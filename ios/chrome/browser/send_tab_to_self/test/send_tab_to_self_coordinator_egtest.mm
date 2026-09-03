@@ -37,6 +37,11 @@
 namespace {
 
 NSString* const kTargetDeviceName = @"My other device";
+NSString* const kRemoteDeviceName = @"remote_device";
+NSString* const kSendTabToSelfModalCancelButtonId =
+    @"kSendTabToSelfModalCancelButton";
+NSString* const kSendTabToSelfModalMenuButtonId =
+    @"kSendTabToSelfModalMenuButton";
 NSString* const kExampleURL = @"https://www.example.com/";
 
 // Helpers for web element selectors.
@@ -68,7 +73,6 @@ id<GREYMatcher> SnackbarWithMessageAndSubtext(NSString* message,
                     grey_descendant(grey_accessibilityLabel(message)),
                     grey_descendant(grey_accessibilityLabel(subtext)), nil);
 }
-
 // Returns a matcher for an infobar banner label stack displaying `label`.
 id<GREYMatcher> InfobarBannerLabelsStack(NSString* label) {
   return grey_allOf(
@@ -76,11 +80,34 @@ id<GREYMatcher> InfobarBannerLabelsStack(NSString* label) {
       grey_accessibilityLabel(label), nil);
 }
 
+// Returns a matcher for an infobar banner label stack displaying the auto-open
+// title and subtitle for `device_name`.
+id<GREYMatcher> AutoOpenInfobarBannerLabelsStack(
+    NSString* device_name = kRemoteDeviceName) {
+  NSString* title = l10n_util::GetPluralNSStringF(
+      IDS_SEND_TAB_TO_SELF_INFOBAR_AUTO_OPEN_TITLE, 1);
+  NSString* subtitle =
+      l10n_util::GetNSStringF(IDS_SEND_TAB_TO_SELF_INFOBAR_AUTO_OPEN_SUBTITLE,
+                              base::SysNSStringToUTF16(device_name));
+  NSString* combinedLabel =
+      [NSString stringWithFormat:@"%@,%@", title, subtitle];
+  return InfobarBannerLabelsStack(combinedLabel);
+}
 // Opens the Tab Grid and waits until a tab grid cell is sufficiently visible.
 void OpenTabGridAndWaitTillVisible() {
   [ChromeEarlGreyUI openTabGrid];
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
                       chrome_test_util::TabGridCellAtIndex(0)];
+}
+
+// Returns the localized label for the Send Tab to Self button.
+NSString* SendTabToSelfButtonLabel() {
+  return l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF);
+}
+
+// Taps the "Send tab to self" button in the open Activity (Share) Sheet.
+void TapSendTabToSelfInActivitySheet() {
+  [ChromeEarlGrey tapButtonInActivitySheetWithID:SendTabToSelfButtonLabel()];
 }
 
 }  // namespace
@@ -128,9 +155,8 @@ void OpenTabGridAndWaitTillVisible() {
   [ChromeEarlGrey waitForWebStateContainingElement:TargetElement()];
 
   [ChromeEarlGreyUI shareCurrentPage];
-
-  NSString* sendTabToSelf = l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF);
-  [ChromeEarlGrey verifyTextVisibleInActivitySheetWithID:sendTabToSelf];
+  [ChromeEarlGrey
+      verifyTextVisibleInActivitySheetWithID:SendTabToSelfButtonLabel()];
 
   // Clean up the activity sheet.
   [ChromeEarlGrey closeActivitySheet];
@@ -146,9 +172,7 @@ void OpenTabGridAndWaitTillVisible() {
   [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   [ChromeEarlGreyUI shareCurrentPage];
-
-  NSString* sendTabToSelf = l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF);
-  [ChromeEarlGrey tapButtonInActivitySheetWithID:sendTabToSelf];
+  TapSendTabToSelfInActivitySheet();
 
   [SigninEarlGreyUI verifyWebSigninIsVisible:YES];
 
@@ -183,8 +207,7 @@ void OpenTabGridAndWaitTillVisible() {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   [ChromeEarlGreyUI shareCurrentPage];
-  NSString* sendTabToSelf = l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF);
-  [ChromeEarlGrey tapButtonInActivitySheetWithID:sendTabToSelf];
+  TapSendTabToSelfInActivitySheet();
 
   // Tap the menu button on the top left.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
@@ -213,8 +236,7 @@ void OpenTabGridAndWaitTillVisible() {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   [ChromeEarlGreyUI shareCurrentPage];
-  NSString* sendTabToSelf = l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF);
-  [ChromeEarlGrey tapButtonInActivitySheetWithID:sendTabToSelf];
+  TapSendTabToSelfInActivitySheet();
 
   // Verify the "No devices found" title is shown.
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
@@ -252,8 +274,7 @@ void OpenTabGridAndWaitTillVisible() {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   [ChromeEarlGreyUI shareCurrentPage];
-  NSString* sendTabToSelf = l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF);
-  [ChromeEarlGrey tapButtonInActivitySheetWithID:sendTabToSelf];
+  TapSendTabToSelfInActivitySheet();
 
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:grey_accessibilityLabel(
@@ -279,8 +300,7 @@ void OpenTabGridAndWaitTillVisible() {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   [ChromeEarlGreyUI shareCurrentPage];
-  NSString* sendTabToSelf = l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF);
-  [ChromeEarlGrey tapButtonInActivitySheetWithID:sendTabToSelf];
+  TapSendTabToSelfInActivitySheet();
 
   // Verify the device is shown in the device picker.
   [ChromeEarlGrey
@@ -331,8 +351,7 @@ void OpenTabGridAndWaitTillVisible() {
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
 
   [ChromeEarlGreyUI shareCurrentPage];
-  NSString* sendTabToSelf = l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF);
-  [ChromeEarlGrey tapButtonInActivitySheetWithID:sendTabToSelf];
+  TapSendTabToSelfInActivitySheet();
 
   // Verify the device is shown in the device picker.
   [ChromeEarlGrey
@@ -367,8 +386,7 @@ void OpenTabGridAndWaitTillVisible() {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   [ChromeEarlGreyUI shareCurrentPage];
-  NSString* sendTabToSelf = l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF);
-  [ChromeEarlGrey tapButtonInActivitySheetWithID:sendTabToSelf];
+  TapSendTabToSelfInActivitySheet();
 
   // Verify the device is shown in the device picker.
   [ChromeEarlGrey
@@ -913,15 +931,8 @@ void OpenTabGridAndWaitTillVisible() {
 
   // Verify that the InfoBar message banner is displayed with correct title and
   // subtitle.
-  NSString* title = l10n_util::GetPluralNSStringF(
-      IDS_SEND_TAB_TO_SELF_INFOBAR_AUTO_OPEN_TITLE, 1);
-  NSString* subtitle = l10n_util::GetNSStringF(
-      IDS_SEND_TAB_TO_SELF_INFOBAR_AUTO_OPEN_SUBTITLE, u"remote_device");
-  NSString* combinedLabel =
-      [NSString stringWithFormat:@"%@,%@", title, subtitle];
-  [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:InfobarBannerLabelsStack(
-                                                       combinedLabel)];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      AutoOpenInfobarBannerLabelsStack()];
 
   // Tap "Open" on the banner and verify that the received tab is opened
   // directly in the foreground.
@@ -975,15 +986,8 @@ void OpenTabGridAndWaitTillVisible() {
 
   // Verify that the InfoBar message banner is displayed with correct title and
   // subtitle.
-  NSString* title = l10n_util::GetPluralNSStringF(
-      IDS_SEND_TAB_TO_SELF_INFOBAR_AUTO_OPEN_TITLE, 1);
-  NSString* subtitle = l10n_util::GetNSStringF(
-      IDS_SEND_TAB_TO_SELF_INFOBAR_AUTO_OPEN_SUBTITLE, u"remote_device");
-  NSString* combinedLabel =
-      [NSString stringWithFormat:@"%@,%@", title, subtitle];
-  [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:InfobarBannerLabelsStack(
-                                                       combinedLabel)];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      AutoOpenInfobarBannerLabelsStack()];
 
   // Open the Tab Grid to verify the activity label on the auto-opened
   // background tab.
@@ -1265,13 +1269,7 @@ void OpenTabGridAndWaitTillVisible() {
 
   // Verify that no InfoBar message banner is displayed since the user already
   // saw the tab arrive in the Tab Grid.
-  NSString* title = l10n_util::GetPluralNSStringF(
-      IDS_SEND_TAB_TO_SELF_INFOBAR_AUTO_OPEN_TITLE, 1);
-  NSString* subtitle = l10n_util::GetNSStringF(
-      IDS_SEND_TAB_TO_SELF_INFOBAR_AUTO_OPEN_SUBTITLE, u"remote_device");
-  NSString* combinedLabel =
-      [NSString stringWithFormat:@"%@,%@", title, subtitle];
-  [[EarlGrey selectElementWithMatcher:InfobarBannerLabelsStack(combinedLabel)]
+  [[EarlGrey selectElementWithMatcher:AutoOpenInfobarBannerLabelsStack()]
       assertWithMatcher:grey_nil()];
 
   // Verify tab order: the new tab should be at index 1 (adjacent to index
