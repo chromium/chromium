@@ -73,6 +73,9 @@ import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.browser_ui.site_settings.StorageAccessSubpageSettings;
+import org.chromium.components.browser_ui.site_settings.Website;
+import org.chromium.components.browser_ui.site_settings.WebsiteAddress;
+import org.chromium.components.browser_ui.site_settings.WebsiteGroup;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 
@@ -386,15 +389,42 @@ public class SettingsFragmentRegistry {
             Object val = args.get(key);
             if (val == null) continue;
 
-            if (!(val instanceof String || val instanceof Number || val instanceof Boolean)) {
-                continue;
+            UrlParam result = extractQueryParam(key, val);
+            if (result != null) {
+                String queryParam = sArgKeyToQueryParamMap.getOrDefault(result.mKey, result.mKey);
+                builder.appendQueryParameter(queryParam, result.mValue);
             }
-
-            // Map argument extra key back to canonical URL query param key.
-            String queryParam = sArgKeyToQueryParamMap.getOrDefault(key, key);
-            builder.appendQueryParameter(queryParam, String.valueOf(val));
         }
         return builder.build().toString();
+    }
+
+    private static @Nullable UrlParam extractQueryParam(String key, Object val) {
+        if (val instanceof Website website) {
+            return new UrlParam(
+                    SingleWebsiteSettings.EXTRA_SITE_ADDRESS, website.getAddress().getOrigin());
+        }
+        if (val instanceof WebsiteAddress websiteAddress) {
+            return new UrlParam(
+                    SingleWebsiteSettings.EXTRA_SITE_ADDRESS, websiteAddress.getOrigin());
+        }
+        if (val instanceof WebsiteGroup websiteGroup) {
+            return new UrlParam(
+                    GroupedWebsitesSettings.EXTRA_GROUP, websiteGroup.getDomainAndRegistry());
+        }
+        if (val instanceof CharSequence || val instanceof Number || val instanceof Boolean) {
+            return new UrlParam(key, String.valueOf(val));
+        }
+        return null;
+    }
+
+    private static class UrlParam {
+        final String mKey;
+        final String mValue;
+
+        UrlParam(String key, String value) {
+            this.mKey = key;
+            this.mValue = value;
+        }
     }
 
     /**

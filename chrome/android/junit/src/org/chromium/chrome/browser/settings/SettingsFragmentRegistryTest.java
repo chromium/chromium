@@ -35,8 +35,13 @@ import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFr
 import org.chromium.chrome.browser.safe_browsing.settings.StandardProtectionSettingsFragment;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
 import org.chromium.chrome.browser.tracing.settings.TracingSettings;
+import org.chromium.components.browser_ui.site_settings.GroupedWebsitesSettings;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
+import org.chromium.components.browser_ui.site_settings.Website;
+import org.chromium.components.browser_ui.site_settings.WebsiteAddress;
+import org.chromium.components.browser_ui.site_settings.WebsiteGroup;
 
+import java.util.Collections;
 import java.util.Map;
 
 /** Unit tests for {@link SettingsFragmentRegistry}. */
@@ -197,6 +202,36 @@ public class SettingsFragmentRegistryTest {
         String url =
                 SettingsFragmentRegistry.createUrlForFragment(SingleWebsiteSettings.class, args);
         assertEquals("chrome://settings/siteDetails?site=example.com", url);
+
+        // Verify WebsiteAddress argument handling.
+        Bundle addressArgs = new Bundle();
+        addressArgs.putSerializable(
+                SingleWebsiteSettings.EXTRA_SITE_ADDRESS,
+                WebsiteAddress.create("https://example.com"));
+        assertEquals(
+                "chrome://settings/siteDetails?site=https%3A%2F%2Fexample.com",
+                SettingsFragmentRegistry.createUrlForFragment(
+                        SingleWebsiteSettings.class, addressArgs));
+
+        // Verify Website argument handling.
+        Bundle websiteArgs = new Bundle();
+        websiteArgs.putSerializable(
+                SingleWebsiteSettings.EXTRA_SITE_ADDRESS,
+                new Website(WebsiteAddress.create("https://example.com"), null));
+        assertEquals(
+                "chrome://settings/siteDetails?site=https%3A%2F%2Fexample.com",
+                SettingsFragmentRegistry.createUrlForFragment(
+                        SingleWebsiteSettings.class, websiteArgs));
+
+        // Verify WebsiteGroup argument handling.
+        Bundle groupArgs = new Bundle();
+        groupArgs.putSerializable(
+                GroupedWebsitesSettings.EXTRA_GROUP,
+                new WebsiteGroup("google.com", Collections.emptyList()));
+        assertEquals(
+                "chrome://settings/allSites/group?group=google.com",
+                SettingsFragmentRegistry.createUrlForFragment(
+                        GroupedWebsitesSettings.class, groupArgs));
     }
 
     @Test
