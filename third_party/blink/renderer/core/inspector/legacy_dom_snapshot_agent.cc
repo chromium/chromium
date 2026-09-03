@@ -403,8 +403,9 @@ int LegacyDOMSnapshotAgent::VisitLayoutTreeNode(LayoutObject* layout_object,
   if (style_index != -1)
     layout_tree_node->setStyleIndex(style_index);
 
-  if (layout_object->Style() && layout_object->IsStackingContext())
+  if (layout_object->IsStackingContext()) {
     layout_tree_node->setIsStackingContext(true);
+  }
 
   if (paint_order_map_) {
     PaintLayer* paint_layer = layout_object->EnclosingLayer();
@@ -449,7 +450,7 @@ const ComputedStyle* ComputedStyleForNode(Node& node) {
     return nullptr;
   }
   if (LayoutObject* layout_object = node.GetLayoutObject()) {
-    return layout_object->Style();
+    return &layout_object->StyleRef();
   }
   if (Element* parent_element = FlatTreeTraversal::ParentElement(node)) {
     return parent_element->EnsureComputedStyle();
