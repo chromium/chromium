@@ -4,6 +4,7 @@
 
 #include "base/metrics/histogram_rust_shim.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <string_view>
@@ -28,6 +29,39 @@ void record_percentage(::rust::Str name, int32_t percent) {
 
 void record_sparse(::rust::Str name, int32_t sample) {
   UmaHistogramSparse(std::string_view(name), sample);
+}
+
+void record_custom_counts(::rust::Str name,
+                          int32_t sample,
+                          int32_t min,
+                          int32_t exclusive_max,
+                          size_t buckets) {
+  UmaHistogramCustomCounts(std::string_view(name), sample, min, exclusive_max,
+                           buckets);
+}
+
+void record_counts_100(::rust::Str name, int32_t sample) {
+  UmaHistogramCounts100(std::string_view(name), sample);
+}
+
+void record_counts_1000(::rust::Str name, int32_t sample) {
+  UmaHistogramCounts1000(std::string_view(name), sample);
+}
+
+void record_counts_10000(::rust::Str name, int32_t sample) {
+  UmaHistogramCounts10000(std::string_view(name), sample);
+}
+
+void record_counts_100000(::rust::Str name, int32_t sample) {
+  UmaHistogramCounts100000(std::string_view(name), sample);
+}
+
+void record_counts_1m(::rust::Str name, int32_t sample) {
+  UmaHistogramCounts1M(std::string_view(name), sample);
+}
+
+void record_counts_10m(::rust::Str name, int32_t sample) {
+  UmaHistogramCounts10M(std::string_view(name), sample);
 }
 
 }  // namespace base::rust

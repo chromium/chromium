@@ -5,6 +5,7 @@
 #ifndef BASE_METRICS_HISTOGRAM_RUST_SHIM_H_
 #define BASE_METRICS_HISTOGRAM_RUST_SHIM_H_
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include "third_party/rust/cxx/v1/cxx.h"
@@ -17,6 +18,17 @@ void record_exact_linear(::rust::Str name,
                          int32_t exclusive_max);
 void record_percentage(::rust::Str name, int32_t percent);
 void record_sparse(::rust::Str name, int32_t sample);
+void record_custom_counts(::rust::Str name,
+                          int32_t sample,
+                          int32_t min,
+                          int32_t exclusive_max,
+                          size_t buckets);
+void record_counts_100(::rust::Str name, int32_t sample);
+void record_counts_1000(::rust::Str name, int32_t sample);
+void record_counts_10000(::rust::Str name, int32_t sample);
+void record_counts_100000(::rust::Str name, int32_t sample);
+void record_counts_1m(::rust::Str name, int32_t sample);
+void record_counts_10m(::rust::Str name, int32_t sample);
 
 }  // namespace base::rust
 

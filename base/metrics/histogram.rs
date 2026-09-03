@@ -36,10 +36,48 @@ mod ffi {
 
         /// Records the integer `sample` to sparse histogram `name`.
         fn record_sparse(name: &str, sample: i32);
+
+        /// Records the integer `sample` to count histogram `name` using custom
+        /// bucket parameters. `min` should be 1 or greater.
+        fn record_custom_counts(
+            name: &str,
+            sample: i32,
+            min: i32,
+            exclusive_max: i32,
+            buckets: usize,
+        );
+
+        /// Records the integer `sample` to count histogram `name` with a
+        /// maximum value of 100 (50 buckets).
+        fn record_counts_100(name: &str, sample: i32);
+
+        /// Records the integer `sample` to count histogram `name` with a
+        /// maximum value of 1,000 (50 buckets).
+        fn record_counts_1000(name: &str, sample: i32);
+
+        /// Records the integer `sample` to count histogram `name` with a
+        /// maximum value of 10,000 (50 buckets).
+        fn record_counts_10000(name: &str, sample: i32);
+
+        /// Records the integer `sample` to count histogram `name` with a
+        /// maximum value of 100,000 (50 buckets).
+        fn record_counts_100000(name: &str, sample: i32);
+
+        /// Records the integer `sample` to count histogram `name` with a
+        /// maximum value of 1,000,000 (50 buckets).
+        fn record_counts_1m(name: &str, sample: i32);
+
+        /// Records the integer `sample` to count histogram `name` with a
+        /// maximum value of 10,000,000 (50 buckets).
+        fn record_counts_10m(name: &str, sample: i32);
     }
 }
 
-pub use ffi::{record_bool, record_exact_linear, record_percentage, record_sparse};
+pub use ffi::{
+    record_bool, record_counts_100, record_counts_1000, record_counts_10000, record_counts_100000,
+    record_counts_10m, record_counts_1m, record_custom_counts, record_exact_linear,
+    record_percentage, record_sparse,
+};
 
 chromium::import! {
     "//base:histogram_enum_macro";

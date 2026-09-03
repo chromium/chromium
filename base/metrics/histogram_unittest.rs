@@ -103,3 +103,41 @@ fn test_uma_histogram_sparse() {
     tester.expect_bucket_count("Test.Rust.Sparse", 123456, 2);
     tester.expect_total_count("Test.Rust.Sparse", 2);
 }
+
+#[gtest(RustHistogramTest, UmaHistogramCustomCounts)]
+fn test_uma_histogram_custom_counts() {
+    let tester = HistogramTester::new();
+    histogram::record_custom_counts("Test.Rust.CustomCounts", 0, 1, 100, 10);
+    histogram::record_custom_counts("Test.Rust.CustomCounts", 20, 1, 100, 10);
+    histogram::record_custom_counts("Test.Rust.CustomCounts", 20, 1, 100, 10);
+    histogram::record_custom_counts("Test.Rust.CustomCounts", 50, 1, 100, 10);
+    histogram::record_custom_counts("Test.Rust.CustomCounts", 105, 1, 100, 10);
+
+    tester.expect_bucket_count("Test.Rust.CustomCounts", 0, 1);
+    tester.expect_bucket_count("Test.Rust.CustomCounts", 20, 2);
+    tester.expect_bucket_count("Test.Rust.CustomCounts", 50, 1);
+    tester.expect_bucket_count("Test.Rust.CustomCounts", 100, 1);
+    tester.expect_total_count("Test.Rust.CustomCounts", 5);
+}
+
+#[gtest(RustHistogramTest, UmaHistogramCounts)]
+fn test_uma_histogram_counts() {
+    let tester = HistogramTester::new();
+    histogram::record_counts_100("Test.Rust.Counts100", 42);
+    tester.expect_unique_sample("Test.Rust.Counts100", 42, 1);
+
+    histogram::record_counts_1000("Test.Rust.Counts1000", 420);
+    tester.expect_unique_sample("Test.Rust.Counts1000", 420, 1);
+
+    histogram::record_counts_10000("Test.Rust.Counts10000", 4200);
+    tester.expect_unique_sample("Test.Rust.Counts10000", 4200, 1);
+
+    histogram::record_counts_100000("Test.Rust.Counts100000", 42000);
+    tester.expect_unique_sample("Test.Rust.Counts100000", 42000, 1);
+
+    histogram::record_counts_1m("Test.Rust.Counts1M", 420000);
+    tester.expect_unique_sample("Test.Rust.Counts1M", 420000, 1);
+
+    histogram::record_counts_10m("Test.Rust.Counts10M", 4200000);
+    tester.expect_unique_sample("Test.Rust.Counts10M", 4200000, 1);
+}
