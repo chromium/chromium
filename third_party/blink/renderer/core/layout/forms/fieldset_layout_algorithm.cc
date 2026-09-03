@@ -249,7 +249,7 @@ void FieldsetLayoutAlgorithm::LayoutLegend(BlockNode& legend) {
 
   auto legend_space = CreateConstraintSpaceForLegend(
       legend, ChildAvailableSize(), percentage_size);
-  const LayoutResult* result = legend.Layout(legend_space, GetBreakToken());
+  const LayoutResult* result = legend.Layout(legend_space);
 
   // Legends are monolithic, so abortions are not expected.
   DCHECK_EQ(result->Status(), LayoutResult::kSuccess);
