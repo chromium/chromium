@@ -86,7 +86,7 @@ gfx::Rect GetOverlayBoundsForSource(const RegionCaptureSource& source) {
     return gfx::Rect();
   }
 
-  // Single display (e.g. macOS 14+ native ScreenCaptureKit picker).
+  // Single display (e.g. macOS screen picker or display-specific capture).
   if (source.type == RegionCaptureSource::Type::kSpecificDisplay &&
       source.display_id) {
     display::Display display;
@@ -297,9 +297,12 @@ class RegionSelectOverlayView : public views::View {
 
   void DrawScreenshotImage(gfx::Canvas* canvas) {
     CHECK(!bitmap_.empty());
-    gfx::ImageSkiaRep rep(bitmap_, canvas->image_scale());
-    gfx::ImageSkia image(rep);
-    canvas->DrawImageInt(image, 0, 0);
+    gfx::ImageSkia image = gfx::ImageSkia::CreateFromBitmap(bitmap_, 1.f);
+    canvas->DrawImageInt(image, /*src_x=*/0, /*src_y=*/0,
+                         /*src_w=*/image.width(), /*src_h=*/image.height(),
+                         /*dest_x=*/0, /*dest_y=*/0,
+                         /*dest_w=*/width(), /*dest_h=*/height(),
+                         /*filter=*/true);
   }
 
   void OnPaint(gfx::Canvas* canvas) override {
@@ -431,7 +434,14 @@ class RegionSelectOverlayView : public views::View {
       return;
     }
     const gfx::Size toast_size = toast_chip_->GetPreferredSize();
+    // On macOS, provide extra top clearance to account for the system menu bar
+    // and MacBook display notches (which occupy up to ~44pt at the top). On
+    // other platforms, y = 0 is clear of system chrome.
+#if BUILDFLAG(IS_MAC)
+    constexpr int kTopMargin = 56;
+#else
     constexpr int kTopMargin = 28;
+#endif
     auto* screen = display::Screen::Get();
     if (!screen) {
       toast_chip_->SetBounds((width() - toast_size.width()) / 2, kTopMargin,
@@ -688,8 +698,14 @@ void OmniboxEverywhereRegionSelectOverlay::Initialize(
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.name = "OmniboxEverywhereRegionSelectOverlay";
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
+#if BUILDFLAG(IS_MAC)
+  // Required to support Widget::SetActivationIndependence().
+  params.z_order = ui::ZOrderLevel::kFloatingWindow;
+#else
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
+#endif
   params.activatable = views::Widget::InitParams::Activatable::kYes;
+  params.visible_on_all_workspaces = true;
   params.bounds = GetOverlayBoundsForSource(source);
   if (context) {
     params.context = context;
@@ -697,6 +713,10 @@ void OmniboxEverywhereRegionSelectOverlay::Initialize(
 
   widget_ = std::make_unique<views::Widget>();
   widget_->Init(std::move(params));
+#if BUILDFLAG(IS_MAC)
+  widget_->SetActivationIndependence(true);
+  widget_->SetCanAppearInExistingFullscreenSpaces(true);
+#endif
   widget_observation_.Observe(widget_.get());
 
 #if defined(USE_AURA)
