@@ -194,7 +194,8 @@ void WebTransportConnectorImpl::Connect(
     std::vector<net::HttpRequestHeaders::HeaderKeyValuePair> additional_headers,
     mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
         handshake_client) {
-  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI),
+        base::NotFatalUntil::M159);
 
   // For document-scoped contexts (e.g., RenderFrame or DedicatedWorker), abort
   // the connection if the original document is no longer active (including
@@ -323,7 +324,8 @@ void WebTransportConnectorImpl::OnWillCreateWebTransportCompleted(
     mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
         handshake_client,
     std::optional<network::mojom::WebTransportErrorPtr> error) {
-  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI),
+        base::NotFatalUntil::M159);
 
   RenderProcessHost* process = RenderProcessHost::FromID(process_id_);
   if (!process) {

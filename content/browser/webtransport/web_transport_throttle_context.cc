@@ -39,7 +39,7 @@ std::optional<net::IPAddress> GetSubnetAddress(const net::IPAddress& address) {
   size_t prefix_bytes = address.IsIPv4() ? 3 : 8;
   base::span<const uint8_t> raw_bytes = address.bytes();
   std::array<uint8_t, 16> subnet_bytes = {};
-  DCHECK_GE(raw_bytes.size(), prefix_bytes);
+  CHECK_GE(raw_bytes.size(), prefix_bytes, base::NotFatalUntil::M159);
   base::span(subnet_bytes).copy_prefix_from(raw_bytes.first(prefix_bytes));
 
   return net::IPAddress(base::span<uint8_t>(subnet_bytes).first(size));
@@ -192,9 +192,9 @@ WebTransportThrottleContext::Tracker::Tracker(
   DVLOG(1) << "WebTransportThrottleContext::Tracker()" << " this=" << this
            << " pending_handshakes_= "
            << throttle_context_->penalty_mgr_.PendingHandshakes();
-  DCHECK(throttle_context_);
-  DCHECK_LT(throttle_context_->penalty_mgr_.PendingHandshakes(),
-            kMaxPendingSessions);
+  CHECK(throttle_context_, base::NotFatalUntil::M159);
+  CHECK_LT(throttle_context_->penalty_mgr_.PendingHandshakes(),
+           kMaxPendingSessions, base::NotFatalUntil::M159);
   throttle_context_->penalty_mgr_.AddPendingHandshakes();
 }
 
@@ -247,7 +247,8 @@ void WebTransportThrottleContext::Tracker::OnHandshakeEstablished() {
 
   DVLOG(1) << "    pending_handshakes_= "
            << throttle_context_->penalty_mgr_.PendingHandshakes();
-  DCHECK_GT(throttle_context_->penalty_mgr_.PendingHandshakes(), 0);
+  CHECK_GT(throttle_context_->penalty_mgr_.PendingHandshakes(), 0,
+           base::NotFatalUntil::M159);
   throttle_context_->penalty_mgr_.QueuePending(base::Milliseconds(10));
   throttle_context_ = nullptr;
 }
@@ -342,14 +343,14 @@ void WebTransportThrottleContext::ScheduleThrottledConnection() {
            << this
            << " pending_handshakes_= " << penalty_mgr_.PendingHandshakes();
 
-  DCHECK(!throttled_connections_.empty());
+  CHECK(!throttled_connections_.empty(), base::NotFatalUntil::M159);
 
   if (penalty_mgr_.PendingHandshakes() == 0) {
     DoOnThrottleDone();
     return;
   }
 
-  DCHECK_GT(penalty_mgr_.PendingHandshakes(), 0);
+  CHECK_GT(penalty_mgr_.PendingHandshakes(), 0, base::NotFatalUntil::M159);
 
   // Don't do the calculation for large values of `pending_handshakes_` to avoid
   // integer overflow. If `pending_handshakes_` is 14, the result of the
@@ -366,7 +367,7 @@ void WebTransportThrottleContext::ScheduleThrottledConnection() {
 
   const base::TimeDelta delay =
       base::Milliseconds(milliseconds_delay * random_multiplier);
-  DCHECK_GT(delay, base::Seconds(0));
+  CHECK_GT(delay, base::Seconds(0), base::NotFatalUntil::M159);
   const base::TimeTicks when = queue_head_time_ + delay;
   const base::TimeDelta relative_delay = when - base::TimeTicks::Now();
 
@@ -391,7 +392,7 @@ void WebTransportThrottleContext::DoOnThrottleDone() {
            << " pending_handshakes_= " << penalty_mgr_.PendingHandshakes()
            << " throttled_connections_.size()="
            << throttled_connections_.size();
-  DCHECK(!throttled_connections_.empty());
+  CHECK(!throttled_connections_.empty(), base::NotFatalUntil::M159);
   auto on_throttle_done = std::move(throttled_connections_.front());
   throttled_connections_.pop();
   queue_head_time_ = base::TimeTicks::Now();

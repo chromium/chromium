@@ -99,7 +99,7 @@ scoped_refptr<net::HttpResponseHeaders> CreateHttpResponseHeaders(
 }
 
 bool GetMimeType(const FileSystemURL& url, std::string* mime_type) {
-  DCHECK(url.is_valid());
+  CHECK(url.is_valid(), base::NotFatalUntil::M159);
   return net::GetWellKnownMimeTypeFromFile(url.path(), mime_type);
 }
 
@@ -292,7 +292,7 @@ class FileSystemDirectoryURLLoader final : public FileSystemEntryURLLoader {
       : FileSystemEntryURLLoader(params) {}
 
   void FileSystemIsMounted() override {
-    DCHECK(url_.is_valid());
+    CHECK(url_.is_valid(), base::NotFatalUntil::M159);
     if (!params_.file_system_context->CanServeURLRequest(url_)) {
       // In incognito mode the API is not usable and there should be no data.
       if (VirtualPath::IsRootPath(url_.virtual_path())) {
@@ -351,7 +351,7 @@ class FileSystemDirectoryURLLoader final : public FileSystemEntryURLLoader {
     const FileSystemURL entry_url =
         params_.file_system_context->CreateCrackedFileSystemURL(
             url_.storage_key(), url_.type(), url_.path().Append(entry.name));
-    DCHECK(entry_url.is_valid());
+    CHECK(entry_url.is_valid(), base::NotFatalUntil::M159);
     params_.file_system_context->operation_runner()->GetMetadata(
         entry_url,
         {storage::FileSystemOperation::GetMetadataField::kSize,

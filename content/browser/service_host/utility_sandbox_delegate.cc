@@ -102,7 +102,7 @@ UtilitySandboxedProcessLauncherDelegate::
 #endif
       sandbox_type_ == sandbox::mojom::Sandbox::kAudio ||
       sandbox_type_ == sandbox::mojom::Sandbox::kSpeechRecognition;
-  DCHECK(supported_sandbox_type);
+  CHECK(supported_sandbox_type, base::NotFatalUntil::M159);
 #endif  // DCHECK_IS_ON()
 }
 

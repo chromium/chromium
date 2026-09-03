@@ -54,7 +54,7 @@ bool AudioInitializeConfig(sandbox::TargetConfig* config) {
   // https://cs.chromium.org/chromium/src/media/audio/win/audio_low_latency_input_win.cc
   // Use USER_RESTRICTED_NON_ADMIN over USER_NON_ADMIN to prevent failures when
   // AppLocker and similar application whitelisting solutions are in place.
-  DCHECK(!config->IsConfigured());
+  CHECK(!config->IsConfigured(), base::NotFatalUntil::M159);
 
   // Custom default policy allowing audio drivers to read device properties
   // (https://crbug.com/883326).
@@ -77,7 +77,7 @@ bool AudioInitializeConfig(sandbox::TargetConfig* config) {
 
 // Sets the sandbox policy for the network service process.
 bool NetworkInitializeConfig(sandbox::TargetConfig* config) {
-  DCHECK(!config->IsConfigured());
+  CHECK(!config->IsConfigured(), base::NotFatalUntil::M159);
   // LPAC sandbox is enabled, so do not use a restricted token.
   auto result = config->SetTokenLevel(sandbox::USER_UNPROTECTED,
                                       sandbox::USER_UNPROTECTED);
@@ -113,7 +113,7 @@ bool NetworkInitializeConfig(sandbox::TargetConfig* config) {
 
 // Sets the sandbox policy for the print backend service process.
 bool PrintBackendInitializeConfig(sandbox::TargetConfig* config) {
-  DCHECK(!config->IsConfigured());
+  CHECK(!config->IsConfigured(), base::NotFatalUntil::M159);
   // Print Backend policy lockdown level must be at least USER_LIMITED and
   // delayed integrity level INTEGRITY_LEVEL_LOW, otherwise ::OpenPrinter()
   // will fail with error code ERROR_ACCESS_DENIED (0x5).
@@ -131,7 +131,7 @@ std::string UtilityAppContainerId(base::CommandLine& cmd_line) {
 }
 
 bool IconReaderInitializeConfig(sandbox::TargetConfig* config) {
-  DCHECK(!config->IsConfigured());
+  CHECK(!config->IsConfigured(), base::NotFatalUntil::M159);
 
   auto result = config->SetTokenLevel(sandbox::USER_RESTRICTED_SAME_ACCESS,
                                       sandbox::USER_LOCKDOWN);
@@ -159,7 +159,7 @@ bool OnDeviceModelExecutionInitializeConfig(
     sandbox::TargetConfig* config,
     base::CommandLine& cmd_line,
     sandbox::mojom::Sandbox sandbox_type) {
-  DCHECK(!config->IsConfigured());
+  CHECK(!config->IsConfigured(), base::NotFatalUntil::M159);
   // USER_RESTRICTED breaks the Direct3D backend, so for now we can only go as
   // low as USER_LIMITED.
   sandbox::ResultCode result = config->SetTokenLevel(
@@ -171,7 +171,7 @@ bool OnDeviceModelExecutionInitializeConfig(
 }
 
 bool WebNNModelCompilationInitializeConfig(sandbox::TargetConfig* config) {
-  DCHECK(!config->IsConfigured());
+  CHECK(!config->IsConfigured(), base::NotFatalUntil::M159);
 
   // Two-stage WebNN compiler sandbox (see crbug.com/500769395 and
   // content/utility/webnn/webnn_sandbox_init.cc):
@@ -278,7 +278,7 @@ bool WebNNModelCompilationInitializeConfig(sandbox::TargetConfig* config) {
 bool XrCompositingInitializeConfig(sandbox::TargetConfig* config,
                                    base::CommandLine& cmd_line,
                                    sandbox::mojom::Sandbox sandbox_type) {
-  DCHECK(!config->IsConfigured());
+  CHECK(!config->IsConfigured(), base::NotFatalUntil::M159);
   // TODO(crbug.com/41412553): Try to harden the XR Compositor
   // sandbox to use mitigations and restrict the token.
 
@@ -319,7 +319,7 @@ bool XrCompositingInitializeConfig(sandbox::TargetConfig* config,
 
 bool ScreenAIInitializeConfig(sandbox::TargetConfig* config,
                               sandbox::mojom::Sandbox sandbox_type) {
-  DCHECK(!config->IsConfigured());
+  CHECK(!config->IsConfigured(), base::NotFatalUntil::M159);
 
   auto result = config->SetTokenLevel(sandbox::USER_RESTRICTED_SAME_ACCESS,
                                       sandbox::USER_LOCKDOWN);
@@ -392,7 +392,7 @@ bool UtilitySandboxedProcessLauncherDelegate::ShouldLaunchElevated() {
 
 bool UtilitySandboxedProcessLauncherDelegate::InitializeConfig(
     sandbox::TargetConfig* config) {
-  DCHECK(!config->IsConfigured());
+  CHECK(!config->IsConfigured(), base::NotFatalUntil::M159);
   if (sandbox_type_ == sandbox::mojom::Sandbox::kAudio) {
     if (!AudioInitializeConfig(config)) {
       return false;

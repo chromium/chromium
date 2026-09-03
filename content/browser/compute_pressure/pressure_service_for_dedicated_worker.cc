@@ -14,7 +14,7 @@ namespace content {
 PressureServiceForDedicatedWorker::PressureServiceForDedicatedWorker(
     DedicatedWorkerHost* host)
     : worker_host_(host) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 }
 
 PressureServiceForDedicatedWorker::~PressureServiceForDedicatedWorker() =

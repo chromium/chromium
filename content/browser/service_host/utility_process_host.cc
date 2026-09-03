@@ -332,7 +332,7 @@ bool UtilityProcessHost::StartProcess() {
   process_->SetMetricsName(options_.metrics_name_);
 
   if (RenderProcessHost::run_renderer_in_process()) {
-    DCHECK(g_utility_main_thread_factory);
+    CHECK(g_utility_main_thread_factory, base::NotFatalUntil::M159);
     // See comment in RenderProcessHostImpl::Init() for the background on why we
     // support single process mode this way.
     in_process_thread_.reset(g_utility_main_thread_factory(
@@ -361,7 +361,8 @@ bool UtilityProcessHost::StartProcess() {
 #else  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_MAC)
   if (options_.sandbox_type_ == sandbox::mojom::Sandbox::kServiceWithJit) {
-    DCHECK_EQ(options_.child_flags_, ChildProcessHost::CHILD_RENDERER);
+    CHECK_EQ(options_.child_flags_, ChildProcessHost::CHILD_RENDERER,
+             base::NotFatalUntil::M159);
   }
 #endif  // BUILDFLAG(IS_MAC)
   int child_flags = options_.child_flags_;

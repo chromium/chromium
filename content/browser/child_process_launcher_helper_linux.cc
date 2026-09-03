@@ -31,17 +31,18 @@ namespace internal {
 
 std::optional<mojo::NamedPlatformChannel>
 ChildProcessLauncherHelper::CreateNamedPlatformChannelOnLauncherThread() {
-  DCHECK(CurrentlyOnProcessLauncherTaskRunner());
+  CHECK(CurrentlyOnProcessLauncherTaskRunner(), base::NotFatalUntil::M159);
   return std::nullopt;
 }
 
 void ChildProcessLauncherHelper::BeforeLaunchOnClientThread() {
-  DCHECK(client_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(client_task_runner_->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M159);
 }
 
 std::unique_ptr<FileMappedForLaunch>
 ChildProcessLauncherHelper::GetFilesToMap() {
-  DCHECK(CurrentlyOnProcessLauncherTaskRunner());
+  CHECK(CurrentlyOnProcessLauncherTaskRunner(), base::NotFatalUntil::M159);
   return CreateDefaultPosixFilesToMap(
       child_process_id(), mojo_channel_->remote_endpoint(),
       file_data_->files_to_preload, GetProcessType(), command_line());
@@ -55,7 +56,7 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
     PosixFileDescriptorInfo& files_to_register,
     base::LaunchOptions* options) {
   if (options) {
-    DCHECK(!GetZygoteForLaunch());
+    CHECK(!GetZygoteForLaunch(), base::NotFatalUntil::M159);
     // Convert FD mapping to FileHandleMappingVector
     options->fds_to_remap = files_to_register.GetMappingWithIDAdjustment(
         base::GlobalDescriptors::kBaseDescriptor);
@@ -67,10 +68,10 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
 
     options->environment = delegate_->GetEnvironment();
   } else {
-    DCHECK(GetZygoteForLaunch());
+    CHECK(GetZygoteForLaunch(), base::NotFatalUntil::M159);
     // Environment variables could be supported in the future, but are not
     // currently supported when launching with the zygote.
-    DCHECK(delegate_->GetEnvironment().empty());
+    CHECK(delegate_->GetEnvironment().empty(), base::NotFatalUntil::M159);
   }
 
   return true;
@@ -161,7 +162,7 @@ void ChildProcessLauncherHelper::ForceNormalProcessTerminationSync(
     ChildProcessLauncherHelper::Process process) {
   TRACE_EVENT0("chromeos",
                "ChildProcessLauncherHelper::ForceNormalProcessTerminationSync");
-  DCHECK(CurrentlyOnProcessLauncherTaskRunner());
+  CHECK(CurrentlyOnProcessLauncherTaskRunner(), base::NotFatalUntil::M159);
   process.process.Terminate(RESULT_CODE_NORMAL_EXIT, false);
   // On POSIX, we must additionally reap the child.
   if (process.zygote) {
@@ -176,7 +177,7 @@ void ChildProcessLauncherHelper::ForceNormalProcessTerminationSync(
 void ChildProcessLauncherHelper::SetProcessPriorityOnLauncherThread(
     base::Process process,
     base::Process::Priority priority) {
-  DCHECK(CurrentlyOnProcessLauncherTaskRunner());
+  CHECK(CurrentlyOnProcessLauncherTaskRunner(), base::NotFatalUntil::M159);
   if (process.CanSetPriority()) {
     process.SetPriority(priority);
   }
@@ -192,7 +193,7 @@ base::File OpenFileToShare(const base::FilePath& path,
                            base::MemoryMappedFile::Region* region) {
   base::FilePath exe_dir;
   bool result = base::PathService::Get(base::BasePathKey::DIR_EXE, &exe_dir);
-  DCHECK(result);
+  CHECK(result, base::NotFatalUntil::M159);
   base::File file(exe_dir.Append(path),
                   base::File::FLAG_OPEN | base::File::FLAG_READ);
   *region = base::MemoryMappedFile::Region::kWholeFile;

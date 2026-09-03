@@ -28,7 +28,7 @@ ServiceProcessInfo ServiceProcessTracker::AddProcess(
     const std::optional<GURL>& site,
     const std::string& service_interface_name,
     base::WeakPtr<ServiceProcessHost::Observer> observer) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   auto id = GenerateNextId();
   ServiceProcessInfo info(service_interface_name, site, id, std::move(process));
   auto info_dup = info.Duplicate();
@@ -45,7 +45,7 @@ ServiceProcessInfo ServiceProcessTracker::AddProcess(
 }
 
 void ServiceProcessTracker::NotifyTerminated(ServiceProcessId id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   auto iter = processes_.find(id);
   CHECK(iter != processes_.end());
 
@@ -68,7 +68,7 @@ void ServiceProcessTracker::NotifyTerminated(ServiceProcessId id) {
 void ServiceProcessTracker::NotifyCrashed(
     ServiceProcessId id,
     UtilityProcessHost::Client::CrashType crash_type) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   auto iter = processes_.find(id);
   CHECK(iter != processes_.end());
 
@@ -99,21 +99,22 @@ void ServiceProcessTracker::NotifyCrashed(
 
 void ServiceProcessTracker::AddObserver(
     ServiceProcessHost::Observer* observer) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   observers_.AddObserver(observer);
 }
 
 void ServiceProcessTracker::RemoveObserver(
     ServiceProcessHost::Observer* observer) {
   // NOTE: Some tests may remove observers after BrowserThreads are shut down.
-  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI) ||
-         !BrowserThread::IsThreadInitialized(BrowserThread::UI));
+  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI) ||
+            !BrowserThread::IsThreadInitialized(BrowserThread::UI),
+        base::NotFatalUntil::M159);
   observers_.RemoveObserver(observer);
 }
 
 void ServiceProcessTracker::ClearInstanceObserver(
     ServiceProcessHost::Observer* observer) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   for (auto& [id, obs] : instance_observers_) {
     if (obs.get() == observer) {
       obs.reset();
@@ -122,7 +123,7 @@ void ServiceProcessTracker::ClearInstanceObserver(
 }
 
 std::vector<ServiceProcessInfo> ServiceProcessTracker::GetProcesses() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   std::vector<ServiceProcessInfo> processes;
   for (const auto& entry : processes_) {
     processes.push_back(entry.second.Duplicate());
@@ -131,7 +132,7 @@ std::vector<ServiceProcessInfo> ServiceProcessTracker::GetProcesses() {
 }
 
 ServiceProcessId ServiceProcessTracker::GenerateNextId() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   return service_process_id_generator_.GenerateNextId();
 }
 

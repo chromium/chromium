@@ -55,7 +55,7 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
         remover_(nullptr) {
     remover_ =
         BrowserContextImpl::From(browser_context)->GetBrowsingDataRemover();
-    DCHECK(remover_);
+    CHECK(remover_, base::NotFatalUntil::M159);
     scoped_observation_.Observe(remover_.get());
   }
 
@@ -64,11 +64,11 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
     // destroyed should be the "delete this" part in
     // OnBrowsingDataRemoverDone() function, and it invokes the |callback_|. So
     // when this destructor is called, the |callback_| should be null.
-    DCHECK(!callback_);
+    CHECK(!callback_, base::NotFatalUntil::M159);
   }
 
   void RunAndDestroySelfWhenDone() {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
     // Cookies and channel IDs are scoped to
     // a) eTLD+1 of |origin|'s host if |origin|'s host is a registrable domain
     //    or a subdomain thereof
@@ -190,13 +190,13 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
                                   weak_factory_.GetWeakPtr(), 0));
     }
 
-    DCHECK_GT(pending_task_count_, 0);
+    CHECK_GT(pending_task_count_, 0, base::NotFatalUntil::M159);
   }
 
  private:
   // BrowsingDataRemover::Observer:
   void OnBrowsingDataRemoverDone(uint64_t failed_data_types) override {
-    DCHECK(pending_task_count_);
+    CHECK(pending_task_count_, base::NotFatalUntil::M159);
     if (--pending_task_count_) {
       return;
     }
@@ -234,11 +234,12 @@ void ClearSiteData(
     std::optional<blink::StorageKey> storage_key,
     bool partitioned_state_allowed_only,
     base::OnceClosure callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   // It's not possible to clear all storage and also only specific buckets.
-  DCHECK(!clear_site_data_types.Has(ClearSiteDataType::kStorage) ||
-         storage_buckets_to_remove.empty());
+  CHECK(!clear_site_data_types.Has(ClearSiteDataType::kStorage) ||
+            storage_buckets_to_remove.empty(),
+        base::NotFatalUntil::M159);
   if (!browser_context) {
     std::move(callback).Run();
     return;

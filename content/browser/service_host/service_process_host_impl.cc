@@ -115,7 +115,7 @@ void ServiceProcessHost::ClearInstanceObserver(Observer* observer) {
 void ServiceProcessHost::Launch(mojo::GenericPendingReceiver receiver,
                                 Options options,
                                 sandbox::mojom::Sandbox sandbox) {
-  DCHECK(receiver.interface_name().has_value());
+  CHECK(receiver.interface_name().has_value(), base::NotFatalUntil::M159);
   if (GetUIThreadTaskRunner({})->BelongsToCurrentThread()) {
     LaunchServiceProcess(std::move(receiver), std::move(options), sandbox);
   } else {

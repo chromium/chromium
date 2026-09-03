@@ -70,7 +70,7 @@ bool CheckCanReadFileSystemFileOnUIThread(
     std::unique_ptr<ChildProcessSecurityPolicyImpl::Handle>
         security_policy_handle,
     const storage::FileSystemURL& url) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   return security_policy_handle->CanReadFileSystemFile(url);
 }
 
@@ -78,7 +78,7 @@ void GrantReadAccessOnUIThread(
     std::unique_ptr<ChildProcessSecurityPolicyImpl::Handle>
         security_policy_handle,
     const base::FilePath& platform_path) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   // It is only possible to grant new permissions if the RenderProcessHost still
   // exists by the time this task runs. If it does exist and doesn't yet have
@@ -101,7 +101,8 @@ void GetPlatformPathOnFileThread(
     const storage::FileSystemURL& url,
     DoGetPlatformPathCB callback,
     bool can_read_filesystem_file) {
-  DCHECK(context->default_file_task_runner()->RunsTasksInCurrentSequence());
+  CHECK(context->default_file_task_runner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M159);
 
   if (!can_read_filesystem_file) {
     std::move(callback).Run(base::FilePath());
@@ -174,8 +175,9 @@ void DoGetPlatformPath(scoped_refptr<storage::FileSystemContext> context,
                        const GURL& path,
                        const blink::StorageKey& storage_key,
                        DoGetPlatformPathCB callback) {
-  DCHECK(context->default_file_task_runner()->RunsTasksInCurrentSequence());
-  DCHECK(callback);
+  CHECK(context->default_file_task_runner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M159);
+  CHECK(callback, base::NotFatalUntil::M159);
 
   storage::FileSystemURL url(context->CrackURL(path, storage_key));
   if (!FileSystemURLIsValid(context.get(), url)) {
@@ -219,7 +221,7 @@ void PrepareDropDataForChildProcess(
   // TODO(crbug.com/482261047): Pass the RenderProcessHost instead of `child_id`
   // as proof that it still exists. This requires using a MockRenderProcessHost
   // in unit tests.
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // The externalfile:// scheme is used in Chrome OS to open external files in a
@@ -242,7 +244,7 @@ void PrepareDropDataForChildProcess(
 
   storage::IsolatedContext* isolated_context =
       storage::IsolatedContext::GetInstance();
-  DCHECK(isolated_context);
+  CHECK(isolated_context, base::NotFatalUntil::M159);
 
   for (auto& file_system_file : drop_data->file_system_files) {
     storage::FileSystemURL file_system_url =
@@ -251,8 +253,10 @@ void PrepareDropDataForChildProcess(
     // Sandboxed filesystem files should never be handled via this path, so
     // assert that none are sent from the renderer (wrapping these won't work
     // anyway).
-    DCHECK(file_system_url.type() != storage::kFileSystemTypePersistent);
-    DCHECK(file_system_url.type() != storage::kFileSystemTypeTemporary);
+    CHECK(file_system_url.type() != storage::kFileSystemTypePersistent,
+          base::NotFatalUntil::M159);
+    CHECK(file_system_url.type() != storage::kFileSystemTypeTemporary,
+          base::NotFatalUntil::M159);
 
     std::string register_name;
     storage::IsolatedContext::ScopedFSHandle filesystem =
@@ -286,7 +290,7 @@ std::string PrepareDataTransferFilenamesForChildProcess(
   // TODO(crbug.com/482261047): Pass the RenderProcessHost instead of `child_id`
   // as proof that it still exists. This requires using a MockRenderProcessHost
   // in unit tests.
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   // The filenames vector represents a capability to access the given files.
   storage::IsolatedContext::FileInfoSet files;
@@ -319,7 +323,7 @@ std::string PrepareDataTransferFilenamesForChildProcess(
 
   storage::IsolatedContext* isolated_context =
       storage::IsolatedContext::GetInstance();
-  DCHECK(isolated_context);
+  CHECK(isolated_context, base::NotFatalUntil::M159);
 
   std::string filesystem_id;
   if (!files.fileset().empty()) {

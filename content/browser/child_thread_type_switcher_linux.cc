@@ -19,7 +19,7 @@ namespace {
 void SetThreadTypeOnLauncherThread(base::ProcessId peer_pid,
                                    base::PlatformThreadId ns_tid,
                                    base::ThreadType thread_type) {
-  DCHECK(CurrentlyOnProcessLauncherTaskRunner());
+  CHECK(CurrentlyOnProcessLauncherTaskRunner(), base::NotFatalUntil::M159);
 
   bool ns_pid_supported = false;
   pid_t peer_tid =
@@ -47,7 +47,7 @@ void SetThreadTypeOnLauncherThread(base::ProcessId peer_pid,
 void SetThreadTypesOnLauncherThread(
     base::ProcessId peer_pid,
     std::vector<mojom::ThreadTypeChangePtr> changes) {
-  DCHECK(CurrentlyOnProcessLauncherTaskRunner());
+  CHECK(CurrentlyOnProcessLauncherTaskRunner(), base::NotFatalUntil::M159);
   for (const auto& change : changes) {
     SetThreadTypeOnLauncherThread(
         peer_pid, base::PlatformThreadId(change->platform_thread_id),
@@ -74,7 +74,7 @@ bool ChildThreadTypeSwitcher::Bind(
 }
 
 void ChildThreadTypeSwitcher::SetPid(base::ProcessId child_pid) {
-  DCHECK_EQ(child_pid_, base::kNullProcessId);
+  CHECK_EQ(child_pid_, base::kNullProcessId, base::NotFatalUntil::M159);
   child_pid_ = child_pid;
   if (receiver_.is_bound()) {
     receiver_.Resume();

@@ -86,7 +86,7 @@ SandboxGrantResult MaybeDeleteOldData(
     return SandboxGrantResult::kSuccess;
 
   // Check old path exists, and is a directory.
-  DCHECK(base::DirectoryExists(old_path));
+  CHECK(base::DirectoryExists(old_path), base::NotFatalUntil::M159);
 
   base::FilePath old_file_path = old_path.Append(*filename);
 
@@ -136,7 +136,8 @@ SandboxGrantResult MaybeCopyData(const base::FilePath& old_path,
     return SandboxGrantResult::kSuccess;
 
   // Check both paths exist, and are directories.
-  DCHECK(base::DirectoryExists(old_path) && base::DirectoryExists(new_path));
+  CHECK(base::DirectoryExists(old_path) && base::DirectoryExists(new_path),
+        base::NotFatalUntil::M159);
 
   base::FilePath old_file_path = old_path.Append(*filename);
   base::FilePath new_file_path = new_path.Append(*filename);
@@ -184,8 +185,9 @@ SandboxGrantResult MaybeCopyData(const base::FilePath& old_path,
 SandboxGrantResult CleanUpOldData(
     network::mojom::NetworkContextParams* params) {
   // Never delete old data unless the checkpoint file exists.
-  DCHECK(base::PathExists(
-      params->file_paths->data_directory.path().Append(kCheckpointFileName)));
+  CHECK(base::PathExists(params->file_paths->data_directory.path().Append(
+            kCheckpointFileName)),
+        base::NotFatalUntil::M159);
 
   SandboxGrantResult last_error = SandboxGrantResult::kSuccess;
   SandboxGrantResult result = MaybeDeleteOldData(
@@ -244,7 +246,8 @@ bool MaybeGrantAccessToDataPath(const SandboxParameters& sandbox_params,
   if (!sandbox::policy::features::IsNetworkSandboxSupported()) {
     return true;
   }
-  DCHECK(!sandbox_params.lpac_capability_name.empty());
+  CHECK(!sandbox_params.lpac_capability_name.empty(),
+        base::NotFatalUntil::M159);
   auto ac_sids = base::win::Sid::FromNamedCapabilityVector(
       {sandbox_params.lpac_capability_name});
 
@@ -371,7 +374,8 @@ void CreateAndGrantAccessLoggingError(
 SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
     const SandboxParameters& sandbox_params,
     network::mojom::NetworkContextParams* params) {
-  DCHECK(!BrowserThread::CurrentlyOn(BrowserThread::UI));
+  CHECK(!BrowserThread::CurrentlyOn(BrowserThread::UI),
+        base::NotFatalUntil::M159);
 #if BUILDFLAG(IS_WIN)
 #if DCHECK_IS_ON()
   params->win_permissions_set = true;
@@ -443,11 +447,11 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
 #if BUILDFLAG(IS_WIN) && DCHECK_IS_ON()
     // On Windows, if network sandbox is enabled then there a migration must
     // happen, so a `unsandboxed_data_path` must be specified.
-    DCHECK(!sandbox_params.sandbox_enabled);
+    CHECK(!sandbox_params.sandbox_enabled, base::NotFatalUntil::M159);
 #endif
     // Trigger migration should never be requested if `unsandboxed_data_path` is
     // not set.
-    DCHECK(!params->file_paths->trigger_migration);
+    CHECK(!params->file_paths->trigger_migration, base::NotFatalUntil::M159);
     // Nothing to do here if `unsandboxed_data_path` is not specified.
     return SandboxGrantResult::kDidNotAttemptToGrantSandboxAccess;
   }
@@ -455,8 +459,9 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
   // If these paths are ever the same then this is a mistake, as the file
   // permissions will be applied to the top level path which could contain other
   // data that should not be accessible by the network sandbox.
-  DCHECK_NE(params->file_paths->data_directory.path(),
-            *params->file_paths->unsandboxed_data_path);
+  CHECK_NE(params->file_paths->data_directory.path(),
+           *params->file_paths->unsandboxed_data_path,
+           base::NotFatalUntil::M159);
 
   // Four cases need to be handled here.
   //
@@ -483,7 +488,7 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
     // On Windows, if network sandbox is enabled then there a migration must
     // happen, so `trigger_migration` must be true, or a migration must have
     // already happened.
-    DCHECK(!sandbox_params.sandbox_enabled);
+    CHECK(!sandbox_params.sandbox_enabled, base::NotFatalUntil::M159);
 #endif
     return SandboxGrantResult::kNoMigrationRequested;
   }
