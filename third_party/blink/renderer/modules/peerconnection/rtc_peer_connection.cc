@@ -757,7 +757,9 @@ RTCPeerConnection::RTCPeerConnection(
   // Tests might need a custom RtcPeerConnectionHandler implementation.
   PeerConnectionDependencyFactory& dependency_factory =
       PeerConnectionDependencyFactory::From(*context);
-  if (!g_create_rpc_peer_connection_handler_callback_.Get().is_null()) {
+  bool is_test_path =
+      !g_create_rpc_peer_connection_handler_callback_.Get().is_null();
+  if (is_test_path) {
     peer_handler_ =
         std::move(g_create_rpc_peer_connection_handler_callback_.Get()).Run();
   } else {
@@ -781,15 +783,17 @@ RTCPeerConnection::RTCPeerConnection(
     return;
   }
   // After Initialize() with a real `peer_handler_`, WebRTC threads exist.
-  scoped_refptr<base::SingleThreadTaskRunner> worker_thread =
-      dependency_factory.GetWebRtcWorkerTaskRunner();
-  if (!worker_thread) {
+  scoped_refptr<base::SingleThreadTaskRunner> signaling_thread;
+  if (is_test_path) {
     // This path is only used in some unit test environments with a fake
     // `peer_handler_` that does not ensure WebRTC threads exist.
-    worker_thread =
+    signaling_thread =
         base::ThreadPool::CreateSingleThreadTaskRunner({base::MayBlock()});
+  } else {
+    signaling_thread = dependency_factory.GetWebRtcSignalingTaskRunner();
+    CHECK(signaling_thread);
   }
-  rtp_contributing_source_cache_.emplace(this, std::move(worker_thread));
+  rtp_contributing_source_cache_.emplace(this, std::move(signaling_thread));
   // The RTCPeerConnection was successfully constructed.
   closed_ = false;
   peer_handler_unregistered_ = false;

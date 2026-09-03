@@ -98,10 +98,10 @@ RTCRtpContributingSourcesFromRTCRtpSources(
 
 RtpContributingSourceCache::RtpContributingSourceCache(
     RTCPeerConnection* pc,
-    scoped_refptr<base::SingleThreadTaskRunner> worker_thread_runner)
-    : pc_(pc), worker_thread_runner_(worker_thread_runner) {
+    scoped_refptr<base::SingleThreadTaskRunner> signaling_thread_runner)
+    : pc_(pc), signaling_thread_runner_(signaling_thread_runner) {
   DCHECK(pc_);
-  DCHECK(worker_thread_runner_);
+  DCHECK(signaling_thread_runner_);
 }
 
 void RtpContributingSourceCache::Shutdown() {
@@ -183,9 +183,9 @@ void RtpContributingSourceCache::MaybeUpdateRtpSources(
   base::WaitableEvent event;
   // Unretained is safe because we're waiting for the operation to complete.
   PostCrossThreadTask(
-      *worker_thread_runner_, FROM_HERE,
+      *signaling_thread_runner_, FROM_HERE,
       CrossThreadBindOnce(
-          &RtpContributingSourceCache::UpdateRtpSourcesOnWorkerThread,
+          &RtpContributingSourceCache::UpdateRtpSourcesOnSignalingThread,
           CrossThreadUnretained(this), CrossThreadUnretained(&receivers),
           CrossThreadUnretained(cached_sources_by_receiver),
           CrossThreadUnretained(&event)));
@@ -198,7 +198,7 @@ void RtpContributingSourceCache::MaybeUpdateRtpSources(
           &RtpContributingSourceCache::ClearCache, weak_factory_.GetWeakPtr()));
 }
 
-void RtpContributingSourceCache::UpdateRtpSourcesOnWorkerThread(
+void RtpContributingSourceCache::UpdateRtpSourcesOnSignalingThread(
     Vector<RTCRtpReceiverPlatform*>* receivers,
     HashMap<RTCRtpReceiverPlatform*, RTCRtpSources>* cached_sources_by_receiver,
     base::WaitableEvent* event) {
