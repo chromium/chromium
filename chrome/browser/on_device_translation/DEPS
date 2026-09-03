@@ -1,11 +1,3 @@
-specific_include_rules = {
-  "on_device_translation_browsertest.cc": [
-    "+components/on_device_translation/service/test/test_util.h",
-  ],
-  "file_operation_proxy_impl_unittest.cc": [
-    "+components/on_device_translation/service/test/test_util.h",
-  ],
-}
 include_rules = [
   "+components/on_device_translation",
 ]

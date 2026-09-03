@@ -662,7 +662,4 @@ specific_include_rules = {
   r"android/omnibox/composebox_query_controller_bridge\.cc": [
     "+components/contextual_search/internal",
   ],
-  "spellcheck_service.cc": [
-    "+chrome/browser/search/search.h",
-  ],
 }
