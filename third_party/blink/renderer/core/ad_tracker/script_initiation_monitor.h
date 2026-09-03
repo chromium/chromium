@@ -17,12 +17,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
-namespace v8 {
-class Context;
-template <class T>
-class Local;
-}  // namespace v8
-
 namespace blink {
 
 class LocalFrame;
@@ -54,7 +48,6 @@ class CORE_EXPORT ScriptInitiationMonitor
     // Called before the engine executes a top-level script (e.g.,
     // parser-inserted or external script resource).
     virtual void WillExecuteScript(ExecutionContext& execution_context,
-                                   v8::Local<v8::Context> v8_context,
                                    V8ScriptId script_id,
                                    const String& script_url,
                                    LazyStackTrace& stack_trace) = 0;
@@ -62,8 +55,7 @@ class CORE_EXPORT ScriptInitiationMonitor
     virtual void DidExecuteScript(V8ScriptId script_id) = 0;
 
     // Called when a dynamic script (e.g., inline event handler) is registered.
-    virtual void DidRegisterDynamicScript(v8::Local<v8::Context> v8_context,
-                                          V8ScriptId script_id,
+    virtual void DidRegisterDynamicScript(V8ScriptId script_id,
                                           LazyStackTrace& stack_trace) = 0;
 
     // Called before a JS function is called (e.g., event listener callbacks).
@@ -117,8 +109,7 @@ class CORE_EXPORT ScriptInitiationMonitor
   void DidStartAsyncTask(probe::AsyncTaskContext*);
   void DidFinishAsyncTask(probe::AsyncTaskContext*);
 
-  void DidRegisterDynamicScript(v8::Local<v8::Context> v8_context,
-                                V8ScriptId script_id);
+  void DidRegisterDynamicScript(V8ScriptId script_id);
 
   // Returns the V8 isolate for this monitor's local root, falling back to the
   // current thread isolate if the window is unavailable.

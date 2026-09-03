@@ -503,8 +503,7 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::RunCompiledScript(
     // ToCoreString here should be zero copy due to externalized string
     // unpacked.
     String url = ToCoreString(isolate, script_url);
-    probe::ExecuteScript probe(context, isolate->GetCurrentContext(), url,
-                               script->ScriptId());
+    probe::ExecuteScript probe(context, url, script->ScriptId());
     result = script->Run(isolate->GetCurrentContext(), host_defined_options);
   }
 
@@ -926,8 +925,7 @@ ScriptEvaluationResult V8ScriptRunner::EvaluateModule(
 
     // Script IDs are not available on errored modules or on non-source text
     // modules, so we give them a default value.
-    probe::ExecuteScript probe(execution_context, script_state->GetContext(),
-                               module_script->SourceUrl(),
+    probe::ExecuteScript probe(execution_context, module_script->SourceUrl(),
                                record->GetStatus() != v8::Module::kErrored &&
                                        record->IsSourceTextModule()
                                    ? record->ScriptId()

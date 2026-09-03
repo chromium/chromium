@@ -984,7 +984,7 @@ void AnimationFrameTimingMonitor::Will(const probe::ExecuteScript& probe_data) {
   // executing an imported module script.
   // This is true for both imported and element-created scripts.
   v8::Isolate* isolate = probe_data.context->GetIsolate();
-  ScriptState* script_state = ScriptState::From(isolate, probe_data.v8_context);
+  ScriptState* script_state = ScriptState::ForCurrentRealm(isolate);
   if (PushScriptEntryPoint(script_state)) {
     pending_script_info_ = PendingScriptInfo{
         .invoker_type = ScriptTimingInfo::InvokerType::kModuleScript,

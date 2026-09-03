@@ -23,7 +23,6 @@ class MockObserver final : public GarbageCollected<MockObserver>,
                            public ScriptInitiationMonitor::Observer {
  public:
   void WillExecuteScript(ExecutionContext& execution_context,
-                         v8::Local<v8::Context> v8_context,
                          V8ScriptId script_id,
                          const String& script_url,
                          LazyStackTrace& stack_trace) override {
@@ -58,8 +57,7 @@ class MockObserver final : public GarbageCollected<MockObserver>,
   void DidFinishAsyncTask(probe::AsyncTaskContext* task_context) override {
     did_finish_async_task_called_ = true;
   }
-  void DidRegisterDynamicScript(v8::Local<v8::Context> v8_context,
-                                V8ScriptId script_id,
+  void DidRegisterDynamicScript(V8ScriptId script_id,
                                 LazyStackTrace& stack_trace) override {
     did_register_dynamic_script_called_ = true;
     script_id_ = script_id;
@@ -97,11 +95,13 @@ TEST(ScriptInitiationMonitorTest, ObserverBroadcast) {
   V8ScriptId script_id(42);
   KURL url("https://example.com/test.js");
 
+  v8::HandleScope handle_scope(monitor->GetIsolate());
   // Call the probe manually.
   {
+    v8::Context::Scope context_scope(
+        ToScriptStateForMainWorld(&frame)->GetContext());
     probe::ExecuteScript probe_data(frame.GetDocument()->GetExecutionContext(),
-                                    v8::Local<v8::Context>(), url.GetString(),
-                                    script_id.value());
+                                    url.GetString(), script_id.value());
     monitor->Will(probe_data);
     EXPECT_TRUE(observer->will_execute_script_called_);
     EXPECT_EQ(observer->script_id_, script_id);
@@ -117,9 +117,10 @@ TEST(ScriptInitiationMonitorTest, ObserverBroadcast) {
   monitor->RemoveObserver(observer);
 
   {
+    v8::Context::Scope context_scope(
+        ToScriptStateForMainWorld(&frame)->GetContext());
     probe::ExecuteScript probe_data(frame.GetDocument()->GetExecutionContext(),
-                                    v8::Local<v8::Context>(), url.GetString(),
-                                    script_id.value());
+                                    url.GetString(), script_id.value());
     monitor->Will(probe_data);
     EXPECT_FALSE(observer->will_execute_script_called_);
   }

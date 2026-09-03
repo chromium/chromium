@@ -246,7 +246,7 @@ v8::Local<v8::Value> JSEventHandlerForContentAttribute::GetCompiledHandler(
   if (auto* monitor = ScriptInitiationMonitor::FromExecutionContext(
           execution_context_of_event_target)) {
     monitor->DidRegisterDynamicScript(
-        v8_context_of_event_target, V8ScriptId(compiled_function->ScriptId()));
+        V8ScriptId(compiled_function->ScriptId()));
   }
 
   // Step 12. Set eventHandler's value to the result of creating a Web IDL

@@ -18,15 +18,13 @@ namespace blink {
 
 namespace {
 
-v8_inspector::V8DebuggerId GetDebuggerIdForContext(
-    v8::Local<v8::Context> v8_context) {
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
-  ThreadDebugger* thread_debugger = ThreadDebugger::From(isolate);
-  DCHECK(thread_debugger);
-  v8_inspector::V8Inspector* inspector = thread_debugger->GetV8Inspector();
-  DCHECK(inspector);
+v8_inspector::V8DebuggerId GetDebuggerIdForCurrentContext(
+    v8::Isolate* isolate) {
+  v8::Local<v8::Context> v8_context = isolate->GetCurrentContext();
+  CHECK(!v8_context.IsEmpty());
   int context_id = v8_inspector::V8ContextInfo::executionContextId(v8_context);
-  return inspector->uniqueDebuggerId(context_id);
+  return ThreadDebugger::From(isolate)->GetV8Inspector()->uniqueDebuggerId(
+      context_id);
 }
 
 String GenerateFakeUrlFromScriptId(V8ScriptId script_id) {
@@ -58,7 +56,6 @@ v8::Isolate* ScriptAncestryTracker::GetIsolate() const {
 
 void ScriptAncestryTracker::WillExecuteScript(
     ExecutionContext& execution_context,
-    v8::Local<v8::Context> v8_context,
     V8ScriptId script_id,
     const String& script_url,
     LazyStackTrace& stack_trace) {
@@ -87,18 +84,13 @@ void ScriptAncestryTracker::WillExecuteScript(
   // seen of its script id. Record the id so that we can refer to the script
   // by id rather than string.
   if (!GetScriptMetadata(script_id)) {
-    v8_inspector::V8DebuggerId debugger_id;
-    if (!v8_context.IsEmpty()) {
-      debugger_id = GetDebuggerIdForContext(v8_context);
-    }
+    v8_inspector::V8DebuggerId debugger_id =
+        GetDebuggerIdForCurrentContext(execution_context.GetIsolate());
     script_metadata_.insert(
         script_id,
         ScriptMetadata{debugger_id, marked_script_id.value_or(V8ScriptId()),
                        url});
   }
-
-  CHECK(v8_context.IsEmpty() || !execution_context.GetIsolate() ||
-        v8_context == execution_context.GetIsolate()->GetCurrentContext());
 
   OnScriptRegistered(execution_context, script_id, url, marked_script_id);
 
@@ -121,7 +113,6 @@ void ScriptAncestryTracker::DidExecuteScript(V8ScriptId script_id) {
 }
 
 void ScriptAncestryTracker::DidRegisterDynamicScript(
-    v8::Local<v8::Context> v8_context,
     V8ScriptId script_id,
     LazyStackTrace& stack_trace) {
   std::optional<V8ScriptId> marked_script_id;
@@ -136,7 +127,7 @@ void ScriptAncestryTracker::DidRegisterDynamicScript(
         /*ignore_monkey_patch=*/MonkeyPatchableApi::kNodeAppendChild);
   }
 
-  RegisterScript(v8_context, script_id, marked_script_id);
+  RegisterScript(script_id, marked_script_id);
 }
 
 void ScriptAncestryTracker::WillCallFunction(
@@ -433,31 +424,23 @@ void ScriptAncestryTracker::Trace(Visitor* visitor) const {
 }
 
 void ScriptAncestryTracker::RegisterScript(
-    v8::Local<v8::Context> v8_context,
     V8ScriptId script_id,
     std::optional<V8ScriptId> marked_script_id) {
   DCHECK_NE(v8::Message::kNoScriptIdInfo, script_id.value());
   String script_name = GenerateFakeUrlFromScriptId(script_id);
 
-  v8_inspector::V8DebuggerId debugger_id;
-  if (!v8_context.IsEmpty()) {
-    debugger_id = GetDebuggerIdForContext(v8_context);
-  }
-
-  ExecutionContext* execution_context = nullptr;
-  if (!v8_context.IsEmpty()) {
-    execution_context = ToExecutionContext(v8_context);
-  }
+  v8::Isolate* isolate = GetIsolate();
+  v8::HandleScope handle_scope(isolate);
+  v8_inspector::V8DebuggerId debugger_id =
+      GetDebuggerIdForCurrentContext(isolate);
 
   script_metadata_.insert(
       script_id,
       ScriptMetadata{debugger_id, marked_script_id.value_or(V8ScriptId()),
                      script_name});
 
-  if (execution_context) {
-    OnScriptRegistered(*execution_context, script_id, script_name,
-                       marked_script_id);
-  }
+  OnScriptRegistered(CHECK_DEREF(CurrentExecutionContext(isolate)), script_id,
+                     script_name, marked_script_id);
 }
 
 const ScriptAncestryTracker::ScriptMetadata*

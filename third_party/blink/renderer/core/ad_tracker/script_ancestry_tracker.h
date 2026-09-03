@@ -87,13 +87,11 @@ class CORE_EXPORT ScriptAncestryTracker
 
   // ScriptInitiationMonitor::Observer overrides:
   void WillExecuteScript(ExecutionContext& execution_context,
-                         v8::Local<v8::Context> v8_context,
                          V8ScriptId script_id,
                          const String& script_url,
                          LazyStackTrace& stack_trace) override;
   void DidExecuteScript(V8ScriptId script_id) override;
-  void DidRegisterDynamicScript(v8::Local<v8::Context> v8_context,
-                                V8ScriptId script_id,
+  void DidRegisterDynamicScript(V8ScriptId script_id,
                                 LazyStackTrace& stack_trace) override;
   void WillCallFunction(ExecutionContext& execution_context,
                         V8ScriptId script_id,
@@ -181,8 +179,7 @@ class CORE_EXPORT ScriptAncestryTracker
 
   // Explicitly registers a script (like inline attribute event handlers) that
   // is compiled dynamically rather than run as a standalone script.
-  void RegisterScript(v8::Local<v8::Context> v8_context,
-                      V8ScriptId script_id,
+  void RegisterScript(V8ScriptId script_id,
                       std::optional<V8ScriptId> marked_script_id);
 
   // Retrieves generic metadata (like parent script relationship and resolved

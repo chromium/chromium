@@ -4553,24 +4553,24 @@ TEST(AdTrackerTest, AdScriptAncestry_ScriptIdFromDifferentTracker) {
   v8::Isolate* isolate = v8::Isolate::GetCurrent();
   v8::HandleScope scope(isolate);
 
-  // Register `script_id_a` in `ad_tracker_a`, which is the only tracker to
-  // learn about this script id.
-  ad_tracker_a->RegisterScript(
-      ToScriptStateForMainWorld(&page_holder_a->GetFrame())->GetContext(),
-      script_id_a, std::nullopt);
-
-  // In `ad_tracker_b`, register `script_id_b` with `script_id_a` as parent.
-  // `ad_tracker_b` doesn't actually know about `script_id_a` though.
+  {
+    v8::Context::Scope context_scope(
+        ToScriptStateForMainWorld(&page_holder_a->GetFrame())->GetContext());
+    // Register `script_id_a` in `ad_tracker_a`, which is the only tracker to
+    // learn about this script id.
+    ad_tracker_a->RegisterScript(script_id_a, std::nullopt);
+  }
   V8ScriptId script_id_b(2001);
-  ad_tracker_b->RegisterScript(
-      ToScriptStateForMainWorld(&page_holder_b->GetFrame())->GetContext(),
-      script_id_b, script_id_a);
-
-  // Register `script_id_c` with `script_id_b` as parent in `ad_tracker_b`.
   V8ScriptId script_id_c(3001);
-  ad_tracker_b->RegisterScript(
-      ToScriptStateForMainWorld(&page_holder_b->GetFrame())->GetContext(),
-      script_id_c, script_id_b);
+  {
+    v8::Context::Scope context_scope(
+        ToScriptStateForMainWorld(&page_holder_b->GetFrame())->GetContext());
+    // In `ad_tracker_b`, register `script_id_b` with `script_id_a` as parent.
+    // `ad_tracker_b` doesn't actually know about `script_id_a` though.
+    ad_tracker_b->RegisterScript(script_id_b, script_id_a);
+    // Register `script_id_c` with `script_id_b` as parent in `ad_tracker_b`.
+    ad_tracker_b->RegisterScript(script_id_c, script_id_b);
+  }
 
   // `ad_tracker_b` knows `script_id_c` and `script_id_b`, but not
   // `script_id_a`. `GetAncestry(script_id_c)` should return a chain of length 2

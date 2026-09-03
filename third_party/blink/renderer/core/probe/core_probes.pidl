@@ -195,7 +195,7 @@ interface CoreProbes {
   EvaluateScriptBlock(ScriptState& script_state, const KURL& source_url, bool is_module, bool sanitize);
 
   /* This is called once the script is ready to execute */
-  ExecuteScript([Keep] ExecutionContext* context, v8::Local<v8::Context> v8_context, const String& script_url, int script_id);
+  ExecuteScript([Keep] ExecutionContext* context, const String& script_url, int script_id);
 
   CallFunction([Keep] ExecutionContext* context, v8::Local<v8::Context> v8_context, v8::Local<v8::Function> function, int depth = 0);
   UserCallback([Keep] ExecutionContext* context, const char* name, AtomicString atomic_name, bool recurring, EventTarget* event_target = nullptr, Event* event = nullptr, EventListener* listener = nullptr);

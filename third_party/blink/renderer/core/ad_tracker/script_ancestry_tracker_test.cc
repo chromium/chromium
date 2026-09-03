@@ -304,7 +304,7 @@ TEST_F(ScriptAncestryTrackerTest, RegisterScriptDirectly) {
       GetDocument().GetFrame(), DOMWrapperWorld::MainWorld(isolate));
   v8::Context::Scope context_scope(context);
 
-  test_observer_->RegisterScript(context, script_id, marked_script_id);
+  test_observer_->RegisterScript(script_id, marked_script_id);
 
   const auto* data = test_observer_->GetScriptMetadata(script_id);
   ASSERT_TRUE(data);

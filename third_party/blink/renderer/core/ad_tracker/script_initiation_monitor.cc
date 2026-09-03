@@ -60,24 +60,18 @@ v8::Isolate* ScriptInitiationMonitor::GetIsolate() const {
 }
 
 void ScriptInitiationMonitor::Will(const probe::ExecuteScript& probe) {
-  if (!probe.context) {
-    return;
-  }
   v8::Isolate* isolate = GetIsolate();
   LazyStackTrace stack_trace(isolate);
   V8ScriptId script_id(probe.script_id);
   for (auto& observer : observers_) {
     if (observer) {
-      observer->WillExecuteScript(*probe.context, probe.v8_context, script_id,
-                                  probe.script_url, stack_trace);
+      observer->WillExecuteScript(*probe.context, script_id, probe.script_url,
+                                  stack_trace);
     }
   }
 }
 
 void ScriptInitiationMonitor::Did(const probe::ExecuteScript& probe) {
-  if (!probe.context) {
-    return;
-  }
   V8ScriptId script_id(probe.script_id);
   for (auto& observer : observers_) {
     if (observer) {
@@ -87,9 +81,6 @@ void ScriptInitiationMonitor::Did(const probe::ExecuteScript& probe) {
 }
 
 void ScriptInitiationMonitor::Will(const probe::CallFunction& probe) {
-  if (!probe.context) {
-    return;
-  }
   v8::Isolate* isolate = GetIsolate();
   LazyStackTrace stack_trace(isolate);
   V8ScriptId script_id;
@@ -106,9 +97,6 @@ void ScriptInitiationMonitor::Will(const probe::CallFunction& probe) {
 }
 
 void ScriptInitiationMonitor::Did(const probe::CallFunction& probe) {
-  if (!probe.context) {
-    return;
-  }
   v8::Isolate* isolate = GetIsolate();
   V8ScriptId script_id;
   if (isolate && !probe.function.IsEmpty()) {
@@ -151,14 +139,12 @@ void ScriptInitiationMonitor::DidFinishAsyncTask(
   }
 }
 
-void ScriptInitiationMonitor::DidRegisterDynamicScript(
-    v8::Local<v8::Context> v8_context,
-    V8ScriptId script_id) {
+void ScriptInitiationMonitor::DidRegisterDynamicScript(V8ScriptId script_id) {
   v8::Isolate* isolate = GetIsolate();
   LazyStackTrace stack_trace(isolate);
   for (auto& observer : observers_) {
     if (observer) {
-      observer->DidRegisterDynamicScript(v8_context, script_id, stack_trace);
+      observer->DidRegisterDynamicScript(script_id, stack_trace);
     }
   }
 }
