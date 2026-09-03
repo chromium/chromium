@@ -281,6 +281,9 @@ void OmniboxPopupViewFullWebUI::OnTabChanged(content::WebContents* contents) {
     controller()->edit_model()->OnChanged();
     should_focus_popup = ShouldFocusLocationBarForTab(contents);
     if (should_focus_popup) {
+      TRACE_EVENT_INSTANT0(
+          "omnibox", "OmniboxPopupViewFullWebUI::OnTabChanged:NewTabFocus",
+          TRACE_EVENT_SCOPE_GLOBAL);
       controller()->edit_model()->OnSetFocus(/*control_down=*/false);
       target_popup_state = OmniboxPopupState::kFull;
     } else {

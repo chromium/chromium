@@ -879,6 +879,15 @@ export class OmniboxPopupSearchboxElement extends
 
     this.selectRange(state.selection);
     this.getDropdownElement().unselect();
+
+    // This mark is recorded when the input field is focused and the caret is
+    // positioned in the DOM, indicating readiness for user input. Placed before
+    // `queryAutocomplete()` to isolate input hydration from ZPS query dispatch.
+    if (state.isFocused && document.visibilityState === 'visible' &&
+        !this.hasInputSelection_) {
+      markOnce('OmniboxPopupSearchboxElement::onSetInputState_:CaretReady');
+    }
+
     // If zero-prefix suggestions are requested by the new state, initiate
     // an on-focus autocomplete query.
     if (state.queryZps) {
