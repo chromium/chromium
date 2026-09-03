@@ -194,7 +194,7 @@ SendTabToSelfBrowserAgent::SendTabToSelfBrowserAgent(Browser* browser)
   if (loading_notifier) {
     url_loading_observation_.Observe(loading_notifier);
   }
-  StartObserving(browser_);
+  web_state_list_observation_.Observe(browser_->GetWebStateList());
   if (base::FeatureList::IsEnabled(send_tab_to_self::kSendTabToSelfAutoOpen)) {
     if (web::WebState* web_state =
             browser_->GetWebStateList()->GetActiveWebState()) {
@@ -206,13 +206,11 @@ SendTabToSelfBrowserAgent::SendTabToSelfBrowserAgent(Browser* browser)
   }
 }
 
-SendTabToSelfBrowserAgent::~SendTabToSelfBrowserAgent() {
-  StopObserving();
-}
+SendTabToSelfBrowserAgent::~SendTabToSelfBrowserAgent() = default;
 
 void SendTabToSelfBrowserAgent::BrowserDestroyed(Browser* browser) {
   weak_ptr_factory_.InvalidateWeakPtrs();
-  StopObserving();
+  web_state_list_observation_.Reset();
   url_loading_observation_.Reset();
   model_observation_.Reset();
   browser_observation_.Reset();
@@ -325,17 +323,25 @@ void SendTabToSelfBrowserAgent::DismissEntries(
   }
 }
 
-#pragma mark - TabsDependencyInstaller
+#pragma mark - WebStateListObserver
 
-void SendTabToSelfBrowserAgent::OnWebStateInserted(web::WebState* web_state) {}
+void SendTabToSelfBrowserAgent::WebStateListWillChange(
+    WebStateList* web_state_list,
+    const WebStateListChangeDetach& detach_change,
+    const WebStateListStatus& status) {
+  if (!detach_change.is_closing()) {
+    return;
+  }
 
-void SendTabToSelfBrowserAgent::OnWebStateRemoved(web::WebState* web_state) {}
+  if (!detach_change.is_user_action() && !detach_change.is_tabs_cleanup()) {
+    return;
+  }
 
-void SendTabToSelfBrowserAgent::OnWebStateDeleted(web::WebState* web_state) {
   if (base::FeatureList::IsEnabled(send_tab_to_self::kSendTabToSelfAutoOpen)) {
     // If the tab is being closed explicitly by the user (and not due to browser
     // shutdown, tab strip destruction, or tab dragging between windows), log
     // the abandonment metric.
+    web::WebState* web_state = detach_change.detached_web_state();
     SendTabToSelfTabCardLabelData* label_data =
         SendTabToSelfTabCardLabelData::FromWebState(web_state);
     if (label_data) {
@@ -344,9 +350,15 @@ void SendTabToSelfBrowserAgent::OnWebStateDeleted(web::WebState* web_state) {
   }
 }
 
-void SendTabToSelfBrowserAgent::OnActiveWebStateChanged(
-    web::WebState* old_active,
-    web::WebState* new_active) {
+void SendTabToSelfBrowserAgent::WebStateListDidChange(
+    WebStateList* web_state_list,
+    const WebStateListChange& change,
+    const WebStateListStatus& status) {
+  if (!status.active_web_state_change()) {
+    return;
+  }
+
+  web::WebState* new_active = status.new_active_web_state;
   if (!new_active) {
     return;
   }
@@ -368,6 +380,11 @@ void SendTabToSelfBrowserAgent::OnActiveWebStateChanged(
     DisplayInfoBar(new_active, entry, /*opened_tab_count=*/1);
   }
   CleanUpObserversAndVariables();
+}
+
+void SendTabToSelfBrowserAgent::WebStateListDestroyed(
+    WebStateList* web_state_list) {
+  web_state_list_observation_.Reset();
 }
 
 #pragma mark - WebStateObserver

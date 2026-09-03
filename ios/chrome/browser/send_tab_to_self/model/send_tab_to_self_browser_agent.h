@@ -26,7 +26,7 @@
 #import "components/send_tab_to_self/target_device_info.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
-#import "ios/chrome/browser/tabs/model/tabs_dependency_installer.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_observer.h"
 #import "ios/web/public/web_state_observer.h"
 
@@ -35,6 +35,7 @@ class GURL;
 class UrlLoadingNotifierBrowserAgent;
 struct SendTabToSelfTextFragment;
 struct UrlLoadParams;
+class WebStateList;
 
 namespace web {
 class WebState;
@@ -50,7 +51,7 @@ class SendTabToSelfBrowserAgent
     : public BrowserUserData<SendTabToSelfBrowserAgent>,
       public send_tab_to_self::SendTabToSelfModelObserver,
       public send_tab_to_self::ReceivingUiHandler,
-      public TabsDependencyInstaller,
+      public WebStateListObserver,
       public web::WebStateObserver,
       public UrlLoadingObserver,
       public BrowserObserver {
@@ -92,12 +93,14 @@ class SendTabToSelfBrowserAgent
       override;
   void DismissEntries(base::span<const std::string> guids) override;
 
-  // TabsDependencyInstaller::
-  void OnWebStateInserted(web::WebState* web_state) override;
-  void OnWebStateRemoved(web::WebState* web_state) override;
-  void OnWebStateDeleted(web::WebState* web_state) override;
-  void OnActiveWebStateChanged(web::WebState* old_active,
-                               web::WebState* new_active) override;
+  // WebStateListObserver::
+  void WebStateListWillChange(WebStateList* web_state_list,
+                              const WebStateListChangeDetach& detach_change,
+                              const WebStateListStatus& status) override;
+  void WebStateListDidChange(WebStateList* web_state_list,
+                             const WebStateListChange& change,
+                             const WebStateListStatus& status) override;
+  void WebStateListDestroyed(WebStateList* web_state_list) override;
 
   // WebStateObserver::
   void WasShown(web::WebState* web_state) override;
@@ -163,6 +166,9 @@ class SendTabToSelfBrowserAgent
   raw_ptr<web::WebState> pending_web_state_ = nullptr;
 
   base::ScopedObservation<Browser, BrowserObserver> browser_observation_{this};
+
+  base::ScopedObservation<WebStateList, WebStateListObserver>
+      web_state_list_observation_{this};
 
   base::ScopedObservation<UrlLoadingNotifierBrowserAgent, UrlLoadingObserver>
       url_loading_observation_{this};
