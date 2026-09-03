@@ -71,7 +71,7 @@ class LocalDOMWindowTest : public PageTestBase {
         blink::WebPolicyContainerPolicies(),
         mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote());
     params->policy_container->policies.sandbox_flags = sandbox_flags;
-    params->initiator_state_token = base::UnguessableToken::Create();
+    params->initiator_state_token = InitiatorStateToken();
     if ((params->policy_container->policies.sandbox_flags &
          network::mojom::blink::WebSandboxFlags::kOrigin) !=
         network::mojom::blink::WebSandboxFlags::kNone) {
@@ -436,7 +436,7 @@ TEST_F(LocalDOMWindowWithSubframeTest, OutgoingReferrerUrlSrcdoc) {
   params->policy_container = std::make_unique<blink::WebPolicyContainer>(
       blink::WebPolicyContainerPolicies(),
       mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote());
-  params->initiator_state_token = base::UnguessableToken::Create();
+  params->initiator_state_token = InitiatorStateToken();
   child.Loader().CommitNavigation(std::move(params), /*extra_data=*/nullptr);
   test::RunPendingTasks();
 

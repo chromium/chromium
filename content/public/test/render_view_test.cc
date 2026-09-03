@@ -519,7 +519,7 @@ void RenderViewTest::SetUp() {
   policy_container_host_ = std::make_unique<MockPolicyContainerHost>();
   main_frame_params->policy_container =
       policy_container_host_->CreatePolicyContainerForBlink();
-  main_frame_params->initiator_state_token = base::UnguessableToken::Create();
+  main_frame_params->initiator_state_token = blink::InitiatorStateToken();
 
   auto widget_params = mojom::CreateFrameWidgetParams::New();
   widget_params->routing_id = render_thread_->GetNextRoutingID();

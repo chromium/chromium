@@ -425,7 +425,7 @@ LocalFrame* LocalFrame::FromFrameToken(const LocalFrameToken& frame_token) {
 void LocalFrame::Init(
     Frame* opener,
     const DocumentToken& document_token,
-    const base::UnguessableToken& initiator_state_token,
+    const InitiatorStateToken& initiator_state_token,
     std::unique_ptr<PolicyContainer> policy_container,
     const StorageKey& storage_key,
     ukm::SourceId document_ukm_source_id,
@@ -3463,10 +3463,7 @@ LocalFrameToken LocalFrame::GetLocalFrameToken() const {
   return GetFrameToken().GetAs<LocalFrameToken>();
 }
 
-const base::UnguessableToken& LocalFrame::GetInitiatorStateToken() const {
-  // A frame's LocalDOMWindow should always have a valid
-  // `initiator_state_token`.
-  CHECK(!DomWindow()->GetInitiatorStateToken().is_empty());
+const InitiatorStateToken& LocalFrame::GetInitiatorStateToken() const {
   return DomWindow()->GetInitiatorStateToken();
 }
 

@@ -184,7 +184,7 @@ class RenderFrameImplTest : public RenderViewTest {
         std::move(frame_replication_state), std::move(widget_params),
         blink::mojom::FrameOwnerProperties::New(),
         /*has_committed_real_load=*/true, blink::DocumentToken(),
-        base::UnguessableToken::Create(),
+        blink::InitiatorStateToken(),
         blink::mojom::PolicyContainer::New(
             blink::mojom::PolicyContainerPolicies::New(),
             mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote()),

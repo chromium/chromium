@@ -20,6 +20,12 @@ mojom_component("tokens") {
           cpp = "::blink::DocumentToken"
         },
 
+        # INITIATOR STATE TOKENS
+        {
+          mojom = "blink.mojom.InitiatorStateToken"
+          cpp = "::blink::InitiatorStateToken"
+        },
+
         # FRAME TOKENS
         {
           mojom = "blink.mojom.LocalFrameToken"

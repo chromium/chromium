@@ -144,7 +144,7 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
       CrossVariantMojoRemote<mojom::BrowserInterfaceBrokerInterfaceBase>,
       const LocalFrameToken& frame_token,
       const DocumentToken& document_token,
-      const base::UnguessableToken& initiator_state_token,
+      const InitiatorStateToken& initiator_state_token,
       std::unique_ptr<blink::WebPolicyContainer> policy_container,
       WebFrame* opener = nullptr,
       const WebString& name = WebString(),
@@ -227,7 +227,7 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   }
 
   virtual WebDocument GetDocument() const = 0;
-  virtual base::UnguessableToken GetInitiatorStateToken() const = 0;
+  virtual InitiatorStateToken GetInitiatorStateToken() const = 0;
 
   // The name of this frame. If no name is given, empty string is returned.
   virtual WebString AssignedName() const = 0;

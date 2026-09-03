@@ -517,8 +517,7 @@ void ExecutionContext::SetReferrerPolicy(
   if (GetReferrerPolicy() != network::mojom::ReferrerPolicy::kDefault)
     UseCounter::Count(this, WebFeature::kResetReferrerPolicy);
 
-  base::UnguessableToken new_initiator_state_token =
-      base::UnguessableToken::Create();
+  InitiatorStateToken new_initiator_state_token;
   policy_container_->UpdateReferrerPolicy(referrer_policy,
                                           new_initiator_state_token);
   SetInitiatorStateToken(new_initiator_state_token);

@@ -654,7 +654,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // - the RenderFrameHost is speculative
   const blink::DocumentToken& GetDocumentToken() const;
 
-  const base::UnguessableToken& current_initiator_state_token() const {
+  const blink::InitiatorStateToken& current_initiator_state_token() const {
     return current_initiator_state_token_;
   }
 
@@ -906,7 +906,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const blink::LocalFrameToken& frame_token,
       const base::UnguessableToken& devtools_frame_token,
       const blink::DocumentToken& document_token,
-      const base::UnguessableToken& initiator_state_token,
+      const blink::InitiatorStateToken& initiator_state_token,
       const blink::FramePolicy& frame_policy,
       const blink::mojom::FrameOwnerProperties& frame_owner_properties,
       blink::FrameOwnerElementType owner_type,
@@ -944,7 +944,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const blink::LocalFrameToken& frame_token,
       const blink::DocumentToken& document_token,
       base::UnguessableToken devtools_frame_token,
-      const base::UnguessableToken& initiator_state_token,
+      const blink::InitiatorStateToken& initiator_state_token,
       const blink::FramePolicy& frame_policy,
       std::string frame_name,
       std::string frame_unique_name,
@@ -3410,7 +3410,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const blink::LocalFrameToken& frame_token,
       const blink::DocumentToken& document_token,
       base::UnguessableToken devtools_frame_token,
-      const base::UnguessableToken& initiator_state_token,
+      const blink::InitiatorStateToken& initiator_state_token,
       bool renderer_initiated_creation_of_main_frame,
       LifecycleStateImpl lifecycle_state,
       scoped_refptr<BrowsingContextState> browsing_context_state,
@@ -3698,7 +3698,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       override;
   void CreateChildFrame(
       const blink::LocalFrameToken& frame_token,
-      const base::UnguessableToken& initiator_state_token,
+      const blink::InitiatorStateToken& initiator_state_token,
       mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
       mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker_receiver,
@@ -4337,13 +4337,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // RenderFrameHost.
   void SetPolicyContainerHost(
       scoped_refptr<PolicyContainerHost> policy_container_host,
-      const base::UnguessableToken& new_initiator_state_token);
+      const blink::InitiatorStateToken& new_initiator_state_token);
 
   // PolicyContainerHost::Client:
   void DidChangeReferrerPolicy(
       network::mojom::ReferrerPolicy referrer_policy) final;
   void DidUpdateInitiatorStateToken(
-      const base::UnguessableToken& new_initiator_state_token) final;
+      const blink::InitiatorStateToken& new_initiator_state_token) final;
 
   // Initializes |local_network_access_request_policy_|. Constructor helper.
   void InitializeLocalNetworkAccessRequestPolicy();
@@ -5492,7 +5492,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // TODO(crbug.com/510258191): Actually have the InitiatorNavigationState be
   // indexed on an initiator state token, once the initiator state token is
   // properly set in the browser and renderer processes.
-  base::UnguessableToken current_initiator_state_token_;
+  blink::InitiatorStateToken current_initiator_state_token_;
 
   // The current document's HTTP response head. This is used by back-forward
   // cache, for navigating a second time toward the same document.

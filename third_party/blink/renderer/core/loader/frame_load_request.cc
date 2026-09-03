@@ -99,9 +99,8 @@ FrameLoadRequest::FrameLoadRequest(LocalDOMWindow* origin_window,
 
     DCHECK(!resource_request_.RequestorOrigin());
     resource_request_.SetRequestorOrigin(origin_window->GetSecurityOrigin());
-    const base::UnguessableToken& initiator_state_token =
+    const InitiatorStateToken& initiator_state_token =
         origin_window->GetInitiatorStateToken();
-    CHECK(!initiator_state_token.is_empty());
     SetInitiatorStateToken(initiator_state_token);
     if (origin_window->document()) {
       SetInitiatorDocumentToken(origin_window->document()->Token());

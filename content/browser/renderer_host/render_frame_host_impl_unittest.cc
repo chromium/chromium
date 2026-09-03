@@ -450,8 +450,7 @@ TEST_F(RenderFrameHostImplTest, PolicyContainerLifecycle) {
   EXPECT_EQ(main_rfh->policy_container_host()->referrer_policy(),
             network::mojom::ReferrerPolicy::kDefault);
 
-  base::UnguessableToken initiator_state_token =
-      base::UnguessableToken::Create();
+  blink::InitiatorStateToken initiator_state_token;
   static_cast<blink::mojom::PolicyContainerHost*>(
       main_rfh->policy_container_host())
       ->SetReferrerPolicy(network::mojom::ReferrerPolicy::kAlways,
@@ -476,8 +475,7 @@ TEST_F(RenderFrameHostImplTest, PolicyContainerLifecycle) {
 
   // Create a new WebContents with opener and test that the new main frame
   // inherits the PolicyContainerHost from the opener.
-  base::UnguessableToken child_initiator_state_token =
-      base::UnguessableToken::Create();
+  blink::InitiatorStateToken child_initiator_state_token;
   static_cast<blink::mojom::PolicyContainerHost*>(
       child_frame->policy_container_host())
       ->SetReferrerPolicy(network::mojom::ReferrerPolicy::kNever,

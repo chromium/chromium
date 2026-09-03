@@ -323,7 +323,7 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   // updated version, so that navigations they start afterwards are associated
   // with the right state of PolicyContainerPolicies.
   virtual void SetInitiatorStateToken(
-      const base::UnguessableToken& initiator_state_token) {}
+      const InitiatorStateToken& initiator_state_token) {}
 
   virtual CoreProbeSink* GetProbeSink() { return nullptr; }
 

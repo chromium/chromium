@@ -2620,7 +2620,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
     const blink::LocalFrameToken& frame_token,
     const blink::DocumentToken& document_token,
     base::UnguessableToken devtools_frame_token,
-    const base::UnguessableToken& initiator_state_token,
+    const blink::InitiatorStateToken& initiator_state_token,
     bool renderer_initiated_creation_of_main_frame,
     LifecycleStateImpl lifecycle_state,
     scoped_refptr<BrowsingContextState> browsing_context_state,
@@ -4470,7 +4470,7 @@ void RenderFrameHostImpl::InitializePolicyContainerHost(
 
 void RenderFrameHostImpl::SetPolicyContainerHost(
     scoped_refptr<PolicyContainerHost> policy_container_host,
-    const base::UnguessableToken& new_initiator_state_token) {
+    const blink::InitiatorStateToken& new_initiator_state_token) {
   // Reset an existing PolicyContainerHost::Client now that it will no longer be
   // associated with this RenderFrameHost.
   if (policy_container_host_) {
@@ -4502,7 +4502,7 @@ void RenderFrameHostImpl::DidChangeReferrerPolicy(
 }
 
 void RenderFrameHostImpl::DidUpdateInitiatorStateToken(
-    const base::UnguessableToken& new_initiator_state_token) {
+    const blink::InitiatorStateToken& new_initiator_state_token) {
   // TODO(crbug.com/510258191): We should create a new InitiatorNavigationState
   // and associate it with the updated token, while validating that the updated
   // token is valid and is not already in use.
@@ -5251,7 +5251,7 @@ void RenderFrameHostImpl::OnCreateChildFrame(
     const blink::LocalFrameToken& frame_token,
     const base::UnguessableToken& devtools_frame_token,
     const blink::DocumentToken& document_token,
-    const base::UnguessableToken& initiator_state_token,
+    const blink::InitiatorStateToken& initiator_state_token,
     const blink::FramePolicy& frame_policy,
     const blink::mojom::FrameOwnerProperties& frame_owner_properties,
     blink::FrameOwnerElementType owner_type,
@@ -5317,7 +5317,7 @@ void RenderFrameHostImpl::OnPreloadingHeuristicsModelDone(const GURL& url,
 
 void RenderFrameHostImpl::CreateChildFrame(
     const blink::LocalFrameToken& frame_token,
-    const base::UnguessableToken& initiator_state_token,
+    const blink::InitiatorStateToken& initiator_state_token,
     mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
     mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker_receiver,
@@ -5358,14 +5358,6 @@ void RenderFrameHostImpl::CreateChildFrame(
       (frame_policy.sandbox_flags | active_sandbox_flags())) {
     bad_message::ReceivedBadMessage(
         GetProcess(), bad_message::RFH_CREATE_CHILD_FRAME_SANDBOX_FLAGS);
-    return;
-  }
-
-  // The renderer should never send an empty initiator state token.
-  if (initiator_state_token.is_empty()) {
-    bad_message::ReceivedBadMessage(
-        GetProcess(),
-        bad_message::RFH_CREATE_CHILD_FRAME_INVALID_INITIATOR_TOKEN);
     return;
   }
 
@@ -6003,7 +5995,7 @@ FrameTreeNode* RenderFrameHostImpl::AddChild(
     const blink::LocalFrameToken& frame_token,
     const blink::DocumentToken& document_token,
     base::UnguessableToken devtools_frame_token,
-    const base::UnguessableToken& initiator_state_token,
+    const blink::InitiatorStateToken& initiator_state_token,
     const blink::FramePolicy& frame_policy,
     std::string frame_name,
     std::string frame_unique_name,
@@ -6016,7 +6008,7 @@ FrameTreeNode* RenderFrameHostImpl::AddChild(
   // a different one if they navigate away.
   child->render_manager()->InitChild(
       GetSiteInstance(), frame_routing_id, std::move(frame_remote), frame_token,
-      document_token, initiator_state_token, devtools_frame_token, frame_policy,
+      document_token, devtools_frame_token, initiator_state_token, frame_policy,
       frame_name, frame_unique_name);
 
   // Other renderer processes in this BrowsingInstance may need to find out
@@ -19557,7 +19549,7 @@ void RenderFrameHostImpl::ReinitializeInitiatorStateTokenAfterCrash(
     base::PassKey<RenderFrameHostManager>) {
   CHECK(is_main_frame());
   CHECK_EQ(RenderFrameState::kDeleted, render_frame_state_);
-  current_initiator_state_token_ = base::UnguessableToken::Create();
+  current_initiator_state_token_ = blink::InitiatorStateToken();
 }
 
 void RenderFrameHostImpl::ReinitializeDocumentAssociatedDataForTesting() {

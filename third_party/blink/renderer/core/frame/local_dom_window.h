@@ -193,7 +193,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   EventTarget* ErrorEventTarget() final { return this; }
   KURL OutgoingReferrerUrl() const final;
   void SetInitiatorStateToken(
-      const base::UnguessableToken& initiator_state_token) final;
+      const InitiatorStateToken& initiator_state_token) final;
   CoreProbeSink* GetProbeSink() final;
   const BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() const final;
   FrameOrWorkerScheduler* GetScheduler() final;
@@ -524,7 +524,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   //   - The frame exists and its policies have not changed.
   //   - Or there is an ongoing navigation started from the frame in the state
   //   associated with the token.
-  const base::UnguessableToken& GetInitiatorStateToken() const {
+  const InitiatorStateToken& GetInitiatorStateToken() const {
     return initiator_state_token_;
   }
 
@@ -726,7 +726,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // InitiatorNavigationState in the browser process for navigations started
   // from this LocalFrame. This will be updated if the policies of the
   // LocalFrame change (e.g. Referrer policy, CSP).
-  base::UnguessableToken initiator_state_token_;
+  InitiatorStateToken initiator_state_token_;
 
   // Tracks which document policy violation reports have already been sent in
   // this document, to avoid reporting duplicates. The value stored comes

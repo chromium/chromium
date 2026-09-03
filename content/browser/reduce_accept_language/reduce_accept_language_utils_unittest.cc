@@ -130,7 +130,7 @@ class AcceptLanguageUtilsTests : public RenderViewHostImplTestHarness {
         CreateStubAssociatedInterfaceProviderReceiver(),
         blink::mojom::TreeScopeType::kDocument, std::string(), "uniqueName0",
         false, blink::LocalFrameToken(), base::UnguessableToken::Create(),
-        blink::DocumentToken(), base::UnguessableToken::Create(),
+        blink::DocumentToken(), blink::InitiatorStateToken(),
         blink::FramePolicy(), blink::mojom::FrameOwnerProperties(),
         blink::FrameOwnerElementType::kIframe, ukm::kInvalidSourceId);
   }

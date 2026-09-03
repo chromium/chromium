@@ -846,7 +846,7 @@ void RenderFrameHostManager::InitRoot(
       /*frame_routing_id=*/IPC::mojom::kRoutingIdNone,
       mojo::PendingAssociatedRemote<mojom::Frame>(), blink::LocalFrameToken(),
       blink::DocumentToken(), devtools_frame_token,
-      /*initiator_state_token=*/base::UnguessableToken::Create(),
+      /*initiator_state_token=*/blink::InitiatorStateToken(),
       renderer_initiated_creation, browsing_context_state,
       ProcessAllocationContext{ProcessAllocationSource::kRFHInitRoot}));
 
@@ -861,8 +861,8 @@ void RenderFrameHostManager::InitChild(
     mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
     const blink::LocalFrameToken& frame_token,
     const blink::DocumentToken& document_token,
-    const base::UnguessableToken& initiator_state_token,
     const base::UnguessableToken& devtools_frame_token,
+    const blink::InitiatorStateToken& initiator_state_token,
     blink::FramePolicy frame_policy,
     std::string frame_name,
     std::string frame_unique_name) {
@@ -4345,7 +4345,7 @@ RenderFrameHostManager::CreateRenderFrameHost(
     const blink::LocalFrameToken& frame_token,
     const blink::DocumentToken& document_token,
     base::UnguessableToken devtools_frame_token,
-    const base::UnguessableToken& initiator_state_token,
+    const blink::InitiatorStateToken& initiator_state_token,
     bool renderer_initiated_creation,
     scoped_refptr<BrowsingContextState> browsing_context_state,
     const ProcessAllocationContext& process_allocation_context) {
@@ -4620,7 +4620,7 @@ RenderFrameHostManager::CreateSpeculativeRenderFrame(
           mojo::PendingAssociatedRemote<mojom::Frame>(),
           blink::LocalFrameToken(), blink::DocumentToken(),
           render_frame_host_->devtools_frame_token(),
-          /*initiator_state_token=*/base::UnguessableToken::Create(),
+          /*initiator_state_token=*/blink::InitiatorStateToken(),
           /*renderer_initiated_creation=*/false, browsing_context_state,
           ProcessAllocationContext{
               ProcessAllocationSource::kNoProcessCreationExpected});

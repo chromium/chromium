@@ -74,7 +74,7 @@ LocalFrame* SingleChildLocalFrameClient::CreateFrame(
   }
 
   child->Init(/*opener=*/nullptr, DocumentToken(),
-              /*initiator_state_token=*/base::UnguessableToken::Create(),
+              /*initiator_state_token=*/InitiatorStateToken(),
               std::move(policy_container),
               parent_frame->DomWindow()->GetStorageKey(),
               /*document_ukm_source_id=*/ukm::kInvalidSourceId,

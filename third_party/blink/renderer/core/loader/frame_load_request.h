@@ -200,10 +200,10 @@ struct CORE_EXPORT FrameLoadRequest {
   const LocalFrameToken* GetInitiatorFrameToken() const;
 
   void SetInitiatorStateToken(
-      const base::UnguessableToken& initiator_state_token) {
+      const InitiatorStateToken& initiator_state_token) {
     initiator_state_token_ = initiator_state_token;
   }
-  const base::UnguessableToken& GetInitiatorStateToken() const {
+  std::optional<InitiatorStateToken> GetInitiatorStateToken() const {
     return initiator_state_token_;
   }
 
@@ -269,7 +269,7 @@ struct CORE_EXPORT FrameLoadRequest {
   std::optional<WebPictureInPictureWindowOptions>
       picture_in_picture_window_options_;
   std::optional<LocalFrameToken> initiator_frame_token_;
-  base::UnguessableToken initiator_state_token_;
+  std::optional<InitiatorStateToken> initiator_state_token_;
   std::optional<DocumentToken> initiator_document_token_;
   mojo::PendingRemote<mojom::blink::NavigationStateKeepAliveHandle>
       initiator_navigation_state_keep_alive_handle_;

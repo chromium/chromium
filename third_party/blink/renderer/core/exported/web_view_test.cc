@@ -559,8 +559,7 @@ TEST_F(WebViewTest, SetBaseBackgroundColorBeforeMainFrame) {
   frame_test_helpers::TestWebFrameClient web_frame_client;
   WebLocalFrame* frame = WebLocalFrame::CreateMainFrame(
       web_view, &web_frame_client, nullptr, mojo::NullRemote(),
-      LocalFrameToken(), DocumentToken(), base::UnguessableToken::Create(),
-      nullptr);
+      LocalFrameToken(), DocumentToken(), InitiatorStateToken(), nullptr);
   web_frame_client.Bind(frame);
 
   frame_test_helpers::TestWebFrameWidget* widget =
@@ -3786,8 +3785,7 @@ TEST_F(WebViewTest, ClientTapHandlingNullWebViewClient) {
   frame_test_helpers::TestWebFrameClient web_frame_client;
   WebLocalFrame* local_frame = WebLocalFrame::CreateMainFrame(
       web_view, &web_frame_client, nullptr, mojo::NullRemote(),
-      LocalFrameToken(), DocumentToken(), base::UnguessableToken::Create(),
-      nullptr);
+      LocalFrameToken(), DocumentToken(), InitiatorStateToken(), nullptr);
   web_frame_client.Bind(local_frame);
   WebNonCompositedWidgetClient widget_client;
   frame_test_helpers::TestWebFrameWidget* widget =
@@ -5353,7 +5351,7 @@ class CreateChildCounterFrameClient
       base::FunctionRef<void(
           WebLocalFrame*,
           const DocumentToken&,
-          const base::UnguessableToken& initiator_state_token,
+          const InitiatorStateToken& initiator_state_token,
           CrossVariantMojoRemote<mojom::BrowserInterfaceBrokerInterfaceBase>,
           std::unique_ptr<base::UnguessableToken> sandbox_origin_token)>
           complete_initialization) override;
@@ -5376,7 +5374,7 @@ WebLocalFrame* CreateChildCounterFrameClient::CreateChildFrame(
     base::FunctionRef<
         void(WebLocalFrame*,
              const DocumentToken&,
-             const base::UnguessableToken& initiator_state_token,
+             const InitiatorStateToken& initiator_state_token,
              CrossVariantMojoRemote<mojom::BrowserInterfaceBrokerInterfaceBase>,
              std::unique_ptr<base::UnguessableToken> sandbox_origin_token)>
         complete_initialization) {

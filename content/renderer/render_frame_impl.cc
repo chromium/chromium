@@ -1831,7 +1831,7 @@ void RenderFrameImpl::CreateFrame(
     blink::mojom::FrameOwnerPropertiesPtr frame_owner_properties,
     bool is_on_initial_empty_document,
     const blink::DocumentToken& document_token,
-    const base::UnguessableToken& initiator_state_token,
+    const blink::InitiatorStateToken& initiator_state_token,
     blink::mojom::PolicyContainerPtr policy_container,
     bool is_for_nested_main_frame) {
   base::ElapsedTimer timer;
@@ -2696,7 +2696,7 @@ void RenderFrameImpl::CommitNavigation(
         fetch_later_loader_factory,
     const blink::DocumentToken& document_token,
     const base::UnguessableToken& devtools_navigation_token,
-    const base::UnguessableToken& initiator_state_token,
+    const blink::InitiatorStateToken& initiator_state_token,
     const base::Uuid& base_auction_nonce,
     blink::mojom::PolicyContainerPtr policy_container,
     mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
@@ -3158,7 +3158,7 @@ void RenderFrameImpl::CommitFailedNavigation(
         subresource_loader_factories,
     const blink::DocumentToken& document_token,
     const base::UnguessableToken& devtools_navigation_token,
-    const base::UnguessableToken& initiator_state_token,
+    const blink::InitiatorStateToken& initiator_state_token,
     blink::mojom::PolicyContainerPtr policy_container,
     mojom::AlternativeErrorPageOverrideInfoPtr alternative_error_page_info,
     mojom::NavigationClient::CommitFailedNavigationCallback callback) {
@@ -3832,8 +3832,7 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
   // synchronized across browser and renderer processes prior to starting any
   // navigation in the renderer process, as it is needed to retrieve state
   // associated with the initiator document in the browser process.
-  base::UnguessableToken initiator_state_token =
-      base::UnguessableToken::Create();
+  blink::InitiatorStateToken initiator_state_token;
 
   // The unique name generation logic was moved out of Blink, so for historical
   // reasons, unique name generation needs to take something called the
@@ -5691,9 +5690,6 @@ void RenderFrameImpl::BeginNavigation(
   // to |this|.
   CHECK(in_frame_tree_);
 
-  // We should always have a valid `initiator_state_token`.
-  CHECK(!info->initiator_state_token.is_empty());
-
   // This might be the first navigation in this RenderFrame.
   const bool first_navigation_in_render_frame = !had_started_any_navigation_;
   had_started_any_navigation_ = true;
@@ -6473,9 +6469,6 @@ void RenderFrameImpl::BeginNavigationInternal(
       devtools_initiator = std::move(*devtools_initiator_value).TakeDict();
     }
   }
-
-  // We must not send an empty `initiator_state_token` ot the browser process.
-  CHECK(!info->initiator_state_token.is_empty());
 
   blink::mojom::BeginNavigationParamsPtr begin_params =
       blink::mojom::BeginNavigationParams::New(

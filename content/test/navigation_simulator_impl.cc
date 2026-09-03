@@ -1430,7 +1430,7 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
     return true;
   }
 
-  base::UnguessableToken initiator_state_token =
+  blink::InitiatorStateToken initiator_state_token =
       initiator_frame_host_
           ? static_cast<RenderFrameHostImpl*>(initiator_frame_host_)
                 ->current_initiator_state_token()

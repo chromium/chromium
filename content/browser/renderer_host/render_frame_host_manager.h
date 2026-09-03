@@ -335,7 +335,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
                  const blink::LocalFrameToken& frame_token,
                  const blink::DocumentToken& document_token,
                  const base::UnguessableToken& devtools_frame_token,
-                 const base::UnguessableToken& initiator_state_token,
+                 const blink::InitiatorStateToken& initiator_state_token,
                  blink::FramePolicy frame_policy,
                  std::string frame_name,
                  std::string frame_unique_name);
@@ -1079,7 +1079,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
       const blink::LocalFrameToken& frame_token,
       const blink::DocumentToken& document_token,
       base::UnguessableToken devtools_frame_token,
-      const base::UnguessableToken& initiator_state_token,
+      const blink::InitiatorStateToken& initiator_state_token,
       bool renderer_initiated_creation,
       scoped_refptr<BrowsingContextState> browsing_context_state,
       const ProcessAllocationContext& process_allocation_context);

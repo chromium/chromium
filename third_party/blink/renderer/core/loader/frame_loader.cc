@@ -250,7 +250,7 @@ void FrameLoader::Trace(Visitor* visitor) const {
 
 void FrameLoader::Init(
     const DocumentToken& document_token,
-    const base::UnguessableToken& initiator_state_token,
+    const InitiatorStateToken& initiator_state_token,
     std::unique_ptr<PolicyContainer> policy_container,
     const StorageKey& storage_key,
     ukm::SourceId document_ukm_source_id,
@@ -1003,11 +1003,9 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
           : CSPDisposition::CHECK;
 
   // Mark this frame as initiator if the request has not specified an initiator.
-  base::UnguessableToken initiator_state_token =
-      request.GetInitiatorStateToken().is_empty()
-          ? frame_->GetInitiatorStateToken()
-          : request.GetInitiatorStateToken();
-  CHECK(!initiator_state_token.is_empty());
+  InitiatorStateToken initiator_state_token =
+      request.GetInitiatorStateToken().value_or(
+          frame_->GetInitiatorStateToken());
   DocumentToken initiator_document_token =
       request.GetInitiatorDocumentToken().value_or(
           frame_->GetDocument()->Token());

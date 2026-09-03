@@ -223,7 +223,7 @@ WebLocalFrame* WebRemoteFrameImpl::CreateLocalChild(
     const LocalFrameToken& frame_token,
     WebFrame* opener,
     const DocumentToken& document_token,
-    const base::UnguessableToken& initiator_state_token,
+    const InitiatorStateToken& initiator_state_token,
     CrossVariantMojoRemote<mojom::BrowserInterfaceBrokerInterfaceBase>
         interface_broker,
     std::unique_ptr<WebPolicyContainer> policy_container) {

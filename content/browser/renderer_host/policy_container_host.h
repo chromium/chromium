@@ -358,7 +358,7 @@ class CONTENT_EXPORT PolicyContainerHost
     // renderer process changed due to the PolicyContainerPolicies being
     // updated.
     virtual void DidUpdateInitiatorStateToken(
-        const base::UnguessableToken& new_initiator_state_token) = 0;
+        const blink::InitiatorStateToken& new_initiator_state_token) = 0;
   };
 
   // This should be called as soon as the PolicyContainerHost gets owned by a
@@ -377,11 +377,11 @@ class CONTENT_EXPORT PolicyContainerHost
   // <meta> tags).
   void SetReferrerPolicy(
       network::mojom::ReferrerPolicy referrer_policy,
-      const base::UnguessableToken& new_initiator_state_token) final;
+      const blink::InitiatorStateToken& new_initiator_state_token) final;
   void AddContentSecurityPolicies(
       std::vector<network::mojom::ContentSecurityPolicyPtr>
           content_security_policies,
-      const base::UnguessableToken& new_initiator_state_token) final;
+      const blink::InitiatorStateToken& new_initiator_state_token) final;
 
   // The policies of this PolicyContainerHost.
   PolicyContainerPolicies policies_;

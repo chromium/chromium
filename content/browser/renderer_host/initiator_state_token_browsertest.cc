@@ -43,7 +43,7 @@ class InitiatorStateTokenBrowserTest : public ContentBrowserTest {
     return static_cast<WebContentsImpl*>(shell()->web_contents());
   }
 
-  base::UnguessableToken GetBrowserSideToken(ToRenderFrameHost adapter) {
+  blink::InitiatorStateToken GetBrowserSideToken(ToRenderFrameHost adapter) {
     return static_cast<RenderFrameHostImpl*>(adapter.render_frame_host())
         ->current_initiator_state_token();
   }
@@ -52,15 +52,16 @@ class InitiatorStateTokenBrowserTest : public ContentBrowserTest {
   // renderer-side `initiator_state_token` have matching values.
   [[nodiscard]] ::testing::AssertionResult VerifyMatchingTokens(
       ToRenderFrameHost adapter) {
-    base::UnguessableToken token_from_browser = GetBrowserSideToken(adapter);
+    blink::InitiatorStateToken token_from_browser =
+        GetBrowserSideToken(adapter);
 
     mojo::Remote<mojom::RenderFrameTestHelper> remote;
     adapter.render_frame_host()->GetRemoteInterfaces()->GetInterface(
         remote.BindNewPipeAndPassReceiver());
-    base::UnguessableToken token_from_renderer;
+    blink::InitiatorStateToken token_from_renderer;
     base::RunLoop run_loop;
-    remote->GetInitiatorStateToken(
-        base::BindLambdaForTesting([&](const base::UnguessableToken& token) {
+    remote->GetInitiatorStateToken(base::BindLambdaForTesting(
+        [&](const blink::InitiatorStateToken& token) {
           token_from_renderer = token;
           run_loop.Quit();
         }));
@@ -86,7 +87,7 @@ class InitiatorStateTokenBrowserTest : public ContentBrowserTest {
   // Navigate `adapter.render_frame_host()` to `target_url`. Verifies that the
   // browser and renderer state are in sync, and that the initiator state token
   // is not updated until the navigation actually commits.
-  base::UnguessableToken NavigateAndGetNewToken(
+  blink::InitiatorStateToken NavigateAndGetNewToken(
       ToRenderFrameHost adapter,
       const GURL& target_url,
       ExpectedResponse expect_response = ExpectedResponse::kYes) {
@@ -97,7 +98,7 @@ class InitiatorStateTokenBrowserTest : public ContentBrowserTest {
         static_cast<RenderFrameHostImpl*>(adapter.render_frame_host());
     FrameTreeNode* const frame_tree_node =
         old_render_frame_host->frame_tree_node();
-    const base::UnguessableToken old_token =
+    const blink::InitiatorStateToken old_token =
         GetBrowserSideToken(old_render_frame_host);
 
     // Start a new navigation in the main frame. The navigation is still
@@ -131,7 +132,7 @@ class InitiatorStateTokenBrowserTest : public ContentBrowserTest {
         frame_tree_node->current_frame_host();
     EXPECT_EQ(target_url, new_render_frame_host->GetLastCommittedURL());
     EXPECT_TRUE(VerifyMatchingTokens(new_render_frame_host));
-    const base::UnguessableToken new_token =
+    const blink::InitiatorStateToken new_token =
         GetBrowserSideToken(new_render_frame_host);
     EXPECT_NE(new_token, old_token);
     return new_token;
@@ -139,7 +140,7 @@ class InitiatorStateTokenBrowserTest : public ContentBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(InitiatorStateTokenBrowserTest, MainFrameBasic) {
-  std::vector<base::UnguessableToken> seen_tokens;
+  std::vector<blink::InitiatorStateToken> seen_tokens;
 
   ASSERT_TRUE(NavigateToURL(
       web_contents(), embedded_test_server()->GetURL("a.com", "/title1.html")));
@@ -157,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(InitiatorStateTokenBrowserTest, MainFrameBasic) {
 }
 
 IN_PROC_BROWSER_TEST_F(InitiatorStateTokenBrowserTest, SubFrameBasic) {
-  std::vector<base::UnguessableToken> seen_tokens;
+  std::vector<blink::InitiatorStateToken> seen_tokens;
 
   ASSERT_TRUE(NavigateToURL(
       web_contents(), embedded_test_server()->GetURL(
@@ -184,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(InitiatorStateTokenBrowserTest, SubFrameBasic) {
 }
 
 IN_PROC_BROWSER_TEST_F(InitiatorStateTokenBrowserTest, NewWindowBasic) {
-  std::vector<base::UnguessableToken> seen_tokens;
+  std::vector<blink::InitiatorStateToken> seen_tokens;
 
   ASSERT_TRUE(NavigateToURL(
       web_contents(), embedded_test_server()->GetURL("a.com", "/title1.html")));
@@ -222,7 +223,8 @@ IN_PROC_BROWSER_TEST_F(InitiatorStateTokenBrowserTest, NewWindowBasic) {
         static_cast<RenderFrameHostImpl*>(new_contents->GetPrimaryMainFrame());
     FrameTreeNode* const frame_tree_node =
         old_render_frame_host->frame_tree_node();
-    const base::UnguessableToken old_token = GetBrowserSideToken(new_contents);
+    const blink::InitiatorStateToken old_token =
+        GetBrowserSideToken(new_contents);
 
     EXPECT_TRUE(VerifyMatchingTokens(new_contents));
     EXPECT_EQ(old_token, GetBrowserSideToken(new_contents));
@@ -259,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(InitiatorStateTokenBrowserTest, NewWindowBasic) {
     EXPECT_EQ(embedded_test_server()->GetURL("a.com", "/title1.html"),
               new_render_frame_host->GetLastCommittedURL());
     EXPECT_TRUE(VerifyMatchingTokens(new_render_frame_host));
-    const base::UnguessableToken new_token =
+    const blink::InitiatorStateToken new_token =
         GetBrowserSideToken(new_render_frame_host);
     EXPECT_NE(new_token, old_token);
     seen_tokens.push_back(new_token);
@@ -285,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(InitiatorStateTokenBrowserTest, NewWindowBasic) {
 }
 
 IN_PROC_BROWSER_TEST_F(InitiatorStateTokenBrowserTest, SubFrameSyncCommit) {
-  std::vector<base::UnguessableToken> seen_tokens;
+  std::vector<blink::InitiatorStateToken> seen_tokens;
 
   // This is a basic test that the synchronous commit of about:blank properly
   // propagates the initiator state token in both the renderer and the browser
@@ -320,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(InitiatorStateTokenBrowserTest, SubFrameSyncCommit) {
 }
 
 IN_PROC_BROWSER_TEST_F(InitiatorStateTokenBrowserTest, NewWindowSyncCommit) {
-  std::vector<base::UnguessableToken> seen_tokens;
+  std::vector<blink::InitiatorStateToken> seen_tokens;
 
   ASSERT_TRUE(NavigateToURL(web_contents(), GURL("about:blank")));
   EXPECT_EQ(1u, Shell::windows().size());
@@ -367,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(InitiatorStateTokenBrowserTest, JavascriptURL) {
   ASSERT_TRUE(NavigateToURL(
       web_contents(), embedded_test_server()->GetURL("a.com", "/title1.html")));
   EXPECT_TRUE(VerifyMatchingTokens(web_contents()));
-  const base::UnguessableToken token = GetBrowserSideToken(web_contents());
+  const blink::InitiatorStateToken token = GetBrowserSideToken(web_contents());
 
   // A javascript: navigation that replaces the document should not change the
   // initiator state token. This does not use the normal Navigate*() helpers
@@ -380,7 +382,7 @@ IN_PROC_BROWSER_TEST_F(InitiatorStateTokenBrowserTest, JavascriptURL) {
 }
 
 IN_PROC_BROWSER_TEST_F(InitiatorStateTokenBrowserTest, FailedNavigation) {
-  std::vector<base::UnguessableToken> seen_tokens;
+  std::vector<blink::InitiatorStateToken> seen_tokens;
 
   ASSERT_TRUE(NavigateToURL(
       web_contents(), embedded_test_server()->GetURL("a.com", "/title1.html")));
@@ -412,7 +414,8 @@ IN_PROC_BROWSER_TEST_F(InitiatorStateTokenBrowserTest, CrashThenReload) {
   ASSERT_TRUE(NavigateToURL(
       web_contents(), embedded_test_server()->GetURL("a.com", "/title1.html")));
   EXPECT_TRUE(VerifyMatchingTokens(web_contents()));
-  const base::UnguessableToken old_token = GetBrowserSideToken(web_contents());
+  const blink::InitiatorStateToken old_token =
+      GetBrowserSideToken(web_contents());
 
   // Cause the renderer to crash.
   RenderProcessHostWatcher crash_observer(
@@ -434,13 +437,13 @@ IN_PROC_BROWSER_TEST_F(InitiatorStateTokenBrowserTest, CrashThenReload) {
       web_contents(), embedded_test_server()->GetURL("a.com", "/title1.html"));
   shell()->LoadURL(embedded_test_server()->GetURL("a.com", "/title1.html"));
   EXPECT_TRUE(VerifyMatchingTokens(web_contents()));
-  const base::UnguessableToken token_after_navigation_started =
+  const blink::InitiatorStateToken token_after_navigation_started =
       GetBrowserSideToken(web_contents());
   EXPECT_NE(token_after_navigation_started, old_token);
 
   ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
   EXPECT_TRUE(VerifyMatchingTokens(web_contents()));
-  const base::UnguessableToken token_after_navigation_finished =
+  const blink::InitiatorStateToken token_after_navigation_finished =
       GetBrowserSideToken(web_contents());
   EXPECT_NE(token_after_navigation_finished, old_token);
 }
@@ -452,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(InitiatorStateTokenBrowserTest,
   EXPECT_TRUE(VerifyMatchingTokens(web_contents()));
   RenderFrameHostImpl* main_frame = web_contents()->GetPrimaryMainFrame();
   const blink::LocalFrameToken frame_token = main_frame->GetFrameToken();
-  const base::UnguessableToken old_token = GetBrowserSideToken(main_frame);
+  const blink::InitiatorStateToken old_token = GetBrowserSideToken(main_frame);
 
   // Cause the renderer to crash.
   RenderProcessHostWatcher crash_observer(
@@ -474,7 +477,8 @@ IN_PROC_BROWSER_TEST_F(InitiatorStateTokenBrowserTest,
             web_contents()->GetPrimaryMainFrame()->GetFrameToken());
   EXPECT_TRUE(VerifyMatchingTokens(web_contents()));
   // The re-created RenderFrame should have a distinct initiator state token.
-  const base::UnguessableToken new_token = GetBrowserSideToken(web_contents());
+  const blink::InitiatorStateToken new_token =
+      GetBrowserSideToken(web_contents());
   EXPECT_NE(new_token, old_token);
 }
 
@@ -482,7 +486,7 @@ IN_PROC_BROWSER_TEST_F(InitiatorStateTokenBrowserTest, UpdateReferrerPolicy) {
   ASSERT_TRUE(NavigateToURL(
       web_contents(), embedded_test_server()->GetURL("a.com", "/title1.html")));
   EXPECT_TRUE(VerifyMatchingTokens(web_contents()));
-  const base::UnguessableToken initial_token =
+  const blink::InitiatorStateToken initial_token =
       GetBrowserSideToken(web_contents());
 
   ASSERT_TRUE(ExecJs(web_contents(),
@@ -492,7 +496,7 @@ IN_PROC_BROWSER_TEST_F(InitiatorStateTokenBrowserTest, UpdateReferrerPolicy) {
                      "document.head.appendChild(meta);"));
 
   EXPECT_TRUE(VerifyMatchingTokens(web_contents()));
-  const base::UnguessableToken updated_token =
+  const blink::InitiatorStateToken updated_token =
       GetBrowserSideToken(web_contents());
   EXPECT_NE(initial_token, updated_token);
 }
@@ -502,7 +506,7 @@ IN_PROC_BROWSER_TEST_F(InitiatorStateTokenBrowserTest,
   ASSERT_TRUE(NavigateToURL(
       web_contents(), embedded_test_server()->GetURL("a.com", "/title1.html")));
   EXPECT_TRUE(VerifyMatchingTokens(web_contents()));
-  const base::UnguessableToken initial_token =
+  const blink::InitiatorStateToken initial_token =
       GetBrowserSideToken(web_contents());
 
   ASSERT_TRUE(ExecJs(web_contents(),
@@ -512,7 +516,7 @@ IN_PROC_BROWSER_TEST_F(InitiatorStateTokenBrowserTest,
                      "document.head.appendChild(meta);"));
 
   EXPECT_TRUE(VerifyMatchingTokens(web_contents()));
-  const base::UnguessableToken updated_token =
+  const blink::InitiatorStateToken updated_token =
       GetBrowserSideToken(web_contents());
   EXPECT_NE(initial_token, updated_token);
 }

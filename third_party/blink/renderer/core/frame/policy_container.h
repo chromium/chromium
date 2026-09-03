@@ -10,6 +10,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom-blink.h"
 #include "third_party/blink/public/platform/web_policy_container.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -44,9 +45,8 @@ class CORE_EXPORT PolicyContainer {
   // A new initiator state token should be generated and passed to this
   // function. The same initiator state token should then be passed to
   // ExecutionContext::SetInitiatorStateToken.
-  void UpdateReferrerPolicy(
-      network::mojom::blink::ReferrerPolicy policy,
-      const base::UnguessableToken& initiator_state_token);
+  void UpdateReferrerPolicy(network::mojom::blink::ReferrerPolicy policy,
+                            const InitiatorStateToken& initiator_state_token);
   network::mojom::blink::ReferrerPolicy GetReferrerPolicy() const;
 
   // Append |policies| to the list of Content Security Policy and sync them with
@@ -56,7 +56,7 @@ class CORE_EXPORT PolicyContainer {
   // ExecutionContext::SetInitiatorStateToken.
   void AddContentSecurityPolicies(
       Vector<network::mojom::blink::ContentSecurityPolicyPtr> policies,
-      const base::UnguessableToken& initiator_state_token);
+      const InitiatorStateToken& initiator_state_token);
 
   const mojom::blink::PolicyContainerPolicies& GetPolicies() const;
 

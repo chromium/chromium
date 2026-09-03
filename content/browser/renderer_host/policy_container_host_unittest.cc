@@ -122,8 +122,7 @@ TEST(PolicyContainerHostTest, ReferrerPolicy) {
   EXPECT_EQ(network::mojom::ReferrerPolicy::kDefault,
             policy_container->referrer_policy());
 
-  base::UnguessableToken new_initiator_state_token =
-      base::UnguessableToken::Create();
+  blink::InitiatorStateToken new_initiator_state_token;
   static_cast<blink::mojom::PolicyContainerHost*>(policy_container.get())
       ->SetReferrerPolicy(network::mojom::ReferrerPolicy::kAlways,
                           new_initiator_state_token);

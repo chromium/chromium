@@ -48,7 +48,7 @@ network::mojom::blink::ReferrerPolicy PolicyContainer::GetReferrerPolicy()
 
 void PolicyContainer::UpdateReferrerPolicy(
     network::mojom::blink::ReferrerPolicy policy,
-    const base::UnguessableToken& initiator_state_token) {
+    const InitiatorStateToken& initiator_state_token) {
   policies_->referrer_policy = policy;
 
   policy_container_host_remote_->SetReferrerPolicy(policy,
@@ -62,7 +62,7 @@ const mojom::blink::PolicyContainerPolicies& PolicyContainer::GetPolicies()
 
 void PolicyContainer::AddContentSecurityPolicies(
     Vector<network::mojom::blink::ContentSecurityPolicyPtr> policies,
-    const base::UnguessableToken& initiator_state_token) {
+    const InitiatorStateToken& initiator_state_token) {
   for (const auto& policy : policies) {
     policies_->content_security_policies.push_back(policy->Clone());
   }

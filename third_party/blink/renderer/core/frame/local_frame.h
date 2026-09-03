@@ -246,7 +246,7 @@ class CORE_EXPORT LocalFrame final
   void Init(
       Frame* opener,
       const DocumentToken& document_token,
-      const base::UnguessableToken& initiator_state_token,
+      const InitiatorStateToken& initiator_state_token,
       std::unique_ptr<PolicyContainer> policy_container,
       const StorageKey& storage_key,
       ukm::SourceId document_ukm_source_id,
@@ -844,7 +844,7 @@ class CORE_EXPORT LocalFrame final
 
   // A helper that returns the initiator state token from the LocalFrame's
   // LocalDomWindow.
-  const base::UnguessableToken& GetInitiatorStateToken() const;
+  const InitiatorStateToken& GetInitiatorStateToken() const;
 
   // A helper that returns the document token from the LocalFrame's Document.
   DocumentToken GetDocumentToken() const;

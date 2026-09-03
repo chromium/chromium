@@ -18,5 +18,5 @@ interface RenderFrameTestHelper {
 
   // Get the initiator state token for the RenderFrame's active document's
   // LocalDomWindow.
-  GetInitiatorStateToken() => (mojo_base.mojom.UnguessableToken token);
+  GetInitiatorStateToken() => (blink.mojom.InitiatorStateToken token);
 };

@@ -604,7 +604,7 @@ KURL LocalDOMWindow::OutgoingReferrerUrl() const {
 }
 
 void LocalDOMWindow::SetInitiatorStateToken(
-    const base::UnguessableToken& initiator_state_token) {
+    const InitiatorStateToken& initiator_state_token) {
   initiator_state_token_ = initiator_state_token;
 }
 

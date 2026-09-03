@@ -1743,8 +1743,7 @@ NavigationRequest::NavigationRequest(
           GetPrerenderHostRegistry().GetPrerenderHostIdForNavigation(this)),
       initiator_navigation_state_(initiator_navigation_state),
       should_ignore_initiator_policies_for_inheritance_(
-          should_ignore_initiator_policies_for_inheritance),
-      initiator_state_token_to_commit_(base::UnguessableToken::Create()) {
+          should_ignore_initiator_policies_for_inheritance) {
   TRACE_EVENT("navigation", "NavigationRequest::NavigationRequest",
               perfetto::Flow::FromPointer(this),
               perfetto::protos::pbzero::ChromeTrackEvent::kNavigation, this);
@@ -11598,7 +11597,7 @@ void NavigationRequest::ComputePoliciesToCommitForError() {
 }
 
 void NavigationRequest::DidUpdateInitiatorStateToken(
-    const base::UnguessableToken& new_initiator_state_token) {
+    const blink::InitiatorStateToken& new_initiator_state_token) {
   initiator_state_token_to_commit_ = new_initiator_state_token;
 }
 void NavigationRequest::CheckStateTransition(NavigationState state) const {

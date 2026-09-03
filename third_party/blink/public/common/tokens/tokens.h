@@ -26,6 +26,11 @@ namespace blink {
 using DocumentToken = base::TokenType<class DocumentTokenTypeMarker>;
 
 ////////////////////////////////////////////////////////////////////////////////
+// INITIATOR STATE TOKENS
+using InitiatorStateToken =
+    base::TokenType<class InitiatorStateTokenTypeMarker>;
+
+////////////////////////////////////////////////////////////////////////////////
 // FRAME TOKENS
 
 // Uniquely identifies a blink::LocalFrame / blink::WebLocalFrame /

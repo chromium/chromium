@@ -219,7 +219,7 @@ struct CreateLocalMainFrameParams {
   // A token tracking the state of the document to retrieve a corresponding
   // InitiatorNavigationState in the browser process for navigations started
   // from the newly created document.
-  mojo_base.mojom.UnguessableToken initiator_state_token;
+  blink.mojom.InitiatorStateToken initiator_state_token;
 
   // Null when the main frame has no policy container yet (for example, because
   // it is a speculative RenderFrameHost), and the policy container will be
@@ -350,7 +350,7 @@ struct CreateFrameParams {
   // A token tracking the state of the document to retrieve a corresponding
   // InitiatorNavigationState in the browser process for navigations started
   // from the newly created document.
-  mojo_base.mojom.UnguessableToken initiator_state_token;
+  blink.mojom.InitiatorStateToken initiator_state_token;
 
   // The policy container for the frame to be created. This can be null if we
   // could not determine a policy container yet, for example in case of a
@@ -686,7 +686,7 @@ struct CreateNewWindowReply {
 
   // Token used to retrieve the InitiatorNavigationState for navigations
   // started by the main document of the new window.
-  mojo_base.mojom.UnguessableToken initiator_state_token;
+  blink.mojom.InitiatorStateToken initiator_state_token;
 
   // The policy container for the new frame that will be created by Blink in
   // response.
@@ -740,7 +740,7 @@ interface FrameHost {
   // messages will have a corresponding mojom::FrameHost::Detach API sent when
   // the frame is detached from the DOM.
   CreateChildFrame(blink.mojom.LocalFrameToken child_frame_token,
-                mojo_base.mojom.UnguessableToken initiator_state_token,
+                   blink.mojom.InitiatorStateToken initiator_state_token,
                    pending_associated_remote<content.mojom.Frame> frame,
                    pending_receiver<blink.mojom.BrowserInterfaceBroker>
                      browser_interface_broker,

@@ -224,7 +224,7 @@ class WebRtcAudioDeviceImplReleaseTest : public WebRtcAudioDeviceImplTest {
 
     web_local_frame_ = blink::WebLocalFrame::CreateMainFrame(
         web_view_, &web_local_frame_client_, nullptr, mojo::NullRemote(),
-        LocalFrameToken(), DocumentToken(), base::UnguessableToken::Create(),
+        LocalFrameToken(), DocumentToken(), InitiatorStateToken(),
         /*policy_container=*/nullptr);
 
     MediaStreamComponentVector dummy_components;

@@ -949,10 +949,9 @@ WebDocument WebLocalFrameImpl::GetDocument() const {
   return WebDocument(GetFrame()->GetDocument());
 }
 
-base::UnguessableToken WebLocalFrameImpl::GetInitiatorStateToken() const {
-  if (!GetFrame() || !GetFrame()->DomWindow()) {
-    return base::UnguessableToken();
-  }
+InitiatorStateToken WebLocalFrameImpl::GetInitiatorStateToken() const {
+  CHECK(GetFrame());
+  CHECK(GetFrame()->DomWindow());
   return GetFrame()->DomWindow()->GetInitiatorStateToken();
 }
 
@@ -2138,7 +2137,7 @@ WebLocalFrame* WebLocalFrame::CreateMainFrame(
         interface_broker,
     const LocalFrameToken& frame_token,
     const DocumentToken& document_token,
-    const base::UnguessableToken& initiator_state_token,
+    const InitiatorStateToken& initiator_state_token,
     std::unique_ptr<WebPolicyContainer> policy_container,
     WebFrame* opener,
     const WebString& name,
@@ -2177,7 +2176,7 @@ WebLocalFrameImpl* WebLocalFrameImpl::CreateMainFrame(
     const WebString& name,
     network::mojom::blink::WebSandboxFlags sandbox_flags,
     const DocumentToken& document_token,
-    const base::UnguessableToken& initiator_state_token,
+    const InitiatorStateToken& initiator_state_token,
     std::unique_ptr<WebPolicyContainer> policy_container,
     const WebURL& creator_base_url,
     std::unique_ptr<base::UnguessableToken> sandbox_origin_token) {
@@ -2253,7 +2252,7 @@ WebLocalFrameImpl* WebLocalFrameImpl::CreateProvisional(
       previous_web_frame->Parent(), nullptr, FrameInsertType::kInsertLater,
       name, &ToCoreFrame(*previous_web_frame)->window_agent_factory(),
       previous_web_frame->Opener(), DocumentToken(),
-      /*initiator_state_token=*/base::UnguessableToken::Create(),
+      /*initiator_state_token=*/InitiatorStateToken(),
       std::move(interface_broker),
       /*policy_container=*/nullptr, StorageKey(),
       /*creator_base_url=*/NullUrl(), sandbox_flags,
@@ -2376,7 +2375,7 @@ void WebLocalFrameImpl::InitializeCoreFrame(
     WindowAgentFactory* window_agent_factory,
     WebFrame* opener,
     const DocumentToken& document_token,
-    const base::UnguessableToken& initiator_state_token,
+    const InitiatorStateToken& initiator_state_token,
     mojo::PendingRemote<mojom::blink::BrowserInterfaceBroker> interface_broker,
     std::unique_ptr<blink::WebPolicyContainer> policy_container,
     const StorageKey& storage_key,
@@ -2403,7 +2402,7 @@ void WebLocalFrameImpl::InitializeCoreFrameInternal(
     WindowAgentFactory* window_agent_factory,
     WebFrame* opener,
     const DocumentToken& document_token,
-    const base::UnguessableToken& initiator_state_token,
+    const InitiatorStateToken& initiator_state_token,
     mojo::PendingRemote<mojom::blink::BrowserInterfaceBroker> interface_broker,
     std::unique_ptr<PolicyContainer> policy_container,
     const StorageKey& storage_key,
@@ -2506,7 +2505,7 @@ LocalFrame* WebLocalFrameImpl::CreateChildFrame(
       [this, owner_element, &policy_container_remote, &policy_container_data,
        &name, document_ukm_source_id](
           WebLocalFrame* new_child_frame, const DocumentToken& document_token,
-          const base::UnguessableToken& initiator_state_token,
+          const InitiatorStateToken& initiator_state_token,
           CrossVariantMojoRemote<mojom::BrowserInterfaceBrokerInterfaceBase>
               interface_broker,
           std::unique_ptr<base::UnguessableToken> sandbox_origin_token) {

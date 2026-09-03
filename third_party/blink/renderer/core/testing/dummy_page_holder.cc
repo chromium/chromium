@@ -132,7 +132,7 @@ DummyPageHolder::DummyPageHolder(
       MakeGarbageCollected<LocalFrameView>(*frame_, initial_view_size));
   frame_->View()->GetPage()->GetVisualViewport().SetSize(initial_view_size);
   frame_->Init(/*opener=*/nullptr, DocumentToken(),
-               base::UnguessableToken::Create(),
+               /*initiator_state_token=*/InitiatorStateToken(),
                /*policy_container=*/nullptr, StorageKey(),
                /*document_ukm_source_id=*/ukm::kInvalidSourceId,
                /*creator_base_url=*/KURL());

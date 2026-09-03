@@ -369,7 +369,7 @@ TEST_F(NavigationPolicyContainerBuilderTest, ParentPoliciesWithParent) {
 
   TestRenderFrameHost* parent = contents()->GetPrimaryMainFrame();
   parent->SetPolicyContainerHost(NewHost(parent_policies.Clone()),
-                                 base::UnguessableToken::Create());
+                                 blink::InitiatorStateToken());
 
   NavigationPolicyContainerBuilder builder(parent, nullptr);
 
@@ -384,7 +384,7 @@ TEST_F(NavigationPolicyContainerBuilderTest,
 
   TestRenderFrameHost* parent = contents()->GetPrimaryMainFrame();
   parent->SetPolicyContainerHost(NewHost(parent_policies.Clone()),
-                                 base::UnguessableToken::Create());
+                                 blink::InitiatorStateToken());
 
   NavigationPolicyContainerBuilder builder(parent, nullptr);
   MockNavigationHandle navigation_handle(AboutSrcdocUrl(), nullptr);
@@ -447,7 +447,7 @@ TEST_F(NavigationPolicyContainerBuilderTest,
 
   TestRenderFrameHost* parent = contents()->GetPrimaryMainFrame();
   parent->SetPolicyContainerHost(NewHost(std::move(parent_policies)),
-                                 base::UnguessableToken::Create());
+                                 blink::InitiatorStateToken());
 
   NavigationPolicyContainerBuilder builder(parent, nullptr);
 
@@ -471,7 +471,7 @@ TEST_F(NavigationPolicyContainerBuilderTest,
 
   TestRenderFrameHost* parent = contents()->GetPrimaryMainFrame();
   parent->SetPolicyContainerHost(NewHost(std::move(parent_policies)),
-                                 base::UnguessableToken::Create());
+                                 blink::InitiatorStateToken());
 
   NavigationPolicyContainerBuilder builder(parent, nullptr);
 
@@ -499,7 +499,7 @@ TEST_F(NavigationPolicyContainerBuilderTest,
 
   TestRenderFrameHost* parent = contents()->GetPrimaryMainFrame();
   parent->SetPolicyContainerHost(NewHost(std::move(parent_policies)),
-                                 base::UnguessableToken::Create());
+                                 blink::InitiatorStateToken());
 
   NavigationPolicyContainerBuilder builder(parent, nullptr);
 
@@ -530,7 +530,7 @@ TEST_F(NavigationPolicyContainerBuilderTest, IsSecureContextRootOverride) {
 
   TestRenderFrameHost* parent = contents()->GetPrimaryMainFrame();
   parent->SetPolicyContainerHost(NewHost(parent_policies.Clone()),
-                                 base::UnguessableToken::Create());
+                                 blink::InitiatorStateToken());
 
   NavigationPolicyContainerBuilder builder(parent, nullptr);
 
@@ -560,7 +560,7 @@ TEST_F(NavigationPolicyContainerBuilderTest,
 
   TestRenderFrameHost* parent = contents()->GetPrimaryMainFrame();
   parent->SetPolicyContainerHost(NewHost(parent_policies.Clone()),
-                                 base::UnguessableToken::Create());
+                                 blink::InitiatorStateToken());
 
   NavigationPolicyContainerBuilder builder(parent, nullptr);
 
@@ -583,7 +583,7 @@ TEST_F(NavigationPolicyContainerBuilderTest,
 
   TestRenderFrameHost* parent = contents()->GetPrimaryMainFrame();
   parent->SetPolicyContainerHost(NewHost(parent_policies.Clone()),
-                                 base::UnguessableToken::Create());
+                                 blink::InitiatorStateToken());
 
   NavigationPolicyContainerBuilder builder(parent, nullptr);
 
@@ -632,7 +632,7 @@ TEST_F(NavigationPolicyContainerBuilderTest,
   PolicyContainerPolicies parent_policies = MakeTestPolicies();
   TestRenderFrameHost* parent = contents()->GetPrimaryMainFrame();
   parent->SetPolicyContainerHost(NewHost(parent_policies.Clone()),
-                                 base::UnguessableToken::Create());
+                                 blink::InitiatorStateToken());
 
   NavigationPolicyContainerBuilder builder(parent, nullptr);
   EXPECT_THAT(builder.ParentPolicies(), Pointee(Eq(ByRef(parent_policies))));
@@ -656,7 +656,7 @@ TEST_F(NavigationPolicyContainerBuilderTest,
 
   TestRenderFrameHost* parent = contents()->GetPrimaryMainFrame();
   parent->SetPolicyContainerHost(NewHost(parent_policies.Clone()),
-                                 base::UnguessableToken::Create());
+                                 blink::InitiatorStateToken());
 
   NavigationPolicyContainerBuilder builder(parent, nullptr);
   MockNavigationHandle navigation_handle(GURL("https://foo.test"), nullptr);

@@ -136,7 +136,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   WebContentCaptureClient* ContentCaptureClient() const override;
   BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() override;
   WebDocument GetDocument() const override;
-  base::UnguessableToken GetInitiatorStateToken() const override;
+  InitiatorStateToken GetInitiatorStateToken() const override;
   WebString AssignedName() const override;
   ui::AXTreeID GetAXTreeID() const override;
   void SetName(const WebString&) override;
@@ -447,7 +447,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       WindowAgentFactory*,
       WebFrame* opener,
       const DocumentToken& document_token,
-      const base::UnguessableToken& initiator_state_token,
+      const InitiatorStateToken& initiator_state_token,
       mojo::PendingRemote<mojom::blink::BrowserInterfaceBroker>
           interface_broker,
       std::unique_ptr<blink::WebPolicyContainer> policy_container,
@@ -472,7 +472,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       const WebString& name,
       network::mojom::blink::WebSandboxFlags,
       const DocumentToken& document_token,
-      const base::UnguessableToken& initiator_state_token,
+      const InitiatorStateToken& initiator_state_token,
       std::unique_ptr<WebPolicyContainer>,
       const WebURL& creator_base_url,
       std::unique_ptr<base::UnguessableToken> sandbox_origin_token);
@@ -666,7 +666,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       WindowAgentFactory*,
       WebFrame* opener,
       const DocumentToken& document_token,
-      const base::UnguessableToken& initiator_state_token,
+      const InitiatorStateToken& initiator_state_token,
       mojo::PendingRemote<mojom::blink::BrowserInterfaceBroker>
           interface_broker,
       std::unique_ptr<PolicyContainer> policy_container,

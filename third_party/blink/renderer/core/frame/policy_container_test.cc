@@ -54,8 +54,7 @@ TEST(PolicyContainerTest, UpdateReferrerPolicyIsPropagated) {
   PolicyContainer policy_container(host.BindNewEndpointAndPassDedicatedRemote(),
                                    std::move(policies));
 
-  const base::UnguessableToken initiator_state_token =
-      base::UnguessableToken::Create();
+  const InitiatorStateToken initiator_state_token;
   EXPECT_CALL(host,
               SetReferrerPolicy(network::mojom::blink::ReferrerPolicy::kNever,
                                 initiator_state_token));
@@ -84,8 +83,7 @@ TEST(PolicyContainerTest, AddContentSecurityPolicies) {
           network::mojom::blink::ContentSecurityPolicySource::kHTTP,
           KURL("https://example.org"));
 
-  const base::UnguessableToken initiator_state_token =
-      base::UnguessableToken::Create();
+  const InitiatorStateToken initiator_state_token;
   EXPECT_CALL(host,
               AddContentSecurityPolicies(testing::Eq(testing::ByRef(new_csps)),
                                          initiator_state_token));

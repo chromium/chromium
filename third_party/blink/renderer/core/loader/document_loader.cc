@@ -371,7 +371,7 @@ struct SameSizeAsDocumentLoader
   std::optional<blink::mojom::FetchCacheMode> force_fetch_cache_mode;
   FramePolicy frame_policy;
   std::optional<uint64_t> visited_link_salt;
-  const base::UnguessableToken initiator_state_token;
+  const InitiatorStateToken initiator_state_token;
   Member<LocalFrame> frame;
   Member<HistoryItem> history_item;
   Member<DocumentParser> parser;
@@ -2955,8 +2955,6 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
   base::UmaHistogramBoolean("API.StorageAccess.DocumentInheritedStorageAccess",
                             inherited_has_storage_access);
 
-  // Every window should have a valid `initiator_state_token`.
-  CHECK(!initiator_state_token_.is_empty());
   frame_->DomWindow()->SetInitiatorStateToken(initiator_state_token_);
 
   frame_->DomWindow()->SetPolicyContainer(std::move(policy_container_));
@@ -4065,7 +4063,7 @@ ContentSecurityPolicy* DocumentLoader::CreateCSP() {
     Vector<network::mojom::blink::ContentSecurityPolicyPtr>
         parsed_embedder_policies = ParseContentSecurityPolicies(
             header.header_value, header.type, header.source, Url());
-    initiator_state_token_ = base::UnguessableToken::Create();
+    initiator_state_token_ = InitiatorStateToken();
     policy_container_->AddContentSecurityPolicies(
         mojo::Clone(parsed_embedder_policies), initiator_state_token_);
     csp->AddPolicies(std::move(parsed_embedder_policies));

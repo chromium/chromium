@@ -1914,7 +1914,7 @@ class CONTENT_EXPORT NavigationRequest
   // Returns a token that will be used to retrieve the InitiatorNavigationState
   // of the document created by this navigation at commit time (if any). Note
   // that this does not identify the initiator of this navigation.
-  const base::UnguessableToken& initiator_state_token_to_commit() const {
+  const blink::InitiatorStateToken& initiator_state_token_to_commit() const {
     return initiator_state_token_to_commit_;
   }
 
@@ -2571,7 +2571,7 @@ class CONTENT_EXPORT NavigationRequest
   void DidChangeReferrerPolicy(
       network::mojom::ReferrerPolicy referrer_policy) final {}
   void DidUpdateInitiatorStateToken(
-      const base::UnguessableToken& new_initiator_state_token) final;
+      const blink::InitiatorStateToken& new_initiator_state_token) final;
 
   // CHECK that transitioning from the current state to |state| valid. This
   // does nothing in non-debug builds.
@@ -3856,7 +3856,7 @@ class CONTENT_EXPORT NavigationRequest
   // document created by this navigation at commit time (if any). Note that this
   // does not identify the initiator of this navigation. See
   // `initiator_navigation_state` for this.
-  base::UnguessableToken initiator_state_token_to_commit_;
+  blink::InitiatorStateToken initiator_state_token_to_commit_;
 
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 };

@@ -24,6 +24,15 @@ struct StructTraits<blink::mojom::DocumentTokenDataView, blink::DocumentToken>
                                            blink::DocumentToken> {};
 
 ////////////////////////////////////////////////////////////////////////////////
+// INITIATOR STATE TOKENS
+template <>
+struct StructTraits<blink::mojom::InitiatorStateTokenDataView,
+                    blink::InitiatorStateToken>
+    : public blink::TokenMojomTraitsHelper<
+          blink::mojom::InitiatorStateTokenDataView,
+          blink::InitiatorStateToken> {};
+
+////////////////////////////////////////////////////////////////////////////////
 // FRAME TOKENS
 
 template <>

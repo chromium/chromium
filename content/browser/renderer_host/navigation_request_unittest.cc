@@ -268,7 +268,7 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
         TestRenderFrameHost::CreateStubAssociatedInterfaceProviderReceiver(),
         blink::mojom::TreeScopeType::kDocument, std::string(), "uniqueName0",
         false, blink::LocalFrameToken(), base::UnguessableToken::Create(),
-        blink::DocumentToken(), base::UnguessableToken::Create(), frame_policy,
+        blink::DocumentToken(), blink::InitiatorStateToken(), frame_policy,
         blink::mojom::FrameOwnerProperties(), false, owner_type,
         /*is_dummy_frame_for_inner_tree=*/false);
   }
@@ -644,13 +644,13 @@ TEST_F(NavigationRequestTest, PolicyContainerInheritance) {
     static_cast<blink::mojom::PolicyContainerHost*>(
         child_frame->policy_container_host())
         ->SetReferrerPolicy(network::mojom::ReferrerPolicy::kAlways,
-                            base::UnguessableToken::Create());
+                            blink::InitiatorStateToken());
     navigation->SetInitiatorFrame(child_frame);
     navigation->Start();
     static_cast<blink::mojom::PolicyContainerHost*>(
         child_frame->policy_container_host())
         ->SetReferrerPolicy(network::mojom::ReferrerPolicy::kNever,
-                            base::UnguessableToken::Create());
+                            blink::InitiatorStateToken());
     navigation->Commit();
     EXPECT_EQ(
         test.expect_inherit ? network::mojom::ReferrerPolicy::kAlways
