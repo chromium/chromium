@@ -27,6 +27,9 @@
 
 namespace content {
 
+BASE_FEATURE(kPreconnectManagerDirectFastPath,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const bool kAllowCredentialsOnPreconnectByDefault = true;
 
 std::unique_ptr<PreconnectManager> PreconnectManager::Create(
@@ -230,6 +233,15 @@ void PreconnectManagerImpl::StartPreconnectUrl(
     return;
   }
   if (!url.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(kPreconnectManagerDirectFastPath)) {
+    PreconnectUrl(url.DeprecatedGetOriginAsURL(), /*num_sockets=*/1,
+                  allow_credentials, network_anonymization_key,
+                  traffic_annotation, storage_partition_config,
+                  network_restrictions_id, std::move(keepalive_config),
+                  std::move(connection_change_observer_client));
     return;
   }
 

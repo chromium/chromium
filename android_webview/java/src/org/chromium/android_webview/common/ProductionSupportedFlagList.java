@@ -64,9 +64,7 @@ public final class ProductionSupportedFlagList {
      * updating the "LoginCustomFlags" field in tools/metrics/histograms/enums.xml.
      */
     public static final Flag[] sFlagList = {
-        Flag.baseFeature(
-                "AwMetricsLogTrimming",
-                "Auto-generated flag for AwMetricsLogTrimming."),
+        Flag.baseFeature("AwMetricsLogTrimming", "Auto-generated flag for AwMetricsLogTrimming."),
         Flag.commandLine(
                 AwSwitches.HIGHLIGHT_ALL_WEBVIEWS,
                 "Highlight the contents (including web contents) of all WebViews with a yellow "
@@ -1389,6 +1387,11 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "EarlyCookieLoadOnPreconnect",
                 "When enabled, cookies are loaded early on preconnect requests."),
+        Flag.baseFeature(
+                "PreconnectManagerDirectFastPath",
+                "When enabled, PreconnectManager bypasses intermediate proxy and host lookups"
+                        + " for direct StartPreconnectUrl calls and immediately issues"
+                        + " NetworkContext::PreconnectSockets."),
         Flag.baseFeature(
                 "NoVarySearchCacheLoadOnSeparateTaskRunner",
                 "Enable loading the No Vary Search cache on a separate task runner."),
