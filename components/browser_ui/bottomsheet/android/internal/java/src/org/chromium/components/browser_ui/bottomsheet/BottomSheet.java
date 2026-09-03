@@ -816,6 +816,16 @@ class BottomSheet extends BottomSheetView
 
                         mSettleAnimator = null;
                         setInternalCurrentState(targetState, reason);
+                        if (isLargeFormFactorUiEnabled()
+                                && !mIsDestroyed
+                                && mCurrentState == targetState) {
+                            // Re-synchronize sheet offset after observers run in
+                            // setInternalCurrentState, ensuring any layout or measurement
+                            // adjustments made by observers (e.g. BottomSheetListViewBase or
+                            // EnhancedTargetDevicePickerView) are immediately reflected in
+                            // mCurrentOffsetPx and view translation.
+                            setSheetOffsetFromBottom(getSheetHeightForState(targetState), reason);
+                        }
                         mTargetState = SheetState.NONE;
                     }
                 });
@@ -1233,7 +1243,7 @@ class BottomSheet extends BottomSheetView
 
     /**
      * @return The current state of the bottom sheet. If the sheet is animating, this will be the
-     *         state the sheet is animating to.
+     *     state the sheet is animating to.
      */
     @SheetState
     int getSheetState() {
@@ -1746,7 +1756,8 @@ class BottomSheet extends BottomSheetView
             }
             mModel.set(BottomSheetProperties.CONTAINER_HEIGHT, targetHeight);
 
-            @Px int viewportBottomInset = getViewportBottomInset();
+            @Px
+            int viewportBottomInset = isLargeFormFactorUiEnabled() ? 0 : getViewportBottomInset();
             if (mBottomSheetContentContainer.getPaddingBottom() != viewportBottomInset) {
                 mBottomSheetContentContainer.setPadding(
                         mBottomSheetContentContainer.getPaddingLeft(),
