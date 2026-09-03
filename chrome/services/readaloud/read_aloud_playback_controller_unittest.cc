@@ -274,6 +274,24 @@ TEST_F(ReadAloudPlaybackControllerTest, SetTextContentNotifiesClientPaused) {
   mock_client_->WaitForStateChange(read_aloud::mojom::PlaybackState::kPaused);
 }
 
+TEST_F(ReadAloudPlaybackControllerTest, SetTextContentRoutesOnTextChunkedIPC) {
+  CreateSession();
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  auto seg = read_aloud::mojom::TextSegment::New();
+  seg->segment_index = 0;
+  seg->text = u"First sentence. Second sentence!";
+  segments.push_back(std::move(seg));
+
+  controller_remote_->SetTextContent(std::move(segments));
+  mock_client_->WaitForChunks();
+
+  ASSERT_TRUE(mock_client_->last_chunks().has_value());
+  const std::vector<std::u16string>& chunks =
+      mock_client_->last_chunks().value();
+  EXPECT_THAT(chunks,
+              testing::ElementsAre(u"First sentence.", u"Second sentence!"));
+}
+
 TEST_F(ReadAloudPlaybackControllerTest, SetTextContentNotMonotonicallyIncreasingReportsBadMessage) {
   CreateSession();
   std::vector<read_aloud::mojom::TextSegmentPtr> segments;

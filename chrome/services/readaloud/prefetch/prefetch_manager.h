@@ -55,6 +55,9 @@ class PrefetchManager {
       base::RepeatingCallback<void(uint32_t chunk_index,
                                    std::u16string_view text)>;
 
+  using OnTextChunkedCallback =
+      base::RepeatingCallback<void(const std::vector<std::u16string>& chunks)>;
+
   PrefetchManager();
   PrefetchManager(const PrefetchManager&) = delete;
   PrefetchManager& operator=(const PrefetchManager&) = delete;
@@ -62,6 +65,9 @@ class PrefetchManager {
 
   // Sets the callback invoked when a synthesis request is dispatched.
   void SetRequestSynthesisCallback(RequestSynthesisCallback callback);
+
+  // Sets the callback invoked when text content is chunked.
+  void SetOnTextChunkedCallback(OnTextChunkedCallback callback);
 
   // Document-bound lifecycle:
   // Sets new document text segments, uses ChunkText(..., GetChunkingMode()) to
@@ -151,6 +157,9 @@ class PrefetchManager {
 
   // Callback invoked when a prefetch request is dispatched.
   RequestSynthesisCallback request_synthesis_callback_;
+
+  // Callback invoked when text content is chunked.
+  OnTextChunkedCallback on_text_chunked_callback_;
 
   // Currently in-flight sentence chunk indices.
   std::set<uint32_t> inflight_requests_;

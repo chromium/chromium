@@ -62,6 +62,17 @@ void PrefetchManager::SetTextContent(
                      std::make_move_iterator(sentence_chunks.begin()),
                      std::make_move_iterator(sentence_chunks.end()));
   }
+
+  if (on_text_chunked_callback_) {
+    std::vector<std::u16string> string_chunks;
+    size_t num_chunks = std::min(timeline_.size(), readaloud::kMaxTextChunks);
+    string_chunks.reserve(num_chunks);
+    for (size_t i = 0; i < num_chunks; ++i) {
+      const TextChunk& chunk = timeline_[i];
+      string_chunks.emplace_back(chunk.text);
+    }
+    on_text_chunked_callback_.Run(string_chunks);
+  }
 }
 
 void PrefetchManager::ResetSession() {
@@ -80,6 +91,11 @@ void PrefetchManager::SetRequestSynthesisCallback(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   request_synthesis_callback_ = std::move(callback);
   MaybeIssueSynthesisRequest();
+}
+
+void PrefetchManager::SetOnTextChunkedCallback(OnTextChunkedCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  on_text_chunked_callback_ = std::move(callback);
 }
 
 void PrefetchManager::SchedulePrefetch(uint32_t chunk_index) {

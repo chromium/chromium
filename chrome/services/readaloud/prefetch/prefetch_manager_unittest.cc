@@ -99,6 +99,51 @@ TEST_F(PrefetchManagerTest, SetTextContentPopulatesTimelineAndClearsCache) {
   EXPECT_FALSE(manager.GetTimelineChunks().empty());
 }
 
+TEST_F(PrefetchManagerTest, SetTextContentFiresOnTextChunkedCallback) {
+  PrefetchManager manager;
+
+  std::vector<std::u16string> received_chunks;
+  int callback_count = 0;
+  manager.SetOnTextChunkedCallback(base::BindRepeating(
+      [](std::vector<std::u16string>* out_chunks, int* count,
+         const std::vector<std::u16string>& chunks) {
+        *out_chunks = chunks;
+        (*count)++;
+      },
+      base::Unretained(&received_chunks), base::Unretained(&callback_count)));
+
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  read_aloud::mojom::TextSegmentPtr seg = read_aloud::mojom::TextSegment::New();
+  seg->segment_index = 0;
+  seg->text = u"First sentence. Second sentence!";
+  segments.push_back(std::move(seg));
+
+  manager.SetTextContent(segments);
+
+  EXPECT_EQ(callback_count, 1);
+  EXPECT_THAT(received_chunks,
+              testing::ElementsAre(u"First sentence.", u"Second sentence!"));
+}
+
+TEST_F(PrefetchManagerTest,
+       SetTextContentEmptySegmentsFiresOnTextChunkedCallback) {
+  PrefetchManager manager;
+
+  std::vector<std::u16string> received_chunks;
+  int callback_count = 0;
+  manager.SetOnTextChunkedCallback(base::BindRepeating(
+      [](std::vector<std::u16string>* out_chunks, int* count,
+         const std::vector<std::u16string>& chunks) {
+        *out_chunks = chunks;
+        (*count)++;
+      },
+      base::Unretained(&received_chunks), base::Unretained(&callback_count)));
+
+  manager.SetTextContent({});
+  EXPECT_EQ(callback_count, 1);
+  EXPECT_TRUE(received_chunks.empty());
+}
+
 TEST_F(PrefetchManagerTest, ResetSessionClearsCacheAndTimeline) {
   PrefetchManager manager;
   std::vector<read_aloud::mojom::TextSegmentPtr> segments;

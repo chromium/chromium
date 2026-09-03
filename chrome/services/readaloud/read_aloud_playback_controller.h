@@ -92,6 +92,9 @@ class ReadAloudPlaybackController
   void OnPrefetchSynthesisRequest(uint32_t chunk_index,
                                   std::u16string_view text);
 
+  // Invoked by `prefetch_manager_` when text content is chunked.
+  void OnTextChunked(const std::vector<std::u16string>& chunks);
+
   // Callback for Mojo RequestSpeechSynthesis responses from the client.
   void OnSpeechSynthesisResponse(uint64_t sequence_id,
                                  uint32_t chunk_index,

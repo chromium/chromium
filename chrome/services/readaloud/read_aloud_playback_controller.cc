@@ -37,9 +37,6 @@ ReadAloudPlaybackController::ReadAloudPlaybackController(
   receiver_.set_disconnect_handler(
       base::BindOnce(&ReadAloudPlaybackController::OnReceiverDisconnected,
                      factory_weak_factory_.GetWeakPtr()));
-  prefetch_manager_.SetRequestSynthesisCallback(base::BindRepeating(
-      &ReadAloudPlaybackController::OnPrefetchSynthesisRequest,
-      factory_weak_factory_.GetWeakPtr()));
 }
 
 ReadAloudPlaybackController::~ReadAloudPlaybackController() {
@@ -68,6 +65,13 @@ void ReadAloudPlaybackController::CreateController(
   client_.set_disconnect_handler(
       base::BindOnce(&ReadAloudPlaybackController::OnClientDisconnected,
                      session_weak_factory_.GetWeakPtr()));
+
+  prefetch_manager_.SetRequestSynthesisCallback(base::BindRepeating(
+      &ReadAloudPlaybackController::OnPrefetchSynthesisRequest,
+      session_weak_factory_.GetWeakPtr()));
+  prefetch_manager_.SetOnTextChunkedCallback(
+      base::BindRepeating(&ReadAloudPlaybackController::OnTextChunked,
+                          session_weak_factory_.GetWeakPtr()));
 }
 
 void ReadAloudPlaybackController::InitializeAudio(
@@ -321,6 +325,14 @@ void ReadAloudPlaybackController::OnPrefetchSynthesisRequest(
       base::BindOnce(&ReadAloudPlaybackController::OnSpeechSynthesisResponse,
                      session_weak_factory_.GetWeakPtr(), sequence_id,
                      chunk_index));
+}
+
+void ReadAloudPlaybackController::OnTextChunked(
+    const std::vector<std::u16string>& chunks) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (client_.is_bound()) {
+    client_->OnTextChunked(chunks);
+  }
 }
 
 void ReadAloudPlaybackController::OnSpeechSynthesisResponse(
