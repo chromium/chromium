@@ -501,19 +501,51 @@ suite('OmniboxEverywhereOmniboxTest', () => {
     assertTrue(!!bottomControls);
     assertFalse(omnibox.hasAttribute('dropdown-is-visible'));
     assertEquals('flex', window.getComputedStyle(bottomControls).display);
+    assertTrue(!!omnibox.shadowRoot.querySelector('#voiceSearchButton'));
+    assertTrue(!!omnibox.shadowRoot.querySelector('#lensSearchButton'));
 
     omnibox.dropdownIsVisible = true;
     await microtasksFinished();
 
     assertTrue(omnibox.hasAttribute('dropdown-is-visible'));
     assertEquals('flex', window.getComputedStyle(bottomControls).display);
+    assertTrue(!!omnibox.shadowRoot.querySelector('#voiceSearchButton'));
+    assertTrue(!!omnibox.shadowRoot.querySelector('#lensSearchButton'));
 
     omnibox.dropdownIsVisible = false;
     await microtasksFinished();
 
     assertFalse(omnibox.hasAttribute('dropdown-is-visible'));
     assertEquals('flex', window.getComputedStyle(bottomControls).display);
+    assertTrue(!!omnibox.shadowRoot.querySelector('#voiceSearchButton'));
+    assertTrue(!!omnibox.shadowRoot.querySelector('#lensSearchButton'));
   });
+
+  test(
+      'voice search button hides with user input while lens button ' +
+          'remains visible',
+      async () => {
+        assertTrue(!!omnibox.shadowRoot.querySelector('#voiceSearchButton'));
+        assertTrue(!!omnibox.shadowRoot.querySelector('#lensSearchButton'));
+
+        omnibox.setInputText('hello world');
+        await microtasksFinished();
+
+        assertFalse(!!omnibox.shadowRoot.querySelector('#voiceSearchButton'));
+        assertTrue(!!omnibox.shadowRoot.querySelector('#lensSearchButton'));
+
+        omnibox.dropdownIsVisible = true;
+        await microtasksFinished();
+
+        assertFalse(!!omnibox.shadowRoot.querySelector('#voiceSearchButton'));
+        assertTrue(!!omnibox.shadowRoot.querySelector('#lensSearchButton'));
+
+        omnibox.setInputText('');
+        await microtasksFinished();
+
+        assertTrue(!!omnibox.shadowRoot.querySelector('#voiceSearchButton'));
+        assertTrue(!!omnibox.shadowRoot.querySelector('#lensSearchButton'));
+      });
 
   test('balanced layout and element clearances', () => {
     const inputWrapper =

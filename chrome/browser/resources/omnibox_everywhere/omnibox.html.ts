@@ -102,9 +102,7 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
         ` : ''}
         <div id="actionButtons">
           ${
-              this.showVoiceAndLensButtons_(
-                  this.searchboxVoiceSearchEnabled_) ?
-              html`
+              this.showVoiceSearchButton_() ? html`
           <div class="searchbox-icon-button-container voice">
             <button id="voiceSearchButton" class="searchbox-icon-button"
                 tabindex="${this.virtualFocusEnabled &&
@@ -115,10 +113,7 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
           </div>
           ` :
               ''}
-          ${this.isFuseboxEnabled &&
-              this.showVoiceAndLensButtons_(
-                  this.searchboxLensSearchEnabled_) ?
-              html`
+          ${this.showLensSearchButton_() ? html`
           <div class="searchbox-icon-button-container lens ${
               this.isScreenshotMenuOpen ? 'menu-open' : ''}">
             <button id="lensSearchButton" class="searchbox-icon-button"
