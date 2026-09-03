@@ -4398,6 +4398,24 @@ TEST_F(ShellSurfaceTest, SetSystemModal) {
   EXPECT_FALSE(shell_surface->frame_enabled());
 }
 
+TEST_F(ShellSurfaceTest, SetSystemModalNotAllowed) {
+  exo::test::TestSecurityDelegate security_delegate;
+  security_delegate.SetCanSetSystemModal(false);
+
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetUseSystemModalContainer()
+          .SetSecurityDelegate(&security_delegate)
+          .SetNoCommit()
+          .BuildShellSurface();
+
+  shell_surface->SetSystemModal(true);
+  shell_surface->root_surface()->Commit();
+
+  EXPECT_NE(ui::mojom::ModalType::kSystem, shell_surface->GetModalType());
+  EXPECT_FALSE(ash::Shell::IsSystemModalWindowOpen());
+}
+
 TEST_F(ShellSurfaceTest, PipInitialPosition) {
   std::unique_ptr<ShellSurface> shell_surface =
       test::ShellSurfaceBuilder({256, 256})

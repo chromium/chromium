@@ -11,6 +11,7 @@
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/exo/display.h"
+#include "components/exo/test/test_security_delegate.h"
 #include "components/exo/wayland/test/client_util.h"
 #include "components/exo/wayland/test/server_util.h"
 #include "components/exo/wayland/test/wayland_server_test.h"
@@ -154,6 +155,16 @@ class WaylandAuraShellServerTest : public test::WaylandServerTest {
   }
 
   raw_ptr<Display, DanglingUntriaged> display_;
+};
+
+class RestrictedAuraShellServerTest : public WaylandAuraShellServerTest {
+ public:
+  std::unique_ptr<Server> CreateServer() override {
+    auto security_delegate =
+        std::make_unique<::exo::test::TestSecurityDelegate>();
+    security_delegate->SetCanSetSystemModal(false);
+    return WaylandServerTest::CreateServer(std::move(security_delegate));
+  }
 };
 
 // Home screen -> any window
@@ -543,6 +554,54 @@ TEST_F(WaylandAuraShellServerTest, SetUnSetFloat) {
   EXPECT_TRUE(window_state->IsFloated());
   EXPECT_TRUE(
       gfx::Rect(0, 300, 400, 300).Contains(widget->GetWindowBoundsInScreen()));
+}
+
+TEST_F(WaylandAuraShellServerTest, SetSystemModalAllowed) {
+  auto keys = SetupClientSurfaces();
+
+  std::unique_ptr<zaura_toplevel> zaura_toplevel;
+  PostToClientAndWait([&](test::TestClient* client) {
+    auto* data = client->GetDataAs<ClientData>();
+    zaura_toplevel.reset(zaura_shell_get_aura_toplevel_for_xdg_toplevel(
+        client->globals().aura_shell.get(),
+        data->test_surfaces_list[0].xdg_toplevel.get()));
+    zaura_toplevel_set_system_modal(zaura_toplevel.get());
+    wl_display_flush(client->display());
+    wl_display_roundtrip(client->display());
+    EXPECT_EQ(0, wl_display_get_error(client->display()));
+  });
+
+  AttachBufferToSurfaces();
+
+  WaylandXdgSurface* xdg_surface =
+      test::server_util::GetUserDataForResource<WaylandXdgSurface>(
+          server_.get(), keys[0].shell_surface_key);
+  ASSERT_TRUE(xdg_surface);
+  EXPECT_TRUE(xdg_surface->shell_surface->GetWidget()->IsModal());
+}
+
+TEST_F(RestrictedAuraShellServerTest, SetSystemModalDenied) {
+  auto keys = SetupClientSurfaces();
+
+  std::unique_ptr<zaura_toplevel> zaura_toplevel;
+  PostToClientAndWait([&](test::TestClient* client) {
+    auto* data = client->GetDataAs<ClientData>();
+    zaura_toplevel.reset(zaura_shell_get_aura_toplevel_for_xdg_toplevel(
+        client->globals().aura_shell.get(),
+        data->test_surfaces_list[0].xdg_toplevel.get()));
+    zaura_toplevel_set_system_modal(zaura_toplevel.get());
+    wl_display_flush(client->display());
+    wl_display_roundtrip(client->display());
+    EXPECT_EQ(0, wl_display_get_error(client->display()));
+  });
+
+  AttachBufferToSurfaces();
+
+  WaylandXdgSurface* xdg_surface =
+      test::server_util::GetUserDataForResource<WaylandXdgSurface>(
+          server_.get(), keys[0].shell_surface_key);
+  ASSERT_TRUE(xdg_surface);
+  EXPECT_FALSE(xdg_surface->shell_surface->GetWidget()->IsModal());
 }
 
 class WaylandAuraOutputServerTest : public test::WaylandServerTest {
