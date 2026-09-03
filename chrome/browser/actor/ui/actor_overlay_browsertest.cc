@@ -761,8 +761,16 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayMagicCursorTest,
   EXPECT_FALSE(has_class);
 }
 
+// TODO(crbug.com/544197164): Re-enable when no longer flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_OverlayWebViewIsTransparentAfterNavigation \
+  DISABLED_OverlayWebViewIsTransparentAfterNavigation
+#else
+#define MAYBE_OverlayWebViewIsTransparentAfterNavigation \
+  OverlayWebViewIsTransparentAfterNavigation
+#endif
 IN_PROC_BROWSER_TEST_F(ActorOverlayTest,
-                       OverlayWebViewIsTransparentAfterNavigation) {
+                       MAYBE_OverlayWebViewIsTransparentAfterNavigation) {
   Profile* const profile = browser()->GetProfile();
   ActorUiStateManagerInterface* state_manager =
       ActorKeyedService::Get(profile)->GetActorUiStateManager();
