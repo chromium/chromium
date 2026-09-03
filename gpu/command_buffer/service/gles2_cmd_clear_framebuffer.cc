@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/service/gles2_cmd_clear_framebuffer.h"
 
+#include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/shader_manager.h"
@@ -166,6 +167,11 @@ void ClearFramebufferResourceManager::ClearFramebuffer(
   glDisable(GL_CULL_FACE);
   glDisable(GL_BLEND);
   glDisable(GL_POLYGON_OFFSET_FILL);
+  glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE);
+  glDisable(GL_SAMPLE_COVERAGE);
+  if (decoder->GetFeatureInfo()->IsES3Capable()) {
+    glDisable(GL_RASTERIZER_DISCARD);
+  }
 
   glViewport(0, 0, max_viewport_size.width(), max_viewport_size.height());
   glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
