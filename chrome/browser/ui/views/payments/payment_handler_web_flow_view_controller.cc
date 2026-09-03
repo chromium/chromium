@@ -20,25 +20,15 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
-#include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/views/location_bar/location_icon_view.h"
-#include "chrome/browser/ui/views/page_info/page_info_bubble_specification.h"
-#include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/payments/payment_handler_header_view_util.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
-#include "chrome/grit/generated_resources.h"
-#include "components/omnibox/browser/location_bar_model_impl.h"
-#include "components/omnibox/browser/vector_icons.h"
 #include "components/payments/content/payment_handler_navigation_throttle.h"
 #include "components/payments/content/ssl_validity_checker.h"
 #include "components/payments/core/features.h"
 #include "components/payments/core/native_error_strings.h"
 #include "components/payments/core/url_util.h"
 #include "components/permissions/permission_request_manager.h"
-#include "components/security_state/core/security_state.h"
-#include "components/tabs/public/tab_interface.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/navigation_controller.h"
@@ -48,18 +38,13 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "content/public/common/content_constants.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/base/models/image_model.h"
 #include "ui/base/window_open_disposition.h"
-#include "ui/color/color_provider.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
-#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
@@ -69,10 +54,6 @@
 #include "url/url_constants.h"
 
 namespace payments {
-
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PaymentHandlerWebFlowViewController,
-                                      kAppIconElementId);
-
 namespace {
 
 // WebContentsUserData key for retrieving PaymentHandlerWebFlowViewController
@@ -170,9 +151,6 @@ PaymentHandlerWebFlowViewController::PaymentHandlerWebFlowViewController(
     : PaymentRequestSheetController(spec, state, dialog),
       profile_(profile),
       target_(target),
-      location_bar_model_(
-          std::make_unique<LocationBarModelImpl>(this,
-                                                 content::kMaxURLDisplayChars)),
       first_navigation_complete_callback_(
           std::move(first_navigation_complete_callback)),
       dialog_manager_delegate_(payment_request_web_contents) {}
@@ -203,8 +181,8 @@ PaymentHandlerWebFlowViewController::FromWebContents(
   return wrapper ? wrapper->controller() : nullptr;
 }
 
-views::View* PaymentHandlerWebFlowViewController::GetPageInfoIconView() {
-  return location_icon_view();
+views::View* PaymentHandlerWebFlowViewController::GetLocationIconView() {
+  return nullptr;
 }
 
 std::u16string PaymentHandlerWebFlowViewController::GetSheetTitle() {
@@ -322,17 +300,8 @@ void PaymentHandlerWebFlowViewController::PopulateSheetHeaderView(
           : url::Origin::Create(target_),
       url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
 
-  std::unique_ptr<views::View> icon_view;
-  if (base::FeatureList::IsEnabled(features::kPaymentHandlerCameraAccessUx)) {
-    auto location_icon = CreatePaymentHandlerLocationIconView(
-        /*icon_label_bubble_delegate=*/this,
-        /*location_icon_delegate=*/this);
-    location_icon_view_tracker_.SetView(location_icon.get());
-    icon_view = std::move(location_icon);
-  }
-
   PaymentHandlerHeaderViews header_views = PopulatePaymentHandlerHeaderView(
-      container, std::move(icon_view), icon_bitmap, origin_text,
+      container, icon_bitmap, origin_text,
       base::BindRepeating(&PaymentRequestSheetController::CloseButtonPressed,
                           GetWeakPtr()));
   origin_label_ = header_views.origin_label;
@@ -374,26 +343,7 @@ void PaymentHandlerWebFlowViewController::VisibleSecurityStateChanged(
     AbortPayment();
   } else {
     SetHeaderColorsAndOriginLabelText();
-    if (location_icon_view()) {
-      location_icon_view()->Update(/*suppress_animations=*/false);
-    }
   }
-}
-
-content::WebContents* PaymentHandlerWebFlowViewController::OpenURLFromTab(
-    content::WebContents* source,
-    const content::OpenURLParams& params,
-    base::OnceCallback<void(content::NavigationHandle&)> callback) {
-  // Reject CURRENT_TAB to maintain existing behavior for internal navigations.
-  // OpenURLFromTab is implemented so that external links (e.g. PageInfo "Learn
-  // more") are routed to the parent tab.
-  if (params.disposition == WindowOpenDisposition::CURRENT_TAB) {
-    return nullptr;
-  }
-  if (!state() || !state()->GetWebContents()) {
-    return nullptr;
-  }
-  return state()->GetWebContents()->OpenURL(params, std::move(callback));
 }
 
 content::WebContents* PaymentHandlerWebFlowViewController::AddNewContents(
@@ -512,9 +462,6 @@ void PaymentHandlerWebFlowViewController::DidFinishNavigation(
   }
 
   SetHeaderColorsAndOriginLabelText();
-  if (location_icon_view()) {
-    location_icon_view()->Update(/*suppress_animations=*/false);
-  }
 }
 
 void PaymentHandlerWebFlowViewController::LoadProgressChanged(double progress) {
@@ -578,94 +525,6 @@ void PaymentHandlerWebFlowViewController::DidChangeThemeColor() {
       dialog()->OnPaymentHandlerThemeColorSet();
     }
   }
-}
-
-content::WebContents*
-PaymentHandlerWebFlowViewController::GetActiveWebContents() const {
-  return web_contents();
-}
-
-SkColor PaymentHandlerWebFlowViewController::
-    GetIconLabelBubbleSurroundingForegroundColor() const {
-  // TODO(crbug.com/549701781): The payment dialog header supports custom HTML
-  // head theme colors, while this icon view currently ignores them in favor of
-  // default Chrome theme colors.
-  return header_view()->GetColorProvider()->GetColor(kColorOmniboxText);
-}
-
-SkColor PaymentHandlerWebFlowViewController::GetIconLabelBubbleBackgroundColor()
-    const {
-  // TODO(crbug.com/549701781): The payment dialog header supports custom HTML
-  // head theme colors, while this icon view currently ignores them in favor of
-  // default Chrome theme colors.
-  return header_view()->GetColorProvider()->GetColor(
-      ui::kColorDialogBackground);
-}
-
-content::WebContents* PaymentHandlerWebFlowViewController::GetWebContents() {
-  return web_contents();
-}
-
-bool PaymentHandlerWebFlowViewController::IsEditingOrEmpty() const {
-  return false;
-}
-
-SkColor PaymentHandlerWebFlowViewController::GetSecurityChipColor(
-    security_state::SecurityLevel security_level) const {
-  ui::ColorId id = kColorOmniboxText;
-  if (security_level == security_state::DANGEROUS) {
-    id = kColorOmniboxSecurityChipDangerous;
-  }
-  return header_view()->GetColorProvider()->GetColor(id);
-}
-
-LocationIconView* PaymentHandlerWebFlowViewController::location_icon_view() {
-  return views::AsViewClass<LocationIconView>(
-      location_icon_view_tracker_.view());
-}
-
-bool PaymentHandlerWebFlowViewController::ShowPageInfoDialog() {
-  content::WebContents* contents = GetWebContents();
-  if (!contents) {
-    return false;
-  }
-  LocationIconView* const icon_view = location_icon_view();
-  CHECK(icon_view);
-
-  content::WebContents* parent_tab_contents = state()->GetWebContents();
-  std::unique_ptr<PageInfoBubbleSpecification> specification =
-      PageInfoBubbleSpecification::Builder(
-          views::BubbleAnchor(icon_view),
-          dialog()->GetWidget()->GetNativeWindow(), contents,
-          contents->GetLastCommittedURL())
-          .AddGetBrowserCallback(base::BindRepeating(
-              [](content::WebContents* parent_contents,
-                 content::WebContents*) -> BrowserWindowInterface* {
-                return tabs::TabInterface::GetFromContents(parent_contents)
-                    ->GetBrowserWindowInterface();
-              },
-              parent_tab_contents))
-          .HideExtendedSiteInfo()
-          .Build();
-
-  views::BubbleDialogDelegateView* const bubble =
-      PageInfoBubbleView::CreatePageInfoBubble(std::move(specification));
-  bubble->SetHighlightedElement(kAppIconElementId);
-  bubble->GetWidget()->Show();
-  return true;
-}
-
-const LocationBarModel*
-PaymentHandlerWebFlowViewController::GetLocationBarModel() const {
-  return location_bar_model_.get();
-}
-
-ui::ImageModel PaymentHandlerWebFlowViewController::GetLocationIcon(
-    LocationIconView::Delegate::IconFetchedCallback on_icon_fetched) {
-  return ui::ImageModel::FromVectorIcon(
-      location_bar_model_->GetVectorIcon(),
-      GetSecurityChipColor(location_bar_model_->GetSecurityLevel()),
-      GetLayoutConstant(LayoutConstant::kLocationBarIconSize));
 }
 
 void PaymentHandlerWebFlowViewController::DidGetUserInteraction(

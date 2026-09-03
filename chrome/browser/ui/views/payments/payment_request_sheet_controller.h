@@ -200,7 +200,6 @@ class PaymentRequestSheetController {
 
  protected:
   views::View* header_view() { return header_view_; }
-  const views::View* header_view() const { return header_view_; }
 
  private:
   // Add the primary/secondary buttons to |container|.

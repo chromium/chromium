@@ -6,9 +6,7 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/payments/core/features.h"
 #include "components/payments/core/sizes.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
@@ -74,13 +72,8 @@ PaymentAppLoadingView::PaymentAppLoadingView(
           url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
 
   header_view_ = AddChildView(std::make_unique<views::View>());
-  std::unique_ptr<views::View> icon_view;
-  if (base::FeatureList::IsEnabled(features::kPaymentHandlerCameraAccessUx)) {
-    icon_view = CreatePaymentHandlerLoadingIconView();
-  }
   PaymentHandlerHeaderViews header_views = PopulatePaymentHandlerHeaderView(
-      header_view_, std::move(icon_view), icon, formatted_app_origin,
-      std::move(close_callback));
+      header_view_, icon, formatted_app_origin, std::move(close_callback));
   origin_label_ = header_views.origin_label.get();
   origin_label_->SetText(formatted_app_origin);
   // We only need one accessibility name on loading view for screen reader to
