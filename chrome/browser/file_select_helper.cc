@@ -680,6 +680,29 @@ void FileSelectHelper::RunFileChooserOnUIThread(
   if (AbortIfWebContentsDestroyed())
     return;
 
+  // RunFileChooser() hops to the thread pool and back before reaching this
+  // point, so the run may already have been ended in the meantime - for
+  // example by OnTabDeactivated() when the user switched tabs.
+  // RunFileChooserEnd() clears `web_contents_`.
+  if (!web_contents_) {
+    return;
+  }
+
+#if !BUILDFLAG(IS_ANDROID)
+  // The dialog is parented to the browser window rather than to the tab, so
+  // showing it for a tab that is not the active tab would put it on top of
+  // whichever page the user is actually looking at. That is reachable both
+  // when the request came from a background tab and when the user switched
+  // tabs during the asynchronous work above. Cancel the request instead; the
+  // page sees this as a `cancel` event on the input.
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents_);
+  if (tab && !tab->IsActivated()) {
+    RunFileChooserEnd();
+    return;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   select_file_dialog_ = ui::SelectFileDialog::Create(
       this, std::make_unique<ChromeSelectFilePolicy>(web_contents_));
   if (!select_file_dialog_)

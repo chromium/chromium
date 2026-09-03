@@ -11,6 +11,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_utils.h"
 #include "ui/shell_dialogs/fake_select_file_dialog.h"
 
 class FileSelectHelperBrowserTest : public InProcessBrowserTest {
@@ -25,6 +26,44 @@ class FileSelectHelperBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::TearDownOnMainThread();
   }
 };
+
+// A file chooser requested by a tab that is not the active tab must not be
+// shown. The dialog is parented to the browser window rather than to the tab,
+// so showing it would place it on top of whichever page the user is actually
+// looking at.
+IN_PROC_BROWSER_TEST_F(FileSelectHelperBrowserTest, NoDialogForBackgroundTab) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/file_input.html")));
+  content::WebContents* background_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Open a second tab in the foreground, so the page above is no longer the
+  // active tab.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), embedded_test_server()->GetURL("/title1.html"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  ASSERT_NE(background_contents,
+            browser()->tab_strip_model()->GetActiveWebContents());
+
+  ui::FakeSelectFileDialog::Factory* factory =
+      ui::FakeSelectFileDialog::RegisterFactory();
+  bool dialog_opened = false;
+  factory->SetOpenCallback(base::BindRepeating(
+      [](bool* opened) { *opened = true; }, &dialog_opened));
+
+  // Request a file chooser from the background tab. ExecJs supplies a user
+  // gesture, so this reaches the browser exactly as a real request would.
+  EXPECT_TRUE(ExecJs(background_contents,
+                     "document.getElementById('fileinput').click();"));
+
+  // Flush the thread pool hop that RunFileChooser() posts, plus the reply back
+  // to the UI thread, so that the dialog would have been shown by now.
+  content::RunAllTasksUntilIdle();
+
+  EXPECT_FALSE(dialog_opened);
+  EXPECT_FALSE(factory->GetLastDialog());
+}
 
 // Verifies that subsequent file picker dialogs can be opened. This was added
 // to prevent regressions like https://crrev.com/c/7810279, where
