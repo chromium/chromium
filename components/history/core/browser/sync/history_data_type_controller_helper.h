@@ -24,9 +24,17 @@ namespace history {
 // DataTypeControllers using this helper must call its GetPreconditionState().
 class HistoryDataTypeControllerHelper {
  public:
-  HistoryDataTypeControllerHelper(syncer::DataType data_type,
-                                  syncer::SyncService* sync_service,
-                                  PrefService* pref_service);
+  // Policy for handling account managed status in GetPreconditionState().
+  enum class AccountManagedStatusPolicy {
+    kAllowAll,
+    kDisallowEnterprise,
+  };
+
+  HistoryDataTypeControllerHelper(
+      syncer::DataType data_type,
+      syncer::SyncService* sync_service,
+      PrefService* pref_service,
+      AccountManagedStatusPolicy account_managed_status_policy);
 
   HistoryDataTypeControllerHelper(const HistoryDataTypeControllerHelper&) =
       delete;
@@ -47,6 +55,7 @@ class HistoryDataTypeControllerHelper {
   const syncer::DataType data_type_;
   const raw_ptr<syncer::SyncService> sync_service_;
   const raw_ptr<PrefService> pref_service_;
+  const AccountManagedStatusPolicy account_managed_status_policy_;
 
   PrefChangeRegistrar pref_registrar_;
 };

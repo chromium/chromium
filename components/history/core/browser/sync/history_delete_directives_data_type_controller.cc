@@ -52,7 +52,11 @@ HistoryDeleteDirectivesDataTypeController::
           GetSyncableServiceFromHistoryService(history_service),
           dump_stack,
           GetDelegateMode()),
-      helper_(syncer::HISTORY_DELETE_DIRECTIVES, sync_service, pref_service) {}
+      helper_(syncer::HISTORY_DELETE_DIRECTIVES,
+              sync_service,
+              pref_service,
+              HistoryDataTypeControllerHelper::AccountManagedStatusPolicy::
+                  kAllowAll) {}
 
 HistoryDeleteDirectivesDataTypeController::
     ~HistoryDeleteDirectivesDataTypeController() = default;

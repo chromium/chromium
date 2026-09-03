@@ -18,7 +18,11 @@ SessionDataTypeController::SessionDataTypeController(
     : DataTypeController(syncer::SESSIONS,
                          std::move(delegate_for_full_sync_mode),
                          std::move(delegate_for_transport_mode)),
-      helper_(syncer::SESSIONS, sync_service, pref_service) {}
+      helper_(syncer::SESSIONS,
+              sync_service,
+              pref_service,
+              history::HistoryDataTypeControllerHelper::
+                  AccountManagedStatusPolicy::kAllowAll) {}
 
 SessionDataTypeController::~SessionDataTypeController() = default;
 
