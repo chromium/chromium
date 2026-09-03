@@ -36,6 +36,8 @@ BASE_DECLARE_FEATURE_PARAM(int, kMockPersonalContextResultTypeParam);
 // expect future changes to the notices anymore, clean up this debug feature.
 BASE_DECLARE_FEATURE(kPersonalContextResetNoticePrefsOnStartup);
 
+BASE_DECLARE_FEATURE(kAutofillAmbientAutofillSkipEligibilityChecks);
+
 }  // namespace personal_context::features::debug
 
 #endif  // COMPONENTS_PERSONAL_CONTEXT_CORE_PERSONAL_CONTEXT_DEBUG_FEATURES_H_

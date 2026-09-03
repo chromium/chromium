@@ -34,11 +34,6 @@ BASE_FEATURE(kAutofillAiDisableReauthRequirement,
 // default. Used for development purposes.
 BASE_FEATURE(kAutofillAiForceOptIn, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, all ambient autofill eligibility checks will be overridden and
-// return true. Used for development purposes.
-BASE_FEATURE(kAutofillAmbientAutofillSkipEligibilityChecks,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Testing tool that collects metrics during a run of the captured site tests
 // and dumps the collected metrics into a specified output directory.
 // For each test, a file named {test-name}.txt is created. It contains all the

@@ -182,6 +182,11 @@ SatisfiesPrefsRequirements(const PrefService* pref_service,
 SatisfiesMiscellaneousRequirements(GeoIpCountryCode country_code,
                                    std::string_view locale,
                                    std::string* debug_message = nullptr) {
+  if (base::FeatureList::IsEnabled(
+          features::debug::kAutofillAmbientAutofillSkipEligibilityChecks)) {
+    return std::pair{true, std::nullopt};
+  }
+
   if (country_code != GeoIpCountryCode("US")) {
     MaybeOutputReason(debug_message, "Unsupported GeoIp.");
     return std::pair{false, PersonalContextNonEligibilityReason::kNotGeoIpUS};

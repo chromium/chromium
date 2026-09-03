@@ -35,4 +35,9 @@ BASE_FEATURE_PARAM(int,
 BASE_FEATURE(kPersonalContextResetNoticePrefsOnStartup,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, all ambient autofill eligibility checks will be overridden and
+// return true. Used for development purposes.
+BASE_FEATURE(kAutofillAmbientAutofillSkipEligibilityChecks,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace personal_context::features::debug
