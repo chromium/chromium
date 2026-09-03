@@ -716,6 +716,7 @@ public class LocationBarMediatorUnitTest {
 
         assertEquals(input.getUserText(), input.getInitialUserText());
         assertEquals(mUrlBarDataCaptor.getValue().displayText, input.getInitialUserText());
+        assertEquals(DisplayState.DRAFTING, input.getDisplayState());
     }
 
     @Test
@@ -1562,6 +1563,7 @@ public class LocationBarMediatorUnitTest {
         assertTrue(mMediator.handleEscPress());
         assertEquals(AutocompleteRequestType.SEARCH, input.getRequestType());
         assertEquals(input.getInitialUserText(), input.getUserText());
+        assertEquals(DisplayState.DRAFTING, input.getDisplayState());
     }
 
     @Test
@@ -5420,5 +5422,16 @@ public class LocationBarMediatorUnitTest {
                 .onLayoutChange(mLocationBarLayout, 0, 0, 200, 50, 0, 0, 300, 50);
 
         verify(mLocationBarLayout).setActivationChipCompact(true);
+    }
+
+    @Test
+    public void testHandleEscPress_suggestionsDisplayState_transitionsToDrafting() {
+        mSessionState.getAutocompleteInput().setDisplayState(DisplayState.SUGGESTIONS);
+        mSessionState.getAutocompleteInput().setRequestType(AutocompleteRequestType.SEARCH);
+        mMediator.beginInput(mSessionState.getAutocompleteInput());
+
+        assertTrue(mMediator.handleEscPress());
+        assertEquals(DisplayState.DRAFTING, mSessionState.getAutocompleteInput().getDisplayState());
+        assertAutocompleteState(AutocompleteState.STANDBY);
     }
 }
