@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.print.PrintAttributes;
 import android.print.PrintDocumentAdapter;
 import android.print.PrintManager;
@@ -37,7 +36,6 @@ import androidx.webkit.WebViewFeature;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
-import org.chromium.base.StrictModeContext;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -113,7 +111,6 @@ public class WebViewBrowserActivity extends AppCompatActivity {
                         getSupportFragmentManager().findFragmentById(R.id.container);
         assert mFragment != null;
         mFragment.setActivityResultRegistry(getActivityResultRegistry());
-        enableStrictMode();
     }
 
     protected void onWebViewCreated(WebView webView) {
@@ -270,16 +267,14 @@ public class WebViewBrowserActivity extends AppCompatActivity {
                                     .setTracingMode(TracingConfig.RECORD_CONTINUOUSLY)
                                     .build());
                 } else {
-                    try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
-                        String outFileName = getFilesDir() + "/webview_tracing.json";
-                        try {
-                            mIsStoppingTracing = true;
-                            tracingController.stop(
-                                    new TracingLogger(outFileName, this),
-                                    Executors.newSingleThreadExecutor());
-                        } catch (FileNotFoundException e) {
-                            throw new RuntimeException(e);
-                        }
+                    String outFileName = getFilesDir() + "/webview_tracing.json";
+                    try {
+                        mIsStoppingTracing = true;
+                        tracingController.stop(
+                                new TracingLogger(outFileName, this),
+                                Executors.newSingleThreadExecutor());
+                    } catch (FileNotFoundException e) {
+                        throw new RuntimeException(e);
                     }
                 }
             }
@@ -468,46 +463,6 @@ public class WebViewBrowserActivity extends AppCompatActivity {
             Toast.makeText(this, "No DevTools in " + currentWebViewPackageName, Toast.LENGTH_LONG)
                     .show();
         }
-    }
-
-    /**
-     * Enables StrictMode to catch as much as reasonable. This selectively disables some StrictMode
-     * policies for some devices, as some manufacturers modify the Android framework in such a way
-     * as to unavoidably violate StrictMode (ex. the platform code which opens the 3-dots menu is
-     * not controlled by WebView or by WebView shell browser).
-     */
-    private static void enableStrictMode() {
-        StrictMode.ThreadPolicy.Builder threadPolicyBuilder =
-                new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().penaltyDeath();
-
-        // See https://crbug.com/1090841#c76
-        // See https://crbug.com/439646941
-        // See https://crbug.com/439646941
-        threadPolicyBuilder.permitDiskReads();
-        threadPolicyBuilder.permitDiskWrites();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            threadPolicyBuilder.permitUnbufferedIo();
-        }
-
-        StrictMode.setThreadPolicy(threadPolicyBuilder.build());
-
-        // Omissions:
-        // * detectCleartextNetwork() to permit testing http:// URLs
-        // * detectFileUriExposure() to permit testing file:// URLs
-        // * detectLeakedClosableObjects() because of drag and drop (https://crbug.com/1090841#c40)
-        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            // WebViewBrowserActivity will have two instances when switching night mode back and
-            // forth for the 3rd times. Don't know the reason, this probably needs the investigation
-            // to rule out WebView holding the instance. (crbug.com/1348615)
-            builder = builder.detectActivityLeaks();
-        }
-        StrictMode.setVmPolicy(
-                builder.detectLeakedRegistrationObjects()
-                        .detectLeakedSqlLiteObjects()
-                        .penaltyLog()
-                        .penaltyDeath()
-                        .build());
     }
 
     private class TracingLogger extends FileOutputStream {

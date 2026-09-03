@@ -60,7 +60,6 @@ import androidx.webkit.WebViewFeature;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.net.ChromiumNetworkAdapter;
 import org.chromium.net.NetworkTrafficAnnotationTag;
@@ -733,10 +732,7 @@ public class WebViewBrowserFragment extends Fragment {
     @SuppressWarnings("deprecation")
     // This is public and static so it can be reused between activities for consistent settings.
     public static void initializeSettings(WebSettings settings, Context context) {
-        File geolocation = null;
-        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
-            geolocation = context.getDir("geolocation", 0);
-        }
+        File geolocation = context.getDir("geolocation", 0);
 
         settings.setJavaScriptEnabled(true);
 
