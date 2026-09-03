@@ -199,7 +199,8 @@ TEST_P(AntiVirusMetricsProviderTest, CallAsyncInitAfterCacheIsPopulated) {
   histogram_tester_.ExpectTotalCount("UMA.AntiVirusMetricsProvider.Latency", 1);
 }
 
-TEST_P(AntiVirusMetricsProviderTest, CallAsyncInitConcurrently) {
+// TODO(crbug.com/553292299): Re-enable when no longer flaky on Windows.
+TEST_P(AntiVirusMetricsProviderTest, DISABLED_CallAsyncInitConcurrently) {
   base::ScopedAllowBlockingForTesting scoped_allow_blocking;
   base::win::ScopedCOMInitializer com_initializer;
 
