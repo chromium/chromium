@@ -405,14 +405,6 @@ bool ParseConstraint(
     return true;
   }
 
-  if (base::FeatureList::IsEnabled(
-          on_device_model::features::kOnDeviceModelSpeculativeDecoding)) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotSupportedError,
-        kExceptionMessageSpeculativeDecodingConstraintConflict);
-    return false;
-  }
-
   if (!RuntimeEnabledFeatures::AIPromptAPIStructuredOutputEnabled(
           ExecutionContext::From(script_state))) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
