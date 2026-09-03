@@ -21,6 +21,7 @@ include_rules = [
   "+chrome/browser/ash/smb_client",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/extensions/api/terminal",
+  "+chrome/browser/global_features.h",
   "+chrome/browser/icon_transcoder",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/system_web_apps",

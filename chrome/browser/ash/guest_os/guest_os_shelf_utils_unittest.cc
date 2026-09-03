@@ -13,6 +13,8 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
+#include "chrome/browser/global_features.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -95,7 +97,10 @@ class GuestOsShelfUtilsTest : public testing::Test {
       if (in_app.no_display)
         out_app.set_no_display(*in_app.no_display);
     }
-    guest_os::GuestOsRegistryService service(&testing_profile_);
+    guest_os::GuestOsRegistryService service(TestingBrowserProcess::GetGlobal()
+                                                 ->GetFeatures()
+                                                 ->application_locale_storage(),
+                                             &testing_profile_);
     for (AppLists::value_type& value : app_lists) {
       service.UpdateApplicationList(std::move(value.second));
     }

@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/values.h"
@@ -28,8 +29,9 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/resource/resource_scale_factor.h"
 
-class Profile;
+class ApplicationLocaleStorage;
 class PrefService;
+class Profile;
 
 namespace base {
 class Clock;
@@ -83,7 +85,7 @@ class GuestOsRegistryService : public KeyedService {
  public:
   class Registration {
    public:
-    Registration(std::string app_id, base::Value pref);
+    Registration(std::string app_locale, std::string app_id, base::Value pref);
     Registration(Registration&& registration) = default;
     Registration& operator=(Registration&& registration) = default;
 
@@ -98,11 +100,15 @@ class GuestOsRegistryService : public KeyedService {
     std::string VmName() const;
     std::string ContainerName() const;
 
+    // Returns the localized name based on the process-wide locale at the time
+    // of construction.
     std::string Name() const;
     std::string Exec() const;
     std::string ExecutableFileName() const;
     std::set<std::string> Extensions() const;
     std::set<std::string> MimeTypes() const;
+    // Returns the localized keywords based on the process-wide locale at the
+    // time of construction.
     std::set<std::string> Keywords() const;
     bool NoDisplay() const;
     bool Terminal() const;
@@ -127,6 +133,7 @@ class GuestOsRegistryService : public KeyedService {
     std::string GetLocalizedString(std::string_view key) const;
     std::set<std::string> GetLocalizedList(std::string_view key) const;
 
+    std::string app_locale_;
     std::string app_id_;
     base::Value pref_;
   };
@@ -153,7 +160,11 @@ class GuestOsRegistryService : public KeyedService {
     virtual ~Observer() = default;
   };
 
-  explicit GuestOsRegistryService(Profile* profile);
+  // `application_locale_storage` and `profile` must be non-null and must
+  // outlive `this`.
+  GuestOsRegistryService(
+      const ApplicationLocaleStorage* application_locale_storage,
+      Profile* profile);
 
   GuestOsRegistryService(const GuestOsRegistryService&) = delete;
   GuestOsRegistryService& operator=(const GuestOsRegistryService&) = delete;
@@ -305,6 +316,8 @@ class GuestOsRegistryService : public KeyedService {
                            ui::ResourceScaleFactor scale_factor,
                            std::string svg_icon_content,
                            std::string png_icon_content);
+
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
 
   // Owned by the Profile.
   const raw_ptr<Profile, DanglingUntriaged> profile_;

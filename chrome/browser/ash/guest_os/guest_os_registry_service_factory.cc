@@ -6,6 +6,8 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
@@ -40,7 +42,10 @@ std::unique_ptr<KeyedService>
 GuestOsRegistryServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return std::make_unique<GuestOsRegistryService>(profile);
+  // NOTE: Allow g_browser_process here as this class is initialized lazily with
+  // base::NoDestructor.
+  return std::make_unique<GuestOsRegistryService>(
+      g_browser_process->GetFeatures()->application_locale_storage(), profile);
 }
 
 }  // namespace guest_os

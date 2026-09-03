@@ -13,9 +13,11 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
-#include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/vm_applications/apps.pb.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -38,9 +40,16 @@ class GuestOsRegistryServiceTest : public testing::Test {
       delete;
 
  protected:
+  ApplicationLocaleStorage* application_locale_storage() {
+    return TestingBrowserProcess::GetGlobal()
+        ->GetFeatures()
+        ->application_locale_storage();
+  }
+
   void RecreateService() {
     service_.reset(nullptr);
-    service_ = std::make_unique<GuestOsRegistryService>(&profile_);
+    service_ = std::make_unique<GuestOsRegistryService>(
+        application_locale_storage(), &profile_);
     service_->SetClockForTesting(&test_clock_);
   }
 
@@ -412,16 +421,14 @@ TEST_F(GuestOsRegistryServiceTest, SetAndGetRegistrationKeywords) {
   }
   service()->UpdateApplicationList(app_list);
 
-  std::optional<GuestOsRegistryService::Registration> result =
-      service()->GetRegistration(app_id);
-  g_browser_process->SetApplicationLocale("");
-  EXPECT_EQ(result->Keywords(), keywords[""]);
-  g_browser_process->SetApplicationLocale("fr");
-  EXPECT_EQ(result->Keywords(), keywords["fr"]);
-  g_browser_process->SetApplicationLocale("ge");
-  EXPECT_EQ(result->Keywords(), keywords["ge"]);
-  g_browser_process->SetApplicationLocale("te");
-  EXPECT_EQ(result->Keywords(), keywords["te"]);
+  application_locale_storage()->Set("");
+  EXPECT_EQ(service()->GetRegistration(app_id)->Keywords(), keywords[""]);
+  application_locale_storage()->Set("fr");
+  EXPECT_EQ(service()->GetRegistration(app_id)->Keywords(), keywords["fr"]);
+  application_locale_storage()->Set("ge");
+  EXPECT_EQ(service()->GetRegistration(app_id)->Keywords(), keywords["ge"]);
+  application_locale_storage()->Set("te");
+  EXPECT_EQ(service()->GetRegistration(app_id)->Keywords(), keywords["te"]);
 }
 
 TEST_F(GuestOsRegistryServiceTest, SetAndGetRegistrationExec) {

@@ -259,8 +259,8 @@ guest_os::GuestOsRegistryService::Registration CreateRegistration(
   localized_name.Set("" /* locale */, base::Value(name));
   pref.GetDict().Set(guest_os::prefs::kAppNameKey, std::move(localized_name));
   pref.GetDict().Set(guest_os::prefs::kAppExecKey, exec);
-  return guest_os::GuestOsRegistryService::Registration(guest_os_app_id,
-                                                        std::move(pref));
+  return guest_os::GuestOsRegistryService::Registration(
+      /*app_locale=*/"en_US", guest_os_app_id, std::move(pref));
 }
 
 TEST_F(BorealisUtilTest, HidesFutureProtonTools) {

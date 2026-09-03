@@ -12,6 +12,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -40,11 +41,11 @@
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_shelf_utils.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/icon_transcoder/svg_icon_transcoder.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/chromeos_app_icon_resources.h"
 #include "chromeos/ash/components/dbus/vm_applications/apps.pb.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -64,12 +65,10 @@ namespace {
 using ::base::i18n::LanguageTag;
 using ::base::i18n::LanguageTagConverter;
 
-// Returns the current locale and fallbacks for it (in this order).
-std::vector<std::string> GetFallbackLocales() {
+std::vector<std::string> GetFallbackLocales(std::string_view app_locale) {
   std::vector<std::string> locales;
   std::optional<LanguageTag> base_tag =
-      LanguageTagConverter::GetInstance().FromString(
-          g_browser_process->GetApplicationLocale());
+      LanguageTagConverter::GetInstance().FromString(app_locale);
 
   if (base_tag) {
     for (const LanguageTag& tag : base_tag->GetLineage()) {
@@ -349,9 +348,12 @@ std::string GetStringKey(const base::Value& dict, std::string_view key) {
 
 }  // namespace
 
-GuestOsRegistryService::Registration::Registration(std::string app_id,
+GuestOsRegistryService::Registration::Registration(std::string app_locale,
+                                                   std::string app_id,
                                                    base::Value pref)
-    : app_id_(std::move(app_id)), pref_(std::move(pref)) {}
+    : app_locale_(std::move(app_locale)),
+      app_id_(std::move(app_id)),
+      pref_(std::move(pref)) {}
 
 GuestOsRegistryService::Registration::~Registration() = default;
 
@@ -482,7 +484,7 @@ std::string GuestOsRegistryService::Registration::GetLocalizedString(
     return std::string();
   }
 
-  for (const std::string& locale : GetFallbackLocales()) {
+  for (const std::string& locale : GetFallbackLocales(app_locale_)) {
     if (const std::string* value = dict->FindString(locale)) {
       return *value;
     }
@@ -500,7 +502,7 @@ std::set<std::string> GuestOsRegistryService::Registration::GetLocalizedList(
     return {};
   }
 
-  for (const std::string& locale : GetFallbackLocales()) {
+  for (const std::string& locale : GetFallbackLocales(app_locale_)) {
     if (const base::ListValue* list = dict->FindList(locale)) {
       return ListToStringSet(list);
     }
@@ -508,8 +510,11 @@ std::set<std::string> GuestOsRegistryService::Registration::GetLocalizedList(
   return {};
 }
 
-GuestOsRegistryService::GuestOsRegistryService(Profile* profile)
-    : profile_(profile),
+GuestOsRegistryService::GuestOsRegistryService(
+    const ApplicationLocaleStorage* application_locale_storage,
+    Profile* profile)
+    : application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      profile_(profile),
       prefs_(profile->GetPrefs()),
       base_icon_path_(profile->GetPath().AppendASCII(kCrostiniIconFolder)),
       clock_(base::DefaultClock::GetInstance()),
@@ -528,7 +533,8 @@ GuestOsRegistryService::GetAllRegisteredApps() const {
       prefs_->GetDict(guest_os::prefs::kGuestOsRegistry);
   std::map<std::string, GuestOsRegistryService::Registration> result;
   for (const auto item : apps) {
-    result.emplace(item.first, Registration(item.first, item.second.Clone()));
+    result.emplace(item.first, Registration(application_locale_storage_->Get(),
+                                            item.first, item.second.Clone()));
   }
   return result;
 }
@@ -593,7 +599,8 @@ GuestOsRegistryService::GetRegistration(const std::string& app_id) const {
     return std::nullopt;
   }
   return std::make_optional<Registration>(
-      app_id, base::Value(pref_registration->Clone()));
+      application_locale_storage_->Get(), app_id,
+      base::Value(pref_registration->Clone()));
 }
 
 void GuestOsRegistryService::RegisterTransientUrlHandler(
@@ -796,7 +803,8 @@ void GuestOsRegistryService::ClearApplicationList(
     base::DictValue& apps = update.Get();
 
     for (const auto item : apps) {
-      Registration registration(item.first, item.second.Clone());
+      Registration registration(application_locale_storage_->Get(), item.first,
+                                item.second.Clone());
       if (vm_type != registration.VmType()) {
         continue;
       }

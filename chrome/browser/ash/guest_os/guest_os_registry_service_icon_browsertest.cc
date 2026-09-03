@@ -2,17 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-#include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
-
 #include <stddef.h>
 
+#include "base/check_deref.h"
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
+#include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
@@ -37,26 +39,31 @@ class GuestOsRegistryServiceIconTest : public InProcessBrowserTest {
     fake_cicerone_client_ = ash::FakeCiceroneClient::Get();
   }
 
-  void TearDownInProcessBrowserTestFixture() override {
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    service_ = std::make_unique<GuestOsRegistryService>(
+        g_browser_process->GetFeatures()->application_locale_storage(),
+        browser()->GetProfile());
+  }
+
+  void TearDownOnMainThread() override {
     service_.reset();
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
     ash::SeneschalClient::Shutdown();
     ash::ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
     InProcessBrowserTest::TearDownInProcessBrowserTestFixture();
   }
 
-  guest_os::GuestOsRegistryService* service() {
-    if (!service_) {
-      service_ =
-          std::make_unique<GuestOsRegistryService>(browser()->GetProfile());
-    }
-    return service_.get();
-  }
+  GuestOsRegistryService& service() { return CHECK_DEREF(service_.get()); }
 
   void LoadIconAndValidateNoWait(const std::string& app_id,
                                  bool expect_loaded,
                                  base::OnceClosure done_closure) {
-    service()->LoadIcon(
+    service().LoadIcon(
         app_id, apps::IconKey(), apps::IconType::kCompressed,
         /*size_hint_in_dip=*/1, /*allow_placeholder_icon=*/false,
         /*fallback_resource_id=*/0,
@@ -114,7 +121,7 @@ class GuestOsRegistryServiceIconTest : public InProcessBrowserTest {
         crostini::CrostiniTestHelper::BasicApp(kSvgAppName);
     std::string app_id = crostini::CrostiniTestHelper::GenerateAppId(
         kSvgAppName, "termina", "penguin");
-    service()->UpdateApplicationList(crostini_list);
+    service().UpdateApplicationList(crostini_list);
 
     vm_tools::cicerone::ContainerAppIconResponse response;
     auto* icon = response.add_icons();
@@ -131,7 +138,7 @@ class GuestOsRegistryServiceIconTest : public InProcessBrowserTest {
     crostini_list.set_vm_type(VmType::TERMINA);
     crostini_list.set_vm_name("termina");
     crostini_list.set_container_name("penguin");
-    service()->UpdateApplicationList(crostini_list);
+    service().UpdateApplicationList(crostini_list);
   }
 
  protected:

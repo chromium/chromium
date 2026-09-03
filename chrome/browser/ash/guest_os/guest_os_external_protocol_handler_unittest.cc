@@ -13,6 +13,8 @@
 #include "chrome/browser/ash/borealis/testing/features.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
+#include "chrome/browser/global_features.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/vm_applications/apps.pb.h"
 #include "content/public/test/browser_task_environment.h"
@@ -29,6 +31,14 @@ class GuestOsExternalProtocolHandlerTest : public testing::Test {
     app_list_.set_vm_type(vm_tools::apps::VmType::TERMINA);
     app_list_.set_vm_name("vm_name");
     app_list_.set_container_name("container_name");
+  }
+
+  std::unique_ptr<GuestOsRegistryService> CreateRegistryService() {
+    return std::make_unique<GuestOsRegistryService>(
+        TestingBrowserProcess::GetGlobal()
+            ->GetFeatures()
+            ->application_locale_storage(),
+        profile());
   }
 
   TestingProfile* profile() { return &profile_; }
@@ -52,7 +62,7 @@ class GuestOsExternalProtocolHandlerTest : public testing::Test {
 
 TEST_F(GuestOsExternalProtocolHandlerTest, TestNoRegisteredApps) {
   AddApp("App", "id", "not-scheme");
-  GuestOsRegistryService(profile()).UpdateApplicationList(app_list());
+  CreateRegistryService()->UpdateApplicationList(app_list());
 
   EXPECT_FALSE(
       GuestOsUrlHandler::GetForUrl(profile(), GURL("testscheme:12341234")));
@@ -60,7 +70,7 @@ TEST_F(GuestOsExternalProtocolHandlerTest, TestNoRegisteredApps) {
 
 TEST_F(GuestOsExternalProtocolHandlerTest, SingleRegisteredApp) {
   AddApp("App", "id", "x-scheme-handler/testscheme");
-  GuestOsRegistryService(profile()).UpdateApplicationList(app_list());
+  CreateRegistryService()->UpdateApplicationList(app_list());
 
   EXPECT_TRUE(
       GuestOsUrlHandler::GetForUrl(profile(), GURL("testscheme:12341234")));
@@ -69,11 +79,10 @@ TEST_F(GuestOsExternalProtocolHandlerTest, SingleRegisteredApp) {
 TEST_F(GuestOsExternalProtocolHandlerTest, MostRecent) {
   AddApp("App1", "id1", "x-scheme-handler/testscheme");
   AddApp("App2", "id2", "x-scheme-handler/testscheme");
-  GuestOsRegistryService(profile()).UpdateApplicationList(app_list());
+  CreateRegistryService()->UpdateApplicationList(app_list());
 
-  GuestOsRegistryService(profile()).AppLaunched(
-      GuestOsRegistryService::GenerateAppId("id1", "vm_name",
-                                            "container_name"));
+  CreateRegistryService()->AppLaunched(GuestOsRegistryService::GenerateAppId(
+      "id1", "vm_name", "container_name"));
 
   auto registration =
       GuestOsUrlHandler::GetForUrl(profile(), GURL("testscheme:12341234"));
@@ -82,9 +91,9 @@ TEST_F(GuestOsExternalProtocolHandlerTest, MostRecent) {
 }
 
 TEST_F(GuestOsExternalProtocolHandlerTest, TransientUrlHandlerIsInvoked) {
-  GuestOsRegistryService service(profile());
+  auto service = CreateRegistryService();
   int invocations = 0;
-  service.RegisterTransientUrlHandler(
+  service->RegisterTransientUrlHandler(
       /*handler=*/GuestOsUrlHandler(
           "Handler1", base::BindRepeating(
                           [](int& invocations, Profile*, const GURL& url) {
@@ -96,7 +105,7 @@ TEST_F(GuestOsExternalProtocolHandlerTest, TransientUrlHandlerIsInvoked) {
           [](const GURL& url) { return url.SchemeIs("test"); }));
 
   GURL url{"test://test"};
-  std::optional<GuestOsUrlHandler> handler = service.GetHandler(url);
+  std::optional<GuestOsUrlHandler> handler = service->GetHandler(url);
   ASSERT_TRUE(handler);
   handler->Handle(profile(), url);
 
@@ -105,15 +114,15 @@ TEST_F(GuestOsExternalProtocolHandlerTest, TransientUrlHandlerIsInvoked) {
 
 TEST_F(GuestOsExternalProtocolHandlerTest,
        InapplicableTransientUrlHandlersIgnored) {
-  GuestOsRegistryService service(profile());
-  service.RegisterTransientUrlHandler(
+  auto service = CreateRegistryService();
+  service->RegisterTransientUrlHandler(
       /*handler=*/GuestOsUrlHandler(
           "Handler1", base::BindRepeating([](Profile*, const GURL& url) {})),
       /*canHandleCallback=*/base::BindRepeating(
           [](const GURL& url) { return url.SchemeIs("test"); }));
 
   std::optional<GuestOsUrlHandler> handler =
-      service.GetHandler(GURL("otherscheme://test"));
+      service->GetHandler(GURL("otherscheme://test"));
   EXPECT_FALSE(handler);
 }
 
@@ -143,7 +152,7 @@ class GuestOsExternalProtocolHandlerBorealisTest
     app_list().set_vm_type(vm_tools::apps::VmType::BOREALIS);
     AddApp("App", "id",
            std::string("x-scheme-handler/") + borealis::kAllowedScheme);
-    GuestOsRegistryService(profile()).UpdateApplicationList(app_list());
+    CreateRegistryService()->UpdateApplicationList(app_list());
   }
 
  private:
