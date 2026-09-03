@@ -8,24 +8,26 @@
 
 namespace payments::facilitated {
 
-// When enabled, QR code detection for facilitated payments will be supported on
-// Desktop.
-BASE_FEATURE(kEnableDesktopQrCodeDetection, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When enabled, Chrome will offer to pay with accounts supporting Pix to users
-// using their devices in landscape mode. Chrome always offers to pay with Pix
-// accounts for users using their devices in portrait mode.
-BASE_FEATURE(kEnablePixPaymentsInLandscapeMode,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Use the Rust implementation of the Pix code validator.
-BASE_FEATURE(kUseRustPixCodeValidator, base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
 // When enabled, the check for matching the main frame domain with the
 // allowlisted domains will be disabled.
 BASE_FEATURE(kDisableFacilitatedPaymentsMerchantAllowlist,
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
+// When enabled, QR code detection for facilitated payments will be supported on
+// Desktop.
+BASE_FEATURE(kEnableDesktopQrCodeDetection, base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_ANDROID)
+// When enabled, Chrome will receive and cache eWallet creation options from
+// Chrome Sync.
+BASE_FEATURE(kEnableEwalletNewAccountLinking,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, pix pay flow will be triggered when users click the copy button
+// within iframe.
+BASE_FEATURE(kEnableIframeForPix, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, Chrome will prompt users without linked Pix accounts to link
 // their Pix accounts to Google Wallet.
@@ -46,15 +48,19 @@ const base::FeatureParam<std::string> kVideoUrlOnPrompt{
     &kEnablePixAccountLinkingNative, "video_url_on_prompt",
     "https://support.google.com/wallet/answer/14616353?hl=en"};
 
-// When enabled, static qr code will be supported for pix pay flow.
-BASE_FEATURE(kEnableStaticQrCodeForPix, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When enabled, pix pay flow will be triggered when users click the copy button
-// within iframe.
-BASE_FEATURE(kEnableIframeForPix, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, Pix code detection will be supported in Chrome Custom Tabs.
 BASE_FEATURE(kEnablePixInCct, base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
+// When enabled, Chrome will offer to pay with accounts supporting Pix to users
+// using their devices in landscape mode. Chrome always offers to pay with Pix
+// accounts for users using their devices in portrait mode.
+BASE_FEATURE(kEnablePixPaymentsInLandscapeMode,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_ANDROID)
+// When enabled, static qr code will be supported for pix pay flow.
+BASE_FEATURE(kEnableStaticQrCodeForPix, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, Chrome will offer to pay with eWallet accounts if a payment
 // link is detected.
@@ -65,11 +71,9 @@ BASE_FEATURE(kEwalletPayments, base::FEATURE_ENABLED_BY_DEFAULT);
 // use and be redirected to the chosen app to complete the payment flow.
 BASE_FEATURE(kFacilitatedPaymentsEnableA2APayment,
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// When enabled, Chrome will receive and cache eWallet creation options from
-// Chrome Sync.
-BASE_FEATURE(kEnableEwalletNewAccountLinking,
-             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+// Use the Rust implementation of the Pix code validator.
+BASE_FEATURE(kUseRustPixCodeValidator, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace payments::facilitated

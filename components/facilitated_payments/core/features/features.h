@@ -11,11 +11,13 @@
 
 namespace payments::facilitated {
 
-BASE_DECLARE_FEATURE(kEnableDesktopQrCodeDetection);
-BASE_DECLARE_FEATURE(kEnablePixPaymentsInLandscapeMode);
-BASE_DECLARE_FEATURE(kUseRustPixCodeValidator);
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kDisableFacilitatedPaymentsMerchantAllowlist);
+#endif  // BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kEnableDesktopQrCodeDetection);
+#if BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kEnableEwalletNewAccountLinking);
+BASE_DECLARE_FEATURE(kEnableIframeForPix);
 BASE_DECLARE_FEATURE(kEnablePixAccountLinking);
 BASE_DECLARE_FEATURE(kEnablePixAccountLinkingNative);
 extern const base::FeatureParam<std::string>
@@ -23,13 +25,15 @@ extern const base::FeatureParam<std::string>
 extern const base::FeatureParam<int>
     kPixAccountLinkingNativeTriggerDelaySeconds;
 extern const base::FeatureParam<std::string> kVideoUrlOnPrompt;
-BASE_DECLARE_FEATURE(kEnableStaticQrCodeForPix);
-BASE_DECLARE_FEATURE(kEnableIframeForPix);
 BASE_DECLARE_FEATURE(kEnablePixInCct);
+#endif  // BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kEnablePixPaymentsInLandscapeMode);
+#if BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kEnableStaticQrCodeForPix);
 BASE_DECLARE_FEATURE(kEwalletPayments);
 BASE_DECLARE_FEATURE(kFacilitatedPaymentsEnableA2APayment);
-BASE_DECLARE_FEATURE(kEnableEwalletNewAccountLinking);
 #endif  // BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kUseRustPixCodeValidator);
 
 }  // namespace payments::facilitated
 
