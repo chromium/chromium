@@ -1565,9 +1565,8 @@ std::vector<AXNodeID> AXNode::GetTableColHeaderNodeIds() const {
 
   std::vector<AXNodeID> col_header_ids;
   // Flatten and add column header ids of each column to |col_header_ids|.
-  for (std::vector<AXNodeID> col_headers_at_index : table_info->col_headers) {
-    col_header_ids.insert(col_header_ids.end(), col_headers_at_index.begin(),
-                          col_headers_at_index.end());
+  for (const auto& col_headers_at_index : table_info->col_headers) {
+    col_header_ids.append_range(col_headers_at_index);
   }
 
   return col_header_ids;
