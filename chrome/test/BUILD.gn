@@ -172,7 +172,6 @@ static_library("test_support") {
     "//chrome/test/base:chrome_render_view_test",
     "//chrome/test/base:chrome_test_scoped_utils",
     "//chrome/test/base:chrome_test_utils",
-    "//chrome/test/base:chrome_unit_test_suite",
     "//chrome/test/base:menu_model_test",
     "//chrome/test/base:profile_lifecycle_test_utils",
     "//chrome/test/base:scoped_metrics_service_for_synthetic_trials",
@@ -4309,6 +4308,7 @@ if (!is_android) {
           "../renderer/safe_browsing/phishing_classifier_browsertest.cc",
           "../renderer/safe_browsing/phishing_dom_utils_browsertest.cc",
         ]
+        deps += [ "//chrome/test/base:chrome_unit_test_suite" ]
       }
     }
 
@@ -7759,6 +7759,7 @@ static_library("test_support_unit") {
   deps = [
     "//chrome/browser:chrome_content_browser_client",
     "//chrome/browser/autofill",
+    "//chrome/test/base:chrome_unit_test_suite",
     "//components/autofill/content/browser:test_support",
   ]
 
@@ -8862,6 +8863,7 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/ui/webui/customize_buttons",
         "//chrome/browser/webauthn:chrome_web_authentication_delegate",
         "//chrome/browser/webauthn:test_support",
+        "//chrome/test/base:chrome_unit_test_suite",
         "//chrome/test/data/webui:resources_grit",
         "//chrome/test/interaction:interactive_ui_tests",
         "//chrome/test/user_education:interactive_ui_tests",
