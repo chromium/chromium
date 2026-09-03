@@ -27,6 +27,10 @@
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/native_theme/native_theme.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/strings/string_split.h"
+#endif
+
 namespace enterprise_reporting {
 namespace {
 
