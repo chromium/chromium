@@ -3,6 +3,11 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+generate_jni("jni_headers") {
+  sources = [ "java/src/org/chromium/components/fcm/FcmBridge.java" ]
+}
 
 android_library("fcm_java") {
   deps = [
@@ -13,13 +18,21 @@ android_library("fcm_java") {
     "//base:base_java",
     "//build/android:build_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 
-  sources = [ "java/src/org/chromium/components/fcm/FcmManager.java" ]
+  srcjar_deps = [ ":jni_headers" ]
+  sources = [
+    "java/src/org/chromium/components/fcm/FcmBridge.java",
+    "java/src/org/chromium/components/fcm/FcmManager.java",
+  ]
 }
 
 robolectric_library("components_fcm_junit_tests") {
-  sources = [ "junit/src/org/chromium/components/fcm/FcmManagerTest.java" ]
+  sources = [
+    "junit/src/org/chromium/components/fcm/FcmBridgeTest.java",
+    "junit/src/org/chromium/components/fcm/FcmManagerTest.java",
+  ]
   deps = [
     ":fcm_java",
     "$google_play_services_package:google_firebase_firebase_common_java",
@@ -27,8 +40,9 @@ robolectric_library("components_fcm_junit_tests") {
     "$google_play_services_package:google_firebase_firebase_messaging_java",
     "$google_play_services_package:google_play_services_tasks_java",
     "//base:base_java",
-    "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//base/test:test_support_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]

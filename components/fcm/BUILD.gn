@@ -19,6 +19,14 @@ static_library("fcm") {
     "//base",
     "//components/keyed_service/core",
   ]
+
+  if (is_android) {
+    sources += [
+      "fcm_driver_android.cc",
+      "fcm_driver_android.h",
+    ]
+    deps = [ "android:jni_headers" ]
+  }
 }
 
 source_set("unit_tests") {
@@ -32,4 +40,8 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (is_android) {
+    sources += [ "fcm_driver_android_unittest.cc" ]
+  }
 }

@@ -28,6 +28,20 @@ class FcmDriver {
   // Unregisters the app handler for the given `app_id`.
   void RemoveAppHandler(const std::string& app_id, FcmAppHandler* handler);
 
+ protected:
+  // Dispatches an incoming FCM message to the appropriate app handler.
+  void DispatchIncomingMessage(const FcmMessage& message);
+
+  // Broadcasts that messages were deleted to all registered app handlers.
+  void DispatchMessagesDeleted();
+
+  // Broadcasts an updated installation ID to all registered app handlers.
+  void DispatchInstallationIdRefreshed(
+      const std::optional<InstallationId>& installation_id);
+
+  // Cached installation ID, if available.
+  std::optional<InstallationId> installation_id_;
+
  private:
   std::map<std::string, raw_ptr<FcmAppHandler>> app_handlers_;
 };
