@@ -2551,6 +2551,12 @@
       settable_from_internals: true
     },
     {
+      // Update EditContext selectionStart/End before TextUpdateEvent while
+      // handling deletion. See https://crbug.com/529413105
+      name: "EditContextSelectionUpdateBeforeTextUpdateEvent",
+      status: "stable",
+    },
+    {
       name: "EditingUseDomPositionApi",
       status: "test",
     },

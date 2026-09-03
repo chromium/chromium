@@ -605,6 +605,16 @@ void EditContext::DeleteCurrentSelection() {
   stringBuilder.Append(StringView(text_, OrderedSelectionEnd()));
   text_ = stringBuilder.ToString();
 
+  if (RuntimeEnabledFeatures::
+          EditContextSelectionUpdateBeforeTextUpdateEventEnabled()) {
+    const uint32_t update_range_start = OrderedSelectionStart();
+    const uint32_t update_range_end = OrderedSelectionEnd();
+    SetSelection(update_range_start, update_range_start);
+    DispatchTextUpdateEvent(g_empty_string, update_range_start,
+                            update_range_end, selection_start_, selection_end_);
+    return;
+  }
+
   DispatchTextUpdateEvent(g_empty_string, OrderedSelectionStart(),
                           OrderedSelectionEnd(), OrderedSelectionStart(),
                           OrderedSelectionStart());
