@@ -10,6 +10,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
@@ -17,7 +19,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_ash.h"
 #include "chrome/common/chrome_paths.h"
@@ -30,6 +31,7 @@
 #include "net/base/load_flags.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -65,7 +67,9 @@ class WallpaperFetcher {
 
   static const char kCancelWallpaperMessage[];
 
-  void FetchWallpaper(const GURL& url, FetchCallback callback) {
+  void FetchWallpaper(network::mojom::URLLoaderFactory& url_loader_factory,
+                      const GURL& url,
+                      FetchCallback callback) {
     CancelPreviousFetch();
     original_url_ = url;
     callback_ = std::move(callback);
@@ -98,11 +102,8 @@ class WallpaperFetcher {
         net::SiteForCookies::FromUrl(original_url_);
     simple_loader_ = network::SimpleURLLoader::Create(
         std::move(resource_request), traffic_annotation);
-    network::mojom::URLLoaderFactory* loader_factory =
-        g_browser_process->system_network_context_manager()
-            ->GetURLLoaderFactory();
     simple_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-        loader_factory,
+        &url_loader_factory,
         base::BindOnce(&WallpaperFetcher::OnSimpleLoaderComplete,
                        base::Unretained(this)));
   }
@@ -171,6 +172,7 @@ ExtensionFunction::ResponseAction WallpaperSetWallpaperFunction::Run() {
   }
 
   g_wallpaper_fetcher.Get().FetchWallpaper(
+      CHECK_DEREF(g_browser_process->shared_url_loader_factory()),
       wallpaper_url,
       base::BindOnce(&WallpaperSetWallpaperFunction::OnWallpaperFetched, this));
   // FetchWallpaper() responds asynchronously.
