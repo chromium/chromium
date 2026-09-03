@@ -5595,6 +5595,26 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
+    public void testOnTabChanged_resetsActivationChipCompact() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
+        when(mLocationBarLayout.getUrlBarWidth()).thenReturn(100);
+        when(mLocationBarLayout.getUrlBarTextWidth()).thenReturn(50);
+        when(mLocationBarLayout.getActivationChipCompactWidthDelta()).thenReturn(50);
+        when(mLocationBarLayout.isActivationChipCompact()).thenReturn(false);
+
+        mMediator.beginInput(mSessionState.getAutocompleteInput());
+        mMediator.setIsTextWrapping(true);
+
+        verify(mLocationBarLayout).setActivationChipCompact(true);
+        when(mLocationBarLayout.isActivationChipCompact()).thenReturn(true);
+
+        mSessionState.deactivate();
+        mMediator.onTabChanged(null);
+
+        verify(mLocationBarLayout).setActivationChipCompact(false);
+    }
+
+    @Test
     public void testHandleEscPress_suggestionsDisplayState_transitionsToDrafting() {
         mSessionState.getAutocompleteInput().setDisplayState(DisplayState.SUGGESTIONS);
         mSessionState.getAutocompleteInput().setRequestType(AutocompleteRequestType.SEARCH);

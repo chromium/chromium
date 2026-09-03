@@ -3216,6 +3216,7 @@ class LocationBarMediator
         disconnectObservers(input);
         mFuseboxCoordinator.endInput();
         mHintTextUpdater.endInput();
+        mIsTextWrapping = false;
         setAttachmentModelList(null);
         updateShowFocusRing();
         updateActivationChip();
@@ -3764,6 +3765,7 @@ class LocationBarMediator
         mLocationBarLayout.setActivationChipVisibility(showActivationChip);
         mActivationChipVisibilitySupplier.set(showActivationChip);
         updateUrlBarAccessibilityOrder(showActivationChip);
+        updateActivationChipCompact();
     }
 
     /* package */ void onActivationChipSelectionChanged(boolean selected) {
