@@ -21605,24 +21605,6 @@
             ]
         }
     ],
-    "WebUIInProcessResourceLoadingV2": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebUIInProcessResourceLoadingV2"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebUIReloadButtonStudy": [
         {
             "platforms": [
@@ -21632,7 +21614,7 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithSurfaceSync_20260813",
+                    "name": "EnabledWithSurfaceSync_20260902",
                     "params": {
                         "WebUIReloadButtonDeferBrowserViewShow": "false",
                         "WebUIReloadButtonKeepVisibleUntilPaint": "true",
@@ -21648,10 +21630,10 @@
                         "InitialWebUISurfaceSync",
                         "InitialWebUISyncNavStartToCommit",
                         "InitialWebUIWithoutExtensions",
-                        "PrioritizeResizeTaskRunnerOnStartup",
                         "SendGPUChannelEarly",
                         "SkipIPCChannelPausingForNonGuests",
                         "WebUIBundledCodeCache",
+                        "WebUIInProcessResourceLoadingV2",
                         "WebUIReloadButton",
                         "WebUIToolbarFrameEvictionOptOut",
                         "WebiumMetricsMapping"
