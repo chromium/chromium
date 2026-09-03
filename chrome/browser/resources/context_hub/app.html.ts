@@ -26,11 +26,11 @@ export function getHtml(this: ContextHubAppElement) {
             @selected-changed="${this.onSelectedChanged_}"
             @click="${this.onSelectorClick_}">
           <a role="menuitem"
-              href="#ai-taskbox"
-              data-route="ai-taskbox"
+              href="#launchpad"
+              data-route="launchpad"
               class="cr-nav-menu-item">
             <cr-icon icon="cr:chrome-extension-filled"></cr-icon>
-            AI Taskbox
+            LaunchPad
           </a>
           <a role="menuitem"
               href="#memory-banks"
@@ -59,7 +59,7 @@ export function getHtml(this: ContextHubAppElement) {
 
     <!-- CONTENT AREA -->
     <div class="content-area">
-      ${this.currentView_ === 'ai-taskbox' ? html`
+      ${this.currentView_ === 'launchpad' ? html`
         <ai-taskbox></ai-taskbox>
       ` : ''}
       ${this.currentView_ === 'memory-banks' ? html`
