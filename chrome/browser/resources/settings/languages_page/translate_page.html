@@ -15,11 +15,11 @@
     <select id="targetLanguage" class="md-select"
         aria-labelledby="targetLanguageLabel"
         on-change="onTargetLanguageChange_">
-      <template is="dom-repeat" items="[[languages.supported]]"
+      <template is="dom-repeat" items="[[supportedLanguages_]]"
           filter="isTranslateSupported_">
         <option value="[[item.code]]"
             selected="[[translateLanguageEqual_(
-                item.code, languages.translateTarget)]]">
+                item.code, translateTarget_)]]">
           [[getTargetLanguageDisplayOption_(item)]]
         </option>
       </template>
@@ -35,7 +35,7 @@
   </div>
   <div class="list-frame">
     <div id="alwaysTranslateList" class="vertical-list" role="list">
-      <template is="dom-repeat" items="[[languages.alwaysTranslate]]"
+      <template is="dom-repeat" items="[[alwaysTranslateLanguages_]]"
           sort="alphabeticalSort_" filter="hasDisplayName_">
         <div class="list-item" role="listitem">
           <div class="start cr-padded-text">[[item.displayName]]</div>
@@ -49,7 +49,7 @@
       </template>
     </div>
     <div id="noAlwaysTranslateLabel" class="list-item" role="listitem"
-        hidden$="[[hasSome_(languages.alwaysTranslate)]]">
+        hidden$="[[hasSome_(alwaysTranslateLanguages_)]]">
       $i18n{noLanguagesAdded}
     </div>
   </div>
@@ -63,12 +63,12 @@
   </div>
   <div class="list-frame">
     <div id="neverTranslateList" class="vertical-list" role="list">
-      <template is="dom-repeat" items="[[languages.neverTranslate]]"
+      <template is="dom-repeat" items="[[neverTranslateLanguages_]]"
           sort="alphabeticalSort_" filter="hasDisplayName_">
         <div class="list-item" role="listitem">
           <div class="start cr-padded-text">[[item.displayName]]</div>
           <cr-icon-button class="icon-delete-gray" value="[[item.code]]"
-              disabled="[[hasLength_(languages.neverTranslate, 1)]]"
+              disabled="[[hasLength_(neverTranslateLanguages_, 1)]]"
               aria-label="[[i18n('removeNeverLanguageAriaLabel',
                             item.displayName)]]"
               on-click="onRemoveNeverTranslateLanguageClick_"
@@ -78,7 +78,7 @@
       </template>
     </div>
     <div id="noNeverTranslateLabel" class="list-item" role="listitem"
-        hidden$="[[hasSome_(languages.neverTranslate)]]">
+        hidden$="[[hasSome_(neverTranslateLanguages_)]]">
       $i18n{noLanguagesAdded}
     </div>
   </div>

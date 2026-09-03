@@ -60,11 +60,6 @@ suite('SpellCheck', function() {
     await languageHelper.whenReady();
 
     spellcheckPage = document.createElement('settings-spell-check-page');
-    spellcheckPage.languages = languageHelper.languages;
-    languageHelper.addEventListener('languages-changed', (e: Event) => {
-      spellcheckPage.languages = (e as CustomEvent).detail;
-    });
-
     document.body.appendChild(spellcheckPage);
     flush();
   });
@@ -291,9 +286,12 @@ suite('SpellCheck', function() {
       assertEquals(toggle.subLabel, undefined);
 
       // Empty out supported languages
-      for (const lang of languageHelper.languages!.enabled) {
-        languageHelper.disableLanguage(lang.language.code);
-      }
+      languageHelper.dispatchEvent(new CustomEvent('languages-changed', {
+        detail: Object.assign({}, languageHelper.languages, {
+          enabled: [],
+          spellCheckOnLanguages: [],
+        }),
+      }));
       assertTrue(toggle.disabled);
       assertFalse(PrefService.getInstance()
                       .getPref<boolean>('browser.enable_spellchecking')
@@ -320,8 +318,7 @@ suite('SpellCheck', function() {
       assertEquals(2, retryButtons.length);
       checkAllHidden(retryButtons);
 
-      const languageCode =
-          spellcheckPage.get('languages.enabled.0.language.code');
+      const languageCode = languageHelper.languages!.enabled[0]!.language.code;
       (languageSettingsPrivate.onSpellcheckDictionariesChanged as
        FakeChromeEvent)
           .callListeners([
@@ -340,7 +337,7 @@ suite('SpellCheck', function() {
       assertTrue(moreInfo.hidden);
       // No change when status is the same as last update.
       const currentStatus =
-          spellcheckPage.get('languages.enabled.0.downloadDictionaryStatus');
+          languageHelper.languages!.enabled[0]!.downloadDictionaryStatus;
       (languageSettingsPrivate.onSpellcheckDictionariesChanged as
        FakeChromeEvent)
           .callListeners([currentStatus]);

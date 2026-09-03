@@ -68,17 +68,17 @@
       <div class="secondary">$i18n{preferredLanguagesDesc}</div>
     </div>
     <cr-button id="addLanguages" class="cr-button-gap header-aligned-button"
-        disabled="[[!canEnableSomeSupportedLanguage_(languages)]]"
+        disabled="[[!canEnableSomeSupportedLanguage_]]"
         on-click="onAddLanguagesClick_">
       $i18n{addLanguages}
     </cr-button>
   </div>
   <div class="list-frame vertical-list" role="list">
-    <template is="dom-repeat" items="[[languages.enabled]]">
+    <template is="dom-repeat" items="[[enabledLanguages_]]">
       <div class$="list-item [[getLanguageItemClass_(
-          item.language.code, language.prospectiveUILanguage)]]
+          item.language.code, prospectiveUILanguage_)]]
           [[isTranslationTarget_(item.language.code,
-          languages.translateTarget)]]" role="listitem">
+          translateTarget_)]]" role="listitem">
         <div class="start cr-padded-text">
           <div title="[[item.language.nativeDisplayName]]" role="none">
             [[formatIndex_(index)]]. [[item.language.displayName]]
@@ -90,14 +90,14 @@
           <div class="explain-selected"
               hidden="[[!isProspectiveUiLanguage_(
                   item.language.code,
-                  languages.prospectiveUILanguage)]]">
+                  prospectiveUILanguage_)]]">
             $i18n{isDisplayedInThisLanguage}
           </div>
 </if> <!-- is_win -->
         </div>
 <if expr="is_win">
         <template is="dom-if" if="[[isRestartRequired_(
-            item.language.code, languages.prospectiveUILanguage)]]"
+            item.language.code, prospectiveUILanguage_)]]"
             restamp>
           <cr-button id="restartButton" on-click="onRestartClick_">
             $i18n{restart}
@@ -124,10 +124,10 @@
             class="dropdown-item"
             checked="[[isProspectiveUiLanguage_(
                 detailLanguage_.language.code,
-                languages.prospectiveUILanguage)]]"
+                prospectiveUILanguage_)]]"
             on-change="onUiLanguageChange_"
             disabled="[[disableUiLanguageCheckbox_(
-                detailLanguage_, languages.prospectiveUILanguage)]]" noink>
+                detailLanguage_, prospectiveUILanguage_)]]" noink>
           <span>
             $i18n{displayInThisLanguage}
           </span>
@@ -139,18 +139,18 @@
         <button class="dropdown-item" role="menuitem"
             on-click="onMoveToTopClick_"
             hidden="[[isNthLanguage_(
-                0, detailLanguage_, languages.enabled.*)]]">
+                0, detailLanguage_, enabledLanguages_.*)]]">
           $i18n{moveToTop}
         </button>
         <button class="dropdown-item" role="menuitem"
             on-click="onMoveUpClick_"
-            hidden="[[!showMoveUp_(detailLanguage_, languages.enabled.*)]]">
+            hidden="[[!showMoveUp_(detailLanguage_, enabledLanguages_.*)]]">
           $i18n{moveUp}
         </button>
         <button class="dropdown-item" role="menuitem"
             on-click="onMoveDownClick_"
             hidden="[[!showMoveDown_(
-                detailLanguage_, languages.enabled.*)]]">
+                detailLanguage_, enabledLanguages_.*)]]">
           $i18n{moveDown}
         </button>
         <button class="dropdown-item" role="menuitem"

@@ -22,7 +22,6 @@ import type {SettingsPlugin} from '../settings_main/settings_plugin.js';
 import {SearchableViewContainerMixin} from '../settings_page/searchable_view_container_mixin.js';
 
 import {getTemplate} from './languages_page_index.html.js';
-import type {LanguagesModel} from './languages_types.js';
 
 
 export interface SettingsLanguagesPageIndexElement {
@@ -46,8 +45,6 @@ export class SettingsLanguagesPageIndexElement extends
 
   static get properties() {
     return {
-      languages: Object,
-
       routes_: {
         type: Object,
         value: () => routes,
@@ -55,7 +52,6 @@ export class SettingsLanguagesPageIndexElement extends
     };
   }
 
-  declare languages?: LanguagesModel;
   declare private routes_: SettingsRoutes;
 
   private showDefaultViews_() {

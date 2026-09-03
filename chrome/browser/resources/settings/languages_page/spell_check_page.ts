@@ -42,7 +42,9 @@ import {routes} from '../route.js';
 import {Router} from '../router.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
+// <if expr="not is_macosx">
 import {getLanguageHelperInstance} from './languages.js';
+// </if>
 import type {LanguageSettingsMetricsProxy} from './languages_settings_metrics_proxy.js';
 import {LanguageSettingsActionType, LanguageSettingsMetricsProxyImpl} from './languages_settings_metrics_proxy.js';
 import type {LanguageHelper, LanguagesModel, LanguageState, SpellCheckLanguageState} from './languages_types.js';
@@ -63,12 +65,6 @@ export class SettingsSpellCheckPageElement extends
 
   static get properties() {
     return {
-      /**
-       * Read-only reference to the languages model provided by the
-       * 'settings-languages' instance.
-       */
-      languages: Object,
-
       // <if expr="not is_macosx">
       spellCheckLanguages_: {
         type: Array,
@@ -93,14 +89,11 @@ export class SettingsSpellCheckPageElement extends
   // <if expr="not is_macosx">
   static get observers() {
     return [
-      'updateSpellcheckLanguages_(languages, languages.enabled.*, ' +
-          'languages.spellCheckOnLanguages.*)',
       'updateSpellcheckEnabled_(enableSpellcheckingPref_)',
     ];
   }
   // </if>
 
-  declare languages?: LanguagesModel;
   declare protected enableSpellcheckingPref_:
       chrome.settingsPrivate.PrefObject<boolean>|undefined;
   declare protected useSpellingServicePref_:
@@ -113,8 +106,9 @@ export class SettingsSpellCheckPageElement extends
   declare private spellCheckLanguages_:
       Array<LanguageState|SpellCheckLanguageState>;
   declare private hideSpellCheckLanguages_: boolean;
-  // </if>
   private languageHelper_: LanguageHelper;
+  private boundOnLanguagesChanged_: ((e: Event) => void)|null = null;
+  // </if>
   private languageSettingsMetricsProxy_: LanguageSettingsMetricsProxy =
       LanguageSettingsMetricsProxyImpl.getInstance();
 
@@ -128,7 +122,30 @@ export class SettingsSpellCheckPageElement extends
       'spellcheck.blocked_dictionaries': 'blockedDictionariesPref_',
     });
 
+    // <if expr="not is_macosx">
     this.languageHelper_ = getLanguageHelperInstance();
+    this.boundOnLanguagesChanged_ = (e: Event) => {
+      this.updateSpellcheckLanguages_(
+          (e as CustomEvent<LanguagesModel>).detail);
+    };
+    this.languageHelper_.addEventListener(
+        'languages-changed', this.boundOnLanguagesChanged_);
+    if (this.languageHelper_.languages) {
+      this.updateSpellcheckLanguages_(this.languageHelper_.languages);
+    }
+    // </if>
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+
+    // <if expr="not is_macosx">
+    if (this.boundOnLanguagesChanged_) {
+      this.languageHelper_.removeEventListener(
+          'languages-changed', this.boundOnLanguagesChanged_);
+      this.boundOnLanguagesChanged_ = null;
+    }
+    // </if>
   }
 
   private onSpellCheckToggleChange_(e: Event) {
@@ -174,16 +191,15 @@ export class SettingsSpellCheckPageElement extends
    * Returns an array of enabled languages, plus spellcheck languages that are
    * force-enabled by policy.
    */
-  private getSpellCheckLanguages_():
+  private getSpellCheckLanguages_(languages: LanguagesModel):
       Array<LanguageState|SpellCheckLanguageState> {
     const supportedSpellcheckLanguages:
-        Array<LanguageState|SpellCheckLanguageState> =
-            this.languages!.enabled.filter(
-                (item) => item.language.supportsSpellcheck);
+        Array<LanguageState|SpellCheckLanguageState> = languages.enabled.filter(
+            (item) => item.language.supportsSpellcheck);
     const supportedSpellcheckLanguagesSet =
         new Set(supportedSpellcheckLanguages.map(x => x.language.code));
 
-    this.languages!.spellCheckOnLanguages.forEach(spellCheckLang => {
+    languages.spellCheckOnLanguages.forEach(spellCheckLang => {
       if (!supportedSpellcheckLanguagesSet.has(spellCheckLang.language.code)) {
         supportedSpellcheckLanguages.push(spellCheckLang);
       }
@@ -204,20 +220,21 @@ export class SettingsSpellCheckPageElement extends
     return false;
   }
 
-  private updateSpellcheckLanguages_() {
-    if (this.languages === undefined) {
+  private updateSpellcheckLanguages_(languages?: LanguagesModel) {
+    if (!languages) {
+      this.set('spellCheckLanguages_', []);
       return;
     }
 
-    this.set('spellCheckLanguages_', this.getSpellCheckLanguages_());
+    this.set('spellCheckLanguages_', this.getSpellCheckLanguages_(languages));
 
     // Notify Polymer of subproperties that might have changed on the items in
     // the spellCheckLanguages_ array, to make sure the UI updates. Polymer
     // would otherwise not notice the changes in the subproperties, as some of
-    // them are references to those from |this.languages.enabled|. It would be
-    // possible to |this.linkPaths()| objects from |this.languages.enabled| to
+    // them are references to those from |languages.enabled|. It would be
+    // possible to |this.linkPaths()| objects from |languages.enabled| to
     // |this.spellCheckLanguages_|, but that would require complex
-    // housekeeping to |this.unlinkPaths()| as |this.languages.enabled|
+    // housekeeping to |this.unlinkPaths()| as |languages.enabled|
     // changes.
     for (let i = 0; i < this.spellCheckLanguages_.length; i++) {
       this.notifyPath(`spellCheckLanguages_.${i}.isManaged`);
@@ -232,6 +249,8 @@ export class SettingsSpellCheckPageElement extends
       PrefService.getInstance().setPrefValue<boolean>(
           'browser.enable_spellchecking', false);
     }
+
+    this.updateSpellcheckEnabled_();
   }
 
   private updateSpellcheckEnabled_() {

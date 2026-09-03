@@ -33,10 +33,6 @@ import {beforeNextRender, flush, PolymerElement} from 'chrome://resources/polyme
 
 import {ensureLazyLoaded} from '../ensure_lazy_loaded.js';
 import {loadTimeData} from '../i18n_setup.js';
-// <if expr="not is_chromeos">
-import {getLanguageHelperInstance} from '../languages_page/languages.js';
-import type {LanguagesModel} from '../languages_page/languages_types.js';
-// </if>
 import {pageVisibility} from '../page_visibility.js';
 import type {PageVisibility} from '../page_visibility.js';
 import {getTopLevelRoute, routes} from '../route.js';
@@ -117,10 +113,6 @@ export class SettingsMainElement extends SettingsMainElementBase {
         value: false,
         notify: true,
       },
-
-      // <if expr="not is_chromeos">
-      languages_: Object,
-      // </if>
     };
   }
 
@@ -133,11 +125,6 @@ export class SettingsMainElement extends SettingsMainElementBase {
   declare private showResetProfileBanner_: boolean;
   declare toolbarSpinnerActive: boolean;
 
-  // <if expr="not is_chromeos">
-  declare private languages_?: LanguagesModel;
-  private boundOnLanguagesChanged_: ((e: Event) => void)|null = null;
-  // </if>
-
   private pendingViewSwitching_: PromiseResolver<void> = new PromiseResolver();
   private topLevelEquivalentRoute_: Route = getTopLevelRoute();
   private currentQuery_: string = '';
@@ -149,32 +136,10 @@ export class SettingsMainElement extends SettingsMainElementBase {
 
     // Request loading of the lazy loaded module within an idle callback.
     requestIdleCallback(() => ensureLazyLoaded());
-
-    // <if expr="not is_chromeos">
-    if (this.showPage_(this.pageVisibility_.languages)) {
-      const languageHelper = getLanguageHelperInstance();
-      this.boundOnLanguagesChanged_ = (e: Event) => {
-        this.set('languages_', (e as CustomEvent<LanguagesModel>).detail);
-      };
-      languageHelper.addEventListener(
-          'languages-changed', this.boundOnLanguagesChanged_);
-      if (languageHelper.languages) {
-        this.set('languages_', languageHelper.languages);
-      }
-    }
-    // </if>
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-
-    // <if expr="not is_chromeos">
-    if (this.boundOnLanguagesChanged_) {
-      getLanguageHelperInstance().removeEventListener(
-          'languages-changed', this.boundOnLanguagesChanged_);
-      this.boundOnLanguagesChanged_ = null;
-    }
-    // </if>
   }
 
   private beforeNextRenderPromise_(): Promise<void> {

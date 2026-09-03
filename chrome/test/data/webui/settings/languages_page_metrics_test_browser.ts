@@ -46,11 +46,6 @@ suite('LanguagesPageMetricsBrowser', function() {
     await languageHelper.whenReady();
 
     languagesPage = document.createElement('settings-languages-page');
-    languagesPage.languages = languageHelper.languages;
-    languageHelper.addEventListener('languages-changed', (e: Event) => {
-      languagesPage.languages = (e as CustomEvent).detail;
-    });
-
     document.body.appendChild(languagesPage);
   });
 

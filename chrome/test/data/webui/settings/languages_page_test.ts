@@ -6,7 +6,7 @@
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {CrCheckboxElement, LanguageHelper, LanguagesModel, SettingsAddLanguagesDialogElement, SettingsLanguagesPageElement} from 'chrome://settings/lazy_load.js';
+import type {CrCheckboxElement, LanguageHelper, SettingsAddLanguagesDialogElement, SettingsLanguagesPageElement} from 'chrome://settings/lazy_load.js';
 import {LanguageHelperImpl, LanguagesBrowserProxyImpl, getLanguageHelperInstance} from 'chrome://settings/lazy_load.js';
 import type {CrActionMenuElement, CrButtonElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, loadTimeData, convertLanguageCodeForTranslate, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
@@ -62,11 +62,6 @@ suite('LanguagesPage', function() {
     await languageHelper.whenReady();
 
     languagesPage = document.createElement('settings-languages-page');
-    languagesPage.languages = languageHelper.languages;
-    languageHelper.addEventListener('languages-changed', (e: Event) => {
-      languagesPage.set('languages', (e as CustomEvent<LanguagesModel>).detail);
-    });
-
     document.body.appendChild(languagesPage);
     flush();
     actionMenu = languagesPage.$.menu.get();
@@ -131,9 +126,9 @@ suite('LanguagesPage', function() {
       cancelButton =
           dialog.shadowRoot.querySelector<CrButtonElement>('.cancel-button')!;
       assertTrue(!!cancelButton);
-      flush();
+      await microtasksFinished();
 
-      dialogItems = dialog.$.dialog.querySelectorAll<CrCheckboxElement>(
+      dialogItems = dialog.shadowRoot.querySelectorAll<CrCheckboxElement>(
           'cr-checkbox:not([hidden])');
       assertGT(dialogItems.length, 1);
 
@@ -149,8 +144,12 @@ suite('LanguagesPage', function() {
     test('undefined languages', function() {
       assertFalse(addLanguagesButton.disabled);
 
-      // Make the languages undefined and make sure the button is disabled.
-      languagesPage.languages = undefined;
+      // Make the languages empty and make sure the button is disabled.
+      languageHelper.dispatchEvent(new CustomEvent('languages-changed', {
+        detail: Object.assign({}, languageHelper.languages, {
+          supported: [],
+        }),
+      }));
       assertTrue(addLanguagesButton.disabled);
     });
 
@@ -219,7 +218,7 @@ suite('LanguagesPage', function() {
       assertTrue(!!searchInput);
 
       const getItems = function() {
-        return dialog.$.dialog.querySelectorAll('cr-checkbox:not([hidden])');
+        return dialog.shadowRoot.querySelectorAll('cr-checkbox:not([hidden])');
       };
 
       // Expecting a few languages to be displayed when no query exists.

@@ -14,14 +14,14 @@
 <cr-view-manager id="viewManager" class="cr-centered-card-container"
     show-all$="[[shouldShowAll]]">
   <settings-languages-page slot="view" id="languages"
-      languages="[[languages]]" route-path$="[[routes_.LANGUAGES.path]]">
+      route-path$="[[routes_.LANGUAGES.path]]">
   </settings-languages-page>
 
   <settings-spell-check-page slot="view" id="spellCheck"
-      languages="[[languages]]" route-path$="[[routes_.SPELL_CHECK.path]]">
+      route-path$="[[routes_.SPELL_CHECK.path]]">
   </settings-spell-check-page>
 
-  <settings-translate-page slot="view" id="translate" languages="[[languages]]">
+  <settings-translate-page slot="view" id="translate">
   </settings-translate-page>
 
 <if expr="not is_macosx">

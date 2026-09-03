@@ -81,11 +81,23 @@ export class SettingsLanguagesPageElement extends
 
   static get properties() {
     return {
-      /**
-       * Read-only reference to the languages model provided by the
-       * 'settings-languages' instance.
-       */
-      languages: Object,
+      supportedLanguages_: {
+        type: Array,
+        value: () => [],
+      },
+      enabledLanguages_: {
+        type: Array,
+        value: () => [],
+      },
+      translateTarget_: String,
+      canEnableSomeSupportedLanguage_: {
+        type: Boolean,
+        value: false,
+      },
+
+      // <if expr="is_win">
+      prospectiveUILanguage_: String,
+      // </if>
 
       /**
        * The language to display the details for.
@@ -102,13 +114,21 @@ export class SettingsLanguagesPageElement extends
     };
   }
 
-  declare languages?: LanguagesModel;
+  declare private supportedLanguages_:
+      chrome.languageSettingsPrivate.Language[];
+  declare private enabledLanguages_: LanguageState[];
+  declare private translateTarget_: string;
+  declare private canEnableSomeSupportedLanguage_: boolean;
+  // <if expr="is_win">
+  declare private prospectiveUILanguage_: string;
+  // </if>
   declare private detailLanguage_?: LanguageState;
   declare private showAddLanguagesDialog_: boolean;
   declare private addLanguagesDialogLanguages_:
       chrome.languageSettingsPrivate.Language[]|null;
   declare private showManagedLanguageDialog_: boolean;
   private languageHelper_: LanguageHelper;
+  private boundOnLanguagesChanged_: ((e: Event) => void)|null = null;
   private languageSettingsMetricsProxy_: LanguageSettingsMetricsProxy =
       LanguageSettingsMetricsProxyImpl.getInstance();
 
@@ -120,6 +140,37 @@ export class SettingsLanguagesPageElement extends
     super.connectedCallback();
 
     this.languageHelper_ = getLanguageHelperInstance();
+    this.boundOnLanguagesChanged_ = (e: Event) => {
+      this.onLanguagesChanged_((e as CustomEvent<LanguagesModel>).detail);
+    };
+    this.languageHelper_.addEventListener(
+        'languages-changed', this.boundOnLanguagesChanged_);
+    if (this.languageHelper_.languages) {
+      this.onLanguagesChanged_(this.languageHelper_.languages);
+    }
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+
+    if (this.boundOnLanguagesChanged_) {
+      this.languageHelper_.removeEventListener(
+          'languages-changed', this.boundOnLanguagesChanged_);
+      this.boundOnLanguagesChanged_ = null;
+    }
+  }
+
+  private onLanguagesChanged_(languages: LanguagesModel) {
+    this.set('supportedLanguages_', languages.supported);
+    this.set('enabledLanguages_', languages.enabled);
+    this.set('translateTarget_', languages.translateTarget);
+    // <if expr="is_win">
+    this.set('prospectiveUILanguage_', languages.prospectiveUILanguage);
+    // </if>
+    this.set(
+        'canEnableSomeSupportedLanguage_',
+        languages.supported.some(
+            language => this.languageHelper_.canEnableLanguage(language)));
   }
 
   /**
@@ -128,10 +179,9 @@ export class SettingsLanguagesPageElement extends
    */
   private onAddLanguagesClick_(e: Event) {
     e.preventDefault();
-    assert(this.languages);
     this.languageSettingsMetricsProxy_.recordPageImpressionMetric(
         LanguageSettingsPageImpressionType.ADD_LANGUAGE);
-    this.addLanguagesDialogLanguages_ = this.languages.supported.filter(
+    this.addLanguagesDialogLanguages_ = this.supportedLanguages_.filter(
         language => this.languageHelper_.canEnableLanguage(language));
     this.showAddLanguagesDialog_ = true;
   }
@@ -162,35 +212,22 @@ export class SettingsLanguagesPageElement extends
   }
 
   /**
-   * Checks if there are supported languages that are not enabled but can be
-   * enabled.
-   * @return True if there is at least one available language.
-   */
-  private canEnableSomeSupportedLanguage_(languages?: LanguagesModel): boolean {
-    return languages !== undefined && languages.supported.some(language => {
-      // Need to call getLanguageHelperInstance() instead of
-      // this.languageHelper_ here, because Polymer observers fire before
-      // connectedCallback sometimes.
-      return getLanguageHelperInstance().canEnableLanguage(language);
-    });
-  }
-
-  /**
    * Used to determine which "Move" buttons to show for ordering enabled
    * languages.
    * @return True if |language| is at the |n|th index in the list of enabled
    *     languages.
    */
   private isNthLanguage_(n: number): boolean {
-    if (this.languages === undefined || this.detailLanguage_ === undefined) {
+    if (this.enabledLanguages_ === undefined ||
+        this.detailLanguage_ === undefined) {
       return false;
     }
 
-    if (n >= this.languages.enabled.length) {
+    if (n >= this.enabledLanguages_.length) {
       return false;
     }
 
-    const compareLanguage = this.languages.enabled[n];
+    const compareLanguage = this.enabledLanguages_[n];
     return this.detailLanguage_.language === compareLanguage.language;
   }
 
@@ -207,8 +244,8 @@ export class SettingsLanguagesPageElement extends
    * @return True if the "Move down" option for |language| should be visible.
    */
   private showMoveDown_(): boolean {
-    return this.languages !== undefined &&
-        !this.isNthLanguage_(this.languages.enabled.length - 1);
+    return this.enabledLanguages_ !== undefined &&
+        !this.isNthLanguage_(this.enabledLanguages_.length - 1);
   }
 
   /**

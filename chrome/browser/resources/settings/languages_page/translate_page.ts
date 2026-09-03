@@ -51,11 +51,19 @@ export class SettingsTranslatePageElement extends
 
   static get properties() {
     return {
-      /**
-       * Read-only reference to the languages model provided by the
-       * 'settings-languages' instance.
-       */
-      languages: Object,
+      supportedLanguages_: {
+        type: Array,
+        value: () => [],
+      },
+      translateTarget_: String,
+      alwaysTranslateLanguages_: {
+        type: Array,
+        value: () => [],
+      },
+      neverTranslateLanguages_: {
+        type: Array,
+        value: () => [],
+      },
 
       showAddAlwaysTranslateDialog_: Boolean,
       showAddNeverTranslateDialog_: Boolean,
@@ -64,7 +72,13 @@ export class SettingsTranslatePageElement extends
     };
   }
 
-  declare languages?: LanguagesModel;
+  declare private supportedLanguages_:
+      chrome.languageSettingsPrivate.Language[];
+  declare private translateTarget_: string;
+  declare private alwaysTranslateLanguages_:
+      chrome.languageSettingsPrivate.Language[];
+  declare private neverTranslateLanguages_:
+      chrome.languageSettingsPrivate.Language[];
   declare protected translateEnabledPref_:
       chrome.settingsPrivate.PrefObject<boolean>|undefined;
   declare private showAddAlwaysTranslateDialog_: boolean;
@@ -72,6 +86,7 @@ export class SettingsTranslatePageElement extends
   declare private addLanguagesDialogLanguages_:
       chrome.languageSettingsPrivate.Language[]|null;
   private languageHelper_: LanguageHelper;
+  private boundOnLanguagesChanged_: ((e: Event) => void)|null = null;
   private languageSettingsMetricsProxy_: LanguageSettingsMetricsProxy =
       LanguageSettingsMetricsProxyImpl.getInstance();
 
@@ -83,6 +98,31 @@ export class SettingsTranslatePageElement extends
     });
 
     this.languageHelper_ = getLanguageHelperInstance();
+    this.boundOnLanguagesChanged_ = (e: Event) => {
+      this.onLanguagesChanged_((e as CustomEvent<LanguagesModel>).detail);
+    };
+    this.languageHelper_.addEventListener(
+        'languages-changed', this.boundOnLanguagesChanged_);
+    if (this.languageHelper_.languages) {
+      this.onLanguagesChanged_(this.languageHelper_.languages);
+    }
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+
+    if (this.boundOnLanguagesChanged_) {
+      this.languageHelper_.removeEventListener(
+          'languages-changed', this.boundOnLanguagesChanged_);
+      this.boundOnLanguagesChanged_ = null;
+    }
+  }
+
+  private onLanguagesChanged_(languages: LanguagesModel) {
+    this.set('supportedLanguages_', languages.supported);
+    this.set('translateTarget_', languages.translateTarget);
+    this.set('alwaysTranslateLanguages_', languages.alwaysTranslate);
+    this.set('neverTranslateLanguages_', languages.neverTranslate);
   }
 
   private onTargetLanguageChange_() {
@@ -139,7 +179,7 @@ export class SettingsTranslatePageElement extends
     e.preventDefault();
     const translatableLanguages = this.getTranslatableLanguages_();
     this.addLanguagesDialogLanguages_ = translatableLanguages.filter(
-        language => !this.languages!.alwaysTranslate.includes(language));
+        language => !this.alwaysTranslateLanguages_.includes(language));
     this.showAddAlwaysTranslateDialog_ = true;
   }
 
@@ -184,7 +224,7 @@ export class SettingsTranslatePageElement extends
     e.preventDefault();
     const translatableLanguages = this.getTranslatableLanguages_();
     this.addLanguagesDialogLanguages_ = translatableLanguages.filter(
-        language => !this.languages!.neverTranslate.includes(language));
+        language => !this.neverTranslateLanguages_.includes(language));
     this.showAddNeverTranslateDialog_ = true;
   }
 
@@ -243,7 +283,7 @@ export class SettingsTranslatePageElement extends
    */
   private getTranslatableLanguages_():
       chrome.languageSettingsPrivate.Language[] {
-    return this.languages!.supported.filter(language => {
+    return this.supportedLanguages_.filter(language => {
       return this.isTranslateSupported_(language);
     });
   }

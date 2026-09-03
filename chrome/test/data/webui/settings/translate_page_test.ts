@@ -46,11 +46,6 @@ suite('TranslatePage', function() {
     await languageHelper.whenReady();
 
     translatePage = document.createElement('settings-translate-page');
-    translatePage.languages = languageHelper.languages;
-    languageHelper.addEventListener('languages-changed', (e: Event) => {
-      translatePage.languages = (e as CustomEvent).detail;
-    });
-
     document.body.appendChild(translatePage);
     flush();
   });

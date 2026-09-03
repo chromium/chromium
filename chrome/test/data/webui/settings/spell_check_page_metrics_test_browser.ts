@@ -61,11 +61,6 @@ suite('SpellCheckPageMetricsBrowser', function() {
     await languageHelper.whenReady();
 
     spellCheckPage = document.createElement('settings-spell-check-page');
-    spellCheckPage.languages = languageHelper.languages;
-    languageHelper.addEventListener('languages-changed', (e: Event) => {
-      spellCheckPage.languages = (e as CustomEvent).detail;
-    });
-
     document.body.appendChild(spellCheckPage);
   });
 

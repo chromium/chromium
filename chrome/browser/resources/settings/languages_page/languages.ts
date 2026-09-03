@@ -271,7 +271,6 @@ export class LanguageHelperImpl extends EventTarget implements LanguageHelper {
 
   private dispatchLanguagesChanged_() {
     assert(this.languages);
-    this.languages = Object.assign({}, this.languages);
     this.dispatchEvent(new CustomEvent('languages-changed', {
       detail: this.languages,
     }));
@@ -321,8 +320,10 @@ export class LanguageHelperImpl extends EventTarget implements LanguageHelper {
 
     // Update translate target language.
     this.languageSettingsPrivate_.getTranslateTargetLanguage().then(result => {
-      this.languages!.translateTarget = result;
-      this.dispatchLanguagesChanged_();
+      if (this.languages && this.languages.translateTarget !== result) {
+        this.languages.translateTarget = result;
+        this.dispatchLanguagesChanged_();
+      }
     });
   }
 
