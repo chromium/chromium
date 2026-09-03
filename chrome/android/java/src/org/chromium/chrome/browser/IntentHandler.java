@@ -823,7 +823,7 @@ public class IntentHandler {
         // The logic in this method should be moved to ChromeTabbedActivity eventually. We should
         // support async handling of voice search when native finishes initializing.
         if (results == null
-                || results.size() == 0
+                || results.isEmpty()
                 || !BrowserStartupController.getInstance().isFullBrowserStarted()) {
             return null;
         }
@@ -1066,7 +1066,7 @@ public class IntentHandler {
                 }
                 setTabGroupMetadata(intent, tabGroupMetadata);
 
-                return tabIdsToUrls.size() == 0;
+                return tabIdsToUrls.isEmpty();
             } else {
                 return shouldIgnoreIntentUrl(
                         intent, context, getUrlFromIntent(intent), isCustomTab);
