@@ -53,7 +53,7 @@ constexpr CGFloat kRestingSheetMVTTopMargin = 12.0;
 
 // Bottom padding between the MVT collection view and the bottom of its
 // container.
-constexpr CGFloat kMVTContainerBottomPadding = 10.0;
+constexpr CGFloat kMVTContainerBottomPadding = 16.0;
 
 // Corner radius for the MVT container.
 constexpr CGFloat kMVTContainerCornerRadius = 24.0;
