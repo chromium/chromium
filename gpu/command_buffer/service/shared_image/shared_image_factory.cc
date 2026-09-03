@@ -172,9 +172,6 @@ SharedImageFactory::SharedImageFactory(
       gr_context_type_(context_state_ ? context_state_->gr_context_type()
                                       : GrContextType::kNone),
       gpu_preferences_(gpu_preferences),
-#if BUILDFLAG(IS_MAC)
-      texture_target_for_io_surfaces_(GL_TEXTURE_2D),
-#endif
       workarounds_(workarounds) {
 
   factory_ref_ = base::MakeRefCounted<SharedImageFactoryRef>(this);
@@ -355,11 +352,7 @@ SharedImageFactory::SharedImageFactory(
         std::make_unique<IOSurfaceImageBackingFactory>(
             gr_context_type_, context_state_->GetMaxTextureSize(),
             feature_info.get(), context_state_->progress_reporter(),
-#if BUILDFLAG(IS_MAC)
-            texture_target_for_io_surfaces_
-#else
             GL_TEXTURE_2D
-#endif
         );
     factories_.push_back(std::move(iosurface_backing_factory));
   }
@@ -897,11 +890,6 @@ gpu::SharedImageCapabilities SharedImageFactory::MakeCapabilities() {
         display_compositor_on_another_thread &&
         !context_state_->is_drdc_enabled();
   }
-
-#if BUILDFLAG(IS_MAC)
-  shared_image_caps.texture_target_for_io_surfaces =
-      texture_target_for_io_surfaces_;
-#endif
 
 #if BUILDFLAG(IS_WIN)
   shared_image_caps.shared_image_d3d = IsD3DSharedImageSupported();

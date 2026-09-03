@@ -255,9 +255,6 @@ class GPU_GLES2_EXPORT SharedImageFactory {
 
   gfx::GpuExtraInfo gpu_extra_info_;
   gpu::GpuPreferences gpu_preferences_;
-#if BUILDFLAG(IS_MAC)
-  uint32_t texture_target_for_io_surfaces_;
-#endif
   gpu::GpuDriverBugWorkarounds workarounds_;
 
 #if BUILDFLAG(IS_ANDROID)

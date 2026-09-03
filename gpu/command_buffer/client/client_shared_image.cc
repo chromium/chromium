@@ -63,7 +63,7 @@ namespace gpu {
 
 namespace {
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_ANDROID)
 bool GMBIsNative(gfx::GpuMemoryBufferType gmb_type) {
   return gmb_type != gfx::EMPTY_BUFFER && gmb_type != gfx::SHARED_MEMORY_BUFFER;
 }
@@ -88,28 +88,9 @@ bool GMBIsNative(gfx::GpuMemoryBufferType gmb_type) {
 //   supported in Chromium only on Ozone).
 uint32_t ComputeTextureTargetForSharedImage(
     SharedImageMetadata metadata,
-    gfx::GpuMemoryBufferType client_gmb_type,
-    scoped_refptr<SharedImageInterface> sii) {
-  CHECK(sii);
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_OZONE) && !BUILDFLAG(IS_ANDROID)
+    gfx::GpuMemoryBufferType client_gmb_type) {
+#if !BUILDFLAG(IS_OZONE) && !BUILDFLAG(IS_ANDROID)
   return GL_TEXTURE_2D;
-#elif BUILDFLAG(IS_MAC)
-  // Check for IOSurfaces being used. We infer IOSurface based on scanout or
-  // WebGPU usage, but that's not strictly correct e.g. with Graphite, WebGL
-  // canvas back buffers will also use IOSurfaces always regardless of scanout.
-  // However, in those cases we would be using GL_TEXTURE_2D anyway due to ANGLE
-  // Metal (or Swiftshader for tests) being used.
-  // Note that iOS uses GL_TEXTURE_2D even though it uses IOSurfaces -
-  // GL_TEXTURE_RECTANGLE_ARB is in CGL which is Mac only.
-  constexpr gpu::SharedImageUsageSet kUsagesRequiringNativeBuffer =
-      SHARED_IMAGE_USAGE_SCANOUT | SHARED_IMAGE_USAGE_WEBGPU_READ |
-      SHARED_IMAGE_USAGE_WEBGPU_WRITE;
-  const bool uses_native_buffer =
-      GMBIsNative(client_gmb_type) ||
-      metadata.usage.HasAny(kUsagesRequiringNativeBuffer);
-  return uses_native_buffer
-             ? sii->GetCapabilities().texture_target_for_io_surfaces
-             : GL_TEXTURE_2D;
 #else  // Ozone or Android
   // Check for external sampling being used.
   if (!metadata.format.PrefersExternalSampler()) {
@@ -379,8 +360,7 @@ ClientSharedImage::ClientSharedImage(
                : nullptr) {
   CHECK(!mailbox.IsZero());
   CHECK(sii_holder_);
-  texture_target_ = ComputeTextureTargetForSharedImage(
-      metadata_, gmb_type, GetSharedImageInterface());
+  texture_target_ = ComputeTextureTargetForSharedImage(metadata_, gmb_type);
 }
 
 ClientSharedImage::ClientSharedImage(
@@ -487,7 +467,7 @@ ClientSharedImage::ClientSharedImage(
   CHECK(sii_holder_);
   CHECK(mappable_buffer_);
   texture_target_ = ComputeTextureTargetForSharedImage(
-      metadata_, mappable_buffer_->GetType(), GetSharedImageInterface());
+      metadata_, mappable_buffer_->GetType());
 }
 
 ClientSharedImage::ClientSharedImage(const Mailbox& mailbox,

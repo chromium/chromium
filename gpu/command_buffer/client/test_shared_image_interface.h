@@ -199,18 +199,10 @@ class TestSharedImageInterface : public SharedImageInterface {
     emulate_client_provided_native_buffer_ = true;
   }
 
-#if BUILDFLAG(IS_MAC)
-  void set_texture_target_for_io_surfaces(uint32_t target) {
-    shared_image_capabilities_.texture_target_for_io_surfaces = target;
-  }
-#endif
-
  protected:
   ~TestSharedImageInterface() override;
 
  private:
-  void InitializeSharedImageCapabilities();
-
   mutable base::Lock lock_;
 
   raw_ptr<TestSharedImageInterfaceClient> test_client_ = nullptr;
