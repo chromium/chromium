@@ -8371,6 +8371,7 @@ from previous Chrome versions.
   <int value="-1966458819" label="AutofillPaymentsFieldSwapping:disabled"/>
   <int value="-1966445414" label="StylusBatteryStatus:disabled"/>
   <int value="-1966164684" label="DbdPasswordRemovalOnAndroid:enabled"/>
+  <int value="-1965799139" label="BrowserActuatorInternals:enabled"/>
   <int value="-1965587041" label="omnibox-tab-switch-suggestions"/>
   <int value="-1964730371"
       label="AutofillFillMerchantPromoCodeFields:disabled"/>
@@ -9987,6 +9988,7 @@ from previous Chrome versions.
   <int value="-1469555275"
       label="VmCameraMicIndicatorsAndNotifications:enabled"/>
   <int value="-1469536698" label="ChromeHomeDoodle:enabled"/>
+  <int value="-1469273573" label="BrowserActuatorInternals:disabled"/>
   <int value="-1469234511" label="KeyboardFocusableScrollers:disabled"/>
   <int value="-1469228683" label="QuickUnlockPinSignin:disabled"/>
   <int value="-1469116522" label="Floss:disabled"/>

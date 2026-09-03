@@ -21,7 +21,9 @@ BrowserActuatorInternalsUIConfig::~BrowserActuatorInternalsUIConfig() = default;
 
 bool BrowserActuatorInternalsUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return base::FeatureList::IsEnabled(browser_actuator::kBrowserActuator);
+  return base::FeatureList::IsEnabled(browser_actuator::kBrowserActuator) &&
+         base::FeatureList::IsEnabled(
+             browser_actuator::kBrowserActuatorInternals);
 }
 
 BrowserActuatorInternalsUI::BrowserActuatorInternalsUI(content::WebUI* web_ui)

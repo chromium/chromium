@@ -1499,6 +1499,14 @@
     "expiry_milestone": 170
   },
   {
+    "name": "browser-actuator-internals",
+    "owners": [
+      "andylky@google.com",
+      "//components/browser_actuator/OWNERS"
+    ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "browser-controls-debugging",
     "owners": [
       "wenyufu@chromium.org",

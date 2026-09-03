@@ -13,6 +13,7 @@
 namespace browser_actuator {
 
 BASE_DECLARE_FEATURE(kBrowserActuator);
+BASE_DECLARE_FEATURE(kBrowserActuatorInternals);
 BASE_DECLARE_FEATURE(kEnableBrowserActuatorForGlicExperimentalTriggering);
 
 // The OAuth2 scope used by the Browser Actuator for authentication with

@@ -11027,6 +11027,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"browser-actuator", flag_descriptions::kBrowserActuatorName,
      flag_descriptions::kBrowserActuatorDescription, kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(browser_actuator::kBrowserActuator)},
+    {"browser-actuator-internals",
+     flag_descriptions::kBrowserActuatorInternalsName,
+     flag_descriptions::kBrowserActuatorInternalsDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(browser_actuator::kBrowserActuatorInternals)},
     {"enable-browser-actuator-for-glic-experimental-triggering",
      flag_descriptions::kEnableBrowserActuatorForGlicExperimentalTriggeringName,
      flag_descriptions::

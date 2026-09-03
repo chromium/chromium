@@ -1319,6 +1319,11 @@ inline constexpr char kBrowserActuatorName[] = "Browser Actuator";
 inline constexpr char kBrowserActuatorDescription[] =
     "Enables the Browser Actuator service for remote browser automation.";
 
+inline constexpr char kBrowserActuatorInternalsName[] =
+    "Browser Actuator Internals";
+inline constexpr char kBrowserActuatorInternalsDescription[] =
+    "Enables the chrome://browser-actuator-internals diagnostic dashboard.";
+
 inline constexpr char
     kEnableBrowserActuatorForGlicExperimentalTriggeringName[] =
         "Enable Browser Actuator for Glic Experimental Triggering";
