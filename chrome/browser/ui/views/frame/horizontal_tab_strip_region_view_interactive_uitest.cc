@@ -782,3 +782,75 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewRTLInteractiveUiTest,
       WaitForState(kFirstTabVisibleObserver, true),
       WaitForState(kLastTabVisibleObserver, false));
 }
+
+// Verify tab strip draggable bounds extend across the available region space to
+// the control buttons even if tabs don't currently fill that space.
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewInteractiveUiTest,
+                       TabStripDraggableBoundsReservesTrailingControls) {
+  BrowserView::GetBrowserViewForBrowser(browser())->GetWidget()->SetBounds(
+      gfx::Rect(100, 100, 1000, 700));
+  views::test::RunScheduledLayout(
+      BrowserView::GetBrowserViewForBrowser(browser()));
+
+  RunTestSequence(
+      EnsurePresent(kTabStripRegionElementId),
+      EnsurePresent(kNewTabButtonElementId), Do([this]() {
+        auto* const region_view = horizontal_tab_strip_region_view();
+        ASSERT_NE(nullptr, region_view);
+
+        const gfx::Rect draggable_bounds =
+            region_view->GetTabStripDraggableBounds();
+        const gfx::Rect tab_strip_bounds =
+            tab_strip_view()->GetBoundsInScreen();
+        const gfx::Rect region_bounds = region_view->GetBoundsInScreen();
+
+        // Draggable bounds should start at the leading edge of the tab strip.
+        EXPECT_EQ(draggable_bounds.x(), tab_strip_bounds.x());
+        EXPECT_EQ(draggable_bounds.y(), tab_strip_bounds.y());
+        EXPECT_EQ(draggable_bounds.height(), tab_strip_bounds.height());
+
+        // Draggable bounds should extend past the current tab strip width into
+        // available region space.
+        EXPECT_GT(draggable_bounds.width(), tab_strip_bounds.width());
+
+        // Draggable bounds stop before the end of the region, leaving room
+        // for trailing controls (grab handle, NTB, etc).
+        EXPECT_LT(draggable_bounds.right(), region_bounds.right());
+      }));
+}
+
+// Verify tab strip draggable bounds extend across the available region space to
+// the control buttons even if tabs don't currently fill that space in RTL.
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewRTLInteractiveUiTest,
+                       TabStripDraggableBoundsReservesTrailingControlsRTL) {
+  BrowserView::GetBrowserViewForBrowser(browser())->GetWidget()->SetBounds(
+      gfx::Rect(100, 100, 1000, 700));
+  views::test::RunScheduledLayout(
+      BrowserView::GetBrowserViewForBrowser(browser()));
+
+  RunTestSequence(
+      EnsurePresent(kTabStripRegionElementId),
+      EnsurePresent(kNewTabButtonElementId), Do([this]() {
+        auto* const region_view = horizontal_tab_strip_region_view();
+        ASSERT_NE(nullptr, region_view);
+
+        const gfx::Rect draggable_bounds =
+            region_view->GetTabStripDraggableBounds();
+        const gfx::Rect tab_strip_bounds =
+            tab_strip_view()->GetBoundsInScreen();
+        const gfx::Rect region_bounds = region_view->GetBoundsInScreen();
+
+        // In RTL, the draggable bounds right edge aligns with the tab strip's
+        // right edge.
+        EXPECT_EQ(draggable_bounds.right(), tab_strip_bounds.right());
+        EXPECT_EQ(draggable_bounds.y(), tab_strip_bounds.y());
+        EXPECT_EQ(draggable_bounds.height(), tab_strip_bounds.height());
+
+        // Draggable bounds should extend to the left beyond the current tab
+        // strip into available space.
+        EXPECT_LT(draggable_bounds.x(), tab_strip_bounds.x());
+
+        // Draggable bounds save room for trailing controls on the left.
+        EXPECT_GT(draggable_bounds.x(), region_bounds.x());
+      }));
+}

@@ -908,10 +908,45 @@ views::View* HorizontalTabStripRegionViewNew::GetTabStripView() {
 }
 
 gfx::Rect HorizontalTabStripRegionViewNew::GetTabStripDraggableBounds() const {
-  if (tab_strip_view()) {
-    return tab_strip_view()->GetBoundsInScreen();
+  if (!tab_strip_view()) {
+    return gfx::Rect();
   }
-  return gfx::Rect();
+
+  // Tabs should be draggable from the leading edge of the tab strip across the
+  // available region space, saving space for the trailing controls (grab
+  // handle, action container, and new tab button). This allows the tab strip to
+  // expand into available space during a drag while preventing tabs from being
+  // dragged past the new tab button into the frame grab handle area.
+  int trailing_reserved_width = 0;
+  if (reserved_grab_handle_space_) {
+    trailing_reserved_width +=
+        reserved_grab_handle_space_->GetPreferredSize().width();
+  }
+  if (tab_strip_action_container_ &&
+      tab_strip_action_container_->GetVisible()) {
+    trailing_reserved_width +=
+        tab_strip_action_container_->GetPreferredSize().width();
+  }
+  if (new_tab_button_ && new_tab_button_->GetVisible()) {
+    trailing_reserved_width += new_tab_button_->GetPreferredSize().width();
+  }
+
+  const gfx::Rect tab_strip_bounds = tab_strip_view()->GetBoundsInScreen();
+  const gfx::Rect region_bounds = GetBoundsInScreen();
+  const bool is_rtl = base::i18n::IsRTL();
+
+  const int start_x =
+      is_rtl ? std::min(tab_strip_bounds.x(),
+                        region_bounds.x() + trailing_reserved_width)
+             : tab_strip_bounds.x();
+  const int end_x =
+      is_rtl ? tab_strip_bounds.right()
+             : std::max(tab_strip_bounds.right(),
+                        region_bounds.right() - trailing_reserved_width);
+
+  gfx::Rect tab_strip_draggable_bounds = tab_strip_bounds;
+  tab_strip_draggable_bounds.SetHorizontalBounds(start_x, end_x);
+  return tab_strip_draggable_bounds;
 }
 
 gfx::Point HorizontalTabStripRegionViewNew::GetLinkDropArrowPosition(
