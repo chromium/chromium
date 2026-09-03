@@ -11,6 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -291,7 +292,13 @@ class ChromeAppAPIFencedFrameTest : public ChromeAppAPITest {
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
-IN_PROC_BROWSER_TEST_F(ChromeAppAPIFencedFrameTest, NoInfo) {
+// TODO(crbug.com/554565046): Re-enable this test
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_NoInfo DISABLED_NoInfo
+#else
+#define MAYBE_NoInfo NoInfo
+#endif
+IN_PROC_BROWSER_TEST_F(ChromeAppAPIFencedFrameTest, MAYBE_NoInfo) {
   GURL app_url = https_server()->GetURL(
       "a.test", "/extensions/get_app_details_for_fenced_frame.html");
 
