@@ -41,7 +41,7 @@ The Omnibox Java code resides under `chrome/browser/ui/android/omnibox/java/src/
 
 ### Model Properties (`*Properties.java`) & ViewBinders
 
-- **Property-Driven State Representation**: If a component is a proper MVC component and a change can be represented using properties, it **must** be captured as a property in `PropertyModel`. Coordinators and Mediators should avoid manipulating views directly. In virtually all cases (including context menu content, text state, styling, listeners, and visibility), properties should be used; exceptions arise only when it is impossible to capture and agree on a state (e.g. `requestFocus()`).
+- **Comprehensive Property Coverage**: As established in Clank MVC Principles, every mutable visual or behavioral attribute that can be represented as a discrete state must be captured as a property in `PropertyModel` rather than directly driven by View method calls.
 - **Alphabetical Sorting**: Properties listed in `*Properties.java` files must be sorted alphabetically for easier lookup (both within field declarations and in `ALL_KEYS` / `ALL_UNIQUE_KEYS` arrays).
 - **Semantic Grouping & Naming**: Properties listed in `*Properties.java` files must be grouped semantically by prefix (e.g. `BTN_ADD_VISIBLE`, `BTN_ADD_ENABLED`, `BTN_ADD_CALLBACK`) so alphabetical sorting naturally groups related properties together.
 - **ViewBinder Order Consistency**: `ViewBinder` binding logic (`bind(...)` method's `if/else if` chain or dispatch logic) must follow the exact same order as `*Properties.java` for all new code.
@@ -52,7 +52,7 @@ The Omnibox Java code resides under `chrome/browser/ui/android/omnibox/java/src/
 ### General Guidelines
 
 - **OmniboxResourceProvider Migration**: Do not add new static methods to `OmniboxResourceProvider`. The component is actively being migrated to instance methods to eliminate redundant client-side caching and prevent UI inconsistencies. Any new functionality must be added as an instance method and accessed through an `OmniboxResourceProvider` instance (typically supplied via `PropertyModel` or dependency injection).
-- **Listener Cleanup**: Always remove listeners and observers in the component's `destroy()` method to prevent memory leaks.
+- **Listener & Observer Cleanup**: Always remove listeners and observers in the component's `destroy()` method to prevent memory leaks. Observe strict MVC boundaries during destruction: Coordinators and Mediators unregister observers from models, data providers, and child components; View click listeners and UI callback teardowns belong inside the View / `ViewBinder` lifecycle (e.g. `LocationBarLayout.destroy()`), not directly held or cleared in the Coordinator.
 - **Destruction Propagation**: A parent component `X` **must** implement a `destroy()` method if any of the subcomponents it owns implements a `destroy()` method. The parent's `destroy()` method must clean up and invoke `destroy()` on all its children.
 - **View Inflation**: Prefer using `AsyncViewInflation` where possible to keep the Main Thread free and reduce startup latency.
 - **Imports**: Use `import` statements whenever possible instead of using fully qualified class names within the code.
@@ -68,12 +68,13 @@ The Omnibox Java code resides under `chrome/browser/ui/android/omnibox/java/src/
   - **Repeated Plain-Old-Data (POD) Parameters**: Repeated primitive / POD parameters (e.g., consecutive `int`, `long`, `float`, `boolean` values) unconditionally must be documented at call sites with `/* paramName= */` comments unless the parameter order is self-evident from the method name (e.g., `new Rect(...)` is fine, but `MotionEvent.obtain(/* downTime= */ 0, /* eventTime= */ 0, /* action= */ ACTION_DOWN, /* x= */ 0, /* y= */ 0, /* metaState= */ 0)` is not). Exact formal parameter names are required by ErrorProne.
 - **Complexity & Early Returns**: Prefer early return statements over deeply nested conditional statements. Keep the cyclomatic complexity of methods low.
 - **Prefer Switch Expressions (`return switch (...)` / `variable = switch (...)`)**:
-  - Prefer modern Java `switch` expressions over verbose `if / else if` ladders or legacy statement `switch` blocks when mapping or resolving discrete `@IntDef`, `enum`, or state values to a result.
+  - Prefer modern Java `switch` expressions over verbose `if / else if` ladders or legacy statement `switch` blocks when mapping or resolving discrete `@IntDef`, `enum`, or primitive/string values to a result.
   - Using `return switch (key) { ... }` or assigning directly via `variable = switch (key) { ... }`:
     - Eliminates mutable temporary variables and repetitive branching boilerplate.
     - Eliminates fallthrough bugs (no `break` statements required) and enforces exhaustiveness at compile time.
     - Avoids heap allocation, primitive boxing, and `<clinit>` overhead compared to static lookup collections (e.g. `Map.of()`).
     - Substantially reduces cyclomatic complexity and visual nesting.
+  - *Exemption for `ViewBinder.bind(...)`*: `PropertyKey` instances are static final object references rather than compile-time constants or enums, so Java syntax does not permit switching on them (`case FooProperties.BAR:` is a compiler error). `ViewBinder` dispatch must continue to use an `if / else if` chain with direct reference equality (`==`).
 - **Method Length & Single Responsibility**:
   - The optimal size of a method is **<50 lines of code (LOC)**.
   - Methods longer than 50 LOC should be divided assuming they do more than one thing.
@@ -111,7 +112,7 @@ The Omnibox Java code resides under `chrome/browser/ui/android/omnibox/java/src/
   - If used across multiple files, isolate them to an appropriate separate utility/helper file so that everyone uses the same logic.
 - **Avoid `instanceof` Checks**: Avoid using `instanceof` and explicit downcasting. `instanceof` is typically a code smell indicating that concrete implementation details are being shoehorned into code that should be properly abstracted. Prefer polymorphism, interface contracts, or delegating behavior directly to the class hierarchy rather than type-checking and branching on concrete types.
 - **Placement**: Ensure logic is implemented in the correct architectural location as early as possible in the flow.
-- **Reusability**: Structure components and logic to be reusable where applicable.
+- **OmniboxUrlUtils for NTP Evaluation**: In Omnibox and LocationBar UI logic, always use `OmniboxUrlUtils.isNtpUrl(url)` rather than calling `UrlUtilities.isNtpUrl(url)` directly. This ensures consistent handling of transient empty/invalid URLs occurring during new tab or new window creation before navigation commits (see crbug.com/553118979), preventing UI flickers (such as showing a globe icon instead of the search engine logo) and enabling early cursor focus.
 
 ## Feature Flags
 
@@ -147,18 +148,16 @@ When introducing or modifying Omnibox feature flags:
   - The *target* size of a test function is **<30 lines of code (LOC)** (ideal: **10 ± 5 lines of code**).
   - Test cases longer than **30 lines of code** are strongly discouraged.
 - **Isolating Setup Logic**: Isolate complex initialization and mock configurations inside helper methods or `@Before` setup blocks. The test method itself should focus solely on setting up the specific scenario, triggering the target behavior, and asserting the expected outcomes in a few clear lines.
-- **Consolidating Tests with Heavy Setup**: Tests where setup is longer than validation should be considered to be merged together where it makes sense, e.g.:
+- **Consolidating Tests with Heavy Setup**: When the execution runtime of a setup phase is heavy (e.g. expensive layout inflation, complex state graphs, or framework bootstrapping that dominates test run time), consider consolidating tests that share the exact same setup where it makes sense. Instead of executing the heavy setup repeatedly across multiple tests merely to assert different facets of the resulting state:
   ```java
-  testA() {
-    // lots of setup, taking most of the time
+  // Consolidate when running the same heavy setup repeatedly incurs significant runtime overhead:
+  testAAndBCombined() {
+    heavySetupHelper();
     assertTrue(someResult);
-  }
-
-  testB() {
-    // same setup, taking most of the time
     assertFalse(someOtherResult());
   }
   ```
+  Common setup logic must still be isolated in a helper method or `@Before` block rather than duplicated inline, keeping the test body concise and strictly within the `<30 LOC` target.
 - **Remove Redundant and Zombie Tests**: Redundant and zombie tests need to be removed.
 - **Use `@UiThreadTest` over `runOnUiThreadBlocking()`**:
   - Tests that wrap their entire logic with `runOnUiThreadBlocking()` should be rewritten as `@UiThreadTest`.
@@ -198,7 +197,7 @@ When introducing or modifying Omnibox feature flags:
       - Avoid bundling explicit `/* times(1) */` / `times(1)` parameters since single invocation is already the default. If verifying actions across distinct test phases, isolate step boundaries using `clearInvocations(mock)`.
   - **`reset(mock)` (Unwelcome)**:
     - *Problem*: Reconstructs internal Mockito handler state, wipes configured stubs, defeats JIT optimizations, and can leak state across test runs.
-    - *Alternative*: Use `clearInvocations(mock)` if you only need to discard recorded interactions without resetting stubs, or instantiate fresh mock instances per test method via standard `@Before` or `@Mock` field lifecycle.
+    - *Alternative*: Use `clearInvocations(mock)` if you only need to discard recorded interactions without resetting stubs, rely on standard `@Mock` field lifecycle re-initialization by `MockitoRule` between test runs, or instantiate fresh fakes/lightweight real objects in `@Before`.
   - **Inconsistent `@Config` across Robolectric Tests (Unwelcome)**:
     - *Problem*: Varying `@Config(shadows = ...)` or `@Config(sdk = ...)` forces Chromium's test harness (`local_machine_junit_test_run.py`) to fragment tests into separate process shards, or triggers runtime failures (`"Invalid test batch detected"`) in `BaseRobolectricTestRunner`. Additionally, `@Config(qualifiers = "...")` contributes directly to the shard grouping key in `TestListComputer`, so introducing arbitrary or unique qualifier strings splits tests into separate process buckets.
     - *Alternative*: Use standardized Robolectric configuration across test suites; avoid custom shadows or SDK variants when real Android or POJO classes can be used. Using `@Config(qualifiers = ...)` is acceptable for establishing device/screen configurations, but avoid proliferating too many distinct configs—standardize on and reuse existing common configs where possible, or adjust qualifiers dynamically during test execution (e.g. `RuntimeEnvironment.setQualifiers(...)`).
