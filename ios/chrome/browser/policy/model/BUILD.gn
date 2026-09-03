@@ -150,6 +150,7 @@ source_set("cloud_profile_reporting") {
     "//base",
     "//components/enterprise",
     "//components/enterprise/browser/identifiers",
+    "//components/enterprise/device_attestation",
     "//components/keyed_service/core",
     "//components/policy/core/common",
     "//ios/chrome/browser/enterprise/identifiers:profile_id_service_factory",
@@ -157,6 +158,7 @@ source_set("cloud_profile_reporting") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/public/provider/chrome/browser/device_attestation:device_attestation_api",
     "//services/network/public/cpp",
   ]
 }
