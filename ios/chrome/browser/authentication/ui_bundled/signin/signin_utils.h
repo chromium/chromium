@@ -16,11 +16,9 @@
 #import "base/ios/block_types.h"
 #import "base/time/time.h"
 #import "components/signin/public/identity_manager/account_info.h"
-#import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync/base/data_type.h"
 #import "ios/chrome/app/change_profile_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
-#import "ios/chrome/browser/signin/model/capabilities_types.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 
 class Browser;
@@ -129,8 +127,6 @@ void RecordFullscreenSigninPromoStarted(
     ChromeAccountManagerService* account_manager_service,
     const base::Version& current_version);
 
-// Converts a SystemIdentityCapabilityResult to a Tribool.
-Tribool TriboolFromCapabilityResult(SystemIdentityCapabilityResult result);
 
 // Returns the list of all accounts on the device, in the order provided by the
 // system, including the ones that are assigned to other profiles.

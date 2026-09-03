@@ -398,17 +398,6 @@ void RecordFullscreenSigninPromoStarted(
   [defaults setInteger:display_count forKey:kSigninPromoViewDisplayCountKey];
 }
 
-Tribool TriboolFromCapabilityResult(SystemIdentityCapabilityResult result) {
-  switch (result) {
-    case SystemIdentityCapabilityResult::kTrue:
-      return Tribool::kTrue;
-    case SystemIdentityCapabilityResult::kFalse:
-      return Tribool::kFalse;
-    case SystemIdentityCapabilityResult::kUnknown:
-      return Tribool::kUnknown;
-  }
-  NOTREACHED();
-}
 
 NSArray<id<SystemIdentity>>* GetIdentitiesOnDevice(
     signin::IdentityManager* identityManager,
