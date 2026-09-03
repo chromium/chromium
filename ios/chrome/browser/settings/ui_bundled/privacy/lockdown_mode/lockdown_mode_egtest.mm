@@ -74,9 +74,10 @@ NSString* const kLockdownModeCellId = @"kLockdownModeCellId";
   [self openLockdownModeSettings];
 
   // Check that lockdown mode row shows an "off" text label.
-  [[EarlGrey
-      selectElementWithMatcher:TableViewSwitchCell(kLockdownModeCellId, NO)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:TableViewSwitchCell(
+                                                       kLockdownModeCellId,
+                                                       NO)];
 
   [self tapLockdownModeToggleButton:NO withNewValue:YES];
   [[EarlGrey
