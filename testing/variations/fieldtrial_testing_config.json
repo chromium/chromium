@@ -12264,6 +12264,7 @@
                     "name": "Enabled",
                     "enable_features": [
                         "IPH_SendTabToSelfOmnibox",
+                        "IPH_SendTabToSelfTutorial",
                         "SendTabToSelfDynamicShortcuts",
                         "SendTabToSelfEnhancedDesktopUIv2",
                         "SendTabToSelfOpenNativeApp",
