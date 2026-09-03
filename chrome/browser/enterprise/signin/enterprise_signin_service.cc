@@ -13,7 +13,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_command_controller.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
@@ -140,8 +139,7 @@ void EnterpriseSigninService::OpenOrActivateGaiaReauthTab() {
     VLOG(2) << "Focused tab is a login page, nothing to do.";
   } else {
     VLOG(2) << "Focused tab is not a login page, opening a new one.";
-    browser->GetFeatures()
-        .browser_command_controller()
+    chrome::BrowserCommandController::From(browser)
         ->ExecuteCommandWithDisposition(
             IDC_SHOW_SIGNIN_WHEN_PAUSED,
             WindowOpenDisposition::NEW_FOREGROUND_TAB);

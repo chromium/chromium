@@ -834,19 +834,17 @@ std::vector<int> GetUngroupedTabIndices(BrowserWindowInterface* browser) {
 }  // namespace
 
 bool IsCommandEnabled(BrowserWindowInterface* browser, int command) {
-  return browser->GetFeatures().browser_command_controller()->IsCommandEnabled(
-      command);
+  return BrowserCommandController::From(browser)->IsCommandEnabled(command);
 }
 
 bool SupportsCommand(BrowserWindowInterface* browser, int command) {
-  return browser->GetFeatures().browser_command_controller()->SupportsCommand(
-      command);
+  return BrowserCommandController::From(browser)->SupportsCommand(command);
 }
 
 bool ExecuteCommand(BrowserWindowInterface* browser,
                     int command,
                     base::TimeTicks time_stamp) {
-  return browser->GetFeatures().browser_command_controller()->ExecuteCommand(
+  return BrowserCommandController::From(browser)->ExecuteCommand(
       command, std::nullopt, time_stamp);
 }
 
@@ -854,7 +852,7 @@ bool ExecuteCommandWithContext(BrowserWindowInterface* browser,
                                int command,
                                actions::ActionInvocationContext context,
                                base::TimeTicks time_stamp) {
-  return browser->GetFeatures().browser_command_controller()->ExecuteCommand(
+  return BrowserCommandController::From(browser)->ExecuteCommand(
       command, std::move(context), time_stamp);
 }
 
@@ -862,10 +860,8 @@ bool ExecuteCommandWithDisposition(BrowserWindowInterface* browser,
                                    int command,
                                    WindowOpenDisposition disposition,
                                    base::TimeTicks time_stamp) {
-  return browser->GetFeatures()
-      .browser_command_controller()
-      ->ExecuteCommandWithDisposition(command, disposition, std::nullopt,
-                                      time_stamp);
+  return BrowserCommandController::From(browser)->ExecuteCommandWithDisposition(
+      command, disposition, std::nullopt, time_stamp);
 }
 
 bool ExecuteCommandWithDispositionAndContext(
@@ -874,31 +870,29 @@ bool ExecuteCommandWithDispositionAndContext(
     WindowOpenDisposition disposition,
     actions::ActionInvocationContext context,
     base::TimeTicks time_stamp) {
-  return browser->GetFeatures()
-      .browser_command_controller()
-      ->ExecuteCommandWithDisposition(command, disposition, std::move(context),
-                                      time_stamp);
+  return BrowserCommandController::From(browser)->ExecuteCommandWithDisposition(
+      command, disposition, std::move(context), time_stamp);
 }
 
 void UpdateCommandEnabled(BrowserWindowInterface* browser,
                           int command,
                           bool enabled) {
-  browser->GetFeatures().browser_command_controller()->UpdateCommandEnabled(
-      command, enabled);
+  BrowserCommandController::From(browser)->UpdateCommandEnabled(command,
+                                                                enabled);
 }
 
 void AddCommandObserver(BrowserWindowInterface* browser,
                         int command,
                         CommandObserver* observer) {
-  browser->GetFeatures().browser_command_controller()->AddCommandObserver(
-      command, observer);
+  BrowserCommandController::From(browser)->AddCommandObserver(command,
+                                                              observer);
 }
 
 void RemoveCommandObserver(BrowserWindowInterface* browser,
                            int command,
                            CommandObserver* observer) {
-  browser->GetFeatures().browser_command_controller()->RemoveCommandObserver(
-      command, observer);
+  BrowserCommandController::From(browser)->RemoveCommandObserver(command,
+                                                                 observer);
 }
 
 int GetContentRestrictions(const BrowserWindowInterface* browser) {

@@ -41,7 +41,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/fullscreen/browser_window_fullscreen_controller.h"
@@ -1042,7 +1041,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
   BrowserWindowInterface* app_browser = CreateBrowserWindow(std::move(params));
 
   chrome::BrowserCommandController* commandController =
-      app_browser->GetFeatures().browser_command_controller();
+      BrowserCommandController::From(app_browser);
   EXPECT_TRUE(commandController->IsCommandEnabled(IDC_NEW_TAB));
 }
 

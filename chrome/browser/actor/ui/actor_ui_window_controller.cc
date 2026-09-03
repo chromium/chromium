@@ -11,7 +11,6 @@
 #include "chrome/browser/actor/ui/handoff_button_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_command_controller.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
@@ -419,5 +418,5 @@ void ActorUiWindowController::TearDown() {
 
 chrome::BrowserCommandController*
 ActorUiWindowController::GetCommandController() {
-  return browser_window_interface_->GetFeatures().browser_command_controller();
+  return chrome::BrowserCommandController::From(browser_window_interface_);
 }

@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/zoom/browser_window_zoom_observer.h"
 
 #include "chrome/browser/ui/browser_command_controller.h"  // nogncheck
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/zoom/zoom_controller.h"
@@ -47,7 +46,7 @@ void BrowserWindowZoomObserver::OnZoomChanged(
       browser_->GetTabStripModel()->GetActiveWebContents()) {
     zoom_changed_callbacks_.Notify(data.can_show_bubble);
     // Update zoom commands state (zoom in/out/reset enabled/disabled).
-    browser_->GetFeatures().browser_command_controller()->ZoomStateChanged();
+    chrome::BrowserCommandController::From(browser_)->ZoomStateChanged();
   }
 }
 

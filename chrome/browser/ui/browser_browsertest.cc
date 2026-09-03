@@ -3599,7 +3599,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DisablePrintOnCrashedTab) {
   content::WebContents* contents = tab_strip_model->GetActiveWebContents();
 
   CommandUpdater* command_updater =
-      browser()->GetFeatures().browser_command_controller();
+      chrome::BrowserCommandController::From(browser());
 
   EXPECT_FALSE(contents->IsCrashed());
   EXPECT_TRUE(command_updater->IsCommandEnabled(IDC_PRINT));
@@ -3626,7 +3626,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DisableZoomOnCrashedTab) {
       zoom_controller->SetZoomLevel(zoom_controller->GetDefaultZoomLevel()));
 
   CommandUpdater* command_updater =
-      browser()->GetFeatures().browser_command_controller();
+      chrome::BrowserCommandController::From(browser());
 
   EXPECT_TRUE(zoom_controller->IsAtDefaultZoom());
   EXPECT_FALSE(contents->IsCrashed());

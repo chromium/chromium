@@ -15,10 +15,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
@@ -134,7 +134,7 @@ class ToolbarDependencyProvider : public WebUIToolbarUI::DependencyProvider {
 
   CommandUpdater* GetCommandUpdater() override {
     return reinterpret_cast<CommandUpdater*>(
-        browser_->GetFeatures().browser_command_controller());
+        chrome::BrowserCommandController::From(browser_));
   }
 
   OmniboxController* GetOmniboxController() override { return nullptr; }

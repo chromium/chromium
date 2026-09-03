@@ -55,7 +55,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/time/time.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"  // nogncheck crbug.com/40147906
@@ -113,9 +112,7 @@ void CoreTabHelper::UpdateContentRestrictions(int content_restrictions) {
     return;
   }
 
-  browser->GetFeatures()
-      .browser_command_controller()
-      ->ContentRestrictionsChanged();
+  chrome::BrowserCommandController::From(browser)->ContentRestrictionsChanged();
 #endif
 }
 
@@ -446,9 +443,7 @@ void CoreTabHelper::NavigationEntriesDeleted() {
       [this](BrowserWindowInterface* browser) {
         if (web_contents() ==
             browser->GetTabStripModel()->GetActiveWebContents()) {
-          browser->GetFeatures()
-              .browser_command_controller()
-              ->TabStateChanged();
+          chrome::BrowserCommandController::From(browser)->TabStateChanged();
         }
         return true;
       });
@@ -464,9 +459,7 @@ void CoreTabHelper::OnWebContentsFocused(
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
           web_contents());
   if (browser) {
-    browser->GetFeatures()
-        .browser_command_controller()
-        ->WebContentsFocusChanged();
+    chrome::BrowserCommandController::From(browser)->WebContentsFocusChanged();
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 }
@@ -478,9 +471,7 @@ void CoreTabHelper::OnWebContentsLostFocus(
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
           web_contents());
   if (browser) {
-    browser->GetFeatures()
-        .browser_command_controller()
-        ->WebContentsFocusChanged();
+    chrome::BrowserCommandController::From(browser)->WebContentsFocusChanged();
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 }

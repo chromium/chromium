@@ -16,9 +16,9 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -134,7 +134,7 @@ class ToolbarDependencyProvider : public WebUIToolbarUI::DependencyProvider {
 
   CommandUpdater* GetCommandUpdater() override {
     return reinterpret_cast<CommandUpdater*>(
-        browser_->GetFeatures().browser_command_controller());
+        chrome::BrowserCommandController::From(browser_));
   }
 
   OmniboxController* GetOmniboxController() override { return nullptr; }
