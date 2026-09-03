@@ -450,7 +450,7 @@ void BackgroundFetchScheduler::AbortFetches(
   // Abandon all active associated with this service worker.
   // BackgroundFetchJobController::Abort() will eventually lead to deletion of
   // the controller from job_controllers, so the IDs need to be copied over.
-  std::vector<BackgroundFetchJobController*> to_abort;
+  std::vector<std::string> job_unique_ids_to_abort;
   for (const auto& controller : job_controllers_) {
     if (service_worker_registration_id !=
             blink::mojom::kInvalidServiceWorkerRegistrationId &&
@@ -459,13 +459,17 @@ void BackgroundFetchScheduler::AbortFetches(
                 .service_worker_registration_id()) {
       continue;
     }
-    to_abort.push_back(controller.second.get());
+    job_unique_ids_to_abort.push_back(controller.first);
   }
 
-  for (auto* controller : to_abort) {
+  for (const std::string& unique_id : job_unique_ids_to_abort) {
+    auto it = job_controllers_.find(unique_id);
+    if (it == job_controllers_.end()) {
+      continue;
+    }
     // Erase it from |controller_ids_| first to avoid rescheduling.
-    base::Erase(controller_ids_, controller->registration_id());
-    controller->Abort(BackgroundFetchFailureReason::SERVICE_WORKER_UNAVAILABLE,
+    base::Erase(controller_ids_, it->second->registration_id());
+    it->second->Abort(BackgroundFetchFailureReason::SERVICE_WORKER_UNAVAILABLE,
                       base::DoNothing());
   }
 }
