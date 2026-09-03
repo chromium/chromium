@@ -40,7 +40,7 @@ FontEnumerationCache::CreateForTesting(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     std::unique_ptr<FontEnumerationDataSource> data_source,
     std::optional<std::string> locale_override) {
-  DCHECK(data_source);
+  CHECK(data_source, base::NotFatalUntil::M159);
   return base::SequenceBound<FontEnumerationCache>(
       std::move(task_runner), std::move(data_source),
       std::move(locale_override), base::PassKey<FontEnumerationCache>());
@@ -52,7 +52,7 @@ FontEnumerationCache::FontEnumerationCache(
     base::PassKey<FontEnumerationCache>)
     : data_source_(std::move(data_source)),
       locale_override_(std::move(locale_override)) {
-  DCHECK(data_source_);
+  CHECK(data_source_, base::NotFatalUntil::M159);
 }
 
 FontEnumerationCache::~FontEnumerationCache() {
@@ -71,7 +71,7 @@ FontEnumerationData FontEnumerationCache::GetFontEnumerationData() {
     initialized_ = true;
   }
 
-  DCHECK(initialized_);
+  CHECK(initialized_, base::NotFatalUntil::M159);
   return {.status = data_.status, .font_data = data_.font_data.Duplicate()};
 }
 
@@ -102,7 +102,8 @@ void FontEnumerationCache::BuildEnumerationCache(
     return;
   }
 
-  DCHECK_GE(font_data_region.mapping.size(), table.ByteSizeLong());
+  CHECK_GE(font_data_region.mapping.size(), table.ByteSizeLong(),
+           base::NotFatalUntil::M159);
   base::span<uint8_t> font_mem(font_data_region.mapping);
   if (!table.SerializeToArray(font_mem.data(), font_mem.size())) {
     data_.status = blink::mojom::FontEnumerationStatus::kUnexpectedError;

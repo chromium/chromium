@@ -51,7 +51,7 @@ FcFontSet* ListFonts(FcObjectSet* object_set) {
       // Increments the refcount for the font.
       FcPatternReference(font);
       FcBool result = FcFontSetAdd(output, font);
-      DCHECK_EQ(result, FcTrue);
+      CHECK_EQ(result, FcTrue, base::NotFatalUntil::M159);
     }
   }
   return output;

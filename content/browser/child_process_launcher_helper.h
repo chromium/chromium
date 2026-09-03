@@ -292,7 +292,7 @@ class ChildProcessLauncherHelper
 #endif  // BUILDFLAG(USE_ZYGOTE)
 
   base::CommandLine* command_line() {
-    DCHECK(CurrentlyOnProcessLauncherTaskRunner());
+    CHECK(CurrentlyOnProcessLauncherTaskRunner(), base::NotFatalUntil::M159);
     return command_line_.get();
   }
 

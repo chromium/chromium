@@ -468,7 +468,7 @@ class FileSystemFileURLLoader final : public FileSystemEntryURLLoader {
         io_task_runner_(io_task_runner) {}
 
   void FileSystemIsMounted() override {
-    DCHECK(url_.is_valid());
+    CHECK(url_.is_valid(), base::NotFatalUntil::M159);
     if (!params_.file_system_context->CanServeURLRequest(url_)) {
       // In incognito mode the API is not usable and there should be no data.
       OnClientComplete(net::ERR_FILE_NOT_FOUND);
@@ -522,9 +522,9 @@ class FileSystemFileURLLoader final : public FileSystemEntryURLLoader {
 
     remaining_bytes_ = byte_range_.last_byte_position() -
                        byte_range_.first_byte_position() + 1;
-    DCHECK_GE(remaining_bytes_, 0);
+    CHECK_GE(remaining_bytes_, 0, base::NotFatalUntil::M159);
 
-    DCHECK(!reader_.get());
+    CHECK(!reader_.get(), base::NotFatalUntil::M159);
     reader_ = params_.file_system_context->CreateFileStreamReader(
         url_, byte_range_.first_byte_position(), remaining_bytes_, base::Time(),
         std::move(file_access_));
@@ -590,7 +590,7 @@ class FileSystemFileURLLoader final : public FileSystemEntryURLLoader {
     if (result == 0) {
       // If `remaining_bytes_` is 0, then we should've called OnFileWritten in
       // ReadMoreFileData.
-      DCHECK_NE(remaining_bytes_, 0);
+      CHECK_NE(remaining_bytes_, 0, base::NotFatalUntil::M159);
       OnFileWritten(net::ERR_REQUEST_RANGE_NOT_SATISFIABLE);
       return;
     }
@@ -611,7 +611,7 @@ class FileSystemFileURLLoader final : public FileSystemEntryURLLoader {
                                  std::nullopt);
     }
     remaining_bytes_ -= result;
-    DCHECK_GE(remaining_bytes_, 0);
+    CHECK_GE(remaining_bytes_, 0, base::NotFatalUntil::M159);
 
     WriteFileData(result);
   }

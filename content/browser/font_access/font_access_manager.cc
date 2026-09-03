@@ -72,9 +72,10 @@ void FontAccessManager::BindReceiver(
 
 void FontAccessManager::EnumerateLocalFonts(
     EnumerateLocalFontsCallback callback) {
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kFontAccess));
+  CHECK(base::FeatureList::IsEnabled(blink::features::kFontAccess),
+        base::NotFatalUntil::M159);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   if (skip_privacy_checks_for_testing_) {
     DidRequestPermission(
@@ -121,7 +122,7 @@ void FontAccessManager::EnumerateLocalFonts(
 
   content::PermissionController* permission_controller =
       rfh->GetBrowserContext()->GetPermissionController();
-  DCHECK(permission_controller);
+  CHECK(permission_controller, base::NotFatalUntil::M159);
 
   auto status = permission_controller->GetPermissionStatusForCurrentDocument(
       content::PermissionDescriptorUtil::

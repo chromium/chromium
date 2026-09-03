@@ -84,7 +84,7 @@ network::mojom::URLLoaderFactoryParamsPtr CreateParams(
     const base::UnguessableToken& network_restrictions_id,
     bool has_effective_top_frame_for_storage_partitioning,
     bool is_outermost_main_frame = false) {
-  DCHECK(process);
+  CHECK(process, base::NotFatalUntil::M159);
 
   network::mojom::URLLoaderFactoryParamsPtr params =
       network::mojom::URLLoaderFactoryParams::New();

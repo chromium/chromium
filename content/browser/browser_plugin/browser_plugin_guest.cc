@@ -43,7 +43,7 @@ std::unique_ptr<WebContentsImpl> BrowserPluginGuest::CreateNewGuestWindow(
     const WebContents::CreateParams& params) {
   std::unique_ptr<WebContents> new_contents =
       delegate_->CreateNewGuestWindow(params);
-  DCHECK(new_contents);
+  CHECK(new_contents, base::NotFatalUntil::M159);
   return base::WrapUnique(
       static_cast<WebContentsImpl*>(new_contents.release()));
 }
@@ -51,7 +51,7 @@ std::unique_ptr<WebContentsImpl> BrowserPluginGuest::CreateNewGuestWindow(
 void BrowserPluginGuest::InitInternal(WebContentsImpl* owner_web_contents) {
   RenderWidgetHostImpl* rwhi =
       GetWebContents()->GetPrimaryMainFrame()->GetRenderWidgetHost();
-  DCHECK(rwhi);
+  CHECK(rwhi, base::NotFatalUntil::M159);
   // The initial state will not be focused but the plugin may be active so
   // set that appropriately.
   rwhi->GetWidgetInputHandler()->SetFocus(

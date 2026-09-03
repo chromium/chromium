@@ -95,8 +95,8 @@ bool NavigationOrDocumentHandle::IsInPrimaryMainFrame() const {
 
 void NavigationOrDocumentHandle::OnNavigationCommitted(
     NavigationRequest& navigation_request) {
-  DCHECK_EQ(navigation_request_->GetNavigationId(),
-            navigation_request.GetNavigationId());
+  CHECK_EQ(navigation_request_->GetNavigationId(),
+           navigation_request.GetNavigationId(), base::NotFatalUntil::M159);
   render_frame_host_ = navigation_request.GetRenderFrameHost()->GetWeakPtr();
 }
 
