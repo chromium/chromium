@@ -52,6 +52,9 @@ enum class DiscoverFeedServiceAvailability {
 
 - (BOOL)isDue {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (!IsDiscoverBackgroundRefreshEnabled()) {
+    return NO;
+  }
   DiscoverFeedService* service = [self discoverFeedService];
   if (!service) {
     return NO;
@@ -67,6 +70,9 @@ enum class DiscoverFeedServiceAvailability {
 
 - (base::TimeDelta)refreshInterval {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (!IsDiscoverBackgroundRefreshEnabled()) {
+    return base::TimeDelta::Max();
+  }
   DiscoverFeedService* service = [self discoverFeedService];
   if (!service) {
     return kDiscoverFeedBackgroundRefreshNoServiceInterval.Get();
@@ -88,6 +94,9 @@ enum class DiscoverFeedServiceAvailability {
 }
 
 - (id<AppRefreshProviderTask>)task {
+  if (!IsDiscoverBackgroundRefreshEnabled()) {
+    return nil;
+  }
   return [self discoverFeedTask];
 }
 

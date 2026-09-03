@@ -1144,9 +1144,7 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
   refreshAgent.audience = _appState;
   [_appState addAgent:refreshAgent];
   // Register background refresh providers.
-  if (IsDiscoverBackgroundRefreshEnabled()) {
-    [refreshAgent addAppRefreshProvider:[[DiscoverFeedProvider alloc] init]];
-  }
+  [refreshAgent addAppRefreshProvider:[[DiscoverFeedProvider alloc] init]];
 
   [refreshAgent addAppRefreshProvider:[[TestRefresher alloc]
                                           initWithAppState:self.appState]];
