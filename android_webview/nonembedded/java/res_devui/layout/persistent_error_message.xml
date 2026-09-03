@@ -31,10 +31,13 @@
 
     <Button
         android:id="@+id/action_button"
+        style="?android:attr/buttonBarButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="?android:attr/buttonBarButtonStyle"
         android:textColor="@android:color/black"
         android:layout_gravity="end"
+        android:nextFocusUp="@id/action_button"
+        android:nextFocusLeft="@id/action_button"
+        android:nextFocusRight="@id/action_button"
         android:visibility="gone"/>
 </LinearLayout>

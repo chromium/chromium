@@ -16,7 +16,7 @@
       android:id="@+id/main_info_list"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:nextFocusUp="@id/main_info_list"
+      android:nextFocusUp="@id/action_button"
       android:nextFocusDown="@id/main_info_list"/>
 
 </LinearLayout>

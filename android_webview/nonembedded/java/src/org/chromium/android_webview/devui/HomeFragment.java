@@ -114,7 +114,24 @@ public class HomeFragment extends DevUiBaseFragment {
         if (isTV()) {
             mInfoListView.setItemsCanFocus(true);
             setupTvFocusOnResume();
+            View actionButton = requireActivity().findViewById(R.id.action_button);
+            if (actionButton != null) {
+                registerDownPressToFocusOnFirstItem(actionButton, mInfoListView);
+            }
         }
+    }
+
+    @Override
+    public void onPause() {
+        if (isTV()) {
+            View actionButton = requireActivity().findViewById(R.id.action_button);
+            if (actionButton != null) {
+                // When user leaves HomeFragment, cancel registerDownPressToFocusOnFirstItem
+                // (pressing DOWN on actionButton goes to HomeFragment mInfoListView)
+                actionButton.setOnKeyListener(null);
+            }
+        }
+        super.onPause();
     }
 
     private void setupTvFocusOnResume() {
@@ -181,6 +198,9 @@ public class HomeFragment extends DevUiBaseFragment {
         }
 
         private void setupTvFocusForInfoItem(View view, int position) {
+            if (position == 0) {
+                view.setNextFocusUpId(R.id.action_button);
+            }
             preventFocusEscapeFromLastItem(view, position == getCount() - 1);
         }
     }

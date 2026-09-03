@@ -26,7 +26,7 @@
             android:id="@+id/flag_search_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:nextFocusUp="@id/flag_search_bar"
+            android:nextFocusUp="@id/action_button"
             android:layout_alignParentStart="true"
             android:layout_toStartOf="@id/reset_flags_button"
             android:hint="Search flags"
@@ -42,7 +42,7 @@
         <Button
             android:text="Reset flags"
             android:id="@+id/reset_flags_button"
-            android:nextFocusUp="@id/reset_flags_button"
+            android:nextFocusUp="@id/action_button"
             android:layout_marginStart="8dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

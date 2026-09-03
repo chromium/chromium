@@ -15,7 +15,7 @@
     <TextView
         style="@style/TvSelectableBackground"
         android:id="@+id/crashes_summary_textview"
-        android:nextFocusUp="@id/crashes_summary_textview"
+        android:nextFocusUp="@id/action_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="16dp"
