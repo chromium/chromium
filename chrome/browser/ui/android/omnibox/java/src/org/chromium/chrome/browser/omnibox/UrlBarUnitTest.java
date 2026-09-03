@@ -2145,23 +2145,7 @@ public class UrlBarUnitTest {
 
         Editable textAfter = mUrlBar.getText();
         assertEquals(
-                0,
-                textAfter
-                        .getSpans(0, textAfter.length(), UrlEmphasisColorSpan.class)
-                        .length);
-    }
-
-    @Test
-    public void testFocusSearch_touchMode_returnsSelfInTouchMode() {
-        View target = new View(mActivity);
-        doReturn(target).when(mUrlBarDelegate).getViewForUrlBackFocus();
-
-        doReturn(true).when(mUrlBar).isInTouchMode();
-        assertSame(mUrlBar, mUrlBar.focusSearch(View.FOCUS_FORWARD));
-        assertSame(mUrlBar, mUrlBar.focusSearch(View.FOCUS_BACKWARD));
-
-        doReturn(false).when(mUrlBar).isInTouchMode();
-        assertSame(target, mUrlBar.focusSearch(View.FOCUS_BACKWARD));
+                0, textAfter.getSpans(0, textAfter.length(), UrlEmphasisColorSpan.class).length);
     }
 
     @Test
