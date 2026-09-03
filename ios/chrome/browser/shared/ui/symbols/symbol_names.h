@@ -323,6 +323,7 @@ extern NSString* const kSystemCameraSymbol;
 extern NSString* const kTextJustifyLeftSymbol;
 extern NSString* const kVideoSymbol;
 extern NSString* const kWaveformSymbol;
+extern NSString* const kWaveformMidSymbol;
 extern NSString* const kRightArrowCircleFillSymbol;
 extern NSString* const kArrowUpCircleFillSymbol;
 extern NSString* const kArrowDownToLineSymbol;

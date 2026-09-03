@@ -659,6 +659,8 @@ SymbolInfo InfoForSymbol(Symbol symbol) {
     case SymbolWandAndSparkles:
       return {@"wand.and.sparkles", SymbolType::kSystem};
     case SymbolWaveform:
+      return {@"waveform", SymbolType::kSystem};
+    case SymbolWaveformMid:
       return {@"waveform.mid", SymbolType::kSystem};
     case SymbolWifi:
       return {@"wifi", SymbolType::kSystem};

@@ -344,6 +344,7 @@ typedef NS_ENUM(NSInteger, Symbol) {
   SymbolWarningShield,
   SymbolWandAndSparkles,
   SymbolWaveform,
+  SymbolWaveformMid,
   SymbolWifi,
   SymbolWork,
   SymbolWrenchAndScrewdriver,
