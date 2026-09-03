@@ -17,7 +17,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
@@ -116,13 +115,10 @@ void CheckDescriptionLabels(const AudioDeviceDescriptions& descriptions,
 
   for (const auto& description : descriptions) {
     if (AudioDeviceDescription::IsDefaultDevice(description.unique_id)) {
-      EXPECT_TRUE(base::EndsWith(description.device_name, real_default_label,
-                                 base::CompareCase::SENSITIVE));
+      EXPECT_TRUE(description.device_name.ends_with(real_default_label));
     } else if (description.unique_id ==
                AudioDeviceDescription::kCommunicationsDeviceId) {
-      EXPECT_TRUE(base::EndsWith(description.device_name,
-                                 real_communications_label,
-                                 base::CompareCase::SENSITIVE));
+      EXPECT_TRUE(description.device_name.ends_with(real_communications_label));
     } else if (description.unique_id == real_default_id) {
       EXPECT_TRUE(description.is_system_default);
     } else if (description.unique_id == real_communications_id) {

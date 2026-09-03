@@ -8,7 +8,6 @@
 
 #include "base/functional/bind.h"
 #include "base/notreached.h"
-#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
@@ -62,11 +61,11 @@ void RedactDeviceName(std::string& name) {
   std::string profile;
   // Extract the audio profile. We check the longer "Hands-Free AG Audio"
   // string first before falling back to the shorter "Hands-Free" variant.
-  if (name.find(kProfileNameHandsFree) != std::string::npos) {
+  if (name.contains(kProfileNameHandsFree)) {
     profile += std::string(" ") + kProfileNameHandsFree;
-  } else if (name.find(kProfileNameHandsFreeShort) != std::string::npos) {
+  } else if (name.contains(kProfileNameHandsFreeShort)) {
     profile += std::string(" ") + kProfileNameHandsFreeShort;
-  } else if (name.find(kProfileNameStereo) != std::string::npos) {
+  } else if (name.contains(kProfileNameStereo)) {
     profile += std::string(" ") + kProfileNameStereo;
   }
 
@@ -75,24 +74,24 @@ void RedactDeviceName(std::string& name) {
   // Extract Windows native form factor prefixes. These usually precede the
   // actual device name wrapped in parentheses (e.g., "Headphones (User's
   // AirPods) (Bluetooth)").
-  if (name.find(kHeadphonesPrefix) != std::string::npos) {
+  if (name.contains(kHeadphonesPrefix)) {
     form_factor = std::string(kHeadphonesPrefix) + " ";
     has_parentheses = true;
-  } else if (name.find(kHeadsetPrefix) != std::string::npos) {
+  } else if (name.contains(kHeadsetPrefix)) {
     form_factor = std::string(kHeadsetPrefix) + " ";
     has_parentheses = true;
   }
 
   std::string suffix;
   // Extract connection type suffixes (e.g., "(Bluetooth)").
-  if (name.find(kBluetoothSuffix) != std::string::npos) {
+  if (name.contains(kBluetoothSuffix)) {
     suffix += std::string(" ") + kBluetoothSuffix;
   }
 
   // If the device is an AirPods device, rebuild the string using only the
   // safe, extracted components. All other text (including the user's name)
   // is discarded to protect privacy.
-  if (name.find(kAirpodsNameSubstring) != std::string::npos) {
+  if (name.contains(kAirpodsNameSubstring)) {
     std::string base_name = kAirpodsNameSubstring + profile;
     if (has_parentheses) {
       // Reconstruct the Windows format, e.g.: "Headphones (AirPods)
@@ -132,8 +131,8 @@ bool AudioDeviceDescription::IsLoopbackDevice(std::string_view device_id) {
 // static
 bool AudioDeviceDescription::IsApplicationLoopbackDevice(
     std::string_view device_id) {
-  return base::StartsWith(device_id, kApplicationLoopbackDeviceId) ||
-         base::StartsWith(device_id, kRestrictOwnAudioBrowserLoopbackDeviceId);
+  return device_id.starts_with(kApplicationLoopbackDeviceId) ||
+         device_id.starts_with(kRestrictOwnAudioBrowserLoopbackDeviceId);
 }
 
 // static

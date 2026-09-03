@@ -6,7 +6,6 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
 #include "media/audio/audio_device_description.h"
 
 namespace media {
@@ -112,8 +111,7 @@ ParseApplicationLoopbackDeviceId(std::string_view device_id) {
 
 bool MEDIA_EXPORT
 IsRestrictOwnAudioBrowserLoopbackDeviceId(std::string_view device_id) {
-  return base::StartsWith(
-      device_id,
+  return device_id.starts_with(
       AudioDeviceDescription::kRestrictOwnAudioBrowserLoopbackDeviceId);
 }
 
