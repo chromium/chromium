@@ -10,7 +10,7 @@ import {ObservableValue as ObservableValueImpl, Subject} from '../../observable.
 import {GlicBrowserHostActor} from '../actor/actor_client.js';
 import {GlicBrowserHostAnnotation} from '../annotation/annotation_client.js';
 import {GlicBrowserHostExperimentalTriggering} from '../experimental_triggering/experimental_triggering_client.js';
-import {createTabOptionsFromClient, getPinCandidatesOptionsFromClient, pinCandidateToClient, tabDataToClient, urlFromClient} from '../host/conversions.js';
+import {createTabOptionsFromClient, getPinCandidatesOptionsFromClient, idFromClient, pinCandidateToClient, tabDataToClient, urlFromClient} from '../host/conversions.js';
 import {PanelOpenState} from '../host/types.js';
 import {GlicBrowserHostSkills} from '../skills/skills_client.js';
 import {assertNever} from '../transport/messaging.js';
@@ -572,15 +572,15 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
 
   async activateTabWithUrl(exactUrl: string, options: ActivateTabOptions = {}):
       Promise<TabData> {
-    const result =
-        await this.clientRemote.requestWithResponse('activateTabWithUrl', {
-          exactUrl,
-          options,
+    const response =
+        await this.handler.activateTabWithUrl(urlFromClient(exactUrl), {
+          pattern: options.pattern ?? '',
+          fallbackWindowId: idFromClient(options.fallbackWindowId),
         });
-    if (!result.tabData) {
+    if (!response.tabData) {
       throw new Error('activateTabWithUrl: failed');
     }
-    return convertTabDataFromPrivate(result.tabData);
+    return tabDataToClient(response.tabData);
   }
 
   openGlicSettingsPage(options?: OpenSettingsOptions): void {

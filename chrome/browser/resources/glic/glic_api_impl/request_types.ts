@@ -70,21 +70,6 @@ export const WebClientHostDef = defInterface({
       histogram: {id: 98},
     },
     {
-      name: 'activateTabWithUrl',
-      request: defMessage<{
-        exactUrl: string,
-        options: {
-          pattern?: string,
-          fallbackWindowId?: string,
-        },
-      }>(),
-      response: defMessage<{
-        // Undefined on failure.
-        tabData?: TabDataPrivate,
-      }>(),
-      histogram: {id: 102},
-    },
-    {
       name: 'openGlicSettingsPage',
       request: defMessage<{options?: OpenSettingsOptions}>(),
       histogram: {id: 4},
@@ -871,7 +856,7 @@ export const RECORDED_REQUEST_IDS = {
   OnOptinImpression: 99,
   ProcessCounterAbuseVerdict: 100,
   GetImageBytesFromTab: 101,
-  ActivateTabWithUrl: 102,
+  // Do not reuse deleted request ID: 102,
   UpdateActorTaskStepProgress: 103,
   OpenPinnedTabPicker: 104,
 } as const satisfies

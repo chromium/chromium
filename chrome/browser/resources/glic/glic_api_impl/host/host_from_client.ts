@@ -22,7 +22,7 @@ import {ErrorWithReasonImpl, exceptionFromTransferable, SubscriberObservationTyp
 import {ResponseExtras} from '../transport/messaging.js';
 import type {PendingReceiver, PendingRemote, PostMessageHandler, PostMessageRemote, PostMessageRouter} from '../transport/post_message_transport.js';
 
-import {bitmapN32ToRGBAImage, captureRegionResultToClient, conversationInfoFromClient, conversionSettings, counterAbuseVerdictFromClient, focusedTabDataToClient, hostCapabilitiesToClient, idFromClient, idToClient, imageBytesResultToClient, microphoneStatusToMojo, openPinnedTabPickerOptionsToMojo, optionalFromClient, optionalToClient, panelStateToClient, pinTabsOptionsToMojo, subscriberObservationTypeFromClient, tabContextOptionsFromClient, tabContextToClient, tabDataToPrivate, timeDeltaFromClient, unpinTabsOptionsToMojo, urlFromClient, urlToClient, webClientModeToMojo} from './conversions.js';
+import {bitmapN32ToRGBAImage, captureRegionResultToClient, conversationInfoFromClient, conversionSettings, counterAbuseVerdictFromClient, focusedTabDataToClient, hostCapabilitiesToClient, idFromClient, idToClient, imageBytesResultToClient, microphoneStatusToMojo, openPinnedTabPickerOptionsToMojo, optionalFromClient, panelStateToClient, pinTabsOptionsToMojo, subscriberObservationTypeFromClient, tabContextOptionsFromClient, tabContextToClient, tabDataToPrivate, timeDeltaFromClient, unpinTabsOptionsToMojo, urlToClient, webClientModeToMojo} from './conversions.js';
 import type {GlicApiHost} from './glic_api_host.js';
 import {DetailedWebClientState} from './glic_api_host.js';
 import {WebClientImpl} from './host_to_client.js';
@@ -169,31 +169,6 @@ export class HostMessageHandler implements PostMessageHandler<WebClientHost> {
             payload.observationId);
       }
     }
-  }
-
-  async activateTabWithUrl(request: {
-    exactUrl: string,
-    options: {pattern?: string, fallbackWindowId?: string},
-  }) {
-    const response =
-        await this.handler.activateTabWithUrl(urlFromClient(request.exactUrl), {
-          pattern: request.options.pattern !== undefined ?
-              request.options.pattern :
-              '',
-          fallbackWindowId: idFromClient(request.options.fallbackWindowId),
-        });
-    const tabData = response.tabData;
-    if (tabData) {
-      return {
-        tabData: {
-          tabId: idToClient(tabData.tabId),
-          windowId: idToClient(tabData.windowId),
-          url: urlToClient(tabData.url),
-          title: optionalToClient(tabData.title),
-        },
-      };
-    }
-    return {};
   }
 
   openGlicSettingsPage(request: {options?: OpenSettingsOptions}): void {

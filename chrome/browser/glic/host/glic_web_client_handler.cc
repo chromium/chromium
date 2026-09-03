@@ -675,6 +675,7 @@ class GlicWebClientHandler
   void ActivateTabWithUrl(const ::GURL& exact_url,
                           glic::mojom::ActivateTabOptionsPtr options,
                           ActivateTabWithUrlCallback callback) override {
+    LogApiRequestCount(GlicHostApiRequestId::kActivateTabWithUrl);
     tabs::TabInterface* exact_match_tab = nullptr;
     tabs::TabInterface* pattern_match_tab = nullptr;
     std::string pattern_str = options ? options->pattern : "";
