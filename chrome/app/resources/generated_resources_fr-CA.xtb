@@ -132,6 +132,7 @@
 Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="1084824384139382525">Copier l'adr&amp;esse du lien</translation>
 <translation id="1085064499066015002">Toujours sur tous les sites</translation>
+<translation id="1085340215550339505">Pour faire des suggestions de modification de mot de passe en temps opportun, le contenu et les URL des pages que vous visitez peuvent être traités dans un espace privé dans le nuage</translation>
 <translation id="1085558727130096638">Se joindre au groupe d'onglets avec <ph name="OWNER_FIRST_NAME" /> et <ph name="NUM_OTHER_MEMBERS" /> autre</translation>
 <translation id="1085618740036066768"><ph name="ITEM" /> non sélectionné. <ph name="INDEX" /> sur <ph name="COUNT" />. Appuyez simultanément sur le bouton de recherche et la barre d'espace pour sélectionner cet élément.</translation>
 <translation id="1086486568852410168">Rechercher avec Lentille Google</translation>
@@ -687,7 +688,6 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1539248305642687917">Ne pas autoriser les sites à remplacer les entrées de votre clavier</translation>
 <translation id="1539727654733007771">Aucun réseau cellulaire n'est configuré. Téléchargez un nouveau <ph name="BEGIN_LINK" />profil<ph name="END_LINK" />.</translation>
 <translation id="1540265419569299117">Service d'application ChromeOS</translation>
-<translation id="1540543470504988112">Gérer les certificats importés de macOS</translation>
 <translation id="1541346352678737112">Aucun réseau trouvé</translation>
 <translation id="154198613844929213">{0,plural, =0{Suppression maintenant.}=1{Suppression dans : 1 seconde}one{Suppression dans : # seconde}other{Suppression dans : # secondes}}</translation>
 <translation id="1542137295869176367">Impossible de mettre à jour vos données de connexion</translation>
@@ -1122,6 +1122,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1871131409931646355">Historique complet des téléchargements</translation>
 <translation id="187145082678092583">Moins d'applications</translation>
 <translation id="1871615898038944731">Votre <ph name="DEVICE_TYPE" /> est à jour</translation>
+<translation id="1872846000961079826">Lors de la modification du mot de passe, le contenu des pages de mot de passe et les informations connexes sont envoyés à Google et peuvent être examinés par des humains afin d'améliorer la qualité de cette fonctionnalité</translation>
 <translation id="1873513359268939357">Calendrier Outlook</translation>
 <translation id="1873920700418191231">Autoriser à nouveau les autorisations pour <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">Autorisés à présenter toutes les annonces</translation>
@@ -1331,7 +1332,6 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="2026367923222947564">Page complète</translation>
 <translation id="2026377162111110983">Voix de la zone</translation>
 <translation id="2028449514182362831">Les fonctionnalités qui nécessitent l'accès aux capteurs de mouvement ne seront pas accessibles</translation>
-<translation id="2028479214883337535">Importés de macOS</translation>
 <translation id="202918510990975568">Entrez votre mot de passe pour configurer la sécurité et la connexion</translation>
 <translation id="2030455719695904263">Pavé tactile</translation>
 <translation id="2030803782168502207">Supprimer l'abonnement de l'appareil</translation>
@@ -2453,6 +2453,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="2887344147309501015">Clavardez avec Gemini dans Chrome pour obtenir des réponses, des éléments à retenir et plus encore pendant que vous naviguez</translation>
 <translation id="2889043468805635730">Aucun problème trouvé</translation>
 <translation id="2889064240420137087">Ouvrir le lien avec...</translation>
+<translation id="2889937141553641427">{0,plural, =1{Mode Isolé}one{# fenêtre en mode Isolé ouverte}other{# fenêtres en mode Isolé ouvertes}}</translation>
 <translation id="2891464434568738544">Aucun site n'est accessible pour le moment. Visitez un site pour l'ajouter à cette liste.</translation>
 <translation id="2891922230654533301">Utiliser cet appareil pour vous connecter à <ph name="APP_NAME" />?</translation>
 <translation id="2893168226686371498">Navigateur par défaut</translation>
@@ -2849,6 +2850,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3184536091884214176">Configurez ou gérez les imprimantes CUPS. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">Utilisez ce NIP pour modifier les paramètres de contrôles parentaux.
     Si vous oubliez le NIP, effectuez un Powerwash sur cet appareil et configurez-le à nouveau.</translation>
+<translation id="3184916134413175521">Donnez une note</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Cette application est bloquée}one{Cette application est bloquée}other{Certaines applications sont bloquées}}</translation>
 <translation id="3185454065699440434">Autoriser les extensions sur <ph name="SITE_NAME" /></translation>
 <translation id="3187556136478864255">Parvenez-vous à voir votre appareil de diffusion dans
@@ -2918,8 +2920,10 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3241680850019875542">Sélectionnez le répertoire racine de l'extension à empaqueter. Pour mettre à jour une extension, sélectionnez également le fichier de clé privée à réutiliser.</translation>
 <translation id="3241810535741601486">Cette modification est permanente et irréversible. Les mises à jour étendues s'appliquent à tous les utilisateurs de cet appareil. <ph name="LINK_START" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="324205398936770726">Votre avatar</translation>
+<translation id="3242764115495920926">Proposer de modifier automatiquement les mots de passe</translation>
 <translation id="3243017971870859287">Lire les numéros de série de l'appareil et des composantes ChromeOS Flex</translation>
 <translation id="324366796737464147">Suppression du bruit</translation>
+<translation id="3243680258677029936">{0,plural, =1{Isolée}one{Isolée (#)}other{Isolées (#)}}</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3244294424315804309">Continuer à désactiver le son</translation>
 <translation id="3247649647204519958">À partir d'ici, vous pouvez voir et gérer les autorisations d'extensions pour le site sur lequel vous vous trouvez</translation>
@@ -4143,6 +4147,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4167924027691268367">Plus d'actions pour le raccourci <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="4168015872538332605">Certains paramètres appartenant à <ph name="PRIMARY_EMAIL" /> sont partagés avec vous. Ces paramètres n'influent sur votre compte que lors de l'utilisation de connexions multicomptes.</translation>
 <translation id="4168651806173792090">Réseau <ph name="NETWORK_NAME" /> se terminant par <ph name="LAST_FOUR_DIGITS" /></translation>
+<translation id="4169275505426201952">Donner une note…</translation>
 <translation id="4169535189173047238">Ne pas autoriser</translation>
 <translation id="4170314459383239649">Effacement à la sortie</translation>
 <translation id="4170685671197375581">Activer le raccourci</translation>
@@ -4444,6 +4449,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4401912261345737180">Se connecter avec un code pour diffuser</translation>
 <translation id="4403012369005671154">Synthèse textuelle</translation>
 <translation id="4403775189117163360">Choisir un autre dossier</translation>
+<translation id="440411460180511551">Si Chromium indique qu'un de vos mots de passe a été découvert dans un cas de violation de données publique, le gestionnaire de mots de passe Google peut vous proposer de le modifier pour vous si vous avez établi une connexion.</translation>
 <translation id="4404843640767531781">L'application <ph name="APP_NAME" /> est bloquée par ton parent. Pour l'utiliser, demande l'autorisation à ton parent.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Déplacer dans…</translation>
@@ -5242,7 +5248,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5017250179386090956">Téléchargement des fichiers d'annotation du nœud principal en cours…</translation>
 <translation id="5017529052065664584">Les 15 dernières minutes</translation>
 <translation id="5018207570537526145">Ouvrir le site Web pour les extensions</translation>
-<translation id="5019487038187875030">Afficher les certificats importés de macOS</translation>
 <translation id="5020008942039547742">Choisissez une autre fenêtre</translation>
 <translation id="5020146655450187658">Vous êtes hors ligne. Vérifiez votre connexion Internet pour gérer les sites sur lesquels Gemini peut vous connecter.</translation>
 <translation id="5020651427400641814">Activer la journalisation vocale</translation>
@@ -6578,6 +6583,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6099766472403716061">Toujours autoriser <ph name="HOST" /> à contrôler et à reprogrammer vos appareils MIDI</translation>
 <translation id="6100736666660498114">Menu Démarrer</translation>
 <translation id="6100737823178787570">Augmentez la taille de la fenêtre pour reprendre la tâche</translation>
+<translation id="6101170451607354234">Si Chrome indique qu'un de vos mots de passe a été découvert dans un cas de violation de données publique, le gestionnaire de mots de passe Google peut vous proposer de le modifier pour vous si vous avez établi une connexion.</translation>
 <translation id="6101226222197207147">Nouvelle application installée (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">Ce fichier a été bloqué par la protection avancée.</translation>
 <translation id="6103681770816982672">Avertissement : vous êtes sur le point de passer à la version développeur</translation>
@@ -6783,6 +6789,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6254892857036829079">Parfaite</translation>
 <translation id="6257602895346497974">Activer la synchronisation…</translation>
 <translation id="625827534921607067">Ce réseau sera préféré si plusieurs réseaux configurés ou auxquels vous vous êtes connectés précédemment sont accessibles</translation>
+<translation id="6258818697161346451">Utilisez vos clés d'accès sur cet appareil</translation>
 <translation id="6259776178973198997">Actualiser les informations sur les propriétaires Wi-Fi direct</translation>
 <translation id="6261688934280090835">Journaux de l'appli kiosque ChromeOS</translation>
 <translation id="6263082573641595914">Version de l'autorité de certification Microsoft</translation>
@@ -8342,7 +8349,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7460045493116006516">Le thème actuel que vous avez installé</translation>
 <translation id="7461924472993315131">NIP</translation>
 <translation id="7462644385455960321">Quitter le mode Plein écran pour afficher les onglets horizontalement</translation>
-<translation id="746329643760972486">macOS</translation>
 <translation id="7463985990119325874">Votre organisation gère la façon dont les données recueillies par ces fonctionnalités peuvent être utilisées.</translation>
 <translation id="7464645554245611385">Dernière mise à jour de cet onglet</translation>
 <translation id="7465777686629334728">Retirer l'environnement de développement géré (<ph name="SPECIFIC_NAME" />)</translation>
@@ -8572,6 +8578,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7651754152638505879">Tâche mise en pause</translation>
 <translation id="7651784568388208829">Poursuite de la tâche de la fonctionnalité Phone Hub</translation>
 <translation id="7652954539215530680">Créer un NIP</translation>
+<translation id="7653354650639364202">{0,plural, =1{Fermer la fenêtre isolée}one{Fermer la fenêtre isolée (# fenêtre)}other{Fermer les fenêtres isolées (# fenêtres)}}</translation>
 <translation id="7654941827281939388">Ce compte est déjà utilisé sur cet ordinateur.</translation>
 <translation id="7655411746932645568">Les sites peuvent demander à se connecter à des ports série</translation>
 <translation id="7657090467145778067">Petites économies</translation>
@@ -8949,6 +8956,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7943837619101191061">Ajouter un dossier...</translation>
 <translation id="79446453817422139">Ce fichier pourrait être dangereux</translation>
 <translation id="7944772052836377867">La synchronisation doit vérifier qu'il s'agit bien de vous</translation>
+<translation id="794567586469801724">macOS</translation>
 <translation id="7945703887991230167">Voix préférée</translation>
 <translation id="7946243258100028201"><ph name="ORIGIN" /> pourra afficher les fichiers dans <ph name="FOLDERNAME" /> et en créer ses propres copies jusqu'à ce que vous fermiez tous les onglets de ce site</translation>
 <translation id="7946586320617670168">L'origine doit être sécuritaire</translation>
@@ -9179,6 +9187,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8106114112474206597">Utilisez « i » pour appuyer sur un bouton de la souris</translation>
 <translation id="810728361871746125">Résolution de l'écran</translation>
 <translation id="8108161424633979910"><ph name="NUM" /> membres</translation>
+<translation id="8108853197309181986">Vous êtes dans une fenêtre isolée</translation>
 <translation id="8109109153262930486">Avatar par défaut</translation>
 <translation id="8109991406044913868">Thème créé par l'IA</translation>
 <translation id="8110393529211831722">L'abonnement est installé sur cet appareil uniquement et n'est pas synchronisé avec d'autres appareils sous votre compte. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
@@ -9584,6 +9593,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8428634594422941299">OK</translation>
 <translation id="84297032718407999">Vous serez déconnecté dans <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8429928917752180743">Plus d'options pour <ph name="EXTENSION_NAME" /></translation>
+<translation id="8430438016498244645">Session isolée</translation>
 <translation id="8431977087510901105">Paramètres du curseur réinitialisés</translation>
 <translation id="8434109185104929038">Coin lecture</translation>
 <translation id="8434837876193928924">Détails du groupe d'onglets</translation>
@@ -10332,6 +10342,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="9003185744423389627">La connexion au serveur de gestion des appareils a échoué avec l'état « <ph name="STATUS_TEXT" /> » à <ph name="FAILURE_TIME" /></translation>
 <translation id="90033698482696970">Rechercher automatiquement les profils eSIM disponibles?</translation>
 <translation id="9003647077635673607">Autoriser sur tous les sites</translation>
+<translation id="9004279470320280717">Donner une note…</translation>
 <translation id="9005774573776346118">Pour obtenir vos mots de passe, vos favoris et plus encore sur tous vos appareils, connectez-vous en tant que <ph name="EMAIL" /></translation>
 <translation id="9006511997799670136">Votre organisation</translation>
 <translation id="900733896273558337">Modifier la compétence</translation>

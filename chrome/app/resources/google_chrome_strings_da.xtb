@@ -8,6 +8,7 @@
 <translation id="102763973188675173">Tilpas og administrer Google Chrome. Der er en tilgængelig opdatering.</translation>
 <translation id="1028061813283459617"><ph name="BEGIN_LINK" />Log ud af Chrome<ph name="END_LINK" /> for kun at slette browserdata fra denne enhed uden at slette dataene på din Google-konto.</translation>
 <translation id="1028770388543831319">Få Googles bedste sikkerhedsfunktioner på farten med Chrome-appen på din telefon</translation>
+<translation id="1036348656032585052">Deaktiver</translation>
 <translation id="1042270987544905725">Klik for at lukke dialogboksen til login i Chrome</translation>
 <translation id="1051793555070215510">Hjælp os med at forbedre inkognito ved at deltage i denne undersøgelse, der kun tager 1 minut.</translation>
 <translation id="1055295352198814912">Vis Gemini i Chrome på Mac-menulinjen, og aktivér tastaturgenvejen</translation>
@@ -242,6 +243,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="3282568296779691940">Log ind i Chrome</translation>
 <translation id="3286538390144397061">Genstart nu</translation>
 <translation id="3292333338048274092">Du skal derefter genstarte Chrome.</translation>
+<translation id="3294686910656423119">Brugsstatistikker og nedbrudsrapporter</translation>
 <translation id="3327226547491422998">Senere kan Chrome spørge, om du vil bruge gemte oplysninger til automatisk at udfylde formularer</translation>
 <translation id="3352986031709923790">øverste højre hjørne af søgeområdet: højre <ph name="RIGHT" /> %, øverste <ph name="TOP" /> %</translation>
 <translation id="3360895254066713204">Hjælp til Chrome</translation>
@@ -471,6 +473,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="5824893331272123205">Dette panel kunne ikke indlæses. Prøv igen</translation>
 <translation id="5825922397106002626">Fjern <ph name="EXTENSION_NAME" /> fra Chrome</translation>
 <translation id="5858486459377137936">Du logges ud af de fleste websites, når du lukker alle Chrome-vinduer, med undtagelse af din Google-konto, hvis du er logget ind i Chrome. <ph name="SETTINGS_LINK" /> for at give websites tilladelse til at huske dig.</translation>
+<translation id="5860491529813859533">Aktivér</translation>
 <translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome advarer dig<ph name="END_LINK" /> om usikre websites og downloads</translation>
 <translation id="5894164573378901688">Hvis du vil bruge Gemini i Chrome, skal du logge ind med en anden Google-konto</translation>
 <translation id="5895138241574237353">Genstart</translation>
@@ -511,6 +514,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="6166185671393271715">Importér adgangskoder til Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome beta</translation>
+<translation id="6177442314419606057">Søg i Chrome</translation>
 <translation id="6180522807229584611">Denne fane bruger ekstra ressourcer. Du kan forbedre ydeevnen ved at give Chrome tilladelse til at gøre den inaktiv.</translation>
 <translation id="6182736845697986886">Installationen mislykkedes på grund af en intern fejl i opdateringsserveren.</translation>
 <translation id="6192058120268468905">Din konto i Chrome</translation>

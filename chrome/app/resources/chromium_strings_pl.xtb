@@ -631,6 +631,7 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="77283119132245232">Zapewnia usługi śledzenia systemu dla <ph name="BROWSER_NAME" />. Jeśli ta usługa jest wyłączona, śledzenie wydajności tworzone przez przeglądarkę nie zawiera zdarzeń dotyczących całego systemu, takich jak przełączanie kontekstu i gotowe zdarzenia wątków.</translation>
 <translation id="7745317241717453663">Spowoduje to usunięcie danych przeglądania z tego urządzenia. Aby później odzyskać dane, zaloguj się w Chromium jako <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Instalator nie mógł utworzyć katalogu tymczasowego. Sprawdź, czy na dysku jest dość wolnego miejsca oraz sprawdź, czy posiadasz uprawnienia do instalowania programów.</translation>
+<translation id="7747820849741499258">Wyszukaj w Chromium</translation>
 <translation id="7750130090210923118">Przywróć domyślny motyw Chromium</translation>
 <translation id="7752521946322750699">Aby zabezpieczyć Twoją pracę w Chromium, Twoja organizacja będzie mogła wyświetlać określone informacje lub nimi zarządzać, gdy zalogujesz się w Chromium.</translation>
 <translation id="7781047659465034537">Ustaw Chromium jako przeglądarkę domyślną i przypnij ją do paska zadań</translation>

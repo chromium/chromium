@@ -8,6 +8,7 @@
 <translation id="102763973188675173">Weka mapendeleo na udhibiti Google Chrome. Sasisho linapatikana.</translation>
 <translation id="1028061813283459617">Ili ufute data ya kuvinjari kwenye kifaa hiki pekee, bila kuifuta katika Akaunti yako ya Google, <ph name="BEGIN_LINK" />ondoka kwenye akaunti ya Chrome<ph name="END_LINK" />.</translation>
 <translation id="1028770388543831319">Pata vipengele bora vya usalama vya Google popote ulipo, ukitumia programu ya Chrome kwenye simu yako</translation>
+<translation id="1036348656032585052">Zima</translation>
 <translation id="1042270987544905725">Bofya ili ufunge kidirisha cha kuingia katika Chrome</translation>
 <translation id="1051793555070215510">Tusaidie kuboresha kipengele cha Faraghani kwa kushiriki katika utafiti huu wa dakika 1.</translation>
 <translation id="1055295352198814912">Onyesha Gemini kwenye Chrome katika upau wa menyu wa Mac kisha uwashe mikato ya kibodi</translation>
@@ -246,6 +247,7 @@ Jaribu kuruhusu uboreshaji ikiwa ukurasa huu haufanyi kazi inavyotarajiwa.</tran
 <translation id="3282568296779691940">Ingia katika Chrome</translation>
 <translation id="3286538390144397061">Zima na uwashe sasa</translation>
 <translation id="3292333338048274092">Na utahitaji kuzima kisha uwashe Chrome.</translation>
+<translation id="3294686910656423119">Takwimu za matumizi na ripoti za kuacha kufanya kazi</translation>
 <translation id="3327226547491422998">Baadaye, Chrome inaweza kukuuliza ikiwa ungependa kutumia taarifa ulizohifadhi ili ijaze fomu kiotomatiki kwa niaba yako</translation>
 <translation id="3352986031709923790">kona ya juu kulia ya eneo la utafutaji: kulia asilimia <ph name="RIGHT" />, juu asilimia <ph name="TOP" /></translation>
 <translation id="3360895254066713204">Msaidizi wa Chrome</translation>
@@ -344,7 +346,7 @@ Jaribu kuruhusu uboreshaji ikiwa ukurasa huu haufanyi kazi inavyotarajiwa.</tran
 <translation id="4329315893554541805">Ili upate mapendeleo na vipengele vingine, jumuisha Chrome kwenye Historia ya Shughuli kwenye Wavuti na Programu pamoja na huduma za Google zilizounganishwa</translation>
 <translation id="4334241893986177674">Tafuta picha hii ya skrini</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> imeongezwa kwenye Chrome</translation>
-<translation id="4344128547036991536">Unapofungua Lenzi ya Google, jina la ukurasa, URL na maudhui, ikijumuisha PDF, yatatumwa kiotomatiki kwenda Google. <ph name="LEARN_MORE" /></translation>
+<translation id="4344128547036991536">Unapofungua Lenzi ya Google, jina la ukurasa, URL na maudhui, ikijumuisha PDF, yatatumwa kiotomatiki kwa Google. <ph name="LEARN_MORE" /></translation>
 <translation id="4348548358339558429">Ili upate mapendeleo, jumuisha Chrome kwenye Historia ya Shughuli kwenye Wavuti na Programu</translation>
 <translation id="436060642166082913">Chrome imezuia upakuaji huu kwa sababu faili inaweza kuathiri akaunti zako binafsi na za mitandao ya kijamii</translation>
 <translation id="4367027658822022112">Unaweza kubandika Lenzi ya Google ili uifikie kwa urahisi; bofya kitufe cha Bandika kilicho sehemu ya juu ya kidirisha cha pembeni</translation>
@@ -479,6 +481,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="5824893331272123205">Imeshindwa kupakia kidirisha hiki, jaribu tena</translation>
 <translation id="5825922397106002626">Ondoa <ph name="EXTENSION_NAME" /> kwenye Chrome</translation>
 <translation id="5858486459377137936">Utaondolewa kwenye tovuti nyingi ukifunga madirisha yote ya Chrome, isipokuwa katika Akaunti yako ya Google ikiwa umeingia katika Chrome. Ili uruhusu tovuti zikukumbuke, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5860491529813859533">Washa</translation>
 <translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome inakuonya<ph name="END_LINK" /> kuhusu tovuti na vipakuliwa ambavyo si salama</translation>
 <translation id="5894164573378901688">Ili utumie Gemini kwenye Chrome, ingia ukitumia Akaunti tofauti ya Google</translation>
 <translation id="5895138241574237353">Zima na uwashe</translation>
@@ -519,6 +522,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="6166185671393271715">Leta Manenosiri Kwenye Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Toleo la Beta la Google Chrome</translation>
+<translation id="6177442314419606057">Tafuta katika Chrome</translation>
 <translation id="6180522807229584611">Kichupo hiki kinatumia nyenzo za ziada. Ruhusu Chrome ikifanye kisitumike ili kuboresha utendaji wako.</translation>
 <translation id="6182736845697986886">Imeshindwa kusakinisha kwa sababu ya hitilafu ya ndani ya seva ya usasishaji.</translation>
 <translation id="6192058120268468905">Akaunti yako katika Chrome</translation>

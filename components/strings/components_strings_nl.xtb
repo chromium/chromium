@@ -1453,6 +1453,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3493881266323043047">Geldigheid</translation>
 <translation id="3495081129428749620">Zoeken op pagina <ph name="PAGE_TITLE" /></translation>
 <translation id="3495818359064790343">Salaris</translation>
+<translation id="3496531230994554300">Wallet-melding is op volledige hoogte geopend.</translation>
 <translation id="3497627066518778351">Check in een nieuw venster een lijst met sitegegevens op het apparaat</translation>
 <translation id="3498215018399854026">We kunnen je ouder momenteel niet bereiken. Probeer het opnieuw.</translation>
 <translation id="350069200438440499">Bestandsnaam:</translation>
@@ -2663,6 +2664,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5499229993630251170">Wil je hiermee doorgaan?</translation>
 <translation id="5506286895894263601">De lijst bevat geen geldige snelkoppelingen.</translation>
 <translation id="5507756662695126555">Onweerlegbaarheid</translation>
+<translation id="5508515366054931524">Prompt voor e-mailverificatie is op volledige hoogte geopend</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Beheerde bookmarks</translation>
 <translation id="5510766032865166053">Het bestand is mogelijk verplaatst of verwijderd.</translation>
@@ -3444,6 +3446,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6860888819347870819">Kan vragen om scherm-in-scherm te openen</translation>
 <translation id="6864189428899665393">267 x 389 mm</translation>
 <translation id="6865412394715372076">Deze pas kan momenteel niet worden geverifieerd</translation>
+<translation id="6871073333584947219">Wallet-melding gesloten.</translation>
 <translation id="6871813064737840684">Prijsgeschiedenis op internet voor deze optie</translation>
 <translation id="6873456682041376666">Bovenste lade</translation>
 <translation id="6874604403660855544">&amp;Opnieuw toevoegen</translation>
@@ -3964,6 +3967,7 @@ Aanvullende informatie:
 <translation id="7705085181312584869">Help me met schrijven</translation>
 <translation id="7705992072972338699">Optische schijf (hoogglans)</translation>
 <translation id="7706689436519265630">Bestanden die je kopieert of verplaatst, worden naar Google Cloud of derden gestuurd voor analyse. Ze kunnen bijvoorbeeld worden gescand op gevoelige gegevens of malware en worden opgeslagen volgens het bedrijfsbeleid.</translation>
+<translation id="7709934467582922028">Prompt voor e-mailverificatie gesloten</translation>
 <translation id="7714351089363296478">Je hebt deze site net bezocht</translation>
 <translation id="7714404809393719981">Foto (zijdeglans)</translation>
 <translation id="7714464543167945231">Certificaat</translation>
@@ -4860,6 +4864,7 @@ Aanvullende informatie:
 <translation id="988159990683914416">Ontwikkelaarsbuild</translation>
 <translation id="989988560359834682">Adres bewerken</translation>
 <translation id="990164307229195234"><ph name="DEVICE_NAME" /> (<ph name="DISAMBIGUATION_LABEL" />)</translation>
+<translation id="990812705189376036">Merkle Tree-bewijs</translation>
 <translation id="992110854164447044">Een virtuele kaart verbergt je werkelijke kaart om je te beschermen tegen potentiële fraude. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>
 <translation id="992256792861109788">Roze</translation>

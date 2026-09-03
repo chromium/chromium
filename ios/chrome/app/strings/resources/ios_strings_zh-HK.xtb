@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">無痕</translation>
 <translation id="1053651653201045802">已登出。重新登入即可使用帳戶中的書籤、密碼和其他資料。</translation>
 <translation id="1054745118061919935">繼續即表示您同意《<ph name="BEGIN_LINK" />服務條款<ph name="END_LINK" />》。</translation>
+<translation id="1056818261333183659">我應該買邊款？</translation>
 <translation id="10614374240317010">永不儲存</translation>
 <translation id="1062138828266376352">你的 PIN 並未變更。請檢查你的互聯網連線，然後再試一次</translation>
 <translation id="1063070031224282617">請選擇「<ph name="FILENAME" />」(<ph name="FILE_SIZE" />) 的儲存位置<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
@@ -28,6 +29,7 @@
 <translation id="1074827084851510304">你將會刪除 {password_count} 個密碼，以及你選擇一律不儲存登入資料的網站和應用程式清單。系統不會刪除任何你為網站和應用程式建立的帳戶。</translation>
 <translation id="1076421457278169141">已掃描編碼</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} 個分頁}other{{count} 個分頁}}</translation>
+<translation id="1081948304372277788">關閉「升級」</translation>
 <translation id="1082554859195167538">為你推薦的產品評論</translation>
 <translation id="1084365883616172403">已在 Facebook 上發佈。</translation>
 <translation id="108485301461714610">Google 搜尋 AI 模式和連結的應用程式</translation>
@@ -214,6 +216,7 @@
 <translation id="1641113438599504367">安全瀏覽</translation>
 <translation id="1644574205037202324">記錄</translation>
 <translation id="164673457281113247">{count,plural, =1{已儲存書籤}other{已儲存書籤}}</translation>
+<translation id="1650979352027263879">已移除外觀偏好設定</translation>
 <translation id="1651260071709244114">應用程式</translation>
 <translation id="1652051421944182562">開啟「安全檢查」通知…</translation>
 <translation id="1652333207707886577">自訂選單</translation>
@@ -276,7 +279,6 @@
 <translation id="1836891464494477513">{count,plural, =1{書籤已儲存至 Google 帳戶 ({email})}other{書籤已儲存至 Google 帳戶 ({email})}}</translation>
 <translation id="1838089197478136166">要在「錢包」中開啟嗎？</translation>
 <translation id="183878838231635348">此資訊卡會顯示「安全檢查」功能自動偵測到的任何私隱或安全問題。</translation>
-<translation id="1840320537320704887">已移除「新分頁」偏好設定</translation>
 <translation id="1845230888742614096">保留群組</translation>
 <translation id="1853558655412913122">你現可前往「設定」和「網址列」變更網址列的位置</translation>
 <translation id="1853692000353488670">新增無痕式分頁</translation>
@@ -590,6 +592,7 @@
 <translation id="2858204748079866344">為保障您的私隱，Chrome 不會在此欄位自動填入您的密碼。</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 個網站 (在已同步的裝置上還有更多網站)}other{# 個網站 (在已同步的裝置上還有更多網站)}}</translation>
+<translation id="286473047976978798">要套用外觀偏好設定嗎？</translation>
 <translation id="2865392654629180917">即管提問，獲取 AI 答覆</translation>
 <translation id="2870560284913253234">網站</translation>
 <translation id="2876369937070532032">當網站面臨安全風險時，Chrome 會將您瀏覽的部分網頁網址傳送給 Google</translation>
@@ -1119,7 +1122,6 @@
 
        選擇如何處理此裝置上現有的瀏覽資料。</translation>
 <translation id="4675298276894277358">此網站不會再顯示</translation>
-<translation id="4676647168422678078">要套用「新分頁」偏好設定嗎？</translation>
 <translation id="4682496302933121474">要翻譯網頁嗎？</translation>
 <translation id="4682686630151240767">1. 開啟 iPhone 的「設定」</translation>
 <translation id="4697240968720007067">一按下載最佳 Google 應用程式</translation>
@@ -1504,6 +1506,7 @@
 <translation id="5898848375214731122">質量</translation>
 <translation id="5899314093904173337">如要與附近的使用者分享，請讓對方以相機或二維條碼掃瞄應用程式來掃瞄此二維條碼</translation>
 <translation id="5902752768726620872">{count,plural, =1{新增 {count} 個分頁}other{新增 {count} 個分頁}}</translation>
+<translation id="5906163261248594192">Dan 的生日</translation>
 <translation id="5911030830365207728">Google 翻譯</translation>
 <translation id="5912796581727968237">開啟「Google 錢包」</translation>
 <translation id="5922999516621365983">將分頁拖曳至此處以固定分頁。</translation>
@@ -1806,6 +1809,7 @@
 <translation id="6806550742467879742">頁面工具</translation>
 <translation id="6807287147325542056">其他應用程式中的密碼</translation>
 <translation id="681368974849482173">已建立項目</translation>
+<translation id="6815692190508268848">已套用外觀偏好設定</translation>
 <translation id="681631578600400068">儲存駕駛執照</translation>
 <translation id="6825078212112407882">{count,plural, =1{書籤已儲存至 Google 帳戶 ({email})}other{{count} 個書籤已儲存至 Google 帳戶 ({email})}}</translation>
 <translation id="6826004672264649705">目前正在追蹤此產品。開啟即可查看價格記錄</translation>
@@ -1920,6 +1924,7 @@
 <translation id="720399613139435155">未能翻譯</translation>
 <translation id="7204922488054642675">個人化新聞</translation>
 <translation id="7206979415662233817">服務條款</translation>
+<translation id="721218676460477064">總結呢篇文章</translation>
 <translation id="7215621211572884440">允許彈出式視窗</translation>
 <translation id="7218491361283758048">郵遞區號</translation>
 <translation id="7221173315674413369">在「最新功能」中探索新功能和提示</translation>
@@ -2181,13 +2186,13 @@
 <translation id="8035133914807600019">新增資料夾…</translation>
 <translation id="8035412398498507358">相片</translation>
 <translation id="8037713009824540257">新增網站</translation>
+<translation id="8038078082340255234">市場報告</translation>
 <translation id="8040407350301524547">如要查看路線選項，請輕按「取得路線」。</translation>
 <translation id="804427445359061970">您可在此查看從其他裝置開啟過的分頁</translation>
 <translation id="8058655154417507695">到期年份</translation>
 <translation id="8059312861912872211">{count,plural, =1{{count} 個書籤}other{{count} 個書籤}}</translation>
 <translation id="8059533439631660104">收起嗰個部分。</translation>
 <translation id="8061584726507121204">記錄</translation>
-<translation id="8064946459644399612">已套用「新分頁」偏好設定</translation>
 <translation id="8065136076319366194">不建議儲存</translation>
 <translation id="8065556469005366939">分享分頁以取得更相關的答案</translation>
 <translation id="8069394452933076548">針對最近未使用的分頁，選擇何時要移至閒置分頁部分。</translation>
@@ -2239,6 +2244,7 @@
 <translation id="8232956427053453090">保留資料</translation>
 <translation id="8233237502828137700">關閉橫額宣傳</translation>
 <translation id="823339794112333264">開麥克風</translation>
+<translation id="8240217649914883113">加去我嘅日曆</translation>
 <translation id="8250920743982581267">文件</translation>
 <translation id="8252980988000695656">「Google 智能鏡頭」已完成！</translation>
 <translation id="8258734532103758067">我已匯出資料</translation>
@@ -2283,6 +2289,7 @@
 <translation id="8368198938968349418">開啟自動填入功能…</translation>
 <translation id="8370406443343902172">前往「設定」…</translation>
 <translation id="8370929854657845191">打開去中等高度</translation>
+<translation id="8371494817541821097">密鑰建立日期：<ph name="DATE" /></translation>
 <translation id="8372471489238799313">{count,plural, =1{刪除地址}other{刪除地址}}</translation>
 <translation id="8378714024927312812">由您的機構管理</translation>
 <translation id="8385363453480067273">使用「Google 智能鏡頭」搜尋眼前事物</translation>

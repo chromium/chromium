@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{ສ້າງເມື່ອ <ph name="NUM_WEEKS_ONE" /> ອາທິດກ່ອນ}other{ສ້າງເມື່ອ <ph name="NUM_WEEKS_MANY" /> ອາທິດກ່ອນ}}</translation>
 <translation id="1063300264396686489">ເປີດກຸ່ມແຖບຈາກອຸປະກອນອື່ນໆໂດຍອັດຕະໂນມັດ</translation>
 <translation id="1075622780330595106">ທ່ານບໍ່ໄດ້ໃຊ້ແຖບ <ph name="NUMBER_OF_TABS" /> ແຖບມາໄລຍະໜຶ່ງແລ້ວ. ປິດພວກມັນບໍ?</translation>
+<translation id="1089791933924803646">ຮັບການແນະນຳ Chrome ໃນແອັບອື່ນໆ</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{ສ້າງເມື່ອ <ph name="NUM_YEARS_ONE" /> ປີກ່ອນ}other{ສ້າງເມື່ອ <ph name="NUM_YEARS_MANY" /> ປີກ່ອນ}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{ແຖບ ແລະ ກຸ່ມທີ່ບໍ່ເຄື່ອນໄຫວຈະຖືກປິດຫຼັງຈາກ 1 ເດືອນ}other{ແຖບ ແລະ ກຸ່ມທີ່ບໍ່ເຄື່ອນໄຫວຈະຖືກປິດຫຼັງຈາກ <ph name="MONTH_COUNT_MANY" /> ເດືອນ}}</translation>
 <translation id="1173894706177603556">ໃສ່ຊື່ໃໝ່</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{ເພີ່ມແຖບໃສ່ກຸ່ມ}other{ເພີ່ມແຖບໃສ່ກຸ່ມ}}</translation>
 <translation id="8138067144082174140">ຫຼັງຈາກບໍ່ເຄື່ອນໄຫວ 14 ມື້</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{ຂະຫຍາຍກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" /> ດ້ວຍ <ph name="TABS_COUNT_ONE" /> ແຖບ, ສີ <ph name="COLOR_NAME" />.}other{ຂະຫຍາຍກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" /> ດ້ວຍ <ph name="TABS_COUNT_MANY" /> ແຖບ, ສີ <ph name="COLOR_NAME" />.}}</translation>
+<translation id="8172214054247281626">ແບ່ງປັນຂໍ້ມູນການທ່ອງເວັບ, ເຊັ່ນ: ປະຫວັດການທ່ອງເວັບຫຼ້າສຸດຂອງທ່ານ, ເພື່ອຮັບຄຳແນະນຳໃນແອັບທີ່ເລືອກ. ຂໍ້ມູນນີ້ຈະໄດ້ຮັບການປະມວນຜົນຢ່າງປອດໄພຢູ່ອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{ຖອນໝຸດແຖບ}other{ຖອນໝຸດແຖບ}}</translation>
 <translation id="8205266828577616993">ຍ້າຍແຖບຂຶ້ນເທິງ</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{ອັບເດດເມື່ອ <ph name="NUM_MINS_ONE" /> ນາທີກ່ອນ}other{ອັບເດດເມື່ອ <ph name="NUM_MINS_MANY" /> ນາທີກ່ອນ}}</translation>

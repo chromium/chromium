@@ -7,6 +7,7 @@
 <translation id="1046742265332833834">Asul na tema</translation>
 <translation id="1070329623210597193">Mga file na puwedeng tingnan o i-edit ng site na ito</translation>
 <translation id="1074758928858737435">Puwede mong hilinging makita ang desktop na bersyon ng mga site</translation>
+<translation id="1089791933924803646">Makakuha ng mga suhestyon sa Chrome sa iba pang app</translation>
 <translation id="1109482864356262001">Hindi gagana ang mga feature na nangangailangan ng mga sensor ng paggalaw o liwanag</translation>
 <translation id="1126523729897810826">Kumpletuhin ang mga iminumungkahing aksyong ito sa ibaba para masulit ang Chrome</translation>
 <translation id="113098737392899175">Mag-navigate sa mga page gamit ang cursor ng text kapag may nakakabit na keyboard</translation>
@@ -453,6 +454,7 @@
 <translation id="5668404140385795438">I-override ang kahilingan ng isang website upang mapigilan ang pagzu-zoom in</translation>
 <translation id="5668843533782548925">Mas mabagal ang mga site pero mas secure</translation>
 <translation id="5677928146339483299">Naka-block</translation>
+<translation id="5679089750838794164">Puwede na ngayong magpakita sa iyo ang Chrome ng mga suhestyon sa iba pang app batay sa iyong data ng pag-browse, gaya ng kamakailang history ng pag-browse. Secure na pinoproseso ang data na ito sa iyong device. Puwede mo itong i-off anumang oras sa mga setting ng Chrome.</translation>
 <translation id="5689516760719285838">Lokasyon</translation>
 <translation id="5690795753582697420">Naka-off ang camera sa mga setting ng Android</translation>
 <translation id="5700761515355162635">Pinapayagan ang third-party na cookies</translation>
@@ -507,6 +509,7 @@
 <translation id="6085954183010297841">I-delete ang pahintulot sa pag-edit ng file? <ph name="FILE" /></translation>
 <translation id="6104860901391833523">Kapag naka-on, puwedeng awtomatikong makapasok sa picture-in-picture ang mga site. Kapag naka-off, hindi puwedeng awtomatikong makapasok sa picture-in-picture ang mga site.</translation>
 <translation id="6120483543004435978">Kapag naka-on, puwedeng hilingin ng mga site na malaman kung kailan mo aktibong ginagamit ang iyong device. Kapag naka-off, hindi malalaman ng mga site kung kailan mo aktibong ginagamit ang iyong device.</translation>
+<translation id="612871598708395517">I-hide ang Makakuha ng mga suhestyon sa Chrome sa iba pang app</translation>
 <translation id="6132075343662013154">Mag-aalok ang Chrome na i-save ang iyong password</translation>
 <translation id="615886654739818377">Huwag payagan ang mga site na pamahalaan ang mga window sa lahat ng iyong screen</translation>
 <translation id="6165508094623778733">Matuto pa</translation>

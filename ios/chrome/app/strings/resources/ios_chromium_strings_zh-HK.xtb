@@ -110,6 +110,7 @@
 <translation id="3180939591219927904">啟用「關閉 Chromium 時鎖定無痕式分頁」</translation>
 <translation id="327628223428512207">請輸入密碼短語以儲存此密碼，並在所有裝置上存取 Chromium 資料</translation>
 <translation id="328933489847748230">{count,plural, =1{宜家顯示緊 1 個 Chromium 視窗}other{宜家顯示緊 {count} 個 Chromium 視窗}}</translation>
+<translation id="3344204225393848305">將 Chromium 設定為預設瀏覽器</translation>
 <translation id="3344973607274501920">Chromium 無法檢查密碼，請檢查互聯網連線。</translation>
 <translation id="3366305173356742781">帳戶中的 Chromium 資料</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{當 Chromium 閒置 {THRESHOLD} 分鐘後，系統就會執行此操作，當中可能包括記錄和自動填入資料。}other{當 Chromium 閒置 {THRESHOLD} 分鐘後，系統就會執行此操作，當中可能包括記錄和自動填入資料。}}</translation>
@@ -284,6 +285,7 @@
 <translation id="6852799557929001644">在此裝置的其他應用程式中使用你的 Chromium 密碼和其他資料。</translation>
 <translation id="6887138405044152640">如要將此分頁傳送至其他裝置，請在該裝置上登入 Chromium。</translation>
 <translation id="6911341667534646387">繼續使用 Google 帳戶中的 Chromium 資料</translation>
+<translation id="6992760259282302305">將 Chromium 用作預設瀏覽器</translation>
 <translation id="7018284295775193585">Chromium 無法更新</translation>
 <translation id="7055269218854630176">你的機構 (<ph name="DOMAIN" />) 會管理你正在登入的帳戶和可以使用 Chromium 的方式。管理員可設定或限制特定功能。</translation>
 <translation id="7099326575020694068">Chromium 無法在「分割檢視」模式中使用相機</translation>
@@ -344,6 +346,7 @@
 <translation id="8385503371191508165">開始使用「密碼管理工具」儲存密鑰</translation>
 <translation id="8390323835464055390">透過 Chromium 的自動填入功能，使用任何應用程式已儲存的密碼和密鑰登入</translation>
 <translation id="8409374867500149834">Chromium 最強大的安全功能可協助防範有害網站</translation>
+<translation id="8428449554948979733">隱藏「將 Chromium 用作預設瀏覽器」</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{當 Chromium 閒置 {THRESHOLD} 分鐘後，系統就會執行此操作。系統將刪除你登入時只儲存至此裝置的資料，其中可能包括記錄和密碼。}other{當 Chromium 閒置 {THRESHOLD} 分鐘後，系統就會執行此操作。系統將刪除你登入時只儲存至此裝置的資料，其中可能包括記錄和密碼。}}</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. 保留所有權利。</translation>
 <translation id="8602103377623855616">Chromium 頁面</translation>

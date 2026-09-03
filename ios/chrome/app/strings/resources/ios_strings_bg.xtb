@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">„Инкогнито“</translation>
 <translation id="1053651653201045802">Не сте в профила си. Влезте отново в него, за да използвате съответните отметки, пароли и др.</translation>
 <translation id="1054745118061919935">Продължавайки, приемате <ph name="BEGIN_LINK" />Общите условия<ph name="END_LINK" />.</translation>
+<translation id="1056818261333183659">Кои да купя?</translation>
 <translation id="10614374240317010">Незапазвани никога</translation>
 <translation id="1062138828266376352">ПИН кодът ви не бе променен. Проверете връзката си с интернет и опитайте отново</translation>
 <translation id="1063070031224282617">Изберете къде да се запази <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /> (<ph name="FILE_SIZE" />)</translation>
@@ -28,6 +29,7 @@
 <translation id="1074827084851510304">Напът сте да изтриете {password_count} пароли и списъка със сайтове и приложения, за които сте избрали данните за вход никога да не се запазват. Профилите, които сте създали за сайтове или приложения, няма да бъдат изтрити.</translation>
 <translation id="1076421457278169141">Кодът бе сканиран</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} раздел}other{{count} раздела}}</translation>
+<translation id="1081948304372277788">Изключване на подобряването</translation>
 <translation id="1082554859195167538">Подходящи за вас отзиви за продукт</translation>
 <translation id="1084365883616172403">Публикацията във Facebook е завършена.</translation>
 <translation id="108485301461714610">Режим с AI в Google Търсене и свързани приложения</translation>
@@ -214,6 +216,7 @@
 <translation id="1641113438599504367">Безопасно сърфиране</translation>
 <translation id="1644574205037202324">История</translation>
 <translation id="164673457281113247">{count,plural, =1{Отметката е запазена}other{Отметките са запазени}}</translation>
+<translation id="1650979352027263879">Предпочитанията ви за облика са премахнати</translation>
 <translation id="1651260071709244114">Apps</translation>
 <translation id="1652051421944182562">Включване на известията от функцията „Проверка на безопасността“…</translation>
 <translation id="1652333207707886577">Персонализиране на менюто ви</translation>
@@ -276,7 +279,6 @@
 <translation id="1836891464494477513">{count,plural, =1{Отметката е запазена в профила ви в Google {email}}other{Отметките са запазени в профила ви в Google {email}}}</translation>
 <translation id="1838089197478136166">Да се отвори ли в Wallet?</translation>
 <translation id="183878838231635348">Тази карта показва всички проблеми, свързани с поверителността и сигурността, които са открити автоматично от функцията за проверка на безопасността.</translation>
-<translation id="1840320537320704887">Предпочитанията ви за новия раздел в браузъра са премахнати</translation>
 <translation id="1845230888742614096">Запазване на групата</translation>
 <translation id="1853558655412913122">Вече можете да променяте позицията на адресната лента от „Настройки“ и след това „Адресна лента“</translation>
 <translation id="1853692000353488670">Нов раздел „инкогнито“</translation>
@@ -590,6 +592,7 @@
 <translation id="2858204748079866344">За да защити поверителността ви, Chrome няма да попълни автоматично паролата ви в това поле.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 сайт (още на синхронизираните устройства)}other{# сайта (още на синхронизираните устройства)}}</translation>
+<translation id="286473047976978798">Да се приложат ли предпочитанията ви за облика?</translation>
 <translation id="2865392654629180917">Задавайте въпроси и получавайте базирани на AI отговори</translation>
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2876369937070532032">Когато сигурността ви е застрашена, изпраща до Google URL адресите на някои от страниците, които посещавате.</translation>
@@ -1119,7 +1122,6 @@
 
        Изберете какво да се направи със съществуващите данни за сърфирането на това устройство.</translation>
 <translation id="4675298276894277358">Този сайт няма да бъде показан отново</translation>
-<translation id="4676647168422678078">Да се приложат ли предпочитанията ви за новия раздел в браузъра?</translation>
 <translation id="4682496302933121474">Да се преведе ли страницата?</translation>
 <translation id="4682686630151240767">1. Отворете настройките на iPhone.</translation>
 <translation id="4697240968720007067">Получете най-добрите приложения на Google с едно докосване</translation>
@@ -1504,6 +1506,7 @@
 <translation id="5898848375214731122">Маса</translation>
 <translation id="5899314093904173337">За да споделите с хората в близост, те трябва да сканират този QR код с камерата си или с приложение за целта</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} нов раздел}other{{count} нови раздела}}</translation>
+<translation id="5906163261248594192">Рожденият ден на Дан</translation>
 <translation id="5911030830365207728">Google Преводач</translation>
 <translation id="5912796581727968237">Отваряне на Google Wallet</translation>
 <translation id="5922999516621365983">Плъзнете раздела тук, за да го фиксирате.</translation>
@@ -1806,6 +1809,7 @@
 <translation id="6806550742467879742">Инструменти за страницата</translation>
 <translation id="6807287147325542056">Пароли в други приложения</translation>
 <translation id="681368974849482173">Елементът е създаден</translation>
+<translation id="6815692190508268848">Предпочитанията ви за облика са приложени</translation>
 <translation id="681631578600400068">Запазване на шофьорската книжка</translation>
 <translation id="6825078212112407882">{count,plural, =1{Отметката е запазена в профила ви в Google {email}}other{{count} отметки са запазени в профила ви в Google {email}}}</translation>
 <translation id="6826004672264649705">Понастоящем проследявате този продукт. Отворете, за да видите историята на цената</translation>
@@ -1922,6 +1926,7 @@
 <translation id="720399613139435155">Преводът не бе успешен</translation>
 <translation id="7204922488054642675">Персонализирани новини</translation>
 <translation id="7206979415662233817">Общи условия</translation>
+<translation id="721218676460477064">Обобщи тази статия</translation>
 <translation id="7215621211572884440">Изскачащ. прозорци са разрешени</translation>
 <translation id="7218491361283758048">Пощенски код</translation>
 <translation id="7221173315674413369">Разгледайте новите функции и съвети в „Новите неща“</translation>
@@ -2183,13 +2188,13 @@
 <translation id="8035133914807600019">Нова папка…</translation>
 <translation id="8035412398498507358">Снимки</translation>
 <translation id="8037713009824540257">Добавяне на сайт</translation>
+<translation id="8038078082340255234">Пазарен отчет</translation>
 <translation id="8040407350301524547">За опции за маршрута докоснете „Получаване на упътвания“.</translation>
 <translation id="804427445359061970">Тук ще се показват разделите ви от други устройства</translation>
 <translation id="8058655154417507695">Година на валидност</translation>
 <translation id="8059312861912872211">{count,plural, =1{{count} отметка}other{{count} отметки}}</translation>
 <translation id="8059533439631660104">Свива секцията.</translation>
 <translation id="8061584726507121204">История</translation>
-<translation id="8064946459644399612">Предпочитанията ви за новия раздел в браузъра са приложени</translation>
 <translation id="8065136076319366194">Запазването не се препоръчва</translation>
 <translation id="8065556469005366939">Получавайте по-уместни отговори, като споделяте разделите си</translation>
 <translation id="8069394452933076548">Изберете кога разделите, които не сте използвали скоро, да се преместват в секцията за неактивни раздели.</translation>
@@ -2241,6 +2246,7 @@
 <translation id="8232956427053453090">Запазване на данните</translation>
 <translation id="8233237502828137700">Затваряне на банера за популяризиране</translation>
 <translation id="823339794112333264">Включване на микрофона</translation>
+<translation id="8240217649914883113">Добави това към календара ми</translation>
 <translation id="8250920743982581267">Документи</translation>
 <translation id="8252980988000695656">Задачата в Google Обектив е изпълнена!</translation>
 <translation id="8258734532103758067">Експортирах данните си</translation>
@@ -2285,6 +2291,7 @@
 <translation id="8368198938968349418">Включване на автоматичното попълване…</translation>
 <translation id="8370406443343902172">Към настройките...</translation>
 <translation id="8370929854657845191">Разгъване до средна височина</translation>
+<translation id="8371494817541821097">Ключът за достъп е създаден на <ph name="DATE" /></translation>
 <translation id="8372471489238799313">{count,plural, =1{Изтриване на адреса}other{Изтриване на адресите}}</translation>
 <translation id="8378714024927312812">Управлява се от организацията ви</translation>
 <translation id="8385363453480067273">Търсене на това, което виждате, с Google Обектив</translation>

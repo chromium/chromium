@@ -8,6 +8,7 @@
 <translation id="102763973188675173">Personnalisez et contrôlez Google Chrome. Une mise à jour est disponible.</translation>
 <translation id="1028061813283459617">Pour supprimer les données de navigation de cet appareil uniquement, tout en les conservant dans votre compte Google, <ph name="BEGIN_LINK" />déconnectez-vous de Chrome<ph name="END_LINK" />.</translation>
 <translation id="1028770388543831319">Profitez des meilleures fonctionnalités de sécurité de Google où que vous soyez avec l'appli Chrome sur votre téléphone</translation>
+<translation id="1036348656032585052">Désactiver</translation>
 <translation id="1042270987544905725">Cliquez pour fermer la boîte de dialogue de connexion à Chrome</translation>
 <translation id="1051793555070215510">Aidez-nous à améliorer la navigation privée en répondant à cette enquête d'une minute.</translation>
 <translation id="1055295352198814912">Afficher Gemini dans Chrome dans la barre de menu Mac et activer le raccourci clavier</translation>
@@ -245,6 +246,7 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="3282568296779691940">Se connecter à Chrome</translation>
 <translation id="3286538390144397061">Redémarrer maintenant</translation>
 <translation id="3292333338048274092">Vous devrez ensuite redémarrer Chrome.</translation>
+<translation id="3294686910656423119">Statistiques d'utilisation et rapports d'erreur</translation>
 <translation id="3327226547491422998">Plus tard, Chrome pourra vous demander si vous souhaitez utiliser les informations enregistrées pour remplir automatiquement des formulaires</translation>
 <translation id="3352986031709923790">angle supérieur droit de la zone de recherche : <ph name="RIGHT" /> % droite, <ph name="TOP" /> % haut</translation>
 <translation id="3360895254066713204">Aide de Chrome</translation>
@@ -478,6 +480,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="5824893331272123205">Impossible de charger ce panneau. Réessayez.</translation>
 <translation id="5825922397106002626">Retirer <ph name="EXTENSION_NAME" /> de Chrome</translation>
 <translation id="5858486459377137936">Lorsque vous fermerez toutes les fenêtres Chrome, vous serez déconnecté de la plupart des sites, à l'exception de votre compte Google si vous êtes connecté à Chrome. Pour autoriser les sites à se souvenir de vous, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5860491529813859533">Activer</translation>
 <translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome vous avertit<ph name="END_LINK" /> en cas de sites et de téléchargements dangereux</translation>
 <translation id="5894164573378901688">Pour utiliser Gemini dans Chrome, connectez-vous avec un autre compte Google</translation>
 <translation id="5895138241574237353">Redémarrer</translation>
@@ -518,6 +521,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6166185671393271715">Importer des mots de passe dans Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Bêta</translation>
+<translation id="6177442314419606057">Effectuer une recherche dans Chrome</translation>
 <translation id="6180522807229584611">Cet onglet utilise des ressources supplémentaires. Pour améliorer les performances, autorisez Chrome à le désactiver.</translation>
 <translation id="6182736845697986886">Échec de l'installation en raison d'une erreur interne du serveur de mise à jour.</translation>
 <translation id="6192058120268468905">Votre compte dans Chrome</translation>

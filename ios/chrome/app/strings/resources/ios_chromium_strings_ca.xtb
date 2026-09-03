@@ -110,6 +110,7 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 <translation id="3180939591219927904">Activa l'opció Bloqueja les pestanyes d'incògnit després de tancar Chromium</translation>
 <translation id="327628223428512207">Introdueix la frase de contrasenya per desar aquesta contrasenya i obtenir les dades de Chromium en tots els teus dispositius</translation>
 <translation id="328933489847748230">{count,plural, =1{S'està mostrant 1 finestra de Chromium}other{S'estan mostrant {count} finestres de Chromium}}</translation>
+<translation id="3344204225393848305">Estableix Chromium com a predeterminat</translation>
 <translation id="3344973607274501920">Chromium no ha pogut comprovar les teves contrasenyes. Comprova la connexió a Internet.</translation>
 <translation id="3366305173356742781">Dades de Chromium al teu compte</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Es produeix quan Chromium no s'utilitza durant {THRESHOLD} minut. Això pot incloure l'historial i la funció Emplenament automàtic.}other{Es produeix quan Chromium no s'utilitza durant {THRESHOLD} minuts. Això pot incloure l'historial i la funció Emplenament automàtic.}}</translation>
@@ -284,6 +285,7 @@ Aspectes que cal tenir en compte:
 <translation id="6852799557929001644">Accedeix a les teves contrasenyes de Chromium i a més elements en altres aplicacions d'aquest dispositiu.</translation>
 <translation id="6887138405044152640">Per enviar aquesta pestanya a un altre dispositiu, inicia la sessió a Chromium al dispositiu en qüestió.</translation>
 <translation id="6911341667534646387">Continua utilitzant les dades de Chromium al teu Compte de Google</translation>
+<translation id="6992760259282302305">Utilitza Chromium com a predeterminat</translation>
 <translation id="7018284295775193585">Chromium no es pot actualitzar</translation>
 <translation id="7055269218854630176">La teva organització, <ph name="DOMAIN" />, gestiona el compte en què estàs iniciant la sessió i com es pot utilitzar Chromium. L'administrador pot configurar o restringir determinades funcions.</translation>
 <translation id="7099326575020694068">Chromium no pot utilitzar la càmera en mode de vista dividida</translation>
@@ -344,6 +346,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="8385503371191508165">Comença a desar claus d'accés amb el gestor de contrasenyes</translation>
 <translation id="8390323835464055390">Inicia la sessió amb les teves contrasenyes i claus d'accés desades des de qualsevol aplicació amb Chromium per a Emplenament automàtic</translation>
 <translation id="8409374867500149834">Tens la seguretat més efectiva de Chromium contra llocs web perillosos</translation>
+<translation id="8428449554948979733">Amaga Utilitza Chromium com a predeterminat</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Es produeix quan Chromium no s'utilitza durant {THRESHOLD} minut. Se suprimiran les dades que s'han desat només en aquest dispositiu mentre tenies la sessió iniciada. S'hi podrien incloure l'historial i les contrasenyes.}other{Es produeix quan Chromium no s'utilitza durant {THRESHOLD} minuts. Se suprimiran les dades que s'han desat només en aquest dispositiu mentre tenies la sessió iniciada. S'hi podrien incloure l'historial i les contrasenyes.}}</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Els autors de Chromium. Tots els drets reservats.</translation>
 <translation id="8602103377623855616">Pàgina de Chromium</translation>

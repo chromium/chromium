@@ -1457,6 +1457,7 @@
 <translation id="3495081129428749620">ຊອກຫາໃນໜ້າ
     <ph name="PAGE_TITLE" /></translation>
 <translation id="3495818359064790343">ເງິນເດືອນ</translation>
+<translation id="3496531230994554300">ປະກາດກ່ຽວກັບ Wallet ເປີດຢູ່ແບບເຕັມຄວາມສູງ.</translation>
 <translation id="3497627066518778351">ກວດສອບລາຍຊື່ຂອງຂໍ້ມູນເວັບໄຊຢູ່ອຸປະກອນໃນໜ້າຈໍໃໝ່</translation>
 <translation id="3498215018399854026">ພວກ​ເຮົາ​ບໍ່​ສາ​ມາດ​ຕິດ​ຕໍ່​ຜູ້​ປົກ​ຄອງ​ຂອງ​ທ່ານ​ໄດ້​ໃນ​ຂະ​ນະ​ນີ້. ກະ​ລຸ​ນາ​ລອງ​ໃໝ່ອີກ.</translation>
 <translation id="350069200438440499">ຊື່ໄຟລ໌:</translation>
@@ -2669,6 +2670,7 @@
 <translation id="5499229993630251170">ສືບຕໍ່ຫົວຂໍ້ນີ້ບໍ?</translation>
 <translation id="5506286895894263601">ລາຍຊື່ມີທາງລັດທີ່ບໍ່ຖືກຕ້ອງ.</translation>
 <translation id="5507756662695126555">ການບໍ່ປະຕິເສດ</translation>
+<translation id="5508515366054931524">ຂໍ້ຄວາມແຈ້ງໃຫ້ຢັ້ງຢືນອີເມວເປີດຢູ່ແບບເຕັມຄວາມສູງ</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">ບຸກມາກສ໌ທີ່ຄຸ້ມຄອງ:</translation>
 <translation id="5510766032865166053">ມັນອາດຈະຖືກຍ້າຍ ຫຼື ລຶບອອກແລ້ວ.</translation>
@@ -3451,6 +3453,7 @@
 <translation id="6860888819347870819">ສາມາດຂໍເຂົ້າໄປການສະແດງຜົນຊ້ອນກັນໄດ້</translation>
 <translation id="6864189428899665393">267 x 389 ມມ</translation>
 <translation id="6865412394715372076">ບໍ່ສາມາດຢັ້ງຢືນບັດນີ້ໄດ້ໃນຕອນນີ້</translation>
+<translation id="6871073333584947219">ປິດປະກາດກ່ຽວກັບ Wallet ແລ້ວ.</translation>
 <translation id="6871813064737840684">ປະຫວັດລາຄາຢູ່ໃນທົ່ວເວັບສຳລັບຕົວເລືອກນີ້</translation>
 <translation id="6873456682041376666">ຖາດເທິງ</translation>
 <translation id="6874604403660855544">ເຮັດຄືນຄຳ​ສັ່ງເພີ່ມ</translation>
@@ -3970,6 +3973,7 @@
 <translation id="7705085181312584869">ຊ່ວຍຂ້ອຍຂຽນ</translation>
 <translation id="7705992072972338699">ອັອບຕິຄອລດິສ (ມັນວາວຫຼາຍ)</translation>
 <translation id="7706689436519265630">ໄຟລ໌ທີ່ທ່ານສຳເນົາ ຫຼື ຍ້າຍອອກຈະຖືກສົ່ງໃຫ້ Google Cloud ຫຼື ພາກສ່ວນທີສາມເພື່ອວິເຄາະ. ຕົວຢ່າງ: ພວກມັນອາດຖືກສະແກນເພື່ອຊອກຫາຂໍ້ມູນທີ່ລະອຽດອ່ອນ ຫຼື ເມົາແວ ແລະ ອາດຖືກຈັດເກັບຕາມນະໂຍບາຍບໍລິສັດ.</translation>
+<translation id="7709934467582922028">ປິດຂໍ້ຄວາມແຈ້ງໃຫ້ຢັ້ງຢືນອີເມວແລ້ວ</translation>
 <translation id="7714351089363296478">ທ່ານຫາກໍເຂົ້າເບິ່ງ</translation>
 <translation id="7714404809393719981">ຮູບພາບ (ເຄິ່ງມັນວາວ)</translation>
 <translation id="7714464543167945231">ໃບ​ຢັ້ງ​ຢືນ</translation>
@@ -4867,6 +4871,7 @@
 <translation id="988159990683914416">ສ້າງ​ນັກພັດ​ທະ​ນາ</translation>
 <translation id="989988560359834682">ແກ້ໄຂທີ່ຢູ່</translation>
 <translation id="990164307229195234"><ph name="DEVICE_NAME" /> (<ph name="DISAMBIGUATION_LABEL" />)</translation>
+<translation id="990812705189376036">ຫຼັກຖານ Merkle Tree</translation>
 <translation id="992110854164447044">ບັດສະເໝືອນຈະເຊື່ອງບັດແທ້ຂອງທ່ານເພື່ອຊ່ວຍປົກປ້ອງທ່ານຈາກຄວາມສ່ຽງໃນການສໍ້ໂກງ. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>
 <translation id="992256792861109788">ສີບົວ</translation>

@@ -110,6 +110,7 @@ Pentru mai multe setări care folosesc date pentru a-ți îmbunătăți experien
 <translation id="3180939591219927904">Activează Blochează filele incognito când închizi Chromium</translation>
 <translation id="327628223428512207">Introdu expresia de acces pentru a salva această parolă și a accesa datele Chromium pe toate dispozitivele</translation>
 <translation id="328933489847748230">{count,plural, =1{Se afișează o fereastră Chromium}few{Se afișează {count} ferestre Chromium}other{Se afișează {count} de ferestre Chromium}}</translation>
+<translation id="3344204225393848305">Setează Chromium ca browser prestabilit</translation>
 <translation id="3344973607274501920">Chromium nu a putut verifica parolele. Verifică-ți conexiunea la internet.</translation>
 <translation id="3366305173356742781">Datele Chromium din cont</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Acest lucru se întâmplă când Chromium nu este folosit timp de {THRESHOLD} minut. Aici pot fi incluse istoricul și completarea automată.}few{Acest lucru se întâmplă când Chromium nu este folosit timp de {THRESHOLD} minute. Aici pot fi incluse istoricul și completarea automată.}other{Acest lucru se întâmplă când Chromium nu este folosit timp de {THRESHOLD} de minute. Aici pot fi incluse istoricul și completarea automată.}}</translation>
@@ -284,6 +285,7 @@ De reținut:
 <translation id="6852799557929001644">Accesează parolele Chromium și alte funcții în alte aplicații de pe acest dispozitiv.</translation>
 <translation id="6887138405044152640">Pentru a trimite această filă pe alt dispozitiv, conectează-te la Chromium pe dispozitivul respectiv</translation>
 <translation id="6911341667534646387">Folosește în continuare datele Chromium din Contul Google</translation>
+<translation id="6992760259282302305">Folosește Chromium ca browser prestabilit</translation>
 <translation id="7018284295775193585">Chromium nu se poate actualiza</translation>
 <translation id="7055269218854630176">Organizația ta, <ph name="DOMAIN" />, gestionează contul la care te conectezi și modul în care poate fi folosit Chromium. Administratorul poate să configureze sau să restricționeze anumite funcții.</translation>
 <translation id="7099326575020694068">Chromium nu poate folosi camera foto în modul Vizualizare împărțită</translation>
@@ -344,6 +346,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="8385503371191508165">Începe să salvezi chei de acces cu Managerul de parole</translation>
 <translation id="8390323835464055390">Conectează-te cu parolele și cheile de acces salvate din orice aplicație folosind Chromium pentru completare automată</translation>
 <translation id="8409374867500149834">Ai cea mai puternică securitate Chromium împotriva site-urilor dăunătoare</translation>
+<translation id="8428449554948979733">Ascunde opțiunea Folosește Chromium ca browser prestabilit</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Acest lucru se întâmplă când Chromium nu este folosit timp de {THRESHOLD} minut. Datele salvate numai pe acest dispozitiv în timp ce erai conectat(ă) se vor șterge. Aici pot fi incluse istoricul și parolele.}few{Acest lucru se întâmplă când Chromium nu este folosit timp de {THRESHOLD} minute. Datele salvate numai pe acest dispozitiv în timp ce erai conectat(ă) se vor șterge. Aceasta ar putea include istoricul și parolele.}other{Acest lucru se întâmplă când Chromium nu este folosit timp de {THRESHOLD} de minute. Datele salvate numai pe acest dispozitiv în timp ce erai conectat(ă) se vor șterge. Aici pot fi incluse istoricul și parolele.}}</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Toate drepturile rezervate.</translation>
 <translation id="8602103377623855616">Pagină Chromium</translation>

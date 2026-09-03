@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">ရုပ်ဖျက်</translation>
 <translation id="1053651653201045802">အကောင့်ထွက်ထားသည်။ လိပ်စာ၊ စကားဝှက် စသည်တို့ကို သင့်အကောင့်တွင် သုံးရန် ပြန်လက်မှတ်ထိုးဝင်ပါ။</translation>
 <translation id="1054745118061919935">ရှေ့ဆက်ခြင်းဖြင့် <ph name="BEGIN_LINK" />ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK" /> ကို သင်သဘောတူရာရောက်သည်။</translation>
+<translation id="1056818261333183659">ဘယ်ဟာ ဝယ်ရမလဲ</translation>
 <translation id="10614374240317010">ဘယ်တော့မှ မသိမ်းဆည်းရန်</translation>
 <translation id="1062138828266376352">သင့်ပင်နံပါတ်ကို ပြောင်းမထားပါ။ အင်တာနက်ချိတ်ဆက်မှုကို စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ</translation>
 <translation id="1063070031224282617">“<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />” (<ph name="FILE_SIZE" />) ကို သိမ်းမည့်နေရာ ရွေးပါ</translation>
@@ -28,6 +29,7 @@
 <translation id="1074827084851510304">သင်သည် စကားဝှက် {password_count} ခုနှင့် လက်မှတ်ထိုးဝင်ရန် အချက်အလက်များကို ဘယ်တော့မှမသိမ်းရန် ရွေးထားသော ဝဘ်ဆိုက်နှင့် အက်ပ်များစာရင်းတို့ကို ဖျက်ပါတော့မည်။ ဝဘ်ဆိုက်နှင့် အက်ပ်များအတွက် သင်ဖွင့်ထားသည့် အကောင့်များကို ဖျက်မည်မဟုတ်ပါ။</translation>
 <translation id="1076421457278169141">ကုဒ်ကို ဖတ်ပြီးပါပြီ</translation>
 <translation id="1081932398873105675">{count,plural, =1{တဘ် {count} ခု}other{တဘ် {count} ခု}}</translation>
+<translation id="1081948304372277788">Level Up ပိတ်ရန်</translation>
 <translation id="1082554859195167538">သင့်အတွက် ကုန်ပစ္စည်းသုံးသပ်ချက်များ</translation>
 <translation id="1084365883616172403">ဖေ့စ်ဘွတ်တွင် တင်ပြခြင်း ပြီးစီပါပြီ။</translation>
 <translation id="108485301461714610">Google Search AI မုဒ်နှင့် ချိတ်ဆက်အက်ပ်များ</translation>
@@ -214,6 +216,7 @@
 <translation id="1641113438599504367">လုံခြုံစွာ ရှာကြည့်မှု</translation>
 <translation id="1644574205037202324">မှတ်တမ်း</translation>
 <translation id="164673457281113247">{count,plural, =1{လိပ်စာ သိမ်းလိုက်သည်}other{လိပ်စာများ သိမ်းလိုက်သည်}}</translation>
+<translation id="1650979352027263879">သင်၏ အသွင်အပြင် သတ်မှတ်ချက်များကို ဖယ်ရှားလိုက်သည်</translation>
 <translation id="1651260071709244114">အက်ပ်များ</translation>
 <translation id="1652051421944182562">လုံခြုံရေး စစ်ဆေးမှု အကြောင်းကြားချက်များ ဖွင့်ရန်…</translation>
 <translation id="1652333207707886577">သင့်မီနူးကို စိတ်ကြိုက်ပြင်နိုင်သည်</translation>
@@ -276,7 +279,6 @@
 <translation id="1836891464494477513">{count,plural, =1{သင်၏ Google Account {email} တွင် သိမ်းထားသော လိပ်စာ}other{သင်၏ Google Account {email} တွင် သိမ်းထားသော လိပ်စာများ}}</translation>
 <translation id="1838089197478136166">Wallet တွင် ဖွင့်မလား။</translation>
 <translation id="183878838231635348">‘လုံခြုံရေး စစ်ဆေးမှု’ က သင့်အတွက် အလိုအလျောက် ရှာတွေ့ထားသော ကိုယ်ရေးအချက်အလက် လုံခြုံမှု (သို့) လုံခြုံရေးဆိုင်ရာ ပြဿနာများကို ဤကတ်တွင် ပြသည်။</translation>
-<translation id="1840320537320704887">‘တဘ်အသစ်’ စာမျက်နှာ သတ်မှတ်ချက်များကို ဖယ်ရှားလိုက်သည်</translation>
 <translation id="1845230888742614096">အုပ်စုကို ဆက်ထားရန်</translation>
 <translation id="1853558655412913122">“ဆက်တင်များ” ပြီးနောက် “လိပ်စာဘား” တွင် လိပ်စာဘား နေရာကို ပြောင်းနိုင်ပါပြီ</translation>
 <translation id="1853692000353488670">ကိုယ်ပျောက် တဘ်အသစ်</translation>
@@ -590,6 +592,7 @@
 <translation id="2858204748079866344">သင်၏ ပုဂ္ဂိုလ်ရေးကို ကာကွယ်ရန် Chrome သည် ဤအကွက်အတွက် သင်၏ စကားဝှက်ကို အော်တိုဖြည့်မည် မဟုတ်ပါ။</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{ဝဘ်ဆိုက် ၁ ခု (စင့်ခ်လုပ်ထားသော စက်များတွင် နောက်ထပ်ရှိသေးသည်)}other{ဝဘ်ဆိုက် # ခု (စင့်ခ်လုပ်ထားသော စက်များတွင် နောက်ထပ်ရှိသေးသည်)}}</translation>
+<translation id="286473047976978798">သင်၏ အသွင်အပြင် သတ်မှတ်ချက်များကို သုံးမလား</translation>
 <translation id="2865392654629180917">ကြိုက်ရာမေးပြီး AI သုံး အဖြေများ ရယူပါ</translation>
 <translation id="2870560284913253234">ဆိုက်</translation>
 <translation id="2876369937070532032">သင်၏လုံခြုံရေး အန္တရာယ်ရှိသောအခါ သင်ဝင်ကြည့်ထားသည့် စာမျက်နှာအချို့၏ URL ကို Google သို့ပို့သည်။</translation>
@@ -1119,7 +1122,6 @@
 
        ဤစက်ပေါ်ရှိ လက်ရှိ ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာအား မည်သို့လုပ်မည်ကို ရွေးပါ။</translation>
 <translation id="4675298276894277358">ဤဝဘ်ဆိုက်ကို ထပ်မပြတော့ပါ</translation>
-<translation id="4676647168422678078">‘တဘ်အသစ်’ စာမျက်နှာ သတ်မှတ်ချက်များကို သုံးမလား</translation>
 <translation id="4682496302933121474">စာမျက်နှာကို ဘာသာပြန်မလား။</translation>
 <translation id="4682686630151240767">၁။ ‘iPhone ဆက်တင်များ’ ဖွင့်ပါ</translation>
 <translation id="4697240968720007067">Google ၏ အကောင်းဆုံးအက်ပ်များကို တစ်ချက်တို့ရုံဖြင့် ရယူပါ</translation>
@@ -1503,6 +1505,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="5898848375214731122">အလေးချိန်</translation>
 <translation id="5899314093904173337">အနီးတဝိုက်ရှိ လူများနှင့် မျှဝေရန် ၎င်းတို့၏ ကင်မရာ သို့မဟုတ် QR စကင်နာအက်ပ်ဖြင့် ဤ QR ကုဒ်ကို စကင်ဖတ်စေပါ</translation>
 <translation id="5902752768726620872">{count,plural, =1{တဘ်အသစ် {count} ခု}other{တဘ်အသစ် {count} ခု}}</translation>
+<translation id="5906163261248594192">Dan ၏ မွေးနေ့</translation>
 <translation id="5911030830365207728">Google ဘာသာပြန်</translation>
 <translation id="5912796581727968237">Google Wallet ဖွင့်ရန်</translation>
 <translation id="5922999516621365983">ပင်ထိုးရန် တဘ်အား ဤနေရာသို့ ဖိဆွဲပါ။</translation>
@@ -1805,6 +1808,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="6806550742467879742">စာမျက်နှာ တူးလ်များ</translation>
 <translation id="6807287147325542056">အခြားအက်ပ်များရှိ စကားဝှက်များ</translation>
 <translation id="681368974849482173">အကြောင်းအရာ ဖန်တီးပြီးပါပြီ</translation>
+<translation id="6815692190508268848">သင်၏ အသွင်အပြင် သတ်မှတ်ချက်များကို သုံးလိုက်သည်</translation>
 <translation id="681631578600400068">ယာဉ်မောင်းလိုင်စင် သိမ်းမလား</translation>
 <translation id="6825078212112407882">{count,plural, =1{သင်၏ Google Account {email} တွင် သိမ်းထားသော လိပ်စာ}other{သင်၏ Google Account {email} တွင် လိပ်စာ {count} ခု သိမ်းထားသည်}}</translation>
 <translation id="6826004672264649705">လောလောဆယ် ဤကုန်ပစ္စည်းကို စောင့်ကြည့်နေသည်။ ဈေးနှုန်းမှတ်တမ်း ကြည့်ရန် ဖွင့်ပါ</translation>
@@ -1921,6 +1925,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="720399613139435155">ဘာသာပြန်၍ မရလိုက်ပါ</translation>
 <translation id="7204922488054642675">ပုဂ္ဂိုလ်ရေးသီးသန့် သတင်း</translation>
 <translation id="7206979415662233817">ဝန်ဆောင်မှုစည်းမျဉ်းများ</translation>
+<translation id="721218676460477064">ဤဆောင်းပါးကို အနှစ်ချုပ်ရန်</translation>
 <translation id="7215621211572884440">ပေါ့ပ်အပ်များ ခွင့်ပြုထားသည်</translation>
 <translation id="7218491361283758048">စာတိုက်သင်္ကေတ</translation>
 <translation id="7221173315674413369">ဝန်ဆောင်မှုအသစ်များနှင့် အကြံပြုချက်များကို ‘အသစ်ပါဝင်မှုများ’ တွင် စူးစမ်းလေ့လာနိုင်သည်</translation>
@@ -2182,13 +2187,13 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="8035133914807600019">ဖိုင်တွဲ အသစ်...</translation>
 <translation id="8035412398498507358">Photos</translation>
 <translation id="8037713009824540257">ဆိုက်ကို ထည့်ရန်</translation>
+<translation id="8038078082340255234">ဈေးကွက်အစီရင်ခံစာ</translation>
 <translation id="8040407350301524547">လမ်းကြောင်းရွေးစရာများအတွက် “ခရီးလမ်းညွှန်ချက်များ ရယူရန်” ကို တို့ပါ။</translation>
 <translation id="804427445359061970">အခြားစက်များမှ သင့်တဘ်များကို ဤနေရာတွင် ပြပါမည်</translation>
 <translation id="8058655154417507695">သက်တမ်းကုန်ဆုံးမည့်နှစ်</translation>
 <translation id="8059312861912872211">{count,plural, =1{ဝဘ်လိပ်စာ {count} ခု}other{ဝဘ်လိပ်စာ {count} ခု}}</translation>
 <translation id="8059533439631660104">ကဏ္ဍများကို ခေါက်သိမ်းသည်။</translation>
 <translation id="8061584726507121204">မှတ်တမ်း</translation>
-<translation id="8064946459644399612">‘တဘ်အသစ်’ စာမျက်နှာ သတ်မှတ်ချက်များကို သုံးလိုက်သည်</translation>
 <translation id="8065136076319366194">သိမ်းခြင်းကို အကြံမပြုပါ</translation>
 <translation id="8065556469005366939">သင့်တဘ်များကို မျှဝေခြင်းဖြင့် ပိုမိုသက်ဆိုင်သော အဖြေများ ရယူပါ</translation>
 <translation id="8069394452933076548">တဘ်များကိုမသုံးပါက မသုံးသောတဘ် ကဏ္ဍသို့ ၎င်းတို့ကို မည်သည့်အချိန်တွင် ရွှေ့လိုသည်ကို ရွေးချယ်ပါ။</translation>
@@ -2240,6 +2245,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="8232956427053453090">ဒေတာများ ဆက်ထားရှိရန်</translation>
 <translation id="8233237502828137700">ပရိုမိုးရှင်း နဖူးစည်း ပိတ်ရန်</translation>
 <translation id="823339794112333264">မိုက်ခရိုဖုန်းဖွင့်ရန်</translation>
+<translation id="8240217649914883113">၎င်းကို ကျွန်ုပ်၏ပြက္ခဒိန်တွင် ထည့်ရန်</translation>
 <translation id="8250920743982581267">စာရွက်စာတမ်းများ</translation>
 <translation id="8252980988000695656">Google Lens ပြီးပါပြီ။</translation>
 <translation id="8258734532103758067">ကျွန်ုပ်၏ဒေတာကို ထုတ်ယူပြီးပါပြီ</translation>
@@ -2284,6 +2290,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="8368198938968349418">‘အော်တိုဖြည့်’ ဖွင့်ရန်…</translation>
 <translation id="8370406443343902172">ဆက်တင်များသို့ သွားရန်...</translation>
 <translation id="8370929854657845191">အလယ်အလတ်အထိ ချဲ့ရန်</translation>
+<translation id="8371494817541821097"><ph name="DATE" /> တွင် လျှို့ဝှက်ကီး ပြုလုပ်ခဲ့သည်</translation>
 <translation id="8372471489238799313">{count,plural, =1{လိပ်စာ ဖျက်ရန်}other{လိပ်စာများ ဖျက်ရန်}}</translation>
 <translation id="8378714024927312812">သင်၏ 'အဖွဲ့အစည်း' က စီမံခန့်ခွဲထားသည်</translation>
 <translation id="8385363453480067273">Google Lens ဖြင့် သင်တွေ့ရသည့်အရာများ ရှာဖွေခြင်း</translation>

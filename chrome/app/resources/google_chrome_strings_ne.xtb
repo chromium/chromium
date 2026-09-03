@@ -8,6 +8,7 @@
 <translation id="102763973188675173">Google Chrome लाई  कस्टम बनाउने र नियन्त्रण गर्ने कार्य गर्नुहोस्। अपडेट उपलब्ध छ।</translation>
 <translation id="1028061813283459617">तपाईंको Google खातामा ब्राउजिङ डेटा यथावत् राखी यो डिभाइसबाट मात्र ब्राउजिङ डेटा मेटाउन <ph name="BEGIN_LINK" />Chrome बाट साइन आउट गर्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="1028770388543831319">आफ्नो फोनमा Chrome एप इन्स्टल गरी जहाँसुकैबाट पनि Google का उत्कृष्ट सुरक्षा सुविधाहरू प्राप्त गर्नुहोस्</translation>
+<translation id="1036348656032585052">अफ गर्नुहोस्</translation>
 <translation id="1042270987544905725">Chrome मा साइन इन गर्ने डायलग बन्द गर्न क्लिक गर्नुहोस्</translation>
 <translation id="1051793555070215510">१ मिनेटको यो सर्वेक्षण पूरा गरेर हामीलाई इन्कोग्निटो मोडको गुणस्तर सुधार्न मद्दत गर्नुहोस्।</translation>
 <translation id="1055295352198814912">Mac को मेनु बारमा Chrome मा उपलब्ध Gemini देखाउनुहोस् र किबोर्ड सर्टकट अन गर्नुहोस्</translation>
@@ -244,6 +245,7 @@
 <translation id="3282568296779691940">Chrome मा साइन इन गर्नुहोस्</translation>
 <translation id="3286538390144397061">अहिले फेरी सुरु गर्नुहोस्</translation>
 <translation id="3292333338048274092">तपाईंले त्यसपछि Chrome रिस्टार्ट गर्नु पर्ने हुन्छ।</translation>
+<translation id="3294686910656423119">प्रयोगसम्बन्धी तथ्याङ्क र क्र्याससम्बन्धी रिपोर्टहरू</translation>
 <translation id="3327226547491422998">Chrome ले तपाईंलाई पछि फारामहरू स्वतः भर्नका निम्ति सेभ गरिएको जानकारी प्रयोग गर्ने कि नगर्ने भन्ने कुरा सोध्न सक्छ</translation>
 <translation id="3352986031709923790">खोज क्षेत्रको सिरानको दायाँ कुना: दायाँ भागको <ph name="RIGHT" />%, सिरानको <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome सहायककर्ता</translation>
@@ -475,6 +477,7 @@ Google Chrome ले तपाईंको सेटिङहरू पुन: �
 <translation id="5824893331272123205">यो प्यानल लोड गर्न सकिएन। फेरि प्रयास गर्नुहोस्</translation>
 <translation id="5825922397106002626">Chrome बाट <ph name="EXTENSION_NAME" /> हटाउनुहोस्</translation>
 <translation id="5858486459377137936">तपाईंले Chrome का सबै विन्डो बन्द गर्नुभयो भने तपाईं अधिकांश साइटहरूबाट साइन आउट हुनु हुने छ तर तपाईं Chrome मा साइन इन अवस्थामा हुनुहुन्छ भने तपाईं आफ्नो Google खाताबाट भने साइन आउट हुनु हुने छैन। साइटहरूले तपाईंका विवरण याद राख्न सकून् भन्नाका लागि <ph name="SETTINGS_LINK" />।</translation>
+<translation id="5860491529813859533">अन गर्नुहोस्</translation>
 <translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome ले तपाईंलाई<ph name="END_LINK" /> असुरक्षित साइट तथा डाउनलोडका बारेमा चेतावनी दिन्छ</translation>
 <translation id="5894164573378901688">Chrome मा उपलब्ध Gemini प्रयोग गर्न अर्कै Google खाता प्रयोग गरी साइन इन गर्नुहोस्</translation>
 <translation id="5895138241574237353">पुन: शुरू गर्नुहोस्</translation>
@@ -515,6 +518,7 @@ Google Chrome ले तपाईंको सेटिङहरू पुन: �
 <translation id="6166185671393271715">पासवर्डहरूलाई Chrome मा इम्पोर्ट गर्नुहोस्</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome बिटा</translation>
+<translation id="6177442314419606057">Chrome मा खोज्नुहोस्</translation>
 <translation id="6180522807229584611">यो ट्याबले अतिरिक्त स्रोतहरू प्रयोग गरिरहेको छ। पर्फर्मेन्स अझ राम्रो बनाउन Chrome लाई यो ट्याब निष्क्रिय बनाउन दिनुहोस्।</translation>
 <translation id="6182736845697986886">अपडेट सर्भरमा आन्तरिक त्रुटि भएकाले इन्स्टल गर्न सकिएन।</translation>
 <translation id="6192058120268468905">Chrome मा भएको तपाईंको खाता</translation>

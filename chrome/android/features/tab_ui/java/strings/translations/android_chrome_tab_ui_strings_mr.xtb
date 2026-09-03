@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> आठवड्यापूर्वी तयार केला आहे}other{<ph name="NUM_WEEKS_MANY" /> आठवड्यांपूर्वी तयार केला आहे}}</translation>
 <translation id="1063300264396686489">इतर डिव्हाइसवरून टॅब गट आपोआप उघडा</translation>
 <translation id="1075622780330595106">तुमच्या <ph name="NUMBER_OF_TABS" /> चा काही दिवसांपासून वापर केला गेला नाही. ते बंद करायचे आहेत का?</translation>
+<translation id="1089791933924803646">इतर अ‍ॅप्समध्ये Chrome सूचना मिळवा</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> वर्षापूर्वी तयार केला आहे}other{<ph name="NUM_YEARS_MANY" /> वर्षांपूर्वी तयार केला आहे}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{इनॅक्टिव्ह टॅब आणि गट १ महिन्यानंतर बंद केले जातील}other{इनॅक्टिव्ह टॅब आणि गट <ph name="MONTH_COUNT_MANY" /> महिन्यांनंतर बंद केले जातील}}</translation>
 <translation id="1173894706177603556">नाव बदला</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{गटामध्ये टॅब जोडा}other{गटामध्ये टॅब जोडा}}</translation>
 <translation id="8138067144082174140">१४ दिवस इनॅक्टिव्ह राहिल्यानंतर</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="TITLE_OF_GROUP" /> टॅब गटाचा <ph name="TABS_COUNT_ONE" /> टॅब, <ph name="COLOR_NAME" /> रंग वापरून विस्तार करा.}other{<ph name="TITLE_OF_GROUP" /> टॅब गटाचा <ph name="TABS_COUNT_MANY" /> टॅब, <ph name="COLOR_NAME" /> रंग वापरून विस्तार करा.}}</translation>
+<translation id="8172214054247281626">निवडलेल्या अ‍ॅप्सवर सूचना मिळवण्यासाठी, तुमचा अलीकडील ब्राउझिंग इतिहास यासारखा ब्राउझिंग डेटा शेअर करा. या डेटावर तुमच्या डिव्हाइसवर सुरक्षितपणे प्रक्रिया केली जाते.</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{टॅब अनपिन करा}other{टॅब अनपिन करा}}</translation>
 <translation id="8205266828577616993">टॅब वर हलवा</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> मिनिटापूर्वी अपडेट केला आहे}other{<ph name="NUM_MINS_MANY" /> मिनिटांपूर्वी अपडेट केला आहे}}</translation>

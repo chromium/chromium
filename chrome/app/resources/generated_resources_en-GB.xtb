@@ -622,6 +622,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1482626744466814421">Bookmark This Tab...</translation>
 <translation id="1482772681918035149">edit passwords</translation>
 <translation id="1483137792530497944">River</translation>
+<translation id="1483151333977672176">Sent!</translation>
 <translation id="1483431819520123112">Display name copied to clipboard</translation>
 <translation id="1483493594462132177">Send</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
@@ -688,7 +689,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1539248305642687917">Don't allow sites to override your keyboard input</translation>
 <translation id="1539727654733007771">No mobile networks set up. Download a new <ph name="BEGIN_LINK" />profile.<ph name="END_LINK" /></translation>
 <translation id="1540265419569299117">ChromeOS App Service</translation>
-<translation id="1540543470504988112">Manage imported certificates from MacOS</translation>
 <translation id="1541346352678737112">No network found</translation>
 <translation id="154198613844929213">{0,plural, =0{Deleting now.}=1{Deleting in: 1 second}other{Deleting in: # seconds}}</translation>
 <translation id="1542137295869176367">Your sign-in data couldn't be updated</translation>
@@ -1341,7 +1341,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="2026367923222947564">Full page</translation>
 <translation id="2026377162111110983">Area voice</translation>
 <translation id="2028449514182362831">Features that need motion sensors won't work</translation>
-<translation id="2028479214883337535">Imported from MacOS</translation>
 <translation id="202918510990975568">Enter your password to configure security and sign-in</translation>
 <translation id="2030455719695904263">Trackpad</translation>
 <translation id="2030803782168502207">Remove subscription from device</translation>
@@ -5254,7 +5253,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5017250179386090956">Downloading main node annotation files</translation>
 <translation id="5017529052065664584">Last 15 minutes</translation>
 <translation id="5018207570537526145">Open extension website</translation>
-<translation id="5019487038187875030">View imported certificates from MacOS</translation>
 <translation id="5020008942039547742">Choose a different window</translation>
 <translation id="5020146655450187658">You’re offline. Check your Internet connection to manage sites that Gemini can sign you in to.</translation>
 <translation id="5020651427400641814">Enable speech logging</translation>
@@ -8354,7 +8352,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7460045493116006516">Current theme that you have installed</translation>
 <translation id="7461924472993315131">Pin</translation>
 <translation id="7462644385455960321">Exit full screen to show tabs horizontally</translation>
-<translation id="746329643760972486">MacOS</translation>
 <translation id="7463985990119325874">Your organisation manages how data collected by these features may be used.</translation>
 <translation id="7464645554245611385">Last update to this tab</translation>
 <translation id="7465777686629334728">Remove managed development environment (<ph name="SPECIFIC_NAME" />)</translation>
@@ -8961,6 +8958,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7943837619101191061">Add Location...</translation>
 <translation id="79446453817422139">This file may be dangerous</translation>
 <translation id="7944772052836377867">Sync needs to verify that it's you</translation>
+<translation id="794567586469801724">macOS</translation>
 <translation id="7945703887991230167">Preferred voice</translation>
 <translation id="7946243258100028201"><ph name="ORIGIN" /> will be able to view and make its own copies of files in <ph name="FOLDERNAME" /> until you close all tabs for this site</translation>
 <translation id="7946586320617670168">Origin must be secure</translation>

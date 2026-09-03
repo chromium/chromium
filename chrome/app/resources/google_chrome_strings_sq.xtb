@@ -8,6 +8,7 @@
 <translation id="102763973188675173">Personalizo dhe kontrollo Google Chrome. Ofrohet përditësim.</translation>
 <translation id="1028061813283459617">Për t'i fshirë të dhënat e shfletimit vetëm nga kjo pajisje, ndërkohë që i mban ato në "Llogarinë tënde të Google", <ph name="BEGIN_LINK" />dil nga llogaria në Chrome<ph name="END_LINK" />.</translation>
 <translation id="1028770388543831319">Merr veçoritë më të mira të sigurisë të Google kur je në lëvizje me aplikacionin e Chrome në telefonin tënd</translation>
+<translation id="1036348656032585052">Çaktivizo</translation>
 <translation id="1042270987544905725">Kliko për të mbyllur dialogun e identifikimit në Chrome</translation>
 <translation id="1051793555070215510">Na ndihmo të përmirësojmë modalitetin "I fshehtë" duke plotësuar këtë anketë 1-minutëshe.</translation>
 <translation id="1055295352198814912">Shfaq Gemini në Chrome në shiritin e menysë së Mac dhe aktivizo shkurtoren e tastierës</translation>
@@ -246,6 +247,7 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="3282568296779691940">Identifikohu në Chrome</translation>
 <translation id="3286538390144397061">Rindiz tani</translation>
 <translation id="3292333338048274092">Më pas do të të duhet të rinisësh Chrome.</translation>
+<translation id="3294686910656423119">Raportet e statistikave të përdorimit dhe të ndërprerjeve aksidentale</translation>
 <translation id="3327226547491422998">Më vonë, Chrome mund të të pyesë nëse dëshiron të përdorësh informacionet e ruajtura për të plotësuar automatikisht formularët për ty</translation>
 <translation id="3352986031709923790">këndi lart djathtas i zonës së kërkimit: djathtas <ph name="RIGHT" />%, lart<ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Ndihmësi i Chrome</translation>
@@ -478,6 +480,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="5824893331272123205">Ky panel nuk mund të ngarkohej. Provo përsëri</translation>
 <translation id="5825922397106002626">Hiq <ph name="EXTENSION_NAME" /> nga Chrome</translation>
 <translation id="5858486459377137936">Do të dalësh nga shumica e sajteve kur të mbyllësh të gjitha dritaret e Chrome, përveçse nga "Llogaria jote e Google" nëse je i identifikuar në Chrome. Për t'i lejuar sajtet që të të kujtojnë, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5860491529813859533">Aktivizo</translation>
 <translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome të paralajmëron<ph name="END_LINK" /> për sajtet dhe shkarkimet e pasigurta</translation>
 <translation id="5894164573378901688">Për të përdorur Gemini në Chrome, identifikohu me një "Llogari tjetër të Google"</translation>
 <translation id="5895138241574237353">Rinis</translation>
@@ -518,6 +521,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6166185671393271715">Importo fjalëkalimet në Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
+<translation id="6177442314419606057">Kërko në Chrome</translation>
 <translation id="6180522807229584611">Kjo skedë po përdor burime shtesë. Për të përmirësuar performancën tënde, lejo që Chrome ta bëjë atë joaktive.</translation>
 <translation id="6182736845697986886">Instalimi dështoi për shkak të një gabimi të brendshëm të serverit të përditësimit.</translation>
 <translation id="6192058120268468905">Llogaria jote në Chrome</translation>

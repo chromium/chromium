@@ -8,6 +8,7 @@
 <translation id="102763973188675173">‏سفارشی کردن و کنترل Google Chrome. به‌روزرسانی‌ دردسترس است.</translation>
 <translation id="1028061813283459617">‏برای حذف کردن داده‌های مرور فقط از این دستگاه و نگهداری آن در «حساب Google»، <ph name="BEGIN_LINK" />از سیستم Chrome خارج شوید<ph name="END_LINK" />.</translation>
 <translation id="1028770388543831319">‏با برنامه Chrome در تلفن، بهترین ویژگی‌های ایمنی Google را درحال حرکت دریافت کنید</translation>
+<translation id="1036348656032585052">خاموش کردن</translation>
 <translation id="1042270987544905725">‏برای بستن کادر گفتگوی ورود به سیستم Chrome، کلیک کنید</translation>
 <translation id="1051793555070215510">با تکمیل این نظرسنجی ۱ دقیقه‌ای به ما کمک کنید «حالت ناشناس» را بهبود ببخشیم.</translation>
 <translation id="1055295352198814912">‏نشان دادن «Gemini در Chrome» در نوار منو Mac و روشن کردن میان‌بر صفحه‌کلید</translation>
@@ -242,6 +243,7 @@
 <translation id="3282568296779691940">‏ورود به سیستم Chrome</translation>
 <translation id="3286538390144397061">راه‌اندازی مجدد اکنون</translation>
 <translation id="3292333338048274092">‏سپس باید Chrome را بازراه‌اندازی کنید.</translation>
+<translation id="3294686910656423119">آمار کاربرد و گزارش‌های خرابی</translation>
 <translation id="3327226547491422998">‏بعداً Chrome می‌تواند از شما بپرسد که آیا می‌خواهید از اطلاعات ذخیره‌شده برای تکمیل خودکار فرم‌ها استفاده کنید</translation>
 <translation id="3352986031709923790">‏گوشه بالا سمت چپ ناحیه جستجو: ‎٪<ph name="RIGHT" /> سمت چپ، ‎٪<ph name="TOP" /> بالا</translation>
 <translation id="3360895254066713204">‏راهنمای Chrome</translation>
@@ -471,6 +473,7 @@
 <translation id="5824893331272123205">این پانل بارگیری نشد، دوباره امتحان کنید</translation>
 <translation id="5825922397106002626">‏حذف <ph name="EXTENSION_NAME" /> از Chrome</translation>
 <translation id="5858486459377137936">‏وقتی همه پنجره‌های Chrome را ببندید از سیستم اکثر سایت‌ها خارج خواهید شد، اما اگر به سیستم Chrome وارد شده باشید از «حساب Google» خارج نخواهید شد. برای اینکه سایت‌ها شما را به‌خاطر بسپارند، <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5860491529813859533">روشن کردن</translation>
 <translation id="586971344380992563">‏‫Chrome درباره بارگیری‌ها و سایت‌های ناامن <ph name="BEGIN_LINK" />به شما هشدار می‌دهد<ph name="END_LINK" /></translation>
 <translation id="5894164573378901688">‏برای استفاده از «Gemini در Chrome»، با «حساب Google» دیگری به سیستم وارد شوید</translation>
 <translation id="5895138241574237353">راه‌اندازی مجدد</translation>
@@ -511,6 +514,7 @@
 <translation id="6166185671393271715">‏وارد کردن گذرواژه‌ها به Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
+<translation id="6177442314419606057">‏جستجو در Chrome</translation>
 <translation id="6180522807229584611">‏این زبانه از منابع اضافی استفاده می‌کند. برای بهبود عملکرد، اجازه دهید Chrome آن را غیرفعال کند.</translation>
 <translation id="6182736845697986886">نصب به‌دلیل وجود خطای داخلی در سرور به‌روزرسانی انجام نشد.</translation>
 <translation id="6192058120268468905">‏حساب شما در Chrome</translation>

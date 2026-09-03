@@ -132,6 +132,7 @@
 Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="1084824384139382525">Kopiraj naslov pove&amp;zave</translation>
 <translation id="1085064499066015002">Vedno na vseh spletnih mestih</translation>
+<translation id="1085340215550339505">Zaradi zagotavljanja pravočasnih predlogov za spremembo gesla se lahko vsebina in URL-ji strani, ki jih obiščete, obdelujejo v zasebnem prostoru v oblaku</translation>
 <translation id="1085558727130096638">Pridružite se skupini zavihkov z osebo <ph name="OWNER_FIRST_NAME" /> in še <ph name="NUM_OTHER_MEMBERS" /></translation>
 <translation id="1085618740036066768">Element <ph name="ITEM" /> ni izbran. <ph name="INDEX" /> od <ph name="COUNT" />. Pritisnite tipko za iskanje in preslednico, če želite izbirati.</translation>
 <translation id="1086486568852410168">Iskanje z Googlom Lens</translation>
@@ -622,6 +623,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1482626744466814421">Dodajanje tega zavihka med zaznamke ...</translation>
 <translation id="1482772681918035149">urejati gesla</translation>
 <translation id="1483137792530497944">Reka</translation>
+<translation id="1483151333977672176">Poslano!</translation>
 <translation id="1483431819520123112">Prikazno ime je kopirano v odložišče</translation>
 <translation id="1483493594462132177">Pošlji</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
@@ -688,7 +690,6 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1539248305642687917">Spletnim mestom ni dovoljeno preglasiti vnosa s tipkovnico</translation>
 <translation id="1539727654733007771">Ni nastavljenih mobilnih omrežij. Prenesite novi <ph name="BEGIN_LINK" />profil.<ph name="END_LINK" /></translation>
 <translation id="1540265419569299117">Storitev aplikacije za ChromeOS</translation>
-<translation id="1540543470504988112">Upravljanje uvoženih potrdil iz sistema macOS</translation>
 <translation id="1541346352678737112">Ni omrežja</translation>
 <translation id="154198613844929213">{0,plural, =0{Brisanje.}=1{Brisanje čez: 1 sekundo}one{Brisanje čez: # sekundo}two{Brisanje čez: # sekundi}few{Brisanje čez: # sekunde}other{Brisanje čez: # sekund}}</translation>
 <translation id="1542137295869176367">Podatkov za prijavo ni bilo mogoče posodobiti.</translation>
@@ -1132,6 +1133,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1871131409931646355">Celotna zgodovina prenosov</translation>
 <translation id="187145082678092583">Manj aplikacij</translation>
 <translation id="1871615898038944731">Naprava <ph name="DEVICE_TYPE" /> je posodobljena</translation>
+<translation id="1872846000961079826">Med spreminjanjem gesla se vsebina s strani z gesli in povezani podatki pošiljajo Googlu in jih lahko pregledajo pregledovalci zaradi izboljšanja kakovosti te funkcije</translation>
 <translation id="1873513359268939357">Koledar v Outlooku</translation>
 <translation id="1873920700418191231">Znova omogočite dovoljenja za <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">Dovoljeno je prikazovanje oglasov</translation>
@@ -1340,7 +1342,6 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="2026367923222947564">Celotna stran</translation>
 <translation id="2026377162111110983">Glas v prostoru</translation>
 <translation id="2028449514182362831">Funkcije, ki potrebujejo tipala gibanja, ne bodo delovale</translation>
-<translation id="2028479214883337535">Uvoženo iz sistema macOS</translation>
 <translation id="202918510990975568">Vnesite geslo, če želite konfigurirati varnost in prijavo</translation>
 <translation id="2030455719695904263">Sledilna ploščica</translation>
 <translation id="2030803782168502207">Odstranitev naročnine iz naprave</translation>
@@ -2859,6 +2860,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3184536091884214176">Nastavitev ali upravljanje tiskalnikov CUPS. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="3184591616546256659">S to kodo PIN lahko spremenite nastavitve starševskega nadzora.
     Če pozabite kodo PIN, v napravi izvedite powerwash in jo znova nastavite.</translation>
+<translation id="3184916134413175521">Ocenite</translation>
 <translation id="3185014249447200271">{NUM_APPS,plural, =1{Ta aplikacija je blokirana}one{Nekatere aplikacije so blokirane}two{Nekatere aplikacije so blokirane}few{Nekatere aplikacije so blokirane}other{Nekatere aplikacije so blokirane}}</translation>
 <translation id="3185454065699440434">Dovoli razširitve na <ph name="SITE_NAME" /></translation>
 <translation id="3187556136478864255">Ali je napravo za predvajanje mogoče videti v
@@ -2928,6 +2930,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3241680850019875542">Izberite korenski imenik razširitve, ki jo želite zapakirati. Če želite posodobiti razširitev, izberite tudi datoteko z zasebnim ključem, ki jo želite znova uporabiti.</translation>
 <translation id="3241810535741601486">Ta sprememba je trajna in je ni mogoče razveljaviti. Razširjene posodobitve se uporabljajo za vse uporabnike te naprave. <ph name="LINK_START" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="324205398936770726">Vaš avatar</translation>
+<translation id="3242764115495920926">Ponudba za samodejno spremembo gesel</translation>
 <translation id="3243017971870859287">Branje serijskih številk naprav in komponent s sistemom ChromeOS Flex.</translation>
 <translation id="324366796737464147">Izločanje hrupa</translation>
 <translation id="3244271242291266297">MM</translation>
@@ -4153,6 +4156,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="4167924027691268367">Več dejanj za bližnjico <ph name="SHORTCUT_TITLE" /></translation>
 <translation id="4168015872538332605">Nekatere nastavitve, ki se nanašajo na uporabnika <ph name="PRIMARY_EMAIL" />, so deljene z vami. Te nastavitve vplivajo na vaš račun samo pri uporabi prijave z več računi.</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> se konča z <ph name="LAST_FOUR_DIGITS" /></translation>
+<translation id="4169275505426201952">Ocenite …</translation>
 <translation id="4169535189173047238">Ne dovoli</translation>
 <translation id="4170314459383239649">Izbriši ob izhodu</translation>
 <translation id="4170685671197375581">Vklopi bližnjico</translation>
@@ -4454,6 +4458,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="4401912261345737180">Vzpostavitev povezave s kodo za predvajanje</translation>
 <translation id="4403012369005671154">Pretvorba govora v besedilo</translation>
 <translation id="4403775189117163360">Izberi drugo mapo</translation>
+<translation id="440411460180511551">Če Chromium v javni podatkovni kršitvi najde eno od vaših gesel, vam lahko Googlov upravitelj gesel ponudi, da ga spremeni, ko ste prijavljeni.</translation>
 <translation id="4404843640767531781">Aplikacijo <ph name="APP_NAME" /> je blokiral starš. Če želiš uporabljati to aplikacijo, prosi starša za dovoljenje.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Premakni v …</translation>
@@ -5253,7 +5258,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5017250179386090956">Prenašanje datotek z obvestili glavnega vozlišča</translation>
 <translation id="5017529052065664584">Zadnjih 15 minut</translation>
 <translation id="5018207570537526145">Odpri spletno mesto razširitve</translation>
-<translation id="5019487038187875030">Ogled uvoženih potrdil iz sistema macOS</translation>
 <translation id="5020008942039547742">Izberite drugo okno</translation>
 <translation id="5020146655450187658">Nimate vzpostavljene povezave. Preverite internetno povezavo, če želite upravljati spletna mesta, na katerih vas lahko Gemini prijavi.</translation>
 <translation id="5020651427400641814">Omogočanje zapisovanja dnevnikov govora</translation>
@@ -6591,6 +6595,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6099766472403716061">Spletnemu mestu <ph name="HOST" /> vedno dovoli upravljanje in reprogramiranje naprav MIDI</translation>
 <translation id="6100736666660498114">Meni »Start«</translation>
 <translation id="6100737823178787570">Povečajte velikost okna, če želite nadaljevati opravilo</translation>
+<translation id="6101170451607354234">Če Chrome v javni podatkovni kršitvi najde eno od vaših gesel, vam lahko Googlov upravitelj gesel ponudi, da ga spremeni, ko ste prijavljeni.</translation>
 <translation id="6101226222197207147">Nova aplikacija je dodana (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">To datoteko je blokirala dodatna zaščita.</translation>
 <translation id="6103681770816982672">Opozorilo: preklapljate na kanal za razvijalce</translation>
@@ -6796,6 +6801,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6254892857036829079">Odlično</translation>
 <translation id="6257602895346497974">Vklopi sinhronizacijo …</translation>
 <translation id="625827534921607067">To omrežje bo prednostno, če je na voljo več kot eno predhodno povezano ali konfigurirano omrežje.</translation>
+<translation id="6258818697161346451">Uporaba ključev za dostop v tej napravi</translation>
 <translation id="6259776178973198997">Osveži podatke o lastnikih Wi-Fi Direct</translation>
 <translation id="6261688934280090835">Dnevniki aplikacij za kioske ChromeOS</translation>
 <translation id="6263082573641595914">Microsoftova različica overitelja potrdil</translation>
@@ -8360,7 +8366,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7460045493116006516">Trenutna tema, ki ste jo namestili</translation>
 <translation id="7461924472993315131">Pripni</translation>
 <translation id="7462644385455960321">Zaprite celozaslonski način za vodoravni prikaz zavihkov</translation>
-<translation id="746329643760972486">macOS</translation>
 <translation id="7463985990119325874">Vaša organizacija upravlja, kako se morda uporabljajo podatki, ki jih zberejo te funkcije.</translation>
 <translation id="7464645554245611385">Zadnja posodobitev tega zavihka</translation>
 <translation id="7465777686629334728">Odstranitev upravljanega razvojnega okolja (<ph name="SPECIFIC_NAME" />)</translation>
@@ -8967,6 +8972,7 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7943837619101191061">Dodaj mesto ...</translation>
 <translation id="79446453817422139">Ta datoteka je morda nevarna</translation>
 <translation id="7944772052836377867">Sinhroniziranje mora potrditi, da ste to vi</translation>
+<translation id="794567586469801724">macOS</translation>
 <translation id="7945703887991230167">Prednostni glas</translation>
 <translation id="7946243258100028201">Spletno mesto <ph name="ORIGIN" /> si bo lahko ogledovalo datoteke v mapi <ph name="FOLDERNAME" /> in v njej ustvarjalo kopije teh datotek, dokler ne zaprete vseh zavihkov tega spletnega mesta</translation>
 <translation id="7946586320617670168">Izvor mora biti varen</translation>
@@ -10351,6 +10357,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="9003185744423389627">Povezava s strežnikom za upravljanje naprav ni uspela; stanje napake ob <ph name="FAILURE_TIME" />: »<ph name="STATUS_TEXT" />«.</translation>
 <translation id="90033698482696970">Želite samodejno iskati razpoložljive profile za e-SIM?</translation>
 <translation id="9003647077635673607">Dovoli na vseh spletnih mestih</translation>
+<translation id="9004279470320280717">Ocenite …</translation>
 <translation id="9005774573776346118">Če želite dostopati do gesel, zaznamkov in drugega v vseh napravah, se prijavite kot <ph name="EMAIL" /></translation>
 <translation id="9006511997799670136">Vaša organizacija</translation>
 <translation id="900733896273558337">Urejanje veščine</translation>

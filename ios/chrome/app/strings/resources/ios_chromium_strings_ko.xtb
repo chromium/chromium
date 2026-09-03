@@ -110,6 +110,7 @@ Chromium 환경을 개선하는 데 데이터를 사용하는 설정을 더 보�
 <translation id="3180939591219927904">'Chromium 종료 시 시크릿 탭 잠금'을 사용 설정합니다.</translation>
 <translation id="327628223428512207">암호를 입력하여 비밀번호를 저장하고 모든 기기에서 Chromium 데이터를 사용하세요</translation>
 <translation id="328933489847748230">{count,plural, =1{Chromium 창 1개 표시 중}other{Chromium 창 {count}개 표시 중}}</translation>
+<translation id="3344204225393848305">Chromium을 기본 브라우저로 설정</translation>
 <translation id="3344973607274501920">Chromium에서 비밀번호를 확인할 수 없습니다. 인터넷 연결 상태를 확인하세요.</translation>
 <translation id="3366305173356742781">사용자 계정의 Chromium 데이터</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Chromium을 {THRESHOLD}분 동안 사용하지 않으면 유휴 상태가 됩니다. 여기에는 방문 기록 및 자동 완성이 포함될 수 있습니다}other{Chromium을 {THRESHOLD}분 동안 사용하지 않으면 유휴 상태가 됩니다. 여기에는 방문 기록 및 자동 완성이 포함될 수 있습니다}}</translation>
@@ -284,6 +285,7 @@ Chromium 환경을 개선하는 데 데이터를 사용하는 설정을 더 보�
 <translation id="6852799557929001644">이 기기의 다른 앱에서 Chromium 비밀번호 등에 액세스합니다.</translation>
 <translation id="6887138405044152640">이 탭을 다른 기기로 보내려면 해당 기기에서 Chromium에 로그인하세요.</translation>
 <translation id="6911341667534646387">Google 계정의 Chromium 데이터를 계속 사용하세요.</translation>
+<translation id="6992760259282302305">Chromium을 기본 브라우저로 사용</translation>
 <translation id="7018284295775193585">Chromium을 업데이트할 수 없습니다.</translation>
 <translation id="7055269218854630176">내가 로그인한 계정과 Chromium의 사용 방식은 <ph name="DOMAIN" /> 조직에서 관리합니다. 관리자는 특정 기능을 설정하거나 제한할 수 있습니다.</translation>
 <translation id="7099326575020694068">Chromium에서는 분할 모드에서 카메라를 사용할 수 없습니다.</translation>
@@ -344,6 +346,7 @@ Chromium 환경을 개선하는 데 데이터를 사용하는 설정을 더 보�
 <translation id="8385503371191508165">비밀번호 관리자로 패스키 저장</translation>
 <translation id="8390323835464055390">Chromium 자동 완성을 사용하여 저장된 비밀번호 및 패스키로 모든 앱에서 로그인하세요</translation>
 <translation id="8409374867500149834">유해한 웹사이트에 대한 Chromium의 가장 강력한 보안 기능을 갖추고 있습니다.</translation>
+<translation id="8428449554948979733">Chromium을 기본 브라우저로 사용 숨기기</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{이 현상은 Chromium을 {THRESHOLD}분 동안 사용하지 않는 경우에 발생합니다. 로그인되어 있는 동안 이 기기에만 저장된 데이터는 삭제됩니다. 여기에는 방문 기록 및 비밀번호가 포함될 수 있습니다.}other{이 현상은 Chromium을 {THRESHOLD}분 동안 사용하지 않는 경우에 발생합니다. 로그인되어 있는 동안 이 기기에만 저장된 데이터는 삭제됩니다. 여기에는 방문 기록 및 비밀번호가 포함될 수 있습니다.}}</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>
 <translation id="8602103377623855616">Chromium 페이지</translation>

@@ -110,6 +110,7 @@ Du hittar fler inställningar som använder data för att förbättra Chromium-u
 <translation id="3180939591219927904">Aktivera Lås inkognitoflikar när du stänger Chromium</translation>
 <translation id="327628223428512207">Ange lösenfrasen om du vill spara det här lösenordet och få Chromium-data på alla dina enheter</translation>
 <translation id="328933489847748230">{count,plural, =1{Nu visas 1 Chromium-fönster}other{Nu visas {count} Chromium-fönster}}</translation>
+<translation id="3344204225393848305">Ställ in Chromium som standardwebbläsare</translation>
 <translation id="3344973607274501920">Chromium kunde inte kontrollera dina lösenord. Testa att kontrollera internetanslutningen.</translation>
 <translation id="3366305173356742781">Chromium-data i ditt konto</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Detta händer när Chromium inte har använts på {THRESHOLD} minut. Detta kan innefatta historik och autofyll.}other{Detta händer när Chromium inte har använts på {THRESHOLD} minuter. Detta kan innefatta historik och autofyll.}}</translation>
@@ -284,6 +285,7 @@ Tänk på detta:
 <translation id="6852799557929001644">Få åtkomst till dina lösenord och annat från Chromium i andra appar på den här enheten.</translation>
 <translation id="6887138405044152640">Om du vill skicka den här fliken till en annan enhet loggar du in i Chromium på den enheten.</translation>
 <translation id="6911341667534646387">Fortsätt använda Chromium-data i Google-kontot</translation>
+<translation id="6992760259282302305">Använd Chromium som standardwebbläsare</translation>
 <translation id="7018284295775193585">Chromium kan inte uppdateras</translation>
 <translation id="7055269218854630176">Din organisation, <ph name="DOMAIN" />, hanterar kontot du loggar in på och hur Chromium kan användas. Administratören kan konfigurera eller begränsa vissa funktioner.</translation>
 <translation id="7099326575020694068">Chromium kan inte använda kameran i delad vy</translation>
@@ -344,6 +346,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="8385503371191508165">Börja spara nycklar med Lösenordshantering</translation>
 <translation id="8390323835464055390">Logga in med dina sparade lösenord och nycklar från vilken app som helst med Chromium för autofyll</translation>
 <translation id="8409374867500149834">Du har den starkaste säkerheten i Chromium mot skadliga webbplatser</translation>
+<translation id="8428449554948979733">Dölj Använd Chromium som standardwebbläsare</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Detta händer när Chromium inte har använts på {THRESHOLD} minut. Data som endast har sparats på den här enheten medan du var inloggad kommer att raderas. Detta kan inkludera historik och lösenord.}other{Detta händer när Chromium inte har använts på {THRESHOLD} minuter. Data som endast har sparats på den här enheten medan du var inloggad kommer att raderas. Detta kan inkludera historik och lösenord.}}</translation>
 <translation id="8586442755830160949">Upphovsrätt <ph name="YEAR" /> The Chromium Authors. Med ensamrätt.</translation>
 <translation id="8602103377623855616">Chromium-sida</translation>

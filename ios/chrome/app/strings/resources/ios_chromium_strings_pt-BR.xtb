@@ -108,6 +108,7 @@ Para conferir mais configurações que usam dados para melhorar sua experiência
 <translation id="3180939591219927904">Ative a opção "Bloquear guias anônimas ao fechar o Chromium"</translation>
 <translation id="327628223428512207">Digite a senha longa para salvar essa senha e acessar os dados do Chromium em todos os seus dispositivos</translation>
 <translation id="328933489847748230">{count,plural, =1{Mostrando agora 1 janela do Chromium}one{Mostrando agora {count} janela do Chromium}other{Mostrando agora {count} janelas do Chromium}}</translation>
+<translation id="3344204225393848305">Definir o Chromium como padrão</translation>
 <translation id="3344973607274501920">Não foi possível verificar suas senhas com o Chromium. Verifique sua conexão de Internet.</translation>
 <translation id="3366305173356742781">Dados do Chromium na sua conta</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Isso acontece quando o Chromium não é usado por {THRESHOLD} minuto. Pode incluir o histórico e o preenchimento automático.}one{Isso acontece quando o Chromium não é usado por {THRESHOLD} minuto. Pode incluir o histórico e o preenchimento automático.}other{Isso acontece quando o Chromium não é usado por {THRESHOLD} minutos. Pode incluir o histórico e o preenchimento automático.}}</translation>
@@ -282,6 +283,7 @@ Considerações:
 <translation id="6852799557929001644">Acesse suas senhas do Chromium e muito mais em outros apps neste dispositivo.</translation>
 <translation id="6887138405044152640">Para enviar esta guia a outro dispositivo, faça login no Chromium no outro aparelho.</translation>
 <translation id="6911341667534646387">Continue usando os dados do Chromium na sua Conta do Google</translation>
+<translation id="6992760259282302305">Usar o Chromium como padrão</translation>
 <translation id="7018284295775193585">Não é possível atualizar o Chromium</translation>
 <translation id="7055269218854630176">Sua organização, <ph name="DOMAIN" />, gerencia a conta em que você faz login e a forma como o Chromium pode ser usado. Seu administrador pode configurar ou restringir determinados recursos.</translation>
 <translation id="7099326575020694068">O Chromium não pode usar a câmera no modo Visualização dividida</translation>
@@ -342,6 +344,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="8385503371191508165">Comece a salvar chaves de acesso com o Gerenciador de Senhas</translation>
 <translation id="8390323835464055390">Faça login com suas senhas e chaves de acesso salvas em qualquer app usando o Chromium para preenchimento automático</translation>
 <translation id="8409374867500149834">Você tem a segurança reforçada do Chromium contra sites perigosos</translation>
+<translation id="8428449554948979733">Ocultar "Usar o Chromium como padrão"</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Isso acontece quando o Chromium não é usado por {THRESHOLD} minuto. Os dados salvos apenas neste dispositivo enquanto sua conta estava conectada serão excluídos. Isso pode incluir histórico e senhas.}one{Isso acontece quando o Chromium não é usado por {THRESHOLD} minuto. Os dados salvos apenas neste dispositivo enquanto sua conta estava conectada serão excluídos. Isso pode incluir histórico e senhas.}other{Isso acontece quando o Chromium não é usado por {THRESHOLD} minutos. Os dados salvos apenas neste dispositivo enquanto sua conta estava conectada serão excluídos, incluindo histórico e senhas.}}</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autores do Chromium. Todos os direitos reservados.</translation>
 <translation id="8602103377623855616">Página do Chromium</translation>

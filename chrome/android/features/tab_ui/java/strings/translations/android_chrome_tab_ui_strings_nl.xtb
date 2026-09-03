@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> week geleden gemaakt}other{<ph name="NUM_WEEKS_MANY" /> weken geleden gemaakt}}</translation>
 <translation id="1063300264396686489">Tabbladgroepen van andere apparaten automatisch openen</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> van je tabbladen zijn niet recent gebruikt. Wil je ze sluiten?</translation>
+<translation id="1089791933924803646">Suggesties van Chrome krijgen in andere apps</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> jaar geleden gemaakt}other{<ph name="NUM_YEARS_MANY" /> jaar geleden gemaakt}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Inactieve tabbladen en groepen worden na 1 maand gesloten}other{Inactieve tabbladen en groepen worden na <ph name="MONTH_COUNT_MANY" /> maanden gesloten}}</translation>
 <translation id="1173894706177603556">Naam wijzigen</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Tabblad toevoegen aan groep}other{Tabbladen toevoegen aan groep}}</translation>
 <translation id="8138067144082174140">Na 14 dagen inactiviteit</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Tabbladgroep <ph name="TITLE_OF_GROUP" /> met <ph name="TABS_COUNT_ONE" /> tabblad uitvouwen, kleur <ph name="COLOR_NAME" />.}other{Tabbladgroep <ph name="TITLE_OF_GROUP" /> met <ph name="TABS_COUNT_MANY" /> tabbladen uitvouwen, kleur <ph name="COLOR_NAME" />.}}</translation>
+<translation id="8172214054247281626">Deel browsegegevens, zoals je recente browsegeschiedenis, om suggesties te krijgen in geselecteerde apps. Deze gegevens worden beveiligd verwerkt op je apparaat.</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{Tabblad losmaken}other{Tabbladen losmaken}}</translation>
 <translation id="8205266828577616993">Tabblad omhoog verplaatsen</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> minuut geleden geüpdatet}other{<ph name="NUM_MINS_MANY" /> minuten geleden geüpdatet}}</translation>

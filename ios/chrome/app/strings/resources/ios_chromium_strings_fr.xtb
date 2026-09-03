@@ -110,6 +110,7 @@ Pour voir d'autres paramètres qui utilisent les données pour améliorer votre 
 <translation id="3180939591219927904">Activez "Verrouiller les onglets de navigation privée lorsque vous fermez Chromium"</translation>
 <translation id="327628223428512207">Saisissez votre phrase secrète pour enregistrer ce mot de passe et accéder aux données Chromium sur tous vos appareils</translation>
 <translation id="328933489847748230">{count,plural, =1{1 fenêtre Chromium actuellement affichée}one{{count} fenêtre Chromium actuellement affichée}other{{count} fenêtres Chromium actuellement affichées}}</translation>
+<translation id="3344204225393848305">Définir Chromium par défaut</translation>
 <translation id="3344973607274501920">Chromium n'est pas parvenu à vérifier vos mots de passe. Vérifiez votre connexion Internet.</translation>
 <translation id="3366305173356742781">Données Chromium de votre compte</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Cela se produit quand Chromium est inutilisé pendant {THRESHOLD} minute. Il peut s'agir de l'historique et de la saisie automatique.}one{Cela se produit quand Chromium est inutilisé pendant {THRESHOLD} minute. Il peut s'agir de l'historique et de la saisie automatique.}other{Cela se produit quand Chromium est inutilisé pendant {THRESHOLD} minutes. Il peut s'agir de l'historique et de la saisie automatique.}}</translation>
@@ -284,6 +285,7 @@ Points à prendre en compte :
 <translation id="6852799557929001644">Accéder à vos mots de passe Chromium et plus dans d'autres applis sur cet appareil.</translation>
 <translation id="6887138405044152640">Pour envoyer cet onglet à un autre appareil, connectez-vous à Chromium sur celui-ci.</translation>
 <translation id="6911341667534646387">Continuez d'utiliser les données Chromium de votre compte Google</translation>
+<translation id="6992760259282302305">Utiliser Chromium par défaut</translation>
 <translation id="7018284295775193585">Impossible de mettre à jour Chromium</translation>
 <translation id="7055269218854630176">Votre organisation (<ph name="DOMAIN" />) gère le compte auquel vous vous connectez et la manière dont Chromium peut être utilisé. Votre administrateur peut configurer ou limiter certaines fonctionnalités.</translation>
 <translation id="7099326575020694068">Chromium ne peut pas utiliser votre appareil photo en mode Vue fractionnée.</translation>
@@ -344,6 +346,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="8385503371191508165">Commencez à enregistrer des clés d'accès avec le Gestionnaire de mots de passe</translation>
 <translation id="8390323835464055390">Connectez-vous avec vos mots de passe et clés d'accès enregistrés depuis n'importe quelle appli avec Chromium pour la saisie automatique</translation>
 <translation id="8409374867500149834">Vous disposez du plus haut niveau de sécurité de Chromium contre les sites dangereux</translation>
+<translation id="8428449554948979733">Masquer "Utiliser Chromium par défaut"</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Cela se produit quand Chromium est inutilisé pendant {THRESHOLD} minute. Les données enregistrées uniquement sur cet appareil lorsque vous étiez connecté seront supprimées. Il peut s'agir de l'historique et de mots de passe.}one{Cela se produit quand Chromium est inutilisé pendant {THRESHOLD} minute. Les données enregistrées uniquement sur cet appareil lorsque vous étiez connecté seront supprimées. Il peut s'agir de l'historique et de mots de passe.}other{Cela se produit quand Chromium est inutilisé pendant {THRESHOLD} minutes. Les données enregistrées uniquement sur cet appareil lorsque vous étiez connecté seront supprimées. Il peut s'agir de l'historique et de mots de passe.}}</translation>
 <translation id="8586442755830160949">Copyright Auteurs de Chromium <ph name="YEAR" />. Tous droits réservés.</translation>
 <translation id="8602103377623855616">Page Chromium</translation>

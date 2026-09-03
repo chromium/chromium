@@ -8,6 +8,7 @@
 <translation id="102763973188675173">Google Chrome браузерін реттеңіз және басқарыңыз. Жаңартылған нұсқа қолжетімді.</translation>
 <translation id="1028061813283459617">Браузерді пайдалану деректерін Google аккаунтында сақтай отырып, тек осы құрылғыдан жою үшін <ph name="BEGIN_LINK" />Chrome-да аккаунттан шығыңыз<ph name="END_LINK" />.</translation>
 <translation id="1028770388543831319">Телефондағы Chrome-мен Google-дың үздік қауіпсіздік функцияларын жол-жөнекей пайдаланыңыз</translation>
+<translation id="1036348656032585052">Өшіру</translation>
 <translation id="1042270987544905725">Chrome-ға кірудің диалогтік терезесін жабу үшін басыңыз.</translation>
 <translation id="1051793555070215510">Осы 1 минуттық сауалнамаға жауап беру арқылы инкогнито режимін жақсартуымызға көмектесіңіз.</translation>
 <translation id="1055295352198814912">Chrome-дағы Gemini-ды Mac мәзір жолағында көрсету және пернелер тіркесімін қосу</translation>
@@ -246,6 +247,7 @@
 <translation id="3282568296779691940">Chrome жүйесіне кіру</translation>
 <translation id="3286538390144397061">Қазір қайта іске қосу</translation>
 <translation id="3292333338048274092">Содан кейін Chrome-ды өшіріп қосуыңыз қажет.</translation>
+<translation id="3294686910656423119">Қолданыс статистикасы және жаңылыс туралы есептер</translation>
 <translation id="3327226547491422998">Кейінірек Chrome сізден үлгілерді автоматты түрде толтыру үшін сақталған ақпаратты пайдалану-пайдаланбау қажеттігін сұрауы мүмкін.</translation>
 <translation id="3352986031709923790">іздеу аймағының жоғарғы оң жақ бұрышы: оң жақ <ph name="RIGHT" />%, жоғарғы жақ <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
@@ -478,6 +480,7 @@ Google Chrome параметрлеріңізді қалпына келтіре �
 <translation id="5824893331272123205">Бұл панельді жүктеу мүмкін болмады. Әрекетті қайталаңыз</translation>
 <translation id="5825922397106002626">Chrome-нан <ph name="EXTENSION_NAME" /> кеңейтімін жою</translation>
 <translation id="5858486459377137936">Chrome-да аккаунтқа кірген болсаңыз, барлық Chrome терезесін жапқан кезде, Google аккаунтын қоспағанда, сайттардың көпшілігінен шығарыласыз. Сайттар сізді есте сақтасын десеңіз, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5860491529813859533">Қосу</translation>
 <translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome сізге<ph name="END_LINK" /> қауіпті сайттар мен жүктеп алу әрекеттері туралы ескертеді</translation>
 <translation id="5894164573378901688">Chrome-дағы Gemini-ды пайдалану үшін басқа Google аккаунтымен кіріңіз</translation>
 <translation id="5895138241574237353">Қайта іске қосу</translation>
@@ -518,6 +521,7 @@ Google Chrome параметрлеріңізді қалпына келтіре �
 <translation id="6166185671393271715">Құпия сөздерді Chrome жүйесіне импорттау</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome бета нұсқасы</translation>
+<translation id="6177442314419606057">Chrome браузерінде іздеу</translation>
 <translation id="6180522807229584611">Бұл қойынды ресурстарды көп қолданып жатыр. Өнімділікті жақсарту үшін Chrome-ға оны әрекетсіз қылуға рұқсат беріңіз.</translation>
 <translation id="6182736845697986886">Орнатылмады, себебі жаңарту серверінде ішкі қате пайда болды.</translation>
 <translation id="6192058120268468905">Chrome-дағы аккаунтыңыз</translation>

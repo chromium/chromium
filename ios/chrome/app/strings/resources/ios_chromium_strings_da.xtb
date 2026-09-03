@@ -110,6 +110,7 @@ Du kan finde flere indstillinger, der bruger data til at forbedre din Chromium-o
 <translation id="3180939591219927904">Aktivér "Lås inkognitofaner, når du lukker Chromium"</translation>
 <translation id="327628223428512207">Angiv adgangssætningen for at gemme denne adgangskode og få Chromium-data på alle dine enheder</translation>
 <translation id="328933489847748230">{count,plural, =1{Der vises nu 1 Chromium-vindue}one{Der vises nu {count} Chromium-vindue}other{Der vises nu {count} Chromium-vinduer}}</translation>
+<translation id="3344204225393848305">Indstil Chromium som standard</translation>
 <translation id="3344973607274501920">Chromium kunne ikke tjekke dine adgangskoder. Prøv at tjekke din internetforbindelse.</translation>
 <translation id="3366305173356742781">Chromium-data på din konto</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Dette sker, når Chromium ikke bruges i {THRESHOLD} minut. Dette kan omfatte historik og autofyld.}one{Dette sker, når Chromium ikke bruges i {THRESHOLD} minut. Dette kan omfatte historik og autofyld.}other{Dette sker, når Chromium ikke bruges i {THRESHOLD} minutter. Dette kan omfatte historik og autofyld.}}</translation>
@@ -284,6 +285,7 @@ Vær opmærksom på følgende:
 <translation id="6852799557929001644">Få adgang til dine Chromium-adgangskoder m.m. i andre apps på denne enhed.</translation>
 <translation id="6887138405044152640">Hvis du vil sende denne fane til en anden enhed, skal du logge ind i Chromium på den pågældende enhed.</translation>
 <translation id="6911341667534646387">Fortsæt med at bruge Chromium-dataene på din Google-konto</translation>
+<translation id="6992760259282302305">Brug Chromium som standard</translation>
 <translation id="7018284295775193585">Chromium kan ikke opdateres</translation>
 <translation id="7055269218854630176">Din organisation, <ph name="DOMAIN" />, administrerer den konto, du logger ind på, og hvordan Chromium kan bruges. Din administrator kan konfigurere eller begrænse visse funktioner.</translation>
 <translation id="7099326575020694068">Chromium kan ikke bruge dit kamera i tilstanden Opdelt visning</translation>
@@ -344,6 +346,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="8385503371191508165">Begynd at gemme adgangsnøgler med Adgangskodeadministrator</translation>
 <translation id="8390323835464055390">Log ind med dine gemte adgangskoder og adgangsnøgler fra en hvilken som helst app ved hjælp af Autofyld i Chromium</translation>
 <translation id="8409374867500149834">Du har Chromiums stærkeste beskyttelse mod skadelige websites</translation>
+<translation id="8428449554948979733">Skjul Brug Chromium som standard</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Dette sker, når Chromium ikke bruges i {THRESHOLD} minut. Data, som kun er gemt på denne enhed, mens du var logget ind, slettes. Dette kan omfatte historik og adgangskoder.}one{Dette sker, når Chromium ikke bruges i {THRESHOLD} minut. Data, som kun er gemt på denne enhed, mens du var logget ind, slettes. Dette kan omfatte historik og adgangskoder.}other{Dette sker, når Chromium ikke bruges i {THRESHOLD} minutter. Data, som kun er gemt på denne enhed, mens du var logget ind, slettes. Dette kan omfatte historik og adgangskoder.}}</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Forfatterne bag Chromium. Alle rettigheder forbeholdes.</translation>
 <translation id="8602103377623855616">Chromium-side</translation>

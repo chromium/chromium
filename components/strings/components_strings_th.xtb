@@ -1456,6 +1456,7 @@
 <translation id="3493881266323043047">ความถูกต้อง</translation>
 <translation id="3495081129428749620">ค้นหาในหน้าเว็บ <ph name="PAGE_TITLE" /></translation>
 <translation id="3495818359064790343">ค่าจ้าง</translation>
+<translation id="3496531230994554300">ประกาศเกี่ยวกับ Wallet เปิดอยู่แบบเต็มความสูง</translation>
 <translation id="3497627066518778351">ตรวจสอบรายการข้อมูลเว็บไซต์ในอุปกรณ์ในหน้าต่างใหม่</translation>
 <translation id="3498215018399854026">เราไม่สามารถติดต่อผู้ปกครองของคุณได้ในขณะนี้ โปรดลองอีกครั้ง</translation>
 <translation id="350069200438440499">ชื่อไฟล์:</translation>
@@ -2668,6 +2669,7 @@
 <translation id="5499229993630251170">ดำเนินการต่อในชุดข้อความนี้ไหม</translation>
 <translation id="5506286895894263601">รายการนี้ไม่มีทางลัดที่ถูกต้อง</translation>
 <translation id="5507756662695126555">การป้องกันการปฏิเสธความรับผิดชอบต่อข้อมูล</translation>
+<translation id="5508515366054931524">ข้อความแจ้งให้ยืนยันอีเมลเปิดอยู่แบบเต็มความสูง</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">บุ๊กมาร์กที่มีการจัดการ</translation>
 <translation id="5510766032865166053">ไฟล์อาจถูกย้ายหรือลบไปแล้ว</translation>
@@ -3450,6 +3452,7 @@
 <translation id="6860888819347870819">สามารถขอเข้าสู่การแสดงภาพซ้อนภาพได้</translation>
 <translation id="6864189428899665393">267 x 389 มม.</translation>
 <translation id="6865412394715372076">ยืนยันบัตรนี้ไม่ได้ในขณะนี้</translation>
+<translation id="6871073333584947219">ปิดประกาศเกี่ยวกับ Wallet แล้ว</translation>
 <translation id="6871813064737840684">ประวัติราคาในเว็บสำหรับตัวเลือกนี้</translation>
 <translation id="6873456682041376666">ถาดบน</translation>
 <translation id="6874604403660855544">&amp;ทำซ้ำการเพิ่ม</translation>
@@ -3970,6 +3973,7 @@
 <translation id="7705085181312584869">ช่วยฉันเขียน</translation>
 <translation id="7705992072972338699">แผ่นออปติคัลดิสก์ (เงามาก)</translation>
 <translation id="7706689436519265630">ไฟล์ที่คุณคัดลอกหรือย้ายจะส่งไปยัง Google Cloud หรือบุคคลที่สามเพื่อทำการวิเคราะห์ เช่น อาจสแกนหาข้อมูลที่ละเอียดอ่อนหรือมัลแวร์ และอาจจัดเก็บตามนโยบายบริษัท</translation>
+<translation id="7709934467582922028">ปิดข้อความแจ้งให้ยืนยันอีเมลแล้ว</translation>
 <translation id="7714351089363296478">คุณเพิ่งเข้าชม</translation>
 <translation id="7714404809393719981">รูปภาพ (กึ่งเงา)</translation>
 <translation id="7714464543167945231">ใบรับรอง</translation>

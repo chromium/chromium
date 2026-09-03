@@ -110,6 +110,7 @@ Gaan na <ph name="BEGIN_LINK" />Google-dienste<ph name="END_LINK" /> vir meer in
 <translation id="3180939591219927904">Skakel “Sluit Incognito-oortjies wanneer jy Chromium toemaak” aan</translation>
 <translation id="327628223428512207">Voer wagfrase in om hierdie wagwoord te stoor en Chromium-data op al jou toestelle te kry</translation>
 <translation id="328933489847748230">{count,plural, =1{Wys nou in 1 Chromium-vensters}other{Wys nou in {count} Chromium-vensters}}</translation>
+<translation id="3344204225393848305">Stel Chromium as Verstek</translation>
 <translation id="3344973607274501920">Chromium kon nie jou wagwoorde nagaan nie. Probeer jou internetverbinding nagaan.</translation>
 <translation id="3366305173356742781">Chromium-data in jou rekening</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Dit gebeur wanneer Chromium vir {THRESHOLD} minuut nie gebruik word nie. Dit kan geskiedenis en outovul insluit.}other{Dit gebeur wanneer Chromium vir {THRESHOLD} minute nie gebruik word nie. Dit kan geskiedenis en outovul insluit.}}</translation>
@@ -284,6 +285,7 @@ Dinge om in ag te neem:
 <translation id="6852799557929001644">Kry van ander apps op hierdie toestel af toegang tot jou Chromium-wagwoorde en meer.</translation>
 <translation id="6887138405044152640">Om hierdie oortjie na ’n ander toestel toe te stuur, moet jy daar by Chromium aanmeld.</translation>
 <translation id="6911341667534646387">Hou aan om die Chromium-data in jou Google-rekening te gebruik</translation>
+<translation id="6992760259282302305">Gebruik Chromium as Verstek</translation>
 <translation id="7018284295775193585">Chromium kan nie opdateer nie</translation>
 <translation id="7055269218854630176">Jou organisasie, <ph name="DOMAIN" />, bestuur die rekening waarby jy aanmeld en hoe Chromium gebruik kan word. Jou administrateur kan sekere kenmerke opstel of beperk.</translation>
 <translation id="7099326575020694068">Chromium kan nie jou kamera in deelaansigmodus gebruik nie</translation>
@@ -344,6 +346,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="8385503371191508165">Begin om toegangsleutels met Wagwoordbestuurder te stoor</translation>
 <translation id="8390323835464055390">Meld aan met jou gestoorde wagwoorde en toegangsleutels vanaf enige app wat Chromium vir Outovul gebruik</translation>
 <translation id="8409374867500149834">Jy het Chromium se sterkste sekuriteit teen skadelike webwerwe</translation>
+<translation id="8428449554948979733">Versteek Gebruik Chromium as Verstek</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Dit gebeur wanneer Chromium vir {THRESHOLD} minuut nie gebruik word nie. Data wat net op hierdie toestel gestoor is terwyl jy aangemeld was, sal uitgevee word. Dit kan geskiedenis en wagwoorde insluit.}other{Dit gebeur wanneer Chromium vir {THRESHOLD} minute nie gebruik word nie. Data wat net op hierdie toestel gestoor is terwyl jy aangemeld was, sal uitgevee word. Dit kan geskiedenis en wagwoorde insluit.}}</translation>
 <translation id="8586442755830160949">Kopiereg <ph name="YEAR" /> Die Chromium-outeurs. Alle regte voorbehou.</translation>
 <translation id="8602103377623855616">Chromium-bladsy</translation>

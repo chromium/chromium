@@ -216,6 +216,7 @@
 <translation id="1641113438599504367">Penyemakan Imbas Selamat</translation>
 <translation id="1644574205037202324">Sejarah</translation>
 <translation id="164673457281113247">{count,plural, =1{Penanda halaman disimpan}other{Penanda halaman disimpan}}</translation>
+<translation id="1650979352027263879">Pilihan penampilan anda telah dialih keluar</translation>
 <translation id="1651260071709244114">Apl</translation>
 <translation id="1652051421944182562">Hidupkan pemberitahuan Semakan Keselamatan…</translation>
 <translation id="1652333207707886577">Sesuaikan menu anda</translation>
@@ -278,7 +279,6 @@
 <translation id="1836891464494477513">{count,plural, =1{Penanda halaman disimpan dalam Google Account anda, {email}}other{Penanda halaman disimpan dalam Google Account anda, {email}}}</translation>
 <translation id="1838089197478136166">Buka dalam Wallet?</translation>
 <translation id="183878838231635348">Kad ini menunjukkan sebarang masalah privasi atau keselamatan yang Pemeriksaan Keselamatan kesan secara automatik untuk anda.</translation>
-<translation id="1840320537320704887">Pilihan halaman Tab Baharu anda telah dialih keluar</translation>
 <translation id="1845230888742614096">Simpan Kumpulan</translation>
 <translation id="1853558655412913122">Kini anda boleh menukar kedudukan bar alamat dalam "Tetapan", kemudian "Bar alamat"</translation>
 <translation id="1853692000353488670">Tab inkognito baharu</translation>
@@ -592,6 +592,7 @@
 <translation id="2858204748079866344">Untuk melindungi privasi anda, Chrome tidak akan mengisi kata laluan anda ke dalam medan ini secara automatik.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 laman (lebih pada peranti disegerakkan)}other{# laman (lebih pada peranti disegerakkan)}}</translation>
+<translation id="286473047976978798">Gunakan pilihan penampilan anda?</translation>
 <translation id="2865392654629180917">Tanya apa-apa sahaja dan dapatkan respons dikuasakan AI</translation>
 <translation id="2870560284913253234">Tapak</translation>
 <translation id="2876369937070532032">Menghantar URL sesetengah halaman yang anda lawati kepada Google, apabila keselamatan anda terancam</translation>
@@ -1121,7 +1122,6 @@
 
        Pilih perkara yang hendak dilakukan dengan data penyemakan imbas sedia ada pada peranti ini.</translation>
 <translation id="4675298276894277358">Laman ini tidak akan dipaparkan lagi</translation>
-<translation id="4676647168422678078">Gunakan pilihan halaman Tab Baharu anda?</translation>
 <translation id="4682496302933121474">Terjemahkan halaman?</translation>
 <translation id="4682686630151240767">1. Buka Tetapan iPhone</translation>
 <translation id="4697240968720007067">Dapatkan apl terbaik Google, dalam satu ketik</translation>
@@ -1809,6 +1809,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6806550742467879742">Alatan halaman</translation>
 <translation id="6807287147325542056">Kata laluan dalam apl lain</translation>
 <translation id="681368974849482173">Item dibuat</translation>
+<translation id="6815692190508268848">Pilihan penampilan anda telah digunakan</translation>
 <translation id="681631578600400068">Simpan lesen memandu</translation>
 <translation id="6825078212112407882">{count,plural, =1{Penanda halaman disimpan dalam Google Account anda, {email}}other{{count} penanda halaman disimpan dalam Google Account anda, {email}}}</translation>
 <translation id="6826004672264649705">Sedang menjejaki produk ini. Buka untuk melihat sejarah harga</translation>
@@ -2194,7 +2195,6 @@ Untuk meneruskan proses daripada komputer anda, beralih kepada <ph name="OTHER_E
 <translation id="8059312861912872211">{count,plural, =1{{count} penanda halaman}other{{count} penanda halaman}}</translation>
 <translation id="8059533439631660104">Meruntuhkan bahagian.</translation>
 <translation id="8061584726507121204">Sejarah</translation>
-<translation id="8064946459644399612">Pilihan halaman Tab Baharu anda telah digunakan</translation>
 <translation id="8065136076319366194">Penyimpanan tidak disyorkan</translation>
 <translation id="8065556469005366939">Dapatkan jawapan yang lebih berkaitan dengan berkongsi tab anda</translation>
 <translation id="8069394452933076548">Pilih waktu untuk mengalihkan tab yang tidak digunakan baru-baru ini kepada bahagian tab tidak aktif.</translation>

@@ -633,6 +633,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="77283119132245232">为 <ph name="BROWSER_NAME" /> 提供系统跟踪服务。如果停用此服务，浏览器创建的性能轨迹将不包含系统级事件，例如上下文切换和就绪线程事件。</translation>
 <translation id="7745317241717453663">这会从这台设备上删除您的浏览数据。如果日后想要检索您的数据，届时请以 <ph name="USER_EMAIL" /> 的身份登录 Chromium。</translation>
 <translation id="7747138024166251722">安装程序无法创建临时目录。请检查您是否有足够的磁盘空间和权限来安装该软件。</translation>
+<translation id="7747820849741499258">在 Chromium 中搜索</translation>
 <translation id="7750130090210923118">重置为默认 Chromium</translation>
 <translation id="7752521946322750699">为了保障您在 Chromium 上的工作安全，当您登录 Chromium 后，您的组织将能够查看或管理某些信息。</translation>
 <translation id="7781047659465034537">将 Chromium 设为默认浏览器并固定到任务栏</translation>

@@ -105,6 +105,7 @@
 <translation id="138181280295369883">Մուտք գործեք՝ ձեր պահված տեղեկությունները և մյուս տվյալները ձեր բոլոր սարքերում օգտագործելու համար</translation>
 <translation id="1381838868249179644">Ձեր անվտանգությունն ապահովելու համար կայքերից թույլտվություններ են հեռացվել</translation>
 <translation id="1383876407941801731">Որոնում</translation>
+<translation id="1384568202352682721">Պահել որպես…</translation>
 <translation id="1384704387250346179">Թարգմանել Տեսապակու միջոցով <ph name="BEGIN_NEW" />Նոր<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">Դուք կարող եք տեսնել պատմությունը այլ հավելվածներից, որոնք հղումներ են բացում Chrome-ում։ Ձեր Google հաշվում կարող են լինել այցելությունների պատմության այլ ձևեր, որոնք կարող եք գտնել <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> էջում։</translation>
 <translation id="139752016751285248">Գների վիճակագրության ներքևի էկրանը բացված է ամբողջությամբ</translation>
@@ -133,6 +134,7 @@
 <translation id="147982357559798527">Փոխվել է</translation>
 <translation id="1480287803138246127">Պատմության որոշ մասը կարող է չցուցադրվել այստեղ։ Բոլոր տվյալները տեսնելու համար բացեք Chrome-ի ամբողջական պատմությունը։</translation>
 <translation id="1483493594462132177">Ուղարկել</translation>
+<translation id="1485343711570311792">Բացել <ph name="NATIVE_APP_NAME" /> հավելվածում • <ph name="DEVICE_NAME" />-ից</translation>
 <translation id="1495677929897281669">Վերադառնալ ներդիր</translation>
 <translation id="1496514951988037011">օգտանուն</translation>
 <translation id="1501480321619201731">Ջնջել խումբը</translation>
@@ -327,6 +329,7 @@
 <translation id="232137538351753795">Մատը սահեցրեք էկրանի ձախ եզրից՝ հետ գնալու համար</translation>
 <translation id="2323763861024343754">Կայքի օգտագործած տարածքը</translation>
 <translation id="2327445548174191329">Աղբյուրը՝ <ph name="DEVICE_NAME" /></translation>
+<translation id="232757965409810352">Պահել էջը որպես…</translation>
 <translation id="2328474416100889417">Ներդիրների «<ph name="GROUP_NAME" />» խումբն անմիջապես անհասանելի կդառնա բոլորին, և հրավերի բոլոր հղումները կանջատվեն</translation>
 <translation id="2329500425421091035">Ներկայացնում ենք ԱԲ ռեժիմը Chrome-ում</translation>
 <translation id="2330186936255788117">Այլ էջանիշներ</translation>
@@ -561,6 +564,7 @@
 <translation id="3232754137068452469">Վեբ ծրագիր</translation>
 <translation id="3236059992281584593">Մնացել է 1 րոպե</translation>
 <translation id="3237087289225714896">Սովորական նախաբեռնում՝</translation>
+<translation id="3243650379537999343">Նկարել</translation>
 <translation id="3244271242291266297">ամիս</translation>
 <translation id="3245429137663807393">Եթե դուք նաև ուղարկում եք Chrome-ի օգտագործման զեկույցներ, դրանցում կներառվեն ձեր այցելած URL-ները</translation>
 <translation id="3250563604907490871">Պատկերի նկարագրությունները կցուցադրվեն, երբ միանաք Wi-Fi-ին</translation>
@@ -963,7 +967,6 @@
 <translation id="480990236307250886">Բացել գլխավոր էջը</translation>
 <translation id="4816492930507672669">Հարմարեցնել էջին</translation>
 <translation id="4822710610088666676">«<ph name="TAB_GROUP_TITLE" />» ներդիրների խումբը փակվեց և պահվեց</translation>
-<translation id="4834250788637067901">Վճարման եղանակներ, առաջարկներ ու հասցեներ Google Pay-ից</translation>
 <translation id="4835385943915508971">Հարցված ռեսուրսը հասանելի չէ Chrome-ին:</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Վերականգնել <ph name="TAB_COUNT_ONE" /> ներդիրից բաղկացած խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը, որպես ներդիրների նոր ֆոնային խումբ։}one{Վերականգնել <ph name="TAB_COUNT_MANY" /> ներդիրից բաղկացած խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը, որպես ներդիրների նոր ֆոնային խումբ։}other{Վերականգնել <ph name="TAB_COUNT_MANY" /> ներդիրից բաղկացած խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը, որպես ներդիրների նոր ֆոնային խումբ։}}</translation>
 <translation id="4849731766219625109">Օգտագործել <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> հաշիվը</translation>
@@ -1874,6 +1877,7 @@
 <translation id="8313599942510782709">Ձեր առաջադրանքը դեռ կատարման փուլում է</translation>
 <translation id="8317318757008452355">Բացել տպելու ընտրանքները</translation>
 <translation id="8320212361750431956">Վերջին գործողությունները</translation>
+<translation id="8322452989119079156">Բացել <ph name="NATIVE_APP_NAME" /> հավելվածում – Ուղարկվել է <ph name="DEVICE_NAME" />-ից</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Նորույթ<ph name="END_NEW" /></translation>
 <translation id="8333026248928723981">Էջանիշներ և ցանկեր</translation>
 <translation id="8342727528718219152">Chrome-ը ձեզ կտեղեկացնի, եթե որևէ կայք չափազանց շատ ծանուցումներ ուղարկի</translation>

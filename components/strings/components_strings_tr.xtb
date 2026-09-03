@@ -1066,7 +1066,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781799097551205934">Ödeme için hazırlanıyor</translation>
 <translation id="2784474685437057136">B5 Extra</translation>
-<translation id="2784795832957740711">Şifreler · Geçiş Anahtarları</translation>
+<translation id="2784795832957740711">Şifreler · Geçiş anahtarları</translation>
 <translation id="2784949926578158345">Bağlantı sıfırlandı.</translation>
 <translation id="2792012897584536778">Bu cihazın yöneticileri, ziyaret ettiğiniz web sitelerinin içeriğini görmelerine izin verebilecek güvenlik sertifikaları ayarladı.</translation>
 <translation id="2793425367785017642">Formları daha iyi anlamak ve doldurmak için, ziyaret ettiğiniz sayfaların içeriği ve URL'leri buluttaki özel bir alanda işlenebilir.</translation>
@@ -1457,6 +1457,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="3495081129428749620">Şu sayfada bul:
     <ph name="PAGE_TITLE" /></translation>
 <translation id="3495818359064790343">Maaş</translation>
+<translation id="3496531230994554300">Cüzdan bildirimi tam ekranda açıldı.</translation>
 <translation id="3497627066518778351">Cihaz üzerindeki site verileri listesini yeni pencerede inceleyin</translation>
 <translation id="3498215018399854026">Şu anda ebeveyninize erişemedik. Lütfen tekrar deneyin.</translation>
 <translation id="350069200438440499">Dosya adı:</translation>
@@ -2669,6 +2670,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="5499229993630251170">Bu ileti dizisine devam edilsin mi?</translation>
 <translation id="5506286895894263601">Listede geçerli bir kısayol yok.</translation>
 <translation id="5507756662695126555">İnkar edilemez</translation>
+<translation id="5508515366054931524">E-posta doğrulama istemi tam ekranda açıldı</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Yönetilen yer işaretleri</translation>
 <translation id="5510766032865166053">Taşınmış veya silinmiş olabilir.</translation>
@@ -3451,6 +3453,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="6860888819347870819">Pencere içinde pencere moduna girmek isteyebilir</translation>
 <translation id="6864189428899665393">267 x 389 mm</translation>
 <translation id="6865412394715372076">Bu kart şu anda doğrulanamıyor</translation>
+<translation id="6871073333584947219">Cüzdan bildirimi kapatıldı.</translation>
 <translation id="6871813064737840684">Bu Seçenek için Web Genelindeki Fiyat Geçmişi</translation>
 <translation id="6873456682041376666">Üst Tepsi</translation>
 <translation id="6874604403660855544">Eklemeyi &amp;yeniden yap</translation>
@@ -3971,6 +3974,7 @@ Ek ayrıntılar:
 <translation id="7705085181312584869">Yazmama yardım et</translation>
 <translation id="7705992072972338699">Optik Disk (Çok Parlak)</translation>
 <translation id="7706689436519265630">Kopyaladığınız veya taşıdığınız dosyalar analiz amacıyla Google Cloud'a ya da üçüncü taraflara gönderilir. Örneğin, dosyalarınızın hassas veriler veya kötü amaçlı yazılım içerip içermediği kontrol edilir ve şirket politikalarına bağlı olarak bu dosyalar saklanabilir.</translation>
+<translation id="7709934467582922028">E-posta doğrulama istemi kapatıldı</translation>
 <translation id="7714351089363296478">Kısa süre önce ziyaret ettiniz</translation>
 <translation id="7714404809393719981">Fotoğraf (Yarı Parlak)</translation>
 <translation id="7714464543167945231">Sertifika</translation>
@@ -4812,7 +4816,7 @@ Ek ayrıntılar:
 <translation id="9210152531668884481">İstiyorum</translation>
 <translation id="9213433120051936369">Görünümü özelleştir</translation>
 <translation id="9215416866750762878">Bir uygulama, Chrome'un bu siteye güvenli bir şekilde bağlanmasını engelliyor</translation>
-<translation id="9217513960785028513"><ph name="ENGINE_NAME" /> arama motoruna sorun veya URL yazın</translation>
+<translation id="9217513960785028513"><ph name="ENGINE_NAME" /> ile sorun veya URL yazın</translation>
 <translation id="92178312226016010">Bu ürünü takip ediyorsunuz.</translation>
 <translation id="9218430445555521422">Varsayılan olarak ayarla</translation>
 <translation id="9219103736887031265">Resimler</translation>

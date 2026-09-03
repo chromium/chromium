@@ -110,6 +110,7 @@ Afin d'accéder à plus de paramètres utilisant des données pour améliorer vo
 <translation id="3180939591219927904">Activez « Verrouiller les onglets de navigation privée lorsque vous fermez Chromium »</translation>
 <translation id="327628223428512207">Entrez la phrase de passe pour enregistrer ce mot de passe et obtenir les données Chromium sur tous vos appareils</translation>
 <translation id="328933489847748230">{count,plural, =1{1 fenêtre de Chromium est maintenant affichée}one{{count} fenêtre de Chromium est maintenant affichée}other{{count} fenêtres de Chromium sont maintenant affichées}}</translation>
+<translation id="3344204225393848305">Définir Chromium comme navigateur par défaut</translation>
 <translation id="3344973607274501920">Chromium n'a pas pu vérifier vos mots de passe. Essayez de vérifier votre connexion Internet.</translation>
 <translation id="3366305173356742781">Données Chromium dans votre compte</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Cela se produit lorsque Chromium n'est pas utilisé pendant {THRESHOLD} minute. Les données pourraient inclure celles de l'historique et du Remplissage automatique.}one{Cela se produit lorsque Chromium n'est pas utilisé pendant {THRESHOLD} minute. Les données pourraient inclure celles de l'historique et du Remplissage automatique.}other{Cela se produit lorsque Chromium n'est pas utilisé pendant {THRESHOLD} minutes. Les données pourraient inclure celles de l'historique et du Remplissage automatique.}}</translation>
@@ -284,6 +285,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="6852799557929001644">Accédez à vos mots de passe Chromium et plus encore dans d'autres applications sur cet appareil.</translation>
 <translation id="6887138405044152640">Pour envoyer cet onglet vers un autre appareil, connectez-vous à Chromium sur ce dernier.</translation>
 <translation id="6911341667534646387">Continuer à utiliser les données Chromium dans votre compte Google</translation>
+<translation id="6992760259282302305">Utiliser Chromium comme navigateur par défaut</translation>
 <translation id="7018284295775193585">Impossible de mettre à jour Chromium</translation>
 <translation id="7055269218854630176">Votre organisation, <ph name="DOMAIN" />, gère le compte auquel vous êtes connecté et la façon dont Chromium peut être utilisé. Votre administrateur peut configurer ou restreindre certaines fonctionnalités.</translation>
 <translation id="7099326575020694068">Chromium ne peut pas utiliser votre appareil photo en mode Vue partagée</translation>
@@ -344,6 +346,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="8385503371191508165">Commencez à enregistrer les clés d'accès avec le gestionnaire de mots de passe</translation>
 <translation id="8390323835464055390">Utilisez Chromium pour le remplissage automatique pour vous connecter avec vos clés d'accès et vos mots de passe enregistrés à partir de n'importe quelle appli</translation>
 <translation id="8409374867500149834">Vous disposez de la sécurité la plus robuste de Chromium contre les sites Web dangereux</translation>
+<translation id="8428449554948979733">Masquer Utiliser Chromium comme navigateur par défaut</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Cela se produit lorsque Chromium n'est pas utilisé pendant {THRESHOLD} minute. Les données enregistrées uniquement sur cet appareil pendant que vous étiez connecté seront supprimées. Cela peut inclure l'historique et les mots de passe.}one{Cela se produit lorsque Chromium n'est pas utilisé pendant {THRESHOLD} minute. Les données enregistrées uniquement sur cet appareil pendant que vous étiez connecté seront supprimées. Cela peut inclure l'historique et les mots de passe.}other{Cela se produit lorsque Chromium n'est pas utilisé pendant {THRESHOLD} minutes. Les données enregistrées uniquement sur cet appareil pendant que vous étiez connecté seront supprimées. Cela peut inclure l'historique et les mots de passe.}}</translation>
 <translation id="8586442755830160949">© <ph name="YEAR" /> Les auteurs de Chrome. Tous droits réservés.</translation>
 <translation id="8602103377623855616">Page Chromium</translation>

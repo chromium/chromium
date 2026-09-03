@@ -8,6 +8,7 @@
 <translation id="102763973188675173">Google Chromeஐத் தனிப்பயனாக்கி, கட்டுப்படுத்தலாம். புதுப்பிப்பு உள்ளது.</translation>
 <translation id="1028061813283459617">உலாவிய தரவை உங்கள் Google கணக்கில் இருந்து நீக்காமல் இந்தச் சாதனத்தில் இருந்து மட்டும் நீக்க, <ph name="BEGIN_LINK" />Chromeமில் இருந்து வெளியேறுங்கள்<ph name="END_LINK" />.</translation>
 <translation id="1028770388543831319">மொபைலில் Chrome ஆப்ஸ் மூலம் Googleளின் சிறந்த பாதுகாப்பு அம்சங்களை எங்கிருந்தும் பெறுங்கள்</translation>
+<translation id="1036348656032585052">ஆஃப் செய்</translation>
 <translation id="1042270987544905725">Chrome உள்நுழைவு உரையாடலை மூட இதைக் கிளிக் செய்யவும்</translation>
 <translation id="1051793555070215510">இந்த ஒரு நிமிடக் கருத்துக்கணிப்பில் பங்கேற்று, மறைநிலைப் பயன்முறையை மேம்படுத்த எங்களுக்கு உதவுங்கள்.</translation>
 <translation id="1055295352198814912">Mac மெனு பட்டியில் Chromeமில் Geminiயைக் காட்டி, கீபோர்டு ஷார்ட்கட்டை ஆன் செய்</translation>
@@ -242,6 +243,7 @@
 <translation id="3282568296779691940">Chrome இல் உள்நுழைக</translation>
 <translation id="3286538390144397061">இப்போது மறுதொடக்கம் செய்க</translation>
 <translation id="3292333338048274092">Chromeமை மீண்டும் தொடங்க வேண்டும்.</translation>
+<translation id="3294686910656423119">பயன்பாட்டுப் புள்ளிவிவரங்களும் சிதைவு அறிக்கைகளும்</translation>
 <translation id="3327226547491422998">சேமித்துள்ள தகவல்களை வைத்து படிவங்களைத் தானாகவே நிரப்ப விரும்புகிறீர்களா என்று Chrome பின்னர் கேட்கலாம்</translation>
 <translation id="3352986031709923790">தேடல் பகுதியின் மேல் வலது மூலை: வலது <ph name="RIGHT" />%, மேல் <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome உதவி</translation>
@@ -471,6 +473,7 @@
 <translation id="5824893331272123205">இந்தப் பேனலை ஏற்ற முடியவில்லை, மீண்டும் முயலவும்</translation>
 <translation id="5825922397106002626"><ph name="EXTENSION_NAME" /> நீட்டிப்பை Chromeமில் இருந்து அகற்றும்</translation>
 <translation id="5858486459377137936">ஆனால், Chrome சாளரங்கள் அனைத்தையும் மூடும்போது Chromeமில் உள்நுழைந்திருக்கும் உங்களின் Google கணக்கைத் தவிர பெரும்பாலான தளங்களில் இருந்து வெளியேற்றப்படுவீர்கள். தளங்கள் உங்களை நினைவில் வைத்துக்கொள்ள அனுமதிக்க, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5860491529813859533">இயக்கு</translation>
 <translation id="586971344380992563">பாதுகாப்பற்ற தளங்கள் மற்றும் பதிவிறக்கங்கள் குறித்து <ph name="BEGIN_LINK" />Chrome உங்களை எச்சரிக்கும்<ph name="END_LINK" /></translation>
 <translation id="5894164573378901688">Chromeமில் Gemini பயன்படுத்த வேறு Google கணக்கின் மூலம் உள்நுழையவும்</translation>
 <translation id="5895138241574237353">மறுதொடக்கம்</translation>
@@ -511,6 +514,7 @@
 <translation id="6166185671393271715">Chromeக்குக் கடவுச்சொற்களை இறக்குதல்</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome பீட்டா</translation>
+<translation id="6177442314419606057">Chromeமில் தேடு</translation>
 <translation id="6180522807229584611">இந்தப் பக்கம் கூடுதல் வளங்களைப் பயன்படுத்துகிறது. செயல்திறனை மேம்படுத்த, அதை முடக்குவதற்கு Chromeமை அனுமதியுங்கள்.</translation>
 <translation id="6182736845697986886">புதுப்பிப்புச் சேவையகத்தின் அகப் பிழை காரணமாக நிறுவ முடியவில்லை.</translation>
 <translation id="6192058120268468905">Chromeமில் உங்கள் கணக்கு</translation>

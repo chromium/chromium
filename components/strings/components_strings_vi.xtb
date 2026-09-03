@@ -1457,6 +1457,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3495081129428749620">Tìm trong trang
     <ph name="PAGE_TITLE" /></translation>
 <translation id="3495818359064790343">Lương</translation>
+<translation id="3496531230994554300">Thông báo của Wallet đã mở trên toàn màn hình.</translation>
 <translation id="3497627066518778351">Xem danh sách dữ liệu trang web trên thiết bị trong cửa sổ mới</translation>
 <translation id="3498215018399854026">Chúng tôi không thể liên lạc với cha mẹ của bạn vào thời điểm này. Vui lòng thử lại.</translation>
 <translation id="350069200438440499">Tên tệp:</translation>
@@ -2209,7 +2210,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4744514002166662487">Tạo bản trình bày</translation>
 <translation id="4744603770635761495">Đường dẫn thực thi</translation>
 <translation id="4744816391336495134">Bạn có thể dùng vân tay để xác minh danh tính của mình mỗi khi sử dụng mật khẩu đã lưu</translation>
-<translation id="4749011317274908093">Bạn đã chuyển sang chế độ Ẩn danh</translation>
+<translation id="4749011317274908093">Bạn đã chuyển sang chế độ ẩn danh</translation>
 <translation id="4749620353539006322">Tối đa hoá phần thưởng</translation>
 <translation id="4749924365937394956">Xác thực máy chủ</translation>
 <translation id="4750671009706599284">điện thoại này</translation>
@@ -2669,6 +2670,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5499229993630251170">Tiếp tục chuỗi này?</translation>
 <translation id="5506286895894263601">Danh sách này không có lối tắt hợp lệ.</translation>
 <translation id="5507756662695126555">Không tuân thủ</translation>
+<translation id="5508515366054931524">Lời nhắc xác minh email đã mở trên toàn màn hình</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Dấu trang được quản lý</translation>
 <translation id="5510766032865166053">Tệp này có thể đã bị di chuyển hoặc xóa.</translation>
@@ -3451,6 +3453,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6860888819347870819">Có thể yêu cầu chuyển sang chế độ hình trong hình</translation>
 <translation id="6864189428899665393">267 x 389 mm</translation>
 <translation id="6865412394715372076">Hiện không thể xác minh thẻ này</translation>
+<translation id="6871073333584947219">Đã đóng thông báo của Wallet.</translation>
 <translation id="6871813064737840684">Giá trên Internet theo thời gian cho lựa chọn này</translation>
 <translation id="6873456682041376666">Khay trên cùng</translation>
 <translation id="6874604403660855544">&amp;Làm lại thêm</translation>
@@ -3971,6 +3974,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7705085181312584869">Giúp tôi viết</translation>
 <translation id="7705992072972338699">Đĩa quang (Độ bóng cao)</translation>
 <translation id="7706689436519265630">Những tệp mà bạn sao chép hoặc di chuyển sẽ được gửi cho Google Cloud hoặc bên thứ ba phân tích. Ví dụ: Các tệp này có thể được quét để tìm xem có dữ liệu nhạy cảm hoặc phần mềm độc hại hay không và có thể được lưu trữ dựa trên chính sách của công ty.</translation>
+<translation id="7709934467582922028">Đã đóng lời nhắc xác minh email</translation>
 <translation id="7714351089363296478">Bạn vừa truy cập</translation>
 <translation id="7714404809393719981">Ảnh (Bán bóng)</translation>
 <translation id="7714464543167945231">Chứng chỉ</translation>

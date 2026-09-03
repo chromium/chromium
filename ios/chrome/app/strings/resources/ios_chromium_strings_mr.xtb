@@ -110,6 +110,7 @@
 <translation id="3180939591219927904">"तुम्ही Chromium बंद करता, तेव्हा गुप्त टॅब लॉक करा" हे सुरू करा</translation>
 <translation id="327628223428512207">हा पासवर्ड सेव्ह करण्यासाठी पासफ्रेझ एंटर करा आणि तुमच्या सर्व डिव्हाइसवर Chromium डेटा मिळवा</translation>
 <translation id="328933489847748230">{count,plural, =1{आता १ Chromium विंडो दाखवत आहे}other{आता {count} Chromium विंडो दाखवत आहे}}</translation>
+<translation id="3344204225393848305">Chromium डीफॉल्ट म्हणून सेट करा</translation>
 <translation id="3344973607274501920">Chromium ला तुमचे पासवर्ड तपासता आले नाहीत. तुमचे इंटरनेट कनेक्शन तपासून पहा.</translation>
 <translation id="3366305173356742781">तुमच्या खात्यामधील Chromium डेटा</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Chromium {THRESHOLD} मिनिटासाठी वापरले जात नाही, तेव्हा हे होते. यामध्ये इतिहास आणि ऑटोफिलचा समावेश असू शकतो.}other{Chromium {THRESHOLD} मिनिटांसाठी वापरले जात नाही, तेव्हा हे होते. यामध्ये इतिहास आणि ऑटोफिलचा समावेश असू शकतो.}}</translation>
@@ -284,6 +285,7 @@
 <translation id="6852799557929001644">डिव्हाइसवरील इतर सर्व अ‍ॅप्सवर तुमचे Chromium पासवर्ड आणि आणखी बरेच काही ॲक्सेस करा.</translation>
 <translation id="6887138405044152640">हा टॅब दुसर्‍या डिव्हाइसवर पाठवण्यासाठी, तेथे Chromium मध्ये साइन इन करा.</translation>
 <translation id="6911341667534646387">तुमच्या Google खाते मधील Chromium डेटा वापरणे सुरू ठेवा</translation>
+<translation id="6992760259282302305">Chromium डीफॉल्ट म्हणून वापरा</translation>
 <translation id="7018284295775193585">Chromium अपडेट करू शकत नाही</translation>
 <translation id="7055269218854630176">तुमची संस्था, <ph name="DOMAIN" />, तुम्ही साइन इन करत असलेले खाते आणि Chromium कसे वापरले जाऊ शकते हे व्यवस्थापित करते. तुमचा अ‍ॅडमिनिस्ट्रेटर काही वैशिष्ट्ये सेट करू शकतो किंवा प्रतिबंधित करू शकतो.</translation>
 <translation id="7099326575020694068">Chromium विभाजित दृश्य मोड मध्ये तुमचा कॅमेरा वापरू शकत नाही</translation>
@@ -344,6 +346,7 @@
 <translation id="8385503371191508165">Password Manager वापरून पासकी सेव्ह करणे सुरू करा</translation>
 <translation id="8390323835464055390">ऑटोफिलसाठी Chromium वापरून कोणत्याही ॲपवरून तुमच्या सेव्ह केलेल्या पासवर्ड आणि पासकीसह साइन इन करा</translation>
 <translation id="8409374867500149834">तुमच्याकडे हानीकारक वेबसाइटच्या विरोधात Chromium ची सर्वात मजबूत सुरक्षा आहे</translation>
+<translation id="8428449554948979733">Chromium डीफॉल्ट म्हणून वापरा हे लपवा</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Chromium {THRESHOLD} मिनिटासाठी वापरले जात नाही, तेव्हा हे होते. तुम्ही साइन इन केले असताना फक्त या डिव्हाइसवर सेव्ह केलेला डेटा हटवला जाईल. यामध्ये इतिहास आणि पासवर्ड यांचा समावेश असू शकतो.}other{Chromium {THRESHOLD} मिनिटांसाठी वापरले जात नाही, तेव्हा हे होते. तुम्ही साइन इन केले असताना फक्त या डिव्हाइसवर सेव्ह केलेला डेटा हटवला जाईल. यामध्ये इतिहास आणि पासवर्ड यांचा समावेश असू शकतो.}}</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium लेखक. सर्व हक्क राखीव.</translation>
 <translation id="8602103377623855616">Chromium पेज</translation>

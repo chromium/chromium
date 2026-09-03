@@ -110,6 +110,7 @@ Ukuze uthole amasethingi engeziwe asebenzisa idatha ukuthuthukisa ukuzizwisa kwa
 <translation id="3180939591219927904">Vula okuthi "Khiya amathebhu e-Incognito uma uvala iChromium"</translation>
 <translation id="327628223428512207">Faka umushwana wokungena ukuze ulondoloze le phasiwedi futhi uthole idatha yeChromium kuwo wonke amadivayisi akho</translation>
 <translation id="328933489847748230">{count,plural, =1{Manje kuvela iwindi le-Chromium elilodwa}one{Manje kuvela amawindi angu-{count} we-Chromium}other{Manje kuvela amawindi angu-{count} we-Chromium}}</translation>
+<translation id="3344204225393848305">Setha iChromium Ngokuzenzakalelayo</translation>
 <translation id="3344973607274501920">I-Chromium ayikwazanga ukuhlola iphasiwedi yakho. Zama ukuhlola ukuxhumeka kwakho ku-inthanethi.</translation>
 <translation id="3366305173356742781">Idatha ye-Chromium ku-akhawunti yakho</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Lokhu kwenzeka lapho i-Chromium ingasetshenziswa umzuzu ongu-{THRESHOLD}. Lokhu kungafaka umlando kanye nokugcwalisa okuzenzakalelayo.}one{Lokhu kwenzeka lapho i-Chromium ingasetshenziswa imizuzu engu-{THRESHOLD}. Lokhu kungafaka umlando kanye nokugcwalisa okuzenzakalelayo.}other{Lokhu kwenzeka lapho i-Chromium ingasetshenziswa imizuzu engu-{THRESHOLD}. Lokhu kungafaka umlando kanye nokugcwalisa okuzenzakalelayo.}}</translation>
@@ -284,6 +285,7 @@ Izinto okumelwe uzicabangele:
 <translation id="6852799557929001644">Finyelela amaphasiwedi akho e-Chromium nokuningi kuwo wonke amanye ama-app kule divayisi.</translation>
 <translation id="6887138405044152640">Ukuze uthumele le thebhu kwenye idivayisi, ngena ngemvume ku-Chromium lapho.</translation>
 <translation id="6911341667534646387">Qhubeka usebenzisa idatha ye-Chromium ku-Google Account yakho</translation>
+<translation id="6992760259282302305">Sebenzisa iChromium Ngokuzenzakalelayo</translation>
 <translation id="7018284295775193585">I-Chromium ayikwazi ukubuyekeza</translation>
 <translation id="7055269218854630176">Inhlangano yakho, <ph name="DOMAIN" /> iphatha i-akhawunti ongena kuyo ngemvume kanye nendlela engasetshenziswa ngayo i-Chromium. Umlawuli wakho angasetha noma abeke umkhawulo ezakhini ezithile.</translation>
 <translation id="7099326575020694068">I-Chromium ayikwazi ukusebenzisa ikhamera yakho kumodi yokubuka okuhlukanisiwe</translation>
@@ -344,6 +346,7 @@ Ngumuntu onomushwana wakho wokungena kuphela ongafunda idatha yakho ebetheliwe. 
 <translation id="8385503371191508165">Qala ukulondoloza okhiye bokudlula ngeSiphathi Sephasiwedi</translation>
 <translation id="8390323835464055390">Ngena ngemvume ngamaphasiwedi nezikhiye zakho zokudlula ezilondoloziwe kunoma iyiphi i-app usebenzisa iChromium Ezigcwaliselayo</translation>
 <translation id="8409374867500149834">Unokuvikeleka okuqine kakhulu kwe-Chromium ngokumelene namawebhusayithi ayingozi</translation>
+<translation id="8428449554948979733">Fihla Ukusebenzisa iChromium Njengokuzenzakalelayo</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Lokhu kwenzeka lapho iChromium ingasetshenziswa umzuzu ongu-{THRESHOLD}. Idatha elondolozwe kule divayisi kuphela ngenkathi ungene ngemvume izosulwa. Lokhu kungase kuhlanganise umlando namaphasiwedi.}one{Lokhu kwenzeka lapho iChromium ingasetshenziswa imizuzu engu-{THRESHOLD}. Idatha elondolozwe kule divayisi kuphela ngenkathi ungene ngemvume izosulwa. Lokhu kungase kuhlanganise umlando namaphasiwedi.}other{Lokhu kwenzeka lapho iChromium ingasetshenziswa imizuzu engu-{THRESHOLD}. Idatha elondolozwe kule divayisi kuphela ngenkathi ungene ngemvume izosulwa. Lokhu kungase kuhlanganise umlando namaphasiwedi.}}</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Ababhali be-Chromium. Wonke amalungelo agciniwe.</translation>
 <translation id="8602103377623855616">Ikhasi leChromium</translation>

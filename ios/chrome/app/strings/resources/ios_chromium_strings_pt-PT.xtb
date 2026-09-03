@@ -110,6 +110,7 @@ Para ver mais definições que usam dados para melhorar a sua experiência do Ch
 <translation id="3180939591219927904">Ative a opção "Bloquear separadores de navegação anónima quando fecha o Chromium"</translation>
 <translation id="327628223428512207">Introduza a frase de acesso para guardar esta palavra-passe e obter os dados do Chromium em todos os seus dispositivos</translation>
 <translation id="328933489847748230">{count,plural, =1{A mostrar 1 janela do Chromium agora}other{A mostrar {count} janelas do Chromium agora}}</translation>
+<translation id="3344204225393848305">Defina o Chromium como predefinição</translation>
 <translation id="3344973607274501920">O Chromium não conseguiu verificar as suas palavras-passe. Experimente verificar a sua ligação à Internet.</translation>
 <translation id="3366305173356742781">Dados do Chromium na sua conta</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Isto acontece quando o Chromium não é usado durante {THRESHOLD} minuto. Estas informações podem incluir o histórico e o preenchimento automático.}other{Isto acontece quando o Chromium não é usado durante {THRESHOLD} minutos. Estas informações podem incluir o histórico e o preenchimento automático.}}</translation>
@@ -284,6 +285,7 @@ Aspetos a considerar:
 <translation id="6852799557929001644">Aceda às suas palavras-passe do Chromium e muito mais noutras apps neste dispositivo.</translation>
 <translation id="6887138405044152640">Para enviar este separador para outro dispositivo, inicie sessão no Chromium nesse dispositivo.</translation>
 <translation id="6911341667534646387">Continue a usar os dados do Chromium na sua Conta Google</translation>
+<translation id="6992760259282302305">Usar Chromium como predefinição</translation>
 <translation id="7018284295775193585">Não é possível atualizar o Chromium.</translation>
 <translation id="7055269218854630176">A sua organização, <ph name="DOMAIN" />, gere a conta na qual está a iniciar sessão e a forma como o Chromium pode ser usado. O seu administrador pode configurar ou restringir determinadas funcionalidades.</translation>
 <translation id="7099326575020694068">O Chromium não pode utilizar a câmara no modo Vista dividida</translation>
@@ -344,6 +346,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="8385503371191508165">Comece a guardar chaves de acesso com o Gestor de Palavras-passe</translation>
 <translation id="8390323835464055390">Inicie sessão com as suas palavras-passe e chaves de acesso guardadas a partir de qualquer app com o Chromium para o preenchimento automático</translation>
 <translation id="8409374867500149834">Tem a segurança mais avançada do Chromium contra Websites prejudiciais</translation>
+<translation id="8428449554948979733">Ocultar Usar o Chromium como predefinição</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Isto acontece quando o Chromium não é usado durante {THRESHOLD} minuto. Os dados guardados apenas neste dispositivo enquanto tinha sessão iniciada vão ser eliminados. Isto pode incluir o histórico e as palavras-passe.}other{Isto acontece quando o Chromium não é usado durante {THRESHOLD} minutos. Os dados guardados apenas neste dispositivo enquanto tinha sessão iniciada vão ser eliminados. Isto pode incluir o histórico e as palavras-passe.}}</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Os autores do Chromium. Todos os direitos reservados.</translation>
 <translation id="8602103377623855616">Página do Chromium</translation>

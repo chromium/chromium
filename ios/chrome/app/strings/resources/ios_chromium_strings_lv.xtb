@@ -110,6 +110,7 @@ Lai skatītu citus iestatījumus, kuros dati tiek izmantoti Chromium lietošanas
 <translation id="3180939591219927904">Ieslēdziet iestatījumu “Bloķēt inkognito cilnes, aizverot pārlūku Chromium”.</translation>
 <translation id="327628223428512207">Ievadiet ieejas frāzi, lai saglabātu šo paroli un iegūtu Chromium datus visās savās ierīcēs</translation>
 <translation id="328933489847748230">{count,plural, =1{Tagad tiek rādīts viens Chromium logs}zero{Tagad tiek rādīti {count} Chromium logi}one{Tagad tiek rādīts {count} Chromium logs}other{Tagad tiek rādīti {count} Chromium logi}}</translation>
+<translation id="3344204225393848305">Iestatīt Chromium kā noklusējuma pārlūku</translation>
 <translation id="3344973607274501920">Pārlūkprogrammā Chromium nevarēja pārbaudīt jūsu paroles. Pārbaudiet interneta savienojumu.</translation>
 <translation id="3366305173356742781">Chromium dati jūsu kontā</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Tas notiek, ja pārlūks Chromium nav izmantots {THRESHOLD} minūti. Var tikt dzēsta arī vēsture un automātiskās aizpildes dati.}zero{Tas notiek, ja pārlūks Chromium nav izmantots {THRESHOLD} minūtes. Var tikt dzēsta arī vēsture un automātiskās aizpildes dati.}one{Tas notiek, ja pārlūks Chromium nav izmantots {THRESHOLD} minūti. Var tikt dzēsta arī vēsture un automātiskās aizpildes dati.}other{Tas notiek, ja pārlūks Chromium nav izmantots {THRESHOLD} minūtes. Var tikt dzēsta arī vēsture un automātiskās aizpildes dati.}}</translation>
@@ -284,6 +285,7 @@ Svarīga informācija
 <translation id="6852799557929001644">Piekļūstiet savām Chromium parolēm un citiem datiem citās lietotnēs šajā ierīcē.</translation>
 <translation id="6887138405044152640">Lai nosūtītu šo cilni uz citu ierīci, otrā ierīcē pierakstieties pārlūkā Chromium.</translation>
 <translation id="6911341667534646387">Turpiniet izmantot Google kontā saglabātos Chromium datus</translation>
+<translation id="6992760259282302305">Izmantot Chromium kā noklusējuma pārlūku</translation>
 <translation id="7018284295775193585">Nevar atjaunināt pārlūku Chromium.</translation>
 <translation id="7055269218854630176">Jūsu organizācija <ph name="DOMAIN" /> pārvalda kontu, kurā pašlaik pierakstāties, un pārlūka Chromium lietošanas iespējas. Administrators var iestatīt vai ierobežot noteiktas funkcijas.</translation>
 <translation id="7099326575020694068">Chromium nevar izmantot kameru dalītā skata režīmā.</translation>
@@ -344,6 +346,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="8385503371191508165">Sāciet piekļuves atslēgu saglabāšanu Paroļu pārvaldniekā</translation>
 <translation id="8390323835464055390">Pierakstieties, izmantojot savas saglabātās paroles un piekļuves atslēgas no jebkuras lietotnes, izmantojot pārlūku Chromium automātiskajai aizpildei</translation>
 <translation id="8409374867500149834">Jūs izmantojat Chromium visaugstāko drošības līmeni pret kaitīgām vietnēm</translation>
+<translation id="8428449554948979733">Paslēpt vienumu “Izmantot Chromium kā noklusējuma pārlūku”</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Tas notiek, ja pārlūks Chromium nav izmantots {THRESHOLD} minūti. Tiks dzēsti dati, kas tika saglabāti tikai šajā ierīcē, kamēr bijāt pierakstījies. Tie var ietvert vēsturi un paroles.}zero{Tas notiek, ja pārlūks Chromium nav izmantots {THRESHOLD} minūtes. Tiks dzēsti dati, kas tika saglabāti tikai šajā ierīcē, kamēr bijāt pierakstījies. Tie var ietvert vēsturi un paroles.}one{Tas notiek, ja pārlūks Chromium nav izmantots {THRESHOLD} minūti. Tiks dzēsti dati, kas tika saglabāti tikai šajā ierīcē, kamēr bijāt pierakstījies. Tie var ietvert vēsturi un paroles.}other{Tas notiek, ja pārlūks Chromium nav izmantots {THRESHOLD} minūtes. Tiks dzēsti dati, kas tika saglabāti tikai šajā ierīcē, kamēr bijāt pierakstījies. Tie var ietvert vēsturi un paroles.}}</translation>
 <translation id="8586442755830160949">Autortiesības <ph name="YEAR" /> Chromium autori. Visas tiesības paturētas.</translation>
 <translation id="8602103377623855616">Pārlūka Chromium lapa</translation>

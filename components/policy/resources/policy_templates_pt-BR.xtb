@@ -651,6 +651,15 @@ mudança de senha, mas também pode ser aplicada por determinadas políticas, co
 <translation id="1438739959477268107">Configuração padrão de geração de chaves</translation>
 <translation id="1440408958042020947">Permite que os usuários que ativaram o recurso Seu smartphone acessem fotos e vídeos recentes capturados no smartphone deles</translation>
 <translation id="1443532790824582949">Ativar o teclado virtual de toque</translation>
+<translation id="1445955287827003066">Esta política controla se um dispositivo é direcionado para migração do ChromeOS para o Next OS e quando isso ocorre.
+
+Se ela for definida como 0, as configurações padrão do Google vão determinar se o dispositivo está apto para a migração, considerando o modelo, o hardware e outros fatores.
+
+Se for definida como 2147483647, o dispositivo será marcado como disponível e direcionado para migração sem um prazo específico.
+
+Se o valor estiver entre 0 e 2147483647, o dispositivo será marcado como disponível e direcionado para migração. Esse valor representa o prazo de conclusão recomendado, expresso em segundos desde a época Unix (1970-01-01 00:00:00 UTC).
+
+Outras configurações de atualização do dispositivo, como fixação de versão (<ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY" />), desativação de atualizações (<ph name="DEVICE_AUTO_UPDATE_DISABLED_POLICY" />) ou configurações de canal de lançamento (<ph name="DEVICE_RELEASE_CHANNEL_POLICY" />), podem impedir que o aparelho receba as atualizações necessárias para iniciar a migração, mesmo que uma data seja definida aqui. A política precisa ser sempre aplicada. Caso ela não seja definida, o comportamento segue o padrão do Google, porque o valor definido interfere no processamento das políticas de atualização de dispositivos.</translation>
 <translation id="1447252610864877219">Permitir que o app do Gemini realize ações nas páginas da Web.</translation>
 <translation id="1449083855104537880">Se esta política for definida como verdadeira, as opções de acessibilidade serão exibidas no menu da bandeja do sistema. Se você definir a política como falsa, as opções não serão exibidas no menu.
 
@@ -2222,6 +2231,7 @@ Quando a política é desativada, ela impede que usuários ou variações do <ph
 
 Se ela for ativada ou deixada sem definição, o usuário poderá escolher uma imagem do Google Fotos como plano de fundo.</translation>
 <translation id="2393862222659066027">Abrir uma lista de URLs e restaurar a última sessão</translation>
+<translation id="239395129206831238">Defina a data de migração do dispositivo para o Next OS</translation>
 <translation id="239416486107542256">As configurações F11 usam o atalho que contém as teclas modificadoras Ctrl e Shift</translation>
 <translation id="2394429297128584919">Não permitir que as páginas enviem solicitações XHR síncronas ao dispensar a página</translation>
 <translation id="2398817690049129302">Aplicar o Modo de Segurança do <ph name="YOUTUBE_PRODUCT_NAME" /></translation>
@@ -4871,6 +4881,7 @@ Importante:
 <translation id="402759845255257575">Não permitir que nenhum site execute o JavaScript</translation>
 <translation id="4027608872760987929">Ativar o provedor de pesquisa padrão</translation>
 <translation id="4030152268425532846">Desativar o descarte do login automático</translation>
+<translation id="4032740546145417900">Não permitir o recurso de digitação por voz.</translation>
 <translation id="4043796890723386527">Impedir que os usuários criem e usem perfis secundários e usem o modo visitante no navegador <ph name="LACROS_NAME" /></translation>
 <translation id="4047633048700722778">Se a política for definida, será possível controlar o filtro de URL SafeSites, que usa a API Google Safe Search para classificar URLs como sendo pornográficos ou não.
 
@@ -6944,6 +6955,17 @@ Observação: esse recurso ainda não está disponível para o público geral. P
 <translation id="5247584184349816217">Ativar o protetor na tela de bloqueio.</translation>
 <translation id="5247973380763021389">Impedir que políticas da nuvem de usuários substituam políticas da nuvem da máquina.</translation>
 <translation id="5249006530384016395">Controla se a sintaxe <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" /> descontinuada para o estado personalizado de CSS está ativada</translation>
+<translation id="5249271416806588789">A digitação por voz é um recurso baseado em IA que permite aos usuários inserir e editar textos usando a voz. Ela usa modelos de IA generativa para oferecer transcrição e formatação de alta qualidade.
+
+Se ela for definida como 0, o recurso será habilitado e os dados relevantes poderão ser usados pelo Google para melhorar os modelos de IA. Esses dados podem incluir comandos, entradas, saídas, materiais de origem e feedback por escrito, dependendo do recurso. Eles também podem ser analisados por humanos para melhorar os modelos de IA. O valor padrão é 0, exceto quando indicado de outra forma abaixo.
+
+Se a política for definida como 1, o recurso será habilitado, mas o Google não poderá usar o conteúdo dos usuários (incluindo comandos, entradas, saídas, materiais de origem e feedback por escrito) para melhorar os modelos. 1 é o valor padrão para usuários corporativos gerenciados pelo <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e contas de ensino gerenciadas pelo <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Se ela for definida como 2, o recurso não será habilitado.
+
+Se for deixada sem definição, o comportamento será determinado pela política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Para mais informações sobre o tratamento de dados dos recursos de IA generativa, consulte https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="5249453807420671499">Os usuários podem adicionar contas do Kerberos</translation>
 <translation id="5249555581286638799">Ativar o modo de alta eficiência</translation>
 <translation id="5252210248395576403">Esta política permite que as Respostas rápidas acessem conteúdos selecionados e enviem informações ao servidor para receber resultados de tradução.
@@ -7075,6 +7097,7 @@ As contas gerenciadas não podem participar nem criar um grupo familiar. Por iss
 <translation id="533287753294126753">Permitir o uso da Tabela de comparação e melhorar os modelos de IA.</translation>
 <translation id="5334404204520035180">Controlar o uso da API WebPrinting</translation>
 <translation id="5334501839642146593">Nunca enviar métricas ao Google</translation>
+<translation id="5335403007354311099">Ativar recursos de acessibilidade do renderizador</translation>
 <translation id="5335910979215357815">Ativar a API Save and Share para o controle do <ph name="PRODUCT_OS_NAME" /> de terceiros.</translation>
 <translation id="5337869685871558036">Permitir a pré-busca de SpeculationRules para URLs controlados pelo ServiceWorkers</translation>
 <translation id="5339096331970464266">Ativar o teclado virtual de acessibilidade</translation>
@@ -8126,6 +8149,7 @@ Se essa política não for definida, então <ph name="DEFAULT_AUTOMATIC_DOWNLOAD
       Se a política for definida como "Desativada", os usuários não poderão enviar feedback ao Google.</translation>
 <translation id="5976636832661103220">As configurações F11 usam o atalho que contém a tecla modificadora Shift</translation>
 <translation id="5979376378555121803">App hospedado</translation>
+<translation id="5983016603010860828">Configurações do recurso de digitação por voz</translation>
 <translation id="5983274643567559194">Não é possível definir um atalho para a ação "Delete".</translation>
 <translation id="5984099692320899605">Não usar a autenticação do NTLM</translation>
 <translation id="5984237109586500246">Aceitar conteúdos da Web exibidos como Signed HTTP Exchanges</translation>
@@ -10021,6 +10045,7 @@ Essa política é aplicada apenas a navegadores gerenciados. Portanto, ela não 
 No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas no <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
 
 No <ph name="MAC_OS_NAME" />, essa política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas no <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
+<translation id="7054840304131108563">Desativar recursos de acessibilidade do renderizador</translation>
 <translation id="7055022222176591388">Não permitir o <ph name="FLASH_PLUGIN_NAME" /> desatualizado</translation>
 <translation id="7056040036973126753">Os dados de confiabilidade do domínio podem ser enviados ao Google dependendo da Política de Métricas do Usuário (UMA, na sigla em inglês) do Chrome.</translation>
 <translation id="7062803946218028349">Permitir a ativação do recurso "Seu smartphone"</translation>
@@ -10539,6 +10564,7 @@ Se esta política for desativada ou não for definida, as configurações de con
       A ativação desta política cria vulnerabilidades para alguns tipos de ataque entre sites e permite que os usuários sejam rastreados nos sites mesmo sem cookies, pela adição de entradas ao cache de autenticação de HTTP usando credenciais incorporadas em URLs.
 
       O objetivo desta política é dar às empresas, dependendo do comportamento legado, a chance de atualizar os próprios procedimentos de login. Ela será removida no futuro.</translation>
+<translation id="7322231030019184787">Permitir o recurso de digitação por voz sem coleta de dados.</translation>
 <translation id="7322825363493984512">A senha para autenticação de serviços do sistema para o proxy remoto da Web.</translation>
 <translation id="7323773727263636287">Ativar o recurso de acessibilidade de correção de cor.
 
@@ -10988,6 +11014,7 @@ Para saber mais sobre padrões de URL válidos, consulte https://chromeenterpris
       Quando esta política é definida, o código de acesso do familiar responsável pode ser verificado no dispositivo da criança.
       Quando esta política não é definida, não é possível verificar o código de acesso do familiar responsável no dispositivo da criança.</translation>
 <translation id="7623431489198474050">Desativar atestado remoto para proteção de conteúdo</translation>
+<translation id="7624832415093566709">Permitir o recurso de digitação por voz.</translation>
 <translation id="7625858205605842562">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica quais sites não podem pedir que o usuário permita o acesso a um dispositivo USB.
 
       Se a política não tiver definição, <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
@@ -11708,6 +11735,7 @@ Várias políticas listam origens que afetam as solicitações enviadas para o d
   - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="8059352177830050556">Ativar relatórios de informações da luz de fundo do dispositivo</translation>
 <translation id="8062485064082966327">Usar um Serviço do Google anônimo para oferecer descrições automáticas para imagens sem um texto alternativo</translation>
+<translation id="8064875716442437829">Ativar acessibilidade do renderizador</translation>
 <translation id="8066428282805800713">Enviar mais dados de hardware no ChromeOS Flex</translation>
 <translation id="8069233292746468045">Esta política configura o <ph name="PRODUCT_NAME" /> para ordenar os algoritmos de contrato de chave preferidos (grupos aceitos) na TLS 1.3 para refletir uma preferência por algoritmos que foram aprovados por um regime de conformidade específico.
 
@@ -12871,6 +12899,13 @@ Observação: essa política não terá efeito se DevicePowerBatteryChargingOpti
       Se a política não for definida, será usada a configuração padrão para o sandbox de rede. Ela pode variar dependendo da versão do <ph name="PRODUCT_NAME" />, da execução de testes de campo e da plataforma.
       Esta política tem como objetivo oferecer às empresas flexibilidade para desativar o sandbox de rede, caso elas usem um software de terceiros que interfira nesse tipo de sandbox.</translation>
 <translation id="8840243776706727185">Recurso NewBaseUrlInheritanceBehavior desativado</translation>
+<translation id="8841125674413543406">Controla a geração da árvore de acessibilidade nos processos do renderizador.
+
+Se esta política for ativada ou deixada sem definição, o <ph name="PRODUCT_NAME" /> vai permitir a geração de árvores de acessibilidade para páginas da web.
+
+Se ela for definida como desativada, a árvore de acessibilidade do renderizador não será mais gerada, impedindo que os recursos de acessibilidade interajam com o renderizador.
+
+Se você definir esta política, os usuários não poderão mudá-la ou substituí-la.</translation>
 <translation id="8842208363354615697">Permitir que o HTTPS-Only Mode seja ativado</translation>
 <translation id="8843331294082716286">Não mostra a solicitação do <ph name="PRIVACY_SANDBOX_NAME" /> aos usuários.</translation>
 <translation id="884855199714673326">Permitir que o host de acesso remoto decida</translation>

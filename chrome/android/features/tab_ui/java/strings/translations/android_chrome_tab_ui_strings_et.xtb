@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Loodud <ph name="NUM_WEEKS_ONE" /> nädal tagasi}other{Loodud <ph name="NUM_WEEKS_MANY" /> nädalat tagasi}}</translation>
 <translation id="1063300264396686489">Vahelehegrupi automaatne avamine teisest seadmest</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> teie vahelehte pole hiljuti kasutatud. Kas sulgeda need?</translation>
+<translation id="1089791933924803646">Chrome'i soovituste hankimine muudes rakendustes</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Loodud <ph name="NUM_YEARS_ONE" /> aasta tagasi}other{Loodud <ph name="NUM_YEARS_MANY" /> aastat tagasi}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Mitteaktiivsed vahelehed ja rühmad suletakse 1 kuu pärast}other{Mitteaktiivsed vahelehed ja rühmad suletakse <ph name="MONTH_COUNT_MANY" /> kuu pärast}}</translation>
 <translation id="1173894706177603556">Muuda nime</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Lisa vaheleht gruppi}other{Lisa vahelehed gruppi}}</translation>
 <translation id="8138067144082174140">14 passiivse päeva järel</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Laienda <ph name="TABS_COUNT_ONE" /> vahelehega vahelehegruppi <ph name="TITLE_OF_GROUP" />, värv on <ph name="COLOR_NAME" />.}other{Laienda <ph name="TABS_COUNT_MANY" /> vahelehega vahelehegruppi <ph name="TITLE_OF_GROUP" />, värv on <ph name="COLOR_NAME" />.}}</translation>
+<translation id="8172214054247281626">Jagage sirvimisandmeid, näiteks oma hiljutist sirvimisajalugu, et saada valitud rakendustes soovitusi. Neid andmeid töödeldakse turvaliselt teie seadmes.</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{Vabasta vaheleht}other{Vabasta vahelehed}}</translation>
 <translation id="8205266828577616993">Teisalda vaheleht üles</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Värskendati <ph name="NUM_MINS_ONE" /> minut tagasi}other{Värskendati <ph name="NUM_MINS_MANY" /> minutit tagasi}}</translation>

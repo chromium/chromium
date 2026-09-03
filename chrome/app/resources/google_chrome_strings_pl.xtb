@@ -8,6 +8,7 @@
 <translation id="102763973188675173">Dostosowywanie i kontrolowanie Google Chrome. Dostępna jest aktualizacja.</translation>
 <translation id="1028061813283459617">Aby usunąć dane przeglądania tylko z tego urządzenia, zachowując je na swoim koncie Google, <ph name="BEGIN_LINK" />wyloguj się z Chrome<ph name="END_LINK" />.</translation>
 <translation id="1028770388543831319">Korzystaj z najlepszych funkcji bezpieczeństwa Google w dowolnym miejscu dzięki aplikacji Chrome na telefonie</translation>
+<translation id="1036348656032585052">Wyłącz</translation>
 <translation id="1042270987544905725">Kliknij, aby zamknąć okno logowania się w Chrome</translation>
 <translation id="1051793555070215510">Pomóż nam ulepszać tryb incognito, wypełniając tę 1-minutową ankietę.</translation>
 <translation id="1055295352198814912">Pokaż Gemini w Chrome na pasku menu Maca i włącz skrót klawiszowy</translation>
@@ -242,6 +243,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="3282568296779691940">Zaloguj się w Chrome</translation>
 <translation id="3286538390144397061">Uruchom ponownie teraz</translation>
 <translation id="3292333338048274092">Następnie musisz ponownie uruchomić Chrome.</translation>
+<translation id="3294686910656423119">Statystyki użytkowania i raporty o awariach</translation>
 <translation id="3327226547491422998">Później Chrome może zapytać, czy chcesz używać zapisanych informacji do automatycznego wypełniania formularzy</translation>
 <translation id="3352986031709923790">prawy górny róg obszaru wyszukiwania: po prawej stronie <ph name="RIGHT" />%, u góry <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Pomoc Chrome</translation>
@@ -470,6 +472,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="5824893331272123205">Nie udało się załadować tego panelu. Spróbuj ponownie</translation>
 <translation id="5825922397106002626">Usuń rozszerzenie <ph name="EXTENSION_NAME" /> z Chrome</translation>
 <translation id="5858486459377137936">Gdy zamkniesz wszystkie okna Chrome, wylogujesz się na większości stron, ale nie z konta Google, o ile wcześniej zalogujesz się w Chrome. Aby pozwolić witrynom na zapamiętywanie Twoich danych, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5860491529813859533">Włącz</translation>
 <translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome ostrzega<ph name="END_LINK" /> o niebezpiecznych stronach i pobieranych plikach</translation>
 <translation id="5894164573378901688">Aby korzystać z Gemini w Chrome, zaloguj się na inne konto Google</translation>
 <translation id="5895138241574237353">Uruchom ponownie</translation>
@@ -510,6 +513,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="6166185671393271715">Importowanie haseł do Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
+<translation id="6177442314419606057">Szukaj w Chrome</translation>
 <translation id="6180522807229584611">Ta karta wykorzystuje dodatkowe zasoby. Aby zwiększyć wydajność, pozwól Chrome ją dezaktywować.</translation>
 <translation id="6182736845697986886">Instalacja się nie udała z powodu wewnętrznego błędu serwera aktualizacji.</translation>
 <translation id="6192058120268468905">Twoje konto w Chrome</translation>

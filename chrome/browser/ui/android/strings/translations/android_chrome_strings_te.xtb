@@ -105,6 +105,7 @@
 <translation id="138181280295369883">మీ డివైజ్‌లన్నింటిలో సేవ్ చేసిన మీ సమాచారాన్ని, ఇంకా మరెన్నో వివరాలను పొందడానికి సైన్ ఇన్ చేయండి</translation>
 <translation id="1381838868249179644">మిమ్మల్ని సురక్షితంగా ఉంచడంలో సహాయపడటానికి, సైట్‌ల నుండి అనుమతులు తీసివేయబడ్డాయి</translation>
 <translation id="1383876407941801731">సెర్చ్</translation>
+<translation id="1384568202352682721">ఇలా సేవ్ చేయండి…</translation>
 <translation id="1384704387250346179"><ph name="BEGIN_NEW" />కొత్తది<ph name="END_NEW" /> Google Lensతో ఇమేజ్‌ను అనువదించండి</translation>
 <translation id="1390418506739274310">మీరు Chromeలో లింక్‌లను తెరిచే ఇతర యాప్‌ల నుండి హిస్టరీని చూడవచ్చు. మీ Google ఖాతా <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />వెబ్‌సైట్‌లో ఇతర ఫారమ్‌లో ఉన్న బ్రౌజింగ్ హిస్టరీని కలిగి ఉండవచ్చు.</translation>
 <translation id="139752016751285248">ధరల గణాంకాల దిగువున ఉన్న షీట్ ఎక్కువ ఎత్తులో తెరవబడింది</translation>
@@ -133,6 +134,7 @@
 <translation id="147982357559798527">మార్చబడింది</translation>
 <translation id="1480287803138246127">మీ హిస్టరీలోని కొన్ని ఇక్కడ చూపబడకపోవచ్చు. మీ మొత్తం Chrome హిస్టరీని చూడటానికి, మొత్తం Chrome హిస్టరీని తెరవండి.</translation>
 <translation id="1483493594462132177">పంపు</translation>
+<translation id="1485343711570311792"><ph name="NATIVE_APP_NAME" />‌లో తెరవండి • <ph name="DEVICE_NAME" /> నుండి</translation>
 <translation id="1495677929897281669">తిరిగి ట్యాబ్‌కు వెళ్లు</translation>
 <translation id="1496514951988037011">యూజర్‌నేమ్</translation>
 <translation id="1501480321619201731">గ్రూప్‌ను తొలగించండి</translation>
@@ -327,6 +329,7 @@
 <translation id="232137538351753795">వెనుకకు వెళ్లడానికి ఎడమ వైపు అంచు నుండి స్వైప్ చేయండి</translation>
 <translation id="2323763861024343754">సైట్ స్టోరేజ్‌</translation>
 <translation id="2327445548174191329"><ph name="DEVICE_NAME" /> నుండి</translation>
+<translation id="232757965409810352">పేజీని ఇలా సేవ్ చేయండి…</translation>
 <translation id="2328474416100889417">అందరూ వెంటనే "<ph name="GROUP_NAME" />" ట్యాబ్ గ్రూప్‌నకు యాక్సెస్‌ను కోల్పోతారు, అలాగే అన్ని ఆహ్వాన లింక్‌లు ఆఫ్ చేయబడతాయి</translation>
 <translation id="2329500425421091035">Chromeలో AI మోడ్‌ను పరిచయం చేస్తున్నాము</translation>
 <translation id="2330186936255788117">మరిన్ని బుక్‌మార్క్‌లు</translation>
@@ -561,6 +564,7 @@
 <translation id="3232754137068452469">వెబ్ యాప్‌</translation>
 <translation id="3236059992281584593">1 నిమిషం మిగిలి ఉంది</translation>
 <translation id="3237087289225714896">స్టాండర్డ్ ప్రీ - లోడింగ్:</translation>
+<translation id="3243650379537999343">డ్రా</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">మీరు Chrome వినియోగ రిపోర్ట్‌లను కూడా షేర్ చేస్తున్నట్లయితే, ఆ రిపోర్ట్‌లలో మీరు సందర్శించే URLలు ఉంటాయి</translation>
 <translation id="3250563604907490871">మీరు Wi-Fiకి కనెక్ట్ అయిన తర్వాత ఇమేజ్ వివరణలు కొనసాగించబడతాయి</translation>
@@ -963,7 +967,6 @@
 <translation id="480990236307250886">హోమ్ పేజీని తెరువు</translation>
 <translation id="4816492930507672669">పేజీకి తగినట్లు అమర్చు</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> ట్యాబ్ గ్రూప్ మూసివేయబడింది, సేవ్ అయింది</translation>
-<translation id="4834250788637067901">Google Payను ఉపయోగిస్తున్న పేమెంట్ ఆప్షన్‌లు, ఆఫర్‌లు, అడ్రస్‌లు</translation>
 <translation id="4835385943915508971">Chrome రిక్వెస్ట్ చేసిన వనరుకు యాక్సెస్ కలిగి లేదు.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ట్యాబ్‌కు సంబంధించిన ట్యాబ్ గ్రూప్‌ను, <ph name="COLOR_NAME" /> రంగును, కొత్త బ్యాక్‌గ్రౌండ్ ట్యాబ్ గ్రూప్‌గా రీస్టోర్ చేయండి.}other{<ph name="TAB_COUNT_MANY" /> ట్యాబ్‌లకు సంబంధించిన ట్యాబ్ గ్రూప్‌ను, <ph name="COLOR_NAME" /> రంగును, కొత్త బ్యాక్‌గ్రౌండ్ ట్యాబ్ గ్రూప్‌గా రీస్టోర్ చేయండి.}}</translation>
 <translation id="4849731766219625109">మీ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ఖాతాను ఉపయోగించండి</translation>
@@ -1872,6 +1875,7 @@
 <translation id="8313599942510782709">మీ టాస్క్ ఇంకా ప్రోగ్రెస్‌లో ఉంది</translation>
 <translation id="8317318757008452355">ప్రింట్ చేయడానికి గల ఆప్షన్‌లను తెరవండి</translation>
 <translation id="8320212361750431956">ఇటీవలి యాక్టివిటీ</translation>
+<translation id="8322452989119079156"><ph name="NATIVE_APP_NAME" />‌లో తెరవండి - <ph name="DEVICE_NAME" /> నుండి పంపారు</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />కొత్తది<ph name="END_NEW" /></translation>
 <translation id="8333026248928723981">బుక్‌మార్క్‌లు, లిస్ట్‌లు</translation>
 <translation id="8342727528718219152">చాలా ఎక్కువ నోటిఫికేషన్‌లను పంపే అవకాశం ఉన్న సైట్‌ల గురించి Chrome మీకు తెలియజేస్తుంది</translation>

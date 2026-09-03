@@ -595,6 +595,15 @@ PromptInTab に設定した場合は、ユーザーの認証が期限切れに�
 <translation id="1438739959477268107">デフォルトのキー生成設定</translation>
 <translation id="1440408958042020947">スマートフォン ハブを有効にしているユーザーが、スマートフォンで最近撮影した写真や動画にアクセスすることを許可します</translation>
 <translation id="1443532790824582949">タップ仮想キーボードを有効にする</translation>
+<translation id="1445955287827003066">このポリシーでは、デバイスを ChromeOS から Next OS に移行するかどうか、移行する場合はその期限を制御します。
+
+このポリシーを 0 に設定した場合、デバイスが移行の対象となるかどうかは Google のデフォルト設定によって決まります。これには、デバイスのモデルやハードウェア、その他の要因が影響する場合があります。
+
+このポリシーを 2147483647 に設定した場合、デバイスは利用可能としてマークされ、特定の期限なしで移行の対象となります。
+
+このポリシーを 0 より大きく 2147483647 より小さい値に設定した場合、デバイスは利用可能としてマークされ、移行の対象となります。この値は、推奨される完了期限を Unix エポック（1970 年 1 月 1 日 00:00:00 UTC）からの秒数で表したものです。
+
+ここで完了予定日を設定しても、バージョンの固定（<ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY" />）、アップデートの無効化（<ph name="DEVICE_AUTO_UPDATE_DISABLED_POLICY" />）、リリース チャンネルの設定（<ph name="DEVICE_RELEASE_CHANNEL_POLICY" />）など、他のデバイス アップデートの設定により、移行の開始に必要なアップデートをデバイスで受信できない場合があります。このポリシーは常に適用されることを想定しています。未設定の場合は Google のデフォルト設定が適用されます。これは、このポリシーの値がデバイスの更新ポリシーの処理に影響する可能性があるためです。</translation>
 <translation id="1447252610864877219">Gemini アプリにウェブページでの操作を許可する。</translation>
 <translation id="1449083855104537880">このポリシーを True に設定した場合、通知領域（システムトレイ）メニューにユーザー補助オプションが表示されます。このポリシーを False に設定した場合、メニューにこのオプションは表示されません。
 
@@ -2070,6 +2079,7 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
 
 このポリシーを有効に設定した場合や未設定のままにした場合、ユーザーは Google フォトの画像を壁紙として選択できます。</translation>
 <translation id="2393862222659066027">URL を開き、最後のセッションを復元する</translation>
+<translation id="239395129206831238">デバイスを Next OS に移行する完了予定日を設定する</translation>
 <translation id="239416486107542256">F11 の設定で Ctrl と Shift の修飾キーを含むショートカットを使用する</translation>
 <translation id="2394429297128584919">ページの終了中にページから同期 XHR リクエストを送信することを許可しない</translation>
 <translation id="2398817690049129302"><ph name="YOUTUBE_PRODUCT_NAME" /> のセーフモードを強制的に適用する</translation>
@@ -4604,6 +4614,7 @@ Protected Audience API のサポート終了により、このポリシーは <p
 <translation id="402759845255257575">すべてのサイトに対して JavaScript の実行を許可しない</translation>
 <translation id="4027608872760987929">デフォルトの検索プロバイダを有効にする</translation>
 <translation id="4030152268425532846">自動ログインの回避を無効にする</translation>
+<translation id="4032740546145417900">音声入力を許可しない。</translation>
 <translation id="4043796890723386527">ユーザーに <ph name="LACROS_NAME" /> ブラウザでの予備のプロフィールの作成と使用、およびゲストモードの使用を許可しない</translation>
 <translation id="4047633048700722778">このポリシーでは、セーフサイトの URL フィルタを制御できます。このフィルタは、Google Safe Search API を使用して URL をポルノとそれ以外に分類します。
 
@@ -6493,6 +6504,17 @@ Attribution Reporting API のサポート終了により、このポリシーは
 <translation id="5247584184349816217">ロック画面でスクリーンセーバーを有効にする。</translation>
 <translation id="5247973380763021389">ユーザーのクラウド ポリシーがマシンのクラウド ポリシーを上書きしないようにする</translation>
 <translation id="5249006530384016395">CSS カスタム ステータスの非推奨の <ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" /> 構文を有効にするかどうかを制御します</translation>
+<translation id="5249271416806588789">音声入力は、生成 AI モデルを活用して高品質な音声文字変換と書式設定を提供し、ユーザーが音声でテキストの入力や編集を行えるようにする AI ベースの機能です。
+
+0 = この機能の使用と、Google が AI モデルを改善する目的で関連データを使用することを許可します。関連データには、機能に応じてプロンプト、入力内容、出力内容、ソース資料、フィードバックの文面などが含まれます。AI モデルを改善するため、人間のレビュアーが確認する場合もあります。以下に記載している場合を除き、0 がデフォルト値です。
+
+1 = この機能の使用を許可しますが、Google がモデルを改善する目的でユーザーのコンテンツ（プロンプト、入力内容、出力内容、ソース資料、フィードバックの文面など）を使用することは許可しません。1 は、<ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> で管理されている企業ユーザーと、<ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> で管理されている教育機関向けアカウントのデフォルト値です。
+
+2 = この機能を許可しません。
+
+このポリシーを未設定のままにした場合、動作は <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> ポリシーによって決まります。
+
+生成 AI 機能のデータ処理について詳しくは、https://support.google.com/chrome/a?p=generative_ai_settings をご覧ください。</translation>
 <translation id="5249453807420671499">ユーザーに Kerberos アカウントの追加を許可する</translation>
 <translation id="5249555581286638799">高効率モードを有効にする</translation>
 <translation id="5252210248395576403">このポリシーでは、クイック アンサーで翻訳の結果を取得する際に、選択したコンテンツへのアクセスとサーバーへの情報送信を許可します。
@@ -6617,6 +6639,7 @@ Attribution Reporting API のサポート終了により、このポリシーは
 <translation id="533287753294126753">タブ比較と AI モデルの改善を許可する。</translation>
 <translation id="5334404204520035180">WebPrinting API の使用を管理する</translation>
 <translation id="5334501839642146593">Google に統計情報を送信しない</translation>
+<translation id="5335403007354311099">レンダラのユーザー補助機能を有効にする</translation>
 <translation id="5335910979215357815">サードパーティの <ph name="PRODUCT_OS_NAME" /> 制御機能に対して Save and Share API を有効にする。</translation>
 <translation id="5337869685871558036">ServiceWorker で制御される URL への SpeculationRules プリフェッチを許可する</translation>
 <translation id="5339096331970464266">ユーザー補助仮想キーボードを有効にする</translation>
@@ -7618,6 +7641,7 @@ URL が <ph name="AUTOMATIC_DOWNLOADS_ALLOWED_FOR_URLS_POLICY_NAME" /> と <ph n
       このポリシーを無効に設定した場合、ユーザーは Google にフィードバックを送信できません。</translation>
 <translation id="5976636832661103220">F11 の設定で Shift 修飾キーを含むショートカットを使用する</translation>
 <translation id="5979376378555121803">ホストされるアプリ</translation>
+<translation id="5983016603010860828">音声入力の設定</translation>
 <translation id="5983274643567559194">Delete キー操作のショートカットの設定は無効。</translation>
 <translation id="5984099692320899605">NTLM 認証を使用しない</translation>
 <translation id="5984237109586500246">Signed HTTP Exchange として配信されるウェブ コンテンツを許可する</translation>
@@ -9321,6 +9345,7 @@ JavaScript の最適化ポリシーの例外は、サイトの詳細レベル（
 <ph name="MS_WIN_NAME" /> では、<ph name="MS_AD_NAME" /> ドメインに追加されたインスタンス、<ph name="MS_AAD_NAME" /> に追加されたインスタンス、または <ph name="CHROME_ENTERPRISE_CORE_NAME" /> に登録されているインスタンスでのみこのポリシーを使用できます。
 
 <ph name="MAC_OS_NAME" /> では、MDM を介して管理されるインスタンス、MCX を介してドメインに追加されたインスタンス、または <ph name="CHROME_ENTERPRISE_CORE_NAME" /> に登録されているインスタンスでのみこのポリシーを使用できます。</translation>
+<translation id="7054840304131108563">レンダラ ユーザー補助機能を無効にする</translation>
 <translation id="7055022222176591388">古い <ph name="FLASH_PLUGIN_NAME" /> を許可しない</translation>
 <translation id="7056040036973126753">Chrome のユーザーに関する指標（UMA）のポリシーに基づき、必要に応じて Google にドメインの信頼性データを送信する</translation>
 <translation id="7062803946218028349">スマートフォン ハブの有効化を許可する</translation>
@@ -9767,6 +9792,7 @@ EphemeralNetworkPolicies 機能がデフォルトで有効になると、この�
       このポリシーを有効にすると、サイトは一部の種類のクロスサイト攻撃に対してさらされることになります。また、URL に埋め込まれた認証情報を使用して HTTP 認証キャッシュにエントリを追加することで、Cookie がなくてもサイト間でユーザーを追跡できるようになります。
 
       このポリシーは、以前の動作に依存している企業がログインの手続きを更新できるようにするために用意されているもので、将来的に削除されます。</translation>
+<translation id="7322231030019184787">データの収集なしで音声入力を許可する。</translation>
 <translation id="7322825363493984512">リモート ウェブプロキシに対するシステム サービスの認証に使用するパスワードです。</translation>
 <translation id="7323773727263636287">色補正のユーザー補助機能を有効にします。
 
@@ -10186,6 +10212,7 @@ URL パターンは、<ph name="WEB_PRINTING_BLOCKED_FOR_URLS_POLICY_NAME" /> �
 
 このポリシーは、アクセスコード設定を段階的に切り替える場合に使用することを想定しています。新しい設定は常に |future_config| に入力され、同時に既存の値は |current_config| に移動されます。|current_config| の以前の値は |old_configs| に移動され、切り替えが完了した後に削除されます。このポリシーは子どものユーザーにのみ適用されます。このポリシーが設定されている場合、子どものユーザーのデバイスで保護者のアクセスコードを確認できます。このポリシーが設定されていない場合、子どものユーザーのデバイスで保護者のアクセスコードを確認できません。</translation>
 <translation id="7623431489198474050">コンテンツ保護のリモート認証を無効にする</translation>
+<translation id="7624832415093566709">音声入力を許可する。</translation>
 <translation id="7625858205605842562">このポリシーでは、USB デバイスへのアクセス許可をユーザーに要求できないサイトの URL パターンリストを指定できます。
 
       このポリシーを未設定のままにした場合、<ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" /> が設定されていればその設定がすべてのサイトで使用され、設定されていなければユーザーの個人設定が適用されます。
@@ -10861,6 +10888,7 @@ Topics API のサポート終了により、このポリシーは <ph name="PROD
   - LocalNetworkAccessAllowedForUrls</translation>
 <translation id="8059352177830050556">デバイスのバックライト情報レポートを有効にする</translation>
 <translation id="8062485064082966327">匿名の Google サービスを使用して、ラベル付けがない画像の説明を自動的に取得する</translation>
+<translation id="8064875716442437829">レンダラのユーザー補助を有効にする</translation>
 <translation id="8066428282805800713">ChromeOS Flex で追加のハードウェア データを送信する</translation>
 <translation id="8069233292746468045">このポリシーでは、<ph name="PRODUCT_NAME" /> で優先する TLS 1.3 の鍵交換アルゴリズム（サポートされているグループ）の順序を指定し、特定のコンプライアンス体制で承認されたアルゴリズムの優先順序を反映するように設定します。
 
@@ -11971,6 +11999,13 @@ M119 よりデフォルトで無効になります）。
       このポリシーを設定しない場合は、ネットワークのサンドボックス化に関するデフォルトの設定が使用されます。デフォルトの設定は、<ph name="PRODUCT_NAME" /> のリリース（現在フィールド テストを実施中）およびプラットフォームごとに異なる場合があります。
       このポリシーは、企業でネットワーク サービスのサンドボックス化の妨げとなるサードパーティ ソフトウェアを使用している場合に、ネットワークのサンドボックス化を無効にできるようにするためのものです。</translation>
 <translation id="8840243776706727185">NewBaseUrlInheritanceBehavior 機能を無効にする</translation>
+<translation id="8841125674413543406">レンダラ プロセスでのユーザー補助ツリーの生成を制御します。
+
+このポリシーを有効に設定するか未設定のままにした場合、<ph name="PRODUCT_NAME" /> ではウェブページのユーザー補助ツリーの生成が許可されます。
+
+このポリシーを無効に設定した場合、レンダラのユーザー補助ツリーは生成されず、ユーザー補助機能はレンダラとやり取りできなくなります。
+
+このポリシーを設定した場合、ユーザーが設定を変更したりオーバーライドしたりすることはできません。</translation>
 <translation id="8842208363354615697">HTTPS 専用モードの有効化を許可する</translation>
 <translation id="8843331294082716286"><ph name="PRIVACY_SANDBOX_NAME" /> のプロンプトをユーザーに表示しない。</translation>
 <translation id="884855199714673326">リモート アクセス ホストに決定を許可する</translation>

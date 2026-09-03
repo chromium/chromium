@@ -110,6 +110,7 @@ Ga naar <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> voor meer 
 <translation id="3180939591219927904">Zet 'Incognitotabbladen vergrendelen als je Chromium sluit' aan</translation>
 <translation id="327628223428512207">Voer een wachtwoordzin in om dit wachtwoord op te slaan en Chromium-gegevens op al je apparaten te krijgen</translation>
 <translation id="328933489847748230">{count,plural, =1{Er wordt nu 1 Chromium-venster getoond}other{Er worden nu {count} Chromium-vensters getoond}}</translation>
+<translation id="3344204225393848305">Chromium instellen als standaard</translation>
 <translation id="3344973607274501920">Chromium kan je wachtwoorden niet checken. Check de internetverbinding.</translation>
 <translation id="3366305173356742781">Chromium-gegevens in je account</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Dit gebeurt als Chromium {THRESHOLD} minuut niet wordt gebruikt. Dit kunnen onder andere de geschiedenis en gegevens voor automatisch invullen zijn.}other{Dit gebeurt als Chromium {THRESHOLD} minuten niet wordt gebruikt. Dit kunnen onder andere de geschiedenis en gegevens voor automatisch invullen zijn.}}</translation>
@@ -284,6 +285,7 @@ Aandachtspunten:
 <translation id="6852799557929001644">Krijg toegang tot je Chromium-wachtwoorden en meer in andere apps op dit apparaat.</translation>
 <translation id="6887138405044152640">Als je dit tabblad naar een ander apparaat wilt sturen, log je daar in bij Chromium.</translation>
 <translation id="6911341667534646387">Blijf de Chromium-gegevens in je Google-account gebruiken</translation>
+<translation id="6992760259282302305">Chromium standaard gebruiken</translation>
 <translation id="7018284295775193585">Chromium kan niet updaten</translation>
 <translation id="7055269218854630176">Je organisatie, <ph name="DOMAIN" />, beheert het account waarop je inlogt en hoe Chromium kan worden gebruikt. Je beheerder kan bepaalde functies instellen of beperken.</translation>
 <translation id="7099326575020694068">Chromium kan je camera niet gebruiken in de modus 'Gesplitste weergave'</translation>
@@ -344,6 +346,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="8385503371191508165">Sla toegangssleutels op met Wachtwoordmanager</translation>
 <translation id="8390323835464055390">Log in met je opgeslagen wachtwoorden en toegangssleutels vanuit elke app via Chromium voor automatisch invullen</translation>
 <translation id="8409374867500149834">Je hebt de krachtigste beveiliging van Chromium tegen schadelijke websites</translation>
+<translation id="8428449554948979733">Chromium als standaard gebruiken verbergen</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Dit gebeurt als Chromium {THRESHOLD} minuut niet wordt gebruikt. Gegevens die alleen op dit apparaat zijn opgeslagen terwijl je was ingelogd, worden verwijderd. Dit kunnen onder andere geschiedenis en wachtwoorden zijn.}other{Dit gebeurt als Chromium {THRESHOLD} minuten niet wordt gebruikt. Gegevens die alleen op dit apparaat zijn opgeslagen terwijl je was ingelogd, worden verwijderd. Dit kunnen onder andere geschiedenis en wachtwoorden zijn.}}</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> De auteurs van Chromium. Alle rechten voorbehouden.</translation>
 <translation id="8602103377623855616">Chromium-pagina</translation>

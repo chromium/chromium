@@ -105,6 +105,7 @@
 <translation id="138181280295369883">Συνδεθείτε, για να έχετε στη διάθεσή σας τις αποθηκευμένες πληροφορίες σας και πολλά ακόμη σε όλες τις συσκευές σας</translation>
 <translation id="1381838868249179644">Για την ασφάλειά σας, καταργήθηκαν άδειες από ορισμένους ιστοτόπους</translation>
 <translation id="1383876407941801731">Αναζήτηση</translation>
+<translation id="1384568202352682721">Αποθήκευση ως…</translation>
 <translation id="1384704387250346179">Μετάφραση εικόνας με Google Lens <ph name="BEGIN_NEW" />Νέο<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">Μπορεί να δείτε το ιστορικό από άλλες εφαρμογές που ανοίγουν συνδέσμους στο Chrome. Ο Λογαριασμός Google ενδέχεται να διαθέτει άλλες μορφές ιστορικού περιήγησης στη διεύθυνση <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Το φύλλο κάτω μέρους insight τιμών άνοιξε σε πλήρες ύψος</translation>
@@ -133,6 +134,7 @@
 <translation id="147982357559798527">Τροποποιήθηκε</translation>
 <translation id="1480287803138246127">Ένα μέρος του ιστορικού μπορεί να μην εμφανίζεται εδώ. Για να δείτε όλο το ιστορικό σας στο Chrome, ανοίξτε το πλήρες Ιστορικό Chrome.</translation>
 <translation id="1483493594462132177">Αποστολή</translation>
+<translation id="1485343711570311792">Άνοιγμα στην εφαρμογή <ph name="NATIVE_APP_NAME" /> • Από <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Επιστροφή στην καρτέλα</translation>
 <translation id="1496514951988037011">όνομα χρήστη</translation>
 <translation id="1501480321619201731">Διαγραφή ομάδας</translation>
@@ -327,6 +329,7 @@
 <translation id="232137538351753795">Για να επιστρέψετε, σύρετε από την αριστερή άκρη</translation>
 <translation id="2323763861024343754">Αποθηκ. χώρος ιστοσελίδας</translation>
 <translation id="2327445548174191329">Από <ph name="DEVICE_NAME" /></translation>
+<translation id="232757965409810352">Αποθήκευση σελίδας ως…</translation>
 <translation id="2328474416100889417">Όλοι θα χάσουν αμέσως την πρόσβαση στην ομάδα καρτελών <ph name="GROUP_NAME" /> και όλοι οι σύνδεσμοι πρόσκλησης θα απενεργοποιηθούν</translation>
 <translation id="2329500425421091035">Παρουσιάζουμε τη Λειτουργία AI στο Chrome</translation>
 <translation id="2330186936255788117">Περισσότεροι σελιδοδείκτες</translation>
@@ -561,6 +564,7 @@
 <translation id="3232754137068452469">Εφαρμογή ιστού</translation>
 <translation id="3236059992281584593">Απομένει 1 λεπτό</translation>
 <translation id="3237087289225714896">Βασική προφόρτωση:</translation>
+<translation id="3243650379537999343">Σχέδιο</translation>
 <translation id="3244271242291266297">ΜΜ</translation>
 <translation id="3245429137663807393">Εάν κοινοποιείτε επίσης αναφορές χρήσης του Chrome, αυτές περιλαμβάνουν τα URL που επισκέπτεστε</translation>
 <translation id="3250563604907490871">Οι περιγραφές εικόνων θα συνεχιστούν όταν συνδεθείτε σε δίκτυο Wi-Fi.</translation>
@@ -963,7 +967,6 @@
 <translation id="480990236307250886">Άνοιγμα της αρχικής σελίδας</translation>
 <translation id="4816492930507672669">Προσαρμογή στη σελίδα</translation>
 <translation id="4822710610088666676">Η ομάδα καρτελών <ph name="TAB_GROUP_TITLE" /> έκλεισε και αποθηκεύτηκε</translation>
-<translation id="4834250788637067901">Τρόποι πληρωμής, προσφορές και διευθύνσεις μέσω Google Pay</translation>
 <translation id="4835385943915508971">Το Chrome δεν έχει πρόσβαση στον πόρο που ζητήθηκε</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Επαναφέρετε την ομάδα καρτελών που αποτελείται από <ph name="TAB_COUNT_ONE" /> καρτέλα και έχει <ph name="COLOR_NAME" /> χρώμα, ως νέα ομάδα καρτελών στο παρασκήνιο.}other{Επαναφέρετε την ομάδα καρτελών που αποτελείται από <ph name="TAB_COUNT_MANY" /> καρτέλες και έχει <ph name="COLOR_NAME" /> χρώμα, ως νέα ομάδα καρτελών στο παρασκήνιο.}}</translation>
 <translation id="4849731766219625109">Χρήση του λογαριασμού σας <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -1662,6 +1665,7 @@
 <translation id="7493994139787901920"><ph name="VERSION" /> (Ενημέρωση στις <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Περιμένετε…</translation>
 <translation id="7499065150275272675"><ph name="TAB_TITLE" />, Καρφιτσωμένη καρτέλα που είναι σε σίγαση</translation>
+<translation id="7500851014030446046">Λήψη PDF σε εξέλιξη</translation>
 <translation id="7501135638693251872">Όλοι οι σελιδοδείκτες</translation>
 <translation id="7507207699631365376">Δείτε την <ph name="BEGIN_LINK" />πολιτική απορρήτου<ph name="END_LINK" /> του παρόχου</translation>
 <translation id="750886945254958667">Διατηρήστε αυτή την ομάδα, για να προσθέσετε καρτέλες αργότερα, ή αποχωρήστε, αν δεν θέλετε πλέον να έχετε πρόσβαση σε αυτή</translation>
@@ -1874,6 +1878,7 @@
 <translation id="8313599942510782709">Η εργασία σας βρίσκεται ακόμη σε εξέλιξη</translation>
 <translation id="8317318757008452355">Άνοιγμα επιλογών για εκτύπωση</translation>
 <translation id="8320212361750431956">Πρόσφατη δραστηριότητα</translation>
+<translation id="8322452989119079156">Άνοιγμα στην εφαρμογή <ph name="NATIVE_APP_NAME" /> - Στάλθηκε από <ph name="DEVICE_NAME" /></translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Νέο<ph name="END_NEW" /></translation>
 <translation id="8333026248928723981">Σελιδοδείκτες και λίστες</translation>
 <translation id="8342727528718219152">Το Chrome θα σας ενημερώνει σχετικά με τους ιστοτόπους που μπορεί να στέλνουν πάρα πολλές ειδοποιήσεις</translation>

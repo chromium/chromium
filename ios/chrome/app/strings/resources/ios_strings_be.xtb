@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">Інкогніта</translation>
 <translation id="1053651653201045802">Выкананы выхад. Каб атрымаць доступ да закладак, пароляў і іншых даных, увайдзіце ва ўліковы запіс зноў.</translation>
 <translation id="1054745118061919935">Працягваючы, вы прымаеце <ph name="BEGIN_LINK" />Умовы выкарыстання<ph name="END_LINK" />.</translation>
+<translation id="1056818261333183659">Што мне купіць?</translation>
 <translation id="10614374240317010">Ніколі не захоўваліся</translation>
 <translation id="1062138828266376352">PIN-код не зменены. Праверце падключэнне да інтэрнэту і паўтарыце спробу.</translation>
 <translation id="1063070031224282617">Выберыце, куды захаваць файл <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /> (<ph name="FILE_SIZE" />)</translation>
@@ -28,6 +29,7 @@
 <translation id="1074827084851510304">Вы збіраецеся выдаліць некаторыя паролі ({password_count}), а таксама спіс сайтаў і праграм, для якіх, згодна з наладамі, не захоўваюцца даныя для ўваходу. Уліковыя запісы, якія вы стварылі для сайтаў ці праграм, не будуць выдалены.</translation>
 <translation id="1076421457278169141">Код сканіраваны</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} укладка}one{{count} укладка}few{{count} укладкі}many{{count} укладак}other{{count} укладкі}}</translation>
+<translation id="1081948304372277788">Выключыць функцыю "Новы ўзровень"</translation>
 <translation id="1082554859195167538">Водгукі пра тавар для вас</translation>
 <translation id="1084365883616172403">Публікацыя ў Facebook выканана.</translation>
 <translation id="108485301461714610">Рэжым AI ў Google Пошуку і падключаныя праграмы</translation>
@@ -214,6 +216,7 @@
 <translation id="1641113438599504367">Бяспечны прагляд</translation>
 <translation id="1644574205037202324">Гісторыя</translation>
 <translation id="164673457281113247">{count,plural, =1{Закладка захавана}one{Закладкі захаваны}few{Закладкі захаваны}many{Закладкі захаваны}other{Закладкі захаваны}}</translation>
+<translation id="1650979352027263879">Налады афармлення выдалены</translation>
 <translation id="1651260071709244114">Праграмы</translation>
 <translation id="1652051421944182562">Уключыць апавяшчэнні праверкі бяспекі…</translation>
 <translation id="1652333207707886577">Наладзьце меню</translation>
@@ -276,7 +279,6 @@
 <translation id="1836891464494477513">{count,plural, =1{Закладка захавана ў вашым Уліковым запісе Google ({email})}one{Закладкі захаваны ў вашым Уліковым запісе Google ({email})}few{Закладкі захаваны ў вашым Уліковым запісе Google ({email})}many{Закладкі захаваны ў вашым Уліковым запісе Google ({email})}other{Закладкі захаваны ў вашым Уліковым запісе Google ({email})}}</translation>
 <translation id="1838089197478136166">Адкрыць у Кашальку?</translation>
 <translation id="183878838231635348">На гэтай картцы адлюстроўваюцца праблемы з прыватнасцю і бяспекай, выяўленыя падчас аўтаматычнай праверкі бяспекі.</translation>
-<translation id="1840320537320704887">Налады старонкі новай укладкі выдалены</translation>
 <translation id="1845230888742614096">Захаваць групу</translation>
 <translation id="1853558655412913122">Цяпер змяніць пазіцыю адраснага радка можна ў меню "Налады" ў раздзеле "Адрасны радок"</translation>
 <translation id="1853692000353488670">Новая ўкладка інкогніта</translation>
@@ -590,6 +592,7 @@
 <translation id="2858204748079866344">У мэтах аховы вашай прыватнасці Chrome не будзе выкарыстоўваць аўтазапаўненне ў полі пароля.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 сайт (больш на сінхранізаваных прыладах)}one{# сайт (больш на сінхранізаваных прыладах)}few{# сайты (больш на сінхранізаваных прыладах)}many{# сайтаў (больш на сінхранізаваных прыладах)}other{# сайта (больш на сінхранізаваных прыладах)}}</translation>
+<translation id="286473047976978798">Прымяніць налады афармлення?</translation>
 <translation id="2865392654629180917">Задавайце пытанні і атрымлівайце адказы на аснове AI</translation>
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2876369937070532032">Адпраўляе URL-адрасы некаторых наведаных вамі старонак у Google, калі ваша бяспека пад пагрозай</translation>
@@ -1119,7 +1122,6 @@
 
        Выберыце, што зрабіць з захаванымі на гэтай прыладзе данымі пра работу ў браўзеры.</translation>
 <translation id="4675298276894277358">Мы больш не будзем паказваць гэты сайт</translation>
-<translation id="4676647168422678078">Прымяніць налады старонкі новай укладкі?</translation>
 <translation id="4682496302933121474">Перакласці старонку?</translation>
 <translation id="4682686630151240767">1. Адкрыйце налады iPhone.</translation>
 <translation id="4697240968720007067">Спампуйце найлепшыя праграмы Google адным дотыкам</translation>
@@ -1504,6 +1506,7 @@
 <translation id="5898848375214731122">Маса</translation>
 <translation id="5899314093904173337">Каб абагуліць гэта змесціва з карыстальнікамі паблізу, дайце ім адсканіраваць гэты QR-код камерай або з дапамогай праграмы сканіравання QR-кодаў.</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} новая ўкладка}one{{count} новая ўкладка}few{{count} новыя ўкладкі}many{{count} новых укладак}other{{count} новай укладкі}}</translation>
+<translation id="5906163261248594192">Дзень нараджэння Дэна</translation>
 <translation id="5911030830365207728">Перакладчык Google</translation>
 <translation id="5912796581727968237">Адкрыць Google Кашалёк</translation>
 <translation id="5922999516621365983">Каб замацаваць укладку, перацягніце яе сюды.</translation>
@@ -1806,6 +1809,7 @@
 <translation id="6806550742467879742">Інструменты кіравання старонкай</translation>
 <translation id="6807287147325542056">Паролі ў іншых праграмах</translation>
 <translation id="681368974849482173">Элемент створаны</translation>
+<translation id="6815692190508268848">Налады афармлення прыменены</translation>
 <translation id="681631578600400068">Захавайце вадзіцельскае пасведчанне</translation>
 <translation id="6825078212112407882">{count,plural, =1{Закладка захавана ў вашым Уліковым запісе Google ({email})}one{{count} закладка захавана ў вашым Уліковым запісе Google ({email})}few{{count} закладкі захаваны ў вашым Уліковым запісе Google ({email})}many{{count} закладак захавана ў вашым Уліковым запісе Google ({email})}other{{count} закладкі захаваны ў вашым Уліковым запісе Google ({email})}}</translation>
 <translation id="6826004672264649705">Вы адсочваеце гэты прадукт. Адкрыйце, каб паглядзець гісторыю цэн.</translation>
@@ -1922,6 +1926,7 @@
 <translation id="720399613139435155">Збой перакладу</translation>
 <translation id="7204922488054642675">Персаналізаваныя навіны</translation>
 <translation id="7206979415662233817">Умовы выкарыстання</translation>
+<translation id="721218676460477064">Падсумаваць змесціва гэтага артыкула</translation>
 <translation id="7215621211572884440">Усплывальныя вокны дазволены</translation>
 <translation id="7218491361283758048">Паштовы індэкс</translation>
 <translation id="7221173315674413369">Знаёмцеся з новымі функцыямі і атрымлівайце парады ў раздзеле "Што новага"</translation>
@@ -2183,13 +2188,13 @@
 <translation id="8035133914807600019">Новая папка…</translation>
 <translation id="8035412398498507358">Фота</translation>
 <translation id="8037713009824540257">Дадаць сайт</translation>
+<translation id="8038078082340255234">Справаздача пра рынак</translation>
 <translation id="8040407350301524547">Каб паглядзець варыянты маршруту, націсніце "Пракласці маршрут".</translation>
 <translation id="804427445359061970">Вашы ўкладкі з іншых прылад знаходзяцца тут</translation>
 <translation id="8058655154417507695">Год заканчэння тэрміну дзеяння</translation>
 <translation id="8059312861912872211">{count,plural, =1{{count} закладка}one{{count} закладка}few{{count} закладкі}many{{count} закладак}other{{count} закладкі}}</translation>
 <translation id="8059533439631660104">Згортвае раздзел.</translation>
 <translation id="8061584726507121204">Гісторыя</translation>
-<translation id="8064946459644399612">Налады старонкі новай укладкі прыменены</translation>
 <translation id="8065136076319366194">Захоўваць не рэкамендуецца</translation>
 <translation id="8065556469005366939">Абагульвайце ўкладкі, каб атрымліваць больш рэлевантныя адказы</translation>
 <translation id="8069394452933076548">Выберыце, калі ўкладкі, якія даўно не выкарыстоўваліся, павінны перамяшчацца ў раздзел неактыўных укладак.</translation>
@@ -2241,6 +2246,7 @@
 <translation id="8232956427053453090">Захаваць даныя</translation>
 <translation id="8233237502828137700">Закрыць рэкламны банер</translation>
 <translation id="823339794112333264">Уключыць мікрафон</translation>
+<translation id="8240217649914883113">Дадаць у мой каляндар</translation>
 <translation id="8250920743982581267">Дакументы</translation>
 <translation id="8252980988000695656">Пошук праз Google Аб’ектыў: завершана</translation>
 <translation id="8258734532103758067">Даныя экспартаваны</translation>
@@ -2285,6 +2291,7 @@
 <translation id="8368198938968349418">Уключыць аўтазапаўненне…</translation>
 <translation id="8370406443343902172">Перайсці ў налады...</translation>
 <translation id="8370929854657845191">Разгарнуць да сярэдняга памеру</translation>
+<translation id="8371494817541821097">Ключ доступу створаны <ph name="DATE" /></translation>
 <translation id="8372471489238799313">{count,plural, =1{Выдаліць адрас}one{Выдаліць адрасы}few{Выдаліць адрасы}many{Выдаліць адрасы}other{Выдаліць адрасы}}</translation>
 <translation id="8378714024927312812">Пад кіраваннем вашай арганізацыі</translation>
 <translation id="8385363453480067273">Даследуйце тое, што бачыце, з дапамогай Google Аб’ектыва</translation>

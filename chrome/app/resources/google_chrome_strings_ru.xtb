@@ -8,6 +8,7 @@
 <translation id="102763973188675173">Новая версия Google Chrome уже вышла!</translation>
 <translation id="1028061813283459617">Чтобы удалить данные о работе в браузере с этого устройства, но оставить их в аккаунте Google, <ph name="BEGIN_LINK" />выйдите из Chrome<ph name="END_LINK" />.</translation>
 <translation id="1028770388543831319">Лучшие функции безопасности Google всегда под рукой в приложении Chrome на телефоне</translation>
+<translation id="1036348656032585052">Отключить</translation>
 <translation id="1042270987544905725">Нажмите, чтобы закрыть диалоговое окно входа в Chrome</translation>
 <translation id="1051793555070215510">Помогите улучшить режим инкогнито, приняв участие в опросе. Это займет всего минуту.</translation>
 <translation id="1055295352198814912">Добавить Gemini в Chrome в строку меню macOS и включить быстрые клавиши</translation>
@@ -242,6 +243,7 @@
 <translation id="3282568296779691940">Войдите в Chrome</translation>
 <translation id="3286538390144397061">Перезапустить сейчас</translation>
 <translation id="3292333338048274092">Затем вам будет нужно перезапустить Chrome.</translation>
+<translation id="3294686910656423119">Статистика использования и отчеты о сбоях</translation>
 <translation id="3327226547491422998">Затем Chrome спросит, хотите ли вы использовать сохраненные данные для автозаполнения форм в дальнейшем.</translation>
 <translation id="3352986031709923790">правый верхний угол области поиска: <ph name="RIGHT" /> % справа, <ph name="TOP" /> % сверху</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
@@ -470,6 +472,7 @@
 <translation id="5824893331272123205">Не удалось загрузить панель. Повторите попытку.</translation>
 <translation id="5825922397106002626">Удалить расширение "<ph name="EXTENSION_NAME" />" из Chrome</translation>
 <translation id="5858486459377137936">Если вы закроете все окна Chrome, то выйдете из системы на большинстве сайтов. Вы останетесь в аккаунте Google, если ранее вошли в Chrome. Разрешить сайтам сохранять ваши данные можно <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5860491529813859533">Включить</translation>
 <translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome предупреждает<ph name="END_LINK" /> о небезопасных сайтах и файлах в интернете</translation>
 <translation id="5894164573378901688">Чтобы использовать Gemini в Chrome, войдите с другим аккаунтом Google.</translation>
 <translation id="5895138241574237353">Перезапустить</translation>
@@ -510,6 +513,7 @@
 <translation id="6166185671393271715">Импорт паролей в Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome (бета-версия)</translation>
+<translation id="6177442314419606057">Поиск в Chrome</translation>
 <translation id="6180522807229584611">Для работы этой вкладки используются дополнительные ресурсы. Разрешите Chrome сделать ее неактивной, и производительность повысится.</translation>
 <translation id="6182736845697986886">Выполнить установку не удалось из-за внутренней ошибки сервера.</translation>
 <translation id="6192058120268468905">Ваш аккаунт в Chrome</translation>

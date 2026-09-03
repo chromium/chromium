@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Dibuat <ph name="NUM_WEEKS_ONE" /> minggu yang lalu}other{Dibuat <ph name="NUM_WEEKS_MANY" /> minggu yang lalu}}</translation>
 <translation id="1063300264396686489">Buka kumpulan tab daripada peranti lain secara automatik</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> daripada tab anda sudah lama tidak digunakan. Tutup tab?</translation>
+<translation id="1089791933924803646">Dapatkan cadangan Chrome pada apl lain</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Dibuat <ph name="NUM_YEARS_ONE" /> tahun yang lalu}other{Dibuat <ph name="NUM_YEARS_MANY" /> tahun yang lalu}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Tab dan kumpulan yang tidak aktif akan ditutup selepas 1 bulan}other{Tab dan kumpulan yang tidak aktif akan ditutup selepas <ph name="MONTH_COUNT_MANY" /> bulan}}</translation>
 <translation id="1173894706177603556">Namakan semula</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Tambahkan tab pada kumpulan}other{Tambahkan tab pada kumpulan}}</translation>
 <translation id="8138067144082174140">Selepas tidak aktif selama 14 hari</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Kembangkan kumpulan tab <ph name="TITLE_OF_GROUP" /> dengan <ph name="TABS_COUNT_ONE" /> tab, warna <ph name="COLOR_NAME" />.}other{Kembangkan kumpulan tab <ph name="TITLE_OF_GROUP" /> dengan <ph name="TABS_COUNT_MANY" /> tab, warna <ph name="COLOR_NAME" />.}}</translation>
+<translation id="8172214054247281626">Kongsi data semakan imbas, seperti sejarah penyemakan imbas terbaharu anda, untuk mendapatkan cadangan pada apl yang dipilih. Data ini diproses dengan selamat pada peranti anda.</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{Nyahsematkan tab}other{Nyahsematkan tab}}</translation>
 <translation id="8205266828577616993">Alihkan tab ke atas</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Dikemaskinikan <ph name="NUM_MINS_ONE" /> minit yang lalu}other{Dikemaskinikan <ph name="NUM_MINS_MANY" /> minit yang lalu}}</translation>

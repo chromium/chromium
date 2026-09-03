@@ -8,6 +8,7 @@
 <translation id="102763973188675173">Anpassa och styr Google Chrome. En uppdatering är tillgänglig.</translation>
 <translation id="1028061813283459617"><ph name="BEGIN_LINK" />Logga ut från Chrome<ph name="END_LINK" /> om du vill radera webbinformation från enheten utan att ta bort den från Google-kontot.</translation>
 <translation id="1028770388543831319">Få Googles bästa säkerhetsfunktioner var du än är med Chrome-appen på telefonen</translation>
+<translation id="1036348656032585052">Inaktivera</translation>
 <translation id="1042270987544905725">Klicka för att stänga inloggningsdialogrutan för Chrome</translation>
 <translation id="1051793555070215510">Hjälp oss att förbättra inkognitoläget genom att svara på den här enkäten på en minut.</translation>
 <translation id="1055295352198814912">Visa Gemini i Chrome i menyraden på Mac och aktivera kortkommandot</translation>
@@ -246,6 +247,7 @@ Om sidan inte fungerar som förväntat kan du testa att tillåta optimering.</tr
 <translation id="3282568296779691940">Logga in i Chrome</translation>
 <translation id="3286538390144397061">Starta om nu</translation>
 <translation id="3292333338048274092">Du måste sedan starta om Chrome.</translation>
+<translation id="3294686910656423119">Användningsstatistik och kraschrapporter</translation>
 <translation id="3327226547491422998">Senare kan Chrome fråga om du vill använda sparade uppgifter för att fylla i formulär automatiskt åt dig</translation>
 <translation id="3352986031709923790">övre högra hörnet av sökområdet: <ph name="RIGHT" /> % åt höger, <ph name="TOP" /> % uppåt</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
@@ -479,6 +481,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="5824893331272123205">Det gick inte att läsa in panelen. Försök igen</translation>
 <translation id="5825922397106002626">Ta bort <ph name="EXTENSION_NAME" /> från Chrome</translation>
 <translation id="5858486459377137936">Du loggas ut från de flesta webbplatser när du stänger alla fönster i Chrome, med undantag för Google-kontot om du är inloggad i Chrome. <ph name="SETTINGS_LINK" /> och gör så att webbplatser kommer ihåg dig.</translation>
+<translation id="5860491529813859533">Aktivera</translation>
 <translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome visar en varning<ph name="END_LINK" /> om osäkra webbplatser och nedladdningar</translation>
 <translation id="5894164573378901688">Logga in med ett annat Google-konto om du vill använda Gemini i Chrome</translation>
 <translation id="5895138241574237353">Starta om</translation>
@@ -519,6 +522,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6166185671393271715">Importera lösenord till Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
+<translation id="6177442314419606057">Sök i Chrome</translation>
 <translation id="6180522807229584611">Den här fliken använder extra resurser. Du kan förbättra prestandan genom att låta Chrome inaktivera den.</translation>
 <translation id="6182736845697986886">Installationen misslyckades på grund av ett internt fel på uppdateringsservern.</translation>
 <translation id="6192058120268468905">Ditt konto i Chrome</translation>

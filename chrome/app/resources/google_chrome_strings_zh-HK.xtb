@@ -8,6 +8,7 @@
 <translation id="102763973188675173">自訂和管理 Google Chrome。有可用的更新。</translation>
 <translation id="1028061813283459617">如果只刪除此裝置上的瀏覽資料，但保留 Google 帳戶中的資料，請<ph name="BEGIN_LINK" />登出 Chrome<ph name="END_LINK" />。</translation>
 <translation id="1028770388543831319">透過手機的 Chrome 應用程式，隨時隨地享用 Google 最強大的安全功能</translation>
+<translation id="1036348656032585052">停用</translation>
 <translation id="1042270987544905725">點擊即可關閉 Chrome 登入對話框</translation>
 <translation id="1051793555070215510">請花 1 分鐘填寫問卷，協助我們改善無痕模式。</translation>
 <translation id="1055295352198814912">在 Mac 選單列顯示 Chrome 版 Gemini，並啟用鍵盤快速鍵</translation>
@@ -246,6 +247,7 @@
 <translation id="3282568296779691940">登入 Chrome</translation>
 <translation id="3286538390144397061">立即重新啟動</translation>
 <translation id="3292333338048274092">你將需要重新啟動 Chrome。</translation>
+<translation id="3294686910656423119">使用情況統計和當機報告</translation>
 <translation id="3327226547491422998">日後 Chrome 可詢問你是否要使用已儲存的資料自動填入表格</translation>
 <translation id="3352986031709923790">搜尋區域嘅右上角：距右側 <ph name="RIGHT" />%，距頂部 <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome 輔助工具</translation>
@@ -478,6 +480,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="5824893331272123205">無法載入此面板，請再試一次</translation>
 <translation id="5825922397106002626">從 Chrome 移除「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="5858486459377137936">關閉所有 Chrome 視窗後，系統會將你登出所有網站，但如果你已登入 Chrome，Google 帳戶就會維持登入狀態。如要允許網站記住你的資料，請<ph name="SETTINGS_LINK" />。</translation>
+<translation id="5860491529813859533">開啟</translation>
 <translation id="586971344380992563">偵測到不安全的網站和下載內容時，<ph name="BEGIN_LINK" />Chrome 會顯示警告<ph name="END_LINK" /></translation>
 <translation id="5894164573378901688">如要使用 Chrome 版 Gemini，請改用其他 Google 帳戶登入</translation>
 <translation id="5895138241574237353">重新啟動</translation>
@@ -518,6 +521,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6166185671393271715">將密碼匯入至 Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta 版</translation>
+<translation id="6177442314419606057">在 Chrome 中搜尋</translation>
 <translation id="6180522807229584611">此分頁正在使用額外的資源。為提升效能，請讓 Chrome 將其設定為閒置分頁。</translation>
 <translation id="6182736845697986886">由於更新伺服器發生內部錯誤，因此無法安裝。</translation>
 <translation id="6192058120268468905">你在 Chrome 的帳戶</translation>

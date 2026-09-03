@@ -105,6 +105,7 @@
 <translation id="138181280295369883">अपने सभी डिवाइसों पर सेव की गई जानकारी वगैरह ऐक्सेस करने के लिए साइन इन करें</translation>
 <translation id="1381838868249179644">आपकी सुरक्षा के लिए, कुछ साइटों को दी गई अनुमतियां हटा दी गई हैं</translation>
 <translation id="1383876407941801731">खोजें</translation>
+<translation id="1384568202352682721">इस रूप में सेव करें…</translation>
 <translation id="1384704387250346179"><ph name="BEGIN_NEW" />नए<ph name="END_NEW" /> Google Lens से इमेज का अनुवाद करें</translation>
 <translation id="1390418506739274310">उन अन्य ऐप्लिकेशन का इतिहास देखा जा सकता है जो अपने लिंक Chrome में खोलते हैं. आपके Google खाते में <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> पर अलग तरह का ब्राउज़िंग इतिहास हो सकता है.</translation>
 <translation id="139752016751285248">कीमत की अहम जानकारी वाली बॉटम शीट पूरी स्क्रीन पर खोल दी गई है</translation>
@@ -133,6 +134,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="147982357559798527">बदला गया</translation>
 <translation id="1480287803138246127">ऐसा हो सकता है कि आपको Chrome पर ब्राउज़िंग के इतिहास का कुछ डेटा न दिखे. पूरा इतिहास देखने के लिए, Chrome का पूरा इतिहास खोलें.</translation>
 <translation id="1483493594462132177">भेजें</translation>
+<translation id="1485343711570311792"><ph name="NATIVE_APP_NAME" /> में खोलें • <ph name="DEVICE_NAME" /> से</translation>
 <translation id="1495677929897281669">टैब पर वापस जाएं</translation>
 <translation id="1496514951988037011">उपयोगकर्ता नाम</translation>
 <translation id="1501480321619201731">ग्रुप मिटाएं</translation>
@@ -327,6 +329,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="232137538351753795">वापस जाने के लिए, स्क्रीन के बाएं किनारे से स्वाइप करें</translation>
 <translation id="2323763861024343754">साइट मेमोरी</translation>
 <translation id="2327445548174191329"><ph name="DEVICE_NAME" /> से मिला</translation>
+<translation id="232757965409810352">पेज को इस रूप में सेव करें…</translation>
 <translation id="2328474416100889417">सभी लोगों के लिए “<ph name="GROUP_NAME" />” टैब ग्रुप का ऐक्सेस तुरंत हटा दिया जाएगा. साथ ही, न्योते के सभी लिंक काम करना बंद कर देंगे</translation>
 <translation id="2329500425421091035">पेश है Chrome में एआई मोड</translation>
 <translation id="2330186936255788117">ज़्यादा बुकमार्क</translation>
@@ -561,6 +564,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="3232754137068452469">वेब ऐप्लिकेशन</translation>
 <translation id="3236059992281584593">1 मिनट शेष</translation>
 <translation id="3237087289225714896">पहले से लोड करने की स्टैंडर्ड सुविधा:</translation>
+<translation id="3243650379537999343">ड्रॉ</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">अगर Chrome के इस्तेमाल से जुड़ी जानकारी देने वाली रिपोर्ट भी शेयर की जाती हैं, तो याद रखें कि आपके देखे गए पेजों के यूआरएल उनमें शामिल होते हैं</translation>
 <translation id="3250563604907490871">वाई-फ़ाई से कनेक्ट करने पर, इमेज की जानकारी जोड़ने की सुविधा फिर से शुरू हो जाएगी</translation>
@@ -963,7 +967,6 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="480990236307250886">होम पेज खोलें</translation>
 <translation id="4816492930507672669">पेज में फ़िट करें</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> टैब ग्रुप बंद और सेव किया गया</translation>
-<translation id="4834250788637067901">Google Pay के ऑफ़र, इस पर सेव पेमेंट के तरीके और पते</translation>
 <translation id="4835385943915508971">Chrome के पास अनुरोध किए गए संसाधन का एक्सेस नहीं है.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{<ph name="COLOR_NAME" /> रंग वाले <ph name="TAB_COUNT_ONE" /> टैब के ग्रुप को, एक नए बैकग्राउंड वाले टैब ग्रुप के तौर पर वापस लाएं.}one{<ph name="COLOR_NAME" /> रंग वाले <ph name="TAB_COUNT_MANY" /> टैब के ग्रुप को, एक नए बैकग्राउंड वाले टैब ग्रुप के तौर पर वापस लाएं.}other{<ph name="COLOR_NAME" /> रंग वाले <ph name="TAB_COUNT_MANY" /> टैब के ग्रुप को, एक नए बैकग्राउंड वाले टैब ग्रुप के तौर पर वापस लाएं.}}</translation>
 <translation id="4849731766219625109">अपने <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> खाते का इस्तेमाल करें</translation>
@@ -1874,6 +1877,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="8313599942510782709">आपका टास्क अब भी जारी है</translation>
 <translation id="8317318757008452355">प्रिंट करने के विकल्प देखें</translation>
 <translation id="8320212361750431956">हाल की गतिविधि</translation>
+<translation id="8322452989119079156"><ph name="NATIVE_APP_NAME" /> में खोलें - <ph name="DEVICE_NAME" /> से भेजा गया</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />नया<ph name="END_NEW" /></translation>
 <translation id="8333026248928723981">बुकमार्क और सूचियां</translation>
 <translation id="8342727528718219152">Chrome आपको उन साइटों के बारे में सूचना देगा जो बहुत ज़्यादा सूचनाएं भेज रही होंगी</translation>

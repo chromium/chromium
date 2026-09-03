@@ -1457,6 +1457,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="3495081129428749620">Lehelt otsimine
     <ph name="PAGE_TITLE" /></translation>
 <translation id="3495818359064790343">Palk</translation>
+<translation id="3496531230994554300">Rahakoti teatis on avatud täiskõrgusel.</translation>
 <translation id="3497627066518778351">Seadmes olevate saidi andmete loendi ülevaatamine uues aknas</translation>
 <translation id="3498215018399854026">Teie vanemaga ei õnnestunud praegu ühendust võtta. Proovige hiljem uuesti.</translation>
 <translation id="350069200438440499">Faili nimi:</translation>
@@ -2669,6 +2670,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="5499229993630251170">Kas jätkata selle lõimega?</translation>
 <translation id="5506286895894263601">Loendis pole sobilikke otseteid.</translation>
 <translation id="5507756662695126555">Tagasivõetamatus</translation>
+<translation id="5508515366054931524">E-posti aadressi kinnitamise viip on avatud täiskõrgusel</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Hallatud järjehoidjad</translation>
 <translation id="5510766032865166053">See võidi teisaldada või kustutada.</translation>
@@ -3451,6 +3453,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="6860888819347870819">Saab paluda pilt pildis režiimi sisenemist</translation>
 <translation id="6864189428899665393">267 x 389 mm</translation>
 <translation id="6865412394715372076">Seda kaarti ei saa praegu kinnitada</translation>
+<translation id="6871073333584947219">Rahakoti teatis on suletud.</translation>
 <translation id="6871813064737840684">Selle valiku hinnaajalugu kogu veebis</translation>
 <translation id="6873456682041376666">Ülemine salv</translation>
 <translation id="6874604403660855544">&amp;Lisa uuesti</translation>
@@ -3971,6 +3974,7 @@ Lisateave:
 <translation id="7705085181312584869">Aita mul kirjutada</translation>
 <translation id="7705992072972338699">Optiline andmekandja (kõrgläikega)</translation>
 <translation id="7706689436519265630">Failid, mida kopeerite või teisaldate, saadetakse analüüsimiseks Google Cloudi või kolmandatele osapooltele. Näiteks võidakse neid skannida tundlike andmete või pahavara tuvastamiseks ja talletada teie ettevõtte eeskirjade alusel.</translation>
+<translation id="7709934467582922028">E-posti aadressi kinnitamise viip on suletud.</translation>
 <translation id="7714351089363296478">Äsja külastatud</translation>
 <translation id="7714404809393719981">Foto (poolmatt)</translation>
 <translation id="7714464543167945231">Sertifikaat</translation>
@@ -4868,6 +4872,7 @@ Lisateave:
 <translation id="988159990683914416">Arendaja järk</translation>
 <translation id="989988560359834682">Aadressi muutmine</translation>
 <translation id="990164307229195234"><ph name="DEVICE_NAME" /> (<ph name="DISAMBIGUATION_LABEL" />)</translation>
+<translation id="990812705189376036">Merkle Tree tõend</translation>
 <translation id="992110854164447044">Virtuaalkaart peidab teie päriskaardi, et teid võimalike pettuste eest kaitsta. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>
 <translation id="992256792861109788">Roosa</translation>

@@ -41,6 +41,7 @@ Notas importantes:
 <translation id="1580570086594302477">Abre una nueva pestaña de Incógnito de Chrome.</translation>
 <translation id="1605168141396675642">Evita la molestia de copiar. Abre enlaces directamente en Chrome.</translation>
 <translation id="1646463005043273333">Abre el ajuste de Chrome para establecer Chrome como navegador predeterminado.</translation>
+<translation id="1668930590094369898">Usar Chrome como predeterminado</translation>
 <translation id="1670609221633730681">Consejo de Chrome: elige la posición de la barra de direcciones</translation>
 <translation id="1683863426423719967">Para recibir recordatorios de pestañas de Chrome, activa las notificaciones en los ajustes de iOS.</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -57,6 +58,7 @@ Notas importantes:
 <translation id="1973910962341002002">En la configuración de <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />, activa Chrome</translation>
 <translation id="1984705450038014246">Sincronizar tus datos de Chrome</translation>
 <translation id="1987779152850321833">Completa las siguientes acciones sugeridas para sacar el máximo partido a Chrome.</translation>
+<translation id="2049569996960148258">Ocultar Usar Chrome como predeterminado</translation>
 <translation id="2055826352861631739">Usa Chrome para iPad de forma predeterminada</translation>
 <translation id="2056123005618757196">Haz más cosas con Google Chrome: funciona más rápido que nunca y es sencillo y seguro.</translation>
 <translation id="2120238739383482109">Abre los marcadores de Chrome.</translation>
@@ -262,6 +264,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chrome, ve a los <ph name="BEGIN_LINK" />servicios de Google<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Elimina los datos de navegación en Chrome.</translation>
 <translation id="6924922227983877439">Abrir enlaces en Chrome por defecto</translation>
+<translation id="6926395711547387358">Establecer Chrome como predeterminado</translation>
 <translation id="6975725306479268850">Elige Chrome para la función Autocompletar</translation>
 <translation id="7001031184470316752">Mueve Chrome al Dock</translation>
 <translation id="7038674195294813388">En iOS, ve a Ajustes, selecciona apps predeterminadas, toca app de navegador y elige Chrome.</translation>

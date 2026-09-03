@@ -110,6 +110,7 @@ Chromium を使いやすくするためにデータを使用するその他の�
 <translation id="3180939591219927904">[Chromium を終了するときにシークレット タブをロックする] をオンにします</translation>
 <translation id="327628223428512207">このパスワードを保存し、すべてのデバイスで Chromium データを使用するには、パスフレーズを入力してください</translation>
 <translation id="328933489847748230">{count,plural, =1{現在 1 個の Chromium ウィンドウを表示しています}other{現在 {count} 個の Chromium ウィンドウを表示しています}}</translation>
+<translation id="3344204225393848305">Chromium を既定に設定する</translation>
 <translation id="3344973607274501920">Chromium でパスワードを確認できませんでした。インターネット接続を確認してみてください。</translation>
 <translation id="3366305173356742781">アカウントの Chromium データ</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Chromium を {THRESHOLD} 分間使用しなかった場合に行われます。履歴や自動入力も対象となります。}other{Chromium を {THRESHOLD} 分間使用しなかった場合に行われます。履歴や自動入力も対象となります。}}</translation>
@@ -284,6 +285,7 @@ Chromium を使いやすくするためにデータを使用するその他の�
 <translation id="6852799557929001644">このデバイスの他のアプリから、Chromium のパスワードなどにアクセスできます。</translation>
 <translation id="6887138405044152640">このタブを別のデバイスに送信するには、送信先のデバイスで Chromium にログインしてください。</translation>
 <translation id="6911341667534646387">Google アカウントの Chromium データを引き続き使用してください</translation>
+<translation id="6992760259282302305">Chromium を既定に設定する</translation>
 <translation id="7018284295775193585">Chromium を更新できません</translation>
 <translation id="7055269218854630176">ログインしようとしているアカウントおよび Chromium の使用方法は、組織（<ph name="DOMAIN" />）によって管理されています。管理者は特定の機能を設定または制限できます。</translation>
 <translation id="7099326575020694068">Chromium では、分割表示モードでカメラを使用することはできません</translation>
@@ -344,6 +346,7 @@ Chromium を使いやすくするためにデータを使用するその他の�
 <translation id="8385503371191508165">パスワード マネージャーでパスキーを保存</translation>
 <translation id="8390323835464055390">Chromium の自動入力を使用して、保存したパスワードとパスキーですべてのアプリからログイン</translation>
 <translation id="8409374867500149834">Chromium の最高強度のセキュリティで有害なウェブサイトから保護します</translation>
+<translation id="8428449554948979733">[Chromium を既定に設定する] を非表示</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Chromium を {THRESHOLD} 分間使用しなかった場合に行われます。ログイン中にこのデバイスにのみ保存されたデータは削除されます。これには履歴やパスワードが含まれる場合があります。}other{Chromium を {THRESHOLD} 分間使用しなかった場合に行われます。ログイン中にこのデバイスにのみ保存されたデータは削除されます。これには履歴やパスワードが含まれる場合があります。}}</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>
 <translation id="8602103377623855616">Chromium ページ</translation>

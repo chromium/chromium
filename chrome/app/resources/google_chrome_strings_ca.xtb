@@ -8,6 +8,7 @@
 <translation id="102763973188675173">Personalitza i controla Google Chrome. Hi ha una actualització disponible.</translation>
 <translation id="1028061813283459617">Per suprimir les dades de navegació només d'aquest dispositiu i conservar-les al teu Compte de Google, <ph name="BEGIN_LINK" />tanca la sessió de Chrome<ph name="END_LINK" />.</translation>
 <translation id="1028770388543831319">Obtén les millors funcions de seguretat de Google siguis on siguis amb l'aplicació Chrome al telèfon</translation>
+<translation id="1036348656032585052">Desactiva</translation>
 <translation id="1042270987544905725">Fes clic per tancar el quadre de diàleg d'inici de sessió de Chrome</translation>
 <translation id="1051793555070215510">Ajuda'ns a millorar la navegació d'incògnit completant aquesta enquesta d'un minut.</translation>
 <translation id="1055295352198814912">Mostra Gemini a Chrome a la barra de menú de Mac i activa les tecles de drecera</translation>
@@ -242,6 +243,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="3282568296779691940">Inicia la sessió a Chrome</translation>
 <translation id="3286538390144397061">Reinicia ara</translation>
 <translation id="3292333338048274092">Després hauràs de reiniciar Chrome.</translation>
+<translation id="3294686910656423119">Estadístiques d'ús i informes d'error</translation>
 <translation id="3327226547491422998">Més tard, Chrome et pot preguntar si vols utilitzar la informació desada per emplenar automàticament formularis per tu</translation>
 <translation id="3352986031709923790">extrem superior dret de l'àrea de cerca: <ph name="RIGHT" /> % per la dreta i <ph name="TOP" /> % per dalt</translation>
 <translation id="3360895254066713204">Aplicació d'ajuda de Chrome</translation>
@@ -471,6 +473,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="5824893331272123205">Aquest tauler no s'ha pogut carregar. Torna-ho a provar.</translation>
 <translation id="5825922397106002626">Suprimeix <ph name="EXTENSION_NAME" /> de Chrome</translation>
 <translation id="5858486459377137936">Quan tanquis totes les finestres de Chrome, se't tancarà la sessió de la majoria de llocs web, tret del teu Compte de Google si tens la sessió iniciada a Chrome. Perquè els llocs web et recordin, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5860491529813859533">Activa</translation>
 <translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome t'avisa<ph name="END_LINK" /> sobre baixades i llocs web que no són segurs</translation>
 <translation id="5894164573378901688">Per utilitzar Gemini a Chrome, inicia la sessió amb un altre Compte de Google</translation>
 <translation id="5895138241574237353">Reinicia</translation>
@@ -511,6 +514,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="6166185671393271715">Importeu contrasenyes a Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
+<translation id="6177442314419606057">Fes cerques a Chrome</translation>
 <translation id="6180522807229584611">Aquesta pestanya utilitza recursos addicionals. Per millorar el rendiment, permet que Chrome la desactivi.</translation>
 <translation id="6182736845697986886">La instal·lació ha fallat a causa d'un error intern del servidor d'actualitzacions.</translation>
 <translation id="6192058120268468905">El teu compte a Chrome</translation>

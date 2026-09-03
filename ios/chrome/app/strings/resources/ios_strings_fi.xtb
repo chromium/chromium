@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1053651653201045802">Kirjautunut ulos. Kirjaudu takaisin, niin voit käyttää tilisi kirjanmerkkejä, salasanoja ja muita tietoja.</translation>
 <translation id="1054745118061919935">Jatkamalla hyväksyt <ph name="BEGIN_LINK" />käyttöehdot<ph name="END_LINK" />.</translation>
+<translation id="1056818261333183659">Mikä minun kannattaa ostaa?</translation>
 <translation id="10614374240317010">Ei tallenneta</translation>
 <translation id="1062138828266376352">PIN-koodia ei muutettu. Tarkista internetyhteytesi ja yritä uudelleen</translation>
 <translation id="1063070031224282617">Valitse, minne "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />) tallennetaan</translation>
@@ -28,6 +29,7 @@
 <translation id="1074827084851510304">Olet poistamassa {password_count} salasanaa ja listan sivustoista ja sovelluksista, joiden sisäänkirjautumistietoja et halua tallentaa. Sivustoille ja sovelluksille luomiasi tilejä ei poisteta.</translation>
 <translation id="1076421457278169141">Koodi skannattiin.</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} välilehti}other{{count} välilehteä}}</translation>
+<translation id="1081948304372277788">Laita Level Up pois päältä</translation>
 <translation id="1082554859195167538">Tuotearvostelut</translation>
 <translation id="1084365883616172403">Facebook-viesti julkaistu.</translation>
 <translation id="108485301461714610">Google Haun tekoälytila ja yhdistetyt sovellukset</translation>
@@ -214,6 +216,7 @@
 <translation id="1641113438599504367">Selaussuoja</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="164673457281113247">{count,plural, =1{Kirjanmerkki tallennettu}other{Kirjanmerkit tallennettu}}</translation>
+<translation id="1650979352027263879">Asetteluvalinnat poistettu</translation>
 <translation id="1651260071709244114">Sovellukset</translation>
 <translation id="1652051421944182562">Laita turvatarkistusilmoitukset päälle…</translation>
 <translation id="1652333207707886577">Muokkaa valikkoa</translation>
@@ -276,7 +279,6 @@
 <translation id="1836891464494477513">{count,plural, =1{Kirjanmerkki tallennettu Google-tilillesi ({email})}other{Kirjanmerkit tallennettu Google-tilillesi ({email})}}</translation>
 <translation id="1838089197478136166">Avataanko tiedosto Walletissa?</translation>
 <translation id="183878838231635348">Kortissa näkyvät yksityisyys- tai tietoturvaongelmat, jotka turvatarkistus havaitsee puolestasi automaattisesti.</translation>
-<translation id="1840320537320704887">Uusi välilehti ‐sivun asetukset poistettu</translation>
 <translation id="1845230888742614096">Säilytä ryhmä</translation>
 <translation id="1853558655412913122">Voit nyt muuttaa osoitepalkin sijaintia valitsemalla "Asetukset" ja sitten "Osoitepalkki"</translation>
 <translation id="1853692000353488670">Uusi incognito-välilehti</translation>
@@ -590,6 +592,7 @@
 <translation id="2858204748079866344">Tietojesi suojaamiseksi Chrome ei täytä salasanaasi automaattisesti tähän kenttään.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 sivusto (lisää synkronoiduilla laitteilla)}other{# sivustoa (lisää synkronoiduilla laitteilla)}}</translation>
+<translation id="286473047976978798">Otetaanko asetteluvalinnat käyttöön?</translation>
 <translation id="2865392654629180917">Kysy mitä tahansa, saat tekoälyä hyödyntäviä vastauksia</translation>
 <translation id="2870560284913253234">Sivusto</translation>
 <translation id="2876369937070532032">Lähettää joidenkin avattujen sivujen URL-osoitteet Googlelle, kun turvallisuutesi on vaarassa</translation>
@@ -1119,7 +1122,6 @@
 
        Valitse, mitä tällä laitteella olevalle selausdatalle tehdään.</translation>
 <translation id="4675298276894277358">Tätä sivustoa ei näytetä enää</translation>
-<translation id="4676647168422678078">Otetaanko Uusi välilehti ‑sivun asetukset käyttöön?</translation>
 <translation id="4682496302933121474">Käännetäänkö sivu?</translation>
 <translation id="4682686630151240767">1. Avaa iPhonen asetukset</translation>
 <translation id="4697240968720007067">Lataa Googlen parhaat sovellukset vaivatta</translation>
@@ -1504,6 +1506,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="5898848375214731122">Paino</translation>
 <translation id="5899314093904173337">Jaa lähellä oleville ihmisille antamalla tämä QR-koodi, jonka he voivat skannata kameralla tai QR-skannaussovelluksella</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} uusi välilehti}other{{count} uutta välilehteä}}</translation>
+<translation id="5906163261248594192">Danin syntymäpäivä</translation>
 <translation id="5911030830365207728">Google Kääntäjä</translation>
 <translation id="5912796581727968237">Avaa Google Wallet</translation>
 <translation id="5922999516621365983">Kiinnitä välilehti vetämällä se tähän.</translation>
@@ -1806,6 +1809,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6806550742467879742">Sivutyökalut</translation>
 <translation id="6807287147325542056">Salasanat muissa sovelluksissa</translation>
 <translation id="681368974849482173">Kohde luotiin</translation>
+<translation id="6815692190508268848">Asetteluvalinnat otettu käyttöön</translation>
 <translation id="681631578600400068">Tallenna ajokortti</translation>
 <translation id="6825078212112407882">{count,plural, =1{Kirjanmerkki tallennettu Google-tilillesi ({email})}other{{count} kirjanmerkkiä tallennettu Google-tilillesi ({email})}}</translation>
 <translation id="6826004672264649705">Tätä tuotetta seurataan tällä hetkellä. Avaa nähdäksesi hintahistorian</translation>
@@ -1922,6 +1926,7 @@ Jos haluat jatkaa tietokoneella, vaihda tiliksi <ph name="OTHER_EMAIL" />. Saat 
 <translation id="720399613139435155">Kääntäminen epäonnistui</translation>
 <translation id="7204922488054642675">Omat uutiset</translation>
 <translation id="7206979415662233817">Käyttöehdot</translation>
+<translation id="721218676460477064">Tee yhteenveto tästä artikkelista</translation>
 <translation id="7215621211572884440">Ponnahdusikkunat sallittu</translation>
 <translation id="7218491361283758048">Postinumero</translation>
 <translation id="7221173315674413369">Tutustu uusiin ominaisuuksiin ja vinkkeihin Uutta-ominaisuudessa</translation>
@@ -2183,13 +2188,13 @@ Jos haluat jatkaa tietokoneella, vaihda tiliksi <ph name="OTHER_EMAIL" />. Saat 
 <translation id="8035133914807600019">Uusi kansio…</translation>
 <translation id="8035412398498507358">Kuvat</translation>
 <translation id="8037713009824540257">Lisää sivusto</translation>
+<translation id="8038078082340255234">Markkinaraportti</translation>
 <translation id="8040407350301524547">Näet reittivaihtoehdot valitsemalla "Hae reittiohjeet".</translation>
 <translation id="804427445359061970">Näet täällä välilehtiä muilta laitteilta</translation>
 <translation id="8058655154417507695">Viimeinen voimassaolovuosi</translation>
 <translation id="8059312861912872211">{count,plural, =1{{count} kirjanmerkki}other{{count} kirjanmerkkiä}}</translation>
 <translation id="8059533439631660104">Tiivistää osion.</translation>
 <translation id="8061584726507121204">Historia</translation>
-<translation id="8064946459644399612">Uusi välilehti ‑sivun asetukset otettu käyttöön</translation>
 <translation id="8065136076319366194">Tallentamista ei suositella</translation>
 <translation id="8065556469005366939">Saat osuvampia vastauksia jakamalla välilehdet</translation>
 <translation id="8069394452933076548">Valitse, milloin viime aikoina käyttämättömät välilehdet siirretään ei-aktiivisiin välilehtiin.</translation>
@@ -2241,6 +2246,7 @@ Jos haluat jatkaa tietokoneella, vaihda tiliksi <ph name="OTHER_EMAIL" />. Saat 
 <translation id="8232956427053453090">Säilytä data</translation>
 <translation id="8233237502828137700">Sulje banneripromo</translation>
 <translation id="823339794112333264">Käynnistä mikrofoni</translation>
+<translation id="8240217649914883113">Lisää tämä kalenteriini</translation>
 <translation id="8250920743982581267">Dokumentit</translation>
 <translation id="8252980988000695656">Google Lens valmis</translation>
 <translation id="8258734532103758067">Olen vienyt datani</translation>
@@ -2285,6 +2291,7 @@ Jos haluat jatkaa tietokoneella, vaihda tiliksi <ph name="OTHER_EMAIL" />. Saat 
 <translation id="8368198938968349418">Laita automaattinen täyttö päälle…</translation>
 <translation id="8370406443343902172">Avaa Asetukset…</translation>
 <translation id="8370929854657845191">Laajenna keskikorkeuteen</translation>
+<translation id="8371494817541821097">Avainkoodi luotu <ph name="DATE" /></translation>
 <translation id="8372471489238799313">{count,plural, =1{Poista osoite}other{Poista osoitteet}}</translation>
 <translation id="8378714024927312812">Organisaatiosi ylläpitämä</translation>
 <translation id="8385363453480067273">Hae näkemiäsi asioita Google Lensillä</translation>

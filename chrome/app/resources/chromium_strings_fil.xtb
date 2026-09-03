@@ -11,6 +11,7 @@
 Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago sa mga kagustuhan.</translation>
 <translation id="1083934481477628225">In-off ng iyong magulang ang "Mga pahintulot para sa mga site, app, at extension" para sa Chromium</translation>
 <translation id="1090946077924227754">Para maghanap ng partikular na feature o extension ng Chromium, i-type ang shortcut nito sa address bar, kasunod ang iyong napiling keyboard key</translation>
+<translation id="1098493699368672217">Ipakita ang paghahanap gamit ang Chromium sa system tray at i-on ang keyboard shortcut</translation>
 <translation id="1104942323762546749">Gustong i-export ng Chromium ang iyong mga password. I-type ang iyong password sa Windows para payagan ito.</translation>
 <translation id="112640046208448578">Tukuyin ang mga bagay o lugar at kopyahin o isalin ang text. Kapag ginamit mo ang Paghahanap ng Larawan, magpapadala ng screenshot ng page sa server. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium ang iyong default na browser</translation>
@@ -307,6 +308,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4298125729853015961">Mag-export ng Mga Password mula sa Chromium</translation>
 <translation id="4304713468139749426">Password Manager</translation>
 <translation id="4334241893986177674">Maghanap sa screenshot na ito</translation>
+<translation id="4368547723231502008">Maghanap at magtanong mula sa kahit saan, kahit na naka-minimize ang Chromium</translation>
 <translation id="4384331407722351213">Ilunsad ang Chromium kapag nagsimula na ang Windows</translation>
 <translation id="4400772909124543403">Walang available na update</translation>
 <translation id="4407044323746248786">Lumabas pa rin sa Chromium?</translation>
@@ -377,6 +379,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="5286907366254680517">Na-detect</translation>
 <translation id="5289287148052354622">Kunin ang Chromium app</translation>
 <translation id="5294316920224716406">Kapag nagba-browse sa Incognito mode, bibigyan ka ng babala ng Chromium bago nito i-load ang isang site na gumagamit ng hindi secure na koneksyon</translation>
+<translation id="5296581118566748922">Maghanap gamit ang Chromium</translation>
 <translation id="5313228254328109263">Chromium Updater Internal Service</translation>
 <translation id="5324450571874973775">Gamitin ang mga ito kasama ng iba pang feature ng Gemini sa Chromium</translation>
 <translation id="5346389065299425353">Palalimin ang iyong paghahanap sa pamamagitan ng pagdaragdag ng maraming tab, file, at tool</translation>
@@ -506,6 +509,7 @@ Kung hindi gumagana ang page na ito gaya ng inaasahan, subukang payagan ang pag-
 <translation id="651535675648445253">Magbubukas ang mga shortcut sa Chromium</translation>
 <translation id="6539122709674868420">Isinasara ng iyong organisasyon ang Chromium kapag hindi ito ginagamit sa loob ng <ph name="TIMEOUT_DURATION" />. Na-delete ang data mula sa pag-browse. Posibleng kasama rito ang history, autofill, at mga download.</translation>
 <translation id="6542839706527980775">Ang bawat profile ay may sariling impormasyon sa Chromium tulad ng mga bookmark, history, mga password, at iba pa</translation>
+<translation id="6556755379298048869">Maghanap gamit ang keyboard shortcut.</translation>
 <translation id="6563921047760808519">Matuto pa tungkol sa kung <ph name="BEGIN_LINK" />paano pinapanatiling pribado ng Chromium ang iyong data<ph name="END_LINK" /></translation>
 <translation id="6564039629497156115">Ia-apply ang mga pagbabago sa setting na ito kapag nag-restart ang Chromium.</translation>
 <translation id="6567032987737689854">Pamahalaan ang iyong mga extension sa pamamagitan ng pag-click sa Mga Extension sa pangunahing menu ng Chromium.</translation>
@@ -540,6 +544,7 @@ Maaaring hindi available ang ilang tampok. Mangyaring tumukoy ng ibang direktory
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6859580922007887573">Pindutin ang tab para magpatuloy</translation>
 <translation id="6862030660799253820">Hanapin ang larawang ito gamit ang Paghahanap ng Larawan</translation>
+<translation id="6869568587896659271">Madaling pag-access sa mga website sa ibaba ng address bar</translation>
 <translation id="6873893289264747459">Napag-alaman ng Chromium na naglalaman ng malware ang "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6877155553248388166">kanang sulok sa ibaba ng lugar para sa paghahanap: kanan <ph name="RIGHT" />%, ibaba <ph name="BOTTOM" />%</translation>
 <translation id="6896758677409633944">Copy</translation>
@@ -636,6 +641,7 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="77283119132245232">Nagbibigay ng mga serbisyo ng pag-trace ng system para sa <ph name="BROWSER_NAME" />. Kung naka-disable ang serbisyong ito, hindi isasama sa mga trace ng performance na ginawa ng browser ang mga system-wide na event gaya ng mga event na context switch at ready thread.</translation>
 <translation id="7745317241717453663">Ide-delete nito ang iyong data sa pag-browse sa device na ito. Upang makuha ang iyong data sa ibang pagkakataon, mag-sign in sa Chromium bilang <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Hindi makalikha ng pansamantalang direktoryo ang installer. Paki-suri para sa puwang sa disk na walang laman at pahintulot upang i-install ang software.</translation>
+<translation id="7747820849741499258">Maghanap sa Chromium</translation>
 <translation id="7750130090210923118">I-reset sa Default na Chromium</translation>
 <translation id="7752521946322750699">Para ma-secure ang iyong gawa sa Chromium, matitingnan o mapapamahalaan ng organisasyon mo ang ilang partikular na impormasyon kapag naka-sign in ka sa Chromium.</translation>
 <translation id="7781047659465034537">Itakda ang Chromium bilang default at i-pin ito sa taskbar</translation>
@@ -643,6 +649,7 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">Gawing mas mahirap para sa mga taong may access sa iyong internet traffic na makita kung aling mga site ang binibisita mo. Gumagamit ang Chromium ng secure na koneksyon para hanapin ang IP address ng isang site sa DNS (Domain Name System).</translation>
 <translation id="7810005234485217901">Puwede mong i-pin ang Paghahanap ng Larawan para madali itong ma-access</translation>
+<translation id="7828527096541974699">Piliin kung ano ang ise-share sa Chromium</translation>
 <translation id="7828947555739565424">Mayroon nang profile sa Chromium na gumagamit ng account na ito sa device na ito</translation>
 <translation id="7845233973568007926">Salamat sa pag-install. Dapat mong i-restart ang iyong computer bago gamitin ang <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7847673590271334840">Binago ang iyong search engine mula sa labas ng Chromium. Para protektahan ka, ni-reset ito ng Chromium sa orihinal na default nito. <ph name="LEARN_MORE_LINK" /></translation>
@@ -762,6 +769,7 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
             • I-delete ang cookies at iba pang pansamantalang data ng site
             <ph name="LINE_BREAKS" />
             Hindi maaapektuhan ang mga bookmark, history, at naka-save na password.</translation>
+<translation id="8966875421152977384">Ipakita ang mga shortcut sa site ng Chromium</translation>
 <translation id="897581876605952338">Logo ng Chromium Enterprise</translation>
 <translation id="8980139959902937527">Dalhin ang kaligtasan ng Google nang on the go gamit ang Chromium app sa iyong <ph name="DEVICE_TYPE" /></translation>
 <translation id="8981150672034878610">Hindi masimulan ang Chromium dahil nagkaproblema noong binubuksan ang iyong profile. Subukang i-restart ang Chromium.</translation>
@@ -770,6 +778,7 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="9018218886431812662">Tapos na ang pag-install</translation>
 <translation id="9019929317751753759">Upang mas gawing ligtas ang Chromium, na-disable namin ang sumusunod na extension na hindi nakalista sa <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> na maaaring naidagdag nang hindi mo nalalalaman.</translation>
 <translation id="9022552996538154597">Mag-sign in sa Chromium</translation>
+<translation id="9035791714111278917">Ipakita ang paghahanap gamit ang Chromium sa menu bar ng Mac at i-on ang keyboard shortcut</translation>
 <translation id="904366664621834601">Na-block ng Chromium ang pag-download na ito dahil naglalaman ang naka-archive na file ng iba pang file na posibleng nagtatago ng malware</translation>
 <translation id="9053882453960391422">Panatilihing ganap na naka-sync ang iyong mga password, mga bookmark, at history sa lahat ng device. Madaling ma-access ang mga feature na alam at gusto mo sa pamamagitan ng pag-update ng iyong default browser sa Chromium. Ipi-pin ang Chromium sa taskbar mo para sa mabilis na pag-access.</translation>
 <translation id="9056398481763999048">Gamitin ang pinakamahuhusay na AI tool ng Google gamit ang Chromium app sa iyong telepono</translation>

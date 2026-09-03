@@ -632,6 +632,7 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="77283119132245232">Menyediakan layanan pelacakan sistem untuk <ph name="BROWSER_NAME" />. Jika layanan ini dinonaktifkan, rekaman aktivitas performa yang dibuat oleh browser tidak akan menyertakan peristiwa di seluruh sistem seperti peristiwa peralihan konteks dan thread yang siap.</translation>
 <translation id="7745317241717453663">Tindakan ini akan menghapus data browsing dari perangkat. Untuk mengambil data nanti, login ke Chromium sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Pemasang tidak dapat membuat direktori sementara. Periksa kapasitas kosong pada disk dan izin untuk memasang software.</translation>
+<translation id="7747820849741499258">Telusuri di Chromium</translation>
 <translation id="7750130090210923118">Reset ke Chromium Default</translation>
 <translation id="7752521946322750699">Untuk mengamankan pekerjaan di Chromium, organisasi Anda akan dapat melihat atau mengelola informasi tertentu saat Anda login ke Chromium.</translation>
 <translation id="7781047659465034537">Setel Chromium sebagai default dan sematkan ke taskbar</translation>

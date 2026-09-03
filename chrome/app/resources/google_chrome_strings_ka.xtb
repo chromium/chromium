@@ -8,6 +8,7 @@
 <translation id="102763973188675173">მოირგეთ და გააკონტროლეთ Google Chrome. ხელმისაწვდომია განახლება.</translation>
 <translation id="1028061813283459617">დათვალიერების მონაცემების მხოლოდ ამ მოწყობილობიდან წასაშლელად და Google ანგარიშში მათ შესანარჩუნებლად <ph name="BEGIN_LINK" />გამოდით Chrome-იდან<ph name="END_LINK" />.</translation>
 <translation id="1028770388543831319">მიიღეთ Google-ის უსაფრთხოების საუკეთესო ფუნქციები ნებისმიერი ადგილიდან, Chrome აპის მეშვეობით თქვენს ტელეფონში</translation>
+<translation id="1036348656032585052">გამორთვა</translation>
 <translation id="1042270987544905725">დააწკაპუნეთ Chrome-ის შესვლის დიალოგის დასახურად</translation>
 <translation id="1051793555070215510">დაგვეხმარეთ ინკოგნიტო რეჟიმის გაუმჯობესებაში ამ 1-წუთიანი გამოკითხვით.</translation>
 <translation id="1055295352198814912">Gemini-ს ჩვენება Chrome-ში Mac-ის მენიუს ზოლში და კლავიატურის მალსახმობის ჩართვა</translation>
@@ -74,6 +75,7 @@
 <translation id="1640672724030957280">მიმდინარეობს ჩამოტვირთვა…</translation>
 <translation id="1651617469580841801">Google Lens-ის გამოყენებისას Google-ს ეგზავნება გვერდის სათაური, URL და კონტენტი, PDF-ების ჩათვლით. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">ChromeOS Flex-ის შესახებ</translation>
+<translation id="1664094661346151467">მოიძიეთ ინფორმაცია და დასვით კითხვები ნებისმიერი ადგილიდან, მაშინაც კი, როცა Chrome ჩაკეცილია</translation>
 <translation id="1674870198290878346">ბმულის გახსნა Chrome-ის ინკო&amp;გნიტო ფანჯარაში</translation>
 <translation id="1682634494516646069">Google Chrome ვერ ახერხებს თავის მონაცემთა დირექტორიაში წაკითხვას და ჩაწერის განხორციელებას:
 
@@ -111,6 +113,7 @@
 <translation id="2034233344106846793">Chrome ავტომატურად განაახლებს HTTPS-თან დაუცველ კავშირებს, როცა ეს შესაძლებელი იქნება</translation>
 <translation id="2039417478970545937">პარამეტრები.</translation>
 <translation id="2040220733769034247">დაასკანირეთ QR კოდი თქვენი ტელეფონით, რომ ჩამოტვირთოთ Chrome და შეხვიდეთ თქვენს Google ანგარიშში.</translation>
+<translation id="2044908892530830113">Chrome-ით ძიების ჩვენება Mac-ის მენიუს ზოლში და კლავიატურის მალსახმობის ჩართვა</translation>
 <translation id="2050189601866423230">შეგიძლიათ, ჩაამაგროთ Google Search-ის ხელოვნური ინტელექტის რეჟიმი, რომ დასვათ კითხვები დათვალიერებისას</translation>
 <translation id="2091012649849228750">Google Chrome-ის მომავალი განახლებების მისაღებად დაგჭირდებათ Windows 10 ან უფრო ახალი ვერსია. ეს კომპიუტერი იყენებს Windows 8-ს.</translation>
 <translation id="2094648590148273905">ChromeOS Flex-ის პირობები</translation>
@@ -138,6 +141,7 @@
 <translation id="2284380654876659752">თქვენ მიერ საიტის მონახულებისას Chrome გაუგზავნის URL-ის შენიღბულ ნაწილს <ph name="BEGIN_LINK" />Google Safe Browsing<ph name="END_LINK" />-ს კონფიდენციალურობის სერვერის მეშვეობით, რომელიც მალავს თქვენს IP მისამართს. თუ საიტი რაიმე საეჭვოს მოიმოქმედებს, გაიგზავნება სრული URL-ები და გვერდების კონტენტის ფრაგმენტებიც.</translation>
 <translation id="2290014774651636340">Google API გასაღები გამოტოვებულია. Google Chrome-ის ზოგიერთი ფუნქცია გამორთული იქნება.</translation>
 <translation id="2290095356545025170">ნამდვილად გსურთ მოახდინოთ Google Chrome-ის დეინსტალაცია?</translation>
+<translation id="2295218613066132598">საიტებისთვის Chrome-ის მალსახმობების ჩვენება</translation>
 <translation id="2301513536169703857">თქვენს ყველა მოწყობილობაზე პაროლების, სანიშნეებისა და სხვა კონტენტის მისაღებად შედით Chrome-ში</translation>
 <translation id="2307973900865360088">სამაგრში დატოვება</translation>
 <translation id="2309047409763057870">ეს Google Chrome-ის მეორადი ინსტალაცია არის და ნაგულისხმევ ბრაუზერად ის ვერ დაყენდება.</translation>
@@ -246,6 +250,7 @@
 <translation id="3282568296779691940">შესვლა Chrome-ში</translation>
 <translation id="3286538390144397061">გადატვირთეთ ახლა</translation>
 <translation id="3292333338048274092">დაგჭირდებათ Chrome-ის გადატვირთვა.</translation>
+<translation id="3294686910656423119">გამოყენების მონაცემები და ავარიულად გათიშვის ანგარიშები</translation>
 <translation id="3327226547491422998">მოგვიანებით Chrome გკითხავთ, გსურთ თუ არა შენახული ინფორმაციის გამოყენება ფორმების ავტომატურად შესავსებად</translation>
 <translation id="3352986031709923790">ძიების არეალის ზედა მარჯვენა კუთხე: მარჯვნივ <ph name="RIGHT" />%, ზემოთ <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome-ის დამხმარე</translation>
@@ -479,6 +484,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="5824893331272123205">ეს პანელი ვერ ჩაიტვირთა, ხელახლა ცადეთ</translation>
 <translation id="5825922397106002626">ამოშალეთ <ph name="EXTENSION_NAME" /> Chrome-იდან</translation>
 <translation id="5858486459377137936">Chrome-ის ყველა ფანჯრის დახურვისას სისტემიდან გამოხვალთ საიტების უმეტესობაზე, გამონაკლისია თქვენი Google ანგარიში, თუ მასში შესული ხართ Chrome-იდან. ვებსაიტებმა რომ დაგიმახსოვროთ, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="5860491529813859533">ჩართვა</translation>
 <translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome გაგაფრთხილებთ<ph name="END_LINK" /> არაუსაფრთხო საიტებისა და ჩამოტვირთვების შესახებ</translation>
 <translation id="5894164573378901688">Gemini Chrome-ში რომ გამოიყენოთ, სხვა Google ანგარიშით უნდა შეხვიდეთ</translation>
 <translation id="5895138241574237353">გადატვირთვა</translation>
@@ -519,9 +525,11 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="6166185671393271715">პაროლების იმპორტი Chrome-ში</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> — Google Chrome Beta</translation>
+<translation id="6177442314419606057">Chrome-ში ძიება</translation>
 <translation id="6180522807229584611">ეს ჩანართი დამატებით რესურსებს იყენებს. ეფექტურობის გაზრდის მიზნით, ნება დართეთ Chrome-ს, ჩანართი უმოქმედო რეჟიმში გადაიტანოს.</translation>
 <translation id="6182736845697986886">ინსტალაცია ვერ მოხერხდა განახლების სერვერის შიდა შეცდომის გამო.</translation>
 <translation id="6192058120268468905">თქვენი ანგარიში Chrome-ში</translation>
+<translation id="6195202018542972563">Chrome-ით ძიების სისტემურ არეში ჩვენება და კლავიატურის მალსახმობის ჩართვა</translation>
 <translation id="6235018212288296708">Google Chrome-ის შემომავალი ტრაფიკის წესი mDNS ტრაფიკისთვის.</translation>
 <translation id="624230925347970731">Chrome მალე დაიხურება</translation>
 <translation id="6247557882553405851">Google პაროლების მმართველი</translation>
@@ -563,6 +571,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="652948702951888897">Chrome ისტორია</translation>
 <translation id="6532945796722480006">Gemini in Chrome Canary-ში გახსნა</translation>
 <translation id="6539493053177300926">მარტივი წვდომა Gemini-ზე Chrome-ში თქვენს მოწყობილობაში მაშინაც კი, როდესაც Chrome მინიმიზებულია.</translation>
+<translation id="6556755379298048869">მოიძიეთ კლავიატურის მალსახმობით.</translation>
 <translation id="6585124893636629274">Gemini Chrome-ში დახურვა</translation>
 <translation id="659498884637196217">Google პაროლების მმართველში ამ მოწყობილობაზე</translation>
 <translation id="6613949864921837107">დაასინქრონეთ თქვენი პაროლები, სანიშნეები და ისტორია თქვენს მოწყობილობებში, რისთვისაც Chrome ნაგულისხმევ ბრაუზერად უნდა დააყენოთ.</translation>
@@ -589,6 +598,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="683440813066116847">შიდა წესი Google Chrome Canary-ისთვის mDNS ტრაფიკის დასაშვებად.</translation>
 <translation id="684888714667046800">ინტერნეტთან დაკავშირება ვერ ხერხდება. თუ ქსელის დაცვას იყენებთ, დარწმუნდით, რომ <ph name="PRODUCT_EXE_NAME" /> დაშვებულთა სიაშია.</translation>
 <translation id="6859580922007887573">შეეხეთ გასაგრძელებლად</translation>
+<translation id="6869568587896659271">ვებსაიტებზე წვდომა პირდაპირ მისამართთა ზოლის ქვემოდან</translation>
 <translation id="6877155553248388166">ძიების არეალის ქვედა მარჯვენა კუთხე: მარჯვნივ <ph name="RIGHT" />%, ქვემოთ <ph name="BOTTOM" />%</translation>
 <translation id="6881299373831449287">მიმდინარეობს Chrome-ის განახლება</translation>
 <translation id="6885412569789873916">Chrome Beta აპები</translation>
@@ -681,6 +691,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="7736869414036750079">თქვენი ორგანიზაცია მოითხოვს, რომ Chrome-ში შეხვიდეთ</translation>
 <translation id="7747138024166251722">ინსტალერმა ვერ შექმნა დროებითი დირექტორია. გთხოვთ, გადაამოწმოთ დისკზე თავისუფალი სივრცე და პროგრამული უზრუნველყოფის დაყენების ნებართვა.</translation>
 <translation id="7748969056734910029">ბოლო დროს არ ყოფილხართ. Chrome-მა ამოშალა <ph name="PERMISSION_1" /> და <ph name="PERMISSION_2" />.</translation>
+<translation id="7759944311003584891">Chrome-ით ძიება</translation>
 <translation id="7761834446675418963">დააწკაპუნეთ თქვენს სახელზე Chrome-ის გასახსნელად და დაიწყეთ დათვალიერება.</translation>
 <translation id="7777080907402804672">თუ სურათს არ ექნება სასარგებლო აღწერილობა, Chrome შეეცდება მის უზრუნველყოფას. აღწერილობების შესაქმნელად სურათები იგზავნება Google-ში. ამის გამორთვა ნებისმიერ დროს შეგიძლიათ პარამეტრებიდან.</translation>
 <translation id="778331955594035129">Chrome საჭიროებს მდებარეობაზე წვდომის ნებართვას ამ საიტისთვის</translation>
