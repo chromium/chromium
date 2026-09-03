@@ -109,10 +109,10 @@ views::ProposedLayout TabGroupViewLayout::CalculateVerticalLayout(
     group_line_bounds.set_y(height);
   }
 
-  const std::vector<views::View*> children =
+  const auto children =
       tab_group_view->collection_node_
           ? tab_group_view->collection_node_->GetDirectChildren()
-          : std::vector<views::View*>();
+          : TabCollectionNode::ChildViews();
 
   const bool is_focused = tab_group_view->IsGroupFocused();
 

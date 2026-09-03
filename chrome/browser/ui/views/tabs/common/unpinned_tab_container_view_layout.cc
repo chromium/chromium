@@ -68,8 +68,7 @@ int UnpinnedTabContainerViewLayout::GetUnconstrainedPreferredWidth(
   }
   std::optional<tab_groups::TabGroupId> focused_group_id =
       GetFocusedGroupId(host);
-  const std::vector<views::View*> children =
-      host->collection_node_->GetDirectChildren();
+  const auto children = host->collection_node_->GetDirectChildren();
   if (children.empty()) {
     return 0;
   }
@@ -93,7 +92,7 @@ views::ProposedLayout UnpinnedTabContainerViewLayout::CalculateHorizontalLayout(
   std::optional<tab_groups::TabGroupId> focused_group_id =
       GetFocusedGroupId(tab_container_view);
 
-  const std::vector<views::View*> children =
+  const auto children =
       tab_container_view->collection_node_->GetDirectChildren();
   if (children.empty()) {
     return layouts;
@@ -196,7 +195,7 @@ views::ProposedLayout UnpinnedTabContainerViewLayout::CalculateVerticalLayout(
   std::optional<tab_groups::TabGroupId> focused_group_id =
       GetFocusedGroupId(tab_container_view);
 
-  const std::vector<views::View*> children =
+  const auto children =
       tab_container_view->collection_node_->GetDirectChildren();
 
   int width = 0;

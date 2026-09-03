@@ -95,9 +95,9 @@ void SplitTabView::OnMouseMoved(const ui::MouseEvent& event) {
 
 void SplitTabView::OnPaint(gfx::Canvas* canvas) {
   if (pinned_) {
-    const std::vector<views::View*> children =
-        collection_node_ ? collection_node_->GetDirectChildren()
-                         : std::vector<views::View*>();
+    const auto children = collection_node_
+                              ? collection_node_->GetDirectChildren()
+                              : TabCollectionNode::ChildViews();
     std::optional<SkColor> background_color =
         !children.empty()
             ? views::AsViewClass<TabView>(children[0])->GetBackgroundColor()
@@ -244,9 +244,8 @@ void SplitTabView::UpdateHovered(bool hovered) {
 views::ProposedLayout SplitTabView::CalculateHorizontalLayout(
     const views::SizeBounds& size_bounds) const {
   views::ProposedLayout layouts;
-  const std::vector<views::View*> children =
-      collection_node_ ? collection_node_->GetDirectChildren()
-                       : std::vector<views::View*>();
+  const auto children = collection_node_ ? collection_node_->GetDirectChildren()
+                                         : TabCollectionNode::ChildViews();
   if (children.size() != 2) {
     layouts.host_size = gfx::Size(0, 0);
     return layouts;
@@ -289,9 +288,8 @@ views::ProposedLayout SplitTabView::CalculateVerticalLayout(
   int width = 0;
   int height = 0;
 
-  const std::vector<views::View*> children =
-      collection_node_ ? collection_node_->GetDirectChildren()
-                       : std::vector<views::View*>();
+  const auto children = collection_node_ ? collection_node_->GetDirectChildren()
+                                         : TabCollectionNode::ChildViews();
   if (children.size() != 2) {
     layouts.host_size = gfx::Size(0, 0);
     return layouts;

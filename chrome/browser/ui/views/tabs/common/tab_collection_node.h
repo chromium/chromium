@@ -109,7 +109,56 @@ class TabCollectionNode {
   TabStripOrientation orientation() const { return orientation_; }
   const NodeChildren& children() const { return children_; }
   views::View* view() const { return node_view_; }
-  std::vector<views::View*> GetDirectChildren() const;
+
+  class ChildViews {
+   public:
+    class Iterator {
+     public:
+      using iterator_concept = std::input_iterator_tag;
+      using iterator_category = std::input_iterator_tag;
+      using value_type = views::View*;
+      using difference_type = std::ptrdiff_t;
+
+      Iterator() = default;
+      explicit Iterator(NodeChildren::const_iterator it) : it_(it) {}
+
+      views::View* operator*() const { return (*it_)->view(); }
+      Iterator& operator++() {
+        ++it_;
+        return *this;
+      }
+      Iterator operator++(int) {
+        Iterator tmp = *this;
+        ++(*this);
+        return tmp;
+      }
+      bool operator==(const Iterator& other) const = default;
+
+     private:
+      NodeChildren::const_iterator it_;
+    };
+
+    ChildViews() = default;
+    explicit ChildViews(const NodeChildren* children) : children_(children) {}
+
+    Iterator begin() const {
+      return children_ ? Iterator(children_->begin()) : Iterator();
+    }
+    Iterator end() const {
+      return children_ ? Iterator(children_->end()) : Iterator();
+    }
+    size_t size() const { return children_ ? children_->size() : 0; }
+    bool empty() const { return !children_ || children_->empty(); }
+    views::View* operator[](size_t index) const {
+      CHECK(children_);
+      return (*children_)[index]->view();
+    }
+
+   private:
+    raw_ptr<const NodeChildren> children_ = nullptr;
+  };
+
+  ChildViews GetDirectChildren() const { return ChildViews(&children_); }
 
   void set_add_child_to_node(CustomAddChildViewCallback add_child_to_node) {
     add_child_to_node_ = std::move(add_child_to_node);

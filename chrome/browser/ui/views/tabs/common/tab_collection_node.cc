@@ -382,14 +382,6 @@ void TabCollectionNode::MoveChild(base::PassKey<TabCollectionNode> pass_key,
   NOTREACHED();
 }
 
-std::vector<views::View*> TabCollectionNode::GetDirectChildren() const {
-  std::vector<views::View*> child_views;
-  child_views.reserve(children_.size());
-  for (const auto& child : children_) {
-    child_views.push_back(child->node_view_);
-  }
-  return child_views;
-}
 
 std::unique_ptr<views::View> TabCollectionNode::CreateAndSetView() {
   auto node_view = CreateViewForNode(this);

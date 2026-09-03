@@ -160,7 +160,7 @@ int GetChildOverlap(const views::View* prev_child,
 }
 
 TabStripCollectionLayoutInfo CollectVisibleChildLayoutInfo(
-    const std::vector<views::View*>& children,
+    TabCollectionNode::ChildViews children,
     int container_height,
     ChildVisibilityCallback is_child_visible) {
   TabStripCollectionLayoutInfo collection;
