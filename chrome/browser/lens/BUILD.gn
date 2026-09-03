@@ -131,6 +131,8 @@ if (is_android) {
   }
 }
 
+import("//components/optimization_guide/features.gni")
+
 source_set("lens_identity_delegation_helper") {
   sources = [
     "lens_identity_delegation_helper.cc",
@@ -139,12 +141,19 @@ source_set("lens_identity_delegation_helper") {
   deps = [
     "//base",
     "//build:branding_buildflags",
-    "//chrome/browser/lens/sapisid",
     "//chrome/browser/profiles:profile",
+    "//components/optimization_guide:optimization_guide_buildflags",
+    "//components/optimization_guide/core:optimization_guide_library_holder",
     "//components/signin/public/identity_manager",
     "//content/public/browser",
     "//google_apis/common",
   ]
+
+  if (build_with_internal_optimization_guide && !is_android) {
+    data_deps = [
+      "//components/optimization_guide/internal:optimization_guide_internal",
+    ]
+  }
 }
 
 source_set("unit_tests") {

@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/scoped_native_library.h"
 #include "base/types/pass_key.h"
@@ -51,6 +52,13 @@ OptimizationGuideLibraryHolder::OptimizationGuideLibraryHolder(
     : library_(std::move(library)) {}
 
 OptimizationGuideLibraryHolder::~OptimizationGuideLibraryHolder() = default;
+
+// static
+OptimizationGuideLibraryHolder* OptimizationGuideLibraryHolder::GetInstance() {
+  static base::NoDestructor<std::unique_ptr<OptimizationGuideLibraryHolder>>
+      instance(Create());
+  return instance->get();
+}
 
 // static
 DISABLE_CFI_DLSYM

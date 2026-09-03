@@ -6572,7 +6572,6 @@ test("unit_tests") {
       "//chrome/browser/importer:unit_tests",
       "//chrome/browser/lens:unit_tests",
       "//chrome/browser/lens/core/mojom:mojo_bindings",
-      "//chrome/browser/lens/sapisid:unit_tests",
       "//chrome/browser/media/router:test_support",
       "//chrome/browser/media/router/discovery",
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
