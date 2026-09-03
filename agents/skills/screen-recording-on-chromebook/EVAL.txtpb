@@ -1,0 +1,120 @@
+# proto-file: learning/gemini/agents/evaluation/evalin/proto/eval_suite.proto
+# proto-message: EvalSuite
+# txtpbfmt: wrap_strings_after_newlines
+
+suite_name: "screen-recording-on-chromebook"
+timeout_seconds: 300
+
+mock_config {
+  tool_mock_rules {
+    tool_type: MOCK_TOOL_TYPE_RUN_COMMAND
+    tool_path: "ssh"
+    tool_path: "/usr/bin/ssh"
+    mocks {
+      arg_regexp: ".*ps aux.*|.*pgrep.*"
+      response {
+        exit_code: 0
+        stdout: "root 12345 0.5 0.2 /usr/local/bin/ffmpeg -y -f kmsgrab -framerate 30 -i - -vf hwdownload,format=bgr0 -c:v msmpeg4v2 -pix_fmt yuv420p -q:v 3 /tmp/dut_recording.avi\n"
+      }
+    }
+    mocks {
+      arg_regexp: ".*screen_record.pid.*"
+      response {
+        exit_code: 0
+        stdout: "Recording is RUNNING (PID: 12345)\n"
+      }
+    }
+    mocks {
+      arg_regexp: ".*ls -lh.*dut_recording.avi.*"
+      response {
+        exit_code: 0
+        stdout: "-rw-r--r-- 1 root root 12M Sep 3 21:00 /tmp/dut_recording.avi\n"
+      }
+    }
+    mocks {
+      arg_regexp: ".*"
+      response {
+        exit_code: 0
+        stdout: "12345\n"
+      }
+    }
+  }
+  tool_mock_rules {
+    tool_type: MOCK_TOOL_TYPE_RUN_COMMAND
+    tool_path: "scp"
+    tool_path: "/usr/bin/scp"
+    mocks {
+      arg_regexp: ".*"
+      response {
+        exit_code: 0
+        stdout: ""
+      }
+    }
+  }
+  tool_mock_rules {
+    tool_type: MOCK_TOOL_TYPE_RUN_COMMAND
+    tool_path: "ffmpeg"
+    tool_path: "/usr/bin/ffmpeg"
+    mocks {
+      arg_regexp: ".*"
+      response {
+        exit_code: 0
+        stdout: "frame=  300 fps= 30 q=-1.0 Lsize=   10240kB time=00:00:10.00 bitrate=8390.8kbits/s speed=1.5x\nvideo:10200kB audio:0kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: 0.390625%\n"
+      }
+    }
+  }
+}
+
+cases {
+  name: "start_recording_chromeos_device"
+  prompt: "Start a screen recording on my ChromeOS device so I can capture this UI bug."
+  expectations: "Agent executes an SSH command targeting the ChromeOS device to start background screen recording"
+  expectations: "The recording command uses ffmpeg with kmsgrab display capture"
+  expectations: "Agent verifies that the recording process is running and confirms to the user"
+}
+
+cases {
+  name: "start_recording_cros_dut"
+  prompt: "Let's begin capturing video on my cros DUT for a bug reproduction."
+  expectations: "Agent connects to the CrOS DUT via SSH and starts background screen capture with ffmpeg"
+  expectations: "Agent confirms the capture process is actively running"
+}
+
+cases {
+  name: "start_recording_remote_chromeos_dut"
+  prompt: "Start screen capture on my connected ChromeOS DUT while I reproduce the issue."
+  expectations: "Agent connects to the ChromeOS device via SSH"
+  expectations: "Agent launches background screen recording using ffmpeg kmsgrab"
+  expectations: "Agent confirms that screen recording has started"
+}
+
+cases {
+  name: "stop_and_pull_chromebook_device"
+  prompt: "I finished reproducing the issue on my Chromebook device. Please stop the screen recording, pull the video to my machine, and convert it to MP4."
+  expectations: "Agent terminates the ffmpeg recording process on the Chromebook gracefully (e.g. using SIGINT/kill -INT)"
+  expectations: "Agent pulls the recorded video file from the Chromebook to the host workstation"
+  expectations: "Agent transcodes the video to MP4 using ffmpeg on the host"
+}
+
+cases {
+  name: "stop_and_pull_cros_dut"
+  prompt: "Stop the recording on my cros DUT and save the video locally on my workstation."
+  expectations: "Agent cleanly stops the recording on the CrOS DUT via SSH"
+  expectations: "Agent retrieves the recorded video from the device to the local machine"
+  expectations: "Agent confirms the video file is saved locally"
+}
+
+cases {
+  name: "check_status_cros_device"
+  prompt: "Is screen recording currently running on my cros device?"
+  expectations: "Agent inspects the running processes or PID file on the CrOS device via SSH"
+  expectations: "Agent clearly reports whether screen recording is active or stopped"
+}
+
+cases {
+  name: "full_session_chromeos_dut"
+  prompt: "Take a 5-second screen recording on my connected ChromeOS DUT and save the MP4 video to /tmp/."
+  expectations: "Agent initiates screen capture on the ChromeOS DUT via SSH"
+  expectations: "Agent stops capture after the duration, retrieves the video file, and converts to MP4"
+  expectations: "Agent confirms the saved video path on the local workstation"
+}
