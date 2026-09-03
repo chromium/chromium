@@ -11,6 +11,7 @@ source_set("controllers") {
   public_deps = [
     "adapters",
     "//base",
+    "//ui/base/mojom:ui_base_types",
   ]
 }
 
@@ -23,8 +24,11 @@ source_set("impl") {
   deps = [
     "adapters:impl",
     "//base",
+    "//chrome/browser/bookmarks",
+    "//components/bookmarks/browser",
     "//components/bookmarks/common",
     "//ui/base:types",
+    "//ui/gfx/geometry",
   ]
 
   if (!is_android) {
@@ -47,9 +51,13 @@ source_set("unit_tests") {
     ":controllers",
     ":impl",
     "//base",
+    "//base/test:test_support",
+    "//components/bookmarks/browser",
     "//components/bookmarks/common",
+    "//components/bookmarks/test",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base:types",
+    "//ui/gfx/geometry",
   ]
 }

@@ -7,9 +7,15 @@
 
 #include <stdint.h>
 
+#include "base/functional/callback.h"
 #include "chrome/browser/bookmarks/bookmark_node_types.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 
 enum class WindowOpenDisposition;
+
+namespace gfx {
+class Point;
+}
 
 class BookmarkBarUIClient;
 
@@ -26,6 +32,10 @@ class BookmarkBarUIController {
                             WindowOpenDisposition disposition) = 0;
   virtual void OpenFolder(const bookmarks::BookmarkNodeId& folder,
                           WindowOpenDisposition disposition) = 0;
+  virtual void ShowContextMenu(const bookmarks::BookmarkNodeId& target,
+                               const gfx::Point& point,
+                               ui::mojom::MenuSourceType source_type,
+                               base::OnceClosure on_close) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_BOOKMARKS_CONTROLLERS_BOOKMARK_BAR_UI_CONTROLLER_H_

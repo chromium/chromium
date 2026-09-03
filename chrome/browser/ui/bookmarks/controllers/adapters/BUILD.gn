@@ -11,6 +11,7 @@ source_set("adapters") {
   public_deps = [
     "//base",
     "//chrome/browser/bookmarks:types",
+    "//ui/base/mojom:ui_base_types",
   ]
 }
 
@@ -36,10 +37,13 @@ source_set("impl") {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/bookmarks",
       "//chrome/browser/ui/tabs/saved_tab_groups",
+      "//chrome/browser/ui/views/bookmarks",
       "//components/bookmarks/browser",
       "//components/bookmarks/common",
       "//components/prefs",
       "//ui/base:types",
+      "//ui/gfx/geometry",
+      "//ui/views",
     ]
   }
 }
