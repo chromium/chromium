@@ -409,3 +409,150 @@ source_set("web_app_install_not_supported_dialog") {
     "//ui/views",
   ]
 }
+
+source_set("web_app_simple_install_dialog") {
+  sources = [ "web_app_simple_install_dialog.cc" ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  deps = [
+    ":web_app_icon_name_and_origin_view",
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/feature_engagement",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/page_action:icon_type",
+    "//chrome/browser/ui/views/frame:toolbar_button_provider",
+    "//chrome/browser/ui/web_applications",
+    "//chrome/browser/web_applications",
+    "//components/constrained_window",
+    "//components/feature_engagement/public",
+    "//components/prefs",
+    "//components/strings:components_strings",
+    "//components/url_formatter",
+    "//components/web_modal",
+    "//components/webapps/browser",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/views",
+  ]
+}
+
+source_set("web_app_detailed_install_dialog") {
+  sources = [ "web_app_detailed_install_dialog.cc" ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  deps = [
+    ":image_carousel_view",
+    ":web_app_icon_name_and_origin_view",
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/feature_engagement",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui/views:layout_provider",
+    "//chrome/browser/ui/web_applications",
+    "//chrome/browser/web_applications",
+    "//components/constrained_window",
+    "//components/metrics/structured",
+    "//components/metrics/structured:structured_events",
+    "//components/prefs",
+    "//components/strings:components_strings",
+    "//components/vector_icons",
+    "//components/web_modal",
+    "//components/webapps/browser",
+    "//components/webapps/common",
+    "//content/public/browser",
+    "//skia",
+    "//ui/base",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+}
+
+source_set("web_app_diy_install_dialog") {
+  sources = [ "web_app_diy_install_dialog.cc" ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  deps = [
+    ":web_app_icon_name_and_origin_view",
+    ":web_apps",
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/feature_engagement",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:url_identity",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/views/controls",
+    "//chrome/browser/ui/web_applications",
+    "//chrome/browser/web_applications",
+    "//components/constrained_window",
+    "//components/feature_engagement/public",
+    "//components/metrics/structured",
+    "//components/metrics/structured:structured_events",
+    "//components/strings:components_strings",
+    "//components/web_modal",
+    "//components/webapps/browser",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/gfx",
+    "//ui/views",
+    "//url",
+  ]
+}
+
+source_set("web_app_launch_dialog") {
+  sources = [ "web_app_launch_dialog.cc" ]
+  public_deps = [
+    ":web_app_modal_dialog_delegate",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+  deps = [
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/web_applications",
+    "//chrome/browser/web_applications",
+    "//components/constrained_window",
+    "//components/services/app_service",
+    "//components/web_modal",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+}
+
+source_set("web_app_update_review_dialog_impl") {
+  sources = [ "web_app_update_review_dialog.cc" ]
+  public_deps = [
+    ":web_app_update_review_dialog",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+  deps = [
+    ":web_app_update_identity_view",
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/picture_in_picture",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/views:layout_provider",
+    "//chrome/browser/ui/views/extensions:security_dialog_tracker",
+    "//chrome/browser/web_applications",
+    "//components/constrained_window",
+    "//components/vector_icons",
+    "//components/web_modal",
+    "//components/webapps/browser",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/color",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+}
