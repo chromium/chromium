@@ -166,7 +166,9 @@ public class WebContentsState implements Destroyable {
      */
     @CalledByNative
     public static WebContentsStateMetadata createMetadata(
-            String title, String virtualUrl, boolean isOffTheRecord) {
+            @JniType("std::u16string") String title,
+            @JniType("std::string") String virtualUrl,
+            boolean isOffTheRecord) {
         return new WebContentsStateMetadata(title, virtualUrl, isOffTheRecord);
     }
 
@@ -436,17 +438,20 @@ public class WebContentsState implements Destroyable {
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
-        @Nullable WebContents restoreContentsFromByteBuffer(
+        @Nullable
+        @JniType("content::WebContents*")
+        WebContents restoreContentsFromByteBuffer(
                 @JniType("Profile*") Profile profile,
                 ByteBuffer buffer,
                 int savedStateVersion,
                 boolean initiallyHidden,
                 boolean noRenderer);
 
-        @Nullable ByteBuffer getContentsStateAsByteBuffer(WebContents webcontents);
+        @Nullable ByteBuffer getContentsStateAsByteBuffer(
+                @JniType("content::WebContents*") WebContents webcontents);
 
         @Nullable ByteBuffer deleteNavigationEntries(
-                ByteBuffer state, int saveStateVersion, long predicate);
+                ByteBuffer state, int savedStateVersion, long predicate);
 
         @Nullable ByteBuffer createSingleNavigationStateAsByteBuffer(
                 @JniType("Profile*") Profile profile,

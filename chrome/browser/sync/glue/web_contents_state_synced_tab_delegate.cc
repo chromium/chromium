@@ -6,6 +6,7 @@
 
 #include "chrome/browser/sync/glue/synced_tab_delegate_android.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/web_contents.h"
 
 namespace browser_sync {
 
