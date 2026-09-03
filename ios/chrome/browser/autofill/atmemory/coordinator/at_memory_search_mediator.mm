@@ -20,6 +20,7 @@
 #import "components/autofill/core/browser/metrics/autofill_metrics.h"
 #import "components/autofill/core/browser/suggestions/suggestion.h"
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"
+#import "components/autofill/core/common/unique_ids.h"
 #import "components/personal_context/first_run/personal_context_first_run_service.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
@@ -29,6 +30,7 @@
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_search_item.h"
 #import "ios/web/public/web_state.h"
 #import "services/metrics/public/cpp/ukm_source_id.h"
+#import "url/origin.h"
 
 namespace {
 
@@ -36,11 +38,19 @@ namespace {
 constexpr std::string_view kNoticeInteractionsHistogram =
     "PersonalContext.AtMemory.NoticeInteractions";
 
+// TODO(crbug.com/556290278): Fix placeholder once the focused field ID is
+// plumbed.
+autofill::FieldGlobalId GetPlaceholderFieldId() {
+  return {autofill::LocalFrameToken(), autofill::FieldRendererId(1)};
+}
+
 }  // namespace
 
 @implementation AtMemorySearchMediator {
   // Manager for AtMemory operations.
   raw_ptr<autofill::AtMemoryManager> _atMemoryManager;
+  // Manager for Browser Autofill operations.
+  raw_ptr<autofill::BrowserAutofillManager> _autofillManager;
   // The WebState for the active tab.
   base::WeakPtr<web::WebState> _webState;
   // Service for managing the first-run notice state.
@@ -68,6 +78,7 @@ constexpr std::string_view kNoticeInteractionsHistogram =
     CHECK(atMemoryManager);
     CHECK(autofillManager);
     _atMemoryManager = atMemoryManager;
+    _autofillManager = autofillManager;
     _webState = webState ? webState->GetWeakPtr() : nullptr;
     _firstRunService = firstRunService;
 
@@ -90,17 +101,23 @@ constexpr std::string_view kNoticeInteractionsHistogram =
           [weakSelf onAtMemorySuggestionsReceived:suggestions];
         });
 
+    url::Origin origin =
+        webState ? url::Origin::Create(webState->GetLastCommittedURL())
+                 : url::Origin();
+    _atMemoryManager->GetStateForField(GetPlaceholderFieldId(), origin);
+
     // TODO(crbug.com/527392582): Update trigger source once a dedicated
     // manual fallback / accessory trigger source is introduced.
     _atMemoryManager->OnPopupShown(
         /*bam=*/*autofillManager,
         /*form_id=*/autofill::FormGlobalId(),
-        /*field_id=*/autofill::FieldGlobalId(),
+        /*field_id=*/GetPlaceholderFieldId(),
         /*trigger_source=*/
         autofill::AutofillSuggestionTriggerSource::kAtMemoryContextMenu,
         /*metadata=*/{},
         /*update_callback=*/std::move(updateCallback),
         /*ukm_source_id=*/ukmSourceId);
+    _atMemoryManager->OnFilterChanged(u"");
   }
   return self;
 }
@@ -120,6 +137,7 @@ constexpr std::string_view kNoticeInteractionsHistogram =
     _atMemoryManager->OnPopupHidden();
   }
   _atMemoryManager = nullptr;
+  _autofillManager = nullptr;
   _webState = nullptr;
   _firstRunService = nullptr;
   _suggestions.clear();
@@ -142,6 +160,10 @@ constexpr std::string_view kNoticeInteractionsHistogram =
     base::UmaHistogramEnumeration(
         kNoticeInteractionsHistogram,
         autofill::AutofillMetrics::PopupNoticeInteractions::kShown);
+  }
+
+  if (!_suggestions.empty()) {
+    [self pushSuggestionsToConsumer];
   }
 }
 
@@ -175,6 +197,17 @@ constexpr std::string_view kNoticeInteractionsHistogram =
 }
 
 - (void)didSelectSearchResultItem:(AtMemorySearchItem*)item {
+  if (!item || !_webState) {
+    return;
+  }
+
+  if (_atMemoryManager && _autofillManager && item.index >= 0 &&
+      static_cast<size_t>(item.index) < _suggestions.size()) {
+    _atMemoryManager->FillSearchResult(
+        *_autofillManager, autofill::FormGlobalId(), GetPlaceholderFieldId(),
+        _suggestions[item.index], /*metadata=*/{});
+  }
+
   [self.fillHandler fillWithContent:item.title];
   [self.atMemoryHandler dismissAtMemory];
 }
@@ -198,18 +231,23 @@ constexpr std::string_view kNoticeInteractionsHistogram =
 - (void)onAtMemorySuggestionsReceived:
     (const std::vector<autofill::Suggestion>&)suggestions {
   _suggestions = suggestions;
+  [self pushSuggestionsToConsumer];
+}
 
-  if (suggestions.empty()) {
-    [self.consumer setErrorType:AtMemoryErrorType::kNoDataError];
-    return;
-  }
-
+// Pushes current suggestions to the consumer.
+- (void)pushSuggestionsToConsumer {
   NSMutableArray<AtMemorySearchItem*>* searchItems =
       [[NSMutableArray alloc] init];
+  NSMutableArray<AtMemorySearchItem*>* recentFillItems =
+      [[NSMutableArray alloc] init];
 
-  for (size_t i = 0; i < suggestions.size(); ++i) {
-    const auto& suggestion = suggestions[i];
+  bool isRecentFills = false;
+  for (size_t i = 0; i < _suggestions.size(); ++i) {
+    const auto& suggestion = _suggestions[i];
     switch (suggestion.type) {
+      case autofill::SuggestionType::kTitle:
+        isRecentFills = true;
+        break;
       case autofill::SuggestionType::kAtMemoryNoConnection:
         [self.consumer setErrorType:AtMemoryErrorType::kNoConnectionError];
         return;
@@ -230,7 +268,11 @@ constexpr std::string_view kNoticeInteractionsHistogram =
 
         AtMemorySearchItem* item =
             [[AtMemorySearchItem alloc] initWithSuggestion:suggestion index:i];
-        [searchItems addObject:item];
+        if (isRecentFills) {
+          [recentFillItems addObject:item];
+        } else {
+          [searchItems addObject:item];
+        }
         break;
       }
       default:
@@ -238,10 +280,14 @@ constexpr std::string_view kNoticeInteractionsHistogram =
     }
   }
 
-  if (searchItems.count > 0) {
+  if (recentFillItems.count > 0) {
+    [self.consumer setRecentFills:recentFillItems];
+  } else if (searchItems.count > 0) {
     [self.consumer setSearchResults:searchItems];
-  } else {
+  } else if (_atMemoryManager && _atMemoryManager->IsSearching()) {
     [self.consumer setErrorType:AtMemoryErrorType::kNoDataError];
+  } else {
+    [self.consumer setRecentFills:@[]];
   }
 }
 

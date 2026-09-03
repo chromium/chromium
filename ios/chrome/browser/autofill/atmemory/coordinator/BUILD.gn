@@ -35,6 +35,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/web/public",
+    "//url",
   ]
 }
 
