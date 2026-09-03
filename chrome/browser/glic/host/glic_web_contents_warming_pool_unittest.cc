@@ -53,12 +53,17 @@ class FakeWebContentsManager : public GlicWebContentsManager {
     return web_client_manager_;
   }
   bool ShouldReloadOnShow() const override {
-    return web_contents_ ? web_contents_->IsCrashed() : false;
+    return should_reload_on_show_ ||
+           (web_contents_ ? web_contents_->IsCrashed() : false);
+  }
+  void set_should_reload_on_show(bool reload) {
+    should_reload_on_show_ = reload;
   }
 
  private:
   GlicWebClientManager web_client_manager_;
   raw_ptr<content::WebContents> web_contents_;
+  bool should_reload_on_show_ = false;
 };
 
 class TestGlicWebContentsWarmingPool : public GlicWebContentsWarmingPool {
@@ -281,6 +286,29 @@ TEST_F(GlicWebContentsWarmingPoolTest, TakeContainerReplacesCrashedContainer) {
   EXPECT_TRUE(taken);
   EXPECT_NE(contents, taken->active_web_contents());
   EXPECT_FALSE(taken->active_web_contents()->IsCrashed());
+  histogram_tester.ExpectUniqueSample("Glic.WarmingPool.HitStatus",
+                                      WarmingPoolStatus::kCrashed, 1);
+}
+
+TEST_F(GlicWebContentsWarmingPoolTest, TakeContainerReplacesErroredContainer) {
+  base::HistogramTester histogram_tester;
+  TestGlicWebContentsWarmingPool warming_pool(&profile_,
+                                              &web_contents_factory_);
+  ASSERT_TRUE(warming_pool.MaybeStartWarming(GlicWarmingTrigger::kStartup));
+  auto* container = static_cast<FakeWebContentsManager*>(
+      warming_pool.GetWarmedContainerForTesting());
+  ASSERT_TRUE(container);
+  content::WebContents* contents = container->active_web_contents();
+  ASSERT_TRUE(contents);
+
+  // Set the container to an error state.
+  container->set_should_reload_on_show(true);
+  ASSERT_TRUE(container->ShouldReloadOnShow());
+
+  std::unique_ptr<GlicWebContentsManager> taken = warming_pool.TakeContainer();
+  EXPECT_TRUE(taken);
+  EXPECT_NE(contents, taken->active_web_contents());
+  EXPECT_FALSE(taken->ShouldReloadOnShow());
   histogram_tester.ExpectUniqueSample("Glic.WarmingPool.HitStatus",
                                       WarmingPoolStatus::kCrashed, 1);
 }
