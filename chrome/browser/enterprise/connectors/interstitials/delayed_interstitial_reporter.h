@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_DATA_PROTECTION_DELAYED_INTERSTITIAL_REPORTER_H_
-#define CHROME_BROWSER_ENTERPRISE_DATA_PROTECTION_DELAYED_INTERSTITIAL_REPORTER_H_
+#ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_INTERSTITIALS_DELAYED_INTERSTITIAL_REPORTER_H_
+#define CHROME_BROWSER_ENTERPRISE_CONNECTORS_INTERSTITIALS_DELAYED_INTERSTITIAL_REPORTER_H_
 
 #include <string>
 
@@ -26,6 +26,7 @@ class DelayedInterstitialReporter
       public content::WebContentsUserData<DelayedInterstitialReporter> {
  public:
   using TitleCallback = base::OnceCallback<void(const std::string& tab_title)>;
+
 
   ~DelayedInterstitialReporter() override;
 
@@ -52,7 +53,7 @@ class DelayedInterstitialReporter
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
   void PrimaryPageChanged(content::Page& page) override;
-  void WebContentsDestroyed() override;
+
 
   enum class RunState { kFailed, kTimeout, kSuccess };
 
@@ -68,4 +69,4 @@ class DelayedInterstitialReporter
 
 }  // namespace enterprise_data_protection
 
-#endif  // CHROME_BROWSER_ENTERPRISE_DATA_PROTECTION_DELAYED_INTERSTITIAL_REPORTER_H_
+#endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_INTERSTITIALS_DELAYED_INTERSTITIAL_REPORTER_H_

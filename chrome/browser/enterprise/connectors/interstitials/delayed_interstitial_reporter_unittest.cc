@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/data_protection/delayed_interstitial_reporter.h"
+#include "chrome/browser/enterprise/connectors/interstitials/delayed_interstitial_reporter.h"
 
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/mock_callback.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
@@ -44,8 +46,7 @@ TEST_F(DelayedInterstitialReporterTest, SuccessfulTitleExtraction) {
 
   GURL url("https://example.com");
 
-  Start(web_contents(), mock_callback.Get(), false,
-                                     "SafeBrowsing");
+  Start(web_contents(), mock_callback.Get(), false, "SafeBrowsing");
 
   EXPECT_CALL(mock_callback, Run("My Test Title"));
 
@@ -61,8 +62,7 @@ TEST_F(DelayedInterstitialReporterTest, StringTruncationLimit) {
 
   GURL url("https://example.com");
 
-  Start(web_contents(), mock_callback.Get(), false,
-                                     "SafeBrowsing");
+  Start(web_contents(), mock_callback.Get(), false, "SafeBrowsing");
 
   std::string long_title(2000, 'A');
   std::string expected_title(1024, 'A');
@@ -82,8 +82,7 @@ TEST_F(DelayedInterstitialReporterTest, PrimaryPageChangedDegradation) {
 
   GURL url("https://example.com");
 
-  Start(web_contents(), mock_callback.Get(), false,
-                                     "SafeBrowsing");
+  Start(web_contents(), mock_callback.Get(), false, "SafeBrowsing");
 
   EXPECT_CALL(mock_callback, Run("other.com"));
 
@@ -97,8 +96,7 @@ TEST_F(DelayedInterstitialReporterTest, WebContentsDestroyedDegradation) {
   auto custom_web_contents = content::WebContentsTester::CreateTestWebContents(
       browser_context(), nullptr);
 
-  Start(
-      custom_web_contents.get(), mock_callback.Get(), false, "SafeBrowsing");
+  Start(custom_web_contents.get(), mock_callback.Get(), false, "SafeBrowsing");
 
   EXPECT_CALL(mock_callback, Run(""));
 
@@ -125,8 +123,7 @@ TEST_F(DelayedInterstitialReporterTest,
   EXPECT_CALL(mock_callback, Run("My Test Title")).Times(0);
 
   Start(web_contents(), mock_callback.Get(),
-                                     /*is_bypassing_interstitial=*/true,
-                                     "UrlFiltering");
+        /*is_bypassing_interstitial=*/true, "UrlFiltering");
 
   // Now we destroy the webcontents to trigger the fallback, and EXPECT_CALL it
   // there.
@@ -150,8 +147,7 @@ TEST_F(DelayedInterstitialReporterTest, BypassingInterstitialWaitAndNavigate) {
   EXPECT_CALL(mock_callback, Run("Malicious Title")).Times(1);
 
   Start(web_contents(), mock_callback.Get(),
-                                     /*is_bypassing_interstitial=*/true,
-                                     "UrlFiltering");
+        /*is_bypassing_interstitial=*/true, "UrlFiltering");
 
   auto simulator2 = content::NavigationSimulator::CreateRendererInitiated(
       GURL("https://malicious.com"), web_contents()->GetPrimaryMainFrame());
@@ -168,5 +164,7 @@ TEST_F(DelayedInterstitialReporterTest, BypassingInterstitialWaitAndNavigate) {
   histogram_tester.ExpectUniqueSample(
       "Enterprise.DelayedReportingInterstitial.Timeout.UrlFiltering", false, 1);
 }
+
+
 
 }  // namespace enterprise_data_protection

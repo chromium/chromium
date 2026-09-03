@@ -33,8 +33,8 @@ source_set("unit_tests") {
   # Some of these tests declare file-scope objects with non-trivial
   # destructors.
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+  sources = []
 
-  sources = [ "delayed_interstitial_reporter_unittest.cc" ]
 
   deps = [
     "//base",

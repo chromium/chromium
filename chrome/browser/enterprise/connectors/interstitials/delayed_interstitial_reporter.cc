@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/data_protection/delayed_interstitial_reporter.h"
+#include "chrome/browser/enterprise/connectors/interstitials/delayed_interstitial_reporter.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "chrome/browser/interstitials/enterprise_util.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 
 namespace {
 constexpr base::TimeDelta kTimeout = base::Seconds(5);
@@ -52,6 +52,8 @@ void DelayedInterstitialReporter::Start(content::WebContents* web_contents,
       uma_suffix);
 }
 
+
+
 DelayedInterstitialReporter::DelayedInterstitialReporter(
     content::WebContents* web_contents,
     TitleCallback report_callback,
@@ -72,7 +74,15 @@ void DelayedInterstitialReporter::OnTimeout() {
   RunCallbackAndCleanUp(RunState::kTimeout);
 }
 
-DelayedInterstitialReporter::~DelayedInterstitialReporter() = default;
+DelayedInterstitialReporter::~DelayedInterstitialReporter() {
+  if (report_callback_) {
+    std::string tab_title;
+    if (web_contents()) {
+      tab_title = base::UTF16ToUTF8(web_contents()->GetTitle());
+    }
+    std::move(report_callback_).Run(tab_title.substr(0, 1024));
+  }
+}
 
 void DelayedInterstitialReporter::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
@@ -91,9 +101,6 @@ void DelayedInterstitialReporter::PrimaryPageChanged(content::Page& page) {
   RunCallbackAndCleanUp(RunState::kFailed);
 }
 
-void DelayedInterstitialReporter::WebContentsDestroyed() {
-  RunCallbackAndCleanUp(RunState::kFailed);
-}
 
 void DelayedInterstitialReporter::RunCallbackAndCleanUp(RunState run_state) {
   if (report_callback_) {
