@@ -4803,6 +4803,12 @@
       status: "stable",
     },
     {
+      // Kill switch for skipping MathML <script src> and simulating the HTML
+      // breakout tags in the HTML preload scanner. https://crbug.com/40728681
+      name: "PreloadScannerSkipMathMLScript",
+      status: "stable",
+    },
+    {
       // Used to allow chrome://flags to turn off prerendering. (Without using
       // the user-facing preloading settings page to turn off other
       // preloading.) See https://crbug.com/1494471.

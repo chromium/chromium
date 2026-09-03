@@ -63,6 +63,8 @@
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/parser/html_srcset_parser.h"
 #include "third_party/blink/renderer/core/html/parser/html_tokenizer.h"
+#include "third_party/blink/renderer/core/html/parser/html_tree_builder.h"
+#include "third_party/blink/renderer/core/html_element_lookup_trie.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/lcp_critical_path_predictor/lcp_critical_path_predictor.h"
@@ -70,9 +72,11 @@
 #include "third_party/blink/renderer/core/loader/fetch_priority_attribute.h"
 #include "third_party/blink/renderer/core/loader/preload_helper.h"
 #include "third_party/blink/renderer/core/loader/web_bundle/script_web_bundle_rule.h"
+#include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/script_loader.h"
 #include "third_party/blink/renderer/core/script_type_names.h"
+#include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/loader/fetch/client_hints_preferences.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
@@ -197,7 +201,8 @@ class TokenPreloadScanner::StartTagScanner {
       MediaValuesCached* media_values,
       TokenPreloadScanner::ScannerType scanner_type,
       const HashSet<String>* disabled_image_types,
-      features::LcppPreloadLazyLoadImageType preload_lazy_load_image_type)
+      features::LcppPreloadLazyLoadImageType preload_lazy_load_image_type,
+      std::optional<TokenPreloadScanner::ForeignContentType> foreign_content)
       : tag_impl_(tag_impl),
         media_values_(media_values),
         scanner_type_(scanner_type),
@@ -212,6 +217,24 @@ class TokenPreloadScanner::StartTagScanner {
       case features::LcppPreloadLazyLoadImageType::kNativeLazyLoading:
         use_data_src_attr_match_for_image_ = false;
         break;
+    }
+    // SVG <image> and <script> load via href/xlink:href, not src. Handle
+    // <image> like <img>, with the attribute mapping done in
+    // ProcessSVGHrefAttribute(). In MathML, script is an unknown element
+    // and loads nothing.
+    if (foreign_content == TokenPreloadScanner::ForeignContentType::kSvg) {
+      if (Match(tag_impl_, html_names::kImageTag)) {
+        is_svg_image_ = true;
+        tag_impl_ = html_names::kImgTag.LocalName().Impl();
+      } else if (Match(tag_impl_, html_names::kScriptTag)) {
+        is_svg_script_ = true;
+      }
+    } else if (RuntimeEnabledFeatures::
+                   PreloadScannerSkipMathMLScriptEnabled() &&
+               foreign_content ==
+                   TokenPreloadScanner::ForeignContentType::kMath &&
+               Match(tag_impl_, html_names::kScriptTag)) {
+      tag_impl_ = nullptr;
     }
     if (Match(tag_impl_, html_names::kImgTag) ||
         Match(tag_impl_, html_names::kSourceTag) ||
@@ -266,6 +289,13 @@ class TokenPreloadScanner::StartTagScanner {
   }
 
   void PostProcessAfterAttributes() {
+    if (is_svg_image_ || is_svg_script_) {
+      // href takes precedence over the deprecated xlink:href.
+      SetUrlToLoad(
+          svg_href_value_.IsNull() ? svg_xlink_href_value_ : svg_href_value_,
+          kDisallowURLReplacement);
+      return;
+    }
     if (Match(tag_impl_, html_names::kImgTag) ||
         (link_is_preload_ && as_attribute_value_ == "image"))
       SetUrlFromImageAttributes();
@@ -339,10 +369,14 @@ class TokenPreloadScanner::StartTagScanner {
         (referrer_policy_ != network::mojom::ReferrerPolicy::kDefault)
             ? referrer_policy_
             : document_parameters.referrer_policy;
+    // The initiator shows up as PerformanceResourceTiming.initiatorType,
+    // which is the element's local name: "image" for SVG <image>.
     auto request = PreloadRequest::CreateIfNeeded(
-        InitiatorFor(tag_impl_, link_is_modulepreload_), url_to_load_,
-        predicted_base_url, type.value(), referrer_policy, is_image_set,
-        exclusion_info, resource_width_, resource_height_, request_type);
+        is_svg_image_ ? html_names::kImageTag.LocalName()
+                      : InitiatorFor(tag_impl_, link_is_modulepreload_),
+        url_to_load_, predicted_base_url, type.value(), referrer_policy,
+        is_image_set, exclusion_info, resource_width_, resource_height_,
+        request_type);
     if (!request)
       return nullptr;
 
@@ -617,20 +651,31 @@ class TokenPreloadScanner::StartTagScanner {
     }
   }
 
+  void ProcessSVGHrefAttribute(const AtomicString& attribute_name,
+                               const String& attribute_value) {
+    if (Match(attribute_name, html_names::kHrefAttr)) {
+      svg_href_value_ = attribute_value;
+    } else if (attribute_name == "xlink:href") {
+      svg_xlink_href_value_ = attribute_value;
+    }
+  }
+
   void ProcessAttribute(const AtomicString& attribute_name,
                         const String& attribute_value) {
     if (Match(attribute_name, html_names::kCharsetAttr))
       charset_ = attribute_value;
 
-    if (Match(tag_impl_, html_names::kScriptTag))
+    if (is_svg_image_ || is_svg_script_) {
+      ProcessSVGHrefAttribute(attribute_name, attribute_value);
+    } else if (Match(tag_impl_, html_names::kScriptTag)) {
       ProcessScriptAttribute(attribute_name, attribute_value);
-    else if (Match(tag_impl_, html_names::kImgTag))
+    } else if (Match(tag_impl_, html_names::kImgTag)) {
       ProcessImgAttribute(attribute_name, attribute_value);
-    else if (Match(tag_impl_, html_names::kLinkTag))
+    } else if (Match(tag_impl_, html_names::kLinkTag)) {
       ProcessLinkAttribute(attribute_name, attribute_value);
-    else if (Match(tag_impl_, html_names::kInputTag))
+    } else if (Match(tag_impl_, html_names::kInputTag)) {
       ProcessInputAttribute(attribute_name, attribute_value);
-    else if (Match(tag_impl_, html_names::kSourceTag))
+    } else if (Match(tag_impl_, html_names::kSourceTag))
       ProcessSourceAttribute(attribute_name, attribute_value);
     else if (Match(tag_impl_, html_names::kVideoTag))
       ProcessVideoAttribute(attribute_name, attribute_value);
@@ -870,6 +915,10 @@ class TokenPreloadScanner::StartTagScanner {
   std::optional<float> resource_height_;
   features::LcppPreloadLazyLoadImageType preload_lazy_load_image_type_;
   bool use_data_src_attr_match_for_image_ = false;
+  bool is_svg_image_ = false;
+  bool is_svg_script_ = false;
+  String svg_href_value_;
+  String svg_xlink_href_value_;
 };
 
 TokenPreloadScanner::TokenPreloadScanner(
@@ -1003,6 +1052,13 @@ void TokenPreloadScanner::Scan(const HTMLToken& token,
       if (template_count_) {
         return;
       }
+      if (Match(tag_impl, svg_names::kSVGTag) ||
+          Match(tag_impl, mathml_names::kMathTag)) {
+        if (!foreign_content_stack_.empty()) {
+          foreign_content_stack_.pop_back();
+        }
+        return;
+      }
       if (Match(tag_impl, html_names::kStyleTag)) {
         if (in_style_)
           css_scanner_.Reset();
@@ -1049,8 +1105,30 @@ void TokenPreloadScanner::Scan(const HTMLToken& token,
           ++template_count_;
         }
       }
-      if (template_count_)
+      if (template_count_) {
         return;
+      }
+      if (RuntimeEnabledFeatures::PreloadScannerSkipMathMLScriptEnabled() &&
+          !foreign_content_stack_.empty() &&
+          HTMLTreeBuilder::IsForeignContentBreakoutStartTag(
+              LookupHtmlTag(token.GetName()), token)) {
+        foreign_content_stack_.clear();
+      }
+      // The tree builder rewrites a bare <image> start tag to <img>, but not
+      // inside SVG/MathML foreign content, so gate the rewrite on the stack.
+      // https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inbody
+      if (Match(tag_impl, svg_names::kSVGTag)) {
+        if (!token.SelfClosing()) {
+          foreign_content_stack_.push_back(ForeignContentType::kSvg);
+        }
+      } else if (Match(tag_impl, mathml_names::kMathTag)) {
+        if (!token.SelfClosing()) {
+          foreign_content_stack_.push_back(ForeignContentType::kMath);
+        }
+      } else if (foreign_content_stack_.empty() &&
+                 Match(tag_impl, html_names::kImageTag)) {
+        tag_impl = html_names::kImgTag.LocalName().Impl();
+      }
       // Don't early return, because the StartTagScanner needs to look at these
       // too.
       if (Match(tag_impl, html_names::kStyleTag)) {
@@ -1145,10 +1223,14 @@ void TokenPreloadScanner::Scan(const HTMLToken& token,
       }
 
       MediaValuesCached* media_values = EnsureMediaValues();
+      std::optional<ForeignContentType> foreign_content;
+      if (!foreign_content_stack_.empty()) {
+        foreign_content = foreign_content_stack_.back();
+      }
       StartTagScanner scanner(
           tag_impl, media_values, scanner_type_,
           &document_parameters_->disabled_image_types,
-          document_parameters_->preload_lazy_load_image_type);
+          document_parameters_->preload_lazy_load_image_type, foreign_content);
       scanner.ProcessAttributes(token.Attributes());
 
       if (in_picture_ && media_values->Width()) {

@@ -3115,62 +3115,14 @@ void HTMLTreeBuilder::ProcessTokenInForeignContent(AtomicHTMLToken* token) {
       break;
     case HTMLToken::kStartTag: {
       const HTMLTag tag = token->GetHTMLTag();
-      switch (tag) {
-        case HTMLTag::kFont:
-          if (!token->GetAttributeItem(html_names::kColorAttr) &&
-              !token->GetAttributeItem(html_names::kFaceAttr) &&
-              !token->GetAttributeItem(html_names::kSizeAttr)) {
-            break;
-          }
-          [[fallthrough]];
-        case HTMLTag::kB:
-        case HTMLTag::kBig:
-        case HTMLTag::kBlockquote:
-        case HTMLTag::kBody:
-        case HTMLTag::kBr:
-        case HTMLTag::kCenter:
-        case HTMLTag::kCode:
-        case HTMLTag::kDd:
-        case HTMLTag::kDiv:
-        case HTMLTag::kDl:
-        case HTMLTag::kDt:
-        case HTMLTag::kEm:
-        case HTMLTag::kEmbed:
-        case NUMBERED_HEADER_CASES:
-        case HTMLTag::kHead:
-        case HTMLTag::kHr:
-        case HTMLTag::kI:
-        case HTMLTag::kImg:
-        case HTMLTag::kLi:
-        case HTMLTag::kListing:
-        case HTMLTag::kMenu:
-        case HTMLTag::kMeta:
-        case HTMLTag::kNobr:
-        case HTMLTag::kOl:
-        case HTMLTag::kP:
-        case HTMLTag::kPre:
-        case HTMLTag::kRuby:
-        case HTMLTag::kS:
-        case HTMLTag::kSmall:
-        case HTMLTag::kSpan:
-        case HTMLTag::kStrong:
-        case HTMLTag::kStrike:
-        case HTMLTag::kSub:
-        case HTMLTag::kSup:
-        case HTMLTag::kTable:
-        case HTMLTag::kTt:
-        case HTMLTag::kU:
-        case HTMLTag::kUl:
-        case HTMLTag::kVar:
-          ParseError(token);
-          tree_.OpenElements()->PopUntilForeignContentScopeMarker();
-          ProcessStartTag(token);
-          return;
-        case HTMLTag::kScript:
-          script_to_process_start_position_ = parser_->GetTextPosition();
-          break;
-        default:
-          break;
+      if (IsForeignContentBreakoutStartTag(tag, *token)) {
+        ParseError(token);
+        tree_.OpenElements()->PopUntilForeignContentScopeMarker();
+        ProcessStartTag(token);
+        return;
+      }
+      if (tag == HTMLTag::kScript) {
+        script_to_process_start_position_ = parser_->GetTextPosition();
       }
       const AtomicString& current_namespace =
           adjusted_current_node->NamespaceURI();

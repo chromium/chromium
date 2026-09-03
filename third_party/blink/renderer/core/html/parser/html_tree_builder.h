@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_construction_site.h"
 #include "third_party/blink/renderer/core/html/parser/html_element_stack.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_options.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
@@ -75,6 +76,67 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
                   ParserRootInsertionPoint* root_insertion_point);
 
   CORE_EXPORT static void ResetCachedFeaturesForTesting();
+
+  // Returns true if a start tag token with `tag` pops the parser back out of
+  // SVG/MathML foreign content. `TokenType` is HTMLToken or AtomicHTMLToken.
+  // https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inforeign
+  template <typename TokenType>
+  static bool IsForeignContentBreakoutStartTag(html_names::HTMLTag tag,
+                                               TokenType& token) {
+    switch (tag) {
+      case html_names::HTMLTag::kFont:
+        return token.GetAttributeItem(html_names::kColorAttr) ||
+               token.GetAttributeItem(html_names::kFaceAttr) ||
+               token.GetAttributeItem(html_names::kSizeAttr);
+      case html_names::HTMLTag::kB:
+      case html_names::HTMLTag::kBig:
+      case html_names::HTMLTag::kBlockquote:
+      case html_names::HTMLTag::kBody:
+      case html_names::HTMLTag::kBr:
+      case html_names::HTMLTag::kCenter:
+      case html_names::HTMLTag::kCode:
+      case html_names::HTMLTag::kDd:
+      case html_names::HTMLTag::kDiv:
+      case html_names::HTMLTag::kDl:
+      case html_names::HTMLTag::kDt:
+      case html_names::HTMLTag::kEm:
+      case html_names::HTMLTag::kEmbed:
+      case html_names::HTMLTag::kH1:
+      case html_names::HTMLTag::kH2:
+      case html_names::HTMLTag::kH3:
+      case html_names::HTMLTag::kH4:
+      case html_names::HTMLTag::kH5:
+      case html_names::HTMLTag::kH6:
+      case html_names::HTMLTag::kHead:
+      case html_names::HTMLTag::kHr:
+      case html_names::HTMLTag::kI:
+      case html_names::HTMLTag::kImg:
+      case html_names::HTMLTag::kLi:
+      case html_names::HTMLTag::kListing:
+      case html_names::HTMLTag::kMenu:
+      case html_names::HTMLTag::kMeta:
+      case html_names::HTMLTag::kNobr:
+      case html_names::HTMLTag::kOl:
+      case html_names::HTMLTag::kP:
+      case html_names::HTMLTag::kPre:
+      case html_names::HTMLTag::kRuby:
+      case html_names::HTMLTag::kS:
+      case html_names::HTMLTag::kSmall:
+      case html_names::HTMLTag::kSpan:
+      case html_names::HTMLTag::kStrong:
+      case html_names::HTMLTag::kStrike:
+      case html_names::HTMLTag::kSub:
+      case html_names::HTMLTag::kSup:
+      case html_names::HTMLTag::kTable:
+      case html_names::HTMLTag::kTt:
+      case html_names::HTMLTag::kU:
+      case html_names::HTMLTag::kUl:
+      case html_names::HTMLTag::kVar:
+        return true;
+      default:
+        return false;
+    }
+  }
 
  private:
   HTMLTreeBuilder(HTMLDocumentParser*,

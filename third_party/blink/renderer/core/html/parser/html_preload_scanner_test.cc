@@ -556,6 +556,118 @@ TEST_F(HTMLPreloadScannerTest, testLinkRelStylesheetDisabled) {
   }
 }
 
+TEST_F(HTMLPreloadScannerTest, testImageElement) {
+  PreloadScannerTestCase test_cases[] = {
+      // A bare <image> is rewritten to <img> by the tree builder.
+      {"http://example.test", "<image src='bla.gif'>", "bla.gif",
+       "http://example.test/", ResourceType::kImage, 0},
+      {"http://example.test", "<image srcset='bla.gif 320w, blabla.gif 640w'>",
+       "blabla.gif", "http://example.test/", ResourceType::kImage, 0},
+      // In SVG/MathML foreign content <image> is not rewritten and has no src
+      // loading.
+      {"http://example.test", "<svg><image src='bla.gif'></image></svg>",
+       nullptr, "http://example.test/", ResourceType::kImage, 0},
+      {"http://example.test", "<math><image src='bla.gif'></image></math>",
+       nullptr, "http://example.test/", ResourceType::kImage, 0},
+      // The rewrite resumes after the foreign content subtree closes.
+      {"http://example.test", "<svg></svg><image src='bla.gif'>", "bla.gif",
+       "http://example.test/", ResourceType::kImage, 0},
+  };
+
+  for (const auto& test_case : test_cases) {
+    Test(test_case);
+  }
+}
+
+TEST_F(HTMLPreloadScannerTest, testSVGImage) {
+  PreloadScannerTestCase test_cases[] = {
+      // SVG <image> loads via href/xlink:href, not src.
+      {"http://example.test", "<svg><image href='bla.gif'></image></svg>",
+       "bla.gif", "http://example.test/", ResourceType::kImage, 0},
+      {"http://example.test", "<svg><image xlink:href='bla.gif'></image></svg>",
+       "bla.gif", "http://example.test/", ResourceType::kImage, 0},
+      // href takes precedence over xlink:href regardless of order.
+      {"http://example.test",
+       "<svg><image href='a.gif' xlink:href='b.gif'></image></svg>", "a.gif",
+       "http://example.test/", ResourceType::kImage, 0},
+      {"http://example.test",
+       "<svg><image xlink:href='b.gif' href='a.gif'></image></svg>", "a.gif",
+       "http://example.test/", ResourceType::kImage, 0},
+      {"http://example.test", "<svg><image src='bla.gif'></image></svg>",
+       nullptr, "http://example.test/", ResourceType::kImage, 0},
+      // MathML <image> is an unknown element and does not load.
+      {"http://example.test", "<math><image href='bla.gif'></image></math>",
+       nullptr, "http://example.test/", ResourceType::kImage, 0},
+      // HTML <image> becomes <img>, which has no href attribute.
+      {"http://example.test", "<image href='bla.gif'>", nullptr,
+       "http://example.test/", ResourceType::kImage, 0},
+  };
+
+  for (const auto& test_case : test_cases) {
+    Test(test_case);
+  }
+}
+
+TEST_F(HTMLPreloadScannerTest, testSVGScript) {
+  PreloadScannerTestCase test_cases[] = {
+      // SVG <script> loads via href/xlink:href, not src.
+      {"http://example.test", "<svg><script href='bla.js'></script></svg>",
+       "bla.js", "http://example.test/", ResourceType::kScript, 0},
+      {"http://example.test",
+       "<svg><script xlink:href='bla.js'></script></svg>", "bla.js",
+       "http://example.test/", ResourceType::kScript, 0},
+      // href takes precedence over xlink:href regardless of order.
+      {"http://example.test",
+       "<svg><script href='a.js' xlink:href='b.js'></script></svg>", "a.js",
+       "http://example.test/", ResourceType::kScript, 0},
+      {"http://example.test",
+       "<svg><script xlink:href='b.js' href='a.js'></script></svg>", "a.js",
+       "http://example.test/", ResourceType::kScript, 0},
+      {"http://example.test", "<svg><script src='bla.js'></script></svg>",
+       nullptr, "http://example.test/", ResourceType::kScript, 0},
+      // HTML <script> has no href attribute.
+      {"http://example.test", "<script href='bla.js'></script>", nullptr,
+       "http://example.test/", ResourceType::kScript, 0},
+      {"http://example.test", "<svg></svg><script src='bla.js'></script>",
+       "bla.js", "http://example.test/", ResourceType::kScript, 0},
+  };
+
+  for (const auto& test_case : test_cases) {
+    Test(test_case);
+  }
+}
+
+TEST_F(HTMLPreloadScannerTest, testMathScript) {
+  PreloadScannerTestCase test_cases[] = {
+      // MathML script is an unknown element and does not load.
+      {"http://example.test", "<math><script src='bla.js'></script></math>",
+       nullptr, "http://example.test/", ResourceType::kScript, 0},
+      {"http://example.test",
+       "<math><font><script src='bla.js'></script></font></math>", nullptr,
+       "http://example.test/", ResourceType::kScript, 0},
+      // <font> with face/color/size breaks out of foreign content, making
+      // the script an HTML script.
+      {"http://example.test",
+       "<math><font face=''><script src='bla.js'></script></font></math>",
+       "bla.js", "http://example.test/", ResourceType::kScript, 0},
+      {"http://example.test",
+       "<math><font color='red'><script src='bla.js'></script></font></math>",
+       "bla.js", "http://example.test/", ResourceType::kScript, 0},
+      // Other HTML breakout tags work the same way.
+      {"http://example.test",
+       "<math><div><script src='bla.js'></script></div></math>", "bla.js",
+       "http://example.test/", ResourceType::kScript, 0},
+      {"http://example.test", "<math><img src='bla.gif'></math>", "bla.gif",
+       "http://example.test/", ResourceType::kImage, 0},
+      {"http://example.test", "<math></math><script src='bla.js'></script>",
+       "bla.js", "http://example.test/", ResourceType::kScript, 0},
+  };
+
+  for (const auto& test_case : test_cases) {
+    Test(test_case);
+  }
+}
+
 TEST_F(HTMLPreloadScannerTest, testImagesWithViewport) {
   PreloadScannerTestCase test_cases[] = {
       {"http://example.test",

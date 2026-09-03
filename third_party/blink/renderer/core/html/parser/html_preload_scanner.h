@@ -187,6 +187,11 @@ class TokenPreloadScanner {
   // template elements on the "stack" are DSD.
   size_t template_count_ = 0;
   size_t dsd_count_ = 0;
+  enum class ForeignContentType { kSvg, kMath };
+  // Stack of open <svg>/<math> subtrees, i.e. SVG/MathML foreign content.
+  // Foreign-content-dependent preload behavior (such as the <image>-to-<img>
+  // rewrite, which only applies in the HTML namespace) is gated on it.
+  Vector<ForeignContentType> foreign_content_stack_;
   std::unique_ptr<CachedDocumentParameters> document_parameters_;
   std::unique_ptr<MediaValuesCached::MediaValuesCachedData>
       media_values_cached_data_;
