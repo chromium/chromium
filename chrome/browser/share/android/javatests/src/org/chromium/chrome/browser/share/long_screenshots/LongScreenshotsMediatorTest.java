@@ -72,7 +72,6 @@ public class LongScreenshotsMediatorTest {
     @Mock private LongScreenshotsEntry mLongScreenshotsEntry;
 
     @Captor private ArgumentCaptor<BitmapGeneratorObserver> mBitmapGeneratorObserverCaptor;
-    @Captor private ArgumentCaptor<Bitmap> mBitmapCaptor;
 
     @Captor private ArgumentCaptor<LongScreenshotsEntry.EntryListener> mEntryListenerCaptor;
 

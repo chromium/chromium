@@ -17,8 +17,6 @@ import org.chromium.base.test.util.Feature;
 /** Unit tests for {@link UniqueIdentificationGeneratorFactory}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class UniqueIdentificationGeneratorFactoryTest {
-    public static final String IDENTITY_GENERATOR_BATCH_NAME = "identity_generator";
-
     @Test
     @SmallTest
     @Feature({"ChromeToMobile", "Omaha", "Sync"})

@@ -39,8 +39,6 @@ public class ScreenshotShareSheetMediatorUnitTest {
 
     @Mock Runnable mSaveRunnable;
 
-    @Mock Callback<Runnable> mInstallRunnable;
-
     @Mock Activity mContext;
 
     @Mock WindowAndroid mWindowAndroid;
