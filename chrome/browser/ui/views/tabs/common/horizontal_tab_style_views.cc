@@ -748,9 +748,13 @@ void HorizontalTabStyleViews::PaintTabBackground(
 
   const auto* widget = delegate_->GetView()->GetWidget();
   DCHECK(widget);
-  const SkColor tab_stroke_color = widget->GetColorProvider()->GetColor(
-      widget->ShouldPaintAsActive() ? kColorTabStrokeFrameActive
-                                    : kColorTabStrokeFrameInactive);
+  const SkColor tab_stroke_color =
+      (delegate_->IsPinned() && !delegate_->IsActive() &&
+       tabs::IsNewHorizontalPinnedTabStylingEnabled())
+          ? GetTabSeparatorColor()
+          : widget->GetColorProvider()->GetColor(
+                widget->ShouldPaintAsActive() ? kColorTabStrokeFrameActive
+                                              : kColorTabStrokeFrameInactive);
 
   PaintBackgroundStroke(canvas, group_color.value_or(tab_stroke_color));
   PaintSeparators(canvas);

@@ -782,6 +782,10 @@ HorizontalTabStripRegionViewNew::HorizontalTabStripRegionViewNew(
         browser, TabStripComboButton::Context::kHorizontalTabStrip));
     combo_button_->SetProperty(views::kCrossAxisAlignmentKey,
                                views::LayoutAlignment::kCenter);
+    combo_button_->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets::TLBR(
+            0, GetLayoutConstant(LayoutConstant::kTabStripPadding), 0, 0));
 
     if (glic::GlicEnabling::IsProfileEligible(browser_view->GetProfile())) {
       tab_strip_action_container =
