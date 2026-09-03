@@ -29,7 +29,7 @@ import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {assertNotStyle, assertStyle, createBackgroundImage, createTheme, installMock} from './test_support.js';
+import {assertCenterAligned, assertNotStyle, assertStyle, createBackgroundImage, createTheme, getCenter, getTextCenter, installMock, queryShadowPath} from './test_support.js';
 
 const VOICE_ACTIONS_METRIC = 'NewTabPage.VoiceActions';
 
@@ -1808,14 +1808,6 @@ suite('NewTabPageAppTest', () => {
     },
   ];
 
-  function getCenter(element: Element): {x: number, y: number} {
-    const rect = element.getBoundingClientRect();
-    return {
-      x: rect.left + rect.width / 2,
-      y: rect.top + rect.height / 2,
-    };
-  }
-
   [false, true].forEach(energyEffectAnimationEnabled => {
     invariant_test_cases.forEach(({
                                    energyEffectEnabled,
@@ -1940,6 +1932,44 @@ suite('NewTabPageAppTest', () => {
                   `Searchbox: (${searchboxCenter.x}, ${searchboxCenter.y}), ` +
                   `Composebox: (${composeboxCenter.x}, ${composeboxCenter.y})`);
         });
+
+        test(
+            'context menu button, text area, voice button, and cancel button are center-aligned',
+            async () => {
+              await recreateApp();
+              await microtasksFinished();
+
+              const searchbox = $$(app, '#searchbox');
+              assertTrue(!!searchbox, 'Searchbox should exist');
+
+              // Arrange: dispatch open-composebox event.
+              searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+                detail: {text: '', files: []},
+              }));
+              await microtasksFinished();
+
+              const composebox =
+                  app.shadowRoot.querySelector<NtpComposeboxElement>(
+                      '#composebox');
+              assertTrue(!!composebox, 'Composebox should exist');
+
+              // Assert that all 4 row elements share identical vertical center
+              // coordinates, evaluating the visual text centerline for the text
+              // area.
+              assertCenterAligned(
+                  composebox, {
+                    'Context Menu Button': [
+                      '#contextEntrypoint',
+                      '#entrypointButton',
+                      '#entrypoint',
+                    ],
+                    'Text Area': getTextCenter(queryShadowPath(
+                        composebox, 'cr-composebox-input', '#input')),
+                    'Voice Button': ['#voiceSearchButton'],
+                    'Cancel Button': ['cr-composebox-input', '#cancelIcon'],
+                  },
+                  'y');
+            });
 
         if (energyEffectEnabled) {
           test(

@@ -5,7 +5,7 @@
 import type {BackgroundImage, Theme} from 'chrome://new-tab-page/new_tab_page.js';
 import {NtpBackgroundImageSource} from 'chrome://new-tab-page/new_tab_page.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
-import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
@@ -110,4 +110,133 @@ export function capture(
   const capture = {received: false};
   target.addEventListener(event, () => capture.received = true);
   return capture;
+}
+
+export interface Coordinate {
+  x: number;
+  y: number;
+}
+
+/**
+ * Calculates the bounding rectangle center coordinate for a given element,
+ * or returns null if the element is not provided.
+ */
+export function getCenter(element: Element): Coordinate;
+export function getCenter(element: null|undefined): null;
+export function getCenter(element: Element|null|undefined): Coordinate|null;
+export function getCenter(element: Element|null|undefined): Coordinate|null {
+  if (!element) {
+    return null;
+  }
+  const rect = element.getBoundingClientRect();
+  return {
+    x: rect.left + rect.width / 2,
+    y: rect.top + rect.height / 2,
+  };
+}
+
+/**
+ * Calculates the visual text centerline coordinate for an input, textarea,
+ * or text-bearing element by accounting for top padding, border, and
+ * line-height. Returns null if the element is not provided.
+ */
+export function getTextCenter(element: Element): Coordinate;
+export function getTextCenter(element: null|undefined): null;
+export function getTextCenter(element: Element|null|undefined): Coordinate|null;
+export function getTextCenter(element: Element|null|undefined): Coordinate|
+    null {
+  if (!element) {
+    return null;
+  }
+  const rect = element.getBoundingClientRect();
+  const style = window.getComputedStyle(element);
+  const borderTop = parseFloat(style.borderTopWidth) || 0;
+  const paddingTop = parseFloat(style.paddingTop) || 0;
+  const lineHeight = parseFloat(style.lineHeight) || rect.height;
+  return {
+    x: rect.left + rect.width / 2,
+    y: rect.top + borderTop + paddingTop + lineHeight / 2,
+  };
+}
+
+
+
+/**
+ * Traverses nested shadow DOM boundaries step-by-step using an array of
+ * selectors (one selector per shadow DOM level).
+ */
+export function queryShadowPath(
+    root: Element|null|undefined, ...selectors: string[]): Element|null {
+  let current: Element|null|undefined = root;
+  for (const selector of selectors) {
+    if (!current) {
+      return null;
+    }
+    const container = current.shadowRoot ?? current;
+    current = container.querySelector(selector);
+  }
+  return current ?? null;
+}
+
+/**
+ * Asserts that multiple DOM elements share an identical center coordinate
+ * along the specified axis ('x' or 'y').
+ *
+ * @param root The root element from which to resolve selector paths.
+ * @param elements A map of human-readable element names to either resolved
+ *     Elements, selector paths, pre-computed coordinate objects, or
+ * null/undefined.
+ * @param axis The coordinate axis to compare:
+ *     - 'x' compares the x values of the elements' center (i.e. confirms that
+ *       elements arranged vertically in a column are aligned).
+ *     - 'y' compares the y values of the elements' center (i.e. confirms that
+ *       elements arranged horizontally in a row are aligned).
+ */
+export function assertCenterAligned(
+    root: Element|null|undefined,
+    elements: Record<string, Element|string|string[]|Coordinate|null|undefined>,
+    axis: 'x'|'y'): void {
+  const centers: Record<string, number> = {};
+  const missingElements: string[] = [];
+
+  for (const [name, target] of Object.entries(elements)) {
+    // 1. Resolve selector or selector path to an Element (or null).
+    let value: Element|Coordinate|null|undefined =
+        typeof target === 'string' || Array.isArray(target) ?
+        queryShadowPath(root, ...(Array.isArray(target) ? target : [target])) :
+        target;
+
+
+    // 2. Convert Element to its bounding-box center.
+    if (value instanceof Element) {
+      value = getCenter(value);
+    }
+
+    // 3. Extract coordinate along the requested axis.
+    const coord = value?.[axis];
+    if (coord === undefined) {
+      missingElements.push(name);
+      continue;
+    }
+    centers[name] = coord;
+  }
+
+  assertTrue(
+      missingElements.length === 0,
+      `Expected all elements to exist, but missing: ${
+          missingElements.join(', ')}`);
+
+  const uniqueValues = new Set(Object.values(centers));
+  if (uniqueValues.size !== 1) {
+    const details = Object.entries(centers)
+                        .map(([name, val]) => `  - ${name}: ${val}px`)
+                        .join('\n');
+    assertEquals(
+        1, uniqueValues.size,
+        `Elements are not ${
+            axis === 'y' ? 'vertically' :
+                           'horizontally'} center-aligned (distinct ${
+            axis.toUpperCase()} values: [${
+            Array.from(uniqueValues).join(', ')}]):\n${details}`);
+  }
 }
