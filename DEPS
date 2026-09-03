@@ -2024,7 +2024,7 @@ deps = {
     Var('chromium_git') + '/angle/angle.git' + '@' +  Var('angle_revision'),
 
   'src/third_party/anonymous_tokens/src':
-    Var('chromium_git') + '/external/github.com/google/anonymous-tokens.git' + '@' + '4640033b0879d78a0725fdf6b7365b00d6841cad',
+    Var('chromium_git') + '/external/github.com/google/anonymous-tokens.git' + '@' + '1ae8df5e40bab28959cc182c2c0d88923059e278',
 
 
     'src/third_party/blink/renderer/core/css/perftest_data': {
