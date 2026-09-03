@@ -109,6 +109,7 @@ import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.dragdrop.ChromeDropDataAndroid;
 import org.chromium.chrome.browser.dragdrop.ChromeTabDropDataAndroid;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.layouts.SceneOverlay;
@@ -154,6 +155,7 @@ import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingUIDelegate;
 import org.chromium.components.data_sharing.SharedGroupTestHelper;
 import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfig;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
@@ -238,6 +240,7 @@ public class StripLayoutHelperTest {
     @Mock private ActivityResultTracker mActivityResultTracker;
     @Mock private SendTabToSelfAndroidBridge.Natives mSendTabToSelfAndroidBridgeNatives;
     @Mock private LeadingButtonDelegate mLeadingButtonDelegate;
+    @Mock private Tracker mTracker;
 
     @Captor private ArgumentCaptor<DataSharingService.Observer> mSharingObserverCaptor;
     @Captor private ArgumentCaptor<TabModelActionListener> mTabModelActionListenerCaptor;
@@ -321,10 +324,12 @@ public class StripLayoutHelperTest {
 
         TabUnderlineManagerJni.setInstanceForTesting(mTabUnderlineMock);
         SendTabToSelfAndroidBridgeJni.setInstanceForTesting(mSendTabToSelfAndroidBridgeNatives);
+        TrackerFactory.setTrackerForTests(mTracker);
     }
 
     @After
     public void tearDown() {
+        TrackerFactory.setTrackerForTests(null);
         CompositorAnimationHandler.setTestingMode(false);
         if (mStripLayoutHelper != null) {
             mStripLayoutHelper.setTabAtPositionForTesting(null);
