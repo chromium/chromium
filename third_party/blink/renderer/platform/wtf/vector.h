@@ -528,11 +528,10 @@ class GC_PLUGIN_IGNORE("crbug.com/428987863") VectorBufferBase {
 
   // PRECONDTIONS: `from` and `to` must point within the same object with
   // `from` coming before `to`.
-  UNSAFE_BUFFER_USAGE void ClearUnusedSlots(T* from, T* to) {
+  UNSAFE_BUFFER_USAGE ALWAYS_INLINE void ClearUnusedSlots(T* from, T* to) {
     if constexpr (NeedsToClearUnusedSlots()) {
       // SAFETY: required from caller, enforced by UNSAFE_BUFFER_USAGE.
-      UNSAFE_BUFFERS(AtomicMemzero(reinterpret_cast<void*>(from),
-                                   sizeof(T) * (to - from)));
+      UNSAFE_BUFFERS(AtomicMemzero(from, to));
     }
   }
 

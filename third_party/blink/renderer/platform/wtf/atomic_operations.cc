@@ -118,7 +118,7 @@ UNSAFE_BUFFER_USAGE void AtomicMemzeroImpl(void* buf, size_t bytes) {
 
 }  // namespace
 
-void AtomicReadMemcpy(void* to, const void* from, size_t bytes) {
+void AtomicReadMemcpySlow(void* to, const void* from, size_t bytes) {
 #if defined(ARCH_CPU_64_BITS)
   const size_t mod_to = reinterpret_cast<size_t>(to) & (sizeof(size_t) - 1);
   const size_t mod_from = reinterpret_cast<size_t>(from) & (sizeof(size_t) - 1);
@@ -132,7 +132,7 @@ void AtomicReadMemcpy(void* to, const void* from, size_t bytes) {
   UNSAFE_BUFFERS(AtomicReadMemcpyImpl<uintptr_t>(to, from, bytes));
 }
 
-void AtomicWriteMemcpy(void* to, const void* from, size_t bytes) {
+void AtomicWriteMemcpySlow(void* to, const void* from, size_t bytes) {
 #if defined(ARCH_CPU_64_BITS)
   const size_t mod_to = reinterpret_cast<size_t>(to) & (sizeof(size_t) - 1);
   const size_t mod_from = reinterpret_cast<size_t>(from) & (sizeof(size_t) - 1);
@@ -146,7 +146,7 @@ void AtomicWriteMemcpy(void* to, const void* from, size_t bytes) {
   UNSAFE_BUFFERS(AtomicWriteMemcpyImpl<uintptr_t>(to, from, bytes));
 }
 
-void AtomicMemzero(void* buf, size_t bytes) {
+void AtomicMemzeroSlow(void* buf, size_t bytes) {
 #if defined(ARCH_CPU_64_BITS)
   const size_t mod = reinterpret_cast<size_t>(buf) & (sizeof(size_t) - 1);
   if (mod != 0) {

@@ -34,9 +34,39 @@ ALWAYS_INLINE const std::atomic<T>* AsAtomicPtr(const T* t) {
 // word/halfword, not for the entire |bytes| bytes as a whole. The function
 // copies elements one by one, so overlapping regions are not supported.
 // PRECONDITIONS: `to` and `from` must be valid for `bytes` bytes.
-UNSAFE_BUFFER_USAGE WTF_EXPORT void AtomicReadMemcpy(void* to,
-                                                     const void* from,
-                                                     size_t bytes);
+UNSAFE_BUFFER_USAGE WTF_EXPORT void AtomicReadMemcpySlow(void* to,
+                                                         const void* from,
+                                                         size_t bytes);
+
+UNSAFE_BUFFER_USAGE ALWAYS_INLINE void AtomicReadMemcpy(void* to,
+                                                        const void* from,
+                                                        size_t bytes) {
+  if (bytes == 0) [[unlikely]] {
+    return;
+  }
+#if defined(ARCH_CPU_64_BITS)
+  if (((reinterpret_cast<uintptr_t>(to) | reinterpret_cast<uintptr_t>(from)) &
+       (sizeof(size_t) - 1)) == 0) {
+    if (bytes == sizeof(size_t)) {
+      *reinterpret_cast<size_t*>(to) =
+          AsAtomicPtr(reinterpret_cast<const size_t*>(from))
+              ->load(std::memory_order_relaxed);
+      return;
+    }
+    if (bytes <= 4 * sizeof(size_t) && (bytes & (sizeof(size_t) - 1)) == 0) {
+      size_t* to_ptr = reinterpret_cast<size_t*>(to);
+      const size_t* from_ptr = reinterpret_cast<const size_t*>(from);
+      const size_t count = bytes / sizeof(size_t);
+      for (size_t i = 0; i < count; ++i) {
+        UNSAFE_BUFFERS(to_ptr[i] = AsAtomicPtr(from_ptr + i)
+                                       ->load(std::memory_order_relaxed));
+      }
+      return;
+    }
+  }
+#endif  // defined(ARCH_CPU_64_BITS)
+  AtomicReadMemcpySlow(to, from, bytes);
+}
 
 namespace internal {
 
@@ -106,9 +136,39 @@ UNSAFE_BUFFER_USAGE ALWAYS_INLINE void AtomicReadMemcpy(void* to,
 // word/halfword, not for the entire |bytes| bytes as a whole. The function
 // copies elements one by one, so overlapping regions are not supported.
 // PRECONDITIONS: `to` and `from` must be valid for `bytes` bytes.
-UNSAFE_BUFFER_USAGE WTF_EXPORT void AtomicWriteMemcpy(void* to,
-                                                      const void* from,
-                                                      size_t bytes);
+UNSAFE_BUFFER_USAGE WTF_EXPORT void AtomicWriteMemcpySlow(void* to,
+                                                          const void* from,
+                                                          size_t bytes);
+
+UNSAFE_BUFFER_USAGE ALWAYS_INLINE void AtomicWriteMemcpy(void* to,
+                                                         const void* from,
+                                                         size_t bytes) {
+  if (bytes == 0) [[unlikely]] {
+    return;
+  }
+#if defined(ARCH_CPU_64_BITS)
+  if (((reinterpret_cast<uintptr_t>(to) | reinterpret_cast<uintptr_t>(from)) &
+       (sizeof(size_t) - 1)) == 0) {
+    if (bytes == sizeof(size_t)) {
+      AsAtomicPtr(reinterpret_cast<size_t*>(to))
+          ->store(*reinterpret_cast<const size_t*>(from),
+                  std::memory_order_relaxed);
+      return;
+    }
+    if (bytes <= 4 * sizeof(size_t) && (bytes & (sizeof(size_t) - 1)) == 0) {
+      size_t* to_ptr = reinterpret_cast<size_t*>(to);
+      const size_t* from_ptr = reinterpret_cast<const size_t*>(from);
+      const size_t count = bytes / sizeof(size_t);
+      for (size_t i = 0; i < count; ++i) {
+        UNSAFE_BUFFERS(AsAtomicPtr(to_ptr + i)
+                           ->store(from_ptr[i], std::memory_order_relaxed));
+      }
+      return;
+    }
+  }
+#endif  // defined(ARCH_CPU_64_BITS)
+  AtomicWriteMemcpySlow(to, from, bytes);
+}
 
 namespace internal {
 
@@ -177,7 +237,78 @@ UNSAFE_BUFFER_USAGE ALWAYS_INLINE void AtomicWriteMemcpy(void* to,
 // buffer of size at least |bytes|. Note that atomicity is guaranteed only per
 // word/halfword, not for the entire |bytes| bytes as a whole.
 // PRECONDITIONS: `buf` must be valid for `bytes` bytes.
-UNSAFE_BUFFER_USAGE WTF_EXPORT void AtomicMemzero(void* buf, size_t bytes);
+UNSAFE_BUFFER_USAGE WTF_EXPORT void AtomicMemzeroSlow(void* buf, size_t bytes);
+
+UNSAFE_BUFFER_USAGE ALWAYS_INLINE void AtomicMemzero(void* buf, size_t bytes) {
+  if (bytes == 0) [[unlikely]] {
+    return;
+  }
+#if defined(ARCH_CPU_64_BITS)
+  if ((reinterpret_cast<uintptr_t>(buf) & (sizeof(size_t) - 1)) == 0) {
+    if (bytes == sizeof(size_t)) {
+      AsAtomicPtr(reinterpret_cast<size_t*>(buf))
+          ->store(0, std::memory_order_relaxed);
+      return;
+    }
+    if (bytes <= 4 * sizeof(size_t) && (bytes & (sizeof(size_t) - 1)) == 0) {
+      size_t* ptr = reinterpret_cast<size_t*>(buf);
+      const size_t count = bytes / sizeof(size_t);
+      for (size_t i = 0; i < count; ++i) {
+        UNSAFE_BUFFERS(
+            AsAtomicPtr(ptr + i)->store(0, std::memory_order_relaxed));
+      }
+      return;
+    }
+  }
+#endif  // defined(ARCH_CPU_64_BITS)
+  AtomicMemzeroSlow(buf, bytes);
+}
+
+// Set the range [from, to) of elements of type T to 0 using atomic writes.
+// PRECONDITIONS: `from` and `to` must point within the same allocated buffer
+// with `from` <= `to`.
+template <typename T>
+UNSAFE_BUFFER_USAGE ALWAYS_INLINE void AtomicMemzero(T* from, T* to) {
+  DCHECK_LE(from, to);
+  if (from == to) [[unlikely]] {
+    return;
+  }
+  if constexpr (sizeof(T) == sizeof(size_t) && alignof(T) >= alignof(size_t)) {
+    const size_t count = static_cast<size_t>(to - from);
+    if (count == 1) [[likely]] {
+      AsAtomicPtr(reinterpret_cast<size_t*>(from))
+          ->store(0, std::memory_order_relaxed);
+      return;
+    }
+    if (count <= 4) {
+      size_t* ptr = reinterpret_cast<size_t*>(from);
+      for (size_t i = 0; i < count; ++i) {
+        UNSAFE_BUFFERS(
+            AsAtomicPtr(ptr + i)->store(0, std::memory_order_relaxed));
+      }
+      return;
+    }
+  } else if constexpr (sizeof(T) == sizeof(uint32_t) &&
+                       alignof(T) >= alignof(uint32_t)) {
+    const size_t count = static_cast<size_t>(to - from);
+    if (count == 1) [[likely]] {
+      AsAtomicPtr(reinterpret_cast<uint32_t*>(from))
+          ->store(0, std::memory_order_relaxed);
+      return;
+    }
+    if (count <= 4) {
+      uint32_t* ptr = reinterpret_cast<uint32_t*>(from);
+      for (size_t i = 0; i < count; ++i) {
+        UNSAFE_BUFFERS(
+            AsAtomicPtr(ptr + i)->store(0, std::memory_order_relaxed));
+      }
+      return;
+    }
+  }
+  // SAFETY: required from caller, enforced by UNSAFE_BUFFER_USAGE.
+  UNSAFE_BUFFERS(
+      AtomicMemzero(static_cast<void*>(from), sizeof(T) * (to - from)));
+}
 
 namespace internal {
 
