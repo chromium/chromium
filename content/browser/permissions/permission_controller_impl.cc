@@ -178,7 +178,7 @@ bool IsRequestAllowed(
     if (result.status == PermissionStatus::DENIED) {
       switch (result.source) {
         case PermissionStatusSource::FENCED_FRAME:
-          render_frame_host->GetOutermostMainFrame()->AddMessageToConsole(
+          render_frame_host->AddMessageToConsole(
               blink::mojom::ConsoleMessageLevel::kWarning,
               blink::GetPermissionString(permission_type) +
                   " permission has been blocked because it was requested "
