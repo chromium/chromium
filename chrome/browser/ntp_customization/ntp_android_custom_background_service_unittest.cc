@@ -485,6 +485,43 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
   service_->SetSyncedThemeBridge(nullptr);
 }
 
+TEST_F(
+    NtpAndroidCustomBackgroundServiceTest,
+    SetSyncedThemeBridge_NotifiesBridge_WhenExistingSyncedBackgroundPresent) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(syncer::kNewTabPageCustomizationThemeSync);
+
+  // Simulate an existing synced background already saved in preferences.
+  service_->OnThemeChangedFromSync(CreateTestThemeSpecifics());
+
+  MockSyncedThemeBridge mock_synced_bridge;
+  EXPECT_CALL(mock_synced_bridge, OnCustomBackgroundImageUpdated()).Times(1);
+
+  // Attaching the bridge should asynchronously notify it of the existing synced
+  // theme.
+  service_->SetSyncedThemeBridge(&mock_synced_bridge);
+  task_environment_.RunUntilIdle();
+
+  service_->SetSyncedThemeBridge(nullptr);
+}
+
+TEST_F(NtpAndroidCustomBackgroundServiceTest,
+       SetSyncedThemeBridge_DoesNotNotifyBridge_WhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(syncer::kNewTabPageCustomizationThemeSync);
+
+  // Simulate an existing synced background already saved in preferences.
+  service_->OnThemeChangedFromSync(CreateTestThemeSpecifics());
+
+  MockSyncedThemeBridge mock_synced_bridge;
+  EXPECT_CALL(mock_synced_bridge, OnCustomBackgroundImageUpdated()).Times(0);
+
+  service_->SetSyncedThemeBridge(&mock_synced_bridge);
+  task_environment_.RunUntilIdle();
+
+  service_->SetSyncedThemeBridge(nullptr);
+}
+
 TEST_F(NtpAndroidCustomBackgroundServiceTest,
        SyncBridgeIntegration_FeatureDisabled) {
   base::test::ScopedFeatureList feature_list;

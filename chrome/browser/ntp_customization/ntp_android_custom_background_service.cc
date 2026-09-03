@@ -8,8 +8,10 @@
 
 #include "base/auto_reset.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/android_buildflags.h"
 #include "chrome/browser/ntp_customization/ntp_android_background_service_factory.h"
 #include "chrome/browser/ntp_customization/ntp_android_theme_sync_bridge.h"
@@ -111,6 +113,28 @@ void NtpAndroidCustomBackgroundService::SetThemeCollectionBridge(
 void NtpAndroidCustomBackgroundService::SetSyncedThemeBridge(
     NtpSyncedThemeBridge* bridge) {
   synced_theme_bridge_ = bridge;
+  // TODO(crbug.com/488439751): This part will need to be refactored once
+  // continuous sync for daily update images is implemented.
+  //
+  // If an existing non-local custom background is already saved in preferences
+  // (e.g. delivered by sync in a previous session or before this bridge was
+  // attached), sync will not re-emit OnThemeChangedFromSync on startup.
+  // Notify the newly attached bridge so Java fetches the remote background
+  // image and applies it to the NTP.
+  // We post this asynchronously to ensure the bridge initialization and native
+  // pointer registration complete before callbacks into Java execute.
+  if (base::FeatureList::IsEnabled(syncer::kNewTabPageCustomizationThemeSync) &&
+      synced_theme_bridge_ &&
+      !pref_service_->GetBoolean(
+          prefs::kNtpAndroidCustomBackgroundLocalToDevice) &&
+      GetCustomBackground().has_value()) {
+    processing_sync_update_ = true;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &NtpAndroidCustomBackgroundService::NotifyAboutBackgrounds,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void NtpAndroidCustomBackgroundService::SetCustomBackgroundInfo(

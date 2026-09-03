@@ -36,8 +36,11 @@ public class NtpSyncedThemeBridge {
     public NtpSyncedThemeBridge(
             Profile profile,
             Callback<@Nullable CustomBackgroundInfo> onThemeCollectionSyncedCallback) {
-        mNativeNtpSyncedThemeBridge = NtpSyncedThemeBridgeJni.get().init(profile, this);
+        // Set the callback before calling native init(), since init attaches this bridge to
+        // NtpAndroidCustomBackgroundService, which may immediately notify this bridge of an
+        // already-existing synced background.
         mOnThemeCollectionSyncedCallback = onThemeCollectionSyncedCallback;
+        mNativeNtpSyncedThemeBridge = NtpSyncedThemeBridgeJni.get().init(profile, this);
     }
 
     /** Cleans up the C++ side of this class. */
