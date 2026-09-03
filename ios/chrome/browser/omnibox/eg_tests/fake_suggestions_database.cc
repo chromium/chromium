@@ -92,9 +92,47 @@ std::u16string FakeSuggestionsDatabase::ExtractSearchTerms(
   std::u16string search_terms;
   url::Parsed::ComponentType search_term_component;
   url::Component search_terms_position;
-  suggestion_url_ref.ExtractSearchTermsFromURL(
+  bool success = suggestion_url_ref.ExtractSearchTermsFromURL(
       url, &search_terms, template_url_service_->search_terms_data(),
       &search_term_component, &search_terms_position);
+
+  // TODO(crbug.com/509448052): If the FakeSuggestionsDatabase receives a
+  // request on the shortened suggest path (e.g., /s), it could clash with the
+  // statically parsed `path_prefix_` (which defaults to /search).
+  // This strict mismatch falsely breaks term extraction during tests. Because
+  // both URLs are the same, we intercept the mismatch here. Ideally, this
+  // mock framework shouldn't rely on the rigid TemplateURLRef for extraction,
+  // but swapping the path is a safe workaround.
+  //
+  // Note: This is strictly a test issue specific to the
+  // FakeSuggestionsDatabase. This mismatch does not occur in non-test
+  // environments because Chrome never extracts search terms from its own
+  // background suggest requests. Term extraction is strictly used on normal
+  // search result URLs.
+  if (!success) {
+    std::string_view path = url.path();
+    std::string new_path;
+    const std::string path_prefix = "/complete/";
+    const std::string suggest_path =
+        path_prefix + TemplateURLService::kSuggestPath;
+    const std::string short_suggest_path =
+        path_prefix + TemplateURLService::kShortSuggestPath;
+    if (path == suggest_path) {
+      new_path = short_suggest_path;
+    } else if (path == short_suggest_path) {
+      new_path = suggest_path;
+    }
+    // Only perform the fallback extraction if we actually generated a new path
+    if (!new_path.empty()) {
+      GURL::Replacements replacements;
+      replacements.SetPathStr(new_path);
+      suggestion_url_ref.ExtractSearchTermsFromURL(
+          url.ReplaceComponents(replacements), &search_terms,
+          template_url_service_->search_terms_data(), &search_term_component,
+          &search_terms_position);
+    }
+  }
+
   return search_terms;
 }
 

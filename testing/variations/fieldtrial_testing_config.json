@@ -14237,6 +14237,30 @@
             ]
         }
     ],
+    "OmniboxUseShortSuggestPathV1": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "fuchsia",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "OmniboxSuggestPathClient": "chrome-omni,chrome,chrome-ntp-action,chrome-cobrowse-compose,chrome-multimodal,chrome-contextual,chrome-android-search-resumption-module,chrome-compose,chrome-mobile-aim"
+                    },
+                    "enable_features": [
+                        "OmniboxUseShortSuggestPathV1"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxWebUIDeferShowUntilVisualStateReady": [
         {
             "platforms": [

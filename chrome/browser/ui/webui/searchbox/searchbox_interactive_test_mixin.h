@@ -205,7 +205,8 @@ class SearchboxInteractiveTestMixin : public T {
     url_loader_interceptor_ =
         std::make_unique<content::URLLoaderInterceptor>(base::BindRepeating(
             [](content::URLLoaderInterceptor::RequestParams* params) {
-              if (params->url_request.url.path() != "/complete/search") {
+              if (params->url_request.url.path() != "/complete/s" &&
+                  params->url_request.url.path() != "/complete/search") {
                 return false;
               }
 

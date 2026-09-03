@@ -857,7 +857,8 @@ class WebUILocationBarInteractiveUiTest
   static bool HandleRequest(
       content::URLLoaderInterceptor::RequestParams* params) {
     if (params->url_request.url.host() == "www.google.com" &&
-        params->url_request.url.path() == "/complete/search") {
+        (params->url_request.url.path() == "/complete/s" ||
+         params->url_request.url.path() == "/complete/search")) {
       constexpr std::string_view headers =
           "HTTP/1.1 200 OK\nContent-Type: application/json\n\n";
       constexpr std::string_view body =

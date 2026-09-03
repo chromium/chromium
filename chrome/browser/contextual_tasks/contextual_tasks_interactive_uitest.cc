@@ -364,7 +364,8 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
         [&](content::URLLoaderInterceptor::RequestParams* params) {
           const GURL& url = params->url_request.url;
           if (url.host() == kMockAimPageHost &&
-              url.path() == "/complete/search") {
+              (url.path() == "/complete/s" ||
+               url.path() == "/complete/search")) {
             std::string q_param;
             net::GetValueForKeyInQuery(url, "q", &q_param);
             std::string query = base::UnescapeURLComponent(
