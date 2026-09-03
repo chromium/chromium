@@ -75,6 +75,10 @@ struct BLINK_COMMON_EXPORT
     return r.force_android_overlay_scrollbar;
   }
 
+  static bool force_viewport_meta(const blink::DeviceEmulationParams& r) {
+    return r.force_viewport_meta;
+  }
+
   static bool Read(blink::mojom::DeviceEmulationParamsDataView r,
                    blink::DeviceEmulationParams* out);
 };

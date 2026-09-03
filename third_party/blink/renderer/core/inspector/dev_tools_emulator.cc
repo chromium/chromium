@@ -228,14 +228,14 @@ void DevToolsEmulator::SetShrinksViewportContentToFit(
 
 void DevToolsEmulator::SetViewportEnabled(bool enabled) {
   embedder_viewport_enabled_ = enabled;
-  if (!emulate_mobile_enabled()) {
+  if (!force_viewport_meta_ && !emulate_mobile_enabled()) {
     web_view_->GetPage()->GetSettings().SetViewportEnabled(enabled);
   }
 }
 
 void DevToolsEmulator::SetViewportMetaEnabled(bool enabled) {
   embedder_viewport_meta_enabled_ = enabled;
-  if (!emulate_mobile_enabled()) {
+  if (!force_viewport_meta_) {
     web_view_->GetPage()->GetSettings().SetViewportMetaEnabled(enabled);
   }
 }
@@ -289,7 +289,9 @@ gfx::Transform DevToolsEmulator::EnableDeviceEmulation(
       emulation_params_.viewport_offset == params.viewport_offset &&
       emulation_params_.viewport_scale == params.viewport_scale &&
       emulation_params_.force_android_overlay_scrollbar ==
-          params.force_android_overlay_scrollbar) {
+          params.force_android_overlay_scrollbar &&
+      emulation_params_.force_viewport_meta ==
+          params.force_viewport_meta) {
     return ComputeRootLayerTransform();
   }
   if ((emulation_params_.device_scale_factor != params.device_scale_factor ||
@@ -321,6 +323,7 @@ gfx::Transform DevToolsEmulator::EnableDeviceEmulation(
     UpdateLifecycleAfterEmulationProfileChange();
   }
 
+  SetForceViewportMeta(params.force_viewport_meta);
   SetForceAndroidOverlayScrollbar(params.force_android_overlay_scrollbar);
 
   web_view_->SetCompositorDeviceScaleFactorOverride(params.device_scale_factor);
@@ -358,6 +361,7 @@ void DevToolsEmulator::DisableDeviceEmulation() {
     UpdateLifecycleAfterEmulationProfileChange();
   }
   SetForceAndroidOverlayScrollbar(false);
+  SetForceViewportMeta(false);
   web_view_->SetCompositorDeviceScaleFactorOverride(0.f);
 
   if (web_view_->MainFrameImpl()) {
@@ -471,8 +475,9 @@ void DevToolsEmulator::EnableMobileEmulation() {
   global_overrides_ = ScopedGlobalOverrides::AssureInstalled();
   web_view_->GetPage()->GetSettings().SetViewportStyle(
       mojom::blink::ViewportStyle::kMobile);
+  // ViewportEnabled activates mobile viewport layout semantics and enables
+  // VisualViewport scrollbar layers (checked in VisualViewportSuppliesScrollbars).
   web_view_->GetPage()->GetSettings().SetViewportEnabled(true);
-  web_view_->GetPage()->GetSettings().SetViewportMetaEnabled(true);
   web_view_->GetPage()->GetSettings().SetTextSizeAdjustEnabled(true);
   web_view_->GetPage()->GetSettings().SetShrinksViewportContentToFit(true);
   web_view_->GetPage()->GetSettings().SetLCDTextPreference(
@@ -498,8 +503,6 @@ void DevToolsEmulator::DisableMobileEmulation() {
   global_overrides_.reset();
   web_view_->GetPage()->GetSettings().SetViewportEnabled(
       embedder_viewport_enabled_);
-  web_view_->GetPage()->GetSettings().SetViewportMetaEnabled(
-      embedder_viewport_meta_enabled_);
   web_view_->GetPage()->GetSettings().SetTextSizeAdjustEnabled(
       embedder_text_size_adjust_enabled_);
   web_view_->GetPage()->GetVisualViewport().InitializeScrollbars();
@@ -647,6 +650,26 @@ void DevToolsEmulator::SetForceAndroidOverlayScrollbar(
   }
 
   web_view_->GetPage()->UsesOverlayScrollbarsChanged();
+
+  if (web_view_->MainFrameImpl()) {
+    web_view_->MainFrameImpl()->GetFrameView()->UpdateLifecycleToLayoutClean(
+        DocumentUpdateReason::kInspector);
+  }
+}
+
+void DevToolsEmulator::SetForceViewportMeta(bool force_viewport_meta) {
+  if (force_viewport_meta_ == force_viewport_meta) {
+    return;
+  }
+  force_viewport_meta_ = force_viewport_meta;
+  // ViewportMetaEnabled enables parsing of <meta name="viewport">, while
+  // ViewportEnabled activates the layout constraint pipeline to apply the
+  // resolved viewport size to the main frame.
+  web_view_->GetPage()->GetSettings().SetViewportMetaEnabled(
+      force_viewport_meta_ || embedder_viewport_meta_enabled_);
+  web_view_->GetPage()->GetSettings().SetViewportEnabled(
+      force_viewport_meta_ || emulate_mobile_enabled() ||
+      embedder_viewport_enabled_);
 
   if (web_view_->MainFrameImpl()) {
     web_view_->MainFrameImpl()->GetFrameView()->UpdateLifecycleToLayoutClean(

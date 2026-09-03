@@ -672,7 +672,8 @@ Response EmulationHandler::SetDeviceMetricsOverride(
     std::unique_ptr<protocol::Emulation::DisplayFeature> display_feature,
     std::unique_ptr<protocol::Emulation::DevicePosture> device_posture,
     std::optional<std::string> scrollbar_type,
-    std::optional<bool> screen_orientation_lock_emulation) {
+    std::optional<bool> screen_orientation_lock_emulation,
+    std::optional<std::string> viewport_meta) {
   const static int max_size = 10000000;
   const static double max_scale = 10;
   const static int max_orientation_angle = 360;
@@ -798,6 +799,12 @@ Response EmulationHandler::SetDeviceMetricsOverride(
   } else {
     params.force_android_overlay_scrollbar = false;
   }
+
+  params.force_viewport_meta =
+      mobile ||
+      (viewport_meta &&
+       *viewport_meta ==
+           Emulation::SetDeviceMetricsOverride::ViewportMetaEnum::Enable);
 
   if (viewport) {
     params.viewport_offset.SetPoint(viewport->GetX(), viewport->GetY());

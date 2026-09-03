@@ -114,7 +114,8 @@ class EmulationHandler : public DevToolsDomainHandler,
       std::unique_ptr<protocol::Emulation::DisplayFeature> display_feature,
       std::unique_ptr<protocol::Emulation::DevicePosture> device_posture,
       std::optional<std::string> scrollbar_type,
-      std::optional<bool> screen_orientation_lock_emulation) override;
+      std::optional<bool> screen_orientation_lock_emulation,
+      std::optional<std::string> viewport_meta) override;
 
   Response ClearDeviceMetricsOverride() override;
 

@@ -56,4 +56,7 @@ struct DeviceEmulationParams {
 
   // Forces Android Overlay Scrollbar.
   bool force_android_overlay_scrollbar;
+
+  // Forces viewport meta tag to be enabled.
+  bool force_viewport_meta;
 };

@@ -67,6 +67,9 @@ struct DeviceEmulationParams {
   // Forces Android Overlay Scrollbar.
   bool force_android_overlay_scrollbar = false;
 
+  // Forces viewport meta tag to be enabled.
+  bool force_viewport_meta = false;
+
   DeviceEmulationParams() = default;
 };
 
@@ -82,7 +85,9 @@ inline bool operator==(const DeviceEmulationParams& a,
          a.viewport_scale == b.viewport_scale &&
          a.viewport_segments == b.viewport_segments &&
          a.device_posture == b.device_posture &&
-         a.force_android_overlay_scrollbar == b.force_android_overlay_scrollbar;
+         a.force_android_overlay_scrollbar ==
+             b.force_android_overlay_scrollbar &&
+         a.force_viewport_meta == b.force_viewport_meta;
 }
 
 }  // namespace blink

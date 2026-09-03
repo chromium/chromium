@@ -1,0 +1,14 @@
+Tests Emulation.setDeviceMetricsOverride(viewportMeta) affects layout width.
+Initial clientWidth (mobile: false, default): 785
+1. Mobile: false, viewportMeta: "enable"
+clientWidth: 320
+2. Mobile: false, viewportMeta: "default"
+clientWidth: 785
+3. Mobile: true, viewportMeta: "default"
+clientWidth: 320
+4. Mobile: true, viewportMeta: "enable"
+clientWidth: 320
+5. Defaulting when viewportMeta is omitted
+mobile: false -> clientWidth: 785
+mobile: true -> clientWidth: 320
+
