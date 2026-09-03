@@ -3154,7 +3154,6 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationEphemeralActionsEnabledTest,
 
   // Simulate that the device goes to sleep and wakes up.
   chromeos::FakePowerManagerClient::Get()->SendSuspendDone(base::Minutes(10));
-  base::RunLoop().RunUntilIdle();
 
   // Verify that the recommended EAP.Identity of the managed wifi service has
   // not been wiped because the "ephemeral actions" don't apply within active
