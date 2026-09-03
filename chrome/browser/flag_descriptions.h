@@ -2192,11 +2192,6 @@ inline constexpr char kCertificateTransparencyIgnoreOcspSctsDescription[] =
     "When enabled, SCTs delivered via OCSP responses are not used for "
     "satisfying Chrome's CT policy.";
 
-inline constexpr char kAccessibilityAcceleratorName[] =
-    "Experimental Accessibility accelerator";
-inline constexpr char kAccessibilityAcceleratorDescription[] =
-    "This option enables the Accessibility accelerator.";
-
 inline constexpr char kAccessibilityGoogleTtsAutomaticReconnectName[] =
     "Google TTS Automatic Reconnect";
 inline constexpr char kAccessibilityGoogleTtsAutomaticReconnectDescription[] =

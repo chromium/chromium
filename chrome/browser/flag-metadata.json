@@ -3128,11 +3128,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "enable-accessibility-accelerator",
-    "owners": [ "zork@chromium.org", "//ash/accessibility/OWNERS" ],
-    "expiry_milestone": 143
-  },
-  {
     "name": "enable-accessibility-android-math",
     "owners": [ "dtseng@chromium.org", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 170

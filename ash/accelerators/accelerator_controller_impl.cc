@@ -771,7 +771,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
   // accelerator.
   switch (action) {
     case AcceleratorAction::kAccessibilityAction:
-      return ::features::IsAccessibilityAcceleratorEnabled();
+      return true;
     case AcceleratorAction::kCycleBackwardMru:
     case AcceleratorAction::kCycleForwardMru:
       return accelerators::CanCycleMru();
@@ -1037,9 +1037,7 @@ void AcceleratorControllerImpl::PerformAction(
   // function above.
   switch (action) {
     case AcceleratorAction::kAccessibilityAction:
-      if (::features::IsAccessibilityAcceleratorEnabled()) {
-        accelerators::AccessibilityAction();
-      }
+      accelerators::AccessibilityAction();
       break;
     case AcceleratorAction::kBrightnessDown: {
       base::RecordAction(UserMetricsAction("Accel_BrightnessDown_F6"));

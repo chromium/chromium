@@ -159,7 +159,6 @@ class AccessibilityControllerTest : public AccessibilityControllerTestBase {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{ash::features::kOnDeviceSpeechRecognition,
-                              ::features::kAccessibilityAccelerator,
                               ::features::kAccessibilityMouseKeys},
         /*disabled_features=*/{});
     AccessibilityControllerTestBase::SetUp();
