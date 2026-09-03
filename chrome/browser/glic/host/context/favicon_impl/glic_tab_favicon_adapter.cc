@@ -98,13 +98,16 @@ void FaviconNotifier::Subscribe(
     ::mojo::PendingRemote<mojom::TabFaviconHandler> receiver) {
   mojo::Remote<mojom::TabFaviconHandler> new_remote;
   new_remote.Bind(std::move(receiver));
-  new_remote->OnTabFaviconChanged(favicon_data_.GetBitmap());
+  const SkBitmap& bitmap = favicon_data_.GetBitmap();
+  new_remote->OnTabFaviconChanged(bitmap.drawsNothing() ? SkBitmap() : bitmap);
   receivers_.Add(std::move(new_remote));
 }
 
 void FaviconNotifier::NotifyFaviconChanged() {
+  const SkBitmap& bitmap = favicon_data_.GetBitmap();
+  const SkBitmap sent_bitmap = bitmap.drawsNothing() ? SkBitmap() : bitmap;
   for (auto& receiver : receivers_) {
-    receiver->OnTabFaviconChanged(favicon_data_.GetBitmap());
+    receiver->OnTabFaviconChanged(sent_bitmap);
   }
 }
 

@@ -364,8 +364,11 @@ export function getArrayBufferFromBigBuffer(bigBuffer: BigBuffer): ArrayBuffer|
 }
 
 export function bitmapN32ToRGBAImage(bitmap: BitmapN32): RgbaImage|undefined {
+  if (bitmap.imageInfo.width === 0 || bitmap.imageInfo.height === 0) {
+    return undefined;
+  }
   const bytes = getArrayBufferFromBigBuffer(bitmap.pixelData);
-  if (!bytes) {
+  if (!bytes || bytes.byteLength === 0) {
     return undefined;
   }
   // Color type on Android is different from other platforms. Because color type

@@ -121,7 +121,7 @@ void TabFavicon::RemoveObserver(TabAndroid* tab_android, Observer* observer) {
 void TabFavicon::GetBitmapForTabOrFallback(
     TabAndroid* tab_android,
     base::OnceCallback<void(const SkBitmap&)> callback) {
-  SkBitmap bitmap = GetBitmapForTab(tab_android, /*allow_fallback=*/false);
+  SkBitmap bitmap = GetBitmapForTab(tab_android, /*allow_fallback=*/true);
   if (!bitmap.empty()) {
     std::move(callback).Run(bitmap);
     return;

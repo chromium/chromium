@@ -13,6 +13,8 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -30,6 +32,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.Promise;
 import org.chromium.base.UserDataHost;
@@ -320,5 +323,64 @@ public class TabFaviconTest {
 
         // 5. Verify cache is not polluted (getFavicon for URL_1 should be null)
         assertNull(mTabFavicon.getFavicon());
+    }
+
+    @Test
+    public void testGetNativePtrForTab_CreatesInstanceIfNeeded() {
+        TabImpl newTab = mock(TabImpl.class);
+        UserDataHost newUserDataHost = new UserDataHost();
+        doReturn(newUserDataHost).when(newTab).getUserDataHost();
+        doReturn(mContext).when(newTab).getContext();
+        doReturn(mResources).when(mContext).getResources();
+        doReturn(IDEAL_SIZE).when(mResources).getDimensionPixelSize(anyInt());
+        doReturn(true).when(newTab).isInitialized();
+
+        long nativePtr = TabFavicon.getNativePtrForTab(newTab);
+        assertEquals(12345L, nativePtr);
+    }
+
+    @Test
+    public void testGetBitmapWithFallback_NoInstanceReturnsNull() {
+        TabImpl newTab = mock(TabImpl.class);
+        UserDataHost newUserDataHost = new UserDataHost();
+        doReturn(newUserDataHost).when(newTab).getUserDataHost();
+        doReturn(true).when(newTab).isInitialized();
+
+        assertNull(TabFavicon.getBitmapWithFallback(newTab, false));
+    }
+
+    @Test
+    public void testConstructor_InitsWebContentsIfPresent() {
+        verify(mTabFaviconJni).setWebContents(12345L, mWebContents);
+    }
+
+    @Test
+    public void testGetBitmapWithFallback_NativePageReturnsFavicon() {
+        Context context = ContextUtils.getApplicationContext();
+        TabImpl nativeTab = mock(TabImpl.class);
+        UserDataHost newUserDataHost = new UserDataHost();
+        doReturn(newUserDataHost).when(nativeTab).getUserDataHost();
+        doReturn(context).when(nativeTab).getContext();
+        doReturn(JUnitTestGURLs.NTP_URL).when(nativeTab).getUrl();
+        doReturn(true).when(nativeTab).isNativePage();
+        doReturn(false).when(nativeTab).isIncognito();
+        doReturn(true).when(nativeTab).isInitialized();
+
+        Bitmap bitmap = TabFavicon.getBitmapWithFallback(nativeTab, /* allowFallback= */ false);
+        assertNotNull(bitmap);
+    }
+
+    @Test
+    public void testGetFaviconOrFallback_NativePageReturnsFavicon() {
+        Context context = ContextUtils.getApplicationContext();
+        doReturn(context).when(mTab).getContext();
+        doReturn(JUnitTestGURLs.NTP_URL).when(mTab).getUrl();
+        doReturn(true).when(mTab).isNativePage();
+        doReturn(false).when(mTab).isIncognito();
+
+        Promise<Bitmap> promise = mTabFavicon.getFaviconOrFallback();
+        assertNotNull(promise);
+        assertTrue(promise.isFulfilled());
+        assertNotNull(promise.getResult());
     }
 }

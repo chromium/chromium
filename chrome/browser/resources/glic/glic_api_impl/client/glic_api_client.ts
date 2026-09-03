@@ -1262,11 +1262,8 @@ class WebClientTabFaviconObserverHandler implements
     PostMessageHandler<WebClientTabFaviconObserver> {
   constructor(private observable: ObservableValueImpl<Blob|undefined>) {}
   tabFaviconChanged(payload: {favicon?: RgbaImage}): void {
-    if (payload.favicon === undefined) {
-      this.observable.assignAndSignal(undefined);
-    } else {
-      this.observable.assignAndSignal(rgbaImageToBlob(payload.favicon));
-    }
+    this.observable.assignAndSignal(
+        payload.favicon ? rgbaImageToBlob(payload.favicon) : undefined);
   }
 }
 
@@ -1283,7 +1280,6 @@ export function convertTabDataFromPrivate(data: TabDataPrivate|undefined):
   async function getFavicon() {
     if (dataFavicon && !faviconResult) {
       faviconResult = Promise.resolve(rgbaImageToBlob(dataFavicon));
-      return faviconResult;
     }
     return faviconResult;
   }
