@@ -201,12 +201,22 @@ void PrintPreviewDialogController::PrintPreview(
     return;
   }
 
-  if (!GetOrCreatePreviewDialog(initiator, params, is_pdf)) {
-    auto* print_view_manager = PrintViewManager::FromWebContents(initiator);
-    if (print_view_manager) {
-      print_view_manager->PrintPreviewDone();
-    }
+  // `initiator` can be destroyed inside GetOrCreatePreviewDialog().
+  base::WeakPtr<content::WebContents> weak_initiator = initiator->GetWeakPtr();
+  if (GetOrCreatePreviewDialog(initiator, params, is_pdf)) {
+    return;
   }
+  if (!weak_initiator) {
+    return;
+  }
+
+  auto* print_view_manager =
+      PrintViewManager::FromWebContents(weak_initiator.get());
+  if (!print_view_manager) {
+    return;
+  }
+
+  print_view_manager->PrintPreviewDone();
 }
 
 // static
@@ -441,10 +451,21 @@ WebContents* PrintPreviewDialogController::CreatePrintPreviewDialog(
     bool is_pdf) {
   base::AutoReset<bool> auto_reset(&is_creating_print_preview_dialog_, true);
 
+  // Showing the dialog synchronously exits HTML fullscreen, which can
+  // potentially destroy `initiator` and its `tab`.
+  base::WeakPtr<content::WebContents> weak_initiator = initiator->GetWeakPtr();
+  base::WeakPtr<tabs::TabInterface> weak_tab =
+      tab ? tab->GetWeakPtr() : nullptr;
+
   // The dialog delegates are deleted when the dialog is closed.
   ConstrainedWebDialogDelegate* web_dialog_delegate = ShowConstrainedWebDialog(
       initiator->GetBrowserContext(),
       std::make_unique<PrintPreviewDialogDelegate>(initiator), initiator);
+
+  if (!weak_initiator || (tab && !weak_tab)) {
+    web_dialog_delegate->OnDialogCloseFromWebUI();
+    return nullptr;
+  }
 
   WebContents* preview_dialog = web_dialog_delegate->GetWebContents();
 
