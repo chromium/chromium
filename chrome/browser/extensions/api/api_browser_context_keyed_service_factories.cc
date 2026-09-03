@@ -18,6 +18,7 @@
 #include "chrome/browser/extensions/api/processes/processes_api.h"
 #include "chrome/browser/extensions/api/reading_list/reading_list_event_router_factory.h"
 #include "chrome/browser/extensions/api/sessions/sessions_api.h"
+#include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
 #include "chrome/browser/extensions/api/tab_capture/tab_capture_registry.h"
 #include "chrome/browser/extensions/api/tab_groups/tab_groups_event_router_factory.h"
 #include "chrome/browser/extensions/api/tabs/tabs_windows_api.h"
@@ -44,7 +45,6 @@
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router_factory.h"
 #include "chrome/browser/extensions/api/settings_overrides/settings_overrides_api.h"
 #include "chrome/browser/extensions/api/settings_private/settings_private_event_router_factory.h"
-#include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
 #include "components/safe_browsing/buildflags.h"
 #include "extensions/browser/api/networking_private/networking_private_delegate_factory.h"
 #include "pdf/buildflags.h"
@@ -101,6 +101,7 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::ProcessesAPI::GetFactoryInstance();
   extensions::ReadingListEventRouterFactory::GetInstance();
   extensions::SessionsAPI::GetFactoryInstance();
+  extensions::SidePanelService::GetFactoryInstance();
   extensions::TabCaptureRegistry::GetFactoryInstance();
   extensions::TabGroupsEventRouterFactory::GetInstance();
   extensions::TabsWindowsAPI::GetFactoryInstance();
@@ -139,7 +140,6 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
 #endif
   extensions::SettingsPrivateEventRouterFactory::GetInstance();
   extensions::SettingsOverridesAPI::GetFactoryInstance();
-  extensions::SidePanelService::GetFactoryInstance();
 #if BUILDFLAG(IS_CHROMEOS)
   extensions::TerminalPrivateAPI::GetFactoryInstance();
   extensions::VerifyTrustApiService::GetFactoryInstance();

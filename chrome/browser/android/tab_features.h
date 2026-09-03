@@ -10,6 +10,7 @@
 #include "base/callback_list.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/common/buildflags.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 #include "ui/webui/buildflags.h"
 
@@ -38,6 +39,12 @@ class WebContents;
 namespace enterprise_data_protection {
 class DataProtectionNavigationController;
 }  // namespace enterprise_data_protection
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+namespace extensions {
+class ExtensionSidePanelManager;
+}  // namespace extensions
+#endif
 
 namespace enterprise_reporting {
 class SaasUsageNavigationObserver;
@@ -111,6 +118,11 @@ class TabFeatures {
   std::unique_ptr<SidePanelRegistry> tab_scoped_side_panel_registry_;
   std::unique_ptr<SidePanelTabScopedDevFeature>
       tab_scoped_side_panel_dev_feature_;
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  std::unique_ptr<extensions::ExtensionSidePanelManager>
+      extension_side_panel_manager_;
+#endif
 
   std::unique_ptr<AskBeforeHttpDialogController>
       ask_before_http_dialog_controller_;

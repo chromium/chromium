@@ -934,7 +934,10 @@ static_library("ui") {
 
   # Desktop-Android-only dependencies.
   if (is_desktop_android) {
-    deps += [ "//chrome/browser/ui/android/extensions/windowing/internal" ]
+    deps += [
+      "//chrome/browser/ui/android/extensions/side_panel/internal",
+      "//chrome/browser/ui/android/extensions/windowing/internal",
+    ]
   }
 
   if (enable_captive_portal_detection) {

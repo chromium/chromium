@@ -73,6 +73,7 @@ if (android_64bit_target_cpu) {
 if (_is_default_toolchain) {
   template("chrome_public_bundle") {
     _base_module_target_name = "${invoker.target_name}__base_bundle_module"
+
     chrome_public_apk_or_module_tmpl(_base_module_target_name) {
       forward_variables_from(invoker,
                              [
@@ -566,6 +567,8 @@ if (_is_default_toolchain) {
       "//chrome/browser/ui/android/enterprise_signals_disclaimer:java",
       "//chrome/browser/ui/android/ephemeraltab:java",
       "//chrome/browser/ui/android/extensions:java",
+      "//chrome/browser/ui/android/extensions/side_panel:factory_java",
+      "//chrome/browser/ui/android/extensions/side_panel:java",
       "//chrome/browser/ui/android/extensions/windowing:factory_java",
       "//chrome/browser/ui/android/extensions/windowing:java",
       "//chrome/browser/ui/android/favicon:java",
@@ -1036,11 +1039,16 @@ if (_is_default_toolchain) {
     ]
 
     if (is_desktop_android) {
-      deps +=
-          [ "//chrome/browser/ui/android/extensions/windowing/internal:java" ]
+      deps += [
+        "//chrome/browser/ui/android/extensions/side_panel/internal:java",
+        "//chrome/browser/ui/android/extensions/windowing/internal:java",
+      ]
     } else {
       # TODO(crbug.com/434123514): see if we can remove these stub targets.
-      deps += [ "//chrome/browser/ui/android/extensions/windowing/stub:java" ]
+      deps += [
+        "//chrome/browser/ui/android/extensions/side_panel/stub:java",
+        "//chrome/browser/ui/android/extensions/windowing/stub:java",
+      ]
     }
     if (enable_webui_ntp) {
       deps += [ "//chrome/browser/ui/customize_chrome:java" ]
@@ -1826,6 +1834,7 @@ if (_is_default_toolchain) {
 
   version_resource_dir = "$target_gen_dir/templates/chrome_version_xml/res"
   version_resource_file = "$version_resource_dir/values/strings.xml"
+
   process_version("version_xml") {
     process_only = true
     template_file = "java/version_strings.xml.template"
@@ -1976,9 +1985,11 @@ if (_is_default_toolchain) {
   # derived from the native library.
   resource_packaging("chrome_apk_pak_assets") {
   }
+
   resource_packaging("chrome_bundle_module_pak_assets") {
     is_bundle_module = true
   }
+
   resource_packaging("trichrome_chrome_bundle_module_pak_assets") {
     is_trichrome = true
     is_bundle_module = true
@@ -2800,10 +2811,12 @@ if (_is_default_toolchain) {
           trichrome_chrome_basename = "TrichromeChrome64.minimal.apks"
           trichrome_webview_basename = "TrichromeWebView64.minimal.apks"
         }
+
         create_app_bundle_minimal_apks("trichrome_chrome_64_minimal_apks") {
           deps = [ ":trichrome_chrome_64_bundle" ]
           bundle_path = "$root_build_dir/apks/TrichromeChrome64.aab"
         }
+
         group("trichrome_64_minimal_apks") {
           deps = [
             ":trichrome_chrome_64_minimal_apks",
@@ -2832,6 +2845,7 @@ if (_is_default_toolchain) {
           deps = [ ":trichrome_chrome_32_bundle" ]
           bundle_path = "$root_build_dir/apks/TrichromeChrome32.aab"
         }
+
         group("trichrome_32_minimal_apks") {
           deps = [
             ":trichrome_chrome_32_minimal_apks",
@@ -2851,6 +2865,7 @@ if (_is_default_toolchain) {
           deps = [ ":$_main_trichrome_chrome_bundle_target" ]
           bundle_path = "$root_build_dir/apks/TrichromeChrome.aab"
         }
+
         group("trichrome_32_minimal_apks") {
           deps = [
             ":$_main_trichrome_library_apk_target",
@@ -2970,6 +2985,7 @@ if (_is_default_toolchain) {
               "expectations/$target_name.$target_cpu.libs_and_assets.expected"
         }
       }
+
       chrome_public_bundle("trichrome_chrome_32_bundle") {
         is_trichrome = true
         bundle_name = "TrichromeChrome32"
@@ -3371,6 +3387,7 @@ if (_is_default_toolchain) {
       collect_inputs_only = true
     }
   }
+
   libchrome_impl("libchrome") {
     define_unwind_table_target =
         add_unwind_tables_in_chrome_32bit_apk && target_cpu == "arm"
@@ -3384,6 +3401,7 @@ if (_is_default_toolchain) {
   group("chrome_jni_headers") {
     public_deps = [ ":chrome_jni_headers($default_toolchain)" ]
   }
+
   group("jni_headers") {
     public_deps = [ ":jni_headers($default_toolchain)" ]
   }
@@ -3468,6 +3486,7 @@ if (_is_default_toolchain && add_unwind_tables_in_chrome_32bit_apk) {
       deps = [ ":${_libname}_unwind_table_v2($_toolchain)" ]
     }
   }
+
   chrome_unwind_assets("libmonochrome_unwind_table_assets") {
     libname = "libmonochrome"
   }
@@ -3477,6 +3496,7 @@ if (_is_default_toolchain && add_unwind_tables_in_chrome_32bit_apk) {
     chrome_unwind_assets("libchrome_unwind_table_assets") {
       libname = "libchrome"
     }
+
     chrome_unwind_assets("libchromefortest_unwind_table_assets") {
       testonly = true
       libname = "libchromefortest"
@@ -3488,6 +3508,7 @@ if (_is_default_toolchain && add_unwind_tables_in_chrome_32bit_apk) {
 if (_is_default_toolchain &&
     (enable_libs_and_assets_verification || enable_manifest_verification)) {
   assert(android_64bit_target_cpu, "Can only do expectations on 64 bit bots")
+
   group("validate_expectations") {
     deps = []
     if (enable_libs_and_assets_verification) {

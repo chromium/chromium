@@ -29,6 +29,7 @@ source_set("tabs_public") {
     "//components/split_tabs",
     "//components/tab_groups",
     "//components/tabs:public",
+    "//extensions/buildflags",
     "//skia",
     "//ui/base/unowned_user_data",
     "//ui/webui:buildflags",
@@ -69,9 +70,13 @@ source_set("tabs_impl") {
     "//components/search",
     "//components/tabs:public",
     "//content/public/browser",
+    "//extensions/buildflags",
   ]
   if (enable_webui_ntp) {
     deps += [ "//chrome/browser/ui/customize_chrome:customize_chrome_base" ]
+  }
+  if (enable_extensions_core) {
+    deps += [ "//chrome/browser/ui/extensions" ]
   }
 }
 

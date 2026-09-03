@@ -254,6 +254,8 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSignalsDisclaimerController;
+import org.chromium.chrome.browser.ui.extensions.side_panel.ExtensionSidePanelManagerBridge;
+import org.chromium.chrome.browser.ui.extensions.side_panel.ExtensionSidePanelManagerBridgeFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.chrome.browser.ui.side_panel.SidePanelContainerCoordinator;
@@ -2357,6 +2359,13 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             var chromeAndroidTask = mChromeAndroidTaskSupplier.get();
             assert chromeAndroidTask != null
                     : "ChromeAndroidTask shouldn't be null when side panel is enabled";
+
+            chromeAndroidTask.addFeature(
+                    new ChromeAndroidTaskFeatureKey(
+                            ExtensionSidePanelManagerBridge.class,
+                            currentlySelectedProfile,
+                            mWindowAndroid),
+                    ExtensionSidePanelManagerBridgeFactory::create);
 
             // TODO(crbug.com/489548570): Remove SidePanelDevFeature when it's not needed.
             mSidePanelDevFeature =

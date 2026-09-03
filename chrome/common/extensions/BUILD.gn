@@ -167,6 +167,7 @@ source_set("unit_tests") {
     "manifest_tests/extension_manifests_options_unittest.cc",
     "manifest_tests/extension_manifests_portsinpermissions_unittest.cc",
     "manifest_tests/extension_manifests_sample_unittest.cc",
+    "manifest_tests/extension_manifests_side_panel_unittest.cc",
     "manifest_tests/extension_manifests_theme_unittest.cc",
     "manifest_tests/extension_manifests_ui_unittest.cc",
     "manifest_tests/extension_manifests_validapp_unittest.cc",
@@ -184,12 +185,7 @@ source_set("unit_tests") {
   ]
 
   if (!is_android) {
-    sources += [
-      "api/extension_action/browser_action_manifest_unittest.cc",
-
-      # Side panel is not yet supported on desktop Android.
-      "manifest_tests/extension_manifests_side_panel_unittest.cc",
-    ]
+    sources += [ "api/extension_action/browser_action_manifest_unittest.cc" ]
   }
 
   if (is_chromeos) {

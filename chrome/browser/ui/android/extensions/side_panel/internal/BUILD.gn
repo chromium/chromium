@@ -1,0 +1,47 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//extensions/buildflags/buildflags.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+assert(
+    enable_extensions_core,
+    "Extension side panel should only be built when enable_extensions_core is true")
+
+source_set("internal") {
+  sources = [
+    "extension_side_panel_manager_bridge.cc",
+    "extension_side_panel_manager_bridge.h",
+  ]
+  deps = [
+    ":jni",
+    "//base",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/extensions",
+    "//chrome/browser/ui/side_panel:side_panel_views_dependent",
+  ]
+}
+
+android_library("java") {
+  visibility = [
+    ":*",
+    "//chrome/android:chrome_all_java",
+  ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/extensions/side_panel/ExtensionSidePanelManagerBridgeFactory.java",
+    "java/src/org/chromium/chrome/browser/ui/extensions/side_panel/ExtensionSidePanelManagerBridgeImpl.java",
+  ]
+  deps = [
+    "//build/android:build_java",
+    "//chrome/browser/ui/android/extensions/side_panel:java",
+    "//chrome/browser/ui/browser_window/public/android:java",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
+  srcjar_deps = [ ":jni" ]
+}
+
+generate_jni("jni") {
+  sources = [ "java/src/org/chromium/chrome/browser/ui/extensions/side_panel/ExtensionSidePanelManagerBridgeImpl.java" ]
+}
