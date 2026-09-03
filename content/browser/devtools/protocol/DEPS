@@ -12,8 +12,3 @@ include_rules = [
   "+content/services/devtools_media_encoding_service/public/mojom",
 ]
 
-specific_include_rules = {
-  "tracing_handler\\.cc": [
-    "+third_party/perfetto"
-  ]
-}

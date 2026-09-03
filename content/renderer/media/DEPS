@@ -6,8 +6,3 @@ include_rules = [
   '+third_party/webrtc_overrides',
 ]
 
-specific_include_rules = {
-  "cast_renderer_factory\\.cc" : [
-    "+chromecast/media/audio/cast_audio_renderer.h",
-  ],
-}
