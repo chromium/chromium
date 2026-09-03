@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "ui/views/views_export.h"
 
 namespace breadcrumbs {
@@ -158,6 +159,9 @@ class VIEWS_EXPORT AnyWidgetObserver : public base::CheckedObserver {
   AnyWidgetCallback hidden_callback_;
   AnyWidgetCallback closing_callback_;
   AnyWidgetCallback activated_callback_;
+  base::ScopedObservation<internal::AnyWidgetObserverSingleton,
+                          AnyWidgetObserver>
+      singleton_observation_{this};
 };
 
 // NamedWidgetShownWaiter provides a more ergonomic way to do the most common

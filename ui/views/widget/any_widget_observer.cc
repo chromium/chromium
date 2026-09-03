@@ -18,12 +18,11 @@ AnyWidgetObserver::AnyWidgetObserver(test::AnyWidgetTestPasskey passkey)
     : AnyWidgetObserver() {}
 
 AnyWidgetObserver::AnyWidgetObserver() {
-  internal::AnyWidgetObserverSingleton::GetInstance()->AddObserver(this);
+  singleton_observation_.Observe(
+      internal::AnyWidgetObserverSingleton::GetInstance());
 }
 
-AnyWidgetObserver::~AnyWidgetObserver() {
-  internal::AnyWidgetObserverSingleton::GetInstance()->RemoveObserver(this);
-}
+AnyWidgetObserver::~AnyWidgetObserver() = default;
 
 #define PROPAGATE_NOTIFICATION(method, callback)   \
   void AnyWidgetObserver::method(Widget* widget) { \
