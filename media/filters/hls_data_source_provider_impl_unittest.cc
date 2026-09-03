@@ -302,9 +302,8 @@ TEST_F(HlsDataSourceProviderImplUnittest, TestCrossOriginRangeRequest) {
       base::BindOnce(
           [](bool* error_canary, HlsDataSourceProvider::ReadResult result) {
             if (!result.has_value()) {
-              *error_canary =
-                  (std::move(result).error() ==
-                   HlsDataSourceProvider::ReadStatus::Codes::kError);
+              *error_canary = (std::move(result).error() ==
+                               HlsDemuxerStatus::Codes::kNetworkReadError);
             }
           },
           &has_error));

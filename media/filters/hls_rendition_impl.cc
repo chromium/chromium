@@ -514,8 +514,7 @@ void HlsRenditionImpl::OnSegmentData(
     // Drop |cb| here, and let the abort handler pick up the pieces.
     // TODO(crbug.com/40057824): If a seek abort interrupts us, we want to not
     // bubble the error upwards.
-    rendition_host_->Quit(HlsDemuxerStatusTraits::FromReadStatus(
-        std::move(result).error().AddHere()));
+    rendition_host_->Quit(std::move(result).error().AddHere());
     return;
   }
 

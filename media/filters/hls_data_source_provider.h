@@ -18,6 +18,7 @@
 #include "media/base/data_source.h"
 #include "media/base/media_export.h"
 #include "media/base/status.h"
+#include "media/filters/hls_demuxer_status.h"
 #include "media/formats/hls/security_metadata.h"
 #include "media/formats/hls/types.h"
 #include "url/gurl.h"
@@ -34,20 +35,8 @@ class MEDIA_EXPORT HlsDataSourceProvider {
  public:
   virtual ~HlsDataSourceProvider() = 0;
 
-  struct ReadStatusTraits {
-    enum class Codes : StatusCodeType {
-      kError,
-      kStopped,
-      kAborted,
-    };
-    static constexpr StatusGroupType Group() {
-      return "HlsDataSourceProvider::ReadStatus";
-    }
-  };
-
-  using ReadStatus = TypedStatus<ReadStatusTraits>;
-  using ReadResult = ReadStatus::Or<std::unique_ptr<HlsDataSourceStream>>;
-  using ReadCb = base::OnceCallback<void(ReadResult)>;
+  using ReadResult = HlsDemuxerStatus::Or<std::unique_ptr<HlsDataSourceStream>>;
+  using ReadCb = HlsDemuxerStatusCb<std::unique_ptr<HlsDataSourceStream>>;
 
   // Represents reading from a specific URI at the given byte range. Multiple
   // segments can be added to a read queue to join chunks together from either

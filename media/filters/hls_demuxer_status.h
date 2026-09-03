@@ -124,18 +124,6 @@ struct HlsDemuxerStatusTraits {
         return "Segment queue never had any data";
     }
   }
-
-  static TypedStatus<HlsDemuxerStatusTraits> FromReadStatus(
-      HlsDataSourceProvider::ReadStatus&& s) {
-    switch (s.code()) {
-      case HlsDataSourceProvider::ReadStatus::Codes::kError:
-        return {Codes::kNetworkReadError, std::move(s)};
-      case HlsDataSourceProvider::ReadStatus::Codes::kAborted:
-        return {Codes::kNetworkReadAborted, std::move(s)};
-      case HlsDataSourceProvider::ReadStatus::Codes::kStopped:
-        return {Codes::kNetworkReadStopped, std::move(s)};
-    }
-  }
 };
 
 using HlsDemuxerStatus = TypedStatus<HlsDemuxerStatusTraits>;

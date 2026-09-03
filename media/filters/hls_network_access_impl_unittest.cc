@@ -581,7 +581,7 @@ TEST_F(HlsNetworkAccessImplUnittest, TestSegmentReadInitConnectionFailure) {
             *cb_called = true;
             EXPECT_FALSE(result.has_value());
             EXPECT_EQ(std::move(result).error().code(),
-                      HlsDataSourceProvider::ReadStatus::Codes::kStopped);
+                      HlsDemuxerStatus::Codes::kNetworkReadStopped);
           },
           &callback_called));
   task_environment_.RunUntilIdle();
@@ -623,7 +623,7 @@ TEST_F(HlsNetworkAccessImplUnittest, TestSegmentReadMediaReadFailure) {
             *cb_called = true;
             EXPECT_FALSE(result.has_value());
             EXPECT_EQ(std::move(result).error().code(),
-                      HlsDataSourceProvider::ReadStatus::Codes::kError);
+                      HlsDemuxerStatus::Codes::kNetworkReadError);
           },
           &callback_called));
   task_environment_.RunUntilIdle();
@@ -666,7 +666,7 @@ TEST_F(HlsNetworkAccessImplUnittest,
             *cb_called = true;
             EXPECT_FALSE(result.has_value());
             EXPECT_EQ(std::move(result).error().code(),
-                      HlsDataSourceProvider::ReadStatus::Codes::kError);
+                      HlsDemuxerStatus::Codes::kNetworkReadError);
           },
           &callback_called));
   task_environment_.RunUntilIdle();
@@ -709,7 +709,7 @@ TEST_F(HlsNetworkAccessImplUnittest, TestSegmentReadKeyFailure) {
             *cb_called = true;
             EXPECT_FALSE(result.has_value());
             EXPECT_EQ(std::move(result).error().code(),
-                      HlsDataSourceProvider::ReadStatus::Codes::kError);
+                      HlsDemuxerStatus::Codes::kNetworkReadError);
           },
           &callback_called));
   task_environment_.RunUntilIdle();
@@ -766,7 +766,7 @@ TEST_F(HlsNetworkAccessImplUnittest, TestSegmentReadKeyFailureLater) {
             *cb_called = true;
             EXPECT_FALSE(result.has_value());
             EXPECT_EQ(std::move(result).error().code(),
-                      HlsDataSourceProvider::ReadStatus::Codes::kError);
+                      HlsDemuxerStatus::Codes::kNetworkReadError);
           },
           &callback_called));
 

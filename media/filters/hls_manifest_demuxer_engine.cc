@@ -560,8 +560,7 @@ void HlsManifestDemuxerEngine::UpdateMediaPlaylistForRole(
     HlsDataSourceProvider::ReadResult maybe_stream) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   if (!maybe_stream.has_value()) {
-    std::move(cb).Run(HlsDemuxerStatusTraits::FromReadStatus(
-        std::move(maybe_stream).error()));
+    std::move(cb).Run(std::move(maybe_stream).error());
     return;
   }
   auto stream = std::move(maybe_stream).value();
@@ -697,9 +696,7 @@ void HlsManifestDemuxerEngine::ParsePlaylist(
     HlsDataSourceProvider::ReadResult m_stream) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   if (!m_stream.has_value()) {
-    std::move(parse_complete_cb)
-        .Run(HlsDemuxerStatusTraits::FromReadStatus(
-            std::move(m_stream).error().AddHere()));
+    std::move(parse_complete_cb).Run(std::move(m_stream).error().AddHere());
     return;
   }
   auto stream = std::move(m_stream).value();
@@ -1075,8 +1072,7 @@ void HlsManifestDemuxerEngine::DetermineBitstreamContainer(
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
 
   if (!maybe_stream.has_value()) {
-    std::move(cb).Run(HlsDemuxerStatusTraits::FromReadStatus(
-        std::move(maybe_stream).error()));
+    std::move(cb).Run(std::move(maybe_stream).error());
     return;
   }
 

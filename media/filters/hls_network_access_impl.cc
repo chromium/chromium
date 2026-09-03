@@ -103,7 +103,7 @@ class HlsNetworkAccessImpl::ParallelFetchState
     CheckCompleted();
   }
 
-  void OnError(HlsDataSourceProvider::ReadStatus status) {
+  void OnError(HlsDemuxerStatus status) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (aborted_) {
       DCHECK(!completion_cb_);
@@ -127,7 +127,7 @@ class HlsNetworkAccessImpl::ParallelFetchState
 
     if (!network_access_) {
       std::move(completion_cb_)
-          .Run(HlsDataSourceProvider::ReadStatus::Codes::kAborted);
+          .Run(HlsDemuxerStatus::Codes::kNetworkReadAborted);
       aborted_ = true;
       return;
     }
@@ -137,7 +137,7 @@ class HlsNetworkAccessImpl::ParallelFetchState
       enc_data_->ImportKey(key_stream->AsString());
       enc_data_->ImportKeySecurity(key_stream->SecurityInfo());
       if (enc_data_->NeedsKeyFetch()) {
-        OnError({HlsDataSourceProvider::ReadStatus::Codes::kError,
+        OnError({HlsDemuxerStatus::Codes::kNetworkReadError,
                  "Error importing key in encrypted segment fetch"});
         return;
       }
@@ -224,7 +224,7 @@ void HlsNetworkAccessImpl::ReadManifest(const GURL& uri,
                                         HlsDataSourceProvider::ReadCb cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   if (!data_source_provider_) {
-    std::move(cb).Run(HlsDataSourceProvider::ReadStatus::Codes::kStopped);
+    std::move(cb).Run(HlsDemuxerStatus::Codes::kNetworkReadStopped);
     return;
   }
   ReadAllInternal(uri, std::move(cb), DataSource::CacheMode::kBypassCache,
@@ -276,8 +276,8 @@ void HlsNetworkAccessImpl::MediaSegmentSecurityChecks(
   }
 
   // Anything else is disallowed.
-  std::move(cb).Run({HlsDataSourceProvider::ReadStatus::Codes::kError,
-                     "insecure media request"});
+  std::move(cb).Run(
+      {HlsDemuxerStatus::Codes::kNetworkReadError, "insecure media request"});
 }
 
 void HlsNetworkAccessImpl::ReadMediaSegment(const hls::MediaSegment& segment,
@@ -286,7 +286,7 @@ void HlsNetworkAccessImpl::ReadMediaSegment(const hls::MediaSegment& segment,
                                             HlsDataSourceProvider::ReadCb cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   if (!data_source_provider_) {
-    std::move(cb).Run(HlsDataSourceProvider::ReadStatus::Codes::kStopped);
+    std::move(cb).Run(HlsDemuxerStatus::Codes::kNetworkReadStopped);
     return;
   }
 
@@ -322,7 +322,7 @@ void HlsNetworkAccessImpl::ReadStream(
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   CHECK(stream);
   if (!data_source_provider_) {
-    std::move(cb).Run(HlsDataSourceProvider::ReadStatus::Codes::kStopped);
+    std::move(cb).Run(HlsDemuxerStatus::Codes::kNetworkReadStopped);
     return;
   }
   data_source_provider_
@@ -345,7 +345,7 @@ void HlsNetworkAccessImpl::ReadUntilExhaustedHelper(
   if (network_access) {
     network_access->ReadUntilExhausted(std::move(cb), std::move(result));
   } else {
-    std::move(cb).Run(HlsDataSourceProvider::ReadStatus::Codes::kAborted);
+    std::move(cb).Run(HlsDemuxerStatus::Codes::kNetworkReadAborted);
   }
 }
 
