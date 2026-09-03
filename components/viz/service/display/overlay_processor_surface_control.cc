@@ -79,6 +79,16 @@ void OverlayProcessorSurfaceControl::CheckOverlaySupportImpl(
   DCHECK(!candidates->empty());
 
   for (auto& candidate : *candidates) {
+    // If HDR overlays are disabled, reject HDR candidates unless hardware DRM
+    // requires an overlay.
+    if (candidate.color_space.IsHDR() && !candidate.requires_overlay) {
+      if (!base::FeatureList::IsEnabled(
+              features::kAndroidSurfaceControlHdrOverlays)) {
+        candidate.overlay_handled = false;
+        return;
+      }
+    }
+
     if (auto override_color_space = GetOverrideColorSpace()) {
       candidate.color_space = override_color_space.value();
       candidate.hdr_metadata = gfx::HDRMetadata();
