@@ -403,7 +403,7 @@ public class RootUiCoordinator
     protected final OneshotSupplier<TabSwitcher> mTabSwitcherSupplier;
     protected final OneshotSupplier<TabSwitcher> mIncognitoTabSwitcherSupplier;
     protected @Nullable ManagedMessageDispatcher mMessageDispatcher;
-    private @Nullable MessageContainerCoordinator mMessageContainerCoordinator;
+    protected @Nullable MessageContainerCoordinator mMessageContainerCoordinator;
     private @Nullable MessageContainerObserver mMessageContainerObserver;
     private @Nullable ChromeMessageQueueMediator mMessageQueueMediator;
     private @Nullable LayoutManagerImpl mLayoutManager;

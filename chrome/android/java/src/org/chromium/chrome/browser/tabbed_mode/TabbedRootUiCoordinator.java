@@ -143,6 +143,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.lifetime.ApplicationLifetime;
 import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.messages.MessageContainerCoordinator;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceIphController;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
@@ -765,6 +766,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 new KeyboardFocusRowManager(
                         () -> mBookmarkBarCoordinator, // Gets current mBookmarkBarCoordinator
                         compositorViewHolderSupplier,
+                        () -> mMessageContainerCoordinator,
                         modalDialogManagerSupplier,
                         () -> mSidePanelContainerCoordinator,
                         mSideUiStateProviderSupplier,
@@ -2673,6 +2675,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     public @Nullable SidePanelContainerCoordinator getSidePanelContainerCoordinatorForTesting() {
         return mSidePanelContainerCoordinator;
+    }
+
+    public @Nullable MessageContainerCoordinator getMessageContainerCoordinatorForTesting() {
+        return mMessageContainerCoordinator;
     }
 
     public @Nullable SidePanelDevFeature getSidePanelDevFeatureForTesting() {

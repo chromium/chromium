@@ -14,6 +14,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarCoordinator;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
+import org.chromium.chrome.browser.messages.MessageContainerCoordinator;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tabstrip.StripVisibilityState;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabsSideUiCoordinator;
@@ -32,8 +33,8 @@ import java.util.List;
 import java.util.function.Supplier;
 
 /**
- * Controls the keyboard focus location for top controls and side UI (tab strip, omnibox, bookmarks
- * bar, vertical tabs, side panel) on Chrome for Android.
+ * Controls the keyboard focus location for top controls and side UI (messages, tab strip, omnibox,
+ * bookmarks bar, vertical tabs, side panel) on Chrome for Android.
  *
  * <p>See {@link org.chromium.chrome.browser.KeyboardShortcuts.KeyboardShortcutsSemanticMeaning}
  */
@@ -43,6 +44,8 @@ import java.util.function.Supplier;
     // Alphabetical order by field name
     private final Supplier<@Nullable BookmarkBarCoordinator> mBookmarkBarCoordinatorSupplier;
     private final Supplier<@Nullable CompositorViewHolder> mCompositorViewHolderSupplier;
+    private final Supplier<@Nullable MessageContainerCoordinator>
+            mMessageContainerCoordinatorSupplier;
     private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
     private final Supplier<@Nullable SidePanelContainerCoordinator> mSidePanelContainerSupplier;
     private final OneshotSupplierImpl<SideUiStateProvider> mSideUiStateProviderSupplier;
@@ -55,7 +58,8 @@ import java.util.function.Supplier;
 
     /**
      * Constructs a {@link KeyboardFocusRowManager}, which controls the keyboard focus location for
-     * tab strip, omnibox, bookmarks bar, vertical tabs, and side panel on Chrome for Android.
+     * messages, tab strip, omnibox, bookmarks bar, vertical tabs, and side panel on Chrome for
+     * Android.
      *
      * <p>See {@link org.chromium.chrome.browser.KeyboardShortcuts.KeyboardShortcutsSemanticMeaning}
      *
@@ -64,6 +68,9 @@ import java.util.function.Supplier;
      *     bookmarks bar.
      * @param compositorViewHolderSupplier Supplies the {@link CompositorViewHolder} that will be
      *     used to request focus on the tab contents.
+     * @param messageContainerCoordinatorSupplier Supplies the {@link MessageContainerCoordinator}
+     *     (or null, if messages are not supported or initialized) that will be used to get/set
+     *     keyboard focus on messages.
      * @param modalDialogManagerSupplier Supplies the {@link ModalDialogManager} that will be used
      *     to determine if an app modal dialog is showing (in which case the keyboard shortcuts
      *     should not do anything).
@@ -88,6 +95,7 @@ import java.util.function.Supplier;
     KeyboardFocusRowManager(
             Supplier<@Nullable BookmarkBarCoordinator> bookmarkBarCoordinatorSupplier,
             Supplier<@Nullable CompositorViewHolder> compositorViewHolderSupplier,
+            Supplier<@Nullable MessageContainerCoordinator> messageContainerCoordinatorSupplier,
             Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             Supplier<@Nullable SidePanelContainerCoordinator> sidePanelContainerSupplier,
             OneshotSupplierImpl<SideUiStateProvider> sideUiStateProviderSupplier,
@@ -99,6 +107,7 @@ import java.util.function.Supplier;
                     verticalTabsSideUiCoordinatorSupplier) {
         mBookmarkBarCoordinatorSupplier = bookmarkBarCoordinatorSupplier;
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
+        mMessageContainerCoordinatorSupplier = messageContainerCoordinatorSupplier;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mSidePanelContainerSupplier = sidePanelContainerSupplier;
         mSideUiStateProviderSupplier = sideUiStateProviderSupplier;
@@ -149,6 +158,12 @@ import java.util.function.Supplier;
                     compositorViewHolder.setFocusOnFirstContentViewItem();
                 }
             }
+            case KeyboardFocusRow.MESSAGE -> {
+                var messageContainerCoordinator = mMessageContainerCoordinatorSupplier.get();
+                if (messageContainerCoordinator != null) {
+                    messageContainerCoordinator.requestKeyboardFocus();
+                }
+            }
             case KeyboardFocusRow.OMNIBOX -> {
                 var toolbarManager = mToolbarManagerSupplier.get();
                 if (toolbarManager != null) {
@@ -186,6 +201,12 @@ import java.util.function.Supplier;
     }
 
     private @KeyboardFocusRow int getKeyboardFocusRow() {
+        var messageContainerCoordinator = mMessageContainerCoordinatorSupplier.get();
+        if (messageContainerCoordinator != null
+                && messageContainerCoordinator.containsKeyboardFocus()) {
+            return KeyboardFocusRow.MESSAGE;
+        }
+
         var toolbarManager = mToolbarManagerSupplier.get();
         if (toolbarManager != null && toolbarManager.isUrlBarFocused()) {
             return KeyboardFocusRow.OMNIBOX;
@@ -229,6 +250,12 @@ import java.util.function.Supplier;
             @KeyboardFocusRow int oldKeyboardFocusRow, boolean forward) {
         // NONE is always an option.
         List<Integer> keyboardFocusRows = new ArrayList<>(List.of(KeyboardFocusRow.NONE));
+
+        // The next item in the focus cycle order is MESSAGE, if it is present.
+        var messageContainerCoordinator = mMessageContainerCoordinatorSupplier.get();
+        if (messageContainerCoordinator != null && messageContainerCoordinator.isVisible()) {
+            keyboardFocusRows.add(KeyboardFocusRow.MESSAGE);
+        }
 
         var toolbarManager = mToolbarManagerSupplier.get();
         if (toolbarManager != null) {

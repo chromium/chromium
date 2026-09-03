@@ -16,7 +16,8 @@ import org.chromium.build.annotations.NullMarked;
     KeyboardFocusRow.OMNIBOX,
     KeyboardFocusRow.BOOKMARKS_BAR,
     KeyboardFocusRow.SIDE_PANEL,
-    KeyboardFocusRow.VERTICAL_TABS
+    KeyboardFocusRow.VERTICAL_TABS,
+    KeyboardFocusRow.MESSAGE
 })
 public @interface KeyboardFocusRow {
     /** The focus is not in one of the rows of top controls. */
@@ -36,4 +37,7 @@ public @interface KeyboardFocusRow {
 
     /** The focus is on the Vertical Tabs rail. */
     int VERTICAL_TABS = 5;
+
+    /** The focus is on the Message UI. */
+    int MESSAGE = 6;
 }

@@ -132,6 +132,27 @@ public class MessageContainerCoordinator implements BrowserControlsStateProvider
         return getContainerTopOffset();
     }
 
+    /** Returns whether a message is currently visible. */
+    public boolean isVisible() {
+        return mContainer != null
+                && mContainer.getVisibility() == View.VISIBLE
+                && mContainer.getChildCount() > 0;
+    }
+
+    /** Requests keyboard focus on the message currently shown. */
+    public void requestKeyboardFocus() {
+        if (!isVisible()) return;
+        assert mContainer != null;
+        mContainer.requestFocus();
+    }
+
+    /**
+     * @return Whether the message container or any of its children currently has focus.
+     */
+    public boolean containsKeyboardFocus() {
+        return mContainer != null && mContainer.hasFocus();
+    }
+
     @Override
     public void onControlsOffsetChanged(
             int topOffset,
