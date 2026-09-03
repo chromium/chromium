@@ -765,6 +765,7 @@ static_library("ui") {
     "//chrome/browser/subresource_filter",
     "//chrome/browser/supervised_user:impl",
     "//chrome/browser/sync",
+    "//chrome/browser/sync_tab_context",
     "//chrome/browser/task_manager/common",
     "//chrome/browser/task_manager/common:impl",
     "//chrome/browser/translate:impl",

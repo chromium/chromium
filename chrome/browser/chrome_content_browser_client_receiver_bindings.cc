@@ -4,6 +4,7 @@
 
 // This file exposes services from the browser to child processes.
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_web_request_reporter_impl.h"
 #include "chrome/browser/signin/google_accounts_private_api_host.h"
 #include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
+#include "chrome/browser/sync_tab_context/tab_context_decryption_token_tab_helper.h"
 #include "chrome/browser/trusted_vault/trusted_vault_encryption_keys_tab_helper.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
@@ -41,6 +43,7 @@
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/surface_embed/browser/surface_embed_host.h"
 #include "components/surface_embed/common/features.h"
+#include "components/sync/base/features.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -537,6 +540,18 @@ void ChromeContentBrowserClient::
                                                     render_frame_host);
       },
       &render_frame_host));
+  if (base::FeatureList::IsEnabled(syncer::kSyncEncryptedTabContextContainer)) {
+    associated_registry.AddInterface<
+        chrome::mojom::TabContextDecryptionTokenExtension>(base::BindRepeating(
+        [](content::RenderFrameHost* render_frame_host,
+           mojo::PendingAssociatedReceiver<
+               chrome::mojom::TabContextDecryptionTokenExtension> receiver) {
+          TabContextDecryptionTokenTabHelper::
+              BindTabContextDecryptionTokenExtension(std::move(receiver),
+                                                     render_frame_host);
+        },
+        &render_frame_host));
+  }
   associated_registry.AddInterface<
       chrome::mojom::GoogleAccountsPrivateApiExtension>(base::BindRepeating(
       [](content::RenderFrameHost* render_frame_host,

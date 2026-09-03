@@ -1,0 +1,51 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("sync_tab_context") {
+  public = [ "tab_context_decryption_token_tab_helper.h" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:mojo_bindings",
+    "//components/sync_tab_context",
+    "//content/public/browser",
+  ]
+}
+
+source_set("impl") {
+  sources = [ "tab_context_decryption_token_tab_helper.cc" ]
+  public_deps = [ ":sync_tab_context" ]
+  deps = [
+    "//chrome/browser/signin",
+    "//chrome/browser/signin:google_accounts_private_api",
+    "//chrome/browser/sync",
+    "//components/signin/public/identity_manager",
+    "//components/sync/base",
+    "//google_apis",
+    "//services/network/public/cpp",
+  ]
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "tab_context_decryption_token_tab_helper_browsertest.cc" ]
+    deps = [
+      ":sync_tab_context",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/signin",
+      "//chrome/browser/sync",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/network_session_configurator/common",
+      "//components/signin/public/identity_manager",
+      "//components/signin/public/identity_manager:test_support",
+      "//components/sync/base",
+      "//content/test:test_support",
+      "//google_apis",
+    ]
+  }
+}

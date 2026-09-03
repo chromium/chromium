@@ -2010,6 +2010,7 @@ if (!is_android) {
       "//chrome/browser/sync:browser_tests",
       "//chrome/browser/sync/test/integration:sync_integration_test_support",
       "//chrome/browser/sync_file_system",
+      "//chrome/browser/sync_tab_context:browser_tests",
       "//chrome/browser/tab_contents",
       "//chrome/browser/tab_contents:browser_tests",
       "//chrome/browser/tab_group_sync",

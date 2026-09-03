@@ -339,6 +339,7 @@
 #include "components/site_isolation/site_isolation_policy.h"
 #include "components/site_token_provider/features.h"
 #include "components/supervised_user/core/common/features.h"
+#include "components/sync_tab_context/http_rpc_constants.h"
 #include "components/translate/core/common/translate_switches.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/variations/variations_associated_data.h"
@@ -3187,6 +3188,7 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
         embedder_support::kOriginTrialDisabledFeatures,
         embedder_support::kOriginTrialPublicKey,
         switches::kReaderModeHeuristics,
+        sync_tab_context::kTabContextAllowedOriginSwitch,
         translate::switches::kTranslateSecurityOrigin,
     };
 
