@@ -35,12 +35,12 @@ CATransactionGPUCoordinator::CATransactionGPUCoordinator(GpuProcessHost* host)
     : host_(host) {}
 
 CATransactionGPUCoordinator::~CATransactionGPUCoordinator() {
-  DCHECK(!host_);
-  DCHECK(!registered_as_observer_);
+  CHECK(!host_, base::NotFatalUntil::M159);
+  CHECK(!registered_as_observer_, base::NotFatalUntil::M159);
 }
 
 void CATransactionGPUCoordinator::HostWillBeDestroyed() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   ui::WindowResizeHelperMac::Get()->task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -50,25 +50,25 @@ void CATransactionGPUCoordinator::HostWillBeDestroyed() {
 }
 
 void CATransactionGPUCoordinator::AddPostCommitObserverOnUIThread() {
-  DCHECK(!registered_as_observer_);
+  CHECK(!registered_as_observer_, base::NotFatalUntil::M159);
   ui::CATransactionCoordinator::Get().AddPostCommitObserver(this);
   registered_as_observer_ = true;
 }
 
 void CATransactionGPUCoordinator::RemovePostCommitObserverOnUIThread() {
-  DCHECK(registered_as_observer_);
+  CHECK(registered_as_observer_, base::NotFatalUntil::M159);
   ui::CATransactionCoordinator::Get().RemovePostCommitObserver(this);
   registered_as_observer_ = false;
 }
 
 void CATransactionGPUCoordinator::OnActivateForTransaction() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (host_)
     host_->gpu_service()->BeginCATransaction();
 }
 
 void CATransactionGPUCoordinator::OnEnterPostCommit() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   // If HostWillBeDestroyed() is called during a commit, pending_commit_count_
   // may be left non-zero. That's fine as long as this instance is destroyed
@@ -81,12 +81,12 @@ void CATransactionGPUCoordinator::OnEnterPostCommit() {
 }
 
 bool CATransactionGPUCoordinator::ShouldWaitInPostCommit() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   return pending_commit_count_ > 0;
 }
 
 void CATransactionGPUCoordinator::OnCommitCompletedOnProcessThread() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   ui::WindowResizeHelperMac::Get()->task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&CATransactionGPUCoordinator::OnCommitCompletedOnUI,
@@ -94,7 +94,7 @@ void CATransactionGPUCoordinator::OnCommitCompletedOnProcessThread() {
 }
 
 void CATransactionGPUCoordinator::OnCommitCompletedOnUI() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   pending_commit_count_--;
 }
 

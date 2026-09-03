@@ -423,7 +423,7 @@ void GpuDataManagerImpl::BindReceiver(
     mojo::PendingReceiver<blink::mojom::GpuDataManager> receiver) {
   // This is intentionally always bound on the IO thread to ensure a low-latency
   // response to sync IPCs.
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
   GetGpuDataManagerReceiver().Bind(std::move(receiver));
 }
 

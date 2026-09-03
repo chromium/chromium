@@ -31,7 +31,7 @@ ServiceWorkerMainResourceHandle::ServiceWorkerMainResourceHandle(
       fetch_event_client_id_(std::move(fetch_event_client_id)),
       service_worker_accessed_callback_(std::move(on_service_worker_accessed)),
       context_wrapper_(std::move(context_wrapper)) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 }
 
 ServiceWorkerMainResourceHandle::~ServiceWorkerMainResourceHandle() = default;
@@ -39,7 +39,7 @@ ServiceWorkerMainResourceHandle::~ServiceWorkerMainResourceHandle() = default;
 void ServiceWorkerMainResourceHandle::set_service_worker_client(
     ScopedServiceWorkerClient scoped_service_worker_client,
     const net::IsolationInfo& isolation_info) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   CHECK(!scoped_service_worker_client_);
 
   scoped_service_worker_client_ = std::make_unique<ScopedServiceWorkerClient>(

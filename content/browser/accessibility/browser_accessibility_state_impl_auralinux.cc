@@ -148,7 +148,7 @@ BrowserAccessibilityStateImplAuralinux::
     ~BrowserAccessibilityStateImplAuralinux() = default;
 
 void BrowserAccessibilityStateImplAuralinux::OnAnimationsEnabledChanged() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   gfx::Animation::UpdatePrefersReducedMotion();
   NotifyWebContentsPreferencesChanged();
 }

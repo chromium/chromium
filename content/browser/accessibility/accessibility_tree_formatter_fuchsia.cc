@@ -234,7 +234,7 @@ void AccessibilityTreeFormatterFuchsia::RecursiveBuildTree(
     ui::AXPlatformNodeFuchsia* child_node =
         static_cast<ui::AXPlatformNodeFuchsia*>(
             ui::AXPlatformNodeBase::GetFromUniqueId(child_id));
-    DCHECK(child_node);
+    CHECK(child_node, base::NotFatalUntil::M159);
 
     ui::AXPlatformNodeDelegate* child_delegate = child_node->GetDelegate();
 

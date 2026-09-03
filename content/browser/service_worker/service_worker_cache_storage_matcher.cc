@@ -36,9 +36,9 @@ ServiceWorkerCacheStorageMatcher::ServiceWorkerCacheStorageMatcher(
       version_(std::move(version)),
       fetch_callback_(std::move(fetch_callback)),
       request_url_(request_->url) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!request_->blob);
+  CHECK(!request_->blob, base::NotFatalUntil::M159);
   TRACE_EVENT(
       "ServiceWorker",
       "ServiceWorkerCacheStorageMatcher::ServiceWorkerCacheStorageMatcher",

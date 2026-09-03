@@ -2018,7 +2018,8 @@ int BrowserAccessibilityAndroid::GetTextChangeFromIndex() const {
     // If the text change is due to a IME text commit.
     if (committed_text_length > 0) {
       // Cursor should move to the end of committed text.
-      DCHECK_GE(GetSelectionStart() - committed_text_length, 0);
+      CHECK_GE(GetSelectionStart() - committed_text_length, 0,
+               base::NotFatalUntil::M159);
       // This is current_cursor_location - len(X).
       return GetSelectionStart() - committed_text_length;
     }
@@ -2257,7 +2258,7 @@ std::optional<int> BrowserAccessibilityAndroid::RowSpan() const {
       GetRole() == ax::mojom::Role::kListBoxOption) {
     // For <ol> and <ul> elements on Android (e.g. role kListItem), the AX
     // code will consider these 0 span, but on Android they are 1.
-    DCHECK(!ax_row_span.has_value());
+    CHECK(!ax_row_span.has_value(), base::NotFatalUntil::M159);
     ax_row_span = 1;
   }
   return ax_row_span;
@@ -2273,7 +2274,7 @@ std::optional<int> BrowserAccessibilityAndroid::ColumnSpan() const {
       GetRole() == ax::mojom::Role::kListBoxOption) {
     // For <ol> and <ul> elements on Android (e.g. role kListItem), the AX
     // code will consider these 0 span, but on Android they are 1.
-    DCHECK(!ax_col_span.has_value());
+    CHECK(!ax_col_span.has_value(), base::NotFatalUntil::M159);
     ax_col_span = 1;
   }
 
@@ -2440,8 +2441,8 @@ std::u16string BrowserAccessibilityAndroid::GetTargetUrl() const {
 void BrowserAccessibilityAndroid::GetSuggestions(
     std::vector<int>* suggestion_starts,
     std::vector<int>* suggestion_ends) const {
-  DCHECK(suggestion_starts);
-  DCHECK(suggestion_ends);
+  CHECK(suggestion_starts, base::NotFatalUntil::M159);
+  CHECK(suggestion_ends, base::NotFatalUntil::M159);
 
   if (!IsTextField()) {
     return;

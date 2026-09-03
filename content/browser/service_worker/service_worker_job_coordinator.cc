@@ -37,13 +37,13 @@ ServiceWorkerRegisterJobBase* ServiceWorkerJobCoordinator::JobQueue::Push(
   // Note we are releasing 'job' here in case neither of the two if() statements
   // above were true.
 
-  DCHECK(!jobs_.empty());
+  CHECK(!jobs_.empty(), base::NotFatalUntil::M159);
   return jobs_.back().get();
 }
 
 void ServiceWorkerJobCoordinator::JobQueue::Pop(
     ServiceWorkerRegisterJobBase* job) {
-  DCHECK(job == jobs_.front().get());
+  CHECK(job == jobs_.front().get(), base::NotFatalUntil::M159);
   jobs_.pop_front();
   if (!jobs_.empty()) {
     StartOneJob();
@@ -51,7 +51,7 @@ void ServiceWorkerJobCoordinator::JobQueue::Pop(
 }
 
 void ServiceWorkerJobCoordinator::JobQueue::StartOneJob() {
-  DCHECK(!jobs_.empty());
+  CHECK(!jobs_.empty(), base::NotFatalUntil::M159);
   jobs_.front()->Start();
 }
 
@@ -67,7 +67,7 @@ void ServiceWorkerJobCoordinator::JobQueue::AbortAll() {
 ServiceWorkerJobCoordinator::ServiceWorkerJobCoordinator(
     ServiceWorkerContextCore* context)
     : context_(context) {
-  DCHECK(context_);
+  CHECK(context_, base::NotFatalUntil::M159);
 }
 
 ServiceWorkerJobCoordinator::~ServiceWorkerJobCoordinator() {
@@ -117,7 +117,7 @@ void ServiceWorkerJobCoordinator::Update(
     blink::mojom::FetchClientSettingsObjectPtr
         outside_fetch_client_settings_object,
     ServiceWorkerRegisterJob::RegistrationCallback callback) {
-  DCHECK(registration);
+  CHECK(registration, base::NotFatalUntil::M159);
   ServiceWorkerRegisterJob* queued_job = static_cast<ServiceWorkerRegisterJob*>(
       job_queues_[UniqueRegistrationKey(registration->scope(),
                                         registration->key())]

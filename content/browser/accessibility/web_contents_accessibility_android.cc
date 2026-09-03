@@ -812,7 +812,7 @@ void WebContentsAccessibilityAndroid::DisableRendererAccessibility(
   // This method should only be called when |snapshot_root_manager_| is null,
   // which means this instance was constructed via a web contents and not an
   // AXTreeUpdate (e.g. for snapshots, frozen tabs, paint preview, etc).
-  DCHECK(!snapshot_root_manager_);
+  CHECK(!snapshot_root_manager_, base::NotFatalUntil::M159);
 
   // To disable the renderer, the root manager /should/ already be connected to
   // this instance, and we need to reset the weak pointer it has to |this|. In
@@ -841,10 +841,10 @@ void WebContentsAccessibilityAndroid::ReEnableRendererAccessibility(
   // This method should only be called when |snapshot_root_manager_| is null,
   // which means this instance was constructed via a web contents and not an
   // AXTreeUpdate (e.g. for snapshots, frozen tabs, paint preview, etc).
-  DCHECK(!snapshot_root_manager_);
+  CHECK(!snapshot_root_manager_, base::NotFatalUntil::M159);
 
   WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M159);
 
   // A request to re-enable renderer accessibility implies AT use on the
   // Java-side, so we need to set the root manager's reference to |this| to
@@ -3232,7 +3232,7 @@ static int64_t JNI_WebContentsAccessibilityImpl_Init(
     JNIEnv* env,
     const JavaRef<jobject>& jweb_contents) {
   WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M159);
 
   return reinterpret_cast<intptr_t>(
       new WebContentsAccessibilityAndroid(web_contents));

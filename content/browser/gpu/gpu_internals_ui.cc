@@ -678,7 +678,7 @@ GpuMessageHandler::~GpuMessageHandler() {
 
 /* BrowserBridge.callAsync prepends a requestID to these messages. */
 void GpuMessageHandler::RegisterMessages() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   web_ui()->RegisterMessageCallback(
       "getGpuInfo", base::BindRepeating(&GpuMessageHandler::HandleGetGpuInfo,
@@ -717,7 +717,7 @@ void GpuMessageHandler::HandleGetLogMessages(const base::ListValue& args) {
 
 void GpuMessageHandler::HandleGetGpuInfo(const base::ListValue& args) {
   CHECK_EQ(1U, args.size());
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   AllowJavascript();
 
   // Tell GpuDataManager it should have full GpuInfo. If the
@@ -733,7 +733,7 @@ void GpuMessageHandler::HandleGetGpuInfo(const base::ListValue& args) {
 }
 
 base::DictValue GpuMessageHandler::GetClientInfo() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   base::DictValue dict;
 
@@ -776,7 +776,7 @@ base::DictValue GpuMessageHandler::GetClientInfo() {
 }
 
 base::ListValue GpuMessageHandler::GetLogMessages() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   return GpuDataManagerImpl::GetInstance()->GetLogMessages();
 }

@@ -324,7 +324,7 @@ base::TimeDelta BrowserAccessibilityStateImpl::GetMaxDisableDelay() {
 
 BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl()
     : platform_ax_mode_(CreateScopedModeForProcess(ui::AXMode())) {
-  DCHECK_EQ(g_instance, nullptr);
+  CHECK_EQ(g_instance, nullptr, base::NotFatalUntil::M159);
   g_instance = this;
 
   bool disallow_changes = false;
@@ -397,7 +397,7 @@ BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl()
 }
 
 BrowserAccessibilityStateImpl::~BrowserAccessibilityStateImpl() {
-  DCHECK_EQ(g_instance, this);
+  CHECK_EQ(g_instance, this, base::NotFatalUntil::M159);
   g_instance = nullptr;
 
   CHECK(last_hidden_.empty());

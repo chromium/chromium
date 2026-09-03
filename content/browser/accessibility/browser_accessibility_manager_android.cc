@@ -253,7 +253,7 @@ ui::AXNode* BrowserAccessibilityManagerAndroid::RetargetForEvents(
   DUMP_WILL_BE_CHECK(wrapper);
   ui::BrowserAccessibility* updated =
       wrapper->PlatformGetLowestPlatformAncestor();
-  DCHECK(updated);
+  CHECK(updated, base::NotFatalUntil::M159);
 
   switch (type) {
     case RetargetEventType::RetargetEventTypeGenerated: {
@@ -437,7 +437,7 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
   }
 
   ui::BrowserAccessibility* wrapper = GetFromAXNode(node);
-  DCHECK(wrapper);
+  CHECK(wrapper, base::NotFatalUntil::M159);
   BrowserAccessibilityAndroid* android_node =
       static_cast<BrowserAccessibilityAndroid*>(wrapper);
 
@@ -614,7 +614,8 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
       break;
     }
     case ui::AXEventGenerator::Event::RANGE_VALUE_CHANGED:
-      DCHECK(android_node->GetData().IsRangeValueSupported());
+      CHECK(android_node->GetData().IsRangeValueSupported(),
+            base::NotFatalUntil::M159);
       if ((android_node->GetRole() == ax::mojom::Role::kSpinButton &&
            !android_node->IsTextField()) ||
           android_node->GetRole() == ax::mojom::Role::kMeter ||
@@ -760,7 +761,7 @@ void BrowserAccessibilityManagerAndroid::FireAriaNotificationEvent(
     ax::mojom::AriaNotificationPriority priority_property,
     ax::mojom::AriaNotificationInterrupt interrupt_property,
     const std::string& type) {
-  DCHECK(node);
+  CHECK(node, base::NotFatalUntil::M159);
 
   auto* wcax = GetWebContentsAXFromRootManager();
   if (!wcax) {
@@ -997,11 +998,11 @@ void BrowserAccessibilityManagerAndroid::OnAtomicUpdateFinished(
     if (root_changed) {
       auto* root_manager = static_cast<BrowserAccessibilityManagerAndroid*>(
           GetManagerForRootFrame());
-      DCHECK(root_manager);
+      CHECK(root_manager, base::NotFatalUntil::M159);
 
       auto* root = static_cast<BrowserAccessibilityAndroid*>(
           root_manager->GetBrowserAccessibilityRoot());
-      DCHECK(root);
+      CHECK(root, base::NotFatalUntil::M159);
 
       wcax->HandleNavigate(root->GetUniqueId());
     }

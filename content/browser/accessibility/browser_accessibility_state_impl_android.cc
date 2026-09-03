@@ -428,7 +428,7 @@ void BrowserAccessibilityStateImplAndroid::
 void BrowserAccessibilityStateImplAndroid::OnAnimatorDurationScaleChanged() {
   // We need to call into gfx::Animation and WebContentsImpl on the UI thread,
   // so ensure that we setup the notification on the correct thread.
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M159);
 
   gfx::Animation::UpdatePrefersReducedMotion();
   NotifyWebContentsPreferencesChanged();

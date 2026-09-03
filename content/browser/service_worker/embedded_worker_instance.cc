@@ -97,7 +97,7 @@ bool HasSentStartWorker(EmbeddedWorkerInstance::StartingPhase phase) {
 }
 
 void NotifyForegroundServiceWorker(bool added, ChildProcessId process_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   RenderProcessHost* rph = RenderProcessHost::FromID(process_id);
   if (!rph)
@@ -131,7 +131,7 @@ class EmbeddedWorkerInstance::DevToolsProxy {
   DevToolsProxy& operator=(const DevToolsProxy&) = delete;
 
   ~DevToolsProxy() {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
     ServiceWorkerDevToolsManager::GetInstance()->WorkerStopped(process_id_,
                                                                agent_route_id_);
   }
@@ -139,14 +139,14 @@ class EmbeddedWorkerInstance::DevToolsProxy {
   void NotifyWorkerReadyForInspection(
       mojo::PendingRemote<blink::mojom::DevToolsAgent> agent_remote,
       mojo::PendingReceiver<blink::mojom::DevToolsAgentHost> host_receiver) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
     ServiceWorkerDevToolsManager::GetInstance()->WorkerReadyForInspection(
         process_id_, agent_route_id_, std::move(agent_remote),
         std::move(host_receiver));
   }
 
   void NotifyWorkerVersionInstalled() {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
     ServiceWorkerDevToolsManager::GetInstance()->WorkerVersionInstalled(
         process_id_, agent_route_id_);
   }
@@ -181,15 +181,15 @@ class EmbeddedWorkerInstance::WorkerProcessHandle {
       : process_manager_(process_manager),
         embedded_worker_id_(embedded_worker_id),
         process_id_(process_id) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    DCHECK(process_id_);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+    CHECK(process_id_, base::NotFatalUntil::M159);
   }
 
   WorkerProcessHandle(const WorkerProcessHandle&) = delete;
   WorkerProcessHandle& operator=(const WorkerProcessHandle&) = delete;
 
   ~WorkerProcessHandle() {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
     process_manager_->ReleaseWorkerProcess(embedded_worker_id_);
   }
 
@@ -220,7 +220,7 @@ struct EmbeddedWorkerInstance::StartInfo {
 };
 
 EmbeddedWorkerInstance::~EmbeddedWorkerInstance() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   in_dtor_ = true;
   ReleaseProcess();
 }
@@ -231,13 +231,14 @@ void EmbeddedWorkerInstance::Start(
   TRACE_EVENT1("ServiceWorker", "EmbeddedWorkerInstance::Start", "script_url",
                params->script_url.spec());
 
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(context_);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  CHECK(context_, base::NotFatalUntil::M159);
   restart_count_++;
-  DCHECK_EQ(blink::EmbeddedWorkerStatus::kStopped, status_);
+  CHECK_EQ(blink::EmbeddedWorkerStatus::kStopped, status_,
+           base::NotFatalUntil::M159);
 
-  DCHECK_NE(blink::mojom::kInvalidServiceWorkerVersionId,
-            params->service_worker_version_id);
+  CHECK_NE(blink::mojom::kInvalidServiceWorkerVersionId,
+           params->service_worker_version_id, base::NotFatalUntil::M159);
 
   auto start_time = base::TimeTicks::Now();
   status_ = blink::EmbeddedWorkerStatus::kStarting;
@@ -401,8 +402,8 @@ void EmbeddedWorkerInstance::Start(
 
   // TODO(crbug.com/40584626): Support changes to blink::RendererPreferences
   // while the worker is running.
-  DCHECK(context_->wrapper()->browser_context() ||
-         process_manager->IsShutdown());
+  CHECK(context_->wrapper()->browser_context() || process_manager->IsShutdown(),
+        base::NotFatalUntil::M159);
   params->renderer_preferences = blink::RendererPreferences();
   UpdateRendererPreferencesForWorkerHelper(
       context_->wrapper()->browser_context(), &params->renderer_preferences);

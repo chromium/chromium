@@ -28,7 +28,7 @@ void GpuFeatureCheckerImpl::CheckGpuFeatureAvailability() {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
 
   // May only call CheckGpuFeatureAvailability() once.
-  DCHECK(!checking_);
+  CHECK(!checking_, base::NotFatalUntil::M159);
   checking_ = true;
 
   AddRef();  // Matched with a Release in OnGpuInfoUpdate.

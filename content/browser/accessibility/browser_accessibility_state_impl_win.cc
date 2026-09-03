@@ -425,7 +425,7 @@ std::vector<AssistiveTechInfo> DiscoverAssistiveTech() {
 }
 
 void OnWndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (message == WM_SETTINGCHANGE && wparam == SPI_SETCLIENTAREAANIMATION) {
     gfx::Animation::UpdatePrefersReducedMotion();
     BrowserAccessibilityStateImpl::GetInstance()

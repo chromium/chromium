@@ -96,7 +96,8 @@ gpu::GpuFeatureStatus SafeGetFeatureStatus(
     // is racy. Be robust and just say that all features are disabled.
     return gpu::kGpuFeatureStatusDisabled;
   }
-  DCHECK(feature >= 0 && feature < gpu::NUMBER_OF_GPU_FEATURE_TYPES);
+  CHECK(feature >= 0 && feature < gpu::NUMBER_OF_GPU_FEATURE_TYPES,
+        base::NotFatalUntil::M159);
   return gpu_feature_info.status_values[feature];
 }
 
