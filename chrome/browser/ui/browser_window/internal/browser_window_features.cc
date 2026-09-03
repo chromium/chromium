@@ -109,7 +109,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/tabs/vertical_tab_iph_controller.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
-#include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/toasts/toast_service.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
@@ -1271,10 +1270,6 @@ glic::GlicNudgeController* BrowserWindowFeatures::glic_nudge_controller() {
 
 actions::ActionItem* BrowserWindowFeatures::GetRootActionItem() {
   return browser_actions_ ? browser_actions_->root_action_item() : nullptr;
-}
-
-ToastController* BrowserWindowFeatures::toast_controller() {
-  return browser_ ? ToastController::From(browser_) : nullptr;
 }
 
 LocationBar* BrowserWindowFeatures::location_bar() {

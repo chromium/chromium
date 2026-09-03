@@ -112,7 +112,6 @@ class TabMenuModelDelegate;
 class TabStripModel;
 class TabStripServiceFeature;
 class TabsFromOtherDevicesSidePanelCoordinator;
-class ToastController;
 class ToastService;
 class TranslateBubbleController;
 class UIControllerFactory;
@@ -373,11 +372,6 @@ class BrowserWindowFeatures {
   }
 
   TabStripModel* tab_strip_model() { return tab_strip_model_; }
-
-  // Returns a pointer to the ToastController for the browser window. This can
-  // return nullptr for non-normal browser windows because toasts are not
-  // supported for those cases.
-  ToastController* toast_controller();
 
   static ui::UserDataFactoryWithOwner<BrowserWindowInterface>&
   GetUserDataFactoryForTesting();

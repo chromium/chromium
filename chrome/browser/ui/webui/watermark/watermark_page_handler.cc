@@ -9,7 +9,6 @@
 #include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_ui_controller.h"
 #include "chrome/browser/enterprise/watermark/settings.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
@@ -55,8 +54,7 @@ void WatermarkPageHandler::ShowNotificationToast() {
     return;
   }
 
-  BrowserWindowFeatures& features = bwi->GetFeatures();
-  ToastController* const toast_controller = features.toast_controller();
+  ToastController* const toast_controller = ToastController::From(bwi);
   if (toast_controller &&
       enterprise_data_protection::IsClipboardCopyAllowedByPolicyForUI(
           base::to_address(host_contents_))) {
