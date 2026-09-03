@@ -2763,7 +2763,6 @@ void WebAppIntegrationTestDriver::SwitchProfileClients(ProfileClient client) {
   active_profile_ = delegate_->GetProfileClient(client);
   CHECK(active_profile_)
       << "Cannot switch profile clients if delegate only supports one profile";
-  delegate_->AwaitWebAppQuiescence();
   AfterStateChangeAction();
 }
 
