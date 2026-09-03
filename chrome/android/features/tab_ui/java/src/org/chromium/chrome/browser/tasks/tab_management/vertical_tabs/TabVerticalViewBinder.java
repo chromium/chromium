@@ -26,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.DimenRes;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -471,18 +472,18 @@ class TabVerticalViewBinder {
                     actionButton.getHitRect(rect);
                     Resources res = view.getResources();
                     boolean isTablet = isTablet(view.getContext());
-                    int minTouchTargetWidthPx =
-                            res.getDimensionPixelSize(
-                                    isTablet
-                                            ? R.dimen
-                                                    .vertical_tab_action_button_touch_target_width_tablet
-                                            : R.dimen.vertical_tab_action_button_touch_target_size);
-                    int minTouchTargetHeightPx =
-                            res.getDimensionPixelSize(
-                                    isTablet
-                                            ? R.dimen
-                                                    .vertical_tab_action_button_touch_target_height_tablet
-                                            : R.dimen.vertical_tab_action_button_touch_target_size);
+                    @DimenRes
+                    int widthRes =
+                            isTablet
+                                    ? R.dimen.vertical_tab_action_button_touch_target_width_tablet
+                                    : R.dimen.vertical_tab_action_button_touch_target_size;
+                    @DimenRes
+                    int heightRes =
+                            isTablet
+                                    ? R.dimen.vertical_tab_action_button_touch_target_height_tablet
+                                    : R.dimen.vertical_tab_action_button_touch_target_size;
+                    int minTouchTargetWidthPx = res.getDimensionPixelSize(widthRes);
+                    int minTouchTargetHeightPx = res.getDimensionPixelSize(heightRes);
 
                     if (rect.width() < minTouchTargetWidthPx) {
                         int deltaX = (minTouchTargetWidthPx - rect.width()) / 2;
@@ -849,7 +850,6 @@ class TabVerticalViewBinder {
      * {@code "<Title> [ - Gemini is working...], [Pinned] [Media] Tab"}.
      */
     private static void updateContentDescription(PropertyModel model, View view) {
-        // TODO(crbug.com/509226293): Align tab group header accessibility descriptions with HTS.
         Context context = view.getContext();
         @Nullable TextResolver contentDescriptionTextResolver =
                 model.get(TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER);

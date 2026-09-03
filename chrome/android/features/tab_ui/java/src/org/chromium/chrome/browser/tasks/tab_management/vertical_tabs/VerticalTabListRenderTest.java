@@ -103,9 +103,6 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
-// TODO(crbug.com/521987032): Add tests for nested children with actor indicator.
-// TODO(crbug.com/509226293): Add tests for RTL layout.
-
 /** Render tests for Vertical Tabs UI (TabVerticalViewBinder). */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
@@ -386,6 +383,34 @@ public class VerticalTabListRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    public void testChildTab_ActorIndicator_Dynamic() throws IOException {
+        if (mIsIncognito) return;
+        ViewGroup[] view = new ViewGroup[1];
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    view[0] = inflateAndAttachView(R.layout.vertical_tab_item);
+                    UiTabState uiTabState =
+                            new UiTabState(0, null, null, TabIndicatorStatus.DYNAMIC, false);
+                    PropertyModel model =
+                            createTabListItemModelBuilder(
+                                            "Child AI Tab", /* groupId= */ Token.createRandom())
+                                    .with(TabProperties.ACTOR_UI_STATE, uiTabState)
+                                    .with(
+                                            TabProperties.TAB_ACTION_BUTTON_DATA,
+                                            new TabActionButtonData(
+                                                    TabActionButtonType.CLOSE, null))
+                                    .build();
+                    PropertyModelChangeProcessor.create(
+                            model, view[0], TabVerticalViewBinder::bindTab);
+                });
+        CriteriaHelper.pollUiThread(() -> view[0].getHeight() > 0);
+
+        mRenderTestRule.render(mRenderView, "child_tab_actor_indicator_dynamic");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
     public void testStandardTab_Active_ActorIndicator_Dynamic() throws IOException {
         if (mIsIncognito) return;
         ViewGroup[] view = new ViewGroup[1];
@@ -462,6 +487,40 @@ public class VerticalTabListRenderTest {
         CriteriaHelper.pollUiThread(() -> view[0].getHeight() > 0);
 
         mRenderTestRule.render(mRenderView, "standard_tab_media_indicator");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testStandardTab_Indicators_Rtl() throws IOException {
+        if (mIsIncognito) return;
+        LocalizationUtils.setRtlForTesting(true);
+        try {
+            ViewGroup[] view = new ViewGroup[1];
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        view[0] = inflateAndAttachView(R.layout.vertical_tab_item);
+                        UiTabState uiTabState =
+                                new UiTabState(0, null, null, TabIndicatorStatus.DYNAMIC, false);
+                        PropertyModel model =
+                                createTabListItemModelBuilder("AI Media Tab", /* groupId= */ null)
+                                        .with(TabProperties.IS_GLIC_ACTIVE, true)
+                                        .with(TabProperties.ACTOR_UI_STATE, uiTabState)
+                                        .with(TabProperties.ALERT_STATE, TabAlert.AUDIO_PLAYING)
+                                        .with(
+                                                TabProperties.TAB_ACTION_BUTTON_DATA,
+                                                new TabActionButtonData(
+                                                        TabActionButtonType.CLOSE, null))
+                                        .build();
+                        PropertyModelChangeProcessor.create(
+                                model, view[0], TabVerticalViewBinder::bindTab);
+                    });
+            CriteriaHelper.pollUiThread(() -> view[0].getHeight() > 0);
+
+            mRenderTestRule.render(mRenderView, "standard_tab_indicators_rtl");
+        } finally {
+            LocalizationUtils.setRtlForTesting(false);
+        }
     }
 
     @Test

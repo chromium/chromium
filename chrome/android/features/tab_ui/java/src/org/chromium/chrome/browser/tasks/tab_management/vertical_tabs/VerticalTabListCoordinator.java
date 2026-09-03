@@ -890,8 +890,6 @@ public class VerticalTabListCoordinator {
 
     /** Requests keyboard focus on the first tab in the rail. */
     public void requestKeyboardFocus() {
-        // TODO(crbug.com/509226293): Check with UX if we want to match desktop behavior by
-        // focusing the currently active tab instead of the first tab.
         if (!mPinnedTabsModelList.isEmpty()) {
             if (KeyboardFocusUtil.setFocusOnFirstFocusableDescendant(mPinnedTabsRecyclerView)) {
                 return;

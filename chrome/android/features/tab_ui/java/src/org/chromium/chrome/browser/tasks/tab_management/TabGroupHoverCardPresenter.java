@@ -77,8 +77,6 @@ public class TabGroupHoverCardPresenter {
         int totalTabsCount = relatedTabs.size();
 
         // Group Title.
-        // TODO(crbug.com/509226293): Show number of tabs in brackets when a custom title is set
-        // instead of the default title (e.g. "My Group (3 Tabs)").
         String title = currentModel.getTabGroupTitle(resolvedGroupId);
         if (TextUtils.isEmpty(title)) {
             title = TabGroupTitleUtils.getDefaultTitle(hoverCardView.getContext(), totalTabsCount);
