@@ -24,6 +24,7 @@ import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.SystemClock;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -375,6 +376,29 @@ public class TabSearchOverlayCoordinatorUnitTest {
         closeButton.performClick();
         watcher.assertExpected();
         verify(mLocationBarCoordinator, never()).clearOmniboxFocus();
+        assertOverlayHidden();
+    }
+
+    @Test
+    public void testTouchCloseButton_dismissesOnFirstTap() {
+        showOverlay();
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabSearch.DismissalReason", TabSearchDismissalReason.CLOSE_BUTTON);
+        ImageButton closeButton = mPanelContainer.findViewById(R.id.tab_search_close_button);
+        assertNotNull(closeButton);
+
+        long now = SystemClock.uptimeMillis();
+        MotionEvent downEvent = MotionEvent.obtain(now, now, MotionEvent.ACTION_DOWN, 0f, 0f, 0);
+        closeButton.dispatchTouchEvent(downEvent);
+        downEvent.recycle();
+
+        MotionEvent upEvent = MotionEvent.obtain(now, now, MotionEvent.ACTION_UP, 0f, 0f, 0);
+        closeButton.dispatchTouchEvent(upEvent);
+        upEvent.recycle();
+        ShadowLooper.idleMainLooper();
+
+        watcher.assertExpected();
         assertOverlayHidden();
     }
 
@@ -1212,7 +1236,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
         ImageButton closeButton = mPanelContainer.findViewById(R.id.tab_search_close_button);
         assertNotNull(closeButton);
         assertTrue(closeButton.isFocusable());
-        assertTrue(closeButton.isFocusableInTouchMode());
+        assertFalse(closeButton.isFocusableInTouchMode());
         assertTrue(closeButton.isClickable());
         assertEquals(
                 View.IMPORTANT_FOR_ACCESSIBILITY_YES, closeButton.getImportantForAccessibility());

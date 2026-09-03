@@ -45,7 +45,6 @@ found in the LICENSE file.
                 android:background="@drawable/tab_close_button_bg_24dp"
                 android:contentDescription="@string/close"
                 android:focusable="true"
-                android:focusableInTouchMode="true"
                 android:clickable="true"
                 android:importantForAccessibility="yes"
                 android:accessibilityTraversalBefore="@id/search_activity_container" />
