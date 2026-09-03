@@ -1405,6 +1405,9 @@ class HTMLFastPathParser {
     // the empty atom instead. (An empty but non-null span, as in `alt=""`,
     // yields the empty atom as well.)
     if (value_span.first.data()) [[likely]] {
+      if (value_span.first.empty()) {
+        return g_empty_atom;
+      }
       return AtomicString(value_span.first);
     }
     return g_empty_atom;
@@ -1467,6 +1470,10 @@ class HTMLFastPathParser {
     if (size < 2) {
       return false;
     }
+    if (size == 2) {
+      return attribute_buffer_[0].LocalName().Impl() ==
+             attribute_buffer_[1].LocalName().Impl();
+    }
     // The limit is fairly arbitrary, it just needs to keep the quadratic scan
     // cheap for pathological input.
     constexpr wtf_size_t kMaxAttributesForQuadraticScan = kAttributePrealloc;
@@ -1492,6 +1499,20 @@ class HTMLFastPathParser {
 
   void ParseAttributes(Element* parent) {
     DCHECK(attribute_buffer_.empty());
+    if (GetNext() == '>') [[likely]] {
+      ++pos_;
+      parent->ParserSetAttributes(attribute_buffer_);
+      return;
+    }
+    if (GetNext() == '/') {
+      ++pos_;
+      SkipWhitespace();
+      if (ConsumeNext() != '>') {
+        return Fail(HtmlFastPathResult::kFailedParsingAttributes);
+      }
+      parent->ParserSetAttributes(attribute_buffer_);
+      return;
+    }
     while (true) {
       Span attr_name = ScanAttrName();
       if (attr_name.empty()) {
@@ -1529,6 +1550,18 @@ class HTMLFastPathParser {
         SkipWhitespace();
       }
       AppendAttribute(attr_name, attr_value);
+      if (GetNext() == '>') [[likely]] {
+        ++pos_;
+        break;
+      }
+      if (GetNext() == '/') {
+        ++pos_;
+        SkipWhitespace();
+        if (ConsumeNext() != '>') {
+          return Fail(HtmlFastPathResult::kFailedParsingAttributes);
+        }
+        break;
+      }
     }
     if (HasDuplicateAttributes()) [[unlikely]] {
       // We would have to ignore repeated attributes, but leave this to the

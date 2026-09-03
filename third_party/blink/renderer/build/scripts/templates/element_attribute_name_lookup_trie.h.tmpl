@@ -31,6 +31,15 @@ ALWAYS_INLINE const QualifiedName& Lookup{{namespace}}AttributeName(const CharTy
       if (data[0] == 's' && data[1] == 'r' && data[2] == 'c') {
         return html_names::kSrcAttr;
       }
+      if (data[0] == 'f' && data[1] == 'o' && data[2] == 'r') {
+        return html_names::kForAttr;
+      }
+      if (data[0] == 'a' && data[1] == 'l' && data[2] == 't') {
+        return html_names::kAltAttr;
+      }
+      if (data[0] == 'r' && data[1] == 'e' && data[2] == 'l') {
+        return html_names::kRelAttr;
+      }
       break;
     case 4:
       if (data[0] == 't' && data[1] == 'y' && data[2] == 'p' && data[3] == 'e') {
@@ -42,6 +51,12 @@ ALWAYS_INLINE const QualifiedName& Lookup{{namespace}}AttributeName(const CharTy
       if (data[0] == 'n' && data[1] == 'a' && data[2] == 'm' && data[3] == 'e') {
         return html_names::kNameAttr;
       }
+      if (data[0] == 'r' && data[1] == 'o' && data[2] == 'l' && data[3] == 'e') {
+        return html_names::kRoleAttr;
+      }
+      if (data[0] == 's' && data[1] == 'l' && data[2] == 'o' && data[3] == 't') {
+        return html_names::kSlotAttr;
+      }
       break;
     case 5:
       if (data[0] == 'c' && data[1] == 'l' && data[2] == 'a' && data[3] == 's' && data[4] == 's') {
@@ -52,6 +67,36 @@ ALWAYS_INLINE const QualifiedName& Lookup{{namespace}}AttributeName(const CharTy
       }
       if (data[0] == 'v' && data[1] == 'a' && data[2] == 'l' && data[3] == 'u' && data[4] == 'e') {
         return html_names::kValueAttr;
+      }
+      if (data[0] == 't' && data[1] == 'i' && data[2] == 't' && data[3] == 'l' && data[4] == 'e') {
+        return html_names::kTitleAttr;
+      }
+      if (data[0] == 'w' && data[1] == 'i' && data[2] == 'd' && data[3] == 't' && data[4] == 'h') {
+        return html_names::kWidthAttr;
+      }
+      break;
+    case 6:
+      if (data[0] == 'h' && data[1] == 'e' && data[2] == 'i' && data[3] == 'g' && data[4] == 'h' && data[5] == 't') {
+        return html_names::kHeightAttr;
+      }
+      if (data[0] == 'h' && data[1] == 'i' && data[2] == 'd' && data[3] == 'd' && data[4] == 'e' && data[5] == 'n') {
+        return html_names::kHiddenAttr;
+      }
+      break;
+    case 7:
+      if (data[0] == 'c' && data[1] == 'h' && data[2] == 'e' && data[3] == 'c' && data[4] == 'k' && data[5] == 'e' && data[6] == 'd') {
+        return html_names::kCheckedAttr;
+      }
+      break;
+    case 8:
+      if (data[0] == 'd' && data[1] == 'i' && data[2] == 's' && data[3] == 'a' && data[4] == 'b' && data[5] == 'l' && data[6] == 'e' && data[7] == 'd') {
+        return html_names::kDisabledAttr;
+      }
+      break;
+    case 11:
+      if (data[0] == 'p' && data[1] == 'l' && data[2] == 'a' && data[3] == 'c' && data[4] == 'e' &&
+          data[5] == 'h' && data[6] == 'o' && data[7] == 'l' && data[8] == 'd' && data[9] == 'e' && data[10] == 'r') {
+        return html_names::kPlaceholderAttr;
       }
       break;
   }
