@@ -386,8 +386,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDevToolsImprovedNetworkError);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDevToolsAllowInterestForcing);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDevToolsWebMCPSupport);
-
 // Enables the DevTools 'Application > Application > Ads' panel.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDevToolsAdsPanel);
 

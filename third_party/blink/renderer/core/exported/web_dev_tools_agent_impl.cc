@@ -361,9 +361,7 @@ void WebDevToolsAgentImpl::AttachSession(DevToolsSession* session,
                                                     css_agent);
 
   session->CreateAndAppend<InspectorMemoryAgent>(inspected_frames);
-  if (base::FeatureList::IsEnabled(features::kDevToolsWebMCPSupport)) {
-    session->CreateAndAppend<InspectorWebMCPAgent>(inspected_frames);
-  }
+  session->CreateAndAppend<InspectorWebMCPAgent>(inspected_frames);
 
   session->CreateAndAppend<InspectorPageAgent>(
       inspected_frames, this, resource_content_loader_.Get(),

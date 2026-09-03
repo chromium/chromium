@@ -44,8 +44,7 @@ class ActorToolsTestScriptTool : public ActorToolsTest {
  public:
   ActorToolsTestScriptTool() {
     features_.InitWithFeatures(
-        {blink::features::kWebMCP, blink::features::kDevToolsWebMCPSupport,
-         actor::kGlicActorEnableScriptTools,
+        {blink::features::kWebMCP, actor::kGlicActorEnableScriptTools,
          actor::kActorScriptToolTransientUserActivation},
         {});
   }
@@ -274,7 +273,6 @@ class ActorToolsTestScriptToolNoTimeout : public ActorToolsTest {
   ActorToolsTestScriptToolNoTimeout() {
     features_.InitWithFeaturesAndParameters(
         {{blink::features::kWebMCP, {}},
-         {blink::features::kDevToolsWebMCPSupport, {}},
          {actor::kGlicActorEnableScriptTools, {{"execution_timeout", "1s"}}}},
         {});
   }

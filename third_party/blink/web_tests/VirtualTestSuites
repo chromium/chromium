@@ -721,22 +721,6 @@
     ]
   },
   {
-    "prefix": "webmcp",
-    "platforms": ["Linux"],
-    "bases": [
-      "inspector-protocol/webmcp",
-      "http/tests/inspector-protocol/webmcp"
-    ],
-    "args": [
-      "--enable-features=DevToolsWebMCPSupport"
-    ],
-    "exclusive_tests": "ALL",
-    "expires": "Sep 28, 2026",
-    "owners": [
-      "pfaffe@google.com"
-    ]
-  },
-  {
     "prefix": "devtools-improved-network-error",
     "platforms": [
       "Linux"

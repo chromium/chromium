@@ -561,8 +561,6 @@ BASE_FEATURE(kDetectJSFrameworksOnWorker, base::FEATURE_ENABLED_BY_DEFAULT);
 // See http://crbug.com/124534.
 BASE_FEATURE(kDevToolsImprovedNetworkError, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDevToolsWebMCPSupport, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDevToolsAdsPanel, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDirectCompositorThreadIpc, base::FEATURE_ENABLED_BY_DEFAULT);

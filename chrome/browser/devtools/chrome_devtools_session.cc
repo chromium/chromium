@@ -92,9 +92,8 @@ ChromeDevToolsSession::ChromeDevToolsSession(
       autofill_handler_ =
           std::make_unique<AutofillHandler>(dispatcher(), agent_host->GetId());
     }
-    if (base::FeatureList::IsEnabled(blink::features::kDevToolsWebMCPSupport) &&
-        (IsDomainAvailableToUntrustedClient<WebMCPHandler>() ||
-         channel->GetClient()->IsTrusted())) {
+    if (IsDomainAvailableToUntrustedClient<WebMCPHandler>() ||
+        channel->GetClient()->IsTrusted()) {
       webmcp_handler_ = std::make_unique<WebMCPHandler>(
           dispatcher(), agent_host->GetWebContents());
     }

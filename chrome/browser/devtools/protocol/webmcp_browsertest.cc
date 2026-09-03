@@ -94,8 +94,7 @@ class DevToolsScriptToolTest : public actor::ActorToolsTest,
  public:
   DevToolsScriptToolTest() {
     std::vector<base::test::FeatureRef> enabled_features = {
-        blink::features::kWebMCP, blink::features::kDevToolsWebMCPSupport,
-        actor::kGlicActorEnableScriptTools};
+        blink::features::kWebMCP, actor::kGlicActorEnableScriptTools};
     std::vector<base::test::FeatureRef> disabled_features;
 
     if (GetParam()) {

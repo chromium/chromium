@@ -2162,11 +2162,6 @@ inline constexpr char kDevToolsSourceMapScopesInSourcesPanelName[] =
 inline constexpr char kDevToolsSourceMapScopesInSourcesPanelDescription[] =
     "Enables source map scopes in the DevTools Sources panel.";
 
-inline constexpr char kDevToolsWebMCPSupportName[] =
-    "WebMCP support in DevTools";
-inline constexpr char kDevToolsWebMCPSupportDescription[] =
-    "Enables WebMCP support in DevTools.";
-
 inline constexpr char kDomStorageSqliteName[] = "DOM Storage SQLite Backend";
 inline constexpr char kDomStorageSqliteDescription[] =
     "Uses a SQLite-powered backing store for local and session storage. No "

@@ -2796,11 +2796,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "devtools-webmcp-support",
-    "owners": [ "pfaffe@chromium.org" ],
-    "expiry_milestone": 155
-  },
-  {
     "name": "dialogs-on-large-form-factors",
     "owners": [ "adelm@google.com" ],
     "expiry_milestone": 170
