@@ -331,7 +331,15 @@ IN_PROC_BROWSER_TEST_P(MemorySaverBubbleViewSavingsTest,
                        ShowsCorrectLabelsForDifferentSavings) {
   AddNewTab(std::get<0>(GetParam()),
             ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
-  SetTabDiscardState(0, true);
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
+  tab_strip_model->ActivateTabAt(0);
+  SetTabDiscardState(1, true);
+  tab_strip_model->ActivateTabAt(1);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return page_actions::PageActionTestAccessor(browser(),
+                                                kActionShowMemorySaverChip)
+        .IsChipVisible();
+  }));
 
   ClickPageActionChip();
 
