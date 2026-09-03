@@ -996,7 +996,10 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
       g_browser_process->platform_part()->browser_policy_connector_ash(),
       SessionManagerClient::Get(), session_termination_manager_.get(),
       session_manager::SessionManager::Get(), user_manager::UserManager::Get(),
-      UserAddingScreen::Get());
+      UserAddingScreen::Get(),
+      g_browser_process->platform_part()
+          ->multi_user_sign_in_policy_controller(),
+      g_browser_process->platform_part()->GetSystemClock());
 
   // This forces the ProfileManager to be created and register for the
   // notification it needs to track the logged in user.

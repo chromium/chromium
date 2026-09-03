@@ -204,6 +204,10 @@ LoginDisplayHostMojo::LoginDisplayHostMojo(
           application_locale_storage,
           std::move(shared_url_loader_factory),
           browser_policy_connector_ash,
+          // TODO(crbug.com/404133029): Avoid using g_browser_process.
+          g_browser_process->platform_part()
+              ->multi_user_sign_in_policy_controller(),
+          g_browser_process->platform_part()->GetSystemClock(),
           displayed_screen)),
       auth_performer_(UserDataAuthClient::Get()),
       system_info_updater_(std::make_unique<MojoSystemInfoDispatcher>(

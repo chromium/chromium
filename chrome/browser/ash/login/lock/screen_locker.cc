@@ -112,11 +112,17 @@ ScreenLocker::ScreenLocker(
     const ApplicationLocaleStorage* application_locale_storage,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+    const user_manager::MultiUserSignInPolicyController*
+        multi_user_sign_in_policy_controller,
+    system::SystemClock* system_clock,
     const user_manager::UserList& users)
     : local_state_(CHECK_DEREF(local_state)),
       application_locale_storage_(CHECK_DEREF(application_locale_storage)),
       shared_url_loader_factory_(std::move(shared_url_loader_factory)),
       browser_policy_connector_ash_(CHECK_DEREF(browser_policy_connector_ash)),
+      multi_user_sign_in_policy_controller_(
+          CHECK_DEREF(multi_user_sign_in_policy_controller)),
+      system_clock_(CHECK_DEREF(system_clock)),
       users_(users),
       challenge_response_auth_keys_loader_(&local_state_.get()) {
   CHECK(shared_url_loader_factory_);
@@ -157,7 +163,8 @@ void ScreenLocker::Init() {
   // mojo.
   views_screen_locker_ = std::make_unique<ViewsScreenLocker>(
       &local_state_.get(), &application_locale_storage_.get(),
-      shared_url_loader_factory_, &browser_policy_connector_ash_.get());
+      shared_url_loader_factory_, &browser_policy_connector_ash_.get(),
+      &multi_user_sign_in_policy_controller_.get(), &system_clock_.get());
 
   // Create and display lock screen.
   CHECK(LoginScreenClientImpl::HasInstance());

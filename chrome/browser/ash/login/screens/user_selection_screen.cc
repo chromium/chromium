@@ -44,8 +44,6 @@
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system/system_clock.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/login/login_screen_client_impl.h"
 #include "chrome/browser/ui/webui/ash/login/l10n_util.h"
@@ -190,14 +188,13 @@ bool CanRemoveUser(PrefService& local_state, const user_manager::User* user) {
 // Returns a pair of 1) whether it is allowed to be part of the current
 // multi user sign-in session, and 2) that policy for the user.
 std::tuple<bool, user_manager::MultiUserSignInPolicy> GetMultiUserSignInPolicy(
+    const user_manager::MultiUserSignInPolicyController& controller,
     const user_manager::User* user) {
+  CHECK(user);
   const std::string& user_id = user->GetAccountId().GetUserEmail();
-  user_manager::MultiUserSignInPolicyController* controller =
-      g_browser_process->platform_part()
-          ->multi_user_sign_in_policy_controller();
   return {
-      controller->IsUserAllowedInSession(user_id),
-      controller->GetCachedValue(user_id),
+      controller.IsUserAllowedInSession(user_id),
+      controller.GetCachedValue(user_id),
   };
 }
 
@@ -487,11 +484,17 @@ UserSelectionScreen::UserSelectionScreen(
     const ApplicationLocaleStorage* application_locale_storage,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     const policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+    const user_manager::MultiUserSignInPolicyController*
+        multi_user_sign_in_policy_controller,
+    system::SystemClock* system_clock,
     DisplayedScreen display_type)
     : local_state_(CHECK_DEREF(local_state)),
       application_locale_storage_(CHECK_DEREF(application_locale_storage)),
       shared_url_loader_factory_(std::move(shared_url_loader_factory)),
       browser_policy_connector_ash_(CHECK_DEREF(browser_policy_connector_ash)),
+      multi_user_sign_in_policy_controller_(
+          CHECK_DEREF(multi_user_sign_in_policy_controller)),
+      system_clock_(CHECK_DEREF(system_clock)),
       display_type_(display_type) {
   CHECK(shared_url_loader_factory_);
 
@@ -656,9 +659,8 @@ void UserSelectionScreen::HandleFocusPod(const AccountId& account_id) {
     if (focused_user_clock_type_.has_value()) {
       focused_user_clock_type_->UpdateClockType(clock_type);
     } else {
-      focused_user_clock_type_ = g_browser_process->platform_part()
-                                     ->GetSystemClock()
-                                     ->CreateScopedHourClockType(clock_type);
+      focused_user_clock_type_ =
+          system_clock_->CreateScopedHourClockType(clock_type);
     }
   }
 
@@ -879,7 +881,8 @@ UserSelectionScreen::UpdateAndReturnUserListForAsh() {
     } else {
       std::tie(user_info.is_multi_user_sign_in_allowed,
                user_info.multi_user_sign_in_policy) =
-          ash::GetMultiUserSignInPolicy(user);
+          ash::GetMultiUserSignInPolicy(
+              multi_user_sign_in_policy_controller_.get(), user);
     }
 
     // Fill public session data.

@@ -25,20 +25,28 @@ namespace policy {
 class BrowserPolicyConnectorAsh;
 }  // namespace policy
 
+namespace user_manager {
+class MultiUserSignInPolicyController;
+}  // namespace user_manager
+
 namespace ash {
 
 class ChromeUserSelectionScreen
     : public UserSelectionScreen,
       public policy::DeviceLocalAccountPolicyService::Observer {
  public:
-  // `local_state`, `application_locale_storage` and
-  // `browser_policy_connector_ash` must be non-null and must outlive `this`.
+  // `local_state`, `application_locale_storage`,
+  // `browser_policy_connector_ash`, `multi_user_sign_in_policy_controller`,
+  // and `system_clock` must be non-null and must outlive `this`.
   // `shared_url_loader_factory` must be non-null.
   ChromeUserSelectionScreen(
       PrefService* local_state,
       const ApplicationLocaleStorage* application_locale_storage,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
       const policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+      const user_manager::MultiUserSignInPolicyController*
+          multi_user_sign_in_policy_controller,
+      system::SystemClock* system_clock,
       DisplayedScreen display_type);
 
   ChromeUserSelectionScreen(const ChromeUserSelectionScreen&) = delete;

@@ -30,7 +30,6 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/login/screens/chrome_user_selection_screen.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/system/system_clock.h"
 #include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
@@ -50,13 +49,18 @@ ViewsScreenLocker::ViewsScreenLocker(
     PrefService* local_state,
     const ApplicationLocaleStorage* application_locale_storage,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
-    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash)
+    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+    const user_manager::MultiUserSignInPolicyController*
+        multi_user_sign_in_policy_controller,
+    system::SystemClock* system_clock)
     : local_state_(CHECK_DEREF(local_state)),
       user_selection_screen_(std::make_unique<ChromeUserSelectionScreen>(
           local_state,
           &CHECK_DEREF(application_locale_storage),
           std::move(shared_url_loader_factory),
           &CHECK_DEREF(browser_policy_connector_ash),
+          multi_user_sign_in_policy_controller,
+          system_clock,
           DisplayedScreen::LOCK_SCREEN)),
       system_info_updater_(std::make_unique<MojoSystemInfoDispatcher>(
           &CHECK_DEREF(browser_policy_connector_ash))),

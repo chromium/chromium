@@ -33,7 +33,15 @@ namespace policy {
 class BrowserPolicyConnectorAsh;
 }  // namespace policy
 
+namespace user_manager {
+class MultiUserSignInPolicyController;
+}  // namespace user_manager
+
 namespace ash {
+
+namespace system {
+class SystemClock;
+}  // namespace system
 
 class MojoSystemInfoDispatcher;
 class UserSelectionScreen;
@@ -44,14 +52,18 @@ class UserSelectionScreen;
 class ViewsScreenLocker : public LoginScreenClientImpl::Delegate,
                           public chromeos::PowerManagerClient::Observer {
  public:
-  // `local_state`, `application_locale_storage`, and
-  // `browser_policy_connector_ash` must be non-null and must outlive `this`.
+  // `local_state`, `application_locale_storage`,
+  // `browser_policy_connector_ash`, `multi_user_sign_in_policy_controller`,
+  // and `system_clock` must be non-null and must outlive `this`.
   // `shared_url_loader_factory` must be non-null.
   ViewsScreenLocker(
       PrefService* local_state,
       const ApplicationLocaleStorage* application_locale_storage,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
-      policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash);
+      policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+      const user_manager::MultiUserSignInPolicyController*
+          multi_user_sign_in_policy_controller,
+      system::SystemClock* system_clock);
 
   ViewsScreenLocker(const ViewsScreenLocker&) = delete;
   ViewsScreenLocker& operator=(const ViewsScreenLocker&) = delete;

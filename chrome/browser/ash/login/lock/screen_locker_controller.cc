@@ -44,7 +44,10 @@ ScreenLockerController::ScreenLockerController(
     SessionTerminationManager* session_termination_manager,
     session_manager::SessionManager* session_manager,
     user_manager::UserManager* user_manager,
-    UserAddingScreen* user_adding_screen)
+    UserAddingScreen* user_adding_screen,
+    const user_manager::MultiUserSignInPolicyController*
+        multi_user_sign_in_policy_controller,
+    system::SystemClock* system_clock)
     : local_state_(CHECK_DEREF(local_state)),
       application_locale_storage_(CHECK_DEREF(application_locale_storage)),
       shared_url_loader_factory_(std::move(shared_url_loader_factory)),
@@ -53,7 +56,10 @@ ScreenLockerController::ScreenLockerController(
       session_termination_manager_(CHECK_DEREF(session_termination_manager)),
       session_manager_(CHECK_DEREF(session_manager)),
       user_manager_(CHECK_DEREF(user_manager)),
-      user_adding_screen_(CHECK_DEREF(user_adding_screen)) {
+      user_adding_screen_(CHECK_DEREF(user_adding_screen)),
+      multi_user_sign_in_policy_controller_(
+          CHECK_DEREF(multi_user_sign_in_policy_controller)),
+      system_clock_(CHECK_DEREF(system_clock)) {
   CHECK(shared_url_loader_factory_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!g_instance);
@@ -152,6 +158,7 @@ void ScreenLockerController::CreateAndInitScreenLocker() {
   screen_locker_ = std::make_unique<ScreenLocker>(
       &local_state_.get(), &application_locale_storage_.get(),
       shared_url_loader_factory_, &browser_policy_connector_ash_.get(),
+      &multi_user_sign_in_policy_controller_.get(), &system_clock_.get(),
       user_manager_->GetUnlockUsers());
   VLOG(1) << "Created ScreenLocker " << screen_locker_.get();
   screen_locker_->Init();

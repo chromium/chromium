@@ -28,10 +28,15 @@ class BrowserPolicyConnectorAsh;
 }  // namespace policy
 
 namespace user_manager {
+class MultiUserSignInPolicyController;
 class UserManager;
 }  // namespace user_manager
 
 namespace ash {
+
+namespace system {
+class SystemClock;
+}  // namespace system
 
 class ScreenLocker;
 class SessionManagerClient;
@@ -46,8 +51,9 @@ class ScreenLockerController : public UserAddingScreen::Observer,
 
   // `local_state`, `application_locale_storage`,
   // `browser_policy_connector_ash`, `session_manager_client`,
-  // `session_termination_manager`, `session_manager`, `user_manager`, and
-  // `user_adding_screen` must be non-null and must outlive `this`.
+  // `session_termination_manager`, `session_manager`, `user_manager`,
+  // `user_adding_screen`, `multi_user_sign_in_policy_controller`, and
+  // `system_clock` must be non-null and must outlive `this`.
   // `shared_url_loader_factory` must be non-null.
   ScreenLockerController(
       PrefService* local_state,
@@ -58,7 +64,10 @@ class ScreenLockerController : public UserAddingScreen::Observer,
       SessionTerminationManager* session_termination_manager,
       session_manager::SessionManager* session_manager,
       user_manager::UserManager* user_manager,
-      UserAddingScreen* user_adding_screen);
+      UserAddingScreen* user_adding_screen,
+      const user_manager::MultiUserSignInPolicyController*
+          multi_user_sign_in_policy_controller,
+      system::SystemClock* system_clock);
 
   ScreenLockerController(const ScreenLockerController&) = delete;
   ScreenLockerController& operator=(const ScreenLockerController&) = delete;
@@ -98,6 +107,9 @@ class ScreenLockerController : public UserAddingScreen::Observer,
   const raw_ref<session_manager::SessionManager> session_manager_;
   const raw_ref<user_manager::UserManager> user_manager_;
   const raw_ref<UserAddingScreen> user_adding_screen_;
+  const raw_ref<const user_manager::MultiUserSignInPolicyController>
+      multi_user_sign_in_policy_controller_;
+  const raw_ref<system::SystemClock> system_clock_;
 
   std::unique_ptr<ScreenLocker> screen_locker_;
 

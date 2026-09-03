@@ -40,11 +40,16 @@ ChromeUserSelectionScreen::ChromeUserSelectionScreen(
     const ApplicationLocaleStorage* application_locale_storage,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     const policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+    const user_manager::MultiUserSignInPolicyController*
+        multi_user_sign_in_policy_controller,
+    system::SystemClock* system_clock,
     DisplayedScreen display_type)
     : UserSelectionScreen(local_state,
                           application_locale_storage,
                           std::move(shared_url_loader_factory),
                           browser_policy_connector_ash,
+                          multi_user_sign_in_policy_controller,
+                          system_clock,
                           display_type) {
   device_local_account_policy_service_ =
       browser_policy_connector_ash->GetDeviceLocalAccountPolicyService();
