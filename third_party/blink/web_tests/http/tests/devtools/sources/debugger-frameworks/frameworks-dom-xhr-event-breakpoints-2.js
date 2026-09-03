@@ -9,6 +9,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
 import * as Common from 'devtools/core/common/common.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as Main from 'devtools/entrypoints/main/main.js';
+import * as Workspace from 'devtools/models/workspace/workspace.js';
 
 (async function() {
   TestRunner.addResult(
@@ -85,8 +86,14 @@ import * as Main from 'devtools/entrypoints/main/main.js';
       }
   `);
 
+  const ignoreListPromise = new Promise(resolve => {
+    TestRunner.addSniffer(Workspace.IgnoreListManager.IgnoreListManager.prototype, 'patternChangeFinishedForTests', resolve);
+  });
+
   var frameworkRegexString = '/framework\\.js$';
+  Workspace.IgnoreListManager.IgnoreListManager.instance();
   Main.MainImpl.MainImpl.universeForTest.settings.settingForTest('skip-stack-frames-pattern').set(frameworkRegexString);
+  await ignoreListPromise;
 
   SourcesTestRunner.setQuiet(true);
 
