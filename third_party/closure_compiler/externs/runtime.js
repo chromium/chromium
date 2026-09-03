@@ -397,7 +397,7 @@ chrome.runtime.connect = function(extensionId, connectInfo) {};
  * href="develop/concepts/native-messaging">Native Messaging</a> for more
  * information.
  * @param {(string|!chrome.runtime.NativeMessageTarget)} application The name of
- *     the registered application to connect to, or target details.
+ *     the registered application to connect to.
  * @return {!chrome.runtime.Port} Port through which messages can be sent and
  *     received with the application
  * @see https://developer.chrome.com/extensions/runtime#method-connectNative

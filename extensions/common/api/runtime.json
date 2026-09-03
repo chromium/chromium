@@ -508,11 +508,11 @@
         "parameters": [
           {
             "name": "application",
-            "description": "The name of the registered application to connect to, or target details.",
+            "description": "The name of the registered application to connect to.",
             "choices": [
               {
                 "type": "string",
-                "description": "The name of the registered application to connect to, or external Android app's package name. Packed extensions on Android must specify a $(ref:runtime.NativeMessageTarget)."
+                "description": "The name of the registered application to connect to."
               },
               {
                 "$ref": "NativeMessageTarget",
