@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
@@ -32,7 +33,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class UnsyncedSuggestionsListAnimationUnitTest {
 
     private static final int VERTICAL_OFFSET = 20;
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     private UnsyncedSuggestionsListAnimation mDriver;
     private final PropertyModel mListModel = new PropertyModel(SuggestionListProperties.ALL_KEYS);

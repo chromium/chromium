@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
@@ -23,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -33,7 +35,9 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 /** Tests for {@link SuggestionHorizontalDivider}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SuggestionHorizontalDividerUnitTest {
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
     @Mock private RecyclerView mRecyclerView;
     @Mock private View mChildViewWithDivider;
     @Mock private View mChildViewWithNoDivider;
@@ -62,15 +66,17 @@ public class SuggestionHorizontalDividerUnitTest {
         mShowDividerViewHolder.model = mShowDividerModel;
         mNoDividerViewHolder.model = mNoDividerModel;
 
-        doReturn(mShowDividerViewHolder)
+        lenient()
+                .doReturn(mShowDividerViewHolder)
                 .when(mRecyclerView)
                 .getChildViewHolder(mChildViewWithDivider);
-        doReturn(mNoDividerViewHolder)
+        lenient()
+                .doReturn(mNoDividerViewHolder)
                 .when(mRecyclerView)
                 .getChildViewHolder(mChildViewWithNoDivider);
-        doReturn(2).when(mRecyclerView).getChildCount();
-        doReturn(mChildViewWithDivider).when(mRecyclerView).getChildAt(0);
-        doReturn(mChildViewWithNoDivider).when(mRecyclerView).getChildAt(1);
+        lenient().doReturn(2).when(mRecyclerView).getChildCount();
+        lenient().doReturn(mChildViewWithDivider).when(mRecyclerView).getChildAt(0);
+        lenient().doReturn(mChildViewWithNoDivider).when(mRecyclerView).getChildAt(1);
     }
 
     @Test

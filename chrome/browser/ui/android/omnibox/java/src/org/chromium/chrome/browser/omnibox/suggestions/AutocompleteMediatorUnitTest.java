@@ -46,6 +46,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowPausedSystemClock;
@@ -146,7 +147,8 @@ public class AutocompleteMediatorUnitTest {
     private static final String TABS_STARTER_PACK_KEYWORD = "@tabs";
     private static final String SAMPLE_QUERY = "sample query";
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock private AutocompleteDelegate mAutocompleteDelegate;
     @Mock private UrlBarEditingTextStateProvider mTextStateProvider;
@@ -413,9 +415,6 @@ public class AutocompleteMediatorUnitTest {
         var session = createSession(requestType);
         mMediator.beginInput(session);
         doReturn(matchType).when(mAutocompleteMatch).getType();
-        doReturn(AutocompleteMatch.isWhatYouTyped(matchType))
-                .when(mAutocompleteMatch)
-                .isWhatYouTyped();
     }
 
     private void verifyLoadUrl(GURL expectedUrl) {
@@ -516,6 +515,10 @@ public class AutocompleteMediatorUnitTest {
     @Test
     public void triggerSiteSearch_Failure_NoText() {
         mMediator.beginInput(createEmptySession());
+        doReturn(true).when(mTemplateUrlService).isLoaded();
+        doReturn(true)
+                .when(mPrefService)
+                .getBoolean(AutocompleteMediator.KEYWORD_SPACE_TRIGGERING_ENABLED_PREF);
         doReturn("").when(mTextStateProvider).getTextWithoutAutocomplete();
 
         assertFalse(mMediator.triggerSiteSearch(SiteSearchActivationSource.SPACE));
@@ -527,15 +530,6 @@ public class AutocompleteMediatorUnitTest {
         mMediator.beginInput(session);
         session.getAutocompleteInput()
                 .setSiteSearchData(new SiteSearchData("existing", "Existing site search"));
-
-        doReturn(true)
-                .when(mPrefService)
-                .getBoolean(AutocompleteMediator.KEYWORD_SPACE_TRIGGERING_ENABLED_PREF);
-        doReturn("bing").when(mTextStateProvider).getTextWithoutAutocomplete();
-        doReturn(true).when(mTemplateUrlService).isLoaded();
-        doReturn("bing").when(mTemplateUrl).getKeyword();
-        doReturn("Bing").when(mTemplateUrl).getShortName();
-        doReturn(mTemplateUrl).when(mAutocompleteController).getTemplateUrlForText("bing");
 
         assertFalse(mMediator.triggerSiteSearch(SiteSearchActivationSource.SPACE));
     }
@@ -2324,7 +2318,6 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     public void fuseboxStateChanges() {
-        doReturn(true).when(mEmbedder).isWideWindow();
         doReturn(false).when(mEmbedder).isPhoneStyleWindow();
         mMediator.beginInput(createEmptySession());
         mFuseboxStateSupplier.set(FuseboxState.EXPANDED);
@@ -2344,7 +2337,6 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     public void fuseboxStateChanges_phone() {
-        doReturn(false).when(mEmbedder).isWideWindow();
         doReturn(true).when(mEmbedder).isPhoneStyleWindow();
         mMediator.beginInput(createEmptySession());
         mFuseboxStateSupplier.set(FuseboxState.EXPANDED);
@@ -2356,7 +2348,6 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     public void fuseboxStateChanges_phone_popover() {
-        doReturn(false).when(mEmbedder).isWideWindow();
         doReturn(false).when(mEmbedder).isPhoneStyleWindow();
         mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
         mMediator.beginInput(createEmptySession());
@@ -2571,7 +2562,6 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     public void testUnsyncedAnimation_doesNotShowKeyboardInStandbyNoFocus() {
-        doReturn(false).when(mEmbedder).isWideWindow();
         var session = createSession(AutocompleteRequestType.SEARCH);
         session.getAutocompleteInput()
                 .setAutocompleteState(AutocompleteInput.AutocompleteState.STANDBY_NO_FOCUS);
@@ -2587,7 +2577,6 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     public void testUnsyncedAnimation_showsKeyboardInEnabledState() {
-        doReturn(false).when(mEmbedder).isWideWindow();
         var session = createSession(AutocompleteRequestType.SEARCH);
         session.getAutocompleteInput()
                 .setAutocompleteState(AutocompleteInput.AutocompleteState.ENABLED);
@@ -2671,7 +2660,9 @@ public class AutocompleteMediatorUnitTest {
         doReturn(keyword + " " + userQuery).when(mTextStateProvider).getTextWithoutAutocomplete();
         doReturn(true).when(mTemplateUrlService).isLoaded();
         doReturn(keyword).when(mTemplateUrl).getKeyword();
-        doReturn(shortName).when(mTemplateUrl).getShortName();
+        if (fullName == null || fullName.isEmpty()) {
+            doReturn(shortName).when(mTemplateUrl).getShortName();
+        }
         doReturn(fullName).when(mTemplateUrlService).getFullNameFromTemplateUrl(keyword);
         doReturn(mTemplateUrl)
                 .when(mAutocompleteController)
@@ -2736,7 +2727,6 @@ public class AutocompleteMediatorUnitTest {
 
         // 2. Backspace: simulate clearing site search data (exit keyword mode)
         session.getAutocompleteInput().setSiteSearchData(null);
-        doReturn("@gemini").when(mTextStateProvider).getTextWithoutAutocomplete();
 
         // 3. Second trigger: user deletes space then types space again -> "@gemini "
         doReturn("@gemini ").when(mTextStateProvider).getTextWithoutAutocomplete();
@@ -2750,12 +2740,6 @@ public class AutocompleteMediatorUnitTest {
     public void triggerSiteSearch_NoOpsInAiMode() {
         FuseboxSessionState session = createSession(AutocompleteRequestType.AI_MODE);
         mMediator.beginInput(session);
-
-        setUpSiteSearchSpaceTrigger(
-                /* keyword= */ "test",
-                /* shortName= */ "Test",
-                /* fullName= */ "Test Site",
-                /* userQuery= */ "abc");
 
         assertFalse(mMediator.triggerSiteSearch(SiteSearchActivationSource.SPACE));
     }
@@ -3299,7 +3283,6 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     public void onInputChanged_nonAimIncognito_triggersAutocomplete() {
-        doReturn(true).when(mLocationBarDataProvider).isIncognitoBranded();
         FuseboxSessionState session = createSession(AutocompleteRequestType.SEARCH, SAMPLE_QUERY);
         mMediator.beginInput(session);
 

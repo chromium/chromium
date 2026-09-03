@@ -26,6 +26,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -36,7 +37,9 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 /** Tests for {@link BaseCarouselSuggestionView}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class BaseCarouselSuggestionViewUnitTest {
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
     @Mock private SimpleRecyclerViewAdapter mAdapter;
     @Mock private RecyclerViewSelectionController mController;
     @Mock private DynamicSpacingRecyclerViewItemDecoration mDecoration;
