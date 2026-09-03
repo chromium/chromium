@@ -77,7 +77,8 @@ def _run_tests(out_dir: str, simulator_udid: str,
   process = subprocess.Popen(launch_command,
                              stdout=subprocess.PIPE,
                              stderr=subprocess.STDOUT,
-                             text=True)
+                             text=True,
+                             errors='replace')
 
   test_failed = False
   test_completed = False

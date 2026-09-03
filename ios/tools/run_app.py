@@ -102,7 +102,8 @@ def _run_app(out_dir: str,
     process = subprocess.Popen(launch_command,
                                stdout=subprocess.PIPE,
                                stderr=subprocess.STDOUT,
-                               text=True)
+                               text=True,
+                               errors='replace')
 
     print(f"{Colors.BLUE}Runner Process PID: {process.pid}{Colors.RESET}")
     time.sleep(1)
