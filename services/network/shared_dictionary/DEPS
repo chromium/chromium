@@ -7,8 +7,4 @@ specific_include_rules = {
     "+sql/meta_table.h",
     "+sql/test/test_helpers.h",
   ],
-  "simple_url_pattern_matcher*\\.*": [
-    "+components/url_pattern",
-    "+third_party/liburlpattern",
-  ],
 }
