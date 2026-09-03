@@ -11,8 +11,9 @@ Chromium. Most of these are either:
 There is very little actual cryptographic code in //crypto - it is mostly
 wrappers.
 
-This directory is actively being refactored as of 2025-06. See
-[PLAN.md](PLAN.md).
+This directory has recently been refactored, and as a result some of the APIs
+are deprecated. They are marked as such in their header files, along with notes
+pointing you towards their replacements.
 
 ## Commonly-Used Interfaces
 
