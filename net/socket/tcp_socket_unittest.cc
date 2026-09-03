@@ -50,7 +50,9 @@
 #if BUILDFLAG(IS_WIN)
 #include <winsock2.h>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "net/socket/tcp_socket_io_completion_port_win.h"
+#include "net/socket/tcp_socket_win.h"
 #else  // !BUILDFLAG(IS_WIN)
 #include <sys/socket.h>
 #endif  //  !BUILDFLAG(IS_WIN)
@@ -1650,6 +1652,127 @@ TEST_P(TCPSocketTest, PendingReadError) {
   EXPECT_EQ(read_callback.GetResult(read_result), net::OK);
 #endif
 }
+
+#if BUILDFLAG(IS_WIN)
+void ExpectNonPubliclyRoutableHistogram(
+    std::string_view expected,
+    const IPAddress& address,
+    std::optional<bool> is_app_container = false) {
+  std::string actual = NonPubliclyRoutableConnectResultHistogramNameWin(
+      address, is_app_container);
+  EXPECT_EQ(expected, actual);
+}
+
+TEST(TCPSocketWinMetricsTest, ClassifiesNonPubliclyRoutableAddresses) {
+  ExpectNonPubliclyRoutableHistogram(
+      "Net.TCPSocket.ConnectResult.NonPubliclyRoutable."
+      "Loopback.NotAppContainer.Win",
+      IPAddress::IPv4Localhost());
+  ExpectNonPubliclyRoutableHistogram(
+      "Net.TCPSocket.ConnectResult.NonPubliclyRoutable."
+      "Loopback.NotAppContainer.Win",
+      IPAddress::IPv6Localhost());
+  ExpectNonPubliclyRoutableHistogram(
+      "Net.TCPSocket.ConnectResult.NonPubliclyRoutable."
+      "LinkLocal.NotAppContainer.Win",
+      IPAddress(169, 254, 1, 1));
+  std::optional<IPAddress> ipv6_link_local =
+      IPAddress::FromIPLiteral("fe80::1");
+  ASSERT_TRUE(ipv6_link_local);
+  ExpectNonPubliclyRoutableHistogram(
+      "Net.TCPSocket.ConnectResult.NonPubliclyRoutable."
+      "LinkLocal.NotAppContainer.Win",
+      *ipv6_link_local);
+
+  ExpectNonPubliclyRoutableHistogram(
+      "Net.TCPSocket.ConnectResult.NonPubliclyRoutable."
+      "Private.NotAppContainer.Win",
+      IPAddress(10, 0, 0, 1));
+  ExpectNonPubliclyRoutableHistogram(
+      "Net.TCPSocket.ConnectResult.NonPubliclyRoutable."
+      "Private.NotAppContainer.Win",
+      IPAddress(172, 16, 0, 1));
+  ExpectNonPubliclyRoutableHistogram(
+      "Net.TCPSocket.ConnectResult.NonPubliclyRoutable."
+      "Private.NotAppContainer.Win",
+      IPAddress(172, 31, 255, 254));
+  ExpectNonPubliclyRoutableHistogram(
+      "Net.TCPSocket.ConnectResult.NonPubliclyRoutable."
+      "Private.NotAppContainer.Win",
+      IPAddress(192, 168, 1, 100));
+  std::optional<IPAddress> ipv6_unique_local =
+      IPAddress::FromIPLiteral("fc00::1");
+  ASSERT_TRUE(ipv6_unique_local);
+  ExpectNonPubliclyRoutableHistogram(
+      "Net.TCPSocket.ConnectResult.NonPubliclyRoutable."
+      "Private.NotAppContainer.Win",
+      *ipv6_unique_local);
+
+  ExpectNonPubliclyRoutableHistogram(
+      "Net.TCPSocket.ConnectResult.NonPubliclyRoutable."
+      "Other.NotAppContainer.Win",
+      IPAddress(100, 64, 0, 1));
+}
+
+TEST(TCPSocketWinMetricsTest, ClassifiesIPv4MappedIPv6Addresses) {
+  ExpectNonPubliclyRoutableHistogram(
+      "Net.TCPSocket.ConnectResult.NonPubliclyRoutable."
+      "Loopback.NotAppContainer.Win",
+      ConvertIPv4ToIPv4MappedIPv6(IPAddress::IPv4Localhost()));
+  ExpectNonPubliclyRoutableHistogram(
+      "Net.TCPSocket.ConnectResult.NonPubliclyRoutable."
+      "Private.NotAppContainer.Win",
+      ConvertIPv4ToIPv4MappedIPv6(IPAddress(192, 168, 1, 100)));
+}
+
+TEST(TCPSocketWinMetricsTest, IncludesProcessSandboxState) {
+  ExpectNonPubliclyRoutableHistogram(
+      "Net.TCPSocket.ConnectResult.NonPubliclyRoutable."
+      "Loopback.AppContainer.Win",
+      IPAddress::IPv4Localhost(), true);
+  ExpectNonPubliclyRoutableHistogram(
+      "Net.TCPSocket.ConnectResult.NonPubliclyRoutable."
+      "Loopback.NotAppContainer.Win",
+      IPAddress::IPv4Localhost(), false);
+  ExpectNonPubliclyRoutableHistogram(
+      "Net.TCPSocket.ConnectResult.NonPubliclyRoutable.Loopback.Unknown.Win",
+      IPAddress::IPv4Localhost(), std::nullopt);
+}
+
+TEST_P(TCPSocketTest, RecordsNonPubliclyRoutableConnectResult) {
+  base::HistogramTester histogram_tester;
+  ASSERT_NO_FATAL_FAILURE(SetUpListenIPv4());
+  auto [connecting_socket, accepted_socket] = CreateIPv4SocketPair();
+  ASSERT_TRUE(connecting_socket);
+  ASSERT_TRUE(accepted_socket);
+
+  histogram_tester.ExpectUniqueSample(
+      NonPubliclyRoutableConnectResultHistogramNameWin(
+          IPAddress::IPv4Localhost(), false),
+      -OK, 1);
+}
+
+TEST_P(TCPSocketTest, RecordsFailedTCPClientSocketConnectResult) {
+  base::HistogramTester histogram_tester;
+  ASSERT_NO_FATAL_FAILURE(SetUpListenIPv4());
+  const IPEndPoint closed_address = local_address_;
+  socket_->Close();
+
+  TCPClientSocket client_socket(AddressList(closed_address),
+                                /*socket_performance_watcher=*/nullptr,
+                                /*network_quality_estimator=*/nullptr,
+                                /*net_log=*/nullptr, NetLogSource(),
+                                handles::kInvalidNetworkHandle);
+  TestCompletionCallback connect_callback;
+  int result = client_socket.Connect(connect_callback.callback());
+
+  EXPECT_EQ(ERR_CONNECTION_REFUSED, connect_callback.GetResult(result));
+  histogram_tester.ExpectUniqueSample(
+      NonPubliclyRoutableConnectResultHistogramNameWin(
+          IPAddress::IPv4Localhost(), false),
+      -ERR_CONNECTION_REFUSED, 1);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 INSTANTIATE_TEST_SUITE_P(
     Any,

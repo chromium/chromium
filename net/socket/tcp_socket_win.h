@@ -10,6 +10,8 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/check_deref.h"
 #include "base/memory/raw_ptr.h"
@@ -32,10 +34,17 @@ class TCPSocketDefaultWin;
 
 class AddressList;
 class IOBuffer;
+class IPAddress;
 class IPEndPoint;
 class NetLog;
 struct NetLogSource;
 class SocketTag;
+
+// Returns the connect-result histogram name for non-public `address`. Exposed
+// for testing.
+NET_EXPORT_PRIVATE std::string NonPubliclyRoutableConnectResultHistogramNameWin(
+    const IPAddress& address,
+    std::optional<bool> is_app_container);
 
 class NET_EXPORT TCPSocketWin : public base::win::ObjectWatcher::Delegate {
  public:

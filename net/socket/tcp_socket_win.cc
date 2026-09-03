@@ -8,6 +8,9 @@
 #include <mstcpip.h>
 
 #include <memory>
+#include <optional>
+#include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -19,11 +22,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/win/access_token.h"
 #include "base/win/windows_version.h"
 #include "net/base/address_list.h"
 #include "net/base/features.h"
 #include "net/base/io_buffer.h"
+#include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_activity_monitor.h"
@@ -48,6 +54,30 @@ namespace net {
 namespace {
 
 const int kTCPKeepAliveSeconds = 45;
+
+// Returns whether the current process is running in an AppContainer, or
+// nullopt if its access token cannot be opened.
+std::optional<bool> IsCurrentProcessAppContainer() {
+  std::optional<base::win::AccessToken> token =
+      base::win::AccessToken::FromCurrentProcess();
+  if (!token) {
+    return std::nullopt;
+  }
+  return token->IsAppContainer();
+}
+
+void RecordNonPubliclyRoutableConnectResult(const IPEndPoint& peer_address,
+                                            int net_error) {
+  if (peer_address.address().IsPubliclyRoutable()) {
+    return;
+  }
+
+  std::string histogram_name = NonPubliclyRoutableConnectResultHistogramNameWin(
+      peer_address.address(), IsCurrentProcessAppContainer());
+
+  // Net errors are non-positive; NetErrorCodes stores their positive values.
+  base::UmaHistogramSparse(histogram_name, -net_error);
+}
 
 // Disable Nagle.
 // Enable TCP Keep-Alive to prevent NAT routers from timing out TCP
@@ -179,6 +209,36 @@ void RecordSocketCloseForReuseMetrics(TCPSocketWin* socket) {
 }
 
 }  // namespace
+
+std::string NonPubliclyRoutableConnectResultHistogramNameWin(
+    const IPAddress& address,
+    std::optional<bool> is_app_container) {
+  // The remaining classification methods do not unwrap IPv4-mapped IPv6
+  // addresses.
+  IPAddress ip = address.IsIPv4MappedIPv6()
+                     ? ConvertIPv4MappedIPv6ToIPv4(address)
+                     : address;
+
+  std::string_view address_class = "Other";
+  if (ip.IsLoopback()) {
+    address_class = "Loopback";
+  } else if (ip.IsLinkLocal()) {
+    address_class = "LinkLocal";
+  } else if (ip.IsUniqueLocalIPv6() ||
+             (ip.IsIPv4() &&
+              (IPAddressMatchesPrefix(ip, IPAddress(10, 0, 0, 0), 8) ||
+               IPAddressMatchesPrefix(ip, IPAddress(172, 16, 0, 0), 12) ||
+               IPAddressMatchesPrefix(ip, IPAddress(192, 168, 0, 0), 16)))) {
+    address_class = "Private";
+  }
+
+  std::string_view sandbox_state =
+      !is_app_container.has_value()
+          ? "Unknown"
+          : (*is_app_container ? "AppContainer" : "NotAppContainer");
+  return base::StrCat({"Net.TCPSocket.ConnectResult.NonPubliclyRoutable.",
+                       address_class, ".", sandbox_state, ".Win"});
+}
 
 //-----------------------------------------------------------------------------
 
@@ -1110,6 +1170,9 @@ void TCPSocketWin::DoConnectComplete(int result) {
 
   // [crbug.com/40744069] Log port reuse metrics.
   RecordSocketConnectForReuseMetrics(this, /*success=*/result == OK);
+
+  // Record before TCPClientSocket can clear the peer address after a failure.
+  RecordNonPubliclyRoutableConnectResult(*peer_address_, result);
 
   if (!logging_multiple_connect_attempts_)
     LogConnectEnd(result);

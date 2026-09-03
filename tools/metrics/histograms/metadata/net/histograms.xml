@@ -9914,6 +9914,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Net.TCPSocket.ConnectResult.NonPubliclyRoutable.{AddressClass}.{ProcessSandboxState}.Win"
+    enum="NetErrorCodes" expires_after="2027-08-01">
+  <owner>wfh@chromium.org</owner>
+  <owner>sstandish@microsoft.com</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Records the result when each TCP connect attempt to a {AddressClass}
+    destination on Windows completes. The process performing the connect
+    {ProcessSandboxState}. Results use the non-negative value of the Chromium
+    network error code.
+  </summary>
+  <token key="AddressClass">
+    <variant name="LinkLocal" summary="link-local (169.254.0.0/16, fe80::/10)"/>
+    <variant name="Loopback" summary="loopback (127.0.0.0/8, ::1)"/>
+    <variant name="Other"
+        summary="other non-publicly-routable (for example CGNAT or reserved)"/>
+    <variant name="Private"
+        summary="private RFC1918 (10/8, 172.16/12, 192.168/16) or IPv6 ULA"/>
+  </token>
+  <token key="ProcessSandboxState">
+    <variant name="AppContainer" summary="is running in an AppContainer"/>
+    <variant name="NotAppContainer"
+        summary="is not running in an AppContainer"/>
+    <variant name="Unknown"
+        summary="has an AppContainer state that could not be determined"/>
+  </token>
+</histogram>
+
 <histogram name="Net.TCPSocket.PortReuseTimeWindows2.{IPType}.{Result}"
     units="ms" expires_after="2027-01-03">
   <owner>arichiv@chromium.org</owner>
