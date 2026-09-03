@@ -31,17 +31,18 @@ class ScriptState;
 // 1. According to spec, calling the getters multiple times inside the same task
 //    execution cycle must return the same values. The cache is cleared in the
 //    next microtask.
-// 2. Getting the SSRC/CSRC values involves a block-invoke to the WebRTC worker
-//    thread. This class uses a heuristic to maybe-update the cache for all
-//    RTCRtpReceiver objects inside the same block-invoke, reducing the total
-//    number of block-invokes if the getters are called on every RTCRtpReceiver.
+// 2. Getting the SSRC/CSRC values involves a block-invoke to the WebRTC
+//    signaling thread. This class uses a heuristic to maybe-update the cache
+//    for all RTCRtpReceiver objects inside the same block-invoke, reducing the
+//    total number of block-invokes if the getters are called on every
+//    RTCRtpReceiver.
 class RtpContributingSourceCache {
  public:
   typedef Vector<std::unique_ptr<RTCRtpSource>> RTCRtpSources;
 
   RtpContributingSourceCache(
       RTCPeerConnection* pc,
-      scoped_refptr<base::SingleThreadTaskRunner> worker_thread_runner);
+      scoped_refptr<base::SingleThreadTaskRunner> signaling_thread_runner);
 
   // When the owner of this object is Disposed(), this method must be called to
   // cancel any in-flight tasks.
@@ -62,7 +63,7 @@ class RtpContributingSourceCache {
   // it is at it.
   void MaybeUpdateRtpSources(ScriptState* script_state,
                              RTCRtpReceiver* requesting_receiver);
-  void UpdateRtpSourcesOnWorkerThread(
+  void UpdateRtpSourcesOnSignalingThread(
       Vector<RTCRtpReceiverPlatform*>* receivers,
       HashMap<RTCRtpReceiverPlatform*, RTCRtpSources>*
           cached_sources_by_receiver,
@@ -72,7 +73,7 @@ class RtpContributingSourceCache {
 
   // Owner of all RTCRtpReceiver objects that this cache is concerned with.
   const WeakPersistent<RTCPeerConnection> pc_;
-  const scoped_refptr<base::SingleThreadTaskRunner> worker_thread_runner_;
+  const scoped_refptr<base::SingleThreadTaskRunner> signaling_thread_runner_;
   // We cache audio and video receivers separately in case the app is only
   // interested in one of the kinds. Having a small fixed number of audio
   // receivers where audio levels are polled and a large number of video
