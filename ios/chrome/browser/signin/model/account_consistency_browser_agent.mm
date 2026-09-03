@@ -6,8 +6,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/check.h"
 #import "base/functional/callback_helpers.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/not_fatal_until.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/core/browser/account_reconcilor.h"
 #import "components/signin/ios/browser/account_consistency_service.h"
@@ -94,9 +96,11 @@ void AccountConsistencyBrowserAgent::OnActiveWebStateChanged(
 }
 
 void AccountConsistencyBrowserAgent::OnRestoreGaiaCookies() {
+  AccountReconcilor* reconcilor =
+      ios::AccountReconcilorFactory::GetForProfile(browser_->GetProfile());
+  CHECK(reconcilor);
   signin_metrics::LogAccountReconcilorStateOnGaiaResponse(
-      ios::AccountReconcilorFactory::GetForProfile(browser_->GetProfile())
-          ->GetState());
+      reconcilor->GetState());
   [application_handler_
       showSigninAccountNotificationFromViewController:base_view_controller_];
 }
@@ -110,9 +114,11 @@ void AccountConsistencyBrowserAgent::OnManageAccounts(
   if (browser_type != Browser::Type::kRegular) {
     return;
   }
+  AccountReconcilor* reconcilor =
+      ios::AccountReconcilorFactory::GetForProfile(browser_->GetProfile());
+  CHECK(reconcilor);
   signin_metrics::LogAccountReconcilorStateOnGaiaResponse(
-      ios::AccountReconcilorFactory::GetForProfile(browser_->GetProfile())
-          ->GetState());
+      reconcilor->GetState());
 
   if (!IsActiveWebState(web_state)) {
     return;
@@ -138,9 +144,11 @@ void AccountConsistencyBrowserAgent::OnShowConsistencyPromo(
   if (!IsActiveWebState(web_state)) {
     return;
   }
+  AccountReconcilor* reconcilor =
+      ios::AccountReconcilorFactory::GetForProfile(browser_->GetProfile());
+  CHECK(reconcilor);
   signin_metrics::LogAccountReconcilorStateOnGaiaResponse(
-      ios::AccountReconcilorFactory::GetForProfile(browser_->GetProfile())
-          ->GetState());
+      reconcilor->GetState());
   [application_handler_
       showWebSigninPromoFromViewController:base_view_controller_
                                        URL:url];
