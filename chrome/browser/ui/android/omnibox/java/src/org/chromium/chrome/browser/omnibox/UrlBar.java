@@ -70,6 +70,7 @@ import org.chromium.ui.display.DisplayUtil;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.text.BreakIterator;
 
 /** The URL text entry view for the Omnibox. */
 @NullMarked
@@ -671,8 +672,12 @@ public class UrlBar extends AutocompleteEditText {
     public boolean onTouchEvent(MotionEvent event) {
         int action = event.getActionMasked();
         if (action == MotionEvent.ACTION_DOWN) {
-            if ((event.getButtonState() & MotionEvent.BUTTON_SECONDARY) != 0 && !isFocused()) {
-                performClick();
+            if ((event.getButtonState() & MotionEvent.BUTTON_SECONDARY) != 0) {
+                if (isFocused()) {
+                    selectWordAt(event.getX(), event.getY());
+                } else {
+                    performClick();
+                }
             }
 
             mLongPressPerformed = false;
@@ -704,6 +709,43 @@ public class UrlBar extends AutocompleteEditText {
         }
 
         return super.onTouchEvent(event);
+    }
+
+    /**
+     * Selects the word under the given coordinates using {@link BreakIterator}.
+     *
+     * @param x The x coordinate of the pointer.
+     * @param y The y coordinate of the pointer.
+     */
+    private void selectWordAt(float x, float y) {
+        int offset = getOffsetForPosition(x, y);
+
+        // Out of bounds.
+        CharSequence text = getText();
+        if (text == null || offset < 0 || offset >= text.length()) {
+            return;
+        }
+
+        // Within existing selection.
+        int selectionStart = getSelectionStart();
+        int selectionEnd = getSelectionEnd();
+        int minSel = Math.min(selectionStart, selectionEnd);
+        int maxSel = Math.max(selectionStart, selectionEnd);
+        if (minSel != maxSel && offset >= minSel && offset < maxSel) {
+            return;
+        }
+
+        BreakIterator iterator = BreakIterator.getWordInstance(getTextLocale());
+        iterator.setText(text.toString());
+
+        int start = iterator.preceding(offset + 1);
+        int end = iterator.following(offset);
+
+        if (start == BreakIterator.DONE || end == BreakIterator.DONE || start >= end) {
+            return;
+        }
+
+        setSelection(start, end);
     }
 
     @Override
