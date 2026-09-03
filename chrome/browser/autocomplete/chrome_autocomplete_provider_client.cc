@@ -856,6 +856,14 @@ void ChromeAutocompleteProviderClient::OpenCoBrowsePanel() {
       }
     }
 
+    // Verify enterprise content sharing settings for the session. This is
+    // required before ContextualSearchSessionHandle::CreateContextToken() can
+    // be called (e.g., when Lens Overlay calls this handle concurrently).
+    if (session_handle) {
+      session_handle->CheckSearchContentSharingSettings(
+          bwi->GetProfile()->GetPrefs());
+    }
+
     if (auto* lens_controller = LensSearchController::From(tab)) {
       if (omnibox::kAskGCoBrowseWithVisualSelection.Get()) {
         // Concurrently launch the Lens Overlay alongside the side panel

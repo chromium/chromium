@@ -329,6 +329,10 @@ IN_PROC_BROWSER_TEST_F(ChromeAutocompleteProviderClientAskGCoBrowseTest,
   ASSERT_TRUE(session_handle);
   EXPECT_EQ(session_handle->invocation_source(),
             lens::LensOverlayInvocationSource::kOmniboxPageAction);
+  // ContextualSearchSessionHandle::CreateContextToken() contains a strict
+  // CHECK(policy_checked_). Verifying this call succeeds confirms policy was
+  // checked.
+  EXPECT_FALSE(session_handle->CreateContextToken().is_empty());
 }
 
 class ChromeAutocompleteProviderClientAskGCoBrowseWithLensOverlayTest
