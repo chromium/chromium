@@ -1416,10 +1416,22 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   return _entrypoint == ComposeboxEntrypoint::kCobrowse;
 }
 
+// Removes all non tabs attached items.
+- (void)clearNonTabItems {
+  for (ComposeboxInputItem* item in _items.containedItems) {
+    if (item.type != ComposeboxInputItemType::kComposeboxInputItemTypeTab) {
+      [self removeItem:item];
+    }
+  }
+}
+
 // Sends a Cobrowse text followup.
 - (void)sendAIMFollowup:(NSString*)text {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  CHECK(_entrypoint == ComposeboxEntrypoint::kCobrowse);
+
   [self promoteAutoAddedItems];
+
   if (!_contextualSearchSession) {
     return;
   }
@@ -1448,6 +1460,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
           std::move(request_info));
 
   [self.URLLoader prepareLoadWithClientToAimMessage:message];
+  [self clearNonTabItems];
 }
 
 // Informs the model of a context change (e.g.; attachment added or deleted).
