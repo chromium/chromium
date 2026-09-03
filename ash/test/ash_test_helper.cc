@@ -65,7 +65,6 @@
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
 #include "components/session_manager/core/fake_session_manager_delegate.h"
-#include "components/session_manager/test/test_user_session_manager.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/floss/floss_dbus_manager.h"
@@ -280,7 +279,6 @@ void AshTestHelper::TearDown() {
   // session_manager_ is reset here, preserving production destruction order.
   // TODO(crbug.com/332481586): Revisit teardown ordering.
   session_manager_.reset();
-  test_user_session_manager_.reset();
   system_monitor_.reset();
   statistics_provider_.reset();
   command_line_.reset();
@@ -382,16 +380,7 @@ void AshTestHelper::SetUp(InitParams init_params) {
   // In production, SessionManager is initialized in PreCreateMainMessageLoop
   // (BrowserProcessPlatformPart::InitializeSessionManager) so that other
   // components can observe it early.
-  // Setting up UserManager here is too early compared to the production
-  // behavior. There's on-going work to shift the initialization timing of
-  // SessionManager and UserManager, so this should be revisited on its
-  // completion.
-  if (!user_manager::UserManager::IsInitialized() &&
-      !session_manager::SessionManager::Get()) {
-    test_user_session_manager_ =
-        std::make_unique<ash::test::TestUserSessionManager>(
-            init_params.local_state);
-  } else if (!session_manager::SessionManager::Get()) {
+  if (!session_manager::SessionManager::Get()) {
     session_manager_ = std::make_unique<session_manager::SessionManager>(
         std::make_unique<session_manager::FakeSessionManagerDelegate>());
   }

@@ -13,7 +13,6 @@ specific_include_rules = {
     "+chromeos/ash/components/login/login_state",
     "+chromeos/ash/components/sync/fake_sync_service_provider.h",
     "+components/session_manager/core/fake_session_manager_delegate.h",
-    "+components/session_manager/test/test_user_session_manager.h",
   ],
   "ash_test_helper\\.h": [
     "+components/session_manager/core/session_manager.h",

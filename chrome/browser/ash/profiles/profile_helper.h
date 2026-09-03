@@ -151,7 +151,6 @@ class ProfileHelper {
   // Associates |profile| with |user|, for GetProfileByUser() testing.
   virtual void SetUserToProfileMappingForTesting(const user_manager::User* user,
                                                  Profile* profile) = 0;
-  virtual void ClearUserToProfileMappingForTesting() = 0;
 
   // Enables/disables testing code path in GetUserByProfile() like
   // always return primary user (when always_return_primary_user_for_testing is

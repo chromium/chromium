@@ -102,7 +102,6 @@ source_set("unit_tests") {
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network:test_support",
     "//chromeos/ash/components/tether",
-    "//chromeos/ash/services/network_config:in_process_instance",
     "//chromeos/constants",
     "//components/account_id",
     "//components/captive_portal/core",
