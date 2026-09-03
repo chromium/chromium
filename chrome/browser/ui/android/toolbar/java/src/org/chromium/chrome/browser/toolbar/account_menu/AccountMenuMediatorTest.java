@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.account_menu;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.verify;
 
@@ -24,8 +25,13 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.ItemType;
+import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.MenuItemProperties;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link AccountMenuMediator}. */
@@ -37,7 +43,7 @@ public class AccountMenuMediatorTest {
     @Mock private Runnable mDismissCallback;
 
     private Context mContext;
-    private PropertyModel mModel;
+    private ModelList mModelList;
     private AccountMenuMediator mMediator;
 
     @Before
@@ -45,8 +51,8 @@ public class AccountMenuMediatorTest {
         mContext = ApplicationProvider.getApplicationContext();
         SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
 
-        mModel = new PropertyModel(AccountMenuProperties.ALL_KEYS);
-        mMediator = new AccountMenuMediator(mContext, mModel, mDismissCallback);
+        mModelList = new ModelList();
+        mMediator = new AccountMenuMediator(mContext, mModelList, mDismissCallback);
     }
 
     @After
@@ -57,7 +63,16 @@ public class AccountMenuMediatorTest {
     @Test
     @SmallTest
     public void testAutofillItemClick_dismissesAndOpensAutofillSettings() {
-        OnClickListener clickListener = mModel.get(AccountMenuProperties.AUTOFILL_CLICK_LISTENER);
+        assertEquals(1, mModelList.size());
+        ListItem item = mModelList.get(0);
+        assertEquals(ItemType.MENU_ITEM, item.type);
+
+        PropertyModel model = item.model;
+        assertEquals(R.string.menu_passwords_and_autofill, model.get(MenuItemProperties.TITLE_ID));
+        assertEquals(
+                R.drawable.ic_password_manager_24dp, model.get(MenuItemProperties.START_ICON_ID));
+
+        OnClickListener clickListener = model.get(MenuItemProperties.CLICK_LISTENER);
         assertNotNull(clickListener);
 
         clickListener.onClick(null);

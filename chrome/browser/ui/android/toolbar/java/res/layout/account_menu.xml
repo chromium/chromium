@@ -5,7 +5,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<LinearLayout
+<androidx.recyclerview.widget.RecyclerView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/account_menu_container"
     android:layout_width="match_parent"
@@ -13,14 +13,6 @@ found in the LICENSE file.
     android:minWidth="@dimen/account_menu_min_width"
     android:paddingTop="@dimen/account_menu_padding_vertical"
     android:paddingBottom="@dimen/account_menu_padding_vertical"
-    android:orientation="vertical"
     android:clipToOutline="true"
     android:elevation="@dimen/app_menu_elevation"
-    android:background="@drawable/default_popup_menu_bg">
-
-    <TextView
-        android:id="@+id/account_menu_passwords_and_autofill"
-        style="@style/AccountMenuControlRow"
-        android:drawableStart="@drawable/ic_password_manager_24dp"
-        android:text="@string/menu_passwords_and_autofill" />
-</LinearLayout>
+    android:background="@drawable/default_popup_menu_bg" />
