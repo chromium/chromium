@@ -194,6 +194,9 @@ class MockLocalMediaStreamAudioSource : public blink::MediaStreamAudioSource {
 
  private:
   AudioPropertiesCallback properties_cb_;
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  std::optional<bool> voice_isolation_enabled_;
+#endif
   bool is_processed_ = false;
 };
 
@@ -732,17 +735,25 @@ MockLocalMediaStreamAudioSource::MockLocalMediaStreamAudioSource(
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 void MockLocalMediaStreamAudioSource::SetVoiceIsolation(bool enabled) {
-  if (MediaStreamSource* source = Owner()) {
-    source->SetAudioProcessingProperties(EchoCancellationMode::kDisabled, false,
-                                         false, enabled);
-  }
+  voice_isolation_enabled_ = enabled;
 }
 #endif
 
 std::optional<AudioProcessingProperties>
 MockLocalMediaStreamAudioSource::GetAudioProcessingProperties() const {
   if (properties_cb_) {
-    return properties_cb_.Run();
+    auto props = properties_cb_.Run();
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+    if (props && voice_isolation_enabled_.has_value()) {
+      props->voice_isolation =
+          *voice_isolation_enabled_
+              ? AudioProcessingProperties::VoiceIsolationType::
+                    kVoiceIsolationEnabled
+              : AudioProcessingProperties::VoiceIsolationType::
+                    kVoiceIsolationDisabled;
+    }
+#endif
+    return props;
   }
   return std::nullopt;
 }
@@ -2470,6 +2481,26 @@ TEST_F(UserMediaClientTest,
   EXPECT_TRUE(std::ranges::contains(voice_isolation_capabilities2, false));
   EXPECT_TRUE(std::ranges::contains(voice_isolation_capabilities2, true));
 
+  // 3. Apply "true" exact to cloned track.
+  // This should SUCCEED and re-enable voice isolation for both tracks.
+  {
+    blink::MockConstraintFactory factory;
+    factory.basic().device_id.SetExact(fake_ids_->audio_input_1);
+    factory.basic().voice_isolation.SetExact(true);
+    auto* apply_constraints_request =
+        MakeGarbageCollected<ApplyConstraintsRequest>(
+            track2, factory.CreateMediaConstraints(), nullptr);
+    user_media_client_impl_->ApplyConstraints(apply_constraints_request);
+    test::RunPendingTasks();
+  }
+  EXPECT_EQ(platform_track2->VoiceIsolationExactConstraint(), true);
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  EXPECT_TRUE(track1->getSettings()->hasVoiceIsolation());
+  EXPECT_EQ(track1->getSettings()->voiceIsolation(), true);
+  EXPECT_TRUE(track2->getSettings()->hasVoiceIsolation());
+  EXPECT_EQ(track2->getSettings()->voiceIsolation(), true);
+#endif
+
   // Stop tracks and GC to ensure a clean slate.
   blink::MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(component1))
       ->Stop();
@@ -2517,6 +2548,22 @@ TEST_F(UserMediaClientTest,
   EXPECT_EQ(platform_track->VoiceIsolationExactConstraint(), false);
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   EXPECT_EQ(track->getSettings()->voiceIsolation(), false);
+#endif
+
+  // 3. Change constraint back to true exact. This should SUCCEED.
+  {
+    blink::MockConstraintFactory factory;
+    factory.basic().device_id.SetExact(fake_ids_->audio_input_1);
+    factory.basic().voice_isolation.SetExact(true);
+    auto* apply_constraints_request =
+        MakeGarbageCollected<ApplyConstraintsRequest>(
+            track, factory.CreateMediaConstraints(), nullptr);
+    user_media_client_impl_->ApplyConstraints(apply_constraints_request);
+    test::RunPendingTasks();
+  }
+  EXPECT_EQ(platform_track->VoiceIsolationExactConstraint(), true);
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  EXPECT_EQ(track->getSettings()->voiceIsolation(), true);
 #endif
 
   // Stop tracks and GC to ensure a clean slate.

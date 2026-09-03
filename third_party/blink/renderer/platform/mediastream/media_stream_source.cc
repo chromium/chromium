@@ -88,6 +88,15 @@ void GetSourceSettings(const blink::WebMediaStreamSource& web_source,
   // kSampleFormatS16 is the format used for all audio input streams.
   settings.sample_size =
       media::SampleFormatToBitsPerChannel(media::kSampleFormatS16);
+
+  // Voice isolation can be reconfigured dynamically at runtime. Override the
+  // initial track creation setting with the current dynamic setting from the
+  // active audio source if available.
+  if (auto properties = source->GetAudioProcessingProperties()) {
+    settings.voice_isolation =
+        properties->voice_isolation ==
+        AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationEnabled;
+  }
 }
 
 }  // namespace

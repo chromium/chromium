@@ -133,7 +133,23 @@ void ProcessedLocalAudioSource::SendLogMessageWithSessionId(
 
 std::optional<blink::AudioProcessingProperties>
 ProcessedLocalAudioSource::GetAudioProcessingProperties() const {
-  return processing_layout_.properties();
+  AudioProcessingProperties properties = processing_layout_.properties();
+  if (!audio_processor_proxy_) {
+    return properties;
+  }
+
+  // Voice isolation can be reconfigured dynamically at runtime. Override the
+  // initial track creation setting with the current dynamic setting from the
+  // audio processor proxy if available.
+  if (std::optional<bool> voice_isolation =
+          audio_processor_proxy_->VoiceIsolation()) {
+    properties.voice_isolation =
+        *voice_isolation ? AudioProcessingProperties::VoiceIsolationType::
+                               kVoiceIsolationEnabled
+                         : AudioProcessingProperties::VoiceIsolationType::
+                               kVoiceIsolationDisabled;
+  }
+  return properties;
 }
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)

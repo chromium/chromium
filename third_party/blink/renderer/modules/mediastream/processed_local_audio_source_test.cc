@@ -303,6 +303,12 @@ TEST_P(ProcessedLocalAudioSourceTest,
   // 3. Call SetVoiceIsolation before controls are created. The setting should
   // be cached in the proxy.
   audio_source()->SetVoiceIsolation(true);
+  EXPECT_EQ(
+      audio_source()->GetAudioProcessingProperties()->voice_isolation,
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationEnabled);
+  MediaStreamTrackPlatform::Settings settings;
+  audio_track()->GetSettings(settings);
+  EXPECT_EQ(settings.voice_isolation, true);
 
   // 4. Inject mock controls. The cached voice isolation setting should be
   // applied immediately.
@@ -314,6 +320,11 @@ TEST_P(ProcessedLocalAudioSourceTest,
   // forwarded to the mock controls immediately.
   EXPECT_CALL(mock_controls, SetVoiceIsolation(false));
   audio_source()->SetVoiceIsolation(false);
+  EXPECT_EQ(
+      audio_source()->GetAudioProcessingProperties()->voice_isolation,
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationDisabled);
+  audio_track()->GetSettings(settings);
+  EXPECT_EQ(settings.voice_isolation, false);
 
   // Clean up.
   EXPECT_CALL(*mock_audio_capturer_source(), Stop());
