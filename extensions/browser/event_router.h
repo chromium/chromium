@@ -17,6 +17,7 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -35,6 +36,7 @@
 #include "extensions/browser/process_manager_observer.h"
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/event_args.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/context_type.mojom-forward.h"
@@ -167,7 +169,7 @@ class EventRouter : public KeyedService,
                              const std::string& event_name,
                              int worker_thread_id,
                              int64_t service_worker_version_id,
-                             base::ListValue event_args,
+                             scoped_refptr<const EventArgs> event_args,
                              mojom::EventFilteringInfoPtr info);
 
   static void BindForRenderer(
@@ -453,9 +455,9 @@ class EventRouter : public KeyedService,
       const mojom::HostID& host_id,
       int event_id,
       const std::string& event_name,
-      base::ListValue event_args,
+      scoped_refptr<const EventArgs> event_args,
       UserGestureState user_gesture,
-      extensions::mojom::EventFilteringInfoPtr info,
+      mojom::EventFilteringInfoPtr info,
       mojom::EventDispatcher::DispatchEventCallback callback);
 
   void ObserveProcess(content::RenderProcessHost* process);
@@ -625,7 +627,7 @@ class EventRouter : public KeyedService,
   void RouteDispatchEvent(
       content::RenderProcessHost* rph,
       mojom::DispatchEventParamsPtr params,
-      base::ListValue event_args,
+      scoped_refptr<const EventArgs> event_args,
       mojom::EventDispatcher::DispatchEventCallback callback);
 
   void DispatchPendingEvent(
@@ -725,11 +727,9 @@ struct Event {
 
   // Returns a reference to the event arguments for read-only access.
   // The reference is valid only for the lifetime of the current arguments
-  // on this Event.
-  const base::ListValue& args() const { return event_args; }
-
-  // Arguments to send to the event listener.
-  base::ListValue event_args;
+  // on this Event. Use `args_ptr()` if retaining ownership is needed.
+  const base::ListValue& args() const { return event_args_->data; }
+  const scoped_refptr<const EventArgs>& args_ptr() const { return event_args_; }
 
   // If non-null, then the event will not be sent to other BrowserContexts
   // unless the extension has permission (e.g. incognito tab update -> normal
@@ -843,17 +843,44 @@ struct Event {
         bool lazy_background_active_on_dispatch = false,
         base::TimeTicks dispatch_start_time = base::TimeTicks{});
 
+  Event(events::HistogramValue histogram_value,
+        std::string_view event_name,
+        scoped_refptr<const EventArgs> event_args);
+
+  Event(events::HistogramValue histogram_value,
+        std::string_view event_name,
+        scoped_refptr<const EventArgs> event_args,
+        content::BrowserContext* restrict_to_browser_context,
+        std::optional<mojom::ContextType> restrict_to_context_type =
+            std::nullopt);
+
+  Event(events::HistogramValue histogram_value,
+        std::string_view event_name,
+        scoped_refptr<const EventArgs> event_args,
+        content::BrowserContext* restrict_to_browser_context,
+        std::optional<mojom::ContextType> restrict_to_context_type,
+        const GURL& event_url,
+        EventRouter::UserGestureState user_gesture,
+        mojom::EventFilteringInfoPtr info,
+        bool lazy_background_active_on_dispatch = false,
+        base::TimeTicks dispatch_start_time = base::TimeTicks{});
+
   ~Event();
 
-  // Creates a copy of this event, selectively choosing whether to also copy the
-  // event arguments and filtering info.
-  // If `copy_event_args` or `copy_filter_info` are false, the respective
-  // members will be initialized to empty values.
-  std::unique_ptr<Event> CopySelectively(bool copy_event_args,
-                                         bool copy_filter_info) const;
+  // Creates a copy of this event, optionally overriding event arguments or
+  // filtering info. If `modified_event_args` is nullopt, the existing arguments
+  // reference is reused (or cloned if sharing is disabled). If
+  // `modified_filter_info` is null, the existing filter info is cloned.
+  std::unique_ptr<Event> CopySelectively(
+      std::optional<base::ListValue> modified_event_args = std::nullopt,
+      mojom::EventFilteringInfoPtr modified_filter_info = nullptr) const;
 
-  // Makes a deep copy of this instance.
-  std::unique_ptr<Event> DeepCopy() const;
+  // Makes a copy of this instance, sharing the ref-counted event arguments when
+  // the `kShareEventArgsOnDispatch` experiment is enabled.
+  std::unique_ptr<Event> Clone() const;
+
+ private:
+  scoped_refptr<const EventArgs> event_args_;
 };
 
 struct EventListenerInfo {

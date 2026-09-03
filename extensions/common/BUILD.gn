@@ -135,6 +135,24 @@ mojom("mojom") {
     {
       types = [
         {
+          mojom = "extensions.mojom.EventArgs"
+          cpp = "::scoped_refptr<const ::extensions::EventArgs>"
+        },
+      ]
+      traits_headers = [
+        "//extensions/common/event_args.h",
+        "//extensions/common/mojom/event_dispatcher_mojom_traits.h",
+      ]
+      traits_sources =
+          [ "//extensions/common/mojom/event_dispatcher_mojom_traits.cc" ]
+      traits_public_deps = [
+        "//base",
+        "//mojo/public/cpp/base",
+      ]
+    },
+    {
+      types = [
+        {
           mojom = "extensions.mojom.Channel"
           cpp = "version_info::Channel"
         },
@@ -333,6 +351,7 @@ static_library("common") {
     "dom_action_types.h",
     "error_utils.cc",
     "error_utils.h",
+    "event_args.h",
     "event_filter.cc",
     "event_filter.h",
     "event_matcher.cc",
@@ -736,6 +755,7 @@ source_set("unit_tests") {
     "manifest_handlers/web_urls_unittest.cc",
     "manifest_unittest.cc",
     "message_bundle_unittest.cc",
+    "mojom/event_dispatcher_mojom_traits_unittest.cc",
     "mojom/event_router_mojom_unittest.cc",
     "mojom/extension_id_mojom_traits_unittest.cc",
     "mojom/frame_mojom_unittest.cc",

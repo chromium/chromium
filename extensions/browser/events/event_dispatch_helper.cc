@@ -391,7 +391,7 @@ std::unique_ptr<Event> EventDispatchHelper::CreateEventForDispatch(
     mojom::ContextType target_context_type,
     bool* dispatch_separate_event_out) {
   if (event.will_dispatch_callback.is_null()) {
-    return event.DeepCopy();
+    return event.Clone();
   }
 
   // Run the callback before copying the event to determine if events need
@@ -406,20 +406,8 @@ std::unique_ptr<Event> EventDispatchHelper::CreateEventForDispatch(
     return nullptr;
   }
 
-  // If `event_args` or `filter_info` are modified, we avoid cloning the
-  // original ones (which can be costly) by using a selective copy mechanism.
-  const bool is_event_args_modified = modified_event_args.has_value();
-  const bool is_filter_info_modified = !!modified_event_filter_info;
   std::unique_ptr<Event> dispatched_event = event.CopySelectively(
-      /*copy_event_args=*/!is_event_args_modified,
-      /*copy_filter_info=*/!is_filter_info_modified);
-
-  if (is_event_args_modified) {
-    dispatched_event->event_args = std::move(*modified_event_args);
-  }
-  if (is_filter_info_modified) {
-    dispatched_event->filter_info = std::move(modified_event_filter_info);
-  }
+      std::move(modified_event_args), std::move(modified_event_filter_info));
   dispatched_event->will_dispatch_callback.Reset();
 
   return dispatched_event;

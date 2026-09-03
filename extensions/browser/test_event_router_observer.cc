@@ -44,8 +44,8 @@ void TestEventRouterObserver::WaitForDispatchedEventWithName(
 
 void TestEventRouterObserver::OnWillDispatchEvent(const Event& event) {
   CHECK(!event.event_name.empty());
-  events_[event.event_name] = event.DeepCopy();
-  all_events_.push_back(event.DeepCopy());
+  events_[event.event_name] = event.Clone();
+  all_events_.push_back(event.Clone());
   if (run_loop_) {
     run_loop_->Quit();
   }
@@ -54,8 +54,8 @@ void TestEventRouterObserver::OnWillDispatchEvent(const Event& event) {
 void TestEventRouterObserver::OnDidDispatchEventToProcess(const Event& event,
                                                           int process_id) {
   CHECK(!event.event_name.empty());
-  dispatched_events_[event.event_name] = event.DeepCopy();
-  all_dispatched_events_.push_back(event.DeepCopy());
+  dispatched_events_[event.event_name] = event.Clone();
+  all_dispatched_events_.push_back(event.Clone());
   if (run_loop_) {
     run_loop_->Quit();
   }

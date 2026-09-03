@@ -7,6 +7,11 @@ module extensions.mojom;
 import "extensions/common/mojom/host_id.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "url/mojom/url.mojom";
+
+struct EventArgs {
+  mojo_base.mojom.ListValue data;
+};
+
 // EventDispatch is a one-per-renderer-process interface that is responsible
 // for triggering API events that extensions have registered listeners for in
 // the renderer (either the extension process renderer, for extension-origin
@@ -22,7 +27,7 @@ interface EventDispatcher {
     // the responsible extensions are identified.
     [UnlimitedSize]
     DispatchEvent(DispatchEventParams params,
-                  mojo_base.mojom.ListValue event_args) => (
+                  EventArgs event_args) => (
                     // TODO(crbug.com/40277737): Remove this variable once
                     // crbug.com/1470045  allows us to only ack for lazy
                     // background page events.

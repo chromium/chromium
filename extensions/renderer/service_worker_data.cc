@@ -134,9 +134,10 @@ void ServiceWorkerData::Init() {
       event_dispatcher_receiver_.BindNewEndpointAndPassRemote());
 }
 
-void ServiceWorkerData::DispatchEvent(mojom::DispatchEventParamsPtr params,
-                                      base::ListValue event_args,
-                                      DispatchEventCallback callback) {
+void ServiceWorkerData::DispatchEvent(
+    mojom::DispatchEventParamsPtr params,
+    const scoped_refptr<const EventArgs>& event_args,
+    DispatchEventCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   ScriptContext* script_context = context();
   // Note |scoped_extension_interaction| requires a HandleScope.
@@ -149,12 +150,13 @@ void ServiceWorkerData::DispatchEvent(mojom::DispatchEventParamsPtr params,
             script_context->v8_context());
   }
 
-  bindings_system()->DispatchEventInContext(params->event_name, event_args,
-                                            std::move(params->filtering_info),
-                                            context());
+  CHECK(event_args);
+  const base::ListValue& args = event_args->data;
+  bindings_system()->DispatchEventInContext(
+      params->event_name, args, std::move(params->filtering_info), context());
   // The worker has a single context, so one dispatch notifies every listener.
   bindings_system()->DidDispatchEvent(*params->host_id, params->event_name,
-                                      event_args);
+                                      args);
 
   std::move(callback).Run(
       // False since this is only possibly true for lazy background page.

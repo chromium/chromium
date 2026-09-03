@@ -84,7 +84,7 @@ class ArcAccessibilityHelperBridgeTest : public ChromeViewsTestBase {
 
     // TestEventRouter::EventObserver overrides:
     void OnBroadcastEvent(const extensions::Event& event) override {
-      last_event = event.DeepCopy();
+      last_event = event.Clone();
     }
     void OnDispatchEventToExtension(const std::string& extension_id,
                                     const extensions::Event& event) override {}

@@ -1718,9 +1718,9 @@ void WebRequestEventRouter::DispatchEventToListeners(
     }
 
     // Filter out the optional keys that this listener didn't request.
-    base::ListValue args_filtered;
+    scoped_refptr<EventArgs> args_filtered = base::MakeRefCounted<EventArgs>();
 
-    args_filtered.Append(event_details->GetFilteredDict(
+    args_filtered->data.Append(event_details->GetFilteredDict(
         listener->extra_info_spec, PermissionHelper::Get(browser_context),
         listener->id.extension_id, crosses_incognito));
 
@@ -1872,8 +1872,8 @@ int WebRequestEventRouter::DispatchEventToTargets(
     // The renderer matches its listeners itself and filters the details per
     // listener, so the dispatched details carry the union of the group's
     // options.
-    base::ListValue args;
-    args.Append(event_details.GetFilteredDict(
+    scoped_refptr<EventArgs> args = base::MakeRefCounted<EventArgs>();
+    args->data.Append(event_details.GetFilteredDict(
         union_spec_all, PermissionHelper::Get(browser_context),
         key.extension_id, crosses_incognito));
     // An additional payload provides what the renderer needs to do the
@@ -1882,7 +1882,7 @@ int WebRequestEventRouter::DispatchEventToTargets(
     payload.Set(kContextDispatchWindowIdKey, request->frame_data.window_id);
     payload.Set(kContextDispatchInstanceIdKey, key.web_view_instance_id);
     payload.Set(kContextDispatchAwaitResponseKey, await_response);
-    args.Append(std::move(payload));
+    args->data.Append(std::move(payload));
 
     if (await_response) {
       BlockedRequest& blocked_request =

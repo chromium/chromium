@@ -221,10 +221,11 @@ void NotifyProcessOutput(content::BrowserContext* browser_context,
     return;
   }
 
-  base::ListValue args;
-  args.Append(terminal_id);
-  args.Append(output_type);
-  args.Append(base::Value(base::as_byte_span(output)));
+  scoped_refptr<extensions::EventArgs> args =
+      base::MakeRefCounted<extensions::EventArgs>();
+  args->data.Append(terminal_id);
+  args->data.Append(output_type);
+  args->data.Append(base::Value(base::as_byte_span(output)));
 
   content::RenderProcessHost* rph =
       content::RenderProcessHost::FromID(render_process_host_id);

@@ -318,6 +318,12 @@ BASE_DECLARE_FEATURE_PARAM(bool,
 // engine override dialog.
 BASE_DECLARE_FEATURE(kSearchEngineUnconditionalDialog);
 
+// When enabled, Event argument ref-counting is used to share arguments across
+// dispatched events instead of deep-cloning. Behind a feature to assess impact
+// (go/chrome-performance-work-should-be-finched).
+// TODO(crbug.com/424432184): Clean up when experiment is complete.
+BASE_DECLARE_FEATURE(kShareEventArgsOnDispatch);
+
 // Enables the securityInfo in chrome.webRequest API for extensions.
 // Allowing them to retrieve certificate information from web requests.
 BASE_DECLARE_FEATURE(kWebRequestSecurityInfo);

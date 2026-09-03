@@ -1256,7 +1256,7 @@ void Dispatcher::WatchPages(const std::vector<std::string>& css_selectors) {
 }
 
 void Dispatcher::DispatchEvent(mojom::DispatchEventParamsPtr params,
-                               base::ListValue event_args,
+                               const scoped_refptr<const EventArgs>& event_args,
                                DispatchEventCallback callback) {
   CHECK_EQ(params->worker_thread_id, kMainThreadId);
   CHECK(params->host_id);
@@ -1289,7 +1289,8 @@ void Dispatcher::DispatchEvent(mojom::DispatchEventParamsPtr params,
         blink::mojom::UserActivationNotificationType::kExtensionEvent);
   }
 
-  DispatchEventHelper(*params->host_id, params->event_name, event_args,
+  CHECK(event_args);
+  DispatchEventHelper(*params->host_id, params->event_name, event_args->data,
                       std::move(params->filtering_info));
   std::move(callback).Run(event_has_listener_in_background_context);
 }
