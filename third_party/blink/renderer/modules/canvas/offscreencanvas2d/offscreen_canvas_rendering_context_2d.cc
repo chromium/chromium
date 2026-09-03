@@ -310,8 +310,7 @@ base::ByteSize OffscreenCanvasRenderingContext2D::AllocatedBufferSize() const {
 }
 
 void OffscreenCanvasRenderingContext2D::Reset() {
-  shared_image_provider_ = nullptr;
-  bitmap_provider_ = nullptr;
+  ResetResourceProvider();
   Host()->DiscardResources();
   BaseRenderingContext2D::ResetInternal();
 }
@@ -373,8 +372,7 @@ ImageBitmap* OffscreenCanvasRenderingContext2D::TransferToImageBitmap(
     return nullptr;
   image->SetOriginClean(OriginClean());
 
-  shared_image_provider_ = nullptr;
-  bitmap_provider_ = nullptr;
+  ResetResourceProvider();
   Host()->DiscardResources();
 
   return MakeGarbageCollected<ImageBitmap>(std::move(image));
@@ -494,10 +492,14 @@ sk_sp<PaintFilter> OffscreenCanvasRenderingContext2D::StateGetFilter() {
   return GetState().GetFilterForOffscreenCanvas(Host()->Size(), this);
 }
 
-void OffscreenCanvasRenderingContext2D::Dispose() {
-  FlushForImageListener::Get()->RemoveObserver(this);
+void OffscreenCanvasRenderingContext2D::ResetResourceProvider() {
   shared_image_provider_.reset();
   bitmap_provider_.reset();
+}
+
+void OffscreenCanvasRenderingContext2D::Dispose() {
+  FlushForImageListener::Get()->RemoveObserver(this);
+  ResetResourceProvider();
   CanvasRenderingContext::Dispose();
 }
 
@@ -507,8 +509,7 @@ void OffscreenCanvasRenderingContext2D::LoseContext(LostContextMode lost_mode) {
   context_lost_mode_ = lost_mode;
   ResetInternal();
   if (CanvasRenderingContextHost* host = Host()) [[likely]] {
-    shared_image_provider_ = nullptr;
-    bitmap_provider_ = nullptr;
+    ResetResourceProvider();
     host->DiscardResources();
     host->DiscardResourceDispatcher();
   }
