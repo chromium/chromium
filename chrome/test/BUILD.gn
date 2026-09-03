@@ -4923,6 +4923,7 @@ test("unit_tests") {
     "../renderer/instant_restricted_id_cache_unittest.cc",
     "../renderer/media/flash_embed_rewrite_unittest.cc",
     "../renderer/net/net_error_helper_core_unittest.cc",
+    "../renderer/tab_context_decryption_token_extension_unittest.cc",
     "../renderer/v8_unwinder_unittest.cc",
   ]
 
@@ -5655,6 +5656,7 @@ test("unit_tests") {
     "//device/fido",
     "//device/fido:test_support",
     "//gin",
+    "//gin:gin_test",
     "//google_apis",
     "//google_apis/gcm",
     "//gpu:test_support",

@@ -81,6 +81,7 @@ include_rules = [
   "+components/surface_embed/common",
   "+components/surface_embed/renderer",
   "+components/sync/base/features.h",
+  "+components/sync_tab_context",
   "+components/translate/content/common",
   "+components/translate/content/renderer",
   "+components/translate/core/common",

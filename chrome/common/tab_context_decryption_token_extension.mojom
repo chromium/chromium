@@ -1,0 +1,18 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chrome.mojom;
+
+import "mojo/public/mojom/base/uuid.mojom";
+
+// API exposed by the browser process to the renderer process, allowing allowed
+// origins to retrieve container decryption tokens from TabContextSyncService.
+interface TabContextDecryptionTokenExtension {
+  // Requests a container access token for `container_id` (which must be a valid
+  // UUID) and user `obfuscated_gaia_id`. Returns serialized token bytes or null
+  // on failure.
+  GetContainerDecryptionToken(string obfuscated_gaia_id,
+                              mojo_base.mojom.Uuid container_id)
+      => (array<uint8>? token_bytes);
+};

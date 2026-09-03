@@ -6,6 +6,7 @@ include_rules = [
   "+google_apis",
   "+net",
   "+services/network/public/cpp",
+  "+url",
 ]
 
 specific_include_rules = {

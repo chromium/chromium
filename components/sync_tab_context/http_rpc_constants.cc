@@ -14,10 +14,14 @@ const char kDefaultEphemeralKeyServerUrl[] =
 const char kEphemeralKeyServerUrlSwitch[] =
     "tab-context-ephemeral-key-server-url";
 
+const char kDefaultTabContextAllowedOrigin[] = "https://chromestorage.goog";
+
+const char kTabContextAllowedOriginSwitch[] = "tab-context-allowed-origin";
+
 GURL GetEphemeralKeyServerUrl() {
   const base::CommandLine* const command_line =
       base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(kEphemeralKeyServerUrlSwitch)) {
+  if (command_line && command_line->HasSwitch(kEphemeralKeyServerUrlSwitch)) {
     const GURL url(
         command_line->GetSwitchValueASCII(kEphemeralKeyServerUrlSwitch));
     if (url.is_valid()) {
@@ -25,6 +29,19 @@ GURL GetEphemeralKeyServerUrl() {
     }
   }
   return GURL(kDefaultEphemeralKeyServerUrl);
+}
+
+url::Origin GetAllowedTabContextOrigin() {
+  const base::CommandLine* const command_line =
+      base::CommandLine::ForCurrentProcess();
+  if (command_line && command_line->HasSwitch(kTabContextAllowedOriginSwitch)) {
+    const GURL url(
+        command_line->GetSwitchValueASCII(kTabContextAllowedOriginSwitch));
+    if (url.is_valid()) {
+      return url::Origin::Create(url);
+    }
+  }
+  return url::Origin::Create(GURL(kDefaultTabContextAllowedOrigin));
 }
 
 }  // namespace sync_tab_context

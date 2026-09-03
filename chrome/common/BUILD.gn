@@ -702,6 +702,7 @@ mojom("mojo_bindings") {
     "plugin.mojom",
     "readaloud/read_aloud.mojom",
     "renderer_configuration.mojom",
+    "tab_context_decryption_token_extension.mojom",
     "trusted_vault_encryption_keys_extension.mojom",
   ]
 

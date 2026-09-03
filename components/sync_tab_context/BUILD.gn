@@ -2,14 +2,24 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("constants") {
+  sources = [
+    "http_rpc_constants.cc",
+    "http_rpc_constants.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//url",
+  ]
+}
+
 static_library("sync_tab_context") {
   sources = [
     "container_id.h",
     "ephemeral_key_fetcher.h",
     "http_rpc_based_ephemeral_key_fetcher.cc",
     "http_rpc_based_ephemeral_key_fetcher.h",
-    "http_rpc_constants.cc",
-    "http_rpc_constants.h",
     "tab_context_container_sync_bridge.cc",
     "tab_context_container_sync_bridge.h",
     "tab_context_data_type_controller.cc",
@@ -23,6 +33,7 @@ static_library("sync_tab_context") {
   ]
 
   public_deps = [
+    ":constants",
     "//base",
     "//components/keyed_service/core",
     "//components/sync_tab_context/proto",

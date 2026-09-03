@@ -68,6 +68,7 @@
 #include "chrome/renderer/plugins/pdf_plugin_placeholder.h"
 #include "chrome/renderer/process_state.h"
 #include "chrome/renderer/supervised_user/supervised_user_error_page_controller_delegate_impl.h"
+#include "chrome/renderer/tab_context_decryption_token_extension.h"
 #include "chrome/renderer/trusted_vault_encryption_keys_extension.h"
 #include "chrome/renderer/url_loader_throttle_provider_impl.h"
 #include "chrome/renderer/v8_unwinder.h"
@@ -684,6 +685,7 @@ void ChromeContentRendererClient::RenderFrameCreated(
   SandboxStatusExtension::Create(render_frame);
 #endif
 
+  TabContextDecryptionTokenExtension::Create(render_frame);
   TrustedVaultEncryptionKeysExtension::Create(render_frame);
 #if !BUILDFLAG(IS_ANDROID)
   if (features::RemoteActorCredentialSharingEnabled() &&
