@@ -1423,6 +1423,11 @@ logon trigger on the scheduled task. For user installs, this is done via both
 the logon trigger on the scheduled task, as well as the "Run" registry entry in
 `HKCU` for redundancy.
 
+The logon trigger is delayed by 1 minute so that the updater does not compete
+for CPU and disk with the rest of the logon sequence. The delay applies only to
+the logon trigger, so the periodic triggers on the same task keep their cadence.
+The `HKCU` "Run" entry cannot be delayed and is unaffected.
+
 ### Server Lifetime
 The updater's RPC server starts and waits for incoming RPCs. The server
 considers itself idle if it has not been processing any RPC in the last ten

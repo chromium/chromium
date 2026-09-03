@@ -50,6 +50,7 @@ namespace {
 constexpr wchar_t kV2Library[] = L"taskschd.dll";
 
 // Text for times used in the V2 API of the Task Scheduler.
+constexpr wchar_t kOneMinuteText[] = L"PT1M";
 constexpr wchar_t kOneHourText[] = L"PT1H";
 constexpr wchar_t kFiveHoursText[] = L"PT5H";
 constexpr wchar_t kOneDayText[] = L"P1D";
@@ -723,6 +724,18 @@ class TaskSchedulerV2 final : public TaskScheduler {
             PLOG(ERROR) << "Can't put 'UserId'. " << std::hex << hr;
             return false;
           }
+        }
+
+        // Delay the logon-triggered run so that the task does not compete for
+        // CPU and disk with the rest of the logon sequence. The delay applies
+        // only to this trigger, so the periodic triggers on the same task keep
+        // their cadence and update freshness is unaffected.
+        hr = logon_trigger->put_Delay(
+            base::win::ScopedBstr(kOneMinuteText).Get());
+        if (FAILED(hr)) {
+          PLOG(ERROR) << "Can't put 'Delay' to " << kOneMinuteText << ". "
+                      << std::hex << hr;
+          return false;
         }
       }
     }
