@@ -35,9 +35,6 @@ specific_include_rules = {
   "web_engine_browser_main_parts\\.cc": [
     "+components/fuchsia_legacymetrics/legacymetrics_client.h"
   ],
-  "web_instance_host_integration_test\\.cc" : [
-    "+fuchsia_web/webinstance_host"
-  ],
   "web_engine_browser_context\\.h" : [
     "+components/reduce_accept_language/browser/in_memory_reduce_accept_language_service.h"
   ]
