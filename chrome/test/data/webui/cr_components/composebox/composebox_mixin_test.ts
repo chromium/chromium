@@ -520,7 +520,7 @@ suite('ComposeboxMixinTest', () => {
               url: 'about:blank?original',
             });
 
-        element.files = new Map([[tokenTab, mockTabFile]]);
+        element.attachedContext = new Map([[tokenTab, mockTabFile]]);
         element.addedTabsIds = new Map([[selectedTabId, tokenTab]]);
 
         const freshTab = {
@@ -536,7 +536,7 @@ suite('ComposeboxMixinTest', () => {
 
         await element.refreshTabSuggestions();
 
-        assertFalse(element.files.has(tokenTab));
+        assertFalse(element.attachedContext.has(tokenTab));
         assertFalse(element.addedTabsIds.has(selectedTabId));
         assertEquals(1, searchboxHandler.getCallCount('deleteContext'));
       });
@@ -552,7 +552,7 @@ suite('ComposeboxMixinTest', () => {
         });
 
     // Add the selected tab to the active files and added tabs maps.
-    element.files = new Map([[tokenTab, mockTabFile]]);
+    element.attachedContext = new Map([[tokenTab, mockTabFile]]);
     element.addedTabsIds = new Map([[selectedTabId, tokenTab]]);
 
     await microtasksFinished();
@@ -562,7 +562,7 @@ suite('ComposeboxMixinTest', () => {
     // Verify: The selected Tab 100 must be completely removed from the
     // current active selection.
     assertFalse(element.addedTabsIds.has(selectedTabId));
-    assertFalse(element.files.has(tokenTab));
+    assertFalse(element.attachedContext.has(tokenTab));
   });
 
   test(
@@ -583,7 +583,7 @@ suite('ComposeboxMixinTest', () => {
               url: 'about:blank?2',
             });
 
-        element.files = new Map([[token1, tab1], [token2, tab2]]);
+        element.attachedContext = new Map([[token1, tab1], [token2, tab2]]);
         element.addedTabsIds = new Map([[1, token1], [2, token2]]);
         element.aimThreadRestoredTabs = [
           {
@@ -1074,7 +1074,7 @@ suite('ComposeboxMixinTest', () => {
                           name: 'Google',
                           url: 'http://google.com',
                         } as Partial<ComposeboxFile>) as ComposeboxFile;
-        freshComposebox.files = new Map([
+        freshComposebox.attachedContext = new Map([
           ['uuid-1' as unknown as UnguessableToken, regularFile],
           ['uuid-2' as unknown as UnguessableToken, tabFile],
         ]);
@@ -1104,7 +1104,7 @@ suite('ComposeboxMixinTest', () => {
                       name: 'Google',
                       url: 'http://google.com',
                     } as Partial<ComposeboxFile>) as ComposeboxFile;
-    freshComposebox.files = new Map([
+    freshComposebox.attachedContext = new Map([
       ['uuid-1' as unknown as UnguessableToken, regularFile],
       ['uuid-2' as unknown as UnguessableToken, tabFile],
     ]);
@@ -1172,8 +1172,8 @@ suite('ComposeboxMixinTest', () => {
     }]);
 
     await microtasksFinished();
-    assertTrue(element.files.has(token));
-    const file = element.files.get(token)!;
+    assertTrue(element.attachedContext.has(token));
+    const file = element.attachedContext.get(token)!;
     assertEquals('file.png', file.name);
     assertEquals('image/png', file.type);
     assertFalse(element.showDropdown);
@@ -1213,7 +1213,7 @@ suite('ComposeboxMixinTest', () => {
       // </if>
     };
     await microtasksFinished();
-    assertTrue(element.files.has(token));
+    assertTrue(element.attachedContext.has(token));
     assertEquals('hello', element.input);
   });
 
@@ -1280,7 +1280,7 @@ suite('ComposeboxMixinTest', () => {
         await element.updateComplete;
 
         assertEquals('hello world', element.input);
-        assertEquals(1, element.files.size);
+        assertEquals(1, element.attachedContext.size);
         assertEquals(1, searchboxHandler.getCallCount('setActiveToolMode'));
         assertEquals(
             ToolMode.kDeepSearch,
@@ -2181,7 +2181,7 @@ suite('ComposeboxMixinTest', () => {
             dummyToken2, 123, 'Tab Title',
             {url: 'about:blank'} as unknown as Url, {isDeletable: false});
 
-        element.files = new Map([
+        element.attachedContext = new Map([
           [dummyToken1, undeletableFile],
           [dummyToken2, tabFile],
         ]);
@@ -2192,8 +2192,8 @@ suite('ComposeboxMixinTest', () => {
         await microtasksFinished();
 
         // Verify: tab is deleted, but non-deletable file remains.
-        assertFalse(element.files.has(dummyToken2));
-        assertTrue(element.files.has(dummyToken1));
+        assertFalse(element.attachedContext.has(dummyToken2));
+        assertTrue(element.attachedContext.has(dummyToken1));
       });
 
   test(
@@ -2585,7 +2585,7 @@ suite('ComposeboxMixinTest', () => {
         element.tabFaviconChipsToCoinsEnabled = true;
         const tabFile = ComposeboxFile.createFromTab(
             'tab-uuid', 1, 'Example Tab', 'https://example.com');
-        element.files = new Map([[tabFile.uuid, tabFile]]);
+        element.attachedContext = new Map([[tabFile.uuid, tabFile]]);
         assertTrue(element.hasTabs());
       });
 
@@ -2595,14 +2595,14 @@ suite('ComposeboxMixinTest', () => {
         element.tabFaviconChipsToCoinsEnabled = false;
         const tabFile = ComposeboxFile.createFromTab(
             'tab-uuid', 1, 'Example Tab', 'https://example.com');
-        element.files = new Map([[tabFile.uuid, tabFile]]);
+        element.attachedContext = new Map([[tabFile.uuid, tabFile]]);
         assertFalse(element.hasTabs());
       });
 
   test(
       'hasTabs returns true when smartTabSharingActive is true regardless of files',
       () => {
-        element.files = new Map();
+        element.attachedContext = new Map();
         element.smartTabSharingActive = true;
         assertTrue(element.hasTabs());
       });
@@ -2610,7 +2610,7 @@ suite('ComposeboxMixinTest', () => {
   test(
       'hasTabs returns false when no tab files and smartTabSharingActive is false',
       () => {
-        element.files = new Map();
+        element.attachedContext = new Map();
         element.smartTabSharingActive = false;
         assertFalse(element.hasTabs());
       });
@@ -2638,7 +2638,7 @@ suite('ComposeboxMixinTest', () => {
         assertFalse(emptyModel.canSubmit());
 
         const tabModel = new ComposeboxInputModel({
-          files: new Map([[tabFile.uuid, tabFile]]),
+          attachedContext: new Map([[tabFile.uuid, tabFile]]),
           tabFaviconChipsToCoinsEnabled: true,
         });
         assertTrue(tabModel.hasTabs());
@@ -2650,7 +2650,7 @@ suite('ComposeboxMixinTest', () => {
         assertTrue(tabModel.canSubmit());
 
         const mixedModel = new ComposeboxInputModel({
-          files:
+          attachedContext:
               new Map([[tabFile.uuid, tabFile], [imageFile.uuid, imageFile]]),
           tabFaviconChipsToCoinsEnabled: true,
         });
@@ -2665,7 +2665,7 @@ suite('ComposeboxMixinTest', () => {
         assertTrue(stsModel.hasTabs());
 
         const unimodalModel = new ComposeboxInputModel({
-          files: new Map([[unimodalFile.uuid, unimodalFile]]),
+          attachedContext: new Map([[unimodalFile.uuid, unimodalFile]]),
         });
         assertTrue(unimodalModel.hasUnimodalFile());
         assertTrue(unimodalModel.hasValidQuery());
@@ -2687,7 +2687,7 @@ suite('ComposeboxMixinTest', () => {
         element.tabFaviconChipsToCoinsEnabled = true;
         element.smartTabSharingActive = false;
         element.input = '';
-        element.files = new Map();
+        element.attachedContext = new Map();
 
         assertFalse(element.hasTabs());
         assertFalse(element.hasNonTabFiles());
@@ -2703,7 +2703,7 @@ suite('ComposeboxMixinTest', () => {
             'tab-uuid', 10, 'Tab Title', 'https://example.com/tab');
         const imgFile = ComposeboxFile.createFromFile(
             'img-uuid', {name: 'photo.jpg', type: 'image/jpeg'});
-        element.files =
+        element.attachedContext =
             new Map([[tabFile.uuid, tabFile], [imgFile.uuid, imgFile]]);
 
         assertTrue(element.hasTabs());

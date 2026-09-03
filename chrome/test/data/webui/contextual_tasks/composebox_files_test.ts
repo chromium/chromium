@@ -246,7 +246,7 @@ suite('ContextualTasksComposeboxFilesTest', () => {
       microtasksFinished(),
     ]);
 
-    assertEquals(0, composebox.files.size);
+    assertEquals(0, composebox.attachedContext.size);
 
     const submitButton: HTMLButtonElement|null = getSubmitButton(composebox);
     assertTrue(submitButton !== null, 'Submit button should exist');
@@ -275,7 +275,7 @@ suite('ContextualTasksComposeboxFilesTest', () => {
             token1, new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}),
             composebox, mockSearchboxPageHandler);
 
-        const currentFiles = composebox.files;
+        const currentFiles = composebox.attachedContext;
         currentFiles.forEach((file: ComposeboxFile) => {
           file.isDeletable = false;
         });
@@ -302,7 +302,7 @@ suite('ContextualTasksComposeboxFilesTest', () => {
         await composebox.updateComplete;
         await microtasksFinished();
 
-        assertEquals(1, composebox.files.size);
+        assertEquals(1, composebox.attachedContext.size);
 
         const submitButton: HTMLButtonElement|null =
             getSubmitButton(composebox);
@@ -334,7 +334,7 @@ suite('ContextualTasksComposeboxFilesTest', () => {
         await searchboxCallbackRouterRemote.$.flushForTesting();
         await composebox.updateComplete;
 
-        const currentFiles2 = composebox.files;
+        const currentFiles2 = composebox.attachedContext;
         currentFiles2.forEach((file: ComposeboxFile) => {
           file.isDeletable = false;
         });
@@ -347,7 +347,7 @@ suite('ContextualTasksComposeboxFilesTest', () => {
         composebox.clearAllInputs(false);
         await composebox.updateComplete;
         await microtasksFinished();
-        assertEquals(2, composebox.files.size);
+        assertEquals(2, composebox.attachedContext.size);
 
         assertTrue(submitButton !== null, 'Submit button should exist');
         // There are no more deletable files, but the remaining undeletable
@@ -363,7 +363,7 @@ suite('ContextualTasksComposeboxFilesTest', () => {
         assertStyle(
             submitContainer, 'pointer-events', 'auto',
             'Submit container should have pointer-events on.');
-        assertEquals(2, composebox.files.size);
+        assertEquals(2, composebox.attachedContext.size);
       });
 
   test('Composebox upload disabled when uploading files', async () => {
@@ -768,7 +768,7 @@ suite('ContextualTasksComposeboxFilesTest', () => {
               await innerComposebox.updateComplete;
               await microtasksFinished();
 
-              assertEquals(1, innerComposebox.files.size);
+              assertEquals(1, innerComposebox.attachedContext.size);
               assertTrue(
                   !!innerComposebox.shadowRoot.querySelector('#carousel'));
             });
@@ -846,7 +846,7 @@ suite('ContextualTasksComposeboxFilesTest', () => {
           await microtasksFinished();
           await innerComposebox.updateComplete;
 
-          assertEquals(1, innerComposebox.files.size);
+          assertEquals(1, innerComposebox.attachedContext.size);
           assertNotEquals(
               'Ask about this tab', innerComposebox.inputPlaceholder);
 
@@ -970,7 +970,7 @@ function disableAnimationsRecursively(element: Element) {
         }
 
         function hasFileWithTabId(tabId: number): boolean {
-          return Array.from(parts.innerComposebox.files.values())
+          return Array.from(parts.innerComposebox.attachedContext.values())
               .some((file: ComposeboxFile) => file.tabId === tabId);
         }
 
@@ -1082,9 +1082,10 @@ function disableAnimationsRecursively(element: Element) {
             await settle();
 
             assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
-            assertEquals(1, innerComposebox.files.size);
+            assertEquals(1, innerComposebox.attachedContext.size);
             const file =
-                Array.from(innerComposebox.files.values())[0] as ComposeboxFile;
+                Array.from(innerComposebox.attachedContext.values())[0] as
+                ComposeboxFile;
             assertEquals(1, file.tabId);
             assertEquals('Auto tab', file.name);
             assertEquals('https://auto.example.com', file.url);
@@ -1103,9 +1104,10 @@ function disableAnimationsRecursively(element: Element) {
             await pushAutoTab(
                 createTabInfo(1, 'Updated Title', 'https://a.example.com'));
             await settle();
-            assertEquals(1, innerComposebox.files.size);
+            assertEquals(1, innerComposebox.attachedContext.size);
             const updatedFile =
-                Array.from(innerComposebox.files.values())[0] as ComposeboxFile;
+                Array.from(innerComposebox.attachedContext.values())[0] as
+                ComposeboxFile;
             assertEquals('Updated Title', updatedFile.name);
             assertEquals(AUTO_TOKEN, updatedFile.uuid);
 
@@ -1119,7 +1121,8 @@ function disableAnimationsRecursively(element: Element) {
             // Reference should be exactly the same (no re-allocation or
             // modification)
             assertEquals(
-                updatedFile, Array.from(innerComposebox.files.values())[0]);
+                updatedFile,
+                Array.from(innerComposebox.attachedContext.values())[0]);
           });
 
           test(
@@ -1386,7 +1389,7 @@ function disableAnimationsRecursively(element: Element) {
                 await pushAutoTab(null, 'OmniboxPageAction');
                 await settle();
                 assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
-                assertEquals(1, innerComposebox.files.size);
+                assertEquals(1, innerComposebox.attachedContext.size);
               });
 
           test('delays the upload outside the side panel', async () => {
@@ -1426,8 +1429,9 @@ function disableAnimationsRecursively(element: Element) {
 
                 resolve(AUTO_TOKEN);
                 await settle();
-                assertEquals(1, innerComposebox.files.size);
-                const file = Array.from(innerComposebox.files.values())[0] as
+                assertEquals(1, innerComposebox.attachedContext.size);
+                const file =
+                    Array.from(innerComposebox.attachedContext.values())[0] as
                     ComposeboxFile;
                 assertEquals('Second title', file.name);
                 assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
@@ -1448,7 +1452,7 @@ function disableAnimationsRecursively(element: Element) {
                 assertEquals(
                     0,
                     mockSearchboxPageHandler.getCallCount(ADD_TAB_CONTEXT_FN));
-                assertEquals(0, innerComposebox.files.size);
+                assertEquals(0, innerComposebox.attachedContext.size);
 
                 document.body.appendChild(app);
                 await settle();
@@ -1457,7 +1461,7 @@ function disableAnimationsRecursively(element: Element) {
                     () => pushAutoTab(
                         createTabInfo(1, 'Auto tab', 'https://a.example.com')));
                 await settle();
-                assertEquals(1, innerComposebox.files.size);
+                assertEquals(1, innerComposebox.attachedContext.size);
                 assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
               });
 
@@ -1581,7 +1585,7 @@ function disableAnimationsRecursively(element: Element) {
             cancelIcon.click();
             await settle();
             assertFalse(innerComposebox.getHasAutomaticActiveTabChipToken());
-            assertEquals(0, innerComposebox.files.size);
+            assertEquals(0, innerComposebox.attachedContext.size);
 
             // The pending url/title guard must reset too: the same url pushed
             // again creates a fresh chip instead of being deduped away.
@@ -1591,7 +1595,7 @@ function disableAnimationsRecursively(element: Element) {
                     createTabInfo(1, 'Auto tab', 'https://a.example.com')));
             await settle();
             assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
-            assertEquals(1, innerComposebox.files.size);
+            assertEquals(1, innerComposebox.attachedContext.size);
           });
         });
 
@@ -1612,7 +1616,7 @@ function disableAnimationsRecursively(element: Element) {
                     () => pushAutoTab(
                         createTabInfo(1, 'Auto tab', 'https://a.example.com')));
                 await settle();
-                assertEquals(2, innerComposebox.files.size);
+                assertEquals(2, innerComposebox.attachedContext.size);
 
                 const queryCallCount = mockSearchboxPageHandler.getCallCount(
                     QUERY_AUTOCOMPLETE_FN);
@@ -1620,7 +1624,7 @@ function disableAnimationsRecursively(element: Element) {
                 await searchboxCallbackRouterRemote.$.flushForTesting();
                 await settle();
 
-                assertEquals(0, innerComposebox.files.size);
+                assertEquals(0, innerComposebox.attachedContext.size);
                 assertFalse(
                     innerComposebox.getHasAutomaticActiveTabChipToken());
                 // Exactly one requery proves the auto tab was excluded from
@@ -1654,7 +1658,7 @@ function disableAnimationsRecursively(element: Element) {
                 await innerComposebox.updateComplete;
                 await settle();
 
-                assertEquals(0, innerComposebox.files.size);
+                assertEquals(0, innerComposebox.attachedContext.size);
                 assertFalse(
                     innerComposebox.getHasAutomaticActiveTabChipToken());
                 assertEquals(
@@ -1676,7 +1680,7 @@ function disableAnimationsRecursively(element: Element) {
             searchboxCallbackRouterRemote.updateSmartTabSharingActive(true);
             await searchboxCallbackRouterRemote.$.flushForTesting();
             await settle();
-            assertEquals(0, innerComposebox.files.size);
+            assertEquals(0, innerComposebox.attachedContext.size);
 
             const addCallCount =
                 mockSearchboxPageHandler.getCallCount(ADD_TAB_CONTEXT_FN);
@@ -1686,7 +1690,7 @@ function disableAnimationsRecursively(element: Element) {
             assertEquals(
                 addCallCount,
                 mockSearchboxPageHandler.getCallCount(ADD_TAB_CONTEXT_FN));
-            assertEquals(0, innerComposebox.files.size);
+            assertEquals(0, innerComposebox.attachedContext.size);
             assertFalse(innerComposebox.getHasAutomaticActiveTabChipToken());
           });
         });

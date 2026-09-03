@@ -843,7 +843,7 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
         await composebox.updateComplete;
         await microtasksFinished();
 
-        assertEquals(0, composebox.files.size);
+        assertEquals(0, composebox.attachedContext.size);
 
         // Should be no longer `EXPANDING` after successful upload and submit
         // click.

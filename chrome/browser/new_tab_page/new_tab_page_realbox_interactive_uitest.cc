@@ -896,7 +896,7 @@ IN_PROC_BROWSER_TEST_F(NtpRealboxTabFlyoverInteractiveTest,
       // Verify tab is attached in NTP composebox.
       WaitForElementToRender(kNtpElementId, kComposeboxFaviconGroup),
       CheckJsResultAt(kNtpElementId, {"ntp-app", "#composebox"},
-                      "el => el.files.size", 1),
+                      "el => el.attachedContext.size", 1),
       CheckJsResultAt(kNtpElementId, {"ntp-app", "#composebox"},
                       "el => el.errorMessage", ""),
       CheckJsResultAt(kNtpElementId, {"ntp-app", "#composebox"},

@@ -43,7 +43,7 @@ export function getHtml(this: NtpComposeboxElement) {
       .hasImageFiles="${this.hasImageFiles()}"
       .selectedTabIds="${this.addedTabsIds}"
       .aimThreadRestoredTabs="${this.aimThreadRestoredTabs}"
-      .fileNum="${this.files.size}"
+      .fileNum="${this.attachedContext.size}"
       .sharedTabs="${this.getSharedTabs()}"
       .tabSuggestionsState="${this.tabSuggestionsState}"
       .glifAnimationState="${this.glifAnimationState}"

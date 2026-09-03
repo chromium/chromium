@@ -542,7 +542,8 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
     change.type = StateChange::Type::kExistsAndConditionTrue;
     change.where = {"contextual-tasks-app", "#composebox", "#composebox"};
     change.test_function = base::StringPrintf(
-        "el => el.files && el.files.size === %d", expected_count);
+        "el => el.attachedContext && el.attachedContext.size === %d",
+        expected_count);
     change.event = kElementExistsEvent;
     return WaitForStateChange(kPrimaryTab, change);
   }
@@ -1589,9 +1590,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
           "querySelector('#composebox');"
           "const triggerTabId = cb?.tabSuggestions?.[0]?.tabId; "
           "const tokenFromMap = cb?.addedTabsIds?.get(triggerTabId); "
-          "const hasTokenInFiles = cb?.files?.has(tokenFromMap); "
-          "return `hasToken: ${hasTokenInFiles}, size: ${cb?.files?.size}, "
-          "filesKeys: ${Array.from(cb?.files?.keys()).map(k => k.high + '_' + "
+          "const hasTokenInFiles = cb?.attachedContext?.has(tokenFromMap); "
+          "return `hasToken: ${hasTokenInFiles}, size: ${cb?.attachedContext?.size}, "
+          "filesKeys: ${Array.from(cb?.attachedContext?.keys()).map(k => k.high + '_' + "
           "k.low)}, mapVal: ${tokenFromMap ? tokenFromMap.high + '_' + "
           "tokenFromMap.low : 'null'}`; }",
           "hasToken: false, size: 0, filesKeys: , mapVal: null"),
@@ -1654,7 +1655,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTestWithChips,
   StateChange files_ready;
   files_ready.type = StateChange::Type::kExistsAndConditionTrue;
   files_ready.where = {"contextual-tasks-app", "#composebox", "#composebox"};
-  files_ready.test_function = "el => el.files && el.files.size === 1";
+  files_ready.test_function =
+      "el => el.attachedContext && el.attachedContext.size === 1";
   files_ready.event = kElementExistsEvent;
 
   RunTestSequence(
@@ -1725,7 +1727,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTestWithChips,
   StateChange files_ready;
   files_ready.type = StateChange::Type::kExistsAndConditionTrue;
   files_ready.where = {"contextual-tasks-app", "#composebox", "#composebox"};
-  files_ready.test_function = "el => el.files && el.files.size === 1";
+  files_ready.test_function =
+      "el => el.attachedContext && el.attachedContext.size === 1";
   files_ready.event = kElementExistsEvent;
 
   StateChange chip_disappeared;

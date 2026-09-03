@@ -50,7 +50,7 @@ export function getHtml(this: ComposeboxElement) {
         .hasImageFiles="${this.hasImageFiles()}"
         .selectedTabIds="${this.addedTabsIds}"
         .aimThreadRestoredTabs="${this.aimThreadRestoredTabs}"
-        .fileNum="${this.files.size}"
+        .fileNum="${this.attachedContext.size}"
         .nonTabFileNum="${this.getNonTabFileNum()}"
         .sharedTabs="${this.getSharedTabs()}"
         .isSidePanel="${this.isSidePanel}"

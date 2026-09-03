@@ -386,7 +386,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   override hasValidQuery(): boolean {
     // If there is at least one file that supports unimodal search, query is
     // valid.
-    if (this.files.values().find(
+    if (this.attachedContext.values().find(
             (file: ComposeboxFile) => file.supportsUnimodal)) {
       return true;
     }
@@ -553,9 +553,9 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
               this.automaticActiveTab.type, this.automaticActiveTab.inputType,
               this.automaticActiveTab);
           this.automaticActiveTab = updatedFile;
-          const fileMap = new Map(this.files);
+          const fileMap = new Map(this.attachedContext);
           fileMap.set(updatedFile.uuid, updatedFile);
-          this.files = fileMap;
+          this.attachedContext = fileMap;
         }
         return;
       }
@@ -624,9 +624,9 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
             this.automaticActiveTab.type, this.automaticActiveTab.inputType,
             this.automaticActiveTab);
         this.automaticActiveTab = updatedFile;
-        const fileMap = new Map(this.files);
+        const fileMap = new Map(this.attachedContext);
         fileMap.set(updatedFile.uuid, updatedFile);
-        this.files = fileMap;
+        this.attachedContext = fileMap;
       }
     }
     return attachment;
@@ -658,15 +658,16 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
     // The file hint should only be shown when there is context that was
     // deliberately added by the user (i.e. not the automatic active tab).
-    const isOnlyAutoTab = this.files.size === 1 && !!this.automaticActiveTab;
+    const isOnlyAutoTab = this.attachedContext.size === 1
+        && !!this.automaticActiveTab;
     const shouldUseFileHint = this.enableFileHint && this.hasFiles() &&
         !isOnlyAutoTab && this.inputState?.activeTool === ToolMode.kUnspecified;
     if (shouldUseFileHint) {
-      if (this.files.size > 1) {
+      if (this.attachedContext.size > 1) {
         this.inputPlaceholder = this.i18n('composeboxHintTextAskAboutThese');
         return;
       }
-      const file = this.files.values().next().value!;
+      const file = this.attachedContext.values().next().value!;
       if (file.type === 'tab') {
         this.inputPlaceholder = this.i18n('composeboxHintTextAskAboutThisTab');
         return;
@@ -872,7 +873,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       }
     }
 
-    const pendingStatus = this.files.get(fileAttachment.uuid)?.status;
+    const pendingStatus = this.attachedContext.get(fileAttachment.uuid)?.status;
     const composeboxFile = ComposeboxFile.createFromFile(
         fileAttachment.uuid as unknown as UnguessableToken,
         {name: fileAttachment.name, type: fileAttachment.mimeType},
@@ -902,7 +903,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
   // TODO(crbug.com/486707842): Move this to contextual tasks composebox.
   updateAutoSuggestedTabContextForTesting(
-      tab: TabInfo|null, invocationSource: string|null = null) {
+    tab: TabInfo|null, invocationSource: string|null = null) {
     this.updateAutoSuggestedTabContext_(tab, invocationSource);
   }
 }

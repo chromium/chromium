@@ -1997,7 +1997,7 @@ suite('NewTabPageAppTest', () => {
               const file = ComposeboxFile.createFromFile(
                   'test-uuid', {name: 'test.pdf', type: 'application/pdf'},
                   ContextUploadStatus.kUploadSuccessful);
-              composebox.files = new Map([[file.uuid, file]]);
+              composebox.attachedContext = new Map([[file.uuid, file]]);
               composebox.inToolMode = true;
               composebox.contextMenuEnabled = false;
               composebox.requestUpdate();
@@ -2109,7 +2109,7 @@ suite('NewTabPageAppTest', () => {
                   ContextUploadStatus.kUploadSuccessful);
               const tabFile = ComposeboxFile.createFromTab(
                   'test-tab-uuid', 1, 'Example Tab', 'https://example.com');
-              composebox.files =
+              composebox.attachedContext =
                   new Map([[file.uuid, file], [tabFile.uuid, tabFile]]);
               composebox.contextMenuEnabled = true;
               composebox.smartTabSharingVisible = true;
@@ -2171,7 +2171,7 @@ suite('NewTabPageAppTest', () => {
               assertTrue(!!composebox);
               const tabFile = ComposeboxFile.createFromTab(
                   'test-tab-uuid', 1, 'Example Tab', 'https://example.com');
-              composebox.files = new Map([[tabFile.uuid, tabFile]]);
+              composebox.attachedContext = new Map([[tabFile.uuid, tabFile]]);
               composebox.contextMenuEnabled = true;
               composebox.smartTabSharingVisible = true;
               composebox.smartTabSharingActive = true;
@@ -2221,7 +2221,7 @@ suite('NewTabPageAppTest', () => {
               const file = ComposeboxFile.createFromFile(
                   'test-uuid', {name: 'test.pdf', type: 'application/pdf'},
                   ContextUploadStatus.kUploadSuccessful);
-              composebox.files = new Map([[file.uuid, file]]);
+              composebox.attachedContext = new Map([[file.uuid, file]]);
               composebox.contextMenuEnabled = false;
               await microtasksFinished();
 

@@ -358,7 +358,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     await composebox.updateComplete;
     await microtasksFinished();
 
-    assertEquals(0, composebox.files.size);
+    assertEquals(0, composebox.attachedContext.size);
 
     // Should be no longer `EXPANDING` after successful upload and submit click.
     assertNotEquals(composebox.animationState, GlowAnimationState.EXPANDING);
@@ -555,7 +555,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     await composebox.updateComplete;
     await microtasksFinished();
 
-    assertEquals(0, composebox.files.size);
+    assertEquals(0, composebox.attachedContext.size);
 
     // Should be no longer `EXPANDING` after successful upload and submit click.
     assertNotEquals(composebox.animationState, GlowAnimationState.EXPANDING);
@@ -563,7 +563,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
 
   test('Composebox submit button disabled when uploading tabs', async () => {
     const callback = (file: ComposeboxFile) => {
-      composebox.files.set(file.uuid, file);
+      composebox.attachedContext.set(file.uuid, file);
       composebox.contextFilesSize_ += 1;
       composebox.submitEnabled_ = composebox.computeSubmitEnabled_();
       composebox.requestUpdate();
@@ -653,7 +653,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     await composebox.updateComplete;
     await microtasksFinished();
 
-    assertEquals(0, composebox.files.size);
+    assertEquals(0, composebox.attachedContext.size);
 
     // Should be no longer `EXPANDING` after successful upload and submit click.
     assertNotEquals(composebox.animationState, GlowAnimationState.EXPANDING);
@@ -714,7 +714,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
         composebox.animationState, GlowAnimationState.SUBMITTING,
         'Query is submitted but animation is suppressed on first submit');
 
-    assertEquals(0, composebox.files.size);
+    assertEquals(0, composebox.attachedContext.size);
   });
 
   test('Composebox zero state open triggers animation', async () => {
@@ -784,7 +784,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
 
   test('delayed tabs do not delay submission', async () => {
     const callback = (file: any) => {
-      composebox.files.set(file.uuid, file);
+      composebox.attachedContext.set(file.uuid, file);
       composebox.contextFilesSize_ = 1;
       composebox.submitEnabled_ = composebox.computeSubmitEnabled_();
       composebox.requestUpdate();
@@ -1429,8 +1429,9 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
               FAKE_TOKEN_STRING, ContextUploadStatus.kProcessing, null);
           await flushAndSettle();
           assertTrue(
-              innerComposebox.files.get(FAKE_TOKEN_STRING) !== undefined,
-              'The pending file should be tracked in `files`');
+              innerComposebox.attachedContext.get(FAKE_TOKEN_STRING) !==
+                  undefined,
+              'The pending file should be tracked in `attachedContext`');
           assertFalse(
               innerComposebox.fileUploadsComplete,
               'The processing upload should be pending');
@@ -1543,7 +1544,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
           });
           await innerComposebox.updateComplete;
 
-          const file = innerComposebox.files.get(FAKE_TOKEN_STRING);
+          const file = innerComposebox.attachedContext.get(FAKE_TOKEN_STRING);
           assertTrue(file !== undefined, 'The injected file should exist');
           assertEquals(FAKE_TOKEN_STRING, file.uuid);
           assertEquals('injected title', file.name);
@@ -1875,7 +1876,8 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
 
               // Anchor the injected file: text alone enables the button, so
               // a no-op injectInput would otherwise pass this test.
-              const file = innerComposebox.files.get(FAKE_TOKEN_STRING);
+              const file =
+                  innerComposebox.attachedContext.get(FAKE_TOKEN_STRING);
               assertTrue(file !== undefined, 'The injected file should exist');
               assertFalse(
                   file.supportsUnimodal,
@@ -1965,7 +1967,8 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
               await innerComposebox.updateComplete;
               await microtasksFinished();
 
-              const file = innerComposebox.files.get(FAKE_TOKEN_STRING);
+              const file =
+                  innerComposebox.attachedContext.get(FAKE_TOKEN_STRING);
               assertTrue(file !== undefined, 'The injected file should exist');
               assertEquals('quoteFilled', file.iconName);
 

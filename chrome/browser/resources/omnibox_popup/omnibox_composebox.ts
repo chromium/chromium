@@ -165,7 +165,7 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
     }
 
     if (changedPrivateProperties.has('input') ||
-        changedPrivateProperties.has('files') ||
+        changedPrivateProperties.has('attachedContext') ||
         changedPrivateProperties.has('inputState') ||
         changedPrivateProperties.has('isContentSharingEnabled_') ||
         changedPrivateProperties.has('isLensSearchEligible_') ||
@@ -175,7 +175,7 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
           !this.hasContent(/* ignoreAutoAddedTabs= */ true);
     }
 
-    if (changedPrivateProperties.has('files') ||
+    if (changedPrivateProperties.has('attachedContext') ||
         changedPrivateProperties.has('inputState') ||
         changedPrivateProperties.has('askGComposeboxPlaceholderEnabled_')) {
       this.updateInputPlaceholder();
@@ -183,7 +183,7 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   override updateInputPlaceholder() {
-    const hasAutoAddedTab = hasOnlyAutoAddedTabs(this.files);
+    const hasAutoAddedTab = hasOnlyAutoAddedTabs(this.attachedContext);
     if (this.askGComposeboxPlaceholderEnabled_ && hasAutoAddedTab &&
         (!this.inputState ||
          this.inputState.activeTool === ToolMode.kUnspecified)) {
@@ -320,7 +320,7 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
     }
 
     const pendingStatus =
-        this.files.get(fileAttachment.uuid)?.status;
+        this.attachedContext.get(fileAttachment.uuid)?.status;
     const composeboxFile = ComposeboxFile.createFromFile(
         fileAttachment.uuid,
         {name: fileAttachment.name, type: fileAttachment.mimeType},

@@ -720,7 +720,7 @@ suite(`NewTabPageComposeboxTest`, () => {
       removeImgButton!.click();
       await microtasksFinished();
       await testProxy.element.updateComplete;
-      assertEquals(0, testProxy.element.files.size);
+      assertEquals(0, testProxy.element.attachedContext.size);
 
       // Remove toolchip:
       testProxy.element.inToolMode = false;
@@ -773,13 +773,13 @@ suite(`NewTabPageComposeboxTest`, () => {
       removeImgButton!.click();
       await microtasksFinished();
       await testProxy.element.updateComplete;
-      assertEquals(0, testProxy.element.files.size);
+      assertEquals(0, testProxy.element.attachedContext.size);
 
       // Submit:
       await submitVoiceSearch();
 
       assertTrue(testProxy.element.inToolMode);
-      assertEquals(0, testProxy.element.files.size);
+      assertEquals(0, testProxy.element.attachedContext.size);
     });
 
     test('remove toolchip but submit image in voice search mode', async () => {
@@ -831,7 +831,7 @@ suite(`NewTabPageComposeboxTest`, () => {
       await submitVoiceSearch();
 
       assertFalse(testProxy.element.inToolMode);
-      assertEquals(1, testProxy.element.files.size);
+      assertEquals(1, testProxy.element.attachedContext.size);
     });
 
     test(
@@ -886,7 +886,7 @@ suite(`NewTabPageComposeboxTest`, () => {
           removeImgButton!.click();
           await microtasksFinished();
           await testProxy.element.updateComplete;
-          assertEquals(0, testProxy.element.files.size);
+          assertEquals(0, testProxy.element.attachedContext.size);
 
           // Remove tool chip from voice tool chips container:
           const toolChip =
@@ -918,7 +918,7 @@ suite(`NewTabPageComposeboxTest`, () => {
           await testProxy.element.updateComplete;
 
           assertFalse(testProxy.element.inToolMode);
-          assertEquals(0, testProxy.element.files.size);
+          assertEquals(0, testProxy.element.attachedContext.size);
         });
 
     test(

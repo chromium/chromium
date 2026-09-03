@@ -129,7 +129,7 @@ export function getHtml(this: OmniboxEverywhereComposeboxElement) {
                         .hasImageFiles="${this.hasImageFiles()}"
                         .selectedTabIds="${this.addedTabsIds}"
                         .aimThreadRestoredTabs="${this.aimThreadRestoredTabs}"
-                        .fileNum="${this.files.size}"
+                        .fileNum="${this.attachedContext.size}"
                         .sharedTabs="${this.getSharedTabs()}"
                         ?upload-button-disabled="${this.uploadButtonDisabled}"
                         unbounded-menu-enabled

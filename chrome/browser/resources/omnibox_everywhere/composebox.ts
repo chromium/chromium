@@ -235,8 +235,9 @@ export class OmniboxEverywhereComposeboxElement extends
   override hasValidQuery(): boolean {
     // If there is at least one file that supports unimodal search, query is
     // valid.
-    if (this.files.size > 0 &&
-        Array.from(this.files.values()).some(file => file.supportsUnimodal)) {
+    if (this.attachedContext.size > 0 &&
+        Array.from(this.attachedContext.values())
+            .some(file => file.supportsUnimodal)) {
       return true;
     }
 
