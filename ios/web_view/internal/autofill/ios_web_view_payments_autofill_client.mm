@@ -308,7 +308,7 @@ IOSWebViewPaymentsAutofillClient::GetRiskBasedAuthenticator() {
 }
 
 bool IOSWebViewPaymentsAutofillClient::IsMandatoryReauthEnabled() {
-  return false;
+  return true;
 }
 
 void IOSWebViewPaymentsAutofillClient::ShowMandatoryReauthOptInPrompt(
