@@ -27,7 +27,7 @@ const CGFloat kLabelFontSize = 13.0;
 // The fade view width.
 const CGFloat kFadeViewWidth = 20.0f;
 /// The close button trailing.
-const CGFloat kTrailingMargin = 28.0;
+const CGFloat kTrailingMargin = 36.0;
 }  // namespace
 
 @implementation ComposeboxInputItemView {
@@ -43,6 +43,8 @@ const CGFloat kTrailingMargin = 28.0;
   CAGradientLayer* _gradientLayer;
   // The theme for this view.
   ComposeboxTheme* _theme;
+  // The item associated with this view.
+  ComposeboxInputItem* _item;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -66,6 +68,9 @@ const CGFloat kTrailingMargin = 28.0;
 
 - (void)configureWithItem:(ComposeboxInputItem*)item
                     theme:(ComposeboxTheme*)theme {
+  _item = item;
+  [self invalidateIntrinsicContentSize];
+
   BOOL isImageItem =
       item.type == ComposeboxInputItemType::kComposeboxInputItemTypeImage;
 
@@ -133,6 +138,8 @@ const CGFloat kTrailingMargin = 28.0;
 }
 
 - (void)prepareForReuse {
+  _item = nil;
+  [self invalidateIntrinsicContentSize];
   _leadingIconImageView.image = nil;
   _previewImageView.image = nil;
   _titleLabel.text = nil;
@@ -228,6 +235,44 @@ const CGFloat kTrailingMargin = 28.0;
     (id)[_theme.inputItemBackgroundColor colorWithAlphaComponent:0.0].CGColor,
     (id)_theme.inputItemBackgroundColor.CGColor
   ];
+}
+
+- (CGSize)intrinsicContentSize {
+  return [ComposeboxInputItemView sizeWithItem:_item];
+}
+
+- (CGSize)sizeThatFits:(CGSize)size {
+  return [self intrinsicContentSize];
+}
+
+#pragma mark - Public
+
++ (CGSize)sizeWithItem:(ComposeboxInputItem*)item {
+  if (!item ||
+      item.type == ComposeboxInputItemType::kComposeboxInputItemTypeImage) {
+    return composeboxAttachments::kImageInputItemSize;
+  }
+
+  UIFont* font = PreferredFontForTextStyle(UIFontTextStyleFootnote,
+                                           UIFontWeightRegular, kLabelFontSize);
+  NSDictionary* attributes = @{NSFontAttributeName : font};
+  CGSize textSize =
+      [item.title
+          boundingRectWithSize:CGSizeMake(
+                                   CGFLOAT_MAX,
+                                   composeboxAttachments::kAttachmentHeight)
+                       options:NSStringDrawingUsesLineFragmentOrigin
+                    attributes:attributes
+                       context:nil]
+          .size;
+
+  CGFloat contentWidth = kLeadingPadding + kLeadingIconSize +
+                         kIconTrailingPadding + ceil(textSize.width) +
+                         kTrailingMargin;
+  CGFloat width =
+      MIN(contentWidth, composeboxAttachments::kTabFileInputItemSize.width);
+  CGFloat height = composeboxAttachments::kTabFileInputItemSize.height;
+  return CGSizeMake(width, height);
 }
 
 @end

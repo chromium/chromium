@@ -20,6 +20,9 @@
 /// Prepares the view for reuse.
 - (void)prepareForReuse;
 
+// Returns the size required to display `item`.
++ (CGSize)sizeWithItem:(ComposeboxInputItem*)item;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_INPUT_ITEM_VIEW_H_

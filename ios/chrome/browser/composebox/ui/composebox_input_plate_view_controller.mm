@@ -913,12 +913,7 @@ UIImage* SendButtonImage(BOOL highlighted,
   ComposeboxInputItem* item =
       [_dataSource itemIdentifierForIndexPath:indexPath];
 
-  if (!item ||
-      item.type == ComposeboxInputItemType::kComposeboxInputItemTypeImage) {
-    return composeboxAttachments::kImageInputItemSize;
-  }
-
-  return composeboxAttachments::kTabFileInputItemSize;
+  return [ComposeboxInputItemView sizeWithItem:item];
 }
 
 #pragma mark - UICollectionViewDelegate
