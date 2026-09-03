@@ -30,6 +30,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
+import org.chromium.chrome.browser.omnibox.OmniboxUrlUtils;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.SearchEngineService;
 import org.chromium.chrome.browser.omnibox.SearchEngineService.SearchEngineIconObserver;
@@ -425,7 +426,8 @@ public class StatusMediator
         // Don't use isNtpVisible() here -- it reports NTP visibility when navigation is already
         // underway, making the onUrlChanged fail to detect the user is navigating out of the NTP.
         var url = mLocationBarDataProvider.getCurrentGurl();
-        boolean isRegularNtpUrl = isNtpUrl(url) && !mLocationBarDataProvider.isIncognitoBranded();
+        boolean isRegularNtpUrl =
+                OmniboxUrlUtils.isNtpUrl(url) && !mLocationBarDataProvider.isIncognitoBranded();
 
         @PageClassification
         int pageClassification =
@@ -539,7 +541,7 @@ public class StatusMediator
         return (mLocationBarDataProvider.getNewTabPageDelegate() != null
                         && mLocationBarDataProvider.getNewTabPageDelegate().isCurrentlyVisible())
                 || (!mLocationBarDataProvider.isIncognitoBranded()
-                        && isNtpUrl(mLocationBarDataProvider.getCurrentGurl()));
+                        && OmniboxUrlUtils.isNtpUrl(mLocationBarDataProvider.getCurrentGurl()));
     }
 
     private boolean shouldShowNtpPlusButton() {
@@ -569,7 +571,7 @@ public class StatusMediator
                                 .getNewTabPageDelegate()
                                 .isIncognitoNewTabPageCurrentlyVisible())
                 || (mLocationBarDataProvider.isIncognitoBranded()
-                        && isNtpUrl(mLocationBarDataProvider.getCurrentGurl()));
+                        && OmniboxUrlUtils.isNtpUrl(mLocationBarDataProvider.getCurrentGurl()));
     }
 
     @Override
@@ -812,7 +814,7 @@ public class StatusMediator
 
     private boolean hasPendingNonNtpNavigation() {
         GURL url = getPendingUrl();
-        return url != null && !isNtpUrl(url);
+        return url != null && !OmniboxUrlUtils.isNtpUrl(url);
     }
 
     private boolean hasPendingHttpOrHttpsNavigation() {
@@ -887,8 +889,10 @@ public class StatusMediator
 
     private void onPreviewMatchUrlChanged(@Nullable GURL url) {
         if (!OmniboxFeatures.sPreviewMatchFavicons.isEnabled()) {
-            boolean wasUrl = mPreviewMatchFetchedUrl != null && !isNtpUrl(mPreviewMatchFetchedUrl);
-            boolean isUrl = url != null && !isNtpUrl(url);
+            boolean wasUrl =
+                    mPreviewMatchFetchedUrl != null
+                            && !OmniboxUrlUtils.isNtpUrl(mPreviewMatchFetchedUrl);
+            boolean isUrl = url != null && !OmniboxUrlUtils.isNtpUrl(url);
             mPreviewMatchFetchedUrl = url;
             if (wasUrl != isUrl) {
                 updateLocationBarIcon(IconTransitionType.CROSSFADE);
@@ -897,7 +901,7 @@ public class StatusMediator
         }
 
         mPreviewMatchFetchedUrl = url;
-        if (url == null || isNtpUrl(url)) {
+        if (url == null || OmniboxUrlUtils.isNtpUrl(url)) {
             mPreviewMatchFavicon = null;
             mShowPreviewMatchGlobe = false;
             updateLocationBarIcon(IconTransitionType.CROSSFADE);
@@ -1138,7 +1142,7 @@ public class StatusMediator
             return;
         }
 
-        if (isNtpUrl(mLocationBarDataProvider.getCurrentGurl())) return;
+        if (OmniboxUrlUtils.isNtpUrl(mLocationBarDataProvider.getCurrentGurl())) return;
 
         openPageInfo(mLocationBarDataProvider.getTab());
     }
@@ -1146,30 +1150,7 @@ public class StatusMediator
     private boolean isUrlBarTextSearch() {
         if (mInputSessionState == null) return true;
         GURL previewMatchUrl = mInputSessionState.getAutocompleteInput().getPreviewMatchUrl();
-        return previewMatchUrl == null || isNtpUrl(previewMatchUrl);
-    }
-
-    /**
-     * Returns whether the supplied URL represents the New Tab Page or a transient empty state.
-     *
-     * <p>Edge cases handled:
-     *
-     * <ul>
-     *   <li>{@code null}: Not an NTP URL.
-     *   <li>Empty or invalid: Transient state occurring on newly created tabs or windows before the
-     *       initial NTP navigation commits. Treating this as an NTP candidate ensures the Default
-     *       Search Engine (DSE) logo is displayed instead of the globe icon (see
-     *       crbug.com/553118979).
-     *   <li>NTP URLs: Standard committed New Tab Page URLs (e.g. {@code chrome://newtab} or {@code
-     *       chrome-native://newtab}).
-     * </ul>
-     *
-     * @param url The URL to inspect.
-     * @return True if the URL represents the NTP or an empty transient state.
-     * @see <a href="https://crbug.com/553118979">crbug.com/553118979</a>
-     */
-    private static boolean isNtpUrl(@Nullable GURL url) {
-        return url != null && (GURL.isEmptyOrInvalid(url) || UrlUtilities.isNtpUrl(url));
+        return previewMatchUrl == null || OmniboxUrlUtils.isNtpUrl(previewMatchUrl);
     }
 
     private boolean isPageInfoMovedToAppMenu() {

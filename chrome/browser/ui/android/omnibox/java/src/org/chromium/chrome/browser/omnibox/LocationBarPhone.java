@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxSta
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.toolbar.ToolbarVariationUtils;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
@@ -453,7 +452,7 @@ class LocationBarPhone extends LocationBarLayout {
             return false;
         }
 
-        return !UrlUtilities.isNtpUrl(mLocationBarDataProvider.getCurrentGurl());
+        return !OmniboxUrlUtils.isNtpUrl(mLocationBarDataProvider.getCurrentGurl());
     }
 
     private boolean isToolbarUiRefactorEnabled() {

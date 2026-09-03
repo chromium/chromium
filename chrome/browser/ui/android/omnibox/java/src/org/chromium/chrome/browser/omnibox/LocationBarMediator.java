@@ -127,7 +127,6 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
@@ -489,7 +488,7 @@ class LocationBarMediator
         if (ToolbarVariationUtils.isToolbarUiRefactorEnabled(mContext)
                 && OmniboxViewUtil.isRegularTabContext(pageClass)) {
             GURL currentUrl = mLocationBarDataProvider.getCurrentGurl();
-            if (UrlUtilities.isNtpUrl(currentUrl)
+            if (OmniboxUrlUtils.isNtpUrl(currentUrl)
                     || (!GURL.isEmptyOrInvalid(currentUrl) && mLocationBarDataProvider.hasTab())) {
                 mWaitingForInitialUrl = false;
                 mLocationBarLayout.setUrlAndStatusGroupVisibility(true);
@@ -856,11 +855,7 @@ class LocationBarMediator
         if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) return;
         Tab tab = mLocationBarDataProvider.getTab();
         if (tab == null) return;
-        GURL url = tab.getUrl();
-        // An empty or invalid URL occurs on newly created tabs/windows before the initial NTP
-        // navigation commits. Treat this transient state as an NTP candidate to allow early cursor
-        // focus.
-        boolean onNtp = UrlUtilities.isNtpUrl(url) || GURL.isEmptyOrInvalid(url);
+        boolean onNtp = OmniboxUrlUtils.isNtpUrl(tab.getUrl());
 
         if (ChromeAccessibilityUtil.get().isAccessibilityEnabled()
                 && mLocationBarDataProvider.getNewTabPageDelegate().isCurrentlyVisible()) {
@@ -1139,7 +1134,7 @@ class LocationBarMediator
             }
 
             if (currentTab != null) {
-                boolean isCurrentTabNtpUrl = UrlUtilities.isNtpUrl(currentTab.getUrl());
+                boolean isCurrentTabNtpUrl = OmniboxUrlUtils.isNtpUrl(currentTab.getUrl());
                 if (currentTab.isNativePage() || isCurrentTabNtpUrl) {
                     mOmniboxUma.recordNavigationOnNtp(
                             omniboxLoadUrlParams.url,
@@ -1289,7 +1284,7 @@ class LocationBarMediator
         if (mUrlCoordinator == null) return;
         String warning = null;
         Tab tab = mLocationBarDataProvider.getTab();
-        boolean isNtp = tab != null && tab.getUrl() != null && UrlUtilities.isNtpUrl(tab.getUrl());
+        boolean isNtp = tab != null && OmniboxUrlUtils.isNtpUrl(tab.getUrl());
         boolean shouldShowWarning =
                 BrowserUiUtils.isPageInfoMovedToAppMenu(mContext)
                         && mLocationBarDataProvider.getSecurityLevel()
@@ -2356,7 +2351,7 @@ class LocationBarMediator
             mLocationBarLayout.setBackButtonVisibility(false);
             return;
         }
-        boolean isNtp = (tab.getUrl() != null) && UrlUtilities.isNtpUrl(tab.getUrl());
+        boolean isNtp = OmniboxUrlUtils.isNtpUrl(tab.getUrl());
 
         boolean showBackButton =
                 ToolbarVariationUtils.isToolbarUiRefactorEnabled(mContext)
@@ -2580,7 +2575,7 @@ class LocationBarMediator
 
     @VisibleForTesting
     boolean shouldShowBookmarkButton() {
-        if (UrlUtilities.isNtpUrl(mLocationBarDataProvider.getCurrentGurl())) {
+        if (OmniboxUrlUtils.isNtpUrl(mLocationBarDataProvider.getCurrentGurl())) {
             return false;
         }
 
