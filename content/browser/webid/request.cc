@@ -1520,6 +1520,14 @@ void Request::ShowModalDialog(DialogType dialog_type,
     }
   };
 
+  // When showing the modal dialog or popup window (e.g. for IdP sign-in or
+  // continuation), the browser opens a popup window, or a new foreground tab if
+  // the initiator tab is in fullscreen mode. This browser-initiated navigation
+  // can cause the tab to exit fullscreen or lose focus, which may trigger
+  // synchronous script execution in the page (such as a fullscreenchange or
+  // blur event) that detaches the initiating iframe and destroys this Request.
+  // Check that the Request is still alive before accessing member fields.
+  base::WeakPtr<Request> weak_this = weak_ptr_factory_.GetWeakPtr();
   WebContents* web_contents = GetDialogController()->ShowModalDialog(
       url_to_show, rp_mode_,
       base::BindOnce(&Request::OnDialogDismissed,
@@ -1529,6 +1537,9 @@ void Request::ShowModalDialog(DialogType dialog_type,
       base::BindOnce(&Request::OnNativeAppResult,
                      weak_ptr_factory_.GetWeakPtr(), dialog_type,
                      idp_config_url));
+  if (!weak_this) {
+    return;
+  }
   did_show_ui_ = true;
   // This may be null on Android, as the method cannot return the WebContents of
   // the CCT that will be created.
@@ -2298,7 +2309,11 @@ void Request::ClickErrorDialogGotItForDevtools() {
 
 void Request::ClickErrorDialogMoreDetailsForDevtools() {
   DCHECK(token_error_ && token_error_->url.is_valid());
+  base::WeakPtr<Request> weak_this = weak_ptr_factory_.GetWeakPtr();
   ShowModalDialog(DialogType::kErrorUrlPopup, config_url_, token_error_->url);
+  if (!weak_this) {
+    return;
+  }
   OnDismissErrorDialog(
       config_url_, token_request_status_,
       IdentityRequestDialogController::DismissReason::kMoreDetailsButton);

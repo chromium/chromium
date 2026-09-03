@@ -6573,6 +6573,37 @@ TEST_F(RequestTest, SuccessfulAuthZRequestWithPopUpWindow) {
   EXPECT_FALSE(DidFetch(FetchedEndpoint::CLIENT_METADATA));
 }
 
+// Test that destroying the Request during ShowModalDialog (e.g. if the
+// frame is detached) does not cause a use-after-free.
+TEST_F(RequestTest, FrameDetachDuringShowModalDialog) {
+  RequestParameters parameters = kDefaultRequestParameters;
+
+  MockConfiguration config = kConfigurationValid;
+  config.token = "an-access-token";
+
+  GURL continue_on = GURL(kProviderUrlFull).Resolve("/more-permissions.php");
+  config.continue_on = std::move(continue_on);
+
+  auto dialog_controller =
+      std::make_unique<TestDialogController>(kConfigurationValid);
+  base::WeakPtr<TestDialogController> weak_dialog_controller =
+      dialog_controller->AsWeakPtr();
+  SetDialogController(std::move(dialog_controller));
+
+  EXPECT_CALL(*weak_dialog_controller, ShowModalDialog)
+      .WillOnce(::testing::WithArg<0>([this](const GURL& url) {
+        // Synchronously navigate the document to destroy the Request
+        // during ShowModalDialog.
+        static_cast<TestWebContents*>(web_contents())
+            ->NavigateAndCommit(GURL("https://other.com"),
+                                ui::PAGE_TRANSITION_LINK);
+        return nullptr;
+      }));
+
+  RunDontWaitForCallback(parameters, config);
+  EXPECT_FALSE(request_);
+}
+
 // Test the continuation popup calling close().
 TEST_F(RequestTest, ContinuationPopupCallingClose) {
   RequestParameters parameters = kDefaultRequestParameters;
