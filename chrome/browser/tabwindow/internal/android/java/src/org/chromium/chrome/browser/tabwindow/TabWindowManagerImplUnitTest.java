@@ -86,7 +86,6 @@ import java.util.Set;
  * {@link Activity}s getting destroyed, etc.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class TabWindowManagerImplUnitTest {
     private static final Token GROUP_ID = new Token(12, 34);
     private static final int TAB_ID = 2;

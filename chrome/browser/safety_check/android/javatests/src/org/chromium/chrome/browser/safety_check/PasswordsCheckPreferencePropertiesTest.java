@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
-import org.robolectric.annotation.Config;
 
 import org.chromium.chrome.browser.pwd_check_wrapper.PasswordCheckController.PasswordCheckResult;
 import org.chromium.chrome.browser.safety_check.PasswordsCheckPreferenceProperties.PasswordsState;
@@ -19,7 +18,6 @@ import java.util.Collection;
 
 /** Unit tests for {@link PasswordsCheckPreferenceProperties}. */
 @RunWith(ParameterizedRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class PasswordsCheckPreferencePropertiesTest {
     @Parameters
     public static Collection<Object[]> testCases() {

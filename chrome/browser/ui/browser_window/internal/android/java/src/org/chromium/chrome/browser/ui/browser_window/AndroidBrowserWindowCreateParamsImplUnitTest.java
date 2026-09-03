@@ -11,7 +11,6 @@ import android.graphics.Rect;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -20,7 +19,6 @@ import org.chromium.ui.mojom.WindowShowState;
 
 /** Unit tests for {@link AndroidBrowserWindowCreateParamsImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class AndroidBrowserWindowCreateParamsImplUnitTest {
 
     @Test

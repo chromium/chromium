@@ -20,9 +20,7 @@ import org.chromium.chrome.R;
 
 /** Unit tests for {@link LongScreenshotsUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowToast.class})
+@Config(shadows = {ShadowToast.class})
 public class LongScreenshotsUtilsTest {
     private final Activity mActivity;
 

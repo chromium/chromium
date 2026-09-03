@@ -36,9 +36,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Tests for the LongScreenshotsCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowToast.class})
+@Config(shadows = {ShadowToast.class})
 public class LongScreenshotsCoordinatorTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private LongScreenshotsCoordinator mCoordinator;

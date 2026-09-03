@@ -33,7 +33,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -42,7 +41,6 @@ import java.lang.ref.WeakReference;
 
 /** Tests for {@link NoPasskeysBottomSheetBridge} */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class NoPasskeysBottomSheetModuleTest {
     private static final long TEST_NATIVE = 42069;
     private static final String TEST_ORIGIN = "origin.com";

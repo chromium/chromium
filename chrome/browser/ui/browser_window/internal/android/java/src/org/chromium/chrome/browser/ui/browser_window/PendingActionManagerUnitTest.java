@@ -14,7 +14,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskImpl.State;
@@ -22,7 +21,6 @@ import org.chromium.chrome.browser.ui.browser_window.PendingActionManager.Pendin
 
 /** Unit tests for {@link PendingActionManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class PendingActionManagerUnitTest {
     private static final @PendingAction int[] ALL_ACTIONS = {
         PendingAction.SHOW,

@@ -17,7 +17,6 @@ import org.junit.runner.RunWith;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.components.autofill.AutofillProfile;
@@ -27,7 +26,6 @@ import java.util.Collection;
 
 /** Parameterized unit tests for the AutofillContact class. */
 @RunWith(ParameterizedRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class AutofillContactTest {
     @Parameters
     public static Collection<Object[]> data() {

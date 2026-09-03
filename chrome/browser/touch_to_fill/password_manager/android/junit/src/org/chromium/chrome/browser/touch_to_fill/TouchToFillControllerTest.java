@@ -54,7 +54,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -94,7 +93,6 @@ import java.util.stream.StreamSupport;
  * properly.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class TouchToFillControllerTest {
     private static final GURL TEST_URL = JUnitTestGURLs.EXAMPLE_URL;
     private static final String TEST_URL_FORMATTED =

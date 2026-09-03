@@ -9,7 +9,6 @@ import androidx.test.filters.SmallTest;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -17,7 +16,6 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /** Unit tests for CloudManagementSharedPreferencesTest. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class CloudManagementSharedPreferencesTest {
     private static final String DM_TOKEN = "fake-dm-token";
     private static final String CLIENT_ID = "fake-client-id";

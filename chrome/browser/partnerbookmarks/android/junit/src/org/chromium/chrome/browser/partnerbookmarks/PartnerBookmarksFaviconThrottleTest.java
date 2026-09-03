@@ -9,13 +9,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Unit tests for {@link PartnerBookmarksFaviconThrottle}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class PartnerBookmarksFaviconThrottleTest {
     private static final String TEST_PREFERENCES_NAME = "partner_bookmarks_favicon_throttle_test";
 

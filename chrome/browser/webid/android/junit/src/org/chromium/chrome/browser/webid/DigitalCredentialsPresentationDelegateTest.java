@@ -29,9 +29,7 @@ import org.chromium.chrome.browser.webid.IdentityCredentialsDelegate.DigitalCred
 
 /** Unit tests for {@link DigitalCredentialsPresentationDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        sdk = {Build.VERSION_CODES.TIRAMISU, Build.VERSION_CODES.UPSIDE_DOWN_CAKE})
+@Config(sdk = {Build.VERSION_CODES.TIRAMISU, Build.VERSION_CODES.UPSIDE_DOWN_CAKE})
 public class DigitalCredentialsPresentationDelegateTest {
 
     private static final String JSON_PROTOCOL = "openid4vp";

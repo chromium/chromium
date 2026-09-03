@@ -18,7 +18,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.UnguessableToken;
@@ -30,7 +29,6 @@ import org.chromium.url.GURL;
 
 /** Test for {@link LongScreenshotsCompositor}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @SuppressWarnings("DoNotMock") // Mocks GURL.
 public class LongScreenshotsCompositorTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

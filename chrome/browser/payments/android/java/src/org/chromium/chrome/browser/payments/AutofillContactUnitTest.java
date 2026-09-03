@@ -14,14 +14,12 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.autofill.AutofillProfile;
 
 /** Unit tests for the AutofillContact class. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class AutofillContactUnitTest {
     private static final String MESSAGE = "message";
     private static final String NAME = "Jon Doe";

@@ -19,14 +19,12 @@ import androidx.test.core.app.ApplicationProvider;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.widget.ButtonCompat;
 
 /** Unit tests for {@link SafetyPromoCarouselView}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class SafetyPromoCarouselViewUnitTest {
     private Context mContext;
     private SafetyPromoCarouselView mView;

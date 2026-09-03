@@ -16,7 +16,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
@@ -63,7 +62,6 @@ import java.util.Set;
  * ChromePaymentRequest and PaymentAppService.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class PaymentRequestIntegrationTest {
     private static final int NATIVE_WEB_CONTENTS_ANDROID = 1;
     private static final String STRINGIFIED_DETAILS = "test stringifiedDetails";

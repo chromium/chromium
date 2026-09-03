@@ -39,7 +39,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -58,7 +57,6 @@ import org.chromium.ui.base.ViewAndroidDelegate;
 
 /** Tests for {@link TouchToFillPasswordGenerationBridge} */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     BaseSwitches.DISABLE_NATIVE_INITIALIZATION
