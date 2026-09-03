@@ -122,9 +122,6 @@ void ConfigureLensButtonAppearance(UIButton* lens_button,
 void ConfigureLensButtonWithNewBadgeAlpha(UIButton* lens_button,
                                           CGFloat new_badge_alpha);
 
-// Returns the nearest ancestor of `view` that is kind of `of_class`.
-UIView* NearestAncestor(UIView* view, Class of_class);
-
 // Returns the color of the search hint label in the fakebox.
 UIColor* SearchHintLabelColor();
 

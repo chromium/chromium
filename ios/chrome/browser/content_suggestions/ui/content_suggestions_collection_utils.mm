@@ -556,16 +556,6 @@ void ConfigureLensButtonWithNewBadgeAlpha(UIButton* lens_button,
   }
 }
 
-UIView* NearestAncestor(UIView* view, Class of_class) {
-  if (!view) {
-    return nil;
-  }
-  if ([view isKindOfClass:of_class]) {
-    return view;
-  }
-  return NearestAncestor([view superview], of_class);
-}
-
 UIColor* SearchHintLabelColor() {
   if (IsNewTabPageUICleanupEnabled()) {
     return [UIColor colorWithDynamicProvider:^UIColor*(

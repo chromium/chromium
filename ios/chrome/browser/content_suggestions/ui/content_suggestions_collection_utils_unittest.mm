@@ -234,22 +234,6 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, heightForLogoHeaderIPhone) {
                                 IPhonePortraitTraitCollection()));
 }
 
-TEST_F(ContentSuggestionsCollectionUtilsTest, NearestAncestor) {
-  // Setup.
-  // The types of the view has no meaning.
-  UILabel* rootView = [[UILabel alloc] init];
-  UIView* intermediaryView = [[UIView alloc] init];
-  UIScrollView* leafView = [[UIScrollView alloc] init];
-  [rootView addSubview:intermediaryView];
-  [intermediaryView addSubview:leafView];
-
-  // Tests.
-  EXPECT_EQ(leafView, NearestAncestor(leafView, [UIScrollView class]));
-  EXPECT_EQ(leafView, NearestAncestor(leafView, [UIView class]));
-  EXPECT_EQ(rootView, NearestAncestor(leafView, [UILabel class]));
-  EXPECT_EQ(nil, NearestAncestor(leafView, [UITextView class]));
-}
-
 TEST_F(ContentSuggestionsCollectionUtilsTest, fakeOmniboxHeight) {
   ScopedBlockSwizzler preferredContentSizeSwizzler(
       [UIApplication class], @selector(preferredContentSizeCategory), ^{
