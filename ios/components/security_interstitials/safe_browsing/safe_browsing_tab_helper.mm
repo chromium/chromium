@@ -217,6 +217,10 @@ void SafeBrowsingTabHelper::ReportSecurityInterstitialShown(
   }
 }
 
+std::vector<GURL> SafeBrowsingTabHelper::GetRedirectChain() const {
+  return policy_decider_.GetRedirectChain();
+}
+
 #pragma mark - SafeBrowsingTabHelper::PolicyDecider
 
 SafeBrowsingTabHelper::PolicyDecider::PolicyDecider(web::WebState* web_state,
@@ -261,11 +265,11 @@ void SafeBrowsingTabHelper::PolicyDecider::SetCommittedRedirectChain() {
     // If a navigation finishes without ShouldAllowResponse being called
     // (e.g., due to a DNS resolution error), `pending_main_frame_query_` is
     // still present and `to_be_committed_redirect_chain_` is empty.
-    committed_redirect_chain_.push_back(std::move(*pending_main_frame_query_));
-    pending_main_frame_query_.reset();
     for (auto& query : pending_main_frame_redirect_chain_) {
       committed_redirect_chain_.push_back(std::move(query));
     }
+    committed_redirect_chain_.push_back(std::move(*pending_main_frame_query_));
+    pending_main_frame_query_.reset();
     pending_main_frame_redirect_chain_.clear();
   } else {
     for (auto& query : to_be_committed_redirect_chain_) {
@@ -273,6 +277,16 @@ void SafeBrowsingTabHelper::PolicyDecider::SetCommittedRedirectChain() {
     }
   }
   to_be_committed_redirect_chain_.clear();
+}
+
+std::vector<GURL> SafeBrowsingTabHelper::PolicyDecider::GetRedirectChain()
+    const {
+  std::vector<GURL> redirect_chain;
+  redirect_chain.reserve(committed_redirect_chain_.size());
+  for (const auto& query : committed_redirect_chain_) {
+    redirect_chain.push_back(query.url);
+  }
+  return redirect_chain;
 }
 
 void SafeBrowsingTabHelper::PolicyDecider::ReloadPage() {
@@ -664,31 +678,27 @@ void SafeBrowsingTabHelper::PolicyDecider::OnMainFrameUrlSyncQueryDecided(
   // If ShouldAllowResponse() has already been called for this URL, and if
   // an overall decision for the redirect chain can be computed, invoke this
   // URL's callback with the overall decision.
-  auto& response_callback = pending_main_frame_query_->response_callback;
-  if (!response_callback.is_null()) {
+  if (!pending_main_frame_query_->response_callback.is_null()) {
     std::optional<web::WebStatePolicyDecider::PolicyDecision> sync_decision =
         RedirectChainDecisionWithFilter(RedirectChain::kPendingMainFrame,
                                         RedirectChainFilter::kSyncQueries);
     if (sync_decision) {
+      // Move `response_callback` out in case
+      // `UpdateToBeCommittedRedirectChain()` is called and resets
+      // `pending_main_frame_query_`.
+      web::WebStatePolicyDecider::PolicyDecisionCallback response_callback =
+          std::move(pending_main_frame_query_->response_callback);
       if (sync_decision->ShouldAllowNavigation()) {
         RecordTotalDelayMetricForDelayedAllowedNavigation(
             pending_main_frame_query_->delay_start_time, performed_check);
+        UpdateToBeCommittedRedirectChain();
       } else {
         base::TimeDelta delay = base::TimeTicks::Now() -
                                 pending_main_frame_query_->delay_start_time;
         RecordTotalDelay2MetricForNavigation(delay, performed_check);
       }
       std::move(response_callback).Run(*sync_decision);
-
-      std::optional<web::WebStatePolicyDecider::PolicyDecision>
-          overall_decision =
-              RedirectChainDecisionWithFilter(RedirectChain::kPendingMainFrame,
-                                              RedirectChainFilter::kAllQueries);
-      if (overall_decision) {
-        pending_main_frame_redirect_chain_.clear();
-      } else {
-        UpdateToBeCommittedRedirectChain();
-      }
+      pending_main_frame_redirect_chain_.clear();
     }
   } else {
     RecordTotalDelay2MetricForNavigation(base::TimeDelta(), performed_check);
@@ -881,11 +891,13 @@ SafeBrowsingTabHelper::PolicyDecider::QueryDecisionFromFilter(
 
 void SafeBrowsingTabHelper::PolicyDecider::UpdateToBeCommittedRedirectChain() {
   to_be_committed_redirect_chain_.clear();
-  to_be_committed_redirect_chain_.push_back(
-      std::move(*pending_main_frame_query_));
-  pending_main_frame_query_.reset();
   for (auto& query : pending_main_frame_redirect_chain_) {
     to_be_committed_redirect_chain_.push_back(std::move(query));
+  }
+  if (pending_main_frame_query_) {
+    to_be_committed_redirect_chain_.push_back(
+        std::move(*pending_main_frame_query_));
+    pending_main_frame_query_.reset();
   }
   pending_main_frame_redirect_chain_.clear();
 }

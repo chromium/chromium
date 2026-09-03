@@ -8,6 +8,7 @@
 #include <list>
 #include <map>
 #include <optional>
+#include <vector>
 
 #include "base/containers/unique_ptr_adapters.h"
 #import "base/memory/raw_ptr.h"
@@ -73,6 +74,10 @@ class SafeBrowsingTabHelper
       web::WebState* web_state,
       const security_interstitials::UnsafeResource& resource);
 
+  // Returns the redirect chain for the committed navigation, or an empty
+  // vector if there is none.
+  std::vector<GURL> GetRedirectChain() const;
+
   // Returns the client side detection host, or nullptr if disabled.
   safe_browsing::ClientSideDetectionHostBase* client_side_detection_host() {
     return csd_host_.get();
@@ -108,6 +113,9 @@ class SafeBrowsingTabHelper
     // Clears and moves `to_be_committed_redirect_chain_` to
     // `committed_redirect_chain_`.
     void SetCommittedRedirectChain();
+
+    // Returns the redirect chain for the committed navigation.
+    std::vector<GURL> GetRedirectChain() const;
 
     // Reloads the page. Used when a reload is necessary for triggering an error
     // page.

@@ -6,7 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/command_line.h"
+#import "base/containers/span.h"
 #import "base/strings/strcat.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_command_line.h"
@@ -42,7 +42,9 @@
 #import "ios/chrome/browser/tabs/model/tab_helper_filter.h"
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/components/security_interstitials/safe_browsing/fake_safe_browsing_client.h"
 #import "ios/components/security_interstitials/safe_browsing/fake_safe_browsing_service.h"
+#import "ios/components/security_interstitials/safe_browsing/safe_browsing_query_manager.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_tab_helper.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_unsafe_resource_container.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
@@ -50,6 +52,7 @@
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "net/base/apple/url_conversions.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -293,12 +296,6 @@ class ClientSideDetectionHostIOSTest : public PlatformTest {
     return host->trigger_model_request_sent_as_force_request();
   }
 
-  void set_trigger_model_request_sent_as_force_request(
-      ClientSideDetectionHostIOS* host,
-      bool value) {
-    host->set_trigger_model_request_sent_as_force_request(value);
-  }
-
   void set_send_sample_ping(ClientSideDetectionHostIOS* host, bool value) {
     host->send_sample_ping_ = value;
   }
@@ -438,6 +435,19 @@ class ClientSideDetectionHostIOSTest : public PlatformTest {
     cache_manager->CacheRealTimeUrlVerdict(response, base::Time::Now());
   }
 
+  // Simulates the completion of an asynchronous Safe Browsing real-time check
+  // for `url`.
+  void SimulateAsyncSafeBrowsingCheckFinished(ClientSideDetectionHostIOS* host,
+                                              const GURL& url) {
+    SafeBrowsingQueryManager::Query query(url, "GET");
+    SafeBrowsingQueryManager::Result result;
+    SafeBrowsingQueryManager::QueryData query_data(
+        nullptr, query, QueryType::kAsync, result,
+        safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck::
+            kUrlRealTimeCheck);
+    host->SafeBrowsingAsyncQueryFinished(query_data);
+  }
+
   // Simulates the completion of an asynchronous Safe Browsing check and asserts
   // force request status and histograms.
   void TestAsyncSafeBrowsingCheck(
@@ -445,8 +455,7 @@ class ClientSideDetectionHostIOSTest : public PlatformTest {
       std::optional<
           ClientSideDetectionHostBase::AsyncCheckTriggerForceRequestResult>
           expected_result,
-      bool expect_force_request,
-      bool is_already_forced) {
+      bool expect_force_request) {
     safe_browsing::SetSafeBrowsingState(
         profile_->GetPrefs(),
         safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
@@ -463,18 +472,7 @@ class ClientSideDetectionHostIOSTest : public PlatformTest {
     web_state_.SetCurrentURL(main_url);
     web_state_.OnNavigationFinished(&context);
 
-    if (is_already_forced) {
-      set_trigger_model_request_sent_as_force_request(host.get(), true);
-    }
-
-    SafeBrowsingQueryManager::Query query(query_url, "GET");
-    SafeBrowsingQueryManager::Result result;
-    SafeBrowsingQueryManager::QueryData query_data(
-        nullptr, query, QueryType::kAsync, result,
-        safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck::
-            kUrlRealTimeCheck);
-
-    host->SafeBrowsingAsyncQueryFinished(query_data);
+    SimulateAsyncSafeBrowsingCheckFinished(host.get(), query_url);
 
     if (expected_result.has_value()) {
       histogram_tester_.ExpectUniqueSample(
@@ -494,6 +492,68 @@ class ClientSideDetectionHostIOSTest : public PlatformTest {
       EXPECT_EQ(last_request_type(host.get()),
                 safe_browsing::ClientSideDetectionType::FORCE_REQUEST);
     }
+  }
+
+  // Configures Safe Browsing, creates tab helpers, and returns a host for
+  // redirect tests.
+  std::unique_ptr<ClientSideDetectionHostIOS> SetUpHostWithSafeBrowsing(
+      ::FakeSafeBrowsingClient& client) {
+    safe_browsing::SetSafeBrowsingState(
+        profile_->GetPrefs(),
+        safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
+
+    static_cast<FakeSafeBrowsingService*>(client.GetSafeBrowsingService())
+        ->SetDatabaseManager(database_manager_);
+    SafeBrowsingQueryManager::CreateForWebState(&web_state_, &client);
+    SafeBrowsingTabHelper::CreateForWebState(&web_state_, &client);
+
+    SnapshotTabHelper::CreateForWebState(&web_state_);
+    web_state_.SetContentsMimeType("text/html");
+
+    return CreateHost();
+  }
+
+  // Simulates a navigation through a chain of redirected URLs ending with the
+  // final committed URL.
+  void SimulateRedirectChain(::FakeSafeBrowsingClient& client,
+                             base::span<const GURL> url_chain) {
+    ASSERT_FALSE(url_chain.empty());
+    for (size_t i = 0; i < url_chain.size(); ++i) {
+      web_state_.ShouldAllowRequest(
+          [NSURLRequest requestWithURL:net::NSURLWithGURL(url_chain[i])],
+          web::WebStatePolicyDecider::RequestInfo(
+              ui::PageTransition::PAGE_TRANSITION_LINK,
+              /*target_frame_is_main=*/true,
+              /*target_frame_is_cross_origin=*/false,
+              /*target_window_is_cross_origin=*/false,
+              /*is_user_initiated=*/false, /*user_tapped_recently=*/false),
+          base::DoNothing());
+      client.run_sync_callbacks();
+
+      if (i > 0) {
+        web::FakeNavigationContext redirect_context;
+        web_state_.OnNavigationRedirected(&redirect_context);
+      }
+    }
+
+    const GURL& final_url = url_chain.back();
+    NSURLResponse* response =
+        [[NSURLResponse alloc] initWithURL:net::NSURLWithGURL(final_url)
+                                  MIMEType:@"text/html"
+                     expectedContentLength:0
+                          textEncodingName:nil];
+    web_state_.ShouldAllowResponse(
+        response,
+        web::WebStatePolicyDecider::ResponseInfo(/*for_main_frame=*/true),
+        base::DoNothing());
+    client.run_sync_callbacks();
+
+    web::FakeNavigationContext commit_context;
+    commit_context.SetUrl(final_url);
+    commit_context.SetHasCommitted(true);
+    commit_context.SetIsSameDocument(false);
+    web_state_.SetCurrentURL(final_url);
+    web_state_.OnNavigationFinished(&commit_context);
   }
 
   web::WebTaskEnvironment task_environment_{
@@ -524,6 +584,41 @@ TEST_F(ClientSideDetectionHostIOSTest, GetFeatureCacheNullWebState) {
   std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
   host->WebStateDestroyed(&web_state_);
   EXPECT_EQ(host->GetFeatureCache(), nullptr);
+}
+
+// Tests that GetRedirectChain() returns an empty vector when
+// SafeBrowsingTabHelper is not attached to the WebState.
+TEST_F(ClientSideDetectionHostIOSTest,
+       GetRedirectChainNoSafeBrowsingTabHelper) {
+  std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
+  EXPECT_TRUE(host->GetRedirectChain().empty());
+}
+
+// Tests that GetRedirectChain() returns an empty vector when the WebState is
+// destroyed.
+TEST_F(ClientSideDetectionHostIOSTest, GetRedirectChainNullWebState) {
+  std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
+  host->WebStateDestroyed(&web_state_);
+  EXPECT_TRUE(host->GetRedirectChain().empty());
+}
+
+// Tests that GetRedirectChain() returns the redirect chain from
+// SafeBrowsingTabHelper.
+TEST_F(ClientSideDetectionHostIOSTest,
+       GetRedirectChainFromSafeBrowsingTabHelper) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      safe_browsing::kClientSideDetectionEnabledIos);
+
+  AttachTabHelpers(&web_state_, TabHelperFilter::kEmpty);
+  SafeBrowsingTabHelper* sb_tab_helper =
+      SafeBrowsingTabHelper::FromWebState(&web_state_);
+  ASSERT_TRUE(sb_tab_helper);
+  safe_browsing::ClientSideDetectionHostBase* csd_host =
+      sb_tab_helper->client_side_detection_host();
+  ASSERT_TRUE(csd_host);
+
+  EXPECT_EQ(csd_host->GetRedirectChain(), sb_tab_helper->GetRedirectChain());
 }
 
 // Tests that ClientSideDetectionHostIOS is created via SafeBrowsingTabHelper
@@ -2868,8 +2963,7 @@ TEST_F(ClientSideDetectionHostIOSTest,
       /*expected_result=*/
       ClientSideDetectionHostBase::AsyncCheckTriggerForceRequestResult::
           kTriggered,
-      /*expect_force_request=*/true,
-      /*is_already_forced=*/false);
+      /*expect_force_request=*/true);
 }
 
 // Tests that an asynchronous real-time check does not trigger a force request
@@ -2881,40 +2975,140 @@ TEST_F(ClientSideDetectionHostIOSTest,
       /*expected_result=*/
       ClientSideDetectionHostBase::AsyncCheckTriggerForceRequestResult::
           kSkippedNotForced,
-      /*expect_force_request=*/false,
-      /*is_already_forced=*/false);
-}
-
-// Tests that an asynchronous real-time check skips triggering a force request
-// if the page-load trigger models request was already sent as a force request.
-// TODO(crbug.com/502615476) Once redirect chains are supported, add a test
-// case similar to this one that verifies only one request is sent when there
-// are two redirects that both asynchronously try to trigger a request.
-TEST_F(ClientSideDetectionHostIOSTest,
-       AsyncSBCheckDoesNotTriggerWhenAlreadyForced) {
-  SetForceRequestRTResponseInCacheManager(kExampleUrlPattern);
-  TestAsyncSafeBrowsingCheck(
-      GURL(kExampleUrl),
-      /*expected_result=*/
-      ClientSideDetectionHostBase::AsyncCheckTriggerForceRequestResult::
-          kSkippedTriggerModelsPingSentAsForceRequest,
-      /*expect_force_request=*/false,
-      /*is_already_forced=*/true);
+      /*expect_force_request=*/false);
 }
 
 // Tests that an asynchronous real-time check for a URL that does not match the
-// current main-frame URL is ignored and does not trigger
-// a force request.
-// TODO(crbug.com/502615476): Once redirect chain tracking is implemented, add a
-// test verifying that multi-hop redirects triggering async checks deduplicate
-// cleanly.
+// current main-frame URL and is not in its redirect chain is ignored and does
+// not trigger a force request.
 TEST_F(ClientSideDetectionHostIOSTest,
        AsyncSBCheckForDifferentUrlDoesNotTrigger) {
   SetForceRequestRTResponseInCacheManager(kDifferentUrlPattern);
   TestAsyncSafeBrowsingCheck(GURL(kDifferentUrl),
                              /*expected_result=*/std::nullopt,
-                             /*expect_force_request=*/false,
-                             /*is_already_forced=*/false);
+                             /*expect_force_request=*/false);
+}
+
+// Tests that an asynchronous real-time check skips triggering a force request
+// if the page-load trigger models request was already sent as a force request.
+TEST_F(ClientSideDetectionHostIOSTest,
+       AsyncSBCheckDoesNotTriggerWhenAlreadyForced) {
+  safe_browsing::SetSafeBrowsingState(
+      profile_->GetPrefs(),
+      safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
+
+  std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
+  SnapshotTabHelper::CreateForWebState(&web_state_);
+  web_state_.SetContentsMimeType("text/html");
+
+  SetForceRequestRTResponseInCacheManager(kExampleUrlPattern);
+
+  GURL main_url(kExampleUrl);
+  web::FakeNavigationContext context;
+  context.SetUrl(main_url);
+  context.SetHasCommitted(true);
+  context.SetIsSameDocument(false);
+  web_state_.SetCurrentURL(main_url);
+  web_state_.OnNavigationFinished(&context);
+
+  // Simulate visual classification completing first and dispatching the forced
+  // ping (which sets `trigger_model_request_sent_as_force_request_ = true`).
+  EXPECT_CALL(mock_service_, SendClientReportPhishingRequest(
+                                 testing::_, testing::_, testing::_))
+      .Times(1);
+  host->OnVisualClassificationDoneForTesting(main_url, {});
+
+  // When the async check finishes later, it should detect that a forced ping
+  // was already sent and deduplicate rather than triggering a second ping.
+  SimulateAsyncSafeBrowsingCheckFinished(host.get(), main_url);
+
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.ClientSideDetection."
+      "AsyncCheckTriggerForceRequestResult",
+      ClientSideDetectionHostBase::AsyncCheckTriggerForceRequestResult::
+          kSkippedTriggerModelsPingSentAsForceRequest,
+      1);
+  EXPECT_FALSE(should_send_as_force_request(host.get()));
+}
+
+// Tests that an asynchronous real-time check for a redirect URL in the redirect
+// chain triggers a force request.
+TEST_F(ClientSideDetectionHostIOSTest,
+       AsyncSBCheckInRedirectChainTriggersForceRequest) {
+  ::FakeSafeBrowsingClient client(profile_->GetPrefs());
+  std::unique_ptr<ClientSideDetectionHostIOS> host =
+      SetUpHostWithSafeBrowsing(client);
+
+  GURL redirect_url("http://redirect.test");
+  GURL main_url(kExampleUrl);
+
+  SetForceRequestRTResponseInCacheManager("redirect.test/");
+
+  SimulateRedirectChain(client, {redirect_url, main_url});
+  EXPECT_EQ(host->GetRedirectChain(),
+            std::vector<GURL>({redirect_url, main_url}));
+
+  SimulateAsyncSafeBrowsingCheckFinished(host.get(), redirect_url);
+
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.ClientSideDetection."
+      "AsyncCheckTriggerForceRequestResult",
+      ClientSideDetectionHostBase::AsyncCheckTriggerForceRequestResult::
+          kTriggered,
+      1);
+  EXPECT_TRUE(should_send_as_force_request(host.get()));
+
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.PreClassificationCheckResult.ForceRequest",
+      safe_browsing::PreClassificationCheckResult::CLASSIFY, 1);
+  EXPECT_EQ(last_request_type(host.get()),
+            safe_browsing::ClientSideDetectionType::FORCE_REQUEST);
+}
+
+// Tests that when multiple redirects in a redirect chain asynchronously finish
+// with FORCE_REQUEST verdicts, only one force request is triggered and
+// subsequent checks deduplicate cleanly.
+TEST_F(ClientSideDetectionHostIOSTest,
+       AsyncSBCheckMultipleRedirectsDeduplicates) {
+  ::FakeSafeBrowsingClient client(profile_->GetPrefs());
+  std::unique_ptr<ClientSideDetectionHostIOS> host =
+      SetUpHostWithSafeBrowsing(client);
+
+  GURL redirect_url1("http://redirect1.test");
+  GURL redirect_url2("http://redirect2.test");
+  GURL main_url(kExampleUrl);
+
+  SetForceRequestRTResponseInCacheManager("redirect1.test/");
+  SetForceRequestRTResponseInCacheManager("redirect2.test/");
+
+  SimulateRedirectChain(client, {redirect_url1, redirect_url2, main_url});
+  EXPECT_EQ(host->GetRedirectChain(),
+            std::vector<GURL>({redirect_url1, redirect_url2, main_url}));
+
+  // First async query finishes for redirect_url1 -> triggers force request.
+  SimulateAsyncSafeBrowsingCheckFinished(host.get(), redirect_url1);
+  histogram_tester_.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetection."
+      "AsyncCheckTriggerForceRequestResult",
+      ClientSideDetectionHostBase::AsyncCheckTriggerForceRequestResult::
+          kTriggered,
+      1);
+
+  // Simulate visual classification completing and sending the forced ping.
+  EXPECT_CALL(mock_service_, SendClientReportPhishingRequest(
+                                 testing::_, testing::_, testing::_))
+      .Times(1);
+  host->OnVisualClassificationDoneForTesting(main_url, {});
+
+  // Second async query finishes for redirect_url2 -> deduplicates without
+  // triggering another ping.
+  SimulateAsyncSafeBrowsingCheckFinished(host.get(), redirect_url2);
+  histogram_tester_.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetection."
+      "AsyncCheckTriggerForceRequestResult",
+      ClientSideDetectionHostBase::AsyncCheckTriggerForceRequestResult::
+          kSkippedTriggerModelsPingSentAsForceRequest,
+      1);
 }
 
 // Tests that MaybeStartImageEmbedding triggers image embedding and emits

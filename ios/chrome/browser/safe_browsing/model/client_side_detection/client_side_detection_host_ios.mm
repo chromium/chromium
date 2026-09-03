@@ -40,6 +40,7 @@
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_service.h"
+#import "ios/components/security_interstitials/safe_browsing/safe_browsing_tab_helper.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_unsafe_resource_container.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -176,9 +177,17 @@ ClientSideDetectionHostIOS::GetFeatureCache() {
 }
 
 std::vector<GURL> ClientSideDetectionHostIOS::GetRedirectChain() {
-  // TODO(crbug.com/502615476): Hook into SafeBrowsingTabHelper to leverage its
-  // existing redirect chain extraction.
-  return std::vector<GURL>();
+  if (!web_state_) {
+    return std::vector<GURL>();
+  }
+
+  SafeBrowsingTabHelper* sb_tab_helper =
+      SafeBrowsingTabHelper::FromWebState(web_state_);
+  if (!sb_tab_helper) {
+    return std::vector<GURL>();
+  }
+
+  return sb_tab_helper->GetRedirectChain();
 }
 
 credit_card_form::ReferringApp ClientSideDetectionHostIOS::GetReferringApp()

@@ -462,6 +462,37 @@ TEST_P(SafeBrowsingTabHelperTest, SafeRedirectChain) {
   web::WebStatePolicyDecider::PolicyDecision response_decision =
       ShouldAllowResponseUrl(url3);
   EXPECT_TRUE(response_decision.ShouldAllowNavigation());
+
+  web::FakeNavigationContext context;
+  context.SetHasCommitted(true);
+  web_state_.OnNavigationFinished(&context);
+
+  SafeBrowsingTabHelper* tab_helper =
+      SafeBrowsingTabHelper::FromWebState(&web_state_);
+  ASSERT_TRUE(tab_helper);
+  EXPECT_EQ(tab_helper->GetRedirectChain(),
+            std::vector<GURL>({url1, url2, url3}));
+}
+
+// Tests that GetRedirectChain returns the expected URL for a navigation without
+// redirects.
+TEST_P(SafeBrowsingTabHelperTest, NonRedirectChain) {
+  GURL url("http://chromium.test");
+  EXPECT_TRUE(ShouldAllowRequestUrl(url).ShouldAllowNavigation());
+  RunSyncCallbacksThenAsyncCallbacks();
+
+  web::WebStatePolicyDecider::PolicyDecision response_decision =
+      ShouldAllowResponseUrl(url);
+  EXPECT_TRUE(response_decision.ShouldAllowNavigation());
+
+  web::FakeNavigationContext context;
+  context.SetHasCommitted(true);
+  web_state_.OnNavigationFinished(&context);
+
+  SafeBrowsingTabHelper* tab_helper =
+      SafeBrowsingTabHelper::FromWebState(&web_state_);
+  ASSERT_TRUE(tab_helper);
+  EXPECT_EQ(tab_helper->GetRedirectChain(), std::vector<GURL>({url}));
 }
 
 // Tests the case of a redirection chain, where the first URL in the chain is
