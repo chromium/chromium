@@ -6,14 +6,28 @@
 
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/svg/svg_element_rare_data.h"
 #include "third_party/blink/renderer/core/svg/svg_length.h"
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
 #include "third_party/blink/renderer/core/svg/svg_length_functions.h"
+#include "third_party/blink/renderer/core/svg/svg_use_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
+
+namespace {
+
+class SVGTestEventListener : public NativeEventListener {
+ public:
+  void Invoke(ExecutionContext*, Event*) override {}
+};
+
+}  // namespace
 
 class SVGElementTest : public PageTestBase {};
 
@@ -94,6 +108,122 @@ TEST_F(SVGElementTest, ContainerUnitContext) {
   const auto* length =
       MakeGarbageCollected<SVGLength>(*value, SVGLengthMode::kWidth);
   EXPECT_FLOAT_EQ(200.0f, length->Value(SVGLengthContext(svg)));
+}
+
+TEST_F(SVGElementTest, SynchronizeAttributeInShadowInstances) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <svg>
+      <defs>
+        <rect id="target" width="10" height="10" fill="red" />
+      </defs>
+      <use id="use" href="#target" />
+      <rect id="standalone" width="20" height="20" fill="green" />
+    </svg>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* target =
+      To<SVGElement>(GetDocument().getElementById(AtomicString("target")));
+  auto* standalone =
+      To<SVGElement>(GetDocument().getElementById(AtomicString("standalone")));
+  ASSERT_TRUE(target);
+  ASSERT_TRUE(standalone);
+  EXPECT_FALSE(target->InstancesForElement().empty());
+  EXPECT_TRUE(standalone->InstancesForElement().empty());
+
+  SVGElement* instance = target->InstancesForElement().begin()->Get();
+  ASSERT_TRUE(instance);
+  EXPECT_EQ(instance->getAttribute(AtomicString("fill")), "red");
+
+  // Verify attribute synchronization with SvgInstanceSyncOptimization enabled.
+  {
+    ScopedSvgInstanceSyncOptimizationForTest optimization(true);
+    target->setAttribute(AtomicString("fill"), AtomicString("blue"));
+    EXPECT_EQ(instance->getAttribute(AtomicString("fill")), "blue");
+
+    standalone->setAttribute(AtomicString("fill"), AtomicString("yellow"));
+    EXPECT_EQ(standalone->getAttribute(AtomicString("fill")), "yellow");
+    EXPECT_TRUE(standalone->InstancesForElement().empty());
+  }
+
+  // Verify attribute synchronization with killswitch disabled (fallback path).
+  {
+    ScopedSvgInstanceSyncOptimizationForTest optimization(false);
+    target->setAttribute(AtomicString("fill"), AtomicString("purple"));
+    EXPECT_EQ(instance->getAttribute(AtomicString("fill")), "purple");
+
+    standalone->setAttribute(AtomicString("fill"), AtomicString("black"));
+    EXPECT_EQ(standalone->getAttribute(AtomicString("fill")), "black");
+    EXPECT_TRUE(standalone->InstancesForElement().empty());
+  }
+}
+
+TEST_F(SVGElementTest, EventListenerSynchronization) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <svg>
+      <defs>
+        <rect id="target" width="10" height="10" />
+      </defs>
+      <use id="use" href="#target" />
+      <rect id="standalone" width="20" height="20" />
+    </svg>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* target =
+      To<SVGElement>(GetDocument().getElementById(AtomicString("target")));
+  auto* standalone =
+      To<SVGElement>(GetDocument().getElementById(AtomicString("standalone")));
+  ASSERT_TRUE(target);
+  ASSERT_TRUE(standalone);
+  EXPECT_FALSE(target->InstancesForElement().empty());
+  EXPECT_TRUE(standalone->InstancesForElement().empty());
+
+  SVGElement* instance = target->InstancesForElement().begin()->Get();
+  ASSERT_TRUE(instance);
+
+  auto* listener = MakeGarbageCollected<SVGTestEventListener>();
+
+  // Verify event listener propagation with SvgInstanceSyncOptimization enabled.
+  {
+    ScopedSvgInstanceSyncOptimizationForTest optimization(true);
+
+    target->addEventListener(event_type_names::kClick, listener,
+                             /*use_capture=*/true);
+    EXPECT_TRUE(instance->HasEventListeners(event_type_names::kClick));
+
+    target->removeEventListener(event_type_names::kClick, listener,
+                                /*use_capture=*/true);
+    EXPECT_FALSE(instance->HasEventListeners(event_type_names::kClick));
+
+    // Standalone element has no instances; listener works normally.
+    standalone->addEventListener(event_type_names::kClick, listener);
+    EXPECT_TRUE(standalone->HasEventListeners(event_type_names::kClick));
+    standalone->removeEventListener(event_type_names::kClick, listener,
+                                    /*use_capture=*/false);
+    EXPECT_FALSE(standalone->HasEventListeners(event_type_names::kClick));
+    EXPECT_TRUE(standalone->InstancesForElement().empty());
+  }
+
+  // Verify event listener propagation with killswitch disabled (fallback path).
+  {
+    ScopedSvgInstanceSyncOptimizationForTest optimization(false);
+
+    target->addEventListener(event_type_names::kClick, listener,
+                             /*use_capture=*/true);
+    EXPECT_TRUE(instance->HasEventListeners(event_type_names::kClick));
+
+    target->removeEventListener(event_type_names::kClick, listener,
+                                /*use_capture=*/true);
+    EXPECT_FALSE(instance->HasEventListeners(event_type_names::kClick));
+
+    standalone->addEventListener(event_type_names::kClick, listener);
+    EXPECT_TRUE(standalone->HasEventListeners(event_type_names::kClick));
+    standalone->removeEventListener(event_type_names::kClick, listener,
+                                    /*use_capture=*/false);
+    EXPECT_FALSE(standalone->HasEventListeners(event_type_names::kClick));
+    EXPECT_TRUE(standalone->InstancesForElement().empty());
+  }
 }
 
 }  // namespace blink

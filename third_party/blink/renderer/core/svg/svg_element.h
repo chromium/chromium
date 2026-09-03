@@ -244,6 +244,7 @@ class CORE_EXPORT SVGElement : public Element {
   SVGElementSet* SetOfIncomingReferences() const;
 
   SVGElementRareData* EnsureSVGRareData();
+  bool MayHaveInstances() const { return HasSVGRareData(); }
   inline bool HasSVGRareData() const { return svg_rare_data_ != nullptr; }
   inline SVGElementRareData* SvgRareData() const {
     DCHECK(svg_rare_data_);

@@ -68,6 +68,7 @@
 #include "third_party/blink/renderer/core/xml_names.h"
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 
@@ -611,25 +612,22 @@ bool SVGElement::HaveLoadedRequiredResources() {
   return true;
 }
 
-static inline void CollectInstancesForSVGElement(
-    SVGElement* element,
-    HeapHashSet<WeakMember<SVGElement>>& instances) {
-  DCHECK(element);
-  if (element->ContainingShadowRoot())
-    return;
-
-  instances = element->InstancesForElement();
-}
-
 void SVGElement::AddedEventListener(
     const AtomicString& event_type,
     RegisteredEventListener& registered_listener) {
   // Add event listener to regular DOM element
   Node::AddedEventListener(event_type, registered_listener);
 
+  if (ContainingShadowRoot()) {
+    return;
+  }
+  if (RuntimeEnabledFeatures::SvgInstanceSyncOptimizationEnabled() &&
+      !MayHaveInstances()) {
+    return;
+  }
+
   // Add event listener to all shadow tree DOM element instances
-  HeapHashSet<WeakMember<SVGElement>> instances;
-  CollectInstancesForSVGElement(this, instances);
+  HeapHashSet<WeakMember<SVGElement>> instances = InstancesForElement();
   AddEventListenerOptionsResolved options = registered_listener.Options();
   EventListener* listener = registered_listener.Callback();
   for (SVGElement* element : instances) {
@@ -644,9 +642,16 @@ void SVGElement::RemovedEventListener(
     const RegisteredEventListener& registered_listener) {
   Node::RemovedEventListener(event_type, registered_listener);
 
+  if (ContainingShadowRoot()) {
+    return;
+  }
+  if (RuntimeEnabledFeatures::SvgInstanceSyncOptimizationEnabled() &&
+      !MayHaveInstances()) {
+    return;
+  }
+
   // Remove event listener from all shadow tree DOM element instances
-  HeapHashSet<WeakMember<SVGElement>> instances;
-  CollectInstancesForSVGElement(this, instances);
+  HeapHashSet<WeakMember<SVGElement>> instances = InstancesForElement();
   RegisteredEventListener::OptionsForMatching options =
       registered_listener.GetOptionsForMatching();
   const EventListener* listener = registered_listener.Callback();
@@ -1171,6 +1176,11 @@ SMILTimeContainer* SVGElement::GetTimeContainer() const {
 void SVGElement::SynchronizeAttributeInShadowInstances(
     const QualifiedName& name,
     const AtomicString& value) {
+  if (RuntimeEnabledFeatures::SvgInstanceSyncOptimizationEnabled() &&
+      !MayHaveInstances()) {
+    return;
+  }
+
   HeapHashSet<WeakMember<SVGElement>> instances = InstancesForElement();
   for (SVGElement* instance : instances) {
     instance->SetAttributeWithoutValidation(name, value);

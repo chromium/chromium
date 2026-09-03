@@ -6087,6 +6087,12 @@
       status: "test",
     },
     {
+      // When enabled, short-circuits shadow instance synchronization when SVG
+      // elements cannot have instances (no rare data).
+      name: "SvgInstanceSyncOptimization",
+      status: "stable",
+    },
+    {
       name: "SvgLengthResolveUnparsedValue",
       status: "stable",
     },
