@@ -145,26 +145,26 @@ public class OmniboxSuggestionsContainerUnitTest {
         mContainer.setEmbedder(mEmbedder);
 
         assertFalse(mAttachedToWindow);
-        mContainer.onOmniboxSessionStateChange(true);
+        mContainer.onOmniboxSessionStateChange(/* urlHasFocus= */ true);
         assertTrue(mAttachedToWindow);
 
-        mContainer.onOmniboxSessionStateChange(false);
+        mContainer.onOmniboxSessionStateChange(/* urlHasFocus= */ false);
         assertFalse(mAttachedToWindow);
     }
 
     @Test
     public void onOmniboxSessionStateChange_withoutEmbedder() {
         assertFalse(mAttachedToWindow);
-        mContainer.onOmniboxSessionStateChange(true);
+        mContainer.onOmniboxSessionStateChange(/* urlHasFocus= */ true);
         assertFalse(mAttachedToWindow);
-        mContainer.onOmniboxSessionStateChange(false);
+        mContainer.onOmniboxSessionStateChange(/* urlHasFocus= */ false);
         assertFalse(mAttachedToWindow);
     }
 
     @Test
     public void testAlignmentProvider_widthChange() {
         mContainer.setEmbedder(mEmbedder);
-        mContainer.onOmniboxSessionStateChange(true);
+        mContainer.onOmniboxSessionStateChange(/* urlHasFocus= */ true);
 
         mOmniboxAlignment = new OmniboxAlignment(0, 100, 600, 0, 10, 10, 0, 0);
         mOmniboxAlignmentSupplier.set(mOmniboxAlignment);
@@ -184,7 +184,7 @@ public class OmniboxSuggestionsContainerUnitTest {
     @Test
     public void testAlignmentProvider_topChange() {
         mContainer.setEmbedder(mEmbedder);
-        mContainer.onOmniboxSessionStateChange(true);
+        mContainer.onOmniboxSessionStateChange(/* urlHasFocus= */ true);
 
         mContainer.setLayoutParams(
                 new LayoutParams(
@@ -211,7 +211,7 @@ public class OmniboxSuggestionsContainerUnitTest {
     @Test
     public void testAlignmentProvider_heightChange() {
         mContainer.setEmbedder(mEmbedder);
-        mContainer.onOmniboxSessionStateChange(true);
+        mContainer.onOmniboxSessionStateChange(/* urlHasFocus= */ true);
 
         mContainer.setLayoutParams(
                 new LayoutParams(
@@ -235,7 +235,7 @@ public class OmniboxSuggestionsContainerUnitTest {
     @SuppressWarnings("DirectInvocationOnMock")
     public void testAlignmentProvider_bottomPaddingChange() {
         mContainer.setEmbedder(mEmbedder);
-        mContainer.onOmniboxSessionStateChange(true);
+        mContainer.onOmniboxSessionStateChange(/* urlHasFocus= */ true);
         mContainer.setLayoutParams(
                 new LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -263,7 +263,7 @@ public class OmniboxSuggestionsContainerUnitTest {
     @SuppressWarnings("DirectInvocationOnMock")
     public void testAlignmentProvider_topPaddingChange() {
         mContainer.setEmbedder(mEmbedder);
-        mContainer.onOmniboxSessionStateChange(true);
+        mContainer.onOmniboxSessionStateChange(/* urlHasFocus= */ true);
         mContainer.setLayoutParams(
                 new LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -290,9 +290,9 @@ public class OmniboxSuggestionsContainerUnitTest {
     @Test
     public void testAlignmentProvider_changeDuringlayout() {
         mContainer.setEmbedder(mEmbedder);
-        mContainer.onOmniboxSessionStateChange(true);
+        mContainer.onOmniboxSessionStateChange(/* urlHasFocus= */ true);
 
-        mContainer.setIsInLayout(true);
+        mContainer.setIsInLayout(/* isInLayout= */ true);
         mOmniboxAlignment = new OmniboxAlignment(0, 80, 400, 600, 10, 10, 0, 0);
         mOmniboxAlignmentSupplier.set(mOmniboxAlignment);
 
@@ -308,7 +308,11 @@ public class OmniboxSuggestionsContainerUnitTest {
         int widthSpec = MeasureSpec.makeMeasureSpec(width, MeasureSpec.AT_MOST);
         int heightSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.AT_MOST);
         mContainer.measure(widthSpec, heightSpec);
-        mContainer.layout(0, 0, mContainer.getMeasuredWidth(), mContainer.getMeasuredHeight());
+        mContainer.layout(
+                /* l= */ 0,
+                /* t= */ 0,
+                /* r= */ mContainer.getMeasuredWidth(),
+                /* b= */ mContainer.getMeasuredHeight());
     }
 
     @Test
@@ -332,7 +336,7 @@ public class OmniboxSuggestionsContainerUnitTest {
     @Test
     public void testOnMeasure_shouldWrapDropdownHeight() {
         mContainer.setEmbedder(mEmbedder);
-        mContainer.onOmniboxSessionStateChange(true);
+        mContainer.onOmniboxSessionStateChange(/* urlHasFocus= */ true);
 
         mOmniboxAlignment = new OmniboxAlignment(0, 80, 600, 400, 10, 10, 0, 0);
         mOmniboxAlignmentSupplier.set(mOmniboxAlignment);
@@ -347,14 +351,14 @@ public class OmniboxSuggestionsContainerUnitTest {
 
     @Test
     public void setShouldClipToOutline_clipsOutlineWhenSet() {
-        mContainer.setShouldClipToOutline(true);
+        mContainer.setShouldClipToOutline(/* clip= */ true);
         assertTrue(mContainer.getClipToOutline());
         assertNotNull(mContainer.getOutlineProvider());
     }
 
     @Test
     public void setShouldClipToOutline_doesNotClipOutlineWhenUnset() {
-        mContainer.setShouldClipToOutline(false);
+        mContainer.setShouldClipToOutline(/* clip= */ false);
         assertFalse(mContainer.getClipToOutline());
         assertNull(mContainer.getOutlineProvider());
     }
