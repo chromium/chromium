@@ -24,6 +24,7 @@ import androidx.credentials.PasswordCredential;
 import androidx.credentials.exceptions.CreateCredentialException;
 import androidx.credentials.exceptions.CreateCredentialNoCreateOptionException;
 import androidx.credentials.exceptions.GetCredentialException;
+import androidx.credentials.exceptions.NoCredentialException;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -124,6 +125,45 @@ public class ThirdPartyCredentialManagerBridgeTest {
                         ThirdPartyCredentialManagerMetricsRecorder.GET_RESULT_HISTOGRAM_NAME,
                         CredentialManagerAndroidGetResult.UNEXPECTED_ERROR);
         doAnswer(invocation -> respondToGetCallback(invocation, null, mGetCredentialException))
+                .when(mCredentialManager)
+                .getCredentialAsync(
+                        any(Context.class),
+                        any(GetCredentialRequest.class),
+                        any(),
+                        any(Executor.class),
+                        any());
+
+        mBridge.get(
+                mWebContents,
+                false,
+                true,
+                new ArrayList<GURL>(),
+                ORIGIN,
+                mCredentialResponseCallback);
+        ShadowLooper.idleMainLooper();
+
+        verify(mCredentialManager)
+                .getCredentialAsync(
+                        any(Context.class),
+                        any(GetCredentialRequest.class),
+                        any(),
+                        any(Executor.class),
+                        any());
+        verify(mCredentialResponseCallback)
+                .onResult(
+                        argThat(
+                                new PasswordCredentialResponseMatcher(
+                                        new PasswordCredentialResponse(false, "", ""))));
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testOnGetCredentialNoCredentialExceptionCalled() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ThirdPartyCredentialManagerMetricsRecorder.GET_RESULT_HISTOGRAM_NAME,
+                        CredentialManagerAndroidGetResult.NO_CREDENTIAL);
+        doAnswer(invocation -> respondToGetCallback(invocation, null, new NoCredentialException()))
                 .when(mCredentialManager)
                 .getCredentialAsync(
                         any(Context.class),

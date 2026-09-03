@@ -30,8 +30,7 @@ _DISABLED_ALWAYS = [
     # the Credential Manager API to support filling *any* site with a third
     # party password manager. Therefore, the list of sign-in domains would be
     # infinite and this warning must be suppressed.
-    "CredentialManagerMisuse",
-    "CredManMissingDal",  # Has false-positives, TODO(crbug.com/420855219).
+    "CredManMissingDal",
     "InlinedApi",  # Constants are copied so they are always available.
     "LintBaseline",  # Don't warn about using baseline.xml files.
     "LintBaselineFixed",  # We dont care if baseline.xml has unused entries.

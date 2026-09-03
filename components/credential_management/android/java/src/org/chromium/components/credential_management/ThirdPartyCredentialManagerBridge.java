@@ -50,6 +50,10 @@ class ThirdPartyCredentialManagerBridge {
         ResettersForTesting.register(() -> sCredentialManagerForTesting = null);
     }
 
+    // Suppressed because NoCredentialException is intentionally handled as a
+    // GetCredentialException (returning an unsuccessful PasswordCredentialResponse)
+    // and recorded in metrics via ThirdPartyCredentialManagerMetricsRecorder.
+    @SuppressWarnings("CredentialManagerMisuse")
     @CalledByNative
     void get(
             @Nullable WebContents webContents,
