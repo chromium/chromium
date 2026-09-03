@@ -372,10 +372,6 @@ class BrowserWindowFeatures {
     return pinned_toolbar_actions_;
   }
 
-  SigninViewController* signin_view_controller() {
-    return signin_view_controller_.get();
-  }
-
   TabStripModel* tab_strip_model() { return tab_strip_model_; }
 
   // Returns a pointer to the ToastController for the browser window. This can
