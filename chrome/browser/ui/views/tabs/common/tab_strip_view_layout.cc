@@ -155,6 +155,10 @@ views::ProposedLayout TabStripViewLayout::CalculateHorizontalLayout(
     if (available_width.value() > 0) {
       tab_strip_view->SetAvailableUnpinnedSpace(
           views::SizeBound(available_unpinned_width));
+      if (unpinned_tabs_scroll_view) {
+        unpinned_tabs_scroll_view->SetDrawOverflowIndicator(
+            will_overflow_without_scroll_buttons);
+      }
     }
     unpinned_width = std::min(unpinned_width, available_unpinned_width);
   }
