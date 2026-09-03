@@ -787,7 +787,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                             () ->
                                     PriceDropNotificationManagerFactory.create(
                                             mTabModelProfileSupplier.get()),
-                            mRootUiCoordinator::getBookmarkBarVisibility);
+                            mRootUiCoordinator::getBookmarkBarVisibility,
+                            OfflinePageUtils::saveBookmarkOffline);
             mTabBookmarkerSupplier.set(tabBookmarker);
             if (!isCustomTab()) {
                 mStartupSigninStateCheckController =

@@ -53,6 +53,7 @@ android_resources("java_resources") {
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/bookmarks/AddToBookmarksToolbarButtonController.java",
     "java/src/org/chromium/chrome/browser/bookmarks/BasicBookmarkQueryHandler.java",
     "java/src/org/chromium/chrome/browser/bookmarks/BookmarkAddNewFolderCoordinator.java",
     "java/src/org/chromium/chrome/browser/bookmarks/BookmarkBridge.java",
@@ -122,6 +123,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/bookmarks/ShoppingAccessoryView.java",
     "java/src/org/chromium/chrome/browser/bookmarks/ShoppingAccessoryViewBinder.java",
     "java/src/org/chromium/chrome/browser/bookmarks/ShoppingAccessoryViewProperties.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/TabBookmarker.java",
     "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBar.java",
     "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarButton.java",
     "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarButtonProperties.java",
@@ -178,6 +180,7 @@ android_library("java") {
     "//chrome/browser/ui/android/native_page:java",
     "//chrome/browser/ui/android/signin:java",
     "//chrome/browser/ui/android/theme:java",
+    "//chrome/browser/ui/android/toolbar:adaptive_features_java",
     "//chrome/browser/ui/android/toolbar:java",
     "//chrome/browser/ui/android/toolbar:optional_button_java",
     "//chrome/browser/ui/messages/android:java",
