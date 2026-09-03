@@ -32,7 +32,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/trace_event/typed_macros.h"
-#include "build/build_config.h"
 #include "mojo/core/ipcz_driver/envelope.h"
 
 namespace mojo::core {
@@ -40,13 +39,7 @@ namespace mojo::core {
 namespace {
 
 // Kill switch.
-BASE_FEATURE(kUseMachVouchers,
-#if defined(ARCH_CPU_X86_FAMILY)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-);
+BASE_FEATURE(kUseMachVouchers, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool ShouldUseVouchers() {
   static bool enabled = base::FeatureList::IsEnabled(kUseMachVouchers);
