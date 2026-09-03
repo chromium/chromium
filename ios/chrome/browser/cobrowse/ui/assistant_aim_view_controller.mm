@@ -769,6 +769,7 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
     [self.view layoutIfNeeded];
   }];
   [self.mutator didTapHistory];
+  [self.delegate assistantAIMViewControllerDidRequestEndEditing:self];
 }
 
 - (void)assistantAIMHeaderViewDidTapMyActivity:
