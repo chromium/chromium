@@ -17,4 +17,7 @@ BASE_FEATURE(kCriticalActionHistory, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<int> kMaxNavigationCacheCapacity{
     &kCriticalActionHistory, "max_navigation_cache_capacity", 200};
 
+const base::FeatureParam<bool> kEnableChatLinkouts{
+    &kCriticalActionHistory, "enable_chat_linkouts", true};
+
 }  // namespace critical_actions::features

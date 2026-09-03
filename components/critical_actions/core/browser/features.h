@@ -16,6 +16,10 @@ BASE_DECLARE_FEATURE(kCriticalActionHistory);
 // Maximum number of recent navigation entries retained in the LRU cache.
 extern const base::FeatureParam<int> kMaxNavigationCacheCapacity;
 
+// Parameter controlling whether to replace "Review Gemini Activity" with
+// "Go to Gemini chat" in the history menu.
+extern const base::FeatureParam<bool> kEnableChatLinkouts;
+
 }  // namespace critical_actions::features
 
 #endif  // COMPONENTS_CRITICAL_ACTIONS_CORE_BROWSER_FEATURES_H_

@@ -4,21 +4,26 @@
 
 source_set("critical_actions") {
   sources = [
+    "chat_linkout_handler.h",
     "critical_action_factory.cc",
     "critical_action_factory.h",
     "critical_action_ui_utils.cc",
     "critical_action_ui_utils.h",
+    "glic_linkout_handler.cc",
+    "glic_linkout_handler.h",
   ]
 
   public_deps = [ "//chrome/browser/profiles:profile" ]
 
   deps = [
     "//base",
+    "//chrome/browser/glic",
     "//chrome/browser/history",
     "//chrome/browser/ui/passwords",
     "//chrome/common",
     "//components/critical_actions/core/browser",
     "//components/keyed_service/core",
+    "//components/tabs:public",
     "//content/public/browser",
     "//net",
     "//url",
@@ -45,4 +50,9 @@ source_set("unit_tests") {
     "//net",
     "//testing/gtest",
   ]
+
+  if (!is_android) {
+    sources += [ "glic_linkout_handler_unittest.cc" ]
+    deps += [ "//chrome/browser/glic/test_support" ]
+  }
 }
