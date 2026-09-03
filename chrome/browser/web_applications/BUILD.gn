@@ -1390,6 +1390,8 @@ source_set("web_applications_browser_tests") {
     "//chrome/browser/ui/views/location_bar",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/browser/ui/views/web_apps:web_app_install_progress_view",
+    "//chrome/browser/ui/views/web_apps/isolated_web_apps:isolated_web_app_installer_coordinator",
+    "//chrome/browser/ui/views/web_apps/isolated_web_apps:isolated_web_app_installer_view_controller",
     "//chrome/browser/ui/views/web_apps/sub_apps",
     "//chrome/browser/ui/web_applications",
     "//chrome/browser/ui/web_applications:launch_utils",

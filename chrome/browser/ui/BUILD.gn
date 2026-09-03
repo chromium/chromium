@@ -2198,6 +2198,7 @@ static_library("ui") {
     ]
 
     allow_circular_includes_from += [
+      "//chrome/browser/ui/views/web_apps/isolated_web_apps:isolated_web_app_installer_view_controller",
       "//chrome/browser/ui/wallet",
       "//chrome/browser/ui/views/hats:impl",
 
@@ -2402,7 +2403,6 @@ static_library("ui") {
       "views/frame/browser_window_property_manager_win.h",
       "views/frame/windows_taskbar_icon_updater.cc",
       "views/frame/windows_taskbar_icon_updater.h",
-      "views/network_profile_bubble_view.cc",
     ]
 
     public_deps += [
@@ -2411,7 +2411,10 @@ static_library("ui") {
       "//chrome/browser/win:jumplist",
     ]
 
-    allow_circular_includes_from += [ "//chrome/browser/win:impl" ]
+    allow_circular_includes_from += [
+      "//chrome/browser/ui/views:network_profile_bubble_view",
+      "//chrome/browser/win:impl",
+    ]
 
     deps += [
       "//chrome/browser:font_prewarmer_tab_helper",
@@ -2419,6 +2422,7 @@ static_library("ui") {
       "//chrome/browser/taskbar",
       "//chrome/browser/ui/views:certificate_viewer_win",
       "//chrome/browser/ui/views:critical_notification_bubble_view",
+      "//chrome/browser/ui/views:network_profile_bubble_view",
       "//chrome/browser/ui/views:uninstall_browser_prompt",
       "//chrome/browser/ui/views/frame:minimize_button_metrics_win",
       "//chrome/browser/win:impl",
@@ -2441,16 +2445,18 @@ static_library("ui") {
       "views/frame/browser_native_widget_aura_linux.h",
       "views/frame/picture_in_picture_browser_frame_view_linux.cc",
       "views/frame/picture_in_picture_browser_frame_view_linux.h",
-      "views/window_sizer_linux.cc",
-      "views/window_sizer_linux.h",
     ]
 
     deps += [
       "//chrome/browser:shell_integration_linux",
       "//chrome/browser/ui/views:eula_dialog_linux",
+      "//chrome/browser/ui/views:window_sizer_linux",
       "//ui/linux:linux_ui_factory",
       "//ui/platform_window",
     ]
+
+    allow_circular_includes_from +=
+        [ "//chrome/browser/ui/views:window_sizer_linux" ]
 
     if (use_dbus) {
       sources += [
@@ -2584,12 +2590,6 @@ static_library("ui") {
       "views/web_apps/frame_toolbar/web_app_menu_button.h",
       "views/web_apps/frame_toolbar/web_app_toolbar_button_container.cc",
       "views/web_apps/frame_toolbar/web_app_toolbar_button_container.h",
-      "views/web_apps/isolated_web_apps/isolated_web_app_installer_coordinator.cc",
-      "views/web_apps/isolated_web_apps/isolated_web_app_installer_coordinator.h",
-      "views/web_apps/isolated_web_apps/isolated_web_app_installer_view_controller.cc",
-      "views/web_apps/isolated_web_apps/isolated_web_app_installer_view_controller.h",
-      "views/web_apps/isolated_web_apps/isolated_web_app_installer_view_impl.cc",
-      "views/web_apps/isolated_web_apps/isolated_web_app_installer_view_impl.h",
       "views/web_apps/web_app_install_dialog_delegate.cc",
       "views/web_apps/web_app_install_dialog_delegate.h",
       "views/web_apps/web_app_install_flow_dialog_delegate.cc",
@@ -2912,6 +2912,9 @@ static_library("ui") {
       "//chrome/browser/ui/views/web_apps/frame_toolbar:window_controls_overlay_toggle_button",
       "//chrome/browser/ui/views/web_apps/frame_toolbar:window_controls_overlay_toggle_button_impl",
       "//chrome/browser/ui/views/web_apps/isolated_web_apps:isolated_web_app_identity_view",
+      "//chrome/browser/ui/views/web_apps/isolated_web_apps:isolated_web_app_installer_coordinator",
+      "//chrome/browser/ui/views/web_apps/isolated_web_apps:isolated_web_app_installer_view_controller",
+      "//chrome/browser/ui/views/web_apps/isolated_web_apps:isolated_web_app_installer_view_impl",
       "//chrome/browser/ui/views/web_apps/isolated_web_apps:user_installability_checker",
       "//chrome/browser/ui/views/webauthn",
       "//chrome/browser/ui/views/webid",

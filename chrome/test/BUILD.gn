@@ -3629,6 +3629,8 @@ if (!is_android) {
         "//chrome/browser/ui/views/web_apps:image_carousel_view",
         "//chrome/browser/ui/views/web_apps:view_visible_in_active_widget_notifier",
         "//chrome/browser/ui/views/web_apps:web_app_uninstall_dialog_view",
+        "//chrome/browser/ui/views/web_apps/isolated_web_apps:isolated_web_app_installer_coordinator",
+        "//chrome/browser/ui/views/web_apps/isolated_web_apps:isolated_web_app_installer_view_controller",
         "//chrome/browser/ui/wallet:browser_tests",
       ]
       if (is_win) {
@@ -7730,6 +7732,8 @@ test("unit_tests") {
       "//chrome/browser/ui/views/frame:web_contents_close_handler",
       "//chrome/browser/ui/views/profiles:avatar_badge_view",
       "//chrome/browser/ui/views/relaunch_notification:unit_tests",
+      "//chrome/browser/ui/views/web_apps/isolated_web_apps:isolated_web_app_installer_view_controller",
+      "//chrome/browser/ui/views/web_apps/isolated_web_apps:isolated_web_app_installer_view_impl",
     ]
     if (is_win || is_mac || is_linux) {
       deps += [ "//chrome/browser/ui/views/scheduled_restart:unit_tests" ]
