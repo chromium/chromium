@@ -14,7 +14,7 @@
 //
 // NOTE: This test suite only verifies unit-test mode. It does NOT cover how
 // fuzzing engines execute a FUZZ_TEST in ClusterFuzz (which occurs through
-// generated wrapper binaries and is tested in `fuzztest_fuzzer_smoke_test.cc`).
+// generated wrapper binaries and is tested in `fuzzer_smoke_test.cc`).
 
 #include <string>
 
