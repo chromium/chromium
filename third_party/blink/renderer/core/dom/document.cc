@@ -8512,7 +8512,7 @@ ukm::SourceId Document::UkmSourceID() const {
 bool Document::AllowInlineEventHandler(Node* node,
                                        EventListener* listener,
                                        const String& context_url,
-                                       const OrdinalNumber& context_line) {
+                                       const TextPosition& context_position) {
   auto* element = DynamicTo<Element>(node);
   // HTML says that inline script needs browsing context to create its execution
   // environment.
@@ -8531,15 +8531,17 @@ bool Document::AllowInlineEventHandler(Node* node,
   if (!window->GetContentSecurityPolicyForCurrentWorld()->AllowInline(
           ContentSecurityPolicy::InlineType::kScriptAttribute, element,
           listener->ScriptBody(), String() /* nonce */, context_url,
-          context_line))
+          context_position)) {
     return false;
+  }
 
   if (!window->CanExecuteScripts(kNotAboutToExecuteScript))
     return false;
   if (node && node->GetDocument() != this &&
       !node->GetDocument().AllowInlineEventHandler(node, listener, context_url,
-                                                   context_line))
+                                                   context_position)) {
     return false;
+  }
 
   return true;
 }

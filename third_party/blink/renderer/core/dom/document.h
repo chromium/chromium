@@ -1577,7 +1577,7 @@ class CORE_EXPORT Document : public ContainerNode,
   bool AllowInlineEventHandler(Node*,
                                EventListener*,
                                const String& context_url,
-                               const OrdinalNumber& context_line);
+                               const TextPosition& context_position);
 
   void StatePopped(scoped_refptr<SerializedScriptValue>);
 

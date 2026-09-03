@@ -205,7 +205,7 @@ StyleElement::ProcessingResult StyleElement::CreateSheetOrModule(
       IsInUserAgentShadowDOM(element) ||
       (csp && csp->AllowInline(ContentSecurityPolicy::InlineType::kStyle,
                                &element, text, element.nonce(), document.Url(),
-                               start_position_.line_));
+                               start_position_));
 
   // Declarative CSS Modules impact the module map, so they must also respect
   // `script-src` CSP. The strictest union applies: the module is blocked if
@@ -214,7 +214,7 @@ StyleElement::ProcessingResult StyleElement::CreateSheetOrModule(
       !IsModule(document) || IsInUserAgentShadowDOM(element) ||
       (csp && csp->AllowInline(ContentSecurityPolicy::InlineType::kScript,
                                &element, text, element.nonce(), document.Url(),
-                               start_position_.line_));
+                               start_position_));
 
   const bool passes_content_security_policy_checks =
       passes_style_csp && passes_script_csp;

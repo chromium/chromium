@@ -74,17 +74,15 @@ SourceLocation* CaptureSourceLocation(ExecutionContext* execution_context) {
 
   if (LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(execution_context)) {
     Document* document = window->document();
-    unsigned line_number = 0;
+    TextPosition position = TextPosition::BelowRangePosition();
     if (document->GetScriptableDocumentParser() &&
-        !document->IsInDocumentWrite()) {
-      if (document->GetScriptableDocumentParser()->IsParsingAtLineNumber()) {
-        line_number =
-            document->GetScriptableDocumentParser()->LineNumber().OneBasedInt();
-      }
+        !document->IsInDocumentWrite() &&
+        document->GetScriptableDocumentParser()->IsParsingAtLineNumber()) {
+      position = document->GetScriptableDocumentParser()->GetTextPosition();
     }
-    return MakeGarbageCollected<SourceLocation>(document->Url().GetString(),
-                                                String(), line_number, 0,
-                                                std::move(stack_trace));
+    return MakeGarbageCollected<SourceLocation>(
+        document->Url().GetString(), String(), position.line_.OneBasedInt(),
+        position.column_.OneBasedInt(), std::move(stack_trace));
   }
 
   return MakeGarbageCollected<SourceLocation>(

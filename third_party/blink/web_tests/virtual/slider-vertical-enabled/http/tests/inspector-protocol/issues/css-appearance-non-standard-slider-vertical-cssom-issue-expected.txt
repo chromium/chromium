@@ -8,7 +8,7 @@ Issue for appearance "slider-vertical": {
                     frameId : <string>
                 }
                 sourceCodeLocation : {
-                    columnNumber : 14
+                    columnNumber : 13
                     lineNumber : 6
                     scriptId : <string>
                     url : http://127.0.0.1:8000/inspector-protocol/resources/css-appearance-non-standard-cssom.html?appearance&slider-vertical
@@ -27,7 +27,7 @@ Issue for -webkit-appearance "slider-vertical": {
                     frameId : <string>
                 }
                 sourceCodeLocation : {
-                    columnNumber : 14
+                    columnNumber : 13
                     lineNumber : 6
                     scriptId : <string>
                     url : http://127.0.0.1:8000/inspector-protocol/resources/css-appearance-non-standard-cssom.html?-webkit-appearance&slider-vertical

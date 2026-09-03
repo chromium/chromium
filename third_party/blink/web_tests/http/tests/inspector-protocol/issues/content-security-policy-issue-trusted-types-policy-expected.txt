@@ -8,7 +8,7 @@ Inspector issue: {
                 contentSecurityPolicyViolationType : kTrustedTypesPolicyViolation
                 isReportOnly : false
                 sourceCodeLocation : {
-                    columnNumber : 36
+                    columnNumber : 35
                     lineNumber : 4
                     scriptId : <string>
                     url : https://devtools.test:8443/inspector-protocol/resources/content-security-policy-issue-trusted-types-policy.php

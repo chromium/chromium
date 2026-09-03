@@ -385,7 +385,7 @@ const AtomicString& HTMLScriptElement::GetNonceForElement() const {
 
 bool HTMLScriptElement::AllowInlineScriptForCSP(
     const AtomicString& nonce,
-    const OrdinalNumber& context_line,
+    const TextPosition& context_position,
     const String& script_content) {
   // Support 'inline-speculation-rules' source.
   // https://wicg.github.io/nav-speculation/speculation-rules.html#content-security-policy
@@ -398,7 +398,7 @@ bool HTMLScriptElement::AllowInlineScriptForCSP(
   return GetExecutionContext()
       ->GetContentSecurityPolicyForCurrentWorld()
       ->AllowInline(inline_type, this, script_content, nonce,
-                    GetDocument().Url(), context_line);
+                    GetDocument().Url(), context_position);
 }
 
 Document& HTMLScriptElement::GetDocument() const {

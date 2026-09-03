@@ -8,7 +8,7 @@ Inspector issue: {
                 contentSecurityPolicyViolationType : kURLViolation
                 isReportOnly : false
                 sourceCodeLocation : {
-                    columnNumber : 1
+                    columnNumber : 0
                     lineNumber : 10
                     scriptId : <string>
                     url : http://127.0.0.1:8000/inspector-protocol/resources/payment-request-csp-violation.html

@@ -6,6 +6,7 @@ Session 1:
 {
     body : {
         blockedURL : inline
+        columnNumber : 13
         disposition : report
         documentURL : <string>
         effectiveDirective : script-src-elem
@@ -29,6 +30,7 @@ Session 1:
 {
     body : {
         blockedURL : inline
+        columnNumber : 13
         disposition : report
         documentURL : <string>
         effectiveDirective : script-src-elem

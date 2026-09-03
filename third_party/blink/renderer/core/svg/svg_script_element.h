@@ -103,7 +103,7 @@ class SVGScriptElement final : public SVGElement,
   }
   bool IsPotentiallyRenderBlocking() const override { return false; }
   bool AllowInlineScriptForCSP(const AtomicString& nonce,
-                               const OrdinalNumber&,
+                               const TextPosition& context_position,
                                const String& script_content) override;
   Document& GetDocument() const override;
   ExecutionContext* GetExecutionContext() const override;

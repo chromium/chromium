@@ -73,7 +73,7 @@ std::unique_ptr<protocol::Audits::SourceCodeLocation> CreateProtocolLocation(
   auto protocol_location = protocol::Audits::SourceCodeLocation::create()
                                .setUrl(location.Url())
                                .setLineNumber(location.LineNumber() - 1)
-                               .setColumnNumber(location.ColumnNumber())
+                               .setColumnNumber(location.ColumnNumber() - 1)
                                .build();
   if (location.ScriptId()) {
     protocol_location->setScriptId(String::Number(location.ScriptId()));

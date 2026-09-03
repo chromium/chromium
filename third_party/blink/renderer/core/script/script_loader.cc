@@ -643,7 +643,7 @@ PendingScript* ScriptLoader::PrepareScript(
   // [CSP]</spec>
   if (!element_->HasSourceAttribute() &&
       (!element_->AllowInlineScriptForCSP(element_->GetNonceForElement(),
-                                          position.line_, source_text) ||
+                                          position, source_text) ||
        !SubresourceIntegrity::VerifyInlineIntegrity(
            element_->IntegrityAttributeValue(),
            element_->SignatureAttributeValue(), source_text,

@@ -168,7 +168,7 @@ void ReportViolationWithLocation(
     const String& console_message,
     const KURL& blocked_url,
     const String& context_url,
-    const OrdinalNumber& context_line,
+    const TextPosition& context_position,
     Element* element,
     const String& source) {
   String message =
@@ -182,7 +182,8 @@ void ReportViolationWithLocation(
                          ? mojom::blink::ConsoleMessageLevel::kInfo
                          : mojom::blink::ConsoleMessageLevel::kError;
   SourceLocation* source_location =
-      CaptureSourceLocation(context_url, context_line.OneBasedInt(), 0);
+      CaptureSourceLocation(context_url, context_position.line_.OneBasedInt(),
+                            context_position.column_.OneBasedInt());
   policy->LogToConsole(MakeGarbageCollected<ConsoleMessage>(
       mojom::ConsoleMessageSource::kSecurity, error_level, message,
       source_location));
@@ -485,7 +486,7 @@ bool CheckInlineAndReportViolation(
     Element* element,
     const String& source,
     const String& context_url,
-    const OrdinalNumber& context_line,
+    const TextPosition& context_position,
     ContentSecurityPolicy::InlineType inline_type,
     const String& hash_value,
     CSPDirectiveName effective_type) {
@@ -557,7 +558,7 @@ bool CheckInlineAndReportViolation(
       StrCat({console_message,
               " violates the following Content Security Policy directive '",
               raw_directive, "'.", suffix}),
-      NullUrl(), context_url, context_line, element,
+      NullUrl(), context_url, context_position, element,
       directive.source_list->report_sample ? source : g_empty_string);
 
   if (!CSPDirectiveListIsReportOnly(csp)) {
@@ -778,7 +779,7 @@ bool CSPDirectiveListAllowInline(
     const String& content,
     const String& nonce,
     const String& context_url,
-    const OrdinalNumber& context_line,
+    const TextPosition& context_position,
     ReportingDisposition reporting_disposition) {
   CSPDirectiveName type = EffectiveDirectiveForInlineCheck(inline_type);
 
@@ -812,7 +813,7 @@ bool CSPDirectiveListAllowInline(
     }
 
     return CheckInlineAndReportViolation(csp, policy, directive, element,
-                                         content, context_url, context_line,
+                                         content, context_url, context_position,
                                          inline_type, hash_value, type);
   }
 

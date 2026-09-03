@@ -6,7 +6,7 @@ Inspector issue: {
             performanceIssueDetails : {
                 performanceIssueType : DocumentCookie
                 sourceCodeLocation : {
-                    columnNumber : 10
+                    columnNumber : 9
                     lineNumber : 0
                     scriptId : <string>
                     url :

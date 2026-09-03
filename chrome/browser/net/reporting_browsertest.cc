@@ -420,6 +420,7 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, TestReportingHeadersProcessed) {
         [ {
            "body": {
               "blockedURL": "inline",
+              "columnNumber": 11,
               "disposition": "enforce",
               "documentURL": "%s",
               "effectiveDirective": "script-src-elem",
@@ -472,6 +473,7 @@ IN_PROC_BROWSER_TEST_P(NonIsolatedReportingBrowserTest,
         [ {
            "body": {
               "blockedURL": "inline",
+              "columnNumber": 11,
               "disposition": "enforce",
               "documentURL": "%s",
               "effectiveDirective": "script-src-elem",

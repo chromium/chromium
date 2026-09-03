@@ -76,7 +76,7 @@ class CORE_EXPORT ScriptElementBase : public GarbageCollectedMixin {
   // synchronously to ensure the correct Javascript world is used for CSP
   // checks.
   virtual bool AllowInlineScriptForCSP(const AtomicString& nonce,
-                                       const OrdinalNumber&,
+                                       const TextPosition& context_position,
                                        const String& script_content) = 0;
 
   // GetDocument() is "element document", to which the script element belongs

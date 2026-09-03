@@ -8,7 +8,7 @@ Inspector issue: {
                 contentSecurityPolicyViolationType : kInlineViolation
                 isReportOnly : false
                 sourceCodeLocation : {
-                    columnNumber : 0
+                    columnNumber : 12
                     lineNumber : 5
                     url : https://devtools.test:8443/inspector-protocol/resources/content-security-policy-issue-inline-script.php
                 }

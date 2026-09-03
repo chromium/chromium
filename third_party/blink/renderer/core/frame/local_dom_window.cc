@@ -524,7 +524,8 @@ bool LocalDOMWindow::AllowInlineJavascriptUrl(const DOMWrapperWorld* world,
   // as per https://html.spec.whatwg.org/C/#javascript-protocol.
   return GetContentSecurityPolicyForWorld(world)->AllowInline(
       ContentSecurityPolicy::InlineType::kNavigation, element, decoded_url,
-      String() /* nonce */, Url(), OrdinalNumber::First());
+      String() /* nonce */, Url(),
+      TextPosition(OrdinalNumber::First(), OrdinalNumber::BeforeFirst()));
 }
 
 String LocalDOMWindow::CheckAndGetJavascriptUrl(
@@ -546,7 +547,8 @@ String LocalDOMWindow::CheckAndGetJavascriptUrl(
   // as per https://html.spec.whatwg.org/C/#javascript-protocol.
   if (!GetContentSecurityPolicyForWorld(world)->AllowInline(
           ContentSecurityPolicy::InlineType::kNavigation, element, decoded_url,
-          String() /* nonce */, Url(), OrdinalNumber::First())) {
+          String() /* nonce */, Url(),
+          TextPosition(OrdinalNumber::First(), OrdinalNumber::BeforeFirst()))) {
     return String();
   }
 

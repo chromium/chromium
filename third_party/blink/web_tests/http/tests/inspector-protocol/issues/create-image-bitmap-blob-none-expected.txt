@@ -8,7 +8,7 @@ Inspector issue: {
                     frameId : <string>
                 }
                 sourceCodeLocation : {
-                    columnNumber : 16
+                    columnNumber : 15
                     lineNumber : 22
                     scriptId : <string>
                     url : http://127.0.0.1:8000/inspector-protocol/resources/create-image-bitmap-blob-none.html

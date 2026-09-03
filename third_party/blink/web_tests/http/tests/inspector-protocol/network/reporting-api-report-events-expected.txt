@@ -4,6 +4,7 @@ Report added:
 {
     body : {
         blockedURL : inline
+        columnNumber : 13
         disposition : report
         documentURL : <string>
         effectiveDirective : script-src-elem
@@ -27,6 +28,7 @@ Report updated:
 {
     body : {
         blockedURL : inline
+        columnNumber : 13
         disposition : report
         documentURL : <string>
         effectiveDirective : script-src-elem
@@ -50,6 +52,7 @@ Report updated:
 {
     body : {
         blockedURL : inline
+        columnNumber : 13
         disposition : report
         documentURL : <string>
         effectiveDirective : script-src-elem

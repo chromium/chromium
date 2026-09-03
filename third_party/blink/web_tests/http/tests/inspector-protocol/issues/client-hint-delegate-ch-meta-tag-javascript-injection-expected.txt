@@ -6,7 +6,7 @@ Inspector issue: {
             clientHintIssueDetails : {
                 clientHintIssueReason : MetaTagModifiedHTML
                 sourceCodeLocation : {
-                    columnNumber : 33
+                    columnNumber : 32
                     lineNumber : 6
                     scriptId : <string>
                     url : https://devtools.test:8443/inspector-protocol/resources/client-hint-delegate-ch-meta-tag-javascript-injection.html

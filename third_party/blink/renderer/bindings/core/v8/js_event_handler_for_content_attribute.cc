@@ -133,8 +133,9 @@ v8::Local<v8::Value> JSEventHandlerForContentAttribute::GetCompiledHandler(
 
   // Step 2. If scripting is disabled for document, then return null.
   if (!document->AllowInlineEventHandler(element, this, source_url_,
-                                         position_.line_))
+                                         position_)) {
     return v8::Null(GetIsolate());
+  }
 
   // Step 5. If element is not null and element has a form owner, let form owner
   // be that form owner. Otherwise, let form owner be null.

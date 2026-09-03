@@ -9,7 +9,7 @@ Inspector issue: {
                 contentSecurityPolicyViolationType : kURLViolation
                 isReportOnly : true
                 sourceCodeLocation : {
-                    columnNumber : 0
+                    columnNumber : 58
                     lineNumber : 2
                     url : https://devtools.test:8443/inspector-protocol/resources/content-security-policy-issue-report-only.php
                 }
@@ -26,7 +26,7 @@ Inspector issue: {
                 contentSecurityPolicyViolationType : kEvalViolation
                 isReportOnly : true
                 sourceCodeLocation : {
-                    columnNumber : 13
+                    columnNumber : 12
                     lineNumber : 4
                     scriptId : <string>
                     url : https://devtools.test:8443/inspector-protocol/resources/content-security-policy-issue-report-only.php
@@ -44,7 +44,7 @@ Inspector issue: {
                 contentSecurityPolicyViolationType : kInlineViolation
                 isReportOnly : true
                 sourceCodeLocation : {
-                    columnNumber : 0
+                    columnNumber : 87
                     lineNumber : 5
                     url : https://devtools.test:8443/inspector-protocol/resources/content-security-policy-issue-report-only.php
                 }

@@ -8,7 +8,7 @@ Inspector issue: {
                     frameId : <string>
                 }
                 sourceCodeLocation : {
-                    columnNumber : 63
+                    columnNumber : 62
                     lineNumber : 0
                     scriptId : <string>
                     url :

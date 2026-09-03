@@ -390,7 +390,8 @@ TEST_F(ContentSecurityPolicyTest, NonceInline) {
 
   String context_url;
   String content;
-  OrdinalNumber context_line = OrdinalNumber::First();
+  TextPosition context_position(OrdinalNumber::First(),
+                                OrdinalNumber::BeforeFirst());
 
   // We need document for HTMLScriptElement tests.
   auto dummy = std::make_unique<DummyPageHolder>();
@@ -416,7 +417,7 @@ TEST_F(ContentSecurityPolicyTest, NonceInline) {
     EXPECT_EQ(test.allowed,
               policy->AllowInline(ContentSecurityPolicy::InlineType::kScript,
                                   element, content, String(test.nonce),
-                                  context_url, context_line));
+                                  context_url, context_position));
     EXPECT_EQ(expected_reports, policy->violation_reports_sent_.size());
 
     // Enforce 'style-src'
@@ -428,7 +429,7 @@ TEST_F(ContentSecurityPolicyTest, NonceInline) {
     EXPECT_EQ(test.allowed,
               policy->AllowInline(ContentSecurityPolicy::InlineType::kStyle,
                                   element, content, String(test.nonce),
-                                  context_url, context_line));
+                                  context_url, context_position));
     EXPECT_EQ(expected_reports, policy->violation_reports_sent_.size());
 
     // Report 'script-src'
@@ -439,7 +440,7 @@ TEST_F(ContentSecurityPolicyTest, NonceInline) {
         ContentSecurityPolicySource::kHTTP, *secure_origin));
     EXPECT_TRUE(policy->AllowInline(ContentSecurityPolicy::InlineType::kScript,
                                     element, content, String(test.nonce),
-                                    context_url, context_line));
+                                    context_url, context_position));
     EXPECT_EQ(expected_reports, policy->violation_reports_sent_.size());
 
     // Report 'style-src'
@@ -450,7 +451,7 @@ TEST_F(ContentSecurityPolicyTest, NonceInline) {
         ContentSecurityPolicySource::kHTTP, *secure_origin));
     EXPECT_TRUE(policy->AllowInline(ContentSecurityPolicy::InlineType::kStyle,
                                     element, content, String(test.nonce),
-                                    context_url, context_line));
+                                    context_url, context_position));
     EXPECT_EQ(expected_reports, policy->violation_reports_sent_.size());
   }
 }
@@ -1220,16 +1221,16 @@ TEST_F(ContentSecurityPolicyTest, EmptyCSPIsNoOp) {
   String source;
   String context_url;
   String nonce;
-  OrdinalNumber ordinal_number = OrdinalNumber::First();
+  TextPosition context_position = TextPosition::MinimumPosition();
   auto* element =
       MakeGarbageCollected<HTMLScriptElement>(*document, CreateElementFlags());
 
   EXPECT_TRUE(csp->AllowInline(ContentSecurityPolicy::InlineType::kNavigation,
                                element, source, String() /* nonce */,
-                               context_url, ordinal_number));
+                               context_url, context_position));
   EXPECT_TRUE(csp->AllowInline(
       ContentSecurityPolicy::InlineType::kScriptAttribute, element, source,
-      String() /* nonce */, context_url, ordinal_number));
+      String() /* nonce */, context_url, context_position));
   EXPECT_TRUE(csp->AllowEval(ReportingDisposition::kReport,
                              ContentSecurityPolicy::kWillNotThrowException,
                              g_empty_string));
@@ -1276,10 +1277,10 @@ TEST_F(ContentSecurityPolicyTest, EmptyCSPIsNoOp) {
             ContentSecurityPolicy::AllowTrustedTypePolicyDetails::kAllowed);
   EXPECT_TRUE(csp->AllowInline(ContentSecurityPolicy::InlineType::kScript,
                                element, source, nonce, context_url,
-                               ordinal_number));
+                               context_position));
   EXPECT_TRUE(csp->AllowInline(ContentSecurityPolicy::InlineType::kStyle,
                                element, source, nonce, context_url,
-                               ordinal_number));
+                               context_position));
   EXPECT_TRUE(csp->AllowRequest(mojom::blink::RequestContextType::SCRIPT,
                                 network::mojom::RequestDestination::kScript,
                                 network::mojom::RequestMode::kCors, example_url,
@@ -1718,9 +1719,10 @@ class SyntheticResponseContentSecurityPolicyTest
     String content;
     auto* element = MakeGarbageCollected<HTMLScriptElement>(
         *window()->document(), CreateElementFlags());
-    OrdinalNumber context_line = OrdinalNumber::First();
+    TextPosition context_position(OrdinalNumber::First(),
+                                  OrdinalNumber::BeforeFirst());
     return csp->AllowInline(type, element, content, nonce, context_url,
-                            context_line);
+                            context_position);
   }
 
   void ExpectBlockedInlineResourceTypeHistogram(InlineType type, int count) {

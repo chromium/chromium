@@ -623,7 +623,7 @@ bool ContentSecurityPolicy::AllowInline(
     const String& content,
     const String& nonce,
     const String& context_url,
-    const OrdinalNumber& context_line,
+    const TextPosition& context_position,
     ReportingDisposition reporting_disposition) {
   DCHECK(element || inline_type == InlineType::kScriptAttribute ||
          inline_type == InlineType::kNavigation);
@@ -679,8 +679,8 @@ bool ContentSecurityPolicy::AllowInline(
     is_allowed &=
         CheckHashAgainstPolicy(csp_hash_values, *policy, inline_type) ||
         CSPDirectiveListAllowInline(*policy, this, inline_type, element,
-                                    content, nonce, context_url, context_line,
-                                    reporting_disposition);
+                                    content, nonce, context_url,
+                                    context_position, reporting_disposition);
   }
 
   return is_allowed;
