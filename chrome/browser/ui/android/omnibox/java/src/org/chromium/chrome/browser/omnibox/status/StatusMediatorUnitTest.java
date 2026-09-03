@@ -195,7 +195,8 @@ public final class StatusMediatorUnitTest {
                         mTogglePopupCallback);
         mTemplateUrlServiceSupplier.set(mTemplateUrlService);
 
-        StatusIconResource logo = new StatusIconResource(R.drawable.ic_logo_googleg_20dp, 0);
+        StatusIconResource logo =
+                new StatusIconResource(R.drawable.ic_logo_googleg_20dp, /* tint= */ 0);
         mMediator.onSearchEngineIconChanged(logo);
     }
 
@@ -365,7 +366,7 @@ public final class StatusMediatorUnitTest {
         doReturn(true).when(mLocationBarDataProvider).isIncognito();
 
         mMediator.endInput();
-        mMediator.updateSecurityIcon(0, 0, 0);
+        mMediator.updateSecurityIcon(/* securityIcon= */ 0, /* tintList= */ 0, /* desc= */ 0);
 
         assertNull(mModel.get(StatusProperties.STATUS_ICON_RESOURCE));
     }
@@ -373,7 +374,7 @@ public final class StatusMediatorUnitTest {
     @Test
     public void searchEngineLogo_maybeUpdateStatusIconForSearchEngineIconChanges() {
         mMediator.beginInput(mFuseboxSessionState);
-        mMediator.updateSecurityIcon(0, 0, 0);
+        mMediator.updateSecurityIcon(/* securityIcon= */ 0, /* tintList= */ 0, /* desc= */ 0);
 
         assertTrue(mMediator.maybeUpdateStatusIconForSearchEngineIcon());
         assertEquals(
@@ -752,7 +753,8 @@ public final class StatusMediatorUnitTest {
         assertFalse(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
         assertNull(mModel.get(StatusProperties.STATUS_ICON_RESOURCE));
 
-        mMediator.updateSecurityIcon(R.drawable.ic_logo_googleg_20dp, 0, 0);
+        mMediator.updateSecurityIcon(
+                R.drawable.ic_logo_googleg_20dp, /* tintList= */ 0, /* desc= */ 0);
         mMediator.updateVerboseStatus(
                 ConnectionSecurityLevel.WARNING,
                 /* pageIsOffline= */ false,
@@ -781,7 +783,8 @@ public final class StatusMediatorUnitTest {
     @Test
     @DisableFeatures({ChromeFeatureList.ANDROID_PAGE_INFO_AS_APP_MENU_ITEM})
     public void testShowStatusIconForSecureOrigins_restoresIconResourceAfterNavigation() {
-        mMediator.updateSecurityIcon(R.drawable.ic_logo_googleg_20dp, 0, 0);
+        mMediator.updateSecurityIcon(
+                R.drawable.ic_logo_googleg_20dp, /* tintList= */ 0, /* desc= */ 0);
         mMediator.updateVerboseStatus(
                 ConnectionSecurityLevel.SECURE,
                 /* pageIsOffline= */ false,
@@ -822,7 +825,8 @@ public final class StatusMediatorUnitTest {
         assertFalse(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
 
         // Non-secure pages should show the status view.
-        mMediator.updateSecurityIcon(R.drawable.ic_logo_googleg_20dp, 0, 0);
+        mMediator.updateSecurityIcon(
+                R.drawable.ic_logo_googleg_20dp, /* tintList= */ 0, /* desc= */ 0);
         mMediator.updateVerboseStatus(
                 ConnectionSecurityLevel.DANGEROUS,
                 /* pageIsOffline= */ false,
@@ -931,7 +935,7 @@ public final class StatusMediatorUnitTest {
         doReturn(mTab).when(mLocationBarDataProvider).getTab();
         doReturn(mWebContents).when(mTab).getWebContents();
         doReturn(JUnitTestGURLs.BLUE_1).when(mLocationBarDataProvider).getCurrentGurl();
-        mMediator.updateSecurityIcon(R.drawable.ic_globe_24dp, 0, 0);
+        mMediator.updateSecurityIcon(R.drawable.ic_globe_24dp, /* tintList= */ 0, /* desc= */ 0);
 
         mModel.get(StatusProperties.STATUS_CLICK_LISTENER).onClick(/* view= */ null);
         verify(mPageInfoAction).show(any(), any());
@@ -991,7 +995,8 @@ public final class StatusMediatorUnitTest {
     public void testCallbackTriggeredWhenStatusViewHidden() {
         mMediator.setOnStatusViewHiddenForPageInfoRemoval(mOnStatusViewHiddenForPageInfoRemoval);
 
-        mMediator.updateSecurityIcon(R.drawable.ic_logo_googleg_20dp, 0, 0);
+        mMediator.updateSecurityIcon(
+                R.drawable.ic_logo_googleg_20dp, /* tintList= */ 0, /* desc= */ 0);
         mMediator.updateVerboseStatus(
                 ConnectionSecurityLevel.SECURE,
                 /* pageIsOffline= */ false,
@@ -1421,18 +1426,19 @@ public final class StatusMediatorUnitTest {
 
     @Test
     public void statusIcon_blankWhenPendingHttpNavigation() {
-        mMediator.updateSecurityIcon(R.drawable.ic_settings_tune_24dp, 0, 0);
+        mMediator.updateSecurityIcon(
+                R.drawable.ic_settings_tune_24dp, /* tintList= */ 0, /* desc= */ 0);
 
         assertModelIconResId(R.drawable.ic_settings_tune_24dp);
 
         doReturn(mNavigationEntry).when(mNavigationController).getPendingEntry();
         doReturn(JUnitTestGURLs.BLUE_1).when(mNavigationEntry).getUrl();
-        mMediator.updateSecurityIcon(R.drawable.ic_info_24dp, 0, 0);
+        mMediator.updateSecurityIcon(R.drawable.ic_info_24dp, /* tintList= */ 0, /* desc= */ 0);
 
         assertNull(mModel.get(StatusProperties.STATUS_ICON_RESOURCE));
 
         doReturn(null).when(mNavigationController).getPendingEntry();
-        mMediator.updateSecurityIcon(R.drawable.ic_info_24dp, 0, 0);
+        mMediator.updateSecurityIcon(R.drawable.ic_info_24dp, /* tintList= */ 0, /* desc= */ 0);
 
         assertModelIconResId(R.drawable.ic_info_24dp);
     }
@@ -1440,31 +1446,33 @@ public final class StatusMediatorUnitTest {
     @Test
     @DisableFeatures(OmniboxFeatureList.SUPPRESS_STATUS_ICON_DURING_HTTP_NAVIGATION)
     public void statusIcon_notBlankWhenPendingHttpNavigation_killSwitch() {
-        mMediator.updateSecurityIcon(R.drawable.ic_settings_tune_24dp, 0, 0);
+        mMediator.updateSecurityIcon(
+                R.drawable.ic_settings_tune_24dp, /* tintList= */ 0, /* desc= */ 0);
 
         assertModelIconResId(R.drawable.ic_settings_tune_24dp);
 
         doReturn(mNavigationEntry).when(mNavigationController).getPendingEntry();
         doReturn(JUnitTestGURLs.BLUE_1).when(mNavigationEntry).getUrl();
-        mMediator.updateSecurityIcon(R.drawable.ic_info_24dp, 0, 0);
+        mMediator.updateSecurityIcon(R.drawable.ic_info_24dp, /* tintList= */ 0, /* desc= */ 0);
 
         assertModelIconResId(R.drawable.ic_info_24dp);
     }
 
     @Test
     public void statusIcon_infoIconWhenPendingNonHttpNavigation() {
-        mMediator.updateSecurityIcon(R.drawable.ic_settings_tune_24dp, 0, 0);
+        mMediator.updateSecurityIcon(
+                R.drawable.ic_settings_tune_24dp, /* tintList= */ 0, /* desc= */ 0);
 
         assertModelIconResId(R.drawable.ic_settings_tune_24dp);
 
         doReturn(mNavigationEntry).when(mNavigationController).getPendingEntry();
         doReturn(JUnitTestGURLs.CHROME_ABOUT).when(mNavigationEntry).getUrl();
-        mMediator.updateSecurityIcon(R.drawable.ic_info_24dp, 0, 0);
+        mMediator.updateSecurityIcon(R.drawable.ic_info_24dp, /* tintList= */ 0, /* desc= */ 0);
 
         assertModelIconResId(R.drawable.ic_info_24dp);
 
         doReturn(null).when(mNavigationController).getPendingEntry();
-        mMediator.updateSecurityIcon(R.drawable.ic_info_24dp, 0, 0);
+        mMediator.updateSecurityIcon(R.drawable.ic_info_24dp, /* tintList= */ 0, /* desc= */ 0);
 
         assertModelIconResId(R.drawable.ic_info_24dp);
     }
