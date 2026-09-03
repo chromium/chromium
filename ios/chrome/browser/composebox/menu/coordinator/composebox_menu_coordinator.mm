@@ -481,6 +481,9 @@ CGFloat const kSheetTopPadding = 40.0f;
 
   if (diff.added.size() > 0) {
     [_metricsRecorder recordTabPickerTabsAttached:diff.added.size()];
+    [_metricsRecorder
+        recordPickerOutcome:MobileFuseboxPickerOutcome::kAttachmentAdded
+          forAttachmentType:MobileFuseboxPickerAttachmentType::kTabs];
   }
 
   [_mediator processWebStateIDs:selectedWebStateIDs

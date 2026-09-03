@@ -134,6 +134,9 @@
 
 - (void)presentTabPicker {
   if (!_browser) {
+    [self.metricsRecorder
+        recordPickerOutcome:MobileFuseboxPickerOutcome::kLocalError
+          forAttachmentType:MobileFuseboxPickerAttachmentType::kTabs];
     return;
   }
 

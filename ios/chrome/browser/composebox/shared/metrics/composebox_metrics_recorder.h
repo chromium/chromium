@@ -75,6 +75,7 @@ enum class MobileFuseboxPickerAttachmentType {
   kGallery,
   kCamera,
   kFile,
+  kTabs,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/histograms.xml:MobileFuseboxPickerAttachmentType)
 

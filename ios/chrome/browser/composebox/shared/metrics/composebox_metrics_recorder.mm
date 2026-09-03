@@ -174,6 +174,8 @@ std::string GetStringForPickerAttachmentType(
       return "Camera";
     case MobileFuseboxPickerAttachmentType::kFile:
       return "File";
+    case MobileFuseboxPickerAttachmentType::kTabs:
+      return "Tabs";
   }
 }
 
