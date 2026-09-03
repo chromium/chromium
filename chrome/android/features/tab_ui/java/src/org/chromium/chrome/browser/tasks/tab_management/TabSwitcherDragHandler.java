@@ -117,6 +117,7 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
     private @Nullable ImageView mShadowView;
     private @Nullable AnimatedDragShadowBuilder mCurrentDragShadowBuilder;
     private final TabSwitcherBackPressHandlerManager mDragHandlerManager;
+    private final boolean mFadeDragShadow;
 
     /**
      * Tracks whether this specific drag handler instance processed {@link DragEvent#ACTION_DROP}.
@@ -134,15 +135,19 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
      * @param multiInstanceManager {@link MultiInstanceManager} to perform move action when drop
      *     completes.
      * @param dragAndDropDelegate {@link DragAndDropDelegate} to initiate tab drag and drop.
+     * @param dragHandlerManager Manager for back press handling during drag.
+     * @param fadeDragShadow Whether the drag shadow should animate alpha during drag.
      */
     public TabSwitcherDragHandler(
             Supplier<@Nullable Activity> activitySupplier,
             MultiInstanceManager multiInstanceManager,
             DragAndDropDelegate dragAndDropDelegate,
-            TabSwitcherBackPressHandlerManager dragHandlerManager) {
+            TabSwitcherBackPressHandlerManager dragHandlerManager,
+            boolean fadeDragShadow) {
         super(activitySupplier, multiInstanceManager, dragAndDropDelegate);
         mDragHandlerManager = dragHandlerManager;
         mDragHandlerManager.addHandler(this);
+        mFadeDragShadow = fadeDragShadow;
     }
 
     public void onDragStateChanged(boolean isDragInProcess) {
@@ -266,7 +271,11 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
         // TODO(crbug.com/425901698): consider using {@link AnimatedImageDragShadowBuilder}.
         AnimatedDragShadowBuilder builder =
                 new AnimatedDragShadowBuilder(
-                        dragSourceView, mShadowView, startPoint, DRAG_SHADOW_ANIMATION_DURATION_MS);
+                        dragSourceView,
+                        mShadowView,
+                        startPoint,
+                        DRAG_SHADOW_ANIMATION_DURATION_MS,
+                        mFadeDragShadow);
         mCurrentDragShadowBuilder = builder;
 
         // Hide the item before trying to start drag. Hiding it at the ItemTouchHelper2 is too late
@@ -428,17 +437,23 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
         private final long mAnimationDuration;
         private final float mStartWidth;
         private final float mStartHeight;
+        private final boolean mFadeDragShadow;
 
         private float mProgress;
         private boolean mShowDragShadow = true;
 
         public AnimatedDragShadowBuilder(
-                View view, View dragShadowView, PointF startPointF, long animationDuration) {
+                View view,
+                View dragShadowView,
+                PointF startPointF,
+                long animationDuration,
+                boolean fadeDragShadow) {
             super(dragShadowView);
             mOriginalView = view;
             mAnimationDuration = animationDuration;
             mStartWidth = dragShadowView.getWidth();
             mStartHeight = dragShadowView.getHeight();
+            mFadeDragShadow = fadeDragShadow;
 
             if (dragShadowView != mOriginalView) {
                 // If using a custom shadow representing a grid card, mimic horizontal tab strip
@@ -461,7 +476,9 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
                 mTouchPointF = new PointF(mStartWidth * relativeX, mStartHeight * relativeY);
             }
 
-            dragShadowView.post(this::animate);
+            if (mFadeDragShadow) {
+                dragShadowView.post(this::animate);
+            }
         }
 
         /**
@@ -557,6 +574,10 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
             }
             View view = getView();
             if (view != null) {
+                if (!mFadeDragShadow) {
+                    view.draw(canvas);
+                    return;
+                }
                 float progress = getProgress();
                 // Apply alpha value.
                 Paint paint = new Paint();
