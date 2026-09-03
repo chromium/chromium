@@ -10,6 +10,8 @@ source_set("coordinator") {
     "at_memory_granular_fill_coordinator.mm",
     "at_memory_granular_fill_mediator.h",
     "at_memory_granular_fill_mediator.mm",
+    "at_memory_mediator.h",
+    "at_memory_mediator.mm",
     "at_memory_search_coordinator.h",
     "at_memory_search_coordinator.mm",
     "at_memory_search_mediator.h",
@@ -41,7 +43,10 @@ source_set("coordinator") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "at_memory_search_mediator_unittest.mm" ]
+  sources = [
+    "at_memory_mediator_unittest.mm",
+    "at_memory_search_mediator_unittest.mm",
+  ]
   deps = [
     ":coordinator",
     "//base",
@@ -51,6 +56,7 @@ source_set("unit_tests") {
     "//components/personal_context/first_run",
     "//ios/chrome/browser/autofill/atmemory/public",
     "//ios/chrome/browser/autofill/atmemory/ui",
+    "//ios/chrome/browser/autofill/manual_fill/public",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gmock",
