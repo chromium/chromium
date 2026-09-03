@@ -936,7 +936,8 @@ base::expected<void, std::string> Environment::WarmupEpDeviceForCompilerProcess(
   const OrtCompileApi* ort_compile_api = platform_functions->ort_compile_api();
 
   // Create the session options on the target device.
-  auto session_options = SessionOptions::Create(target_device, this);
+  auto session_options =
+      SessionOptions::CreateForCompilation(target_device, this);
   ScopedOrtModelCompilationOptions compile_options;
   CHECK_STATUS(ort_compile_api->CreateModelCompilationOptionsFromSessionOptions(
       env_.get(), session_options->get(),

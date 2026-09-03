@@ -35,7 +35,8 @@ DispatchContextImplOrt::Create(
   DCHECK(owning_task_runner->RunsTasksInCurrentSequence());
 
   // Create the session options on the target EP device.
-  auto session_options = ort::SessionOptions::Create(target_device, env);
+  auto session_options =
+      ort::SessionOptions::CreateForDispatch(target_device, env);
 
   OrtHardwareDeviceType device_type = WebnnToOrtDeviceType(options->device);
   const EpWorkarounds ep_workarounds = env->GetEpWorkarounds(device_type);

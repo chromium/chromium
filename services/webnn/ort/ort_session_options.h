@@ -39,9 +39,18 @@ class SessionOptions final : public base::RefCountedThreadSafe<SessionOptions> {
       scoped_refptr<Environment> env);
 
   // Selects the target EP device directly, bypassing the auto EP selection
-  // policy.
-  static scoped_refptr<SessionOptions> Create(const EpDeviceInfo& target_device,
-                                              scoped_refptr<Environment> env);
+  // policy. Used by the GPU process to create dispatch sessions that consume
+  // models already compiled by the Compiler process. Applies additional
+  // hardening.
+  static scoped_refptr<SessionOptions> CreateForDispatch(
+      const EpDeviceInfo& target_device,
+      scoped_refptr<Environment> env);
+
+  // Selects the target EP device directly, bypassing the auto EP selection
+  // policy. Used by the Compiler process for model compilation and EP warmup.
+  static scoped_refptr<SessionOptions> CreateForCompilation(
+      const EpDeviceInfo& target_device,
+      scoped_refptr<Environment> env);
 
   SessionOptions(base::PassKey<SessionOptions>,
                  ScopedOrtSessionOptions session_options,

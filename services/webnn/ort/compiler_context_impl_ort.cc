@@ -53,7 +53,7 @@ CompilerContextImplOrt::CompilerContextImplOrt(
       model_loader_(std::move(model_loader)),
       // The environment is guaranteed to be initialized in PreSandboxInit().
       env_(Environment::GetInstance().value()) {
-  session_options_ = SessionOptions::Create(target_device, env_);
+  session_options_ = SessionOptions::CreateForCompilation(target_device, env_);
 
   model_loader_.set_disconnect_handler(
       base::BindOnce(&CompilerContextImplOrt::OnModelLoaderDisconnected,

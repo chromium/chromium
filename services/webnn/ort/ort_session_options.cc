@@ -204,6 +204,45 @@ ScopedOrtSessionOptions CreateBaseSessionOptions(
   return session_options;
 }
 
+// Builds the session options shared by both the GPU-process dispatch session
+// and the Compiler-process compile/warmup sessions.
+ScopedOrtSessionOptions CreateSessionOptionsForTargetDevice(
+    std::string_view ep_name,
+    const OrtEnv* env,
+    const OrtEpDevice* target_ort_device) {
+  const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
+
+  ScopedOrtSessionOptions session_options = CreateBaseSessionOptions(ep_name);
+
+  // Directly bind the target device to the session options, bypassing the
+  // auto EP selection policy.
+  CHECK_STATUS(ort_api->SessionOptionsAppendExecutionProvider_V2(
+      session_options.get(), const_cast<OrtEnv*>(env), &target_ort_device,
+      /*num_ep_devices=*/1, /*ep_option_keys=*/nullptr,
+      /*ep_option_vals=*/nullptr, /*num_ep_options=*/0));
+
+  // Disable CPU EP fallback to ensure the session will be created on the
+  // expected EP device.
+  CHECK_STATUS(ort_api->AddSessionConfigEntry(
+      session_options.get(), kOrtSessionOptionsDisableCPUEPFallback, "1"));
+
+  // Setting the intra-op thread count to 1 stops ORT from spawning an intra-op
+  // thread pool, which it otherwise creates eagerly per session. The pool is
+  // only used to execute CPU kernels during graph execution, which never
+  // happens here since CPU EP fallback is disabled above.
+  CHECK_STATUS(ort_api->SetIntraOpNumThreads(session_options.get(), 1));
+
+  auto ep_it = kKnownEPs.find(ep_name);
+  if (ep_it != kKnownEPs.end()) {
+    for (const auto& [key, value] : ep_it->second.config_entries) {
+      CHECK_STATUS(ort_api->AddSessionConfigEntry(session_options.get(),
+                                                  key.c_str(), value.c_str()));
+    }
+  }
+
+  return session_options;
+}
+
 }  // namespace
 
 // static
@@ -260,15 +299,21 @@ SessionOptions::Create(mojom::CreateContextOptionsPtr context_options,
 }
 
 // static
-scoped_refptr<SessionOptions> SessionOptions::Create(
+scoped_refptr<SessionOptions> SessionOptions::CreateForDispatch(
     const EpDeviceInfo& target_device,
     scoped_refptr<Environment> env) {
   CHECK(base::FeatureList::IsEnabled(mojom::features::kWebNNCompilerProcess));
 
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
 
-  ScopedOrtSessionOptions session_options =
-      CreateBaseSessionOptions(target_device.ep_name);
+  // The target device was validated and registered during Environment
+  // initialization, so it must be present.
+  const OrtEpDevice* target_ort_device =
+      env->FindRegisteredEpDevice(target_device);
+  CHECK(target_ort_device);
+
+  ScopedOrtSessionOptions session_options = CreateSessionOptionsForTargetDevice(
+      target_device.ep_name, env->get(), target_ort_device);
 
   // Consume the compiled model with graph optimizations disabled. In the
   // offline-compile flow the GPU process loads a model that the sandboxed
@@ -276,25 +321,17 @@ scoped_refptr<SessionOptions> SessionOptions::Create(
   // compiler_context_impl_ort.cc), so re-optimizing here would be wasted work.
   // More importantly, this is a security boundary: the high-privilege GPU
   // process must not run graph transformation over attacker-influenced input,
-  // so all transformation is confined to the sandboxed Compiler process.
-  //
-  // This overload is also used by the Compiler process (CompileModel) and its
-  // EP warmup, where the level is ignored because
-  // CreateModelCompilationOptionsFromSessionOptions resets it; so setting it
-  // here effectively targets only the GPU-process dispatch session that
-  // consumes a precompiled model via CreateSessionFromArray. It overrides any
-  // --webnn-ort-graph-optimization-level switch applied in the base options,
-  // which is intended: the security boundary is not a debug-tunable knob.
+  // so all transformation is confined to the sandboxed Compiler process. This
+  // overrides any --webnn-ort-graph-optimization-level switch applied in the
+  // base options, which is intended: the security boundary is not a
+  // debug-tunable knob.
   CHECK_STATUS(ort_api->SetSessionGraphOptimizationLevel(session_options.get(),
                                                          ORT_DISABLE_ALL));
 
   // Disable model compilation in the GPU process, forcing all compilation on
   // compiling EPs to only happen in the Compiler process. This way a
   // compromised Compiler process can't cause the high-privilege GPU process to
-  // run less safe code than intended. The Compiler process itself ignores this
-  // setting because it internally overrides the value to 0 via the model
-  // compilation options.
-  // https://github.com/microsoft/onnxruntime/blob/00e575d/onnxruntime/core/session/model_compilation_options.cc#L32
+  // run less safe code than intended.
   CHECK_STATUS(ort_api->AddSessionConfigEntry(
       session_options.get(), kOrtSessionOptionsDisableModelCompile, "1"));
 
@@ -304,9 +341,8 @@ scoped_refptr<SessionOptions> SessionOptions::Create(
   CHECK_STATUS(ort_api->AddSessionConfigEntry(
       session_options.get(), kOrtSessionOptionsConfigLoadModelFormat, "ONNX"));
 
-  // Disable ahead-of-time function inlining. WebNN-built models never contain
-  // ONNX functions, so inlining is unnecessary for both the Compiler and GPU
-  // processes, and disabling it reduces the attack surface in the GPU process.
+  // Disable ahead-of-time function inlining to reduce the attack surface in the
+  // GPU process.
   CHECK_STATUS(ort_api->AddSessionConfigEntry(
       session_options.get(),
       kOrtSessionOptionsDisableAheadOfTimeFunctionInlining, "1"));
@@ -319,24 +355,16 @@ scoped_refptr<SessionOptions> SessionOptions::Create(
       kOrtSessionOptionsModelExternalInitializersFileFolderPath,
       "\\\\?\\Volume{00000000-0000-0000-0000-000000000000}\\"));
 
-  // Disable CPU EP fallback to ensure the session will be created on the
-  // expected EP device.
-  CHECK_STATUS(ort_api->AddSessionConfigEntry(
-      session_options.get(), kOrtSessionOptionsDisableCPUEPFallback, "1"));
+  return base::MakeRefCounted<SessionOptions>(
+      base::PassKey<SessionOptions>(), std::move(session_options),
+      std::move(env), target_ort_device, /*context_options=*/nullptr);
+}
 
-  // Setting the intra-op thread count to 1 stops ORT from spawning an intra-op
-  // thread pool, which it otherwise creates eagerly per session. The pool is
-  // only used to execute CPU kernels during graph execution, which never
-  // happens here since CPU EP fallback is disabled above.
-  CHECK_STATUS(ort_api->SetIntraOpNumThreads(session_options.get(), 1));
-
-  const auto ep_it = kKnownEPs.find(target_device.ep_name);
-  if (ep_it != kKnownEPs.end()) {
-    for (const auto& [key, value] : ep_it->second.config_entries) {
-      CHECK_STATUS(ort_api->AddSessionConfigEntry(session_options.get(),
-                                                  key.c_str(), value.c_str()));
-    }
-  }
+// static
+scoped_refptr<SessionOptions> SessionOptions::CreateForCompilation(
+    const EpDeviceInfo& target_device,
+    scoped_refptr<Environment> env) {
+  CHECK(base::FeatureList::IsEnabled(mojom::features::kWebNNCompilerProcess));
 
   // The target device was validated and registered during Environment
   // initialization, so it must be present.
@@ -344,13 +372,8 @@ scoped_refptr<SessionOptions> SessionOptions::Create(
       env->FindRegisteredEpDevice(target_device);
   CHECK(target_ort_device);
 
-  // Directly bind the target device to the session options, bypassing the
-  // auto EP selection policy.
-  CHECK_STATUS(ort_api->SessionOptionsAppendExecutionProvider_V2(
-      session_options.get(), const_cast<OrtEnv*>(env->get()),
-      &target_ort_device,
-      /*num_ep_devices=*/1, /*ep_option_keys=*/nullptr,
-      /*ep_option_vals=*/nullptr, /*num_ep_options=*/0));
+  ScopedOrtSessionOptions session_options = CreateSessionOptionsForTargetDevice(
+      target_device.ep_name, env->get(), target_ort_device);
 
   return base::MakeRefCounted<SessionOptions>(
       base::PassKey<SessionOptions>(), std::move(session_options),
