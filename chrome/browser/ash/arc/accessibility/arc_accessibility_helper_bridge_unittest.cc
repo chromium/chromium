@@ -230,8 +230,7 @@ TEST_F(ArcAccessibilityHelperBridgeTest, AnnouncementEvent) {
 
   ASSERT_EQ(1, helper_bridge->GetEventCount(event_name));
   ASSERT_EQ(event_name, helper_bridge->last_event->event_name);
-  const base::ListValue& arg =
-      helper_bridge->last_event->event_args[0].GetList();
+  const base::ListValue& arg = helper_bridge->last_event->args()[0].GetList();
   ASSERT_EQ(1U, arg.size());
   ASSERT_EQ(announce_text, arg[0].GetString());
 }
@@ -260,8 +259,7 @@ TEST_F(ArcAccessibilityHelperBridgeTest, NotificationStateChangedEvent) {
 
   ASSERT_EQ(1, helper_bridge->GetEventCount(event_name));
   ASSERT_EQ(event_name, helper_bridge->last_event->event_name);
-  const base::ListValue& arg =
-      helper_bridge->last_event->event_args[0].GetList();
+  const base::ListValue& arg = helper_bridge->last_event->args()[0].GetList();
   ASSERT_EQ(1U, arg.size());
   ASSERT_EQ(toast_text, arg[0].GetString());
 

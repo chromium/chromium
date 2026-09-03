@@ -427,7 +427,7 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateDelegateImplTest,
       events.find(api::passwords_private::
                       OnPasswordManagerActionableErrorChanged::kEventName);
   ASSERT_TRUE(it != events.end());
-  base::Value args = base::Value(it->second->event_args.Clone());
+  base::Value args = base::Value(it->second->args().Clone());
 
   ASSERT_TRUE(args.is_list());
   ASSERT_EQ(1u, args.GetList().size());

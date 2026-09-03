@@ -306,8 +306,7 @@ class DownloadsEventsListener : public EventRouter::TestObserver {
 
     Event* new_event = new Event(
         Profile::FromBrowserContext(event.restrict_to_browser_context),
-        event.event_name, base::Value(event.event_args.Clone()),
-        base::Time::Now());
+        event.event_name, base::Value(event.args().Clone()), base::Time::Now());
     // Keep track of the last filename seen in the event stream. Don't overwrite
     // with empty strings because some (most) events don't have filenames.
     if (!new_event->filename().empty()) {

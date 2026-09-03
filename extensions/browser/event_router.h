@@ -723,6 +723,11 @@ struct Event {
   // The event to dispatch.
   const std::string event_name;
 
+  // Returns a reference to the event arguments for read-only access.
+  // The reference is valid only for the lifetime of the current arguments
+  // on this Event.
+  const base::ListValue& args() const { return event_args; }
+
   // Arguments to send to the event listener.
   base::ListValue event_args;
 

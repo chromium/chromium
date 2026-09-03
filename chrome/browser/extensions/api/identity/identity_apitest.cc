@@ -4364,12 +4364,12 @@ class OnSignInChangedEventTest : public IdentityTestWithSignin {
 
     // Search for |event| in the set of expected events.
     bool found_event = false;
-    const auto& event_args = event->event_args;
+    const auto& event_args = event->args();
     for (const auto& expected_event : expected_events_) {
       EXPECT_EQ(expected_event->histogram_value, event->histogram_value);
       EXPECT_EQ(expected_event->event_name, event->event_name);
 
-      const auto& expected_event_args = expected_event->event_args;
+      const auto& expected_event_args = expected_event->args();
       if (event_args != expected_event_args) {
         continue;
       }
@@ -4385,7 +4385,7 @@ class OnSignInChangedEventTest : public IdentityTestWithSignin {
       LOG(INFO) << "Was expecting events with these args:";
 
       for (const auto& expected_event : expected_events_) {
-        LOG(INFO) << expected_event->event_args;
+        LOG(INFO) << expected_event->args();
       }
 
       LOG(INFO) << "But received event with different args:";

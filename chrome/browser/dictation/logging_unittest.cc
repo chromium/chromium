@@ -83,9 +83,9 @@ TEST_F(DictationLoggingTest, BuffersAndFlushesOnTimer) {
       extensions::api::dictation_private::OnBrowserLog::kEventName);
   ASSERT_NE(it, observer.events().end());
   ASSERT_TRUE(it->second);
-  ASSERT_EQ(it->second->event_args.size(), 1u);
+  ASSERT_EQ(it->second->args().size(), 1u);
 
-  const base::ListValue& list = it->second->event_args[0].GetList();
+  const base::ListValue& list = it->second->args()[0].GetList();
   ASSERT_EQ(list.size(), 2u);
   const std::string* msg1 = list[0].GetDict().FindString("message");
   const std::string* msg2 = list[1].GetDict().FindString("message");

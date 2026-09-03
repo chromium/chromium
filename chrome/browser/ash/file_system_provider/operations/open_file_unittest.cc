@@ -112,7 +112,7 @@ TEST_F(FileSystemProviderOperationsOpenFileTest, Execute) {
   EXPECT_EQ(
       extensions::api::file_system_provider::OnOpenFileRequested::kEventName,
       event->event_name);
-  const base::ListValue& event_args = event->event_args;
+  const base::ListValue& event_args = event->args();
   ASSERT_EQ(1u, event_args.size());
 
   const base::Value* options_as_value = &event_args[0];

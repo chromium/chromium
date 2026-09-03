@@ -79,7 +79,7 @@ class FakeEventRouter : public extensions::EventRouter {
       const extensions::ExtensionId& extension_id,
       std::unique_ptr<extensions::Event> event) override {
     ASSERT_TRUE(file_system_);
-    const base::Value* dict = &event->event_args[0];
+    const base::Value* dict = &event->args()[0];
     ASSERT_TRUE(dict->is_dict());
     const std::string* file_system_id =
         dict->GetDict().FindString("fileSystemId");

@@ -65,9 +65,9 @@ class AppLaunchTracker : public extensions::TestEventRouter::EventObserver {
                                   const extensions::Event& event) override {
     ASSERT_EQ(event.event_name,
               extensions::api::app_runtime::OnLaunched::kEventName);
-    ASSERT_EQ(1u, event.event_args.size());
+    ASSERT_EQ(1u, event.args().size());
 
-    const base::DictValue& launch_data = event.event_args[0].GetDict();
+    const base::DictValue& launch_data = event.args()[0].GetDict();
     std::optional<bool> is_kiosk_session =
         launch_data.FindBool("isKioskSession");
     ASSERT_TRUE(is_kiosk_session);

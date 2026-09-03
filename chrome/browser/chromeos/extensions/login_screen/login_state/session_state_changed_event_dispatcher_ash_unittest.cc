@@ -53,8 +53,8 @@ bool WasSessionStateChangedEventDispatched(
   }
 
   const extensions::Event& event = *iter->second;
-  CHECK_EQ(1u, event.event_args.size());
-  std::string session_state = event.event_args[0].GetString();
+  CHECK_EQ(1u, event.args().size());
+  std::string session_state = event.args()[0].GetString();
   return extensions::api::login_state::ParseSessionState(session_state) ==
          expected_state;
 }

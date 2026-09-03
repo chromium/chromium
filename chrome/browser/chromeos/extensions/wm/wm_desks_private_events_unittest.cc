@@ -90,8 +90,8 @@ TEST_F(WMDesksPrivateEventsUnitTest, DispatchEventOnDeskAdded) {
   const auto& event_map = test_observer.events();
   auto iter = event_map.find(event_name);
   ASSERT_FALSE(iter == event_map.end());
-  ASSERT_EQ(2u, iter->second->event_args.size());
-  EXPECT_EQ(desk_1.AsLowercaseString(), iter->second->event_args[0]);
+  ASSERT_EQ(2u, iter->second->args().size());
+  EXPECT_EQ(desk_1.AsLowercaseString(), iter->second->args()[0]);
 }
 
 TEST_F(WMDesksPrivateEventsUnitTest, DispatchEventOnDeskRemoved) {
@@ -113,8 +113,8 @@ TEST_F(WMDesksPrivateEventsUnitTest, DispatchEventOnDeskRemoved) {
   const auto& event_map = test_observer.events();
   auto iter = event_map.find(event_name);
   ASSERT_FALSE(iter == event_map.end());
-  ASSERT_EQ(1u, iter->second->event_args.size());
-  EXPECT_EQ(desk_1.AsLowercaseString(), iter->second->event_args[0]);
+  ASSERT_EQ(1u, iter->second->args().size());
+  EXPECT_EQ(desk_1.AsLowercaseString(), iter->second->args()[0]);
 }
 
 TEST_F(WMDesksPrivateEventsUnitTest, DispatchEventOnDeskSwitched) {
@@ -137,9 +137,9 @@ TEST_F(WMDesksPrivateEventsUnitTest, DispatchEventOnDeskSwitched) {
   const auto& event_map = test_observer.events();
   auto iter = event_map.find(event_name);
   ASSERT_FALSE(iter == event_map.end());
-  ASSERT_EQ(2u, iter->second->event_args.size());
-  EXPECT_EQ(desk_1.AsLowercaseString(), iter->second->event_args[0]);
-  EXPECT_EQ(desk_2.AsLowercaseString(), iter->second->event_args[1]);
+  ASSERT_EQ(2u, iter->second->args().size());
+  EXPECT_EQ(desk_1.AsLowercaseString(), iter->second->args()[0]);
+  EXPECT_EQ(desk_2.AsLowercaseString(), iter->second->args()[1]);
 }
 
 TEST_F(WMDesksPrivateEventsUnitTest, DispatchEventOnDeskRemovalUndone) {
@@ -161,7 +161,7 @@ TEST_F(WMDesksPrivateEventsUnitTest, DispatchEventOnDeskRemovalUndone) {
   const auto& event_map = test_observer.events();
   auto iter = event_map.find(event_name);
   ASSERT_FALSE(iter == event_map.end());
-  ASSERT_EQ(2u, iter->second->event_args.size());
-  EXPECT_EQ(desk_1.AsLowercaseString(), iter->second->event_args[0]);
+  ASSERT_EQ(2u, iter->second->args().size());
+  EXPECT_EQ(desk_1.AsLowercaseString(), iter->second->args()[0]);
 }
 }  // namespace extensions

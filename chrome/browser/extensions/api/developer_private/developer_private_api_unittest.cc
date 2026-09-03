@@ -138,9 +138,9 @@ bool DoesItemChangedEventMatch(
     const ExtensionId& extension_id,
     const api::developer_private::EventType event_type,
     api::developer_private::ExtensionInfo* info_from_event) {
-  CHECK_GE(1u, event.event_args.size());
+  CHECK_GE(1u, event.args().size());
   std::optional<api::developer_private::EventData> event_data =
-      api::developer_private::EventData::FromValue(event.event_args[0]);
+      api::developer_private::EventData::FromValue(event.args()[0]);
   if (!event_data) {
     return false;
   }
@@ -187,9 +187,9 @@ bool WasUserSiteSettingsChangedEventDispatched(
   }
 
   const Event& event = *iter->second;
-  CHECK_GE(1u, event.event_args.size());
+  CHECK_GE(1u, event.args().size());
   auto site_settings =
-      api::developer_private::UserSiteSettings::FromValue(event.event_args[0]);
+      api::developer_private::UserSiteSettings::FromValue(event.args()[0]);
   if (!site_settings) {
     return false;
   }

@@ -38,7 +38,7 @@ void TestExtensionEventObserver::OnBroadcastEvent(
       event.event_name == OnPolicySpecifiedPasswordReuseDetected::kEventName ||
       event.event_name == OnPolicySpecifiedPasswordChanged::kEventName ||
       event.event_name == OnDangerousDownloadOpened::kEventName) {
-    latest_event_args_ = event.event_args.Clone();
+    latest_event_args_ = event.args().Clone();
     latest_event_name_ = event.event_name;
   }
 }

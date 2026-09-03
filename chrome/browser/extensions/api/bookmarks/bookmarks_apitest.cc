@@ -56,12 +56,12 @@ using ::testing::StrEq;
 MATCHER_P(IsCreatedEventForNode, node, "") {
   return ExplainMatchResult(Eq(api::bookmarks::OnCreated::kEventName),
                             arg->event_name, result_listener) &&
-         ExplainMatchResult(Eq(2u), arg->event_args.size(), result_listener) &&
+         ExplainMatchResult(Eq(2u), arg->args().size(), result_listener) &&
          ExplainMatchResult(Eq(base::NumberToString(node->id())),
-                            arg->event_args[0].GetString(), result_listener) &&
+                            arg->args()[0].GetString(), result_listener) &&
          ExplainMatchResult(
              MatchesBookmarkNode(node),
-             api::bookmarks::BookmarkTreeNode::FromValue(arg->event_args[1])
+             api::bookmarks::BookmarkTreeNode::FromValue(arg->args()[1])
                  .value(),
              result_listener);
 }
@@ -86,11 +86,11 @@ MATCHER_P5(IsMovedEvent,
                      << arg->event_name;
     return false;
   }
-  if (!ExplainMatchResult(Eq(2u), arg->event_args.size(), result_listener)) {
+  if (!ExplainMatchResult(Eq(2u), arg->args().size(), result_listener)) {
     return false;
   }
   if (!ExplainMatchResult(Eq(base::NumberToString(node_id)),
-                          arg->event_args[0].GetString(), result_listener)) {
+                          arg->args()[0].GetString(), result_listener)) {
     return false;
   }
 
@@ -99,9 +99,9 @@ MATCHER_P5(IsMovedEvent,
   expected_move_info.old_index = old_index;
   expected_move_info.parent_id = base::NumberToString(new_parent_id);
   expected_move_info.index = new_index;
-  if (arg->event_args[1] != expected_move_info.ToValue()) {
+  if (arg->args()[1] != expected_move_info.ToValue()) {
     *result_listener << "Actual MoveInfo:\n"
-                     << PrintToString(arg->event_args[1])
+                     << PrintToString(arg->args()[1])
                      << "\nDoes not match expected value:\n"
                      << PrintToString(expected_move_info.ToValue());
     return false;
@@ -118,16 +118,16 @@ MATCHER_P(IsRemoveEventForNodeWithIndex, remove_info, "") {
                      << arg->event_name;
     return false;
   }
-  if (!ExplainMatchResult(Eq(2u), arg->event_args.size(), result_listener)) {
+  if (!ExplainMatchResult(Eq(2u), arg->args().size(), result_listener)) {
     return false;
   }
-  if (!ExplainMatchResult(Eq(remove_info->node.id),
-                          arg->event_args[0].GetString(), result_listener)) {
+  if (!ExplainMatchResult(Eq(remove_info->node.id), arg->args()[0].GetString(),
+                          result_listener)) {
     return false;
   }
-  if (arg->event_args[1] != remove_info->ToValue()) {
+  if (arg->args()[1] != remove_info->ToValue()) {
     *result_listener << "Actual RemoveInfo:\n"
-                     << PrintToString(arg->event_args[1])
+                     << PrintToString(arg->args()[1])
                      << "\nDoes not match expected value:\n"
                      << PrintToString(remove_info->ToValue());
     return false;
