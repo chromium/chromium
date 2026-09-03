@@ -1669,6 +1669,11 @@ class StructTraits<remoting::mojom::SessionPoliciesDataView,
     return policies.allow_gnubby_forwarding;
   }
 
+  static std::optional<bool> allow_terminal_mode(
+      const ::remoting::SessionPolicies& policies) {
+    return policies.allow_terminal_mode;
+  }
+
   static bool Read(remoting::mojom::SessionPoliciesDataView data_view,
                    ::remoting::SessionPolicies* out_policies);
 };

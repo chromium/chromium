@@ -151,6 +151,10 @@ struct SessionPolicies {
   // the host machine.
   // A null value means to use the default value, which is true (allowed).
   bool? allow_gnubby_forwarding;
+
+  // Allow the client to establish terminal sessions on supported platforms.
+  // A null value means to use the default value, which is true (allowed).
+  bool? allow_terminal_mode;
 };
 // LINT.ThenChange(//remoting/base/session_policies.h:SessionPolicies)
 

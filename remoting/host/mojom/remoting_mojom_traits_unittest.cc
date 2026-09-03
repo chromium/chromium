@@ -852,6 +852,7 @@ TEST(RemotingMojomTraitsTest, SessionPoliciesRoundTripAndValidation) {
   input.allow_remote_input = true;
   input.allow_webauthn_forwarding = false;
   input.allow_gnubby_forwarding = true;
+  input.allow_terminal_mode = false;
 
   SessionPolicies output;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::SessionPolicies>(

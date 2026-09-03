@@ -639,6 +639,7 @@ bool mojo::StructTraits<remoting::mojom::SessionPoliciesDataView,
   out_policies->allow_webauthn_forwarding =
       data_view.allow_webauthn_forwarding();
   out_policies->allow_gnubby_forwarding = data_view.allow_gnubby_forwarding();
+  out_policies->allow_terminal_mode = data_view.allow_terminal_mode();
   return true;
 }
 
