@@ -7,6 +7,5 @@ found in the LICENSE file.
 
 <resources>
     <dimen name="side_panel_corner_radius">12dp</dimen>
-    <dimen name="side_panel_hairline_width">1dp</dimen>
     <dimen name="side_ui_container_padding">6dp</dimen>
 </resources>

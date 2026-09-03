@@ -84,6 +84,7 @@ public class SidePanelContainerCoordinatorIntegrationTest {
     @Rule
     public RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(1)
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_TOP_CHROME_SIDE_PANEL)
                     .build();
 

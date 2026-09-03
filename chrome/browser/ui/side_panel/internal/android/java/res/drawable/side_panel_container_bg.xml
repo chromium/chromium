@@ -15,9 +15,5 @@ found in the LICENSE file.
       android:shape="rectangle">
     <solid android:color="@macro/default_bg_color" />
     <corners android:radius="@dimen/side_panel_corner_radius" />
-    <padding android:left="@dimen/side_panel_hairline_width"
-        android:top="@dimen/side_panel_hairline_width"
-        android:right="@dimen/side_panel_hairline_width"
-        android:bottom="@dimen/side_panel_hairline_width"/>
   </shape>
 </inset>
