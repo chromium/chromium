@@ -8,17 +8,60 @@ package identity_consent;
 
 option optimize_for = LITE_RUNTIME;
 
+// Standalone wire-compatible definition of Google3 ConsentFlowId enum:
+// google3/identity/consent/auth/primitives/api/consent_flow_id.proto
+enum ConsentFlowId {
+  CONSENT_FLOW_ID_UNSPECIFIED = 0;
+  CHOICEFLOW_PCONTEXT_WORKSPACE_AIM = 76;
+}
+
+// Standalone wire-compatible definition of Google3 ConsentSettingId enum:
+// google3/java/com/google/personalization/footprints/transparencyandcontrol/proto/consent.proto
+enum ConsentSettingId {
+  SETTING_UNSPECIFIED = 0;
+  PERSONAL_CONTEXT_SEARCH_USING_WORKSPACE = 38;
+}
+
+// Standalone wire-compatible definition of Google3 Decision enum:
+// google3/identity/consent/auth/primitives/api/decision.proto
+enum Decision {
+  DECISION_UNSPECIFIED = 0;
+  DECISION_CONSENT = 1;
+  DECISION_DO_NOT_CONSENT = 2;
+  DECISION_ABANDONED = 3;
+  DECISION_ASK_LATER = 4;
+  DECISION_CUSTOMIZE_OPTIONS = 5;
+  DECISION_GO_BACK = 6;
+  DECISION_DISABLE_SETTING = 7;
+  DECISION_KEEP_CONSENT = 8;
+  DECISION_ASK_LATER_ONE_WEEK = 10;
+  DECISION_ASK_LATER_TWO_WEEKS = 11;
+  DECISION_COMPLETED = 12;
+  DECISION_TRIGGER_FOLLOW_UP_FLOW = 13;
+  DECISION_CHANGE_LANGUAGE = 14;
+}
+
 message ConsentFlowCompleted {}
 message ConsentFlowNotCompleted {}
 
-message ConsentFlowId {
-  optional int32 value = 1;
+// Standalone wire-compatible definition of Google3 ConsentDecision:
+// google3/identity/consent/auth/primitives/api/api.proto
+message ConsentDecision {
+  oneof setting_id {
+    ConsentSettingId ftc_consent_setting_id = 1;
+  }
+  optional Decision decision = 2;
 }
 
+// Standalone wire-compatible definition of Google3 PrivacyFlowResult:
+// google3/identity/consent/auth/primitives/api/v2/privacy_flow_result.proto
 message PrivacyFlowResult {
   optional ConsentFlowId flow_id = 1;
-  optional ConsentFlowCompleted flow_completed = 2;
-  optional ConsentFlowNotCompleted flow_not_completed = 3;
+  oneof outcome {
+    ConsentFlowCompleted flow_completed = 2;
+    ConsentFlowNotCompleted flow_not_completed = 3;
+  }
+  repeated ConsentDecision decision = 4;
 }
 
 enum Event {

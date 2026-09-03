@@ -336,17 +336,31 @@ void DrivePickerHostUI::HandlePrivacyFlowResult(
   VLOG(1)
       << "[DrivePickerHostUI] HandlePrivacyFlowResult entry. flow_completed: "
       << result.has_flow_completed()
-      << ", flow_not_completed: " << result.has_flow_not_completed();
+      << ", flow_not_completed: " << result.has_flow_not_completed()
+      << ", decisions: " << result.decision_size();
   if (result.has_flow_id() &&
-      result.flow_id().value() !=
-          omnibox::kComposeboxDriveConsentFlowId.Get()) {
+      result.flow_id() != static_cast<identity_consent::ConsentFlowId>(
+                              omnibox::kComposeboxDriveConsentFlowId.Get())) {
     DLOG(WARNING) << "Unexpected or missing flow_id";
     OnConsentKitError("Unexpected or missing flow_id");
     return;
   }
 
-  if (result.has_flow_completed()) {
-    VLOG(1) << "[DrivePickerHostUI] Handling flow_completed. "
+  bool has_consent = false;
+  for (const auto& decision : result.decision()) {
+    if (decision.ftc_consent_setting_id() ==
+            identity_consent::ConsentSettingId::
+                PERSONAL_CONTEXT_SEARCH_USING_WORKSPACE &&
+        (decision.decision() == identity_consent::Decision::DECISION_CONSENT ||
+         decision.decision() ==
+             identity_consent::Decision::DECISION_KEEP_CONSENT)) {
+      has_consent = true;
+      break;
+    }
+  }
+
+  if (has_consent) {
+    VLOG(1) << "[DrivePickerHostUI] Handling decision consent. "
                "Transitioning to Picker.";
     Profile* profile = Profile::FromWebUI(web_ui());
     profile->GetPrefs()->SetInteger(
@@ -361,7 +375,7 @@ void DrivePickerHostUI::HandlePrivacyFlowResult(
     if (consent_result_handler_) {
       FetchTokenAndShowPicker(consent_result_handler_.Unbind());
     }
-  } else if (result.has_flow_not_completed()) {
+  } else {
     if (consent_result_handler_) {
       consent_result_handler_->OnCancel();
       consent_result_handler_.reset();
