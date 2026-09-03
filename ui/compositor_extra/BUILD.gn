@@ -4,12 +4,16 @@
 
 source_set("compositor_extra") {
   sources = [
+    "decoration_util.cc",
+    "decoration_util.h",
     "shadow.cc",
     "shadow.h",
   ]
 
   deps = [
     "//base",
+    "//cc/paint",
+    "//skia",
     "//ui/base",
     "//ui/compositor",
     "//ui/gfx",

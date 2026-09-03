@@ -13,10 +13,10 @@
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_nine_patch.h"
 #include "ui/compositor/layer_owner.h"
+#include "ui/compositor_extra/decoration_util.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/gfx/shadow_util.h"
 
 namespace ui {
 

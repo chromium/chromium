@@ -303,6 +303,7 @@ test("aura_unittests") {
   use_xvfb = use_xvfb_in_this_config
 
   sources = [
+    "../compositor_extra/decoration_util_unittest.cc",
     "../compositor_extra/shadow_unittest.cc",
     "client/screen_position_client_unittest.cc",
     "gestures/gesture_recognizer_unittest.cc",

@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_GFX_SHADOW_UTIL_H_
-#define UI_GFX_SHADOW_UTIL_H_
+#ifndef UI_COMPOSITOR_EXTRA_DECORATION_UTIL_H_
+#define UI_COMPOSITOR_EXTRA_DECORATION_UTIL_H_
 
-#include "base/component_export.h"
+#include <cstddef>
+
 #include "build/build_config.h"
 #include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -16,7 +17,7 @@ namespace gfx {
 
 // A struct that describes a vector of shadows and their depiction as an image
 // suitable for ninebox tiling.
-struct COMPONENT_EXPORT(GFX) ShadowDetails {
+struct ShadowDetails {
   ShadowDetails(const gfx::ShadowValues& values,
                 const gfx::ImageSkia& nine_patch_image);
 
@@ -79,4 +80,4 @@ struct COMPONENT_EXPORT(GFX) ShadowDetails {
 
 }  // namespace gfx
 
-#endif  // UI_GFX_SHADOW_UTIL_H_
+#endif  // UI_COMPOSITOR_EXTRA_DECORATION_UTIL_H_

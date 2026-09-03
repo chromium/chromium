@@ -1,4 +1,6 @@
 include_rules = [
+  "+cc/paint",
+  "+third_party/skia",
   "+ui/base",
   "+ui/compositor",
   "+ui/gfx",

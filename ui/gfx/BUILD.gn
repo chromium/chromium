@@ -388,8 +388,6 @@ component("gfx") {
       "render_text_harfbuzz.h",
       "scoped_canvas.cc",
       "scoped_canvas.h",
-      "shadow_util.cc",
-      "shadow_util.h",
       "skia_paint_util.cc",
       "skia_paint_util.h",
       "text_utils_skia.cc",
@@ -873,7 +871,6 @@ test("gfx_unittests") {
       "selection_bound_unittest.cc",
       "selection_model_unittest.cc",
       "sequential_id_generator_unittest.cc",
-      "shadow_util_unittest.cc",
       "shadow_value_unittest.cc",
       "skbitmap_operations_unittest.cc",
       "skia_util_unittest.cc",
@@ -1044,6 +1041,7 @@ if (is_ios) {
     testonly = true
     filelist_name = "test/data/codec/unit_tests_bundle_data.filelist"
   }
+
   bundle_data_from_filelist("compositor_tests_bundle_data") {
     testonly = true
     filelist_name = "test/data/compositor/unit_tests_bundle_data.filelist"

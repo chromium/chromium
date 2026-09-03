@@ -138,6 +138,7 @@ component("message_center") {
       deps += [
         "//ui/color",
         "//ui/compositor",
+        "//ui/compositor_extra",
         "//ui/events",
         "//ui/views",
       ]

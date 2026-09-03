@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/gfx/shadow_util.h"
+#include "ui/compositor_extra/decoration_util.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/shadow_value.h"

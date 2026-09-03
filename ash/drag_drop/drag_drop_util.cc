@@ -5,7 +5,7 @@
 #include "ash/drag_drop/drag_drop_util.h"
 
 #include "ash/style/ash_color_id.h"
-#include "ui/gfx/shadow_util.h"
+#include "ui/compositor_extra/decoration_util.h"
 
 namespace ash::drag_drop {
 

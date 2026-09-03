@@ -9,9 +9,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor_extra/decoration_util.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
-#include "ui/gfx/shadow_util.h"
 #include "ui/gfx/shadow_value.h"
 
 namespace ui {
