@@ -6,6 +6,7 @@ source_set("ttc") {
   public = [
     "features.h",
     "session_controller.h",
+    "session_view.h",
     "tool_controller.h",
     "ttc_keyed_service.h",
     "ttc_keyed_service_factory.h",
@@ -22,6 +23,8 @@ source_set("impl") {
     "features.cc",
     "session_controller_impl.cc",
     "session_controller_impl.h",
+    "session_view.cc",
+    "session_view_delegate.h",
     "tool_controller.cc",
     "ttc_keyed_service.cc",
     "ttc_keyed_service_factory.cc",

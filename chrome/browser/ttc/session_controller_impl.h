@@ -5,14 +5,19 @@
 #ifndef CHROME_BROWSER_TTC_SESSION_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_TTC_SESSION_CONTROLLER_IMPL_H_
 
+#include <memory>
+
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ttc/session_controller.h"
+#include "chrome/browser/ttc/session_view_delegate.h"
 
 namespace ttc {
 
+class SessionView;
 class TtcKeyedService;
 
-class SessionControllerImpl : public SessionController {
+class SessionControllerImpl : public SessionController,
+                              public SessionViewDelegate {
  public:
   explicit SessionControllerImpl(TtcKeyedService& service);
   ~SessionControllerImpl() override;
@@ -23,6 +28,7 @@ class SessionControllerImpl : public SessionController {
   // Safe because TtcKeyedService owns this object and outlives it. Gets
   // assigned on construction.
   const raw_ref<TtcKeyedService> service_;
+  std::unique_ptr<SessionView> session_view_;
 };
 
 }  // namespace ttc
