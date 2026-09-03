@@ -402,6 +402,8 @@ void DrivePickerHostUI::ShowConsentKitDialog(
            .Serialize()});
   builder.SetFlowId(omnibox::kComposeboxDriveConsentFlowId.Get());
   builder.SetProductId(omnibox::kComposeboxDriveConsentProductId.Get());
+  builder.SetProductSurface(
+      omnibox::kComposeboxDriveConsentProductSurface.Get());
   builder.SetEntrypointId(omnibox::kComposeboxDriveConsentEntrypointId.Get());
   bool is_dark = color_utils::IsDark(
       web_ui()->GetWebContents()->GetColorProvider().GetColor(
