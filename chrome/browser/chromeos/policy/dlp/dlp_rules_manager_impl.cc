@@ -12,11 +12,11 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
@@ -249,8 +249,8 @@ DlpRulesManagerImpl::GetAggregatedComponents(const GURL& source,
 
 DlpRulesManagerImpl::DlpRulesManagerImpl(PrefService* local_state,
                                          Profile* profile)
-    : DlpRulesManager(profile) {
-  pref_change_registrar_.Init(local_state);
+    : DlpRulesManager(profile), local_state_(CHECK_DEREF(local_state)) {
+  pref_change_registrar_.Init(&local_state_.get());
   pref_change_registrar_.Add(
       policy_prefs::kDlpRulesList,
       base::BindRepeating(&DlpRulesManagerImpl::OnDataLeakPreventionRulesUpdate,
@@ -266,8 +266,7 @@ DlpRulesManagerImpl::DlpRulesManagerImpl(PrefService* local_state,
 }
 
 bool DlpRulesManagerImpl::IsReportingEnabled() const {
-  return g_browser_process->local_state()->GetBoolean(
-      policy_prefs::kDlpReportingEnabled);
+  return local_state_->GetBoolean(policy_prefs::kDlpReportingEnabled);
 }
 
 data_controls::DlpReportingManager* DlpRulesManagerImpl::GetReportingManager()
@@ -280,8 +279,7 @@ DlpFilesController* DlpRulesManagerImpl::GetDlpFilesController() const {
 }
 
 size_t DlpRulesManagerImpl::GetClipboardCheckSizeLimitInBytes() const {
-  return pref_change_registrar_.prefs()->GetInteger(
-      policy_prefs::kDlpClipboardCheckSizeLimit);
+  return local_state_->GetInteger(policy_prefs::kDlpClipboardCheckSizeLimit);
 }
 
 bool DlpRulesManagerImpl::IsFilesPolicyEnabled() const {
@@ -319,7 +317,7 @@ void DlpRulesManagerImpl::OnDataLeakPreventionRulesUpdate() {
   files_controller_ = nullptr;
 
   const base::ListValue& rules_list =
-      g_browser_process->local_state()->GetList(policy_prefs::kDlpRulesList);
+      local_state_->GetList(policy_prefs::kDlpRulesList);
 
   data_controls::DlpBooleanHistogram(data_controls::dlp::kDlpPolicyPresentUMA,
                                      !rules_list.empty());
