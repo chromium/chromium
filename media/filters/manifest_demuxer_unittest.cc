@@ -32,7 +32,7 @@ class MockEngine : public ManifestDemuxer::Engine {
   MOCK_METHOD(void,
               Initialize,
               (ManifestDemuxerEngineHost * demuxer,
-               PipelineStatusCallback status_cb),
+               HlsDemuxerStatusCallback status_cb),
               (override));
   MOCK_METHOD(std::string, GetName, (), (const, override));
   MOCK_METHOD(void,
@@ -116,7 +116,7 @@ class ManifestDemuxerTest : public ::testing::Test {
 
     // Mark the engine as initialized successfully.
     EXPECT_CALL(*mock_engine_, Initialize(_, _))
-        .WillOnce(RunOnceCallback<1>(media::PIPELINE_OK));
+        .WillOnce(RunOnceCallback<1>(OkStatus()));
 
     manifest_demuxer_->Initialize(
         mock_host_.get(), base::BindOnce(&ManifestDemuxerTest::MockInitComplete,
@@ -370,7 +370,7 @@ TEST_F(ManifestDemuxerTest, TrackChanges) {
 
   // Mark the engine as initialized successfully.
   EXPECT_CALL(*mock_engine_, Initialize(_, _))
-      .WillOnce(RunOnceCallback<1>(media::PIPELINE_OK));
+      .WillOnce(RunOnceCallback<1>(OkStatus()));
 
   manifest_demuxer_->Initialize(
       mock_host_.get(), base::BindOnce(&ManifestDemuxerTest::MockInitComplete,
@@ -458,7 +458,7 @@ TEST_F(ManifestDemuxerTest, DoesNotExposeTracksForAudioOnlyManifests) {
 
   // Mark the engine as initialized successfully.
   EXPECT_CALL(*mock_engine_, Initialize(_, _))
-      .WillOnce(RunOnceCallback<1>(media::PIPELINE_OK));
+      .WillOnce(RunOnceCallback<1>(OkStatus()));
 
   manifest_demuxer_->Initialize(
       mock_host_.get(), base::BindOnce(&ManifestDemuxerTest::MockInitComplete,

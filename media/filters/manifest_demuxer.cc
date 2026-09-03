@@ -490,10 +490,10 @@ void ManifestDemuxer::OnChunkDemuxerOpened() {
 
 void ManifestDemuxer::OnProgress() {}
 
-void ManifestDemuxer::OnEngineInitialized(PipelineStatus status) {
+void ManifestDemuxer::OnEngineInitialized(HlsDemuxerStatus status) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   if (!status.is_ok()) {
-    OnError(std::move(status).AddHere());
+    OnError({DEMUXER_ERROR_COULD_NOT_PARSE, std::move(status)});
     return;
   }
   engine_impl_ready_ = true;

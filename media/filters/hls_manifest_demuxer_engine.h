@@ -58,7 +58,7 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
   // ManifestDemuxer::Engine implementation
   std::string GetName() const override;
   void Initialize(ManifestDemuxerEngineHost* host,
-                  PipelineStatusCallback status_cb) override;
+                  HlsDemuxerStatusCallback status_cb) override;
   void OnTimeUpdate(base::TimeDelta time,
                     double playback_rate,
                     ManifestDemuxer::DelayCallback cb) override;
@@ -163,8 +163,9 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
                             ManifestDemuxer::SeekCallback cb);
 
   // Posted by `::Initialize()`
-  void InitAction(PipelineStatusCallback status_cb);
-  void FinishInitialization(PipelineStatusCallback cb, HlsDemuxerStatus status);
+  void InitAction(HlsDemuxerStatusCallback status_cb);
+  void FinishInitialization(HlsDemuxerStatusCallback cb,
+                            HlsDemuxerStatus status);
 
   // Posted by `::OnTimeUpdate()`
   void OnTimeUpdateAction(base::TimeDelta time,

@@ -131,7 +131,7 @@ class MEDIA_EXPORT ManifestDemuxer : public Demuxer, ManifestDemuxerEngineHost {
 
     // Set for the engine, such as fetching manifests or content.
     virtual void Initialize(ManifestDemuxerEngineHost* demuxer,
-                            PipelineStatusCallback status_cb) = 0;
+                            HlsDemuxerStatusCallback status_cb) = 0;
 
     // Get the name of the engine impl.
     virtual std::string GetName() const = 0;
@@ -311,7 +311,7 @@ class MEDIA_EXPORT ManifestDemuxer : public Demuxer, ManifestDemuxerEngineHost {
 
   // Allows for both the chunk demuxer and the engine to be required for
   // initialization.
-  void OnEngineInitialized(PipelineStatus status);
+  void OnEngineInitialized(HlsDemuxerStatus status);
   void MaybeCompleteInitialize();
 
   // Trigger the next event, and based on it's expected delay, post a
