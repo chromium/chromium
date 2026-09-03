@@ -62,4 +62,8 @@ message WordTiming {
   // Time offset in milliseconds from the start of the audio stream when this
   // word begins speaking.
   int32 time_offset_ms = 3 [features = { field_presence: EXPLICIT }];
+
+  // Time offset in milliseconds from the start of the audio stream when this
+  // word finishes speaking.
+  int32 end_time_offset_ms = 4 [features = { field_presence: EXPLICIT }];
 }

@@ -82,6 +82,12 @@ message MemoryBankEntry {
 
   // Tags associated with the entry for grouping.
   repeated string tags = 7;
+
+  // Collection associated with the entry for grouping.
+  string collection = 8 [features = { field_presence: EXPLICIT }];
+
+  // Notes associated with the entry for grouping.
+  string notes = 9 [features = { field_presence: EXPLICIT }];
 }
 
 // A single turn in the conversation history.
