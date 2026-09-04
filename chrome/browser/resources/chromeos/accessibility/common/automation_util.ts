@@ -505,6 +505,40 @@ export class AutomationUtil {
 
     return null;
   }
+
+  /**
+   * Finds the first node in the subtree of |cur| matching |findParams| using
+   * pre-order traversal, stopping at the first match and without recursing into
+   * web views.
+   * @param cur Node to begin the search from.
+   * @param findParams Params to match against.
+   * @return The matching node, or null if none is found.
+   */
+  static findNodeInDesktopTree(
+      cur: AutomationNode,
+      findParams: chrome.automation.FindParams): AutomationNode|null {
+    if (!cur) {
+      return null;
+    }
+
+    if (cur.root?.role !== RoleType.DESKTOP) {
+      return null;
+    }
+
+    if (cur.matches(findParams)) {
+      return cur;
+    }
+
+    let child = cur.firstChild;
+    while (child) {
+      const ret = AutomationUtil.findNodeInDesktopTree(child, findParams);
+      if (ret) {
+        return ret;
+      }
+      child = child.nextSibling;
+    }
+    return null;
+  }
 }
 
 /**
