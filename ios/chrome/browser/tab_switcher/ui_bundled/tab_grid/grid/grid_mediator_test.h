@@ -12,6 +12,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state_id.h"
@@ -29,7 +30,6 @@ class IOSChromeScopedTestingLocalState;
 class PlatformTest;
 @class SceneState;
 class TabGroupService;
-class TestProfileIOS;
 class TestSceneUrlLoadingService;
 class UrlLoadingBrowserAgent;
 
@@ -63,7 +63,8 @@ class GridMediatorTestClass : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestProfileIOS> profile_;
+  TestProfileManagerIOS profile_manager_;
+  raw_ptr<TestProfileIOS> profile_;
   FakeTabCollectionConsumer* consumer_;
   std::vector<web::WebStateID> original_identifiers_;
   web::WebStateID original_selected_identifier_;
