@@ -72,7 +72,14 @@ class ChromeContentVerifierTest : public ExtensionServiceTestWithInstall {
       content_verifier_->Shutdown();
       content_verifier_.reset();
     }
-    testing_profile_ = nullptr;
+    if (testing_profile_) {
+      // Clear the raw_ptr before deleting the profile so it does not dangle.
+      testing_profile_ = nullptr;
+      // Explicitly delete the extra testing profile created in SetUp() before
+      // the base class tears down to ensure proper cleanup order and avoid
+      // multi-profile teardown races.
+      testing_profile_manager()->DeleteTestingProfile("content_verifier");
+    }
     ExtensionServiceTestWithInstall::TearDown();
   }
 

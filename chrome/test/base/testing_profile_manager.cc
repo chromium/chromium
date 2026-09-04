@@ -260,7 +260,18 @@ void TestingProfileManager::DeleteAllTestingProfiles() {
     }
     storage.RemoveProfile(profile->GetPath());
   }
-  profile_manager_->profiles_info_.clear();
+  // Erase profiles one-by-one rather than calling `clear()`. `ProfileInfo`'s
+  // destructor synchronously triggers profile destruction, during which objects
+  // (like `ScopedProfileKeepAlive`) may call
+  // `ProfileManager::RemoveKeepAlive()`, which re-entrantly queries
+  // `profiles_info_`. `clear()` performs a post-order tree traversal and leaves
+  // dangling node pointers during element destruction, leading to
+  // use-after-free crashes. `erase()` unlinks each node from the tree before
+  // destroying the `ProfileInfo`, keeping the map valid for re-entrant lookups.
+  while (!profile_manager_->profiles_info_.empty()) {
+    profile_manager_->profiles_info_.erase(
+        profile_manager_->profiles_info_.begin());
+  }
 }
 
 
