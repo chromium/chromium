@@ -22,7 +22,7 @@ option features.utf8_validation = NONE;
 // Almost all the fields should be populated on every upload. (The only
 // exception is some fields in the stability section that are only uploaded
 // once per browsing session, usually shortly after startup.)
-// Next tag: 52
+// Next tag: 53
 message SystemProfileProto {
   // The time when the client was compiled/linked, in seconds since the epoch.
   int64 build_timestamp = 1;
@@ -143,6 +143,14 @@ message SystemProfileProto {
   // validation to answer the question of how our data would be distributed if
   // we didn't have to worry about low entropy source drift.
   int32 pseudo_low_entropy_source = 37;
+
+  // A low entropy source value used by WebView to synchronize experiment
+  // groups across multiple embedding applications on the same device. For
+  // experiments configured to use device-wide synchronization, this value seeds
+  // the pseudorandom generator instead of low_entropy_source. It's provided by
+  // the nonembedded WebView service and is passed to embedding apps via the
+  // AwVariationsSeed.
+  int32 webview_low_entropy_source = 52;
 
   // The user's selected application locale, i.e. the user interface language.
   // The locale includes a language code and, possibly, also a country code,
