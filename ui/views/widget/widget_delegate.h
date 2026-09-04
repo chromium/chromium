@@ -92,7 +92,6 @@ class DropTargetView;
 class ExitWarningWidgetDelegateView;
 class FrameCaptionButtonContainerViewTest;
 class FrameSizeButtonTestWidgetDelegate;
-class GuestSessionConfirmationDialog;
 class HotseatWidgetDelegateView;
 class IdleAppNameNotificationDelegateView;
 class InSessionAuthDialog;
@@ -400,7 +399,6 @@ class VIEWS_EXPORT WidgetDelegate {
     friend class ::ash::CaptureModeSessionFocusCycler;
     friend class ::ash::DeferredUpdateDialog;
     friend class ::ash::DisclaimerView;
-    friend class ::ash::GuestSessionConfirmationDialog;
     friend class ::ash::InSessionAuthDialog;
     friend class ::ash::InSessionAuthDialogControllerImpl;
     friend class ::ash::LocalAuthenticationWithPinControllerImpl;
