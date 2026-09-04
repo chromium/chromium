@@ -30,7 +30,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
@@ -69,42 +68,43 @@ public class ActorTabStateHelperTest {
 
     @Before
     public void setUp() {
-        ProfileManager.setLastUsedProfileForTesting(mProfile);
         ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
-
-        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
-        when(mTabModel.getProfile()).thenReturn(mProfile);
-        when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
-        when(mTabModel.getCount()).thenReturn(1);
-        when(mTabModel.getTabAt(0)).thenReturn(mTab);
-        when(mTabModel.iterator()).thenReturn(Collections.singletonList(mTab).iterator());
-
-        when(mTab.getId()).thenReturn(TAB_ID);
-        when(mTab.getIsPinned()).thenReturn(IS_PINNED);
-        when(mTab.getProfile()).thenReturn(mProfile);
-        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
-
-        when(mActorKeyedService.getActiveTasksCount()).thenReturn(1);
-        when(mActorKeyedService.getActiveTaskIdOnTab(TAB_ID, false)).thenReturn(500);
-
-        when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
-        when(mTabModel.getRelatedTabList(TAB_ID)).thenReturn(Collections.singletonList(mTab));
-        when(mTabModel.indexOf(mTab)).thenReturn(0);
-        when(mPlaceholderTab.getId()).thenReturn(101);
-        org.chromium.base.UserDataHost userDataHost = new org.chromium.base.UserDataHost();
-        when(mPlaceholderTab.getUserDataHost()).thenReturn(userDataHost);
-        when(mTabCreator.createFrozenTab(any(), anyInt(), eq(1))).thenReturn(mPlaceholderTab);
     }
 
     @After
     public void tearDown() {
-        ProfileManager.resetForTesting();
         ActorKeyedServiceFactory.setForTesting(null);
         TabStateExtractor.resetTabStatesForTesting();
     }
 
+    private void setupModelSelectorAndProfile() {
+        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
+        when(mTabModel.getProfile()).thenReturn(mProfile);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+    }
+
+    private void setupPlaceholderCreationMocks(boolean isPinned) {
+        when(mTab.getId()).thenReturn(TAB_ID);
+        when(mTab.getIsPinned()).thenReturn(isPinned);
+        when(mTabModel.indexOf(mTab)).thenReturn(0);
+        when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
+        when(mTabCreator.createFrozenTab(any(), anyInt(), eq(1))).thenReturn(mPlaceholderTab);
+    }
+
+    private void setupDetachmentMocks() {
+        setupModelSelectorAndProfile();
+        when(mActorKeyedService.getActiveTasksCount()).thenReturn(1);
+        when(mTabModel.iterator()).thenReturn(Collections.singletonList(mTab).iterator());
+        when(mActorKeyedService.getActiveTaskIdOnTab(TAB_ID, false)).thenReturn(500);
+        when(mPlaceholderTab.getId()).thenReturn(101);
+        when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
+        setupPlaceholderCreationMocks(IS_PINNED);
+    }
+
     @Test
     public void testDetachActiveBackgroundSessions_WithActiveTask_TransitionsTab() {
+        setupDetachmentMocks();
+
         TabState testTabState = new TabState();
         TabStateExtractor.setTabStateForTesting(TAB_ID, testTabState);
 
@@ -132,8 +132,8 @@ public class ActorTabStateHelperTest {
 
     @Test
     public void testDetachActiveBackgroundSessions_NoActiveTask_NoTransition() {
+        setupModelSelectorAndProfile();
         when(mActorKeyedService.getActiveTasksCount()).thenReturn(0);
-        when(mActorKeyedService.getActiveTaskIdOnTab(TAB_ID, false)).thenReturn(null);
 
         List<BackgroundSession> sessions =
                 ActorTabStateHelper.detachActiveBackgroundSessions(
@@ -146,19 +146,20 @@ public class ActorTabStateHelperTest {
 
     @Test
     public void testDetachActiveBackgroundSessions_MultipleTabsSameTask_GroupedInSession() {
-        TabState testTabState = new TabState();
-        TabStateExtractor.setTabStateForTesting(TAB_ID, testTabState);
-        TabStateExtractor.setTabStateForTesting(102, testTabState);
+        setupDetachmentMocks();
 
         Tab tab2 = mock(Tab.class);
         when(tab2.getId()).thenReturn(102);
-        when(tab2.getProfile()).thenReturn(mProfile);
         when(tab2.getIsPinned()).thenReturn(false);
-        when(mTabModel.indexOf(tab2)).thenReturn(1);
-        when(mTabCreator.createFrozenTab(any(), anyInt(), eq(2))).thenReturn(mPlaceholderTab);
 
         when(mTabModel.iterator()).thenReturn(Arrays.asList(mTab, tab2).iterator());
         when(mActorKeyedService.getActiveTaskIdOnTab(102, false)).thenReturn(500);
+        when(mTabModel.indexOf(tab2)).thenReturn(1);
+        when(mTabCreator.createFrozenTab(any(), anyInt(), eq(2))).thenReturn(mPlaceholderTab);
+
+        TabState testTabState = new TabState();
+        TabStateExtractor.setTabStateForTesting(TAB_ID, testTabState);
+        TabStateExtractor.setTabStateForTesting(102, testTabState);
 
         List<BackgroundSession> sessions =
                 ActorTabStateHelper.detachActiveBackgroundSessions(
@@ -181,10 +182,12 @@ public class ActorTabStateHelperTest {
 
     @Test
     public void testCreateAndInsertPlaceholder_CreatesDormantPlaceholder() {
+        setupPlaceholderCreationMocks(false);
+
         TabState testTabState = new TabState();
         TabStateExtractor.setTabStateForTesting(TAB_ID, testTabState);
 
-        Tab placeholder = ActorTabStateHelper.createAndInsertPlaceholder(mTab, mTabModel);
+        ActorTabStateHelper.createAndInsertPlaceholder(mTab, mTabModel);
 
         verify(mTabCreator).createFrozenTab(eq(testTabState), anyInt(), eq(1));
         verify(mTabModel, never()).pinTab(anyInt(), anyBoolean());
@@ -192,11 +195,13 @@ public class ActorTabStateHelperTest {
 
     @Test
     public void testCreateAndInsertPlaceholder_PinnedTab() {
-        when(mTab.getIsPinned()).thenReturn(true);
+        setupPlaceholderCreationMocks(true);
+        when(mPlaceholderTab.getId()).thenReturn(101);
+
         TabState testTabState = new TabState();
         TabStateExtractor.setTabStateForTesting(TAB_ID, testTabState);
 
-        Tab placeholder = ActorTabStateHelper.createAndInsertPlaceholder(mTab, mTabModel);
+        ActorTabStateHelper.createAndInsertPlaceholder(mTab, mTabModel);
 
         verify(mTabCreator).createFrozenTab(eq(testTabState), anyInt(), eq(1));
         verify(mTabModel).pinTab(eq(101), eq(false));
@@ -205,12 +210,15 @@ public class ActorTabStateHelperTest {
 
     @Test
     public void testCreateAndInsertPlaceholder_TabGroup() {
+        setupPlaceholderCreationMocks(false);
         Token groupId = Token.createRandom();
         when(mTab.getTabGroupId()).thenReturn(groupId);
+        when(mTabModel.getRelatedTabList(TAB_ID)).thenReturn(Collections.singletonList(mTab));
+
         TabState testTabState = new TabState();
         TabStateExtractor.setTabStateForTesting(TAB_ID, testTabState);
 
-        Tab placeholder = ActorTabStateHelper.createAndInsertPlaceholder(mTab, mTabModel);
+        ActorTabStateHelper.createAndInsertPlaceholder(mTab, mTabModel);
 
         verify(mTabCreator).createFrozenTab(eq(testTabState), anyInt(), eq(1));
         verify(mTabModel)
@@ -228,7 +236,6 @@ public class ActorTabStateHelperTest {
                 TabModel.INVALID_TAB_INDEX, session.getTabDataList().get(0).getOriginalTabIndex());
 
         Tab otherTab = mock(Tab.class);
-        when(otherTab.getId()).thenReturn(200);
         session.addTabData(new BackgroundSession.BackgroundTabData(otherTab, 102, 3, 42));
 
         assertEquals(2, session.getTabDataList().size());
@@ -240,14 +247,13 @@ public class ActorTabStateHelperTest {
 
     @Test
     public void testRestoreActiveWindowBackgroundTabs_RestoresMatchingTabs() {
+        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
+
         WindowAndroid window = mock(WindowAndroid.class);
         TabDelegateFactory delegateFactory = mock(TabDelegateFactory.class);
 
         Tab tab1 = mock(Tab.class);
-        when(tab1.getId()).thenReturn(111);
-
         Tab tab2 = mock(Tab.class);
-        when(tab2.getId()).thenReturn(222);
 
         // Prepare background session with two tab metadatas:
         BackgroundSession session = new BackgroundSession(tab1, 500);
@@ -268,7 +274,6 @@ public class ActorTabStateHelperTest {
         // Set up the TabModel mock to contain the placeholder for tab1, but not tab2 (since it's a
         // different window)
         Tab placeholder1 = mock(Tab.class);
-        when(placeholder1.getId()).thenReturn(101);
         when(mTabModel.getTabById(101)).thenReturn(placeholder1);
         when(mTabModel.indexOf(placeholder1)).thenReturn(3);
         when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
