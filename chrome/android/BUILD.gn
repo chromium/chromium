@@ -1309,7 +1309,7 @@ if (_is_default_toolchain) {
     if (enable_extensions_core) {
       deps += [
         "//chrome/browser/extensions/api/messaging/android:junit",
-        "//chrome/browser/ui/android/extensions:junit",
+        "//chrome/browser/ui/android/extensions/side_panel/internal:junit",
       ]
     }
     if (enable_webui_ntp) {

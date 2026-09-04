@@ -39,7 +39,6 @@ class ExtensionViewHostFactory {
       const GURL& url,
       BrowserWindowInterface* browser);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Creates a new ExtensionHost with its associated view, grouping it in the
   // appropriate SiteInstance (and therefore process) based on the URL and
   // profile.
@@ -48,7 +47,6 @@ class ExtensionViewHostFactory {
       const GURL& url,
       BrowserWindowInterface* browser,
       tabs::TabInterface* tab_interface);
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 };
 
 }  // namespace extensions

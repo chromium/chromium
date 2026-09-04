@@ -43,6 +43,7 @@ if (enable_extensions_core) {
       "extensions_toolbar_android.cc",
       "extensions_toolbar_android.h",
     ]
+    public_deps = [ "//chrome/browser/ui/side_panel/android" ]
     deps = [
       "//base",
       "//chrome/app:generated_resources",
@@ -58,6 +59,7 @@ if (enable_extensions_core) {
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/extensions:extensions_menu_handler",
+      "//chrome/browser/ui/side_panel",
       "//chrome/browser/ui/toolbar",
       "//content/public/browser",
       "//extensions/browser",
@@ -83,6 +85,7 @@ android_library("java") {
     "//base:content_uri_utils_java",
     "//base:lifetime_java",
     "//base:service_loader_java",
+    "//base/version_info/android:version_constants_java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/settings:factory_java",
     "//chrome/browser/tab:java",
@@ -104,6 +107,9 @@ android_library("java") {
       "//components/browser_ui/modaldialog/android:java",
       "//components/browser_ui/settings/android:java",
       "//components/browser_ui/site_settings/android:java",
+      "//components/embedder_support/android:content_view_java",
+      "//components/thin_webview:factory_java",
+      "//components/thin_webview:java",
       "//content/public/android:content_full_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",

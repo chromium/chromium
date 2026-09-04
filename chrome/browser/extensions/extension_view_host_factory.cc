@@ -34,7 +34,7 @@ namespace extensions {
 
 namespace {
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if !BUILDFLAG(IS_ANDROID)
 
 // Delegate for ExtensionViewHost attached to a specific browser window.
 class ExtensionViewHostBrowserDelegate : public ExtensionViewHost::Delegate {
@@ -141,7 +141,7 @@ class ExtensionViewHostTabDelegate : public ExtensionViewHost::Delegate {
   raw_ptr<content::WebContents> web_contents_;
 };
 
-#else  // BUILDFLAG(ENABLE_EXTENSIONS)
+#else  // !BUILDFLAG(IS_ANDROID)
 
 // Delegate for ExtensionViewHost on Android.
 class ExtensionViewHostDelegateAndroid : public ExtensionViewHost::Delegate {
@@ -258,18 +258,16 @@ std::unique_ptr<ExtensionViewHost> ExtensionViewHostFactory::CreatePopupHost(
     BrowserWindowInterface* browser) {
   DCHECK(browser);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if !BUILDFLAG(IS_ANDROID)
   auto delegate = std::make_unique<ExtensionViewHostBrowserDelegate>(browser);
-#else   // BUILDFLAG(ENABLE_EXTENSIONS)
+#else
   auto delegate = std::make_unique<ExtensionViewHostDelegateAndroid>();
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif
 
   return CreateExtensionViewHost(extension, url, browser->GetProfile(),
                                  mojom::ViewType::kExtensionPopup,
                                  std::move(delegate));
 }
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 
 // static
 std::unique_ptr<ExtensionViewHost>
@@ -284,17 +282,20 @@ ExtensionViewHostFactory::CreateSidePanelHost(
       browser ? browser->GetProfile()
               : tab_interface->GetBrowserWindowInterface()->GetProfile();
 
+#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<ExtensionViewHost::Delegate> delegate =
       browser ? static_cast<std::unique_ptr<ExtensionViewHost::Delegate>>(
                     std::make_unique<ExtensionViewHostBrowserDelegate>(browser))
               : std::make_unique<ExtensionViewHostTabDelegate>(
                     tab_interface->GetContents());
+#else
+  std::unique_ptr<ExtensionViewHost::Delegate> delegate =
+      std::make_unique<ExtensionViewHostDelegateAndroid>();
+#endif
 
   return CreateExtensionViewHost(extension, url, profile,
                                  mojom::ViewType::kExtensionSidePanel,
                                  std::move(delegate));
 }
-
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace extensions

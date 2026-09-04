@@ -239,9 +239,9 @@ source_set("impl") {
     sources += [
       "extension_dialog_utils_android.cc",
       "extension_install_ui_android.cc",
-      "extension_side_panel_coordinator_android.cc",
     ]
     deps += [
+      "//chrome/browser/ui/android/extensions",
       "//chrome/browser/ui/android/tab_model",
       "//extensions/common",
       "//ui/android",
