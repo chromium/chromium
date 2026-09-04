@@ -22,6 +22,7 @@
 #import "components/send_tab_to_self/features.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/webauthn/ios/ios_passkey_client_commands.h"
+#import "ios/chrome/browser/app_store_rating/model/features.h"
 #import "ios/chrome/browser/authentication/signin/non_modal_promo/coordinator/non_modal_signin_promo_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_prompt/enterprise_prompt_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
@@ -51,6 +52,9 @@
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
 #import "ios/chrome/browser/contextual_panel/utils/contextual_panel_metrics.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/default_browser/promo/generic/coordinator/default_browser_generic_promo_coordinator.h"
+#import "ios/chrome/browser/default_browser/promo/generic/public/default_browser_generic_promo_commands.h"
 #import "ios/chrome/browser/docking_promo/coordinator/docking_promo_coordinator.h"
 #import "ios/chrome/browser/download/coordinator/download_list_coordinator.h"
 #import "ios/chrome/browser/download/coordinator/pass_kit_coordinator.h"
@@ -80,6 +84,8 @@
 #import "ios/chrome/browser/picture_in_picture/coordinator/picture_in_picture_coordinator.h"
 #import "ios/chrome/browser/picture_in_picture/public/picture_in_picture_configuration.h"
 #import "ios/chrome/browser/price_notifications/ui_bundled/price_notifications_view_coordinator.h"
+#import "ios/chrome/browser/promos_manager/coordinator/promos_manager_coordinator.h"
+#import "ios/chrome/browser/promos_manager/model/app_store_review_swift.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_web_state_utils.h"
 #import "ios/chrome/browser/reminder_notifications/coordinator/reminder_notifications_coordinator.h"
 #import "ios/chrome/browser/save_to_drive/ui_bundled/save_to_drive_coordinator.h"
@@ -124,6 +130,7 @@
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/level_up_commands.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
+#import "ios/chrome/browser/shared/public/commands/new_tab_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/non_modal_signin_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
@@ -202,6 +209,7 @@ const char kContextPanelDismissedHistogram[] =
                                 CollaborationGroupCommands,
                                 ContextualPanelEntrypointIPHCommands,
                                 ContextualSheetCommands,
+                                DefaultBrowserGenericPromoCommands,
                                 CountryCodePickerCommands,
                                 DockingPromoCommands,
                                 DownloadListCommands,
@@ -227,6 +235,7 @@ const char kContextPanelDismissedHistogram[] =
                                 PictureInPictureCommands,
                                 PolicyChangeCommands,
                                 PriceTrackedItemsCommands,
+                                PromosManagerCommands,
                                 QuickDeleteCommands,
                                 ReminderNotificationsCommands,
                                 ReminderNotificationsCoordinatorDelegate,
@@ -279,6 +288,7 @@ const char kContextPanelDismissedHistogram[] =
   CountryCodePickerCoordinator* _countryCodePickerCoordinator;
   CredentialSuggestionBottomSheetCoordinator*
       _credentialSuggestionBottomSheetCoordinator;
+  DefaultBrowserGenericPromoCoordinator* _defaultBrowserGenericPromoCoordinator;
   DockingPromoCoordinator* _dockingPromoCoordinator;
   DownloadListCoordinator* _downloadListCoordinator;
   RootDriveFilePickerCoordinator* _driveFilePickerCoordinator;
@@ -308,6 +318,7 @@ const char kContextPanelDismissedHistogram[] =
       _paymentsSuggestionBottomSheetCoordinator;
   PictureInPictureCoordinator* _pictureInPictureCoordinator;
   PriceNotificationsViewCoordinator* _priceNotificationsViewCoordinator;
+  PromosManagerCoordinator* _promosManagerCoordinator;
   QuickDeleteCoordinator* _quickDeleteCoordinator;
   ReminderNotificationsCoordinator* _reminderNotificationsCoordinator;
   SaveCardBottomSheetCoordinator* _saveCardBottomSheetCoordinator;
@@ -378,6 +389,7 @@ const char kContextPanelDismissedHistogram[] =
   [self hideContextualSheet];
   [self dismissContextualPanelEntrypointIPH:NO];
   [self hideCountryCodePicker];
+  [self hidePromo];
   [self dismissDockingPromo];
   if (IsDownloadListEnabled()) {
     [self hideDownloadList];
@@ -408,6 +420,7 @@ const char kContextPanelDismissedHistogram[] =
   [self dismissPageActionMenuWithCompletion:nil];
   [self hideParentAccessBottomSheet];
   [self hidePriceTrackedItems];
+  [self dismissCurrentPromo];
   [self stopQuickDelete];
   [self stopReminderNotificationsCoordinator];
   [self hideSaveToDriveAnimated:NO];
@@ -632,6 +645,7 @@ const char kContextPanelDismissedHistogram[] =
     @protocol(CollaborationGroupCommands),
     @protocol(ContextualPanelEntrypointIPHCommands),
     @protocol(ContextualSheetCommands),
+    @protocol(DefaultBrowserGenericPromoCommands),
     @protocol(CountryCodePickerCommands),
     @protocol(DockingPromoCommands),
     @protocol(DownloadListCommands),
@@ -653,6 +667,7 @@ const char kContextPanelDismissedHistogram[] =
     @protocol(PictureInPictureCommands),
     @protocol(PolicyChangeCommands),
     @protocol(PriceTrackedItemsCommands),
+    @protocol(PromosManagerCommands),
     @protocol(QuickDeleteCommands),
     @protocol(ReminderNotificationsCommands),
     @protocol(SaveToDriveCommands),
@@ -1320,6 +1335,15 @@ const char kContextPanelDismissedHistogram[] =
 - (void)hideCountryCodePicker {
   [_countryCodePickerCoordinator stop];
   _countryCodePickerCoordinator = nil;
+}
+
+#pragma mark - DefaultBrowserGenericPromoCommands
+
+- (void)hidePromo {
+  // TODO(crbug.com/555581788): This protocol should be merged in
+  // PromosManagerCommands.
+  [_defaultBrowserGenericPromoCoordinator stop];
+  _defaultBrowserGenericPromoCoordinator = nil;
 }
 
 #pragma mark - DockingPromoCommands
@@ -1992,6 +2016,138 @@ const char kContextPanelDismissedHistogram[] =
                              browser:_browser];
   _priceNotificationsViewCoordinator.showCurrentPage = showCurrentPage;
   [_priceNotificationsViewCoordinator start];
+}
+
+#pragma mark - PromosManagerCommands
+
+- (void)showPromo {
+  if (!_promosManagerCoordinator) {
+    id<SceneCommands> sceneHandler =
+        HandlerForProtocol(_browser->GetCommandDispatcher(), SceneCommands);
+
+    // TODO(crbug.com/557067385): Do not pass the SceneCommands.
+    _promosManagerCoordinator = [[PromosManagerCoordinator alloc]
+        initWithBaseViewController:_baseViewController
+                           browser:_browser
+                      sceneHandler:sceneHandler];
+
+    [_promosManagerCoordinator start];
+  } else {
+    [_promosManagerCoordinator displayPromoIfAvailable];
+  }
+}
+
+- (void)showAppStoreReviewPrompt {
+  if (IsAppStoreRatingEnabled()) {
+    [AppStoreReviewAdapter
+        requestReviewInScene:_browser->GetSceneState().scene];
+
+    // Apple doesn't tell whether the app store review window will show or
+    // provide a callback for when it is dismissed, so alert the coordinator
+    // here so it can do any necessary cleanup.
+    [_promosManagerCoordinator promoWasDismissed];
+  }
+}
+
+- (void)dismissCurrentPromo {
+  [_promosManagerCoordinator stop];
+  _promosManagerCoordinator = nil;
+}
+
+- (void)showWhatsNewPromo {
+  id<WhatsNewCommands> whatsNewHandler =
+      HandlerForProtocol(_browser->GetCommandDispatcher(), WhatsNewCommands);
+  // TODO(crbug.com/557066085): Do not pass the promosUIHandler and directly
+  // call the command.
+  [whatsNewHandler showWhatsNewWithPromosUIHandler:_promosManagerCoordinator];
+}
+
+- (void)showDefaultBrowserPromo {
+  if (_defaultBrowserGenericPromoCoordinator) {
+    // The default browser promo manager is already being displayed. Early
+    // return as this is expected if a default browser promo was open and the
+    // app was backgrounded.
+    return;
+  }
+
+  _defaultBrowserGenericPromoCoordinator =
+      [[DefaultBrowserGenericPromoCoordinator alloc]
+          initWithBaseViewController:_baseViewController
+                             browser:_browser];
+  _defaultBrowserGenericPromoCoordinator.promosUIHandler =
+      _promosManagerCoordinator;
+  // TODO(crbug.com/557067296): Do not pass self as handler here.
+  _defaultBrowserGenericPromoCoordinator.handler = self;
+
+  if (IsDefaultBrowserOffCyclePromoEnabled()) {
+    _defaultBrowserGenericPromoCoordinator.promoWasFromOffCycleTrigger = YES;
+  }
+
+  [_defaultBrowserGenericPromoCoordinator start];
+}
+
+- (void)showDefaultBrowserPromoAfterRemindMeLater {
+  if (_defaultBrowserGenericPromoCoordinator) {
+    // Stop the existing default browser promo coordinator before starting a
+    // new one to ensure the promo is displayed with the correct configuration.
+    [_defaultBrowserGenericPromoCoordinator stop];
+    _defaultBrowserGenericPromoCoordinator = nil;
+  }
+
+  _defaultBrowserGenericPromoCoordinator =
+      [[DefaultBrowserGenericPromoCoordinator alloc]
+          initWithBaseViewController:_baseViewController
+                             browser:_browser];
+  _defaultBrowserGenericPromoCoordinator.promosUIHandler =
+      _promosManagerCoordinator;
+  // TODO(crbug.com/557067296): Do not pass self as handler here.
+  _defaultBrowserGenericPromoCoordinator.handler = self;
+  _defaultBrowserGenericPromoCoordinator.promoWasFromRemindMeLater = YES;
+  [_defaultBrowserGenericPromoCoordinator start];
+}
+
+- (void)showFullscreenSigninPromo {
+  __weak __typeof(_promosManagerCoordinator) weakPromosManagerCoordinator =
+      _promosManagerCoordinator;
+  [HandlerForProtocol(self.dispatcher, SceneCommands)
+      showFullscreenSigninPromoWithCompletion:^(SigninCoordinator* coordinator,
+                                                SigninCoordinatorResult result,
+                                                id<SystemIdentity>) {
+        [weakPromosManagerCoordinator promoWasDismissed];
+      }];
+}
+
+- (void)showWelcomeBackPromo {
+  // TODO(crbug.com/557066085): Do not pass the promosUIHandler and directly
+  // call the command.
+  [HandlerForProtocol(self.dispatcher, WelcomeBackPromoCommands)
+      showWelcomeBackPromoWithPromosUIHandler:_promosManagerCoordinator];
+}
+
+- (void)showHomeBackgroundCustomizationPromo {
+  // TODO(crbug.com/557066085): Do not pass the promosUIHandler and directly
+  // call the command.
+  [HandlerForProtocol(self.dispatcher, NewTabPageCommands)
+      showHomeBackgroundCustomizationPromoWithUIHandler:
+          _promosManagerCoordinator];
+}
+
+- (void)showDockingPromo {
+  // TODO(crbug.com/557066085): Do not pass the promosUIHandler and directly
+  // call the command.
+  [HandlerForProtocol(self.dispatcher, DockingPromoCommands)
+      showDockingPromoWithPromosUIHandler:_promosManagerCoordinator];
+}
+
+- (void)showCredentialProviderPromoWithTrigger:
+    (CredentialProviderPromoTrigger)trigger {
+  id<CredentialProviderPromoCommands> credentialProviderPromoHandler =
+      HandlerForProtocol(self.dispatcher, CredentialProviderPromoCommands);
+  // TODO(crbug.com/557066085): Do not pass the promosUIHandler and directly
+  // call the command.
+  [credentialProviderPromoHandler
+      showCredentialProviderPromoWithTrigger:trigger
+                             promosUIHandler:_promosManagerCoordinator];
 }
 
 #pragma mark - QuickDeleteCommands

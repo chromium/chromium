@@ -91,9 +91,6 @@
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
 #import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_coordinator.h"
-#import "ios/chrome/browser/default_browser/model/utils.h"
-#import "ios/chrome/browser/default_browser/promo/generic/coordinator/default_browser_generic_promo_coordinator.h"
-#import "ios/chrome/browser/default_browser/promo/generic/public/default_browser_generic_promo_commands.h"
 #import "ios/chrome/browser/default_browser/promo/non_modal/coordinator/default_browser_promo_non_modal_coordinator.h"
 #import "ios/chrome/browser/default_browser/promo/non_modal/coordinator/default_promo_non_modal_presentation_delegate.h"
 #import "ios/chrome/browser/default_browser/promo/non_modal/public/default_browser_promo_non_modal_commands.h"
@@ -145,8 +142,7 @@
 #import "ios/chrome/browser/presenters/ui_bundled/vertical_animation_container.h"
 #import "ios/chrome/browser/print/coordinator/print_coordinator.h"
 #import "ios/chrome/browser/print/coordinator/print_coordinator_impl.h"
-#import "ios/chrome/browser/promos_manager/coordinator/promos_manager_coordinator.h"
-#import "ios/chrome/browser/promos_manager/model/app_store_review_swift.h"
+#import "ios/chrome/browser/promos_manager/coordinator/promos_manager_ui_handler.h"
 #import "ios/chrome/browser/push_notification/coordinator/notifications_opt_in_coordinator.h"
 #import "ios/chrome/browser/push_notification/coordinator/notifications_opt_in_coordinator_delegate.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
@@ -204,7 +200,6 @@
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
-#import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_generation_commands.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_chip_commands.h"
@@ -305,7 +300,6 @@
     AutofillSettingsNavigator,
     BrowserCoordinatorCommands,
     BubblePresenterDelegate,
-    DefaultBrowserGenericPromoCommands,
     DefaultBrowserPromoNonModalCommands,
     DefaultPromoNonModalPresentationDelegate,
     EditMenuBuilder,
@@ -316,7 +310,6 @@
     OverscrollActionsControllerDelegate,
     PasswordControllerDelegate,
     PrerenderBrowserAgentDelegate,
-    PromosManagerCommands,
     ReSigninPresenter,
     ReaderModeBrowserAgentDelegate,
     ReaderModeCommands,
@@ -411,9 +404,6 @@
 // Used to display the Print UI. Nil if not visible.
 @property(nonatomic, strong) PrintCoordinator* printCoordinator;
 
-// Coordinator for app-wide promos.
-@property(nonatomic, strong) PromosManagerCoordinator* promosManagerCoordinator;
-
 // Coordinator for the QR scanner.
 @property(nonatomic, strong) QRScannerLegacyCoordinator* qrScannerCoordinator;
 
@@ -448,10 +438,6 @@
 
 // Opens downloaded Vcard.
 @property(nonatomic, strong) VcardCoordinator* vcardCoordinator;
-
-// The manager used to display a default browser promo.
-@property(nonatomic, strong) DefaultBrowserGenericPromoCoordinator*
-    defaultBrowserGenericPromoCoordinator;
 
 // The webState of the active tab.
 @property(nonatomic, readonly) web::WebState* activeWebState;
@@ -949,13 +935,11 @@
     @protocol(AutoDeletionCommands),
     @protocol(BrowserCoordinatorCommands),
     @protocol(DefaultBrowserPromoNonModalCommands),
-    @protocol(PromosManagerCommands),
     @protocol(FindInPageCommands),
     @protocol(ReaderModeCommands),
     @protocol(NewTabPageCommands),
     @protocol(SyncPresenterCommands),
     @protocol(TextZoomCommands),
-    @protocol(DefaultBrowserGenericPromoCommands),
   ];
 
   for (Protocol* protocol in protocols) {
@@ -1377,9 +1361,6 @@
   [self.printCoordinator stop];
   self.printCoordinator = nil;
 
-  [self.promosManagerCoordinator stop];
-  self.promosManagerCoordinator = nil;
-
   [self.readingListCoordinator stop];
   self.readingListCoordinator.delegate = nil;
   self.readingListCoordinator = nil;
@@ -1408,9 +1389,6 @@
 
   [_credentialProviderPromoCoordinator stop];
   _credentialProviderPromoCoordinator = nil;
-
-  [self.defaultBrowserGenericPromoCoordinator stop];
-  self.defaultBrowserGenericPromoCoordinator = nil;
 
   [self.choiceCoordinator stop];
   self.choiceCoordinator = nil;
@@ -2087,13 +2065,6 @@
          dismissPresentedViewController:dismissPresentedViewController];
 }
 
-#pragma mark - DefaultBrowserPromoCommands
-
-- (void)hidePromo {
-  [self.defaultBrowserGenericPromoCoordinator stop];
-  self.defaultBrowserGenericPromoCoordinator = nil;
-}
-
 #pragma mark - ReaderModeCommands
 
 - (void)showReaderModeFromAccessPoint:(ReaderModeAccessPoint)accessPoint {
@@ -2269,131 +2240,6 @@
   // is sufficient to call `StartFinding()` directly on the Find tab helper of
   // the current web state.
   helper->StartFinding(@"");
-}
-
-#pragma mark - PromosManagerCommands
-
-- (void)showPromo {
-  if (!self.promosManagerCoordinator) {
-    id<SceneCommands> sceneHandler =
-        HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
-
-    self.promosManagerCoordinator = [[PromosManagerCoordinator alloc]
-        initWithBaseViewController:self.viewController
-                           browser:self.browser
-                      sceneHandler:sceneHandler];
-
-    [self.promosManagerCoordinator start];
-  } else {
-    [self.promosManagerCoordinator displayPromoIfAvailable];
-  }
-}
-
-- (void)showAppStoreReviewPrompt {
-  if (IsAppStoreRatingEnabled()) {
-    [AppStoreReviewAdapter requestReviewInScene:self.sceneState.scene];
-
-    // Apple doesn't tell whether the app store review window will show or
-    // provide a callback for when it is dismissed, so alert the coordinator
-    // here so it can do any necessary cleanup.
-    [self.promosManagerCoordinator promoWasDismissed];
-  }
-}
-
-- (void)dismissCurrentPromo {
-  [self.promosManagerCoordinator stop];
-  self.promosManagerCoordinator = nil;
-}
-
-- (void)showWhatsNewPromo {
-  id<WhatsNewCommands> whatsNewHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), WhatsNewCommands);
-  [whatsNewHandler
-      showWhatsNewWithPromosUIHandler:self.promosManagerCoordinator];
-}
-
-- (void)showDefaultBrowserPromo {
-  if (self.defaultBrowserGenericPromoCoordinator) {
-    // The default browser promo manager is already being displayed. Early
-    // return as this is expected if a default browser promo was open and the
-    // app was backgrounded.
-    return;
-  }
-
-  self.defaultBrowserGenericPromoCoordinator =
-      [[DefaultBrowserGenericPromoCoordinator alloc]
-          initWithBaseViewController:self.viewController
-                             browser:self.browser];
-  self.defaultBrowserGenericPromoCoordinator.promosUIHandler =
-      self.promosManagerCoordinator;
-  self.defaultBrowserGenericPromoCoordinator.handler = self;
-
-  if (IsDefaultBrowserOffCyclePromoEnabled()) {
-    self.defaultBrowserGenericPromoCoordinator.promoWasFromOffCycleTrigger =
-        YES;
-  }
-
-  [self.defaultBrowserGenericPromoCoordinator start];
-}
-
-- (void)showDefaultBrowserPromoAfterRemindMeLater {
-  if (self.defaultBrowserGenericPromoCoordinator) {
-    // Stop the existing default browser promo coordinator before starting a
-    // new one to ensure the promo is displayed with the correct configuration.
-    [self.defaultBrowserGenericPromoCoordinator stop];
-    self.defaultBrowserGenericPromoCoordinator = nil;
-  }
-
-  self.defaultBrowserGenericPromoCoordinator =
-      [[DefaultBrowserGenericPromoCoordinator alloc]
-          initWithBaseViewController:self.viewController
-                             browser:self.browser];
-  self.defaultBrowserGenericPromoCoordinator.promosUIHandler =
-      self.promosManagerCoordinator;
-  self.defaultBrowserGenericPromoCoordinator.handler = self;
-  self.defaultBrowserGenericPromoCoordinator.promoWasFromRemindMeLater = YES;
-  [self.defaultBrowserGenericPromoCoordinator start];
-}
-
-- (void)showFullscreenSigninPromo {
-  [HandlerForProtocol(self.dispatcher, SceneCommands)
-      showFullscreenSigninPromoWithCompletion:^(SigninCoordinator* coordinator,
-                                                SigninCoordinatorResult result,
-                                                id<SystemIdentity>) {
-        [self.promosManagerCoordinator promoWasDismissed];
-      }];
-}
-
-- (void)showWelcomeBackPromo {
-  [HandlerForProtocol(self.dispatcher, WelcomeBackPromoCommands)
-      showWelcomeBackPromoWithPromosUIHandler:self.promosManagerCoordinator];
-}
-
-- (void)showHomeBackgroundCustomizationPromo {
-  // The promos manager tries to check if the current page is an NTP before
-  // showing the promo, but asynchronous navigation can cause that to be
-  // incorrect.
-  if (!_NTPCoordinator.isNTPActiveForCurrentWebState) {
-    [_promosManagerCoordinator promoWasDismissed];
-    return;
-  }
-  [_NTPCoordinator showHomeBackgroundCustomizationPromoWithUIHandler:
-                       _promosManagerCoordinator];
-}
-
-- (void)showDockingPromo {
-  [HandlerForProtocol(self.dispatcher, DockingPromoCommands)
-      showDockingPromoWithPromosUIHandler:self.promosManagerCoordinator];
-}
-
-- (void)showCredentialProviderPromoWithTrigger:
-    (CredentialProviderPromoTrigger)trigger {
-  id<CredentialProviderPromoCommands> credentialProviderPromoHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                         CredentialProviderPromoCommands);
-  [credentialProviderPromoHandler
-      showCredentialProviderPromoWithTrigger:trigger
-                             promosUIHandler:self.promosManagerCoordinator];
 }
 
 #pragma mark - AutofillSettingsNavigator
@@ -3085,6 +2931,19 @@
 
 - (void)setNTPBlueDotVisible:(BOOL)visible {
   [_NTPCoordinator setBlueDotVisible:visible];
+}
+
+- (void)showHomeBackgroundCustomizationPromoWithUIHandler:
+    (id<PromosManagerUIHandler>)promosUIHandler {
+  // The promos manager tries to check if the current page is an NTP before
+  // showing the promo, but asynchronous navigation can cause that to be
+  // incorrect.
+  if (!_NTPCoordinator.isNTPActiveForCurrentWebState) {
+    [promosUIHandler promoWasDismissed];
+    return;
+  }
+  [_NTPCoordinator
+      showHomeBackgroundCustomizationPromoWithUIHandler:promosUIHandler];
 }
 
 #pragma mark - WebNavigationNTPDelegate

@@ -11,6 +11,8 @@
 
 typedef NS_ENUM(NSInteger, FeedLayoutUpdateType);
 
+@protocol PromosManagerUIHandler;
+
 // Commands related to the new tab page.
 @protocol NewTabPageCommands
 
@@ -34,6 +36,10 @@ typedef NS_ENUM(NSInteger, FeedLayoutUpdateType);
 
 // Controls the visibility of the blue dot on the NTP.
 - (void)setNTPBlueDotVisible:(BOOL)visible;
+
+// Shows the home background customization promo on the NTP.
+- (void)showHomeBackgroundCustomizationPromoWithUIHandler:
+    (id<PromosManagerUIHandler>)UIHandler;
 
 @end
 

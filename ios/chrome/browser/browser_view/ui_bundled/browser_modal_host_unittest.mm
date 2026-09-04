@@ -12,10 +12,13 @@
 #import "components/send_tab_to_self/metrics_util.h"
 #import "ios/chrome/browser/authentication/signin/non_modal_promo/coordinator/non_modal_signin_promo_coordinator.h"
 #import "ios/chrome/browser/authentication/signin/non_modal_promo/coordinator/non_modal_signin_promo_types.h"
+#import "ios/chrome/browser/default_browser/promo/generic/coordinator/default_browser_generic_promo_coordinator.h"
+#import "ios/chrome/browser/default_browser/promo/generic/public/default_browser_generic_promo_commands.h"
 #import "ios/chrome/browser/download/coordinator/download_list_coordinator.h"
 #import "ios/chrome/browser/download/coordinator/pass_kit_coordinator.h"
 #import "ios/chrome/browser/download/model/external_app_util.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
+#import "ios/chrome/browser/promos_manager/coordinator/promos_manager_coordinator.h"
 #import "ios/chrome/browser/save_to_photos/ui_bundled/save_to_photos_coordinator.h"
 #import "ios/chrome/browser/send_tab_to_self/coordinator/send_tab_to_self_coordinator.h"
 #import "ios/chrome/browser/settings/clear_browsing_data/coordinator/quick_delete_coordinator.h"
@@ -29,11 +32,14 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
+#import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/download_list_commands.h"
 #import "ios/chrome/browser/shared/public/commands/non_modal_signin_promo_commands.h"
+#import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_image_to_photos_command.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_photos_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/send_tab_to_self_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/web_content_commands.h"
@@ -522,5 +528,66 @@ TEST_F(BrowserModalHostTest, StartsAndStopsQuickDeleteCoordinator) {
 
   OCMExpect([mockCoordinator stop]);
   [handler stopQuickDelete];
+  EXPECT_OCMOCK_VERIFY(classMock);
+}
+
+// Tests that `-dismissCurrentPromo` stops PromosManagerCoordinator.
+TEST_F(BrowserModalHostTest, DismissesCurrentPromo) {
+  CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+  id mockSceneCommands = OCMProtocolMock(@protocol(SceneCommands));
+  [dispatcher startDispatchingToTarget:mockSceneCommands
+                           forProtocol:@protocol(SceneCommands)];
+  id mockCredentialProviderPromoCommands =
+      OCMProtocolMock(@protocol(CredentialProviderPromoCommands));
+  [dispatcher
+      startDispatchingToTarget:mockCredentialProviderPromoCommands
+                   forProtocol:@protocol(CredentialProviderPromoCommands)];
+
+  id classMock = OCMClassMock([PromosManagerCoordinator class]);
+  PromosManagerCoordinator* mockCoordinator = classMock;
+  OCMExpect([classMock alloc]).andReturn(classMock);
+  OCMExpect([[classMock ignoringNonObjectArgs]
+                initWithBaseViewController:base_view_controller_
+                                   browser:browser_.get()
+                              sceneHandler:[OCMArg any]])
+      .andReturn(mockCoordinator);
+  OCMExpect([mockCoordinator start]);
+
+  id<PromosManagerCommands> handler =
+      HandlerForProtocol(dispatcher, PromosManagerCommands);
+  [handler showPromo];
+  EXPECT_OCMOCK_VERIFY(classMock);
+
+  OCMExpect([mockCoordinator stop]);
+  [handler dismissCurrentPromo];
+  EXPECT_OCMOCK_VERIFY(classMock);
+}
+
+// Tests that `-hidePromo` stops DefaultBrowserGenericPromoCoordinator.
+TEST_F(BrowserModalHostTest, HidesDefaultBrowserPromo) {
+  CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+  id<PromosManagerCommands> promosHandler =
+      HandlerForProtocol(dispatcher, PromosManagerCommands);
+  id<DefaultBrowserGenericPromoCommands> defaultBrowserHandler =
+      HandlerForProtocol(dispatcher, DefaultBrowserGenericPromoCommands);
+
+  id classMock = OCMClassMock([DefaultBrowserGenericPromoCoordinator class]);
+  DefaultBrowserGenericPromoCoordinator* mockCoordinator = classMock;
+  OCMExpect([classMock alloc]).andReturn(classMock);
+  OCMExpect([[classMock ignoringNonObjectArgs]
+                initWithBaseViewController:base_view_controller_
+                                   browser:browser_.get()])
+      .andReturn(mockCoordinator);
+  OCMExpect([mockCoordinator setPromosUIHandler:[OCMArg any]]);
+  OCMExpect([mockCoordinator
+      setHandler:static_cast<id<DefaultBrowserGenericPromoCommands>>(
+                     modal_host_)]);
+  OCMExpect([mockCoordinator start]);
+
+  [promosHandler showDefaultBrowserPromo];
+  EXPECT_OCMOCK_VERIFY(classMock);
+
+  OCMExpect([mockCoordinator stop]);
+  [defaultBrowserHandler hidePromo];
   EXPECT_OCMOCK_VERIFY(classMock);
 }

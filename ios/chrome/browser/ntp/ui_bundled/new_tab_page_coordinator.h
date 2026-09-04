@@ -100,7 +100,7 @@ class WebState;
 
 // Shows the Home Background Customization promo.
 - (void)showHomeBackgroundCustomizationPromoWithUIHandler:
-    (id<PromosManagerUIHandler>)uiHandler;
+    (id<PromosManagerUIHandler>)promosUIHandler;
 
 // Returns `YES` if the feed is currently visible on the NTP.
 - (BOOL)isFeedVisible;
