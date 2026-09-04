@@ -68,7 +68,7 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
   }
 
   override get showContextEntrypoint(): boolean {
-    return this.ntpRealboxNextEnabled;
+    return false;
   }
 
   static get is() {
