@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "net/http/structured_headers.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
@@ -460,6 +461,20 @@ PermissionsPolicyParser::Node ParsingContext::ParseFeaturePolicyToIR(
   return root;
 }
 
+namespace {
+
+String GetEndpoint(const net::structured_headers::Parameters& params) {
+  for (const auto& [key, value] : params) {
+    if (const std::string* token = value.GetIfToken();
+        key == "report-to" && token) {
+      return String(*token);
+    }
+  }
+  return String();
+}
+
+}  // namespace
+
 PermissionsPolicyParser::Node ParsingContext::ParsePermissionsPolicyToIR(
     const String& policy) {
   if (policy.length() > MAX_LENGTH_PARSE) {
@@ -483,34 +498,19 @@ PermissionsPolicyParser::Node ParsingContext::ParsePermissionsPolicyToIR(
     const auto& key = feature_entry.first;
     const char* feature_name = key.c_str();
     const auto& value = feature_entry.second;
-    String endpoint;
-
-    if (!value.params.empty()) {
-      for (const auto& param : value.params) {
-        if (const std::string* token = param.second.GetIfToken();
-            param.first == "report-to" && token) {
-          endpoint = String(*token);
-        }
-      }
-    }
 
     Vector<String> allowlist;
-    for (const auto& parameterized_item : value.member) {
-      if (!parameterized_item.params.empty()) {
-        logger_.Warn(
-            StrCat({"Feature ", feature_name, "'s parameters are ignored."}));
-      }
 
+    const auto process_item = [&](const net::structured_headers::Item& item) {
       String allowlist_item;
-      if (const std::string* token_value =
-              parameterized_item.item.GetIfToken()) {
+      if (const std::string* token_value = item.GetIfToken()) {
         // All special keyword appears as token, i.e. self, src and *.
         if (*token_value != "*" && *token_value != "self") {
           logger_.Warn(
               StrCat({"Invalid allowlist item(", token_value->c_str(),
                       ") for feature ", feature_name,
                       ". Allowlist item must be *, self or quoted url."}));
-          continue;
+          return;
         }
 
         if (*token_value == "*") {
@@ -518,18 +518,37 @@ PermissionsPolicyParser::Node ParsingContext::ParsePermissionsPolicyToIR(
         } else {
           allowlist_item = StrCat({"'", token_value->c_str(), "'"});
         }
-      } else if (const std::string* str =
-                     parameterized_item.item.GetIfString()) {
+      } else if (const std::string* str = item.GetIfString()) {
         allowlist_item = String(*str);
       } else {
         logger_.Warn(
             StrCat({"Invalid allowlist item for feature ", feature_name,
                     ". Allowlist item must be *, self, or quoted url."}));
-        continue;
+        return;
       }
       if (!allowlist_item.empty()) {
         allowlist.push_back(allowlist_item);
       }
+    };
+
+    String endpoint;
+    if (auto item_and_params = value.GetWithParamsIfItem()) {
+      endpoint = GetEndpoint(item_and_params->second);
+      process_item(item_and_params->first);
+    } else if (auto inner_list_and_params = value.GetWithParamsIfInnerList()) {
+      endpoint = GetEndpoint(inner_list_and_params->second);
+      for (const auto& parameterized_item : inner_list_and_params->first) {
+        if (!parameterized_item.params.empty()) {
+          logger_.Warn(
+              StrCat({"Feature ", feature_name, "'s parameters are ignored."}));
+        }
+
+        process_item(parameterized_item.item);
+      }
+    } else {
+      // Parsed dictionaries always return a value from either
+      // `GetWithParamsIfItem()` or `GetWithParamsIfInnerList()`.
+      NOTREACHED();
     }
 
     if (allowlist.empty()) {
