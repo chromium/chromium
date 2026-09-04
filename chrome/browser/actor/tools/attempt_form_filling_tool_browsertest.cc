@@ -877,7 +877,8 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest,
 }
 
 // Test that when switches::kAttemptFormFillingToolSkipsUI is enabled, the
-// user is not asked to select a suggestion.
+// user is not asked to select a suggestion, and each form section is filled
+// before notifying suggestions selected.
 IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, TestSkippingSelection) {
   base::test::ScopedCommandLine scoped_command_line;
   scoped_command_line.GetProcessCommandLine()->AppendSwitch(
@@ -891,30 +892,49 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, TestSkippingSelection) {
       GetDomNodeOnPage(*main_frame(), "#ADDRESS_HOME_LINE1");
   ASSERT_TRUE(address_home_line1);
 
-  autofill::ActorFormFillingRequest request;
+  autofill::ActorFormFillingRequest request1;
   autofill::ActorSuggestion suggestion1;
   suggestion1.id = autofill::ActorSuggestionId(123);
   suggestion1.title = "My Address";
-  request.suggestions.push_back(suggestion1);
+  request1.suggestions.push_back(suggestion1);
+
+  autofill::ActorFormFillingRequest request2;
   autofill::ActorSuggestion suggestion2;
   suggestion2.id = autofill::ActorSuggestionId(456);
-  suggestion2.title = "Work Address";
-  request.suggestions.push_back(suggestion2);
-  std::vector<autofill::ActorFormFillingRequest> requests = {request};
+  suggestion2.title = "My Contact";
+  request2.suggestions.push_back(suggestion2);
+  autofill::ActorSuggestion suggestion3;
+  suggestion3.id = autofill::ActorSuggestionId(789);
+  suggestion3.title = "Work Contact";
+  request2.suggestions.push_back(suggestion3);
+
+  std::vector<autofill::ActorFormFillingRequest> requests = {request1,
+                                                             request2};
 
   EXPECT_CALL(mock_form_filling_service(), GetSuggestions)
       .WillOnce(RunOnceCallback<2>(requests));
 
   // RequestToShowAutofillSuggestions should not be shown but instead the
-  // first address is automatically selected.
+  // first suggestion is automatically selected for each section.
   EXPECT_CALL(mock_execution_engine(), RequestToShowAutofillSuggestions)
       .Times(0);
 
   EXPECT_CALL(
       mock_form_filling_service(),
+      FillForm(Ref(autofill_client()), 0,
+               MakeActorFormFillingSelection(request1.suggestions[0].id)));
+  EXPECT_CALL(
+      mock_form_filling_service(),
+      FillForm(Ref(autofill_client()), 1,
+               MakeActorFormFillingSelection(request2.suggestions[0].id)));
+
+  EXPECT_CALL(
+      mock_form_filling_service(),
       FillSuggestions(
           _,
-          ElementsAre(MakeActorFormFillingSelection(request.suggestions[0].id)),
+          ElementsAre(
+              MakeActorFormFillingSelection(request1.suggestions[0].id),
+              MakeActorFormFillingSelection(request2.suggestions[0].id)),
           _))
       .WillOnce(RunOnceCallback<2>(""));
 

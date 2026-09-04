@@ -239,25 +239,45 @@ void AttemptFormFillingTool::OnSuggestionsRetrieved(
 void AttemptFormFillingTool::SimulateRequestToShowAutofillSuggestions(
     ToolCallback invoke_callback,
     std::vector<ActorFormFillingRequest> requests) {
-  // In the simulation of asking the user to pick suggestions, we just choose
-  // the first suggestion for each form section.
-  std::vector<webui::mojom::FormFillingResponsePtr> accepted_suggestions =
+  tabs::TabInterface* tab = GetTargetTab().Get();
+  if (!tab) {
+    std::move(invoke_callback)
+        .Run(MakeResult(mojom::ActionResultCode::kTabWentAway));
+    return;
+  }
+
+  AutofillClient* client = GetAutofillClient();
+  if (!client) {
+    std::move(invoke_callback)
+        .Run(
+            MakeResult(mojom::ActionResultCode::kFormFillingAutofillUnavailable,
+                       /*requires_page_stabilization=*/false,
+                       "Autofill is not available."));
+    return;
+  }
+
+  // Follow the Chat UI behavior of filling each form section one at a time.
+  for (size_t i = 0; i < requests.size(); ++i) {
+    // `GetSuggestions` aborts with `kNoSuggestions` if any form section has no
+    // suggestions. Therefore, every request is guaranteed to have suggestions.
+    CHECK_GT(requests[i].suggestions.size(), 0u);
+    tool_delegate().GetActorFormFillingService().FillForm(
+        *client, static_cast<int>(i),
+        ActorFormFillingSelection(requests[i].suggestions[0].id));
+  }
+
+  std::vector<webui::mojom::FormFillingResponsePtr> selected_suggestions =
       base::ToVector(requests, [](const ActorFormFillingRequest& request) {
-        std::string chosen_suggestion_id;
-        if (!request.suggestions.empty()) {
-          chosen_suggestion_id =
-              base::NumberToString(request.suggestions[0].id.value());
-        }
-        return webui::mojom::FormFillingResponse::New(chosen_suggestion_id);
+        return webui::mojom::FormFillingResponse::New(
+            base::NumberToString(request.suggestions[0].id.value()));
       });
 
-  auto dialog_response =
-      webui::mojom::SelectAutofillSuggestionsDialogResponse::New();
-  dialog_response->task_id = task_id().value();
-  dialog_response->result =
-      webui::mojom::SelectAutofillSuggestionsDialogResult::
-          NewSelectedSuggestions(std::move(accepted_suggestions));
-  OnSuggestionsSelected(std::move(invoke_callback), std::move(dialog_response));
+  OnSuggestionsSelected(
+      std::move(invoke_callback),
+      webui::mojom::SelectAutofillSuggestionsDialogResponse::New(
+          task_id().value(),
+          webui::mojom::SelectAutofillSuggestionsDialogResult::
+              NewSelectedSuggestions(std::move(selected_suggestions))));
 }
 
 void AttemptFormFillingTool::OnSuggestionsSelected(
