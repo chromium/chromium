@@ -438,21 +438,15 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
       }));
 }
 
-// TODO(crbug.com/478095504): Flakily fails on ASan/LSan
-#if defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER)
-#define MAYBE_SidePanelOpenByTransferWebContentsFromTab \
-  DISABLED_SidePanelOpenByTransferWebContentsFromTab
-#else
-#define MAYBE_SidePanelOpenByTransferWebContentsFromTab \
-  SidePanelOpenByTransferWebContentsFromTab
-#endif
 IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
-                       MAYBE_SidePanelOpenByTransferWebContentsFromTab) {
+                       SidePanelOpenByTransferWebContentsFromTab) {
   SetUpTasks();
   // Add tab4 with contextual task side panel tab.
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   chrome::AddTabAt(browser(), GURL(chrome::kChromeUIContextualTasksURL), -1,
                    true);
+  ASSERT_TRUE(
+      content::WaitForLoadStop(tab_strip_model->GetActiveWebContents()));
   int detach_index = tab_strip_model->GetIndexOfWebContents(
       tab_strip_model->GetActiveWebContents());
   EXPECT_EQ(4, detach_index);
