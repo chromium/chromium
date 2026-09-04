@@ -104,6 +104,57 @@ TEST(StringHasherTest, StringHasher_ComputeHashAndMaskTop8Bits) {
                                wide_bytes.data(), wide_bytes.size()));
 }
 
+TEST(StringHasherTest, ComputeHashAndMaskTop8Bits_Span) {
+  EXPECT_EQ(
+      kEmptyStringHash & 0xFFFFFF,
+      StringHasher::ComputeHashAndMaskTop8Bits(base::span<const uint8_t>()));
+  EXPECT_EQ(kEmptyStringHash & 0xFFFFFF,
+            StringHasher::ComputeHashAndMaskTop8Bits(
+                base::as_byte_span(kNullLChars).first(0u)));
+  EXPECT_EQ(kEmptyStringHash & 0xFFFFFF,
+            StringHasher::ComputeHashAndMaskTop8Bits<ConvertTo8BitHashReader>(
+                base::span<const uint8_t>()));
+  EXPECT_EQ(kEmptyStringHash & 0xFFFFFF,
+            StringHasher::ComputeHashAndMaskTop8Bits<ConvertTo8BitHashReader>(
+                base::as_byte_span(kNullUChars).first(0u)));
+
+  EXPECT_EQ(kSingleNullCharacterHash & 0xFFFFFF,
+            StringHasher::ComputeHashAndMaskTop8Bits(
+                base::as_byte_span(kNullLChars)));
+  EXPECT_EQ(kSingleNullCharacterHash & 0xFFFFFF,
+            StringHasher::ComputeHashAndMaskTop8Bits<ConvertTo8BitHashReader>(
+                base::as_byte_span(kNullUChars)));
+
+  EXPECT_EQ(kTestAHash & 0xFFFFFF, StringHasher::ComputeHashAndMaskTop8Bits(
+                                       base::as_byte_span(kTestALChars)));
+  EXPECT_EQ(kTestAHash & 0xFFFFFF,
+            StringHasher::ComputeHashAndMaskTop8Bits<ConvertTo8BitHashReader>(
+                base::as_byte_span(kTestAUChars)));
+  EXPECT_EQ(kTestBHash & 0xFFFFFF, StringHasher::ComputeHashAndMaskTop8Bits(
+                                       base::as_byte_span(kTestBUChars)));
+
+  // Test a slightly longer case (including characters that fit in Latin1
+  // but not in ASCII).
+  constexpr base::span<const char> kStr =
+      base::span_from_cstring("A quick browñ föx jumps over thé lazy dog");
+  std::array<UChar, kStr.size()> wide_str;
+  std::ranges::copy(base::as_bytes(kStr), wide_str.begin());
+  unsigned expected_hash =
+      StringHasher::ComputeHashAndMaskTop8Bits(base::as_byte_span(kStr));
+  using Reader = ConvertTo8BitHashReader;
+  EXPECT_EQ(expected_hash, StringHasher::ComputeHashAndMaskTop8Bits<Reader>(
+                               base::as_byte_span(wide_str)));
+
+  // Test a reader with expansion (kExpansionFactor > 1).
+  using ExpansionReader = CaseFoldingHashReader<LChar>;
+  base::span<const LChar> lchars = base::span(kTestALChars);
+  EXPECT_EQ(StringHasher::ComputeHashAndMaskTop8Bits<ExpansionReader>(
+                reinterpret_cast<const char*>(lchars.data()),
+                lchars.size_bytes() * ExpansionReader::kExpansionFactor),
+            StringHasher::ComputeHashAndMaskTop8Bits<ExpansionReader>(
+                base::as_byte_span(lchars)));
+}
+
 TEST(StringHasherTest, StringHasher_HashMemory) {
   EXPECT_EQ(kEmptyStringHash,
             StringHasher::HashMemory64(base::span<const uint8_t>()));

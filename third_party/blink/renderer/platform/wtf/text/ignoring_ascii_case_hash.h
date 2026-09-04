@@ -20,18 +20,17 @@ struct IgnoringAsciiCaseHash {
     if (string.ContainsOnlyAsciiOrEmpty() && string.ContainsNoAsciiUpper()) {
       return HashTraits<String>::GetHash(string);
     }
-    base::span<const char> bytes = base::as_chars(string.RawByteSpan());
+    auto bytes = string.RawByteSpan();
     if (string.Is8Bit()) {
       return StringHasher::ComputeHashAndMaskTop8Bits<
-          AsciiLowerHashReader<LChar>>(bytes.data(), bytes.size());
+          AsciiLowerHashReader<LChar>>(bytes);
     }
     if (string.ContainsOnlyLatin1OrEmpty()) {
-      using Reader = AsciiConvertTo8AndLowerHashReader;
-      return StringHasher::ComputeHashAndMaskTop8Bits<Reader>(
-          bytes.data(), bytes.size() / Reader::kCompressionFactor);
+      return StringHasher::ComputeHashAndMaskTop8Bits<
+          AsciiConvertTo8AndLowerHashReader>(bytes);
     }
     return StringHasher::ComputeHashAndMaskTop8Bits<
-        AsciiLowerHashReader<UChar>>(bytes.data(), bytes.size());
+        AsciiLowerHashReader<UChar>>(bytes);
   }
 
   static unsigned GetHash(const AtomicString& string) {
@@ -71,18 +70,17 @@ struct IgnoringAsciiCaseHashTranslator {
     if (string.SharedImpl()) {
       return IgnoringAsciiCaseHash::GetHash(string.ToString());
     }
-    base::span<const char> bytes = base::as_chars(string.RawByteSpan());
+    auto bytes = string.RawByteSpan();
     if (string.Is8Bit()) {
       return StringHasher::ComputeHashAndMaskTop8Bits<
-          AsciiLowerHashReader<LChar>>(bytes.data(), bytes.size());
+          AsciiLowerHashReader<LChar>>(bytes);
     }
     if (string.ContainsOnlyLatin1OrEmpty()) {
-      using Reader = AsciiConvertTo8AndLowerHashReader;
-      return StringHasher::ComputeHashAndMaskTop8Bits<Reader>(
-          bytes.data(), bytes.size() / Reader::kCompressionFactor);
+      return StringHasher::ComputeHashAndMaskTop8Bits<
+          AsciiConvertTo8AndLowerHashReader>(bytes);
     }
     return StringHasher::ComputeHashAndMaskTop8Bits<
-        AsciiLowerHashReader<UChar>>(bytes.data(), bytes.size());
+        AsciiLowerHashReader<UChar>>(bytes);
   }
 
   static bool Equal(const String& a, StringView b) {

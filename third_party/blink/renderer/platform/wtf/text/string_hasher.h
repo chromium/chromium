@@ -43,6 +43,15 @@ class StringHasher {
 
   // The main entry point for the string hasher. Computes the hash and returns
   // only the lowest 24 bits, since that's what we have room for in StringImpl.
+  template <class Reader = PlainHashReader>
+  static uint32_t ComputeHashAndMaskTop8Bits(base::span<const uint8_t> data) {
+    return MaskTop8Bits(rapidhash<Reader>(
+        data.data(),
+        data.size() * Reader::kExpansionFactor / Reader::kCompressionFactor));
+  }
+
+  // Another entry point for the string hasher. Computes the hash and returns
+  // only the lowest 24 bits, since that's what we have room for in StringImpl.
   //
   // NOTE: length is the number of bytes produced _by the reader_.
   // Normally, this means that the number of bytes actually read will be
