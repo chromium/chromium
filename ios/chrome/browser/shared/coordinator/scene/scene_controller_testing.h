@@ -24,6 +24,10 @@ struct UrlLoadParams;
 - (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion
                            dismissOmnibox:(BOOL)dismissOmnibox;
 
+- (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion
+                           dismissOmnibox:(BOOL)dismissOmnibox
+                            dismissGemini:(BOOL)dismissGemini;
+
 - (WrangledBrowser*)currentInterface;
 
 - (SceneCoordinator*)mainCoordinator;

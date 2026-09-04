@@ -263,6 +263,7 @@ TEST_F(SceneCoordinatorTest, TestDismissModalDialogsWithCompletion) {
                            forProtocol:@protocol(BrowserCoordinatorCommands)];
 
   id mockGeminiHandler = OCMProtocolMock(@protocol(GeminiCommands));
+  OCMExpect([mockGeminiHandler dismissGeminiFlowWithCompletion:nil]);
   [dispatcher startDispatchingToTarget:mockGeminiHandler
                            forProtocol:@protocol(GeminiCommands)];
 
@@ -274,6 +275,55 @@ TEST_F(SceneCoordinatorTest, TestDismissModalDialogsWithCompletion) {
                          dismissOmnibox:YES
                        dismissSnackbars:YES];
   EXPECT_TRUE(completed);
+  EXPECT_OCMOCK_VERIFY(mockGeminiHandler);
+}
+
+// Tests that dismissModalDialogsWithCompletion does not dismiss Gemini when
+// dismissGemini is NO.
+TEST_F(SceneCoordinatorTest,
+       TestDismissModalDialogsWithCompletionDoesNotDismissGemini) {
+  CommandDispatcher* dispatcher =
+      coordinator_.currentBrowser->GetCommandDispatcher();
+
+  id mockSnackbarHandler = OCMProtocolMock(@protocol(SnackbarCommands));
+  [dispatcher startDispatchingToTarget:mockSnackbarHandler
+                           forProtocol:@protocol(SnackbarCommands)];
+
+  id mockBookmarksHandler = OCMProtocolMock(@protocol(BookmarksCommands));
+  [dispatcher startDispatchingToTarget:mockBookmarksHandler
+                           forProtocol:@protocol(BookmarksCommands)];
+
+  id mockBrowserCoordinatorHandler =
+      OCMProtocolMock(@protocol(BrowserCoordinatorCommands));
+  OCMStub([mockBrowserCoordinatorHandler
+              clearPresentedStateWithCompletion:[OCMArg any]
+                                 dismissOmnibox:YES])
+      .andDo(^(NSInvocation* invocation) {
+        void* ptr = nullptr;
+        [invocation getArgument:&ptr atIndex:2];
+        ProceduralBlock completionBlock = (__bridge ProceduralBlock)ptr;
+        if (completionBlock) {
+          completionBlock();
+        }
+      });
+  [dispatcher startDispatchingToTarget:mockBrowserCoordinatorHandler
+                           forProtocol:@protocol(BrowserCoordinatorCommands)];
+
+  id mockGeminiHandler = OCMProtocolMock(@protocol(GeminiCommands));
+  [[mockGeminiHandler reject] dismissGeminiFlowWithCompletion:[OCMArg any]];
+  [dispatcher startDispatchingToTarget:mockGeminiHandler
+                           forProtocol:@protocol(GeminiCommands)];
+
+  __block bool completed = false;
+  [coordinator_
+      dismissModalDialogsWithCompletion:^{
+        completed = true;
+      }
+                         dismissOmnibox:YES
+                       dismissSnackbars:YES
+                          dismissGemini:NO];
+  EXPECT_TRUE(completed);
+  EXPECT_OCMOCK_VERIFY(mockGeminiHandler);
 }
 
 }  // namespace

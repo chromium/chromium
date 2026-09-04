@@ -521,12 +521,23 @@ inline LayoutStateScenePassKey PassKey() {
 - (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion {
   [self dismissModalDialogsWithCompletion:completion
                            dismissOmnibox:YES
-                         dismissSnackbars:YES];
+                         dismissSnackbars:YES
+                            dismissGemini:YES];
 }
 
 - (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion
                            dismissOmnibox:(BOOL)dismissOmnibox
                          dismissSnackbars:(BOOL)dismissSnackbars {
+  [self dismissModalDialogsWithCompletion:completion
+                           dismissOmnibox:dismissOmnibox
+                         dismissSnackbars:dismissSnackbars
+                            dismissGemini:YES];
+}
+
+- (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion
+                           dismissOmnibox:(BOOL)dismissOmnibox
+                         dismissSnackbars:(BOOL)dismissSnackbars
+                            dismissGemini:(BOOL)dismissGemini {
   // Disconnected scenes should no-op, since browser objects may not exist.
   // See crbug.com/371847600.
   if (self.sceneState.activationLevel == SceneActivationLevelDisconnected) {
@@ -594,11 +605,13 @@ inline LayoutStateScenePassKey PassKey() {
 
   [self closePresentedViews:NO completion:closePresentedViewsCompletion];
 
-  [_geminiEntryFlowCoordinator stop];
-  _geminiEntryFlowCoordinator = nil;
-  id<GeminiCommands> geminiHandler = HandlerForProtocol(
-      _regularBrowser->GetCommandDispatcher(), GeminiCommands);
-  [geminiHandler dismissGeminiFlowWithCompletion:nil];
+  if (dismissGemini) {
+    [_geminiEntryFlowCoordinator stop];
+    _geminiEntryFlowCoordinator = nil;
+    id<GeminiCommands> geminiHandler = HandlerForProtocol(
+        _regularBrowser->GetCommandDispatcher(), GeminiCommands);
+    [geminiHandler dismissGeminiFlowWithCompletion:nil];
+  }
 
   // Verify that no modal views are left presented.
   ios::provider::LogIfModalViewsArePresented();
