@@ -46,6 +46,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
@@ -175,17 +176,17 @@ class LocationBarBadgeMediatorTest : public PlatformTest {
         OptimizationGuideServiceFactory::GetInstance(),
         OptimizationGuideServiceFactory::GetDefaultFactory());
 
-    profile_ = std::move(builder).Build();
-    SetUpPrefs(profile_.get()->GetPrefs());
-    browser_ = std::make_unique<TestBrowser>(profile_.get());
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
+    SetUpPrefs(profile_->GetPrefs());
+    browser_ = std::make_unique<TestBrowser>(profile_);
     tracker_ = static_cast<feature_engagement::test::MockTracker*>(
-        feature_engagement::TrackerFactory::GetForProfile(profile_.get()));
+        feature_engagement::TrackerFactory::GetForProfile(profile_));
     web_state_list_ = browser_->GetWebStateList();
 
     // Create WebState to pass Gemini eligibility.
     std::unique_ptr<web::FakeWebState> web_state =
         std::make_unique<web::FakeWebState>();
-    web_state->SetBrowserState(profile_.get());
+    web_state->SetBrowserState(profile_);
     web_state->SetCurrentURL(GURL("https://www.google.com"));
     web_state->SetContentsMimeType("text/html");
     web_state->WasShown();
@@ -211,9 +212,9 @@ class LocationBarBadgeMediatorTest : public PlatformTest {
     mediator_ = [[LocationBarBadgeMediator alloc]
         initWithWebStateList:web_state_list_
                      tracker:feature_engagement::TrackerFactory::GetForProfile(
-                                 profile_.get())
-                 prefService:profile_.get()->GetPrefs()
-               geminiService:GeminiServiceFactory::GetForProfile(profile_.get())
+                                 profile_)
+                 prefService:profile_->GetPrefs()
+               geminiService:GeminiServiceFactory::GetForProfile(profile_)
           geminiBrowserAgent:GeminiBrowserAgent::FromBrowser(browser_.get())];
     SignInAndSetCapability(true);
 
@@ -238,7 +239,20 @@ class LocationBarBadgeMediatorTest : public PlatformTest {
                                      ContextualPanelEntrypointIPHCommands)];
   }
 
-  ~LocationBarBadgeMediatorTest() override { [mediator_ disconnect]; }
+  void TearDown() override {
+    [mediator_ disconnect];
+    mediator_ = nil;
+    mock_consumer_ = nil;
+    mock_delegate_ = nil;
+    mock_contextual_sheet_handler_ = nil;
+    mock_entrypoint_iph_handler_ = nil;
+    mock_gemini_handler_ = nil;
+    tracker_ = nullptr;
+    web_state_list_ = nullptr;
+    browser_.reset();
+    profile_ = nullptr;
+    PlatformTest::TearDown();
+  }
 
   void SetUpPrefs(PrefService* pref_service) {
     pref_service->SetInteger(prefs::kGeminiEnabledByPolicy, 0);
@@ -255,11 +269,11 @@ class LocationBarBadgeMediatorTest : public PlatformTest {
     system_identity_manager->AddIdentity(identity);
 
     AuthenticationService* auth_service =
-        AuthenticationServiceFactory::GetForProfile(profile_.get());
+        AuthenticationServiceFactory::GetForProfile(profile_);
     auth_service->SignIn(identity, signin_metrics::AccessPoint::kStartPage);
 
     signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(profile_.get());
+        IdentityManagerFactory::GetForProfile(profile_);
     AccountInfo account_info =
         identity_manager->FindExtendedAccountInfoByAccountId(
             identity_manager->GetPrimaryAccountId(
@@ -310,18 +324,19 @@ class LocationBarBadgeMediatorTest : public PlatformTest {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   signin::IdentityTestEnvironment identity_test_env_;
-  std::unique_ptr<TestProfileIOS> profile_;
+  TestProfileManagerIOS profile_manager_;
+  raw_ptr<TestProfileIOS> profile_ = nullptr;
   std::unique_ptr<TestBrowser> browser_;
-  raw_ptr<WebStateList> web_state_list_;
-  raw_ptr<feature_engagement::test::MockTracker> tracker_;
-  LocationBarBadgeMediator* mediator_;
-  id mock_gemini_handler_;
-  id mock_consumer_;
-  id mock_delegate_;
+  raw_ptr<WebStateList> web_state_list_ = nullptr;
+  raw_ptr<feature_engagement::test::MockTracker> tracker_ = nullptr;
+  LocationBarBadgeMediator* mediator_ = nil;
+  id mock_gemini_handler_ = nil;
+  id mock_consumer_ = nil;
+  id mock_delegate_ = nil;
   base::test::ScopedFeatureList scoped_feature_list_;
   feature_engagement::test::ScopedIphFeatureList iph_feature_list_;
-  id mock_contextual_sheet_handler_;
-  id mock_entrypoint_iph_handler_;
+  id mock_contextual_sheet_handler_ = nil;
+  id mock_entrypoint_iph_handler_ = nil;
 };
 
 // Tests that the consumer is updated when the badge configuration is updated.

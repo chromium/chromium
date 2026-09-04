@@ -54,6 +54,7 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -146,8 +147,9 @@ class AppBarMediatorTest : public PlatformTest {
     // in IsGeminiLocationEligible().
     SetLocationEligible(true);
 
-    regular_profile_ = std::move(builder).Build();
-    incognito_profile_ = TestProfileIOS::Builder().Build();
+    regular_profile_ =
+        profile_manager_.AddProfileWithBuilder(std::move(builder));
+    incognito_profile_ = regular_profile_->GetOffTheRecordProfile();
 
     // IdentityTestEnvironment requires the SigninClient, which is created
     // when the profile is built. But it can also be used as a member.
@@ -155,16 +157,14 @@ class AppBarMediatorTest : public PlatformTest {
     // as they share the same global SystemIdentityManager.
 
     auth_service_ =
-        AuthenticationServiceFactory::GetForProfile(regular_profile_.get());
+        AuthenticationServiceFactory::GetForProfile(regular_profile_);
     fake_gemini_service_ = static_cast<FakeGeminiService*>(
-        GeminiServiceFactory::GetForProfile(regular_profile_.get()));
+        GeminiServiceFactory::GetForProfile(regular_profile_));
     account_manager_service_ =
-        ChromeAccountManagerServiceFactory::GetForProfile(
-            regular_profile_.get());
+        ChromeAccountManagerServiceFactory::GetForProfile(regular_profile_);
 
-    regular_browser_ = std::make_unique<TestBrowser>(regular_profile_.get());
-    incognito_browser_ =
-        std::make_unique<TestBrowser>(incognito_profile_.get());
+    regular_browser_ = std::make_unique<TestBrowser>(regular_profile_);
+    incognito_browser_ = std::make_unique<TestBrowser>(incognito_profile_);
 
     FullscreenBrowserAgent::CreateForBrowser(regular_browser_.get());
     FullscreenBrowserAgent::CreateForBrowser(incognito_browser_.get());
@@ -290,6 +290,16 @@ class AppBarMediatorTest : public PlatformTest {
     [mediator_ disconnect];
     mediator_ = nil;
     aim_eligibility_service_.reset();
+    fake_gemini_service_ = nullptr;
+    regular_web_state_list_ = nullptr;
+    incognito_web_state_list_ = nullptr;
+    url_loader_ = nullptr;
+    regular_browser_.reset();
+    incognito_browser_.reset();
+    regular_profile_ = nullptr;
+    incognito_profile_ = nullptr;
+    auth_service_ = nullptr;
+    account_manager_service_ = nullptr;
   }
 
   void SignInAndSetCapability(bool capability) {
@@ -417,11 +427,12 @@ class AppBarMediatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestProfileManagerIOS profile_manager_;
   IOSChromeScopedTestingVariationsService scoped_variations_service_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<MockAimEligibilityService> aim_eligibility_service_;
-  std::unique_ptr<TestProfileIOS> regular_profile_;
-  std::unique_ptr<TestProfileIOS> incognito_profile_;
+  raw_ptr<TestProfileIOS> regular_profile_;
+  raw_ptr<ProfileIOS> incognito_profile_;
   std::unique_ptr<TestBrowser> regular_browser_;
   std::unique_ptr<TestBrowser> incognito_browser_;
   AppBarMediator* __strong mediator_;
