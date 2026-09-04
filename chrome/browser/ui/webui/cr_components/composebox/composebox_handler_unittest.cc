@@ -689,6 +689,9 @@ TEST_F(ComposeboxHandlerTest,
       tab_id);
   contextual_session_handle()->set_submitted_context_tokens({token});
 
+  // When Contextual Tasks UI is enabled and a single context token matching
+  // the active tab is attached, queries and suggestions route to the side panel
+  // via LensSearchController.
   EXPECT_TRUE(handler().ShouldOpenInLensSidePanelForTesting(
       web_contents(), contextual_session_handle()));
 }
@@ -902,4 +905,84 @@ TEST_F(
   // support multiple context tokens and should return false.
   EXPECT_FALSE(handler().ShouldOpenInLensSidePanelForTesting(
       web_contents(), contextual_session_handle()));
+}
+
+TEST_F(ComposeboxHandlerTest,
+       ShouldOpenInLensSidePanel_SingleTabAttached_CurrentTabNotInContext) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{contextual_tasks::kContextualTasksSidePanel},
+      /*disabled_features=*/{contextual_tasks::kContextualTasks});
+
+  sessions::SessionTabHelper::CreateForWebContents(
+      web_contents(), base::BindRepeating([](content::WebContents* contents) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+  SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents());
+
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  query_controller().AddTabFileInfoForTesting(
+      token, GURL("https://example.com"), lens::MimeType::kAnnotatedPageContent,
+      SessionID::FromSerializedValue(tab_id.id() + 1));
+  contextual_session_handle()->set_submitted_context_tokens({token});
+
+  // When the single attached tab is not the current active tab, it should not
+  // route to the Lens side panel.
+  EXPECT_FALSE(handler().ShouldOpenInLensSidePanelForTesting(
+      web_contents(), contextual_session_handle()));
+}
+
+TEST_F(ComposeboxHandlerTest, ShouldOpenInLensSidePanel_NoTabsAttached) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{contextual_tasks::kContextualTasksSidePanel},
+      /*disabled_features=*/{contextual_tasks::kContextualTasks});
+
+  sessions::SessionTabHelper::CreateForWebContents(
+      web_contents(), base::BindRepeating([](content::WebContents* contents) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+
+  contextual_session_handle()->set_submitted_context_tokens({});
+
+  // When no tabs are attached, queries should not route to the Lens side panel.
+  EXPECT_FALSE(handler().ShouldOpenInLensSidePanelForTesting(
+      web_contents(), contextual_session_handle()));
+}
+
+TEST_F(ComposeboxHandlerTest,
+       ShouldOpenInLensSidePanel_ContextualTasksDisabled_SingleTabAttached) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{contextual_tasks::kContextualTasksSidePanel,
+                             contextual_tasks::kContextualTasks,
+                             contextual_tasks::kContextualTasksRearchitecture});
+
+  sessions::SessionTabHelper::CreateForWebContents(
+      web_contents(), base::BindRepeating([](content::WebContents* contents) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+  SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents());
+
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  query_controller().AddTabFileInfoForTesting(
+      token, GURL("https://example.com"), lens::MimeType::kAnnotatedPageContent,
+      tab_id);
+  contextual_session_handle()->set_submitted_context_tokens({token});
+
+  // When contextual tasks is disabled and Lens Overlay is not active,
+  // ShouldOpenInLensSidePanel should return false.
+  EXPECT_FALSE(handler().ShouldOpenInLensSidePanelForTesting(
+      web_contents(), contextual_session_handle()));
+}
+
+TEST_F(ComposeboxHandlerTest, ShouldOpenInLensSidePanel_NullSessionHandle) {
+  EXPECT_FALSE(
+      handler().ShouldOpenInLensSidePanelForTesting(web_contents(), nullptr));
+}
+
+TEST_F(ComposeboxHandlerTest, ShouldOpenInLensSidePanel_NullWebContents) {
+  EXPECT_FALSE(handler().ShouldOpenInLensSidePanelForTesting(
+      nullptr, contextual_session_handle()));
 }
