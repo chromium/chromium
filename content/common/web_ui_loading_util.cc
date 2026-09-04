@@ -6,7 +6,6 @@
 
 #include "base/byte_size.h"
 #include "base/check.h"
-#include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
@@ -104,6 +103,10 @@ bool SendData(
   }
 
   auto [pipe, output_size] = GetPipe(bytes, requested_range);
+  if (!pipe.is_valid()) {
+    CallOnError(std::move(client_remote), net::ERR_INSUFFICIENT_RESOURCES);
+    return false;
+  }
 
   // For media content, |content_length| must be known upfront for data that is
   // assumed to be fully buffered (as opposed to streamed from the network),
@@ -155,9 +158,7 @@ std::pair<mojo::ScopedDataPipeConsumerHandle, size_t> GetPipe(
   MojoResult create_result = mojo::CreateDataPipe(
       &options, pipe_producer_handle, pipe_consumer_handle);
   if (create_result != MOJO_RESULT_OK) {
-    SCOPED_CRASH_KEY_NUMBER("WebUI", "mojo_CreateDataPipe_result",
-                            create_result);
-    CHECK(false);
+    return std::make_pair(mojo::ScopedDataPipeConsumerHandle(), 0);
   }
 
   auto producer =
