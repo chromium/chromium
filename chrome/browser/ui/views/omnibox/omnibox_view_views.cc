@@ -578,13 +578,18 @@ void OmniboxViewViews::SetFocus(bool is_user_initiated) {
             ->GetRevealedLock(ImmersiveModeController::ANIMATE_REVEAL_YES);
   }
 
-  const bool omnibox_already_focused = HasFocus();
+  const bool is_full_webui =
+      base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup);
+  const bool omnibox_already_focused =
+      HasFocus() || (is_full_webui && controller()->edit_model()->has_focus());
 
   if (is_user_initiated) {
     controller()->edit_model()->Unelide();
   }
 
-  RequestFocus();
+  if (!is_full_webui) {
+    RequestFocus();
+  }
 
   if (omnibox_already_focused) {
     controller()->edit_model()->ClearKeyword();
@@ -611,8 +616,11 @@ void OmniboxViewViews::SetFocus(bool is_user_initiated) {
   // |is_user_initiated| is true for focus events from keyboard accelerators.
   if (is_user_initiated) {
     controller()->edit_model()->StartZeroSuggestRequest();
+  }
+
+  if (is_user_initiated) {
     if (location_bar_view_) {
-      location_bar_view_->OpenOmniboxPopup(/*query_zps=*/is_user_initiated);
+      location_bar_view_->OpenOmniboxPopup(/*query_zps=*/true);
     }
   }
 
@@ -1649,8 +1657,19 @@ void OmniboxViewViews::OnFocus() {
   // Don't call WebLocationBar::OnSetFocus(), this view has already acquired
   // focus.
 
-  // Restore the selection we saved in OnBlur() if it's still valid.
-  if (saved_selection_for_focus_change_.IsValid()) {
+  const bool is_focus_traversal =
+      GetFocusManager() &&
+      GetFocusManager()->focus_change_reason() ==
+          views::FocusManager::FocusChangeReason::kFocusTraversal;
+
+  // Restore the selection we saved in OnBlur() if it's still valid. If focus
+  // was acquired via tab traversal under full WebUI popup, select all instead
+  // of restoring stale selection.
+  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup) &&
+      is_focus_traversal) {
+    saved_selection_for_focus_change_ = gfx::Range::InvalidRange();
+    SelectAll(true);
+  } else if (saved_selection_for_focus_change_.IsValid()) {
     SetSelectedRange(saved_selection_for_focus_change_);
     saved_selection_for_focus_change_ = gfx::Range::InvalidRange();
     UpdateAccessibleTextSelection();
@@ -1668,19 +1687,52 @@ void OmniboxViewViews::OnFocus() {
   if (location_bar_view_) {
     location_bar_view_->OnOmniboxFocused();
   }
+
+  // When navigated to via Tab or Shift+Tab, open and focus the full WebUI
+  // popup instead of retaining focus in the native view.
+  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup) &&
+      is_focus_traversal) {
+    if (location_bar_view_) {
+      location_bar_view_->OpenOmniboxPopup(/*query_zps=*/false);
+    }
+  }
 }
 
 void OmniboxViewViews::OnBlur() {
   views::Textfield::OnBlur();
 
+  views::FocusManager* focus_manager = GetFocusManager();
+  const bool focus_moved_to_another_view =
+      focus_manager && focus_manager->GetFocusedView() &&
+      focus_manager->GetFocusedView() != this;
+
   // If focus is transferring to a WebUI popup widget (e.g., Full Popup or AIM
   // Popup), treat this as a logical focus transfer rather than a true blur.
   // Keep the edit model's focus state active, and skip all reversion/blurring.
-  if (controller()->popup_state_manager()->popup_state() ==
-          OmniboxPopupState::kFull ||
-      controller()->popup_state_manager()->popup_state() ==
-          OmniboxPopupState::kAim) {
+  if (!focus_moved_to_another_view &&
+      (controller()->popup_state_manager()->popup_state() ==
+           OmniboxPopupState::kFull ||
+       controller()->popup_state_manager()->popup_state() ==
+           OmniboxPopupState::kAim)) {
     return;
+  }
+
+  // If the full WebUI popup was open and focus is truly leaving the Omnibox,
+  // notify the popup view and dismiss the popup unless there is an active
+  // draft.
+  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup) &&
+      controller()->popup_state_manager()->popup_state() ==
+          OmniboxPopupState::kFull) {
+    if (location_bar_view_ && location_bar_view_->GetOmniboxPopupView()) {
+      location_bar_view_->GetOmniboxPopupView()->OnBlur();
+    }
+    const bool user_input_in_progress =
+        controller()->edit_model()->user_input_in_progress();
+    const std::u16string& user_text = controller()->edit_model()->user_text();
+    if (!user_input_in_progress || user_text.empty()) {
+      controller()->popup_state_manager()->SetPopupState(
+          OmniboxPopupState::kNone);
+    }
   }
 
   // Save the user's existing selection to restore it later.
