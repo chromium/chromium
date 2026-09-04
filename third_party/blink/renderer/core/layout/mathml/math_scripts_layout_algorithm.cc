@@ -270,8 +270,7 @@ MathScriptsLayoutAlgorithm::LayoutAndGetMetrics(BlockNode child) const {
   ChildAndMetrics child_and_metrics;
   auto constraint_space = CreateConstraintSpaceForMathChild(
       Node(), ChildAvailableSize(), GetConstraintSpace(), child);
-  child_and_metrics.result =
-      child.Layout(constraint_space, nullptr /*break_token*/);
+  child_and_metrics.result = child.Layout(constraint_space);
   LogicalBoxFragment fragment(
       GetConstraintSpace().GetWritingDirection(),
       To<PhysicalBoxFragment>(child_and_metrics.result->GetPhysicalFragment()));

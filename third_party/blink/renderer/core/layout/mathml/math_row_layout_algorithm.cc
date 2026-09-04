@@ -87,8 +87,8 @@ void MathRowLayoutAlgorithm::LayoutRowItems(ChildrenVector* children,
       const auto child_constraint_space = CreateConstraintSpaceForMathChild(
           Node(), ChildAvailableSize(), constraint_space, child,
           LayoutResultCacheSlot::kMeasure);
-      const auto* child_layout_result = To<BlockNode>(child).Layout(
-          child_constraint_space, nullptr /* break_token */);
+      const auto* child_layout_result =
+          To<BlockNode>(child).Layout(child_constraint_space);
       UpdateBlockStretchSizes(child_layout_result);
       should_layout_remaining_items_with_zero_block_stretch_size = false;
     }
@@ -106,8 +106,8 @@ void MathRowLayoutAlgorithm::LayoutRowItems(ChildrenVector* children,
         const auto child_constraint_space = CreateConstraintSpaceForMathChild(
             Node(), ChildAvailableSize(), constraint_space, child,
             LayoutResultCacheSlot::kMeasure, zero_stretch_sizes);
-        const auto* child_layout_result = To<BlockNode>(child).Layout(
-            child_constraint_space, nullptr /* break_token */);
+        const auto* child_layout_result =
+            To<BlockNode>(child).Layout(child_constraint_space);
         UpdateBlockStretchSizes(child_layout_result);
       }
     }
@@ -146,8 +146,8 @@ void MathRowLayoutAlgorithm::LayoutRowItems(ChildrenVector* children,
         LayoutResultCacheSlot::kLayout, target_stretch_block_sizes,
         target_stretch_inline_size);
 
-    const auto* child_layout_result = To<BlockNode>(child).Layout(
-        child_constraint_space, nullptr /* break_token */);
+    const auto* child_layout_result =
+        To<BlockNode>(child).Layout(child_constraint_space);
     LayoutUnit lspace, rspace;
     if (should_add_space)
       DetermineOperatorSpacing(To<BlockNode>(child), &lspace, &rspace);

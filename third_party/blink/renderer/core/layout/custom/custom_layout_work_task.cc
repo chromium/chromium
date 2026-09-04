@@ -136,7 +136,7 @@ void CustomLayoutWorkTask::RunLayoutFragmentTask(
     builder.SetCustomLayoutData(std::move(constraint_data_));
   }
   auto space = builder.ToConstraintSpace();
-  auto* result = To<BlockNode>(child).Layout(space, nullptr /* break_token */);
+  auto* result = To<BlockNode>(child).Layout(space);
 
   LogicalBoxFragment fragment(
       parent_space.GetWritingDirection(),

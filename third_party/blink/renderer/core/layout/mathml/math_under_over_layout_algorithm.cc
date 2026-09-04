@@ -235,8 +235,8 @@ const LayoutResult* MathUnderOverLayoutAlgorithm::Layout() {
     const auto child_constraint_space = CreateConstraintSpaceForMathChild(
         Node(), ChildAvailableSize(), constraint_space, child,
         LayoutResultCacheSlot::kMeasure);
-    const auto* child_layout_result = To<BlockNode>(child).Layout(
-        child_constraint_space, nullptr /* break_token */);
+    const auto* child_layout_result =
+        To<BlockNode>(child).Layout(child_constraint_space);
     UpdateInlineStretchSize(child_layout_result);
     layout_remaining_items_with_zero_inline_stretch_size = false;
   }
@@ -256,8 +256,8 @@ const LayoutResult* MathUnderOverLayoutAlgorithm::Layout() {
       const auto child_constraint_space = CreateConstraintSpaceForMathChild(
           Node(), ChildAvailableSize(), constraint_space, child,
           LayoutResultCacheSlot::kMeasure, std::nullopt, zero_stretch_size);
-      const auto* child_layout_result = To<BlockNode>(child).Layout(
-          child_constraint_space, nullptr /* break_token */);
+      const auto* child_layout_result =
+          To<BlockNode>(child).Layout(child_constraint_space);
       UpdateInlineStretchSize(child_layout_result);
     }
   }

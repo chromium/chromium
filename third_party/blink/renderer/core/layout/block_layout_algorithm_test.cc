@@ -120,7 +120,7 @@ TEST_F(BlockLayoutAlgorithmTest, Caching) {
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
         LogicalSize(LayoutUnit(100), LayoutUnit(100)));
 
-    const LayoutResult* result = node.Layout(space, nullptr);
+    const LayoutResult* result = node.Layout(space);
     EXPECT_EQ(PhysicalSize(30, 40), result->GetPhysicalFragment().Size());
 
     // Test pointer-equal constraint space.
@@ -175,7 +175,7 @@ TEST_F(BlockLayoutAlgorithmTest, MinInlineSizeCaching) {
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
         LogicalSize(LayoutUnit(100), LayoutUnit(100)));
 
-    const LayoutResult* result = node.Layout(space, nullptr);
+    const LayoutResult* result = node.Layout(space);
     EXPECT_EQ(PhysicalSize(30, 40), result->GetPhysicalFragment().Size());
 
     // Test pointer-equal constraint space.

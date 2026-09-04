@@ -685,7 +685,7 @@ const LayoutResult* BlockNode::SimplifiedLayout(
   // Perform layout on ourselves using the previous constraint space.
   const ConstraintSpace& space =
       previous_result->GetConstraintSpaceForCaching();
-  const LayoutResult* result = Layout(space, /* break_token */ nullptr);
+  const LayoutResult* result = Layout(space);
 
   if (result->Status() != LayoutResult::kSuccess) {
     // TODO(crbug.com/1297864): The optimistic BFC block-offsets aren't being
