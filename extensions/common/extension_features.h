@@ -119,6 +119,10 @@ BASE_DECLARE_FEATURE(kApiRuntimeGetPlatformInfoNaClArch);
 // runtime.connectNative on Desktop Android.
 BASE_DECLARE_FEATURE(kApiDesktopAndroidNativeMessaging);
 
+// If enabled, bypasses the allowlist check on Desktop Android for native
+// messaging extension IDs.
+BASE_DECLARE_FEATURE(kApiDesktopAndroidNativeMessagingBypassExtensionAllowlist);
+
 ///////////////////////////////////////////////////////////////////////////////
 // Other Features
 ///////////////////////////////////////////////////////////////////////////////

@@ -1,0 +1,12 @@
+{
+  "name": "native messaging unauthorized test",
+  "version": "1.0",
+  "manifest_version": 3,
+  "description": "Tests unauthorized extension rejection in native messaging on Android.",
+  "background": {
+    "service_worker": "test.js"
+  },
+  "permissions": [
+    "nativeMessaging"
+  ]
+}
