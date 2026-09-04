@@ -196,7 +196,7 @@ public class FuseboxMetricsUnitTest {
                                 ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
                         .build();
 
-        mMetrics.notifyAttachmentsPopupToggled(true, mPropertyModel, mTracker);
+        mMetrics.notifyAttachmentsPopupToggled(/* toShowPopup= */ true, mPropertyModel, mTracker);
 
         histogramWatcher.assertExpected();
     }
@@ -229,7 +229,7 @@ public class FuseboxMetricsUnitTest {
                                 FuseboxMetrics.FuseboxAttachmentButtonType.FILES)
                         .build();
 
-        mMetrics.notifyAttachmentsPopupToggled(true, mPropertyModel, mTracker);
+        mMetrics.notifyAttachmentsPopupToggled(/* toShowPopup= */ true, mPropertyModel, mTracker);
 
         histogramWatcher.assertExpected();
     }
@@ -284,7 +284,7 @@ public class FuseboxMetricsUnitTest {
                                 ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE)
                         .build();
 
-        mMetrics.notifyAttachmentsPopupToggled(true, mPropertyModel, mTracker);
+        mMetrics.notifyAttachmentsPopupToggled(/* toShowPopup= */ true, mPropertyModel, mTracker);
 
         histogramWatcher.assertExpected();
     }
@@ -296,7 +296,7 @@ public class FuseboxMetricsUnitTest {
                         "Omnibox.MobileFusebox.AttachmentsPopupToggled", false);
 
         // When hiding the popup, no other metrics should be recorded.
-        mMetrics.notifyAttachmentsPopupToggled(false, mPropertyModel, mTracker);
+        mMetrics.notifyAttachmentsPopupToggled(/* toShowPopup= */ false, mPropertyModel, mTracker);
 
         histogramWatcher.assertExpected();
     }
@@ -414,7 +414,7 @@ public class FuseboxMetricsUnitTest {
                                 ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
                         .build();
 
-        mMetrics.notifyAttachmentsPopupToggled(true, mPropertyModel, mTracker);
+        mMetrics.notifyAttachmentsPopupToggled(/* toShowPopup= */ true, mPropertyModel, mTracker);
 
         mMetrics.notifyAttachmentButtonUsed(FuseboxMetrics.FuseboxAttachmentButtonType.CAMERA);
         mMetrics.notifyAttachmentButtonUsed(FuseboxMetrics.FuseboxAttachmentButtonType.TAB_PICKER);
@@ -500,8 +500,8 @@ public class FuseboxMetricsUnitTest {
                                 false)
                         .build();
 
-        FuseboxMetrics.recordAttachmentLoadOom(true, MimeTypeUtils.Type.IMAGE);
-        FuseboxMetrics.recordAttachmentLoadOom(false, MimeTypeUtils.Type.TEXT);
+        FuseboxMetrics.recordAttachmentLoadOom(/* oomOccurred= */ true, MimeTypeUtils.Type.IMAGE);
+        FuseboxMetrics.recordAttachmentLoadOom(/* oomOccurred= */ false, MimeTypeUtils.Type.TEXT);
 
         histogramWatcher.assertExpected();
     }
