@@ -5727,6 +5727,23 @@ Called by update_autofill_enums.py.-->
 
 <!-- LINT.ThenChange(//components/one_time_tokens/core/browser/one_time_token_service_constants.h:TickleArrival) -->
 
+<!-- LINT.IfChange(OneTimeTokensTickleFormOutcome) -->
+
+<enum name="OneTimeTokensTickleFormOutcome">
+  <summary>
+    The outcome of an OTP web form relative to push notification delivery and
+    user interaction.
+  </summary>
+  <int value="0"
+      label="Tickle before user interaction (active and unedited field)"/>
+  <int value="1"
+      label="Tickle after user interaction (typed, pasted, submitted, or
+             navigated)"/>
+  <int value="2" label="No tickle received (3 minutes elapsed)"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/one_time_tokens/core/browser/one_time_token_service_constants.h:TickleFormOutcome) -->
+
 <!-- LINT.IfChange(OtpFillingSafeBrowsingCheckResult) -->
 
 <enum name="OtpFillingSafeBrowsingCheckResult">

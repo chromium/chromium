@@ -51,6 +51,23 @@ enum class TickleArrival {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:OneTimeTokensTickleArrival)
 
+inline constexpr char kTickleFormOutcomeHistogram[] =
+    "Autofill.OneTimeTokens.Tickle.FormOutcome";
+
+// Represents the outcome of every detected OTP form on a web page relative to
+// push notification delivery and user interaction.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(OneTimeTokensTickleFormOutcome)
+enum class TickleFormOutcome {
+  kTickleBeforeUserInteraction = 0,
+  kTickleAfterUserInteraction = 1,
+  kNoTickleReceived = 2,
+  kMaxValue = kNoTickleReceived,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:OneTimeTokensTickleFormOutcome)
+
 }  // namespace one_time_tokens
 
 #endif  // COMPONENTS_ONE_TIME_TOKENS_CORE_BROWSER_ONE_TIME_TOKEN_SERVICE_CONSTANTS_H_

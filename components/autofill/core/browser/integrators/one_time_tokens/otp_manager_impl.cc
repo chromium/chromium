@@ -136,12 +136,20 @@ void OtpManagerImpl::OnFieldTypesDetermined(
     return;
   }
 
+  std::vector<FieldGlobalId> otp_field_ids;
+  for (const auto& field : form->fields()) {
+    if (field->Type().GetTypes().contains(ONE_TIME_CODE)) {
+      otp_field_ids.push_back(field->global_id());
+    }
+  }
+
   LOG_AF(owner_->client().GetCurrentLogManager())
       << LoggingScope::kOneTimeTokens << "OTP field detected in web form."
       << Br{} << "Form ID: " << form_id;
 
   if (OtpMetricsTracker* tracker = owner_->client().GetOtpMetricsTracker()) {
-    tracker->OnOtpFieldDetected();
+    tracker->OnOtpFieldDetected(form_id, std::move(otp_field_ids),
+                                owner_->GetWeakPtr());
   }
 
   GetRecentOtpsAndRenewSubscription();
