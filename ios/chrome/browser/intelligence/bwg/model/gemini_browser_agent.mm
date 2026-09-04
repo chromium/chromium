@@ -1778,101 +1778,52 @@ void GeminiBrowserAgent::OnActiveWebStateChanged(web::WebState* old_active,
         base::UserMetricsAction("MobileGeminiFloatyTabSwitched"));
   }
 
-  // While the tab grid is open, active WebState updates are deferred to
-  // `TabGridStateObserver::WillEnterTabGrid()` (which leaves the old tab) and
-  // `WillExitTabGrid()` (which enters the selected tab).
-  if (!IsTabGridVisible()) {
-    SwitchTabs(old_active, new_active);
-  }
-}
+  if (old_active) {
+    GeminiTabHelper* old_tab_helper = GeminiTabHelper::FromWebState(old_active);
+    if (old_tab_helper) {
+      old_tab_helper->RemoveObserver(this);
+    }
+    [old_active->GetWebViewProxy().scrollViewProxy
+        removeObserver:scroll_observer_];
 
-void GeminiBrowserAgent::SwitchTabs(web::WebState* old_active,
-                                    web::WebState* new_active) {
-  LeaveTab(old_active);
-  EnterTab(new_active);
+    web::WebStateID old_active_id = old_active->GetUniqueIdentifier();
+    if (GeminiPageContext* old_context =
+            GetAttachedPageContext(old_active_id)) {
+      if (old_context.geminiPageContextAttachmentState !=
+          ios::provider::GeminiPageContextAttachmentState::kAttached) {
+        RemoveAttachedPageContext(old_active_id);
+      } else if (HasSharedTabs()) {
+        // We are switching tabs and there is more than one tab attached to the
+        // conversation. Refetch the old active tab's page context to ensure it
+        // reflects its most recent state (instead of the state when the Floaty
+        // was last invoked).
+        UpdateAttachedTabContexts({old_active_id});
+      }
+    }
+  }
+
+  if (new_active) {
+    if (is_floaty_invoked_) {
+      UpdateAttachedTabsForActiveWebState(new_active);
+    }
+    GeminiTabHelper* new_tab_helper = GetActiveTabHelper(new_active);
+    if (new_tab_helper) {
+      new_tab_helper->AddObserver(this);
+      // Propagate the context of the new active tab.
+      OnPageContextUpdated(new_active);
+    }
+    [new_active->GetWebViewProxy().scrollViewProxy
+        addObserver:scroll_observer_];
+
+    if (IsGeminiChatPersistenceEnabled() && is_floaty_invoked_) {
+      ios::provider::RequestUIChange(
+          ios::provider::GeminiUIElementType::kZeroState);
+    }
+  }
 
   UpdateLiveModeUI();
   UpdateGeminiAvailability();
   ResetFullscreenDisabler();
-}
-
-void GeminiBrowserAgent::LeaveTab(web::WebState* web_state) {
-  if (!web_state) {
-    return;
-  }
-  GeminiTabHelper* tab_helper = GeminiTabHelper::FromWebState(web_state);
-  if (tab_helper) {
-    // TODO(crbug.com/549153666): Don't call `OnPageContextUpdated` here as it
-    // can do some unnecessary tasks. Extract logic from `OnPageContextUpdated`
-    // that is important for leaving tab and call that instead.
-    if (IsChromeNextIaEnabled() || IsInGeminiLiveMode()) {
-      tab_helper->NotifyPageContextUpdated(web_state);
-    }
-    tab_helper->RemoveObserver(this);
-  }
-  [web_state->GetWebViewProxy().scrollViewProxy
-      removeObserver:scroll_observer_];
-
-  web::WebStateID web_state_id = web_state->GetUniqueIdentifier();
-  if (GeminiPageContext* old_context = GetAttachedPageContext(web_state_id)) {
-    if (old_context.geminiPageContextAttachmentState !=
-        ios::provider::GeminiPageContextAttachmentState::kAttached) {
-      RemoveAttachedPageContext(web_state_id);
-    } else if (HasSharedTabs()) {
-      // We are switching tabs and there is more than one tab attached to the
-      // conversation. Refetch the old active tab's page context to ensure it
-      // reflects its most recent state (instead of the state when the Floaty
-      // was last invoked).
-      UpdateAttachedTabContexts({web_state_id});
-    }
-  }
-
-  // In NextIA or Live mode, the floaty remains persistently visible when a tab
-  // is hidden (e.g., during a tab switch), but we must update the page context
-  // immediately to ensure the hidden tab's content is detached and blocked.
-  if (!IsChromeNextIaEnabled() && !IsInGeminiLiveMode() &&
-      IsPageActionMenuEnabled()) {
-    id<GeminiCommands> gemini_handler =
-        HandlerForProtocol(browser_->GetCommandDispatcher(), GeminiCommands);
-    [gemini_handler
-        hideFloatyIfInvokedAnimated:NO
-                         fromSource:gemini::FloatyUpdateSource::WebNavigation];
-  }
-}
-
-void GeminiBrowserAgent::EnterTab(web::WebState* web_state) {
-  if (!web_state) {
-    return;
-  }
-  if (is_floaty_invoked_) {
-    UpdateAttachedTabsForActiveWebState(web_state);
-  }
-
-  GeminiTabHelper* tab_helper = GeminiTabHelper::FromWebState(web_state);
-  if (tab_helper) {
-    tab_helper->AddObserver(this);
-    tab_helper->CancelPageContextGeneration();
-    OnPageContextUpdated(web_state);
-  }
-  [web_state->GetWebViewProxy().scrollViewProxy addObserver:scroll_observer_];
-
-  if (IsGeminiChatPersistenceEnabled() && is_floaty_invoked_) {
-    ios::provider::RequestUIChange(
-        ios::provider::GeminiUIElementType::kZeroState);
-  }
-
-  // In NextIA or Live mode, the floaty remains persistently visible across tab
-  // switches, but the page context needs to be updated to match the newly
-  // visible tab.
-  if (!IsChromeNextIaEnabled() && !IsInGeminiLiveMode() &&
-      IsPageActionMenuEnabled()) {
-    id<GeminiCommands> gemini_handler =
-        HandlerForProtocol(browser_->GetCommandDispatcher(), GeminiCommands);
-    [gemini_handler
-        updateFloatyVisibilityIfEligibleAnimated:NO
-                                      fromSource:gemini::FloatyUpdateSource::
-                                                     WebNavigation];
-  }
 }
 
 void GeminiBrowserAgent::OnScrollEvent() {
@@ -2071,7 +2022,6 @@ void GeminiBrowserAgent::WillEnterTabGrid() {
   if (IsFullscreenInitialized()) {
     ios::provider::UpdateOverlayOffsetWithOpacity(GetFloatyOffset(), 1.0);
   }
-  SwitchTabs(browser_->GetWebStateList()->GetActiveWebState(), nullptr);
 }
 
 void GeminiBrowserAgent::WillExitTabGrid() {
@@ -2079,7 +2029,6 @@ void GeminiBrowserAgent::WillExitTabGrid() {
     ios::provider::UpdateOverlayOffsetWithOpacity(GetFloatyOffset(),
                                                   GetFloatyProgress());
   }
-  SwitchTabs(nullptr, browser_->GetWebStateList()->GetActiveWebState());
 }
 
 #pragma mark - Private

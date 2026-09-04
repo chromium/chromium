@@ -223,21 +223,6 @@ class GeminiBrowserAgentTest : public PlatformTest {
     return gemini_browser_agent_->floaty_tab_switch_count_;
   }
 
-  // Calls SwitchTabs on the agent.
-  void SwitchTabs(web::WebState* old_active, web::WebState* new_active) {
-    gemini_browser_agent_->SwitchTabs(old_active, new_active);
-  }
-
-  // Calls LeaveTab on the agent.
-  void LeaveTab(web::WebState* web_state) {
-    gemini_browser_agent_->LeaveTab(web_state);
-  }
-
-  // Calls EnterTab on the agent.
-  void EnterTab(web::WebState* web_state) {
-    gemini_browser_agent_->EnterTab(web_state);
-  }
-
   // Getter for `is_floaty_temporarily_hidden_`.
   bool IsFloatyTemporarilyHidden() {
     return gemini_browser_agent_->is_floaty_temporarily_hidden_;
@@ -487,12 +472,6 @@ TEST_F(GeminiBrowserAgentTest, TestActiveWebStateChanged) {
 
   std::unique_ptr<TestBrowser> scoped_browser =
       std::make_unique<TestBrowser>(profile_);
-
-  id mock_gemini_handler = OCMProtocolMock(@protocol(GeminiCommands));
-  [scoped_browser->GetCommandDispatcher()
-      startDispatchingToTarget:mock_gemini_handler
-                   forProtocol:@protocol(GeminiCommands)];
-
   if (IsFullscreenRefactoringEnabled()) {
     FullscreenBrowserAgent::CreateForBrowser(scoped_browser.get());
   }
@@ -1872,56 +1851,4 @@ TEST_F(GeminiBrowserAgentTest,
   EXPECT_TRUE(completion_called);
   EXPECT_TRUE(completion_granted);
   [mock_device stopMocking];
-}
-
-// Tests that SwitchTabs updates observer state when switching between web
-// states.
-TEST_F(GeminiBrowserAgentTest, TestSwitchTabs) {
-  // Create a second web state.
-  std::unique_ptr<web::FakeWebState> web_state2 =
-      std::make_unique<web::FakeWebState>();
-  web_state2->SetBrowserState(profile_);
-  GeminiTabHelper::CreateForWebState(web_state2.get());
-  WebViewProxyTabHelper::CreateForWebState(web_state2.get());
-  web::WebState* raw_web_state2 = web_state2.get();
-  browser_->GetWebStateList()->InsertWebState(
-      std::move(web_state2),
-      WebStateList::InsertionParams::Automatic().Activate(false));
-
-  GeminiTabHelper* tab_helper2 = GeminiTabHelper::FromWebState(raw_web_state2);
-  ASSERT_TRUE(tab_helper2);
-
-  EXPECT_TRUE(gemini_tab_helper_->HasObserver(gemini_browser_agent_));
-  EXPECT_FALSE(tab_helper2->HasObserver(gemini_browser_agent_));
-
-  // Switch tabs from `web_state_` to `raw_web_state2`.
-  SwitchTabs(web_state_, raw_web_state2);
-
-  EXPECT_FALSE(gemini_tab_helper_->HasObserver(gemini_browser_agent_));
-  EXPECT_TRUE(tab_helper2->HasObserver(gemini_browser_agent_));
-
-  // Switching with the same tab should retain observation on that tab.
-  SwitchTabs(raw_web_state2, raw_web_state2);
-  EXPECT_TRUE(tab_helper2->HasObserver(gemini_browser_agent_));
-}
-
-// Tests that LeaveTab unregisters the agent as an observer of the web state's
-// GeminiTabHelper.
-TEST_F(GeminiBrowserAgentTest, TestLeaveTab) {
-  EXPECT_TRUE(gemini_tab_helper_->HasObserver(gemini_browser_agent_));
-
-  LeaveTab(web_state_);
-  EXPECT_FALSE(gemini_tab_helper_->HasObserver(gemini_browser_agent_));
-}
-
-// Tests that EnterTab registers the agent as an observer of the web state's
-// GeminiTabHelper.
-TEST_F(GeminiBrowserAgentTest, TestEnterTab) {
-  // First leave the active tab so observation is removed.
-  LeaveTab(web_state_);
-  EXPECT_FALSE(gemini_tab_helper_->HasObserver(gemini_browser_agent_));
-
-  // Now enter the active tab and verify observation is re-established.
-  EnterTab(web_state_);
-  EXPECT_TRUE(gemini_tab_helper_->HasObserver(gemini_browser_agent_));
 }
