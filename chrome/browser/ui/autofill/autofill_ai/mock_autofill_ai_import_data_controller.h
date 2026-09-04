@@ -6,7 +6,10 @@
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_AI_MOCK_AUTOFILL_AI_IMPORT_DATA_CONTROLLER_H_
 
 #include "chrome/browser/ui/autofill/autofill_ai/autofill_ai_import_data_controller.h"
+#include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+class GURL;
 
 namespace autofill {
 
@@ -23,6 +26,7 @@ class MockAutofillAiImportDataController
               (EntityInstance,
                std::optional<EntityInstance>,
                bool,
+               LegalMessageLines,
                AutofillClient::EntityImportPromptResultCallback),
               (override));
   MOCK_METHOD(void, ShowLocalSaveNotification, (), (override));
@@ -54,6 +58,12 @@ class MockAutofillAiImportDataController
               (AutofillClient::AutofillAiBubbleResult),
               (override));
   MOCK_METHOD(int, GetNoticeStringId, (), (const override));
+  MOCK_METHOD(bool, IsEligibleForWalletPassDisclosure, (), (const override));
+  MOCK_METHOD(const LegalMessageLines&,
+              GetLegalMessageLines,
+              (),
+              (const override));
+  MOCK_METHOD(void, OnLegalMessageLinkClicked, (const GURL&), (override));
   base::WeakPtr<AutofillAiImportDataController> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
   }

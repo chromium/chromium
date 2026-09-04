@@ -13,7 +13,10 @@
 #include "chrome/browser/ui/autofill/autofill_ai/entity_attribute_update_details.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"
+#include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "content/public/browser/web_contents.h"
+
+class GURL;
 
 namespace autofill {
 
@@ -43,6 +46,7 @@ class AutofillAiImportDataController {
   virtual void ShowPrompt(EntityInstance new_entity,
                           std::optional<EntityInstance> old_entity,
                           bool close_on_accept,
+                          LegalMessageLines legal_message_lines,
                           AutofillClient::EntityImportPromptResultCallback
                               prompt_result_callback) = 0;
 
@@ -99,6 +103,15 @@ class AutofillAiImportDataController {
 
   // Returns the notice string id shown as the footer text.
   virtual int GetNoticeStringId() const = 0;
+
+  // Returns true if the entity is eligible for Wallet pass disclosure.
+  virtual bool IsEligibleForWalletPassDisclosure() const = 0;
+
+  // Returns the legal message lines for the disclosure.
+  virtual const LegalMessageLines& GetLegalMessageLines() const = 0;
+
+  // Whether the user clicked a link in the legal message disclosure.
+  virtual void OnLegalMessageLinkClicked(const GURL& url) = 0;
 };
 
 }  // namespace autofill

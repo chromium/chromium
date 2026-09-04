@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/autofill/autofill_ai/autofill_ai_import_data_controller.h"
 #include "chrome/browser/ui/autofill/autofill_ai/entity_attribute_update_details.h"
 #include "chrome/browser/ui/views/autofill/autofill_ai/autofill_ai_bubble_utils.h"
+#include "chrome/browser/ui/views/autofill/autofill_bubble_utils.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -106,6 +107,10 @@ AutofillAiImportDataBubbleView::AutofillAiImportDataBubbleView(
       controller_->GetUpdatedAttributesDetails();
   for (const EntityAttributeUpdateDetails& detail : attributes_details) {
     attributes_wrapper->AddChildView(BuildEntityAttributeRow(detail));
+  }
+
+  if (controller_->IsEligibleForWalletPassDisclosure()) {
+    main_content_wrapper->AddChildView(GetWalletableEntityDisclosure());
   }
 
   DialogDelegate::SetButtonLabel(
@@ -250,6 +255,21 @@ AutofillAiImportDataBubbleView::GetWalletableEntitySubtitle() const {
       .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
       .AddStyleRange(link_range, go_to_wallet)
       .Build();
+}
+
+std::unique_ptr<views::View>
+AutofillAiImportDataBubbleView::GetWalletableEntityDisclosure() {
+  std::unique_ptr<views::View> legal_message_view = CreateLegalMessageView(
+      controller_->GetLegalMessageLines(),
+      base::BindRepeating(
+          &AutofillAiImportDataController::OnLegalMessageLinkClicked,
+          controller_));
+  legal_message_view->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets().set_top(ChromeLayoutProvider::Get()->GetDistanceMetric(
+          views::DISTANCE_RELATED_CONTROL_VERTICAL)));
+  legal_message_view->SetID(DialogViewId::LEGAL_MESSAGE_VIEW);
+  return legal_message_view;
 }
 
 void AutofillAiImportDataBubbleView::Hide() {

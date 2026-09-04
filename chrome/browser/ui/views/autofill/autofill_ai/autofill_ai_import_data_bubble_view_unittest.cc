@@ -255,6 +255,27 @@ TEST_F(AutofillAiImportDataBubbleViewTest,
   EXPECT_EQ(margins->right(), 0);
 }
 
+TEST_F(AutofillAiImportDataBubbleViewTest,
+       WalletPassDisclosureShownWhenEligible) {
+  EXPECT_CALL(mock_controller(), IsEligibleForWalletPassDisclosure())
+      .WillRepeatedly(Return(true));
+  LegalMessageLines legal_message_lines;
+  EXPECT_CALL(mock_controller(), GetLegalMessageLines())
+      .WillRepeatedly(testing::ReturnRef(legal_message_lines));
+  CreateViewAndShow();
+
+  EXPECT_NE(view()->GetViewByID(DialogViewId::LEGAL_MESSAGE_VIEW), nullptr);
+}
+
+TEST_F(AutofillAiImportDataBubbleViewTest,
+       WalletPassDisclosureNotShownWhenNotEligible) {
+  EXPECT_CALL(mock_controller(), IsEligibleForWalletPassDisclosure())
+      .WillRepeatedly(Return(false));
+  CreateViewAndShow();
+
+  EXPECT_EQ(view()->GetViewByID(DialogViewId::LEGAL_MESSAGE_VIEW), nullptr);
+}
+
 }  // namespace
 
 }  // namespace autofill

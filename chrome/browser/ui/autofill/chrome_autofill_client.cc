@@ -1540,8 +1540,10 @@ void ChromeAutofillClient::ShowEntityImportBubble(
 #else
   if (auto* controller = AutofillAiImportDataController::GetOrCreate(
           web_contents(), GetAppLocale())) {
+    // TODO(crbug.com/553442816): Add the legal message lines.
     controller->ShowPrompt(std::move(new_entity), std::move(old_entity),
                            /*close_on_accept=*/save_is_synchronous,
+                           /*legal_message_lines=*/{},
                            std::move(prompt_result_callback));
   } else {
     std::move(prompt_result_callback)

@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"
+#include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -44,6 +45,7 @@ class AutofillAiImportDataControllerImpl
   void ShowPrompt(EntityInstance new_entity,
                   std::optional<EntityInstance> old_entity,
                   bool close_on_accept,
+                  LegalMessageLines legal_message_lines,
                   AutofillClient::EntityImportPromptResultCallback
                       prompt_result_callback) override;
   void ShowLocalSaveNotification() override;
@@ -64,6 +66,9 @@ class AutofillAiImportDataControllerImpl
   bool IsSavePrompt() const override;
   bool CloseOnAccept() const override;
   int GetNoticeStringId() const override;
+  bool IsEligibleForWalletPassDisclosure() const override;
+  const LegalMessageLines& GetLegalMessageLines() const override;
+  void OnLegalMessageLinkClicked(const GURL& url) override;
 
   // BubbleControllerBase:
   bool CanBeReshown() const override;
@@ -95,6 +100,7 @@ class AutofillAiImportDataControllerImpl
     SaveUpdateState(EntityInstance new_entity,
                     std::optional<EntityInstance> old_entity,
                     bool close_on_accept,
+                    LegalMessageLines legal_message_lines,
                     AutofillClient::EntityImportPromptResultCallback
                         prompt_result_callback);
     SaveUpdateState(SaveUpdateState&& other);
@@ -116,6 +122,9 @@ class AutofillAiImportDataControllerImpl
     // Callback to notify the data provider about the user decision for the save
     // or update prompt.
     AutofillClient::EntityImportPromptResultCallback prompt_result_callback;
+
+    // Legal message lines for the disclosure.
+    LegalMessageLines legal_message_lines;
   };
 
   // The state of the local save notification. Since there is no specific state
@@ -147,6 +156,11 @@ class AutofillAiImportDataControllerImpl
   // exists and is non-null.
   void MaybeRunSaveUpdateCallback(
       AutofillClient::AutofillAiBubbleResult result);
+
+  // Opens `url` in a singleton tab and sets
+  // `reopen_bubble_when_web_contents_becomes_visible_` to true so the bubble
+  // is re-shown when returning to the tab.
+  void OpenUrlAndReopenBubbleOnReturn(const GURL& url);
 
   // The browser's locale when the object was instantiated.
   const std::string app_locale_;

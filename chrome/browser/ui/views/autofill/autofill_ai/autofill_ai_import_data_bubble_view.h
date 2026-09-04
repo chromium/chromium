@@ -57,6 +57,7 @@ class AutofillAiImportDataBubbleView : public AutofillLocationBarBubble {
 
   std::unique_ptr<views::Label> GetLocalEntitySubtitle() const;
   std::unique_ptr<views::StyledLabel> GetWalletableEntitySubtitle() const;
+  std::unique_ptr<views::View> GetWalletableEntityDisclosure();
 
   raw_ptr<views::View> loading_progress_row_ = nullptr;
   raw_ptr<views::Throbber> loading_throbber_ = nullptr;
