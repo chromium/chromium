@@ -34,7 +34,7 @@ class CORE_EXPORT ComputeIntersectionsContext {
   DOMHighResTimeStamp GetTimeStamp(const IntersectionObserver& observer);
   std::optional<IntersectionGeometry::RootGeometry>& GetRootGeometry(
       const IntersectionObserver& observer,
-      unsigned flags);
+      const Vector<Length>& root_margin);
   void UpdateNextRunDelay(base::TimeDelta delay);
   base::TimeDelta GetAndResetNextRunDelay();
 
@@ -69,13 +69,11 @@ class CORE_EXPORT IntersectionObserverController
 
   void UpdateIntersectionObserverStatus();
 
-  // The flags argument is composed of values from
-  // IntersectionObservation::ComputeFlags. They are dirty bits that control
-  // whether an IntersectionObserver needs to do any work.
-  void ComputeIntersections(
-      unsigned flags,
-      LocalFrameView&,
-      ComputeIntersectionsContext&);
+  // The flags argument contains dirty bits that control whether an
+  // IntersectionObserver needs to do any work.
+  void ComputeIntersections(IntersectionObservation::ComputeFlags flags,
+                            LocalFrameView&,
+                            ComputeIntersectionsContext&);
 
   void AddTrackedObserver(IntersectionObserver&);
   void AddTrackedObservation(IntersectionObservation&);

@@ -64,7 +64,7 @@ class CORE_EXPORT RemoteFrameView final
 
   void UpdateIntersectionObserverStatus() override;
   void UpdateViewportIntersectionsForSubtree(
-      unsigned parent_flags,
+      IntersectionObservation::ComputeFlags parent_flags,
       ComputeIntersectionsContext&) override;
   bool HasActiveIntersectionObservations() const override;
   bool NeedsOcclusionTracking() const override;

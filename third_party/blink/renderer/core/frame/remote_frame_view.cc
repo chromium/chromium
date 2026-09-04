@@ -106,7 +106,7 @@ void RemoteFrameView::DetachFromLayout() {
 }
 
 void RemoteFrameView::UpdateViewportIntersectionsForSubtree(
-    unsigned parent_flags,
+    IntersectionObservation::ComputeFlags parent_flags,
     ComputeIntersectionsContext&) {
   UpdateViewportIntersection(parent_flags, needs_occlusion_tracking_);
 }

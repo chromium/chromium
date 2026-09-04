@@ -60,9 +60,10 @@ bool FrameView::DisplayLockedInParentFrame() {
   return DisplayLockUtilities::LockedInclusiveAncestorPreventingPaint(*owner);
 }
 
-void FrameView::UpdateViewportIntersection(unsigned flags,
-                                           bool needs_occlusion_tracking) {
-  if (!(flags & IntersectionObservation::kImplicitRootObserversNeedUpdate)) {
+void FrameView::UpdateViewportIntersection(
+    IntersectionObservation::ComputeFlags flags,
+    bool needs_occlusion_tracking) {
+  if (!flags.Has(IntersectionObservation::kImplicitRootObserversNeedUpdate)) {
     return;
   }
 
@@ -99,7 +100,7 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
   bool display_locked_in_parent_frame = DisplayLockedInParentFrame();
   if (!owner_layout_object ||
       owner_layout_object->PhysicalContentBoxRect().IsEmpty() ||
-      (flags & IntersectionObservation::kAncestorFrameIsDetachedFromLayout) ||
+      flags.Has(IntersectionObservation::kAncestorFrameIsDetachedFromLayout) ||
       display_locked_in_parent_frame) {
     // The frame, or an ancestor frame, is detached from layout, not visible, or
     // zero size, or it's display locked in parent frame; leave
@@ -108,10 +109,11 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
     occlusion_state = mojom::blink::FrameOcclusionState::kPossiblyOccluded;
   } else if (parent_lifecycle_state >= DocumentLifecycle::kLayoutClean &&
              !owner_document.View()->NeedsLayout()) {
-    unsigned geometry_flags =
-        IntersectionGeometry::kForFrameViewportIntersection;
-    if (should_compute_occlusion)
-      geometry_flags |= IntersectionGeometry::kShouldComputeVisibility;
+    IntersectionGeometry::Flags geometry_flags = {
+        IntersectionGeometry::kForFrameViewportIntersection};
+    if (should_compute_occlusion) {
+      geometry_flags.Put(IntersectionGeometry::kShouldComputeVisibility);
+    }
 
     std::optional<IntersectionGeometry::RootGeometry> root_geometry;
     IntersectionGeometry geometry(

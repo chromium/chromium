@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/containers/enum_set.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
@@ -30,38 +31,43 @@ class CORE_EXPORT IntersectionObservation final
  public:
   // Flags that drive the behavior of the ComputeIntersections() method. For an
   // explanation of implicit vs. explicit root, see intersection_observer.h.
-  enum ComputeFlags {
+  enum class ComputeFlag {
+    kMinValue,
     // If this bit is set, and observer_->RootIsImplicit() is true, then the
     // root bounds (i.e., size of the top document's viewport) should be
     // included in any IntersectionObserverEntry objects created by Compute().
-    kReportImplicitRootBounds = 1 << 0,
+    kReportImplicitRootBounds = kMinValue,
     // If this bit is set, and observer_->RootIsImplicit() is false, then
     // Compute() should update the observation.
-    kExplicitRootObserversNeedUpdate = 1 << 1,
+    kExplicitRootObserversNeedUpdate,
     // If this bit is set, and observer_->RootIsImplicit() is true, then
     // Compute() should update the observation.
-    kImplicitRootObserversNeedUpdate = 1 << 2,
+    kImplicitRootObserversNeedUpdate,
     // If this bit is set, it indicates that at least one LocalFrameView
     // ancestor is detached from the LayoutObject tree of its parent. Usually,
     // this is unnecessary -- if an ancestor FrameView is detached, then all
     // descendant frames are detached. There is, however, at least one exception
     // to this rule; see crbug.com/749737 for details.
-    kAncestorFrameIsDetachedFromLayout = 1 << 3,
+    kAncestorFrameIsDetachedFromLayout,
     // If this bit is set, then the observer.delay parameter is ignored; i.e.,
     // the computation will run even if the previous run happened within the
     // delay parameter.
-    kIgnoreDelay = 1 << 4,
+    kIgnoreDelay,
     // If this bit is set, we can skip tracking the sticky frame during
     // UpdateViewportIntersectionsForSubtree.
-    kCanSkipStickyFrameTracking = 1 << 5,
+    kCanSkipStickyFrameTracking,
     // If this bit is set, we only process intersection observations that
     // require post-layout delivery.
-    kPostLayoutDeliveryOnly = 1 << 6,
+    kPostLayoutDeliveryOnly,
     // Corresponding to LocalFrameView::kScrollAndVisibilityOnly.
-    kScrollAndVisibilityOnly = 1 << 7,
+    kScrollAndVisibilityOnly,
     // Remove outdated entries from IntersectionObserverController.
-    kUpdateTracking = 1 << 8,
+    kUpdateTracking,
+    kMaxValue = kUpdateTracking,
   };
+  // Allow using the enum values under IntersectionObservation::.
+  using enum ComputeFlag;
+  using ComputeFlags = base::EnumSet<ComputeFlag>;
 
   IntersectionObservation(IntersectionObserver&, Element&);
 
@@ -72,9 +78,7 @@ class CORE_EXPORT IntersectionObservation final
   bool CanCompute() const;
   // Returns 1 if the geometry was recalculated, otherwise 0. This could be a
   // bool, but int64_t matches IntersectionObserver::ComputeIntersections().
-  int64_t ComputeIntersection(
-      unsigned flags,
-      ComputeIntersectionsContext&);
+  int64_t ComputeIntersection(ComputeFlags flags, ComputeIntersectionsContext&);
   void TakeRecords(HeapVector<Member<IntersectionObserverEntry>>&);
   void Disconnect();
 
@@ -84,9 +88,11 @@ class CORE_EXPORT IntersectionObservation final
   bool HasPendingUpdateForTesting() const { return needs_update_; }
 
  private:
-  bool ShouldCompute(unsigned flags) const;
-  bool MaybeDelayAndReschedule(unsigned flags, ComputeIntersectionsContext&);
-  unsigned GetIntersectionGeometryFlags(unsigned compute_flags) const;
+  bool ShouldCompute(ComputeFlags flags) const;
+  bool MaybeDelayAndReschedule(ComputeFlags flags,
+                               ComputeIntersectionsContext&);
+  IntersectionGeometry::Flags GetIntersectionGeometryFlags(
+      ComputeFlags compute_flags) const;
   // Inspect the geometry to see if there has been a transition event; if so,
   // generate a notification and schedule it for delivery.
   void ProcessIntersectionGeometry(const IntersectionGeometry& geometry,

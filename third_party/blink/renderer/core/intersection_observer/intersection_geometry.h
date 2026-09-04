@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/containers/enum_set.h"
 #include "base/functional/callback_forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
@@ -56,28 +57,35 @@ class CORE_EXPORT IntersectionGeometry {
   static constexpr gfx::Vector2dF kInfiniteScrollDelta{
       std::numeric_limits<float>::max(), std::numeric_limits<float>::max()};
 
-  enum Flags {
+  enum class Flag {
+    kMinValue,
     // These flags should passed to the constructor
-    kShouldReportRootBounds = 1 << 0,
-    kShouldComputeVisibility = 1 << 1,
-    kShouldTrackFractionOfRoot = 1 << 2,
-    kForFrameViewportIntersection = 1 << 3,
-    kShouldConvertToCSSPixels = 1 << 4,
+    kConstructorFlagFirst = kMinValue,
+    kShouldReportRootBounds = kConstructorFlagFirst,
+    kShouldComputeVisibility,
+    kShouldTrackFractionOfRoot,
+    kForFrameViewportIntersection,
+    kShouldConvertToCSSPixels,
     // Applies to boxes. If true, OverflowClipRect() is used if necessary
     // instead of BorderBoundingBox().
-    kUseOverflowClipEdge = 1 << 5,
-    kRespectFilters = 1 << 6,
-    kScrollAndVisibilityOnly = 1 << 7,
+    kUseOverflowClipEdge,
+    kRespectFilters,
+    kScrollAndVisibilityOnly,
+    // This flag is to expose extra information of occluded state.
+    kShouldExposeOccluderNodeId,
+    kConstructorFlagLast = kShouldExposeOccluderNodeId,
 
     // These flags will be computed
-    kShouldUseCachedRects = 1 << 8,
-    kRootIsImplicit = 1 << 9,
-    kDidComputeGeometry = 1 << 10,
-    kIsVisible = 1 << 11,
+    kShouldUseCachedRects,
+    kRootIsImplicit,
+    kDidComputeGeometry,
+    kIsVisible,
 
-    // These flags to expose extra information of occluded state
-    kShouldExposeOccluderNodeId = 1 << 12,
+    kMaxValue = kIsVisible,
   };
+  // Allow using the enum values under IntersectionGeometry::.
+  using enum Flag;
+  using Flags = base::EnumSet<Flag>;
 
   struct RootGeometry {
     STACK_ALLOCATED();
@@ -125,7 +133,7 @@ class CORE_EXPORT IntersectionGeometry {
                        const Vector<float>& thresholds,
                        const Vector<Length>& target_margin,
                        const Vector<Length>& scroll_margin,
-                       unsigned flags,
+                       Flags flags,
                        std::optional<RootGeometry>& root_geometry,
                        CachedRects* cached_rects = nullptr,
                        std::optional<HitNodeCb> hit_node_cb = std::nullopt);
@@ -133,13 +141,13 @@ class CORE_EXPORT IntersectionGeometry {
   IntersectionGeometry(const IntersectionGeometry&) = default;
 
   bool ShouldReportRootBounds() const {
-    return flags_ & kShouldReportRootBounds;
+    return flags_.Has(kShouldReportRootBounds);
   }
   bool ShouldComputeVisibility() const {
-    return flags_ & kShouldComputeVisibility;
+    return flags_.Has(kShouldComputeVisibility);
   }
   bool ShouldTrackFractionOfRoot() const {
-    return flags_ & kShouldTrackFractionOfRoot;
+    return flags_.Has(kShouldTrackFractionOfRoot);
   }
 
   gfx::RectF TargetRect() const { return target_rect_; }
@@ -155,19 +163,21 @@ class CORE_EXPORT IntersectionGeometry {
   double IntersectionRatio() const { return intersection_ratio_; }
   wtf_size_t ThresholdIndex() const { return threshold_index_; }
 
-  bool DidComputeGeometry() const { return flags_ & kDidComputeGeometry; }
+  bool DidComputeGeometry() const { return flags_.Has(kDidComputeGeometry); }
   bool IsIntersecting() const { return threshold_index_ > 0; }
-  bool IsVisible() const { return flags_ & kIsVisible; }
+  bool IsVisible() const { return flags_.Has(kIsVisible); }
   DOMNodeId occluder_node_id() const { return occluder_node_id_; }
 
   bool CanUseCachedRectsForTesting() const { return ShouldUseCachedRects(); }
 
  private:
-  bool RootIsImplicit() const { return flags_ & kRootIsImplicit; }
-  bool ShouldUseCachedRects() const { return flags_ & kShouldUseCachedRects; }
-  bool ShouldRespectFilters() const { return flags_ & kRespectFilters; }
+  bool RootIsImplicit() const { return flags_.Has(kRootIsImplicit); }
+  bool ShouldUseCachedRects() const {
+    return flags_.Has(kShouldUseCachedRects);
+  }
+  bool ShouldRespectFilters() const { return flags_.Has(kRespectFilters); }
   bool IsForFrameViewportIntersection() const {
-    return flags_ & kForFrameViewportIntersection;
+    return flags_.Has(kForFrameViewportIntersection);
   }
 
   struct RootAndTarget {
@@ -244,7 +254,7 @@ class CORE_EXPORT IntersectionGeometry {
   gfx::RectF intersection_rect_;
   gfx::RectF unclipped_intersection_rect_;
   gfx::RectF root_rect_;
-  unsigned flags_;
+  Flags flags_;
   double intersection_ratio_ = 0;
   wtf_size_t threshold_index_ = 0;
   DOMNodeId occluder_node_id_ = kInvalidDOMNodeId;
