@@ -21106,8 +21106,11 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileLanguageSettingsBack">
-  <owner>eugenebut@chromium.org</owner>
-  <description>TODO(crbug.com/483962380): Write the description.</description>
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported when user goes back from Language Settings UI to root Settings
+    screen. iOS only.
+  </description>
 </action>
 
 <action name="MobileLocationBarTapped">
@@ -31887,8 +31890,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.Language">
-  <owner>eugenebut@chromium.org</owner>
-  <description>TODO(crbug.com/483964250): Write the description.</description>
+  <owner>gambard@chromium.org</owner>
+  <description>
+    Reported when user navigates to Language Settings. iOS only.
+  </description>
 </action>
 
 <action name="Settings.ManageOptionOnSettingsSelected">
