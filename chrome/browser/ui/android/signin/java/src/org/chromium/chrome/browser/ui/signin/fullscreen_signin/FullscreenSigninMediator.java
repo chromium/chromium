@@ -606,7 +606,7 @@ public class FullscreenSigninMediator
                 SigninFlowTimestampsLogger.startLogging(FlowVariant.FULLSCREEN);
         // If the user signs into an account on the FRE, goes to the next page and presses
         // back to come back to the welcome screen, then there will already be an account signed in.
-        @Nullable CoreAccountInfo signedInAccount = getSignedInAccount();
+        AccountInfo signedInAccount = getSignedInAccount();
         if (signedInAccount != null && Objects.equals(signedInAccount, mSelectedAccount)) {
             mDelegate.advanceToNextPage();
             return;
@@ -678,7 +678,7 @@ public class FullscreenSigninMediator
      */
     private void finishSignIn(SigninFlowTimestampsLogger signinTimestampsLogger) {
         if (mDestroyed) return;
-        @Nullable CoreAccountInfo signedInAccount = getSignedInAccount();
+        AccountInfo signedInAccount = getSignedInAccount();
         final SignInCallback signInCallback = getSigninCallback(signinTimestampsLogger);
         final @SigninAccessPoint int accessPoint =
                 mModel.get(FullscreenSigninProperties.SHOULD_HIDE_DISMISS_BUTTON)
@@ -777,10 +777,10 @@ public class FullscreenSigninMediator
     }
 
     /**
-     * @return The signed-in {@link CoreAccountInfo} of the user, or null if the user isn't signed
-     *     in or the profile is not available yet.
+     * @return The signed-in {@link AccountInfo} of the user, or null if the user isn't signed in or
+     *     the profile is not available yet.
      */
-    private @Nullable CoreAccountInfo getSignedInAccount() {
+    private @Nullable AccountInfo getSignedInAccount() {
         Profile profile = getProfile();
         if (profile == null) return null;
         IdentityManager identityManager =
