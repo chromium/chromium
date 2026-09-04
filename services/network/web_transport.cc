@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <algorithm>
+
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -37,6 +39,11 @@ namespace network {
 namespace {
 
 constexpr size_t kMaxFinalReceiveStreamStatsEntries = 512;
+
+// QuicDatagramQueue computes an expiry with unchecked signed addition. Clamp
+// the untrusted renderer duration here to keep that sum representable.
+constexpr base::TimeDelta kMaxOutgoingDatagramExpirationDuration =
+    base::TimeDelta::Max() / 2;
 
 net::WebTransportParameters CreateParameters(
     const std::vector<mojom::WebTransportCertificateFingerprintPtr>&
@@ -653,6 +660,8 @@ void WebTransport::SetOutgoingDatagramExpirationDuration(
   }
 
   CHECK(transport_->session());
+  duration = std::clamp(duration, base::TimeDelta(),
+                        kMaxOutgoingDatagramExpirationDuration);
   transport_->session()->SetDatagramMaxTimeInQueue(
       absl::Microseconds(duration.InMicroseconds()));
 }

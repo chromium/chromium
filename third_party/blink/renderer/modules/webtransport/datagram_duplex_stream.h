@@ -17,6 +17,7 @@
 
 namespace blink {
 
+class ExceptionState;
 class ReadableStream;
 class ScriptState;
 class WebTransportDatagramsWritable;
@@ -58,10 +59,10 @@ class MODULES_EXPORT DatagramDuplexStream : public ScriptWrappable {
   uint32_t maxDatagramSize() const { return max_datagram_size_; }
   void SetMaxDatagramSize(uint32_t value) { max_datagram_size_ = value; }
   std::optional<double> incomingMaxAge() const { return incoming_max_age_; }
-  void setIncomingMaxAge(std::optional<double> max_age);
+  void setIncomingMaxAge(std::optional<double> max_age, ExceptionState&);
 
   std::optional<double> outgoingMaxAge() const { return outgoing_max_age_; }
-  void setOutgoingMaxAge(std::optional<double> max_age);
+  void setOutgoingMaxAge(std::optional<double> max_age, ExceptionState&);
 
   // Spec-renamed attributes use Web IDL unsigned long (uint32_t).
   uint32_t incomingMaxBufferedDatagrams() const {

@@ -1,7 +1,5 @@
 This is a testharness.js-based test.
 [FAIL] Reading datagrams with BYOB reader without datagramsReadableType should fail.
   assert_throws_js: function "() => { wt.datagrams.readable.getReader({ mode: 'byob' }) }" did not throw
-[FAIL] Datagram MaxAge getters/setters work correctly
-  assert_throws_js: function "() => { wt.datagrams.incomingMaxAge = -1; }" did not throw
 Harness: the test ran to completion.
 

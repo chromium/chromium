@@ -173,7 +173,8 @@ interface WebTransport {
 
   // Sets the duration which determines whether an outgoing datagram should be
   // discarded due to being in the queue for too long. A duration of 0 means to
-  // use an implementation-defined default.
+  // use an implementation-defined default. Implementations may clamp large
+  // values to an effectively infinite safe duration.
   SetOutgoingDatagramExpirationDuration(mojo_base.mojom.TimeDelta duration);
 
   // Provides the latest stats for the session.

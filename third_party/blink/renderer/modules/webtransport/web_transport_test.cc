@@ -2120,7 +2120,8 @@ TEST_F(WebTransportTest, IncomingMaxAgeIsObeyed) {
   test::RunPendingTasks();
 
   constexpr base::TimeDelta kMaxAge = base::Microseconds(1);
-  web_transport->datagrams()->setIncomingMaxAge(kMaxAge.InMillisecondsF());
+  web_transport->datagrams()->setIncomingMaxAge(kMaxAge.InMillisecondsF(),
+                                                ASSERT_NO_EXCEPTION);
 
   test::RunDelayedTasks(kMaxAge);
 
@@ -2776,6 +2777,22 @@ TEST_F(WebTransportTest, SetDatagramWritableQueueExpirationDuration) {
   test::RunPendingTasks();
 }
 
+TEST_F(WebTransportTest,
+       SetDatagramWritableQueueExpirationDurationConvertsInfinity) {
+  V8TestingScope scope;
+
+  auto* web_transport =
+      CreateAndConnectSuccessfully(scope, "https://example.com");
+
+  EXPECT_CALL(*mock_web_transport_,
+              SetOutgoingDatagramExpirationDuration(base::TimeDelta::Max()));
+
+  web_transport->setDatagramWritableQueueExpirationDuration(
+      std::numeric_limits<double>::infinity());
+
+  test::RunPendingTasks();
+}
+
 // Regression test for https://crbug.com/1241489.
 TEST_F(WebTransportTest, SetOutgoingMaxAgeBeforeConnectComplete) {
   V8TestingScope scope;
@@ -2785,9 +2802,20 @@ TEST_F(WebTransportTest, SetOutgoingMaxAgeBeforeConnectComplete) {
   constexpr double kDuration = 1000;
   constexpr base::TimeDelta kDurationDelta = base::Milliseconds(kDuration);
 
-  web_transport->datagrams()->setOutgoingMaxAge(kDuration);
+  web_transport->datagrams()->setOutgoingMaxAge(kDuration, ASSERT_NO_EXCEPTION);
 
   ConnectSuccessfully(web_transport, kDurationDelta);
+}
+
+TEST_F(WebTransportTest, SetOutgoingMaxAgeToZeroBeforeConnectComplete) {
+  V8TestingScope scope;
+
+  auto* web_transport = Create(scope, "https://example.com/", EmptyOptions());
+
+  web_transport->datagrams()->setOutgoingMaxAge(0, ASSERT_NO_EXCEPTION);
+  EXPECT_FALSE(web_transport->datagrams()->outgoingMaxAge().has_value());
+
+  ConnectSuccessfully(web_transport);
 }
 
 TEST_F(WebTransportTest, OnClosed) {

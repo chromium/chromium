@@ -15,8 +15,8 @@
   readonly attribute WritableStream writable;
 
   readonly attribute unsigned long maxDatagramSize;
-  attribute double? incomingMaxAge;
-  attribute double? outgoingMaxAge;
+  [RaisesException=Setter] attribute unrestricted double? incomingMaxAge;
+  [RaisesException=Setter] attribute unrestricted double? outgoingMaxAge;
   attribute unsigned long incomingMaxBufferedDatagrams;
   attribute unsigned long outgoingMaxBufferedDatagrams;
   [DeprecateAs=WebTransportDatagramDuplexStreamIncomingHighWaterMark]
