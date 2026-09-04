@@ -681,7 +681,7 @@ ci.thin_tester(
             "mac_arm64_apple_m2_retina_gpu_stable",
             "mac_toolchain",
             "out_dir_arg",
-            "xcode_16_main",
+            "xcode_27_main",
             "xctest",
         ],
     ),
