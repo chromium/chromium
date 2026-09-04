@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
@@ -147,14 +148,14 @@ class AccountMenuViewControllerTest : public PlatformTest {
             std::make_unique<FakeAuthenticationServiceDelegate>()));
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateTestSyncService));
-    profile_ = std::move(builder).Build();
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     fake_system_identity_manager_ =
         FakeSystemIdentityManager::FromSystemIdentityManager(
             GetApplicationContext()->GetSystemIdentityManager());
     data_source_.accountManagerService =
-        ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
+        ChromeAccountManagerServiceFactory::GetForProfile(profile_);
     authentication_service_ =
-        AuthenticationServiceFactory::GetForProfile(profile_.get());
+        AuthenticationServiceFactory::GetForProfile(profile_);
 
     AddPrimaryIdentity();
     AddSecondaryIdentity();
@@ -183,6 +184,10 @@ class AccountMenuViewControllerTest : public PlatformTest {
   }
 
   void TearDown() override {
+    fake_system_identity_manager_ = nullptr;
+    authentication_service_ = nullptr;
+    profile_ = nullptr;
+
     VerifyMock();
     PlatformTest::TearDown();
   }
@@ -260,7 +265,8 @@ class AccountMenuViewControllerTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestProfileIOS> profile_;
+  TestProfileManagerIOS profile_manager_;
+  raw_ptr<TestProfileIOS> profile_;
   raw_ptr<AuthenticationService> authentication_service_;
 };
 

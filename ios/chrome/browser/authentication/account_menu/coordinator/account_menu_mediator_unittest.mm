@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/settings/model/sync/utils/identity_error_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -79,7 +80,7 @@ class AccountMenuMediatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetFactoryWithDelegateForTesting(
             std::make_unique<FakeAuthenticationServiceDelegate>()));
-    profile_ = std::move(builder).Build();
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     avatar_provider_ = std::make_unique<signin::AvatarProvider>();
 
     // Set the manager and services variables.
@@ -87,12 +88,12 @@ class AccountMenuMediatorTest : public PlatformTest {
         FakeSystemIdentityManager::FromSystemIdentityManager(
             GetApplicationContext()->GetSystemIdentityManager());
     authentication_service_ =
-        AuthenticationServiceFactory::GetForProfile(profile_.get());
+        AuthenticationServiceFactory::GetForProfile(profile_);
     account_manager_service_ =
-        ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
+        ChromeAccountManagerServiceFactory::GetForProfile(profile_);
     test_sync_service_ = static_cast<syncer::TestSyncService*>(
-        SyncServiceFactory::GetForProfile(profile_.get()));
-    identity_manager_ = IdentityManagerFactory::GetForProfile(profile_.get());
+        SyncServiceFactory::GetForProfile(profile_));
+    identity_manager_ = IdentityManagerFactory::GetForProfile(profile_);
 
     AddPrimaryIdentity();
     AddSecondaryIdentity();
@@ -110,7 +111,7 @@ class AccountMenuMediatorTest : public PlatformTest {
                        identityManager:identity_manager_
                                  prefs:profile_->GetPrefs()
         subscriptionEligibilityService:SubscriptionEligibilityServiceFactory::
-                                           GetForProfile(profile_.get())
+                                           GetForProfile(profile_)
                            accessPoint:AccountMenuAccessPoint::kNewTabPage
                                    URL:GURL()
                   prepareChangeProfile:nil
@@ -128,6 +129,7 @@ class AccountMenuMediatorTest : public PlatformTest {
     account_manager_service_ = nullptr;
     test_sync_service_ = nullptr;
     identity_manager_ = nullptr;
+    profile_ = nullptr;
 
     [mediator_ disconnect];
     mediator_ = nil;
@@ -189,6 +191,7 @@ class AccountMenuMediatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestProfileManagerIOS profile_manager_;
   id<AccountMenuMediatorDelegate> delegate_mock_;
   id<SyncErrorSettingsCommandHandler> sync_error_settings_mock_;
   id<AccountMenuConsumer> consumer_mock_;
@@ -201,7 +204,7 @@ class AccountMenuMediatorTest : public PlatformTest {
   raw_ptr<signin::IdentityManager> identity_manager_;
   base::UserActionTester user_actions_;
   std::unique_ptr<signin::AvatarProvider> avatar_provider_;
-  std::unique_ptr<TestProfileIOS> profile_;
+  raw_ptr<TestProfileIOS> profile_;
 
  private:
   // Signs in kPrimaryIdentity as primary identity.
@@ -227,12 +230,21 @@ TEST_F(AccountMenuMediatorTest, TestAddSecondaryIdentity) {
   thirdIdentity.userFullName = nil;
   thirdIdentity.userGivenName = nil;
 
+  NSArray<NSString*>* gaiaIDsToKeep = @[
+    kSecondaryIdentity.gaiaId.ToNSString(), thirdIdentity.gaiaId.ToNSString()
+  ];
+  // Adding an identity triggers notifications from both
+  // -[<IdentityManagerObserving> accountsOnDeviceDidChange] and
+  // -[<IdentityManagerObserving> extendedAccountInfoDidUpdate:] .
   OCMExpect([consumer_mock_
       updateAccountListWithGaiaIDsToAdd:@[ thirdIdentity.gaiaId.ToNSString() ]
                         gaiaIDsToRemove:@[]
                           gaiaIDsToKeep:@[
                             kSecondaryIdentity.gaiaId.ToNSString()
                           ]]);
+  OCMExpect([consumer_mock_ updateAccountListWithGaiaIDsToAdd:@[]
+                                              gaiaIDsToRemove:@[]
+                                                gaiaIDsToKeep:gaiaIDsToKeep]);
   fake_system_identity_manager_->AddIdentity(thirdIdentity);
 
   // Simulate that the identity gets updated (e.g. the username became known).
@@ -240,9 +252,6 @@ TEST_F(AccountMenuMediatorTest, TestAddSecondaryIdentity) {
   // identities is unchanged.
   thirdIdentity.userFullName = @"First Last";
   thirdIdentity.userGivenName = @"First";
-  NSArray<NSString*>* gaiaIDsToKeep = @[
-    kSecondaryIdentity.gaiaId.ToNSString(), thirdIdentity.gaiaId.ToNSString()
-  ];
   OCMExpect([consumer_mock_ updateAccountListWithGaiaIDsToAdd:@[]
                                               gaiaIDsToRemove:@[]
                                                 gaiaIDsToKeep:gaiaIDsToKeep]);

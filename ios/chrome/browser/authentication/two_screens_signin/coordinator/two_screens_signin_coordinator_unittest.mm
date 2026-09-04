@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -57,8 +58,8 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
             std::make_unique<FakeAuthenticationServiceDelegate>()));
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateTestSyncService));
-    profile_ = std::move(builder).Build();
-    browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
+    browser_ = std::make_unique<TestBrowser>(profile_, scene_state_);
 
     NSUserDefaults* standardDefaults = [NSUserDefaults standardUserDefaults];
     [standardDefaults removeObjectForKey:kDisplayedSSORecallPromoCountKey];
@@ -83,6 +84,17 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
   ~TwoScreensSigninCoordinatorTest() override {
     EXPECT_OCMOCK_VERIFY((id)fullscreen_signin_screen_coordinator_mock_);
     EXPECT_OCMOCK_VERIFY((id)history_sync_coordinator_mock_);
+  }
+
+  void TearDown() override {
+    [coordinator_ stop];
+    coordinator_ = nil;
+    browser_.reset();
+    profile_ = nullptr;
+    window_ = nil;
+    scene_state_ = nil;
+    profile_state_ = nil;
+    PlatformTest::TearDown();
   }
 
   // Initalize coordinator_ up to start.
@@ -202,11 +214,11 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
   // Signs in a fake identity.
   void SigninFakeIdentity(bool has_history_sync_opt_in) {
     AuthenticationService* auth_service =
-        AuthenticationServiceFactory::GetForProfile(profile_.get());
+        AuthenticationServiceFactory::GetForProfile(profile_);
     auth_service->SignIn(fake_identity_,
                          signin_metrics::AccessPoint::kStartPage);
     syncer::SyncService* sync_service =
-        SyncServiceFactory::GetForProfile(profile_.get());
+        SyncServiceFactory::GetForProfile(profile_);
     sync_service->GetUserSettings()->SetSelectedType(
         syncer::UserSelectableType::kHistory, has_history_sync_opt_in);
     sync_service->GetUserSettings()->SetSelectedType(
@@ -232,8 +244,9 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
   bool completion_block_done_ = false;
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestProfileManagerIOS profile_manager_;
+  raw_ptr<TestProfileIOS> profile_ = nullptr;
   std::unique_ptr<Browser> browser_;
-  std::unique_ptr<TestProfileIOS> profile_;
   TwoScreensSigninCoordinator* coordinator_;
   base::UserActionTester user_actions_;
   UIWindow* window_;
