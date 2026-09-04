@@ -704,7 +704,7 @@
           'linux_nvidia_gtx_1660_stable',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_all_linux_release_vulkan_telemetry_tests',
+          'gpu_telemetry_tests': 'legacy_gpu_all_linux_release_telemetry_tests',
         },
       },
       'Linux V8 FYI Release - pointer compression (NVIDIA)': {
@@ -714,7 +714,7 @@
           'linux_nvidia_gtx_1660_stable',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_all_linux_release_vulkan_telemetry_tests',
+          'gpu_telemetry_tests': 'legacy_gpu_all_linux_release_telemetry_tests',
         },
       },
       'Mac V8 FYI Release (Apple M2)': {

@@ -45,12 +45,11 @@ targets.legacy_compound_suite(
 
 # BEGIN composition test suites used by the GPU bots
 
-# TODO(jonross): remove this once Vulkan Swiftshader and Vulkan GL interop
-# paths are merged. This should mirror
-# `gpu_all_linux_release_telemetry_tests` but with additional
-# `gpu_skia_renderer_vulkan_passthrough_telemetry_tests`
+# Legacy copy of the gpu_all_linux_release_telemetry_tests bundle.
+# TODO(crbug.com/554055689): Remove this once V8 is updated to use Starlark test
+# specs.
 targets.legacy_compound_suite(
-    name = "gpu_all_linux_release_vulkan_telemetry_tests",
+    name = "legacy_gpu_all_linux_release_telemetry_tests",
     basic_suites = [
         "gpu_passthrough_telemetry_tests",
         "gpu_webcodecs_telemetry_test",
@@ -63,6 +62,8 @@ targets.legacy_compound_suite(
         # directly included.
         "legacy_info_collection_tests",
         "legacy_trace_test",
+        # TODO(crbug.com/541312843): Add `webrtc_tests` to make this actually
+        # identical to gpu_all_linux_release_telemetry_tests.
     ],
 )
 

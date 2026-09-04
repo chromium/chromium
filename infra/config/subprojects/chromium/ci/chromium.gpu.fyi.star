@@ -1510,6 +1510,9 @@ ci.thin_tester(
                     "--test-launcher-filter-file=../../testing/buildbot/filters/linux.amd.5500xt.wayland.gl_tests_passthrough.filter",
                 ],
             ),
+            "vulkan_pixel_skia_gold_test": targets.remove(
+                reason = "Only run on NVIDIA",
+            ),
         },
     ),
     targets_settings = targets.settings(
@@ -1593,6 +1596,11 @@ ci.thin_tester(
             "very_limited_capacity_bot",
             "gpu_amd_rx_9070_xt_linux_experimental",
         ],
+        per_test_modifications = {
+            "vulkan_pixel_skia_gold_test": targets.remove(
+                reason = "Only run on NVIDIA",
+            ),
+        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.RELEASE,
@@ -1677,7 +1685,7 @@ ci.thin_tester(
         # should be running the same tests as 'Linux FYI Release (NVIDIA)'.
         targets = [
             "gpu_all_linux_release_gtests",
-            "gpu_all_linux_release_vulkan_telemetry_tests",
+            "gpu_all_linux_release_telemetry_tests",
         ],
         mixins = [
             "limited_capacity_bot",
@@ -1717,7 +1725,7 @@ ci.thin_tester(
     targets = targets.bundle(
         targets = [
             "gpu_all_linux_release_gtests",
-            "gpu_all_linux_release_vulkan_telemetry_tests",
+            "gpu_all_linux_release_telemetry_tests",
         ],
         mixins = [
             "very_limited_capacity_bot",
@@ -1793,7 +1801,7 @@ ci.thin_tester(
     targets = targets.bundle(
         targets = [
             "gpu_all_linux_release_gtests",
-            "gpu_all_linux_release_vulkan_telemetry_tests",
+            "gpu_all_linux_release_telemetry_tests",
         ],
         mixins = [
             "linux_nvidia_rtx_4070_super_stable",
@@ -1836,6 +1844,11 @@ ci.thin_tester(
         mixins = [
             "linux_amd_rx_5500_xt",
         ],
+        per_test_modifications = {
+            "vulkan_pixel_skia_gold_test": targets.remove(
+                reason = "Only run on NVIDIA",
+            ),
+        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.RELEASE,
@@ -1873,6 +1886,11 @@ ci.thin_tester(
         mixins = [
             "linux_amd_rx_7600_stable",
         ],
+        per_test_modifications = {
+            "vulkan_pixel_skia_gold_test": targets.remove(
+                reason = "Only run on NVIDIA",
+            ),
+        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.RELEASE,
@@ -1995,6 +2013,11 @@ ci.thin_tester(
         mixins = [
             "linux_intel_uhd_630_stable",
         ],
+        per_test_modifications = {
+            "vulkan_pixel_skia_gold_test": targets.remove(
+                reason = "Only run on NVIDIA",
+            ),
+        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.RELEASE,
@@ -2037,6 +2060,9 @@ ci.thin_tester(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/linux.uhd_770.gl_tests_passthrough.filter",
                 ],
+            ),
+            "vulkan_pixel_skia_gold_test": targets.remove(
+                reason = "Only run on NVIDIA",
             ),
         },
     ),

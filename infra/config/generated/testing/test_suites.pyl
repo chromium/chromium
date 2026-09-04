@@ -2687,16 +2687,6 @@
       'devtools_browser_tests_suite',
     ],
 
-    'gpu_all_linux_release_vulkan_telemetry_tests': [
-      'gpu_passthrough_telemetry_tests',
-      'gpu_skia_renderer_vulkan_passthrough_telemetry_tests',
-      'gpu_webcodecs_telemetry_test',
-      'gpu_webgl2_conformance_gl_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
-      'legacy_info_collection_tests',
-      'legacy_trace_test',
-    ],
-
     'gpu_fyi_only_mac_release_telemetry_tests': [
       'gpu_metal_passthrough_graphite_telemetry_tests',
       'gpu_webcodecs_metal_passthrough_graphite_telemetry_test',
@@ -2733,6 +2723,16 @@
       'legacy_info_collection_tests',
       'legacy_pixel_skia_gold_passthrough_graphite_test',
       'legacy_screenshot_sync_passthrough_graphite_tests',
+      'legacy_trace_test',
+    ],
+
+    'legacy_gpu_all_linux_release_telemetry_tests': [
+      'gpu_passthrough_telemetry_tests',
+      'gpu_skia_renderer_vulkan_passthrough_telemetry_tests',
+      'gpu_webcodecs_telemetry_test',
+      'gpu_webgl2_conformance_gl_passthrough_telemetry_tests',
+      'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
+      'legacy_info_collection_tests',
       'legacy_trace_test',
     ],
 
