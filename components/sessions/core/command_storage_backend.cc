@@ -793,11 +793,19 @@ CommandStorageBackend::FindLastSessionFile() const {
   // Determine the session with the most recent timestamp. This is called
   // at startup, before a file has been opened for writing.
   DCHECK(!open_file_);
+  int files_read = 0;
   for (const SessionInfo& session : GetSessionFilesSortedByReverseTimestamp()) {
+    ++files_read;
     if (CanUseFileForLastSession(session.path)) {
+      base::UmaHistogramCounts100(
+          GetHistogramName("FindLastSessionFile", "Found", "FilesRead"),
+          files_read);
       return session;
     }
   }
+  base::UmaHistogramCounts100(
+      GetHistogramName("FindLastSessionFile", "NotFound", "FilesRead"),
+      files_read);
   return std::nullopt;
 }
 

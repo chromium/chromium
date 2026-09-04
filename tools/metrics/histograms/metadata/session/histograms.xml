@@ -38,6 +38,15 @@ chromium-metrics-reviews@google.com.
   <variant name="Encrypted"/>
 </variants>
 
+<variants name="FindLastSessionFileResult">
+  <variant name="Found"
+      summary="a valid session file was found (either the newest file or
+               after falling back to older files)"/>
+  <variant name="NotFound"
+      summary="no valid session file was found (either 0 candidate files
+               existed or all candidate files were invalid)"/>
+</variants>
+
 <variants name="SmartRestartTabCount">
   <variant name="" summary="all sessions"/>
   <variant name=".HighTab" summary="sessions with more than 20 tabs"/>
@@ -133,6 +142,27 @@ chromium-metrics-reviews@google.com.
   <token key="SessionType" variants="CommandStorageSessionType"/>
   <token key="EncryptedStatus" variants="EncryptedStatus"/>
   <token key="Slice" variants="AppendCommandsSlice"/>
+</histogram>
+
+<histogram
+    name="Session.CommandStorageBackend.{SessionType}.{EncryptedStatus}.FindLastSessionFile.{Result}.FilesRead"
+    units="files" expires_after="2027-09-01">
+  <owner>jacastro@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The number of candidate session files inspected/read by
+    CommandStorageBackend for {SessionType} sessions ({EncryptedStatus}) when
+    {Result}.
+
+    For 'Found', records the number of candidate files inspected (1 if the
+    newest file was valid, &gt;=2 if fallback files were inspected). For
+    'NotFound', records 0 if no candidate files existed in the session directory
+    (e.g. fresh profile), or &gt;=1 if candidate files existed but all lacked a
+    valid marker. Recorded during backend initialization.
+  </summary>
+  <token key="SessionType" variants="CommandStorageSessionType"/>
+  <token key="EncryptedStatus" variants="EncryptedStatus"/>
+  <token key="Result" variants="FindLastSessionFileResult"/>
 </histogram>
 
 <histogram

@@ -132,6 +132,11 @@ class CommandStorageBackendTest : public testing::Test {
     return backend->last_session_info_;
   }
 
+  std::unique_ptr<base::File> OpenAndWriteHeader(CommandStorageBackend* backend,
+                                                 const base::FilePath& path) {
+    return backend->OpenAndWriteHeader(path);
+  }
+
   std::vector<base::FilePath> GetSessionFilePathsSortedByReverseTimestamp(
       SessionType session_type,
       bool encrypted) {
@@ -1235,6 +1240,118 @@ TEST_P(CommandStorageBackendParamTest, UseMarkerWithoutValidMarker) {
   if (!GetParam().encrypted) {
     EXPECT_FALSE(GetLastSessionInfo(backend.get()));
   }
+}
+
+TEST_P(CommandStorageBackendParamTest, FindLastSessionFile_FilesRead_NoFiles) {
+  base::HistogramTester histogram_tester;
+  scoped_refptr<CommandStorageBackend> backend = CreateBackend();
+  // Initialize backend to trigger FindLastSessionFile().
+  backend->ReadLastSessionCommands();
+
+  histogram_tester.ExpectUniqueSample(
+      GetHistogramName("FindLastSessionFile", "NotFound", "FilesRead"), 0, 1);
+  histogram_tester.ExpectTotalCount(
+      GetHistogramName("FindLastSessionFile", "Found", "FilesRead"), 0);
+}
+
+TEST_P(CommandStorageBackendParamTest,
+       FindLastSessionFile_FilesRead_SingleValidFile) {
+  // Write a valid session file.
+  scoped_refptr<CommandStorageBackend> backend = CreateBackend();
+  SessionCommands commands;
+  commands.push_back(CreateCommandFromData({1, "a"}));
+  backend->AppendCommands(std::move(commands), /*truncate=*/true,
+                          base::DoNothing());
+  backend.reset();
+
+  base::HistogramTester histogram_tester;
+  backend = CreateBackend();
+  backend->ReadLastSessionCommands();
+
+  histogram_tester.ExpectUniqueSample(
+      GetHistogramName("FindLastSessionFile", "Found", "FilesRead"), 1, 1);
+  histogram_tester.ExpectTotalCount(
+      GetHistogramName("FindLastSessionFile", "NotFound", "FilesRead"), 0);
+}
+
+TEST_P(CommandStorageBackendParamTest,
+       FindLastSessionFile_FilesRead_FallbackToOlderFile) {
+  base::SimpleTestClock test_clock;
+  test_clock.SetNow(base::Time::Now());
+
+  // 1. Write an older valid session file with a marker at T1.
+  scoped_refptr<CommandStorageBackend> backend = CreateBackend(&test_clock);
+  SessionCommands commands;
+  commands.push_back(CreateCommandFromData({1, "older_session"}));
+  backend->AppendCommands(std::move(commands), /*truncate=*/true,
+                          base::DoNothing());
+  const base::FilePath older_path = backend->current_path_for_testing();
+  EXPECT_FALSE(older_path.empty());
+  backend.reset();
+
+  // 2. Write a newer invalid session file (header only, no marker) at T2.
+  test_clock.Advance(base::Minutes(5));
+  base::FilePath newer_path = GetFilePath(static_cast<uint64_t>(
+      test_clock.Now().ToDeltaSinceWindowsEpoch().InMicroseconds()));
+  backend = CreateBackend(&test_clock);
+  std::unique_ptr<base::File> newer_file =
+      OpenAndWriteHeader(backend.get(), newer_path);
+  ASSERT_TRUE(newer_file);
+  ASSERT_TRUE(newer_file->IsValid());
+  newer_file.reset();
+  backend.reset();
+
+  // 3. Initialize a new backend. It should inspect `newer_path` first, find no
+  // marker, then fall back to `older_path`.
+  base::HistogramTester histogram_tester;
+  backend = CreateBackend(&test_clock);
+  ReadCommandsResult result = backend->ReadLastSessionCommands();
+  EXPECT_FALSE(result.error_reading);
+  ASSERT_EQ(1u, result.commands.size());
+  AssertCommandEqualsData({1, "older_session"}, result.commands[0].get());
+
+  histogram_tester.ExpectUniqueSample(
+      GetHistogramName("FindLastSessionFile", "Found", "FilesRead"), 2, 1);
+  histogram_tester.ExpectTotalCount(
+      GetHistogramName("FindLastSessionFile", "NotFound", "FilesRead"), 0);
+}
+
+TEST_P(CommandStorageBackendParamTest,
+       FindLastSessionFile_FilesRead_AllFilesInvalid) {
+  base::SimpleTestClock test_clock;
+  test_clock.SetNow(base::Time::Now());
+
+  scoped_refptr<CommandStorageBackend> backend = CreateBackend(&test_clock);
+
+  // Write two files with headers but without markers.
+  base::FilePath path1 = GetFilePath(static_cast<uint64_t>(
+      test_clock.Now().ToDeltaSinceWindowsEpoch().InMicroseconds()));
+  std::unique_ptr<base::File> file1 = OpenAndWriteHeader(backend.get(), path1);
+  ASSERT_TRUE(file1);
+  ASSERT_TRUE(file1->IsValid());
+  file1.reset();
+
+  test_clock.Advance(base::Minutes(1));
+  base::FilePath path2 = GetFilePath(static_cast<uint64_t>(
+      test_clock.Now().ToDeltaSinceWindowsEpoch().InMicroseconds()));
+  std::unique_ptr<base::File> file2 = OpenAndWriteHeader(backend.get(), path2);
+  ASSERT_TRUE(file2);
+  ASSERT_TRUE(file2->IsValid());
+  file2.reset();
+
+  backend.reset();
+
+  // Initialize a new backend. Both files should be inspected and rejected.
+  base::HistogramTester histogram_tester;
+  backend = CreateBackend(&test_clock);
+  ReadCommandsResult result = backend->ReadLastSessionCommands();
+  EXPECT_FALSE(result.error_reading);
+  EXPECT_TRUE(result.commands.empty());
+
+  histogram_tester.ExpectUniqueSample(
+      GetHistogramName("FindLastSessionFile", "NotFound", "FilesRead"), 2, 1);
+  histogram_tester.ExpectTotalCount(
+      GetHistogramName("FindLastSessionFile", "Found", "FilesRead"), 0);
 }
 
 TEST_P(CommandStorageBackendParamTest, NewFileOnTruncate) {
