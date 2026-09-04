@@ -140,14 +140,15 @@ void ReadAloudService::PreviewVoice(std::string_view voice_id) {
   // Pause active article playback while previewing a voice.
   Pause();
 
-  // TODO(b/522835686): Implement actual voice preview audio synthesis via the
-  // utility process player.
-
-  // Notify the UI/client delegate that voice preview playback has started.
+  // Notify the UI/client delegate that voice preview playback is buffering.
   if (delegate_) {
     delegate_->OnVoicePreviewPlaybackStateChanged(voice_id,
-                                                  PlaybackState::kPlaying);
+                                                  PlaybackState::kBuffering);
   }
+
+  // TODO(b/522835686): Implement actual voice preview audio synthesis via the
+  // utility process player and notify the delegate when playback transitions to
+  // PlaybackState::kPlaying.
 }
 
 void ReadAloudService::StopVoicePreview() {

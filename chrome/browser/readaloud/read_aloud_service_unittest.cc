@@ -40,6 +40,8 @@ namespace readaloud {
 
 namespace {
 
+constexpr char kTestVoiceId[] = "msf00006";
+
 class MockDelegate : public ReadAloudService::Delegate {
  public:
   MockDelegate() = default;
@@ -1008,14 +1010,16 @@ TEST_F(ReadAloudServiceTest, VoicePreviewDispatchesPlayingAndStoppedStates) {
   MockDelegate* delegate_ptr = delegate.get();
   service()->SetDelegate(std::move(delegate));
 
+  testing::InSequence s;
   EXPECT_CALL(*delegate_ptr,
               OnVoicePreviewPlaybackStateChanged(
-                  "msf00006", ReadAloudService::PlaybackState::kPlaying))
+                  kTestVoiceId, ReadAloudService::PlaybackState::kBuffering))
       .Times(1);
-  service()->PreviewVoice("msf00006");
+  service()->PreviewVoice(kTestVoiceId);
 
-  EXPECT_CALL(*delegate_ptr, OnVoicePreviewPlaybackStateChanged(
-                                 "", ReadAloudService::PlaybackState::kStopped))
+  EXPECT_CALL(*delegate_ptr,
+              OnVoicePreviewPlaybackStateChanged(
+                  /*voice_id=*/"", ReadAloudService::PlaybackState::kStopped))
       .Times(1);
   service()->StopVoicePreview();
 
@@ -1039,9 +1043,9 @@ TEST_F(ReadAloudServiceTest, PreviewVoicePausesActivePlayback) {
       .Times(1);
   EXPECT_CALL(*delegate_ptr,
               OnVoicePreviewPlaybackStateChanged(
-                  "msf00006", ReadAloudService::PlaybackState::kPlaying))
+                  kTestVoiceId, ReadAloudService::PlaybackState::kBuffering))
       .Times(1);
-  service()->PreviewVoice("msf00006");
+  service()->PreviewVoice(kTestVoiceId);
 
   // Stopping playback returns article state to stopped before teardown.
   EXPECT_CALL(*delegate_ptr,
@@ -1055,7 +1059,7 @@ TEST_F(ReadAloudServiceTest, PreviewVoicePausesActivePlayback) {
 TEST_F(ReadAloudServiceTest, PlayResumesPlaybackAfterVoicePreview) {
   std::unique_ptr<content::WebContents> test_contents = CreateTestWebContents();
   service()->Play(test_contents.get());
-  service()->PreviewVoice("msf00006");
+  service()->PreviewVoice(kTestVoiceId);
 
   auto delegate = std::make_unique<testing::StrictMock<MockDelegate>>();
   MockDelegate* delegate_ptr = delegate.get();
