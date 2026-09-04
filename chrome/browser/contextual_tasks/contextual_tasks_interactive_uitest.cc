@@ -482,15 +482,54 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
         "app?.shadowRoot?.querySelector('#composebox')?.shadowRoot?."
         "querySelector('#composebox');"
         "  if (!composebox) return false;"
-        "  if (composebox.contextMenuOpened) return true;"
-        "  const btn = "
+        "  if (composebox.contextMenuOpened) {"
+        "    app._entrypointClicked = false;"
+        "    return true;"
+        "  }"
+        "  if (!app._entrypointClicked) {"
+        "    const btn = "
         "composebox.shadowRoot?.querySelector('#contextEntrypoint')?."
         "shadowRoot?."
         "querySelector('#entrypointButton')?.shadowRoot?.querySelector('#"
         "entrypoint');"
-        "  if (btn) { btn.click(); }"
+        "    if (btn && !btn.disabled) {"
+        "      app._entrypointClicked = true;"
+        "      btn.click();"
+        "    }"
+        "  }"
         "  return false;"
         "}";
+    change.event = kElementExistsEvent;
+    return WaitForStateChange(contents_id, change);
+  }
+
+  // Helper to force click a button in the context menu matching the selector.
+  auto ForceClickMenuButtonBySelector(const ui::ElementIdentifier& contents_id,
+                                      const std::string& selector) {
+    StateChange change;
+    change.type = StateChange::Type::kExistsAndConditionTrue;
+    change.where = {"contextual-tasks-app"};
+    change.test_function = base::StringPrintf(
+        R"(
+        function(app) {
+          const btn = app?.shadowRoot
+              ?.querySelector('#composebox')
+              ?.shadowRoot
+              ?.querySelector('#composebox')
+              ?.shadowRoot
+              ?.querySelector('#contextEntrypoint')
+              ?.shadowRoot
+              ?.querySelector('#menu')
+              ?.shadowRoot
+              ?.querySelector('%s');
+          if (btn && !btn.disabled) {
+            btn.click();
+            return true;
+          }
+          return false;
+        }
+        )",
+        selector.c_str());
     change.event = kElementExistsEvent;
     return WaitForStateChange(contents_id, change);
   }
@@ -500,56 +539,16 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
   // identified by its position or index in the list.
   auto ForceClickMenuButton(const ui::ElementIdentifier& contents_id,
                             int target_index) {
-    StateChange change;
-    change.type = StateChange::Type::kExistsAndConditionTrue;
-    change.where = {"contextual-tasks-app"};
-    change.test_function = base::StringPrintf(
-        "function(app) {"
-        "  const composebox = "
-        "app?.shadowRoot?.querySelector('#composebox')?.shadowRoot?."
-        "querySelector('#composebox');"
-        "  if (!composebox) return false;"
-        "  const btn = "
-        "composebox.shadowRoot?.querySelector('#contextEntrypoint')?."
-        "shadowRoot?.querySelector('#menu')?.shadowRoot?.querySelector('button."
-        "dropdown-item[data-index=\"' + %d + '\"]');"
-        "  if (btn) {"
-        "    btn.click();"
-        "    return true;"
-        "  }"
-        "  return false;"
-        "}",
-        target_index);
-    change.event = kElementExistsEvent;
-    return WaitForStateChange(contents_id, change);
+    return ForceClickMenuButtonBySelector(
+        contents_id,
+        base::StringPrintf("button.dropdown-item[data-index=\"%d\"]",
+                           target_index));
   }
 
   // Forces a click on a context menu item identified by its ID string.
   auto ForceClickMenuButton(const ui::ElementIdentifier& contents_id,
                             const std::string& button_id) {
-    StateChange change;
-    change.type = StateChange::Type::kExistsAndConditionTrue;
-    change.where = {"contextual-tasks-app"};
-    change.test_function = base::StringPrintf(
-        "function(app) {"
-        "  const composebox = "
-        "app?.shadowRoot?.querySelector('#composebox')?.shadowRoot?."
-        "querySelector('#composebox');"
-        "  if (!composebox) return false;"
-        "  const menu = "
-        "composebox.shadowRoot?.querySelector('#contextEntrypoint')?."
-        "shadowRoot?.querySelector('#menu');"
-        "  if (!menu) return false;"
-        "  const btn = menu.shadowRoot?.querySelector('#%s');"
-        "  if (btn) {"
-        "    btn.click();"
-        "    return true;"
-        "  }"
-        "  return false;"
-        "}",
-        button_id.c_str());
-    change.event = kElementExistsEvent;
-    return WaitForStateChange(contents_id, change);
+    return ForceClickMenuButtonBySelector(contents_id, "#" + button_id);
   }
 
   auto WaitForComposeboxFilesCount(int expected_count) {
@@ -1176,8 +1175,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
                   WaitForComposeboxFilesCount(0));
 }
 
-// TODO(crbug.com/524797987): Re-enable this test.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+// TODO(crbug.com/524797987): Re-enable this test on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_AddAndRemoveImageChipFromComposebox \
   DISABLED_AddAndRemoveImageChipFromComposebox
 #else
@@ -1214,7 +1213,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
                   ForceClickAddContextEntrypoint(kPrimaryTab),
                   ForceClickMenuButton(kPrimaryTab, "imageUpload"),
 
-                  WaitForElementExists(kPrimaryTab, kImgChip),
+                  WaitForElementVisible(kPrimaryTab, kImgChip),
                   WaitForComposeboxFilesCount(1),
 
                   ClickButton(kPrimaryTab, kRemoveImgButton),
