@@ -2913,10 +2913,6 @@ inline constexpr char kChromeDarkNeutrals26Name[] = "Chrome Dark Neutrals 26";
 inline constexpr char kChromeDarkNeutrals26Description[] =
     "When enabled, updates the neutral palette for dark mode default theme";
 
-inline constexpr char kChromeFindsInternalsName[] = "Chrome Finds Internals";
-inline constexpr char kChromeFindsInternalsDescription[] =
-    "Enables the chrome://chrome-finds-internals page.";
-
 inline constexpr char kFallbackToSWIfGLES3NotSupportedName[] =
     "Fallback to software if GLES3 is not supported";
 inline constexpr char kFallbackToSWIfGLES3NotSupportedDescription[] =
@@ -6006,6 +6002,10 @@ inline constexpr char kChromeFindsName[] = "Chrome Finds";
 inline constexpr char kChromeFindsDescription[] =
     "When enabled, users will be able to opt-in to receive personalized "
     "notifications based on their browsing history.";
+
+inline constexpr char kChromeFindsInternalsName[] = "Chrome Finds Internals";
+inline constexpr char kChromeFindsInternalsDescription[] =
+    "Enables the chrome://chrome-finds-internals page.";
 
 inline constexpr char kClankDefaultBrowserPromoName[] =
     "Clank default browser promo 2";

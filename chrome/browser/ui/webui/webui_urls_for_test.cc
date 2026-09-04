@@ -42,7 +42,6 @@ base::span<const std::string_view> GetChromeUrlsForTest() {
       "chrome://bookmarks-side-panel.top-chrome",
       "chrome://browser-actuator-internals",
       "chrome://certificate-manager",
-      "chrome://chrome-finds-internals",
       "chrome://chrome-urls",
       "chrome://color-pipeline-internals",
       "chrome://comments-side-panel.top-chrome",
@@ -199,6 +198,7 @@ base::span<const std::string_view> GetChromeUrlsForTest() {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+      "chrome://chrome-finds-internals",
       "chrome://explore-sites-internals",
       "chrome://internals/notifications",
       "chrome://internals/query-tiles",

@@ -148,6 +148,7 @@ source_set("configs") {
     #is_android
     deps += [
       "//chrome/browser/ui/android/lens",
+      "//chrome/browser/ui/webui/chrome_finds_internals",
       "//chrome/browser/ui/webui/feed_internals",
       "//chrome/browser/ui/webui/notifications_internals",
       "//chrome/browser/ui/webui/webapks",

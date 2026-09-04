@@ -33,7 +33,6 @@
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
-#include "chrome/browser/finds/core/finds_service.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_prefs.h"
@@ -281,6 +280,7 @@
 #include "chrome/browser/android/preferences/shared_preferences_migrator_android.h"
 #include "chrome/browser/android/usage_stats/usage_stats_bridge.h"
 #include "chrome/browser/auxiliary_search/auxiliary_search_donation_service.h"
+#include "chrome/browser/finds/core/finds_service.h"
 #include "chrome/browser/first_run/android/first_run_prefs.h"
 #include "chrome/browser/lens/android/lens_prefs.h"
 #include "chrome/browser/media/android/cdm/media_drm_origin_id_manager.h"
@@ -1844,7 +1844,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   enterprise_reporting::RegisterProfilePrefs(registry);
   dom_distiller::DistilledPagePrefs::RegisterProfilePrefs(registry);
   DownloadPrefs::RegisterProfilePrefs(registry);
-  finds::FindsService::RegisterProfilePrefs(registry);
   glic::prefs::RegisterProfilePrefs(registry);
   glic::contextual_cueing::prefs::RegisterProfilePrefs(registry);
   permissions::PermissionHatsTriggerHelper::RegisterProfilePrefs(registry);
@@ -2034,6 +2033,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   AuxiliarySearchDonationService::RegisterProfilePrefs(registry);
   feed::prefs::RegisterFeedSharedProfilePrefs(registry);
   feed::RegisterProfilePrefs(registry);
+  finds::FindsService::RegisterProfilePrefs(registry);
   cdm::MediaDrmStorageImpl::RegisterProfilePrefs(registry);
   KnownInterceptionDisclosureInfoBarDelegate::RegisterProfilePrefs(registry);
   MediaDrmOriginIdManager::RegisterProfilePrefs(registry);

@@ -14,9 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/finds/android/finds_service_android.h"
-#endif
 #include "chrome/browser/finds/core/finds_features.h"
 #include "chrome/browser/finds/core/finds_metrics.h"
 #include "chrome/browser/finds/core/finds_pref_names.h"
@@ -440,16 +438,12 @@ void FindsService::MaybeRescheduleNotifications() {
 }
 
 void FindsService::CheckFindsNotificationsEnabledAndMaybeExecute() {
-#if BUILDFLAG(IS_ANDROID)
   if (!IsFindsFeatureAllowedForUser()) {
     return;
   }
   FindsServiceAndroid::CheckAreFindsNotificationsEnabledAndroid(
       base::BindOnce(&FindsService::OnCheckAreFindsNotificationsEnabled,
                      weak_ptr_factory_.GetWeakPtr()));
-#else
-  ExecuteModelAndScheduleNotification(base::DoNothing());
-#endif
 }
 
 void FindsService::OnHistoryQueryComplete(

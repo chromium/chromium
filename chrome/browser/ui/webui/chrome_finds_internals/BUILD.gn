@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+assert(is_android)
+
 import("//mojo/public/tools/bindings/mojom.gni")
 
 static_library("chrome_finds_internals") {
@@ -12,21 +14,19 @@ static_library("chrome_finds_internals") {
 
   public_deps = [
     ":mojo_bindings",
-    "//base",
-    "//chrome/browser/finds/core",
-    "//chrome/browser/history",
-    "//chrome/browser/profiles:profile",
-    "//chrome/browser/resources/chrome_finds_internals:resources",
+    "//chrome/common",
     "//content/public/browser",
     "//ui/webui",
   ]
 
   deps = [
+    "//base",
     "//chrome/browser/finds",
     "//chrome/browser/finds/core",
+    "//chrome/browser/history",
     "//chrome/browser/optimization_guide",
-    "//chrome/common",
-    "//chrome/common:constants",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/chrome_finds_internals:resources",
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//mojo/public/cpp/bindings",

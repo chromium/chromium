@@ -103,7 +103,6 @@
 #include "chrome/browser/feed/feed_service_factory.h"
 #include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
-#include "chrome/browser/finds/finds_service_factory.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 #include "chrome/browser/font_pref_change_notifier_factory.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager_factory.h"
@@ -352,6 +351,7 @@
 #include "chrome/browser/auxiliary_search/auxiliary_search_donation_service_factory.h"
 #include "chrome/browser/auxiliary_search/auxiliary_search_provider.h"
 #include "chrome/browser/commerce/merchant_viewer/merchant_viewer_data_manager_factory.h"
+#include "chrome/browser/finds/finds_service_factory.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/media/android/cdm/media_drm_origin_id_manager_factory.h"
 #include "chrome/browser/ntp_customization/ntp_android_background_service_factory.h"
@@ -1069,7 +1069,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   FieldInfoManagerFactory::GetInstance();
   FileSystemAccessPermissionContextFactory::GetInstance();
   FindBarStateFactory::GetInstance();
+#if BUILDFLAG(IS_ANDROID)
   finds::FindsServiceFactory::GetInstance();
+#endif  // BUILDFLAG(IS_ANDROID)
   first_party_sets::FirstPartySetsPolicyServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
   FirstRunServiceFactory::GetInstance();

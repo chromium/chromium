@@ -4,12 +4,7 @@
 
 #include "chrome/browser/finds/core/finds_tab_helper.h"
 
-#include "ui/base/page_transition_types.h"
-
-#if BUILDFLAG(IS_ANDROID)
 #include "base/android/device_info.h"
-#endif
-
 #include "chrome/browser/finds/core/finds_features.h"
 #include "chrome/browser/finds/core/finds_pref_names.h"
 #include "chrome/browser/finds/core/finds_service.h"
@@ -24,6 +19,7 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/page_transition_types.h"
 
 namespace finds {
 
@@ -50,14 +46,12 @@ bool IsValidNavigation(content::NavigationHandle* navigation_handle) {
 
 // static
 bool FindsTabHelper::IsSupportedPlatform() {
-#if BUILDFLAG(IS_ANDROID)
   if (base::android::device_info::is_desktop() ||
       base::android::device_info::is_tv() ||
       base::android::device_info::is_automotive() ||
       base::android::device_info::is_xr()) {
     return false;
   }
-#endif
   return true;
 }
 

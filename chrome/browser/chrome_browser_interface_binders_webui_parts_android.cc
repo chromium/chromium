@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chrome_browser_interface_binders_webui_parts.h"
 
+#include "chrome/browser/ui/webui/chrome_finds_internals/chrome_finds_internals.mojom.h"
+#include "chrome/browser/ui/webui/chrome_finds_internals/chrome_finds_internals_ui.h"
 #include "chrome/browser/ui/webui/feed_internals/feed_internals.mojom.h"
 #include "chrome/browser/ui/webui/feed_internals/feed_internals_ui.h"
 #include "chrome/browser/ui/webui/notifications_internals/notifications_internals.mojom.h"
@@ -21,6 +23,9 @@ using content::RegisterWebUIControllerInterfaceBinder;
 void PopulateChromeWebUIFrameBindersPartsAndroid(
     mojo::BinderMapWithContext<content::RenderFrameHost*>* map,
     content::RenderFrameHost* render_frame_host) {
+  RegisterWebUIControllerInterfaceBinder<
+      chrome_finds_internals::mojom::PageHandlerFactory,
+      chrome_finds_internals::ChromeFindsInternalsUI>(map);
   RegisterWebUIControllerInterfaceBinder<feed_internals::mojom::PageHandler,
                                          FeedInternalsUI>(map);
   RegisterWebUIControllerInterfaceBinder<

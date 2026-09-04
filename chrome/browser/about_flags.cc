@@ -43,7 +43,6 @@
 #include "chrome/browser/dictation/features.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
-#include "chrome/browser/finds/core/finds_features.h"
 #include "chrome/browser/flag_descriptions.h"
 #include "chrome/browser/geic/geic_enabling.h"
 #include "chrome/browser/geic/geic_pwc_manager.h"
@@ -288,6 +287,7 @@
 #include "url/url_features.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/finds/core/finds_features.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/notifications/chime/android/features.h"
 #include "components/android_autofill/browser/android_autofill_features.h"
@@ -906,6 +906,7 @@ const FeatureEntry::Choice kSafetyHubUnifiedPasswordsModuleChoices[] = {
      "SafetyHubLocalPasswordsModule, SafetyHubUnifiedPasswordsModule"},
 };
 
+#if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kChromeFindsTestOptInConditions[] = {
     {"enable_srp_return_count_opt_in", "true"},
     {"enable_theme_url_visit_count_opt_in", "true"},
@@ -915,6 +916,7 @@ const FeatureEntry::FeatureParam kChromeFindsTestOptInConditions[] = {
 
 const FeatureEntry::FeatureVariation kChromeFindsVariations[] = {
     {"(opt-in testing)", kChromeFindsTestOptInConditions, nullptr}};
+#endif  // BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::FeatureParam kPopularSitesRefreshUsParamArm1[] = {
     {"arm", "1"}};  // ntp_tiles::kPopularSitesRefreshUsArm.name
@@ -10364,11 +10366,13 @@ const FeatureEntry kFeatureEntries[] = {
          kAndroidTipsNotificationsV2Variations,
          "AndroidTipsNotificationsV2")},
 
+#if BUILDFLAG(IS_ANDROID)
     {"chrome-finds", flag_descriptions::kChromeFindsName,
      flag_descriptions::kChromeFindsDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(finds::features::kChromeFinds,
                                     kChromeFindsVariations,
                                     "ChromeFinds")},
+#endif  // BUILDFLAG(IS_ANDROID)
 
     {"cross-device-task-handoff",
      flag_descriptions::kCrossDeviceTaskHandoffName,
@@ -13046,9 +13050,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableNewAmexNetworkArtDescription, kOsAll,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableNewAmexNetworkArt)},
 
+#if BUILDFLAG(IS_ANDROID)
     {"chrome-finds-internals", flag_descriptions::kChromeFindsInternalsName,
-     flag_descriptions::kChromeFindsInternalsDescription, kOsAll,
+     flag_descriptions::kChromeFindsInternalsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(finds::features::kChromeFindsInternals)},
+#endif  // BUILDFLAG(IS_ANDROID)
 
     {"devtools-aria-live-recording",
      flag_descriptions::kDevToolsAriaLiveRecordingName,

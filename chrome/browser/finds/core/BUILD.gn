@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+assert(is_android)
+
 static_library("core") {
   sources = [
     "finds_features.cc",
@@ -16,20 +18,20 @@ static_library("core") {
     "finds_tab_helper.h",
     "finds_utils.cc",
     "finds_utils.h",
-  ]
 
-  # We include the platform header here as a source to satisfy GN checks
-  # for JNI without creating circular deps with the android target.
-  if (is_android) {
-    sources += [ "../android/finds_service_android.h" ]
-  }
+    # We include the platform header here as a source to satisfy GN checks
+    # for JNI without creating circular deps with the android target.
+    "../android/finds_service_android.h",
+  ]
 
   deps = [
     "//base",
     "//chrome/app:generated_resources",
+    "//chrome/browser/android:tabs_public",
     "//chrome/browser/notifications/scheduler/public",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/android/tab_model",
     "//chrome/common",
     "//components/history/core/browser",
     "//components/omnibox/browser",
@@ -43,12 +45,6 @@ static_library("core") {
     "//components/unified_consent",
     "//content/public/browser",
   ]
-  if (is_android) {
-    deps += [
-      "//chrome/browser/android:tabs_public",
-      "//chrome/browser/ui/android/tab_model",
-    ]
-  }
 }
 
 source_set("unit_tests") {

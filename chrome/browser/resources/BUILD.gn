@@ -410,7 +410,6 @@ group("dev_ui_resources") {
     "accessibility:resources",
     "bluetooth_internals:resources",
     "browser_actuator_internals:resources",
-    "chrome_finds_internals:resources",
     "components:resources",
     "content_settings:resources",
     "context_hub:resources",
@@ -463,6 +462,7 @@ group("dev_ui_resources") {
 
   if (is_android) {
     public_deps += [
+      "//chrome/browser/resources/chrome_finds_internals:resources",
       "//chrome/browser/resources/feed_internals:resources",
       "//chrome/browser/resources/notifications_internals:resources",
       "//chrome/browser/resources/webapks:resources",
@@ -502,7 +502,6 @@ repack("dev_ui_paks") {
     "$root_gen_dir/chrome/accessibility_resources.pak",
     "$root_gen_dir/chrome/bluetooth_internals_resources.pak",
     "$root_gen_dir/chrome/browser_actuator_internals_resources.pak",
-    "$root_gen_dir/chrome/chrome_finds_internals_resources.pak",
     "$root_gen_dir/chrome/components_resources.pak",
     "$root_gen_dir/chrome/content_settings_resources.pak",
     "$root_gen_dir/chrome/context_hub_resources.pak",
@@ -555,6 +554,7 @@ repack("dev_ui_paks") {
 
   if (is_android) {
     sources += [
+      "$root_gen_dir/chrome/chrome_finds_internals_resources.pak",
       "$root_gen_dir/chrome/feed_internals_resources.pak",
       "$root_gen_dir/chrome/notifications_internals_resources.pak",
       "$root_gen_dir/chrome/webapks_resources.pak",
