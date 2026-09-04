@@ -24,6 +24,9 @@
 /// The product surface associated with the privacy primitive.
 @property(nonatomic, assign) NSInteger productSurface;
 
+/// A callback that will be used to open URLs requested by the privacy flow.
+@property(nonatomic, copy) void (^openURLCallback)(NSURL* URL);
+
 @end
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_PRIVACY_PRIMITIVE_PRIVACY_PRIMITIVE_CONFIGURATION_H_
