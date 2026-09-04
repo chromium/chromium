@@ -674,7 +674,7 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
       UpdateDiscoveryLog(),
       UnorderedElementsAre(DictionaryHasValue(
           "result",
-          base::Value("Error::kPinnedVersionNotFoundInUpdateManifest"))));
+          base::Value("Pinned version not found in update manifest."))));
   EXPECT_THAT(UpdateDiscoveryLog(), SizeIs(1));
   EXPECT_THAT(UpdateApplyLog(), IsEmpty());
 }

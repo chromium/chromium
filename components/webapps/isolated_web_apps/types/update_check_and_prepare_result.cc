@@ -33,27 +33,27 @@ std::string IwaUpdateCheckAndPrepareErrorToString(
     IwaUpdateCheckAndPrepareError error) {
   switch (error) {
     case IwaUpdateCheckAndPrepareError::kUpdateManifestDownloadFailed:
-      return "Error::kUpdateManifestDownloadFailed";
+      return "Failed to download update manifest.";
     case IwaUpdateCheckAndPrepareError::kUpdateManifestInvalidJson:
-      return "Error::kUpdateManifestInvalidJson";
+      return "Update manifest contains invalid JSON.";
     case IwaUpdateCheckAndPrepareError::kUpdateManifestInvalidManifest:
-      return "Error::kUpdateManifestInvalidManifest";
+      return "Invalid update manifest format.";
     case IwaUpdateCheckAndPrepareError::kUpdateManifestNoApplicableVersion:
-      return "Error::kUpdateManifestNoApplicableVersion";
+      return "No applicable version found in update manifest.";
     case IwaUpdateCheckAndPrepareError::kIwaNotInstalled:
-      return "Error::kIwaNotInstalled";
+      return "App not found.";
     case IwaUpdateCheckAndPrepareError::kPinnedVersionNotFoundInUpdateManifest:
-      return "Error::kPinnedVersionNotFoundInUpdateManifest";
+      return "Pinned version not found in update manifest.";
     case IwaUpdateCheckAndPrepareError::kDowngradeNotAllowed:
-      return "Error::kDowngradeNotAllowed";
-    case IwaUpdateCheckAndPrepareError::kBundleDownloadError:
-      return "Error::kBundleDownloadError";
+      return "Version downgrade is not allowed.";
     case IwaUpdateCheckAndPrepareError::kDownloadPathCreationFailed:
-      return "Error::kDownloadPathCreationFailed";
+      return "Failed to create download path.";
+    case IwaUpdateCheckAndPrepareError::kBundleDownloadError:
+      return "Failed to download web bundle.";
     case IwaUpdateCheckAndPrepareError::kUpdateDryRunFailed:
-      return "Error::kUpdateDryRunFailed";
+      return "Update dry run failed.";
     case IwaUpdateCheckAndPrepareError::kSystemShutdown:
-      return "Error::kSystemShutdown";
+      return "Operation aborted.";
   }
 }
 
