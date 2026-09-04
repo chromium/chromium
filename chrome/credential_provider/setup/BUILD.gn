@@ -97,13 +97,6 @@ executable("gcp_setup") {
     "//components/crash/core/common",
     "//content/public/common:static_switches",
   ]
-  configs += [
-    "//build/config/win:windowed",
-    "//build/config/win:delayloads",
-    "//build/config/win:delayloads_not_for_child_dll",
-  ]
-  ldflags = [
-    "/DELAYLOAD:version.dll",
-    "/DEPENDENTLOADFLAG:0x800",
-  ]
+  configs += [ "//build/config/win:windowed" ]
+  ldflags = [ "/DEPENDENTLOADFLAG:0x800" ]
 }
