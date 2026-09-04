@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Empty option bag should be accepted
-  Failed to construct 'WebSocket': The subprotocol '[object Object]' is invalid.
-[FAIL] Option bag with protocols array should be accepted
-  Failed to construct 'WebSocket': The subprotocol '[object Object]' is invalid.
-Harness: the test ran to completion.
-

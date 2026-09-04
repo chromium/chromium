@@ -1,0 +1,15 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/whatwg/websockets/issues/42
+
+dictionary WebSocketInit {
+    sequence<DOMString> protocols = [];
+    [RuntimeEnabled=LocalNetworkAccessWebSocketsTargetAddressSpace] IPAddressSpace targetAddressSpace;
+};
+
+// This typedef ensures that the union is still generated even when it isn't
+// mentioned in websocket.idl.
+typedef (DOMString or sequence<DOMString> or WebSocketInit) WebSocketProtocolsOrWebSocketInit;
+

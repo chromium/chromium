@@ -35,6 +35,7 @@
 #include <cstdint>
 #include <optional>
 
+#include "base/functional/callback.h"
 #include "services/network/public/mojom/ip_address_space.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
@@ -65,8 +66,10 @@ class DOMArrayBuffer;
 class DOMArrayBufferView;
 class ExceptionState;
 class ExecutionContext;
-class V8UnionStringOrStringSequence;
+class ScriptValue;
 
+// Implementation of the WebSocket JavaScript API.
+// See https://websockets.spec.whatwg.org/#the-websocket-interface.
 class MODULES_EXPORT DOMWebSocket
     : public EventTarget,
       public ActiveScriptWrappable<DOMWebSocket>,
@@ -76,10 +79,7 @@ class MODULES_EXPORT DOMWebSocket
 
  public:
   // These definitions are required by V8DOMWebSocket.
-  static constexpr auto kConnecting = WebSocketCommon::kConnecting;
-  static constexpr auto kOpen = WebSocketCommon::kOpen;
-  static constexpr auto kClosing = WebSocketCommon::kClosing;
-  static constexpr auto kClosed = WebSocketCommon::kClosed;
+  using enum WebSocketCommon::State;
 
   // DOMWebSocket instances must be used with a wrapper since this class's
   // lifetime management is designed assuming the V8 holds a ref on it while
@@ -89,7 +89,7 @@ class MODULES_EXPORT DOMWebSocket
                               ExceptionState&);
   static DOMWebSocket* Create(ExecutionContext* execution_context,
                               const String& url,
-                              const V8UnionStringOrStringSequence* protocols,
+                              ScriptValue protocols_or_options,
                               ExceptionState& exception_state);
 
   explicit DOMWebSocket(ExecutionContext*);
@@ -208,12 +208,8 @@ class MODULES_EXPORT DOMWebSocket
     kMaxValue = kBlob,
   };
 
-  // This function is virtual for unittests.
-  virtual WebSocketChannel* CreateChannel(ExecutionContext* context,
-                                          WebSocketChannelClient* client) {
-    return WebSocketChannelImpl::Create(context, client,
-                                        CaptureSourceLocation(context));
-  }
+  WebSocketChannel* CreateChannel(ExecutionContext* context,
+                                  WebSocketChannelClient* client);
 
   // Adds a console message with JSMessageSource and ErrorMessageLevel.
   void LogError(const String& message);
@@ -265,6 +261,26 @@ class MODULES_EXPORT DOMWebSocket
   Member<EventQueue> event_queue_;
 
   bool buffered_amount_update_task_pending_;
+};
+
+// ScopedWebSocketChannelCreateFunctionForTesting can be used by tests to
+// change how DOMWebSocket creates a WebSocketChannel implementation.
+class MODULES_EXPORT ScopedWebSocketChannelCreateFunctionForTesting {
+ public:
+  using WebSocketChannelCreateFunction =
+      base::RepeatingCallback<WebSocketChannel*(ExecutionContext*,
+                                                WebSocketChannelClient*)>;
+
+  explicit ScopedWebSocketChannelCreateFunctionForTesting(
+      WebSocketChannelCreateFunction create_function);
+  ~ScopedWebSocketChannelCreateFunctionForTesting();
+  ScopedWebSocketChannelCreateFunctionForTesting(
+      const ScopedWebSocketChannelCreateFunctionForTesting&) = delete;
+  ScopedWebSocketChannelCreateFunctionForTesting& operator=(
+      const ScopedWebSocketChannelCreateFunctionForTesting&) = delete;
+
+ private:
+  WebSocketChannelCreateFunction previous_create_function_;
 };
 
 }  // namespace blink

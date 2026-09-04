@@ -45,7 +45,10 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_ip_address_space.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_string_stringsequence_websocketinit.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_websocket_init.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -77,6 +80,89 @@
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
+
+namespace {
+
+ScopedWebSocketChannelCreateFunctionForTesting::WebSocketChannelCreateFunction&
+GetChannelCreateFunction() {
+  // This is thread-safe when it is null. It is only set to a different value in
+  // tests.
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      ScopedWebSocketChannelCreateFunctionForTesting::
+          WebSocketChannelCreateFunction,
+      func, ());
+  return func;
+}
+
+template <typename Union>
+void ParseGenericConstructorOptions(const Union* protocols,
+                                    Vector<String>& protocols_vector) {
+  if (protocols->IsString()) {
+    protocols_vector.push_back(protocols->GetAsString());
+    return;
+  }
+
+  if (protocols->IsStringSequence()) {
+    protocols_vector = protocols->GetAsStringSequence();
+    return;
+  }
+
+  NOTREACHED();
+}
+
+bool ParseOptionBag(const WebSocketInit* options,
+                    Vector<String>& protocols_vector,
+                    network::mojom::blink::IPAddressSpace& target_address_space,
+                    ExceptionState& exception_state) {
+  CHECK(options);
+  if (RuntimeEnabledFeatures::
+          LocalNetworkAccessWebSocketsTargetAddressSpaceEnabled() &&
+      options->hasTargetAddressSpace()) {
+    switch (options->targetAddressSpace().AsEnum()) {
+      case V8IPAddressSpace::Enum::kLoopback:
+        target_address_space = network::mojom::blink::IPAddressSpace::kLoopback;
+        break;
+      case V8IPAddressSpace::Enum::kLocal:
+        target_address_space = network::mojom::blink::IPAddressSpace::kLocal;
+        break;
+      case V8IPAddressSpace::Enum::kPrivate:
+        exception_state.ThrowTypeError(
+            "The targetAddressSpace option does not support the legacy "
+            "'private' alias; use 'local' instead.");
+        return false;
+      case V8IPAddressSpace::Enum::kPublic:
+        target_address_space = network::mojom::blink::IPAddressSpace::kPublic;
+        break;
+      case V8IPAddressSpace::Enum::kUnknown:
+        exception_state.ThrowTypeError(
+            "The targetAddressSpace option cannot be set to 'unknown'.");
+        return false;
+    }
+  }
+  if (options->hasProtocols()) {
+    protocols_vector = options->protocols();
+  }
+  return true;
+}
+
+bool ParseConstructorOptionsWithBag(
+    const V8UnionStringOrStringSequenceOrWebSocketInit* protocols_or_options,
+    Vector<String>& protocols_vector,
+    network::mojom::blink::IPAddressSpace& target_address_space,
+    ExceptionState& exception_state) {
+  if (protocols_or_options->GetContentType() ==
+      V8UnionStringOrStringSequenceOrWebSocketInit::ContentType::
+          kWebSocketInit) {
+    return ParseOptionBag(protocols_or_options->GetAsWebSocketInit(),
+                          protocols_vector, target_address_space,
+                          exception_state);
+  }
+
+  ParseGenericConstructorOptions(protocols_or_options, protocols_vector);
+  return true;
+}
+
+}  // namespace
 
 DOMWebSocket::EventQueue::EventQueue(EventTarget* target)
     : state_(kActive), target_(target) {}
@@ -169,10 +255,26 @@ static void SetInvalidStateErrorForSendMethod(ExceptionState& exception_state) {
                                     "Still in CONNECTING state.");
 }
 
-constexpr WebSocketCommon::State DOMWebSocket::kConnecting;
-constexpr WebSocketCommon::State DOMWebSocket::kOpen;
-constexpr WebSocketCommon::State DOMWebSocket::kClosing;
-constexpr WebSocketCommon::State DOMWebSocket::kClosed;
+ScopedWebSocketChannelCreateFunctionForTesting::
+    ScopedWebSocketChannelCreateFunctionForTesting(
+        WebSocketChannelCreateFunction create_function)
+    : previous_create_function_(GetChannelCreateFunction()) {
+  GetChannelCreateFunction() = std::move(create_function);
+}
+
+ScopedWebSocketChannelCreateFunctionForTesting::
+    ~ScopedWebSocketChannelCreateFunctionForTesting() {
+  GetChannelCreateFunction() = std::move(previous_create_function_);
+}
+
+WebSocketChannel* DOMWebSocket::CreateChannel(ExecutionContext* context,
+                                              WebSocketChannelClient* client) {
+  if (GetChannelCreateFunction()) {
+    return GetChannelCreateFunction().Run(context, client);
+  }
+  return WebSocketChannelImpl::Create(context, client,
+                                      CaptureSourceLocation(context));
+}
 
 DOMWebSocket::DOMWebSocket(ExecutionContext* context)
     : ActiveScriptWrappable<DOMWebSocket>({}),
@@ -204,42 +306,57 @@ void DOMWebSocket::LogError(const String& message) {
 DOMWebSocket* DOMWebSocket::Create(ExecutionContext* context,
                                    const String& url,
                                    ExceptionState& exception_state) {
-  return Create(
-      context, url,
-      MakeGarbageCollected<V8UnionStringOrStringSequence>(Vector<String>()),
-      exception_state);
+  DOMWebSocket* websocket = MakeGarbageCollected<DOMWebSocket>(context);
+  websocket->Connect(url, Vector<String>(), exception_state);
+
+  if (exception_state.HadException()) {
+    return nullptr;
+  }
+
+  return websocket;
 }
 
-DOMWebSocket* DOMWebSocket::Create(
-    ExecutionContext* context,
-    const String& url,
-    const V8UnionStringOrStringSequence* protocols,
-    ExceptionState& exception_state) {
-  if (url.IsNull()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kSyntaxError,
-        "Failed to create a WebSocket: the provided URL is invalid.");
-    return nullptr;
+DOMWebSocket* DOMWebSocket::Create(ExecutionContext* context,
+                                   const String& url,
+                                   ScriptValue protocols_or_options,
+                                   ExceptionState& exception_state) {
+  Vector<String> protocols_vector;
+  network::mojom::blink::IPAddressSpace target_address_space =
+      network::mojom::blink::IPAddressSpace::kUnknown;
+
+  if (RuntimeEnabledFeatures::WebSocketOptionBagEnabled()) {
+    const V8UnionStringOrStringSequenceOrWebSocketInit*
+        protocols_or_options_ptr =
+            V8UnionStringOrStringSequenceOrWebSocketInit::Create(
+                context->GetIsolate(), protocols_or_options.V8Value(),
+                exception_state);
+    if (!protocols_or_options_ptr) {
+      return nullptr;
+    }
+    if (!ParseConstructorOptionsWithBag(protocols_or_options_ptr,
+                                        protocols_vector, target_address_space,
+                                        exception_state)) {
+      return nullptr;
+    }
+  } else {
+    const V8UnionStringOrStringSequence* protocols_ptr =
+        V8UnionStringOrStringSequence::Create(context->GetIsolate(),
+                                              protocols_or_options.V8Value(),
+                                              exception_state);
+    if (!protocols_ptr) {
+      return nullptr;
+    }
+
+    ParseGenericConstructorOptions(protocols_ptr, protocols_vector);
   }
 
   DOMWebSocket* websocket = MakeGarbageCollected<DOMWebSocket>(context);
+  websocket->Connect(url, protocols_vector, exception_state,
+                     target_address_space);
 
-  DCHECK(protocols);
-  switch (protocols->GetContentType()) {
-    case V8UnionStringOrStringSequence::ContentType::kString: {
-      Vector<String> protocols_vector;
-      protocols_vector.push_back(protocols->GetAsString());
-      websocket->Connect(url, protocols_vector, exception_state);
-      break;
-    }
-    case V8UnionStringOrStringSequence::ContentType::kStringSequence:
-      websocket->Connect(url, protocols->GetAsStringSequence(),
-                         exception_state);
-      break;
-  }
-
-  if (exception_state.HadException())
+  if (exception_state.HadException()) {
     return nullptr;
+  }
 
   return websocket;
 }

@@ -14,8 +14,13 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_ip_address_space.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_stringsequence.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_string_stringsequence_websocketinit.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_websocket_init.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -25,8 +30,10 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -46,63 +53,53 @@ namespace {
 typedef testing::StrictMock<testing::MockFunction<void(int)>>
     Checkpoint;  // NOLINT
 
-class DOMWebSocketWithMockChannel final : public DOMWebSocket {
- public:
-  static DOMWebSocketWithMockChannel* Create(ExecutionContext* context) {
-    DOMWebSocketWithMockChannel* websocket =
-        MakeGarbageCollected<DOMWebSocketWithMockChannel>(context);
-    return websocket;
-  }
-
-  explicit DOMWebSocketWithMockChannel(ExecutionContext* context)
-      : DOMWebSocket(context),
-        channel_(MakeGarbageCollected<MockWebSocketChannel>()),
-        has_created_channel_(false) {}
-
-  MockWebSocketChannel* Channel() { return channel_.Get(); }
-
-  WebSocketChannel* CreateChannel(ExecutionContext*,
-                                  WebSocketChannelClient*) override {
-    DCHECK(!has_created_channel_);
-    has_created_channel_ = true;
-    return channel_.Get();
-  }
-
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(channel_);
-    DOMWebSocket::Trace(visitor);
-  }
-
- private:
-  Member<MockWebSocketChannel> channel_;
-  bool has_created_channel_;
-};
-
 class DOMWebSocketTestScope {
   STACK_ALLOCATED();
 
  public:
   explicit DOMWebSocketTestScope(ExecutionContext* execution_context)
-      : websocket_(DOMWebSocketWithMockChannel::Create(execution_context)) {}
+      : channel_(MakeGarbageCollected<MockWebSocketChannel>()),
+        scoped_channel_creator_(
+            BindRepeating(&DOMWebSocketTestScope::CreateChannel,
+                          base::Unretained(this))),
+        execution_context_(execution_context) {}
 
   ~DOMWebSocketTestScope() {
-    if (!websocket_)
+    if (!websocket_) {
       return;
+    }
     // These statements are needed to clear WebSocket::channel_ to
     // avoid ASSERTION failure on ~DOMWebSocket.
-    DCHECK(Socket().Channel());
-    testing::Mock::VerifyAndClear(Socket().Channel());
+    DCHECK(channel_);
+    testing::Mock::VerifyAndClear(channel_);
     EXPECT_CALL(Channel(), Disconnect()).Times(AnyNumber());
 
-    Socket().DidClose(WebSocketChannelClient::kClosingHandshakeIncomplete, 1006,
-                      "");
+    websocket_->DidClose(WebSocketChannelClient::kClosingHandshakeIncomplete,
+                         1006, "");
   }
 
-  MockWebSocketChannel& Channel() { return *websocket_->Channel(); }
-  DOMWebSocketWithMockChannel& Socket() { return *websocket_.Get(); }
+  MockWebSocketChannel& Channel() { return *channel_; }
+  DOMWebSocket& Socket() {
+    if (!websocket_) {
+      websocket_ = MakeGarbageCollected<DOMWebSocket>(execution_context_);
+    }
+    return *websocket_;
+  }
 
  private:
-  Persistent<DOMWebSocketWithMockChannel> websocket_;
+  WebSocketChannel* CreateChannel(ExecutionContext*,
+                                  WebSocketChannelClient* client) {
+    DCHECK(!has_created_channel_);
+    has_created_channel_ = true;
+    websocket_ = static_cast<DOMWebSocket*>(client);
+    return channel_;
+  }
+
+  MockWebSocketChannel* channel_ = nullptr;
+  ScopedWebSocketChannelCreateFunctionForTesting scoped_channel_creator_;
+  ExecutionContext* execution_context_ = nullptr;
+  DOMWebSocket* websocket_ = nullptr;
+  bool has_created_channel_ = false;
 };
 
 TEST(DOMWebSocketTest, connectToBadURL) {
@@ -983,24 +980,159 @@ TEST(DOMWebSocketTest, GCWhileEventsPending) {
   ThreadState::Current()->CollectAllGarbageForTesting();
 }
 
+DOMWebSocket* CreateWithWebSocketInit(V8TestingScope& scope,
+                                      const String& url,
+                                      const WebSocketInit* options) {
+  ScriptValue script_options =
+      ScriptValue::From(scope.GetScriptState(), options);
+  return DOMWebSocket::Create(scope.GetExecutionContext(), url, script_options,
+                              scope.GetExceptionState());
+}
+
+TEST(DOMWebSocketTest, OptionBagDisabledThrowsSyntaxError) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  ScopedWebSocketOptionBagForTest option_bag_feature(false);
+  DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
+
+  auto* options = WebSocketInit::Create();
+  DOMWebSocket* websocket =
+      CreateWithWebSocketInit(scope, "ws://example.com/", options);
+  EXPECT_EQ(nullptr, websocket);
+  EXPECT_TRUE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(DOMExceptionCode::kSyntaxError,
+            scope.GetExceptionState().CodeAs<DOMExceptionCode>());
+  EXPECT_EQ("The subprotocol '[object Object]' is invalid.",
+            scope.GetExceptionState().Message());
+}
+
+TEST(DOMWebSocketTest, OptionBagWithProtocolsSequence) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  ScopedWebSocketOptionBagForTest option_bag_feature(true);
+  DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
+
+  auto* options = WebSocketInit::Create();
+  options->setProtocols(Vector<String>{"chat", "superchat"});
+
+  EXPECT_CALL(websocket_scope.Channel(),
+              Connect(KURL("ws://example.com/"), String("chat, superchat"),
+                      network::mojom::blink::IPAddressSpace::kUnknown))
+      .WillOnce(Return(true));
+
+  DOMWebSocket* websocket =
+      CreateWithWebSocketInit(scope, "ws://example.com/", options);
+  EXPECT_NE(nullptr, websocket);
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(DOMWebSocket::kConnecting, websocket->readyState());
+}
+
+TEST(DOMWebSocketTest, OptionBagWithInvalidProtocolThrowsSyntaxError) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  ScopedWebSocketOptionBagForTest option_bag_feature(true);
+  DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
+
+  auto* options = WebSocketInit::Create();
+  options->setProtocols(Vector<String>{"invalid, protocol"});
+
+  DOMWebSocket* websocket =
+      CreateWithWebSocketInit(scope, "ws://example.com/", options);
+  EXPECT_EQ(nullptr, websocket);
+  EXPECT_TRUE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(DOMExceptionCode::kSyntaxError,
+            scope.GetExceptionState().CodeAs<DOMExceptionCode>());
+}
+
+TEST(DOMWebSocketTest, LegacyPrivateAliasThrowsTypeError) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  ScopedWebSocketOptionBagForTest option_bag_feature(true);
+  ScopedLocalNetworkAccessWebSocketsTargetAddressSpaceForTest lna_feature(true);
+  DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
+
+  auto* options = WebSocketInit::Create();
+  options->setTargetAddressSpace(
+      V8IPAddressSpace(V8IPAddressSpace::Enum::kPrivate));
+
+  DOMWebSocket* websocket =
+      CreateWithWebSocketInit(scope, "ws://example.com/", options);
+  EXPECT_EQ(nullptr, websocket);
+  EXPECT_TRUE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(ESErrorType::kTypeError,
+            scope.GetExceptionState().CodeAs<ESErrorType>());
+  EXPECT_EQ(
+      "The targetAddressSpace option does not support the legacy 'private' "
+      "alias; use 'local' instead.",
+      scope.GetExceptionState().Message());
+}
+
+TEST(DOMWebSocketTest, UnknownTargetAddressSpaceThrowsTypeError) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  ScopedWebSocketOptionBagForTest option_bag_feature(true);
+  ScopedLocalNetworkAccessWebSocketsTargetAddressSpaceForTest lna_feature(true);
+  DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
+
+  auto* options = WebSocketInit::Create();
+  options->setTargetAddressSpace(
+      V8IPAddressSpace(V8IPAddressSpace::Enum::kUnknown));
+
+  DOMWebSocket* websocket =
+      CreateWithWebSocketInit(scope, "ws://example.com/", options);
+  EXPECT_EQ(nullptr, websocket);
+  EXPECT_TRUE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(ESErrorType::kTypeError,
+            scope.GetExceptionState().CodeAs<ESErrorType>());
+  EXPECT_EQ("The targetAddressSpace option cannot be set to 'unknown'.",
+            scope.GetExceptionState().Message());
+}
+
+TEST(DOMWebSocketTest, TargetAddressSpaceFeatureDisabledDefaultsToUnknown) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  ScopedWebSocketOptionBagForTest option_bag_feature(true);
+  ScopedLocalNetworkAccessWebSocketsTargetAddressSpaceForTest lna_feature(
+      false);
+  DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
+
+  auto* options = WebSocketInit::Create();
+  options->setTargetAddressSpace(
+      V8IPAddressSpace(V8IPAddressSpace::Enum::kLoopback));
+
+  EXPECT_CALL(websocket_scope.Channel(),
+              Connect(KURL("ws://example.com/"), String(),
+                      network::mojom::blink::IPAddressSpace::kUnknown))
+      .WillOnce(Return(true));
+
+  DOMWebSocket* websocket =
+      CreateWithWebSocketInit(scope, "ws://example.com/", options);
+  EXPECT_NE(nullptr, websocket);
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(DOMWebSocket::kConnecting, websocket->readyState());
+}
+
 TEST(DOMWebSocketTest, ConnectForwardsTargetAddressSpace) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
-  auto* socket =
-      DOMWebSocketWithMockChannel::Create(scope.GetExecutionContext());
+  ScopedWebSocketOptionBagForTest option_bag_feature(true);
+  ScopedLocalNetworkAccessWebSocketsTargetAddressSpaceForTest lna_feature(true);
+  DOMWebSocketTestScope websocket_scope(scope.GetExecutionContext());
 
-  EXPECT_CALL(*socket->Channel(),
+  auto* options = WebSocketInit::Create();
+  options->setTargetAddressSpace(
+      V8IPAddressSpace(V8IPAddressSpace::Enum::kLoopback));
+
+  EXPECT_CALL(websocket_scope.Channel(),
               Connect(KURL("ws://example.com/"), String(),
                       network::mojom::blink::IPAddressSpace::kLoopback))
       .WillOnce(Return(true));
 
-  socket->Connect("ws://example.com/", Vector<String>(), ASSERT_NO_EXCEPTION,
-                  network::mojom::blink::IPAddressSpace::kLoopback);
-
-  testing::Mock::VerifyAndClear(socket->Channel());
-  EXPECT_CALL(*socket->Channel(), Disconnect()).Times(AnyNumber());
-  socket->DidClose(WebSocketChannelClient::kClosingHandshakeIncomplete, 1006,
-                   "");
+  DOMWebSocket* websocket =
+      CreateWithWebSocketInit(scope, "ws://example.com/", options);
+  EXPECT_NE(nullptr, websocket);
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(DOMWebSocket::kConnecting, websocket->readyState());
 }
 
 }  // namespace

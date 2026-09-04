@@ -38,7 +38,13 @@ enum BinaryType { "blob", "arraybuffer" };
     Exposed=(Window,Worker),
     ImplementedAs=DOMWebSocket
 ] interface WebSocket : EventTarget {
-    [CallWith=ExecutionContext, RaisesException] constructor(USVString url, optional (DOMString or sequence<DOMString>) protocols);
+    // The type of `protocolsOrOptions` is `any` because the type needs to
+    // differ depending on the setting of the "WebSocketOptionBag" feature.
+    // TODO(crbug.com/542670554): Change to `(DOMString or sequence<DOMString> or
+    // WebSocketInit)` when the "WebSocketOptionBag" feature is permanently
+    // enabled and removed.
+    [CallWith=ExecutionContext, RaisesException]
+    constructor(USVString url, optional any protocolsOrOptions);
     readonly attribute USVString url;
 
     // ready state
