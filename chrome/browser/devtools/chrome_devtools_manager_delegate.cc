@@ -31,7 +31,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -540,8 +540,11 @@ void ChromeDevToolsManagerDelegate::AcceptDebugging(AcceptCallback callback) {
         std::move(inner_callback).Run(result);
       },
       std::move(callback));
+  Profile* profile = Profile::FromBrowserContext(GetDefaultBrowserContext());
+  ProfileBrowserCollection* collection =
+      profile ? ProfileBrowserCollection::GetForProfile(profile) : nullptr;
   BrowserWindowInterface* last_active =
-      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
+      collection ? collection->GetLastActiveBrowser() : nullptr;
   DevToolsConnectionDialog::Show(last_active, std::move(wrapped_callback));
 }
 
