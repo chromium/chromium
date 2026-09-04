@@ -1590,6 +1590,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"disable-lens-camera", flag_descriptions::kDisableLensCameraName,
      flag_descriptions::kDisableLensCameraDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kDisableLensCamera)},
+    {"enable-lens-on-ipad", flag_descriptions::kEnableLensOnIPadName,
+     flag_descriptions::kEnableLensOnIPadDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kEnableLensOnIPad)},
     {"autofill-enable-prefetching-risk-data-for-retrieval",
      flag_descriptions::kAutofillEnablePrefetchingRiskDataForRetrievalName,
      flag_descriptions::

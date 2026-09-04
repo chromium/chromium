@@ -11,7 +11,9 @@
 #import "ios/chrome/browser/omnibox/ui/keyboard_assist/omnibox_ui_bar_button_item.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -21,7 +23,8 @@
 
 NSArray<UIBarButtonItemGroup*>* OmniboxAssistiveKeyboardLeadingBarButtonGroups(
     id<OmniboxAssistiveKeyboardDelegate> delegate,
-    id<UIPasteConfigurationSupporting> pasteTarget) {
+    id<UIPasteConfigurationSupporting> pasteTarget,
+    bool use_lens) {
   NSMutableArray<UIBarButtonItem*>* items = [NSMutableArray array];
 
   UIImage* voiceSearchIcon =
@@ -44,21 +47,47 @@ NSArray<UIBarButtonItemGroup*>* OmniboxAssistiveKeyboardLeadingBarButtonGroups(
   voiceSearchItem.accessibilityIdentifier = kVoiceSearchInputAccessoryViewID;
   [items addObject:voiceSearchItem];
 
-  UIImage* cameraIcon = [[UIImage imageNamed:@"keyboard_accessory_qr_scanner"]
-      imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-
   UIButton* cameraButton = [UIButton buttonWithType:UIButtonTypeSystem];
-  [cameraButton setImage:cameraIcon forState:UIControlStateNormal];
-  [cameraButton addTarget:delegate
-                   action:@selector(keyboardAccessoryCameraSearchTapped)
-         forControlEvents:UIControlEventTouchUpInside];
   cameraButton.translatesAutoresizingMaskIntoConstraints = NO;
 
   UIBarButtonItem* cameraItem =
       [[UIBarButtonItem alloc] initWithCustomView:cameraButton];
-  SetA11yLabelAndUiAutomationName(
-      cameraItem, IDS_IOS_KEYBOARD_ACCESSORY_VIEW_QR_CODE_SEARCH,
-      @"QR code Search");
+
+  if (use_lens) {
+    delegate.lensButton = cameraButton;
+    [delegate.layoutGuideCenter referenceView:cameraButton
+                                    underName:kLensKeyboardButtonGuide];
+    UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
+        configurationWithPointSize:kOmniboxAssistiveKeyboardSymbolPointSize
+                            weight:UIImageSymbolWeightSemibold
+                             scale:UIImageSymbolScaleMedium];
+    UIImage* cameraIcon =
+        SymbolWithConfiguration(SymbolCameraLens, configuration);
+    if (UITraitCollection.currentTraitCollection.userInterfaceStyle ==
+        UIUserInterfaceStyleDark) {
+      cameraIcon = MakeSymbolMonochrome(cameraIcon);
+      cameraButton.tintColor = [UIColor whiteColor];
+    } else {
+      cameraIcon = MakeSymbolMulticolor(cameraIcon);
+    }
+    [cameraButton setImage:cameraIcon forState:UIControlStateNormal];
+    [cameraButton addTarget:delegate
+                     action:@selector(keyboardAccessoryLensTapped)
+           forControlEvents:UIControlEventTouchUpInside];
+    SetA11yLabelAndUiAutomationName(
+        cameraItem, IDS_IOS_KEYBOARD_ACCESSORY_VIEW_LENS, @"Search With Lens");
+  } else {
+    UIImage* cameraIcon = [[UIImage imageNamed:@"keyboard_accessory_qr_scanner"]
+        imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    [cameraButton setImage:cameraIcon forState:UIControlStateNormal];
+    [cameraButton addTarget:delegate
+                     action:@selector(keyboardAccessoryCameraSearchTapped)
+           forControlEvents:UIControlEventTouchUpInside];
+    SetA11yLabelAndUiAutomationName(
+        cameraItem, IDS_IOS_KEYBOARD_ACCESSORY_VIEW_QR_CODE_SEARCH,
+        @"QR code Search");
+  }
+
   [items addObject:cameraItem];
 
   if (experimental_flags::IsOmniboxDebuggingEnabled()) {

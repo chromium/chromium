@@ -135,6 +135,7 @@ bool IsNewSyncOptInIllustration() {
 }
 
 BASE_FEATURE(kDisableLensCamera, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableLensOnIPad, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDownloadAutoDeletionClearFilesOnEveryStartup,
              base::FEATURE_DISABLED_BY_DEFAULT);

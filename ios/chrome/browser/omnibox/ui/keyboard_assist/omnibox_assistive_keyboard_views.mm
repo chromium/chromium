@@ -6,6 +6,8 @@
 
 #import "base/check.h"
 #import "components/search_engines/template_url_service.h"
+#import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
+#import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/omnibox/ui/keyboard_assist/omnibox_assistive_keyboard_delegate.h"
 #import "ios/chrome/browser/omnibox/ui/keyboard_assist/omnibox_assistive_keyboard_utils.h"
 #import "ios/chrome/browser/omnibox/ui/keyboard_assist/omnibox_input_assistant_items.h"
@@ -36,8 +38,16 @@ OmniboxKeyboardAccessoryView* ConfigureAssistiveKeyboardViews(
   }
 
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    const BOOL isGoogleSearchEngine =
+        templateURLService && templateURLService->GetDefaultSearchProvider() &&
+        templateURLService->GetDefaultSearchProvider()->GetEngineType(
+            templateURLService->search_terms_data()) == SEARCH_ENGINE_GOOGLE;
+    const BOOL useLens =
+        lens_availability::CheckAndLogAvailabilityForLensEntryPoint(
+            LensEntrypoint::Keyboard, isGoogleSearchEngine);
     textInput.view.inputAssistantItem.leadingBarButtonGroups =
-        OmniboxAssistiveKeyboardLeadingBarButtonGroups(delegate, textInput);
+        OmniboxAssistiveKeyboardLeadingBarButtonGroups(delegate, textInput,
+                                                       useLens);
     textInput.view.inputAssistantItem.trailingBarButtonGroups =
         OmniboxAssistiveKeyboardTrailingBarButtonGroups(delegate, buttonTitles);
   } else {

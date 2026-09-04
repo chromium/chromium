@@ -163,6 +163,9 @@ bool IsNewSyncOptInIllustration();
 // Feature flag to disable Lens LVF features.
 BASE_DECLARE_FEATURE(kDisableLensCamera);
 
+// Feature flag to enable Lens on iPad.
+BASE_DECLARE_FEATURE(kEnableLensOnIPad);
+
 // Feature flag that allows the Auto-deletion feature to clear all downloaded
 // files scheduled for deletion on every application startup, regardless of when
 // the file was downloaded. This feature is intended for testing-only.

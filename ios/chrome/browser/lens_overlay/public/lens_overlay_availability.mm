@@ -31,7 +31,7 @@ bool IsLensOverlayLandscapeOrientationEnabled(const PrefService* prefs) {
 
 bool IsLVFEscapeHatchEnabled(const PrefService* prefs) {
   BOOL isTablet = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
-  return !isTablet;
+  return !isTablet || base::FeatureList::IsEnabled(kEnableLensOnIPad);
 }
 
 bool UseCustomLensOverlayBottomSheet() {

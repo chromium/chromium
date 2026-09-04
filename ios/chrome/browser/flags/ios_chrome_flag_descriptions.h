@@ -774,6 +774,10 @@ inline constexpr char kEnableLensInOmniboxCopiedImageDescription[] =
     "when Google is the selected search engine, accessible from the omnibox or "
     "popup menu.";
 
+inline constexpr char kEnableLensOnIPadName[] = "Enable Lens on iPad";
+inline constexpr char kEnableLensOnIPadDescription[] =
+    "When enabled, enables Lens Viewfinder entry points on iPad.";
+
 inline constexpr char kEnableNewStartupFlowName[] = "EnableNewStartupFlow";
 inline constexpr char kEnableNewStartupFlowDescription[] =
     "Enables the EnableNewStartupFlow feature.";

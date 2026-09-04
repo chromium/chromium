@@ -12,6 +12,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
+#import "ios/chrome/browser/lens_overlay/public/lens_overlay_availability.h"
 #import "ios/chrome/browser/lens_overlay/public/lens_overlay_entrypoint.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/popup_menu/overflow_menu/public/features.h"
@@ -24,6 +25,7 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "ui/base/device_form_factor.h"
 #import "url/gurl.h"
 
 namespace {
@@ -179,6 +181,27 @@ TEST_F(LensOverlayAvailabilityUtilsTest,
   EXPECT_FALSE(IsLensOverlayEntrypointAvailable(
       LensOverlayEntrypoint::kOverflowMenu, profile_->GetPrefs(),
       template_url_service_, ntp_web_state.get()));
+}
+
+// Tests that the LVF escape hatch is enabled on phone.
+TEST_F(LensOverlayAvailabilityUtilsTest, IsLVFEscapeHatchEnabled_Phone) {
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
+    return;
+  }
+  EXPECT_TRUE(IsLVFEscapeHatchEnabled(profile_->GetPrefs()));
+}
+
+// Tests that the LVF escape hatch is disabled by default on tablet and enabled
+// with kEnableLensOnIPad.
+TEST_F(LensOverlayAvailabilityUtilsTest, IsLVFEscapeHatchEnabled_Tablet) {
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+    return;
+  }
+  EXPECT_FALSE(IsLVFEscapeHatchEnabled(profile_->GetPrefs()));
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnableLensOnIPad);
+  EXPECT_TRUE(IsLVFEscapeHatchEnabled(profile_->GetPrefs()));
 }
 
 }  // namespace

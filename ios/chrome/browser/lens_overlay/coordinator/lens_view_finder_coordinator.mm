@@ -367,7 +367,8 @@ LensViewFinderTransition TransitionFromPresentationStyle(
       GetApplicationContext()->GetLocalState()->GetBoolean(
           prefs::kLensCameraAssistedSearchPolicyAllowed) &&
       !base::FeatureList::IsEnabled(kDisableLensCamera) &&
-      ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET;
+      (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET ||
+       base::FeatureList::IsEnabled(kEnableLensOnIPad));
   [sharedDefaults setBool:enableLensInWidget forKey:enableLensInWidgetKey];
 }
 

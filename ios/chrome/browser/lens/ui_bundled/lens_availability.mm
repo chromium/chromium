@@ -42,7 +42,8 @@ LensSupportStatus LensSupportStatusForLensEntryPoint(
     return LensSupportStatus::DisabledByEnterprisePolicy;
   } else if (!is_google_default_search_engine) {
     return LensSupportStatus::NonGoogleSearchEngine;
-  } else if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+  } else if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
+             !base::FeatureList::IsEnabled(kEnableLensOnIPad)) {
     return LensSupportStatus::DeviceFormFactorTablet;
   } else if (base::FeatureList::IsEnabled(kDisableLensCamera)) {
     return LensSupportStatus::DisabledByFlag;

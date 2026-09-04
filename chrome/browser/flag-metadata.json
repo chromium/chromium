@@ -4077,6 +4077,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "enable-lens-on-ipad",
+    "owners": [ "stkhapugin@chromium.org", "lens-chrome@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "enable-lens-overlay",
     "owners": [ "stkhapugin@chromium.org", "jdonnelly@chromium.org", "lens-chrome@google.com" ],
     "expiry_milestone": 144
