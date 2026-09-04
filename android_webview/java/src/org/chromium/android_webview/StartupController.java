@@ -84,6 +84,7 @@ public class StartupController {
     private final StartupDiagnostics mStartupDiagnostics = new StartupDiagnostics();
     private final AtomicInteger mChromiumFirstStartupRequestMode =
             new AtomicInteger(StartupTasksRunner.StartupRequestMode.UNSET);
+    private final WebViewChromiumRunQueue mStartupCallbackQueue = new WebViewChromiumRunQueue();
 
     private @Nullable RuntimeException mStartupException;
     private @Nullable Error mStartupError;
@@ -92,6 +93,15 @@ public class StartupController {
 
     public StartupController(Delegate delegate) {
         mDelegate = delegate;
+    }
+
+    /**
+     * Requests asynchronous Chromium startup and registers a callback to receive diagnostics when
+     * startup is finished.
+     */
+    public void requestAsyncStartup(StartupDiagnostics.Callback callback) {
+        mStartupCallbackQueue.addTask(() -> callback.onSuccess(getStartupDiagnostics()));
+        postChromiumStartupIfNeeded(StartupCallSite.ASYNC_WEBVIEW_STARTUP);
     }
 
     public void maybeSetChromiumUiThread(Looper looper) {
@@ -301,6 +311,7 @@ public class StartupController {
                             public void onStartupComplete(
                                     StartupTasksRunner.StartupTimings timings) {
                                 mStartupDiagnostics.setStartupTimings(timings);
+                                mStartupCallbackQueue.notifyChromiumStarted();
                                 mDelegate.onStartupDiagnosticsReady(mStartupDiagnostics);
                             }
 

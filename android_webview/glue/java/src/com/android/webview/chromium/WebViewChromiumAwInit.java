@@ -90,8 +90,6 @@ public class WebViewChromiumAwInit {
     private final Object mLazyInitLock = new Object();
 
     private final WebViewChromiumFactoryProvider mFactory;
-    private final WebViewChromiumRunQueue mWebViewStartUpCallbackRunQueue =
-            new WebViewChromiumRunQueue();
 
     private final StartupController.Delegate mStartupDelegate =
             new StartupController.Delegate() {
@@ -166,8 +164,6 @@ public class WebViewChromiumAwInit {
     }
 
     private void recordStartupMetrics(StartupTasksRunner.StartupTimings timings) {
-        mWebViewStartUpCallbackRunQueue.notifyChromiumStarted();
-
         // Stop early trace event collection.
         // They have already been emitted if a trace session was started to capture startup.
         EarlyTraceEvent.reset();
@@ -391,8 +387,8 @@ public class WebViewChromiumAwInit {
             return;
         }
 
-        mWebViewStartUpCallbackRunQueue.addTask(
-                () -> {
+        mStartupController.requestAsyncStartup(
+                diagnostics -> {
                     Set<String> profilesCopy =
                             profilesToLoad != null
                                     ? profilesToLoad
@@ -402,9 +398,8 @@ public class WebViewChromiumAwInit {
                         mProfileStore.getOrCreateProfile(
                                 context, ProfileStore.CallSite.ASYNC_WEBVIEW_STARTUP);
                     }
-                    callback.onSuccess(mStartupController.getStartupDiagnostics());
+                    callback.onSuccess(diagnostics);
                 });
-        postChromiumStartupIfNeeded(StartupCallSite.ASYNC_WEBVIEW_STARTUP);
     }
 
     public Profile getDefaultProfile(@StartupCallSite int callSite) {
