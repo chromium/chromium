@@ -157,6 +157,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(kHappyEyeballsV3);
 // Note: If kHappyEyeballsV3 is enabled, this behavior is automatically active
 // regardless of this flag's state.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableIntermediateDnsResults);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kEnableIntermediateDnsResultsSortTransactionsIndividually);
 
 // Feature to control the Happy Eyeballs slow timer (IPv6 fallback time).
 NET_EXPORT BASE_DECLARE_FEATURE(kAdjustIPv6FallbackTime);
@@ -439,6 +442,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(kAsyncDnsQuicJob);
 // Whether AsyncDnsJob notifies waiting requests immediately on the first
 // attempt's session creation failure instead of holding the error.
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kAsyncDnsQuicJobFastFail);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kAsyncDnsQuicJobSortTransactionsIndividually);
 
 // Makes the QUIC slow timer delay configurable.
 // How long to wait before starting a second connection attempt

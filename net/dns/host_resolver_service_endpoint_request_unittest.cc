@@ -2011,6 +2011,114 @@ TEST_F(HostResolverServiceEndpointRequestIntermediateResultsOnlyTest,
               UnorderedElementsAre("4slow_ok"));
 }
 
+TEST_F(HostResolverServiceEndpointRequestIntermediateResultsOnlyTest,
+       SortIntermediateEndpoints) {
+  constexpr char kHost[] = "multiple";
+  MockDnsClientRuleList rules;
+  DnsResponse a_response = BuildTestDnsResponse(
+      kHost, dns_protocol::kTypeA,
+      {BuildTestAddressRecord(kHost, IPAddress(192, 0, 2, 2)),
+       BuildTestAddressRecord(kHost, IPAddress(192, 0, 2, 1))});
+  DnsResponse aaaa_response = BuildTestDnsResponse(
+      kHost, dns_protocol::kTypeAAAA,
+      {BuildTestAddressRecord(kHost, *IPAddress::FromIPLiteral("2001:db8::2")),
+       BuildTestAddressRecord(kHost,
+                              *IPAddress::FromIPLiteral("2001:db8::1"))});
+  AddDnsRule(&rules, kHost, dns_protocol::kTypeA, std::move(a_response),
+             /*delay=*/true);
+  AddDnsRule(&rules, kHost, dns_protocol::kTypeAAAA, std::move(aaaa_response),
+             /*delay=*/false);
+
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+  mock_dns_client_->SetAddressSorterForTesting(
+      std::make_unique<FakeAddressSorter>());
+
+  Requester requester = CreateRequester("https://multiple");
+  int rv = requester.Start();
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  // AAAA completes first as an intermediate result.
+  requester.WaitForOnUpdated();
+  ASSERT_FALSE(requester.finished_result().has_value());
+  ASSERT_TRUE(requester.request()->EndpointsCryptoReady());
+  // Intermediate IPv6 endpoints are sorted by FakeAddressSorter (2001:db8::1
+  // before 2001:db8::2) instead of the raw response order.
+  EXPECT_THAT(requester.request()->GetEndpointResults(),
+              ElementsAre(ExpectServiceEndpoint(
+                  IsEmpty(), ElementsAre(MakeIPEndPoint("2001:db8::1", 443),
+                                         MakeIPEndPoint("2001:db8::2", 443)))));
+
+  // Complete delayed A request, which finishes the request synchronously.
+  mock_dns_client_->CompleteDelayedTransactions();
+  ASSERT_TRUE(requester.request()->EndpointsCryptoReady());
+  EXPECT_THAT(*requester.finished_result(), IsOk());
+  EXPECT_THAT(requester.finished_endpoints(),
+              ElementsAre(ExpectServiceEndpoint(
+                  ElementsAre(MakeIPEndPoint("192.0.2.1", 443),
+                              MakeIPEndPoint("192.0.2.2", 443)),
+                  ElementsAre(MakeIPEndPoint("2001:db8::1", 443),
+                              MakeIPEndPoint("2001:db8::2", 443)))));
+}
+
+TEST_F(HostResolverServiceEndpointRequestIntermediateResultsOnlyTest,
+       SortIntermediateEndpoints_DisabledViaFeatureParam) {
+  feature_list().Reset();
+  feature_list().InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{features::kEnableIntermediateDnsResults,
+        {{"EnableIntermediateDnsResultsSortTransactionsIndividually",
+          "false"}}}},
+      /*disabled_features=*/{features::kHappyEyeballsV3});
+
+  constexpr char kHost[] = "multiple";
+  MockDnsClientRuleList rules;
+  DnsResponse a_response = BuildTestDnsResponse(
+      kHost, dns_protocol::kTypeA,
+      {BuildTestAddressRecord(kHost, IPAddress(192, 0, 2, 2)),
+       BuildTestAddressRecord(kHost, IPAddress(192, 0, 2, 1))});
+  DnsResponse aaaa_response = BuildTestDnsResponse(
+      kHost, dns_protocol::kTypeAAAA,
+      {BuildTestAddressRecord(kHost, *IPAddress::FromIPLiteral("2001:db8::2")),
+       BuildTestAddressRecord(kHost,
+                              *IPAddress::FromIPLiteral("2001:db8::1"))});
+  AddDnsRule(&rules, kHost, dns_protocol::kTypeA, std::move(a_response),
+             /*delay=*/true);
+  AddDnsRule(&rules, kHost, dns_protocol::kTypeAAAA, std::move(aaaa_response),
+             /*delay=*/false);
+
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+  mock_dns_client_->SetAddressSorterForTesting(
+      std::make_unique<FakeAddressSorter>());
+
+  Requester requester = CreateRequester("https://multiple");
+  int rv = requester.Start();
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  // AAAA completes first as an intermediate result.
+  requester.WaitForOnUpdated();
+  ASSERT_FALSE(requester.finished_result().has_value());
+  ASSERT_TRUE(requester.request()->EndpointsCryptoReady());
+  // Intermediate IPv6 endpoints are NOT individually sorted, preserving the
+  // raw response order (2001:db8::2 before 2001:db8::1).
+  EXPECT_THAT(requester.request()->GetEndpointResults(),
+              ElementsAre(ExpectServiceEndpoint(
+                  IsEmpty(), ElementsAre(MakeIPEndPoint("2001:db8::2", 443),
+                                         MakeIPEndPoint("2001:db8::1", 443)))));
+
+  // Complete delayed A request, which finishes the request synchronously.
+  mock_dns_client_->CompleteDelayedTransactions();
+  ASSERT_TRUE(requester.request()->EndpointsCryptoReady());
+  EXPECT_THAT(*requester.finished_result(), IsOk());
+  EXPECT_THAT(requester.finished_endpoints(),
+              ElementsAre(ExpectServiceEndpoint(
+                  ElementsAre(MakeIPEndPoint("192.0.2.1", 443),
+                              MakeIPEndPoint("192.0.2.2", 443)),
+                  ElementsAre(MakeIPEndPoint("2001:db8::1", 443),
+                              MakeIPEndPoint("2001:db8::2", 443)))));
+}
+
 TEST(HangingHostResolverTest, ServiceEndpointRequest) {
   base::test::TaskEnvironment task_environment;
   HangingHostResolver resolver;

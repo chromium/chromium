@@ -98,7 +98,7 @@ class MockHostResolverDnsTaskDelegate : public HostResolverDnsTask::Delegate {
                    single_transaction_results),
               (override));
   MOCK_METHOD(RequestPriority, priority, (), (const, override));
-  MOCK_METHOD(bool, IsHappyEyeballsV3Enabled, (), (const, override));
+  MOCK_METHOD(bool, ShouldSortTransactionsIndividually, (), (const, override));
   MOCK_METHOD(void,
               AddTransactionTimeQueued,
               (base::TimeDelta time_queued),
@@ -544,6 +544,75 @@ TEST_F(HostResolverDnsTaskTest, HandlesIndividualTransactionSort) {
   constexpr static std::string_view kHost = "foo.test";
 
   base::test::ScopedFeatureList feature_list(features::kUseHostResolverCache);
+
+  // Configure a mock DnsClient to respond to "foo.test" with 2 addresses per
+  // address family.
+  DnsResponse a_response = BuildTestDnsResponse(
+      std::string(kHost), dns_protocol::kTypeA,
+      {BuildTestAddressRecord(std::string(kHost), IPAddress(192, 0, 2, 31)),
+       BuildTestAddressRecord(std::string(kHost), IPAddress(192, 0, 2, 36))});
+  DnsResponse aaaa_response = BuildTestDnsResponse(
+      std::string(kHost), dns_protocol::kTypeAAAA,
+      {BuildTestAddressRecord(std::string(kHost),
+                              *IPAddress::FromIPLiteral("3fff:14::31")),
+       BuildTestAddressRecord(std::string(kHost),
+                              *IPAddress::FromIPLiteral("3fff:14::36"))});
+  MockDnsClientRuleList rules;
+  rules.emplace_back(std::string(kHost), dns_protocol::kTypeA,
+                     /*secure=*/false,
+                     MockDnsClientRule::Result(std::move(a_response)),
+                     /*delay=*/false);
+  rules.emplace_back(std::string(kHost), dns_protocol::kTypeAAAA,
+                     /*secure=*/false,
+                     MockDnsClientRule::Result(std::move(aaaa_response)),
+                     /*delay=*/false);
+  MockDnsClient mock_dns_client(CreateValidDnsConfig(), std::move(rules));
+  mock_dns_client.SetInsecureEnabled(InsecureDnsMode::kEnabledBuiltIn,
+                                     /*additional_types_enabled=*/true);
+
+  auto test_sorter = std::make_unique<DelayingAddressSorter>();
+  DelayingAddressSorter* test_sorter_ptr = test_sorter.get();
+  mock_dns_client.SetAddressSorterForTesting(std::move(test_sorter));
+
+  // Task should wait on sorting before completion.
+  EXPECT_CALL(mock_dns_task_delegate_, OnDnsTaskComplete(_, _, _, _)).Times(0);
+
+  base::SimpleTestTickClock clock;
+  HostResolverDnsTask task(
+      &mock_dns_client,
+      HostResolver::Host(url::SchemeHostPort("http", "foo.test", 80)),
+      NetworkAnonymizationKey(), {DnsQueryType::A, DnsQueryType::AAAA},
+      resolve_context_.get(), DnsTransactionFactory::AttemptMode::kClassic,
+      SecureDnsMode::kAutomatic, handles::kInvalidNetworkHandle,
+      &mock_dns_task_delegate_, NetLogWithSource(), &clock,
+      /*fallback_available=*/false, HostResolver::HttpsSvcbOptions());
+  ASSERT_EQ(task.num_additional_transactions_needed(), 2);
+
+  // Expect sort to be called immediately on completion of first transaction.
+  task.StartNextTransaction();
+  test_sorter_ptr->WaitForSortCall();
+  ASSERT_EQ(task.num_additional_transactions_needed(), 1);
+  ASSERT_EQ(task.num_transactions_in_progress(), 1);
+  ASSERT_EQ(test_sorter_ptr->NumInProgress(), 1);
+
+  // Expect sort to be called immediately on completion of second transaction.
+  task.StartNextTransaction();
+  test_sorter_ptr->WaitForSortCall();
+  ASSERT_EQ(task.num_additional_transactions_needed(), 0);
+  ASSERT_EQ(task.num_transactions_in_progress(), 2);
+  ASSERT_EQ(test_sorter_ptr->NumInProgress(), 2);
+
+  Mock::VerifyAndClearExpectations(&mock_dns_task_delegate_);
+  EXPECT_CALL(mock_dns_task_delegate_, OnDnsTaskComplete(_, _, _, _));
+  test_sorter_ptr->FinishSorts();
+  EXPECT_EQ(task.num_transactions_in_progress(), 0);
+}
+
+TEST_F(HostResolverDnsTaskTest, HandlesIndividualTransactionSortViaDelegate) {
+  constexpr static std::string_view kHost = "foo.test";
+
+  ON_CALL(mock_dns_task_delegate_, ShouldSortTransactionsIndividually())
+      .WillByDefault(Return(true));
 
   // Configure a mock DnsClient to respond to "foo.test" with 2 addresses per
   // address family.
