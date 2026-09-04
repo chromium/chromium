@@ -572,7 +572,7 @@ BASE_FEATURE(kAutofillAtMemoryPasteText, base::FEATURE_ENABLED_BY_DEFAULT);
 // Controls whether the previously filled suggestions from AtMemory are shown.
 // Takes no effect when `kAutofillAtMemorySearchStatefulness` is disabled.
 BASE_FEATURE(kAutofillAtMemoryPreviouslyFilled,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, preserves the active AtMemory search query and fetched
 // suggestions when the popup is dismissed, restoring them if the user reopens
