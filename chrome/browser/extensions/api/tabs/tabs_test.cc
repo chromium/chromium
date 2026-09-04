@@ -94,7 +94,6 @@
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/base/base_window.h"
-#include "ui/base/device_form_factor.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -3867,14 +3866,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsUpdate_WebToAboutNewTab) {
   // definitely undesirable for http-initiated navigations (see r818969), but
   // it is less clear what should happen in extension-initiated navigations.
   GURL about_newtab_url = GURL("about:newtab");
-
-  // The expected URL depends on the device form factor and not on platform,
-  // as Desktop Android now points to chrome://new-tab-page/.
-  GURL chrome_newtab_url =
-      (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP)
-          ? GURL("chrome://new-tab-page/")
-          : GURL("chrome-native://newtab/");
-
+#if BUILDFLAG(IS_ANDROID)
+  GURL chrome_newtab_url = GURL("chrome-native://newtab/");
+#else
+  GURL chrome_newtab_url = GURL("chrome://new-tab-page/");
+#endif
   // Navigate a tab to an extension page.
   content::WebContents* extension_contents = GetActiveWebContents();
   ASSERT_TRUE(NavigateToURL(extension_contents, extension_url));
@@ -3909,14 +3905,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsUpdate_WebToAboutNewTab) {
   content::RenderFrameHost* test_frame = test_contents->GetPrimaryMainFrame();
   EXPECT_EQ(chrome_newtab_url, test_frame->GetLastCommittedURL());
 
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP) {
-    EXPECT_EQ(url::Origin::Create(chrome_newtab_url),
-              test_frame->GetLastCommittedOrigin());
-  } else {
-    // "chrome-native://newtab/" has an opaque origin.
-    EXPECT_TRUE(test_frame->GetLastCommittedOrigin().opaque());
-  }
-
+#if BUILDFLAG(IS_ANDROID)
+  // "chrome-native://newtab/" has an opaque origin.
+  EXPECT_TRUE(test_frame->GetLastCommittedOrigin().opaque());
+#else
+  EXPECT_EQ(url::Origin::Create(chrome_newtab_url),
+            test_frame->GetLastCommittedOrigin());
+#endif
   EXPECT_NE(extension_contents->GetPrimaryMainFrame()->GetProcess(),
             test_contents->GetPrimaryMainFrame()->GetProcess());
 }

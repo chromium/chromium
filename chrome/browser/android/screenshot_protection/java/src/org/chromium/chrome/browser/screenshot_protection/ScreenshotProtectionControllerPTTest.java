@@ -22,7 +22,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -50,8 +49,6 @@ import org.chromium.net.test.EmbeddedTestServer;
 })
 @EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_ENTERPRISE_SCREENSHOT_PROTECTION)
 @DoNotBatch(reason = "Tests window flags and features which are activity-global")
-// TODO(b/555414915): Update Android tests with WebUI NTP enabled on AL.
-@DisableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
 public class ScreenshotProtectionControllerPTTest {
 
     @Rule

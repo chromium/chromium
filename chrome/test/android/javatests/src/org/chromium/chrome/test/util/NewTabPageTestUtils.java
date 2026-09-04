@@ -15,7 +15,6 @@ import org.chromium.chrome.browser.suggestions.tile.TileSectionType;
 import org.chromium.chrome.browser.suggestions.tile.TileSource;
 import org.chromium.chrome.browser.suggestions.tile.TileTitleSource;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.url_constants.UrlOverrideUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.url.GURL;
 
@@ -35,18 +34,11 @@ public class NewTabPageTestUtils {
         CriteriaHelper.pollUiThread(
                 () -> {
                     if (!tab.isIncognito()) {
-                        // If the WebUI NTP override is enabled, check that the renderer is ready.
-                        // Otherwise, check that the NTP is loaded in the native page.
-                        if (UrlOverrideUtils.isWebUiNtpOverrideEnabled()) {
-                            Criteria.checkThat(
-                                    ChromeTabUtils.isRendererReady(tab), Matchers.is(true));
-                        } else {
-                            Criteria.checkThat(
-                                    tab.getNativePage(), Matchers.instanceOf(NewTabPage.class));
-                            Criteria.checkThat(
-                                    ((NewTabPage) tab.getNativePage()).isLoadedForTests(),
-                                    Matchers.is(true));
-                        }
+                        Criteria.checkThat(
+                                tab.getNativePage(), Matchers.instanceOf(NewTabPage.class));
+                        Criteria.checkThat(
+                                ((NewTabPage) tab.getNativePage()).isLoadedForTests(),
+                                Matchers.is(true));
                     } else {
                         Criteria.checkThat(
                                 tab.getNativePage(),

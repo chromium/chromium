@@ -66,11 +66,7 @@ import java.util.List;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-// TODO(b/555414915): Update Android tests with WebUI NTP enabled on AL.
-@DisableFeatures({
-    ChromeFeatureList.CHANGE_UNFOCUSED_PRIORITY,
-    ChromeFeatureList.USE_WEB_UI_NTP_ANDROID
-})
+@DisableFeatures({ChromeFeatureList.CHANGE_UNFOCUSED_PRIORITY})
 @Batch(Batch.PER_CLASS)
 public class TabPersistentStoreIntegrationTest {
     @Rule

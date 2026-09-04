@@ -16,10 +16,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
@@ -44,8 +42,6 @@ import java.util.List;
 /** Instrumentation tests for {@link SigninSurveyController}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "Activity should be restarted")
-// TODO(b/555414915): Update Android tests with WebUI NTP enabled on AL.
-@DisableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
 public class SigninSurveyControllerTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =

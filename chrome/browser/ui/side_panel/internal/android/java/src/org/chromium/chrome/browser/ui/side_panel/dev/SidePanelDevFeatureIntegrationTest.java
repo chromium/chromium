@@ -44,8 +44,6 @@ import org.chromium.ui.base.DeviceFormFactor;
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL + ":disable_animations/true")
 @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-// TODO(b/555414915): Update Android tests with WebUI NTP enabled on AL.
-@DisableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
 @NullMarked
 public class SidePanelDevFeatureIntegrationTest {
 

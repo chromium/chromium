@@ -44,8 +44,6 @@ import java.util.concurrent.TimeoutException;
 @ImportantFormFactors(DeviceFormFactor.TABLET_OR_DESKTOP)
 @Batch(Batch.PER_CLASS)
 @EnableLeakChecks
-// TODO(b/555414915): Update Android tests with WebUI NTP enabled on AL.
-@DisableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
 public class PublicTransitLeakTest {
     @Rule
     public FreshCtaTransitTestRule mChromeTabbedActivityTestRule =
