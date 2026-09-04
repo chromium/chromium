@@ -115,11 +115,13 @@ cr-tabs {
 
 .card-tags {
   align-items: center;
+  box-sizing: border-box;
   display: flex;
   flex-wrap: nowrap;
   gap: 4px;
   height: 18px;
   overflow: hidden;
+  padding-inline-end: 20px;
   width: 100%;
 }
 
@@ -161,6 +163,7 @@ cr-tabs {
   justify-content: center;
   padding-block: 6px;
   padding-inline: 16px;
+  position: relative;
 }
 
 .footer-main {
@@ -213,13 +216,12 @@ cr-tabs {
   --cr-icon-button-color: var(--cr-secondary-text-color);
   --cr-icon-button-icon-size: 16px;
   --cr-icon-button-size: 24px;
-  inset-inline-end: 0;
+  bottom: 6px;
+  inset-inline-end: 6px;
   margin: 0;
   opacity: 0;
   padding: 0;
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
   transition: opacity 150ms ease-in-out;
   z-index: 2;
 }
@@ -367,4 +369,25 @@ cr-tabs {
   font-size: 13px;
   margin: 8px 0 0 0;
 }
+
+/* Action Menu */
+cr-action-menu {
+  --cr-action-menu-padding: 4px 0;
+  --cr-menu-border-radius: 8px;
+  --cr-menu-shadow: var(--cr-elevation-2);
+}
+
+cr-action-menu::part(dialog) {
+  min-width: 96px;
+}
+
+cr-action-menu .dropdown-item {
+  font-family: 'Google Sans Text', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  min-height: 28px;
+  padding-block: 4px;
+  padding-inline: 14px;
+}
+
 

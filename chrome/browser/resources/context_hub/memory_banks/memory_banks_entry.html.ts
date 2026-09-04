@@ -50,10 +50,6 @@ export function getHtml(this: MemoryBanksElement, entry: MemoryBankEntry) {
             })}
             </span>
           </div>
-          <cr-icon-button class="card-more-btn" iron-icon="cr:more-vert"
-              title="More actions"
-              @click="${(e: MouseEvent) => this.onMoreActionsClick_(entry, e)}">
-          </cr-icon-button>
         </div>
         ${
         entry.tags && entry.tags.length > 0 ? html`
@@ -64,6 +60,10 @@ export function getHtml(this: MemoryBanksElement, entry: MemoryBankEntry) {
           </div>
         ` :
                                               ''}
+        <cr-icon-button class="card-more-btn" iron-icon="cr:more-vert"
+            title="More actions"
+            @click="${(e: MouseEvent) => this.onMoreActionsClick_(entry, e)}">
+        </cr-icon-button>
       </div>
     </a>
   `;
