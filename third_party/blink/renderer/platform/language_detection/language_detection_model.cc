@@ -6,18 +6,14 @@
 
 #include <map>
 #include <string>
-#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
-#include "components/language_detection/content/common/language_detection.mojom-blink.h"
-#include "components/language_detection/content/renderer/language_detection_model_manager.h"
 #include "components/language_detection/core/chinese_script_classifier.h"
 #include "components/language_detection/core/language_detection_model.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 

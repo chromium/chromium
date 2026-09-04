@@ -1825,12 +1825,8 @@ component("platform") {
     "//cc",
     "//cc/mojo_embedder",
     "//components/input",
-    "//components/language_detection/content/common",
-    "//components/language_detection/content/common:common_blink",
-    "//components/language_detection/content/renderer",
     "//components/paint_preview/common",
     "//components/search_engines:search_engine_utils",
-    "//components/translate/core/language_detection",
     "//components/viz/client",
     "//components/viz/common",
     "//components/webrtc:net_address_utils",
@@ -3055,10 +3051,12 @@ blink_fuzzer_test("blink_storage_key_fuzzer") {
 # Fuzzer template for blink::TextCodec.
 template("blink_text_codec_fuzzer") {
   forward_variables_from(invoker, "*")
+
   config(target_name + "_config") {
     defines = [ "$target_name" ]
   }
   name = target_name
+
   blink_fuzzer_test("blink_text_codec_" + name + "_fuzzer") {
     sources = [ "text_codec_fuzzer.cc" ]
     deps = [ ":platform" ]

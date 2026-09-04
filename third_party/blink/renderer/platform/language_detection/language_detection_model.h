@@ -8,7 +8,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "base/types/expected.h"
-#include "components/language_detection/content/common/language_detection.mojom-blink.h"
 #include "components/language_detection/core/language_detection_model.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
