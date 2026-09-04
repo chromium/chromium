@@ -5,10 +5,12 @@
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_observer.h"
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
@@ -34,6 +36,8 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/enterprise/connectors/interstitials/delayed_interstitial_reporter.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"
 #include "components/enterprise/data_protection/features.h"
 #include "components/safe_browsing/core/browser/realtime/chrome_enterprise_url_lookup_service.h"
@@ -112,7 +116,8 @@ void RunPendingNavigationCallback(
   if (ShouldReportSafeUrlFilteringEvents(user_data)) {
     MaybeTriggerUrlFilteringInterstitialEvent(
         web_contents, web_contents->GetLastCommittedURL(),
-        /*threat_type=*/"", *user_data->rt_lookup_response());
+        /*threat_type=*/"", *user_data->rt_lookup_response(),
+        /*tab_title=*/base::UTF16ToUTF8(web_contents->GetTitle()));
   }
 #endif
 

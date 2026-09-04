@@ -4,6 +4,7 @@
 
 #include "chrome/browser/safe_browsing/chrome_ui_manager_delegate.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/interstitials/enterprise_util.h"
@@ -37,8 +38,9 @@ void ChromeSafeBrowsingUIManagerDelegate::
         const GURL& page_url,
         const std::string& reason,
         int net_error_code) {
-  MaybeTriggerSecurityInterstitialShownEvent(web_contents, page_url, reason,
-                                             net_error_code);
+  MaybeTriggerSecurityInterstitialShownEvent(
+      web_contents, page_url, reason, net_error_code,
+      base::UTF16ToUTF8(web_contents->GetTitle()));
 }
 
 void ChromeSafeBrowsingUIManagerDelegate::
@@ -47,8 +49,9 @@ void ChromeSafeBrowsingUIManagerDelegate::
         const GURL& page_url,
         const std::string& reason,
         int net_error_code) {
-  MaybeTriggerSecurityInterstitialProceededEvent(web_contents, page_url, reason,
-                                                 net_error_code);
+  MaybeTriggerSecurityInterstitialProceededEvent(
+      web_contents, page_url, reason, net_error_code,
+      base::UTF16ToUTF8(web_contents->GetTitle()));
 }
 
 void ChromeSafeBrowsingUIManagerDelegate::
@@ -57,8 +60,9 @@ void ChromeSafeBrowsingUIManagerDelegate::
         const GURL& page_url,
         const std::string& threat_type,
         safe_browsing::RTLookupResponse rt_lookup_response) {
-  MaybeTriggerUrlFilteringInterstitialEvent(web_contents, page_url, threat_type,
-                                            rt_lookup_response);
+  MaybeTriggerUrlFilteringInterstitialEvent(
+      web_contents, page_url, threat_type, rt_lookup_response,
+      base::UTF16ToUTF8(web_contents->GetTitle()));
 }
 
 prerender::NoStatePrefetchContents*

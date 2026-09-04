@@ -195,7 +195,7 @@ TEST_F(InterstitialEnterpriseUtilTest, RouterEventDisabledInIncognitoMode) {
   MaybeTriggerSecurityInterstitialShownEvent(
       web_contents_factory_.CreateWebContents(incognito_profile),
       GURL("https://phishing.com/"), "reason",
-      /*net_error_code=*/0);
+      /*net_error_code=*/0, "");
 }
 
 TEST_F(InterstitialEnterpriseUtilTest,
@@ -234,7 +234,7 @@ TEST_F(InterstitialEnterpriseUtilTest,
   MaybeTriggerSecurityInterstitialShownEvent(
       web_contents_factory_.CreateWebContents(guest_profile),
       GURL("https://phishing.com/"), "reason",
-      /*net_error_code=*/0);
+      /*net_error_code=*/0, "");
   run_loop.Run();
 
   ValidateReferrerChainForInterstitialEvent(event_request);
@@ -276,7 +276,7 @@ TEST_F(InterstitialEnterpriseUtilTest,
   MaybeTriggerSecurityInterstitialProceededEvent(
       web_contents_factory_.CreateWebContents(guest_profile),
       GURL("https://phishing.com/"), "reason",
-      /*net_error_code=*/0);
+      /*net_error_code=*/0, "");
   run_loop.Run();
 
   ValidateReferrerChainForInterstitialEvent(event_request);
@@ -326,7 +326,7 @@ TEST_F(InterstitialEnterpriseUtilTest,
 
   MaybeTriggerUrlFilteringInterstitialEvent(
       web_contents_factory_.CreateWebContents(guest_profile),
-      GURL("https://phishing.com/"), "ENTERPRISE_WARNED_SEEN", response);
+      GURL("https://phishing.com/"), "ENTERPRISE_WARNED_SEEN", response, "");
   run_loop.Run();
 
   ValidateReferrerChainForUrlFilteringEvent(event_request);
@@ -381,7 +381,7 @@ TEST_F(InterstitialEnterpriseUtilTest, ReferrerChainFallsbackToEventUrl) {
 
   MaybeTriggerUrlFilteringInterstitialEvent(
       web_contents_factory_.CreateWebContents(guest_profile),
-      GURL("https://phishing.com/"), "ENTERPRISE_WARNED_SEEN", response);
+      GURL("https://phishing.com/"), "ENTERPRISE_WARNED_SEEN", response, "");
   run_loop.Run();
 
   ValidateReferrerChainForUrlFilteringEvent(event_request);
