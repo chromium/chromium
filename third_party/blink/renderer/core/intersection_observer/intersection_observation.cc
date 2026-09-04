@@ -16,8 +16,6 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 
-#define CHECK_SKIPPED_UPDATE_ON_SCROLL() DCHECK_IS_ON()
-
 namespace blink {
 
 IntersectionObservation::IntersectionObservation(IntersectionObserver& observer,
@@ -26,15 +24,9 @@ IntersectionObservation::IntersectionObservation(IntersectionObserver& observer,
 
 int64_t IntersectionObservation::ComputeIntersection(
     unsigned compute_flags,
-    gfx::Vector2dF accumulated_scroll_delta_since_last_update,
     ComputeIntersectionsContext& context) {
   if (!CanCompute()) {
     return 0;
-  }
-  if (compute_flags & kConsumeScrollDelta) {
-    cached_rects_.min_scroll_delta_to_update -=
-        accumulated_scroll_delta_since_last_update;
-    accumulated_scroll_delta_since_last_update = gfx::Vector2dF();
   }
 
   // If we're processing post-layout deliveries only and we don't have a
@@ -49,7 +41,6 @@ int64_t IntersectionObservation::ComputeIntersection(
     return 0;
   }
 
-  bool has_pending_update = needs_update_;
   if (compute_flags &
       (observer_->RootIsImplicit() ? kImplicitRootObserversNeedUpdate
                                    : kExplicitRootObserversNeedUpdate)) {
@@ -66,22 +57,6 @@ int64_t IntersectionObservation::ComputeIntersection(
   last_run_time_ = context.GetMonotonicTime();
   needs_update_ = false;
 
-#if CHECK_SKIPPED_UPDATE_ON_SCROLL()
-  std::optional<IntersectionGeometry::CachedRects> cached_rects_backup;
-#endif
-  if (!has_pending_update && (compute_flags & kScrollAndVisibilityOnly) &&
-      cached_rects_.min_scroll_delta_to_update.x() >
-          accumulated_scroll_delta_since_last_update.x() &&
-      cached_rects_.min_scroll_delta_to_update.y() >
-          accumulated_scroll_delta_since_last_update.y()) {
-#if CHECK_SKIPPED_UPDATE_ON_SCROLL()
-    cached_rects_backup.emplace(cached_rects_);
-#else
-    // This is equivalent to a full update.
-    return 1;
-#endif
-  }
-
   unsigned geometry_flags = GetIntersectionGeometryFlags(compute_flags);
   // The policy for honoring margins is the same as that for reporting root
   // bounds, so this flag can be used for both.
@@ -97,25 +72,8 @@ int64_t IntersectionObservation::ComputeIntersection(
       context.GetRootGeometry(*observer_, compute_flags), &cached_rects_,
       observer_->hit_node_cb());
 
-#if CHECK_SKIPPED_UPDATE_ON_SCROLL()
-  if (cached_rects_backup) {
-    // A skipped update on scroll should generate the same result.
-    CHECK_EQ(last_threshold_index_, geometry.ThresholdIndex());
-    CHECK_EQ(last_is_visible_, geometry.IsVisible());
-    cached_rects_ = cached_rects_backup.value();
-    return 1;
-  }
-#endif
-
   ProcessIntersectionGeometry(geometry, context);
   return geometry.DidComputeGeometry() ? 1 : 0;
-}
-
-gfx::Vector2dF IntersectionObservation::MinScrollDeltaToUpdate() const {
-  if (cached_rects_.valid) {
-    return cached_rects_.min_scroll_delta_to_update;
-  }
-  return gfx::Vector2dF();
 }
 
 void IntersectionObservation::TakeRecords(

@@ -101,11 +101,6 @@ class CORE_EXPORT IntersectionGeometry {
     // Target rect mapped up to the root's space, with intermediate clips
     // applied, but without applying the root's clip or scroll offset.
     gfx::RectF unscrolled_unclipped_intersection_rect;
-    // This is calculated basically based on the distance between the root rect
-    // and the target rect, when it's applicable. On each scroll, we subtract
-    // the absolute scroll delta from it, and only need to update intersection
-    // geometry if it becomes <= 0 along either axis.
-    gfx::Vector2dF min_scroll_delta_to_update;
     // True iff unscrolled_unclipped_intersection_rect actually intersects the
     // root, as defined by edge-inclusive intersection rules.
     bool does_intersect = false;
@@ -189,15 +184,12 @@ class CORE_EXPORT IntersectionGeometry {
       kInvalid,
       // The target is in a sub-frame of the implicit root.
       kTargetInSubFrame,
-      // There are intermediate clippers (scroll containers or not) between the
-      // root and the target. The target is likely to be scrollable in root.
-      kHasIntermediateClippers,
-      // The target can't be scrolled in the root by any scroller, without any
-      // intermediate clippers.
-      kNotScrollable,
-      // The target can be scrolled in the root by the root only, without any
-      // intermediate clippers.
-      kScrollableByRootOnly,
+      // There are intermediate scroll containers between the root and
+      // the target.
+      kHasIntermediateScrollers,
+      // The target can't be scrolled in the root by any scroller or can be
+      // scrolled by the root only, without any intermediate clippers.
+      kNotScrollableOrByRootOnly,
     };
     Relationship relationship = kInvalid;
     // Whether `root` scrolls `target` directly or indirectly. This is false if
@@ -206,9 +198,6 @@ class CORE_EXPORT IntersectionGeometry {
     // - `root` is the LayoutView and `target` is contained by a fixed-position
     //   element that is fixed to the viewport.
     bool root_scrolls_target = false;
-    // This is used only when relationship is kHasIntermediateClippers or
-    // kScrollableByRootOnly.
-    bool has_filter = false;
     // This is collected only if has_scroll_margin is true.
     HeapVector<Member<const LayoutBox>, 2> intermediate_scrollers;
 
@@ -250,13 +239,6 @@ class CORE_EXPORT IntersectionGeometry {
 
   unsigned FirstThresholdGreaterThan(float ratio,
                                      const Vector<float>& thresholds) const;
-
-  gfx::Vector2dF ComputeMinScrollDeltaToUpdate(
-      const RootAndTarget& root_and_target,
-      const gfx::Transform& target_to_view_transform,
-      const gfx::Transform& root_to_view_transform,
-      const Vector<float>& thresholds,
-      const Vector<Length>& scroll_margin) const;
 
   gfx::RectF target_rect_;
   gfx::RectF intersection_rect_;

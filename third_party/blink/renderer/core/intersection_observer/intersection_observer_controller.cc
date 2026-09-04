@@ -151,7 +151,6 @@ void IntersectionObserverController::UpdateIntersectionObserverStatus() {
 void IntersectionObserverController::ComputeIntersections(
     unsigned flags,
     LocalFrameView& frame_view,
-    gfx::Vector2dF accumulated_scroll_delta_since_last_update,
     ComputeIntersectionsContext& context) {
   if (!GetExecutionContext()) {
     return;
@@ -177,8 +176,7 @@ void IntersectionObserverController::ComputeIntersections(
     }
     int64_t count = 0;
     for (auto& observation : observations) {
-      count += observation->ComputeIntersection(
-          flags, accumulated_scroll_delta_since_last_update, context);
+      count += observation->ComputeIntersection(flags, context);
     }
     if (observer.IsInternal()) {
       internal_observation_count += count;

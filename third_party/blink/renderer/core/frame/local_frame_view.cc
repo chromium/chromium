@@ -1183,9 +1183,7 @@ void LocalFrameView::RunIntersectionObserverSteps() {
 
   ComputeIntersectionsContext context;
   UpdateViewportIntersectionsForSubtree(
-      IntersectionObservation::kConsumeScrollDelta |
-          IntersectionObservation::kUpdateTracking,
-      context);
+      IntersectionObservation::kUpdateTracking, context);
 
 #if DCHECK_IS_ON()
   DCHECK(was_dirty || !NeedsLayout());
@@ -1663,9 +1661,7 @@ void LocalFrameView::ComputePostLayoutIntersections(
 
   if (auto* controller =
           GetFrame().GetDocument()->GetIntersectionObserverController()) {
-    controller->ComputeIntersections(
-        flags, *this, accumulated_scroll_delta_since_last_intersection_update_,
-        context);
+    controller->ComputeIntersections(flags, *this, context);
   }
 
   for (Frame* child = frame_->Tree().FirstChild(); child;
@@ -4767,13 +4763,7 @@ void LocalFrameView::UpdateViewportIntersectionsForSubtree(
   // degenerate "not intersecting" notification or schedule a delayed update
   // if needed.
   if (controller) {
-    controller->ComputeIntersections(
-        flags, *this, accumulated_scroll_delta_since_last_intersection_update_,
-        context);
-    if (flags & IntersectionObservation::kConsumeScrollDelta) {
-      accumulated_scroll_delta_since_last_intersection_update_ =
-          gfx::Vector2dF();
-    }
+    controller->ComputeIntersections(flags, *this, context);
   }
   intersection_observation_state_ = kNotNeeded;
 
@@ -4946,13 +4936,6 @@ void LocalFrameView::SetIntersectionObservationState(
   }
 }
 
-void LocalFrameView::UpdateIntersectionObservationStateOnScroll(
-    gfx::Vector2dF scroll_delta) {
-  accumulated_scroll_delta_since_last_intersection_update_ +=
-      gfx::Vector2dF(std::abs(scroll_delta.x()), std::abs(scroll_delta.y()));
-  SetIntersectionObservationState(kScrollAndVisibilityOnly);
-}
-
 void LocalFrameView::SetVisualViewportOrOverlayNeedsRepaint() {
   if (LocalFrameView* root = GetFrame().LocalFrameRoot().View())
     root->visual_viewport_or_overlay_needs_repaint_ = true;
@@ -4976,9 +4959,7 @@ PaintArtifactCompositor* LocalFrameView::GetPaintArtifactCompositor() const {
 
 unsigned LocalFrameView::GetIntersectionObservationFlags(
     unsigned parent_flags) const {
-  unsigned flags =
-      parent_flags & (IntersectionObservation::kConsumeScrollDelta |
-                      IntersectionObservation::kUpdateTracking);
+  unsigned flags = parent_flags & (IntersectionObservation::kUpdateTracking);
 
   const LocalFrame& target_frame = GetFrame();
   const Frame& root_frame = target_frame.Tree().Top();

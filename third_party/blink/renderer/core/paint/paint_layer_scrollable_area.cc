@@ -447,8 +447,8 @@ void PaintLayerScrollableArea::UpdateScrollOffset(
   // The ScrollOffsetTranslation paint property depends on the scroll offset.
   // (see: PaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation).
   GetLayoutBox()->SetNeedsPaintPropertyUpdate();
-  frame_view->UpdateIntersectionObservationStateOnScroll(new_offset -
-                                                         scroll_offset_);
+  frame_view->SetIntersectionObservationState(
+      LocalFrameView::kScrollAndVisibilityOnly);
 
   scroll_offset_ = new_offset;
 

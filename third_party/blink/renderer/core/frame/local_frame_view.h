@@ -242,10 +242,8 @@ class CORE_EXPORT LocalFrameView final
   enum IntersectionObservationState {
     // The next painting frame does not need an intersection observation.
     kNotNeeded = 0,
-    // The next painting frame needs to update
-    // - intersection observations whose MinScrollDeltaToUpdate is exceeded by
-    //   the accumulated scroll delta in the frame.
-    // - intersection observers that trackVisibility.
+    // The next painting frame needs to update intersection observers for
+    // scroll or intersection observers that trackVisibility.
     kScrollAndVisibilityOnly = 1,
     // The next painting frame needs to update all intersection observations.
     kDesired = 2,
@@ -257,7 +255,6 @@ class CORE_EXPORT LocalFrameView final
   // Sets the internal IntersectionObservationState to the max of the
   // current value and the provided one.
   void SetIntersectionObservationState(IntersectionObservationState);
-  void UpdateIntersectionObservationStateOnScroll(gfx::Vector2dF scroll_delta);
   IntersectionObservationState GetIntersectionObservationStateForTesting()
       const {
     return intersection_observation_state_;
@@ -1271,7 +1268,6 @@ class CORE_EXPORT LocalFrameView final
   // True if this FrameView or any descendant FrameView has active
   // IntersectionObservers for which observer->trackVisibility() is true.
   bool needs_occlusion_tracking_ = false;
-  gfx::Vector2dF accumulated_scroll_delta_since_last_intersection_update_;
   // Used only if the frame is the local root.
   HeapTaskRunnerTimer<LocalFrameView> delayed_intersection_timer_;
   // Set on the local root when the above timer is fired. Will force update

@@ -75,7 +75,6 @@ class CORE_EXPORT IntersectionObserverController
   void ComputeIntersections(
       unsigned flags,
       LocalFrameView&,
-      gfx::Vector2dF accumulated_scroll_delta_since_last_update,
       ComputeIntersectionsContext&);
 
   void AddTrackedObserver(IntersectionObserver&);
