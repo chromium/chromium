@@ -6614,6 +6614,10 @@
       status: "test",
     },
     {
+      name: "UsePaintGeometryForIntersection",
+      status: "stable",
+    },
+    {
       name: "UsePositionForPointInFlexibleBoxWithSingleChildElement",
       status: "stable",
     },

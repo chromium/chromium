@@ -203,24 +203,12 @@ VisibilityInfo ComputeVisibilityInfo(
 // containing view's coordinates. Note that this doesn't work if `object` has
 // multiple block fragments.
 gfx::Transform ObjectToViewTransform(const LayoutObject& object) {
-  // Use faster GeometryMapper when possible.
-  PropertyTreeStateOrAlias container_properties(
-      PropertyTreeState::kUninitialized);
-  const LayoutObject* property_container =
-      IntersectionGeometry::CanUseGeometryMapper(object)
-          ? object.GetPropertyContainer(nullptr, &container_properties)
-          : nullptr;
-  if (property_container) {
-    gfx::Transform transform = GeometryMapper::SourceToDestinationProjection(
-        container_properties.Transform(),
-        object.View()->FirstFragment().LocalBorderBoxProperties().Transform());
-    transform.Translate(gfx::Vector2dF(object.FirstFragment().PaintOffset()));
-    return transform;
+  MapCoordinatesFlags map_flags = {};
+  if (IntersectionGeometry::CanUseGeometryMapper(object)) {
+    map_flags = {MapCoordinatesMode::kUseGeometryMapper};
   }
-
-  // Fall back to MapLocalToAncestor.
   TransformState transform_state(TransformState::kApplyTransformDirection);
-  object.MapLocalToAncestor(nullptr, transform_state, {});
+  object.MapLocalToAncestor(nullptr, transform_state, map_flags);
   return transform_state.AccumulatedTransform();
 }
 
@@ -587,10 +575,15 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
       // the absolute coordinates of the target document.
       TransformState implicit_root_to_target_document_transform(
           TransformState::kUnapplyInverseTransformDirection);
+      MapCoordinatesFlags map_flags = {
+          MapCoordinatesMode::kTraverseDocumentBoundaries,
+          MapCoordinatesMode::kApplyRemoteMainFrameTransform};
+      if (RuntimeEnabledFeatures::UsePaintGeometryForIntersectionEnabled() &&
+          CanUseGeometryMapper(*target)) {
+        map_flags.Put(MapCoordinatesMode::kUseGeometryMapper);
+      }
       target->View()->MapAncestorToLocal(
-          nullptr, implicit_root_to_target_document_transform,
-          {MapCoordinatesMode::kTraverseDocumentBoundaries,
-           MapCoordinatesMode::kApplyRemoteMainFrameTransform});
+          nullptr, implicit_root_to_target_document_transform, map_flags);
       gfx::Transform matrix =
           implicit_root_to_target_document_transform.AccumulatedTransform()
               .InverseOrIdentity();

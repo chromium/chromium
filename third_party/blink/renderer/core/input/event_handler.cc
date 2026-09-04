@@ -420,10 +420,15 @@ HitTestResult EventHandler::HitTestResultAtLocation(
           if (hit_type & HitTestRequest::kHitTestVisualOverflow) {
             // Apply ancestor transforms to location rect
             PhysicalRect local_rect = location.BoundingBox();
+            MapCoordinatesFlags map_flags = {
+                MapCoordinatesMode::kTraverseDocumentBoundaries};
+            if (RuntimeEnabledFeatures::
+                    UsePaintGeometryForIntersectionEnabled()) {
+              map_flags.Put(MapCoordinatesMode::kUseGeometryMapper);
+            }
             PhysicalRect main_frame_rect =
                 frame_view->GetLayoutView()->LocalToAncestorRect(
-                    local_rect, main_view->GetLayoutView(),
-                    {MapCoordinatesMode::kTraverseDocumentBoundaries});
+                    local_rect, main_view->GetLayoutView(), map_flags);
             adjusted_location = HitTestLocation(main_frame_rect);
           } else {
             // Don't apply ancestor transforms to bounding box

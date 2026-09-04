@@ -50,6 +50,13 @@ enum class MapCoordinatesMode {
 
   kTraverseDocumentBoundaries,
 
+  // Use the GeometryMapper fast-path, if possible. This also uses paint
+  // geometry instead of layout geometry, which may be different about pixel
+  // snapping, etc. and has different requirements for up-to-date data (which
+  // is the caller's responsibility to check or ensure). Some modes and
+  // situations are not supported, and will fall back to the slow path.
+  kUseGeometryMapper,
+
   // Ignore offset adjustments caused by position:sticky calculations when
   // walking the chain.
   kIgnoreStickyOffset,

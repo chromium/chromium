@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>IntersectionObserver V2: Subpixel accumulation in nested iframes</title>
+<link rel="help" href="https://crbug.com/539481795">
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<!-- This test is not under wpt because it depends on Chrome's specific
+     pixel snapping method of frames. -->
+
+<style>
+  body {
+    margin: 0;
+  }
+  #occluder {
+    position: absolute;
+    top: 0;
+    left: 50px;
+    width: 15px;
+    height: 15px;
+    background-color: blue;
+    z-index: 100;
+  }
+  #iframe-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200px;
+    height: 200px;
+  }
+</style>
+
+<div id="occluder"></div>
+
+<script>
+function setupNestedIframes(depth) {
+  let currentDoc = document;
+
+  for (let i = 0; i < depth; i++) {
+    let iframe = currentDoc.createElement("iframe");
+    iframe.style.position = "absolute";
+    iframe.style.top = "0.4px";
+    iframe.style.left = "0.6px";
+    iframe.style.border = "none";
+
+    currentDoc.body.appendChild(iframe);
+    currentDoc = iframe.contentDocument;
+  }
+
+  // Create the target element in the innermost iframe
+  let target = currentDoc.createElement("div");
+  target.position = "absolute";
+  target.left = "0";
+  target.top = "0";
+  target.style.width = "15px";
+  target.style.height = "15px";
+  target.style.backgroundColor = "green";
+  currentDoc.body.appendChild(target);
+
+  return target;
+}
+
+// With the current pixel snapping method for frames, the absolute location of
+// the innermost iframe is at (0, 50), making the target visually occluded by
+// the occluder.
+async_test(t => {
+  let target = setupNestedIframes(50);
+  let observer = new IntersectionObserver(t.step_func(entries => {
+    assert_equals(entries.length, 1);
+    assert_true(entries[0].isIntersecting, "Target intersects viewport");
+    assert_false(entries[0].isVisible, "Target is visually occluded by occluder");
+    t.done();
+  }), { trackVisibility: true, delay: 100 });
+  observer.observe(target);
+}, "IntersectionObserver V2 handles subpixel accumulation in nested iframes without false isVisible report.");
+
+</script>

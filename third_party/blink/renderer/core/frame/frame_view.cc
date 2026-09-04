@@ -177,11 +177,16 @@ void FrameView::UpdateViewportIntersection(
 
     // Generate matrix to transform from the space of the containing document
     // to the space of the iframe's contents.
+    MapCoordinatesFlags map_flags;
+    if (RuntimeEnabledFeatures::UsePaintGeometryForIntersectionEnabled() &&
+        IntersectionGeometry::CanUseGeometryMapper(*owner_layout_object)) {
+      map_flags = {MapCoordinatesMode::kUseGeometryMapper};
+    }
     TransformState parent_frame_to_iframe_content_transform(
         TransformState::kUnapplyInverseTransformDirection);
     // First transform to box coordinates of the iframe element...
     owner_layout_object->MapAncestorToLocal(
-        nullptr, parent_frame_to_iframe_content_transform, {});
+        nullptr, parent_frame_to_iframe_content_transform, map_flags);
     // ... then apply content_box_offset to translate to the coordinate of the
     // child frame.
     parent_frame_to_iframe_content_transform.Move(
@@ -254,14 +259,12 @@ void FrameView::UpdateViewportIntersection(
       child_frame_to_root_frame.Move(PhysicalOffset::FromPointFRound(
           gfx::PointF(frame.GetOutermostMainFrameScrollPosition())));
     }
-    if (owner_layout_object) {
-      owner_layout_object->MapAncestorToLocal(
-          nullptr, child_frame_to_root_frame,
-          {MapCoordinatesMode::kTraverseDocumentBoundaries,
-           MapCoordinatesMode::kApplyRemoteMainFrameTransform});
-      child_frame_to_root_frame.Move(
-          owner_layout_object->PhysicalContentBoxRect().offset);
-    }
+    map_flags.PutAll({MapCoordinatesMode::kTraverseDocumentBoundaries,
+                      MapCoordinatesMode::kApplyRemoteMainFrameTransform});
+    owner_layout_object->MapAncestorToLocal(nullptr, child_frame_to_root_frame,
+                                            map_flags);
+    child_frame_to_root_frame.Move(
+        owner_layout_object->PhysicalContentBoxRect().offset);
     main_frame_transform_matrix =
         child_frame_to_root_frame.AccumulatedTransform();
   }

@@ -2199,12 +2199,6 @@ TEST_P(VisualRectMappingTest, NestedElementCanvasTransformVisualRectMapping) {
       To<LayoutBoxModelObject>(canvas), slow_rect, {}));
   EXPECT_EQ(mapper_rect, PhysicalRect(0, 100, 50, 50));
   EXPECT_EQ(mapper_rect, slow_rect);
-  EXPECT_EQ(PhysicalOffset(0, 100),
-            b->LocalToAncestorPoint(PhysicalOffset(),
-                                    To<LayoutBoxModelObject>(canvas)));
-  EXPECT_EQ(PhysicalOffset(0, 0),
-            b->AncestorToLocalPoint(To<LayoutBoxModelObject>(canvas),
-                                    PhysicalOffset(0, 100)));
 }
 
 TEST_P(VisualRectMappingTest,
@@ -2238,12 +2232,6 @@ TEST_P(VisualRectMappingTest,
       To<LayoutBoxModelObject>(canvas), slow_rect, {}));
   EXPECT_EQ(mapper_rect, PhysicalRect(0, 100, 50, 50));
   EXPECT_EQ(mapper_rect, slow_rect);
-  EXPECT_EQ(PhysicalOffset(0, 100),
-            b->LocalToAncestorPoint(PhysicalOffset(),
-                                    To<LayoutBoxModelObject>(canvas)));
-  EXPECT_EQ(PhysicalOffset(0, 0),
-            b->AncestorToLocalPoint(To<LayoutBoxModelObject>(canvas),
-                                    PhysicalOffset(0, 100)));
 }
 
 TEST_P(
@@ -2277,12 +2265,6 @@ TEST_P(
       To<LayoutBoxModelObject>(canvas), slow_rect, {}));
   EXPECT_EQ(mapper_rect, PhysicalRect(0, 0, 50, 50));
   EXPECT_EQ(mapper_rect, slow_rect);
-  EXPECT_EQ(PhysicalOffset(0, 0),
-            b->LocalToAncestorPoint(PhysicalOffset(),
-                                    To<LayoutBoxModelObject>(canvas)));
-  EXPECT_EQ(PhysicalOffset(0, 0),
-            b->AncestorToLocalPoint(To<LayoutBoxModelObject>(canvas),
-                                    PhysicalOffset(0, 0)));
 }
 
 TEST_P(VisualRectMappingTest,
@@ -2315,12 +2297,6 @@ TEST_P(VisualRectMappingTest,
       To<LayoutBoxModelObject>(canvas), slow_rect, {}));
   EXPECT_EQ(mapper_rect, PhysicalRect(100, 0, 50, 50));
   EXPECT_EQ(mapper_rect, slow_rect);
-  EXPECT_EQ(PhysicalOffset(100, 0),
-            b->LocalToAncestorPoint(PhysicalOffset(),
-                                    To<LayoutBoxModelObject>(canvas)));
-  EXPECT_EQ(PhysicalOffset(0, 0),
-            b->AncestorToLocalPoint(To<LayoutBoxModelObject>(canvas),
-                                    PhysicalOffset(100, 0)));
 }
 
 TEST_P(VisualRectMappingTest,
@@ -2358,12 +2334,6 @@ TEST_P(VisualRectMappingTest,
       To<LayoutBoxModelObject>(canvas), slow_rect, {}));
   EXPECT_EQ(mapper_rect, PhysicalRect(0, 100, 50, 50));
   EXPECT_EQ(mapper_rect, slow_rect);
-  EXPECT_EQ(PhysicalOffset(0, 100),
-            b->LocalToAncestorPoint(PhysicalOffset(),
-                                    To<LayoutBoxModelObject>(canvas)));
-  EXPECT_EQ(PhysicalOffset(0, 0),
-            b->AncestorToLocalPoint(To<LayoutBoxModelObject>(canvas),
-                                    PhysicalOffset(0, 100)));
 }
 
 }  // namespace blink

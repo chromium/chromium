@@ -1558,8 +1558,10 @@ void PrePaintTreeWalk::Walk(const LayoutObject& object,
               current.paint_offset -=
                   PhysicalOffset(embedded_view->DeprecatedLocation());
             }
+            // LINT.IfChange(FramePixelSnapping)
             current.paint_offset =
                 PhysicalOffset(ToRoundedPoint(current.paint_offset));
+            // LINT.ThenChange(embedded_content_painter.cc:FramePixelSnapping)
 
             // Subpixel accumulation doesn't propagate across embedded view.
             current.directly_composited_container_paint_offset_subpixel_delta =
