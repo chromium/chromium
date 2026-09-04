@@ -177,7 +177,6 @@ static_library("test_support") {
     "//chrome/test/base:test_switches",
     "//chrome/test/base:testing_browser_process_impl",
     "//chrome/test/base:testing_profile_impl",
-    "//chrome/test/base:web_feature_histogram_tester",
     "//chrome/test/base:web_ui_mocha_browser_test",
     "//chrome/test/base:web_ui_test_support",
   ]

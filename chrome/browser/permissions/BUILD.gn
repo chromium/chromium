@@ -373,6 +373,7 @@ if (!is_android) {
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/views/permissions",
       "//chrome/test:test_support",
+      "//chrome/test/base:web_feature_histogram_tester",
       "//components/back_forward_cache",
       "//components/contextual_tasks/public",
       "//components/optimization_guide/core:test_support",
