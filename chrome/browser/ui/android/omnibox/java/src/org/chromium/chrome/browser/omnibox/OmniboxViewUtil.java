@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import android.text.Spanned;
+
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -13,6 +15,43 @@ import org.chromium.components.omnibox.PageClassificationUtils;
 /** Utilities for the Omnibox view component. */
 @NullMarked
 public class OmniboxViewUtil {
+
+    /**
+     * Returns whether {@code currentText} and {@code newText} contain equivalent spans of {@code
+     * spanType}. Other span types are deliberately ignored because TextView and the IME attach
+     * transient spans that do not represent Omnibox display state.
+     */
+    static <T> boolean haveEquivalentSpans(
+            CharSequence currentText, CharSequence newText, Class<T> spanType) {
+        if (!(currentText instanceof Spanned)) {
+            return !(newText instanceof Spanned)
+                    || ((Spanned) newText).getSpans(0, newText.length(), spanType).length == 0;
+        }
+
+        Spanned currentSpannedText = (Spanned) currentText;
+        T[] currentSpans = currentSpannedText.getSpans(0, currentText.length(), spanType);
+        if (!(newText instanceof Spanned)) return currentSpans.length == 0;
+
+        Spanned newSpannedText = (Spanned) newText;
+        T[] newSpans = newSpannedText.getSpans(0, newText.length(), spanType);
+        if (currentSpans.length != newSpans.length) return false;
+
+        for (int i = 0; i < currentSpans.length; i++) {
+            T currentSpan = currentSpans[i];
+            T newSpan = newSpans[i];
+            if (!currentSpan.equals(newSpan)
+                    || currentSpannedText.getSpanStart(currentSpan)
+                            != newSpannedText.getSpanStart(newSpan)
+                    || currentSpannedText.getSpanEnd(currentSpan)
+                            != newSpannedText.getSpanEnd(newSpan)
+                    || currentSpannedText.getSpanFlags(currentSpan)
+                            != newSpannedText.getSpanFlags(newSpan)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
     /**
      * Sanitizing the given string to be safe to paste into the omnibox.
