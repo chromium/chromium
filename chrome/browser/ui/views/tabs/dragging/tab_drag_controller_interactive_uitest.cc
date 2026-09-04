@@ -5038,8 +5038,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_FALSE(target_browser->GetWindow()->IsMaximized());
 }
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-// Flaky on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+// TODO(crbug.com/41482323): Fix and re-enable, flaky on multiple platforms.
 #define MAYBE_DragDirectlyToSecondWindow DISABLED_DragDirectlyToSecondWindow
 #else
 #define MAYBE_DragDirectlyToSecondWindow DragDirectlyToSecondWindow
