@@ -19,7 +19,8 @@ ChromeMediaSessionClient* ChromeMediaSessionClient::GetInstance() {
 
 bool ChromeMediaSessionClient::ShouldHideMetadata(
     content::BrowserContext* browser_context) const {
-  return Profile::FromBrowserContext(browser_context)->IsIncognitoProfile();
+  return Profile::FromBrowserContext(browser_context)
+      ->IsPrimaryOTRProfileWithRegularParent();
 }
 
 std::u16string ChromeMediaSessionClient::GetTitlePlaceholder() const {

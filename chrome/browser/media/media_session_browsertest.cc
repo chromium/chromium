@@ -83,8 +83,30 @@ IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest,
   observer.WaitForExpectedHideMetadata(false);
 }
 
+class MediaSessionIsolatedBrowserTest : public MediaSessionBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    MediaSessionBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(
+        "force-enterprise-isolated-mode-replaces-incognito");
+  }
+};
+
 IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest,
                        MediaSessionInfoHideMetadataIfInIncognito) {
+  BrowserWindowInterface* browser = CreateIncognitoBrowser();
+
+  media_session::test::MockMediaSessionMojoObserver observer(
+      *content::MediaSession::Get(
+          browser->GetTabStripModel()->GetActiveWebContents()));
+
+  PlayVideoWithMetadata(browser);
+
+  observer.WaitForExpectedHideMetadata(true);
+}
+
+IN_PROC_BROWSER_TEST_F(MediaSessionIsolatedBrowserTest,
+                       MediaSessionInfoHideMetadataIfInIsolatedMode) {
   BrowserWindowInterface* browser = CreateIncognitoBrowser();
 
   media_session::test::MockMediaSessionMojoObserver observer(
@@ -99,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest,
 // We hide the media metadata from CrOS' media controls by replacing the
 // metadata in the MediaSessionImpl with some placeholder metadata. These
 // changes are gated to only affect ChromeOS, hence why the testing for this is
-// also ChromeOS only.
+// split into two platforms.
 #if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest,
                        MediaSessionInfoIsHiddenInCrOSIncognito) {
@@ -113,9 +135,35 @@ IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest,
 
   observer.WaitForExpectedMetadata(GetExpectedHiddenMetadata());
 }
+
+IN_PROC_BROWSER_TEST_F(MediaSessionIsolatedBrowserTest,
+                       MediaSessionInfoIsHiddenInCrOSIsolatedMode) {
+  BrowserWindowInterface* browser = CreateIncognitoBrowser();
+
+  media_session::test::MockMediaSessionMojoObserver observer(
+      *content::MediaSession::Get(
+          browser->GetTabStripModel()->GetActiveWebContents()));
+
+  PlayVideoWithMetadata(browser);
+
+  observer.WaitForExpectedMetadata(GetExpectedHiddenMetadata());
+}
 #else  // !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest,
                        MediaSessionInfoIsNotHiddenInNonCrOSIncognito) {
+  BrowserWindowInterface* browser = CreateIncognitoBrowser();
+
+  media_session::test::MockMediaSessionMojoObserver observer(
+      *content::MediaSession::Get(
+          browser->GetTabStripModel()->GetActiveWebContents()));
+
+  PlayVideoWithMetadata(browser);
+
+  observer.WaitForExpectedMetadata(GetExpectedMetadata());
+}
+
+IN_PROC_BROWSER_TEST_F(MediaSessionIsolatedBrowserTest,
+                       MediaSessionInfoIsNotHiddenInNonCrOSIsolatedMode) {
   BrowserWindowInterface* browser = CreateIncognitoBrowser();
 
   media_session::test::MockMediaSessionMojoObserver observer(
