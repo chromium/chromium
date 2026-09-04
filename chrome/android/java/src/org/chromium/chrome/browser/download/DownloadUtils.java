@@ -43,6 +43,7 @@ import org.chromium.base.FileUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
+import org.chromium.base.TriState;
 import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -101,7 +102,7 @@ public class DownloadUtils {
             "org.chromium.chrome.browser.download.OTR_PROFILE_ID";
     private static final String MIME_TYPE_ZIP = "application/zip";
     private static final String DOCUMENTS_UI_PACKAGE_NAME = "com.android.documentsui";
-    private static @Nullable Boolean sIsDownloadRestrictedByPolicyForTesting;
+    private static @TriState int sIsDownloadRestrictedByPolicyForTesting;
     // Tracks the timestamp and identifier of the last openFile request to debounce rapid
     // consecutive clicks (e.g. double-taps) and prevent launching duplicate chooser dialogs.
     private static long sLastOpenFileTimeMs;
@@ -912,14 +913,14 @@ public class DownloadUtils {
      * @return True if download is restricted, or false otherwise.
      */
     public static boolean isDownloadRestrictedByPolicy(Profile profile) {
-        if (sIsDownloadRestrictedByPolicyForTesting != null) {
-            return sIsDownloadRestrictedByPolicyForTesting;
+        if (sIsDownloadRestrictedByPolicyForTesting != TriState.NOT_SET) {
+            return sIsDownloadRestrictedByPolicyForTesting == TriState.TRUE;
         }
         return DownloadUtilsJni.get().isDownloadRestrictedByPolicy(profile);
     }
 
     public static void setIsDownloadRestrictedByPolicyForTesting(
-            Boolean isDownloadRestrictedByPolicy) {
+            @TriState int isDownloadRestrictedByPolicy) {
         sIsDownloadRestrictedByPolicyForTesting = isDownloadRestrictedByPolicy;
     }
 

@@ -63,6 +63,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.FeatureList;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TriState;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.params.BaseJUnit4RunnerDelegate;
@@ -195,7 +196,7 @@ public class ChromeContextMenuPopulatorTest {
         FeatureList.setDisableNativeForTesting(true);
         ChromeContextMenuPopulator.setIsDefaultBrowserForTesting(false);
         mAutomotiveRule.setIsAutomotive(false);
-        DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(false);
+        DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(TriState.FALSE);
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtils);
         SendTabToSelfAndroidBridgeJni.setInstanceForTesting(mSendTabToSelfAndroidBridgeNatives);
@@ -263,7 +264,7 @@ public class ChromeContextMenuPopulatorTest {
     public void tearDown() {
         IdentityServicesProvider.setInstanceForTests(null);
         DataProtectionBridge.setInstanceForTesting(null);
-        DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(null);
+        DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(TriState.NOT_SET);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ApplicationStatus.resetActivitiesForInstrumentationTests();
@@ -661,7 +662,7 @@ public class ChromeContextMenuPopulatorTest {
     @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testHttpLinkWithDownloadBlockedByPolicy() {
         setAllMandatoryFlowsComplete();
-        DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(true);
+        DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(TriState.TRUE);
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
@@ -1388,7 +1389,7 @@ public class ChromeContextMenuPopulatorTest {
     })
     public void testVideoDownloadVideoFrame_restrictedByPolicy() {
         setAllMandatoryFlowsComplete();
-        DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(true);
+        DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(TriState.TRUE);
         ContextMenuParams params = createVideoParams(ContextMenuDataMediaFlags.MEDIA_NONE);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
@@ -1574,7 +1575,7 @@ public class ChromeContextMenuPopulatorTest {
     })
     public void testVideoLinkWithDownloadBlockedByPolicy() {
         setAllMandatoryFlowsComplete();
-        DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(true);
+        DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(TriState.TRUE);
         GURL sourceUrl = new GURL("http://www.blah.com/");
         GURL url = new GURL(sourceUrl.getSpec() + "I_love_mouse_video.avi");
         ContextMenuParams params =
@@ -2011,7 +2012,7 @@ public class ChromeContextMenuPopulatorTest {
     @UiThreadTest
     public void testImageWithDownloadBlockedByPolicy() {
         setAllMandatoryFlowsComplete();
-        DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(true);
+        DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(TriState.TRUE);
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
@@ -2858,7 +2859,7 @@ public class ChromeContextMenuPopulatorTest {
     public void testPageDownloadRestricted() {
         setAllMandatoryFlowsComplete();
         ContextMenuParams params = getPageParams();
-        DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(true);
+        DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(TriState.TRUE);
 
         int[][] expectedPage = {
             {
