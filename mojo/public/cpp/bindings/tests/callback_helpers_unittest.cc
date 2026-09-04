@@ -43,6 +43,20 @@ void CallClosure(base::OnceClosure cl) {
   std::move(cl).Run();
 }
 
+class ImmobileType {
+ public:
+  explicit ImmobileType(int v) : value(v) {}
+  ImmobileType(const ImmobileType&) = delete;
+  ImmobileType& operator=(const ImmobileType&) = delete;
+  ImmobileType(ImmobileType&&) = delete;
+  ImmobileType& operator=(ImmobileType&&) = delete;
+  int value;
+};
+
+void SetFromImmobile(int* var, const ImmobileType& val) {
+  *var = val.value;
+}
+
 }  // namespace
 
 TEST(CallbackWithDeleteTest, SetIntegers_Run) {
@@ -197,6 +211,188 @@ TEST(CallbackWithDefaultTest, SetString_Destruction) {
         base::BindOnce(&SetString, &a), "hello");
   }
   EXPECT_EQ(a, "hello");
+}
+
+TEST(CallbackWithDefaultInvokeCallbackTest, SetIntegers_Run) {
+  int a = 0;
+  int b = 0;
+  bool default_invoked = false;
+  auto cb = WrapCallbackWithDefaultInvokeCallbackIfNotRun(
+      base::BindOnce(&SetIntegers, &a, &b),
+      base::BindOnce(
+          [](bool* invoked, base::OnceCallback<void(int, int)> callback) {
+            *invoked = true;
+            std::move(callback).Run(3, 4);
+          },
+          &default_invoked));
+  std::move(cb).Run(1, 2);
+  EXPECT_EQ(a, 1);
+  EXPECT_EQ(b, 2);
+  EXPECT_FALSE(default_invoked);
+}
+
+TEST(CallbackWithDefaultInvokeCallbackTest, SetIntegers_Destruction) {
+  int a = 0;
+  int b = 0;
+  bool default_invoked = false;
+  {
+    auto cb = WrapCallbackWithDefaultInvokeCallbackIfNotRun(
+        base::BindOnce(&SetIntegers, &a, &b),
+        base::BindOnce(
+            [](bool* invoked, base::OnceCallback<void(int, int)> callback) {
+              *invoked = true;
+              std::move(callback).Run(3, 4);
+            },
+            &default_invoked));
+  }
+  EXPECT_EQ(a, 3);
+  EXPECT_EQ(b, 4);
+  EXPECT_TRUE(default_invoked);
+}
+
+TEST(CallbackWithDefaultInvokeCallbackTest, ConstRefImmobile_Run) {
+  int result = 0;
+  bool default_invoked = false;
+  auto cb = WrapCallbackWithDefaultInvokeCallbackIfNotRun(
+      base::BindOnce(&SetFromImmobile, &result),
+      base::BindOnce(
+          [](bool* invoked,
+             base::OnceCallback<void(const ImmobileType&)> callback) {
+            *invoked = true;
+            ImmobileType default_val(99);
+            std::move(callback).Run(default_val);
+          },
+          &default_invoked));
+  ImmobileType val(42);
+  std::move(cb).Run(val);
+  EXPECT_EQ(result, 42);
+  EXPECT_FALSE(default_invoked);
+}
+
+TEST(CallbackWithDefaultInvokeCallbackTest, ConstRefImmobile_Destruction) {
+  int result = 0;
+  bool default_invoked = false;
+  {
+    auto cb = WrapCallbackWithDefaultInvokeCallbackIfNotRun(
+        base::BindOnce(&SetFromImmobile, &result),
+        base::BindOnce(
+            [](bool* invoked,
+               base::OnceCallback<void(const ImmobileType&)> callback) {
+              *invoked = true;
+              ImmobileType default_val(99);
+              std::move(callback).Run(default_val);
+            },
+            &default_invoked));
+  }
+  EXPECT_EQ(result, 99);
+  EXPECT_TRUE(default_invoked);
+}
+
+TEST(CallbackWithDefaultInvokeCallbackTest, MoveOnly_Run) {
+  int result = 0;
+  bool default_invoked = false;
+  auto cb = WrapCallbackWithDefaultInvokeCallbackIfNotRun(
+      base::BindOnce(&SetIntegerFromUniquePtr, &result),
+      base::BindOnce(
+          [](bool* invoked,
+             base::OnceCallback<void(std::unique_ptr<int>)> callback) {
+            *invoked = true;
+            std::move(callback).Run(std::make_unique<int>(99));
+          },
+          &default_invoked));
+  std::move(cb).Run(std::make_unique<int>(42));
+  EXPECT_EQ(result, 42);
+  EXPECT_FALSE(default_invoked);
+}
+
+TEST(CallbackWithDefaultInvokeCallbackTest, MoveOnly_Destruction) {
+  int result = 0;
+  bool default_invoked = false;
+  {
+    auto cb = WrapCallbackWithDefaultInvokeCallbackIfNotRun(
+        base::BindOnce(&SetIntegerFromUniquePtr, &result),
+        base::BindOnce(
+            [](bool* invoked,
+               base::OnceCallback<void(std::unique_ptr<int>)> callback) {
+              *invoked = true;
+              std::move(callback).Run(std::make_unique<int>(99));
+            },
+            &default_invoked));
+  }
+  EXPECT_EQ(result, 99);
+  EXPECT_TRUE(default_invoked);
+}
+
+TEST(CallbackWithDefaultInvokeCallbackTest, Closure_Run) {
+  bool ran = false;
+  bool default_invoked = false;
+  auto cb = WrapCallbackWithDefaultInvokeCallbackIfNotRun(
+      base::BindOnce([](bool* r) { *r = true; }, &ran),
+      base::BindOnce(
+          [](bool* invoked, base::OnceClosure callback) {
+            *invoked = true;
+            std::move(callback).Run();
+          },
+          &default_invoked));
+  std::move(cb).Run();
+  EXPECT_TRUE(ran);
+  EXPECT_FALSE(default_invoked);
+}
+
+TEST(CallbackWithDefaultInvokeCallbackTest, Closure_Destruction) {
+  bool ran = false;
+  bool default_invoked = false;
+  {
+    auto cb = WrapCallbackWithDefaultInvokeCallbackIfNotRun(
+        base::BindOnce([](bool* r) { *r = true; }, &ran),
+        base::BindOnce(
+            [](bool* invoked, base::OnceClosure callback) {
+              *invoked = true;
+              std::move(callback).Run();
+            },
+            &default_invoked));
+  }
+  EXPECT_TRUE(ran);
+  EXPECT_TRUE(default_invoked);
+}
+
+TEST(CallbackWithDefaultInvokeCallbackTest, DropsCallbackWithoutRunning) {
+  bool invoked = false;
+  bool default_invoked = false;
+  {
+    auto cb = WrapCallbackWithDefaultInvokeCallbackIfNotRun(
+        base::BindOnce([](bool* run) { *run = true; }, &invoked),
+        base::BindOnce(
+            [](bool* default_run, base::OnceClosure callback) {
+              *default_run = true;
+              // Intentionally drop `callback` without invoking it.
+            },
+            &default_invoked));
+  }
+  EXPECT_FALSE(invoked);
+  EXPECT_TRUE(default_invoked);
+}
+
+TEST(CallbackWithDefaultInvokeCallbackTest, DefersCallbackExecution) {
+  int a = 0;
+  int b = 0;
+  base::OnceCallback<void(int, int)> saved_callback;
+  {
+    auto cb = WrapCallbackWithDefaultInvokeCallbackIfNotRun(
+        base::BindOnce(&SetIntegers, &a, &b),
+        base::BindOnce(
+            [](base::OnceCallback<void(int, int)>* dest,
+               base::OnceCallback<void(int, int)> callback) {
+              *dest = std::move(callback);
+            },
+            &saved_callback));
+  }
+  EXPECT_EQ(a, 0);
+  EXPECT_EQ(b, 0);
+  ASSERT_TRUE(saved_callback);
+  std::move(saved_callback).Run(10, 20);
+  EXPECT_EQ(a, 10);
+  EXPECT_EQ(b, 20);
 }
 
 }  // namespace mojo

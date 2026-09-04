@@ -6,6 +6,7 @@
 #define MOJO_PUBLIC_CPP_BINDINGS_CALLBACK_HELPERS_H_
 
 #include <memory>
+#include <type_traits>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -16,8 +17,9 @@
 // callback is destructed before it has a chance to run (e.g. the callback is
 // bound into a task and the task is dropped), it will be run with the
 // default arguments passed into WrapCallbackWithDefaultInvokeIfNotRun.
-// Alternatively, it will run the delete closure passed to
-// WrapCallbackWithDropHandler.
+// Alternatively, it will invoke the default invoke callback passed to
+// WrapCallbackWithDefaultInvokeCallbackIfNotRun, or run the delete closure
+// passed to WrapCallbackWithDropHandler.
 //
 // These helpers are intended for use on the client side of a mojo interface,
 // where users want to know if their individual callback was dropped (e.g.
@@ -48,6 +50,19 @@
 //  foo->DoWorkAndReturnResult(
 //      WrapCallbackWithDropHandler(base::BindOnce(&Foo::OnResult, this),
 //                         base::BindOnce(&Foo::LogError, this, WAS_DROPPED)));
+//
+// If the callback is destructed without running, it'll run the delete closure.
+//
+//  foo->DoWorkAndReturnResult(
+//      WrapCallbackWithDefaultInvokeCallbackIfNotRun(
+//          base::BindOnce(&Foo::OnResultWithImmobile, this),
+//          base::BindOnce([](base::OnceCallback<void(const Immobile&)> cb) {
+//            Immobile default_val;
+//            std::move(cb).Run(default_val);
+//          })));
+//
+// If the callback is destructed without running, it'll invoke the default
+// invoke callback with the original callback.
 
 namespace mojo {
 namespace internal {
@@ -104,6 +119,44 @@ class CallbackWithDeleteHelper<void(Args...)> {
   base::OnceClosure delete_callback_;
 };
 
+template <typename Signature>
+class CallbackWithDefaultInvokeCallbackHelper;
+
+// Only support callbacks that return void because otherwise it is odd to call
+// the callback in the destructor and drop the return value immediately.
+template <typename... Args>
+class CallbackWithDefaultInvokeCallbackHelper<void(Args...)> {
+ public:
+  using CallbackType = base::OnceCallback<void(Args...)>;
+  using DefaultInvokeCallback = base::OnceCallback<void(CallbackType)>;
+
+  explicit CallbackWithDefaultInvokeCallbackHelper(
+      CallbackType callback,
+      DefaultInvokeCallback default_invoke_callback)
+      : callback_(std::move(callback)),
+        default_invoke_callback_(std::move(default_invoke_callback)) {}
+
+  CallbackWithDefaultInvokeCallbackHelper(
+      const CallbackWithDefaultInvokeCallbackHelper&) = delete;
+  CallbackWithDefaultInvokeCallbackHelper& operator=(
+      const CallbackWithDefaultInvokeCallbackHelper&) = delete;
+
+  ~CallbackWithDefaultInvokeCallbackHelper() {
+    if (default_invoke_callback_) {
+      std::move(default_invoke_callback_).Run(std::move(callback_));
+    }
+  }
+
+  void Run(Args... args) {
+    default_invoke_callback_.Reset();
+    std::move(callback_).Run(std::forward<Args>(args)...);
+  }
+
+ private:
+  CallbackType callback_;
+  DefaultInvokeCallback default_invoke_callback_;
+};
+
 }  // namespace internal
 
 template <typename T, typename... Args>
@@ -122,6 +175,22 @@ inline base::OnceCallback<T> WrapCallbackWithDefaultInvokeIfNotRun(
   return base::BindOnce(&internal::CallbackWithDeleteHelper<T>::Run,
                         std::make_unique<internal::CallbackWithDeleteHelper<T>>(
                             std::move(cb), std::forward<Args>(args)...));
+}
+
+// Wraps `cb` such that if it is destructed before being run,
+// `default_invoke_cb` is invoked with `cb`. This is useful when the fallback
+// arguments are immobile (e.g. non-copyable and non-movable) and cannot be
+// bound eagerly by value into `WrapCallbackWithDefaultInvokeIfNotRun`.
+template <typename T>
+[[nodiscard]] inline base::OnceCallback<T>
+WrapCallbackWithDefaultInvokeCallbackIfNotRun(
+    base::OnceCallback<T> cb,
+    std::type_identity_t<base::OnceCallback<void(base::OnceCallback<T>)>>
+        default_invoke_cb) {
+  return base::BindOnce(
+      &internal::CallbackWithDefaultInvokeCallbackHelper<T>::Run,
+      std::make_unique<internal::CallbackWithDefaultInvokeCallbackHelper<T>>(
+          std::move(cb), std::move(default_invoke_cb)));
 }
 
 }  // namespace mojo
