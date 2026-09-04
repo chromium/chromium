@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_BROWSER_DELEGATE_BROWSER_DELEGATE_IMPL_H_
 
 #include "base/memory/raw_ref.h"
-#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
+#include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 
 class BrowserWindowInterface;
 

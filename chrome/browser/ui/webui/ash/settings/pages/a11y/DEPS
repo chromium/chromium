@@ -11,8 +11,6 @@ include_rules = [
   # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/ash/accessibility",
-  "+chrome/browser/ash/browser_delegate/browser_controller.h",
-  "+chrome/browser/ash/browser_delegate/browser_delegate.h",
   "+chrome/browser/ash/input_method",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/extensions/extension_service.h",

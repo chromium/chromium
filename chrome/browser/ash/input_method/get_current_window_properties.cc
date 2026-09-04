@@ -9,8 +9,8 @@
 #include <optional>
 
 #include "ash/public/cpp/window_properties.h"
-#include "chrome/browser/ash/browser_delegate/browser_controller.h"
-#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
+#include "chromeos/ash/components/browser_delegate/browser_controller.h"
+#include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "components/exo/wm_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/aura/window.h"

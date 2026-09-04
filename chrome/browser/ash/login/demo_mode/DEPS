@@ -16,7 +16,6 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/apps/app_service",
   "+chrome/browser/apps/platform_apps",
-  "+chrome/browser/ash/browser_delegate/browser_controller.h",
   "+chrome/browser/ash/drive",
   "+chrome/browser/ash/file_manager",
   "+chrome/browser/ash/login",
@@ -42,7 +41,6 @@ include_rules = [
 
 specific_include_rules = {
   ".*test(|_.*)\\.(cc|h)": [
-    "+chrome/browser/ash/browser_delegate/browser_delegate.h",
     "+chrome/browser/ash/browser_delegate/browser_controller_impl.h",
     "+chrome/test/base",
   ],

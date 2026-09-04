@@ -4,7 +4,6 @@ specific_include_rules = {
   ],
   "system_web_app_interactive_uitest\\.cc": [
     "+ash/multi_user/multi_user_window_manager.h",
-    "+chrome/browser/ash/browser_delegate/browser_delegate.h",
     "+ash/shell.h",
     "+ash/wm/window_util.h",
   ],

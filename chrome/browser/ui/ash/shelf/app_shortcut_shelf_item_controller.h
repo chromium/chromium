@@ -15,7 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "url/gurl.h"
 
 namespace ash {

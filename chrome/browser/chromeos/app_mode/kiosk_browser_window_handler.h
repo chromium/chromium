@@ -16,8 +16,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_policies.h"
+#include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "components/webapps/common/web_app_id.h"
 
 class Profile;

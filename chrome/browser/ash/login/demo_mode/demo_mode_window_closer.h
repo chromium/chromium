@@ -7,7 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/views/widget/widget_observer.h"

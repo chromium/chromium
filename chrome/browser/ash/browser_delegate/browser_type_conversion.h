@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_BROWSER_DELEGATE_BROWSER_TYPE_CONVERSION_H_
 #define CHROME_BROWSER_ASH_BROWSER_DELEGATE_BROWSER_TYPE_CONVERSION_H_
 
-#include "chrome/browser/ash/browser_delegate/browser_type.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chromeos/ash/components/browser_delegate/browser_type.h"
 
 namespace ash {
 

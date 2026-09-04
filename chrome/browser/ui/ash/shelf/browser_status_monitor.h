@@ -14,9 +14,9 @@
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_instance_registry_helper.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
+#include "chromeos/ash/components/browser_delegate/browser_controller.h"
 
 namespace ash {
 class BrowserDelegate;

@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/ash/boca/chrome_tab_strip_delegate.h"
 
 #include "ash/public/cpp/tab_strip_delegate.h"
-#include "chrome/browser/ash/browser_delegate/browser_controller.h"
-#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
+#include "chromeos/ash/components/browser_delegate/browser_controller.h"
+#include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/favicon_status.h"

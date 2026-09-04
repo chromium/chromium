@@ -22,8 +22,6 @@ include_rules = [
   "+chrome/browser/ash/arc/pip",
   "+chrome/browser/ash/arc/session",
   "+chrome/browser/ash/borealis",
-  "+chrome/browser/ash/browser_delegate/browser_controller.h",
-  "+chrome/browser/ash/browser_delegate/browser_delegate.h",
   "+chrome/browser/ash/bruschetta",
   "+chrome/browser/ash/crostini",
   "+chrome/browser/ash/guest_os",

@@ -7,7 +7,7 @@
 
 #include "base/callback_list.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chromeos/ash/components/browser_delegate/browser_controller.h"
 
 class Profile;
 

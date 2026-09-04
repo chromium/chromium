@@ -11,7 +11,7 @@
 #include "ash/multi_user/multi_user_window_manager_observer.h"
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "components/account_id/account_id.h"
 
 namespace aura {

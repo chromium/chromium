@@ -15,8 +15,6 @@ include_rules = [
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/accessibility",
-  "+chrome/browser/ash/browser_delegate/browser_controller.h",
-  "+chrome/browser/ash/browser_delegate/browser_delegate.h",
   "+chrome/browser/ash/login/users",
   "+chrome/browser/component_updater",
   "+chrome/browser/profiles",

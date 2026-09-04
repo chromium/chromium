@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/ash/desks/chrome_desks_util.h"
 
 #include "base/logging.h"
-#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
+#include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "components/tab_groups/tab_group_info.h"
 
 namespace chrome_desks_util {

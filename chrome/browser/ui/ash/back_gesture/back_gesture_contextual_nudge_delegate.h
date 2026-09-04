@@ -8,7 +8,7 @@
 #include "ash/public/cpp/back_gesture_contextual_nudge_delegate.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/aura/window_observer.h"
 
