@@ -860,6 +860,66 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
             0.0);
 }
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ScrollerOutsideViewportMouseWheelScroll \
+  DISABLED_ScrollerOutsideViewportMouseWheelScroll
+#else
+#define MAYBE_ScrollerOutsideViewportMouseWheelScroll \
+  ScrollerOutsideViewportMouseWheelScroll
+#endif
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
+                       MAYBE_ScrollerOutsideViewportMouseWheelScroll) {
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  const int kOutsideElementLeft = 50;
+  const int kOutsideElementTop = 800;
+  std::string script = base::StringPrintf(
+      R"(
+    document.body.style.margin = '0';
+    document.body.style.height = '3000px';
+    document.body.innerHTML = `
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <div id="scroller" style="width:200px; height:150px; position:absolute;
+           top:%dpx; left:%dpx; overflow-y:scroll;" unbounded>
+        <div style="height:1000px;">Scroller content</div>
+      </div>
+    `;
+    const scroller = document.getElementById('scroller');
+    scroller.showUnboundedElement();
+  )",
+      kOutsideElementTop, kOutsideElementLeft);
+
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(), script));
+  WaitForFrameReady();
+
+  UnboundedSurfaceWindow* window = GetActiveWindow();
+  ASSERT_TRUE(window);
+
+  blink::WebMouseWheelEvent event(blink::WebInputEvent::Type::kMouseWheel,
+                                  blink::WebInputEvent::kNoModifiers,
+                                  base::TimeTicks::Now());
+  event.button = blink::WebMouseEvent::Button::kNoButton;
+  gfx::Rect popup_bounds = window->GetBounds();
+  const int kMouseOffsetX = 50;
+  const int kMouseOffsetY = 50;
+  event.SetPositionInWidget(kMouseOffsetX, kMouseOffsetY);
+  event.SetPositionInScreen(popup_bounds.x() + kMouseOffsetX,
+                            popup_bounds.y() + kMouseOffsetY);
+  event.delta_y = -50.0f;
+  event.wheel_ticks_y = -1.0f;
+  event.phase = blink::WebMouseWheelEvent::kPhaseBegan;
+
+  window->RouteMouseWheelEvent(event);
+  RunUntilInputProcessed(primary_main_frame_host()->GetRenderWidgetHost());
+
+  EXPECT_GT(EvalJs(primary_main_frame_host(),
+                   "document.getElementById('scroller').scrollTop")
+                .ExtractInt(),
+            0);
+  EXPECT_EQ(0, EvalJs(primary_main_frame_host(), "window.scrollY"));
+}
+
 IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
                        InputEventRoutingWithScroll) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));

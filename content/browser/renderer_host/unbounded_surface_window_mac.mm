@@ -107,6 +107,31 @@
 
 namespace content {
 
+namespace {
+
+template <typename T>
+RenderWidgetHostViewMac* TranslateCoordinatesToRoot(
+    RenderWidgetHostViewMac* parent_view,
+    T& web_event) {
+  if (!parent_view) {
+    return nullptr;
+  }
+  auto* root_view =
+      static_cast<RenderWidgetHostViewMac*>(parent_view->GetRootView());
+  if (!root_view) {
+    return nullptr;
+  }
+
+  gfx::Point root_origin = root_view->GetViewBounds().origin();
+  gfx::PointF root_point = web_event.PositionInScreen() -
+                           gfx::Vector2dF(root_origin.x(), root_origin.y());
+  web_event.SetPositionInWidget(root_point.x(), root_point.y());
+
+  return root_view;
+}
+
+}  // namespace
+
 UnboundedSurfaceWindowMac::UnboundedSurfaceWindowMac(
     RenderWidgetHostViewMac* parent_view,
     mojo::PendingAssociatedReceiver<blink::mojom::UnboundedSurfaceHost> host,
@@ -388,13 +413,25 @@ RenderWidgetHostViewBase* UnboundedSurfaceWindowMac::GetParentView() const {
 }
 
 void UnboundedSurfaceWindowMac::RouteMouseEvent(NSEvent* ns_event) {
-  RouteMouseEvent(
-      input::WebMouseEventBuilder::Build(ns_event, window_.contentView));
+  blink::WebMouseEvent web_event =
+      input::WebMouseEventBuilder::Build(ns_event, window_.contentView);
+  RenderWidgetHostViewMac* root_view =
+      TranslateCoordinatesToRoot(parent_view_, web_event);
+  if (!root_view) {
+    return;
+  }
+  root_view->RouteOrProcessMouseEvent(web_event);
 }
 
 void UnboundedSurfaceWindowMac::RouteWheelEvent(NSEvent* ns_event) {
-  RouteMouseWheelEvent(
-      input::WebMouseWheelEventBuilder::Build(ns_event, window_.contentView));
+  blink::WebMouseWheelEvent web_event =
+      input::WebMouseWheelEventBuilder::Build(ns_event, window_.contentView);
+  RenderWidgetHostViewMac* root_view =
+      TranslateCoordinatesToRoot(parent_view_, web_event);
+  if (!root_view) {
+    return;
+  }
+  root_view->RouteOrProcessWheelEvent(web_event);
 }
 
 void UnboundedSurfaceWindowMac::RouteKeyboardEvent(NSEvent* ns_event) {

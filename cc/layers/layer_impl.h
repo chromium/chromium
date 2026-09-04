@@ -559,6 +559,9 @@ class CC_EXPORT LayerImpl {
 
   virtual viz::ViewTransitionElementResourceId ViewTransitionResourceId() const;
 
+  // Returns true if this layer is part of an unbounded element.
+  bool IsUnboundedMember() const;
+
   virtual void SetInInvisibleLayerTree() {}
 
   enum : uint8_t {

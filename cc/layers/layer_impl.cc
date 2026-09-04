@@ -1127,4 +1127,27 @@ viz::ViewTransitionElementResourceId LayerImpl::ViewTransitionResourceId()
   return viz::ViewTransitionElementResourceId();
 }
 
+bool LayerImpl::IsUnboundedMember() const {
+  if (!layer_tree_impl()->settings().enable_unbounded_element) {
+    return false;
+  }
+  const auto* property_trees = GetPropertyTrees();
+  if (!property_trees) {
+    return false;
+  }
+  const auto& effect_tree = property_trees->effect_tree();
+  int i = effect_tree_index();
+  while (i != kInvalidPropertyNodeId) {
+    const auto& node = effect_tree.Node(i);
+    if (node.id == kContentsRootPropertyNodeId) {
+      break;
+    }
+    if (node.render_surface_reason == RenderSurfaceReason::kUnboundedElement) {
+      return true;
+    }
+    i = node.parent_id;
+  }
+  return false;
+}
+
 }  // namespace cc

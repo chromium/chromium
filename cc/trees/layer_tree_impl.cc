@@ -2584,20 +2584,24 @@ static bool PointIsClippedByAncestorClipNode(
   // clip's bounds. Also, the point can be clipped by the content rect of an
   // ancestor render surface.
 
-  // We first check if the point is clipped by viewport.
+  // We first check if the point is clipped by viewport, unless the layer is
+  // part of an unbounded element which extends beyond the viewport.
   const PropertyTrees* property_trees =
       layer->layer_tree_impl()->property_trees();
   const ClipTree& clip_tree = property_trees->clip_tree();
   const TransformTree& transform_tree = property_trees->transform_tree();
-  gfx::Rect clip = gfx::ToEnclosingRect(clip_tree.Node(1).clip);
-  if (!PointHitsRect(screen_space_point, gfx::Transform(), clip, nullptr))
-    return true;
+  if (!layer->IsUnboundedMember()) {
+    gfx::Rect clip = gfx::ToEnclosingRect(clip_tree.Node(1).clip);
+    if (!PointHitsRect(screen_space_point, gfx::Transform(), clip, nullptr)) {
+      return true;
+    }
+  }
 
   for (int id = layer->clip_tree_index(); id > kViewportPropertyNodeId;
        id = clip_tree.Node(id).parent_id) {
     const ClipNode& clip_node = clip_tree.Node(id);
     if (clip_node.AppliesLocalClip()) {
-      clip = gfx::ToEnclosingRect(clip_node.clip);
+      gfx::Rect clip = gfx::ToEnclosingRect(clip_node.clip);
 
       gfx::Transform screen_space_transform =
           transform_tree.ToScreen(clip_node.transform_id);

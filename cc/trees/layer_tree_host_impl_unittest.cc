@@ -15883,6 +15883,25 @@ TEST_P(UnboundedElementTest, UnboundedCompositorFrameExtraction) {
             effect_tree.Node(effect_node_id).render_surface_reason);
 }
 
+TEST_P(UnboundedElementTest, IsUnboundedMember) {
+  auto* root = SetupDefaultRootLayer(gfx::Size(100, 100));
+  auto* unbounded_layer = AddLayerInActiveTree();
+  CopyProperties(root, unbounded_layer);
+
+  EXPECT_FALSE(root->IsUnboundedMember());
+  EXPECT_FALSE(unbounded_layer->IsUnboundedMember());
+
+  EffectNode& effect_node = CreateEffectNode(unbounded_layer);
+  effect_node.render_surface_reason = RenderSurfaceReason::kUnboundedElement;
+
+  EXPECT_FALSE(root->IsUnboundedMember());
+  EXPECT_TRUE(unbounded_layer->IsUnboundedMember());
+
+  auto* child_layer = AddLayerInActiveTree();
+  CopyProperties(unbounded_layer, child_layer);
+  EXPECT_TRUE(child_layer->IsUnboundedMember());
+}
+
 TEST_P(UnboundedElementTest, HasDamageWithUnboundedElementOutsideViewport) {
   // Viewport is 100x100.
   auto* root = SetupDefaultRootLayer(gfx::Size(100, 100));
