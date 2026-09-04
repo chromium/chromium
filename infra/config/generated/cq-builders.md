@@ -94,7 +94,7 @@ builder.
 * [cronet-arm64-gn2bp-debug](https://ci.chromium.org/p/chrome/builders/try/cronet-arm64-gn2bp-debug) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""cronet-arm64-gn2bp-debug""))
 
   Location filters:
-  * [`//components/cronet/gn2bp/.+`](https://cs.chromium.org/chromium/src/components/cronet/gn2bp/)
+  * [`//components/cronet/.+`](https://cs.chromium.org/chromium/src/components/cronet/)
 
 * [internal-cq-builder-verifier](https://ci.chromium.org/p/chrome/builders/try/internal-cq-builder-verifier) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""internal-cq-builder-verifier""))
 
