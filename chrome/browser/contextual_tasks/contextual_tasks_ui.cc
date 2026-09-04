@@ -400,6 +400,17 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddBoolean(
       "voiceSearchCoherenceComposeboxesEnabled",
       SearchboxHandler::GetVoiceSearchCoherenceCobrowsingComposeboxEnabled());
+#if !BUILDFLAG(IS_ANDROID)
+  std::optional<lens::LensOverlayInvocationSource> invocation_source;
+  if (auto* browser = GetBrowser()) {
+    if (auto* controller = LensSearchController::FromTabWebContents(
+            browser->GetTabStripModel()->GetActiveWebContents())) {
+      invocation_source = controller->invocation_source();
+    }
+  }
+  source->AddBoolean("clearAllInputsWhenSubmittingQuery",
+                     ShouldClearAllInputsOnSubmit(invocation_source));
+#endif
 #endif  // BUILDFLAG(ENABLE_WEBUI_CONTEXTUAL_TASKS_COMPOSEBOX)
 
   // Determine and cache tab input support on initialization.
@@ -633,6 +644,7 @@ base::DictValue ContextualTasksUI::GetContextualTasksLoadTimeData(
            contextual_tasks::
                GetContextualTasksAskGTooltipSessionImpressionCap());
   dict.Set("askGCoBrowseEnabled", omnibox::kAskGCoBrowse.Get());
+  dict.Set("clearAllInputsWhenSubmittingQuery", true);
   dict.Set("contextualTasksSidePanelRearchitectureEnabled",
            contextual_tasks::IsContextualTasksSidePanelRearchitectureEnabled());
 
@@ -759,6 +771,19 @@ base::DictValue ContextualTasksUI::GetContextualTasksLoadTimeData(
   AddZeroStateStrings(dict, profile);
 
   return dict;
+}
+
+// static
+bool ContextualTasksUI::ShouldClearAllInputsOnSubmit(
+    std::optional<lens::LensOverlayInvocationSource> invocation_source) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (invocation_source.has_value() &&
+      invocation_source.value() ==
+          lens::LensOverlayInvocationSource::kOmniboxPageAction) {
+    return false;
+  }
+#endif
+  return true;
 }
 
 void ContextualTasksUI::CreatePageHandler(

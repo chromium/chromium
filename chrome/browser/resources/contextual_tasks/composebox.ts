@@ -158,6 +158,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
       useFork_: {type: Boolean},
       smartTabSharingVisible_: {type: Boolean},
       contextManagementInComposeboxEnabled_: {type: Boolean},
+      clearAllInputsWhenSubmittingQuery_: {type: Boolean},
       energyEffectEnabled_: {type: Boolean, reflect: true},
       energyEffectAnimationEnabled_: {type: Boolean, reflect: true},
       glifAnimationState_: {type: String},
@@ -228,6 +229,8 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
       loadTimeData.getBoolean('composeboxSmartTabSharingVisible');
   protected accessor contextManagementInComposeboxEnabled_: boolean =
       loadTimeData.getBoolean('contextManagementInComposeboxEnabled');
+  protected accessor clearAllInputsWhenSubmittingQuery_: boolean =
+      loadTimeData.getBoolean('clearAllInputsWhenSubmittingQuery');
   protected accessor energyEffectEnabled_: boolean =
       loadTimeData.getBoolean('energyEffectEnabled');
   // The use of energyEffectEnabled to set energyEffectAnimationEnabled_ is
