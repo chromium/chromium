@@ -238,8 +238,18 @@ TEST_F(InputProtectionEventHandlerTest, UnprotectedWidgetAllowsEvents) {
   EXPECT_EQ(button_click_count(), 1);
 }
 
+#if BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM64) && !defined(NDEBUG)
+// TODO(crbug.com/464455929): On ARM64 QEMU, there is no native Vulkan support
+// so Vulkan uses SwiftShader. SwiftShader on ARM64 uses LLVM 10, which crashes
+// in debug builds when compiling shaders.
+#define MAYBE_UnprotectedWidgetBlocksClicksWhenOccludedByAlwaysOnTopWindow \
+  DISABLED_UnprotectedWidgetBlocksClicksWhenOccludedByAlwaysOnTopWindow
+#else
+#define MAYBE_UnprotectedWidgetBlocksClicksWhenOccludedByAlwaysOnTopWindow \
+  UnprotectedWidgetBlocksClicksWhenOccludedByAlwaysOnTopWindow
+#endif
 TEST_F(InputProtectionEventHandlerTest,
-       UnprotectedWidgetBlocksClicksWhenOccludedByAlwaysOnTopWindow) {
+       MAYBE_UnprotectedWidgetBlocksClicksWhenOccludedByAlwaysOnTopWindow) {
   // Verify that widget-level input activation protection is not enabled.
   EXPECT_FALSE(widget()->IsInputEventActivationProtectionEnabled());
 
@@ -288,8 +298,18 @@ TEST_F(InputProtectionEventHandlerTest,
   EXPECT_EQ(button_click_count(), 1);
 }
 
+#if BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM64) && !defined(NDEBUG)
+// TODO(crbug.com/464455929): On ARM64 QEMU, there is no native Vulkan support
+// so Vulkan uses SwiftShader. SwiftShader on ARM64 uses LLVM 10, which crashes
+// in debug builds when compiling shaders.
+#define MAYBE_ProtectedWidgetBlocksClicksWhenOccludedByAlwaysOnTopWindow \
+  DISABLED_ProtectedWidgetBlocksClicksWhenOccludedByAlwaysOnTopWindow
+#else
+#define MAYBE_ProtectedWidgetBlocksClicksWhenOccludedByAlwaysOnTopWindow \
+  ProtectedWidgetBlocksClicksWhenOccludedByAlwaysOnTopWindow
+#endif
 TEST_F(InputProtectionEventHandlerTest,
-       ProtectedWidgetBlocksClicksWhenOccludedByAlwaysOnTopWindow) {
+       MAYBE_ProtectedWidgetBlocksClicksWhenOccludedByAlwaysOnTopWindow) {
   // Configure the widget policy to allow input so that blocking is only driven
   // by global occlusion protection.
   EnableInputProtection(/*should_block=*/false);
