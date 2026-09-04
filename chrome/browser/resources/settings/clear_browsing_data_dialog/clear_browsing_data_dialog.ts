@@ -10,9 +10,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/cr_spinner_style.css.js';
 import '../controls/settings_checkbox.js';
-import '../settings_shared.css.js';
 // <if expr="not is_chromeos">
 import './clear_browsing_data_account_indicator.js';
 // </if>
@@ -26,11 +24,12 @@ import {PrefService} from '/shared/settings/prefs2/pref_service.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert, assertNotReached, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {SettingsCheckboxElement} from '../controls/settings_checkbox.js';
 import {loadTimeData} from '../i18n_setup.js';
@@ -38,11 +37,12 @@ import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
 import type {Route} from '../router.js';
-import {RouteObserverMixin} from '../router.js';
+import {RouteObserverMixinLit} from '../router.js';
 
 import type {ClearBrowsingDataBrowserProxy, UpdateSyncStateEvent} from './clear_browsing_data_browser_proxy.js';
 import {BrowsingDataType, ClearBrowsingDataBrowserProxyImpl, TimePeriod} from './clear_browsing_data_browser_proxy.js';
-import {getTemplate} from './clear_browsing_data_dialog.html.js';
+import {getCss} from './clear_browsing_data_dialog.css.js';
+import {getHtml} from './clear_browsing_data_dialog.html.js';
 import {canDeleteAccountData, isSignedIn} from './clear_browsing_data_signin_util.js';
 import type {SettingsClearBrowsingDataTimePickerElement} from './clear_browsing_data_time_picker.js';
 import {getTimePeriodString} from './clear_browsing_data_time_picker.js';
@@ -146,7 +146,10 @@ export function getDataTypePrefName(datatypes: BrowsingDataType) {
 }
 
 const SettingsClearBrowsingDataDialogElementBase =
-    RouteObserverMixin(WebUiListenerMixin(PolymerElement));
+    RouteObserverMixinLit(WebUiListenerMixinLit(CrLitElement));
+
+export type ClearBrowsingDataDialogElement =
+    SettingsClearBrowsingDataDialogElement;
 
 export class SettingsClearBrowsingDataDialogElement extends
     SettingsClearBrowsingDataDialogElementBase {
@@ -154,89 +157,41 @@ export class SettingsClearBrowsingDataDialogElement extends
     return 'settings-clear-browsing-data-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      dataTypesExpanded_: {
-        type: Boolean,
-        value: false,
-      },
-
-      deleteButtonLabel_: {
-        type: String,
-        value: loadTimeData.getString('deleteDataFromDevice'),
-        computed: 'computeDeleteButtonLabel_(syncStatus_.signedInState)',
-      },
-
-      deletingDataAlertString_: {
-        type: String,
-        value: '',
-      },
-
-      isDeletionInProgress_: {
-        type: Boolean,
-        value: false,
-      },
-
-      isNoDatatypeSelected_: {
-        type: Boolean,
-        value: false,
-      },
-
-      isGoogleDse_: {
-        type: Boolean,
-        value: false,
-      },
-
-      otherGoogleDataRowLabel_: {
-        type: String,
-        computed: 'computeOtherGoogleDataRowLabel_(isGoogleDse_)',
-      },
-
-      otherGoogleDataRowSubLabel_: {
-        type: String,
-        computed:
-            'computeOtherGoogleDataRowSubLabel_(syncStatus_.signedInState, isGoogleDse_)',
-      },
-
-      showHistoryDeletionDialog_: {
-        type: Boolean,
-        value: false,
-      },
-
-      showOtherGoogleDataDialog_: {
-        type: Boolean,
-        value: false,
-      },
-
-      expandedBrowsingDataTypeOptionsList_: Array,
-
-      moreBrowsingDataTypeOptionsList_: Array,
-
-      syncStatus_: {
-        type: Object,
-        observer: 'onSyncStatusChanged_',
-      },
+      dataTypesExpanded_: {type: Boolean},
+      deletingDataAlertString_: {type: String},
+      isDeletionInProgress_: {type: Boolean},
+      isNoDatatypeSelected_: {type: Boolean},
+      isGoogleDse_: {type: Boolean},
+      showHistoryDeletionDialog_: {type: Boolean},
+      showOtherGoogleDataDialog_: {type: Boolean},
+      expandedBrowsingDataTypeOptionsList_: {type: Array},
+      moreBrowsingDataTypeOptionsList_: {type: Array},
+      syncStatus_: {type: Object},
     };
   }
 
-  declare private dataTypesExpanded_: boolean;
-  declare private deleteButtonLabel_: string;
-  declare private deletingDataAlertString_: string;
-  declare private isDeletionInProgress_: boolean;
-  declare private isNoDatatypeSelected_: boolean;
-  declare private isGoogleDse_: boolean;
-  declare private otherGoogleDataRowLabel_: boolean;
-  declare private otherGoogleDataRowSubLabel_: boolean;
-  declare private showHistoryDeletionDialog_: boolean;
-  declare private showOtherGoogleDataDialog_: boolean;
-  declare private expandedBrowsingDataTypeOptionsList_:
-      BrowsingDataTypeOption[];
-  declare private moreBrowsingDataTypeOptionsList_: BrowsingDataTypeOption[];
-  declare private syncStatus_: SyncStatus|undefined;
+  protected accessor dataTypesExpanded_: boolean = false;
+  protected accessor deletingDataAlertString_: string = '';
+  protected accessor isDeletionInProgress_: boolean = false;
+  private accessor isNoDatatypeSelected_: boolean = false;
+  private accessor isGoogleDse_: boolean = false;
+  protected accessor showHistoryDeletionDialog_: boolean = false;
+  protected accessor showOtherGoogleDataDialog_: boolean = false;
+  protected accessor expandedBrowsingDataTypeOptionsList_:
+      BrowsingDataTypeOption[] = [];
+  protected accessor moreBrowsingDataTypeOptionsList_:
+      BrowsingDataTypeOption[] = [];
+  private accessor syncStatus_: SyncStatus|undefined;
 
   private clearBrowsingDataBrowserProxy_: ClearBrowsingDataBrowserProxy =
       ClearBrowsingDataBrowserProxyImpl.getInstance();
@@ -245,8 +200,16 @@ export class SettingsClearBrowsingDataDialogElement extends
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
 
-  override ready() {
-    super.ready();
+  override connectedCallback() {
+    super.connectedCallback();
+
+    this.clearBrowsingDataBrowserProxy_.initialize();
+
+    this.setFocusOutlineToVisible_();
+  }
+
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
 
     this.addWebUiListener(
         'browsing-data-counter-text-update',
@@ -271,11 +234,20 @@ export class SettingsClearBrowsingDataDialogElement extends
 
     PrefService.getInstance().whenInitialized().then(() => {
       this.setUpDataTypeOptionLists_();
-      // afterNextRender() is needed to wait for checkbox lists to be populated
-      // via dom-repeat before checking if the delete button should be
-      // disabled.
-      afterNextRender(this, () => this.updateDeleteButtonState_());
+      // Wait for checkbox lists to be populated before checking if the delete
+      // button should be disabled.
+      this.updateComplete.then(() => this.updateDeleteButtonState_());
     });
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('syncStatus_')) {
+      this.onSyncStatusChanged_();
+    }
   }
 
   private updateDseStatus_(isNonGoogleDse: boolean) {
@@ -287,16 +259,12 @@ export class SettingsClearBrowsingDataDialogElement extends
   }
 
   private onSyncStatusChanged_() {
+    if (this.syncStatus_ === undefined) {
+      return;
+    }
+
     this.clearBrowsingDataBrowserProxy_.restartCounters(
         this.$.timePicker.getSelectedTimePeriod());
-  }
-
-  override connectedCallback() {
-    super.connectedCallback();
-
-    this.clearBrowsingDataBrowserProxy_.initialize();
-
-    this.setFocusOutlineToVisible_();
   }
 
   override currentRouteChanged(currentRoute: Route) {
@@ -341,9 +309,10 @@ export class SettingsClearBrowsingDataDialogElement extends
         this.expandedBrowsingDataTypeOptionsList_.map(option => option.prefKey)
             .indexOf(prefName);
     if (expandedListIndex !== -1) {
-      this.set(
-          `expandedBrowsingDataTypeOptionsList_.${expandedListIndex}.subLabel`,
-          text);
+      const item = this.expandedBrowsingDataTypeOptionsList_[expandedListIndex];
+      this.expandedBrowsingDataTypeOptionsList_ =
+          this.expandedBrowsingDataTypeOptionsList_.toSpliced(
+              expandedListIndex, 1, {...item, subLabel: text});
       return;
     }
 
@@ -353,8 +322,10 @@ export class SettingsClearBrowsingDataDialogElement extends
         this.moreBrowsingDataTypeOptionsList_.map(option => option.prefKey)
             .indexOf(prefName);
     assert(moreListIndex !== -1);
-    this.set(
-        `moreBrowsingDataTypeOptionsList_.${moreListIndex}.subLabel`, text);
+    const moreItem = this.moreBrowsingDataTypeOptionsList_[moreListIndex];
+    this.moreBrowsingDataTypeOptionsList_ =
+        this.moreBrowsingDataTypeOptionsList_.toSpliced(
+            moreListIndex, 1, {...moreItem, subLabel: text});
   }
 
   private isSignedIn_() {
@@ -368,19 +339,19 @@ export class SettingsClearBrowsingDataDialogElement extends
             .value;
   }
 
-  private computeDeleteButtonLabel_() {
+  protected computeDeleteButtonLabel_() {
     return canDeleteAccountData(this.syncStatus_) ?
         loadTimeData.getString('clearData') :
         loadTimeData.getString('deleteDataFromDevice');
   }
 
-  private computeOtherGoogleDataRowLabel_() {
+  protected computeOtherGoogleDataRowLabel_() {
     return this.isGoogleDse_ ?
         loadTimeData.getString('manageOtherGoogleDataLabel') :
         loadTimeData.getString('manageOtherDataLabel');
   }
 
-  private computeOtherGoogleDataRowSubLabel_() {
+  protected computeOtherGoogleDataRowSubLabel_() {
     if (loadTimeData.getBoolean('showGlicSettings') && this.isSignedIn_()) {
       return loadTimeData.getString('manageSearchGeminiPasswordsSubLabel');
     }
@@ -392,12 +363,12 @@ export class SettingsClearBrowsingDataDialogElement extends
     return loadTimeData.getString('managePasswordsSubLabel');
   }
 
-  private onTimePeriodChanged_() {
+  protected onSelectedTimePeriodChange_() {
     this.clearBrowsingDataBrowserProxy_.restartCounters(
         this.$.timePicker.getSelectedTimePeriod());
   }
 
-  private onCancelClick_() {
+  protected onCancelClick_() {
     this.$.deleteBrowsingDataDialog.close();
   }
 
@@ -405,7 +376,7 @@ export class SettingsClearBrowsingDataDialogElement extends
    * Triggers browsing data deletion on the selected DataTypes and within the
    * selected TimePeriod.
    */
-  private async onDeleteBrowsingDataClick_() {
+  protected async onDeleteBrowsingDataClick_() {
     this.deletingDataAlertString_ = loadTimeData.getString('clearingData');
     this.isDeletionInProgress_ = true;
 
@@ -448,13 +419,9 @@ export class SettingsClearBrowsingDataDialogElement extends
             'deletionConfirmationToast',
             getTimePeriodString(timePeriod, /*short=*/ false));
 
-    this.dispatchEvent(new CustomEvent('browsing-data-deleted', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        deletionConfirmationText: deletionConfirmationToastLabel,
-      },
-    }));
+    this.fire('browsing-data-deleted', {
+      deletionConfirmationText: deletionConfirmationToastLabel,
+    });
   }
 
   private getSelectedDataTypes_(): string[] {
@@ -476,33 +443,33 @@ export class SettingsClearBrowsingDataDialogElement extends
     this.isNoDatatypeSelected_ = this.getSelectedDataTypes_().length === 0;
   }
 
-  private onShowMoreClick_() {
+  protected onShowMoreClick_() {
     this.dataTypesExpanded_ = true;
     this.metricsBrowserProxy_.recordAction(
         'Settings.DeleteBrowsingData.CheckboxesShowMoreClick');
 
     // Set the focus to the first checkbox in the 'more' options list.
-    afterNextRender(this, () => {
+    this.updateComplete.then(() => {
       const toFocus = this.$.moreOptionsList.querySelector('settings-checkbox');
       assert(toFocus);
       toFocus.focus();
     });
   }
 
-  private shouldHideShowMoreButton_() {
-    return this.dataTypesExpanded_ || !this.moreBrowsingDataTypeOptionsList_ ||
+  protected shouldHideShowMoreButton_(): boolean {
+    return this.dataTypesExpanded_ ||
         this.moreBrowsingDataTypeOptionsList_.length === 0;
   }
 
-  private shouldDisableDeleteButton_(): boolean {
+  protected shouldDisableDeleteButton_(): boolean {
     return this.isDeletionInProgress_ || this.isNoDatatypeSelected_;
   }
 
-  private onHistoryDeletionDialogClose_() {
+  protected onHistoryDeletionDialogClose_() {
     this.showHistoryDeletionDialog_ = false;
   }
 
-  private onManageOtherGoogleDataRowClick_() {
+  protected onManageOtherGoogleDataRowClick_() {
     this.showOtherGoogleDataDialog_ = true;
     this.metricsBrowserProxy_.recordAction(
         'Settings.DeleteBrowsingData.OtherDataEntryPointClick');
@@ -521,14 +488,14 @@ export class SettingsClearBrowsingDataDialogElement extends
     }, {once: true});
   }
 
-  private onOtherGoogleDataDialogClose_(e: Event) {
+  protected onOtherGoogleDataDialogCancel_(e: Event) {
     e.stopPropagation();
     this.showOtherGoogleDataDialog_ = false;
-    afterNextRender(
-        this, () => focusWithoutInk(this.$.manageOtherGoogleDataRow));
+    this.updateComplete.then(
+        () => focusWithoutInk(this.$.manageOtherGoogleDataRow));
   }
 
-  private onCheckboxSubLabelLinkClick_(e: CustomEvent<{id: string}>) {
+  protected onSubLabelLinkClicked_(e: CustomEvent<{id: string}>) {
     // <if expr="not is_chromeos">
     if (e.detail.id === 'signOutLink') {
       this.syncBrowserProxy_.signOut(/*delete_profile=*/ false);

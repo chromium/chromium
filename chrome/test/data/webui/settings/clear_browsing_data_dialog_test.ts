@@ -10,8 +10,8 @@ import type {ClearBrowsingDataResult, SettingsCheckboxElement, SettingsClearBrow
 import {BrowsingDataType, ClearBrowsingDataBrowserProxyImpl, getDataTypePrefName, getTimePeriodString, TimePeriod} from 'chrome://settings/lazy_load.js';
 import {loadTimeData, MetricsBrowserProxyImpl, PrefService, resetRouterForTesting, Router, routes, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestClearBrowsingDataBrowserProxy} from './test_clear_browsing_data_browser_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
@@ -71,13 +71,13 @@ suite('DeleteBrowsingDataDialog', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     dialog = document.createElement('settings-clear-browsing-data-dialog');
     document.body.appendChild(dialog);
-    return waitAfterNextRender(dialog);
+    return microtasksFinished();
   }
 
   function verifyCheckboxesVisibleForDataTypesInOrder(
       datatypes: BrowsingDataType[]) {
     const visibleCheckboxes =
-        dialog.shadowRoot!.querySelectorAll<SettingsCheckboxElement>(
+        dialog.shadowRoot.querySelectorAll<SettingsCheckboxElement>(
             'settings-checkbox');
     assertTrue(!!visibleCheckboxes);
     assertEquals(datatypes.length, visibleCheckboxes.length);
@@ -91,7 +91,7 @@ suite('DeleteBrowsingDataDialog', function() {
   function getCheckboxForDataType(datatype: BrowsingDataType):
       SettingsCheckboxElement|undefined {
     const visibleCheckboxes =
-        dialog.shadowRoot!.querySelectorAll<SettingsCheckboxElement>(
+        dialog.shadowRoot.querySelectorAll<SettingsCheckboxElement>(
             'settings-checkbox');
     assertTrue(!!visibleCheckboxes);
 
@@ -153,7 +153,7 @@ suite('DeleteBrowsingDataDialog', function() {
     assertFalse(historyCheckbox.$.checkbox.disabled);
 
     dialog.$.showMoreButton.click();
-    await waitAfterNextRender(dialog);
+    await microtasksFinished();
 
     const formDataCheckbox = getCheckboxForDataType(BrowsingDataType.FORM_DATA);
     assertTrue(!!formDataCheckbox);
@@ -260,11 +260,11 @@ suite('DeleteBrowsingDataDialog', function() {
     assertTrue(isVisible(dialog.$.showMoreButton));
 
     dialog.$.showMoreButton.click();
-    await waitAfterNextRender(dialog);
+    await microtasksFinished();
     // Verify the focus is not lost after expanding the checkboxes.
     assertEquals(
         dialog.$.moreOptionsList.firstElementChild,
-        dialog.shadowRoot!.activeElement);
+        dialog.shadowRoot.activeElement);
     assertFalse(isVisible(dialog.$.showMoreButton));
   });
 
@@ -278,7 +278,7 @@ suite('DeleteBrowsingDataDialog', function() {
     ]);
 
     dialog.$.showMoreButton.click();
-    await waitAfterNextRender(dialog);
+    await microtasksFinished();
 
     assertEquals(
         'Settings.DeleteBrowsingData.CheckboxesShowMoreClick',
@@ -314,7 +314,7 @@ suite('DeleteBrowsingDataDialog', function() {
     ]);
 
     dialog.$.showMoreButton.click();
-    await waitAfterNextRender(dialog);
+    await microtasksFinished();
     // On show more click, all checkboxes should be visible with the unselected
     // checkboxes at the bottom.
     verifyCheckboxesVisibleForDataTypesInOrder([
@@ -381,7 +381,7 @@ suite('DeleteBrowsingDataDialog', function() {
 
     // Case 2, selection from more checkboxes.
     dialog.$.showMoreButton.click();
-    await waitAfterNextRender(dialog);
+    await microtasksFinished();
 
     // All checkboxes should be visible.
     verifyCheckboxesVisibleForDataTypesInOrder([
@@ -441,7 +441,7 @@ suite('DeleteBrowsingDataDialog', function() {
     ]);
 
     dialog.$.showMoreButton.click();
-    await waitAfterNextRender(dialog);
+    await microtasksFinished();
 
     const formDataCheckbox = getCheckboxForDataType(BrowsingDataType.FORM_DATA);
     assertTrue(!!formDataCheckbox);
@@ -537,7 +537,7 @@ suite('DeleteBrowsingDataDialog', function() {
         'site settings result');
 
     dialog.$.showMoreButton.click();
-    await waitAfterNextRender(dialog);
+    await microtasksFinished();
 
     const siteSettingsCheckbox =
         getCheckboxForDataType(BrowsingDataType.SITE_SETTINGS);
@@ -551,7 +551,7 @@ suite('DeleteBrowsingDataDialog', function() {
 
     // Select datatypes for deletion.
     dialog.$.showMoreButton.click();
-    await waitAfterNextRender(dialog);
+    await microtasksFinished();
     const historyCheckbox = getCheckboxForDataType(BrowsingDataType.HISTORY);
     assertTrue(!!historyCheckbox);
     historyCheckbox.$.checkbox.click();
@@ -753,7 +753,7 @@ suite('DeleteBrowsingDataDialog', function() {
 
   test('NavigationToAndFromOtherGoogleData', async function() {
     let otherGoogleDataDialog =
-        dialog.shadowRoot!.querySelector('settings-other-google-data-dialog');
+        dialog.shadowRoot.querySelector('settings-other-google-data-dialog');
     assertFalse(!!otherGoogleDataDialog);
 
     dialog.$.manageOtherGoogleDataRow.click();
@@ -763,7 +763,7 @@ suite('DeleteBrowsingDataDialog', function() {
         await testMetricsBrowserProxy.whenCalled('recordAction'));
 
     otherGoogleDataDialog =
-        dialog.shadowRoot!.querySelector('settings-other-google-data-dialog');
+        dialog.shadowRoot.querySelector('settings-other-google-data-dialog');
     assertTrue(!!otherGoogleDataDialog);
     assertTrue(otherGoogleDataDialog.$.dialog.open);
     assertTrue(dialog.$.deleteBrowsingDataDialog.hidden);
@@ -780,7 +780,7 @@ suite('DeleteBrowsingDataDialog', function() {
     assertFalse(otherGoogleDataDialog.$.dialog.open);
 
     otherGoogleDataDialog =
-        dialog.shadowRoot!.querySelector('settings-other-google-data-dialog');
+        dialog.shadowRoot.querySelector('settings-other-google-data-dialog');
     assertFalse(!!otherGoogleDataDialog);
     assertTrue(dialog.$.deleteBrowsingDataDialog.open);
     assertFalse(dialog.$.deleteBrowsingDataDialog.hidden);
@@ -806,7 +806,7 @@ suite('DeleteBrowsingDataDialog', function() {
     await flushTasks();
 
     const historyNoticeDialog =
-        dialog.shadowRoot!.querySelector<SettingsHistoryDeletionDialogElement>(
+        dialog.shadowRoot.querySelector<SettingsHistoryDeletionDialogElement>(
             '#historyNotice');
     assertTrue(!!historyNoticeDialog);
 
@@ -821,7 +821,7 @@ suite('DeleteBrowsingDataDialog', function() {
 
     // Verify all dialogs should be closed after closing the history notice
     // dialog.
-    assertFalse(!!dialog.shadowRoot!.querySelector('#historyNotice'));
+    assertFalse(!!dialog.shadowRoot.querySelector('#historyNotice'));
     assertFalse(dialog.$.deleteBrowsingDataDialog.open);
   });
 

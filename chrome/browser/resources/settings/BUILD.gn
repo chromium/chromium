@@ -514,6 +514,7 @@ build_webui("build") {
     "autofill_page/passwords/passwords_shared.css",
     "autofill_page/payments/screen_reader_only.css",
     "clear_browsing_data_dialog/clear_browsing_data_account_indicator.css",
+    "clear_browsing_data_dialog/clear_browsing_data_dialog.css",
     "clear_browsing_data_dialog/clear_browsing_data_time_picker.css",
     "clear_browsing_data_dialog/other_google_data_dialog.css",
     "controls/settings_dropdown_menu.css",

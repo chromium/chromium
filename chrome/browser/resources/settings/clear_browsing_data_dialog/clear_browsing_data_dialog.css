@@ -1,0 +1,110 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #include=settings-shared-lit cr-spinner-style-lit
+ * #import=chrome://resources/cr_elements/cr_spinner_style_lit.css.js
+ * #import=../settings_shared_lit.css.js
+ * #css_wrapper_metadata_end */
+
+:host {
+  --cr-dialog-button-container-padding-bottom: 20px;
+  --cr-dialog-button-container-padding-horizontal: 20px;
+  --cr-dialog-button-container-padding-top: 20px;
+  --cr-dialog-title-font-size: 16px;
+  --cr-dialog-title-slot-padding-bottom: 14px;
+  --cr-section-two-line-min-height: 40px;
+  --dbd-container-border-radius: 12px;
+  --dbd-container-color: var(--cr-fallback-color-surface3);
+  --dbd-container-stacked-border-radius: 4px;
+  --dbd-dialog-body-max-height: 400px;
+  --dbd-dialog-max-height: 600px;
+  --settings-checkbox-margin-top: 8px;
+}
+
+:host-context([webui-refresh-2026]) {
+  --dbd-container-color: var(--color-webui-dialog-container-background);
+}
+
+#checkboxContainer {
+  background-color: var(--dbd-container-color);
+  border-radius: var(--dbd-container-border-radius);
+  padding: 8px var(--cr-section-padding) 12px var(--cr-section-padding);
+}
+
+#checkboxContainer:has(+ #showMoreButton:not([hidden])) {
+  border-bottom-left-radius: var(--dbd-container-stacked-border-radius);
+  border-bottom-right-radius: var(--dbd-container-stacked-border-radius);
+  border-top-left-radius: var(--dbd-container-border-radius);
+  border-top-right-radius: var(--dbd-container-border-radius);
+  margin-bottom: 2px;
+}
+
+#deleteBrowsingDataDialog [slot=header] {
+  padding-bottom: var(--cr-section-padding);
+  padding-inline-end: var(--cr-section-padding);
+  padding-inline-start: var(--cr-section-padding);
+}
+
+#deleteBrowsingDataDialog::part(body-container) {
+  max-height: var(--dbd-dialog-body-max-height);
+}
+
+#deleteBrowsingDataDialog::part(dialog) {
+  max-height: var(--dbd-dialog-max-height);
+}
+
+#deletingDataAlert {
+  clip: rect(0, 0, 0, 0);
+  position: fixed;
+}
+
+#manageOtherGoogleDataRow {
+  border-radius: var(--dbd-container-border-radius);
+  color: var(--cr-primary-text-color);
+  background: var(--dbd-container-color);
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+}
+
+#showMoreButton {
+  --cr-button-background-color: var(--dbd-container-color);
+  --cr-button-height: auto;
+  --cr-button-text-color: var(--cr-primary-text-color);
+  border: none;
+  border-bottom-left-radius: var(--dbd-container-border-radius);
+  border-bottom-right-radius: var(--dbd-container-border-radius);
+  border-top-left-radius: var(--dbd-container-stacked-border-radius);
+  border-top-right-radius: var(--dbd-container-stacked-border-radius);
+  padding: var(--cr-section-vertical-padding) 16px;
+  width: 100%;
+}
+
+#spinner {
+  margin-bottom: auto;
+  margin-inline-end: 16px;
+  margin-top: auto;
+}
+
+.checkbox-title {
+  font-weight: 500;
+}
+
+.dialog-title {
+  font-weight: 500;
+  line-height: 24px;
+}
+
+.row-aligned {
+  align-items: center;
+  display: flex;
+}
+
+settings-clear-browsing-data-account-indicator {
+  margin-inline-end: auto;
+  overflow: hidden;
+}
