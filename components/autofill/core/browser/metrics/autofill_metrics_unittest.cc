@@ -3250,5 +3250,89 @@ TEST_F(AutofillMetricsTest, FormRequirementsAndAvailabilityMetrics) {
       1, 1);
 }
 
+TEST_F(AutofillMetricsTest, ScanCreditCardPromptShown) {
+  base::HistogramTester histogram_tester;
+
+  AutofillMetrics::LogScanCreditCardPromptShown(
+      AutofillMetrics::ScanCreditCardPromptEntryPoint::kKeyboardAccessory,
+      /*is_new_user=*/true);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ScanCreditCardPrompt.NewUser.Shown.EntryPoint",
+      AutofillMetrics::ScanCreditCardPromptEntryPoint::kKeyboardAccessory, 1);
+
+  AutofillMetrics::LogScanCreditCardPromptShown(
+      AutofillMetrics::ScanCreditCardPromptEntryPoint::kBottomsheet,
+      /*is_new_user=*/true);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.ScanCreditCardPrompt.NewUser.Shown.EntryPoint",
+      AutofillMetrics::ScanCreditCardPromptEntryPoint::kBottomsheet, 1);
+
+  AutofillMetrics::LogScanCreditCardPromptShown(
+      AutofillMetrics::ScanCreditCardPromptEntryPoint::kSettingsPage,
+      /*is_new_user=*/false);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ScanCreditCardPrompt.ExistingUser.Shown.EntryPoint",
+      AutofillMetrics::ScanCreditCardPromptEntryPoint::kSettingsPage, 1);
+}
+
+TEST_F(AutofillMetricsTest, ScanCreditCardPromptSelected) {
+  base::HistogramTester histogram_tester;
+
+  AutofillMetrics::LogScanCreditCardPromptSelected(
+      AutofillMetrics::ScanCreditCardPromptEntryPoint::kKeyboardAccessory,
+      /*is_new_user=*/true);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ScanCreditCardPrompt.NewUser.Selected.EntryPoint",
+      AutofillMetrics::ScanCreditCardPromptEntryPoint::kKeyboardAccessory, 1);
+
+  AutofillMetrics::LogScanCreditCardPromptSelected(
+      AutofillMetrics::ScanCreditCardPromptEntryPoint::kBottomsheet,
+      /*is_new_user=*/true);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.ScanCreditCardPrompt.NewUser.Selected.EntryPoint",
+      AutofillMetrics::ScanCreditCardPromptEntryPoint::kBottomsheet, 1);
+
+  AutofillMetrics::LogScanCreditCardPromptSelected(
+      AutofillMetrics::ScanCreditCardPromptEntryPoint::kSettingsPage,
+      /*is_new_user=*/false);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ScanCreditCardPrompt.ExistingUser.Selected.EntryPoint",
+      AutofillMetrics::ScanCreditCardPromptEntryPoint::kSettingsPage, 1);
+}
+
+TEST_F(AutofillMetricsTest, ScanCreditCardScreenType) {
+  base::HistogramTester histogram_tester;
+
+  AutofillMetrics::LogScanCreditCardScreenType(
+      AutofillMetrics::ScanCreditCardScreenType::kUnknown);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.ScanCreditCard.Completed.ScreenType",
+      AutofillMetrics::ScanCreditCardScreenType::kUnknown, 1);
+
+  AutofillMetrics::LogScanCreditCardScreenType(
+      AutofillMetrics::ScanCreditCardScreenType::kOcr);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.ScanCreditCard.Completed.ScreenType",
+      AutofillMetrics::ScanCreditCardScreenType::kOcr, 1);
+
+  AutofillMetrics::LogScanCreditCardScreenType(
+      AutofillMetrics::ScanCreditCardScreenType::kNfc);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.ScanCreditCard.Completed.ScreenType",
+      AutofillMetrics::ScanCreditCardScreenType::kNfc, 1);
+}
+
+TEST_F(AutofillMetricsTest, ScanCreditCardCompletedNewUser) {
+  base::HistogramTester histogram_tester;
+
+  AutofillMetrics::LogScanCreditCardCompletedNewUser(true);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.ScanCreditCard.Completed.NewUser", true, 1);
+
+  AutofillMetrics::LogScanCreditCardCompletedNewUser(false);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.ScanCreditCard.Completed.NewUser", false, 1);
+}
+
 }  // namespace
 }  // namespace autofill::autofill_metrics

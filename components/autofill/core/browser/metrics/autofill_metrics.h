@@ -252,6 +252,26 @@ class AutofillMetrics {
     NUM_SCAN_CREDIT_CARD_PROMPT_METRICS,
   };
 
+  // Entry points for the scan credit card prompt.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class ScanCreditCardPromptEntryPoint {
+    kKeyboardAccessory = 0,
+    kBottomsheet = 1,
+    kSettingsPage = 2,
+    kMaxValue = kSettingsPage,
+  };
+
+  // Screen types for credit card scanner completion.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class ScanCreditCardScreenType {
+    kUnknown = 0,
+    kOcr = 1,
+    kNfc = 2,
+    kMaxValue = kNfc,
+  };
+
   // Cardholder name fix flow prompt metrics.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -605,6 +625,12 @@ class AutofillMetrics {
       bool is_uploading,
       payments::PaymentsAutofillClient::SaveCreditCardOptions options);
   static void LogScanCreditCardPromptMetric(ScanCreditCardPromptMetric metric);
+  static void LogScanCreditCardPromptShown(
+      ScanCreditCardPromptEntryPoint entry_point,
+      bool is_new_user);
+  static void LogScanCreditCardPromptSelected(
+      ScanCreditCardPromptEntryPoint entry_point,
+      bool is_new_user);
   static void LogProgressDialogResultMetric(
       bool is_canceled_by_user,
       AutofillProgressUiType autofill_progress_dialog_type);
@@ -622,6 +648,8 @@ class AutofillMetrics {
   // if the scan was cancelled.
   static void LogScanCreditCardCompleted(base::TimeDelta duration,
                                          bool completed);
+  static void LogScanCreditCardScreenType(ScanCreditCardScreenType screen_type);
+  static void LogScanCreditCardCompletedNewUser(bool is_new_user);
 
   static void LogServerQueryMetric(ServerQueryMetric metric);
 

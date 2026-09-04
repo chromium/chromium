@@ -8478,6 +8478,35 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <summary>Whether a credit card scan was completed or cancelled.</summary>
 </histogram>
 
+<histogram name="Autofill.ScanCreditCard.Completed.NewUser" enum="Boolean"
+    expires_after="2027-08-31">
+  <owner>benphillips@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Credit card scanning allows users to capture card details from a physical
+    card using their device camera (OCR) or NFC to autofill checkout forms or
+    save a card in settings (chrome://settings/payments).
+
+    Logged when a credit card scan completes. Records true if the user did not
+    previously have any saved credit cards in Chrome (new user) and false if the
+    user previously had credit cards.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.ScanCreditCard.Completed.ScreenType"
+    enum="AutofillScanCreditCardScreenType" expires_after="2027-08-31">
+  <owner>benphillips@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Credit card scanning allows users to capture card details from a physical
+    card using their device camera (OCR) or NFC to autofill checkout forms or
+    save a card in settings (chrome://settings/payments).
+
+    Tracks whether the card was scanned with OCR (camera) or NFC (tap). Logged
+    when a credit card scan completes.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.ScanCreditCard.Duration{CreditCardScanSuccess}"
     units="ms" expires_after="2026-10-01">
   <owner>darwinyang@google.com</owner>
@@ -8498,6 +8527,31 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <owner>koerber@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>Usage of the &quot;Scan card&quot; control item.</summary>
+</histogram>
+
+<histogram
+    name="Autofill.ScanCreditCardPrompt.{UserType}.{PromptAction}.EntryPoint"
+    enum="AutofillScanCreditCardPromptEntryPoint" expires_after="2027-08-31">
+  <owner>benphillips@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Credit card scanning allows users to capture details from a physical card
+    using OCR (camera) or NFC, either to fill a web checkout form or to add a
+    card in payment settings (chrome://settings/payments).
+
+    Tracks which entry point was used to interact with the scan card prompt for
+    {UserType}. Logged when the scan card prompt is {PromptAction}.
+  </summary>
+  <token key="UserType">
+    <variant name="ExistingUser"
+        summary="an existing user who has saved credit cards"/>
+    <variant name="NewUser"
+        summary="a new user who does not have saved credit cards"/>
+  </token>
+  <token key="PromptAction">
+    <variant name="Selected" summary="selected"/>
+    <variant name="Shown" summary="shown"/>
+  </token>
 </histogram>
 
 <histogram name="Autofill.ServerCardLinkClicked" enum="AutofillSyncState"
