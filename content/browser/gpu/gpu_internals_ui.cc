@@ -16,7 +16,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
-#include "base/memory/raw_ref.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringize_macros.h"
@@ -566,15 +565,6 @@ std::string GetEncodeProfileLabel(
 base::ListValue GetVideoAcceleratorsInfo() {
   gpu::GPUInfo gpu_info = GpuDataManagerImpl::GetInstance()->GetGPUInfo();
   base::ListValue info;
-
-  struct {
-    const raw_ref<const gpu::VideoDecodeAcceleratorSupportedProfiles>
-        capabilities;
-    std::string name;
-  } kVideoDecoderImplementations[] = {
-      {raw_ref(gpu_info.video_decode_accelerator_supported_profiles),
-       "Decoding"},
-  };
 
   info.Append(display::BuildGpuInfoEntry("Decoding", ""));
   for (const auto& profile :
