@@ -588,16 +588,6 @@
           'isolated_scripts': 'devtools_web_isolated_scripts',
         },
       },
-      'DevTools Linux Fastbuild': {
-        'mixins': [
-          'linux-jammy',
-        ],
-        'additional_compile_targets': ['blink_tests'],
-        'test_suites': {
-          'gtest_tests': 'devtools_gtests',
-          'isolated_scripts': 'devtools_web_isolated_scripts',
-        },
-      },
     },
   },
   {
@@ -1274,15 +1264,6 @@
     'mixins': ['chromium-tester-service-account'],
     'machines': {
       'devtools_frontend_linux_blink_light_rel': {
-        'mixins': [
-          'linux-jammy',
-        ],
-        'test_suites': {
-          'gtest_tests': 'devtools_browser_tests_suite',
-          'isolated_scripts': 'devtools_web_isolated_scripts',
-        },
-      },
-      'devtools_frontend_linux_blink_light_rel_fastbuild': {
         'mixins': [
           'linux-jammy',
         ],

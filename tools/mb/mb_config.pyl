@@ -132,7 +132,6 @@
 
     'client.devtools-frontend.integration': {
       'DevTools Linux': 'release_trybot_blink_do_typecheck_siso',
-      'DevTools Linux Fastbuild': 'release_trybot_blink_siso',
     },
 
     'client.openscreen.chromium': {
@@ -243,7 +242,6 @@
     'tryserver.devtools-frontend': {
       # Align devtools blink builders with chromium linux-rel
       'devtools_frontend_linux_blink_light_rel': 'release_trybot_blink_do_typecheck_siso',
-      'devtools_frontend_linux_blink_light_rel_fastbuild': 'release_trybot_blink_siso',
       'devtools_frontend_linux_blink_rel': 'release_trybot_blink_do_typecheck_siso',
     },
 
