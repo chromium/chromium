@@ -3200,23 +3200,8 @@ INSTANTIATE_TEST_SUITE_P(AutofillInteractiveTest,
                          ::testing::Values(0, 1));
 
 // Tests that in a shadow-DOM-transcending form, Autofill detects labels
-// *outside* of the field's shadow DOM.
-IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestShadowDom,
-                       LabelInHostingDomOfField) {
-  CreateTestProfile();
-  GURL url =
-      embedded_test_server()->GetURL("a.com", "/autofill/shadowdom.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  ASSERT_TRUE(AutofillFlow(JsElement("getNameElement($1)"), this));
-  EXPECT_EQ("Milton C. Waddams", Js("getName($1)"));
-  EXPECT_EQ("4120 Freidrich Lane", Js("getAddress($1)"));
-  EXPECT_EQ("Austin", Js("getCity($1)"));
-  EXPECT_EQ("TX", Js("getState($1)"));
-  EXPECT_EQ("78744", Js("getZip($1)"));
-}
-
-// Tests that in a shadow-DOM-transcending form, Autofill detects labels
-// *inside* of the field's shadow DOM.
+// *inside* of the field's shadow DOM. Labels *outside* of the field's
+// shadow DOM are not expected to be found (removed due to low utility).
 IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestShadowDom,
                        LabelInSameShadowDomAsField) {
   CreateTestProfile();

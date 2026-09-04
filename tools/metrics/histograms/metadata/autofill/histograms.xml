@@ -4527,8 +4527,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     <variant name="DivTable"/>
     <variant name="ForId"/>
     <variant name="ForName"/>
-    <variant name="ForShadowHostId"/>
-    <variant name="ForShadowHostName"/>
     <variant name="LabelTag"/>
     <variant name="LiTag"/>
     <variant name="NoLabel"/>

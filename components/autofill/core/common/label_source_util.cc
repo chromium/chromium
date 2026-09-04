@@ -36,10 +36,6 @@ std::string LabelSourceToString(FormFieldData::LabelSource label_source) {
       return "ForId";
     case FormFieldData::LabelSource::kForName:
       return "ForName";
-    case FormFieldData::LabelSource::kForShadowHostId:
-      return "ForShadowHostId";
-    case FormFieldData::LabelSource::kForShadowHostName:
-      return "ForShadowHostName";
     case FormFieldData::LabelSource::kOverlayingLabel:
       return "OverlayingLabel";
   }
@@ -51,8 +47,6 @@ bool IsLabelHigherQualityThanPlaceholder(
     case FormFieldData::LabelSource::kCombined:
     case FormFieldData::LabelSource::kForId:
     case FormFieldData::LabelSource::kForName:
-    case FormFieldData::LabelSource::kForShadowHostId:
-    case FormFieldData::LabelSource::kForShadowHostName:
     case FormFieldData::LabelSource::kLabelTag:
     case FormFieldData::LabelSource::kPTag:
       return true;

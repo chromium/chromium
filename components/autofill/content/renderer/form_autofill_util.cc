@@ -91,20 +91,6 @@ using blink::WebString;
 
 namespace autofill::form_util {
 
-struct ShadowFieldData {
-  ShadowFieldData() = default;
-  ShadowFieldData(ShadowFieldData&& other) = default;
-  ShadowFieldData& operator=(ShadowFieldData&& other) = default;
-  ShadowFieldData(const ShadowFieldData& other) = delete;
-  ShadowFieldData& operator=(const ShadowFieldData& other) = delete;
-  ~ShadowFieldData() = default;
-
-  // If the form control is inside shadow DOM, then these lists will contain
-  // id and name attributes of the parent shadow host elements. There may be
-  // more than one if the form control is in nested shadow DOM.
-  std::vector<std::u16string> shadow_host_id_attributes;
-  std::vector<std::u16string> shadow_host_name_attributes;
-};
 
 namespace {
 
@@ -1436,56 +1422,40 @@ void PreviewFormField(const FormFieldData::FillData& data,
 // pointer.
 struct CompareByRendererId {
   using is_transparent = void;
-  bool operator()(const std::pair<FormFieldData*, ShadowFieldData>& f,
-                  const std::pair<FormFieldData*, ShadowFieldData>& g) const {
-    DCHECK(f.first && g.first);
-    return f.first->renderer_id() < g.first->renderer_id();
+  bool operator()(const FormFieldData* f, const FormFieldData* g) const {
+    DCHECK(f && g);
+    return f->renderer_id() < g->renderer_id();
   }
-  bool operator()(const FieldRendererId f,
-                  const std::pair<FormFieldData*, ShadowFieldData>& g) const {
-    DCHECK(g.first);
-    return f < g.first->renderer_id();
+  bool operator()(FieldRendererId f, const FormFieldData* g) const {
+    DCHECK(g);
+    return f < g->renderer_id();
   }
-  bool operator()(const std::pair<FormFieldData*, ShadowFieldData>& f,
-                  FieldRendererId g) const {
-    DCHECK(f.first);
-    return f.first->renderer_id() < g;
+  bool operator()(const FormFieldData* f, FieldRendererId g) const {
+    DCHECK(f);
+    return f->renderer_id() < g;
   }
 };
 
-// Searches |fields| for a unique field with name |field_name|. If there is
-// none or more than one field with that name, the fields' shadow hosts' name
-// and id attributes are tested, and the first match is returned. Returns
-// nullptr if no match was found.
+// Searches `fields` for a unique field with name `field_name`. Returns
+// nullptr if no match was found or when there were multiple matches.
 FormFieldData* SearchForFormControlByName(
     const std::u16string& field_name,
-    base::span<const std::pair<FormFieldData*, ShadowFieldData>> fields,
+    base::span<FormFieldData* const> fields,
     LabelSource& label_source) {
   if (field_name.empty())
     return nullptr;
 
-  auto get_field_name = [](const auto& p) { return p.first->name(); };
+  auto get_field_name = [](const FormFieldData* field) {
+    return field->name();
+  };
   auto it = std::ranges::find(fields, field_name, get_field_name);
-  auto end = fields.end();
-  if (it == end ||
-      std::ranges::find(it + 1, end, field_name, get_field_name) != end) {
-    auto ShadowHostHasTargetName = [&](const auto& p) {
-      return std::ranges::contains(p.second.shadow_host_name_attributes,
-                                   field_name) ||
-             std::ranges::contains(p.second.shadow_host_id_attributes,
-                                   field_name);
-    };
-    it = std::ranges::find_if(fields, ShadowHostHasTargetName);
-    if (it != end) {
-      label_source = std::ranges::contains(
-                         it->second.shadow_host_name_attributes, field_name)
-                         ? LabelSource::kForShadowHostName
-                         : LabelSource::kForShadowHostId;
-    }
-  } else {
-    label_source = LabelSource::kForName;
+  if (it == fields.end() ||
+      std::ranges::contains(it + 1, fields.end(), field_name, get_field_name)) {
+    return nullptr;
   }
-  return it != end ? it->first : nullptr;
+
+  label_source = LabelSource::kForName;
+  return *it;
 }
 
 // Considers all <label> descendents of `root`, looks at their corresponding
@@ -1493,27 +1463,18 @@ FormFieldData* SearchForFormControlByName(
 // control is either a descendent of the label or an input specified by id in
 // the label's for-attribute.
 // In case no corresponding control exists, but a for-attribute is specified,
-// we look for fields with matching name as a fallback. Moreover, the ids and
-// names of shadow root ancestors of the fields are considered as a fallback.
+// we look for fields with matching name as a fallback.
 void MatchLabelsAndFields(const WebDocument& root,
-                          base::span<FormFieldData> fields,
-                          std::vector<ShadowFieldData> shadow_fields) {
-  CHECK_EQ(fields.size(), shadow_fields.size());
-
+                          base::span<FormFieldData> fields) {
   if (fields.empty()) {
     // Performance optimization: If there are no fields, the below is a no-op.
     return;
   }
 
-  base::flat_set<std::pair<FormFieldData*, ShadowFieldData>,
-                 CompareByRendererId>
-      field_set = [&] {
-        std::vector<std::pair<FormFieldData*, ShadowFieldData>> items;
-        for (size_t i = 0; i < fields.size(); ++i) {
-          items.emplace_back(&fields[i], std::move(shadow_fields[i]));
-        }
-        return items;
-      }();
+  auto field_set =
+      base::MakeFlatSet<FormFieldData*, CompareByRendererId>(
+          fields, CompareByRendererId(),
+          [](FormFieldData& field) { return &field; });
 
   WebElementCollection labels =
       root.GetElementsByHTMLTagName(GetWebString<kLabel>());
@@ -1540,7 +1501,7 @@ void MatchLabelsAndFields(const WebDocument& root,
       auto iter = field_set.find(GetFieldRendererId(form_control));
       if (iter == field_set.end())
         continue;
-      field_data = iter->first;
+      field_data = *iter;
     }
 
     // Skip `label` if we could not find an associated form control.
@@ -1896,8 +1857,7 @@ void WebFormControlElementToFormField(
     const WebFormElement& form_element,
     const WebFormControlElement& element,
     const FieldDataManager* field_data_manager,
-    FormFieldData* field,
-    ShadowFieldData* shadow_data) {
+    FormFieldData* field) {
   DCHECK(field);
   DCHECK(element);
   DCHECK(element.GetDocument().GetFrame());
@@ -1980,15 +1940,6 @@ void WebFormControlElementToFormField(
        host && levels_up > 0 && form_element &&
        form_element.OwnerShadowHost() != host;
        host = host.OwnerShadowHost(), --levels_up) {
-    std::u16string shadow_host_id = host.GetIdAttribute().Utf16();
-    if (shadow_data && !shadow_host_id.empty()) {
-      shadow_data->shadow_host_id_attributes.push_back(shadow_host_id);
-    }
-    std::u16string shadow_host_name = GetAttribute<kName>(host).Utf16();
-    if (shadow_data && !shadow_host_name.empty()) {
-      shadow_data->shadow_host_name_attributes.push_back(shadow_host_name);
-    }
-
     if (field->id_attribute().empty()) {
       field->set_id_attribute(host.GetIdAttribute().Utf16());
     }
@@ -2139,10 +2090,8 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
   //   set to the correct value, but `child_frames[i].token` is not initialized
   //   yet.
   std::vector<FormFieldData> fields;
-  std::vector<ShadowFieldData> shadow_fields;
   std::vector<FrameTokenWithPredecessor> child_frames;
   fields.reserve(control_elements.size());
-  shadow_fields.reserve(control_elements.size());
   child_frames.resize(iframe_elements.size());
   size_t next_iframe = 0;
   for (const WebFormControlElement& control_element : control_elements) {
@@ -2150,10 +2099,8 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
     DCHECK(IsAutofillableElement(control_element));
 
     fields.emplace_back();
-    shadow_fields.emplace_back();
     WebFormControlElementToFormField(form_element, control_element,
-                                     &field_data_manager, &fields.back(),
-                                     &shadow_fields.back());
+                                     &field_data_manager, &fields.back());
 
     // Finds the last frame that precedes |control_element|.
     while (next_iframe < iframe_elements.size() &&
@@ -2179,7 +2126,7 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
   // `field_set` built below.
   // Iterating through the fields and looking at their `WebElement::Labels()`
   // unfortunately doesn't scale, as each call corresponds to a DOM traversal.
-  MatchLabelsAndFields(document, fields, std::move(shadow_fields));
+  MatchLabelsAndFields(document, fields);
 
   // Infers field labels from other tags or <labels> without for="...".
   InferLabelForElements(control_elements, fields);
@@ -2469,8 +2416,8 @@ std::optional<FormAndField> FindFormAndFieldForFormControlElement(
     // If we couldn't extract the form, ignore the fields other than `element`.
     // This gives Autocomplete and other handlers the chance to handle it.
     FormFieldData field;
-    WebFormControlElementToFormField(owning_form, element, nullptr, &field,
-                                     /*shadow_data=*/nullptr);
+    WebFormControlElementToFormField(owning_form, element,
+                                     /*field_data_manager=*/nullptr, &field);
     form.emplace();
     form->set_renderer_id(GetFormRendererId(owning_form));
     form->set_fields({std::move(field)});
@@ -3136,8 +3083,7 @@ void WebFormControlElementToFormFieldForTesting(  // IN-TEST
     const FieldDataManager* field_data_manager,
     FormFieldData* field) {
   WebFormControlElementToFormField(form_element, element, field_data_manager,
-                                   field,
-                                   /*shadow_data=*/nullptr);
+                                   field);
 }
 
 std::vector<SelectOption> GetDataListOptionsForTesting(  // IN-TEST
