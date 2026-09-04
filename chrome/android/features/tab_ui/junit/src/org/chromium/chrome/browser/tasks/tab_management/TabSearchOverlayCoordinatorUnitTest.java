@@ -84,6 +84,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.searchwidget.SearchUiCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
@@ -417,6 +418,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
 
     @Test
     public void testLoadUrl_regular() {
+        when(mTabModel.getCount()).thenReturn(3);
         showOverlay();
         verifySearchUiCoordinatorInitialized();
 
@@ -441,10 +443,16 @@ public class TabSearchOverlayCoordinatorUnitTest {
         assertTrue(
                 intent.getBooleanExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, false));
         assertFalse(intent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false));
+        assertEquals(
+                3, intent.getIntExtra(IntentHandler.EXTRA_TAB_INDEX, TabModel.INVALID_TAB_INDEX));
+        assertEquals(
+                Integer.valueOf(TabLaunchType.FROM_OMNIBOX),
+                IntentHandler.getTabLaunchType(intent));
     }
 
     @Test
     public void testLoadUrl_incognito() {
+        when(mTabModel.getCount()).thenReturn(5);
         showOverlay();
         verifySearchUiCoordinatorInitialized();
 
@@ -469,6 +477,36 @@ public class TabSearchOverlayCoordinatorUnitTest {
         assertTrue(
                 intent.getBooleanExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, false));
         assertTrue(intent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false));
+        assertEquals(
+                5, intent.getIntExtra(IntentHandler.EXTRA_TAB_INDEX, TabModel.INVALID_TAB_INDEX));
+        assertEquals(
+                Integer.valueOf(TabLaunchType.FROM_OMNIBOX),
+                IntentHandler.getTabLaunchType(intent));
+    }
+
+    @Test
+    public void testLoadUrl_nullModel() {
+        when(mTabModelSelector.getModel(false)).thenReturn(null);
+        showOverlay();
+        verifySearchUiCoordinatorInitialized();
+
+        OverrideUrlLoadingDelegate delegate = mOverrideUrlLoadingDelegateCaptor.getValue();
+        OmniboxLoadUrlParams params =
+                new OmniboxLoadUrlParams.Builder(
+                                "https://www.google.com/search?q=test", PageTransition.TYPED)
+                        .build();
+        boolean handled = delegate.willHandleLoadUrlWithPostData(params, /* incognito= */ false);
+        assertTrue(handled);
+        assertFalse(mCoordinator.isVisible());
+
+        Intent intent = Shadows.shadowOf(mActivity).getNextStartedActivity();
+        assertNotNull(intent);
+        assertEquals(
+                TabModel.INVALID_TAB_INDEX,
+                intent.getIntExtra(IntentHandler.EXTRA_TAB_INDEX, TabModel.INVALID_TAB_INDEX));
+        assertEquals(
+                Integer.valueOf(TabLaunchType.FROM_OMNIBOX),
+                IntentHandler.getTabLaunchType(intent));
     }
 
     @Test

@@ -68,6 +68,7 @@ import org.chromium.chrome.browser.searchwidget.SearchActivityUtils;
 import org.chromium.chrome.browser.searchwidget.SearchBoxDataProvider;
 import org.chromium.chrome.browser.searchwidget.SearchUiCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
@@ -620,6 +621,19 @@ public class TabSearchOverlayCoordinator
         if (isIncognito) {
             intent.putExtra(Browser.EXTRA_APPLICATION_ID, mActivity.getPackageName());
         }
+
+        // Ensure new tabs opened from search suggestions are appended to the end of the tab
+        // strip rather than inserted adjacent to the active tab. If an existing tab matches the
+        // URL, REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB causes Chrome to switch to it in place, so this
+        // insertion index only applies when a new tab must be created.
+        TabModelSelector selector = mTabModelSelectorSupplier.get();
+        if (selector != null) {
+            TabModel tabModel = selector.getModel(isIncognito);
+            if (tabModel != null) {
+                intent.putExtra(IntentHandler.EXTRA_TAB_INDEX, tabModel.getCount());
+            }
+        }
+        IntentHandler.setTabLaunchType(intent, TabLaunchType.FROM_OMNIBOX);
 
         // Add trusted intent extras so Chrome trusts the incognito launch request
         IntentUtils.addTrustedIntentExtras(intent);
