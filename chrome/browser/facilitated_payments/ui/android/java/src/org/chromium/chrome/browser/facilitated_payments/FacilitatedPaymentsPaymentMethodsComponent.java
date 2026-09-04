@@ -60,12 +60,6 @@ interface FacilitatedPaymentsPaymentMethodsComponent {
          */
         void onPaymentAppSelected(String packageName, String activityName);
 
-        /** Called whenever the Pix account linking prompt is accepted. */
-        void onPixAccountLinkingPromptAccepted();
-
-        /** Called whenever the Pix account linking prompt is declined. */
-        void onPixAccountLinkingPromptDeclined();
-
         /** Called whenever an account linking prompt is shown. */
         void onAccountLinkingPromptShown(@FacilitatedPaymentsType int type);
 

@@ -1530,20 +1530,146 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
                 .get(ACCEPT_BUTTON_CALLBACK)
                 .onClick(null);
 
-        verify(mDelegateMock).onPixAccountLinkingPromptAccepted();
+        verify(mDelegateMock)
+                .onAccountLinkingPromptAction(
+                        FacilitatedPaymentsType.PIX, AccountLinkingPromptUserAction.ACCEPTED);
     }
 
     @Test
     public void testDecliningPixAccountLinkingPromptInformsDelegate() {
         mCoordinator.showPixAccountLinkingPrompt(0, TestAccounts.ACCOUNT1.getEmail());
 
-        // Simulate clicking the accept button.
+        // Simulate clicking the decline button.
         mFacilitatedPaymentsPaymentMethodsModel
                 .get(SCREEN_VIEW_MODEL)
                 .get(DECLINE_BUTTON_CALLBACK)
                 .onClick(null);
 
-        verify(mDelegateMock).onPixAccountLinkingPromptDeclined();
+        verify(mDelegateMock)
+                .onAccountLinkingPromptAction(
+                        FacilitatedPaymentsType.PIX, AccountLinkingPromptUserAction.DECLINED);
+    }
+
+    @Test
+    public void testShowingPixAccountLinkingPromptInformsDelegate() {
+        mCoordinator.showPixAccountLinkingPrompt(0, TestAccounts.ACCOUNT1.getEmail());
+
+        verify(mDelegateMock).onAccountLinkingPromptShown(FacilitatedPaymentsType.PIX);
+        verify(mDelegateMock).onUiEvent(UiEvent.NEW_SCREEN_SHOWN);
+    }
+
+    @Test
+    public void testDismissingPixAccountLinkingPromptInformsDelegate() {
+        mCoordinator.showPixAccountLinkingPrompt(0, TestAccounts.ACCOUNT1.getEmail());
+
+        mFacilitatedPaymentsPaymentMethodsModel
+                .get(UI_EVENT_LISTENER)
+                .onResult(UiEvent.SCREEN_CLOSED_BY_USER);
+
+        verify(mDelegateMock)
+                .onAccountLinkingPromptAction(
+                        FacilitatedPaymentsType.PIX, AccountLinkingPromptUserAction.DISMISSED);
+        verify(mDelegateMock).onUiEvent(UiEvent.SCREEN_CLOSED_BY_USER);
+    }
+
+    @Test
+    public void testShowPixAccountLinkingPrompt_FailedToShow_UiEventRelayed() {
+        Mockito.when(
+                        mBottomSheetController.requestShowContent(
+                                any(BottomSheetContent.class), anyBoolean()))
+                .thenReturn(false);
+
+        mCoordinator.showPixAccountLinkingPrompt(0, TestAccounts.ACCOUNT1.getEmail());
+
+        verify(mDelegateMock).onUiEvent(UiEvent.SCREEN_COULD_NOT_BE_SHOWN);
+    }
+
+    @Test
+    public void testAcceptingPixAccountLinkingPromptMultipleTimesInformsDelegateOnce() {
+        mCoordinator.showPixAccountLinkingPrompt(0, TestAccounts.ACCOUNT1.getEmail());
+
+        // Simulate clicking the accept button multiple times.
+        mFacilitatedPaymentsPaymentMethodsModel
+                .get(SCREEN_VIEW_MODEL)
+                .get(ACCEPT_BUTTON_CALLBACK)
+                .onClick(null);
+        mFacilitatedPaymentsPaymentMethodsModel
+                .get(SCREEN_VIEW_MODEL)
+                .get(ACCEPT_BUTTON_CALLBACK)
+                .onClick(null);
+
+        verify(mDelegateMock, times(1))
+                .onAccountLinkingPromptAction(
+                        FacilitatedPaymentsType.PIX, AccountLinkingPromptUserAction.ACCEPTED);
+    }
+
+    @Test
+    public void testDecliningPixAccountLinkingPromptMultipleTimesInformsDelegateOnce() {
+        mCoordinator.showPixAccountLinkingPrompt(0, TestAccounts.ACCOUNT1.getEmail());
+
+        // Simulate clicking the decline button multiple times.
+        mFacilitatedPaymentsPaymentMethodsModel
+                .get(SCREEN_VIEW_MODEL)
+                .get(DECLINE_BUTTON_CALLBACK)
+                .onClick(null);
+        mFacilitatedPaymentsPaymentMethodsModel
+                .get(SCREEN_VIEW_MODEL)
+                .get(DECLINE_BUTTON_CALLBACK)
+                .onClick(null);
+
+        verify(mDelegateMock, times(1))
+                .onAccountLinkingPromptAction(
+                        FacilitatedPaymentsType.PIX, AccountLinkingPromptUserAction.DECLINED);
+    }
+
+    @Test
+    public void testAcceptingPixPromptThenClosingDoesNotLogDismissed() {
+        mCoordinator.showPixAccountLinkingPrompt(0, TestAccounts.ACCOUNT1.getEmail());
+
+        // Simulate clicking the accept button.
+        mFacilitatedPaymentsPaymentMethodsModel
+                .get(SCREEN_VIEW_MODEL)
+                .get(ACCEPT_BUTTON_CALLBACK)
+                .onClick(null);
+
+        // Simulate the bottom sheet closing immediately after.
+        mFacilitatedPaymentsPaymentMethodsModel
+                .get(UI_EVENT_LISTENER)
+                .onResult(UiEvent.SCREEN_CLOSED_BY_USER);
+
+        // Verify that ACCEPTED is logged exactly once, and DISMISSED is never logged.
+        verify(mDelegateMock, times(1))
+                .onAccountLinkingPromptAction(
+                        FacilitatedPaymentsType.PIX, AccountLinkingPromptUserAction.ACCEPTED);
+        verify(mDelegateMock, never())
+                .onAccountLinkingPromptAction(
+                        FacilitatedPaymentsType.PIX, AccountLinkingPromptUserAction.DISMISSED);
+        verify(mDelegateMock).onUiEvent(UiEvent.SCREEN_CLOSED_BY_USER);
+    }
+
+    @Test
+    public void testDecliningPixPromptThenClosingDoesNotLogDismissed() {
+        mCoordinator.showPixAccountLinkingPrompt(0, TestAccounts.ACCOUNT1.getEmail());
+
+        // Simulate clicking the decline button.
+        mFacilitatedPaymentsPaymentMethodsModel
+                .get(SCREEN_VIEW_MODEL)
+                .get(DECLINE_BUTTON_CALLBACK)
+                .onClick(null);
+
+        // Simulate the bottom sheet closing immediately after.
+        mFacilitatedPaymentsPaymentMethodsModel
+                .get(UI_EVENT_LISTENER)
+                .onResult(UiEvent.SCREEN_CLOSED_BY_USER);
+
+        // Verify that DECLINED is logged exactly once, and DISMISSED is never logged.
+        verify(mDelegateMock, times(1))
+                .onAccountLinkingPromptAction(
+                        FacilitatedPaymentsType.PIX, AccountLinkingPromptUserAction.DECLINED);
+        verify(mDelegateMock, never())
+                .onAccountLinkingPromptAction(
+                        FacilitatedPaymentsType.PIX, AccountLinkingPromptUserAction.DISMISSED);
+        verify(mDelegateMock).onUiEvent(UiEvent.SCREEN_CLOSED_BY_USER);
     }
 
     @Test

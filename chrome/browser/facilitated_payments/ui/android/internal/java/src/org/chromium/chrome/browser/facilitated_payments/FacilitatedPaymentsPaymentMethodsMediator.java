@@ -322,19 +322,26 @@ class FacilitatedPaymentsPaymentMethodsMediator implements SnackbarController {
     }
 
     public void onUiEvent(@UiEvent int uiEvent) {
-        mDelegate.onUiEvent(uiEvent);
-        if (mModel.get(SCREEN) == EWALLET_ACCOUNT_LINKING_PROMPT) {
+        int screen = mModel.get(SCREEN);
+        if (screen == EWALLET_ACCOUNT_LINKING_PROMPT || screen == PIX_ACCOUNT_LINKING_PROMPT) {
+            int fopType =
+                    screen == EWALLET_ACCOUNT_LINKING_PROMPT
+                            ? FacilitatedPaymentsType.EWALLET
+                            : FacilitatedPaymentsType.PIX;
             if (uiEvent == UiEvent.NEW_SCREEN_SHOWN) {
-                mDelegate.onAccountLinkingPromptShown(FacilitatedPaymentsType.EWALLET);
+                mDelegate.onAccountLinkingPromptShown(fopType);
             } else if (uiEvent == UiEvent.SCREEN_CLOSED_BY_USER) {
-                if (mActionAlreadyTaken) return;
-                mDelegate.onAccountLinkingPromptAction(
-                        FacilitatedPaymentsType.EWALLET, AccountLinkingPromptUserAction.DISMISSED);
+                if (!mActionAlreadyTaken) {
+                    mDelegate.onAccountLinkingPromptAction(
+                            fopType, AccountLinkingPromptUserAction.DISMISSED);
+                }
             }
         }
+        mDelegate.onUiEvent(uiEvent);
     }
 
     void showPixAccountLinkingPrompt(int strikeCount, String accountEmail) {
+        mActionAlreadyTaken = false;
         // Set {@link VISIBLE_STATE} to the placeholder state which is a no-op, and then update the
         // screen to the Pix account linking prompt. Finally update {@link VISIBLE_STATE} to show
         // the new screen.
@@ -343,9 +350,25 @@ class FacilitatedPaymentsPaymentMethodsMediator implements SnackbarController {
         // Set Pix account linking prompt properties and show the prompt.
         mModel.get(SCREEN_VIEW_MODEL).set(ACCOUNT_EMAIL, accountEmail);
         mModel.get(SCREEN_VIEW_MODEL)
-                .set(ACCEPT_BUTTON_CALLBACK, v -> mDelegate.onPixAccountLinkingPromptAccepted());
+                .set(
+                        ACCEPT_BUTTON_CALLBACK,
+                        v -> {
+                            if (mActionAlreadyTaken) return;
+                            mActionAlreadyTaken = true;
+                            mDelegate.onAccountLinkingPromptAction(
+                                    FacilitatedPaymentsType.PIX,
+                                    AccountLinkingPromptUserAction.ACCEPTED);
+                        });
         mModel.get(SCREEN_VIEW_MODEL)
-                .set(DECLINE_BUTTON_CALLBACK, v -> mDelegate.onPixAccountLinkingPromptDeclined());
+                .set(
+                        DECLINE_BUTTON_CALLBACK,
+                        v -> {
+                            if (mActionAlreadyTaken) return;
+                            mActionAlreadyTaken = true;
+                            mDelegate.onAccountLinkingPromptAction(
+                                    FacilitatedPaymentsType.PIX,
+                                    AccountLinkingPromptUserAction.DECLINED);
+                        });
         int declineStringId =
                 strikeCount < STRIKE_THRESHOLD_FOR_HARD_DECLINE
                         ? R.string.pix_account_linking_prompt_decline_first_two_times

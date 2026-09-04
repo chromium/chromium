@@ -141,8 +141,15 @@ void FacilitatedPaymentsController::ShowPixAccountLinkingPrompt(
     const std::string& account_email,
     base::OnceCallback<void()> on_accepted,
     base::OnceCallback<void()> on_declined) {
-  on_pix_account_linking_prompt_accepted_ = std::move(on_accepted);
-  on_pix_account_linking_prompt_declined_ = std::move(on_declined);
+  if (is_prompt_showing_) {
+    payments::facilitated::LogAccountLinkingPromptFailedToShow(
+        payments::facilitated::FacilitatedPaymentsType::kPix);
+    return;
+  }
+  is_prompt_showing_ = true;
+  account_linking_prompt_shown_time_ = base::TimeTicks::Now();
+  on_accepted_callback_ = std::move(on_accepted);
+  on_declined_callback_ = std::move(on_declined);
   view_->ShowPixAccountLinkingPrompt(strike_count, account_email);
 }
 
@@ -177,20 +184,6 @@ void FacilitatedPaymentsController::ShowAccountLinkingFailureNotification(
   view_->ShowAccountLinkingFailureNotification(fop_type);
 }
 
-void FacilitatedPaymentsController::OnPixAccountLinkingPromptAccepted(
-    JNIEnv* env) {
-  if (on_pix_account_linking_prompt_accepted_) {
-    std::move(on_pix_account_linking_prompt_accepted_).Run();
-  }
-}
-
-void FacilitatedPaymentsController::OnPixAccountLinkingPromptDeclined(
-    JNIEnv* env) {
-  if (on_pix_account_linking_prompt_declined_) {
-    std::move(on_pix_account_linking_prompt_declined_).Run();
-  }
-}
-
 void FacilitatedPaymentsController::OnAccountLinkingPromptShown(JNIEnv* env,
                                                                 int32_t type) {
   payments::facilitated::LogAccountLinkingPromptUserAction(
@@ -220,16 +213,17 @@ void FacilitatedPaymentsController::OnAccountLinkingPromptAction(
   base::OnceClosure on_accepted = std::move(on_accepted_callback_);
   base::OnceClosure on_declined = std::move(on_declined_callback_);
   base::OnceClosure on_dismissed = std::move(on_dismissed_callback_);
+  auto payment_type =
+      static_cast<payments::facilitated::FacilitatedPaymentsType>(type);
   auto user_action =
       static_cast<payments::facilitated::AccountLinkingPromptUserAction>(
           action);
 
-  payments::facilitated::LogAccountLinkingPromptUserAction(
-      static_cast<payments::facilitated::FacilitatedPaymentsType>(type),
-      user_action);
+  payments::facilitated::LogAccountLinkingPromptUserAction(payment_type,
+                                                           user_action);
   payments::facilitated::LogAccountLinkingPromptInteractionDuration(
-      static_cast<payments::facilitated::FacilitatedPaymentsType>(type),
-      user_action, base::TimeTicks::Now() - account_linking_prompt_shown_time_);
+      payment_type, user_action,
+      base::TimeTicks::Now() - account_linking_prompt_shown_time_);
   is_prompt_showing_ = false;
 
   switch (user_action) {

@@ -366,6 +366,7 @@ TEST_F(ChromeFacilitatedPaymentsClientTest,
   auto client = std::make_unique<ChromeFacilitatedPaymentsClient>(
       web_contents(), &optimization_guide_decider_);
 
-  EXPECT_NO_FATAL_FAILURE(static_cast<payments::facilitated::FacilitatedPaymentsClient&>(*client)
-      .InitPixAccountLinkingFlow(kPageOrigin));
+  EXPECT_NO_FATAL_FAILURE(
+      static_cast<payments::facilitated::FacilitatedPaymentsClient&>(*client)
+          .InitPixAccountLinkingFlow(kPageOrigin));
 }
