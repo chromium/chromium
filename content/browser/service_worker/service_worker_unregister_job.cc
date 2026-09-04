@@ -30,7 +30,7 @@ ServiceWorkerUnregisterJob::ServiceWorkerUnregisterJob(
       key_(key),
       is_immediate_(is_immediate),
       initiator_(initiator) {
-  DCHECK(context_);
+  CHECK(context_, base::NotFatalUntil::M159);
 }
 
 ServiceWorkerUnregisterJob::~ServiceWorkerUnregisterJob() = default;
@@ -73,7 +73,7 @@ void ServiceWorkerUnregisterJob::OnRegistrationFound(
     blink::ServiceWorkerStatusCode status,
     scoped_refptr<ServiceWorkerRegistration> registration) {
   if (status == blink::ServiceWorkerStatusCode::kErrorNotFound) {
-    DCHECK(!registration.get());
+    CHECK(!registration.get(), base::NotFatalUntil::M159);
     Complete(blink::mojom::kInvalidServiceWorkerRegistrationId,
              blink::ServiceWorkerStatusCode::kErrorNotFound);
     return;
@@ -84,7 +84,7 @@ void ServiceWorkerUnregisterJob::OnRegistrationFound(
     return;
   }
 
-  DCHECK(!registration->is_uninstalling());
+  CHECK(!registration->is_uninstalling(), base::NotFatalUntil::M159);
 
   ResolvePromise(registration->id(), blink::ServiceWorkerStatusCode::kOk);
 
@@ -114,7 +114,7 @@ void ServiceWorkerUnregisterJob::CompleteInternal(
 void ServiceWorkerUnregisterJob::ResolvePromise(
     int64_t registration_id,
     blink::ServiceWorkerStatusCode status) {
-  DCHECK(!is_promise_resolved_);
+  CHECK(!is_promise_resolved_, base::NotFatalUntil::M159);
   is_promise_resolved_ = true;
   promise_resolved_registration_id_ = registration_id;
   promise_resolved_status_ = status;

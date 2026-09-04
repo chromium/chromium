@@ -237,7 +237,7 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithRegistration(
     blink::ServiceWorkerStatusCode status,
     scoped_refptr<ServiceWorkerRegistration> registration) {
   if (is_for_navigation) {
-    DCHECK(!find_registration_start_time.is_null());
+    CHECK(!find_registration_start_time.is_null(), base::NotFatalUntil::M159);
     auto now = base::TimeTicks::Now();
 
     ServiceWorkerMetrics::RecordFindRegistrationForClientUrlTime(
@@ -265,7 +265,7 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithRegistration(
     CompleteWithoutLoader();
     return;
   }
-  DCHECK(registration);
+  CHECK(registration, base::NotFatalUntil::M159);
 
   if (!service_worker_client_) {
     TRACE_EVENT(

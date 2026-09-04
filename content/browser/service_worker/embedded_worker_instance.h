@@ -175,7 +175,8 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
   int embedded_worker_id() const { return embedded_worker_id_; }
   blink::EmbeddedWorkerStatus status() const { return status_; }
   StartingPhase starting_phase() const {
-    DCHECK_EQ(blink::EmbeddedWorkerStatus::kStarting, status());
+    CHECK_EQ(blink::EmbeddedWorkerStatus::kStarting, status(),
+             base::NotFatalUntil::M159);
     return starting_phase_;
   }
   int restart_count() const { return restart_count_; }
@@ -202,8 +203,9 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
   }
 
   ServiceWorkerMetrics::StartSituation start_situation() const {
-    DCHECK(status() == blink::EmbeddedWorkerStatus::kStarting ||
-           status() == blink::EmbeddedWorkerStatus::kRunning);
+    CHECK(status() == blink::EmbeddedWorkerStatus::kStarting ||
+              status() == blink::EmbeddedWorkerStatus::kRunning,
+          base::NotFatalUntil::M159);
     return start_situation_;
   }
 

@@ -146,7 +146,7 @@ void ServiceWorkerUsbDelegateObserver::WorkerStarted(
     UsbServiceDeviceEventCallback callback,
     scoped_refptr<ServiceWorkerVersion> version,
     blink::ServiceWorkerStatusCode service_worker_status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (!version ||
       service_worker_status != blink::ServiceWorkerStatusCode::kOk) {
     return;

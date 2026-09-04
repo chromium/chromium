@@ -617,9 +617,9 @@ void ServiceWorkerNewScriptLoader::WriteData(
                       nullptr);
       return;
     case MOJO_RESULT_SHOULD_WAIT:
-      DCHECK(pending_buffer);
-      DCHECK(!pending_network_buffer_);
-      DCHECK_EQ(pending_network_bytes_available_, 0u);
+      CHECK(pending_buffer, base::NotFatalUntil::M159);
+      CHECK(!pending_network_buffer_, base::NotFatalUntil::M159);
+      CHECK_EQ(pending_network_bytes_available_, 0u, base::NotFatalUntil::M159);
       // No data was written to `client_producer_` because the pipe was full.
       // Retry when the pipe becomes ready again.
       pending_network_buffer_ = std::move(pending_buffer);
@@ -696,8 +696,9 @@ void ServiceWorkerNewScriptLoader::CommitCompleted(
     CHECK_EQ(WriterState::kCompleted, body_writer_state_);
     CHECK(cache_writer_->did_replace());
     bytes_written = base::ByteSize(cache_writer_->bytes_written());
-    DCHECK_EQ(cache_writer_->checksum_update_timing(),
-              ServiceWorkerCacheWriter::ChecksumUpdateTiming::kCacheMismatch);
+    CHECK_EQ(cache_writer_->checksum_update_timing(),
+             ServiceWorkerCacheWriter::ChecksumUpdateTiming::kCacheMismatch,
+             base::NotFatalUntil::M159);
     sha256_checksum = cache_writer_->GetSha256Checksum();
   } else {
     // When we fail a main script fetch, we do not have a renderer in which to
@@ -738,8 +739,8 @@ void ServiceWorkerNewScriptLoader::OnClientWritable(MojoResult result) {
               perfetto::Flow::ProcessScoped(request_id_,
                                             kServiceWorkerNewScriptLoaderScope),
               "mojo_result", result);
-  DCHECK(pending_network_buffer_);
-  DCHECK_GT(pending_network_bytes_available_, 0u);
+  CHECK(pending_network_buffer_, base::NotFatalUntil::M159);
+  CHECK_GT(pending_network_bytes_available_, 0u, base::NotFatalUntil::M159);
 
   scoped_refptr<network::MojoToNetPendingBuffer> pending_buffer =
       std::move(pending_network_buffer_);

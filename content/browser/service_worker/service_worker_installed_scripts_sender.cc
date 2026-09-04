@@ -30,8 +30,10 @@ ServiceWorkerInstalledScriptsSender::ServiceWorkerInstalledScriptsSender(
       state_(State::kNotStarted),
       last_finished_reason_(
           ServiceWorkerInstalledScriptReader::FinishedReason::kNotFinished) {
-  DCHECK(ServiceWorkerVersion::IsInstalled(owner_->status()));
-  DCHECK_NE(blink::mojom::kInvalidServiceWorkerResourceId, main_script_id_);
+  CHECK(ServiceWorkerVersion::IsInstalled(owner_->status()),
+        base::NotFatalUntil::M159);
+  CHECK_NE(blink::mojom::kInvalidServiceWorkerResourceId, main_script_id_,
+           base::NotFatalUntil::M159);
 }
 
 ServiceWorkerInstalledScriptsSender::~ServiceWorkerInstalledScriptsSender() {}
@@ -40,9 +42,9 @@ blink::mojom::ServiceWorkerInstalledScriptsInfoPtr
 ServiceWorkerInstalledScriptsSender::CreateInfoAndBind() {
   if (base::FeatureList::IsEnabled(
           features::kServiceWorkerStaticRouterConsolidateMainScriptResponse)) {
-    DCHECK(!manager_.is_bound());
+    CHECK(!manager_.is_bound(), base::NotFatalUntil::M159);
   } else {
-    DCHECK_EQ(State::kNotStarted, state_);
+    CHECK_EQ(State::kNotStarted, state_, base::NotFatalUntil::M159);
   }
 
   std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources =
@@ -84,8 +86,9 @@ ServiceWorkerInstalledScriptsSender::CreateInfoAndBind() {
 }
 
 void ServiceWorkerInstalledScriptsSender::Start() {
-  DCHECK_EQ(State::kNotStarted, state_);
-  DCHECK_NE(blink::mojom::kInvalidServiceWorkerResourceId, main_script_id_);
+  CHECK_EQ(State::kNotStarted, state_, base::NotFatalUntil::M159);
+  CHECK_NE(blink::mojom::kInvalidServiceWorkerResourceId, main_script_id_,
+           base::NotFatalUntil::M159);
   TRACE_EVENT_INSTANT(
       "ServiceWorker", "ServiceWorkerInstalledScriptsSender::Start",
       perfetto::Flow::FromPointer(this, "ServiceWorkerInstalledScriptsSender"),
@@ -96,8 +99,8 @@ void ServiceWorkerInstalledScriptsSender::Start() {
 void ServiceWorkerInstalledScriptsSender::StartSendingScript(
     int64_t resource_id,
     const GURL& script_url) {
-  DCHECK(!reader_);
-  DCHECK(current_sending_url_.is_empty());
+  CHECK(!reader_, base::NotFatalUntil::M159);
+  CHECK(current_sending_url_.is_empty(), base::NotFatalUntil::M159);
   state_ = State::kSendingScripts;
 
   // (crbug.com/352578800) Override the state and bypass reading the scripts as
@@ -143,9 +146,9 @@ void ServiceWorkerInstalledScriptsSender::OnStarted(
     std::optional<mojo_base::BigBuffer> metadata,
     mojo::ScopedDataPipeConsumerHandle body_handle,
     mojo::ScopedDataPipeConsumerHandle meta_data_handle) {
-  DCHECK(response_head);
-  DCHECK(reader_);
-  DCHECK_EQ(State::kSendingScripts, state_);
+  CHECK(response_head, base::NotFatalUntil::M159);
+  CHECK(reader_, base::NotFatalUntil::M159);
+  CHECK_EQ(State::kSendingScripts, state_, base::NotFatalUntil::M159);
   uint64_t meta_data_size = metadata ? metadata->size() : 0;
   TRACE_EVENT_INSTANT(
       "ServiceWorker", "ServiceWorkerInstalledScriptsSender::OnStarted",
@@ -155,7 +158,7 @@ void ServiceWorkerInstalledScriptsSender::OnStarted(
 
   // Create a map of response headers.
   scoped_refptr<net::HttpResponseHeaders> headers = response_head->headers;
-  DCHECK(headers);
+  CHECK(headers, base::NotFatalUntil::M159);
   base::flat_map<std::string, std::string> header_strings;
   size_t iter = 0;
   std::string key;
@@ -195,8 +198,8 @@ void ServiceWorkerInstalledScriptsSender::OnStarted(
 
 void ServiceWorkerInstalledScriptsSender::OnFinished(
     ServiceWorkerInstalledScriptReader::FinishedReason reason) {
-  DCHECK(reader_);
-  DCHECK_EQ(State::kSendingScripts, state_);
+  CHECK(reader_, base::NotFatalUntil::M159);
+  CHECK_EQ(State::kSendingScripts, state_, base::NotFatalUntil::M159);
 
   reader_.reset();
   current_sending_url_ = GURL();
@@ -234,9 +237,9 @@ void ServiceWorkerInstalledScriptsSender::OnFinished(
 
 void ServiceWorkerInstalledScriptsSender::Abort(
     ServiceWorkerInstalledScriptReader::FinishedReason reason) {
-  DCHECK_EQ(State::kSendingScripts, state_);
-  DCHECK_NE(ServiceWorkerInstalledScriptReader::FinishedReason::kSuccess,
-            reason);
+  CHECK_EQ(State::kSendingScripts, state_, base::NotFatalUntil::M159);
+  CHECK_NE(ServiceWorkerInstalledScriptReader::FinishedReason::kSuccess, reason,
+           base::NotFatalUntil::M159);
   TRACE_EVENT_INSTANT("ServiceWorker",
                       "ServiceWorkerInstalledScriptsSender::Abort",
                       perfetto::TerminatingFlow::FromPointer(
@@ -277,7 +280,7 @@ void ServiceWorkerInstalledScriptsSender::Abort(
       if (owner_->context()) {
         scoped_refptr<ServiceWorkerRegistration> registration =
             owner_->context()->GetLiveRegistration(owner_->registration_id());
-        DCHECK(registration);
+        CHECK(registration, base::NotFatalUntil::M159);
         // Check if the registation is still alive. The registration may have
         // already been deleted while this service worker was running.
         if (!registration->is_uninstalled()) {
@@ -303,10 +306,10 @@ void ServiceWorkerInstalledScriptsSender::Abort(
 
 void ServiceWorkerInstalledScriptsSender::UpdateFinishedReasonAndBecomeIdle(
     ServiceWorkerInstalledScriptReader::FinishedReason reason) {
-  DCHECK_EQ(State::kSendingScripts, state_);
-  DCHECK_NE(ServiceWorkerInstalledScriptReader::FinishedReason::kNotFinished,
-            reason);
-  DCHECK(current_sending_url_.is_empty());
+  CHECK_EQ(State::kSendingScripts, state_, base::NotFatalUntil::M159);
+  CHECK_NE(ServiceWorkerInstalledScriptReader::FinishedReason::kNotFinished,
+           reason, base::NotFatalUntil::M159);
+  CHECK(current_sending_url_.is_empty(), base::NotFatalUntil::M159);
   state_ = State::kIdle;
   last_finished_reason_ = reason;
 
@@ -346,7 +349,7 @@ void ServiceWorkerInstalledScriptsSender::RequestInstalledScript(
     return;
   }
 
-  DCHECK_EQ(State::kIdle, state_);
+  CHECK_EQ(State::kIdle, state_, base::NotFatalUntil::M159);
   TRACE_EVENT_INSTANT(
       "ServiceWorker",
       "ServiceWorkerInstalledScriptsSender::RequestInstalledScript",

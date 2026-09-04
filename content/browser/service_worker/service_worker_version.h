@@ -449,9 +449,10 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // This must be called when is_endpoint_ready() returns true, which is after
   // InitializeGlobalScope() is called.
   blink::mojom::ServiceWorker* endpoint() {
-    DCHECK(running_status() == blink::EmbeddedWorkerStatus::kStarting ||
-           running_status() == blink::EmbeddedWorkerStatus::kRunning);
-    DCHECK(service_worker_remote_.is_bound());
+    CHECK(running_status() == blink::EmbeddedWorkerStatus::kStarting ||
+              running_status() == blink::EmbeddedWorkerStatus::kRunning,
+          base::NotFatalUntil::M159);
+    CHECK(service_worker_remote_.is_bound(), base::NotFatalUntil::M159);
     return service_worker_remote_.get();
   }
 
@@ -464,7 +465,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // if the pending request is pending too long? https://crbug.com/797222
   blink::mojom::ControllerServiceWorker* controller() {
     if (!remote_controller_.is_bound()) {
-      DCHECK(!controller_receiver_.is_valid());
+      CHECK(!controller_receiver_.is_valid(), base::NotFatalUntil::M159);
       controller_receiver_ = remote_controller_.BindNewPipeAndPassReceiver();
     }
     return remote_controller_.get();
@@ -568,7 +569,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
   void set_outside_fetch_client_settings_object(
       blink::mojom::FetchClientSettingsObjectPtr
           outside_fetch_client_settings_object) {
-    DCHECK(!outside_fetch_client_settings_object_);
+    CHECK(!outside_fetch_client_settings_object_, base::NotFatalUntil::M159);
     outside_fetch_client_settings_object_ =
         std::move(outside_fetch_client_settings_object);
   }
