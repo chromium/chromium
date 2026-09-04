@@ -19,6 +19,7 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/google/core/common/google_util.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/sessions/core/session_id.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_controller.h"

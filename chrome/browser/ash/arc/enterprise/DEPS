@@ -28,7 +28,6 @@ include_rules = [
   "+chrome/browser/chromeos/platform_keys",
   "+chrome/browser/net",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui/browser.h",
   "+chrome/common/net",
   "+chrome/test/base",
 ]

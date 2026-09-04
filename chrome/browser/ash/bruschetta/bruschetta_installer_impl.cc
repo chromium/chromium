@@ -35,6 +35,7 @@
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/prefs/pref_service.h"
+#include "ui/display/types/display_constants.h"
 
 namespace bruschetta {
 

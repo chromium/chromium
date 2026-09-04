@@ -8,25 +8,25 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/browser/ui/browser_window/public/create_browser_window.h",
-  "+chrome/browser/ui/navigator/browser_navigator_params.h",
   "+chrome/browser/ui/navigator/browser_navigator.h",
+  "+chrome/browser/ui/navigator/browser_navigator_params.h",
   "+chrome/browser/ui/tabs/tab_strip_model.h",
 ]
 
 specific_include_rules = {
   ".*_browsertest\\.cc": [
-    "+chrome/browser/ui/browser.h",
     "+chrome/browser/ui/browser_command_controller.h",
     "+chrome/browser/ui/browser_commands.h",
     "+chrome/browser/ui/browser_window.h",
+    "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
     "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
     "+chrome/browser/ui/unload_controller.h",
     "+chrome/test/base/ui_test_utils.h",
   ],
   "on_task_locked_session_navigation_throttle_interactive_ui_test\\.cc": [
-    "+chrome/browser/ui/browser.h",
     "+chrome/browser/ui/browser_commands.h",
     "+chrome/browser/ui/browser_window.h",
+    "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
     "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
     "+chrome/browser/ui/test/test_browser_closed_waiter.h",
     "+chrome/test/base/interactive_test_utils.h",
@@ -38,5 +38,9 @@ specific_include_rules = {
     "+chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h",
     "+chrome/common/chrome_paths.h",
     "+chrome/common/webui_url_constants.h",
+  ],
+  "on_task_locked_session_window_tracker\\.(h|cc)": [
+    "+chrome/browser/ui/tabs/tab_change_type.h",
+    "+chrome/browser/ui/tabs/tab_enums.h",
   ],
 }

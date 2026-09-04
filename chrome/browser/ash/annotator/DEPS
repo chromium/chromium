@@ -8,8 +8,7 @@ include_rules = [
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/ash/annotator",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/ash/projector/projector_utils.h",
   "+chrome/browser/ui/tabs",
   "+chrome/test/base",
-  "+chrome/browser/ui/ash/projector/projector_utils.h"
 ]

@@ -23,6 +23,7 @@
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace ash {
 

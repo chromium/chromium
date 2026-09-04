@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/app_restore/arc_ghost_window_handler.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "ui/display/screen.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace arc {

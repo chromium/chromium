@@ -28,6 +28,5 @@ specific_include_rules = {
     "+chrome/test/base",
   ],
   "arc_vmm_manager_browsertest\\.cc": [
-     "+chrome/browser/ui/browser.h",
   ],
 }

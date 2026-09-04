@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 
-#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 

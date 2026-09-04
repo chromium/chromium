@@ -22,6 +22,8 @@
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "components/user_manager/user.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"

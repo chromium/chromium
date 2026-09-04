@@ -19,7 +19,6 @@ include_rules = [
   "+chrome/browser/ash/arc/input_method_manager",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/shelf/app_service",
-  "+chrome/browser/ui/browser.h",
   "+chrome/common/extensions/api",
   "+chrome/test/base",
   "+chrome/test/views",

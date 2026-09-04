@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/types_util.h"
+#include "content/public/browser/navigation_controller.h"
 #include "ui/display/screen.h"
 
 namespace {

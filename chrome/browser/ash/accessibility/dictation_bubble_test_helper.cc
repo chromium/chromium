@@ -11,6 +11,7 @@
 #include "ash/shell.h"
 #include "ash/system/accessibility/dictation_bubble_view.h"
 #include "base/run_loop.h"
+#include "content/public/browser/navigation_controller.h"
 
 namespace ash {
 

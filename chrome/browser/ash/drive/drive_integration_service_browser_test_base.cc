@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/drive/drive_integration_service_browser_test_base.h"
 
 #include "base/files/file_util.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"

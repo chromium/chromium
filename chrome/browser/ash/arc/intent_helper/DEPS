@@ -22,7 +22,6 @@ include_rules = [
   "+chrome/browser/ash/system",
   "+chrome/browser/global_features.h",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
   "+chrome/browser/ui/tabs",
   "+chrome/browser/ui/test",
@@ -36,7 +35,7 @@ specific_include_rules = {
     "+chrome/browser/browser_process.h",
   ],
   "arc_settings_service_unittest\\.cc": [
-    "+chrome/common/pref_names.h",
     "+chrome/browser/ash/login/users/scoped_account_id_annotator.h",
+    "+chrome/common/pref_names.h",
   ],
 }

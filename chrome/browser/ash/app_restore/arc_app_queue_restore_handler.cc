@@ -51,6 +51,7 @@
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "ui/display/display.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/wm/public/activation_client.h"
 
 namespace ash::app_restore {

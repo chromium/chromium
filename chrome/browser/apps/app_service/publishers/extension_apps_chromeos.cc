@@ -78,6 +78,7 @@
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/launch_result.h"
+#include "components/sessions/core/session_id.h"
 #include "content/public/browser/clear_site_data_utils.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/extension_system.h"
@@ -96,6 +97,7 @@
 #include "net/base/url_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace {

@@ -16,6 +16,7 @@
 #include "google_apis/common/auth_service.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 using google_apis::RequestSender;
 using google_apis::calendar::CalendarApiCalendarListRequest;

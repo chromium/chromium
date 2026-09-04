@@ -65,6 +65,7 @@
 #include "content/public/browser/browser_context.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/rect.h"
 

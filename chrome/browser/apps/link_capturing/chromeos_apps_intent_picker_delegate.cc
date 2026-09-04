@@ -23,6 +23,7 @@
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/display/types/display_constants.h"
 #include "url/gurl.h"
 

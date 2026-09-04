@@ -8,6 +8,10 @@
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
+#include "components/sessions/core/session_id.h"
+#include "ui/base/page_transition_types.h"
 // TODO(crbug.com/365146870): on_task_locked_controller.h|cc and associated code
 // will be removed.
 #include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
@@ -15,7 +19,6 @@
 #include "chrome/browser/ash/browser_delegate/browser_type_conversion.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_init_state.h"

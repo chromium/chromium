@@ -24,7 +24,6 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/browser/sync",
   "+chrome/browser/ui/ash/shelf",
-  "+chrome/browser/ui/browser.h",
   "+chrome/browser/web_applications/test",
   "+chrome/common/chrome_paths.h",
   "+chrome/grit",

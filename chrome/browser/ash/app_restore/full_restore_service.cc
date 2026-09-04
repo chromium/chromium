@@ -53,10 +53,12 @@
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_info.h"
 #include "components/prefs/pref_service.h"
+#include "components/sessions/core/session_id.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/common/url_constants.h"
 
 // Enable VLOG level 1.

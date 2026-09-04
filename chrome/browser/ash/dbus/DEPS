@@ -19,7 +19,6 @@ include_rules = [
   "+chrome/browser/ash/arc/session",
   "+chrome/browser/ash/arc/test",
   "+chrome/browser/ash/arc/tracing",
-  "+chromeos/ash/experiences/arc/video",
   "+chrome/browser/ash/bruschetta",
   "+chrome/browser/ash/certificate_provider",
   "+chrome/browser/ash/crostini",
@@ -37,10 +36,10 @@ include_rules = [
   "+chrome/browser/enterprise/browser_management",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui/browser.h",
   "+chrome/common/chrome_paths.h",
   "+chrome/common/chrome_switches.h",
   "+chrome/test/base",
+  "+chromeos/ash/experiences/arc/video",
 
   "+mojo/core",
 ]

@@ -19,7 +19,6 @@ include_rules = [
   "+chrome/browser/ash/login/session",
   "+chrome/browser/profiles",
   "+chrome/browser/speech",
-  "+chrome/browser/ui/browser.h",
   "+chrome/test/base",
 ]
 

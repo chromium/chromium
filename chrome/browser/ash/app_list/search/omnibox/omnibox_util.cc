@@ -20,6 +20,7 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/favicon_cache.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
 namespace app_list {

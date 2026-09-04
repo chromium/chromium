@@ -20,6 +20,7 @@
 #include "components/exo/buffer.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "ui/display/screen.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/caption_button_types.h"

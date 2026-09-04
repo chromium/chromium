@@ -61,6 +61,7 @@
 #include "content/public/test/browser_test.h"
 #include "net/http/http_status_code.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/display/types/display_constants.h"
 
 namespace apps {
 

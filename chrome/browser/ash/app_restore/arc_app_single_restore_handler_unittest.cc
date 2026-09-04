@@ -15,6 +15,7 @@
 #include "components/session_manager/test/test_user_session_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/display/types/display_constants.h"
 
 namespace ash::app_restore {
 

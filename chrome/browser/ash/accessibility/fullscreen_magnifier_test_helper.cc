@@ -8,6 +8,7 @@
 #include "ash/constants/ash_extension_constants.h"
 #include "ash/shell.h"
 #include "base/functional/bind.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"

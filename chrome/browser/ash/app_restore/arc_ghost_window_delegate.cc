@@ -12,6 +12,7 @@
 #include "chromeos/ui/base/window_state_type.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/display/types/display_constants.h"
 
 namespace ash::full_restore {
 

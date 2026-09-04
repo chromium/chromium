@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
 #include "components/app_restore/features.h"
 #include "components/exo/wm_helper.h"

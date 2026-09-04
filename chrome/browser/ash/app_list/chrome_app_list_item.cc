@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/app_list/reorder/app_list_reorder_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/app_icon_color_cache/app_icon_color_cache.h"
+#include "content/public/browser/navigation_controller.h"
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/extension_system.h"
 #include "ui/display/screen.h"

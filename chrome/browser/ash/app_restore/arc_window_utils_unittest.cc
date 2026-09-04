@@ -14,6 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display.h"
 #include "ui/display/test/test_screen.h"
+#include "ui/display/types/display_constants.h"
 
 namespace {
 const int TEST_DISPLAY_ID = 0x1387;

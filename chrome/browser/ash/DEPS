@@ -17,4 +17,14 @@ include_rules = [
   "+chrome/browser/ash/browser_delegate/browser_controller.h",
   "+chrome/browser/ash/browser_delegate/browser_delegate.h",
   "+chrome/browser/ash/browser_delegate/browser_type.h",
+  "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
+  "+chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h",
 ]
+
+specific_include_rules = {
+  ".*test.*": [
+    "+chrome/browser/ui/tabs/tab_change_type.h",
+    "+chrome/browser/ui/tabs/tab_enums.h",
+    "+chrome/browser/ui/tabs/tab_strip_model.h",
+  ],
+}

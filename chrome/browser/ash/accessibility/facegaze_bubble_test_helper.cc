@@ -8,6 +8,7 @@
 #include "ash/shell.h"
 #include "ash/system/accessibility/facegaze_bubble_controller.h"
 #include "ash/system/accessibility/facegaze_bubble_view.h"
+#include "content/public/browser/navigation_controller.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace ash {

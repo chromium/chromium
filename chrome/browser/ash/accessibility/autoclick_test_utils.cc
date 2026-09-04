@@ -14,6 +14,7 @@
 #include "base/check_op.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/ash/accessibility/automation_test_utils.h"

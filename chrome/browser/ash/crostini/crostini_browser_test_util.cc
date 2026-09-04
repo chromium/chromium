@@ -17,7 +17,6 @@
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
 #include "components/component_updater/ash/fake_component_manager_ash.h"
 #include "components/prefs/pref_service.h"

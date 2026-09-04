@@ -26,6 +26,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/verifier_formats.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"

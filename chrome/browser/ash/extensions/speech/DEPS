@@ -17,5 +17,4 @@ include_rules = [
   "+chrome/browser/extensions/extension_apitest.h",
   "+chrome/browser/profiles",
   "+chrome/browser/speech",
-  "+chrome/browser/ui/browser.h",
 ]

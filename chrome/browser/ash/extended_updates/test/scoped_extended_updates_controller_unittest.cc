@@ -7,6 +7,7 @@
 #include "chrome/browser/ash/extended_updates/extended_updates_controller.h"
 #include "chrome/browser/ash/extended_updates/test/mock_extended_updates_controller.h"
 #include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/navigation_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -17,8 +17,8 @@ include_rules = [
   "+chrome/browser/apps/app_discovery_service",
   "+chrome/browser/apps/app_service",
   "+chrome/browser/ash/app_list",
-  "+chrome/browser/ash/browser_delegate/browser_delegate.h",
   "+chrome/browser/ash/arc",
+  "+chrome/browser/ash/browser_delegate/browser_delegate.h",
   "+chrome/browser/ash/crostini",
   "+chrome/browser/ash/drive",
   "+chrome/browser/ash/extensions",
@@ -40,7 +40,6 @@ include_rules = [
   "+chrome/browser/sync",
   "+chrome/browser/trusted_vault",
   "+chrome/browser/ui/ash",
-  "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/webui/ash/settings/calculator",
   "+chrome/browser/ui/webui/ash/settings/pages/storage",
   "+chrome/browser/ui/webui/ash/settings/search",
@@ -57,9 +56,9 @@ include_rules = [
   # Dependencies outside of //chrome:
   "+ash/accelerators",
   "+ash/strings/grit",
-  "+chromeos/ui/vector_icons",
   "+chromeos/ash/components/launcher_search",
   "+chromeos/ash/components/system_info",
+  "+chromeos/ui/vector_icons",
   "+third_party/omnibox_proto",
 ]
 

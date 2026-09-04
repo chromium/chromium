@@ -15,8 +15,8 @@ include_rules = [
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/extensions/file_manager",
-  "+chrome/browser/ash/fileapi",
   "+chrome/browser/ash/file_manager",
+  "+chrome/browser/ash/fileapi",
   "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/chromeos/drivefs",
@@ -24,7 +24,6 @@ include_rules = [
   "+chrome/browser/net",
   "+chrome/browser/notifications",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui/browser.h",
   "+chrome/common/chrome_constants.h",
   "+chrome/common/chrome_paths.h",
   "+chrome/common/chrome_paths_internal.h",

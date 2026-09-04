@@ -22,8 +22,8 @@ include_rules = [
   "+chrome/browser/ash/login",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/settings",
-  "+chrome/browser/chrome_browser_main_extra_parts.h",
   "+chrome/browser/chrome_browser_main.h",
+  "+chrome/browser/chrome_browser_main_extra_parts.h",
   "+chrome/browser/extensions/api/terminal",
   "+chrome/browser/platform_util.h",
   "+chrome/browser/policy",
@@ -58,7 +58,6 @@ specific_include_rules = {
   ".*test.*": [
     "+chrome/browser/browser_process.h",
     "+chrome/browser/browser_process_platform_part.h",
-    "+chrome/browser/ui/browser.h",
     "+chrome/test/base",
     "+chrome/test/views",
   ],

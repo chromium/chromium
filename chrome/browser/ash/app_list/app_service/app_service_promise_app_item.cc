@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/app_list/chrome_app_list_item.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "components/sync/model/string_ordinal.h"
+#include "content/public/browser/navigation_controller.h"
 
 // static
 const char AppServicePromiseAppItem::kItemType[] = "AppServicePromiseAppItem";
