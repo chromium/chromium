@@ -90,9 +90,14 @@ struct LoadResult {
 
 class SiteTokenURLLoaderFactoryTest : public ChromeRenderViewHostTestHarness {
  protected:
-  SiteTokenURLLoaderFactoryTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kSiteTokenProviderEnabled);
+  SiteTokenURLLoaderFactoryTest()
+      : ChromeRenderViewHostTestHarness(
+            content::BrowserTaskEnvironment::REAL_IO_THREAD) {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kSiteTokenProviderEnabled,
+        {{"site_token_allowlist",
+          "example.com,sub.domain.example.com,legitimate.com,localhost,127.0.0."
+          "1"}});
   }
   ~SiteTokenURLLoaderFactoryTest() override = default;
 
@@ -201,6 +206,18 @@ INSTANTIATE_TEST_SUITE_P(
             .initiator_url = "https://example.com:8443",
             .mock_token = "token_port_789",
             .expected_domain = "example.com",
+        },
+        TokenDeliveryTestCase{
+            .test_name = "LocalhostInitiator",
+            .initiator_url = "http://localhost:8080",
+            .mock_token = "token_localhost_123",
+            .expected_domain = "localhost",
+        },
+        TokenDeliveryTestCase{
+            .test_name = "IPv4LocalhostInitiator",
+            .initiator_url = "http://127.0.0.1:8080",
+            .mock_token = "token_127_456",
+            .expected_domain = "127.0.0.1",
         },
         TokenDeliveryTestCase{
             .test_name = "EmptyTokenReturnsEmptyBody",
@@ -318,6 +335,13 @@ INSTANTIATE_TEST_SUITE_P(
             .request_url = "chrome-experimental-site-token-provider://token",
             .initiator = url::Origin(),
             .expected_error = net::ERR_ACCESS_DENIED,
+        },
+        InvalidRequestTestCase{
+            .test_name = "NonCryptographicHttpInitiator",
+            .method = net::HttpRequestHeaders::kGetMethod,
+            .request_url = "chrome-experimental-site-token-provider://token",
+            .initiator = url::Origin::Create(GURL("http://example.com")),
+            .expected_error = net::ERR_ACCESS_DENIED,
         }),
     [](const testing::TestParamInfo<InvalidRequestTestCase>& info) {
       return info.param.test_name;
@@ -333,6 +357,24 @@ TEST_F(SiteTokenURLLoaderFactoryTest, RejectsUnauthorizedProcess) {
   request.url = ValidTokenUrl();
   request.request_initiator =
       url::Origin::Create(GURL("https://unauthorized.com"));
+
+  LoadResult result = IssueRequest(request);
+
+  EXPECT_EQ(result.error_code, net::ERR_ACCESS_DENIED);
+  EXPECT_TRUE(result.response_body.empty());
+  EXPECT_FALSE(result.response_head);
+}
+
+TEST_F(SiteTokenURLLoaderFactoryTest, RejectsDisallowedDomain) {
+  NavigateAndCommit(GURL("https://disallowed.com"));
+
+  EXPECT_CALL(*mock_service_, GetTokenForDomain(_)).Times(0);
+
+  network::ResourceRequest request;
+  request.method = net::HttpRequestHeaders::kGetMethod;
+  request.url = ValidTokenUrl();
+  request.request_initiator =
+      url::Origin::Create(GURL("https://disallowed.com"));
 
   LoadResult result = IssueRequest(request);
 

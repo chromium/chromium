@@ -29,6 +29,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/cors/cors.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -104,6 +105,12 @@ base::expected<url::Origin, net::Error> ValidateAndGetInitiator(
     return base::unexpected(net::ERR_ACCESS_DENIED);
   }
 
+  // Require initiator origin to be potentially trustworthy (e.g. HTTPS or
+  // localhost).
+  if (!network::IsOriginPotentiallyTrustworthy(initiator)) {
+    return base::unexpected(net::ERR_ACCESS_DENIED);
+  }
+
   return initiator;
 }
 
@@ -119,6 +126,10 @@ base::expected<std::string, net::Error> GetToken(int render_process_id,
 
   if (!service) {
     return base::unexpected(net::ERR_FAILED);
+  }
+
+  if (!service->IsDomainAllowlisted(initiator.host())) {
+    return base::unexpected(net::ERR_ACCESS_DENIED);
   }
 
   return service->GetTokenForDomain(initiator.host());
