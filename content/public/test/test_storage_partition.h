@@ -161,13 +161,6 @@ class TestStoragePartition : public StoragePartition {
       std::unique_ptr<network::mojom::DeviceBoundSessionManager>
           device_bound_session_manager) override;
 
-  // TODO(crbug.com/540787715): Clean up this old setter in favor of
-  // OverrideDeviceBoundSessionManagerForTesting.
-  void set_device_bound_session_manager(
-      network::mojom::DeviceBoundSessionManager* device_bound_session_manager) {
-    device_bound_session_manager_ = device_bound_session_manager;
-  }
-
   void DeleteStaleSessionData() override {}
 
   void set_devtools_background_services_context(
@@ -270,10 +263,8 @@ class TestStoragePartition : public StoragePartition {
   raw_ptr<SharedWorkerService> shared_worker_service_ = nullptr;
   mojo::Remote<storage::mojom::CacheStorageControl> cache_storage_control_;
   raw_ptr<GeneratedCodeCacheContext> generated_code_cache_context_ = nullptr;
-  raw_ptr<network::mojom::DeviceBoundSessionManager>
-      device_bound_session_manager_ = nullptr;
   std::unique_ptr<network::mojom::DeviceBoundSessionManager>
-      device_bound_session_manager_owned_;
+      device_bound_session_manager_;
   raw_ptr<PlatformNotificationContext> platform_notification_context_ = nullptr;
   raw_ptr<DevToolsBackgroundServicesContext>
       devtools_background_services_context_ = nullptr;

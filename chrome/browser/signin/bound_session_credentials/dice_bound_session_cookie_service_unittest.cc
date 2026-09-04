@@ -38,8 +38,8 @@ class DiceBoundSessionCookieServiceTest : public ::testing::Test {
   DiceBoundSessionCookieServiceTest()
       : identity_test_env_(&url_loader_factory_) {
     storage_partition_.set_cookie_manager_for_browser_process(&cookie_manager_);
-    storage_partition_.set_device_bound_session_manager(
-        &device_bound_session_manager_);
+    storage_partition_.OverrideDeviceBoundSessionManagerForTesting(
+        std::make_unique<network::MockDeviceBoundSessionManager>());
     dice_bound_session_cookie_service_ =
         std::make_unique<DiceBoundSessionCookieService>(
             bound_session_cookie_refresh_service_,
@@ -76,10 +76,6 @@ class DiceBoundSessionCookieServiceTest : public ::testing::Test {
 
   BoundSessionTestCookieManager* cookie_manager() { return &cookie_manager_; }
 
-  network::MockDeviceBoundSessionManager* device_bound_session_manager() {
-    return &device_bound_session_manager_;
-  }
-
   DiceBoundSessionCookieService* dice_bound_session_cookie_service() {
     return dice_bound_session_cookie_service_.get();
   }
@@ -87,7 +83,6 @@ class DiceBoundSessionCookieServiceTest : public ::testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   BoundSessionTestCookieManager cookie_manager_;
-  network::MockDeviceBoundSessionManager device_bound_session_manager_;
   content::TestStoragePartition storage_partition_;
   network::TestURLLoaderFactory url_loader_factory_;
   signin::IdentityTestEnvironment identity_test_env_;

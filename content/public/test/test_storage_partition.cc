@@ -150,14 +150,13 @@ CdmStorageDataModel* TestStoragePartition::GetCdmStorageDataModel() {
 
 network::mojom::DeviceBoundSessionManager*
 TestStoragePartition::GetDeviceBoundSessionManager() {
-  return device_bound_session_manager_;
+  return device_bound_session_manager_.get();
 }
 
 void TestStoragePartition::OverrideDeviceBoundSessionManagerForTesting(
     std::unique_ptr<network::mojom::DeviceBoundSessionManager>
         device_bound_session_manager) {
-  device_bound_session_manager_owned_ = std::move(device_bound_session_manager);
-  device_bound_session_manager_ = device_bound_session_manager_owned_.get();
+  device_bound_session_manager_ = std::move(device_bound_session_manager);
 }
 
 DevToolsBackgroundServicesContext*
