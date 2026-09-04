@@ -348,7 +348,6 @@ cr-composebox-contextual-entrypoint-and-menu {
 cr-searchbox-input::part(searchbox-input),
 cr-searchbox-dropdown::part(dropdown-content),
 cr-searchbox-compose-button::part(compose-button),
-#composeButton,
 #context,
 #contextEntrypoint,
 cr-composebox-contextual-entrypoint-and-menu,
@@ -361,7 +360,8 @@ cr-composebox-contextual-entrypoint-button,
   -webkit-app-region: no-drag;
 }
 
-cr-searchbox-input::part(icon) {
+cr-searchbox-input::part(icon),
+#composeButton {
   -webkit-app-region: drag;
   -webkit-user-drag: none;
 }
