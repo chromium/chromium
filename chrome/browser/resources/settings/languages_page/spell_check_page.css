@@ -1,0 +1,65 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=../settings_shared_lit.css.js
+ * #include=cr-shared-style-lit settings-shared-lit
+ * #css_wrapper_metadata_end */
+
+.name-with-error-list {
+  padding: 14px 0;
+}
+
+.name-with-error-list div {
+  /* TODO(dbeam): does this need to differ from --settings-error-color? */
+  color: var(--google-red-500);
+  margin-top: 8px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .name-with-error-list div {
+    color: var(--settings-error-color);
+  }
+}
+
+cr-icon[icon='cr:error-filled'] {
+  --iron-icon-fill-color: var(--settings-error-color);
+  height: var(--cr-icon-size);
+  margin-inline-end: 8px;
+  width: var(--cr-icon-size);
+}
+
+.name-with-error-list[disabled] {
+  pointer-events: none;
+}
+
+cr-policy-pref-indicator {
+  margin-inline-end: var(--cr-controlled-by-spacing);
+}
+
+.spell-check-radio-group {
+  padding-block-end: var(--cr-section-vertical-padding);
+}
+
+.spell-check-radio-button {
+  --cr-radio-button-label-spacing:
+    calc(var(--cr-section-indent-width) - var(--cr-radio-button-size));
+}
+
+.spell-check-radio-button.enhanced {
+  align-items: start;
+  /* Align with just the first line of text */
+  --cr-radio-button-disc-margin-block-start:
+    calc((1.5em - var(--cr-radio-button-size)) / 2);
+}
+
+.enhanced-spellcheck-description {
+  padding-inline-end: 150px;
+}
+
+.spell-check-languages .list-item:last-of-type {
+  border-bottom: var(--cr-separator-line);
+}

@@ -3,11 +3,9 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {LanguageHelper, SettingsSpellCheckPageElement} from 'chrome://settings/lazy_load.js';
 import {LanguageHelperImpl, LanguagesBrowserProxyImpl, getLanguageHelperInstance} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
-import type {SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 // <if expr="not is_macosx">
 import {loadTimeData} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
@@ -21,10 +19,8 @@ import {assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 // <if expr="_google_chrome or not is_macosx">
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 // </if>
-
 // <if expr="not is_macosx">
 import type {FakeChromeEvent} from 'chrome://webui-test/fake_chrome_event.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 // </if>
 
@@ -39,6 +35,7 @@ suite('SpellCheck', function() {
   let spellcheckPage: SettingsSpellCheckPageElement;
   let browserProxy: TestLanguagesBrowserProxy;
   let prefsBrowserProxy: TestPrefsBrowserProxy;
+  let prefService: PrefService;
 
   suiteSetup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -49,7 +46,8 @@ suite('SpellCheck', function() {
     prefsBrowserProxy = new TestPrefsBrowserProxy(getFakeLanguagePrefs());
     PrefsBrowserProxy.setInstance(prefsBrowserProxy);
     PrefService.resetInstanceForTesting();
-    await PrefService.getInstance().whenInitialized();
+    prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
 
     // Set up test browser proxy.
     browserProxy = new TestLanguagesBrowserProxy();
@@ -61,7 +59,6 @@ suite('SpellCheck', function() {
 
     spellcheckPage = document.createElement('settings-spell-check-page');
     document.body.appendChild(spellcheckPage);
-    flush();
   });
 
   teardown(function() {
@@ -72,23 +69,20 @@ suite('SpellCheck', function() {
     // <if expr="is_macosx">
     test('structure', function() {
       const spellCheckLanguagesList =
-          spellcheckPage.shadowRoot!.querySelector('#spellCheckLanguagesList');
+          spellcheckPage.shadowRoot.querySelector('#spellCheckLanguagesList');
       assertFalse(!!spellCheckLanguagesList);
 
       const editDictionaryTrigger =
-          spellcheckPage.shadowRoot!.querySelector('#spellCheckSubpageTrigger');
+          spellcheckPage.shadowRoot.querySelector('#spellCheckSubpageTrigger');
       assertFalse(!!editDictionaryTrigger);
 
       // <if expr="not _google_chrome">
       const spellCheckCollapse =
-          spellcheckPage.shadowRoot!.querySelector('#spellCheckCollapse');
+          spellcheckPage.shadowRoot.querySelector('#spellCheckCollapse');
       assertFalse(!!spellCheckCollapse);
       // </if>
 
-      const toggle =
-          spellcheckPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-              '#enableSpellcheckingToggle');
-      assertTrue(!!toggle);
+      const toggle = spellcheckPage.$.enableSpellcheckingToggle;
       assertTrue(toggle.checked);
     });
     // </if>
@@ -96,13 +90,12 @@ suite('SpellCheck', function() {
     // <if expr="not is_macosx">
     test('structure', async function() {
       function getListItems() {
-        return spellcheckPage.shadowRoot!.querySelectorAll(
+        return spellcheckPage.shadowRoot.querySelectorAll(
             '#spellCheckCollapse .list-item');
       }
 
       let listItems = getListItems();
-      const triggerRow = spellcheckPage.shadowRoot!.querySelector(
-          '#enableSpellcheckingToggle')!;
+      const triggerRow = spellcheckPage.$.enableSpellcheckingToggle;
       assertEquals(2, listItems.length);
 
       // Disable spellcheck for en-US.
@@ -115,47 +108,50 @@ suite('SpellCheck', function() {
       assertFalse(spellcheckLanguageToggle.checked);
       assertEquals(
           0,
-          PrefService.getInstance()
-              .getPref<string[]>('spellcheck.dictionaries')
+          prefService.getPref<string[]>('spellcheck.dictionaries')
               .value.length);
 
       // Force-enable a language via policy.
-      PrefService.getInstance().setPrefValue(
-          'spellcheck.forced_dictionaries', ['nb']);
-      flush();
+      prefService.setPrefValue('spellcheck.forced_dictionaries', ['nb']);
+      await microtasksFinished();
       listItems = getListItems();
       assertEquals(3, listItems.length);
       const forceEnabledNbLanguageRow = listItems[2]!;
-      assertTrue(forceEnabledNbLanguageRow.querySelector('cr-toggle')!.checked);
+      const forceEnabledNbLanguageToggle =
+          forceEnabledNbLanguageRow.querySelector('cr-toggle');
+      assertTrue(!!forceEnabledNbLanguageToggle);
+      assertTrue(forceEnabledNbLanguageToggle.checked);
       assertTrue(!!forceEnabledNbLanguageRow.querySelector(
           'cr-policy-pref-indicator'));
 
       // Add the same language to spellcheck.dictionaries, but don't enable it.
-      PrefService.getInstance().setPrefValue(
-          'spellcheck.forced_dictionaries', []);
-      PrefService.getInstance().setPrefValue('spellcheck.dictionaries', ['nb']);
-      flush();
+      prefService.setPrefValue('spellcheck.forced_dictionaries', []);
+      prefService.setPrefValue('spellcheck.dictionaries', ['nb']);
+      await microtasksFinished();
       listItems = getListItems();
       assertEquals(3, listItems.length);
       const prefEnabledNbLanguageRow = listItems[2]!;
-      assertTrue(prefEnabledNbLanguageRow.querySelector('cr-toggle')!.checked);
+      const prefEnabledNbLanguageToggle =
+          prefEnabledNbLanguageRow.querySelector('cr-toggle');
+      assertTrue(!!prefEnabledNbLanguageToggle);
+      assertTrue(prefEnabledNbLanguageToggle.checked);
 
       // Disable the language.
-      prefEnabledNbLanguageRow.querySelector('cr-toggle')!.click();
-      await prefEnabledNbLanguageRow.querySelector('cr-toggle')!.updateComplete;
-      flush();
+      prefEnabledNbLanguageToggle.click();
+      await microtasksFinished();
       assertEquals(2, getListItems().length);
 
       // Force-disable the same language via policy.
-      PrefService.getInstance().setPrefValue(
-          'spellcheck.blocked_dictionaries', ['nb']);
+      prefService.setPrefValue('spellcheck.blocked_dictionaries', ['nb']);
       languageHelper.enableLanguage('nb');
-      flush();
+      await microtasksFinished();
       listItems = getListItems();
       assertEquals(3, listItems.length);
       const forceDisabledNbLanguageRow = listItems[2]!;
-      assertFalse(
-          forceDisabledNbLanguageRow.querySelector('cr-toggle')!.checked);
+      const forceDisabledNbLanguageToggle =
+          forceDisabledNbLanguageRow.querySelector('cr-toggle');
+      assertTrue(!!forceDisabledNbLanguageToggle);
+      assertFalse(forceDisabledNbLanguageToggle.checked);
       assertTrue(!!forceDisabledNbLanguageRow.querySelector(
           'cr-policy-pref-indicator'));
 
@@ -175,7 +171,7 @@ suite('SpellCheck', function() {
 
       // Force-disable spellchecking via policy.
       setEnableSpellcheckingViaPolicy(false);
-      flush();
+      await microtasksFinished();
 
       // The policy indicator should be present.
       assertTrue(
@@ -185,62 +181,51 @@ suite('SpellCheck', function() {
       // indicator is not present. |enable_spellchecking| can be forced to
       // true by policy, but no indicator should be shown in that case.
       setEnableSpellcheckingViaPolicy(true);
-      flush();
+      await microtasksFinished();
       assertFalse(!!triggerRow.querySelector('cr-policy-pref-indicator'));
 
       const spellCheckLanguagesCount = getListItems().length;
       // Enabling a language without spellcheck support should not add it to
       // the list
       languageHelper.enableLanguage('tk');
-      flush();
+      await microtasksFinished();
       assertEquals(getListItems().length, spellCheckLanguagesCount);
     });
 
     test('only 1 supported language', async () => {
-      const list = spellcheckPage.shadowRoot!.querySelector<HTMLElement>(
-          '#spellCheckLanguagesList')!;
+      const list = spellcheckPage.$.spellCheckLanguagesList;
       assertFalse(list.hidden);
-      const toggle =
-          spellcheckPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-              '#enableSpellcheckingToggle');
-      assertTrue(!!toggle);
+      const toggle = spellcheckPage.$.enableSpellcheckingToggle;
       assertTrue(toggle.checked);
       assertDeepEquals(
           ['en-US'],
-          PrefService.getInstance()
-              .getPref<string[]>('spellcheck.dictionaries')
-              .value);
+          prefService.getPref<string[]>('spellcheck.dictionaries').value);
 
       // Update supported languages to just 1 language should hide list.
       languageHelper.disableLanguage('sw');
-      await flushTasks();
+      await microtasksFinished();
       assertTrue(list.hidden);
 
       // Disable spell check should keep list hidden and remove the single
       // language from dictionaries.
       toggle.click();
-      await flushTasks();
+      await microtasksFinished();
 
       assertTrue(list.hidden);
       assertFalse(toggle.checked);
       assertDeepEquals(
-          [],
-          PrefService.getInstance()
-              .getPref<string[]>('spellcheck.dictionaries')
-              .value);
+          [], prefService.getPref<string[]>('spellcheck.dictionaries').value);
 
       // Enable spell check should keep list hidden and add the single language
       // to dictionaries.
       toggle.click();
-      await flushTasks();
+      await microtasksFinished();
 
       assertTrue(list.hidden);
       assertTrue(toggle.checked);
       assertDeepEquals(
           ['en-US'],
-          PrefService.getInstance()
-              .getPref<string[]>('spellcheck.dictionaries')
-              .value);
+          prefService.getPref<string[]>('spellcheck.dictionaries').value);
 
       // When a single language has a dictionary download error, the list should
       // not be hidden so the user can see the error and retry.
@@ -250,7 +235,7 @@ suite('SpellCheck', function() {
           .callListeners([
             {languageCode: 'en-US', isReady: false, downloadFailed: true},
           ]);
-      await flushTasks();
+      await microtasksFinished();
       assertFalse(list.hidden);
 
       // When the dictionary download succeeds, the list is hidden again.
@@ -259,31 +244,25 @@ suite('SpellCheck', function() {
           .callListeners([
             {languageCode: 'en-US', isReady: true, downloadFailed: false},
           ]);
-      await flushTasks();
+      await microtasksFinished();
       assertTrue(list.hidden);
 
       // When a single language is managed by policy, the list is not hidden.
-      PrefService.getInstance().setPrefValue(
-          'spellcheck.forced_dictionaries', ['en-US']);
-      await flushTasks();
+      prefService.setPrefValue('spellcheck.forced_dictionaries', ['en-US']);
+      await microtasksFinished();
       assertFalse(list.hidden);
     });
 
-    test('no supported languages', () => {
+    test('no supported languages', async () => {
       loadTimeData.overrideValues({
         spellCheckDisabledReason: 'no languages!',
       });
 
-      const toggle =
-          spellcheckPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-              '#enableSpellcheckingToggle');
-      assertTrue(!!toggle);
-
+      const toggle = spellcheckPage.$.enableSpellcheckingToggle;
       assertFalse(toggle.disabled);
-      assertTrue(PrefService.getInstance()
-                     .getPref<boolean>('browser.enable_spellchecking')
-                     .value);
-      assertEquals(toggle.subLabel, undefined);
+      assertTrue(
+          prefService.getPref<boolean>('browser.enable_spellchecking').value);
+      assertEquals(toggle.subLabel, '');
 
       // Empty out supported languages
       languageHelper.dispatchEvent(new CustomEvent('languages-changed', {
@@ -292,21 +271,20 @@ suite('SpellCheck', function() {
           spellCheckOnLanguages: [],
         }),
       }));
+      await microtasksFinished();
       assertTrue(toggle.disabled);
-      assertFalse(PrefService.getInstance()
-                      .getPref<boolean>('browser.enable_spellchecking')
-                      .value);
+      assertFalse(
+          prefService.getPref<boolean>('browser.enable_spellchecking').value);
       assertEquals(toggle.subLabel, 'no languages!');
     });
 
-    test('error handling', function() {
+    test('error handling', async function() {
       function checkAllHidden(nodes: HTMLElement[]) {
         assertTrue(nodes.every(node => node.hidden));
       }
 
       const languageSettingsPrivate = browserProxy.getLanguageSettingsPrivate();
-      const spellCheckCollapse =
-          spellcheckPage.shadowRoot!.querySelector('#spellCheckCollapse')!;
+      const spellCheckCollapse = spellcheckPage.$.spellCheckCollapse;
       const errorDivs =
           Array.from(spellCheckCollapse.querySelectorAll<HTMLElement>(
               '.name-with-error-list div'));
@@ -325,7 +303,7 @@ suite('SpellCheck', function() {
             {languageCode, isReady: false, downloadFailed: true},
           ]);
 
-      flush();
+      await microtasksFinished();
       assertFalse(errorDivs[0]!.hidden);
       checkAllHidden(errorDivs.slice(1));
       assertFalse(retryButtons[0]!.hidden);
@@ -341,11 +319,11 @@ suite('SpellCheck', function() {
       (languageSettingsPrivate.onSpellcheckDictionariesChanged as
        FakeChromeEvent)
           .callListeners([currentStatus]);
-      flush();
+      await microtasksFinished();
       assertTrue(moreInfo.hidden);
 
       retryButtons[0]!.click();
-      flush();
+      await microtasksFinished();
       assertFalse(moreInfo.hidden);
     });
     // </if>
@@ -355,17 +333,12 @@ suite('SpellCheck', function() {
   suite('OfficialBuild', function() {
     test('enabling and disabling the spelling service', async () => {
       const previousValue =
-          PrefService.getInstance()
-              .getPref<boolean>('spellcheck.use_spelling_service')
-              .value;
-      spellcheckPage.shadowRoot!
-          .querySelector<HTMLElement>('#spellingServiceEnable')!.click();
-      flush();
+          prefService.getPref<boolean>('spellcheck.use_spelling_service').value;
+      spellcheckPage.$.spellingServiceEnable.click();
       await microtasksFinished();
       assertNotEquals(
           previousValue,
-          PrefService.getInstance()
-              .getPref<boolean>('spellcheck.use_spelling_service')
+          prefService.getPref<boolean>('spellcheck.use_spelling_service')
               .value);
     });
   });
