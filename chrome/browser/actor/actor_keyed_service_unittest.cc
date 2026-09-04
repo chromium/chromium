@@ -283,7 +283,7 @@ TEST_F(ActorKeyedServiceTest, InitialTabAssociationOnCreate) {
 
   TaskId id = actor_service->CreateTaskWithOptions(
       TestTaskSourceInfo(), NoEnterprisePolicyChecker(), std::move(options),
-      /*delegate=*/nullptr);
+      /*delegate=*/nullptr, actor_service->GetActorUiStateManager());
 
   ActorTask* task = actor_service->GetTask(id);
   ASSERT_TRUE(task);

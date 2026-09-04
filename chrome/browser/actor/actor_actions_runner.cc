@@ -193,7 +193,7 @@ void ActorActionsRunner::Start() {
   // blocking or content validation at the actor task level.
   task_id_ = actor_service->CreateTaskWithOptions(
       source_info_, GetNullEnterprisePolicyChecker(), std::move(options),
-      nullptr);
+      nullptr, actor_service->GetActorUiStateManager());
   if (!task_id_) {
     LOG(ERROR) << "Failed to create Actor task.";
     Finish(std::make_unique<optimization_guide::proto::ActionsResult>(

@@ -49,6 +49,7 @@ class ExecutionEngine;
 class TabObservationStrategy;
 
 namespace ui {
+class ActorUiStateManagerInterface;
 class UiEventDispatcher;
 }
 struct ActionResultWithLatencyInfo;
@@ -81,6 +82,7 @@ class ActorTask : public base::SupportsUserData {
             webui::mojom::TaskOptionsPtr options,
             const TaskSourceInfo& source_info,
             const EnterprisePolicyChecker* policy_checker,
+            actor::ui::ActorUiStateManagerInterface* ui_state_manager,
             base::WeakPtr<ActorTaskDelegate> delegate = nullptr,
             std::optional<glic::mojom::InvocationSource>
                 initial_invocation_source = std::nullopt);

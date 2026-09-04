@@ -155,7 +155,8 @@ IN_PROC_BROWSER_TEST_F(ActorTaskListBubbleInteractiveUiTest,
       glic::mojom::FeatureMode::kExperimentalTriggering;
   actor::TaskId task_id = actor_keyed_service()->CreateTaskWithOptions(
       actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker(),
-      std::move(task_options), nullptr);
+      std::move(task_options), nullptr,
+      actor_keyed_service()->GetActorUiStateManager());
   base::test::TestFuture<actor::mojom::ActionResultPtr> future;
   actor_keyed_service()->GetTask(task_id)->AddTab(
       browser()->GetActiveTabInterface()->GetHandle(),

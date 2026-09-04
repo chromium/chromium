@@ -687,17 +687,13 @@ ExecutionEngine::GetFactoryFunctionForTesting() {
   return *callback;
 }
 
-ExecutionEngine::ExecutionEngine(base::PassKey<ExecutionEngine> pass_key,
-                                 ActorTask& owner_task)
+// Protected constructor without pass key to allow subclassing.
+ExecutionEngine::ExecutionEngine(ActorTask& owner_task)
     : ExecutionEngine(
-          pass_key,
+          base::PassKey<ExecutionEngine>(),
           owner_task,
           ui::NewUiEventDispatcher(
               owner_task.actor_keyed_service().GetActorUiStateManager())) {}
-
-// Protected constructor without pass key to allow subclassing.
-ExecutionEngine::ExecutionEngine(ActorTask& owner_task)
-    : ExecutionEngine(base::PassKey<ExecutionEngine>(), owner_task) {}
 
 ExecutionEngine::ExecutionEngine(
     base::PassKey<ExecutionEngine>,
@@ -792,15 +788,18 @@ ExecutionEngine::ExecutionEngine(
 
 // static
 std::unique_ptr<ExecutionEngine> ExecutionEngine::Create(
-    ActorTask& owner_task) {
+    ActorTask& owner_task,
+    std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher) {
   if (!GetFactoryFunctionForTesting().is_null()) {
     return GetFactoryFunctionForTesting().Run(owner_task);
   }
 
   return std::make_unique<ExecutionEngine>(base::PassKey<ExecutionEngine>(),
-                                           owner_task);
+                                           owner_task,
+                                           std::move(ui_event_dispatcher));
 }
 
+// static
 std::unique_ptr<ExecutionEngine> ExecutionEngine::CreateForTesting(
     ActorTask& owner_task,
     std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher) {

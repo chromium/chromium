@@ -241,7 +241,7 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
     ScopedExecutionEngineFactory scoped_execution_engine_factory(
         base::BindLambdaForTesting([&](actor::ActorTask& task) {
           CHECK(ui_event_dispatcher);
-          return actor::ExecutionEngine::CreateForTesting(
+          return ExecutionEngine::CreateForTesting(
               task, std::move(ui_event_dispatcher));
         }));
 

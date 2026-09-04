@@ -250,6 +250,7 @@ void GlicActorClientSession::CreateTask(
       actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kGlic,
                             conversation_id),
       &actor_policy_checker(), std::move(options), GetWeakPtr(),
+      actor_keyed_service().GetActorUiStateManager(),
       instance_metrics().initial_invocation_source());
   CHECK(!current_task_id_.is_null());
 

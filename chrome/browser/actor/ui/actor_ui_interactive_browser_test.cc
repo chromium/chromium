@@ -30,7 +30,8 @@ void ActorUiInteractiveBrowserTest::StartActingOnTab(
   task_options->duration = duration;
   task_id_ = actor_keyed_service()->CreateTaskWithOptions(
       actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker(),
-      std::move(task_options), nullptr);
+      std::move(task_options), nullptr,
+      actor_keyed_service()->GetActorUiStateManager());
   TestFuture<actor::mojom::ActionResultPtr> future;
   actor_keyed_service()->GetTask(task_id_)->AddTab(
       browser()->GetActiveTabInterface()->GetHandle(),

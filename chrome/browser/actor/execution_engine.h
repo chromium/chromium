@@ -171,15 +171,15 @@ class ExecutionEngine : public ToolDelegate,
       base::RepeatingCallback<std::unique_ptr<ExecutionEngine>(ActorTask&)>;
   static FactoryFunction& GetFactoryFunctionForTesting();
 
-  static std::unique_ptr<ExecutionEngine> Create(ActorTask& owner_task);
+  static std::unique_ptr<ExecutionEngine> Create(
+      ActorTask& owner_task,
+      std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher);
   static std::unique_ptr<ExecutionEngine> CreateForTesting(
       ActorTask& owner_task,
       std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher);
 
   // Constructors public for std::make_unique but only usable via static Create
   // method.
-  explicit ExecutionEngine(base::PassKey<ExecutionEngine>,
-                           ActorTask& owner_task);
   ExecutionEngine(base::PassKey<ExecutionEngine>,
                   ActorTask& owner_task,
                   std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher);
