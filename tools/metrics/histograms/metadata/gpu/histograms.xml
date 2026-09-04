@@ -1287,6 +1287,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.GraphiteDawn.Error" enum="GraphiteDawnError"
+    expires_after="2027-09-01">
+  <owner>lehoangquyen@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Reports the type of error encountered in DawnSharedContext::OnError.
+  </summary>
+</histogram>
+
 <histogram name="Gpu.GraphiteSharedContext.LockAcquireTimeUs"
     units="microseconds" expires_after="2027-02-28">
   <owner>magchen@chromium.org</owner>

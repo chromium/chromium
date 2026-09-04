@@ -1107,6 +1107,17 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="10" label="NoKillForGpuProgressInCrashDump"/>
 </enum>
 
+<!-- LINT.IfChange(GraphiteDawnError) -->
+
+<enum name="GraphiteDawnError">
+  <int value="0" label="Other"/>
+  <int value="1" label="DXGIError"/>
+  <int value="2" label="OutOfMemory"/>
+  <int value="3" label="Validation"/>
+</enum>
+
+<!-- LINT.ThenChange(//gpu/command_buffer/service/dawn_context_provider.cc:GraphiteDawnError) -->
+
 <!-- LINT.IfChange(GraphiteInsertRecordingStatus) -->
 
 <enum name="GraphiteInsertRecordingStatus">
