@@ -35,6 +35,7 @@ source_set("omnibox_everywhere") {
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/omnibox",
+    "//chrome/browser/ui/views/permissions:permission_prompt_observer",
     "//chrome/browser/ui/webui/top_chrome",
     "//components/feature_engagement/public",
     "//components/prefs",

@@ -333,6 +333,12 @@ void OmniboxEverywhereUIManager::EnsureContentsWrapperInitialized(
 #endif
     // Create PermissionRequestManager explicitly for this WebContents.
     permissions::PermissionRequestManager::CreateForWebContents(web_contents());
+    PermissionPromptObserver::CreateForWebContents(web_contents());
+    if (auto* observer =
+            PermissionPromptObserver::FromWebContents(web_contents())) {
+      permission_prompt_observation_.Reset();
+      permission_prompt_observation_.Observe(observer);
+    }
   }
 
   contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
@@ -615,6 +621,7 @@ void OmniboxEverywhereUIManager::CleanUpWidget() {
             },
             std::move(widget_), std::move(widget_delegate_)));
   }
+  permission_prompt_observation_.Reset();
   contents_wrapper_.reset();
   if (context_menu_runner_) {
     context_menu_runner_->Cancel();
@@ -632,6 +639,7 @@ void OmniboxEverywhereUIManager::CleanUpWidget() {
   is_demoted_ = false;
   is_screenshare_picker_open_ = false;
   is_screenshare_disclosure_open_ = false;
+  is_permission_prompt_open_ = false;
   is_dragging_ = false;
   pending_auto_resize_size_.reset();
   draggable_region_.reset();
@@ -644,6 +652,7 @@ void OmniboxEverywhereUIManager::CleanUpWidget() {
 void OmniboxEverywhereUIManager::Shutdown() {
   deactivation_task_.Cancel();
   last_shown_time_.reset();
+  permission_prompt_observation_.Reset();
   browser_collection_observation_.Reset();
   profile_pref_change_registrar_.Reset();
   CleanUpWidget();
@@ -661,7 +670,7 @@ bool OmniboxEverywhereUIManager::IsActive() const {
 bool OmniboxEverywhereUIManager::HasOpenModalDialog() const {
   return is_file_chooser_open_ || is_drive_picker_open_ ||
          is_screenshare_picker_open_ || is_screenshare_disclosure_open_ ||
-         region_select_overlay_ != nullptr;
+         is_permission_prompt_open_ || region_select_overlay_ != nullptr;
 }
 
 void OmniboxEverywhereUIManager::OnWidgetActivationChanged(
@@ -771,6 +780,12 @@ void OmniboxEverywhereUIManager::RequestMediaAccessPermission(
     content::MediaResponseCallback callback) {
   MediaCaptureDevicesDispatcher::GetInstance()->ProcessMediaAccessRequest(
       web_contents, request, std::move(callback), /*extension=*/nullptr);
+}
+
+void OmniboxEverywhereUIManager::OnPermissionPromptChanged(
+    bool is_showing,
+    const gfx::Size& prompt_size) {
+  is_permission_prompt_open_ = is_showing;
 }
 
 void OmniboxEverywhereUIManager::OnFileChooserOpened() {

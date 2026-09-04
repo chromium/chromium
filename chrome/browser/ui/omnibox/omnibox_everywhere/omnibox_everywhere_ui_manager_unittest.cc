@@ -770,6 +770,7 @@ TEST_F(OmniboxEverywhereUIManagerTest, ShutdownSynchronouslyDestroysResources) {
   EXPECT_FALSE(ui_manager->contents_wrapper_for_testing());
   EXPECT_EQ(ui_manager->profile(), nullptr);
   EXPECT_FALSE(ui_manager->is_file_chooser_open_for_testing());
+  EXPECT_FALSE(ui_manager->is_permission_prompt_open_for_testing());
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -2113,6 +2114,70 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   ui_manager->region_select_overlay_for_testing()->widget()->CloseWithReason(
       views::Widget::ClosedReason::kEscKeyPressed);
   EXPECT_TRUE(future.IsReady());
+  EXPECT_FALSE(ui_manager->HasOpenModalDialog());
+
+  task_environment()->FastForwardBy(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kActivationGracePeriod +
+      base::Milliseconds(1));
+  ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
+  EXPECT_TRUE(base::test::RunUntil([&]() { return !widget->IsVisible(); }));
+
+  ui_manager->Shutdown();
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest, PermissionPromptStateTracking) {
+  auto ui_manager = CreateUIManager();
+  EXPECT_FALSE(ui_manager->is_permission_prompt_open_for_testing());
+
+  ui_manager->OnPermissionPromptChanged(/*is_showing=*/true,
+                                        gfx::Size(100, 100));
+  EXPECT_TRUE(ui_manager->is_permission_prompt_open_for_testing());
+
+  ui_manager->OnPermissionPromptChanged(/*is_showing=*/false, gfx::Size());
+  EXPECT_FALSE(ui_manager->is_permission_prompt_open_for_testing());
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest,
+       HasOpenModalDialogUpdatesCorrectly_PermissionPrompt) {
+  auto ui_manager = CreateUIManager();
+  EXPECT_FALSE(ui_manager->HasOpenModalDialog());
+
+  ui_manager->OnPermissionPromptChanged(/*is_showing=*/true,
+                                        gfx::Size(100, 100));
+  EXPECT_TRUE(ui_manager->HasOpenModalDialog());
+
+  ui_manager->OnPermissionPromptChanged(/*is_showing=*/false, gfx::Size());
+  EXPECT_FALSE(ui_manager->HasOpenModalDialog());
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest, DismissBypassedDuringPermissionPrompt) {
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, true);
+  }
+  auto ui_manager = CreateUIManager();
+
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+  EXPECT_TRUE(widget->IsVisible());
+
+  // Mark permission prompt as showing.
+  ui_manager->OnPermissionPromptChanged(/*is_showing=*/true,
+                                        gfx::Size(100, 100));
+  EXPECT_TRUE(ui_manager->is_permission_prompt_open_for_testing());
+  EXPECT_TRUE(ui_manager->HasOpenModalDialog());
+
+  // Simulating deactivation while permission prompt is open should NOT close
+  // the widget.
+  ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
+  EXPECT_TRUE(ui_manager->widget());
+  EXPECT_TRUE(widget->IsVisible());
+
+  // Mark permission prompt as closed and simulate deactivation after grace
+  // period.
+  ui_manager->OnPermissionPromptChanged(/*is_showing=*/false, gfx::Size());
+  EXPECT_FALSE(ui_manager->is_permission_prompt_open_for_testing());
   EXPECT_FALSE(ui_manager->HasOpenModalDialog());
 
   task_environment()->FastForwardBy(
