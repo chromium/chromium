@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_ORGANIZER_ORGANIZER_PANEL_CONTROLS_VIEW_H_
 
 #include "ui/views/layout/delegating_layout_manager.h"
-#include "ui/views/view.h"
+#include "ui/views/layout/flex_layout_view.h"
 
 namespace gfx {
 class Point;
@@ -22,8 +22,7 @@ class LabelButton;
 
 // Contains the controls for the organizer panel, including the
 // button to close the panel.
-class OrganizerPanelControlsView : public views::View,
-                                   public views::LayoutDelegate {
+class OrganizerPanelControlsView : public views::FlexLayoutView {
   METADATA_HEADER(OrganizerPanelControlsView, views::View)
 
  public:
@@ -32,10 +31,6 @@ class OrganizerPanelControlsView : public views::View,
   OrganizerPanelControlsView& operator=(const OrganizerPanelControlsView&) =
       delete;
   ~OrganizerPanelControlsView() override;
-
-  // LayoutDelegate:
-  views::ProposedLayout CalculateProposedLayout(
-      const views::SizeBounds& size_bounds) const override;
 
   bool IsPositionInWindowCaption(const gfx::Point& point);
 
