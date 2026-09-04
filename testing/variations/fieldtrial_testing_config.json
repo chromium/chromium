@@ -18633,6 +18633,27 @@
             ]
         }
     ],
+    "SplitViewHorizontalDirectTabAccess": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledDirectTabAccess_20260902",
+                    "params": {
+                        "split_view_horizontal_direct_tab_access": "true"
+                    },
+                    "enable_features": [
+                        "SplitViewHorizontal"
+                    ]
+                }
+            ]
+        }
+    ],
     "SplitscreenVersusFullScreenForNewWindows": [
         {
             "platforms": [
