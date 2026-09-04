@@ -114,8 +114,8 @@ class OpenURLObserver : public WebContentsObserver {
     // After running the callback, |this| will stop observing, thus
     // web_contents() should return nullptr and |RunCallback| should no longer
     // be called. Then, |this| will self destroy.
-    DCHECK(web_contents());
-    DCHECK(callback_);
+    CHECK(web_contents(), base::NotFatalUntil::M159);
+    CHECK(callback_, base::NotFatalUntil::M159);
 
     scoped_refptr<base::SequencedTaskRunner> task_runner =
         base::SequencedTaskRunner::GetCurrentDefault();
@@ -135,7 +135,7 @@ blink::mojom::ServiceWorkerClientInfoPtr GetWindowClientInfo(
     const GlobalRenderFrameHostId& rfh_id,
     base::TimeTicks create_time,
     const std::string& client_uuid) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   auto* render_frame_host = RenderFrameHostImpl::FromID(rfh_id);
   if (!render_frame_host)
     return nullptr;
@@ -169,7 +169,7 @@ blink::mojom::ServiceWorkerClientInfoPtr GetWindowClientInfo(
 
 // This is only called for main frame navigations in OpenWindow().
 void DidOpenURL(OpenURLCallback callback, WebContents* web_contents) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   if (!web_contents) {
     std::move(callback).Run(GlobalRenderFrameHostId());
@@ -194,7 +194,7 @@ void AddWindowClient(
     const ServiceWorkerClient& service_worker_client,
     const base::WeakPtr<ServiceWorkerVersion>& controller,
     std::vector<blink::mojom::ServiceWorkerClientInfoPtr>* clients) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   // A client in a privileged WebContents (see //chrome's PrivilegedWebContents)
   // that forbids service worker control is invisible to service workers: it
   // cannot be controlled and is not enumerable via Clients.matchAll(), even
@@ -221,7 +221,7 @@ void AddWindowClient(
   if (!info) {
     return;
   }
-  DCHECK(!info->client_uuid.empty());
+  CHECK(!info->client_uuid.empty(), base::NotFatalUntil::M159);
 
   auto* rfh =
       RenderFrameHostImpl::FromID(service_worker_client.GetRenderFrameHostId());
@@ -266,7 +266,7 @@ void AddNonWindowClient(
     const ServiceWorkerClient& service_worker_client,
     blink::mojom::ServiceWorkerClientType client_type,
     std::vector<blink::mojom::ServiceWorkerClientInfoPtr>* out_clients) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   // A worker client that inherited ineligibility from a privileged WebContents
   // (see AddWindowClient) is likewise invisible to service workers.
   if (service_worker_client.disallows_service_worker_control()) {
@@ -335,7 +335,7 @@ struct ServiceWorkerClientInfoSort {
 void DidGetClients(
     blink::mojom::ServiceWorkerHost::GetClientsCallback callback,
     std::vector<blink::mojom::ServiceWorkerClientInfoPtr> clients) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   std::sort(clients.begin(), clients.end(), ServiceWorkerClientInfoSort());
 
@@ -347,7 +347,7 @@ void GetNonWindowClients(
     blink::mojom::ServiceWorkerClientQueryOptionsPtr options,
     blink::mojom::ServiceWorkerHost::GetClientsCallback callback,
     std::vector<blink::mojom::ServiceWorkerClientInfoPtr> clients) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (options->include_uncontrolled) {
     if (controller->context()) {
       for (auto it =
@@ -378,7 +378,7 @@ void DidGetWindowClients(
     blink::mojom::ServiceWorkerClientQueryOptionsPtr options,
     blink::mojom::ServiceWorkerHost::GetClientsCallback callback,
     std::vector<blink::mojom::ServiceWorkerClientInfoPtr> clients) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (options->client_type == blink::mojom::ServiceWorkerClientType::kAll) {
     GetNonWindowClients(controller, std::move(options), std::move(callback),
                         std::move(clients));
@@ -397,10 +397,11 @@ void GetWindowClients(
     blink::mojom::ServiceWorkerClientQueryOptionsPtr options,
     blink::mojom::ServiceWorkerHost::GetClientsCallback callback,
     std::vector<blink::mojom::ServiceWorkerClientInfoPtr> clients) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(options->client_type ==
-             blink::mojom::ServiceWorkerClientType::kWindow ||
-         options->client_type == blink::mojom::ServiceWorkerClientType::kAll);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  CHECK(
+      options->client_type == blink::mojom::ServiceWorkerClientType::kWindow ||
+          options->client_type == blink::mojom::ServiceWorkerClientType::kAll,
+      base::NotFatalUntil::M159);
 
   if (options->include_uncontrolled) {
     if (controller->context()) {
@@ -430,7 +431,7 @@ void DidGetExecutionReadyClient(
     const GURL& script_url,
     const blink::StorageKey& key,
     NavigationCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   if (!context) {
     std::move(callback).Run(blink::ServiceWorkerStatusCode::kErrorAbort,
@@ -469,8 +470,9 @@ void DidGetExecutionReadyClient(
 void FocusWindowClient(
     ServiceWorkerClient* service_worker_client,
     blink::mojom::ServiceWorkerHost::FocusClientCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(service_worker_client->IsContainerForWindowClient());
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  CHECK(service_worker_client->IsContainerForWindowClient(),
+        base::NotFatalUntil::M159);
 
   GlobalRenderFrameHostId rfh_id =
       service_worker_client->GetRenderFrameHostId();
@@ -522,7 +524,7 @@ void OpenWindow(
     const base::WeakPtr<ServiceWorkerContextCore>& context,
     WindowType type,
     NavigationCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   net::NetworkAnonymizationKey network_anonymization_key;
   std::optional<base::UnguessableToken> reporting_source;
@@ -606,7 +608,7 @@ void NavigateClient(
     scoped_refptr<PolicyContainerHost> service_worker_policy_container_host,
     const base::WeakPtr<ServiceWorkerContextCore>& context,
     NavigationCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   RenderFrameHostImpl* rfhi = RenderFrameHostImpl::FromID(rfh_id);
   WebContents* web_contents = WebContents::FromRenderFrameHost(rfhi);
@@ -697,7 +699,7 @@ void NavigateClient(
 
 void GetClient(ServiceWorkerClient* service_worker_client,
                ClientCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   if (service_worker_client->GetClientType() ==
       blink::mojom::ServiceWorkerClientType::kWindow) {
@@ -741,7 +743,7 @@ void GetClient(ServiceWorkerClient* service_worker_client,
 void GetClients(const base::WeakPtr<ServiceWorkerVersion>& controller,
                 blink::mojom::ServiceWorkerClientQueryOptionsPtr options,
                 blink::mojom::ServiceWorkerHost::GetClientsCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   auto clients = std::vector<blink::mojom::ServiceWorkerClientInfoPtr>();
   if (!controller->HasControllee() && !options->include_uncontrolled) {
@@ -766,7 +768,7 @@ void DidNavigate(const base::WeakPtr<ServiceWorkerContextCore>& context,
                  const blink::StorageKey& key,
                  NavigationCallback callback,
                  GlobalRenderFrameHostId rfh_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   if (!context) {
     std::move(callback).Run(blink::ServiceWorkerStatusCode::kErrorAbort,
@@ -795,7 +797,7 @@ void DidNavigate(const base::WeakPtr<ServiceWorkerContextCore>& context,
     // DidNavigate must be called with a preparation complete client (the
     // navigation was committed), but the client might not be execution ready
     // yet (Blink hasn't yet created the Document).
-    DCHECK(it->is_response_committed());
+    CHECK(it->is_response_committed(), base::NotFatalUntil::M159);
     if (!it->is_execution_ready()) {
       it->AddExecutionReadyCallback(base::BindOnce(
           &DidGetExecutionReadyClient, context, it->client_uuid(), script_url,

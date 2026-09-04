@@ -72,7 +72,7 @@ ServiceWorkerMainResourceLoaderInterceptor::CreateForNavigation(
     const GURL& url,
     base::WeakPtr<ServiceWorkerMainResourceHandle> navigation_handle,
     const NavigationRequestInfo& request_info) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   if (!ShouldCreateForNavigation(
           url, request_info.common_params->request_destination,
@@ -101,7 +101,7 @@ ServiceWorkerMainResourceLoaderInterceptor::CreateForPrefetch(
     const network::ResourceRequest& resource_request,
     base::WeakPtr<ServiceWorkerMainResourceHandle> navigation_handle,
     scoped_refptr<network::SharedURLLoaderFactory> network_url_loader_factory) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   CHECK(base::FeatureList::IsEnabled(features::kPrefetchServiceWorker));
 
   if (!ShouldCreateForNavigation(
@@ -130,7 +130,7 @@ std::unique_ptr<ServiceWorkerMainResourceLoaderInterceptor>
 ServiceWorkerMainResourceLoaderInterceptor::CreateForDownload(
     const network::ResourceRequest& resource_request,
     base::WeakPtr<ServiceWorkerMainResourceHandle> navigation_handle) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   CHECK(
       base::FeatureList::IsEnabled(features::kServiceWorkerInterceptDownloads));
   // The caller must populate trusted_params with an IsolationInfo so the SW
@@ -180,7 +180,7 @@ ServiceWorkerMainResourceLoaderInterceptor::CreateForWorker(
     ChildProcessId process_id,
     const DedicatedOrSharedWorkerToken& worker_token,
     base::WeakPtr<ServiceWorkerMainResourceHandle> navigation_handle) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   DCHECK(resource_request.destination ==
              network::mojom::RequestDestination::kWorker ||
@@ -227,7 +227,7 @@ ServiceWorkerMainResourceLoaderInterceptor::CreateForWorker(
 
 ServiceWorkerMainResourceLoaderInterceptor::
     ~ServiceWorkerMainResourceLoaderInterceptor() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 }
 
 void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
@@ -235,8 +235,8 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
     BrowserContext* browser_context,
     LoaderCallback loader_callback,
     FallbackCallback fallback_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(handle_);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  CHECK(handle_, base::NotFatalUntil::M159);
 
   ServiceWorkerContextCore* context_core =
       handle_->context_wrapper()->context();
@@ -324,8 +324,8 @@ ServiceWorkerMainResourceLoaderInterceptor::
     ServiceWorkerMainResourceLoaderInterceptor(
         base::WeakPtr<ServiceWorkerMainResourceHandle> handle)
     : handle_(std::move(handle)) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(handle_);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  CHECK(handle_, base::NotFatalUntil::M159);
   CHECK(handle_->scoped_service_worker_client());
 }
 

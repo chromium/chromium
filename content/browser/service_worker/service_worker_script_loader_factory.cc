@@ -41,8 +41,10 @@ ServiceWorkerScriptLoaderFactory::ServiceWorkerScriptLoaderFactory(
       worker_host_(worker_host),
       loader_factory_for_new_scripts_(
           std::move(loader_factory_for_new_scripts)) {
-  DCHECK(loader_factory_for_new_scripts_ ||
-         ServiceWorkerVersion::IsInstalled(worker_host_->version()->status()));
+  CHECK(
+      loader_factory_for_new_scripts_ ||
+          ServiceWorkerVersion::IsInstalled(worker_host_->version()->status()),
+      base::NotFatalUntil::M159);
 }
 
 ServiceWorkerScriptLoaderFactory::~ServiceWorkerScriptLoaderFactory() = default;
@@ -265,8 +267,9 @@ void ServiceWorkerScriptLoaderFactory::OnCopyScriptFinished(
   }
 
   base::ByteSize resource_size = cache_writer_->bytes_written();
-  DCHECK_EQ(cache_writer_->checksum_update_timing(),
-            ServiceWorkerCacheWriter::ChecksumUpdateTiming::kCacheMismatch);
+  CHECK_EQ(cache_writer_->checksum_update_timing(),
+           ServiceWorkerCacheWriter::ChecksumUpdateTiming::kCacheMismatch,
+           base::NotFatalUntil::M159);
   std::string sha256_checksum = cache_writer_->GetSha256Checksum();
   cache_writer_.reset();
   scoped_refptr<ServiceWorkerVersion> version = worker_host_->version();

@@ -61,7 +61,7 @@ using GetRegistrationsCallback =
 void OperationCompleteCallback(WeakPtr<ServiceWorkerInternalsHandler> internals,
                                const std::string& callback_id,
                                blink::ServiceWorkerStatusCode status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (internals) {
     internals->OnOperationComplete(static_cast<int>(status), callback_id);
   }
@@ -246,7 +246,7 @@ void DidGetStoredRegistrations(
     GetRegistrationsCallback callback,
     blink::ServiceWorkerStatusCode status,
     const std::vector<ServiceWorkerRegistrationInfo>& stored_registrations) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   std::move(callback).Run(context->GetAllLiveRegistrationInfo(),
                           context->GetAllLiveVersionInfo(),
                           stored_registrations);
@@ -271,7 +271,7 @@ class ServiceWorkerInternalsHandler::PartitionObserver
   }
   // ServiceWorkerContextCoreObserver overrides:
   void OnStarting(int64_t version_id) override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
     if (handler_) {
       handler_->OnRunningStateChanged();
     }
@@ -282,19 +282,19 @@ class ServiceWorkerInternalsHandler::PartitionObserver
                  const GURL& script_url,
                  const blink::ServiceWorkerToken& token,
                  const blink::StorageKey& key) override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
     if (handler_) {
       handler_->OnRunningStateChanged();
     }
   }
   void OnStopping(int64_t version_id) override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
     if (handler_) {
       handler_->OnRunningStateChanged();
     }
   }
   void OnStopped(int64_t version_id) override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
     if (handler_) {
       handler_->OnRunningStateChanged();
     }
@@ -303,7 +303,7 @@ class ServiceWorkerInternalsHandler::PartitionObserver
                              const GURL& scope,
                              const blink::StorageKey& key,
                              ServiceWorkerVersion::Status) override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
     if (handler_) {
       handler_->OnVersionStateChanged(partition_id_, version_id);
     }
@@ -311,7 +311,7 @@ class ServiceWorkerInternalsHandler::PartitionObserver
   void OnVersionRouterRulesChanged(
       int64_t,
       const ServiceWorkerVersion::RouterRulesForDevTools&) override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
     if (handler_) {
       handler_->OnVersionRouterRulesChanged();
     }
@@ -321,7 +321,7 @@ class ServiceWorkerInternalsHandler::PartitionObserver
       const GURL& scope,
       const blink::StorageKey& key,
       const ServiceWorkerContextObserver::ErrorInfo& info) override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
     if (!handler_) {
       return;
     }
@@ -338,7 +338,7 @@ class ServiceWorkerInternalsHandler::PartitionObserver
                               const GURL& scope,
                               const blink::StorageKey& key,
                               const ConsoleMessage& message) override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
     if (!handler_) {
       return;
     }
