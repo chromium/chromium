@@ -267,6 +267,20 @@ TEST_F(StarboardEventSourceTest, OemSemicolonKey) {
   EXPECT_EQ(last_ui_event_->AsKeyEvent()->code(), ui::DomCode::SEMICOLON);
 }
 
+TEST_F(StarboardEventSourceTest, BackspaceKey) {
+  EmulateKey(kSbKeyBackspace, /*press=*/true);
+  ASSERT_NE(last_ui_event_, nullptr);
+  EXPECT_TRUE(last_ui_event_->IsKeyEvent());
+  EXPECT_EQ(last_ui_event_->AsKeyEvent()->code(), ui::DomCode::BACKSPACE);
+  EXPECT_EQ(last_ui_event_->type(), ui::EventType::kKeyPressed);
+
+  EmulateKey(kSbKeyBackspace, /*press=*/false);
+  ASSERT_NE(last_ui_event_, nullptr);
+  EXPECT_TRUE(last_ui_event_->IsKeyEvent());
+  EXPECT_EQ(last_ui_event_->AsKeyEvent()->code(), ui::DomCode::BACKSPACE);
+  EXPECT_EQ(last_ui_event_->type(), ui::EventType::kKeyReleased);
+}
+
 TEST_F(StarboardEventSourceTest, UnsupportedKeyIsNotPropagated) {
   EmulateKey(kSbKeyCancel, /*press=*/true);
   EXPECT_EQ(last_ui_event_, nullptr);

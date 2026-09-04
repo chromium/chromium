@@ -41,7 +41,6 @@ const base::flat_map<SbKey, ui::DomCode>& GetSbKeyToDomCodeMap() {
       {kSbKeyDown, ui::DomCode::ARROW_DOWN},
       {kSbKeyLeft, ui::DomCode::ARROW_LEFT},
       {kSbKeyRight, ui::DomCode::ARROW_RIGHT},
-      {kSbKeyBack, ui::DomCode::BROWSER_BACK},
       {kSbKeyEscape, ui::DomCode::ESCAPE},
       {kSbKeyTab, ui::DomCode::TAB},
       {kSbKeyBacktab,
