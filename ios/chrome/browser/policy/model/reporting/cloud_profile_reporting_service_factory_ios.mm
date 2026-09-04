@@ -14,8 +14,10 @@
 #import "ios/chrome/browser/enterprise/signals/model/ios_signals_aggregator_factory.h"
 #import "ios/chrome/browser/policy/model/reporting/cloud_profile_reporting_service_ios.h"
 #import "ios/chrome/browser/policy/model/reporting/features.h"
+#import "ios/chrome/browser/policy/model/reporting/reporting_delegate_factory_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/public/provider/chrome/browser/device_attestation/device_attestation_api.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace enterprise_reporting {
 
@@ -39,7 +41,12 @@ CloudProfileReportingServiceFactoryIOS::BuildServiceInstanceFor(
   if (!base::FeatureList::IsEnabled(kCloudProfileReporting)) {
     return nullptr;
   }
-  return std::make_unique<CloudProfileReportingServiceIOS>(profile);
+  ReportingDelegateFactoryIOS delegate_factory;
+  return std::make_unique<CloudProfileReportingServiceIOS>(
+      enterprise::ProfileIdServiceFactoryIOS::GetForProfile(profile),
+      profile->GetSharedURLLoaderFactory(), profile->GetProfileName(),
+      delegate_factory.GetReportSchedulerDelegate(profile),
+      IOSSignalsAggregatorFactory::GetForProfile(profile));
 }
 
 CloudProfileReportingServiceFactoryIOS::CloudProfileReportingServiceFactoryIOS()
