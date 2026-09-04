@@ -57,8 +57,10 @@ public class WebContent {
                             internalAccessAdapter,
                             drawFnAccess,
                             clientFactory,
+                            webViewChromium::initSettings,
                             dependencyFactory);
         } else {
+            webViewChromium.initSettings(mAwContents.getSettings());
             mAwContents.adopt(webView, internalAccessAdapter);
         }
         return mAwContents;
