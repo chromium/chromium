@@ -17,6 +17,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
+#include "ui/events/event_target.h"
 #include "ui/events/event_utils.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/linux/linux_ui.h"
@@ -32,12 +33,10 @@ WindowEventFilterLinux::WindowEventFilterLinux(
     DesktopWindowTreeHostPlatform* desktop_window_tree_host,
     ui::WmMoveResizeHandler* handler)
     : desktop_window_tree_host_(desktop_window_tree_host), handler_(handler) {
-  desktop_window_tree_host_->window()->AddPreTargetHandler(this);
+  window_observation_.Observe(desktop_window_tree_host_->window());
 }
 
-WindowEventFilterLinux::~WindowEventFilterLinux() {
-  desktop_window_tree_host_->window()->RemovePreTargetHandler(this);
-}
+WindowEventFilterLinux::~WindowEventFilterLinux() = default;
 
 void WindowEventFilterLinux::HandleLocatedEventWithHitTest(
     int hit_test,
