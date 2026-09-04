@@ -87,11 +87,11 @@ public class BaseSuggestionViewUnitTest {
     public void onKeyDown_enterKeyWithModifiersActivatesSuggestion() {
         var event =
                 new KeyEvent(
-                        0,
-                        0,
+                        /* downTime= */ 0,
+                        /* eventTime= */ 0,
                         KeyEvent.ACTION_DOWN,
                         KeyEvent.KEYCODE_ENTER,
-                        0,
+                        /* repeat= */ 0,
                         KeyEvent.META_ALT_ON);
         assertTrue(mView.onKeyDown(KeyEvent.KEYCODE_ENTER, event));
         verify(mOnActivateListener).onResult(eq(KeyEvent.META_ALT_ON));
