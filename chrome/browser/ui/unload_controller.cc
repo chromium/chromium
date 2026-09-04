@@ -845,7 +845,7 @@ UnloadController::OkToCloseWithInProgressDownloads(
       DownloadCoreServiceFactory::GetForBrowserContext(browser_->GetProfile());
   if (last_window_for_profile && download_core_service &&
       (download_core_service->BlockingShutdownCount() > 0) &&
-      (browser_->GetProfile()->IsIncognitoProfile() ||
+      (browser_->GetProfile()->IsPrimaryOTRProfileWithRegularParent() ||
        browser_->GetProfile()->IsGuestSession())) {
     *num_downloads_blocking = download_core_service->BlockingShutdownCount();
     return browser_->GetProfile()->IsGuestSession()
