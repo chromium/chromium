@@ -12,8 +12,12 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -27,6 +31,9 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 /** Tests for {@link AnswerSuggestionViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AnswerSuggestionViewBinderUnitTest {
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
     private Context mContext;
     private PropertyModel mModel;
     private BaseSuggestionView<View> mBaseView;

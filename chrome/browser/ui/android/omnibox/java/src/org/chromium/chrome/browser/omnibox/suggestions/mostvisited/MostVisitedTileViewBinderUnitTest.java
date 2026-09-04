@@ -13,8 +13,12 @@ import android.content.Context;
 import android.view.ContextThemeWrapper;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -29,6 +33,9 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 /** Tests for {@link MostVisitedTileViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class MostVisitedTileViewBinderUnitTest {
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
     private PropertyModel mModel;
     private Context mContext;
     private TileView mView;
