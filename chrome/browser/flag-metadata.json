@@ -2242,6 +2242,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "contextual-tasks-clobber-active-tab",
+    "owners": [ "mercerd@google.com", "chrome-contextual-tasks-eng@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "contextual-tasks-close-tab-expands-side-panel",
     "owners": [
       "nguyenbryan@google.com",

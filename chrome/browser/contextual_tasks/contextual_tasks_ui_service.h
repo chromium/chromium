@@ -428,6 +428,12 @@ class ContextualTasksUiService : public KeyedService {
       std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
           session_handle);
 
+  void OpenUrlForTesting(const content::OpenURLParams& url_params,
+                         const blink::mojom::WindowFeatures& window_features,
+                         BrowserWindowInterface* browser) {
+    OpenUrl(url_params, window_features, browser);
+  }
+
   // Applies required side panel URL modifications (e.g. forced host override,
   // gsc=2, hl, cs, theme, country overrides) to the given URL for side panel
   // load.
@@ -443,6 +449,11 @@ class ContextualTasksUiService : public KeyedService {
       std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
           session_handle,
       StartTaskUiOptions options);
+
+  // Navigates to a share URL.
+  virtual void OpenUrl(const content::OpenURLParams& url_params,
+                       const blink::mojom::WindowFeatures& window_features,
+                       BrowserWindowInterface* browser);
   // The actual implementation of `HandleNavigation` that extracts more of the
   // components needed to decide if the navigation should be handled by this
   // service.
@@ -615,11 +626,6 @@ class ContextualTasksUiService : public KeyedService {
       std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
           session_handle,
       omnibox::ChromeAimEntryPoint entry_point);
-
-  // Navigates to a share URL.
-  virtual void OpenUrl(const content::OpenURLParams& url_params,
-                       const blink::mojom::WindowFeatures& window_features,
-                       BrowserWindowInterface* browser);
 
   // Sets the initial thread URL for a given task and runs any pending
   // callbacks.

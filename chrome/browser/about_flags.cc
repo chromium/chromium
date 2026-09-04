@@ -12394,6 +12394,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          contextual_tasks::kContextualTasksSidePanelRearchitecture)},
 
+    {"contextual-tasks-clobber-active-tab",
+     contextual_tasks::flag_descriptions::kContextualTasksClobberActiveTabName,
+     contextual_tasks::flag_descriptions::
+         kContextualTasksClobberActiveTabDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(contextual_tasks::kContextualTasksClobberActiveTab)},
+
     {"contextual-tasks-bypass-dismissed-cap",
      contextual_tasks::flag_descriptions::
          kContextualTasksBypassDismissedCapName,

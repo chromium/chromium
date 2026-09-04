@@ -8958,6 +8958,7 @@ from previous Chrome versions.
   <int value="-1788662002" label="MainNodeAnnotations:enabled"/>
   <int value="-1788489755" label="BrowserActuator:disabled"/>
   <int value="-1787333474" label="FedCmError:disabled"/>
+  <int value="-1787002517" label="ContextualTasksClobberActiveTab:enabled"/>
   <int value="-1786020274" label="AppSpecificHistory:enabled"/>
   <int value="-1785314304"
       label="BlockV8OptimizerOnUnfamiliarSitesSetting:enabled"/>
@@ -14839,6 +14840,7 @@ from previous Chrome versions.
   <int value="29212695" label="OfflineIndicator:enabled"/>
   <int value="29769995" label="DataSharingNonProductionEnvironment:enabled"/>
   <int value="29924596" label="AiModeOmniboxEntryPoint:enabled"/>
+  <int value="30152521" label="ContextualTasksClobberActiveTab:disabled"/>
   <int value="30466163" label="DesktopAndroidTWADisclosures:disabled"/>
   <int value="30668734" label="CanvasDrawElement:enabled"/>
   <int value="30914609" label="DisablePartnerHomepageAndroid:enabled"/>

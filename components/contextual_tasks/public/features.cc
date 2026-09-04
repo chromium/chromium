@@ -200,6 +200,9 @@ BASE_FEATURE(kContextualTasksSidePanelRearchitecture,
 BASE_FEATURE(kContextualTasksEnableStickyConversation,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kContextualTasksClobberActiveTab,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kContextualTasksNonBlockingUrlNavigation,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -882,6 +885,10 @@ bool IsContextualTasksSidePanelRearchitectureEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksSidePanelRearchitecture);
 }
 
+bool IsContextualTasksClobberActiveTabEnabled() {
+  return base::FeatureList::IsEnabled(kContextualTasksClobberActiveTab);
+}
+
 const base::FeatureParam<std::string> kContextualTasksSearchCapabilitiesVersion{
     &kContextualTasksRearchitecture,
     "contextual-tasks-search-capabilities-version",
@@ -988,6 +995,12 @@ const char kContextualTasksSidePanelRearchitectureName[] =
     "Contextual Tasks Side Panel Rearchitecture";
 const char kContextualTasksSidePanelRearchitectureDescription[] =
     "Enables the side panel rearchitecture for contextual tasks.";
+
+const char kContextualTasksClobberActiveTabName[] =
+    "Contextual Tasks Clobber Active Tab";
+const char kContextualTasksClobberActiveTabDescription[] =
+    "Enables clicking links in the contextual tasks side panel to clobber the "
+    "active tab instead of opening in a new tab.";
 
 const char kContextualTasksBypassDismissedCapName[] =
     "Contextual Tasks Bypass Dismissed Cap";

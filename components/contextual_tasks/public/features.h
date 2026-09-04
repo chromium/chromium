@@ -141,6 +141,10 @@ BASE_DECLARE_FEATURE(kContextualTasksSidePanelRearchitecture);
 // Enables sticky conversation UI that follows the user around.
 BASE_DECLARE_FEATURE(kContextualTasksEnableStickyConversation);
 
+// Enables clicking links in contextual tasks side panel to clobber the active
+// tab next to the side panel instead of opening a new tab.
+BASE_DECLARE_FEATURE(kContextualTasksClobberActiveTab);
+
 // When enabled, allows AIM search URLs to be created and navigated immediately
 // upon starting contextual input uploads without waiting for background
 // network uploads to complete.
@@ -490,6 +494,7 @@ extern bool GetIsWebpageApcComparisonEnabled();
 
 extern bool IsContextualTasksRearchitectureEnabled();
 extern bool IsContextualTasksSidePanelRearchitectureEnabled();
+extern bool IsContextualTasksClobberActiveTabEnabled();
 extern bool IsContextualTasksUnboundedMenuEnabled();
 
 inline constexpr char kContextualTasksSearchCapabilitiesHeaderName[] =
@@ -537,6 +542,8 @@ extern const char kContextualTasksEphemeralBrandedEntryPointName[];
 extern const char kContextualTasksEphemeralBrandedEntryPointDescription[];
 extern const char kContextualTasksSidePanelRearchitectureName[];
 extern const char kContextualTasksSidePanelRearchitectureDescription[];
+extern const char kContextualTasksClobberActiveTabName[];
+extern const char kContextualTasksClobberActiveTabDescription[];
 extern const char kContextualTasksBypassDismissedCapName[];
 extern const char kContextualTasksBypassDismissedCapDescription[];
 extern const char kEphemeralPinningVisibleWhenPermanentlyPinnedName[];

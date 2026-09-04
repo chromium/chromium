@@ -910,7 +910,18 @@ void ContextualTasksUiService::OnThreadLinkClicked(
     // Attempt to focus an existing tab prior to creating a new one.
     tabs::TabInterface* existing_tab = nullptr;
     existing_tab = MaybeFocusExistingOpenTab(url, tab_list, task_id);
-    if (!existing_tab) {
+    tabs::TabInterface* active_tab = tab_list->GetActiveTab();
+    if (contextual_tasks::IsContextualTasksClobberActiveTabEnabled() &&
+        active_tab && active_tab->GetContents()) {
+      OMNIBOX_LOG("nav_trace")
+          << "ContextualTasks navigation trace: OnThreadLinkClicked "
+             "clobbering active tab: "
+          << url;
+      content::NavigationController::LoadURLParams params(url);
+      params.override_user_agent =
+          content::NavigationController::UA_OVERRIDE_TRUE;
+      active_tab->GetContents()->GetController().LoadURLWithParams(params);
+    } else if (!existing_tab) {
       if (task_id.is_valid()) {
         AssociateWebContentsToTask(new_contents_ptr, task_id);
       }
@@ -920,7 +931,6 @@ void ContextualTasksUiService::OnThreadLinkClicked(
              "using InsertWebContentsAt";
       // Insert the WebContents after the current active.
       int active_tab_index = tab_list->GetActiveIndex();
-      tabs::TabInterface* active_tab = tab_list->GetActiveTab();
       tabs::TabInterface* new_tab = tab_list->InsertWebContentsAt(
           active_tab_index + 1, std::move(new_contents),
           /*should_pin=*/false,
@@ -1635,6 +1645,23 @@ void ContextualTasksUiService::OpenUrl(
 
   NavigateParams nav_params(profile_, url, url_params.transition);
   nav_params.FillNavigateParamsFromOpenURLParams(url_params);
+
+  if (contextual_tasks::IsContextualTasksClobberActiveTabEnabled() &&
+      (url_params.disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
+       url_params.disposition == WindowOpenDisposition::CURRENT_TAB)) {
+    TabListInterface* tab_list =
+        browser ? TabListInterface::From(browser) : nullptr;
+    tabs::TabInterface* active_tab =
+        tab_list ? tab_list->GetActiveTab() : nullptr;
+    if (active_tab && active_tab->GetContents()) {
+      OMNIBOX_LOG("nav_trace") << "ContextualTasks navigation trace: OpenUrl "
+                                  "clobbering active tab: "
+                               << url;
+      content::NavigationController::LoadURLParams load_params(url_params);
+      active_tab->GetContents()->GetController().LoadURLWithParams(load_params);
+      return;
+    }
+  }
 
   // Browser and tab index have no equivalent in OpenURLParams, so add them to
   // ensure the tab opens in the right tab strip position.

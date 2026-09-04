@@ -3551,4 +3551,33 @@ TEST_F(ContextualTasksUiServiceTest,
             omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
 }
 
+TEST_F(ContextualTasksUiServiceTest,
+       OpenUrl_ClobbersActiveTabWhenFeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kContextualTasksClobberActiveTab);
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  tabs::MockTabInterface active_tab;
+  ON_CALL(active_tab, GetContents).WillByDefault(Return(web_contents.get()));
+
+  NiceMock<MockBrowserWindowInterface> browser;
+  NiceMock<MockTabListInterface> mock_tab_list;
+  ON_CALL(mock_tab_list, GetActiveTab).WillByDefault(Return(&active_tab));
+  ui::ScopedUnownedUserData<TabListInterface> tab_list_registration(
+      browser.GetUnownedUserDataHost(), mock_tab_list);
+
+  GURL target_url("https://target.example.com/");
+  content::Referrer referrer;
+  content::OpenURLParams params(target_url, referrer,
+                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                ui::PAGE_TRANSITION_LINK,
+                                /*is_renderer_initiated=*/false);
+
+  real_service_->OpenUrlForTesting(params, blink::mojom::WindowFeatures(),
+                                   &browser);
+
+  EXPECT_EQ(web_contents->GetVisibleURL(), target_url);
+}
+
 }  // namespace contextual_tasks
