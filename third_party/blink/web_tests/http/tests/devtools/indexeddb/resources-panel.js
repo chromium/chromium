@@ -77,33 +77,37 @@ import * as Application from 'devtools/panels/application/application.js';
     ApplicationTestRunner.dumpIndexedDBTree();
     TestRunner.addResult('Navigating to another security origin.');
     const dbRemoval = indexedDBModel.once(Application.IndexedDBModel.Events.DatabaseRemoved);
-    const navigationPromise = new Promise(resolve =>
-      TestRunner.deprecatedRunAfterPendingDispatches(() =>
-        TestRunner.navigatePromise(withoutIndexedDBURL).then(resolve))
-    );
-    await Promise.all([dbRemoval, navigationPromise]);
+    await TestRunner.navigatePromise(withoutIndexedDBURL);
+    await dbRemoval;
     navigatedAway();
   }
 
-  function navigatedAway() {
+  async function navigatedAway() {
     TestRunner.addResult('Navigated to another security origin.');
     indexedDBModel.removeEventListener(Application.IndexedDBModel.Events.DatabaseRemoved);
     ApplicationTestRunner.dumpIndexedDBTree();
     TestRunner.addResult('Navigating back.');
-    TestRunner.deprecatedRunAfterPendingDispatches(() => TestRunner.navigate(originalURL, navigatedBack));
+    await TestRunner.navigatePromise(originalURL);
+    navigatedBack();
   }
 
   async function navigatedBack() {
     TestRunner.addResult('Navigated back.');
-    await new Promise(resolve => TestRunner.deprecatedRunAfterPendingDispatches(resolve));
-    indexedDBModel.addEventListener(Application.IndexedDBModel.Events.DatabaseLoaded, databaseLoaded2);
-    Application.ResourcesPanel.ResourcesPanel.instance().sidebar.indexedDBListTreeElement.refreshIndexedDB();
+    indexedDBModel = ApplicationTestRunner.indexedDBModel();
+    const loadedPromise = new Promise(resolve => {
+      TestRunner.addSniffer(
+          Application.ApplicationPanelSidebar.IndexedDBTreeElement.prototype,
+          'indexedDBLoadedForTest', resolve);
+    });
     TestRunner.addResult('Refreshing.');
+    Application.ResourcesPanel.ResourcesPanel.instance()
+        .sidebar.indexedDBListTreeElement.refreshIndexedDB();
+    await loadedPromise;
+    databaseLoaded2();
   }
 
   async function databaseLoaded2() {
     TestRunner.addResult('Refreshed.');
-    indexedDBModel.removeEventListener(Application.IndexedDBModel.Events.DatabaseLoaded, databaseLoaded2);
     ApplicationTestRunner.dumpIndexedDBTree();
     await ApplicationTestRunner.setupIndexedDBHelpers();
     mainFrameId = TestRunner.resourceTreeModel.mainFrame.id;

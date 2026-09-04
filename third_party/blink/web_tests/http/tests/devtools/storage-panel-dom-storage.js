@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {TestRunner} from 'test_runner';
 import {ApplicationTestRunner} from 'application_test_runner';
-
 import * as Application from 'devtools/panels/application/application.js';
+import * as UI from 'devtools/ui/legacy/legacy.js';
+import {TestRunner} from 'test_runner';
 
 (async function() {
   TestRunner.addResult(
@@ -28,9 +28,9 @@ import * as Application from 'devtools/panels/application/application.js';
       }
   `);
 
-  TestRunner.evaluateInPage('populateDOMStorage()', function(result) {
-    TestRunner.addResult('Populated local and session storage');
-  });
+  await TestRunner.evaluateInPagePromise('populateDOMStorage()');
+  TestRunner.addResult('Populated local and session storage');
+
   function name(storage) {
     return storage.isLocalStorage ? 'Local storage' : 'Session storage';
   }
@@ -48,29 +48,28 @@ import * as Application from 'devtools/panels/application/application.js';
     TestRunner.addResult('KeyValue pairs: ' + rows.join(''));
   }
 
-  function testStorageInView(storages) {
-    var storage = storages.shift();
-    if (!storage) {
-      TestRunner.addResult('DONE');
-      TestRunner.completeTest();
-      return;
-    }
-    Application.ResourcesPanel.ResourcesPanel.instance().showDOMStorage(storage);
-    TestRunner.addResult('Did show: ' + name(storage));
-    TestRunner.deprecatedRunAfterPendingDispatches(function() {
-      TestRunner.addResult(name(storage) + ' content: ');
-      var view = Application.ResourcesPanel.ResourcesPanel.instance().domStorageView;
-      dumpDataGridContent(view.contentElement.querySelector('devtools-data-grid'));
-      TestRunner.deprecatedRunAfterPendingDispatches(() => testStorageInView(storages));
-    });
+  var storages = ApplicationTestRunner.domStorageModel().storages();
+  if (!storages || !storages.length) {
+    TestRunner.addResult('FAIL: no DOM storages found.');
+    TestRunner.completeTest();
+    return;
   }
 
-  TestRunner.deprecatedRunAfterPendingDispatches(function() {
-    var storages = ApplicationTestRunner.domStorageModel().storages();
-    if (storages)
-      testStorageInView(storages.slice());
-    else
-      TestRunner.addResult('FAIL: no DOM storages found.');
+  for (const storage of storages) {
+    const showItemsPromise = TestRunner.addSnifferPromise(
+        Application.DOMStorageItemsView.DOMStorageItemsView.prototype,
+        'showItems');
+    Application.ResourcesPanel.ResourcesPanel.instance().showDOMStorage(storage);
+    TestRunner.addResult('Did show: ' + name(storage));
+    await showItemsPromise;
+    await UI.Widget.Widget.allUpdatesComplete;
+    TestRunner.addResult(name(storage) + ' content: ');
+    var view =
+        Application.ResourcesPanel.ResourcesPanel.instance().domStorageView;
+    dumpDataGridContent(
+        view.contentElement.querySelector('devtools-data-grid'));
+  }
 
-  });
+  TestRunner.addResult('DONE');
+  TestRunner.completeTest();
 })();

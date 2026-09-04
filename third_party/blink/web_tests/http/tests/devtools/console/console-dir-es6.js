@@ -102,10 +102,11 @@ import {ConsoleTestRunner} from 'console_test_runner';
     })();
   `);
 
-  ConsoleTestRunner.expandConsoleMessages(dumpConsoleMessages);
-
-  async function dumpConsoleMessages() {
-    await ConsoleTestRunner.dumpConsoleMessages(false, false, TestRunner.textContentWithLineBreaks);
-    TestRunner.completeTest();
+  await ConsoleTestRunner.expandConsoleMessagesPromise();
+  if (ConsoleTestRunner.waitForAllPopulations) {
+    await ConsoleTestRunner.waitForAllPopulations();
   }
+  await ConsoleTestRunner.dumpConsoleMessages(
+      false, false, TestRunner.textContentWithLineBreaks);
+  TestRunner.completeTest();
 })();

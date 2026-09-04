@@ -17,10 +17,11 @@ import {ConsoleTestRunner} from 'console_test_runner';
   await TestRunner.showPanel('elements');
 
   // Warm up elements renderer.
-  ConsoleTestRunner.expandConsoleMessages(callback);
-
-  async function callback() {
-    await ConsoleTestRunner.dumpConsoleMessages();
-    TestRunner.completeTest();
+  await ConsoleTestRunner.expandConsoleMessagesPromise();
+  if (ConsoleTestRunner.waitForAllPopulations) {
+    await ConsoleTestRunner.waitForAllPopulations();
   }
+
+  await ConsoleTestRunner.dumpConsoleMessages();
+  TestRunner.completeTest();
 })();

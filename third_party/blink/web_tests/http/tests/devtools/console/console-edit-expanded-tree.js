@@ -24,18 +24,26 @@ import * as Console from 'devtools/panels/console/console.js';
     })();
   `);
 
-  ConsoleTestRunner.expandConsoleMessages(onConsoleMessageExpanded);
+  await ConsoleTestRunner.expandConsoleMessagesPromise();
+  if (ConsoleTestRunner.waitForAllPopulations) {
+    await ConsoleTestRunner.waitForAllPopulations();
+  }
 
-  function onConsoleMessageExpanded() {
-    var messages = Console.ConsoleView.ConsoleView.instance().visibleViewMessages;
+  const messages =
+      Console.ConsoleView.ConsoleView.instance().visibleViewMessages;
+  for (let i = 0; i < messages.length; ++i) {
+    const message = messages[i];
 
-    for (var i = 0; i < messages.length; ++i) {
-      var message = messages[i];
-      var node = message.contentElement();
-
-      for (var node = message.contentElement(); node; node = node.traverseNextNode(message.contentElement())) {
-        const treeElement = UIModule.TreeOutline.TreeElement.getTreeElementBylistItemNode(node);
-        if (treeElement) {
+    for (let node = message.contentElement(); node;
+         node = node.traverseNextNode(message.contentElement())) {
+      const treeElement =
+          UIModule.TreeOutline.TreeElement.getTreeElementBylistItemNode(node);
+      if (treeElement) {
+        if (!treeElement.firstChild() && treeElement.onpopulate) {
+          await treeElement.onpopulate();
+          await UIModule.Widget.Widget.allUpdatesComplete;
+        }
+        if (treeElement.firstChild()) {
           onTreeElement(treeElement.firstChild());
           return;
         }

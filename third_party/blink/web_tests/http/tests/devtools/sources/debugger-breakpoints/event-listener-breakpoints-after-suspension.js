@@ -40,15 +40,15 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     SourcesTestRunner.resumeExecution(suspendAll);
   }
 
-  function suspendAll() {
+  async function suspendAll() {
     TestRunner.addResult('Suspend all targets');
-    SDK.TargetManager.TargetManager.instance().suspendAllTargets();
-    TestRunner.deprecatedRunAfterPendingDispatches(resumeAll);
+    await SDK.TargetManager.TargetManager.instance().suspendAllTargets();
+    await resumeAll();
   }
 
-  function resumeAll() {
+  async function resumeAll() {
     TestRunner.addResult('Resume all targets');
-    SDK.TargetManager.TargetManager.instance().resumeAllTargets();
+    await SDK.TargetManager.TargetManager.instance().resumeAllTargets();
     SourcesTestRunner.waitUntilPaused(finish);
     TestRunner.evaluateInPageWithTimeout('addListenerAndClick()');
   }
