@@ -316,8 +316,13 @@ cr-composebox-contextual-entrypoint-and-menu {
 }
 
 :host([is-fusebox-enabled]) #composeButton {
-  top: var(--omnibox-everywhere-top-actions-top, 12px);
   margin-inline-end: 58px;
+  top: var(--omnibox-everywhere-top-actions-top, 12px);
+}
+
+:host([is-fusebox-enabled]):has(#profileIcon[is-enterprise-profile])
+    #composeButton {
+  margin-inline-end: 86px;
 }
 
 #bottomControls {
