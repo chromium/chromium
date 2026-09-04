@@ -158,6 +158,7 @@ const FeatureEntry::Choice kSendTabToSelfEnhancedHandoffChoices[] = {
      "SyncUseServerDeterminedDeviceName,"
      "SyncSessionsUsePreferredDisplayName"},
     {"Enabled with fast-follows", switches::kEnableFeatures,
+     "IPH_SendTabToSelfOmnibox,"
      "SendTabToSelfAutoOpen,"
      "SendTabToSelfExtraEntryPoints,"
      "SendTabToSelfImprovedLastActiveLabels,"
@@ -165,12 +166,15 @@ const FeatureEntry::Choice kSendTabToSelfEnhancedHandoffChoices[] = {
      "SendTabToSelfPropagateScrollPosition,"
      "SendTabToSelfPostSendToast,"
      "SendTabToSelfEnhancedBottomsheet,"
+     "SendTabToSelfSupportAutoOpenInTabGrid,"
      "SyncSimplifyDeviceNaming,"
+     "SyncDisambiguateDeviceNamesWithChannel,"
      "SyncUseServerDeterminedDeviceName,"
      "SyncSessionsUsePreferredDisplayName,"
      "SendTabToSelfIOSShareSheetDeviceList,"
      "SendTabToSelfMultiTabShare"},
     {flags_ui::kGenericExperimentChoiceDisabled, switches::kDisableFeatures,
+     "IPH_SendTabToSelfOmnibox,"
      "SendTabToSelfAutoOpen,"
      "SendTabToSelfExtraEntryPoints,"
      "SendTabToSelfImprovedLastActiveLabels,"
@@ -178,7 +182,9 @@ const FeatureEntry::Choice kSendTabToSelfEnhancedHandoffChoices[] = {
      "SendTabToSelfPropagateScrollPosition,"
      "SendTabToSelfPostSendToast,"
      "SendTabToSelfEnhancedBottomsheet,"
+     "SendTabToSelfSupportAutoOpenInTabGrid,"
      "SyncSimplifyDeviceNaming,"
+     "SyncDisambiguateDeviceNamesWithChannel,"
      "SyncUseServerDeterminedDeviceName,"
      "SyncSessionsUsePreferredDisplayName,"
      "SendTabToSelfIOSShareSheetDeviceList,"
