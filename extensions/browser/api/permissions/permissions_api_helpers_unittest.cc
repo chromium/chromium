@@ -38,7 +38,7 @@ namespace extensions {
 // Tests that we can convert PermissionSets to the generated types.
 TEST(PermissionsApiHelpersTest, Pack) {
   APIPermissionSet apis;
-  apis.insert(APIPermissionID::kTab);
+  apis.insert(APIPermissionID::kActiveTab);
 
   URLPatternSet explicit_hosts(
       {URLPattern(Extension::kValidHostPermissionSchemes, "http://a.com/*"),
@@ -53,7 +53,8 @@ TEST(PermissionsApiHelpersTest, Pack) {
                     std::move(explicit_hosts), std::move(scriptable_hosts))));
   ASSERT_TRUE(pack_result);
   ASSERT_TRUE(pack_result->permissions);
-  EXPECT_THAT(*pack_result->permissions, testing::UnorderedElementsAre("tabs"));
+  EXPECT_THAT(*pack_result->permissions,
+              testing::UnorderedElementsAre("activeTab"));
 
   ASSERT_TRUE(pack_result->origins);
   EXPECT_THAT(*pack_result->origins, testing::UnorderedElementsAre(
@@ -65,7 +66,7 @@ TEST(PermissionsApiHelpersTest, Pack) {
 // into PermissionSets.
 TEST(PermissionsApiHelpersTest, Unpack_Basic) {
   base::ListValue apis;
-  apis.Append("tabs");
+  apis.Append("activeTab");
   base::ListValue origins;
   origins.Append("http://a.com/*");
 
@@ -73,7 +74,7 @@ TEST(PermissionsApiHelpersTest, Unpack_Basic) {
   std::string error;
 
   APIPermissionSet optional_apis;
-  optional_apis.insert(APIPermissionID::kTab);
+  optional_apis.insert(APIPermissionID::kActiveTab);
   URLPatternSet optional_explicit_hosts(
       {URLPattern(Extension::kValidHostPermissionSchemes, "http://a.com/*")});
   PermissionSet optional_permissions(
@@ -95,7 +96,7 @@ TEST(PermissionsApiHelpersTest, Unpack_Basic) {
     EXPECT_TRUE(error.empty());
     EXPECT_EQ(1u, unpack_result->optional_apis.size());
     EXPECT_TRUE(
-        unpack_result->optional_apis.count(mojom::APIPermissionID::kTab));
+        unpack_result->optional_apis.count(mojom::APIPermissionID::kActiveTab));
   }
 
   // The api permissions don't need to be present either.
@@ -267,9 +268,9 @@ TEST(PermissionsApiHelpersTest, Unpack_HostSeparation) {
 // Tests that host permissions are properly partitioned according to the
 // required/optional permission sets.
 TEST(PermissionsApiHelpersTest, Unpack_APISeparation) {
-  constexpr APIPermissionID kRequired1 = APIPermissionID::kTab;
+  constexpr APIPermissionID kRequired1 = APIPermissionID::kActiveTab;
   constexpr APIPermissionID kRequired2 = APIPermissionID::kStorage;
-  constexpr APIPermissionID kOptional1 = APIPermissionID::kCookie;
+  constexpr APIPermissionID kOptional1 = APIPermissionID::kAudio;
   constexpr APIPermissionID kOptional2 = APIPermissionID::kAlarms;
   constexpr APIPermissionID kUnlisted1 = APIPermissionID::kIdle;
 
@@ -290,7 +291,7 @@ TEST(PermissionsApiHelpersTest, Unpack_APISeparation) {
 
   Permissions permissions_object;
   permissions_object.permissions =
-      std::vector<std::string>({"tabs", "cookies", "idle"});
+      std::vector<std::string>({"activeTab", "audio", "idle"});
 
   std::string error;
   std::unique_ptr<UnpackPermissionSetResult> unpack_result =

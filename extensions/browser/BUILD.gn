@@ -913,6 +913,7 @@ source_set("crx_installer") {
     deps += [ "//components/user_manager" ]
   }
 }
+
 source_set("webstore_installer") {
   sources = [
     "webstore_data_fetcher.cc",
@@ -1078,6 +1079,7 @@ source_set("unit_tests") {
     "api/file_handlers/directory_util_unittest.cc",
     "api/file_handlers/mime_util_unittest.cc",
     "api/idle/idle_api_unittest.cc",
+    "api/permissions/permissions_api_helpers_unittest.cc",
     "api/power/power_api_unittest.cc",
     "api/proxy/proxy_api_helpers_unittest.cc",
     "api/runtime/restart_after_delay_api_unittest.cc",
