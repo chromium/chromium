@@ -3306,11 +3306,6 @@ targets.bundle(
 targets.bundle(
     name = "gpu_android_arm_release_telemetry_tests",
     targets = [
-        "gpu_webgl_conformance_validating_telemetry_tests",
-
-        # Migrated individual tests below.
-        # TODO(crbug.com/541312843): Remove this comment once all tests are
-        # directly included.
         "context_lost_validating_tests",
         "expected_color_pixel_validating_test",
         "gpu_process_launch_tests",
@@ -3319,6 +3314,7 @@ targets.bundle(
         "pixel_skia_gold_validating_test",
         "screenshot_sync_validating_tests",
         "trace_test",
+        "webgl_conformance_validating_tests",
     ],
 )
 

@@ -1123,6 +1123,15 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
+    # TODO(crbug.com/554055689): Remove this thin wrapper and directly use the
+    # underlying test once V8 is migrated to use Starlark test specs.
+    name = "legacy_webgl_conformance_validating_tests",
+    tests = {
+        "webgl_conformance_validating_tests": targets.legacy_test_config(),
+    },
+)
+
+targets.legacy_basic_suite(
     name = "gpu_webgl_conformance_metal_passthrough_graphite_telemetry_tests",
     tests = {
         "webgl_conformance_metal_passthrough_graphite_tests": targets.legacy_test_config(),
@@ -1142,20 +1151,6 @@ targets.legacy_basic_suite(
             ],
             swarming = targets.swarming(
                 shards = 1,
-            ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "gpu_webgl_conformance_validating_telemetry_tests",
-    tests = {
-        "webgl_conformance_validating_tests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 2,
-            ),
-            android_swarming = targets.swarming(
-                shards = 6,
             ),
         ),
     },

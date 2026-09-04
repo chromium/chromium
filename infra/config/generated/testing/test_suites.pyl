@@ -1941,28 +1941,6 @@
       },
     },
 
-    'gpu_webgl_conformance_validating_telemetry_tests': {
-      'webgl_conformance_validating_tests': {
-        'test_common': {
-          'mixins': [
-            'has_native_resultdb_integration',
-            'gpu_force_command_decoder_validating',
-            'gpu_force_high_performance_gpu',
-            'gpu_integration_test_webgl1_args',
-            'gpu_integration_test_common_args',
-          ],
-          'module_scheme': 'flat',
-        },
-        'telemetry_test_name': 'webgl1_conformance',
-        'swarming': {
-          'shards': 2,
-        },
-        'android_swarming': {
-          'shards': 6,
-        },
-      },
-    },
-
     'gpu_webgl_conformance_vulkan_passthrough_telemetry_tests': {
       'webgl_conformance_vulkan_passthrough_tests': {
         'test_common': {
@@ -2136,6 +2114,23 @@
             'has_native_resultdb_integration',
             'gpu_force_angle_gles',
             'gpu_force_command_decoder_passthrough',
+            'gpu_force_high_performance_gpu',
+            'gpu_integration_test_webgl1_args',
+            'gpu_integration_test_common_args',
+            'legacy_gpu_webgl_conformance_shards',
+          ],
+          'module_scheme': 'flat',
+        },
+        'telemetry_test_name': 'webgl1_conformance',
+      },
+    },
+
+    'legacy_webgl_conformance_validating_tests': {
+      'webgl_conformance_validating_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
+            'gpu_force_command_decoder_validating',
             'gpu_force_high_performance_gpu',
             'gpu_integration_test_webgl1_args',
             'gpu_integration_test_common_args',
@@ -2705,7 +2700,6 @@
     ],
 
     'gpu_telemetry_tests_v8': [
-      'gpu_webgl_conformance_validating_telemetry_tests',
       'legacy_context_lost_validating_tests',
       'legacy_expected_color_pixel_validating_test',
       'legacy_gpu_process_launch_tests',
@@ -2715,6 +2709,7 @@
       'legacy_screenshot_sync_validating_tests',
       'legacy_trace_test',
       'legacy_webgl_conformance_gles_passthrough_tests',
+      'legacy_webgl_conformance_validating_tests',
     ],
 
     'gpu_v8_win_release_telemetry_tests': [
