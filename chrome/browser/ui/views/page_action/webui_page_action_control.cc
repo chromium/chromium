@@ -237,6 +237,15 @@ WebUIPageActionControl::WebUIPageActionDelegate::~WebUIPageActionDelegate() {
 
 void WebUIPageActionControl::WebUIPageActionDelegate::SetController(
     page_actions::PageActionController* controller) {
+  if (observation_.IsObserving() &&
+      observation_.GetSource()->ShouldShowAnchoredMessage()) {
+    CloseAnchoredMessage();
+  }
+  if (anchored_message_widget_) {
+    anchored_message_ = nullptr;
+    anchored_message_widget_.reset();
+  }
+  element_shown_subscription_ = {};
   observation_.Reset();
   action_item_subscription_ = {};
   controller_ = controller;
@@ -251,11 +260,6 @@ void WebUIPageActionControl::WebUIPageActionDelegate::SetController(
         controller_->CreateActionItemSubscription(&*action_item_);
     OnPageActionModelChanged(*observation_.GetSource());
   } else {
-    if (anchored_message_widget_ && !anchored_message_widget_->IsClosed()) {
-      anchored_message_widget_->CloseWithReason(
-          views::Widget::ClosedReason::kUnspecified);
-    }
-    element_shown_subscription_ = {};
     is_chip_showing_changed_callback_ = base::DoNothing();
     image_animation_started_callback_ = base::DoNothing();
     anchored_message_close_callback_ = base::DoNothing();

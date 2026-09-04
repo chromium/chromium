@@ -147,6 +147,50 @@ class WebUIPageActionControlTest : public ChromeRenderViewHostTestHarness {
   }
 
  protected:
+  struct TabContext {
+    std::unique_ptr<content::WebContents> web_contents;
+    ui::UnownedUserDataHost user_data_host;
+    tabs::MockTabInterface mock_tab;
+    tabs::TabFeatures tab_features;
+    std::unique_ptr<page_actions::PageActionControllerImpl> controller;
+  };
+
+  std::unique_ptr<TabContext> CreateTestTabContext() {
+    auto context = std::make_unique<TabContext>();
+    context->web_contents = CreateTestWebContents();
+    ON_CALL(context->mock_tab, GetUnownedUserDataHost())
+        .WillByDefault(testing::ReturnRef(context->user_data_host));
+    ON_CALL(context->mock_tab, GetContents())
+        .WillByDefault(testing::Return(context->web_contents.get()));
+    ON_CALL(context->mock_tab, GetProfile())
+        .WillByDefault(testing::Return(profile()));
+    ON_CALL(context->mock_tab, RegisterDidActivate(_))
+        .WillByDefault([](tabs::TabInterface::DidActivateCallback) {
+          return base::CallbackListSubscription();
+        });
+    ON_CALL(context->mock_tab, RegisterWillDeactivate(_))
+        .WillByDefault([](tabs::TabInterface::WillDeactivateCallback) {
+          return base::CallbackListSubscription();
+        });
+    ON_CALL(context->mock_tab, IsActivated())
+        .WillByDefault(testing::Return(true));
+
+    tabs::TabLookupFromWebContents::CreateForWebContents(
+        context->web_contents.get(), &context->mock_tab);
+    ON_CALL(context->mock_tab, GetTabFeatures())
+        .WillByDefault(testing::Return(&context->tab_features));
+
+    auto* pinned_actions_model = PinnedToolbarActionsModel::Get(profile());
+    context->controller =
+        std::make_unique<page_actions::PageActionControllerImpl>(
+            context->mock_tab,
+            std::vector<actions::ActionId>(page_actions::kActionIds.begin(),
+                                           page_actions::kActionIds.end()),
+            page_actions::PageActionPropertiesProvider(), pinned_actions_model);
+
+    return context;
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   NiceMock<MockWebUIToolbarControlDelegate> webui_delegate_;
   std::unique_ptr<actions::ActionItem> root_action_item_;
@@ -831,6 +875,91 @@ TEST_F(WebUIPageActionControlDisabledGlowUpTest,
   states = control_->GetPageActionStates();
   ASSERT_EQ(1u, states.size());
   EXPECT_EQ(0u, states[0]->icon_animation_token);
+}
+
+TEST_F(WebUIPageActionControlTest,
+       SwitchingControllerClosesActiveAnchoredMessage) {
+  control_->UpdateController(web_contents());
+
+  tabs::TabInterface* tab1 =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  ASSERT_TRUE(tab1);
+  page_actions::PageActionController* controller1 =
+      page_actions::PageActionController::From(tab1);
+  ASSERT_TRUE(controller1);
+
+  actions::ActionId target_action_id = kActionAiMode;
+  controller1->Show(target_action_id);
+  controller1->ShowAnchoredMessage(target_action_id,
+                                   page_actions::AnchoredMessageConfig{});
+  EXPECT_EQ(controller1->GetActiveAnchoredMessage(), target_action_id);
+
+  // Switching controller to nullptr should close the active anchored message on
+  // the previous controller.
+  control_->UpdateController(nullptr);
+  EXPECT_EQ(controller1->GetActiveAnchoredMessage(), std::nullopt);
+}
+
+TEST_F(WebUIPageActionControlTest,
+       SwitchingToNewControllerClosesActiveAnchoredMessage) {
+  control_->UpdateController(web_contents());
+
+  tabs::TabInterface* tab1 =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  ASSERT_TRUE(tab1);
+  page_actions::PageActionController* controller1 =
+      page_actions::PageActionController::From(tab1);
+  ASSERT_TRUE(controller1);
+
+  actions::ActionId target_action_id = kActionAiMode;
+  controller1->Show(target_action_id);
+  controller1->ShowAnchoredMessage(target_action_id,
+                                   page_actions::AnchoredMessageConfig{});
+  EXPECT_EQ(controller1->GetActiveAnchoredMessage(), target_action_id);
+
+  // Set up a second WebContents and Tab with its own PageActionController.
+  auto tab2 = CreateTestTabContext();
+
+  // Switching controller to web_contents2 should close the active anchored
+  // message on controller1.
+  control_->UpdateController(tab2->web_contents.get());
+  EXPECT_EQ(controller1->GetActiveAnchoredMessage(), std::nullopt);
+  EXPECT_FALSE(control_->IsAnchoredMessageShowing(target_action_id));
+  EXPECT_EQ(tab2->controller->GetActiveAnchoredMessage(), std::nullopt);
+}
+
+TEST_F(WebUIPageActionControlTest,
+       SwitchingToNewControllerWithActiveAnchoredMessage) {
+  control_->UpdateController(web_contents());
+
+  tabs::TabInterface* tab1 =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  ASSERT_TRUE(tab1);
+  page_actions::PageActionController* controller1 =
+      page_actions::PageActionController::From(tab1);
+  ASSERT_TRUE(controller1);
+
+  actions::ActionId target_action_id = kActionAiMode;
+  controller1->Show(target_action_id);
+  controller1->ShowAnchoredMessage(target_action_id,
+                                   page_actions::AnchoredMessageConfig{});
+  EXPECT_EQ(controller1->GetActiveAnchoredMessage(), target_action_id);
+
+  // Set up a second WebContents and Tab with its own PageActionController.
+  auto tab2 = CreateTestTabContext();
+
+  // Show an active anchored message on controller2 before switching.
+  tab2->controller->Show(target_action_id);
+  tab2->controller->ShowAnchoredMessage(target_action_id,
+                                        page_actions::AnchoredMessageConfig{});
+  EXPECT_EQ(tab2->controller->GetActiveAnchoredMessage(), target_action_id);
+
+  // Switching controller to web_contents2 should close the active anchored
+  // message on controller1 while retaining controller2's active anchored
+  // message.
+  control_->UpdateController(tab2->web_contents.get());
+  EXPECT_EQ(controller1->GetActiveAnchoredMessage(), std::nullopt);
+  EXPECT_EQ(tab2->controller->GetActiveAnchoredMessage(), target_action_id);
 }
 }  // namespace
 
