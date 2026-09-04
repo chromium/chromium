@@ -4724,7 +4724,7 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="PasswordProtection.InterstitialAction"
+<histogram name="PasswordProtection.InterstitialAction{Trigger}"
     enum="PasswordProtectionWarningAction" expires_after="2027-01-03">
   <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -4733,11 +4733,31 @@ useful for Chirp alerts (go/crca-alerts). -->
     (a.k.a chrome://reset-password page). Logged when the interstitial is shown
     and when the user chooses to change their password. Warning: this histogram
     was expired from 2021-01-30 to 2021-10-25 and 2024-09-01 to 2025-01-16; data
-    may be missing.
+    may be missing. {Trigger}
   </summary>
+  <token key="Trigger">
+    <variant name="" summary="all triggers"/>
+    <variant name=".GmailNonSyncPasswordEntry"
+        summary="Password protection triggered by entering a non-syncing gaia
+                 password that is associated with a Gmail account."/>
+    <variant name=".GSuiteNonSyncPasswordEntry"
+        summary="Password protection triggered by entering a non-syncing gaia
+                 password that is associated with a GSuite account."/>
+    <variant name=".GSuiteSyncPasswordEntry"
+        summary="Password protection triggered by entering the sync password
+                 that is associated with a GSuite account."/>
+    <variant name=".NonGaiaEnterprisePasswordEntry"
+        summary="Password protection triggered by entering a password that
+                 matches a non-Gaia enterprise password."/>
+    <variant name=".NonSyncPasswordEntry"
+        summary="Password protection triggered by entering an unconsented
+                 primary account password."/>
+    <variant name=".SyncPasswordEntry"
+        summary="Password protection triggered by entering the sync password."/>
+  </token>
 </histogram>
 
-<histogram name="PasswordProtection.ModalWarningDialogAction"
+<histogram name="PasswordProtection.ModalWarningDialogAction{Trigger}"
     enum="PasswordProtectionWarningAction" expires_after="2027-04-12">
   <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -4745,8 +4765,35 @@ useful for Chirp alerts (go/crca-alerts). -->
     Records how a user interacts with the password protection modal warning
     dialog. Logged when the dialog is shown and when the user chooses to change
     their password, ignore warning, or navigate away. Warning: this histogram
-    was expired from 2024-12-08 to 2025-01-22; data may be missing.
+    was expired from 2024-12-08 to 2025-01-22; data may be missing. {Trigger}
   </summary>
+  <token key="Trigger">
+    <variant name="" summary="all triggers"/>
+    <variant name=".GmailNonSyncPasswordEntry"
+        summary="Password protection triggered by entering a non-syncing gaia
+                 password that is associated with a Gmail account."/>
+    <variant name=".GmailSyncPasswordEntry"
+        summary="Password protection triggered by entering the sync password
+                 that is associated with a Gmail account."/>
+    <variant name=".GSuiteNonSyncPasswordEntry"
+        summary="Password protection triggered by entering a non-syncing gaia
+                 password that is associated with a GSuite account."/>
+    <variant name=".GSuiteSyncPasswordEntry"
+        summary="Password protection triggered by entering the sync password
+                 that is associated with a GSuite account."/>
+    <variant name=".NonGaiaEnterprisePasswordEntry"
+        summary="Password protection triggered by entering a password that
+                 matches a non-Gaia enterprise password."/>
+    <variant name=".NonSyncPasswordEntry"
+        summary="Password protection triggered by entering an unconsented
+                 primary account password."/>
+    <variant name=".SavedPasswordEntry"
+        summary="Password protection triggered by entering a password saved
+                 in the password manager where the account is not signed-in
+                 to Google."/>
+    <variant name=".SyncPasswordEntry"
+        summary="Password protection triggered by entering the sync password."/>
+  </token>
 </histogram>
 
 <histogram name="PasswordProtection.ModalWarningDialogLifetime" units="ms"
@@ -4772,7 +4819,7 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="PasswordProtection.PageInfoAction"
+<histogram name="PasswordProtection.PageInfoAction{Trigger}"
     enum="PasswordProtectionWarningAction" expires_after="2027-01-03">
   <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -4781,11 +4828,38 @@ useful for Chirp alerts (go/crca-alerts). -->
     password protection warning. Logged when such page info bubble is shown and
     when the user chooses to change their password, ignore warning, or mark site
     as legitimate via buttons on the page info bubble. Warning: The histogram
-    was expired from 2025-05-13 to 2025-05-22.
+    was expired from 2025-05-13 to 2025-05-22. {Trigger}
   </summary>
+  <token key="Trigger">
+    <variant name="" summary="all triggers"/>
+    <variant name=".GmailNonSyncPasswordEntry"
+        summary="Password protection triggered by entering a non-syncing gaia
+                 password that is associated with a Gmail account."/>
+    <variant name=".GmailSyncPasswordEntry"
+        summary="Password protection triggered by entering the sync password
+                 that is associated with a Gmail account."/>
+    <variant name=".GSuiteNonSyncPasswordEntry"
+        summary="Password protection triggered by entering a non-syncing gaia
+                 password that is associated with a GSuite account."/>
+    <variant name=".GSuiteSyncPasswordEntry"
+        summary="Password protection triggered by entering the sync password
+                 that is associated with a GSuite account."/>
+    <variant name=".NonGaiaEnterprisePasswordEntry"
+        summary="Password protection triggered by entering a password that
+                 matches a non-Gaia enterprise password."/>
+    <variant name=".NonSyncPasswordEntry"
+        summary="Password protection triggered by entering an unconsented
+                 primary account password."/>
+    <variant name=".SavedPasswordEntry"
+        summary="Password protection triggered by entering a password saved
+                 in the password manager where the account is not signed-in
+                 to Google."/>
+    <variant name=".SyncPasswordEntry"
+        summary="Password protection triggered by entering the sync password."/>
+  </token>
 </histogram>
 
-<histogram name="PasswordProtection.PasswordAlertModeOutcome"
+<histogram name="PasswordProtection.PasswordAlertModeOutcome{Trigger}"
     enum="PasswordProtectionRequestOutcome" expires_after="2026-12-08">
   <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -4793,8 +4867,20 @@ useful for Chirp alerts (go/crca-alerts). -->
     Records the outcome of the password alert mode, indicating if password alert
     warning is shown successfully or if it is skipped for some reason. Warning:
     this histogram was expired from 2021-01-30 to 2021-10-25; data may be
-    missing.
+    missing. {Trigger}
   </summary>
+  <token key="Trigger">
+    <variant name="" summary="all triggers"/>
+    <variant name=".GSuiteNonSyncPasswordEntry"
+        summary="Password protection triggered by entering a non-syncing gaia
+                 password that is associated with a GSuite account."/>
+    <variant name=".GSuiteSyncPasswordEntry"
+        summary="Password protection triggered by entering the sync password
+                 that is associated with a GSuite account."/>
+    <variant name=".NonGaiaEnterprisePasswordEntry"
+        summary="Password protection triggered by entering a password that
+                 matches a non-Gaia enterprise password."/>
+  </token>
 </histogram>
 
 <histogram name="PasswordProtection.PasswordProtectionResponseOrErrorCode"
@@ -4822,7 +4908,7 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="PasswordProtection.RequestOutcome"
+<histogram name="PasswordProtection.RequestOutcome{Trigger}"
     enum="PasswordProtectionRequestOutcome" expires_after="2027-01-17">
 <!-- Note to owner: This histogram can be renewed 1 full year if it is still
 useful for Chirp alerts (go/crca-alerts). -->
@@ -4832,8 +4918,45 @@ useful for Chirp alerts (go/crca-alerts). -->
   <summary>
     Records the outcome of the password protection request, indicating if
     request is sent out successfully or if it is skipped or canceled for some
-    reason.
+    reason. {Trigger}
   </summary>
+  <token key="Trigger">
+    <variant name="" summary="all triggers"/>
+    <variant name=".AnyPasswordEntry"
+        summary="Password protection triggered by entering a password that
+                 matches either/both the sync password, signed-in non-syncing
+                 password, or a saved password."/>
+    <variant name=".GmailNonSyncPasswordEntry"
+        summary="Password protection triggered by entering a non-syncing gaia
+                 password that is associated with a Gmail account."/>
+    <variant name=".GmailSyncPasswordEntry"
+        summary="Password protection triggered by entering the sync password
+                 that is associated with a Gmail account."/>
+    <variant name=".GSuiteNonSyncPasswordEntry"
+        summary="Password protection triggered by entering a non-syncing gaia
+                 password that is associated with a GSuite account."/>
+    <variant name=".GSuiteSyncPasswordEntry"
+        summary="Password protection triggered by entering the sync password
+                 that is associated with a GSuite account."/>
+    <variant name=".NonGaiaEnterprisePasswordEntry"
+        summary="Password protection triggered by entering a password that
+                 matches a non-Gaia enterprise password."/>
+    <variant name=".NonSyncPasswordEntry"
+        summary="Password protection triggered by entering an unconsented
+                 primary account password."/>
+    <variant name=".OneTimePasswordFieldDetected"
+        summary="Password protection triggered by one time password field
+                 detected."/>
+    <variant name=".PasswordFieldOnFocus"
+        summary="Password protection triggered by password field on focus
+                 event."/>
+    <variant name=".SavedPasswordEntry"
+        summary="Password protection triggered by entering a password saved
+                 in the password manager where the account is not signed-in
+                 to Google."/>
+    <variant name=".SyncPasswordEntry"
+        summary="Password protection triggered by entering the sync password."/>
+  </token>
 </histogram>
 
 <histogram name="PasswordProtection.RequestReferringAppSource"
@@ -4900,20 +5023,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="PasswordProtection.Verdict" enum="PasswordProtectionVerdict"
-    expires_after="2027-01-17">
-<!-- Note to owner: This histogram can be renewed 1 full year if it is still
-useful for Chirp alerts (go/crca-alerts). -->
-
-  <owner>nwokedi@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Verdict types returned by Safe Browsing server for a password protection
-    request. Request can be triggered when user focuses on a password field or
-    enters a protected password (syncing, signed-in, or saved).
-  </summary>
-</histogram>
-
 <histogram
     name="PasswordProtection.Verdict.{TriggerType}.SiteEngagementScore.{VerdictType}"
     units="score" expires_after="2027-05-15">
@@ -4935,6 +5044,65 @@ useful for Chirp alerts (go/crca-alerts). -->
     <variant name="Phishing" summary="PHISHING"/>
     <variant name="Safe" summary="SAFE"/>
     <variant name="Unspecified" summary="VERDICT_TYPE_UNSPECIFIED"/>
+  </token>
+</histogram>
+
+<histogram name="PasswordProtection.Verdict{Trigger}"
+    enum="PasswordProtectionVerdict" expires_after="2027-01-17">
+<!-- Note to owner: This histogram can be renewed 1 full year if it is still
+useful for Chirp alerts (go/crca-alerts). -->
+
+  <owner>nwokedi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Verdict types returned by Safe Browsing server for a password protection
+    request. Request can be triggered when user focuses on a password field or
+    enters a protected password (syncing, signed-in, or saved). {Trigger}
+  </summary>
+  <token key="Trigger">
+    <variant name="" summary="all triggers"/>
+    <variant name=".AnyPasswordEntry"
+        summary="Password protection triggered by entering a password that
+                 matches either/both the sync password, signed-in non-syncing
+                 password, or a saved password."/>
+    <variant name=".GmailNonSyncPasswordEntry"
+        summary="Password protection triggered by entering a non-syncing gaia
+                 password that is associated with a Gmail account."/>
+    <variant name=".GmailSyncPasswordEntry"
+        summary="Password protection triggered by entering the sync password
+                 that is associated with a Gmail account."/>
+    <variant name=".GSuiteNonSyncPasswordEntry"
+        summary="Password protection triggered by entering a non-syncing gaia
+                 password that is associated with a GSuite account."/>
+    <variant name=".GSuiteSyncPasswordEntry"
+        summary="Password protection triggered by entering the sync password
+                 that is associated with a GSuite account."/>
+    <variant name=".NonGaiaEnterprisePasswordEntry"
+        summary="Password protection triggered by entering a password that
+                 matches a non-Gaia enterprise password."/>
+    <variant name=".NonSyncPasswordEntry"
+        summary="Password protection triggered by entering an unconsented
+                 primary account password."/>
+    <variant name=".OneTimePasswordFieldDetected"
+        summary="Password protection triggered by one time password field
+                 detected."/>
+    <variant name=".PasswordFieldOnFocus"
+        summary="Password protection triggered by password field on focus
+                 event."/>
+    <variant name=".SavedPasswordEntry"
+        summary="Password protection triggered by entering a password saved
+                 in the password manager where the account is not signed-in
+                 to Google."/>
+    <variant name=".SyncPasswordEntry"
+        summary="Password protection triggered by entering the sync password."/>
+    <variant name=".UnknownNonPrimaryPasswordEntry"
+        summary="Password protection triggered by entering a password that
+                 does not match a primary account password but no current
+                 signed-in account is found."/>
+    <variant name=".UnknownPrimaryPasswordEntry"
+        summary="Password protection triggered by entering a password that
+                 matches a primary account password but no current signed-in
+                 account is found."/>
   </token>
 </histogram>
 
