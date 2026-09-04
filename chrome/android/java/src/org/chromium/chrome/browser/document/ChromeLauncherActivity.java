@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomiza
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.share.send_tab_to_self.OtherDevicesShortcutController;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabwindow.TabWindowInfo;
 import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
 import org.chromium.webapk.lib.common.WebApkConstants;
@@ -100,19 +101,32 @@ public class ChromeLauncherActivity extends Activity {
         // show homepage, which might require reading PartnerBrowserCustomizations provider.
         PartnerBrowserCustomizations.getInstance().initializeAsync(getApplicationContext());
 
-        int tabId = IntentHandler.getBringTabToFrontId(intent);
+        final @TabId int intentTabId =
+                IntentUtils.safeGetIntExtra(
+                        intent, IntentHandler.BRING_TAB_TO_FRONT_EXTRA, Tab.INVALID_TAB_ID);
+        final @TabId int targetTabId = IntentHandler.getBringTabToFrontId(intent);
+
+        // Notifications posted before tabs are created contain Tab.INVALID_TAB_ID. When clicked,
+        // we dynamically resolve the current tab ID from the active Actor task.
+        //
+        // Stamp the resolved ID onto the intent before forwarding to ChromeTabbedActivity,
+        // because ActorMetrics consumes EXTRA_ACTOR_TASK_ID upon receipt, preventing
+        // ChromeTabbedActivity from resolving the tab dynamically itself.
+        if (targetTabId != intentTabId && targetTabId != Tab.INVALID_TAB_ID) {
+            IntentHandler.setBringTabToFrontId(intent, targetTabId);
+        }
 
         // Check if a web search Intent is being handled.
-        if (processWebSearchIntent(tabId, intent)) return;
+        if (processWebSearchIntent(targetTabId, intent)) return;
 
         // Check if a LIVE WebappActivity has to be brought back to the foreground.  We can't
         // check for a dead WebappActivity because we don't have that information without a global
         // TabManager.  If that ever lands, code to bring back any Tab could be consolidated
         // here instead of being spread between ChromeTabbedActivity and ChromeLauncherActivity.
         // https://crbug.com/40399032, https://crbug.com/40432274
-        if (WebappLauncherActivity.bringWebappToFront(tabId)) return;
+        if (WebappLauncherActivity.bringWebappToFront(targetTabId)) return;
 
-        if (bringTabActivityToFront(tabId, intent)) return;
+        if (bringTabActivityToFront(targetTabId, intent)) return;
 
         // The notification settings cog on the flipped side of Notifications and in the Android
         // Settings "App Notifications" view will open us with a specific category.
@@ -171,7 +185,7 @@ public class ChromeLauncherActivity extends Activity {
      * @return {@code true} if the activity was found and successfully brought to the front, {@code
      *     false} otherwise (indicating that the standard intent path should be used as a fallback).
      */
-    private boolean bringTabActivityToFront(int tabId, Intent intent) {
+    private boolean bringTabActivityToFront(@TabId int tabId, Intent intent) {
         if (tabId == Tab.INVALID_TAB_ID) return false;
 
         // Fallback to the standard intent dispatch flow if the sys-call is disabled.
@@ -200,7 +214,7 @@ public class ChromeLauncherActivity extends Activity {
     }
 
     @SuppressWarnings(value = "UnsafeImplicitIntentLaunch")
-    private boolean processWebSearchIntent(int tabId, Intent intent) {
+    private boolean processWebSearchIntent(@TabId int tabId, Intent intent) {
         boolean incognito =
                 intent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false);
         String url = IntentHandler.getUrlFromIntent(intent);

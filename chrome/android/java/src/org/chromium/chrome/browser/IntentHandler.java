@@ -41,6 +41,7 @@ import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.ActorBackgroundActuationManager;
+import org.chromium.chrome.browser.actor.ActorForegroundServiceController;
 import org.chromium.chrome.browser.actor.ActorNotificationFactory;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
@@ -63,6 +64,7 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.renderer_host.ChromeNavigationUiData;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabIdManager;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
@@ -387,7 +389,7 @@ public class IntentHandler {
     private static final String NEWS_LINK_PREFIX = "http://news.google.com/news/url?";
     private static final String YOUTUBE_LINK_PREFIX_HTTPS = "https://www.youtube.com/redirect?";
     private static final String YOUTUBE_LINK_PREFIX_HTTP = "http://www.youtube.com/redirect?";
-    private static final String BRING_TAB_TO_FRONT_EXTRA = "BRING_TAB_TO_FRONT";
+    public static final String BRING_TAB_TO_FRONT_EXTRA = "BRING_TAB_TO_FRONT";
     private static final String BRING_TAB_GROUP_TO_FRONT_EXTRA = "BRING_TAB_GROUP_TO_FRONT";
     public static final String BRING_TAB_TO_FRONT_SOURCE_EXTRA = "BRING_TAB_TO_FRONT_SOURCE";
     public static final String BRING_TAB_GROUP_TO_FRONT_SOURCE_EXTRA =
@@ -1762,7 +1764,7 @@ public class IntentHandler {
      * @return Created Intent or null if this operation isn't possible.
      */
     public static Intent createTrustedBringTabToFrontIntent(
-            int tabId, @BringToFrontSource int bringToFrontSource) {
+            @TabId int tabId, @BringToFrontSource int bringToFrontSource) {
         Context context = ContextUtils.getApplicationContext();
         Intent intent = new Intent(context, ChromeLauncherActivity.class);
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
@@ -1792,13 +1794,16 @@ public class IntentHandler {
         return intent;
     }
 
-    public static int getBringTabToFrontId(Intent intent) {
+    public static @TabId int getBringTabToFrontId(Intent intent) {
         if (!wasIntentSenderChrome(intent)) return Tab.INVALID_TAB_ID;
-        return IntentUtils.safeGetIntExtra(intent, BRING_TAB_TO_FRONT_EXTRA, Tab.INVALID_TAB_ID);
+        final @TabId int tabId =
+                IntentUtils.safeGetIntExtra(intent, BRING_TAB_TO_FRONT_EXTRA, Tab.INVALID_TAB_ID);
+        if (tabId != Tab.INVALID_TAB_ID) return tabId;
+        return ActorForegroundServiceController.resolveActorIntentTabId(intent);
     }
 
     /** Sets the Bring Tab to Front ID extra for a given intent. */
-    public static void setBringTabToFrontId(Intent intent, int tabId) {
+    public static void setBringTabToFrontId(Intent intent, @TabId int tabId) {
         intent.putExtra(BRING_TAB_TO_FRONT_EXTRA, tabId);
     }
 
