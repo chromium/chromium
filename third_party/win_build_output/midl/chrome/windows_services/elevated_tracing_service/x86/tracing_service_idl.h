@@ -157,12 +157,12 @@ EXTERN_C const IID IID_ISystemTraceSession;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("DB01E5CE-10CE-4A84-8FAE-DA5E46EEF1CF")
+    MIDL_INTERFACE("CF38F35B-1913-4214-AC70-6E39C9729DA3")
     ISystemTraceSession : public IUnknown
     {
     public:
         virtual HRESULT STDMETHODCALLTYPE AcceptInvitation( 
-            /* [string][in] */ const WCHAR *server_name,
+            /* [in] */ UINT32 endpoint_handle,
             /* [out] */ DWORD *pid) = 0;
         
     };
@@ -192,7 +192,7 @@ EXTERN_C const IID IID_ISystemTraceSession;
         DECLSPEC_XFGVIRT(ISystemTraceSession, AcceptInvitation)
         HRESULT ( STDMETHODCALLTYPE *AcceptInvitation )( 
             ISystemTraceSession * This,
-            /* [string][in] */ const WCHAR *server_name,
+            /* [in] */ UINT32 endpoint_handle,
             /* [out] */ DWORD *pid);
         
         END_INTERFACE
@@ -218,8 +218,8 @@ EXTERN_C const IID IID_ISystemTraceSession;
     ( (This)->lpVtbl -> Release(This) ) 
 
 
-#define ISystemTraceSession_AcceptInvitation(This,server_name,pid)	\
-    ( (This)->lpVtbl -> AcceptInvitation(This,server_name,pid) ) 
+#define ISystemTraceSession_AcceptInvitation(This,endpoint_handle,pid)	\
+    ( (This)->lpVtbl -> AcceptInvitation(This,endpoint_handle,pid) ) 
 
 #endif /* COBJMACROS */
 
@@ -242,8 +242,8 @@ enum : HRESULT {
       MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA002),
   kErrorCouldNotGetCallingProcessPid =
       MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA003),
-  kErrorCouldNotOpenCallingProcess =
-      MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA004),
+  // kErrorCouldNotOpenCallingProcess =
+  //     MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA004),
   kErrorCouldNotDuplicateHandleToClient =
       MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA005),
   kErrorTooManyInvitations =
@@ -252,6 +252,8 @@ enum : HRESULT {
       MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA007),
   kErrorNotWaitingForInvitation =
       MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA008),
+  kErrorCouldNotDuplicateCallingProcessHandle =
+      MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA009),
 };
 
 
@@ -269,7 +271,7 @@ EXTERN_C const IID IID_ISystemTraceSessionChromium;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("A3FD580A-FFD4-4075-9174-75D0B199D3CB")
+    MIDL_INTERFACE("E0B03E2D-7682-4D83-B9FF-4574AF720500")
     ISystemTraceSessionChromium : public ISystemTraceSession
     {
     public:
@@ -300,7 +302,7 @@ EXTERN_C const IID IID_ISystemTraceSessionChromium;
         DECLSPEC_XFGVIRT(ISystemTraceSession, AcceptInvitation)
         HRESULT ( STDMETHODCALLTYPE *AcceptInvitation )( 
             ISystemTraceSessionChromium * This,
-            /* [string][in] */ const WCHAR *server_name,
+            /* [in] */ UINT32 endpoint_handle,
             /* [out] */ DWORD *pid);
         
         END_INTERFACE
@@ -326,8 +328,8 @@ EXTERN_C const IID IID_ISystemTraceSessionChromium;
     ( (This)->lpVtbl -> Release(This) ) 
 
 
-#define ISystemTraceSessionChromium_AcceptInvitation(This,server_name,pid)	\
-    ( (This)->lpVtbl -> AcceptInvitation(This,server_name,pid) ) 
+#define ISystemTraceSessionChromium_AcceptInvitation(This,endpoint_handle,pid)	\
+    ( (This)->lpVtbl -> AcceptInvitation(This,endpoint_handle,pid) ) 
 
 
 #endif /* COBJMACROS */
@@ -352,7 +354,7 @@ EXTERN_C const IID IID_ISystemTraceSessionChrome;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("056B3371-1C09-475B-A8D7-9E58BF45533E")
+    MIDL_INTERFACE("A780C41E-1D88-4E7C-98F9-B0689668055C")
     ISystemTraceSessionChrome : public ISystemTraceSession
     {
     public:
@@ -383,7 +385,7 @@ EXTERN_C const IID IID_ISystemTraceSessionChrome;
         DECLSPEC_XFGVIRT(ISystemTraceSession, AcceptInvitation)
         HRESULT ( STDMETHODCALLTYPE *AcceptInvitation )( 
             ISystemTraceSessionChrome * This,
-            /* [string][in] */ const WCHAR *server_name,
+            /* [in] */ UINT32 endpoint_handle,
             /* [out] */ DWORD *pid);
         
         END_INTERFACE
@@ -409,8 +411,8 @@ EXTERN_C const IID IID_ISystemTraceSessionChrome;
     ( (This)->lpVtbl -> Release(This) ) 
 
 
-#define ISystemTraceSessionChrome_AcceptInvitation(This,server_name,pid)	\
-    ( (This)->lpVtbl -> AcceptInvitation(This,server_name,pid) ) 
+#define ISystemTraceSessionChrome_AcceptInvitation(This,endpoint_handle,pid)	\
+    ( (This)->lpVtbl -> AcceptInvitation(This,endpoint_handle,pid) ) 
 
 
 #endif /* COBJMACROS */
@@ -435,7 +437,7 @@ EXTERN_C const IID IID_ISystemTraceSessionChromeBeta;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("A69D7D7D-9A08-422A-B6C6-B7B8D376A12C")
+    MIDL_INTERFACE("14F7041D-19E4-4F7F-AB6C-858E09DE9F97")
     ISystemTraceSessionChromeBeta : public ISystemTraceSession
     {
     public:
@@ -466,7 +468,7 @@ EXTERN_C const IID IID_ISystemTraceSessionChromeBeta;
         DECLSPEC_XFGVIRT(ISystemTraceSession, AcceptInvitation)
         HRESULT ( STDMETHODCALLTYPE *AcceptInvitation )( 
             ISystemTraceSessionChromeBeta * This,
-            /* [string][in] */ const WCHAR *server_name,
+            /* [in] */ UINT32 endpoint_handle,
             /* [out] */ DWORD *pid);
         
         END_INTERFACE
@@ -492,8 +494,8 @@ EXTERN_C const IID IID_ISystemTraceSessionChromeBeta;
     ( (This)->lpVtbl -> Release(This) ) 
 
 
-#define ISystemTraceSessionChromeBeta_AcceptInvitation(This,server_name,pid)	\
-    ( (This)->lpVtbl -> AcceptInvitation(This,server_name,pid) ) 
+#define ISystemTraceSessionChromeBeta_AcceptInvitation(This,endpoint_handle,pid)	\
+    ( (This)->lpVtbl -> AcceptInvitation(This,endpoint_handle,pid) ) 
 
 
 #endif /* COBJMACROS */
@@ -518,7 +520,7 @@ EXTERN_C const IID IID_ISystemTraceSessionChromeDev;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("E08ADAE8-9334-46ED-B0CF-DD1780158D55")
+    MIDL_INTERFACE("AEFB2E52-D121-4617-A366-DD782246FB4B")
     ISystemTraceSessionChromeDev : public ISystemTraceSession
     {
     public:
@@ -549,7 +551,7 @@ EXTERN_C const IID IID_ISystemTraceSessionChromeDev;
         DECLSPEC_XFGVIRT(ISystemTraceSession, AcceptInvitation)
         HRESULT ( STDMETHODCALLTYPE *AcceptInvitation )( 
             ISystemTraceSessionChromeDev * This,
-            /* [string][in] */ const WCHAR *server_name,
+            /* [in] */ UINT32 endpoint_handle,
             /* [out] */ DWORD *pid);
         
         END_INTERFACE
@@ -575,8 +577,8 @@ EXTERN_C const IID IID_ISystemTraceSessionChromeDev;
     ( (This)->lpVtbl -> Release(This) ) 
 
 
-#define ISystemTraceSessionChromeDev_AcceptInvitation(This,server_name,pid)	\
-    ( (This)->lpVtbl -> AcceptInvitation(This,server_name,pid) ) 
+#define ISystemTraceSessionChromeDev_AcceptInvitation(This,endpoint_handle,pid)	\
+    ( (This)->lpVtbl -> AcceptInvitation(This,endpoint_handle,pid) ) 
 
 
 #endif /* COBJMACROS */
@@ -601,7 +603,7 @@ EXTERN_C const IID IID_ISystemTraceSessionChromeCanary;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("6EFB8558-68D1-4826-A612-A180B3570375")
+    MIDL_INTERFACE("4A5732F2-DC92-4EE4-B8F4-A3216967312A")
     ISystemTraceSessionChromeCanary : public ISystemTraceSession
     {
     public:
@@ -632,7 +634,7 @@ EXTERN_C const IID IID_ISystemTraceSessionChromeCanary;
         DECLSPEC_XFGVIRT(ISystemTraceSession, AcceptInvitation)
         HRESULT ( STDMETHODCALLTYPE *AcceptInvitation )( 
             ISystemTraceSessionChromeCanary * This,
-            /* [string][in] */ const WCHAR *server_name,
+            /* [in] */ UINT32 endpoint_handle,
             /* [out] */ DWORD *pid);
         
         END_INTERFACE
@@ -658,8 +660,8 @@ EXTERN_C const IID IID_ISystemTraceSessionChromeCanary;
     ( (This)->lpVtbl -> Release(This) ) 
 
 
-#define ISystemTraceSessionChromeCanary_AcceptInvitation(This,server_name,pid)	\
-    ( (This)->lpVtbl -> AcceptInvitation(This,server_name,pid) ) 
+#define ISystemTraceSessionChromeCanary_AcceptInvitation(This,endpoint_handle,pid)	\
+    ( (This)->lpVtbl -> AcceptInvitation(This,endpoint_handle,pid) ) 
 
 
 #endif /* COBJMACROS */

@@ -49,7 +49,7 @@
 
 #include "tracing_service_idl.h"
 
-#define TYPE_FORMAT_STRING_SIZE   11                                
+#define TYPE_FORMAT_STRING_SIZE   7                                 
 #define PROC_FORMAT_STRING_SIZE   43                                
 #define EXPR_FORMAT_STRING_SIZE   1                                 
 #define TRANSMIT_AS_TABLE_SIZE    0            
@@ -240,9 +240,9 @@ static const tracing_service_idl_MIDL_PROC_FORMAT_STRING tracing_service_idl__MI
 /*  2 */	NdrFcLong( 0x0 ),	/* 0 */
 /*  6 */	NdrFcShort( 0x3 ),	/* 3 */
 /*  8 */	NdrFcShort( 0x10 ),	/* x86 Stack size/offset = 16 */
-/* 10 */	NdrFcShort( 0x0 ),	/* 0 */
+/* 10 */	NdrFcShort( 0x8 ),	/* 8 */
 /* 12 */	NdrFcShort( 0x24 ),	/* 36 */
-/* 14 */	0x46,		/* Oi2 Flags:  clt must size, has return, has ext, */
+/* 14 */	0x44,		/* Oi2 Flags:  has return, has ext, */
 			0x3,		/* 3 */
 /* 16 */	0x8,		/* 8 */
 			0x1,		/* Ext Flags:  new corr desc, */
@@ -250,11 +250,12 @@ static const tracing_service_idl_MIDL_PROC_FORMAT_STRING tracing_service_idl__MI
 /* 20 */	NdrFcShort( 0x0 ),	/* 0 */
 /* 22 */	NdrFcShort( 0x0 ),	/* 0 */
 
-	/* Parameter server_name */
+	/* Parameter endpoint_handle */
 
-/* 24 */	NdrFcShort( 0x10b ),	/* Flags:  must size, must free, in, simple ref, */
+/* 24 */	NdrFcShort( 0x48 ),	/* Flags:  in, base type, */
 /* 26 */	NdrFcShort( 0x4 ),	/* x86 Stack size/offset = 4 */
-/* 28 */	NdrFcShort( 0x4 ),	/* Type Offset=4 */
+/* 28 */	0x8,		/* FC_LONG */
+			0x0,		/* 0 */
 
 	/* Parameter pid */
 
@@ -280,13 +281,8 @@ static const tracing_service_idl_MIDL_TYPE_FORMAT_STRING tracing_service_idl__MI
         {
 			NdrFcShort( 0x0 ),	/* 0 */
 /*  2 */	
-			0x11, 0x8,	/* FC_RP [simple_pointer] */
-/*  4 */	
-			0x25,		/* FC_C_WSTRING */
-			0x5c,		/* FC_PAD */
-/*  6 */	
 			0x11, 0xc,	/* FC_RP [alloced_on_stack] [simple_pointer] */
-/*  8 */	0x8,		/* FC_LONG */
+/*  4 */	0x8,		/* FC_LONG */
 			0x5c,		/* FC_PAD */
 
 			0x0
@@ -299,7 +295,7 @@ static const tracing_service_idl_MIDL_TYPE_FORMAT_STRING tracing_service_idl__MI
 
 
 /* Object interface: ISystemTraceSession, ver. 0.0,
-   GUID={0xDB01E5CE,0x10CE,0x4A84,{0x8F,0xAE,0xDA,0x5E,0x46,0xEE,0xF1,0xCF}} */
+   GUID={0xCF38F35B,0x1913,0x4214,{0xAC,0x70,0x6E,0x39,0xC9,0x72,0x9D,0xA3}} */
 
 #pragma code_seg(".orpc")
 static const unsigned short ISystemTraceSession_FormatStringOffsetTable[] =
@@ -353,7 +349,7 @@ const CInterfaceStubVtbl _ISystemTraceSessionStubVtbl =
 
 
 /* Object interface: ISystemTraceSessionChromium, ver. 0.0,
-   GUID={0xA3FD580A,0xFFD4,0x4075,{0x91,0x74,0x75,0xD0,0xB1,0x99,0xD3,0xCB}} */
+   GUID={0xE0B03E2D,0x7682,0x4D83,{0xB9,0xFF,0x45,0x74,0xAF,0x72,0x05,0x00}} */
 
 #pragma code_seg(".orpc")
 static const unsigned short ISystemTraceSessionChromium_FormatStringOffsetTable[] =
@@ -410,7 +406,7 @@ CInterfaceStubVtbl _ISystemTraceSessionChromiumStubVtbl =
 
 
 /* Object interface: ISystemTraceSessionChrome, ver. 0.0,
-   GUID={0x056B3371,0x1C09,0x475B,{0xA8,0xD7,0x9E,0x58,0xBF,0x45,0x53,0x3E}} */
+   GUID={0xA780C41E,0x1D88,0x4E7C,{0x98,0xF9,0xB0,0x68,0x96,0x68,0x05,0x5C}} */
 
 #pragma code_seg(".orpc")
 static const unsigned short ISystemTraceSessionChrome_FormatStringOffsetTable[] =
@@ -467,7 +463,7 @@ CInterfaceStubVtbl _ISystemTraceSessionChromeStubVtbl =
 
 
 /* Object interface: ISystemTraceSessionChromeBeta, ver. 0.0,
-   GUID={0xA69D7D7D,0x9A08,0x422A,{0xB6,0xC6,0xB7,0xB8,0xD3,0x76,0xA1,0x2C}} */
+   GUID={0x14F7041D,0x19E4,0x4F7F,{0xAB,0x6C,0x85,0x8E,0x09,0xDE,0x9F,0x97}} */
 
 #pragma code_seg(".orpc")
 static const unsigned short ISystemTraceSessionChromeBeta_FormatStringOffsetTable[] =
@@ -524,7 +520,7 @@ CInterfaceStubVtbl _ISystemTraceSessionChromeBetaStubVtbl =
 
 
 /* Object interface: ISystemTraceSessionChromeDev, ver. 0.0,
-   GUID={0xE08ADAE8,0x9334,0x46ED,{0xB0,0xCF,0xDD,0x17,0x80,0x15,0x8D,0x55}} */
+   GUID={0xAEFB2E52,0xD121,0x4617,{0xA3,0x66,0xDD,0x78,0x22,0x46,0xFB,0x4B}} */
 
 #pragma code_seg(".orpc")
 static const unsigned short ISystemTraceSessionChromeDev_FormatStringOffsetTable[] =
@@ -581,7 +577,7 @@ CInterfaceStubVtbl _ISystemTraceSessionChromeDevStubVtbl =
 
 
 /* Object interface: ISystemTraceSessionChromeCanary, ver. 0.0,
-   GUID={0x6EFB8558,0x68D1,0x4826,{0xA6,0x12,0xA1,0x80,0xB3,0x57,0x03,0x75}} */
+   GUID={0x4A5732F2,0xDC92,0x4EE4,{0xB8,0xF4,0xA3,0x21,0x69,0x67,0x31,0x2A}} */
 
 #pragma code_seg(".orpc")
 static const unsigned short ISystemTraceSessionChromeCanary_FormatStringOffsetTable[] =
@@ -668,34 +664,34 @@ static const MIDL_STUB_DESC Object_StubDesc =
 
 const CInterfaceProxyVtbl * const _tracing_service_idl_ProxyVtblList[] = 
 {
-    ( CInterfaceProxyVtbl *) &_ISystemTraceSessionChromiumProxyVtbl,
-    ( CInterfaceProxyVtbl *) &_ISystemTraceSessionChromeCanaryProxyVtbl,
-    ( CInterfaceProxyVtbl *) &_ISystemTraceSessionChromeProxyVtbl,
     ( CInterfaceProxyVtbl *) &_ISystemTraceSessionChromeBetaProxyVtbl,
-    ( CInterfaceProxyVtbl *) &_ISystemTraceSessionProxyVtbl,
+    ( CInterfaceProxyVtbl *) &_ISystemTraceSessionChromeProxyVtbl,
+    ( CInterfaceProxyVtbl *) &_ISystemTraceSessionChromiumProxyVtbl,
     ( CInterfaceProxyVtbl *) &_ISystemTraceSessionChromeDevProxyVtbl,
+    ( CInterfaceProxyVtbl *) &_ISystemTraceSessionProxyVtbl,
+    ( CInterfaceProxyVtbl *) &_ISystemTraceSessionChromeCanaryProxyVtbl,
     0
 };
 
 const CInterfaceStubVtbl * const _tracing_service_idl_StubVtblList[] = 
 {
-    ( CInterfaceStubVtbl *) &_ISystemTraceSessionChromiumStubVtbl,
-    ( CInterfaceStubVtbl *) &_ISystemTraceSessionChromeCanaryStubVtbl,
-    ( CInterfaceStubVtbl *) &_ISystemTraceSessionChromeStubVtbl,
     ( CInterfaceStubVtbl *) &_ISystemTraceSessionChromeBetaStubVtbl,
-    ( CInterfaceStubVtbl *) &_ISystemTraceSessionStubVtbl,
+    ( CInterfaceStubVtbl *) &_ISystemTraceSessionChromeStubVtbl,
+    ( CInterfaceStubVtbl *) &_ISystemTraceSessionChromiumStubVtbl,
     ( CInterfaceStubVtbl *) &_ISystemTraceSessionChromeDevStubVtbl,
+    ( CInterfaceStubVtbl *) &_ISystemTraceSessionStubVtbl,
+    ( CInterfaceStubVtbl *) &_ISystemTraceSessionChromeCanaryStubVtbl,
     0
 };
 
 PCInterfaceName const _tracing_service_idl_InterfaceNamesList[] = 
 {
-    "ISystemTraceSessionChromium",
-    "ISystemTraceSessionChromeCanary",
-    "ISystemTraceSessionChrome",
     "ISystemTraceSessionChromeBeta",
-    "ISystemTraceSession",
+    "ISystemTraceSessionChrome",
+    "ISystemTraceSessionChromium",
     "ISystemTraceSessionChromeDev",
+    "ISystemTraceSession",
+    "ISystemTraceSessionChromeCanary",
     0
 };
 

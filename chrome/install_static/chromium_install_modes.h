@@ -33,6 +33,15 @@ enum InstallConstantIndex {
   NUM_INSTALL_MODES,
 };
 
+inline constexpr auto kOldTracingServiceIids = std::to_array<IID>({
+    // Replaced in 2026-09. Delete after 2028-09.
+    // {A3FD580A-FFD4-4075-9174-75D0B199D3CB}
+    {0xa3fd580a,
+     0xffd4,
+     0x4075,
+     {0x91, 0x74, 0x75, 0xd0, 0xb1, 0x99, 0xd3, 0xcb}},
+});
+
 inline constexpr auto kInstallModes = std::to_array<InstallConstants>({
     // The primary (and only) install mode for Chromium.
     {
@@ -79,13 +88,13 @@ inline constexpr auto kInstallModes = std::to_array<InstallConstants>({
                                   0x447f,
                                   {0x8b, 0xcc, 0x0e, 0x3f, 0x97, 0xbe, 0x9c,
                                    0xf2}},  // SystemTraceSession CLSID.
-        .tracing_service_iid = {0xa3fd580a,
-                                0xffd4,
-                                0x4075,
-                                {0x91, 0x74, 0x75, 0xd0, 0xb1, 0x99, 0xd3,
-                                 0xcb}},  // ISystemTraceSessionChromium IID and
+        .tracing_service_iid = {0xe0b03e2d,
+                                0x7682,
+                                0x4d83,
+                                {0xb9, 0xff, 0x45, 0x74, 0xaf, 0x72, 0x05,
+                                 0x00}},  // ISystemTraceSessionChromium IID and
                                           // TypeLib
-        .old_tracing_service_iids = {},
+        .old_tracing_service_iids = kOldTracingServiceIids,
         .default_channel_name =
             L"",  // Empty default channel name since no update integration.
         .channel_strategy = ChannelStrategy::UNSUPPORTED,

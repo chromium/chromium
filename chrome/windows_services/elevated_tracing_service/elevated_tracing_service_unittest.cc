@@ -25,13 +25,15 @@
 #include "base/win/elevation_util.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/win_util.h"
+#include "base/win/windows_handle_util.h"
 #include "chrome/windows_services/elevated_tracing_service/system_tracing_session.h"
 #include "chrome/windows_services/elevated_tracing_service/tracing_service_idl.h"
 #include "chrome/windows_services/elevated_tracing_service/with_child_test.h"
 #include "chrome/windows_services/service_program/test_support/scoped_medium_integrity.h"
 #include "chrome/windows_services/service_program/test_support/service_environment.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/platform/named_platform_channel.h"
+#include "mojo/public/cpp/platform/platform_channel.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
@@ -56,19 +58,22 @@ void TestGetServiceProcessHandle() {
       COLE_DEFAULT_PRINCIPAL, RPC_C_AUTHN_LEVEL_PKT_PRIVACY,
       RPC_C_IMP_LEVEL_IMPERSONATE, nullptr, EOAC_DYNAMIC_CLOAKING));
 
-  mojo::NamedPlatformChannel channel(mojo::NamedPlatformChannel::Options{});
+  mojo::PlatformChannel channel;
   mojo::OutgoingInvitation invitation;
   invitation.set_extra_flags(MOJO_SEND_INVITATION_FLAG_ELEVATED);
   mojo::ScopedMessagePipeHandle pipe = invitation.AttachMessagePipe(/*name=*/0);
 
+  auto remote_endpoint = channel.TakeRemoteEndpoint();
   DWORD pid = base::kNullProcessId;
-  ASSERT_HRESULT_SUCCEEDED(
-      trace_session->AcceptInvitation(channel.GetServerName().c_str(), &pid));
+  ASSERT_HRESULT_SUCCEEDED(trace_session->AcceptInvitation(
+      base::win::HandleToUint32(
+          remote_endpoint.platform_handle().GetHandle().get()),
+      &pid));
   ASSERT_NE(pid, base::kNullProcessId);
 
   mojo::OutgoingInvitation::Send(std::move(invitation),
                                  /*target_process=*/base::kNullProcessHandle,
-                                 channel.TakeServerEndpoint());
+                                 channel.TakeLocalEndpoint());
 
   // Wait for the service to connect to the pipe.
   mojo::SimpleWatcher pipe_watcher(FROM_HERE,
@@ -112,32 +117,38 @@ void TestOnlyOneInvitation() {
 
   mojo::ScopedMessagePipeHandle pipe;
   {
-    mojo::NamedPlatformChannel channel(mojo::NamedPlatformChannel::Options{});
+    mojo::PlatformChannel channel;
     mojo::OutgoingInvitation invitation;
     invitation.set_extra_flags(MOJO_SEND_INVITATION_FLAG_ELEVATED);
     pipe = invitation.AttachMessagePipe(/*name=*/0);
 
+    auto remote_endpoint = channel.TakeRemoteEndpoint();
     DWORD pid = base::kNullProcessId;
-    ASSERT_HRESULT_SUCCEEDED(
-        trace_session->AcceptInvitation(channel.GetServerName().c_str(), &pid));
+    ASSERT_HRESULT_SUCCEEDED(trace_session->AcceptInvitation(
+        base::win::HandleToUint32(
+            remote_endpoint.platform_handle().GetHandle().get()),
+        &pid));
     ASSERT_NE(pid, base::kNullProcessId);
 
     mojo::OutgoingInvitation::Send(std::move(invitation),
                                    /*target_process=*/base::kNullProcessHandle,
-                                   channel.TakeServerEndpoint());
+                                   channel.TakeLocalEndpoint());
   }
 
   {
-    mojo::NamedPlatformChannel channel(mojo::NamedPlatformChannel::Options{});
+    mojo::PlatformChannel channel;
     mojo::OutgoingInvitation invitation;
     invitation.set_extra_flags(MOJO_SEND_INVITATION_FLAG_ELEVATED);
     mojo::ScopedMessagePipeHandle pipe2 =
         invitation.AttachMessagePipe(/*name=*/0);
 
+    auto remote_endpoint = channel.TakeRemoteEndpoint();
     DWORD pid = base::kNullProcessId;
-    ASSERT_EQ(
-        trace_session->AcceptInvitation(channel.GetServerName().c_str(), &pid),
-        kErrorSessionAlreadyActive);
+    ASSERT_EQ(trace_session->AcceptInvitation(
+                  base::win::HandleToUint32(
+                      remote_endpoint.platform_handle().GetHandle().get()),
+                  &pid),
+              kErrorSessionAlreadyActive);
   }
 }
 
@@ -160,19 +171,22 @@ void TestOnlyOneSession() {
 
   mojo::ScopedMessagePipeHandle pipe;
   {
-    mojo::NamedPlatformChannel channel(mojo::NamedPlatformChannel::Options{});
+    mojo::PlatformChannel channel;
     mojo::OutgoingInvitation invitation;
     invitation.set_extra_flags(MOJO_SEND_INVITATION_FLAG_ELEVATED);
     pipe = invitation.AttachMessagePipe(/*name=*/0);
 
+    auto remote_endpoint = channel.TakeRemoteEndpoint();
     DWORD pid = base::kNullProcessId;
-    ASSERT_HRESULT_SUCCEEDED(
-        trace_session->AcceptInvitation(channel.GetServerName().c_str(), &pid));
+    ASSERT_HRESULT_SUCCEEDED(trace_session->AcceptInvitation(
+        base::win::HandleToUint32(
+            remote_endpoint.platform_handle().GetHandle().get()),
+        &pid));
     ASSERT_NE(pid, base::kNullProcessId);
 
     mojo::OutgoingInvitation::Send(std::move(invitation),
                                    /*target_process=*/base::kNullProcessHandle,
-                                   channel.TakeServerEndpoint());
+                                   channel.TakeLocalEndpoint());
   }
 
   // Now a second client is refused.
@@ -189,16 +203,43 @@ void TestOnlyOneSession() {
       COLE_DEFAULT_PRINCIPAL, RPC_C_AUTHN_LEVEL_PKT_PRIVACY,
       RPC_C_IMP_LEVEL_IMPERSONATE, nullptr, EOAC_DYNAMIC_CLOAKING));
 
-  mojo::NamedPlatformChannel channel(mojo::NamedPlatformChannel::Options{});
+  mojo::PlatformChannel channel;
   mojo::OutgoingInvitation invitation;
   invitation.set_extra_flags(MOJO_SEND_INVITATION_FLAG_ELEVATED);
   mojo::ScopedMessagePipeHandle pipe2 =
       invitation.AttachMessagePipe(/*name=*/0);
 
+  auto remote_endpoint = channel.TakeRemoteEndpoint();
   DWORD pid = base::kNullProcessId;
-  ASSERT_EQ(
-      trace_session2->AcceptInvitation(channel.GetServerName().c_str(), &pid),
-      kErrorSessionInProgress);
+  ASSERT_EQ(trace_session2->AcceptInvitation(
+                base::win::HandleToUint32(
+                    remote_endpoint.platform_handle().GetHandle().get()),
+                &pid),
+            kErrorSessionInProgress);
+}
+
+void TestInvalidHandle() {
+  Microsoft::WRL::ComPtr<IUnknown> unknown;
+  ASSERT_HRESULT_SUCCEEDED(::CoCreateInstance(
+      elevated_tracing_service::kTestSystemTracingSessionClsid, nullptr,
+      CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&unknown)));
+
+  Microsoft::WRL::ComPtr<ISystemTraceSession> trace_session;
+  ASSERT_HRESULT_SUCCEEDED(unknown.As(&trace_session));
+  unknown.Reset();
+
+  ASSERT_HRESULT_SUCCEEDED(::CoSetProxyBlanket(
+      trace_session.Get(), RPC_C_AUTHN_DEFAULT, RPC_C_AUTHZ_DEFAULT,
+      COLE_DEFAULT_PRINCIPAL, RPC_C_AUTHN_LEVEL_PKT_PRIVACY,
+      RPC_C_IMP_LEVEL_IMPERSONATE, nullptr, EOAC_DYNAMIC_CLOAKING));
+
+  DWORD pid = base::kNullProcessId;
+
+  // An event is not a pipe.
+  base::win::ScopedHandle event(::CreateEvent(nullptr, TRUE, FALSE, nullptr));
+  ASSERT_EQ(trace_session->AcceptInvitation(
+                base::win::HandleToUint32(event.get()), &pid),
+            E_INVALIDARG);
 }
 
 MULTIPROCESS_TEST_MAIN(GetServiceProcessHandleInChild) {
@@ -225,6 +266,19 @@ MULTIPROCESS_TEST_MAIN(OnlyOneInvitationInChild) {
   }
 
   TestOnlyOneInvitation();
+
+  return ::testing::Test::HasFailure() ? 1 : 0;
+}
+
+MULTIPROCESS_TEST_MAIN(InvalidHandleInChild) {
+  // base::debug::WaitForDebugger(30, /*silent=*/false);
+
+  base::win::ScopedCOMInitializer com_initializer;
+  if (!com_initializer.Succeeded()) {
+    return 1;
+  }
+
+  TestInvalidHandle();
 
   return ::testing::Test::HasFailure() ? 1 : 0;
 }
@@ -327,6 +381,18 @@ TEST_F(TracingServiceTest, OnlyOneSession) {
   TestOnlyOneSession();
 }
 
+// Tests calling into the service from the main test process itself after
+// dropping to medium integrity level.
+TEST_F(TracingServiceTest, InvalidHandle) {
+  base::win::ScopedCOMInitializer com_initializer;
+  ASSERT_TRUE(com_initializer.Succeeded());
+
+  ScopedMediumIntegrity medium_integrity;
+  ASSERT_TRUE(medium_integrity.Succeeded());
+
+  TestInvalidHandle();
+}
+
 // Tests calling into the service from a de-elevated child process. This test is
 // skipped if UAC is disabled.
 TEST_F(TracingServiceTest, GetServiceProcessHandleInChild) {
@@ -349,8 +415,7 @@ TEST_F(TracingServiceTest, GetServiceProcessHandleInChild) {
 TEST_F(TracingServiceTest, OnlyOneInvitationInChild) {
   // Pro tip: Add --show-error-dialogs to the test's command line and put
   // base::debug::WaitForDebugger(30, /*silent=*/false); in
-  // `GetServiceProcessHandleInChild()` to more easily debug in the child
-  // process.
+  // `OnlyOneInvitationInChild()` to more easily debug in the child process.
   auto child_or_error = RunInChildDeElevated("OnlyOneInvitationInChild");
 
   if (!child_or_error.has_value()) {
@@ -366,9 +431,24 @@ TEST_F(TracingServiceTest, OnlyOneInvitationInChild) {
 TEST_F(TracingServiceTest, OnlyOneSessionInChild) {
   // Pro tip: Add --show-error-dialogs to the test's command line and put
   // base::debug::WaitForDebugger(30, /*silent=*/false); in
-  // `GetServiceProcessHandleInChild()` to more easily debug in the child
-  // process.
+  // `OnlyOneSessionInChild()` to more easily debug in the child process.
   auto child_or_error = RunInChildDeElevated("OnlyOneSessionInChild");
+
+  if (!child_or_error.has_value()) {
+    GTEST_SKIP() << "Cannot de-elevate when UAC is disabled.";
+  }
+  int exit_code;
+  ASSERT_TRUE(child_or_error->WaitForExit(&exit_code));
+  ASSERT_EQ(exit_code, 0);
+}
+
+// Tests calling into the service from a de-elevated child process. This test is
+// skipped if UAC is disabled.
+TEST_F(TracingServiceTest, InvalidHandleInChild) {
+  // Pro tip: Add --show-error-dialogs to the test's command line and put
+  // base::debug::WaitForDebugger(30, /*silent=*/false); in
+  // `InvalidHandleInChild()` to more easily debug in the child process.
+  auto child_or_error = RunInChildDeElevated("InvalidHandleInChild");
 
   if (!child_or_error.has_value()) {
     GTEST_SKIP() << "Cannot de-elevate when UAC is disabled.";
@@ -401,19 +481,22 @@ MULTIPROCESS_TEST_MAIN(ConnectToServiceAndTerminateInChild) {
 
   mojo::ScopedMessagePipeHandle pipe;
   {
-    mojo::NamedPlatformChannel channel(mojo::NamedPlatformChannel::Options{});
+    mojo::PlatformChannel channel;
     mojo::OutgoingInvitation invitation;
     invitation.set_extra_flags(MOJO_SEND_INVITATION_FLAG_ELEVATED);
     pipe = invitation.AttachMessagePipe(/*name=*/0);
 
+    auto remote_endpoint = channel.TakeRemoteEndpoint();
     DWORD pid = base::kNullProcessId;
     CHECK(SUCCEEDED(trace_session->AcceptInvitation(
-        channel.GetServerName().c_str(), &pid)));
+        base::win::HandleToUint32(
+            remote_endpoint.platform_handle().GetHandle().get()),
+        &pid)));
     CHECK_NE(pid, base::kNullProcessId);
 
     mojo::OutgoingInvitation::Send(std::move(invitation),
                                    /*target_process=*/base::kNullProcessHandle,
-                                   channel.TakeServerEndpoint());
+                                   channel.TakeLocalEndpoint());
   }
 
   // A session is now active. Tell the test that the child has started. The test

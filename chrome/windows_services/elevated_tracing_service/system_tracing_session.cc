@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/win/windows_handle_util.h"
 #include "chrome/windows_services/elevated_tracing_service/service_integration.h"
 #include "chrome/windows_services/service_program/crash_reporting.h"
 #include "chrome/windows_services/service_program/get_calling_process.h"
@@ -18,8 +19,8 @@
 #include "chrome/windows_services/service_program/user_crash_state.h"
 #include "components/tracing/common/etw_system_data_source_win.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 #include "mojo/public/cpp/system/handle.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "mojo/public/cpp/system/message_pipe.h"
@@ -54,9 +55,10 @@ HRESULT SystemTracingSession::RuntimeClassInitialize(
 }
 
 // Invoked on an arbitrary RPC thread.
-HRESULT SystemTracingSession::AcceptInvitation(const wchar_t* server_name,
+HRESULT SystemTracingSession::AcceptInvitation(UINT32 endpoint_handle,
                                                DWORD* pid) {
-  if (!pid || !server_name || !*server_name) {
+  if (!pid || endpoint_handle == 0 ||
+      base::win::IsPseudoHandle(base::win::Uint32ToHandle(endpoint_handle))) {
     return E_INVALIDARG;
   }
   *pid = base::kNullProcessId;
@@ -65,32 +67,54 @@ HRESULT SystemTracingSession::AcceptInvitation(const wchar_t* server_name,
     return kErrorSessionAlreadyActive;
   }
 
-  // Impersonate the client to get a handle to the client's process and per-user
-  // state related to crash handling.
-  base::Process client_process;
+  // Obtain a handle to the client's process. I_RpcOpenClientProcess implicitly
+  // verifies the calling client's capabilities. Calling this while
+  // impersonating the client can fail or mask the RPC context.
+  base::Process client_process = GetCallingProcess(
+      PROCESS_DUP_HANDLE | PROCESS_QUERY_LIMITED_INFORMATION | SYNCHRONIZE);
+  if (!client_process.IsValid()) {
+    return kErrorCouldNotObtainCallingProcess;
+  }
+
+  // Impersonate the client to get per-user state related to crash handling.
   std::unique_ptr<UserCrashState> user_crash_state;
   if (ScopedClientImpersonation impersonate; impersonate.is_valid()) {
-    client_process = GetCallingProcess();
-    if (!client_process.IsValid()) {
-      return kErrorCouldNotObtainCallingProcess;
-    }
     user_crash_state = UserCrashState::Create(impersonate, client_process);
   } else {
     return impersonate.result();
   }
 
-  // Get a handle to the client process with appropriate rights.
   const auto client_pid = client_process.Pid();
-  if (client_pid != base::kNullProcessId) {
-    if (auto dup = base::Process::OpenWithAccess(client_pid, SYNCHRONIZE);
-        dup.IsValid()) {
-      std::swap(client_process, dup);
-    } else {
-      return kErrorCouldNotOpenCallingProcess;
-    }
-  } else {
+  if (client_pid == base::kNullProcessId) {
     return kErrorCouldNotGetCallingProcessPid;
   }
+
+  // Duplicate the client's message pipe handle into the service process.
+  HANDLE raw_handle = nullptr;
+  if (!::DuplicateHandle(client_process.Handle(),
+                         base::win::Uint32ToHandle(endpoint_handle),
+                         ::GetCurrentProcess(), &raw_handle,
+                         /*dwDesiredAccess=*/0,
+                         /*bInheritHandle=*/FALSE, DUPLICATE_SAME_ACCESS)) {
+    return E_INVALIDARG;  // Invalid endpoint handle.
+  }
+  mojo::PlatformChannelEndpoint endpoint(mojo::PlatformHandle(
+      base::win::ScopedHandle(std::exchange(raw_handle, nullptr))));
+  if (::GetFileType(endpoint.platform_handle().GetHandle().get()) !=
+      FILE_TYPE_PIPE) {
+    return E_INVALIDARG;  // Invalid endpoint handle.
+  }
+
+  // Drop down to only SYNCHRONIZE on the child process's handle. Pass ownership
+  // of `client_process`, as DUPLICATE_CLOSE_SOURCE ensures that it will be
+  // closed even on failure.
+  HANDLE raw_client_handle = nullptr;
+  if (!::DuplicateHandle(::GetCurrentProcess(), client_process.Release(),
+                         ::GetCurrentProcess(), &raw_client_handle, SYNCHRONIZE,
+                         /*bInheritHandle=*/FALSE, DUPLICATE_CLOSE_SOURCE)) {
+    return kErrorCouldNotDuplicateCallingProcessHandle;
+  }
+  client_process = base::Process(std::exchange(raw_client_handle, nullptr));
 
   // This instance is ready to become the active session provided that there
   // isn't one already.
@@ -108,10 +132,6 @@ HRESULT SystemTracingSession::AcceptInvitation(const wchar_t* server_name,
         /*process_type=*/"elevated-tracing-service", task_runner_);
   }
 
-  auto endpoint = mojo::NamedPlatformChannel::ConnectToServer(server_name);
-  if (!endpoint.is_valid()) {
-    return E_INVALIDARG;  // Invalid channel name.
-  }
   mojo::IncomingInvitation invitation = mojo::IncomingInvitation::Accept(
       std::move(endpoint), MOJO_ACCEPT_INVITATION_FLAG_ELEVATED);
   if (!invitation.is_valid()) {

@@ -12,7 +12,6 @@
 #include "chrome/browser/tracing/windows_system_tracing_client_impl_win.h"
 #include "chrome/windows_services/elevated_tracing_service/tracing_service_idl.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
-#include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,7 +31,7 @@ class MockSystemTraceSession : public ISystemTraceSession {
  public:
   MOCK_METHOD(HRESULT,
               AcceptInvitation,
-              (const wchar_t* server_name, DWORD* pid),
+              (UINT32 endpoint_handle, DWORD* pid),
               (override, Calltype(STDMETHODCALLTYPE)));
   MOCK_METHOD(HRESULT,
               QueryInterface,
@@ -73,12 +72,12 @@ TEST_F(WindowsSystemTracingClientImplTest, InviteSucceeds) {
   StrictMock<MockSystemTraceSession> session;
 
   // Configure a mock tracing session that will return the current process's PID
-  // and capture the server name to the channel on which the invitation will be
-  // sent.
-  mojo::NamedPlatformChannel::ServerName server_name;
+  // and capture the handle value for the channel on which the invitation will
+  // be sent.
+  UINT32 handle_val = 0;
   EXPECT_CALL(session, AcceptInvitation(_, _))
-      .WillOnce([&server_name](const wchar_t* name, DWORD* pid) {
-        server_name = name;
+      .WillOnce([&handle_val](UINT32 val, DWORD* pid) {
+        handle_val = val;
         *pid = ::GetCurrentProcessId();
         return S_OK;
       });
@@ -99,8 +98,8 @@ TEST_F(WindowsSystemTracingClientImplTest, InviteSucceeds) {
   histogram_tester.ExpectUniqueSample(
       "Tracing.ElevatedTracingService.LaunchResult.AcceptInvitation", S_OK, 1);
 
-  // The host should have given the service a valid server name.
-  ASSERT_FALSE(server_name.empty());
+  // The host should have given the service a valid handle.
+  ASSERT_NE(handle_val, 0u);
 }
 
 // Tests that the host properly handles the case where the service reports a
