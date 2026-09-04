@@ -18,6 +18,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/power_monitor/power_observer.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "base/types/id_type.h"
@@ -79,7 +80,8 @@ class ContextHubBackend;
 
 class ContextHubService : public KeyedService,
                           public AutoTodosStore::Observer,
-                          public signin::IdentityManager::Observer
+                          public signin::IdentityManager::Observer,
+                          public base::PowerSuspendObserver
 #if !BUILDFLAG(IS_ANDROID)
     ,
                           public BrowserTabStripTrackerDelegate,
@@ -129,6 +131,9 @@ class ContextHubService : public KeyedService,
       const GoogleServiceAuthError& error,
       signin_metrics::SourceForRefreshTokenOperation token_operation_source)
       override;
+
+  // base::PowerSuspendObserver:
+  void OnResume() override;
 
 #if !BUILDFLAG(IS_ANDROID)
   // BrowserTabStripTrackerDelegate:

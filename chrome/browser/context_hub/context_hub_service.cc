@@ -19,6 +19,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/power_monitor/power_monitor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -234,6 +235,9 @@ ContextHubService::ContextHubService(
   identity_manager_observation_.Observe(&identity_manager_.get());
   if (auto_todos_store_) {
     auto_todos_store_->AddObserver(this);
+    // Observe system suspend and resume events so that sleep duration can be
+    // accounted for, since monotonic timers freeze during suspend.
+    base::PowerMonitor::GetInstance()->AddPowerSuspendObserver(this);
     first_party_auto_todos_timer_.Start(
         FROM_HERE, features::kFirstPartyAutoTodosInterval.Get(),
         base::BindRepeating(
@@ -251,6 +255,7 @@ ContextHubService::ContextHubService(
 
 ContextHubService::~ContextHubService() {
   if (auto_todos_store_) {
+    base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
     auto_todos_store_->RemoveObserver(this);
   }
   if (pending_tab_todos_callback_) {
@@ -349,6 +354,37 @@ void ContextHubService::OnErrorStateOfRefreshTokenUpdatedForAccount(
                                      signin::ConsentLevel::kSignin) &&
       error.state() == GoogleServiceAuthError::NONE) {
     MaybeTriggerFirstPartyAutoTodosGeneration();
+  }
+}
+
+void ContextHubService::OnResume() {
+  if (!auto_todos_store_) {
+    return;
+  }
+  // RepeatingTimer uses TimeTicks (monotonic clock), which freezes across
+  // system suspend on most platforms. Use Time::Now() (wall-clock time) to
+  // determine the actual elapsed time since the last generation.
+  const base::TimeDelta time_since_last_generation =
+      base::Time::Now() - last_first_party_generation_time_;
+  if (last_first_party_generation_time_.is_null() ||
+      time_since_last_generation < base::TimeDelta() ||
+      time_since_last_generation >=
+          features::kFirstPartyAutoTodosInterval.Get()) {
+    // 24+ hours have passed while suspended (or never generated). Clean up
+    // expired entries and trigger generation now.
+    auto_todos_store_->DeleteExpiredEntries(base::DoNothing());
+    MaybeTriggerFirstPartyAutoTodosGeneration();
+  } else {
+    // Less than 24 hours have passed. Adjust the timer delay so that time spent
+    // asleep counts toward the 24-hour interval instead of freezing it.
+    const base::TimeDelta remaining =
+        features::kFirstPartyAutoTodosInterval.Get() -
+        time_since_last_generation;
+    first_party_auto_todos_timer_.Start(
+        FROM_HERE, remaining,
+        base::BindRepeating(
+            &ContextHubService::OnFirstPartyAutoTodosTimerTriggered,
+            weak_factory_.GetWeakPtr()));
   }
 }
 
@@ -718,7 +754,19 @@ void ContextHubService::FinishFirstPartyAutoTodosGeneration(bool success) {
   is_generating_first_party_auto_todos_ = false;
   if (success) {
     last_first_party_generation_time_ = base::Time::Now();
-    first_party_auto_todos_timer_.Reset();
+    // Reset the periodic background timer so the 24-hour countdown restarts
+    // from this generation (whether triggered automatically or manually). This
+    // prevents a manual generation (e.g. 2 hours before the scheduled timer)
+    // from causing the upcoming timer tick to see recent todos and skip,
+    // which would leave them unrefreshed for up to 48 hours.
+    // Use Start() rather than Reset() to ensure the delay is explicitly
+    // restored to the full 24-hour interval even if it was previously shortened
+    // by OnResume().
+    first_party_auto_todos_timer_.Start(
+        FROM_HERE, features::kFirstPartyAutoTodosInterval.Get(),
+        base::BindRepeating(
+            &ContextHubService::OnFirstPartyAutoTodosTimerTriggered,
+            weak_factory_.GetWeakPtr()));
   }
   observers_.Notify(&Observer::OnFirstPartyAutoTodosGenerationStateChanged,
                     false);

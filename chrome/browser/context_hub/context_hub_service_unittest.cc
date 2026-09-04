@@ -11,6 +11,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/power_monitor_test.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -2444,6 +2445,194 @@ TEST_F(ContextHubServiceTest,
                    _, _, _));
 
   task_environment_.FastForwardBy(base::Hours(12));
+}
+
+TEST_F(ContextHubServiceTest, AutoTodos_ManualGenerationResetsPeriodicTimer) {
+  identity_test_environment_.MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+
+  personal_context::proto::AutoTodosResponse expected_response;
+  personal_context::proto::Any any_response;
+  expected_response.SerializeToString(any_response.mutable_value());
+
+  personal_context::MockPersonalContextService mock_personal_context_service;
+  // Triggers once on startup and completes.
+  EXPECT_CALL(
+      mock_personal_context_service,
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _))
+      .WillOnce(RunOnceCallback<3>(
+          personal_context::FetchContextResult(base::ok(any_response))));
+
+  ContextHubService service(
+      &profile_, identity_test_environment_.identity_manager(),
+      &mock_personal_context_service, &mock_remote_model_executor_,
+      &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
+      std::make_unique<InMemoryMemoryBank>(),
+      std::make_unique<InMemoryTabGroupStore>(),
+      /*context_hub_backend=*/nullptr,
+      std::make_unique<InMemoryAutoTodosStore>());
+
+  // Advance to 2 hours before the 24-hour periodic timer would trigger (22
+  // hours after startup).
+  task_environment_.FastForwardBy(base::Hours(22));
+
+  // Trigger manual generation.
+  EXPECT_CALL(
+      mock_personal_context_service,
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _))
+      .WillOnce(RunOnceCallback<3>(
+          personal_context::FetchContextResult(base::ok(any_response))));
+
+  base::test::TestFuture<bool> future;
+  service.GenerateFirstPartyAutoTodos(future.GetCallback());
+  EXPECT_TRUE(future.Get());
+
+  // Fast-forward 2 hours (24 hours after startup). Because manual generation
+  // reset the periodic timer, the timer should NOT trigger here.
+  EXPECT_CALL(
+      mock_personal_context_service,
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _))
+      .Times(0);
+  task_environment_.FastForwardBy(base::Hours(2));
+
+  // Fast-forward another 22 hours (24 hours after manual generation). The
+  // periodic timer should now trigger.
+  EXPECT_CALL(
+      mock_personal_context_service,
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _));
+
+  task_environment_.FastForwardBy(base::Hours(22));
+}
+
+TEST_F(ContextHubServiceTest,
+       AutoTodos_PowerResume_TriggersWhenIntervalElapsed) {
+  base::test::ScopedPowerMonitorTestSource power_monitor_source;
+  identity_test_environment_.MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+
+  personal_context::proto::AutoTodosResponse expected_response;
+  personal_context::proto::Any any_response;
+  expected_response.SerializeToString(any_response.mutable_value());
+
+  personal_context::MockPersonalContextService mock_personal_context_service;
+  // Triggers once on startup and completes.
+  EXPECT_CALL(
+      mock_personal_context_service,
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _))
+      .WillOnce(RunOnceCallback<3>(
+          personal_context::FetchContextResult(base::ok(any_response))));
+
+  ContextHubService service(
+      &profile_, identity_test_environment_.identity_manager(),
+      &mock_personal_context_service, &mock_remote_model_executor_,
+      &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
+      std::make_unique<InMemoryMemoryBank>(),
+      std::make_unique<InMemoryTabGroupStore>(),
+      /*context_hub_backend=*/nullptr,
+      std::make_unique<InMemoryAutoTodosStore>());
+
+  // 10 hours of uptime.
+  task_environment_.FastForwardBy(base::Hours(10));
+
+  // Machine suspends.
+  power_monitor_source.GenerateSuspendEvent();
+
+  // 15 hours pass while suspended (total 25 hours wall-clock time since last
+  // generation).
+  task_environment_.AdvanceClock(base::Hours(15));
+
+  // Machine resumes. Since >= 24 hours have elapsed, generation should trigger.
+  EXPECT_CALL(
+      mock_personal_context_service,
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _))
+      .WillOnce(RunOnceCallback<3>(
+          personal_context::FetchContextResult(base::ok(any_response))));
+
+  power_monitor_source.GenerateResumeEvent();
+}
+
+TEST_F(ContextHubServiceTest,
+       AutoTodos_PowerResume_AdjustsTimerWhenIntervalNotElapsed) {
+  base::test::ScopedPowerMonitorTestSource power_monitor_source;
+
+  identity_test_environment_.MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+
+  personal_context::proto::AutoTodosResponse expected_response;
+  personal_context::proto::Any any_response;
+  expected_response.SerializeToString(any_response.mutable_value());
+
+  personal_context::MockPersonalContextService mock_personal_context_service;
+  // Triggers once on startup and completes.
+  EXPECT_CALL(
+      mock_personal_context_service,
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _))
+      .WillOnce(RunOnceCallback<3>(
+          personal_context::FetchContextResult(base::ok(any_response))));
+
+  ContextHubService service(
+      &profile_, identity_test_environment_.identity_manager(),
+      &mock_personal_context_service, &mock_remote_model_executor_,
+      &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
+      std::make_unique<InMemoryMemoryBank>(),
+      std::make_unique<InMemoryTabGroupStore>(),
+      /*context_hub_backend=*/nullptr,
+      std::make_unique<InMemoryAutoTodosStore>());
+
+  // 6 hours of uptime.
+  task_environment_.FastForwardBy(base::Hours(6));
+
+  // Machine suspends and sleeps for 10 hours.
+  power_monitor_source.GenerateSuspendEvent();
+  task_environment_.AdvanceClock(base::Hours(10));
+
+  // Machine resumes. 16 hours elapsed in total (< 24 hours).
+  // It should NOT trigger generation immediately, but adjust the timer to fire
+  // in 8 hours (24 - 16).
+  EXPECT_CALL(
+      mock_personal_context_service,
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _))
+      .Times(0);
+
+  power_monitor_source.GenerateResumeEvent();
+
+  // Fast forward 7 hours (23 hours total wall-clock time). Still shouldn't
+  // trigger.
+  task_environment_.FastForwardBy(base::Hours(7));
+
+  // Fast forward 1 more hour (24 hours total wall-clock time). Timer fires.
+  EXPECT_CALL(
+      mock_personal_context_service,
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _))
+      .WillOnce(RunOnceCallback<3>(
+          personal_context::FetchContextResult(base::ok(any_response))));
+
+  task_environment_.FastForwardBy(base::Hours(1));
+
+  // Verify that after successful generation, the timer is restored to the full
+  // 24-hour interval rather than repeating the shortened 8-hour delay.
+  EXPECT_CALL(
+      mock_personal_context_service,
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _))
+      .Times(0);
+  task_environment_.FastForwardBy(base::Hours(8));
+
+  // At +24 hours after generation (8h + 16h), the timer fires again.
+  EXPECT_CALL(
+      mock_personal_context_service,
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _));
+  task_environment_.FastForwardBy(base::Hours(16));
 }
 
 TEST_F(ContextHubServiceTest,
