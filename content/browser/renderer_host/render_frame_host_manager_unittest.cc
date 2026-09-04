@@ -597,13 +597,12 @@ class RenderFrameHostManagerTest
   }
 
   // Exposes RenderFrameHostManager::CanUseSourceSiteInstance for testing.
-  bool CanUseSourceSiteInstance(
-      RenderFrameHostManager* render_manager,
-      const UrlInfo& dest_url_info,
-      SiteInstanceImpl* source_instance,
-      bool was_server_redirect,
-      NavigationRequest::ErrorPageProcess error_page_process,
-      std::string* reason) {
+  bool CanUseSourceSiteInstance(RenderFrameHostManager* render_manager,
+                                const UrlInfo& dest_url_info,
+                                SiteInstanceImpl* source_instance,
+                                bool was_server_redirect,
+                                ErrorPageProcess error_page_process,
+                                std::string* reason) {
     return render_manager->CanUseSourceSiteInstance(
         dest_url_info, source_instance, was_server_redirect, error_page_process,
         reason);
@@ -4253,8 +4252,7 @@ TEST_P(RenderFrameHostManagerTest,
   std::string reason;
   EXPECT_FALSE(CanUseSourceSiteInstance(
       render_manager, dest_url_info, source_instance.get(),
-      /*was_server_redirect=*/false,
-      NavigationRequest::ErrorPageProcess::kNotErrorPage, &reason));
+      /*was_server_redirect=*/false, ErrorPageProcess::kNotErrorPage, &reason));
   EXPECT_NE(std::string::npos,
             reason.find("(mime-handler-isolation-id-mismatched)"))
       << "actual reason: " << reason;
@@ -4300,8 +4298,7 @@ TEST_P(RenderFrameHostManagerTest,
   std::string reason;
   EXPECT_FALSE(CanUseSourceSiteInstance(
       render_manager, dest_url_info, source_instance.get(),
-      /*was_server_redirect=*/false,
-      NavigationRequest::ErrorPageProcess::kNotErrorPage, &reason));
+      /*was_server_redirect=*/false, ErrorPageProcess::kNotErrorPage, &reason));
   EXPECT_NE(std::string::npos,
             reason.find("(mime-handler-isolation-id-mismatched)"))
       << "actual reason: " << reason;

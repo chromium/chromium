@@ -5900,8 +5900,7 @@ void NavigationRequest::SelectFrameHostForOnRequestFailedInternal(
   }
 }
 
-NavigationRequest::ErrorPageProcess
-NavigationRequest::ComputeErrorPageProcess() {
+ErrorPageProcess NavigationRequest::ComputeErrorPageProcess() {
   if (net_error_ == net::OK) {
     return ErrorPageProcess::kNotErrorPage;
   }

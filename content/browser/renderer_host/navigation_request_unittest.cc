@@ -1158,7 +1158,7 @@ TEST_F(NavigationRequestWithoutSubframeErrorPageIsolationTest,
 
   NavigationRequest* request =
       NavigationRequest::From(navigation->GetNavigationHandle());
-  ASSERT_EQ(NavigationRequest::ErrorPageProcess::kCurrentProcess,
+  ASSERT_EQ(ErrorPageProcess::kCurrentProcess,
             request->ComputeErrorPageProcess());
 
   // The error page commits in the initiator's process, so the final URL (which
@@ -1213,7 +1213,7 @@ TEST_F(
 
   NavigationRequest* request =
       NavigationRequest::From(navigation->GetNavigationHandle());
-  ASSERT_EQ(NavigationRequest::ErrorPageProcess::kCurrentProcess,
+  ASSERT_EQ(ErrorPageProcess::kCurrentProcess,
             request->ComputeErrorPageProcess());
 
   // The feature is disabled, so the final URL should NOT be reduced to its
@@ -1272,7 +1272,7 @@ TEST_F(NavigationRequestWithoutSubframeErrorPageIsolationTest,
 
   NavigationRequest* request =
       NavigationRequest::From(navigation->GetNavigationHandle());
-  ASSERT_EQ(NavigationRequest::ErrorPageProcess::kCurrentProcess,
+  ASSERT_EQ(ErrorPageProcess::kCurrentProcess,
             request->ComputeErrorPageProcess());
 
   // The final URL is same-origin with the receiving process (c.com), so it
@@ -1338,7 +1338,7 @@ TEST_F(
 
   NavigationRequest* request =
       NavigationRequest::From(navigation->GetNavigationHandle());
-  ASSERT_EQ(NavigationRequest::ErrorPageProcess::kCurrentProcess,
+  ASSERT_EQ(ErrorPageProcess::kCurrentProcess,
             request->ComputeErrorPageProcess());
 
   // The error page commits in process A (initiator). Both redirect URLs and

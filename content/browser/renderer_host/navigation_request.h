@@ -117,6 +117,7 @@ class AgentClusterKey;
 class CrossOriginEmbedderPolicyReporter;
 class FrameTreeNode;
 class InitiatorNavigationStateImpl;
+class NavigationFastFetchManager;
 class NavigationUIData;
 class NavigationURLLoader;
 class NavigatorDelegate;
@@ -125,7 +126,8 @@ class PrerenderHostRegistry;
 class RenderFrameHostCSPContext;
 class ServiceWorkerMainResourceHandle;
 class SubframeHistoryNavigationThrottle;
-class NavigationFastFetchManager;
+
+enum class ErrorPageProcess;
 
 // The primary implementation of NavigationHandle.
 //
@@ -1458,20 +1460,7 @@ class CONTENT_EXPORT NavigationRequest
     return std::move(web_ui_);
   }
 
-  enum ErrorPageProcess {
-    kNotErrorPage,
-    kPostCommitErrorPage,
-    kCurrentProcess,
-    kDestinationProcess,
-    kIsolatedProcess
-  };
-  // Helper to determine whether a navigation is committing an error page and
-  // should stay in the current process (kCurrentProcess), the destination
-  // URL's process (kDestinationProcess), an isolated process
-  // (kIsolatedProcess), or is a post-commit error page that does not have any
-  // specific process requirements and goes through the "normal navigation"
-  // path. Returns kNotErrorPage if the navigation is not an error page
-  // navigation.
+  // Helper to determine a navigation's process requirements.
   ErrorPageProcess ComputeErrorPageProcess();
 
   // This describes the reason for performing an early RenderFrameHost swap, if
@@ -3862,6 +3851,23 @@ class CONTENT_EXPORT NavigationRequest
   blink::InitiatorStateToken initiator_state_token_to_commit_;
 
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
+};
+
+enum class ErrorPageProcess {
+  // Navigation is not an error page navigation.
+  kNotErrorPage,
+  // Post-commit error page that does not have any specific process requirements
+  // and goes through the "normal navigation" path.
+  kPostCommitErrorPage,
+  // Navigation is committing an error page and should stay in the current
+  // process.
+  kCurrentProcess,
+  // Navigation is committing an error page and should stay in the destination
+  // URL's process.
+  kDestinationProcess,
+  // Navigation is committing an error page and should stay in an isolated
+  // process.
+  kIsolatedProcess
 };
 
 }  // namespace content
