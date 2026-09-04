@@ -140,7 +140,6 @@ public class WebViewChromiumAwInit {
                             mDefaultProfileHolder.initializeDefaultProfileOnUI();
                         }
                     }
-                    mFactory.getRunQueue().notifyChromiumStarted();
                 }
 
                 @Override
@@ -355,7 +354,7 @@ public class WebViewChromiumAwInit {
     }
 
     public WebViewChromiumRunQueue getRunQueue() {
-        return mFactory.getRunQueue();
+        return mStartupController.getRunQueue();
     }
 
     public Object getLazyInitLock() {

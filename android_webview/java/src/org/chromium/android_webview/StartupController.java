@@ -84,6 +84,7 @@ public class StartupController {
     private final StartupDiagnostics mStartupDiagnostics = new StartupDiagnostics();
     private final AtomicInteger mChromiumFirstStartupRequestMode =
             new AtomicInteger(StartupTasksRunner.StartupRequestMode.UNSET);
+    private final WebViewChromiumRunQueue mRunQueue = new WebViewChromiumRunQueue();
     private final WebViewChromiumRunQueue mStartupCallbackQueue = new WebViewChromiumRunQueue();
 
     private @Nullable RuntimeException mStartupException;
@@ -93,6 +94,10 @@ public class StartupController {
 
     public StartupController(Delegate delegate) {
         mDelegate = delegate;
+    }
+
+    public WebViewChromiumRunQueue getRunQueue() {
+        return mRunQueue;
     }
 
     /**
@@ -428,6 +433,7 @@ public class StartupController {
         mStartupFinished.countDown();
 
         mDelegate.onStartupComplete();
+        mRunQueue.notifyChromiumStarted();
 
         PostTask.disablePreNativeUiTasks(false);
         AwBrowserProcess.onStartupComplete();

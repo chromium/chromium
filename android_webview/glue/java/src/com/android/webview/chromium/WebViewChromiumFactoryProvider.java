@@ -152,25 +152,23 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     private static final Object sSingletonLock = new Object();
     private static WebViewChromiumFactoryProvider sSingleton;
 
-    private final WebViewChromiumRunQueue mRunQueue = new WebViewChromiumRunQueue();
-
     /* package */ WebViewChromiumRunQueue getRunQueue() {
-        return mRunQueue;
+        return mAwInit.getRunQueue();
     }
 
     // We have a 4 second timeout to try to detect deadlocks to detect and aid in debugging
     // deadlocks.
     // Do not call this method while on the UI thread!
     /* package */ void runVoidTaskOnUiThreadBlocking(Runnable r) {
-        mRunQueue.runVoidTaskOnUiThreadBlocking(r);
+        getRunQueue().runVoidTaskOnUiThreadBlocking(r);
     }
 
     /* package */ <T> T runOnUiThreadBlocking(Callable<T> c) {
-        return mRunQueue.runBlockingFuture(new FutureTask<T>(c));
+        return getRunQueue().runBlockingFuture(new FutureTask<T>(c));
     }
 
     /* package */ void addTask(Runnable task) {
-        mRunQueue.addTask(task);
+        getRunQueue().addTask(task);
     }
 
     /**
