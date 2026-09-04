@@ -29,6 +29,24 @@ function makeMockModule(brailleResult, mapForward) {
     TenjiToHiragana: (_tenji) =>
         ({ok: true, value: 'mock_hiragana', delete () {}}),
     OffsetMap: MockOffsetMap,
+    MozcConvertHiraganaToKanji: (_reading, _maxCandidates) =>
+        makeMockEmbindStringVector([]),
+  };
+}
+
+/**
+ * Creates a mock Embind std::vector<std::string>, as returned by
+ * MozcConvertHiraganaToKanji, that records whether delete() was called.
+ */
+function makeMockEmbindStringVector(values, onDelete) {
+  return {
+    size: () => values.length,
+    get: (index) => values[index],
+    delete: () => {
+      if (onDelete) {
+        onDelete();
+      }
+    },
   };
 }
 
@@ -272,5 +290,102 @@ AX_TEST_F(
           {data: {type: 'backTranslate', tenjiString: brailleString(1)}});
       assertEquals('backTranslate', response.type);
       assertEquals(undefined, response.error);
+      assertTrue(deleteCalledOnResult);
+    });
+
+// --- Tests for convert requests ---
+
+// No module loaded: expect an error response.
+AX_TEST_F(
+    'ChromeVoxSandboxedTenjiWrapperTest', 'ConvertNotInitialized', function() {
+      let response = null;
+      setPostToParentForTesting((msg) => {
+        response = msg;
+      });
+      handleSandboxMessageForTesting(
+          {data: {type: 'convert', reading: 'てんじ', maxCandidates: 20}});
+      assertEquals('convert', response.type);
+      assertTrue(!!response.error);
+      assertEquals(undefined, response.candidates);
+    });
+
+// The reading and maxCandidates are forwarded to the engine, and its
+// candidates are unpacked from the Embind vector into a plain array.
+AX_TEST_F('ChromeVoxSandboxedTenjiWrapperTest', 'ConvertSuccess', function() {
+  const mockModule = makeMockModule('', (_byte) => 0);
+  let capturedReading = null;
+  let capturedMaxCandidates = null;
+  mockModule.MozcConvertHiraganaToKanji = (reading, maxCandidates) => {
+    capturedReading = reading;
+    capturedMaxCandidates = maxCandidates;
+    return makeMockEmbindStringVector(['転じ', '点字', '展示']);
+  };
+  setTenjiModuleForTesting(mockModule);
+  let response = null;
+  setPostToParentForTesting((msg) => {
+    response = msg;
+  });
+  handleSandboxMessageForTesting(
+      {data: {type: 'convert', reading: 'てんじ', maxCandidates: 20}});
+  assertEquals('convert', response.type);
+  assertEquals(undefined, response.error);
+  assertEqualsJSON(['転じ', '点字', '展示'], response.candidates);
+  assertEquals('てんじ', capturedReading);
+  assertEquals(20, capturedMaxCandidates);
+});
+
+// An empty candidate vector is a valid, successful result (no conversion
+// available), distinct from an error.
+AX_TEST_F(
+    'ChromeVoxSandboxedTenjiWrapperTest', 'ConvertEmptyResult', function() {
+      const mockModule = makeMockModule('', (_byte) => 0);
+      mockModule.MozcConvertHiraganaToKanji = (_reading, _maxCandidates) =>
+          makeMockEmbindStringVector([]);
+      setTenjiModuleForTesting(mockModule);
+      let response = null;
+      setPostToParentForTesting((msg) => {
+        response = msg;
+      });
+      handleSandboxMessageForTesting(
+          {data: {type: 'convert', reading: 'てんじ', maxCandidates: 20}});
+      assertEquals('convert', response.type);
+      assertEquals(undefined, response.error);
+      assertEqualsJSON([], response.candidates);
+    });
+
+// The engine throwing should be reported as an error response rather than
+// propagating, and the (possibly partial) result must still be freed.
+AX_TEST_F(
+    'ChromeVoxSandboxedTenjiWrapperTest', 'ConvertEngineThrows', function() {
+      const mockModule = makeMockModule('', (_byte) => 0);
+      mockModule.MozcConvertHiraganaToKanji = (_reading, _maxCandidates) => {
+        throw new Error('conversion failed');
+      };
+      setTenjiModuleForTesting(mockModule);
+      let response = null;
+      setPostToParentForTesting((msg) => {
+        response = msg;
+      });
+      handleSandboxMessageForTesting(
+          {data: {type: 'convert', reading: 'てんじ', maxCandidates: 20}});
+      assertEquals('convert', response.type);
+      assertTrue(!!response.error);
+      assertEquals(undefined, response.candidates);
+    });
+
+// result.delete() must be called after a successful convert, to free the
+// Embind-bound vector.
+AX_TEST_F(
+    'ChromeVoxSandboxedTenjiWrapperTest', 'ConvertDeleteCalledOnResult',
+    function() {
+      let deleteCalledOnResult = false;
+      const mockModule = makeMockModule('', (_byte) => 0);
+      mockModule.MozcConvertHiraganaToKanji = (_reading, _maxCandidates) =>
+          makeMockEmbindStringVector(
+              ['転じ'], () => deleteCalledOnResult = true);
+      setTenjiModuleForTesting(mockModule);
+      setPostToParentForTesting(() => {});
+      handleSandboxMessageForTesting(
+          {data: {type: 'convert', reading: 'てんじ', maxCandidates: 20}});
       assertTrue(deleteCalledOnResult);
     });
