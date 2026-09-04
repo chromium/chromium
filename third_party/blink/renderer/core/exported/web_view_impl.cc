@@ -2980,6 +2980,7 @@ void WebViewImpl::EnableAutoResizeMode(const gfx::Size& min_size,
 
 void WebViewImpl::DisableAutoResizeMode() {
   should_auto_resize_ = false;
+  size_before_suppressed_autosize_.reset();
   ConfigureAutoResizeMode();
 }
 
@@ -4020,15 +4021,41 @@ void WebViewImpl::ResizeAfterLayout() {
   if (should_auto_resize_) {
     LocalFrameView* view = MainFrameImpl()->GetFrame()->View();
     gfx::Size frame_size = view->Size();
+    const bool should_suppress_notifications =
+        view->IsBeingAutoSized() &&
+        RuntimeEnabledFeatures::AutoSizeUsesScrollWidthForOverflowEnabled();
+    if (should_suppress_notifications && !size_before_suppressed_autosize_) {
+      size_before_suppressed_autosize_ = size_;
+    }
+    const bool had_suppressed_autosize_measurements =
+        size_before_suppressed_autosize_.has_value();
+    const gfx::Size previously_reported_size =
+        size_before_suppressed_autosize_.value_or(size_);
+    bool visual_viewport_size_changed = false;
     if (frame_size != size_) {
       size_ = frame_size;
 
-      GetPage()->GetVisualViewport().SetSize(size_);
+      GetPage()->GetVisualViewport().SetSize(size_,
+                                             should_suppress_notifications);
+      visual_viewport_size_changed = true;
       GetPageScaleConstraintsSet().DidChangeInitialContainingBlockSize(size_);
+    }
 
+    if (!should_suppress_notifications) {
+      size_before_suppressed_autosize_.reset();
+    }
+    if (!should_suppress_notifications &&
+        frame_size != previously_reported_size) {
       web_view_client_->DidAutoResize(size_);
       web_widget_->DidAutoResize(size_);
       SendResizeEventForMainFrame();
+      if (!visual_viewport_size_changed) {
+        view->GetFrame().GetDocument()->EnqueueVisualViewportResizeEvent();
+      }
+      if (had_suppressed_autosize_measurements &&
+          !view->GetFrame().GetDocument()->Printing()) {
+        probe::DidResizeMainFrame(&view->GetFrame());
+      }
     }
   }
 

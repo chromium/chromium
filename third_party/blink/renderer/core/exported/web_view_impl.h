@@ -822,6 +822,9 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // contents [e.g. to accomodate a keyboard] without forcing the web page to
   // relayout. For more details, see the header for the VisualViewport class.
   gfx::Size size_;
+  // Size before internal scroll-width autosize measurements, used to report
+  // only a stable size change.
+  std::optional<gfx::Size> size_before_suppressed_autosize_;
   // If true, automatically resize the layout view around its content.
   bool should_auto_resize_ = false;
   // The lower bound on the size when auto-resizing.
