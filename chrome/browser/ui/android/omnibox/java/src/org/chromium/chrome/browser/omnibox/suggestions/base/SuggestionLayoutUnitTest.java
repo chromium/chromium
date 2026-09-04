@@ -74,7 +74,7 @@ public class SuggestionLayoutUnitTest {
                 "Unexpected default value of the bottom edge rounding",
                 spy.mOutlineProvider.isBottomEdgeRounded());
 
-        spy.setRoundingEdges(false, false);
+        spy.setRoundingEdges(/* roundTopEdge= */ false, /* roundBottomEdge= */ false);
         assertFalse(
                 "Top edge rounding does not reflect the requested state: false",
                 spy.mOutlineProvider.isTopEdgeRounded());
@@ -85,7 +85,7 @@ public class SuggestionLayoutUnitTest {
         verify(spy, never()).invalidateOutline();
 
         // Enable rounding of bottom corners only. Observe redraw.
-        spy.setRoundingEdges(false, true);
+        spy.setRoundingEdges(/* roundTopEdge= */ false, /* roundBottomEdge= */ true);
         assertFalse(
                 "Top edge rounding does not reflect the requested state: false",
                 spy.mOutlineProvider.isTopEdgeRounded());
@@ -96,7 +96,7 @@ public class SuggestionLayoutUnitTest {
         clearInvocations(spy);
 
         // Apply the same configuration as previously. Observe no redraw.
-        spy.setRoundingEdges(false, true);
+        spy.setRoundingEdges(/* roundTopEdge= */ false, /* roundBottomEdge= */ true);
         assertFalse(
                 "Top edge rounding does not reflect the requested state: false",
                 spy.mOutlineProvider.isTopEdgeRounded());
@@ -106,7 +106,7 @@ public class SuggestionLayoutUnitTest {
         verify(spy, never()).invalidateOutline();
 
         // Enable rounding of all corners. Observe redraw.
-        spy.setRoundingEdges(true, true);
+        spy.setRoundingEdges(/* roundTopEdge= */ true, /* roundBottomEdge= */ true);
         assertTrue(
                 "Top edge rounding does not reflect the requested state: true",
                 spy.mOutlineProvider.isTopEdgeRounded());
@@ -130,21 +130,21 @@ public class SuggestionLayoutUnitTest {
                 mLayout.getClipToOutline());
 
         // When any of the edges are rounded, we should also enable clipping.
-        mLayout.setRoundingEdges(true, false);
+        mLayout.setRoundingEdges(/* roundTopEdge= */ true, /* roundBottomEdge= */ false);
         assertTrue(
                 "Clipping should be enabled when rounding only top edge corners",
                 mLayout.getClipToOutline());
-        mLayout.setRoundingEdges(false, true);
+        mLayout.setRoundingEdges(/* roundTopEdge= */ false, /* roundBottomEdge= */ true);
         assertTrue(
                 "Clipping should be enabled when rounding only bottom edge corners",
                 mLayout.getClipToOutline());
-        mLayout.setRoundingEdges(true, true);
+        mLayout.setRoundingEdges(/* roundTopEdge= */ true, /* roundBottomEdge= */ true);
         assertTrue(
                 "Clipping should be enabled when rounding both top and bottom edge corners",
                 mLayout.getClipToOutline());
 
         // Revert back to no rounding. Observe that we're not clipping any longer.
-        mLayout.setRoundingEdges(false, false);
+        mLayout.setRoundingEdges(/* roundTopEdge= */ false, /* roundBottomEdge= */ false);
         assertFalse(
                 "Clipping should be disabled when rounding is not in use",
                 mLayout.getClipToOutline());
