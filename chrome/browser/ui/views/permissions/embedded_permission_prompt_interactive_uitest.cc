@@ -801,7 +801,8 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
             }
           }, true);
         })JS"),
-      WaitForStateChange(kWebContentsElementId, pepc_visible), Do([this]() {
+      WaitForStateChange(kWebContentsElementId, pepc_visible),
+      FocusWebContents(kWebContentsElementId), Do([this]() {
         // The exact number of "tab" presses needed to pass through all elements
         // differs by platform. Here we do it 10 times to be sure.
         for (int i = 0; i < 10; i++) {
@@ -1691,7 +1692,7 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
   widget->SetBounds(gfx::Rect(0, 0, 800, 600));
 
   auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  auto* location_bar = browser_view->toolbar()->location_bar_view();
+  auto* location_bar = browser_view->toolbar()->location_bar();
 
   auto container = std::make_unique<views::View>();
   auto* omnibox_content = container->AddChildView(
