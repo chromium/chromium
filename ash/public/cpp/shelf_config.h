@@ -182,18 +182,6 @@ class ASH_EXPORT ShelfConfig : public SessionObserver,
   int scrollable_shelf_ripple_padding() const {
     return scrollable_shelf_ripple_padding_;
   }
-  int shelf_tooltip_preview_height() const {
-    return shelf_tooltip_preview_height_;
-  }
-  int shelf_tooltip_preview_max_width() const {
-    return shelf_tooltip_preview_max_width_;
-  }
-  float shelf_tooltip_preview_max_ratio() const {
-    return shelf_tooltip_preview_max_ratio_;
-  }
-  float shelf_tooltip_preview_min_ratio() const {
-    return shelf_tooltip_preview_min_ratio_;
-  }
   int shelf_blur_radius() const { return shelf_blur_radius_; }
   int mousewheel_scroll_offset_threshold() const {
     return mousewheel_scroll_offset_threshold_;
@@ -381,12 +369,6 @@ class ASH_EXPORT ShelfConfig : public SessionObserver,
   // Padding between the shelf container view and the edging app icon in order
   // to show the app icon's ripple correctly.
   const int scrollable_shelf_ripple_padding_;
-
-  // Dimensions for hover previews.
-  const int shelf_tooltip_preview_height_;
-  const int shelf_tooltip_preview_max_width_;
-  const float shelf_tooltip_preview_max_ratio_;
-  const float shelf_tooltip_preview_min_ratio_;
 
   // The blur radius used for the shelf.
   const int shelf_blur_radius_;

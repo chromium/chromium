@@ -54,8 +54,6 @@ class ASH_EXPORT WindowPreviewView
   void OnWindowParentChanged(aura::Window* window,
                              aura::Window* parent) override;
 
-  aura::Window* window() { return window_; }
-
  private:
   friend class WindowPreviewViewTestApi;
 

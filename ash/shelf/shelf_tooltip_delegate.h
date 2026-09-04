@@ -6,7 +6,6 @@
 #define ASH_SHELF_SHELF_TOOLTIP_DELEGATE_H_
 
 #include <string>
-#include <vector>
 
 #include "ash/ash_export.h"
 
@@ -20,10 +19,6 @@ class Event;
 
 namespace views {
 class View;
-}
-
-namespace aura {
-class Window;
 }
 
 namespace ash {
@@ -41,11 +36,6 @@ class ASH_EXPORT ShelfTooltipDelegate {
   // the coordinates of the `delegate_view`.
   virtual bool ShouldHideTooltip(const gfx::Point& cursor_point,
                                  views::View* delegate_view) const = 0;
-
-  // Returns the list of open windows that correspond to the app represented by
-  // this shelf view.
-  virtual const std::vector<aura::Window*> GetOpenWindowsForView(
-      views::View* view) = 0;
 
   // Returns the title of |view|.
   virtual std::u16string GetTitleForView(const views::View* view) const = 0;

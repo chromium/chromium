@@ -86,9 +86,6 @@ void ShelfTooltipManager::ShowTooltip(views::View* view) {
   if (!ShouldShowTooltipForView(view))
     return;
 
-  const std::vector<aura::Window*> open_windows =
-      shelf_tooltip_delegate_->GetOpenWindowsForView(view);
-
   const ShelfAlignment alignment = shelf_->alignment();
 
   // In vertical shelf, the desk button tooltip bubble should still be centered

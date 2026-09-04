@@ -1460,8 +1460,6 @@ component("ash") {
     "shelf/shelf_window_watcher_item_delegate.h",
     "shelf/swipe_home_to_overview_controller.cc",
     "shelf/swipe_home_to_overview_controller.h",
-    "shelf/window_preview.cc",
-    "shelf/window_preview.h",
     "shelf/window_scale_animation.cc",
     "shelf/window_scale_animation.h",
     "shell.cc",

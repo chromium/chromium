@@ -21,7 +21,6 @@
 #include "ash/public/cpp/shelf_item.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
-#include "ash/public/cpp/window_properties.h"
 #include "ash/screen_util.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/hotseat_widget.h"
@@ -44,7 +43,6 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/user_education/user_education_class_properties.h"
 #include "ash/wm/desks/desks_util.h"
-#include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/window_pin_util.h"
 #include "ash/wm/window_util.h"
 #include "base/auto_reset.h"
@@ -505,30 +503,6 @@ bool ShelfView::ShouldHideTooltip(const gfx::Point& cursor_location,
   // in the gaps, but the tooltip should hide if the mouse moved totally outside
   // of the buttons area.
   return !LocationInsideVisibleShelfItemBounds(cursor_location);
-}
-
-const std::vector<aura::Window*> ShelfView::GetOpenWindowsForView(
-    views::View* view) {
-  std::vector<raw_ptr<aura::Window, VectorExperimental>> window_list =
-      Shell::Get()->mru_window_tracker()->BuildWindowForCycleList(kActiveDesk);
-  std::vector<aura::Window*> open_windows;
-  const ShelfItem* item = ShelfItemForView(view);
-
-  // The concept of a list of open windows doesn't make sense for something
-  // that isn't an app shortcut: return an empty list.
-  if (!item)
-    return open_windows;
-
-  for (aura::Window* window : window_list) {
-    const std::string window_app_id =
-        ShelfID::Deserialize(window->GetProperty(kShelfIDKey)).app_id;
-    if (window_app_id == item->id.app_id) {
-      // TODO: In the very first version we only show one window. Add the proper
-      // UI to show all windows for a given open app.
-      open_windows.push_back(window);
-    }
-  }
-  return open_windows;
 }
 
 std::u16string ShelfView::GetTitleForView(const views::View* view) const {
