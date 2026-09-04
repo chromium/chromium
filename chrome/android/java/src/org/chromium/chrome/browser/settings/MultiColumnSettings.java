@@ -226,15 +226,26 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
             // Remove any existing stale detail fragments (e.g. after a sign-out or when returning
             // to root settings in single-column mode) and clear the back stack so that stale
             // detail fragments are not resurrected when transitioning to two-column mode.
-            getChildFragmentManager()
-                    .popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            Fragment currentDetail =
-                    getChildFragmentManager().findFragmentById(R.id.preferences_detail);
-            if (currentDetail != null) {
-                getChildFragmentManager()
-                        .beginTransaction()
-                        .remove(currentDetail)
-                        .commitAllowingStateLoss();
+            //
+            // If there are entries in the back stack, asynchronously pop them. We must not use
+            // popBackStackImmediate() because this method can be invoked while FragmentManager is
+            // already executing transactions (e.g. during onStart() lifecycle dispatch when an
+            // account was removed in the background). Once the pop transactions complete and the
+            // back stack becomes empty, onBackStackEmpty() will remove any remaining detail
+            // fragment, close the pane, and update focusability.
+            //
+            // If the back stack is already empty, directly remove any current detail fragment.
+            FragmentManager fragmentManager = getChildFragmentManager();
+            if (fragmentManager.getBackStackEntryCount() > 0) {
+                fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            } else {
+                Fragment currentDetail = fragmentManager.findFragmentById(R.id.preferences_detail);
+                if (currentDetail != null) {
+                    fragmentManager
+                            .beginTransaction()
+                            .remove(currentDetail)
+                            .commitAllowingStateLoss();
+                }
             }
             return null;
         }
@@ -261,8 +272,8 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
     /**
      * Handles back stack becoming empty after FragmentManager finishes executing transactions. In
      * two-column mode, populates the initial detail fragment so the detail pane does not remain
-     * blank. In single-column mode, closes the sliding pane and restores header focusability when
-     * no detail fragment remains.
+     * blank. In single-column mode, removes any remaining detail fragment (if SettingsInTab is
+     * enabled), closes the sliding pane, and restores header focusability.
      */
     private void onBackStackEmpty() {
         if (getView() == null) return;
@@ -272,7 +283,21 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
 
         if (isTwoColumn()) {
             ensureInitialDetailFragment();
+        } else if (SettingsInTab.isEnabled()) {
+            // When SettingsInTab is enabled in single-column mode, there should be no detail
+            // fragment when at the root settings level. If any detail fragment remains (e.g.
+            // an un-backstacked base fragment after popping all back stack entries), remove it
+            // and close the sliding pane.
+            Fragment currentDetail = fragmentManager.findFragmentById(R.id.preferences_detail);
+            if (currentDetail != null) {
+                fragmentManager.beginTransaction().remove(currentDetail).commitAllowingStateLoss();
+            }
+            getSlidingPaneLayout().closePane();
+            updateHeaderPaneFocusability();
         } else if (fragmentManager.findFragmentById(R.id.preferences_detail) == null) {
+            // When SettingsInTab is disabled, single-column mode (e.g. portrait on a tablet)
+            // retains an initial detail fragment. Only close the sliding pane and restore
+            // header focusability if no detail fragment remains (e.g. after exiting search).
             getSlidingPaneLayout().closePane();
             updateHeaderPaneFocusability();
         }
@@ -413,7 +438,12 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
         transaction.commit();
         // Execute the transaction synchronously so the detail fragment is attached to
         // R.id.preferences_detail before updateHeaderPaneFocusability() evaluates isLayoutOpen().
-        fragmentManager.executePendingTransactions();
+        // During lifecycle startup (e.g. onStart()), FragmentManager is already executing
+        // transactions and will execute the committed transaction automatically; attempting
+        // synchronous execution then throws an IllegalStateException.
+        if (isResumed()) {
+            fragmentManager.executePendingTransactions();
+        }
         getSlidingPaneLayout().open();
         updateHeaderPaneFocusability();
 

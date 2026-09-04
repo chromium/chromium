@@ -412,17 +412,27 @@ public class SettingsNavigationImpl implements SettingsNavigation {
 
     @Override
     public void finishCurrentSettings(Fragment fragment) {
-        Activity activity = fragment.getActivity();
-        if (activity == null) return;
-
         // SettingsInTab does not use SettingsActivity.
         if (useSettingsInTab()) {
-            SettingsHostFragment settingsHostFragment = SettingsHostFragment.get(activity);
+            // Prefer looking up the enclosing SettingsHostFragment directly from the fragment's
+            // parent hierarchy. When Chrome is in the background or during lifecycle transitions,
+            // the host fragment view may not report isShown(), which causes the activity-level
+            // lookup to return null.
+            SettingsHostFragment settingsHostFragment = SettingsHostFragment.get(fragment);
+            if (settingsHostFragment == null) {
+                Activity activity = fragment.getActivity();
+                if (activity != null) {
+                    settingsHostFragment = SettingsHostFragment.get(activity);
+                }
+            }
             if (settingsHostFragment != null) {
                 settingsHostFragment.finishCurrentSettings(fragment);
             }
             return;
         }
+
+        Activity activity = fragment.getActivity();
+        if (activity == null) return;
 
         ((SettingsActivity) activity).finishCurrentSettings(fragment);
     }
