@@ -88,18 +88,26 @@ class WTF_EXPORT AtomicString {
   // [string.cons] --------------------------------------------------
 
   AtomicString() = default;
-  explicit AtomicString(const char* chars)
-      // SAFETY: The below span creation is safe if `chars` points to a
-      // NUL-terminated string.
-      : AtomicString(base::as_bytes(UNSAFE_BUFFERS(
-            base::span(base::unchecked, chars, chars ? strlen(chars) : 0u)))) {}
+  explicit AtomicString(const char* chars) {
+    if (!chars) {
+      return;
+    }
+    if (chars[0] == '\0') {
+      string_ = String(StringImpl::empty_);
+      return;
+    }
+    // SAFETY: The below span creation is safe if `chars` points to a
+    // NUL-terminated string.
+    *this = AtomicString(base::as_bytes(UNSAFE_BUFFERS(
+        base::span(base::unchecked, chars, strlen(chars)))));
+  }
   explicit AtomicString(base::span<const LChar> chars);
   explicit AtomicString(
       base::span<const UChar> chars,
       AtomicStringUCharEncoding encoding = AtomicStringUCharEncoding::kUnknown);
   explicit AtomicString(const UChar* chars);
 
-  explicit AtomicString(const StringView& view);
+  explicit AtomicString(const StringView& view) : string_(Add(view)) {}
 
   // Constructing an AtomicString from a String / StringImpl can be expensive if
   // the StringImpl is not already atomic.
@@ -292,8 +300,23 @@ class WTF_EXPORT AtomicString {
       return r;
     return AddSlowCase(r);
   }
+
+  ALWAYS_INLINE static String Add(const StringView& r) {
+    if (r.IsNull()) {
+      return String();
+    }
+    if (!r.length()) {
+      return String(StringImpl::empty_);
+    }
+    if (StringImpl* impl = r.SharedImpl(); impl && impl->IsAtomic()) {
+      return String(impl);
+    }
+    return AddSlowCase(r);
+  }
+
   static String AddSlowCase(String&&);
   static String AddSlowCase(StringImpl*);
+  static String AddSlowCase(const StringView&);
 };
 
 inline bool operator==(const AtomicString& a, const AtomicString& b) {

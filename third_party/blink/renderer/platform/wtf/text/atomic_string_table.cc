@@ -496,6 +496,10 @@ String AtomicStringTable::Add(const StringView& string_view) {
     return StringImpl::empty_;
   }
 
+  if (StringImpl* impl = string_view.SharedImpl(); impl && impl->IsAtomic()) {
+    return String(impl);
+  }
+
   const auto length = string_view.length();
   if (length <= 16 && string_view.Is8Bit()) {
     base::span<const LChar> chars = string_view.Span8();

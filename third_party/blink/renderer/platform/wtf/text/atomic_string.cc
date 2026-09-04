@@ -49,8 +49,9 @@ AtomicString::AtomicString(const UChar* chars)
                           chars ? LengthOfNullTerminatedString(chars) : 0}),
           AtomicStringUCharEncoding::kUnknown)) {}
 
-AtomicString::AtomicString(const StringView& string_view)
-    : string_(AtomicStringTable::Instance().Add(string_view)) {}
+String AtomicString::AddSlowCase(const StringView& string_view) {
+  return AtomicStringTable::Instance().Add(string_view);
+}
 
 String AtomicString::AddSlowCase(String&& string) {
   DCHECK(!string.Impl()->IsAtomic());
