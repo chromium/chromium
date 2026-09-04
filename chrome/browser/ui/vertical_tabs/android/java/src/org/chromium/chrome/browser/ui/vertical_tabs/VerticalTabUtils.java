@@ -130,9 +130,6 @@ public class VerticalTabUtils {
     /** Feature parameter name for enabling Vertical Tabs by default. */
     public static final String ENABLE_BY_DEFAULT_PARAM = "enable_by_default";
 
-    /** Feature parameter name for enabling the incognito button in the footer. */
-    public static final String INCOGNITO_BUTTON_PARAM = "incognito_button";
-
     /**
      * Returns whether Vertical Tabs should be enabled by default for eligible users who have not
      * explicitly set their preference.
@@ -247,14 +244,6 @@ public class VerticalTabUtils {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                 ChromeFeatureList.ANDROID_VERTICAL_TABS,
                 "expand_on_hover",
-                /* defaultValue= */ false);
-    }
-
-    /** Returns whether the incognito button in the footer is enabled for Vertical Tabs. */
-    public static boolean isIncognitoButtonEnabled() {
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.ANDROID_VERTICAL_TABS,
-                INCOGNITO_BUTTON_PARAM,
                 /* defaultValue= */ false);
     }
 

@@ -1219,13 +1219,12 @@ public class VerticalTabListCoordinator {
     }
 
     private boolean isIncognitoButtonVisible() {
-        if (!VerticalTabUtils.isIncognitoButtonEnabled()
-                || IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+        if (mProfile.shutdownStarted() || IncognitoUtils.shouldOpenIncognitoAsWindow()) {
             return false;
         }
         TabModel incognitoModel = mTabModelSelector.getModel(/* incognito= */ true);
         boolean hasIncognitoTabs = incognitoModel != null && incognitoModel.getCount() > 0;
-        return IncognitoUtils.isIncognitoModeEnabled(mProfile) && hasIncognitoTabs;
+        return hasIncognitoTabs && IncognitoUtils.isIncognitoModeEnabled(mProfile);
     }
 
     private void updateIncognitoButtonVisibility() {
