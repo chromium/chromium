@@ -83,7 +83,6 @@
 #include "ui/gl/gl_surface.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "android_webview/browser_jni_headers/AwBrowserMainParts_jni.h"
 #include "android_webview/browser_jni_headers/AwInterfaceRegistrar_jni.h"
 
 namespace {
@@ -370,18 +369,7 @@ void AwBrowserMainParts::RegisterSyntheticTrials() {
         std::string(PRODUCT_VERSION) + "_" + trial_group,
         variations::SyntheticTrialAnnotationMode::kCurrentLog);
   }
-  JNIEnv* env = base::android::AttachCurrentThread();
-  bool use_webview_context = Java_AwBrowserMainParts_getUseWebViewContext(env);
-  bool partitioned_cookies_enablement_state =
-      Java_AwBrowserMainParts_getPartitionedCookiesDefaultState(env);
-  AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      metrics, "WebViewSeparateResourceContextMetrics",
-      use_webview_context ? "Enabled" : "Control",
-      variations::SyntheticTrialAnnotationMode::kCurrentLog);
-  AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      metrics, "WebViewPartitionedCookiesMetrics",
-      partitioned_cookies_enablement_state ? "Control" : "Disabled",
-      variations::SyntheticTrialAnnotationMode::kCurrentLog);
+  AwMetricsServiceClient::GetInstance()->FlushPendingSyntheticTrialsFromJava();
 
   bool in_seed_experiment =
       android_webview::CachedFlags::IsCachedFeatureOverridden(
@@ -478,5 +466,4 @@ int AwBrowserMainParts::PostCreateThreads() {
 
 }  // namespace android_webview
 
-DEFINE_JNI(AwBrowserMainParts)
 DEFINE_JNI(AwInterfaceRegistrar)

@@ -20,6 +20,7 @@ namespace android_webview {
 class AwMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
  private:
   friend class AwBrowserMainParts;
+  friend class AwMetricsServiceClient;
   friend class AwSettings;
   friend class AwPrefetchManager;
   friend class AwMetricsTestBase;

@@ -7,6 +7,8 @@ package org.chromium.android_webview.metrics;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 
+import androidx.annotation.GuardedBy;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
@@ -20,8 +22,11 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.variations.SyntheticTrialAnnotationMode;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Determines user consent and app opt-out for metrics. See aw_metrics_service_client.h for more
@@ -32,6 +37,29 @@ import java.io.File;
 public class AwMetricsServiceClient {
     private static final String PLAY_STORE_PACKAGE_NAME = "com.android.vending";
     private static final String METRICS_SUBDIR = ".webview";
+
+    private static final Object sLock = new Object();
+
+    @GuardedBy("sLock")
+    private static final List<SyntheticTrial> sPendingSyntheticTrials = new ArrayList<>();
+
+    @GuardedBy("sLock")
+    private static boolean sIsMetricsServiceInitialized;
+
+    private static class SyntheticTrial {
+        final String mTrialName;
+        final String mGroupName;
+        final @SyntheticTrialAnnotationMode int mAnnotationMode;
+
+        SyntheticTrial(
+                String trialName,
+                String groupName,
+                @SyntheticTrialAnnotationMode int annotationMode) {
+            mTrialName = trialName;
+            mGroupName = groupName;
+            mAnnotationMode = annotationMode;
+        }
+    }
 
     private static @InstallerPackageType @Nullable Integer sInstallerPackageTypeForTesting;
 
@@ -114,6 +142,50 @@ public class AwMetricsServiceClient {
         }
     }
 
+    /**
+     * Registers a synthetic field trial with the given trial name and group name using {@link
+     * SyntheticTrialAnnotationMode#CURRENT_LOG}.
+     *
+     * <p>If called before native metrics initialization, the trial will be queued and registered
+     * automatically when native metrics startup completes.
+     */
+    public static void registerSyntheticFieldTrial(String trialName, String groupName) {
+        registerSyntheticFieldTrial(trialName, groupName, SyntheticTrialAnnotationMode.CURRENT_LOG);
+    }
+
+    /**
+     * Registers a synthetic field trial with the given trial name, group name, and annotation mode.
+     *
+     * <p>If called before native metrics initialization, the trial will be queued and registered
+     * automatically when native metrics startup completes.
+     */
+    public static void registerSyntheticFieldTrial(
+            String trialName, String groupName, @SyntheticTrialAnnotationMode int annotationMode) {
+        synchronized (sLock) {
+            if (sIsMetricsServiceInitialized) {
+                AwMetricsServiceClientJni.get()
+                        .registerSyntheticFieldTrial(trialName, groupName, annotationMode);
+            } else {
+                sPendingSyntheticTrials.add(
+                        new SyntheticTrial(trialName, groupName, annotationMode));
+            }
+        }
+    }
+
+    /** Called by native during RegisterSyntheticTrials() to drain any pre-native trials. */
+    @CalledByNative
+    private static void flushPendingSyntheticTrials() {
+        synchronized (sLock) {
+            sIsMetricsServiceInitialized = true;
+            for (SyntheticTrial trial : sPendingSyntheticTrials) {
+                AwMetricsServiceClientJni.get()
+                        .registerSyntheticFieldTrial(
+                                trial.mTrialName, trial.mGroupName, trial.mAnnotationMode);
+            }
+            sPendingSyntheticTrials.clear();
+        }
+    }
+
     @NativeMethods
     interface Natives {
         void setHaveMetricsConsent(boolean userConsent, boolean appConsent);
@@ -124,5 +196,10 @@ public class AwMetricsServiceClient {
 
         void setOnFinalMetricsCollectedListenerForTesting(
                 @JniType("base::RepeatingClosure") Runnable listener);
+
+        void registerSyntheticFieldTrial(
+                @JniType("std::string") String trialName,
+                @JniType("std::string") String groupName,
+                @SyntheticTrialAnnotationMode int annotationMode);
     }
 }
