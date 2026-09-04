@@ -67,33 +67,22 @@ class ActorTaskTest : public testing::Test {
                 }))
             .Build();
 
-    // Setup ExecutionEngine mock dispatcher.
-    auto ee_mock_ui_event_dispatcher =
-        std::make_unique<testing::NiceMock<ui::MockUiEventDispatcher>>();
-    mock_ee_ui_event_dispatcher_ = ee_mock_ui_event_dispatcher.get();
-
-    ON_CALL(*mock_ee_ui_event_dispatcher_, OnPreTool)
-        .WillByDefault([](const ToolRequest&,
-                          ui::UiEventDispatcher::UiCompleteCallback callback) {
-          std::move(callback).Run(MakeOkResult());
-        });
-
-    ON_CALL(*mock_ee_ui_event_dispatcher_, OnPostTool)
-        .WillByDefault([](const ToolRequest&,
-                          ui::UiEventDispatcher::UiCompleteCallback callback) {
-          std::move(callback).Run(MakeOkResult());
-        });
-
-    scoped_ee_factory_ = std::make_unique<ScopedExecutionEngineFactory>(
-        base::BindLambdaForTesting([&](actor::ActorTask& task) {
-          return actor::ExecutionEngine::CreateForTesting(
-              task, std::move(ee_mock_ui_event_dispatcher));
-        }));
-
-    // Setup ActorTask mock dispatcher.
+    // Setup mock dispatcher for ActorTask and ExecutionEngine.
     auto mock_ui_event_dispatcher =
         std::make_unique<testing::NiceMock<ui::MockUiEventDispatcher>>();
     mock_ui_event_dispatcher_ = mock_ui_event_dispatcher.get();
+
+    ON_CALL(*mock_ui_event_dispatcher_, OnPreTool)
+        .WillByDefault([](const ToolRequest&,
+                          ui::UiEventDispatcher::UiCompleteCallback callback) {
+          std::move(callback).Run(MakeOkResult());
+        });
+
+    ON_CALL(*mock_ui_event_dispatcher_, OnPostTool)
+        .WillByDefault([](const ToolRequest&,
+                          ui::UiEventDispatcher::UiCompleteCallback callback) {
+          std::move(callback).Run(MakeOkResult());
+        });
 
     ON_CALL(*mock_ui_event_dispatcher_, OnActorTaskAsyncChange)
         .WillByDefault([](const ui::UiEventDispatcher::ActorTaskAsyncChange&,
@@ -199,10 +188,8 @@ class ActorTaskTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestingProfile> profile_;
   MockActorTaskDelegate mock_delegate_;
-  std::unique_ptr<ScopedExecutionEngineFactory> scoped_ee_factory_;
   raw_ptr<ActorTask> task_;
   raw_ptr<ui::MockUiEventDispatcher> mock_ui_event_dispatcher_;
-  raw_ptr<ui::MockUiEventDispatcher> mock_ee_ui_event_dispatcher_;
 };
 
 TEST_F(ActorTaskTest, CustomToolInterruptsWithUserControl) {

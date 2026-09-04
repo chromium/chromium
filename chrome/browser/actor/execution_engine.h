@@ -171,18 +171,12 @@ class ExecutionEngine : public ToolDelegate,
       base::RepeatingCallback<std::unique_ptr<ExecutionEngine>(ActorTask&)>;
   static FactoryFunction& GetFactoryFunctionForTesting();
 
-  static std::unique_ptr<ExecutionEngine> Create(
-      ActorTask& owner_task,
-      std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher);
-  static std::unique_ptr<ExecutionEngine> CreateForTesting(
-      ActorTask& owner_task,
-      std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher);
+  static std::unique_ptr<ExecutionEngine> Create(ActorTask& owner_task);
 
-  // Constructors public for std::make_unique but only usable via static Create
+  // Constructor public for std::make_unique but only usable via static Create
   // method.
-  ExecutionEngine(base::PassKey<ExecutionEngine>,
-                  ActorTask& owner_task,
-                  std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher);
+  explicit ExecutionEngine(base::PassKey<ExecutionEngine>,
+                           ActorTask& owner_task);
 
   ExecutionEngine(const ExecutionEngine&) = delete;
   ExecutionEngine& operator=(const ExecutionEngine&) = delete;
@@ -461,6 +455,8 @@ class ExecutionEngine : public ToolDelegate,
       base::OnceCallback<void(bool)> callback,
       webui::mojom::UserConfirmationDialogResponsePtr response);
 
+  ui::UiEventDispatcher& GetUiEventDispatcher();
+
   State state_ = State::kInit;
 
   static std::optional<base::TimeDelta> action_observation_delay_for_testing_;
@@ -478,7 +474,6 @@ class ExecutionEngine : public ToolDelegate,
       actor_form_filling_service_;
   std::unique_ptr<autofill::ActorOneTimeTokenFillingService>
       actor_one_time_token_filling_service_;
-  std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher_;
 
   base::flat_map<url::Origin, url::Origin> affiliated_origin_map_;
 

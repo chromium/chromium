@@ -54,43 +54,27 @@ TaskId ActorKeyedServiceFake::
         glic::mojom::FeatureMode feature_mode) {
   std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher =
       ui::NewMockUiEventDispatcher();
-  std::unique_ptr<ui::UiEventDispatcher> task_ui_event_dispatcher =
-      ui::NewMockUiEventDispatcher();
-
   auto* mock_ui_dispatcher =
       static_cast<ui::MockUiEventDispatcher*>(ui_event_dispatcher.get());
-  auto* mock_task_ui_dispatcher =
-      static_cast<ui::MockUiEventDispatcher*>(task_ui_event_dispatcher.get());
 
-  for (auto& mock : {mock_ui_dispatcher, mock_task_ui_dispatcher}) {
-    ON_CALL(*mock, OnPreTool(_, _))
-        .WillByDefault(
-            UiEventDispatcherCallback<ToolRequest>(base::BindRepeating(
-                MakeOkResult, /*requires_page_stabilization=*/true)));
-    ON_CALL(*mock, OnPostTool(_, _))
-        .WillByDefault(
-            UiEventDispatcherCallback<ToolRequest>(base::BindRepeating(
-                MakeOkResult, /*requires_page_stabilization=*/true)));
-    ON_CALL(*mock, OnActorTaskAsyncChange(_, _))
-        .WillByDefault(UiEventDispatcherCallback<
-                       ui::UiEventDispatcher::ActorTaskAsyncChange>(
-            base::BindRepeating(MakeOkResult,
-                                /*requires_page_stabilization=*/true)));
-  }
-
-  ScopedExecutionEngineFactory scoped_execution_engine_factory_(
-      base::BindLambdaForTesting([&](ActorTask& task) {
-        CHECK(ui_event_dispatcher);
-        return ExecutionEngine::CreateForTesting(
-            task, std::move(ui_event_dispatcher));
-      }));
+  ON_CALL(*mock_ui_dispatcher, OnPreTool(_, _))
+      .WillByDefault(UiEventDispatcherCallback<ToolRequest>(base::BindRepeating(
+          MakeOkResult, /*requires_page_stabilization=*/true)));
+  ON_CALL(*mock_ui_dispatcher, OnPostTool(_, _))
+      .WillByDefault(UiEventDispatcherCallback<ToolRequest>(base::BindRepeating(
+          MakeOkResult, /*requires_page_stabilization=*/true)));
+  ON_CALL(*mock_ui_dispatcher, OnActorTaskAsyncChange(_, _))
+      .WillByDefault(UiEventDispatcherCallback<
+                     ui::UiEventDispatcher::ActorTaskAsyncChange>(
+          base::BindRepeating(MakeOkResult,
+                              /*requires_page_stabilization=*/true)));
 
   auto task_options = webui::mojom::TaskOptions::New();
   task_options->title = "Test Task";
   task_options->duration = duration;
   task_options->feature_mode = feature_mode;
   return ActorKeyedService::CreateTaskForTesting(  // IN-TEST
-      std::move(task_ui_event_dispatcher), TestTaskSourceInfo(),
+      std::move(ui_event_dispatcher), TestTaskSourceInfo(),
       &no_enterprise_policy_checker_, std::move(task_options),
       /*delegate=*/nullptr);
 }

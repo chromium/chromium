@@ -689,16 +689,10 @@ ExecutionEngine::GetFactoryFunctionForTesting() {
 
 // Protected constructor without pass key to allow subclassing.
 ExecutionEngine::ExecutionEngine(ActorTask& owner_task)
-    : ExecutionEngine(
-          base::PassKey<ExecutionEngine>(),
-          owner_task,
-          ui::NewUiEventDispatcher(
-              owner_task.actor_keyed_service().GetActorUiStateManager())) {}
+    : ExecutionEngine(base::PassKey<ExecutionEngine>(), owner_task) {}
 
-ExecutionEngine::ExecutionEngine(
-    base::PassKey<ExecutionEngine>,
-    ActorTask& owner_task,
-    std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher)
+ExecutionEngine::ExecutionEngine(base::PassKey<ExecutionEngine>,
+                                 ActorTask& owner_task)
     : task_(owner_task),
       journal_(task_->actor_keyed_service().GetJournal().GetSafeRef()),
       tool_controller_(std::make_unique<ToolController>(*task_, *this)),
@@ -712,7 +706,6 @@ ExecutionEngine::ExecutionEngine(
               task_->GetProfile(),
               journal_,
               task_->id())),
-      ui_event_dispatcher_(std::move(ui_event_dispatcher)),
       origin_gating_checker_(
           *this,
           origin_gating::OriginGatingConfiguration(
@@ -788,24 +781,13 @@ ExecutionEngine::ExecutionEngine(
 
 // static
 std::unique_ptr<ExecutionEngine> ExecutionEngine::Create(
-    ActorTask& owner_task,
-    std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher) {
+    ActorTask& owner_task) {
   if (!GetFactoryFunctionForTesting().is_null()) {
     return GetFactoryFunctionForTesting().Run(owner_task);
   }
 
   return std::make_unique<ExecutionEngine>(base::PassKey<ExecutionEngine>(),
-                                           owner_task,
-                                           std::move(ui_event_dispatcher));
-}
-
-// static
-std::unique_ptr<ExecutionEngine> ExecutionEngine::CreateForTesting(
-    ActorTask& owner_task,
-    std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher) {
-  return std::make_unique<ExecutionEngine>(base::PassKey<ExecutionEngine>(),
-                                           owner_task,
-                                           std::move(ui_event_dispatcher));
+                                           owner_task);
 }
 
 ExecutionEngine::~ExecutionEngine() {
@@ -1510,7 +1492,7 @@ void ExecutionEngine::PostToolCreate(mojom::ActionResultPtr result) {
     return;
   }
   SetState(State::kUiPreInvoke);
-  ui_event_dispatcher_->OnPreTool(
+  GetUiEventDispatcher().OnPreTool(
       GetInProgressAction(),
       base::BindOnce(&ExecutionEngine::FinishedUiPreInvoke,
                      GetActionSequenceWeakPtr()));
@@ -1612,7 +1594,7 @@ void ExecutionEngine::FinishedToolInvoke(mojom::ActionResultPtr result) {
   }
 
   SetState(State::kUiPostInvoke);
-  ui_event_dispatcher_->OnPostTool(
+  GetUiEventDispatcher().OnPostTool(
       GetInProgressAction(),
       base::BindOnce(&ExecutionEngine::FinishedUiPostInvoke,
                      GetActionSequenceWeakPtr()));
@@ -1979,6 +1961,10 @@ size_t ExecutionEngine::GetResultIndexForAction(size_t action_index) const {
   CHECK_GT(original_count, 0ul);
 
   return original_count - 1;
+}
+
+ui::UiEventDispatcher& ExecutionEngine::GetUiEventDispatcher() {
+  return task_->ui_event_dispatcher();
 }
 
 std::ostream& operator<<(std::ostream& o, const ExecutionEngine::State& s) {

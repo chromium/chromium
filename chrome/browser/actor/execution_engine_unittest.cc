@@ -227,46 +227,30 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::SetUp();
     AssociateTabInterface();
 
-    // ExecutionEngine & ActorTask use separate UiEventDispatcher objects, so
-    // we create separate mocks for each.
     std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher =
-        ui::NewMockUiEventDispatcher();
-    std::unique_ptr<ui::UiEventDispatcher> task_ui_event_dispatcher =
         ui::NewMockUiEventDispatcher();
     mock_ui_event_dispatcher_ =
         static_cast<ui::MockUiEventDispatcher*>(ui_event_dispatcher.get());
-    task_mock_ui_event_dispatcher_ =
-        static_cast<ui::MockUiEventDispatcher*>(task_ui_event_dispatcher.get());
-
-    ScopedExecutionEngineFactory scoped_execution_engine_factory(
-        base::BindLambdaForTesting([&](actor::ActorTask& task) {
-          CHECK(ui_event_dispatcher);
-          return ExecutionEngine::CreateForTesting(
-              task, std::move(ui_event_dispatcher));
-        }));
 
     task_ = ActorTask::CreateForTesting(
         *ActorKeyedService::Get(profile()), TaskId(1),
-        std::move(task_ui_event_dispatcher),
+        std::move(ui_event_dispatcher),
         /*options=*/nullptr, TestTaskSourceInfo(), &no_enterprise_checker_,
         mock_actor_task_delegate_.GetWeakPtr());
 
-    for (auto& mock :
-         {mock_ui_event_dispatcher_, task_mock_ui_event_dispatcher_}) {
-      ON_CALL(*mock, OnPreTool)
-          .WillByDefault(
-              UiEventDispatcherCallback<ToolRequest>(base::BindRepeating(
-                  MakeOkResult, /*requires_page_stabilization=*/true)));
-      ON_CALL(*mock, OnPostTool)
-          .WillByDefault(
-              UiEventDispatcherCallback<ToolRequest>(base::BindRepeating(
-                  MakeOkResult, /*requires_page_stabilization=*/true)));
-      ON_CALL(*mock, OnActorTaskAsyncChange)
-          .WillByDefault(UiEventDispatcherCallback<
-                         ui::UiEventDispatcher::ActorTaskAsyncChange>(
-              base::BindRepeating(MakeOkResult,
-                                  /*requires_page_stabilization=*/true)));
-    }
+    ON_CALL(*mock_ui_event_dispatcher_, OnPreTool)
+        .WillByDefault(
+            UiEventDispatcherCallback<ToolRequest>(base::BindRepeating(
+                MakeOkResult, /*requires_page_stabilization=*/true)));
+    ON_CALL(*mock_ui_event_dispatcher_, OnPostTool)
+        .WillByDefault(
+            UiEventDispatcherCallback<ToolRequest>(base::BindRepeating(
+                MakeOkResult, /*requires_page_stabilization=*/true)));
+    ON_CALL(*mock_ui_event_dispatcher_, OnActorTaskAsyncChange)
+        .WillByDefault(UiEventDispatcherCallback<
+                       ui::UiEventDispatcher::ActorTaskAsyncChange>(
+            base::BindRepeating(MakeOkResult,
+                                /*requires_page_stabilization=*/true)));
 
     ON_CALL(mock_actor_task_delegate_, RequestToShowUserConfirmationDialog)
         .WillByDefault([](TaskId, const url::Origin&, bool,
@@ -281,9 +265,7 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
 
   void TearDown() override {
     testing::Mock::VerifyAndClearExpectations(mock_ui_event_dispatcher_);
-    testing::Mock::VerifyAndClearExpectations(task_mock_ui_event_dispatcher_);
     mock_ui_event_dispatcher_ = nullptr;
-    task_mock_ui_event_dispatcher_ = nullptr;
     if (!task_->IsCompleted()) {
       task_->Stop(kTabDetached);
     }
@@ -344,7 +326,6 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
   FakeChromeRenderFrame fake_chrome_render_frame_;
   std::unique_ptr<ActorTask> task_;
   raw_ptr<ui::MockUiEventDispatcher> mock_ui_event_dispatcher_;
-  raw_ptr<ui::MockUiEventDispatcher> task_mock_ui_event_dispatcher_;
   testing::NiceMock<MockActorTaskDelegate> mock_actor_task_delegate_;
 
  private:
@@ -368,17 +349,17 @@ TEST_F(ExecutionEngineTest, MAYBE_ActSucceedsOnSupportedUrl) {
               OnPostTool(Property(&ToolRequest::JournalEvent, Eq("Click")), _))
       .Times(1);
   EXPECT_CALL(
-      *task_mock_ui_event_dispatcher_,
+      *mock_ui_event_dispatcher_,
       OnActorTaskSyncChange(VariantWith<ChangeTaskState>(AllOf(
           Field(&ChangeTaskState::old_state, ActorTask::State::kCreated),
           Field(&ChangeTaskState::new_state, ActorTask::State::kActing)))))
       .Times(1);
   EXPECT_CALL(
-      *task_mock_ui_event_dispatcher_,
+      *mock_ui_event_dispatcher_,
       OnActorTaskSyncChange(VariantWith<ChangeTaskState>(AllOf(
           Field(&ChangeTaskState::old_state, ActorTask::State::kActing),
           Field(&ChangeTaskState::new_state, ActorTask::State::kReflecting)))));
-  EXPECT_CALL(*task_mock_ui_event_dispatcher_,
+  EXPECT_CALL(*mock_ui_event_dispatcher_,
               OnActorTaskAsyncChange(VariantWith<AddTab>(_), _))
       .Times(1);
   EXPECT_TRUE(
@@ -436,7 +417,7 @@ TEST_F(ExecutionEngineTest, MAYBE_UiOnPostToolFails) {
 #define MAYBE_ActFailsWhenAddTabFails ActFailsWhenAddTabFails
 #endif
 TEST_F(ExecutionEngineTest, MAYBE_ActFailsWhenAddTabFails) {
-  EXPECT_CALL(*task_mock_ui_event_dispatcher_,
+  EXPECT_CALL(*mock_ui_event_dispatcher_,
               OnActorTaskAsyncChange(VariantWith<AddTab>(_), _))
       .WillOnce(UiEventDispatcherCallback<
                 ui::UiEventDispatcher::ActorTaskAsyncChange>(
@@ -576,12 +557,12 @@ TEST_F(ExecutionEngineTest, MAYBE_ActorTaskCompletedHistogram) {
   const base::TimeDelta task_duration = base::Milliseconds(123);
   task_environment()->FastForwardBy(task_duration);
 
-  EXPECT_CALL(*task_mock_ui_event_dispatcher_,
+  EXPECT_CALL(*mock_ui_event_dispatcher_,
               OnActorTaskSyncChange(
                   VariantWith<ui::MockUiEventDispatcher::RemoveTab>(_)))
       .Times(testing::AnyNumber());
   EXPECT_CALL(
-      *task_mock_ui_event_dispatcher_,
+      *mock_ui_event_dispatcher_,
       OnActorTaskSyncChange(VariantWith<StopTask>(AllOf(
           Field(&StopTask::task_id, task_->id()),
           Field(&StopTask::final_state, ActorTask::State::kFinished),
@@ -1242,32 +1223,23 @@ class ExecutionEngineUrlGatingTest : public ChromeRenderViewHostTestHarness {
   // OriginGatingChecker-backed path.
   ExecutionEngine& GetExecutionEngine() {
     if (!task_) {
-      std::unique_ptr<ui::UiEventDispatcher> engine_dispatcher =
-          ui::NewMockUiEventDispatcher();
       std::unique_ptr<ui::UiEventDispatcher> task_dispatcher =
           ui::NewMockUiEventDispatcher();
-      for (auto* mock :
-           {static_cast<ui::MockUiEventDispatcher*>(engine_dispatcher.get()),
-            static_cast<ui::MockUiEventDispatcher*>(task_dispatcher.get())}) {
-        ON_CALL(*mock, OnPreTool)
-            .WillByDefault(
-                UiEventDispatcherCallback<ToolRequest>(base::BindRepeating(
-                    MakeOkResult, /*requires_page_stabilization=*/true)));
-        ON_CALL(*mock, OnPostTool)
-            .WillByDefault(
-                UiEventDispatcherCallback<ToolRequest>(base::BindRepeating(
-                    MakeOkResult, /*requires_page_stabilization=*/true)));
-        ON_CALL(*mock, OnActorTaskAsyncChange)
-            .WillByDefault(UiEventDispatcherCallback<
-                           ui::UiEventDispatcher::ActorTaskAsyncChange>(
-                base::BindRepeating(MakeOkResult,
-                                    /*requires_page_stabilization=*/true)));
-      }
-      ScopedExecutionEngineFactory scoped_factory(base::BindLambdaForTesting(
-          [&](ActorTask& task) -> std::unique_ptr<ExecutionEngine> {
-            return ExecutionEngine::CreateForTesting(
-                task, std::move(engine_dispatcher));
-          }));
+      auto* mock =
+          static_cast<ui::MockUiEventDispatcher*>(task_dispatcher.get());
+      ON_CALL(*mock, OnPreTool)
+          .WillByDefault(
+              UiEventDispatcherCallback<ToolRequest>(base::BindRepeating(
+                  MakeOkResult, /*requires_page_stabilization=*/true)));
+      ON_CALL(*mock, OnPostTool)
+          .WillByDefault(
+              UiEventDispatcherCallback<ToolRequest>(base::BindRepeating(
+                  MakeOkResult, /*requires_page_stabilization=*/true)));
+      ON_CALL(*mock, OnActorTaskAsyncChange)
+          .WillByDefault(UiEventDispatcherCallback<
+                         ui::UiEventDispatcher::ActorTaskAsyncChange>(
+              base::BindRepeating(MakeOkResult,
+                                  /*requires_page_stabilization=*/true)));
       task_ = ActorTask::CreateForTesting(
           *ActorKeyedService::Get(profile()), TaskId(1),
           std::move(task_dispatcher),

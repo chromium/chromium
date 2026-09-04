@@ -49,7 +49,6 @@ class ExecutionEngine;
 class TabObservationStrategy;
 
 namespace ui {
-class ActorUiStateManagerInterface;
 class UiEventDispatcher;
 }
 struct ActionResultWithLatencyInfo;
@@ -82,7 +81,6 @@ class ActorTask : public base::SupportsUserData {
             webui::mojom::TaskOptionsPtr options,
             const TaskSourceInfo& source_info,
             const EnterprisePolicyChecker* policy_checker,
-            actor::ui::ActorUiStateManagerInterface* ui_state_manager,
             base::WeakPtr<ActorTaskDelegate> delegate = nullptr,
             std::optional<glic::mojom::InvocationSource>
                 initial_invocation_source = std::nullopt);
@@ -300,6 +298,9 @@ class ActorTask : public base::SupportsUserData {
   }
 
   ActorKeyedService& actor_keyed_service() const { return service_.get(); }
+  ui::UiEventDispatcher& ui_event_dispatcher() const {
+    return *ui_event_dispatcher_;
+  }
 
   bool has_visible_tab() const { return has_visible_tab_; }
   bool is_in_pip() const { return is_in_pip_; }
@@ -408,11 +409,13 @@ class ActorTask : public base::SupportsUserData {
 
   std::unique_ptr<ActionTrackerForMetrics> action_tracker_for_metrics_;
 
+  // This is used by and should be kept above `execution_engine_`.
+  std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher_;
+
   // The engine responsible for actually processing and invoking a list of
   // ToolRequests. Always non-null.
   std::unique_ptr<ExecutionEngine> execution_engine_;
 
-  std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher_;
 
   base::SafeRef<AggregatedJournal> journal_;
 

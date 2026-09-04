@@ -515,8 +515,7 @@ TaskId ActorKeyedService::CreateTaskImpl(
   auto actor_task = std::make_unique<ActorTask>(
       base::PassKey<ActorKeyedService>(), *this, task_id,
       std::move(ui_event_dispatcher), std::move(options), source_info,
-      policy_checker, ui_state_manager, std::move(delegate),
-      initial_invocation_source);
+      policy_checker, std::move(delegate), initial_invocation_source);
 
   if (initial_tab_handle != tabs::TabHandle::Null()) {
     actor_task->AddTab(initial_tab_handle, /*stop_task_on_detach=*/true,

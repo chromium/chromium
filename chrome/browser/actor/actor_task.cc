@@ -149,7 +149,6 @@ ActorTask::ActorTask(
     webui::mojom::TaskOptionsPtr options,
     const TaskSourceInfo& source_info,
     const EnterprisePolicyChecker* policy_checker,
-    actor::ui::ActorUiStateManagerInterface* ui_state_manager,
     base::WeakPtr<ActorTaskDelegate> delegate,
     std::optional<glic::mojom::InvocationSource> initial_invocation_source)
     : service_(service),
@@ -175,8 +174,7 @@ ActorTask::ActorTask(
       ui_weak_ptr_factory_(ui_event_dispatcher_.get()) {
   CHECK(policy_checker);
   CHECK(!id_.is_null());
-  execution_engine_ = ExecutionEngine::Create(
-      *this, ui::NewUiEventDispatcher(ui_state_manager));
+  execution_engine_ = ExecutionEngine::Create(*this);
 }
 
 ActorTask::~ActorTask() {
@@ -197,8 +195,7 @@ std::unique_ptr<ActorTask> ActorTask::CreateForTesting(
     std::optional<glic::mojom::InvocationSource> initial_invocation_source) {
   return std::make_unique<ActorTask>(
       base::PassKey<ActorTask>(), service, id, std::move(ui_event_dispatcher),
-      std::move(options), source_info, policy_checker,
-      service.GetActorUiStateManager(), std::move(delegate),
+      std::move(options), source_info, policy_checker, std::move(delegate),
       initial_invocation_source);
 }
 
