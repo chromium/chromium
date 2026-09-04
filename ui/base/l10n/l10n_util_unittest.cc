@@ -116,6 +116,14 @@ class L10nUtilTest : public PlatformTest {
         env_(base::Environment::Create()) {}
   ~L10nUtilTest() override = default;
 
+  void SetUp() override {
+    PlatformTest::SetUp();
+    env().UnSetVar("LC_ALL");
+    env().UnSetVar("LANGUAGE");
+    env().UnSetVar("LANG");
+    env().UnSetVar("LC_MESSAGES");
+  }
+
   void SetUpLocales(base::span<const std::string_view> locales) {
     // Use a temporary locale dir so we don't have to actually build the locale
     // pak files for this test.
@@ -472,14 +480,7 @@ TEST_F(L10nUtilTest, GetAppLocale_NoSupportsLocalePreference) {
 }
 
 // TODO(crbug.com/556065800): Re-enable this test.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_GetAppLocale_NoSupportsLocalePreference_Nb \
-  DISABLED_GetAppLocale_NoSupportsLocalePreference_Nb
-#else
-#define MAYBE_GetAppLocale_NoSupportsLocalePreference_Nb \
-  GetAppLocale_NoSupportsLocalePreference_Nb
-#endif
-TEST_F(L10nUtilTest, MAYBE_GetAppLocale_NoSupportsLocalePreference_Nb) {
+TEST_F(L10nUtilTest, GetAppLocale_NoSupportsLocalePreference_Nb) {
   if (!kSupportsLocalePreference) {
     SetUpLocales(kDefaultLocalesOnDisk);
     SetDefaultLocaleForTest(GetKnownLanguageTag("no"));
