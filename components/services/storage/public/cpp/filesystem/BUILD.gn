@@ -41,12 +41,17 @@ component("typemap_traits") {
 
 source_set("tests") {
   testonly = true
-  sources = [ "filesystem_proxy_unittest.cc" ]
+  sources = [
+    "filesystem_proxy_unittest.cc",
+    "strict_relative_path_mojom_traits_unittest.cc",
+  ]
   deps = [
     ":filesystem",
+    ":typemap_traits",
     "//base",
     "//base/test:test_support",
     "//components/services/storage/public/mojom/filesystem",
+    "//mojo/public/cpp/test_support:test_utils",
     "//testing/gmock",
     "//testing/gtest",
   ]

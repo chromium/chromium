@@ -534,7 +534,6 @@ FilePath GetUniquePathWithSuffixFormat(const FilePath& path,
   return FilePath();
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 bool IsReservedNameOnWindows(const base::FilePath::StringType& filename) {
   // This list is taken from the MSDN article "Naming a file"
   // http://msdn2.microsoft.com/en-us/library/aa365247(VS.85).aspx
@@ -549,26 +548,38 @@ bool IsReservedNameOnWindows(const base::FilePath::StringType& filename) {
       // shell.
       "desktop.ini",
       "thumbs.db",
+      // Windows console input/output devices. Unlike legacy DOS devices (e.g.
+      // CON), Windows does not strip extensions for CONIN$/CONOUT$.
+      "conin$",
+      "conout$",
   });
 
 #if BUILDFLAG(IS_WIN)
   std::string filename_lower = base::ToLowerASCII(base::WideToUTF8(filename));
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#else
   std::string filename_lower = base::ToLowerASCII(filename);
 #endif
 
-  return std::ranges::any_of(kKnownDevices,
-                             [&filename_lower](std::string_view device) {
-                               if (filename_lower == device) {
-                                 return true;
-                               }
-                               auto parts =
-                                   SplitStringOnce(filename_lower, '.');
-                               return parts && parts->first == device;
-                             }) ||
-         kMagicNames.contains(filename_lower);
+  // On Windows, trailing spaces and dots are stripped by Win32 API path
+  // canonicalization (e.g., "con " or "con. " resolves to device "\\.\CON").
+  std::string_view trimmed_filename =
+      base::TrimString(filename_lower, " .", base::TRIM_TRAILING);
+
+  // Extract the part of the filename before the first dot to check against
+  // DOS device names (e.g. "CON.zip" -> "CON" and "CON.tar.gz" -> "CON").
+  // Doing this once here avoids redundant string splitting inside the loop.
+  std::string_view prefix = trimmed_filename;
+  if (auto parts = SplitStringOnce(trimmed_filename, '.')) {
+    prefix = parts->first;
+  }
+
+  return std::ranges::any_of(
+             kKnownDevices,
+             [prefix, trimmed_filename](std::string_view device) {
+               return trimmed_filename == device || prefix == device;
+             }) ||
+         kMagicNames.contains(trimmed_filename);
 }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 std::optional<FilePath> GetLatestTemporaryFileWithNamePrefix(
     const FilePath& dir,
