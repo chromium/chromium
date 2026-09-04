@@ -11,12 +11,16 @@ optimize_ts("education_page_detector") {
 
 source_set("page_classification") {
   sources = [
+    "education_eligibility_vertical.h",
+    "education_eligibility_vertical.mm",
     "education_java_script_feature.h",
     "education_java_script_feature.mm",
   ]
   deps = [
     ":education_page_detector",
     "//base",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/public/provider/chrome/browser/intelligence:intelligence_api",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
   ]
@@ -24,11 +28,15 @@ source_set("page_classification") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "education_java_script_feature_unittest.mm" ]
+  sources = [
+    "education_eligibility_vertical_unittest.mm",
+    "education_java_script_feature_unittest.mm",
+  ]
   deps = [
     ":page_classification",
     "//base",
     "//base/test:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
