@@ -2933,11 +2933,13 @@ StyleDifference LayoutObject::AdjustStyleDifference(
   // change without the actual style changing, since it depends on whether we
   // decide to composite these elements. When the layer status of one of these
   // elements changes, we need to force a layout.
-  if (!diff.NeedsFullLayout() && HasStyle() && IsBoxModelObject()) {
-    bool requires_layer =
-        To<LayoutBoxModelObject>(this)->LayerTypeRequired() != kNoPaintLayer;
-    if (HasLayer() != requires_layer)
-      diff.SetNeedsFullLayout();
+  if (!diff.NeedsFullLayout() && style_) {
+    if (const auto* box_model = DynamicTo<LayoutBoxModelObject>(this)) {
+      const bool needs_layer = box_model->LayerTypeRequired() != kNoPaintLayer;
+      if (HasLayer() != needs_layer) {
+        diff.SetNeedsFullLayout();
+      }
+    }
   }
 
   return diff;

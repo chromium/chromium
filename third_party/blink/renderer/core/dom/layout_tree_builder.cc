@@ -142,7 +142,9 @@ void LayoutTreeBuilderForElement::CreateLayoutObject() {
   LayoutObject* next_layout_object = NextLayoutObject();
   node_->SetLayoutObject(new_layout_object);
 
+#if DCHECK_IS_ON()
   DCHECK(!new_layout_object->HasStyle());
+#endif
   new_layout_object->SetStyle(style_);
 
   parent_layout_object->AddChild(new_layout_object, next_layout_object);
@@ -212,7 +214,9 @@ void LayoutTreeBuilderForText::CreateLayoutObject() {
   new_layout_object->SetIsInsideMulticol(context_.parent->IsInsideMulticol());
 
   node_->SetLayoutObject(new_layout_object);
+#if DCHECK_IS_ON()
   DCHECK(!new_layout_object->HasStyle());
+#endif
   new_layout_object->SetStyle(style);
 
   layout_object_parent->AddChild(new_layout_object, next_layout_object);

@@ -1946,10 +1946,12 @@ void Node::AttachLayoutTree(AttachContext& context) {
   DCHECK(!context.performing_reattach ||
          GetDocument().GetStyleEngine().InRebuildLayoutTree());
 
-  LayoutObject* layout_object = GetLayoutObject();
+#if DCHECK_IS_ON()
+  const LayoutObject* layout_object = GetLayoutObject();
   DCHECK(!layout_object ||
          (layout_object->HasStyle() &&
           (layout_object->Parent() || IsA<LayoutView>(layout_object))));
+#endif
 
   ClearNeedsReattachLayoutTree();
 
