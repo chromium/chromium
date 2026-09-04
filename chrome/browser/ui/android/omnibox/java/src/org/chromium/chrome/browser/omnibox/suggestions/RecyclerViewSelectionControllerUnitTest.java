@@ -356,21 +356,21 @@ public class RecyclerViewSelectionControllerUnitTest {
         mSelectionController.selectNextItem();
 
         assertEquals(Integer.valueOf(1), mSelectionController.getPosition());
-        verify(mVirtualCallback).onResult(true);
+        verify(mVirtualCallback).onResult(/* result= */ true);
         verify(mChildView1).setSelected(false);
         verify(mChildView2, never()).setSelected(anyBoolean());
 
         mSelectionController.selectNextItem();
 
         assertEquals(Integer.valueOf(2), mSelectionController.getPosition());
-        verify(mVirtualCallback).onResult(false);
+        verify(mVirtualCallback).onResult(/* result= */ false);
         verify(mChildView2).setSelected(true);
 
         clearInvocations(mChildView2);
         mSelectionController.selectPreviousItem();
 
         assertEquals(Integer.valueOf(1), mSelectionController.getPosition());
-        verify(mVirtualCallback, times(2)).onResult(true);
+        verify(mVirtualCallback, times(2)).onResult(/* result= */ true);
         verify(mChildView2).setSelected(false);
     }
 
@@ -396,12 +396,12 @@ public class RecyclerViewSelectionControllerUnitTest {
         mSelectionController.addVirtualView(1, mVirtualCallback);
         mSelectionController.setPosition(1);
         assertEquals(Integer.valueOf(1), mSelectionController.getPosition());
-        verify(mVirtualCallback).onResult(true);
+        verify(mVirtualCallback).onResult(/* result= */ true);
 
         clearInvocations(mVirtualCallback);
         mSelectionController.removeVirtualView(1);
         assertEquals(Integer.valueOf(0), mSelectionController.getPosition());
-        verify(mVirtualCallback).onResult(false);
+        verify(mVirtualCallback).onResult(/* result= */ false);
         verify(mChildView1).setSelected(true);
     }
 
@@ -410,11 +410,11 @@ public class RecyclerViewSelectionControllerUnitTest {
         mSelectionControllerWithSentinel.addVirtualView(1, mVirtualCallback);
         mSelectionControllerWithSentinel.setPosition(1);
         assertEquals(Integer.valueOf(1), mSelectionControllerWithSentinel.getPosition());
-        verify(mVirtualCallback).onResult(true);
+        verify(mVirtualCallback).onResult(/* result= */ true);
 
         clearInvocations(mVirtualCallback);
         mSelectionControllerWithSentinel.removeVirtualView(1);
         assertNull(mSelectionControllerWithSentinel.getPosition());
-        verify(mVirtualCallback).onResult(false);
+        verify(mVirtualCallback).onResult(/* result= */ false);
     }
 }
