@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/settings/model/sync/utils/sync_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/sync_presenter_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -76,9 +77,9 @@ class SyncErrorInfobarDelegateTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetFactoryWithDelegateForTesting(
             std::make_unique<FakeAuthenticationServiceDelegate>()));
-    profile_ = std::move(builder).Build();
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     presenter_ = OCMStrictProtocolMock(@protocol(SyncPresenterCommands));
-    web_state_.SetBrowserState(profile_.get());
+    web_state_.SetBrowserState(profile_);
     // Navigation manager is needed for infobar manager.
     web_state_.SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
@@ -87,32 +88,35 @@ class SyncErrorInfobarDelegateTest : public PlatformTest {
         FakeSystemIdentityManager::FromSystemIdentityManager(
             GetApplicationContext()->GetSystemIdentityManager());
     authentication_service_ =
-        AuthenticationServiceFactory::GetForProfile(profile_.get());
+        AuthenticationServiceFactory::GetForProfile(profile_);
   }
 
   void TearDown() override {
+    EXPECT_OCMOCK_VERIFY((id)presenter_);
     fake_system_identity_manager_ = nullptr;
     authentication_service_ = nullptr;
-    EXPECT_OCMOCK_VERIFY((id)presenter_);
+    presenter_ = nil;
+    profile_ = nullptr;
     PlatformTest::TearDown();
   }
 
   syncer::MockSyncService* mock_sync_service() {
     return static_cast<syncer::MockSyncService*>(
-        SyncServiceFactory::GetForProfile(profile_.get()));
+        SyncServiceFactory::GetForProfile(profile_));
   }
 
   infobars::InfoBarManager* infobar_manager() {
     return InfoBarManagerImpl::FromWebState(&web_state_);
   }
 
+  web::WebTaskEnvironment task_environment_;
   // ScopedTestingLocalState needed for the authentication service.
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestProfileManagerIOS profile_manager_;
+  raw_ptr<TestProfileIOS> profile_ = nullptr;
   raw_ptr<FakeSystemIdentityManager> fake_system_identity_manager_;
   raw_ptr<AuthenticationService> authentication_service_;
   id<SyncPresenterCommands> presenter_;
-  web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestProfileIOS> profile_;
   base::HistogramTester histogram_tester_;
   base::ScopedMockClockOverride scoped_clock_;
   web::FakeWebState web_state_;

@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_image_item.h"
@@ -82,13 +83,13 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetFactoryWithDelegateForTesting(
             std::make_unique<FakeAuthenticationServiceDelegate>()));
-    profile_ = std::move(builder).Build();
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 
     sync_service_ = static_cast<syncer::TestSyncService*>(
-        SyncServiceFactory::GetForProfile(profile_.get()));
+        SyncServiceFactory::GetForProfile(profile_));
 
     AuthenticationService* authentication_service =
-        AuthenticationServiceFactory::GetForProfile(profile_.get());
+        AuthenticationServiceFactory::GetForProfile(profile_);
     authentication_service->SignIn(fake_system_identity_,
                                    signin_metrics::AccessPoint::kStartPage);
   }
@@ -102,12 +103,11 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
     [consumer_ loadModel];
     mediator_ = [[ManageSyncSettingsMediator alloc]
           initWithSyncService:sync_service_
-              identityManager:IdentityManagerFactory::GetForProfile(
-                                  profile_.get())
+              identityManager:IdentityManagerFactory::GetForProfile(profile_)
         authenticationService:AuthenticationServiceFactory::GetForProfile(
-                                  profile_.get())
+                                  profile_)
         accountManagerService:ChromeAccountManagerServiceFactory::GetForProfile(
-                                  profile_.get())
+                                  profile_)
                   prefService:profile_->GetPrefs()];
     mediator_.consumer = consumer_;
   }
@@ -116,6 +116,8 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
     [mediator_ disconnect];
     mediator_ = nullptr;
     consumer_ = nullptr;
+    sync_service_ = nullptr;
+    profile_ = nullptr;
     PlatformTest::TearDown();
   }
 
@@ -130,9 +132,10 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
 
   // Needed for the initialization of authentication service.
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestProfileManagerIOS profile_manager_;
+  raw_ptr<TestProfileIOS> profile_ = nullptr;
 
-  raw_ptr<syncer::TestSyncService, DanglingUntriaged> sync_service_;
-  std::unique_ptr<TestProfileIOS> profile_;
+  raw_ptr<syncer::TestSyncService> sync_service_ = nullptr;
 
   ManageSyncSettingsMediator* mediator_ = nullptr;
   ManageSyncSettingsTableViewController* consumer_ = nullptr;
