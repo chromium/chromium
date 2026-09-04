@@ -125,4 +125,7 @@ tast.hwsec.CrossVersionChromeLogin.ti50_r114
 tast.hwsec.CrossVersionChromeLogin.ti50_r120
 tast.hwsec.CrossVersionChromeLogin.ti50_r125
 
+# b/556069856: This test itself passes but makes the succeeding tests failed.
+tast.arc.MIDIClient.vm
+
 # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
