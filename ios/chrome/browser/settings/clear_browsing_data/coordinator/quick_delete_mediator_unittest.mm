@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
@@ -74,9 +75,9 @@ class QuickDeleteMediatorTest : public PlatformTest {
             std::make_unique<FakeAuthenticationServiceDelegate>()));
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateTestSyncService));
-    profile_ = std::move(builder).Build();
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 
-    auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
+    auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_);
 
     FakeSystemIdentityManager* system_identity_manager =
         FakeSystemIdentityManager::FromSystemIdentityManager(
@@ -86,7 +87,7 @@ class QuickDeleteMediatorTest : public PlatformTest {
 
     scene_state_ = [[SceneState alloc] init];
     history_service_ = ios::HistoryServiceFactory::GetForProfile(
-        profile_.get(), ServiceAccessType::EXPLICIT_ACCESS);
+        profile_, ServiceAccessType::EXPLICIT_ACCESS);
 
     // Reset prefs related to quick delete so tests start with the same state
     // every time.
@@ -113,31 +114,30 @@ class QuickDeleteMediatorTest : public PlatformTest {
   void CreateMediator(raw_ptr<TemplateURLService> template_url_service) {
     fake_browsing_data_counter_wrapper_producer_ =
         [[FakeBrowsingDataCounterWrapperProducer alloc]
-            initWithProfile:profile_.get()];
+            initWithProfile:profile_];
 
     signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(profile_.get());
+        IdentityManagerFactory::GetForProfile(profile_);
     BrowsingDataRemover* browsing_data_remover =
-        BrowsingDataRemoverFactory::GetForProfile(profile_.get());
+        BrowsingDataRemoverFactory::GetForProfile(profile_);
     DiscoverFeedService* discover_feed_service =
-        DiscoverFeedServiceFactory::GetForProfile(profile_.get());
+        DiscoverFeedServiceFactory::GetForProfile(profile_);
     if (template_url_service) {
       template_url_service->Load();
     }
     feature_engagement::Tracker* tracker =
-        feature_engagement::TrackerFactory::GetForProfile(profile_.get());
+        feature_engagement::TrackerFactory::GetForProfile(profile_);
 
-    mediator_ =
-        [[QuickDeleteMediator alloc] initWithPrefs:profile_.get()->GetPrefs()
-                browsingDataCounterWrapperProducer:
-                    fake_browsing_data_counter_wrapper_producer_
-                                   identityManager:identity_manager
-                               browsingDataRemover:browsing_data_remover
-                               discoverFeedService:discover_feed_service
-                                templateURLService:template_url_service
-                     canPerformRadialWipeAnimation:NO
-                                   uiBlockerTarget:scene_state_
-                          featureEngagementTracker:tracker];
+    mediator_ = [[QuickDeleteMediator alloc] initWithPrefs:profile_->GetPrefs()
+                        browsingDataCounterWrapperProducer:
+                            fake_browsing_data_counter_wrapper_producer_
+                                           identityManager:identity_manager
+                                       browsingDataRemover:browsing_data_remover
+                                       discoverFeedService:discover_feed_service
+                                        templateURLService:template_url_service
+                             canPerformRadialWipeAnimation:NO
+                                           uiBlockerTarget:scene_state_
+                                  featureEngagementTracker:tracker];
   }
 
   // Creates a QuickDeleteMediator with a valid template URL Service.
@@ -151,6 +151,8 @@ class QuickDeleteMediatorTest : public PlatformTest {
     [mediator_ disconnect];
     mediator_ = nil;
 
+    fake_browsing_data_counter_wrapper_producer_ = nil;
+    consumer_ = nil;
     scene_state_ = nil;
     auth_service_ = nullptr;
     history_service_ = nullptr;
@@ -202,8 +204,8 @@ class QuickDeleteMediatorTest : public PlatformTest {
   // `num_tabs`.
   void TriggerUpdateUICallbackForTabsResults(int num_tabs) {
     TabsCounter tabs_counter(
-        BrowserListFactory::GetForProfile(profile_.get()),
-        SessionRestorationServiceFactory::GetForProfile(profile_.get()));
+        BrowserListFactory::GetForProfile(profile_),
+        SessionRestorationServiceFactory::GetForProfile(profile_));
     const TabsCounter::TabsResult tabsResult(&tabs_counter, num_tabs,
                                              /*num_windows=*/0, {});
     OCMExpect(
@@ -248,8 +250,9 @@ class QuickDeleteMediatorTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestProfileManagerIOS profile_manager_;
+  raw_ptr<TestProfileIOS> profile_ = nullptr;
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
-  std::unique_ptr<TestProfileIOS> profile_;
   QuickDeleteMediator* mediator_;
   id consumer_;
   id<SystemIdentity> fake_identity_;
