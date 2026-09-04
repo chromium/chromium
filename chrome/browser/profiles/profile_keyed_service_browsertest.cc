@@ -1053,5 +1053,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
       features::kLazyKeyedServiceInstantiationExtensions.Get()) {
     guest_active_services.erase("SafeBrowsingPrivateEventRouter");
   }
+  if (base::FeatureList::IsEnabled(features::kLazyKeyedServiceInstantiation) &&
+      features::kLazyKeyedServiceInstantiationSafeBrowsing.Get()) {
+    guest_active_services.erase("SafeBrowsingTailoredSecurityService");
+  }
   TestKeyedProfileServicesActives(guest_parent_profile, guest_active_services);
 }

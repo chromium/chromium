@@ -9,6 +9,7 @@
 #include "chrome/browser/safe_browsing/tailored_security/chrome_tailored_security_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/browser/browser_context.h"
 
 namespace safe_browsing {
@@ -51,6 +52,11 @@ TailoredSecurityServiceFactory::BuildServiceInstanceForBrowserContext(
 
 bool TailoredSecurityServiceFactory::ServiceIsCreatedWithBrowserContext()
     const {
+  if (base::FeatureList::IsEnabled(
+          ::features::kLazyKeyedServiceInstantiation) &&
+      ::features::kLazyKeyedServiceInstantiationSafeBrowsing.Get()) {
+    return false;
+  }
   return true;
 }
 

@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/network_context_service_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "chrome/common/chrome_features.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/ohttp_key_service.h"
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "content/public/browser/browser_context.h"
@@ -66,7 +67,15 @@ OhttpKeyServiceFactory::BuildServiceInstanceForBrowserContext(
 }
 
 bool OhttpKeyServiceFactory::ServiceIsCreatedWithBrowserContext() const {
-  // The service is created early to start async key fetch.
+  if (base::FeatureList::IsEnabled(
+          ::features::kLazyKeyedServiceInstantiation) &&
+      ::features::kLazyKeyedServiceInstantiationSafeBrowsing.Get()) {
+    return false;
+  }
+  // When deferred instantiation is disabled, the service is created early to
+  // start the async key fetch early. When deferred, it is created on-demand
+  // when HashRealTimeService first requests it, and key fetching occurs
+  // on-demand.
   return true;
 }
 
