@@ -58,7 +58,7 @@ export function getHtml(this: MemoryBanksElement, entry: MemoryBankEntry) {
         ${
         entry.tags && entry.tags.length > 0 ? html`
           <div class="card-tags">
-            ${entry.tags.map(tag => html`
+            ${entry.tags.slice(0, 4).map(tag => html`
               <span class="tag-pill" title="${tag}">${tag}</span>
             `)}
           </div>

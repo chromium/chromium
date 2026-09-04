@@ -81,6 +81,7 @@ cr-tabs {
   background: var(--cr-card-background-color);
   box-sizing: border-box;
   display: flex;
+  flex: 1;
   flex-direction: column;
   height: 133px;
   justify-content: center;
@@ -113,31 +114,38 @@ cr-tabs {
 }
 
 .card-tags {
+  align-items: center;
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 4px;
-  max-height: 20px;
+  height: 18px;
   overflow: hidden;
   width: 100%;
 }
 
 .tag-pill {
-  align-items: center;
   background-color: var(
-      --color-sys-primary-container, var(--cr-fallback-color-surface2));
+      --color-sys-primary-container,
+      var(--cr-fallback-color-primary-container));
   border-radius: 100px;
   box-sizing: border-box;
-  color: var(--color-sys-on-primary-container, var(--cr-primary-text-color));
-  display: inline-flex;
+  color: var(
+      --color-sys-on-primary-container,
+      var(--cr-fallback-color-on-primary-container));
+  display: inline-block;
+  flex-shrink: 1;
   font-family: 'Google Sans Text', sans-serif;
   font-size: 10px;
   font-weight: 500;
-  line-height: 12px;
-  max-width: 100%;
+  height: 18px;
+  line-height: 18px;
+  max-width: 80px;
+  min-width: 0;
   overflow: hidden;
-  padding-block: 1px;
   padding-inline: 6px;
+  text-align: center;
   text-overflow: ellipsis;
+  vertical-align: middle;
   white-space: nowrap;
 }
 
@@ -147,10 +155,11 @@ cr-tabs {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  flex-shrink: 0;
+  gap: 4px;
+  height: 67px;
   justify-content: center;
-  min-height: 67px;
-  padding-block: 8px;
+  padding-block: 6px;
   padding-inline: 16px;
 }
 
@@ -185,7 +194,7 @@ cr-tabs {
   font-family: 'Google Sans Flex', sans-serif;
   font-size: 13px;
   font-weight: 400;
-  line-height: 17px;
+  line-height: 16px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -196,8 +205,8 @@ cr-tabs {
   font-family: 'Google Sans Flex', sans-serif;
   font-size: 10px;
   font-weight: 500;
-  line-height: 14px;
-  margin-top: 2px;
+  line-height: 13px;
+  margin-top: 1px;
 }
 
 .card-more-btn {
