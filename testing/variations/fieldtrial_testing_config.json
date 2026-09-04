@@ -1749,6 +1749,7 @@
             "platforms": [
                 "android",
                 "chromeos",
+                "ios",
                 "linux",
                 "mac",
                 "windows"
@@ -1767,6 +1768,7 @@
                         "AutofillAtMemoryTriggerShortcut",
                         "AutofillAtMemoryTriggerString",
                         "AutofillEnableKeyboardAccessoryOnSearchFields",
+                        "AutofillSupportContentEditableIos",
                         "IPH_AutofillAtMemory",
                         "PersonalContextForceEnablementState"
                     ]
