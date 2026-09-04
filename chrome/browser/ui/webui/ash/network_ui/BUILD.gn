@@ -54,3 +54,24 @@ static_library("network_ui") {
     "//ui/webui",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "network_config_message_handler_unittest.cc" ]
+
+  deps = [
+    ":network_ui",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser/ash/login/users:test_support",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/hermes",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/network:test_support",
+    "//components/onc",
+    "//components/user_manager:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

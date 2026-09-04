@@ -420,6 +420,11 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   }
 
   void ResetESimCache(const base::ListValue& arg_list) {
+    if (IsGuestModeActive()) {
+      NET_LOG(ERROR) << "Couldn't reset eSIM cache in guest mode.";
+      return;
+    }
+
     CellularESimProfileHandler* handler =
         NetworkHandler::Get()->cellular_esim_profile_handler();
     if (!handler) {
@@ -432,10 +437,45 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   }
 
   void DisableActiveESimProfile(const base::ListValue& arg_list) {
+    if (IsGuestModeActive()) {
+      NET_LOG(ERROR) << "Couldn't disable eSIM profile in guest mode.";
+      return;
+    }
+
     CellularESimProfileHandler* handler =
         NetworkHandler::Get()->cellular_esim_profile_handler();
     if (!handler) {
       return;
+    }
+
+    NetworkStateHandler* state_handler =
+        NetworkHandler::Get()->network_state_handler();
+    if (!state_handler) {
+      return;
+    }
+
+    NetworkStateHandler::NetworkStateList state_list;
+    state_handler->GetNetworkListByType(NetworkTypePattern::Cellular(),
+                                        /*configured_only=*/true,
+                                        /*visible_only=*/false,
+                                        /*limit=*/0, &state_list);
+
+    // Use CellularESimProfileHandler (which wraps Hermes) as the source of
+    // truth for active profiles, as Shill's connection state drops when the
+    // network is not visible.
+    for (const auto& profile : handler->GetESimProfiles()) {
+      if (profile.state() != CellularESimProfile::State::kActive ||
+          profile.iccid().empty()) {
+        continue;
+      }
+      for (const NetworkState* network : state_list) {
+        if (network->iccid() == profile.iccid() &&
+            network->IsManagedByPolicy()) {
+          NET_LOG(ERROR)
+              << "Couldn't disable active eSIM profile; managed by policy.";
+          return;
+        }
+      }
     }
 
     CellularESimProfileHandlerImpl* handler_impl =
@@ -461,6 +501,20 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   }
 
   void ResetApnMigrator(const base::ListValue& arg_list) {
+    if (IsGuestModeActive()) {
+      NET_LOG(ERROR) << "Couldn't reset APN migrator in guest mode.";
+      return;
+    }
+    const ManagedNetworkConfigurationHandler*
+        managed_network_configuration_handler =
+            NetworkHandler::Get()->managed_network_configuration_handler();
+    if (managed_network_configuration_handler &&
+        !managed_network_configuration_handler->AllowApnModification()) {
+      NET_LOG(ERROR) << "Couldn't reset APN migrator: APN modification "
+                        "disallowed by policy.";
+      return;
+    }
+
     NET_LOG(EVENT) << "Executing reset ApnMigrator";
     PrefService* local_state = g_browser_process->local_state();
 
@@ -1011,6 +1065,12 @@ base::DictValue NetworkUI::GetLocalizedStrings() {
       .Set("refreshWifiDirectClientInfoButtonText",
            l10n_util::GetStringUTF16(
                IDS_NETWORK_UI_REFRESH_WIFI_DIRECT_CLIENT_INFO_BUTTON_TEXT));
+}
+
+// static
+std::unique_ptr<content::WebUIMessageHandler>
+NetworkUI::CreateNetworkConfigMessageHandlerForTesting() {
+  return std::make_unique<network_ui::NetworkConfigMessageHandler>();
 }
 
 NetworkUI::NetworkUI(content::WebUI* web_ui)

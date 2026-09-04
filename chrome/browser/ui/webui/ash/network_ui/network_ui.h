@@ -17,6 +17,10 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
+namespace content {
+class WebUIMessageHandler;
+}  // namespace content
+
 namespace ash {
 
 class NetworkUI;
@@ -40,6 +44,9 @@ class NetworkUI : public ui::MojoWebUIController {
   ~NetworkUI() override;
 
   static base::DictValue GetLocalizedStrings();
+
+  static std::unique_ptr<content::WebUIMessageHandler>
+  CreateNetworkConfigMessageHandlerForTesting();
 
   // Instantiates implementation of the mojom::CrosNetworkConfig mojo interface
   // passing the pending receiver that will be internally bound.

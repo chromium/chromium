@@ -27,3 +27,9 @@ include_rules = [
   "+chrome/common",
   "+chrome/grit",
 ]
+
+specific_include_rules = {
+  "network_config_message_handler_unittest\\.cc": [
+    "+chrome/test/base",
+  ],
+}
