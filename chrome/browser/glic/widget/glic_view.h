@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "chrome/browser/pwc/privileged_web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -24,7 +25,8 @@ class Profile;
 
 namespace glic {
 
-class GlicView : public views::WebView {
+class GlicView : public views::WebView,
+                 public pwc::PrivilegedWebContents::EmbedderDelegate {
   METADATA_HEADER(GlicView, views::WebView)
 
  public:

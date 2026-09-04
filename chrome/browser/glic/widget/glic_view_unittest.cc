@@ -8,6 +8,9 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/pwc/privileged_web_contents.h"
+#include "chrome/browser/pwc/pwc_component_policy.h"
+#include "chrome/browser/pwc/pwc_features.mojom-features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -17,6 +20,8 @@
 #include "content/public/test/test_renderer_host.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "ui/views/widget/widget.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace glic {
 
@@ -147,6 +152,77 @@ TEST_F(GlicViewTest, SetWebContents_DoesNotClearIfOverwritten) {
 
   glic_view->SetWebContents(nullptr);
   EXPECT_EQ(wc_ptr->GetDelegate(), &other_delegate);
+}
+
+class TestEmbedderDelegate
+    : public pwc::PrivilegedWebContents::EmbedderDelegate {
+ public:
+  TestEmbedderDelegate() = default;
+  ~TestEmbedderDelegate() override = default;
+};
+
+TEST_F(GlicViewTest, SetWebContents_NoWebview_ClearsOldDelegate) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kGlicNoWebview, pwc::mojom::features::kPrivilegedWebContents},
+      {});
+
+  content::RenderViewHostTestEnabler rvh_test_enabler;
+
+  auto glic_view =
+      std::make_unique<GlicView>(profile(), gfx::Size(800, 600), nullptr);
+
+  auto policy_delegate = std::make_unique<pwc::FixedPwcPolicyDelegate>(
+      std::vector<url::Origin>{
+          url::Origin::Create(GURL("https://pwc-test.example.com"))},
+      std::vector<url::Origin>{
+          url::Origin::Create(GURL("https://pwc-test.example.com"))});
+  std::unique_ptr<pwc::PrivilegedWebContents> pwc =
+      pwc::PrivilegedWebContents::Create(pwc::PrivilegedComponent::kGlic,
+                                         profile(), std::move(policy_delegate));
+  ASSERT_TRUE(pwc);
+
+  EXPECT_EQ(pwc->embedder_delegate(), nullptr);
+
+  glic_view->SetWebContents(pwc->web_contents());
+  EXPECT_EQ(pwc->embedder_delegate(), glic_view.get());
+
+  glic_view->SetWebContents(nullptr);
+  EXPECT_EQ(pwc->embedder_delegate(), nullptr);
+}
+
+TEST_F(GlicViewTest, SetWebContents_NoWebview_DoesNotClearIfOverwritten) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kGlicNoWebview, pwc::mojom::features::kPrivilegedWebContents},
+      {});
+
+  content::RenderViewHostTestEnabler rvh_test_enabler;
+
+  TestEmbedderDelegate other_delegate;
+  auto glic_view =
+      std::make_unique<GlicView>(profile(), gfx::Size(800, 600), nullptr);
+
+  auto policy_delegate = std::make_unique<pwc::FixedPwcPolicyDelegate>(
+      std::vector<url::Origin>{
+          url::Origin::Create(GURL("https://pwc-test.example.com"))},
+      std::vector<url::Origin>{
+          url::Origin::Create(GURL("https://pwc-test.example.com"))});
+  std::unique_ptr<pwc::PrivilegedWebContents> pwc =
+      pwc::PrivilegedWebContents::Create(pwc::PrivilegedComponent::kGlic,
+                                         profile(), std::move(policy_delegate));
+  ASSERT_TRUE(pwc);
+
+  glic_view->SetWebContents(pwc->web_contents());
+  EXPECT_EQ(pwc->embedder_delegate(), glic_view.get());
+
+  pwc->SetEmbedderDelegate(&other_delegate);
+  EXPECT_EQ(pwc->embedder_delegate(), &other_delegate);
+
+  glic_view->SetWebContents(nullptr);
+  EXPECT_EQ(pwc->embedder_delegate(), &other_delegate);
+
+  pwc->SetEmbedderDelegate(nullptr);
 }
 
 }  // namespace glic

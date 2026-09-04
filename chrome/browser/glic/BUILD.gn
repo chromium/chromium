@@ -155,6 +155,7 @@ source_set("glic") {
     public_deps += [
       "//chrome/browser/glic/resources:browser_resources",
       "//chrome/browser/optimization_guide",
+      "//chrome/browser/pwc",
       "//chrome/browser/themes",
       "//chrome/browser/ui/tabs:tab_strip_model_observer",
       "//chrome/browser/ui/tabs:tabs_public",
@@ -470,6 +471,7 @@ source_set("impl") {
     "widget/glic_inactive_tab_ui.h",
     "widget/glic_tab_ui.cc",
     "widget/glic_tab_ui.h",
+    "widget/web_contents_delegate_util.h",
   ]
 
   public_deps = [

@@ -10,6 +10,7 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/widget/web_contents_delegate_util.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -51,7 +52,10 @@ GlicView::GlicView(Profile* profile,
   UpdateBackgroundColor();
 }
 
-GlicView::~GlicView() = default;
+GlicView::~GlicView() {
+  SetWebContentsDelegate(web_contents(), /*delegate=*/nullptr,
+                         /*expected_delegate=*/this);
+}
 
 bool GlicView::HandleKeyboardEvent(content::WebContents* source,
                                    const input::NativeWebKeyboardEvent& event) {
@@ -96,25 +100,15 @@ void GlicView::ContentsZoomChange(bool zoom_in) {
 }
 
 void GlicView::SetWebContents(content::WebContents* new_web_contents) {
-  // In NoWebview mode, PrivilegedWebContents owns the WebContentsDelegate.
-  // We must not overwrite or clear it.
-  // TODO(crbug.com/534807813): Plumb required delegate callbacks via
-  // PrivilegedWebContents APIs instead of setting the delegate directly.
-  if (!base::FeatureList::IsEnabled(features::kGlicNoWebview)) {
-    // Clear the delegate on the old WebContents if this view is currently the
-    // delegate. Checks `GetDelegate() == this` to avoid clearing the delegate
-    // if another view has already taken over (e.g. during transitions between
-    // panel and floaty).
-    if (web_contents() && web_contents()->GetDelegate() == this) {
-      web_contents()->SetDelegate(nullptr);
-    }
-  }
+  // Clear the delegate on the old WebContents if this view is currently the
+  // delegate. Passing `/*expected_delegate=*/this` avoids clearing the delegate
+  // if another view has already taken over (e.g. during transitions between
+  // panel and floaty).
+  SetWebContentsDelegate(web_contents(), /*delegate=*/nullptr,
+                         /*expected_delegate=*/this);
   views::WebView::SetWebContents(new_web_contents);
-  if (!base::FeatureList::IsEnabled(features::kGlicNoWebview)) {
-    if (new_web_contents) {
-      new_web_contents->SetDelegate(this);
-    }
-  }
+  // Attach this view as the delegate for the new WebContents.
+  SetWebContentsDelegate(new_web_contents, /*delegate=*/this);
 }
 
 void GlicView::DraggableRegionsChanged(
