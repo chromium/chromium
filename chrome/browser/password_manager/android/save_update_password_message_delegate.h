@@ -92,6 +92,39 @@ class SaveUpdatePasswordMessageDelegate
   friend class SaveUpdatePasswordMessageDelegateTest;
   enum class SavePasswordDialogMenuItem { kNeverSave = 0, kEditPassword = 1 };
 
+  // Lifecycle states of the password save/update delegate.
+  enum class State {
+    // No active message prompt, dialog, or background operation. Delegate is
+    // inactive and ready to display a new prompt.
+    kIdle,
+
+    // The main "Save password" or "Update password" message prompt is currently
+    // displayed or queued in the Messages UI.
+    kSaveUpdatePromptShowing,
+
+    // The password edit dialog is currently open, allowing the user to view or
+    // edit the username and password before saving.
+    kEditDialogShowing,
+
+    // The user initiated a save/update, and the system Device Lock UI (PIN,
+    // pattern, or biometrics) is currently shown to confirm identity.
+    kWaitingForDeviceLock,
+
+    // Password saving is blocked by an unrecovered trusted vault key. The
+    // delegate is observing the password store while waiting for the trusted
+    // vault key retrieval flow to finish.
+    kWaitingForTrustedVault,
+
+    // The password was successfully saved after resolving a trusted vault key
+    // error, and a temporary confirmation message is currently displayed.
+    kConfirmationShowing,
+
+    // The flow has completed or was dismissed, and the delegate is waiting for
+    // any remaining asynchronous UI dismissal callbacks to arrive before
+    // resetting to kIdle.
+    kDismissing,
+  };
+
   explicit SaveUpdatePasswordMessageDelegate(
       PasswordEditDialogFactory password_edit_dialog_factory);
 
@@ -142,8 +175,7 @@ class SaveUpdatePasswordMessageDelegate
   // Following methods handle events associated with user interaction with UI.
   void HandleSaveButtonClicked();
   void StartSavePasswordFlow();
-  void SolveTrustedVaultCheck(bool flow_involved_device_lock_ui,
-                              bool is_device_lock_requirement_met);
+  void SolveTrustedVaultCheck(bool is_device_lock_requirement_met);
   void OnTrustedVaultRecoveryDone();
   void SaveFormManager(bool show_confirmation_message);
   void HandleNeverSaveClicked();
@@ -159,6 +191,8 @@ class SaveUpdatePasswordMessageDelegate
   void HandleConfirmationMessageDismissed(
       messages::DismissReason dismiss_reason);
 
+  void TransitionTo(State new_state);
+  void MaybeCleanUpState();
   void ClearState();
 
   // Returns true if password saving (not updating) is blocked by a trusted
@@ -181,6 +215,8 @@ class SaveUpdatePasswordMessageDelegate
   std::optional<std::string> account_email_;
   bool update_password_ = false;
 
+  State state_ = State::kIdle;
+
   // ManagePasswordsState maintains the password form that is being
   // saved/updated. It provides helper functions for populating username list.
   ManagePasswordsState passwords_state_;
@@ -193,8 +229,6 @@ class SaveUpdatePasswordMessageDelegate
 
   std::unique_ptr<PasswordManagerErrorMessageHelperBridge>
       password_manager_error_message_helper_bridge_;
-
-  bool waiting_for_unlocking_trusted_vault_ = false;
 
   base::ScopedObservation<password_manager::PasswordStoreInterface,
                           password_manager::PasswordStoreInterface::Observer>

@@ -2253,3 +2253,122 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
       });
   delegate()->DismissAllActiveUI();
 }
+
+// Tests that when Device Lock requirement is met while the prompt message
+// dismissal callback is still in flight in Java, the password is saved,
+// no premature CHECK crashes occur in ClearState, and the subsequent dismissal
+// callback from Java completes safely.
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       DeviceLockCompletedWhilePromptDismissalInFlight) {
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
+      ui::WindowAndroid::CreateForTesting();
+  window->get()->AddChild(web_contents()->GetNativeView());
+
+  test_device_lock_bridge()->SetShouldShowDeviceLockUi(true);
+
+  std::unique_ptr<MockPasswordFormManagerForUI> form_manager =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  EXPECT_CALL(*form_manager, Save());
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/false,
+                 /*update_password=*/false);
+  ASSERT_NE(nullptr, GetMessageWrapper());
+
+  // User clicks "Save", which launches Device Lock UI. Keep Java message
+  // dismissal in-flight (i.e. message_ is still non-null).
+  GetMessageWrapper()->HandleActionClick(base::android::AttachCurrentThread());
+  EXPECT_NE(nullptr, GetMessageWrapper());
+  EXPECT_EQ(1, test_device_lock_bridge()->device_lock_ui_shown_count());
+  EXPECT_FALSE(is_password_saved());
+
+  // Device Lock UI finishes before Java message dismissal callback arrives.
+  test_device_lock_bridge()->SimulateDeviceLockComplete(true);
+  EXPECT_TRUE(is_password_saved());
+
+  // Now simulate Java completing the delayed message dismissal callback.
+  DismissMessage(messages::DismissReason::PRIMARY_ACTION);
+}
+
+// Tests that when Device Lock requirement is not met (e.g. canceled by user)
+// while the prompt message dismissal callback is still in flight in Java,
+// the delegate cleans up safely without premature CHECK crashes in ClearState.
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       DeviceLockFailedWhilePromptDismissalInFlight) {
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
+      ui::WindowAndroid::CreateForTesting();
+  window->get()->AddChild(web_contents()->GetNativeView());
+
+  test_device_lock_bridge()->SetShouldShowDeviceLockUi(true);
+
+  std::unique_ptr<MockPasswordFormManagerForUI> form_manager =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  EXPECT_CALL(*form_manager, Save()).Times(0);
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/false,
+                 /*update_password=*/false);
+  ASSERT_NE(nullptr, GetMessageWrapper());
+
+  // User clicks "Save", which launches Device Lock UI with in-flight dismissal.
+  GetMessageWrapper()->HandleActionClick(base::android::AttachCurrentThread());
+  EXPECT_NE(nullptr, GetMessageWrapper());
+  EXPECT_EQ(1, test_device_lock_bridge()->device_lock_ui_shown_count());
+
+  // Device Lock is canceled by user while message dismissal is still in flight.
+  test_device_lock_bridge()->SimulateDeviceLockComplete(false);
+  EXPECT_FALSE(is_password_saved());
+
+  // Delayed message dismissal arrives from Java.
+  DismissMessage(messages::DismissReason::PRIMARY_ACTION);
+}
+
+// Tests that enqueuing a second prompt while the first prompt's dismissal
+// callback is still pending in Java does not trigger synchronous CHECK crashes
+// and cleanly displays the second prompt.
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       SuccessivePromptEnqueuedWhilePreviousPromptDismissing) {
+  std::unique_ptr<MockPasswordFormManagerForUI> form_manager1 =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  EnqueueMessage(std::move(form_manager1), /*user_signed_in=*/true,
+                 /*update_password=*/false);
+  ASSERT_NE(nullptr, GetMessageWrapper());
+
+  // Enqueue a second prompt. This triggers DismissAllActiveUI() for prompt #1.
+  std::unique_ptr<MockPasswordFormManagerForUI> form_manager2 =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  EnqueueMessage(std::move(form_manager2), /*user_signed_in=*/true,
+                 /*update_password=*/false);
+  ASSERT_NE(nullptr, GetMessageWrapper());
+
+  DismissMessage(messages::DismissReason::UNKNOWN);
+}
+
+// Tests that calling DismissAllActiveUI while Device Lock UI is pending and
+// message dismissal callback is in flight in Java safely cancels/aborts the
+// flow, preventing saving or crashes when Device Lock completes afterwards.
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       DismissAllActiveUIWhileDeviceLockPending) {
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
+      ui::WindowAndroid::CreateForTesting();
+  window->get()->AddChild(web_contents()->GetNativeView());
+
+  test_device_lock_bridge()->SetShouldShowDeviceLockUi(true);
+
+  std::unique_ptr<MockPasswordFormManagerForUI> form_manager =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  EXPECT_CALL(*form_manager, Save()).Times(0);
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/false,
+                 /*update_password=*/false);
+  ASSERT_NE(nullptr, GetMessageWrapper());
+
+  // User clicks "Save", which launches Device Lock UI. Keep Java message
+  // dismissal in-flight (i.e. message_ is still non-null).
+  GetMessageWrapper()->HandleActionClick(base::android::AttachCurrentThread());
+  EXPECT_NE(nullptr, GetMessageWrapper());
+  EXPECT_EQ(1, test_device_lock_bridge()->device_lock_ui_shown_count());
+
+  // User closes tab / navigates while device lock is displayed on screen.
+  ExpectDismissMessageCall();
+  delegate()->DismissAllActiveUI();
+
+  // Device Lock UI finishes after tab dismissal was already initiated.
+  test_device_lock_bridge()->SimulateDeviceLockComplete(true);
+  EXPECT_FALSE(is_password_saved());
+}
