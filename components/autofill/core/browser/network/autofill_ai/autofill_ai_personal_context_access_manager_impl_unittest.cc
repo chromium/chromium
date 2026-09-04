@@ -774,7 +774,6 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
       base::Milliseconds(456), 1);
 }
 
-
 // Tests that total prefetch latency for SPII entity types (which require
 // two requests to complete) is correctly recorded when the final request
 // completes.
@@ -1865,7 +1864,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {{features::kAutofillAmbientAutofill,
-        {{"ambient_autofill_eligible_tiers", "1,2"}}}},
+        {{features::kAutofillAmbientAutofillEligibleTiers.name, "1,2"}}}},
       {});
 
   // Before the startup delay, startup logging should not have occurred.
@@ -1886,7 +1885,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {{features::kAutofillAmbientAutofill,
-        {{"ambient_autofill_eligible_tiers", "1,2"}}}},
+        {{features::kAutofillAmbientAutofillEligibleTiers.name, "1,2"}}}},
       {});
 
   // Set tier to an eligible tier (1) before startup logging triggers.
@@ -1918,7 +1917,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {{features::kAutofillAmbientAutofill,
-        {{"ambient_autofill_eligible_tiers", "1,2"}}}},
+        {{features::kAutofillAmbientAutofillEligibleTiers.name, "1,2"}}}},
       {});
 
   pref_service_.SetInteger(subscription_eligibility::prefs::kAiSubscriptionTier,
@@ -1955,8 +1954,8 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {{features::kAutofillAmbientAutofill,
-        {{"ambient_autofill_eligible_tiers", "1,2"},
-         {"ambient_autofill_enabled_devices",
+        {{features::kAutofillAmbientAutofillEligibleTiers.name, "1,2"},
+         {features::kAutofillAmbientAutofillEnabledDevices.name,
           base::SysInfo::HardwareModelName()}}}},
       {});
 
