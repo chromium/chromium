@@ -527,7 +527,7 @@ void LayoutBlockFlow::MakeChildrenNonInline(LayoutObject* insertion_point) {
     LayoutBlock* block = CreateAnonymousBlock();
     Children()->InsertChildNode(this, block, inline_run_start);
     MoveChildrenTo(block, inline_run_start, child,
-                   /*full_remove_insert=*/false);
+                   /*full_remove_insert=*/true);
   }
 
 #if DCHECK_IS_ON()
