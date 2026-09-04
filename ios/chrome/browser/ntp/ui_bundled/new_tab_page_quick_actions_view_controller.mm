@@ -38,7 +38,6 @@ const CGFloat kButtonCornerRadius = 24.0;
 // The size of the quick actions symbols.
 constexpr CGFloat kSymbolPointSize = 18.0;
 constexpr CGFloat kSymbolPointSizeUICleanup = 14.0;
-constexpr CGFloat kSymbolContainerSizeUICleanup = 20.0;
 
 // The maximum font size for the quick actions button.
 const CGFloat kMaximumFontSize = 20.0;
@@ -233,9 +232,6 @@ UIColor* ButtonBackgroundColor(NewTabPageColorPalette* color_palette) {
 
   button.translatesAutoresizingMaskIntoConstraints = NO;
   button.configuration = configuration;
-  if (IsNewTabPageUICleanupEnabled()) {
-    AddSquareConstraints(button.imageView, kSymbolContainerSizeUICleanup);
-  }
   return button;
 }
 
