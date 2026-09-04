@@ -9,6 +9,7 @@
 #import "base/test/metrics/user_action_tester.h"
 #import "components/autofill/core/browser/suggestions/suggestion.h"
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_constants.h"
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_inline_notice_view.h"
@@ -25,6 +26,7 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -216,6 +218,35 @@ TEST_F(AtMemorySearchViewControllerTest, TestFetchingState) {
                   tableView:view_controller_.tableView
       cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
   EXPECT_FALSE(cell.userInteractionEnabled);
+
+  TableViewCellContentConfiguration* configuration =
+      base::apple::ObjCCastStrict<TableViewCellContentConfiguration>(
+          cell.contentConfiguration);
+  EXPECT_NSEQ(configuration.subtitle,
+              l10n_util::GetNSString(
+                  IDS_AUTOFILL_AT_MEMORY_FETCHING_FINDING_INFO_WITH_GEMINI));
+}
+
+// Tests that updating the fetching subtitle updates the cell's subtitle in the
+// fetching state.
+TEST_F(AtMemorySearchViewControllerTest, TestFetchingSubtitleUpdate) {
+  UISearchBar* search_bar =
+      view_controller_.navigationItem.searchController.searchBar;
+  search_bar.text = kSearchQuery;
+  [(id<UISearchBarDelegate>)view_controller_
+      searchBarSearchButtonClicked:search_bar];
+
+  NSString* updated_subtitle = l10n_util::GetNSString(
+      IDS_AUTOFILL_AT_MEMORY_FETCHING_REVIEWING_CONNECTED_APPS);
+  [view_controller_ setFetchingSubtitle:updated_subtitle];
+
+  UITableViewCell* cell = [view_controller_.tableView.dataSource
+                  tableView:view_controller_.tableView
+      cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+  TableViewCellContentConfiguration* configuration =
+      base::apple::ObjCCastStrict<TableViewCellContentConfiguration>(
+          cell.contentConfiguration);
+  EXPECT_NSEQ(configuration.subtitle, updated_subtitle);
 }
 
 // Tests that the table view displays the notice cell when notice is visible

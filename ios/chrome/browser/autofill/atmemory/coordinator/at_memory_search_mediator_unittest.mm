@@ -199,6 +199,23 @@ TEST_F(AtMemorySearchMediatorTest, StartsSearchWithQuerySubmitsToManager) {
   EXPECT_OCMOCK_VERIFY(mock_consumer_);
 }
 
+// Tests that submitting a search query notifies the consumer with the fetching
+// subtitle while the query is in progress.
+TEST_F(AtMemorySearchMediatorTest,
+       StartsSearchWithQueryPushesFetchingSubtitle) {
+  CreateMediator();
+
+  OCMExpect([mock_consumer_ setFetchingSubtitle:[OCMArg isNotNil]]);
+
+  // Do not invoke the query callback to remain in the fetching state.
+  EXPECT_CALL(*mock_query_service_,
+              Query(testing::_, testing::_, testing::_, testing::_));
+
+  [mediator_ startSearchWithQuery:kSearchQuery];
+
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+}
+
 // Tests that multiple search results from the manager are converted to items
 // and pushed to the consumer.
 TEST_F(AtMemorySearchMediatorTest, PushesSearchResultsToConsumer) {

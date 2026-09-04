@@ -255,7 +255,8 @@ autofill::FieldGlobalId GetPlaceholderFieldId() {
         [self.consumer setErrorType:AtMemoryErrorType::kNoDataError];
         return;
       case autofill::SuggestionType::kAtMemoryFetching:
-        [self.consumer setFetchingSubtitle];
+        [self.consumer setFetchingSubtitle:base::SysUTF16ToNSString(
+                                               suggestion.main_text.value)];
         return;
       case autofill::SuggestionType::kAtMemorySearchResult: {
         if (!std::holds_alternative<autofill::Suggestion::AtMemoryPayload>(

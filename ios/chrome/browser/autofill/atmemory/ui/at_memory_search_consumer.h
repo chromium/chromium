@@ -24,9 +24,8 @@ enum class AtMemoryErrorType {
 // Sets the `AtMemoryErrorType`.
 - (void)setErrorType:(AtMemoryErrorType)errorType;
 
-// TODO(crbug.com/541237598): Will be implemented in a separate CL.
-// Sets the progress indicator while fetching results from Gemini.
-- (void)setFetchingSubtitle;
+// Sets the progress indicator subtitle while fetching results from Gemini.
+- (void)setFetchingSubtitle:(NSString*)subtitle;
 
 // Sets whether the informational notice is visible.
 - (void)setNoticeVisible:(BOOL)noticeVisible;

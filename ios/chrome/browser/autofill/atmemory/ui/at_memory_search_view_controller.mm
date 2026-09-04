@@ -90,6 +90,8 @@ enum class ItemIdentifier {
   BOOL _recentFillsAreVisible;
   // The current error type.
   AtMemoryErrorType _errorType;
+  // Subtitle to display in the fetching state cell.
+  NSString* _fetchingSubtitle;
 }
 
 #pragma mark - UIViewController
@@ -355,8 +357,9 @@ enum class ItemIdentifier {
   [self updateTableViewBackgroundStyle];
 }
 
-- (void)setFetchingSubtitle {
-  // TODO(crbug.com/541237598): Implement fetching subtitle.
+- (void)setFetchingSubtitle:(NSString*)subtitle {
+  _fetchingSubtitle = [subtitle copy];
+  [self updateSnapshotForItemIdentifier:ItemIdentifier::kFetchingItem];
 }
 
 - (void)setRecentFills:(NSArray<AtMemorySearchItem*>*)recentFills {
@@ -759,7 +762,9 @@ enum class ItemIdentifier {
   configuration.title = _searchController.searchBar.text;
   configuration.titleColor = [UIColor colorNamed:kTextPrimaryColor];
   configuration.subtitle =
-      l10n_util::GetNSString(IDS_AUTOFILL_AT_MEMORY_SEARCH_AFFORDANCE_SUBTITLE);
+      _fetchingSubtitle
+          ?: l10n_util::GetNSString(
+                 IDS_AUTOFILL_AT_MEMORY_FETCHING_FINDING_INFO_WITH_GEMINI);
 
   ActivityIndicatorContentConfiguration* activityIndicatorConfiguration =
       [[ActivityIndicatorContentConfiguration alloc] init];
@@ -797,6 +802,8 @@ enum class ItemIdentifier {
 // Starts an AtMemory search for `query` and transitions to the fetching state.
 - (void)startSearchWithQuery:(NSString*)query {
   _currentSearchQuery = [query copy];
+  _fetchingSubtitle = l10n_util::GetNSString(
+      IDS_AUTOFILL_AT_MEMORY_FETCHING_FINDING_INFO_WITH_GEMINI);
   [self createSnapshotForFetchingState];
   [self.mutator startSearchWithQuery:query];
 }
