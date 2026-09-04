@@ -22,7 +22,11 @@ root = "fake_root"
 #
 # TODO(https://github.com/rust-lang/cargo/issues/10801): remove workaround once
 # issue is fixed.
-remove_crates = ['allocator-api2', 'shlex']
+remove_crates = ['allocator-api2',
+                 'shlex',
+
+# TODO(https://crbug.com/556790371) Figure this out.
+                 'find-msvc-tools']
 
 [gn]
 build_file_template = "BUILD.gn.hbs"
