@@ -165,7 +165,6 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceForcedMigrationInteractiveUiTest,
 DICE_MIGRATION_TEST_F(DiceMigrationServiceForcedMigrationInteractiveUiTest,
                       ToastDoesNotCloseOnNavigation) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
-  constexpr char16_t kNewUrl[] = u"chrome://version";
 
   // The user is explicitly signed in.
   ASSERT_TRUE(
@@ -173,25 +172,22 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceForcedMigrationInteractiveUiTest,
   ASSERT_TRUE(
       GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
 
-  RunTestSequence(TriggerToastTimer(),
+  RunTestSequence(
+      InstrumentTab(kActiveTab), TriggerToastTimer(),
+      WaitForShow(toasts::ToastView::kToastViewId),
 
-                  WaitForShow(toasts::ToastView::kToastViewId),
+      // Navigate to another page.
+      NavigateWebContents(kActiveTab, GURL(chrome::kChromeUIVersionURL)),
+      FocusWebContents(kActiveTab),
 
-                  // Navigate to another page using the omnibox.
-                  InstrumentTab(kActiveTab),
-                  EnterText(kOmniboxElementId, kNewUrl),
-                  Confirm(kOmniboxElementId),
-                  WaitForWebContentsNavigation(kActiveTab, GURL(kNewUrl)),
-
-                  // The toast should still be visible.
-                  EnsurePresent(toasts::ToastView::kToastViewId));
+      // The toast should still be visible.
+      EnsurePresent(toasts::ToastView::kToastViewId));
 }
 
 DICE_MIGRATION_TEST_F(DiceMigrationServiceForcedMigrationInteractiveUiTest,
                       ToastDoesNotCloseOnTabSwitch) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTab);
-  constexpr char16_t kNewUrl[] = u"chrome://version";
 
   // The user is explicitly signed in.
   ASSERT_TRUE(
@@ -199,25 +195,26 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceForcedMigrationInteractiveUiTest,
   ASSERT_TRUE(
       GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
 
-  RunTestSequence(InstrumentTab(kActiveTab),
+  RunTestSequence(
+      InstrumentTab(kActiveTab),
 
-                  TriggerToastTimer(),
+      TriggerToastTimer(),
 
-                  WaitForShow(toasts::ToastView::kToastViewId),
+      WaitForShow(toasts::ToastView::kToastViewId),
 
-                  // Switch to another tab.
-                  AddInstrumentedTab(kNewTab, GURL(kNewUrl)),
+      // Switch to another tab.
+      AddInstrumentedTab(kNewTab, GURL(chrome::kChromeUIVersionURL)),
 
-                  // The toast should still be visible because the timeout
-                  // hasn't passed yet.
-                  EnsurePresent(toasts::ToastView::kToastViewId),
+      // The toast should still be visible because the timeout
+      // hasn't passed yet.
+      EnsurePresent(toasts::ToastView::kToastViewId),
 
-                  // Switch back to the original tab.
-                  SelectTab(kTabStripElementId, 0),
+      // Switch back to the original tab.
+      SelectTab(kTabStripElementId, 0),
 
-                  // The toast should still be visible because the timeout
-                  // hasn't passed yet.
-                  EnsurePresent(toasts::ToastView::kToastViewId));
+      // The toast should still be visible because the timeout
+      // hasn't passed yet.
+      EnsurePresent(toasts::ToastView::kToastViewId));
 }
 
 DICE_MIGRATION_TEST_F(DiceMigrationServiceForcedMigrationInteractiveUiTest,
