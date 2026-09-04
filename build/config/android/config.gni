@@ -172,7 +172,7 @@ if (is_android) {
   }
 
   if (!defined(default_target_sdk_version)) {
-    default_target_sdk_version = "36"
+    default_target_sdk_version = "37"
   }
 
   if (!defined(default_lint_android_sdk_root)) {
