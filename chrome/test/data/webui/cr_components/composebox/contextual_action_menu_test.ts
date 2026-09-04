@@ -256,6 +256,7 @@ suite('ContextualActionMenu', () => {
           hintText: '',
           aimUrlParams: [],
           menuTooltip: '',
+          icon: 0,
         },
         {
           tool: ToolMode.kImageGen,
@@ -265,6 +266,7 @@ suite('ContextualActionMenu', () => {
           hintText: '',
           aimUrlParams: [],
           menuTooltip: '',
+          icon: 0,
         },
       ],
       toolsSectionConfig: {header: ''},
@@ -323,6 +325,7 @@ suite('ContextualActionMenu', () => {
           hintText: '',
           aimUrlParams: [],
           menuTooltip: '',
+          icon: 0,
         },
         {
           tool: ToolMode.kImageGen,
@@ -332,6 +335,7 @@ suite('ContextualActionMenu', () => {
           hintText: '',
           aimUrlParams: [],
           menuTooltip: '',
+          icon: 0,
         },
       ],
       toolsSectionConfig: {header: ''},
@@ -378,6 +382,7 @@ suite('ContextualActionMenu', () => {
           hintText: '',
           aimUrlParams: [],
           menuTooltip: '',
+          icon: 0,
         },
         {
           tool: ToolMode.kImageGen,
@@ -387,6 +392,7 @@ suite('ContextualActionMenu', () => {
           hintText: '',
           aimUrlParams: [],
           menuTooltip: '',
+          icon: 0,
         },
       ],
       toolsSectionConfig: {header: ''},
@@ -604,6 +610,236 @@ suite('ContextualActionMenu', () => {
         assertEquals('composebox:timer', proIcon!.getAttribute('icon'));
       });
 
+  test('Renders icon defined in toolConfig', async () => {
+    actionMenu.inputState = new MockInputState({
+      allowedTools:
+          [ToolMode.kDeepSearch, ToolMode.kImageGen, ToolMode.kCanvas],
+      toolConfigs: [
+        {
+          tool: ToolMode.kDeepSearch,
+          menuLabel: 'Deep Search',
+          disableActiveModelSelection: false,
+          chipLabel: '',
+          icon: 94,
+          hintText: '',
+          aimUrlParams: [],
+          menuTooltip: '',
+        },
+        {
+          tool: ToolMode.kImageGen,
+          menuLabel: 'Create Images',
+          disableActiveModelSelection: false,
+          chipLabel: '',
+          icon: 100,
+          hintText: '',
+          aimUrlParams: [],
+          menuTooltip: '',
+        },
+        {
+          tool: ToolMode.kCanvas,
+          menuLabel: 'Canvas',
+          disableActiveModelSelection: false,
+          chipLabel: '',
+          icon: 96,
+          hintText: '',
+          aimUrlParams: [],
+          menuTooltip: '',
+        },
+      ],
+    });
+    actionMenu.showAt(actionMenu);
+    await microtasksFinished();
+
+    const deepSearchButton =
+        $$(actionMenu, `[data-mode="${ToolMode.kDeepSearch}"]`);
+    assertTrue(isVisible(deepSearchButton));
+    const deepSearchIcon = deepSearchButton!.querySelector('cr-icon');
+    assertTrue(isVisible(deepSearchIcon));
+    assertEquals('searchbox_config:94', deepSearchIcon!.getAttribute('icon'));
+
+    const imageGenButton =
+        $$(actionMenu, `[data-mode="${ToolMode.kImageGen}"]`);
+    assertTrue(isVisible(imageGenButton));
+    const imageGenIcon = imageGenButton!.querySelector('cr-icon');
+    assertTrue(isVisible(imageGenIcon));
+    assertEquals('searchbox_config:100', imageGenIcon!.getAttribute('icon'));
+
+    const canvasButton = $$(actionMenu, `[data-mode="${ToolMode.kCanvas}"]`);
+    assertTrue(isVisible(canvasButton));
+    const canvasIcon = canvasButton!.querySelector('cr-icon');
+    assertTrue(isVisible(canvasIcon));
+    assertEquals('searchbox_config:96', canvasIcon!.getAttribute('icon'));
+  });
+
+  test(
+      'Uses searchbox_config:0 when tool icon is 0 or unspecified in config',
+      async () => {
+        actionMenu.inputState = new MockInputState({
+          allowedTools:
+              [ToolMode.kDeepSearch, ToolMode.kImageGen, ToolMode.kCanvas],
+          toolConfigs: [
+            {
+              tool: ToolMode.kDeepSearch,
+              menuLabel: 'Deep Search',
+              disableActiveModelSelection: false,
+              chipLabel: '',
+              icon: 0,
+              hintText: '',
+              aimUrlParams: [],
+              menuTooltip: '',
+            },
+            {
+              tool: ToolMode.kImageGen,
+              menuLabel: 'Create Images',
+              disableActiveModelSelection: false,
+              chipLabel: '',
+              icon: 0,
+              hintText: '',
+              aimUrlParams: [],
+              menuTooltip: '',
+            },
+            {
+              tool: ToolMode.kCanvas,
+              menuLabel: 'Canvas',
+              disableActiveModelSelection: false,
+              chipLabel: '',
+              icon: 0,
+              hintText: '',
+              aimUrlParams: [],
+              menuTooltip: '',
+            },
+          ],
+        });
+        actionMenu.showAt(actionMenu);
+        await microtasksFinished();
+
+        const deepSearchButton =
+            $$(actionMenu, `[data-mode="${ToolMode.kDeepSearch}"]`);
+        assertTrue(isVisible(deepSearchButton));
+        const deepSearchIcon = deepSearchButton!.querySelector('cr-icon');
+        assertTrue(isVisible(deepSearchIcon));
+        assertEquals(
+            'searchbox_config:0', deepSearchIcon!.getAttribute('icon'));
+
+        const imageGenButton =
+            $$(actionMenu, `[data-mode="${ToolMode.kImageGen}"]`);
+        assertTrue(isVisible(imageGenButton));
+        const imageGenIcon = imageGenButton!.querySelector('cr-icon');
+        assertTrue(isVisible(imageGenIcon));
+        assertEquals('searchbox_config:0', imageGenIcon!.getAttribute('icon'));
+
+        const canvasButton =
+            $$(actionMenu, `[data-mode="${ToolMode.kCanvas}"]`);
+        assertTrue(isVisible(canvasButton));
+        const canvasIcon = canvasButton!.querySelector('cr-icon');
+        assertTrue(isVisible(canvasIcon));
+        assertEquals('searchbox_config:0', canvasIcon!.getAttribute('icon'));
+      });
+
+  test(
+      'Uses searchbox_config:0 when tool is not present in toolConfigs',
+      async () => {
+        actionMenu.inputState = new MockInputState({
+          allowedTools:
+              [ToolMode.kDeepSearch, ToolMode.kImageGen, ToolMode.kCanvas],
+          toolConfigs: [],
+        });
+        actionMenu.showAt(actionMenu);
+        await microtasksFinished();
+
+        const deepSearchButton =
+            $$(actionMenu, `[data-mode="${ToolMode.kDeepSearch}"]`);
+        assertTrue(isVisible(deepSearchButton));
+        const deepSearchIcon = deepSearchButton!.querySelector('cr-icon');
+        assertTrue(isVisible(deepSearchIcon));
+        assertEquals(
+            'searchbox_config:0', deepSearchIcon!.getAttribute('icon'));
+
+        const imageGenButton =
+            $$(actionMenu, `[data-mode="${ToolMode.kImageGen}"]`);
+        assertTrue(isVisible(imageGenButton));
+        const imageGenIcon = imageGenButton!.querySelector('cr-icon');
+        assertTrue(isVisible(imageGenIcon));
+        assertEquals('searchbox_config:0', imageGenIcon!.getAttribute('icon'));
+
+        const canvasButton =
+            $$(actionMenu, `[data-mode="${ToolMode.kCanvas}"]`);
+        assertTrue(isVisible(canvasButton));
+        const canvasIcon = canvasButton!.querySelector('cr-icon');
+        assertTrue(isVisible(canvasIcon));
+        assertEquals('searchbox_config:0', canvasIcon!.getAttribute('icon'));
+      });
+
+  test(
+      'Uses legacy tool icons when useSearchboxConfigIconIds is false',
+      async () => {
+        loadTimeData.overrideValues({
+          useSearchboxConfigIconIds: false,
+        });
+        actionMenu.inputState = new MockInputState({
+          allowedTools:
+              [ToolMode.kDeepSearch, ToolMode.kImageGen, ToolMode.kCanvas],
+          toolConfigs: [
+            {
+              tool: ToolMode.kDeepSearch,
+              menuLabel: 'Deep Search',
+              disableActiveModelSelection: false,
+              chipLabel: '',
+              icon: 94,
+              hintText: '',
+              aimUrlParams: [],
+              menuTooltip: '',
+            },
+            {
+              tool: ToolMode.kImageGen,
+              menuLabel: 'Create Images',
+              disableActiveModelSelection: false,
+              chipLabel: '',
+              icon: 100,
+              hintText: '',
+              aimUrlParams: [],
+              menuTooltip: '',
+            },
+            {
+              tool: ToolMode.kCanvas,
+              menuLabel: 'Canvas',
+              disableActiveModelSelection: false,
+              chipLabel: '',
+              icon: 96,
+              hintText: '',
+              aimUrlParams: [],
+              menuTooltip: '',
+            },
+          ],
+        });
+        actionMenu.showAt(actionMenu);
+        await microtasksFinished();
+
+        const deepSearchButton =
+            $$(actionMenu, `[data-mode="${ToolMode.kDeepSearch}"]`);
+        assertTrue(isVisible(deepSearchButton));
+        const deepSearchIcon = deepSearchButton!.querySelector('cr-icon');
+        assertTrue(isVisible(deepSearchIcon));
+        assertEquals(
+            'composebox:travel-explore', deepSearchIcon!.getAttribute('icon'));
+
+        const imageGenButton =
+            $$(actionMenu, `[data-mode="${ToolMode.kImageGen}"]`);
+        assertTrue(isVisible(imageGenButton));
+        const imageGenIcon = imageGenButton!.querySelector('cr-icon');
+        assertTrue(isVisible(imageGenIcon));
+        assertEquals(
+            'composebox:nanoBanana-custom', imageGenIcon!.getAttribute('icon'));
+
+        const canvasButton =
+            $$(actionMenu, `[data-mode="${ToolMode.kCanvas}"]`);
+        assertTrue(isVisible(canvasButton));
+        const canvasIcon = canvasButton!.querySelector('cr-icon');
+        assertTrue(isVisible(canvasIcon));
+        assertEquals(
+            'composebox:draft-spark', canvasIcon!.getAttribute('icon'));
+      });
+
   // LINT.IfChange(SearchboxConfigIcons)
   test(
       'searchbox_config icon definitions match composebox icon definitions',
@@ -662,6 +898,7 @@ suite('ContextualActionMenu', () => {
           hintText: '',
           aimUrlParams: [],
           menuTooltip: '',
+          icon: 0,
         },
         {
           tool: ToolMode.kImageGen,
@@ -671,6 +908,7 @@ suite('ContextualActionMenu', () => {
           hintText: '',
           aimUrlParams: [],
           menuTooltip: '',
+          icon: 0,
         },
       ],
       toolsSectionConfig: {header: ''},
@@ -796,6 +1034,7 @@ suite('ContextualActionMenu', () => {
         hintText: '',
         aimUrlParams: [],
         menuTooltip: '',
+        icon: 0,
       }],
       toolsSectionConfig: {header: ''},
       allowedModels: [],
@@ -853,6 +1092,7 @@ suite('ContextualActionMenu', () => {
         hintText: '',
         aimUrlParams: [],
         menuTooltip: '',
+        icon: 0,
       }],
       toolsSectionConfig: {header: ''},
       modelSectionConfig: {header: ''},
@@ -1043,6 +1283,7 @@ suite('ContextualActionMenu', () => {
         hintText: '',
         aimUrlParams: [],
         menuTooltip: '',
+        icon: 0,
       }],
       toolsSectionConfig: {header: toolsHeader},
       allowedModels: [ModelMode.kGeminiRegular],
@@ -2018,6 +2259,7 @@ suite('ContextualActionMenu', () => {
         hintText: '',
         aimUrlParams: [],
         menuTooltip: '',
+        icon: 0,
       }],
       toolsSectionConfig: {header: ''},
       allowedModels: [ModelMode.kGeminiRegular],

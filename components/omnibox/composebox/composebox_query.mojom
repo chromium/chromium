@@ -155,6 +155,13 @@ struct ToolConfig {
   string hint_text;
   array<AimUrlParam> aim_url_params;
   string menu_tooltip;
+  // Raw integer value corresponding to omnibox::IconResourceIds in
+  // third_party/omnibox_proto/icon_resource_ids.proto. An int32 is used
+  // instead of a dedicated Mojom enum to avoid duplicating and maintaining
+  // hundreds of server-defined icon enum values across IPC and WebUI bindings.
+  // Frontend consumers only map the subset of icons they support and fall
+  // back safely if an unknown or unsupported icon ID is encountered.
+  int32 icon;
 };
 // LINT.ThenChange(//third_party/omnibox_proto/tool_config.proto:ToolConfig)
 

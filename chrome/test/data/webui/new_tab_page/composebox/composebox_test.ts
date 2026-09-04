@@ -421,7 +421,10 @@ suite(`NewTabPageComposeboxTest`, () => {
 
         try {
           // Guard off: ImageGen renders the legacy layout.
-          loadTimeData.overrideValues({isAndroid: false});
+          loadTimeData.overrideValues({
+            isAndroid: false,
+            useSearchboxConfigIconIds: false,
+          });
           testProxy.searchboxCallbackRouterRemote.onInputStateChanged(
               new MockInputState({activeTool: ToolMode.kImageGen}));
           await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
@@ -474,7 +477,10 @@ suite(`NewTabPageComposeboxTest`, () => {
               'Canvas should render the Clank close icon when isAndroid is' +
                   ' true');
         } finally {
-          loadTimeData.overrideValues({isAndroid: false});
+          loadTimeData.overrideValues({
+            isAndroid: false,
+            useSearchboxConfigIconIds: true,
+          });
         }
       });
 

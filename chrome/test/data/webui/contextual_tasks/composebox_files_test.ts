@@ -125,6 +125,7 @@ suite('ContextualTasksComposeboxFilesTest', () => {
           hintText: 'Canvas hint',
           aimUrlParams: [{paramKey: 'rc', paramValue: '1'}],
           menuTooltip: '',
+          icon: 0,
         }],
       },
     }));

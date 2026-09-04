@@ -449,6 +449,18 @@ StructTraits<UsedToolConfigDataView, omnibox::ToolConfig>::menu_tooltip(
 }
 
 // static
+int32_t StructTraits<UsedToolConfigDataView, omnibox::ToolConfig>::icon(
+    const omnibox::ToolConfig& config) {
+  if (config.has_icon() && config.icon().has_icon_id()) {
+    int icon_id = static_cast<int>(config.icon().icon_id());
+    if (omnibox::IconResourceIds_IsValid(icon_id)) {
+      return icon_id;
+    }
+  }
+  return static_cast<int32_t>(omnibox::IconResourceIds::PLACE_WHITE);
+}
+
+// static
 bool StructTraits<UsedToolConfigDataView, omnibox::ToolConfig>::Read(
     UsedToolConfigDataView data,
     omnibox::ToolConfig* output) {
@@ -494,6 +506,13 @@ bool StructTraits<UsedToolConfigDataView, omnibox::ToolConfig>::Read(
     return false;
   }
   output->set_menu_tooltip(menu_tooltip);
+
+  int32_t icon_id = data.icon();
+  if (omnibox::IconResourceIds_IsValid(icon_id) &&
+      icon_id != static_cast<int32_t>(omnibox::IconResourceIds::PLACE_WHITE)) {
+    output->mutable_icon()->set_icon_id(
+        static_cast<omnibox::IconResourceIds>(icon_id));
+  }
 
   return true;
 }

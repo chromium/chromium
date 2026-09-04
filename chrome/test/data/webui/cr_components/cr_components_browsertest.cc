@@ -354,6 +354,11 @@ IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, LensSearch) {
 IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, CurrentTabChip) {
   RunTest("cr_components/composebox/current_tab_chip_test.js", "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, ComposeboxToolChip) {
+  RunTest("cr_components/composebox/composebox_tool_chip_test.js",
+          "mocha.run()");
+}
 #endif
 
 IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, ComposeboxVoiceSearch) {

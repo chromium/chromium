@@ -4,6 +4,9 @@
 
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
+import '//resources/cr_elements/icons.html.js';
+import './icons.html.js';
+import './searchbox_config_icons.html.js';
 
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -67,6 +70,12 @@ export class ComposeboxToolChipElement extends I18nMixinLit
   protected getIcon_(): string {
     if (!this.inputState) {
       return '';
+    }
+
+    if (getLoadTimeBoolean('useSearchboxConfigIconIds', false)) {
+      const config = this.inputState.toolConfigs?.find(
+          c => c.tool === this.inputState!.activeTool);
+      return `searchbox_config:${config ? config.icon : 0}`;
     }
 
     switch (this.inputState.activeTool) {

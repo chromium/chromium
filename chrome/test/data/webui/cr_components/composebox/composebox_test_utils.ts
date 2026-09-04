@@ -29,6 +29,7 @@ export class MockInputState implements InputState {
       disableActiveModelSelection: false,
       aimUrlParams: [],
       menuTooltip: '',
+      icon: 0,
     },
     {
       tool: ToolMode.kImageGen,
@@ -38,6 +39,7 @@ export class MockInputState implements InputState {
       disableActiveModelSelection: false,
       aimUrlParams: [],
       menuTooltip: '',
+      icon: 0,
     },
     {
       tool: ToolMode.kCanvas,
@@ -47,6 +49,7 @@ export class MockInputState implements InputState {
       disableActiveModelSelection: false,
       aimUrlParams: [],
       menuTooltip: '',
+      icon: 0,
     },
   ];
   toolsSectionConfig: any|null = null;
@@ -169,6 +172,7 @@ export function createValidInputState(): InputState {
         disableActiveModelSelection: false,
         aimUrlParams: [],
         menuTooltip: '',
+        icon: 0,
       },
     ],
     toolsSectionConfig: {header: ''},

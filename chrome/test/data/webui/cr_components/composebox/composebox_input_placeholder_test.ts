@@ -146,6 +146,7 @@ suite('ComposeboxInputPlaceholder', () => {
                                       disableActiveModelSelection: false,
                                       aimUrlParams: [],
                                       menuTooltip: '',
+                                      icon: 0,
                                     })),
       }));
 

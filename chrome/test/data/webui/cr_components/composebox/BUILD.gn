@@ -36,6 +36,7 @@ build_webui_tests("build") {
     "file_carousel_test.ts",
     "file_thumbnail_test.ts",
     "current_tab_chip_test.ts",
+    "composebox_tool_chip_test.ts",
     "recording_wave_test.ts",
     "test_composebox_mixin.ts",
   ]

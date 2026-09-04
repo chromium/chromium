@@ -1252,6 +1252,11 @@ export class ContextualActionMenuElement extends
   }
 
   protected getIconForToolMode_(mode: ToolMode): string|undefined {
+    if (getLoadTimeBoolean('useSearchboxConfigIconIds', false)) {
+      const config = this.inputState?.toolConfigs.find(c => c.tool === mode);
+      return `searchbox_config:${config ? config.icon : 0}`;
+    }
+    // Fallback to legacy hardcoded tool mapping if flag is disabled.
     return this.supportedTools_.get(mode)?.icon;
   }
 

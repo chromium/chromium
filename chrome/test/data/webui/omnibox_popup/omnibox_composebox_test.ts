@@ -2865,6 +2865,7 @@ suite('OmniboxComposeboxTest', () => {
         disableActiveModelSelection: false,
         aimUrlParams: [],
         menuTooltip: '',
+        icon: 0,
       }];
       omniboxComposebox.inputState = inputState;
       await microtasksFinished();

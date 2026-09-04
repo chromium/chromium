@@ -69,6 +69,7 @@ class TestOmniboxContextMenuController : public OmniboxContextMenuController {
  public:
   using OmniboxContextMenuController::GetIconForInputType;
   using OmniboxContextMenuController::GetIconForModel;
+  using OmniboxContextMenuController::GetIconForTool;
   using OmniboxContextMenuController::OmniboxContextMenuController;
   using OmniboxContextMenuController::OnGetInputState;
 
@@ -391,6 +392,68 @@ TEST_F(OmniboxContextMenuControllerTest, GetIconForModel_LegacyFallback) {
   EXPECT_EQ(controller()->GetIconForModel(
                 omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR),
             expected_legacy_icon);
+}
+
+TEST_F(OmniboxContextMenuControllerTest,
+       GetIconForTool_UseSearchboxConfigIconIds) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kAimUseSearchboxConfigIconIds);
+
+  omnibox::InputState state;
+  omnibox::ToolConfig deep_search_config;
+  deep_search_config.set_tool(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  deep_search_config.mutable_icon()->set_icon_id(
+      omnibox::IconResourceIds::TRAVEL_EXPLORE);
+  state.tool_configs.push_back(deep_search_config);
+
+  omnibox::ToolConfig canvas_config;
+  canvas_config.set_tool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  canvas_config.mutable_icon()->set_icon_id(
+      omnibox::IconResourceIds::DRAFT_SPARK);
+  state.tool_configs.push_back(canvas_config);
+
+  controller()->OnGetInputState(state);
+
+  ui::ImageModel expected_deep_search_icon = ui::ImageModel::FromVectorIcon(
+      features::IsRoundedIconsEnabled() ? kTravelExploreIcon
+                                        : kTravelExploreOldIcon,
+      ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
+  EXPECT_EQ(
+      controller()->GetIconForTool(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH),
+      expected_deep_search_icon);
+
+  ui::ImageModel expected_canvas_icon = ui::ImageModel::FromVectorIcon(
+      features::IsRoundedIconsEnabled() ? kDraftSparkIcon : kDraftSparkOldIcon,
+      ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
+  EXPECT_EQ(controller()->GetIconForTool(omnibox::ToolMode::TOOL_MODE_CANVAS),
+            expected_canvas_icon);
+
+  // Tool not present in tool_configs uses empty ImageModel (zero value).
+  EXPECT_EQ(
+      controller()->GetIconForTool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN),
+      ui::ImageModel());
+}
+
+TEST_F(OmniboxContextMenuControllerTest, GetIconForTool_LegacyFallback) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(omnibox::kAimUseSearchboxConfigIconIds);
+
+  omnibox::InputState state;
+  omnibox::ToolConfig deep_search_config;
+  deep_search_config.set_tool(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+  deep_search_config.mutable_icon()->set_icon_id(
+      omnibox::IconResourceIds::BOLT);
+  state.tool_configs.push_back(deep_search_config);
+
+  controller()->OnGetInputState(state);
+
+  ui::ImageModel expected_legacy_icon = ui::ImageModel::FromVectorIcon(
+      features::IsRoundedIconsEnabled() ? kTravelExploreIcon
+                                        : kTravelExploreOldIcon,
+      ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
+  EXPECT_EQ(
+      controller()->GetIconForTool(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH),
+      expected_legacy_icon);
 }
 
 TEST_F(OmniboxContextMenuControllerTest, ExecuteCommand_DriveInputType) {

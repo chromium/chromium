@@ -84,6 +84,8 @@ struct StructTraits<composebox_query::mojom::ToolConfigDataView,
   static std::vector<omnibox::UrlParam> aim_url_params(
       const omnibox::ToolConfig& config);
   static const std::string& menu_tooltip(const omnibox::ToolConfig& config);
+  // Returns raw int32 corresponding to omnibox::IconResourceIds.
+  static int32_t icon(const omnibox::ToolConfig& config);
 
   static bool Read(composebox_query::mojom::ToolConfigDataView data,
                    omnibox::ToolConfig* output);

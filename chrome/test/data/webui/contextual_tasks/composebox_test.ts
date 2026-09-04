@@ -84,6 +84,7 @@ suite('ContextualTasksComposeboxTest', () => {
         hintText: 'Canvas hint',
         aimUrlParams: [{paramKey: 'rc', paramValue: '1'}],
         menuTooltip: '',
+        icon: 0,
       }] :
                                                [],
     });
@@ -184,6 +185,7 @@ suite('ContextualTasksComposeboxTest', () => {
           hintText: 'Canvas hint',
           aimUrlParams: [{paramKey: 'rc', paramValue: '1'}],
           menuTooltip: '',
+          icon: 0,
         }],
       },
     }));
