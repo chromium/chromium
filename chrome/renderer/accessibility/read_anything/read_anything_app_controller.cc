@@ -1312,6 +1312,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("onFontSizeChanged",
                  &ReadAnythingAppController::OnFontSizeChanged)
       .SetMethod("onFontSizeReset", &ReadAnythingAppController::OnFontSizeReset)
+      .SetMethod("onImagesEnabledToggled",
+                 &ReadAnythingAppController::OnImagesEnabledToggled)
       .SetMethod("onLinksEnabledToggled",
                  &ReadAnythingAppController::OnLinksEnabledToggled)
       .SetMethod("onTranslationRequested",
