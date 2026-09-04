@@ -82,7 +82,6 @@ static_library("signin") {
     "//chrome/browser/ash/login/lock/online_reauth",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/profiles",
-    "//chrome/browser/notifications",
     "//chrome/browser/signin",
     "//chrome/browser/supervised_user",
     "//chrome/browser/sync",

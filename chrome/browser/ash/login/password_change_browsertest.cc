@@ -36,7 +36,6 @@
 #include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/termination_notification.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
@@ -466,10 +465,8 @@ class PasswordChangeTokenCheck : public PasswordChangeTest {
     const user_manager::User* active_user =
         user_manager::UserManager::Get()->GetActiveUser();
     return message_center::MessageCenter::Get()->FindVisibleNotificationById(
-        CreateUserScopedNotificationId(
-            kProfileSigninNotificationId +
-                ProfileManager::GetActiveUserProfile()->GetProfileUserName(),
-            active_user->username_hash()));
+        CreateUserScopedNotificationId(kProfileSigninNotificationId,
+                                       active_user->username_hash()));
   }
 
   AccountId user_with_invalid_token_;
