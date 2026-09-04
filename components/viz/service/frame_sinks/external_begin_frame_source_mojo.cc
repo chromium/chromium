@@ -42,7 +42,7 @@ void ExternalBeginFrameSourceMojo::IssueExternalBeginFrame(
     mojo::ReportBadMessage("Got overlapping IssueExternalBeginFrame");
     return;
   }
-  original_source_id_ = args.frame_id.source_id;
+  original_frame_id_ = args.frame_id;
 
   OnBeginFrame(args);
 
@@ -84,7 +84,8 @@ void ExternalBeginFrameSourceMojo::OnDestroyedCompositorFrameSink(
 void ExternalBeginFrameSourceMojo::OnFrameSinkDidBeginFrame(
     const FrameSinkId& sink_id,
     const BeginFrameArgs& args) {
-  if (!original_source_id_ || args.frame_id.source_id != *original_source_id_) {
+  if (!original_frame_id_ ||
+      args.frame_id.source_id != original_frame_id_->source_id) {
     return;
   }
   pending_frame_sinks_.insert(sink_id);
@@ -93,7 +94,8 @@ void ExternalBeginFrameSourceMojo::OnFrameSinkDidBeginFrame(
 void ExternalBeginFrameSourceMojo::OnFrameSinkDidFinishFrame(
     const FrameSinkId& sink_id,
     const BeginFrameArgs& args) {
-  if (!original_source_id_ || args.frame_id.source_id != *original_source_id_) {
+  if (!original_frame_id_ ||
+      args.frame_id.source_id != original_frame_id_->source_id) {
     return;
   }
   pending_frame_sinks_.erase(sink_id);
@@ -101,10 +103,12 @@ void ExternalBeginFrameSourceMojo::OnFrameSinkDidFinishFrame(
 }
 
 void ExternalBeginFrameSourceMojo::MaybeProduceFrameCallback() {
-  if (!pending_frame_sinks_.empty())
+  if (!pending_frame_sinks_.empty()) {
     return;
-  if (!pending_frame_callback_)
+  }
+  if (!pending_frame_callback_) {
     return;
+  }
 
   if (pending_ack_) {
     DispatchFrameCallback(*pending_ack_);
@@ -120,9 +124,16 @@ void ExternalBeginFrameSourceMojo::MaybeProduceFrameCallback() {
   }
 
   // All frame sinks are done with frame, yet the root frame is still missing,
-  // the display won't draw, so resolve callback now.
-  BeginFrameAck nak(last_begin_frame_args_.frame_id.source_id,
-                    last_begin_frame_args_.frame_id.sequence_number,
+  // the display won't draw, so resolve callback now. Build the nak from the
+  // in-flight request's frame id, not from `last_begin_frame_args_`: the
+  // latter is reset by DispatchFrameCallback() and is not updated when
+  // OnBeginFrame() defers the frame while the GPU is busy, so it can be
+  // invalid (sequence number 0) here — and a nak with sequence number 0 fails
+  // BeginFrameAck validation in the browser process, which then terminates
+  // this process for a bad message.
+  CHECK(original_frame_id_);
+  BeginFrameAck nak(original_frame_id_->source_id,
+                    original_frame_id_->sequence_number,
                     /*has_damage=*/false);
   DispatchFrameCallback(nak);
 }
@@ -145,8 +156,9 @@ void ExternalBeginFrameSourceMojo::DispatchFrameCallback(
 void ExternalBeginFrameSourceMojo::OnDisplayDidFinishFrame(
     const BeginFrameId& frame_id,
     DisplaySchedulerDrawResult result) {
-  if (!pending_frame_callback_)
+  if (!pending_frame_callback_) {
     return;
+  }
 
   if (result == DisplaySchedulerDrawResult::kDrawnLate ||
       result == DisplaySchedulerDrawResult::kMayDrawLate) {
@@ -171,11 +183,13 @@ void ExternalBeginFrameSourceMojo::OnDisplayDestroyed() {
 }
 
 void ExternalBeginFrameSourceMojo::SetDisplay(Display* display) {
-  if (display_)
+  if (display_) {
     display_->RemoveObserver(this);
+  }
   display_ = display;
-  if (display_)
+  if (display_) {
     display_->AddObserver(this);
+  }
 }
 
 void ExternalBeginFrameSourceMojo::OnNeedsBeginFrames(bool needs_begin_frames) {
