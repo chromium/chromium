@@ -52,12 +52,19 @@ void ServiceWorkerProcessManager::Shutdown() {
   // `storage_partition_` to nullptr to avoid holding a dangling ptr.
   storage_partition_ = nullptr;
 
+  // DecrementWorkerRefCount() can synchronously destroy the RenderProcessHost
+  // and run observers that re-enter this manager. Mark shutdown and remove all
+  // entries before invoking those callbacks.
+  is_shutdown_ = true;
+  auto worker_process_map = std::move(worker_process_map_);
+  worker_process_map_.clear();
+
   // In single-process mode, Shutdown() is called when deleting the default
   // browser context, which is itself destroyed after the RenderProcessHost.
   // The refcount decrement can be skipped anyway since there's only one
   // process.
   if (!RenderProcessHost::run_renderer_in_process()) {
-    for (const auto& it : worker_process_map_) {
+    for (const auto& it : worker_process_map) {
       if (it.second->HasProcess()) {
         RenderProcessHost* process = it.second->GetProcess();
         if (!process->AreRefCountsDisabled())
@@ -65,8 +72,6 @@ void ServiceWorkerProcessManager::Shutdown() {
       }
     }
   }
-  worker_process_map_.clear();
-  is_shutdown_ = true;
 }
 
 bool ServiceWorkerProcessManager::IsShutdown() {
@@ -203,12 +208,16 @@ void ServiceWorkerProcessManager::ReleaseWorkerProcess(int embedded_worker_id) {
   if (it == worker_process_map_.end())
     return;
 
-  if (it->second->HasProcess()) {
-    RenderProcessHost* process = it->second->GetProcess();
+  // DecrementWorkerRefCount() can synchronously destroy the RenderProcessHost
+  // and run observers that re-enter this manager. Remove the worker entry first
+  // so reentrant cleanup cannot release it twice.
+  scoped_refptr<SiteInstance> site_instance = std::move(it->second);
+  worker_process_map_.erase(it);
+  if (site_instance->HasProcess()) {
+    RenderProcessHost* process = site_instance->GetProcess();
     if (!process->AreRefCountsDisabled())
       process->DecrementWorkerRefCount();
   }
-  worker_process_map_.erase(it);
 }
 
 base::WeakPtr<ServiceWorkerProcessManager>
