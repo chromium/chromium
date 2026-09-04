@@ -24,6 +24,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/mock_key_rotation_launcher.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/ec_signing_key.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/signing_key_pair.h"
+#include "crypto/sign.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -59,7 +60,7 @@ constexpr char kKeyRotationResultHistogram[] =
 
 scoped_refptr<SigningKeyPair> CreateFakeHWKeyPair() {
   ECSigningKeyProvider provider;
-  auto algorithm = {crypto::SignatureVerifier::ECDSA_SHA256};
+  auto algorithm = {crypto::sign::ECDSA_SHA256};
   auto signing_key = provider.GenerateSigningKeySlowly(algorithm);
   DCHECK(signing_key);
   return base::MakeRefCounted<SigningKeyPair>(std::move(signing_key),

@@ -24,7 +24,7 @@
 #include "components/unexportable_keys/mojom/unexportable_key_service.mojom.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -49,9 +49,9 @@ constexpr std::string_view kTestKeyTag = "test_key_tag";
 constexpr auto kTestWrappedAttestationKey =
     std::to_array<uint8_t>({0x11, 0x22, 0x33});
 constexpr auto kTestAttestationAlgorithms =
-    std::to_array<crypto::SignatureVerifier::SignatureAlgorithm>({
-        crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256,
-        crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
+    std::to_array<crypto::sign::SignatureKind>({
+        crypto::sign::RSA_PKCS1_SHA256,
+        crypto::sign::ECDSA_SHA256,
     });
 constexpr auto kTestChallenge = std::to_array<uint8_t>({1, 2, 3});
 
@@ -104,8 +104,7 @@ template <
     typename KeyIdType = decltype(std::declval<NewKeyDataPtrType>()->key_id)>
 ServiceErrorOr<NewKeyDataPtrType> GenerateKeyImpl(
     std::optional<ServiceErrorOr<NewKeyDataPtrType>> response,
-    base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-        acceptable_algorithms) {
+    base::span<const crypto::sign::SignatureKind> acceptable_algorithms) {
   if (response) {
     return std::move(*response);
   }
@@ -139,8 +138,7 @@ ServiceErrorOr<NewKeyDataPtrType> FromWrappedKeyImpl(
       {
           .subject_public_key_info = base::ToVector(kTestSubjectPublicKeyInfo),
           .wrapped_key = base::ToVector(wrapped_key),
-          .algorithm =
-              crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
+          .algorithm = crypto::sign::ECDSA_SHA256,
           .key_tag = std::string(kTestKeyTag),
       });
 }
@@ -151,8 +149,7 @@ class FakeUnexportableKeyServiceProxy : public mojom::UnexportableKeyService {
   ~FakeUnexportableKeyServiceProxy() override = default;
 
   void GenerateSigningKey(
-      const std::vector<crypto::SignatureVerifier::SignatureAlgorithm>&
-          acceptable_algorithms,
+      const std::vector<crypto::sign::SignatureKind>& acceptable_algorithms,
       BackgroundTaskPriority priority,
       GenerateSigningKeyCallback callback) override {
     std::move(callback).Run(GenerateKeyImpl(
@@ -167,8 +164,7 @@ class FakeUnexportableKeyServiceProxy : public mojom::UnexportableKeyService {
   }
 
   void GenerateAttestationKey(
-      const std::vector<crypto::SignatureVerifier::SignatureAlgorithm>&
-          acceptable_algorithms,
+      const std::vector<crypto::sign::SignatureKind>& acceptable_algorithms,
       BackgroundTaskPriority priority,
       GenerateAttestationKeyCallback callback) override {
     std::move(callback).Run(
@@ -298,16 +294,16 @@ class UnexportableKeyServiceProxiedTest : public ::testing::Test {
   UnexportableSigningKeyId GenerateSigningKeyOrDie() {
     base::test::TestFuture<ServiceErrorOr<UnexportableSigningKeyId>> future;
     proxied_service_.GenerateSigningKeySlowlyAsync(
-        {crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256},
-        BackgroundTaskPriority::kUserVisible, future.GetCallback());
+        {crypto::sign::RSA_PKCS1_SHA256}, BackgroundTaskPriority::kUserVisible,
+        future.GetCallback());
     return future.Get().value();
   }
 
   UnexportableAttestationKeyId GenerateAttestationKeyOrDie() {
     base::test::TestFuture<ServiceErrorOr<UnexportableAttestationKeyId>> future;
     proxied_service_.GenerateAttestationKeySlowlyAsync(
-        {crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256},
-        BackgroundTaskPriority::kUserVisible, future.GetCallback());
+        {crypto::sign::RSA_PKCS1_SHA256}, BackgroundTaskPriority::kUserVisible,
+        future.GetCallback());
     return future.Get().value();
   }
 
@@ -320,9 +316,8 @@ class UnexportableKeyServiceProxiedTest : public ::testing::Test {
 
 TEST_F(UnexportableKeyServiceProxiedTest, GenerateSigningKeySuccess) {
   base::test::TestFuture<ServiceErrorOr<UnexportableSigningKeyId>> future;
-  std::vector<crypto::SignatureVerifier::SignatureAlgorithm> algos = {
-      crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256,
-      crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256};
+  std::vector<crypto::sign::SignatureKind> algos = {
+      crypto::sign::RSA_PKCS1_SHA256, crypto::sign::ECDSA_SHA256};
 
   proxied_service_.GenerateSigningKeySlowlyAsync(
       algos, BackgroundTaskPriority::kUserVisible, future.GetCallback());
@@ -333,9 +328,8 @@ TEST_F(UnexportableKeyServiceProxiedTest, GenerateSigningKeySuccess) {
               ValueIs(ElementsAreArray(kTestSubjectPublicKeyInfo)));
   EXPECT_THAT(proxied_service_.GetWrappedKey(key_id),
               ValueIs(ElementsAreArray(kTestWrappedKey)));
-  EXPECT_THAT(
-      proxied_service_.GetAlgorithm(key_id),
-      ValueIs(crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256));
+  EXPECT_THAT(proxied_service_.GetAlgorithm(key_id),
+              ValueIs(crypto::sign::RSA_PKCS1_SHA256));
   EXPECT_THAT(proxied_service_.GetKeyTag(key_id), ValueIs(kTestKeyTag));
 }
 
@@ -344,8 +338,8 @@ TEST_F(UnexportableKeyServiceProxiedTest, GenerateSigningKeyError) {
       base::unexpected(ServiceError::kCryptoApiFailed));
 
   base::test::TestFuture<ServiceErrorOr<UnexportableSigningKeyId>> future;
-  std::vector<crypto::SignatureVerifier::SignatureAlgorithm> algos = {
-      crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256};
+  std::vector<crypto::sign::SignatureKind> algos = {
+      crypto::sign::RSA_PKCS1_SHA256};
 
   proxied_service_.GenerateSigningKeySlowlyAsync(
       algos, BackgroundTaskPriority::kUserVisible, future.GetCallback());
@@ -355,7 +349,7 @@ TEST_F(UnexportableKeyServiceProxiedTest, GenerateSigningKeyError) {
 
 TEST_F(UnexportableKeyServiceProxiedTest, GenerateSigningKeyEmptyAlgorithms) {
   base::test::TestFuture<ServiceErrorOr<UnexportableSigningKeyId>> future;
-  std::vector<crypto::SignatureVerifier::SignatureAlgorithm> algos = {};
+  std::vector<crypto::sign::SignatureKind> algos = {};
 
   proxied_service_.GenerateSigningKeySlowlyAsync(
       algos, BackgroundTaskPriority::kUserVisible, future.GetCallback());
@@ -365,22 +359,20 @@ TEST_F(UnexportableKeyServiceProxiedTest, GenerateSigningKeyEmptyAlgorithms) {
 
 TEST_F(UnexportableKeyServiceProxiedTest, GenerateKeyCollision) {
   base::test::TestFuture<ServiceErrorOr<UnexportableSigningKeyId>> future1;
-  std::vector<crypto::SignatureVerifier::SignatureAlgorithm> algos = {
-      crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256};
+  std::vector<crypto::sign::SignatureKind> algos = {
+      crypto::sign::RSA_PKCS1_SHA256};
   proxied_service_.GenerateSigningKeySlowlyAsync(
       algos, BackgroundTaskPriority::kUserVisible, future1.GetCallback());
   ASSERT_TRUE(future1.Wait());
   ASSERT_TRUE(future1.Get().has_value());
   UnexportableSigningKeyId key_id = future1.Get().value();
 
-  mojom::NewSigningKeyDataPtr collision_data = ToMojomKeyData(
-      key_id,
-      {
-          .subject_public_key_info = {9, 9},
-          .wrapped_key = {9, 9, 9},
-          .algorithm =
-              crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256,
-      });
+  mojom::NewSigningKeyDataPtr collision_data =
+      ToMojomKeyData(key_id, {
+                                 .subject_public_key_info = {9, 9},
+                                 .wrapped_key = {9, 9, 9},
+                                 .algorithm = crypto::sign::RSA_PKCS1_SHA256,
+                             });
   fake_service_.SetGenerateResponse(std::move(collision_data));
 
   base::test::TestFuture<ServiceErrorOr<UnexportableSigningKeyId>> future2;
@@ -405,17 +397,16 @@ TEST_F(UnexportableKeyServiceProxiedTest, FromWrappedSigningKeySuccess) {
               ValueIs(ElementsAreArray(kTestSubjectPublicKeyInfo)));
   EXPECT_THAT(proxied_service_.GetWrappedKey(key_id),
               ValueIs(ElementsAreArray(wrapped_key)));
-  EXPECT_THAT(
-      proxied_service_.GetAlgorithm(key_id),
-      ValueIs(crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256));
+  EXPECT_THAT(proxied_service_.GetAlgorithm(key_id),
+              ValueIs(crypto::sign::ECDSA_SHA256));
   EXPECT_THAT(proxied_service_.GetKeyTag(key_id), ValueIs(kTestKeyTag));
 }
 
 TEST_F(UnexportableKeyServiceProxiedTest, FromWrappedSigningKeyAlreadyCached) {
   base::test::TestFuture<ServiceErrorOr<UnexportableSigningKeyId>>
       generate_future;
-  std::vector<crypto::SignatureVerifier::SignatureAlgorithm> algos = {
-      crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256};
+  std::vector<crypto::sign::SignatureKind> algos = {
+      crypto::sign::RSA_PKCS1_SHA256};
   proxied_service_.GenerateSigningKeySlowlyAsync(
       algos, BackgroundTaskPriority::kUserVisible,
       generate_future.GetCallback());
@@ -426,20 +417,18 @@ TEST_F(UnexportableKeyServiceProxiedTest, FromWrappedSigningKeyAlreadyCached) {
       proxied_service_.GetSubjectPublicKeyInfo(key_id);
   ServiceErrorOr<std::vector<uint8_t>> original_wrapped =
       proxied_service_.GetWrappedKey(key_id);
-  ServiceErrorOr<crypto::SignatureVerifier::SignatureAlgorithm> original_algo =
+  ServiceErrorOr<crypto::sign::SignatureKind> original_algo =
       proxied_service_.GetAlgorithm(key_id);
   ASSERT_TRUE(original_spki.has_value());
   ASSERT_TRUE(original_wrapped.has_value());
   ASSERT_TRUE(original_algo.has_value());
 
-  mojom::NewSigningKeyDataPtr new_key_data = ToMojomKeyData(
-      key_id,
-      {
-          .subject_public_key_info = {99, 99},
-          .wrapped_key = {99},
-          .algorithm =
-              crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
-      });
+  mojom::NewSigningKeyDataPtr new_key_data =
+      ToMojomKeyData(key_id, {
+                                 .subject_public_key_info = {99, 99},
+                                 .wrapped_key = {99},
+                                 .algorithm = crypto::sign::ECDSA_SHA256,
+                             });
 
   fake_service_.SetFromWrappedResponse(std::move(new_key_data));
 
@@ -475,8 +464,8 @@ TEST_F(UnexportableKeyServiceProxiedTest, FromWrappedSigningKeyError) {
 TEST_F(UnexportableKeyServiceProxiedTest, SignSuccess) {
   base::test::TestFuture<ServiceErrorOr<UnexportableSigningKeyId>>
       generate_future;
-  std::vector<crypto::SignatureVerifier::SignatureAlgorithm> algos = {
-      crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256};
+  std::vector<crypto::sign::SignatureKind> algos = {
+      crypto::sign::RSA_PKCS1_SHA256};
   proxied_service_.GenerateSigningKeySlowlyAsync(
       algos, BackgroundTaskPriority::kUserVisible,
       generate_future.GetCallback());
@@ -498,8 +487,8 @@ TEST_F(UnexportableKeyServiceProxiedTest, SignSuccess) {
 TEST_F(UnexportableKeyServiceProxiedTest, SignError) {
   base::test::TestFuture<ServiceErrorOr<UnexportableSigningKeyId>>
       generate_future;
-  std::vector<crypto::SignatureVerifier::SignatureAlgorithm> algos = {
-      crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256};
+  std::vector<crypto::sign::SignatureKind> algos = {
+      crypto::sign::RSA_PKCS1_SHA256};
   proxied_service_.GenerateSigningKeySlowlyAsync(
       algos, BackgroundTaskPriority::kUserVisible,
       generate_future.GetCallback());
@@ -616,15 +605,14 @@ TEST_F(UnexportableKeyServiceProxiedTest,
   UnexportableSigningKeyId key_id2;
 
   auto create_data = [](UnexportableSigningKeyId id) {
-    return ToMojomKeyData(
-        id, {
-                .subject_public_key_info =
-                    base::ToVector(kTestSubjectPublicKeyInfo),
-                .wrapped_key = base::ToVector(kTestWrappedKey),
-                .algorithm =
-                    crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
-                .key_tag = std::string(kTestKeyTag),
-            });
+    return ToMojomKeyData(id,
+                          {
+                              .subject_public_key_info =
+                                  base::ToVector(kTestSubjectPublicKeyInfo),
+                              .wrapped_key = base::ToVector(kTestWrappedKey),
+                              .algorithm = crypto::sign::ECDSA_SHA256,
+                              .key_tag = std::string(kTestKeyTag),
+                          });
   };
 
   key_data_list.push_back(create_data(key_id1));
@@ -675,8 +663,8 @@ TEST_F(UnexportableKeyServiceProxiedTest, GetAllKeysForGarbageCollectionError) {
 
 TEST_F(UnexportableKeyServiceProxiedTest, GenerateSigningKeyCancelled) {
   base::test::TestFuture<ServiceErrorOr<UnexportableSigningKeyId>> future;
-  std::vector<crypto::SignatureVerifier::SignatureAlgorithm> algos = {
-      crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256};
+  std::vector<crypto::sign::SignatureKind> algos = {
+      crypto::sign::RSA_PKCS1_SHA256};
 
   proxied_service_.GenerateSigningKeySlowlyAsync(
       algos, BackgroundTaskPriority::kUserVisible, future.GetCallback());
@@ -754,9 +742,8 @@ TEST_F(UnexportableKeyServiceProxiedTest, GenerateAttestationKeySuccess) {
               ValueIs(ElementsAreArray(kTestSubjectPublicKeyInfo)));
   EXPECT_THAT(proxied_service_.GetWrappedKey(key_id),
               ValueIs(ElementsAreArray(kTestWrappedKey)));
-  EXPECT_THAT(
-      proxied_service_.GetAlgorithm(key_id),
-      ValueIs(crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256));
+  EXPECT_THAT(proxied_service_.GetAlgorithm(key_id),
+              ValueIs(crypto::sign::RSA_PKCS1_SHA256));
   EXPECT_THAT(proxied_service_.GetKeyTag(key_id), ValueIs(kTestKeyTag));
 }
 
@@ -794,9 +781,8 @@ TEST_F(UnexportableKeyServiceProxiedTest, FromWrappedAttestationKeySuccess) {
               ValueIs(ElementsAreArray(kTestSubjectPublicKeyInfo)));
   EXPECT_THAT(proxied_service_.GetWrappedKey(key_id),
               ValueIs(ElementsAreArray(kTestWrappedAttestationKey)));
-  EXPECT_THAT(
-      proxied_service_.GetAlgorithm(key_id),
-      ValueIs(crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256));
+  EXPECT_THAT(proxied_service_.GetAlgorithm(key_id),
+              ValueIs(crypto::sign::ECDSA_SHA256));
   EXPECT_THAT(proxied_service_.GetKeyTag(key_id), ValueIs(kTestKeyTag));
 }
 

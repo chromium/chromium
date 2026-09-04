@@ -21,6 +21,7 @@
 #include "crypto/openssl_util.h"
 #include "crypto/scoped_capi_types.h"
 #include "crypto/scoped_cng_types.h"
+#include "crypto/sign.h"
 #include "crypto/unexportable_key.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_private_key.h"
@@ -496,9 +497,8 @@ TEST_P(UnexportableSSLPlatformKeyWinTest, WrapUnexportableKeySlowly) {
     GTEST_SKIP() << "Platform keys are not supported.";
   }
 
-  const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
-      crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
-      crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256};
+  const crypto::sign::SignatureKind algorithms[] = {
+      crypto::sign::ECDSA_SHA256, crypto::sign::RSA_PKCS1_SHA256};
   auto key = provider->GenerateSigningKeySlowly(algorithms);
   if (!key) {
     // Could be hitting crbug.com/41494935. Fine to skip the test as the

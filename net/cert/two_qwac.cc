@@ -78,7 +78,7 @@ base::expected<Jades2QwacHeader, std::string> ParseJades2QwacHeader(
   //
   // Given that there are no required signature algorithms, this only supports
   // algorithms that at the time of writing are both listed in the IANA registry
-  // and supported by crypto::SignatureVerifier.
+  // and supported by crypto::sign::SignatureKind.
   std::string* alg = header.FindString("alg");
   if (!alg) {
     return base::unexpected("alg missing or not a string");

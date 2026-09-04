@@ -27,7 +27,7 @@
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "crypto/scoped_fake_unexportable_key_provider.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "crypto/unexportable_key.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -97,9 +97,8 @@ MATCHER(TupleEqualsProto, "") {
                                      std::get<0>(arg), result_listener);
 }
 
-std::vector<crypto::SignatureVerifier::SignatureAlgorithm> CreateAlgArray() {
-  return {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
-          crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256};
+std::vector<crypto::sign::SignatureKind> CreateAlgArray() {
+  return {crypto::sign::ECDSA_SHA256, crypto::sign::RSA_PKCS1_SHA256};
 }
 
 bound_session_credentials::Credential CreateTestBoundSessionCredential(

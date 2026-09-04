@@ -16,7 +16,7 @@
 #include "components/unexportable_keys/background_task_impl.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/service_error.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "crypto/unexportable_key.h"
 
 namespace crypto {
@@ -47,8 +47,7 @@ class GenerateKeyTask
  public:
   GenerateKeyTask(
       std::unique_ptr<crypto::UnexportableKeyProvider> key_provider,
-      base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms,
+      base::span<const crypto::sign::SignatureKind> acceptable_algorithms,
       BackgroundTaskPriority priority,
       base::OnceCallback<void(ReturnType)> callback,
       PreReplyCallback pre_reply);
@@ -118,8 +117,7 @@ class GenerateAttestationKeyTask
  public:
   GenerateAttestationKeyTask(
       std::unique_ptr<crypto::UnexportableKeyProvider> key_provider,
-      base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms,
+      base::span<const crypto::sign::SignatureKind> acceptable_algorithms,
       BackgroundTaskPriority priority,
       base::OnceCallback<void(ReturnType)> callback,
       PreReplyCallback pre_reply);

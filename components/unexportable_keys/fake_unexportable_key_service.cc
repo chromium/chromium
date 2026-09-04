@@ -10,14 +10,13 @@
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "crypto/unexportable_key.h"
 
 namespace unexportable_keys {
 
 void FakeUnexportableKeyService::GenerateSigningKeySlowlyAsync(
-    base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-        acceptable_algorithms,
+    base::span<const crypto::sign::SignatureKind> acceptable_algorithms,
     BackgroundTaskPriority priority,
     base::OnceCallback<void(ServiceErrorOr<UnexportableSigningKeyId>)>
         callback) {
@@ -31,8 +30,7 @@ void FakeUnexportableKeyService::FromWrappedSigningKeySlowlyAsync(
   std::move(callback).Run(base::unexpected(ServiceError::kKeyNotFound));
 }
 void FakeUnexportableKeyService::GenerateAttestationKeySlowlyAsync(
-    base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-        acceptable_algorithms,
+    base::span<const crypto::sign::SignatureKind> acceptable_algorithms,
     BackgroundTaskPriority priority,
     base::OnceCallback<void(ServiceErrorOr<UnexportableAttestationKeyId>)>
         callback) {
@@ -86,7 +84,7 @@ ServiceErrorOr<std::vector<uint8_t>> FakeUnexportableKeyService::GetWrappedKey(
     UnexportableSigningKeyId key_id) const {
   return base::unexpected(ServiceError::kKeyNotFound);
 }
-ServiceErrorOr<crypto::SignatureVerifier::SignatureAlgorithm>
+ServiceErrorOr<crypto::sign::SignatureKind>
 FakeUnexportableKeyService::GetAlgorithm(
     UnexportableSigningKeyId key_id) const {
   return base::unexpected(ServiceError::kKeyNotFound);

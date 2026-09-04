@@ -18,7 +18,7 @@
 #include "components/unexportable_keys/mojom/unexportable_key_service.mojom.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "crypto/unexportable_key.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -110,8 +110,7 @@ UnexportableKeyServiceProxyImpl::UnexportableKeyServiceProxyImpl(
 UnexportableKeyServiceProxyImpl::~UnexportableKeyServiceProxyImpl() = default;
 
 void unexportable_keys::UnexportableKeyServiceProxyImpl::GenerateSigningKey(
-    const std::vector<crypto::SignatureVerifier::SignatureAlgorithm>&
-        acceptable_algorithms,
+    const std::vector<crypto::sign::SignatureKind>& acceptable_algorithms,
     BackgroundTaskPriority priority,
     GenerateSigningKeyCallback callback) {
   unexportable_key_service_->GenerateSigningKeySlowlyAsync(
@@ -135,8 +134,7 @@ void unexportable_keys::UnexportableKeyServiceProxyImpl::FromWrappedSigningKey(
 }
 
 void unexportable_keys::UnexportableKeyServiceProxyImpl::GenerateAttestationKey(
-    const std::vector<crypto::SignatureVerifier::SignatureAlgorithm>&
-        acceptable_algorithms,
+    const std::vector<crypto::sign::SignatureKind>& acceptable_algorithms,
     BackgroundTaskPriority priority,
     GenerateAttestationKeyCallback callback) {
   unexportable_key_service_->GenerateAttestationKeySlowlyAsync(

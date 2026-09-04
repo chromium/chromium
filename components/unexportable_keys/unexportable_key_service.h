@@ -12,7 +12,7 @@
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 
 namespace crypto {
 struct AttestationStatement;
@@ -73,8 +73,7 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyService {
   // if no value in `acceptable_algorithms` is supported, or if there was an
   // error creating the key.
   virtual void GenerateSigningKeySlowlyAsync(
-      base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms,
+      base::span<const crypto::sign::SignatureKind> acceptable_algorithms,
       BackgroundTaskPriority priority,
       base::OnceCallback<void(ServiceErrorOr<UnexportableSigningKeyId>)>
           callback) = 0;
@@ -109,8 +108,7 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyService {
   // TODO(crbug.com/501306852): Attestation keys are not really useful yet, but
   // a CertifySlowly() API involving them will be added shortly.
   virtual void GenerateAttestationKeySlowlyAsync(
-      base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms,
+      base::span<const crypto::sign::SignatureKind> acceptable_algorithms,
       BackgroundTaskPriority priority,
       base::OnceCallback<void(ServiceErrorOr<UnexportableAttestationKeyId>)>
           callback) = 0;
@@ -257,8 +255,8 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyService {
   // Returns a `ServiceError` if `key_id` is not found.
   // `key_id` must have resulted from calling `GenerateSigningKeySlowlyAsync()`
   // or `FromWrappedSigningKeySlowlyAsync()`
-  virtual ServiceErrorOr<crypto::SignatureVerifier::SignatureAlgorithm>
-  GetAlgorithm(UnexportableSigningKeyId key_id) const = 0;
+  virtual ServiceErrorOr<crypto::sign::SignatureKind> GetAlgorithm(
+      UnexportableSigningKeyId key_id) const = 0;
 
   // Returns the tag of a key that `key_id` refers to.
   // Returns a `ServiceError` if `key_id` is not found, or if the key does not

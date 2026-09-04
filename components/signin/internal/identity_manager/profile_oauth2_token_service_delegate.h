@@ -23,7 +23,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/load_credentials_state.h"
 #include "components/signin/public/identity_manager/token_binding_info.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_manager.h"
@@ -122,8 +122,7 @@ class ProfileOAuth2TokenServiceDelegate {
   // Returns false if the generation cannot be started. In that case, `callback`
   // will not be invoked.
   virtual bool GenerateBindingKeyRegistrationToken(
-      base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-          supported_algorithms,
+      base::span<const crypto::sign::SignatureKind> supported_algorithms,
       std::string_view auth_code,
       base::OnceCallback<
           void(std::optional<signin::BindingKeyRegistrationTokenResult>)>

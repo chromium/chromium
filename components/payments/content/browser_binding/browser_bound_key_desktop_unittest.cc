@@ -13,21 +13,22 @@
 #include "content/public/test/browser_task_environment.h"
 #include "crypto/cose.h"
 #include "crypto/mock_unexportable_key.h"
+#include "crypto/sign.h"
 #include "crypto/test_support.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 using crypto::MockUnexportableSigningKey;
-using crypto::SignatureVerifier;
 using testing::DoAll;
 using testing::Return;
 
-static const SignatureVerifier::SignatureAlgorithm kAllSignatureAlgorithms[] = {
-    SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1,
-    SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256,
-    SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
-    SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA256};
+constexpr crypto::sign::SignatureKind kAllSignatureAlgorithms[] = {
+    crypto::sign::RSA_PKCS1_SHA1,
+    crypto::sign::RSA_PKCS1_SHA256,
+    crypto::sign::ECDSA_SHA256,
+    crypto::sign::RSA_PSS_SHA256,
+};
 }  // namespace
 
 namespace payments {
@@ -37,8 +38,7 @@ class BrowserBoundKeyDesktopTest : public ::testing::Test {
   BrowserBoundKeyDesktopTest() {
     auto key = std::make_unique<MockUnexportableSigningKey>();
     EXPECT_CALL(*key, Algorithm())
-        .WillRepeatedly(
-            Return(SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256));
+        .WillRepeatedly(Return(crypto::sign::ECDSA_SHA256));
     key_ = key.get();
     browser_bound_key_ =
         std::make_unique<BrowserBoundKeyDesktop>(std::move(key));
@@ -67,8 +67,8 @@ TEST_F(BrowserBoundKeyDesktopTest, UnexportableSigningKey_AlgorithmValidation) {
     key = std::make_unique<MockUnexportableSigningKey>();
     EXPECT_CALL(*key, Algorithm()).WillRepeatedly(Return(algorithm));
 
-    if (algorithm == SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256 ||
-        algorithm == SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256) {
+    if (algorithm == crypto::sign::ECDSA_SHA256 ||
+        algorithm == crypto::sign::RSA_PKCS1_SHA256) {
       EXPECT_NO_FATAL_FAILURE(BrowserBoundKeyDesktop(std::move(key)));
     } else {
       EXPECT_CHECK_DEATH(BrowserBoundKeyDesktop(std::move(key)));

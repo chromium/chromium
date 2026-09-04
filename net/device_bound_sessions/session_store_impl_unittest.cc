@@ -30,6 +30,7 @@
 #include "crypto/mock_unexportable_key.h"
 #include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
+#include "crypto/sign.h"
 #include "crypto/unexportable_key.h"
 #include "net/base/features.h"
 #include "net/base/schemeful_site.h"
@@ -61,8 +62,8 @@ using ::testing::Return;
 
 using AttestationKeySaveOutcome = SessionStoreImpl::AttestationKeySaveOutcome;
 
-constexpr crypto::SignatureVerifier::SignatureAlgorithm
-    kAcceptableAlgorithms[] = {crypto::SignatureVerifier::ECDSA_SHA256};
+constexpr crypto::sign::SignatureKind kAcceptableAlgorithms[] = {
+    crypto::sign::ECDSA_SHA256};
 constexpr unexportable_keys::BackgroundTaskPriority kTaskPriority =
     unexportable_keys::BackgroundTaskPriority::kUserBlocking;
 constexpr unexportable_keys::BackgroundTaskOrigin kTaskOrigin =

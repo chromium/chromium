@@ -30,27 +30,25 @@ constexpr char kAikRequiredParamKey[] = "aik_required";
 constexpr char kES256[] = "ES256";
 constexpr char kRS256[] = "RS256";
 
-std::optional<crypto::SignatureVerifier::SignatureAlgorithm> AlgoFromString(
+std::optional<crypto::sign::SignatureKind> AlgoFromString(
     const std::string_view& algo) {
   if (algo == kES256) {
-    return crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256;
+    return crypto::sign::ECDSA_SHA256;
   }
 
   if (algo == kRS256) {
-    return crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256;
+    return crypto::sign::RSA_PKCS1_SHA256;
   }
 
   return std::nullopt;
 }
 
-std::vector<crypto::SignatureVerifier::SignatureAlgorithm>
-ParseSupportedAlgorithms(
+std::vector<crypto::sign::SignatureKind> ParseSupportedAlgorithms(
     const std::vector<net::structured_headers::ParameterizedItem>& member) {
-  std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos;
+  std::vector<crypto::sign::SignatureKind> supported_algos;
   for (const auto& algo_token : member) {
     if (const std::string* token = algo_token.item.GetIfToken()) {
-      std::optional<crypto::SignatureVerifier::SignatureAlgorithm> algo =
-          AlgoFromString(*token);
+      std::optional<crypto::sign::SignatureKind> algo = AlgoFromString(*token);
       if (algo) {
         supported_algos.push_back(*algo);
       }
@@ -142,7 +140,7 @@ RegistrationFetcherParam::~RegistrationFetcherParam() = default;
 RegistrationFetcherParam::RegistrationFetcherParam(
     GURL registration_endpoint,
     url::Origin referring_origin,
-    std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos,
+    std::vector<crypto::sign::SignatureKind> supported_algos,
     std::optional<std::string> challenge,
     std::optional<std::string> authorization,
     std::optional<ProviderRegistrationParams> provider_params,
@@ -164,7 +162,7 @@ std::optional<RegistrationFetcherParam> RegistrationFetcherParam::ParseItem(
     return std::nullopt;
   }
 
-  std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos =
+  std::vector<crypto::sign::SignatureKind> supported_algos =
       ParseSupportedAlgorithms(inner_list_and_params->first);
   if (supported_algos.empty()) {
     return std::nullopt;
@@ -297,7 +295,7 @@ std::vector<RegistrationFetcherParam> RegistrationFetcherParam::CreateIfValid(
 // static
 RegistrationFetcherParam RegistrationFetcherParam::CreateInstanceForTesting(
     GURL registration_endpoint,
-    std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos,
+    std::vector<crypto::sign::SignatureKind> supported_algos,
     std::optional<std::string> challenge,
     std::optional<std::string> authorization,
     std::optional<ProviderRegistrationParams> provider_params,

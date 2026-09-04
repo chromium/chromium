@@ -12,7 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/connectors/connectors_internals.mojom.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 
 #if BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
 #include "components/enterprise/client_certificates/core/client_identity.h"
@@ -50,7 +50,7 @@ connectors_internals::mojom::ClientIdentityPtr ConvertIdentity(
 
 // Maps a signature algorithm to a Mojo key type.
 connectors_internals::mojom::KeyType AlgorithmToType(
-    crypto::SignatureVerifier::SignatureAlgorithm algorithm);
+    crypto::sign::SignatureKind algorithm);
 
 // Hashes the given SPKI bytes and encodes them into a Base64Url string.
 std::string HashAndEncodeString(const std::string& spki_bytes);

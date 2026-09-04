@@ -11,6 +11,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -23,6 +24,7 @@
 #include "base/types/expected.h"
 #include "crypto/apple/keychain_v2.h"
 #include "crypto/apple/unexportable_key_apple.h"
+#include "crypto/sign.h"
 #include "crypto/unexportable_key.h"
 
 namespace crypto {
@@ -108,8 +110,7 @@ class UserVerifyingSigningKeyMac : public UserVerifyingSigningKey {
 
 base::expected<std::unique_ptr<UserVerifyingSigningKey>,
                UserVerifyingKeyCreationError>
-DoGenerateKey(base::span<const SignatureVerifier::SignatureAlgorithm>
-                  acceptable_algorithms,
+DoGenerateKey(base::span<const sign::SignatureKind> acceptable_algorithms,
               UnexportableKeyProvider::Config config,
               LAContext* lacontext) {
   std::unique_ptr<apple::UnexportableKeyProviderApple> key_provider =
@@ -166,16 +167,15 @@ class UserVerifyingKeyProviderMac : public UserVerifyingKeyProvider {
   ~UserVerifyingKeyProviderMac() override = default;
 
   void GenerateUserVerifyingSigningKey(
-      base::span<const SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms,
+      base::span<const sign::SignatureKind> acceptable_algorithms,
       UserVerifyingKeyCreationCallback callback) override {
     // Creating a key may result in disk access, so do it in a separate thread
     // to avoid blocking the UI.
     scoped_refptr<base::SequencedTaskRunner> worker_task_runner =
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::USER_BLOCKING});
-    std::vector<SignatureVerifier::SignatureAlgorithm> algorithms(
-        acceptable_algorithms.begin(), acceptable_algorithms.end());
+    std::vector<sign::SignatureKind> algorithms =
+        base::ToVector(acceptable_algorithms);
     worker_task_runner->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(&DoGenerateKey, std::move(algorithms),

@@ -27,9 +27,9 @@ enum class KeyType {
   kVirtualizedKey,
 };
 
-const SignatureVerifier::SignatureAlgorithm kAllAlgorithms[] = {
-    SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
-    SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256,
+const sign::SignatureKind kAllAlgorithms[] = {
+    sign::ECDSA_SHA256,
+    sign::RSA_PKCS1_SHA256,
 };
 
 constexpr char kTestKeyName[] = "ChromeMetricsTestKey";
@@ -108,7 +108,7 @@ void ReportUmaTpmOperation(TPMOperation operation,
   }
 }
 
-bool VerifySignature(SignatureVerifier::SignatureAlgorithm alg,
+bool VerifySignature(sign::SignatureKind alg,
                      base::span<const uint8_t> spki,
                      base::span<const uint8_t> data,
                      base::span<const uint8_t> signature) {
@@ -130,25 +130,25 @@ internal::TPMSupport MeasureVirtualTpmOperations() {
   auto algo = virtual_provider->SelectAlgorithm(kAllAlgorithms);
   if (algo) {
     switch (*algo) {
-      case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256:
+      case sign::ECDSA_SHA256:
         supported_virtual_algo = internal::TPMSupport::kECDSA;
         break;
-      case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256:
+      case sign::RSA_PKCS1_SHA256:
         supported_virtual_algo = internal::TPMSupport::kRSA;
         break;
-      case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1:
-      case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA384:
-      case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA512:
-      case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA256:
-      case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA384:
-      case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA512:
-      case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA1:
-      case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA384:
-      case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA512:
-      case SignatureVerifier::SignatureAlgorithm::ED25519:
-      case SignatureVerifier::SignatureAlgorithm::MLDSA_44:
-      case SignatureVerifier::SignatureAlgorithm::MLDSA_65:
-      case SignatureVerifier::SignatureAlgorithm::MLDSA_87:
+      case sign::RSA_PKCS1_SHA1:
+      case sign::RSA_PKCS1_SHA384:
+      case sign::RSA_PKCS1_SHA512:
+      case sign::RSA_PSS_SHA256:
+      case sign::RSA_PSS_SHA384:
+      case sign::RSA_PSS_SHA512:
+      case sign::ECDSA_SHA1:
+      case sign::ECDSA_SHA384:
+      case sign::ECDSA_SHA512:
+      case sign::ED25519:
+      case sign::MLDSA_44:
+      case sign::MLDSA_65:
+      case sign::MLDSA_87:
         // Not supported for this metric.
         break;
     }
@@ -212,25 +212,25 @@ void MeasureTpmOperationsInternal(UnexportableKeyProvider::Config config) {
   auto algo = provider->SelectAlgorithm(kAllAlgorithms);
   if (algo) {
     switch (*algo) {
-      case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256:
+      case sign::ECDSA_SHA256:
         supported_algo = internal::TPMSupport::kECDSA;
         break;
-      case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256:
+      case sign::RSA_PKCS1_SHA256:
         supported_algo = internal::TPMSupport::kRSA;
         break;
-      case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1:
-      case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA384:
-      case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA512:
-      case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA256:
-      case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA384:
-      case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA512:
-      case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA1:
-      case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA384:
-      case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA512:
-      case SignatureVerifier::SignatureAlgorithm::ED25519:
-      case SignatureVerifier::SignatureAlgorithm::MLDSA_44:
-      case SignatureVerifier::SignatureAlgorithm::MLDSA_65:
-      case SignatureVerifier::SignatureAlgorithm::MLDSA_87:
+      case sign::RSA_PKCS1_SHA1:
+      case sign::RSA_PKCS1_SHA384:
+      case sign::RSA_PKCS1_SHA512:
+      case sign::RSA_PSS_SHA256:
+      case sign::RSA_PSS_SHA384:
+      case sign::RSA_PSS_SHA512:
+      case sign::ECDSA_SHA1:
+      case sign::ECDSA_SHA384:
+      case sign::ECDSA_SHA512:
+      case sign::ED25519:
+      case sign::MLDSA_44:
+      case sign::MLDSA_65:
+      case sign::MLDSA_87:
         // Not supported for this metric.
         break;
     }
@@ -383,26 +383,26 @@ std::string OperationToString(TPMOperation operation) {
   }
 }
 
-std::string AlgorithmToString(SignatureVerifier::SignatureAlgorithm algorithm) {
+std::string AlgorithmToString(sign::SignatureKind algorithm) {
   switch (algorithm) {
-    case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1:
-    case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256:
-    case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA384:
-    case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA512:
-    case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA256:
-    case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA384:
-    case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA512:
+    case sign::RSA_PKCS1_SHA1:
+    case sign::RSA_PKCS1_SHA256:
+    case sign::RSA_PKCS1_SHA384:
+    case sign::RSA_PKCS1_SHA512:
+    case sign::RSA_PSS_SHA256:
+    case sign::RSA_PSS_SHA384:
+    case sign::RSA_PSS_SHA512:
       return "RSA";
-    case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA1:
-    case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256:
-    case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA384:
-    case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA512:
+    case sign::ECDSA_SHA1:
+    case sign::ECDSA_SHA256:
+    case sign::ECDSA_SHA384:
+    case sign::ECDSA_SHA512:
       return "ECDSA";
-    case SignatureVerifier::SignatureAlgorithm::ED25519:
+    case sign::ED25519:
       return "ED25519";
-    case SignatureVerifier::SignatureAlgorithm::MLDSA_44:
-    case SignatureVerifier::SignatureAlgorithm::MLDSA_65:
-    case SignatureVerifier::SignatureAlgorithm::MLDSA_87:
+    case sign::MLDSA_44:
+    case sign::MLDSA_65:
+    case sign::MLDSA_87:
       return "MLDSA";
   }
 }

@@ -20,7 +20,7 @@
 #include "components/unexportable_keys/mojom/unexportable_key_service.mojom.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "crypto/unexportable_key.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
@@ -87,8 +87,7 @@ UnexportableKeyServiceProxied::UnexportableKeyServiceProxied(
 UnexportableKeyServiceProxied::~UnexportableKeyServiceProxied() = default;
 
 void UnexportableKeyServiceProxied::GenerateSigningKeySlowlyAsync(
-    base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-        acceptable_algorithms,
+    base::span<const crypto::sign::SignatureKind> acceptable_algorithms,
     BackgroundTaskPriority priority,
     base::OnceCallback<void(ServiceErrorOr<UnexportableSigningKeyId>)>
         callback) {
@@ -136,8 +135,7 @@ void UnexportableKeyServiceProxied::OnSigningKeyLoaded(
 }
 
 void UnexportableKeyServiceProxied::GenerateAttestationKeySlowlyAsync(
-    base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-        acceptable_algorithms,
+    base::span<const crypto::sign::SignatureKind> acceptable_algorithms,
     BackgroundTaskPriority priority,
     base::OnceCallback<void(ServiceErrorOr<UnexportableAttestationKeyId>)>
         callback) {
@@ -230,7 +228,7 @@ UnexportableKeyServiceProxied::GetWrappedKey(
   return it->second.wrapped_key;
 }
 
-ServiceErrorOr<crypto::SignatureVerifier::SignatureAlgorithm>
+ServiceErrorOr<crypto::sign::SignatureKind>
 UnexportableKeyServiceProxied::GetAlgorithm(
     UnexportableSigningKeyId key_id) const {
   auto it = key_cache_.find(key_id);

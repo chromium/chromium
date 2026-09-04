@@ -19,7 +19,7 @@
 #include "components/unexportable_keys/mock_unexportable_key_service.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -92,8 +92,7 @@ TEST_F(UnexportableKeysInternalsHandlerTest,
   EXPECT_CALL(mock_key_service(), GetWrappedKey(key_id_1))
       .WillOnce(Return(std::vector<uint8_t>{9, 9, 7}));
   EXPECT_CALL(mock_key_service(), GetAlgorithm(key_id_1))
-      .WillOnce(
-          Return(crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256));
+      .WillOnce(Return(crypto::sign::ECDSA_SHA256));
   EXPECT_CALL(mock_key_service(), GetKeyTag(key_id_1))
       .WillOnce(Return("key_tag_1"));
   EXPECT_CALL(mock_key_service(), GetCreationTime(key_id_1))
@@ -129,8 +128,7 @@ TEST_F(UnexportableKeysInternalsHandlerTest,
   EXPECT_CALL(mock_key_service(), GetWrappedKey(key_id_1))
       .WillOnce(Return(std::vector<uint8_t>{9, 9, 7}));
   EXPECT_CALL(mock_key_service(), GetAlgorithm(key_id_1))
-      .WillOnce(
-          Return(crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256));
+      .WillOnce(Return(crypto::sign::ECDSA_SHA256));
   EXPECT_CALL(mock_key_service(), GetKeyTag(key_id_1))
       .WillOnce(Return("key_tag_1"));
   EXPECT_CALL(mock_key_service(), GetCreationTime(key_id_1))
@@ -168,8 +166,7 @@ TEST_F(UnexportableKeysInternalsHandlerTest,
   EXPECT_CALL(mock_key_service(), GetWrappedKey(key_id_1))
       .WillOnce(Return(std::vector<uint8_t>{9, 9, 7}));
   EXPECT_CALL(mock_key_service(), GetAlgorithm(key_id_1))
-      .WillOnce(
-          Return(crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256));
+      .WillOnce(Return(crypto::sign::ECDSA_SHA256));
   EXPECT_CALL(mock_key_service(), GetKeyTag(key_id_1))
       .WillOnce(Return("key_tag_1"));
   EXPECT_CALL(mock_key_service(), GetCreationTime(key_id_1))
@@ -178,8 +175,7 @@ TEST_F(UnexportableKeysInternalsHandlerTest,
   EXPECT_CALL(mock_key_service(), GetWrappedKey(key_id_2))
       .WillOnce(Return(std::vector<uint8_t>{9, 9, 8}));
   EXPECT_CALL(mock_key_service(), GetAlgorithm(key_id_2))
-      .WillOnce(
-          Return(crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256));
+      .WillOnce(Return(crypto::sign::ECDSA_SHA256));
   EXPECT_CALL(mock_key_service(), GetKeyTag(key_id_2))
       .WillOnce(Return(base::unexpected(
           unexportable_keys::ServiceError::kOperationNotSupported)));
@@ -210,8 +206,7 @@ TEST_F(UnexportableKeysInternalsHandlerTest,
   EXPECT_CALL(mock_key_service(), GetWrappedKey(key_id_1))
       .WillOnce(Return(std::vector<uint8_t>{9, 9, 7}));
   EXPECT_CALL(mock_key_service(), GetAlgorithm(key_id_1))
-      .WillOnce(
-          Return(crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256));
+      .WillOnce(Return(crypto::sign::ECDSA_SHA256));
   EXPECT_CALL(mock_key_service(), GetKeyTag(key_id_1))
       .WillOnce(Return("key_tag_1"));
   EXPECT_CALL(mock_key_service(), GetCreationTime(key_id_1))
@@ -220,8 +215,7 @@ TEST_F(UnexportableKeysInternalsHandlerTest,
   EXPECT_CALL(mock_key_service(), GetWrappedKey(key_id_2))
       .WillOnce(Return(std::vector<uint8_t>{9, 9, 8}));
   EXPECT_CALL(mock_key_service(), GetAlgorithm(key_id_2))
-      .WillOnce(
-          Return(crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256));
+      .WillOnce(Return(crypto::sign::ECDSA_SHA256));
   EXPECT_CALL(mock_key_service(), GetKeyTag(key_id_2))
       .WillOnce(Return("key_tag_2"));
   EXPECT_CALL(mock_key_service(), GetCreationTime(key_id_2))
@@ -243,15 +237,13 @@ TEST_F(UnexportableKeysInternalsHandlerTest,
 TEST_F(UnexportableKeysInternalsHandlerTest, GetUnexportableKeysInfoSucceeds) {
   const unexportable_keys::UnexportableSigningKeyId key_id_1;
   const std::vector<uint8_t> wrapped_key_1 = {9, 9, 7};
-  const crypto::SignatureVerifier::SignatureAlgorithm algorithm_1 =
-      crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256;
+  const crypto::sign::SignatureKind algorithm_1 = crypto::sign::ECDSA_SHA256;
   const std::string key_tag_1 = "key_tag_1";
   const base::Time creation_time_1 = base::Time::Now();
 
   const unexportable_keys::UnexportableSigningKeyId key_id_2;
   const std::vector<uint8_t> wrapped_key_2 = {9, 9, 8};
-  const crypto::SignatureVerifier::SignatureAlgorithm algorithm_2 =
-      crypto::SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA256;
+  const crypto::sign::SignatureKind algorithm_2 = crypto::sign::RSA_PSS_SHA256;
   const std::string key_tag_2 = "key_tag_2";
   const base::Time creation_time_2 = base::Time::Now();
 

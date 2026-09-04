@@ -17,7 +17,7 @@
 #include "base/time/time.h"
 #include "base/value_iterators.h"
 #include "base/values.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "net/device_bound_sessions/test_support.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,7 +32,7 @@ using ::testing::Eq;
 using ::testing::Pointee;
 
 using enum crypto::AttestationStatement::Format;
-using enum crypto::SignatureVerifier::SignatureAlgorithm;
+using enum crypto::sign::SignatureKind;
 
 constexpr auto kValidDerSignature = std::to_array<uint8_t>(
     {0x30, 0x45, 0x02, 0x20, 0x74, 0xa0, 0x6f, 0x6b, 0x2b, 0x0e, 0x82, 0x0e,

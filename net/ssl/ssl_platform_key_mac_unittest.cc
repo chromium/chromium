@@ -19,7 +19,7 @@
 #include "base/test/task_environment.h"
 #include "crypto/apple/scoped_fake_keychain_v2.h"
 #include "crypto/apple/test_helpers.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "net/ssl/ssl_private_key.h"
 #include "net/ssl/ssl_private_key_test_util.h"
 #include "net/test/cert_test_util.h"
@@ -115,8 +115,8 @@ TEST(SSLPlatformKeyMacInvalidTest, UnsupportedKeyType) {
 namespace {
 
 constexpr char kTestKeychainAccessGroup[] = "test-keychain-access-group";
-constexpr crypto::SignatureVerifier::SignatureAlgorithm kAcceptableAlgos[] = {
-    crypto::SignatureVerifier::ECDSA_SHA256};
+constexpr crypto::sign::SignatureKind kAcceptableAlgos[] = {
+    crypto::sign::ECDSA_SHA256};
 
 const crypto::UnexportableKeyProvider::Config config = {
     .keychain_access_group = kTestKeychainAccessGroup,

@@ -22,7 +22,7 @@
 #include "components/signin/public/base/session_binding_utils.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace unexportable_keys {
@@ -126,8 +126,7 @@ class TokenBindingHelper {
   // The result is returned through `callback`. Returns `std::nullopt` if the
   // generation fails.
   void GenerateBindingKeyRegistrationToken(
-      base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-          supported_algorithms,
+      base::span<const crypto::sign::SignatureKind> supported_algorithms,
       const std::variant<signin::TokenBindingAuthCode,
                          signin::TokenBindingChallenge>& auth_code_or_challenge,
       base::OnceCallback<void(
@@ -180,8 +179,7 @@ class TokenBindingHelper {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::string_view device_id,
       std::string_view challenge,
-      base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-          supported_algorithms);
+      base::span<const crypto::sign::SignatureKind> supported_algorithms);
 
   // Sets the callback to persist the binding key after a token binding upgrade.
   // Must be called exactly once.
@@ -191,8 +189,7 @@ class TokenBindingHelper {
 
  private:
   void MaybeInitializeRegistrationTokenHelper(
-      base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-          supported_algorithms);
+      base::span<const crypto::sign::SignatureKind> supported_algorithms);
   void OnUpgradeRegistrationTokenGenerated(
       const CoreAccountId& account_id,
       std::optional<signin::BindingKeyRegistrationTokenResult> result);

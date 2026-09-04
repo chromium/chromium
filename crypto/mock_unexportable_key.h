@@ -17,10 +17,7 @@ class MockUnexportableSigningKey : public UnexportableSigningKey,
   ~MockUnexportableSigningKey() override;
 
   // UnexportableSigningKey:
-  MOCK_METHOD(SignatureVerifier::SignatureAlgorithm,
-              Algorithm,
-              (),
-              (const, override));
+  MOCK_METHOD(sign::SignatureKind, Algorithm, (), (const, override));
   MOCK_METHOD(std::vector<uint8_t>,
               GetSubjectPublicKeyInfo,
               (),
@@ -54,10 +51,7 @@ class MockUnexportableAttestationKey : public UnexportableAttestationKey,
   ~MockUnexportableAttestationKey() override;
 
   // UnexportableSigningKey:
-  MOCK_METHOD(SignatureVerifier::SignatureAlgorithm,
-              Algorithm,
-              (),
-              (const, override));
+  MOCK_METHOD(sign::SignatureKind, Algorithm, (), (const, override));
   MOCK_METHOD(std::vector<uint8_t>,
               GetSubjectPublicKeyInfo,
               (),

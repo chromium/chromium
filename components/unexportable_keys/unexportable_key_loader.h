@@ -14,7 +14,7 @@
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 
 namespace unexportable_keys {
 
@@ -48,8 +48,7 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyLoader {
   // Creates a new loader that will generate a brand new key.
   static std::unique_ptr<UnexportableKeyLoader> CreateWithNewKey(
       UnexportableKeyService& unexportable_key_service,
-      base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms,
+      base::span<const crypto::sign::SignatureKind> acceptable_algorithms,
       BackgroundTaskPriority priority);
 
   UnexportableKeyLoader(const UnexportableKeyLoader&) = delete;
@@ -80,8 +79,7 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyLoader {
                           BackgroundTaskPriority priority);
   void GenerateNewKey(
       UnexportableKeyService& unexportable_key_service,
-      base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms,
+      base::span<const crypto::sign::SignatureKind> acceptable_algorithms,
       BackgroundTaskPriority priority);
 
   void OnKeyLoaded(ServiceErrorOr<UnexportableSigningKeyId> key_id_or_error);

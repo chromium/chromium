@@ -109,25 +109,25 @@ connectors_internals::mojom::CertificateMetadataPtr ConvertCertificate(
 }  // namespace
 
 connectors_internals::mojom::KeyType AlgorithmToType(
-    crypto::SignatureVerifier::SignatureAlgorithm algorithm) {
+    crypto::sign::SignatureKind algorithm) {
   switch (algorithm) {
-    case crypto::SignatureVerifier::RSA_PKCS1_SHA1:
-    case crypto::SignatureVerifier::RSA_PKCS1_SHA256:
-    case crypto::SignatureVerifier::RSA_PKCS1_SHA384:
-    case crypto::SignatureVerifier::RSA_PKCS1_SHA512:
-    case crypto::SignatureVerifier::RSA_PSS_SHA256:
-    case crypto::SignatureVerifier::RSA_PSS_SHA384:
-    case crypto::SignatureVerifier::RSA_PSS_SHA512:
+    case crypto::sign::RSA_PKCS1_SHA1:
+    case crypto::sign::RSA_PKCS1_SHA256:
+    case crypto::sign::RSA_PKCS1_SHA384:
+    case crypto::sign::RSA_PKCS1_SHA512:
+    case crypto::sign::RSA_PSS_SHA256:
+    case crypto::sign::RSA_PSS_SHA384:
+    case crypto::sign::RSA_PSS_SHA512:
       return connectors_internals::mojom::KeyType::RSA;
-    case crypto::SignatureVerifier::ECDSA_SHA1:
-    case crypto::SignatureVerifier::ECDSA_SHA256:
-    case crypto::SignatureVerifier::ECDSA_SHA384:
-    case crypto::SignatureVerifier::ECDSA_SHA512:
+    case crypto::sign::ECDSA_SHA1:
+    case crypto::sign::ECDSA_SHA256:
+    case crypto::sign::ECDSA_SHA384:
+    case crypto::sign::ECDSA_SHA512:
       return connectors_internals::mojom::KeyType::EC;
-    case crypto::SignatureVerifier::ED25519:
-    case crypto::SignatureVerifier::MLDSA_44:
-    case crypto::SignatureVerifier::MLDSA_65:
-    case crypto::SignatureVerifier::MLDSA_87:
+    case crypto::sign::ED25519:
+    case crypto::sign::MLDSA_44:
+    case crypto::sign::MLDSA_65:
+    case crypto::sign::MLDSA_87:
       return connectors_internals::mojom::KeyType::UNKNOWN;
   }
 }

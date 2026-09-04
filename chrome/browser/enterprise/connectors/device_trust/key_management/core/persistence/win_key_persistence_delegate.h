@@ -5,13 +5,12 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_KEY_MANAGEMENT_CORE_PERSISTENCE_WIN_KEY_PERSISTENCE_DELEGATE_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_KEY_MANAGEMENT_CORE_PERSISTENCE_WIN_KEY_PERSISTENCE_DELEGATE_H_
 
-#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
-
 #include <memory>
 #include <vector>
 
 #include "base/win/registry.h"
-#include "crypto/signature_verifier.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
+#include "crypto/sign.h"
 
 namespace enterprise_connectors {
 

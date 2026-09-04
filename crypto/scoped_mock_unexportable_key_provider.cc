@@ -26,15 +26,13 @@ class ForwardingUnexportableKeyProvider : public UnexportableKeyProvider {
   ~ForwardingUnexportableKeyProvider() override = default;
 
   // UnexportableKeyProvider:
-  std::optional<SignatureVerifier::SignatureAlgorithm> SelectAlgorithm(
-      base::span<const SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms) override {
+  std::optional<sign::SignatureKind> SelectAlgorithm(
+      base::span<const sign::SignatureKind> acceptable_algorithms) override {
     return provider_->SelectAlgorithm(acceptable_algorithms);
   }
 
   std::unique_ptr<UnexportableSigningKey> GenerateSigningKeySlowly(
-      base::span<const SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms) override {
+      base::span<const sign::SignatureKind> acceptable_algorithms) override {
     return provider_->GenerateSigningKeySlowly(acceptable_algorithms);
   }
 
@@ -44,8 +42,7 @@ class ForwardingUnexportableKeyProvider : public UnexportableKeyProvider {
   }
 
   std::unique_ptr<UnexportableAttestationKey> GenerateAttestationKeySlowly(
-      base::span<const SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms) override {
+      base::span<const sign::SignatureKind> acceptable_algorithms) override {
     return provider_->GenerateAttestationKeySlowly(acceptable_algorithms);
   }
 
@@ -90,8 +87,7 @@ ScopedMockUnexportableKeyProvider::ScopedMockUnexportableKeyProvider() {
   crypto::internal::SetUnexportableKeyProviderForTesting(&GetMockKeyProvider);
 
   ON_CALL(mock_provider_, SelectAlgorithm)
-      .WillByDefault([](base::span<const SignatureVerifier::SignatureAlgorithm>
-                            algorithms) {
+      .WillByDefault([](base::span<const sign::SignatureKind> algorithms) {
         return algorithms.empty() ? std::nullopt : std::optional(algorithms[0]);
       });
   ON_CALL(mock_provider_, GenerateSigningKeySlowly).WillByDefault([this](auto) {

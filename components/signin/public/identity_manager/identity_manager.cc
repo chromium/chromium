@@ -278,8 +278,7 @@ bool IdentityManager::HasAccountWithRefreshTokenInPersistentErrorState(
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 bool IdentityManager::GenerateBindingKeyRegistrationToken(
-    base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-        supported_algorithms,
+    base::span<const crypto::sign::SignatureKind> supported_algorithms,
     std::string_view auth_code,
     base::OnceCallback<void(
         std::optional<signin::BindingKeyRegistrationTokenResult>)> callback) {

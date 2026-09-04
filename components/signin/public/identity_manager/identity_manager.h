@@ -29,7 +29,7 @@
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_mutator.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "google_apis/gaia/oauth2_access_token_manager.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -323,8 +323,7 @@ class IdentityManager : public KeyedService,
   // Returns false if the generation cannot be started. In that case, `callback`
   // will not be invoked.
   bool GenerateBindingKeyRegistrationToken(
-      base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-          supported_algorithms,
+      base::span<const crypto::sign::SignatureKind> supported_algorithms,
       std::string_view auth_code,
       base::OnceCallback<void(
           std::optional<signin::BindingKeyRegistrationTokenResult>)> callback);

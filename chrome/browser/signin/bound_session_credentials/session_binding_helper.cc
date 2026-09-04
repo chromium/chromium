@@ -16,7 +16,7 @@
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_loader.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "url/gurl.h"
 
 namespace {
@@ -40,7 +40,7 @@ bool ShouldTryToReloadKey(
 
 base::expected<std::string, SessionBindingHelper::Error> CreateAssertionToken(
     const std::string& header_and_payload,
-    crypto::SignatureVerifier::SignatureAlgorithm algorithm,
+    crypto::sign::SignatureKind algorithm,
     std::vector<uint8_t> public_key,
     unexportable_keys::ServiceErrorOr<std::vector<uint8_t>> signature) {
   using enum SessionBindingHelper::Error;
@@ -102,7 +102,7 @@ void SessionBindingHelper::SignAssertionToken(
     return;
   }
 
-  crypto::SignatureVerifier::SignatureAlgorithm algorithm =
+  crypto::sign::SignatureKind algorithm =
       *unexportable_key_service_->GetAlgorithm(*binding_key);
   std::vector<uint8_t> public_key =
       *unexportable_key_service_->GetSubjectPublicKeyInfo(*binding_key);

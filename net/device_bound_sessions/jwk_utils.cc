@@ -10,6 +10,7 @@
 #include "crypto/evp.h"
 #include "crypto/keypair.h"
 #include "crypto/sha2.h"
+#include "crypto/sign.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
@@ -96,22 +97,20 @@ base::DictValue ConvertRS256PkeySpkiToJwk(base::span<const uint8_t> pkey_spki) {
 }
 }  // namespace
 
-base::DictValue ConvertPkeySpkiToJwk(
-    crypto::SignatureVerifier::SignatureAlgorithm algorithm,
-    base::span<const uint8_t> pkey_spki) {
+base::DictValue ConvertPkeySpkiToJwk(crypto::sign::SignatureKind algorithm,
+                                     base::span<const uint8_t> pkey_spki) {
   switch (algorithm) {
-    case crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256:
+    case crypto::sign::RSA_PKCS1_SHA256:
       return ConvertRS256PkeySpkiToJwk(pkey_spki);
-    case crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256:
+    case crypto::sign::ECDSA_SHA256:
       return ConvertES256PkeySpkiToJwk(pkey_spki);
     default:
       return base::DictValue();
   }
 }
 
-std::string CreateJwkThumbprint(
-    crypto::SignatureVerifier::SignatureAlgorithm algorithm,
-    base::span<const uint8_t> pkey_spki) {
+std::string CreateJwkThumbprint(crypto::sign::SignatureKind algorithm,
+                                base::span<const uint8_t> pkey_spki) {
   base::DictValue jwk = ConvertPkeySpkiToJwk(algorithm, pkey_spki);
   if (jwk.empty()) {
     return "";
@@ -120,12 +119,12 @@ std::string CreateJwkThumbprint(
   // Move only the required fields from `jwk` to `canonical_jwk`.
   base::DictValue canonical_jwk;
   switch (algorithm) {
-    case crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256:
+    case crypto::sign::RSA_PKCS1_SHA256:
       canonical_jwk.Set(kKeyTypeParam, std::move(*jwk.Extract(kKeyTypeParam)));
       canonical_jwk.Set(kRsaExponent, std::move(*jwk.Extract(kRsaExponent)));
       canonical_jwk.Set(kRsaModulus, std::move(*jwk.Extract(kRsaModulus)));
       break;
-    case crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256:
+    case crypto::sign::ECDSA_SHA256:
       canonical_jwk.Set(kKeyTypeParam, std::move(*jwk.Extract(kKeyTypeParam)));
       canonical_jwk.Set(kEcCurve, std::move(*jwk.Extract(kEcCurve)));
       canonical_jwk.Set(kEcCoordinateX,

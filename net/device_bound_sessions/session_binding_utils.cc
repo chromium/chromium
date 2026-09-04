@@ -20,7 +20,7 @@
 #include "crypto/ecdsa_utils.h"
 #include "crypto/keypair.h"
 #include "crypto/sha2.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "net/base/url_util.h"
 #include "net/device_bound_sessions/jwk_utils.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
@@ -35,38 +35,38 @@ namespace {
 // https://www.iana.org/assignments/jose/jose.xhtml,
 // RFC 8037 (EdDSA in JOSE), and RFC 9964 (ML-DSA in JOSE).
 std::optional<std::string_view> SignatureAlgorithmToString(
-    crypto::SignatureVerifier::SignatureAlgorithm algorithm) {
+    crypto::sign::SignatureKind algorithm) {
   switch (algorithm) {
-    case crypto::SignatureVerifier::RSA_PKCS1_SHA1:
+    case crypto::sign::RSA_PKCS1_SHA1:
       return "RS1";
-    case crypto::SignatureVerifier::RSA_PKCS1_SHA256:
+    case crypto::sign::RSA_PKCS1_SHA256:
       return "RS256";
-    case crypto::SignatureVerifier::RSA_PKCS1_SHA384:
+    case crypto::sign::RSA_PKCS1_SHA384:
       return "RS384";
-    case crypto::SignatureVerifier::RSA_PKCS1_SHA512:
+    case crypto::sign::RSA_PKCS1_SHA512:
       return "RS512";
-    case crypto::SignatureVerifier::RSA_PSS_SHA256:
+    case crypto::sign::RSA_PSS_SHA256:
       return "PS256";
-    case crypto::SignatureVerifier::RSA_PSS_SHA384:
+    case crypto::sign::RSA_PSS_SHA384:
       return "PS384";
-    case crypto::SignatureVerifier::RSA_PSS_SHA512:
+    case crypto::sign::RSA_PSS_SHA512:
       return "PS512";
-    case crypto::SignatureVerifier::ECDSA_SHA1:
+    case crypto::sign::ECDSA_SHA1:
       // SHA-1 with ECDSA has no standard JWA representation.
       return std::nullopt;
-    case crypto::SignatureVerifier::ECDSA_SHA256:
+    case crypto::sign::ECDSA_SHA256:
       return "ES256";
-    case crypto::SignatureVerifier::ECDSA_SHA384:
+    case crypto::sign::ECDSA_SHA384:
       return "ES384";
-    case crypto::SignatureVerifier::ECDSA_SHA512:
+    case crypto::sign::ECDSA_SHA512:
       return "ES512";
-    case crypto::SignatureVerifier::ED25519:
+    case crypto::sign::ED25519:
       return "EdDSA";
-    case crypto::SignatureVerifier::MLDSA_44:
+    case crypto::sign::MLDSA_44:
       return "ML-DSA-44";
-    case crypto::SignatureVerifier::MLDSA_65:
+    case crypto::sign::MLDSA_65:
       return "ML-DSA-65";
-    case crypto::SignatureVerifier::MLDSA_87:
+    case crypto::sign::MLDSA_87:
       return "ML-DSA-87";
   }
 }
@@ -104,7 +104,7 @@ std::optional<std::string> CombineHeaderAndPayload(
 // registration JWTs.
 std::optional<std::string> CreateHeaderAndPayload(
     std::optional<std::string> challenge,
-    crypto::SignatureVerifier::SignatureAlgorithm algorithm,
+    crypto::sign::SignatureKind algorithm,
     std::optional<base::DictValue> jwk,
     const std::optional<std::string>& authorization) {
   ASSIGN_OR_RETURN(std::string_view alg, SignatureAlgorithmToString(algorithm));
@@ -147,7 +147,7 @@ base::DictValue CreateAttestationValue(
 
 std::optional<std::string> CreateOuterRegistrationHeaderAndPayload(
     std::string_view inner_jws,
-    crypto::SignatureVerifier::SignatureAlgorithm aik_algorithm,
+    crypto::sign::SignatureKind aik_algorithm,
     base::span<const uint8_t> aik_pubkey_spki,
     std::string_view aud,
     const crypto::AttestationStatement& attestation_stmt) {
@@ -175,7 +175,7 @@ std::optional<std::string> CreateOuterRegistrationHeaderAndPayload(
 
 std::optional<std::string> CreateKeyRegistrationHeaderAndPayload(
     std::optional<std::string> challenge,
-    crypto::SignatureVerifier::SignatureAlgorithm algorithm,
+    crypto::sign::SignatureKind algorithm,
     base::span<const uint8_t> pubkey_spki,
     std::optional<std::string> authorization) {
   base::DictValue jwk = ConvertPkeySpkiToJwk(algorithm, pubkey_spki);
@@ -190,18 +190,18 @@ std::optional<std::string> CreateKeyRegistrationHeaderAndPayload(
 
 std::optional<std::string> CreateKeyRefreshHeaderAndPayload(
     std::optional<std::string> challenge,
-    crypto::SignatureVerifier::SignatureAlgorithm algorithm) {
+    crypto::sign::SignatureKind algorithm) {
   return CreateHeaderAndPayload(challenge, algorithm, /*jwk=*/std::nullopt,
                                 /*authorization=*/std::nullopt);
 }
 
 std::optional<std::string> AppendSignatureToHeaderAndPayload(
     std::string_view header_and_payload,
-    crypto::SignatureVerifier::SignatureAlgorithm algorithm,
+    crypto::sign::SignatureKind algorithm,
     base::span<const uint8_t> pubkey_spki,
     base::span<const uint8_t> signature) {
   std::optional<std::vector<uint8_t>> signature_holder;
-  if (algorithm == crypto::SignatureVerifier::ECDSA_SHA256) {
+  if (algorithm == crypto::sign::ECDSA_SHA256) {
     std::optional<crypto::keypair::PublicKey> public_key =
         crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(pubkey_spki);
     if (!public_key.has_value()) {

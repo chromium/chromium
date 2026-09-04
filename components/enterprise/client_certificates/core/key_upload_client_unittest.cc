@@ -24,7 +24,7 @@
 #include "components/enterprise/client_certificates/core/mock_private_key.h"
 #include "components/enterprise/client_certificates/core/private_key.h"
 #include "components/enterprise/client_certificates/core/upload_client_error.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
@@ -73,7 +73,7 @@ scoped_refptr<MockPrivateKey> CreateMockedKey(
   }
   ON_CALL(*private_key, GetSubjectPublicKeyInfo()).WillByDefault(Return(spki));
   ON_CALL(*private_key, GetAlgorithm())
-      .WillByDefault(Return(crypto::SignatureVerifier::RSA_PKCS1_SHA1));
+      .WillByDefault(Return(crypto::sign::RSA_PKCS1_SHA1));
   return private_key;
 }
 
@@ -396,7 +396,7 @@ scoped_refptr<StrictMock<MockPrivateKey>> CreateMockKeyWithSource(
   ON_CALL(*key, GetSubjectPublicKeyInfo())
       .WillByDefault(Return(ToBytes(kFakeSpki)));
   ON_CALL(*key, GetAlgorithm())
-      .WillByDefault(Return(crypto::SignatureVerifier::RSA_PKCS1_SHA1));
+      .WillByDefault(Return(crypto::sign::RSA_PKCS1_SHA1));
   EXPECT_CALL(*key, Sign(_, _));
   EXPECT_CALL(*key, GetSubjectPublicKeyInfo()).Times(testing::AtMost(3));
   EXPECT_CALL(*key, GetAlgorithm());

@@ -38,6 +38,7 @@
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/test/browser_test.h"
 #include "crypto/scoped_fake_unexportable_key_provider.h"
+#include "crypto/sign.h"
 #include "google_apis/gaia/bound_oauth_token.pb.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/features.h"
@@ -62,8 +63,8 @@ using ::testing::UnorderedElementsAre;
 using ::testing::Values;
 using ::unexportable_keys::UnexportableSigningKeyId;
 
-constexpr crypto::SignatureVerifier::SignatureAlgorithm
-    kAcceptableAlgorithms[] = {crypto::SignatureVerifier::ECDSA_SHA256};
+constexpr crypto::sign::SignatureKind kAcceptableAlgorithms[] = {
+    crypto::sign::ECDSA_SHA256};
 constexpr unexportable_keys::BackgroundTaskPriority kTaskPriority =
     unexportable_keys::BackgroundTaskPriority::kUserBlocking;
 

@@ -16,7 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/oauth2_api_call_flow.h"
 #include "net/cookies/canonical_cookie.h"
@@ -158,7 +158,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2MintTokenFlow
     base::TimeDelta time_to_live;
     bool is_token_encrypted = false;
     std::string bound_token_upgrade_challenge;
-    std::vector<crypto::SignatureVerifier::SignatureAlgorithm>
+    std::vector<crypto::sign::SignatureKind>
         bound_token_upgrade_supported_algorithms;
   };
 

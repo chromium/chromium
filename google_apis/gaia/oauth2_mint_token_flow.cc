@@ -78,9 +78,8 @@ constexpr char kTokenBindingChallengeHeader[] =
 constexpr char kTokenBindingResponseKey[] = "tokenBindingResponse";
 constexpr char kDirectedResponseKey[] = "directedResponse";
 
-constexpr std::array kDefaultAlgorithms = {
-    crypto::SignatureVerifier::ECDSA_SHA256,
-    crypto::SignatureVerifier::RSA_PKCS1_SHA256};
+constexpr std::array kDefaultAlgorithms = {crypto::sign::ECDSA_SHA256,
+                                           crypto::sign::RSA_PKCS1_SHA256};
 
 constexpr auto kOAuth2ResponseByErrorReason =
     base::MakeFixedFlatMap<std::string_view, OAuth2Response>({
@@ -263,13 +262,13 @@ void RecordApiCallMetrics(OAuth2MintTokenApiCallResult result,
   }
 }
 
-std::optional<crypto::SignatureVerifier::SignatureAlgorithm>
-ParseSignatureAlgorithm(std::string_view algo_str) {
+std::optional<crypto::sign::SignatureKind> ParseSignatureAlgorithm(
+    std::string_view algo_str) {
   if (base::EqualsCaseInsensitiveASCII(algo_str, "ES256")) {
-    return crypto::SignatureVerifier::ECDSA_SHA256;
+    return crypto::sign::ECDSA_SHA256;
   }
   if (base::EqualsCaseInsensitiveASCII(algo_str, "RS256")) {
-    return crypto::SignatureVerifier::RSA_PKCS1_SHA256;
+    return crypto::sign::RSA_PKCS1_SHA256;
   }
   return std::nullopt;
 }
@@ -611,7 +610,7 @@ OAuth2MintTokenFlow::ParseMintTokenResponse(const base::DictValue& dict) {
         continue;
       }
 
-      std::optional<crypto::SignatureVerifier::SignatureAlgorithm> algo =
+      std::optional<crypto::sign::SignatureKind> algo =
           ParseSignatureAlgorithm(*algo_str);
       if (algo.has_value()) {
         result.bound_token_upgrade_supported_algorithms.push_back(*algo);

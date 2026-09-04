@@ -15,6 +15,7 @@
 #include "chromeos/ash/components/kcer/kcer.h"
 #include "chromeos/ash/components/kcer/ssl_private_key_kcer.h"
 #include "components/enterprise/client_certificates/core/private_key_types.h"
+#include "crypto/sign.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_private_key.h"
 
@@ -101,9 +102,8 @@ std::vector<uint8_t> KcerPrivateKey::GetSubjectPublicKeyInfo() const {
   return spki_.value();
 }
 
-crypto::SignatureVerifier::SignatureAlgorithm KcerPrivateKey::GetAlgorithm()
-    const {
-  return crypto::SignatureVerifier::ECDSA_SHA256;
+crypto::sign::SignatureKind KcerPrivateKey::GetAlgorithm() const {
+  return crypto::sign::ECDSA_SHA256;
 }
 
 client_certificates_pb::PrivateKey KcerPrivateKey::ToProto() const {

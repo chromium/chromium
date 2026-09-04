@@ -26,7 +26,7 @@
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "crypto/mock_unexportable_key.h"
 #include "crypto/scoped_fake_unexportable_key_provider.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "crypto/unexportable_key.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -66,16 +66,14 @@ constexpr auto kTestAttestationStatement = std::to_array<uint8_t>({0x11, 0x22});
 constexpr auto kTestAttestationSignature = std::to_array<uint8_t>({0x33, 0x44});
 
 constexpr std::array kTestAttestationAlgorithms = {
-    crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1,
-    crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
+    crypto::sign::RSA_PKCS1_SHA1,
+    crypto::sign::ECDSA_SHA256,
 };
 constexpr std::array kTestAttestationAlgorithmsError = {
-    crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1,
+    crypto::sign::RSA_PKCS1_SHA1,
 };
-constexpr auto kTestAlgorithmECDSA =
-    crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256;
-constexpr auto kTestAlgorithmRSAPSS =
-    crypto::SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA256;
+constexpr auto kTestAlgorithmECDSA = crypto::sign::ECDSA_SHA256;
+constexpr auto kTestAlgorithmRSAPSS = crypto::sign::RSA_PSS_SHA256;
 
 TEST(UnexportableKeyServiceProxyTest, GenerateKeyReturnsError) {
   base::test::TaskEnvironment task_environment;
@@ -89,8 +87,8 @@ TEST(UnexportableKeyServiceProxyTest, GenerateKeyReturnsError) {
           RunOnceCallback<2>(base::unexpected(ServiceError::kKeyNotFound)));
   UnexportableKeyServiceProxyImpl impl(&mock, std::move(receiver));
 
-  std::vector<crypto::SignatureVerifier::SignatureAlgorithm> algos = {
-      crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1};
+  std::vector<crypto::sign::SignatureKind> algos = {
+      crypto::sign::RSA_PKCS1_SHA1};
 
   TestFuture<ServiceErrorOr<mojom::NewSigningKeyDataPtr>> future;
   uks->GenerateSigningKey(algos, kTestPriority, future.GetCallback());
@@ -109,18 +107,14 @@ TEST(UnexportableKeyServiceProxyTest, GenerateKeySuccess) {
 
   const UnexportableSigningKeyId key_id;
 
-  const crypto::SignatureVerifier::SignatureAlgorithm algo =
-      crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256;
+  const crypto::sign::SignatureKind algo = crypto::sign::ECDSA_SHA256;
   const std::vector<uint8_t> wrapped_key = {0x11, 0x22, 0x33, 0x44};
   const std::vector<uint8_t> pub_key_info = {0x55, 0x66, 0x77, 0x88, 0x99};
 
-  EXPECT_CALL(
-      mock_uks,
-      GenerateSigningKeySlowlyAsync(
-          ElementsAre(
-              crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1,
-              crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256),
-          kTestPriority, _))
+  EXPECT_CALL(mock_uks, GenerateSigningKeySlowlyAsync(
+                            ElementsAre(crypto::sign::RSA_PKCS1_SHA1,
+                                        crypto::sign::ECDSA_SHA256),
+                            kTestPriority, _))
       .WillOnce(RunOnceCallback<2>(key_id));
 
   EXPECT_CALL(mock_uks, GetAlgorithm(key_id)).WillOnce(Return(algo));
@@ -128,9 +122,8 @@ TEST(UnexportableKeyServiceProxyTest, GenerateKeySuccess) {
   EXPECT_CALL(mock_uks, GetSubjectPublicKeyInfo(key_id))
       .WillOnce(Return(pub_key_info));
 
-  std::vector<crypto::SignatureVerifier::SignatureAlgorithm> algos = {
-      crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1,
-      crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256};
+  std::vector<crypto::sign::SignatureKind> algos = {
+      crypto::sign::RSA_PKCS1_SHA1, crypto::sign::ECDSA_SHA256};
 
   TestFuture<ServiceErrorOr<mojom::NewSigningKeyDataPtr>> future;
   uks_remote->GenerateSigningKey(algos, kTestPriority, future.GetCallback());
@@ -165,8 +158,8 @@ TEST(UnexportableKeyServiceProxyTest, GenerateKeyGetAlgorithmError) {
   ON_CALL(mock_uks, GetSubjectPublicKeyInfo(key_id))
       .WillByDefault(Return(std::vector<uint8_t>{0xAA, 0xBB}));
 
-  std::vector<crypto::SignatureVerifier::SignatureAlgorithm> algos = {
-      crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256};
+  std::vector<crypto::sign::SignatureKind> algos = {
+      crypto::sign::RSA_PKCS1_SHA256};
 
   TestFuture<ServiceErrorOr<mojom::NewSigningKeyDataPtr>> future;
   uks_remote->GenerateSigningKey(algos, kTestPriority, future.GetCallback());
@@ -189,8 +182,7 @@ TEST(UnexportableKeyServiceProxyTest, GenerateKeyGetWrappedKeyError) {
       .WillOnce(RunOnceCallback<2>(key_id));
 
   EXPECT_CALL(mock_uks, GetAlgorithm(key_id))
-      .WillOnce(
-          Return(crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256));
+      .WillOnce(Return(crypto::sign::ECDSA_SHA256));
 
   EXPECT_CALL(mock_uks, GetWrappedKey(key_id))
       .WillOnce(Return(base::unexpected(ServiceError::kKeyNotFound)));
@@ -198,8 +190,8 @@ TEST(UnexportableKeyServiceProxyTest, GenerateKeyGetWrappedKeyError) {
   ON_CALL(mock_uks, GetSubjectPublicKeyInfo(key_id))
       .WillByDefault(Return(std::vector<uint8_t>{0xAA, 0xBB, 0xCC}));
 
-  std::vector<crypto::SignatureVerifier::SignatureAlgorithm> algos = {
-      crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256};
+  std::vector<crypto::sign::SignatureKind> algos = {
+      crypto::sign::RSA_PKCS1_SHA256};
 
   TestFuture<ServiceErrorOr<mojom::NewSigningKeyDataPtr>> future;
   uks_remote->GenerateSigningKey(algos, kTestPriority, future.GetCallback());
@@ -222,8 +214,7 @@ TEST(UnexportableKeyServiceProxyTest, GenerateKeyGetSubjectPublicKeyInfoError) {
       .WillOnce(RunOnceCallback<2>(key_id));
 
   EXPECT_CALL(mock_uks, GetAlgorithm(key_id))
-      .WillOnce(
-          Return(crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256));
+      .WillOnce(Return(crypto::sign::ECDSA_SHA256));
 
   EXPECT_CALL(mock_uks, GetWrappedKey(key_id))
       .WillOnce(Return(std::vector<uint8_t>{0x11, 0x22, 0x33}));
@@ -231,8 +222,7 @@ TEST(UnexportableKeyServiceProxyTest, GenerateKeyGetSubjectPublicKeyInfoError) {
   EXPECT_CALL(mock_uks, GetSubjectPublicKeyInfo(key_id))
       .WillOnce(Return(base::unexpected(ServiceError::kCryptoApiFailed)));
 
-  std::vector<crypto::SignatureVerifier::SignatureAlgorithm> algos = {
-      crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256};
+  std::vector<crypto::sign::SignatureKind> algos = {crypto::sign::ECDSA_SHA256};
 
   TestFuture<ServiceErrorOr<mojom::NewSigningKeyDataPtr>> future;
   uks_remote->GenerateSigningKey(algos, kTestPriority, future.GetCallback());
@@ -275,8 +265,7 @@ TEST(UnexportableKeyServiceProxyTest, FromWrappedKeySuccess) {
   UnexportableSigningKeyId key_id;
 
   const std::vector<uint8_t> test_wrapped_key = {0xAA, 0xBB, 0xCC};
-  const crypto::SignatureVerifier::SignatureAlgorithm algo =
-      crypto::SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA256;
+  const crypto::sign::SignatureKind algo = crypto::sign::RSA_PSS_SHA256;
   const std::vector<uint8_t> wrapped_key_result = {0x11, 0x22, 0x33, 0x44};
   const std::vector<uint8_t> pub_key_info = {0x55, 0x66, 0x77, 0x88, 0x99};
 
@@ -348,8 +337,7 @@ TEST(UnexportableKeyServiceProxyTest, FromWrappedKeyGetWrappedKeyError) {
       .WillOnce(RunOnceCallback<2>(key_id));
 
   EXPECT_CALL(mock_uks, GetAlgorithm(key_id))
-      .WillOnce(
-          Return(crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256));
+      .WillOnce(Return(crypto::sign::ECDSA_SHA256));
 
   EXPECT_CALL(mock_uks, GetWrappedKey(key_id))
       .WillOnce(Return(base::unexpected(ServiceError::kKeyNotFound)));
@@ -381,8 +369,7 @@ TEST(UnexportableKeyServiceProxyTest,
       .WillOnce(RunOnceCallback<2>(key_id));
 
   EXPECT_CALL(mock_uks, GetAlgorithm(key_id))
-      .WillOnce(
-          Return(crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256));
+      .WillOnce(Return(crypto::sign::ECDSA_SHA256));
 
   EXPECT_CALL(mock_uks, GetWrappedKey(key_id))
       .WillOnce(Return(std::vector<uint8_t>{0x11, 0x22, 0x33}));
@@ -486,8 +473,7 @@ TEST(UnexportableKeyServiceProxyTest, GetAllKeysForGarbageCollectionSuccess) {
   // Since PopulateNewKeyData calls them in order, we should ensure they return
   // valid data.
   ON_CALL(mock_uks, GetAlgorithm)
-      .WillByDefault(
-          Return(crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256));
+      .WillByDefault(Return(crypto::sign::ECDSA_SHA256));
   ON_CALL(mock_uks, GetWrappedKey)
       .WillByDefault(Return(std::vector<uint8_t>{1, 2, 3}));
   ON_CALL(mock_uks, GetSubjectPublicKeyInfo)
@@ -828,8 +814,7 @@ TEST(UnexportableKeyServiceProxyTest, DestroyProxyBeforeCallback) {
       }));
   TestFuture<ServiceErrorOr<mojom::NewSigningKeyDataPtr>> future;
   uks_remote->GenerateSigningKey(
-      {crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1},
-      kTestPriority,
+      {crypto::sign::RSA_PKCS1_SHA1}, kTestPriority,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           future.GetCallback(), base::unexpected(kDroppedCallbackError)));
 
@@ -865,8 +850,7 @@ TEST(UnexportableKeyServiceProxyTest, DestroyProxyAndServiceBeforeCallback) {
       }));
   TestFuture<ServiceErrorOr<mojom::NewSigningKeyDataPtr>> future;
   uks_remote->GenerateSigningKey(
-      {crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1},
-      kTestPriority,
+      {crypto::sign::RSA_PKCS1_SHA1}, kTestPriority,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           future.GetCallback(), base::unexpected(kDroppedCallbackError)));
 

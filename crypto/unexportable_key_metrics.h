@@ -53,8 +53,7 @@ enum class TPMOperation {
 CRYPTO_EXPORT std::string OperationToString(TPMOperation operation);
 
 // Converts the given `algorithm` to a string representation.
-CRYPTO_EXPORT std::string AlgorithmToString(
-    SignatureVerifier::SignatureAlgorithm algorithm);
+CRYPTO_EXPORT std::string AlgorithmToString(sign::SignatureKind algorithm);
 
 // Records UMA metrics of TPM availability, latency and successful usage.
 // Does the work on a new background task.

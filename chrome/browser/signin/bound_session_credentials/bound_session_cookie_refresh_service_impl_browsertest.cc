@@ -45,7 +45,7 @@
 #include "content/public/test/browsing_data_remover_test_util.h"
 #include "content/public/test/btm_service_test_utils.h"
 #include "crypto/scoped_fake_unexportable_key_provider.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "net/base/url_util.h"
 #include "net/cookies/canonical_cookie.h"
@@ -136,12 +136,12 @@ std::string CreateBoundSessionParamsValidJson(const std::string& session_id,
                             cookie_name2.c_str(), domain.c_str(), path.c_str());
 }
 
-std::optional<crypto::SignatureVerifier::SignatureAlgorithm>
-SignatureAlgorithmFromString(std::string_view algorithm) {
+std::optional<crypto::sign::SignatureKind> SignatureAlgorithmFromString(
+    std::string_view algorithm) {
   if (algorithm == "ES256") {
-    return crypto::SignatureVerifier::ECDSA_SHA256;
+    return crypto::sign::ECDSA_SHA256;
   } else if (algorithm == "RS256") {
-    return crypto::SignatureVerifier::RSA_PKCS1_SHA256;
+    return crypto::sign::RSA_PKCS1_SHA256;
   }
 
   return std::nullopt;
@@ -375,7 +375,7 @@ class FakeServer {
     if (!algorithm_str) {
       return AssertionFailure() << "\"alg\" field is missing";
     }
-    std::optional<crypto::SignatureVerifier::SignatureAlgorithm> algorithm =
+    std::optional<crypto::sign::SignatureKind> algorithm =
         SignatureAlgorithmFromString(*algorithm_str);
     if (!algorithm) {
       return AssertionFailure()

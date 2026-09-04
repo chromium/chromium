@@ -27,6 +27,7 @@
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
+#include "crypto/sign.h"
 #include "net/base/features.h"
 #include "net/base/schemeful_site.h"
 #include "net/cert/x509_certificate.h"
@@ -473,12 +474,12 @@ void SessionServiceImpl::RegisterBoundSession(
 void SessionServiceImpl::RegisterStandaloneBoundSession(
     RegistrationParams params) {
   // Copy the supported algos before moving `params`.
-  std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos =
+  std::vector<crypto::sign::SignatureKind> supported_algos =
       base::ToVector(params.fetcher_param.supported_algos());
   StartRegistration(
       std::move(params), RegistrationType::kStandalone,
       base::BindOnce(
-          [](std::vector<crypto::SignatureVerifier::SignatureAlgorithm> algos,
+          [](std::vector<crypto::sign::SignatureKind> algos,
              RegistrationFetcher* fetcher,
              RegistrationRequestParam request_params,
              RegistrationFetcher::RegistrationCompleteCallback callback) {
@@ -640,10 +641,8 @@ void SessionServiceImpl::CheckFederatedProviderKey(
     return;
   }
 
-  unexportable_keys::ServiceErrorOr<
-      crypto::SignatureVerifier::SignatureAlgorithm>
-      algorithm =
-          key_service_->GetAlgorithm(*provider_session->unexportable_key_id());
+  unexportable_keys::ServiceErrorOr<crypto::sign::SignatureKind> algorithm =
+      key_service_->GetAlgorithm(*provider_session->unexportable_key_id());
   if (!algorithm.has_value()) {
     std::move(callback).Run(
         base::unexpected(SessionError::kInvalidFederatedKey));

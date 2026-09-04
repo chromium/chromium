@@ -33,6 +33,7 @@
 #include "base/win/scoped_hstring.h"
 #include "base/win/winrt_storage_util.h"
 #include "crypto/random.h"
+#include "crypto/sign.h"
 
 using ABI::Windows::Foundation::IAsyncAction;
 using ABI::Windows::Foundation::IAsyncOperation;
@@ -590,12 +591,11 @@ void DeleteUserVerifyingKeyInternal(UserVerifyingKeyLabel key_label,
   std::move(callback).Run(true);
 }
 
-std::optional<SignatureVerifier::SignatureAlgorithm> SelectAlgorithm(
-    base::span<const SignatureVerifier::SignatureAlgorithm>
-        acceptable_algorithms) {
+std::optional<sign::SignatureKind> SelectAlgorithm(
+    base::span<const sign::SignatureKind> acceptable_algorithms) {
   // Windows keys come in any algorithm you want, as long as it's RSA 2048.
   for (auto algorithm : acceptable_algorithms) {
-    if (algorithm == SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256) {
+    if (algorithm == sign::RSA_PKCS1_SHA256) {
       return algorithm;
     }
   }
@@ -608,8 +608,7 @@ class UserVerifyingKeyProviderWin : public UserVerifyingKeyProvider {
   ~UserVerifyingKeyProviderWin() override = default;
 
   void GenerateUserVerifyingSigningKey(
-      base::span<const SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms,
+      base::span<const sign::SignatureKind> acceptable_algorithms,
       UserVerifyingKeyCreationCallback callback) override {
     // Ignore the non-empty return value of `SelectAlgorithm` unless in the
     // future Windows supports more algorithms.

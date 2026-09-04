@@ -69,8 +69,7 @@ bool FakeProfileOAuth2TokenServiceDelegate::RefreshTokenIsAvailableOnDevice(
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 bool FakeProfileOAuth2TokenServiceDelegate::GenerateBindingKeyRegistrationToken(
-    base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-        supported_algorithms,
+    base::span<const crypto::sign::SignatureKind> supported_algorithms,
     std::string_view auth_code,
     base::OnceCallback<void(
         std::optional<signin::BindingKeyRegistrationTokenResult>)> callback) {

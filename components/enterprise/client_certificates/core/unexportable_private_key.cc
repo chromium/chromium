@@ -9,6 +9,7 @@
 #include "base/task/thread_pool.h"
 #include "components/enterprise/client_certificates/core/private_key_types.h"
 #include "components/enterprise/client_certificates/core/ssl_key_converter.h"
+#include "crypto/sign.h"
 #include "crypto/unexportable_key.h"
 #include "net/ssl/ssl_private_key.h"
 
@@ -49,8 +50,7 @@ std::vector<uint8_t> UnexportablePrivateKey::GetSubjectPublicKeyInfo() const {
   return key_->GetSubjectPublicKeyInfo();
 }
 
-crypto::SignatureVerifier::SignatureAlgorithm
-UnexportablePrivateKey::GetAlgorithm() const {
+crypto::sign::SignatureKind UnexportablePrivateKey::GetAlgorithm() const {
   return key_->Algorithm();
 }
 

@@ -20,6 +20,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "crypto/evp.h"
+#include "crypto/sign.h"
 #include "crypto/signature_verifier.h"
 #include "net/base/features.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -388,7 +389,7 @@ bool VerifyEs256Jwt(std::string_view jwt) {
   }
 
   crypto::SignatureVerifier verifier;
-  verifier.VerifyInit(crypto::SignatureVerifier::ECDSA_SHA256, der_sig.value(),
+  verifier.VerifyInit(crypto::sign::ECDSA_SHA256, der_sig.value(),
                       spki.value());
   verifier.VerifyUpdate(
       base::as_byte_span(base::StrCat({header64, ".", payload64})));

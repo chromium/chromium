@@ -12,7 +12,7 @@
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "crypto/unexportable_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -26,8 +26,7 @@ class MockUnexportableKeyService : public UnexportableKeyService {
   MOCK_METHOD(
       void,
       GenerateSigningKeySlowlyAsync,
-      (base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-           acceptable_algorithms,
+      (base::span<const crypto::sign::SignatureKind> acceptable_algorithms,
        BackgroundTaskPriority priority,
        base::OnceCallback<void(ServiceErrorOr<UnexportableSigningKeyId>)>
            callback),
@@ -43,8 +42,7 @@ class MockUnexportableKeyService : public UnexportableKeyService {
   MOCK_METHOD(
       void,
       GenerateAttestationKeySlowlyAsync,
-      (base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-           acceptable_algorithms,
+      (base::span<const crypto::sign::SignatureKind> acceptable_algorithms,
        BackgroundTaskPriority priority,
        base::OnceCallback<void(ServiceErrorOr<UnexportableAttestationKeyId>)>
            callback),
@@ -100,7 +98,7 @@ class MockUnexportableKeyService : public UnexportableKeyService {
               GetWrappedKey,
               (UnexportableSigningKeyId key_id),
               (const, override));
-  MOCK_METHOD(ServiceErrorOr<crypto::SignatureVerifier::SignatureAlgorithm>,
+  MOCK_METHOD(ServiceErrorOr<crypto::sign::SignatureKind>,
               GetAlgorithm,
               (UnexportableSigningKeyId key_id),
               (const, override));

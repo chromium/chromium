@@ -16,7 +16,7 @@
 #include "build/build_config.h"
 #include "components/enterprise/client_certificates/core/private_key_types.h"
 #include "components/enterprise/client_certificates/proto/client_certificates_database.pb.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 
 #if BUILDFLAG(IS_IOS)
 #include <Security/Security.h>
@@ -44,8 +44,7 @@ class PrivateKey : public base::RefCountedThreadSafe<PrivateKey> {
   virtual std::vector<uint8_t> GetSubjectPublicKeyInfo() const = 0;
 
   // Returns the algorithm of the asymmetric key pair.
-  virtual crypto::SignatureVerifier::SignatureAlgorithm GetAlgorithm()
-      const = 0;
+  virtual crypto::sign::SignatureKind GetAlgorithm() const = 0;
 
   // Returns a proto representation of the current private key which can be
   // serialized and loaded again through the PrivateKeyFactory.

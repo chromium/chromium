@@ -17,42 +17,41 @@
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 
 namespace {
 
-std::string_view GetAlgorithmName(
-    crypto::SignatureVerifier::SignatureAlgorithm algorithm) {
+std::string_view GetAlgorithmName(crypto::sign::SignatureKind algorithm) {
   switch (algorithm) {
-    case crypto::SignatureVerifier::RSA_PKCS1_SHA1:
+    case crypto::sign::RSA_PKCS1_SHA1:
       return "RSA_PKCS1_SHA1";
-    case crypto::SignatureVerifier::RSA_PKCS1_SHA256:
+    case crypto::sign::RSA_PKCS1_SHA256:
       return "RSA_PKCS1_SHA256";
-    case crypto::SignatureVerifier::RSA_PKCS1_SHA384:
+    case crypto::sign::RSA_PKCS1_SHA384:
       return "RSA_PKCS1_SHA384";
-    case crypto::SignatureVerifier::RSA_PKCS1_SHA512:
+    case crypto::sign::RSA_PKCS1_SHA512:
       return "RSA_PKCS1_SHA512";
-    case crypto::SignatureVerifier::RSA_PSS_SHA256:
+    case crypto::sign::RSA_PSS_SHA256:
       return "RSA_PSS_SHA256";
-    case crypto::SignatureVerifier::RSA_PSS_SHA384:
+    case crypto::sign::RSA_PSS_SHA384:
       return "RSA_PSS_SHA384";
-    case crypto::SignatureVerifier::RSA_PSS_SHA512:
+    case crypto::sign::RSA_PSS_SHA512:
       return "RSA_PSS_SHA512";
-    case crypto::SignatureVerifier::ECDSA_SHA1:
+    case crypto::sign::ECDSA_SHA1:
       return "ECDSA_SHA1";
-    case crypto::SignatureVerifier::ECDSA_SHA256:
+    case crypto::sign::ECDSA_SHA256:
       return "ECDSA_SHA256";
-    case crypto::SignatureVerifier::ECDSA_SHA384:
+    case crypto::sign::ECDSA_SHA384:
       return "ECDSA_SHA384";
-    case crypto::SignatureVerifier::ECDSA_SHA512:
+    case crypto::sign::ECDSA_SHA512:
       return "ECDSA_SHA512";
-    case crypto::SignatureVerifier::ED25519:
+    case crypto::sign::ED25519:
       return "ED25519";
-    case crypto::SignatureVerifier::MLDSA_44:
+    case crypto::sign::MLDSA_44:
       return "MLDSA_44";
-    case crypto::SignatureVerifier::MLDSA_65:
+    case crypto::sign::MLDSA_65:
       return "MLDSA_65";
-    case crypto::SignatureVerifier::MLDSA_87:
+    case crypto::sign::MLDSA_87:
       return "MLDSA_87";
   }
 }
@@ -117,9 +116,8 @@ void UnexportableKeysInternalsHandler::OnGetAllKeysForGarbageCollection(
     }
     key_info->wrapped_key = base::Base64Encode(*wrapped_key);
 
-    unexportable_keys::ServiceErrorOr<
-        crypto::SignatureVerifier::SignatureAlgorithm>
-        algorithm = key_service_->GetAlgorithm(key);
+    unexportable_keys::ServiceErrorOr<crypto::sign::SignatureKind> algorithm =
+        key_service_->GetAlgorithm(key);
     if (!algorithm.has_value()) {
       continue;
     }

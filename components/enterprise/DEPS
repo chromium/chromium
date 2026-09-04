@@ -16,7 +16,7 @@ include_rules = [
   "+components/signin",
   "+crypto/hash.h",
   "+crypto/sha2.h",
-  "+crypto/signature_verifier.h",
+  "+crypto/sign.h",
   "+google_apis/gaia",
   "+mojo/public/cpp",
   "+net",

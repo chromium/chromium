@@ -24,6 +24,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/metrics_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "crypto/scoped_fake_unexportable_key_provider.h"
+#include "crypto/sign.h"
 #include "crypto/unexportable_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -112,7 +113,7 @@ class KeyRotationManagerTest : public testing::Test {
   }
 
   std::unique_ptr<crypto::UnexportableSigningKey> CreateHardwareKey() {
-    auto acceptable_algorithms = {crypto::SignatureVerifier::ECDSA_SHA256};
+    auto acceptable_algorithms = {crypto::sign::ECDSA_SHA256};
     return key_provider_->GenerateSigningKeySlowly(acceptable_algorithms);
   }
 

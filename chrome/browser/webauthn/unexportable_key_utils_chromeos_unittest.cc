@@ -18,7 +18,7 @@
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/osauth/impl/request/webauthn_auth_request.h"
 #include "chromeos/ash/components/osauth/public/request/auth_request.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "crypto/user_verifying_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -141,8 +141,7 @@ TEST_P(UserVerifyingKeyUtilsCrosTest,
                      crypto::UserVerifyingKeyCreationError>>
       future;
   provider->GenerateUserVerifyingSigningKey(
-      base::span_from_ref(crypto::SignatureVerifier::ECDSA_SHA256),
-      future.GetCallback());
+      base::span_from_ref(crypto::sign::ECDSA_SHA256), future.GetCallback());
   crypto::UserVerifyingSigningKey& signing_key = *future.Get().value();
 
   base::test::TestFuture<
@@ -188,8 +187,7 @@ TEST_P(UserVerifyingKeyUtilsCrosTest,
                      crypto::UserVerifyingKeyCreationError>>
       future;
   provider->GenerateUserVerifyingSigningKey(
-      base::span_from_ref(crypto::SignatureVerifier::ECDSA_SHA256),
-      future.GetCallback());
+      base::span_from_ref(crypto::sign::ECDSA_SHA256), future.GetCallback());
   crypto::UserVerifyingSigningKey& signing_key = *future.Get().value();
   base::test::TestFuture<base::expected<std::vector<uint8_t>,
                                         crypto::UserVerifyingKeySigningError>>
@@ -231,7 +229,7 @@ TEST_P(UserVerifyingKeyUtilsCrosTest,
                      crypto::UserVerifyingKeyCreationError>>
       signing_key_future;
   provider->GenerateUserVerifyingSigningKey(
-      base::span_from_ref(crypto::SignatureVerifier::ECDSA_SHA256),
+      base::span_from_ref(crypto::sign::ECDSA_SHA256),
       signing_key_future.GetCallback());
   base::test::TestFuture<base::expected<std::vector<uint8_t>,
                                         crypto::UserVerifyingKeySigningError>>

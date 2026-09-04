@@ -22,7 +22,7 @@
 #include "crypto/mock_unexportable_key.h"
 #include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "crypto/unexportable_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -40,8 +40,7 @@ using ::testing::_;
 using ::testing::Eq;
 using ::testing::WithArgs;
 
-constexpr std::array kAcceptableAlgorithms = {
-    crypto::SignatureVerifier::ECDSA_SHA256};
+constexpr std::array kAcceptableAlgorithms = {crypto::sign::ECDSA_SHA256};
 constexpr unexportable_keys::BackgroundTaskPriority kTaskPriority =
     unexportable_keys::BackgroundTaskPriority::kUserBlocking;
 
@@ -61,7 +60,7 @@ class BindingKeyRegistrationTokenHelperTest : public testing::Test {
   void RunBackgroundTasks() { task_environment_.RunUntilIdle(); }
 
   void VerifyResult(const BindingKeyRegistrationTokenHelper::Result& result) {
-    crypto::SignatureVerifier::SignatureAlgorithm algorithm =
+    crypto::sign::SignatureKind algorithm =
         *unexportable_key_service().GetAlgorithm(result.binding_key_id);
     std::vector<uint8_t> pubkey =
         *unexportable_key_service().GetSubjectPublicKeyInfo(
@@ -243,8 +242,7 @@ TEST_F(BindingKeyRegistrationTokenHelperTest, FailureEmptyAlgorithms) {
       std::optional<BindingKeyRegistrationTokenHelper::Result>>
       future;
   BindingKeyRegistrationTokenHelper helper(
-      unexportable_key_service(),
-      std::vector<crypto::SignatureVerifier::SignatureAlgorithm>());
+      unexportable_key_service(), std::vector<crypto::sign::SignatureKind>());
   helper.GenerateForTokenBinding(
       "test_client_id", TokenBindingAuthCode("test_auth_code"),
       GURL("https://accounts.google.com/Register"), future.GetCallback());
@@ -260,7 +258,7 @@ TEST_F(BindingKeyRegistrationTokenHelperTest, SignatureFailure) {
   auto key_to_generate =
       std::make_unique<testing::NiceMock<crypto::MockUnexportableSigningKey>>();
   ON_CALL(*key_to_generate, Algorithm)
-      .WillByDefault(Return(crypto::SignatureVerifier::ECDSA_SHA256));
+      .WillByDefault(Return(crypto::sign::ECDSA_SHA256));
   ON_CALL(*key_to_generate, GetWrappedKey)
       .WillByDefault(Return(std::vector<uint8_t>{0, 0, 1}));
   EXPECT_CALL(*key_to_generate, SignSlowly)

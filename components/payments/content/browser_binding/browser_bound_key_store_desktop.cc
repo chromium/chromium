@@ -10,7 +10,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "components/payments/content/browser_binding/browser_bound_key.h"
 #include "components/payments/content/browser_binding/browser_bound_key_desktop.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "crypto/unexportable_key.h"
 #include "device/fido/public/public_key_credential_params.h"
 
@@ -81,18 +81,16 @@ BrowserBoundKeyStoreDesktop::GetOrCreateBrowserBoundKeyForCredentialId(
 
   // No existing key, create a new one.
   base::ElapsedTimer create_key_timer;
-  std::vector<crypto::SignatureVerifier::SignatureAlgorithm> algorithms;
+  std::vector<crypto::sign::SignatureKind> algorithms;
   algorithms.reserve(allowed_credentials.size());
   for (const auto& credential : allowed_credentials) {
     switch (
         static_cast<device::CoseAlgorithmIdentifier>(credential.algorithm)) {
       case device::CoseAlgorithmIdentifier::kRs256:
-        algorithms.push_back(
-            crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256);
+        algorithms.push_back(crypto::sign::RSA_PKCS1_SHA256);
         break;
       case device::CoseAlgorithmIdentifier::kEs256:
-        algorithms.push_back(
-            crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256);
+        algorithms.push_back(crypto::sign::ECDSA_SHA256);
         break;
       default:  // Unsupported algorithms.
         break;
@@ -125,11 +123,9 @@ bool BrowserBoundKeyStoreDesktop::GetDeviceSupportsHardwareKeys() {
     // hardware-backed keys are supported. Check if we can create a key with
     // either of the two algorithms we support.
     device_supports_hardware_keys_ =
-        key_provider_ &&
-        key_provider_->SelectAlgorithm(
-            {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
-             crypto::SignatureVerifier::SignatureAlgorithm::
-                 RSA_PKCS1_SHA256}) != std::nullopt;
+        key_provider_ && key_provider_->SelectAlgorithm(
+                             {crypto::sign::ECDSA_SHA256,
+                              crypto::sign::RSA_PKCS1_SHA256}) != std::nullopt;
 #else  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
   // Hardware based browser bound keys are not supported on Linux or ChromeOS.
   device_supports_hardware_keys_ = false;

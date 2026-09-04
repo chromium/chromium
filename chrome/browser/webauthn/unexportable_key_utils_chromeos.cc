@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "chromeos/ash/components/osauth/impl/request/webauthn_auth_request.h"
+#include "crypto/sign.h"
 #include "crypto/unexportable_key.h"
 #include "crypto/user_verifying_key.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -114,8 +115,7 @@ class UserVerifyingKeyProviderCros : public crypto::UserVerifyingKeyProvider {
   ~UserVerifyingKeyProviderCros() override = default;
 
   void GenerateUserVerifyingSigningKey(
-      base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms,
+      base::span<const crypto::sign::SignatureKind> acceptable_algorithms,
       UserVerifyingKeyCreationCallback callback) override {
     std::unique_ptr<crypto::UnexportableSigningKey> key =
         crypto::GetSoftwareUnsecureUnexportableKeyProvider()

@@ -12,6 +12,7 @@
 #include "components/enterprise/client_certificates/core/constants.h"
 #include "components/enterprise/client_certificates/core/private_key.h"
 #include "components/enterprise/client_certificates/core/scoped_ssl_key_converter.h"
+#include "crypto/sign.h"
 #include "crypto/unexportable_key.h"
 #include "net/ssl/ssl_private_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,8 +26,8 @@ TEST(UnexportablePrivateKeyTest, SupportedCreateKey) {
   ASSERT_TRUE(provider);
 
   // The mock only works with the ECDSA_SHA256 algorithm.
-  std::array<crypto::SignatureVerifier::SignatureAlgorithm, 1>
-      kAcceptableAlgorithms = {crypto::SignatureVerifier::ECDSA_SHA256};
+  std::array<crypto::sign::SignatureKind, 1> kAcceptableAlgorithms = {
+      crypto::sign::ECDSA_SHA256};
   auto unexportable_key =
       provider->GenerateSigningKeySlowly(kAcceptableAlgorithms);
   ASSERT_TRUE(unexportable_key);
@@ -36,8 +37,7 @@ TEST(UnexportablePrivateKeyTest, SupportedCreateKey) {
 
   auto spki_bytes = private_key->GetSubjectPublicKeyInfo();
   EXPECT_GT(spki_bytes.size(), 0U);
-  EXPECT_EQ(private_key->GetAlgorithm(),
-            crypto::SignatureVerifier::ECDSA_SHA256);
+  EXPECT_EQ(private_key->GetAlgorithm(), crypto::sign::ECDSA_SHA256);
   base::test::TestFuture<std::optional<std::vector<uint8_t>>> test_future;
   private_key->Sign(spki_bytes, test_future.GetCallback());
   EXPECT_TRUE(test_future.Get().has_value());
@@ -60,8 +60,8 @@ TEST(UnexportablePrivateKeyTest, SupportedCreateKeySoftware) {
   ASSERT_TRUE(provider);
 
   // The mock only works with the ECDSA_SHA256 algorithm.
-  std::array<crypto::SignatureVerifier::SignatureAlgorithm, 1>
-      kAcceptableAlgorithms = {crypto::SignatureVerifier::ECDSA_SHA256};
+  std::array<crypto::sign::SignatureKind, 1> kAcceptableAlgorithms = {
+      crypto::sign::ECDSA_SHA256};
   auto unexportable_key =
       provider->GenerateSigningKeySlowly(kAcceptableAlgorithms);
   ASSERT_TRUE(unexportable_key);
@@ -71,8 +71,7 @@ TEST(UnexportablePrivateKeyTest, SupportedCreateKeySoftware) {
 
   auto spki_bytes = private_key->GetSubjectPublicKeyInfo();
   EXPECT_GT(spki_bytes.size(), 0U);
-  EXPECT_EQ(private_key->GetAlgorithm(),
-            crypto::SignatureVerifier::ECDSA_SHA256);
+  EXPECT_EQ(private_key->GetAlgorithm(), crypto::sign::ECDSA_SHA256);
   base::test::TestFuture<std::optional<std::vector<uint8_t>>> test_future;
   private_key->Sign(spki_bytes, test_future.GetCallback());
   EXPECT_TRUE(test_future.Get().has_value());

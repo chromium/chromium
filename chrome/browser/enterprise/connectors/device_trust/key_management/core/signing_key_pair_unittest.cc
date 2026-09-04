@@ -10,7 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/ec_signing_key.h"
 #include "crypto/scoped_fake_unexportable_key_provider.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -48,7 +48,7 @@ std::unique_ptr<crypto::UnexportableSigningKey> GenerateSigningKey(
     provider = std::make_unique<ECSigningKeyProvider>();
   }
   DCHECK(provider);
-  auto acceptable_algorithms = {crypto::SignatureVerifier::ECDSA_SHA256};
+  auto acceptable_algorithms = {crypto::sign::ECDSA_SHA256};
   return provider->GenerateSigningKeySlowly(acceptable_algorithms);
 }
 

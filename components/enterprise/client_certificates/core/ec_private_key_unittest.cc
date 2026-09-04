@@ -10,6 +10,7 @@
 #include "components/enterprise/client_certificates/core/constants.h"
 #include "components/enterprise/client_certificates/core/private_key.h"
 #include "crypto/keypair.h"
+#include "crypto/sign.h"
 #include "net/ssl/ssl_private_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,8 +22,7 @@ TEST(ECPrivateKeyTest, KeyWorksAsExpected) {
   auto ec_private_key = base::MakeRefCounted<ECPrivateKey>(
       crypto::keypair::PrivateKey::GenerateEcP256());
 
-  EXPECT_EQ(ec_private_key->GetAlgorithm(),
-            crypto::SignatureVerifier::ECDSA_SHA256);
+  EXPECT_EQ(ec_private_key->GetAlgorithm(), crypto::sign::ECDSA_SHA256);
 
   auto spki_bytes = ec_private_key->GetSubjectPublicKeyInfo();
   EXPECT_GT(spki_bytes.size(), 0U);

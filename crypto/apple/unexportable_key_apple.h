@@ -44,8 +44,7 @@ class UnexportableKeyProviderApple : public StatefulUnexportableKeyProvider {
   // an authenticated LAContext to avoid having macOS prompt the user for user
   // verification.
   std::unique_ptr<UnexportableSigningKey> GenerateSigningKeySlowly(
-      base::span<const SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms,
+      base::span<const sign::SignatureKind> acceptable_algorithms,
       LAContext* lacontext);
 
   // Like UnexportableKeyProvider::FromWrappedAttestationKeySlowly, but lets you
@@ -59,23 +58,19 @@ class UnexportableKeyProviderApple : public StatefulUnexportableKeyProvider {
   // pass an authenticated LAContext to avoid having macOS prompt the user for
   // user verification.
   std::unique_ptr<UnexportableAttestationKey> GenerateAttestationKeySlowly(
-      base::span<const SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms,
+      base::span<const sign::SignatureKind> acceptable_algorithms,
       LAContext* lacontext);
 #endif  // defined(__OBJC__)
 
   // UnexportableKeyProvider:
-  std::optional<SignatureVerifier::SignatureAlgorithm> SelectAlgorithm(
-      base::span<const SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms) override;
+  std::optional<sign::SignatureKind> SelectAlgorithm(
+      base::span<const sign::SignatureKind> acceptable_algorithms) override;
   std::unique_ptr<UnexportableSigningKey> GenerateSigningKeySlowly(
-      base::span<const SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms) override;
+      base::span<const sign::SignatureKind> acceptable_algorithms) override;
   std::unique_ptr<UnexportableSigningKey> FromWrappedSigningKeySlowly(
       base::span<const uint8_t> wrapped_key) override;
   std::unique_ptr<UnexportableAttestationKey> GenerateAttestationKeySlowly(
-      base::span<const SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms) override;
+      base::span<const sign::SignatureKind> acceptable_algorithms) override;
   std::unique_ptr<UnexportableAttestationKey> FromWrappedAttestationKeySlowly(
       base::span<const uint8_t> wrapped_key) override;
   StatefulUnexportableKeyProvider* AsStatefulUnexportableKeyProvider()

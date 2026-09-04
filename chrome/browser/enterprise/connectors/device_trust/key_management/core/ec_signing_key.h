@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "crypto/sign.h"
 #include "crypto/unexportable_key.h"
 
 namespace enterprise_connectors {
@@ -22,12 +23,12 @@ class ECSigningKeyProvider : public crypto::UnexportableKeyProvider {
   ~ECSigningKeyProvider() override;
 
   // crypto::UnexportableKeyProvider:
-  std::optional<crypto::SignatureVerifier::SignatureAlgorithm> SelectAlgorithm(
-      base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms) override;
+  std::optional<crypto::sign::SignatureKind> SelectAlgorithm(
+      base::span<const crypto::sign::SignatureKind> acceptable_algorithms)
+      override;
   std::unique_ptr<crypto::UnexportableSigningKey> GenerateSigningKeySlowly(
-      base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms) override;
+      base::span<const crypto::sign::SignatureKind> acceptable_algorithms)
+      override;
   std::unique_ptr<crypto::UnexportableSigningKey> FromWrappedSigningKeySlowly(
       base::span<const uint8_t> wrapped_key) override;
   crypto::StatefulUnexportableKeyProvider* AsStatefulUnexportableKeyProvider()

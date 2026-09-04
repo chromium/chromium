@@ -33,7 +33,7 @@ BoundSessionRegistrationFetcherParam::~BoundSessionRegistrationFetcherParam() =
 
 BoundSessionRegistrationFetcherParam::BoundSessionRegistrationFetcherParam(
     GURL registration_endpoint,
-    std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos,
+    std::vector<crypto::sign::SignatureKind> supported_algos,
     std::string challenge)
     : registration_endpoint_(std::move(registration_endpoint)),
       supported_algos_(std::move(supported_algos)),
@@ -62,7 +62,7 @@ BoundSessionRegistrationFetcherParam::CreateFromHeaders(
 BoundSessionRegistrationFetcherParam
 BoundSessionRegistrationFetcherParam::CreateInstanceForTesting(
     GURL registration_endpoint,
-    std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos,
+    std::vector<crypto::sign::SignatureKind> supported_algos,
     std::string challenge) {
   return BoundSessionRegistrationFetcherParam(std::move(registration_endpoint),
                                               std::move(supported_algos),
@@ -76,13 +76,13 @@ BoundSessionRegistrationFetcherParam::ParseListItem(
     net::structured_headers::ParameterizedMember item) {
   ASSIGN_OR_RETURN((auto [items, params]), item.GetWithParamsIfInnerList());
 
-  std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos;
+  std::vector<crypto::sign::SignatureKind> supported_algos;
   for (const auto& algo_token : items) {
     const std::string* token = algo_token.item.GetIfToken();
     if (!token) {
       continue;
     }
-    std::optional<crypto::SignatureVerifier::SignatureAlgorithm> algo =
+    std::optional<crypto::sign::SignatureKind> algo =
         signin::SignatureAlgorithmFromString(*token);
     if (algo) {
       supported_algos.push_back(*algo);

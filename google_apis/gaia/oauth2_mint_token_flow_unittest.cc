@@ -21,6 +21,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
+#include "crypto/sign.h"
 #include "google_apis/gaia/gaia_features.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -803,9 +804,9 @@ TEST_F(OAuth2MintTokenFlowTest, ParseMintTokenResponseBoundTokenUpgradeInfo) {
   auto result = ParseMintTokenResponse(json);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->bound_token_upgrade_challenge, "test_challenge");
-  EXPECT_THAT(result->bound_token_upgrade_supported_algorithms,
-              ElementsAre(crypto::SignatureVerifier::ECDSA_SHA256,
-                          crypto::SignatureVerifier::RSA_PKCS1_SHA256));
+  EXPECT_THAT(
+      result->bound_token_upgrade_supported_algorithms,
+      ElementsAre(crypto::sign::ECDSA_SHA256, crypto::sign::RSA_PKCS1_SHA256));
 }
 
 TEST_F(OAuth2MintTokenFlowTest,
@@ -825,9 +826,9 @@ TEST_F(OAuth2MintTokenFlowTest,
   auto result = ParseMintTokenResponse(json);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->bound_token_upgrade_challenge, "test_challenge");
-  EXPECT_THAT(result->bound_token_upgrade_supported_algorithms,
-              ElementsAre(crypto::SignatureVerifier::ECDSA_SHA256,
-                          crypto::SignatureVerifier::RSA_PKCS1_SHA256));
+  EXPECT_THAT(
+      result->bound_token_upgrade_supported_algorithms,
+      ElementsAre(crypto::sign::ECDSA_SHA256, crypto::sign::RSA_PKCS1_SHA256));
 }
 
 TEST_F(OAuth2MintTokenFlowTest,

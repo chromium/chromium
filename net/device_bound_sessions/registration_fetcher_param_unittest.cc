@@ -9,7 +9,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "net/base/features.h"
 #include "net/http/http_response_headers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -21,8 +21,8 @@ namespace {
 
 constexpr char kRegistrationHeaderName[] = "Secure-Session-Registration";
 
-using crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256;
-using crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256;
+using crypto::sign::ECDSA_SHA256;
+using crypto::sign::RSA_PKCS1_SHA256;
 using ::testing::UnorderedElementsAre;
 
 scoped_refptr<net::HttpResponseHeaders> CreateHeaders(

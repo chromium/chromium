@@ -20,6 +20,7 @@
 #include "components/enterprise/client_certificates/core/private_key_types.h"
 #include "content/public/test/browser_task_environment.h"
 #include "crypto/scoped_test_nss_db.h"
+#include "crypto/sign.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_private_key.h"
 #include "net/test/cert_builder.h"
@@ -59,7 +60,7 @@ TEST_F(KcerPrivateKeyFactoryTest, CreatePrivateKey_GeneratesRealEcKey) {
   // test slot, but the factory resolves the source from KeyInfo, not from
   // that success - and a non-Chaps slot holds nothing hardware backed.
   EXPECT_EQ(key->GetSource(), PrivateKeySource::kChromeOsSwKey);
-  EXPECT_EQ(key->GetAlgorithm(), crypto::SignatureVerifier::ECDSA_SHA256);
+  EXPECT_EQ(key->GetAlgorithm(), crypto::sign::ECDSA_SHA256);
 
   // EC P-256 SubjectPublicKeyInfo is 91 bytes; a non-empty SPKI implies the
   // key really materialized in NSS (not a stub from a mock).

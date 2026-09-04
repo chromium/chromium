@@ -8,6 +8,7 @@
 #include "base/notreached.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/signing_key_pair.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "crypto/sign.h"
 #include "crypto/unexportable_key.h"
 
 using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
@@ -18,26 +19,25 @@ namespace {
 
 constexpr int kMaxDMTokenLength = 4096;
 
-BPKUR::KeyType AlgorithmToType(
-    crypto::SignatureVerifier::SignatureAlgorithm algorithm) {
+BPKUR::KeyType AlgorithmToType(crypto::sign::SignatureKind algorithm) {
   switch (algorithm) {
-    case crypto::SignatureVerifier::RSA_PKCS1_SHA1:
-    case crypto::SignatureVerifier::RSA_PKCS1_SHA256:
-    case crypto::SignatureVerifier::RSA_PKCS1_SHA384:
-    case crypto::SignatureVerifier::RSA_PKCS1_SHA512:
-    case crypto::SignatureVerifier::RSA_PSS_SHA256:
-    case crypto::SignatureVerifier::RSA_PSS_SHA384:
-    case crypto::SignatureVerifier::RSA_PSS_SHA512:
+    case crypto::sign::RSA_PKCS1_SHA1:
+    case crypto::sign::RSA_PKCS1_SHA256:
+    case crypto::sign::RSA_PKCS1_SHA384:
+    case crypto::sign::RSA_PKCS1_SHA512:
+    case crypto::sign::RSA_PSS_SHA256:
+    case crypto::sign::RSA_PSS_SHA384:
+    case crypto::sign::RSA_PSS_SHA512:
       return BPKUR::RSA_KEY;
-    case crypto::SignatureVerifier::ECDSA_SHA1:
-    case crypto::SignatureVerifier::ECDSA_SHA256:
-    case crypto::SignatureVerifier::ECDSA_SHA384:
-    case crypto::SignatureVerifier::ECDSA_SHA512:
+    case crypto::sign::ECDSA_SHA1:
+    case crypto::sign::ECDSA_SHA256:
+    case crypto::sign::ECDSA_SHA384:
+    case crypto::sign::ECDSA_SHA512:
       return BPKUR::EC_KEY;
-    case crypto::SignatureVerifier::ED25519:
-    case crypto::SignatureVerifier::MLDSA_44:
-    case crypto::SignatureVerifier::MLDSA_65:
-    case crypto::SignatureVerifier::MLDSA_87:
+    case crypto::sign::ED25519:
+    case crypto::sign::MLDSA_44:
+    case crypto::sign::MLDSA_65:
+    case crypto::sign::MLDSA_87:
       NOTREACHED();
   }
 }

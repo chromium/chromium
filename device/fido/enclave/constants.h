@@ -9,7 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 
 namespace device::enclave {
 
@@ -50,12 +50,11 @@ inline constexpr size_t kVaultHandleLen = 17;
 inline constexpr int kMaxGPMBootstrapPrompts = 2;
 
 // The list of algorithms that are acceptable as device identity keys.
-inline constexpr crypto::SignatureVerifier::SignatureAlgorithm
-    kSigningAlgorithms[] = {
-        // This is in preference order and the enclave must support all the
-        // algorithms listed here.
-        crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
-        crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256,
+inline constexpr crypto::sign::SignatureKind kSigningAlgorithms[] = {
+    // This is in preference order and the enclave must support all the
+    // algorithms listed here.
+    crypto::sign::ECDSA_SHA256,
+    crypto::sign::RSA_PKCS1_SHA256,
 };
 
 // Error codes from the service on per-request failures. These can be returned

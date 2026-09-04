@@ -16,7 +16,7 @@
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 
 namespace unexportable_keys {
 
@@ -35,8 +35,7 @@ UnexportableKeyLoader::CreateFromWrappedKey(
 // static
 std::unique_ptr<UnexportableKeyLoader> UnexportableKeyLoader::CreateWithNewKey(
     UnexportableKeyService& unexportable_key_service,
-    base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-        acceptable_algorithms,
+    base::span<const crypto::sign::SignatureKind> acceptable_algorithms,
     BackgroundTaskPriority priority) {
   std::unique_ptr<UnexportableKeyLoader> loader =
       base::WrapUnique(new UnexportableKeyLoader());
@@ -92,8 +91,7 @@ void UnexportableKeyLoader::LoadFromWrappedKey(
 }
 void UnexportableKeyLoader::GenerateNewKey(
     UnexportableKeyService& unexportable_key_service,
-    base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-        acceptable_algorithms,
+    base::span<const crypto::sign::SignatureKind> acceptable_algorithms,
     BackgroundTaskPriority priority) {
   CHECK_EQ(state_, State::kNotStarted);
   state_ = State::kLoading;

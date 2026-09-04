@@ -44,10 +44,9 @@ std::vector<uint8_t> AndroidPrivateKey::GetSubjectPublicKeyInfo() const {
   return key_->GetPublicKeyAsSPKI();
 }
 
-crypto::SignatureVerifier::SignatureAlgorithm AndroidPrivateKey::GetAlgorithm()
-    const {
+crypto::sign::SignatureKind AndroidPrivateKey::GetAlgorithm() const {
   // TODO(crbug.com/432304139): Add support for other algorithms.
-  return crypto::SignatureVerifier::ECDSA_SHA256;
+  return crypto::sign::ECDSA_SHA256;
 }
 
 client_certificates_pb::PrivateKey AndroidPrivateKey::ToProto() const {

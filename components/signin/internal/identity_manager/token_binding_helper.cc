@@ -36,7 +36,7 @@
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_loader.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -56,7 +56,7 @@ constexpr unexportable_keys::BackgroundTaskPriority kTokenBindingPriority =
 
 base::expected<std::string, TokenBindingHelper::Error> CreateAssertionToken(
     const std::string& header_and_payload,
-    crypto::SignatureVerifier::SignatureAlgorithm algorithm,
+    crypto::sign::SignatureKind algorithm,
     const std::vector<uint8_t>& pubkey,
     unexportable_keys::ServiceErrorOr<std::vector<uint8_t>> signature) {
   if (!signature.has_value()) {
@@ -127,8 +127,7 @@ void TokenBindingHelper::ClearAllKeys() {
 }
 
 void TokenBindingHelper::MaybeInitializeRegistrationTokenHelper(
-    base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-        supported_algorithms) {
+    base::span<const crypto::sign::SignatureKind> supported_algorithms) {
   if (registration_token_helper_) {
     return;
   }
@@ -159,8 +158,8 @@ void TokenBindingHelper::OnAllCredentialsLoaded(bool has_refresh_tokens) {
   }
 
   MaybeInitializeRegistrationTokenHelper({
-      crypto::SignatureVerifier::ECDSA_SHA256,
-      crypto::SignatureVerifier::RSA_PKCS1_SHA256,
+      crypto::sign::ECDSA_SHA256,
+      crypto::sign::RSA_PKCS1_SHA256,
   });
   CHECK(registration_token_helper_);
   registration_token_helper_->CreateKeyLoaderIfNeeded();
@@ -172,8 +171,7 @@ bool TokenBindingHelper::IsRegistrationKeyReady() const {
 }
 
 void TokenBindingHelper::GenerateBindingKeyRegistrationToken(
-    base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-        supported_algorithms,
+    base::span<const crypto::sign::SignatureKind> supported_algorithms,
     const std::variant<signin::TokenBindingAuthCode,
                        signin::TokenBindingChallenge>& auth_code_or_challenge,
     base::OnceCallback<void(
@@ -268,8 +266,7 @@ void TokenBindingHelper::PerformTokenBindingUpgrade(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::string_view device_id,
     std::string_view challenge,
-    base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-        supported_algorithms) {
+    base::span<const crypto::sign::SignatureKind> supported_algorithms) {
   CHECK(base::FeatureList::IsEnabled(
       switches::kEnableChromeRefreshTokenBindingUpgrade));
   CHECK_NE(refresh_token, GaiaConstants::kInvalidRefreshToken);
@@ -371,7 +368,7 @@ void TokenBindingHelper::SignAssertionToken(
     return;
   }
 
-  crypto::SignatureVerifier::SignatureAlgorithm algorithm =
+  crypto::sign::SignatureKind algorithm =
       *unexportable_key_service_->GetAlgorithm(*binding_key);
   std::vector<uint8_t> pubkey =
       *unexportable_key_service_->GetSubjectPublicKeyInfo(*binding_key);

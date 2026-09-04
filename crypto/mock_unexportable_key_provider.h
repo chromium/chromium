@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "crypto/unexportable_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -24,15 +24,13 @@ class MockUnexportableKeyProvider : public StatefulUnexportableKeyProvider {
   ~MockUnexportableKeyProvider() override;
 
   // UnexportableKeyProvider:
-  MOCK_METHOD(std::optional<SignatureVerifier::SignatureAlgorithm>,
+  MOCK_METHOD(std::optional<sign::SignatureKind>,
               SelectAlgorithm,
-              (base::span<const SignatureVerifier::SignatureAlgorithm>
-                   acceptable_algorithms),
+              (base::span<const sign::SignatureKind> acceptable_algorithms),
               (override));
   MOCK_METHOD(std::unique_ptr<UnexportableSigningKey>,
               GenerateSigningKeySlowly,
-              (base::span<const SignatureVerifier::SignatureAlgorithm>
-                   acceptable_algorithms),
+              (base::span<const sign::SignatureKind> acceptable_algorithms),
               (override));
   MOCK_METHOD(std::unique_ptr<UnexportableSigningKey>,
               FromWrappedSigningKeySlowly,
@@ -40,8 +38,7 @@ class MockUnexportableKeyProvider : public StatefulUnexportableKeyProvider {
               (override));
   MOCK_METHOD(std::unique_ptr<UnexportableAttestationKey>,
               GenerateAttestationKeySlowly,
-              (base::span<const SignatureVerifier::SignatureAlgorithm>
-                   acceptable_algorithms),
+              (base::span<const sign::SignatureKind> acceptable_algorithms),
               (override));
   MOCK_METHOD(std::unique_ptr<UnexportableAttestationKey>,
               FromWrappedAttestationKeySlowly,

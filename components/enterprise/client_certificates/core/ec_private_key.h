@@ -23,7 +23,7 @@ class ECPrivateKey : public PrivateKey {
             base::OnceCallback<void(std::optional<std::vector<uint8_t>>)>
                 callback) const override;
   std::vector<uint8_t> GetSubjectPublicKeyInfo() const override;
-  crypto::SignatureVerifier::SignatureAlgorithm GetAlgorithm() const override;
+  crypto::sign::SignatureKind GetAlgorithm() const override;
   client_certificates_pb::PrivateKey ToProto() const override;
   base::DictValue ToDict() const override;
 

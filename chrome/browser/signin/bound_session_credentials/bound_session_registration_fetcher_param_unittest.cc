@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "net/http/http_response_headers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,7 +17,7 @@ namespace {
 
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
-using enum ::crypto::SignatureVerifier::SignatureAlgorithm;
+using enum ::crypto::sign::SignatureKind;
 
 constexpr char kChallenge[] = "Y2hhbGxlbmdl";
 constexpr char kChallenge2[] = "Y2hhbGxlbmdlMg==";
@@ -25,7 +25,7 @@ constexpr char kChallenge2[] = "Y2hhbGxlbmdlMg==";
 class BoundSessionRegistrationFetcherParamTest : public testing::Test {};
 
 TEST_F(BoundSessionRegistrationFetcherParamTest, AllInvalid) {
-  std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos;
+  std::vector<crypto::sign::SignatureKind> supported_algos;
   BoundSessionRegistrationFetcherParam params =
       BoundSessionRegistrationFetcherParam::CreateInstanceForTesting(
           GURL(), supported_algos, "");

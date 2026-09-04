@@ -15,8 +15,7 @@ class FakeUnexportableKeyService : public UnexportableKeyService {
  public:
   // UnexportableKeyService:
   void GenerateSigningKeySlowlyAsync(
-      base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms,
+      base::span<const crypto::sign::SignatureKind> acceptable_algorithms,
       BackgroundTaskPriority priority,
       base::OnceCallback<void(ServiceErrorOr<UnexportableSigningKeyId>)>
           callback) override;
@@ -26,8 +25,7 @@ class FakeUnexportableKeyService : public UnexportableKeyService {
       base::OnceCallback<void(ServiceErrorOr<UnexportableSigningKeyId>)>
           callback) override;
   void GenerateAttestationKeySlowlyAsync(
-      base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms,
+      base::span<const crypto::sign::SignatureKind> acceptable_algorithms,
       BackgroundTaskPriority priority,
       base::OnceCallback<void(ServiceErrorOr<UnexportableAttestationKeyId>)>
           callback) override;
@@ -64,7 +62,7 @@ class FakeUnexportableKeyService : public UnexportableKeyService {
       UnexportableSigningKeyId key_id) const override;
   ServiceErrorOr<std::vector<uint8_t>> GetWrappedKey(
       UnexportableSigningKeyId key_id) const override;
-  ServiceErrorOr<crypto::SignatureVerifier::SignatureAlgorithm> GetAlgorithm(
+  ServiceErrorOr<crypto::sign::SignatureKind> GetAlgorithm(
       UnexportableSigningKeyId key_id) const override;
   ServiceErrorOr<std::string> GetKeyTag(
       UnexportableSigningKeyId key_id) const override;

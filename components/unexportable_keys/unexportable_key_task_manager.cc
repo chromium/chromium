@@ -27,7 +27,7 @@
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_tasks.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "crypto/unexportable_key.h"
 
 namespace unexportable_keys {
@@ -135,8 +135,7 @@ void UnexportableKeyTaskManager::GetAllKeysForGarbageCollectionSlowlyAsync(
 void UnexportableKeyTaskManager::GenerateSigningKeySlowlyAsync(
     BackgroundTaskOrigin origin,
     crypto::UnexportableKeyProvider::Config config,
-    base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-        acceptable_algorithms,
+    base::span<const crypto::sign::SignatureKind> acceptable_algorithms,
     BackgroundTaskPriority priority,
     base::OnceCallback<
         void(ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>)>
@@ -287,8 +286,7 @@ void UnexportableKeyTaskManager::DeleteAllKeysSlowlyAsync(
 void UnexportableKeyTaskManager::GenerateAttestationKeySlowlyAsync(
     BackgroundTaskOrigin origin,
     crypto::UnexportableKeyProvider::Config config,
-    base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-        acceptable_algorithms,
+    base::span<const crypto::sign::SignatureKind> acceptable_algorithms,
     BackgroundTaskPriority priority,
     base::OnceCallback<void(
         ServiceErrorOr<scoped_refptr<RefCountedUnexportableAttestationKey>>)>

@@ -33,10 +33,7 @@ class MockPrivateKey : public PrivateKey {
               GetSubjectPublicKeyInfo,
               (),
               (const, override));
-  MOCK_METHOD(crypto::SignatureVerifier::SignatureAlgorithm,
-              GetAlgorithm,
-              (),
-              (const, override));
+  MOCK_METHOD(crypto::sign::SignatureKind, GetAlgorithm, (), (const, override));
   MOCK_METHOD(client_certificates_pb::PrivateKey,
               ToProto,
               (),

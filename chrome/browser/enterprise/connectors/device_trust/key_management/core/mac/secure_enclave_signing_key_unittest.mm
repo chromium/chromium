@@ -19,6 +19,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/mock_secure_enclave_client.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/secure_enclave_client.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/shared_command_constants.h"
+#include "crypto/sign.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -79,7 +80,7 @@ TEST_F(SecureEnclaveSigningKeyTest, GenerateSigningKeySlowly) {
   key_.reset();
   SetUnexportableKey();
   ASSERT_TRUE(key_);
-  EXPECT_EQ(key_->Algorithm(), crypto::SignatureVerifier::ECDSA_SHA256);
+  EXPECT_EQ(key_->Algorithm(), crypto::sign::ECDSA_SHA256);
   EXPECT_TRUE(key_->GetSecKeyRef());
 }
 
@@ -98,8 +99,7 @@ TEST_F(SecureEnclaveSigningKeyTest,
   auto unexportable_key = provider_.LoadStoredSigningKeySlowly(
       SecureEnclaveClient::KeyType::kPermanent, &error);
   ASSERT_TRUE(unexportable_key);
-  EXPECT_EQ(unexportable_key->Algorithm(),
-            crypto::SignatureVerifier::ECDSA_SHA256);
+  EXPECT_EQ(unexportable_key->Algorithm(), crypto::sign::ECDSA_SHA256);
 
   auto wrapped = unexportable_key->GetWrappedKey();
   EXPECT_EQ(std::string(wrapped.begin(), wrapped.end()),
@@ -138,8 +138,7 @@ TEST_F(SecureEnclaveSigningKeyTest,
   auto unexportable_key = provider_.LoadStoredSigningKeySlowly(
       SecureEnclaveClient::KeyType::kTemporary, &error);
   ASSERT_TRUE(unexportable_key);
-  EXPECT_EQ(unexportable_key->Algorithm(),
-            crypto::SignatureVerifier::ECDSA_SHA256);
+  EXPECT_EQ(unexportable_key->Algorithm(), crypto::sign::ECDSA_SHA256);
 
   auto wrapped = unexportable_key->GetWrappedKey();
   EXPECT_EQ(std::string(wrapped.begin(), wrapped.end()),

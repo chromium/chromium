@@ -11,7 +11,7 @@
 
 #include "base/containers/span.h"
 #include "base/values.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class HybridEncryptionKey;
@@ -21,7 +21,7 @@ namespace signin {
 // Verifies that `jwt` is well-formed and properly signed.
 [[nodiscard]] testing::AssertionResult VerifyJwtSignature(
     std::string_view jwt,
-    crypto::SignatureVerifier::SignatureAlgorithm algorithm,
+    crypto::sign::SignatureKind algorithm,
     base::span<const uint8_t> public_key);
 
 // Returns a parsed header part of `jwt` or std::nullopt if parsing fails.

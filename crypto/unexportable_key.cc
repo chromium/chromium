@@ -22,8 +22,7 @@ UnexportableKeyProvider::~UnexportableKeyProvider() = default;
 
 std::unique_ptr<UnexportableAttestationKey>
 UnexportableKeyProvider::GenerateAttestationKeySlowly(
-    base::span<const SignatureVerifier::SignatureAlgorithm>
-        acceptable_algorithms) {
+    base::span<const sign::SignatureKind> acceptable_algorithms) {
   return nullptr;
 }
 

@@ -17,6 +17,8 @@
 #include "crypto/apple/fake_keychain_v2.h"
 #include "crypto/apple/scoped_fake_keychain_v2.h"
 #include "crypto/apple/scoped_lacontext.h"
+#include "crypto/sign.h"
+#include "crypto/signature_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace crypto {
@@ -24,8 +26,7 @@ namespace crypto {
 namespace {
 
 constexpr char kTestKeychainAccessGroup[] = "test-keychain-access-group";
-constexpr SignatureVerifier::SignatureAlgorithm kAcceptableAlgos[] = {
-    SignatureVerifier::ECDSA_SHA256};
+constexpr sign::SignatureKind kAcceptableAlgos[] = {sign::ECDSA_SHA256};
 
 UserVerifyingKeyProvider::Config MakeConfig() {
   UserVerifyingKeyProvider::Config config;

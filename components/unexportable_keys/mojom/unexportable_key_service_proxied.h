@@ -16,6 +16,7 @@
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
+#include "crypto/sign.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
@@ -26,8 +27,7 @@ namespace unexportable_keys {
 struct CachedKeyData {
   std::vector<uint8_t> subject_public_key_info;
   std::vector<uint8_t> wrapped_key;
-  crypto::SignatureVerifier::SignatureAlgorithm algorithm =
-      crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256;
+  crypto::sign::SignatureKind algorithm = crypto::sign::ECDSA_SHA256;
   ServiceErrorOr<std::string> key_tag;
   ServiceErrorOr<base::Time> creation_time;
 };
@@ -47,8 +47,7 @@ class UnexportableKeyServiceProxied : public UnexportableKeyService {
   ~UnexportableKeyServiceProxied() override;
 
   void GenerateSigningKeySlowlyAsync(
-      base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms,
+      base::span<const crypto::sign::SignatureKind> acceptable_algorithms,
       BackgroundTaskPriority priority,
       base::OnceCallback<void(ServiceErrorOr<UnexportableSigningKeyId>)>
           callback) override;
@@ -58,8 +57,7 @@ class UnexportableKeyServiceProxied : public UnexportableKeyService {
       base::OnceCallback<void(ServiceErrorOr<UnexportableSigningKeyId>)>
           callback) override;
   void GenerateAttestationKeySlowlyAsync(
-      base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms,
+      base::span<const crypto::sign::SignatureKind> acceptable_algorithms,
       BackgroundTaskPriority priority,
       base::OnceCallback<void(ServiceErrorOr<UnexportableAttestationKeyId>)>
           callback) override;
@@ -96,7 +94,7 @@ class UnexportableKeyServiceProxied : public UnexportableKeyService {
       UnexportableSigningKeyId key_id) const override;
   ServiceErrorOr<std::vector<uint8_t>> GetWrappedKey(
       UnexportableSigningKeyId key_id) const override;
-  ServiceErrorOr<crypto::SignatureVerifier::SignatureAlgorithm> GetAlgorithm(
+  ServiceErrorOr<crypto::sign::SignatureKind> GetAlgorithm(
       UnexportableSigningKeyId key_id) const override;
   ServiceErrorOr<std::string> GetKeyTag(
       UnexportableSigningKeyId key_id) const override;

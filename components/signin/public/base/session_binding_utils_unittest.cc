@@ -20,7 +20,7 @@
 #include "components/signin/public/base/hybrid_encryption_key.h"
 #include "components/signin/public/base/hybrid_encryption_key_test_utils.h"
 #include "components/signin/public/base/session_binding_test_utils.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -68,7 +68,7 @@ std::string Base64UrlEncode(std::string_view input) {
 }  // namespace
 
 TEST(SessionBindingUtilsTest, SignatureAlgorithmFromString) {
-  using enum crypto::SignatureVerifier::SignatureAlgorithm;
+  using enum crypto::sign::SignatureKind;
   EXPECT_EQ(SignatureAlgorithmFromString("ES256"), ECDSA_SHA256);
   EXPECT_EQ(SignatureAlgorithmFromString("es256"), ECDSA_SHA256);
 
@@ -81,7 +81,7 @@ TEST(SessionBindingUtilsTest, SignatureAlgorithmFromString) {
 }
 
 TEST(SessionBindingUtilsTest, ParseSignatureAlgorithmList) {
-  using enum crypto::SignatureVerifier::SignatureAlgorithm;
+  using enum crypto::sign::SignatureKind;
   EXPECT_THAT(ParseSignatureAlgorithmList("ES256 RS256"),
               ElementsAre(ECDSA_SHA256, RSA_PKCS1_SHA256));
   // Extra whitespace is ignored.
@@ -104,8 +104,7 @@ TEST(SessionBindingUtilsTest,
       CreateKeyRegistrationHeaderAndPayloadForTokenBinding(
           "test_client_id", TokenBindingAuthCode("test_auth_code"),
           GURL("https://accounts.google.com/RegisterKey"),
-          crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
-          std::vector<uint8_t>({1, 2, 3}),
+          crypto::sign::ECDSA_SHA256, std::vector<uint8_t>({1, 2, 3}),
           base::Time::UnixEpoch() + base::Days(200) + base::Milliseconds(123));
   ASSERT_TRUE(result.has_value());
 
@@ -142,8 +141,7 @@ TEST(SessionBindingUtilsTest,
       CreateKeyRegistrationHeaderAndPayloadForTokenBinding(
           "test_client_id", TokenBindingChallenge("test_challenge"),
           GURL("https://accounts.google.com/RegisterKey"),
-          crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
-          std::vector<uint8_t>({1, 2, 3}),
+          crypto::sign::ECDSA_SHA256, std::vector<uint8_t>({1, 2, 3}),
           base::Time::UnixEpoch() + base::Days(200) + base::Milliseconds(123));
   ASSERT_TRUE(result.has_value());
 
@@ -179,8 +177,7 @@ TEST(SessionBindingUtilsTest,
       CreateKeyRegistrationHeaderAndPayloadForTokenBinding(
           "test_client_id", TokenBindingAuthCode("test_auth_code"),
           GURL("https://accounts.google.com/RegisterKey?a=b#c"),
-          crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
-          std::vector<uint8_t>({1, 2, 3}),
+          crypto::sign::ECDSA_SHA256, std::vector<uint8_t>({1, 2, 3}),
           base::Time::UnixEpoch() + base::Days(200) + base::Milliseconds(123));
   ASSERT_TRUE(result.has_value());
 
@@ -199,8 +196,7 @@ TEST(SessionBindingUtilsTest,
   std::optional<std::string> result =
       CreateKeyRegistrationHeaderAndPayloadForSessionBinding(
           "test_challenge", GURL("https://accounts.google.com/RegisterKey"),
-          crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256,
-          std::vector<uint8_t>({1, 2, 3}),
+          crypto::sign::RSA_PKCS1_SHA256, std::vector<uint8_t>({1, 2, 3}),
           base::Time::UnixEpoch() + base::Days(200) + base::Milliseconds(123));
   ASSERT_TRUE(result.has_value());
 
@@ -235,8 +231,7 @@ TEST(SessionBindingUtilsTest,
       CreateKeyRegistrationHeaderAndPayloadForSessionBinding(
           "test_challenge",
           GURL("https://accounts.google.com/RegisterKey?a=b#c"),
-          crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256,
-          std::vector<uint8_t>({1, 2, 3}),
+          crypto::sign::RSA_PKCS1_SHA256, std::vector<uint8_t>({1, 2, 3}),
           base::Time::UnixEpoch() + base::Days(200) + base::Milliseconds(123));
   ASSERT_TRUE(result.has_value());
 
@@ -263,8 +258,8 @@ TEST_P(SessionBindingUtilsEphemeralKeyParamTest,
     ephemeral_key = CreateHybridEncryptionKeyForTesting();
   }
   std::optional<std::string> result = CreateKeyAssertionHeaderAndPayload(
-      crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
-      std::vector<uint8_t>({1, 2, 3}), "test_client_id", "test_challenge",
+      crypto::sign::ECDSA_SHA256, std::vector<uint8_t>({1, 2, 3}),
+      "test_client_id", "test_challenge",
       GURL("https://accounts.google.com/VerifyKey"), "test_namespace",
       ephemeral_key.has_value() ? ephemeral_key->ExportPublicKey()
                                 : std::string_view());
@@ -308,8 +303,8 @@ TEST_P(SessionBindingUtilsEphemeralKeyParamTest,
 
 TEST(SessionBindingUtilsTest, CreateKeyAssertionHeaderAndPayloadStripsUrl) {
   std::optional<std::string> result = CreateKeyAssertionHeaderAndPayload(
-      crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
-      std::vector<uint8_t>({1, 2, 3}), "test_client_id", "test_challenge",
+      crypto::sign::ECDSA_SHA256, std::vector<uint8_t>({1, 2, 3}),
+      "test_client_id", "test_challenge",
       GURL("https://accounts.google.com/VerifyKey?a=b#c"), "test_namespace",
       /*ephemeral_public_key=*/std::string_view());
   ASSERT_TRUE(result.has_value());
@@ -334,8 +329,7 @@ INSTANTIATE_TEST_SUITE_P(,
 
 TEST(SessionBindingUtilsTest, AppendSignatureToHeaderAndPayload) {
   std::optional<std::string> result = AppendSignatureToHeaderAndPayload(
-      "abc.efg",
-      crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256,
+      "abc.efg", crypto::sign::RSA_PKCS1_SHA256,
       /*pubkey_spki=*/{}, std::vector<uint8_t>({1, 2, 3}));
   EXPECT_EQ(result, "abc.efg.AQID");
 }
@@ -346,23 +340,23 @@ TEST(SessionBindingUtilsTest,
       "dKBvaysOgg4DO26Y_Imc8zC1VtMpibWCM1-dl_tlZJC8te5C4lqHriEY2n5oZTC-5Wk9xV_"
       "VYkU-jQsFGjN5jQ";
 
-  std::optional<std::string> result = AppendSignatureToHeaderAndPayload(
-      "abc.efg", crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
-      kValidP256Spki, kValidDerSignature);
+  std::optional<std::string> result =
+      AppendSignatureToHeaderAndPayload("abc.efg", crypto::sign::ECDSA_SHA256,
+                                        kValidP256Spki, kValidDerSignature);
   EXPECT_EQ(result, base::StrCat({"abc.efg.", kRawSignatureBase64UrlEncoded}));
 }
 
 TEST(SessionBindingUtilsTest,
      AppendSignatureToHeaderAndPayloadInvalidECDSASignature) {
   std::optional<std::string> result = AppendSignatureToHeaderAndPayload(
-      "abc.efg", crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
-      kValidP256Spki, /*signature=*/std::vector<uint8_t>({1, 2, 3}));
+      "abc.efg", crypto::sign::ECDSA_SHA256, kValidP256Spki,
+      /*signature=*/std::vector<uint8_t>({1, 2, 3}));
   EXPECT_EQ(result, std::nullopt);
 }
 
 TEST(SessionBindingUtilsTest, AppendSignatureToHeaderAndPayloadInvalidSpki) {
   std::optional<std::string> result = AppendSignatureToHeaderAndPayload(
-      "abc.efg", crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
+      "abc.efg", crypto::sign::ECDSA_SHA256,
       /*pubkey_spki=*/std::vector<uint8_t>({1, 2, 3}), kValidDerSignature);
   EXPECT_EQ(result, std::nullopt);
 }

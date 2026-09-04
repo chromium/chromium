@@ -20,7 +20,7 @@
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/unexportable_key_loader.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace signin {
@@ -102,7 +102,7 @@ void BindingKeyRegistrationTokenHelper::CreateKeyLoaderIfNeeded() {
                     unexportable_key_service_.get(),
                     wrapped_binding_key_to_reuse, priority_);
           },
-          [&](const std::vector<crypto::SignatureVerifier::SignatureAlgorithm>&
+          [&](const std::vector<crypto::sign::SignatureKind>&
                   acceptable_algorithms) {
             key_loader_ =
                 unexportable_keys::UnexportableKeyLoader::CreateWithNewKey(
@@ -122,8 +122,7 @@ void BindingKeyRegistrationTokenHelper::SignHeaderAndPayload(
         absl::Overload{[](const std::vector<uint8_t>&) {
                          return Error::kLoadReusedKeyFailure;
                        },
-                       [](const std::vector<
-                           crypto::SignatureVerifier::SignatureAlgorithm>&) {
+                       [](const std::vector<crypto::sign::SignatureKind>&) {
                          return Error::kGenerateNewKeyFailure;
                        }},
         key_init_param_);
@@ -131,7 +130,7 @@ void BindingKeyRegistrationTokenHelper::SignHeaderAndPayload(
     return;
   }
 
-  crypto::SignatureVerifier::SignatureAlgorithm algorithm =
+  crypto::sign::SignatureKind algorithm =
       *unexportable_key_service_->GetAlgorithm(*binding_key);
   std::optional<std::string> header_and_payload =
       header_and_payload_generator.Run(
@@ -162,7 +161,7 @@ void BindingKeyRegistrationTokenHelper::CreateRegistrationToken(
     return;
   }
 
-  crypto::SignatureVerifier::SignatureAlgorithm algorithm =
+  crypto::sign::SignatureKind algorithm =
       *unexportable_key_service_->GetAlgorithm(binding_key);
   std::vector<uint8_t> pubkey =
       *unexportable_key_service_->GetSubjectPublicKeyInfo(binding_key);

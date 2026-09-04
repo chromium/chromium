@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/structured_headers.h"
 #include "url/gurl.h"
@@ -36,14 +36,12 @@ class BoundSessionRegistrationFetcherParam {
   // Convenience constructor for testing.
   static BoundSessionRegistrationFetcherParam CreateInstanceForTesting(
       GURL registration_endpoint,
-      std::vector<crypto::SignatureVerifier::SignatureAlgorithm>
-          supported_algos,
+      std::vector<crypto::sign::SignatureKind> supported_algos,
       std::string challenge);
 
   const GURL& registration_endpoint() const { return registration_endpoint_; }
 
-  base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-  supported_algos() const {
+  base::span<const crypto::sign::SignatureKind> supported_algos() const {
     return supported_algos_;
   }
 
@@ -59,12 +57,11 @@ class BoundSessionRegistrationFetcherParam {
 
   BoundSessionRegistrationFetcherParam(
       GURL registration_endpoint,
-      std::vector<crypto::SignatureVerifier::SignatureAlgorithm>
-          supported_algos,
+      std::vector<crypto::sign::SignatureKind> supported_algos,
       std::string challenge);
 
   GURL registration_endpoint_;
-  std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos_;
+  std::vector<crypto::sign::SignatureKind> supported_algos_;
   std::string challenge_;
 };
 

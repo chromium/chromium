@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/to_vector.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/enterprise/client_certificates/core/private_key_types.h"
@@ -36,11 +37,10 @@ void ECPrivateKey::Sign(
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(
           [](scoped_refptr<const ECPrivateKey> key, std::vector<uint8_t> data) {
-            return crypto::sign::Sign(crypto::sign::SignatureKind::ECDSA_SHA256,
-                                      key->key_, data);
+            return crypto::sign::Sign(crypto::sign::ECDSA_SHA256, key->key_,
+                                      data);
           },
-          base::WrapRefCounted(this),
-          std::vector<uint8_t>(data.begin(), data.end())),
+          base::WrapRefCounted(this), base::ToVector(data)),
       std::move(callback));
 }
 
@@ -48,9 +48,8 @@ std::vector<uint8_t> ECPrivateKey::GetSubjectPublicKeyInfo() const {
   return key_.ToSubjectPublicKeyInfo();
 }
 
-crypto::SignatureVerifier::SignatureAlgorithm ECPrivateKey::GetAlgorithm()
-    const {
-  return crypto::SignatureVerifier::ECDSA_SHA256;
+crypto::sign::SignatureKind ECPrivateKey::GetAlgorithm() const {
+  return crypto::sign::ECDSA_SHA256;
 }
 
 client_certificates_pb::PrivateKey ECPrivateKey::ToProto() const {

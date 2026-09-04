@@ -29,6 +29,7 @@
 #include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "crypto/sign.h"
+#include "crypto/signature_verifier.h"
 #include "crypto/tpm_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -46,6 +47,8 @@
 #include "crypto/tpm.rs.h"
 #include "crypto/unexportable_key_win.h"
 #endif  // BUILDFLAG(IS_WIN)
+
+namespace crypto {
 
 namespace {
 
@@ -82,9 +85,9 @@ const Provider kAllProviders[] = {
     Provider::kMicrosoftSoftware,
 };
 
-const crypto::SignatureVerifier::SignatureAlgorithm kAllAlgorithms[] = {
-    crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
-    crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256,
+const sign::SignatureKind kAllAlgorithms[] = {
+    sign::ECDSA_SHA256,
+    sign::RSA_PKCS1_SHA256,
 };
 
 #if BUILDFLAG(IS_APPLE)
@@ -103,8 +106,7 @@ std::string ToString(Provider provider) {
 }
 
 class UnexportableKeyTest
-    : public testing::TestWithParam<
-          std::tuple<crypto::SignatureVerifier::SignatureAlgorithm, Provider>> {
+    : public testing::TestWithParam<std::tuple<sign::SignatureKind, Provider>> {
  protected:
   std::unique_ptr<crypto::UnexportableKeyProvider> CreateProvider() {
     if (provider_type() == Provider::kMicrosoftSoftware) {
@@ -119,9 +121,7 @@ class UnexportableKeyTest
     return crypto::GetUnexportableKeyProvider(std::move(config));
   }
 
-  crypto::SignatureVerifier::SignatureAlgorithm algorithm() {
-    return std::get<0>(GetParam());
-  }
+  sign::SignatureKind algorithm() { return std::get<0>(GetParam()); }
 
   Provider provider_type() { return std::get<1>(GetParam()); }
 
@@ -129,12 +129,11 @@ class UnexportableKeyTest
     if (!provider) {
       return false;
     }
-    const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
-        algorithm()};
+    const sign::SignatureKind algorithms[] = {algorithm()};
     return provider->SelectAlgorithm(algorithms) == algorithm();
   }
 
-  crypto::sign::SignatureKind signature_kind() { return algorithm(); }
+  sign::SignatureKind signature_kind() { return algorithm(); }
 
  private:
 #if BUILDFLAG(IS_MAC)
@@ -154,10 +153,10 @@ TEST_P(UnexportableKeyTest, RoundTrip) {
                                          : provider_type() == Provider::kTPM;
 
   switch (algorithm()) {
-    case crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256:
+    case sign::ECDSA_SHA256:
       LOG(INFO) << "ECDSA P-256, provider=" << ToString(provider_type());
       break;
-    case crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256:
+    case sign::RSA_PKCS1_SHA256:
       LOG(INFO) << "RSA, provider=" << ToString(provider_type());
       break;
     default:
@@ -177,8 +176,7 @@ TEST_P(UnexportableKeyTest, RoundTrip) {
     GTEST_SKIP() << "Algorithm not supported by provider.";
   }
 
-  const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
-      algorithm()};
+  const sign::SignatureKind algorithms[] = {algorithm()};
   const base::TimeTicks generate_start = base::TimeTicks::Now();
   std::unique_ptr<crypto::UnexportableSigningKey> key =
       provider->GenerateSigningKeySlowly(algorithms);
@@ -252,8 +250,7 @@ TEST_P(UnexportableKeyTest, DuplicatePlatformKeyHandleSucceeds) {
     GTEST_SKIP() << "Algorithm not supported by provider.";
   }
 
-  const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
-      algorithm()};
+  const sign::SignatureKind algorithms[] = {algorithm()};
   auto key = provider->GenerateSigningKeySlowly(algorithms);
   if (!key) {
     GTEST_SKIP() << "Key generation failed (see https://crbug.com/41494935).";
@@ -273,8 +270,7 @@ TEST_P(UnexportableKeyTest, AttestationKeyCannotSign) {
     GTEST_SKIP() << "Algorithm not supported by provider.";
   }
 
-  const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
-      algorithm()};
+  const sign::SignatureKind algorithms[] = {algorithm()};
   auto key = provider->GenerateAttestationKeySlowly(algorithms);
   if (!key) {
     // Software providers or missing TPM support.
@@ -293,8 +289,7 @@ TEST_P(UnexportableKeyTest, AttestationKeyCannotSign) {
   void* padding_info = nullptr;
   DWORD flags = NCRYPT_SILENT_FLAG;
 
-  if (algorithm() ==
-      crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256) {
+  if (algorithm() == sign::RSA_PKCS1_SHA256) {
     padding_info = &pkcs1_padding_info;
     flags |= BCRYPT_PAD_PKCS1;
   }
@@ -317,8 +312,7 @@ TEST_P(UnexportableKeyTest, CertifySlowlySucceeds) {
     GTEST_SKIP() << "Algorithm not supported by provider.";
   }
 
-  const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
-      algorithm()};
+  const sign::SignatureKind algorithms[] = {algorithm()};
   auto attestation_key = provider->GenerateAttestationKeySlowly(algorithms);
   if (!attestation_key) {
     GTEST_SKIP() << "Attestation key generation failed (see "
@@ -351,8 +345,7 @@ TEST_P(UnexportableKeyTest, CertifySlowlyUsesSha256) {
     GTEST_SKIP() << "Algorithm not supported by provider.";
   }
 
-  const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
-      algorithm()};
+  const sign::SignatureKind algorithms[] = {algorithm()};
   auto attestation_key = provider->GenerateAttestationKeySlowly(algorithms);
   if (!attestation_key) {
     GTEST_SKIP() << "Attestation key generation failed (see "
@@ -396,8 +389,7 @@ TEST_P(UnexportableKeyTest, CertifyFailsForSoftwareSigningKey) {
     GTEST_SKIP() << "Algorithm not supported by software provider.";
   }
 
-  const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
-      algorithm()};
+  const sign::SignatureKind algorithms[] = {algorithm()};
 
   auto attestation_key = tpm_provider->GenerateAttestationKeySlowly(algorithms);
   if (!attestation_key) {
@@ -433,8 +425,7 @@ TEST_P(UnexportableKeyTest, FromWrappedAttestationKeyFailsForSigningKey) {
     GTEST_SKIP() << "Algorithm not supported by provider.";
   }
 
-  const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
-      algorithm()};
+  const sign::SignatureKind algorithms[] = {algorithm()};
 
   // 1. Generate a signing key.
   auto signing_key = provider->GenerateSigningKeySlowly(algorithms);
@@ -461,8 +452,7 @@ TEST_P(UnexportableKeyTest,
     GTEST_SKIP() << "Algorithm not supported by provider.";
   }
 
-  const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
-      algorithm()};
+  const sign::SignatureKind algorithms[] = {algorithm()};
 
   // 1. Generate an attestation key.
   auto attestation_key = provider->GenerateAttestationKeySlowly(algorithms);
@@ -491,7 +481,7 @@ TEST_P(UnexportableKeyTest,
                        crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(
                            loaded_attestation_key->GetSubjectPublicKeyInfo()));
 
-  EXPECT_TRUE(crypto::sign::Verify(signature_kind(), public_key, msg, sig));
+  EXPECT_TRUE(sign::Verify(signature_kind(), public_key, msg, sig));
 }
 
 TEST_P(UnexportableKeyTest, FromWrappedSigningKeyFailsForAttestationKey) {
@@ -504,8 +494,7 @@ TEST_P(UnexportableKeyTest, FromWrappedSigningKeyFailsForAttestationKey) {
     GTEST_SKIP() << "Algorithm not supported by provider.";
   }
 
-  const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
-      algorithm()};
+  const sign::SignatureKind algorithms[] = {algorithm()};
 
   // 1. Generate an attestation key.
   auto attestation_key = provider->GenerateAttestationKeySlowly(algorithms);
@@ -537,8 +526,7 @@ TEST_P(UnexportableKeyTest, AttestationKeyCanSignSlowly) {
     GTEST_SKIP() << "Skipping test because of lack of hardware support.";
   }
 
-  const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
-      algorithm()};
+  const sign::SignatureKind algorithms[] = {algorithm()};
   auto attestation_key = provider->GenerateAttestationKeySlowly(algorithms);
   if (!attestation_key) {
     GTEST_SKIP()
@@ -553,7 +541,7 @@ TEST_P(UnexportableKeyTest, AttestationKeyCanSignSlowly) {
                        crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(
                            attestation_key->GetSubjectPublicKeyInfo()));
 
-  EXPECT_TRUE(crypto::sign::Verify(signature_kind(), public_key, msg, sig));
+  EXPECT_TRUE(sign::Verify(signature_kind(), public_key, msg, sig));
 }
 
 TEST_P(UnexportableKeyTest, AttestationKeyCanSignArbitraryPayloadSizes) {
@@ -571,8 +559,7 @@ TEST_P(UnexportableKeyTest, AttestationKeyCanSignArbitraryPayloadSizes) {
     GTEST_SKIP() << "Skipping test because of lack of hardware support.";
   }
 
-  const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
-      algorithm()};
+  const sign::SignatureKind algorithms[] = {algorithm()};
   auto attestation_key = provider->GenerateAttestationKeySlowly(algorithms);
   if (!attestation_key) {
     GTEST_SKIP()
@@ -590,7 +577,7 @@ TEST_P(UnexportableKeyTest, AttestationKeyCanSignArbitraryPayloadSizes) {
         msg, [i = 0]() mutable { return static_cast<uint8_t>(i++); });
 
     ASSERT_OK_AND_ASSIGN(auto sig, attestation_key->SignSlowly(msg));
-    EXPECT_TRUE(crypto::sign::Verify(signature_kind(), public_key, msg, sig));
+    EXPECT_TRUE(sign::Verify(signature_kind(), public_key, msg, sig));
   }
 }
 
@@ -613,8 +600,7 @@ TEST_P(UnexportableKeyTest, AttestationKeyMock) {
   auto provider = CreateProvider();
   ASSERT_TRUE(provider);
 
-  const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
-      algorithm()};
+  const sign::SignatureKind algorithms[] = {algorithm()};
 
   auto attestation_key = provider->GenerateAttestationKeySlowly(algorithms);
   ASSERT_TRUE(attestation_key);
@@ -641,8 +627,7 @@ TEST_P(UnexportableKeyTest, FakeAttestationWorkflows) {
   auto provider = CreateProvider();
   ASSERT_TRUE(provider);
 
-  const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
-      algorithm()};
+  const sign::SignatureKind algorithms[] = {algorithm()};
 
   auto attestation_key = provider->GenerateAttestationKeySlowly(algorithms);
   ASSERT_TRUE(attestation_key);
@@ -727,8 +712,7 @@ TEST_P(UnexportableKeyTest, AttestationKeySignFailsForTpmGeneratedValue) {
     GTEST_SKIP() << "Skipping test because of lack of provider support.";
   }
 
-  const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
-      algorithm()};
+  const sign::SignatureKind algorithms[] = {algorithm()};
   auto attestation_key = provider->GenerateAttestationKeySlowly(algorithms);
   if (!attestation_key) {
     GTEST_SKIP() << "Skipping test because of lack of attestation key support.";
@@ -741,3 +725,5 @@ TEST_P(UnexportableKeyTest, AttestationKeySignFailsForTpmGeneratedValue) {
 }
 
 }  // namespace
+
+}  // namespace crypto

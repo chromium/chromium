@@ -96,6 +96,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "crypto/scoped_fake_user_verifying_key_provider.h"
+#include "crypto/sign.h"
 #include "crypto/unexportable_key.h"
 #include "crypto/user_verifying_key.h"
 #include "device/fido/fido_request_handler_base.h"
@@ -4203,9 +4204,9 @@ GetBlockingUnexportableKeyProviderRendezvous() {
 // functions.
 class BlockingUnexportableKeyProvider : public crypto::UnexportableKeyProvider {
  public:
-  std::optional<crypto::SignatureVerifier::SignatureAlgorithm> SelectAlgorithm(
-      base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms) override {
+  std::optional<crypto::sign::SignatureKind> SelectAlgorithm(
+      base::span<const crypto::sign::SignatureKind> acceptable_algorithms)
+      override {
     CHECK(!acceptable_algorithms.empty());
 
     // This function runs in a thread-pool thread.
@@ -4214,8 +4215,8 @@ class BlockingUnexportableKeyProvider : public crypto::UnexportableKeyProvider {
   }
 
   std::unique_ptr<crypto::UnexportableSigningKey> GenerateSigningKeySlowly(
-      base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms) override {
+      base::span<const crypto::sign::SignatureKind> acceptable_algorithms)
+      override {
     NOTREACHED();
   }
 

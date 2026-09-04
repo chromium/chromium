@@ -11,7 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 
 namespace enterprise_connectors {
 
@@ -54,7 +54,7 @@ class DeviceTrustKeyManager {
   struct KeyMetadata {
     enterprise_management::BrowserPublicKeyUploadRequest::KeyTrustLevel
         trust_level{};
-    crypto::SignatureVerifier::SignatureAlgorithm algorithm{};
+    crypto::sign::SignatureKind algorithm{};
     std::string spki_bytes{};
     std::optional<int> synchronization_response_code = std::nullopt;
     std::optional<PermanentFailure> permanent_failure = std::nullopt;

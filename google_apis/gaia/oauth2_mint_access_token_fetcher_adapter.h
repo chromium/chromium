@@ -13,7 +13,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "google_apis/gaia/oauth2_mint_token_flow.h"
@@ -66,8 +66,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2MintAccessTokenFetcherAdapter
 
   using TokenUpgradeCallback = base::OnceCallback<void(
       std::string_view challenge,
-      base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-          supported_algorithms)>;
+      base::span<const crypto::sign::SignatureKind> supported_algorithms)>;
   virtual void EnableTokenUpgradeEligibility(
       TokenUpgradeCallback token_upgrade_callback);
 

@@ -152,9 +152,7 @@ class SoftwareKeyImpl : public BaseInterface {
   explicit SoftwareKeyImpl(crypto::keypair::PrivateKey key)
       : key_(std::move(key)) {}
 
-  SignatureVerifier::SignatureAlgorithm Algorithm() const override {
-    return GetSignatureKind();
-  }
+  sign::SignatureKind Algorithm() const override { return GetSignatureKind(); }
 
   std::vector<uint8_t> GetSubjectPublicKeyInfo() const override {
     return key_.ToSubjectPublicKeyInfo();
@@ -295,27 +293,26 @@ class SoftwareProvider : public UnexportableKeyProvider {
  public:
   ~SoftwareProvider() override = default;
 
-  std::optional<SignatureVerifier::SignatureAlgorithm> SelectAlgorithm(
-      base::span<const SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms) override {
+  std::optional<sign::SignatureKind> SelectAlgorithm(
+      base::span<const sign::SignatureKind> acceptable_algorithms) override {
     for (auto algo : acceptable_algorithms) {
       switch (algo) {
-        case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256:
-        case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256:
+        case sign::ECDSA_SHA256:
+        case sign::RSA_PKCS1_SHA256:
           return algo;
-        case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1:
-        case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA384:
-        case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA512:
-        case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA256:
-        case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA384:
-        case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA512:
-        case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA1:
-        case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA384:
-        case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA512:
-        case SignatureVerifier::SignatureAlgorithm::ED25519:
-        case SignatureVerifier::SignatureAlgorithm::MLDSA_44:
-        case SignatureVerifier::SignatureAlgorithm::MLDSA_65:
-        case SignatureVerifier::SignatureAlgorithm::MLDSA_87:
+        case sign::RSA_PKCS1_SHA1:
+        case sign::RSA_PKCS1_SHA384:
+        case sign::RSA_PKCS1_SHA512:
+        case sign::RSA_PSS_SHA256:
+        case sign::RSA_PSS_SHA384:
+        case sign::RSA_PSS_SHA512:
+        case sign::ECDSA_SHA1:
+        case sign::ECDSA_SHA384:
+        case sign::ECDSA_SHA512:
+        case sign::ED25519:
+        case sign::MLDSA_44:
+        case sign::MLDSA_65:
+        case sign::MLDSA_87:
           continue;  // Not supported
       }
     }
@@ -324,36 +321,35 @@ class SoftwareProvider : public UnexportableKeyProvider {
   }
 
   std::unique_ptr<UnexportableSigningKey> GenerateSigningKeySlowly(
-      base::span<const SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms) override {
+      base::span<const sign::SignatureKind> acceptable_algorithms) override {
     if (!SelectAlgorithm(acceptable_algorithms)) {
       return nullptr;
     }
 
     for (auto algo : acceptable_algorithms) {
       switch (algo) {
-        case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256: {
+        case sign::ECDSA_SHA256: {
           return std::make_unique<SoftwareSigningKey>(
               crypto::keypair::PrivateKey::GenerateEcP256());
         }
 
-        case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256: {
+        case sign::RSA_PKCS1_SHA256: {
           return std::make_unique<SoftwareSigningKey>(
               crypto::keypair::PrivateKey::GenerateRsa2048());
         }
-        case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1:
-        case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA384:
-        case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA512:
-        case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA256:
-        case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA384:
-        case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA512:
-        case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA1:
-        case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA384:
-        case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA512:
-        case SignatureVerifier::SignatureAlgorithm::ED25519:
-        case SignatureVerifier::SignatureAlgorithm::MLDSA_44:
-        case SignatureVerifier::SignatureAlgorithm::MLDSA_65:
-        case SignatureVerifier::SignatureAlgorithm::MLDSA_87:
+        case sign::RSA_PKCS1_SHA1:
+        case sign::RSA_PKCS1_SHA384:
+        case sign::RSA_PKCS1_SHA512:
+        case sign::RSA_PSS_SHA256:
+        case sign::RSA_PSS_SHA384:
+        case sign::RSA_PSS_SHA512:
+        case sign::ECDSA_SHA1:
+        case sign::ECDSA_SHA384:
+        case sign::ECDSA_SHA512:
+        case sign::ED25519:
+        case sign::MLDSA_44:
+        case sign::MLDSA_65:
+        case sign::MLDSA_87:
           continue;  // Not supported
       }
     }
@@ -377,36 +373,35 @@ class SoftwareProvider : public UnexportableKeyProvider {
   }
 
   std::unique_ptr<UnexportableAttestationKey> GenerateAttestationKeySlowly(
-      base::span<const SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms) override {
+      base::span<const sign::SignatureKind> acceptable_algorithms) override {
     if (!SelectAlgorithm(acceptable_algorithms)) {
       return nullptr;
     }
 
     for (auto algo : acceptable_algorithms) {
       switch (algo) {
-        case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256: {
+        case sign::ECDSA_SHA256: {
           return std::make_unique<SoftwareAttestationKey>(
               crypto::keypair::PrivateKey::GenerateEcP256());
         }
 
-        case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256: {
+        case sign::RSA_PKCS1_SHA256: {
           return std::make_unique<SoftwareAttestationKey>(
               crypto::keypair::PrivateKey::GenerateRsa2048());
         }
-        case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1:
-        case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA384:
-        case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA512:
-        case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA256:
-        case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA384:
-        case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA512:
-        case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA1:
-        case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA384:
-        case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA512:
-        case SignatureVerifier::SignatureAlgorithm::ED25519:
-        case SignatureVerifier::SignatureAlgorithm::MLDSA_44:
-        case SignatureVerifier::SignatureAlgorithm::MLDSA_65:
-        case SignatureVerifier::SignatureAlgorithm::MLDSA_87:
+        case sign::RSA_PKCS1_SHA1:
+        case sign::RSA_PKCS1_SHA384:
+        case sign::RSA_PKCS1_SHA512:
+        case sign::RSA_PSS_SHA256:
+        case sign::RSA_PSS_SHA384:
+        case sign::RSA_PSS_SHA512:
+        case sign::ECDSA_SHA1:
+        case sign::ECDSA_SHA384:
+        case sign::ECDSA_SHA512:
+        case sign::ED25519:
+        case sign::MLDSA_44:
+        case sign::MLDSA_65:
+        case sign::MLDSA_87:
           continue;  // Not supported
       }
     }

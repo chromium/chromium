@@ -15,7 +15,7 @@
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/mojom/unexportable_key_service.mojom.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -44,8 +44,7 @@ class UnexportableKeyServiceProxyImpl : public mojom::UnexportableKeyService {
   ~UnexportableKeyServiceProxyImpl() override;
 
   void GenerateSigningKey(
-      const std::vector<crypto::SignatureVerifier::SignatureAlgorithm>&
-          acceptable_algorithms,
+      const std::vector<crypto::sign::SignatureKind>& acceptable_algorithms,
       BackgroundTaskPriority priority,
       GenerateSigningKeyCallback callback) override;
 
@@ -54,8 +53,7 @@ class UnexportableKeyServiceProxyImpl : public mojom::UnexportableKeyService {
                              FromWrappedSigningKeyCallback callback) override;
 
   void GenerateAttestationKey(
-      const std::vector<crypto::SignatureVerifier::SignatureAlgorithm>&
-          acceptable_algorithms,
+      const std::vector<crypto::sign::SignatureKind>& acceptable_algorithms,
       BackgroundTaskPriority priority,
       GenerateAttestationKeyCallback callback) override;
 

@@ -15,7 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "crypto/unexportable_key.h"
 #include "crypto/user_verifying_key.h"
 
@@ -74,8 +74,7 @@ class FakeUserVerifyingKeyProvider : public UserVerifyingKeyProvider {
   ~FakeUserVerifyingKeyProvider() override = default;
 
   void GenerateUserVerifyingSigningKey(
-      base::span<const SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms,
+      base::span<const sign::SignatureKind> acceptable_algorithms,
       UserVerifyingKeyCreationCallback callback) override {
     auto software_unexportable_key =
         GetSoftwareUnsecureUnexportableKeyProvider()->GenerateSigningKeySlowly(
@@ -96,8 +95,7 @@ class FakeUserVerifyingKeyProvider : public UserVerifyingKeyProvider {
         return;
       }
     }
-    std::vector<SignatureVerifier::SignatureAlgorithm> algorithms = {
-        SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256};
+    std::vector<sign::SignatureKind> algorithms = {sign::ECDSA_SHA256};
     std::optional<std::vector<uint8_t>> wrapped_key =
         base::Base64Decode(key_label);
     CHECK(wrapped_key);
@@ -142,8 +140,7 @@ class FailingUserVerifyingKeyProvider : public UserVerifyingKeyProvider {
   ~FailingUserVerifyingKeyProvider() override = default;
 
   void GenerateUserVerifyingSigningKey(
-      base::span<const SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms,
+      base::span<const sign::SignatureKind> acceptable_algorithms,
       UserVerifyingKeyCreationCallback callback) override {
     std::move(callback).Run(
         base::ok(std::make_unique<FailingUserVerifyingSigningKey>()));

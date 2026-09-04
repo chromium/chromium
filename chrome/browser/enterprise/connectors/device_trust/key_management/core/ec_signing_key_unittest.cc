@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/containers/span.h"
+#include "crypto/sign.h"
 #include "crypto/signature_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -15,13 +16,13 @@ namespace enterprise_connectors {
 class ECSigningKeyTest : public testing::Test {
  public:
   ECSigningKeyTest() {
-    auto acceptable_algorithms = {crypto::SignatureVerifier::ECDSA_SHA256};
+    auto acceptable_algorithms = {crypto::sign::ECDSA_SHA256};
     key_ = provider_.GenerateSigningKeySlowly(acceptable_algorithms);
   }
 
   crypto::UnexportableSigningKey* key() { return key_.get(); }
 
-  bool Verify(crypto::SignatureVerifier::SignatureAlgorithm algo,
+  bool Verify(crypto::sign::SignatureKind algo,
               base::span<const uint8_t> pubkey,
               base::span<const uint8_t> signature,
               const std::string& data) {

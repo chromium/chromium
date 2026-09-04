@@ -23,9 +23,9 @@
 #include "components/enterprise/client_certificates/core/constants.h"
 #include "components/enterprise/client_certificates/core/private_key.h"
 #include "components/enterprise/client_certificates/core/private_key_types.h"
-#include "crypto/scoped_test_nss_db.h"
-#include "crypto/signature_verifier.h"
 #include "content/public/test/browser_task_environment.h"
+#include "crypto/scoped_test_nss_db.h"
+#include "crypto/sign.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_private_key.h"
 #include "net/test/cert_builder.h"
@@ -112,7 +112,7 @@ TEST_F(KcerPrivateKeyTest, ReportsKcerSourceAndEcdsaAlgorithm) {
       MakeKey(std::move(public_key), PrivateKeySource::kChromeOsHwKey);
 
   EXPECT_EQ(key->GetSource(), PrivateKeySource::kChromeOsHwKey);
-  EXPECT_EQ(key->GetAlgorithm(), crypto::SignatureVerifier::ECDSA_SHA256);
+  EXPECT_EQ(key->GetAlgorithm(), crypto::sign::ECDSA_SHA256);
 }
 
 TEST_F(KcerPrivateKeyTest, SourceReflectsHardwareBacking) {

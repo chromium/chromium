@@ -12,7 +12,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "crypto/cose.h"
 #include "crypto/keypair.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "crypto/unexportable_key.h"
 
 namespace {
@@ -27,10 +27,8 @@ namespace payments {
 BrowserBoundKeyDesktop::BrowserBoundKeyDesktop(
     std::unique_ptr<crypto::UnexportableSigningKey> key)
     : key_(std::move(key)) {
-  CHECK(key_->Algorithm() ==
-            crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256 ||
-        key_->Algorithm() ==
-            crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256);
+  CHECK(key_->Algorithm() == crypto::sign::ECDSA_SHA256 ||
+        key_->Algorithm() == crypto::sign::RSA_PKCS1_SHA256);
 }
 
 BrowserBoundKeyDesktop::~BrowserBoundKeyDesktop() = default;

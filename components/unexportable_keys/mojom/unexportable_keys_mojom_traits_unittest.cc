@@ -7,31 +7,31 @@
 #include "base/unguessable_token.h"
 #include "components/unexportable_keys/mojom/unexportable_key_service.mojom.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace unexportable_keys {
 
 TEST(UnexportableKeysTraitsTest, SignatureAlgorithm) {
-  for (crypto::SignatureVerifier::SignatureAlgorithm input : {
-           crypto::SignatureVerifier::RSA_PKCS1_SHA1,
-           crypto::SignatureVerifier::RSA_PKCS1_SHA256,
-           crypto::SignatureVerifier::RSA_PKCS1_SHA384,
-           crypto::SignatureVerifier::RSA_PKCS1_SHA512,
-           crypto::SignatureVerifier::RSA_PSS_SHA256,
-           crypto::SignatureVerifier::RSA_PSS_SHA384,
-           crypto::SignatureVerifier::RSA_PSS_SHA512,
-           crypto::SignatureVerifier::ECDSA_SHA1,
-           crypto::SignatureVerifier::ECDSA_SHA256,
-           crypto::SignatureVerifier::ECDSA_SHA384,
-           crypto::SignatureVerifier::ECDSA_SHA512,
-           crypto::SignatureVerifier::ED25519,
-           crypto::SignatureVerifier::MLDSA_44,
-           crypto::SignatureVerifier::MLDSA_65,
-           crypto::SignatureVerifier::MLDSA_87,
+  for (crypto::sign::SignatureKind input : {
+           crypto::sign::RSA_PKCS1_SHA1,
+           crypto::sign::RSA_PKCS1_SHA256,
+           crypto::sign::RSA_PKCS1_SHA384,
+           crypto::sign::RSA_PKCS1_SHA512,
+           crypto::sign::RSA_PSS_SHA256,
+           crypto::sign::RSA_PSS_SHA384,
+           crypto::sign::RSA_PSS_SHA512,
+           crypto::sign::ECDSA_SHA1,
+           crypto::sign::ECDSA_SHA256,
+           crypto::sign::ECDSA_SHA384,
+           crypto::sign::ECDSA_SHA512,
+           crypto::sign::ED25519,
+           crypto::sign::MLDSA_44,
+           crypto::sign::MLDSA_65,
+           crypto::sign::MLDSA_87,
        }) {
-    crypto::SignatureVerifier::SignatureAlgorithm output;
+    crypto::sign::SignatureKind output;
     EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::SignatureAlgorithm>(
         input, output));
     EXPECT_EQ(input, output);

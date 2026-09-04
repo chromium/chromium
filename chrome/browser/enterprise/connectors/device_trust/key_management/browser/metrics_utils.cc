@@ -6,7 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 
 using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
 
@@ -35,26 +35,25 @@ DTKeyTrustLevel ConvertTrustLevel(BPKUR::KeyTrustLevel trust_level) {
   }
 }
 
-DTKeyType AlgorithmToType(
-    crypto::SignatureVerifier::SignatureAlgorithm algorithm) {
+DTKeyType AlgorithmToType(crypto::sign::SignatureKind algorithm) {
   switch (algorithm) {
-    case crypto::SignatureVerifier::RSA_PKCS1_SHA1:
-    case crypto::SignatureVerifier::RSA_PKCS1_SHA256:
-    case crypto::SignatureVerifier::RSA_PKCS1_SHA384:
-    case crypto::SignatureVerifier::RSA_PKCS1_SHA512:
-    case crypto::SignatureVerifier::RSA_PSS_SHA256:
-    case crypto::SignatureVerifier::RSA_PSS_SHA384:
-    case crypto::SignatureVerifier::RSA_PSS_SHA512:
+    case crypto::sign::RSA_PKCS1_SHA1:
+    case crypto::sign::RSA_PKCS1_SHA256:
+    case crypto::sign::RSA_PKCS1_SHA384:
+    case crypto::sign::RSA_PKCS1_SHA512:
+    case crypto::sign::RSA_PSS_SHA256:
+    case crypto::sign::RSA_PSS_SHA384:
+    case crypto::sign::RSA_PSS_SHA512:
       return DTKeyType::kRsa;
-    case crypto::SignatureVerifier::ECDSA_SHA1:
-    case crypto::SignatureVerifier::ECDSA_SHA256:
-    case crypto::SignatureVerifier::ECDSA_SHA384:
-    case crypto::SignatureVerifier::ECDSA_SHA512:
+    case crypto::sign::ECDSA_SHA1:
+    case crypto::sign::ECDSA_SHA256:
+    case crypto::sign::ECDSA_SHA384:
+    case crypto::sign::ECDSA_SHA512:
       return DTKeyType::kEc;
-    case crypto::SignatureVerifier::ED25519:
-    case crypto::SignatureVerifier::MLDSA_44:
-    case crypto::SignatureVerifier::MLDSA_65:
-    case crypto::SignatureVerifier::MLDSA_87:
+    case crypto::sign::ED25519:
+    case crypto::sign::MLDSA_44:
+    case crypto::sign::MLDSA_65:
+    case crypto::sign::MLDSA_87:
       return DTKeyType::kUnknown;
   }
 }

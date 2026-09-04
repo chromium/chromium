@@ -26,6 +26,7 @@
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "components/signin/public/base/binding_key_registration_token_result.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
+#include "crypto/sign.h"
 #endif
 
 namespace network {
@@ -67,8 +68,7 @@ class FakeProfileOAuth2TokenServiceDelegate
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   bool GenerateBindingKeyRegistrationToken(
-      base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-          supported_algorithms,
+      base::span<const crypto::sign::SignatureKind> supported_algorithms,
       std::string_view auth_code,
       base::OnceCallback<void(
           std::optional<signin::BindingKeyRegistrationTokenResult>)> callback)

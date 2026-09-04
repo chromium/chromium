@@ -21,6 +21,7 @@
 #include "components/enterprise/client_certificates/core/private_key.h"
 #include "components/enterprise/client_certificates/core/private_key_types.h"
 #include "components/enterprise/client_certificates/core/unexportable_private_key.h"
+#include "crypto/sign.h"
 #include "crypto/unexportable_key.h"
 #include "net/ssl/ssl_private_key.h"
 
@@ -44,9 +45,9 @@ scoped_refptr<UnexportablePrivateKey> CreateKey(
     return nullptr;
   }
 
-  static constexpr std::array<crypto::SignatureVerifier::SignatureAlgorithm, 2>
-      kAcceptableAlgorithms = {crypto::SignatureVerifier::ECDSA_SHA256,
-                               crypto::SignatureVerifier::RSA_PKCS1_SHA256};
+  static constexpr std::array<crypto::sign::SignatureKind, 2>
+      kAcceptableAlgorithms = {crypto::sign::ECDSA_SHA256,
+                               crypto::sign::RSA_PKCS1_SHA256};
   auto key = provider->GenerateSigningKeySlowly(kAcceptableAlgorithms);
 
   if (!key) {

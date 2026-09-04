@@ -28,6 +28,7 @@
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
+#include "crypto/sign.h"
 #include "crypto/unexportable_key.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
@@ -101,7 +102,7 @@ void RunSessionCallback(
 // Holds the signature algorithm and SubjectPublicKeyInfo (SPKI) bytes of an
 // unexportable key.
 struct KeyInfo {
-  crypto::SignatureVerifier::SignatureAlgorithm algorithm;
+  crypto::sign::SignatureKind algorithm;
   std::vector<uint8_t> pubkey;
 };
 
@@ -480,8 +481,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
 
   void StartCreateTokenAndFetch(
       RegistrationRequestParam& registration_params,
-      base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-          supported_algos,
+      base::span<const crypto::sign::SignatureKind> supported_algos,
       RegistrationCompleteCallback callback) override {
     // Using mock fetcher for testing.
     if (g_mock_fetcher) {
@@ -1214,9 +1214,8 @@ void RegistrationFetcher::CreateRegistrationTokenAsyncForTesting(
     std::optional<std::string> authorization,
     base::OnceCallback<void(
         SessionErrorOr<RegistrationFetcher::RegistrationToken>)> callback) {
-  static constexpr crypto::SignatureVerifier::SignatureAlgorithm
-      kSupportedAlgos[] = {crypto::SignatureVerifier::ECDSA_SHA256,
-                           crypto::SignatureVerifier::RSA_PKCS1_SHA256};
+  static constexpr crypto::sign::SignatureKind kSupportedAlgos[] = {
+      crypto::sign::ECDSA_SHA256, crypto::sign::RSA_PKCS1_SHA256};
   unexportable_key_service.GenerateSigningKeySlowlyAsync(
       kSupportedAlgos, unexportable_keys::BackgroundTaskPriority::kBestEffort,
       base::BindOnce(

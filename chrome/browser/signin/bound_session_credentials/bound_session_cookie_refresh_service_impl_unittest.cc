@@ -41,6 +41,7 @@
 #include "components/unexportable_keys/fake_unexportable_key_service.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/test_storage_partition.h"
+#include "crypto/sign.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -503,8 +504,7 @@ class BoundSessionCookieRefreshServiceImplTestBase : public testing::Test {
   BoundSessionRegistrationFetcherParam CreateTestRegistrationFetcherParams(
       std::string_view registration_path) {
     return BoundSessionRegistrationFetcherParam::CreateInstanceForTesting(
-        kTestGoogleURL.Resolve(registration_path),
-        {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+        kTestGoogleURL.Resolve(registration_path), {crypto::sign::ECDSA_SHA256},
         "test_challenge");
   }
 

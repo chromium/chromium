@@ -41,6 +41,7 @@
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "crypto/scoped_fake_unexportable_key_provider.h"
+#include "crypto/sign.h"
 #include "crypto/unexportable_key.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/canonical_cookie.h"
@@ -119,8 +120,8 @@ UnexportableSigningKeyId GenerateNewSigningKey(
   base::test::TestFuture<ServiceErrorOr<UnexportableSigningKeyId>>
       generate_future;
   unexportable_key_service.GenerateSigningKeySlowlyAsync(
-      base::span<const crypto::SignatureVerifier::SignatureAlgorithm>(
-          {crypto::SignatureVerifier::ECDSA_SHA256}),
+      base::span<const crypto::sign::SignatureKind>(
+          {crypto::sign::ECDSA_SHA256}),
       BackgroundTaskPriority::kUserBlocking, generate_future.GetCallback());
   ServiceErrorOr<UnexportableSigningKeyId> key_id = generate_future.Get();
   CHECK(key_id.has_value());

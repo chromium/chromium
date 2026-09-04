@@ -106,7 +106,7 @@
 #include "components/trusted_vault/proto/vault.pb.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/trusted_vault/securebox.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 // These tests are also disabled under MSAN. The enclave subprocess is written
@@ -2907,8 +2907,7 @@ TEST_F(EnclaveUVTest, UserVerifyingKeyUseExisting) {
   std::unique_ptr<crypto::UserVerifyingKeyProvider> key_provider =
       crypto::GetUserVerifyingKeyProvider(/*config=*/{});
   key_provider->GenerateUserVerifyingSigningKey(
-      std::array{crypto::SignatureVerifier::ECDSA_SHA256},
-      key_future.GetCallback());
+      std::array{crypto::sign::ECDSA_SHA256}, key_future.GetCallback());
   EXPECT_TRUE(key_future.Wait());
   manager_.local_state_for_testing()
       .mutable_users()
@@ -3405,8 +3404,7 @@ TEST_F(EnclaveUVTest, UnregisterOnMissingUserVerifyingKey) {
   std::unique_ptr<crypto::UserVerifyingKeyProvider> key_provider =
       crypto::GetUserVerifyingKeyProvider(/*config=*/{});
   key_provider->GenerateUserVerifyingSigningKey(
-      std::array{crypto::SignatureVerifier::ECDSA_SHA256},
-      key_future.GetCallback());
+      std::array{crypto::sign::ECDSA_SHA256}, key_future.GetCallback());
   EXPECT_TRUE(key_future.Wait());
   manager_.local_state_for_testing()
       .mutable_users()

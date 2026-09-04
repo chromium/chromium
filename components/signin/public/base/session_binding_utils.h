@@ -12,7 +12,7 @@
 
 #include "base/containers/span.h"
 #include "base/types/strong_alias.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 
 class GURL;
 class HybridEncryptionKey;
@@ -28,17 +28,16 @@ using TokenBindingAuthCode =
 using TokenBindingChallenge =
     base::StrongAlias<class TokenBindingChallengeTag, std::string>;
 
-// Converts a known algorithm string into
-// `crypto::SignatureVerifier::SignatureAlgorithm`. Returns std::nullopt if
-// algorithm is not recognized.
-std::optional<crypto::SignatureVerifier::SignatureAlgorithm>
-SignatureAlgorithmFromString(std::string_view algorithm);
+// Converts a known algorithm string into `crypto::sign::SignatureKind`.
+// Returns std::nullopt if algorithm is not recognized.
+std::optional<crypto::sign::SignatureKind> SignatureAlgorithmFromString(
+    std::string_view algorithm);
 
 // Parses the space-separated list of algorithms into a vector of
-// `crypto::SignatureVerifier::SignatureAlgorithm`. Unrecognized algorithms
-// aren't included in the result.
-std::vector<crypto::SignatureVerifier::SignatureAlgorithm>
-ParseSignatureAlgorithmList(std::string_view algorithm_list);
+// `crypto::sign::SignatureKind`. Unrecognized algorithms aren't included in the
+// result.
+std::vector<crypto::sign::SignatureKind> ParseSignatureAlgorithmList(
+    std::string_view algorithm_list);
 
 // Creates header and payload parts of a registration JWT.
 std::optional<std::string> CreateKeyRegistrationHeaderAndPayloadForTokenBinding(
@@ -46,21 +45,21 @@ std::optional<std::string> CreateKeyRegistrationHeaderAndPayloadForTokenBinding(
     const std::variant<TokenBindingAuthCode, TokenBindingChallenge>&
         auth_code_or_challenge,
     const GURL& registration_url,
-    crypto::SignatureVerifier::SignatureAlgorithm algorithm,
+    crypto::sign::SignatureKind algorithm,
     base::span<const uint8_t> pubkey,
     base::Time timestamp);
 std::optional<std::string>
 CreateKeyRegistrationHeaderAndPayloadForSessionBinding(
     std::string_view challenge,
     const GURL& registration_url,
-    crypto::SignatureVerifier::SignatureAlgorithm algorithm,
+    crypto::sign::SignatureKind algorithm,
     base::span<const uint8_t> pubkey,
     base::Time timestamp);
 
 // Creates header and payload parts of an assertion JWT.
 // `ephemeral_public_key` can be empty.
 std::optional<std::string> CreateKeyAssertionHeaderAndPayload(
-    crypto::SignatureVerifier::SignatureAlgorithm algorithm,
+    crypto::sign::SignatureKind algorithm,
     base::span<const uint8_t> pubkey,
     std::string_view client_id,
     std::string_view challenge,
@@ -72,7 +71,7 @@ std::optional<std::string> CreateKeyAssertionHeaderAndPayload(
 // to form a complete JWT.
 std::optional<std::string> AppendSignatureToHeaderAndPayload(
     std::string_view header_and_payload,
-    crypto::SignatureVerifier::SignatureAlgorithm algorithm,
+    crypto::sign::SignatureKind algorithm,
     base::span<const uint8_t> pubkey_spki,
     base::span<const uint8_t> signature);
 

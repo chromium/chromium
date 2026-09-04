@@ -104,8 +104,7 @@ struct KeyDetails {
   // The SubjectPublicKeyInfo for the public key.
   std::vector<uint8_t> spki;
   // The algorithm used for the key.
-  SignatureVerifier::SignatureAlgorithm algo =
-      SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256;
+  sign::SignatureKind algo = sign::ECDSA_SHA256;
 };
 
 // WinKeyImpl shares common implementation for unexportable keys on Windows.
@@ -119,9 +118,7 @@ class WinKeyImpl : public BaseInterface {
         spki_(std::move(details.spki)),
         algo_(details.algo) {}
 
-  SignatureVerifier::SignatureAlgorithm Algorithm() const override {
-    return algo_;
-  }
+  sign::SignatureKind Algorithm() const override { return algo_; }
 
   std::vector<uint8_t> GetSubjectPublicKeyInfo() const override {
     return spki_;
@@ -140,7 +137,7 @@ class WinKeyImpl : public BaseInterface {
   ScopedNCryptKey key_;
   const std::vector<uint8_t> wrapped_key_;
   const std::vector<uint8_t> spki_;
-  const SignatureVerifier::SignatureAlgorithm algo_;
+  const sign::SignatureKind algo_;
 };
 
 LPCWSTR GetWindowsIdentifierForProvider(ProviderType type) {
@@ -185,11 +182,10 @@ SecurityStatusOr<void> SetNCryptProperty(NCRYPT_HANDLE handle,
 
 // Logs `status` and `selected_algorithm` to an error histogram capturing that
 // `operation` failed for a TPM-backed key.
-void LogTPMOperationError(
-    TPMOperation operation,
-    HRESULT status,
-    std::optional<SignatureVerifier::SignatureAlgorithm> selected_algorithm,
-    bool open_storage_provider_error = false) {
+void LogTPMOperationError(TPMOperation operation,
+                          HRESULT status,
+                          std::optional<sign::SignatureKind> selected_algorithm,
+                          bool open_storage_provider_error = false) {
   static constexpr char kTPMOperationErrorHistogramFormat[] =
       "Crypto.TPMOperation.Win.%s%s.Error";
   // There are two cases that can be recorded without a `selected_algorithm`:
@@ -213,13 +209,12 @@ void LogTPMOperationError(
 
 // BCryptAlgorithmFor returns the BCrypt algorithm ID for the given Chromium
 // signing algorithm.
-std::optional<LPCWSTR> BCryptAlgorithmFor(
-    SignatureVerifier::SignatureAlgorithm algo) {
+std::optional<LPCWSTR> BCryptAlgorithmFor(sign::SignatureKind algo) {
   switch (algo) {
-    case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256:
+    case sign::RSA_PKCS1_SHA256:
       return BCRYPT_RSA_ALGORITHM;
 
-    case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256:
+    case sign::ECDSA_SHA256:
       return BCRYPT_ECDSA_P256_ALGORITHM;
 
     default:
@@ -229,35 +224,34 @@ std::optional<LPCWSTR> BCryptAlgorithmFor(
 
 // GetSrkHandleFor returns the persistent Storage Root Key (SRK) handle used as
 // the parent key when creating TPM 2.0 keys for the given algorithm.
-WindowsSrkHandle GetSrkHandleFor(SignatureVerifier::SignatureAlgorithm algo) {
+WindowsSrkHandle GetSrkHandleFor(sign::SignatureKind algo) {
   switch (algo) {
-    case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1:
-    case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256:
-    case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA384:
-    case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA512:
-    case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA256:
-    case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA384:
-    case SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA512:
+    case sign::RSA_PKCS1_SHA1:
+    case sign::RSA_PKCS1_SHA256:
+    case sign::RSA_PKCS1_SHA384:
+    case sign::RSA_PKCS1_SHA512:
+    case sign::RSA_PSS_SHA256:
+    case sign::RSA_PSS_SHA384:
+    case sign::RSA_PSS_SHA512:
       return WindowsSrkHandle::kRsa;
-    case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA1:
-    case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256:
-    case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA384:
-    case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA512:
+    case sign::ECDSA_SHA1:
+    case sign::ECDSA_SHA256:
+    case sign::ECDSA_SHA384:
+    case sign::ECDSA_SHA512:
       return WindowsSrkHandle::kEcc;
-    case SignatureVerifier::SignatureAlgorithm::ED25519:
-    case SignatureVerifier::SignatureAlgorithm::MLDSA_44:
-    case SignatureVerifier::SignatureAlgorithm::MLDSA_65:
-    case SignatureVerifier::SignatureAlgorithm::MLDSA_87:
+    case sign::ED25519:
+    case sign::MLDSA_44:
+    case sign::MLDSA_65:
+    case sign::MLDSA_87:
       NOTREACHED();
   }
 }
 
 // GetBestSupported returns the first element of |acceptable_algorithms| that
 // |provider| supports, or |nullopt| if there isn't any.
-std::optional<SignatureVerifier::SignatureAlgorithm> GetBestSupported(
+std::optional<sign::SignatureKind> GetBestSupported(
     NCRYPT_PROV_HANDLE provider,
-    base::span<const SignatureVerifier::SignatureAlgorithm>
-        acceptable_algorithms) {
+    base::span<const sign::SignatureKind> acceptable_algorithms) {
   for (auto algo : acceptable_algorithms) {
     std::optional<LPCWSTR> bcrypto_algo_name = BCryptAlgorithmFor(algo);
     if (!bcrypto_algo_name) {
@@ -732,10 +726,9 @@ std::optional<TPMOperation> TpmCommandToOperation(tpm::TpmCommand command) {
   NOTREACHED();
 }
 
-void LogTpmExtractPropertyResult(
-    tpm::TpmCommand command,
-    SECURITY_STATUS status,
-    SignatureVerifier::SignatureAlgorithm algorithm) {
+void LogTpmExtractPropertyResult(tpm::TpmCommand command,
+                                 SECURITY_STATUS status,
+                                 sign::SignatureKind algorithm) {
   base::UmaHistogramSparse(
       absl::StrFormat("Crypto.TPMOperation.Win.Tpm%vExtractProperty.Result",
                       command),
@@ -745,10 +738,9 @@ void LogTpmExtractPropertyResult(
   }
 }
 
-std::optional<TBS_HCONTEXT> GetTbsContext(
-    NCRYPT_KEY_HANDLE key_handle,
-    tpm::TpmCommand command,
-    SignatureVerifier::SignatureAlgorithm algorithm) {
+std::optional<TBS_HCONTEXT> GetTbsContext(NCRYPT_KEY_HANDLE key_handle,
+                                          tpm::TpmCommand command,
+                                          sign::SignatureKind algorithm) {
   auto log_extract_property_error = [&](SECURITY_STATUS status) {
     LogTpmExtractPropertyResult(command, status, algorithm);
     return std::nullopt;
@@ -767,10 +759,9 @@ std::optional<TBS_HCONTEXT> GetTbsContext(
   return h_context;
 }
 
-std::optional<uint32_t> GetTpmPlatformHandle(
-    NCRYPT_KEY_HANDLE key_handle,
-    tpm::TpmCommand command,
-    SignatureVerifier::SignatureAlgorithm algorithm) {
+std::optional<uint32_t> GetTpmPlatformHandle(NCRYPT_KEY_HANDLE key_handle,
+                                             tpm::TpmCommand command,
+                                             sign::SignatureKind algorithm) {
   return base::OptionalFromExpected(
       GetNCryptProperty<uint32_t>(key_handle,
                                   NCRYPT_PCP_PLATFORMHANDLE_PROPERTY)
@@ -785,7 +776,7 @@ std::optional<std::vector<uint8_t>> SubmitTbsCommand(
     tpm::TpmCommand command,
     base::span<const uint8_t> cmd,
     size_t max_resp_size,
-    SignatureVerifier::SignatureAlgorithm algorithm) {
+    sign::SignatureKind algorithm) {
   // A max_resp_size buffer handles the maximum expected TPM response.
   // Heap-allocating it protects the local stack from potential buffer
   // overflow vulnerabilities in the OS API.
@@ -844,29 +835,29 @@ struct HashResult {
 };
 
 // Extracts the hash algorithm (`crypto::hash::HashKind`) from a
-// `SignatureVerifier::SignatureAlgorithm`.
+// `sign::SignatureKind`.
 constexpr std::optional<hash::HashKind> ToHashKind(
-    SignatureVerifier::SignatureAlgorithm algorithm) {
+    sign::SignatureKind algorithm) {
   switch (algorithm) {
-    case SignatureVerifier::RSA_PKCS1_SHA1:
-    case SignatureVerifier::ECDSA_SHA1:
+    case sign::RSA_PKCS1_SHA1:
+    case sign::ECDSA_SHA1:
       return hash::kSha1;
-    case SignatureVerifier::RSA_PKCS1_SHA256:
-    case SignatureVerifier::ECDSA_SHA256:
-    case SignatureVerifier::RSA_PSS_SHA256:
+    case sign::RSA_PKCS1_SHA256:
+    case sign::ECDSA_SHA256:
+    case sign::RSA_PSS_SHA256:
       return hash::kSha256;
-    case SignatureVerifier::RSA_PKCS1_SHA384:
-    case SignatureVerifier::ECDSA_SHA384:
-    case SignatureVerifier::RSA_PSS_SHA384:
+    case sign::RSA_PKCS1_SHA384:
+    case sign::ECDSA_SHA384:
+    case sign::RSA_PSS_SHA384:
       return hash::kSha384;
-    case SignatureVerifier::RSA_PKCS1_SHA512:
-    case SignatureVerifier::ECDSA_SHA512:
-    case SignatureVerifier::RSA_PSS_SHA512:
+    case sign::RSA_PKCS1_SHA512:
+    case sign::ECDSA_SHA512:
+    case sign::RSA_PSS_SHA512:
       return hash::kSha512;
-    case SignatureVerifier::ED25519:
-    case SignatureVerifier::MLDSA_44:
-    case SignatureVerifier::MLDSA_65:
-    case SignatureVerifier::MLDSA_87:
+    case sign::ED25519:
+    case sign::MLDSA_44:
+    case sign::MLDSA_65:
+    case sign::MLDSA_87:
       return std::nullopt;
   }
 }
@@ -874,10 +865,9 @@ constexpr std::optional<hash::HashKind> ToHashKind(
 // Hashes data using either single-shot TPM2_Hash (if data <= 1024 bytes) or
 // streaming TPM sequence commands (TPM2_HashSequenceStart, TPM2_SequenceUpdate,
 // TPM2_SequenceComplete) for larger buffers.
-std::optional<HashResult> HashDataSlowly(
-    TBS_HCONTEXT h_context,
-    base::span<const uint8_t> data,
-    SignatureVerifier::SignatureAlgorithm algorithm) {
+std::optional<HashResult> HashDataSlowly(TBS_HCONTEXT h_context,
+                                         base::span<const uint8_t> data,
+                                         sign::SignatureKind algorithm) {
   ASSIGN_OR_RETURN(const hash::HashKind hash_kind, ToHashKind(algorithm));
   if (data.size() <= kMaxTpmHashBufferSize) {
     std::vector<uint8_t> hash_cmd = tpm::BuildHashCommand(data, hash_kind);
@@ -1095,9 +1085,8 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
       : provider_type_(provider_type) {}
   ~UnexportableKeyProviderWin() override = default;
 
-  std::optional<SignatureVerifier::SignatureAlgorithm> SelectAlgorithm(
-      base::span<const SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms) override {
+  std::optional<sign::SignatureKind> SelectAlgorithm(
+      base::span<const sign::SignatureKind> acceptable_algorithms) override {
     ScopedNCryptProvider provider;
     {
       SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
@@ -1116,8 +1105,7 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
   }
 
   std::unique_ptr<UnexportableSigningKey> GenerateSigningKeySlowly(
-      base::span<const SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms) override {
+      base::span<const sign::SignatureKind> acceptable_algorithms) override {
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::WILL_BLOCK);
 
@@ -1135,7 +1123,7 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
       }
     }
 
-    ASSIGN_OR_RETURN(SignatureVerifier::SignatureAlgorithm algo,
+    ASSIGN_OR_RETURN(sign::SignatureKind algo,
                      GetBestSupported(provider.get(), acceptable_algorithms),
                      [] { return nullptr; });
 
@@ -1171,7 +1159,7 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
       }
 
       if (provider_type_ == ProviderType::kTPM &&
-          algo == SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256) {
+          algo == sign::RSA_PKCS1_SHA256) {
         // TPM 2.0 RSA keys created via the Platform Crypto Provider default to
         // SHA-1 for signing if left unset. Restrict the key to SHA-256 instead.
         RETURN_IF_ERROR(
@@ -1201,9 +1189,9 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
         std::vector<uint8_t> spki,
         [&]() -> std::optional<std::vector<uint8_t>> {
           switch (algo) {
-            case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256:
+            case sign::ECDSA_SHA256:
               return GetP256ECDSASPKI(key.get());
-            case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256:
+            case sign::RSA_PKCS1_SHA256:
               return GetRSASPKI(key.get());
             default:
               return std::nullopt;
@@ -1214,10 +1202,10 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
     KeyDetails key_details{std::move(key), std::move(key_id), std::move(spki),
                            algo};
     switch (algo) {
-      case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256:
+      case sign::ECDSA_SHA256:
         return std::make_unique<ECDSASigningKey>(provider_type_,
                                                  std::move(key_details));
-      case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256:
+      case sign::RSA_PKCS1_SHA256:
         return std::make_unique<RSASigningKey>(provider_type_,
                                                std::move(key_details));
       default:
@@ -1236,8 +1224,7 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
   // BCRYPT_OPAQUE_KEY_BLOB (PCP_KEY_BLOB_WIN8), and import it via
   // NCryptImportKey.
   std::unique_ptr<UnexportableAttestationKey> GenerateAttestationKeySlowly(
-      base::span<const SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms) override {
+      base::span<const sign::SignatureKind> acceptable_algorithms) override {
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::WILL_BLOCK);
 
@@ -1262,7 +1249,7 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
       }
     }
 
-    ASSIGN_OR_RETURN(SignatureVerifier::SignatureAlgorithm algo,
+    ASSIGN_OR_RETURN(sign::SignatureKind algo,
                      GetBestSupported(provider.get(), acceptable_algorithms),
                      [] { return nullptr; });
 
@@ -1333,15 +1320,13 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
         algorithm == BCRYPT_ECDSA_ALGORITHM) {
       ASSIGN_OR_RETURN(std::vector<uint8_t> spki, GetP256ECDSASPKI(key.get()));
       return KeyDetails{std::move(key), base::ToVector(wrapped),
-                        std::move(spki),
-                        SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256};
+                        std::move(spki), sign::ECDSA_SHA256};
     }
 
     if (algorithm == BCRYPT_RSA_ALGORITHM) {
       ASSIGN_OR_RETURN(std::vector<uint8_t> spki, GetRSASPKI(key.get()));
-      return KeyDetails{
-          std::move(key), base::ToVector(wrapped), std::move(spki),
-          SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256};
+      return KeyDetails{std::move(key), base::ToVector(wrapped),
+                        std::move(spki), sign::RSA_PKCS1_SHA256};
     }
 
     return std::nullopt;
@@ -1354,10 +1339,10 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
                      [] { return nullptr; });
 
     switch (key.algo) {
-      case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256:
+      case sign::ECDSA_SHA256:
         return std::make_unique<ECDSASigningKey>(provider_type_,
                                                  std::move(key));
-      case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256:
+      case sign::RSA_PKCS1_SHA256:
         return std::make_unique<RSASigningKey>(provider_type_, std::move(key));
       default:
         return nullptr;
@@ -1391,9 +1376,7 @@ class ECDSASoftwareKey : public VirtualUnexportableSigningKey {
                    std::vector<uint8_t> spki)
       : key_(std::move(key)), name_(std::move(name)), spki_(std::move(spki)) {}
 
-  SignatureVerifier::SignatureAlgorithm Algorithm() const override {
-    return SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256;
-  }
+  sign::SignatureKind Algorithm() const override { return sign::ECDSA_SHA256; }
 
   std::vector<uint8_t> GetSubjectPublicKeyInfo() const override {
     return spki_;
@@ -1439,8 +1422,8 @@ class RSASoftwareKey : public VirtualUnexportableSigningKey {
                  std::vector<uint8_t> spki)
       : key_(std::move(key)), name_(std::move(name)), spki_(std::move(spki)) {}
 
-  SignatureVerifier::SignatureAlgorithm Algorithm() const override {
-    return SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256;
+  sign::SignatureKind Algorithm() const override {
+    return sign::RSA_PKCS1_SHA256;
   }
 
   std::vector<uint8_t> GetSubjectPublicKeyInfo() const override {
@@ -1486,9 +1469,8 @@ class VirtualUnexportableKeyProviderWin
  public:
   ~VirtualUnexportableKeyProviderWin() override = default;
 
-  std::optional<SignatureVerifier::SignatureAlgorithm> SelectAlgorithm(
-      base::span<const SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms) override {
+  std::optional<sign::SignatureKind> SelectAlgorithm(
+      base::span<const sign::SignatureKind> acceptable_algorithms) override {
     ScopedNCryptProvider provider;
     {
       SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
@@ -1505,8 +1487,7 @@ class VirtualUnexportableKeyProviderWin
   }
 
   std::unique_ptr<VirtualUnexportableSigningKey> GenerateSigningKey(
-      base::span<const SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms,
+      base::span<const sign::SignatureKind> acceptable_algorithms,
       std::string name) override {
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::WILL_BLOCK);
@@ -1523,7 +1504,7 @@ class VirtualUnexportableKeyProviderWin
       }
     }
 
-    std::optional<SignatureVerifier::SignatureAlgorithm> algo =
+    std::optional<sign::SignatureKind> algo =
         GetBestSupported(provider.get(), acceptable_algorithms);
     if (!algo) {
       return nullptr;
@@ -1553,14 +1534,14 @@ class VirtualUnexportableKeyProviderWin
 
     std::optional<std::vector<uint8_t>> spki;
     switch (*algo) {
-      case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256:
+      case sign::ECDSA_SHA256:
         spki = GetP256ECDSASPKI(key.get());
         if (!spki) {
           return nullptr;
         }
         return std::make_unique<ECDSASoftwareKey>(std::move(key), name,
                                                   std::move(spki.value()));
-      case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256:
+      case sign::RSA_PKCS1_SHA256:
         spki = GetRSASPKI(key.get());
         if (!spki) {
           return nullptr;

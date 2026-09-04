@@ -16,7 +16,7 @@ mojom("mojom") {
       types = [
         {
           mojom = "unexportable_keys.mojom.SignatureAlgorithm"
-          cpp = "::crypto::SignatureVerifier::SignatureAlgorithm"
+          cpp = "::crypto::sign::SignatureKind"
         },
         {
           mojom = "unexportable_keys.mojom.BackgroundTaskPriority"
@@ -48,7 +48,7 @@ mojom("mojom") {
         "//components/unexportable_keys/mojom/unexportable_keys_mojom_traits.h",
         "//components/unexportable_keys/background_task_priority.h",
         "//components/unexportable_keys/unexportable_key_id.h",
-        "//crypto/signature_verifier.h",
+        "//crypto/sign.h",
         "//crypto/unexportable_key.h",
         "//components/unexportable_keys/service_error.h",
       ]

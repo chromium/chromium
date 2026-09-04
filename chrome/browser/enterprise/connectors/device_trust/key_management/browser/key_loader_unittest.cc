@@ -24,6 +24,7 @@
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/mock_device_management_service.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "crypto/sign.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -55,7 +56,7 @@ constexpr char kSynchronizationUploadHistogram[] =
 
 scoped_refptr<SigningKeyPair> CreateFakeKeyPair() {
   ECSigningKeyProvider provider;
-  auto algorithm = {crypto::SignatureVerifier::ECDSA_SHA256};
+  auto algorithm = {crypto::sign::ECDSA_SHA256};
   auto signing_key = provider.GenerateSigningKeySlowly(algorithm);
   DCHECK(signing_key);
   return base::MakeRefCounted<SigningKeyPair>(std::move(signing_key),

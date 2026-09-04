@@ -25,6 +25,7 @@
 #include "crypto/mock_unexportable_key_provider.h"
 #include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
+#include "crypto/sign.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -145,7 +146,7 @@ TEST_P(UnexportableKeyTaskManagerTest, GenerateKeyAsync) {
   base::test::TestFuture<
       ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>>
       future;
-  auto supported_algorithm = {crypto::SignatureVerifier::ECDSA_SHA256};
+  auto supported_algorithm = {crypto::sign::ECDSA_SHA256};
 
   task_manager().GenerateSigningKeySlowlyAsync(
       GetParam().origin, crypto::UnexportableKeyProvider::Config(),
@@ -172,7 +173,7 @@ TEST_P(UnexportableKeyTaskManagerTest,
       future;
   // RSA_PKCS1_SHA1 is not supported by the protocol, so the key generation
   // should fail.
-  auto unsupported_algorithm = {crypto::SignatureVerifier::RSA_PKCS1_SHA1};
+  auto unsupported_algorithm = {crypto::sign::RSA_PKCS1_SHA1};
 
   task_manager().GenerateSigningKeySlowlyAsync(
       GetParam().origin, crypto::UnexportableKeyProvider::Config(),
@@ -195,7 +196,7 @@ TEST_P(UnexportableKeyTaskManagerTest, GenerateKeyAsyncFailureNoKeyProvider) {
   base::test::TestFuture<
       ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>>
       future;
-  auto supported_algorithm = {crypto::SignatureVerifier::ECDSA_SHA256};
+  auto supported_algorithm = {crypto::sign::ECDSA_SHA256};
 
   DisableKeyProvider();
   task_manager().GenerateSigningKeySlowlyAsync(
@@ -218,7 +219,7 @@ TEST_P(UnexportableKeyTaskManagerTest, FromWrappedKeyAsync) {
   base::test::TestFuture<
       ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>>
       generate_key_future;
-  auto supported_algorithm = {crypto::SignatureVerifier::ECDSA_SHA256};
+  auto supported_algorithm = {crypto::sign::ECDSA_SHA256};
   task_manager().GenerateSigningKeySlowlyAsync(
       GetParam().origin, crypto::UnexportableKeyProvider::Config(),
       supported_algorithm, BackgroundTaskPriority::kBestEffort,
@@ -284,7 +285,7 @@ TEST_P(UnexportableKeyTaskManagerTest,
   base::test::TestFuture<
       ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>>
       generate_key_future;
-  auto supported_algorithm = {crypto::SignatureVerifier::ECDSA_SHA256};
+  auto supported_algorithm = {crypto::sign::ECDSA_SHA256};
   task_manager().GenerateSigningKeySlowlyAsync(
       GetParam().origin, crypto::UnexportableKeyProvider::Config(),
       supported_algorithm, BackgroundTaskPriority::kBestEffort,
@@ -321,7 +322,7 @@ TEST_P(UnexportableKeyTaskManagerTest, SignAsync) {
   base::test::TestFuture<
       ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>>
       generate_key_future;
-  auto supported_algorithm = {crypto::SignatureVerifier::ECDSA_SHA256};
+  auto supported_algorithm = {crypto::sign::ECDSA_SHA256};
   task_manager().GenerateSigningKeySlowlyAsync(
       GetParam().origin, crypto::UnexportableKeyProvider::Config(),
       supported_algorithm, BackgroundTaskPriority::kBestEffort,
@@ -377,7 +378,7 @@ TEST_P(UnexportableKeyTaskManagerTest, SignWithAttestationKeyAsync) {
   base::test::TestFuture<
       ServiceErrorOr<scoped_refptr<RefCountedUnexportableAttestationKey>>>
       generate_key_future;
-  auto supported_algorithm = {crypto::SignatureVerifier::ECDSA_SHA256};
+  auto supported_algorithm = {crypto::sign::ECDSA_SHA256};
   task_manager().GenerateAttestationKeySlowlyAsync(
       GetParam().origin, crypto::UnexportableKeyProvider::Config(),
       supported_algorithm, BackgroundTaskPriority::kBestEffort,
@@ -442,7 +443,7 @@ TEST_P(UnexportableKeyTaskManagerTest, RetrySignAsyncWithSuccess) {
       generate_key_future;
   task_manager().GenerateSigningKeySlowlyAsync(
       GetParam().origin, crypto::UnexportableKeyProvider::Config(),
-      /*acceptable_algorithms=*/{crypto::SignatureVerifier::ECDSA_SHA256},
+      /*acceptable_algorithms=*/{crypto::sign::ECDSA_SHA256},
       BackgroundTaskPriority::kBestEffort, generate_key_future.GetCallback());
   RunBackgroundTasks();
   ASSERT_OK_AND_ASSIGN(auto key, generate_key_future.Get());
@@ -508,7 +509,7 @@ TEST_P(UnexportableKeyTaskManagerTest,
       generate_key_future;
   task_manager().GenerateSigningKeySlowlyAsync(
       GetParam().origin, crypto::UnexportableKeyProvider::Config(),
-      /*acceptable_algorithms=*/{crypto::SignatureVerifier::ECDSA_SHA256},
+      /*acceptable_algorithms=*/{crypto::sign::ECDSA_SHA256},
       BackgroundTaskPriority::kBestEffort, generate_key_future.GetCallback());
   RunBackgroundTasks();
   ASSERT_OK_AND_ASSIGN(auto key, generate_key_future.Get());
@@ -550,7 +551,7 @@ TEST_P(UnexportableKeyTaskManagerTest,
        RetrySignAsyncIfSignatureVerificationFailsWithFailure) {
   auto mocked_key = std::make_unique<crypto::MockUnexportableSigningKey>();
   ON_CALL(*mocked_key, Algorithm())
-      .WillByDefault(Return(crypto::SignatureVerifier::ECDSA_SHA256));
+      .WillByDefault(Return(crypto::sign::ECDSA_SHA256));
   ON_CALL(*mocked_key, GetSubjectPublicKeyInfo())
       .WillByDefault(Return(std::vector<uint8_t>{7, 7, 7}));
   const std::vector<uint8_t> data = {4, 8, 15, 16, 23, 42};
@@ -589,7 +590,7 @@ TEST_P(UnexportableKeyTaskManagerTest, DeleteKeysAsync) {
   base::test::TestFuture<
       ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>>
       generate_key_future;
-  auto supported_algorithm = {crypto::SignatureVerifier::ECDSA_SHA256};
+  auto supported_algorithm = {crypto::sign::ECDSA_SHA256};
   task_manager().GenerateSigningKeySlowlyAsync(
       GetParam().origin, crypto::UnexportableKeyProvider::Config(),
       supported_algorithm, BackgroundTaskPriority::kBestEffort,
@@ -644,7 +645,7 @@ TEST_P(UnexportableKeyTaskManagerTest, DeleteKeysAsyncPartialSuccess) {
   base::test::TestFuture<
       ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>>
       generate_key_future;
-  auto supported_algorithm = {crypto::SignatureVerifier::ECDSA_SHA256};
+  auto supported_algorithm = {crypto::sign::ECDSA_SHA256};
   task_manager().GenerateSigningKeySlowlyAsync(
       GetParam().origin, crypto::UnexportableKeyProvider::Config(),
       supported_algorithm, BackgroundTaskPriority::kBestEffort,
@@ -946,7 +947,7 @@ TEST_P(UnexportableKeyTaskManagerTest, GenerateAttestationKeyAsync) {
   base::test::TestFuture<
       ServiceErrorOr<scoped_refptr<RefCountedUnexportableAttestationKey>>>
       future;
-  auto supported_algorithm = {crypto::SignatureVerifier::ECDSA_SHA256};
+  auto supported_algorithm = {crypto::sign::ECDSA_SHA256};
 
   task_manager().GenerateAttestationKeySlowlyAsync(
       GetParam().origin, crypto::UnexportableKeyProvider::Config(),
@@ -971,7 +972,7 @@ TEST_P(UnexportableKeyTaskManagerTest,
   base::test::TestFuture<
       ServiceErrorOr<scoped_refptr<RefCountedUnexportableAttestationKey>>>
       future;
-  auto unsupported_algorithm = {crypto::SignatureVerifier::RSA_PKCS1_SHA1};
+  auto unsupported_algorithm = {crypto::sign::RSA_PKCS1_SHA1};
 
   task_manager().GenerateAttestationKeySlowlyAsync(
       GetParam().origin, crypto::UnexportableKeyProvider::Config(),
@@ -998,7 +999,7 @@ TEST_P(UnexportableKeyTaskManagerTest, FromWrappedAttestationKeyAsync) {
   base::test::TestFuture<
       ServiceErrorOr<scoped_refptr<RefCountedUnexportableAttestationKey>>>
       generate_key_future;
-  auto supported_algorithm = {crypto::SignatureVerifier::ECDSA_SHA256};
+  auto supported_algorithm = {crypto::sign::ECDSA_SHA256};
   task_manager().GenerateAttestationKeySlowlyAsync(
       GetParam().origin, crypto::UnexportableKeyProvider::Config(),
       supported_algorithm, BackgroundTaskPriority::kBestEffort,
@@ -1093,7 +1094,7 @@ TEST_P(UnexportableKeyTaskManagerTest, CancelPendingTask) {
   base::test::TestFuture<
       ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>>
       task1_future;
-  auto supported_algorithm = {crypto::SignatureVerifier::ECDSA_SHA256};
+  auto supported_algorithm = {crypto::sign::ECDSA_SHA256};
   task_manager().GenerateSigningKeySlowlyAsync(
       GetParam().origin, crypto::UnexportableKeyProvider::Config(),
       supported_algorithm, BackgroundTaskPriority::kBestEffort,

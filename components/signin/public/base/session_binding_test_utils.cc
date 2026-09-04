@@ -16,6 +16,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "components/signin/public/base/hybrid_encryption_key.h"
+#include "crypto/sign.h"
 #include "crypto/signature_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
@@ -84,7 +85,7 @@ std::optional<std::string> ExtractJwtPart(std::string_view jwt, JwtPart part) {
 
 testing::AssertionResult VerifyJwtSignature(
     std::string_view jwt,
-    crypto::SignatureVerifier::SignatureAlgorithm algorithm,
+    crypto::sign::SignatureKind algorithm,
     base::span<const uint8_t> public_key) {
   std::vector<std::string_view> parts = base::SplitStringPiece(
       jwt, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
@@ -101,7 +102,7 @@ testing::AssertionResult VerifyJwtSignature(
            << "Failed to decode signature: " << signature_str;
   }
   std::vector<uint8_t> signature(signature_str.begin(), signature_str.end());
-  if (algorithm == crypto::SignatureVerifier::ECDSA_SHA256) {
+  if (algorithm == crypto::sign::ECDSA_SHA256) {
     std::optional<std::vector<uint8_t>> der_signature =
         ConvertRawSignatureToDER(base::as_byte_span(signature));
     if (!der_signature) {

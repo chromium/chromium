@@ -18,7 +18,7 @@
 #include "build/build_config.h"
 #include "crypto/apple/scoped_lacontext.h"
 #include "crypto/crypto_export.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "crypto/unexportable_key.h"
 
 namespace crypto {
@@ -138,8 +138,7 @@ class CRYPTO_EXPORT UserVerifyingKeyProvider {
   // high-priority thread when the underlying platform is slow.
   // Invokes |callback| with the resulting key, or nullptr on error.
   virtual void GenerateUserVerifyingSigningKey(
-      base::span<const SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms,
+      base::span<const sign::SignatureKind> acceptable_algorithms,
       UserVerifyingKeyCreationCallback callback) = 0;
 
   // Similar to |FromWrappedSigningKey| but uses a wrapped key that was

@@ -20,7 +20,7 @@
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -54,7 +54,7 @@ class BindingKeyRegistrationTokenHelper {
   using KeyInitParam = std::variant<
       // A list of acceptable signature algorithms to generate a new binding
       // key.
-      std::vector<crypto::SignatureVerifier::SignatureAlgorithm>,
+      std::vector<crypto::sign::SignatureKind>,
       // Wrapped binding key to reuse an existing binding key.
       std::vector<uint8_t>>;
 
@@ -118,7 +118,7 @@ class BindingKeyRegistrationTokenHelper {
  private:
   using HeaderAndPayloadGenerator =
       base::RepeatingCallback<std::optional<std::string>(
-          crypto::SignatureVerifier::SignatureAlgorithm,
+          crypto::sign::SignatureKind,
           base::span<const uint8_t>,
           base::Time)>;
 

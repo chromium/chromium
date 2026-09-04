@@ -32,6 +32,7 @@
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
 #include "crypto/scoped_fake_unexportable_key_provider.h"
+#include "crypto/sign.h"
 #include "net/base/features.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/schemeful_site.h"
@@ -146,9 +147,8 @@ constexpr char kSessionIdHeaderName[] = "Sec-Secure-Session-Id";
 constexpr unexportable_keys::BackgroundTaskOrigin kTaskOrigin =
     unexportable_keys::BackgroundTaskOrigin::kDeviceBoundSessionCredentials;
 
-std::vector<crypto::SignatureVerifier::SignatureAlgorithm> CreateAlgArray() {
-  return {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
-          crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256};
+std::vector<crypto::sign::SignatureKind> CreateAlgArray() {
+  return {crypto::sign::ECDSA_SHA256, crypto::sign::RSA_PKCS1_SHA256};
 }
 
 struct InvokeCallbackArgumentAction {};

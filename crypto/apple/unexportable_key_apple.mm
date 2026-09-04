@@ -51,7 +51,7 @@
 #include "crypto/ecdsa_utils.h"
 #include "crypto/hash.h"
 #include "crypto/keypair.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 #include "crypto/unexportable_key_metrics.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
@@ -316,9 +316,7 @@ class AppleKeyImpl : public BaseInterface, public StatefulKey {
         ConvertX962ToDerSpki(base::apple::CFDataToSpan(x962_bytes.get())));
   }
 
-  SignatureVerifier::SignatureAlgorithm Algorithm() const override {
-    return SignatureVerifier::ECDSA_SHA256;
-  }
+  sign::SignatureKind Algorithm() const override { return sign::ECDSA_SHA256; }
 
   std::vector<uint8_t> GetSubjectPublicKeyInfo() const override {
     return public_key_spki_;
@@ -410,15 +408,13 @@ std::unique_ptr<KeyClass> GenerateKeySlowlyImpl(
     UnexportableKeyProvider::Config::AccessControl access_control,
     NSString* keychain_access_group,
     NSString* application_tag,
-    base::span<const SignatureVerifier::SignatureAlgorithm>
-        acceptable_algorithms,
+    base::span<const sign::SignatureKind> acceptable_algorithms,
     LAContext* lacontext) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
 
   // The Secure Enclave only supports elliptic curve keys.
-  if (!std::ranges::contains(acceptable_algorithms,
-                             SignatureVerifier::ECDSA_SHA256)) {
+  if (!std::ranges::contains(acceptable_algorithms, sign::ECDSA_SHA256)) {
     return nullptr;
   }
 
@@ -571,27 +567,23 @@ UnexportableKeyProviderApple::UnexportableKeyProviderApple(Config config)
       }) {}
 UnexportableKeyProviderApple::~UnexportableKeyProviderApple() = default;
 
-std::optional<SignatureVerifier::SignatureAlgorithm>
+std::optional<sign::SignatureKind>
 UnexportableKeyProviderApple::SelectAlgorithm(
-    base::span<const SignatureVerifier::SignatureAlgorithm>
-        acceptable_algorithms) {
-  return std::ranges::contains(acceptable_algorithms,
-                               SignatureVerifier::ECDSA_SHA256)
-             ? std::optional(SignatureVerifier::ECDSA_SHA256)
+    base::span<const sign::SignatureKind> acceptable_algorithms) {
+  return std::ranges::contains(acceptable_algorithms, sign::ECDSA_SHA256)
+             ? std::optional(sign::ECDSA_SHA256)
              : std::nullopt;
 }
 
 std::unique_ptr<UnexportableSigningKey>
 UnexportableKeyProviderApple::GenerateSigningKeySlowly(
-    base::span<const SignatureVerifier::SignatureAlgorithm>
-        acceptable_algorithms) {
+    base::span<const sign::SignatureKind> acceptable_algorithms) {
   return GenerateSigningKeySlowly(acceptable_algorithms, /*lacontext=*/nil);
 }
 
 std::unique_ptr<UnexportableSigningKey>
 UnexportableKeyProviderApple::GenerateSigningKeySlowly(
-    base::span<const SignatureVerifier::SignatureAlgorithm>
-        acceptable_algorithms,
+    base::span<const sign::SignatureKind> acceptable_algorithms,
     LAContext* lacontext) {
   return GenerateKeySlowlyImpl<UnexportableSigningKeyApple>(
       access_control_, objc_storage_->keychain_access_group_,
@@ -615,15 +607,13 @@ UnexportableKeyProviderApple::FromWrappedSigningKeySlowly(
 
 std::unique_ptr<UnexportableAttestationKey>
 UnexportableKeyProviderApple::GenerateAttestationKeySlowly(
-    base::span<const SignatureVerifier::SignatureAlgorithm>
-        acceptable_algorithms) {
+    base::span<const sign::SignatureKind> acceptable_algorithms) {
   return GenerateAttestationKeySlowly(acceptable_algorithms, /*lacontext=*/nil);
 }
 
 std::unique_ptr<UnexportableAttestationKey>
 UnexportableKeyProviderApple::GenerateAttestationKeySlowly(
-    base::span<const SignatureVerifier::SignatureAlgorithm>
-        acceptable_algorithms,
+    base::span<const sign::SignatureKind> acceptable_algorithms,
     LAContext* lacontext) {
   return GenerateKeySlowlyImpl<UnexportableAttestationKeyApple>(
       access_control_, objc_storage_->keychain_access_group_,
