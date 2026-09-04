@@ -4,15 +4,32 @@
 
 #include "base/message_loop/message_pump_wakeup_counter.h"
 
+#include <atomic>
 #include <string>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/strings/strcat.h"
 
 namespace base {
+
+BASE_FEATURE(kInhibitMessagePumpWakeupCounter, FEATURE_DISABLED_BY_DEFAULT);
+
+namespace {
+
+std::atomic_bool g_inhibit_wakeup_counter = false;
+
+}  // namespace
+
+// static
+void MessagePumpWakeupCounter::InitializeFeatures() {
+  g_inhibit_wakeup_counter.store(
+      FeatureList::IsEnabled(kInhibitMessagePumpWakeupCounter),
+      std::memory_order_relaxed);
+}
 
 // static
 void MessagePumpWakeupCounter::InitializeForCurrentThread(
@@ -32,6 +49,9 @@ MessagePumpWakeupCounter& MessagePumpWakeupCounter::GetForCurrentThread() {
 }
 
 void MessagePumpWakeupCounter::RecordWakeup() {
+  if (g_inhibit_wakeup_counter.load(std::memory_order_relaxed)) {
+    return;
+  }
   if (histogram_) {
     // Not subsampling. The average overhead of increasing a bucket count is
     // similar to subsampling itself. In a rare coincidence the bucket could

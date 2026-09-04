@@ -8,6 +8,7 @@
 
 #include "base/debug/stack_trace.h"
 #include "base/files/file_path.h"
+#include "base/message_loop/message_pump_wakeup_counter.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
@@ -240,6 +241,7 @@ void Init() {
 
   debug::StackTrace::InitializeFeatures();
   FilePath::InitializeFeatures();
+  MessagePumpWakeupCounter::InitializeFeatures();
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   MessagePumpEpoll::InitializeFeatures();

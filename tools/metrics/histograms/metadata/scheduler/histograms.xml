@@ -196,6 +196,10 @@ chromium-metrics-reviews@google.com.
     Also excludes samples for 'synthetic wakeups', such as when an event is
     discovered by BusyWaitOnEvent. In Finch experiments, enabling busy waiting
     should directly reduce the volume of recorded wakeups.
+
+    Note: The recording of this metric may be inhibited on x86_64 macOS by the
+    InhibitMessagePumpWakeupCounter experiment to measure its performance
+    impact.
   </summary>
   <token key="ThreadName">
     <variant name="BrowserIO"/>
