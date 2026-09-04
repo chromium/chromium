@@ -108,6 +108,7 @@
 #import "ios/chrome/browser/intelligence/contextual_cueing/contextual_cueing_cap_tracker_service_factory.h"
 #import "ios/chrome/browser/intelligence/on_device_category_classifier/in_process_category_classification_service_factory.h"
 #import "ios/chrome/browser/intelligence/on_device_category_classifier/on_device_page_classification_service_factory.h"
+#import "ios/chrome/browser/intelligence/page_classification/page_classification_service_factory.h"
 #import "ios/chrome/browser/intelligence/persist_tab_context/model/page_content_cache_service_factory.h"
 #import "ios/chrome/browser/invalidation/model/ios_chrome_profile_invalidation_provider_factory.h"
 #import "ios/chrome/browser/language/model/accept_languages_service_factory.h"
@@ -414,6 +415,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   OptimizationGuideServiceFactory::GetInstance();
   PageContentAnnotationsServiceFactory::GetInstance();
   PageImageServiceFactory::GetInstance();
+  PageClassificationServiceFactory::GetInstance();
   PageContentCacheServiceFactory::GetInstance();
   PhotosServiceFactory::GetInstance();
   PolicyBlocklistServiceFactory::GetInstance();
