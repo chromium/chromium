@@ -47,10 +47,6 @@ NSDictionary<NSString*, NSDate*>* GetFaviconsListAndFreshness();
 bool ShouldFetchFavicon(NSString* favicon_key,
                         NSDictionary<NSString*, NSDate*>* favicon_dict);
 
-// Deletes the folder containing the favicons. Returns whether the deletion was
-// successful.
-bool DeleteFaviconsFolder();
-
 // Returns whether the favicon folder is available.
 bool IsFaviconFolderAvailable();
 

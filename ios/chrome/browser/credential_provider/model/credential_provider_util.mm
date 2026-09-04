@@ -457,23 +457,6 @@ bool ShouldFetchFavicon(NSString* favicon_key,
          kFaviconRefreshInterval;
 }
 
-bool DeleteFaviconsFolder() {
-  NSURL* shared_favicon_attributes_folder_url = GetFaviconsFolderURL();
-  if (!shared_favicon_attributes_folder_url) {
-    return true;
-  }
-
-  NSFileManager* file_manager = [NSFileManager defaultManager];
-  NSString* path = shared_favicon_attributes_folder_url.path;
-
-  // If the favicon folder doesn't exist, there's nothing to delete.
-  if (![file_manager fileExistsAtPath:path]) {
-    return true;
-  }
-
-  return [file_manager removeItemAtPath:path error:nil];
-}
-
 bool IsFaviconFolderAvailable() {
   return GetFaviconsFolderURL() != nil;
 }

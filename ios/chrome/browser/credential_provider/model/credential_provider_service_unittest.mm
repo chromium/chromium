@@ -113,9 +113,6 @@ class CredentialProviderServiceTest : public PlatformTest {
 
   void SetUp() override {
     PlatformTest::SetUp();
-    // Make sure there are no favicons left from some other tests.
-    ASSERT_TRUE(DeleteFaviconsFolder());
-
     ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
     NSURL* folder_url =
         base::apple::FilePathToNSURL(scoped_temp_dir_.GetPath());
@@ -132,8 +129,6 @@ class CredentialProviderServiceTest : public PlatformTest {
   }
 
   void TearDown() override {
-    // Delete all favicon files that were created during the test.
-    EXPECT_TRUE(DeleteFaviconsFolder());
     SetFaviconsFolderURLForTesting(nil);
     ResetMaxNumberOfFaviconsForTesting();
 
