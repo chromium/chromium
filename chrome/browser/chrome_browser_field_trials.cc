@@ -369,6 +369,11 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // TODO(crbug.com/545634112): Remove when launched to 100% on Desktop Android.
   feature_overrides.EnableFeature(chrome::android::kDisableGridTabSwitcher);
 
+  // Enables spoofing the user agent platform as ChromeOS on desktop Android.
+  // TODO(crbug.com/556358275): Enablement on tablets is tracked by this bug.
+  feature_overrides.EnableFeature(
+      blink::features::kAndroidDesktopUASpoofAsChromeOS);
+
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
   // Desktop-first features which are past incubation should either end up here,
   // or to a finch trial that enables it for all form factors.
