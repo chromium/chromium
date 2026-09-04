@@ -221,9 +221,23 @@ void HttpAuthCoordinator::Flow::ShowDialog() {
 
   // For subresources, create a LoginHandler which will show a login prompt.
   auto wrapped_callback = base::BindOnce(&Flow::OnCredentials, GetWeakPtr());
-  login_handler_ = coordinator_->CreateLoginDelegateFromLoginHandler(
-      web_contents_.get(), auth_info_, request_id_, url_, response_headers_,
-      std::move(wrapped_callback));
+  // Showing the login prompt synchronously blocks the WebContents, which
+  // drops HTML fullscreen. Exiting fullscreen can spin a nested message loop
+  // (see the comment in WebContentsImpl::ExitFullscreenMode(),
+  // crbug.com/1506535, crbug.com/498752242) in which the auth challenge can
+  // be cancelled, synchronously destroying `this`. Check liveness before
+  // touching any member.
+  base::WeakPtr<Flow> weak_this = GetWeakPtr();
+  std::unique_ptr<content::LoginDelegate> login_handler =
+      coordinator_->CreateLoginDelegateFromLoginHandler(
+          web_contents_.get(), auth_info_, request_id_, url_, response_headers_,
+          std::move(wrapped_callback));
+  if (!weak_this) {
+    // `this` was destroyed while the prompt was being shown. Dropping
+    // `login_handler` closes the just-created prompt.
+    return;
+  }
+  login_handler_ = std::move(login_handler);
 }
 
 base::WeakPtr<HttpAuthCoordinator::Flow>
