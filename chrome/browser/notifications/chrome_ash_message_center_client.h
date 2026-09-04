@@ -25,8 +25,7 @@
 
 // Helper for NotificationPlatformBridgeChromeOs. Sends notifications to Ash
 // and handles interactions with those notifications, plus it keeps track of
-// NotifierControllers to provide notifier settings information to Ash (visible
-// in NotifierSettingsView).
+// NotifierControllers to provide notifier settings information to Ash.
 class ChromeAshMessageCenterClient : public NotificationPlatformBridge,
                                      public ash::NotifierSettingsController,
                                      public NotifierController::Observer {
