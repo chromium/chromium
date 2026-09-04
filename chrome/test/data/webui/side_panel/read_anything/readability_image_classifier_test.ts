@@ -7,6 +7,8 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 import {ReadabilityImageClassifier} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
+import {setWindowSize} from './common.js';
+
 suite('ReadabilityImageClassifier', function() {
   let testContainer: HTMLElement;
 
@@ -17,6 +19,8 @@ suite('ReadabilityImageClassifier', function() {
       wrapperTags: string[] = []): Promise<HTMLImageElement> {
     return new Promise((resolve) => {
       const parent = document.createElement(parentTag);
+      parent.style.margin = '0';
+      parent.style.padding = '0';
       const img = document.createElement('img');
       img.id = id;
 
@@ -47,9 +51,9 @@ suite('ReadabilityImageClassifier', function() {
 
       testContainer.appendChild(parent);
 
-      // The promise resolves when the image is loaded or has failed to load.
-      img.onload = () => resolve(img);
-      img.onerror = () => resolve(img);
+      const onDone = () => resolve(img);
+      img.onload = onDone;
+      img.onerror = onDone;
 
       // Apply all attributes *except* src to avoid triggering a network
       // request before the load/error handlers are attached.
@@ -70,15 +74,21 @@ suite('ReadabilityImageClassifier', function() {
         img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
       }
 
-      if (img.complete) {
+      if (img.complete && (img.naturalWidth > 0 || img.naturalHeight > 0)) {
         resolve(img);
       }
     });
   }
 
   setup(() => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.style.margin = '0';
+    document.body.style.padding = '0';
+    setWindowSize(1000, 1000);
     testContainer = document.createElement('div');
-    testContainer.style.width = '100%';
+    testContainer.style.width = '1000px';
+    testContainer.style.margin = '0';
+    testContainer.style.padding = '0';
     document.body.appendChild(testContainer);
   });
 
@@ -93,7 +103,7 @@ suite('ReadabilityImageClassifier', function() {
     const imagePromises: Array<Promise<HTMLImageElement>> = [
       // 1. Hero Image
       createImageTest('hero_image', 200, 100, 'p', '<img>', {
-        style: 'width: 90vw;',
+        style: 'width: 900px;',
         class: 'hero-style',
       }),
 
@@ -137,9 +147,14 @@ suite('ReadabilityImageClassifier', function() {
     ];
 
     await Promise.all(imagePromises);
-    // Wait for layout to be ready.
-    await new Promise(resolve => requestAnimationFrame(() => resolve(null)));
-
+    await Promise.all(
+        Array.from(testContainer.querySelectorAll('img')).map(async img => {
+          try {
+            await img.decode();
+          } catch {
+            // Ignore decode errors for mock / non-image src.
+          }
+        }));
     ReadabilityImageClassifier.processImagesIn(testContainer);
 
     const assertHasClass = (id: string, expectedClass: string) => {
