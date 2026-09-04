@@ -18,13 +18,6 @@ struct FcPatternDeleter {
 };
 using ScopedFcPattern = std::unique_ptr<FcPattern, FcPatternDeleter>;
 
-// Initializes FontConfig on a worker thread if a thread pool instance is
-// available, otherwise initializes FontConfig in a blocking fashion on the
-// calling thread.  If this function is not called, the first call to
-// GetGlobalFontConfig() will implicitly initialize FontConfig.  Can be called
-// on any thread.
-COMPONENT_EXPORT(GFX) void InitializeGlobalFontConfigAsync();
-
 // Retrieve the global font config. Must be called on the main thread.
 COMPONENT_EXPORT(GFX) FcConfig* GetGlobalFontConfig();
 COMPONENT_EXPORT(GFX) void OverrideGlobalFontConfigForTesting(FcConfig* config);
