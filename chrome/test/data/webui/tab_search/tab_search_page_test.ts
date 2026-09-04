@@ -564,12 +564,15 @@ suite('TabSearchAppTest', () => {
     await microtasksFinished();
     assertEquals(1, testProxy.getCallCount('getProfileData'));
 
-    // When visible visibilitychange should trigger the data callback.
+    // When visible visibilitychange should trigger the data callback if
+    // optimizations are disabled, or rely on TabsChanged if enabled.
     Object.defineProperty(
         document, 'visibilityState', {value: 'visible', writable: true});
     document.dispatchEvent(new Event('visibilitychange'));
     await microtasksFinished();
-    assertEquals(2, testProxy.getCallCount('getProfileData'));
+    const expectedCalls =
+        loadTimeData.getBoolean('tabSearchPerformanceImprovements') ? 1 : 2;
+    assertEquals(expectedCalls, testProxy.getCallCount('getProfileData'));
   });
 
   test('Verify hiding document resets selection and search text', async () => {

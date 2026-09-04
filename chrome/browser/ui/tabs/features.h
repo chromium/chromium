@@ -32,7 +32,8 @@ BASE_DECLARE_FEATURE_PARAM(bool, kSplitViewHorizontalDirectTabAccess);
 BASE_DECLARE_FEATURE(kTabSearchCjkWordBoundary);
 
 // Enables performance optimizations for Tab Search when large numbers of tabs
-// are open, including asynchronous favicon loading.
+// are open, including asynchronous favicon loading and de-duplicated profile
+// data push on bubble show.
 BASE_DECLARE_FEATURE(kTabSearchPerformanceImprovements);
 BASE_DECLARE_FEATURE(kVerticalTabsNewBadge);
 

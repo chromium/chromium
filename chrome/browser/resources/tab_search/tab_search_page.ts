@@ -196,7 +196,14 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
       if (document.visibilityState === 'visible') {
         this.windowShownTimestamp_ = Date.now();
         this.activeDescendantEnabled_ = false;
-        this.updateTabs_();
+        if (loadTimeData.getBoolean('tabSearchPerformanceImprovements')) {
+          listenOnce(
+              this.$.tabsList, 'viewport-filled',
+              () => this.apiProxy_.maybeShowUi());
+          this.updateFilteredTabs_();
+        } else {
+          this.updateTabs_();
+        }
       } else {
         this.onDocumentHidden_();
       }
