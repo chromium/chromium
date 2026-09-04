@@ -6604,6 +6604,55 @@ TEST_F(RequestTest, FrameDetachDuringShowModalDialog) {
   EXPECT_FALSE(request_);
 }
 
+namespace {
+
+class FrameDetachWhenShowAccountsDialogController
+    : public TestDialogController {
+ public:
+  FrameDetachWhenShowAccountsDialogController(
+      const MockConfiguration& configuration,
+      base::OnceClosure on_show_accounts_dialog)
+      : TestDialogController(configuration),
+        on_show_accounts_dialog_(std::move(on_show_accounts_dialog)) {}
+
+  bool ShowAccountsDialog(
+      RelyingPartyData rp_data,
+      const std::vector<IdentityProviderDataPtr>& idp_list,
+      const std::vector<IdentityRequestAccountPtr>& accounts,
+      const std::vector<IdentityRequestAccountPtr>& filtered_accounts,
+      blink::mojom::RpMode rp_mode,
+      IdentityRequestDialogController::AccountSelectionCallback on_selected,
+      IdentityRequestDialogController::LoginToIdPCallback on_add_account,
+      IdentityRequestDialogController::DismissCallback dismiss_callback,
+      IdentityRequestDialogController::AccountsDisplayedCallback
+          accounts_displayed_callback) override {
+    if (on_show_accounts_dialog_) {
+      std::move(on_show_accounts_dialog_).Run();
+    }
+    return true;
+  }
+
+ private:
+  base::OnceClosure on_show_accounts_dialog_;
+};
+
+}  // namespace
+
+// Test that destroying the Request during ShowAccountsDialog (e.g. if the
+// frame is detached) does not cause a use-after-free.
+TEST_F(RequestTest, FrameDetachDuringShowAccountsDialog) {
+  SetDialogController(
+      std::make_unique<FrameDetachWhenShowAccountsDialogController>(
+          kConfigurationValid, base::BindLambdaForTesting([this]() {
+            static_cast<TestWebContents*>(web_contents())
+                ->NavigateAndCommit(GURL("https://other.com"),
+                                    ui::PAGE_TRANSITION_LINK);
+          })));
+
+  RunDontWaitForCallback(kDefaultRequestParameters, kConfigurationValid);
+  EXPECT_FALSE(request_);
+}
+
 // Test the continuation popup calling close().
 TEST_F(RequestTest, ContinuationPopupCallingClose) {
   RequestParameters parameters = kDefaultRequestParameters;

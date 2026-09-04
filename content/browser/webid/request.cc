@@ -507,12 +507,14 @@ bool Request::RequestToken(
     const GURL& idp_config_url = idp_order_[0];
     auto get_info_it = token_request_get_infos_.find(idp_config_url);
     CHECK(get_info_it != token_request_get_infos_.end());
-    if (!GetDialogController()->ShowLoadingDialog(
-            CreateRpData(/*client_metadata_received=*/false),
-            FormatOriginForDisplay(url::Origin::Create(idp_config_url)),
-            get_info_it->second.rp_context, rp_mode_,
-            base::BindOnce(&Request::OnDialogDismissed,
-                           weak_ptr_factory_.GetWeakPtr()))) {
+    if (!ShowDialog([&]() {
+          return GetDialogController()->ShowLoadingDialog(
+              CreateRpData(/*client_metadata_received=*/false),
+              FormatOriginForDisplay(url::Origin::Create(idp_config_url)),
+              get_info_it->second.rp_context, rp_mode_,
+              base::BindOnce(&Request::OnDialogDismissed,
+                             weak_ptr_factory_.GetWeakPtr()));
+        })) {
       return false;
     }
     did_show_ui_ = true;
@@ -1041,31 +1043,35 @@ void Request::MaybeShowAccountsDialog() {
     GetDialogController()->SetIsInterceptionEnabled(intercept);
   }
 
+  bool shown = false;
   if (identity_selection_type_ != kExplicit) {
     OnAccountSelected(accounts_[0]->identity_provider->idp_metadata.config_url,
                       accounts_[0]->id, /*is_sign_in=*/true);
-    if (!GetDialogController()->ShowVerifyingDialog(
-            CreateRpData(/*client_metadata_received=*/true), auto_reauthn.idp,
-            accounts_[0], SignInMode::kAuto, rp_mode_,
-            base::BindOnce(&Request::OnAccountsDisplayed,
-                           weak_ptr_factory_.GetWeakPtr()))) {
-      return;
-    }
+    shown = ShowDialog([&]() {
+      return GetDialogController()->ShowVerifyingDialog(
+          CreateRpData(/*client_metadata_received=*/true), auto_reauthn.idp,
+          accounts_[0], SignInMode::kAuto, rp_mode_,
+          base::BindOnce(&Request::OnAccountsDisplayed,
+                         weak_ptr_factory_.GetWeakPtr()));
+    });
   } else {
-    if (!GetDialogController()->ShowAccountsDialog(
-            CreateRpData(/*client_metadata_received=*/true),
-            idp_data_for_display_, accounts_, filtered_accounts_, rp_mode_,
-            base::BindOnce(&Request::OnAccountSelected,
-                           weak_ptr_factory_.GetWeakPtr()),
-            base::BindRepeating(&Request::LoginToIdP,
-                                weak_ptr_factory_.GetWeakPtr(),
-                                /*can_append_hints=*/false),
-            base::BindOnce(&Request::OnDialogDismissed,
-                           weak_ptr_factory_.GetWeakPtr()),
-            base::BindOnce(&Request::OnAccountsDisplayed,
-                           weak_ptr_factory_.GetWeakPtr()))) {
-      return;
-    }
+    shown = ShowDialog([&]() {
+      return GetDialogController()->ShowAccountsDialog(
+          CreateRpData(/*client_metadata_received=*/true),
+          idp_data_for_display_, accounts_, filtered_accounts_, rp_mode_,
+          base::BindOnce(&Request::OnAccountSelected,
+                         weak_ptr_factory_.GetWeakPtr()),
+          base::BindRepeating(&Request::LoginToIdP,
+                              weak_ptr_factory_.GetWeakPtr(),
+                              /*can_append_hints=*/false),
+          base::BindOnce(&Request::OnDialogDismissed,
+                         weak_ptr_factory_.GetWeakPtr()),
+          base::BindOnce(&Request::OnAccountsDisplayed,
+                         weak_ptr_factory_.GetWeakPtr()));
+    });
+  }
+  if (!shown) {
+    return;
   }
   AfterAccountsDialogShown(did_succeed_for_at_least_one_idp);
 }
@@ -1143,12 +1149,14 @@ void Request::NotifyAutofillSuggestionAccepted(
   // before we can call ShowAccountsDialog() to create the internal state
   // necessary in the dialog controller. We should probably be able to create
   // the internal state on demand in case it isn't available.
-  if (!GetDialogController()->ShowLoadingDialog(
-          CreateRpData(/*client_metadata_received=*/true),
-          FormatOriginForDisplay(url::Origin::Create(idp)),
-          get_info_it->second.rp_context, blink::mojom::RpMode::kActive,
-          base::BindOnce(&Request::OnDialogDismissed,
-                         weak_ptr_factory_.GetWeakPtr()))) {
+  if (!ShowDialog([&]() {
+        return GetDialogController()->ShowLoadingDialog(
+            CreateRpData(/*client_metadata_received=*/true),
+            FormatOriginForDisplay(url::Origin::Create(idp)),
+            get_info_it->second.rp_context, blink::mojom::RpMode::kActive,
+            base::BindOnce(&Request::OnDialogDismissed,
+                           weak_ptr_factory_.GetWeakPtr()));
+      })) {
     return;
   }
   did_show_ui_ = true;
@@ -1168,19 +1176,21 @@ void Request::NotifyAutofillSuggestionAccepted(
   for (const auto& account : selected) {
     account->display_priority = IdentityRequestAccount::DisplayPriority::kNew;
   }
-  if (!GetDialogController()->ShowAccountsDialog(
-          CreateRpData(/*client_metadata_received=*/true),
-          idp_data_for_display_, selected, filtered_accounts_,
-          blink::mojom::RpMode::kActive,
-          base::BindOnce(&Request::OnAccountSelected,
-                         weak_ptr_factory_.GetWeakPtr()),
-          base::BindRepeating(&Request::LoginToIdP,
-                              weak_ptr_factory_.GetWeakPtr(),
-                              /*can_append_hints=*/false),
-          base::BindOnce(&Request::OnDialogDismissed,
-                         weak_ptr_factory_.GetWeakPtr()),
-          base::BindOnce(&Request::OnAccountsDisplayed,
-                         weak_ptr_factory_.GetWeakPtr()))) {
+  if (!ShowDialog([&]() {
+        return GetDialogController()->ShowAccountsDialog(
+            CreateRpData(/*client_metadata_received=*/true),
+            idp_data_for_display_, selected, filtered_accounts_,
+            blink::mojom::RpMode::kActive,
+            base::BindOnce(&Request::OnAccountSelected,
+                           weak_ptr_factory_.GetWeakPtr()),
+            base::BindRepeating(&Request::LoginToIdP,
+                                weak_ptr_factory_.GetWeakPtr(),
+                                /*can_append_hints=*/false),
+            base::BindOnce(&Request::OnDialogDismissed,
+                           weak_ptr_factory_.GetWeakPtr()),
+            base::BindOnce(&Request::OnAccountsDisplayed,
+                           weak_ptr_factory_.GetWeakPtr()));
+      })) {
     return;
   }
   // TODO(crbug.com/435216589): Should we call AfterAccountsDialogShown here?
@@ -1255,15 +1265,17 @@ void Request::ShowSingleIdpFailureDialog() {
                    !idp_info->provider->domain_hint.empty() ||
                    !idp_info->metadata.requested_label.empty();
 
-  if (!GetDialogController()->ShowFailureDialog(
-          CreateRpData(/*client_metadata_received=*/true),
-          FormatOriginForDisplay(idp_origin), idp_info->rp_context, rp_mode_,
-          idp_info->metadata, filtered_accounts_,
-          base::BindOnce(&Request::OnDismissFailureDialog,
-                         weak_ptr_factory_.GetWeakPtr()),
-          base::BindRepeating(&Request::LoginToIdP,
-                              weak_ptr_factory_.GetWeakPtr(),
-                              /*can_append_hints=*/true))) {
+  if (!ShowDialog([&]() {
+        return GetDialogController()->ShowFailureDialog(
+            CreateRpData(/*client_metadata_received=*/true),
+            FormatOriginForDisplay(idp_origin), idp_info->rp_context, rp_mode_,
+            idp_info->metadata, filtered_accounts_,
+            base::BindOnce(&Request::OnDismissFailureDialog,
+                           weak_ptr_factory_.GetWeakPtr()),
+            base::BindRepeating(&Request::LoginToIdP,
+                                weak_ptr_factory_.GetWeakPtr(),
+                                /*can_append_hints=*/true));
+      })) {
     return;
   }
   did_show_ui_ = true;
@@ -1520,24 +1532,19 @@ void Request::ShowModalDialog(DialogType dialog_type,
     }
   };
 
-  // When showing the modal dialog or popup window (e.g. for IdP sign-in or
-  // continuation), the browser opens a popup window, or a new foreground tab if
-  // the initiator tab is in fullscreen mode. This browser-initiated navigation
-  // can cause the tab to exit fullscreen or lose focus, which may trigger
-  // synchronous script execution in the page (such as a fullscreenchange or
-  // blur event) that detaches the initiating iframe and destroys this Request.
-  // Check that the Request is still alive before accessing member fields.
-  base::WeakPtr<Request> weak_this = weak_ptr_factory_.GetWeakPtr();
-  WebContents* web_contents = GetDialogController()->ShowModalDialog(
-      url_to_show, rp_mode_,
-      base::BindOnce(&Request::OnDialogDismissed,
-                     weak_ptr_factory_.GetWeakPtr()),
-      base::BindOnce(create_registry_async, weak_ptr_factory_.GetWeakPtr(),
-                     idp_config_url),
-      base::BindOnce(&Request::OnNativeAppResult,
-                     weak_ptr_factory_.GetWeakPtr(), dialog_type,
-                     idp_config_url));
-  if (!weak_this) {
+  WebContents* web_contents = nullptr;
+  if (!ShowDialog([&]() {
+        web_contents = GetDialogController()->ShowModalDialog(
+            url_to_show, rp_mode_,
+            base::BindOnce(&Request::OnDialogDismissed,
+                           weak_ptr_factory_.GetWeakPtr()),
+            base::BindOnce(create_registry_async,
+                           weak_ptr_factory_.GetWeakPtr(), idp_config_url),
+            base::BindOnce(&Request::OnNativeAppResult,
+                           weak_ptr_factory_.GetWeakPtr(), dialog_type,
+                           idp_config_url));
+        return true;
+      })) {
     return;
   }
   did_show_ui_ = true;
@@ -1696,19 +1703,21 @@ void Request::ShowErrorDialog(const GURL& idp_config_url,
   token_error_ = token_error;
 
   // TODO(crbug.com/40282657): Refactor IdentityCredentialTokenError
-  if (!GetDialogController()->ShowErrorDialog(
-          CreateRpData(/*client_metadata_received=*/true),
-          FormatOriginForDisplay(url::Origin::Create(idp_config_url)),
-          idp_infos_[idp_config_url]->rp_context, rp_mode_,
-          idp_infos_[idp_config_url]->metadata, token_error,
-          base::BindOnce(&Request::OnDismissErrorDialog,
-                         weak_ptr_factory_.GetWeakPtr(), idp_config_url,
-                         status),
-          token_error && !token_error->url.is_empty()
-              ? base::BindOnce(
-                    &Request::ShowModalDialog, weak_ptr_factory_.GetWeakPtr(),
-                    DialogType::kErrorUrlPopup, config_url_, token_error->url)
-              : base::NullCallback())) {
+  if (!ShowDialog([&]() {
+        return GetDialogController()->ShowErrorDialog(
+            CreateRpData(/*client_metadata_received=*/true),
+            FormatOriginForDisplay(url::Origin::Create(idp_config_url)),
+            idp_infos_[idp_config_url]->rp_context, rp_mode_,
+            idp_infos_[idp_config_url]->metadata, token_error,
+            base::BindOnce(&Request::OnDismissErrorDialog,
+                           weak_ptr_factory_.GetWeakPtr(), idp_config_url,
+                           status),
+            token_error && !token_error->url.is_empty()
+                ? base::BindOnce(
+                      &Request::ShowModalDialog, weak_ptr_factory_.GetWeakPtr(),
+                      DialogType::kErrorUrlPopup, config_url_, token_error->url)
+                : base::NullCallback());
+      })) {
     return;
   }
   did_show_ui_ = true;
@@ -2085,6 +2094,17 @@ IdentityRequestDialogController* Request::GetDialogController() {
   return request_service_->GetOrCreateDialogController();
 }
 
+bool Request::ShowDialog(base::FunctionRef<bool()> show_dialog_callback) {
+  // Showing a FedCM UI may cause the tab to drop fullscreen or lose focus,
+  // during which the frame may be detached and this Request destroyed. Check
+  // that the Request is still alive before returning true.
+  base::WeakPtr<Request> weak_this = weak_ptr_factory_.GetWeakPtr();
+  if (!show_dialog_callback()) {
+    return false;
+  }
+  return weak_this != nullptr;
+}
+
 base::WeakPtr<Request> Request::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
@@ -2309,9 +2329,11 @@ void Request::ClickErrorDialogGotItForDevtools() {
 
 void Request::ClickErrorDialogMoreDetailsForDevtools() {
   DCHECK(token_error_ && token_error_->url.is_valid());
-  base::WeakPtr<Request> weak_this = weak_ptr_factory_.GetWeakPtr();
-  ShowModalDialog(DialogType::kErrorUrlPopup, config_url_, token_error_->url);
-  if (!weak_this) {
+  if (!ShowDialog([&]() {
+        ShowModalDialog(DialogType::kErrorUrlPopup, config_url_,
+                        token_error_->url);
+        return true;
+      })) {
     return;
   }
   OnDismissErrorDialog(
