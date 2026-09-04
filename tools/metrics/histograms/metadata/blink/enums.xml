@@ -6739,6 +6739,11 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="6001" label="V8RTCPeerConnection_Onremovestream_AttributeGetter"/>
   <int value="6002" label="V8RTCPeerConnection_Onremovestream_AttributeSetter"/>
   <int value="6003" label="SingleAxisScrollerPropagateSnapAxis"/>
+  <int value="6004" label="HTMLMenuElement"/>
+  <int value="6005" label="HTMLMenuBarElement"/>
+  <int value="6006" label="HTMLMenuItemElement"/>
+  <int value="6007" label="HTMLMenuListElement"/>
+  <int value="6008" label="HTMLMenuItemInMenu"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

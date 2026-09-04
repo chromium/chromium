@@ -5318,6 +5318,11 @@ enum WebFeature {
   kV8RTCPeerConnection_Onremovestream_AttributeGetter = 6001,
   kV8RTCPeerConnection_Onremovestream_AttributeSetter = 6002,
   kSingleAxisScrollerPropagateSnapAxis = 6003,
+  kHTMLMenuElement = 6004,
+  kHTMLMenuBarElement = 6005,
+  kHTMLMenuItemElement = 6006,
+  kHTMLMenuListElement = 6007,
+  kHTMLMenuItemInMenu = 6008,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra
