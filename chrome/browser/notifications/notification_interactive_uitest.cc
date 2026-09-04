@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/message_center/public/cpp/notification.h"
-
 #include <string>
 
 #include "base/command_line.h"
@@ -53,6 +51,7 @@
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/notification_blocker.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
+#include "ui/message_center/public/cpp/notification.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_MAC)
