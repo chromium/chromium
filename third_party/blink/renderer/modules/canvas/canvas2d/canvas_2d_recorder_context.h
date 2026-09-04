@@ -507,6 +507,10 @@ class MODULES_EXPORT Canvas2DRecorderContext : public CanvasPath {
   // such as tainting from a filter applied to the canvas.
   void SetOriginTaintedByContent();
 
+  // Adjusts a rect for negative width or height to give the bounding rect.
+  template <typename T>
+  static void AdjustRectForCanvas(T& x, T& y, T& width, T& height);
+
  private:
   void FillImpl(SkPathFillType winding_rule);
   void FillPathImpl(Path2D* dom_path, SkPathFillType winding_rule);
@@ -628,9 +632,6 @@ class MODULES_EXPORT Canvas2DRecorderContext : public CanvasPath {
 
   template <typename T>
   bool ValidateRectForCanvas(T x, T y, T width, T height);
-
-  template <typename T>
-  void AdjustRectForCanvas(T& x, T& y, T& width, T& height);
 
   bool RectContainsTransformedRect(const gfx::RectF&, const SkIRect&) const;
 
