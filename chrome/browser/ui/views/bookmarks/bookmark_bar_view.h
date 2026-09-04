@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/bookmarks/controllers/bookmark_bar_ui_client.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
-#include "chrome/browser/ui/views/bookmarks/bookmark_context_menu.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_menu_controller_observer.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_menu_controller_views.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
@@ -42,7 +41,6 @@
 class BookmarkBarUIController;
 class BookmarkBarViewObserver;
 class BookmarkBarViewTestHelper;
-class BookmarkContextMenu;
 class BookmarkMergedSurfaceService;
 struct BookmarkParentFolder;
 class BrowserView;
@@ -82,8 +80,7 @@ class BookmarkBarView : public views::AccessiblePaneView,
                         public views::ContextMenuController,
                         public views::DragController,
                         public views::AnimationDelegateViews,
-                        public BookmarkMenuControllerObserver,
-                        public BookmarkContextMenuObserver {
+                        public BookmarkMenuControllerObserver {
   METADATA_HEADER(BookmarkBarView, views::AccessiblePaneView)
 
  public:
@@ -245,17 +242,7 @@ class BookmarkBarView : public views::AccessiblePaneView,
       const gfx::Point& point,
       ui::mojom::MenuSourceType source_type) override;
 
-  void RunContextMenuAt(std::vector<int64_t> node_ids,
-                        const gfx::Point& point,
-                        ui::mojom::MenuSourceType source_type,
-                        bool can_paste);
-
-  // BookmarkContextMenuObserver:
-  void WillRemoveBookmarks(
-      const std::vector<raw_ptr<const bookmarks::BookmarkNode,
-                                VectorExperimental>>& bookmarks) override {}
-  void DidRemoveBookmarks() override {}
-  void OnContextMenuClosed() override;
+  void OnContextMenuClosed();
 
   // Calculate the available width for the saved tab group bar.
   // This is used in Tab Group v2 UI to allocate space for both saved tab groups
@@ -462,15 +449,6 @@ class BookmarkBarView : public views::AccessiblePaneView,
   // over a folder this becomes non-null and manages the menu showing the
   // contents of the node.
   raw_ptr<BookmarkMenuController> bookmark_drop_menu_ = nullptr;
-
-  // If non-NULL we're showing a context menu for one of the items on the
-  // bookmark bar.
-  std::unique_ptr<BookmarkContextMenu> context_menu_;
-
-  // Observe the context menu so that we know when it closes, in order to reset
-  // the anchor highlight.
-  base::ScopedObservation<BookmarkContextMenu, BookmarkContextMenuObserver>
-      context_menu_observation_{this};
 
   // Manages the lifetime of the highlight for the button that the context menu
   // is triggered for.

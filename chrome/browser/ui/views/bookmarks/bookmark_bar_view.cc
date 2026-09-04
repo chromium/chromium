@@ -43,7 +43,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/themes/theme_properties.h"
-#include "chrome/browser/ui/bookmarks/bookmark_context_menu_controller.h"
 #include "chrome/browser/ui/bookmarks/bookmark_drag_drop.h"
 #include "chrome/browser/ui/bookmarks/bookmark_ui_operations_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
@@ -284,15 +283,6 @@ class BookmarkFolderButton : public BookmarkMenuButtonBase {
 BEGIN_METADATA(BookmarkFolderButton)
 END_METADATA
 
-// BookmarkTabGroupButton
-// -------------------------------------------------------
-
-std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> ToRawPtrVector(
-    const std::vector<const BookmarkNode*>& nodes) {
-  return base::ToVector(nodes, [](const BookmarkNode* node) {
-    return raw_ptr<const BookmarkNode, VectorExperimental>(node);
-  });
-}
 }  // namespace
 
 // DropLocation ---------------------------------------------------------------
@@ -422,10 +412,6 @@ BookmarkBarView::BookmarkBarView(
 }
 
 BookmarkBarView::~BookmarkBarView() {
-  if (context_menu_) {
-    context_menu_->RemoveObserver(this);
-  }
-
   if (bookmark_service_) {
     bookmark_service_->RemoveObserver(this);
   }
@@ -1455,31 +1441,22 @@ void BookmarkBarView::ShowContextMenuForViewImpl(
   }
 
   views::Button* context_menu_source = nullptr;
-
-  std::vector<const BookmarkNode*> nodes;
+  bookmarks::BookmarkNodeId target;
   if (source == all_bookmarks_button_) {
-    // Do this so the user can open all bookmarks. BookmarkContextMenu makes
-    // sure the user can't edit/delete the node in this case.
-    nodes = bookmark_service_->GetUnderlyingNodes(
-        BookmarkParentFolder::OtherFolder());
+    target = bookmarks::PermanentFolderType::kOtherNode;
     context_menu_source = all_bookmarks_button_;
   } else if (source == managed_bookmarks_button_) {
-    nodes = bookmark_service_->GetUnderlyingNodes(
-        BookmarkParentFolder::ManagedFolder());
+    target = bookmarks::PermanentFolderType::kManagedNode;
     context_menu_source = managed_bookmarks_button_;
-  } else if (source != this && source != apps_page_shortcut_) {
-    // User clicked on one of the bookmark buttons, find which one they
-    // clicked on, except for the apps page shortcut, which must behave as if
-    // the user clicked on the bookmark bar background.
+  } else if (source != this && source != apps_page_shortcut_ &&
+             source != overflow_button_) {
     size_t bookmark_button_index = GetIndexForButton(source);
     DCHECK_NE(static_cast<size_t>(-1), bookmark_button_index);
     CHECK_LT(bookmark_button_index, bookmark_buttons_.size());
-    const BookmarkNode* node = bookmark_buttons_[bookmark_button_index].second;
-    nodes.push_back(node);
+    target = bookmark_buttons_[bookmark_button_index].second->id();
     context_menu_source = bookmark_buttons_[bookmark_button_index].first;
   } else {
-    nodes = bookmark_service_->GetUnderlyingNodes(
-        BookmarkParentFolder::BookmarkBarFolder());
+    target = bookmarks::PermanentFolderType::kBookmarkBarNode;
     if (source == apps_page_shortcut_) {
       context_menu_source = apps_page_shortcut_;
     }
@@ -1489,53 +1466,13 @@ void BookmarkBarView::ShowContextMenuForViewImpl(
     context_menu_highlight_ = context_menu_source->AddAnchorHighlight();
   }
 
-  std::vector<int64_t> node_ids;
-  node_ids.reserve(nodes.size());
-  for (const auto* node : nodes) {
-    node_ids.push_back(node->id());
-  }
-  auto parent_folder = BookmarkContextMenuController::GetParentForNewNodes(
-      ToRawPtrVector(nodes));
-  BookmarkUIOperationsHelperMergedSurfaces(bookmark_service_,
-                                           parent_folder.get())
-      .CanPasteFromClipboard(base::BindOnce(
-          &BookmarkBarView::RunContextMenuAt, weak_ptr_factory_.GetWeakPtr(),
-          std::move(node_ids), point, source_type));
-}
-
-void BookmarkBarView::RunContextMenuAt(std::vector<int64_t> node_ids,
-                                       const gfx::Point& point,
-                                       ui::mojom::MenuSourceType source_type,
-                                       bool can_paste) {
-  // |close_on_remove| only matters for nested menus. We're not nested at this
-  // point, so this value has no effect.
-  const bool close_on_remove = true;
-
-  auto* bookmark_model =
-      BookmarkModelFactory::GetForBrowserContext(browser_->GetProfile());
-  std::vector<const BookmarkNode*> nodes;
-  for (int64_t node_id : node_ids) {
-    const BookmarkNode* node =
-        bookmarks::GetBookmarkNodeByID(bookmark_model, node_id);
-    if (node) {
-      nodes.push_back(node);
-    }
-  }
-  if (nodes.empty()) {
-    return;
-  }
-
-  context_menu_observation_.Reset();
-  context_menu_ = std::make_unique<BookmarkContextMenu>(
-      GetWidget(), browser_, browser_->GetProfile(),
-      BookmarkLaunchLocation::kAttachedBar, ToRawPtrVector(nodes),
-      close_on_remove, can_paste);
-  context_menu_observation_.Observe(context_menu_.get());
-  context_menu_->RunMenuAt(point, source_type);
+  controller_->ShowContextMenu(
+      target, point, source_type,
+      base::BindOnce(&BookmarkBarView::OnContextMenuClosed,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void BookmarkBarView::OnContextMenuClosed() {
-  context_menu_observation_.Reset();
   context_menu_highlight_.reset();
 }
 
