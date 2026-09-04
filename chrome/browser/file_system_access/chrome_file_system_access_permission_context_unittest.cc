@@ -1111,6 +1111,181 @@ TEST_F(ChromeFileSystemAccessPermissionContextNoSymbolicLinkCheckTest,
             SensitiveDirectoryResult::kAbort);
 }
 
+// Verifies that Windows Subsystem for Linux (WSL) Universal Naming Convention
+// (UNC) paths are rejected by sensitive entry access checks.
+//
+// WSL exposes Linux distribution filesystems through the \\wsl.localhost and
+// legacy \\wsl$ UNC namespaces. Because these paths alias local system files
+// and shell configuration dotfiles without using DOS drive letters, they must
+// Verifies that Windows Subsystem for Linux (WSL) Universal Naming Convention
+// (UNC) distribution root paths are rejected by sensitive entry access checks.
+TEST_F(ChromeFileSystemAccessPermissionContextNoSymbolicLinkCheckTest,
+       ConfirmSensitiveEntryAccess_WSL_DistroRoot) {
+  // Distribution root paths should be blocked.
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(FILE_PATH_LITERAL("\\\\wsl.localhost\\Ubuntu")),
+                HandleType::kDirectory, UserAction::kOpen),
+            SensitiveDirectoryResult::kAbort);
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(FILE_PATH_LITERAL("\\\\wsl.localhost\\Ubuntu\\")),
+                HandleType::kDirectory, UserAction::kOpen),
+            SensitiveDirectoryResult::kAbort);
+}
+
+// Verifies that WSL system configuration directories and files are blocked.
+TEST_F(ChromeFileSystemAccessPermissionContextNoSymbolicLinkCheckTest,
+       ConfirmSensitiveEntryAccess_WSL_SystemPaths) {
+  // Distribution system configuration directories should be blocked.
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(FILE_PATH_LITERAL("\\\\wsl.localhost\\Ubuntu\\etc")),
+                HandleType::kDirectory, UserAction::kOpen),
+            SensitiveDirectoryResult::kAbort);
+  EXPECT_EQ(
+      ConfirmSensitiveEntryAccessSync(
+          permission_context(),
+          PathInfo(FILE_PATH_LITERAL("\\\\wsl.localhost\\Ubuntu\\etc\\shadow")),
+          HandleType::kFile, UserAction::kOpen),
+      SensitiveDirectoryResult::kAbort);
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(FILE_PATH_LITERAL("\\\\wsl.localhost\\Ubuntu\\root")),
+                HandleType::kDirectory, UserAction::kOpen),
+            SensitiveDirectoryResult::kAbort);
+}
+
+// Verifies that WSL user home directories, .ssh, and shell init dotfiles
+// (.bashrc) are blocked across picker open, save, and non-prompted resolution
+// (kNone).
+TEST_F(ChromeFileSystemAccessPermissionContextNoSymbolicLinkCheckTest,
+       ConfirmSensitiveEntryAccess_WSL_UserPaths) {
+  // User home directories and shell configuration files should be blocked.
+  EXPECT_EQ(
+      ConfirmSensitiveEntryAccessSync(
+          permission_context(),
+          PathInfo(FILE_PATH_LITERAL("\\\\wsl.localhost\\Ubuntu\\home\\user")),
+          HandleType::kDirectory, UserAction::kOpen),
+      SensitiveDirectoryResult::kAbort);
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(FILE_PATH_LITERAL(
+                    "\\\\wsl.localhost\\Ubuntu\\home\\user\\.ssh")),
+                HandleType::kDirectory, UserAction::kOpen),
+            SensitiveDirectoryResult::kAbort);
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(FILE_PATH_LITERAL(
+                    "\\\\wsl.localhost\\Ubuntu\\home\\user\\.ssh")),
+                HandleType::kDirectory, UserAction::kNone),
+            SensitiveDirectoryResult::kAbort);
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(FILE_PATH_LITERAL(
+                    "\\\\wsl.localhost\\Ubuntu\\home\\user\\.bashrc")),
+                HandleType::kFile, UserAction::kSave),
+            SensitiveDirectoryResult::kAbort);
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(FILE_PATH_LITERAL(
+                    "\\\\wsl.localhost\\Ubuntu\\home\\user\\.bashrc")),
+                HandleType::kFile, UserAction::kOpen),
+            SensitiveDirectoryResult::kAbort);
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(FILE_PATH_LITERAL(
+                    "\\\\wsl.localhost\\Ubuntu\\home\\user\\.bashrc")),
+                HandleType::kFile, UserAction::kNone),
+            SensitiveDirectoryResult::kAbort);
+}
+
+// Verifies that WSL UNC paths with case variations, trailing dot FQDN syntax,
+// and forward slash separators are blocked.
+TEST_F(ChromeFileSystemAccessPermissionContextNoSymbolicLinkCheckTest,
+       ConfirmSensitiveEntryAccess_WSL_PathVariations) {
+  // Case variations should be blocked.
+  EXPECT_EQ(
+      ConfirmSensitiveEntryAccessSync(
+          permission_context(),
+          PathInfo(FILE_PATH_LITERAL("\\\\WSL.LOCALHOST\\Ubuntu\\home\\user")),
+          HandleType::kDirectory, UserAction::kOpen),
+      SensitiveDirectoryResult::kAbort);
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(FILE_PATH_LITERAL("\\\\Wsl.LocalHost\\Ubuntu\\etc")),
+                HandleType::kDirectory, UserAction::kOpen),
+            SensitiveDirectoryResult::kAbort);
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(FILE_PATH_LITERAL(
+                    "\\\\WSL.LOCALHOST\\UBUNTU\\home\\user\\.bashrc")),
+                HandleType::kFile, UserAction::kSave),
+            SensitiveDirectoryResult::kAbort);
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(FILE_PATH_LITERAL(
+                    "\\\\WSL.LOCALHOST\\UBUNTU\\home\\user\\.bashrc")),
+                HandleType::kFile, UserAction::kNone),
+            SensitiveDirectoryResult::kAbort);
+
+  // Fully qualified domain name syntax with trailing dot should be blocked.
+  EXPECT_EQ(
+      ConfirmSensitiveEntryAccessSync(
+          permission_context(),
+          PathInfo(FILE_PATH_LITERAL("\\\\wsl.localhost.\\Ubuntu\\home\\user")),
+          HandleType::kDirectory, UserAction::kOpen),
+      SensitiveDirectoryResult::kAbort);
+
+  // Forward slash path separators should be blocked.
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(FILE_PATH_LITERAL("//wsl.localhost/Ubuntu/home/user")),
+                HandleType::kDirectory, UserAction::kOpen),
+            SensitiveDirectoryResult::kAbort);
+}
+
+// Verifies that legacy \\wsl$ redirector paths are rejected.
+TEST_F(ChromeFileSystemAccessPermissionContextNoSymbolicLinkCheckTest,
+       ConfirmSensitiveEntryAccess_WSL_LegacyRedirector) {
+  EXPECT_EQ(
+      ConfirmSensitiveEntryAccessSync(
+          permission_context(), PathInfo(FILE_PATH_LITERAL("\\\\wsl$\\Ubuntu")),
+          HandleType::kDirectory, UserAction::kOpen),
+      SensitiveDirectoryResult::kAbort);
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(FILE_PATH_LITERAL("\\\\wsl$\\Ubuntu\\home\\user")),
+                HandleType::kDirectory, UserAction::kOpen),
+            SensitiveDirectoryResult::kAbort);
+  EXPECT_EQ(
+      ConfirmSensitiveEntryAccessSync(
+          permission_context(),
+          PathInfo(FILE_PATH_LITERAL("\\\\WSL$\\Ubuntu\\home\\user\\.ssh")),
+          HandleType::kDirectory, UserAction::kOpen),
+      SensitiveDirectoryResult::kAbort);
+}
+
+// Verifies that legitimate remote UNC shares remain allowed.
+TEST_F(ChromeFileSystemAccessPermissionContextNoSymbolicLinkCheckTest,
+       ConfirmSensitiveEntryAccess_RemoteUNC_Allowed) {
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(FILE_PATH_LITERAL("\\\\server\\share\\foo\\bar")),
+                HandleType::kDirectory, UserAction::kOpen),
+            SensitiveDirectoryResult::kAllowed);
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(FILE_PATH_LITERAL("\\\\remote-nas\\projects\\my-app")),
+                HandleType::kDirectory, UserAction::kOpen),
+            SensitiveDirectoryResult::kAllowed);
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(FILE_PATH_LITERAL("\\\\corp.domain.com\\dfs\\team")),
+                HandleType::kDirectory, UserAction::kOpen),
+            SensitiveDirectoryResult::kAllowed);
+}
+
 // Testing that the */.git/hooks are all blocked.
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveEntryAccess_SuffixWriteBlock) {
