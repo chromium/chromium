@@ -28,9 +28,11 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetListViewBase.java",
     "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetObserver.java",
     "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetRecyclerScrollListener.java",
+    "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetType.java",
     "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetUtils.java",
     "java/src/org/chromium/components/browser_ui/bottomsheet/ExpandedSheetHelper.java",
     "java/src/org/chromium/components/browser_ui/bottomsheet/ItemDividerBase.java",
+    "java/src/org/chromium/components/browser_ui/bottomsheet/UserCriticalFeature.java",
   ]
 
   deps = [

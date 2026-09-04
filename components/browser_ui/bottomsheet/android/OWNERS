@@ -11,3 +11,5 @@ per-file ItemDividerBase.java=tchudakov@google.com
 per-file BottomSheetRecyclerScrollListener.java=tchudakov@google.com
 per-file BottomSheetRecyclerScrollListenerTest.java=tchudakov@google.com
 
+per-file UserCriticalFeature.java=set noparent
+per-file UserCriticalFeature.java=file://components/browser_ui/bottomsheet/android/OWNERS

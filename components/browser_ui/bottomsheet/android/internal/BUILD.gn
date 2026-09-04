@@ -48,6 +48,7 @@ robolectric_library("junit_tests") {
     "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetListViewBaseUnitTest.java",
     "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetRecyclerScrollListenerTest.java",
     "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetSwipeDetectorTest.java",
+    "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetTypeUnitTest.java",
     "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetUnitTest.java",
     "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetViewBinderUnitTest.java",
   ]
