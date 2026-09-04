@@ -9,7 +9,7 @@
 #include <optional>
 #include <utility>
 
-#include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/compositor_animation_observer.h"
@@ -103,7 +103,6 @@ class VIEWS_EXPORT AnimatedImageView : public ImageViewBase,
 
   void DoPlay(lottie::Animation::PlaybackConfig playback_config);
   void SetCompositorFromWidget();
-  void ClearCurrentCompositor();
 
   // The current state of the animation.
   State state_ = State::kStopped;
@@ -112,9 +111,6 @@ class VIEWS_EXPORT AnimatedImageView : public ImageViewBase,
   // to a widget.
   std::unique_ptr<lottie::Animation::PlaybackConfig> playback_config_;
 
-  // The compositor associated with the widget of this view.
-  raw_ptr<ui::Compositor> compositor_ = nullptr;
-
   // The most recent timestamp at which a paint was scheduled for this view.
   base::TimeTicks previous_timestamp_;
 
@@ -122,6 +118,11 @@ class VIEWS_EXPORT AnimatedImageView : public ImageViewBase,
   std::unique_ptr<lottie::Animation> animated_image_;
 
   gfx::Vector2d additional_translation_;
+
+  // Observes the compositor of this view's widget while the animation is
+  // running. An active observation means the animation is driving frames.
+  base::ScopedObservation<ui::Compositor, ui::CompositorAnimationObserver>
+      compositor_observation_{this};
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, AnimatedImageView, ImageViewBase)

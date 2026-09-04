@@ -81,7 +81,7 @@ void AnimatedImageView::Stop() {
   }
 
   DCHECK(animated_image_);
-  ClearCurrentCompositor();
+  compositor_observation_.Reset();
 
   animated_image_->Stop();
   state_ = State::kStopped;
@@ -117,8 +117,8 @@ void AnimatedImageView::OnPaint(gfx::Canvas* canvas) {
 void AnimatedImageView::NativeViewHierarchyChanged() {
   ui::Compositor* compositor = GetWidget()->GetCompositor();
   DCHECK(compositor);
-  if (compositor_ != compositor) {
-    ClearCurrentCompositor();
+  if (!compositor_observation_.IsObservingSource(compositor)) {
+    compositor_observation_.Reset();
 
     // Restore the Play() state with the new compositor.
     if (state_ == State::kPlaying) {
@@ -135,9 +135,9 @@ void AnimatedImageView::AddedToWidget() {
 }
 
 void AnimatedImageView::RemovedFromWidget() {
-  if (compositor_) {
+  if (compositor_observation_.IsObserving()) {
     Stop();
-    ClearCurrentCompositor();
+    compositor_observation_.Reset();
   }
 }
 
@@ -149,9 +149,9 @@ void AnimatedImageView::OnAnimationStep(base::TimeTicks timestamp) {
 }
 
 void AnimatedImageView::OnCompositingShuttingDown(ui::Compositor* compositor) {
-  if (compositor_ == compositor) {
+  if (compositor_observation_.IsObservingSource(compositor)) {
     Stop();
-    ClearCurrentCompositor();
+    compositor_observation_.Reset();
   }
 }
 
@@ -162,20 +162,12 @@ void AnimatedImageView::DoPlay(
 }
 
 void AnimatedImageView::SetCompositorFromWidget() {
-  DCHECK(!compositor_);
+  DCHECK(!compositor_observation_.IsObserving());
   auto* widget = GetWidget();
   DCHECK(widget);
-  compositor_ = widget->GetCompositor();
-  DCHECK(!compositor_->HasAnimationObserver(this));
-  compositor_->AddAnimationObserver(this);
-}
-
-void AnimatedImageView::ClearCurrentCompositor() {
-  if (compositor_) {
-    DCHECK(compositor_->HasAnimationObserver(this));
-    compositor_->RemoveAnimationObserver(this);
-    compositor_ = nullptr;
-  }
+  ui::Compositor* compositor = widget->GetCompositor();
+  DCHECK(!compositor->HasAnimationObserver(this));
+  compositor_observation_.Observe(compositor);
 }
 
 BEGIN_METADATA(AnimatedImageView)
