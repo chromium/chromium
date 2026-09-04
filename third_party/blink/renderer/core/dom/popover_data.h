@@ -23,6 +23,13 @@ enum class PopoverVisibilityState {
   kShowing,
 };
 
+enum class PopoverInvokedVia {
+  // Priority order:
+  kNone = 0,
+  kInterest = 1,
+  kCommand = 2,
+};
+
 using PopoverHoverShowMap =
     HeapHashMap<WeakMember<const HTMLFormControlElement>, TaskHandle>;
 
@@ -47,6 +54,13 @@ class PopoverData final : public GarbageCollected<PopoverData>,
 
   Element* invoker() const { return invoker_.Get(); }
   void setInvoker(Element* element) { invoker_ = element; }
+
+  PopoverInvokedVia invokedVia() const { return invoked_via_; }
+  void setInvokedVia(PopoverInvokedVia invoked_via) {
+    if (invoked_via == PopoverInvokedVia::kNone || invoked_via > invoked_via_) {
+      invoked_via_ = invoked_via;
+    }
+  }
 
   Element* previouslyFocusedElement() const {
     return previously_focused_element_.Get();
@@ -106,6 +120,7 @@ class PopoverData final : public GarbageCollected<PopoverData>,
  private:
   PopoverVisibilityState visibility_state_ = PopoverVisibilityState::kHidden;
   PopoverValueType type_ = PopoverValueType::kNone;
+  PopoverInvokedVia invoked_via_ = PopoverInvokedVia::kNone;
   WeakMember<Element> invoker_;
   WeakMember<Element> previously_focused_element_;
 

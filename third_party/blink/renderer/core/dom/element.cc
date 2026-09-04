@@ -2027,7 +2027,7 @@ bool Element::InterestGained(Element* target, InterestState state) {
                                 /*exception_state=*/nullptr,
                                 /*include_event_handler_text=*/true,
                                 &GetDocument())) {
-      popover->InvokePopover(*this);
+      popover->InvokePopover(*this, PopoverInvokedVia::kInterest);
     }
   }
   return true;
@@ -2072,11 +2072,13 @@ bool Element::InterestLost(Element* target,
     ChangeInterestState(target, InterestState::kNoInterest);
   }
 
-  // If the target is a popover, hide it.
+  // If the target is a popover, and it was invoked via interest, hide it.
   if (behavior == InterestLostPopoverBehavior::kClosePopovers) {
     if (auto* popover = DynamicTo<HTMLElement>(target);
         popover && popover->PopoverType() != PopoverValueType::kNone) {
-      if (popover->IsPopoverReady(PopoverTriggerAction::kHide,
+      if (popover->GetPopoverData()->invokedVia() ==
+              PopoverInvokedVia::kInterest &&
+          popover->IsPopoverReady(PopoverTriggerAction::kHide,
                                   /*exception_state=*/nullptr,
                                   /*include_event_handler_text=*/true,
                                   &GetDocument())) {

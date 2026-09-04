@@ -246,9 +246,7 @@ void HTMLMenuItemElement::ActivateMenuItem() {
   if (HTMLMenuListElement* submenu = GetInvokedSubmenu()) {
     DCHECK(!IsCheckable());
 
-    if (!submenu->popoverOpen()) {
-      submenu->InvokePopover(*this);
-    }
+    submenu->InvokePopover(*this, PopoverInvokedVia::kCommand);
 
     bool handling_keyboard_event = false;
     if (LocalFrame* frame = GetDocument().GetFrame()) {
@@ -409,9 +407,7 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
       // arrow right should open the invoked menulist and focus its first
       // menuitem.
       if (auto* invoked_menulist = GetInvokedSubmenu()) {
-        if (!invoked_menulist->popoverOpen()) {
-          invoked_menulist->InvokePopover(*this);
-        }
+        invoked_menulist->InvokePopover(*this, PopoverInvokedVia::kCommand);
         MenuItemList invoked_menuitems = invoked_menulist->ItemList();
         if (auto* first = invoked_menuitems.NextFocusableElement(
                 *invoked_menuitems.begin(), /*inclusive=*/true)) {
@@ -532,9 +528,7 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
       // If this invokes a menulist and is in a menubar, then arrow down/up
       // should open the menulist and go to first/last menuitem in it.
       if (auto* invoked_menulist = GetInvokedSubmenu()) {
-        if (!invoked_menulist->popoverOpen()) {
-          invoked_menulist->InvokePopover(*this);
-        }
+        invoked_menulist->InvokePopover(*this, PopoverInvokedVia::kCommand);
         if (key == keywords::kArrowDown) {
           if (invoked_menulist->FocusFirstItem()) {
             event.SetDefaultHandled();

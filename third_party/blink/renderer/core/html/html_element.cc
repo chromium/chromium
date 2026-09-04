@@ -2164,7 +2164,10 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
   original_document.AddToTopLayer(this);
   // Make the popover match `:popover-open` and remove `display:none` styling:
   GetPopoverData()->setVisibilityState(PopoverVisibilityState::kShowing);
-  SetPopoverInvoker(invoker);
+  // ShowPopoverInternal() doesn't know how this popover was invoked (e.g. JS
+  // showPopover() vs. command vs. interest). Default to kNone here; callers
+  // that are command or interest invokers will upgrade this after the call.
+  SetPopoverInvoker(invoker, PopoverInvokedVia::kNone);
   SetImplicitAnchor(invoker);
 
   PseudoStateChanged(CSSSelector::kPseudoPopoverOpen);
@@ -2245,11 +2248,13 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
   }
 }
 
-void HTMLElement::SetPopoverInvoker(Element* invoker) {
+void HTMLElement::SetPopoverInvoker(Element* invoker,
+                                    PopoverInvokedVia invoked_via) {
   if (Element* oldInvoker = GetPopoverData()->invoker()) {
     oldInvoker->GetInvokerData()->SetInvokedPopover(nullptr);
   }
   GetPopoverData()->setInvoker(invoker);
+  GetPopoverData()->setInvokedVia(invoked_via);
   if (invoker) {
     invoker->EnsureInvokerData().SetInvokedPopover(this);
   }
@@ -2740,7 +2745,7 @@ PopoverHideResult HTMLElement::HidePopoverInternal(
     }
   }
 
-  SetPopoverInvoker(nullptr);
+  SetPopoverInvoker(nullptr, PopoverInvokedVia::kNone);
 
   // Re-apply display:none, and stop matching `:popover-open`.
   GetPopoverData()->setVisibilityState(PopoverVisibilityState::kHidden);
@@ -3188,9 +3193,17 @@ void HTMLElement::HandlePopoverLightDismissForClick(
   }
 }
 
-void HTMLElement::InvokePopover(Element& invoker) {
+void HTMLElement::InvokePopover(Element& invoker,
+                                PopoverInvokedVia invoked_via) {
   CHECK(IsPopover());
-  ShowPopoverInternal(&invoker, /*exception_state=*/nullptr);
+  if (!popoverOpen()) {
+    ShowPopoverInternal(&invoker, /*exception_state=*/nullptr);
+    if (popoverOpen()) {
+      GetPopoverData()->setInvokedVia(invoked_via);
+    }
+  } else if (invoked_via >= GetPopoverData()->invokedVia()) {
+    SetPopoverInvoker(&invoker, invoked_via);
+  }
 }
 
 void HTMLElement::SetImplicitAnchor(Element* element) {
@@ -3324,7 +3337,12 @@ bool HTMLElement::HandleCommandInternal(HTMLElement& invoker,
   } else if (can_show) {
     // TODO(crbug.com/1121840) HandleCommandInternal is called for both
     // `popovertarget` and `commandfor`.
-    InvokePopover(invoker);
+    InvokePopover(invoker, PopoverInvokedVia::kCommand);
+    return true;
+  } else if (command == CommandEventType::kShowPopover && popoverOpen()) {
+    // A `show-popover` command invoker "upgrades" to a command invoker, so it
+    // persists if de-hovered/blurred.
+    SetPopoverInvoker(&invoker, PopoverInvokedVia::kCommand);
     return true;
   }
 
