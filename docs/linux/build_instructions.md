@@ -516,8 +516,11 @@ If you're SSH-ing into a remote machine that supports Chrome Remote Desktop
 .bash_profile.
 
 ```shell
-if [[ -n "$SSH_CLIENT" || -n "$SSH_TTY" ]]; then
-    export $(systemctl --user show-environment | /usr/bin/grep -E '^(DISPLAY|WAYLAND_DISPLAY|XAUTHORITY|XDG_RUNTIME_DIR)=')
+if [[ -n "${SSH_CLIENT}" || -n "${SSH_TTY}" ]]; then
+  eval "$(systemctl --user show-environment | \
+    sed -En '/^(DISPLAY|WAYLAND_DISPLAY|XAUTHORITY|XDG_RUNTIME_DIR)=/{
+      s:^:export :;p
+    }')"
 fi
 ```
 
