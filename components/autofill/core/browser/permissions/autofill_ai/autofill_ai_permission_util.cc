@@ -661,10 +661,6 @@ base::flat_set<int32_t> GetAutofillAmbientAutofillEligibleTiers() {
     case AutofillAiAction::kShowAmbientAutofillInSettings:
     case AutofillAiAction::kAmbientAutofill:
     case AutofillAiAction::kTypeSupportsAmbientAutofillData: {
-      if (base::FeatureList::IsEnabled(
-              features::debug::kAutofillAmbientAutofillSkipEligibilityChecks)) {
-        return true;
-      }
       if (!IsPersonalContextEligible(personal_context_eligibility_state)) {
         return false;
       }
