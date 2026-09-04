@@ -6,18 +6,17 @@ import 'chrome://omnibox-everywhere.top-chrome/omnibox_everywhere.js';
 
 import {ComposeboxProxyImpl, OmniboxEverywhereBrowserProxyImpl, SearchboxBrowserProxy} from 'chrome://omnibox-everywhere.top-chrome/omnibox_everywhere.js';
 import type {OmniboxEverywhereAppElement, OmniboxEverywhereComposeboxElement, OmniboxEverywhereOmniboxElement, OmniboxEverywhereProfileIconElement} from 'chrome://omnibox-everywhere.top-chrome/omnibox_everywhere.js';
-import {ComposeboxFile, TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
+import {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
 import type {ComposeboxState} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {InputType, ModelMode, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
-import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
+import type {ContextualEntrypointButtonElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_button.js';
 import type {SearchAnimatedGlowElement} from 'chrome://resources/cr_components/search/animated_glow.js';
 import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SelectedFileInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
-import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -35,6 +34,7 @@ function getInputValue(
 suite('OmniboxEverywhereOmniboxTest', () => {
   let omnibox: OmniboxEverywhereOmniboxElement;
   let testProxy: TestSearchboxBrowserProxy;
+  let testEverywhereProxy: TestOmniboxEverywhereBrowserProxy;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -58,41 +58,33 @@ suite('OmniboxEverywhereOmniboxTest', () => {
     });
     testProxy = new TestSearchboxBrowserProxy();
     SearchboxBrowserProxy.setInstance(testProxy);
+    testEverywhereProxy = new TestOmniboxEverywhereBrowserProxy();
+    OmniboxEverywhereBrowserProxyImpl.setInstance(testEverywhereProxy);
     omnibox = document.createElement('omnibox-everywhere-omnibox');
     document.body.appendChild(omnibox);
     await microtasksFinished();
   });
 
-  test('AddTabContext opens composebox with tab upload', () => {
-    let openComposeboxCalled = false;
-    const detailHolder: {state?: ComposeboxState} = {};
-    omnibox.addEventListener('open-composebox', (e: Event) => {
-      openComposeboxCalled = true;
-      detailHolder.state = (e as CustomEvent).detail as ComposeboxState;
-    });
+  test('clicking entrypoint triggers showContextActionMenu', async () => {
+    const entrypoint =
+        omnibox.shadowRoot.querySelector<ContextualEntrypointButtonElement>(
+            '#context')!;
+    assertTrue(!!entrypoint);
 
-    const contextMenu = omnibox.shadowRoot.querySelector('#context')!;
-    contextMenu.dispatchEvent(new CustomEvent('add-tab-context', {
+    entrypoint.dispatchEvent(new CustomEvent('context-menu-entrypoint-click', {
       detail: {
-        id: 123,
-        title: 'Test Tab Title',
-        url: 'https://example.com' as unknown as Url,
-        delayUpload: false,
-        origin: TabUploadOrigin.CONTEXT_MENU,
+        anchorRect: {x: 10, y: 20, width: 30, height: 40},
       },
       bubbles: true,
       composed: true,
     }));
 
-    assertTrue(openComposeboxCalled);
-    const files = detailHolder.state!.files;
-    assertEquals(1, files.length);
-    assertEquals(123, (files[0] as {tabId: number}).tabId);
-    assertEquals('Test Tab Title', (files[0] as {title: string}).title);
-    assertEquals('https://example.com', (files[0] as {url: Url}).url);
-    assertEquals(
-        TabUploadOrigin.CONTEXT_MENU,
-        (files[0] as {origin: TabUploadOrigin}).origin);
+    const args =
+        await testEverywhereProxy.handler.whenCalled('showContextActionMenu');
+    assertEquals(10, args.x);
+    assertEquals(20, args.y);
+    assertEquals(30, args.width);
+    assertEquals(40, args.height);
   });
 
   test(
@@ -483,6 +475,7 @@ suite('OmniboxEverywhereOmniboxTest', () => {
 suite('OmniboxEverywhereComposeboxTest', () => {
   let composebox: OmniboxEverywhereComposeboxElement;
   let testProxy: TestSearchboxBrowserProxy;
+  let testEverywhereProxy: TestOmniboxEverywhereBrowserProxy;
   let mockPageHandler: TestMock<PageHandlerRemote>&PageHandlerRemote;
 
   setup(async () => {
@@ -501,6 +494,8 @@ suite('OmniboxEverywhereComposeboxTest', () => {
     });
     testProxy = new TestSearchboxBrowserProxy();
     SearchboxBrowserProxy.setInstance(testProxy);
+    testEverywhereProxy = new TestOmniboxEverywhereBrowserProxy();
+    OmniboxEverywhereBrowserProxyImpl.setInstance(testEverywhereProxy);
     mockPageHandler = TestMock.fromClass(PageHandlerRemote);
     ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
         mockPageHandler,
@@ -563,35 +558,30 @@ suite('OmniboxEverywhereComposeboxTest', () => {
         assertEquals(GlowAnimationState.NONE, testElem.animationState);
       });
 
-  test('AddTabContext event adds tab to composebox files', async () => {
-    const mockToken = {high: 1234n, low: 5678n};
-    testProxy.handler.setPromiseResolveFor('addTabContext', mockToken);
+  test(
+      'clicking contextEntrypoint triggers showContextActionMenu', async () => {
+        const entrypoint =
+            composebox.shadowRoot
+                .querySelector<ContextualEntrypointButtonElement>(
+                    '#contextEntrypoint')!;
+        assertTrue(!!entrypoint);
 
-    const contextMenu =
-        composebox.shadowRoot.querySelector('#contextEntrypoint')!;
-    contextMenu.dispatchEvent(new CustomEvent('add-tab-context', {
-      detail: {
-        id: 789,
-        title: 'Composebox Direct Tab',
-        url: 'https://direct.com' as unknown as Url,
-        delayUpload: false,
-        origin: TabUploadOrigin.CONTEXT_MENU,
-      },
-      bubbles: true,
-      composed: true,
-    }));
+        entrypoint.dispatchEvent(
+            new CustomEvent('context-menu-entrypoint-click', {
+              detail: {
+                anchorRect: {x: 15, y: 25, width: 35, height: 45},
+              },
+              bubbles: true,
+              composed: true,
+            }));
 
-    await testProxy.handler.whenCalled('addTabContext');
-    const args = testProxy.handler.getArgs('addTabContext')[0];
-    assertEquals(789, args[0]);
-    assertFalse(args[1]);
-
-    await microtasksFinished();
-    assertEquals(1, composebox.attachedContext.size);
-    const file = Array.from(composebox.attachedContext.values())[0]!;
-    assertEquals(789, file.tabId);
-    assertEquals('Composebox Direct Tab', file.name);
-  });
+        const args = await testEverywhereProxy.handler.whenCalled(
+            'showContextActionMenu');
+        assertEquals(15, args.x);
+        assertEquals(25, args.y);
+        assertEquals(35, args.width);
+        assertEquals(45, args.height);
+      });
 
   test(
       'clicking voice search button dispatches open-voice-search event',
@@ -1532,7 +1522,7 @@ suite('OmniboxEverywhereContextMenuTest', () => {
   test('clicking entrypoint triggers showContextActionMenu', async () => {
     const omnibox = app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
     const entrypoint =
-        omnibox.shadowRoot.querySelector<ContextualEntrypointAndMenuElement>(
+        omnibox.shadowRoot.querySelector<ContextualEntrypointButtonElement>(
             '#context')!;
     assertTrue(!!entrypoint);
 

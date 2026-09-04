@@ -7,13 +7,12 @@ import '//resources/cr_components/searchbox/searchbox_input.js';
 import '//resources/cr_components/searchbox/searchbox_compose_button.js';
 import '//resources/cr_components/search/animated_glow.js';
 import '//resources/cr_components/composebox/composebox_file_inputs.js';
-import '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
+import '//resources/cr_components/composebox/contextual_entrypoint_button.js';
 import './profile_icon.js';
 
-import {ContextType, recordContextAdditionMethod, recordContextualElementClickedMetric, TabSuggestionsState} from '//resources/cr_components/composebox/common.js';
-import type {ComposeboxState, ContextualUpload, DriveUpload, TabUpload, TabUploadOrigin} from '//resources/cr_components/composebox/common.js';
+import {recordContextAdditionMethod} from '//resources/cr_components/composebox/common.js';
+import type {ComposeboxState, ContextualUpload} from '//resources/cr_components/composebox/common.js';
 import type {ComposeboxFileInputsElement} from '//resources/cr_components/composebox/composebox_file_inputs.js';
-import type {ContextualEntrypointAndMenuElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import {HelpBubbleMixinLit} from '//resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 import {ComposeboxContextAddedMethod, GlowAnimationState} from '//resources/cr_components/search/constants.js';
 import {DragAndDropHandler} from '//resources/cr_components/search/drag_drop_handler.js';
@@ -30,11 +29,9 @@ import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mix
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import {DriveDisclaimerStatus} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {DriveUploadError, PageCallbackRouter, PageHandlerInterface, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {DriveUploadError, PageCallbackRouter, PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ModelMode, ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
-import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {OmniboxEverywhereBrowserProxyImpl} from './browser_proxy.js';
 import {getCss} from './omnibox.css.js';
@@ -119,9 +116,7 @@ export class OmniboxEverywhereOmniboxElement extends
       hasUserInput_: {type: Boolean},
       ntpRealboxDynamicAiModeButtonEnabled_: {type: Boolean},
       inputState_: {type: Object},
-      tabSuggestions_: {type: Array},
       searchboxLayoutMode: {type: String},
-      tabSuggestionsState_: {type: Number},
       contextManagementInComposeboxEnabled: {type: Boolean},
       isDraggingFile: {
         reflect: true,
@@ -179,11 +174,8 @@ export class OmniboxEverywhereOmniboxElement extends
   protected accessor ntpRealboxDynamicAiModeButtonEnabled_: boolean =
       loadTimeData.getBoolean('ntpRealboxDynamicAiModeButton');
   protected accessor inputState_: InputState|null = null;
-  protected accessor tabSuggestions_: TabInfo[] = [];
   protected accessor searchboxLayoutMode: string =
       loadTimeData.getString('searchboxLayoutMode');
-  protected accessor tabSuggestionsState_: TabSuggestionsState =
-      TabSuggestionsState.NOT_STARTED;
 
   private pageHandler_: PageHandlerInterface;
   private callbackRouter_: PageCallbackRouter;
@@ -387,58 +379,6 @@ export class OmniboxEverywhereOmniboxElement extends
     });
   }
 
-  protected async onOpenDriveUpload_() {
-    // Check if the user has accepted the Drive disclaimer. This handles
-    // the edge case where a user sees the drive option in the menu, but
-    // then revokes Drive permissions.
-    const {status} = await this.pageHandler().getDriveDisclaimerStatus();
-    if (status === DriveDisclaimerStatus.kRestricted) {
-      return;
-    }
-
-    const {response} = await this.pageHandler().onDriveUploadClicked();
-
-    const driveUploads: DriveUpload[] =
-        response.files.map(file => ({
-                             token: file.token,
-                             mimeType: file.mimeType,
-                             fileName: file.fileName,
-                             thumbnailUrl: file.thumbnailUrl ?? null,
-                             iconUrl: file.iconUrl ?? null,
-                           }));
-
-    recordContextualElementClickedMetric(
-        this.composeboxSource, 'ClassicPopup', ContextType.DRIVE);
-
-    if (driveUploads.length > 0 || response.error !== null) {
-      this.openComposebox_(
-          driveUploads, ToolMode.kUnspecified, ModelMode.kUnspecified,
-          response.error ?? undefined);
-    }
-  }
-
-  protected onAddTabContext_(e: CustomEvent<{
-    id: number,
-    title: string,
-    url: Url,
-    delayUpload: boolean,
-    origin: TabUploadOrigin,
-  }>) {
-    const tabUpload: TabUpload = {
-      tabId: e.detail.id,
-      title: e.detail.title,
-      url: e.detail.url,
-      delayUpload: e.detail.delayUpload,
-      origin: e.detail.origin,
-    };
-    recordContextualElementClickedMetric(
-        this.composeboxSource, 'ClassicPopup', ContextType.TAB);
-    const contextMenu =
-        this.shadowRoot?.querySelector<ContextualEntrypointAndMenuElement>(
-            '#context');
-    contextMenu?.closeMenu();
-    this.openComposebox_([tabUpload]);
-  }
 
   protected onFileChange_(e: CustomEvent<{files: FileList}>) {
     this.processFiles_(
@@ -531,36 +471,6 @@ export class OmniboxEverywhereOmniboxElement extends
 
   onContextMenuClosed() {
     this.isContextMenuOpen = false;
-    const entrypoint =
-        this.shadowRoot?.querySelector<ContextualEntrypointAndMenuElement>(
-            '#context');
-    entrypoint?.closeMenu();
-  }
-
-  protected async refreshTabSuggestions_(forceRefresh: boolean = false) {
-    if (this.tabSuggestionsState_ === TabSuggestionsState.LOADING ||
-        (this.tabSuggestionsState_ === TabSuggestionsState.LOADED &&
-         !forceRefresh)) {
-      return;
-    }
-    this.tabSuggestionsState_ = TabSuggestionsState.LOADING;
-    try {
-      const {tabs} = await this.pageHandler_.getRecentTabs();
-      this.tabSuggestions_ = [...tabs];
-      this.tabSuggestionsState_ = TabSuggestionsState.LOADED;
-    } finally {
-      if (this.tabSuggestionsState_ === TabSuggestionsState.LOADING) {
-        this.tabSuggestionsState_ = TabSuggestionsState.NOT_STARTED;
-      }
-    }
-  }
-
-  protected onContextMenuOpened_() {
-    this.refreshTabSuggestions_(/*forceRefresh=*/ true);
-  }
-
-  protected onContextMenuClosed_() {
-    this.tabSuggestionsState_ = TabSuggestionsState.NOT_STARTED;
   }
 
   override onInputWrapperFocusout(e: FocusEvent) {
@@ -568,26 +478,6 @@ export class OmniboxEverywhereOmniboxElement extends
       return;
     }
     super.onInputWrapperFocusout(e);
-  }
-
-  protected onRequestTabSuggestionsLoad() {
-    this.refreshTabSuggestions_(/*forceRefresh=*/ true);
-  }
-
-  protected onToolClick_(e: CustomEvent<{toolMode: ToolMode}>) {
-    this.openComposeboxWithMode_(e.detail.toolMode);
-  }
-
-  protected onDeepSearchClick_() {
-    this.openComposeboxWithMode_(ToolMode.kDeepSearch);
-  }
-
-  protected onCreateImageClick_() {
-    this.openComposeboxWithMode_(ToolMode.kImageGen);
-  }
-
-  protected onModelClick_(e: CustomEvent<{model: ModelMode}>) {
-    this.openComposeboxWithMode_(ToolMode.kUnspecified, e.detail.model);
   }
 }
 

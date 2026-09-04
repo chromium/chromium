@@ -93,50 +93,24 @@ export function getHtml(this: OmniboxEverywhereComposeboxElement) {
                     @mousedown="${this.onContextMenuContainerMousedown}"
                     @click="${this.onContextMenuContainerClick}">
                   ${hasAllowedInputs(this.inputState, this.usePecApi) ? html`
-                    <cr-composebox-contextual-entrypoint-and-menu
+                    <cr-composebox-contextual-entrypoint-button
                         id="contextEntrypoint"
                         part="composebox-entrypoint"
                         exportparts="context-menu-entrypoint-icon,
                                      entrypoint-button"
                         class="upload-button no-overlap"
-                        @add-tab-context="${this.onAddTabContext}"
-                        @delete-tab-context="${this.onDeleteTabContext}"
-                        @tool-click="${this.onToolClick}"
-                        @model-click="${this.onModelClick}"
-                        @get-tab-preview="${this.onGetTabPreview}"
-                        @context-menu-entrypoint-click="${
-                            this.onContextMenuEntrypointClick_}"
-                        @context-menu-closed="${this.onContextMenuClosed}"
-                        @context-menu-opened="${this.onContextMenuOpened}"
-                        @open-image-upload="${this.onOpenImageUpload}"
-                        @open-file-upload="${this.onOpenFileUpload}"
-                        @open-drive-upload="${this.onOpenDriveUpload}"
-                        @smart-tab-sharing-active-changed="${
-                            this.onSmartTabSharingActiveChanged}"
-                        @share-tabs-flyout-open-changed="${
-                            this.onShareTabsFlyoutOpenChanged}"
-                        @request-tab-suggestions-load="${
-                            this.onRequestTabSuggestionsLoad}"
-                        .shareTabsFlyoutOpen="${this.shareTabsFlyoutOpen}"
-                        .smartTabSharingVisible="${this.smartTabSharingVisible}"
-                        .tabSuggestionsState="${this.tabSuggestionsState}"
                         .inputState="${this.inputState}"
-                        .usePecApi="${this.usePecApi}"
-                        .smartTabSharingActive="${this.smartTabSharingActive}"
-                        .contextManagementInComposeboxEnabled="${
-                            this.contextManagementInComposeboxEnabled}"
-                        .searchboxLayoutMode="${this.searchboxLayoutMode}"
-                        .tabSuggestions="${this.tabSuggestions}"
-                        .recentTabId="${this.recentTabId}"
-                        .hasImageFiles="${this.hasImageFiles()}"
-                        .selectedTabIds="${this.addedTabsIds}"
-                        .aimThreadRestoredTabs="${this.aimThreadRestoredTabs}"
-                        .fileNum="${this.attachedContext.size}"
                         .sharedTabs="${this.getSharedTabs()}"
+                        .restoredTabs="${this.aimThreadRestoredTabs}"
+                        .smartTabSharingActive="${this.smartTabSharingActive}"
+                        .energyEffectAnimationEnabled="${
+                            this.energyEffectAnimationEnabled}"
                         ?upload-button-disabled="${this.uploadButtonDisabled}"
                         ?show-context-menu-description="${
-                            this.showContextMenuDescription}">
-                    </cr-composebox-contextual-entrypoint-and-menu>
+                            this.showContextMenuDescription}"
+                        @context-menu-entrypoint-click="${
+                            this.onContextMenuEntrypointClick_}">
+                    </cr-composebox-contextual-entrypoint-button>
                   ` : ''}
                   ${this.inToolMode ? html`
                     <cr-composebox-tool-chip

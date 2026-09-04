@@ -7,7 +7,6 @@ import '//resources/cr_components/composebox/composebox_file_inputs.js';
 import '//resources/cr_components/composebox/composebox_input.js';
 import '//resources/cr_components/composebox/composebox_tool_chip.js';
 import '//resources/cr_components/composebox/contextual_entrypoint_button.js';
-import '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import '//resources/cr_components/composebox/composebox_submit.js';
 import '//resources/cr_components/composebox/file_carousel.js';
 import '//resources/cr_components/search/animated_glow.js';
@@ -19,7 +18,6 @@ import type {ComposeboxFileInputsElement} from '//resources/cr_components/compos
 import type {ComposeboxInputElement} from '//resources/cr_components/composebox/composebox_input.js';
 import {ComposeboxEmbedderMixin, SubmitButtonIconType} from '//resources/cr_components/composebox/composebox_mixin.js';
 import {ComposeboxProxyImpl} from '//resources/cr_components/composebox/composebox_proxy.js';
-import type {ContextualEntrypointAndMenuElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import type {ContextualEntrypointButtonElement} from '//resources/cr_components/composebox/contextual_entrypoint_button.js';
 import {HelpBubbleMixinLit} from '//resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 import {GlowAnimationState} from '//resources/cr_components/search/constants.js';
@@ -216,9 +214,9 @@ export class OmniboxEverywhereComposeboxElement extends
     return this.searchboxHandler_;
   }
 
-  override getContextEntrypointElement(): ContextualEntrypointButtonElement|
-      ContextualEntrypointAndMenuElement|null {
-    return this.shadowRoot?.querySelector<ContextualEntrypointAndMenuElement>(
+  override getContextEntrypointElement(): ContextualEntrypointButtonElement
+      |null {
+    return this.shadowRoot?.querySelector<ContextualEntrypointButtonElement>(
                '#contextEntrypoint') ||
         null;
   }
@@ -237,12 +235,13 @@ export class OmniboxEverywhereComposeboxElement extends
 
   override async onContextMenuClosed(): Promise<void> {
     this.isContextMenuOpen = false;
-    const entrypoint =
-        this.shadowRoot?.querySelector<ContextualEntrypointAndMenuElement>(
-            '#contextEntrypoint');
-    entrypoint?.closeMenu();
     await super.onContextMenuClosed();
     this.showDropdown = this.computeShowDropdown();
+  }
+
+  override async keepMenuOpenForMultiSelection(): Promise<void> {
+    // Omnibox Everywhere uses a native Views context menu rather than an
+    // embedded WebUI menu on the entrypoint button.
   }
 
 

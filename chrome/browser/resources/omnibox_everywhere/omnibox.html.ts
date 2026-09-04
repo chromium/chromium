@@ -72,30 +72,16 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
           <cr-composebox-file-inputs id="fileInputs" @file-change="${
       this.onFileChange_}">
             <div class="context-menu-container" id="contextMenuContainer">
-              <cr-composebox-contextual-entrypoint-and-menu id="context"
+              <cr-composebox-contextual-entrypoint-button id="context"
                   exportparts="context-menu-entrypoint-icon,
                                entrypoint-button"
                   class="upload-button"
-                  disable-auto-reposition
                   .inputState="${this.inputState_}"
-                  .searchboxLayoutMode="${this.searchboxLayoutMode}"
-                  .tabSuggestions="${this.tabSuggestions_}"
-                  .tabSuggestionsState="${this.tabSuggestionsState_}"
-                  .contextManagementInComposeboxEnabled="${
-      this.contextManagementInComposeboxEnabled}"
+                  .energyEffectAnimationEnabled="${
+                      this.energyEffectAnimationEnabled_}"
                   @context-menu-entrypoint-click="${
-      this.onContextMenuEntrypointClick_}"
-                  @context-menu-opened="${this.onContextMenuOpened_}"
-                  @context-menu-closed="${this.onContextMenuClosed_}"
-                  @add-tab-context="${this.onAddTabContext_}"
-                  @request-tab-suggestions-load="${
-      this.onRequestTabSuggestionsLoad}"
-                  @tool-click="${this.onToolClick_}"
-                  @deep-search-click="${this.onDeepSearchClick_}"
-                  @create-image-click="${this.onCreateImageClick_}"
-                  @model-click="${this.onModelClick_}"
-                  @open-drive-upload="${this.onOpenDriveUpload_}">
-              </cr-composebox-contextual-entrypoint-and-menu>
+      this.onContextMenuEntrypointClick_}">
+              </cr-composebox-contextual-entrypoint-button>
             </div>
           </cr-composebox-file-inputs>
         </div>
