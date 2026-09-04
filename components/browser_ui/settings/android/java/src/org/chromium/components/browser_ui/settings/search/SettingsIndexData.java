@@ -796,13 +796,15 @@ public class SettingsIndexData {
     }
 
     /**
-     * Finalizes the index by resolving the correct header for each entry based on the currently
-     * visible preferences and removes any orphaned entries that no longer have a valid parent path.
+     * Finalizes the index in-place by resolving the correct header for each entry based on the
+     * currently visible preferences and removes any orphaned entries that no longer have a valid
+     * parent path.
      *
      * @param rootFragmentName The class name of the root fragment (e.g., MainSettings).
+     * @return The list of orphaned {@link Entry} objects pruned and removed from the index.
      */
-    public void resolveIndex(String rootFragmentName) {
-        List<String> entriesToRemove = new ArrayList<>();
+    public List<Entry> resolveIndex(String rootFragmentName) {
+        List<Entry> entriesToRemove = new ArrayList<>();
 
         for (Entry entry : mEntries.values()) {
             // Root entries have their own title as the header if they do not inherit one from the
@@ -820,7 +822,7 @@ public class SettingsIndexData {
                     getBreadcrumbEntries(
                             entry.parentFragment, /* arguments= */ null, rootFragmentName);
             if (path == null && !entry.parentFragment.equals(rootFragmentName)) {
-                entriesToRemove.add(entry.id);
+                entriesToRemove.add(entry);
                 continue;
             }
 
@@ -841,14 +843,20 @@ public class SettingsIndexData {
             }
         }
 
-        for (String key : entriesToRemove) {
-            removeEntry(key);
+        for (Entry entry : entriesToRemove) {
+            removeEntry(entry.id);
         }
+
+        return entriesToRemove;
     }
 
-    /** Invokes {@link #resolveIndex} with MainSettings.class.getName(). */
-    public void resolveIndex() {
-        resolveIndex(sMainSettingsClassName);
+    /**
+     * Invokes {@link #resolveIndex} with MainSettings.class.getName().
+     *
+     * @return The list of orphaned {@link Entry} objects pruned and removed from the index.
+     */
+    public List<Entry> resolveIndex() {
+        return resolveIndex(sMainSettingsClassName);
     }
 
     private boolean hasSearchablePathToRoot(String fragmentName, String rootFragmentName) {
@@ -1130,7 +1138,8 @@ public class SettingsIndexData {
         return mEntries;
     }
 
-    Map<String, List<String>> getChildFragmentToParentKeysForTesting() {
+    @VisibleForTesting
+    public Map<String, List<String>> getChildFragmentToParentKeysForTesting() {
         return mChildFragmentToParentKeys;
     }
 }

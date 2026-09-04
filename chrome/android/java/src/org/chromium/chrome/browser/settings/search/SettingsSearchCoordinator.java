@@ -841,8 +841,15 @@ public class SettingsSearchCoordinator
         mIndexData = ensureIndexBuilt(mActivity, mProfile);
     }
 
+    /**
+     * Builds the settings search index in-place for all registered providers.
+     *
+     * @return The list of orphaned {@link SettingsIndexData.Entry} objects pruned and removed from
+     *     the index during resolution.
+     */
     @VisibleForTesting
-    static void buildIndexInternal(Context context, Profile profile, SettingsIndexData indexData) {
+    static List<SettingsIndexData.Entry> buildIndexInternal(
+            Context context, Profile profile, SettingsIndexData indexData) {
         // This is done to avoid duplicate entries when parsing XML.
         indexData.clear();
 
@@ -884,7 +891,7 @@ public class SettingsSearchCoordinator
                 context, new ChromeAccessibilitySettingsDelegate(profile), indexData);
 
         // Resolve headers and remove any orphaned entries.
-        indexData.resolveIndex(mainSettingsClassName);
+        return indexData.resolveIndex(mainSettingsClassName);
     }
 
     /**
