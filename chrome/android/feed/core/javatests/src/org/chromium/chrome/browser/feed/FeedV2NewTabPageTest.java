@@ -316,7 +316,7 @@ public class FeedV2NewTabPageTest {
                     }
                 });
 
-        mRenderTestRule.render(recyclerView, "feedContent_landscape_with_scrollable_mvt_v8");
+        mRenderTestRule.render(recyclerView, "feedContent_landscape_with_scrollable_mvt_v9");
     }
 
     @Test

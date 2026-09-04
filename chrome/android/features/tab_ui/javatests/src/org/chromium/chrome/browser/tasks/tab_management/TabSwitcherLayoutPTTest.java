@@ -257,7 +257,7 @@ public class TabSwitcherLayoutPTTest {
 
         tabSwitcherStation = pageStation.openRegularTabSwitcher();
 
-        mRenderTestRule.render(cta.findViewById(R.id.pane_frame), "3_native_tabs_v7");
+        mRenderTestRule.render(cta.findViewById(R.id.pane_frame), "3_native_tabs_v8");
 
         RegularNewTabPageStation previousPage =
                 tabSwitcherStation.leaveHubToPreviousTabViaBack(
@@ -320,7 +320,7 @@ public class TabSwitcherLayoutPTTest {
         editor.openAppMenuWithEditor().pinTabs();
 
         mRenderTestRule.render(
-                tabSwitcher.getActivity().findViewById(R.id.pane_frame), "regular_pinned_tabs_v3");
+                tabSwitcher.getActivity().findViewById(R.id.pane_frame), "regular_pinned_tabs_v4");
 
         RegularNewTabPageStation previousPage =
                 tabSwitcher.leaveHubToPreviousTabViaBack(RegularNewTabPageStation.newBuilder());
