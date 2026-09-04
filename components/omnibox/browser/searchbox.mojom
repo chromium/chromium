@@ -53,6 +53,20 @@ struct MatchKeywordModel {
   string keyword;
 };
 
+// LINT.IfChange(SuggestStyle)
+// Style of the suggestion match as reported in SuggestTemplateInfo.
+// NOTE: Must match StandardSuggestStyle in
+// //third_party/omnibox_proto/suggest_template_info.proto exactly as values
+// are cast directly between them.
+enum SuggestStyle {
+  kUnspecified = 0,
+  kDefault = 1,
+  kEnriched = 2,
+  kAnnotated = 3,
+  kRichImage = 4,
+};
+// LINT.ThenChange(//third_party/omnibox_proto/suggest_template_info.proto:StandardSuggestStyle)
+
 struct AutocompleteMatch {
   // Whether match should be hidden from UI.
   bool is_hidden;
@@ -109,6 +123,8 @@ struct AutocompleteMatch {
   // FuseboxAction carries client behavior and configuration to apply when the
   // user accepts a suggestion.
   fusebox_action.mojom.FuseboxAction? fusebox_action;
+  // Style of this suggestion match as reported in SuggestTemplateInfo.
+  SuggestStyle suggest_style = SuggestStyle.kUnspecified;
 };
 
 // Information about a suggested tab in the WebUI.

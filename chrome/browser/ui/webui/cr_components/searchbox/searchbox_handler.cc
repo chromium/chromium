@@ -1048,6 +1048,11 @@ SearchboxHandler::CreateAutocompleteMatch(
         match.suggest_template->fusebox_action());
   }
 
+  if (match.suggest_template && match.suggest_template->has_style()) {
+    mojom_match->suggest_style = static_cast<searchbox::mojom::SuggestStyle>(
+        match.suggest_template->style());
+  }
+
   if (SupportsKeywordMode()) {
     KeywordState keyword_state;
     std::u16string keyword;

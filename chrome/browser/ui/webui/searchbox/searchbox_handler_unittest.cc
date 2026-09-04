@@ -1401,6 +1401,27 @@ TEST_F(WebuiOmniboxHandlerTest,
             fusebox_action::mojom::SearchboxOverride::kComposebox);
 }
 
+TEST_F(WebuiOmniboxHandlerTest, CreateAutocompleteMatch_PopulatesSuggestStyle) {
+  AutocompleteMatch match;
+  match.destination_url = GURL("https://example.com");
+
+  omnibox::SuggestTemplateInfo suggest_template;
+  suggest_template.set_style(omnibox::SuggestTemplateInfo::RICH_IMAGE);
+  match.suggest_template = suggest_template;
+
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile());
+  bookmark_model->LoadEmptyForTest();
+
+  auto mojom_match = handler_->CreateAutocompleteMatch(
+      match, 0, bookmark_model, omnibox::GroupConfigMap(),
+      omnibox_controller_->client()->GetTemplateURLService());
+
+  ASSERT_TRUE(mojom_match.has_value());
+  EXPECT_EQ(mojom_match.value()->suggest_style,
+            searchbox::mojom::SuggestStyle::kRichImage);
+}
+
 TEST_F(WebuiOmniboxHandlerTest, OpenAutocompleteMatch_KeyboardModifiers) {
   scoped_refptr<FakeAutocompleteProvider> provider =
       new FakeAutocompleteProvider(AutocompleteProvider::TYPE_SEARCH);
