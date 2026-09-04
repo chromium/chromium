@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "components/personal_context/core/personal_context_prefs.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/base/hybrid_encryption_key.pb.h"
 #include "components/signin/public/base/tink_key.pb.h"
 #include "components/sync_device_info/fake_device_info_sync_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,7 +44,15 @@ TEST_F(PersonalContextKeyManagerTest, GeneratesAndPersistsKey) {
   ASSERT_EQ(keyset1.key_size(), 1);
   EXPECT_EQ(keyset1.key(0).key_data().type_url(),
             "type.googleapis.com/google.crypto.tink.HpkePublicKey");
-  EXPECT_EQ(keyset1.key(0).key_data().value().size(), 1184u);
+
+  tink::HpkePublicKey hpke_public_key;
+  ASSERT_TRUE(
+      hpke_public_key.ParseFromString(keyset1.key(0).key_data().value()));
+  EXPECT_EQ(hpke_public_key.version(), 0u);
+  EXPECT_EQ(hpke_public_key.params().kem(), tink::HpkeKem::ML_KEM768);
+  EXPECT_EQ(hpke_public_key.params().kdf(), tink::HpkeKdf::HKDF_SHA256);
+  EXPECT_EQ(hpke_public_key.params().aead(), tink::HpkeAead::AES_128_GCM);
+  EXPECT_EQ(hpke_public_key.public_key().size(), 1184u);
 
   // Subsequent call returns the same persisted key.
   std::vector<uint8_t> keyset_bytes2 =
