@@ -166,7 +166,6 @@ bool Process::Terminate(int exit_code, bool wait) const {
     if (wait && ::WaitForSingleObject(Handle(), kWaitMs) != WAIT_OBJECT_0) {
       DPLOG(ERROR) << "Error waiting for process exit";
     }
-    Exited(exit_code);
   } else {
     // The process can't be terminated, perhaps because it has already exited or
     // is in the process of exiting. An error code of ERROR_ACCESS_DENIED is the
@@ -178,10 +177,6 @@ bool Process::Terminate(int exit_code, bool wait) const {
     }
     // A non-zero timeout is necessary here for the same reasons as above.
     if (wait && ::WaitForSingleObject(Handle(), kWaitMs) == WAIT_OBJECT_0) {
-      DWORD actual_exit;
-      Exited(::GetExitCodeProcess(Handle(), &actual_exit)
-                 ? static_cast<int>(actual_exit)
-                 : exit_code);
       result = true;
     }
   }
@@ -205,7 +200,6 @@ Process::WaitExitStatus Process::WaitForExitOrEvent(
       *exit_code = static_cast<int>(temp_code);
     }
 
-    Exited(static_cast<int>(temp_code));
     return Process::WaitExitStatus::PROCESS_EXITED;
   }
 
@@ -246,11 +240,8 @@ bool Process::WaitForExitWithTimeout(TimeDelta timeout, int* exit_code) const {
     *exit_code = static_cast<int>(temp_code);
   }
 
-  Exited(static_cast<int>(temp_code));
   return true;
 }
-
-void Process::Exited(int exit_code) const {}
 
 Process::Priority Process::GetPriority() const {
   DCHECK(IsValid());

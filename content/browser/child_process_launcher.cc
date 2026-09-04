@@ -308,7 +308,6 @@ ChildProcessTerminationInfo ChildProcessLauncher::GetChildTerminationInfo(
   // still running), we'll need to Terminate via ProcessWatcher. So we can't
   // close the handle here.
   if (termination_info_.status != base::TERMINATION_STATUS_STILL_RUNNING) {
-    process_.process.Exited(termination_info_.exit_code);
     process_.process.Close();
   }
 

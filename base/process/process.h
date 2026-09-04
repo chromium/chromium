@@ -179,13 +179,6 @@ class BASE_EXPORT Process {
   // is not required.
   bool WaitForExitWithTimeout(TimeDelta timeout, int* exit_code) const;
 
-  // Indicates that the process has exited with the specified |exit_code|.
-  // This should be called if process exit is observed outside of this class.
-  // (i.e. Not because Terminate or WaitForExit, above, was called.)
-  // Note that nothing prevents this being called multiple times for a dead
-  // process though that should be avoided.
-  void Exited(int exit_code) const;
-
   // The different priorities that a process can have.
   enum class Priority {
     kMinValue = 0,

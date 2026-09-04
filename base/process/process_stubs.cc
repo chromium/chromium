@@ -96,8 +96,6 @@ bool Process::WaitForExitWithTimeout(TimeDelta timeout, int* exit_code) const {
   return false;
 }
 
-void Process::Exited(int exit_code) const {}
-
 Process::Priority Process::GetPriority() const {
   return Priority::kUserBlocking;
 }

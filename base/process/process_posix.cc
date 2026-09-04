@@ -343,7 +343,6 @@ bool Process::WaitForExitWithTimeout(TimeDelta timeout, int* exit_code) const {
   int local_exit_code = 0;
   bool exited = WaitForExitWithTimeoutImpl(Handle(), &local_exit_code, timeout);
   if (exited) {
-    Exited(local_exit_code);
     if (exit_code) {
       *exit_code = local_exit_code;
     }
@@ -398,8 +397,6 @@ bool Process::WaitForExitWithTimeoutImpl(base::ProcessHandle handle,
   return exited;
 }
 #endif
-
-void Process::Exited(int exit_code) const {}
 
 int Process::GetOSPriority() const {
   DCHECK(IsValid());

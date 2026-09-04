@@ -278,8 +278,6 @@ bool Process::WaitForExitWithTimeout(TimeDelta timeout, int* exit_code) const {
   return true;
 }
 
-void Process::Exited(int exit_code) const {}
-
 Process::Priority Process::GetPriority() const {
   // See SetPriority().
   DCHECK(IsValid());
