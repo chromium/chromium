@@ -7,13 +7,11 @@
 #include <memory>
 #include <string>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "google_apis/gcm/base/gcm_features.h"
 #include "google_apis/gcm/engine/connection_handler_impl.h"
 #include "google_apis/gcm/monitoring/gcm_stats_recorder.h"
 #include "google_apis/gcm/protocol/mcs.pb.h"
@@ -165,9 +163,7 @@ void ConnectionFactoryImpl::ConnectWithBackoff() {
   // otherwise it's possible to hit a use-after-free in the connection handler.
   // crbug.com/462319
   CloseSocket();
-  if (!waiting_for_network_online_ ||
-      !base::FeatureList::IsEnabled(
-          gcm::features::kGCMAvoidConnectionWhenNetworkUnavailable)) {
+  if (!waiting_for_network_online_) {
     ConnectImpl(/*ignore_connection_failure=*/false);
   }
 }
@@ -229,9 +225,7 @@ void ConnectionFactoryImpl::SignalConnectionReset(
   CloseSocket();
   DCHECK(!IsEndpointReachable());
 
-  if (waiting_for_network_online_ &&
-      base::FeatureList::IsEnabled(
-          gcm::features::kGCMAvoidConnectionWhenNetworkUnavailable)) {
+  if (waiting_for_network_online_) {
     // Do nothing when there is no network connection.
     return;
   }
@@ -315,9 +309,7 @@ void ConnectionFactoryImpl::ConnectImpl(bool ignore_connection_failure) {
 void ConnectionFactoryImpl::StartConnection(bool ignore_connection_failure) {
   DCHECK(!IsEndpointReachable());
   CHECK(!socket_);
-  CHECK(!waiting_for_network_online_ ||
-        !base::FeatureList::IsEnabled(
-            gcm::features::kGCMAvoidConnectionWhenNetworkUnavailable));
+  CHECK(!waiting_for_network_online_);
 
   connecting_ = true;
   GURL current_endpoint = GetCurrentEndpoint();
@@ -435,9 +427,7 @@ void ConnectionFactoryImpl::OnConnectDone(
     LOG(ERROR) << "Failed to connect to MCS endpoint with error " << result;
     recorder_->RecordConnectionFailure(result);
     CloseSocket();
-    if (!ignore_connection_failure ||
-        !base::FeatureList::IsEnabled(
-            gcm::features::kGCMDoNotIncreaseBackoffDelayOnNetworkChange)) {
+    if (!ignore_connection_failure) {
       // Do not inform of a failed request when `ignore_connection_failure`.
       backoff_entry_->InformOfRequest(false);
     }

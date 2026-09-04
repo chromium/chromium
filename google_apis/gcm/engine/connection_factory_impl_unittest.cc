@@ -13,10 +13,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
-#include "google_apis/gcm/base/gcm_features.h"
 #include "google_apis/gcm/base/mcs_util.h"
 #include "google_apis/gcm/engine/connection_factory.h"
 #include "google_apis/gcm/engine/fake_connection_handler.h"
@@ -596,9 +594,6 @@ TEST_F(ConnectionFactoryImplTest, SignalResetRestoresBackoff) {
 
 TEST_F(ConnectionFactoryImplTest,
        ShouldNotIncreaseBackoffDelayOnNetworkChange) {
-  base::test::ScopedFeatureList feature_override(
-      gcm::features::kGCMDoNotIncreaseBackoffDelayOnNetworkChange);
-
   factory()->SetConnectResult(net::ERR_NAME_NOT_RESOLVED);
   factory()->Connect();
   WaitForConnections();
@@ -622,9 +617,6 @@ TEST_F(ConnectionFactoryImplTest,
 // connection.
 TEST_F(ConnectionFactoryImplTest,
        ShouldRetryWithSmallDelayAfterManyNetworkChanges) {
-  base::test::ScopedFeatureList feature_override(
-      gcm::features::kGCMDoNotIncreaseBackoffDelayOnNetworkChange);
-
   factory()->SetConnectResult(net::ERR_NAME_NOT_RESOLVED);
   base::TimeTicks connect_time = factory()->tick_clock()->NowTicks();
   factory()->Connect();
@@ -652,10 +644,6 @@ TEST_F(ConnectionFactoryImplTest,
 // When the network is disconnected, close the socket and suppress further
 // connection attempts until the network returns.
 TEST_F(ConnectionFactoryImplTest, SuppressConnectWhenNoNetwork) {
-  base::test::ScopedFeatureList feature_override;
-  feature_override.InitAndEnableFeature(
-      gcm::features::kGCMAvoidConnectionWhenNetworkUnavailable);
-
   factory()->SetConnectResult(net::OK);
   factory()->Connect();
   EXPECT_TRUE(factory()->NextRetryAttempt().is_null());
