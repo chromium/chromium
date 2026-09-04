@@ -236,6 +236,7 @@ chrome_internal_verifier(
     cq_settings = try_.cq_settings(
         location_filters = [
             "components/cronet/.+",
+            "third_party/protobuf/.+",
         ],
     ),
     # The limited traffic to the location_filters specified below makes this
