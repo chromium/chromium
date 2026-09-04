@@ -16,7 +16,10 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <cstring>
+#include <map>
 #include <memory>
+#include <string>
 #include <tuple>
 #include <type_traits>
 #include <typeindex>

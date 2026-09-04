@@ -28,6 +28,7 @@
 #include "absl/container/hash_container_defaults.h"
 #include "absl/container/internal/container_memory.h"
 #include "absl/container/internal/hash_generator_testing.h"
+#include "absl/container/internal/hash_policy_testing.h"
 #include "absl/container/internal/test_allocator.h"
 #include "absl/container/internal/unordered_set_constructor_test.h"
 #include "absl/container/internal/unordered_set_lookup_test.h"

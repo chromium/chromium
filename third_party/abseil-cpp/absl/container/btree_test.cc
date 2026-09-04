@@ -16,6 +16,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cstddef>
 #include <cstdint>
 #include <functional>
 #include <iostream>
@@ -25,6 +26,7 @@
 #include <memory>
 #include <numeric>
 #include <optional>
+#include <set>
 #include <stdexcept>
 #include <string>
 #include <type_traits>
@@ -44,6 +46,7 @@
 #include "absl/hash/hash_testing.h"
 #include "absl/memory/memory.h"
 #include "absl/random/random.h"
+#include "absl/strings/cord.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_split.h"
 #include "absl/strings/string_view.h"

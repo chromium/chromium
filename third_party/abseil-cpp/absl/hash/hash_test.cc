@@ -1306,6 +1306,10 @@ TEST(SwisstableCollisions, DoubleRange) {
 TEST(SwisstableCollisions, LowEntropyStrings) {
   constexpr char kMinChar = 0;
   constexpr char kMaxChar = 64;
+  // Scale the probe limit inversely with Group::kWidth so the test asserts a
+  // consistent bound on the number of probed slots across architectures.
+  constexpr size_t kMaxProbes =
+      64 * 16 / absl::container_internal::Group::kWidth;
   // These sizes cover the different hashing cases.
   for (size_t size : {8u, 16u, 32u, 64u, 128u}) {
     for (size_t b = 0; b < size - 1; ++b) {
@@ -1321,7 +1325,7 @@ TEST(SwisstableCollisions, LowEntropyStrings) {
           s[b + 1] = c2;
           set.insert(s);
           ASSERT_LT(HashtableDebugAccess<decltype(set)>::GetNumProbes(set, s),
-                    64)
+                    kMaxProbes)
               << "size: " << size << "; bit: " << b;
         }
       }

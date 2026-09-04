@@ -31,6 +31,7 @@
 #include <iomanip>
 #include <ios>
 #include <limits>
+#include <ratio>  // NOLINT(build/c++11)
 #include <string>
 #include <type_traits>
 

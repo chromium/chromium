@@ -163,6 +163,7 @@ cc_library(
         "//absl/container:hash_container_defaults",
         "//absl/strings",
         "//absl/strings:str_format",
+        "//absl/strings:string_view",
         "//absl/types:span",
     ],
 )

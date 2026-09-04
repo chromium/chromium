@@ -782,7 +782,7 @@ void Mutex::EnableDebugLog(const char* name) {
   // Since it's not possible to take address of a destructor, we move the
   // actual destructor code into the separate Dtor function and force the
   // compiler to emit this function even if it's inline by taking its address.
-  ABSL_ATTRIBUTE_UNUSED volatile auto dtor = &Mutex::Dtor;
+  [[maybe_unused]] volatile auto dtor = &Mutex::Dtor;
   ABSL_ANNOTATE_IGNORE_WRITES_END();
 }
 

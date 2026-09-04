@@ -15,7 +15,9 @@
 #include <string.h>
 
 #include <cctype>
+#include <chrono>  // NOLINT(build/c++11)
 #include <cstdint>
+#include <string>
 #include <utility>
 
 #include "absl/strings/ascii.h"

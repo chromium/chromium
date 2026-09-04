@@ -17,7 +17,10 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <deque>
+#include <functional>
 #include <limits>
+#include <memory>
 #include <numeric>
 #include <random>
 #include <string>
@@ -29,9 +32,12 @@
 #include "absl/base/internal/raw_logging.h"
 #include "absl/container/internal/container_memory.h"
 #include "absl/container/internal/hash_function_defaults.h"
+#include "absl/container/internal/hashtable_control_bytes.h"
 #include "absl/container/internal/raw_hash_set.h"
+#include "absl/hash/hash.h"
 #include "absl/random/random.h"
 #include "absl/strings/str_format.h"
+#include "absl/strings/string_view.h"
 #include "benchmark/benchmark.h"
 
 namespace absl {
@@ -161,6 +167,32 @@ struct IntTable
                    std::equal_to<int64_t>, std::allocator<int64_t>> {
   using Base = typename IntTable::raw_hash_set;
   IntTable() {}
+  using Base::Base;
+};
+
+struct MyInt {
+  int64_t value;
+};
+
+struct TransparentIntHash {
+  using is_transparent = void;
+  size_t operator()(int64_t x) const { return absl::Hash<int64_t>{}(x); }
+  size_t operator()(MyInt x) const { return absl::Hash<int64_t>{}(x.value); }
+};
+
+struct TransparentIntEq {
+  using is_transparent = void;
+  bool operator()(int64_t x, MyInt y) const { return x == y.value; }
+  bool operator()(MyInt x, MyInt y) const { return x.value == y.value; }
+  bool operator()(MyInt x, int64_t y) const { return x.value == y; }
+  bool operator()(int64_t x, int64_t y) const { return x == y; }
+};
+
+struct TransparentIntTable
+    : raw_hash_set<IntPolicy, TransparentIntHash, TransparentIntEq,
+                   std::allocator<int64_t>> {
+  using Base = typename TransparentIntTable::raw_hash_set;
+  TransparentIntTable() = default;
   using Base::Base;
 };
 
@@ -593,6 +625,20 @@ void BM_DropDeletes(benchmark::State& state) {
   }
 }
 BENCHMARK(BM_DropDeletes);
+
+void BM_TransparentFind(benchmark::State& state) {
+  TransparentIntTable table;
+  for (int i = 0; i < 10000; ++i) {
+    table.insert(i);
+  }
+  while (state.KeepRunningBatch(10000)) {
+    for (int i = 0; i < 10000; ++i) {
+      auto it = table.find(MyInt{i});
+      benchmark::DoNotOptimize(it);
+    }
+  }
+}
+BENCHMARK(BM_TransparentFind);
 
 void BM_Resize(benchmark::State& state) {
   // For now just measure a small cheap hash table since we

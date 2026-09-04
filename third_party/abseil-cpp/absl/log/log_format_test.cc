@@ -1273,7 +1273,7 @@ struct PointWithAbslStringifiyAndOstream {
   int y = 20;
 };
 
-ABSL_ATTRIBUTE_UNUSED std::ostream& operator<<(
+[[maybe_unused]] std::ostream& operator<<(
     std::ostream& os, const PointWithAbslStringifiyAndOstream&) {
   return os << "Default to AbslStringify()";
 }

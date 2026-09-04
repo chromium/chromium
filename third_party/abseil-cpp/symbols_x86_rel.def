@@ -793,7 +793,7 @@ EXPORTS
     ?GetFlagsHelpMatchSubstr@flags_internal@absl@@YA?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@XZ
     ?GetFlagsHelpMode@flags_internal@absl@@YA?AW4HelpMode@12@XZ
     ?GetFlatAux@Cord@absl@@CA_NPAUCordRep@cord_internal@2@PAV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
-    ?GetGrowthLeftTotalSlow@GrowthInfoAccessor@container_internal@absl@@QBEII@Z
+    ?GetGrowthLeftTotalSlow@CommonFields@container_internal@absl@@QBEII@Z
     ?GetHashtablezMaxSamples@container_internal@absl@@YAIXZ
     ?GetHashtablezSampleParameter@container_internal@absl@@YAHXZ
     ?GetId@GraphCycles@synchronization_internal@absl@@QAE?AUGraphId@23@PAX@Z
@@ -854,7 +854,7 @@ EXPORTS
     ?Init@FlagImpl@flags_internal@absl@@AAEXXZ
     ?InitDiscreteDistribution@random_internal@absl@@YA?AV?$vector@U?$pair@NI@__Cr@std@@V?$allocator@U?$pair@NI@__Cr@std@@@23@@__Cr@std@@PAV?$vector@NV?$allocator@N@__Cr@std@@@45@@Z
     ?InitFrom@?$Storage@UPayload@status_internal@absl@@$00V?$allocator@UPayload@status_internal@absl@@@__Cr@std@@@inlined_vector_internal@absl@@QAEXABV123@@Z
-    ?InitGrowthLeftNoDeleted@GrowthInfoAccessor@container_internal@absl@@QAEXII@Z
+    ?InitGrowthLeftNoDeleted@CommonFields@container_internal@absl@@QAEXII@Z
     ?InitRepImpl@StatusBuilder@absl@@CAPAURep@12@VStatus@2@@Z
     ?InitSigSafeArena@base_internal@absl@@YAXXZ
     ?InitStream@Rep@StatusBuilder@absl@@QAEXXZ
@@ -993,7 +993,7 @@ EXPORTS
     ?OnVLogVerbosityUpdate@log_internal@absl@@YAXV?$function@$$A6AXXZ@__Cr@std@@@Z
     ?OneTimeInitThreadIdentity@synchronization_internal@absl@@YAXPAUThreadIdentity@base_internal@2@@Z
     ?OneWordValue@FlagImpl@flags_internal@absl@@ABEAAU?$atomic@_J@__Cr@std@@XZ
-    ?OverwriteFullAsEmpty@GrowthInfoAccessor@container_internal@absl@@QAEXXZ
+    ?OverwriteFullAsEmpty@CommonFields@container_internal@absl@@QAEXXZ
     ?ParseAbseilFlagsOnly@absl@@YAXHQAPADAAV?$vector@PADV?$allocator@PAD@__Cr@std@@@__Cr@std@@AAV?$vector@UUnrecognizedFlag@absl@@V?$allocator@UUnrecognizedFlag@absl@@@__Cr@std@@@34@@Z
     ?ParseAbseilFlagsOnlyImpl@flags_internal@absl@@YA?AW4HelpMode@12@HQAPADAAV?$vector@PADV?$allocator@PAD@__Cr@std@@@__Cr@std@@AAV?$vector@UUnrecognizedFlag@absl@@V?$allocator@UUnrecognizedFlag@absl@@@__Cr@std@@@56@W4UsageFlagsAction@12@@Z
     ?ParseCivilTime@absl@@YA_NV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PAV?$civil_time@Uday_tag@time_internal@absl@@@detail@cctz@time_internal@1@@Z
@@ -1067,8 +1067,8 @@ EXPORTS
     ?ReadSeedMaterialFromOSEntropy@random_internal@absl@@YA_NV?$Span@I@2@@Z
     ?ReadSequenceLockedData@FlagImpl@flags_internal@absl@@ABEXPAX@Z
     ?ReaderTryLockSlow@Mutex@absl@@AAE_NXZ
-    ?RebalanceGrowthLeftLowerBound@GrowthInfoAccessor@container_internal@absl@@QAE?AVGrowthInfoLowerBound@23@I@Z
-    ?RebalanceGrowthLeftLowerBoundLargeCapacity@GrowthInfoAccessor@container_internal@absl@@AAE?AVGrowthInfoLowerBound@23@XZ
+    ?RebalanceGrowthLeftLowerBound@CommonFields@container_internal@absl@@QAE?AVGrowthInfoLowerBound@23@I@Z
+    ?RebalanceGrowthLeftLowerBoundLargeCapacity@CommonFields@container_internal@absl@@AAE?AVGrowthInfoLowerBound@23@XZ
     ?Rebuild@CordRepBtree@cord_internal@absl@@CAXPAPAV123@PAV123@_N@Z
     ?Rebuild@CordRepBtree@cord_internal@absl@@SAPAV123@PAV123@@Z
     ?RecordClearedReservationSlow@container_internal@absl@@YAXPAUHashtablezInfo@12@@Z

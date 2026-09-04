@@ -920,8 +920,7 @@ class ABSL_ATTRIBUTE_TRIVIAL_ABI Cord {
     static constexpr unsigned char kMaxInline = cord_internal::kMaxInline;
     static_assert(kMaxInline >= sizeof(absl::cord_internal::CordRep*));
 
-    constexpr InlineRep() : data_() {}
-    explicit InlineRep(InlineData::DefaultInitType init) : data_(init) {}
+    InlineRep() = default;
     InlineRep(const InlineRep& src);
     InlineRep(InlineRep&& src);
     InlineRep& operator=(const InlineRep& src);
@@ -1181,8 +1180,7 @@ constexpr Cord::InlineRep::InlineRep(absl::string_view sv,
                                      CordRep* absl_nullable rep)
     : data_(sv, rep) {}
 
-inline Cord::InlineRep::InlineRep(const Cord::InlineRep& src)
-    : data_(InlineData::kDefaultInit) {
+inline Cord::InlineRep::InlineRep(const Cord::InlineRep& src) {
   if (CordRep* tree = src.tree()) {
     EmplaceTree(CordRep::Ref(tree), src.data_,
                 CordzUpdateTracker::kConstructorCord);
@@ -1364,7 +1362,7 @@ inline void Cord::InlineRep::MaybeRemoveEmptyCrcNode() {
   ResetToEmpty();
 }
 
-constexpr inline Cord::Cord() noexcept {}
+constexpr inline Cord::Cord() noexcept : contents_() {}
 
 inline Cord::Cord(absl::string_view src)
     : Cord(src, CordzUpdateTracker::kConstructorString) {}

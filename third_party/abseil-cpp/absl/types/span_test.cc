@@ -796,9 +796,9 @@ TEST(IntSpan, NoexceptTest) {
 template <int i>
 struct ConstexprTester {};
 
-#define ABSL_TEST_CONSTEXPR(expr)                                          \
-  do {                                                                     \
-    ABSL_ATTRIBUTE_UNUSED ConstexprTester<(static_cast<void>(expr), 1)> t; \
+#define ABSL_TEST_CONSTEXPR(expr)                                     \
+  do {                                                                \
+    [[maybe_unused]] ConstexprTester<(static_cast<void>(expr), 1)> t; \
   } while (0)
 
 struct ContainerWithConstexprMethods {

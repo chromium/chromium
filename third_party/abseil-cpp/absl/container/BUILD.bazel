@@ -169,6 +169,9 @@ cc_library(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     textual_hdrs = ["internal/test_allocator.h"],
     visibility = ["//visibility:private"],
+    deps = [
+        "//absl/base:config",
+    ],
 )
 
 cc_test(
@@ -322,6 +325,7 @@ cc_test(
         ":flat_hash_set",
         ":hash_container_defaults",
         ":hash_generator_testing",
+        ":hash_policy_testing",
         ":test_allocator",
         ":unordered_set_constructor_test",
         ":unordered_set_lookup_test",
@@ -331,7 +335,7 @@ cc_test(
         "//absl/hash",
         "//absl/log:check",
         "//absl/memory",
-        "//absl/strings",
+        "//absl/strings:string_view",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
@@ -445,7 +449,7 @@ cc_test(
         "//absl/base:config",
         "//absl/base:no_destructor",
         "//absl/meta:type_traits",
-        "//absl/strings",
+        "//absl/strings:string_view",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
@@ -464,8 +468,8 @@ cc_library(
         "//absl/base:config",
         "//absl/hash",
         "//absl/meta:type_traits",
-        "//absl/strings",
         "//absl/strings:cord",
+        "//absl/strings:string_view",
     ],
 )
 
@@ -491,11 +495,12 @@ cc_test(
         ":flat_hash_map",
         ":flat_hash_set",
         ":hash_function_defaults",
+        "//absl/base:core_headers",
         "//absl/hash",
         "//absl/random",
-        "//absl/strings",
         "//absl/strings:cord",
         "//absl/strings:cord_test_helpers",
+        "//absl/strings:string_view",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
@@ -515,7 +520,7 @@ cc_library(
         "//absl/memory",
         "//absl/meta:type_traits",
         "//absl/random",
-        "//absl/strings",
+        "//absl/strings:string_view",
     ],
 )
 
@@ -530,7 +535,7 @@ cc_library(
     ],
     deps = [
         "//absl/hash",
-        "//absl/strings",
+        "//absl/strings:string_view",
     ],
 )
 
@@ -852,6 +857,7 @@ cc_test(
         "//absl/numeric:int128",
         "//absl/random",
         "//absl/strings",
+        "//absl/strings:string_view",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
@@ -868,10 +874,13 @@ cc_binary(
     deps = [
         ":container_memory",
         ":hash_function_defaults",
+        ":hashtable_control_bytes",
         ":raw_hash_set",
         "//absl/base:raw_logging_internal",
+        "//absl/hash",
         "//absl/random",
         "//absl/strings:str_format",
+        "//absl/strings:string_view",
         "@google_benchmark//:benchmark_main",
     ],
 )
@@ -896,6 +905,7 @@ cc_binary(
         "//absl/random:distributions",
         "//absl/strings",
         "//absl/strings:str_format",
+        "//absl/strings:string_view",
     ],
 )
 
@@ -1120,6 +1130,7 @@ cc_test(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     tags = ["no_test_loonix"],
     deps = [
+        ":hash_policy_testing",
         ":unordered_set_constructor_test",
         ":unordered_set_lookup_test",
         ":unordered_set_members_test",
@@ -1136,6 +1147,7 @@ cc_test(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     tags = ["no_test_loonix"],
     deps = [
+        ":hash_policy_testing",
         ":unordered_map_constructor_test",
         ":unordered_map_lookup_test",
         ":unordered_map_members_test",
@@ -1190,8 +1202,8 @@ cc_library(
         "//absl/hash:weakly_mixed_integer",
         "//absl/memory",
         "//absl/meta:type_traits",
-        "//absl/strings",
         "//absl/strings:cord",
+        "//absl/strings:string_view",
         "//absl/types:compare",
     ],
 )
@@ -1206,7 +1218,6 @@ cc_library(
     deps = [
         ":btree",
         ":flat_hash_set",
-        "//absl/strings",
         "//absl/strings:cord",
         "//absl/time",
     ],
@@ -1240,6 +1251,8 @@ cc_test(
         "//absl/memory",
         "//absl/random",
         "//absl/strings",
+        "//absl/strings:cord",
+        "//absl/strings:string_view",
         "//absl/types:compare",
         "@googletest//:gtest",
         "@googletest//:gtest_main",

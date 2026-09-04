@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include <cstddef>
+#include <cstring>
 #include <unordered_set>
 #include <utility>
 #include <vector>

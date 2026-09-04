@@ -87,6 +87,7 @@ absl_source_set("synchronization") {
     "//third_party/abseil-cpp/absl/debugging:stacktrace",
     "//third_party/abseil-cpp/absl/debugging:symbolize",
     "//third_party/abseil-cpp/absl/meta:type_traits",
+    "//third_party/abseil-cpp/absl/strings:string_view",
     "//third_party/abseil-cpp/absl/time",
   ]
 }
@@ -168,7 +169,6 @@ absl_test("per_thread_sem_test") {
   deps = [
     ":per_thread_sem_test_common",
     ":synchronization",
-    "//third_party/abseil-cpp/absl/strings",
     "//third_party/abseil-cpp/absl/time",
   ]
 }

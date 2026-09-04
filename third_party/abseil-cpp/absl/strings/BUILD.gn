@@ -323,7 +323,6 @@ absl_test("cord_data_edge_test") {
     ":cord_internal",
     ":cord_rep_test_util",
     ":string_view",
-    ":strings",
     "//third_party/abseil-cpp/absl/base:config",
   ]
 }
@@ -361,7 +360,6 @@ absl_test("cord_rep_btree_reader_test") {
     ":cord_internal",
     ":cord_rep_test_util",
     ":string_view",
-    ":strings",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:raw_logging_internal",
   ]
@@ -610,7 +608,6 @@ absl_source_set("cord_test_helpers") {
     ":cord",
     ":cord_internal",
     ":string_view",
-    ":strings",
     "//third_party/abseil-cpp/absl/base:config",
   ]
 }
@@ -622,7 +619,6 @@ absl_source_set("cord_rep_test_util") {
   deps = [
     ":cord_internal",
     ":string_view",
-    ":strings",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:raw_logging_internal",
     "//third_party/abseil-cpp/absl/types:span",
@@ -909,7 +905,6 @@ absl_test("str_format_extension_test") {
     ":str_format",
     ":str_format_internal",
     ":string_view",
-    ":strings",
     "//third_party/abseil-cpp/absl/random",
   ]
 }

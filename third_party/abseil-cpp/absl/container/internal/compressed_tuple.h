@@ -32,6 +32,7 @@
 #ifndef ABSL_CONTAINER_INTERNAL_COMPRESSED_TUPLE_H_
 #define ABSL_CONTAINER_INTERNAL_COMPRESSED_TUPLE_H_
 
+#include <cstddef>
 #include <initializer_list>
 #include <tuple>
 #include <type_traits>

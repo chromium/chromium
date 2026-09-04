@@ -14,6 +14,8 @@
 
 #include "absl/container/internal/hash_policy_testing.h"
 
+#include <utility>
+
 #include "gtest/gtest.h"
 
 namespace absl {
