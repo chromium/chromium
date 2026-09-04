@@ -1115,6 +1115,11 @@ class ApiTests extends ApiTestFixtureBase {
     this.host.openPasswordManagerSettingsPage();
   }
 
+  async testOpenContactInfoSettingsPage() {
+    assertDefined(this.host.openContactInfoSettingsPage);
+    this.host.openContactInfoSettingsPage();
+  }
+
   async testSwitchConversationToOldConversationInPlace() {
     assertDefined(this.host.switchConversation);
     await this.host.switchConversation(

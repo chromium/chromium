@@ -604,6 +604,8 @@ void GlicInternalsPageHandler::GetInternalsDataPayload(
   boolean_settings["Get Tab by ID Enabled"] = state->enable_get_tab_by_id;
   boolean_settings["Open Password Manager Settings Page Enabled"] =
       state->enable_open_password_manager_settings_page;
+  boolean_settings["Open Contact Info Settings Page Enabled"] =
+      state->enable_open_contact_info_settings_page;
   boolean_settings["Skills Feature Enabled"] = state->enable_skills;
   boolean_settings["Get Tab Favicon by ID Enabled"] =
       state->enable_get_tab_favicon_by_id;

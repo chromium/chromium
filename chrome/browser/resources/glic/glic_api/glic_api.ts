@@ -717,6 +717,12 @@ export declare interface GlicBrowserHost {
    */
   openPasswordManagerSettingsPage?(): void;
 
+  /**
+   * Opens a tab to the contact info settings page. If an open tab already
+   * has the page loaded, it is focused instead.
+   */
+  openContactInfoSettingsPage?(): void;
+
   /** Requests the closing of the panel containing the web client. */
   closePanel?(): Promise<void>;
 

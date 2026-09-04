@@ -536,6 +536,10 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
       this.openPasswordManagerSettingsPage = undefined;
     }
 
+    if (!state.enableOpenContactInfoSettingsPage) {
+      this.openContactInfoSettingsPage = undefined;
+    }
+
     if (!state.enableGetTabFaviconById) {
       this.getTabFaviconById = undefined;
     }
@@ -600,6 +604,10 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
 
   openPasswordManagerSettingsPage?(): void {
     this.handler.openPasswordManagerSettingsPage();
+  }
+
+  openContactInfoSettingsPage?(): void {
+    this.handler.openContactInfoSettingsPage();
   }
 
   reportClientTransientError(abslStatus: number): void {

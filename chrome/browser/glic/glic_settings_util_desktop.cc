@@ -107,6 +107,14 @@ void OpenPasswordManagerSettingsPage(Profile* profile) {
   glic::Navigate(std::move(params));
 }
 
+void OpenContactInfoSettingsPage(Profile* profile) {
+  auto params = std::make_unique<NavigateParams>(
+      profile, chrome::GetSettingsUrl(chrome::kContactInfoSubPage),
+      ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+  params->disposition = WindowOpenDisposition::SINGLETON_TAB;
+  glic::Navigate(std::move(params));
+}
+
 std::string_view GetPlatformHelpSuffix() {
 #if BUILDFLAG(IS_WIN)
   return "_win";

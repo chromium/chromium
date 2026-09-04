@@ -981,6 +981,9 @@ BASE_FEATURE(kGlicGetTabByIdApi, base::FEATURE_ENABLED_BY_DEFAULT);
 // Kill switch for openPasswordManagerSettingsPage API.
 BASE_FEATURE(kGlicOpenPasswordManagerSettingsPageApi,
              base::FEATURE_ENABLED_BY_DEFAULT);
+// Kill switch for openContactInfoSettingsPage API.
+BASE_FEATURE(kGlicOpenContactInfoSettingsPageApi,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicAssetsV2, base::FEATURE_ENABLED_BY_DEFAULT);
 

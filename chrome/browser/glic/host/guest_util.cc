@@ -764,6 +764,8 @@ void PopulateGlobalClientInitialState(mojom::WebClientInitialState* state,
   state->enable_open_password_manager_settings_page =
       base::FeatureList::IsEnabled(
           features::kGlicOpenPasswordManagerSettingsPageApi);
+  state->enable_open_contact_info_settings_page = base::FeatureList::IsEnabled(
+      features::kGlicOpenContactInfoSettingsPageApi);
   state->enable_trust_first_onboarding =
       !GlicEnabling::HasConsentedForProfile(profile);
   state->onboarding_completed = GlicEnabling::HasConsentedForProfile(profile);

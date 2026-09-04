@@ -111,6 +111,7 @@ enum class GlicHostApiRequestId {
   kActivateTabWithUrl = 102,
   kUpdateActorTaskStepProgress = 103,
   kOpenPinnedTabPicker = 104,
+  kOpenContactInfoSettingsPage = 105,
 };
 // LINT.ThenChange(
 // //tools/metrics/histograms/metadata/glic/histograms.xml:ApiRequestType,

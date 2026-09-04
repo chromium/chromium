@@ -765,6 +765,15 @@ class GlicWebClientHandler
     ::glic::OpenPasswordManagerSettingsPage(profile_);
   }
 
+  void OpenContactInfoSettingsPage() override {
+    LogApiRequestCount(GlicHostApiRequestId::kOpenContactInfoSettingsPage);
+    if (!base::FeatureList::IsEnabled(
+            features::kGlicOpenContactInfoSettingsPageApi)) {
+      return;
+    }
+    ::glic::OpenContactInfoSettingsPage(profile_);
+  }
+
   void ClosePanel() override {
     LogApiRequestCount(GlicHostApiRequestId::kClosePanel);
     host().ClosePanel();

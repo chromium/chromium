@@ -825,6 +825,7 @@ export const RECORDED_REQUEST_IDS = {
   // Do not reuse deleted request ID: 102,
   UpdateActorTaskStepProgress: 103,
   OpenPinnedTabPicker: 104,
+  // Do not reuse deleted request ID: 105,
 } as const satisfies
 InterfaceHistogramIds<WebClientHost>&InterfaceHistogramIds<ActorHost>&
     InterfaceHistogramIds<AnnotationHost>;

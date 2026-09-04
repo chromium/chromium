@@ -38,6 +38,10 @@ void OpenPasswordManagerSettingsPage(Profile* profile) {
   }
 }
 
+void OpenContactInfoSettingsPage(Profile* profile) {
+  NOTIMPLEMENTED();
+}
+
 std::string_view GetPlatformHelpSuffix() {
   return "_android";
 }

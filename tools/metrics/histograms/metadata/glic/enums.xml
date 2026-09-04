@@ -465,6 +465,7 @@ chromium-metrics-reviews@google.com.
   <int value="102" label="ActivateTabWithUrl"/>
   <int value="103" label="UpdateActorTaskStepProgress"/>
   <int value="104" label="OpenPinnedTabPicker"/>
+  <int value="105" label="OpenContactInfoSettingsPage"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/public/glic_api_metrics.h:GlicHostApiRequestId) -->

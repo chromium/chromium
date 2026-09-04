@@ -5,6 +5,7 @@
 module glic.mojom;
 
 import "chrome/browser/glic/host/glic_features.mojom";
+import "chrome/browser/ui/webui/ai_overlay_dialog/tools/tools.mojom";
 import "chrome/common/actor_webui.mojom";
 import "chrome/common/glic_enums.mojom";
 import "components/content_settings/core/common/content_settings_types.mojom";
@@ -19,7 +20,6 @@ import "mojo/public/mojom/base/values.mojom";
 import "mojo/public/mojom/base/version.mojom";
 import "skia/public/mojom/bitmap.mojom";
 import "third_party/blink/public/mojom/content_extraction/ai_page_content_metadata.mojom";
-import "chrome/browser/ui/webui/ai_overlay_dialog/tools/tools.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
@@ -306,6 +306,8 @@ struct WebClientInitialState {
   bool enable_get_tab_by_id;
   // Whether kGlicOpenPasswordManagerSettingsPageApi is enabled.
   bool enable_open_password_manager_settings_page;
+  // Whether kGlicOpenContactInfoSettingsPageApi is enabled.
+  bool enable_open_contact_info_settings_page;
   // Whether kGlicTrustFirstOnboarding is enabled.
   bool enable_trust_first_onboarding;
   // Whether the user has completed the onboarding flow.
@@ -1195,6 +1197,9 @@ interface WebClientHandler {
 
   // Opens the password manager settings page.
   OpenPasswordManagerSettingsPage();
+
+  // Opens the contact info settings page.
+  OpenContactInfoSettingsPage();
 
   // Set whether the panel can be manually resized.
   EnableDragResize(bool enabled);

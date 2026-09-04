@@ -307,6 +307,7 @@ class GlicApiTest : public GlicApiBrowserTest,
           {{features::kGlicUserStatusRefreshApi.name, "true"},
            {features::kGlicUserStatusThrottleInterval.name, "2s"}}},
          {features::kGlicOpenPasswordManagerSettingsPageApi, {}},
+         {features::kGlicOpenContactInfoSettingsPageApi, {}},
          {features::kGlicActor,
           {{features::kGlicActorPolicyControlExemption.name, "true"}}},
          {blink::features::kAIPageContentTrackedElementsIframe, {}}},
@@ -3247,6 +3248,7 @@ class GlicGetHostCapabilityApiTest : public GlicApiBrowserTest,
          {{features::kGlicUserStatusRefreshApi.name, "true"},
           {features::kGlicUserStatusThrottleInterval.name, "2s"}}},
         {features::kGlicOpenPasswordManagerSettingsPageApi, {}},
+        {features::kGlicOpenContactInfoSettingsPageApi, {}},
         {features::kGlicActor,
          {{features::kGlicActorPolicyControlExemption.name, "true"}}},
         {blink::features::kAIPageContentTrackedElementsIframe, {}},
@@ -3716,6 +3718,18 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testOpenPasswordManagerSettingsPage) {
   EXPECT_EQ(
       GetTabListInterface()->GetActiveTab()->GetContents()->GetVisibleURL(),
       settings_url);
+}
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testOpenContactInfoSettingsPage) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+  ASSERT_OK(
+      RunUntilEqual([&]() { return GetTabListInterface()->GetTabCount(); }, 2));
+  EXPECT_EQ(
+      GetTabListInterface()->GetActiveTab()->GetContents()->GetVisibleURL(),
+      chrome::GetSettingsUrl(chrome::kContactInfoSubPage));
 }
 #endif
 
