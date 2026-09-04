@@ -72,8 +72,8 @@ public class ActionChipsView extends RecyclerView {
     }
 
     /**
-     * Proxy calls to super.onKeyDown; call exposed for testing purposes. There is no way to detect
-     * calls to super using robolectric.
+     * Proxies calls to super.onKeyDown; call exposed for testing purposes. There is no way to
+     * detect calls to super using robolectric.
      */
     @CheckDiscard("Should be inlined except for testing")
     @VisibleForTesting

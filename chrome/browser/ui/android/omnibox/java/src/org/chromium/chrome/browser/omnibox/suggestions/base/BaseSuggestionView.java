@@ -140,9 +140,7 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout
         }
     }
 
-    /**
-     * @return List of Action views.
-     */
+    /** Returns the list of Action views. */
     public List<ActionButtonView> getActionButtons() {
         return mActionButtons;
     }
@@ -150,8 +148,8 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout
     /**
      * Applies / removes selection hairline from action button.
      *
-     * @param buttonIndex the index of an action button
-     * @param isSelected whether to apply hairline
+     * @param buttonIndex The index of an action button.
+     * @param isSelected Whether to apply hairline.
      */
     private void highlightActionButton(int buttonIndex, boolean isSelected) {
         if (buttonIndex < 0 || buttonIndex >= mActionButtons.size()) return;
@@ -375,7 +373,7 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout
         return false;
     }
 
-    /** Set the lead-in spacing for the action chip carousel. */
+    /** Sets the lead-in spacing for the action chip carousel. */
     public void setActionChipLeadInSpacing(int spacing) {
         actionChipsView.setLeadInSpacing(spacing);
     }
@@ -397,7 +395,7 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout
         decorationIcon.getLayoutParams().height = oldParams.height;
     }
 
-    /** Control whether the decoration icon should be visible. */
+    /** Controls whether the decoration icon should be visible. */
     public void setShowDecorationIcon(boolean shouldShow) {
         decorationIcon.setVisibility(shouldShow ? VISIBLE : GONE);
     }

@@ -45,7 +45,7 @@ class SuggestionLayout extends ViewGroup {
     /**
      * SuggestionLayout's LayoutParams.
      *
-     * <p>Additional parameters define the role of an element..
+     * <p>Additional parameters define the role of an element.
      */
     public static class LayoutParams extends ViewGroup.LayoutParams {
 
@@ -105,27 +105,23 @@ class SuggestionLayout extends ViewGroup {
             mIsLargeDecoration = isLargeDecoration;
         }
 
-        /** Create LayoutParams for particular SuggestionViewType. */
+        /** Creates LayoutParams for particular SuggestionViewType. */
         public static LayoutParams forViewType(@SuggestionViewType int type) {
             return new LayoutParams(WRAP_CONTENT, WRAP_CONTENT, type, false);
         }
 
-        /** Create LayoutParams for particular SuggestionViewType. */
+        /** Creates LayoutParams for large decoration icon. */
         public static LayoutParams forLargeDecorationIcon() {
             return new LayoutParams(
                     WRAP_CONTENT, WRAP_CONTENT, SuggestionViewType.DECORATION, true);
         }
 
-        /**
-         * @return The role of the view.
-         */
+        /** Returns the role of the view. */
         private @SuggestionViewType int getViewType() {
             return mSuggestionViewType;
         }
 
-        /**
-         * @return The placement of the view, relative to Suggestion area start.
-         */
+        /** Returns the placement of the view, relative to the suggestion area start. */
         private Rect getPlacement() {
             return mPlacement;
         }
@@ -354,7 +350,7 @@ class SuggestionLayout extends ViewGroup {
      * <p>NOTE: this is invoked directly by the measure cycle. Do not allocate memory, and avoid any
      * calls that trigger measurement invalidation and restart.
      *
-     * @param suggestionWidthPx The width of the suggestion content area
+     * @param suggestionWidthPx The width of the suggestion content area.
      * @return The computed width of the CONTENT views.
      */
     private @Px int measureContentViewsWidthPx(@Px int suggestionWidthPx) {
@@ -440,7 +436,7 @@ class SuggestionLayout extends ViewGroup {
      * <p>NOTE: this is invoked directly by the measure cycle. Do not allocate memory, and avoid any
      * calls that trigger measurement invalidation and restart.
      *
-     * @param suggestionWidthPx The width of the suggestion content area
+     * @param suggestionWidthPx The width of the suggestion content area.
      * @return The cumulative height of the FOOTER views.
      */
     private @Px int measureFooterViewsHeightPx(@Px int suggestionWidthPx) {
@@ -512,7 +508,7 @@ class SuggestionLayout extends ViewGroup {
      *
      * <ul>
      *   <li>to the RIGHT, when the layout direction is LTR, and
-     *   <li>to the LEFT, when the layout direction ir RTL.
+     *   <li>to the LEFT, when the layout direction is RTL.
      * </ul>
      *
      * @param suggestionWidthPx The width of the Suggestion area.

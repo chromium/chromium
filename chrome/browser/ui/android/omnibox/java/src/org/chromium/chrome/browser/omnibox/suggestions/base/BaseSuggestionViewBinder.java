@@ -150,7 +150,7 @@ public abstract class BaseSuggestionViewBinder<T extends View>
         }
     }
 
-    /** Bind Action Icons for the suggestion view. */
+    /** Binds action icons for the suggestion view. */
     private static <T extends View> void bindActionButtons(
             PropertyModel model, BaseSuggestionView<T> view, List<Action> actions) {
         final int actionCount = actions != null ? actions.size() : 0;
@@ -224,7 +224,7 @@ public abstract class BaseSuggestionViewBinder<T extends View>
         return model.get(SuggestionCommonProperties.COLOR_SCHEME) == BrandedColorScheme.INCOGNITO;
     }
 
-    /** Update attributes of decorated suggestion icon. */
+    /** Updates attributes of decorated suggestion icon. */
     private static <T extends View> void updateSuggestionIcon(
             PropertyModel model, BaseSuggestionView<T> baseView) {
         final ImageView rciv = baseView.decorationIcon;
@@ -333,7 +333,7 @@ public abstract class BaseSuggestionViewBinder<T extends View>
         }
     }
 
-    /** Update image view using supplied drawable state object. */
+    /** Updates image view using supplied drawable state object. */
     private static void updateIcon(
             ImageView view, OmniboxDrawableState sds, @ColorRes int tintRes) {
         if (sds == null) {
@@ -371,9 +371,7 @@ public abstract class BaseSuggestionViewBinder<T extends View>
         sFocusableDrawableState = null;
     }
 
-    /**
-     * @return Cached ConstantState for testing.
-     */
+    /** Returns the cached ConstantState for testing. */
     public static @Nullable ConstantState getFocusableDrawableStateForTesting() {
         return sFocusableDrawableState;
     }
