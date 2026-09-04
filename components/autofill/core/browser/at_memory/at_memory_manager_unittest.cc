@@ -1241,7 +1241,6 @@ TEST_P(AtMemoryManagerTest, FillIban_Success) {
         .WillOnce([&](const Suggestion::Payload& payload,
                       IbanAccessManager::OnIbanFetchedCallback callback) {
           fetch_callback = std::move(callback);
-          return IsAsync(true);
         });
 
     EXPECT_CALL(
@@ -1683,7 +1682,6 @@ TEST_P(AtMemoryManagerTest, FillOverlappingPopups) {
       .WillOnce([&](const Suggestion::Payload& payload,
                     IbanAccessManager::OnIbanFetchedCallback callback) {
         fetch_callback = std::move(callback);
-        return IsAsync(true);
       });
 
   // 2. Accept async suggestion on Popup 1.

@@ -38,7 +38,6 @@
 #include "components/autofill/core/browser/test_utils/autofill_form_test_util.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/browser/test_utils/valuables_data_test_util.h"
-#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_test_util.h"
@@ -664,7 +663,6 @@ TEST_F(PaymentMethodAccessoryControllerTest, FetchLocalIban) {
       .WillOnce([&iban](const Suggestion::Payload& payload,
                         IbanAccessManager::OnIbanFetchedCallback callback) {
         std::move(callback).Run(iban.value());
-        return IsAsync(false);
       });
 
   EXPECT_CALL(autofill_driver(),

@@ -26,7 +26,6 @@
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/ui/payments/autofill_progress_ui_type.h"
-#include "components/autofill/core/common/aliases.h"
 
 namespace autofill {
 
@@ -35,8 +34,8 @@ IbanAccessManager::IbanAccessManager(AutofillClient* client)
 
 IbanAccessManager::~IbanAccessManager() = default;
 
-IsAsync IbanAccessManager::FetchValue(const Suggestion::Payload& payload,
-                                      OnIbanFetchedCallback on_iban_fetched) {
+void IbanAccessManager::FetchValue(const Suggestion::Payload& payload,
+                                   OnIbanFetchedCallback on_iban_fetched) {
   if (auto* form_data_importer = client_->GetFormDataImporter()) {
     // Reset the variable in PaymentsFormDataImporter that denotes if
     // non-interactive authentication happened. This variable will be set to a
@@ -54,7 +53,7 @@ IsAsync IbanAccessManager::FetchValue(const Suggestion::Payload& payload,
     if (!iban) {
       std::move(on_iban_fetched)
           .Run(base::unexpected(FailureReason::kItemNotFound));
-      return IsAsync(false);
+      return;
     }
     Iban iban_copy = *iban;
     GetPaymentsDataManager().RecordUseOfIban(iban_copy);
@@ -64,9 +63,10 @@ IsAsync IbanAccessManager::FetchValue(const Suggestion::Payload& payload,
                 .GetOrCreatePaymentsMandatoryReauthManager();
         mandatory_reauth_manager &&
         GetPaymentsAutofillClient().IsMandatoryReauthEnabled()) {
-      return StartDeviceAuthenticationForFilling(
+      StartDeviceAuthenticationForFilling(
           std::move(on_iban_fetched), iban_copy.value(),
           NonInteractivePaymentMethodType::kLocalIban);
+      return;
     }
 
     if (auto* form_data_importer = client_->GetFormDataImporter()) {
@@ -77,7 +77,7 @@ IsAsync IbanAccessManager::FetchValue(const Suggestion::Payload& payload,
                       Iban::RecordType::kLocalIban));
     }
     std::move(on_iban_fetched).Run(iban_copy.value());
-    return IsAsync(false);
+    return;
   }
 
   int64_t instrument_id = std::get<Suggestion::InstrumentId>(payload).value();
@@ -90,7 +90,7 @@ IsAsync IbanAccessManager::FetchValue(const Suggestion::Payload& payload,
   if (!iban) {
     std::move(on_iban_fetched)
         .Run(base::unexpected(FailureReason::kItemNotFound));
-    return IsAsync(false);
+    return;
   }
 
   GetPaymentsAutofillClient().ShowAutofillProgressDialog(
@@ -112,7 +112,6 @@ IsAsync IbanAccessManager::FetchValue(const Suggestion::Payload& payload,
       base::BindOnce(&IbanAccessManager::OnUnmaskResponseReceived,
                      weak_ptr_factory_.GetWeakPtr(), std::move(on_iban_fetched),
                      unmask_request_timestamp));
-  return IsAsync(true);
 }
 
 void IbanAccessManager::OnUnmaskResponseReceived(
@@ -143,8 +142,7 @@ void IbanAccessManager::OnUnmaskResponseReceived(
               // trigger the re-authentication flow, so we should avoid
               // calling `Reset()` until the re-authentication flow is
               // complete.
-              base::IgnoreResult(
-                  &IbanAccessManager::StartDeviceAuthenticationForFilling),
+              &IbanAccessManager::StartDeviceAuthenticationForFilling,
               weak_ptr_factory_.GetWeakPtr(), std::move(on_iban_fetched), value,
               NonInteractivePaymentMethodType::kServerIban));
     } else {
@@ -178,15 +176,12 @@ void IbanAccessManager::OnServerIbanUnmaskCancelled() {
   // TODO(crbug.com/296651899): Log the cancel metrics.
 }
 
-IsAsync IbanAccessManager::StartDeviceAuthenticationForFilling(
+void IbanAccessManager::StartDeviceAuthenticationForFilling(
     OnIbanFetchedCallback on_iban_fetched,
     const std::u16string& value,
     NonInteractivePaymentMethodType non_interactive_payment_method_type) {
   payments::MandatoryReauthManager* mandatory_reauth_manager =
       GetPaymentsAutofillClient().GetOrCreatePaymentsMandatoryReauthManager();
-  bool is_supported =
-      mandatory_reauth_manager->IsDeviceAuthenticationSupported();
-
   mandatory_reauth_manager->StartDeviceAuthentication(
       non_interactive_payment_method_type,
       base::BindOnce(
@@ -194,8 +189,6 @@ IsAsync IbanAccessManager::StartDeviceAuthenticationForFilling(
           weak_ptr_factory_.GetWeakPtr(), std::move(on_iban_fetched), value,
           non_interactive_payment_method_type,
           mandatory_reauth_manager->GetAuthenticationMethod()));
-
-  return IsAsync(is_supported);
 }
 
 void IbanAccessManager::OnDeviceAuthenticationResponseForFilling(

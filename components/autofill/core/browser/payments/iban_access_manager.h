@@ -16,7 +16,6 @@
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
-#include "components/autofill/core/common/aliases.h"
 
 namespace autofill {
 
@@ -47,10 +46,9 @@ class IbanAccessManager {
   // As this may require a network round-trip for server IBANs,
   // `on_iban_fetched` is run once the value is fetched or the fetch failed. For
   // local IBANs, the value will be filled immediately unless mandatory reauth
-  // is required. Returns `IsAsync(true)` if the operation is asynchronous,
-  // and `IsAsync(false)` otherwise.
-  virtual IsAsync FetchValue(const Suggestion::Payload& payload,
-                             OnIbanFetchedCallback on_iban_fetched);
+  // is required.
+  virtual void FetchValue(const Suggestion::Payload& payload,
+                          OnIbanFetchedCallback on_iban_fetched);
 
   void OnDeviceAuthenticationResponseForFillingForTesting(
       OnIbanFetchedCallback on_iban_fetched,
@@ -80,7 +78,7 @@ class IbanAccessManager {
   // `value` is the full IBAN value that needs to be filled. This function
   // should only be called on platforms where DeviceAuthenticator is present.
   // `non_interactive_payment_method_type` is passed in for logging purposes.
-  IsAsync StartDeviceAuthenticationForFilling(
+  void StartDeviceAuthenticationForFilling(
       OnIbanFetchedCallback on_iban_fetched,
       const std::u16string& value,
       NonInteractivePaymentMethodType non_interactive_payment_method_type);
