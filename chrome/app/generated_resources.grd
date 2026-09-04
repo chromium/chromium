@@ -10197,7 +10197,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Use Google Lens to learn more about specific images or text on a page.
       </message>
       <message name="IDS_LENS_COBROWSE_CURRENT_TAB_IPH_DESCRIPTION" desc="Informs user that the content and URL of their current tab is shared with Google to get more relevant answers.">
-        The content and the URL of your current tab is shared with Google to give you more relevant answers. You can add or remove tabs as you browse.
+        The page title, URL, and content of your current tab is shared with Google to give you more relevant answers. You can add or remove tabs as you browse.
       </message>
 
       <!--Tooltip strings -->
