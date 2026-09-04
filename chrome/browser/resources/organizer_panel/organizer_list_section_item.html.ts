@@ -13,7 +13,8 @@ export function getHtml(this: OrganizerListSectionItemElement) {
 <cr-url-list-item id="crUrlListItem" .title="${this.item.title}"
     .description="${this.getDescription_()}"
     .url="${this.getUrl_() || nothing}"
-    ?always-show-suffix="${this.hasSuffix_()}">
+    ?always-show-suffix="${this.hasSuffix_()}"
+    .size="${this.item.size || nothing}">
   ${this.item.prefixIcon?.element ? html`
     <div slot="customIcon">
       ${this.item.prefixIcon.element}

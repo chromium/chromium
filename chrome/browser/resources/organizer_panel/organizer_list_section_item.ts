@@ -8,7 +8,7 @@ import '//resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 
 import type {CrIconElement} from '//resources/cr_elements/cr_icon/cr_icon.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import type {CrUrlListItemElement} from '//resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
+import type {CrUrlListItemElement, CrUrlListItemSize} from '//resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import {MouseHoverableMixinLit} from '//resources/cr_elements/mouse_hoverable_mixin_lit.js';
 import type {TemplateResult} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -53,6 +53,9 @@ export interface OrganizerListSectionItem<T> {
   // when the item is hovered. Clicking on the button will call
   // onItemActionButtonClicked on the delegate.
   hoveredActionButton?: OrganizerListSectionItemActionButton;
+
+  // The size to render. Defaults to medium.
+  size?: CrUrlListItemSize;
 
   // The actual data held by the item.
   data?: T;

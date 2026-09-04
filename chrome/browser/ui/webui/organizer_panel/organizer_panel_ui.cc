@@ -40,6 +40,7 @@ OrganizerPanelUI::OrganizerPanelUI(content::WebUI* web_ui)
       {"openTabs", IDS_TAB_SEARCH_OPEN_TABS},
       {"recentlyClosed", IDS_TAB_SEARCH_RECENTLY_CLOSED},
       {"searchTabs", IDS_TAB_SEARCH_SEARCH_TABS},
+      {"tabGroups", IDS_ORGANIZER_PANEL_TAB_GROUPS},
       {"title", IDS_ORGANIZER_PANEL},
   };
   source->AddLocalizedStrings(kStrings);

@@ -14,6 +14,7 @@ import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {OpenTabsDelegate} from './delegates/open_tabs_delegate.js';
 import {RecentTabsDelegate} from './delegates/recent_tabs_delegate.js';
+import {TabGroupsDelegate} from './delegates/tab_groups_delegate.js';
 import type {OrganizerListElement} from './organizer_list.js';
 import type {OrganizerListSectionDelegate} from './organizer_list_section_delegate.js';
 
@@ -51,6 +52,7 @@ export class OrganizerPanelAppElement extends CrLitElement {
       Array<OrganizerListSectionDelegate<unknown>> = [
         new OpenTabsDelegate(),
         new RecentTabsDelegate(),
+        new TabGroupsDelegate(),
       ];
 
 
