@@ -251,41 +251,6 @@ chromium-metrics-reviews@google.com.
       name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="NavigationFrameType" separator=".">
-  <suffix name="MainFrame" label="Navigation in the main frame."/>
-  <suffix name="Subframe" label="Navigation in a subframe."/>
-  <affected-histogram name="Navigation.IsSameSiteInstance"/>
-  <affected-histogram name="Navigation.StartToCommit"/>
-  <affected-histogram name="Navigation.StartToCommit.CrossProcess"/>
-  <affected-histogram name="Navigation.StartToCommit.SameProcess"/>
-  <affected-histogram name="Navigation.TimeToReadyToCommit2"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="NavigationTypeTiming" separator=".">
-  <suffix name="BackForward" label="History (back/forward) navigation"/>
-  <suffix name="BackgroundProcessPriority"
-      label="process priority = background"/>
-  <suffix name="ForegroundProcessPriority"
-      label="process priority = foreground"/>
-  <suffix name="NewNavigation" label="New navigation"/>
-  <suffix name="Reload" label="Reload"/>
-  <affected-histogram name="Navigation.ReadyToCommitUntilCommit2"/>
-  <affected-histogram name="Navigation.StartToCommit"/>
-  <affected-histogram name="Navigation.StartToCommit.CrossProcess"/>
-  <affected-histogram name="Navigation.StartToCommit.CrossProcess.MainFrame"/>
-  <affected-histogram name="Navigation.StartToCommit.CrossProcess.Subframe"/>
-  <affected-histogram name="Navigation.StartToCommit.MainFrame"/>
-  <affected-histogram name="Navigation.StartToCommit.SameProcess"/>
-  <affected-histogram name="Navigation.StartToCommit.SameProcess.MainFrame"/>
-  <affected-histogram name="Navigation.StartToCommit.SameProcess.Subframe"/>
-  <affected-histogram name="Navigation.StartToCommit.Subframe"/>
-  <affected-histogram name="Navigation.TimeToReadyToCommit2"/>
-  <affected-histogram name="Navigation.TimeToReadyToCommit2.CrossProcess"/>
-  <affected-histogram name="Navigation.TimeToReadyToCommit2.MainFrame"/>
-  <affected-histogram name="Navigation.TimeToReadyToCommit2.SameProcess"/>
-  <affected-histogram name="Navigation.TimeToReadyToCommit2.Subframe"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="PageLoadBackgrounded2" separator=".">
   <suffix name="Background"
       label="The page was backgrounded at least once from navigation start to
