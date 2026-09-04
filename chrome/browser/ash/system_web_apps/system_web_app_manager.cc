@@ -329,7 +329,17 @@ void SystemWebAppManager::ScheduleStart() {
 
 void SystemWebAppManager::Start() {
   TRACE_EVENT0("ui", "SystemWebAppManager::Start");
-  DCHECK(provider_->is_registry_ready());
+  // TODO(crbug.com/crbug.com/506131577): `WebAppProvider::on_registry_ready()`
+  // may fire in the case database reads fail, `WebAppProvider` is not
+  // initialized and `WebAppProvider::is_registry_ready()` reports false. Either
+  // `on_registry_ready()` should be renamed to indicate it is independent of
+  // init success or better error handling is implemented.
+  if (!provider_->is_registry_ready()) {
+    if (!on_apps_synchronized_->is_signaled()) {
+      on_apps_synchronized_->Signal();
+    }
+    return;
+  }
 
   // `Start` can be called multiple times in tests.
   ui_manager_observation_.Reset();
@@ -481,7 +491,9 @@ std::vector<webapps::AppId> SystemWebAppManager::GetAppIds() const {
 }
 
 bool SystemWebAppManager::IsSystemWebApp(const webapps::AppId& app_id) const {
-  DCHECK(provider_->is_registry_ready());
+  if (!provider_->is_registry_ready()) {
+    return false;
+  }
   return web_app::IsSystemWebApp(provider_->registrar_unsafe(),
                                  system_app_delegates_, app_id);
 }
