@@ -12,6 +12,7 @@
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
@@ -65,6 +66,8 @@ class LocaleSwitchScreenBrowserTest : public OobeBaseTest {
   void SetPeopleAPIResponseLocale(const std::string& account_locale);
   LocaleSwitchScreen::Result WaitForScreenExitResult();
 
+  LocaleSwitchScreen* GetScreen();
+
  private:
   // Helper to substitute calls to PeopleAPI to fetch preferred user locale.
   std::unique_ptr<content::URLLoaderInterceptor> people_api_interceptor_;
@@ -76,14 +79,19 @@ class LocaleSwitchScreenBrowserTest : public OobeBaseTest {
 
 LocaleSwitchScreenBrowserTest::LocaleSwitchScreenBrowserTest() = default;
 
-void LocaleSwitchScreenBrowserTest::SetUpOnMainThread() {
-  SetPeopleAPIResponseLocale("en");
-  LocaleSwitchScreen* screen = static_cast<LocaleSwitchScreen*>(
+LocaleSwitchScreen* LocaleSwitchScreenBrowserTest::GetScreen() {
+  return static_cast<LocaleSwitchScreen*>(
       WizardController::default_controller()->screen_manager()->GetScreen(
           LocaleSwitchView::kScreenId));
+}
+
+void LocaleSwitchScreenBrowserTest::SetUpOnMainThread() {
+  SetPeopleAPIResponseLocale("en");
+  LocaleSwitchScreen* screen = GetScreen();
   original_callback_ = screen->get_exit_callback_for_testing();
   screen->set_exit_callback_for_testing(
       screen_result_waiter_.GetRepeatingCallback());
+  screen->set_timeout_for_testing(base::Seconds(30));
   fake_gaia_.SetupFakeGaiaForLoginWithDefaults();
   OobeBaseTest::SetUpOnMainThread();
 }

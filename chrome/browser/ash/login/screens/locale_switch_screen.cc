@@ -48,8 +48,6 @@ namespace {
 constexpr char kPeopleApiURL[] =
     "https://people.googleapis.com/v1/people/me?personFields=locales";
 
-constexpr base::TimeDelta kWaitTimeout = base::Seconds(5);
-
 class GetLocaleOAuth2PeopleAPICall : public OAuth2ApiCallFlow {
  public:
   GetLocaleOAuth2PeopleAPICall(
@@ -259,9 +257,8 @@ void LocaleSwitchScreen::ShowImpl() {
   const AccountInfo account_info =
       identity_manager_->FindExtendedAccountInfoByGaiaId(gaia_id_);
   account_capabilities_loaded_ =
-      refresh_token_loaded_ &&
-      SyncConsentScreen::AreCapabilitiesLoaded(
-          account_info.GetAccountCapabilities());
+      refresh_token_loaded_ && SyncConsentScreen::AreCapabilitiesLoaded(
+                                   account_info.GetAccountCapabilities());
   if (!account_capabilities_loaded_) {
     identity_manager_observer_.Observe(identity_manager_.get());
   }
@@ -269,7 +266,7 @@ void LocaleSwitchScreen::ShowImpl() {
   FetchPreferredUserLocaleAndSwitchAsync();
 
   // Wait for a reasonable time to fetch locale and account capabilities.
-  timeout_waiter_.Start(FROM_HERE, kWaitTimeout,
+  timeout_waiter_.Start(FROM_HERE, timeout_,
                         base::BindOnce(&LocaleSwitchScreen::OnTimeout,
                                        weak_factory_.GetWeakPtr()));
 }
@@ -296,9 +293,8 @@ void LocaleSwitchScreen::OnExtendedAccountInfoUpdated(
     return;
   }
   account_capabilities_loaded_ =
-      refresh_token_loaded_ &&
-      SyncConsentScreen::AreCapabilitiesLoaded(
-          account_info.GetAccountCapabilities());
+      refresh_token_loaded_ && SyncConsentScreen::AreCapabilitiesLoaded(
+                                   account_info.GetAccountCapabilities());
   if (!account_capabilities_loaded_) {
     return;
   }
