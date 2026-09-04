@@ -78,7 +78,7 @@ public class SigninChecker implements AccountsChangeObserver, Destroyable {
         assert childInfo != null;
         mSigninManager.runAfterOperationInProgress(
                 () -> {
-                    CoreAccountInfo accountInfo =
+                    AccountInfo accountInfo =
                             mSigninManager.getIdentityManager().getPrimaryAccountInfo();
 
                     if (accountInfo == null || childInfo.getId().equals(accountInfo.getId())) {
