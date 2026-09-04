@@ -1565,6 +1565,23 @@ useful for Chirp alerts (go/crca-alerts). -->
   </token>
 </histogram>
 
+<histogram
+    name="SBClientPhishing.UnfamiliarLoginPage.SiteEngagementScore.{Verdict}"
+    units="score" expires_after="2027-01-31">
+  <owner>nwokedi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The site engagement score of the site for which a server model phishing
+    detection verdict of {Verdict} was received for the UnfamiliarLoginPage
+    request type. Logged whenever a verdict is received from the Safe Browsing
+    server.
+  </summary>
+  <token key="Verdict">
+    <variant name="NotPhishing" summary="not phishing"/>
+    <variant name="Phishing" summary="phishing"/>
+  </token>
+</histogram>
+
 <histogram name="SBClientPhishing.VerdictParseSuccessful" enum="BooleanSuccess"
     expires_after="2027-02-14">
   <owner>nwokedi@chromium.org</owner>

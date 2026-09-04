@@ -496,6 +496,11 @@ bool ClientSideDetectionHostBase::CanGetAccessToken() {
   return IsEnhancedProtectionEnabled() && IsAccountSignedIn();
 }
 
+std::optional<double> ClientSideDetectionHostBase::GetSiteEngagementScore(
+    const GURL& url) const {
+  return std::nullopt;
+}
+
 bool ClientSideDetectionHostBase::HasForceRequestFromRtUrlLookup() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // It is possible for the async check force request to complete before page
@@ -1412,6 +1417,16 @@ void ClientSideDetectionHostBase::MaybeShowPhishingWarning(
         base::StrCat({"SBClientPhishing.ServerModelDetectsPhishing.",
                       request_type_name}),
         is_phishing);
+    if (request_type == ClientSideDetectionType::UNFAMILIAR_LOGIN_PAGE) {
+      std::optional<double> score = GetSiteEngagementScore(phishing_url);
+      if (score.has_value()) {
+        base::UmaHistogramExactLinear(
+            base::StrCat(
+                {"SBClientPhishing.UnfamiliarLoginPage.SiteEngagementScore.",
+                 is_phishing ? "Phishing" : "NotPhishing"}),
+            static_cast<int>(score.value()), 101);
+      }
+    }
   }
 
   if (IsEnhancedProtectionEnabled() && response_code.has_value()) {

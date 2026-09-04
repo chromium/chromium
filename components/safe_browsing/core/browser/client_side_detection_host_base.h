@@ -111,6 +111,11 @@ class ClientSideDetectionHostBase : public autofill::AutofillManager::Observer,
   virtual bool IsAccountSignedIn() = 0;
   virtual bool IsErrorDocument() = 0;
 
+  // Returns the site engagement score for `url`. Returns std::nullopt if the
+  // score is not available (e.g., for off-the-record profiles, if WebContents
+  // is null, or if SiteEngagementService is unavailable).
+  virtual std::optional<double> GetSiteEngagementScore(const GURL& url) const;
+
   // Returns the inner text from the tab. The callback is used to retrieve a
   // string back when the inner text function is completed. This string is then
   // used to provide the intelligent scan delegate the information about the
@@ -197,6 +202,8 @@ class ClientSideDetectionHostBase : public autofill::AutofillManager::Observer,
       IntelligentScanDelegate* intelligent_scan_delegate) {
     intelligent_scan_delegate_ = intelligent_scan_delegate;
   }
+
+  bool is_off_the_record() const { return is_off_the_record_; }
 
   void set_is_off_the_record_for_testing(bool is_off_the_record) {
     is_off_the_record_ = is_off_the_record;

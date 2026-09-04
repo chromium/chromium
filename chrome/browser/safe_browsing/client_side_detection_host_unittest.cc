@@ -76,6 +76,7 @@
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "components/sessions/core/session_id.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
@@ -1288,6 +1289,86 @@ TEST_F(
   histogram_tester.ExpectUniqueSample(
       "SBClientPhishing.HighConfidenceAllowlistMatchOnServerVerdictPhishy",
       true, 1);
+}
+
+TEST_F(ClientSideDetectionHostTest,
+       PhishingDetectionDoneUnfamiliarLoginPageSiteEngagementScore) {
+  base::HistogramTester histogram_tester;
+
+  ClientSideDetectionService::ClientReportPhishingRequestCallback cb;
+  GURL phishing_url("http://unfamiliarloginpage.com/");
+  ClientPhishingRequest verdict;
+  verdict.set_url(phishing_url.spec());
+  verdict.set_client_score(1.0f);
+  verdict.set_is_phishing(true);
+
+  site_engagement::SiteEngagementService::Get(profile())->ResetBaseScoreForURL(
+      phishing_url, 42.0);
+
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
+                                 PartiallyEqualVerdict(verdict), _, _))
+      .WillOnce(MoveArg<1>(&cb));
+  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict),
+                        ClientSideDetectionType::UNFAMILIAR_LOGIN_PAGE);
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
+  ASSERT_FALSE(cb.is_null());
+
+  // Simulate server response: not phishing (false).
+  std::move(cb).Run(phishing_url, /*is_phishing=*/false, net::HTTP_OK,
+                    std::nullopt);
+
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.ServerModelDetectsPhishing", false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.ServerModelDetectsPhishing.UnfamiliarLoginPage", false,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.UnfamiliarLoginPage.SiteEngagementScore.NotPhishing",
+      42, 1);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.UnfamiliarLoginPage.SiteEngagementScore.Phishing", 0);
+}
+
+TEST_F(ClientSideDetectionHostIncognitoTest,
+       PhishingDetectionDoneUnfamiliarLoginPageOffTheRecordDoesNotLog) {
+  base::HistogramTester histogram_tester;
+
+  ClientSideDetectionService::ClientReportPhishingRequestCallback cb;
+  GURL phishing_url("http://unfamiliarloginpage.com/");
+  ClientPhishingRequest verdict;
+  verdict.set_url(phishing_url.spec());
+  verdict.set_client_score(1.0f);
+  verdict.set_is_phishing(true);
+
+  site_engagement::SiteEngagementService::Get(profile())->ResetBaseScoreForURL(
+      phishing_url, 42.0);
+
+  EXPECT_EQ(csd_host_->GetSiteEngagementScore(phishing_url), std::nullopt);
+
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
+                                 PartiallyEqualVerdict(verdict), _, _))
+      .WillOnce(MoveArg<1>(&cb));
+  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict),
+                        ClientSideDetectionType::UNFAMILIAR_LOGIN_PAGE);
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
+  ASSERT_FALSE(cb.is_null());
+
+  // Simulate server response: not phishing (false).
+  std::move(cb).Run(phishing_url, /*is_phishing=*/false, net::HTTP_OK,
+                    std::nullopt);
+
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.ServerModelDetectsPhishing", false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.ServerModelDetectsPhishing.UnfamiliarLoginPage", false,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.UnfamiliarLoginPage.SiteEngagementScore.NotPhishing",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.UnfamiliarLoginPage.SiteEngagementScore.Phishing", 0);
 }
 
 TEST_F(ClientSideDetectionHostTest,

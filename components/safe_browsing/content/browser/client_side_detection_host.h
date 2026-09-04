@@ -73,6 +73,7 @@ class ClientSideDetectionHost
   ChromeUserPopulation GetUserPopulation() override;
   bool IsAccountSignedIn() override;
   bool IsErrorDocument() override;
+  std::optional<double> GetSiteEngagementScore(const GURL& url) const override;
   void GetInnerText(HostInnerTextCallback callback) override;
   void MaybeStartImageEmbedding(
       std::unique_ptr<ClientPhishingRequest> verdict,

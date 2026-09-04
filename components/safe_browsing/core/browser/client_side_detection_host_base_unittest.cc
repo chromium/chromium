@@ -122,6 +122,27 @@ class TestClientSideDetectionHostBase : public ClientSideDetectionHostBase {
                std::optional<net::HttpStatusCode> response_code,
                std::optional<IntelligentScanVerdict> intelligent_scan_verdict),
               (override));
+
+  void CallMaybeShowPhishingWarning(
+      bool is_from_cache,
+      ClientSideDetectionType request_type,
+      std::optional<bool> did_match_high_confidence_allowlist,
+      GURL phishing_url,
+      bool is_phishing,
+      std::optional<net::HttpStatusCode> response_code,
+      std::optional<IntelligentScanVerdict> intelligent_scan_verdict) {
+    ClientSideDetectionHostBase::MaybeShowPhishingWarning(
+        is_from_cache, request_type, did_match_high_confidence_allowlist,
+        phishing_url, is_phishing, response_code, intelligent_scan_verdict);
+  }
+
+  std::optional<double> GetSiteEngagementScore(const GURL& url) const override {
+    return site_engagement_score_;
+  }
+
+  void set_site_engagement_score(std::optional<double> score) {
+    site_engagement_score_ = score;
+  }
   MOCK_METHOD(void,
               ShowBlockingPage,
               (GURL phishing_url,
@@ -163,6 +184,7 @@ class TestClientSideDetectionHostBase : public ClientSideDetectionHostBase {
   std::optional<ClientSideDetectionType> last_preclassification_request_type_;
   credit_card_form::ReferringApp referring_app_ =
       credit_card_form::ReferringApp::kNoReferringApp;
+  std::optional<double> site_engagement_score_;
 };
 
 class ClientSideDetectionHostBaseTest : public testing::Test {
@@ -843,6 +865,120 @@ TEST_F(ClientSideDetectionHostBaseTest,
         ClientSideDetectionType::CREDIT_CARD_FORM,
         /*url_on_high_confidence_allowlist=*/true));
   }
+}
+
+TEST_F(ClientSideDetectionHostBaseTest,
+       MaybeShowPhishingWarning_UnfamiliarLoginPage_LogsSiteEngagementScore) {
+  base::HistogramTester histograms;
+  GURL phishing_url("https://example.com/");
+
+  host_->set_site_engagement_score(15.0);
+
+  // When is_phishing is false.
+  host_->CallMaybeShowPhishingWarning(
+      /*is_from_cache=*/false, ClientSideDetectionType::UNFAMILIAR_LOGIN_PAGE,
+      /*did_match_high_confidence_allowlist=*/std::nullopt, phishing_url,
+      /*is_phishing=*/false,
+      /*response_code=*/std::nullopt,
+      /*intelligent_scan_verdict=*/std::nullopt);
+
+  histograms.ExpectUniqueSample("SBClientPhishing.ServerModelDetectsPhishing",
+                                false, 1);
+  histograms.ExpectUniqueSample(
+      "SBClientPhishing.ServerModelDetectsPhishing.UnfamiliarLoginPage", false,
+      1);
+  histograms.ExpectUniqueSample(
+      "SBClientPhishing.UnfamiliarLoginPage.SiteEngagementScore.NotPhishing",
+      15, 1);
+  histograms.ExpectTotalCount(
+      "SBClientPhishing.UnfamiliarLoginPage.SiteEngagementScore.Phishing", 0);
+
+  // When is_phishing is true.
+  EXPECT_CALL(*host_,
+              ShowBlockingPage(phishing_url,
+                               ClientSideDetectionType::UNFAMILIAR_LOGIN_PAGE,
+                               _, false))
+      .Times(1);
+  host_->CallMaybeShowPhishingWarning(
+      /*is_from_cache=*/false, ClientSideDetectionType::UNFAMILIAR_LOGIN_PAGE,
+      /*did_match_high_confidence_allowlist=*/std::nullopt, phishing_url,
+      /*is_phishing=*/true,
+      /*response_code=*/std::nullopt,
+      /*intelligent_scan_verdict=*/std::nullopt);
+
+  histograms.ExpectBucketCount("SBClientPhishing.ServerModelDetectsPhishing",
+                               true, 1);
+  histograms.ExpectBucketCount(
+      "SBClientPhishing.ServerModelDetectsPhishing.UnfamiliarLoginPage", true,
+      1);
+  histograms.ExpectUniqueSample(
+      "SBClientPhishing.UnfamiliarLoginPage.SiteEngagementScore.Phishing", 15,
+      1);
+}
+
+TEST_F(ClientSideDetectionHostBaseTest,
+       MaybeShowPhishingWarning_UnfamiliarLoginPage_FromCache_DoesNotLog) {
+  base::HistogramTester histograms;
+  GURL phishing_url("https://example.com/");
+  host_->set_site_engagement_score(15.0);
+
+  host_->CallMaybeShowPhishingWarning(
+      /*is_from_cache=*/true, ClientSideDetectionType::UNFAMILIAR_LOGIN_PAGE,
+      /*did_match_high_confidence_allowlist=*/std::nullopt, phishing_url,
+      /*is_phishing=*/false,
+      /*response_code=*/std::nullopt,
+      /*intelligent_scan_verdict=*/std::nullopt);
+
+  histograms.ExpectTotalCount(
+      "SBClientPhishing.UnfamiliarLoginPage.SiteEngagementScore.NotPhishing",
+      0);
+  histograms.ExpectTotalCount(
+      "SBClientPhishing.UnfamiliarLoginPage.SiteEngagementScore.Phishing", 0);
+}
+
+TEST_F(ClientSideDetectionHostBaseTest,
+       MaybeShowPhishingWarning_OtherRequestType_DoesNotLogEngagementScore) {
+  base::HistogramTester histograms;
+  GURL phishing_url("https://example.com/");
+  host_->set_site_engagement_score(15.0);
+
+  host_->CallMaybeShowPhishingWarning(
+      /*is_from_cache=*/false, ClientSideDetectionType::TRIGGER_MODELS,
+      /*did_match_high_confidence_allowlist=*/std::nullopt, phishing_url,
+      /*is_phishing=*/false,
+      /*response_code=*/std::nullopt,
+      /*intelligent_scan_verdict=*/std::nullopt);
+
+  histograms.ExpectUniqueSample("SBClientPhishing.ServerModelDetectsPhishing",
+                                false, 1);
+  histograms.ExpectUniqueSample(
+      "SBClientPhishing.ServerModelDetectsPhishing.TriggerModel", false, 1);
+  histograms.ExpectTotalCount(
+      "SBClientPhishing.UnfamiliarLoginPage.SiteEngagementScore.NotPhishing",
+      0);
+  histograms.ExpectTotalCount(
+      "SBClientPhishing.UnfamiliarLoginPage.SiteEngagementScore.Phishing", 0);
+}
+
+TEST_F(ClientSideDetectionHostBaseTest,
+       MaybeShowPhishingWarning_UnfamiliarLoginPage_NoScore_DoesNotLog) {
+  base::HistogramTester histograms;
+  GURL phishing_url("https://example.com/");
+  host_->set_site_engagement_score(std::nullopt);
+
+  host_->CallMaybeShowPhishingWarning(
+      /*is_from_cache=*/false, ClientSideDetectionType::UNFAMILIAR_LOGIN_PAGE,
+      /*did_match_high_confidence_allowlist=*/std::nullopt, phishing_url,
+      /*is_phishing=*/false,
+      /*response_code=*/std::nullopt,
+      /*intelligent_scan_verdict=*/std::nullopt);
+
+  histograms.ExpectTotalCount(
+      "SBClientPhishing.ServerModelDetectsPhishing.UnfamiliarLoginPage.false",
+      0);
+  histograms.ExpectTotalCount(
+      "SBClientPhishing.ServerModelDetectsPhishing.UnfamiliarLoginPage.true",
+      0);
 }
 
 // Unit tests for ExtractClipboardData

@@ -56,6 +56,7 @@
 #include "components/safe_browsing/core/common/safebrowsing_switches.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "components/security_interstitials/core/unsafe_resource_locator.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "components/url_formatter/url_fixer.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/browser_context.h"
@@ -751,6 +752,20 @@ bool ClientSideDetectionHost::IsAccountSignedIn() {
 
 bool ClientSideDetectionHost::IsErrorDocument() {
   return web_contents()->GetPrimaryMainFrame()->IsErrorDocument();
+}
+
+std::optional<double> ClientSideDetectionHost::GetSiteEngagementScore(
+    const GURL& url) const {
+  if (is_off_the_record() || !web_contents()) {
+    return std::nullopt;
+  }
+  site_engagement::SiteEngagementService* service =
+      site_engagement::SiteEngagementService::Get(
+          web_contents()->GetBrowserContext());
+  if (!service) {
+    return std::nullopt;
+  }
+  return service->GetScore(url);
 }
 
 ChromeUserPopulation ClientSideDetectionHost::GetUserPopulation() {
