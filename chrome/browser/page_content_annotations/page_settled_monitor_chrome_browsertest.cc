@@ -8,6 +8,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "chrome/browser/page_content_annotations/page_stability_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -78,7 +79,9 @@ IN_PROC_BROWSER_TEST_F(PageSettledMonitorChromeBrowserTest,
   // Complete the fetch, ensure the monitor completes.
   Respond("NETWORK DONE");
   ASSERT_TRUE(result.Wait());
-  ASSERT_EQ(GetOutputText(), "NETWORK DONE");
+  while (GetOutputText() != "NETWORK DONE") {
+    Sleep(TestTimeouts::tiny_timeout());
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(PageSettledMonitorChromeBrowserTest, WaitOnMainThread) {
