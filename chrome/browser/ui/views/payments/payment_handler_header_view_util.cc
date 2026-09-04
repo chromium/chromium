@@ -48,6 +48,9 @@ constexpr int kVerticalInset = 8;
 constexpr int kHeaderHorizontalInset = 16;
 constexpr int kHeaderIconWidth = 32;
 constexpr int kCloseButtonWidth = 32;
+// TODO(crbug.com/549694583): Make header column sizing dynamic instead of using
+// a fixed width for the permission indicator chip.
+constexpr int kHeaderLeadingWidthWithCameraAccessUx = 144;
 
 // Returns a Google color closest to light_mode_color or dark_mode_color based
 // on whether background_color is considered dark mode, with a minimum
@@ -300,7 +303,7 @@ PaymentHandlerHeaderViews PopulatePaymentHandlerHeaderView(
     const std::u16string& origin_text,
     views::Button::PressedCallback close_callback) {
   // The PaymentHandler header consists of the payment app icon (or PageInfo
-  // security icon button if kPaymentHandlerCameraAccessUx is enabled), the
+  // location icon if kPaymentHandlerCameraAccessUx is enabled), the
   // current web contents origin, and a close button. The origin is centered
   // on the dialog, whilst the icon and close are aligned with the LHS and RHS
   // respectively.
@@ -319,14 +322,20 @@ PaymentHandlerHeaderViews PopulatePaymentHandlerHeaderView(
   views::TableLayout* layout =
       container->SetLayoutManager(std::make_unique<views::TableLayout>());
 
+  const int header_leading_width =
+      base::FeatureList::IsEnabled(features::kPaymentHandlerCameraAccessUx)
+          ? kHeaderLeadingWidthWithCameraAccessUx
+          : kHeaderIconWidth;
+
   // Column 1 (Leading): App icon or PageInfo button.
   if (has_icon) {
     layout->AddColumn(
         views::LayoutAlignment::kStart, views::LayoutAlignment::kCenter,
         views::TableLayout::kFixedSize, views::TableLayout::ColumnSize::kFixed,
-        kHeaderIconWidth, /*min_width=*/0);
+        header_leading_width, /*min_width=*/0);
   } else {
-    layout->AddPaddingColumn(views::TableLayout::kFixedSize, kHeaderIconWidth);
+    layout->AddPaddingColumn(views::TableLayout::kFixedSize,
+                             header_leading_width);
   }
 
   // Column 2 (Center): Origin label.
@@ -335,7 +344,12 @@ PaymentHandlerHeaderViews PopulatePaymentHandlerHeaderView(
       /*horizontal_resize=*/1.0, views::TableLayout::ColumnSize::kUsePreferred,
       /*fixed_width=*/0, /*min_width=*/0);
 
-  // Column 3 (Trailing): Close button.
+  // Column 3 (Trailing): Close button with symmetric padding to keep origin
+  // centered.
+  const int right_padding = header_leading_width - kCloseButtonWidth;
+  if (right_padding > 0) {
+    layout->AddPaddingColumn(views::TableLayout::kFixedSize, right_padding);
+  }
   layout->AddColumn(views::LayoutAlignment::kEnd,
                     views::LayoutAlignment::kCenter,
                     views::TableLayout::kFixedSize,

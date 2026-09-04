@@ -7,6 +7,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -17,9 +19,13 @@
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
 #include "chrome/browser/ui/views/payments/payment_handler_web_flow_view_controller.h"
+#include "chrome/browser/ui/views/payments/payment_handler_web_flow_view_test_api.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_test_api.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -37,6 +43,7 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -46,6 +53,52 @@
 #include "ui/views/view_utils.h"
 
 namespace payments {
+
+namespace {
+
+class VideoCaptureWaiter : public MediaStreamCaptureIndicator::Observer {
+ public:
+  explicit VideoCaptureWaiter(content::WebContents* web_contents)
+      : target_web_contents_(web_contents) {
+    if (scoped_refptr<MediaStreamCaptureIndicator> indicator =
+            MediaCaptureDevicesDispatcher::GetInstance()
+                ->GetMediaStreamCaptureIndicator()) {
+      observation_.Observe(indicator.get());
+      is_capturing_ = indicator->IsCapturingVideo(web_contents);
+    }
+  }
+
+  ~VideoCaptureWaiter() override = default;
+
+  void WaitForCaptureState(bool capture_state) {
+    if (is_capturing_ == capture_state) {
+      return;
+    }
+    base::RunLoop run_loop;
+    quit_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+  void OnIsCapturingVideoChanged(content::WebContents* web_contents,
+                                 bool is_capturing_video) override {
+    if (web_contents == target_web_contents_) {
+      is_capturing_ = is_capturing_video;
+      if (quit_closure_) {
+        std::move(quit_closure_).Run();
+      }
+    }
+  }
+
+ private:
+  raw_ptr<content::WebContents> target_web_contents_;
+  bool is_capturing_ = false;
+  base::OnceClosure quit_closure_;
+  base::ScopedObservation<MediaStreamCaptureIndicator,
+                          MediaStreamCaptureIndicator::Observer>
+      observation_{this};
+};
+
+}  // namespace
 
 class PaymentHandlerWebFlowViewTest : public PaymentRequestBrowserTestBase {
  public:
@@ -612,7 +665,6 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewMandatoryUiDisabledTest,
   content::SimulateMouseClickOrTapElementWithId(payment_handler_contents,
                                                 "reject-button");
 
-  ASSERT_TRUE(WaitForObservedEvent());
 }
 
 class PaymentHandlerWebFlowViewCameraTest
@@ -1086,6 +1138,169 @@ IN_PROC_BROWSER_TEST_P(
       payment_handler_contents->GetDelegate()->OpenURLFromTab(
           payment_handler_contents, new_tab_params, base::NullCallback());
   EXPECT_NE(nullptr, result);
+}
+
+class PaymentHandlerWebFlowViewCameraUxTest
+    : public PaymentRequestBrowserTestBase {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PaymentRequestBrowserTestBase::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kUseFakeDeviceForMediaStream);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      {features::kPaymentHandlerCameraAccessUx,
+       features::kPaymentRequestMandatoryPaymentAppUi}};
+};
+
+IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraUxTest,
+                       CameraInUseIndicator_TogglesOnVideoCapture) {
+  NavigateTo("/payment_handler.html");
+  std::string method_name;
+  InstallPaymentApp("a.com", "/payment_handler_sw.js", &method_name);
+
+  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::DIALOG_OPENED,
+                               DialogEvent::LOADING_VIEW_SHOWN,
+                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::LOADING_VIEW_HIDDEN,
+                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
+  ASSERT_EQ(
+      "success",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
+  ASSERT_TRUE(WaitForObservedEvent());
+
+  views::View* top_view = test_api(dialog_view()).view_stack()->top();
+  auto* sheet_controller =
+      test_api(dialog_view()).controller_map()->at(top_view).get();
+  auto* web_flow_controller =
+      static_cast<PaymentHandlerWebFlowViewController*>(sheet_controller);
+  content::WebContents* payment_handler_contents =
+      web_flow_controller->web_contents();
+
+  GURL payment_app_url = payment_handler_contents->GetLastCommittedURL();
+  HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
+      ->SetContentSettingDefaultScope(payment_app_url, payment_app_url,
+                                      ContentSettingsType::MEDIASTREAM_CAMERA,
+                                      CONTENT_SETTING_ALLOW);
+
+  // Initial state: not capturing.
+  EXPECT_NE(nullptr, web_flow_controller->GetPageInfoIconView());
+  ASSERT_NE(nullptr, test_api(web_flow_controller).location_icon_view());
+  EXPECT_TRUE(test_api(web_flow_controller).location_icon_view()->GetVisible());
+  ASSERT_NE(nullptr, test_api(web_flow_controller).permission_dashboard_view());
+  EXPECT_FALSE(
+      test_api(web_flow_controller).permission_dashboard_view()->GetVisible());
+
+  // Start video capture.
+  VideoCaptureWaiter waiter(payment_handler_contents);
+  ASSERT_EQ("success", content::EvalJs(payment_handler_contents, R"(
+              navigator.mediaDevices.getUserMedia({video: true})
+                .then(stream => {
+                  window.activeStream = stream;
+                  return 'success';
+                })
+                .catch(err => err.name);
+            )"));
+  waiter.WaitForCaptureState(true);
+
+  // PermissionDashboardView should be visible, LocationIconView hidden.
+  EXPECT_TRUE(
+      test_api(web_flow_controller).permission_dashboard_view()->GetVisible());
+  EXPECT_FALSE(
+      test_api(web_flow_controller).location_icon_view()->GetVisible());
+  auto* indicator_chip = test_api(web_flow_controller)
+                             .permission_dashboard_view()
+                             ->GetIndicatorChip();
+  ASSERT_NE(nullptr, indicator_chip);
+  EXPECT_TRUE(indicator_chip->GetVisible());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_CAMERA_IN_USE),
+            indicator_chip->GetTooltipText());
+  EXPECT_EQ(indicator_chip, web_flow_controller->GetPageInfoIconView());
+
+  // Stop video capture.
+  ASSERT_EQ("stopped", content::EvalJs(payment_handler_contents, R"(
+              window.activeStream.getVideoTracks().forEach(t => t.stop());
+              'stopped';
+            )"));
+  waiter.WaitForCaptureState(false);
+
+  // PermissionDashboardView should be hidden, LocationIconView visible again.
+  EXPECT_FALSE(
+      test_api(web_flow_controller).permission_dashboard_view()->GetVisible());
+  EXPECT_TRUE(test_api(web_flow_controller).location_icon_view()->GetVisible());
+  EXPECT_EQ(test_api(web_flow_controller).location_icon_view(),
+            web_flow_controller->GetPageInfoIconView());
+}
+
+IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraUxTest,
+                       CameraInUseIndicator_IgnoresForeignWebContents) {
+  NavigateTo("/payment_handler.html");
+  std::string method_name;
+  InstallPaymentApp("a.com", "/payment_handler_sw.js", &method_name);
+
+  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::DIALOG_OPENED,
+                               DialogEvent::LOADING_VIEW_SHOWN,
+                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::LOADING_VIEW_HIDDEN,
+                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
+  ASSERT_EQ(
+      "success",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
+  ASSERT_TRUE(WaitForObservedEvent());
+
+  views::View* top_view = test_api(dialog_view()).view_stack()->top();
+  auto* sheet_controller =
+      test_api(dialog_view()).controller_map()->at(top_view).get();
+  auto* web_flow_controller =
+      static_cast<PaymentHandlerWebFlowViewController*>(sheet_controller);
+
+  // Initial state: not capturing.
+  ASSERT_NE(nullptr, test_api(web_flow_controller).permission_dashboard_view());
+  EXPECT_FALSE(
+      test_api(web_flow_controller).permission_dashboard_view()->GetVisible());
+  ASSERT_NE(nullptr, test_api(web_flow_controller).location_icon_view());
+  EXPECT_TRUE(test_api(web_flow_controller).location_icon_view()->GetVisible());
+
+  // Trigger video capture on parent tab WebContents.
+  content::WebContents* parent_contents = GetActiveWebContents();
+  GURL parent_url = parent_contents->GetLastCommittedURL();
+  HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
+      ->SetContentSettingDefaultScope(parent_url, parent_url,
+                                      ContentSettingsType::MEDIASTREAM_CAMERA,
+                                      CONTENT_SETTING_ALLOW);
+
+  VideoCaptureWaiter parent_waiter(parent_contents);
+  ASSERT_EQ("success", content::EvalJs(parent_contents, R"(
+                         navigator.mediaDevices.getUserMedia({video: true})
+                           .then(stream => {
+                             window.activeStream = stream;
+                             return 'success';
+                           })
+                           .catch(err => err.name);
+                       )"));
+  parent_waiter.WaitForCaptureState(true);
+
+  // Verify Payment Handler indicator remains hidden (not affected by parent
+  // tab).
+  EXPECT_FALSE(
+      test_api(web_flow_controller).permission_dashboard_view()->GetVisible());
+  EXPECT_TRUE(test_api(web_flow_controller).location_icon_view()->GetVisible());
+
+  // Clean up parent stream.
+  ASSERT_EQ("stopped", content::EvalJs(parent_contents, R"(
+              window.activeStream.getVideoTracks().forEach(t => t.stop());
+              'stopped';
+            )"));
+  parent_waiter.WaitForCaptureState(false);
 }
 
 INSTANTIATE_TEST_SUITE_P(

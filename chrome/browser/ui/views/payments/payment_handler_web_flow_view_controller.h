@@ -10,6 +10,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/ui/toolbar/chrome_location_bar_model_delegate.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
@@ -24,9 +26,11 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/view_tracker.h"
+#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
 class LocationBarModel;
+class PermissionDashboardView;
 class Profile;
 
 namespace blink {
@@ -54,7 +58,8 @@ class PaymentHandlerWebFlowViewController
       public content::WebContentsObserver,
       public ChromeLocationBarModelDelegate,
       public IconLabelBubbleView::Delegate,
-      public LocationIconView::Delegate {
+      public LocationIconView::Delegate,
+      public MediaStreamCaptureIndicator::Observer {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAppIconElementId);
   // This ctor forwards its first 3 args to PaymentRequestSheetController's
@@ -85,6 +90,8 @@ class PaymentHandlerWebFlowViewController
   views::View* GetPageInfoIconView();
 
  private:
+  friend class PaymentHandlerWebFlowViewTestApi;
+
   class RoundedCornerViewClipper;
 
   // PaymentRequestSheetController:
@@ -150,15 +157,25 @@ class PaymentHandlerWebFlowViewController
   ui::ImageModel GetLocationIcon(
       LocationIconView::Delegate::IconFetchedCallback on_icon_fetched) override;
 
+  // MediaStreamCaptureIndicator::Observer:
+  void OnIsCapturingVideoChanged(content::WebContents* contents,
+                                 bool is_capturing_video) override;
+
+  void OnPageInfoBubbleClosed(views::Widget::ClosedReason closed_reason,
+                              bool reload_prompt);
   void AbortPayment();
   void SetHeaderColorsAndOriginLabelText();
 
   LocationIconView* location_icon_view();
-
+  PermissionDashboardView* permission_dashboard_view();
   raw_ptr<Profile> profile_;
   GURL target_;
   std::unique_ptr<LocationBarModel> location_bar_model_;
   views::ViewTracker location_icon_view_tracker_;
+  views::ViewTracker permission_dashboard_view_tracker_;
+  base::ScopedObservation<MediaStreamCaptureIndicator,
+                          MediaStreamCaptureIndicator::Observer>
+      indicator_observation_{this};
   base::WeakPtr<PaymentHandlerProgressBar> progress_bar_;
   base::WeakPtr<PaymentHandlerOriginLabel> origin_label_;
   base::WeakPtr<PaymentHandlerCloseButton> close_button_;

@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/devtools/devtools_window.h"
@@ -22,15 +23,18 @@
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_specification.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/payments/payment_handler_header_view_util.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_chip_theme.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/location_bar_model_impl.h"
-#include "components/omnibox/browser/vector_icons.h"
 #include "components/payments/content/payment_handler_navigation_throttle.h"
 #include "components/payments/content/ssl_validity_checker.h"
 #include "components/payments/core/features.h"
@@ -38,8 +42,10 @@
 #include "components/payments/core/url_util.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/security_state/core/security_state.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/url_formatter/elide_url.h"
+#include "components/vector_icons/vector_icons.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -51,6 +57,7 @@
 #include "content/public/common/content_constants.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/color/color_provider.h"
@@ -62,6 +69,7 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -204,6 +212,11 @@ PaymentHandlerWebFlowViewController::FromWebContents(
 }
 
 views::View* PaymentHandlerWebFlowViewController::GetPageInfoIconView() {
+  if (permission_dashboard_view() &&
+      permission_dashboard_view()->GetVisible() &&
+      permission_dashboard_view()->GetIndicatorChip()->GetVisible()) {
+    return permission_dashboard_view()->GetIndicatorChip();
+  }
   return location_icon_view();
 }
 
@@ -271,6 +284,12 @@ void PaymentHandlerWebFlowViewController::FillContentView(
   // TODO(crbug.com/539998580): Restrict non-camera permission requests in
   // Payment Handler windows via Permissions-Policy enforcement.
   if (base::FeatureList::IsEnabled(features::kPaymentHandlerCameraAccessUx)) {
+    indicator_observation_.Reset();
+    if (scoped_refptr<MediaStreamCaptureIndicator> indicator =
+            MediaCaptureDevicesDispatcher::GetInstance()
+                ->GetMediaStreamCaptureIndicator()) {
+      indicator_observation_.Observe(indicator.get());
+    }
     OneTimePermissionsTrackerHelper::CreateForWebContents(web_contents());
     permissions::PermissionRequestManager::CreateForWebContents(web_contents());
   } else if (base::FeatureList::IsEnabled(
@@ -322,13 +341,33 @@ void PaymentHandlerWebFlowViewController::PopulateSheetHeaderView(
           : url::Origin::Create(target_),
       url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
 
-  std::unique_ptr<views::View> icon_view;
+  std::unique_ptr<views::BoxLayoutView> icon_view;
   if (base::FeatureList::IsEnabled(features::kPaymentHandlerCameraAccessUx)) {
-    auto location_icon = CreatePaymentHandlerLocationIconView(
-        /*icon_label_bubble_delegate=*/this,
-        /*location_icon_delegate=*/this);
-    location_icon_view_tracker_.SetView(location_icon.get());
-    icon_view = std::move(location_icon);
+    icon_view = std::make_unique<views::BoxLayoutView>();
+    icon_view->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
+    icon_view->SetMainAxisAlignment(
+        views::BoxLayout::MainAxisAlignment::kCenter);
+    icon_view->SetCrossAxisAlignment(
+        views::BoxLayout::CrossAxisAlignment::kCenter);
+
+    LocationIconView* icon =
+        icon_view->AddChildView(CreatePaymentHandlerLocationIconView(
+            /*icon_label_bubble_delegate=*/this,
+            /*location_icon_delegate=*/this));
+    location_icon_view_tracker_.SetView(icon);
+
+    PermissionDashboardView* dashboard =
+        icon_view->AddChildView(std::make_unique<PermissionDashboardView>());
+    dashboard->GetIndicatorChip()->SetChipIcon(vector_icons::kVideocamIcon);
+    dashboard->GetIndicatorChip()->SetTheme(
+        PermissionChipTheme::kInUseActivityIndicator);
+    dashboard->GetIndicatorChip()->SetTooltipText(
+        l10n_util::GetStringUTF16(IDS_CAMERA_IN_USE));
+    dashboard->GetIndicatorChip()->SetCallback(base::BindRepeating(
+        base::IgnoreResult(
+            &PaymentHandlerWebFlowViewController::ShowPageInfoDialog),
+        weak_ptr_factory_.GetWeakPtr()));
+    permission_dashboard_view_tracker_.SetView(dashboard);
   }
 
   PaymentHandlerHeaderViews header_views = PopulatePaymentHandlerHeaderView(
@@ -624,18 +663,41 @@ LocationIconView* PaymentHandlerWebFlowViewController::location_icon_view() {
       location_icon_view_tracker_.view());
 }
 
+PermissionDashboardView*
+PaymentHandlerWebFlowViewController::permission_dashboard_view() {
+  return views::AsViewClass<PermissionDashboardView>(
+      permission_dashboard_view_tracker_.view());
+}
+
+void PaymentHandlerWebFlowViewController::OnIsCapturingVideoChanged(
+    content::WebContents* contents,
+    bool is_capturing_video) {
+  if (contents != web_contents()) {
+    return;
+  }
+  if (location_icon_view()) {
+    location_icon_view()->SetVisible(!is_capturing_video);
+  }
+  if (permission_dashboard_view()) {
+    // PermissionDashboardView initializes its chips as hidden, so both must be
+    // shown.
+    permission_dashboard_view()->SetVisible(is_capturing_video);
+    permission_dashboard_view()->GetIndicatorChip()->SetVisible(
+        is_capturing_video);
+  }
+}
 bool PaymentHandlerWebFlowViewController::ShowPageInfoDialog() {
   content::WebContents* contents = GetWebContents();
   if (!contents) {
     return false;
   }
-  LocationIconView* const icon_view = location_icon_view();
-  CHECK(icon_view);
+  views::View* const anchor_view = GetPageInfoIconView();
+  CHECK(anchor_view);
 
   content::WebContents* parent_tab_contents = state()->GetWebContents();
   std::unique_ptr<PageInfoBubbleSpecification> specification =
       PageInfoBubbleSpecification::Builder(
-          views::BubbleAnchor(icon_view),
+          views::BubbleAnchor(anchor_view),
           dialog()->GetWidget()->GetNativeWindow(), contents,
           contents->GetLastCommittedURL())
           .AddGetBrowserCallback(base::BindRepeating(
@@ -645,14 +707,28 @@ bool PaymentHandlerWebFlowViewController::ShowPageInfoDialog() {
                     ->GetBrowserWindowInterface();
               },
               parent_tab_contents))
+          .AddPageInfoClosingCallback(base::BindOnce(
+              &PaymentHandlerWebFlowViewController::OnPageInfoBubbleClosed,
+              weak_ptr_factory_.GetWeakPtr()))
           .HideExtendedSiteInfo()
           .Build();
 
   views::BubbleDialogDelegateView* const bubble =
       PageInfoBubbleView::CreatePageInfoBubble(std::move(specification));
-  bubble->SetHighlightedElement(kAppIconElementId);
+  bubble->SetHighlightedElement(
+      anchor_view == location_icon_view()
+          ? kAppIconElementId
+          : PermissionChipView::kIndicatorChipElementId);
   bubble->GetWidget()->Show();
   return true;
+}
+
+void PaymentHandlerWebFlowViewController::OnPageInfoBubbleClosed(
+    views::Widget::ClosedReason closed_reason,
+    bool reload_prompt) {
+  if (LocationIconView* icon = location_icon_view()) {
+    icon->MaybeAnimateIcon(/*open=*/false);
+  }
 }
 
 const LocationBarModel*
