@@ -228,8 +228,7 @@ void TipsNotificationPresenter::ShowEnhancedSafeBrowsingPromo() {
 }
 
 void TipsNotificationPresenter::ShowCPEPromo() {
-  [HandlerForProtocol(browser_->GetCommandDispatcher(),
-                      CredentialProviderPromoCommands)
+  [HandlerForProtocol(browser_->GetCommandDispatcher(), PromosManagerCommands)
       showCredentialProviderPromoWithTrigger:CredentialProviderPromoTrigger::
                                                  TipsNotification];
 }

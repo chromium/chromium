@@ -8,6 +8,7 @@
 #import <StoreKit/StoreKit.h>
 
 @class ShowSigninCommand;
+enum class CredentialProviderPromoTrigger;
 
 // Commands to show app-wide promos.
 @protocol PromosManagerCommands <NSObject>
@@ -41,6 +42,10 @@
 
 // Shows the Docking promo.
 - (void)showDockingPromo;
+
+// Shows the Credential Provider Promo with `trigger`.
+- (void)showCredentialProviderPromoWithTrigger:
+    (CredentialProviderPromoTrigger)trigger;
 
 @end
 

@@ -23,7 +23,6 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/docking_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/picture_in_picture_commands.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
@@ -108,12 +107,10 @@ class PromosManagerCoordinatorTest : public PlatformTest {
                      forProtocol:@protocol(SceneCommands)];
 
     coordinator_ = [[PromosManagerCoordinator alloc]
-            initWithBaseViewController:view_controller_
-                               browser:browser
-                          sceneHandler:OCMStrictProtocolMock(
-                                           @protocol(SceneCommands))
-        credentialProviderPromoHandler:OCMStrictProtocolMock(@protocol(
-                                           CredentialProviderPromoCommands))];
+        initWithBaseViewController:view_controller_
+                           browser:browser
+                      sceneHandler:OCMStrictProtocolMock(
+                                       @protocol(SceneCommands))];
   }
 
   // Forces the test promo for display.

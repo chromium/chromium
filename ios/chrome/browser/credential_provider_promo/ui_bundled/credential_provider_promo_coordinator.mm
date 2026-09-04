@@ -48,6 +48,9 @@
 // app session.
 @property(nonatomic, assign) BOOL promoSeenInCurrentSession;
 
+// The PromosManagerUIHandler to alert about UI changes.
+@property(nonatomic, weak) id<PromosManagerUIHandler> promosUIHandler;
+
 @end
 
 using credential_provider_promo::IOSCredentialProviderPromoAction;
@@ -73,12 +76,15 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
                          completion:nil];
   self.mediator = nil;
   self.viewController = nil;
+  self.promosUIHandler = nil;
 }
 
 #pragma mark - CredentialProviderPromoCommands
 
 - (void)showCredentialProviderPromoWithTrigger:
-    (CredentialProviderPromoTrigger)trigger {
+            (CredentialProviderPromoTrigger)trigger
+                               promosUIHandler:
+                                   (id<PromosManagerUIHandler>)promosUIHandler {
   // If the user is not eligible to be shown the promo, or the VC is already
   // being presented, return early.
   if (![self.mediator
@@ -88,6 +94,7 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
       [self.viewController isBeingPresented]) {
     return;
   }
+  self.promosUIHandler = promosUIHandler;
   self.viewController = [[CredentialProviderPromoViewController alloc] init];
   self.mediator.consumer = self.viewController;
   self.mediator.tracker =

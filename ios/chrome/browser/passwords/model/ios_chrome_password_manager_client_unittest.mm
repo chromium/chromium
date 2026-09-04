@@ -41,6 +41,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
+#import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
@@ -178,22 +179,21 @@ TEST_F(IOSChromePasswordManagerClientTest, PasswordManagerEnabledPolicyTest) {
 }
 
 // Tests that `NotifySuccessfulLoginWithExistingPassword` dispatches
-// `CredentialProviderPromoCommands`.
+// `PromosManagerCommands`.
 TEST_F(IOSChromePasswordManagerClientTest,
        NotifySuccessfulLoginWithExistingPasswordTest) {
   // Create a dispatcher for the client, register the command handler for
-  // `CredentialProviderPromoCommands`
-  id credential_provider_promo_commands_handler_mock =
-      OCMStrictProtocolMock(@protocol(CredentialProviderPromoCommands));
+  // `PromosManagerCommands`
+  id promos_manager_commands_handler_mock =
+      OCMStrictProtocolMock(@protocol(PromosManagerCommands));
 
   id dispatcher = [[CommandDispatcher alloc] init];
-  [dispatcher
-      startDispatchingToTarget:credential_provider_promo_commands_handler_mock
-                   forProtocol:@protocol(CredentialProviderPromoCommands)];
+  [dispatcher startDispatchingToTarget:promos_manager_commands_handler_mock
+                           forProtocol:@protocol(PromosManagerCommands)];
   passwordController_.dispatcher = dispatcher;
 
   // Expect the call with correct trigger type.
-  [[credential_provider_promo_commands_handler_mock expect]
+  [[promos_manager_commands_handler_mock expect]
       showCredentialProviderPromoWithTrigger:
           CredentialProviderPromoTrigger::SuccessfulLoginUsingExistingPassword];
 
@@ -209,7 +209,7 @@ TEST_F(IOSChromePasswordManagerClientTest,
       ->NotifySuccessfulLoginWithExistingPassword(std::move(manager));
 
   // Verify.
-  [credential_provider_promo_commands_handler_mock verify];
+  [promos_manager_commands_handler_mock verify];
 
   passwordController_.dispatcher = nil;
 }

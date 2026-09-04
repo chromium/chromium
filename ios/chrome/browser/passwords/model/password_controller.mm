@@ -74,6 +74,7 @@
 #import "ios/chrome/browser/shared/public/commands/password_breach_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_protection_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_suggestion_commands.h"
+#import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/sync_presenter_commands.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -403,8 +404,7 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 }
 
 - (void)showCredentialProviderPromo:(CredentialProviderPromoTrigger)trigger {
-  [self.credentialProviderPromoHandler
-      showCredentialProviderPromoWithTrigger:trigger];
+  [self.promosManagerDispatcher showCredentialProviderPromoWithTrigger:trigger];
 }
 
 #pragma mark - Private methods
@@ -421,10 +421,10 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
   return HandlerForProtocol(self.dispatcher, PasswordProtectionCommands);
 }
 
-// The handler used for CredentialProviderPromoCommands.
-- (id<CredentialProviderPromoCommands>)credentialProviderPromoHandler {
+// The dispatcher used for PromosManagerCommands.
+- (id<PromosManagerCommands>)promosManagerDispatcher {
   DCHECK(self.dispatcher);
-  return HandlerForProtocol(self.dispatcher, CredentialProviderPromoCommands);
+  return HandlerForProtocol(self.dispatcher, PromosManagerCommands);
 }
 
 // The dispatcher used for PasswordSuggestionCommands.

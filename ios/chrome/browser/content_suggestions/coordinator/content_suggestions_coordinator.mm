@@ -155,6 +155,7 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/picture_in_picture_commands.h"
 #import "ios/chrome/browser/shared/public/commands/price_tracked_items_commands.h"
+#import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
@@ -1276,7 +1277,7 @@ using segmentation_platform::TipIdentifier;
 // Shows the Credential Provider Promo using the SetUpList trigger.
 - (void)showCredentialProviderPromo {
   [HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                      CredentialProviderPromoCommands)
+                      PromosManagerCommands)
       showCredentialProviderPromoWithTrigger:CredentialProviderPromoTrigger::
                                                  SetUpList];
 }

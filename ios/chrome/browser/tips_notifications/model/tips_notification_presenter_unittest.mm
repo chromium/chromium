@@ -158,7 +158,7 @@ TEST_F(TipsNotificationPresenterTest, TestShowEnhancedSafeBrowsingPromo) {
 
 // Tests that the presenter can show the CPE promo.
 TEST_F(TipsNotificationPresenterTest, TestShowCPEPromo) {
-  id mock_handler = MockHandler(@protocol(CredentialProviderPromoCommands));
+  id mock_handler = MockHandler(@protocol(PromosManagerCommands));
   OCMExpect(
       [mock_handler showCredentialProviderPromoWithTrigger:
                         CredentialProviderPromoTrigger::TipsNotification]);

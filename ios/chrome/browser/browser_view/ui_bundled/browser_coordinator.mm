@@ -1351,8 +1351,6 @@
       [[CredentialProviderPromoCoordinator alloc]
           initWithBaseViewController:self.viewController
                              browser:self.browser];
-  _credentialProviderPromoCoordinator.promosUIHandler =
-      _promosManagerCoordinator;
   [_credentialProviderPromoCoordinator start];
 
   _lensOverlayCoordinator = [[LensOverlayCoordinator alloc]
@@ -2279,20 +2277,11 @@
   if (!self.promosManagerCoordinator) {
     id<SceneCommands> sceneHandler =
         HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
-    id<CredentialProviderPromoCommands> credentialProviderPromoHandler =
-        HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                           CredentialProviderPromoCommands);
 
     self.promosManagerCoordinator = [[PromosManagerCoordinator alloc]
-            initWithBaseViewController:self.viewController
-                               browser:self.browser
-                          sceneHandler:sceneHandler
-        credentialProviderPromoHandler:credentialProviderPromoHandler];
-
-    // CredentialProviderPromoCoordinator is initialized earlier than this, so
-    // make sure to set its UI handler.
-    _credentialProviderPromoCoordinator.promosUIHandler =
-        self.promosManagerCoordinator;
+        initWithBaseViewController:self.viewController
+                           browser:self.browser
+                      sceneHandler:sceneHandler];
 
     [self.promosManagerCoordinator start];
   } else {
@@ -2395,6 +2384,16 @@
 - (void)showDockingPromo {
   [HandlerForProtocol(self.dispatcher, DockingPromoCommands)
       showDockingPromoWithPromosUIHandler:self.promosManagerCoordinator];
+}
+
+- (void)showCredentialProviderPromoWithTrigger:
+    (CredentialProviderPromoTrigger)trigger {
+  id<CredentialProviderPromoCommands> credentialProviderPromoHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                         CredentialProviderPromoCommands);
+  [credentialProviderPromoHandler
+      showCredentialProviderPromoWithTrigger:trigger
+                             promosUIHandler:self.promosManagerCoordinator];
 }
 
 #pragma mark - AutofillSettingsNavigator

@@ -1618,9 +1618,9 @@ const char kContextPanelDismissedHistogram[] =
 }
 
 - (void)showCredentialProviderPromoOnPasskeyCreated {
-  id<CredentialProviderPromoCommands> credentialProviderPromoHandler =
-      HandlerForProtocol(self.dispatcher, CredentialProviderPromoCommands);
-  [credentialProviderPromoHandler
+  id<PromosManagerCommands> promosManagerHandler =
+      HandlerForProtocol(self.dispatcher, PromosManagerCommands);
+  [promosManagerHandler
       showCredentialProviderPromoWithTrigger:CredentialProviderPromoTrigger::
                                                  SuccessfulPasskeyCreation];
 }

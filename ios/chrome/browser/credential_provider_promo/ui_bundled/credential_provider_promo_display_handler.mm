@@ -8,25 +8,16 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "ios/chrome/browser/promos_manager/model/promo_config.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
+#import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 
-@implementation CredentialProviderPromoDisplayHandler {
-  id<CredentialProviderPromoCommands> _handler;
-}
-
-- (instancetype)initWithHandler:(id<CredentialProviderPromoCommands>)handler {
-  self = [super init];
-  if (self) {
-    DCHECK(handler);
-    _handler = handler;
-  }
-  return self;
-}
+@implementation CredentialProviderPromoDisplayHandler
 
 #pragma mark - StandardPromoDisplayHandler
 
 - (void)handleDisplay {
-  [_handler showCredentialProviderPromoWithTrigger:
-                CredentialProviderPromoTrigger::RemindMeLater];
+  DCHECK(self.handler);
+  [self.handler showCredentialProviderPromoWithTrigger:
+                    CredentialProviderPromoTrigger::RemindMeLater];
 }
 
 #pragma mark - PromoProtocol

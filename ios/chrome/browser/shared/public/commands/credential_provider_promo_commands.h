@@ -17,12 +17,16 @@ enum class CredentialProviderPromoTrigger {
   SuccessfulPasskeyCreation,             // User successfully created a passkey.
 };
 
+@protocol PromosManagerUIHandler;
+
 // Commands to show app-wide promos.
 @protocol CredentialProviderPromoCommands <NSObject>
 
-// Show Credential Provider Promo
+// Show Credential Provider Promo.
 - (void)showCredentialProviderPromoWithTrigger:
-    (CredentialProviderPromoTrigger)trigger;
+            (CredentialProviderPromoTrigger)trigger
+                               promosUIHandler:
+                                   (id<PromosManagerUIHandler>)promosUIHandler;
 
 @end
 

@@ -8,7 +8,7 @@
 #import "ios/chrome/browser/promos_manager/coordinator/standard_promo_display_handler.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 
-@protocol CredentialProviderPromoCommands;
+@protocol PromosManagerCommands;
 
 // Handler for displaying the Credential Provider Promo.
 //
@@ -17,7 +17,8 @@
 @interface CredentialProviderPromoDisplayHandler
     : NSObject <StandardPromoDisplayHandler>
 
-- (instancetype)initWithHandler:(id<CredentialProviderPromoCommands>)handler;
+// PromosManagerCommands handler.
+@property(nonatomic, weak) id<PromosManagerCommands> handler;
 
 @end
 

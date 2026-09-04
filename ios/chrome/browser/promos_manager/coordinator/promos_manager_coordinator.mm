@@ -55,7 +55,6 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/picture_in_picture_commands.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -105,9 +104,6 @@
 
   // The handler for the SceneCommands.
   id<SceneCommands> _sceneHandler;
-
-  // The handler for the CredentialProviderPromoCommands.
-  id<CredentialProviderPromoCommands> _credentialProviderPromoCommandHandler;
 }
 
 // A mediator that observes when it's a good time to display a promo.
@@ -133,16 +129,13 @@
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                              sceneHandler:(id<SceneCommands>)sceneHandler
-            credentialProviderPromoHandler:(id<CredentialProviderPromoCommands>)
-                                               credentialProviderPromoHandler {
+                              sceneHandler:(id<SceneCommands>)sceneHandler {
   DCHECK(ShouldPromoManagerDisplayPromos());
   if ((self = [super initWithBaseViewController:viewController
                                         browser:browser])) {
     CHECK(viewController);
     CHECK(browser);
     _sceneHandler = sceneHandler;
-    _credentialProviderPromoCommandHandler = credentialProviderPromoHandler;
 
     [self registerPromos];
 
@@ -583,8 +576,7 @@
 
   // Credentials provider promo handler.
   _displayHandlerPromos[promos_manager::Promo::CredentialProviderExtension] =
-      [[CredentialProviderPromoDisplayHandler alloc]
-          initWithHandler:_credentialProviderPromoCommandHandler];
+      [[CredentialProviderPromoDisplayHandler alloc] init];
 
 
   // Default browser promo handler.

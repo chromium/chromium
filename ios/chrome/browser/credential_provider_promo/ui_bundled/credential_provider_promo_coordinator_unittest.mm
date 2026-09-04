@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_constants.h"
 #import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_coordinator.h"
 #import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_metrics.h"
+#import "ios/chrome/browser/promos_manager/coordinator/promos_manager_ui_handler.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -22,6 +23,8 @@
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 using credential_provider_promo::IOSCredentialProviderPromoAction;
 
@@ -79,6 +82,13 @@ class CredentialProviderPromoCoordinatorTest : public PlatformTest {
     return GetApplicationContext()->GetLocalState();
   }
 
+  void ShowPromo(CredentialProviderPromoTrigger trigger,
+                 id<PromosManagerUIHandler> promos_ui_handler = nil) {
+    [credential_provider_promo_command_handler_
+        showCredentialProviderPromoWithTrigger:trigger
+                               promosUIHandler:promos_ui_handler];
+  }
+
  protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
@@ -103,9 +113,8 @@ TEST_F(CredentialProviderPromoCoordinatorTest,
       IOSCredentialProviderPromoSource::kAutofillUsed, 0);
 
   // Coordinator will show the promo with PasswordCopied as source.
-  [credential_provider_promo_command_handler_
-      showCredentialProviderPromoWithTrigger:
-          CredentialProviderPromoTrigger::SuccessfulLoginUsingExistingPassword];
+  ShowPromo(
+      CredentialProviderPromoTrigger::SuccessfulLoginUsingExistingPassword);
 
   histogram_tester_->ExpectBucketCount(
       kIOSCredentialProviderPromoImpressionHistogram,
@@ -120,9 +129,7 @@ TEST_F(CredentialProviderPromoCoordinatorTest,
       kIOSCredentialProviderPromoImpressionHistogram,
       IOSCredentialProviderPromoSource::kPasskeyCreated, 0);
 
-  [credential_provider_promo_command_handler_
-      showCredentialProviderPromoWithTrigger:CredentialProviderPromoTrigger::
-                                                 SuccessfulPasskeyCreation];
+  ShowPromo(CredentialProviderPromoTrigger::SuccessfulPasskeyCreation);
 
   histogram_tester_->ExpectBucketCount(
       kIOSCredentialProviderPromoImpressionHistogram,
@@ -139,16 +146,13 @@ TEST_F(CredentialProviderPromoCoordinatorTest,
 
   // Coordinator will show the promo with AutofillUsed as source, and update
   // `prefs::kIosCredentialProviderPromoSource`.
-  [credential_provider_promo_command_handler_
-      showCredentialProviderPromoWithTrigger:
-          CredentialProviderPromoTrigger::SuccessfulLoginUsingExistingPassword];
+  ShowPromo(
+      CredentialProviderPromoTrigger::SuccessfulLoginUsingExistingPassword);
 
   // Coordinator is called to again to show the promo as reminder.
   // `kAutofillUsed` will be used as the original source when recording
   // metric.
-  [credential_provider_promo_command_handler_
-      showCredentialProviderPromoWithTrigger:CredentialProviderPromoTrigger::
-                                                 RemindMeLater];
+  ShowPromo(CredentialProviderPromoTrigger::RemindMeLater);
 
   histogram_tester_->ExpectBucketCount(
       kIOSCredentialProviderPromoImpressionIsReminderHistogram,
@@ -182,9 +186,8 @@ TEST_F(CredentialProviderPromoCoordinatorTest,
   // Trigger the promo with PasswordSaved.
   // The primary CTA on the first step of the promo is 'Learn more' before iOS
   // 18 and 'Turn on AutoFill…' after.
-  [credential_provider_promo_command_handler_
-      showCredentialProviderPromoWithTrigger:
-          CredentialProviderPromoTrigger::SuccessfulLoginUsingExistingPassword];
+  ShowPromo(
+      CredentialProviderPromoTrigger::SuccessfulLoginUsingExistingPassword);
 
   // Perform the action. The coordinator will record the action.
   ASSERT_TRUE([coordinator_
@@ -217,9 +220,8 @@ TEST_F(CredentialProviderPromoCoordinatorTest,
       kTurnOnCredentialProviderExtensionPromptOutcomeHistogram, 0);
 
   // Trigger the promo and tap the primary action button.
-  [credential_provider_promo_command_handler_
-      showCredentialProviderPromoWithTrigger:
-          CredentialProviderPromoTrigger::SuccessfulLoginUsingExistingPassword];
+  ShowPromo(
+      CredentialProviderPromoTrigger::SuccessfulLoginUsingExistingPassword);
   ASSERT_TRUE([coordinator_
       conformsToProtocol:@protocol(ConfirmationAlertActionHandler)]);
   [(id<ConfirmationAlertActionHandler>)
@@ -247,9 +249,8 @@ TEST_F(CredentialProviderPromoCoordinatorTest,
       credential_provider_promo::IOSCredentialProviderPromoAction::kNo, 0);
 
   // Trigger the promo with SuccessfulLoginUsingExistingPassword.
-  [credential_provider_promo_command_handler_
-      showCredentialProviderPromoWithTrigger:
-          CredentialProviderPromoTrigger::SuccessfulLoginUsingExistingPassword];
+  ShowPromo(
+      CredentialProviderPromoTrigger::SuccessfulLoginUsingExistingPassword);
 
   EXPECT_TRUE([coordinator_
       conformsToProtocol:@protocol(ConfirmationAlertActionHandler)]);
@@ -273,9 +274,7 @@ TEST_F(CredentialProviderPromoCoordinatorTest, SetUpListTrigger) {
       0);
   // Trigger the promo with SetUpList. The primary CTA of the promo, when
   // triggered from SetUpList, is 'go to settings'.
-  [credential_provider_promo_command_handler_
-      showCredentialProviderPromoWithTrigger:CredentialProviderPromoTrigger::
-                                                 SetUpList];
+  ShowPromo(CredentialProviderPromoTrigger::SetUpList);
 
   // Perform the action. Coordinator will record the action 'go to settings'.
   ASSERT_TRUE([coordinator_
@@ -307,9 +306,7 @@ TEST_F(CredentialProviderPromoCoordinatorTest,
       0);
   // Trigger the promo with SetUpList. The primary CTA of the promo, when
   // triggered from SetUpList, is 'Turn on AutoFill'.
-  [credential_provider_promo_command_handler_
-      showCredentialProviderPromoWithTrigger:CredentialProviderPromoTrigger::
-                                                 SetUpList];
+  ShowPromo(CredentialProviderPromoTrigger::SetUpList);
 
   // Perform the action. Coordinator will record the action 'Turn on AutoFill'.
   ASSERT_TRUE([coordinator_
@@ -334,9 +331,7 @@ TEST_F(CredentialProviderPromoCoordinatorTest,
 TEST_F(CredentialProviderPromoCoordinatorTest, LastActionTaken) {
   // Trigger the promo with SetUpList. The primary CTA of the promo, when
   // triggered from SetUpList, is 'go to settings'.
-  [credential_provider_promo_command_handler_
-      showCredentialProviderPromoWithTrigger:CredentialProviderPromoTrigger::
-                                                 SetUpList];
+  ShowPromo(CredentialProviderPromoTrigger::SetUpList);
   EXPECT_EQ(LastActionTaken(), -1);
 
   // Perform the action. Coordinator will record the action 'go to settings'.
@@ -346,4 +341,28 @@ TEST_F(CredentialProviderPromoCoordinatorTest, LastActionTaken) {
           coordinator_ confirmationAlertPrimaryAction];
   EXPECT_EQ(LastActionTaken(),
             static_cast<int>(IOSCredentialProviderPromoAction::kGoToSettings));
+}
+
+// Tests that promoWasDismissed is sent to PromosManagerUIHandler on dismissal
+// when triggered with RemindMeLater.
+TEST_F(CredentialProviderPromoCoordinatorTest,
+       PromosUIHandlerNotifiedOnDismissal) {
+  id mock_promos_ui_handler =
+      OCMProtocolMock(@protocol(PromosManagerUIHandler));
+  OCMExpect([mock_promos_ui_handler promoWasDismissed]);
+
+  // Set the original source.
+  ShowPromo(
+      CredentialProviderPromoTrigger::SuccessfulLoginUsingExistingPassword);
+
+  // Trigger remind me later promo.
+  ShowPromo(CredentialProviderPromoTrigger::RemindMeLater,
+            mock_promos_ui_handler);
+
+  ASSERT_TRUE([coordinator_
+      conformsToProtocol:@protocol(ConfirmationAlertActionHandler)]);
+  [(id<ConfirmationAlertActionHandler>)
+          coordinator_ confirmationAlertSecondaryAction];
+
+  EXPECT_OCMOCK_VERIFY(mock_promos_ui_handler);
 }
