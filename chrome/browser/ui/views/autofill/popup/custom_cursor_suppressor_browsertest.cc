@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/extensions/extension_side_panel_manager.h"
@@ -290,9 +289,7 @@ IN_PROC_BROWSER_TEST_F(CustomCursorSuppressorExtensionBrowserTest,
   scoped_refptr<const extensions::Extension> extension =
       LoadExtensionInSidePanel();
   auto* extension_coordinator =
-      browser()
-          ->GetFeatures()
-          .extension_side_panel_manager()
+      extensions::ExtensionSidePanelManager::From(browser())
           ->GetExtensionCoordinatorForTesting(extension->id());
   content::WebContents* host_contents =
       extension_coordinator->GetHostWebContentsForTesting();
@@ -315,9 +312,7 @@ IN_PROC_BROWSER_TEST_F(
   scoped_refptr<const extensions::Extension> extension =
       LoadExtensionInSidePanel();
   auto* extension_coordinator =
-      browser()
-          ->GetFeatures()
-          .extension_side_panel_manager()
+      extensions::ExtensionSidePanelManager::From(browser())
           ->GetExtensionCoordinatorForTesting(extension->id());
   content::WebContents* host_contents =
       extension_coordinator->GetHostWebContentsForTesting();

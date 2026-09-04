@@ -27,7 +27,6 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
@@ -325,11 +324,11 @@ class ExtensionSidePanelBrowserTest : public ExtensionBrowserTest {
   ExtensionSidePanelCoordinator* GetCoordinator(
       const ExtensionId& extension_id,
       content::WebContents* web_contents) {
-    auto* manager =
-        web_contents ? tabs::TabInterface::GetFromContents(web_contents)
-                           ->GetTabFeatures()
-                           ->extension_side_panel_manager()
-                     : browser()->GetFeatures().extension_side_panel_manager();
+    auto* manager = web_contents
+                        ? tabs::TabInterface::GetFromContents(web_contents)
+                              ->GetTabFeatures()
+                              ->extension_side_panel_manager()
+                        : ExtensionSidePanelManager::From(browser());
     return manager->GetExtensionCoordinatorForTesting(extension_id);
   }
 

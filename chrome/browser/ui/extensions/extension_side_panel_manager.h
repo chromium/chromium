@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_SIDE_PANEL_MANAGER_H_
 #define CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_SIDE_PANEL_MANAGER_H_
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -12,6 +14,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension_id.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
 class Profile;
@@ -36,6 +39,8 @@ class Extension;
 // extension's ExtensionSidePanelCoordinator.
 class ExtensionSidePanelManager : public ExtensionRegistryObserver {
  public:
+  DECLARE_USER_DATA(ExtensionSidePanelManager);
+
   ExtensionSidePanelManager(BrowserWindowInterface* browser,
                             SidePanelRegistry* registry);
   ExtensionSidePanelManager(Profile* profile,
@@ -46,6 +51,10 @@ class ExtensionSidePanelManager : public ExtensionRegistryObserver {
   ExtensionSidePanelManager& operator=(const ExtensionSidePanelManager&) =
       delete;
   ~ExtensionSidePanelManager() override;
+
+  // Returns the window-scoped manager for `browser`, or null if there is
+  // none. Tab-scoped instances are not registered and are not returned here.
+  static ExtensionSidePanelManager* From(BrowserWindowInterface* browser);
 
   ExtensionSidePanelCoordinator* GetExtensionCoordinatorForTesting(
       const ExtensionId& extension_id);
@@ -88,6 +97,11 @@ class ExtensionSidePanelManager : public ExtensionRegistryObserver {
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
+
+  // Only set for the window-scoped instance; tab-scoped instances are reached
+  // through TabFeatures instead.
+  std::optional<ui::ScopedUnownedUserData<ExtensionSidePanelManager>>
+      scoped_unowned_user_data_;
 };
 
 }  // namespace extensions

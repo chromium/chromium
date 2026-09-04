@@ -326,10 +326,6 @@ class BrowserWindowFeatures {
     return extension_keybinding_registry_.get();
   }
 
-  extensions::ExtensionSidePanelManager* extension_side_panel_manager() {
-    return extension_side_panel_manager_.get();
-  }
-
   // Get the FindBarController for this browser window, creating it if it does
   // not yet exist.
   FindBarController* GetFindBarController();

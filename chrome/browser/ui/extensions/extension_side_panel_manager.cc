@@ -17,6 +17,8 @@
 
 namespace extensions {
 
+DEFINE_USER_DATA(ExtensionSidePanelManager);
+
 ExtensionSidePanelManager::ExtensionSidePanelManager(
     BrowserWindowInterface* browser,
     SidePanelRegistry* registry)
@@ -24,7 +26,10 @@ ExtensionSidePanelManager::ExtensionSidePanelManager(
       browser_(browser),
       tab_interface_(nullptr),
       registry_(registry),
-      for_tab_(false) {
+      for_tab_(false),
+      scoped_unowned_user_data_(std::in_place,
+                                browser->GetUnownedUserDataHost(),
+                                *this) {
   RegisterExtensionEntries();
 }
 
@@ -41,6 +46,12 @@ ExtensionSidePanelManager::ExtensionSidePanelManager(
 }
 
 ExtensionSidePanelManager::~ExtensionSidePanelManager() = default;
+
+// static
+ExtensionSidePanelManager* ExtensionSidePanelManager::From(
+    BrowserWindowInterface* browser) {
+  return Get(browser->GetUnownedUserDataHost());
+}
 
 ExtensionSidePanelCoordinator*
 ExtensionSidePanelManager::GetExtensionCoordinatorForTesting(

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extension_side_panel_coordinator.h"
 #include "chrome/browser/ui/extensions/extension_side_panel_manager.h"
@@ -29,11 +28,11 @@ class ExtensionSidePanelInteractiveTest : public ExtensionBrowserTest {
   ExtensionSidePanelCoordinator* GetCoordinator(
       const ExtensionId& extension_id,
       content::WebContents* web_contents) {
-    auto* manager =
-        web_contents ? tabs::TabInterface::GetFromContents(web_contents)
-                           ->GetTabFeatures()
-                           ->extension_side_panel_manager()
-                     : browser()->GetFeatures().extension_side_panel_manager();
+    auto* manager = web_contents
+                        ? tabs::TabInterface::GetFromContents(web_contents)
+                              ->GetTabFeatures()
+                              ->extension_side_panel_manager()
+                        : ExtensionSidePanelManager::From(browser());
     return manager->GetExtensionCoordinatorForTesting(extension_id);
   }
 };

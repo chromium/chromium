@@ -154,7 +154,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"  // nogncheck
@@ -2131,9 +2130,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   ASSERT_TRUE(default_path_listener.WaitUntilSatisfied());
 
   content::WebContents* side_panel_contents =
-      browser_window_interface()
-          ->GetFeatures()
-          .extension_side_panel_manager()
+      extensions::ExtensionSidePanelManager::From(browser_window_interface())
           ->GetExtensionCoordinatorForTesting(extension->id())
           ->GetHostWebContentsForTesting();
   ASSERT_TRUE(side_panel_contents);
