@@ -26,6 +26,7 @@
 #include "chrome/browser/extensions/sync/extension_sync_service.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extension_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model_factory.h"
@@ -400,13 +401,11 @@ bool ToolbarActionsModel::HasAction(const ActionId& action_id) const {
 
 bool ToolbarActionsModel::CanShowActionsInToolbar(
     const BrowserWindowInterface& browser) {
-#if BUILDFLAG(IS_ANDROID)
-  // On Desktop Android, we show actions in the toolbar as long as the rest of
-  // the extensions UI is enabled in the browser.
-  // TODO(crbug.com/460554584): Make sure this is the intended behavior.
-  return true;
-#else   // BUILDFLAG(IS_ANDROID)
   // Pinning extensions is not available in PWAs.
+#if BUILDFLAG(IS_ANDROID)
+  return browser.GetType() != BrowserWindowInterface::Type::TYPE_APP &&
+         browser.GetType() != BrowserWindowInterface::Type::TYPE_APP_POPUP;
+#else   // BUILDFLAG(IS_ANDROID)
   return !web_app::AppBrowserController::IsWebApp(&browser);
 #endif  // BUILDFLAG(IS_ANDROID)
 }
