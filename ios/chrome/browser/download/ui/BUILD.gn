@@ -66,6 +66,7 @@ source_set("eg2_tests") {
     "download_manager_egtest.mm",
     "pass_kit_egtest.mm",
     "safari_download_egtest.mm",
+    "vcard_egtest.mm",
   ]
 
   deps = [

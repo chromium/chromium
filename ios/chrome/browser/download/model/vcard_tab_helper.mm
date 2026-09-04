@@ -60,6 +60,16 @@ void VcardTabHelper::DidStartNavigation(
   }
 }
 
+void VcardTabHelper::DidFinishNavigation(
+    web::WebState* web_state,
+    web::NavigationContext* navigation_context) {
+  CHECK_EQ(web_state_, web_state);
+  if (navigation_context->HasCommitted() &&
+      !navigation_context->IsSameDocument()) {
+    pending_vcard_ = nil;
+  }
+}
+
 #pragma mark - DownloadTaskObserver
 
 void VcardTabHelper::OnDownloadUpdated(web::DownloadTask* updated_task) {

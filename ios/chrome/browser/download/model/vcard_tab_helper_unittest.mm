@@ -119,8 +119,8 @@ TEST_F(VcardTabHelperTest, DeferVcardPresentationWhenHidden) {
 }
 
 // Tests that vCard presentation deferred while the WebState was hidden is
-// dropped upon observing a cross-document navigation.
-TEST_F(VcardTabHelperTest, DeferredVcardDroppedOnNavigation) {
+// dropped upon observing a cross-document navigation start.
+TEST_F(VcardTabHelperTest, DeferredVcardDroppedOnNavigationStart) {
   web_state_.WasHidden();
 
   auto task =
@@ -145,6 +145,46 @@ TEST_F(VcardTabHelperTest, DeferredVcardDroppedOnNavigation) {
   web::FakeNavigationContext context;
   context.SetIsSameDocument(false);
   web_state_.OnNavigationStarted(&context);
+
+  id mock_handler_visible = OCMProtocolMock(@protocol(VcardTabHelperDelegate));
+  tab_helper()->set_delegate(mock_handler_visible);
+  [[mock_handler_visible reject] openVcardFromData:OCMOCK_ANY];
+
+  web_state_.WasShown();
+
+  EXPECT_OCMOCK_VERIFY(mock_handler_visible);
+}
+
+// Tests that vCard presentation deferred during provisional navigation is
+// dropped upon observing a committed cross-document navigation finish.
+TEST_F(VcardTabHelperTest, DeferredVcardDroppedOnNavigationFinish) {
+  web_state_.WasHidden();
+
+  web::FakeNavigationContext context;
+  context.SetIsSameDocument(false);
+  context.SetHasCommitted(true);
+  web_state_.OnNavigationStarted(&context);
+
+  auto task =
+      std::make_unique<web::FakeDownloadTask>(GURL(kUrl), kVcardMimeType);
+  web::FakeDownloadTask* task_ptr = task.get();
+  tab_helper()->Download(std::move(task));
+
+  std::string pass_data = testing::GetTestFileContents(testing::kVcardFilePath);
+  NSData* data = [NSData dataWithBytes:pass_data.data()
+                                length:pass_data.size()];
+
+  id mock_handler = OCMProtocolMock(@protocol(VcardTabHelperDelegate));
+  tab_helper()->set_delegate(mock_handler);
+
+  [[mock_handler reject] openVcardFromData:OCMOCK_ANY];
+
+  task_ptr->SetResponseData(data);
+  task_ptr->SetDone(true);
+
+  EXPECT_OCMOCK_VERIFY(mock_handler);
+
+  web_state_.OnNavigationFinished(&context);
 
   id mock_handler_visible = OCMProtocolMock(@protocol(VcardTabHelperDelegate));
   tab_helper()->set_delegate(mock_handler_visible);

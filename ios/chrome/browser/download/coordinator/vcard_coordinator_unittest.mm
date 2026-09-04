@@ -4,16 +4,23 @@
 
 #import "ios/chrome/browser/download/coordinator/vcard_coordinator.h"
 
+#import "base/test/ios/wait_util.h"
+#import "ios/chrome/browser/download/model/download_test_util.h"
 #import "ios/chrome/browser/download/model/vcard_tab_helper.h"
 #import "ios/chrome/browser/download/model/vcard_tab_helper_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/utils/mime_type_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/test/scoped_key_window.h"
+#import "ios/web/public/test/fakes/fake_download_task.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
+
+using base::test::ios::kWaitForUIElementTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 // Test fixture for VcardCoordinatorTest class.
 class VcardCoordinatorTest : public PlatformTest {
@@ -21,10 +28,11 @@ class VcardCoordinatorTest : public PlatformTest {
   VcardCoordinatorTest() {
     profile_ = TestProfileIOS::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
-    coordinator_ =
-        [[VcardCoordinator alloc] initWithBaseViewController:nil
-                                                     browser:browser_.get()];
-    [scoped_key_window_.Get() setRootViewController:nil];
+    base_view_controller_ = [[UIViewController alloc] init];
+    coordinator_ = [[VcardCoordinator alloc]
+        initWithBaseViewController:base_view_controller_
+                           browser:browser_.get()];
+    [scoped_key_window_.Get() setRootViewController:base_view_controller_];
 
     [coordinator_ start];
   }
@@ -35,6 +43,7 @@ class VcardCoordinatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
+  UIViewController* base_view_controller_;
   VcardCoordinator* coordinator_;
   ScopedKeyWindow scoped_key_window_;
 };
@@ -58,4 +67,38 @@ TEST_F(VcardCoordinatorTest, InstallDelegates) {
   EXPECT_FALSE(VcardTabHelper::FromWebState(web_state_ptr3)->delegate());
   browser_->GetWebStateList()->ReplaceWebStateAt(0, std::move(web_state3));
   EXPECT_TRUE(VcardTabHelper::FromWebState(web_state_ptr3)->delegate());
+}
+
+// Tests that a vCard received while a WebState is in the background is
+// presented when that WebState is shown.
+TEST_F(VcardCoordinatorTest, ShowVcardWhenTabActivated) {
+  // Add background web state.
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web_state->WasHidden();
+  web::FakeWebState* web_state_ptr = web_state.get();
+  VcardTabHelper::CreateForWebState(web_state_ptr);
+  browser_->GetWebStateList()->InsertWebState(std::move(web_state));
+
+  // Trigger vCard download in background web state.
+  std::string pass_data = testing::GetTestFileContents(testing::kVcardFilePath);
+  NSData* data = [NSData dataWithBytes:pass_data.data()
+                                length:pass_data.size()];
+  auto task = std::make_unique<web::FakeDownloadTask>(
+      GURL("https://example.test/vcard.vcf"), kVcardMimeType);
+  web::FakeDownloadTask* task_ptr = task.get();
+  VcardTabHelper::FromWebState(web_state_ptr)->Download(std::move(task));
+  task_ptr->SetResponseData(data);
+  task_ptr->SetDone(true);
+
+  // UI should not be presented yet while web state is hidden.
+  EXPECT_FALSE(base_view_controller_.presentedViewController);
+
+  // Show the web state.
+  web_state_ptr->WasShown();
+
+  // UI should now be presented.
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
+    return [base_view_controller_.presentedViewController class] ==
+           [UINavigationController class];
+  }));
 }

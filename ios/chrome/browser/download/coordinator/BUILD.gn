@@ -27,6 +27,9 @@ source_set("coordinator") {
     "safari_download_coordinator.mm",
     "vcard_coordinator.h",
     "vcard_coordinator.mm",
+    "vcard_mediator.h",
+    "vcard_mediator.mm",
+    "vcard_mediator_delegate.h",
   ]
 
   deps = [
@@ -90,6 +93,7 @@ source_set("unit_tests") {
     "pass_kit_mediator_unittest.mm",
     "safari_download_coordinator_unittest.mm",
     "vcard_coordinator_unittest.mm",
+    "vcard_mediator_unittest.mm",
   ]
   deps = [
     ":coordinator",
