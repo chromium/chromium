@@ -22,6 +22,7 @@ BASE_DECLARE_FEATURE(kContextualTasksEphemeralBrandedEntryPoint);
 BASE_DECLARE_FEATURE(kContextualTasksExtraOauthScopes);
 BASE_DECLARE_FEATURE(kContextualTasksDriveOAuthScope);
 BASE_DECLARE_FEATURE(kEnableContextualTasksPinButtonInToolbar);
+BASE_DECLARE_FEATURE(kEphemeralPinningVisibleWhenPermanentlyPinned);
 BASE_DECLARE_FEATURE(kContextualTasksContext);
 BASE_DECLARE_FEATURE(kContextualTasksSearchQuery);
 BASE_DECLARE_FEATURE(kContextualTasksContextMultiTurnTabRelevance);
@@ -538,6 +539,8 @@ extern const char kContextualTasksSidePanelRearchitectureName[];
 extern const char kContextualTasksSidePanelRearchitectureDescription[];
 extern const char kContextualTasksBypassDismissedCapName[];
 extern const char kContextualTasksBypassDismissedCapDescription[];
+extern const char kEphemeralPinningVisibleWhenPermanentlyPinnedName[];
+extern const char kEphemeralPinningVisibleWhenPermanentlyPinnedDescription[];
 
 }  // namespace flag_descriptions
 

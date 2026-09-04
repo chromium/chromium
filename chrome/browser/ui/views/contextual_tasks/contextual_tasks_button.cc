@@ -321,10 +321,15 @@ void ContextualTasksButton::OnButtonPress() {
   auto* controller = contextual_tasks::ContextualTasksPanelController::From(
       browser_window_interface_);
   CHECK(controller);
-  // TODO(crbug.com/480218994): Clean up the ToggleContextualTasksSidePanel
-  // browser action, since the logic is now handled in this method.
-  bool is_pinned = contextual_tasks::GetEffectivePinState(
-      browser_window_interface_->GetProfile());
+
+  // When kEphemeralPinningVisibleWhenPermanentlyPinned is enabled, the
+  // ephemeral button remains visible alongside the pinned button, and presses
+  // on this button should always be logged as EphemeralToolbarButton actions.
+  bool is_pinned =
+      !base::FeatureList::IsEnabled(
+          contextual_tasks::kEphemeralPinningVisibleWhenPermanentlyPinned) &&
+      contextual_tasks::GetEffectivePinState(
+          browser_window_interface_->GetProfile());
 
   if (controller->IsPanelOpenForContextualTask()) {
     base::RecordAction(base::UserMetricsAction(
@@ -367,7 +372,6 @@ void ContextualTasksButton::OnButtonPress() {
     }
   }
 }
-
 
 void ContextualTasksButton::OnSidePanelAlignmentChanged() {
   if (contextual_tasks::kShowEntryPoint.Get() ==
@@ -558,11 +562,10 @@ void ContextualTasksButton::AnimateShow() {
     return;
   }
   views::AnimationBuilder builder;
-  auto& sequence =
-      builder.Once()
-          .SetDuration(
-              base::Milliseconds(features::kSidePanelFlyoverDurationMs.Get()))
-          .SetOpacity(layer(), 1.0f);
+  auto& sequence = builder.Once()
+                       .SetDuration(base::Milliseconds(
+                           features::kSidePanelFlyoverDurationMs.Get()))
+                       .SetOpacity(layer(), 1.0f);
 
   if (drop_shadow_painted_layer_) {
     drop_shadow_painted_layer_->layer()->SetOpacity(0.0f);

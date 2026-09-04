@@ -348,15 +348,23 @@ class ContextualTasksEphemeralButtonInteractiveTestMixin
   ~ContextualTasksEphemeralButtonInteractiveTestMixin() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{contextual_tasks::kContextualTasks,
-          {{"ContextualTasksExpandButtonOptions", "toolbar-close-button"}}},
-         {contextual_tasks::kContextualTasksEphemeralBrandedEntryPoint,
-          {{"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"}}},
-         {contextual_tasks::kContextualTasksHideCloseButtonInVerticalTabs, {}},
-         {contextual_tasks::kEnableContextualTasksPinButtonInToolbar, {}}},
-        {});
+    scoped_feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(),
+                                                       GetDisabledFeatures());
     Base::SetUp();
+  }
+
+  virtual std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() {
+    return {
+        {contextual_tasks::kContextualTasks,
+         {{"ContextualTasksExpandButtonOptions", "toolbar-close-button"}}},
+        {contextual_tasks::kContextualTasksEphemeralBrandedEntryPoint,
+         {{"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"}}},
+        {contextual_tasks::kContextualTasksHideCloseButtonInVerticalTabs, {}},
+        {contextual_tasks::kEnableContextualTasksPinButtonInToolbar, {}}};
+  }
+
+  virtual std::vector<base::test::FeatureRef> GetDisabledFeatures() {
+    return {};
   }
 
   void SetUpOnMainThread() override {
@@ -442,14 +450,11 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
       SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
       AddInstrumentedTab(kSecondTab, GetTestURL()),
       SelectTab(kTabStripElementId, 0),
-      EnsureNotPresent(
-          kContextualTasksEphemeralToolbarButtonElementId),
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
       CreateTaskForTab(0),
-      EnsureNotPresent(
-          kContextualTasksEphemeralToolbarButtonElementId),
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
       SimulateOpeningContextualTaskSidePanel(),
-      EnsureNotPresent(
-          kContextualTasksEphemeralToolbarButtonElementId),
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
       SimulateClosingContextualTaskSidePanel(),
       WaitForShow(kContextualTasksEphemeralToolbarButtonElementId));
 }
@@ -460,8 +465,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
       SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
       AddInstrumentedTab(kSecondTab, GetTestURL()),
       SelectTab(kTabStripElementId, 0),
-      EnsureNotPresent(
-          kContextualTasksEphemeralToolbarButtonElementId),
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
       CreateTaskForTab(0), SimulateOpeningContextualTaskSidePanel(),
       SimulateClosingContextualTaskSidePanel(),
       WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
@@ -495,8 +499,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
       SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
       AddInstrumentedTab(kSecondTab, GetTestURL()),
       SelectTab(kTabStripElementId, 0),
-      EnsureNotPresent(
-          kContextualTasksEphemeralToolbarButtonElementId),
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
       CreateTaskForTab(0), SimulateOpeningContextualTaskSidePanel(),
       SimulateClosingContextualTaskSidePanel(),
       WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
@@ -510,8 +513,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
       SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
       AddInstrumentedTab(kSecondTab, GetTestURL()),
       SelectTab(kTabStripElementId, 0),
-      EnsureNotPresent(
-          kContextualTasksEphemeralToolbarButtonElementId),
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
       CreateTaskForTab(0), SimulateOpeningContextualTaskSidePanel(),
       SimulateClosingContextualTaskSidePanel(),
       WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
@@ -613,6 +615,134 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
+                       ButtonHiddenWhenActiveTaskInZeroState) {
+  RunTestSequence(
+      SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
+      AddInstrumentedTab(kSecondTab, GetTestURL()),
+      SelectTab(kTabStripElementId, 0),
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
+      // Create a task without a thread (zero state) for tab 0.
+      Do([&] {
+        contextual_tasks::ContextualTask task =
+            GetContextualTasksService()->CreateTask();
+        content::WebContents* const web_contents =
+            browser()->GetTabStripModel()->GetWebContentsAt(0);
+        SessionID session_id =
+            sessions::SessionTabHelper::IdForTab(web_contents);
+        GetContextualTasksService()->AssociateTabWithTask(task.GetTaskId(),
+                                                          session_id);
+      }),
+      SimulateOpeningContextualTaskSidePanel(),
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
+      SimulateClosingContextualTaskSidePanel(),
+      // Button should NOT show because the active task has no thread (zero
+      // state).
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
+      // Now update the task with a thread (exiting zero state).
+      Do([&] {
+        tabs::TabInterface* tab =
+            browser()->GetTabStripModel()->GetTabAtIndex(0);
+        std::optional<contextual_tasks::ContextualTask> current_task =
+            GetContextualTasksService()->GetContextualTaskForTab(
+                sessions::SessionTabHelper::IdForTab(tab->GetContents()));
+        ASSERT_TRUE(current_task.has_value());
+        GetContextualTasksService()->UpdateThreadForTask(
+            current_task->GetTaskId(), contextual_tasks::ThreadType::kAiMode,
+            "test_server_id", std::nullopt, "Test Title");
+      }),
+      SimulateOpeningContextualTaskSidePanel(),
+      SimulateClosingContextualTaskSidePanel(),
+      // Button should now show because the task has an active thread.
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId));
+}
+
+class ContextualTasksEphemeralButtonFeatureEnabledInteractiveTest
+    : public ContextualTasksEphemeralButtonInteractiveTest {
+ public:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    std::vector<base::test::FeatureRefAndParams> enabled_features =
+        ContextualTasksEphemeralButtonInteractiveTest::GetEnabledFeatures();
+    enabled_features.push_back(
+        {contextual_tasks::kEphemeralPinningVisibleWhenPermanentlyPinned, {}});
+    return enabled_features;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksEphemeralButtonFeatureEnabledInteractiveTest,
+    ButtonDoesNotHideWhenPinned) {
+  RunTestSequence(
+      SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
+      AddInstrumentedTab(kSecondTab, GetTestURL()),
+      SelectTab(kTabStripElementId, 0),
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
+      CreateTaskForTab(0), SimulateOpeningContextualTaskSidePanel(),
+      SimulateClosingContextualTaskSidePanel(),
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId), Do([&]() {
+        PinnedToolbarActionsModel::Get(browser()->GetProfile())
+            ->UpdatePinnedState(kActionSidePanelShowContextualTasks, true);
+      }),
+      EnsurePresent(kContextualTasksEphemeralToolbarButtonElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksEphemeralButtonFeatureEnabledInteractiveTest,
+    LogsEphemeralMetricsOnToolbarButtonPressWhenPinned) {
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+
+  RunTestSequence(
+      SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
+      AddInstrumentedTab(kSecondTab, GetTestURL()),
+      SelectTab(kTabStripElementId, 0),
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
+      CreateTaskForTab(0), SimulateOpeningContextualTaskSidePanel(),
+      SimulateClosingContextualTaskSidePanel(),
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId), Do([&]() {
+        PinnedToolbarActionsModel::Get(browser()->GetProfile())
+            ->UpdatePinnedState(kActionSidePanelShowContextualTasks, true);
+      }),
+      EnsurePresent(kContextualTasksEphemeralToolbarButtonElementId),
+      PressButton(kContextualTasksEphemeralToolbarButtonElementId), Do([&]() {
+        EXPECT_EQ(1, user_action_tester.GetActionCount(
+                         "ContextualTasks.EphemeralToolbarButton.UserAction."
+                         "OpenSidePanel"));
+        histogram_tester.ExpectUniqueSample(
+            "ContextualTasks.EphemeralToolbarButton.UserAction.OpenSidePanel",
+            true, 1);
+        EXPECT_EQ(0, user_action_tester.GetActionCount(
+                         "ContextualTasks.PermanentToolbarButton.UserAction."
+                         "OpenSidePanel"));
+      }));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksEphemeralButtonFeatureEnabledInteractiveTest,
+    ButtonHidesWhenOpeningZeroStateFromPinnedButton) {
+  RunTestSequence(
+      SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
+      AddInstrumentedTab(kSecondTab, GetTestURL()),
+      SelectTab(kTabStripElementId, 0),
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
+      CreateTaskForTab(0), SimulateOpeningContextualTaskSidePanel(),
+      SimulateClosingContextualTaskSidePanel(),
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId), Do([&]() {
+        PinnedToolbarActionsModel::Get(browser()->GetProfile())
+            ->UpdatePinnedState(kActionSidePanelShowContextualTasks, true);
+      }),
+      EnsurePresent(kContextualTasksEphemeralToolbarButtonElementId),
+      // Pressing the pinned button opens the panel in zero state.
+      PressButton(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      WaitForHide(kContextualTasksEphemeralToolbarButtonElementId),
+      // Closing the side panel leaves tab 0 associated with the zero-state
+      // task.
+      SimulateClosingContextualTaskSidePanel(),
+      // The ephemeral button remains hidden because the active thread is in
+      // zero state.
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
                        PinnedButtonVisibilityUpdatesOnEligibilityChange) {
   RunTestSequence(
       SignIntoEligibleAccount(), Do([&]() {
@@ -687,8 +817,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
       SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
       AddInstrumentedTab(kSecondTab, GetTestURL()),
       SelectTab(kTabStripElementId, 0),
-      EnsureNotPresent(
-          kContextualTasksEphemeralToolbarButtonElementId),
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
       CreateTaskForTab(0), SimulateOpeningContextualTaskSidePanel(),
       SimulateClosingContextualTaskSidePanel(),
       WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
@@ -911,4 +1040,3 @@ IN_PROC_BROWSER_TEST_F(
         EXPECT_NE(initial_task_id, new_task_id);
       }));
 }
-

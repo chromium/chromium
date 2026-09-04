@@ -12349,6 +12349,15 @@ const FeatureEntry kFeatureEntries[] = {
          kEphemeralBrandedEntryPointVariations,
          "ContextualTasksEphemeralBrandedEntryPoint")},
 
+    {"contextual-tasks-ephemeral-pinning-visible-when-permanently-pinned",
+     contextual_tasks::flag_descriptions::
+         kEphemeralPinningVisibleWhenPermanentlyPinnedName,
+     contextual_tasks::flag_descriptions::
+         kEphemeralPinningVisibleWhenPermanentlyPinnedDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         contextual_tasks::kEphemeralPinningVisibleWhenPermanentlyPinned)},
+
     {"contextual-tasks-private-api-no-animation",
      contextual_tasks::flag_descriptions::
          kContextualTasksPrivateApiNoAnimationName,

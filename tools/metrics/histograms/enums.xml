@@ -13067,6 +13067,8 @@ from previous Chrome versions.
   <int value="-517913118" label="OmahaMinSdkVersionAndroid:enabled"/>
   <int value="-517231584" label="CameraAppPdfOcr:disabled"/>
   <int value="-517037197" label="ContextMenuToolTips:enabled"/>
+  <int value="-516999515"
+      label="EphemeralPinningVisibleWhenPermanentlyPinned:disabled"/>
   <int value="-516845951" label="enable-embedded-extension-options"/>
   <int value="-516269317" label="HttpsFirstModeV2:enabled"/>
   <int value="-516005152" label="CastStreamingMaxVideoBitrate:enabled"/>
@@ -18684,6 +18686,8 @@ from previous Chrome versions.
       label="EnableBrowserActuatorForGlicExperimentalTriggering:disabled"/>
   <int value="1224660785" label="ImeSwitchCheckConnectionStatus:disabled"/>
   <int value="1224806430" label="ConsumerAutoUpdateToggleAllowed:enabled"/>
+  <int value="1225676268"
+      label="EphemeralPinningVisibleWhenPermanentlyPinned:enabled"/>
   <int value="1226624874" label="Mus:disabled"/>
   <int value="1226676061" label="PageInfoV2Desktop:enabled"/>
   <int value="1226782541"
