@@ -17879,6 +17879,25 @@
             ]
         }
     ],
+    "SharedStorageDeprecation": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "SharedStorageAPI"
+                    ]
+                }
+            ]
+        }
+    ],
     "SharedTabGroups": [
         {
             "platforms": [
