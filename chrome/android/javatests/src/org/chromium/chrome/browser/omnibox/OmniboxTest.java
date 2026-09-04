@@ -427,6 +427,7 @@ public class OmniboxTest {
     @SmallTest
     @SkipCommandLineParameterization
     @DisableFeatures({ChromeFeatureList.ANDROID_PAGE_INFO_AS_APP_MENU_ITEM})
+    @DisabledTest(message = "crbug.com/556414361")
     public void testHttpsLocationBarColor() throws Exception {
         mActivityTestRule.startOnBlankPage();
         EmbeddedTestServer testServer =
@@ -500,6 +501,7 @@ public class OmniboxTest {
     @SmallTest
     @SkipCommandLineParameterization
     @EnableFeatures({ChromeFeatureList.ANDROID_PAGE_INFO_AS_APP_MENU_ITEM})
+    @DisabledTest(message = "crbug.com/556408574")
     public void testHttpsLocationBarColor_PageInfoAsAppMenuItemFlagEnabled() throws Exception {
         mActivityTestRule.startOnBlankPage();
         EmbeddedTestServer testServer =
