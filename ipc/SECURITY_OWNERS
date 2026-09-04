@@ -26,6 +26,7 @@ chrome-ipc-reviews@google.com
 # go/chrome-ipc-review).
 ajgo@chromium.org            #{LAST_RESORT_SUGGESTION}
 antoniosartori@chromium.org  #{LAST_RESORT_SUGGESTION}
+arichiv@chromium.org         #{LAST_RESORT_SUGGESTION}
 arthursonzogni@chromium.org  #{LAST_RESORT_SUGGESTION}
 bookholt@chromium.org        #{LAST_RESORT_SUGGESTION}
 clamy@chromium.org           #{LAST_RESORT_SUGGESTION}
