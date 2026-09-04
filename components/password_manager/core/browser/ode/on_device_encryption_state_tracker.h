@@ -27,6 +27,11 @@ enum class OnDeviceEncryptionState {
   kDeviceReady,
   // User disabled syncing of passwords and passkeys.
   kPasswordAndPasskeySyncDisabled,
+  // Profile is not signed in to a primary Google account.
+  kProfileNotSignedIn,
+  // Profile has an account, but credentials were invalidated and re-auth is
+  // required (sync is paused).
+  kProfileSignInPending,
 };
 
 // Base class that monitors and maintains the on-device encryption state for a

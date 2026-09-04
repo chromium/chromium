@@ -714,6 +714,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Device not ready"/>
   <int value="2" label="Device ready"/>
   <int value="3" label="Password and passkey sync disabled"/>
+  <int value="4" label="Profile not signed in"/>
+  <int value="5" label="Profile sign-in pending"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/password_manager/core/browser/ode/on_device_encryption_metrics_reporter.h:OnDeviceEncryptionStateHistogramBucket) -->

@@ -35,9 +35,27 @@ constexpr auto NonTrustedVaultPassphraseTypeSet =
                      decltype(AllPassphraseTypeSet){
                          syncer::PassphraseType::kTrustedVaultPassphrase});
 
+enum class AccountState {
+  kNotSignedIn,
+  kSignInPending,
+  kSignedIn,
+};
+
+std::string_view AccountStateToString(AccountState state) {
+  switch (state) {
+    case AccountState::kNotSignedIn:
+      return "ProfileNotSignedIn";
+    case AccountState::kSignInPending:
+      return "ProfileSignInPending";
+    case AccountState::kSignedIn:
+      return "ProfileSignedIn";
+  }
+}
+
 // Used in parameterized tests which verify that the correct state is being
 // derived for different combinations of the parameters.
 struct StateComputationTestCase {
+  AccountState account_state;
   bool is_sync_engine_initialized;
   bool is_password_sync_enabled;
   syncer::PassphraseType passphrase_type;
@@ -48,7 +66,8 @@ struct StateComputationTestCase {
 
 class PasswordTrustedVaultOnDeviceEncryptionStateTrackerStateTest
     : public testing::TestWithParam<
-          std::tuple<bool /*is_sync_engine_initialized*/,
+          std::tuple<AccountState /*account_state*/,
+                     bool /*is_sync_engine_initialized*/,
                      bool /*is_password_sync_enabled*/,
                      syncer::PassphraseType /*passphrase_type*/,
                      bool /*is_trusted_vault_key_required*/,
@@ -57,12 +76,13 @@ class PasswordTrustedVaultOnDeviceEncryptionStateTrackerStateTest
  public:
   StateComputationTestCase GetTestCase() const {
     return StateComputationTestCase{
-        .is_sync_engine_initialized = std::get<0>(GetParam()),
-        .is_password_sync_enabled = std::get<1>(GetParam()),
-        .passphrase_type = std::get<2>(GetParam()),
-        .is_trusted_vault_key_required = std::get<3>(GetParam()),
-        .is_passwords_data_type_active = std::get<4>(GetParam()),
-        .expected_state = std::get<5>(GetParam()),
+        .account_state = std::get<0>(GetParam()),
+        .is_sync_engine_initialized = std::get<1>(GetParam()),
+        .is_password_sync_enabled = std::get<2>(GetParam()),
+        .passphrase_type = std::get<3>(GetParam()),
+        .is_trusted_vault_key_required = std::get<4>(GetParam()),
+        .is_passwords_data_type_active = std::get<5>(GetParam()),
+        .expected_state = std::get<6>(GetParam()),
     };
   }
 
@@ -91,14 +111,16 @@ std::string ParamInfoToString(
         PasswordTrustedVaultOnDeviceEncryptionStateTrackerStateTest::ParamType>&
         info) {
   return base::StrCat({
-      std::get<0>(info.param) ? "SyncEngineInitialized_"
-                              : "SyncEngineNotInitialized_",
-      std::get<1>(info.param) ? "PasswordSyncEnabled_"
-                              : "PasswordSyncDisabled_",
-      PassphraseTypeToString(std::get<2>(info.param)),
+      AccountStateToString(std::get<0>(info.param)),
       "_",
-      std::get<3>(info.param) ? "KeyRequired_" : "KeyNotRequired_",
-      std::get<4>(info.param) ? "PasswordsActive" : "PasswordsNotActive",
+      std::get<1>(info.param) ? "SyncEngineInitialized_"
+                              : "SyncEngineNotInitialized_",
+      std::get<2>(info.param) ? "PasswordSyncEnabled_"
+                              : "PasswordSyncDisabled_",
+      PassphraseTypeToString(std::get<3>(info.param)),
+      "_",
+      std::get<4>(info.param) ? "KeyRequired_" : "KeyNotRequired_",
+      std::get<5>(info.param) ? "PasswordsActive" : "PasswordsNotActive",
   });
 }
 
@@ -107,7 +129,21 @@ TEST_P(PasswordTrustedVaultOnDeviceEncryptionStateTrackerStateTest,
   const StateComputationTestCase test_case = GetTestCase();
 
   syncer::TestSyncService sync_service;
-  if (!test_case.is_sync_engine_initialized) {
+  switch (test_case.account_state) {
+    case AccountState::kNotSignedIn:
+      sync_service.SetSignedOut();
+      break;
+    case AccountState::kSignInPending:
+      // Setting a persistent auth error puts sync into the `PAUSED` state.
+      sync_service.SetPersistentAuthError();
+      break;
+    case AccountState::kSignedIn:
+      break;
+  }
+  // For `kSignInPending`, sync must stay in `PAUSED` state, so do not override
+  // it with `INITIALIZING`.
+  if (!test_case.is_sync_engine_initialized &&
+      test_case.account_state != AccountState::kSignInPending) {
     sync_service.SetMaxTransportState(
         syncer::SyncService::TransportState::INITIALIZING);
   }
@@ -131,12 +167,45 @@ TEST_P(PasswordTrustedVaultOnDeviceEncryptionStateTrackerStateTest,
   EXPECT_EQ(tracker.GetEncryptionState(), test_case.expected_state);
 }
 
+// When the profile is not signed in, the on-device encryption state is
+// "profile not signed in".
+INSTANTIATE_TEST_SUITE_P(
+    ProfileNotSignedIn,
+    PasswordTrustedVaultOnDeviceEncryptionStateTrackerStateTest,
+    Combine(
+        /*account_state=*/Values(AccountState::kNotSignedIn),
+        /*is_sync_engine_initialized=*/Values(false),
+        /*is_password_sync_enabled=*/Bool(),
+        /*passphrase_type=*/ValuesIn(AllPassphraseTypeSet),
+        /*is_trusted_vault_key_required=*/Bool(),
+        /*is_passwords_data_type_active=*/Bool(),
+        /*expected_state=*/
+        Values(OnDeviceEncryptionState::kProfileNotSignedIn)),
+    &ParamInfoToString);
+
+// When the profile is in sign-in pending state (sync is paused), the on-device
+// encryption state is "sign-in pending".
+INSTANTIATE_TEST_SUITE_P(
+    ProfileSignInPending,
+    PasswordTrustedVaultOnDeviceEncryptionStateTrackerStateTest,
+    Combine(
+        /*account_state=*/Values(AccountState::kSignInPending),
+        /*is_sync_engine_initialized=*/Values(false),
+        /*is_password_sync_enabled=*/Bool(),
+        /*passphrase_type=*/ValuesIn(AllPassphraseTypeSet),
+        /*is_trusted_vault_key_required=*/Bool(),
+        /*is_passwords_data_type_active=*/Bool(),
+        /*expected_state=*/
+        Values(OnDeviceEncryptionState::kProfileSignInPending)),
+    &ParamInfoToString);
+
 // When sync engine is not initialized the on-device encryption state can't be
 // computed.
 INSTANTIATE_TEST_SUITE_P(
     SyncEngineNotInitialized,
     PasswordTrustedVaultOnDeviceEncryptionStateTrackerStateTest,
     Combine(
+        /*account_state=*/Values(AccountState::kSignedIn),
         /*is_sync_engine_initialized=*/Values(false),
         /*is_password_sync_enabled=*/Bool(),
         /*passphrase_type=*/ValuesIn(AllPassphraseTypeSet),
@@ -151,6 +220,7 @@ INSTANTIATE_TEST_SUITE_P(
     PasswordSyncNotEnabled,
     PasswordTrustedVaultOnDeviceEncryptionStateTrackerStateTest,
     Combine(
+        /*account_state=*/Values(AccountState::kSignedIn),
         /*is_sync_engine_initialized=*/Values(true),
         /*is_password_sync_enabled=*/Values(false),
         /*passphrase_type=*/ValuesIn(AllPassphraseTypeSet),
@@ -166,6 +236,7 @@ INSTANTIATE_TEST_SUITE_P(
     PassphraseTypeNotTrustedVault,
     PasswordTrustedVaultOnDeviceEncryptionStateTrackerStateTest,
     Combine(
+        /*account_state=*/Values(AccountState::kSignedIn),
         /*is_sync_engine_initialized=*/Values(true),
         /*is_password_sync_enabled=*/Values(true),
         /*passphrase_type=*/ValuesIn(NonTrustedVaultPassphraseTypeSet),
@@ -182,6 +253,7 @@ INSTANTIATE_TEST_SUITE_P(
     KeyCheckInFlight,
     PasswordTrustedVaultOnDeviceEncryptionStateTrackerStateTest,
     Combine(
+        /*account_state=*/Values(AccountState::kSignedIn),
         /*is_sync_engine_initialized=*/Values(true),
         /*is_password_sync_enabled=*/Values(true),
         /*passphrase_type=*/
@@ -198,6 +270,7 @@ INSTANTIATE_TEST_SUITE_P(
     DeviceNotReady,
     PasswordTrustedVaultOnDeviceEncryptionStateTrackerStateTest,
     Combine(
+        /*account_state=*/Values(AccountState::kSignedIn),
         /*is_sync_engine_initialized=*/Values(true),
         /*is_password_sync_enabled=*/Values(true),
         /*passphrase_type=*/
@@ -214,6 +287,7 @@ INSTANTIATE_TEST_SUITE_P(
     DeviceReady,
     PasswordTrustedVaultOnDeviceEncryptionStateTrackerStateTest,
     Combine(
+        /*account_state=*/Values(AccountState::kSignedIn),
         /*is_sync_engine_initialized=*/Values(true),
         /*is_password_sync_enabled=*/Values(true),
         /*passphrase_type=*/

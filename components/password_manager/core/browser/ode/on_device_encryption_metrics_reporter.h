@@ -31,7 +31,9 @@ enum class OnDeviceEncryptionStateHistogramBucket {
   kDeviceNotReady = 1,
   kDeviceReady = 2,
   kPasswordAndPasskeySyncDisabled = 3,
-  kMaxValue = kPasswordAndPasskeySyncDisabled,
+  kProfileNotSignedIn = 4,
+  kProfileSignInPending = 5,
+  kMaxValue = kProfileSignInPending,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/password/enums.xml:OnDeviceEncryptionStateHistogramBucket)
 

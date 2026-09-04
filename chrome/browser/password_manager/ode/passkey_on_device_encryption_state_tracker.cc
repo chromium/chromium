@@ -65,7 +65,25 @@ void PasskeyOnDeviceEncryptionStateTracker::OnPasskeyModelIsReady(
 }
 
 void PasskeyOnDeviceEncryptionStateTracker::ComputeState() {
-  if (!sync_service() || !sync_service()->IsEngineInitialized()) {
+  // The logic of deriving the state based on sync_service() is similar for
+  // passkey state tracker and for password state tracker.
+  // TODO(crbug.com/540854648): Consider moving the common logic to a base
+  // class.
+  if (!sync_service()) {
+    SetState(OnDeviceEncryptionState::kOnDeviceEncryptionStateNotAvailable);
+    return;
+  }
+  if (sync_service()->HasDisableReason(
+          syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN)) {
+    SetState(OnDeviceEncryptionState::kProfileNotSignedIn);
+    return;
+  }
+  if (sync_service()->GetTransportState() ==
+      syncer::SyncService::TransportState::PAUSED) {
+    SetState(OnDeviceEncryptionState::kProfileSignInPending);
+    return;
+  }
+  if (!sync_service()->IsEngineInitialized()) {
     SetState(OnDeviceEncryptionState::kOnDeviceEncryptionStateNotAvailable);
     return;
   }

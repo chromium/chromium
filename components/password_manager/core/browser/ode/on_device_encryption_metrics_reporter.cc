@@ -125,6 +125,10 @@ OnDeviceEncryptionMetricsReporter::ToOnDeviceEncryptionStateHistogramBucket(
     case OnDeviceEncryptionState::kPasswordAndPasskeySyncDisabled:
       return OnDeviceEncryptionStateHistogramBucket::
           kPasswordAndPasskeySyncDisabled;
+    case OnDeviceEncryptionState::kProfileNotSignedIn:
+      return OnDeviceEncryptionStateHistogramBucket::kProfileNotSignedIn;
+    case OnDeviceEncryptionState::kProfileSignInPending:
+      return OnDeviceEncryptionStateHistogramBucket::kProfileSignInPending;
   }
   NOTREACHED();
 }

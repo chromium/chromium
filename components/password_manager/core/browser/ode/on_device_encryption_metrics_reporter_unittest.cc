@@ -237,7 +237,17 @@ INSTANTIATE_TEST_SUITE_P(
             .test_name = "PasswordAndPasskeySyncDisabled",
             .state = OnDeviceEncryptionState::kPasswordAndPasskeySyncDisabled,
             .expected_bucket = OnDeviceEncryptionStateHistogramBucket::
-                kPasswordAndPasskeySyncDisabled}),
+                kPasswordAndPasskeySyncDisabled},
+        StateTransitionTestCase{
+            .test_name = "ProfileNotSignedIn",
+            .state = OnDeviceEncryptionState::kProfileNotSignedIn,
+            .expected_bucket =
+                OnDeviceEncryptionStateHistogramBucket::kProfileNotSignedIn},
+        StateTransitionTestCase{
+            .test_name = "ProfileSignInPending",
+            .state = OnDeviceEncryptionState::kProfileSignInPending,
+            .expected_bucket =
+                OnDeviceEncryptionStateHistogramBucket::kProfileSignInPending}),
     [](const testing::TestParamInfo<StateTransitionTestCase>& info) {
       return info.param.test_name;
     });

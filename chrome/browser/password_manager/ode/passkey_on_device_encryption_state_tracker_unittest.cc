@@ -27,9 +27,27 @@ using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::Values;
 
+enum class AccountState {
+  kNotSignedIn,
+  kSignInPending,
+  kSignedIn,
+};
+
+std::string_view AccountStateToString(AccountState state) {
+  switch (state) {
+    case AccountState::kNotSignedIn:
+      return "ProfileNotSignedIn";
+    case AccountState::kSignInPending:
+      return "ProfileSignInPending";
+    case AccountState::kSignedIn:
+      return "ProfileSignedIn";
+  }
+}
+
 // Used in parameterized tests which verify that the correct state is being
 // derived for different combinations of the parameters.
 struct StateComputationTestCase {
+  AccountState account_state;
   bool is_sync_engine_initialized;
   bool is_webauthn_credential_sync_enabled;
   bool is_passkey_model_ready;
@@ -41,7 +59,8 @@ struct StateComputationTestCase {
 
 class PasskeyOnDeviceEncryptionStateTrackerStateTest
     : public testing::TestWithParam<
-          std::tuple<bool /*is_sync_engine_initialized*/,
+          std::tuple<AccountState /*account_state*/,
+                     bool /*is_sync_engine_initialized*/,
                      bool /*is_webauthn_credential_sync_enabled*/,
                      bool /*is_passkey_model_ready*/,
                      bool /*is_enclave_loaded*/,
@@ -51,13 +70,14 @@ class PasskeyOnDeviceEncryptionStateTrackerStateTest
  public:
   StateComputationTestCase GetTestCase() const {
     return StateComputationTestCase{
-        .is_sync_engine_initialized = std::get<0>(GetParam()),
-        .is_webauthn_credential_sync_enabled = std::get<1>(GetParam()),
-        .is_passkey_model_ready = std::get<2>(GetParam()),
-        .is_enclave_loaded = std::get<3>(GetParam()),
-        .is_passkey_model_empty = std::get<4>(GetParam()),
-        .is_enclave_ready = std::get<5>(GetParam()),
-        .expected_state = std::get<6>(GetParam()),
+        .account_state = std::get<0>(GetParam()),
+        .is_sync_engine_initialized = std::get<1>(GetParam()),
+        .is_webauthn_credential_sync_enabled = std::get<2>(GetParam()),
+        .is_passkey_model_ready = std::get<3>(GetParam()),
+        .is_enclave_loaded = std::get<4>(GetParam()),
+        .is_passkey_model_empty = std::get<5>(GetParam()),
+        .is_enclave_ready = std::get<6>(GetParam()),
+        .expected_state = std::get<7>(GetParam()),
     };
   }
 
@@ -70,14 +90,16 @@ std::string ParamInfoToString(
     const testing::TestParamInfo<
         PasskeyOnDeviceEncryptionStateTrackerStateTest::ParamType>& info) {
   return base::StrCat({
-      std::get<0>(info.param) ? "SyncEngineInitialized_"
+      AccountStateToString(std::get<0>(info.param)),
+      "_",
+      std::get<1>(info.param) ? "SyncEngineInitialized_"
                               : "SyncEngineNotInitialized_",
-      std::get<1>(info.param) ? "WebauthnSyncEnabled_"
+      std::get<2>(info.param) ? "WebauthnSyncEnabled_"
                               : "WebauthnSyncDisabled_",
-      std::get<2>(info.param) ? "PasskeyModelReady_" : "PasskeyModelNotReady_",
-      std::get<3>(info.param) ? "EnclaveLoaded_" : "EnclaveNotLoaded_",
-      std::get<4>(info.param) ? "PasskeysEmpty_" : "PasskeysExist_",
-      std::get<5>(info.param) ? "EnclaveReady" : "EnclaveNotReady",
+      std::get<3>(info.param) ? "PasskeyModelReady_" : "PasskeyModelNotReady_",
+      std::get<4>(info.param) ? "EnclaveLoaded_" : "EnclaveNotLoaded_",
+      std::get<5>(info.param) ? "PasskeysEmpty_" : "PasskeysExist_",
+      std::get<6>(info.param) ? "EnclaveReady" : "EnclaveNotReady",
   });
 }
 
@@ -85,7 +107,21 @@ TEST_P(PasskeyOnDeviceEncryptionStateTrackerStateTest, ComputesCorrectState) {
   const StateComputationTestCase test_case = GetTestCase();
 
   syncer::TestSyncService sync_service;
-  if (!test_case.is_sync_engine_initialized) {
+  switch (test_case.account_state) {
+    case AccountState::kNotSignedIn:
+      sync_service.SetSignedOut();
+      break;
+    case AccountState::kSignInPending:
+      // Setting a persistent auth error puts sync into the `PAUSED` state.
+      sync_service.SetPersistentAuthError();
+      break;
+    case AccountState::kSignedIn:
+      break;
+  }
+  // For `kSignInPending`, sync must stay in `PAUSED` state, so do not override
+  // it with `INITIALIZING`.
+  if (!test_case.is_sync_engine_initialized &&
+      test_case.account_state != AccountState::kSignInPending) {
     sync_service.SetMaxTransportState(
         syncer::SyncService::TransportState::INITIALIZING);
   }
@@ -122,12 +158,47 @@ TEST_P(PasskeyOnDeviceEncryptionStateTrackerStateTest, ComputesCorrectState) {
   EXPECT_EQ(tracker.GetEncryptionState(), test_case.expected_state);
 }
 
+// When the profile is not signed in, the on-device encryption state is
+// "profile not signed in".
+INSTANTIATE_TEST_SUITE_P(
+    ProfileNotSignedIn,
+    PasskeyOnDeviceEncryptionStateTrackerStateTest,
+    Combine(
+        /*account_state=*/Values(AccountState::kNotSignedIn),
+        /*is_sync_engine_initialized=*/Values(false),
+        /*is_webauthn_credential_sync_enabled=*/Bool(),
+        /*is_passkey_model_ready=*/Bool(),
+        /*is_enclave_loaded=*/Bool(),
+        /*is_passkey_model_empty=*/Bool(),
+        /*is_enclave_ready=*/Bool(),
+        /*expected_state=*/
+        Values(OnDeviceEncryptionState::kProfileNotSignedIn)),
+    &ParamInfoToString);
+
+// When the profile is in sign-in pending state (sync is paused), the on-device
+// encryption state is "sign-in pending".
+INSTANTIATE_TEST_SUITE_P(
+    ProfileSignInPending,
+    PasskeyOnDeviceEncryptionStateTrackerStateTest,
+    Combine(
+        /*account_state=*/Values(AccountState::kSignInPending),
+        /*is_sync_engine_initialized=*/Values(false),
+        /*is_webauthn_credential_sync_enabled=*/Bool(),
+        /*is_passkey_model_ready=*/Bool(),
+        /*is_enclave_loaded=*/Bool(),
+        /*is_passkey_model_empty=*/Bool(),
+        /*is_enclave_ready=*/Bool(),
+        /*expected_state=*/
+        Values(OnDeviceEncryptionState::kProfileSignInPending)),
+    &ParamInfoToString);
+
 // When sync engine is not initialized the on-device encryption state can't be
 // computed.
 INSTANTIATE_TEST_SUITE_P(
     SyncEngineNotInitialized,
     PasskeyOnDeviceEncryptionStateTrackerStateTest,
     Combine(
+        /*account_state=*/Values(AccountState::kSignedIn),
         /*is_sync_engine_initialized=*/Values(false),
         /*is_webauthn_credential_sync_enabled=*/Bool(),
         /*is_passkey_model_ready=*/Bool(),
@@ -143,6 +214,7 @@ INSTANTIATE_TEST_SUITE_P(
     WebauthnCredentialSyncNotEnabled,
     PasskeyOnDeviceEncryptionStateTrackerStateTest,
     Combine(
+        /*account_state=*/Values(AccountState::kSignedIn),
         /*is_sync_engine_initialized=*/Values(true),
         /*is_webauthn_credential_sync_enabled=*/Values(false),
         /*is_passkey_model_ready=*/Bool(),
@@ -159,6 +231,7 @@ INSTANTIATE_TEST_SUITE_P(
     PasskeyModelNotReady,
     PasskeyOnDeviceEncryptionStateTrackerStateTest,
     Combine(
+        /*account_state=*/Values(AccountState::kSignedIn),
         /*is_sync_engine_initialized=*/Values(true),
         /*is_webauthn_credential_sync_enabled=*/Values(true),
         /*is_passkey_model_ready=*/Values(false),
@@ -175,6 +248,7 @@ INSTANTIATE_TEST_SUITE_P(
     EnclaveManagerNotLoaded,
     PasskeyOnDeviceEncryptionStateTrackerStateTest,
     Combine(
+        /*account_state=*/Values(AccountState::kSignedIn),
         /*is_sync_engine_initialized=*/Values(true),
         /*is_webauthn_credential_sync_enabled=*/Values(true),
         /*is_passkey_model_ready=*/Bool(),
@@ -191,6 +265,7 @@ INSTANTIATE_TEST_SUITE_P(
     PasskeyModelEmpty,
     PasskeyOnDeviceEncryptionStateTrackerStateTest,
     Combine(
+        /*account_state=*/Values(AccountState::kSignedIn),
         /*is_sync_engine_initialized=*/Values(true),
         /*is_webauthn_credential_sync_enabled=*/Values(true),
         /*is_passkey_model_ready=*/Values(true),
@@ -207,6 +282,7 @@ INSTANTIATE_TEST_SUITE_P(
     DeviceReady,
     PasskeyOnDeviceEncryptionStateTrackerStateTest,
     Combine(
+        /*account_state=*/Values(AccountState::kSignedIn),
         /*is_sync_engine_initialized=*/Values(true),
         /*is_webauthn_credential_sync_enabled=*/Values(true),
         /*is_passkey_model_ready=*/Values(true),
@@ -223,6 +299,7 @@ INSTANTIATE_TEST_SUITE_P(
     DeviceNotReady,
     PasskeyOnDeviceEncryptionStateTrackerStateTest,
     Combine(
+        /*account_state=*/Values(AccountState::kSignedIn),
         /*is_sync_engine_initialized=*/Values(true),
         /*is_webauthn_credential_sync_enabled=*/Values(true),
         /*is_passkey_model_ready=*/Values(true),
