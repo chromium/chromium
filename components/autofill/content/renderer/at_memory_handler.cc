@@ -34,6 +34,7 @@
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
 #include "third_party/blink/public/web/web_form_element.h"
+#include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_input_method_controller.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_range.h"
@@ -118,6 +119,13 @@ bool IsSingleCtrlKey(const WebKeyboardEvent& event) {
     default:
       return false;
   }
+}
+
+// Returns true if window-level focus is in the web content area, or more
+// precisely, in one of the frames of this renderer process.
+bool HasWindowFocus(const blink::WebLocalFrame& frame) {
+  blink::WebFrameWidget* widget = frame.LocalRoot()->FrameWidget();
+  return widget && widget->HasFocus();
 }
 
 // Returns true if `field` is fillable by AtMemory.
@@ -455,22 +463,22 @@ void AtMemoryHandler::WaitForFocusAndReplaceSelectionForAtMemory(
 
   WebElement field =
       WebNode::FromDomNodeId(*info.field_id).DynamicTo<WebElement>();
-  if (!field || info.value_hash != HashFieldValue(field)) {
+  if (!field) {
     return;
   }
 
-  // Ensures that `field.GetDocument().FocusedElement() == field` and that
-  // SetEditableSelectionOffsets() and ExtendSelectionAndReplace() operate on
-  // that field -- assuming that no JavaScript `focus` listener or similar
-  // moved the focus elsewhere.
-  field.Focus();
+  WebLocalFrame* frame = field.GetDocument().GetFrame();
+  if (!frame) {
+    return;
+  }
 
-  // While `field.Focus()` sets the page-level focus, the window-level focus may
-  // still be with the AtMemory popup in the browser process. In that case,
-  // `field.Focused()` is false. If so, we wait `kMaxRetries - num_try` times
-  // for it to become true. If the focus still hasn't arrived afterwards, we
-  // just try to fill the field without window focus.
-  if (!field.Focused() && num_try < kMaxRetries) {
+  // Wait for window-level focus to be returned by the browser process to the
+  // web contents.
+  //
+  // The browser process steals the window-level focus to display the AtMemory
+  // popup (which contains a text field) and returns it when the popup is
+  // closed. We wait for the focus `kDelayBeforeRetry * kMaxRetries`.
+  if (!HasWindowFocus(*frame) && num_try < kMaxRetries) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(
@@ -481,10 +489,24 @@ void AtMemoryHandler::WaitForFocusAndReplaceSelectionForAtMemory(
     return;
   }
 
-  WebLocalFrame* frame = field.GetDocument().GetFrame();
-  if (!frame) {
+  // Abort filling if the field value changed in the meantime because we
+  // shouldn't overwrite other content. This is particularly relevant when
+  // AtMemory has a high filling latency due to SPII fetching.
+  if (info.value_hash != HashFieldValue(field)) {
     return;
   }
+
+  // Ensures that `field.GetDocument().FocusedElement() == field` and that
+  // SetEditableSelectionOffsets() and ExtendSelectionAndReplace() operate on
+  // that field (assuming no JavaScript `focus` listener moves it elsewhere).
+  //
+  // This is to handle the case where DOM-level focus moved out of the field.
+  // That may happen especially when AtMemory has a high filling latency due to
+  // SPII fetching.
+  //
+  // We do this intentionally after the hash value comparison so we don't move
+  // the focus if no fill happens.
+  field.Focus();
 
   if (!info.selection_range.IsNull()) {
     // Restores the text selection at the time of AskForValuesToFill().

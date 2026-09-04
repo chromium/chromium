@@ -68,6 +68,7 @@ class AtMemoryHandlerTest : public test::AutofillRendererTest {
 
   void SetUp() override {
     test::AutofillRendererTest::SetUp();
+    GetWebFrameWidget()->SetFocus(true);
     SetTrigger(u"@@");
     run_loop_.emplace();
     ON_CALL(autofill_driver(), AskForValuesToFill)
@@ -1134,6 +1135,7 @@ TEST_F(AtMemoryHandlerContentEditableTest,
   SendCtrlKeyDown();
   SendCtrlKeyDown();
   WaitForApplyFieldAction();
+  task_environment_.FastForwardBy(base::Milliseconds(120));
   EXPECT_EQ(ce.TextContent().Utf16(), u"hello result");
   EXPECT_EQ(ce.GetDocument().FocusedElement(), ce);
 }
