@@ -1119,38 +1119,49 @@ void LocalFrameView::RunCanvasOnpaintSteps() {
     return;
   }
 
-  ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
-    if (frame_view.canvas_elements_needing_onpaint_.empty()) {
-      return;
-    }
-    CanvasOnpaintMap canvas_elements_needing_onpaint;
-    canvas_elements_needing_onpaint.swap(
-        frame_view.canvas_elements_needing_onpaint_);
+  // Collect canvases needing onpaint in reverse document order and in reverse
+  // tree order within each document.
+  using CanvasOnpaintEntry =
+      std::pair<Member<HTMLCanvasElement>,
+                Member<GCedHeapLinkedHashSet<Member<Element>>>>;
+  HeapVector<CanvasOnpaintEntry> all_canvases_needing_onpaint;
+  ForAllNonThrottledLocalFrameViews(
+      [&all_canvases_needing_onpaint](LocalFrameView& frame_view) {
+        if (frame_view.canvas_elements_needing_onpaint_.empty()) {
+          return;
+        }
+        const wtf_size_t start_index = all_canvases_needing_onpaint.size();
+        all_canvases_needing_onpaint.reserve(
+            start_index + frame_view.canvas_elements_needing_onpaint_.size());
+        for (auto& entry : frame_view.canvas_elements_needing_onpaint_) {
+          all_canvases_needing_onpaint.emplace_back(entry.key,
+                                                    std::move(entry.value));
+        }
+        frame_view.canvas_elements_needing_onpaint_.clear();
 
-    // Sort canvases in reverse shadow-including tree order so that descendant
-    // <canvas> elements fire `paint` events before their ancestors.
-    HeapVector<Member<HTMLCanvasElement>> sorted_canvases;
-    sorted_canvases.reserve(canvas_elements_needing_onpaint.size());
-    for (const auto& entry : canvas_elements_needing_onpaint) {
-      sorted_canvases.push_back(entry.key);
-    }
-    std::sort(sorted_canvases.begin(), sorted_canvases.end(),
-              [](const Member<HTMLCanvasElement>& a,
-                 const Member<HTMLCanvasElement>& b) {
-                return b->compareDocumentPosition(
-                           a, Node::kTreatShadowTreesAsComposed) &
-                       Node::kDocumentPositionFollowing;
-              });
+        // Sort canvases in reverse shadow-including tree order so that
+        // descendant <canvas> elements fire `paint` events before their
+        // ancestors.
+        std::ranges::sort(
+            base::span(all_canvases_needing_onpaint).subspan(start_index),
+            [](const CanvasOnpaintEntry& a, const CanvasOnpaintEntry& b) {
+              return b.first->compareDocumentPosition(
+                         a.first, Node::kTreatShadowTreesAsComposed) &
+                     Node::kDocumentPositionFollowing;
+            });
+      },
+      kPostOrder);
 
-    for (const auto& canvas : sorted_canvases) {
-      auto* value = canvas_elements_needing_onpaint.at(canvas);
-      const HeapVector<Member<Element>> children(*value);
-      CanvasPaintEventInit* init = CanvasPaintEventInit::Create();
-      init->setChangedElements(std::move(children));
-      canvas->DispatchEvent(
-          *CanvasPaintEvent::Create(event_type_names::kPaint, init));
+  for (const auto& [canvas, changed_elements] : all_canvases_needing_onpaint) {
+    if (!canvas->InActiveDocument()) {
+      continue;
     }
-  });
+    const HeapVector<Member<Element>> children(*changed_elements);
+    CanvasPaintEventInit* init = CanvasPaintEventInit::Create();
+    init->setChangedElements(std::move(children));
+    canvas->DispatchEvent(
+        *CanvasPaintEvent::Create(event_type_names::kPaint, init));
+  }
 }
 
 void LocalFrameView::RunIntersectionObserverSteps() {

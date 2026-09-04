@@ -621,9 +621,9 @@ painting, and event dispatch:
     direct compositing reason, while compositing for the nested canvas element
     itself is suppressed.
 *   **Paint event ordering**: To ensure nested canvases are updated before their
-    parent canvases draw them, `RunCanvasOnpaintSteps` sorts canvases needing
-    `onpaint` by DOM tree depth in descending order. Deeper canvases fire their
-    `onpaint` events first.
+    parent canvases draw them, `RunCanvasOnpaintSteps` fires `paint` events in
+    reverse document order across frames, and in reverse tree order within each
+    document.
 *   **Placeholder recording**: When `HTMLCanvasPainter::PaintReplaced` paints a
     nested `layoutsubtree` canvas, it records a `cc::CustomDataOp` containing
     the nested canvas's `DOMNodeId` as a placeholder.
