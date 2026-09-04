@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/scoped_observation.h"
@@ -59,6 +60,7 @@ using ::personal_context::MockPersonalContextService;
 using ::personal_context::proto::SensitivePiiPresence;
 using ::testing::_;
 using ::testing::AllOf;
+using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::Eq;
 using ::testing::InSequence;
@@ -69,7 +71,6 @@ using ::testing::Optional;
 using ::testing::Property;
 using ::testing::Ref;
 using ::testing::Return;
-using ::testing::Truly;
 using ::testing::UnorderedElementsAre;
 using ::testing::UnorderedElementsAreArray;
 using ::testing::WithArg;
@@ -83,6 +84,8 @@ using test::CreateOrderProto;
 using test::CreatePassportProto;
 using test::CreateShipmentProto;
 using test::CreateVehicleProto;
+using test::HasAttributeWithValue;
+using test::HasEntityType;
 
 // Cache TTL values initialized directly from production feature defaults.
 const base::TimeDelta kPrefetchCacheTTL =
@@ -90,15 +93,6 @@ const base::TimeDelta kPrefetchCacheTTL =
         .default_value;
 const base::TimeDelta kUnmaskedSpiiCacheTTL =
     features::kAutofillAmbientAutofillUnmaskedSpiiCacheTTL.default_value;
-
-[[nodiscard]] auto HasAttributeWithValue(AttributeTypeName attribute_type_name,
-                                         std::u16string value) {
-  return Truly([=](const EntityInstance& entity) {
-    base::optional_ref<const AttributeInstance> attribute =
-        entity.attribute(AttributeType(attribute_type_name));
-    return attribute && attribute->GetCompleteInfo(/*app_locale=*/"") == value;
-  });
-}
 
 // Checks that ContextMemoryAmbientAutofillRequest matches the `expected_types`
 // and `expected_presence`.
@@ -382,8 +376,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest, PrefetchContextSuccess) {
       access_manager().IsTypePrefetched(EntityType(EntityTypeName::kOrder)));
   EXPECT_THAT(entities,
               UnorderedElementsAre(AllOf(
-                  Property(&EntityInstance::type,
-                           Property(&EntityType::name, EntityTypeName::kOrder)),
+                  HasEntityType(EntityTypeName::kOrder),
                   HasAttributeWithValue(AttributeTypeName::kOrderId, u"12345"),
                   HasAttributeWithValue(AttributeTypeName::kOrderMerchantName,
                                         u"Amazon"))));
@@ -422,8 +415,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   // The returned entities should only contain the requested kOrder.
   EXPECT_THAT(entities,
               UnorderedElementsAre(AllOf(
-                  Property(&EntityInstance::type,
-                           Property(&EntityType::name, EntityTypeName::kOrder)),
+                  HasEntityType(EntityTypeName::kOrder),
                   HasAttributeWithValue(AttributeTypeName::kOrderId, u"12345"),
                   HasAttributeWithValue(AttributeTypeName::kOrderMerchantName,
                                         u"Amazon"))));
@@ -2263,8 +2255,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplSpiiCacheTest,
   EXPECT_THAT(
       entities,
       UnorderedElementsAre(AllOf(
-          Property(&EntityInstance::type,
-                   Property(&EntityType::name, EntityTypeName::kPassport)),
+          HasEntityType(EntityTypeName::kPassport),
           HasAttributeWithValue(AttributeTypeName::kPassportName, u"Jane Doe"),
           HasAttributeWithValue(AttributeTypeName::kPassportNumber, u"45"))));
 }
@@ -2305,14 +2296,12 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplSpiiCacheTest,
   EXPECT_THAT(
       entities,
       UnorderedElementsAre(
-          AllOf(Property(&EntityInstance::type,
-                         Property(&EntityType::name, EntityTypeName::kOrder)),
+          AllOf(HasEntityType(EntityTypeName::kOrder),
                 HasAttributeWithValue(AttributeTypeName::kOrderId, u"ORD-999"),
                 HasAttributeWithValue(AttributeTypeName::kOrderMerchantName,
                                       u"BestBuy")),
           AllOf(
-              Property(&EntityInstance::type,
-                       Property(&EntityType::name, EntityTypeName::kPassport)),
+              HasEntityType(EntityTypeName::kPassport),
               HasAttributeWithValue(AttributeTypeName::kPassportName, u"Alice"),
               HasAttributeWithValue(AttributeTypeName::kPassportNumber,
                                     u"78"))));
@@ -2402,18 +2391,14 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplSpiiCacheTest,
   EXPECT_TRUE(access_manager().IsTypePrefetched(
       EntityType(EntityTypeName::kDriversLicense)));
   ASSERT_EQ(entities.size(), 2u);
-  EXPECT_THAT(
-      entities,
-      UnorderedElementsAre(
-          AllOf(
-              Property(&EntityInstance::type,
-                       Property(&EntityType::name, EntityTypeName::kPassport)),
-              HasAttributeWithValue(AttributeTypeName::kPassportNumber, u"0")),
-          AllOf(Property(&EntityInstance::type,
-                         Property(&EntityType::name,
-                                  EntityTypeName::kDriversLicense)),
-                HasAttributeWithValue(AttributeTypeName::kDriversLicenseNumber,
-                                      u"00"))));
+  EXPECT_THAT(entities,
+              UnorderedElementsAre(
+                  AllOf(HasEntityType(EntityTypeName::kPassport),
+                        HasAttributeWithValue(
+                            AttributeTypeName::kPassportNumber, u"0")),
+                  AllOf(HasEntityType(EntityTypeName::kDriversLicense),
+                        HasAttributeWithValue(
+                            AttributeTypeName::kDriversLicenseNumber, u"00"))));
 }
 
 // Tests that prefetched encrypted entities expire after the 30-minute TTL.
@@ -2455,8 +2440,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplSpiiCacheTest,
   EXPECT_FALSE(unmasked->IsMaskedEntity());
   EXPECT_THAT(
       *unmasked,
-      AllOf(Property(&EntityInstance::type,
-                     Property(&EntityType::name, EntityTypeName::kPassport)),
+      AllOf(HasEntityType(EntityTypeName::kPassport),
             HasAttributeWithValue(AttributeTypeName::kPassportNumber, u"P123"),
             HasAttributeWithValue(AttributeTypeName::kPassportName,
                                   u"John Doe")));
@@ -2507,8 +2491,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplSpiiCacheTest,
   EXPECT_THAT(
       entities,
       UnorderedElementsAre(AllOf(
-          Property(&EntityInstance::type,
-                   Property(&EntityType::name, EntityTypeName::kPassport)),
+          HasEntityType(EntityTypeName::kPassport),
           HasAttributeWithValue(AttributeTypeName::kPassportName, u"Jane Doe"),
           HasAttributeWithValue(AttributeTypeName::kPassportNumber, u"45"))));
 }
