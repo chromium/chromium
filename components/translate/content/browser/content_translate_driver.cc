@@ -28,6 +28,7 @@
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/browser/translate_metrics_logger.h"
+#include "components/translate/core/common/translate_constants.h"
 #include "components/translate/core/common/translate_features.h"
 #include "components/translate/core/common/translate_metrics.h"
 #include "content/public/browser/browser_context.h"
@@ -40,6 +41,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
+#include "content/public/common/url_constants.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -52,6 +54,11 @@ namespace {
 // The maximum number of attempts we'll do to see if the page has finished
 // loading before giving up the translation
 const int kMaxTranslateLoadCheckAttempts = 20;
+
+bool IsReadingModeSidePanel(const GURL& url) {
+  return url.SchemeIs(content::kChromeUIUntrustedScheme) &&
+         url.host() == kReadingModeSidePanelHost;
+}
 
 class ContentTranslateDriverUserData : public base::SupportsUserData::Data {
  public:
@@ -289,6 +296,11 @@ void ContentTranslateDriver::InitiateTranslationIfReload(
                      0));
 }
 
+bool ContentTranslateDriver::IsPdfTranslation() {
+  return GetContentsMimeType() == kPdfMimeType &&
+         base::FeatureList::IsEnabled(translate::kEnableTranslatePdf);
+}
+
 // content::WebContentsObserver methods
 void ContentTranslateDriver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
@@ -376,7 +388,16 @@ void ContentTranslateDriver::RegisterPage(
     mojo::PendingRemote<translate::mojom::TranslateAgent> translate_agent,
     const translate::LanguageDetectionDetails& details,
     const bool page_level_translation_criteria_met) {
+  if (!web_contents()) {
+    return;
+  }
   base::TimeTicks language_determined_time = base::TimeTicks::Now();
+
+  int page_seq_no = UpdatePageSequenceNumber();
+  if (IsReadingModeSidePanel(details.url)) {
+    BindSidePanelTranslateAgent(page_seq_no, std::move(translate_agent));
+    return;
+  }
   ReportLanguageDeterminedDuration(finish_navigation_time_,
                                    language_determined_time);
 
@@ -386,33 +407,23 @@ void ContentTranslateDriver::RegisterPage(
     language_histogram_->OnPageVisited(details.model_detected_language);
   }
 
-  int page_seq_no = UpdatePageSequenceNumber();
-  BindTranslateAgent(page_seq_no, std::move(translate_agent), details.url);
-
-  // Intercept if this is the Reading Mode side panel WebContents registering
-  if (details.url.SchemeIs("chrome-untrusted") &&
-      details.url.host() == "read-anything-side-panel.top-chrome") {
-    return;
-  }
+  BindMainTranslateAgent(page_seq_no, std::move(translate_agent));
 
   translate_manager_->GetLanguageState()->LanguageDetermined(
       details.adopted_language, page_level_translation_criteria_met);
 
-  if (web_contents()) {
+  if (IsPdfTranslation()) {
 #if BUILDFLAG(ENABLE_PDF)
-    if (GetContentsMimeType() == "application/pdf" &&
-        base::FeatureList::IsEnabled(translate::kEnableTranslatePdf)) {
-      content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
-      auto* coordinator = PDFTranslationCoordinator::GetOrCreateForCurrentDocument(rfh);
-      coordinator->RunIfPdfIsTranslatable(base::BindOnce(
-          &TranslateManager::InitiateTranslation,
-          translate_manager_->GetWeakPtr(), details.adopted_language));
-    } else {
-      translate_manager_->InitiateTranslation(details.adopted_language);
-    }
-#else
-    translate_manager_->InitiateTranslation(details.adopted_language);
+    content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
+    auto* coordinator =
+        PDFTranslationCoordinator::GetOrCreateForCurrentDocument(rfh);
+    coordinator->RunIfPdfIsTranslatable(base::BindOnce(
+        &TranslateManager::InitiateTranslation,
+        translate_manager_->GetWeakPtr(), details.adopted_language));
 #endif
+  } else {
+    translate_manager_->InitiateTranslation(details.adopted_language);
+  }
 
     // Save the page language on the navigation entry so it can be synced.
     // TODO(crbug.com/40779913): The mojo IPC coming from the renderer might
@@ -424,9 +435,8 @@ void ContentTranslateDriver::RegisterPage(
     // cases where the detected language is attributed to the wrong page.
     auto* const entry = web_contents()->GetController().GetLastCommittedEntry();
     SetPageLanguageInNavigation(details.adopted_language, entry);
-  }
 
-  for (auto& observer : language_detection_observers()) {
+  for (LanguageDetectionObserver& observer : language_detection_observers()) {
     observer.OnLanguageDetermined(details);
   }
 
@@ -486,32 +496,32 @@ int ContentTranslateDriver::UpdatePageSequenceNumber() {
   return active_page_seq_no_;
 }
 
-void ContentTranslateDriver::BindTranslateAgent(
+void ContentTranslateDriver::BindSidePanelTranslateAgent(
     int page_seq_no,
-    mojo::PendingRemote<mojom::TranslateAgent> translate_agent,
-    const GURL& url) {
+    mojo::PendingRemote<mojom::TranslateAgent> translate_agent) {
   auto& agents = translate_agents_[page_seq_no];
-  if (url.SchemeIs("chrome-untrusted") &&
-      url.host() == "read-anything-side-panel.top-chrome") {
-    agents.side_panel_agent.reset();
-    agents.side_panel_agent.Bind(std::move(translate_agent));
-    // Use a specific disconnect handler that doesn't erase the whole entry.
-    // base::Unretained(this) is safe here because `side_panel_agent` is owned
-    // by `translate_agents_`, which is owned by `this`. The callback is
-    // destroyed when the remote is destroyed, guaranteeing `this` outlives it.
-    agents.side_panel_agent.set_disconnect_handler(
-        base::BindOnce(&ContentTranslateDriver::OnSidePanelAway,
-                       base::Unretained(this), page_seq_no));
-  } else {
-    agents.main_agent.reset();
-    agents.main_agent.Bind(std::move(translate_agent));
-    // base::Unretained(this) is safe here because `main_agent` is owned by
-    // `translate_agents_`, which is owned by `this`. The callback is destroyed
-    // when the remote is destroyed, guaranteeing `this` outlives it.
-    agents.main_agent.set_disconnect_handler(
-        base::BindOnce(&ContentTranslateDriver::OnPageAway,
-                       base::Unretained(this), page_seq_no));
-  }
+  agents.side_panel_agent.reset();
+  agents.side_panel_agent.Bind(std::move(translate_agent));
+  // Use a specific disconnect handler that doesn't erase the whole entry.
+  // base::Unretained(this) is safe here because `side_panel_agent` is owned
+  // by `translate_agents_`, which is owned by `this`. The callback is
+  // destroyed when the remote is destroyed, guaranteeing `this` outlives it.
+  agents.side_panel_agent.set_disconnect_handler(
+      base::BindOnce(&ContentTranslateDriver::OnSidePanelAway,
+                     base::Unretained(this), page_seq_no));
 }
 
+void ContentTranslateDriver::BindMainTranslateAgent(
+    int page_seq_no,
+    mojo::PendingRemote<mojom::TranslateAgent> translate_agent) {
+  auto& agents = translate_agents_[page_seq_no];
+  agents.main_agent.reset();
+  agents.main_agent.Bind(std::move(translate_agent));
+  // base::Unretained(this) is safe here because `main_agent` is owned by
+  // `translate_agents_`, which is owned by `this`. The callback is destroyed
+  // when the remote is destroyed, guaranteeing `this` outlives it.
+  agents.main_agent.set_disconnect_handler(
+      base::BindOnce(&ContentTranslateDriver::OnPageAway,
+                     base::Unretained(this), page_seq_no));
+}
 }  // namespace translate

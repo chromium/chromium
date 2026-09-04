@@ -129,12 +129,15 @@ class ContentTranslateDriver : public TranslateDriver,
 
   void OnPageAway(int page_seq_no);
   void OnSidePanelAway(int page_seq_no);
+  bool IsPdfTranslation();
 
   int UpdatePageSequenceNumber();
-  void BindTranslateAgent(
+  void BindSidePanelTranslateAgent(
       int page_seq_no,
-      mojo::PendingRemote<mojom::TranslateAgent> translate_agent,
-      const GURL& url);
+      mojo::PendingRemote<mojom::TranslateAgent> translate_agent);
+  void BindMainTranslateAgent(
+      int page_seq_no,
+      mojo::PendingRemote<mojom::TranslateAgent> translate_agent);
 
   void InitiateTranslationIfReload(
       content::NavigationHandle* navigation_handle);
