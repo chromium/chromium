@@ -1783,8 +1783,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   bool IsColumnSpanAll() const {
     NOT_DESTROYED();
-    // May be called before style is set.
-    return Style() && Style()->GetColumnSpan() == EColumnSpan::kAll &&
+    return StyleRef().GetColumnSpan() == EColumnSpan::kAll &&
            IsValidColumnSpannerInTree();
   }
 

@@ -2308,6 +2308,11 @@ String LayoutObject::DecoratedName() const {
   StringBuilder name;
   name.Append(GetName());
 
+  // If we don't have a style yet our "attributes" are meaningless.
+  if (!style_) {
+    return name.ToString();
+  }
+
   Vector<const char*> attributes;
   if (ChildLayoutBlockedByDisplayLock()) {
     attributes.push_back("display-locked");
