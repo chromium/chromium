@@ -36,7 +36,6 @@
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColorType.h"
-#include "ui/gl/trace_util.h"
 
 namespace cc {
 

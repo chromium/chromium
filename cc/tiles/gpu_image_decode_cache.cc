@@ -57,7 +57,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/skia_span_util.h"
-#include "ui/gl/trace_util.h"
 
 namespace cc {
 
