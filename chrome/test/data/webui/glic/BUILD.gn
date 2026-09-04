@@ -25,6 +25,7 @@ ts_library("build_extra_ts") {
     "browser_tests/browser_test_base.ts",
     "browser_tests/glic_api_browsertest.ts",
     "browser_tests/glic_chrome_tools_browsertest.ts",
+    "browser_tests/glic_api_skills_browsertest.ts",
     "browser_tests/glic_permission_enforcement_browsertest.ts",
     "browser_tests/glic_actor_task_lifecycle_browsertest.ts",
     "browser_tests/glic_actor_attempt_otp_filling_browsertest.ts",
