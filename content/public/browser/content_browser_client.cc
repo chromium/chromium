@@ -1727,13 +1727,6 @@ base::FilePath ContentBrowserClient::GetChildProcessPath(int flags) {
   return base::FilePath();
 }
 
-#if BUILDFLAG(IS_MAC)
-std::string ContentBrowserClient::GetChildProcessSuffix(int child_flags) {
-  NOTIMPLEMENTED();
-  return std::string();
-}
-#endif
-
 bool ContentBrowserClient::AreIsolatedWebAppsEnabled(
     BrowserContext* browser_context) {
   // The whole logic of the IWAs lives in //chrome. So IWAs should be

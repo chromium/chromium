@@ -101,9 +101,10 @@ class CONTENT_EXPORT ChildProcessHost {
     CHILD_GPU,
 
     // Marker for the start of embedder-specific helper child process types.
-    // Values greater than CHILD_EMBEDDER_FIRST are reserved to be used by the
-    // embedder to add custom process types and will be resolved via
-    // ContentClient::GetChildPath().
+    // Values greater than CHILD_EMBEDDER_FIRST are reserved for embedder
+    // process types. Content provides no fallback resolution for these types;
+    // embedders must handle them in
+    // ContentBrowserClient::GetChildProcessPath().
     CHILD_EMBEDDER_FIRST,
 #endif
   };

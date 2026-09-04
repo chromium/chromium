@@ -2893,17 +2893,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   // the default path.
   virtual base::FilePath GetChildProcessPath(int flags);
 
-#if BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/534570563): Deprecate GetChildProcessSuffix in favor of
-  // GetChildProcessPath.
-  // Gets the suffix for an embedder-specific helper child process. The
-  // |child_flags| is a value greater than
-  // ChildProcessHost::CHILD_EMBEDDER_FIRST. The embedder-specific helper app
-  // bundle should be placed next to the known //content Mac helpers in the
-  // framework bundle.
-  virtual std::string GetChildProcessSuffix(int child_flags);
-#endif  // BUILDFLAG(IS_MAC)
-
   // Checks if Isolated Web Apps are enabled, e.g. by feature flag
   // or in any other way.
   virtual bool AreIsolatedWebAppsEnabled(BrowserContext* browser_context);

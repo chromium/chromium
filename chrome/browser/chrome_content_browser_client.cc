@@ -479,6 +479,7 @@
 #include "content/public/browser/tracing_service.h"
 #include "sandbox/win/src/sandbox_policy.h"
 #elif BUILDFLAG(IS_MAC)
+#include "base/apple/foundation_util.h"
 #include "chrome/browser/browser_process_platform_part_mac.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_proxying_url_loader_factory.h"
 #include "chrome/common/chrome_version.h"
@@ -8767,21 +8768,32 @@ base::FilePath ChromeContentBrowserClient::GetChildProcessPath(int flags) {
   }
 #endif
 
+#if BUILDFLAG(IS_MAC)
+  if (flags ==
+      std::to_underlying(ChildProcessHostFlags::kChildProcessHelperAlerts)) {
+    if (!base::apple::AmIBundled()) {
+      return base::FilePath();
+    }
+    std::string_view child_suffix =
+        base::FeatureList::IsEnabled(features::kAperitifHelpers)
+            ? " (Aperitif Alerts)"
+            : chrome::kMacHelperSuffixAlerts;
+    std::string child_base_name =
+        base::StrCat({chrome::kHelperProcessExecutableName, child_suffix});
+    // Parallel to SetUpBundleOverrides(), helper executables reside in the
+    // "Helpers" directory within the versioned framework bundle as
+    // `<child_base_name>.app/Contents/MacOS/<child_base_name>`.
+    return chrome::GetFrameworkBundlePath()
+        .Append(FILE_PATH_LITERAL("Helpers"))
+        .Append(base::StrCat({child_base_name, FILE_PATH_LITERAL(".app")}))
+        .Append(FILE_PATH_LITERAL("Contents"))
+        .Append(FILE_PATH_LITERAL("MacOS"))
+        .Append(child_base_name);
+  }
+#endif
+
   return base::FilePath();
 }
-
-#if BUILDFLAG(IS_MAC)
-std::string ChromeContentBrowserClient::GetChildProcessSuffix(int child_flags) {
-  if (child_flags ==
-      std::to_underlying(ChildProcessHostFlags::kChildProcessHelperAlerts)) {
-    if (base::FeatureList::IsEnabled(features::kAperitifHelpers)) {
-      return " (Aperitif Alerts)";
-    }
-    return chrome::kMacHelperSuffixAlerts;
-  }
-  NOTREACHED() << "Unsupported child process flags!";
-}
-#endif  // BUILDFLAG(IS_MAC)
 
 bool ChromeContentBrowserClient::ShouldUseFirstPartyStorageKey(
     const url::Origin& origin) {

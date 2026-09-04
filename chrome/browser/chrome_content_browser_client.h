@@ -1042,6 +1042,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::BrowserContext* browser_context,
       const GURL& url) override;
 
+  base::FilePath GetChildProcessPath(int flags) override;
+
   bool AreIsolatedWebAppsEnabled(
       content::BrowserContext* browser_context) override;
 
@@ -1404,14 +1406,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   std::unique_ptr<FetchKeepAliveProcessManager>
       fetch_keepalive_process_manager_;
 #endif
-
-  base::FilePath GetChildProcessPath(int flags) override;
-
-#if BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/534570563): Deprecate GetChildProcessSuffix in favor of
-  // GetChildProcessPath.
-  std::string GetChildProcessSuffix(int child_flags) override;
-#endif  // BUILDFLAG(IS_MAC)
 
   // Tracks whether the browser was started in "minimal" mode (as opposed to
   // full browser mode), where most subsystems are not initialized.

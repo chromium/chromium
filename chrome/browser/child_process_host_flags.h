@@ -9,7 +9,7 @@
 #include "content/public/browser/child_process_host.h"
 
 // Flags for Chrome specific child processes to resolve the appropriate process
-// via ChromeContentBrowserClient::GetChildProcessSuffix().
+// via ChromeContentBrowserClient::GetChildProcessPath().
 enum class ChildProcessHostFlags {
 #if BUILDFLAG(IS_MAC)
   // Starts a child process with the macOS alert style to show notifications as
