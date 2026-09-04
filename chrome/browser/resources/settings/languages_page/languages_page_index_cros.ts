@@ -3,30 +3,36 @@
 // found in the LICENSE file.
 
 import '../settings_page/settings_section.js';
-import '../settings_shared.css.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {getSearchManager} from '../search_settings.js';
 import type {SettingsPlugin} from '../settings_main/settings_plugin.js';
+import {getCss as getSettingsSharedCss} from '../settings_shared_lit.css.js';
 
-import {getTemplate} from './languages_page_index_cros.html.js';
+import {getHtml} from './languages_page_index_cros.html.js';
 
+export type LanguagesPageIndexCrosElement =
+    SettingsLanguagesPageIndexCrosElement;
 
-export class SettingsLanguagesPageIndexElement extends PolymerElement implements
-    SettingsPlugin {
+export class SettingsLanguagesPageIndexCrosElement extends CrLitElement
+    implements SettingsPlugin {
   static get is() {
     return 'settings-languages-page-index-cros';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return [getSettingsSharedCss()];
   }
 
-  private onOpenChromeOsLanguagesSettingsClick_() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  protected onOpenChromeOsLanguagesSettingsClick_() {
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('osSettingsLanguagesPageUrl'));
   }
@@ -40,9 +46,10 @@ export class SettingsLanguagesPageIndexElement extends PolymerElement implements
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-languages-page-index-cros': SettingsLanguagesPageIndexElement;
+    'settings-languages-page-index-cros': SettingsLanguagesPageIndexCrosElement;
   }
 }
 
 customElements.define(
-    SettingsLanguagesPageIndexElement.is, SettingsLanguagesPageIndexElement);
+    SettingsLanguagesPageIndexCrosElement.is,
+    SettingsLanguagesPageIndexCrosElement);

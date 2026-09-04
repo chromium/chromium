@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
-import '../settings_shared.css.js';
 import './languages_page.js';
 import './spell_check_page.js';
 import './translate_page.js';
@@ -13,16 +12,16 @@ import './edit_dictionary_page.js';
 // </if>
 
 import type {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {routes} from '../route.js';
-import {RouteObserverMixin} from '../router.js';
+import {RouteObserverMixinLit} from '../router.js';
 import type {Route, SettingsRoutes} from '../router.js';
 import type {SettingsPlugin} from '../settings_main/settings_plugin.js';
-import {SearchableViewContainerMixin} from '../settings_page/searchable_view_container_mixin.js';
+import {SearchableViewContainerMixinLit} from '../settings_page/searchable_view_container_mixin_lit.js';
 
-import {getTemplate} from './languages_page_index.html.js';
-
+import {getCss} from './languages_page_index.css.js';
+import {getHtml} from './languages_page_index.html.js';
 
 export interface SettingsLanguagesPageIndexElement {
   $: {
@@ -30,8 +29,10 @@ export interface SettingsLanguagesPageIndexElement {
   };
 }
 
+export type LanguagesPageIndexElement = SettingsLanguagesPageIndexElement;
+
 const SettingsLanguagesPageIndexElementBase =
-    SearchableViewContainerMixin(RouteObserverMixin(PolymerElement));
+    SearchableViewContainerMixinLit(RouteObserverMixinLit(CrLitElement));
 
 export class SettingsLanguagesPageIndexElement extends
     SettingsLanguagesPageIndexElementBase implements SettingsPlugin {
@@ -39,20 +40,21 @@ export class SettingsLanguagesPageIndexElement extends
     return 'settings-languages-page-index';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      routes_: {
-        type: Object,
-        value: () => routes,
-      },
+      routes_: {type: Object},
     };
   }
 
-  declare private routes_: SettingsRoutes;
+  protected accessor routes_: SettingsRoutes = routes;
 
   private showDefaultViews_() {
     this.$.viewManager.switchViews(
