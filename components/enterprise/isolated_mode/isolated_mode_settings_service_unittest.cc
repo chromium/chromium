@@ -15,13 +15,10 @@
 
 namespace enterprise_isolated_mode {
 
-class SettingsTest : public testing::Test {
+class IsolatedModeSettingsServiceTest : public testing::Test {
  protected:
   void SetUp() override {
-    // Register the pref used by the policy.
-    // Note: In components, we use
-    // enterprise_isolated_mode::RegisterProfilePrefs which registers it as an
-    // Integer pref.
+    // Register the kEnterpriseIsolatedModeSettings pref used by the policy.
     RegisterProfilePrefs(pref_service_.registry());
   }
 
@@ -29,20 +26,21 @@ class SettingsTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(SettingsTest, DisabledByDefault) {
+TEST_F(IsolatedModeSettingsServiceTest, DoesNotReplaceIncognitoByDefault) {
   IsolatedModeSettingsService service(&pref_service_,
                                       version_info::Channel::DEV);
   EXPECT_FALSE(service.ReplacesIncognito());
 }
 
-TEST_F(SettingsTest, FeatureOnlyDoesNotEnable) {
+TEST_F(IsolatedModeSettingsServiceTest,
+       DoesNotReplaceIncognitoWithFeatureOnly) {
   feature_list_.InitAndEnableFeature(kEnableEnterpriseIsolatedMode);
   IsolatedModeSettingsService service(&pref_service_,
                                       version_info::Channel::DEV);
   EXPECT_FALSE(service.ReplacesIncognito());
 }
 
-TEST_F(SettingsTest, PolicyOnlyDoesNotEnable) {
+TEST_F(IsolatedModeSettingsServiceTest, DoesNotReplaceIncognitoWithPolicyOnly) {
   pref_service_.SetInteger(kEnterpriseIsolatedModeSettings,
                            static_cast<int>(IsolatedModeSetting::kEnabled));
   IsolatedModeSettingsService service(&pref_service_,
@@ -50,7 +48,7 @@ TEST_F(SettingsTest, PolicyOnlyDoesNotEnable) {
   EXPECT_FALSE(service.ReplacesIncognito());
 }
 
-TEST_F(SettingsTest, FeatureAndPolicyEnables) {
+TEST_F(IsolatedModeSettingsServiceTest, ReplacesIncognitoWithFeatureAndPolicy) {
   feature_list_.InitAndEnableFeature(kEnableEnterpriseIsolatedMode);
   pref_service_.SetInteger(kEnterpriseIsolatedModeSettings,
                            static_cast<int>(IsolatedModeSetting::kEnabled));
@@ -59,7 +57,8 @@ TEST_F(SettingsTest, FeatureAndPolicyEnables) {
   EXPECT_TRUE(service.ReplacesIncognito());
 }
 
-TEST_F(SettingsTest, CommandLineSwitchPriority) {
+TEST_F(IsolatedModeSettingsServiceTest,
+       ReplacesIncognitoWithCommandLineSwitch) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kForceEnterpriseIsolatedModeReplacesIncognito);
 
@@ -77,7 +76,7 @@ TEST_F(SettingsTest, CommandLineSwitchPriority) {
   EXPECT_FALSE(stable_service.ReplacesIncognito());
 }
 
-TEST_F(SettingsTest, PrefChangeAfterStartupIgnoredInServiceDueToLock) {
+TEST_F(IsolatedModeSettingsServiceTest, IgnoresPrefChangeAfterStartup) {
   feature_list_.InitAndEnableFeature(kEnableEnterpriseIsolatedMode);
   // Initial service evaluation when policy is not set.
   IsolatedModeSettingsService service(&pref_service_,
@@ -93,6 +92,13 @@ TEST_F(SettingsTest, PrefChangeAfterStartupIgnoredInServiceDueToLock) {
   IsolatedModeSettingsService new_service(&pref_service_,
                                           version_info::Channel::DEV);
   EXPECT_TRUE(new_service.ReplacesIncognito());
+}
+
+TEST_F(IsolatedModeSettingsServiceTest,
+       DoesNotReplaceIncognitoWithNullPrefService) {
+  feature_list_.InitAndEnableFeature(kEnableEnterpriseIsolatedMode);
+  IsolatedModeSettingsService service(nullptr, version_info::Channel::DEV);
+  EXPECT_FALSE(service.ReplacesIncognito());
 }
 
 }  // namespace enterprise_isolated_mode
