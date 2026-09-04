@@ -10,6 +10,7 @@ use std::fmt;
 use std::pin::Pin;
 
 /// Watches to ensure recursion does not go too deep during deserialization.
+#[derive(Clone, Copy)]
 struct RecursionDepthCheck(usize);
 
 impl RecursionDepthCheck {
@@ -165,6 +166,8 @@ impl<'de> Visitor<'de> for ValueVisitor<'_, '_> {
     where
         M: MapAccess<'de>,
     {
+        let recursion_depth_check = self.recursion_depth_check.recurse()?;
+
         // `serde_json_lenient::de::MapAccess::size_hint` always returns `None`,
         // so we don't bother trying to reserve space here.
         let mut inner_ctx = match self.aggregate {
@@ -174,7 +177,7 @@ impl<'de> Visitor<'de> for ValueVisitor<'_, '_> {
         while let Some(ref key) = access.next_key_seed(CowStrVisitor)? {
             access.next_value_seed(ValueVisitor {
                 aggregate: DeserializationTarget::Dict { ctx: inner_ctx.as_mut(), key },
-                recursion_depth_check: self.recursion_depth_check.recurse()?,
+                recursion_depth_check,
             })?;
         }
         Ok(())
@@ -184,6 +187,8 @@ impl<'de> Visitor<'de> for ValueVisitor<'_, '_> {
     where
         S: SeqAccess<'de>,
     {
+        let recursion_depth_check = self.recursion_depth_check.recurse()?;
+
         // `serde_json_lenient::de::SeqAccess::size_hint` always returns `None`,
         // so we don't bother trying to reserve space here.
         let mut inner_ctx = match self.aggregate {
@@ -193,7 +198,7 @@ impl<'de> Visitor<'de> for ValueVisitor<'_, '_> {
         while access
             .next_element_seed(ValueVisitor {
                 aggregate: DeserializationTarget::List { ctx: inner_ctx.as_mut() },
-                recursion_depth_check: self.recursion_depth_check.recurse()?,
+                recursion_depth_check,
             })?
             .is_some()
         {}

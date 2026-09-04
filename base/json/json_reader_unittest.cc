@@ -921,9 +921,20 @@ TEST(JSONReaderTest, ASCIIControlCodes) {
 }
 
 TEST(JSONReaderTest, MaxNesting) {
-  std::string json(R"({"outer": { "inner": {"foo": true}}})");
+  const std::string_view json(R"({"outer": { "inner": {"foo": true}}})");
   EXPECT_FALSE(JSONReader::Read(json, JSON_PARSE_RFC, 3));
   EXPECT_TRUE(JSONReader::Read(json, JSON_PARSE_RFC, 4));
+
+  // Verify that empty dicts and empty lists at the max depth behave
+  // consistently and both fail parsing if max_depth is exceeded
+  // (http://crbug.com/557144542).
+  const std::string_view empty_dict_json(R"({"outer": { "inner": {}}})");
+  EXPECT_FALSE(JSONReader::Read(empty_dict_json, JSON_PARSE_RFC, 3));
+  EXPECT_TRUE(JSONReader::Read(empty_dict_json, JSON_PARSE_RFC, 4));
+
+  const std::string_view empty_list_json(R"({"outer": { "inner": []}})");
+  EXPECT_FALSE(JSONReader::Read(empty_list_json, JSON_PARSE_RFC, 3));
+  EXPECT_TRUE(JSONReader::Read(empty_list_json, JSON_PARSE_RFC, 4));
 }
 
 TEST(JSONReaderTest, Decode4ByteUtf8Char) {
