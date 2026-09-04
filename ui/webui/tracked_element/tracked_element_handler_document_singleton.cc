@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -24,6 +25,15 @@ namespace ui {
 namespace {
 
 using ContextGetter = TrackedElementHandlerDocumentSingleton::ContextGetter;
+
+void PostResult(
+    base::OnceCallback<void(base::WeakPtr<TrackedElementHandler>)> callback,
+    base::WeakPtr<TrackedElementHandler> result) {
+  auto task_runner = base::SequencedTaskRunner::GetCurrentDefault();
+
+  task_runner->PostTask(FROM_HERE,
+                        base::BindOnce(std::move(callback), std::move(result)));
+}
 
 // Holds the configuration for TrackedElementHandlers in a WebContents.
 class TrackedElementHandlerConfig
@@ -67,23 +77,46 @@ class TrackedElementHandlerUserData
 
   TrackedElementHandler* handler() { return handler_.get(); }
 
- private:
-  friend class content::DocumentUserData<TrackedElementHandlerUserData>;
-  explicit TrackedElementHandlerUserData(
-      content::RenderFrameHost* rfh,
-      const TrackedElementHandlerConfig* config)
-      : content::DocumentUserData<TrackedElementHandlerUserData>(rfh) {
+  void SetOrUpdateConfig(content::WebContents* web_contents,
+                         const TrackedElementHandlerConfig* config) {
     CHECK(config);
-    auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
     CHECK(web_contents);
-    handler_ = std::make_unique<TrackedElementHandler>(web_contents,
-                                                       config->context());
+    if (!handler_) {
+      handler_ = std::make_unique<TrackedElementHandler>(web_contents,
+                                                         config->context());
+    }
+
+    // This is called also when re-registering the config, to make sure the
+    // identifier list is current. If this is not done then adding a second
+    // component which uses identifier could be ignored if another component got
+    // here first.
     handler_->RegisterIdentifiers(config->identifiers());
   }
+
+  void AddCallback(
+      base::OnceCallback<void(base::WeakPtr<TrackedElementHandler>)> callback) {
+    callbacks_.push_back(std::move(callback));
+  }
+
+  void RunPendingCallbacks() {
+    auto result = handler_->GetWeakPtr();
+
+    for (auto& callback : callbacks_) {
+      PostResult(std::move(callback), result);
+    }
+    callbacks_.clear();
+  }
+
+ private:
+  friend class content::DocumentUserData<TrackedElementHandlerUserData>;
+  explicit TrackedElementHandlerUserData(content::RenderFrameHost* rfh)
+      : content::DocumentUserData<TrackedElementHandlerUserData>(rfh) {}
 
   DOCUMENT_USER_DATA_KEY_DECL();
 
   std::unique_ptr<TrackedElementHandler> handler_;
+  std::vector<base::OnceCallback<void(base::WeakPtr<TrackedElementHandler>)>>
+      callbacks_;
 };
 
 DOCUMENT_USER_DATA_KEY_IMPL(TrackedElementHandlerUserData);
@@ -122,6 +155,17 @@ void TrackedElementHandlerDocumentSingleton::Register(
   }
   TrackedElementHandlerConfig::CreateForWebContents(
       web_contents, std::move(maybe_context_getter), std::move(identifiers));
+  const TrackedElementHandlerConfig* const config =
+      TrackedElementHandlerConfig::FromWebContents(web_contents);
+
+  // Activate any pending GetOrCreateAsync() callbacks, now we have the config.
+  web_contents->ForEachRenderFrameHost([&](content::RenderFrameHost* rfh) {
+    auto* user_data = TrackedElementHandlerUserData::GetForCurrentDocument(rfh);
+    if (user_data) {
+      user_data->SetOrUpdateConfig(web_contents, config);
+      user_data->RunPendingCallbacks();
+    }
+  });
 }
 
 // static
@@ -134,25 +178,52 @@ TrackedElementHandlerDocumentSingleton::GetOrCreate(
 
   content::WebContents* const web_contents =
       content::WebContents::FromRenderFrameHost(rfh);
-  const TrackedElementHandlerConfig* const config =
-      web_contents ? TrackedElementHandlerConfig::FromWebContents(web_contents)
-                   : nullptr;
-  auto* user_data = TrackedElementHandlerUserData::GetForCurrentDocument(rfh);
-  if (user_data) {
-    // Re-registering the config, so make sure the identifier list is current.
-    // If this is not done then adding a second component which uses identifiers
-    // could be ignored if another component got here first.
-    if (config) {
-      user_data->handler()->RegisterIdentifiers(config->identifiers());
-    }
-  } else if (!web_contents || !config) {
+  if (!web_contents) {
     return nullptr;
-  } else {
-    TrackedElementHandlerUserData::CreateForCurrentDocument(rfh, config);
-    user_data = TrackedElementHandlerUserData::GetForCurrentDocument(rfh);
   }
-  CHECK(user_data);
-  return user_data->handler() ? user_data->handler()->GetWeakPtr() : nullptr;
+
+  const TrackedElementHandlerConfig* const config =
+      TrackedElementHandlerConfig::FromWebContents(web_contents);
+  if (!config) {
+    return nullptr;
+  }
+
+  auto* user_data =
+      TrackedElementHandlerUserData::GetOrCreateForCurrentDocument(rfh);
+  user_data->SetOrUpdateConfig(web_contents, config);
+
+  return user_data->handler()->GetWeakPtr();
+}
+
+// static
+void TrackedElementHandlerDocumentSingleton::GetOrCreateAsync(
+    content::RenderFrameHost* rfh,
+    base::OnceCallback<void(base::WeakPtr<TrackedElementHandler>)> callback) {
+  if (!rfh) {
+    PostResult(std::move(callback), nullptr);
+    return;
+  }
+
+  content::WebContents* const web_contents =
+      content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents) {
+    PostResult(std::move(callback), nullptr);
+    return;
+  }
+
+  auto* user_data =
+      TrackedElementHandlerUserData::GetOrCreateForCurrentDocument(rfh);
+
+  const TrackedElementHandlerConfig* const config =
+      TrackedElementHandlerConfig::FromWebContents(web_contents);
+  if (!config) {
+    // Defer until ::Register is called.
+    user_data->AddCallback(std::move(callback));
+    return;
+  }
+
+  user_data->SetOrUpdateConfig(web_contents, config);
+  PostResult(std::move(callback), user_data->handler()->GetWeakPtr());
 }
 
 }  // namespace ui

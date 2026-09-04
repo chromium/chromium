@@ -84,6 +84,7 @@
 #include "chrome/browser/ui/views/page_action/webui_page_action_control.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
 #include "chrome/browser/ui/views/performance_controls/battery_saver_bubble_view.h"
+#include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/browser/ui/views/toolbar/home_button.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -162,6 +163,7 @@
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/inspect/ax_event_recorder.h"
 #include "ui/actions/actions.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/page_transition_types.h"
@@ -1685,12 +1687,26 @@ class WebUIToolbarLifecycleBrowserTest : public InProcessBrowserTest {
         if (!reload_button || !reload_button->is_initialized()) {
           return false;
         }
+        // Make sure that the button is available with ElementTracker API.
+        if (!ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
+                kReloadButtonElementId)) {
+          return false;
+        }
       }
       if (features::IsWebUIAvatarButtonEnabled()) {
         auto* avatar_button = static_cast<WebUIAvatarToolbarButton*>(
             webui_toolbar->GetAvatarToolbarButtonInterface());
         if (!avatar_button || !avatar_button->is_initialized()) {
           return false;
+        }
+        // Make sure that the button is available with ElementTracker API...
+        // ... if we're on a platform that's showing it.
+        if (AvatarToolbarButtonInterface::CanShowForProfile(
+                browser()->GetProfile())) {
+          if (!ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
+                  kToolbarAvatarButtonElementId)) {
+            return false;
+          }
         }
       }
       return true;

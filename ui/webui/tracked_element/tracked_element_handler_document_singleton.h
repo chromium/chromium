@@ -40,6 +40,13 @@ class TrackedElementHandlerDocumentSingleton {
   // WebContents or if the handler could not be created.
   static base::WeakPtr<TrackedElementHandler> GetOrCreate(
       content::RenderFrameHost* rfh);
+
+  // Like above, but if `Register` hasn't been called yet, will post `callback`
+  // if it ever does get called, rather than failing.
+  // `callback` will never be called synchronously.
+  static void GetOrCreateAsync(
+      content::RenderFrameHost* rfh,
+      base::OnceCallback<void(base::WeakPtr<TrackedElementHandler>)> callback);
 };
 
 }  // namespace ui

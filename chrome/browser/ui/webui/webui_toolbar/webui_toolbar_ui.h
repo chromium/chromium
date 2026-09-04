@@ -148,6 +148,11 @@ class WebUIToolbarUI : public TopChromeWebUIController,
       mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler)
       override;
 
+  void FinishCreateHelpBubbleHandler(
+      mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> client,
+      mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler,
+      base::WeakPtr<ui::TrackedElementHandler> tracked_element_handler);
+
   // searchbox::mojom::PageHandlerFactory:
   void CreatePageHandler(
       mojo::PendingRemote<searchbox::mojom::Page> page,
@@ -224,6 +229,8 @@ class WebUIToolbarUI : public TopChromeWebUIController,
 
   mojo::Receiver<searchbox::mojom::PageHandlerFactory>
       searchbox_page_factory_receiver_{this};
+
+  base::WeakPtrFactory<WebUIToolbarUI> weak_ptr_factory_{this};
 
   /////////////////////////////////////////////////////////////////////////////
 

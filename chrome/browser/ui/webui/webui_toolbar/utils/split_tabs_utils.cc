@@ -51,8 +51,7 @@ TabSplitStatus ComputeTabSplitStatus(
   return status;
 }
 
-void PopulateSplitTabsDataSource(content::WebUIDataSource* source,
-                                 BrowserWindowInterface* browser_interface) {
+void PopulateSplitTabsDataSource(content::WebUIDataSource* source) {
   source->AddBoolean("enableSplitTabsButton",
                      features::IsWebUISplitTabsButtonEnabled());
 

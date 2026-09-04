@@ -124,15 +124,22 @@ void BindColorChangeListener(
 }
 #endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
 
+void FinishBindTrackedElementHandler(
+    mojo::PendingReceiver<tracked_element::mojom::TrackedElementHandler>
+        pending_receiver,
+    base::WeakPtr<ui::TrackedElementHandler> handler) {
+  if (handler) {
+    handler->BindInterface(std::move(pending_receiver));
+  }
+}
+
 void BindTrackedElementHandler(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<tracked_element::mojom::TrackedElementHandler>
         pending_receiver) {
-  auto handler =
-      ui::TrackedElementHandlerDocumentSingleton::GetOrCreate(frame_host);
-  if (handler) {
-    handler->BindInterface(std::move(pending_receiver));
-  }
+  ui::TrackedElementHandlerDocumentSingleton::GetOrCreateAsync(
+      frame_host, base::BindOnce(&FinishBindTrackedElementHandler,
+                                 std::move(pending_receiver)));
 }
 
 void BindTrackedElementHandlerRestricted(

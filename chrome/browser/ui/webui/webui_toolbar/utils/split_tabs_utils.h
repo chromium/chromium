@@ -30,8 +30,7 @@ TabSplitStatus ComputeTabSplitStatus(BrowserWindowInterface* browser_interface);
 
 // Populates the WebUI data source with split tabs specific strings and initial
 // state.
-void PopulateSplitTabsDataSource(content::WebUIDataSource* source,
-                                 BrowserWindowInterface* browser_interface);
+void PopulateSplitTabsDataSource(content::WebUIDataSource* source);
 
 }  // namespace webui_toolbar
 

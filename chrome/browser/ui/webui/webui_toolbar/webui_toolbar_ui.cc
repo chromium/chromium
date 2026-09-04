@@ -267,27 +267,12 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
   source->AddBoolean("webUIToolbarFullyEnabled",
                      features::IsWebUIToolbarFullyEnabled());
 
-  BrowserWindowInterface* browser =
-      webui::GetBrowserWindowInterface(web_ui->GetWebContents());
-  webui_toolbar::PopulateSplitTabsDataSource(source, browser);
+  webui_toolbar::PopulateSplitTabsDataSource(source);
 
   source->AddResourcePaths(kWebuiToolbarSharedResources);
 
   // Handles chrome.send() calls that records non-timestamp histograms.
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
-
-  if (browser) {
-    // `base::Unretained(browser)` is safe because `browser` owns the
-    // WebContents hosting this WebUI and is guaranteed to outlive the
-    // `WebContentsUserData` holding this callback.
-    ui::TrackedElementHandlerDocumentSingleton::Register(
-        this, GetKnownElementIdentifiers(),
-        base::BindRepeating(
-            [](BrowserWindowInterface* bwi) {
-              return BrowserElements::From(bwi)->GetContext();
-            },
-            base::Unretained(browser)));
-  }
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
@@ -371,6 +356,20 @@ void WebUIToolbarUI::Init(DependencyProvider* dependency_provider) {
     // We cannot properly initialize the WebUI Toolbar without it.
     return;
   }
+
+  BrowserWindowInterface* browser =
+      webui::GetBrowserWindowInterface(web_ui()->GetWebContents());
+  CHECK(browser);
+  // `base::Unretained(browser)` is safe because by the time this is called
+  // `browser` owns the WebContents hosting this WebUI and is guaranteed to
+  // outlive the `WebContentsUserData` holding this callback.
+  ui::TrackedElementHandlerDocumentSingleton::Register(
+      this, GetKnownElementIdentifiers(),
+      base::BindRepeating(
+          [](BrowserWindowInterface* bwi) {
+            return BrowserElements::From(bwi)->GetContext();
+          },
+          base::Unretained(browser)));
 
   InitBrowserControlsService(*dependency_provider);
   InitToolbarUIService(*dependency_provider);
@@ -490,10 +489,20 @@ void WebUIToolbarUI::PopulateLocalResourceLoaderConfig(
 void WebUIToolbarUI::CreateHelpBubbleHandler(
     mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> client,
     mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler) {
+  ui::TrackedElementHandlerDocumentSingleton::GetOrCreateAsync(
+      web_ui()->GetRenderFrameHost(),
+      base::BindOnce(&WebUIToolbarUI::FinishCreateHelpBubbleHandler,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(client),
+                     std::move(handler)));
+}
+
+void WebUIToolbarUI::FinishCreateHelpBubbleHandler(
+    mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> client,
+    mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler,
+    base::WeakPtr<ui::TrackedElementHandler> tracked_element_handler) {
   help_bubble_handler_ = std::make_unique<user_education::HelpBubbleHandler>(
       std::move(handler), std::move(client),
-      ui::TrackedElementHandlerDocumentSingleton::GetOrCreate(
-          web_ui()->GetRenderFrameHost()));
+      std::move(tracked_element_handler));
 }
 
 void WebUIToolbarUI::CreatePageHandler(
