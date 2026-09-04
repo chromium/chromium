@@ -40,6 +40,7 @@ bool g_needs_set_up_for_test_case = true;
     @".*google\\.com.*",
     @".*googleapis\\.com.*",
     @".*app-analytics-services\\.com.*",
+    @".*googleusercontent\\.com.*",
   ];
   [[GREYConfiguration sharedConfiguration]
           setValue:blockedURLs

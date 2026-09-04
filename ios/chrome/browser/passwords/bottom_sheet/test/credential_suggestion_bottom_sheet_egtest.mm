@@ -73,10 +73,16 @@ id<GREYMatcher> ContinueButton() {
 }
 
 id<GREYMatcher> SubtitleString(const GURL& url) {
-  return grey_text(l10n_util::GetNSStringF(
-      IDS_IOS_CREDENTIAL_BOTTOM_SHEET_SUBTITLE,
-      url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
-          url)));
+  return grey_anyOf(
+      grey_text(l10n_util::GetNSStringF(
+          IDS_IOS_CREDENTIAL_BOTTOM_SHEET_SUBTITLE,
+          url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+              url))),
+      grey_text(l10n_util::GetNSStringF(
+          IDS_IOS_CREDENTIAL_BOTTOM_SHEET_SUBTITLE_WITH_PASSKEYS,
+          url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+              url))),
+      nil);
 }
 
 id<GREYMatcher> SubtitleWithPasskeysString(const GURL& url) {
@@ -88,8 +94,12 @@ id<GREYMatcher> SubtitleWithPasskeysString(const GURL& url) {
 
 // Returns the matcher for the use password button.
 id<GREYMatcher> UsePasswordButton() {
-  return chrome_test_util::StaticTextWithAccessibilityLabel(
-      l10n_util::GetNSString(IDS_IOS_CREDENTIAL_BOTTOM_SHEET_USE_PASSWORD));
+  return grey_anyOf(
+      chrome_test_util::StaticTextWithAccessibilityLabel(
+          l10n_util::GetNSString(IDS_IOS_CREDENTIAL_BOTTOM_SHEET_USE_PASSWORD)),
+      chrome_test_util::ButtonWithAccessibilityLabelId(
+          IDS_IOS_CREDENTIAL_BOTTOM_SHEET_CONTINUE),
+      nil);
 }
 
 // Returns the matcher for the open keyboard button.
@@ -383,15 +393,11 @@ void VerifyManualFillShowsSignInActionButton(
               @selector(
                   testKeyboardAccessoryDisplaysPasskeyAndPasswordNoBottomSheetOnConditionalLogin)]) {
     config.features_enabled.push_back(kIOSPasskeyConditionalLoginWithShim);
-  } else {
-    config.features_disabled.push_back(kIOSPasskeyConditionalLoginWithShim);
   }
 
   if ([self isRunningTest:@selector
             (testOpenCredentialBottomSheetAndUsePasskeyOnModalLogin)]) {
     config.features_enabled.push_back(kIOSPasskeyModalLoginWithShim);
-  } else {
-    config.features_disabled.push_back(kIOSPasskeyModalLoginWithShim);
   }
 
   if ([self useNewBlur]) {
@@ -671,6 +677,17 @@ void VerifyManualFillShowsSignInActionButton(
 
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormPasswordId1)];
+
+  // If the bottom sheet is presented (e.g. if the passkey conditional login
+  // flag is enabled), dismiss it to show the keyboard.
+  NSError* error = nil;
+  [[EarlGrey selectElementWithMatcher:OpenKeyboardButton()]
+      assertWithMatcher:grey_sufficientlyVisible()
+                  error:&error];
+  if (!error) {
+    [[EarlGrey selectElementWithMatcher:OpenKeyboardButton()]
+        performAction:grey_tap()];
+  }
 
   [ChromeEarlGrey waitForKeyboardToAppear];
 }
@@ -1038,21 +1055,42 @@ void VerifyManualFillShowsSignInActionButton(
   DeleteCredential(@"user2", website);
 
   // Wait until the alert and the detail view are dismissed.
-  [ChromeEarlGreyUI waitForAppToIdle];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      grey_accessibilityID(kPasswordDetailsViewControllerID)];
 
   // Verify that user2 is not available anymore.
+  // Blur the active element to ensure that the next tap triggers a fresh focus
+  // event.
+  [ChromeEarlGrey
+      evaluateJavaScriptForSideEffect:@"document.activeElement?.blur()"];
+
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormPasswordId1)];
+
+  [ChromeEarlGrey waitForKeyboardToAppear];
   // Since the bottom sheet was dismissed, now suggestions are shown in the
   // keyboard acessory.
   NSString* accessorySuggestionURL =
       base::SysUTF8ToNSString(loginURL.GetHost() + ":" + loginURL.GetPort());
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
-                      grey_accessibilityLabel([@"user, "
-                          stringByAppendingString:accessorySuggestionURL])];
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityLabel([@"user2, "
-                     stringByAppendingString:accessorySuggestionURL])]
+  NSString* passwordSubtext = l10n_util::GetNSString(IDS_IOS_PASSWORD_SUBTEXT);
+
+  NSString* labelUserWithURL =
+      [@"user, " stringByAppendingString:accessorySuggestionURL];
+  NSString* labelUserWithPassword =
+      [NSString stringWithFormat:@"user, %@", passwordSubtext];
+  id<GREYMatcher> userSuggestionMatcher =
+      grey_anyOf(grey_accessibilityLabel(labelUserWithURL),
+                 grey_accessibilityLabel(labelUserWithPassword), nil);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:userSuggestionMatcher];
+
+  NSString* labelUser2WithURL =
+      [@"user2, " stringByAppendingString:accessorySuggestionURL];
+  NSString* labelUser2WithPassword =
+      [NSString stringWithFormat:@"user2, %@", passwordSubtext];
+  id<GREYMatcher> user2SuggestionMatcher =
+      grey_anyOf(grey_accessibilityLabel(labelUser2WithURL),
+                 grey_accessibilityLabel(labelUser2WithPassword), nil);
+  [[EarlGrey selectElementWithMatcher:user2SuggestionMatcher]
       assertWithMatcher:grey_nil()];
 }
 
