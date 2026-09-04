@@ -306,6 +306,10 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       SettingsOption.VOICE_SELECTION,
     ];
 
+    if (this.visualBrowserProxy_.isLineFocusEnabled()) {
+      optionIDs.push(SettingsOption.LINE_FOCUS);
+    }
+
     if (this.visualBrowserProxy_.isReadAnythingTranslateEntryPointEnabled()) {
       optionIDs.push(SettingsOption.TRANSLATION_REQUESTED);
     }
