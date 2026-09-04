@@ -14,6 +14,8 @@ import com.google.errorprone.annotations.DoNotMock;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
+import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider.IncognitoStateObserver;
@@ -44,12 +46,14 @@ import java.util.Set;
      * @param sideUiStateProvider The {@link SideUiStateProvider} to observe SideUI changes.
      * @param sideUiWebContentHairlineContainer The group that contains the WebContent hairlines.
      * @param incognitoStateProvider The {@link IncognitoStateProvider} to observe incognito state.
+     * @param topControlsStacker The {@link TopControlsStacker} to query top controls layer state.
      */
     /* package */ SideUiWebContentHairlineManager(
             BrowserControlsStateProvider browserControlsStateProvider,
             SideUiStateProvider sideUiStateProvider,
             SideUiWebContentHairlineContainer sideUiWebContentHairlineContainer,
-            IncognitoStateProvider incognitoStateProvider) {
+            IncognitoStateProvider incognitoStateProvider,
+            TopControlsStacker topControlsStacker) {
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mSideUiStateProvider = sideUiStateProvider;
         mIncognitoStateProvider = incognitoStateProvider;
@@ -58,7 +62,8 @@ import java.util.Set;
                 new WebContentHairlineControlsObserver(
                         browserControlsStateProvider,
                         sideUiStateProvider,
-                        sideUiWebContentHairlineContainer);
+                        sideUiWebContentHairlineContainer,
+                        topControlsStacker);
         browserControlsStateProvider.addObserver(mWebContentHairlineControlsObserver);
         mWebContentHairlineControlsObserver.updateWebContentHairlineContainer();
 
@@ -95,14 +100,17 @@ import java.util.Set;
         private final BrowserControlsStateProvider mBrowserControlsStateProvider;
         private final SideUiStateProvider mSideUiStateProvider;
         private final SideUiWebContentHairlineContainer mSideUiWebContentHairlineContainer;
+        private final TopControlsStacker mTopControlsStacker;
 
         WebContentHairlineControlsObserver(
                 BrowserControlsStateProvider browserControlsStateProvider,
                 SideUiStateProvider sideUiStateProvider,
-                SideUiWebContentHairlineContainer sideUiWebContentHairlineContainer) {
+                SideUiWebContentHairlineContainer sideUiWebContentHairlineContainer,
+                TopControlsStacker topControlsStacker) {
             mBrowserControlsStateProvider = browserControlsStateProvider;
             mSideUiStateProvider = sideUiStateProvider;
             mSideUiWebContentHairlineContainer = sideUiWebContentHairlineContainer;
+            mTopControlsStacker = topControlsStacker;
         }
 
         @Override
@@ -124,9 +132,24 @@ import java.util.Set;
         }
 
         /* package */ void updateWebContentHairlineContainer() {
-            // Hides the top hairline, if needed.
             int topVisibleContentOffset =
                     (int) mBrowserControlsStateProvider.getTopVisibleContentOffset();
+
+            // When the bookmarks bar is showing, its layer bakes in the hairline height, causing
+            // the visible content offset to extend past the top of the hairline. Subtract the
+            // hairline height so the container aligns with the top of the hairline stroke. This
+            // caused a bug where the rounded corner was not aligned with the top controls hairline.
+            // See crbug.com/539662382.
+            // TODO(crbug.com/532218047): Once the toolbar refactor is complete, this logic should
+            //  be safe to remove.
+            if (!ChromeFeatureList.sToolbarProgressBarRefactor.isEnabled()
+                    && mTopControlsStacker != null
+                    && mTopControlsStacker.isLayerAtBottom(TopControlType.BOOKMARK_BAR)) {
+                int hairlineHeight = mBrowserControlsStateProvider.getTopControlsHairlineHeight();
+                topVisibleContentOffset = Math.max(0, topVisibleContentOffset - hairlineHeight);
+            }
+
+            // Hides the top hairline, if needed.
             boolean hideTopHairline =
                     !ChromeFeatureList.sSidePanelTopHairlineRefactorAndroid.isEnabled()
                             || topVisibleContentOffset == 0

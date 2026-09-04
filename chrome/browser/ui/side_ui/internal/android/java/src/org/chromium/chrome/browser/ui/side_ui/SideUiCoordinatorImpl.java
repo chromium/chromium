@@ -162,7 +162,8 @@ final class SideUiCoordinatorImpl
                         browserControlVisibilityManager,
                         /* sideUiStateProvider= */ this,
                         webContentHairlineContainer,
-                        incognitoStateProvider);
+                        incognitoStateProvider,
+                        topControlsStacker);
 
         // TODO(crbug.com/540566058): Investigate if we need to recolor the anchor containers when
         //  toggling Incognito state.

@@ -26,6 +26,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
+import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
@@ -48,6 +50,9 @@ public class SideUiWebContentHairlineManagerTest {
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private SideUiStateProvider mSideUiStateProvider;
     @Mock private IncognitoStateProvider mIncognitoStateProvider;
+    @Mock private TopControlsStacker mTopControlsStacker;
+
+    private static final int HAIRLINE_HEIGHT = 1;
 
     private SideUiWebContentHairlineManager mManager;
 
@@ -86,7 +91,8 @@ public class SideUiWebContentHairlineManagerTest {
                         mBrowserControlsStateProvider,
                         mSideUiStateProvider,
                         hairlineContainer,
-                        mIncognitoStateProvider);
+                        mIncognitoStateProvider,
+                        mTopControlsStacker);
     }
 
     @Test
@@ -251,5 +257,26 @@ public class SideUiWebContentHairlineManagerTest {
 
         assertEquals("Top margin should still be updated.", 100, mLayoutParams.topMargin);
         assertEquals(View.INVISIBLE, mTopHairline.getVisibility());
+    }
+
+    @Test
+    public void testControlsOffsetChangedUpdatesMargin_whenBookmarkBarIsShowing() {
+        ArgumentCaptor<BrowserControlsStateProvider.Observer> observerCaptor =
+                ArgumentCaptor.forClass(BrowserControlsStateProvider.Observer.class);
+        verify(mBrowserControlsStateProvider).addObserver(observerCaptor.capture());
+        BrowserControlsStateProvider.Observer observer = observerCaptor.getValue();
+
+        when(mSideUiStateProvider.isAnySideUiShowing()).thenReturn(true);
+        when(mTopControlsStacker.isLayerAtBottom(TopControlType.BOOKMARK_BAR)).thenReturn(true);
+        when(mBrowserControlsStateProvider.getTopControlsHairlineHeight())
+                .thenReturn(HAIRLINE_HEIGHT);
+        when(mBrowserControlsStateProvider.getTopVisibleContentOffset()).thenReturn(100f);
+        observer.onControlsOffsetChanged(0, 0, false, 0, 0, false, false, false);
+
+        assertEquals(
+                "Top margin should subtract hairline height when bookmark bar is showing.",
+                100 - HAIRLINE_HEIGHT,
+                mLayoutParams.topMargin);
+        assertEquals(View.VISIBLE, mTopHairline.getVisibility());
     }
 }
