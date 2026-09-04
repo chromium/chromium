@@ -171,6 +171,12 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
             origin: TabUploadOrigin.CONTEXT_MENU,
           }];
         }
+        if (initialState.fileToken && initialState.fileInfo) {
+          state.files = [{
+            token: initialState.fileToken,
+            fileInfo: initialState.fileInfo,
+          }];
+        }
         if (initialState.tool !== undefined &&
             initialState.tool !== ToolMode.kUnspecified) {
           state.mode = initialState.tool;
@@ -232,6 +238,14 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
     this.omniboxEverywhereListenerIds_ = [];
   }
 
+  /**
+   * Opens the Composebox view and hydrates it with any initial contextual
+   * state (e.g., pre-uploaded browser files, tab context, active tool modes).
+   *
+   * This is the centralized transition point invoked by both:
+   * 1. Native Views/C++ via Mojo callback (openComposebox listener).
+   * 2. WebUI internal action handlers and DOM custom events.
+   */
   async openComposebox(state?: Partial<ComposeboxState>) {
     if (this.isComposeboxMode_) {
       if (!this.composebox || !state) {
@@ -240,6 +254,8 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
       for (const file of state.files ?? []) {
         if ('tabId' in file) {
           this.composebox.addTabContextHandleCallback(file);
+        } else if ('token' in file && 'fileInfo' in file) {
+          this.composebox.addFileContextFromBrowser(file.token, file.fileInfo);
         }
       }
       if (state.mode !== undefined && state.mode !== ToolMode.kUnspecified) {
@@ -314,6 +330,7 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
   }
 
   protected async onCloseComposebox_() {
+    this.composeboxState_ = null;
     this.isComposeboxMode_ = false;
     await this.updateComplete;
     const searchbox =
@@ -324,8 +341,16 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
     }
   }
 
-  protected onComposeboxSubmit_() {
+  protected async onComposeboxSubmit_() {
+    this.composeboxState_ = null;
     this.isComposeboxMode_ = false;
+    await this.updateComplete;
+    const searchbox =
+        this.shadowRoot?.querySelector<OmniboxEverywhereOmniboxElement>(
+            'omnibox-everywhere-omnibox');
+    if (searchbox) {
+      searchbox.focusInput();
+    }
   }
 
   private async onVisibilitychange_() {
@@ -334,9 +359,20 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
     }
 
     await this.updateComplete;
-    const searchbox = this.$.searchbox;
-    if (searchbox) {
-      searchbox.focusInput();
+    if (this.isComposeboxMode_) {
+      const composebox =
+          this.shadowRoot?.querySelector<OmniboxEverywhereComposeboxElement>(
+              'omnibox-everywhere-composebox');
+      if (composebox) {
+        composebox.focusInput();
+      }
+    } else {
+      const searchbox =
+          this.shadowRoot?.querySelector<OmniboxEverywhereOmniboxElement>(
+              'omnibox-everywhere-omnibox');
+      if (searchbox) {
+        searchbox.focusInput();
+      }
     }
   }
 
@@ -348,20 +384,11 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
     this.voiceSearchReceivedSpeech_ = false;
     this.voiceSearchTranscript_ = '';
     await this.updateComplete;
-
     const dialog =
         this.shadowRoot?.querySelector<HTMLDialogElement>('#voiceSearchDialog');
-
-    // Ensure the dialog exists, is connected to the Document, and is not
-    // already open; otherwise, do not open and abort.
-    if (dialog && dialog.isConnected && !dialog.open) {
+    if (dialog && !dialog.open) {
       dialog.showModal();
-    } else if (!dialog || !dialog.isConnected) {
-      return;
     }
-
-    // Fetch fresh composebox voice search in case it was removed, then added
-    // back. This avoids stale references compared to using `$`.
     const voiceSearch =
         this.shadowRoot?.querySelector<ComposeboxVoiceSearchElement>(
             '#voiceSearch');
@@ -371,7 +398,8 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
   }
 
   protected onVoiceSearchOverlayClose_() {
-    const dialog = this.$.voiceSearchDialog;
+    const dialog =
+        this.shadowRoot?.querySelector<HTMLDialogElement>('#voiceSearchDialog');
     if (dialog && dialog.open) {
       dialog.close();
     }
@@ -388,7 +416,9 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
       this.voiceSearchListening_ =
           this.showVoiceSearchOverlay_ && !this.hasVoiceSearchError_;
     }
-    const audioAnimation = this.$.voiceSearchGlow;
+    const audioAnimation =
+        this.shadowRoot?.querySelector<SearchAnimatedGlowElement>(
+            '#voiceSearchGlow');
     if (audioAnimation) {
       if (e.detail.isOpened) {
         audioAnimation.classList.add(PERMISSION_PROMPT_CSS_CLASS);
@@ -396,7 +426,9 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
         audioAnimation.classList.remove(PERMISSION_PROMPT_CSS_CLASS);
       }
     }
-    const voiceSearchElement = this.$.voiceSearch;
+    const voiceSearchElement =
+        this.shadowRoot?.querySelector<ComposeboxVoiceSearchElement>(
+            '#voiceSearch');
     if (voiceSearchElement) {
       if (e.detail.isOpened) {
         voiceSearchElement.classList.add(PERMISSION_PROMPT_CSS_CLASS);

@@ -319,79 +319,9 @@ void OmniboxPopupFileSelector::UpdateSearchboxContextData(
   if (!web_contents_) {
     return;
   }
-
-  if (OmniboxContextMenuController::GetOmniboxEverywhereUI(
-          web_contents_.get())) {
-    if (auto* handler =
-            OmniboxContextMenuController::GetContextualSearchboxHandler(
-                web_contents_.get())) {
-      auto file_info_mojom = searchbox::mojom::SelectedFileInfo::New();
-      file_info_mojom->file_name = file_name;
-      file_info_mojom->mime_type = mime_string;
-      file_info_mojom->is_deletable = true;
-      file_info_mojom->selection_time = base::Time::Now();
-      if (mime_type == lens::MimeType::kImage) {
-        file_info_mojom->image_data_url = image_data_url;
-      }
-      if (!result.has_value()) {
-        base::UnguessableToken error_token = base::UnguessableToken::Create();
-        handler->AddFileContextFromBrowser(error_token,
-                                           std::move(file_info_mojom));
-        handler->OnContextUploadStatusChanged(
-            error_token, mime_type,
-            contextual_search::ContextUploadStatus::kValidationFailed,
-            result.error());
-      } else {
-        handler->AddFileContextFromBrowser(result.value(),
-                                           std::move(file_info_mojom));
-      }
-    }
-    return;
-  }
-
-  auto file_attachment = searchbox::mojom::FileAttachment::New();
-  file_attachment->uuid =
-      result.has_value() ? result.value() : base::UnguessableToken::Create();
-  file_attachment->name = file_name;
-  file_attachment->mime_type = mime_string;
-  if (!result.has_value()) {
-    file_attachment->error_type = result.error();
-  }
-  if (mime_type == lens::MimeType::kImage) {
-    file_attachment->image_data_url = image_data_url;
-  }
-  auto* browser_window_interface =
-      webui::GetBrowserWindowInterface(web_contents_.get());
-  if (!browser_window_interface) {
-    return;
-  }
-  SearchboxContextData* searchbox_context_data =
-      SearchboxContextData::From(browser_window_interface);
-  if (!searchbox_context_data) {
-    return;
-  }
-  auto context = searchbox_context_data->TakePendingContext();
-  if (!context) {
-    context = std::make_unique<SearchboxContextData::Context>();
-  }
-  context->file_infos.push_back(
-      searchbox::mojom::SearchContextAttachment::NewFileAttachment(
-          std::move(file_attachment)));
-  auto* location_bar = browser_window_interface->GetFeatures().location_bar();
-  auto* omnibox_controller =
-      location_bar ? location_bar->GetOmniboxController() : nullptr;
-  if (omnibox_controller && omnibox_controller->popup_state_manager() &&
-      omnibox_controller->popup_state_manager()->popup_state() ==
-          OmniboxPopupState::kAim) {
-    if (auto* webui = web_contents_->GetWebUI()) {
-      auto* omnibox_popup_ui = webui->GetController()->GetAs<OmniboxPopupUI>();
-      if (omnibox_popup_ui && omnibox_popup_ui->popup_aim_handler()) {
-        omnibox_popup_ui->popup_aim_handler()->AddContext(std::move(context));
-      }
-    }
-  } else {
-    searchbox_context_data->SetPendingContext(std::move(context));
-  }
+  OmniboxContextMenuController::AddFileContext(web_contents_.get(), mime_type,
+                                               image_data_url, file_name,
+                                               mime_string, result);
 }
 
 void OmniboxPopupFileSelector::NotifyFileSelectionClosed() {

@@ -452,6 +452,15 @@ void OmniboxEverywhereUI::CreatePageHandler(
       base::BindRepeating(&OmniboxEverywhereUI::ClearContextualSessionHandle,
                           base::Unretained(this)),
       this);
+  composebox_handler_->set_disconnect_handler(
+      base::BindOnce(&OmniboxEverywhereUI::OnComposeboxHandlerDisconnected,
+                     weak_factory_.GetWeakPtr()));
+
+  for (const auto& pending : pending_upload_statuses_) {
+    composebox_handler_->OnContextualInputStatusChanged(
+        pending.token, pending.status, pending.error_type);
+  }
+  pending_upload_statuses_.clear();
 }
 
 void OmniboxEverywhereUI::BindInterface(
@@ -593,7 +602,7 @@ void OmniboxEverywhereUI::CreateHelpBubbleHandler(
 
 ContextualSearchboxHandler*
 OmniboxEverywhereUI::GetContextualSearchboxHandler() {
-  if (composebox_handler_) {
+  if (is_composebox_mode_ && composebox_handler_) {
     return composebox_handler_.get();
   }
   return omnibox_handler_.get();
@@ -616,8 +625,29 @@ OmniboxEverywhereUI::GetOrCreateContextualSessionHandle() {
   return shared_session_handle_.get();
 }
 
+void OmniboxEverywhereUI::set_is_composebox_mode(bool mode) {
+  is_composebox_mode_ = mode;
+}
+
 void OmniboxEverywhereUI::ClearContextualSessionHandle() {
   shared_session_handle_.reset();
+  pending_upload_statuses_.clear();
+  set_is_composebox_mode(false);
+
+  // OmniboxEverywhereUI concurrently hosts both `omnibox_handler_` and
+  // `composebox_handler_` across a persistent WebContents.
+  // Because `selected_tabs` and `input_state_model_` are owned directly by each
+  // ContextualSearchboxHandler rather than the shared session handle, we must
+  // explicitly reset both handlers to prevent stale tab mappings or input
+  // models from leaking across subsequent queries and mode switches.
+  if (omnibox_handler_) {
+    omnibox_handler_->selected_tabs.clear();
+    omnibox_handler_->ResetInputStateModel();
+  }
+  if (composebox_handler_) {
+    composebox_handler_->selected_tabs.clear();
+    composebox_handler_->ResetInputStateModel();
+  }
 }
 
 // Shows a native Views menu rather than a WebUI <cr-action-menu> so that the
@@ -734,8 +764,40 @@ bool OmniboxEverywhereUI::IsCommandIdVisible(int command_id) const {
 
 void OmniboxEverywhereUI::OpenComposebox(
     omnibox_everywhere::mojom::ComposeboxInitialStatePtr initial_state) {
+  set_is_composebox_mode(true);
   if (page_handler_) {
     page_handler_->OpenComposebox(std::move(initial_state));
+  }
+}
+
+void OmniboxEverywhereUI::OnComposeboxHandlerDisconnected() {
+  composebox_handler_.reset();
+  ClearContextualSessionHandle();
+}
+
+void OmniboxEverywhereUI::AddFileContext(
+    const base::UnguessableToken& token,
+    searchbox::mojom::SelectedFileInfoPtr file_info) {
+  if (is_composebox_mode_ && composebox_handler_) {
+    composebox_handler_->AddFileContextFromBrowser(token, std::move(file_info));
+  } else {
+    auto initial_state =
+        omnibox_everywhere::mojom::ComposeboxInitialState::New();
+    initial_state->file_token = token;
+    initial_state->file_info = std::move(file_info);
+    OpenComposebox(std::move(initial_state));
+  }
+}
+
+void OmniboxEverywhereUI::OnContextualInputStatusChanged(
+    const base::UnguessableToken& token,
+    contextual_search::ContextUploadStatus status,
+    std::optional<contextual_search::ContextUploadErrorType> error_type) {
+  if (is_composebox_mode_ && composebox_handler_) {
+    composebox_handler_->OnContextualInputStatusChanged(token, status,
+                                                        error_type);
+  } else {
+    pending_upload_statuses_.push_back({token, status, error_type});
   }
 }
 

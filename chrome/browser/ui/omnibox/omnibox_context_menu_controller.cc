@@ -56,6 +56,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/omnibox_popup_resources.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
+#include "components/contextual_search/contextual_search_types.h"
 #include "components/contextual_search/input_state_model.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/favicon/core/favicon_service.h"
@@ -939,6 +940,62 @@ void OmniboxContextMenuController::UpdateSearchboxContext(
   } else if (searchbox_context_data) {
     searchbox_context_data->SetPendingContext(std::move(context));
   }
+}
+
+// static
+void OmniboxContextMenuController::AddFileContext(
+    content::WebContents* web_contents,
+    lens::MimeType mime_type,
+    const std::string& image_data_url,
+    const std::string& file_name,
+    const std::string& mime_string,
+    base::expected<base::UnguessableToken,
+                   contextual_search::ContextUploadErrorType> result) {
+  if (!web_contents) {
+    return;
+  }
+
+  if (auto* omnibox_everywhere_ui = GetOmniboxEverywhereUI(web_contents)) {
+    auto file_info_mojom = searchbox::mojom::SelectedFileInfo::New();
+    file_info_mojom->file_name = file_name;
+    file_info_mojom->mime_type = mime_string;
+    file_info_mojom->is_deletable = true;
+    file_info_mojom->selection_time = base::Time::Now();
+    if (mime_type == lens::MimeType::kImage) {
+      file_info_mojom->image_data_url = image_data_url;
+    }
+    if (!result.has_value()) {
+      base::UnguessableToken error_token = base::UnguessableToken::Create();
+      omnibox_everywhere_ui->AddFileContext(error_token,
+                                            std::move(file_info_mojom));
+      omnibox_everywhere_ui->OnContextualInputStatusChanged(
+          error_token,
+          contextual_search::ContextUploadStatus::kValidationFailed,
+          result.error());
+    } else {
+      omnibox_everywhere_ui->AddFileContext(result.value(),
+                                            std::move(file_info_mojom));
+    }
+    return;
+  }
+
+  auto file_attachment = searchbox::mojom::FileAttachment::New();
+  file_attachment->uuid =
+      result.has_value() ? result.value() : base::UnguessableToken::Create();
+  file_attachment->name = file_name;
+  file_attachment->mime_type = mime_string;
+  if (!result.has_value()) {
+    file_attachment->error_type = result.error();
+  }
+  if (mime_type == lens::MimeType::kImage) {
+    file_attachment->image_data_url = image_data_url;
+  }
+  std::vector<searchbox::mojom::SearchContextAttachmentPtr> attachments;
+  attachments.push_back(
+      searchbox::mojom::SearchContextAttachment::NewFileAttachment(
+          std::move(file_attachment)));
+  UpdateSearchboxContext(web_contents, /*tab_info=*/std::nullopt,
+                         /*tool_mode=*/std::nullopt, std::move(attachments));
 }
 
 void OmniboxContextMenuController::HandleDriveUploadResponse(

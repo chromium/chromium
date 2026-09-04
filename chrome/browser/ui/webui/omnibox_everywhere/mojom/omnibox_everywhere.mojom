@@ -6,14 +6,31 @@ module omnibox_everywhere.mojom;
 
 import "components/omnibox/browser/searchbox.mojom";
 import "components/omnibox/composebox/composebox_query.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Initial state when transitioning into composebox mode (e.g. from context
 // menu actions).
 struct ComposeboxInitialState {
+  // Pre-selected tool mode (e.g. Deep Search, Create Images) chosen from the
+  // context menu before opening the composebox.
   composebox_query.mojom.ToolMode tool = kUnspecified;
+
+  // Pre-selected model mode (e.g. Thinking, Pro) chosen from the context menu
+  // before opening the composebox.
   composebox_query.mojom.ModelMode model = kUnspecified;
+
+  // Browser tab context selected from the context menu to be staged or
+  // shared upon entering the composebox.
   searchbox.mojom.TabInfo? tab;
+
+  // Unique session token for an uploaded or staged file from the native file
+  // picker dialog.
+  mojo_base.mojom.UnguessableToken? file_token;
+
+  // File metadata (e.g. name, mime type, image preview data URL) for the
+  // selected file corresponding to `file_token`.
+  searchbox.mojom.SelectedFileInfo? file_info;
 };
 
 // The browser-side handler factory for Omnibox Everywhere.

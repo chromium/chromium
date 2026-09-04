@@ -82,6 +82,19 @@ class OmniboxEverywhereHandler : public ContextualSearchboxHandler,
   void OnProfileNameChanged(const base::FilePath& profile_path,
                             const std::u16string& old_profile_name) override;
 
+  // Overridden to route file attachments and status changes to
+  // OmniboxEverywhereUI so they can be dispatched or buffered for
+  // ComposeboxEverywhereHandler.
+  void AddFileContextFromBrowser(
+      base::UnguessableToken token,
+      searchbox::mojom::SelectedFileInfoPtr file_info) override;
+  void OnContextUploadStatusChanged(
+      const base::UnguessableToken& context_token,
+      lens::MimeType mime_type,
+      contextual_search::ContextUploadStatus context_upload_status,
+      const std::optional<contextual_search::ContextUploadErrorType>&
+          error_type) override;
+
  private:
   void OnShowAiModePrefChanged();
   void UpdatePromoState();

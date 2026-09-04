@@ -19,11 +19,13 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/omnibox/omnibox_context_menu_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_omnibox_client.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
+#include "chrome/browser/ui/webui/omnibox_everywhere/omnibox_everywhere_ui.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
@@ -353,4 +355,28 @@ void OmniboxEverywhereHandler::PushProfileInfo() {
   page()->UpdateProfileInfo(GURL(profile_avatar_url),
                             base::UTF16ToUTF8(display_name),
                             base::UTF16ToUTF8(entry->GetUserName()));
+}
+
+void OmniboxEverywhereHandler::AddFileContextFromBrowser(
+    base::UnguessableToken token,
+    searchbox::mojom::SelectedFileInfoPtr file_info) {
+  if (auto* omnibox_everywhere_ui =
+          OmniboxContextMenuController::GetOmniboxEverywhereUI(web_contents_)) {
+    omnibox_everywhere_ui->AddFileContext(token, std::move(file_info));
+  }
+}
+
+void OmniboxEverywhereHandler::OnContextUploadStatusChanged(
+    const base::UnguessableToken& context_token,
+    lens::MimeType mime_type,
+    contextual_search::ContextUploadStatus context_upload_status,
+    const std::optional<contextual_search::ContextUploadErrorType>&
+        error_type) {
+  ContextualSearchboxHandler::OnContextUploadStatusChanged(
+      context_token, mime_type, context_upload_status, error_type);
+  if (auto* omnibox_everywhere_ui =
+          OmniboxContextMenuController::GetOmniboxEverywhereUI(web_contents_)) {
+    omnibox_everywhere_ui->OnContextualInputStatusChanged(
+        context_token, context_upload_status, error_type);
+  }
 }

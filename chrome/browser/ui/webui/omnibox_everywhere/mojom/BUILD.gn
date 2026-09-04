@@ -12,6 +12,7 @@ mojom("mojo_bindings") {
   public_deps = [
     "//components/omnibox/browser:mojo_bindings",
     "//components/omnibox/composebox:mojo_bindings",
+    "//mojo/public/mojom/base",
     "//ui/gfx/geometry/mojom",
   ]
 }

@@ -99,15 +99,19 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
       const gfx::VectorIcon& icon) const;
 
   // Adds file context to the searchbox from the browser.
-  void AddFileContextFromBrowser(
+  virtual void AddFileContextFromBrowser(
       base::UnguessableToken token,
       searchbox::mojom::SelectedFileInfoPtr file_info);
 
   // Notifies the WebUI that the contextual input status has changed.
-  void OnContextualInputStatusChanged(
+  virtual void OnContextualInputStatusChanged(
       base::UnguessableToken token,
       contextual_search::ContextUploadStatus status,
       std::optional<contextual_search::ContextUploadErrorType> error_type);
+
+  void set_disconnect_handler(base::OnceClosure callback) {
+    page_handler_.set_disconnect_handler(std::move(callback));
+  }
 
   // AutocompleteController::Observer:
   void OnResultChanged(AutocompleteController* controller,

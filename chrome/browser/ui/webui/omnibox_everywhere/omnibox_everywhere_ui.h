@@ -177,12 +177,34 @@ class OmniboxEverywhereUI
 
   void OnContextMenuClosed();
 
+  bool is_composebox_mode() const { return is_composebox_mode_; }
+  void set_is_composebox_mode(bool mode);
+
+  void AddFileContext(const base::UnguessableToken& token,
+                      searchbox::mojom::SelectedFileInfoPtr file_info);
+  void OnContextualInputStatusChanged(
+      const base::UnguessableToken& token,
+      contextual_search::ContextUploadStatus status,
+      std::optional<contextual_search::ContextUploadErrorType> error_type);
   contextual_search::ContextualSearchSessionHandle*
   GetOrCreateContextualSessionHandle();
   void ClearContextualSessionHandle();
 
  private:
+  void OnComposeboxHandlerDisconnected();
+  // Buffers upload status notifications that arrive while the WebUI is
+  // transitioning to composebox mode before `composebox_handler_` is bound.
+  // Flushed once `CreatePageHandler` instantiates `composebox_handler_`.
+  struct PendingUploadStatus {
+    base::UnguessableToken token;
+    contextual_search::ContextUploadStatus status;
+    std::optional<contextual_search::ContextUploadErrorType> error_type;
+  };
+
   raw_ptr<Profile> profile_;
+  bool is_composebox_mode_ = false;
+
+  std::vector<PendingUploadStatus> pending_upload_statuses_;
 
   std::unique_ptr<ComposeboxEverywhereHandler> composebox_handler_;
   std::unique_ptr<OmniboxEverywhereHandler> omnibox_handler_;
