@@ -20,6 +20,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -215,7 +216,7 @@ class BubbleDialogDelegate::AnchorViewObserver : public ViewObserver {
  public:
   AnchorViewObserver(BubbleDialogDelegate* parent, View* anchor_view)
       : parent_(parent), anchor_view_(anchor_view) {
-    anchor_view_->AddObserver(this);
+    view_observation_.Observe(anchor_view);
     scoped_notify_ = std::make_unique<
         views::View::ScopedNotifyObserversOnVisibleBoundsChanged>(*anchor_view);
     AddToAnchorVector();
@@ -226,7 +227,6 @@ class BubbleDialogDelegate::AnchorViewObserver : public ViewObserver {
 
   ~AnchorViewObserver() override {
     RemoveFromAnchorVector();
-    anchor_view_->RemoveObserver(this);
   }
 
   View* anchor_view() const { return anchor_view_; }
@@ -291,6 +291,9 @@ class BubbleDialogDelegate::AnchorViewObserver : public ViewObserver {
   const raw_ptr<View> anchor_view_;
   bool bubble_widget_visible_ = true;
   bool update_bounds_when_visible_ = false;
+
+  base::ScopedObservation<views::View, views::ViewObserver> view_observation_{
+      this};
 };
 
 // This class is responsible for observing events on a BubbleDialogDelegate's
