@@ -27,6 +27,8 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
+#import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
@@ -56,12 +58,12 @@ class GeminiServiceImplTest : public PlatformTest {
     builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
         OptimizationGuideServiceFactory::GetDefaultFactory());
-    profile_ = std::move(builder).Build();
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 
-    auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
-    identity_manager_ = IdentityManagerFactory::GetForProfile(profile_.get());
+    auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_);
+    identity_manager_ = IdentityManagerFactory::GetForProfile(profile_);
     optimization_guide_service_ =
-        OptimizationGuideServiceFactory::GetForProfile(profile_.get());
+        OptimizationGuideServiceFactory::GetForProfile(profile_);
 
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     pref_service_->registry()->RegisterIntegerPref(
@@ -76,7 +78,7 @@ class GeminiServiceImplTest : public PlatformTest {
         prefs::kAIHubEligibilityTriggered, false);
 
     gemini_service_ = std::make_unique<GeminiServiceImpl>(
-        profile_.get(), auth_service_, identity_manager_, pref_service_.get(),
+        profile_, auth_service_, identity_manager_, pref_service_.get(),
         optimization_guide_service_);
   }
 
@@ -86,6 +88,12 @@ class GeminiServiceImplTest : public PlatformTest {
     if (gemini_service_) {
       gemini_service_->Shutdown();
     }
+    gemini_service_.reset();
+    pref_service_.reset();
+    auth_service_ = nullptr;
+    identity_manager_ = nullptr;
+    optimization_guide_service_ = nullptr;
+    profile_ = nullptr;
     PlatformTest::TearDown();
   }
 
@@ -106,6 +114,9 @@ class GeminiServiceImplTest : public PlatformTest {
   void SignInManagedAccountWithCapability(signin::Tribool capability) {
     FakeSystemIdentity* identity = [FakeSystemIdentity fakeManagedIdentity];
     fake_system_identity_manager()->AddIdentity(identity);
+    GetApplicationContext()
+        ->GetAccountProfileMapper()
+        ->MakePersonalProfileManagedWithGaiaID(identity.gaiaId);
     auth_service_->SignIn(identity, signin_metrics::AccessPoint::kStartPage);
     if (capability != signin::Tribool::kUnknown) {
       SetCapabilityForAccount(
@@ -135,14 +146,15 @@ class GeminiServiceImplTest : public PlatformTest {
   }
 
   // Environment objects are declared first, so they are destroyed last.
-  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestProfileManagerIOS profile_manager_;
+  raw_ptr<TestProfileIOS> profile_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
 
   // Profile and services that depend on the environment are declared next.
   // Note: `pref_service_` must be declared before `gemini_service_` so that
   // it is destroyed after `gemini_service_`, preventing a dangling pointer.
-  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   std::unique_ptr<GeminiServiceImpl> gemini_service_;
   raw_ptr<AuthenticationService> auth_service_;

@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
@@ -95,24 +96,23 @@ class PageActionMenuMediatorTest : public PlatformTest {
               return std::make_unique<FakeGeminiService>();
             }));
 
-    browser_state_ = std::move(builder).Build();
+    browser_state_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 
     // Fetch required services from the profile.
-    auth_service_ =
-        AuthenticationServiceFactory::GetForProfile(browser_state_.get());
+    auth_service_ = AuthenticationServiceFactory::GetForProfile(browser_state_);
     pref_service_ = browser_state_->GetPrefs();
     ASSERT_TRUE(pref_service_);
     fake_gemini_service_ = static_cast<FakeGeminiService*>(
-        GeminiServiceFactory::GetForProfile(browser_state_.get()));
+        GeminiServiceFactory::GetForProfile(browser_state_));
     web_state_ = std::make_unique<web::FakeWebState>();
-    web_state_->SetBrowserState(browser_state_.get());
+    web_state_->SetBrowserState(browser_state_);
     web_state_->WasShown();
 
     // Set up search engines environment and content settings map.
     TemplateURLService* template_url_service =
         search_engines_test_environment_.template_url_service();
     settings_map_ =
-        ios::HostContentSettingsMapFactory::GetForProfile(browser_state_.get());
+        ios::HostContentSettingsMapFactory::GetForProfile(browser_state_);
     ASSERT_TRUE(settings_map_);
 
     // Attach required tab helpers to the fake web state.
@@ -143,7 +143,7 @@ class PageActionMenuMediatorTest : public PlatformTest {
     settings_map_ = nullptr;
     pref_service_ = nullptr;
     auth_service_ = nullptr;
-    browser_state_.reset();
+    browser_state_ = nullptr;
     PlatformTest::TearDown();
   }
 
@@ -155,7 +155,7 @@ class PageActionMenuMediatorTest : public PlatformTest {
     system_identity_manager->AddIdentity(identity);
 
     signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(browser_state_.get());
+        IdentityManagerFactory::GetForProfile(browser_state_);
     signin::AccountAvailabilityOptionsBuilder options_builder;
     options_builder.AsPrimary(signin::ConsentLevel::kSignin);
     options_builder.WithGaiaId(identity.gaiaId);
@@ -169,8 +169,9 @@ class PageActionMenuMediatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestProfileManagerIOS profile_manager_;
+  raw_ptr<TestProfileIOS> browser_state_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<TestProfileIOS> browser_state_;
   raw_ptr<AuthenticationService> auth_service_;
   raw_ptr<PrefService> pref_service_ = nullptr;
   raw_ptr<HostContentSettingsMap> settings_map_ = nullptr;

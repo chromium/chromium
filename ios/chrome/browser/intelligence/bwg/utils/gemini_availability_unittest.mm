@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
@@ -68,12 +69,12 @@ class GeminiAvailabilityTest : public PlatformTest {
             [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
               return std::make_unique<FakeGeminiService>();
             }));
-    profile_ = std::move(builder).Build();
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     fake_gemini_service_ = static_cast<FakeGeminiService*>(
-        GeminiServiceFactory::GetForProfile(profile_.get()));
-    auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
+        GeminiServiceFactory::GetForProfile(profile_));
+    auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_);
 
-    web_state_.SetBrowserState(profile_.get());
+    web_state_.SetBrowserState(profile_);
     web_state_.WasShown();
     web_state_.SetCurrentURL(GURL("https://www.google.com"));
     GeminiTabHelper::CreateForWebState(&web_state_);
@@ -86,7 +87,7 @@ class GeminiAvailabilityTest : public PlatformTest {
     system_identity_manager->AddIdentity(identity);
 
     signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(profile_.get());
+        IdentityManagerFactory::GetForProfile(profile_);
     signin::AccountAvailabilityOptionsBuilder builder;
     builder.WithGaiaId(identity.gaiaId)
         .AsPrimary(signin::ConsentLevel::kSignin);
@@ -100,6 +101,9 @@ class GeminiAvailabilityTest : public PlatformTest {
   void TearDown() override {
     ios::provider::SetMockFeatureModeDisabledByQuota(false);
     ios::provider::SetMockRefillDateForFeatureMode(nil);
+    fake_gemini_service_ = nullptr;
+    auth_service_ = nullptr;
+    profile_ = nullptr;
     PlatformTest::TearDown();
   }
 
@@ -107,16 +111,17 @@ class GeminiAvailabilityTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<TestProfileIOS> profile_;
-  raw_ptr<FakeGeminiService> fake_gemini_service_;
-  raw_ptr<AuthenticationService> auth_service_;
+  TestProfileManagerIOS profile_manager_;
+  raw_ptr<TestProfileIOS> profile_ = nullptr;
+  raw_ptr<FakeGeminiService> fake_gemini_service_ = nullptr;
+  raw_ptr<AuthenticationService> auth_service_ = nullptr;
   web::FakeWebState web_state_;
 };
 
 TEST_F(GeminiAvailabilityTest, PageActionMenuAvailable) {
   fake_gemini_service_->SetIsEligible(true);
   GeminiAvailabilityResult result =
-      IsGeminiAvailable(EntryPoint::AIHub, profile_.get(), &web_state_);
+      IsGeminiAvailable(EntryPoint::AIHub, profile_, &web_state_);
   EXPECT_TRUE(result.visible);
   EXPECT_TRUE(result.enabled);
   EXPECT_FALSE(result.ineligibility_reasons.has_value());
@@ -125,7 +130,7 @@ TEST_F(GeminiAvailabilityTest, PageActionMenuAvailable) {
 TEST_F(GeminiAvailabilityTest, PageActionMenuIneligibleProfile) {
   fake_gemini_service_->SetIsEligible(false);
   GeminiAvailabilityResult result =
-      IsGeminiAvailable(EntryPoint::AIHub, profile_.get(), &web_state_);
+      IsGeminiAvailable(EntryPoint::AIHub, profile_, &web_state_);
   EXPECT_FALSE(result.visible);
   EXPECT_FALSE(result.enabled);
   ASSERT_TRUE(result.ineligibility_reasons.has_value());
@@ -134,10 +139,10 @@ TEST_F(GeminiAvailabilityTest, PageActionMenuIneligibleProfile) {
 
 TEST_F(GeminiAvailabilityTest, ContextualEntryPointAllowed) {
   fake_gemini_service_->SetIsEligible(true);
-  gemini::test::SetUpEligibleAccount(profile_.get());
+  gemini::test::SetUpEligibleAccount(profile_);
 
-  GeminiAvailabilityResult result = IsGeminiAvailable(
-      EntryPoint::ImageContextMenu, profile_.get(), &web_state_);
+  GeminiAvailabilityResult result =
+      IsGeminiAvailable(EntryPoint::ImageContextMenu, profile_, &web_state_);
   EXPECT_TRUE(result.visible);
   EXPECT_TRUE(result.enabled);
   EXPECT_FALSE(result.disabled_reason.has_value());
@@ -190,7 +195,7 @@ TEST_F(GeminiAvailabilityTest, HighLevelFlagDisabled) {
   feature_list_.InitAndDisableFeature(kPageActionMenu);
   fake_gemini_service_->SetIsEligible(true);
   GeminiAvailabilityResult result =
-      IsGeminiAvailable(EntryPoint::AIHub, profile_.get(), &web_state_);
+      IsGeminiAvailable(EntryPoint::AIHub, profile_, &web_state_);
   EXPECT_FALSE(result.visible);
   EXPECT_FALSE(result.enabled);
 }
@@ -201,7 +206,7 @@ TEST_F(GeminiAvailabilityTest, AppSwitcherAvailable) {
                                  {});
   fake_gemini_service_->SetIsEligible(true);
   GeminiAvailabilityResult result = IsGeminiAvailable(
-      EntryPoint::AppSwitcherAISummarization, profile_.get(), nullptr);
+      EntryPoint::AppSwitcherAISummarization, profile_, nullptr);
   EXPECT_TRUE(result.visible);
   EXPECT_TRUE(result.enabled);
 }
@@ -212,7 +217,7 @@ TEST_F(GeminiAvailabilityTest, AppSwitcherFlagDisabled) {
                                  {kAppSwitcherAISummarization});
   fake_gemini_service_->SetIsEligible(true);
   GeminiAvailabilityResult result = IsGeminiAvailable(
-      EntryPoint::AppSwitcherAISummarization, profile_.get(), nullptr);
+      EntryPoint::AppSwitcherAISummarization, profile_, nullptr);
   EXPECT_FALSE(result.visible);
   EXPECT_FALSE(result.enabled);
 }
@@ -222,7 +227,7 @@ TEST_F(GeminiAvailabilityTest, AtMemorySearchAvailable) {
   feature_list_.InitWithFeatures({kPageActionMenu}, {});
   fake_gemini_service_->SetIsEligible(true);
   GeminiAvailabilityResult result =
-      IsGeminiAvailable(EntryPoint::AtMemorySearch, profile_.get(), nullptr);
+      IsGeminiAvailable(EntryPoint::AtMemorySearch, profile_, nullptr);
   EXPECT_TRUE(result.visible);
   EXPECT_TRUE(result.enabled);
 }
@@ -230,7 +235,7 @@ TEST_F(GeminiAvailabilityTest, AtMemorySearchAvailable) {
 TEST_F(GeminiAvailabilityTest, NullWebStateForTabSurface) {
   fake_gemini_service_->SetIsEligible(true);
   GeminiAvailabilityResult result =
-      IsGeminiAvailable(EntryPoint::AIHub, profile_.get(), nullptr);
+      IsGeminiAvailable(EntryPoint::AIHub, profile_, nullptr);
   EXPECT_FALSE(result.visible);
   EXPECT_FALSE(result.enabled);
 }
@@ -239,7 +244,7 @@ TEST_F(GeminiAvailabilityTest, IneligibleWebStateURL) {
   fake_gemini_service_->SetIsEligible(true);
   web_state_.SetCurrentURL(GURL("chrome://newtab"));
   GeminiAvailabilityResult result =
-      IsGeminiAvailable(EntryPoint::AIHub, profile_.get(), &web_state_);
+      IsGeminiAvailable(EntryPoint::AIHub, profile_, &web_state_);
   EXPECT_FALSE(result.visible);
   EXPECT_FALSE(result.enabled);
 }
@@ -247,7 +252,7 @@ TEST_F(GeminiAvailabilityTest, IneligibleWebStateURL) {
 TEST_F(GeminiAvailabilityTest, EditMenuAvailable) {
   fake_gemini_service_->SetIsEligible(true);
   GeminiAvailabilityResult result =
-      IsGeminiAvailable(EntryPoint::EditMenu, profile_.get(), &web_state_);
+      IsGeminiAvailable(EntryPoint::EditMenu, profile_, &web_state_);
   EXPECT_TRUE(result.visible);
   EXPECT_TRUE(result.enabled);
 }
@@ -258,7 +263,7 @@ TEST_F(GeminiAvailabilityTest, AppSwitcherIneligibleProfile) {
                                  {});
   fake_gemini_service_->SetIsEligible(false);
   GeminiAvailabilityResult result = IsGeminiAvailable(
-      EntryPoint::AppSwitcherAISummarization, profile_.get(), nullptr);
+      EntryPoint::AppSwitcherAISummarization, profile_, nullptr);
   EXPECT_FALSE(result.visible);
   EXPECT_FALSE(result.enabled);
 }
@@ -281,7 +286,7 @@ TEST_F(GeminiAvailabilityTest, ToolbarProfileInferredFromWebState) {
 TEST_F(GeminiAvailabilityTest, EntryPointUnknown) {
   fake_gemini_service_->SetIsEligible(true);
   GeminiAvailabilityResult result =
-      IsGeminiAvailable(EntryPoint::Unknown, profile_.get(), &web_state_);
+      IsGeminiAvailable(EntryPoint::Unknown, profile_, &web_state_);
   EXPECT_TRUE(result.visible);
   EXPECT_TRUE(result.enabled);
 }
@@ -289,7 +294,7 @@ TEST_F(GeminiAvailabilityTest, EntryPointUnknown) {
 TEST_F(GeminiAvailabilityTest, ToolbarAvailable) {
   fake_gemini_service_->SetIsEligible(true);
   GeminiAvailabilityResult result =
-      IsGeminiAvailable(EntryPoint::Toolbar, profile_.get(), &web_state_);
+      IsGeminiAvailable(EntryPoint::Toolbar, profile_, &web_state_);
   EXPECT_TRUE(result.visible);
   EXPECT_TRUE(result.enabled);
 }
@@ -297,7 +302,7 @@ TEST_F(GeminiAvailabilityTest, ToolbarAvailable) {
 TEST_F(GeminiAvailabilityTest, ToolbarVisibleWhenSignedOutAndPolicyAllowed) {
   fake_gemini_service_->SetIsEligible(false);
   GeminiAvailabilityResult result =
-      IsGeminiAvailable(EntryPoint::Toolbar, profile_.get(), &web_state_,
+      IsGeminiAvailable(EntryPoint::Toolbar, profile_, &web_state_,
                         auth_service_, profile_->GetPrefs());
   // Visible and enabled for signed-out users when policy allows, so tapping it
   // can trigger the sign-in flow.
@@ -311,7 +316,7 @@ TEST_F(GeminiAvailabilityTest, TestToolbarAvailableOnIneligibleWebState) {
   fake_gemini_service_->SetIsEligible(true);
   web_state_.SetCurrentURL(GURL("chrome://newtab"));
   GeminiAvailabilityResult result =
-      IsGeminiAvailable(EntryPoint::Toolbar, profile_.get(), &web_state_);
+      IsGeminiAvailable(EntryPoint::Toolbar, profile_, &web_state_);
   EXPECT_TRUE(result.visible);
   EXPECT_TRUE(result.enabled);
 }
@@ -320,7 +325,7 @@ TEST_F(GeminiAvailabilityTest, TestToolbarAvailableOnIneligibleWebState) {
 TEST_F(GeminiAvailabilityTest, TestAppBarAvailable) {
   fake_gemini_service_->SetIsEligible(true);
   GeminiAvailabilityResult result =
-      IsGeminiAvailable(EntryPoint::AppBar, profile_.get(), &web_state_);
+      IsGeminiAvailable(EntryPoint::AppBar, profile_, &web_state_);
   EXPECT_TRUE(result.visible);
   EXPECT_TRUE(result.enabled);
 }
@@ -330,7 +335,7 @@ TEST_F(GeminiAvailabilityTest, TestAppBarAvailable) {
 TEST_F(GeminiAvailabilityTest, TestAppBarAvailableOnIneligibleWebState) {
   fake_gemini_service_->SetIsEligible(true);
   GeminiAvailabilityResult result =
-      IsGeminiAvailable(EntryPoint::AppBar, profile_.get(), nullptr);
+      IsGeminiAvailable(EntryPoint::AppBar, profile_, nullptr);
   EXPECT_TRUE(result.visible);
   EXPECT_TRUE(result.enabled);
 }
@@ -343,23 +348,22 @@ TEST_F(GeminiAvailabilityTest, TestBarExcludedInEEAOrJapan) {
   variations_service.Get()->OverrideStoredPermanentCountry("fr");
 
   GeminiAvailabilityResult toolbar_result =
-      IsGeminiAvailable(EntryPoint::Toolbar, profile_.get(), &web_state_);
+      IsGeminiAvailable(EntryPoint::Toolbar, profile_, &web_state_);
   EXPECT_FALSE(toolbar_result.visible);
   EXPECT_FALSE(toolbar_result.enabled);
 
   GeminiAvailabilityResult app_bar_result =
-      IsGeminiAvailable(EntryPoint::AppBar, profile_.get(), &web_state_);
+      IsGeminiAvailable(EntryPoint::AppBar, profile_, &web_state_);
   EXPECT_FALSE(app_bar_result.visible);
   EXPECT_FALSE(app_bar_result.enabled);
 
   variations_service.Get()->OverrideStoredPermanentCountry("jp");
   toolbar_result =
-      IsGeminiAvailable(EntryPoint::Toolbar, profile_.get(), &web_state_);
+      IsGeminiAvailable(EntryPoint::Toolbar, profile_, &web_state_);
   EXPECT_FALSE(toolbar_result.visible);
   EXPECT_FALSE(toolbar_result.enabled);
 
-  app_bar_result =
-      IsGeminiAvailable(EntryPoint::AppBar, profile_.get(), &web_state_);
+  app_bar_result = IsGeminiAvailable(EntryPoint::AppBar, profile_, &web_state_);
   EXPECT_FALSE(app_bar_result.visible);
   EXPECT_FALSE(app_bar_result.enabled);
 }
@@ -372,7 +376,7 @@ TEST_F(GeminiAvailabilityTest, TestBarVisibleAndEnabledForUnverifiedAccount) {
   SignIn(identity);
 
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_.get());
+      IdentityManagerFactory::GetForProfile(profile_);
   CoreAccountId account_id =
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
@@ -382,13 +386,13 @@ TEST_F(GeminiAvailabilityTest, TestBarVisibleAndEnabledForUnverifiedAccount) {
               CREDENTIALS_REJECTED_BY_SERVER));
 
   GeminiAvailabilityResult toolbar_result =
-      IsGeminiAvailable(EntryPoint::Toolbar, profile_.get(), &web_state_,
+      IsGeminiAvailable(EntryPoint::Toolbar, profile_, &web_state_,
                         auth_service_, profile_->GetPrefs());
   EXPECT_TRUE(toolbar_result.visible);
   EXPECT_TRUE(toolbar_result.enabled);
 
   GeminiAvailabilityResult app_bar_result =
-      IsGeminiAvailable(EntryPoint::AppBar, profile_.get(), &web_state_,
+      IsGeminiAvailable(EntryPoint::AppBar, profile_, &web_state_,
                         auth_service_, profile_->GetPrefs());
   EXPECT_TRUE(app_bar_result.visible);
   EXPECT_TRUE(app_bar_result.enabled);
@@ -402,13 +406,13 @@ TEST_F(GeminiAvailabilityTest, TestBarWorkspacePolicyPendingAllowed) {
   fake_gemini_service_->SetWorkspacePolicyCheckPending(true);
 
   GeminiAvailabilityResult toolbar_result =
-      IsGeminiAvailable(EntryPoint::Toolbar, profile_.get(), &web_state_,
+      IsGeminiAvailable(EntryPoint::Toolbar, profile_, &web_state_,
                         auth_service_, profile_->GetPrefs());
   EXPECT_TRUE(toolbar_result.visible);
   EXPECT_TRUE(toolbar_result.enabled);
 
   GeminiAvailabilityResult app_bar_result =
-      IsGeminiAvailable(EntryPoint::AppBar, profile_.get(), &web_state_,
+      IsGeminiAvailable(EntryPoint::AppBar, profile_, &web_state_,
                         auth_service_, profile_->GetPrefs());
   EXPECT_TRUE(app_bar_result.visible);
   EXPECT_TRUE(app_bar_result.enabled);
@@ -426,13 +430,13 @@ TEST_F(GeminiAvailabilityTest, TestBarWorkspacePolicyRestrictedOnline) {
   fake_gemini_service_->SetIneligibilityReasons(reasons);
 
   GeminiAvailabilityResult toolbar_result =
-      IsGeminiAvailable(EntryPoint::Toolbar, profile_.get(), &web_state_,
+      IsGeminiAvailable(EntryPoint::Toolbar, profile_, &web_state_,
                         auth_service_, profile_->GetPrefs());
   EXPECT_FALSE(toolbar_result.visible);
   EXPECT_FALSE(toolbar_result.enabled);
 
   GeminiAvailabilityResult app_bar_result =
-      IsGeminiAvailable(EntryPoint::AppBar, profile_.get(), &web_state_,
+      IsGeminiAvailable(EntryPoint::AppBar, profile_, &web_state_,
                         auth_service_, profile_->GetPrefs());
   EXPECT_FALSE(app_bar_result.visible);
   EXPECT_FALSE(app_bar_result.enabled);
@@ -454,13 +458,13 @@ TEST_F(GeminiAvailabilityTest, TestBarWorkspacePolicyRestrictedOffline) {
   fake_gemini_service_->SetIneligibilityReasons(reasons);
 
   GeminiAvailabilityResult toolbar_result =
-      IsGeminiAvailable(EntryPoint::Toolbar, profile_.get(), &web_state_,
+      IsGeminiAvailable(EntryPoint::Toolbar, profile_, &web_state_,
                         auth_service_, profile_->GetPrefs());
   EXPECT_TRUE(toolbar_result.visible);
   EXPECT_TRUE(toolbar_result.enabled);
 
   GeminiAvailabilityResult app_bar_result =
-      IsGeminiAvailable(EntryPoint::AppBar, profile_.get(), &web_state_,
+      IsGeminiAvailable(EntryPoint::AppBar, profile_, &web_state_,
                         auth_service_, profile_->GetPrefs());
   EXPECT_TRUE(app_bar_result.visible);
   EXPECT_TRUE(app_bar_result.enabled);
@@ -475,12 +479,12 @@ TEST_F(GeminiAvailabilityTest, TestBarDisabledByPolicy) {
       static_cast<int>(gemini::GenAiDefaultSettingsPolicy::kNotAllowed));
 
   GeminiAvailabilityResult toolbar_result =
-      IsGeminiAvailable(EntryPoint::Toolbar, profile_.get(), &web_state_);
+      IsGeminiAvailable(EntryPoint::Toolbar, profile_, &web_state_);
   EXPECT_FALSE(toolbar_result.visible);
   EXPECT_FALSE(toolbar_result.enabled);
 
   GeminiAvailabilityResult app_bar_result =
-      IsGeminiAvailable(EntryPoint::AppBar, profile_.get(), &web_state_);
+      IsGeminiAvailable(EntryPoint::AppBar, profile_, &web_state_);
   EXPECT_FALSE(app_bar_result.visible);
   EXPECT_FALSE(app_bar_result.enabled);
 }
