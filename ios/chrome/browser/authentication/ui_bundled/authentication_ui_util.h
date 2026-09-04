@@ -7,9 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#include <string>
-#include <string_view>
-
 #include "base/ios/block_types.h"
 
 @class ActionSheetCoordinator;
@@ -64,10 +61,6 @@ using SignoutActionSheetCoordinatorCompletion =
 // account switching.
 using LeavingPrimaryAccountConfirmationDialogCompletion =
     void (^)(bool continue_flow);
-
-// Returns the hosted domain for the primary account.
-std::u16string HostedDomainForPrimaryAccount(
-    signin::IdentityManager* identity_manager);
 
 // Returns the sign in alert coordinator for `error`. `dismissAction` is called
 // when the dialog is dismissed (the user taps on the Ok button) or cancelled

@@ -42,6 +42,17 @@
 
 namespace {
 
+// Returns the hosted domain for the primary account.
+std::u16string HostedDomainForPrimaryAccount(
+    signin::IdentityManager* identity_manager) {
+  return base::UTF8ToUTF16(
+      identity_manager
+          ->FindExtendedAccountInfo(identity_manager->GetPrimaryAccountInfo(
+              signin::ConsentLevel::kSignin))
+          .GetHostedDomain()
+          .value_or(std::string()));
+}
+
 // Returns the title associated to the given user sign-in state.
 // `account_profile_switch` is true if the flow was triggered for an account or
 // profile switching.
@@ -120,16 +131,6 @@ NSString* GetActionSheetCoordinatorMessage(
 }
 
 }  // namespace
-
-std::u16string HostedDomainForPrimaryAccount(
-    signin::IdentityManager* identity_manager) {
-  return base::UTF8ToUTF16(
-      identity_manager
-          ->FindExtendedAccountInfo(identity_manager->GetPrimaryAccountInfo(
-              signin::ConsentLevel::kSignin))
-          .GetHostedDomain()
-          .value_or(std::string()));
-}
 
 AlertCoordinator* ErrorCoordinator(NSError* error,
                                    ProceduralBlock dismissAction,
