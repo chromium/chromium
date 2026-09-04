@@ -105,8 +105,7 @@ suite('DeleteBrowsingDataDialog', function() {
 
   async function selectTimePeriodFromTimePicker(timePeriod: TimePeriod) {
     const visibleTimePeriodChips =
-        dialog.$.timePicker.shadowRoot!.querySelectorAll<HTMLElement>(
-            'cr-chip');
+        dialog.$.timePicker.shadowRoot.querySelectorAll<HTMLElement>('cr-chip');
     assertTrue(!!visibleTimePeriodChips);
 
     for (const chip of visibleTimePeriodChips) {
@@ -120,7 +119,7 @@ suite('DeleteBrowsingDataDialog', function() {
     dialog.$.timePicker.$.moreButton.click();
     await flushTasks();
     const menuItems =
-        dialog.$.timePicker.shadowRoot!.querySelectorAll<HTMLElement>(
+        dialog.$.timePicker.shadowRoot.querySelectorAll<HTMLElement>(
             '.dropdown-item');
     assertTrue(!!menuItems);
 

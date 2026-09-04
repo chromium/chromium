@@ -44,7 +44,7 @@ import type {ClearBrowsingDataBrowserProxy, UpdateSyncStateEvent} from './clear_
 import {BrowsingDataType, ClearBrowsingDataBrowserProxyImpl, TimePeriod} from './clear_browsing_data_browser_proxy.js';
 import {getTemplate} from './clear_browsing_data_dialog.html.js';
 import {canDeleteAccountData, isSignedIn} from './clear_browsing_data_signin_util.js';
-import type {SettingsClearBrowsingDataTimePicker} from './clear_browsing_data_time_picker.js';
+import type {SettingsClearBrowsingDataTimePickerElement} from './clear_browsing_data_time_picker.js';
 import {getTimePeriodString} from './clear_browsing_data_time_picker.js';
 
 /**
@@ -72,7 +72,7 @@ export interface SettingsClearBrowsingDataDialogElement {
     moreOptionsList: HTMLElement,
     showMoreButton: CrButtonElement,
     spinner: HTMLElement,
-    timePicker: SettingsClearBrowsingDataTimePicker,
+    timePicker: SettingsClearBrowsingDataTimePickerElement,
   };
 }
 
