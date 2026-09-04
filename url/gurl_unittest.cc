@@ -16,6 +16,7 @@
 #include "url/gurl_debug.h"
 #include "url/origin.h"
 #include "url/url_canon.h"
+#include "url/url_features.h"
 #include "url/url_test_utils.h"
 
 namespace url {
@@ -1133,45 +1134,370 @@ TEST_F(GURLTest, IsStandard) {
   EXPECT_FALSE(d.IsStandard());
 }
 
-TEST_F(GURLTest, SchemeIsHTTPOrHTTPS) {
-  EXPECT_TRUE(GURL("http://bar/").SchemeIsHTTPOrHTTPS());
-  EXPECT_TRUE(GURL("HTTPS://BAR").SchemeIsHTTPOrHTTPS());
-  EXPECT_FALSE(GURL("ftp://bar/").SchemeIsHTTPOrHTTPS());
-}
-
 TEST_F(GURLTest, SchemeIsHTTPOrHTTPSAfterSwap) {
-  GURL url1("http://example.com");
-  GURL url2("ftp://example.com");
+  for (bool feature_enabled : {false, true}) {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatureState(
+        url::kCacheGurlSchemeIsHttpOrHttpsResult, feature_enabled);
 
-  EXPECT_TRUE(url1.SchemeIsHTTPOrHTTPS());
-  EXPECT_FALSE(url2.SchemeIsHTTPOrHTTPS());
+    GURL url1("http://example.com");
+    GURL url2("ftp://example.com");
 
-  url1.Swap(&url2);
+    EXPECT_TRUE(url1.SchemeIsHTTPOrHTTPS());
+    EXPECT_FALSE(url2.SchemeIsHTTPOrHTTPS());
 
-  EXPECT_FALSE(url1.SchemeIsHTTPOrHTTPS());
-  EXPECT_TRUE(url2.SchemeIsHTTPOrHTTPS());
+    url1.Swap(&url2);
+
+    EXPECT_FALSE(url1.SchemeIsHTTPOrHTTPS());
+    EXPECT_TRUE(url2.SchemeIsHTTPOrHTTPS());
+
+    // Swap with empty GURL.
+    GURL empty_url;
+    url2.Swap(&empty_url);
+    EXPECT_FALSE(url2.SchemeIsHTTPOrHTTPS());
+    EXPECT_TRUE(empty_url.SchemeIsHTTPOrHTTPS());
+  }
 }
 
 TEST_F(GURLTest, SchemeIsHTTPOrHTTPSAfterReplaceComponents) {
-  GURL url("http://example.com");
-  EXPECT_TRUE(url.SchemeIsHTTPOrHTTPS());
+  for (bool feature_enabled : {false, true}) {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatureState(
+        url::kCacheGurlSchemeIsHttpOrHttpsResult, feature_enabled);
 
-  GURL::Replacements replacements;
-  replacements.SetSchemeStr("ftp");
-  GURL new_url = url.ReplaceComponents(replacements);
+    GURL url("http://example.com");
+    EXPECT_TRUE(url.SchemeIsHTTPOrHTTPS());
 
-  EXPECT_FALSE(new_url.SchemeIsHTTPOrHTTPS());
+    // Replace scheme with non-http.
+    GURL::Replacements replacements_ftp;
+    replacements_ftp.SetSchemeStr("ftp");
+    GURL new_url_ftp = url.ReplaceComponents(replacements_ftp);
+    EXPECT_FALSE(new_url_ftp.SchemeIsHTTPOrHTTPS());
+
+    // Replace other component, keeping http scheme.
+    GURL::Replacements replacements_path;
+    replacements_path.SetPathStr("/new_path");
+    GURL new_url_path = url.ReplaceComponents(replacements_path);
+    EXPECT_TRUE(new_url_path.SchemeIsHTTPOrHTTPS());
+
+    // Replace scheme from non-http to https.
+    GURL ftp_url("ftp://example.com");
+    GURL::Replacements replacements_https;
+    replacements_https.SetSchemeStr("https");
+    GURL new_url_https = ftp_url.ReplaceComponents(replacements_https);
+    EXPECT_TRUE(new_url_https.SchemeIsHTTPOrHTTPS());
+
+    // 16-bit Replacements.
+    GURL::ReplacementsW replacements_w;
+    replacements_w.SetPathStr(u"/new_path_w");
+    GURL new_url_w = url.ReplaceComponents(replacements_w);
+    EXPECT_TRUE(new_url_w.SchemeIsHTTPOrHTTPS());
+
+    // 16-bit Replacements: change to non-http.
+    GURL::ReplacementsW replacements_w_ftp;
+    replacements_w_ftp.SetSchemeStr(u"ftp");
+    GURL new_url_w_ftp = url.ReplaceComponents(replacements_w_ftp);
+    EXPECT_FALSE(new_url_w_ftp.SchemeIsHTTPOrHTTPS());
+
+    // 16-bit Replacements: change from non-http to https.
+    GURL::ReplacementsW replacements_w_https;
+    replacements_w_https.SetSchemeStr(u"https");
+    GURL new_url_w_https = ftp_url.ReplaceComponents(replacements_w_https);
+    EXPECT_TRUE(new_url_w_https.SchemeIsHTTPOrHTTPS());
+
+    // Filesystem URL component replacement preserves inner_url scheme state.
+    GURL fs_url("filesystem:http://example.com/temporary/foo.txt");
+    GURL::Replacements replacements_fs;
+    replacements_fs.SetPathStr("/temporary/bar.txt");
+    GURL new_fs_url = fs_url.ReplaceComponents(replacements_fs);
+    EXPECT_FALSE(new_fs_url.SchemeIsHTTPOrHTTPS());
+    ASSERT_TRUE(new_fs_url.inner_url());
+    EXPECT_TRUE(new_fs_url.inner_url()->SchemeIsHTTPOrHTTPS());
+
+    // Replace components on an invalid URL yields an empty URL.
+    GURL invalid_url("invalid url");
+    EXPECT_FALSE(invalid_url.SchemeIsHTTPOrHTTPS());
+    GURL replaced_from_invalid =
+        invalid_url.ReplaceComponents(replacements_ftp);
+    EXPECT_FALSE(replaced_from_invalid.SchemeIsHTTPOrHTTPS());
+  }
 }
 
 TEST_F(GURLTest, SchemeIsHTTPOrHTTPSAfterResolve) {
-  GURL url("http://example.com/foo");
-  EXPECT_TRUE(url.SchemeIsHTTPOrHTTPS());
+  for (bool feature_enabled : {false, true}) {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatureState(
+        url::kCacheGurlSchemeIsHttpOrHttpsResult, feature_enabled);
 
-  GURL new_url = url.Resolve("bar");
-  EXPECT_TRUE(new_url.SchemeIsHTTPOrHTTPS());
+    GURL url("http://example.com/foo");
+    EXPECT_TRUE(url.SchemeIsHTTPOrHTTPS());
 
-  GURL new_url2 = url.Resolve("ftp://elsewhere.com");
-  EXPECT_FALSE(new_url2.SchemeIsHTTPOrHTTPS());
+    GURL new_url = url.Resolve("bar");
+    EXPECT_TRUE(new_url.SchemeIsHTTPOrHTTPS());
+
+    GURL new_url2 = url.Resolve("ftp://elsewhere.com");
+    EXPECT_FALSE(new_url2.SchemeIsHTTPOrHTTPS());
+
+    // 16-bit Resolve
+    GURL new_url_u16 = url.Resolve(u"baz");
+    EXPECT_TRUE(new_url_u16.SchemeIsHTTPOrHTTPS());
+
+    // Resolve from non-http
+    GURL ftp_url("ftp://example.com/foo");
+    GURL new_ftp_url = ftp_url.Resolve("bar");
+    EXPECT_FALSE(new_ftp_url.SchemeIsHTTPOrHTTPS());
+    GURL new_http_from_ftp = ftp_url.Resolve("http://example.com/bar");
+    EXPECT_TRUE(new_http_from_ftp.SchemeIsHTTPOrHTTPS());
+
+    // 16-bit Resolve changing scheme
+    GURL new_url_u16_ftp = url.Resolve(u"ftp://elsewhere.com");
+    EXPECT_FALSE(new_url_u16_ftp.SchemeIsHTTPOrHTTPS());
+    GURL new_url_u16_http = ftp_url.Resolve(u"http://example.com/bar");
+    EXPECT_TRUE(new_url_u16_http.SchemeIsHTTPOrHTTPS());
+  }
+}
+
+TEST_F(GURLTest, SchemeIsHTTPOrHTTPSAfterMove) {
+  // NOLINTBEGIN(bugprone-use-after-move)
+  for (bool feature_enabled : {false, true}) {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatureState(
+        url::kCacheGurlSchemeIsHttpOrHttpsResult, feature_enabled);
+
+    GURL url1("http://example.com");
+    EXPECT_TRUE(url1.SchemeIsHTTPOrHTTPS());
+
+    GURL url2 = std::move(url1);
+    EXPECT_TRUE(url2.SchemeIsHTTPOrHTTPS());
+    EXPECT_FALSE(url1.is_valid());  // NOLINT(bugprone-use-after-move)
+    EXPECT_FALSE(
+        url1.SchemeIsHTTPOrHTTPS());  // NOLINT(bugprone-use-after-move)
+
+    GURL url3;
+    url3 = std::move(url2);
+    EXPECT_TRUE(url3.SchemeIsHTTPOrHTTPS());
+    EXPECT_FALSE(url2.is_valid());  // NOLINT(bugprone-use-after-move)
+    EXPECT_FALSE(
+        url2.SchemeIsHTTPOrHTTPS());  // NOLINT(bugprone-use-after-move)
+
+    // Overwrite existing HTTP URL with non-HTTP URL via move.
+    GURL move_overwrite_http("http://example.com");
+    EXPECT_TRUE(move_overwrite_http.SchemeIsHTTPOrHTTPS());
+    GURL move_non_http("ftp://example.com");
+    move_overwrite_http = std::move(move_non_http);
+    EXPECT_FALSE(move_overwrite_http.SchemeIsHTTPOrHTTPS());
+
+    // Overwrite existing non-HTTP URL with HTTP URL via move.
+    GURL move_overwrite_non_http("ftp://example.com");
+    EXPECT_FALSE(move_overwrite_non_http.SchemeIsHTTPOrHTTPS());
+    GURL move_http("https://example.com");
+    move_overwrite_non_http = std::move(move_http);
+    EXPECT_TRUE(move_overwrite_non_http.SchemeIsHTTPOrHTTPS());
+    EXPECT_FALSE(move_http.is_valid());  // NOLINT(bugprone-use-after-move)
+    EXPECT_FALSE(
+        move_http.SchemeIsHTTPOrHTTPS());  // NOLINT(bugprone-use-after-move)
+  }
+  // NOLINTEND(bugprone-use-after-move)
+}
+
+TEST_F(GURLTest, SchemeIsHTTPOrHTTPSAfterCopy) {
+  for (bool feature_enabled : {false, true}) {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatureState(
+        url::kCacheGurlSchemeIsHttpOrHttpsResult, feature_enabled);
+
+    GURL url1("http://example.com");
+    EXPECT_TRUE(url1.SchemeIsHTTPOrHTTPS());
+
+    GURL url2(url1);
+    EXPECT_TRUE(url2.SchemeIsHTTPOrHTTPS());
+
+    GURL url3;
+    url3 = url1;
+    EXPECT_TRUE(url3.SchemeIsHTTPOrHTTPS());
+
+    // Overwrite existing HTTP URL with non-HTTP URL via copy.
+    GURL copy_overwrite_http("http://example.com");
+    EXPECT_TRUE(copy_overwrite_http.SchemeIsHTTPOrHTTPS());
+    GURL copy_non_http("ftp://example.com");
+    copy_overwrite_http = copy_non_http;
+    EXPECT_FALSE(copy_overwrite_http.SchemeIsHTTPOrHTTPS());
+
+    // Overwrite existing non-HTTP URL with HTTP URL via copy.
+    GURL copy_overwrite_non_http("ftp://example.com");
+    EXPECT_FALSE(copy_overwrite_non_http.SchemeIsHTTPOrHTTPS());
+    GURL copy_http("https://example.com");
+    copy_overwrite_non_http = copy_http;
+    EXPECT_TRUE(copy_overwrite_non_http.SchemeIsHTTPOrHTTPS());
+  }
+}
+
+TEST_F(GURLTest, SchemeIsHTTPOrHTTPS_FeatureToggle) {
+  const struct {
+    const char* url;
+    bool expected;
+  } kTestCases[] = {
+      {"http://example.com", true},
+      {"https://example.com", true},
+      {"HTTP://EXAMPLE.COM", true},
+      {"HTTPS://EXAMPLE.COM", true},
+      {"HtTp://example.com", true},
+      {"HtTpS://example.com", true},
+      {"ftp://example.com", false},
+      {"ws://example.com", false},
+      {"wss://example.com", false},
+      {"chrome://version", false},
+      {"about:blank", false},
+      {"blob:http://example.com/uuid", false},
+      {"javascript:void(0)", false},
+      {"", false},
+      {"invalid url", false},
+      {"http:google.com:foo", true},
+      {"http://example.com:9999999", true},
+      {"http://%T%Ae", true},
+      {"https://[invalid-ipv6]", true},
+      {"ftp://example.com:9999999", false},
+      {"ws://[invalid-ipv6]", false},
+      {"filesystem:http://example.com/temporary/foo.txt", false},
+      {"filesystem:ftp://example.com/temporary/foo.txt", false},
+  };
+
+  for (bool feature_enabled : {false, true}) {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatureState(
+        url::kCacheGurlSchemeIsHttpOrHttpsResult, feature_enabled);
+
+    // Default constructed instances.
+    EXPECT_FALSE(GURL().SchemeIsHTTPOrHTTPS());
+    EXPECT_FALSE(GURL::EmptyGURL().SchemeIsHTTPOrHTTPS());
+
+    for (const auto& test_case : kTestCases) {
+      GURL url(test_case.url);
+      EXPECT_EQ(url.SchemeIsHTTPOrHTTPS(), test_case.expected)
+          << "Failed for URL: " << test_case.url
+          << " with feature_enabled=" << feature_enabled;
+    }
+
+    // 16-bit string constructor coverage.
+    EXPECT_TRUE(GURL(u"http://example.com").SchemeIsHTTPOrHTTPS());
+    EXPECT_TRUE(GURL(u"https://example.com").SchemeIsHTTPOrHTTPS());
+    EXPECT_FALSE(GURL(u"ftp://example.com").SchemeIsHTTPOrHTTPS());
+
+    // Inner URL scheme verification for filesystem URLs.
+    GURL fs_http("filesystem:http://example.com/temporary/foo.txt");
+    ASSERT_TRUE(fs_http.inner_url());
+    EXPECT_TRUE(fs_http.inner_url()->SchemeIsHTTPOrHTTPS());
+
+    GURL fs_ftp("filesystem:ftp://example.com/temporary/foo.txt");
+    ASSERT_TRUE(fs_ftp.inner_url());
+    EXPECT_FALSE(fs_ftp.inner_url()->SchemeIsHTTPOrHTTPS());
+  }
+}
+
+TEST_F(GURLTest, SchemeIsHTTPOrHTTPS_CanonicalSpecAndEmptyPath) {
+  for (bool feature_enabled : {false, true}) {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatureState(
+        url::kCacheGurlSchemeIsHttpOrHttpsResult, feature_enabled);
+
+    // Canonical spec constructor (std::string_view overload).
+    GURL base_http("http://example.com/path");
+    GURL canonical_http(base_http.spec(),
+                        base_http.parsed_for_possibly_invalid_spec(),
+                        base_http.is_valid());
+    EXPECT_TRUE(canonical_http.SchemeIsHTTPOrHTTPS());
+
+    GURL base_ftp("ftp://example.com/path");
+    GURL canonical_ftp(base_ftp.spec(),
+                       base_ftp.parsed_for_possibly_invalid_spec(),
+                       base_ftp.is_valid());
+    EXPECT_FALSE(canonical_ftp.SchemeIsHTTPOrHTTPS());
+
+    // Canonical spec constructor with invalid URLs (std::string_view overload).
+    GURL invalid_http("http://example.com:9999999");
+    GURL canonical_invalid_http(invalid_http.possibly_invalid_spec(),
+                                invalid_http.parsed_for_possibly_invalid_spec(),
+                                invalid_http.is_valid());
+    EXPECT_TRUE(canonical_invalid_http.SchemeIsHTTPOrHTTPS());
+
+    GURL invalid_ftp("ftp://example.com:9999999");
+    GURL canonical_invalid_ftp(invalid_ftp.possibly_invalid_spec(),
+                               invalid_ftp.parsed_for_possibly_invalid_spec(),
+                               invalid_ftp.is_valid());
+    EXPECT_FALSE(canonical_invalid_ftp.SchemeIsHTTPOrHTTPS());
+
+    // Canonical spec constructor (std::string rvalue overload).
+    GURL canonical_http_rvalue(std::string(base_http.spec()),
+                               base_http.parsed_for_possibly_invalid_spec(),
+                               base_http.is_valid());
+    EXPECT_TRUE(canonical_http_rvalue.SchemeIsHTTPOrHTTPS());
+
+    GURL canonical_ftp_rvalue(std::string(base_ftp.spec()),
+                              base_ftp.parsed_for_possibly_invalid_spec(),
+                              base_ftp.is_valid());
+    EXPECT_FALSE(canonical_ftp_rvalue.SchemeIsHTTPOrHTTPS());
+
+    // In-place path mutation on copy.
+    GURL empty_path_url = base_http.GetWithEmptyPath();
+    EXPECT_TRUE(empty_path_url.SchemeIsHTTPOrHTTPS());
+
+    // In-place path mutation on copy (negative case).
+    GURL empty_path_ftp = base_ftp.GetWithEmptyPath();
+    EXPECT_FALSE(empty_path_ftp.SchemeIsHTTPOrHTTPS());
+
+    // Derivation helpers that preserve scheme.
+    EXPECT_TRUE(base_http.GetWithoutFilename().SchemeIsHTTPOrHTTPS());
+    EXPECT_FALSE(base_ftp.GetWithoutFilename().SchemeIsHTTPOrHTTPS());
+    EXPECT_TRUE(base_http.GetWithoutRef().SchemeIsHTTPOrHTTPS());
+    EXPECT_FALSE(base_ftp.GetWithoutRef().SchemeIsHTTPOrHTTPS());
+    EXPECT_TRUE(base_http.DeprecatedGetOriginAsURL().SchemeIsHTTPOrHTTPS());
+    EXPECT_FALSE(base_ftp.DeprecatedGetOriginAsURL().SchemeIsHTTPOrHTTPS());
+    GURL base_http_with_creds_and_ref("http://user:pass@example.com/path#ref");
+    EXPECT_TRUE(
+        base_http_with_creds_and_ref.GetAsReferrer().SchemeIsHTTPOrHTTPS());
+    EXPECT_FALSE(base_ftp.GetAsReferrer().SchemeIsHTTPOrHTTPS());
+  }
+}
+
+TEST_F(GURLTest, SchemeIsHTTPOrHTTPS_BeforeFeatureList) {
+  auto feature_list = base::FeatureList::ClearInstanceForTesting();
+  EXPECT_FALSE(base::FeatureList::GetInstance());
+
+  GURL http_url("http://example.com");
+  EXPECT_TRUE(http_url.SchemeIsHTTPOrHTTPS());
+
+  GURL https_url("https://example.com");
+  EXPECT_TRUE(https_url.SchemeIsHTTPOrHTTPS());
+
+  GURL ftp_url("ftp://example.com");
+  EXPECT_FALSE(ftp_url.SchemeIsHTTPOrHTTPS());
+
+  // Ensure no early feature access was recorded while FeatureList is not set.
+  EXPECT_EQ(base::FeatureList::GetEarlyAccessedFeatureForTesting(), nullptr);
+
+  base::FeatureList::RestoreInstanceForTesting(std::move(feature_list));
+
+  // Verify that URLs constructed before FeatureList initialization work
+  // correctly when the feature is explicitly disabled.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(
+        url::kCacheGurlSchemeIsHttpOrHttpsResult);
+    EXPECT_TRUE(http_url.SchemeIsHTTPOrHTTPS());
+    EXPECT_TRUE(https_url.SchemeIsHTTPOrHTTPS());
+    EXPECT_FALSE(ftp_url.SchemeIsHTTPOrHTTPS());
+  }
+
+  // Verify that URLs constructed before FeatureList initialization correctly
+  // return their precomputed scheme flag once the feature is enabled.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(
+        url::kCacheGurlSchemeIsHttpOrHttpsResult);
+    EXPECT_TRUE(http_url.SchemeIsHTTPOrHTTPS());
+    EXPECT_TRUE(https_url.SchemeIsHTTPOrHTTPS());
+    EXPECT_FALSE(ftp_url.SchemeIsHTTPOrHTTPS());
+  }
 }
 
 TEST_F(GURLTest, SchemeIsWSOrWSS) {

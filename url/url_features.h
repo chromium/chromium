@@ -45,10 +45,7 @@ COMPONENT_EXPORT(URL) bool IsPreservingPercentEncodedDotInPath();
 // WHATWG URL Standard.
 COMPONENT_EXPORT(URL) BASE_DECLARE_FEATURE(kPreservePercentEncodedDotInPath);
 
-// Returns true if the GURL scheme cache is enabled.
-COMPONENT_EXPORT(URL) bool IsCacheGurlSchemeIsHttpOrHttpsResultEnabled();
-
-// When enabled, cache the result of GURL::SchemeIsHTTPOrHTTPS().
+// When enabled, use the precomputed result of GURL::SchemeIsHTTPOrHTTPS().
 COMPONENT_EXPORT(URL) BASE_DECLARE_FEATURE(kCacheGurlSchemeIsHttpOrHttpsResult);
 
 }  // namespace url
