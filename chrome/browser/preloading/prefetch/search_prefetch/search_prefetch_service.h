@@ -72,7 +72,7 @@ enum class SearchPrefetchEligibilityReason {
   // A URLLoaderThrottle decided this request should not be issued.
   kThrottled = 8,
   // The prefetch was suppressed because the network is too slow.
-  kSlowNetwork = 9,
+  // kSlowNetwork = 9,  // No longer used.
   // The prefetch was suppressed because Data Saver is enabled.
   kDataSaverEnabled = 10,
   // The prefetch was suppressed because Battery Saver is enabled.

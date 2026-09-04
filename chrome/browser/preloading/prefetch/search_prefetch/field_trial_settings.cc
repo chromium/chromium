@@ -203,16 +203,6 @@ const base::FeatureParam<base::TimeDelta>
         &kAutocompleteDictionaryPreload,
         "autocomplete_preloaded_dictionary_timeout", base::Milliseconds(60000)};
 
-BASE_FEATURE(kSuppressesSearchPrefetchOnSlowNetwork,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Regarding how this number was chosen, see the design doc linked from
-// crbug.com/350519234.
-const base::FeatureParam<base::TimeDelta>
-    kSuppressesSearchPrefetchOnSlowNetworkThreshold{
-        &kSuppressesSearchPrefetchOnSlowNetwork,
-        "slow_network_threshold_for_search_prefetch", base::Milliseconds(208)};
-
 BASE_FEATURE(kSuppressPrefetchForUnsupportedSearchMode,
              base::FEATURE_DISABLED_BY_DEFAULT);
 // Allows to specify a comma-separated list of unsupported parameters, e.g.

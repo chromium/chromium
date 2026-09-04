@@ -111,13 +111,6 @@ BASE_DECLARE_FEATURE(kAutocompleteDictionaryPreload);
 extern const base::FeatureParam<base::TimeDelta>
     kAutocompletePreloadedDictionaryTimeout;
 
-// If enabled, suppresses SearchPrefetch (https://crbug.com/350519234)
-BASE_DECLARE_FEATURE(kSuppressesSearchPrefetchOnSlowNetwork);
-
-// The threshold to determine if the network is slow or not.
-extern const base::FeatureParam<base::TimeDelta>
-    kSuppressesSearchPrefetchOnSlowNetworkThreshold;
-
 BASE_DECLARE_FEATURE(kSuppressPrefetchForUnsupportedSearchMode);
 extern const base::FeatureParam<std::string> kUnsupportedSearchPrefetchModes;
 

@@ -18742,12 +18742,10 @@
                 {
                     "name": "SuppressesAll",
                     "params": {
-                        "slow_network_threshold": "208ms",
-                        "slow_network_threshold_for_search_prefetch": "208ms"
+                        "slow_network_threshold": "208ms"
                     },
                     "enable_features": [
-                        "SuppressesLoadingPredictorOnSlowNetwork",
-                        "SuppressesSearchPrefetchOnSlowNetwork"
+                        "SuppressesLoadingPredictorOnSlowNetwork"
                     ]
                 }
             ]

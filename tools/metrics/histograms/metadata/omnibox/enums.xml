@@ -576,7 +576,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Duplicate prefetch request"/>
   <int value="7" label="Too many recent prefetches"/>
   <int value="8" label="Throttle prevented the prefetch"/>
-  <int value="9" label="SlowNetwork suppressed the prefetch"/>
+  <int value="9" label="SlowNetwork suppressed the prefetch (Obsolete)"/>
   <int value="10" label="Data saver enabled"/>
   <int value="11" label="Battery saver enabled"/>
 </enum>
