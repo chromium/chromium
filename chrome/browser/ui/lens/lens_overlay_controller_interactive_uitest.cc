@@ -334,16 +334,10 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest,
 //  (2) User opens lens overlay.
 //  (3) User makes a selection that opens the results side panel.
 //  (4) User presses the escape key to close lens overlay.
-#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
-// Flaky on ASAN on Linux.
-#define MAYBE_EscapeKeyCloseWithResultsPanel \
-  DISABLED_EscapeKeyCloseWithResultsPanel
-#else
-#define MAYBE_EscapeKeyCloseWithResultsPanel EscapeKeyCloseWithResultsPanel
-#endif
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest,
-                       MAYBE_EscapeKeyCloseWithResultsPanel) {
+                       EscapeKeyCloseWithResultsPanel) {
   WaitForTemplateURLServiceToLoad();
+  SidePanelUI::From(browser())->DisableAnimationsForTesting();
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlaySidePanelWebViewId);
 
@@ -404,11 +398,10 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest,
           WaitForWebContentsReady(kOverlaySidePanelWebViewId),
           WaitForWebContentsPainted(kOverlaySidePanelWebViewId),
           EnsurePresent(kOverlaySidePanelWebViewId, kPathToResultsFrame)),
-      // Press the escape key to and ensure the overlay closes.
-      InSameContext(WaitForShow(kOverlaySidePanelWebViewId),
-                    FocusWebContents(kOverlaySidePanelWebViewId),
-                    SendAccelerator(kOverlaySidePanelWebViewId, escape_key),
-                    WaitForHide(kOverlayId)));
+      // Press the escape key and ensure the overlay closes.
+      FocusWebContents(kOverlaySidePanelWebViewId),
+      SendAccelerator(kOverlaySidePanelWebViewId, escape_key),
+      InAnyContext(WaitForHide(kOverlayId)));
 }
 
 // This tests the following CUJ:
