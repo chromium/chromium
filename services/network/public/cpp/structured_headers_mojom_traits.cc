@@ -8,13 +8,18 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "net/http/structured_headers.h"
 
 namespace mojo {
 
 namespace {
+using net::structured_headers::InnerListWrapper;
 using net::structured_headers::Item;
+using net::structured_headers::ParameterizedItem;
+using net::structured_headers::ParameterizedMember;
 using network::mojom::StructuredHeadersItemDataView;
+using network::mojom::StructuredHeadersParameterizedMemberDataView;
 }  // namespace
 
 // static
@@ -95,9 +100,9 @@ bool StructTraits<network::mojom::StructuredHeadersParameterDataView,
 
 // static
 bool StructTraits<network::mojom::StructuredHeadersParameterizedItemDataView,
-                  net::structured_headers::ParameterizedItem>::
+                  ParameterizedItem>::
     Read(network::mojom::StructuredHeadersParameterizedItemDataView data,
-         net::structured_headers::ParameterizedItem* out) {
+         ParameterizedItem* out) {
   if (!data.ReadItem(&out->item))
     return false;
 
@@ -108,21 +113,63 @@ bool StructTraits<network::mojom::StructuredHeadersParameterizedItemDataView,
 }
 
 // static
-bool StructTraits<network::mojom::StructuredHeadersParameterizedMemberDataView,
-                  net::structured_headers::ParameterizedMember>::
-    Read(network::mojom::StructuredHeadersParameterizedMemberDataView data,
-         net::structured_headers::ParameterizedMember* out) {
-  if (!data.ReadMember(&out->member)) {
-    return false;
+StructuredHeadersParameterizedMemberDataView::Tag
+UnionTraits<StructuredHeadersParameterizedMemberDataView,
+            ParameterizedMember>::GetTag(const ParameterizedMember& in) {
+  if (in.GetWithParamsIfItem().has_value()) {
+    return StructuredHeadersParameterizedMemberDataView::Tag::kItem;
   }
-
-  out->member_is_inner_list = data.member_is_inner_list();
-
-  if (!data.ReadParameters(&out->params)) {
-    return false;
+  if (in.GetWithParamsIfInnerList().has_value()) {
+    return StructuredHeadersParameterizedMemberDataView::Tag::kInnerList;
   }
+  return StructuredHeadersParameterizedMemberDataView::Tag::kEmpty;
+}
 
-  return true;
+// static
+ParameterizedItem
+UnionTraits<StructuredHeadersParameterizedMemberDataView,
+            ParameterizedMember>::item(const ParameterizedMember& in) {
+  auto pair = in.GetWithParamsIfItem();
+  CHECK(pair.has_value());
+  return {pair->first, pair->second};
+}
+
+// static
+InnerListWrapper
+UnionTraits<StructuredHeadersParameterizedMemberDataView,
+            ParameterizedMember>::inner_list(const ParameterizedMember& in) {
+  auto pair = in.GetWithParamsIfInnerList();
+  CHECK(pair.has_value());
+  return {pair->first, pair->second};
+}
+
+// static
+bool UnionTraits<StructuredHeadersParameterizedMemberDataView,
+                 ParameterizedMember>::
+    Read(StructuredHeadersParameterizedMemberDataView data,
+         ParameterizedMember* out) {
+  switch (data.tag()) {
+    case StructuredHeadersParameterizedMemberDataView::Tag::kEmpty:
+      *out = ParameterizedMember();
+      return true;
+    case StructuredHeadersParameterizedMemberDataView::Tag::kItem: {
+      ParameterizedItem item;
+      if (!data.ReadItem(&item)) {
+        return false;
+      }
+      *out = ParameterizedMember(std::move(item.item), std::move(item.params));
+      return true;
+    }
+    case StructuredHeadersParameterizedMemberDataView::Tag::kInnerList: {
+      InnerListWrapper inner_list;
+      if (!data.ReadInnerList(&inner_list)) {
+        return false;
+      }
+      *out = ParameterizedMember(std::move(inner_list.items),
+                                 std::move(inner_list.params));
+      return true;
+    }
+  }
 }
 
 // static
@@ -135,7 +182,7 @@ bool StructTraits<network::mojom::StructuredHeadersDictionaryMemberDataView,
     return false;
   }
 
-  net::structured_headers::ParameterizedMember value;
+  ParameterizedMember value;
   if (!data.ReadValue(&value)) {
     return false;
   }
@@ -165,6 +212,14 @@ bool StructTraits<network::mojom::StructuredHeadersDictionaryDataView,
 
   *out = net::structured_headers::Dictionary(std::move(members));
   return true;
+}
+
+// static
+bool StructTraits<network::mojom::StructuredHeadersInnerListDataView,
+                  InnerListWrapper>::
+    Read(network::mojom::StructuredHeadersInnerListDataView data,
+         InnerListWrapper* out) {
+  return data.ReadItems(&out->items) && data.ReadParameters(&out->params);
 }
 
 }  // namespace mojo

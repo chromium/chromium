@@ -1562,6 +1562,11 @@ mojom("mojom_structured_headers") {
           cpp = "::net::structured_headers::Dictionary"
           move_only = true
         },
+        {
+          mojom = "network.mojom.StructuredHeadersInnerList"
+          cpp = "::net::structured_headers::InnerListWrapper"
+          move_only = true
+        },
       ]
       traits_headers =
           [ "//services/network/public/cpp/structured_headers_mojom_traits.h" ]

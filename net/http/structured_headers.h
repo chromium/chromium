@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/feature.h"
 #include "net/base/net_export.h"
@@ -60,6 +61,14 @@ inline std::string_view ItemTypeToString(
     structured_headers::Item::ItemType type) {
   return quiche::structured_headers::ItemTypeToString(type);
 }
+
+// Exposed only for Mojo typemapping. Do not use.
+// TODO(crbug.com/517204961): Replace this with `using InnerList =
+// quiche::structured_headers::InnerList`.
+struct InnerListWrapper {
+  std::vector<ParameterizedItem> items;
+  Parameters params;
+};
 
 }  // namespace net::structured_headers
 

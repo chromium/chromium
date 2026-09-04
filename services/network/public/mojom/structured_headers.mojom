@@ -36,11 +36,18 @@ struct StructuredHeadersParameterizedItem {
   array<StructuredHeadersParameter> parameters;
 };
 
-// Corresponds to net::structured_headers::ParameterizedMember.
-struct StructuredHeadersParameterizedMember {
-  array<StructuredHeadersParameterizedItem> member;
-  bool member_is_inner_list;
+struct StructuredHeadersInnerList {
+  array<StructuredHeadersParameterizedItem> items;
+
+  // Parameter order is significant, so a map is not sufficient.
   array<StructuredHeadersParameter> parameters;
+};
+
+// Corresponds to net::structured_headers::ParameterizedMember.
+union StructuredHeadersParameterizedMember {
+  uint8 empty;
+  StructuredHeadersParameterizedItem item;
+  StructuredHeadersInnerList inner_list;
 };
 
 // Corresponds to net::structured_headers::DictionaryMember.

@@ -99,23 +99,20 @@ struct COMPONENT_EXPORT(NETWORK_CPP_STRUCTURED_HEADERS)
 
 template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_STRUCTURED_HEADERS)
-    StructTraits<network::mojom::StructuredHeadersParameterizedMemberDataView,
-                 net::structured_headers::ParameterizedMember> {
-  static const std::vector<net::structured_headers::ParameterizedItem>& member(
-      const net::structured_headers::ParameterizedMember& in) {
-    return in.member;
+    UnionTraits<network::mojom::StructuredHeadersParameterizedMemberDataView,
+                net::structured_headers::ParameterizedMember> {
+  static network::mojom::StructuredHeadersParameterizedMemberDataView::Tag
+  GetTag(const net::structured_headers::ParameterizedMember&);
+
+  static uint8_t empty(const net::structured_headers::ParameterizedMember&) {
+    return 0;
   }
 
-  static bool member_is_inner_list(
-      const net::structured_headers::ParameterizedMember& in) {
-    return in.member_is_inner_list;
-  }
+  static net::structured_headers::ParameterizedItem item(
+      const net::structured_headers::ParameterizedMember&);
 
-  static const std::vector<
-      std::pair<std::string, net::structured_headers::Item>>&
-  parameters(const net::structured_headers::ParameterizedMember& in) {
-    return in.params;
-  }
+  static net::structured_headers::InnerListWrapper inner_list(
+      const net::structured_headers::ParameterizedMember&);
 
   static bool Read(network::mojom::StructuredHeadersParameterizedMemberDataView,
                    net::structured_headers::ParameterizedMember* out);
@@ -148,6 +145,25 @@ struct COMPONENT_EXPORT(NETWORK_CPP_STRUCTURED_HEADERS)
 
   static bool Read(network::mojom::StructuredHeadersDictionaryDataView,
                    net::structured_headers::Dictionary* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(NETWORK_CPP_STRUCTURED_HEADERS)
+    StructTraits<network::mojom::StructuredHeadersInnerListDataView,
+                 net::structured_headers::InnerListWrapper> {
+  static const std::vector<net::structured_headers::ParameterizedItem>& items(
+      const net::structured_headers::InnerListWrapper& in) {
+    return in.items;
+  }
+
+  static const std::vector<
+      std::pair<std::string, net::structured_headers::Item>>&
+  parameters(const net::structured_headers::InnerListWrapper& in) {
+    return in.params;
+  }
+
+  static bool Read(network::mojom::StructuredHeadersInnerListDataView,
+                   net::structured_headers::InnerListWrapper* out);
 };
 
 }  // namespace mojo

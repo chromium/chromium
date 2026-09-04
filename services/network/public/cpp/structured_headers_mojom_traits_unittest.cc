@@ -71,18 +71,19 @@ TEST(StructuredHeadersMojomTraitsTest,
 
 TEST(StructuredHeadersMojomTraitsTest, Dictionary_SerializeAndDeserialize) {
   const Dictionary kExpected({
-      {"abc",
-       ParameterizedMember({ParameterizedItem(Item("def"),
-                                              {
-                                                  Parameter("y", Item("s")),
-                                                  Parameter("x", Item("q")),
-                                                  Parameter("z", Item("r")),
-                                              })},
-                           /*member_is_inner_list=*/false, {})},
-      {"def", ParameterizedMember(
-                  {ParameterizedItem(Item("abc"), {}),
-                   ParameterizedItem(Item("xyz"), {Parameter("y", Item("q"))})},
-                  /*member_is_inner_list=*/true, {Parameter("z", Item("r"))})},
+      {"empty", ParameterizedMember()},
+      {"item", ParameterizedMember(Item("def"),
+                                   {
+                                       Parameter("y", Item("s")),
+                                       Parameter("x", Item("q")),
+                                       Parameter("z", Item("r")),
+                                   })},
+      {"inner-list",
+       ParameterizedMember(/*items=*/
+                           {ParameterizedItem(Item("abc"), {}),
+                            ParameterizedItem(Item("xyz"),
+                                              {Parameter("y", Item("q"))})},
+                           /*params=*/{Parameter("z", Item("r"))})},
   });
 
   Dictionary actual;
