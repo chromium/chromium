@@ -6,62 +6,63 @@
  * @fileoverview 'settings-clear-browsing-data-account-indicator' is an
  * indicator that informs users of the primary signed-in account.
  */
-import '//resources/cr_elements/cr_shared_style.css.js';
-import '//resources/cr_elements/cr_shared_vars.css.js';
-import '../settings_shared.css.js';
 
 import {assert} from '//resources/js/assert.js';
 import type {StoredAccount, SyncBrowserProxy, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './clear_browsing_data_account_indicator.html.js';
+import {getCss} from './clear_browsing_data_account_indicator.css.js';
+import {getHtml} from './clear_browsing_data_account_indicator.html.js';
 import {canDeleteAccountData} from './clear_browsing_data_signin_util.js';
 
-const SettingsClearBrowsingDataAccountIndicatorBase =
-    WebUiListenerMixin(PolymerElement);
+const SettingsClearBrowsingDataAccountIndicatorElementBase =
+    WebUiListenerMixinLit(CrLitElement);
 
-export class SettingsClearBrowsingDataAccountIndicator extends
-    SettingsClearBrowsingDataAccountIndicatorBase {
+export type ClearBrowsingDataAccountIndicatorElement =
+    SettingsClearBrowsingDataAccountIndicatorElement;
+
+export class SettingsClearBrowsingDataAccountIndicatorElement extends
+    SettingsClearBrowsingDataAccountIndicatorElementBase {
   static get is() {
     return 'settings-clear-browsing-data-account-indicator';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      shouldShowAccountIndicator_: {
-        type: Boolean,
-        value: false,
-        computed: 'computeShouldShowAvatarRow_(shownAccount_,' +
-            'syncStatus_.signedInState)',
-      },
+      shouldShowAccountIndicator_: {type: Boolean},
 
       /**
        * The primary signed-in account.
        */
-      shownAccount_: String,
+      shownAccount_: {type: Object},
 
       /**
        * The current sync status, supplied by SyncBrowserProxy.
        */
-      syncStatus_: Object,
+      syncStatus_: {type: Object},
     };
   }
 
-  declare private shouldShowAccountIndicator_: boolean;
-  declare private shownAccount_: StoredAccount|null;
-  declare private syncStatus_: SyncStatus|undefined;
+  protected accessor shouldShowAccountIndicator_: boolean = false;
+  protected accessor shownAccount_: StoredAccount|null = null;
+  private accessor syncStatus_: SyncStatus|undefined = undefined;
 
   private syncBrowserProxy_: SyncBrowserProxy =
       SyncBrowserProxyImpl.getInstance();
 
-  override ready() {
-    super.ready();
+  override connectedCallback() {
+    super.connectedCallback();
 
     this.syncBrowserProxy_.getStoredAccounts().then(
         this.handleStoredAccounts_.bind(this));
@@ -72,6 +73,17 @@ export class SettingsClearBrowsingDataAccountIndicator extends
         'stored-accounts-updated', this.handleStoredAccounts_.bind(this));
     this.addWebUiListener(
         'sync-status-changed', this.handleSyncStatus_.bind(this));
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('shownAccount_') ||
+        changedPrivateProperties.has('syncStatus_')) {
+      this.shouldShowAccountIndicator_ = this.computeShouldShowAvatarRow_();
+    }
   }
 
   /**
@@ -103,7 +115,7 @@ export class SettingsClearBrowsingDataAccountIndicator extends
     return canDeleteAccountData(this.syncStatus_);
   }
 
-  private getProfileImageSrc_(): string {
+  protected getProfileImageSrc_(): string {
     assert(this.shownAccount_);
 
     // image can be undefined if the account has not set an avatar photo.
@@ -115,10 +127,10 @@ export class SettingsClearBrowsingDataAccountIndicator extends
 declare global {
   interface HTMLElementTagNameMap {
     'settings-clear-browsing-data-account-indicator':
-        SettingsClearBrowsingDataAccountIndicator;
+        SettingsClearBrowsingDataAccountIndicatorElement;
   }
 }
 
 customElements.define(
-    SettingsClearBrowsingDataAccountIndicator.is,
-    SettingsClearBrowsingDataAccountIndicator);
+    SettingsClearBrowsingDataAccountIndicatorElement.is,
+    SettingsClearBrowsingDataAccountIndicatorElement);

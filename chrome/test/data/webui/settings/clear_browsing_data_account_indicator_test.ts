@@ -6,11 +6,10 @@
 import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import type {SettingsClearBrowsingDataAccountIndicator} from 'chrome://settings/lazy_load.js';
+import type {SettingsClearBrowsingDataAccountIndicatorElement} from 'chrome://settings/lazy_load.js';
 import {SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {simulateStoredAccounts} from './sync_test_util.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
@@ -18,7 +17,7 @@ import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 // clang-format on
 
 suite('DeleteBrowsingDataAccountIndicator', function() {
-  let indicator: SettingsClearBrowsingDataAccountIndicator;
+  let indicator: SettingsClearBrowsingDataAccountIndicatorElement;
   let testSyncBrowserProxy: TestSyncBrowserProxy;
 
   setup(function() {
@@ -35,20 +34,18 @@ suite('DeleteBrowsingDataAccountIndicator', function() {
 
     await testSyncBrowserProxy.whenCalled('getSyncStatus');
     await testSyncBrowserProxy.whenCalled('getStoredAccounts');
-    await flushTasks();
+    await microtasksFinished();
   }
 
   function checkAccountIndicatorVisibility() {
-    const avatarRow =
-        indicator.shadowRoot!.querySelector<HTMLElement>('#avatarRow');
-    return isVisible(avatarRow);
+    return isChildVisible(indicator, '#avatarRow');
   }
 
   function checkShownAccount(name: string, email: string) {
     // Shown account must match the primary account which is the first account
     // in the StoredAccounts list.
     const userInfo =
-        indicator.shadowRoot!.querySelector<HTMLElement>('#userInfo')!;
+        indicator.shadowRoot.querySelector<HTMLElement>('#userInfo');
     assertTrue(!!userInfo);
     const title = userInfo.children[0]!.textContent;
     const subtitle = userInfo.children[1]!.textContent;
@@ -75,7 +72,7 @@ suite('DeleteBrowsingDataAccountIndicator', function() {
       signedInState: SignedInState.SIGNED_OUT,
       hasError: false,
     });
-    await flushTasks();
+    await microtasksFinished();
     assertFalse(checkAccountIndicatorVisibility());
 
     // Signin pending: Account indicator is hidden.
@@ -83,7 +80,7 @@ suite('DeleteBrowsingDataAccountIndicator', function() {
       signedInState: SignedInState.SIGNED_IN_PAUSED,
       hasError: false,
     });
-    await flushTasks();
+    await microtasksFinished();
     assertFalse(checkAccountIndicatorVisibility());
 
     // Web only signin: Account indicator is hidden.
@@ -91,7 +88,7 @@ suite('DeleteBrowsingDataAccountIndicator', function() {
       signedInState: SignedInState.WEB_ONLY_SIGNED_IN,
       hasError: false,
     });
-    await flushTasks();
+    await microtasksFinished();
     assertFalse(checkAccountIndicatorVisibility());
 
     // Signed in: Account indicator is Visible.
@@ -99,7 +96,7 @@ suite('DeleteBrowsingDataAccountIndicator', function() {
       signedInState: SignedInState.SIGNED_IN,
       hasError: false,
     });
-    await flushTasks();
+    await microtasksFinished();
     assertTrue(checkAccountIndicatorVisibility());
     checkShownAccount('fooName', 'foo@foo.com');
 
@@ -108,7 +105,7 @@ suite('DeleteBrowsingDataAccountIndicator', function() {
       signedInState: SignedInState.SYNCING,
       hasError: false,
     });
-    await flushTasks();
+    await microtasksFinished();
     assertTrue(checkAccountIndicatorVisibility());
     checkShownAccount('fooName', 'foo@foo.com');
 
@@ -118,13 +115,13 @@ suite('DeleteBrowsingDataAccountIndicator', function() {
       hasError: true,
       statusAction: StatusAction.REAUTHENTICATE,
     });
-    await flushTasks();
+    await microtasksFinished();
     assertFalse(checkAccountIndicatorVisibility());
   });
 
   test('IndicatorVisibilityNoStoredAccounts', async function() {
     simulateStoredAccounts([]);
-    await flushTasks();
+    await microtasksFinished();
     assertFalse(checkAccountIndicatorVisibility());
   });
 });
