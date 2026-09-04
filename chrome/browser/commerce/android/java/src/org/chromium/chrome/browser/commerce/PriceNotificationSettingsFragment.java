@@ -36,7 +36,7 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefService;
-import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
@@ -70,7 +70,7 @@ public class PriceNotificationSettingsFragment extends ChromeBaseSettingsFragmen
         mEmailNotificationsSwitch =
                 (ChromeSwitchPreference) findPreference(PREF_EMAIL_NOTIFICATIONS);
         mEmailNotificationsSwitch.setOnPreferenceChangeListener(this::onPreferenceChange);
-        CoreAccountInfo info =
+        AccountInfo info =
                 assumeNonNull(IdentityServicesProvider.get().getIdentityManager(getProfile()))
                         .getPrimaryAccountInfo();
         if (info != null) {
