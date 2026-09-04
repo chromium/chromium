@@ -18,7 +18,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Shadows;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.ContextUtils;
@@ -26,7 +25,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Unit tests for {@link DownloadDocumentUriBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class DownloadDocumentUriBridgeTest {
     private static final String DOCUMENTS_AUTHORITY = "org.chromium.test.documents";
 
