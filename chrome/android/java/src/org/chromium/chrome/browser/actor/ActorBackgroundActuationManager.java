@@ -15,6 +15,8 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.compositor.CompositorViewHolderSupplier;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
@@ -25,6 +27,7 @@ import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -247,8 +250,30 @@ public class ActorBackgroundActuationManager {
                     ActorTabStateHelper.restoreActiveWindowBackgroundTabs(
                             selector, windowId, windowAndroid, targetSessions, tabDelegateFactory);
             mBackgroundSessions.removeAll(restoredSessions);
+
+            if (!restoredSessions.isEmpty()) {
+                // Synchronously save tab state to disk upon restoring warm background
+                // sessions. When Chrome is in the background or stopped, deferred async saves
+                // may not execute before process or Foreground Service terminates, which
+                // could cause tab loss on the next cold start.
+                flushTabStateToDisk(activity);
+            }
+
             if (mBackgroundSessions.isEmpty()) {
                 return;
+            }
+        }
+    }
+
+    private static void flushTabStateToDisk(Activity activity) {
+        if (!(activity instanceof ChromeTabbedActivity cta)) {
+            return;
+        }
+        TabModelOrchestrator orchestrator = cta.getTabModelOrchestratorSupplier().get();
+        if (orchestrator != null) {
+            TabPersistentStore store = orchestrator.getTabPersistentStore();
+            if (store != null) {
+                store.saveState();
             }
         }
     }

@@ -340,7 +340,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     private final SettableMonotonicObservableSupplier<ShareDelegate> mShareDelegateSupplier =
             ObservableSuppliers.createMonotonic();
 
-    private final SettableMonotonicObservableSupplier<TabModelOrchestrator>
+    private SettableMonotonicObservableSupplier<TabModelOrchestrator>
             mTabModelOrchestratorSupplier = ObservableSuppliers.createMonotonic();
 
     /** Used to access the {@link TabModelSelector} from {@link WindowAndroid}. */
@@ -2455,6 +2455,14 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     public final MonotonicObservableSupplier<TabModelOrchestrator>
             getTabModelOrchestratorSupplier() {
         return mTabModelOrchestratorSupplier;
+    }
+
+    /** Sets the {@link TabModelOrchestrator} for testing purposes. */
+    public void setTabModelOrchestratorForTesting(TabModelOrchestrator tabModelOrchestrator) {
+        if (mTabModelOrchestratorSupplier == null) {
+            mTabModelOrchestratorSupplier = ObservableSuppliers.createMonotonic();
+        }
+        mTabModelOrchestratorSupplier.set(tabModelOrchestrator);
     }
 
     /** Returns an {@link MonotonicObservableSupplier} for {@link TabModelSelector}. */

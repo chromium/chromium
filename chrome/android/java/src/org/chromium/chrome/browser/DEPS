@@ -134,4 +134,7 @@ specific_include_rules = {
   "DragAndDropLauncherActivity\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
   ],
+  "ActorBackgroundActuationManager\\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
+  ],
 }
