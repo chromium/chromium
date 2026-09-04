@@ -228,14 +228,6 @@ export class HostMessageHandler implements PostMessageHandler<WebClientHost> {
     this.host.captureRegionObserver = observer;
   }
 
-  subscribeToZoomLevel(): void {
-    this.host.subscribeToZoomLevel();
-  }
-
-  unsubscribeFromZoomLevel(): void {
-    this.host.unsubscribeFromZoomLevel();
-  }
-
   deleteCapturedRegion(request: {tabId: string, regionId: string}) {
     this.handler.deleteCapturedRegion(
         idFromClient(request.tabId), request.regionId);

@@ -43,13 +43,6 @@ class InFrameGlicBoot {
             directPair.host.router,
         );
 
-        const updateZoom = () => {
-          hostApi?.onZoomLevelChanged(
-              Math.round((window.devicePixelRatio || 1.0) * 100) / 100);
-        };
-        window.visualViewport?.addEventListener('resize', updateZoom);
-        window.addEventListener('resize', updateZoom);
-
         window.addEventListener('click', (e: MouseEvent) => {
           const target = (e.target as HTMLElement)?.closest?.('a');
           if (target && target.getAttribute('target') === '_blank' &&

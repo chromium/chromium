@@ -445,14 +445,6 @@ export const WebClientHostDef = defInterface({
       histogram: {id: 100},
     },
     {
-      name: 'subscribeToZoomLevel',
-      histogram: {id: 96},
-    },
-    {
-      name: 'unsubscribeFromZoomLevel',
-      histogram: {id: 97},
-    },
-    {
       name: 'createAnnotationHandler',
       request: defMessage<{
         annotationReceiver: PendingReceiver<AnnotationHost>,
@@ -627,8 +619,8 @@ export const RECORDED_REQUEST_IDS = {
   OnActionSubmitted: 93,
   SubscribeToTabFavicon: 94,
   // Do not reuse deleted request ID: 95,
-  SubscribeToZoomLevel: 96,
-  UnsubscribeFromZoomLevel: 97,
+  // Do not reuse deleted request ID: 96,
+  // Do not reuse deleted request ID: 97,
   OnExperimentalTriggeringUpdate: 98,
   OnOptinImpression: 99,
   ProcessCounterAbuseVerdict: 100,
