@@ -165,12 +165,13 @@ if (use_fuzzing_engine && !is_win) {
 # ClusterFuzz bots.
 
 # To catch bugs that only present themselves in content fuzzers, e.g.
-# https://crbug.com/524216727, depend on content when possible. In component
-# builds, //content/public/browser brings in many shared libraries. Centipede
-# attempts to symbolize all of them, which causes the tests to time out. Avoid
-# bringing in so many symbols to avoid this.
+# https://crbug.com/524216727, depend on content when possible.
+#
+# In component builds, //content/public/browser brings in many shared libraries:
+# - Centipede attempts to symbolize all of them, which causes tests to time out.
+# - Debug builds take too long to load so many symbols, which also causes timeouts.
 _test_fuzzer_extra_deps = []
-if (use_blink && !use_centipede) {
+if (use_blink && !use_centipede && !is_debug) {
   _test_fuzzer_extra_deps += [ "//content/public/browser" ]
 }
 

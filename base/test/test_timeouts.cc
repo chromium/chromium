@@ -72,6 +72,11 @@ void InitializeTimeout(const char* switch_name,
   // ASan/Win has not been optimized yet, give it a higher
   // timeout multiplier. See http://crbug.com/412471
   constexpr int kTimeoutMultiplier = 3;
+#elif defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_MAC)
+  // ASan/Mac has significant overhead during process startup when dyld resolves
+  // symbols and loads dynamic libraries with ASan hooks, especially under
+  // parallel test execution.
+  constexpr int kTimeoutMultiplier = 3;
 #elif defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_CHROMEOS)
   // Typical slowdown for memory sanitizer is 2x.
   constexpr int kTimeoutMultiplier = 2 * kAshBaseMultiplier;
