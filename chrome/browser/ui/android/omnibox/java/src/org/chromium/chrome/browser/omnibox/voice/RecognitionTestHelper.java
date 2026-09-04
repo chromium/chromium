@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionIntentHandler.VoiceResult;
 
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import java.util.List;
  * A helper class that simplifies creation of {@link VoiceRecognitionHandler}'s test dependencies
  * and provides utility methods for tests.
  */
+@NullMarked
 public class RecognitionTestHelper {
     /**
      * Creates a test bundle.
@@ -44,7 +46,11 @@ public class RecognitionTestHelper {
         for (int i = 0; i < texts.length; ++i) {
             VoiceResult result = results.get(i);
             assertEquals("Match text is not equal", texts[i], result.getMatch());
-            assertEquals("Confidence is not equal", confidences[i], result.getConfidence(), 0);
+            assertEquals(
+                    "Confidence is not equal",
+                    confidences[i],
+                    result.getConfidence(),
+                    /* delta= */ 0);
         }
     }
 }

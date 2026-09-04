@@ -60,7 +60,7 @@ public class VoiceRecognitionUtil {
 
         if (!isVoiceSearchPermittedByPolicy(/* strictPolicyCheck= */ false)) return false;
 
-        return isRecognitionIntentPresent(true);
+        return isRecognitionIntentPresent(/* useCachedValue= */ true);
     }
 
     /**

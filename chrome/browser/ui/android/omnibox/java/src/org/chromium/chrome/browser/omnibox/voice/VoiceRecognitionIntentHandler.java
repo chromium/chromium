@@ -128,7 +128,9 @@ public class VoiceRecognitionIntentHandler {
     public boolean isVoiceSearchEnabled() {
         if (mWindowAndroid == null) return false;
         if (mWindowAndroid.getActivity().get() == null) return false;
-        if (!VoiceRecognitionUtil.isVoiceSearchPermittedByPolicy(false)) return false;
+        if (!VoiceRecognitionUtil.isVoiceSearchPermittedByPolicy(/* strictPolicyCheck= */ false)) {
+            return false;
+        }
 
         if (mIsVoiceSearchEnabledCached == null) {
             mIsVoiceSearchEnabledCached = VoiceRecognitionUtil.isVoiceSearchEnabled(mWindowAndroid);
@@ -184,10 +186,11 @@ public class VoiceRecognitionIntentHandler {
                     intent.putExtra(
                             RecognizerIntent.EXTRA_CALLING_PACKAGE,
                             activity.getComponentName().flattenToString());
-                    intent.putExtra(RecognizerIntent.EXTRA_WEB_SEARCH_ONLY, true);
+                    intent.putExtra(RecognizerIntent.EXTRA_WEB_SEARCH_ONLY, /* value= */ true);
 
                     if (!showSpeechRecognitionIntent(intent, source, callback)) {
-                        VoiceRecognitionUtil.isRecognitionIntentPresent(false);
+                        VoiceRecognitionUtil.isRecognitionIntentPresent(
+                                /* useCachedValue= */ false);
                         recordVoiceSearchFailureEvent(source);
                         callback.onAvailabilityImpacted();
                     }
@@ -258,19 +261,19 @@ public class VoiceRecognitionIntentHandler {
 
                     List<VoiceResult> results = convertBundleToVoiceResults(data.getExtras());
                     if (results == null || results.isEmpty()) {
-                        recordVoiceSearchResult(false);
+                        recordVoiceSearchResult(/* result= */ false);
                         callback.onCanceled();
                         return;
                     }
 
                     VoiceResult topResult = results.get(0);
                     if (TextUtils.isEmpty(topResult.getMatch())) {
-                        recordVoiceSearchResult(false);
+                        recordVoiceSearchResult(/* result= */ false);
                         callback.onCanceled();
                         return;
                     }
 
-                    recordVoiceSearchResult(true);
+                    recordVoiceSearchResult(/* result= */ true);
                     recordVoiceSearchConfidenceValue(topResult.getConfidence());
 
                     recordSuccessMetrics(source);

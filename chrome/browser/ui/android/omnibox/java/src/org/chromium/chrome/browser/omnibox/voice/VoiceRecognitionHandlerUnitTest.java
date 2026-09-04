@@ -280,7 +280,7 @@ public class VoiceRecognitionHandlerUnitTest {
         doReturn(false).when(mPermissionDelegate).hasPermission(anyString());
         verify(mObserver, never()).onVoiceAvailabilityImpacted();
         doReturn(true).when(mPermissionDelegate).canRequestPermission(anyString());
-        setReportedPermissionResult(PackageManager.PERMISSION_DENIED);
+        setReportedPermissionResult(/* result= */ PackageManager.PERMISSION_DENIED);
         mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX, () -> {});
         verify(mIntentHandler, never()).recordVoiceSearchStartEvent(anyInt());
         verify(mObserver, never()).onVoiceAvailabilityImpacted();
@@ -314,7 +314,8 @@ public class VoiceRecognitionHandlerUnitTest {
 
     @Test
     public void testStartVoiceRecognition_StartsVoiceSearchWithSuccessfulIntent() {
-        setVoiceResult(Activity.RESULT_OK, /* text= */ null, /* confidence= */ 0.f);
+        setVoiceResult(
+                /* resultCode= */ Activity.RESULT_OK, /* text= */ null, /* confidence= */ 0.f);
         mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX, () -> {});
         verify(mIntentHandler).recordVoiceSearchStartEvent(eq(VoiceInteractionSource.OMNIBOX));
         verify(mObserver, never()).onVoiceAvailabilityImpacted();
@@ -328,7 +329,10 @@ public class VoiceRecognitionHandlerUnitTest {
      */
     @Test
     public void testCallback_noVoiceSearchResultWithBadResultCode() {
-        setVoiceResult(Activity.RESULT_FIRST_USER, /* text= */ null, /* confidence= */ 0.f);
+        setVoiceResult(
+                /* resultCode= */ Activity.RESULT_FIRST_USER,
+                /* text= */ null,
+                /* confidence= */ 0.f);
 
         mHandler.startVoiceRecognition(VoiceInteractionSource.NTP, () -> {});
         verify(mIntentHandler).recordVoiceSearchStartEvent(eq(VoiceInteractionSource.NTP));
@@ -338,7 +342,10 @@ public class VoiceRecognitionHandlerUnitTest {
 
     @Test
     public void testCallback_noVoiceSearchResultCanceled() {
-        setVoiceResult(Activity.RESULT_CANCELED, /* text= */ null, /* confidence= */ 0.f);
+        setVoiceResult(
+                /* resultCode= */ Activity.RESULT_CANCELED,
+                /* text= */ null,
+                /* confidence= */ 0.f);
 
         mHandler.startVoiceRecognition(VoiceInteractionSource.NTP, () -> {});
         verify(mIntentHandler).recordVoiceSearchStartEvent(eq(VoiceInteractionSource.NTP));
@@ -348,7 +355,8 @@ public class VoiceRecognitionHandlerUnitTest {
 
     @Test
     public void testCallback_noVoiceSearchResultWithNullAutocompleteResult() {
-        setVoiceResult(Activity.RESULT_OK, /* text= */ null, /* confidence= */ 0.f);
+        setVoiceResult(
+                /* resultCode= */ Activity.RESULT_OK, /* text= */ null, /* confidence= */ 0.f);
 
         mHandler.startVoiceRecognition(VoiceInteractionSource.SEARCH_WIDGET, () -> {});
         verify(mIntentHandler)
@@ -358,7 +366,7 @@ public class VoiceRecognitionHandlerUnitTest {
 
     @Test
     public void testCallback_noVoiceSearchResultWithNoMatch() {
-        setVoiceResult(Activity.RESULT_OK, /* text= */ "", /* confidence= */ 1.f);
+        setVoiceResult(/* resultCode= */ Activity.RESULT_OK, /* text= */ "", /* confidence= */ 1.f);
         mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX, () -> {});
         verify(mIntentHandler).recordVoiceSearchStartEvent(eq(VoiceInteractionSource.OMNIBOX));
         verify(mIntentHandler).recordVoiceSearchResult(eq(false));
@@ -368,7 +376,10 @@ public class VoiceRecognitionHandlerUnitTest {
     public void testCallback_successWithLowConfidence() {
         float confidence =
                 VoiceRecognitionHandler.VOICE_SEARCH_CONFIDENCE_NAVIGATE_THRESHOLD - 0.01f;
-        setVoiceResult(Activity.RESULT_OK, /* text= */ "testing", /* confidence= */ confidence);
+        setVoiceResult(
+                /* resultCode= */ Activity.RESULT_OK,
+                /* text= */ "testing",
+                /* confidence= */ confidence);
 
         mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX, () -> {});
         verify(mIntentHandler).recordVoiceSearchStartEvent(eq(VoiceInteractionSource.OMNIBOX));
@@ -387,9 +398,10 @@ public class VoiceRecognitionHandlerUnitTest {
     public void testCallback_successWithHighConfidence() {
         // Needs to run on the UI thread because we use the TemplateUrlService on success.
         setVoiceResult(
-                Activity.RESULT_OK,
+                /* resultCode= */ Activity.RESULT_OK,
                 /* text= */ "testing",
-                VoiceRecognitionHandler.VOICE_SEARCH_CONFIDENCE_NAVIGATE_THRESHOLD);
+                /* confidence= */ VoiceRecognitionHandler
+                        .VOICE_SEARCH_CONFIDENCE_NAVIGATE_THRESHOLD);
         mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX, () -> {});
         verify(mIntentHandler).recordVoiceSearchStartEvent(eq(VoiceInteractionSource.OMNIBOX));
         verify(mIntentHandler).recordVoiceSearchFinishEvent(eq(VoiceInteractionSource.OMNIBOX));
@@ -461,7 +473,10 @@ public class VoiceRecognitionHandlerUnitTest {
     @Test
     public void testHandleTranscriptionResult_aimRequestLowConfidence_noUrlNavigation() {
         float confidence = 0;
-        setVoiceResult(Activity.RESULT_OK, /* text= */ "voice text", confidence);
+        setVoiceResult(
+                /* resultCode= */ Activity.RESULT_OK,
+                /* text= */ "voice text",
+                /* confidence= */ confidence);
 
         mAutocompleteInput.setRequestType(AutocompleteRequestType.AI_MODE);
         doReturn(mFuseboxSessionState).when(mDataProvider).getFuseboxSessionState();
