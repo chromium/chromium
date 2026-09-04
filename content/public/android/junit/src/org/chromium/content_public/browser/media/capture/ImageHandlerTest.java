@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -465,5 +466,39 @@ public class ImageHandlerTest {
         final Image image = mock(Image.class);
         when(image.getFormat()).thenReturn(ImageFormat.JPEG);
         onImageAvailable(image);
+    }
+
+    @Test
+    public void testSynchronousReleaseDoesNotCauseStackOverflow() {
+        // Mock a scenario where delegate invokes releaseCb synchronously on every frame,
+        // mirroring DesktopCapturerAndroid::ProcessRgbaFrame().
+        doAnswer(
+                        invocation -> {
+                            Runnable releaseCb = invocation.getArgument(1);
+                            releaseCb.run();
+                            return null;
+                        })
+                .when(mDelegate)
+                .onRgbaFrameAvailable(any(), any(), anyLong(), any(), any());
+
+        // Return a new image on every call, simulating a continuous burst of incoming frames.
+        // Without the reentrancy guard, this would recurse infinitely and crash with
+        // StackOverflowError.
+        final Image image = createMockImage();
+        when(mImageReader.acquireLatestImage()).thenReturn(image);
+
+        mImageHandler.onImageAvailable(mImageReader);
+
+        // Verification: onRgbaFrameAvailable was invoked once, the image was closed,
+        // and execution returned cleanly with 0 acquired images remaining.
+        verify(mDelegate, times(1)).onRgbaFrameAvailable(any(), any(), anyLong(), any(), any());
+        verify(image, times(1)).close();
+        assertEquals(0, mImageHandler.getAcquiredImageCountForTesting());
+
+        // Verify that subsequent callbacks from the message loop continue to process normally.
+        mImageHandler.onImageAvailable(mImageReader);
+        verify(mDelegate, times(2)).onRgbaFrameAvailable(any(), any(), anyLong(), any(), any());
+        verify(image, times(2)).close();
+        assertEquals(0, mImageHandler.getAcquiredImageCountForTesting());
     }
 }

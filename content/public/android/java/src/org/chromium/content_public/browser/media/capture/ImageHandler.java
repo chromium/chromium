@@ -51,6 +51,9 @@ class ImageHandler implements ImageReader.OnImageAvailableListener {
     private int mAcquiredImageCount;
     private boolean mClosing;
 
+    /** Whether we are actively acquiring and dispatching images. */
+    private boolean mIsAcquiring;
+
     /**
      * Constructs an ImageHandler.
      *
@@ -176,36 +179,46 @@ class ImageHandler implements ImageReader.OnImageAvailableListener {
 
     @Override
     public void onImageAvailable(ImageReader reader) {
-        // Note that we can't use `acquireLatestImage` here because we can't close older
-        // images until the C++ side is finished using them.
-        final Image image = maybeAcquireImage(reader);
+        // Prevent re-entrant recursion if the delegate synchronously releases the image
+        // during frame processing, which calls releaseImage() -> onImageAvailable().
+        if (mIsAcquiring) return;
 
-        // If we have not yet closed images, this may return null. We need to retry
-        // after closing an image.
-        if (image == null) return;
+        mIsAcquiring = true;
+        try {
+            // Note that we can't use `acquireLatestImage` here because we can't close older
+            // images until the C++ side is finished using them.
+            final Image image = maybeAcquireImage(reader);
 
-        switch (image.getFormat()) {
-            case PixelFormat.RGBA_8888:
-                assert image.getPlanes().length == 1;
-                final Plane plane = image.getPlanes()[0];
-                mDelegate.onRgbaFrameAvailable(
-                        this,
-                        () -> releaseImage(reader, image),
-                        image.getTimestamp(),
-                        plane,
-                        image.getCropRect());
-                break;
-            case ImageFormat.YUV_420_888:
-                assert image.getPlanes().length == 3;
-                mDelegate.onI420FrameAvailable(
-                        this,
-                        () -> releaseImage(reader, image),
-                        image.getTimestamp(),
-                        image.getPlanes(),
-                        image.getCropRect());
-                break;
-            default:
-                throw new IllegalStateException("Unexpected image format: " + image.getFormat());
+            // If we have not yet closed images, this may return null. We need to retry
+            // after closing an image.
+            if (image == null) return;
+
+            switch (image.getFormat()) {
+                case PixelFormat.RGBA_8888:
+                    assert image.getPlanes().length == 1;
+                    final Plane plane = image.getPlanes()[0];
+                    mDelegate.onRgbaFrameAvailable(
+                            this,
+                            () -> releaseImage(reader, image),
+                            image.getTimestamp(),
+                            plane,
+                            image.getCropRect());
+                    break;
+                case ImageFormat.YUV_420_888:
+                    assert image.getPlanes().length == 3;
+                    mDelegate.onI420FrameAvailable(
+                            this,
+                            () -> releaseImage(reader, image),
+                            image.getTimestamp(),
+                            image.getPlanes(),
+                            image.getCropRect());
+                    break;
+                default:
+                    throw new IllegalStateException(
+                            "Unexpected image format: " + image.getFormat());
+            }
+        } finally {
+            mIsAcquiring = false;
         }
     }
 
