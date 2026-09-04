@@ -41,7 +41,11 @@ static_library("print_compositor") {
       "print_watermark.h",
     ]
 
-    deps += [ "//components/enterprise/watermarking" ]
+    deps += [
+      "//components/enterprise/watermarking",
+      "//pdf",
+      "//pdf:pdf_watermark_overlayer",
+    ]
 
     public_deps += [ "//components/enterprise/watermarking/mojom" ]
   }
@@ -66,9 +70,17 @@ if (enable_printing) {
     if (enterprise_watermark) {
       sources += [ "print_watermark_unittest.cc" ]
 
+      data = [
+        "//components/test/data/enterprise/watermark_pdf_overlay.png",
+        "//components/test/data/enterprise/watermark_pdf_overlay_mac.png",
+        "//components/test/data/enterprise/watermark_pdf_overlay_win.png",
+      ]
+
       deps += [
         "//components/enterprise/watermarking",
         "//components/enterprise/watermarking:watermark_test_utils",
+        "//pdf",
+        "//pdf:pdf_watermark_overlayer",
       ]
     }
   }

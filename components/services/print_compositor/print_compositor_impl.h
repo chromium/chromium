@@ -149,10 +149,9 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
 
   // Make these functions virtual so tests can override them.
   virtual void DrawPage(SkDocument* doc, const SkDocumentPage& page);
-  virtual void FulfillRequest(
-      base::span<const uint8_t> serialized_content,
-      const ContentToFrameMap& subframe_content_map,
-      CompositePagesCallback callback);
+  virtual void FulfillRequest(base::span<const uint8_t> serialized_content,
+                              const ContentToFrameMap& subframe_content_map,
+                              CompositePagesCallback callback);
   virtual void FulfillPdfRequest(
       base::ReadOnlySharedMemoryRegion serialized_content,
       CompositePagesCallback callback);
@@ -317,6 +316,11 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
   // demand for multiple addons, this can be easily modified to accommodate
   // that.
   std::unique_ptr<Addon> addon_;
+
+  // Set to true if an addon (e.g. enterprise watermark) was requested but
+  // failed to initialize. When true, subsequent composite requests will fail-
+  // closed.
+  bool addon_init_failed_ = false;
 
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
   // Points at `addon_` if `addon_` is a PrintWatermark.

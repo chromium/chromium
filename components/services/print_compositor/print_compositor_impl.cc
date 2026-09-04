@@ -127,6 +127,7 @@ PrintCompositorImpl::~PrintCompositorImpl() {
 
 void PrintCompositorImpl::SetAddonForTesting(std::unique_ptr<Addon> addon) {
   addon_ = std::move(addon);
+  addon_init_failed_ = false;
 }
 
 void PrintCompositorImpl::NotifyUnavailableSubframe(uint64_t frame_guid) {
@@ -210,6 +211,11 @@ void PrintCompositorImpl::CompositeDocument(
 
 void PrintCompositorImpl::PrepareToCompositeDocument(
     mojom::PrintCompositor::PrepareToCompositeDocumentCallback callback) {
+  if (addon_init_failed_) {
+    std::move(callback).Run(
+        mojom::PrintCompositor::Status::kContentFormatError);
+    return;
+  }
   CHECK(!doc_info_);
   doc_info_ = std::make_unique<DocumentInfo>();
   std::move(callback).Run(mojom::PrintCompositor::Status::kSuccess);
@@ -321,6 +327,12 @@ void PrintCompositorImpl::HandleCompositionRequest(
     const ContentToFrameMap& subframe_content_map,
     bool is_pdf,
     CompositePagesCallback callback) {
+  if (addon_init_failed_) {
+    std::move(callback).Run(mojom::PrintCompositor::Status::kContentFormatError,
+                            base::ReadOnlySharedMemoryRegion());
+    return;
+  }
+
   if (is_pdf) {
     FulfillPdfRequest(std::move(serialized_content), std::move(callback));
     return;
@@ -576,13 +588,14 @@ void PrintCompositorImpl::SetTitle(const std::string& title) {
 void PrintCompositorImpl::SetWatermarkBlock(
     watermark::mojom::WatermarkBlockPtr watermark_block) {
   if (watermark_block) {
-    auto watermark =
-        std::make_unique<PrintWatermark>(std::move(watermark_block));
+    auto watermark = PrintWatermark::Create(std::move(watermark_block));
     watermark_for_testing_ = watermark.get();
     addon_ = std::move(watermark);
+    addon_init_failed_ = !addon_;
   } else {
     watermark_for_testing_ = nullptr;
     addon_.reset();
+    addon_init_failed_ = false;
   }
 }
 #endif

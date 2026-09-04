@@ -9,6 +9,8 @@ include_rules = [
   "+content/public/common",
   "+content/public/utility",
   "+mojo/public/cpp",
+  "+pdf/pdf.h",
+  "+pdf/pdf_watermark_overlayer.h",
   "+printing/backend",
   "+printing/buildflags",
   "+printing/common",
