@@ -26,6 +26,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/components/settings/scoped_timezone_settings.h"
 #include "components/account_id/account_id.h"
 #include "google_apis/common/api_error_codes.h"
 
@@ -336,6 +337,7 @@ TEST_F(CalendarEventFetchTest, HaveEvents) {
 }
 
 TEST_F(CalendarEventFetchTest, FetchEventsForNonPrimaryCalendar) {
+  ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
   RegisterClient();
 
   // The month for which we want to fetch events.
