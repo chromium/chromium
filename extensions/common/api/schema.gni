@@ -63,7 +63,7 @@ if (enable_guest_view) {
   ]
   extensions_types_only_schema_files_ += [
     "extension_options_internal.webidl",
-    "icon_variants.idl",
+    "icon_variants.webidl",
   ]
 }
 
