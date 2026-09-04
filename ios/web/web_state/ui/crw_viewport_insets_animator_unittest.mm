@@ -87,4 +87,57 @@ TEST_F(CRWViewportInsetsAnimatorTest, StopAnimationCancelsDisplayLink) {
   EXPECT_EQ(0, updateCount);
 }
 
+// Tests that high initial velocity producing spring overshoot does not result
+// in negative insets.
+TEST_F(CRWViewportInsetsAnimatorTest,
+       SpringOvershootClampsInsetsToNonNegative) {
+  const NSTimeInterval duration = 0.2;
+  UIEdgeInsets startInsets = UIEdgeInsetsMake(0, 0, 50, 0);
+  UIEdgeInsets targetInsets = UIEdgeInsetsZero;
+  __block BOOL reportedNegativeInset = NO;
+  __block UIEdgeInsets lastReportedInsets = UIEdgeInsetsZero;
+
+  CRWViewportInsetsAnimator* animator = [[CRWViewportInsetsAnimator alloc]
+      initWithStartInsets:startInsets
+             targetInsets:targetInsets
+                 duration:duration
+          initialVelocity:200.0
+            updateHandler:^(UIEdgeInsets insets) {
+              lastReportedInsets = insets;
+              if (insets.top < 0 || insets.left < 0 || insets.bottom < 0 ||
+                  insets.right < 0) {
+                reportedNegativeInset = YES;
+              }
+            }
+               completion:nil];
+
+  [animator start];
+
+  id mockDisplayLink = OCMClassMock([CADisplayLink class]);
+  __block CFTimeInterval mockTimestamp = 100.0;
+  [[[mockDisplayLink stub] andDo:^(NSInvocation* invocation) {
+    [invocation setReturnValue:&mockTimestamp];
+  }] timestamp];
+
+  // Tick 1: start (t = 0.0)
+  mockTimestamp = 100.0;
+  [animator handleDisplayLink:mockDisplayLink];
+
+  // Tick 2: intermediate tick where spring overshoots (t = 0.05s)
+  mockTimestamp = 100.05;
+  [animator handleDisplayLink:mockDisplayLink];
+
+  EXPECT_FALSE(reportedNegativeInset);
+  EXPECT_GE(animator.currentInsets.bottom, 0.0);
+  EXPECT_GE(lastReportedInsets.bottom, 0.0);
+
+  // Tick 3: end (t = 0.2s)
+  mockTimestamp = 100.2;
+  [animator handleDisplayLink:mockDisplayLink];
+
+  EXPECT_FALSE(reportedNegativeInset);
+  EXPECT_TRUE(
+      UIEdgeInsetsEqualToEdgeInsets(targetInsets, animator.currentInsets));
+}
+
 }  // namespace
