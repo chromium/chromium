@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_visibility.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_buttons_utils.h"
+#import "ios/chrome/browser/toolbar/ui/buttons/toolbar_element_with_background.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_tab_grid_badge_button.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_constants.h"
 #import "ios/chrome/browser/toolbar/ui/toolbar_height_delegate.h"
@@ -149,6 +150,10 @@ constexpr CGFloat kGlassFullscreenScaleFactor = 0.8;
   UIMenu* _tabGridButtonMenu;
   ToolbarButton* _toolsMenuButton;
 
+  // Whether the toolbar is currently in fullscreen state. Only used during
+  // fullscreen animations.
+  BOOL _inFullscreenState;
+
   // Button taking the full size of the toolbar. Exits fullscreen mode to expand
   // the toolbar when tapped.
   UIButton* _collapsedToolbarButton;
@@ -182,7 +187,7 @@ constexpr CGFloat kGlassFullscreenScaleFactor = 0.8;
 
   // Dynamic container for the `_backButton` and `_forwardButton` Toolbar
   // navigation buttons in the `_leadingStackView`.
-  UIView* _navigationButtonsContainer;
+  UIView<ToolbarElementWithBackground>* _navigationButtonsContainer;
   // The stack views that hold the buttons on the leading side.
   UIStackView* _leadingStackView;
   // The container for the location bar, which is transparent.
@@ -192,6 +197,12 @@ constexpr CGFloat kGlassFullscreenScaleFactor = 0.8;
   // Content view for the location bar that clips subviews to the pill shape
   // without clipping the shadow on `_locationBarBackground`.
   UIView* _locationBarContentView;
+  // The location bar.
+  UIViewController* _locationBarViewController;
+  // The layout guide constrained to the steady view of the location bar.
+  UILayoutGuide* _steadyViewLayoutGuide;
+  // The text-only location bar in this toolbar (used for fullscreen animation).
+  UIViewController* _textOnlyLocationBarViewController;
   // The target for the fake omnibox, which replaces the location bar when the
   // location bar is not visible.
   UIView* _fakeOmniboxTarget;
@@ -282,6 +293,10 @@ constexpr CGFloat kGlassFullscreenScaleFactor = 0.8;
   // Constraints for the banner promo in non-split toolbar mode (where the
   // banner is below the toolbar).
   NSArray<NSLayoutConstraint*>* _bannerPromoBelowConstraints;
+
+  // Constraints for text-only location bar view.
+  NSArray<NSLayoutConstraint*>* _textOnlySteadyViewNormalConstraints;
+  NSArray<NSLayoutConstraint*>* _textOnlySteadyViewGuideConstraints;
 }
 
 - (instancetype)initInIncognito:(BOOL)incognito topPosition:(BOOL)topPosition {
@@ -371,10 +386,13 @@ constexpr CGFloat kGlassFullscreenScaleFactor = 0.8;
 #pragma mark - Properties
 
 - (void)setLocationBarViewController:
-    (UIViewController*)locationBarViewController {
-  if (_locationBarViewController == locationBarViewController) {
+            (UIViewController*)locationBarViewController
+            andSteadyViewLayoutGuide:(UILayoutGuide*)steadyViewLayoutGuide {
+  if (_locationBarViewController == locationBarViewController &&
+      _steadyViewLayoutGuide == steadyViewLayoutGuide) {
     return;
   }
+  _steadyViewLayoutGuide = steadyViewLayoutGuide;
   [self loadViewIfNeeded];
 
   if (_locationBarViewController &&
@@ -400,6 +418,40 @@ constexpr CGFloat kGlassFullscreenScaleFactor = 0.8;
     AddSameConstraints(locationBarView, _locationBarContainer);
   }
   [_locationBarViewController didMoveToParentViewController:self];
+  [self updateTextOnlyLocationBarViewConstraints];
+}
+
+- (void)setTextOnlyLocationBarViewController:
+    (UIViewController*)textOnlyLocationBarViewController {
+  if (!IsGlassToolbarEnabled()) {
+    return;
+  }
+  if (_textOnlyLocationBarViewController == textOnlyLocationBarViewController) {
+    return;
+  }
+  [self loadViewIfNeeded];
+
+  if (_textOnlyLocationBarViewController &&
+      [_textOnlyLocationBarViewController.view isDescendantOfView:self.view]) {
+    [_textOnlyLocationBarViewController willMoveToParentViewController:nil];
+    [_textOnlyLocationBarViewController.view removeFromSuperview];
+    [_textOnlyLocationBarViewController removeFromParentViewController];
+  }
+
+  _textOnlyLocationBarViewController = textOnlyLocationBarViewController;
+  if (!_textOnlyLocationBarViewController || !IsGlassToolbarEnabled()) {
+    return;
+  }
+
+  UIView* textOnlyView = _textOnlyLocationBarViewController.view;
+  textOnlyView.translatesAutoresizingMaskIntoConstraints = NO;
+  textOnlyView.alpha = 0;
+
+  [self addChildViewController:_textOnlyLocationBarViewController];
+  [_glassBackgroundView.contentView addSubview:textOnlyView];
+  [_textOnlyLocationBarViewController didMoveToParentViewController:self];
+
+  [self updateTextOnlyLocationBarViewConstraints];
 }
 
 - (void)setBannerPromoDelegate:
@@ -1162,6 +1214,57 @@ constexpr CGFloat kGlassFullscreenScaleFactor = 0.8;
   } else {
     [NSLayoutConstraint activateConstraints:_bannerPromoAboveConstraints];
     [NSLayoutConstraint deactivateConstraints:_bannerPromoBelowConstraints];
+  }
+}
+
+// Updates the constraints for the TextOnly location bar.
+- (void)updateTextOnlyLocationBarViewConstraints {
+  if (_textOnlySteadyViewNormalConstraints) {
+    [NSLayoutConstraint
+        deactivateConstraints:_textOnlySteadyViewNormalConstraints];
+    _textOnlySteadyViewNormalConstraints = nil;
+  }
+  if (_textOnlySteadyViewGuideConstraints) {
+    [NSLayoutConstraint
+        deactivateConstraints:_textOnlySteadyViewGuideConstraints];
+    _textOnlySteadyViewGuideConstraints = nil;
+  }
+
+  if (!IsGlassToolbarEnabled() || !_textOnlyLocationBarViewController ||
+      !_steadyViewLayoutGuide) {
+    return;
+  }
+
+  UIView* textOnlyView = _textOnlyLocationBarViewController.view;
+
+  _textOnlySteadyViewNormalConstraints = @[
+    [textOnlyView.topAnchor
+        constraintEqualToAnchor:_steadyViewLayoutGuide.topAnchor],
+    [textOnlyView.bottomAnchor
+        constraintEqualToAnchor:_steadyViewLayoutGuide.bottomAnchor],
+    [textOnlyView.leadingAnchor
+        constraintEqualToAnchor:_steadyViewLayoutGuide.leadingAnchor],
+    [textOnlyView.trailingAnchor
+        constraintEqualToAnchor:_steadyViewLayoutGuide.trailingAnchor],
+  ];
+
+  _textOnlySteadyViewGuideConstraints = @[
+    [textOnlyView.topAnchor
+        constraintEqualToAnchor:_glassBackgroundView.topAnchor],
+    [textOnlyView.bottomAnchor
+        constraintEqualToAnchor:_glassBackgroundView.bottomAnchor],
+    [textOnlyView.leadingAnchor
+        constraintEqualToAnchor:_glassBackgroundView.leadingAnchor],
+    [textOnlyView.trailingAnchor
+        constraintEqualToAnchor:_glassBackgroundView.trailingAnchor],
+  ];
+
+  if (_inFullscreenState) {
+    [NSLayoutConstraint
+        activateConstraints:_textOnlySteadyViewGuideConstraints];
+  } else {
+    [NSLayoutConstraint
+        activateConstraints:_textOnlySteadyViewNormalConstraints];
   }
 }
 

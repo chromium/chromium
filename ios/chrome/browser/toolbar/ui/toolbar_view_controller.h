@@ -65,9 +65,6 @@
 // Delegate for banner promo interactions.
 @property(nonatomic, weak) id<BannerPromoViewDelegate> bannerPromoDelegate;
 
-// The location bar in this toolbar.
-@property(nonatomic, strong) UIViewController* locationBarViewController;
-
 // Initializer for the toolbar, in `incognito` and `topPosition` or not.
 - (instancetype)initInIncognito:(BOOL)incognito
                     topPosition:(BOOL)topPosition NS_DESIGNATED_INITIALIZER;
@@ -89,6 +86,17 @@
 
 // Sets the tab group indicator view.
 - (void)setTabGroupIndicatorView:(TabGroupIndicatorView*)view;
+
+// Sets the location bar in this toolbar and the layout guide on its steady
+// view.
+- (void)setLocationBarViewController:
+            (UIViewController*)locationBarViewController
+            andSteadyViewLayoutGuide:(UILayoutGuide*)steadyViewLayoutGuide;
+
+// Sets the text-only location bar in this toolbar (used for fullscreen
+// animation).
+- (void)setTextOnlyLocationBarViewController:
+    (UIViewController*)textOnlyLocationBarViewController;
 
 @end
 
