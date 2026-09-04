@@ -11,6 +11,7 @@ found in the LICENSE file.
     <color name="toolbar_shadow_color">@color/black_alpha_11</color>
     <macro name="search_box_hint" tools:ignore="UnusedResources">@macro/default_text_color_secondary</macro>
     <macro name="ntp_search_box_hint" tools:ignore="UnusedResources">@macro/default_text_color</macro>
+    <color name="home_surface_search_box_background_color">@color/color_primary_with_alpha_15</color>
 
     <!-- Chip Colors -->
     <color name="default_chip_assistive_text_color">@color/default_text_color_baseline</color>

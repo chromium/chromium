@@ -392,7 +392,6 @@ android_resources("java_resources") {
     "java/res/drawable-mdpi/badge_update_light.png",
     "java/res/drawable-mdpi/incognito_small.png",
     "java/res/drawable-mdpi/modern_location_bar.9.png",
-    "java/res/drawable-night/home_surface_search_box_background.xml",
     "java/res/drawable-xhdpi/badge_update_dark.png",
     "java/res/drawable-xhdpi/badge_update_light.png",
     "java/res/drawable-xhdpi/incognito_small.png",
