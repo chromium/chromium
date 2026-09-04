@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
 
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
@@ -25,9 +26,29 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 /** Unit tests for {@link SettingsInTab}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SettingsInTabTest {
+    @After
+    public void tearDown() {
+        DeviceInfo.resetIsDesktopForTesting();
+    }
+
     @Test
     @DisableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
     public void testIsEnabled_FeatureDisabled_ReturnsFalse() {
+        assertFalse(SettingsInTab.isEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
+    @Config(qualifiers = "sw600dp")
+    public void testIsEnabled_SettingsMultiColumnDisabled_ReturnsFalse() {
+        assertFalse(SettingsInTab.isEnabled());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    @Config(qualifiers = "sw600dp")
+    public void testIsEnabled_FeatureDisabledOnTablet_ReturnsFalse() {
         assertFalse(SettingsInTab.isEnabled());
     }
 
@@ -46,7 +67,22 @@ public class SettingsInTabTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP)
+    public void testIsEnabled_Desktop_SettingsInTabDisabled_ReturnsTrue() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        assertTrue(SettingsInTab.isEnabled());
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    @DisableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP)
+    public void testIsEnabled_Desktop_SettingsInTabDesktopDisabled_ReturnsFalse() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        assertFalse(SettingsInTab.isEnabled());
+    }
+
+    @Test
     @Config(qualifiers = "sw320dp")
     public void testIsEnabled_FeatureEnabledOnDesktopNarrowWindow_ReturnsTrue() {
         DeviceInfo.setIsDesktopForTesting(true);

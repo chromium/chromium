@@ -115,7 +115,7 @@ public class SettingsHostFragmentTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    @DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP})
     public void testConstructor_SettingsInTabDisabled_ThrowsAssertionError() {
         Assume.assumeTrue(BuildConfig.ENABLE_ASSERTS);
         assertThrows(AssertionError.class, SettingsHostFragment::new);

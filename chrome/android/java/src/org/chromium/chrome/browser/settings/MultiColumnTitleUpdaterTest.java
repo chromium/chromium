@@ -236,7 +236,7 @@ public class MultiColumnTitleUpdaterTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    @DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP})
     public void testMultipleTitles_settingsInTabDisabled_noBackButton() {
         List<MultiColumnSettings.Title> titles = new ArrayList<>();
         titles.add(

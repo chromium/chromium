@@ -136,7 +136,7 @@ public class NativePageTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    @DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP})
     @Config(qualifiers = "sw600dp")
     public void testNativePageType_SettingsDisabled() {
         String url = "chrome://settings";

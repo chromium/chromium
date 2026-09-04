@@ -98,7 +98,7 @@ public class FragmentDependencyProviderTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    @DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP})
     public void testOnFragmentAttached_SearchViewProvider_SettingsInTabDisabled() {
         TestSearchViewProviderFragment fragment = new TestSearchViewProviderFragment();
         mProvider.onFragmentAttached(null, fragment, null);

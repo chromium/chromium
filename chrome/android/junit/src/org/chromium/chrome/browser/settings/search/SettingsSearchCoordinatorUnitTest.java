@@ -436,7 +436,7 @@ public class SettingsSearchCoordinatorUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    @DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP})
     public void testInitializeSearchUi_withoutSettingsInTab_doesNotSetSearchBoxFocusable() {
         setUpMultiColumnSettings();
         mCoordinator.initializeSearchUi(null);

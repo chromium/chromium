@@ -45,7 +45,10 @@ import org.chromium.ui.util.AttrUtils;
 /** Tests for the Settings menu. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "Tests cannot run batched because they launch a Settings activity.")
-@DisableFeatures(ChromeFeatureList.SETTINGS_IN_TAB) // crbug.com/521895796
+@DisableFeatures({
+    ChromeFeatureList.SETTINGS_IN_TAB, // crbug.com/521895796
+    ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP // crbug.com/556881398
+})
 public class SettingsActivityTest {
     @Rule
     public SettingsActivityTestRule<MainSettings> mSettingsActivityTestRule =

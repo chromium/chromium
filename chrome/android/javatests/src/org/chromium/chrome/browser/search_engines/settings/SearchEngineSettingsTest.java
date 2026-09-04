@@ -51,7 +51,10 @@ import java.util.List;
 
 /** Tests for Search Engine Settings. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DisableFeatures(ChromeFeatureList.SETTINGS_IN_TAB) // crbug.com/521895796
+@DisableFeatures({
+    ChromeFeatureList.SETTINGS_IN_TAB, // crbug.com/521895796
+    ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP // crbug.com/556881398
+})
 public class SearchEngineSettingsTest {
     private final SettingsTestRule<SearchEngineSettings> mSearchEngineSettingsTestRule =
             new SettingsTestRule<>(SearchEngineSettings.class);

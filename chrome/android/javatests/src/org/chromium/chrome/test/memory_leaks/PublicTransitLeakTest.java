@@ -64,7 +64,10 @@ public class PublicTransitLeakTest {
 
     @Test
     @LargeTest
-    @DisableFeatures(ChromeFeatureList.SETTINGS_IN_TAB) // crbug.com/521895796
+    @DisableFeatures({
+        ChromeFeatureList.SETTINGS_IN_TAB, // crbug.com/521895796
+        ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP // crbug.com/556881398
+    })
     public void settingsActivityTest() {
         WebPageStation page = mChromeTabbedActivityTestRule.startOnBlankPage();
         page.openRegularTabAppMenu()

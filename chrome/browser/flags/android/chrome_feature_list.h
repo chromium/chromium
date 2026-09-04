@@ -289,6 +289,7 @@ BASE_DECLARE_FEATURE(kSearchInCCTAlternateTapHandlingIfEnabledByEmbedder);
 BASE_DECLARE_FEATURE(kSearchInCCTIfEnabledByEmbedder);
 BASE_DECLARE_FEATURE(kSessionRestoreAfterCrash);
 BASE_DECLARE_FEATURE(kSettingsInTab);
+BASE_DECLARE_FEATURE(kSettingsInTabDesktop);
 BASE_DECLARE_FEATURE(kSettingsInTabUrlNav);
 BASE_DECLARE_FEATURE(kSettingsMultiColumn);
 BASE_DECLARE_FEATURE(kSettingsSingleActivity);

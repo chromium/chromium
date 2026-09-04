@@ -470,7 +470,7 @@ public class ChromeActivityUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    @DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP})
     public void testPreferencesMenuItem_SettingsInTabDisabled() {
         TestChromeActivity chromeActivity = Mockito.spy(new TestChromeActivity());
 
