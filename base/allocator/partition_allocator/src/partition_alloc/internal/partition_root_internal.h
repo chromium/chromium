@@ -327,7 +327,8 @@ PartitionRoot::AllocFromBucket(Bucket* bucket,
                                size_t slot_span_alignment,
                                size_t* usable_size,
                                size_t* slot_size,
-                               bool* is_already_zeroed) {
+                               bool* is_already_zeroed,
+                               bool* stored_raw_size) {
   PA_DCHECK((slot_span_alignment >= internal::PartitionPageSize()) &&
             std::has_single_bit(slot_span_alignment));
   SlotSpanMetadata* slot_span = bucket->active_slot_spans_head;
@@ -370,7 +371,7 @@ PartitionRoot::AllocFromBucket(Bucket* bucket,
     // Should check validity, but later in this function.
     slot_start = UntaggedSlotStart::Unchecked(
         bucket->SlowPathAlloc(this, flags, raw_size, slot_span_alignment,
-                              &slot_span, is_already_zeroed));
+                              &slot_span, is_already_zeroed, stored_raw_size));
     if (!slot_start) [[unlikely]] {
       return UntaggedSlotStart();
     }
@@ -1388,6 +1389,7 @@ PA_ALWAYS_INLINE void* PartitionRoot::AllocInternalNoHooks(
   bool is_already_zeroed = false;
   UntaggedSlotStart slot_start;
   size_t slot_size = 0;
+  bool stored_raw_size = false;
 
   auto* thread_cache = GetOrCreateThreadCache();
 
@@ -1424,14 +1426,15 @@ PA_ALWAYS_INLINE void* PartitionRoot::AllocInternalNoHooks(
       PA_DCHECK(!slot_span->bucket->is_direct_mapped());
 #endif
     } else {
-      slot_start = RawAlloc<flags>(PA_UNSAFE_TODO(buckets_ + bucket_index),
-                                   raw_size, slot_span_alignment, &usable_size,
-                                   &slot_size, &is_already_zeroed);
+      slot_start =
+          RawAlloc<flags>(PA_UNSAFE_TODO(buckets_ + bucket_index), raw_size,
+                          slot_span_alignment, &usable_size, &slot_size,
+                          &is_already_zeroed, &stored_raw_size);
     }
   } else {
-    slot_start = RawAlloc<flags>(PA_UNSAFE_TODO(buckets_ + bucket_index),
-                                 raw_size, slot_span_alignment, &usable_size,
-                                 &slot_size, &is_already_zeroed);
+    slot_start = RawAlloc<flags>(
+        PA_UNSAFE_TODO(buckets_ + bucket_index), raw_size, slot_span_alignment,
+        &usable_size, &slot_size, &is_already_zeroed, &stored_raw_size);
   }
 
   if (!slot_start.value()) [[unlikely]] {
@@ -1527,14 +1530,15 @@ PartitionRoot::RawAlloc(Bucket* bucket,
                         size_t slot_span_alignment,
                         size_t* usable_size,
                         size_t* slot_size,
-                        bool* is_already_zeroed) {
+                        bool* is_already_zeroed,
+                        bool* stored_raw_size) {
   UntaggedSlotStart slot_start;
   {
     ::partition_alloc::internal::ScopedGuard guard{
         internal::PartitionRootLock(this)};
-    slot_start =
-        AllocFromBucket<flags>(bucket, raw_size, slot_span_alignment,
-                               usable_size, slot_size, is_already_zeroed);
+    slot_start = AllocFromBucket<flags>(bucket, raw_size, slot_span_alignment,
+                                        usable_size, slot_size,
+                                        is_already_zeroed, stored_raw_size);
   }
 
   if (slot_start.value()) [[likely]] {

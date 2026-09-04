@@ -1271,7 +1271,8 @@ uintptr_t PartitionBucket::SlowPathAlloc(PartitionRoot* root,
                                          size_t raw_size,
                                          size_t slot_span_alignment,
                                          SlotSpanMetadata** slot_span,
-                                         bool* is_already_zeroed) {
+                                         bool* is_already_zeroed,
+                                         bool* stored_raw_size) {
   PA_DCHECK((slot_span_alignment >= PartitionPageSize()) &&
             std::has_single_bit(slot_span_alignment));
 
@@ -1422,6 +1423,7 @@ uintptr_t PartitionBucket::SlowPathAlloc(PartitionRoot* root,
   new_bucket->active_slot_spans_head = new_slot_span;
   if (new_slot_span->CanStoreRawSize()) {
     new_slot_span->SetRawSize(raw_size);
+    *stored_raw_size = true;
   }
 
   // If we found an active slot span with free slots, or an empty slot span, we

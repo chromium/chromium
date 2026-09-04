@@ -82,7 +82,8 @@ struct PartitionBucket {
                     size_t raw_size,
                     size_t slot_span_alignment,
                     SlotSpanMetadata** slot_span,
-                    bool* is_already_zeroed)
+                    bool* is_already_zeroed,
+                    bool* stored_raw_size)
           PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root));
 
   PA_ALWAYS_INLINE bool CanStoreRawSize() const { return can_store_raw_size; }

@@ -871,14 +871,16 @@ class alignas(internal::kPartitionCachelineSize)
                                               size_t slot_span_alignment,
                                               size_t* usable_size,
                                               size_t* slot_size,
-                                              bool* is_already_zeroed);
+                                              bool* is_already_zeroed,
+                                              bool* stored_raw_size);
   template <AllocFlags flags>
   PA_ALWAYS_INLINE UntaggedSlotStart AllocFromBucket(Bucket* bucket,
                                                      size_t raw_size,
                                                      size_t slot_span_alignment,
                                                      size_t* usable_size,
                                                      size_t* slot_size,
-                                                     bool* is_already_zeroed)
+                                                     bool* is_already_zeroed,
+                                                     bool* stored_raw_size)
       PA_EXCLUSIVE_LOCKS_REQUIRED(internal::PartitionRootLock(this));
 
   // We use this to make MEMORY_TOOL_REPLACES_ALLOCATOR behave the same for max

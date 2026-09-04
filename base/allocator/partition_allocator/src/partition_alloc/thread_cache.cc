@@ -666,6 +666,10 @@ void ThreadCache::FillBucket(size_t bucket_index) {
       // only used for direct-mapped allocations and single-slot ones anyway,
       // which are not handled here.
       size_t ret_slot_size;
+      // `AllocFromBucket()` sets an output argument to show whether
+      // the slot can store its raw size. Slots handled by the thread
+      // cache, by definition, can not.
+      bool unused;
       UntaggedSlotStart slot_start =
           root_->AllocFromBucket<AllocFlags::kFastPathOrReturnNull |
                                  AllocFlags::kReturnNull>(
@@ -673,7 +677,7 @@ void ThreadCache::FillBucket(size_t bucket_index) {
               PA_UNSAFE_TODO(root_->buckets_[bucket_index])
                   .slot_size /* raw_size */,
               internal::PartitionPageSize(), &usable_size, &ret_slot_size,
-              &is_already_zeroed);
+              &is_already_zeroed, &unused);
       // Either the previous allocation would require a slow path allocation, or
       // the central allocator is out of memory. If the bucket was filled with
       // some objects, then the allocation will be handled normally. Otherwise,
