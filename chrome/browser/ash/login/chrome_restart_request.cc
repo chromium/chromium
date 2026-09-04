@@ -246,7 +246,6 @@ void DeriveCommandLine(const GURL& start_url,
 // current session.
 void DeriveFeatures(base::CommandLine* out_command_line) {
   auto kForwardFeatures = {
-      &::features::kAccessibilityManifestV3EspeakNGTts,
       &::features::kAccessibilityManifestV3GoogleTts,
       &features::kAutoNightLight,
       &chromeos::features::kFeatureManagementRoundedWindows,
