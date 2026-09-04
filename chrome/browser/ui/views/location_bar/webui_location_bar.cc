@@ -704,6 +704,10 @@ bool WebUILocationBar::IsContentSettingImageVisible(size_t index) {
   return content_setting_image_control_.IsContentSettingImageVisible(index);
 }
 
+views::Widget* WebUILocationBar::GetContentSettingBubbleWidget(size_t index) {
+  return content_setting_image_control_.GetBubbleWidget(index);
+}
+
 void WebUILocationBar::OnLhsChipMousePressed(
     toolbar_ui_api::mojom::LhsChipIdentifier identifier,
     bool is_middle_click) {

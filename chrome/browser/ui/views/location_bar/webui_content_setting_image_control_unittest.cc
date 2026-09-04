@@ -478,6 +478,13 @@ TEST_F(WebUIContentSettingImageControlTest, TestPressed) {
   control_->ProcessContentSettingState(web_contents());
   EXPECT_FALSE(control_->TestPressed(0));
 
+  // When delegate specifies the image should be hidden, should return false.
+  cookies_model->set_visible(true);
+  delegate_->set_should_hide(true);
+  control_->ProcessContentSettingState(web_contents());
+  EXPECT_FALSE(control_->TestPressed(0));
+  delegate_->set_should_hide(false);
+
   // Visible model should attempt to show bubble and return true.
   cookies_model->set_visible(true);
   control_->ProcessContentSettingState(web_contents());
@@ -488,4 +495,32 @@ TEST_F(WebUIContentSettingImageControlTest, TestPressed) {
       .WillOnce(testing::Return(
           testing::ByMove(std::unique_ptr<ContentSettingBubbleModel>())));
   EXPECT_TRUE(control_->TestPressed(0));
+}
+
+TEST_F(WebUIContentSettingImageControlTest, IsContentSettingImageVisible) {
+  std::vector<std::unique_ptr<ContentSettingImageModel>> models;
+  auto cookies_model_ptr = std::make_unique<FakeContentSettingImageModel>(
+      ImageType::kCookies, ContentSettingsType::COOKIES);
+  auto* cookies_model = cookies_model_ptr.get();
+  models.push_back(std::move(cookies_model_ptr));
+
+  control_->InitForTesting(std::move(models));
+
+  // Out of bounds index should return false.
+  EXPECT_FALSE(control_->IsContentSettingImageVisible(1));
+
+  // Hidden model should return false.
+  cookies_model->set_visible(false);
+  control_->ProcessContentSettingState(web_contents());
+  EXPECT_FALSE(control_->IsContentSettingImageVisible(0));
+
+  // Visible model should return true.
+  cookies_model->set_visible(true);
+  control_->ProcessContentSettingState(web_contents());
+  EXPECT_TRUE(control_->IsContentSettingImageVisible(0));
+
+  // When delegate specifies the image should be hidden, should return false.
+  delegate_->set_should_hide(true);
+  control_->ProcessContentSettingState(web_contents());
+  EXPECT_FALSE(control_->IsContentSettingImageVisible(0));
 }

@@ -1606,6 +1606,13 @@ bool LocationBarView::IsContentSettingBubbleShowing(size_t index) {
          content_setting_views_[index]->IsBubbleShowing();
 }
 
+views::Widget* LocationBarView::GetContentSettingBubbleWidget(size_t index) {
+  if (index >= content_setting_views_.size()) {
+    return nullptr;
+  }
+  return content_setting_views_[index]->GetBubbleWidget();
+}
+
 bool LocationBarView::IsContentSettingImageVisible(size_t index) {
   return index < content_setting_views_.size() &&
          content_setting_views_[index]->GetVisible();

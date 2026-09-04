@@ -45,6 +45,10 @@ class MouseEvent;
 class TrackedElement;
 }
 
+namespace views {
+class Widget;
+}
+
 // The LocationBar class is a virtual interface, defining access to the
 // window's location bar component.  This class exists so that cross-platform
 // components like the browser command system can talk to the platform
@@ -256,6 +260,10 @@ class LocationBarTesting {
 
   // Returns if the content setting image at |index| is displaying a bubble.
   virtual bool IsContentSettingBubbleShowing(size_t index) = 0;
+
+  // Returns the bubble widget for the content setting image at |index|, if
+  // showing.
+  virtual views::Widget* GetContentSettingBubbleWidget(size_t index) = 0;
 
   // Returns if the content setting image at |index| is currently visible.
   virtual bool IsContentSettingImageVisible(size_t index) = 0;

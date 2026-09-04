@@ -72,6 +72,7 @@ class WebUIContentSettingImageControl {
   bool TestPressed(size_t index);
   bool IsBubbleShowing(size_t index) const;
   bool IsContentSettingImageVisible(size_t index) const;
+  views::Widget* GetBubbleWidget(size_t index);
 
   void SetSuppressionThresholdForTesting(base::TimeDelta threshold) {
     bubble_reopen_suppressor_.SetSuppressionThresholdForTesting(threshold);

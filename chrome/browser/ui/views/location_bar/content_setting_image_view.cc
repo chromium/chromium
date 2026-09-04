@@ -276,7 +276,7 @@ ContentSettingImageModel::ImageType ContentSettingImageView::GetType() const {
   return content_setting_image_model_->image_type();
 }
 
-views::Widget* ContentSettingImageView::GetBubbleWidgetForTesting() const {
+views::Widget* ContentSettingImageView::GetBubbleWidget() const {
   if (!bubble_view_) {
     return nullptr;
   }

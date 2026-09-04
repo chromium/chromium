@@ -124,6 +124,7 @@ class WebUILocationBar : public LocationBar,
   bool TestContentSettingImagePressed(size_t index) override;
   bool IsContentSettingBubbleShowing(size_t index) override;
   bool IsContentSettingImageVisible(size_t index) override;
+  views::Widget* GetContentSettingBubbleWidget(size_t index) override;
 
   // Left hand side (LHS) chip events (called from WebUIToolbarWebView)
   void OnLhsChipMousePressed(

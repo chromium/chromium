@@ -71,7 +71,7 @@ class ContentSettingImageView : public IconLabelBubbleView,
   // Returns a type that current ContentSettingImageView represents.
   ContentSettingImageModel::ImageType GetType() const;
 
-  views::Widget* GetBubbleWidgetForTesting() const;
+  views::Widget* GetBubbleWidget() const;
 
   views::BubbleDialogDelegateView* GetBubbleViewForTesting() const;
 

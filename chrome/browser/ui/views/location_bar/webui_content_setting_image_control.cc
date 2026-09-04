@@ -243,17 +243,7 @@ WebUIContentSettingImageControl::ShowContentSettingsBubbleImpl(ImageType type) {
 }
 
 bool WebUIContentSettingImageControl::TestPressed(size_t index) {
-  if (index >= models_.size()) {
-    return false;
-  }
-  if (setting_view_delegate_) {
-    content::WebContents* web_contents =
-        setting_view_delegate_->ShouldHideContentSettingImage()
-            ? nullptr
-            : setting_view_delegate_->GetContentSettingWebContents();
-    models_[index]->Update(web_contents);
-  }
-  if (!models_[index]->is_visible()) {
+  if (!IsContentSettingImageVisible(index)) {
     return false;
   }
   auto result = ShowContentSettingsBubbleImpl(models_[index]->image_type());
@@ -271,4 +261,11 @@ bool WebUIContentSettingImageControl::IsBubbleShowing(size_t index) const {
 bool WebUIContentSettingImageControl::IsContentSettingImageVisible(
     size_t index) const {
   return index < models_.size() && models_[index]->is_visible();
+}
+
+views::Widget* WebUIContentSettingImageControl::GetBubbleWidget(size_t index) {
+  if (!IsBubbleShowing(index)) {
+    return nullptr;
+  }
+  return bubble_reopen_suppressor_.GetWidget();
 }
