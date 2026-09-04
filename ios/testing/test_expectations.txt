@@ -109,3 +109,15 @@ crbug.com/553554439 [ iOS26.5 iPad Simulator ] ReadingListTestCase/testMarkMixed
 
 # Gardening suppression 2026-08-28
 crbug.com/554049961 GeminiMultiTabTestCase/testActiveTabNotBlockedOnTabGridWhenSharedTabExists [ Pass Failure ]
+
+# Gardening suppression 2026-09-04
+crbug.com/557277868 [ Simulator ] ContentSuggestionsTestCase/testMostVisitedPinnedSiteDragAndDrop [ Pass Failure ]
+crbug.com/557277111 [ Simulator ] TranslateInfobarTestCase/testTranslateManualTrigger [ Pass Failure ]
+crbug.com/557276943 [ iPhone Simulator ] SnapshotTestCase/testSnapshotWithScrollDown [ Pass Failure ]
+crbug.com/557277287 [ iPhone Simulator ] ComposeboxEligiblityTestCase/testNoTabAttachmentsInImageGeneration [ Pass Failure ]
+crbug.com/557278120 [ iPad Simulator ] InfobarTestCase/testInfobarTopMostVisible [ Pass Failure ]
+crbug.com/557278184 [ iPad Simulator ] SaveToDriveTestCase/testSaveToDriveAccountRemoved [ Pass Failure ]
+crbug.com/557277880 [ iPad Simulator ] FeatureEngagementTestCase/testRequestDesktopTip [ Pass Failure ]
+crbug.com/557278187 [ iPad Simulator ] TabStripGroupTestCase/testDragLastTabOutOfGroupCancel [ Pass Failure ]
+crbug.com/557278123 [ iPhone Simulator ] PinnedTabsDragDropTestCase/testDragRegularTabInPinnedView [ Pass Failure ]
+crbug.com/557276970 [ iPhone Simulator ] PinnedTabsGenericConsistencyTestCase/testCloseAllPinnedThenRegularTabs [ Pass Failure ]
