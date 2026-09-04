@@ -4,6 +4,7 @@ set noparent
 ajgo@chromium.org
 andreaorru@chromium.org
 dcheng@chromium.org
+emiled@microsoft.com
 ffred@chromium.org
 tsepez@chromium.org
 # NOTE: keep this in sync with global-owners-override@chromium.org owners
