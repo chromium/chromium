@@ -12,7 +12,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "base/values.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/common/autofill_debug_features.h"
 
 namespace autofill {
@@ -84,6 +86,55 @@ void FakeWalletPassAccessManager::GetUnmaskedWalletEntityInstance(
           },
           weak_ptr_factory_.GetWeakPtr(), entity_id)
           .Then(std::move(callback)),
+      base::Milliseconds(
+          features::debug::kFakeWalletApiResponsesDelayMs.Get()));
+}
+
+void FakeWalletPassAccessManager::GetDetailsForUpsertPass(
+    GetDetailsForUpsertPassCallback callback) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::WeakPtr<FakeWalletPassAccessManager> weakSelf,
+             GetDetailsForUpsertPassCallback callback) {
+            if (!weakSelf) {
+              return;
+            }
+            if (features::debug::kFakeWalletApiResponsesSimulateFailure.Get()) {
+              std::move(callback).Run(std::nullopt);
+              return;
+            }
+            base::ListValue parameters;
+            parameters.Append(
+                base::DictValue()
+                    .Set("display_text", "Google Privacy Policy")
+                    .Set("url", "https://policies.google.com/privacy"));
+            parameters.Append(
+                base::DictValue()
+                    .Set("display_text", "Wallet settings")
+                    .Set("url", "https://wallet.google.com/settings"));
+
+            base::DictValue line;
+            line.Set("template",
+                     "Lorem ipsum dolor sit amet, consectetur {0} sed do "
+                     "eiusmod {1}.");
+            line.Set("template_parameter", std::move(parameters));
+
+            base::ListValue line_list;
+            line_list.Append(std::move(line));
+
+            base::DictValue legal_message;
+            legal_message.Set("line", std::move(line_list));
+
+            LegalMessageLines legal_message_lines;
+            LegalMessageLine::Parse(legal_message, &legal_message_lines);
+
+            std::move(callback).Run(GetDetailsForUpsertPassResponse{
+                .legal_message_lines = std::move(legal_message_lines),
+                .context_token = "mock_context_token",
+            });
+          },
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
       base::Milliseconds(
           features::debug::kFakeWalletApiResponsesDelayMs.Get()));
 }

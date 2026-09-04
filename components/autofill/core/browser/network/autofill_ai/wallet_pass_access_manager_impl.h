@@ -52,6 +52,8 @@ class WalletPassAccessManagerImpl : public EntityDataManager::Observer,
   void GetUnmaskedWalletEntityInstance(
       const EntityInstance::EntityId& entity_id,
       GetUnmaskedEntityInstanceCallback callback) override;
+  void GetDetailsForUpsertPass(
+      GetDetailsForUpsertPassCallback callback) override;
 
  private:
   // Constructs a callback that takes the response of an

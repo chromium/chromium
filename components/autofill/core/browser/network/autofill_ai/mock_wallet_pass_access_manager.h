@@ -32,6 +32,10 @@ class MockWalletPassAccessManager : public WalletPassAccessManager {
               (const EntityInstance::EntityId& entity_id,
                GetUnmaskedEntityInstanceCallback callback),
               (override));
+  MOCK_METHOD(void,
+              GetDetailsForUpsertPass,
+              (GetDetailsForUpsertPassCallback callback),
+              (override));
 };
 
 }  // namespace autofill

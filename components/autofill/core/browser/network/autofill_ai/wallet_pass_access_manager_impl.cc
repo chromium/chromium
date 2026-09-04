@@ -159,6 +159,23 @@ void WalletPassAccessManagerImpl::GetUnmaskedWalletEntityInstance(
           .Then(std::move(callback)));
 }
 
+void WalletPassAccessManagerImpl::GetDetailsForUpsertPass(
+    GetDetailsForUpsertPassCallback callback) {
+  // TODO(crbug.com/553442816): Update to call the actual RPC once it is in place.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::WeakPtr<WalletPassAccessManagerImpl> access_manager,
+             GetDetailsForUpsertPassCallback callback) {
+            if (!access_manager) {
+              return;
+            }
+            std::move(callback).Run(
+                WalletPassAccessManager::GetDetailsForUpsertPassResponse{});
+          },
+          weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
 base::OnceCallback<std::optional<EntityInstance>(
     const base::expected<PrivatePass, WalletRequestError>&)>
 WalletPassAccessManagerImpl::GetUnmaskResponseToUnmaskedEntityCallback(

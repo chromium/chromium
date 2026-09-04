@@ -6,9 +6,11 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_NETWORK_AUTOFILL_AI_WALLET_PASS_ACCESS_MANAGER_H_
 
 #include <optional>
+#include <string>
 
 #include "base/functional/callback.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -20,6 +22,12 @@ namespace autofill {
 // to issue UpsertPass and GetUnmaskedPass requests.
 class WalletPassAccessManager : public KeyedService {
  public:
+  // Information retrieved from a `GetDetailsForUpsertPass` request.
+  struct GetDetailsForUpsertPassResponse {
+    LegalMessageLines legal_message_lines;
+    std::string context_token;
+  };
+
   // Callback for save and update requests. On success, it returns
   // the masked `EntityInstance` as it is stored in the Wallet backend
   // (including its `id`). Returns `std::nullopt` on failure.
@@ -31,6 +39,12 @@ class WalletPassAccessManager : public KeyedService {
   // `entity_id`. Returns `std::nullopt` on failure.
   using GetUnmaskedEntityInstanceCallback =
       base::OnceCallback<void(std::optional<EntityInstance>)>;
+
+  // Callback for `GetDetailsForUpsertPass` requests. On success, it returns
+  // the response containing the legal disclosure message lines and context
+  // token. Returns `std::nullopt` on failure.
+  using GetDetailsForUpsertPassCallback =
+      base::OnceCallback<void(std::optional<GetDetailsForUpsertPassResponse>)>;
 
   // Issues an save request to the Wallet backend for the given `entity`.
   // Notably, the returned entity will always have a new entity id.
@@ -52,6 +66,12 @@ class WalletPassAccessManager : public KeyedService {
   virtual void GetUnmaskedWalletEntityInstance(
       const EntityInstance::EntityId& entity_id,
       GetUnmaskedEntityInstanceCallback callback) = 0;
+
+  // Issues a `GetDetailsForUpsertPass` request to the Wallet backend to fetch
+  // legal disclosure messages and a context token for audit logging prior to
+  // upserting a public non-readonly pass.
+  virtual void GetDetailsForUpsertPass(
+      GetDetailsForUpsertPassCallback callback) = 0;
 };
 
 }  // namespace autofill
