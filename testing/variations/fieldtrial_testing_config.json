@@ -13794,7 +13794,11 @@
             "experiments": [
                 {
                     "name": "Enabled_DirectNavigation_AddTab",
+                    "params": {
+                        "AddTabUploadDelayOnActionChipClick": "true"
+                    },
                     "enable_features": [
+                        "NtpNextFeatures",
                         "NtpScaledActionChips",
                         "NtpScaledActionChipsSmall"
                     ]
