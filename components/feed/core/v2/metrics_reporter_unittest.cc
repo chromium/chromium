@@ -257,7 +257,6 @@ TEST_F(MetricsReporterTest, ReportsLoadStreamStatus) {
 }
 
 TEST_F(MetricsReporterTest, ReportsLoadStreamStatusWhenDisabled) {
-  feedstore::Metadata::StreamMetadata stream_metadata;
   reporter_->OnLoadStream(
       StreamType(StreamKind::kForYou),
       LoadFailureResults(LoadStreamStatus::kLoadNotAllowedDisabled),
@@ -347,7 +346,6 @@ TEST_F(MetricsReporterTest, DoNotReportContentAgeWhenNotPositive) {
 }
 
 TEST_F(MetricsReporterTest, ReportsLoadStepLatenciesOnFirstView) {
-  feedstore::Metadata::StreamMetadata stream_metadata;
   {
     auto latencies = std::make_unique<LoadLatencyTimes>();
     task_environment_.FastForwardBy(base::Milliseconds(150));

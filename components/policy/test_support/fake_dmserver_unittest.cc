@@ -716,8 +716,6 @@ TEST_F(FakeDMServerTest, HandleExternalPolicyRequestSucceeds) {
   EXPECT_EQ(response.status, net::HTTP_OK);
   ASSERT_NO_FATAL_FAILURE(response.AssertValidProto());
   EXPECT_EQ(response.proto().policy_response().responses_size(), 1);
-  em::PolicyFetchResponse policy_fetch_response =
-      response.proto().policy_response().responses(0);
 
   em::PolicyData policy_data;
   ASSERT_TRUE(policy_data.ParseFromString(

@@ -592,10 +592,6 @@ TEST_F(WifiConfigurationBridgeTest, LocalConfiguredAndUpdated_BeforeInit) {
 TEST_F(WifiConfigurationBridgeTest, LocalConfigured_BadPassword) {
   InitializeSyncStore();
 
-  WifiConfigurationSpecifics meow_local =
-      GenerateTestWifiSpecifics(meow_network_id(), kSyncPsk, /*timestamp=*/0);
-
-  std::string storage_key;
   EXPECT_CALL(*processor(), Put).Times(0);
 
   std::string guid = meow_network_id().SerializeToString();

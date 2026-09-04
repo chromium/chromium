@@ -469,9 +469,6 @@ TEST_F(V5SearchHashesUtilTest,
       V5::ThreatType::BETTER_ADS_VIOLATION, {V5::ThreatAttribute::CANARY});
   V5::FullHash::FullHashDetail abs_enforce =
       CreateHashDetail(V5::ThreatType::ABUSIVE_EXPERIENCE_VIOLATION);
-  V5::FullHash::FullHashDetail abs_warn =
-      CreateHashDetail(V5::ThreatType::ABUSIVE_EXPERIENCE_VIOLATION,
-                       {V5::ThreatAttribute::CANARY});
   V5::FullHash::FullHashDetail soceng =
       CreateHashDetail(V5::ThreatType::SOCIAL_ENGINEERING);
 

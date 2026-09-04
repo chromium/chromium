@@ -310,7 +310,6 @@ TEST_F(EventModelImplTest, IncrementingNonExistingEvent) {
   model_->IncrementEvent("nonexisting", 1u);
   const Event* event2 = model_->GetEvent("nonexisting");
   ASSERT_NE(nullptr, event2);
-  Event_Count event2_count = event2->events(0);
   EXPECT_EQ(1, event2->events_size());
   test::VerifyEventCount(event2, 1u, 2u);
   test::VerifyEventsEqual(event2, store_->GetLastWrittenEvent());

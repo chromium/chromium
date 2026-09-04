@@ -1698,8 +1698,8 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadSuccess) {
 #if !BUILDFLAG(IS_ANDROID)
   std::string feedback_ping;
   std::string feedback_response;
-#endif
   ClientDownloadResponse expected_response;
+#endif
 
   {
     base::HistogramTester histogram_tester;
@@ -4388,7 +4388,6 @@ TEST_F(DownloadProtectionServiceTest, FileSystemAccessWriteRequest_Success) {
               ExtractImageFeatures(
                   tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _))
       .Times(9);
-  ClientDownloadResponse expected_response;
 
   {
     base::HistogramTester histogram_tester;

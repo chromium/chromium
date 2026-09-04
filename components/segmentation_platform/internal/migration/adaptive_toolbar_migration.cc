@@ -61,7 +61,6 @@ std::vector<float> PopulateModelScoresForAdaptiveToolbar(
 proto::ClientResult CreateClientResultForAdaptiveToolbar(
     Config* config,
     const SelectedSegment& old_result) {
-  proto::ClientResult client_result;
   const proto::OutputConfig& output_config =
       CreateOutputConfigForAdaptiveToolbar(config);
   std::vector<float> model_scores =

@@ -665,8 +665,6 @@ TEST_F(WebAppSyncBridgeTest,
   // might be removed in the future.
   SetPlatformSpecificUserDisplayMode(
       sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER, &sync_app_to_update);
-  WebAppSpecifics sync_app_to_delete =
-      GetSpecificsFromInstalledApp(app_id_to_delete);
 
   // Set up initial sync management source state.
   syncer::EntityChangeList sync_data_list;

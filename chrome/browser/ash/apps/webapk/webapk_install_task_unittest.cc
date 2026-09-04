@@ -410,9 +410,9 @@ TEST_F(WebApkInstallTaskTest, SuccessfulUpdateScope) {
   ASSERT_THAT(last_webapk_request()->update_reasons(),
               ::testing::ElementsAre(webapk::WebApk::SCOPE_DIFFERS));
 
-  webapk::WebAppManifest manifest = last_webapk_request()->manifest();
-  EXPECT_EQ(last_webapk_request()->manifest().scopes_size(), 1);
-  EXPECT_EQ(last_webapk_request()->manifest().scopes(0),
+  const webapk::WebAppManifest& manifest = last_webapk_request()->manifest();
+  EXPECT_EQ(manifest.scopes_size(), 1);
+  EXPECT_EQ(manifest.scopes(0),
             GURL(kTestAppDifferentScope).spec());
 
   // Check we still only have 1 version of |app_id| installed.

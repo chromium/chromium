@@ -33,7 +33,6 @@ void RemoteCommandsResultWaiter::WaitForResult() {
 }
 
 void RemoteCommandsResultWaiter::WaitForAck() {
-  em::RemoteCommandResult result;
   if (remote_commands_state_->IsRemoteCommandAcked(command_id_)) {
     // No need to wait, the remote command was acknowledged.
     return;

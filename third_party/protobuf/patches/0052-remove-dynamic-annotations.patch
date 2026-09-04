@@ -1,5 +1,4 @@
 diff --git a/src/google/protobuf/descriptor.cc b/src/google/protobuf/descriptor.cc
-index 9c936d9..c45cf7e 100644
 --- a/src/google/protobuf/descriptor.cc
 +++ b/src/google/protobuf/descriptor.cc
 @@ -38,7 +38,6 @@
@@ -11,7 +10,6 @@ index 9c936d9..c45cf7e 100644
  #include "absl/base/thread_annotations.h"
  #include "absl/cleanup/cleanup.h"
 diff --git a/src/google/protobuf/repeated_field.h b/src/google/protobuf/repeated_field.h
-index fc3a06f..2429974 100644
 --- a/src/google/protobuf/repeated_field.h
 +++ b/src/google/protobuf/repeated_field.h
 @@ -34,7 +34,6 @@
@@ -22,10 +20,10 @@ index fc3a06f..2429974 100644
  #include "absl/base/macros.h"
  #include "absl/base/no_destructor.h"
  #include "absl/base/optimization.h"
-@@ -646,8 +645,8 @@ class ABSL_ATTRIBUTE_WARN_UNUSED PROTOBUF_DECLSPEC_EMPTY_BASES
+@@ -679,8 +678,8 @@
+     if (old_size != new_size) {
        [[maybe_unused]] const bool is_soo = this->is_soo();
-       [[maybe_unused]] const Element* elem =
-           reinterpret_cast<const Element*>(soo_rep_.elements(is_soo));
+       [[maybe_unused]] const Element* elem = soo_rep_.elements<Element>(is_soo);
 -      ABSL_ANNOTATE_CONTIGUOUS_CONTAINER(elem, elem + Capacity(is_soo),
 -                                         elem + old_size, elem + new_size);
 +      // ABSL_ANNOTATE_CONTIGUOUS_CONTAINER(elem, elem + Capacity(is_soo),

@@ -185,7 +185,6 @@ void CloudSessionAuthzServiceClient::OnVerifySessionTokenResponse(
   response_struct->session_id = response->session_id();
   response_struct->shared_secret = response->shared_secret();
   response_struct->session_reauth_token = response->session_reauth_token();
-  auto token_lifetime = response->session_reauth_token_lifetime();
   response_struct->session_reauth_token_lifetime =
       fromProtoDuration(response->session_reauth_token_lifetime());
   if (response->has_session_policies()) {

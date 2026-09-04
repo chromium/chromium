@@ -3,9 +3,9 @@ Short Name: protobuf
 URL: https://github.com/google/protobuf
 License: BSD-3-Clause
 License File: LICENSE
-Version: 35.1
-CPEPrefix: cpe:/a:google:protobuf:35.1
-Revision: 35cd01f9fe9afbeea38cc7b979a3b6bfcde82c03
+Version: 36.0
+CPEPrefix: cpe:/a:google:protobuf:36.0
+Revision: 3f17acbf7ffbda81db8be17505554c726e558bb2
 Update Mechanism: Manual
 Security Critical: yes
 Shipped: yes
@@ -296,4 +296,19 @@ Description of the patches:
   rare LargeMap iteration helpers to `extension_set.cc`. Eliminates btree_map
   template overhead across all translation units that include `.pb.h`.
 
+- 0070-fix-deprecated-get-enum-in-message.patch
 
+  Removes [[deprecated]] attribute from Reflection::GetEnum and
+  Reflection::GetRepeatedEnum in message.h to avoid -Wdeprecated-declarations
+  compilation errors across Chromium callers.
+
+- 0071-remove-log-include-from-descriptor-h.patch
+
+  Removes `absl/log/log.h` include from `descriptor.h` to avoid macro clashes
+  with Chromium's `base/logging.h` (LOG, PLOG, DLOG, VLOG, etc.). This is in
+  the process of getting upstreamed.
+
+- 0072-remove-version-stamp.patch
+
+  Scrubs out the non-OSS `kVersionStampBuildHasHardeningProtobuf` version
+  stamp block from `port.cc`. This has been upstreamed.

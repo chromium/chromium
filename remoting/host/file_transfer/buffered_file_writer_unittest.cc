@@ -164,8 +164,6 @@ TEST_F(BufferedFileWriterTest, CancelsWriter) {
                        base::Unretained(this)),
         base::BindOnce(&BufferedFileWriterTest_CancelsWriter_Test::OnError,
                        base::Unretained(this)));
-    protocol::FileTransfer_Error fake_error = protocol::MakeFileTransferError(
-        FROM_HERE, protocol::FileTransfer_Error_Type_IO_ERROR);
 
     writer.Start(kTestFilename);
     writer.Write(kTestDataOne);

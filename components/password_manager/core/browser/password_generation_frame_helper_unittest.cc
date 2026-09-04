@@ -365,7 +365,7 @@ TEST_F(PasswordGenerationFrameHelperTest, ProcessPasswordRequirements) {
         client_->GetPasswordRequirementsService()->GetSpec(
             origin, FormSignature(form_signature.value() + 1), field_signature);
     EXPECT_EQ(test.expected_spec_for_unknown_signature.max_length(),
-              spec.max_length());
+              spec_for_unknown_signature.max_length());
   }
 }
 

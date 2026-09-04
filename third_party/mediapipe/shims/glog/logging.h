@@ -25,6 +25,10 @@
 
 #endif  // !defined(VLOG)
 
+#ifndef VLOG_IS_ON
+#define VLOG_IS_ON(severity) false
+#endif
+
 namespace google {
 
 void AddLogSink(void* unused);

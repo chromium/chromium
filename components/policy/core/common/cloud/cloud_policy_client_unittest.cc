@@ -2679,7 +2679,6 @@ TEST_P(CloudPolicyClientRegisterWithPsmParamsTest,
        RegistrationWithCertificateAndPsmResult) {
   constexpr int64_t kExpectedPsmDeterminationTimestamp = 2;
 
-  const em::DeviceManagementResponse policy_response = GetPolicyResponse();
   const PsmExecutionResult psm_execution_result = GetPsmExecutionResult();
 
   EXPECT_CALL(device_dmtoken_callback_observer_,

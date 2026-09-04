@@ -1206,16 +1206,16 @@ TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenStudentStateUpdated) {
   status.set_state(::boca::StudentStatus::ACTIVE);
   (*session_1->mutable_student_statuses())["1"] = std::move(status);
   ::boca::StudentStatus status_1;
-  status.set_state(::boca::StudentStatus::ADDED);
+  status_1.set_state(::boca::StudentStatus::ADDED);
   (*session_1->mutable_student_statuses())["2"] = std::move(status_1);
   auto session_2 =
       std::make_unique<::boca::Session>(GetInitialSession(session_start_time_));
   ::boca::StudentStatus status_2;
-  status.set_state(::boca::StudentStatus::ADDED);
+  status_2.set_state(::boca::StudentStatus::ADDED);
   (*session_2->mutable_student_statuses())["1"] = std::move(status_2);
   ::boca::StudentStatus status_3;
-  status.set_state(::boca::StudentStatus::ADDED);
-  (*session_2->mutable_student_statuses())["2"] = std::move(status);
+  status_3.set_state(::boca::StudentStatus::ADDED);
+  (*session_2->mutable_student_statuses())["2"] = std::move(status_3);
 
   EXPECT_CALL(*session_client_impl(),
               GetSession(_, /*can_skip_duplicate_request=*/true))

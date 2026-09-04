@@ -566,8 +566,8 @@ base::DictValue SearchboxHandler::GetWebUIDataSourceDict(
   dict.Set("composeboxContextDragAndDropEnabled",
            options.session_allows_drag_and_drop);
 
-  auto composebox_config = ntp_composebox::FeatureConfig::Get().config;
 #if !BUILDFLAG(IS_ANDROID)
+  auto composebox_config = ntp_composebox::FeatureConfig::Get().config;
   dict.Set("searchboxShowComposeAnimation",
            profile->GetPrefs()->GetInteger(
                prefs::kNtpComposeButtonShownCountPrefName) <

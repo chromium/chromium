@@ -1264,7 +1264,6 @@ TEST_F(BocaAppPageHandlerConsumerTest, GetSessionWithFullInputTest) {
         ::boca::StudentDevice device_1;
         auto* activity_1 = device_1.mutable_activity();
         activity_1->mutable_active_tab()->set_title("google");
-        ::boca::StudentDevice device_11;
         device_1.set_state(::boca::StudentDevice::INACTIVE);
 
         (*status_1.mutable_devices())["device1"] = std::move(device_1);

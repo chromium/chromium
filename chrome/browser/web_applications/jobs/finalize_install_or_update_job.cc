@@ -237,8 +237,6 @@ void ApplyUserDisplayModeSyncMitigations(const FinalizeJobOptions& options,
     return;
   }
 
-  sync_pb::WebAppSpecifics sync_proto = web_app.sync_proto();
-
   switch (web_app.sync_proto().user_display_mode_cros()) {
     case sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER:
       // Pre-M122 CrOS devices use the user_display_mode_default sync field

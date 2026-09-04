@@ -391,7 +391,6 @@ TEST_F(SharingMessageSenderTest, RequestCancelled) {
   components_sharing_message::SharingMessage sent_message;
   sent_message.mutable_sms_fetch_request()->add_origins("https://a.com");
 
-  components_sharing_message::ResponseMessage expected_response_message;
   base::MockCallback<SharingMessageSender::ResponseCallback> mock_callback;
   EXPECT_CALL(mock_callback,
               Run(SharingSendMessageResult::kCancelled, IsNull()));

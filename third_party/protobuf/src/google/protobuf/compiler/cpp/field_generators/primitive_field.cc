@@ -104,6 +104,12 @@ class SingularPrimitive final : public FieldGeneratorBase {
     )cc");
   }
 
+  void GenerateMessageClearingCode(io::Printer* p) const override {
+    p->Emit(R"cc(
+      this_.$field_$ = $kDefault$;
+    )cc");
+  }
+
   void GenerateClearingCode(io::Printer* p) const override {
     p->Emit(R"cc(
       $field_$ = $kDefault$;
@@ -241,7 +247,7 @@ void SingularPrimitive::GenerateSerializeWithCachedSizesToArray(
     // of the tag+value to the array
     p->Emit(R"cc(
       target =
-          $pbi$::WireFormatLite::Write$declared_type$ToArrayWithField<$number$>(
+          $pbi$::WireFormatLite::Write$DeclaredType$ToArrayWithField<$number$>(
               stream, this_._internal_$name$(), target);
     )cc");
   } else {
@@ -280,7 +286,6 @@ void SingularPrimitive::GenerateByteSize(io::Printer* p) const {
   )cc");
 }
 
-
 class RepeatedPrimitive final : public FieldGeneratorBase {
  public:
   RepeatedPrimitive(const FieldDescriptor* field, const Options& opts)
@@ -290,6 +295,14 @@ class RepeatedPrimitive final : public FieldGeneratorBase {
   ~RepeatedPrimitive() override = default;
 
   std::vector<Sub> MakeVars() const override { return Vars(field_, *opts_); }
+
+  void GenerateMessageClearingCode(io::Printer* p) const override {
+    if (should_split()) {
+      p->Emit("this_.$field_$.ClearIfNotDefault();\n");
+    } else {
+      p->Emit("$field_$.Clear();\n");
+    }
+  }
 
   void GenerateClearingCode(io::Printer* p) const override {
     if (should_split()) {
@@ -347,7 +360,6 @@ class RepeatedPrimitive final : public FieldGeneratorBase {
     p->Emit(R"cc(
       /*decltype($field_$)*/ {},
     )cc");
-    GenerateCacheSizeInitializer(p);
   }
 
   void GenerateAggregateInitializer(io::Printer* p) const override {
@@ -356,7 +368,6 @@ class RepeatedPrimitive final : public FieldGeneratorBase {
             R"cc(
               decltype($field_$){$internal_metadata_offset$},
             )cc");
-    GenerateCacheSizeInitializer(p);
   }
 
   void GenerateCopyAggregateInitializer(io::Printer* p) const override {
@@ -364,7 +375,6 @@ class RepeatedPrimitive final : public FieldGeneratorBase {
     p->Emit(R"cc(
       decltype($field_$){from.$field_$},
     )cc");
-    GenerateCacheSizeInitializer(p);
   }
 
   void GenerateMemberConstexprConstructor(io::Printer* p) const override {
@@ -372,9 +382,6 @@ class RepeatedPrimitive final : public FieldGeneratorBase {
             R"cc(
               $name$_ { visibility, $internal_metadata_offset$ }
             )cc");
-    if (HasCachedSize()) {
-      p->Emit(",\n_$name$_cached_byte_size_{0}");
-    }
   }
 
   void GenerateMemberConstructor(io::Printer* p) const override {
@@ -382,21 +389,15 @@ class RepeatedPrimitive final : public FieldGeneratorBase {
             R"cc(
               $name$_ { visibility, $internal_metadata_offset$ }
             )cc");
-    if (HasCachedSize()) {
-      p->Emit(",\n_$name$_cached_byte_size_{0}");
-    }
   }
 
   void GenerateMemberCopyConstructor(io::Printer* p) const override {
     p->Emit({InternalMetadataOffsetSub(p)},
             R"cc(
               $name$_ {
-                visibility, $internal_metadata_offset$, from.$name$_
+                visibility, $internal_metadata_offset$, arena, from.$name$_
               }
             )cc");
-    if (HasCachedSize()) {
-      p->Emit(",\n_$name$_cached_byte_size_{0}");
-    }
   }
 
   void GenerateOneofCopyConstruct(io::Printer* p) const override {
@@ -404,6 +405,7 @@ class RepeatedPrimitive final : public FieldGeneratorBase {
   }
 
   void GeneratePrivateMembers(io::Printer* p) const override;
+  void GenerateSecondaryPrivateMembers(io::Printer* p) const override;
   void GenerateAccessorDeclarations(io::Printer* p) const override;
   void GenerateInlineAccessorDefinitions(io::Printer* p) const override;
   void GenerateSerializeWithCachedSizesToArray(io::Printer* p) const override;
@@ -415,15 +417,6 @@ class RepeatedPrimitive final : public FieldGeneratorBase {
         field_->is_packed() && !FixedSize(field_->type()).has_value();
     return is_packed_varint && HasGeneratedMethods(field_->file(), *opts_) &&
            !should_split();
-  }
-
-  void GenerateCacheSizeInitializer(io::Printer* p) const {
-    if (!HasCachedSize()) return;
-    // std::atomic has no move constructor, which prevents explicit aggregate
-    // initialization pre-C++17.
-    p->Emit(R"cc(
-      /* $_field_cached_byte_size_$ = */ {0},
-    )cc");
   }
 
   const Options* opts_;
@@ -440,13 +433,25 @@ void RepeatedPrimitive::GeneratePrivateMembers(io::Printer* p) const {
       $pb$::RepeatedField<$Type$> $name$_;
     )cc");
   }
-
+#if defined(PROTOBUF_INTERNAL_TEMPORARY_CACHED_SIZE_LAYOUT_OPTOUT)
   if (HasCachedSize()) {
     p->Emit({{"_cached_size_", MakeVarintCachedSizeName(field_)}},
             R"cc(
               $pbi$::CachedSize $_cached_size_$;
             )cc");
   }
+#endif
+}
+
+void RepeatedPrimitive::GenerateSecondaryPrivateMembers(io::Printer* p) const {
+#if !defined(PROTOBUF_INTERNAL_TEMPORARY_CACHED_SIZE_LAYOUT_OPTOUT)
+  if (HasCachedSize()) {
+    p->Emit({{"_cached_size_", MakeVarintCachedSizeName(field_)}},
+            R"cc(
+              $pbi$::CachedSize $_cached_size_$;
+            )cc");
+  }
+#endif
 }
 
 void RepeatedPrimitive::GenerateAccessorDeclarations(io::Printer* p) const {
@@ -710,12 +715,12 @@ void RepeatedPrimitive::GenerateByteSize(io::Printer* p) const {
 
 std::unique_ptr<FieldGeneratorBase> MakeSinguarPrimitiveGenerator(
     const FieldDescriptor* desc, const Options& options) {
-  return absl::make_unique<SingularPrimitive>(desc, options);
+  return std::make_unique<SingularPrimitive>(desc, options);
 }
 
 std::unique_ptr<FieldGeneratorBase> MakeRepeatedPrimitiveGenerator(
     const FieldDescriptor* desc, const Options& options) {
-  return absl::make_unique<RepeatedPrimitive>(desc, options);
+  return std::make_unique<RepeatedPrimitive>(desc, options);
 }
 
 }  // namespace cpp

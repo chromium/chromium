@@ -1,8 +1,7 @@
 diff --git a/src/google/protobuf/compiler/cpp/enum.cc b/src/google/protobuf/compiler/cpp/enum.cc
-index f889a0c..6e927f2 100644
 --- a/src/google/protobuf/compiler/cpp/enum.cc
 +++ b/src/google/protobuf/compiler/cpp/enum.cc
-@@ -147,7 +147,7 @@ void EnumGenerator::GenerateDefinition(io::Printer* p) {
+@@ -147,7 +147,7 @@
                             .AnnotatedAs(value),
                         {"kNumber", Int32ToString(value->number())},
                         {"DEPRECATED",
@@ -11,20 +10,19 @@ index f889a0c..6e927f2 100644
                     },
                     R"cc(
                       $Msg_Enum_VALUE$$ DEPRECATED$ = $kNumber$,
-@@ -323,7 +323,7 @@ void EnumGenerator::GenerateSymbolImports(io::Printer* p) const {
+@@ -323,7 +323,7 @@
+     p->Emit(
          {
              Sub("VALUE", EnumValueName(enum_->value(j))).AnnotatedAs(value),
-             {"DEPRECATED",
--             value->options().deprecated() ? "[[deprecated]]" : ""},
-+             /*value->options().deprecated() ? "[[deprecated]]" : */""},
-         },
-         R"cc(
-           $DEPRECATED $static constexpr $Enum_$ $VALUE$ = $Msg_Enum$_$VALUE$;
+-            {"DEPRECATED", deprecated ? "[[deprecated]]" : ""},
++            {"DEPRECATED", /*deprecated ? "[[deprecated]]" : */""},
+             // The alias initializer references the deprecated enumerator, so
+             // wrap it to avoid triggering -Wdeprecated-declarations in code the
+             // user does not control. See protocolbuffers/protobuf#18205.
 diff --git a/src/google/protobuf/compiler/cpp/helpers.h b/src/google/protobuf/compiler/cpp/helpers.h
-index a0dfe5e..94a44bd 100644
 --- a/src/google/protobuf/compiler/cpp/helpers.h
 +++ b/src/google/protobuf/compiler/cpp/helpers.h
-@@ -63,12 +63,12 @@ inline FieldDescriptor::CppRepeatedType CalculateFieldDescriptorRepeatedType(
+@@ -63,12 +63,12 @@
  
  inline std::string DeprecatedAttribute(const Options&,
                                         const FieldDescriptor* d) {

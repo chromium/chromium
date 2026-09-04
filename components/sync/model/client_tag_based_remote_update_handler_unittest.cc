@@ -415,7 +415,6 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerTest,
 TEST_F(ClientTagBasedRemoteUpdateHandlerTest,
        ShouldPreferRemoteNonDeletionOverLocalEncryptionOnConflict) {
   UpdateResponseData update = GeneratePrefUpdate(kKey1, kValue1);
-  sync_pb::EntitySpecifics specifics = update.entity.specifics;
   ProcessSingleUpdate(std::move(update));
   ASSERT_EQ(1U, ProcessorEntityCount());
   ASSERT_EQ(1U, db()->data_change_count());

@@ -640,7 +640,6 @@ TEST_F(NearbyPresenceCredentialManagerImplTest, DownloadCredentialsFailure) {
   first_time_download_scheduler->SetNumConsecutiveFailures(
       kServerCommunicationMaxAttempts);
   first_time_download_scheduler->InvokeRequestCallback();
-  ash::nearby::proto::ListSharedCredentialsResponse certificate_response;
   server_client_factory_.fake_server_client()
       ->InvokeListSharedCredentialsErrorCallback(
           ash::nearby::NearbyHttpError::kInternalServerError);

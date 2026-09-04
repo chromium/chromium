@@ -1689,7 +1689,6 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
       source_directory_url_.path());
 
   std::string scan_id = "scan_id";
-  ContentAnalysisResponse::Result result;
   // Mark all files and text with failed scans.
   for (const auto& path : paths) {
     if (path.value().find("bad") != std::string::npos) {
@@ -1699,7 +1698,6 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
               TriggeredRule::BLOCK);
       response.set_request_token(scan_id);
       PathFailsDeepScan(path, response);
-      result = response.results()[0];
     }
   }
 

@@ -146,7 +146,6 @@ TEST_F(ModelManagerTest, OnSegmentationModelUpdatedInvalidMetadata) {
   CreateModelManager({segment_id}, callback.Get());
 
   // Create invalid metadata, which should be ignored.
-  proto::SegmentInfo segment_info;
   proto::SegmentationModelMetadata metadata;
   metadata.set_time_unit(proto::UNKNOWN_TIME_UNIT);
 

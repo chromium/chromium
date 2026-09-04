@@ -324,7 +324,6 @@ TEST_F(VariationsLayersTest, InvalidLayer_LimitedLayerDropped) {
 
 TEST_F(VariationsLayersTest, ValidSlotBounds) {
   auto representable_max = std::numeric_limits<uint32_t>::max();
-  auto study = CreateStudy({.layer_id = 1u, .layer_member_id = 1u});
   auto layer =
       CreateLayer({.id = 1u,
                    .num_slots = representable_max,
@@ -347,7 +346,6 @@ TEST_F(VariationsLayersTest, ValidSlotBounds_OverlapppingLayerMembers) {
 
 TEST_F(VariationsLayersTest, InvalidSlotBounds_ReferringToOutOfBoundsSlot) {
   auto representable_max = std::numeric_limits<uint32_t>::max();
-  auto study = CreateStudy({.layer_id = 1u, .layer_member_id = 1u});
   auto layer = CreateLayer(
       {.id = 1u,
        .num_slots = representable_max,

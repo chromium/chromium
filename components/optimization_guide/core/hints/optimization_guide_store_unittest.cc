@@ -1575,17 +1575,17 @@ TEST_F(OptimizationGuideStoreTest, FetchHintsPurgeExpiredFetchedHints) {
   update_data = guide_store()->CreateUpdateDataForFetchedHints(update_time);
 
   proto::Hint fetched_hint3;
-  fetched_hint1.set_key("domain4.org");
-  fetched_hint1.set_key_representation(proto::HOST);
-  fetched_hint1.mutable_max_cache_duration()->set_seconds(
+  fetched_hint3.set_key("domain4.org");
+  fetched_hint3.set_key_representation(proto::HOST);
+  fetched_hint3.mutable_max_cache_duration()->set_seconds(
       base::Days(-7).InSeconds());
-  update_data->MoveHintIntoUpdateData(std::move(fetched_hint1));
+  update_data->MoveHintIntoUpdateData(std::move(fetched_hint3));
   proto::Hint fetched_hint4;
-  fetched_hint2.set_key("domain5.org");
-  fetched_hint2.set_key_representation(proto::HOST);
-  fetched_hint2.mutable_max_cache_duration()->set_seconds(
+  fetched_hint4.set_key("domain5.org");
+  fetched_hint4.set_key_representation(proto::HOST);
+  fetched_hint4.mutable_max_cache_duration()->set_seconds(
       base::Days(-7).InSeconds());
-  update_data->MoveHintIntoUpdateData(std::move(fetched_hint2));
+  update_data->MoveHintIntoUpdateData(std::move(fetched_hint4));
 
   UpdateFetchedHints(std::move(update_data));
 

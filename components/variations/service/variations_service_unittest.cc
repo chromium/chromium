@@ -908,7 +908,6 @@ TEST_F(VariationsServiceTest, GetStoredPermanentCountry) {
                      std::move(list_value));
     }
 
-    VariationsSeed seed(CreateTestSeed());
     // GetClientFilterableStateForVersion needs to be called before
     // service.GetStoredPermanentCountry can be used in tests.
     service.GetClientFilterableStateForVersion();
@@ -950,8 +949,6 @@ TEST_F(VariationsServiceTest, OverrideStoredPermanentCountry) {
       prefs_.SetString(prefs::kVariationsPermanentOverriddenCountry,
                        test.pref_value_before);
     }
-
-    VariationsSeed seed(CreateTestSeed());
 
     EXPECT_EQ(test.has_updated, service.OverrideStoredPermanentCountry(
                                     test.country_code_override))

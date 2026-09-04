@@ -218,7 +218,6 @@ TEST_F(CohortImplDirectCheckInTest, ValidateBrandNewDeviceFlow) {
       GenerateImportRequestBodyForTesting();
   EXPECT_EQ(data->import_data_size(), 1);
   FresnelImportData import_data = data->import_data().at(0);
-  DeviceMetadata metadata = data->device_metadata();
   EXPECT_EQ(import_data.window_identifier(), "202301");
   EXPECT_FALSE(import_data.churn_cohort_metadata().is_first_active_in_cohort());
   EXPECT_EQ(import_data.churn_cohort_metadata().active_status_value(),

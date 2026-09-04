@@ -95,6 +95,7 @@ GetHighestPrecedenceForceSaveToCloudDestination(
   return TriggeredRule::UNSPECIFIED;
 }
 
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 TriggeredRule::CustomRuleMessage GetForceSaveToCloudCustomRuleMessage(
     const enterprise_connectors::ContentAnalysisResponse& response) {
   for (const auto& result : response.results()) {
@@ -108,7 +109,6 @@ TriggeredRule::CustomRuleMessage GetForceSaveToCloudCustomRuleMessage(
   return TriggeredRule::CustomRuleMessage();
 }
 
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 bool CanBypassForceSaveDialogForAutomation() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kEnableAutomation);
@@ -776,10 +776,6 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
 
   DownloadCheckResult download_result = DownloadCheckResult::UNKNOWN;
 
-  enterprise_connectors::ContentAnalysisResponse::Result::TriggeredRule::
-      CustomRuleMessage custom_message =
-          GetForceSaveToCloudCustomRuleMessage(response);
-
   if (result == enterprise_connectors::ScanRequestUploadResult::kFileTooLarge &&
       analysis_settings_.block_large_files) {
     download_result = DownloadCheckResult::BLOCKED_TOO_LARGE;
@@ -847,6 +843,10 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
                          weak_ptr_factory_.GetWeakPtr(),
                          DownloadCheckResult::SENSITIVE_CONTENT_BLOCK);
 
+      enterprise_connectors::ContentAnalysisResponse::Result::TriggeredRule::
+          CustomRuleMessage custom_message =
+              GetForceSaveToCloudCustomRuleMessage(
+                  file_metadata_.at(current_path).scan_response);
       ShowForceSaveToCloudDialog(
           std::move(keep_closure), std::move(discard_closure),
           force_save_web_contents, custom_message, /*file_count=*/1);

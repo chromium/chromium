@@ -723,8 +723,6 @@ TEST_F(PasswordSyncBridgeTest, ShouldMergeSyncRemoteAndLocalPasswords) {
   const std::string kExpectedPrimaryKeyStr3 = "1";
   StoredCredential form1 = MakeStoredCredential(kSignonRealm1, kPrimaryKey1);
   StoredCredential form2 = MakeStoredCredential(kSignonRealm2, kPrimaryKey2);
-  sync_pb::PasswordSpecifics specifics1 =
-      CreateSpecificsWithSignonRealm(kSignonRealm1);
   sync_pb::PasswordSpecifics specifics2 =
       CreateSpecificsWithSignonRealm(kSignonRealm2);
   sync_pb::PasswordSpecifics specifics3 =
@@ -1655,8 +1653,6 @@ TEST_F(PasswordSyncBridgeTest, ShouldAddLocalSecurityIssuesDuringInitialMerge) {
   StoredCredential kForm =
       MakeStoredCredentialWithIssues(kSignonRealm1, kPrimaryKey1, kIssuesTypes);
 
-  sync_pb::PasswordSpecifics specifics1 =
-      CreateSpecificsWithSignonRealm(kSignonRealm1);
   fake_db()->AddLoginWithPrimaryKey(std::move(kForm));
 
   EXPECT_CALL(

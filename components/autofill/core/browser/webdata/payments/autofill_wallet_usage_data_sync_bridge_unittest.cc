@@ -117,8 +117,6 @@ TEST_F(AutofillWalletUsageDataSyncBridgeTest, VerifyGetClientTag) {
       AutofillWalletUsageData::ForVirtualCard(test::GetVirtualCardUsageData1());
   SetAutofillWalletUsageSpecificsFromAutofillWalletUsageData(data, &specifics);
 
-  sync_pb::AutofillWalletUsageSpecifics::VirtualCardUsageData
-      virtual_card_usage_data = specifics.virtual_card_usage_data();
 
   EXPECT_EQ(bridge()->GetClientTag(SpecificsToEntity(specifics)),
             kExpectedClientTagAndStorageKey);
@@ -130,8 +128,6 @@ TEST_F(AutofillWalletUsageDataSyncBridgeTest, VerifyGetStorageKey) {
       AutofillWalletUsageData::ForVirtualCard(test::GetVirtualCardUsageData1());
   SetAutofillWalletUsageSpecificsFromAutofillWalletUsageData(data, &specifics);
 
-  sync_pb::AutofillWalletUsageSpecifics::VirtualCardUsageData
-      virtual_card_usage_data = specifics.virtual_card_usage_data();
 
   EXPECT_EQ(bridge()->GetStorageKey(SpecificsToEntity(specifics)),
             kExpectedClientTagAndStorageKey);

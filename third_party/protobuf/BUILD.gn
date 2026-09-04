@@ -39,6 +39,7 @@ config("protobuf_config") {
   defines = [
     "GOOGLE_PROTOBUF_NO_RTTI",
     "PROTOBUF_INTERNAL_BOUNDS_CHECK_MODE_ABORT",
+    "PROTOBUF_MESSAGE_GLOBALS_TEMPORARY_OPTOUT",
   ]
   if (!is_win) {
     defines += [ "HAVE_PTHREAD" ]
@@ -70,6 +71,7 @@ config("using_proto") {
     "src",
     "third_party/utf8_range",
   ]
+  defines = [ "PROTOBUF_MESSAGE_GLOBALS_TEMPORARY_OPTOUT" ]
 }
 
 # Configs to remove from the main protobuf libraries (lite and full)

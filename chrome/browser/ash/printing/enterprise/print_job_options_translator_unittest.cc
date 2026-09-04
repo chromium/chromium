@@ -189,8 +189,7 @@ TEST(ManagedPrintOptionsProtoFromDict, InvalidPrintJobOptions) {
 
   base::DictValue print_job_options_dict = ConvertJsonToDict(kPrintJobOptions);
 
-  PrintJobOptions print_job_options =
-      ManagedPrintOptionsProtoFromDict(print_job_options_dict);
+  ManagedPrintOptionsProtoFromDict(print_job_options_dict);
 }
 
 TEST(ChromeOsPrintOptionsFromManagedPrintOptions, InvalidMediaSize) {

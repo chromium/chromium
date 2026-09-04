@@ -120,7 +120,6 @@ TEST_F(DataUploadConfigDownloaderTest, ReturnsInvalidProtocolBuffer) {
   DataUploadConfigDownloader downloader(
       scoped_refptr<network::SharedURLLoaderFactory>(
           test_url_loader_factory.GetSafeWeakWrapper()));
-  fcp::confidentialcompute::DataUploadConfig config;
 
   bool optional_empty = false;
   base::RunLoop run_loop;

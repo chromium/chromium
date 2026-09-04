@@ -161,7 +161,6 @@ TEST(ProtoExtrasToValueTest, OneofField) {
 TEST(ProtoExtrasToValueTest, MapField) {
   TestMessage message;
   (*message.mutable_primitive_map_field())[1] = "hello";
-  DependencyMessage dependency_message;
   (*message.mutable_message_map_field())["hello"].set_int32_field(4);
   EXPECT_EQ(ToValue(message), base::test::ParseJson(R"!({
     "double_field": 0.0,

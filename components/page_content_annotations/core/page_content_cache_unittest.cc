@@ -113,7 +113,6 @@ TEST_F(PageContentCacheTest, CacheAndGet) {
 TEST_F(PageContentCacheTest, Remove) {
   const int64_t kTabId = 1;
   const GURL kUrl("https://example.com/");
-  const auto kApc = TestContent("test title");
 
   GetOrCreateCache()->CachePageContent(kTabId, kUrl, base::Time::Now(),
                                        base::Time::Now(),

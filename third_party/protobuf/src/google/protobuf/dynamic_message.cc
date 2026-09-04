@@ -267,7 +267,7 @@ uint32_t FieldFlags(const FieldDescriptor* field) {
       !field->is_extension() &&                      //
       field->cpp_type() == field->CPPTYPE_STRING &&  //
       field->cpp_string_type() == FieldDescriptor::CppStringType::kView) {
-    return internal::kMicroStringMask;
+    return internal::kMicroStringOffsetTag;
   }
   return 0;
 }
@@ -345,10 +345,6 @@ class DynamicMessage final : public Message {
   static void* NewImpl(const void* prototype, void* mem, Arena* arena);
   static void DestroyImpl(MessageLite& msg);
 
-  // If `T` is not `void`, it will mask bits off the offset via alignment.
-  // Used to remove feature masks that are part of the reflection
-  // implementation.
-  template <typename T>
   uint32_t FieldOffset(int i) const;
   internal::InternalMetadataOffset FieldInternalMetadataOffset(int i) const;
   template <typename T = void>
@@ -485,16 +481,13 @@ struct DynamicMessageFactory::TypeInfo {
 DynamicMessage::DynamicMessage(const DynamicMessageFactory::TypeInfo* type_info,
                                Arena* arena)
     : Message(arena, type_info->GetClassDataFull().base()),
-      type_info_(type_info),
-      cached_byte_size_(0) {
+      type_info_(type_info) {
   SharedCtor(true);
 }
 
 DynamicMessage::DynamicMessage(DynamicMessageFactory::TypeInfo* type_info,
                                bool lock_factory)
-    : Message(type_info->GetClassDataFull().base()),
-      type_info_(type_info),
-      cached_byte_size_(0) {
+    : Message(type_info->GetClassDataFull().base()), type_info_(type_info) {
   // The prototype in type_info has to be set before creating the prototype
   // instance on memory. e.g., message Foo { map<int32_t, Foo> a = 1; }. When
   // creating prototype for Foo, prototype of the map entry will also be
@@ -507,27 +500,21 @@ DynamicMessage::DynamicMessage(DynamicMessageFactory::TypeInfo* type_info,
   SharedCtor(lock_factory);
 }
 
-template <typename T>
 inline uint32_t DynamicMessage::FieldOffset(int i) const {
-  uint32_t mask = ~uint32_t{0};
-  if constexpr (!std::is_void_v<T>) {
-    mask = ~(uint32_t{alignof(T)} - 1);
-  }
-  return type_info_->offsets[i] & mask;
+  return type_info_->offsets[i] & ~internal::kAllOffsetTags;
 }
 inline internal::InternalMetadataOffset
 DynamicMessage::FieldInternalMetadataOffset(int i) const {
-  size_t field_offset = FieldOffset<void>(i);
   return internal::InternalMetadataOffset::BuildFromDynamicOffset<
-      DynamicMessage>(field_offset);
+      DynamicMessage>(FieldOffset(i));
 }
 template <typename T>
 inline T* DynamicMessage::MutableRaw(int i) {
-  return reinterpret_cast<T*>(OffsetToPointer(FieldOffset<T>(i)));
+  return reinterpret_cast<T*>(OffsetToPointer(FieldOffset(i)));
 }
 template <typename T>
 inline const T& DynamicMessage::GetRaw(int i) const {
-  return *reinterpret_cast<const T*>(OffsetToPointer(FieldOffset<T>(i)));
+  return *reinterpret_cast<const T*>(OffsetToPointer(FieldOffset(i)));
 }
 inline void* DynamicMessage::MutableExtensionsRaw() {
   return OffsetToPointer(type_info_->extensions_offset);
@@ -845,9 +832,11 @@ void DynamicMessage::CrossLinkPrototypes() {
   // Cross-link default messages.
   for (int i = 0; i < descriptor->field_count(); i++) {
     const FieldDescriptor* field = descriptor->field(i);
+    PROTOBUF_IGNORE_DEPRECATION_START
+    const bool field_is_weak = field->options().weak();
+    PROTOBUF_IGNORE_DEPRECATION_STOP
     if (field->cpp_type() == FieldDescriptor::CPPTYPE_MESSAGE &&
-        !field->options().weak() && !InRealOneof(field) &&
-        !field->is_repeated()) {
+        !field_is_weak && !InRealOneof(field) && !field->is_repeated()) {
       void* field_ptr = MutableRaw(i);
       // For fields with message types, we need to cross-link with the
       // prototype for the field's type.
@@ -996,6 +985,9 @@ const Message* DynamicMessageFactory::GetPrototypeNoLock(
     type_info->oneof_case_offset = size;
     size += real_oneof_count * sizeof(uint32_t);
     size = AlignOffset(size);
+  } else {
+    // No oneofs.
+    type_info->oneof_case_offset = -1;
   }
 
   // The ExtensionSet, if any.
@@ -1083,18 +1075,17 @@ const Message* DynamicMessageFactory::GetPrototypeNoLock(
   // of dynamic message to avoid dead lock.
   DynamicMessage* prototype = new (msg_base) DynamicMessage(type_info, false);
 
-  internal::ReflectionSchema schema = {
-      static_cast<const Message*>(type_info->GetPrototype()),
-      type_info->offsets.get(),
-      type_info->has_bits_indices.get(),
-      type_info->has_bits_offset,
-      type_info->extensions_offset,
+  internal::ReflectionSchema schema(
+      /*default_instance=*/static_cast<const Message*>(
+          type_info->GetPrototype()),
+      type_info->offsets.get(), type_info->has_bits_indices.get(),
+      type_info->has_bits_offset, type_info->extensions_offset,
       type_info->oneof_case_offset,
+      /*object_size=*/
       static_cast<int>(type_info->GetClassDataFull().allocation_size()),
       type_info->weak_field_map_offset,
-      -1,  // split_offset_
-      -1,  // sizeof_split_
-  };
+      /*split_offset=*/-1,
+      /*sizeof_split=*/-1);
 
   type_info->MutableClassDataFull().set_reflection(
       new Reflection(type_info->GetClassDataFull().descriptor(), schema,

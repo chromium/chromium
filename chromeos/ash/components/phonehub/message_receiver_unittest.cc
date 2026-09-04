@@ -532,10 +532,10 @@ TEST_F(MessageReceiverImplTest, OnAppListIncremenatlUpdateReceived) {
       GetLastAppListIncrementalUpdate();
 
   EXPECT_EQ(1u, GetNumAppListIncrementalUpdateCalls());
-  EXPECT_TRUE(expected_app_list_incremental_update.has_installed_apps());
-  EXPECT_FALSE(expected_app_list_incremental_update.has_removed_apps());
+  EXPECT_TRUE(actual_app_list_incremental_update.has_installed_apps());
+  EXPECT_FALSE(actual_app_list_incremental_update.has_removed_apps());
   EXPECT_EQ(1,
-            expected_app_list_incremental_update.installed_apps().apps_size());
+            actual_app_list_incremental_update.installed_apps().apps_size());
 }
 
 TEST_F(MessageReceiverImplTest,

@@ -9402,8 +9402,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerReinvocationBrowserTest,
                   .last_received_is_side_panel_open_.value());
 
   // Verify the content bytes were included in a followup request.
-  auto page_content_request_payload =
-      fake_query_controller->last_sent_page_content_payload();
   EXPECT_EQ(fake_query_controller->num_page_content_update_requests_sent(), 1);
 }
 

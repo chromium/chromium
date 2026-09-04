@@ -84,7 +84,6 @@ IwaKeyDistribution CreateValidData() {
 
   IwaKeyRotations key_rotations;
   IwaKeyRotations::KeyRotationInfo kr_info;
-  IwaAccessControl access_control;
 
   kr_info.set_expected_key(base::Base64Encode(kExpectedKey));
   key_rotations.mutable_key_rotations()->emplace(kWebBundleId,

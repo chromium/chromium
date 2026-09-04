@@ -815,8 +815,6 @@ TEST_F(NigoriSyncBridgeImplTest,
       /*keystore_decryptor_params=*/kKeystoreKeyParams,
       /*keystore_key_params=*/kKeystoreKeyParams);
 
-  sync_pb::EncryptedData expected_pending_keys =
-      entity_data.specifics.nigori().encryption_keybag();
   ASSERT_THAT(bridge()->MergeFullSyncData(std::move(entity_data)),
               Eq(std::nullopt));
 

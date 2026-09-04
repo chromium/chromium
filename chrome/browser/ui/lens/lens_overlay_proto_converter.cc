@@ -375,7 +375,6 @@ lens::mojom::TextPtr CreateTextMojomFromProto(
   lens::mojom::TextPtr text = lens::mojom::Text::New();
   text->content_language = response_text.content_language();
   if (response_text.has_text_layout()) {
-    const lens::TextLayout response_layout = response_text.text_layout();
     lens::mojom::TextLayoutPtr text_layout = lens::mojom::TextLayout::New();
     std::vector<lens::mojom::ParagraphPtr> paragraphs;
 

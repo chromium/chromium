@@ -112,7 +112,6 @@ TEST_F(PageContentStoreTest, AddPageContent_SucceedsOnDuplicate) {
 
 TEST_F(PageContentStoreTest, AddPageContent_SucceedsAfterDelete) {
   const GURL url(kUrl);
-  const auto apc1 = TestContent("test title 1");
   const base::Time visit_timestamp = base::Time::Now();
   const base::Time extraction_timestamp = base::Time::Now();
 
@@ -185,7 +184,6 @@ TEST_F(PageContentStoreTest, AddPageContent_NullTabId) {
 
 TEST_F(PageContentStoreTest, DeletePageContentOlderThan) {
   const GURL url(kUrl);
-  const auto apc = TestContent("test title");
   const base::Time visit_timestamp = base::Time::Now() - base::Days(8);
   const base::Time extraction_timestamp = base::Time::Now();
 
@@ -237,7 +235,6 @@ TEST_F(PageContentStoreTest, DeletePageContentOlderThan_RespectsMaxLimit) {
 
 TEST_F(PageContentStoreTest, DeletePageContentForTab) {
   const GURL url(kUrl);
-  const auto apc = TestContent("test title");
   const base::Time visit_timestamp = base::Time::Now();
   const base::Time extraction_timestamp = base::Time::Now();
 
@@ -286,7 +283,7 @@ TEST_F(PageContentStoreTest, GetPageContentForTab) {
   const base::Time visit_timestamp = base::Time::Now();
   const base::Time extraction_timestamp = base::Time::Now();
 
-  EXPECT_TRUE(store_->AddPageContent(url, TestContent("test title"),
+  EXPECT_TRUE(store_->AddPageContent(url, apc,
                                      visit_timestamp, extraction_timestamp,
                                      kTabId));
 
@@ -299,7 +296,6 @@ TEST_F(PageContentStoreTest, GetPageContentForTab) {
 
 TEST_F(PageContentStoreTest, DeleteAllEntries) {
   const GURL url(kUrl);
-  const auto apc = TestContent("test title");
   const base::Time visit_timestamp = base::Time::Now();
   const base::Time extraction_timestamp = base::Time::Now();
 

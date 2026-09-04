@@ -7,10 +7,21 @@
 
 # Public targets for PHP code generator.
 
+load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
 load("@rules_cc//cc:cc_test.bzl", "cc_test")
 load("@rules_cc//cc:defs.bzl", "cc_library")
 load("@rules_pkg//pkg:mappings.bzl", "pkg_files", "strip_prefix")
 load("//build_defs:cpp_opts.bzl", "COPTS")
+
+cc_binary(
+    name = "protoc-gen-php",
+    srcs = ["plugin_main.cc"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":php_generator",
+        "//src/google/protobuf/compiler:plugin",
+    ],
+)
 
 cc_library(
     name = "names",
@@ -55,6 +66,7 @@ cc_library(
         "@abseil-cpp//absl/container:flat_hash_set",
         "@abseil-cpp//absl/log:absl_log",
         "@abseil-cpp//absl/strings",
+        "@abseil-cpp//absl/strings:charset",
     ],
 )
 
@@ -65,6 +77,7 @@ cc_test(
         ":php_generator",
         "//:protobuf",
         "//src/google/protobuf/compiler:command_line_interface_tester",
+        "@abseil-cpp//absl/strings",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],

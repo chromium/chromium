@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-edition = "2024";
+edition = "2026";
 
 package pb;
 
@@ -27,6 +27,8 @@ message InternalOptionsForce {
 message InternalFieldOptionsCpp {
   message MicroString {
     InternalOptionsForce.Enum force = 1;
+    // If set, we force the SSO size of the field.
+    int32 sso_size = 2;
   }
   MicroString micro_string = 1;
 }

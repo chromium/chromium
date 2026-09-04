@@ -913,7 +913,6 @@ TEST_F(KcerTokenImplTest, ImportKeyRsaSuccess) {
 TEST_F(KcerTokenImplTest, ImportKeyRsaAlreadyExists) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
 
-  chaps::AttributeList find_key_attrs;
   EXPECT_CALL(chaps_client_, FindObjects)
       .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>{ObjectHandle(1)},
                                    chromeos::PKCS11_CKR_OK));
@@ -939,7 +938,6 @@ TEST_F(KcerTokenImplTest, ImportKeyRsaAlreadyExists) {
 TEST_F(KcerTokenImplTest, ImportKeyRsaFailToSearchExistingKey) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
 
-  chaps::AttributeList find_key_attrs;
   EXPECT_CALL(chaps_client_, FindObjects)
       .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
                                    chromeos::PKCS11_CKR_GENERAL_ERROR));
@@ -962,7 +960,6 @@ TEST_F(KcerTokenImplTest, ImportKeyRsaFailToSearchExistingKey) {
 TEST_F(KcerTokenImplTest, ImportKeyRsaRetryToSearchExistingKey) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
 
-  chaps::AttributeList find_key_attrs;
   EXPECT_CALL(chaps_client_, FindObjects)
       .Times(kDefaultAttempts)
       .WillRepeatedly(RunOnceCallbackRepeatedly<2>(
@@ -986,7 +983,6 @@ TEST_F(KcerTokenImplTest, ImportKeyRsaRetryToSearchExistingKey) {
 TEST_F(KcerTokenImplTest, ImportKeyRsaFailToCreatePrivKey) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
 
-  chaps::AttributeList find_key_attrs;
   EXPECT_CALL(chaps_client_, FindObjects)
       .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
                                    chromeos::PKCS11_CKR_OK));
@@ -1010,7 +1006,6 @@ TEST_F(KcerTokenImplTest, ImportKeyRsaFailToCreatePrivKey) {
 TEST_F(KcerTokenImplTest, ImportKeyRsaRetryToCreatePrivKey) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
 
-  chaps::AttributeList find_key_attrs;
   EXPECT_CALL(chaps_client_, FindObjects)
       .Times(kDefaultAttempts)
       .WillRepeatedly(RunOnceCallbackRepeatedly<2>(std::vector<ObjectHandle>(),
@@ -1036,7 +1031,6 @@ TEST_F(KcerTokenImplTest, ImportKeyRsaRetryToCreatePrivKey) {
 TEST_F(KcerTokenImplTest, ImportKeyRsaFailToCreatePubKey) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
 
-  chaps::AttributeList find_key_attrs;
   EXPECT_CALL(chaps_client_, FindObjects)
       .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
                                    chromeos::PKCS11_CKR_OK));
@@ -1068,7 +1062,6 @@ TEST_F(KcerTokenImplTest, ImportKeyRsaFailToCreatePubKey) {
 TEST_F(KcerTokenImplTest, ImportKeyRsaRetryToCreatePubKey) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
 
-  chaps::AttributeList find_key_attrs;
   EXPECT_CALL(chaps_client_, FindObjects)
       .Times(kDefaultAttempts)
       .WillRepeatedly(RunOnceCallbackRepeatedly<2>(std::vector<ObjectHandle>(),
@@ -1217,7 +1210,6 @@ TEST_F(KcerTokenImplTest, ImportKeyEcSuccess) {
 TEST_F(KcerTokenImplTest, ImportKeyEcAlreadyExists) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
 
-  chaps::AttributeList find_key_attrs;
   EXPECT_CALL(chaps_client_, FindObjects)
       .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>{ObjectHandle(1)},
                                    chromeos::PKCS11_CKR_OK));
@@ -1243,7 +1235,6 @@ TEST_F(KcerTokenImplTest, ImportKeyEcAlreadyExists) {
 TEST_F(KcerTokenImplTest, ImportKeyEcFailToSearchExistingKey) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
 
-  chaps::AttributeList find_key_attrs;
   EXPECT_CALL(chaps_client_, FindObjects)
       .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
                                    chromeos::PKCS11_CKR_GENERAL_ERROR));
@@ -1266,7 +1257,6 @@ TEST_F(KcerTokenImplTest, ImportKeyEcFailToSearchExistingKey) {
 TEST_F(KcerTokenImplTest, ImportKeyEcRetryToSearchExistingKey) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
 
-  chaps::AttributeList find_key_attrs;
   EXPECT_CALL(chaps_client_, FindObjects)
       .Times(kDefaultAttempts)
       .WillRepeatedly(RunOnceCallbackRepeatedly<2>(
@@ -1290,7 +1280,6 @@ TEST_F(KcerTokenImplTest, ImportKeyEcRetryToSearchExistingKey) {
 TEST_F(KcerTokenImplTest, ImportKeyEcFailToCreatePrivKey) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
 
-  chaps::AttributeList find_key_attrs;
   EXPECT_CALL(chaps_client_, FindObjects)
       .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
                                    chromeos::PKCS11_CKR_OK));
@@ -1314,7 +1303,6 @@ TEST_F(KcerTokenImplTest, ImportKeyEcFailToCreatePrivKey) {
 TEST_F(KcerTokenImplTest, ImportKeyEcRetryToCreatePrivKey) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
 
-  chaps::AttributeList find_key_attrs;
   EXPECT_CALL(chaps_client_, FindObjects)
       .Times(kDefaultAttempts)
       .WillRepeatedly(RunOnceCallbackRepeatedly<2>(std::vector<ObjectHandle>(),
@@ -1340,7 +1328,6 @@ TEST_F(KcerTokenImplTest, ImportKeyEcRetryToCreatePrivKey) {
 TEST_F(KcerTokenImplTest, ImportKeyEcFailToCreatePubKey) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
 
-  chaps::AttributeList find_key_attrs;
   EXPECT_CALL(chaps_client_, FindObjects)
       .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
                                    chromeos::PKCS11_CKR_OK));
@@ -1372,7 +1359,6 @@ TEST_F(KcerTokenImplTest, ImportKeyEcFailToCreatePubKey) {
 TEST_F(KcerTokenImplTest, ImportKeyEcRetryToCreatePubKey) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
 
-  chaps::AttributeList find_key_attrs;
   EXPECT_CALL(chaps_client_, FindObjects)
       .Times(kDefaultAttempts)
       .WillRepeatedly(RunOnceCallbackRepeatedly<2>(std::vector<ObjectHandle>(),

@@ -141,7 +141,6 @@ TEST_F(ClassifierPredictorTest, PredictRankerExampleNoPreprocessor) {
 
   // Prediction of RankerExample without preprocessor config should fail.
   std::vector<float> response;
-  RankerExample example;
   EXPECT_FALSE(predictor->Predict(RankerExample(), &response));
 }
 

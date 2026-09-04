@@ -146,10 +146,6 @@ TEST_F(StatsTest, SegmentSwitchWithMultiOutput) {
       test_utils::GetTestOutputConfigForBinnedClassifier(),
       /*timestamp=*/base::Time::Now(), /*model_version=*/1);
 
-  auto result_underflow = metadata_utils::CreatePredictionResult(
-      /*model_scores=*/{0.1},
-      test_utils::GetTestOutputConfigForBinnedClassifier(),
-      /*timestamp=*/base::Time::Now(), /*model_version=*/1);
 
   // Low -> Low. No switched histograms.
   RecordClassificationResultUpdated(config, &result_low, result_low);
@@ -209,10 +205,6 @@ TEST_F(StatsTest, SegmentComputedWithMultiOutput) {
       test_utils::GetTestOutputConfigForBinnedClassifier(),
       /*timestamp=*/base::Time::Now(), /*model_version=*/1);
 
-  auto result_underflow = metadata_utils::CreatePredictionResult(
-      /*model_scores=*/{0.1},
-      test_utils::GetTestOutputConfigForBinnedClassifier(),
-      /*timestamp=*/base::Time::Now(), /*model_version=*/1);
 
   RecordClassificationResultComputed(config, result_low);
   RecordClassificationResultComputed(config, result_medium);

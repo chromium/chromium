@@ -1478,7 +1478,6 @@ void AppListSyncableService::SetAppListPreferredOrder(
   const auto reorder_params =
       reorder::GenerateReorderParamsForSyncItems(order, sync_items_);
   for (const auto& reorder_param : reorder_params) {
-    sync_pb::AppListSpecifics specifics;
     SyncItem* sync_item = FindSyncItem(reorder_param.sync_item_id);
     const syncer::StringOrdinal& old_ordinal = sync_item->item_ordinal;
     const syncer::StringOrdinal& new_ordinal = reorder_param.ordinal;

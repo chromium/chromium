@@ -1033,7 +1033,6 @@ TEST_F(AutocompleteProviderTest, UpdateSearchboxStats) {
   ResetControllerWithTestProviders(false, nullptr, nullptr);
 
   {
-    omnibox::metrics::ChromeSearchboxStats searchbox_stats;
     SCOPED_TRACE("No matches");
     RunSearchboxStatsTest({}, /*input_is_zero_suggest=*/false);
   }

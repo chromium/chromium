@@ -878,7 +878,6 @@ TEST_F(ProcessorEntityTest, LocalCreationConflictsWithServerTombstone) {
 
   // Generate a commit request. The server ID should have been reused from the
   // otherwise ignored update.
-  const sync_pb::EntityMetadata metadata_v1 = entity->metadata();
   CommitRequestData request;
   entity->InitializeCommitRequestData(&request);
   EXPECT_EQ(kId, request.entity->id);

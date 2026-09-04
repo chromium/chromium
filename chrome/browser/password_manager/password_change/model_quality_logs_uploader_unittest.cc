@@ -495,8 +495,6 @@ TEST_F(ModelQualityLogsUploaderTest, LoginCheckRetryCountSet) {
   logs_uploader.SetLoggedInCheckQuality(
       login_state_checks,
       CreateLoggingDataForLoginCheck(/*is_logged_in=*/true));
-  const optimization_guide::proto::LogAiDataRequest final_log =
-      logs_uploader.GetFinalLog();
   VerifyLoginCheckStep(logs_uploader.GetFinalLog(), quality_status,
                        /*expected_retry_count=*/login_state_checks - 1,
                        /*was_skipped=*/false);
@@ -510,8 +508,6 @@ TEST_F(ModelQualityLogsUploaderTest, LoginCheckReachedMaxAttempts) {
   logs_uploader.SetLoggedInCheckQuality(
       login_state_checks,
       CreateLoggingDataForLoginCheck(/*is_logged_in=*/false));
-  const optimization_guide::proto::LogAiDataRequest final_log =
-      logs_uploader.GetFinalLog();
   VerifyLoginCheckStep(logs_uploader.GetFinalLog(), quality_status,
                        /*expected_retry_count=*/login_state_checks - 1,
                        /*was_skipped=*/false);

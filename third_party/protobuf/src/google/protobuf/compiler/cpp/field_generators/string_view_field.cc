@@ -81,15 +81,21 @@ class SingularStringView : public FieldGeneratorBase {
 
   bool IsInlined() const override { return is_inlined(); }
 
+  std::string FieldTypeName() const {
+    if (is_inlined()) return "InlinedStringField";
+    if (!use_micro_string()) return "ArenaStringPtr";
+    if (auto micro_string_sso = MicroStringSSOSize(field_, *opts_)) {
+      return absl::StrCat("MicroStringExtra<", *micro_string_sso, ">");
+    }
+    return "MicroString";
+  }
+
   void GeneratePrivateMembers(io::Printer* p) const override {
     // Skips the automatic destruction if inlined; rather calls it explicitly if
     // allocating arena is null.
-    p->Emit({{"Str", is_inlined()         ? "InlinedStringField"
-                     : use_micro_string() ? "MicroString"
-                                          : "ArenaStringPtr"}},
-            R"cc(
-              $pbi$::$Str$ $name$_;
-            )cc");
+    p->Emit({{"Str", FieldTypeName()}}, R"cc(
+      $pbi$::$Str$ $name$_;
+    )cc");
   }
 
   bool RequiresArena(GeneratorFunction function) const override {
@@ -177,10 +183,10 @@ class SingularStringView : public FieldGeneratorBase {
 
   void GenerateOneofCopyConstruct(io::Printer* p) const override {
     if (is_inlined() || EmptyDefault() || use_micro_string()) {
-      p->Emit("new (&$field$) decltype($field$){arena, from.$field$};\n");
+      p->Emit("new (&$field_$) decltype($field_$){arena, from.$field_$};\n");
     } else {
       p->Emit(
-          "new (&$field$) decltype($field$){arena, from.$field$,"
+          "new (&$field_$) decltype($field_$){arena, from.$field_$,"
           " $default_variable_field$};\n");
     }
   }
@@ -374,14 +380,14 @@ void SingularStringView::GenerateMessageClearingCode(io::Printer* p) const {
     // Clear to a non-empty default is more involved, as we try to use the
     // Arena if one is present and may need to reallocate the string.
     p->Emit(R"cc(
-      $field_$.ClearToDefault($lazy_var$, GetArena());
+      this_.$field_$.ClearToDefault($lazy_var$, this_.GetArena());
     )cc");
     return;
   }
 
   if (use_micro_string()) {
     p->Emit(R"cc(
-      $field_$.Clear();
+      this_.$field_$.Clear();
     )cc");
     return;
   }
@@ -389,7 +395,7 @@ void SingularStringView::GenerateMessageClearingCode(io::Printer* p) const {
   p->Emit({{"Clear", HasHasbit(field_, options_) ? "ClearNonDefaultToEmpty"
                                                  : "ClearToEmpty"}},
           R"cc(
-            $field_$.$Clear$();
+            this_.$field_$.$Clear$();
           )cc");
 }
 
@@ -420,7 +426,7 @@ void SingularStringView::GenerateSwappingCode(io::Printer* p) const {
 }
 
 void SingularStringView::GenerateCopyConstructorCode(io::Printer* p) const {
-  if (!(is_inlined() && EmptyDefault()) && !is_oneof()) {
+  if (!(is_inlined() && EmptyDefault()) && !is_oneof() && !use_micro_string()) {
     ABSL_DCHECK(!is_inlined());
 
     p->Emit(R"cc(
@@ -504,7 +510,7 @@ void SingularStringView::GenerateConstexprAggregateInitializer(
       )cc");
     } else {
       p->Emit(R"cc(
-        /*decltype($field_$)*/ {$classname$::$default_variable_field$},
+        /*decltype($field_$)*/ {$Msg$::$default_variable_field$},
       )cc");
     }
   } else {
@@ -553,6 +559,14 @@ class RepeatedStringView : public FieldGeneratorBase {
       p->Emit(R"cc(
         $pb$::RepeatedPtrField<::std::string> $name$_;
       )cc");
+    }
+  }
+
+  void GenerateMessageClearingCode(io::Printer* p) const override {
+    if (should_split()) {
+      p->Emit("this_.$field_$.ClearIfNotDefault();\n");
+    } else {
+      p->Emit("$field_$.Clear();\n");
     }
   }
 
@@ -839,12 +853,12 @@ void RepeatedStringView::GenerateSerializeWithCachedSizesToArray(
 
 std::unique_ptr<FieldGeneratorBase> MakeSingularStringViewGenerator(
     const FieldDescriptor* desc, const Options& options) {
-  return absl::make_unique<SingularStringView>(desc, options);
+  return std::make_unique<SingularStringView>(desc, options);
 }
 
 std::unique_ptr<FieldGeneratorBase> MakeRepeatedStringViewGenerator(
     const FieldDescriptor* desc, const Options& options) {
-  return absl::make_unique<RepeatedStringView>(desc, options);
+  return std::make_unique<RepeatedStringView>(desc, options);
 }
 
 }  // namespace cpp

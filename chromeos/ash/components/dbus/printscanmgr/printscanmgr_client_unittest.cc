@@ -539,8 +539,6 @@ TEST_F(PrintscanmgrClientTest, NullResponseToCupsRetrievePpd) {
 TEST_F(PrintscanmgrClientTest, EmptyResponseToCupsRetrievePpd) {
   std::unique_ptr<dbus::Response> response = dbus::Response::CreateEmpty();
   SetCupsRetrievePpdExpectation(response.get());
-  const printscanmgr::CupsRetrievePpdResponse kExpectedResponse =
-      CreateCupsRetrievePpdResponse();
 
   base::RunLoop run_loop;
   bool callback_called = false;

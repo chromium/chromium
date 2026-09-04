@@ -546,7 +546,6 @@ IN_PROC_BROWSER_TEST_F(PowerPolicyInSessionBrowserTest, AllowScreenWakeLocks) {
   pm::PowerManagementPolicy baseline_policy = power_manager_client()->policy();
 
   // Default settings should not report any wake locks.
-  pm::PowerManagementPolicy power_management_policy = baseline_policy;
   EXPECT_FALSE(baseline_policy.screen_wake_lock());
   EXPECT_FALSE(baseline_policy.dim_wake_lock());
   EXPECT_FALSE(baseline_policy.system_wake_lock());

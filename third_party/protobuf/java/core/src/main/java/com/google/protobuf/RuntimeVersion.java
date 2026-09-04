@@ -28,8 +28,8 @@ public final class RuntimeVersion {
   // These OSS versions are not stripped to avoid merging conflicts.
   public static final RuntimeDomain OSS_DOMAIN = RuntimeDomain.PUBLIC;
   public static final int OSS_MAJOR = 4;
-  public static final int OSS_MINOR = 35;
-  public static final int OSS_PATCH = 1;
+  public static final int OSS_MINOR = 36;
+  public static final int OSS_PATCH = 0;
   public static final String OSS_SUFFIX = "";
 
   public static final RuntimeDomain DOMAIN = OSS_DOMAIN;

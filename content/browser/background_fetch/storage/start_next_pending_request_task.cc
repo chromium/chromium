@@ -64,8 +64,6 @@ void StartNextPendingRequestTask::DidGetPendingRequests(
   }
 
   // Create an active request.
-  proto::BackgroundFetchActiveRequest active_request;
-
   active_request_.set_download_guid(
       base::Uuid::GenerateRandomV4().AsLowercaseString());
   active_request_.set_unique_id(pending_request_.unique_id());

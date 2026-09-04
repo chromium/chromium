@@ -1,7 +1,7 @@
-diff --git a/src/google/protobuf/message_lite.h b/src/google/protobuf/message_lite.h
---- a/src/google/protobuf/message_lite.h
-+++ b/src/google/protobuf/message_lite.h
-@@ -416,7 +416,7 @@ struct PROTOBUF_EXPORT ClassData {
+diff --git a/src/google/protobuf/class_data.h b/src/google/protobuf/class_data.h
+--- a/src/google/protobuf/class_data.h
++++ b/src/google/protobuf/class_data.h
+@@ -171,7 +171,7 @@
        void (*merge_to_from)(MessageLite& to, const MessageLite& from_msg),
        internal::MessageCreator message_creator,
        [[maybe_unused]] void (*destroy_message)(MessageLite& msg),  //

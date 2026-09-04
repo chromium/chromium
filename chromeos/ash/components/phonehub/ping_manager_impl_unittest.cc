@@ -241,8 +241,6 @@ TEST_F(PingManagerImplTest, OnPingResponseReceived) {
 }
 
 TEST_F(PingManagerImplTest, SendPingRequest) {
-  proto::PingRequest request;
-
   ping_manager()->SendPingRequest();
 
   EXPECT_EQ(1u, GetPingRequestCallCount());
