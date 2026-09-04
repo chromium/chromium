@@ -10,11 +10,14 @@ include_rules = [
   "+chrome/updater/util/path_util.h",
   "+chrome/windows_services/elevated_tracing_service/service_integration.h",
   "+components/base32",
+  "+components/crx_file",
   "+components/metrics",
   "+components/version_info/channel.h",
+  "+crypto",
   "+services/webnn/buildflags.h",
   "+services/webnn/public/cpp",
   "+third_party/crashpad",
+  "+third_party/zlib/google",
 ]
 
 specific_include_rules = {

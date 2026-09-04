@@ -224,6 +224,11 @@ chromium-metrics-reviews@google.com.
       label="Successfully configured the browser in a specified directory"/>
   <int value="79"
       label="Failed to configure the browser in a specified directory"/>
+  <int value="80" label="Successfully installed component to system directory"/>
+  <int value="81" label="Failed to install component due to internal error"/>
+  <int value="82" label="Component exists and is up-to-date"/>
+  <int value="83" label="Failed to install component due to invalid signature"/>
+  <int value="84" label="Failed to install component due to invalid input"/>
 </enum>
 
 <enum name="UnPackStatus">
