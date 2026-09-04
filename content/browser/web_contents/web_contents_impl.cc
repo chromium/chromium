@@ -862,7 +862,7 @@ WebContents* WebContents::FromDragId(BrowserContext* browser_context,
   }
 
   RenderFrameHost* rfh = RenderFrameHost::FromFrameToken(source_rfh_token);
-  if (!rfh) {
+  if (!rfh || !rfh->IsActive()) {
     return nullptr;
   }
 
