@@ -10,6 +10,7 @@ import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {MetricsReporterImpl} from '//resources/js/metrics_reporter/metrics_reporter.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import {KeywordType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {AutocompleteMatch, InputKeywordModel, PageCallbackRouter} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
 import {SearchboxBrowserProxy} from './searchbox_browser_proxy.js';
@@ -372,6 +373,10 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
 
   protected computePlaceholderText_(): string {
     return this.placeholderText ?? this.i18n('searchBoxHint');
+  }
+
+  protected inKeywordMode_(): boolean {
+    return this.inputKeywordModel?.type === KeywordType.kInKeyword;
   }
 }
 

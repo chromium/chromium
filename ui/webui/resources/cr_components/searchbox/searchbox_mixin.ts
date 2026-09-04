@@ -883,7 +883,9 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
             '';
         const newFillEnd = newFill.length - newInline.length;
         const text = newFill.substr(0, newFillEnd);
-        assert(text);
+        if (!this.keywordModeManager_.isInKeywordMode) {
+          assert(text);
+        }
         this.getInputElement().setInput({
           text: text,
           inline: newInline,

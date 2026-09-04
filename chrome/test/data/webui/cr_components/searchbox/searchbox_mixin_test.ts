@@ -49,6 +49,7 @@ class TestSearchboxMixinElement extends TestElementBase {
             searchbox-icon="search.svg"
             .result="${this.result}"
             .selectedMatch="${this.selectedMatch}"
+            .inputKeywordModel="${this.inputKeywordModel}"
             @input-focus-changed="${this.onInputFocusChanged}"
             @searchbox-input-text-updated="${this.onSearchboxInputTextUpdated}">
         </cr-searchbox-input>
@@ -1844,6 +1845,58 @@ suite('SearchboxMixinTest', () => {
     assertEquals('Search Google', element.inputKeywordModel.displayText);
     assertEquals('', mockInput.inputElement.value);
   });
+
+  // TODO(crbug.com/555945371): Fails on multiple OSes.
+  test.skip(
+      'navigating matches in keyword mode preserves keyword mode and icon',
+      async () => {
+        const mockInput = element.getInputElement();
+        const keyword = 'google.com';
+
+        const match0 = createSearchMatchForTesting({
+          allowedToBeDefaultMatch: true,
+          keywordModel: createMatchKeywordModelForTesting({
+            type: KeywordType.kInKeyword,
+            keyword,
+            chipHint: 'Search Google',
+          }),
+        });
+        const match1 = createUrlMatch({
+          destinationUrl: 'https://youtube.com/',
+        });
+
+        element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+          queryId: element.activeQueryId,
+          input: '',
+          matches: [match0, match1],
+        }));
+        await microtasksFinished();
+
+        element.inputKeywordModel = {
+          type: KeywordType.kInKeyword,
+          keyword,
+          displayText: 'Search Google',
+        };
+        await microtasksFinished();
+        await mockInput.updateComplete;
+        await mockInput.$.icon.updateComplete;
+
+        assertIconMaskImageUrl(
+            mockInput.$.icon,
+            '//resources/cr_components/searchbox/icons/search_cr23.svg');
+
+        // Select the 2nd match (which does not have a keywordModel).
+        element.selectedMatchIndex = 1;
+        await microtasksFinished();
+        await mockInput.updateComplete;
+        await mockInput.$.icon.updateComplete;
+
+        assertTrue(element.inputKeywordModel !== null);
+        assertEquals(KeywordType.kInKeyword, element.inputKeywordModel.type);
+        assertIconMaskImageUrl(
+            mockInput.$.icon,
+            '//resources/cr_components/searchbox/icons/search_cr23.svg');
+      });
 
   test(
       'acceptInlineAutocomplete accepts text and queries autocomplete',

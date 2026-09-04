@@ -73,6 +73,16 @@ export class SearchboxIconElement extends CrLitElement {
       },
 
       /**
+       * Whether icon is in keyword mode. Used in searchbox input to show
+       * the generic search loupe icon instead of match favicons when the
+       * keyword does not have its own custom icon.
+       */
+      inKeywordMode: {
+        type: Boolean,
+        reflect: true,
+      },
+
+      /**
        * Whether icon belongs to an answer or not. Used to prevent
        * the match image from taking size of container.
        */
@@ -209,6 +219,7 @@ export class SearchboxIconElement extends CrLitElement {
 
   accessor defaultIcon: string = '';
   accessor hasIconContainerBackground: boolean = false;
+  accessor inKeywordMode: boolean = false;
   accessor inSearchbox: boolean = false;
   accessor isStarterPack = false;
   accessor isFeaturedEnterpriseSearch = false;
@@ -240,7 +251,9 @@ export class SearchboxIconElement extends CrLitElement {
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
 
-    if (changedProperties.has('match') || changedProperties.has('pageUrl')) {
+    if (changedProperties.has('match') || changedProperties.has('pageUrl') ||
+        changedProperties.has('defaultIcon') ||
+        changedProperties.has('inKeywordMode')) {
       // In Lit, setting properties synchronously within `willUpdate()` does not
       // add them to `changedProperties` for the current update cycle. Track
       // loading state transitions directly when computed URLs change.
@@ -290,6 +303,7 @@ export class SearchboxIconElement extends CrLitElement {
 
     if (changedProperties.has('match') || changedProperties.has('pageUrl') ||
         changedProperties.has('defaultIcon') ||
+        changedProperties.has('inKeywordMode') ||
         changedPrivateProperties.has('isLensSearchbox_') ||
         changedPrivateProperties.has('isTopChromeSearchbox_') ||
         changedPrivateProperties.has('faviconImage_') ||
@@ -392,6 +406,13 @@ export class SearchboxIconElement extends CrLitElement {
   }
 
   private computeMaskImage_(): string {
+    // In keyword mode, use search_cr23.svg as a fallback icon in the searchbox.
+    // If a custom keyword icon or favicon exists, it is displayed as an image
+    // via computeBackgroundImage_() / computeShowIconImg_().
+    if (this.inSearchbox && this.inKeywordMode) {
+      return 'url(//resources/cr_components/searchbox/icons/search_cr23.svg)';
+    }
+
     // Lens searchboxes should always have the Google G in the searchbox.
     if (this.isLensSearchbox_ && this.inSearchbox) {
       return `url(${this.defaultIcon})`;
@@ -420,6 +441,10 @@ export class SearchboxIconElement extends CrLitElement {
   // Controls whether the favicon image should be rendered instead of the mask
   // image.
   private computeShowFaviconImage_(): boolean {
+    if (this.inSearchbox && this.inKeywordMode) {
+      return false;
+    }
+
     // If the favicon resource is missing, still loading, or encountered an
     // error, fall back to rendering the mask image icon.
     if (!this.faviconImage_ || this.faviconLoading_ || this.faviconError_) {

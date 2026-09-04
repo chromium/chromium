@@ -404,5 +404,26 @@ suite('CrComponentsSearchboxIconTest', () => {
       assertTrue(window.getComputedStyle(icon.$.icon)
                      .webkitMaskImage.includes('page_cr23.svg'));
     });
+
+    test(
+        'renders keyword search loupe when inKeywordMode is set in searchbox',
+        async () => {
+          icon.defaultIcon =
+              '//resources/cr_components/searchbox/icons/google_g_gradient.svg';
+          icon.inSearchbox = true;
+          icon.inKeywordMode = true;
+          icon.pageUrl = 'https://example.com';
+          icon.match = createAutocompleteMatch({
+            isSearchType: false,
+            destinationUrl: 'https://example.com',
+          });
+
+          await microtasksFinished();
+          await icon.updateComplete;
+
+          assertFalse(isVisible(icon.$.faviconImage));
+          assertTrue(window.getComputedStyle(icon.$.icon)
+                         .webkitMaskImage.includes('search_cr23.svg'));
+        });
   });
 });
