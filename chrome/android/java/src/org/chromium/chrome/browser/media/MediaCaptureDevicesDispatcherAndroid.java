@@ -164,7 +164,7 @@ public class MediaCaptureDevicesDispatcherAndroid {
     public static void notifyTabCapturingStopped(@Nullable WebContents webContents) {
         if (webContents == null) return;
         setSourceSwitchingInProgress(webContents, false);
-        TabSharingUIManager.getInstance().stopSharingByCapturerTab(webContents);
+        TabSharingUiManager.getInstance().stopSharingByCapturerTab(webContents);
     }
 
     public static boolean shouldFilterWebContents(

@@ -14,7 +14,7 @@ import org.chromium.content_public.browser.WebContentsObserver;
 
 /** Glue for the tab sharing toolbar UI code and communication with the native backend. */
 @NullMarked
-public class TabSharingUIBridge {
+public class TabSharingUiBridge {
     private final WebContents mCapturer;
     private final WebContents mCapturee;
     private final WebContentsObserver mCapturerObserver;
@@ -31,7 +31,7 @@ public class TabSharingUIBridge {
      * @param capturer The {@link WebContents} that is performing tab sharing.
      * @param capturee The {@link WebContents} that is being shared.
      */
-    private TabSharingUIBridge(
+    private TabSharingUiBridge(
             long nativeTabSharingUIAndroid,
             WebContents capturer,
             WebContents capturee,
@@ -59,27 +59,27 @@ public class TabSharingUIBridge {
     }
 
     /**
-     * Creates a TabSharingUIBridge.
+     * Creates a TabSharingUiBridge.
      *
      * @param nativePtr Pointer to the native object.
      * @param capturer The {@link WebContents} that is performing tab sharing.
      * @param capturee The {@link WebContents} that is being shared.
      */
     @CalledByNative
-    static TabSharingUIBridge create(
+    static TabSharingUiBridge create(
             long nativePtr,
             @JniType("content::WebContents*") WebContents capturer,
             @JniType("content::WebContents*") WebContents capturee,
             boolean isSourceSwitchingSupported,
             boolean appPreferredCurrentTab) {
-        TabSharingUIBridge bridge =
-                new TabSharingUIBridge(
+        TabSharingUiBridge bridge =
+                new TabSharingUiBridge(
                         nativePtr,
                         capturer,
                         capturee,
                         isSourceSwitchingSupported,
                         appPreferredCurrentTab);
-        TabSharingUIManager.getInstance().addBridge(bridge);
+        TabSharingUiManager.getInstance().addBridge(bridge);
         return bridge;
     }
 
@@ -88,7 +88,7 @@ public class TabSharingUIBridge {
         if (mNativeTabSharingUIAndroid == 0) return;
         mCapturerObserver.observe(null);
         mCaptureeObserver.observe(null);
-        TabSharingUIManager.getInstance().removeBridge(this);
+        TabSharingUiManager.getInstance().removeBridge(this);
         mNativeTabSharingUIAndroid = 0;
     }
 
@@ -96,7 +96,7 @@ public class TabSharingUIBridge {
     public void stopSharing() {
         MediaCaptureDevicesDispatcherAndroid.setSourceSwitchingInProgress(mCapturer, false);
         if (mNativeTabSharingUIAndroid == 0) return;
-        TabSharingUIBridgeJni.get().stopSharing(mNativeTabSharingUIAndroid);
+        TabSharingUiBridgeJni.get().stopSharing(mNativeTabSharingUIAndroid);
     }
 
     /**
@@ -107,7 +107,7 @@ public class TabSharingUIBridge {
     public void changeSource(WebContents newSource) {
         if (mNativeTabSharingUIAndroid == 0) return;
         MediaCaptureDevicesDispatcherAndroid.setSourceSwitchingInProgress(mCapturer, true);
-        TabSharingUIBridgeJni.get().changeSource(mNativeTabSharingUIAndroid, newSource);
+        TabSharingUiBridgeJni.get().changeSource(mNativeTabSharingUIAndroid, newSource);
     }
 
     /** Returns the {@link WebContents} that is performing the tab sharing. */

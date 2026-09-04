@@ -22,23 +22,23 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.content_public.browser.WebContents;
 
-/** Unit tests for {@link TabSharingUIManager}. */
+/** Unit tests for {@link TabSharingUiManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class TabSharingUIManagerTest {
+public class TabSharingUiManagerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private TabSharingUIManager.Observer mObserver1;
-    @Mock private TabSharingUIManager.Observer mObserver2;
-    @Mock private TabSharingUIBridge mBridge1;
+    @Mock private TabSharingUiManager.Observer mObserver1;
+    @Mock private TabSharingUiManager.Observer mObserver2;
+    @Mock private TabSharingUiBridge mBridge1;
     @Mock private WebContents mCapturer1;
     @Mock private WebContents mCapturer2;
 
-    private TabSharingUIManager mManager;
+    private TabSharingUiManager mManager;
 
     @Before
     public void setUp() {
-        mManager = new TabSharingUIManager();
-        TabSharingUIManager.setInstanceForTesting(mManager);
+        mManager = new TabSharingUiManager();
+        TabSharingUiManager.setInstanceForTesting(mManager);
     }
 
     @After

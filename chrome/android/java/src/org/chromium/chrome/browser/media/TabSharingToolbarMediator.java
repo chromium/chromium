@@ -37,7 +37,7 @@ class TabSharingToolbarMediator {
 
     private final Context mContext;
     private final PropertyModel mModel;
-    private final TabSharingUIBridge mBridge;
+    private final TabSharingUiBridge mBridge;
     private final ActivityTabProvider mTabProvider;
     private final ActivityTabProvider.ActivityTabTabObserver mActiveTabObserver;
 
@@ -58,7 +58,7 @@ class TabSharingToolbarMediator {
     public TabSharingToolbarMediator(
             Context context,
             PropertyModel model,
-            TabSharingUIBridge bridge,
+            TabSharingUiBridge bridge,
             ActivityTabProvider tabProvider) {
         mContext = context;
         mModel = model;

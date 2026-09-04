@@ -46,7 +46,7 @@ import org.chromium.url.GURL;
 public class TabSharingToolbarMediatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private TabSharingUIBridge mBridge;
+    @Mock private TabSharingUiBridge mBridge;
     private WebContents mCapturer;
     @Mock private WebContents mCapturee;
     @Mock private WebContents mOtherWebContents;

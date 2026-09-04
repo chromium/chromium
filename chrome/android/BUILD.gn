@@ -3212,7 +3212,7 @@ if (_is_default_toolchain) {
     if (enable_screen_capture) {
       sources += [
         "java/src/org/chromium/chrome/browser/media/MediaCapturePickerManagerBridge.java",
-        "java/src/org/chromium/chrome/browser/media/TabSharingUIBridge.java",
+        "java/src/org/chromium/chrome/browser/media/TabSharingUiBridge.java",
       ]
     }
 

@@ -21,13 +21,11 @@ import java.util.Map;
 
 /**
  * Manages the UI for tab sharing toolbars for each window. Observes the global {@link
- * TabSharingUIManager} for active tab sharing sessions to add or remove its corresponding toolbar
+ * TabSharingUiManager} for active tab sharing sessions to add or remove its corresponding toolbar
  * by the {@link TabSharingToolbarCoordinator}.
  */
-// TODO(crbug.com/546411766): Rename TabSharingUIManager and TabSharingUIBridge to
-// TabSharingUiManager/TabSharingUiBridge to follow Java acronym-casing conventions.
 @NullMarked
-public class TabSharingToolbarUiCoordinator implements TabSharingUIManager.Observer {
+public class TabSharingToolbarUiCoordinator implements TabSharingUiManager.Observer {
     private final Context mContext;
     private final ViewGroup mParentView;
     private final TabSharingToolbarContainer mContainer;
@@ -37,7 +35,7 @@ public class TabSharingToolbarUiCoordinator implements TabSharingUIManager.Obser
     // One child coordinator (and toolbar view) per active sharing session in this window. A window
     // can host multiple concurrent sessions, whose toolbars are stacked in mContainer; keyed by the
     // session's bridge. (The OS currently allows only one active session; see crbug.com/487666920.)
-    private final Map<TabSharingUIBridge, TabSharingToolbarCoordinator> mCoordinators =
+    private final Map<TabSharingUiBridge, TabSharingToolbarCoordinator> mCoordinators =
             new ArrayMap<>();
 
     // Safety timeout after which a toolbar retained for an in-progress source switch is torn down
@@ -87,7 +85,7 @@ public class TabSharingToolbarUiCoordinator implements TabSharingUIManager.Obser
         mContainer.setLayoutParams(lp);
         parentView.addView(mContainer);
 
-        TabSharingUIManager.getInstance().addObserver(this);
+        TabSharingUiManager.getInstance().addObserver(this);
     }
 
     /**
@@ -95,7 +93,7 @@ public class TabSharingToolbarUiCoordinator implements TabSharingUIManager.Obser
      * active toolbars within this window.
      */
     public void destroy() {
-        TabSharingUIManager.getInstance().removeObserver(this);
+        TabSharingUiManager.getInstance().removeObserver(this);
 
         for (TabSharingToolbarCoordinator coordinator : mCoordinators.values()) {
             coordinator.destroy();
@@ -115,7 +113,7 @@ public class TabSharingToolbarUiCoordinator implements TabSharingUIManager.Obser
     }
 
     @Override
-    public void onSharingSessionStarted(TabSharingUIBridge bridge) {
+    public void onSharingSessionStarted(TabSharingUiBridge bridge) {
         // Only show a session's toolbar in windows whose profile matches the session's incognito
         // state. This prevents an incognito session's info (e.g. the shared URL) from leaking into
         // normal windows, and vice versa.
@@ -145,7 +143,7 @@ public class TabSharingToolbarUiCoordinator implements TabSharingUIManager.Obser
     }
 
     @Override
-    public void onSharingSessionStopped(TabSharingUIBridge bridge) {
+    public void onSharingSessionStopped(TabSharingUiBridge bridge) {
         TabSharingToolbarCoordinator coordinator = mCoordinators.remove(bridge);
         if (coordinator == null) return;
 

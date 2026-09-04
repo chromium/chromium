@@ -1401,7 +1401,7 @@ if (enable_screen_capture) {
     "java/src/org/chromium/chrome/browser/media/TabSharingToolbarProperties.java",
     "java/src/org/chromium/chrome/browser/media/TabSharingToolbarUiCoordinator.java",
     "java/src/org/chromium/chrome/browser/media/TabSharingToolbarViewBinder.java",
-    "java/src/org/chromium/chrome/browser/media/TabSharingUIBridge.java",
-    "java/src/org/chromium/chrome/browser/media/TabSharingUIManager.java",
+    "java/src/org/chromium/chrome/browser/media/TabSharingUiBridge.java",
+    "java/src/org/chromium/chrome/browser/media/TabSharingUiManager.java",
   ]
 }

@@ -47,7 +47,7 @@ public class TabSharingToolbarUiCoordinatorTest {
     @Mock private TopControlsStacker mTopControlsStacker;
     @Mock private Tab mTab;
     @Mock private Profile mWindowProfile;
-    @Mock private TabSharingUIBridge mBridge;
+    @Mock private TabSharingUiBridge mBridge;
     private WebContents mCapturer;
     @Mock private WebContents mCapturee;
     @Mock private Profile mSessionProfile;
@@ -185,7 +185,7 @@ public class TabSharingToolbarUiCoordinatorTest {
         mCoordinator.onSharingSessionStopped(mBridge);
 
         // Start multiple sessions and destroy coordinator directly
-        TabSharingUIBridge bridge2 = Mockito.mock(TabSharingUIBridge.class);
+        TabSharingUiBridge bridge2 = Mockito.mock(TabSharingUiBridge.class);
         when(bridge2.getCapturer()).thenReturn(mCapturer);
         when(bridge2.getCapturee()).thenReturn(mCapturee);
         mCoordinator.onSharingSessionStarted(mBridge);
@@ -214,7 +214,7 @@ public class TabSharingToolbarUiCoordinatorTest {
         assertEquals(originalView, container.getChildAt(0));
 
         // The new session starts: the toolbar is swapped in place, still a single child.
-        TabSharingUIBridge newBridge = Mockito.mock(TabSharingUIBridge.class);
+        TabSharingUiBridge newBridge = Mockito.mock(TabSharingUiBridge.class);
         when(newBridge.getCapturer()).thenReturn(mCapturer);
         when(newBridge.getCapturee()).thenReturn(mCapturee);
         mCoordinator.onSharingSessionStarted(newBridge);

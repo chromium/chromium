@@ -29,7 +29,7 @@ public class TabSharingToolbarCoordinator {
      * @param tabProvider The provider of the current tab.
      */
     public TabSharingToolbarCoordinator(
-            Context context, TabSharingUIBridge bridge, ActivityTabProvider tabProvider) {
+            Context context, TabSharingUiBridge bridge, ActivityTabProvider tabProvider) {
         mView = LayoutInflater.from(context).inflate(R.layout.tab_sharing_toolbar, null);
 
         PropertyModel model =

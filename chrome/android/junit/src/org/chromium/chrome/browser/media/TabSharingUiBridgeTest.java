@@ -25,12 +25,12 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 
-/** Unit tests for {@link TabSharingUIBridge}. */
+/** Unit tests for {@link TabSharingUiBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class TabSharingUIBridgeTest {
+public class TabSharingUiBridgeTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private TabSharingUIBridge.Natives mNativeMock;
+    @Mock private TabSharingUiBridge.Natives mNativeMock;
 
     @Mock(extraInterfaces = {WebContentsObserver.Observable.class})
     private WebContents mCapturer;
@@ -38,28 +38,28 @@ public class TabSharingUIBridgeTest {
     @Mock(extraInterfaces = {WebContentsObserver.Observable.class})
     private WebContents mCapturee;
 
-    @Mock private TabSharingUIManager.Observer mManagerObserver;
+    @Mock private TabSharingUiManager.Observer mManagerObserver;
     @Mock private MediaCaptureDevicesDispatcherAndroid.Natives mMediaCaptureJniMock;
 
     private static final long NATIVE_PTR = 12345L;
-    private TabSharingUIBridge mBridge;
+    private TabSharingUiBridge mBridge;
 
     @Before
     public void setUp() {
-        TabSharingUIBridgeJni.setInstanceForTesting(mNativeMock);
+        TabSharingUiBridgeJni.setInstanceForTesting(mNativeMock);
         MediaCaptureDevicesDispatcherAndroidJni.setInstanceForTesting(mMediaCaptureJniMock);
-        TabSharingUIManager.getInstance().addObserver(mManagerObserver);
-        mBridge = TabSharingUIBridge.create(NATIVE_PTR, mCapturer, mCapturee, true, false);
+        TabSharingUiManager.getInstance().addObserver(mManagerObserver);
+        mBridge = TabSharingUiBridge.create(NATIVE_PTR, mCapturer, mCapturee, true, false);
     }
 
     @After
     public void tearDown() {
-        TabSharingUIBridgeJni.setInstanceForTesting(null);
+        TabSharingUiBridgeJni.setInstanceForTesting(null);
         if (mBridge != null) {
             mBridge.destroy();
             mBridge = null;
         }
-        TabSharingUIManager.getInstance().removeObserver(mManagerObserver);
+        TabSharingUiManager.getInstance().removeObserver(mManagerObserver);
     }
 
     @Test

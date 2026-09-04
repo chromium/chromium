@@ -248,7 +248,7 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
                         notificationEntry -> notificationEntry.first == notificationId);
                 if (!hasNewMediaTypesToUpdate) {
                     if (mNotifications.isEmpty()) {
-                        if (!TabSharingUIManager.getInstance().isSharing()) {
+                        if (!TabSharingUiManager.getInstance().isSharing()) {
                             stopForegroundService();
                         }
                     } else if (isRemovingLatestNotification

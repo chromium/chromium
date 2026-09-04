@@ -30,12 +30,12 @@ class TabSharingUIAndroid : public MediaStreamUI {
       content::MediaStreamUI::SourceCallback source_callback,
       const std::vector<content::DesktopMediaID>& media_ids) override;
 
-  // Called via JNI from TabSharingUIBridge when the user clicks the "Stop
+  // Called via JNI from TabSharingUiBridge when the user clicks the "Stop
   // sharing" button on the toolbar, or internally upon teardown. Executes the
   // underlying WebRTC callback to stop capturing.
   void StopSharing();
 
-  // Called via JNI from TabSharingUIBridge when the user chooses to switch the
+  // Called via JNI from TabSharingUiBridge when the user chooses to switch the
   // shared tab within an active session (e.g., clicking "Switch to present this
   // tab" on the toolbar). Switches the active capture source to |new_source|.
   void ChangeSource(content::WebContents* new_source);

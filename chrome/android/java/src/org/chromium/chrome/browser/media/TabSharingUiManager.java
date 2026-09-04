@@ -19,25 +19,25 @@ import java.util.List;
  * events to create and destroy the UI.
  */
 @NullMarked
-public class TabSharingUIManager {
-    private static @Nullable TabSharingUIManager sInstance;
+public class TabSharingUiManager {
+    private static @Nullable TabSharingUiManager sInstance;
 
     public interface Observer {
         /** Called when a new tab sharing session starts. */
-        void onSharingSessionStarted(TabSharingUIBridge bridge);
+        void onSharingSessionStarted(TabSharingUiBridge bridge);
 
         /** Called when an existing tab sharing session stops. */
-        void onSharingSessionStopped(TabSharingUIBridge bridge);
+        void onSharingSessionStopped(TabSharingUiBridge bridge);
     }
 
-    private final List<TabSharingUIBridge> mActiveBridges = new ArrayList<>();
+    private final List<TabSharingUiBridge> mActiveBridges = new ArrayList<>();
     private final ObserverList<Observer> mObservers = new ObserverList<>();
 
-    /** Returns the singleton instance of TabSharingUIManager. */
-    public static TabSharingUIManager getInstance() {
-        TabSharingUIManager instance = sInstance;
+    /** Returns the singleton instance of TabSharingUiManager. */
+    public static TabSharingUiManager getInstance() {
+        TabSharingUiManager instance = sInstance;
         if (instance == null) {
-            instance = new TabSharingUIManager();
+            instance = new TabSharingUiManager();
             sInstance = instance;
         }
         return instance;
@@ -48,13 +48,13 @@ public class TabSharingUIManager {
      *
      * @param instance The test instance to use, or null to reset.
      */
-    public static void setInstanceForTesting(@Nullable TabSharingUIManager instance) {
+    public static void setInstanceForTesting(@Nullable TabSharingUiManager instance) {
         var oldInstance = sInstance;
         sInstance = instance;
         ResettersForTesting.register(() -> sInstance = oldInstance);
     }
 
-    TabSharingUIManager() {}
+    TabSharingUiManager() {}
 
     /**
      * Adds an observer to be notified of tab sharing session events.
@@ -64,7 +64,7 @@ public class TabSharingUIManager {
     public void addObserver(Observer observer) {
         mObservers.addObserver(observer);
         // Notify the new observer of all currently active sessions.
-        for (TabSharingUIBridge bridge : mActiveBridges) {
+        for (TabSharingUiBridge bridge : mActiveBridges) {
             observer.onSharingSessionStarted(bridge);
         }
     }
@@ -83,7 +83,7 @@ public class TabSharingUIManager {
      *
      * @param bridge The bridge to add.
      */
-    public void addBridge(TabSharingUIBridge bridge) {
+    public void addBridge(TabSharingUiBridge bridge) {
         mActiveBridges.add(bridge);
         for (Observer observer : mObservers) {
             observer.onSharingSessionStarted(bridge);
@@ -95,7 +95,7 @@ public class TabSharingUIManager {
      *
      * @param bridge The bridge to remove.
      */
-    public void removeBridge(TabSharingUIBridge bridge) {
+    public void removeBridge(TabSharingUiBridge bridge) {
         boolean removed = mActiveBridges.remove(bridge);
         assert removed : "Bridge not found in active bridges: " + bridge;
         if (removed) {
@@ -111,7 +111,7 @@ public class TabSharingUIManager {
      * @param capturer The {@link WebContents} performing tab sharing.
      */
     public void stopSharingByCapturerTab(WebContents capturer) {
-        for (TabSharingUIBridge bridge : mActiveBridges) {
+        for (TabSharingUiBridge bridge : mActiveBridges) {
             if (bridge.getCapturer() == capturer) {
                 bridge.stopSharing();
                 // A capturer WebContents can have at most one active tab sharing session at a time
