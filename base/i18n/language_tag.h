@@ -294,9 +294,13 @@ consteval LanguageTag GetKnownLanguageTag(std::string_view tag) {
 
   std::optional<i18n_internal::ParsedBcp47Tag> parsed =
       i18n_internal::ParseBcp47Tag(tag);
-  // Check if the input `tag` is a well-formed bcp47 tag and its subtags are
-  // known.
-  if (!parsed || !i18n_internal::AreSubtagsKnown(*parsed)) {
+  // Check if the input `tag` is a well-formed bcp47 tag
+  if (!parsed) {
+    void ERROR_TagIsMalformed();
+    ERROR_TagIsMalformed();
+  }
+  // Check that the subtags are known.
+  if (!i18n_internal::AreSubtagsKnown(*parsed)) {
     void ERROR_TagIsUnknown();
     ERROR_TagIsUnknown();
   }

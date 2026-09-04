@@ -47,6 +47,11 @@ TEST(Bcp47ParserTest, Constexprness) {
            parsed->script == "Latn" && parsed->region == "US" &&
            parsed->variants.empty();
   }());
+  // Constexpr check for tag ending with a "-".
+  static_assert([] {
+    std::optional<ParsedBcp47Tag> parsed = ParseBcp47Tag("en-US-");
+    return !parsed.has_value();
+  }());
 
   // Constexpr check for AreSubtagsKnown.
   static_assert([] {
@@ -101,19 +106,11 @@ TEST(Bcp47ParserTest, IsVariantSubtag) {
 }
 
 TEST(Bcp47ParserTest, ParseBcp47TagFromSpan) {
-  ASSERT_OK_AND_ASSIGN(
-      ParsedBcp47Tag parsed,
-      ParseBcp47Tag(base::span<const std::string_view>({"en", "US"})));
+  ASSERT_OK_AND_ASSIGN(ParsedBcp47Tag parsed, ParseBcp47Tag("en-US"));
   EXPECT_EQ(parsed.language, "en");
   EXPECT_EQ(parsed.region, "US");
   EXPECT_TRUE(parsed.script.empty());
   EXPECT_TRUE(parsed.variants.empty());
-}
-
-TEST(Bcp47ParserTest, ParseBcp47TagFromSpanEmpty) {
-  const std::optional<ParsedBcp47Tag> parsed =
-      ParseBcp47Tag(base::span<const std::string_view>({}));
-  EXPECT_FALSE(parsed.has_value());
 }
 
 TEST(Bcp47ParserTest, ParseBcp47TagFromStringEmpty) {
