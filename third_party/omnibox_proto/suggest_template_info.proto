@@ -17,12 +17,14 @@ import "chrome_searchbox_stats.proto";
 import "formatted_string.proto";
 import "input_source.proto";
 import "model_mode.proto";
+import "searchbox_tutorial.proto";
 import "suggest_inventory.proto";
 import "tool_mode.proto";
 
 // Suggest Template rendering data.
 // Next ID: 11
 message SuggestTemplateInfo {
+  // LINT.IfChange(StandardSuggestStyle)
   enum StandardSuggestStyle {
     SUGGEST_STYLE_UNSPECIFIED = 0;
     // Suggestions with query text only
@@ -31,7 +33,10 @@ message SuggestTemplateInfo {
     ENRICHED = 2;
     // Suggestion annotated with updated data.
     ANNOTATED = 3;
+    // Suggestions with rich image only (e.g. create image suggestions).
+    RICH_IMAGE = 4;
   }
+  // LINT.ThenChange(//components/omnibox/browser/searchbox.mojom:SuggestStyle)
 
   // The style of the suggestion.
   optional StandardSuggestStyle style = 1;
@@ -162,7 +167,7 @@ message SuggestTemplateInfo {
 
   // This sends information about what the Fusebox action does. For example,
   // it might preselect a tool, a model or something else.
-  // Next ID: 7
+  // Next ID: 8
   message FuseboxAction {
     // Which tool gets preselected when the user clicks on the suggestion.
     optional ToolMode preselected_tool = 1;
@@ -204,6 +209,9 @@ message SuggestTemplateInfo {
       SEARCHBOX_OVERRIDE_COMPOSEBOX = 2;
     }
     optional SearchboxOverride searchbox_override = 6;
+
+    // This triggers a tutorial experience in the searchbox.
+    optional SearchboxTutorial searchbox_tutorial = 7;
   }
 
   optional FuseboxAction fusebox_action = 8;
