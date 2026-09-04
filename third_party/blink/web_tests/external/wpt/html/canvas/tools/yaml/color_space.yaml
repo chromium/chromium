@@ -190,6 +190,115 @@
 
   variants: *color-space-convert-variants
 
+- name: 2d.color.space.toBlob.toDataURL.{{ format }}.linear.float
+  desc: >-
+    Test {{ method }} creates a {{ format }} image using an appropriate
+    encoding to not lose precision from a {{ canvas_cs }} float16 canvas
+  size: [256, 1]
+  attributes: '{colorSpace: "{{ canvas_cs }}", colorType: "float16"}'
+  test_type: promise
+  append_variants_to_name: false
+  variants_layout: [multi_files, single_file, single_file]
+  code: |
+    // Draw a grayscale ramp across the canvas.
+    for (let i = 0; i < {{ num_inputs }}; ++i) {
+      const v = i / ({{ num_inputs }} - 1);
+      ctx.fillStyle = `color(srgb ${v} ${v} ${v})`;
+      ctx.fillRect(i, 0, 1, 1);
+    }
+
+    // Decodes a Blob into an Image. Note that this is not used by the
+    // toDataURL variant, which decodes directly from the data URL string.
+    const decodeBlob = async (blob) => {
+      const url = URL.createObjectURL(blob);
+      const img = new Image();
+      await new Promise(resolve => {
+        img.onload = resolve;
+        img.src = url;
+      });
+      URL.revokeObjectURL(url);
+      return img;
+    };
+
+    const getImage = async (type, quality) => {
+      {{ get_image | indent(2) }}
+    };
+
+    // Encode the canvas and decode it back to an Image.
+    const img = await getImage(
+        '{{ mime_type }}'{% if quality %}, {{ quality }}{% endif %});
+
+    // Draw into a float16 canvas to read back values without 8-bit clamping.
+    const dst_canvas = canvas instanceof OffscreenCanvas
+        ? new OffscreenCanvas({{ num_inputs }}, 1)
+        : document.createElement('canvas');
+    dst_canvas.width = {{ num_inputs }};
+    dst_canvas.height = 1;
+    const dst_ctx = dst_canvas.getContext(
+        '2d', {colorSpace: 'srgb', colorType: 'float16'});
+    dst_ctx.drawImage(img, 0, 0);
+
+    // Verify that enough distinct values were preserved.
+    const pixels = dst_ctx.getImageData(
+        0, 0, {{ num_inputs }}, 1, {pixelFormat: 'rgba-float16'}).data;
+    const unique_values = new Set();
+    for (let i = 0; i < {{ num_inputs }}; ++i) {
+      unique_values.add(pixels[4 * i]);
+    }
+    assert_greater_than(
+        unique_values.size, {{ min_unique }},
+        '{{ mime_type }} encoding should produce >{{ min_unique }} unique ' +
+        'values ({{ assertion_comment }})');
+
+  variants:
+    - jpeg:
+        format: "jpeg"
+        mime_type: "image/jpeg"
+        quality: 1.0
+        num_inputs: 256
+        min_unique: 220
+        size: [256, 1]
+        assertion_comment: "naive linear encoding would return 183"
+      png:
+        format: "png"
+        mime_type: "image/png"
+        quality: null
+        num_inputs: 1024
+        min_unique: 1000
+        size: [1024, 1]
+        assertion_comment: >-
+          this guarantees 16-bit encoding, but does not guarantee that the
+          encoding was linear
+    - srgb-linear:
+        canvas_cs: "srgb-linear"
+      display-p3-linear:
+        canvas_cs: "display-p3-linear"
+    - toBlob:
+        canvas_types: ['HtmlCanvas']
+        method: "toBlob"
+        get_image: |-
+          const blob = await new Promise(
+              resolve => canvas.toBlob(resolve, type, quality));
+          return await decodeBlob(blob);
+      toDataURL:
+        canvas_types: ['HtmlCanvas']
+        method: "toDataURL"
+        get_image: |-
+          const dataUrl = canvas.toDataURL(type, quality);
+          const img = new Image();
+          await new Promise(resolve => {
+            img.onload = resolve;
+            img.src = dataUrl;
+          });
+          return img;
+      convertToBlob:
+        canvas_types: ['OffscreenCanvas']
+        method: "convertToBlob"
+        get_image: |-
+          const blob = await canvas.convertToBlob(
+              {type{% if quality %}, quality: {{ quality }}{% endif %}});
+          return await decodeBlob(blob);
+
 - name: 2d.color.space.p3.fillText
   desc: Test if fillText can be used with a solid display-p3 color
   attributes: '{colorSpace: "display-p3"}'

@@ -6,6 +6,9 @@
 
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/include/core/SkImageInfo.h"
+#include "ui/gfx/hdr_metadata.h"
 
 namespace blink {
 
@@ -50,6 +53,28 @@ String ImageEncoderUtils::MimeTypeName(ImageEncodingMimeType mime_type) {
   constexpr std::array<const char* const, 3> kMimeTypeNames = {
       "image/png", "image/jpeg", "image/webp"};
   return kMimeTypeNames[mime_type];
+}
+
+SkColorInfo ImageEncoderUtils::GetColorInfoForEncoder(
+    const SkColorInfo& color_info,
+    const gfx::HDRMetadata& hdr_metadata) {
+  SkColorType color_type = color_info.colorType();
+  // Convert premultiplied or opaque alpha to unpremultiplied.
+  // TODO(crbug.com/454152417): Avoid converting kOpaque_SkAlphaType to
+  // kUnpremul_SkAlphaType, and update tests that assert string equality on
+  // data URLs between 2D and bitmaprenderer canvases (e.g.
+  // http/tests/canvas/toDataURL-clean-canvas.html).
+  SkAlphaType alpha_type = kUnpremul_SkAlphaType;
+  sk_sp<SkColorSpace> color_space = color_info.refColorSpace();
+
+  // When encoding a linear float16 image, use an appropriate encoding to not
+  // lose precision.
+  if (color_type == kRGBA_F16_SkColorType && color_space &&
+      color_space->gammaIsLinear()) {
+    color_space = color_space->makeSRGBGamma();
+  }
+
+  return SkColorInfo(color_type, alpha_type, std::move(color_space));
 }
 
 }  // namespace blink

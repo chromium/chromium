@@ -9,6 +9,11 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/skia/include/core/SkImageInfo.h"
+
+namespace gfx {
+struct HDRMetadata;
+}
 
 namespace blink {
 
@@ -16,6 +21,13 @@ class PLATFORM_EXPORT ImageEncoderUtils {
   STATIC_ONLY(ImageEncoderUtils);
 
  public:
+  // Returns the color info to use for encoding to not lose precision or produce
+  // color artifacts (e.g. unpremultiplied alpha and non-linear transfer
+  // function).
+  static SkColorInfo GetColorInfoForEncoder(
+      const SkColorInfo& color_info,
+      const gfx::HDRMetadata& hdr_metadata);
+
   // Default image mime type for toDataURL and toBlob functions
   static const char kDefaultRequestedMimeType[];
   static const ImageEncodingMimeType kDefaultEncodingMimeType;

@@ -33,12 +33,14 @@
 #include "third_party/blink/renderer/platform/graphics/image_data_buffer.h"
 
 #include "base/compiler_specific.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder_utils.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/skia_span_util.h"
 
 namespace blink {
@@ -63,19 +65,17 @@ ImageDataBuffer::ImageDataBuffer(scoped_refptr<StaticBitmapImage> image) {
   }
 #endif
 
-  if (paint_image.IsTextureBacked() || paint_image.IsLazyGenerated() ||
-      paint_image_info.alphaType() != kUnpremul_SkAlphaType) {
+  const SkColorInfo target_color_info =
+      ImageEncoderUtils::GetColorInfoForEncoder(paint_image_info.colorInfo(),
+                                                image->GetHdrMetadata());
+
+  if (target_color_info != paint_image_info.colorInfo() ||
+      paint_image.IsTextureBacked() || paint_image.IsLazyGenerated()) {
     // Unpremul is handled upfront, using readPixels, which will correctly clamp
     // premul color values that would otherwise cause overflows in the skia
     // encoder unpremul logic.
-    SkColorType colorType = paint_image.GetColorType();
-    if (colorType == kRGBA_8888_SkColorType ||
-        colorType == kBGRA_8888_SkColorType)
-      colorType = kN32_SkColorType;  // Work around for bug with JPEG encoder
     const SkImageInfo info =
-        SkImageInfo::Make(paint_image_info.width(), paint_image_info.height(),
-                          paint_image_info.colorType(), kUnpremul_SkAlphaType,
-                          paint_image_info.refColorSpace());
+        SkImageInfo::Make(paint_image_info.dimensions(), target_color_info);
     const size_t rowBytes = info.minRowBytes();
     size_t size = info.computeByteSize(rowBytes);
     if (SkImageInfo::ByteSizeOverflowed(size))
@@ -102,7 +102,16 @@ ImageDataBuffer::ImageDataBuffer(scoped_refptr<StaticBitmapImage> image) {
 ImageDataBuffer::ImageDataBuffer(const SkPixmap& pixmap)
     : pixmap_(pixmap),
       is_valid_(pixmap_.addr() &&
-                !gfx::Size(pixmap.width(), pixmap.height()).IsEmpty()) {}
+                !gfx::Size(pixmap.width(), pixmap.height()).IsEmpty()) {
+  // Any color space or alpha conversion should have been performed by the
+  // caller higher up in the stack (e.g. in CanvasAsyncBlobCreator).
+  if (ImageEncoderUtils::GetColorInfoForEncoder(pixmap_.info().colorInfo(),
+                                                gfx::HDRMetadata()) !=
+      pixmap_.info().colorInfo()) {
+    DLOG(WARNING) << "Encoding image without prior color space or alpha "
+                     "conversion; precision or colors may be lost.";
+  }
+}
 
 std::unique_ptr<ImageDataBuffer> ImageDataBuffer::Create(
     scoped_refptr<StaticBitmapImage> image) {
