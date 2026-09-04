@@ -1064,6 +1064,11 @@ std::string MediaDrmBridge::GetVersionInternal() {
 }
 
 HdcpVersion MediaDrmBridge::GetCurrentHdcpLevel() {
+  if (security_level_ == SECURITY_LEVEL_SW_SECURE_CRYPTO ||
+      security_level_ == SECURITY_LEVEL_SW_SECURE_DECODE) {
+    return HdcpVersion::kHdcpVersionNone;
+  }
+
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jstring> j_current_hdcp_level =
       Java_MediaDrmBridge_getCurrentHdcpLevel(env, j_media_drm_);
