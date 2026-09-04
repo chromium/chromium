@@ -93,6 +93,46 @@ suite('OmniboxPopupSearchboxTest', function() {
     assertEquals(1, testProxy.handler.getCallCount('stopAutocomplete'));
   });
 
+  test('ResetsEditHistoryOnTabSwitch', async () => {
+    // Initial state on Tab 1.
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      tabId: 1,
+      text: 'tab 1 draft',
+      userInputInProgress: true,
+    }));
+    await microtasksFinished();
+    handler.reset();
+
+    // Simulate typing in Tab 1 to create undo history.
+    searchbox.$.input.dispatchEvent(
+        new CustomEvent('searchbox-input-text-updated', {
+          bubbles: true,
+          composed: true,
+          detail: {value: 'tab 1 draft edited', isComposing: false},
+        }));
+    await microtasksFinished();
+
+    // Verify edit history has undoable edits on Tab 1.
+    let [canUndo, canRedo] = await handler.whenCalled('setEditHistoryState');
+    assertTrue(canUndo);
+    assertFalse(canRedo);
+    handler.resetResolver('setEditHistoryState');
+
+    // Switch to Tab 2 with an in-progress draft.
+    callbackRouter.setInputState(createDefaultOmniboxInputState({
+      tabId: 2,
+      text: 'tab 2 draft',
+      userInputInProgress: true,
+    }));
+    await microtasksFinished();
+
+    // Tab 2 must have its edit history reset, preventing Tab 1 edits from
+    // leaking.
+    [canUndo, canRedo] = await handler.whenCalled('setEditHistoryState');
+    assertFalse(canUndo);
+    assertFalse(canRedo);
+  });
+
   test('EnterKeySubmitsVerbatimMatchWhenNoMatchSelected', async () => {
     callbackRouter.setInputState(createDefaultOmniboxInputState({
       text: 'chrome://version',
