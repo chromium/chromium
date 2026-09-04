@@ -203,6 +203,18 @@ enabled):
 Non-standard, debugging or unsafe command line flags and features are not
 accepted.
 
+### Reporting full-chains
+
+Please report each individual bug in the chain as distinct bugs including the
+information we need to reproduce each bug in isolation. Once you have done so,
+create an additional vulnerability report that describes how the components
+chain together and refers to each bug for its details. Attach a video or logs
+showing the chain, and the command line, Chrome version, Operating System and
+hardware that you've used to demonstrate the full-chain exploit. Finally, add
+the
+[Security-Request-Exploit-Assessment](https://issues.chromium.org/hotlists/8186895)
+hotlist to the issue (you can do this after it has been filed).
+
 ## Frequently Asked Questions (FAQ)
 
 ### Scope / Reward Eligibility
