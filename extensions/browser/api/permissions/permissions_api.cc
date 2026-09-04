@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/permissions/permissions_api.h"
+#include "extensions/browser/api/permissions/permissions_api.h"
 
 #include <memory>
 #include <utility>
@@ -12,19 +12,17 @@
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
-#include "chrome/browser/extensions/api/permissions/permissions_api_helpers.h"
-#include "chrome/browser/extensions/chrome_extension_function_details.h"
-#include "chrome/browser/extensions/extension_install_prompt.h"
-#include "chrome/browser/extensions/extension_management.h"
-#include "chrome/browser/extensions/extension_tab_util.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/common/extensions/api/permissions.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/api/permissions/permissions_api_helpers.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/browser/extension_management_client.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/install_prompt_data.h"
 #include "extensions/browser/permissions/permissions_updater.h"
 #include "extensions/browser/permissions_manager.h"
+#include "extensions/common/api/permissions.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
@@ -80,6 +78,30 @@ PermissionsRequestFunction::ShowDialogCallback* g_show_dialog_callback =
 PermissionsRequestFunction* g_pending_request_function = nullptr;
 bool ignore_user_gesture_for_tests = false;
 
+// Returns whether `web_contents` belongs to `browser_context`, optionally
+// treating an incognito context as belonging to its original context.
+// TODO(crbug.com/358567092): This could live in an //extensions util file and
+// be used directly by the only other similar helper,
+// ExtensionTabUtil::IsWebContentsInContext() in
+// chrome/browser/extensions/api/web_navigation/web_navigation_api.cc, moving
+// the logic out of ExtensionTabUtil entirely.
+bool IsWebContentsInBrowserContext(content::WebContents* web_contents,
+                                   content::BrowserContext* browser_context,
+                                   bool include_incognito) {
+  content::BrowserContext* web_contents_browser_context =
+      web_contents->GetBrowserContext();
+  if (web_contents_browser_context == browser_context) {
+    return true;
+  }
+
+  if (!include_incognito) {
+    return false;
+  }
+
+  return ExtensionsBrowserClient::Get()->IsSameContext(
+      web_contents_browser_context, browser_context);
+}
+
 // Returns whether `tab_id` is a valid tab. Populates `web_contents` with the
 // ones belonging to the tab , and `error` if tab is invalid.
 bool ValidateTab(int tab_id,
@@ -87,8 +109,8 @@ bool ValidateTab(int tab_id,
                  content::BrowserContext* browser_context,
                  content::WebContents** web_contents,
                  std::string* error) {
-  bool is_valid = ExtensionTabUtil::GetTabById(
-      tab_id, browser_context, include_incognito_information, web_contents);
+  bool is_valid = ExtensionsBrowserClient::Get()->IsValidTabId(
+      browser_context, tab_id, include_incognito_information, web_contents);
   if (!is_valid) {
     *error = ErrorUtils::FormatErrorMessage(kTabNotFoundError,
                                             base::NumberToString(tab_id));
@@ -128,8 +150,8 @@ bool ValidateDocument(const std::string& document_id,
   // BrowserContext. We check for this since we found the RenderFrameHost
   // through a generic lookup.
   *web_contents = content::WebContents::FromRenderFrameHost(frame);
-  if (!ExtensionTabUtil::IsWebContentsInContext(
-          *web_contents, browser_context, include_incognito_information)) {
+  if (!IsWebContentsInBrowserContext(*web_contents, browser_context,
+                                     include_incognito_information)) {
     *error =
         ErrorUtils::FormatErrorMessage(kInvalidDocumentIdError, document_id);
     return false;
@@ -296,16 +318,15 @@ void PermissionsRequestFunction::ResolvePendingDialogForTests(
   // use.
   g_pending_request_function = nullptr;
 
-  ExtensionInstallPrompt::DoneCallbackPayload result(
-      accept_dialog ? ExtensionInstallPrompt::Result::ACCEPTED
-                    : ExtensionInstallPrompt::Result::USER_CANCELED);
+  ExtensionInstallPromptClient::DoneCallbackPayload result(
+      accept_dialog ? ExtensionInstallPromptClient::Result::ACCEPTED
+                    : ExtensionInstallPromptClient::Result::USER_CANCELED);
   pending_function->OnInstallPromptDone(result);
   pending_function->Release();  // Balanced in Run().
 }
 
 // static
-void PermissionsRequestFunction::SetIgnoreUserGestureForTests(
-    bool ignore) {
+void PermissionsRequestFunction::SetIgnoreUserGestureForTests(bool ignore) {
   ignore_user_gesture_for_tests = ignore;
 }
 
@@ -323,7 +344,7 @@ ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
   }
 
   gfx::NativeWindow native_window =
-      ChromeExtensionFunctionDetails(this).GetNativeWindowForUI();
+      ExtensionsBrowserClient::Get()->GetNativeWindowForFunction(*this);
   if (!native_window && g_dialog_action == DialogAction::kDefault) {
     return RespondNow(Error("Could not find an active window."));
   }
@@ -404,7 +425,8 @@ ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
 
   // Automatically declines api permissions requests, which are blocked by
   // enterprise policy.
-  if (!ExtensionManagementFactory::GetForBrowserContext(browser_context())
+  if (!ExtensionsBrowserClient::Get()
+           ->GetExtensionManagementClient(browser_context())
            ->IsPermissionSetAllowed(extension(), *total_new_permissions)) {
     return RespondNow(Error(kBlockedByEnterprisePolicy));
   }
@@ -442,8 +464,8 @@ ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
           .empty();
   if (has_no_warnings ||
       extension_->location() == mojom::ManifestLocation::kComponent) {
-    OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload(
-        ExtensionInstallPrompt::Result::ACCEPTED));
+    OnInstallPromptDone(ExtensionInstallPromptClient::DoneCallbackPayload(
+        ExtensionInstallPromptClient::Result::ACCEPTED));
     return did_respond() ? AlreadyResponded() : RespondLater();
   }
 
@@ -452,11 +474,11 @@ ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
   if (g_dialog_action != DialogAction::kDefault) {
     prompted_permissions_for_testing_ = total_new_permissions->Clone();
     if (g_dialog_action == DialogAction::kAutoConfirm) {
-      OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload(
-          ExtensionInstallPrompt::Result::ACCEPTED));
+      OnInstallPromptDone(ExtensionInstallPromptClient::DoneCallbackPayload(
+          ExtensionInstallPromptClient::Result::ACCEPTED));
     } else if (g_dialog_action == DialogAction::kAutoReject) {
-      OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload(
-          ExtensionInstallPrompt::Result::USER_CANCELED));
+      OnInstallPromptDone(ExtensionInstallPromptClient::DoneCallbackPayload(
+          ExtensionInstallPromptClient::Result::USER_CANCELED));
     } else {
       CHECK_EQ(g_dialog_action, DialogAction::kProgrammatic);
       // A test will let us know when to resolve the prompt. Add a reference to
@@ -470,16 +492,16 @@ ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
     return did_respond() ? AlreadyResponded() : RespondLater();
   }
 
-  install_ui_ = std::make_unique<ExtensionInstallPrompt>(
-      Profile::FromBrowserContext(browser_context()), native_window,
-      std::make_unique<InstallPromptData>(
-          InstallPromptData::PERMISSIONS_PROMPT));
-  install_ui_->ShowDialog(
+  install_ui_ =
+      ExtensionsBrowserClient::Get()->CreateInstallPromptForNativeWindow(
+          native_window, *browser_context(),
+          std::make_unique<InstallPromptData>(
+              InstallPromptData::PERMISSIONS_PROMPT));
+  install_ui_->ConfirmPermissions(
       base::BindOnce(&PermissionsRequestFunction::OnInstallPromptDone, this),
-      extension(), nullptr, std::move(total_new_permissions),
-      ExtensionInstallPrompt::GetDefaultShowDialogCallback());
+      extension(), std::move(total_new_permissions));
 
-  // ExtensionInstallPrompt::ShowDialog() can call the response synchronously.
+  // ConfirmPermissions() can call the response synchronously.
   return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
@@ -491,11 +513,12 @@ bool PermissionsRequestFunction::ShouldKeepWorkerAliveIndefinitely() {
 }
 
 void PermissionsRequestFunction::OnInstallPromptDone(
-    ExtensionInstallPrompt::DoneCallbackPayload payload) {
+    ExtensionInstallPromptClient::DoneCallbackPayload payload) {
   // This dialog doesn't support the "withhold permissions" checkbox.
-  DCHECK_NE(payload.result,
-            ExtensionInstallPrompt::Result::ACCEPTED_WITH_WITHHELD_PERMISSIONS);
-  if (payload.result != ExtensionInstallPrompt::Result::ACCEPTED) {
+  DCHECK_NE(
+      payload.result,
+      ExtensionInstallPromptClient::Result::ACCEPTED_WITH_WITHHELD_PERMISSIONS);
+  if (payload.result != ExtensionInstallPromptClient::Result::ACCEPTED) {
     Respond(ArgumentList(api::permissions::Request::Results::Create(false)));
     return;
   }
@@ -574,7 +597,11 @@ PermissionsAddHostAccessRequestFunction::Run() {
     is_valid = ValidateDocument(document_id_param.value(),
                                 include_incognito_information(),
                                 browser_context(), &web_contents, &error);
-    tab_id = is_valid ? ExtensionTabUtil::GetTabId(web_contents) : -1;
+    if (is_valid) {
+      int window_id = -1;
+      ExtensionsBrowserClient::Get()->GetTabAndWindowIdForWebContents(
+          web_contents, &tab_id, &window_id);
+    }
   }
 
   if (!is_valid) {
@@ -672,7 +699,11 @@ PermissionsRemoveHostAccessRequestFunction::Run() {
     is_valid = ValidateDocument(document_id_param.value(),
                                 include_incognito_information(),
                                 browser_context(), &web_contents, &error);
-    tab_id = ExtensionTabUtil::GetTabId(web_contents);
+    if (is_valid) {
+      int window_id = -1;
+      ExtensionsBrowserClient::Get()->GetTabAndWindowIdForWebContents(
+          web_contents, &tab_id, &window_id);
+    }
   }
 
   if (!is_valid) {

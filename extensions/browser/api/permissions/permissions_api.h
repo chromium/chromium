@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_API_PERMISSIONS_PERMISSIONS_API_H_
-#define CHROME_BROWSER_EXTENSIONS_API_PERMISSIONS_PERMISSIONS_API_H_
+#ifndef EXTENSIONS_BROWSER_API_PERMISSIONS_PERMISSIONS_API_H_
+#define EXTENSIONS_BROWSER_API_PERMISSIONS_PERMISSIONS_API_H_
 
 #include "base/auto_reset.h"
-#include "chrome/browser/extensions/extension_install_prompt.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/browser/extension_install_prompt_client.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "ui/gfx/native_ui_types.h"
@@ -101,12 +101,13 @@ class PermissionsRequestFunction : public ExtensionFunction {
   bool ShouldKeepWorkerAliveIndefinitely() override;
 
  private:
-  void OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload payload);
+  void OnInstallPromptDone(
+      ExtensionInstallPromptClient::DoneCallbackPayload payload);
   void OnRuntimePermissionsGranted();
   void OnOptionalPermissionsGranted();
   void RespondIfRequestsFinished();
 
-  std::unique_ptr<ExtensionInstallPrompt> install_ui_;
+  std::unique_ptr<ExtensionInstallPromptClient> install_ui_;
 
   // Requested permissions that are currently withheld.
   std::unique_ptr<const PermissionSet> requested_withheld_;
@@ -150,4 +151,4 @@ class PermissionsRemoveHostAccessRequestFunction : public ExtensionFunction {
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_API_PERMISSIONS_PERMISSIONS_API_H_
+#endif  // EXTENSIONS_BROWSER_API_PERMISSIONS_PERMISSIONS_API_H_

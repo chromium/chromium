@@ -34,8 +34,10 @@
 #include "services/network/public/mojom/url_loader.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "url/gurl.h"
 
+class ExtensionFunction;
 class ExtensionFunctionRegistry;
 
 namespace base {
@@ -706,6 +708,20 @@ class ExtensionsBrowserClient {
   virtual std::unique_ptr<ExtensionInstallPromptClient> CreateInstallPrompt(
       content::WebContents* web_contents,
       std::unique_ptr<InstallPromptData> prompt);
+
+  // Creates install prompt UI anchored to `native_window` rather than a
+  // WebContents, for use when `function`'s caller has no directly associated
+  // WebContents (e.g. an extension service worker).
+  virtual std::unique_ptr<ExtensionInstallPromptClient>
+  CreateInstallPromptForNativeWindow(gfx::NativeWindow native_window,
+                                     content::BrowserContext& browser_context,
+                                     std::unique_ptr<InstallPromptData> prompt);
+
+  // Returns a native window suitable for anchoring UI (e.g. a
+  // permission-request prompt) triggered by `function`. Returns null if none
+  // is found.
+  virtual gfx::NativeWindow GetNativeWindowForFunction(
+      ExtensionFunction& function);
 
  protected:
   std::unique_ptr<ExtensionAssetsManager> assets_manager_;

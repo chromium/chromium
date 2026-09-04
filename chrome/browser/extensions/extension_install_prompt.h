@@ -117,6 +117,10 @@ class ExtensionInstallPrompt : public extensions::ExtensionInstallPromptClient {
   void ConfirmReEnable(DoneCallback install_callback,
                        const extensions::Extension* extension,
                        content::BrowserContext* browser_context) override;
+  void ConfirmPermissions(DoneCallback done_callback,
+                          const extensions::Extension* extension,
+                          std::unique_ptr<const extensions::PermissionSet>
+                              custom_permissions) override;
   void ShowInstallDialog(DoneCallback install_callback,
                          const extensions::Extension* extension,
                          const SkBitmap* icon) override;

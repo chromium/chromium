@@ -41,6 +41,7 @@ group("api_implementations") {
     "//extensions/browser/api/messaging:native_messaging",
     "//extensions/browser/api/metrics_private",
     "//extensions/browser/api/offscreen",
+    "//extensions/browser/api/permissions",
     "//extensions/browser/api/power",
     "//extensions/browser/api/proxy:proxy_api",
     "//extensions/browser/api/runtime",

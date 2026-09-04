@@ -62,14 +62,6 @@ InstallPromptData::PromptType
     ExtensionInstallPrompt::g_last_prompt_type_for_tests =
         InstallPromptData::UNSET_PROMPT_TYPE;
 
-ExtensionInstallPrompt::DoneCallbackPayload::DoneCallbackPayload(Result result)
-    : DoneCallbackPayload(result, std::string()) {}
-
-ExtensionInstallPrompt::DoneCallbackPayload::DoneCallbackPayload(
-    Result result,
-    std::string justification)
-    : result(result), justification(std::move(justification)) {}
-
 // static
 InstallPromptData::PromptType
 ExtensionInstallPrompt::GetReEnablePromptTypeForExtension(
@@ -206,6 +198,16 @@ void ExtensionInstallPrompt::ShowInstallDialog(DoneCallback install_callback,
   DCHECK(prompt_);
   ShowDialog(std::move(install_callback), extension, icon,
              GetDefaultShowDialogCallback());
+}
+
+void ExtensionInstallPrompt::ConfirmPermissions(
+    DoneCallback done_callback,
+    const Extension* extension,
+    std::unique_ptr<const PermissionSet> custom_permissions) {
+  DCHECK(prompt_);
+  DCHECK(custom_permissions);
+  ShowDialog(std::move(done_callback), extension, nullptr,
+             std::move(custom_permissions), GetDefaultShowDialogCallback());
 }
 
 std::unique_ptr<InstallPromptData>

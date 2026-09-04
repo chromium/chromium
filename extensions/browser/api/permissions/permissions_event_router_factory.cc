@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/permissions/permissions_event_router_factory.h"
+#include "extensions/browser/api/permissions/permissions_event_router_factory.h"
 
 #include "base/no_destructor.h"
-#include "chrome/browser/extensions/api/permissions/permissions_event_router.h"
-#include "chrome/browser/profiles/profile_selections.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
+#include "extensions/browser/api/permissions/permissions_event_router.h"
 #include "extensions/browser/event_router_factory.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/permissions_manager.h"
 
 namespace extensions {
@@ -20,15 +21,17 @@ PermissionsEventRouterFactory* PermissionsEventRouterFactory::GetInstance() {
 }
 
 PermissionsEventRouterFactory::PermissionsEventRouterFactory()
-    : ProfileKeyedServiceFactory(
+    : BrowserContextKeyedServiceFactory(
           "PermissionsEventRouter",
-          ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kRedirectedToOriginal)
-              .WithGuest(ProfileSelection::kRedirectedToOriginal)
-              .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
-              .Build()) {
+          BrowserContextDependencyManager::GetInstance()) {
   DependsOn(EventRouterFactory::GetInstance());
   DependsOn(PermissionsManager::GetFactory());
+}
+
+content::BrowserContext* PermissionsEventRouterFactory::GetBrowserContextToUse(
+    content::BrowserContext* context) const {
+  return ExtensionsBrowserClient::Get()->GetContextRedirectedToOriginal(
+      context);
 }
 
 std::unique_ptr<KeyedService>

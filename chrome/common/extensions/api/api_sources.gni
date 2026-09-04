@@ -33,7 +33,6 @@ schema_sources_ = [
   "notifications.webidl",
   "omnibox.json",
   "page_capture.json",
-  "permissions.json",
   "processes.idl",
   "reading_list.webidl",
   "search.idl",

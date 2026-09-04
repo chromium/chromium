@@ -403,4 +403,17 @@ ExtensionsBrowserClient::CreateInstallPrompt(
   return nullptr;
 }
 
+std::unique_ptr<ExtensionInstallPromptClient>
+ExtensionsBrowserClient::CreateInstallPromptForNativeWindow(
+    gfx::NativeWindow native_window,
+    content::BrowserContext& browser_context,
+    std::unique_ptr<InstallPromptData> prompt) {
+  return nullptr;
+}
+
+gfx::NativeWindow ExtensionsBrowserClient::GetNativeWindowForFunction(
+    ExtensionFunction& function) {
+  return gfx::NativeWindow();
+}
+
 }  // namespace extensions

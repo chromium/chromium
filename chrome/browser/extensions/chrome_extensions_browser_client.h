@@ -336,6 +336,13 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
   std::unique_ptr<ExtensionInstallPromptClient> CreateInstallPrompt(
       content::WebContents* web_contents,
       std::unique_ptr<InstallPromptData> prompt) override;
+  std::unique_ptr<ExtensionInstallPromptClient>
+  CreateInstallPromptForNativeWindow(
+      gfx::NativeWindow native_window,
+      content::BrowserContext& browser_context,
+      std::unique_ptr<InstallPromptData> prompt) override;
+  gfx::NativeWindow GetNativeWindowForFunction(
+      ExtensionFunction& function) override;
 
   void SetAPIClientForTest(std::unique_ptr<ExtensionsAPIClient> client);
 

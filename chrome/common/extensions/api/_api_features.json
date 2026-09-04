@@ -811,22 +811,6 @@
       "chrome://password-manager/*"
     ]
   }],
-  "permissions": {
-    "channel": "stable",
-    "extension_types": [
-      "extension",
-      "legacy_packaged_app",
-      "platform_app",
-      "chromeos_system_extension"
-    ],
-    "contexts": ["privileged_extension"]
-  },
-  "permissions.addHostAccessRequest": {
-    "min_manifest_version": 3
-  },
-  "permissions.removeHostAccessRequest": {
-    "min_manifest_version": 3
-  },
   "platformKeys": {
     "dependencies": ["permission:platformKeys"],
     "contexts": ["privileged_extension"]

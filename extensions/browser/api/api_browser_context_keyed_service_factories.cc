@@ -14,6 +14,7 @@
 #include "extensions/browser/api/management/management_api.h"
 #include "extensions/browser/api/messaging/message_service.h"
 #include "extensions/browser/api/offscreen/offscreen_document_manager.h"
+#include "extensions/browser/api/permissions/permissions_event_router_factory.h"
 #include "extensions/browser/api/power/power_api.h"
 #include "extensions/browser/api/runtime/runtime_api.h"
 #include "extensions/browser/api/storage/session_storage_manager.h"  // nogncheck
@@ -81,6 +82,7 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
   ManagementAPI::GetFactoryInstance();
   MessageService::GetFactoryInstance();
   OffscreenDocumentManager::GetFactory();
+  PermissionsEventRouterFactory::GetInstance();
   PowerAPI::GetFactoryInstance();
   RulesRegistryService::GetFactoryInstance();
   RuntimeAPI::GetFactoryInstance();

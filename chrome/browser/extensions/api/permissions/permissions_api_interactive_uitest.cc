@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/permissions/permissions_api.h"
+#include "extensions/browser/api/permissions/permissions_api.h"
 
 #include "base/test/bind.h"
 #include "chrome/browser/extensions/extension_apitest.h"

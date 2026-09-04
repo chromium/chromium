@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/permissions/permissions_event_router.h"
+#include "extensions/browser/api/permissions/permissions_event_router.h"
 
 #include <memory>
 
 #include "base/scoped_observation.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/api/permissions/permissions_api_helpers.h"
-#include "chrome/common/extensions/api/permissions.h"
+#include "extensions/browser/api/permissions/permissions_api_helpers.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/common/api/permissions.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permission_set.h"
 

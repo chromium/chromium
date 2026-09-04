@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/permissions/permissions_api_helpers.h"
+#include "extensions/browser/api/permissions/permissions_api_helpers.h"
 
 #include <stddef.h>
 
@@ -11,9 +11,9 @@
 
 #include "base/json/json_reader.h"
 #include "base/values.h"
-#include "chrome/common/extensions/api/permissions.h"
 #include "extensions/browser/permissions/permissions_test_util.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/api/permissions.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_info.h"

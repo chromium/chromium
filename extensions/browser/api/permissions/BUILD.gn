@@ -21,12 +21,13 @@ source_set("permissions") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
+  public_deps = [
     "//base",
-    "//chrome/browser/extensions",
-    "//chrome/browser/profiles",
-    "//chrome/common/extensions/api",
-    "//extensions/browser",
+    "//components/keyed_service/content",
+    "//content/public/browser",
+    "//extensions/browser:browser_sources",
     "//extensions/common",
+    "//extensions/common/api",
   ]
+  deps = [ "//components/keyed_service/content" ]
 }

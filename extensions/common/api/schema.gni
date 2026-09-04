@@ -18,6 +18,7 @@ extensions_api_schema_files_ = [
   "management.json",
   "metrics_private.json",
   "offscreen.webidl",
+  "permissions.json",
   "power.webidl",
   "proxy.json",
   "runtime.json",

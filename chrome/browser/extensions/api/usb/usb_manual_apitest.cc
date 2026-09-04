@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "build/build_config.h"
-#include "chrome/browser/extensions/api/permissions/permissions_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/browser/api/permissions/permissions_api.h"
 
 namespace extensions {
 namespace {
