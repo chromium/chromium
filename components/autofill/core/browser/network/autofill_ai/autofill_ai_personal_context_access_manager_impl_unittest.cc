@@ -322,9 +322,14 @@ class AutofillAiPersonalContextAccessManagerImplTest : public testing::Test {
     *passport->mutable_expiration_date() = TodayWithDelta(base::Days(365));
 
     std::vector<EntityInstance> entities;
-    EXPECT_CALL(mock_observer(),
+    MockAutofillAiPersonalContextAccessManagerObserver local_observer;
+    base::ScopedObservation<AutofillAiPersonalContextAccessManagerImpl,
+                            MockAutofillAiPersonalContextAccessManagerObserver>
+        observation{&local_observer};
+    observation.Observe(&access_manager());
+    EXPECT_CALL(local_observer,
                 OnPrefetchContextComplete(_, Optional(IsEmpty())));
-    EXPECT_CALL(mock_observer(),
+    EXPECT_CALL(local_observer,
                 OnPrefetchContextComplete(_, Optional(Not(IsEmpty()))))
         .WillOnce(SaveOptSpanToVector<1>(&entities));
     PrefetchContextSync({kPassportType}, {kPassportType}, presence_response,
@@ -425,19 +430,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
 TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
        PrefetchContextOnlyRequestsUnfetchedTypes) {
   // 1. First, prefetch Passport.
-  personal_context::proto::ContextMemoryAmbientAutofillResponse
-      passport_presence_response;
-  passport_presence_response.add_entities()
-      ->mutable_sensitive_pii_presence()
-      ->set_type(SensitivePiiPresence::PASSPORT);
-  personal_context::proto::ContextMemoryAmbientAutofillResponse
-      passport_spii_response;
-  personal_context::proto::Passport* passport =
-      passport_spii_response.add_entities()->mutable_passport();
-  passport->set_number("P123");
-  *passport->mutable_expiration_date() = TodayWithDelta(base::Days(365));
-  PrefetchContextSync({kPassportType}, {kPassportType},
-                      passport_presence_response, passport_spii_response);
+  PrefetchMaskedPassportAndGetGuid();
   ASSERT_TRUE(access_manager().IsTypePrefetched(kPassportType));
 
   // 2. Now call PrefetchContext for both Passport and Driver's
@@ -470,17 +463,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
 TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
        PrefetchContextAllPrefetchedNoRequest) {
   // 1. Prefetch Passport.
-  personal_context::proto::ContextMemoryAmbientAutofillResponse
-      presence_response;
-  presence_response.add_entities()->mutable_sensitive_pii_presence()->set_type(
-      SensitivePiiPresence::PASSPORT);
-  personal_context::proto::ContextMemoryAmbientAutofillResponse spii_response;
-  personal_context::proto::Passport* passport =
-      spii_response.add_entities()->mutable_passport();
-  passport->set_number("P123");
-  *passport->mutable_expiration_date() = TodayWithDelta(base::Days(365));
-  PrefetchContextSync({kPassportType}, {kPassportType}, presence_response,
-                      spii_response);
+  PrefetchMaskedPassportAndGetGuid();
   ASSERT_TRUE(access_manager().IsTypePrefetched(kPassportType));
 
   // 2. Call PrefetchContext for Passport.
@@ -816,19 +799,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
 // TTL is tracked per entity type.
 TEST_F(AutofillAiPersonalContextAccessManagerImplTest, PrefetchedEntities_TTL) {
   // 1. Prefetch Passport.
-  personal_context::proto::ContextMemoryAmbientAutofillResponse
-      passport_presence_response;
-  passport_presence_response.add_entities()
-      ->mutable_sensitive_pii_presence()
-      ->set_type(SensitivePiiPresence::PASSPORT);
-  personal_context::proto::ContextMemoryAmbientAutofillResponse
-      passport_spii_response;
-  personal_context::proto::Passport* passport =
-      passport_spii_response.add_entities()->mutable_passport();
-  passport->set_number("P123");
-  *passport->mutable_expiration_date() = TodayWithDelta(base::Days(365));
-  PrefetchContextSync({kPassportType}, {kPassportType},
-                      passport_presence_response, passport_spii_response);
+  PrefetchMaskedPassportAndGetGuid();
   EXPECT_TRUE(access_manager().IsTypePrefetched(kPassportType));
   EXPECT_FALSE(access_manager().IsTypePrefetched(kDriversLicenseType));
 
@@ -872,17 +843,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest, PrefetchedEntities_TTL) {
 TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
        PrefetchContext_FollowUpRequestNoOp) {
   // 1. Prefetch Passport at T = 0.
-  personal_context::proto::ContextMemoryAmbientAutofillResponse
-      presence_response;
-  presence_response.add_entities()->mutable_sensitive_pii_presence()->set_type(
-      SensitivePiiPresence::PASSPORT);
-  personal_context::proto::ContextMemoryAmbientAutofillResponse spii_response;
-  personal_context::proto::Passport* passport =
-      spii_response.add_entities()->mutable_passport();
-  passport->set_number("P123");
-  *passport->mutable_expiration_date() = TodayWithDelta(base::Days(365));
-  PrefetchContextSync({kPassportType}, {kPassportType}, presence_response,
-                      spii_response);
+  PrefetchMaskedPassportAndGetGuid();
   EXPECT_TRUE(access_manager().IsTypePrefetched(kPassportType));
 
   // Fast forward half TTL (Passport still valid).
@@ -956,24 +917,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
 TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
        ServerHasSpiiPresenceSignal_TrueAfterUnmasking) {
   // 1. Prefetch (masked) Passport.
-  personal_context::proto::ContextMemoryAmbientAutofillResponse
-      presence_response;
-  presence_response.add_entities()->mutable_sensitive_pii_presence()->set_type(
-      SensitivePiiPresence::PASSPORT);
-  personal_context::proto::ContextMemoryAmbientAutofillResponse spii_response;
-  personal_context::proto::Passport* passport =
-      spii_response.add_entities()->mutable_passport();
-  passport->set_number("P123");
-  *passport->mutable_expiration_date() = TodayWithDelta(base::Days(365));
-
-  std::vector<EntityInstance> entities;
-  EXPECT_CALL(mock_observer(),
-              OnPrefetchContextComplete(_, Optional(IsEmpty())));
-  EXPECT_CALL(mock_observer(),
-              OnPrefetchContextComplete(_, Optional(Not(IsEmpty()))))
-      .WillOnce(SaveOptSpanToVector<1>(&entities));
-  PrefetchContextSync({kPassportType}, {kPassportType}, presence_response,
-                      spii_response);
+  PrefetchMaskedPassportAndGetGuid();
   ASSERT_TRUE(access_manager().IsTypePrefetched(kPassportType));
 
   // Server should have data available after prefetch (presence signal cached).
@@ -1044,17 +988,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
 // entities of that type.
 TEST_F(AutofillAiPersonalContextAccessManagerImplTest, ResetStateForType) {
   // Prefetch passport.
-  personal_context::proto::ContextMemoryAmbientAutofillResponse
-      presence_response;
-  presence_response.add_entities()->mutable_sensitive_pii_presence()->set_type(
-      SensitivePiiPresence::PASSPORT);
-  personal_context::proto::ContextMemoryAmbientAutofillResponse spii_response;
-  personal_context::proto::Passport* passport =
-      spii_response.add_entities()->mutable_passport();
-  passport->set_number("P123");
-  *passport->mutable_expiration_date() = TodayWithDelta(base::Days(365));
-  PrefetchContextSync({kPassportType}, {kPassportType}, presence_response,
-                      spii_response);
+  PrefetchMaskedPassportAndGetGuid();
   EXPECT_TRUE(access_manager().IsTypePrefetched(kPassportType));
 
   // Reset the prefetch state. Should evict the passport.
@@ -1069,28 +1003,8 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest, ResetStateForType) {
 TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
        PrefetchedEntities_ExpirationResetsUnmaskedCache) {
   // 1. Prefetch a (masked) Passport at T=0.
-  personal_context::proto::ContextMemoryAmbientAutofillResponse
-      presence_response;
-  presence_response.add_entities()->mutable_sensitive_pii_presence()->set_type(
-      SensitivePiiPresence::PASSPORT);
-  personal_context::proto::ContextMemoryAmbientAutofillResponse spii_response;
-  personal_context::proto::Passport* passport =
-      spii_response.add_entities()->mutable_passport();
-  passport->set_number("P123");
-  *passport->mutable_expiration_date() = TodayWithDelta(base::Days(365));
-
-  std::vector<EntityInstance> entities;
-  EXPECT_CALL(mock_observer(),
-              OnPrefetchContextComplete(_, Optional(IsEmpty())));
-  EXPECT_CALL(mock_observer(),
-              OnPrefetchContextComplete(_, Optional(Not(IsEmpty()))))
-      .WillOnce(SaveOptSpanToVector<1>(&entities));
-  PrefetchContextSync({kPassportType}, {kPassportType}, presence_response,
-                      spii_response);
+  EntityInstance::EntityId passport_guid = PrefetchMaskedPassportAndGetGuid();
   EXPECT_TRUE(access_manager().IsTypePrefetched(kPassportType));
-
-  ASSERT_EQ(entities.size(), 1u);
-  EntityInstance::EntityId passport_guid = entities[0].guid();
 
   // 2. Fast forward to shortly before before TTL expiration.
   constexpr base::TimeDelta kDeltaBeforeExpiry = base::Seconds(30);
@@ -1138,27 +1052,8 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
 TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
        GetUnmaskedSpiiEntity_CacheMiss_Success) {
   // 1. Prefetch (masked) Passport.
-  personal_context::proto::ContextMemoryAmbientAutofillResponse
-      presence_response;
-  presence_response.add_entities()->mutable_sensitive_pii_presence()->set_type(
-      SensitivePiiPresence::PASSPORT);
-  personal_context::proto::ContextMemoryAmbientAutofillResponse spii_response;
-  personal_context::proto::Passport* passport =
-      spii_response.add_entities()->mutable_passport();
-  passport->set_number("P123");
-  *passport->mutable_expiration_date() = TodayWithDelta(base::Days(365));
-
-  std::vector<EntityInstance> entities;
-  EXPECT_CALL(mock_observer(),
-              OnPrefetchContextComplete(_, Optional(IsEmpty())));
-  EXPECT_CALL(mock_observer(),
-              OnPrefetchContextComplete(_, Optional(Not(IsEmpty()))))
-      .WillOnce(SaveOptSpanToVector<1>(&entities));
-  PrefetchContextSync({kPassportType}, {kPassportType}, presence_response,
-                      spii_response);
+  EntityInstance::EntityId passport_guid = PrefetchMaskedPassportAndGetGuid();
   ASSERT_TRUE(access_manager().IsTypePrefetched(kPassportType));
-  ASSERT_EQ(entities.size(), 1u);
-  EntityInstance passport_masked = entities[0];
 
   // 2. Prepare unmasked response.
   personal_context::proto::FetchPiiEntitiesResponse expected_response;
@@ -1175,11 +1070,11 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   // Call GetUnmaskedSpiiEntity.
   {
     std::optional<EntityInstance> result =
-        GetUnmaskedSpiiEntitySync(passport_masked.guid());
+        GetUnmaskedSpiiEntitySync(passport_guid);
     ASSERT_TRUE(result.has_value());
     // The result should be unmasked and have the same GUID.
     EXPECT_FALSE(result->IsMaskedEntity());
-    EXPECT_EQ(result->guid(), passport_masked.guid());
+    EXPECT_EQ(result->guid(), passport_guid);
     EXPECT_EQ(
         result->attribute(AttributeType(AttributeTypeName::kPassportNumber))
             ->GetCompleteRawInfo(),
@@ -1195,9 +1090,9 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   EXPECT_CALL(mock_personal_context_service(), FetchPiiEntities).Times(0);
   {
     std::optional<EntityInstance> cached_result =
-        GetUnmaskedSpiiEntitySync(passport_masked.guid());
+        GetUnmaskedSpiiEntitySync(passport_guid);
     ASSERT_TRUE(cached_result.has_value());
-    EXPECT_EQ(cached_result->guid(), passport_masked.guid());
+    EXPECT_EQ(cached_result->guid(), passport_guid);
     EXPECT_FALSE(cached_result->IsMaskedEntity());
   }
   histogram_tester().ExpectBucketCount(
@@ -1223,26 +1118,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
 TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
        GetUnmaskedSpiiEntity_ServiceFailure) {
   // 1. Prefetch (masked) Passport.
-  personal_context::proto::ContextMemoryAmbientAutofillResponse
-      presence_response;
-  presence_response.add_entities()->mutable_sensitive_pii_presence()->set_type(
-      SensitivePiiPresence::PASSPORT);
-  personal_context::proto::ContextMemoryAmbientAutofillResponse spii_response;
-  personal_context::proto::Passport* passport =
-      spii_response.add_entities()->mutable_passport();
-  passport->set_number("P123");
-  *passport->mutable_expiration_date() = TodayWithDelta(base::Days(365));
-
-  std::vector<EntityInstance> entities;
-  EXPECT_CALL(mock_observer(),
-              OnPrefetchContextComplete(_, Optional(IsEmpty())));
-  EXPECT_CALL(mock_observer(),
-              OnPrefetchContextComplete(_, Optional(Not(IsEmpty()))))
-      .WillOnce(SaveOptSpanToVector<1>(&entities));
-  PrefetchContextSync({kPassportType}, {kPassportType}, presence_response,
-                      spii_response);
-  ASSERT_EQ(entities.size(), 1u);
-  EntityInstance::EntityId passport_guid = entities[0].guid();
+  EntityInstance::EntityId passport_guid = PrefetchMaskedPassportAndGetGuid();
 
   ContextMemoryError expected_error = ContextMemoryError::FromExecutionError(
       ContextMemoryError::ExecutionError::kGenericFailure);
@@ -1298,27 +1174,8 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
 // all state is wiped.
 TEST_F(AutofillAiPersonalContextAccessManagerImplTest, WipeStateOnDisablement) {
   // 1. Prefetch a (masked) passport.
-  personal_context::proto::ContextMemoryAmbientAutofillResponse
-      presence_response;
-  presence_response.add_entities()->mutable_sensitive_pii_presence()->set_type(
-      SensitivePiiPresence::PASSPORT);
-  personal_context::proto::ContextMemoryAmbientAutofillResponse spii_response;
-  personal_context::proto::Passport* passport =
-      spii_response.add_entities()->mutable_passport();
-  passport->set_number("P123");
-  *passport->mutable_expiration_date() = TodayWithDelta(base::Days(365));
-
-  std::vector<EntityInstance> entities;
-  EXPECT_CALL(mock_observer(),
-              OnPrefetchContextComplete(_, Optional(IsEmpty())));
-  EXPECT_CALL(mock_observer(),
-              OnPrefetchContextComplete(_, Optional(Not(IsEmpty()))))
-      .WillOnce(SaveOptSpanToVector<1>(&entities));
-  PrefetchContextSync({kPassportType}, {kPassportType}, presence_response,
-                      spii_response);
+  PrefetchMaskedPassportAndGetGuid();
   EXPECT_TRUE(access_manager().IsTypePrefetched(kPassportType));
-  ASSERT_EQ(entities.size(), 1u);
-  EntityInstance::EntityId passport_guid = entities[0].guid();
 
   // 2. Call OnEligibilityStateChanged with an ENABLED state. State should not
   // be wiped.
@@ -1554,17 +1411,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   access_manager().AddObserver(&observer);
 
   // 1. Prefetch Passport.
-  personal_context::proto::ContextMemoryAmbientAutofillResponse
-      presence_response;
-  presence_response.add_entities()->mutable_sensitive_pii_presence()->set_type(
-      SensitivePiiPresence::PASSPORT);
-  personal_context::proto::ContextMemoryAmbientAutofillResponse spii_response;
-  personal_context::proto::Passport* passport =
-      spii_response.add_entities()->mutable_passport();
-  passport->set_number("P123");
-  *passport->mutable_expiration_date() = TodayWithDelta(base::Days(365));
-  PrefetchContextSync({kPassportType}, {kPassportType}, presence_response,
-                      spii_response);
+  PrefetchMaskedPassportAndGetGuid();
 
   // 2. Call Prefetch again. Expect observer to be notified synchronously.
   EXPECT_CALL(observer, OnPrefetchContextComplete(_, Optional(IsEmpty())));
@@ -1627,19 +1474,8 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
             .name,
         "10m"}});
 
-  personal_context::proto::ContextMemoryAmbientAutofillResponse
-      presence_response;
-  presence_response.add_entities()->mutable_sensitive_pii_presence()->set_type(
-      SensitivePiiPresence::PASSPORT);
-  personal_context::proto::ContextMemoryAmbientAutofillResponse spii_response;
-  personal_context::proto::Passport* passport =
-      spii_response.add_entities()->mutable_passport();
-  passport->set_number("P123");
-  *passport->mutable_expiration_date() = TodayWithDelta(base::Days(365));
-
   // 1. Initial prefetch at T = 0.
-  PrefetchContextSync({kPassportType}, {kPassportType}, presence_response,
-                      spii_response);
+  PrefetchMaskedPassportAndGetGuid();
   EXPECT_TRUE(access_manager().IsTypePrefetched(kPassportType));
 
   // Fast forward 5 minutes (Passport still valid).
@@ -1663,26 +1499,8 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
 // turned off.
 TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
        ResetAllStateOnTogglePrefChangedOff) {
-  personal_context::proto::ContextMemoryAmbientAutofillResponse
-      presence_response;
-  presence_response.add_entities()->mutable_sensitive_pii_presence()->set_type(
-      SensitivePiiPresence::PASSPORT);
-  personal_context::proto::ContextMemoryAmbientAutofillResponse spii_response;
-  personal_context::proto::Passport* passport =
-      spii_response.add_entities()->mutable_passport();
-  passport->set_number("P123");
-  *passport->mutable_expiration_date() = TodayWithDelta(base::Days(365));
-
-  std::vector<EntityInstance> entities;
-  EXPECT_CALL(mock_observer(),
-              OnPrefetchContextComplete(_, Optional(IsEmpty())));
-  EXPECT_CALL(mock_observer(),
-              OnPrefetchContextComplete(_, Optional(Not(IsEmpty()))))
-      .WillOnce(SaveOptSpanToVector<1>(&entities));
-  PrefetchContextSync({kPassportType}, {kPassportType}, presence_response,
-                      spii_response);
+  PrefetchMaskedPassportAndGetGuid();
   ASSERT_TRUE(access_manager().IsTypePrefetched(kPassportType));
-  ASSERT_EQ(entities.size(), 1u);
 
   // Set the toggle pref to false. This should trigger eviction.
   EXPECT_CALL(mock_observer(), OnMaskedEntityTypeEvicted(_, kPassportType));
