@@ -72,6 +72,12 @@ config("compiler") {
     cflags += [ "-mtls-dialect=trad" ]
   }
 
+  if (current_cpu == "arm64" || current_cpu == "x86" || current_cpu == "x64" ||
+      current_cpu == "riscv64") {
+    # TODO(crbug.com/556790370): Evaluate and decide if we want to use this.
+    cflags += [ "-fno-stack-clash-protection" ]
+  }
+
   cflags += [ "--target=$android_abi_target$android_ndk_api_level" ]
   ldflags += [ "--target=$android_abi_target$android_ndk_api_level" ]
 
