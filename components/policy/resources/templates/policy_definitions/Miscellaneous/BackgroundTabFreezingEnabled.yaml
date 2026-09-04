@@ -1,0 +1,33 @@
+caption: Enable background tab freezing
+default: null
+desc: |-
+  Controls whether <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> freezes inactive background tabs to save CPU and memory.
+
+  When background tab freezing is active, tabs that have been inactive in the background for a period of time are frozen by pausing JavaScript execution and timer tasks. Frozen tabs remain loaded in memory and instantly resume when selected by the user. Tabs with active background tasks—such as those playing audio or video, capturing screen or camera streams, maintaining active WebRTC connections, or holding Web Locks—are ineligible for freezing and continue running. Sites configured in the <ph name="TAB_DISCARDING_EXCEPTIONS_POLICY_NAME">TabDiscardingExceptions</ph> policy or in the user's tab discarding exceptions are also exempt from freezing.
+
+  Setting the policy to Enabled turns on automatic background tab freezing for eligible background tabs. Users cannot change this setting.
+
+  Setting the policy to Disabled prevents background tabs from being frozen. Users cannot change this setting.
+
+  Not setting the policy means background tab freezing is enabled by default, but users can turn it on or off in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> settings.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: false
+items:
+- caption: Background tab freezing is enabled
+  value: true
+- caption: Background tab freezing is disabled
+  value: false
+- caption: Allow the user to decide whether to freeze background tabs
+  value: null
+owners:
+- anthonyvd@chromium.org
+- file://components/performance_manager/OWNERS
+schema:
+  type: boolean
+supported_on:
+- chrome.*:155-
+- chrome_os:155-
+tags: []
+type: main
