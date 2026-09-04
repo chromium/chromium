@@ -69,6 +69,7 @@ import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwDataDirLock;
 import org.chromium.android_webview.AwLayoutSizer;
 import org.chromium.android_webview.AwPrintDocumentAdapter;
+import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.AwThreadUtils;
 import org.chromium.android_webview.DarkModeHelper;
 import org.chromium.android_webview.DualTraceEvent;
@@ -291,11 +292,6 @@ class WebViewChromium
                         mContentsClientAdapter.getWebChromeClient());
             }
 
-            try (ScopedSysTraceEvent e2 =
-                    ScopedSysTraceEvent.scoped("WebViewChromium.ContentSettingsAdapter")) {
-                mWebSettings = mFactory.createContentSettingsAdapter(mAwContents.getSettings());
-            }
-
             if (mAppTargetSdkVersion < Build.VERSION_CODES.LOLLIPOP) {
                 // Prior to Lollipop, JavaScript objects injected via addJavascriptInterface
                 // were not inspectable.
@@ -311,6 +307,18 @@ class WebViewChromium
             // AwContents is created.
             if (mGetAccessibilityNodeProviderCalledWhenAwContentsNull) {
                 mWebView.sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+            }
+        }
+    }
+
+    // A callback we provide to AwContents to return AwSettings as soon as it has it.
+    // We need this because AwContents calls back into the ContainerView and clients may
+    // try to access these settings before AwContents is finished constructing.
+    void initSettings(AwSettings settings) {
+        if (mWebSettings == null) {
+            try (ScopedSysTraceEvent e2 =
+                    ScopedSysTraceEvent.scoped("WebViewChromium.ContentSettingsAdapter")) {
+                mWebSettings = mFactory.createContentSettingsAdapter(settings);
             }
         }
     }
