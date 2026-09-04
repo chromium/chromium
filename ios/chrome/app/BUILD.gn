@@ -616,6 +616,7 @@ source_set("app_internal") {
     "//ios/chrome/browser/first_run/public:utils",
     "//ios/chrome/browser/geolocation/model",
     "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/keyboard/ui_bundled",
     "//ios/chrome/browser/main/ui_bundled",
     "//ios/chrome/browser/memory/model",

@@ -29,6 +29,7 @@
 #import "base/values.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/component_updater/component_updater_service.h"
+#import "components/component_updater/installer_policies/actor_safety_lists_component_installer.h"
 #import "components/component_updater/installer_policies/on_device_head_suggest_component_installer.h"
 #import "components/component_updater/installer_policies/optimization_hints_component_installer.h"
 #import "components/component_updater/installer_policies/safety_tips_component_installer.h"
@@ -97,6 +98,7 @@
 #import "ios/chrome/browser/download/model/download_directory_util.h"
 #import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/first_run/public/first_run_util.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/memory/model/memory_debugger_manager.h"
 #import "ios/chrome/browser/metrics/model/first_user_action_recorder.h"
 #import "ios/chrome/browser/metrics/model/incognito_usage_app_state_agent.h"
@@ -240,6 +242,10 @@ void RegisterComponentsForUpdate() {
       cus, GetApplicationContext()->GetApplicationLocaleStorage()->Get());
   RegisterSafetyTipsComponent(cus);
   RegisterOptimizationHintsComponent(cus);
+  if (IsActorEnabled()) {
+    component_updater::RegisterActorSafetyListsComponent(cus,
+                                                         base::DoNothing());
+  }
 }
 
 // The delay before beginning memory experimentation.
