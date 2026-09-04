@@ -518,9 +518,9 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewMandatoryUiEnabledTest,
   // Expect the dialog to close.
   ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
 
+  // Wait for the WebView to finish composition and load.
+  content::WaitForCopyableViewInWebContents(payment_handler_contents);
   // Reject the promise with a user interaction.
-  content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(
-      payment_handler_contents);
   content::SimulateMouseClickOrTapElementWithId(payment_handler_contents,
                                                 "reject-button");
 
@@ -616,16 +616,8 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewMandatoryUiDisabledTest,
   ASSERT_TRUE(WaitForObservedEvent());
 }
 
-// TODO(crbug.com/531590249): Re-enable this test
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ErrorMessageShownOnErrorAfterUserInteraction \
-  DISABLED_ErrorMessageShownOnErrorAfterUserInteraction
-#else
-#define MAYBE_ErrorMessageShownOnErrorAfterUserInteraction \
-  ErrorMessageShownOnErrorAfterUserInteraction
-#endif
 IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewMandatoryUiDisabledTest,
-                       MAYBE_ErrorMessageShownOnErrorAfterUserInteraction) {
+                       ErrorMessageShownOnErrorAfterUserInteraction) {
   NavigateTo("/payment_handler.html");
   std::string method_name;
   InstallPaymentApp("a.com",
@@ -659,9 +651,9 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewMandatoryUiDisabledTest,
   ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_HIDDEN,
                                DialogEvent::ERROR_MESSAGE_SHOWN});
 
+  // Wait for the WebView to finish composition and load.
+  content::WaitForCopyableViewInWebContents(payment_handler_contents);
   // Reject the promise with a user interaction.
-  content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(
-      payment_handler_contents);
   content::SimulateMouseClickOrTapElementWithId(payment_handler_contents,
                                                 "reject-button");
 
