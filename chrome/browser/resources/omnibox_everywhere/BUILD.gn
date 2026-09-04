@@ -29,7 +29,6 @@ build_webui("build") {
     "debug/debug_app.html.ts",
     "debug/debug_app.ts",
     "browser_proxy.ts",
-    "unbounded_utils.ts",
   ]
   css_files = [
     "composebox.css",

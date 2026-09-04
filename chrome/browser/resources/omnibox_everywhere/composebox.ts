@@ -31,7 +31,6 @@ import {ToolMode} from '//resources/mojo/components/omnibox/composebox/composebo
 import {OmniboxEverywhereBrowserProxyImpl} from './browser_proxy.js';
 import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
-import {UnboundedMenuManager} from './unbounded_utils.js';
 
 export interface OmniboxEverywhereComposeboxElement {
   $: {
@@ -213,18 +212,13 @@ export class OmniboxEverywhereComposeboxElement extends
   override getFileInputsElement(): ComposeboxFileInputsElement|null {
     return this.shouldDisableFileInputs() ? null : this.$.fileInputs;
   }
-
-  private unboundedMenuManager_ = new UnboundedMenuManager(
-      () => this.getContextEntrypointElement() as HTMLElement | null);
   override computeShowDropdown(): boolean {
-    return (this.unboundedMenuManager_?.isDialogOpen() ?? false) ||
-        this.isScreenshotMenuOpen || super.computeShowDropdown();
+    return this.isContextMenuOpen || super.computeShowDropdown();
   }
 
   override onContextMenuOpened() {
     super.onContextMenuOpened();
     this.showDropdown = this.computeShowDropdown();
-    this.unboundedMenuManager_.onContextMenuOpened();
   }
 
   override async onContextMenuClosed(): Promise<void> {
@@ -235,7 +229,6 @@ export class OmniboxEverywhereComposeboxElement extends
     entrypoint?.closeMenu();
     await super.onContextMenuClosed();
     this.showDropdown = this.computeShowDropdown();
-    this.unboundedMenuManager_.onContextMenuClosed();
   }
 
 

@@ -4,8 +4,8 @@
 
 import 'chrome://omnibox-everywhere.top-chrome/omnibox_everywhere.js';
 
-import {ComposeboxProxyImpl, getContextMenuDialog, OmniboxEverywhereBrowserProxyImpl, SearchboxBrowserProxy, UnboundedMenuManager, updateUnboundedElementVisibility} from 'chrome://omnibox-everywhere.top-chrome/omnibox_everywhere.js';
-import type {OmniboxEverywhereAppElement, OmniboxEverywhereComposeboxElement, OmniboxEverywhereOmniboxElement, OmniboxEverywhereProfileIconElement, UnboundedElement} from 'chrome://omnibox-everywhere.top-chrome/omnibox_everywhere.js';
+import {ComposeboxProxyImpl, OmniboxEverywhereBrowserProxyImpl, SearchboxBrowserProxy} from 'chrome://omnibox-everywhere.top-chrome/omnibox_everywhere.js';
+import type {OmniboxEverywhereAppElement, OmniboxEverywhereComposeboxElement, OmniboxEverywhereOmniboxElement, OmniboxEverywhereProfileIconElement} from 'chrome://omnibox-everywhere.top-chrome/omnibox_everywhere.js';
 import {ComposeboxFile, TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
 import type {ComposeboxState} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
@@ -403,99 +403,6 @@ suite('OmniboxEverywhereOmniboxTest', () => {
         assertTrue(!!testOmnibox.shadowRoot.querySelector('#composeButton'));
         assertFalse(!!testOmnibox.shadowRoot.querySelector('#context'));
       });
-
-  test('ContextMenuUnboundedToggleEvent', async () => {
-    const contextMenu =
-        omnibox.shadowRoot.querySelector<ContextualEntrypointAndMenuElement>(
-            '#context')!;
-    const mockDialog = document.createElement('dialog') as UnboundedElement;
-    mockDialog.id = 'dialog';
-    // Dialog must be attached to the DOM so Blink tracks its open state in
-    // AllOpenDialogs(), avoiding DCHECK failures on attribute changes.
-    document.body.appendChild(mockDialog);
-    (contextMenu as unknown as {getDialog: () => HTMLDialogElement}).getDialog =
-        () => mockDialog;
-
-    let closeMenuCalled = false;
-    contextMenu.closeMenu = () => {
-      closeMenuCalled = true;
-    };
-
-    contextMenu.dispatchEvent(new CustomEvent('context-menu-opened'));
-    await omnibox.updateComplete;
-
-    const event = new ToggleEvent('beforetoggle', {
-      oldState: 'open',
-      newState: 'closed',
-    });
-    mockDialog.dispatchEvent(event);
-
-    assertTrue(closeMenuCalled);
-    mockDialog.remove();
-  });
-
-  test('ContextMenuClosed event removes unbounded visibility', async () => {
-    const contextMenu =
-        omnibox.shadowRoot.querySelector<ContextualEntrypointAndMenuElement>(
-            '#context')!;
-    const mockDialog = document.createElement('dialog') as UnboundedElement;
-    mockDialog.id = 'dialog';
-    // Dialog must be attached to the DOM so Blink tracks its open state in
-    // AllOpenDialogs(), avoiding DCHECK failures on attribute changes.
-    document.body.appendChild(mockDialog);
-    mockDialog.setAttribute('unbounded', '');
-    let hideCalled = false;
-    mockDialog.hideUnboundedElement = () => {
-      hideCalled = true;
-      return Promise.resolve();
-    };
-    (contextMenu as unknown as {getDialog: () => HTMLDialogElement}).getDialog =
-        () => mockDialog;
-
-    contextMenu.dispatchEvent(new CustomEvent('context-menu-closed'));
-    await microtasksFinished();
-
-    assertTrue(hideCalled);
-    assertFalse(mockDialog.hasAttribute('unbounded'));
-    mockDialog.remove();
-  });
-
-  test('onInputWrapperFocusout ignores blur when dialog is open', () => {
-    const contextMenu =
-        omnibox.shadowRoot.querySelector<ContextualEntrypointAndMenuElement>(
-            '#context')!;
-    const mockDialog = document.createElement('dialog') as UnboundedElement;
-    mockDialog.id = 'dialog';
-    // Dialog must be attached to the DOM before mutating `open` so Blink tracks
-    // it in AllOpenDialogs(), avoiding DCHECK failures when resetting `open`.
-    document.body.appendChild(mockDialog);
-    mockDialog.open = true;
-    (contextMenu as unknown as {getDialog: () => HTMLDialogElement}).getDialog =
-        () => mockDialog;
-
-    let superFocusoutCalled = false;
-    const originalFocusout =
-        Object.getPrototypeOf(Object.getPrototypeOf(omnibox))
-            .onInputWrapperFocusout;
-    try {
-      Object.getPrototypeOf(Object.getPrototypeOf(omnibox))
-          .onInputWrapperFocusout = () => {
-        superFocusoutCalled = true;
-      };
-
-      omnibox.onInputWrapperFocusout(new FocusEvent('focusout'));
-      assertFalse(superFocusoutCalled);
-
-      mockDialog.open = false;
-      omnibox.onInputWrapperFocusout(new FocusEvent('focusout'));
-      assertTrue(superFocusoutCalled);
-    } finally {
-      Object.getPrototypeOf(Object.getPrototypeOf(omnibox))
-          .onInputWrapperFocusout = originalFocusout;
-      mockDialog.remove();
-    }
-  });
-
   test('dropdownIsVisible preserves bottomControls', async () => {
     const bottomControls =
         omnibox.shadowRoot.querySelector<HTMLElement>('#bottomControls');
@@ -765,78 +672,13 @@ suite('OmniboxEverywhereComposeboxTest', () => {
     assertEquals(1, composebox.attachedContext.size);
   });
 
-  test('ContextMenuUnboundedToggleEvent', async () => {
-    let closeMenuCalled = false;
-    const contextMenu = composebox.getContextEntrypointElement() as
-        ContextualEntrypointAndMenuElement;
-    contextMenu.closeMenu = () => {
-      closeMenuCalled = true;
-    };
-
-    const mockDialog = document.createElement('dialog') as UnboundedElement;
-    mockDialog.id = 'dialog';
-    // Dialog must be attached to the DOM so Blink tracks its open state in
-    // AllOpenDialogs(), avoiding DCHECK failures on attribute changes.
-    document.body.appendChild(mockDialog);
-    (contextMenu as unknown as {getDialog: () => HTMLDialogElement}).getDialog =
-        () => mockDialog;
-
-    composebox.onContextMenuOpened();
-    await composebox.updateComplete;
-
-    const event = new ToggleEvent('beforetoggle', {
-      oldState: 'open',
-      newState: 'closed',
-    });
-    mockDialog.dispatchEvent(event);
-
-    assertTrue(closeMenuCalled);
-    mockDialog.remove();
-  });
-
-  test('computeShowDropdown returns true when dialog is open', () => {
-    const contextMenu = composebox.getContextEntrypointElement() as
-        ContextualEntrypointAndMenuElement;
-    const mockDialog = document.createElement('dialog') as UnboundedElement;
-    mockDialog.id = 'dialog';
-    // Dialog must be attached to the DOM before mutating `open` so Blink tracks
-    // it in AllOpenDialogs(), avoiding DCHECK failures when resetting `open`.
-    document.body.appendChild(mockDialog);
-    mockDialog.open = true;
-    (contextMenu as unknown as {getDialog: () => HTMLDialogElement}).getDialog =
-        () => mockDialog;
-
+  test('computeShowDropdown returns true when context menu is open', () => {
+    composebox.isContextMenuOpen = true;
     assertTrue(composebox.computeShowDropdown());
 
-    mockDialog.open = false;
+    composebox.isContextMenuOpen = false;
     composebox.showDropdown = false;
     assertFalse(composebox.computeShowDropdown());
-    mockDialog.remove();
-  });
-
-  test('onContextMenuClosed removes unbounded visibility', async () => {
-    const contextMenu = composebox.getContextEntrypointElement() as
-        ContextualEntrypointAndMenuElement;
-    const mockDialog = document.createElement('dialog') as UnboundedElement;
-    mockDialog.id = 'dialog';
-    // Dialog must be attached to the DOM so Blink tracks its open state in
-    // AllOpenDialogs(), avoiding DCHECK failures on attribute changes.
-    document.body.appendChild(mockDialog);
-    mockDialog.setAttribute('unbounded', '');
-    let hideCalled = false;
-    mockDialog.hideUnboundedElement = () => {
-      hideCalled = true;
-      return Promise.resolve();
-    };
-    (contextMenu as unknown as {getDialog: () => HTMLDialogElement}).getDialog =
-        () => mockDialog;
-
-    await composebox.onContextMenuClosed();
-    await microtasksFinished();
-
-    assertTrue(hideCalled);
-    assertFalse(mockDialog.hasAttribute('unbounded'));
-    mockDialog.remove();
   });
 
   test('cancel button title reflects input and file state', async () => {
@@ -964,144 +806,6 @@ suite('OmniboxEverywhereComposeboxTest', () => {
         assertFalse(lensContainer.classList.contains('menu-open'));
       });
 });
-
-suite('UnboundedUtilsTest', () => {
-  setup(() => {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-  });
-
-  test('getContextMenuDialog resolves nested dialog correctly', () => {
-    const host = document.createElement('div');
-    const hostRoot = host.attachShadow({mode: 'open'});
-    const entrypoint = document.createElement('div');
-    entrypoint.id = 'context';
-    const entrypointRoot = entrypoint.attachShadow({mode: 'open'});
-    const menu1 = document.createElement('div');
-    menu1.id = 'menu';
-    const menu1Root = menu1.attachShadow({mode: 'open'});
-    const menu2 = document.createElement('div');
-    menu2.id = 'menu';
-    const menu2Root = menu2.attachShadow({mode: 'open'});
-    const dialog = document.createElement('dialog') as UnboundedElement;
-    dialog.id = 'dialog';
-
-    menu2Root.appendChild(dialog);
-    menu1Root.appendChild(menu2);
-    entrypointRoot.appendChild(menu1);
-    hostRoot.appendChild(entrypoint);
-    document.body.appendChild(host);
-
-    assertEquals(dialog, getContextMenuDialog(hostRoot, '#context'));
-    assertEquals(null, getContextMenuDialog(null, '#context'));
-    assertEquals(null, getContextMenuDialog(hostRoot, '#nonExistent'));
-  });
-
-  test('UnboundedMenuManager manages lifecycle cleanly', async () => {
-    const mockDialog = document.createElement('dialog') as UnboundedElement;
-    // Dialog must be attached to the DOM so Blink tracks its open state in
-    // AllOpenDialogs(), avoiding DCHECK failures on attribute changes.
-    document.body.appendChild(mockDialog);
-    let showCalled = false;
-    let hideCalled = false;
-    mockDialog.showUnboundedElement = () => {
-      showCalled = true;
-      return Promise.resolve();
-    };
-    mockDialog.hideUnboundedElement = () => {
-      hideCalled = true;
-      return Promise.resolve();
-    };
-
-    const host = document.createElement('div');
-    (host as unknown as {getDialog: () => HTMLDialogElement}).getDialog = () =>
-        mockDialog;
-
-    let closedFired = false;
-    const manager = new UnboundedMenuManager(() => host, () => {
-      closedFired = true;
-    });
-
-    assertEquals(mockDialog, manager.getDialog());
-    assertFalse(manager.isDialogOpen());
-
-    manager.onContextMenuOpened();
-    assertTrue(showCalled);
-
-    const event = new ToggleEvent('beforetoggle', {
-      oldState: 'open',
-      newState: 'closed',
-    });
-    mockDialog.dispatchEvent(event);
-    assertTrue(closedFired);
-
-    manager.onContextMenuClosed();
-    await microtasksFinished();
-    assertTrue(hideCalled);
-    mockDialog.remove();
-  });
-
-  test('updateUnboundedElementVisibility show and hide', async () => {
-    const dialog = document.createElement('dialog') as UnboundedElement;
-    // Dialog must be attached to the DOM so Blink tracks its open state in
-    // AllOpenDialogs(), avoiding DCHECK failures on attribute changes.
-    document.body.appendChild(dialog);
-    let showCalled = false;
-    let hideCalled = false;
-    dialog.showUnboundedElement = () => {
-      showCalled = true;
-      return Promise.resolve();
-    };
-    dialog.hideUnboundedElement = () => {
-      hideCalled = true;
-      return Promise.resolve();
-    };
-
-    updateUnboundedElementVisibility(dialog, true);
-    assertTrue(dialog.hasAttribute('unbounded'));
-    assertTrue(showCalled);
-
-    updateUnboundedElementVisibility(dialog, false);
-    await microtasksFinished();
-    assertTrue(hideCalled);
-    assertFalse(dialog.hasAttribute('unbounded'));
-    dialog.remove();
-  });
-
-  test(
-      'updateUnboundedElementVisibility handles async check and failures',
-      async () => {
-        const dialog = document.createElement('dialog') as UnboundedElement;
-        // Dialog must be attached to the DOM so Blink tracks its open state in
-        // AllOpenDialogs(), avoiding DCHECK failures on attribute changes.
-        document.body.appendChild(dialog);
-        let showCallCount = 0;
-        dialog.showUnboundedElement = () => {
-          showCallCount++;
-          return Promise.resolve();
-        };
-
-        // Async check returns false -> should not call showUnboundedElement.
-        updateUnboundedElementVisibility(dialog, true, () => false);
-        await new Promise(resolve => requestAnimationFrame(resolve));
-        assertEquals(0, showCallCount);
-        assertFalse(dialog.hasAttribute('unbounded'));
-
-        // Async check returns true -> should call showUnboundedElement.
-        updateUnboundedElementVisibility(dialog, true, () => true);
-        await new Promise(resolve => requestAnimationFrame(resolve));
-        assertEquals(1, showCallCount);
-
-        // Hide with rejection cleans up attribute.
-        dialog.setAttribute('unbounded', '');
-        dialog.hideUnboundedElement = () =>
-            Promise.reject(new Error('Native error'));
-        updateUnboundedElementVisibility(dialog, false);
-        await microtasksFinished();
-        assertFalse(dialog.hasAttribute('unbounded'));
-        dialog.remove();
-      });
-});
-
 
 declare global {
   interface Window {

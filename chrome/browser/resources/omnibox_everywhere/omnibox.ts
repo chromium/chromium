@@ -39,7 +39,6 @@ import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 import {OmniboxEverywhereBrowserProxyImpl} from './browser_proxy.js';
 import {getCss} from './omnibox.css.js';
 import {getHtml} from './omnibox.html.js';
-import {UnboundedMenuManager} from './unbounded_utils.js';
 
 
 export interface OmniboxEverywhereOmniboxElement {
@@ -556,21 +555,16 @@ export class OmniboxEverywhereOmniboxElement extends
     }
   }
 
-  private unboundedMenuManager_ = new UnboundedMenuManager(
-      () => this.shadowRoot?.querySelector('#context') ?? null);
   protected onContextMenuOpened_() {
     this.refreshTabSuggestions_(/*forceRefresh=*/ true);
-    this.unboundedMenuManager_.onContextMenuOpened();
   }
 
   protected onContextMenuClosed_() {
     this.tabSuggestionsState_ = TabSuggestionsState.NOT_STARTED;
-    this.unboundedMenuManager_.onContextMenuClosed();
   }
 
   override onInputWrapperFocusout(e: FocusEvent) {
-    if (this.unboundedMenuManager_.isDialogOpen() ||
-        this.isScreenshotMenuOpen) {
+    if (this.isContextMenuOpen) {
       return;
     }
     super.onInputWrapperFocusout(e);
