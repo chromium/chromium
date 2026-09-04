@@ -27,9 +27,9 @@ BackgroundSyncNetworkObserver::BackgroundSyncNetworkObserver(
       connection_type_(
           net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN),
       connection_changed_callback_(std::move(connection_changed_callback)) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(connection_changed_callback_);
+  CHECK(connection_changed_callback_, base::NotFatalUntil::M159);
 
   RegisterWithNetworkConnectionTracker(GetNetworkConnectionTracker());
 }
@@ -44,7 +44,7 @@ BackgroundSyncNetworkObserver::~BackgroundSyncNetworkObserver() {
 void BackgroundSyncNetworkObserver::RegisterWithNetworkConnectionTracker(
     network::NetworkConnectionTracker* network_connection_tracker) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(network_connection_tracker);
+  CHECK(network_connection_tracker, base::NotFatalUntil::M159);
   network_connection_tracker_ = network_connection_tracker;
   network_connection_tracker_->AddNetworkConnectionObserver(this);
 

@@ -56,7 +56,7 @@ void BackgroundSyncOpScheduler::ScheduleOperation(base::OnceClosure closure) {
 
 void BackgroundSyncOpScheduler::CompleteOperationAndRunNext() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(running_operation_);
+  CHECK(running_operation_, base::NotFatalUntil::M159);
   running_operation_ = nullptr;
 
   MaybeRunOperation();

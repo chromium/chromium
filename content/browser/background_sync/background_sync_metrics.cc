@@ -116,7 +116,7 @@ void BackgroundSyncMetrics::CountRegisterSuccess(
         "BackgroundSync.Registration.OneShot.CouldFire",
         registration_could_fire == REGISTRATION_COULD_FIRE);
   } else {
-    DCHECK_GE(min_interval_ms, 0);
+    CHECK_GE(min_interval_ms, 0, base::NotFatalUntil::M159);
     base::UmaHistogramCounts10M(
         "BackgroundSync.Registration.Periodic.MinInterval",
         min_interval_ms / 1000);

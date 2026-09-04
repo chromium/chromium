@@ -49,8 +49,8 @@ VideoPictureInPictureWindowControllerImpl::
 }
 
 void VideoPictureInPictureWindowControllerImpl::Show() {
-  DCHECK(window_);
-  DCHECK(surface_id_.is_valid());
+  CHECK(window_, base::NotFatalUntil::M159);
+  CHECK(surface_id_.is_valid(), base::NotFatalUntil::M159);
 
   MediaSessionImpl* media_session = MediaSessionImpl::Get(web_contents());
   media_session_action_play_handled_ = media_session->ShouldRouteAction(
@@ -136,8 +136,8 @@ void VideoPictureInPictureWindowControllerImpl::EmbedSurface(
   if (!window_)
     return;
 
-  DCHECK(active_session_);
-  DCHECK(surface_id.is_valid());
+  CHECK(active_session_, base::NotFatalUntil::M159);
+  CHECK(surface_id.is_valid(), base::NotFatalUntil::M159);
 
   surface_id_ = surface_id;
 
@@ -225,8 +225,8 @@ void VideoPictureInPictureWindowControllerImpl::UpdateMediaPosition() {
 bool VideoPictureInPictureWindowControllerImpl::TogglePlayPause() {
   // This comes from the window, rather than the renderer, so we must actually
   // have a window at this point.
-  DCHECK(window_);
-  DCHECK(active_session_);
+  CHECK(window_, base::NotFatalUntil::M159);
+  CHECK(active_session_, base::NotFatalUntil::M159);
 
   if (IsPlayerActive()) {
     return PauseInternal();
@@ -237,8 +237,8 @@ bool VideoPictureInPictureWindowControllerImpl::TogglePlayPause() {
 void VideoPictureInPictureWindowControllerImpl::Play() {
   // This comes from the window, rather than the renderer, so we must actually
   // have a window at this point.
-  DCHECK(window_);
-  DCHECK(active_session_);
+  CHECK(window_, base::NotFatalUntil::M159);
+  CHECK(active_session_, base::NotFatalUntil::M159);
 
   PlayInternal();
 }
@@ -246,8 +246,8 @@ void VideoPictureInPictureWindowControllerImpl::Play() {
 void VideoPictureInPictureWindowControllerImpl::Pause() {
   // This comes from the window, rather than the renderer, so we must actually
   // have a window at this point.
-  DCHECK(window_);
-  DCHECK(active_session_);
+  CHECK(window_, base::NotFatalUntil::M159);
+  CHECK(active_session_, base::NotFatalUntil::M159);
 
   PauseInternal();
 }
@@ -466,7 +466,7 @@ void VideoPictureInPictureWindowControllerImpl::HangUp() {
 }
 
 void VideoPictureInPictureWindowControllerImpl::RequestMute(bool mute) {
-  DCHECK(active_session_);
+  CHECK(active_session_, base::NotFatalUntil::M159);
   active_session_->GetMediaPlayerRemote()->RequestMute(mute);
 }
 
@@ -666,7 +666,7 @@ void VideoPictureInPictureWindowControllerImpl::WebContentsDestroyed() {
 
 void VideoPictureInPictureWindowControllerImpl::OnLeavingPictureInPicture(
     bool should_pause_video) {
-  DCHECK(active_session_);
+  CHECK(active_session_, base::NotFatalUntil::M159);
 
   if (IsPlayerActive() && should_pause_video) {
     // Pause the current video so there is only one video playing at a time.

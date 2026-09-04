@@ -85,7 +85,7 @@ void PosixFileDescriptorInfoImpl::AddToMapping(
     int id,
     base::PlatformFile fd,
     const base::MemoryMappedFile::Region& region) {
-  DCHECK(!HasID(id));
+  CHECK(!HasID(id), base::NotFatalUntil::M159);
   mapping_.push_back(std::make_pair(fd, id));
   if (region != base::MemoryMappedFile::Region::kWholeFile)
     ids_to_regions_[id] = region;

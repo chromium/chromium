@@ -25,9 +25,9 @@ BackgroundSyncProxy::BackgroundSyncProxy(
   // This class lives on the UI thread. Check explicitly that it is on the UI
   // thread in the constructor, and use the `sequence_checker_` in
   // each method to check that it is on a single sequence (the UI thread).
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(service_worker_context_);
+  CHECK(service_worker_context_, base::NotFatalUntil::M159);
 }
 
 BackgroundSyncProxy::~BackgroundSyncProxy() = default;
@@ -43,8 +43,8 @@ void BackgroundSyncProxy::ScheduleDelayedProcessing(
     return;
 
   auto* scheduler = BackgroundSyncScheduler::GetFor(browser_context());
-  DCHECK(scheduler);
-  DCHECK(delay != base::TimeDelta::Max());
+  CHECK(scheduler, base::NotFatalUntil::M159);
+  CHECK(delay != base::TimeDelta::Max(), base::NotFatalUntil::M159);
 
   scheduler->ScheduleDelayedProcessing(
       service_worker_context_->storage_partition(), sync_type, delay,
@@ -59,7 +59,7 @@ void BackgroundSyncProxy::CancelDelayedProcessing(
     return;
 
   auto* scheduler = BackgroundSyncScheduler::GetFor(browser_context());
-  DCHECK(scheduler);
+  CHECK(scheduler, base::NotFatalUntil::M159);
 
   scheduler->CancelDelayedProcessing(
       service_worker_context_->storage_partition(), sync_type);
@@ -73,7 +73,7 @@ void BackgroundSyncProxy::SendSuspendedPeriodicSyncOrigins(
     return;
 
   auto* controller = browser_context()->GetBackgroundSyncController();
-  DCHECK(controller);
+  CHECK(controller, base::NotFatalUntil::M159);
 
   controller->NoteSuspendedPeriodicSyncOrigins(std::move(suspended_origins));
 }

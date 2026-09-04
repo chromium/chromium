@@ -137,7 +137,7 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
             RenderFrameHostToFrameInfoNoTraverse(rfh, type);
         all_frame_info[rfh] = frame_info.get();
         RenderFrameHostImpl* parent = rfh->GetParentOrOuterDocumentOrEmbedder();
-        DCHECK(all_frame_info.contains(parent));
+        CHECK(all_frame_info.contains(parent), base::NotFatalUntil::M159);
         all_frame_info[parent]->subframes.push_back(std::move(frame_info));
         return RenderFrameHost::FrameIterationAction::kContinue;
       });

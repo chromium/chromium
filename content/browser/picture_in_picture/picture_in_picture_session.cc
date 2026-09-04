@@ -96,7 +96,7 @@ void PictureInPictureSession::Shutdown() {
 }
 
 void PictureInPictureSession::StopInternal(StopCallback callback) {
-  DCHECK(!is_stopping_);
+  CHECK(!is_stopping_, base::NotFatalUntil::M159);
 
   is_stopping_ = true;
 

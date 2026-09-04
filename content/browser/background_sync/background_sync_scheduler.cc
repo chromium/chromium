@@ -22,8 +22,8 @@ using DelayedProcessingInfoMap =
 // static
 BackgroundSyncScheduler* BackgroundSyncScheduler::GetFor(
     BrowserContext* browser_context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(browser_context);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  CHECK(browser_context, base::NotFatalUntil::M159);
 
   return BrowserContextImpl::From(browser_context)->background_sync_scheduler();
 }
@@ -43,11 +43,11 @@ void BackgroundSyncScheduler::ScheduleDelayedProcessing(
     blink::mojom::BackgroundSyncType sync_type,
     base::TimeDelta delay,
     base::OnceClosure delayed_task) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(storage_partition);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  CHECK(storage_partition, base::NotFatalUntil::M159);
 
   // CancelDelayedProcessing should be called in this case.
-  DCHECK(!delay.is_max());
+  CHECK(!delay.is_max(), base::NotFatalUntil::M159);
 
   auto& delayed_processing_info = GetDelayedProcessingInfoMap(sync_type);
   delayed_processing_info.emplace(storage_partition,
@@ -69,9 +69,9 @@ void BackgroundSyncScheduler::ScheduleDelayedProcessing(
 void BackgroundSyncScheduler::CancelDelayedProcessing(
     StoragePartitionImpl* storage_partition,
     blink::mojom::BackgroundSyncType sync_type) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
-  DCHECK(storage_partition);
+  CHECK(storage_partition, base::NotFatalUntil::M159);
 
   auto& delayed_processing_info = GetDelayedProcessingInfoMap(sync_type);
   if (delayed_processing_info.count(storage_partition)) {
@@ -93,7 +93,7 @@ void BackgroundSyncScheduler::CancelDelayedProcessing(
 
 DelayedProcessingInfoMap& BackgroundSyncScheduler::GetDelayedProcessingInfoMap(
     blink::mojom::BackgroundSyncType sync_type) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (sync_type == blink::mojom::BackgroundSyncType::ONE_SHOT)
     return delayed_processing_info_one_shot_;
   else
@@ -104,7 +104,7 @@ void BackgroundSyncScheduler::RunDelayedTaskAndPruneInfoMap(
     blink::mojom::BackgroundSyncType sync_type,
     StoragePartitionImpl* storage_partition,
     base::OnceClosure delayed_task) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   std::move(delayed_task).Run();
   CancelDelayedProcessing(storage_partition, sync_type);
@@ -114,12 +114,12 @@ void BackgroundSyncScheduler::RunDelayedTaskAndPruneInfoMap(
 void BackgroundSyncScheduler::ScheduleOrCancelBrowserWakeupForSyncType(
     blink::mojom::BackgroundSyncType sync_type,
     StoragePartitionImpl* storage_partition) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   auto* browser_context = storage_partition->browser_context();
-  DCHECK(browser_context);
+  CHECK(browser_context, base::NotFatalUntil::M159);
   auto* controller = browser_context->GetBackgroundSyncController();
-  DCHECK(controller);
+  CHECK(controller, base::NotFatalUntil::M159);
 
   auto& delayed_processing_info = GetDelayedProcessingInfoMap(sync_type);
 

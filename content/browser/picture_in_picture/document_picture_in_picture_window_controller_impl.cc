@@ -47,7 +47,7 @@ DocumentPictureInPictureWindowControllerImpl::
 void DocumentPictureInPictureWindowControllerImpl::SetChildWebContents(
     WebContents* child_contents) {
   // This method should only be called once for a given controller.
-  DCHECK(!child_contents_);
+  CHECK(!child_contents_, base::NotFatalUntil::M159);
   child_contents_ = child_contents;
 
   // Notify coordinator of PiP owner early so screen capture exclusion is
@@ -81,7 +81,7 @@ void DocumentPictureInPictureWindowControllerImpl::Show() {
   // It would nice if we were provided with the child WebContents, but this
   // method is shared with non-WebContents video PiP. So, we just have to be
   // confident that somebody has set it already.
-  DCHECK(child_contents_);
+  CHECK(child_contents_, base::NotFatalUntil::M159);
 
   // Start observing our WebContents. Note that this is safe, since we're
   // owned by the opener WebContents.
@@ -105,7 +105,7 @@ void DocumentPictureInPictureWindowControllerImpl::Close(
 
   NotifyClosedAndStopObserving(should_pause_video);
   // Since we use `child_contents_` to gate everything, make sure it's null.
-  DCHECK(!child_contents_);
+  CHECK(!child_contents_, base::NotFatalUntil::M159);
 }
 
 void DocumentPictureInPictureWindowControllerImpl::CloseAndFocusInitiator() {

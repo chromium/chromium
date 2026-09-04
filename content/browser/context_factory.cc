@@ -10,7 +10,7 @@
 namespace content {
 
 ui::ContextFactory* GetContextFactory() {
-  DCHECK(ImageTransportFactory::GetInstance());
+  CHECK(ImageTransportFactory::GetInstance(), base::NotFatalUntil::M159);
   return ImageTransportFactory::GetInstance()->GetContextFactory();
 }
 

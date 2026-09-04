@@ -20,7 +20,7 @@ BackgroundSyncRegistrationHelper::BackgroundSyncRegistrationHelper(
     RenderProcessHost* render_process_host)
     : background_sync_context_(background_sync_context),
       render_process_host_id_(render_process_host->GetDeprecatedID()) {
-  DCHECK(background_sync_context_);
+  CHECK(background_sync_context_, base::NotFatalUntil::M159);
 }
 
 BackgroundSyncRegistrationHelper::~BackgroundSyncRegistrationHelper() = default;
@@ -28,11 +28,11 @@ BackgroundSyncRegistrationHelper::~BackgroundSyncRegistrationHelper() = default;
 bool BackgroundSyncRegistrationHelper::ValidateSWRegistrationID(
     int64_t sw_registration_id,
     const url::Origin& origin) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   BackgroundSyncManager* background_sync_manager =
       background_sync_context_->background_sync_manager();
-  DCHECK(background_sync_manager);
+  CHECK(background_sync_manager, base::NotFatalUntil::M159);
 
   scoped_refptr<ServiceWorkerRegistration> service_worker_registration =
       background_sync_manager->service_worker_context()->GetLiveRegistration(
@@ -45,11 +45,11 @@ void BackgroundSyncRegistrationHelper::Register(
     blink::mojom::SyncRegistrationOptionsPtr options,
     int64_t sw_registration_id,
     RegisterCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   BackgroundSyncManager* background_sync_manager =
       background_sync_context_->background_sync_manager();
-  DCHECK(background_sync_manager);
+  CHECK(background_sync_manager, base::NotFatalUntil::M159);
 
   background_sync_manager->Register(
       sw_registration_id, render_process_host_id_, *options,
@@ -59,11 +59,11 @@ void BackgroundSyncRegistrationHelper::Register(
 
 void BackgroundSyncRegistrationHelper::DidResolveRegistration(
     blink::mojom::BackgroundSyncRegistrationInfoPtr registration_info) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   BackgroundSyncManager* background_sync_manager =
       background_sync_context_->background_sync_manager();
-  DCHECK(background_sync_manager);
+  CHECK(background_sync_manager, base::NotFatalUntil::M159);
 
   background_sync_manager->DidResolveRegistration(std::move(registration_info));
 }
@@ -72,7 +72,7 @@ void BackgroundSyncRegistrationHelper::OnRegisterResult(
     RegisterCallback callback,
     BackgroundSyncStatus status,
     std::unique_ptr<BackgroundSyncRegistration> result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   // TODO(crbug.com/40614176): Use blink::mojom::BackgroundSyncError
   // directly.
@@ -83,7 +83,7 @@ void BackgroundSyncRegistrationHelper::OnRegisterResult(
     return;
   }
 
-  DCHECK(result);
+  CHECK(result, base::NotFatalUntil::M159);
   std::move(callback).Run(
       static_cast<blink::mojom::BackgroundSyncError>(status),
       result->options()->Clone());
@@ -102,7 +102,7 @@ void BackgroundSyncRegistrationHelper::OnGetRegistrationsResult(
     BackgroundSyncStatus status,
     std::vector<std::unique_ptr<BackgroundSyncRegistration>>
         result_registrations) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   std::vector<blink::mojom::SyncRegistrationOptionsPtr> mojo_registrations;
   mojo_registrations.reserve(result_registrations.size());
