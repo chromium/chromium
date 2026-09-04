@@ -24,22 +24,23 @@ ServiceWorkerObjectHost::ServiceWorkerObjectHost(
       container_origin_(
           url::Origin::Create(container_host_->url_for_access_check())),
       version_(std::move(version)) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(context_ && container_host_ && version_);
-  DCHECK(context_->GetLiveRegistration(version_->registration_id()));
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  CHECK(context_ && container_host_ && version_, base::NotFatalUntil::M159);
+  CHECK(context_->GetLiveRegistration(version_->registration_id()),
+        base::NotFatalUntil::M159);
   version_->AddObserver(this);
   receivers_.set_disconnect_handler(base::BindRepeating(
       &ServiceWorkerObjectHost::OnConnectionError, base::Unretained(this)));
 }
 
 ServiceWorkerObjectHost::~ServiceWorkerObjectHost() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   version_->RemoveObserver(this);
 }
 
 void ServiceWorkerObjectHost::OnVersionStateChanged(
     ServiceWorkerVersion* version) {
-  DCHECK(version);
+  CHECK(version, base::NotFatalUntil::M159);
   blink::mojom::ServiceWorkerState state =
       mojo::ConvertTo<blink::mojom::ServiceWorkerState>(version->status());
   for (auto& remote_object : remote_objects_)
@@ -84,13 +85,14 @@ void ServiceWorkerObjectHost::TerminateForTesting(
 void ServiceWorkerObjectHost::DispatchExtendableMessageEvent(
     ::blink::TransferableMessage message,
     base::OnceCallback<void(blink::ServiceWorkerStatusCode)> callback) {
-  DCHECK(container_host_);
+  CHECK(container_host_, base::NotFatalUntil::M159);
   if (!context_) {
     std::move(callback).Run(blink::ServiceWorkerStatusCode::kErrorAbort);
     return;
   }
-  DCHECK_EQ(container_origin_,
-            url::Origin::Create(container_host_->url_for_access_check()));
+  CHECK_EQ(container_origin_,
+           url::Origin::Create(container_host_->url_for_access_check()),
+           base::NotFatalUntil::M159);
 
   // As we don't track tasks between workers and renderers, we can nullify the
   // message's task state ID.
@@ -104,7 +106,7 @@ void ServiceWorkerObjectHost::OnConnectionError() {
   // If there are still receivers, |this| is still being used.
   if (!receivers_.empty())
     return;
-  DCHECK(container_host_);
+  CHECK(container_host_, base::NotFatalUntil::M159);
   // Will destroy |this|.
   container_host_->version_object_manager().RemoveHost(version_->version_id());
 }

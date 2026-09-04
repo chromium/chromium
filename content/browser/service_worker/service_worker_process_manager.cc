@@ -32,11 +32,11 @@ ServiceWorkerProcessManager::ServiceWorkerProcessManager()
       process_id_for_test_(ChildProcessHost::kInvalidUniqueID),
       new_process_id_for_test_(ChildProcessHost::kInvalidUniqueID),
       force_new_process_for_test_(false) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 }
 
 ServiceWorkerProcessManager::~ServiceWorkerProcessManager() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   DCHECK(IsShutdown())
       << "Call Shutdown() before destroying |this|, so that racing method "
       << "invocations don't use a destroyed BrowserContext.";
@@ -47,7 +47,7 @@ ServiceWorkerProcessManager::~ServiceWorkerProcessManager() {
 }
 
 void ServiceWorkerProcessManager::Shutdown() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   // `StoragePartitionImpl` might be destroyed before `this` is destroyed. Set
   // `storage_partition_` to nullptr to avoid holding a dangling ptr.
   storage_partition_ = nullptr;
@@ -70,7 +70,7 @@ void ServiceWorkerProcessManager::Shutdown() {
 }
 
 bool ServiceWorkerProcessManager::IsShutdown() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   return is_shutdown_;
 }
 
@@ -82,7 +82,7 @@ ServiceWorkerProcessManager::AllocateWorkerProcess(
     bool can_use_existing_process,
     blink::mojom::AncestorFrameType ancestor_frame_type,
     AllocatedProcessInfo* out_info) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   if (force_new_process_for_test_)
     can_use_existing_process = false;
@@ -110,7 +110,7 @@ ServiceWorkerProcessManager::AllocateWorkerProcess(
   // Create a SiteInstance to get the renderer process from.
   //
   // TODO(alexmos): Support CrossOriginIsolated for guests.
-  DCHECK(storage_partition_);
+  CHECK(storage_partition_, base::NotFatalUntil::M159);
   const bool is_guest = storage_partition_->is_guest();
   const bool is_fenced =
       ancestor_frame_type == blink::mojom::AncestorFrameType::kFencedFrame &&
@@ -144,8 +144,8 @@ ServiceWorkerProcessManager::AllocateWorkerProcess(
   RenderProcessHost* rph =
       site_instance->GetOrCreateProcess(ProcessAllocationContext{
           ProcessAllocationSource::kServiceWorkerProcessManager});
-  DCHECK(!storage_partition_ ||
-         rph->InSameStoragePartition(storage_partition_));
+  CHECK(!storage_partition_ || rph->InSameStoragePartition(storage_partition_),
+        base::NotFatalUntil::M159);
 
   // Let the embedder grant the worker process access to origins if the worker
   // is locked to the same origin as the worker.
@@ -183,7 +183,7 @@ ServiceWorkerProcessManager::AllocateWorkerProcess(
 }
 
 void ServiceWorkerProcessManager::ReleaseWorkerProcess(int embedded_worker_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (process_id_for_test_) {
     // Unittests don't increment or decrement the worker refcount of a
     // RenderProcessHost.
@@ -192,7 +192,7 @@ void ServiceWorkerProcessManager::ReleaseWorkerProcess(int embedded_worker_id) {
 
   if (IsShutdown()) {
     // Shutdown already released all instances.
-    DCHECK(worker_process_map_.empty());
+    CHECK(worker_process_map_.empty(), base::NotFatalUntil::M159);
     return;
   }
 
@@ -213,13 +213,13 @@ void ServiceWorkerProcessManager::ReleaseWorkerProcess(int embedded_worker_id) {
 
 base::WeakPtr<ServiceWorkerProcessManager>
 ServiceWorkerProcessManager::GetWeakPtr() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   return weak_ptr_factory_.GetWeakPtr();
 }
 
 SiteInstance* ServiceWorkerProcessManager::GetSiteInstanceForWorker(
     int embedded_worker_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   auto it = worker_process_map_.find(embedded_worker_id);
   if (it == worker_process_map_.end())
     return nullptr;

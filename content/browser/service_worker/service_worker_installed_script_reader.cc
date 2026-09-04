@@ -100,7 +100,7 @@ ServiceWorkerInstalledScriptReader::ServiceWorkerInstalledScriptReader(
     mojo::Remote<storage::mojom::ServiceWorkerResourceReader> reader,
     Client* client)
     : reader_(std::move(reader)), client_(client) {
-  DCHECK(reader_.is_connected());
+  CHECK(reader_.is_connected(), base::NotFatalUntil::M159);
   reader_.set_disconnect_handler(base::BindOnce(
       &ServiceWorkerInstalledScriptReader::OnReaderDisconnected, AsWeakPtr()));
 }
@@ -109,7 +109,7 @@ ServiceWorkerInstalledScriptReader::~ServiceWorkerInstalledScriptReader() {}
 
 void ServiceWorkerInstalledScriptReader::Start() {
   TRACE_EVENT0("ServiceWorker", "ServiceWorkerInstalledScriptReader::Start");
-  DCHECK(reader_.is_connected());
+  CHECK(reader_.is_connected(), base::NotFatalUntil::M159);
   reader_->ReadResponseHead(base::BindOnce(
       &ServiceWorkerInstalledScriptReader::OnReadResponseHeadComplete,
       AsWeakPtr()));
@@ -119,20 +119,20 @@ void ServiceWorkerInstalledScriptReader::OnReadResponseHeadComplete(
     int result,
     network::mojom::URLResponseHeadPtr response_head,
     std::optional<mojo_base::BigBuffer> metadata) {
-  DCHECK(client_);
+  CHECK(client_, base::NotFatalUntil::M159);
   TRACE_EVENT0(
       "ServiceWorker",
       "ServiceWorkerInstalledScriptReader::OnReadResponseHeadComplete");
   if (!response_head) {
-    DCHECK_LT(result, 0);
+    CHECK_LT(result, 0, base::NotFatalUntil::M159);
     ServiceWorkerMetrics::CountReadResponseResult(
         ServiceWorkerMetrics::READ_HEADERS_ERROR);
     CompleteSendIfNeeded(FinishedReason::kNoResponseHeadError);
     return;
   }
 
-  DCHECK_GE(result, 0);
-  DCHECK(reader_.is_connected());
+  CHECK_GE(result, 0, base::NotFatalUntil::M159);
+  CHECK(reader_.is_connected(), base::NotFatalUntil::M159);
 
   body_size_ = response_head->content_length;
   int64_t content_length = response_head->content_length;
@@ -156,7 +156,7 @@ void ServiceWorkerInstalledScriptReader::OnReadDataPrepared(
 
   // Start sending meta data (V8 code cache data).
   if (metadata) {
-    DCHECK_GT(metadata->size(), 0UL);
+    CHECK_GT(metadata->size(), 0UL, base::NotFatalUntil::M159);
 
     mojo::ScopedDataPipeProducerHandle meta_producer_handle;
     MojoCreateDataPipeOptions options;

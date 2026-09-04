@@ -444,10 +444,13 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithActivatedVersion(
   service_worker_client_->SetControllerRegistration(
       registration, false /* notify_controllerchange */);
 
-  DCHECK_EQ(active_version, registration->active_version());
-  DCHECK_EQ(active_version, service_worker_client_->controller());
-  DCHECK_NE(active_version->fetch_handler_existence(),
-            ServiceWorkerVersion::FetchHandlerExistence::UNKNOWN);
+  CHECK_EQ(active_version, registration->active_version(),
+           base::NotFatalUntil::M159);
+  CHECK_EQ(active_version, service_worker_client_->controller(),
+           base::NotFatalUntil::M159);
+  CHECK_NE(active_version->fetch_handler_existence(),
+           ServiceWorkerVersion::FetchHandlerExistence::UNKNOWN,
+           base::NotFatalUntil::M159);
 
   base::UmaHistogramEnumeration(
       "ServiceWorker.FetchHandler."
@@ -544,7 +547,7 @@ void ServiceWorkerControlleeRequestHandler::DidUpdateRegistration(
     blink::ServiceWorkerStatusCode status,
     const std::string& status_message,
     int64_t registration_id) {
-  DCHECK(force_update_started_);
+  CHECK(force_update_started_, base::NotFatalUntil::M159);
 
   if (!context_ || !service_worker_client_) {
     TRACE_EVENT("ServiceWorker",
@@ -576,7 +579,8 @@ void ServiceWorkerControlleeRequestHandler::DidUpdateRegistration(
               "ServiceWorkerControlleeRequestHandler::DidUpdateRegistration",
               perfetto::Flow::FromPointer(this));
 
-  DCHECK_EQ(original_registration->id(), registration_id);
+  CHECK_EQ(original_registration->id(), registration_id,
+           base::NotFatalUntil::M159);
   ServiceWorkerVersion* new_version =
       original_registration->installing_version();
   new_version->ReportForceUpdateToDevTools();
