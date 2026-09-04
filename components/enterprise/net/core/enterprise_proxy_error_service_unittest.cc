@@ -36,6 +36,8 @@ namespace enterprise_net {
 
 namespace {
 
+constexpr int64_t kTestNavigationId = 12345;
+
 constexpr char kAuthBlockJson[] = R"(,
           "google_chrome": {
             "auth": {
@@ -196,6 +198,28 @@ class EnterpriseProxyErrorServiceTest : public testing::Test {
     return auth_info;
   }
 
+  // Intercepts a proxy auth challenge and returns the resulting credentials.
+  std::optional<net::AuthCredentials> InterceptChallenge(
+      std::string_view realm = "",
+      int64_t navigation_id = kTestNavigationId,
+      std::unique_ptr<EnterpriseProxyErrorService::Delegate> delegate = nullptr,
+      const GURL& destination_url = GURL("https://target.example.com/test")) {
+    base::test::TestFuture<const std::optional<net::AuthCredentials>&> future;
+    bool handled = error_service_->InterceptProxyAuthChallenge(
+        CreateProxyAuthChallengeInfo("proxy.example.com", realm),
+        destination_url, nullptr, navigation_id, std::move(delegate),
+        future.GetCallback());
+    EXPECT_TRUE(handled);
+    return future.Get();
+  }
+
+  void TriggerInvalidGaiaCredentials() {
+    identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+        GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+            GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                CREDENTIALS_REJECTED_BY_SERVER));
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
@@ -212,129 +236,35 @@ TEST_F(EnterpriseProxyErrorServiceTest, NotApplicableWhenNoManagedProxy) {
   base::test::TestFuture<const std::optional<net::AuthCredentials>&> future;
   bool handled = error_service_->InterceptProxyAuthChallenge(
       CreateProxyAuthChallengeInfo("unmanaged.example.com"),
-      GURL("https://target.example.com/test"), nullptr,
-      /*delegate=*/nullptr, future.GetCallback());
+      GURL("https://target.example.com/test"), nullptr, kTestNavigationId,
+      future.GetCallback());
 
   EXPECT_FALSE(handled);
   EXPECT_FALSE(future.IsReady());
 }
 
-TEST_F(EnterpriseProxyErrorServiceTest, DisguisedErrorRealm403_CancelsAuth) {
-  SetupManagedDomainWithProxy("proxy.example.com");
-
-  bool attached = false;
-  EnterpriseProxyErrorData attached_data;
-  base::test::TestFuture<const std::optional<net::AuthCredentials>&> future;
-  bool handled = error_service_->InterceptProxyAuthChallenge(
-      CreateProxyAuthChallengeInfo("proxy.example.com", "403"),
-      GURL("https://target.example.com/test"), nullptr,
-      std::make_unique<TestDelegate>(&attached, &attached_data),
-      future.GetCallback());
-
-  EXPECT_TRUE(handled);
-  EXPECT_FALSE(future.Get().has_value());
-  EXPECT_TRUE(attached);
-  EXPECT_EQ(attached_data.destination_url(),
-            GURL("https://target.example.com/test"));
-  EXPECT_EQ(attached_data.proxy_url(), GURL("https://proxy.example.com:443"));
-  EXPECT_EQ(attached_data.error_code(), 403);
+TEST_F(EnterpriseProxyErrorServiceTest, NoCredentialsNeeded_ReturnsNullopt) {
+  SetupManagedDomainWithProxy("proxy.example.com", /*with_auth=*/false);
+  std::optional<net::AuthCredentials> credentials = InterceptChallenge();
+  EXPECT_FALSE(credentials.has_value());
 }
 
-TEST_F(EnterpriseProxyErrorServiceTest,
-       DisguisedErrorOtherRealms_CancelsAuthAndAttachesData) {
-  for (int error_code : {500, 502, 503, 504}) {
-    SetupManagedDomainWithProxy("proxy.example.com");
-
-    bool attached = false;
-    EnterpriseProxyErrorData attached_data;
-    base::test::TestFuture<const std::optional<net::AuthCredentials>&> future;
-    bool handled = error_service_->InterceptProxyAuthChallenge(
-        CreateProxyAuthChallengeInfo("proxy.example.com",
-                                     base::NumberToString(error_code)),
-        GURL("https://target.example.com/test"), nullptr,
-        std::make_unique<TestDelegate>(&attached, &attached_data),
-        future.GetCallback());
-
-    EXPECT_TRUE(handled);
-    EXPECT_FALSE(future.Get().has_value());
-    EXPECT_TRUE(attached);
-    EXPECT_EQ(attached_data.error_code(), error_code);
-  }
+TEST_F(EnterpriseProxyErrorServiceTest, ValidAuthChallenge_FetchesCredentials) {
+  SetupManagedDomainWithProxy("proxy.example.com");
+  std::optional<net::AuthCredentials> credentials =
+      InterceptChallenge("Enterprise Realm");
+  ASSERT_TRUE(credentials.has_value());
+  EXPECT_EQ(u"access_token", credentials->password());
 }
 
 TEST_F(EnterpriseProxyErrorServiceTest,
        InvalidOrUnsupportedRealm_ProceedsAsStandardAuth) {
   SetupManagedDomainWithProxy("proxy.example.com");
-
-  bool attached = false;
-  EnterpriseProxyErrorData attached_data;
-  base::test::TestFuture<const std::optional<net::AuthCredentials>&> future;
-  // A realm like "404" or "unknown" is not a disguised error code, so it is
-  // treated as a standard proxy auth challenge.
-  bool handled = error_service_->InterceptProxyAuthChallenge(
-      CreateProxyAuthChallengeInfo("proxy.example.com", "404"),
-      GURL("https://target.example.com/test"), nullptr,
-      std::make_unique<TestDelegate>(&attached, &attached_data),
-      future.GetCallback());
-
-  EXPECT_TRUE(handled);
-  // It fetches standard OAuth credentials rather than canceling as a disguised
-  // error.
-  ASSERT_TRUE(future.Get().has_value());
-  EXPECT_EQ(u"access_token", future.Get()->password());
-  EXPECT_FALSE(attached);
-}
-
-TEST_F(EnterpriseProxyErrorServiceTest,
-       ForcedDisguisedErrorCodeParam_ForcesError) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      kEnterpriseProxyErrorHandling, {{"forced_disguised_error_code", "503"}});
-
-  SetupManagedDomainWithProxy("proxy.example.com");
-
-  bool attached = false;
-  EnterpriseProxyErrorData attached_data;
-  base::test::TestFuture<const std::optional<net::AuthCredentials>&> future;
-  // Even with a normal realm like "Enterprise Realm", the forced param
-  // overrides it to 503.
-  bool handled = error_service_->InterceptProxyAuthChallenge(
-      CreateProxyAuthChallengeInfo("proxy.example.com", "Enterprise Realm"),
-      GURL("https://target.example.com/test"), nullptr,
-      std::make_unique<TestDelegate>(&attached, &attached_data),
-      future.GetCallback());
-
-  EXPECT_TRUE(handled);
-  EXPECT_FALSE(future.Get().has_value());
-  EXPECT_TRUE(attached);
-  EXPECT_EQ(attached_data.error_code(), 503);
-}
-
-TEST_F(EnterpriseProxyErrorServiceTest, NoCredentialsNeeded_ReturnsNullopt) {
-  SetupManagedDomainWithProxy("proxy.example.com", /*with_auth=*/false);
-
-  base::test::TestFuture<const std::optional<net::AuthCredentials>&> future;
-  bool handled = error_service_->InterceptProxyAuthChallenge(
-      CreateProxyAuthChallengeInfo("proxy.example.com"),
-      GURL("https://target.example.com/test"), nullptr,
-      /*delegate=*/nullptr, future.GetCallback());
-
-  EXPECT_TRUE(handled);
-  EXPECT_FALSE(future.Get().has_value());
-}
-
-TEST_F(EnterpriseProxyErrorServiceTest, ValidAuthChallenge_FetchesCredentials) {
-  SetupManagedDomainWithProxy("proxy.example.com");
-
-  base::test::TestFuture<const std::optional<net::AuthCredentials>&> future;
-  bool handled = error_service_->InterceptProxyAuthChallenge(
-      CreateProxyAuthChallengeInfo("proxy.example.com", "Enterprise Realm"),
-      GURL("https://target.example.com/test"), nullptr,
-      /*delegate=*/nullptr, future.GetCallback());
-
-  EXPECT_TRUE(handled);
-  ASSERT_TRUE(future.Get().has_value());
-  EXPECT_EQ(u"access_token", future.Get()->password());
+  std::optional<net::AuthCredentials> credentials = InterceptChallenge("404");
+  ASSERT_TRUE(credentials.has_value());
+  EXPECT_EQ(u"access_token", credentials->password());
+  EXPECT_FALSE(
+      error_service_->TakeDisguisedError(kTestNavigationId).has_value());
 }
 
 TEST_F(EnterpriseProxyErrorServiceTest, CredentialFetchFailure_ReturnsNullopt) {
@@ -344,37 +274,144 @@ TEST_F(EnterpriseProxyErrorServiceTest, CredentialFetchFailure_ReturnsNullopt) {
   base::test::TestFuture<const std::optional<net::AuthCredentials>&> future;
   bool handled = error_service_->InterceptProxyAuthChallenge(
       CreateProxyAuthChallengeInfo("proxy.example.com", "Enterprise Realm"),
-      GURL("https://target.example.com/test"), nullptr,
-      /*delegate=*/nullptr, future.GetCallback());
+      GURL("https://target.example.com/test"), nullptr, kTestNavigationId,
+      future.GetCallback());
 
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       GoogleServiceAuthError::FromServiceUnavailable("error"));
 
   EXPECT_TRUE(handled);
   EXPECT_FALSE(future.Get().has_value());
+
+  std::optional<EnterpriseProxyErrorData> error_data =
+      error_service_->TakeDisguisedError(kTestNavigationId);
+  ASSERT_TRUE(error_data.has_value());
+  EXPECT_EQ(error_data->error_category(),
+            EnterpriseProxyErrorData::ErrorCategory::kOther);
 }
 
 TEST_F(EnterpriseProxyErrorServiceTest,
-       SignInRequired_InvokesDelegateOnSignInRequired) {
+       ForcedDisguisedErrorCodeParam_ForcesError) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kEnterpriseProxyErrorHandling, {{"forced_disguised_error_code", "503"}});
+
+  SetupManagedDomainWithProxy("proxy.example.com");
+  std::optional<net::AuthCredentials> credentials =
+      InterceptChallenge("Enterprise Realm");
+  EXPECT_FALSE(credentials.has_value());
+
+  std::optional<EnterpriseProxyErrorData> error_data =
+      error_service_->TakeDisguisedError(kTestNavigationId);
+  ASSERT_TRUE(error_data.has_value());
+  EXPECT_EQ(error_data->error_code(), 503);
+  EXPECT_EQ(error_data->error_category(),
+            EnterpriseProxyErrorData::ErrorCategory::kOther);
+}
+
+TEST_F(EnterpriseProxyErrorServiceTest,
+       DisguisedError_ZeroNavigationId_DoesNotRecord) {
+  SetupManagedDomainWithProxy("proxy.example.com");
+  std::optional<net::AuthCredentials> credentials =
+      InterceptChallenge("502", /*navigation_id=*/0);
+  EXPECT_FALSE(credentials.has_value());
+  EXPECT_FALSE(error_service_->TakeDisguisedError(0).has_value());
+}
+
+TEST_F(EnterpriseProxyErrorServiceTest,
+       SignInRequired_RecordsAuthenticationError) {
+  SetupManagedDomainWithProxy("proxy.example.com");
+  identity_test_env_.SetAutomaticIssueOfAccessTokens(false);
+
+  base::test::TestFuture<const std::optional<net::AuthCredentials>&> future;
+  bool handled = error_service_->InterceptProxyAuthChallenge(
+      CreateProxyAuthChallengeInfo("proxy.example.com", "Enterprise Realm"),
+      GURL("https://target.example.com/test"), nullptr, kTestNavigationId,
+      future.GetCallback());
+  TriggerInvalidGaiaCredentials();
+
+  EXPECT_TRUE(handled);
+  EXPECT_FALSE(future.Get().has_value());
+
+  std::optional<EnterpriseProxyErrorData> error_data =
+      error_service_->TakeDisguisedError(kTestNavigationId);
+  ASSERT_TRUE(error_data.has_value());
+  EXPECT_EQ(error_data->error_category(),
+            EnterpriseProxyErrorData::ErrorCategory::kAuthentication);
+}
+
+TEST_F(EnterpriseProxyErrorServiceTest,
+       SignInRequired_WithDelegate_RecordsErrorAndTriggersSignIn) {
   SetupManagedDomainWithProxy("proxy.example.com");
   identity_test_env_.SetAutomaticIssueOfAccessTokens(false);
 
   bool signin_prompt_shown = false;
   GURL signin_destination_url;
+  auto delegate = std::make_unique<TestDelegate>(
+      /*attached_flag=*/nullptr, /*error_data_out=*/nullptr,
+      &signin_prompt_shown, &signin_destination_url);
+
   base::test::TestFuture<const std::optional<net::AuthCredentials>&> future;
   bool handled = error_service_->InterceptProxyAuthChallenge(
       CreateProxyAuthChallengeInfo("proxy.example.com", "Enterprise Realm"),
-      GURL("https://target.example.com/test"), nullptr,
-      std::make_unique<TestDelegate>(/*attached_flag=*/nullptr,
-                                     /*error_data_out=*/nullptr,
-                                     &signin_prompt_shown,
-                                     &signin_destination_url),
-      future.GetCallback());
+      GURL("https://target.example.com/test"), nullptr, kTestNavigationId,
+      std::move(delegate), future.GetCallback());
+  TriggerInvalidGaiaCredentials();
 
-  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-              CREDENTIALS_REJECTED_BY_SERVER));
+  EXPECT_TRUE(handled);
+  EXPECT_FALSE(future.Get().has_value());
+
+  std::optional<EnterpriseProxyErrorData> error_data =
+      error_service_->TakeDisguisedError(kTestNavigationId);
+  ASSERT_TRUE(error_data.has_value());
+  EXPECT_EQ(error_data->error_category(),
+            EnterpriseProxyErrorData::ErrorCategory::kAuthentication);
+
+  EXPECT_TRUE(signin_prompt_shown);
+  EXPECT_EQ(signin_destination_url, GURL("https://target.example.com/test"));
+}
+
+TEST_F(EnterpriseProxyErrorServiceTest,
+       DisguisedErrorRealm403_WithDelegate_AttachesToDelegateAndRecords) {
+  SetupManagedDomainWithProxy("proxy.example.com");
+
+  bool attached_flag = false;
+  EnterpriseProxyErrorData delegate_error_data;
+  auto delegate =
+      std::make_unique<TestDelegate>(&attached_flag, &delegate_error_data);
+
+  std::optional<net::AuthCredentials> credentials =
+      InterceptChallenge("403", kTestNavigationId, std::move(delegate));
+  EXPECT_FALSE(credentials.has_value());
+
+  std::optional<EnterpriseProxyErrorData> error_data =
+      error_service_->TakeDisguisedError(kTestNavigationId);
+  ASSERT_TRUE(error_data.has_value());
+  EXPECT_EQ(error_data->error_code(), 403);
+  EXPECT_EQ(error_data->error_category(),
+            EnterpriseProxyErrorData::ErrorCategory::kAuthorization);
+
+  EXPECT_TRUE(attached_flag);
+  EXPECT_EQ(delegate_error_data.error_code(), 403);
+}
+
+TEST_F(EnterpriseProxyErrorServiceTest,
+       LegacyDelegateOverload_SignInRequired_TriggersSignIn) {
+  SetupManagedDomainWithProxy("proxy.example.com");
+  identity_test_env_.SetAutomaticIssueOfAccessTokens(false);
+
+  bool signin_prompt_shown = false;
+  GURL signin_destination_url;
+  auto delegate = std::make_unique<TestDelegate>(
+      /*attached_flag=*/nullptr, /*error_data_out=*/nullptr,
+      &signin_prompt_shown, &signin_destination_url);
+
+  base::test::TestFuture<const std::optional<net::AuthCredentials>&> future;
+  bool handled = error_service_->InterceptProxyAuthChallenge(
+      CreateProxyAuthChallengeInfo("proxy.example.com", "Enterprise Realm"),
+      GURL("https://target.example.com/test"), nullptr, std::move(delegate),
+      future.GetCallback());
+  TriggerInvalidGaiaCredentials();
 
   EXPECT_TRUE(handled);
   EXPECT_FALSE(future.Get().has_value());
@@ -382,51 +419,111 @@ TEST_F(EnterpriseProxyErrorServiceTest,
   EXPECT_EQ(signin_destination_url, GURL("https://target.example.com/test"));
 }
 
-TEST_F(EnterpriseProxyErrorServiceTest, GetErrorPageHTML_NullDelegate) {
-  base::HistogramTester histogram_tester;
-  EXPECT_TRUE(error_service_->GetErrorPageHTML(nullptr).empty());
-  histogram_tester.ExpectTotalCount(
-      "Enterprise.Proxy.DisguisedErrorPage.ErrorCode", 0);
+TEST_F(EnterpriseProxyErrorServiceTest, RemoveDisguisedError_CleansUpMap) {
+  EnterpriseProxyErrorData data(GURL("https://target.example.com/page"),
+                                GURL("https://proxy.example.com:443"), 502);
+  error_service_->RecordDisguisedError(kTestNavigationId, data);
+  error_service_->RemoveDisguisedError(kTestNavigationId);
+  EXPECT_FALSE(
+      error_service_->TakeDisguisedError(kTestNavigationId).has_value());
 }
 
-TEST_F(EnterpriseProxyErrorServiceTest, GetErrorPageHTML_NoDisguisedErrorData) {
-  base::HistogramTester histogram_tester;
-  TestDelegate delegate;
-  EXPECT_TRUE(error_service_->GetErrorPageHTML(&delegate).empty());
-  histogram_tester.ExpectTotalCount(
-      "Enterprise.Proxy.DisguisedErrorPage.ErrorCode", 0);
-}
-
-TEST_F(EnterpriseProxyErrorServiceTest, GetErrorPageHTML_FeatureDisabled) {
+TEST_F(EnterpriseProxyErrorServiceTest, GetErrorPageParams_FeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(kEnterpriseProxyErrorHandling);
 
   base::HistogramTester histogram_tester;
-  TestDelegate delegate;
-  EnterpriseProxyErrorData data(GURL("https://target.example.com/page"),
-                                GURL("https://proxy.example.com:443"), 403);
-  delegate.AttachDisguisedErrorData(data);
+  EnterpriseProxyErrorData data(
+      GURL("https://target.example.com/page"),
+      GURL("https://proxy.example.com:443"), 403,
+      EnterpriseProxyErrorData::ErrorCategory::kAuthorization);
 
-  EXPECT_TRUE(error_service_->GetErrorPageHTML(&delegate).empty());
+  EXPECT_TRUE(error_service_->GetErrorPageParams(data).empty());
   histogram_tester.ExpectTotalCount(
       "Enterprise.Proxy.DisguisedErrorPage.ErrorCode", 0);
 }
 
-TEST_F(EnterpriseProxyErrorServiceTest, GetErrorPageHTML_ValidData) {
-  base::HistogramTester histogram_tester;
-  TestDelegate delegate;
-  EnterpriseProxyErrorData data(GURL("https://target.example.com/page"),
-                                GURL("https://proxy.example.com:443"), 403);
-  delegate.AttachDisguisedErrorData(data);
+TEST_F(EnterpriseProxyErrorServiceTest, GetErrorPageParams_ValidData) {
+  const struct {
+    EnterpriseProxyErrorData::ErrorCategory category;
+    std::string expected_category_str;
+    int error_code;
+  } kTestCases[] = {
+      {EnterpriseProxyErrorData::ErrorCategory::kAuthentication, "0", 401},
+      {EnterpriseProxyErrorData::ErrorCategory::kAuthorization, "1", 403},
+      {EnterpriseProxyErrorData::ErrorCategory::kOther, "2", 502},
+  };
 
-  std::string html = error_service_->GetErrorPageHTML(&delegate);
-  EXPECT_FALSE(html.empty());
-  EXPECT_NE(html.find("https://target.example.com/page"), std::string::npos);
-  EXPECT_NE(html.find("https://proxy.example.com/"), std::string::npos);
-  EXPECT_NE(html.find("403"), std::string::npos);
+  for (const auto& test_case : kTestCases) {
+    base::HistogramTester histogram_tester;
+    EnterpriseProxyErrorData data(GURL("https://target.example.com/page"),
+                                  GURL("https://proxy.example.com:443"),
+                                  test_case.error_code, test_case.category);
 
-  histogram_tester.ExpectUniqueSample(
-      "Enterprise.Proxy.DisguisedErrorPage.ErrorCode", 403, 1);
+    base::DictValue params = error_service_->GetErrorPageParams(data);
+    EXPECT_FALSE(params.empty());
+    EXPECT_EQ(true, params.FindBool("override_error_page").value_or(false));
+    EXPECT_EQ(true,
+              params.FindBool("is_enterprise_proxy_error").value_or(false));
+    EXPECT_EQ("https://target.example.com/page",
+              *params.FindString("destination_url"));
+    EXPECT_EQ("https://proxy.example.com/", *params.FindString("proxy_url"));
+    EXPECT_EQ(base::NumberToString(test_case.error_code),
+              *params.FindString("error_code"));
+    EXPECT_EQ(test_case.expected_category_str,
+              *params.FindString("error_category"));
+
+    histogram_tester.ExpectUniqueSample(
+        "Enterprise.Proxy.DisguisedErrorPage.ErrorCode", test_case.error_code,
+        1);
+  }
 }
+
+struct DisguisedErrorTestCase {
+  int error_code;
+  EnterpriseProxyErrorData::ErrorCategory expected_category;
+};
+
+class EnterpriseProxyErrorServiceDisguisedErrorTest
+    : public EnterpriseProxyErrorServiceTest,
+      public testing::WithParamInterface<DisguisedErrorTestCase> {};
+
+TEST_P(EnterpriseProxyErrorServiceDisguisedErrorTest,
+       CancelsAuthAndStoresData) {
+  const DisguisedErrorTestCase& test_case = GetParam();
+  SetupManagedDomainWithProxy("proxy.example.com");
+
+  std::optional<net::AuthCredentials> credentials =
+      InterceptChallenge(base::NumberToString(test_case.error_code));
+  EXPECT_FALSE(credentials.has_value());
+
+  std::optional<EnterpriseProxyErrorData> error_data =
+      error_service_->TakeDisguisedError(kTestNavigationId);
+  ASSERT_TRUE(error_data.has_value());
+  EXPECT_EQ(error_data->destination_url(),
+            GURL("https://target.example.com/test"));
+  EXPECT_EQ(error_data->proxy_url(), GURL("https://proxy.example.com:443"));
+  EXPECT_EQ(error_data->error_code(), test_case.error_code);
+  EXPECT_EQ(error_data->error_category(), test_case.expected_category);
+
+  // Subsequent Take returns nullopt (consumed).
+  EXPECT_FALSE(
+      error_service_->TakeDisguisedError(kTestNavigationId).has_value());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    EnterpriseProxyErrorServiceDisguisedErrorTest,
+    testing::Values(
+        DisguisedErrorTestCase{
+            403, EnterpriseProxyErrorData::ErrorCategory::kAuthorization},
+        DisguisedErrorTestCase{500,
+                               EnterpriseProxyErrorData::ErrorCategory::kOther},
+        DisguisedErrorTestCase{502,
+                               EnterpriseProxyErrorData::ErrorCategory::kOther},
+        DisguisedErrorTestCase{503,
+                               EnterpriseProxyErrorData::ErrorCategory::kOther},
+        DisguisedErrorTestCase{
+            504, EnterpriseProxyErrorData::ErrorCategory::kOther}));
 
 }  // namespace enterprise_net

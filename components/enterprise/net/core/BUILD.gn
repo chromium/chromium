@@ -48,6 +48,7 @@ static_library("core") {
     ]
     deps = [
       "//components/enterprise/browser/identifiers",
+      "//components/error_page/common",
       "//components/language/core/browser",
       "//components/policy/core/common",
       "//components/signin/public/identity_manager",

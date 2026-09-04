@@ -12,10 +12,12 @@ EnterpriseProxyErrorData::EnterpriseProxyErrorData() = default;
 
 EnterpriseProxyErrorData::EnterpriseProxyErrorData(GURL destination_url,
                                                    GURL proxy_url,
-                                                   int error_code)
+                                                   int error_code,
+                                                   ErrorCategory error_category)
     : destination_url_(std::move(destination_url)),
       proxy_url_(std::move(proxy_url)),
-      error_code_(error_code) {}
+      error_code_(error_code),
+      error_category_(error_category) {}
 
 EnterpriseProxyErrorData::EnterpriseProxyErrorData(
     const EnterpriseProxyErrorData&) = default;
