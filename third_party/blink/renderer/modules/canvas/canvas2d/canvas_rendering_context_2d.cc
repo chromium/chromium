@@ -121,6 +121,7 @@
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_util.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table.h"
@@ -909,7 +910,12 @@ void CanvasRenderingContext2D::FinalizeFrame(FlushReason reason) {
   HTMLCanvasElement* host = canvas();
   CHECK(host);
 
-  FlushCanvas(reason);
+  if (RuntimeEnabledFeatures::Canvas2dDeferredFlushEnabled() &&
+      IsComposited() && reason == FlushReason::kCanvasPushFrame) {
+    // Flush is deferred to PrepareTransferableResource when composited.
+  } else {
+    FlushCanvas(reason);
+  }
   if (reason == FlushReason::kCanvasPushFrame) {
     if (host->IsDisplayed()) {
       // Make sure the GPU is never more than two animation frames behind.

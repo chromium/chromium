@@ -1015,6 +1015,13 @@
       status: "experimental",
     },
     {
+      // When enabled, avoids eagerly flushing raster draw ops in FinalizeFrame
+      // for composited 2D canvases, deferring the flush to
+      // PrepareTransferableResource.
+      name: "Canvas2dDeferredFlush",
+      status: "experimental",
+    },
+    {
       name: "Canvas2dLayers",
     },
     {

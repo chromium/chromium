@@ -3828,6 +3828,25 @@
             ]
         }
     ],
+    "Canvas2dDeferredFlush": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "Canvas2dDeferredFlush"
+                    ]
+                }
+            ]
+        }
+    ],
     "CanvasAccessibility": [
         {
             "platforms": [

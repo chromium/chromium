@@ -795,6 +795,74 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   EXPECT_FALSE(!!CanvasElement().RateLimiter());
 }
 
+TEST_P(CanvasRenderingContext2DTestAccelerated,
+       DeferredFlushInFinalizeFrameWhenComposited) {
+  ScopedCanvas2dDeferredFlushForTest enable_feature(true);
+  CreateContext(kNonOpaque);
+
+  gfx::Size size = CanvasElement().Size();
+  auto provider = std::make_unique<FakeCanvasResourceProvider>(
+      size, RasterModeHint::kPreferGPU, &CanvasElement());
+  Context2D()->SetCanvas2DResourceProviderForTesting(std::move(provider), size);
+  ASSERT_TRUE(Context2D()->IsComposited());
+  ASSERT_TRUE(CanvasElement().GetOrCreateCcLayerForCanvas2DIfNeeded());
+
+  // Flush is deferred on kCanvasPushFrame for composited canvas.
+  Context2D()->fillRect(0, 0, 10, 10);
+  EXPECT_TRUE(Context2D()->Recorder()->HasRecordedDrawOps());
+
+  Context2D()->FinalizeFrame(FlushReason::kCanvasPushFrame);
+  // Flush is deferred; paint ops remain recorded in the buffer.
+  EXPECT_TRUE(Context2D()->Recorder()->HasRecordedDrawOps());
+
+  // PrepareTransferableResource flushes the recording.
+  viz::TransferableResource resource;
+  viz::ReleaseCallback release_callback;
+  ASSERT_TRUE(CanvasElement().PrepareTransferableResource(&resource,
+                                                          &release_callback));
+  EXPECT_FALSE(Context2D()->Recorder()->HasRecordedDrawOps());
+  if (release_callback) {
+    std::move(release_callback).Run(gpu::SyncToken(), /*lost_resource=*/true);
+  }
+
+  // A non-push-frame reason (e.g. kOther) flushes immediately.
+  Context2D()->fillRect(0, 0, 10, 10);
+  EXPECT_TRUE(Context2D()->Recorder()->HasRecordedDrawOps());
+  Context2D()->FinalizeFrame(FlushReason::kOther);
+  EXPECT_FALSE(Context2D()->Recorder()->HasRecordedDrawOps());
+
+  // Disable the feature flag for Canvas2dDeferredFlush to verify it returns
+  // to flushing composited canvas frames for FlushReason::kCanvasPushFrame.
+  ScopedCanvas2dDeferredFlushForTest disable_feature(false);
+  Context2D()->fillRect(0, 0, 10, 10);
+  EXPECT_TRUE(Context2D()->Recorder()->HasRecordedDrawOps());
+  Context2D()->FinalizeFrame(FlushReason::kCanvasPushFrame);
+  EXPECT_FALSE(Context2D()->Recorder()->HasRecordedDrawOps());
+}
+
+TEST_P(CanvasRenderingContext2DTest, FlushNotDeferredWhenNonComposited) {
+  ScopedCanvas2dDeferredFlushForTest enable_feature(true);
+  CreateContext(kNonOpaque);
+
+  // Install a CanvasResourceProvider that does not support direct compositing.
+  gfx::Size size = CanvasElement().Size();
+  auto provider = Canvas2DBitmapProvider::CreateForTesting(
+      size, Canvas2DColorParams(PredefinedColorSpace::kSRGB, gfx::HDRMetadata(),
+                                CanvasPixelFormat::kUint8,
+                                /*has_alpha=*/true));
+  Context2D()->SetBitmapProviderForTesting(std::move(provider), size);
+  ASSERT_FALSE(Context2D()->IsComposited());
+
+  // Non-composited canvas flushes immediately on kCanvasPushFrame.
+  Context2D()->fillRect(0, 0, 10, 10);
+  EXPECT_TRUE(Context2D()->Recorder()->HasRecordedDrawOps());
+
+  Context2D()->FinalizeFrame(FlushReason::kCanvasPushFrame);
+  EXPECT_FALSE(Context2D()->Recorder()->HasRecordedDrawOps());
+
+  Context2D()->ResetResourceProvider();
+}
+
 TEST_P(CanvasRenderingContext2DTest, GetImageWithAccelerationDisabled) {
   CreateContext(kNonOpaque);
 
