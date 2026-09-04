@@ -1,3 +1,13 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
+import type {SettingsLanguagesPageElement} from './languages_page.js';
+
+export function getHtml(this: SettingsLanguagesPageElement) {
+  return html`<!--_html_template_start_-->
 <settings-section page-title="$i18n{languagesCardTitle}">
 <div id="languagesSection">
   <div class="cr-row continuation">
@@ -51,10 +61,8 @@
   </div>
   <cr-lazy-render-lit id="menu" .template="${() => html`
     <cr-action-menu role-description="$i18n{menu}"
-<if expr="is_win">
-        @close="${this.onMenuClose_}" class="complex"
-</if>
-        >
+        class="${this.isWindows_() ? 'complex' : ''}"
+        @close="${this.onMenuClose_}">
 <if expr="is_win">
       <cr-checkbox id="uiLanguageItem"
           class="dropdown-item"
@@ -115,3 +123,5 @@ ${this.shouldShowRelaunchDialog ? html`
   </relaunch-confirmation-dialog>
 ` : ''}
 </settings-section>
+<!--_html_template_end_-->`;
+}

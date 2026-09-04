@@ -15,7 +15,6 @@ import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrSearchFieldElement} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
 import {FindShortcutMixinLit} from 'chrome://resources/cr_elements/find_shortcut_mixin_lit.js';
-import type {I18nMixinLitInterface} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -23,8 +22,7 @@ import {getCss} from './add_languages_dialog.css.js';
 import {getHtml} from './add_languages_dialog.html.js';
 import {getFullName} from './languages_util.js';
 
-export interface SettingsAddLanguagesDialogElement extends
-    I18nMixinLitInterface {
+export interface SettingsAddLanguagesDialogElement {
   $: {
     dialog: CrDialogElement,
     list: HTMLElement,

@@ -20,7 +20,6 @@ import '../settings_page/settings_section.js';
 import {getCss as getCrSharedStyleCss} from '//resources/cr_elements/cr_shared_style_lit.css.js';
 import {getCss as getMdSelectLitCss} from '//resources/cr_elements/md_select_lit.css.js';
 import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
-import type {I18nMixinLitInterface} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
@@ -35,10 +34,6 @@ import {LanguageSettingsActionType, LanguageSettingsMetricsProxyImpl} from './la
 import type {LanguageHelper, LanguagesModel} from './languages_types.js';
 import {convertLanguageCodeForChrome, getFullName, isTranslateBaseLanguage} from './languages_util.js';
 import {getHtml} from './translate_page.html.js';
-
-export interface SettingsTranslatePageElement extends I18nMixinLitInterface {}
-
-export type TranslatePageElement = SettingsTranslatePageElement;
 
 const SettingsTranslatePageElementBase =
     PrefServiceObserverMixinLit(I18nMixinLit(CrLitElement));

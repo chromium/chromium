@@ -29,8 +29,6 @@ export interface SettingsLanguagesPageIndexElement {
   };
 }
 
-export type LanguagesPageIndexElement = SettingsLanguagesPageIndexElement;
-
 const SettingsLanguagesPageIndexElementBase =
     SearchableViewContainerMixinLit(RouteObserverMixinLit(CrLitElement));
 

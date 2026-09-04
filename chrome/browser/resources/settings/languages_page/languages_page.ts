@@ -56,8 +56,6 @@ export interface SettingsLanguagesPageElement {
   };
 }
 
-export type LanguagesPageElement = SettingsLanguagesPageElement;
-
 const SettingsLanguagesPageElementBase =
     RouteObserverMixinLit(RelaunchMixinLit(I18nMixinLit(CrLitElement)));
 
@@ -241,6 +239,26 @@ export class SettingsLanguagesPageElement extends
     }
   }
 
+  protected isWindows_(): boolean {
+    return isWindows;
+  }
+
+  protected async onMenuClose_() {
+    // <if expr="is_win">
+    if (!this.isChangeInProgress_) {
+      return;
+    }
+    await this.updateComplete;
+    this.isChangeInProgress_ = false;
+    const restartButton =
+        this.shadowRoot.querySelector<HTMLElement>('#restartButton');
+    if (!restartButton) {
+      return;
+    }
+    focusWithoutInk(restartButton);
+    // </if>
+  }
+
   // <if expr="is_win">
   /**
    * @param languageCode The language code identifying a language.
@@ -259,20 +277,6 @@ export class SettingsLanguagesPageElement extends
     // `canEnableSomeSupportedLanguage_` (see comment there).
     return prospectiveUILanguage === languageCode &&
         getLanguageHelperInstance().requiresRestart();
-  }
-
-  protected async onMenuClose_() {
-    if (!this.isChangeInProgress_) {
-      return;
-    }
-    await this.updateComplete;
-    this.isChangeInProgress_ = false;
-    const restartButton =
-        this.shadowRoot.querySelector<HTMLElement>('#restartButton');
-    if (!restartButton) {
-      return;
-    }
-    focusWithoutInk(restartButton);
   }
 
   /**

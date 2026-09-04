@@ -15,9 +15,6 @@ import {getCss as getSettingsSharedCss} from '../settings_shared_lit.css.js';
 
 import {getHtml} from './languages_page_index_cros.html.js';
 
-export type LanguagesPageIndexCrosElement =
-    SettingsLanguagesPageIndexCrosElement;
-
 export class SettingsLanguagesPageIndexCrosElement extends CrLitElement
     implements SettingsPlugin {
   static get is() {

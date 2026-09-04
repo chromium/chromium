@@ -41,8 +41,6 @@ export interface SettingsEditDictionaryPageElement {
 const SettingsEditDictionaryPageElementBase =
     PrefServiceObserverMixinLit(SettingsViewMixinLit(CrLitElement));
 
-export type EditDictionaryPageElement = SettingsEditDictionaryPageElement;
-
 export class SettingsEditDictionaryPageElement extends
     SettingsEditDictionaryPageElementBase {
   static get is() {

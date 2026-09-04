@@ -63,8 +63,6 @@ export interface SettingsSpellCheckPageElement {
   };
 }
 
-export type SpellCheckPageElement = SettingsSpellCheckPageElement;
-
 const SettingsSpellCheckPageElementBase = SettingsViewMixinLit(
     I18nMixinLit(PrefServiceObserverMixinLit(CrLitElement)));
 

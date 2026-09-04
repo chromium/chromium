@@ -1,3 +1,13 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
+import type {SettingsTranslatePageElement} from './translate_page.js';
+
+export function getHtml(this: SettingsTranslatePageElement) {
+  return html`<!--_html_template_start_-->
 <settings-section page-title="$i18n{translatePageTitle}">
 <settings-toggle-button id="offerTranslateOtherLanguages"
     pref-key="translate.enabled"
@@ -97,3 +107,5 @@ ${this.showAddNeverTranslateDialog_ ? html`
   </settings-add-languages-dialog>
 ` : ''}
 </settings-section>
+<!--_html_template_end_-->`;
+}
