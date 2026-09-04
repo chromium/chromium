@@ -128,13 +128,31 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
             if (ACTION_MEDIA_CAPTURE_UPDATE.equals(action)) {
                 updateNotification(notificationId, mediaTypes, url, isIncognito, startId);
             } else if (ACTION_SCREEN_CAPTURE_STOP.equals(action)) {
-                // Notify native to stop screen capture when the STOP button in notification
+                // Notify native to stop capture when the STOP button in notification
                 // is clicked.
                 final int tabId = getTabIdFromNotificationId(notificationId);
                 final Tab tab = TabWindowManagerSingleton.getInstance().getTabById(tabId);
                 if (tab != null) {
-                    MediaCaptureDevicesDispatcherAndroid.notifyDisplayMediaStopped(
-                            tab.getWebContents());
+                    // TODO(crbug.com/487666920): Revisit when support for multiple media capture
+                    // sessions is permitted.
+                    Set<@MediaType Integer> activeMediaTypes =
+                            mNotificationsType.get(notificationId);
+                    boolean isTabCapture =
+                            activeMediaTypes != null
+                                    && activeMediaTypes.contains(MediaType.TAB_CAPTURE);
+                    boolean isDisplayCapture =
+                            activeMediaTypes == null
+                                    || activeMediaTypes.contains(MediaType.SCREEN_CAPTURE)
+                                    || activeMediaTypes.contains(MediaType.WINDOW_CAPTURE);
+
+                    if (isTabCapture) {
+                        MediaCaptureDevicesDispatcherAndroid.notifyTabCapturingStopped(
+                                tab.getWebContents());
+                    }
+                    if (isDisplayCapture) {
+                        MediaCaptureDevicesDispatcherAndroid.notifyDisplayMediaStopped(
+                                tab.getWebContents());
+                    }
                 }
             }
         }
