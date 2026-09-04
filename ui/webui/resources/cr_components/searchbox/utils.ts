@@ -47,6 +47,16 @@ export function renderTypeToClass(renderType: RenderType): string {
   }
 }
 
+/**
+ * Records a performance mark using the Web Performance API if it has not
+ * already been recorded for the current document.
+ */
+export function markOnce(name: string) {
+  if (!performance.getEntriesByName(name).length) {
+    performance.mark(name);
+  }
+}
+
 // LINT.IfChange(StripJavascriptSchemas)
 export function stripJavascriptSchemas(text: string): string {
   const kJsPrefix = 'javascript:';

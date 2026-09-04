@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
@@ -121,7 +122,12 @@ void OmniboxPopupViewFullWebUI::UpdatePopupAppearance() {
   }
 }
 
+// TODO(crbug.com/553005514): Instrument callsite traces
+// (ex: OnNewTabFocus, OnFocus, OnTabChanged, SaveStateToTab) at their
+// respective entry points to capture individual trigger contexts.
 void OmniboxPopupViewFullWebUI::SyncNativeStateToWebUI(bool query_zps) {
+  TRACE_EVENT1("omnibox", "OmniboxPopupViewFullWebUI::SyncNativeStateToWebUI",
+               "query_zps", query_zps);
   auto* edit_model = controller()->edit_model();
 
   edit_model->ResetDisplayTexts();

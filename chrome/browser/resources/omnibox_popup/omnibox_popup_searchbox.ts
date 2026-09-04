@@ -15,7 +15,7 @@ import {kDefaultSelection} from '//resources/cr_components/searchbox/searchbox_m
 import type {SearchboxMixinInterface} from '//resources/cr_components/searchbox/searchbox_mixin.js';
 import {SearchboxMixin} from '//resources/cr_components/searchbox/searchbox_mixin.js';
 import {selectionIsNativelySupported} from '//resources/cr_components/searchbox/searchbox_selection_mixin.js';
-import {sanitizeTextForPaste} from '//resources/cr_components/searchbox/utils.js';
+import {markOnce, sanitizeTextForPaste} from '//resources/cr_components/searchbox/utils.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
@@ -830,6 +830,7 @@ export class OmniboxPopupSearchboxElement extends
    * focus.
    */
   private onSetInputState_(state: OmniboxInputState) {
+    markOnce('OmniboxPopupSearchboxElement::onSetInputState_');
     const isTabSwitch = this.tabId_ !== state.tabId;
     this.$.input.setInputText(state.text);
     this.userInputInProgress_ = state.userInputInProgress;

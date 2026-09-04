@@ -183,6 +183,7 @@ source_set("impl") {
       "//components/security_interstitials/content:security_interstitial_page",
       "//components/security_state/content",
       "//components/security_state/core",
+      "//components/startup_metric_utils",
       "//components/strings:components_strings",
       "//components/user_education/common",
       "//components/zoom",

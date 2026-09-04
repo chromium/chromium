@@ -114,6 +114,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/security_state/core/security_state.h"
+#include "components/startup_metric_utils/common/startup_metric_utils.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -271,6 +272,19 @@ LocationBarView::~LocationBarView() {
 }
 
 void LocationBarView::Init() {
+  TRACE_EVENT0("omnibox", "LocationBarView::Init");
+  static bool has_logged_startup_to_init = false;
+  if (!has_logged_startup_to_init) {
+    has_logged_startup_to_init = true;
+    const base::TimeTicks process_start =
+        startup_metric_utils::GetCommon().MainEntryPointTicks();
+    if (!process_start.is_null()) {
+      TRACE_EVENT_INSTANT1(
+          "omnibox", "LocationBarView::StartupToInit", TRACE_EVENT_SCOPE_GLOBAL,
+          "startup_to_init_ms",
+          (base::TimeTicks::Now() - process_start).InMillisecondsF());
+    }
+  }
   // We need to be in a Widget, otherwise GetNativeTheme() may change and we're
   // not prepared for that.
   DCHECK(GetWidget());
