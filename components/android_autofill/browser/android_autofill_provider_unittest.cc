@@ -13,7 +13,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/android_autofill/browser/android_autofill_bridge_factory.h"
-#include "components/android_autofill/browser/android_autofill_features.h"
 #include "components/android_autofill/browser/android_autofill_manager.h"
 #include "components/android_autofill/browser/android_autofill_provider_bridge.h"
 #include "components/android_autofill/browser/android_autofill_provider_test_api.h"
@@ -790,13 +789,10 @@ TEST_F(AndroidAutofillProviderTest, CancelSessionOnNavigation) {
   Reset(autofill_driver());
 }
 
-// Tests that OnSelectControlSelectionChanged updates the current field's origin
-// when the feature flag is enabled.
+// Tests that OnSelectControlSelectionChanged updates the current field's
+// origin.
 TEST_F(AndroidAutofillProviderTest,
        OnSelectControlSelectionChangedUpdatesOrigin) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAndroidAutofillFieldsUpdatedOnSelect};
-
   FormData form = CreateFormDataForFrame(
       CreateTestPersonalInformationFormData(), main_frame_token());
   android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
@@ -1316,9 +1312,6 @@ TEST_F(AndroidAutofillProviderWithCredManMultiFrameTest,
 // active (see crbug.com/518115316).
 TEST_F(AndroidAutofillProviderWithCredManMultiFrameTest,
        CredManActiveBlocksSpoofedSelectControlSelectionChanged) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAndroidAutofillFieldsUpdatedOnSelect};
-
   // 1. Start session on main frame (origin https://foo.com) and trigger
   // CredMan.
   android_autofill_manager().OnFormsSeen({test_form()}, {},

@@ -18,8 +18,7 @@ namespace {
 
 const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidAutofillLazyFrameworkWrapper,
-    &kAndroidAutofillImprovedVisibilityDetection,
-    &kAndroidAutofillFieldsUpdatedOnSelect};
+    &kAndroidAutofillImprovedVisibilityDetection};
 
 }  // namespace
 
@@ -39,11 +38,6 @@ BASE_FEATURE(kAndroidAutofillImprovedVisibilityDetection,
 // If enabled, the native autofill provider is updated when the web contents
 // change.
 BASE_FEATURE(kAndroidAutofillUpdateContextForWebContents,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, fields are updated whenever a user interacts with a <select>.
-// TODO(crbug.com/502346855): Remove in M152 or later.
-BASE_FEATURE(kAndroidAutofillFieldsUpdatedOnSelect,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 static int64_t JNI_AndroidAutofillFeatures_GetFeature(JNIEnv* env,

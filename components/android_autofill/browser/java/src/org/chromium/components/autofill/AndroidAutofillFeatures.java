@@ -23,15 +23,11 @@ public class AndroidAutofillFeatures extends Features {
             "AndroidAutofillLazyFrameworkWrapper";
     public static final String ANDROID_AUTOFILL_IMPROVED_VISIBILITY_DETECTION_NAME =
             "AndroidAutofillImprovedVisibilityDetection";
-    public static final String ANDROID_AUTOFILL_FIELDS_UPDATED_ON_SELECT_NAME =
-            "AndroidAutofillFieldsUpdatedOnSelect";
 
     public static final AndroidAutofillFeatures ANDROID_AUTOFILL_LAZY_FRAMEWORK_WRAPPER =
             new AndroidAutofillFeatures(0, ANDROID_AUTOFILL_LAZY_FRAMEWORK_WRAPPER_NAME);
     public static final AndroidAutofillFeatures ANDROID_AUTOFILL_IMPROVED_VISIBILITY_DETECTION =
             new AndroidAutofillFeatures(1, ANDROID_AUTOFILL_IMPROVED_VISIBILITY_DETECTION_NAME);
-    public static final AndroidAutofillFeatures ANDROID_AUTOFILL_FIELDS_UPDATED_ON_SELECT =
-            new AndroidAutofillFeatures(2, ANDROID_AUTOFILL_FIELDS_UPDATED_ON_SELECT_NAME);
 
     private final int mOrdinal;
 

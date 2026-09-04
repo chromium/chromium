@@ -15,7 +15,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "components/android_autofill/browser/android_autofill_bridge_factory.h"
-#include "components/android_autofill/browser/android_autofill_features.h"
 #include "components/android_autofill/browser/android_autofill_manager.h"
 #include "components/android_autofill/browser/android_autofill_provider_bridge.h"
 #include "components/android_autofill/browser/form_data_android.h"
@@ -529,10 +528,7 @@ void AndroidAutofillProvider::OnSelectControlSelectionChanged(
     // crbug.com/518115316).
     return;
   }
-  if (base::FeatureList::IsEnabled(
-          features::kAndroidAutofillFieldsUpdatedOnSelect)) {
-    UpdateCurrentField(manager, form, field);
-  }
+  UpdateCurrentField(manager, form, field);
   if (!IsLinkedForm(form)) {
     StartNewSession(manager, form, field);
     // TODO(crbug.com/40929724): Return early at this point?
