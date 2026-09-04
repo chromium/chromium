@@ -101,9 +101,12 @@ class TestGlicSelectionObserver : public GlicSelectionObserver {
     show_selection_affordance_called_ = false;
     last_affordance_text_.reset();
     trigger_region_capture_called_ = false;
+    mock_side_panel_open_ = true;
   }
 
   // Expose methods for testing.
+  using GlicSelectionObserver::IsShakeTriggerEnabled;
+  using GlicSelectionObserver::IsSidePanelOpen;
   using GlicSelectionObserver::OnInputEvent;
   using GlicSelectionObserver::OnPageContextEligibilityChanged;
   using GlicSelectionObserver::RenderFrameCreated;
@@ -115,6 +118,10 @@ class TestGlicSelectionObserver : public GlicSelectionObserver {
   }
 
   void set_mock_panel_showing(bool value) { mock_panel_showing_ = value; }
+  void set_mock_side_panel_open(bool value) { mock_side_panel_open_ = value; }
+  bool BaseIsSidePanelOpen() const {
+    return GlicSelectionObserver::IsSidePanelOpen();
+  }
 
   bool send_context_called() const { return send_context_called_; }
   const std::optional<std::u16string>& last_sent_context() const {
@@ -161,6 +168,8 @@ class TestGlicSelectionObserver : public GlicSelectionObserver {
     GlicSelectionObserver::TriggerRegionCapture();
   }
 
+  bool IsSidePanelOpen() const override { return mock_side_panel_open_; }
+
  private:
   std::optional<std::u16string> last_processed_text_;
   int update_count_ = 0;
@@ -169,6 +178,7 @@ class TestGlicSelectionObserver : public GlicSelectionObserver {
 
   bool call_base_update_selection_state_ = false;
   bool mock_panel_showing_ = false;
+  bool mock_side_panel_open_ = true;
   bool send_context_called_ = false;
   std::optional<std::u16string> last_sent_context_;
   bool show_selection_affordance_called_ = false;
@@ -310,6 +320,27 @@ class GlicSelectionObserverTest : public ChromeRenderViewHostTestHarness {
 
   size_t GetObservedFramesCount() const {
     return observer_->observed_frames_.size();
+  }
+
+  void SimulateMouseMove(float x, float y) {
+    blink::WebMouseEvent event(
+        blink::WebInputEvent::Type::kMouseMove,
+        blink::WebInputEvent::kNoModifiers,
+        blink::WebInputEvent::GetStaticTimeStampForTests());
+    event.SetPositionInWidget(x, y);
+    observer_->OnInputEvent(*GetRenderWidgetHost(), event,
+                            content::RenderWidgetHost::InputEventObserver::
+                                InputEventSource::kUnknown);
+    task_environment()->RunUntilIdle();
+  }
+
+  void SimulateMouseShake() {
+    SimulateMouseMove(0.0f, 0.0f);
+    SimulateMouseMove(20.0f, 0.0f);
+    SimulateMouseMove(0.0f, 0.0f);
+    SimulateMouseMove(20.0f, 0.0f);
+    SimulateMouseMove(0.0f, 0.0f);
+    SimulateMouseMove(20.0f, 0.0f);
   }
 };
 
@@ -1230,7 +1261,8 @@ TEST_F(GlicSelectionObserverTest, OnHideHidesSelectionWidget) {
                 url, GURL(), ContentSettingsType::INLINE_CUE_MENU));
 }
 
-TEST_F(GlicSelectionObserverTest, ShakeTriggerSucceedsWhenFeatureAndPrefEnabled) {
+TEST_F(GlicSelectionObserverTest,
+       ShakeTriggerSucceedsWhenFeatureAndPrefEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kGlicSelectionPrompt,
@@ -1242,38 +1274,8 @@ TEST_F(GlicSelectionObserverTest, ShakeTriggerSucceedsWhenFeatureAndPrefEnabled)
   auto* observer = GetObserver();
   ASSERT_TRUE(observer);
 
-  auto simulate_mouse_move = [&](float x, float y) {
-    blink::WebMouseEvent event(
-        blink::WebInputEvent::Type::kMouseMove,
-        blink::WebInputEvent::kNoModifiers,
-        blink::WebInputEvent::GetStaticTimeStampForTests());
-    event.SetPositionInWidget(x, y);
-    observer->OnInputEvent(
-        *main_rfh()->GetRenderWidgetHost(), event,
-        content::RenderWidgetHost::InputEventObserver::InputEventSource::kUnknown);
-    task_environment()->RunUntilIdle();
-  };
-
   EXPECT_FALSE(observer->trigger_region_capture_called());
-
-  // Move right 20px (establishes initial direction: RIGHT).
-  simulate_mouse_move(0.0f, 0.0f);
-  simulate_mouse_move(20.0f, 0.0f);
-
-  // Move left 20px (Direction change 1: LEFT).
-  simulate_mouse_move(0.0f, 0.0f);
-  EXPECT_FALSE(observer->trigger_region_capture_called());
-
-  // Move right 20px (Direction change 2: RIGHT).
-  simulate_mouse_move(20.0f, 0.0f);
-  EXPECT_FALSE(observer->trigger_region_capture_called());
-
-  // Move left 20px (Direction change 3: LEFT).
-  simulate_mouse_move(0.0f, 0.0f);
-  EXPECT_FALSE(observer->trigger_region_capture_called());
-
-  // Move right 20px (Direction change 4: RIGHT -> Shake triggered!).
-  simulate_mouse_move(20.0f, 0.0f);
+  SimulateMouseShake();
   EXPECT_TRUE(observer->trigger_region_capture_called());
 }
 
@@ -1288,26 +1290,8 @@ TEST_F(GlicSelectionObserverTest, ShakeTriggerDisabledByFeatureFlag) {
   auto* observer = GetObserver();
   ASSERT_TRUE(observer);
 
-  auto simulate_mouse_move = [&](float x, float y) {
-    blink::WebMouseEvent event(
-        blink::WebInputEvent::Type::kMouseMove,
-        blink::WebInputEvent::kNoModifiers,
-        blink::WebInputEvent::GetStaticTimeStampForTests());
-    event.SetPositionInWidget(x, y);
-    observer->OnInputEvent(
-        *main_rfh()->GetRenderWidgetHost(), event,
-        content::RenderWidgetHost::InputEventObserver::InputEventSource::kUnknown);
-    task_environment()->RunUntilIdle();
-  };
-
-  // Perform 4 direction changes.
-  simulate_mouse_move(0.0f, 0.0f);
-  simulate_mouse_move(20.0f, 0.0f);
-  simulate_mouse_move(0.0f, 0.0f);
-  simulate_mouse_move(20.0f, 0.0f);
-  simulate_mouse_move(0.0f, 0.0f);
-  simulate_mouse_move(20.0f, 0.0f);
-
+  EXPECT_FALSE(observer->trigger_region_capture_called());
+  SimulateMouseShake();
   EXPECT_FALSE(observer->trigger_region_capture_called());
 }
 
@@ -1323,26 +1307,8 @@ TEST_F(GlicSelectionObserverTest, ShakeTriggerDisabledByPref) {
   auto* observer = GetObserver();
   ASSERT_TRUE(observer);
 
-  auto simulate_mouse_move = [&](float x, float y) {
-    blink::WebMouseEvent event(
-        blink::WebInputEvent::Type::kMouseMove,
-        blink::WebInputEvent::kNoModifiers,
-        blink::WebInputEvent::GetStaticTimeStampForTests());
-    event.SetPositionInWidget(x, y);
-    observer->OnInputEvent(
-        *main_rfh()->GetRenderWidgetHost(), event,
-        content::RenderWidgetHost::InputEventObserver::InputEventSource::kUnknown);
-    task_environment()->RunUntilIdle();
-  };
-
-  // Perform 4 direction changes.
-  simulate_mouse_move(0.0f, 0.0f);
-  simulate_mouse_move(20.0f, 0.0f);
-  simulate_mouse_move(0.0f, 0.0f);
-  simulate_mouse_move(20.0f, 0.0f);
-  simulate_mouse_move(0.0f, 0.0f);
-  simulate_mouse_move(20.0f, 0.0f);
-
+  EXPECT_FALSE(observer->trigger_region_capture_called());
+  SimulateMouseShake();
   EXPECT_FALSE(observer->trigger_region_capture_called());
 }
 
@@ -1358,27 +1324,81 @@ TEST_F(GlicSelectionObserverTest, ContinuousMoveDoesNotTriggerShake) {
   auto* observer = GetObserver();
   ASSERT_TRUE(observer);
 
-  auto simulate_mouse_move = [&](float x, float y) {
-    blink::WebMouseEvent event(
-        blink::WebInputEvent::Type::kMouseMove,
-        blink::WebInputEvent::kNoModifiers,
-        blink::WebInputEvent::GetStaticTimeStampForTests());
-    event.SetPositionInWidget(x, y);
-    observer->OnInputEvent(
-        *main_rfh()->GetRenderWidgetHost(), event,
-        content::RenderWidgetHost::InputEventObserver::InputEventSource::kUnknown);
-    task_environment()->RunUntilIdle();
-  };
-
   // Move continuously in the positive X direction.
-  simulate_mouse_move(0.0f, 0.0f);
-  simulate_mouse_move(20.0f, 0.0f);
-  simulate_mouse_move(40.0f, 0.0f);
-  simulate_mouse_move(60.0f, 0.0f);
-  simulate_mouse_move(80.0f, 0.0f);
-  simulate_mouse_move(100.0f, 0.0f);
+  SimulateMouseMove(0.0f, 0.0f);
+  SimulateMouseMove(20.0f, 0.0f);
+  SimulateMouseMove(40.0f, 0.0f);
+  SimulateMouseMove(60.0f, 0.0f);
+  SimulateMouseMove(80.0f, 0.0f);
+  SimulateMouseMove(100.0f, 0.0f);
 
   EXPECT_FALSE(observer->trigger_region_capture_called());
+}
+
+TEST_F(GlicSelectionObserverTest, ShakeTriggerDisabledWhenSidePanelClosed) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kGlicSelectionPrompt,
+                            features::kGlicShakeTrigger},
+      /*disabled_features=*/{});
+  profile()->GetPrefs()->SetBoolean(prefs::kGlicShakeTriggerEnabled, true);
+  NavigateAndCommit(GURL("https://example.com/"));
+
+  auto* observer = GetObserver();
+  ASSERT_TRUE(observer);
+  observer->set_mock_side_panel_open(false);
+
+  EXPECT_FALSE(observer->IsShakeTriggerEnabled());
+
+  EXPECT_FALSE(observer->trigger_region_capture_called());
+  SimulateMouseShake();
+  EXPECT_FALSE(observer->trigger_region_capture_called());
+}
+
+TEST_F(GlicSelectionObserverTest,
+       ShakeTriggerSucceedsWhenSidePanelClosedIfOnlyOnSidePanelFalse) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kGlicSelectionPrompt, {}},
+                            {features::kGlicShakeTrigger,
+                             {{"only_on_side_panel", "false"}}}},
+      /*disabled_features=*/{});
+  profile()->GetPrefs()->SetBoolean(prefs::kGlicShakeTriggerEnabled, true);
+  NavigateAndCommit(GURL("https://example.com/"));
+
+  auto* observer = GetObserver();
+  ASSERT_TRUE(observer);
+  observer->set_mock_side_panel_open(false);
+
+  EXPECT_TRUE(observer->IsShakeTriggerEnabled());
+
+  EXPECT_FALSE(observer->trigger_region_capture_called());
+  SimulateMouseShake();
+  EXPECT_TRUE(observer->trigger_region_capture_called());
+}
+
+TEST_F(GlicSelectionObserverTest, ShakeTriggerSucceedsWhenSidePanelOpen) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kGlicSelectionPrompt,
+                            features::kGlicShakeTrigger},
+      /*disabled_features=*/{});
+  profile()->GetPrefs()->SetBoolean(prefs::kGlicShakeTriggerEnabled, true);
+  NavigateAndCommit(GURL("https://example.com/"));
+
+  auto* observer = GetObserver();
+  ASSERT_TRUE(observer);
+  observer->set_mock_side_panel_open(true);
+
+  EXPECT_TRUE(observer->IsShakeTriggerEnabled());
+
+  EXPECT_FALSE(observer->trigger_region_capture_called());
+  SimulateMouseShake();
+  EXPECT_TRUE(observer->trigger_region_capture_called());
+}
+
+TEST_F(GlicSelectionObserverTest, BaseIsSidePanelOpenReturnsFalseWithoutTab) {
+  EXPECT_FALSE(observer_->BaseIsSidePanelOpen());
 }
 
 TEST_F(GlicSelectionObserverTest, SelectionWordCountMetrics) {

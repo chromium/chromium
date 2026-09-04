@@ -135,6 +135,10 @@ class GlicSelectionObserver
   // Virtual for testing.
   virtual bool IsShakeTriggerEnabled() const;
 
+  // Returns true if the Glic side panel is open.
+  // Virtual for testing.
+  virtual bool IsSidePanelOpen() const;
+
   // Called when the page context eligibility changes.
   // Virtual for testing.
   virtual void OnPageContextEligibilityChanged(
@@ -178,15 +182,13 @@ class GlicSelectionObserver
       const GlicSkillOption& skill = {},
       const std::string& skill_prompt = "");
 
-
   void OnAskGemini();
   void OnAskGeminiWithSkill(const GlicSkillOption& skill);
   std::vector<GlicSkillOption> GetContextualSkills();
   std::vector<GlicSkillOption> GetUserSkills();
   void OnAskGeminiForQuery(const std::u16string& query);
-  void OnAskGeminiMoreAboutThis(
-      const std::u16string& selected_text,
-      const std::string& explanation_text);
+  void OnAskGeminiMoreAboutThis(const std::u16string& selected_text,
+                                const std::string& explanation_text);
   void OnInlineExplanationUpdate(const std::string& markdown_output,
                                  bool is_complete,
                                  const std::string& error_message);

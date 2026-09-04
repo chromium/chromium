@@ -34,6 +34,7 @@
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
+#include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/selection/explain_selection_trigger.h"
 #include "chrome/browser/glic/selection/inline_cue_blocklist_utils.h"
@@ -156,7 +157,8 @@ mojom::AdditionalContextPtr CreateAdditionalContext(
 constexpr float kMinShakeDistance = 10.0f;
 // Required number of direction changes to trigger region capture.
 constexpr int kRequiredDirectionChanges = 4;
-// Maximum time allowed between direction changes before the shake detector resets.
+// Maximum time allowed between direction changes before the shake detector
+// resets.
 constexpr base::TimeDelta kShakeTimeout = base::Milliseconds(1000);
 
 bool IsListenedToInputEvent(blink::WebInputEvent::Type type) {
@@ -200,9 +202,8 @@ class GlicSelectionObserver::WidgetActionDelegate
   void OnAskGeminiForQuery(const std::u16string& query) override {
     observer_->OnAskGeminiForQuery(query);
   }
-  void OnAskGeminiMoreAboutThis(
-      const std::u16string& selected_text,
-      const std::string& explanation_text) override {
+  void OnAskGeminiMoreAboutThis(const std::u16string& selected_text,
+                                const std::string& explanation_text) override {
     observer_->OnAskGeminiMoreAboutThis(selected_text, explanation_text);
   }
   void OnCopy() override { observer_->OnCopy(); }
@@ -910,7 +911,6 @@ void GlicSelectionObserver::OnSettings() {
   }
 }
 
-
 void GlicSelectionObserver::RequestLinkGeneration(
     content::RenderFrameHost* rfh) {
   generated_link_.reset();
@@ -1146,8 +1146,7 @@ void GlicSelectionObserver::OnAskGeminiWithSkill(
   if (skill_prompt.empty()) {
     Profile* profile =
         Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-    if (auto* service =
-            skills::SkillsServiceFactory::GetForProfile(profile)) {
+    if (auto* service = skills::SkillsServiceFactory::GetForProfile(profile)) {
       if (const auto* s = service->GetSkillById(skill.id)) {
         skill_prompt = s->prompt;
       }
@@ -1247,10 +1246,9 @@ void GlicSelectionObserver::OnAskGeminiMoreAboutThis(
   if (!explanation_text.empty()) {
     prompt += u"\n\nContext:\n" + base::UTF8ToUTF16(explanation_text);
   }
-  InvokeGlicFromSelectionAffordance(
-      last_selected_text_, /*is_widget=*/true,
-      web_contents()->GetWeakPtr(),
-      /*prompt_override=*/prompt);
+  InvokeGlicFromSelectionAffordance(last_selected_text_, /*is_widget=*/true,
+                                    web_contents()->GetWeakPtr(),
+                                    /*prompt_override=*/prompt);
 }
 
 void GlicSelectionObserver::OnInlineExplanationUpdate(
@@ -1296,6 +1294,12 @@ void GlicSelectionObserver::OnWidgetClose() {
   }
 }
 
+bool GlicSelectionObserver::IsSidePanelOpen() const {
+  auto* tab_interface =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  return tab_interface && GlicSidePanelCoordinator::IsShowing(tab_interface);
+}
+
 bool GlicSelectionObserver::IsShakeTriggerEnabled() const {
   if (!base::FeatureList::IsEnabled(features::kGlicShakeTrigger)) {
     return false;
@@ -1308,7 +1312,13 @@ bool GlicSelectionObserver::IsShakeTriggerEnabled() const {
   if (!profile || !profile->GetPrefs()) {
     return false;
   }
-  return profile->GetPrefs()->GetBoolean(prefs::kGlicShakeTriggerEnabled);
+  if (!profile->GetPrefs()->GetBoolean(prefs::kGlicShakeTriggerEnabled)) {
+    return false;
+  }
+  if (features::kGlicShakeTriggerOnlyOnSidePanel.Get() && !IsSidePanelOpen()) {
+    return false;
+  }
+  return true;
 }
 
 void GlicSelectionObserver::TriggerRegionCapture() {

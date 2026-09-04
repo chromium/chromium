@@ -152,11 +152,11 @@ BASE_DECLARE_FEATURE(kGlicSparkSettingsAccessibleLabels);
 BASE_DECLARE_FEATURE(kGlicOptInDialogA11yFix);
 BASE_DECLARE_FEATURE(kGlicStructuredYieldMetadata);
 
-
 BASE_DECLARE_FEATURE(kGlicNoWebview);
 BASE_DECLARE_FEATURE(kGlicDisconnectedWebview);
 
 BASE_DECLARE_FEATURE(kGlicShakeTrigger);
+extern const base::FeatureParam<bool> kGlicShakeTriggerOnlyOnSidePanel;
 
 BASE_DECLARE_FEATURE(kGlicAndroidTablet);
 

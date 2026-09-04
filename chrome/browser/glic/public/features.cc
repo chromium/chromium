@@ -52,8 +52,8 @@ const base::FeatureParam<bool> kGlicSelectionPromptInlineFulfillment{
     &kGlicSelectionPrompt, "inline_fulfillment", false};
 const base::FeatureParam<std::string> kGlicSelectionPromptInlinePromptTemplate{
     &kGlicSelectionPrompt, "inline_prompt_template", ""};
-const base::FeatureParam<bool> kGlicSelectionPromptSkills{
-    &kGlicSelectionPrompt, "skills", true};
+const base::FeatureParam<bool> kGlicSelectionPromptSkills{&kGlicSelectionPrompt,
+                                                          "skills", true};
 const base::FeatureParam<std::string> kGlicSelectionDefaultBlockedSites{
     &kGlicSelectionPrompt, "GlicSelectionDefaultBlockedSites", ""};
 
@@ -276,6 +276,8 @@ BASE_FEATURE(kGlicDisconnectedWebview, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicShakeTrigger,
              "GlicShakeTrigger",
              base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<bool> kGlicShakeTriggerOnlyOnSidePanel{
+    &kGlicShakeTrigger, "only_on_side_panel", true};
 
 BASE_FEATURE(kGlicAndroidTablet, base::FEATURE_DISABLED_BY_DEFAULT);
 
