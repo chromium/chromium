@@ -392,7 +392,6 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest,
   EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 0u);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 TEST_F(GlicExperimentalTriggeringCoordinatorTest,
        HandlesMultipleConcurrentDeviceOptInRequests) {
   auto web_contents = content::WebContents::Create(
@@ -506,7 +505,6 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest,
   EXPECT_EQ(result2.task_metadata->sender_sequence_number, 0);
   EXPECT_EQ(result2.task_metadata->last_seen_sequence_number, 43);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(GlicExperimentalTriggeringCoordinatorTest,
        OnProtoMessage_MissingPayload) {

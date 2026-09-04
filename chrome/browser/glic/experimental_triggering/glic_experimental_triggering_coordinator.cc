@@ -45,6 +45,8 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_commands.h"  // nogncheck
+#else
+#include "base/android/application_status_listener.h"
 #endif
 
 namespace glic {
@@ -162,7 +164,6 @@ ExperimentalTriggeringResponse CreateResponseMessage(
   return response;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 // Builds a device opt-in response for synchronous request replies.
 ExperimentalTriggeringResponse CreateDeviceOptInResponse(
     const std::string& context_id,
@@ -174,7 +175,6 @@ ExperimentalTriggeringResponse CreateDeviceOptInResponse(
   response.device_opt_in_result = opt_in_result;
   return response;
 }
-#endif
 
 // Builds base response metadata for asynchronous Mojo updates and callbacks
 // (using instance state).
@@ -196,6 +196,12 @@ ExperimentalTriggeringResponse CreateBaseResponse(
   response.task_metadata = std::move(metadata);
   return response;
 }
+
+#if BUILDFLAG(IS_ANDROID)
+bool CanShowDeviceOptInUi() {
+  return base::android::ApplicationStatusListener::HasVisibleActivities();
+}
+#endif
 
 }  // namespace
 
@@ -703,13 +709,16 @@ class ExperimentalTriggeringUpdatesHandler
       base::ScopedClosureRunner cleanup_runner,
       ScopedIncomingMessageResultLogger result_logger) {
 #if BUILDFLAG(IS_ANDROID)
-    result_logger.set_result(GlicExperimentalTriggeringIncomingMessageResult::
-                                 kAndroidOptInUnsupported);
-    return CreateResponseMessage(context_id_, TaskUpdate::State::kFailed,
-                                 TaskUpdate::DataType::kErrorMessage,
-                                 "Ignoring unexpected Android Opt-in request.",
-                                 task_metadata, sequence_generator_.GetNext());
-#else
+    if (!CanShowDeviceOptInUi()) {
+      result_logger.set_result(GlicExperimentalTriggeringIncomingMessageResult::
+                                   kAndroidOptInUnsupported);
+      return CreateResponseMessage(
+          context_id_, TaskUpdate::State::kFailed,
+          TaskUpdate::DataType::kErrorMessage,
+          "Ignoring unexpected Android Opt-in request.", task_metadata,
+          sequence_generator_.GetNext());
+    }
+#endif
     if (!coordinator_) {
       result_logger.set_result(GlicExperimentalTriggeringIncomingMessageResult::
                                    kCoordinatorUnavailable);
@@ -763,7 +772,6 @@ class ExperimentalTriggeringUpdatesHandler
     result_logger.set_result(
         GlicExperimentalTriggeringIncomingMessageResult::kSuccess);
     return std::nullopt;
-#endif
   }
 
   void SendTaskUpdateMessage(
@@ -786,7 +794,6 @@ class ExperimentalTriggeringUpdatesHandler
   }
 
   void SendDeviceOptInResult(bool accepted) {
-#if !BUILDFLAG(IS_ANDROID)
     if (update_callback_) {
       ExperimentalTriggeringResponse response =
           CreateBaseResponse(context_id_, sequence_generator_.GetNext(),
@@ -798,7 +805,6 @@ class ExperimentalTriggeringUpdatesHandler
     if (coordinator_) {
       coordinator_->OnUpdatesHandlerCleanup(context_id_);
     }
-#endif
   }
 
   void SendScreenshotResult(ScreenshotResult::Status status,
