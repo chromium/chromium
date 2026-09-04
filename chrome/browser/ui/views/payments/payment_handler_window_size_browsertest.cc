@@ -61,7 +61,13 @@ class PaymentHandlerWindowSizeTest : public PaymentRequestBrowserTestBase {
       features::kPaymentRequestMandatoryPaymentAppUi};
 };
 
-IN_PROC_BROWSER_TEST_F(PaymentHandlerWindowSizeTest, ValidateDialogSize) {
+// TODO(crbug.com/557001558): enable the flaky test on mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ValidateDialogSize DISABLED_ValidateDialogSize
+#else
+#define MAYBE_ValidateDialogSize ValidateDialogSize
+#endif
+IN_PROC_BROWSER_TEST_F(PaymentHandlerWindowSizeTest, MAYBE_ValidateDialogSize) {
   // Add an autofill profile, so [Continue] button is enabled.
   autofill::AutofillProfile profile(autofill::test::GetFullProfile());
   AddAutofillProfile(profile);
