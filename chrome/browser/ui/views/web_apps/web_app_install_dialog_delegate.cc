@@ -96,17 +96,6 @@ std::ostream& operator<<(std::ostream& os, InstallDialogType type) {
   return os << "Unknown";
 }
 
-std::u16string NormalizeSuggestedAppTitle(const std::u16string& title) {
-  std::u16string normalized = title;
-  if (base::StartsWith(normalized, u"https://")) {
-    normalized = normalized.substr(8);
-  }
-  if (base::StartsWith(normalized, u"http://")) {
-    normalized = normalized.substr(7);
-  }
-  return normalized;
-}
-
 MaxAllowedShrinkage GetMaxAllowedShrinkage(InstallDialogType type) {
   switch (type) {
     case InstallDialogType::kSimple:

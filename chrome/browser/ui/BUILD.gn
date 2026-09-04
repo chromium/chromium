@@ -2957,8 +2957,6 @@ static_library("ui") {
       "//chrome/browser/ui/views/frame:contents_capture_border_view_impl",
       "//chrome/browser/ui/views/frame:multi_contents_background_view_impl",
       "//chrome/browser/ui/views/frame:multi_contents_resize_area_impl",
-      "//chrome/browser/ui/views/web_apps:create_shortcut_confirmation_view_impl",
-      "//chrome/browser/ui/views/web_apps:image_carousel_view_impl",
       "//chrome/browser/ui/views/web_apps:web_app_detailed_install_dialog",
       "//chrome/browser/ui/views/web_apps:web_app_diy_install_dialog",
       "//chrome/browser/ui/views/web_apps:web_app_launch_dialog",

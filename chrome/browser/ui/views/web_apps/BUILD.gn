@@ -306,11 +306,9 @@ source_set("view_visible_in_active_widget_notifier") {
 
 source_set("image_carousel_view_impl") {
   sources = [ "image_carousel_view.cc" ]
-  public_deps = [
-    ":image_carousel_view",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":image_carousel_view" ]
   deps = [
+    ":web_apps",
     "//chrome/app:generated_resources",
     "//chrome/app/vector_icons",
     "//chrome/browser/ui:browser_element_identifiers",
@@ -340,11 +338,9 @@ source_set("create_shortcut_confirmation_view") {
 
 source_set("create_shortcut_confirmation_view_impl") {
   sources = [ "create_shortcut_confirmation_view.cc" ]
-  public_deps = [
-    ":create_shortcut_confirmation_view",
-    "//chrome/browser:browser_public_dependencies",
-  ]
+  public_deps = [ ":create_shortcut_confirmation_view" ]
   deps = [
+    ":web_apps",
     "//chrome/app:generated_resources",
     "//chrome/browser/ui/views:layout_provider",
     "//chrome/browser/ui/web_applications",

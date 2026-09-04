@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/version.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -76,6 +77,17 @@ std::unique_ptr<views::Label> CreateParentNameLabel(
   parent_app_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   parent_app_label->SetMultiLine(false);
   return parent_app_label;
+}
+
+std::u16string NormalizeSuggestedAppTitle(const std::u16string& title) {
+  std::u16string normalized = title;
+  if (base::StartsWith(normalized, u"https://")) {
+    normalized = normalized.substr(8);
+  }
+  if (base::StartsWith(normalized, u"http://")) {
+    normalized = normalized.substr(7);
+  }
+  return normalized;
 }
 
 }  // namespace web_app
