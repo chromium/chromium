@@ -72,7 +72,14 @@ optimization_guide::proto::PageContext ToPageContext(
 }
 
 // Returns whether the page content cache is enabled.
-bool IsPageContentCacheEnabled(feature_engagement::Tracker* tracker) {
+bool IsPageContentCacheEnabled(feature_engagement::Tracker* tracker,
+                               os_crypt_async::OSCryptAsync* os_crypt_async,
+                               const base::FilePath& profile_path) {
+  // Should only be hit in testing.
+  if (!os_crypt_async || profile_path.empty()) {
+    return false;
+  }
+
   bool enabled = base::FeatureList::IsEnabled(features::kPageContentCache);
 
 #if BUILDFLAG(IS_ANDROID)
@@ -154,7 +161,8 @@ PageContentExtractionService::PageContentExtractionService(
     os_crypt_async::OSCryptAsync* os_crypt_async,
     const base::FilePath& profile_path,
     feature_engagement::Tracker* tracker)
-    : is_page_content_cache_enabled_(IsPageContentCacheEnabled(tracker)),
+    : is_page_content_cache_enabled_(
+          IsPageContentCacheEnabled(tracker, os_crypt_async, profile_path)),
       page_content_cache_handler_(
           CreatePageContentCacheHandler(is_page_content_cache_enabled_,
                                         os_crypt_async,
