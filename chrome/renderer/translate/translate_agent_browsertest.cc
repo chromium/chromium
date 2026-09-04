@@ -16,11 +16,13 @@
 #include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "components/language_detection/core/constants.h"
 #include "components/translate/content/common/translate.mojom.h"
+#include "components/translate/core/common/translate_features.h"
 #include "components/translate/core/common/translate_util.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/renderer/render_frame.h"
@@ -674,7 +676,10 @@ TEST_F(TranslateAgentBrowserTest, PdfUnsupportedTranslateSchemes) {
   ASSERT_FALSE(fake_translate_driver_.called_new_page_);
 }
 
-TEST_F(TranslateAgentBrowserTest, PageCapturedPdfIgnored) {
+TEST_F(TranslateAgentBrowserTest, PageCapturedPdfIgnoredWhenFeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(translate::kEnableTranslatePdf);
+
   LoadHTML("<html><body>A random page with random content.</body></html>");
   base::RunLoop().RunUntilIdle();
 
@@ -694,7 +699,36 @@ TEST_F(TranslateAgentBrowserTest, PageCapturedPdfIgnored) {
   translate_agent_->PageCaptured(contents);
   base::RunLoop().RunUntilIdle();
 
-  // PageCaptured should return early and not register page.
+  // With kEnableTranslatePdf enabled, PageCaptured should return early and not
+  // register page.
   EXPECT_FALSE(fake_translate_driver_.called_new_page_);
+}
+
+TEST_F(TranslateAgentBrowserTest, PageCapturedPdfNotIgnoredWhenFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(translate::kEnableTranslatePdf);
+
+  LoadHTML("<html><body>A random page with random content.</body></html>");
+  base::RunLoop().RunUntilIdle();
+
+  fake_translate_driver_.ResetNewPageValues();
+
+  // Manually override the MIME type to application/pdf.
+  auto* main_frame = GetMainFrame();
+  auto* doc_loader = main_frame->GetDocumentLoader();
+  ASSERT_TRUE(doc_loader);
+  const_cast<blink::WebURLResponse&>(doc_loader->GetWebResponse())
+      .SetMimeType(blink::WebString::FromUtf8("application/pdf"));
+
+  // Call PageCaptured directly.
+  scoped_refptr<const base::RefCountedString16> contents =
+      base::MakeRefCounted<const base::RefCountedString16>(
+          u"A random page with random content.");
+  translate_agent_->PageCaptured(contents);
+  base::RunLoop().RunUntilIdle();
+
+  // With kEnableTranslatePdf disabled (default), PageCaptured should NOT return
+  // early, allowing language detection and page registration.
+  EXPECT_TRUE(fake_translate_driver_.called_new_page_);
 }
 #endif
