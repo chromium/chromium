@@ -27,8 +27,8 @@
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
-#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#if BUILDFLAG(IS_CHROMEOS)
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -40,6 +40,7 @@
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #endif
+#include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
@@ -49,6 +50,7 @@
 #include "chrome/browser/ui/views/app_menu/action_app_menu_zoom_view.h"
 #include "chrome/browser/ui/views/app_menu/bookmarks_dynamic_menu.h"
 #include "chrome/browser/ui/views/app_menu/recent_tabs_dynamic_menu.h"
+#include "chrome/browser/ui/views/app_menu/send_tab_to_self_dynamic_menu.h"
 #include "chrome/browser/ui/views/app_menu/tab_group_dynamic_menu.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
@@ -59,6 +61,8 @@
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
+#include "components/send_tab_to_self/entry_point_display_reason.h"
+#include "components/send_tab_to_self/features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "extensions/buildflags/buildflags.h"
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -348,7 +352,9 @@ ActionAppMenuManager::ActionAppMenuManager(
       bookmarks_menu_(
           std::make_unique<BookmarksDynamicMenu>(browser_window_interface)),
       tab_groups_menu_(
-          std::make_unique<TabGroupDynamicMenu>(browser_window_interface)) {}
+          std::make_unique<TabGroupDynamicMenu>(browser_window_interface)),
+      send_tab_to_self_menu_(std::make_unique<SendTabToSelfDynamicMenu>(
+          browser_window_interface)) {}
 
 ActionAppMenuManager::~ActionAppMenuManager() = default;
 
@@ -599,9 +605,33 @@ void ActionAppMenuManager::AddToolsAndActionsActions(
             sharing_hub::DesktopScreenshotsFeatureEnabled(profile)) {
           sub.AddDivider();
           if (!sharing_hub::SharingIsDisabledByPolicy(profile)) {
-            sub.AddAction(kActionCopyUrl)
-                .AddAction(kActionSendTabToSelf)
-                .AddAction(kActionQrCodeGenerator);
+            sub.AddAction(kActionCopyUrl);
+
+            content::WebContents* web_contents =
+                browser_window_interface_->GetTabStripModel()
+                    ? browser_window_interface_->GetTabStripModel()
+                          ->GetActiveWebContents()
+                    : nullptr;
+            std::optional<send_tab_to_self::EntryPointDisplayReason> reason =
+                web_contents
+                    ? send_tab_to_self::GetEntryPointDisplayReason(web_contents)
+                    : std::nullopt;
+
+            if (web_contents &&
+                base::FeatureList::IsEnabled(
+                    send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2) &&
+                reason ==
+                    send_tab_to_self::EntryPointDisplayReason::kOfferFeature) {
+              sub.AddDynamicSubmenu(
+                  kActionSendTabToSelf,
+                  base::BindRepeating(
+                      &SendTabToSelfDynamicMenu::BuildSendTabToSelfActions,
+                      send_tab_to_self_menu_->GetWeakPtr()));
+            } else {
+              sub.AddAction(kActionSendTabToSelf);
+            }
+
+            sub.AddAction(kActionQrCodeGenerator);
           }
           if (sharing_hub::DesktopScreenshotsFeatureEnabled(profile)) {
             sub.AddAction(kActionSharingHubScreenshot);

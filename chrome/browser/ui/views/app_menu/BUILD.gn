@@ -19,6 +19,7 @@ source_set("app_menu") {
     "action_app_menu_zoom_view.h",
     "bookmarks_dynamic_menu.h",
     "recent_tabs_dynamic_menu.h",
+    "send_tab_to_self_dynamic_menu.h",
     "tab_group_dynamic_menu.h",
   ]
 
@@ -32,6 +33,8 @@ source_set("app_menu") {
     "//chrome/browser/ui/tabs/saved_tab_groups",
     "//chrome/browser/ui/views",
     "//components/favicon_base",
+    "//components/send_tab_to_self",
+    "//components/sync_device_info",
     "//components/user_education/common",
     "//components/zoom",
     "//skia",
@@ -54,6 +57,7 @@ source_set("impl") {
     "action_app_menu_zoom_view.cc",
     "bookmarks_dynamic_menu.cc",
     "recent_tabs_dynamic_menu.cc",
+    "send_tab_to_self_dynamic_menu.cc",
     "tab_group_dynamic_menu.cc",
   ]
 
@@ -78,6 +82,7 @@ source_set("impl") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search",
     "//chrome/browser/search_engines",
+    "//chrome/browser/send_tab_to_self",
     "//chrome/browser/sessions",
     "//chrome/browser/sharing_hub",
     "//chrome/browser/sync",
@@ -90,6 +95,7 @@ source_set("impl") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/lens",
+    "//chrome/browser/ui/send_tab_to_self",
     "//chrome/browser/ui/tabs:tab_group",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/tabs/saved_tab_groups",
@@ -100,6 +106,7 @@ source_set("impl") {
     "//chrome/browser/ui/web_applications",
     "//chrome/browser/ui/webui/side_panel/customize_chrome:customize_chrome_ui",
     "//chrome/browser/ui/webui/whats_new",
+    "//chrome/browser/user_education",
     "//components/bookmarks/browser",
     "//components/bookmarks/common",
     "//components/favicon/core",

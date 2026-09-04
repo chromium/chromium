@@ -20,6 +20,7 @@
 class RecentTabsDynamicMenu;
 class BookmarksDynamicMenu;
 class TabGroupDynamicMenu;
+class SendTabToSelfDynamicMenu;
 
 // Manages the ActionItem hierarchy for the Action App Menu, including
 // constructing the menu tree and managing dynamic submenus.
@@ -82,6 +83,7 @@ class ActionAppMenuManager {
   std::unique_ptr<RecentTabsDynamicMenu> recent_tabs_menu_;
   std::unique_ptr<BookmarksDynamicMenu> bookmarks_menu_;
   std::unique_ptr<TabGroupDynamicMenu> tab_groups_menu_;
+  std::unique_ptr<SendTabToSelfDynamicMenu> send_tab_to_self_menu_;
 };
 
 DECLARE_UI_CLASS_PROPERTY_TYPE(ActionAppMenuManager::DisplayType)
