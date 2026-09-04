@@ -4297,7 +4297,6 @@ targets.bundle(
     targets = [
         # arm64 tests are the arm tests + Graphite equivalents.
         "gpu_fyi_android_arm_release_telemetry_tests",
-        "gpu_webcodecs_validating_graphite_telemetry_test",
         "gpu_webgl_conformance_gles_passthrough_graphite_telemetry_tests",
         "gpu_webgl_conformance_validating_graphite_telemetry_tests",
         "gpu_webrtc_validating_graphite_telemetry_test",
@@ -4309,6 +4308,7 @@ targets.bundle(
         "expected_color_pixel_passthrough_graphite_test",
         "pixel_skia_gold_passthrough_graphite_test",
         "screenshot_sync_passthrough_graphite_tests",
+        "webcodecs_graphite_tests",
     ],
 )
 
@@ -4727,13 +4727,6 @@ targets.bundle(
             ],
         ),
     },
-)
-
-targets.bundle(
-    name = "gpu_webcodecs_validating_graphite_telemetry_test",
-    targets = [
-        "webcodecs_graphite_tests",
-    ],
 )
 
 targets.bundle(
