@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/pwc/pwc_component_policy.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_trigger_type.h"
@@ -19,6 +20,10 @@ class BrowserContext;
 class NavigationHandle;
 class WebContents;
 }  // namespace content
+
+namespace input {
+struct NativeWebKeyboardEvent;
+}  // namespace input
 
 namespace pwc {
 
@@ -80,6 +85,24 @@ class PrivilegedWebContents : public content::WebContentsDelegate,
     return unowned_user_data_host_;
   }
 
+  // Optional embedder delegate for forwarding non-security WebContentsDelegate
+  // callbacks (e.g. keyboard events and zoom changes) to UI embedders.
+  // The registered delegate must either outlive `PrivilegedWebContents` or call
+  // `SetEmbedderDelegate(nullptr)` prior to its destruction.
+  class EmbedderDelegate {
+   public:
+    virtual ~EmbedderDelegate() = default;
+    virtual bool HandleKeyboardEvent(
+        content::WebContents* source,
+        const input::NativeWebKeyboardEvent& event);
+    virtual void ContentsZoomChange(bool zoom_in);
+  };
+
+  void SetEmbedderDelegate(EmbedderDelegate* delegate) {
+    embedder_delegate_ = delegate;
+  }
+  EmbedderDelegate* embedder_delegate() const { return embedder_delegate_; }
+
   // content::WebContentsDelegate:
   // Privileged content never prerenders: a prerendered page is activated into
   // the primary main frame without running navigation throttles, which would
@@ -100,6 +123,9 @@ class PrivilegedWebContents : public content::WebContentsDelegate,
       const blink::mojom::WindowFeatures& window_features,
       bool user_gesture,
       bool* was_blocked) override;
+  bool HandleKeyboardEvent(content::WebContents* source,
+                           const input::NativeWebKeyboardEvent& event) override;
+  void ContentsZoomChange(bool zoom_in) override;
 
   // content::WebContentsObserver:
   // Disables the back-forward cache for every committed document, so a
@@ -117,6 +143,7 @@ class PrivilegedWebContents : public content::WebContentsDelegate,
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<PwcApiBinder> bridge_;
   ui::UnownedUserDataHost unowned_user_data_host_;
+  raw_ptr<EmbedderDelegate> embedder_delegate_ = nullptr;
 };
 
 }  // namespace pwc

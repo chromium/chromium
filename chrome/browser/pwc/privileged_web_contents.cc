@@ -104,6 +104,15 @@ PrivilegedWebContents::~PrivilegedWebContents() {
   web_contents_.reset();
 }
 
+bool PrivilegedWebContents::EmbedderDelegate::HandleKeyboardEvent(
+    content::WebContents* source,
+    const input::NativeWebKeyboardEvent& event) {
+  return false;
+}
+
+void PrivilegedWebContents::EmbedderDelegate::ContentsZoomChange(bool zoom_in) {
+}
+
 content::PreloadingEligibility PrivilegedWebContents::IsPrerender2Supported(
     content::WebContents& web_contents,
     content::PreloadingTriggerType trigger_type) {
@@ -125,6 +134,21 @@ content::WebContents* PrivilegedWebContents::AddNewContents(
   // (ChromeContentBrowserClient::CanCreateWindow), so a new WebContents should
   // never be handed to this delegate. Drop it loudly if it ever is.
   NOTREACHED();
+}
+
+bool PrivilegedWebContents::HandleKeyboardEvent(
+    content::WebContents* source,
+    const input::NativeWebKeyboardEvent& event) {
+  if (embedder_delegate_) {
+    return embedder_delegate_->HandleKeyboardEvent(source, event);
+  }
+  return false;
+}
+
+void PrivilegedWebContents::ContentsZoomChange(bool zoom_in) {
+  if (embedder_delegate_) {
+    embedder_delegate_->ContentsZoomChange(zoom_in);
+  }
 }
 
 void PrivilegedWebContents::DidFinishNavigation(
