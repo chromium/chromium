@@ -68,6 +68,7 @@ if (is_chromeos) {
       "//chrome/browser/ui/webui/ash/login",
       "//chrome/common",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_test_scoped_utils",
       "//chromeos/ash/components/dbus",
       "//chromeos/ash/components/system",
       "//content/public/browser",

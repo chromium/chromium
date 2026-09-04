@@ -201,7 +201,7 @@ source_set("unit_tests") {
     "//chrome/common:constants",
     "//chrome/common/printing",
     "//chrome/services/printing/public/mojom",
-    "//chrome/test:test_support",
+    "//chrome/test/base:chrome_test_scoped_utils",
     "//components/account_id",
     "//components/enterprise/buildflags",
     "//components/prefs",

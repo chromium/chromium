@@ -239,6 +239,7 @@ if (!is_android) {
       "//chrome/browser/ui/webui/cr_components/theme_color_picker",
       "//chrome/browser/user_education",
       "//chrome/test:test_support",
+      "//chrome/test/base:chrome_test_scoped_utils",
       "//chrome/test/user_education:impl",
       "//components/feature_engagement/test:test_support",
       "//components/ntp_tiles:pref_names",
