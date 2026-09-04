@@ -176,6 +176,16 @@ void HashPrefixMap::GetPrefixInfo(
   }
 }
 
+std::vector<base::FilePath> HashPrefixMap::GetPaths() const {
+  std::vector<base::FilePath> paths;
+  for (const auto& [size, file_info] : map_) {
+    if (file_info.IsReadable()) {
+      paths.push_back(file_info.GetPath());
+    }
+  }
+  return paths;
+}
+
 const std::string& HashPrefixMap::GetExtensionForTesting(PrefixSize size) {
   return GetFileInfo(size).GetExtensionForTesting();  // IN-TEST
 }

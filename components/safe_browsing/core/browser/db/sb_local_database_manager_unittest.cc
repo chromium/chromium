@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -240,6 +241,9 @@ class FakeSBStore : public SBStore {
   }
   std::string GetMetricPrefix() const override { return "Fake"; }
   const std::string& GetStoreState() const override { return state_; }
+  std::vector<base::FilePath> GetPathsInUse() const override {
+    return {store_path_};
+  }
 
  private:
   std::string state_ = "state";

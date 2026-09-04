@@ -542,6 +542,14 @@ void V5Store::Reset() {
   file_size_ = 0;
 }
 
+std::vector<base::FilePath> V5Store::GetPathsInUse() const {
+  std::vector<base::FilePath> paths{store_path_};
+  for (const auto& path : hash_prefix_list_->GetPaths()) {
+    paths.push_back(path);
+  }
+  return paths;
+}
+
 bool V5Store::VerifyChecksum() {
   base::ElapsedThreadTimer thread_timer;
   CHECK(task_runner_->RunsTasksInCurrentSequence());

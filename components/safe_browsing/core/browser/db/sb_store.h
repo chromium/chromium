@@ -332,6 +332,10 @@ class SBStore {
 
   int64_t file_size() const { return file_size_; }
 
+  // Returns all file paths currently in use on disk by this store, including
+  // the main store file and all active hash prefix files.
+  virtual std::vector<base::FilePath> GetPathsInUse() const = 0;
+
   // Records (in kilobytes) and returns the size of the file on disk for this
   // store using `base_metric` as prefix and the filename as suffix.
   virtual int64_t RecordAndReturnFileSize(const std::string& base_metric);

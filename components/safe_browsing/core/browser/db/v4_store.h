@@ -210,6 +210,8 @@ class V4Store : public SBStore {
 
   const std::string& GetStoreState() const override;
 
+  std::vector<base::FilePath> GetPathsInUse() const override;
+
  protected:
   std::string GetMetricPrefix() const override;
 

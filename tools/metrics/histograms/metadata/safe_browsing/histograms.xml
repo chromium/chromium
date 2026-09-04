@@ -3763,6 +3763,50 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.UnusedStoresCleanup.FileCount.{CountType}"
+    units="files" expires_after="2027-02-07">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logged on startup when at least one unused store or stale hash file is found
+    and cleanup is performed in SBDatabase. Records the total number of
+    {CountType} during the cleanup pass. Not logged if there are no unused store
+    files to clean up.
+  </summary>
+  <token key="CountType">
+    <variant name="ActiveRemaining"
+        summary="active store and hash files remaining on disk"/>
+    <variant name="Cleaned"
+        summary="unrecognized store and stale hash files successfully deleted
+                 from disk"/>
+    <variant name="DeleteFailed"
+        summary="unrecognized store and stale hash files that failed to be
+                 deleted from disk"/>
+  </token>
+</histogram>
+
+<histogram name="SafeBrowsing.UnusedStoresCleanup.Needed" enum="Boolean"
+    expires_after="2027-02-07">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logged on startup when the store cleanup pass runs in SBDatabase. Records
+    true if at least one unused store or stale hash file was found and needed to
+    be deleted from disk, or false if no unused files were found.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.UnusedStoresCleanup.Time" units="ms"
+    expires_after="2027-02-07">
+  <owner>thefrog@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logged once on startup when the store cleanup pass runs in SBDatabase,
+    regardless of whether any unused store files were found. Records the time
+    taken to check for and delete unused store and hash files from disk.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.URTAndBackgroundHPRT.Result"
     enum="URTAndBackgroundHPRTResult" expires_after="2026-02-01">
   <owner>zackhan@chromium.org</owner>

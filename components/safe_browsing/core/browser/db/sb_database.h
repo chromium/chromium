@@ -162,6 +162,11 @@ class SBDatabase {
   // with the combined size of all the stores.
   void RecordFileSizeHistograms();
 
+  // Deletes any *.store* files in `base_path` that are not currently in use by
+  // any of the active stores in this database.
+  // `base_path`: The directory containing the store files.
+  void DeleteUnusedStoreFiles(const base::FilePath& base_path);
+
   // Populates the DatabaseInfo message of the safe_browsing_page proto.
   void CollectDatabaseInfo(DatabaseManagerInfo::DatabaseInfo* database_info);
 

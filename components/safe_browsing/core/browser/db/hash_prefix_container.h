@@ -131,9 +131,13 @@ class HashPrefixContainer {
 
     const std::string& GetExtensionForTesting() const;
 
+    // Returns the file path for this FileInfo.
+    base::FilePath GetPath() const;
+
    private:
     const base::FilePath store_path_;
     const PrefixSize prefix_size_;
+    std::string extension_;
 
     base::MemoryMappedFile file_;
     std::unique_ptr<BufferedFileWriter> writer_;
@@ -170,6 +174,12 @@ class HashPrefixContainer {
       google::protobuf::RepeatedPtrField<
           DatabaseManagerInfo::DatabaseInfo::StoreInfo::PrefixSet>*
           prefix_sets) = 0;
+
+  // Returns all active hash prefix file paths currently managed by this
+  // container.
+  // TODO(crbug.com/372395685): This just returns a single item once v4 is
+  // deprecated, so stop returning a vector.
+  virtual std::vector<base::FilePath> GetPaths() const = 0;
 
   // Generates the file path for a hash prefix file.
   // `store_path`: The base path of the store file.

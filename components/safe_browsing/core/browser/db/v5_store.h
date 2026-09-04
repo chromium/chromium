@@ -175,6 +175,8 @@ class V5Store : public SBStore {
                    const scoped_refptr<base::SequencedTaskRunner>& runner,
                    UpdatedStoreReadyCallback callback) override;
 
+  std::vector<base::FilePath> GetPathsInUse() const override;
+
  protected:
   std::string GetMetricPrefix() const override;
 

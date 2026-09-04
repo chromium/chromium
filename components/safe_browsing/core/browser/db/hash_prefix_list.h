@@ -83,6 +83,7 @@ class HashPrefixList : public HashPrefixContainer {
   void GetPrefixInfo(google::protobuf::RepeatedPtrField<
                      DatabaseManagerInfo::DatabaseInfo::StoreInfo::PrefixSet>*
                          prefix_sets) override;
+  std::vector<base::FilePath> GetPaths() const override;
 
   // Returns a flat string view of all the hash prefixes in this list.
   // The prefixes are concatenated in sorted order.

@@ -154,8 +154,9 @@ bool HashPrefixContainer::FileInfo::Initialize(const std::string& extension,
                                                uint64_t expected_file_size,
                                                bool initialize_after_write,
                                                std::string_view metric_prefix) {
+  extension_ = extension;
   // Make sure file size is correct before attempting to mmap.
-  base::FilePath path = GetPath(store_path_, extension);
+  base::FilePath path = HashPrefixContainer::GetPath(store_path_, extension);
   std::optional<int64_t> actual_file_size = base::GetFileSize(path);
   if (!actual_file_size.has_value()) {
     if (initialize_after_write) {
@@ -261,6 +262,10 @@ const std::string& HashPrefixContainer::FileInfo::GetExtensionForTesting()
 
 bool HashPrefixContainer::FileInfo::IsReadable() const {
   return file_.IsValid();
+}
+
+base::FilePath HashPrefixContainer::FileInfo::GetPath() const {
+  return HashPrefixContainer::GetPath(store_path_, extension_);
 }
 
 // static

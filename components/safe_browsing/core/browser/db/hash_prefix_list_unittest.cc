@@ -24,10 +24,13 @@
 #include "components/safe_browsing/core/browser/db/hash_prefix_container.h"
 #include "components/safe_browsing/core/browser/db/sb_store_file_format.h"
 #include "components/safe_browsing/core/common/proto/v5_store.pb.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/platform_test.h"
 
 namespace safe_browsing {
 namespace {
+
+using ::testing::ElementsAre;
 
 class HashPrefixListTest : public PlatformTest {
  public:
@@ -472,6 +475,26 @@ TEST_F(HashPrefixListTest, ReadFileEmptyExtensionFileExists) {
 
   // Cleanup
   base::DeleteFile(GetBasePath());
+}
+
+TEST_F(HashPrefixListTest, GetPaths) {
+  HashPrefixList list(GetBasePath(), 4);
+  // Before any prefixes are added, GetPaths() should be empty.
+  EXPECT_TRUE(list.GetPaths().empty());
+
+  list.Append(4, "fooo");
+  // Before WriteToDisk(), the file info is created for writing but not
+  // readable.
+  EXPECT_TRUE(list.GetPaths().empty());
+
+  V5StoreFileFormat file_format;
+  SBStoreFileFormat sb_file_format(&file_format);
+  EXPECT_TRUE(list.WriteToDisk(sb_file_format));
+
+  // After WriteToDisk(), the file is readable.
+  EXPECT_THAT(
+      list.GetPaths(),
+      ElementsAre(GetPath(file_format.list_details().hash_file().extension())));
 }
 
 }  // namespace

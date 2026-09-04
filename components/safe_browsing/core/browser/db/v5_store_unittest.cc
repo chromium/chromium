@@ -29,6 +29,9 @@
 
 namespace safe_browsing {
 
+using ::testing::ElementsAre;
+using ::testing::UnorderedElementsAre;
+
 class V5StoreTest : public PlatformTest {
  public:
   V5StoreTest() = default;
@@ -2774,6 +2777,41 @@ TEST_F(V5StoreTest, UpdateCategory_PartialUpdate) {
   ApplyUpdateAndVerifyCategory(
       *static_cast<V5Store*>(updated_store.get()), /*is_partial_update=*/true,
       SafeBrowsingUpdateCategory::kRegularPartialUpdate, "v5_version_2");
+}
+
+TEST_F(V5StoreTest, GetPathsInUse) {
+  V5Store store(task_runner(), store_path_, /*prefix_size=*/4, v4_store_path_,
+                /*is_eligible_for_v4_to_v5_disk_migration=*/true,
+                /*is_extensions_blocklist=*/false);
+  // Before hash prefix list is loaded, GetPathsInUse() returns just the store
+  // path.
+  EXPECT_THAT(store.GetPathsInUse(), ElementsAre(store_path_));
+
+  // Write main proto and hash file.
+  V5StoreFileFormat file_format;
+  file_format.set_magic_number(0x600D71FE);
+  file_format.set_file_version(10);
+  ListDetails* list_details = file_format.mutable_list_details();
+  list_details->set_version("test_version");
+  V5HashFile* hash_file = list_details->mutable_hash_file();
+  hash_file->set_extension("foo");
+  hash_file->set_file_size(4);
+
+  std::string data = "abcd";
+  std::array<uint8_t, crypto::hash::kSha256Size> checksum;
+  crypto::hash::Hash(crypto::hash::HashKind::kSha256, base::as_byte_span(data),
+                     checksum);
+  list_details->mutable_checksum()->set_sha256(
+      std::string(reinterpret_cast<char*>(checksum.data()), checksum.size()));
+
+  base::WriteFile(store_path_, file_format.SerializeAsString());
+  base::WriteFile(store_path_.AddExtensionASCII("foo"), data);
+
+  store.Initialize();
+  EXPECT_TRUE(store.HasValidData());
+  EXPECT_THAT(
+      store.GetPathsInUse(),
+      UnorderedElementsAre(store_path_, store_path_.AddExtensionASCII("foo")));
 }
 
 }  // namespace safe_browsing

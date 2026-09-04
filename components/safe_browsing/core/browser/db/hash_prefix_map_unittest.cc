@@ -22,6 +22,7 @@ namespace safe_browsing {
 namespace {
 
 using ::testing::ElementsAre;
+using ::testing::UnorderedElementsAre;
 
 class HashPrefixMapTest : public PlatformTest {
  public:
@@ -308,6 +309,28 @@ TEST_F(HashPrefixMapTest, ExtensionFormat) {
   std::string numeric_part = extension.substr(2);
   uint64_t microsecond_timestamp;
   EXPECT_TRUE(base::StringToUint64(numeric_part, &microsecond_timestamp));
+}
+
+TEST_F(HashPrefixMapTest, GetPaths) {
+  HashPrefixMap map(GetBasePath());
+  // Before any files are added, GetPaths() should be empty.
+  EXPECT_TRUE(map.GetPaths().empty());
+
+  map.Append(4, "fooo");
+  map.Append(2, "ba");
+  // Before WriteToDisk(), the file infos are created for writing but not
+  // readable.
+  EXPECT_TRUE(map.GetPaths().empty());
+
+  V4StoreFileFormat file_format;
+  SBStoreFileFormat sb_file_format(&file_format);
+  EXPECT_TRUE(map.WriteToDisk(sb_file_format));
+
+  // After WriteToDisk(), the files are readable.
+  EXPECT_THAT(
+      map.GetPaths(),
+      UnorderedElementsAre(GetPath(file_format.hash_files(0).extension()),
+                           GetPath(file_format.hash_files(1).extension())));
 }
 
 }  // namespace

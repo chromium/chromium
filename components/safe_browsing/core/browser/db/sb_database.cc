@@ -8,7 +8,9 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/flat_set.h"
 #include "base/debug/crash_logging.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -197,6 +199,10 @@ void SBDatabase::CreateOnTaskRunner(
 
   std::unique_ptr<SBDatabase, base::OnTaskRunnerDeleter> sb_database =
       GetDatabaseFactory()->Create(db_task_runner, std::move(store_map));
+
+  if (base::FeatureList::IsEnabled(kSafeBrowsingDeleteUnusedStores)) {
+    sb_database->DeleteUnusedStoreFiles(base_path);
+  }
 
   // Database is done loading, pass it to the new_db_callback on the caller's
   // thread. This would unblock resource loads.
@@ -466,6 +472,59 @@ void SBDatabase::RecordDatabaseUpdateLatency() {
         base::Time::Now() - last_update_, kUmaMinTime, kUmaMaxTime,
         kUmaNumBuckets);
   }
+}
+
+void SBDatabase::DeleteUnusedStoreFiles(const base::FilePath& base_path) {
+  CHECK(db_task_runner_->RunsTasksInCurrentSequence());
+  base::ScopedUmaHistogramTimer timer("SafeBrowsing.UnusedStoresCleanup.Time");
+
+  base::flat_set<base::FilePath> paths_in_use;
+  for (const auto& [list_id, store] : *store_map_) {
+    for (const base::FilePath& path : store->GetPathsInUse()) {
+      paths_in_use.insert(path);
+    }
+  }
+
+  std::vector<base::FilePath> files_to_delete;
+  int active_store_files_remaining_count = 0;
+  base::FileEnumerator enumerator(base_path, /*recursive=*/false,
+                                  base::FileEnumerator::FILES,
+                                  FILE_PATH_LITERAL("*.store*"));
+  for (base::FilePath file_path = enumerator.Next(); !file_path.empty();
+       file_path = enumerator.Next()) {
+    if (paths_in_use.contains(file_path)) {
+      active_store_files_remaining_count++;
+    } else {
+      files_to_delete.push_back(file_path);
+    }
+  }
+
+  bool is_cleanup_needed = !files_to_delete.empty();
+  base::UmaHistogramBoolean("SafeBrowsing.UnusedStoresCleanup.Needed",
+                            is_cleanup_needed);
+  if (!is_cleanup_needed) {
+    return;
+  }
+
+  int files_cleaned_count = 0;
+  int files_failed_to_delete_count = 0;
+  for (const base::FilePath& file_path : files_to_delete) {
+    if (base::DeleteFile(file_path)) {
+      files_cleaned_count++;
+    } else {
+      files_failed_to_delete_count++;
+    }
+  }
+
+  base::UmaHistogramCounts100(
+      "SafeBrowsing.UnusedStoresCleanup.FileCount.Cleaned",
+      files_cleaned_count);
+  base::UmaHistogramCounts100(
+      "SafeBrowsing.UnusedStoresCleanup.FileCount.DeleteFailed",
+      files_failed_to_delete_count);
+  base::UmaHistogramCounts100(
+      "SafeBrowsing.UnusedStoresCleanup.FileCount.ActiveRemaining",
+      active_store_files_remaining_count);
 }
 
 void SBDatabase::CollectDatabaseInfo(

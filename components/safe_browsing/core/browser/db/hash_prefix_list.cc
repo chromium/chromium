@@ -186,6 +186,14 @@ void HashPrefixList::GetPrefixInfo(
   }
 }
 
+std::vector<base::FilePath> HashPrefixList::GetPaths() const {
+  std::vector<base::FilePath> paths;
+  if (file_info_ && file_info_->IsReadable()) {
+    paths.push_back(file_info_->GetPath());
+  }
+  return paths;
+}
+
 HashPrefixList::FileInfo& HashPrefixList::GetFileInfo() {
   if (!file_info_) {
     file_info_ = std::make_unique<FileInfo>(store_path_, prefix_size_);

@@ -30,6 +30,7 @@ namespace safe_browsing {
 
 using ::google::protobuf::RepeatedField;
 using ::google::protobuf::RepeatedPtrField;
+using ::testing::ElementsAre;
 using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
 
@@ -2650,6 +2651,41 @@ TEST_F(V4StoreTest, UpdateCategory_PostMigrationPartialUpdate) {
   ApplyUpdateAndVerifyCategory(
       store, /*is_partial_update=*/true,
       SafeBrowsingUpdateCategory::kPostMigrationPartialUpdate);
+}
+
+TEST_F(V4StoreTest, GetPathsInUse) {
+  V4Store store(task_runner(), store_path_, /*v5_prefix_size=*/4,
+                /*is_eligible_for_migration=*/true,
+                /*is_extensions_blocklist=*/false);
+  // Before hash prefix map is loaded, GetPathsInUse() returns just the store
+  // path.
+  EXPECT_THAT(store.GetPathsInUse(), ElementsAre(store_path_));
+
+  // Write a valid store format proto with hash files.
+  V4StoreFileFormat file_format;
+  auto* hash_file1 = file_format.add_hash_files();
+  hash_file1->set_prefix_size(4);
+  hash_file1->set_extension("foo");
+  hash_file1->set_file_size(4);
+  base::WriteFile(HashPrefixMap::GetPath(store_path_, "foo"), "abcd");
+
+  auto* hash_file2 = file_format.add_hash_files();
+  hash_file2->set_prefix_size(2);
+  hash_file2->set_extension("bar");
+  hash_file2->set_file_size(2);
+  base::WriteFile(HashPrefixMap::GetPath(store_path_, "bar"), "ab");
+
+  ListUpdateResponse list_update_response;
+  list_update_response.set_platform_type(LINUX_PLATFORM);
+  list_update_response.set_response_type(ListUpdateResponse::FULL_UPDATE);
+  WriteFileFormatProtoToFile(&file_format, /*magic=*/0x600D71FE,
+                             /*version=*/9, &list_update_response);
+
+  EXPECT_EQ(READ_SUCCESS, ReadFromDisk(store));
+  EXPECT_THAT(store.GetPathsInUse(),
+              UnorderedElementsAre(store_path_,
+                                   HashPrefixMap::GetPath(store_path_, "foo"),
+                                   HashPrefixMap::GetPath(store_path_, "bar")));
 }
 
 }  // namespace safe_browsing

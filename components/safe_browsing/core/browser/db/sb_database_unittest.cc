@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/core/browser/db/sb_database.h"
 
+#include <optional>
 #include <unordered_map>
 #include <utility>
 
@@ -263,12 +264,23 @@ class SBDatabaseTest : public PlatformTest {
 class SBDatabaseTest_V4V5 : public SBDatabaseTest,
                             public ::testing::WithParamInterface<bool> {
  public:
-  SBDatabaseTest_V4V5() {
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(kLocalListsUseSBv5);
+  SBDatabaseTest_V4V5()
+      : SBDatabaseTest_V4V5(/*enable_delete_unused_stores=*/true) {}
+
+  explicit SBDatabaseTest_V4V5(bool enable_delete_unused_stores) {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (IsV5Enabled()) {
+      enabled_features.push_back(kLocalListsUseSBv5);
     } else {
-      feature_list_.InitAndDisableFeature(kLocalListsUseSBv5);
+      disabled_features.push_back(kLocalListsUseSBv5);
     }
+    if (enable_delete_unused_stores) {
+      enabled_features.push_back(kSafeBrowsingDeleteUnusedStores);
+    } else {
+      disabled_features.push_back(kSafeBrowsingDeleteUnusedStores);
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   bool IsV5Enabled() const { return GetParam(); }
@@ -358,8 +370,112 @@ class SBDatabaseTest_V4V5 : public SBDatabaseTest,
     return update_map;
   }
 
+  // Helper to test startup cleanup behavior under various feature and file
+  // configurations.
+  void RunStartupInactiveStoreFilesCleanupTest(
+      bool create_unused_files,
+      bool expect_unused_files_deleted,
+      bool expect_time_recorded,
+      std::optional<bool> expected_cleanup_needed_sample) {
+    base::HistogramTester histogram_tester;
+    RegisterFactory();
+
+    ASSERT_FALSE(expected_store_paths_.empty());
+    ASSERT_TRUE(base::CreateDirectory(database_dirname_));
+
+    // Create active store files on disk.
+    for (const auto& expected_path : expected_store_paths_) {
+      ASSERT_TRUE(base::WriteFile(expected_path, "active_store"));
+    }
+
+    base::FilePath deprecated_store =
+        database_dirname_.AppendASCII("CertCsdDownloadAllowlist.store");
+    base::FilePath deprecated_store_hash =
+        database_dirname_.AppendASCII("CertCsdDownloadAllowlist.store.0");
+    base::FilePath ip_malware_store =
+        database_dirname_.AppendASCII("IpMalware.store");
+    base::FilePath stale_hash =
+        expected_store_paths_[0].AddExtensionASCII("old_ext");
+    base::FilePath non_store_file =
+        database_dirname_.AppendASCII("unrelated_file.txt");
+
+    if (create_unused_files) {
+      ASSERT_TRUE(base::WriteFile(deprecated_store, "deprecated"));
+      ASSERT_TRUE(base::WriteFile(deprecated_store_hash, "deprecated_hash"));
+      ASSERT_TRUE(base::WriteFile(ip_malware_store, "ip_malware"));
+      ASSERT_TRUE(base::WriteFile(stale_hash, "stale_hash"));
+      ASSERT_TRUE(base::WriteFile(non_store_file, "unrelated"));
+    }
+
+    WaitForSBDatabaseReady(CreateTaskRunner(),
+                           /*simple_task_runners_to_wait_for=*/{});
+
+    // Active store files should always exist.
+    for (const auto& expected_path : expected_store_paths_) {
+      EXPECT_TRUE(base::PathExists(expected_path));
+    }
+
+    if (create_unused_files) {
+      // Unrelated non-store file should never be touched by cleanup.
+      EXPECT_TRUE(base::PathExists(non_store_file));
+
+      if (expect_unused_files_deleted) {
+        EXPECT_FALSE(base::PathExists(deprecated_store));
+        EXPECT_FALSE(base::PathExists(deprecated_store_hash));
+        EXPECT_FALSE(base::PathExists(ip_malware_store));
+        EXPECT_FALSE(base::PathExists(stale_hash));
+      } else {
+        EXPECT_TRUE(base::PathExists(deprecated_store));
+        EXPECT_TRUE(base::PathExists(deprecated_store_hash));
+        EXPECT_TRUE(base::PathExists(ip_malware_store));
+        EXPECT_TRUE(base::PathExists(stale_hash));
+      }
+    }
+
+    histogram_tester.ExpectTotalCount("SafeBrowsing.UnusedStoresCleanup.Time",
+                                      expect_time_recorded ? 1 : 0);
+
+    if (expected_cleanup_needed_sample.has_value()) {
+      histogram_tester.ExpectUniqueSample(
+          "SafeBrowsing.UnusedStoresCleanup.Needed",
+          /*sample=*/expected_cleanup_needed_sample.value(),
+          /*expected_bucket_count=*/1);
+    } else {
+      histogram_tester.ExpectTotalCount(
+          "SafeBrowsing.UnusedStoresCleanup.Needed", 0);
+    }
+
+    if (expect_unused_files_deleted) {
+      histogram_tester.ExpectUniqueSample(
+          "SafeBrowsing.UnusedStoresCleanup.FileCount.Cleaned", /*sample=*/4,
+          /*expected_bucket_count=*/1);
+      histogram_tester.ExpectUniqueSample(
+          "SafeBrowsing.UnusedStoresCleanup.FileCount.DeleteFailed",
+          /*sample=*/0, /*expected_bucket_count=*/1);
+      histogram_tester.ExpectUniqueSample(
+          "SafeBrowsing.UnusedStoresCleanup.FileCount.ActiveRemaining",
+          /*sample=*/expected_store_paths_.size(),
+          /*expected_bucket_count=*/1);
+    } else {
+      histogram_tester.ExpectTotalCount(
+          "SafeBrowsing.UnusedStoresCleanup.FileCount.Cleaned", 0);
+      histogram_tester.ExpectTotalCount(
+          "SafeBrowsing.UnusedStoresCleanup.FileCount.DeleteFailed", 0);
+      histogram_tester.ExpectTotalCount(
+          "SafeBrowsing.UnusedStoresCleanup.FileCount.ActiveRemaining", 0);
+    }
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
+};
+
+// Fixture for testing behavior when kSafeBrowsingDeleteUnusedStores is
+// disabled.
+class SBDatabaseTest_DeleteUnusedStoresDisabled : public SBDatabaseTest_V4V5 {
+ public:
+  SBDatabaseTest_DeleteUnusedStoresDisabled()
+      : SBDatabaseTest_V4V5(/*enable_delete_unused_stores=*/false) {}
 };
 
 // Test to set up the database with fake stores.
@@ -594,6 +710,31 @@ TEST_P(SBDatabaseTest_V4V5, VerifyChecksumCalledAsync) {
   // asynchronously.
   EXPECT_FALSE(verify_checksum_future.IsReady());
   EXPECT_TRUE(verify_checksum_future.Wait());
+}
+
+TEST_P(SBDatabaseTest_V4V5, DeleteUnusedStoreFilesOnStartup) {
+  RunStartupInactiveStoreFilesCleanupTest(
+      /*create_unused_files=*/true,
+      /*expect_unused_files_deleted=*/true,
+      /*expect_time_recorded=*/true,
+      /*expected_cleanup_needed_sample=*/true);
+}
+
+TEST_P(SBDatabaseTest_V4V5, DeleteUnusedStoreFilesOnStartup_NoUnusedFiles) {
+  RunStartupInactiveStoreFilesCleanupTest(
+      /*create_unused_files=*/false,
+      /*expect_unused_files_deleted=*/false,
+      /*expect_time_recorded=*/true,
+      /*expected_cleanup_needed_sample=*/false);
+}
+
+TEST_P(SBDatabaseTest_DeleteUnusedStoresDisabled,
+       UnusedStoreFilesNotDeletedWhenFeatureDisabled) {
+  RunStartupInactiveStoreFilesCleanupTest(
+      /*create_unused_files=*/true,
+      /*expect_unused_files_deleted=*/false,
+      /*expect_time_recorded=*/false,
+      /*expected_cleanup_needed_sample=*/std::nullopt);
 }
 
 TEST_P(SBDatabaseTest_V4V5, VerifyChecksumCancelled) {
@@ -1020,5 +1161,8 @@ TEST(SBDatabaseListInfoTest, TestNonSyncProperties) {
 }
 
 INSTANTIATE_TEST_SUITE_P(All, SBDatabaseTest_V4V5, ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         SBDatabaseTest_DeleteUnusedStoresDisabled,
+                         ::testing::Bool());
 
 }  // namespace safe_browsing

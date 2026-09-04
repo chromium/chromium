@@ -14,9 +14,11 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -34,7 +36,9 @@
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/thread_test_helper.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -74,6 +78,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/security_interstitials/core/controller_client.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -617,6 +622,82 @@ class SBSafeBrowsingServiceTestBase : public InProcessBrowserTest {
 #endif
 };
 
+// Parameterized fixture for testing startup cleanup of unused Safe Browsing
+// store files.
+class SBSafeBrowsingServiceCleanupTest
+    : public SBSafeBrowsingServiceTestBase,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  SBSafeBrowsingServiceCleanupTest()
+      : SBSafeBrowsingServiceTestBase(/*use_v5=*/GetParam(),
+                                      /*enable_warning_shown_reports=*/true) {}
+
+  // Initializes the user data directory with dummy and active store files
+  // before the browser and SafeBrowsingService start.
+  bool SetUpUserDataDirectory() override {
+    base::FilePath user_data_dir;
+    CHECK(base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir));
+    base::FilePath sb_dir =
+        user_data_dir.Append(safe_browsing::kSafeBrowsingBaseFilename);
+    CHECK(base::CreateDirectory(sb_dir));
+
+    active_store_ = sb_dir.AppendASCII(use_v5() ? "UrlMalware_v5.store"
+                                                : "UrlMalware.store");
+    deprecated_store_ = sb_dir.AppendASCII("CertCsdDownloadAllowlist.store");
+    deprecated_store_hash_ =
+        sb_dir.AppendASCII("CertCsdDownloadAllowlist.store.0");
+    ip_malware_store_ = sb_dir.AppendASCII("IpMalware.store");
+    stale_hash_ = sb_dir.AppendASCII(use_v5() ? "UrlMalware_v5.store.stale"
+                                              : "UrlMalware.store.stale");
+    unrelated_file_ = sb_dir.AppendASCII("unrelated.txt");
+
+    CHECK(base::WriteFile(active_store_, "active"));
+    CHECK(base::WriteFile(deprecated_store_, "deprecated"));
+    CHECK(base::WriteFile(deprecated_store_hash_, "deprecated_hash"));
+    CHECK(base::WriteFile(ip_malware_store_, "ip_malware"));
+    CHECK(base::WriteFile(stale_hash_, "stale_hash"));
+    CHECK(base::WriteFile(unrelated_file_, "unrelated"));
+
+    return SBSafeBrowsingServiceTestBase::SetUpUserDataDirectory();
+  }
+
+ protected:
+  // File path for an active store that should be preserved.
+  base::FilePath active_store_;
+  // File path for a deprecated store that should be deleted.
+  base::FilePath deprecated_store_;
+  // File path for a deprecated store hash file that should be deleted.
+  base::FilePath deprecated_store_hash_;
+  // File path for another deprecated store that should be deleted.
+  base::FilePath ip_malware_store_;
+  // File path for a stale hash file that should be deleted.
+  base::FilePath stale_hash_;
+  // File path for an unrelated file that should be preserved.
+  base::FilePath unrelated_file_;
+};
+
+IN_PROC_BROWSER_TEST_P(SBSafeBrowsingServiceCleanupTest,
+                       DeleteUnusedStoreFilesOnStartup) {
+  // Wait for the database to complete startup initialization (which includes
+  // the cleanup pass).
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return safe_browsing_service()->database_manager()->IsDatabaseReady();
+  }));
+
+  // Required for `base::PathExists` calls below.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  // Confirm dummy / deprecated and stale store files are gone.
+  EXPECT_FALSE(base::PathExists(deprecated_store_));
+  EXPECT_FALSE(base::PathExists(deprecated_store_hash_));
+  EXPECT_FALSE(base::PathExists(ip_malware_store_));
+  EXPECT_FALSE(base::PathExists(stale_hash_));
+
+  // Confirm active store files and unrelated files are still present.
+  EXPECT_TRUE(base::PathExists(active_store_));
+  EXPECT_TRUE(base::PathExists(unrelated_file_));
+}
+
 // Parameterized fixture for SafeBrowsingService tests running with v4 and v5
 // lists.
 class SBSafeBrowsingServiceTest : public SBSafeBrowsingServiceTestBase,
@@ -1078,6 +1159,10 @@ IN_PROC_BROWSER_TEST_P(SBSafeBrowsingServiceTest,
 // END: These tests use SafeBrowsingService::Client to directly interact with
 // SafeBrowsingService.
 ///////////////////////////////////////////////////////////////////////////////
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SBSafeBrowsingServiceCleanupTest,
+                         ::testing::Bool());
 
 INSTANTIATE_TEST_SUITE_P(All, SBSafeBrowsingServiceTest, ::testing::Bool());
 

@@ -111,6 +111,8 @@ class HashPrefixMap : public HashPrefixContainer {
                      DatabaseManagerInfo::DatabaseInfo::StoreInfo::PrefixSet>*
                          prefix_sets) override;
 
+  std::vector<base::FilePath> GetPaths() const override;
+
   const std::string& GetExtensionForTesting(PrefixSize size);
   void ClearAndWaitForTesting();
 
