@@ -441,10 +441,7 @@ const Extension* DeveloperPrivateAPIFunction::GetEnabledExtensionById(
 }
 
 DeveloperPrivateAPIFunction::ResponseValue
-DeveloperPrivateAPIFunction::LogNoSuchExtensionFoundAndReturn() {
-  base::UmaHistogramSparse(
-      "Extensions.Functions.DeveloperPrivate.NoSuchExtensionErrorThrown",
-      histogram_value());
+DeveloperPrivateAPIFunction::NoSuchExtensionError() {
   return Error(ErrorUtils::FormatErrorMessage(kNoSuchExtensionError, name()));
 }
 
@@ -530,7 +527,7 @@ DeveloperPrivateGetExtensionInfoFunction::Run() {
 void DeveloperPrivateGetExtensionInfoFunction::OnInfosGenerated(
     ExtensionInfoGenerator::ExtensionInfoList list) {
   DCHECK_LE(1u, list.size());
-  Respond(list.empty() ? LogNoSuchExtensionFoundAndReturn()
+  Respond(list.empty() ? NoSuchExtensionError()
                        : WithArguments(list[0].ToValue()));
 }
 
@@ -548,7 +545,7 @@ DeveloperPrivateGetExtensionSizeFunction::Run() {
 
   const Extension* extension = GetExtensionById(params->id);
   if (!extension) {
-    return RespondNow(LogNoSuchExtensionFoundAndReturn());
+    return RespondNow(NoSuchExtensionError());
   }
 
   extensions::path_util::CalculateAndFormatExtensionDirectorySize(
@@ -633,7 +630,7 @@ DeveloperPrivateOpenReviewPageFunction::Run() {
 
   const Extension* extension = GetExtensionById(params->extension_id);
   if (!extension) {
-    return RespondNow(LogNoSuchExtensionFoundAndReturn());
+    return RespondNow(NoSuchExtensionError());
   }
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
@@ -669,7 +666,7 @@ DeveloperPrivateUpdateExtensionConfigurationFunction::Run() {
 
   const Extension* extension = GetExtensionById(update.extension_id);
   if (!extension) {
-    return RespondNow(LogNoSuchExtensionFoundAndReturn());
+    return RespondNow(NoSuchExtensionError());
   }
 
   // The chrome://extensions page uses toggles which, when dragged, do not
@@ -690,7 +687,7 @@ DeveloperPrivateUpdateExtensionConfigurationFunction::Run() {
                              *update.file_access);
     extension = GetExtensionById(update.extension_id);
     if (!extension) {
-      return RespondNow(LogNoSuchExtensionFoundAndReturn());
+      return RespondNow(NoSuchExtensionError());
     }
   }
   if (update.incognito_access) {
@@ -700,7 +697,7 @@ DeveloperPrivateUpdateExtensionConfigurationFunction::Run() {
                                 *update.incognito_access);
     extension = GetExtensionById(update.extension_id);
     if (!extension) {
-      return RespondNow(LogNoSuchExtensionFoundAndReturn());
+      return RespondNow(NoSuchExtensionError());
     }
   }
   if (update.user_scripts_access) {
@@ -785,7 +782,7 @@ ExtensionFunction::ResponseAction DeveloperPrivateReloadFunction::Run() {
 
   const Extension* extension = GetExtensionById(params->extension_id);
   if (!extension) {
-    return RespondNow(LogNoSuchExtensionFoundAndReturn());
+    return RespondNow(NoSuchExtensionError());
   }
 
   reloading_extension_path_ = extension->path();
@@ -1187,7 +1184,7 @@ ExtensionFunction::ResponseAction DeveloperPrivateShowOptionsFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   const Extension* extension = GetEnabledExtensionById(params->extension_id);
   if (!extension) {
-    return RespondNow(LogNoSuchExtensionFoundAndReturn());
+    return RespondNow(NoSuchExtensionError());
   }
 
   if (OptionsPageInfo::GetOptionsPage(extension).is_empty()) {
@@ -1211,7 +1208,7 @@ ExtensionFunction::ResponseAction DeveloperPrivateShowPathFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   const Extension* extension = GetExtensionById(params->extension_id);
   if (!extension) {
-    return RespondNow(LogNoSuchExtensionFoundAndReturn());
+    return RespondNow(NoSuchExtensionError());
   }
 
   // We explicitly show manifest.json in order to work around an issue in OSX
@@ -1279,7 +1276,7 @@ DeveloperPrivateAddHostPermissionFunction::Run() {
 
   const Extension* extension = GetExtensionById(params->extension_id);
   if (!extension) {
-    return RespondNow(LogNoSuchExtensionFoundAndReturn());
+    return RespondNow(NoSuchExtensionError());
   }
 
   if (!PermissionsManager::Get(browser_context())
@@ -1325,7 +1322,7 @@ DeveloperPrivateRemoveHostPermissionFunction::Run() {
 
   const Extension* extension = GetExtensionById(params->extension_id);
   if (!extension) {
-    return RespondNow(LogNoSuchExtensionFoundAndReturn());
+    return RespondNow(NoSuchExtensionError());
   }
 
   PermissionsManager* manager = PermissionsManager::Get(browser_context());
@@ -1656,7 +1653,7 @@ DeveloperPrivateUpdateSiteAccessFunction::Run() {
   for (const auto& update : params->updates) {
     const Extension* extension = GetExtensionById(update.id);
     if (!extension) {
-      return RespondNow(LogNoSuchExtensionFoundAndReturn());
+      return RespondNow(NoSuchExtensionError());
     }
     if (!permissions_manager->CanAffectExtension(*extension)) {
       return RespondNow(Error(kCannotChangeHostPermissions));
@@ -2028,7 +2025,7 @@ DeveloperPrivateRequestFileSourceFunction::Run() {
       params_->properties;
   const Extension* extension = GetExtensionById(properties.extension_id);
   if (!extension) {
-    return RespondNow(LogNoSuchExtensionFoundAndReturn());
+    return RespondNow(NoSuchExtensionError());
   }
 
   // Under no circumstances should we ever need to reference a file outside of
@@ -2057,7 +2054,7 @@ void DeveloperPrivateRequestFileSourceFunction::Finish(
       params_->properties;
   const Extension* extension = GetExtensionById(properties.extension_id);
   if (!extension) {
-    Respond(LogNoSuchExtensionFoundAndReturn());
+    Respond(NoSuchExtensionError());
     return;
   }
 
@@ -2115,7 +2112,7 @@ ExtensionFunction::ResponseAction DeveloperPrivateOpenDevToolsFunction::Run() {
       properties.is_service_worker && *properties.is_service_worker;
   if (is_service_worker) {
     if (!extension) {
-      return RespondNow(LogNoSuchExtensionFoundAndReturn());
+      return RespondNow(NoSuchExtensionError());
     }
     if (!BackgroundInfo::IsServiceWorkerBased(extension)) {
       return RespondNow(Error(kInvalidLazyBackgroundPageParameter));
@@ -2134,7 +2131,7 @@ ExtensionFunction::ResponseAction DeveloperPrivateOpenDevToolsFunction::Run() {
   if (properties.render_process_id == -1) {
     // This is for a lazy background page.
     if (!extension) {
-      return RespondNow(LogNoSuchExtensionFoundAndReturn());
+      return RespondNow(NoSuchExtensionError());
     }
     if (!BackgroundInfo::HasLazyBackgroundPage(extension)) {
       return RespondNow(Error(kInvalidRenderProcessId));
@@ -2208,7 +2205,7 @@ DeveloperPrivateRepairExtensionFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   const Extension* extension = GetExtensionById(params->extension_id);
   if (!extension) {
-    return RespondNow(LogNoSuchExtensionFoundAndReturn());
+    return RespondNow(NoSuchExtensionError());
   }
 
   if (!ExtensionPrefs::Get(browser_context())
