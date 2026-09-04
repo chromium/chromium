@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_icon/cr_icon.js';
-import '//resources/cr_elements/cr_lottie/cr_lottie.js';
+import '//resources/cr_components/cr_lottie/cr_lottie.js';
 import './fingerprint_icons.html.js';
 
+import type {CrLottieElement} from '//resources/cr_components/cr_lottie/cr_lottie.js';
 import type {CrIconElement} from '//resources/cr_elements/cr_icon/cr_icon.js';
-import type {CrLottieElement} from '//resources/cr_elements/cr_lottie/cr_lottie.js';
 import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';

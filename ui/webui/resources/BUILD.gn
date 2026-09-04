@@ -55,6 +55,7 @@ generate_grd("build_grd") {
     public_deps += [
       "cr_components/app_management:build_grdp",
       "cr_components/color_change_listener:build_grdp",
+      "cr_components/cr_lottie:build_grdp",
       "cr_components/cr_shortcut_input:build_grdp",
       "cr_components/customize_color_scheme_mode:build_grdp",
       "cr_components/history:build_grdp",
@@ -77,6 +78,7 @@ generate_grd("build_grd") {
       "$root_gen_dir/ui/webui/resources/cr_components/color_change_listener/resources.grdp",
       "$root_gen_dir/ui/webui/resources/cr_components/page_image_service/resources.grdp",
       "$target_gen_dir/cr_components/app_management/resources.grdp",
+      "$target_gen_dir/cr_components/cr_lottie/resources.grdp",
       "$target_gen_dir/cr_components/cr_shortcut_input/resources.grdp",
       "$target_gen_dir/cr_components/customize_color_scheme_mode/resources.grdp",
       "$target_gen_dir/cr_components/history_clusters/resources.grdp",
@@ -169,6 +171,7 @@ if (enable_webui_generate_code_cache) {
       "$target_gen_dir/cr_elements/code_cache_resources.grdp",
       "$target_gen_dir/cr_components/color_change_listener/code_cache_resources.grdp",
       "$target_gen_dir/cr_components/commerce/code_cache_resources.grdp",
+      "$target_gen_dir/cr_components/cr_lottie/code_cache_resources.grdp",
       "$target_gen_dir/cr_components/customize_color_scheme_mode/code_cache_resources.grdp",
       "$target_gen_dir/cr_components/help_bubble/code_cache_resources.grdp",
       "$target_gen_dir/cr_components/managed_dialog/code_cache_resources.grdp",
@@ -178,6 +181,7 @@ if (enable_webui_generate_code_cache) {
     public_deps = [
       "cr_components/color_change_listener:build_code_cache_grdp",
       "cr_components/commerce:build_code_cache_grdp",
+      "cr_components/cr_lottie:build_code_cache_grdp",
       "cr_components/customize_color_scheme_mode:build_code_cache_grdp",
       "cr_components/help_bubble:build_code_cache_grdp",
       "cr_components/managed_dialog:build_code_cache_grdp",

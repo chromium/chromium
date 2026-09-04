@@ -4,12 +4,12 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import 'chrome://resources/cr_elements/cr_lottie/cr_lottie.js';
+import 'chrome://resources/cr_components/cr_lottie/cr_lottie.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import '/strings.m.js';
 
+import type {CrLottieElement} from 'chrome://resources/cr_components/cr_lottie/cr_lottie.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import type {CrLottieElement} from 'chrome://resources/cr_elements/cr_lottie/cr_lottie.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
