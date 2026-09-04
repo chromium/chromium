@@ -4971,7 +4971,9 @@ void RenderFrameImpl::DidCreateScriptContext(v8::Local<v8::Context> context,
             blink::features::kUnboundedElementOnTheOpenWeb) ||
         enabled_bindings_.Has(BindingsPolicyValue::kWebUi) ||
         (GetWebFrame() && !GetWebFrame()->GetSecurityOrigin().IsNull() &&
-         GetWebFrame()->GetSecurityOrigin().IsWebUI());
+         GetWebFrame()->GetSecurityOrigin().IsWebUI() &&
+         GetWebFrame()->GetSecurityOrigin().Protocol() !=
+             kChromeUIUntrustedScheme);
     if (is_unbounded_allowed) {
       blink::WebV8Features::EnableUnboundedElement(context, true);
     }

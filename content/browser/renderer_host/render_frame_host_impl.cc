@@ -11514,7 +11514,8 @@ RenderFrameHostImpl::GetUnboundedElementAuth() const {
   if (!base::FeatureList::IsEnabled(blink::features::kUnboundedElement)) {
     return UnboundedElementAuth::kDenied;
   }
-  if (web_ui() != nullptr || HasWebUIOrigin(GetLastCommittedOrigin())) {
+  if (GetLastCommittedOrigin().scheme() != kChromeUIUntrustedScheme &&
+      (web_ui() != nullptr || HasWebUIOrigin(GetLastCommittedOrigin()))) {
     return UnboundedElementAuth::kAllowedPrivileged;
   }
   if (base::FeatureList::IsEnabled(
