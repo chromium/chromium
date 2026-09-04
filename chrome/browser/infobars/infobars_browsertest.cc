@@ -48,6 +48,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog_controller.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/base/window_open_disposition.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -73,6 +74,11 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "sandbox/policy/switches.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/api/identity/web_auth_flow.h"
+#include "chrome/browser/extensions/api/identity/web_auth_flow_info_bar_delegate.h"
+#endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "chrome/browser/plugins/reload_plugin_infobar_delegate.h"
@@ -237,6 +243,9 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
           {"page_info", IBD::PAGE_INFO_INFOBAR_DELEGATE},
           {"automation", IBD::AUTOMATION_INFOBAR_DELEGATE},
           {"tab_sharing", IBD::TAB_SHARING_INFOBAR_DELEGATE},
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+          {"web_auth_flow", IBD::EXTENSIONS_WEB_AUTH_FLOW_INFOBAR_DELEGATE},
+#endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
           {"session_restore", IBD::SESSION_RESTORE_INFOBAR_DELEGATE},
@@ -464,6 +473,24 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       break;
 #endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    case IBD::EXTENSIONS_WEB_AUTH_FLOW_INFOBAR_DELEGATE:
+      if (infobars::IsInfoBarMigrated(
+              infobars::InfoBarDelegate::
+                  EXTENSIONS_WEB_AUTH_FLOW_INFOBAR_DELEGATE)) {
+        auto* browser_infobar_manager =
+            infobars::BrowserInfoBarManager::From(g_browser_process);
+        CHECK(browser_infobar_manager);
+        browser_infobar_manager->Show(
+            GetTab(), infobars::InfoBarDelegate::
+                          EXTENSIONS_WEB_AUTH_FLOW_INFOBAR_DELEGATE);
+      } else {
+        extensions::WebAuthFlowInfoBarDelegate::Create(GetWebContents(),
+                                                       "Test Extension");
+      }
+      break;
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
     default:
       ADD_FAILURE() << "Unhandled infobar " << name;
       break;
@@ -594,6 +621,12 @@ IN_PROC_BROWSER_TEST_P(InfoBarUiTest, MAYBE_InvokeUi_tab_sharing) {
 IN_PROC_BROWSER_TEST_P(InfoBarUiTest, MAYBE_InvokeUi_multiple_infobars) {
   ShowAndVerifyUi();
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+IN_PROC_BROWSER_TEST_P(InfoBarUiTest, InvokeUi_web_auth_flow) {
+  ShowAndVerifyUi();
+}
+#endif
 
 INSTANTIATE_TEST_SUITE_P(All,
                          InfoBarUiTest,

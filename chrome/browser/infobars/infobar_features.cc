@@ -114,6 +114,11 @@ BASE_FEATURE_PARAM(bool,
                    &kCentralizedInfoBarFramework,
                    false);
 
+BASE_FEATURE_PARAM(bool,
+                   kMigratedWebAuthFlow,
+                   &kCentralizedInfoBarFramework,
+                   false);
+
 const base::FeatureParam<bool>* GetInfoBarMigrationParam(
     InfoBarDelegate::InfoBarIdentifier infobar_id) {
   switch (infobar_id) {
@@ -159,6 +164,8 @@ const base::FeatureParam<bool>* GetInfoBarMigrationParam(
       return &kMigratedSessionRestore;
     case InfoBarDelegate::INSTALLATION_ERROR_INFOBAR_DELEGATE:
       return &kMigratedInstallationError;
+    case InfoBarDelegate::EXTENSIONS_WEB_AUTH_FLOW_INFOBAR_DELEGATE:
+      return &kMigratedWebAuthFlow;
     default:
       return nullptr;
   }

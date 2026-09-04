@@ -26,6 +26,10 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Profile;
 
+namespace infobars {
+class BrowserInfoBarManager;
+}
+
 namespace base {
 class OneShotTimer;
 class TickClock;
@@ -123,12 +127,12 @@ class WebAuthFlow : public content::WebContentsObserver,
   // Prevents further calls to the delegate and deletes the flow.
   void DetachDelegateAndDelete();
 
+  // Registers the InfoBarSpec for EXTENSIONS_WEB_AUTH_FLOW_INFOBAR_DELEGATE.
+  static void RegisterInfoBar(infobars::BrowserInfoBarManager& infobar_manager);
+
   // This call will make the interactive mode, that opens up a browser tab for
   // auth, display an Infobar that shows the extension name.
   void SetShouldShowInfoBar(const std::string& extension_display_name);
-
-  // Returns nullptr if the InfoBar is not displayed.
-  base::WeakPtr<WebAuthFlowInfoBarDelegate> GetInfoBarDelegateForTesting();
 
 #if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
   void OnBrowserWindowInterfaceInitialized(BrowserWindowInterface* browser);

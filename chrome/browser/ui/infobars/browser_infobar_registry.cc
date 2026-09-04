@@ -39,6 +39,7 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/api/debugger/debugger_api.h"
+#include "chrome/browser/extensions/api/identity/web_auth_flow.h"
 #endif
 
 #include "components/omnibox/browser/vector_icons.h"
@@ -253,6 +254,11 @@ void RegisterInfoBars() {
             .AddOkButton(std::u16string(), base::DoNothing())
             .Build();
     browser_infobar_manager->Register(std::move(spec));
+  }
+
+  if (IsInfoBarMigrated(
+          InfoBarDelegate::EXTENSIONS_WEB_AUTH_FLOW_INFOBAR_DELEGATE)) {
+    extensions::WebAuthFlow::RegisterInfoBar(*browser_infobar_manager);
   }
 #endif
 

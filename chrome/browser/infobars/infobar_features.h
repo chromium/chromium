@@ -38,6 +38,7 @@ BASE_DECLARE_FEATURE_PARAM(bool, kMigratedThemeInstalled);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedExtensionDevTools);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedSessionRestore);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedInstallationError);
+BASE_DECLARE_FEATURE_PARAM(bool, kMigratedWebAuthFlow);
 
 // Returns true if the centralization framework is enabled and the specified
 // infobar is configured to be migrated.

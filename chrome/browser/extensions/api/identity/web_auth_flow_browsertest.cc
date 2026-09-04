@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/extensions/api/identity/web_auth_flow_info_bar_delegate.h"
 #include "chrome/browser/extensions/browser_window_util.h"
+#include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -24,6 +25,9 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/test/browser_event_waiter.h"
 #include "chrome/test/base/platform_browser_test.h"
+#include "components/infobars/content/content_infobar_manager.h"
+#include "components/infobars/core/confirm_infobar_delegate.h"
+#include "components/infobars/core/infobar.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -143,6 +147,25 @@ class WebAuthFlowBrowserTest : public PlatformBrowserTest {
       return nullptr;
     }
     return web_auth_flow_->web_contents();
+  }
+
+  ConfirmInfoBarDelegate* GetInfoBarDelegate() {
+    if (!web_contents()) {
+      return nullptr;
+    }
+    auto* manager =
+        infobars::ContentInfoBarManager::FromWebContents(web_contents());
+    if (!manager) {
+      return nullptr;
+    }
+    for (infobars::InfoBar* infobar : manager->infobars()) {
+      if (infobar->delegate()->GetIdentifier() ==
+          infobars::InfoBarDelegate::
+              EXTENSIONS_WEB_AUTH_FLOW_INFOBAR_DELEGATE) {
+        return infobar->delegate()->AsConfirmInfoBarDelegate();
+      }
+    }
+    return nullptr;
   }
 
   BrowserWindowInterface* GetFirstActivatedBrowser() {
@@ -488,6 +511,24 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowFencedFrameTest,
       embedded_test_server()->GetURL("/error"), net::Error::ERR_FAILED));
 }
 
+class WebAuthFlowInfoBarBrowserTest : public WebAuthFlowBrowserTest,
+                                      public testing::WithParamInterface<bool> {
+ protected:
+  WebAuthFlowInfoBarBrowserTest() {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeatureWithParameters(
+          infobars::kCentralizedInfoBarFramework,
+          {{infobars::kMigratedWebAuthFlow.name, "true"}});
+    } else {
+      feature_list_.InitAndDisableFeature(
+          infobars::kCentralizedInfoBarFramework);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // This test is in two parts:
 // - First create a WebAuthFlow in interactive mode that will create a popup
 // window with the auth_url.
@@ -495,7 +536,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowFencedFrameTest,
 //
 // These two tests are combined into one in order not to re-test the window
 // creation twice.
-IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest,
+IN_PROC_BROWSER_TEST_P(WebAuthFlowInfoBarBrowserTest,
                        InteractivePopupWindowCreatedWithAuthURL_ThenCloseTab) {
   const GURL auth_url = embedded_test_server()->GetURL("/title1.html");
   WebAuthFlowTestNavigationObserver navigation_observer(auth_url);
@@ -503,7 +544,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest,
   EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url));
   StartWebAuthFlow(auth_url, WebAuthFlow::Mode::INTERACTIVE);
 
-  const char extension_name[] = "extension_name";
+  const std::string extension_name = "extension_name";
   web_auth_flow()->SetShouldShowInfoBar(extension_name);
 
   navigation_observer.WaitForWindow(web_auth_flow());
@@ -517,14 +558,14 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest,
             auth_url);
 
   // Check info bar exists and displays proper message with extension name.
-  base::WeakPtr<WebAuthFlowInfoBarDelegate> infobar_delegate =
-      web_auth_flow()->GetInfoBarDelegateForTesting();
-  EXPECT_TRUE(infobar_delegate);
+  ConfirmInfoBarDelegate* infobar_delegate = GetInfoBarDelegate();
+  ASSERT_TRUE(infobar_delegate);
   EXPECT_EQ(
       infobar_delegate->GetIdentifier(),
       infobars::InfoBarDelegate::EXTENSIONS_WEB_AUTH_FLOW_INFOBAR_DELEGATE);
-  EXPECT_TRUE(infobar_delegate->GetMessageText().find(
-      base::UTF8ToUTF16(std::string(extension_name))));
+  EXPECT_NE(infobar_delegate->GetMessageText().find(
+                base::UTF8ToUTF16(extension_name)),
+            std::u16string::npos);
 
   //---------------------------------------------------------------------
   // Part of the test that closes the tab, simulating declining the consent.
@@ -532,6 +573,13 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest,
   EXPECT_CALL(mock(), OnAuthFlowFailure(WebAuthFlow::Failure::WINDOW_CLOSED));
   tabs->GetActiveTab()->Close();
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         WebAuthFlowInfoBarBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Migrated" : "Legacy";
+                         });
 
 IN_PROC_BROWSER_TEST_F(
     WebAuthFlowBrowserTest,
@@ -553,10 +601,7 @@ IN_PROC_BROWSER_TEST_F(
   //---------------------------------------------------------------------
   testing::Mock::VerifyAndClearExpectations(&mock());
 
-  // Keeping a reference to the info bar delegate to check later.
-  base::WeakPtr<WebAuthFlowInfoBarDelegate> auth_info_bar =
-      web_auth_flow()->GetInfoBarDelegateForTesting();
-  ASSERT_TRUE(auth_info_bar);
+  ASSERT_TRUE(GetInfoBarDelegate());
 
   BrowserWindowInterface* popup_browser =
       browser_window_util::GetBrowserForTabContents(*web_contents());
@@ -588,7 +633,7 @@ IN_PROC_BROWSER_TEST_F(
             popup_browser);
 
   // Infobar should not be closed on navigation.
-  EXPECT_TRUE(auth_info_bar);
+  EXPECT_TRUE(GetInfoBarDelegate());
 }
 
 // These tests run into Android's background activity launch restrictions.
@@ -716,9 +761,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest,
 
   // Check info bar is not created if not set via
   // `SetShouldShowInfoBar())`.
-  base::WeakPtr<WebAuthFlowInfoBarDelegate> infobar_delegate =
-      web_auth_flow()->GetInfoBarDelegateForTesting();
-  EXPECT_FALSE(infobar_delegate);
+  EXPECT_FALSE(GetInfoBarDelegate());
 }
 
 IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest,

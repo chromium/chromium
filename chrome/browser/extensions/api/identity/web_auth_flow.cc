@@ -5,39 +5,49 @@
 #include "chrome/browser/extensions/api/identity/web_auth_flow.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
+#include <vector>
 
-#include "base/feature_list.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/identity/web_auth_flow_info_bar_delegate.h"
 #include "chrome/browser/extensions/browser_window_util.h"
+#include "chrome/browser/infobars/browser_infobar_manager.h"
+#include "chrome/browser/infobars/infobar_features.h"
+#include "chrome/browser/infobars/infobar_spec.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/sessions/core/session_id.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "extensions/browser/ui_util.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/base/base_window.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #else
@@ -159,14 +169,67 @@ void WebAuthFlow::DetachDelegateAndDelete() {
                                                                 this);
 }
 
+// static
+void WebAuthFlow::RegisterInfoBar(
+    infobars::BrowserInfoBarManager& infobar_manager) {
+  auto spec =
+      infobars::InfoBarSpec::Builder(
+          infobars::InfoBarDelegate::EXTENSIONS_WEB_AUTH_FLOW_INFOBAR_DELEGATE)
+          .SetMessageTextTemplate(l10n_util::GetStringUTF16(
+              IDS_EXTENSION_LAUNCH_WEB_AUTH_FLOW_TAB_INFO_BAR_TEXT))
+          .SetScope(infobars::InfoBarScope::kTab)
+          .SetExpireOnNavigation(false)
+          .Build();
+  infobar_manager.Register(std::move(spec));
+}
+
 void WebAuthFlow::DisplayInfoBar() {
   DCHECK(web_contents());
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (infobars::IsInfoBarMigrated(
+          infobars::InfoBarDelegate::
+              EXTENSIONS_WEB_AUTH_FLOW_INFOBAR_DELEGATE)) {
+    auto* browser_infobar_manager =
+        infobars::BrowserInfoBarManager::From(g_browser_process);
+    CHECK(browser_infobar_manager);
+    auto* tab = tabs::TabInterface::MaybeGetFromContents(web_contents());
+    if (tab) {
+      infobars::InfoBarShowParams params;
+      params.substitutions = {MessageSubstitution(
+          ui_util::GetFixupExtensionNameForUIDisplay(
+              info_bar_parameters_.extension_display_name),
+          /*is_link=*/false, /*accessible_name=*/std::nullopt)};
+      browser_infobar_manager->Show(
+          tab,
+          infobars::InfoBarDelegate::EXTENSIONS_WEB_AUTH_FLOW_INFOBAR_DELEGATE,
+          std::move(params));
+    }
+    return;
+  }
+#endif
 
   info_bar_delegate_ = WebAuthFlowInfoBarDelegate::Create(
       web_contents(), info_bar_parameters_.extension_display_name);
 }
 
 void WebAuthFlow::CloseInfoBar() {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (infobars::IsInfoBarMigrated(
+          infobars::InfoBarDelegate::
+              EXTENSIONS_WEB_AUTH_FLOW_INFOBAR_DELEGATE)) {
+    if (web_contents()) {
+      auto* browser_infobar_manager =
+          infobars::BrowserInfoBarManager::From(g_browser_process);
+      CHECK(browser_infobar_manager);
+      browser_infobar_manager->Hide(
+          web_contents(),
+          infobars::InfoBarDelegate::EXTENSIONS_WEB_AUTH_FLOW_INFOBAR_DELEGATE);
+    }
+    return;
+  }
+#endif
+
   if (info_bar_delegate_) {
     info_bar_delegate_->CloseInfoBar();
   }
@@ -435,11 +498,6 @@ void WebAuthFlow::SetShouldShowInfoBar(
     const std::string& extension_display_name) {
   info_bar_parameters_.should_show = true;
   info_bar_parameters_.extension_display_name = extension_display_name;
-}
-
-base::WeakPtr<WebAuthFlowInfoBarDelegate>
-WebAuthFlow::GetInfoBarDelegateForTesting() {
-  return info_bar_delegate_;
 }
 
 }  // namespace extensions

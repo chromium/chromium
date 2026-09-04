@@ -35,6 +35,7 @@ source_set("infobars") {
 
   if (enable_extensions) {
     deps += [ "//chrome/browser/extensions/api/debugger" ]
+    deps += [ "//chrome/browser/extensions" ]
   }
 
   if (is_win || is_mac) {
