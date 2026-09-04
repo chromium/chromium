@@ -301,20 +301,8 @@ void ContextualSearchboxScreenshareController::OnNativePickerSourceSelected(
 
   std::optional<RegionCaptureSource> region_source;
   if (is_region_capture) {
-    if (selected_source.display_id != webrtc::kInvalidDisplayId) {
-      region_source =
-          RegionCaptureSource::ForDisplay(selected_source.display_id);
-    } else {
-      region_source = RegionCaptureSource{
-          .type = RegionCaptureSource::Type::kSpecificDisplay};
-      if (auto* screen = display::Screen::Get()) {
-        // TODO(crbug.com/532198850): Native picker screenshots currently don't
-        // populate display_id, so we fallback to the display of the cursor,
-        // which isn't 100% correct. Once fixed, remove this fallback.
-        region_source->display_id =
-            screen->GetDisplayNearestPoint(screen->GetCursorScreenPoint()).id();
-      }
-    }
+    CHECK_NE(selected_source.display_id, webrtc::kInvalidDisplayId);
+    region_source = RegionCaptureSource::ForDisplay(selected_source.display_id);
   }
 
   CaptureAndUploadScreenshot(media_id, std::move(callback), region_source);
