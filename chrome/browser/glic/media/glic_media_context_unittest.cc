@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -738,6 +739,30 @@ TEST_F(GlicMediaContextTest, RecordsUkmOnDestruction) {
   entries = ukm_recorder.GetEntriesByName("Glic.MediaContext");
   ASSERT_EQ(entries.size(), 2u);
   ukm_recorder.ExpectEntryMetric(entries[1], "HasTranscript", 0);
+}
+
+TEST_F(GlicMediaContextTest, SharedContextLengthMetric) {
+  base::HistogramTester histogram_tester;
+
+  // Initially, no metric should be recorded.
+  context()->GetTranscriptChunks();
+  histogram_tester.ExpectTotalCount("Glic.Media.SharedContextLength", 0);
+
+  // Add a final result.
+  const std::string test_cap = "Hello World";
+  context()->OnResult(
+      media::SpeechRecognitionResult(test_cap, /*is_final=*/true));
+
+  // Request the transcript.
+  context()->GetTranscriptChunks();
+
+  // Metric should be recorded once with the correct length.
+  histogram_tester.ExpectUniqueSample("Glic.Media.SharedContextLength",
+                                      test_cap.length(), 1);
+
+  // Request again, should record again.
+  context()->GetTranscriptChunks();
+  histogram_tester.ExpectTotalCount("Glic.Media.SharedContextLength", 2);
 }
 
 }  // namespace glic

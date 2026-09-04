@@ -260,6 +260,10 @@ GlicMediaContext::GetTranscriptChunks() const {
   if (!transcript || transcript->next_sequence_number_ == 0) {
     return {};
   }
+
+  UMA_HISTOGRAM_COUNTS_10M("Glic.Media.SharedContextLength",
+                           transcript->max_transcript_size_);
+
   return transcript->transcript_chunks_;
 }
 
