@@ -54,6 +54,8 @@ extern __typeof (FcConfigUptoDate) FcConfigUptoDate __attribute((alias("IA__FcCo
 extern __typeof (FcConfigBuildFonts) FcConfigBuildFonts __attribute((alias("IA__FcConfigBuildFonts"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
 # undef FcConfigGetFontDirs
 extern __typeof (FcConfigGetFontDirs) FcConfigGetFontDirs __attribute((alias("IA__FcConfigGetFontDirs"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
+# undef FcConfigGetAppFonts
+extern __typeof (FcConfigGetAppFonts) FcConfigGetAppFonts __attribute((alias("IA__FcConfigGetAppFonts"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
 # undef FcConfigGetConfigDirs
 extern __typeof (FcConfigGetConfigDirs) FcConfigGetConfigDirs __attribute((alias("IA__FcConfigGetConfigDirs"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
 # undef FcConfigGetConfigFiles
@@ -72,6 +74,8 @@ extern __typeof (FcConfigSetRescanInterval) FcConfigSetRescanInterval __attribut
 extern __typeof (FcConfigGetFonts) FcConfigGetFonts __attribute((alias("IA__FcConfigGetFonts"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
 # undef FcConfigAcceptFont
 extern __typeof (FcConfigAcceptFont) FcConfigAcceptFont __attribute((alias("IA__FcConfigAcceptFont"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
+# undef FcConfigAcceptFilename
+extern __typeof (FcConfigAcceptFilename) FcConfigAcceptFilename __attribute((alias("IA__FcConfigAcceptFilename"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
 # undef FcConfigAcceptFilter
 extern __typeof (FcConfigAcceptFilter) FcConfigAcceptFilter __attribute((alias("IA__FcConfigAcceptFilter"))) FC_ATTRIBUTE_VISIBILITY_EXPORT;
 # undef FcConfigAppFontAddFile
