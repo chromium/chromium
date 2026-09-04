@@ -1292,6 +1292,38 @@ suite('ComposeboxMixinTest', () => {
         assertFalse(searchboxHandler.getArgs('setActiveModelMode')[0][1]);
       });
 
+  test(
+      'updates state from state property with browser file upload',
+      async () => {
+        const token = '00000000000000010000000000000002';
+        const fileInfo: SelectedFileInfo = {
+          fileName: 'test.png',
+          mimeType: 'image/png',
+          imageDataUrl: 'data:image/png;base64,AAAA',
+          thumbnailUrl: null,
+          isDeletable: true,
+          selectionTime: new Date(),
+        };
+        element.state = {
+          text: '',
+          files: [{token, fileInfo}],
+          mode: ToolMode.kUnspecified,
+          model: ModelMode.kUnspecified,
+          // <if expr="not is_android">
+          smartTabSharingActive: false,
+          // </if>
+        };
+        await element.updateComplete;
+        await microtasksFinished();
+
+        assertEquals(1, element.files.size);
+        const attachment = element.files.values().next().value;
+        assertTrue(!!attachment);
+        assertEquals('test.png', attachment.name);
+        assertEquals('image/png', attachment.type);
+        assertEquals(ContextUploadStatus.kUploadSuccessful, attachment.status);
+      });
+
   test('navigates matches with ArrowDown and ArrowUp', async () => {
     const input = element.getInputElement().inputElement;
     const matchesElement = element.getDropdownElement();

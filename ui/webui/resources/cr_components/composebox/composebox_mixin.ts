@@ -22,7 +22,7 @@ import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/ung
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {ComposeboxFile, ComposeboxFileValidationError, ComposeboxInputModel, ContextType, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, isContextUploadStatusTerminal, isValidTabId, mapOriginToMojoSource, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordContextualElementClickedMetric, recordEnumerationValue, recordInputTypeShown, recordModelModeSelection, recordModelModeShown, recordToolModeSelection, recordToolModeShown, recordUserAction, TabSuggestionsState, TabUploadOrigin} from './common.js';
-import type {ComposeboxFuseboxActionRequest, ComposeboxState, DriveUpload, TabUpload} from './common.js';
+import type {BrowserFileUpload, ComposeboxFuseboxActionRequest, ComposeboxState, ContextualUpload, DriveUpload, TabUpload} from './common.js';
 import type {PageHandlerRemote} from './composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from './composebox_dropdown.js';
 import type {ComposeboxFileInputsElement} from './composebox_file_inputs.js';
@@ -59,6 +59,11 @@ function dedupeTabs(restoredTabs: TabInfo[], recentTabs: TabInfo[]): TabInfo[] {
     const restoredUrl = restoredUrlMap.get(t.tabId);
     return restoredUrl !== t.url;
   });
+}
+
+function isBrowserFileUpload(file: ContextualUpload):
+    file is BrowserFileUpload {
+  return 'token' in file && 'fileInfo' in file;
 }
 
 export const ComposeboxEmbedderMixin =
@@ -1596,6 +1601,8 @@ export const ComposeboxEmbedderMixin =
                     /*replaceAutoActiveTabToken=*/ false);
               } else if ('mimeType' in file) {
                 driveUploads.push(file);
+              } else if (isBrowserFileUpload(file)) {
+                this.addFileContextFromBrowser(file.token, file.fileInfo);
               } else {
                 dataTransfer.items.add(file.file);
               }
