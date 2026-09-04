@@ -101,6 +101,7 @@ class CORE_EXPORT HTMLTextAreaElement final : public TextControlElement {
   void DidAddUserAgentShadowRoot(ShadowRoot&) override;
 
   void HandleBeforeTextInsertedEvent(BeforeTextInsertedEvent*);
+  String FilterBeforeTextInserted(const String& text) override;
   static String SanitizeUserInputValue(const String&, unsigned max_length);
   void UpdateValue();
   void SetNonDirtyValue(const String&, TextControlSetValueSelection);

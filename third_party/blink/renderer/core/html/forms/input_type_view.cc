@@ -31,11 +31,13 @@
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/events/before_text_inserted_event.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -64,7 +66,14 @@ void InputTypeView::HandleKeypressEvent(KeyboardEvent&) {}
 
 void InputTypeView::HandleKeyupEvent(KeyboardEvent&) {}
 
-void InputTypeView::HandleBeforeTextInsertedEvent(BeforeTextInsertedEvent&) {}
+void InputTypeView::HandleBeforeTextInsertedEvent(BeforeTextInsertedEvent&) {
+  DCHECK(!RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled());
+}
+
+String InputTypeView::FilterBeforeTextInserted(const String& text) {
+  CHECK(RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled());
+  return text;
+}
 
 void InputTypeView::HandleDOMActivateEvent(Event&) {}
 

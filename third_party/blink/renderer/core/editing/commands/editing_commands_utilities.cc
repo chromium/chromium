@@ -59,6 +59,7 @@
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -730,13 +731,22 @@ InputEvent::InputType DeletionInputTypeFromTextGranularity(
 
 void DispatchEditableContentChangedEvents(Element* start_root,
                                           Element* end_root) {
-  if (start_root) {
-    start_root->DefaultEventHandler(
-        *Event::Create(event_type_names::kWebkitEditableContentChanged));
-  }
-  if (end_root && end_root != start_root) {
-    end_root->DefaultEventHandler(
-        *Event::Create(event_type_names::kWebkitEditableContentChanged));
+  if (RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled()) {
+    if (start_root) {
+      start_root->NotifyEditableContentChanged();
+    }
+    if (end_root && end_root != start_root) {
+      end_root->NotifyEditableContentChanged();
+    }
+  } else {
+    if (start_root) {
+      start_root->DefaultEventHandler(
+          *Event::Create(event_type_names::kWebkitEditableContentChanged));
+    }
+    if (end_root && end_root != start_root) {
+      end_root->DefaultEventHandler(
+          *Event::Create(event_type_names::kWebkitEditableContentChanged));
+    }
   }
 }
 

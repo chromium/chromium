@@ -99,6 +99,7 @@ class CORE_EXPORT InputTypeView : public GarbageCollectedMixin {
   virtual void HandleKeypressEvent(KeyboardEvent&);
   virtual void HandleKeyupEvent(KeyboardEvent&);
   virtual void HandleBeforeTextInsertedEvent(BeforeTextInsertedEvent&);
+  virtual String FilterBeforeTextInserted(const String& text);
   virtual void ForwardEvent(Event&);
   virtual bool ShouldSubmitImplicitly(const Event&);
   virtual HTMLFormElement* FormForSubmission() const;

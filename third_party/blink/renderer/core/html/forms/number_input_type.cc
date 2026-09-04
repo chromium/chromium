@@ -233,9 +233,14 @@ void NumberInputType::HandleKeydownEvent(KeyboardEvent& event) {
 
 void NumberInputType::HandleBeforeTextInsertedEvent(
     BeforeTextInsertedEvent& event) {
+  DCHECK(!RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled());
+  event.SetText(FilterBeforeTextInserted(event.GetText()));
+}
+
+String NumberInputType::FilterBeforeTextInserted(const String& text) {
   Locale& locale = GetLocale();
 
-  String normalized_input = event.GetText();
+  String normalized_input = text;
   if (RuntimeEnabledFeatures::NumberInputFullWidthCharsEnabled()) {
     // Normalize full-width digits and minus sign to ASCII
     normalized_input = NormalizeFullWidthNumberChars(normalized_input);
@@ -248,8 +253,7 @@ void NumberInputType::HandleBeforeTextInsertedEvent(
 
   // Check if locale supports more cleanup rules
   if (!locale.UsesSingleCharNumberFiltering()) {
-    event.SetText(updated_event_text);
-    return;
+    return updated_event_text;
   }
 
   // Get left and right of cursor
@@ -273,8 +277,9 @@ void NumberInputType::HandleBeforeTextInsertedEvent(
       if (locale.HasDecimalSeparator(left_half) ||
           locale.HasDecimalSeparator(right_half) ||
           left_half.Find(IsE) != kNotFound ||
-          locale.HasSignNotAfterE(right_half))
+          locale.HasSignNotAfterE(right_half)) {
         continue;
+      }
     }
     // For 'e' input:
     // - Reject if the editing value already contains another 'e'
@@ -283,8 +288,9 @@ void NumberInputType::HandleBeforeTextInsertedEvent(
     else if (IsE(c)) {
       if (left_half.Find(IsE) != kNotFound ||
           right_half.Find(IsE) != kNotFound ||
-          locale.HasDecimalSeparator(right_half))
+          locale.HasDecimalSeparator(right_half)) {
         continue;
+      }
     }
     // For '-' or '+' input:
     // - Reject if the editing value already contains two signs
@@ -312,15 +318,16 @@ void NumberInputType::HandleBeforeTextInsertedEvent(
       if ((left_half.empty() && !right_half.empty() &&
            locale.IsSignPrefix(right_half[0])) ||
           (!left_half.empty() && IsE(left_half[left_half.length() - 1]) &&
-           !right_half.empty() && locale.IsSignPrefix(right_half[0])))
+           !right_half.empty() && locale.IsSignPrefix(right_half[0]))) {
         continue;
+      }
     }
 
     // Add character
     left_half = StrCat({left_half, StringView(base::span_from_ref(c))});
     final_event_text.Append(c);
   }
-  event.SetText(final_event_text.ReleaseString());
+  return final_event_text.ReleaseString();
 }
 
 Decimal NumberInputType::ParseToNumber(const String& src,

@@ -199,16 +199,26 @@ ReplacementFragment::ReplacementFragment(Document* document,
   else
     shadow_ancestor_element = editable_root;
 
-  if (!editable_root->GetAttributeEventListener(
-          event_type_names::kWebkitBeforeTextInserted)
-      // FIXME: Remove these checks once textareas and textfields actually
-      // register an event handler.
-      &&
-      !(shadow_ancestor_element && shadow_ancestor_element->GetLayoutObject() &&
-        shadow_ancestor_element->GetLayoutObject()->IsTextControl()) &&
-      IsRichlyEditable(*editable_root)) {
-    RemoveInterchangeNodes(fragment_);
-    return;
+  if (RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled()) {
+    if (!(shadow_ancestor_element &&
+          shadow_ancestor_element->GetLayoutObject() &&
+          shadow_ancestor_element->GetLayoutObject()->IsTextControl()) &&
+        IsRichlyEditable(*editable_root)) {
+      RemoveInterchangeNodes(fragment_);
+      return;
+    }
+  } else {
+    if (!editable_root->GetAttributeEventListener(
+            event_type_names::kWebkitBeforeTextInserted)
+        // FIXME: Remove these checks once textareas and textfields actually
+        // register an event handler.
+        && !(shadow_ancestor_element &&
+             shadow_ancestor_element->GetLayoutObject() &&
+             shadow_ancestor_element->GetLayoutObject()->IsTextControl()) &&
+        IsRichlyEditable(*editable_root)) {
+      RemoveInterchangeNodes(fragment_);
+      return;
+    }
   }
 
   if (!IsRichlyEditable(*editable_root)) {
@@ -226,12 +236,18 @@ ReplacementFragment::ReplacementFragment(Document* document,
     if (is_plain_text) {
       RemoveInterchangeNodes(fragment_);
       String original_text = fragment_->textContent();
-      auto* event =
-          MakeGarbageCollected<BeforeTextInsertedEvent>(original_text);
-      editable_root->DefaultEventHandler(*event);
-      if (original_text != event->GetText()) {
+      String filtered_text;
+      if (RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled()) {
+        filtered_text = editable_root->FilterBeforeTextInserted(original_text);
+      } else {
+        auto* event =
+            MakeGarbageCollected<BeforeTextInsertedEvent>(original_text);
+        editable_root->DefaultEventHandler(*event);
+        filtered_text = event->GetText();
+      }
+      if (original_text != filtered_text) {
         fragment_ = CreateFragmentFromText(
-            selection.ToNormalizedEphemeralRange(), event->GetText());
+            selection.ToNormalizedEphemeralRange(), filtered_text);
         RemoveInterchangeNodes(fragment_);
       }
       UpdateTrivialReplacementText();
@@ -264,9 +280,15 @@ ReplacementFragment::ReplacementFragment(Document* document,
   RestoreAndRemoveTestRenderingNodesToFragment(holder);
 
   // Give the root a chance to change the text.
-  auto* evt = MakeGarbageCollected<BeforeTextInsertedEvent>(text);
-  editable_root->DefaultEventHandler(*evt);
-  if (text != evt->GetText() || !IsRichlyEditable(*editable_root)) {
+  String filtered_text;
+  if (RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled()) {
+    filtered_text = editable_root->FilterBeforeTextInserted(text);
+  } else {
+    auto* evt = MakeGarbageCollected<BeforeTextInsertedEvent>(text);
+    editable_root->DefaultEventHandler(*evt);
+    filtered_text = evt->GetText();
+  }
+  if (text != filtered_text || !IsRichlyEditable(*editable_root)) {
     RestoreAndRemoveTestRenderingNodesToFragment(holder);
 
     // TODO(editing-dev): Use of UpdateStyleAndLayout
@@ -274,7 +296,7 @@ ReplacementFragment::ReplacementFragment(Document* document,
     document->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
     fragment_ = CreateFragmentFromText(selection.ToNormalizedEphemeralRange(),
-                                       evt->GetText());
+                                       filtered_text);
 
     // Fragment may have become trivial after recreation from text
     UpdateTrivialReplacementText();

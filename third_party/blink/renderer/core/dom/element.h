@@ -2046,6 +2046,9 @@ class CORE_EXPORT Element : public ContainerNode {
 
   void DefaultEventHandler(Event&) override;
 
+  virtual String FilterBeforeTextInserted(const String& text);
+  virtual void NotifyEditableContentChanged();
+
   // Set on elements with scroll-target-group property to
   // collect HTMLAnchorElement scroll markers.
   ScrollMarkerGroupData& EnsureScrollTargetGroupData();

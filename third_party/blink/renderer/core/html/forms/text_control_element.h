@@ -266,6 +266,7 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   void RestoreCachedSelection();
 
   void DefaultEventHandler(Event&) override;
+  void NotifyEditableContentChanged() override;
   virtual void SubtreeHasChanged() = 0;
 
   void SetLastChangeWasNotUserEdit() { last_change_was_user_edit_ = false; }

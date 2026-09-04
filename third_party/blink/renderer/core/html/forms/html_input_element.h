@@ -159,6 +159,8 @@ class CORE_EXPORT HTMLInputElement
   unsigned size() const;
   bool GetSizeWithDecoration(int& preferred_size) const;
 
+  String FilterBeforeTextInserted(const String& text) override;
+
   void setType(const AtomicString&);
 
   String Value() const override;

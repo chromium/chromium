@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_BEFORE_TEXT_INSERTED_EVENT_H_
 
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -36,7 +37,10 @@ class BeforeTextInsertedEvent final : public Event {
   ~BeforeTextInsertedEvent() override;
 
   const AtomicString& InterfaceName() const override;
-  bool IsBeforeTextInsertedEvent() const override { return true; }
+  bool IsBeforeTextInsertedEvent() const override {
+    DCHECK(!RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled());
+    return true;
+  }
 
   const String& GetText() const { return text_; }
   void SetText(const String& s) { text_ = s; }

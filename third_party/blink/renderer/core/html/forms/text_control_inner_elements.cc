@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/forms/layout_text_control_inner_editor.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -82,16 +83,19 @@ void TextControlInnerEditorElement::DefaultEventHandler(Event& event) {
   // Then we would add one to the text field's inner div, and we wouldn't need
   // this subclass.
   // Or possibly we could just use a normal event listener.
-  if (event.IsBeforeTextInsertedEvent() ||
-      event.type() == event_type_names::kWebkitEditableContentChanged) {
-    Element* shadow_ancestor = OwnerShadowHost();
-    // A TextControlInnerTextElement can have no host if its been detached,
-    // but kept alive by an EditCommand. In this case, an undo/redo can
-    // cause events to be sent to the TextControlInnerTextElement. To
-    // prevent an infinite loop, we must check for this case before sending
-    // the event up the chain.
-    if (shadow_ancestor)
-      shadow_ancestor->DefaultEventHandler(event);
+  if (!RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled()) {
+    if (event.IsBeforeTextInsertedEvent() ||
+        event.type() == event_type_names::kWebkitEditableContentChanged) {
+      Element* shadow_ancestor = OwnerShadowHost();
+      // A TextControlInnerTextElement can have no host if its been detached,
+      // but kept alive by an EditCommand. In this case, an undo/redo can
+      // cause events to be sent to the TextControlInnerTextElement. To
+      // prevent an infinite loop, we must check for this case before sending
+      // the event up the chain.
+      if (shadow_ancestor) {
+        shadow_ancestor->DefaultEventHandler(event);
+      }
+    }
   }
 
   if (event.type() == event_type_names::kScroll ||
@@ -107,6 +111,24 @@ void TextControlInnerEditorElement::DefaultEventHandler(Event& event) {
 
   if (!event.DefaultHandled())
     HTMLDivElement::DefaultEventHandler(event);
+}
+
+String TextControlInnerEditorElement::FilterBeforeTextInserted(
+    const String& text) {
+  CHECK(RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled());
+  Element* shadow_ancestor = OwnerShadowHost();
+  if (shadow_ancestor) {
+    return shadow_ancestor->FilterBeforeTextInserted(text);
+  }
+  return text;
+}
+
+void TextControlInnerEditorElement::NotifyEditableContentChanged() {
+  CHECK(RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled());
+  Element* shadow_ancestor = OwnerShadowHost();
+  if (shadow_ancestor) {
+    shadow_ancestor->NotifyEditableContentChanged();
+  }
 }
 
 void TextControlInnerEditorElement::SetVisibility(bool is_visible) {

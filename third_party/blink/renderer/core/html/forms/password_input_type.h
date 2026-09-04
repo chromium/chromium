@@ -62,6 +62,7 @@ class PasswordInputType final : public BaseTextInputType {
   void ForwardEvent(Event& event) override;
   void HandleKeydownEvent(KeyboardEvent&) override;
   void HandleBeforeTextInsertedEvent(BeforeTextInsertedEvent&) override;
+  String FilterBeforeTextInserted(const String& text) override;
 
   void HandleBlurEvent() override;
   bool SupportsInputModeAttribute() const override;

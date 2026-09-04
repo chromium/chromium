@@ -1693,9 +1693,11 @@ void HTMLInputElement::DefaultEventHandler(Event& evt) {
     return;
   }
 
-  if (evt.IsBeforeTextInsertedEvent()) {
-    input_type_view_->HandleBeforeTextInsertedEvent(
-        static_cast<BeforeTextInsertedEvent&>(evt));
+  if (!RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled()) {
+    if (evt.IsBeforeTextInsertedEvent()) {
+      input_type_view_->HandleBeforeTextInsertedEvent(
+          static_cast<BeforeTextInsertedEvent&>(evt));
+    }
   }
 
   if (mouse_event && evt.type() == event_type_names::kMousedown) {
@@ -1708,6 +1710,14 @@ void HTMLInputElement::DefaultEventHandler(Event& evt) {
 
   if (!call_base_class_early && !evt.DefaultHandled())
     TextControlElement::DefaultEventHandler(evt);
+}
+
+String HTMLInputElement::FilterBeforeTextInserted(const String& text) {
+  CHECK(RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled());
+  if (input_type_view_) {
+    return input_type_view_->FilterBeforeTextInserted(text);
+  }
+  return text;
 }
 
 ShadowRoot* HTMLInputElement::EnsureShadowSubtree() {

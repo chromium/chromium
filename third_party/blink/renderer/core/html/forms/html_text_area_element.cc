@@ -431,7 +431,8 @@ void HTMLTextAreaElement::DefaultEventHandler(Event& event) {
        event.HasInterface(event_interface_names::kWheelEvent) ||
        event.type() == event_type_names::kBlur)) {
     ForwardEvent(event);
-  } else if (GetLayoutObject() && event.IsBeforeTextInsertedEvent()) {
+  } else if (!RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled() &&
+             GetLayoutObject() && event.IsBeforeTextInsertedEvent()) {
     HandleBeforeTextInsertedEvent(
         static_cast<BeforeTextInsertedEvent*>(&event));
   }
@@ -485,18 +486,27 @@ void HTMLTextAreaElement::SubtreeHasChanged() {
 
 void HTMLTextAreaElement::HandleBeforeTextInsertedEvent(
     BeforeTextInsertedEvent* event) {
+  DCHECK(!RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled());
   DCHECK(event);
   DCHECK(GetLayoutObject());
+  event->SetText(FilterBeforeTextInserted(event->GetText()));
+}
+
+String HTMLTextAreaElement::FilterBeforeTextInserted(const String& text) {
+  if (!GetLayoutObject()) {
+    return text;
+  }
   int signed_max_length = maxLength();
-  if (signed_max_length < 0)
-    return;
+  if (signed_max_length < 0) {
+    return text;
+  }
   unsigned unsigned_max_length = static_cast<unsigned>(signed_max_length);
 
   const String& current_value = InnerEditorValue();
   unsigned current_length = ComputeLengthForAPIValue(current_value);
-  if (current_length + ComputeLengthForAPIValue(event->GetText()) <
-      unsigned_max_length)
-    return;
+  if (current_length + ComputeLengthForAPIValue(text) < unsigned_max_length) {
+    return text;
+  }
 
   // selectionLength represents the selection length of this text field to be
   // removed by this insertion.
@@ -516,12 +526,13 @@ void HTMLTextAreaElement::HandleBeforeTextInsertedEvent(
   unsigned base_length = current_length - selection_length;
   unsigned appendable_length =
       unsigned_max_length > base_length ? unsigned_max_length - base_length : 0;
-  event->SetText(SanitizeUserInputValue(event->GetText(), appendable_length));
+  String result = SanitizeUserInputValue(text, appendable_length);
 
   if (selection_length == current_length && selection_length != 0 &&
-      !event->GetText().empty()) {
+      !result.empty()) {
     GetDocument().GetPage()->GetChromeClient().DidClearValueInTextField(*this);
   }
+  return result;
 }
 
 String HTMLTextAreaElement::SanitizeUserInputValue(const String& proposed_value,

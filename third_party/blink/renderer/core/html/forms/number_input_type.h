@@ -61,6 +61,7 @@ class NumberInputType final : public TextFieldInputType {
   StepRange CreateStepRange(AnyStepHandling) const override;
   void HandleKeydownEvent(KeyboardEvent&) override;
   void HandleBeforeTextInsertedEvent(BeforeTextInsertedEvent&) override;
+  String FilterBeforeTextInserted(const String& text) override;
   Decimal ParseToNumber(const String&, const Decimal&) const override;
   String Serialize(const Decimal&) const override;
   String LocalizeValue(const String&) const override;

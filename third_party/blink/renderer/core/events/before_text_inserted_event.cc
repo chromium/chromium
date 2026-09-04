@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/core/event_interface_names.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -34,7 +35,9 @@ BeforeTextInsertedEvent::BeforeTextInsertedEvent(const String& text)
     : Event(event_type_names::kWebkitBeforeTextInserted,
             Bubbles::kNo,
             Cancelable::kYes),
-      text_(text) {}
+      text_(text) {
+  DCHECK(!RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled());
+}
 
 BeforeTextInsertedEvent::~BeforeTextInsertedEvent() = default;
 

@@ -51,6 +51,8 @@ class TextControlInnerEditorElement final : public HTMLDivElement {
   explicit TextControlInnerEditorElement(Document&);
 
   void DefaultEventHandler(Event&) override;
+  String FilterBeforeTextInserted(const String& text) override;
+  void NotifyEditableContentChanged() override;
 
   void SetVisibility(bool is_visible);
   void FocusChanged();

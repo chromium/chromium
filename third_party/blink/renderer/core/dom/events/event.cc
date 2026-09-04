@@ -220,6 +220,7 @@ bool Event::IsClipboardEvent() const {
 }
 
 bool Event::IsBeforeTextInsertedEvent() const {
+  DCHECK(!RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled());
   return false;
 }
 

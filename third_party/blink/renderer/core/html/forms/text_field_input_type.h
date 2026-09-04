@@ -65,6 +65,7 @@ class TextFieldInputType : public InputType,
   void ForwardEvent(Event&) override;
   void HandleBlurEvent() override;
   void HandleBeforeTextInsertedEvent(BeforeTextInsertedEvent&) override;
+  String FilterBeforeTextInserted(const String& text) override;
   String SanitizeValue(const String&) const override;
   void SetValue(const String&,
                 bool value_changed,

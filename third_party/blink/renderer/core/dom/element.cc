@@ -2156,6 +2156,15 @@ void Element::DefaultEventHandler(Event& event) {
   ContainerNode::DefaultEventHandler(event);
 }
 
+String Element::FilterBeforeTextInserted(const String& text) {
+  CHECK(RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled());
+  return text;
+}
+
+void Element::NotifyEditableContentChanged() {
+  CHECK(RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled());
+}
+
 inline void Element::SynchronizeAttribute(const QualifiedName& name) const {
   if (!HasElementData()) {
     return;

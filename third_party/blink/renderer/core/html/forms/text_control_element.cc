@@ -71,6 +71,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -188,8 +189,54 @@ void TextControlElement::DefaultEventHandler(Event& event) {
     CaptureOpaqueRangePreEdit();
   }
 
-  if (event.type() == event_type_names::kWebkitEditableContentChanged &&
-      GetLayoutObject() && GetLayoutObject()->IsTextControl()) {
+  if (!RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled()) {
+    if (event.type() == event_type_names::kWebkitEditableContentChanged &&
+        GetLayoutObject() && GetLayoutObject()->IsTextControl()) {
+      last_change_was_user_edit_ = !GetDocument().IsRunningExecCommand();
+      if (last_change_was_user_edit_) {
+        SetUserHasEditedTheField();
+      }
+
+      if (IsFocused()) {
+        // Updating the cache in SelectionChanged() isn't enough because
+        // SelectionChanged() is not called if:
+        // - Text nodes in the inner-editor is split to multiple, and
+        // - The caret is on the beginning of a Text node, and its previous node
+        //   is updated, or
+        // - The caret is on the end of a text node, and its next node is
+        // updated.
+        ComputedSelection computed_selection;
+        ComputeSelection(kStart | kEnd | kDirection, computed_selection);
+        CacheSelection(computed_selection.start, computed_selection.end,
+                       computed_selection.direction);
+      } else if (RuntimeEnabledFeatures::
+                     ClampUnfocusedSelectionCacheEnabled()) {
+        // If the element is not focused, the selection cache is not updated
+        // during text mutations because the global Selection doesn't point to
+        // this element. This can cause the cache to exceed the new text length.
+        // We clamp the cache here to prevent out-of-bounds index crashes.
+        // Note: While this doesn't perfectly adjust selection offsets (e.g. if
+        // text is deleted from the beginning), it is sufficient to prevent
+        // crashes in rare non-focused edit cases.
+        unsigned len = InnerEditorValue().length();
+        if (cached_selection_start_ > len || cached_selection_end_ > len) {
+          CacheSelection(std::min(cached_selection_start_, len),
+                         std::min(cached_selection_end_, len),
+                         cached_selection_direction_);
+        }
+      }
+
+      SubtreeHasChanged();
+      return;
+    }
+  }
+
+  HTMLFormControlElementWithState::DefaultEventHandler(event);
+}
+
+void TextControlElement::NotifyEditableContentChanged() {
+  CHECK(RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled());
+  if (GetLayoutObject() && GetLayoutObject()->IsTextControl()) {
     last_change_was_user_edit_ = !GetDocument().IsRunningExecCommand();
     if (last_change_was_user_edit_) {
       SetUserHasEditedTheField();
@@ -223,10 +270,7 @@ void TextControlElement::DefaultEventHandler(Event& event) {
     }
 
     SubtreeHasChanged();
-    return;
   }
-
-  HTMLFormControlElementWithState::DefaultEventHandler(event);
 }
 
 void TextControlElement::ForwardEvent(Event& event) {

@@ -5158,5 +5158,30 @@
       "tnak@chromium.org"
     ],
     "expires": "Jul 1, 2027"
+  },
+  {
+    "prefix": "clean-up-activation-behavior-disabled",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "editing/inserting",
+      "editing/pasteboard",
+      "fast/events/before-unload-returnValue.html",
+      "fast/forms/number",
+      "fast/forms/password",
+      "fast/forms/text",
+      "fast/forms/textarea",
+      "media/controls"
+    ],
+    "args": [
+      "--disable-blink-features=CleanUpActivationBehavior"
+    ],
+    "owners": [
+      "masonf@chromium.org"
+    ],
+    "expires": "Dec 1, 2027"
   }
 ]
