@@ -36,8 +36,8 @@ GlanceablesProgressBarView::GlanceablesProgressBarView() {
   progress_bar_->SetPreferredHeight(kProgressBarThickness);
   progress_bar_->SetPreferredCornerRadii(std::nullopt);
   progress_bar_->SetID(std::to_underlying(GlanceablesViewId::kProgressBar));
-  progress_bar_->SetBackgroundColorId(cros_tokens::kCrosSysSystemOnBase);
-  progress_bar_->SetForegroundColorId(cros_tokens::kCrosSysPrimary);
+  progress_bar_->SetBackgroundColor(cros_tokens::kCrosSysSystemOnBase);
+  progress_bar_->SetForegroundColor(cros_tokens::kCrosSysPrimary);
   progress_bar_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,

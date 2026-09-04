@@ -329,8 +329,8 @@ views::ProgressBar* SetupChildProgressBarView(
         value * 100 <= lower_warning_limit.value()))
           ? kColorAshSystemInfoBarChartWarningColorForeground
           : kColorAshSystemInfoBarChartColorForeground;
-  progress_bar_view->SetForegroundColorId(foreground_color);
-  progress_bar_view->SetBackgroundColorId(
+  progress_bar_view->SetForegroundColor(foreground_color);
+  progress_bar_view->SetBackgroundColor(
       kColorAshSystemInfoBarChartColorBackground);
   return progress_bar_view;
 }

@@ -1317,8 +1317,8 @@ void AshNotificationView::CreateOrUpdateProgressViews(
   CreateOrUpdateProgressStatusView(notification);
   CreateOrUpdateProgressBarView(notification);
   if (progress_bar_view()) {
-    progress_bar_view()->SetForegroundColorId(cros_tokens::kCrosSysPrimary);
-    progress_bar_view()->SetBackgroundColorId(
+    progress_bar_view()->SetForegroundColor(cros_tokens::kCrosSysPrimary);
+    progress_bar_view()->SetBackgroundColor(
         cros_tokens::kCrosSysHighlightShape);
   }
 

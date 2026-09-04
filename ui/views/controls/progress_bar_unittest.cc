@@ -109,24 +109,19 @@ TEST_F(ProgressBarTest, OverrideDefaultColors) {
 
   // Override colors with color ID. It will also override the colors set with
   // SkColor.
-  bar()->SetForegroundColorId(ui::kColorSysPrimary);
-  bar()->SetBackgroundColorId(ui::kColorSysPrimaryContainer);
+  bar()->SetForegroundColor(ui::kColorSysPrimary);
+  bar()->SetBackgroundColor(ui::kColorSysPrimaryContainer);
   const auto* color_provider = bar()->GetColorProvider();
   EXPECT_EQ(color_provider->GetColor(ui::kColorSysPrimary),
             bar()->GetForegroundColor());
   EXPECT_EQ(color_provider->GetColor(ui::kColorSysPrimaryContainer),
             bar()->GetBackgroundColor());
-  EXPECT_EQ(ui::kColorSysPrimary, bar()->GetForegroundColorId().value());
-  EXPECT_EQ(ui::kColorSysPrimaryContainer,
-            bar()->GetBackgroundColorId().value());
 
   // Override the colors set with color ID by SkColor.
   bar()->SetForegroundColor(SK_ColorRED);
   bar()->SetBackgroundColor(SK_ColorGREEN);
   EXPECT_EQ(SK_ColorRED, bar()->GetForegroundColor());
   EXPECT_EQ(SK_ColorGREEN, bar()->GetBackgroundColor());
-  EXPECT_EQ(std::nullopt, bar()->GetForegroundColorId());
-  EXPECT_EQ(std::nullopt, bar()->GetBackgroundColorId());
 }
 
 // Test that if no `preferred_corner_radii` are provided the default radius is

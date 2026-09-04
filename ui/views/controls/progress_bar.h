@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "ui/color/color_id.h"
+#include "ui/color/color_variant.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/metadata/view_factory.h"
@@ -48,15 +49,14 @@ class VIEWS_EXPORT ProgressBar : public View, public gfx::AnimationDelegate {
 
   // The color of the progress portion.
   SkColor GetForegroundColor() const;
-  void SetForegroundColor(SkColor color);
-  std::optional<ui::ColorId> GetForegroundColorId() const;
-  void SetForegroundColorId(std::optional<ui::ColorId> color_id);
+  void SetForegroundColor(std::optional<ui::ColorVariant> color);
 
   // The color of the portion that displays potential progress.
   SkColor GetBackgroundColor() const;
-  void SetBackgroundColor(SkColor color);
-  std::optional<ui::ColorId> GetBackgroundColorId() const;
-  void SetBackgroundColorId(std::optional<ui::ColorId> color_id);
+  std::optional<ui::ColorVariant> background_color() const {
+    return background_color_;
+  }
+  void SetBackgroundColor(std::optional<ui::ColorVariant> color);
 
   int GetPreferredHeight() const;
   void SetPreferredHeight(int preferred_height);
@@ -102,10 +102,8 @@ class VIEWS_EXPORT ProgressBar : public View, public gfx::AnimationDelegate {
   std::optional<gfx::RoundedCornersF> preferred_corner_radii_ =
       gfx::RoundedCornersF(3);
 
-  std::optional<SkColor> foreground_color_;
-  std::optional<ui::ColorId> foreground_color_id_;
-  std::optional<SkColor> background_color_;
-  std::optional<ui::ColorId> background_color_id_;
+  std::optional<ui::ColorVariant> foreground_color_;
+  std::optional<ui::ColorVariant> background_color_;
 
   std::unique_ptr<gfx::LinearAnimation> indeterminate_bar_animation_;
 
@@ -115,10 +113,8 @@ class VIEWS_EXPORT ProgressBar : public View, public gfx::AnimationDelegate {
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, ProgressBar, View)
 VIEW_BUILDER_PROPERTY(double, Value)
 VIEW_BUILDER_PROPERTY(bool, Paused)
-VIEW_BUILDER_PROPERTY(SkColor, ForegroundColor)
-VIEW_BUILDER_PROPERTY(std::optional<ui::ColorId>, ForegroundColorId)
-VIEW_BUILDER_PROPERTY(SkColor, BackgroundColor)
-VIEW_BUILDER_PROPERTY(std::optional<ui::ColorId>, BackgroundColorId)
+VIEW_BUILDER_PROPERTY(std::optional<ui::ColorVariant>, ForegroundColor)
+VIEW_BUILDER_PROPERTY(std::optional<ui::ColorVariant>, BackgroundColor)
 VIEW_BUILDER_PROPERTY(int, PreferredHeight)
 VIEW_BUILDER_PROPERTY(std::optional<gfx::RoundedCornersF>, PreferredCornerRadii)
 END_VIEW_BUILDER
