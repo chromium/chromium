@@ -89,7 +89,6 @@ targets.legacy_compound_suite(
 targets.legacy_compound_suite(
     name = "gpu_v8_win_release_telemetry_tests",
     basic_suites = [
-        "gpu_passthrough_graphite_telemetry_tests",
         "gpu_passthrough_telemetry_tests",
         "gpu_webcodecs_telemetry_test",
         "gpu_webrtc_telemetry_test",
@@ -100,7 +99,11 @@ targets.legacy_compound_suite(
         # Migrated individual tests below.
         # TODO(crbug.com/541312843): Remove this comment once all tests are
         # directly included.
+        "legacy_context_lost_passthrough_graphite_tests",
+        "legacy_expected_color_pixel_passthrough_graphite_test",
         "legacy_info_collection_tests",
+        "legacy_pixel_skia_gold_passthrough_graphite_test",
+        "legacy_screenshot_sync_passthrough_graphite_tests",
         "legacy_trace_test",
     ],
 )
