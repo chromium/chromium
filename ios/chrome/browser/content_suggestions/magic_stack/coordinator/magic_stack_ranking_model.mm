@@ -239,6 +239,8 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
       _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
       _prefObserverBridge->ObserveChangesForPreference(prefs::kLevelUpOptIn,
                                                        &_prefChangeRegistrar);
+      _prefObserverBridge->ObserveChangesForPreference(
+          prefs::kLevelUpCompletedTasks, &_prefChangeRegistrar);
     }
   }
   return self;
@@ -462,7 +464,8 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
-  if (preferenceName == prefs::kLevelUpOptIn) {
+  if (preferenceName == prefs::kLevelUpOptIn ||
+      preferenceName == prefs::kLevelUpCompletedTasks) {
     if (![self isMagicStackOrderReady]) {
       return;
     }

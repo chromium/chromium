@@ -14,6 +14,20 @@
   return ContentSuggestionsModuleType::kLevelUp;
 }
 
+- (BOOL)hasDifferentContentsFromConfig:(MagicStackModule*)config {
+  if ([super hasDifferentContentsFromConfig:config]) {
+    return YES;
+  }
+  LevelUpConfig* levelUpConfig = static_cast<LevelUpConfig*>(config);
+  return self.progressCompleted != levelUpConfig.progressCompleted ||
+         self.progressTotal != levelUpConfig.progressTotal ||
+         (self.titleText != levelUpConfig.titleText &&
+          ![self.titleText isEqualToString:levelUpConfig.titleText]) ||
+         (self.descriptionText != levelUpConfig.descriptionText &&
+          ![self.descriptionText
+              isEqualToString:levelUpConfig.descriptionText]);
+}
+
 #pragma mark - NSCopying
 
 - (instancetype)copyWithZone:(NSZone*)zone {
