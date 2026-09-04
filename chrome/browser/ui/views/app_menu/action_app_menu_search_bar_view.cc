@@ -24,6 +24,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/widget/widget.h"
+
 ActionAppMenuSearchBarView::ActionAppMenuSearchBarView() {
   const auto* provider = ChromeLayoutProvider::Get();
   int icon_size =

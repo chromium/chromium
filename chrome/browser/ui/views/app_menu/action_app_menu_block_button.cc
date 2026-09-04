@@ -56,6 +56,9 @@ ActionAppMenuBlockButton::ActionAppMenuBlockButton(PressedCallback callback)
   SetBorder(views::CreateRoundedRectBorder(1, corner_radius,
                                            kColorAppMenuBlockButtonBorder));
 
+  // Enable keyboard navigation and focus highlighting.
+  SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+
   icon_view_ = AddChildView(std::make_unique<views::ImageView>());
   icon_view_->SetImageSize(gfx::Size(icon_size, icon_size));
   icon_view_->GetViewAccessibility().SetIsIgnored(true);
