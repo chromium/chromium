@@ -91,13 +91,13 @@ public class FuseboxAttachmentUnitTest {
                         mResources,
                         FuseboxAttachmentButtonType.TAB_PICKER,
                         /* isSuggestedTab= */ false);
-        when(mBridge.addTabContext(mTab, false)).thenReturn(CAPTURE_TOKEN);
+        when(mBridge.addTabContext(mTab, /* isSuggestedTab= */ false)).thenReturn(CAPTURE_TOKEN);
 
-        boolean result = attachment.uploadToBackend(mBridge, false);
+        boolean result = attachment.uploadToBackend(mBridge, /* bypassTabCacheThisTime= */ false);
 
         assertTrue(result);
         assertEquals(CAPTURE_TOKEN, attachment.getToken());
-        verify(mBridge).addTabContext(mTab, false);
+        verify(mBridge).addTabContext(mTab, /* isSuggestedTab= */ false);
         verify(mBridge, never()).addTabContextFromCache(anyLong(), anyBoolean());
         verify(mTab, never()).loadIfNeeded(anyBoolean());
     }
@@ -112,12 +112,12 @@ public class FuseboxAttachmentUnitTest {
                         mResources,
                         FuseboxAttachmentButtonType.TAB_PICKER,
                         /* isSuggestedTab= */ false);
-        when(mBridge.addTabContext(mTab, false)).thenReturn(null);
+        when(mBridge.addTabContext(mTab, /* isSuggestedTab= */ false)).thenReturn(null);
 
-        boolean result = attachment.uploadToBackend(mBridge, false);
+        boolean result = attachment.uploadToBackend(mBridge, /* bypassTabCacheThisTime= */ false);
 
         assertFalse(result);
-        verify(mBridge).addTabContext(mTab, false);
+        verify(mBridge).addTabContext(mTab, /* isSuggestedTab= */ false);
     }
 
     @Test
@@ -132,7 +132,7 @@ public class FuseboxAttachmentUnitTest {
                         /* isSuggestedTab= */ false);
 
         // Force fetch is true, but capture not allowed and tab not active.
-        boolean result = attachment.uploadToBackend(mBridge, true);
+        boolean result = attachment.uploadToBackend(mBridge, /* bypassTabCacheThisTime= */ true);
 
         assertFalse(result);
         verify(mBridge, never()).addTabContext(any(), anyBoolean());
@@ -149,14 +149,15 @@ public class FuseboxAttachmentUnitTest {
                         mResources,
                         FuseboxAttachmentButtonType.TAB_PICKER,
                         /* isSuggestedTab= */ false);
-        when(mBridge.addTabContextFromCache(TAB_ID, false)).thenReturn(CACHE_TOKEN);
+        when(mBridge.addTabContextFromCache(TAB_ID, /* isSuggestedTab= */ false))
+                .thenReturn(CACHE_TOKEN);
 
         // Not forced, background capture disabled. Should try cache.
-        boolean result = attachment.uploadToBackend(mBridge, false);
+        boolean result = attachment.uploadToBackend(mBridge, /* bypassTabCacheThisTime= */ false);
 
         assertTrue(result);
         assertEquals(CACHE_TOKEN, attachment.getToken());
-        verify(mBridge).addTabContextFromCache(TAB_ID, false);
+        verify(mBridge).addTabContextFromCache(TAB_ID, /* isSuggestedTab= */ false);
         verify(mBridge, never()).addTabContext(any(), anyBoolean());
     }
 
@@ -171,13 +172,13 @@ public class FuseboxAttachmentUnitTest {
                         mResources,
                         FuseboxAttachmentButtonType.TAB_PICKER,
                         /* isSuggestedTab= */ false);
-        when(mBridge.addTabContext(mTab, false)).thenReturn(CAPTURE_TOKEN);
+        when(mBridge.addTabContext(mTab, /* isSuggestedTab= */ false)).thenReturn(CAPTURE_TOKEN);
 
-        boolean result = attachment.uploadToBackend(mBridge, false);
+        boolean result = attachment.uploadToBackend(mBridge, /* bypassTabCacheThisTime= */ false);
 
         assertTrue(result);
         assertEquals(CAPTURE_TOKEN, attachment.getToken());
-        verify(mBridge).addTabContext(mTab, false);
+        verify(mBridge).addTabContext(mTab, /* isSuggestedTab= */ false);
         verify(mBridge, never()).addTabContextFromCache(anyLong(), anyBoolean());
     }
 
@@ -191,14 +192,15 @@ public class FuseboxAttachmentUnitTest {
                         mResources,
                         FuseboxAttachmentButtonType.TAB_PICKER,
                         /* isSuggestedTab= */ false);
-        when(mBridge.addTabContextFromCache(TAB_ID, false)).thenReturn(CACHE_TOKEN);
-        assertTrue(attachment.uploadToBackend(mBridge, false));
+        when(mBridge.addTabContextFromCache(TAB_ID, /* isSuggestedTab= */ false))
+                .thenReturn(CACHE_TOKEN);
+        assertTrue(attachment.uploadToBackend(mBridge, /* bypassTabCacheThisTime= */ false));
         setTabActive(true);
-        when(mBridge.addTabContext(mTab, false)).thenReturn(CAPTURE_TOKEN);
+        when(mBridge.addTabContext(mTab, /* isSuggestedTab= */ false)).thenReturn(CAPTURE_TOKEN);
 
         assertTrue(attachment.retryUpload(mBridge));
         assertEquals(CAPTURE_TOKEN, attachment.getToken());
-        verify(mBridge).addTabContext(mTab, false);
+        verify(mBridge).addTabContext(mTab, /* isSuggestedTab= */ false);
     }
 
     @Test
@@ -211,8 +213,9 @@ public class FuseboxAttachmentUnitTest {
                         mResources,
                         FuseboxAttachmentButtonType.TAB_PICKER,
                         /* isSuggestedTab= */ false);
-        when(mBridge.addTabContextFromCache(TAB_ID, false)).thenReturn(CACHE_TOKEN);
-        assertTrue(attachment.uploadToBackend(mBridge, false));
+        when(mBridge.addTabContextFromCache(TAB_ID, /* isSuggestedTab= */ false))
+                .thenReturn(CACHE_TOKEN);
+        assertTrue(attachment.uploadToBackend(mBridge, /* bypassTabCacheThisTime= */ false));
 
         assertFalse(attachment.retryUpload(mBridge));
         assertEquals(CACHE_TOKEN, attachment.getToken());
