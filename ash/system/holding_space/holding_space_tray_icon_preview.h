@@ -13,12 +13,13 @@
 #include "base/scoped_observation.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer_animation_observer.h"
-#include "ui/compositor/layer_delegate.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
 namespace ui {
 class Layer;
+class LayerSolidColor;
+class Shadow;
 }  // namespace ui
 
 namespace ash {
@@ -32,11 +33,12 @@ enum class ShelfAlignment;
 // space tray icon in the shelf. While determined to be within the icon's
 // viewport, each instance will manage a layer for the holding space tray icon.
 class ASH_EXPORT HoldingSpaceTrayIconPreview
-    : public ui::LayerDelegate,
-      public ui::ImplicitAnimationObserver,
+    : public ui::ImplicitAnimationObserver,
       public views::ViewObserver {
  public:
   static constexpr char kClassName[] = "HoldingSpaceTrayIconPreview";
+  static constexpr char kBackgroundLayerName[] =
+      "HoldingSpaceTrayIconPreview::Background";
   static constexpr char kImageLayerName[] =
       "HoldingSpaceTrayIconPreview::Image";
 
@@ -87,11 +89,6 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
  private:
   class ImageLayerOwner;
 
-  // ui::LayerDelegate:
-  void OnPaintLayer(const ui::PaintContext& context) override;
-  void OnDeviceScaleFactorChanged(float old_device_scale_factor,
-                                  float new_device_scale_factor) override;
-
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override;
 
@@ -114,9 +111,6 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
   // viewport for the holding space tray `container_`, this is used to gate
   // creation/deletion of the preview layer.
   bool NeedsLayer() const;
-
-  // Schedules repaint of `layer()`, no-oping if it doesn't exist.
-  void InvalidateLayer();
 
   // Updates the bounds of `layer()`.
   void UpdateLayerBounds();
@@ -144,6 +138,14 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
   // holding space item. NOTE: The `ui::Layer` is *not* painted if the holding
   // space item is not in-progress.
   std::unique_ptr<ProgressIndicator> progress_indicator_;
+
+  // Owns the `ui::Shadow` which paints the shadow for the holding space tray
+  // icon preview.
+  std::unique_ptr<ui::Shadow> shadow_;
+
+  // Owns the `ui::LayerSolidColor` which paints the background for the holding
+  // space tray icon preview.
+  std::unique_ptr<ui::LayerSolidColor> background_layer_;
 
   // Whether or not this preview is currently using small dimensions. This is
   // done when in tablet mode and an app is in use.
