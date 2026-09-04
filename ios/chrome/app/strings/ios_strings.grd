@@ -4631,6 +4631,9 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_LEVEL_UP_AI_SEARCH_IPH" desc="Text of the bubble for the Level Up task prompting the user to search with AI Mode. [iOS only]">
         Ask anything and get AI-powered responses
       </message>
+      <message name="IDS_IOS_LEVEL_UP_ALL_TASKS_TITLE" desc="Title for Level Up screen showing all tasks.  [iOS only]">
+        All Tasks
+      </message>
       <message name="IDS_IOS_LEVEL_UP_COMPLETED_TASKS" desc="Label indicating the number of tasks completed in the Level Up list. [iOS only]">
         {count, plural,
           =1 {1 completed task}

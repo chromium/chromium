@@ -48,7 +48,7 @@ NSString* const kCategoriesSectionIdentifier = @"CategoriesSection";
   [super viewDidLoad];
 
   self.view.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
-  self.title = l10n_util::GetNSString(IDS_IOS_LEVEL_UP_SEE_ALL);
+  self.title = l10n_util::GetNSString(IDS_IOS_LEVEL_UP_ALL_TASKS_TITLE);
 
   UICollectionViewCompositionalLayoutConfiguration* config =
       [[UICollectionViewCompositionalLayoutConfiguration alloc] init];
