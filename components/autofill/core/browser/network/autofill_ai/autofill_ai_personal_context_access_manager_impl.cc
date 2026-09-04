@@ -324,7 +324,7 @@ AutofillAiPersonalContextAccessManagerImpl::ExtractEntitiesFromResponse(
         entities.push_back({*type, entity});
       }
     } else if (std::optional<EntityInstance> converted =
-                   ConvertProtoToEntityInstance(entity)) {
+                   ConvertProtoToEntityInstance(entity, /*mask_spii=*/true)) {
       entities.push_back({std::move(*converted), entity});
     }
   }
@@ -333,19 +333,24 @@ AutofillAiPersonalContextAccessManagerImpl::ExtractEntitiesFromResponse(
 
 std::optional<EntityInstance>
 AutofillAiPersonalContextAccessManagerImpl::ConvertProtoToEntityInstance(
-    const personal_context::proto::Entity& entity) const {
+    const personal_context::proto::Entity& entity,
+    bool mask_spii) const {
   if (base::FeatureList::IsEnabled(
           features::kAutofillAmbientAutofillSpiiCache) &&
       entity.entity_case() ==
           personal_context::proto::Entity::kEncryptedEntity) {
-    // TODO(crbug.com/548257908): Mask the decrypted entity.
     return personal_context_service_->DecryptEntity(entity).and_then(
-        [](const personal_context::proto::Entity& decrypted) {
-          return PersonalContextEntityToEntityInstance(decrypted);
+        [mask_spii](personal_context::proto::Entity decrypted) {
+          if (mask_spii) {
+            MaskSpiiEntityFields(decrypted);
+          }
+          return PersonalContextEntityToEntityInstance(decrypted,
+                                                       /*is_masked=*/mask_spii);
         });
   }
 
-  return PersonalContextEntityToEntityInstance(entity);
+  return PersonalContextEntityToEntityInstance(entity,
+                                               /*is_masked=*/mask_spii);
 }
 
 void AutofillAiPersonalContextAccessManagerImpl::GetUnmaskedSpiiEntity(
@@ -369,20 +374,17 @@ void AutofillAiPersonalContextAccessManagerImpl::GetUnmaskedSpiiEntity(
 
   if (base::FeatureList::IsEnabled(
           features::kAutofillAmbientAutofillSpiiCache)) {
-    if (std::optional<personal_context::proto::Entity> decrypted_entity =
-            personal_context_service_->DecryptEntity(*proto_entity)) {
-      if (std::optional<EntityInstance> unmasked_entity =
-              PersonalContextEntityToEntityInstance(*decrypted_entity,
-                                                    /*is_masked=*/false)) {
-        EntityInstance final_entity = unmasked_entity->CopyWithNewEntityId(id);
-        CacheUnmaskedSpiiEntity(final_entity);
-        LogUnmaskResult(EntityInstance::RecordType::kPersonalContext,
-                        AutofillAiUnmaskResult::kSuccess);
-        LogRequestLatency(RequestType::kSpiiUnmasking,
-                          base::TimeTicks::Now() - request_start_time);
-        std::move(callback).Run(std::move(final_entity));
-        return;
-      }
+    if (std::optional<EntityInstance> unmasked_entity =
+            ConvertProtoToEntityInstance(*proto_entity,
+                                         /*mask_spii=*/false)) {
+      EntityInstance final_entity = unmasked_entity->CopyWithNewEntityId(id);
+      CacheUnmaskedSpiiEntity(final_entity);
+      LogUnmaskResult(EntityInstance::RecordType::kPersonalContext,
+                      AutofillAiUnmaskResult::kSuccess);
+      LogRequestLatency(RequestType::kSpiiUnmasking,
+                        base::TimeTicks::Now() - request_start_time);
+      std::move(callback).Run(std::move(final_entity));
+      return;
     }
     LogUnmaskResult(EntityInstance::RecordType::kPersonalContext,
                     AutofillAiUnmaskResult::kDecryptionFailed);
@@ -762,7 +764,7 @@ void AutofillAiPersonalContextAccessManagerImpl::OnEntitySuppressionsChanged() {
       suppression_observation_.GetSource();
   for (const auto& [id, proto] : prefetched_proto_cache_) {
     std::optional<EntityInstance> converted =
-        ConvertProtoToEntityInstance(proto);
+        ConvertProtoToEntityInstance(proto, /*mask_spii=*/true);
     if (!converted) {
       continue;
     }

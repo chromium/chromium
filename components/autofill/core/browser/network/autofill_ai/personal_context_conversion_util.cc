@@ -4,7 +4,10 @@
 
 #include "components/autofill/core/browser/network/autofill_ai/personal_context_conversion_util.h"
 
+#include <algorithm>
+#include <cmath>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -334,6 +337,44 @@ EntityInstance PersonalContextKnownTravelerNumberToEntityInstance(
 }
 
 }  // namespace
+
+void MaskSpiiEntityFields(personal_context::proto::Entity& entity) {
+  auto GetMaskedValue = [](std::string_view value) {
+    if (value.empty()) {
+      return std::string();
+    }
+    // Implements ceiling with integer division.
+    const size_t suffix_length = std::min<size_t>(4, (value.length() + 3) / 4);
+    return std::string(value.substr(value.length() - suffix_length));
+  };
+
+  switch (entity.entity_case()) {
+    case personal_context::proto::Entity::kPassport:
+      entity.mutable_passport()->set_number(
+          GetMaskedValue(entity.passport().number()));
+      break;
+    case personal_context::proto::Entity::kDriversLicense:
+      entity.mutable_drivers_license()->set_number(
+          GetMaskedValue(entity.drivers_license().number()));
+      break;
+    case personal_context::proto::Entity::kNationalId:
+      entity.mutable_national_id()->set_number(
+          GetMaskedValue(entity.national_id().number()));
+      break;
+    case personal_context::proto::Entity::kKnownTravelerNumber:
+      entity.mutable_known_traveler_number()->set_number(
+          GetMaskedValue(entity.known_traveler_number().number()));
+      break;
+    case personal_context::proto::Entity::kOrder:
+    case personal_context::proto::Entity::kShipment:
+    case personal_context::proto::Entity::kFlightReservation:
+    case personal_context::proto::Entity::kVehicle:
+    case personal_context::proto::Entity::kSensitivePiiPresence:
+    case personal_context::proto::Entity::kEncryptedEntity:
+    case personal_context::proto::Entity::ENTITY_NOT_SET:
+      break;
+  }
+}
 
 std::optional<EntityInstance> PersonalContextEntityToEntityInstance(
     const personal_context::proto::Entity& entity,
