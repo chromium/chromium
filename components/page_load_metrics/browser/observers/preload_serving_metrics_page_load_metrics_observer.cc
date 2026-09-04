@@ -100,16 +100,16 @@ bool IsPrefetch(content::UsedInstantLoad used_instant_load) {
 }
 
 std::string GetNavigationInitiatorString(
-    content::NavigationHandle* navigation_handle) {
-  if (ui::PageTransitionCoreTypeIs(navigation_handle->GetPageTransition(),
+    content::NavigationHandle& navigation_handle) {
+  if (ui::PageTransitionCoreTypeIs(navigation_handle.GetPageTransition(),
                                    ui::PAGE_TRANSITION_RELOAD)) {
     return "Reload";
   }
 
-  if ((navigation_handle->GetPageTransition() &
+  if ((navigation_handle.GetPageTransition() &
        ui::PAGE_TRANSITION_FORWARD_BACK) ||
-      navigation_handle->IsServedFromBackForwardCache()) {
-    int history_offset = navigation_handle->GetNavigationEntryOffset();
+      navigation_handle.IsServedFromBackForwardCache()) {
+    int history_offset = navigation_handle.GetNavigationEntryOffset();
     if (history_offset > 0) {
       return "Forward";
     }
@@ -123,14 +123,14 @@ std::string GetNavigationInitiatorString(
 
   auto* user_data =
       page_load_metrics::NavigationHandleUserData::GetForNavigationHandle(
-          *navigation_handle);
+          navigation_handle);
   if (user_data) {
     return user_data->navigation_type_string();
   }
 
-  if (navigation_handle->IsRendererInitiated() &&
-      navigation_handle->HasUserGesture() &&
-      ui::PageTransitionCoreTypeIs(navigation_handle->GetPageTransition(),
+  if (navigation_handle.IsRendererInitiated() &&
+      navigation_handle.HasUserGesture() &&
+      ui::PageTransitionCoreTypeIs(navigation_handle.GetPageTransition(),
                                    ui::PAGE_TRANSITION_LINK)) {
     return "LinkClick";
   }
@@ -139,13 +139,10 @@ std::string GetNavigationInitiatorString(
 }
 
 bool GetServedByLegacySearchPrefetch(
-    content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle) {
-    return false;
-  }
+    content::NavigationHandle& navigation_handle) {
   auto* user_data =
       page_load_metrics::NavigationHandleUserData::GetForNavigationHandle(
-          *navigation_handle);
+          navigation_handle);
   return user_data && user_data->is_served_by_legacy_search_prefetch();
 }
 
@@ -353,8 +350,21 @@ void RecordLargestContentfulPaint(
 
 }  // namespace page_load_metrics_internal
 
-PreloadServingMetricsPageLoadMetricsObserver::NavigationData::NavigationData() =
-    default;
+PreloadServingMetricsPageLoadMetricsObserver::NavigationData::NavigationData(
+    content::NavigationHandle& navigation_handle,
+    bool used_bfcache)
+    : preload_serving_metrics_capsule(
+          content::PreloadServingMetricsCapsule::TakeFromNavigationHandle(
+              navigation_handle)),
+      used_bfcache(used_bfcache),
+      navigation_initiator_string(
+          GetNavigationInitiatorString(navigation_handle)),
+      is_url_srp(google_util::IsGoogleSearchUrl(navigation_handle.GetURL())),
+      is_served_by_legacy_search_prefetch(
+          GetServedByLegacySearchPrefetch(navigation_handle)) {
+  CHECK(preload_serving_metrics_capsule);
+}
+
 PreloadServingMetricsPageLoadMetricsObserver::NavigationData::
     ~NavigationData() = default;
 PreloadServingMetricsPageLoadMetricsObserver::NavigationData::NavigationData(
@@ -397,27 +407,6 @@ PreloadServingMetricsPageLoadMetricsObserver::OnPrerenderStart(
   return CONTINUE_OBSERVING;
 }
 
-PreloadServingMetricsPageLoadMetricsObserver::NavigationData
-PreloadServingMetricsPageLoadMetricsObserver::CreateNavigationData(
-    content::NavigationHandle* navigation_handle,
-    bool used_bfcache) {
-  NavigationData navigation_data;
-  navigation_data.preload_serving_metrics_capsule =
-      content::PreloadServingMetricsCapsule::TakeFromNavigationHandle(
-          *navigation_handle);
-  CHECK(navigation_data.preload_serving_metrics_capsule);
-
-  navigation_data.used_bfcache = used_bfcache;
-  navigation_data.navigation_initiator_string =
-      GetNavigationInitiatorString(navigation_handle);
-  navigation_data.is_url_srp =
-      google_util::IsGoogleSearchUrl(navigation_handle->GetURL());
-  navigation_data.is_served_by_legacy_search_prefetch =
-      GetServedByLegacySearchPrefetch(navigation_handle);
-
-  return navigation_data;
-}
-
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 PreloadServingMetricsPageLoadMetricsObserver::OnCommit(
     content::NavigationHandle* navigation_handle) {
@@ -430,16 +419,14 @@ PreloadServingMetricsPageLoadMetricsObserver::OnCommit(
     return CONTINUE_OBSERVING;
   }
 
-  navigation_data_ =
-      CreateNavigationData(navigation_handle, /*used_bfcache=*/false);
+  navigation_data_.emplace(*navigation_handle, /*used_bfcache=*/false);
 
   return CONTINUE_OBSERVING;
 }
 
 void PreloadServingMetricsPageLoadMetricsObserver::DidActivatePrerenderedPage(
     content::NavigationHandle* navigation_handle) {
-  navigation_data_ =
-      CreateNavigationData(navigation_handle, /*used_bfcache=*/false);
+  navigation_data_.emplace(*navigation_handle, /*used_bfcache=*/false);
 }
 
 void PreloadServingMetricsPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
@@ -499,8 +486,7 @@ void PreloadServingMetricsPageLoadMetricsObserver::
     OnRestoreFromBackForwardCache(
         const page_load_metrics::mojom::PageLoadTiming& timing,
         content::NavigationHandle* navigation_handle) {
-  navigation_data_ =
-      CreateNavigationData(navigation_handle, /*used_bfcache=*/true);
+  navigation_data_.emplace(*navigation_handle, /*used_bfcache=*/true);
 }
 
 void PreloadServingMetricsPageLoadMetricsObserver::MaybeRecord() {
