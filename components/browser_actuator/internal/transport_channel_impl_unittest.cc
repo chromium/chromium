@@ -261,8 +261,7 @@ TEST_F(TransportChannelImplTest,
   EXPECT_EQ(body.sessions(0).last_seen_sequence_number(), 0);
 }
 
-TEST_F(TransportChannelImplTest,
-       ReconnectsWhenNewSessionRegisteredAndConnected) {
+TEST_F(TransportChannelImplTest, ConnectsWhenNewSessionRegisteredAndConnected) {
   fake_client_->set_connected(true);
 
   GetSessionRegistryImpl()->GetOrCreateSession("s1");

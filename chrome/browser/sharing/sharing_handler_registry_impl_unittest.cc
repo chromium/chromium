@@ -8,6 +8,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/common/chrome_features.h"
+#include "components/browser_actuator/public/features.h"
 #include "components/sharing_message/mock_sharing_message_handler.h"
 #include "components/sharing_message/sharing_device_registration.h"
 #include "content/public/test/browser_task_environment.h"
@@ -83,4 +84,22 @@ TEST_F(SharingHandlerRegistryImplTest, AddRemoveManually) {
       components_sharing_message::SharingMessage::kSmsFetchRequest);
   EXPECT_FALSE(handler_registry->GetSharingHandler(
       components_sharing_message::SharingMessage::kSmsFetchRequest));
+}
+
+TEST_F(SharingHandlerRegistryImplTest,
+       BrowserActuatorDownstreamMessage_AddedWhenFeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(browser_actuator::kBrowserActuator);
+  auto handler_registry = CreateHandlerRegistry();
+  EXPECT_TRUE(handler_registry->GetSharingHandler(
+      components_sharing_message::SharingMessage::kActuatorDownstreamMessage));
+}
+
+TEST_F(SharingHandlerRegistryImplTest,
+       BrowserActuatorDownstreamMessage_NotAddedWhenFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(browser_actuator::kBrowserActuator);
+  auto handler_registry = CreateHandlerRegistry();
+  EXPECT_FALSE(handler_registry->GetSharingHandler(
+      components_sharing_message::SharingMessage::kActuatorDownstreamMessage));
 }

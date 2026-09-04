@@ -13,13 +13,14 @@ import "optimization_guide_push_notification.proto";
 import "peer_connection_messages.proto";
 import "remote_copy_message.proto";
 import "sms_fetch_message_test_proto3_optional.proto";
+import "components/browser_actuator/proto/actuator_downstream_message.proto";
 
 package components_sharing_message;
 
 option optimize_for = LITE_RUNTIME;
 
 // Message for sending between devices in Sharing.
-// Next tag: 19
+// Next tag: 20
 message SharingMessage {
   reserved 4, 5;
   reserved "shared_clipboard_message";
@@ -43,6 +44,7 @@ message SharingMessage {
     OptimizationGuidePushNotification optimization_guide_push_notification = 16;
     OneTimeTokenBackendNotification one_time_token_backend_notification = 17;
     GlicExperimentalTriggering glic_experimental_triggering = 18;
+    browser_actuator.ActuatorDownstreamMessage actuator_downstream_message = 19;
   }
 
   oneof ack_channel_configuration {

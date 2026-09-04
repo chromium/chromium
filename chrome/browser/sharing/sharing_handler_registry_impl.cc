@@ -31,6 +31,40 @@
 #include "chrome/browser/sharing/shared_clipboard/remote_copy_message_handler.h"
 #endif
 
+namespace {
+
+bool IsBrowserActuatorForGlicEnabled() {
+  return base::FeatureList::IsEnabled(browser_actuator::kBrowserActuator) &&
+         base::FeatureList::IsEnabled(
+             browser_actuator::
+                 kEnableBrowserActuatorForGlicExperimentalTriggering);
+}
+
+std::set<components_sharing_message::SharingMessage::PayloadCase>
+GetBrowserActuatorPayloads(Profile* profile) {
+  std::set<components_sharing_message::SharingMessage::PayloadCase> payloads;
+  if (!base::FeatureList::IsEnabled(browser_actuator::kBrowserActuator)) {
+    return payloads;
+  }
+
+  // Generic transport messages always go to BrowserActuatorMessageHandler.
+  payloads.insert(
+      components_sharing_message::SharingMessage::kActuatorDownstreamMessage);
+
+  // Route kGlicExperimentalTriggering based on whether BrowserActuator is
+  // taking over handling for it.
+  if (IsBrowserActuatorForGlicEnabled() &&
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile,
+                                                         /*create=*/true)) {
+    payloads.insert(components_sharing_message::SharingMessage::
+                        kGlicExperimentalTriggering);
+  }
+
+  return payloads;
+}
+
+}  // namespace
+
 SharingHandlerRegistryImpl::SharingHandlerRegistryImpl(
     Profile* profile,
     SharingDeviceRegistration* sharing_device_registration,
@@ -80,32 +114,24 @@ SharingHandlerRegistryImpl::SharingHandlerRegistryImpl(
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  bool browser_actuator_enabled =
-      base::FeatureList::IsEnabled(browser_actuator::kBrowserActuator);
-  bool browser_actuator_for_glic_enabled =
-      browser_actuator_enabled &&
-      base::FeatureList::IsEnabled(
-          browser_actuator::
-              kEnableBrowserActuatorForGlicExperimentalTriggering);
-  bool glic_experimental_triggering_enabled =
-      base::FeatureList::IsEnabled(features::kGlicExperimentalTriggering);
-
-  if ((browser_actuator_for_glic_enabled ||
-       glic_experimental_triggering_enabled) &&
+  // Route kGlicExperimentalTriggering to legacy handler if BrowserActuator is
+  // not taking over handling for it.
+  if (!IsBrowserActuatorForGlicEnabled() &&
+      base::FeatureList::IsEnabled(features::kGlicExperimentalTriggering) &&
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile,
                                                          /*create=*/true)) {
-    if (browser_actuator_for_glic_enabled) {
-      AddSharingHandler(
-          std::make_unique<BrowserActuatorMessageHandler>(profile),
-          {components_sharing_message::SharingMessage::
-               kGlicExperimentalTriggering});
-    } else {
-      AddSharingHandler(
-          std::make_unique<GlicExperimentalTriggeringMessageHandler>(
-              profile, message_sender),
-          {components_sharing_message::SharingMessage::
-               kGlicExperimentalTriggering});
-    }
+    AddSharingHandler(
+        std::make_unique<GlicExperimentalTriggeringMessageHandler>(
+            profile, message_sender),
+        {components_sharing_message::SharingMessage::
+             kGlicExperimentalTriggering});
+  }
+
+  std::set<components_sharing_message::SharingMessage::PayloadCase>
+      browser_actuator_payloads = GetBrowserActuatorPayloads(profile);
+  if (!browser_actuator_payloads.empty()) {
+    AddSharingHandler(std::make_unique<BrowserActuatorMessageHandler>(profile),
+                      browser_actuator_payloads);
   }
 }
 

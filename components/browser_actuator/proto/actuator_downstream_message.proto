@@ -1,0 +1,46 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package browser_actuator;
+
+import "google/protobuf/any.proto";
+
+// Identifies the routing destination in the Chrome client of an
+// ActuatorDownstreamMessage.
+enum ActuatorDownstreamPayloadType {
+  // Default value.
+  ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_UNSPECIFIED = 0;
+  // Channel control command, e.g. destroy channel or close session.
+  ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND = 1;
+  // Legacy experimental triggering message.
+  ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING = 2;
+}
+
+// Wrapper that pairs a payload with its routing type.
+// This message is passed through the channel to the Chrome client.
+message ActuatorDownstreamTypedPayload {
+  // Eventual payload delivered by the transport library to the target
+  // feature handler in Chrome.
+  google.protobuf.Any proto_payload = 1;
+  // Used to direct the message to the correct feature team's handler in Chrome.
+  ActuatorDownstreamPayloadType payload_type = 2;
+}
+
+// Information sent from OnePlatform or the server down to the Chrome client
+// over the active session stream or FCM.
+message ActuatorDownstreamMessage {
+  // Unique identifier for the active agent session or task.
+  string session_id = 1;
+
+  // Monotonic sequence number used for ordering and connection resumption.
+  // Sequence numbers start at 1.
+  int64 sequence_number = 2;
+
+  // Typed payloads with the intended target feature handler in Chrome.
+  repeated ActuatorDownstreamTypedPayload typed_payloads = 3;
+}

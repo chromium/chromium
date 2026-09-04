@@ -49,6 +49,12 @@ void ControlTransportHandler::OnMessage(
       }
       break;
     }
+    case ControlCommand::kStartSession:
+      // StartSession is primarily used for FCM wakeup and establishing the
+      // connection. If received over the stream, it might be redundant or
+      // used for logging/tracing.
+      // TODO: Implement handling if needed over stream.
+      break;
     case ControlCommand::COMMAND_NOT_SET:
       break;
   }
