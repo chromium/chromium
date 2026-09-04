@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -142,7 +143,7 @@ public class LocationBarCoordinatorUnitTest {
 
     @Test
     public void testInitializeBoundsEllipsis_EnableInTabbedMode() {
-        when(mLocationBarDataProvider.getPageClassification(false))
+        when(mLocationBarDataProvider.getPageClassification(/* prefetch= */ false))
                 .thenReturn(PageClassification.OTHER);
         mCoordinator.initializeBoundsEllipsis(mLocationBarDataProvider);
         verify(mUrlCoordinator).setBoundsEllipsisEnabled(true);
@@ -150,7 +151,7 @@ public class LocationBarCoordinatorUnitTest {
 
     @Test
     public void testInitializeBoundsEllipsis_DisableInHubSearch() {
-        when(mLocationBarDataProvider.getPageClassification(false))
+        when(mLocationBarDataProvider.getPageClassification(/* prefetch= */ false))
                 .thenReturn(PageClassification.ANDROID_HUB);
         mCoordinator.initializeBoundsEllipsis(mLocationBarDataProvider);
         verify(mUrlCoordinator).setBoundsEllipsisEnabled(false);
@@ -158,7 +159,7 @@ public class LocationBarCoordinatorUnitTest {
 
     @Test
     public void testInitializeBoundsEllipsis_DisableInCct() {
-        when(mLocationBarDataProvider.getPageClassification(false))
+        when(mLocationBarDataProvider.getPageClassification(/* prefetch= */ false))
                 .thenReturn(PageClassification.OTHER_ON_CCT);
         mCoordinator.initializeBoundsEllipsis(mLocationBarDataProvider);
         verify(mUrlCoordinator).setBoundsEllipsisEnabled(false);
@@ -167,7 +168,7 @@ public class LocationBarCoordinatorUnitTest {
     @Test
     public void testSetMiniOriginMode_Transitions() {
         // Setup default bounds ellipsis
-        when(mLocationBarDataProvider.getPageClassification(false))
+        when(mLocationBarDataProvider.getPageClassification(/* prefetch= */ false))
                 .thenReturn(PageClassification.OTHER);
         mCoordinator.initializeBoundsEllipsis(mLocationBarDataProvider);
         verify(mUrlCoordinator).setBoundsEllipsisEnabled(true);
@@ -178,7 +179,7 @@ public class LocationBarCoordinatorUnitTest {
         verify(mLocationBarMediator).setMiniOriginMode(true);
 
         mCoordinator.setMiniOriginMode(false);
-        verify(mUrlCoordinator, org.mockito.Mockito.times(2)).setBoundsEllipsisEnabled(true);
+        verify(mUrlCoordinator, times(2)).setBoundsEllipsisEnabled(true);
         verify(mLocationBarMediator).setMiniOriginMode(false);
     }
 
@@ -196,8 +197,8 @@ public class LocationBarCoordinatorUnitTest {
 
     @Test
     public void testOnTextWrappingChanged() {
-        mCoordinator.onTextWrappingChanged(true);
-        verify(mFuseboxCoordinator).onFuseboxTextWrappingChanged(true);
+        mCoordinator.onTextWrappingChanged(/* isWrapping= */ true);
+        verify(mFuseboxCoordinator).onFuseboxTextWrappingChanged(/* isTextWrapping= */ true);
         verify(mLocationBarMediator).setIsTextWrapping(true);
         verify(mLocationBarMediator).updateButtonVisibility();
     }
