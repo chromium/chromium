@@ -91,6 +91,6 @@ DebugRecordingSession::DebugRecordingSession(
   debug_recording_->Enable(std::move(remote_file_provider));
 }
 
-DebugRecordingSession::~DebugRecordingSession() {}
+DebugRecordingSession::~DebugRecordingSession() = default;
 
 }  // namespace audio

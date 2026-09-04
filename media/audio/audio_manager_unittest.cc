@@ -568,7 +568,7 @@ class TestAudioSourceCallback : public AudioOutputStream::AudioSourceCallback {
   TestAudioSourceCallback(const TestAudioSourceCallback&) = delete;
   TestAudioSourceCallback& operator=(const TestAudioSourceCallback&) = delete;
 
-  ~TestAudioSourceCallback() override {}
+  ~TestAudioSourceCallback() override = default;
 
   int OnMoreData(base::TimeDelta,
                  base::TimeTicks,

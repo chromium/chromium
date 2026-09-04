@@ -141,7 +141,7 @@ class InputSyncWriterTest : public testing::Test {
   InputSyncWriterTest(const InputSyncWriterTest&) = delete;
   InputSyncWriterTest& operator=(const InputSyncWriterTest&) = delete;
 
-  ~InputSyncWriterTest() override {}
+  ~InputSyncWriterTest() override = default;
 
   // Get total number of expected log calls. On non-Android we expect one log
   // call at first Write() call, zero on Android. We also expect all call in the

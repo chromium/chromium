@@ -97,12 +97,12 @@ class AudioSystemCallbackExpectations {
 template <class T>
 class AudioSystemTestTemplate : public T {
  public:
-  AudioSystemTestTemplate() {}
+  AudioSystemTestTemplate() = default;
 
   AudioSystemTestTemplate(const AudioSystemTestTemplate&) = delete;
   AudioSystemTestTemplate& operator=(const AudioSystemTestTemplate&) = delete;
 
-  ~AudioSystemTestTemplate() override {}
+  ~AudioSystemTestTemplate() override = default;
 
   void SetUp() override {
     T::SetUp();

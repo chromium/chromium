@@ -10,9 +10,9 @@
 
 namespace audio {
 
-FakeSystemInfo::FakeSystemInfo() {}
+FakeSystemInfo::FakeSystemInfo() = default;
 
-FakeSystemInfo::~FakeSystemInfo() {}
+FakeSystemInfo::~FakeSystemInfo() = default;
 
 // static
 void FakeSystemInfo::OverrideGlobalBinderForAudioService(

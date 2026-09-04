@@ -6,7 +6,7 @@
 
 namespace media {
 
-MockAlsaWrapper::MockAlsaWrapper() {}
+MockAlsaWrapper::MockAlsaWrapper() = default;
 
 MockAlsaWrapper::~MockAlsaWrapper() = default;
 

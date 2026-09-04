@@ -34,8 +34,8 @@ constexpr base::TimeDelta kIdleTimeout = base::Seconds(1);
 class MockWebMediaPlayerDelegateObserver
     : public blink::WebMediaPlayerDelegate::Observer {
  public:
-  MockWebMediaPlayerDelegateObserver() {}
-  ~MockWebMediaPlayerDelegateObserver() {}
+  MockWebMediaPlayerDelegateObserver() = default;
+  ~MockWebMediaPlayerDelegateObserver() = default;
 
   // WebMediaPlayerDelegate::Observer implementation.
   MOCK_METHOD0(OnPageHidden, void());
@@ -47,14 +47,14 @@ class MockWebMediaPlayerDelegateObserver
 
 class RendererWebMediaPlayerDelegateTest : public content::RenderViewTest {
  public:
-  RendererWebMediaPlayerDelegateTest() {}
+  RendererWebMediaPlayerDelegateTest() = default;
 
   RendererWebMediaPlayerDelegateTest(
       const RendererWebMediaPlayerDelegateTest&) = delete;
   RendererWebMediaPlayerDelegateTest& operator=(
       const RendererWebMediaPlayerDelegateTest&) = delete;
 
-  ~RendererWebMediaPlayerDelegateTest() override {}
+  ~RendererWebMediaPlayerDelegateTest() override = default;
 
   void SetUp() override {
     RenderViewTest::SetUp();

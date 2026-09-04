@@ -37,8 +37,8 @@ constexpr base::TimeDelta kDefaultHangDeadline = base::Minutes(3);
 
 }  // namespace
 
-AudioThreadHangMonitor::SharedAtomicFlag::SharedAtomicFlag() {}
-AudioThreadHangMonitor::SharedAtomicFlag::~SharedAtomicFlag() {}
+AudioThreadHangMonitor::SharedAtomicFlag::SharedAtomicFlag() = default;
+AudioThreadHangMonitor::SharedAtomicFlag::~SharedAtomicFlag() = default;
 
 // static
 AudioThreadHangMonitor::Ptr AudioThreadHangMonitor::Create(

@@ -51,7 +51,7 @@ RendererWebMediaPlayerDelegate::RendererWebMediaPlayerDelegate(
       render_frame->GetTaskRunner(blink::TaskType::kInternalMedia));
 }
 
-RendererWebMediaPlayerDelegate::~RendererWebMediaPlayerDelegate() {}
+RendererWebMediaPlayerDelegate::~RendererWebMediaPlayerDelegate() = default;
 
 bool RendererWebMediaPlayerDelegate::IsPageHidden() {
   // There is always a render frame except perhaps during teardown (though

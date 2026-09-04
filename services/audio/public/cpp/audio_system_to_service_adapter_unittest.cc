@@ -38,14 +38,14 @@ namespace audio {
 // Base fixture for all the tests below.
 class AudioSystemToServiceAdapterTestBase : public testing::Test {
  public:
-  AudioSystemToServiceAdapterTestBase() {}
+  AudioSystemToServiceAdapterTestBase() = default;
 
   AudioSystemToServiceAdapterTestBase(
       const AudioSystemToServiceAdapterTestBase&) = delete;
   AudioSystemToServiceAdapterTestBase& operator=(
       const AudioSystemToServiceAdapterTestBase&) = delete;
 
-  ~AudioSystemToServiceAdapterTestBase() override {}
+  ~AudioSystemToServiceAdapterTestBase() override = default;
 
   void SetUp() override {
     audio_manager_ = std::make_unique<media::MockAudioManager>(
@@ -103,14 +103,14 @@ class AudioSystemToServiceAdapterTestBase : public testing::Test {
 class AudioSystemToServiceAdapterConnectionLossTest
     : public AudioSystemToServiceAdapterTestBase {
  public:
-  AudioSystemToServiceAdapterConnectionLossTest() {}
+  AudioSystemToServiceAdapterConnectionLossTest() = default;
 
   AudioSystemToServiceAdapterConnectionLossTest(
       const AudioSystemToServiceAdapterConnectionLossTest&) = delete;
   AudioSystemToServiceAdapterConnectionLossTest& operator=(
       const AudioSystemToServiceAdapterConnectionLossTest&) = delete;
 
-  ~AudioSystemToServiceAdapterConnectionLossTest() override {}
+  ~AudioSystemToServiceAdapterConnectionLossTest() override = default;
 
   void SetUp() override {
     AudioSystemToServiceAdapterTestBase::SetUp();
@@ -369,14 +369,14 @@ static constexpr char kValidReplyId[] =
 
 class AudioSystemToServiceAdapterDisconnectTest : public testing::Test {
  public:
-  AudioSystemToServiceAdapterDisconnectTest() {}
-  ~AudioSystemToServiceAdapterDisconnectTest() override {}
+  AudioSystemToServiceAdapterDisconnectTest() = default;
+  ~AudioSystemToServiceAdapterDisconnectTest() override = default;
 
  protected:
   class MockSystemInfo : public mojom::SystemInfo {
    public:
     MockSystemInfo(base::TimeDelta response_delay) {}
-    ~MockSystemInfo() override {}
+    ~MockSystemInfo() override = default;
 
    private:
     // audio::mojom::SystemInfo implementation.

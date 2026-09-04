@@ -317,7 +317,7 @@ class FullDuplexAudioSinkSource
   FullDuplexAudioSinkSource& operator=(const FullDuplexAudioSinkSource&) =
       delete;
 
-  ~FullDuplexAudioSinkSource() override {}
+  ~FullDuplexAudioSinkSource() override = default;
 
   // AudioInputStream::AudioInputCallback implementation
   void OnError(Error error_code) override {}

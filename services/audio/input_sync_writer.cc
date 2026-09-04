@@ -50,7 +50,7 @@ InputSyncWriter::OverflowData::OverflowData(
       capture_time_(capture_time),
       glitch_info_(glitch_info),
       audio_bus_(std::move(audio_bus)) {}
-InputSyncWriter::OverflowData::~OverflowData() {}
+InputSyncWriter::OverflowData::~OverflowData() = default;
 InputSyncWriter::OverflowData::OverflowData(InputSyncWriter::OverflowData&&) =
     default;
 InputSyncWriter::OverflowData& InputSyncWriter::OverflowData::operator=(
