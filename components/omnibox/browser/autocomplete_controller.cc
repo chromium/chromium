@@ -601,6 +601,9 @@ AutocompleteController::AutocompleteController(
 }
 
 AutocompleteController::~AutocompleteController() {
+  for (Observer& obs : observers_) {
+    obs.OnControllerDestroying(this);
+  }
   base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
       this);
   // Must stop providers because they may have unowned tasks that continue to

@@ -37,6 +37,7 @@ class AutocompleteControllerEmitter : public KeyedService,
                        bool default_match_changed) override;
   void OnMlScored(AutocompleteController* controller,
                   const AutocompleteResult& result) override;
+  void OnControllerDestroying(AutocompleteController* controller) override;
 
  private:
   base::ObserverList<AutocompleteController::Observer> observers_;

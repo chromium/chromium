@@ -144,6 +144,9 @@ class AutocompleteController : public AutocompleteProviderListener,
     // Invoked when autocomplete stop timer is triggered.
     virtual void OnAutocompleteStopTimerTriggered(
         const AutocompleteInput& input) {}
+
+    // Invoked when the |controller| is being destroyed.
+    virtual void OnControllerDestroying(AutocompleteController* controller) {}
   };
 
   // Converts `UpdateType` to string.

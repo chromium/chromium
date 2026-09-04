@@ -68,7 +68,11 @@ FakeAutocompleteController::FakeAutocompleteController(
   AddObserver(observer_.get());
 }
 
-FakeAutocompleteController::~FakeAutocompleteController() = default;
+FakeAutocompleteController::~FakeAutocompleteController() {
+  if (observer_) {
+    RemoveObserver(observer_.get());
+  }
+}
 
 // static
 AutocompleteInput FakeAutocompleteController::CreateInput(

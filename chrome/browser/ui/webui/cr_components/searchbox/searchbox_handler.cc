@@ -1754,6 +1754,13 @@ void SearchboxHandler::OnResultChanged(AutocompleteController* controller,
   }
 }
 
+void SearchboxHandler::OnControllerDestroying(
+    AutocompleteController* controller) {
+  if (autocomplete_controller_observation_.IsObservingSource(controller)) {
+    autocomplete_controller_observation_.Reset();
+  }
+}
+
 void SearchboxHandler::OnPermissionPromptChanged(bool is_showing,
                                                  const gfx::Size& prompt_size) {
   gfx::Size size_with_buffer;

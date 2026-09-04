@@ -112,6 +112,7 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   // AutocompleteController::Observer:
   void OnResultChanged(AutocompleteController* controller,
                        bool default_match_changed) override;
+  void OnControllerDestroying(AutocompleteController* controller) override;
 
   // PermissionPromptObserver::Observer:
   void OnPermissionPromptChanged(bool is_showing,

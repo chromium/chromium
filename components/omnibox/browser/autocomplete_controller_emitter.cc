@@ -43,3 +43,10 @@ void AutocompleteControllerEmitter::OnMlScored(
   for (auto& observer : observers_)
     observer.OnMlScored(controller, result);
 }
+
+void AutocompleteControllerEmitter::OnControllerDestroying(
+    AutocompleteController* controller) {
+  for (auto& observer : observers_) {
+    observer.OnControllerDestroying(controller);
+  }
+}
