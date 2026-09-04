@@ -1241,9 +1241,10 @@ void BrowserAccessibilityManagerWin::HandleSelectedStateChanged(
   // selection container as the key because |FinalizeSelectionEvents| needs to
   // determine whether or not there is only one element selected in order to
   // optimize what platform events are sent.
-  BrowserAccessibility* key = node;
-  if (auto* selection_container = node->PlatformGetSelectionContainer())
-    key = selection_container;
+  AXNodeID key = node->node()->id();
+  if (auto* selection_container = node->PlatformGetSelectionContainer()) {
+    key = selection_container->node()->id();
+  }
 
   if (is_selected)
     selection_events_map[key].added.push_back(node);
@@ -1251,20 +1252,20 @@ void BrowserAccessibilityManagerWin::HandleSelectedStateChanged(
     selection_events_map[key].removed.push_back(node);
 }
 
-// static
 void BrowserAccessibilityManagerWin::FinalizeSelectionEvents(
     SelectionEventsMap& selection_events_map,
     IsSelectedPredicate is_selected_predicate,
     FirePlatformSelectionEventsCallback fire_platform_events_callback) {
   for (auto&& selected : selection_events_map) {
-    BrowserAccessibility* key_node = selected.first;
+    AXNodeID key_node_id = selected.first;
     SelectionEvents& changes = selected.second;
 
     // Determine if |node| is a selection container with one selected child in
     // order to optimize what platform events are sent.
     BrowserAccessibility* container = nullptr;
     BrowserAccessibility* only_selected_child = nullptr;
-    if (IsContainerWithSelectableChildren(key_node->GetRole())) {
+    BrowserAccessibility* key_node = GetFromID(key_node_id);
+    if (key_node && IsContainerWithSelectableChildren(key_node->GetRole())) {
       container = key_node;
       for (auto it = container->InternalChildrenBegin();
            it != container->InternalChildrenEnd(); ++it) {

@@ -125,7 +125,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerWin
     ~SelectionEvents();
   };
 
-  using SelectionEventsMap = std::map<BrowserAccessibility*, SelectionEvents>;
+  using SelectionEventsMap = std::map<AXNodeID, SelectionEvents>;
   using IsSelectedPredicate =
       base::RepeatingCallback<bool(BrowserAccessibility*)>;
   using FirePlatformSelectionEventsCallback =
@@ -147,7 +147,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerWin
       BrowserAccessibility* node,
       bool is_selected);
 
-  static void FinalizeSelectionEvents(
+  void FinalizeSelectionEvents(
       SelectionEventsMap& selection_events_map,
       IsSelectedPredicate is_selected_predicate,
       FirePlatformSelectionEventsCallback fire_platform_events_callback);
