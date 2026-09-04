@@ -231,6 +231,8 @@ try_.orchestrator_builder(
         "chromium.enable_cleandead": 100,
         # go/rts-project-proposal
         "chromium_rts.filter_file_analysis": 100,
+        # crbug.com/40280175
+        "chromium_checkout.expand_submodules": 100,
         # TODO(https://crbug.com/521401232): Increase to 100
         "luci.buildbucket.run_in_turboci": 100,
     },
