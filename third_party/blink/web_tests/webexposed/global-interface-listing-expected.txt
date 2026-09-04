@@ -2751,6 +2751,10 @@ interface Element : Node
 interface ElementBehavior
     attribute @@toStringTag
     method constructor
+interface ElementGeometryUpdateEvent : Event
+    attribute @@toStringTag
+    getter elements
+    method constructor
 interface ElementImage
     attribute @@toStringTag
     getter height
@@ -3920,6 +3924,7 @@ interface HTMLCanvasElement : HTMLElement
     attribute @@toStringTag
     getter height
     getter layoutSubtree
+    getter onelementgeometryupdate
     getter onpaint
     getter width
     method captureElementImage
@@ -3936,6 +3941,7 @@ interface HTMLCanvasElement : HTMLElement
     method updateElementGeometry
     setter height
     setter layoutSubtree
+    setter onelementgeometryupdate
     setter onpaint
     setter width
 interface HTMLCollection

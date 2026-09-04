@@ -31,6 +31,8 @@ blink_core_sources_html = [
   "canvas/canvas_rendering_context_host.h",
   "canvas/canvas_resource_tracker.cc",
   "canvas/canvas_resource_tracker.h",
+  "canvas/element_geometry_update_event.cc",
+  "canvas/element_geometry_update_event.h",
   "canvas/element_image.cc",
   "canvas/element_image.h",
   "canvas/html_canvas_accessibility_manager.cc",

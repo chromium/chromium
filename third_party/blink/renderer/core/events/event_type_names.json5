@@ -107,6 +107,7 @@
     "dragstart",
     "drop",
     "durationchange",
+    "elementgeometryupdate",
     "emptied",
     "encrypted",
     "end",

@@ -11,15 +11,21 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/optional_util.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_element_geometry_update_event_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_element_elementimage.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_update_element_geometry_options.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/offscreen_font_selector.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
+#include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -30,6 +36,7 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_factory.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_resource_tracker.h"
+#include "third_party/blink/renderer/core/html/canvas/element_geometry_update_event.h"
 #include "third_party/blink/renderer/core/html/canvas/element_image.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
 #include "third_party/blink/renderer/core/html/canvas/ukm_parameters.h"
@@ -50,11 +57,13 @@
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image_transform.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder_utils.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
@@ -131,46 +140,46 @@ void ClearAllRenderedTextOnMainThread(int placeholder_canvas_id) {
   }
 }
 
-void UpdateDrawnElementGeometryOnMainThread(int placeholder_canvas_id,
-                                            Element& element,
-                                            const gfx::Transform* transform,
-                                            bool update_hit_test_order) {
+void ApplyElementGeometryUpdatesOnMainThread(
+    DOMNodeId canvas_id,
+    Vector<OffscreenCanvas::ElementGeometryUpdate> updates) {
   DCHECK(IsMainThread());
-  if (auto* placeholder = OffscreenCanvasPlaceholder::GetPlaceholderCanvasById(
-          placeholder_canvas_id)) {
-    placeholder->UpdateDrawnElementGeometry(element, transform,
-                                            update_hit_test_order);
+  auto* canvas = DynamicTo<HTMLCanvasElement>(DOMNodeIds::NodeForId(canvas_id));
+  if (!canvas) {
+    return;
   }
-}
 
-void UpdateDrawnElementGeometryOnMainThread(int placeholder_canvas_id,
-                                            ElementImage& element_image,
-                                            const gfx::Transform* transform,
-                                            bool update_hit_test_order) {
-  DCHECK(IsMainThread());
-  if (auto* placeholder = OffscreenCanvasPlaceholder::GetPlaceholderCanvasById(
-          placeholder_canvas_id)) {
-    placeholder->UpdateDrawnElementGeometry(element_image, transform,
-                                            update_hit_test_order);
+  HeapVector<Member<Element>> updated_elements;
+  HeapHashSet<Member<Element>> seen_elements;
+  for (const auto& update : updates) {
+    if (Element* element =
+            DynamicTo<Element>(DOMNodeIds::NodeForId(update.element_id))) {
+      if (element->CanvasForDrawing() == canvas) {
+        if (update.clear_element_geometry) {
+          canvas->ClearDrawnElementGeometry(*element);
+        } else {
+          canvas->UpdateDrawnElementGeometry(*element,
+                                             update.transform.has_value()
+                                                 ? &update.transform.value()
+                                                 : nullptr,
+                                             update.update_hit_test_order);
+        }
+        if (seen_elements.insert(element).is_new_entry) {
+          updated_elements.push_back(element);
+        }
+      }
+    }
   }
-}
 
-void ClearDrawnElementGeometryOnMainThread(int placeholder_canvas_id,
-                                           Element& element) {
-  DCHECK(IsMainThread());
-  if (auto* placeholder = OffscreenCanvasPlaceholder::GetPlaceholderCanvasById(
-          placeholder_canvas_id)) {
-    placeholder->ClearDrawnElementGeometry(element);
+  if (updated_elements.empty()) {
+    return;
   }
-}
 
-void ClearDrawnElementGeometryOnMainThread(int placeholder_canvas_id,
-                                           ElementImage& element_image) {
-  DCHECK(IsMainThread());
-  if (auto* placeholder = OffscreenCanvasPlaceholder::GetPlaceholderCanvasById(
-          placeholder_canvas_id)) {
-    placeholder->ClearDrawnElementGeometry(element_image);
-  }
+  ElementGeometryUpdateEventInit* init =
+      ElementGeometryUpdateEventInit::Create();
+  init->setElements(updated_elements);
+  canvas->DispatchEvent(*ElementGeometryUpdateEvent::Create(
+      event_type_names::kElementgeometryupdate, init));
 }
 
 }  // namespace
@@ -257,6 +266,7 @@ void OffscreenCanvas::Dispose() {
   disposing_ = true;
   placeholder_client_ = nullptr;
   frame_dispatcher_ = nullptr;
+  pending_element_geometry_updates_.clear();
   DiscardResources();
 
   if (context_) {
@@ -949,33 +959,84 @@ void OffscreenCanvas::UpdateDrawnElementGeometry(
     Element& element,
     const gfx::Transform* transform,
     bool update_hit_test_order) {
-  UpdateDrawnElementGeometryOnMainThread(placeholder_canvas_id_, element,
-                                         transform, update_hit_test_order);
+  QueueElementGeometryUpdate(element.GetDomNodeId(), transform,
+                             update_hit_test_order);
 }
 
 void OffscreenCanvas::UpdateDrawnElementGeometry(
     ElementImage& element_image,
     const gfx::Transform* transform,
     bool update_hit_test_order) {
-  if (IsMainThread()) {
-    UpdateDrawnElementGeometryOnMainThread(placeholder_canvas_id_,
-                                           element_image, transform,
-                                           update_hit_test_order);
-  } else {
-    // TODO(paint-dev): queue update for event dispatch to main thread
-  }
+  QueueElementGeometryUpdate(element_image.GetNodeId(), transform,
+                             update_hit_test_order);
 }
 
 void OffscreenCanvas::ClearDrawnElementGeometry(Element& element) {
-  ClearDrawnElementGeometryOnMainThread(placeholder_canvas_id_, element);
+  QueueClearElementGeometry(element.GetDomNodeId());
 }
 
 void OffscreenCanvas::ClearDrawnElementGeometry(ElementImage& element_image) {
+  QueueClearElementGeometry(element_image.GetNodeId());
+}
+
+void OffscreenCanvas::QueueUpdate(ElementGeometryUpdate update) {
+  if (placeholder_canvas_id_ == kInvalidDOMNodeId) {
+    return;
+  }
+
+  bool should_enqueue_microtask = pending_element_geometry_updates_.empty();
+  pending_element_geometry_updates_.push_back(std::move(update));
+
+  if (should_enqueue_microtask) {
+    if (auto* execution_context = GetExecutionContext()) {
+      execution_context->GetAgent()->event_loop()->EnqueueMicrotask(
+          blink::BindOnce(
+              &OffscreenCanvas::ProcessPendingElementGeometryUpdates,
+              WrapWeakPersistent(this)));
+    }
+  }
+}
+
+void OffscreenCanvas::QueueElementGeometryUpdate(
+    DOMNodeId element_id,
+    const gfx::Transform* transform,
+    bool update_hit_test_order) {
+  QueueUpdate(ElementGeometryUpdate{
+      .element_id = element_id,
+      .transform = base::OptionalFromPtr(transform),
+      .update_hit_test_order = update_hit_test_order,
+      .clear_element_geometry = false,
+  });
+}
+
+void OffscreenCanvas::QueueClearElementGeometry(DOMNodeId element_id) {
+  QueueUpdate(ElementGeometryUpdate{
+      .element_id = element_id,
+      .clear_element_geometry = true,
+  });
+}
+
+void OffscreenCanvas::ProcessPendingElementGeometryUpdates() {
+  if (pending_element_geometry_updates_.empty()) {
+    return;
+  }
+
+  Vector<ElementGeometryUpdate> updates;
+  updates.swap(pending_element_geometry_updates_);
+
   if (IsMainThread()) {
-    ClearDrawnElementGeometryOnMainThread(placeholder_canvas_id_,
-                                          element_image);
+    ApplyElementGeometryUpdatesOnMainThread(placeholder_canvas_id_,
+                                            std::move(updates));
   } else {
-    // TODO(paint-dev): queue update for event dispatch to main thread
+    if (auto* context = GetTopExecutionContext()) {
+      if (auto task_runner =
+              context->GetAgentGroupSchedulerCompositorTaskRunner()) {
+        PostCrossThreadTask(
+            *task_runner, FROM_HERE,
+            CrossThreadBindOnce(&ApplyElementGeometryUpdatesOnMainThread,
+                                placeholder_canvas_id_, std::move(updates)));
+      }
+    }
   }
 }
 

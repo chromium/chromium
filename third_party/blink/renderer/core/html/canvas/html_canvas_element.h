@@ -124,6 +124,7 @@ class CORE_EXPORT HTMLCanvasElement final
   void setLayoutSubtree(bool);
   bool layoutSubtree() const;
   DEFINE_ATTRIBUTE_EVENT_LISTENER(paint, kPaint)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(elementgeometryupdate, kElementgeometryupdate)
   void requestPaint();
 
   void SetSize(gfx::Size new_size);

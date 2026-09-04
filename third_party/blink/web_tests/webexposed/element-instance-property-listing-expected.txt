@@ -592,6 +592,7 @@ html element canvas
     property getElementTransform
     property height
     property layoutSubtree
+    property onelementgeometryupdate
     property onpaint
     property requestPaint
     property toBlob

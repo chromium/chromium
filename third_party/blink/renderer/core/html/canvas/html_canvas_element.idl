@@ -38,6 +38,7 @@
 
     [RuntimeEnabled=CanvasDrawElement] attribute boolean layoutSubtree;
     [RuntimeEnabled=CanvasDrawElement] attribute EventHandler onpaint;
+    [RuntimeEnabled=CanvasDrawElement] attribute EventHandler onelementgeometryupdate;
     [RuntimeEnabled=CanvasDrawElement] void requestPaint();
     [RuntimeEnabled=CanvasDrawElement, RaisesException] DOMMatrix getElementTransform((Element or ElementImage) element, DOMMatrix draw_transform);
     // Returns the current transform applied to the Element mapping its
