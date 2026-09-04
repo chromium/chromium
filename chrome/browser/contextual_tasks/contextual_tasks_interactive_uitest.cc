@@ -1360,18 +1360,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
           lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE));
 }
 
-// TODO(crbug.com/516333831): Re-enable this test on Windows.
-// TODO(crbug.com/543925663): Re-enable this test on Linux TSAN.
-#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER))
-#define MAYBE_AddAndSubmitMultipleContextsFromComposebox \
-  DISABLED_AddAndSubmitMultipleContextsFromComposebox
-#else
-#define MAYBE_AddAndSubmitMultipleContextsFromComposebox \
-  AddAndSubmitMultipleContextsFromComposebox
-#endif
-
 IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
-                       MAYBE_AddAndSubmitMultipleContextsFromComposebox) {
+                       AddAndSubmitMultipleContextsFromComposebox) {
   const GURL kInterceptionUrl("https://www.google.com/search?udm=50");
   const GURL kGenericPageUrl1 = embedded_test_server()->GetURL("/title1.html");
   const GURL kGenericPageUrl2 = embedded_test_server()->GetURL("/title2.html");
@@ -1440,6 +1430,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
       WaitForComposeboxFilesCount(5),
 
       // 6. Submit
+      WaitForSubmitButtonEnabled(kPrimaryTab),
       ClickButton(kPrimaryTab, kSubmitButton),
 
       // 7. Verify multiple inputs in the final message
