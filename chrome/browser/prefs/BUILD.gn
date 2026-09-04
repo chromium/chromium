@@ -376,6 +376,7 @@ source_set("impl") {
       "//chrome/browser/password_manager/android:utils",
       "//chrome/browser/readaloud/android:native",
       "//chrome/browser/search_engines",
+      "//chrome/browser/ui/android/enterprise_signals_disclaimer",
       "//components/feed/core/common:feed_core_common",
       "//components/feed/core/shared_prefs:feed_shared_prefs",
       "//components/feed/core/v2:ios_shared",

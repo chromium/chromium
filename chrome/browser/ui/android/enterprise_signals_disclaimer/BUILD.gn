@@ -4,6 +4,35 @@
 
 import("//build/config/android/rules.gni")
 
+source_set("enterprise_signals_disclaimer") {
+  sources = [
+    "acknowledgment_manager.cc",
+    "acknowledgment_manager.h",
+  ]
+  deps = [
+    "//base",
+    "//components/prefs",
+    "//components/signin/public/base",
+    "//google_apis",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "acknowledgment_manager_unittest.cc" ]
+  deps = [
+    ":enterprise_signals_disclaimer",
+    "//base",
+    "//chrome/test:test_support",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/signin/public/base",
+    "//content/test:test_support",
+    "//google_apis",
+    "//testing/gtest",
+  ]
+}
+
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/BottomSheetDisclaimerHost.java",
