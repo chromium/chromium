@@ -100,6 +100,7 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
       {"greyDefaultColorName", IDS_NTP_CUSTOMIZE_GREY_DEFAULT_LABEL},
       {"managedColorsBody", IDS_NTP_THEME_MANAGED_DIALOG_BODY},
       {"managedColorsTitle", IDS_NTP_THEME_MANAGED_DIALOG_TITLE},
+      {"ok", IDS_OK},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 
