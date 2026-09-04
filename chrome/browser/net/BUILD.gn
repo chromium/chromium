@@ -494,6 +494,7 @@ if (!is_android) {
       "//chrome/browser/ui/login",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/test:test_support",
+      "//chrome/test/base:test_launcher_utils",
       "//chrome/test/base:web_feature_histogram_tester",
       "//components/component_updater/installer_policies",
       "//components/cookie_config",

@@ -116,8 +116,10 @@ source_set("browser_tests") {
   deps = [
     "//chrome/app_shim",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/web_applications/test:test_support_ui",
     "//chrome/browser/web_applications:web_applications_test_support",
-    "//chrome/test:test_support",
+    "//chrome/test/base:test_launcher_utils",
+    "//chrome/test/base:test_utils_mac",
     "//components/remote_cocoa/app_shim",
     "//content/test:test_support",
   ]

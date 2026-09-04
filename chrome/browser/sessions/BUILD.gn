@@ -308,6 +308,7 @@ if (!is_android) {
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
+      "//chrome/test/base:test_launcher_utils",
       "//components/infobars/content",
       "//components/javascript_dialogs",
       "//components/saved_tab_groups/internal:model",

@@ -2529,6 +2529,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/zoom",
     "//chrome/browser/web_applications/proto",
     "//chrome/test:platform_browser_tests",
+    "//chrome/test/base:test_launcher_utils",
     "//chrome/test/base:tracing",
     "//components/back_forward_cache",
     "//components/bookmarks/managed",

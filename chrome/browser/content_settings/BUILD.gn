@@ -262,6 +262,7 @@ if (!is_android) {
         "//chrome/common:chrome_features",
         "//chrome/common:constants",
         "//chrome/test:test_support",
+        "//chrome/test/base:test_launcher_utils",
         "//components/browsing_data/content",
         "//components/content_settings/core/browser:cookie_settings",
         "//components/content_settings/core/common",

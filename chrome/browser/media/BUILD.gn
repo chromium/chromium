@@ -227,6 +227,7 @@ source_set("browser_tests") {
       "//chrome/browser/ui:recently_audible_helper",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/test:test_support_ui",
+      "//chrome/test/base:test_launcher_utils",
       "//components/cdm/common:buildflags",
       "//components/no_state_prefetch/browser",
       "//components/no_state_prefetch/common",
