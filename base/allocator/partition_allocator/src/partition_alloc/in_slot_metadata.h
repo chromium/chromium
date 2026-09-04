@@ -92,10 +92,14 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
   //                               - Increased in Acquire()
   //                               - Decreased in Release()
   //
-  // 30     has_requested_size     Whether or not the allocation size originally
-  //                               requested by caller is available at the slot
-  //                               end. Used by Checked Span: see
+  // 30     has_smuggled_size      Whether or not the allocation size originally
+  //                               requested by caller is available at the end
+  //                               of the slot's usable size. This is "smuggled"
+  //                               in on allocation. Used by Checked Span: see
   //                               https://crbug.com/484171909.
+  //                               N.b. this is distinct from the
+  //                               `requested_size_` member, used in a different
+  //                               build config.
   //
   // 31     request_quarantine     When set, PA will quarantine the memory in
   //                               Scheduler-Loop quarantine.
@@ -110,7 +114,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
   // 0      is_allocated
   // 1-30   ptr_count
   //
-  // 31     has_requested_size
+  // 31     has_smuggled_size
   // 32     dangling_detected      A dangling raw_ptr<> has been detected.
   // 33     request_quarantine
   //
@@ -137,8 +141,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
   // The most significant bit of the refcount is reserved to prevent races with
   // overflow detection.
   static constexpr CountType kMaxPtrCount = BitField<CountType>::Mask(1, 28);
-  static constexpr CountType kHasRequestedSizeBit =
-      BitField<CountType>::Bit(30);
+  static constexpr CountType kHasSmuggledSizeBit = BitField<CountType>::Bit(30);
   static constexpr CountType kRequestQuarantineBit =
       BitField<CountType>::Bit(31);
   static constexpr CountType kDanglingRawPtrDetectedBit =
@@ -152,8 +155,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
   // The most significant bit of the refcount is reserved to prevent races with
   // overflow detection.
   static constexpr auto kMaxPtrCount = BitField<CountType>::Mask(1, 29);
-  static constexpr CountType kHasRequestedSizeBit =
-      BitField<CountType>::Bit(31);
+  static constexpr CountType kHasSmuggledSizeBit = BitField<CountType>::Bit(31);
   static constexpr auto kDanglingRawPtrDetectedBit =
       BitField<CountType>::Bit(32);
   static constexpr CountType kRequestQuarantineBit =
@@ -168,7 +170,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
 
   // Quick check to assert these masks do not overlap.
   static_assert((kMemoryHeldByAllocatorBit + kPtrCountMask +
-                 kUnprotectedPtrCountMask + kHasRequestedSizeBit +
+                 kUnprotectedPtrCountMask + kHasSmuggledSizeBit +
                  kDanglingRawPtrDetectedBit + kRequestQuarantineBit) ==
                 std::numeric_limits<CountType>::max());
 
@@ -391,18 +393,18 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
   // `Set...()` and `Clear...()` are only called on (re)allocation,
   // which is understood to be thread-unsafe.
   //
-  // `IsRequestedSizeAvailable()` racing with the other methods would
+  // `IsSmuggledSizeAvailable()` racing with the other methods would
   // imply that the caller is minting a Checked Span _while reallocating
   // the underlying data_. We don't attempt to defend against such
   // undefined behavior.
-  PA_ALWAYS_INLINE void SetHasRequestedSizeBit() {
-    count_.fetch_or(kHasRequestedSizeBit, std::memory_order_relaxed);
+  PA_ALWAYS_INLINE void SetHasSmuggledSizeBit() {
+    count_.fetch_or(kHasSmuggledSizeBit, std::memory_order_relaxed);
   }
-  PA_ALWAYS_INLINE void ClearHasRequestedSizeBit() {
-    count_.fetch_and(~kHasRequestedSizeBit, std::memory_order_relaxed);
+  PA_ALWAYS_INLINE void ClearHasSmuggledSizeBit() {
+    count_.fetch_and(~kHasSmuggledSizeBit, std::memory_order_relaxed);
   }
-  PA_ALWAYS_INLINE bool IsRequestedSizeAvailable() {
-    return count_.load(std::memory_order_relaxed) & kHasRequestedSizeBit;
+  PA_ALWAYS_INLINE bool IsSmuggledSizeAvailable() const {
+    return count_.load(std::memory_order_relaxed) & kHasSmuggledSizeBit;
   }
 #endif  // PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
 
