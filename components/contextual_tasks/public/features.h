@@ -70,8 +70,6 @@ BASE_DECLARE_FEATURE(kContextualTasksSendContextualInputUploadType);
 // contextual tasks URL and redirect to aim URL.
 BASE_DECLARE_FEATURE(kContextualTasksUrlRedirectToAimUrl);
 
-// Enables the use of Stratus dark mode colors.
-BASE_DECLARE_FEATURE(kContextualTasksUseStratusDarkModeColors);
 
 // If enabled, animates the caret.
 BASE_DECLARE_FEATURE(kContextualTasksAnimatedCaret);
@@ -457,8 +455,6 @@ extern bool ShouldEnableCookiePrefetch();
 // from AIM.
 extern bool ShouldEnableLockAndUnlockInputCapability();
 
-// Returns whether the Stratus dark mode colors should be used.
-extern bool ShouldUseStratusDarkModeColors();
 
 // Returns whether the file hint is enabled in the composebox.
 extern bool GetEnableFileHint();

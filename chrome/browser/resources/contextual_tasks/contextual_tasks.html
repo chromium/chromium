@@ -23,9 +23,6 @@
       /* This is only used for first load. */
       @media (prefers-color-scheme: dark) {
         body {
-          background-color: rgba(16, 18, 23, 1);
-        }
-        body[use-stratus-dark-mode-colors="true"] {
           background-color: rgba(34, 36, 43, 1);
         }
       }
@@ -41,7 +38,7 @@
       }
     </style>
   </head>
-  <body use-stratus-dark-mode-colors="$i18n{useStratusDarkModeColorsAttr}">
+  <body>
     <contextual-tasks-app></contextual-tasks-app>
     <script type="module" src="app.js"></script>
   </body>

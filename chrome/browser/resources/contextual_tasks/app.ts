@@ -242,10 +242,6 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
         type: Boolean,
         reflect: true,
       },
-      useStratusDarkModeColors_: {
-        type: Boolean,
-        reflect: true,
-      },
       isInputLocked_: {
         type: Boolean,
       },
@@ -371,8 +367,6 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
   protected accessor inNlm_: boolean = false;
   protected accessor isGhostLoaderVisible_: boolean =
       loadTimeData.getBoolean('isGhostLoaderVisible');
-  protected accessor useStratusDarkModeColors_: boolean =
-      loadTimeData.getBoolean('useStratusDarkModeColors');
   protected accessor isInputLocked_: boolean = false;
   protected accessor isLoadingZeroStateFromResults_: boolean = false;
   // The bounds of the composebox that are forced by the embedded page. These
@@ -853,9 +847,13 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
 
+    if (changedPrivateProperties.has('darkMode_')) {
+      this.updateBackgroundColor_();
+    }
+
     // Fetch the common search params before setting up the request overrides.
-    // TODO(crbug.com/463729504): Add checking to see if dark mode changed.
-    if (changedPrivateProperties.has('isShownInTab_')) {
+    if (changedPrivateProperties.has('isShownInTab_') ||
+        changedPrivateProperties.has('darkMode_')) {
       this.updateCommonSearchParams();
     }
 
@@ -1943,9 +1941,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
 
   private updateBackgroundColor_() {
     if (this.darkMode_) {
-      document.body.style.backgroundColor = this.useStratusDarkModeColors_ ?
-          'rgba(34, 36, 43, 1)' :
-          'rgba(16, 18, 23, 1)';
+      document.body.style.backgroundColor = 'rgba(34, 36, 43, 1)';
     } else {
       document.body.style.backgroundColor = 'rgba(255, 255, 255, 1)';
     }
