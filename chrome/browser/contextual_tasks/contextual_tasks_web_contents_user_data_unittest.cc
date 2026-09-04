@@ -245,7 +245,7 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
 
 TEST_F(
     ContextualTasksWebContentsUserDataTest,
-    GetOrCreateInputStateModel_InvalidatesStaleEmptyConfigWhenValidConfigAvailable) {
+    GetOrCreateInputStateModel_UpdatesStaleEmptyConfigWhenValidConfigAvailable) {
   // Prepare a valid searchbox config containing active tool definitions.
   omnibox::SearchboxConfig valid_config;
   valid_config.mutable_rule_set();
@@ -286,13 +286,15 @@ TEST_F(
   // A non-empty searchbox configuration becomes available.
   current_config = &valid_config;
 
-  // Calling `GetOrCreateInputStateModel` again should invalidate the stale
-  // empty cached model and create a new valid one.
+  // Calling `GetOrCreateInputStateModel` again should update the existing
+  // cached model in-place rather than invalidating it, preserving
+  // subscriptions.
   auto model_updated = user_data->GetOrCreateInputStateModel(*mock_handle);
   ASSERT_TRUE(model_updated);
   EXPECT_TRUE(model_updated->has_valid_config());
-  // The old initial weak pointer should now be null/invalidated.
-  EXPECT_FALSE(model_initial);
+  // The existing instance is updated in-place without destroying weak pointers.
+  EXPECT_TRUE(model_initial);
+  EXPECT_EQ(model_initial.get(), model_updated.get());
 
   // Reset testing factory to prevent dangling references to stack variables.
   AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(

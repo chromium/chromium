@@ -524,6 +524,14 @@ ContextualSearchboxHandler::ContextualSearchboxHandler(
               web_contents,
               this,
               screenshare_delegate)) {
+  if (auto* aim_eligibility_service =
+          AimEligibilityServiceFactory::GetForProfile(profile)) {
+    aim_eligibility_subscription_ =
+        aim_eligibility_service->RegisterEligibilityChangedCallback(
+            base::BindRepeating(
+                &ContextualSearchboxHandler::OnAimEligibilityChanged,
+                weak_ptr_factory_.GetWeakPtr()));
+  }
   InitializeInputStateModel();
   tab_favicon_helper_ = std::make_unique<ContextualSearchboxTabFaviconHelper>();
 
@@ -711,6 +719,21 @@ void ContextualSearchboxHandler::ResetInputStateModel() {
   input_state_model_.reset();
   smart_tab_sharing_active_for_thread_.reset();
   last_sent_smart_tab_sharing_active_.reset();
+}
+
+void ContextualSearchboxHandler::OnAimEligibilityChanged() {
+  if (!input_state_model_) {
+    InitializeInputStateModel();
+    return;
+  }
+  auto* aim_eligibility_service =
+      AimEligibilityServiceFactory::GetForProfile(profile_);
+  const omnibox::SearchboxConfig* config =
+      aim_eligibility_service ? aim_eligibility_service->GetSearchboxConfig()
+                              : nullptr;
+  if (config) {
+    input_state_model_->UpdateConfig(*config);
+  }
 }
 
 contextual_search::ContextualSearchMetricsRecorder*

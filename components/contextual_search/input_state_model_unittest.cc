@@ -1635,8 +1635,31 @@ TEST_F(InputStateModelTest, CopyConstructorCopiesAllRelevantFields) {
               testing::Contains(omnibox::InputType::INPUT_TYPE_LENS_IMAGE));
 }
 
+TEST_F(InputStateModelTest, IsConfigPopulated) {
+  EXPECT_FALSE(InputStateModel::IsConfigPopulated(nullptr));
+
+  omnibox::SearchboxConfig empty_config;
+  EXPECT_FALSE(InputStateModel::IsConfigPopulated(&empty_config));
+
+  omnibox::SearchboxConfig config_with_rules;
+  config_with_rules.mutable_rule_set();
+  EXPECT_TRUE(InputStateModel::IsConfigPopulated(&config_with_rules));
+
+  omnibox::SearchboxConfig config_with_tools;
+  config_with_tools.add_tool_configs();
+  EXPECT_TRUE(InputStateModel::IsConfigPopulated(&config_with_tools));
+
+  omnibox::SearchboxConfig config_with_models;
+  config_with_models.add_model_configs();
+  EXPECT_TRUE(InputStateModel::IsConfigPopulated(&config_with_models));
+
+  omnibox::SearchboxConfig config_with_input_types;
+  config_with_input_types.add_input_type_configs();
+  EXPECT_TRUE(InputStateModel::IsConfigPopulated(&config_with_input_types));
+}
+
 TEST_F(InputStateModelTest, HasValidConfig) {
-  // Empty config has no rule_set -> has_valid_config() should be false.
+  // Empty config -> has_valid_config() should be false.
   omnibox::SearchboxConfig empty_config;
   auto model_without_config = std::make_unique<InputStateModel>(
       session_handle_, empty_config, active_url_, /*is_off_the_record=*/false,
@@ -1659,6 +1682,58 @@ TEST_F(InputStateModelTest, HasValidConfig) {
 
   InputStateModel copied_valid(*model_with_config, session_handle_);
   EXPECT_TRUE(copied_valid.has_valid_config());
+}
+
+TEST_F(InputStateModelTest, UpdateConfig) {
+  omnibox::SearchboxConfig empty_config;
+  auto model = std::make_unique<InputStateModel>(
+      session_handle_, empty_config, active_url_, /*is_off_the_record=*/false,
+      /*is_signed_in=*/false,
+      /*browser_identity_matches_aim_identity=*/false);
+  EXPECT_FALSE(model->has_valid_config());
+  EXPECT_TRUE(model->GetInputState().allowed_models.empty());
+
+  int notify_count = 0;
+  base::CallbackListSubscription subscription =
+      model->subscribe(base::BindRepeating(
+          [](int* count, const InputState&) { (*count)++; }, &notify_count));
+
+  // Updating with another empty config should return false and not notify.
+  EXPECT_FALSE(model->UpdateConfig(empty_config));
+  EXPECT_EQ(0, notify_count);
+  EXPECT_FALSE(model->has_valid_config());
+
+  // Updating with a populated config should populate models and notify.
+  omnibox::SearchboxConfig populated_config;
+  populated_config.mutable_rule_set();
+  auto* model_config = populated_config.add_model_configs();
+  model_config->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+  auto* tool_config = populated_config.add_tool_configs();
+  tool_config->set_tool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+
+  EXPECT_TRUE(model->UpdateConfig(populated_config));
+  EXPECT_EQ(1, notify_count);
+  EXPECT_TRUE(model->has_valid_config());
+  EXPECT_THAT(
+      model->GetInputState().allowed_models,
+      testing::ElementsAre(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR));
+  EXPECT_THAT(model->GetInputState().allowed_tools,
+              testing::ElementsAre(omnibox::ToolMode::TOOL_MODE_CANVAS));
+
+  // Updating with an identical config should be a no-op and not notify again.
+  EXPECT_FALSE(model->UpdateConfig(populated_config));
+  EXPECT_EQ(1, notify_count);
+
+  // Updating with a modified config should succeed and notify again.
+  auto* model_config_2 = populated_config.add_model_configs();
+  model_config_2->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+
+  EXPECT_TRUE(model->UpdateConfig(populated_config));
+  EXPECT_EQ(2, notify_count);
+  EXPECT_THAT(
+      model->GetInputState().allowed_models,
+      testing::ElementsAre(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR,
+                           omnibox::ModelMode::MODEL_MODE_GEMINI_PRO));
 }
 
 }  // namespace contextual_search

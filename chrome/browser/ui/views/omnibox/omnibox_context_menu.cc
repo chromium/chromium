@@ -58,30 +58,11 @@ OmniboxContextMenu::OmniboxContextMenu(views::Widget* parent_widget,
       std::move(menu), views::MenuRunner::HAS_MNEMONICS |
                            views::MenuRunner::MENU_ITEM_CONTEXT_MENU);
   ui::SimpleMenuModel* menu_model = controller_->menu_model();
-  menu_model->SetMenuModelDelegate(this);
-  // Register `this` to listen for live icon updates on the secondary submenu.
-  if (controller_->shared_tabs_menu_model()) {
-    controller_->shared_tabs_menu_model()->SetMenuModelDelegate(this);
+  if (menu_model && menu_model->menu_model_delegate() != this) {
+    menu_model->SetMenuModelDelegate(this);
   }
 
-  for (size_t i = 0; i < menu_model->GetItemCount(); ++i) {
-    // Use default vertical margins for top-level items.
-    views::MenuItemView* item =
-        views::MenuModelAdapter::AppendMenuItemFromModel(
-            menu_model, i, menu_, menu_model->GetCommandIdAt(i));
-    // If the top-level item is a real submenu container, recursively append its
-    // underlying child items (tabs) to ensure the menu tree is fully populated.
-    if (item && menu_model->GetTypeAt(i) == ui::MenuModel::TYPE_SUBMENU) {
-      ui::MenuModel* submodel = menu_model->GetSubmenuModelAt(i);
-      if (submodel) {
-        for (size_t j = 0; j < submodel->GetItemCount(); ++j) {
-          // Use default vertical margins for submenu items.
-          views::MenuModelAdapter::AppendMenuItemFromModel(
-              submodel, j, item, submodel->GetCommandIdAt(j));
-        }
-      }
-    }
-  }
+  BuildMenuTree();
 }
 
 int OmniboxContextMenu::GetMaxWidthForMenu(views::MenuItemView* menu) {
@@ -279,6 +260,41 @@ void OmniboxContextMenu::OnIconChanged(int command_id) {
   if (menu_item) {
     menu_item->SetIcon(model->GetIconAt(index.value()));
   }
+}
+
+void OmniboxContextMenu::BuildMenuTree() {
+  if (menu_->HasSubmenu()) {
+    menu_->GetSubmenu()->RemoveAllChildViews();
+  }
+  ui::SimpleMenuModel* menu_model = controller_->menu_model();
+  if (controller_->shared_tabs_menu_model() &&
+      controller_->shared_tabs_menu_model()->menu_model_delegate() != this) {
+    controller_->shared_tabs_menu_model()->SetMenuModelDelegate(this);
+  }
+  for (size_t i = 0; i < menu_model->GetItemCount(); ++i) {
+    // Use default vertical margins for top-level items.
+    views::MenuItemView* item =
+        views::MenuModelAdapter::AppendMenuItemFromModel(
+            menu_model, i, menu_, menu_model->GetCommandIdAt(i));
+    // If the top-level item is a real submenu container, recursively append its
+    // underlying child items (tabs) to ensure the menu tree is fully populated.
+    if (item && menu_model->GetTypeAt(i) == ui::MenuModel::TYPE_SUBMENU) {
+      ui::MenuModel* submodel = menu_model->GetSubmenuModelAt(i);
+      CHECK(submodel);
+      for (size_t j = 0; j < submodel->GetItemCount(); ++j) {
+        // Use default vertical margins for submenu items.
+        views::MenuModelAdapter::AppendMenuItemFromModel(
+            submodel, j, item, submodel->GetCommandIdAt(j));
+      }
+    }
+  }
+  if (menu_runner_) {
+    menu_->ChildrenChanged();
+  }
+}
+
+void OmniboxContextMenu::OnMenuStructureChanged() {
+  BuildMenuTree();
 }
 
 int OmniboxContextMenu::GetMinimumMenuWidth(const views::MenuItemView* menu) const {

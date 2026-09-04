@@ -209,6 +209,11 @@ OmniboxContextMenuController::OmniboxContextMenuController(
     if (contextual_searchbox_handler->input_state_model()) {
       input_state_ =
           contextual_searchbox_handler->input_state_model()->GetInputState();
+      input_state_subscription_ =
+          contextual_searchbox_handler->input_state_model()->subscribe(
+              base::BindRepeating(
+                  &OmniboxContextMenuController::OnInputStateChanged,
+                  weak_ptr_factory_.GetWeakPtr()));
     }
     contextual_searchbox_handler->GetInputState(
         base::BindOnce(&OmniboxContextMenuController::OnGetInputState,
@@ -755,8 +760,42 @@ void OmniboxContextMenuController::OnFaviconDataAvailable(
 
 void OmniboxContextMenuController::OnGetInputState(
     const std::optional<omnibox::InputState>& input_state) {
+  if (!input_state_subscription_) {
+    auto* contextual_searchbox_handler = GetContextualSearchboxHandler();
+    if (contextual_searchbox_handler &&
+        contextual_searchbox_handler->input_state_model()) {
+      input_state_subscription_ =
+          contextual_searchbox_handler->input_state_model()->subscribe(
+              base::BindRepeating(
+                  &OmniboxContextMenuController::OnInputStateChanged,
+                  weak_ptr_factory_.GetWeakPtr()));
+    }
+  }
   if (input_state) {
-    input_state_ = *input_state;
+    OnInputStateChanged(*input_state);
+  }
+}
+
+void OmniboxContextMenuController::OnInputStateChanged(
+    const omnibox::InputState& new_state) {
+  input_state_ = new_state;
+  input_type_info_.clear();
+  input_type_for_command_id_.clear();
+  tool_info_.clear();
+  tool_for_command_id_.clear();
+  model_info_.clear();
+  model_for_command_id_.clear();
+  InitializeMenuItemInfo();
+  menu_model_->Clear();
+  shared_tabs_menu_model_.reset();
+  next_command_id_ = kMinOmniboxContextMenuRecentTabsCommandId;
+  std::optional<size_t> max_suggestions = GetMaxTabSuggestions();
+  min_tools_and_models_command_id_ =
+      kMinOmniboxContextMenuRecentTabsCommandId +
+      static_cast<int>(max_suggestions.value_or(0));
+  BuildMenu();
+  if (menu_model_->menu_model_delegate()) {
+    menu_model_->menu_model_delegate()->OnMenuStructureChanged();
   }
 }
 
@@ -1482,7 +1521,8 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
     if (use_input_state_model) {
       if (auto it = input_type_for_command_id_.find(id);
           it != input_type_for_command_id_.end()) {
-        if (it->second == omnibox::InputType::INPUT_TYPE_DRIVE) {
+        const omnibox::InputType input_type = it->second;
+        if (input_type == omnibox::InputType::INPUT_TYPE_DRIVE) {
           if (contextual_searchbox_handler) {
             contextual_searchbox_handler->GetDriveDisclaimerStatus(
                 base::BindOnce(
@@ -1513,7 +1553,7 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
         }
         file_selector_->OpenFileUploadDialog(
             web_contents_.get(),
-            /*is_image=*/it->second ==
+            /*is_image=*/input_type ==
                 omnibox::InputType::INPUT_TYPE_LENS_IMAGE,
             GetEditModel(),
             OmniboxPopupFileSelector::CreateImageEncodingOptions(),
@@ -1523,25 +1563,28 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
 
       if (auto it = tool_for_command_id_.find(id);
           it != tool_for_command_id_.end()) {
+        const omnibox::ToolMode tool_mode = it->second;
+        RecordContextMenuItemSelection(sliced_prefix, id);
         if (contextual_searchbox_handler) {
           contextual_searchbox_handler->SetActiveToolMode(
-              it->second,
+              tool_mode,
               /*is_set_by_aim=*/false);
-          contextual_searchbox_handler->RecordToolSelectionAction(it->second);
+          contextual_searchbox_handler->RecordToolSelectionAction(tool_mode);
         }
 
-        RecordContextMenuItemSelection(sliced_prefix, id);
         OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu);
         return;
       }
 
       if (auto it = model_for_command_id_.find(id);
           it != model_for_command_id_.end()) {
+        const omnibox::ModelMode model_mode = it->second;
+        RecordContextMenuItemSelection(sliced_prefix, id);
         if (contextual_searchbox_handler) {
           contextual_searchbox_handler->SetActiveModelMode(
-              it->second,
+              model_mode,
               /*is_set_by_aim=*/false);
-          contextual_searchbox_handler->RecordModelSelectionAction(it->second);
+          contextual_searchbox_handler->RecordModelSelectionAction(model_mode);
         }
         if (is_aim_popup_open) {
           if (auto* omnibox_popup_ui = GetOmniboxPopupUI()) {
@@ -1551,7 +1594,6 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
           }
         }
 
-        RecordContextMenuItemSelection(sliced_prefix, id);
         OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu);
         return;
       }

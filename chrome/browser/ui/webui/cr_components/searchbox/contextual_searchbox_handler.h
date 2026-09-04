@@ -324,6 +324,7 @@ class ContextualSearchboxHandler
 
   // Resets `input_state_model_`.
   void ResetInputStateModel();
+  void OnAimEligibilityChanged();
   void SetActiveToolMode(omnibox::ToolMode tool, bool is_set_by_aim) override;
   void RecordToolSelectionAction(omnibox::ToolMode tool) override;
   void SetActiveModelMode(omnibox::ModelMode model,
@@ -527,6 +528,7 @@ class ContextualSearchboxHandler
       tab_list_observation_{this};
 
   std::unique_ptr<ContextualSearchboxTabFaviconHelper> tab_favicon_helper_;
+  base::CallbackListSubscription aim_eligibility_subscription_;
 
  protected:
   std::optional<bool> smart_tab_sharing_active_for_thread_;

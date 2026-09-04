@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_CONTEXTUAL_SEARCH_INPUT_STATE_MODEL_H_
 #define COMPONENTS_CONTEXTUAL_SEARCH_INPUT_STATE_MODEL_H_
 
+#include <string>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -66,6 +67,10 @@ class InputStateModel {
   // searchbox config.
   bool has_valid_config() const { return has_valid_config_; }
 
+  // Returns true if `config` is non-null and contains rules or configuration
+  // entries for tools, models, or input types.
+  static bool IsConfigPopulated(const omnibox::SearchboxConfig* config);
+
   // Returns the current input types from the session handle.
   static std::vector<InputType> GetCurrentInputTypes(
       const contextual_search::ContextualSearchSessionHandle* session_handle);
@@ -75,6 +80,12 @@ class InputStateModel {
 
   // Initializes the model and notifies subscribers of the initial state.
   void Initialize();
+
+  // Updates the searchbox configuration. If `config` contains new or updated
+  // configuration, repopulates allowed tools, models, and inputs, and notifies
+  // subscribers. Returns true if the configuration changed and subscribers
+  // were notified.
+  bool UpdateConfig(const omnibox::SearchboxConfig& config);
 
   // Set a new tool.
   void setActiveTool(ToolMode tool);
@@ -168,8 +179,12 @@ class InputStateModel {
   // Returns a rule for a given `tool`.
   const omnibox::ToolRule* GetToolRule(ToolMode tool) const;
 
+  // Repopulates rules, tools, and models from `config`.
+  void PopulateConfig(const omnibox::SearchboxConfig& config);
+
   InputState state_;
   omnibox::RuleSet rule_set_;
+  std::string serialized_config_;
   base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
       session_handle_;
   base::RepeatingCallbackList<void(const InputState&)> subscribers_;

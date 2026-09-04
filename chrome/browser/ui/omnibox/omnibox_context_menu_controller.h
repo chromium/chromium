@@ -229,6 +229,7 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
       int command_id,
       const favicon_base::FaviconImageResult& image_result);
   void OnGetInputState(const std::optional<omnibox::InputState>& input_state);
+  void OnInputStateChanged(const omnibox::InputState& new_state);
 
   void UpdateSearchboxContextToolMode(omnibox::ToolMode tool_mode);
 
@@ -297,6 +298,8 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
 
   mutable std::optional<std::vector<OmniboxContextMenuController::TabInfo>>
       cached_recent_tabs_;
+
+  base::CallbackListSubscription input_state_subscription_;
 
   base::WeakPtrFactory<OmniboxContextMenuController> weak_ptr_factory_{this};
 };

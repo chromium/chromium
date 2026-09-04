@@ -249,75 +249,7 @@ InputStateModel::InputStateModel(
       browser_identity_matches_aim_identity_(
           browser_identity_matches_aim_identity),
       current_url_(active_url) {
-  // Track whether the model was constructed with a valid, non-empty searchbox
-  // configuration. Models created with an empty config can be invalidated once
-  // a populated config becomes available.
-  has_valid_config_ = config.has_rule_set();
-
-  SearchboxConfig mutable_config = config;
-  MaybePopulateBrowserTabInputTypeRule(&mutable_config);
-  MaybePopulateDriveInputTypeRule(&mutable_config);
-
-  if (mutable_config.has_rule_set()) {
-    rule_set_ = mutable_config.rule_set();
-
-    // Initialize allowed tools, models, inputs in `state_`.
-    state_.allowed_tools.reserve(mutable_config.tool_configs().size());
-    for (const auto& tool_config : mutable_config.tool_configs()) {
-      if (tool_config.hide_from_menu()) {
-        continue;
-      }
-      if (tool_config.tool() == omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD) {
-        continue;
-      }
-      if (is_off_the_record_ &&
-          tool_config.tool() == omnibox::ToolMode::TOOL_MODE_IMAGE_GEN) {
-        continue;
-      }
-      state_.allowed_tools.push_back(tool_config.tool());
-    }
-    state_.allowed_models.reserve(mutable_config.model_configs().size());
-    for (const auto& model_config : mutable_config.model_configs()) {
-      state_.allowed_models.push_back(model_config.model());
-    }
-    configured_input_types_.reserve(mutable_config.input_type_configs().size());
-    for (const auto& input_type_config : mutable_config.input_type_configs()) {
-      if (input_type_config.has_input_type()) {
-        configured_input_types_.push_back(input_type_config.input_type());
-      }
-    }
-    state_.tool_configs.reserve(mutable_config.tool_configs_size());
-    for (const auto& tool_config : mutable_config.tool_configs()) {
-      state_.tool_configs.push_back(tool_config);
-    }
-    state_.model_configs.reserve(mutable_config.model_configs_size());
-    for (const auto& model_config : mutable_config.model_configs()) {
-      state_.model_configs.push_back(model_config);
-    }
-    state_.input_type_configs.reserve(mutable_config.input_type_configs_size());
-    for (const auto& input_type_config : mutable_config.input_type_configs()) {
-      state_.input_type_configs.push_back(input_type_config);
-    }
-    if (mutable_config.has_tools_section_config()) {
-      state_.tools_section_config = mutable_config.tools_section_config();
-    }
-    if (mutable_config.has_model_section_config()) {
-      state_.model_section_config = mutable_config.model_section_config();
-    }
-    if (mutable_config.has_hint_text()) {
-      state_.hint_text = mutable_config.hint_text();
-    }
-    if (rule_set_.has_max_total_inputs()) {
-      state_.max_total_inputs = rule_set_.max_total_inputs();
-    }
-    for (const auto& rule : rule_set_.input_type_rules()) {
-      if (rule.has_input_type() && rule.has_max_instance()) {
-        state_.max_inputs_by_type[rule.input_type()] = rule.max_instance();
-      }
-    }
-  }
-
-
+  PopulateConfig(config);
 
   state_.active_tool = omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
   state_.is_canvas_query_submitted = false;
@@ -329,7 +261,7 @@ InputStateModel::InputStateModel(
       state_.is_canvas_query_submitted = true;
     }
   }
-  // the initial model should be the first allowed model, but can be
+  // The initial model should be the first allowed model, but can be
   // overridden by parameters in the active web contents URL.
   state_.active_model = state_.GetDefaultModel();
 
@@ -344,6 +276,114 @@ InputStateModel::InputStateModel(
   updateDisabledState();
 }
 
+void InputStateModel::PopulateConfig(const SearchboxConfig& config) {
+  has_valid_config_ = IsConfigPopulated(&config);
+  serialized_config_ = config.SerializeAsString();
+
+  SearchboxConfig mutable_config = config;
+  MaybePopulateBrowserTabInputTypeRule(&mutable_config);
+  MaybePopulateDriveInputTypeRule(&mutable_config);
+
+  if (mutable_config.has_rule_set()) {
+    rule_set_ = mutable_config.rule_set();
+
+    state_.allowed_tools.clear();
+    state_.allowed_tools.reserve(mutable_config.tool_configs().size());
+    for (const auto& tool_config : mutable_config.tool_configs()) {
+      if (tool_config.hide_from_menu()) {
+        continue;
+      }
+      if (tool_config.tool() == omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD) {
+        continue;
+      }
+      if (is_off_the_record_ &&
+          tool_config.tool() == omnibox::ToolMode::TOOL_MODE_IMAGE_GEN) {
+        continue;
+      }
+      state_.allowed_tools.push_back(tool_config.tool());
+    }
+    state_.allowed_models.clear();
+    state_.allowed_models.reserve(mutable_config.model_configs().size());
+    for (const auto& model_config : mutable_config.model_configs()) {
+      state_.allowed_models.push_back(model_config.model());
+    }
+    configured_input_types_.clear();
+    configured_input_types_.reserve(mutable_config.input_type_configs().size());
+    for (const auto& input_type_config : mutable_config.input_type_configs()) {
+      if (input_type_config.has_input_type()) {
+        configured_input_types_.push_back(input_type_config.input_type());
+      }
+    }
+    state_.tool_configs.clear();
+    state_.tool_configs.reserve(mutable_config.tool_configs_size());
+    for (const auto& tool_config : mutable_config.tool_configs()) {
+      state_.tool_configs.push_back(tool_config);
+    }
+    state_.model_configs.clear();
+    state_.model_configs.reserve(mutable_config.model_configs_size());
+    for (const auto& model_config : mutable_config.model_configs()) {
+      state_.model_configs.push_back(model_config);
+    }
+    state_.input_type_configs.clear();
+    state_.input_type_configs.reserve(mutable_config.input_type_configs_size());
+    for (const auto& input_type_config : mutable_config.input_type_configs()) {
+      state_.input_type_configs.push_back(input_type_config);
+    }
+    if (mutable_config.has_tools_section_config()) {
+      state_.tools_section_config = mutable_config.tools_section_config();
+    } else {
+      state_.tools_section_config.reset();
+    }
+    if (mutable_config.has_model_section_config()) {
+      state_.model_section_config = mutable_config.model_section_config();
+    } else {
+      state_.model_section_config.reset();
+    }
+    if (mutable_config.has_hint_text()) {
+      state_.hint_text = mutable_config.hint_text();
+    } else {
+      state_.hint_text.clear();
+    }
+    if (rule_set_.has_max_total_inputs()) {
+      state_.max_total_inputs = rule_set_.max_total_inputs();
+    } else {
+      state_.max_total_inputs = 0;
+    }
+    state_.max_inputs_by_type.clear();
+    for (const auto& rule : rule_set_.input_type_rules()) {
+      if (rule.has_input_type() && rule.has_max_instance()) {
+        state_.max_inputs_by_type[rule.input_type()] = rule.max_instance();
+      }
+    }
+  }
+}
+
+bool InputStateModel::UpdateConfig(const SearchboxConfig& config) {
+  if (!IsConfigPopulated(&config)) {
+    return false;
+  }
+  std::string serialized = config.SerializeAsString();
+  if (has_valid_config_ && serialized == serialized_config_) {
+    return false;
+  }
+
+  PopulateConfig(config);
+
+  if (!std::ranges::contains(state_.allowed_models, state_.active_model)) {
+    state_.active_model = state_.GetDefaultModel();
+  }
+  if (state_.active_tool != omnibox::ToolMode::TOOL_MODE_UNSPECIFIED &&
+      !std::ranges::contains(state_.allowed_tools, state_.active_tool)) {
+    state_.active_tool = omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
+  }
+
+  updateDisabledState();
+  RebuildAllowedInputTypes();
+
+  subscribers_.Notify(state_);
+  return true;
+}
+
 InputStateModel::InputStateModel(
     const InputStateModel& new_input_state_model,
     contextual_search::ContextualSearchSessionHandle& new_session_handle)
@@ -355,6 +395,7 @@ InputStateModel::InputStateModel(
       current_url_(new_input_state_model.current_url_) {
   state_ = new_input_state_model.state_;
   rule_set_ = new_input_state_model.rule_set_;
+  serialized_config_ = new_input_state_model.serialized_config_;
   configured_input_types_ = new_input_state_model.configured_input_types_;
   has_valid_config_ = new_input_state_model.has_valid_config_;
   is_smart_tab_sharing_active_ =
@@ -371,6 +412,14 @@ InputStateModel::InputStateModel(
 }
 
 InputStateModel::~InputStateModel() = default;
+
+// static
+bool InputStateModel::IsConfigPopulated(
+    const omnibox::SearchboxConfig* config) {
+  return config && (config->has_rule_set() || !config->tool_configs().empty() ||
+                    !config->model_configs().empty() ||
+                    !config->input_type_configs().empty());
+}
 
 // static
 std::vector<omnibox::InputType> InputStateModel::GetCurrentInputTypes(

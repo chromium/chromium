@@ -50,7 +50,6 @@ class OmniboxComposeboxHandler : public ComposeboxHandler {
       const WindowOpenDisposition disposition) override;
 
  private:
-  void OnAimEligibilityChanged();
   void OnContentSharingPolicyChanged();
   void OnPopupStateChanged(OmniboxPopupState old_state,
                            OmniboxPopupState new_state);
@@ -59,7 +58,6 @@ class OmniboxComposeboxHandler : public ComposeboxHandler {
 
   base::CallbackListSubscription popup_state_subscription_;
   PrefChangeRegistrar pref_change_registrar_;
-  base::CallbackListSubscription aim_eligibility_subscription_;
 
   base::WeakPtrFactory<OmniboxComposeboxHandler> weak_ptr_factory_{this};
 };
