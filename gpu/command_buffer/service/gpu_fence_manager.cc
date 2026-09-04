@@ -111,7 +111,13 @@ void GpuFenceManager::Destroy(bool have_context) {
     // Invalidate fences on context loss. This is a no-op for EGL fences, but
     // other platforms may want this.
     for (auto& it : gpu_fence_entries_) {
-      it.second.get()->gl_fence_->Invalidate();
+      // Entries created by CreateGpuFenceFromHandle() carry only a
+      // gfx::GpuFenceHandle and leave gl_fence_ null, so it cannot be
+      // dereferenced unconditionally here. GetGpuFence() and
+      // GpuFenceServerWait() already distinguish the two shapes.
+      if (it.second->gl_fence_) {
+        it.second->gl_fence_->Invalidate();
+      }
     }
   }
   gpu_fence_entries_.clear();
