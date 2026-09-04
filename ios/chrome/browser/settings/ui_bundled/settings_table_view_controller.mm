@@ -1860,6 +1860,9 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
     base::debug::DumpWithoutCrashing();
   }
 
+  // Stop the coordinator before restarting it, if it exists.
+  [_contentSettingsCoordinator stop];
+
   _contentSettingsCoordinator = [[ContentSettingsCoordinator alloc]
       initWithBaseNavigationController:self.navigationController
                                browser:_browser];

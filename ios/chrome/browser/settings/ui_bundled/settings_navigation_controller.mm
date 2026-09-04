@@ -927,6 +927,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
     // No need to open it.
     return;
   }
+  [self stopContentSettingsCoordinator];
   self.contentSettingsCoordinator = [[ContentSettingsCoordinator alloc]
       initWithBaseNavigationController:self
                                browser:self.browser];
