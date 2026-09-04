@@ -22,18 +22,13 @@
 
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-#include <locale.h>
-#include <stdarg.h>
-
 #include <algorithm>
 #include <limits>
 #include <string_view>
 
-#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/span_printf.h"
 #include "base/strings/string_view_util.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/dtoa.h"
@@ -230,69 +225,6 @@ String String::FoldCase() const {
   if (!impl_)
     return String();
   return impl_->FoldCase();
-}
-
-String String::Format(const char* format, ...) {
-  // vsnprintf is locale sensitive when converting floats to strings
-  // and we need it to always use a decimal point. Double check that
-  // the locale is compatible, and also that it is the default "C"
-  // locale so that we aren't just lucky. Android's locales work
-  // differently so can't check the same way there.
-  DCHECK_EQ(StringView("."), localeconv()->decimal_point);
-#if !BUILDFLAG(IS_ANDROID)
-  DCHECK_EQ(StringView("C"), setlocale(LC_NUMERIC, nullptr));
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-  va_list args;
-
-  // TODO(esprehn): base uses 1024, maybe we should use a bigger size too.
-  static const unsigned kDefaultSize = 256;
-  Vector<char, kDefaultSize> buffer(kDefaultSize);
-
-  va_start(args, format);
-  // SAFETY: The safety of this code depends on the content of `format`. Since
-  // unsafe usage is marked with UNSAFE_TODO or UNSAFE_BUFFERS at the call
-  // site, no action is required here.
-  int length = UNSAFE_BUFFERS(base::VSpanPrintf(buffer, format, args));
-  va_end(args);
-
-  // TODO(esprehn): Negative result can only happen if there's an encoding
-  // error, what's the locale set to inside blink? Can this happen?
-  if (length < 0) {
-    return String();
-  }
-
-  if (static_cast<unsigned>(length) >= buffer.size()) {
-    // Buffer is too small to hold the full result. Resize larger and try
-    // again. `length` doesn't include the NUL terminator so add space for
-    // it when growing.
-    if (length == std::numeric_limits<int>::max()) {
-      // But length can't grow if it is already at max size (and signed
-      // overflow below would be UB).
-      return String();
-    }
-    buffer.Grow(length + 1);
-
-    // We need to call va_end() and then va_start() each time we use args, as
-    // the contents of args is undefined after the call to vsnprintf according
-    // to http://man.cx/snprintf(3)
-    //
-    // Not calling va_end/va_start here happens to work on lots of systems, but
-    // fails e.g. on 64bit Linux.
-    va_start(args, format);
-    // SAFETY: See the previous comment on base::VSpanPrintf().
-    length = UNSAFE_BUFFERS(base::VSpanPrintf(buffer, format, args));
-    va_end(args);
-
-    // TODO(tsepez): can we get an error the second time around if
-    // we didn't get an error the first time? Can this happen?
-    if (length < 0) {
-      return String();
-    }
-  }
-
-  // Note that first() will CHECK() if length is OOB.
-  return String(base::span(buffer).first(base::checked_cast<size_t>(length)));
 }
 
 String String::EncodeForDebugging() const {

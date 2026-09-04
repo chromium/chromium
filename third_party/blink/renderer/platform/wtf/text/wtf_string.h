@@ -134,16 +134,6 @@ class WTF_EXPORT String {
   // For example, 266 becomes "10a", and 0 becomes "0".
   [[nodiscard]] static String HexNumber(uint64_t value);
 
-  // Takes a printf format and args and prints into a String.
-  // This function supports Latin-1 characters only.
-  // PRECONDITIONS: `format` must be compatible with subsequent args.
-  // Ideally, this would be UNSAFE_BUFFER_USAGE but there are too many
-  // callers at present to investigate.
-  //
-  // DEPRECATED: Use blink::StrCat() or blink::Format() instead.
-  [[nodiscard]] PRINTF_FORMAT(1, 2) static String
-      Format(const char* format, ...);
-
   // [string.cons] --------------------------------------------------
 
   // Construct a null string, distinguishable from an empty string.
