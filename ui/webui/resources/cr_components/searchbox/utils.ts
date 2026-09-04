@@ -49,12 +49,15 @@ export function renderTypeToClass(renderType: RenderType): string {
 
 /**
  * Records a performance mark using the Web Performance API if it has not
- * already been recorded for the current document.
+ * already been recorded for the current document. Returns true if the mark was
+ * freshly recorded, false if it was previously recorded.
  */
-export function markOnce(name: string) {
+export function markOnce(name: string): boolean {
   if (!performance.getEntriesByName(name).length) {
     performance.mark(name);
+    return true;
   }
+  return false;
 }
 
 // LINT.IfChange(StripJavascriptSchemas)
