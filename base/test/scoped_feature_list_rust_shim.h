@@ -24,6 +24,10 @@ class ScopedFeatureListRs {
                            ::rust::Str disable_features);
   void InitAndEnableFeature(const base::Feature& feature);
   void InitAndDisableFeature(const base::Feature& feature);
+  void InitAndEnableFeatureWithParameters(
+      const base::Feature& feature,
+      ::rust::Slice<const ::rust::Str> keys,
+      ::rust::Slice<const ::rust::Str> values);
 
  private:
   ScopedFeatureList scoped_feature_list_;

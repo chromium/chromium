@@ -7,17 +7,40 @@ chromium::import! {
     "//base/test:scoped_feature_list";
 }
 
-use feature::{base_feature, FeatureState};
+use feature::{base_feature, base_feature_param, FeatureState};
 use rust_gtest_interop::prelude::*;
 use scoped_feature_list::ScopedFeatureList;
 
 base_feature!(FeatureOnByDefault, FeatureState::Enabled);
 base_feature!(FeatureOffByDefault, FeatureState::Disabled);
 
+base_feature!(FeatureWithParams, FeatureState::Disabled);
+base_feature_param!(BoolParam, bool, &FeatureWithParams, "BoolParam", true);
+base_feature_param!(IntParam, i32, &FeatureWithParams, "IntParam", 42);
+
 #[gtest(RustFeatureTest, DefaultStates)]
 fn test_default_states() {
     expect_true!(FeatureOnByDefault.is_enabled());
     expect_false!(FeatureOffByDefault.is_enabled());
+}
+
+#[gtest(RustFeatureTest, FeatureParamDefaults)]
+fn test_feature_param_defaults() {
+    expect_true!(BoolParam.get());
+    expect_eq!(IntParam.get(), 42);
+}
+
+#[gtest(RustFeatureTest, FeatureParamOverrides)]
+fn test_feature_param_overrides() {
+    let mut scoped_feature_list = ScopedFeatureList::new();
+    scoped_feature_list.init_and_enable_feature_with_parameters(
+        &FeatureWithParams,
+        &[("BoolParam", "false"), ("IntParam", "1234")],
+    );
+
+    expect_true!(FeatureWithParams.is_enabled());
+    expect_false!(BoolParam.get());
+    expect_eq!(IntParam.get(), 1234);
 }
 
 #[gtest(RustFeatureTest, InitFromCommandLine)]

@@ -25,6 +25,12 @@ mod ffi {
         );
         fn InitAndEnableFeature(self: Pin<&mut ScopedFeatureListRs>, feature: &Feature);
         fn InitAndDisableFeature(self: Pin<&mut ScopedFeatureListRs>, feature: &Feature);
+        fn InitAndEnableFeatureWithParameters(
+            self: Pin<&mut ScopedFeatureListRs>,
+            feature: &Feature,
+            keys: &[&str],
+            values: &[&str],
+        );
     }
 }
 
@@ -47,6 +53,15 @@ impl ScopedFeatureList {
 
     pub fn init_and_disable_feature(&mut self, feature: &feature::Feature) {
         self.inner.pin_mut().InitAndDisableFeature(feature.into());
+    }
+
+    pub fn init_and_enable_feature_with_parameters(
+        &mut self,
+        feature: &feature::Feature,
+        params: &[(&str, &str)],
+    ) {
+        let (keys, values): (Vec<&str>, Vec<&str>) = params.iter().cloned().unzip();
+        self.inner.pin_mut().InitAndEnableFeatureWithParameters(feature.into(), &keys, &values);
     }
 }
 

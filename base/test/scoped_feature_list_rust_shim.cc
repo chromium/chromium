@@ -25,6 +25,17 @@ void ScopedFeatureListRs::InitAndDisableFeature(const base::Feature& feature) {
   scoped_feature_list_.InitAndDisableFeature(feature);
 }
 
+void ScopedFeatureListRs::InitAndEnableFeatureWithParameters(
+    const base::Feature& feature,
+    ::rust::Slice<const ::rust::Str> keys,
+    ::rust::Slice<const ::rust::Str> values) {
+  base::FieldTrialParams params;
+  for (size_t i = 0; i < keys.size(); ++i) {
+    params[std::string(keys[i])] = std::string(values[i]);
+  }
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(feature, params);
+}
+
 // On the C++ side, ScopedFeatureList is managed via RAII.
 // We can't rely on that on the Rust side. Instead, we make a UniquePtr
 // and use that to interface with it.

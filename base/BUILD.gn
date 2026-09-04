@@ -2764,7 +2764,21 @@ rust_static_library("feature") {
   crate_root = "feature.rs"
   cxx_bindings = [ "feature.rs" ]
   allow_unsafe = true
-  deps = [ "//base" ]
+  deps = [
+    ":feature_shim",
+    "//base",
+  ]
+}
+
+source_set("feature_shim") {
+  sources = [
+    "feature_rust_shim.cc",
+    "feature_rust_shim.h",
+  ]
+  deps = [
+    "//base",
+    "//third_party/rust/cxx/v1:lib",
+  ]
 }
 
 rust_static_library("unguessable_token") {
