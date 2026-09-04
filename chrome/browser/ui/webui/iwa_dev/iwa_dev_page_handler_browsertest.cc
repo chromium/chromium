@@ -11,7 +11,9 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/synchronization/lock.h"
 #include "base/test/test_future.h"
+#include "base/thread_annotations.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
@@ -843,6 +845,84 @@ IN_PROC_BROWSER_TEST_F(IwaDevHandlerUpdateManifestBrowserTest,
   auto apps = GetInstalledAppsInfo();
   ASSERT_EQ(apps.size(), 1u);
   EXPECT_EQ(apps[0]->installed_version, "2.0.0");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    IwaDevHandlerUpdateManifestBrowserTest,
+    UpdateManifestInstalledApp_SubsequentUpdateRefreshesManifest) {
+  web_package::test::Ed25519KeyPair key_pair =
+      web_package::test::Ed25519KeyPair::CreateRandom();
+  web_app::IsolatedWebAppUrlInfo app =
+      BuildAndInstallBundle(kManifestAppName, kAppBaseVersion, key_pair);
+
+  auto bundle_server_v2 = BuildAndServeBundle("2.0.0", key_pair);
+  auto bundle_server_v3 = BuildAndServeBundle("3.0.0", key_pair);
+
+  // Thread-safe dynamic manifest state since EmbeddedTestServer runs on a
+  // worker thread.
+  struct ManifestState {
+    base::Lock lock;
+    std::string version GUARDED_BY(lock);
+    GURL bundle_url GUARDED_BY(lock);
+  } manifest_state;
+
+  {
+    base::AutoLock lock(manifest_state.lock);
+    manifest_state.version = "2.0.0";
+    manifest_state.bundle_url = bundle_server_v2->GetURL("/app.swbn");
+  }
+
+  auto manifest_server = StartServerForPath(
+      "/update_manifest.json",
+      base::BindRepeating(
+          [](ManifestState* state)
+              -> std::unique_ptr<net::test_server::HttpResponse> {
+            base::AutoLock lock(state->lock);
+            auto response =
+                std::make_unique<net::test_server::BasicHttpResponse>();
+            response->set_code(net::HTTP_OK);
+            response->set_content_type("application/json");
+            // Set aggressive caching header to simulate a caching proxy/server.
+            response->AddCustomHeader("Cache-Control", "max-age=3600");
+            response->set_content(base::StringPrintf(
+                R"({
+              "versions": [
+                {
+                  "version": "%s",
+                  "src": "%s"
+                }
+              ]
+            })",
+                state->version.c_str(), state->bundle_url.spec().c_str()));
+            return response;
+          },
+          base::Unretained(&manifest_state)));
+
+  SetUpdateInfo(app.app_id(), manifest_server->GetURL("/update_manifest.json"));
+
+  // First update: from 1.0.0 to 2.0.0.
+  auto result_v2 = CallUpdateManifestInstalledApp(app.app_id());
+  EXPECT_TRUE(result_v2.has_value());
+
+  auto apps = GetInstalledAppsInfo();
+  ASSERT_EQ(apps.size(), 1u);
+  EXPECT_EQ(apps[0]->installed_version, "2.0.0");
+
+  // Developer updates the manifest on the server to 3.0.0.
+  {
+    base::AutoLock lock(manifest_state.lock);
+    manifest_state.version = "3.0.0";
+    manifest_state.bundle_url = bundle_server_v3->GetURL("/app.swbn");
+  }
+
+  // Second update: despite Cache-Control: max-age=3600, the manifest must be
+  // re-fetched and the app updated to 3.0.0.
+  auto result_v3 = CallUpdateManifestInstalledApp(app.app_id());
+  EXPECT_TRUE(result_v3.has_value());
+
+  apps = GetInstalledAppsInfo();
+  ASSERT_EQ(apps.size(), 1u);
+  EXPECT_EQ(apps[0]->installed_version, "3.0.0");
 }
 
 IN_PROC_BROWSER_TEST_F(IwaDevHandlerUpdateManifestBrowserTest,

@@ -16,6 +16,7 @@
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
+#include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -117,6 +118,22 @@ class UpdateManifestFetcherTest : public ::testing::Test {
                               status);
   }
 
+  network::ResourceRequest FetchAndGetPendingRequest(const GURL& url) {
+    auto fetcher = UpdateManifestFetcher(
+        url, PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS, shared_url_loader_factory_,
+        &fake_network_context_);
+
+    base::test::TestFuture<
+        base::expected<UpdateManifest, UpdateManifestFetcher::Error>>
+        future;
+    fetcher.FetchUpdateManifest(future.GetCallback());
+    EXPECT_TRUE(
+        base::test::RunUntil([&]() { return test_factory_.NumPending() > 0; }));
+
+    CHECK_EQ(test_factory_.NumPending(), 1);
+    return test_factory_.GetPendingRequest(0)->request;
+  }
+
   base::test::TaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
@@ -208,21 +225,8 @@ TEST_F(UpdateManifestFetcherTest, FailedDownload) {
 }
 
 TEST_F(UpdateManifestFetcherTest, SetsCorrectClientSecurityState) {
-  GURL unknown_url("https://other-example.com/manifest.json");
-  auto fetcher =
-      UpdateManifestFetcher(unknown_url, PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS,
-                            shared_url_loader_factory_, &fake_network_context_);
-
-  base::test::TestFuture<
-      base::expected<UpdateManifest, UpdateManifestFetcher::Error>>
-      future;
-  fetcher.FetchUpdateManifest(future.GetCallback());
-  EXPECT_TRUE(
-      base::test::RunUntil([&]() { return test_factory_.NumPending() > 0; }));
-
-  ASSERT_EQ(test_factory_.NumPending(), 1);
-  const network::ResourceRequest& request =
-      test_factory_.GetPendingRequest(0)->request;
+  network::ResourceRequest request = FetchAndGetPendingRequest(
+      GURL("https://other-example.com/manifest.json"));
 
   ASSERT_TRUE(request.trusted_params);
   ASSERT_TRUE(request.trusted_params->client_security_state);
@@ -236,23 +240,8 @@ TEST_F(UpdateManifestFetcherTest, SetsCorrectClientSecurityState) {
 }
 
 TEST_F(UpdateManifestFetcherTest, SetsCorrectClientSecurityStateForIpLiteral) {
-  GURL ip_url("http://127.0.0.1/manifest.json");
-  // No response added for this URL.
-
-  auto fetcher =
-      UpdateManifestFetcher(ip_url, PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS,
-                            shared_url_loader_factory_, &fake_network_context_);
-
-  base::test::TestFuture<
-      base::expected<UpdateManifest, UpdateManifestFetcher::Error>>
-      future;
-  fetcher.FetchUpdateManifest(future.GetCallback());
-  EXPECT_TRUE(
-      base::test::RunUntil([&]() { return test_factory_.NumPending() > 0; }));
-
-  ASSERT_EQ(test_factory_.NumPending(), 1);
-  const network::ResourceRequest& request =
-      test_factory_.GetPendingRequest(0)->request;
+  network::ResourceRequest request =
+      FetchAndGetPendingRequest(GURL("http://127.0.0.1/manifest.json"));
 
   ASSERT_TRUE(request.trusted_params);
   ASSERT_TRUE(request.trusted_params->client_security_state);
@@ -262,27 +251,14 @@ TEST_F(UpdateManifestFetcherTest, SetsCorrectClientSecurityStateForIpLiteral) {
 
 TEST_F(UpdateManifestFetcherTest,
        SetsCorrectClientSecurityStateForMultipleAddresses) {
-  GURL mixed_url("https://mixed.com/manifest.json");
   // One public, one private. Public should win.
   fake_network_context_.set_resolved_addresses(net::AddressList({
       net::IPEndPoint(net::IPAddress(192, 168, 0, 1), 80),
       net::IPEndPoint(net::IPAddress(8, 8, 8, 8), 80),
   }));
 
-  auto fetcher =
-      UpdateManifestFetcher(mixed_url, PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS,
-                            shared_url_loader_factory_, &fake_network_context_);
-
-  base::test::TestFuture<
-      base::expected<UpdateManifest, UpdateManifestFetcher::Error>>
-      future;
-  fetcher.FetchUpdateManifest(future.GetCallback());
-  EXPECT_TRUE(
-      base::test::RunUntil([&]() { return test_factory_.NumPending() > 0; }));
-
-  ASSERT_EQ(test_factory_.NumPending(), 1);
-  const network::ResourceRequest& request =
-      test_factory_.GetPendingRequest(0)->request;
+  network::ResourceRequest request =
+      FetchAndGetPendingRequest(GURL("https://mixed.com/manifest.json"));
 
   ASSERT_TRUE(request.trusted_params);
   ASSERT_TRUE(request.trusted_params->client_security_state);
@@ -293,33 +269,28 @@ TEST_F(UpdateManifestFetcherTest,
 
 TEST_F(UpdateManifestFetcherTest,
        SetsCorrectClientSecurityStateForLocalAndLoopback) {
-  GURL mixed_url("https://mixed.com/manifest.json");
   // One local, one loopback. Local should win (it's more public).
   fake_network_context_.set_resolved_addresses(net::AddressList({
       net::IPEndPoint(net::IPAddress(127, 0, 0, 1), 80),
       net::IPEndPoint(net::IPAddress(192, 168, 0, 1), 80),
   }));
 
-  auto fetcher =
-      UpdateManifestFetcher(mixed_url, PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS,
-                            shared_url_loader_factory_, &fake_network_context_);
-
-  base::test::TestFuture<
-      base::expected<UpdateManifest, UpdateManifestFetcher::Error>>
-      future;
-  fetcher.FetchUpdateManifest(future.GetCallback());
-  EXPECT_TRUE(
-      base::test::RunUntil([&]() { return test_factory_.NumPending() > 0; }));
-
-  ASSERT_EQ(test_factory_.NumPending(), 1);
-  const network::ResourceRequest& request =
-      test_factory_.GetPendingRequest(0)->request;
+  network::ResourceRequest request =
+      FetchAndGetPendingRequest(GURL("https://mixed.com/manifest.json"));
 
   ASSERT_TRUE(request.trusted_params);
   ASSERT_TRUE(request.trusted_params->client_security_state);
   // kLocal should be chosen over kLoopback.
   EXPECT_EQ(request.trusted_params->client_security_state->ip_address_space,
             network::mojom::IPAddressSpace::kLocal);
+}
+
+TEST_F(UpdateManifestFetcherTest, SetsCacheBypassLoadFlags) {
+  network::ResourceRequest request =
+      FetchAndGetPendingRequest(GURL("https://example.com/manifest.json"));
+
+  EXPECT_EQ(request.load_flags,
+            net::LOAD_DISABLE_CACHE | net::LOAD_BYPASS_CACHE);
 }
 
 TEST_F(UpdateManifestFetcherTest, ErrorToString) {

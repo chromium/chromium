@@ -16,6 +16,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 #include "net/base/address_list.h"
+#include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/ip_address_space_util.h"
@@ -140,6 +141,8 @@ void UpdateManifestFetcher::DownloadUpdateManifest(
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = url_;
+  resource_request->load_flags =
+      net::LOAD_DISABLE_CACHE | net::LOAD_BYPASS_CACHE;
   // Cookies are not allowed.
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
