@@ -486,8 +486,9 @@ void PrefetchServingHandle::OnGotPrefetchToServe(
     GURL::Replacements replacements;
     replacements.ClearRef();
     replacements.ClearQuery();
-    DCHECK_EQ(tentative_resource_request_url.ReplaceComponents(replacements),
-              GetCurrentURLToServe().ReplaceComponents(replacements));
+    CHECK_EQ(tentative_resource_request_url.ReplaceComponents(replacements),
+             GetCurrentURLToServe().ReplaceComponents(replacements),
+             base::NotFatalUntil::M159);
   }
 #endif
 

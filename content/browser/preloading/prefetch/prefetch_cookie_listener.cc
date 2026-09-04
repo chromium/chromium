@@ -14,7 +14,7 @@ namespace content {
 std::unique_ptr<PrefetchCookieListener> PrefetchCookieListener::MakeAndRegister(
     const GURL& url,
     network::mojom::CookieManager* cookie_manager) {
-  DCHECK(cookie_manager);
+  CHECK(cookie_manager, base::NotFatalUntil::M159);
 
   std::unique_ptr<PrefetchCookieListener> cookie_listener =
       std::make_unique<PrefetchCookieListener>(url);
@@ -47,7 +47,8 @@ void PrefetchCookieListener::ResumeListening() {
 void PrefetchCookieListener::OnCookieChange(
     const net::CookieChangeInfo& change) {
   if (!should_pause_listening_) {
-    DCHECK(url_.DomainIs(change.cookie.DomainWithoutDot()));
+    CHECK(url_.DomainIs(change.cookie.DomainWithoutDot()),
+          base::NotFatalUntil::M159);
     have_cookies_changed_ = true;
 
     // Once we record one change to the cookies associated with |url_|, we don't

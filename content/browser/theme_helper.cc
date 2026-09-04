@@ -35,7 +35,8 @@ mojom::UpdateSystemColorInfoParamsPtr MakeUpdateSystemColorInfoParams(
 }
 
 void ThemeHelper::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
-  DCHECK(theme_observation_.IsObservingSource(observed_theme));
+  CHECK(theme_observation_.IsObservingSource(observed_theme),
+        base::NotFatalUntil::M159);
 
   mojom::UpdateSystemColorInfoParamsPtr params =
       MakeUpdateSystemColorInfoParams(observed_theme);

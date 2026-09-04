@@ -67,18 +67,18 @@ bool SupportsExtension(const WebPluginInfo& plugin,
 
 // static
 PluginList* PluginList::Singleton() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   return g_singleton.Pointer();
 }
 
 void PluginList::RegisterInternalPlugin(const WebPluginInfo& info) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   internal_plugins_.insert(internal_plugins_.begin(), info);
 }
 
 void PluginList::UnregisterInternalPlugin(const base::FilePath& path) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   bool found = false;
   for (size_t i = 0; i < internal_plugins_.size(); i++) {
@@ -88,20 +88,20 @@ void PluginList::UnregisterInternalPlugin(const base::FilePath& path) {
       break;
     }
   }
-  DCHECK(found);
+  CHECK(found, base::NotFatalUntil::M159);
 }
 
 std::vector<WebPluginInfo> PluginList::GetInternalPluginsForTesting() const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   return internal_plugins_;
 }
 
 PluginList::PluginList() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 }
 
 void PluginList::LoadPlugins() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   std::vector<base::FilePath> seen_plugin_paths;
   plugins_list_.clear();
@@ -121,13 +121,13 @@ void PluginList::LoadPlugins() {
 }
 
 const std::vector<WebPluginInfo>& PluginList::GetPlugins() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   LoadPlugins();
   return plugins_list_;
 }
 
 const std::vector<WebPluginInfo>& PluginList::GetPluginsForTesting() const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   return plugins_list_;
 }
 
@@ -136,9 +136,9 @@ void PluginList::GetPluginInfoArray(
     const std::string& mime_type,
     std::vector<WebPluginInfo>* info,
     std::vector<std::string>* actual_mime_types) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(mime_type == base::ToLowerASCII(mime_type));
-  DCHECK(info);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  CHECK(mime_type == base::ToLowerASCII(mime_type), base::NotFatalUntil::M159);
+  CHECK(info, base::NotFatalUntil::M159);
 
   info->clear();
   if (actual_mime_types) {

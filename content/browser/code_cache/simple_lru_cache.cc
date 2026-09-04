@@ -25,7 +25,8 @@ GetResult& GetResult::operator=(GetResult&&) = default;
 
 SimpleLruCache::Value::Value(Age age, base::Time response_time, uint32_t size)
     : age(age), response_time(response_time), size(size) {
-  DCHECK(!base::FeatureList::IsEnabled(features::kInMemoryCodeCache));
+  CHECK(!base::FeatureList::IsEnabled(features::kInMemoryCodeCache),
+        base::NotFatalUntil::M159);
 }
 
 SimpleLruCache::Value::Value(Age age,
@@ -36,7 +37,8 @@ SimpleLruCache::Value::Value(Age age,
       response_time(response_time),
       size(size),
       data(data.begin(), data.end()) {
-  DCHECK(base::FeatureList::IsEnabled(features::kInMemoryCodeCache));
+  CHECK(base::FeatureList::IsEnabled(features::kInMemoryCodeCache),
+        base::NotFatalUntil::M159);
 }
 
 SimpleLruCache::Value::~Value() = default;
@@ -90,7 +92,7 @@ void SimpleLruCache::Delete(const std::string& key) {
     return;
   }
 
-  DCHECK_GE(size_, it->second.size);
+  CHECK_GE(size_, it->second.size, base::NotFatalUntil::M159);
   size_ -= it->second.size;
   access_list_.erase(it->second.age);
   entries_.erase(it);
@@ -131,7 +133,8 @@ void SimpleLruCache::Evict() {
   while (capacity_ < size_) {
     auto it = access_list_.begin();
     CHECK(it != access_list_.end());
-    DCHECK(entries_.find(it->second) != entries_.end());
+    CHECK(entries_.find(it->second) != entries_.end(),
+          base::NotFatalUntil::M159);
 
     Delete(it->second);
   }

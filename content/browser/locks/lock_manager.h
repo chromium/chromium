@@ -198,10 +198,10 @@ class LockManager<LockGroupIdType>::Lock {
   // request pipe.
   void Grant(LockManager<LockGroupIdType>* lock_manager,
              LockGroupIdType lock_group_id) {
-    DCHECK(lock_manager);
-    DCHECK(!lock_manager_);
-    DCHECK(request_);
-    DCHECK(!handle_);
+    CHECK(lock_manager, base::NotFatalUntil::M159);
+    CHECK(!lock_manager_, base::NotFatalUntil::M159);
+    CHECK(request_, base::NotFatalUntil::M159);
+    CHECK(!handle_, base::NotFatalUntil::M159);
 
     lock_manager_ = lock_manager->weak_ptr_factory_.GetWeakPtr();
 
@@ -215,9 +215,9 @@ class LockManager<LockGroupIdType>::Lock {
   // Break a granted lock. This terminates the connection, signaling an error
   // on the other end of the pipe.
   void Break() {
-    DCHECK(!request_);
-    DCHECK(handle_);
-    DCHECK(lock_manager_);
+    CHECK(!request_, base::NotFatalUntil::M159);
+    CHECK(handle_, base::NotFatalUntil::M159);
+    CHECK(lock_manager_, base::NotFatalUntil::M159);
 
     LockHandleImpl<LockGroupIdType>* impl =
         static_cast<LockHandleImpl<LockGroupIdType>*>(handle_->impl());
@@ -286,7 +286,7 @@ class LockManager<LockGroupIdType>::LockGroupState {
                    mojo::AssociatedRemote<blink::mojom::LockRequest> request,
                    const ReceiverState& receiver_state) {
     // Preempting shared locks is not supported.
-    DCHECK_EQ(mode, LockMode::EXCLUSIVE);
+    CHECK_EQ(mode, LockMode::EXCLUSIVE, base::NotFatalUntil::M159);
     std::list<Lock>& request_queue = resource_names_to_requests_[name];
     while (!request_queue.empty() && request_queue.front().is_granted()) {
       BreakLock(request_queue, request_queue.begin());
@@ -304,7 +304,7 @@ class LockManager<LockGroupIdType>::LockGroupState {
                   mojo::AssociatedRemote<blink::mojom::LockRequest> request,
                   WaitMode wait,
                   const ReceiverState& receiver_state) {
-    DCHECK(wait != WaitMode::PREEMPT);
+    CHECK(wait != WaitMode::PREEMPT, base::NotFatalUntil::M159);
     std::list<Lock>& request_queue = resource_names_to_requests_[name];
     bool can_grant = request_queue.empty() ||
                      (request_queue.back().is_granted() &&
@@ -373,7 +373,7 @@ class LockManager<LockGroupIdType>::LockGroupState {
         break;
       }
     }
-    DCHECK(found);
+    CHECK(found, base::NotFatalUntil::M159);
 #endif
 
     request_queue.erase(lock_it);
@@ -394,12 +394,13 @@ class LockManager<LockGroupIdType>::LockGroupState {
     if (request_queue.front().mode() == LockMode::EXCLUSIVE) {
       request_queue.front().Grant(lock_manager_, lock_group_id);
     } else {
-      DCHECK(request_queue.front().mode() == LockMode::SHARED);
+      CHECK(request_queue.front().mode() == LockMode::SHARED,
+            base::NotFatalUntil::M159);
       for (auto grantee = request_queue.begin();
            grantee != request_queue.end() &&
            grantee->mode() == LockMode::SHARED;
            ++grantee) {
-        DCHECK(!grantee->is_granted());
+        CHECK(!grantee->is_granted(), base::NotFatalUntil::M159);
         grantee->Grant(lock_manager_, lock_group_id);
       }
     }
@@ -560,7 +561,7 @@ void LockManager<LockGroupIdType>::QueryState(QueryStateCallback callback) {
                             std::vector<blink::mojom::LockInfoPtr>());
     return;
   }
-  DCHECK(!lock_group_id.is_null());
+  CHECK(!lock_group_id.is_null(), base::NotFatalUntil::M159);
   LockGroupState& state = lock_group_id_it->second;
   auto requested_held_pair = state.Snapshot();
   for (const auto& lock_info : requested_held_pair.second) {
@@ -591,7 +592,7 @@ void LockManager<LockGroupIdType>::RemoveLockObserver(
 template <typename LockGroupIdType>
 int64_t LockManager<LockGroupIdType>::NextLockId() {
   int64_t lock_id = ++next_lock_id_;
-  DCHECK_GT(lock_id, kPreemptiveLockId);
+  CHECK_GT(lock_id, kPreemptiveLockId, base::NotFatalUntil::M159);
   return lock_id;
 }
 

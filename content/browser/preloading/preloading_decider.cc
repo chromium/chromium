@@ -530,7 +530,7 @@ void PreloadingDecider::MarkCandidateAsProcessed(
 void PreloadingDecider::UpdateSpeculationCandidates(
     std::vector<blink::mojom::SpeculationCandidatePtr>& candidates,
     bool enable_cross_origin_prerender_iframes) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (observer_for_testing_) {
     observer_for_testing_->UpdateSpeculationCandidates(candidates);
   }

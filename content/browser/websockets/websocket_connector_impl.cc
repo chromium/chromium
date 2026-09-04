@@ -95,7 +95,8 @@ void WebSocketConnectorImpl::Connect(
         handshake_client,
     const std::optional<base::UnguessableToken>& throttling_profile_id,
     network::mojom::IPAddressSpace target_address_space) {
-  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI),
+        base::NotFatalUntil::M159);
 
   // If the connector was created for a RenderFrame or a DedicatedWorker
   // (where `frame_routing_id` is not kRoutingIdNone), it is scoped to a
@@ -176,7 +177,8 @@ void WebSocketConnectorImpl::ConnectCalledByContentBrowserClient(
         auth_handler,
     mojo::PendingRemote<network::mojom::TrustedHeaderClient>
         trusted_header_client) {
-  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI),
+        base::NotFatalUntil::M159);
   RenderProcessHost* process = RenderProcessHost::FromID(frame_id.child_id);
   if (!process) {
     return;

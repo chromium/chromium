@@ -221,7 +221,7 @@ void ManifestManagerHost::BindObserver(
 }
 
 void ManifestManagerHost::GetManifest(GetManifestCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (page().GetMainDocument().GetLastCommittedURL().SchemeIs(
           url::kAboutScheme)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -339,7 +339,7 @@ ManifestManagerHost::ExtractPendingCallbacks() {
 }
 
 void ManifestManagerHost::OnConnectionError() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   DispatchManifestNotFound(ExtractPendingCallbacks());
   if (GetForPage(page())) {
     DeleteForPage(page());
@@ -351,7 +351,7 @@ void ManifestManagerHost::OnRequestManifestResponse(
     blink::mojom::ManifestRequestResult result,
     const GURL& url,
     blink::mojom::ManifestPtr manifest) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   manifest = ValidateAndMaybeOverrideManifest(result, std::move(manifest));
   auto callback = std::move(*callbacks_.Lookup(request_id));
   callbacks_.Remove(request_id);
@@ -363,7 +363,7 @@ void ManifestManagerHost::OnRequestManifestAndErrors(
     const GURL& manifest_url_for_fetch,
     base::expected<blink::mojom::ManifestPtr,
                    blink::mojom::RequestManifestErrorPtr> result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   // Reset the information for the current manifest url being fetched if it
   // matches the request that was sent to the ManifestManager, and only process
   // requests for the latest manifest url on the page.

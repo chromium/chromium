@@ -41,7 +41,7 @@ ContactsProviderAndroid::ContactsProviderAndroid(
   dialog_.Reset(
       Java_ContactsDialogHost_create(env, web_contents->GetJavaWebContents(),
                                      reinterpret_cast<intptr_t>(this)));
-  DCHECK(!dialog_.is_null());
+  CHECK(!dialog_.is_null(), base::NotFatalUntil::M159);
 }
 
 ContactsProviderAndroid::~ContactsProviderAndroid() {
@@ -78,7 +78,7 @@ void ContactsProviderAndroid::AddContact(
     const base::android::JavaRef<JArray<jstring>>& tel_java,
     const base::android::JavaRef<JArray<JByteBuffer>>& addresses_java,
     const base::android::JavaRef<JArray<JByteBuffer>>& icons_java) {
-  DCHECK(callback_);
+  CHECK(callback_, base::NotFatalUntil::M159);
 
   std::optional<std::vector<std::string>> names;
   if (names_java) {
@@ -150,14 +150,14 @@ void ContactsProviderAndroid::AddContact(
 void ContactsProviderAndroid::EndContactsList(JNIEnv* env,
                                               int32_t percentage_shared,
                                               int32_t properties_requested) {
-  DCHECK(callback_);
+  CHECK(callback_, base::NotFatalUntil::M159);
   ContactsPickerProperties properties =
       static_cast<ContactsPickerProperties>(properties_requested);
   std::move(callback_).Run(std::move(contacts_), percentage_shared, properties);
 }
 
 void ContactsProviderAndroid::EndWithPermissionDenied(JNIEnv* env) {
-  DCHECK(callback_);
+  CHECK(callback_, base::NotFatalUntil::M159);
   std::move(callback_).Run(std::nullopt, /*percentage_shared=*/-1,
                            PROPERTIES_NONE);
 }

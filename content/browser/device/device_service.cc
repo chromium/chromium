@@ -115,7 +115,7 @@ void BindDeviceServiceReceiver(
 #if BUILDFLAG(IS_ANDROID)
   JNIEnv* env = base::android::AttachCurrentThread();
   params->java_nfc_delegate = Java_ContentNfcDelegate_create(env);
-  DCHECK(!params->java_nfc_delegate.is_null());
+  CHECK(!params->java_nfc_delegate.is_null(), base::NotFatalUntil::M159);
 
   params->wake_lock_context_callback =
       base::BindRepeating(&WakeLockContextHost::GetNativeViewForContext);

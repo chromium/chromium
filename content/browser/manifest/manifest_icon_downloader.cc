@@ -49,7 +49,8 @@ bool ManifestIconDownloader::Download(
     bool square_only,
     const GlobalRenderFrameHostId& initiator_frame_routing_id,
     bool suppress_warnings) {
-  DCHECK(minimum_icon_size_in_px <= ideal_icon_size_in_px);
+  CHECK(minimum_icon_size_in_px <= ideal_icon_size_in_px,
+        base::NotFatalUntil::M159);
   if (!web_contents || !icon_url.is_valid())
     return false;
 
@@ -83,7 +84,7 @@ void ManifestIconDownloader::OnIconFetched(
     const GURL& url,
     const std::vector<SkBitmap>& bitmaps,
     const std::vector<gfx::Size>& sizes) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   if (bitmaps.empty()) {
     if (web_contents && !suppress_warnings) {
@@ -142,7 +143,7 @@ void ManifestIconDownloader::ScaleIcon(int ideal_icon_width_in_px,
                                        int ideal_icon_height_in_px,
                                        const SkBitmap& bitmap,
                                        IconFetchCallbackWithResult callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
 
   const SkBitmap& scaled = skia::ImageOperations::Resize(
       bitmap, skia::ImageOperations::RESIZE_BEST, ideal_icon_width_in_px,

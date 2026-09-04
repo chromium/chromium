@@ -11,7 +11,7 @@ namespace content {
 
 PrefetchDNSProber::PrefetchDNSProber(OnDNSResultsCallback callback)
     : callback_(std::move(callback)) {
-  DCHECK(callback_);
+  CHECK(callback_, base::NotFatalUntil::M159);
 }
 
 PrefetchDNSProber::~PrefetchDNSProber() {

@@ -103,13 +103,13 @@ GeneratedCodeCacheContext::GetTaskRunner(
 }
 
 GeneratedCodeCacheContext::GeneratedCodeCacheContext() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 void GeneratedCodeCacheContext::Initialize(const base::FilePath& path,
                                            int max_bytes) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   CHECK(!task_runner_);  // Only initialize once.
 
   if (blink::features::IsPersistentCacheForCodeCacheEnabled() ||
@@ -163,7 +163,7 @@ void GeneratedCodeCacheContext::InitializeOnThread(const base::FilePath& path,
 
         // The rest is left over for open web JS.
         max_bytes_js = max_bytes - max_bytes_webui_js;
-        DCHECK_GT(max_bytes_js, max_bytes_webui_js);
+        CHECK_GT(max_bytes_js, max_bytes_webui_js, base::NotFatalUntil::M159);
 
         // Specifying a maximum size of zero means to use heuristics based on
         // available disk size, which would be the opposite of our intent if the
@@ -229,7 +229,7 @@ void GeneratedCodeCacheContext::InitializeOnThread(const base::FilePath& path,
 }
 
 void GeneratedCodeCacheContext::Shutdown() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   RunOrPostTask(this, FROM_HERE,
                 base::BindOnce(&GeneratedCodeCacheContext::ShutdownOnThread,
                                this, std::move(task_runner_for_resource_)));
@@ -237,7 +237,7 @@ void GeneratedCodeCacheContext::Shutdown() {
 }
 
 void GeneratedCodeCacheContext::ShutdownForTesting(base::OnceClosure callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   auto ui_callback = base::BindPostTaskToCurrentDefault(std::move(callback));
 
   RunOrPostTask(

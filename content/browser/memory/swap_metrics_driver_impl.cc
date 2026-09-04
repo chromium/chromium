@@ -21,7 +21,7 @@ SwapMetricsDriverImpl::SwapMetricsDriverImpl(
     : delegate_(std::move(delegate)),
       update_interval_(update_interval),
       is_initialized_(false) {
-  DCHECK(delegate_);
+  CHECK(delegate_, base::NotFatalUntil::M159);
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
@@ -49,7 +49,7 @@ void SwapMetricsDriverImpl::PeriodicUpdateMetrics() {
 }
 
 SwapMetricsDriver::SwapMetricsUpdateResult SwapMetricsDriverImpl::Start() {
-  DCHECK(update_interval_.InSeconds() > 0);
+  CHECK(update_interval_.InSeconds() > 0, base::NotFatalUntil::M159);
 
   SwapMetricsDriver::SwapMetricsUpdateResult result = InitializeMetrics();
   if (result !=
@@ -68,7 +68,7 @@ void SwapMetricsDriverImpl::Stop() {
 SwapMetricsDriver::SwapMetricsUpdateResult
 SwapMetricsDriverImpl::UpdateMetrics() {
   // Enforce initialization before updates.
-  DCHECK(is_initialized_);
+  CHECK(is_initialized_, base::NotFatalUntil::M159);
   return UpdateMetricsImpl();
 }
 

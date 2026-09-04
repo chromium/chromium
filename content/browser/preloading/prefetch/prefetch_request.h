@@ -265,7 +265,7 @@ class CONTENT_EXPORT PrefetchRequest final {
 
   // Can only be accessed its mutable methods/members on the UI thread.
   PreloadPipelineInfoImpl& preload_pipeline_info() const {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
     return *preload_pipeline_info_;
   }
 
@@ -276,7 +276,7 @@ class CONTENT_EXPORT PrefetchRequest final {
 
   // Can only be accessed its methods/members on the UI thread.
   PreloadingAttempt* attempt() const {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
     return attempt_.get();
   }
 
@@ -290,13 +290,13 @@ class CONTENT_EXPORT PrefetchRequest final {
 
   // Can only be accessed its methods/members on the UI thread.
   const base::WeakPtr<WebContents>& referring_web_contents() const {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
     return referring_web_contents_;
   }
 
   // Can only be accessed its methods/members on the UI thread.
   BrowserContext* browser_context() const {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
     return browser_context_.get();
   }
 

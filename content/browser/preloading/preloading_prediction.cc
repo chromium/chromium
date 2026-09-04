@@ -70,7 +70,7 @@ void PreloadingPrediction::RecordPreloadingPredictionUKMs(
 }
 
 void PreloadingPrediction::SetIsAccuratePrediction(const GURL& navigated_url) {
-  DCHECK(url_match_predicate_);
+  CHECK(url_match_predicate_, base::NotFatalUntil::M159);
 
   // `PreloadingAttemptImpl::SetIsAccurateTriggering` is called during
   // `WCO::DidStartNavigation`.

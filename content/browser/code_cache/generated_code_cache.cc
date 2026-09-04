@@ -54,14 +54,15 @@ constexpr char kSeparator[] = " \n";
 void CheckValidResource(const GURL& resource_url,
                         GeneratedCodeCache::CodeCacheType cache_type) {
   // If the resource url is invalid don't cache the code.
-  DCHECK(resource_url.is_valid());
+  CHECK(resource_url.is_valid(), base::NotFatalUntil::M159);
   bool resource_url_is_chrome_or_chrome_untrusted =
       resource_url.SchemeIs(content::kChromeUIScheme) ||
       resource_url.SchemeIs(content::kChromeUIUntrustedScheme);
-  DCHECK(
-      resource_url.SchemeIsHTTPOrHTTPS() ||
-      resource_url_is_chrome_or_chrome_untrusted ||
-      blink::CommonSchemeRegistry::IsExtensionScheme(resource_url.GetScheme()));
+  CHECK(resource_url.SchemeIsHTTPOrHTTPS() ||
+            resource_url_is_chrome_or_chrome_untrusted ||
+            blink::CommonSchemeRegistry::IsExtensionScheme(
+                resource_url.GetScheme()),
+        base::NotFatalUntil::M159);
 
   if (!blink::features::IsPersistentCacheForCodeCacheEnabled()) {
     // The chrome and chrome-untrusted schemes are only used with the WebUI code
@@ -69,8 +70,9 @@ void CheckValidResource(const GURL& resource_url,
     // segments WebUI from non-WebUI in multiple ways to prevent privilege
     // escalation, using both `GetCacheId` and
     // `CheckSecurityForAccessingCodeCacheData`.
-    DCHECK_EQ(resource_url_is_chrome_or_chrome_untrusted,
-              cache_type == GeneratedCodeCache::kWebUIJavaScript);
+    CHECK_EQ(resource_url_is_chrome_or_chrome_untrusted,
+             cache_type == GeneratedCodeCache::kWebUIJavaScript,
+             base::NotFatalUntil::M159);
   }
 }
 
@@ -83,12 +85,13 @@ void CheckValidContext(const GURL& origin_lock,
   bool origin_lock_is_chrome_or_chrome_untrusted =
       origin_lock.SchemeIs(content::kChromeUIScheme) ||
       origin_lock.SchemeIs(content::kChromeUIUntrustedScheme);
-  DCHECK(origin_lock.is_empty() ||
-         ((origin_lock.SchemeIsHTTPOrHTTPS() ||
-           origin_lock_is_chrome_or_chrome_untrusted ||
-           blink::CommonSchemeRegistry::IsExtensionScheme(
-               origin_lock.GetScheme())) &&
-          !url::Origin::Create(origin_lock).opaque()));
+  CHECK(origin_lock.is_empty() ||
+            ((origin_lock.SchemeIsHTTPOrHTTPS() ||
+              origin_lock_is_chrome_or_chrome_untrusted ||
+              blink::CommonSchemeRegistry::IsExtensionScheme(
+                  origin_lock.GetScheme())) &&
+             !url::Origin::Create(origin_lock).opaque()),
+        base::NotFatalUntil::M159);
 
   if (!blink::features::IsPersistentCacheForCodeCacheEnabled()) {
     // The chrome and chrome-untrusted schemes are only used with the WebUI code
@@ -96,8 +99,9 @@ void CheckValidContext(const GURL& origin_lock,
     // segments WebUI from non-WebUI in multiple ways to prevent privilege
     // escalation, using both `GetCacheId` and
     // `CheckSecurityForAccessingCodeCacheData`.
-    DCHECK_EQ(origin_lock_is_chrome_or_chrome_untrusted,
-              cache_type == GeneratedCodeCache::kWebUIJavaScript);
+    CHECK_EQ(origin_lock_is_chrome_or_chrome_untrusted,
+             cache_type == GeneratedCodeCache::kWebUIJavaScript,
+             base::NotFatalUntil::M159);
   }
 }
 
@@ -332,7 +336,8 @@ class GeneratedCodeCache::PendingOperation {
         key_(key),
         small_buffer_(small_buffer),
         large_buffer_(large_buffer) {
-    DCHECK(Operation::kWrite == op_ || Operation::kWriteWithSHAKey == op_);
+    CHECK(Operation::kWrite == op_ || Operation::kWriteWithSHAKey == op_,
+          base::NotFatalUntil::M159);
   }
 
   PendingOperation(Operation op,
@@ -345,7 +350,7 @@ class GeneratedCodeCache::PendingOperation {
         origin_lock_(origin_lock),
         key_(key),
         read_callback_(std::move(read_callback)) {
-    DCHECK_EQ(Operation::kFetch, op_);
+    CHECK_EQ(Operation::kFetch, op_, base::NotFatalUntil::M159);
   }
 
   PendingOperation(Operation op,
@@ -366,7 +371,7 @@ class GeneratedCodeCache::PendingOperation {
         small_buffer_(small_buffer),
         large_buffer_(large_buffer),
         read_callback_(std::move(read_callback)) {
-    DCHECK_EQ(Operation::kFetchWithSHAKey, op_);
+    CHECK_EQ(Operation::kFetchWithSHAKey, op_, base::NotFatalUntil::M159);
   }
 
   PendingOperation(Operation op,
@@ -377,12 +382,12 @@ class GeneratedCodeCache::PendingOperation {
         resource_url_(resource_url),
         origin_lock_(origin_lock),
         key_(key) {
-    DCHECK_EQ(Operation::kDelete, op_);
+    CHECK_EQ(Operation::kDelete, op_, base::NotFatalUntil::M159);
   }
 
   PendingOperation(Operation op, GetBackendCallback backend_callback)
       : op_(op), backend_callback_(std::move(backend_callback)) {
-    DCHECK_EQ(Operation::kGetBackend, op_);
+    CHECK_EQ(Operation::kGetBackend, op_, base::NotFatalUntil::M159);
   }
 
   ~PendingOperation();
@@ -422,17 +427,17 @@ class GeneratedCodeCache::PendingOperation {
   // These are called by Fetch operations to hold the buffers we create once the
   // entry is opened.
   void set_small_buffer(scoped_refptr<net::IOBufferWithSize> small_buffer) {
-    DCHECK_EQ(Operation::kFetch, op_);
+    CHECK_EQ(Operation::kFetch, op_, base::NotFatalUntil::M159);
     small_buffer_ = small_buffer;
   }
   void set_large_buffer(scoped_refptr<BigIOBuffer> large_buffer) {
-    DCHECK_EQ(Operation::kFetch, op_);
+    CHECK_EQ(Operation::kFetch, op_, base::NotFatalUntil::M159);
     large_buffer_ = large_buffer;
   }
 
   // This returns the site-specific response time for merged code entries.
   const base::Time& response_time() const {
-    DCHECK_EQ(Operation::kFetchWithSHAKey, op_);
+    CHECK_EQ(Operation::kFetchWithSHAKey, op_, base::NotFatalUntil::M159);
     return response_time_;
   }
 
@@ -443,11 +448,12 @@ class GeneratedCodeCache::PendingOperation {
   bool succeeded() const { return succeeded_; }
 
   bool AddBufferCompletion(bool succeeded) {
-    DCHECK(op_ == Operation::kWrite || op_ == Operation::kWriteWithSHAKey ||
-           op_ == Operation::kFetch || op_ == Operation::kFetchWithSHAKey);
+    CHECK(op_ == Operation::kWrite || op_ == Operation::kWriteWithSHAKey ||
+              op_ == Operation::kFetch || op_ == Operation::kFetchWithSHAKey,
+          base::NotFatalUntil::M159);
     if (!succeeded)
       succeeded_ = false;
-    DCHECK_GT(2, completions_);
+    CHECK_GT(2, completions_, base::NotFatalUntil::M159);
     completions_++;
     return completions_ == 2;
   }
@@ -556,7 +562,8 @@ void GeneratedCodeCache::WriteEntry(const GURL& url,
       return;
     data = mojo_base::BigBuffer();  // Release the old buffer.
     std::string checksum_key = base::HexEncode(crypto::hash::Sha256(copy));
-    DCHECK_EQ(kSHAKeySizeInBytes, checksum_key.length());
+    CHECK_EQ(kSHAKeySizeInBytes, checksum_key.length(),
+             base::NotFatalUntil::M159);
     small_buffer = base::MakeRefCounted<net::IOBufferWithSize>(
         kHeaderSizeInBytes + checksum_key.length());
     // Copy |checksum_key| into the small buffer.
@@ -692,8 +699,9 @@ void GeneratedCodeCache::IssueOperation(PendingOperation* op) {
 }
 
 void GeneratedCodeCache::WriteEntryImpl(PendingOperation* op) {
-  DCHECK(Operation::kWrite == op->operation() ||
-         Operation::kWriteWithSHAKey == op->operation());
+  CHECK(Operation::kWrite == op->operation() ||
+            Operation::kWriteWithSHAKey == op->operation(),
+        base::NotFatalUntil::M159);
   if (backend_state_ != kInitialized) {
     // Silently fail the request.
     CloseOperationAndIssueNext(op);
@@ -713,8 +721,9 @@ void GeneratedCodeCache::WriteEntryImpl(PendingOperation* op) {
 void GeneratedCodeCache::OpenCompleteForWrite(
     PendingOperation* op,
     disk_cache::EntryResult entry_result) {
-  DCHECK(Operation::kWrite == op->operation() ||
-         Operation::kWriteWithSHAKey == op->operation());
+  CHECK(Operation::kWrite == op->operation() ||
+            Operation::kWriteWithSHAKey == op->operation(),
+        base::NotFatalUntil::M159);
   if (entry_result.net_error() != net::OK) {
     CollectStatistics(op->resource_url(), op->origin_lock(),
                       CacheEntryStatus::kError);
@@ -732,7 +741,7 @@ void GeneratedCodeCache::OpenCompleteForWrite(
 
   disk_cache::ScopedEntryPtr entry(entry_result.ReleaseEntry());
   // There should be a valid entry if the open was successful.
-  DCHECK(entry);
+  CHECK(entry, base::NotFatalUntil::M159);
 
   // For merged entries, don't write if the entry already exists.
   if (op->operation() == Operation::kWriteWithSHAKey) {
@@ -744,8 +753,8 @@ void GeneratedCodeCache::OpenCompleteForWrite(
       return;
     }
     // Otherwise, there shouldn't be any data for this entry yet.
-    DCHECK_EQ(0, small_size);
-    DCHECK_EQ(0, large_size);
+    CHECK_EQ(0, small_size, base::NotFatalUntil::M159);
+    CHECK_EQ(0, large_size, base::NotFatalUntil::M159);
   }
 
   // Write the small data first, truncating.
@@ -775,8 +784,9 @@ void GeneratedCodeCache::OpenCompleteForWrite(
 
 void GeneratedCodeCache::WriteSmallBufferComplete(PendingOperation* op,
                                                   int rv) {
-  DCHECK(Operation::kWrite == op->operation() ||
-         Operation::kWriteWithSHAKey == op->operation());
+  CHECK(Operation::kWrite == op->operation() ||
+            Operation::kWriteWithSHAKey == op->operation(),
+        base::NotFatalUntil::M159);
   if (op->AddBufferCompletion(rv == op->small_buffer()->size())) {
     WriteComplete(op);
   }
@@ -784,16 +794,18 @@ void GeneratedCodeCache::WriteSmallBufferComplete(PendingOperation* op,
 
 void GeneratedCodeCache::WriteLargeBufferComplete(PendingOperation* op,
                                                   int rv) {
-  DCHECK(Operation::kWrite == op->operation() ||
-         Operation::kWriteWithSHAKey == op->operation());
+  CHECK(Operation::kWrite == op->operation() ||
+            Operation::kWriteWithSHAKey == op->operation(),
+        base::NotFatalUntil::M159);
   if (op->AddBufferCompletion(rv == op->large_buffer()->size())) {
     WriteComplete(op);
   }
 }
 
 void GeneratedCodeCache::WriteComplete(PendingOperation* op) {
-  DCHECK(Operation::kWrite == op->operation() ||
-         Operation::kWriteWithSHAKey == op->operation());
+  CHECK(Operation::kWrite == op->operation() ||
+            Operation::kWriteWithSHAKey == op->operation(),
+        base::NotFatalUntil::M159);
   if (!op->succeeded()) {
     // The write failed; record the failure and doom the entry here.
     CollectStatistics(op->resource_url(), op->origin_lock(),
@@ -804,8 +816,9 @@ void GeneratedCodeCache::WriteComplete(PendingOperation* op) {
 }
 
 void GeneratedCodeCache::FetchEntryImpl(PendingOperation* op) {
-  DCHECK(Operation::kFetch == op->operation() ||
-         Operation::kFetchWithSHAKey == op->operation());
+  CHECK(Operation::kFetch == op->operation() ||
+            Operation::kFetchWithSHAKey == op->operation(),
+        base::NotFatalUntil::M159);
   if (base::FeatureList::IsEnabled(features::kInMemoryCodeCache)) {
     if (auto result = lru_cache_.Get(op->key())) {
       op->RunReadCallback(this, result->response_time, std::move(result->data));
@@ -833,8 +846,9 @@ void GeneratedCodeCache::FetchEntryImpl(PendingOperation* op) {
 void GeneratedCodeCache::OpenCompleteForRead(
     PendingOperation* op,
     disk_cache::EntryResult entry_result) {
-  DCHECK(Operation::kFetch == op->operation() ||
-         Operation::kFetchWithSHAKey == op->operation());
+  CHECK(Operation::kFetch == op->operation() ||
+            Operation::kFetchWithSHAKey == op->operation(),
+        base::NotFatalUntil::M159);
   if (entry_result.net_error() != net::OK) {
     CollectStatistics(op->resource_url(), op->origin_lock(),
                       CacheEntryStatus::kMiss);
@@ -845,7 +859,7 @@ void GeneratedCodeCache::OpenCompleteForRead(
 
   disk_cache::ScopedEntryPtr entry(entry_result.ReleaseEntry());
   // There should be a valid entry if the open was successful.
-  DCHECK(entry);
+  CHECK(entry, base::NotFatalUntil::M159);
 
   int small_size = entry->GetDataSize(kSmallDataStream);
   int large_size = entry->GetDataSize(kLargeDataStream);
@@ -859,8 +873,8 @@ void GeneratedCodeCache::OpenCompleteForRead(
   } else {
     small_buffer = op->small_buffer();
     large_buffer = op->large_buffer();
-    DCHECK_EQ(small_size, small_buffer->size());
-    DCHECK_EQ(large_size, large_buffer->size());
+    CHECK_EQ(small_size, small_buffer->size(), base::NotFatalUntil::M159);
+    CHECK_EQ(large_size, large_buffer->size(), base::NotFatalUntil::M159);
   }
 
   // Read the small data first.
@@ -888,8 +902,9 @@ void GeneratedCodeCache::OpenCompleteForRead(
 }
 
 void GeneratedCodeCache::ReadSmallBufferComplete(PendingOperation* op, int rv) {
-  DCHECK(Operation::kFetch == op->operation() ||
-         Operation::kFetchWithSHAKey == op->operation());
+  CHECK(Operation::kFetch == op->operation() ||
+            Operation::kFetchWithSHAKey == op->operation(),
+        base::NotFatalUntil::M159);
   bool no_header = op->operation() == Operation::kFetchWithSHAKey;
   bool succeeded = (rv == op->small_buffer()->size() &&
                     (no_header || IsValidHeader(op->small_buffer())));
@@ -906,15 +921,17 @@ void GeneratedCodeCache::ReadSmallBufferComplete(PendingOperation* op, int rv) {
 }
 
 void GeneratedCodeCache::ReadLargeBufferComplete(PendingOperation* op, int rv) {
-  DCHECK(Operation::kFetch == op->operation() ||
-         Operation::kFetchWithSHAKey == op->operation());
+  CHECK(Operation::kFetch == op->operation() ||
+            Operation::kFetchWithSHAKey == op->operation(),
+        base::NotFatalUntil::M159);
   if (op->AddBufferCompletion(rv == op->large_buffer()->size()))
     ReadComplete(op);
 }
 
 void GeneratedCodeCache::ReadComplete(PendingOperation* op) {
-  DCHECK(Operation::kFetch == op->operation() ||
-         Operation::kFetchWithSHAKey == op->operation());
+  CHECK(Operation::kFetch == op->operation() ||
+            Operation::kFetchWithSHAKey == op->operation(),
+        base::NotFatalUntil::M159);
   if (!op->succeeded()) {
     op->RunReadCallback(this, base::Time(), mojo_base::BigBuffer());
     // Doom this entry since it is inaccessible.
@@ -927,7 +944,7 @@ void GeneratedCodeCache::ReadComplete(PendingOperation* op) {
                            &data_size);
       if (data_size <= kInlineDataLimit) {
         // Small data. Copy the data from the small buffer.
-        DCHECK_EQ(0, op->large_buffer()->size());
+        CHECK_EQ(0, op->large_buffer()->size(), base::NotFatalUntil::M159);
         mojo_base::BigBuffer data(
             op->small_buffer()->span().subspan(kHeaderSizeInBytes, data_size));
         op->RunReadCallback(this, response_time, std::move(data));
@@ -938,8 +955,8 @@ void GeneratedCodeCache::ReadComplete(PendingOperation* op) {
                             op->large_buffer()->TakeBuffer());
       } else {
         // Very large data. Create the second fetch using the checksum as key.
-        DCHECK_EQ(static_cast<int>(kHeaderSizeInBytes + kSHAKeySizeInBytes),
-                  op->small_buffer()->size());
+        CHECK_EQ(static_cast<int>(kHeaderSizeInBytes + kSHAKeySizeInBytes),
+                 op->small_buffer()->size(), base::NotFatalUntil::M159);
         std::string checksum_key(
             UNSAFE_TODO(op->small_buffer()->data() + kHeaderSizeInBytes),
             kSHAKeySizeInBytes);
@@ -961,16 +978,16 @@ void GeneratedCodeCache::ReadComplete(PendingOperation* op) {
 }
 
 void GeneratedCodeCache::DeleteEntryImpl(PendingOperation* op) {
-  DCHECK_EQ(Operation::kDelete, op->operation());
+  CHECK_EQ(Operation::kDelete, op->operation(), base::NotFatalUntil::M159);
   DoomEntry(op);
   CloseOperationAndIssueNext(op);
 }
 
 void GeneratedCodeCache::DoomEntry(PendingOperation* op) {
   // Write, Fetch, and Delete may all doom an entry.
-  DCHECK_NE(Operation::kGetBackend, op->operation());
+  CHECK_NE(Operation::kGetBackend, op->operation(), base::NotFatalUntil::M159);
   // Entries shouldn't be doomed if the backend hasn't been initialized.
-  DCHECK_EQ(kInitialized, backend_state_);
+  CHECK_EQ(kInitialized, backend_state_, base::NotFatalUntil::M159);
   CollectStatistics(op->resource_url(), op->origin_lock(),
                     CacheEntryStatus::kClear);
   backend_->DoomEntry(op->key(), net::LOWEST, net::CompletionOnceCallback());
@@ -981,7 +998,7 @@ void GeneratedCodeCache::IssueNextOperation(const std::string& key) {
   if (it == active_entries_map_.end())
     return;
 
-  DCHECK(!it->second.empty());
+  CHECK(!it->second.empty(), base::NotFatalUntil::M159);
   IssueOperation(it->second.front().get());
 }
 

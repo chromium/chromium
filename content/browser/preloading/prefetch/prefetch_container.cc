@@ -1447,7 +1447,7 @@ void PrefetchContainer::OnPrefetchCompleteInternal() {
   // Updates the prefetch's status if it hasn't been updated since the request
   // first started. For the prefetch to reach the network stack, it must have
   // `PrefetchStatus::kPrefetchNotStarted` or beyond.
-  DCHECK(HasPrefetchStatus());
+  CHECK(HasPrefetchStatus(), base::NotFatalUntil::M159);
   if (GetPrefetchStatus() == PrefetchStatus::kPrefetchNotFinishedInTime) {
     SetPrefetchStatus(net_error == net::OK
                           ? PrefetchStatus::kPrefetchSuccessful
