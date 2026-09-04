@@ -517,12 +517,28 @@ final class SideUiCoordinatorImpl
         return switch (heightType) {
             case HeightType.TOOLBAR ->
                     mTopControlsStacker.getHeightFromLayerBottomToTop(TopControlType.TABSTRIP);
-            case HeightType.WEB_CONTENTS -> mTopControlsStacker.getVisibleTopControlsTotalHeight();
+            case HeightType.WEB_CONTENTS -> getTopMarginForWebContentsHeightType();
             default ->
                     // includes HeightType.NOT_APPLICABLE
                     throw new IllegalStateException(
                             "Unable to get top margin for HeightType: " + heightType);
         };
+    }
+
+    private @Px int getTopMarginForWebContentsHeightType() {
+        int totalHeight = mTopControlsStacker.getVisibleTopControlsTotalHeight();
+        // When the bookmarks bar is showing, its layer bakes in the hairline height, causing the
+        // total height to extend past the top of the hairline. Subtract the hairline height so the
+        // container aligns with the top of the hairline stroke. This caused a bug where the rounded
+        // corner was not aligned with the top controls hairline. See crbug.com/539662382.
+        // TODO(crbug.com/532218047): Once the toolbar refactor is complete, this logic should
+        //  be safe to remove.
+        if (!ChromeFeatureList.sToolbarProgressBarRefactor.isEnabled()
+                && mTopControlsStacker.isLayerAtBottom(TopControlType.BOOKMARK_BAR)) {
+            int hairlineHeight = mBrowserControlsVisibilityManager.getTopControlsHairlineHeight();
+            totalHeight = Math.max(0, totalHeight - hairlineHeight);
+        }
+        return totalHeight;
     }
 
     private @HeightType int getCurrentHeightType(@AnchorSide int anchorSide) {

@@ -907,6 +907,32 @@ public class SideUiCoordinatorImplTest {
     }
 
     @Test
+    public void testUpdateUi_HeightTypeWebContents_whenBookmarkBarIsShowing() {
+        int topControlsTotalHeight = 56;
+        int hairlineHeight = 1;
+        doReturn(topControlsTotalHeight)
+                .when(mTopControlsStacker)
+                .getVisibleTopControlsTotalHeight();
+        doReturn(true).when(mTopControlsStacker).isLayerAtBottom(TopControlType.BOOKMARK_BAR);
+        doReturn(hairlineHeight)
+                .when(mBrowserControlsVisibilityManager)
+                .getTopControlsHairlineHeight();
+
+        var sideUiContainer =
+                new TestSideUiContainer(
+                        mCoordinator, mSideUiContainerView, SideUiId.SIDE_PANEL, AnchorSide.RIGHT);
+        sideUiContainer.mHeightType = HeightType.WEB_CONTENTS;
+        mCoordinator.registerSideUiContainer(sideUiContainer);
+
+        mCoordinator.updateUi(
+                new UiUpdateRequest(sideUiContainer.getSideUiId(), /* suppressAnimations= */ true));
+
+        MarginLayoutParams rightLayoutParams =
+                (MarginLayoutParams) mRightAnchorContainer.getLayoutParams();
+        assertEquals(topControlsTotalHeight - hairlineHeight, rightLayoutParams.topMargin);
+    }
+
+    @Test
     public void testUpdateUi_HeightTypeChanges_UpdatesTopMargin() {
         mRightAnchorContainer.setLayoutParams(
                 new FrameLayout.LayoutParams(
