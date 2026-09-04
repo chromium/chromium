@@ -5096,7 +5096,6 @@ auto DefaultTestParamSet() {
   return testing::Values(TestParams{});
 }
 
-#ifndef DISABLE_ALL_TESTS
 INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTest,
                          DefaultTestParamSet(),
@@ -5259,40 +5258,5 @@ INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTestWithFileUploadPolicyEnabled,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
-#endif
-#else
-GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(GlicApiTest);
-GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(GlicApiTestWithFastTimeout);
-GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
-    GlicApiTestWithWebContentsWarming);
-GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(GlicApiTestWithPixelOutput);
-GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(GlicApiTestWithContextualCueing);
-GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
-    GlicApiTestWithGeminiActOnWebPolicy);
-GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(GlicApiMultiProfileTest);
-GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
-    GlicApiTestWithDefaultTabContextDisabled);
-GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
-    GlicApiTestWithBlankInstanceDelay);
-GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
-    GlicApiTestWithDefaultTabContextEnabled);
-GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
-    GlicApiTestWithWebActuationSettingDisabled);
-GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
-    GlicApiTestWithWebActuationSettingEnabled);
-GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
-    GlicApiTestWithProcessCounterAbuseVerdictDisabled);
-GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(GlicApiTestForNoWebUiLoader);
-GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(GlicApiScrollToTest);
-GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
-    GlicApiTestWithExperimentalTriggeringScreenshot);
-GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(GlicApiUnresponsiveTest);
-GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(GlicOnboardingApiTest);
-GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(GlicApiTestSystemSettingsTest);
-GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(GlicApiTestWithNewTabDaisyChain);
-#if !BUILDFLAG(IS_ANDROID)
-GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
-    GlicApiTestWithFileUploadPolicyEnabled);
-#endif
 #endif
 }  // namespace glic
