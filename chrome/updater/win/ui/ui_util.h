@@ -9,6 +9,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -66,27 +67,30 @@ void SetWindowIcons(HWND hwnd,
                     WindowIcons new_icons,
                     WindowIcons& current_icons);
 
-// Creates an icon from an opaque HBITMAP (such as an updater 24bpp 48x48 app
-// logo BMP or a 32bpp compatible bitmap), scaled to the specified dimensions.
-// If one dimension is 0, the specified dimension is used for both (square
-// aspect). If both dimensions are omitted (width = 0, height = 0), dimensions
-// default specifically to DPI-aware ICON_BIG system metrics for `dpi` (or
-// 96 DPI system metrics if `dpi` is 0). Callers should pass explicit DPI-scaled
-// metrics (e.g. from GetIconSizesForDpi) for small icons.
+// Creates an icon from an HBITMAP (such as an updater 24bpp 48x48 app logo BMP,
+// a 32bpp ARGB icon bitmap, or a 32bpp compatible bitmap), scaled to the
+// specified dimensions. If one dimension is 0, the specified dimension is used
+// for both (square aspect). If both dimensions are omitted (width = 0, height =
+// 0), dimensions default specifically to DPI-aware ICON_BIG system metrics for
+// `dpi` (or 96 DPI system metrics if `dpi` is 0). Callers should pass explicit
+// DPI-scaled metrics (e.g. from GetIconSizesForDpi) for small icons.
 // Non-square source bitmaps (such as wide rectangular app logos) are fitted and
 // centered within the target dimensions while preserving their aspect ratio;
 // any unused letterbox margin is made transparent in the 1bpp mask.
-// Synthesizes an HICON using an explicit 24bpp DIBSection and a 1bpp
-// monochrome mask, ensuring deterministic opacity without alpha channel
-// artifacts in Windows DWM.
-// Note: 32bpp source bitmaps are treated as opaque RGB; per-pixel alpha
-// transparency is ignored by StretchBlt and rendered fully opaque. If
-// transparent 32bpp ARGB logos are supported in the future, explicit alpha
-// channel extraction or 32bpp ARGB icon synthesis will be required.
-base::win::ScopedGDIObject<HICON> CreateIconFromHBitmap(HBITMAP bitmap,
-                                                        int width = 0,
-                                                        int height = 0,
-                                                        UINT dpi = 0);
+// If the source bitmap is 32bpp with a true per-pixel alpha channel,
+// synthesizes a 32bpp BITMAPV5HEADER icon with full alpha transparency. For
+// opaque 24bpp or 32bpp bitmaps without an alpha channel, performs background
+// color keying: samples the background color from (0, 0) (or tests for known
+// light/dark dialog background colors RGB(255, 255, 255) and RGB(31, 31, 31),
+// or uses `transparent_color` if provided) and keys out the connected
+// background pixels in the 1bpp monochrome mask, setting transparent color
+// pixels to RGB(0, 0, 0) to prevent Windows GDI XOR artifacts.
+base::win::ScopedGDIObject<HICON> CreateIconFromHBitmap(
+    HBITMAP bitmap,
+    int width = 0,
+    int height = 0,
+    UINT dpi = 0,
+    std::optional<COLORREF> transparent_color = std::nullopt);
 
 // Returns a localized installer name for a bundle. If |bundle_name| is empty,
 // the friendly company name is used.

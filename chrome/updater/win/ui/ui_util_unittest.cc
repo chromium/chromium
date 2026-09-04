@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <cstdlib>
+#include <optional>
 #include <vector>
 
 #include "base/compiler_specific.h"
@@ -540,6 +541,474 @@ TEST(UiUtilTest, CreateIconFromBitmap) {
       EXPECT_EQ(row[2], 0x0F) << "Row " << y << " byte 2";
       EXPECT_EQ(row[3], 0xFF) << "Row " << y << " byte 3";
     }
+  }
+}
+
+TEST(UiUtilTest, CreateIconFromBitmap_AlphaChannel) {
+  if (!base::win::IsUser32AndGdi32Available()) {
+    return;
+  }
+
+  base::win::ScopedGetDC dc(nullptr);
+
+  // Create a 32x32 32bpp DIB with per-pixel alpha variation.
+  BITMAPINFO bi32 = {};
+  bi32.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+  bi32.bmiHeader.biWidth = 32;
+  bi32.bmiHeader.biHeight = 32;
+  bi32.bmiHeader.biPlanes = 1;
+  bi32.bmiHeader.biBitCount = 32;
+  bi32.bmiHeader.biCompression = BI_RGB;
+
+  void* bits32 = nullptr;
+  base::win::ScopedGDIObject<HBITMAP> bmp32(
+      ::CreateDIBSection(dc, &bi32, DIB_RGB_COLORS, &bits32, nullptr, 0));
+  ASSERT_TRUE(bmp32.is_valid());
+  ASSERT_NE(bits32, nullptr);
+
+  // Bottom-up DIB:
+  // DIB rows 0..15 (visual bottom):
+  //   x in [0..15]: opaque green (0xFF00FF00)
+  //   x in [16..31]: opaque blue (0xFF0000FF)
+  // DIB rows 16..31 (visual top):
+  //   x in [0..15]: fully transparent (0x00000000)
+  //   x in [16..31]: semi-transparent red (0x80FF0000)
+  base::span<uint32_t> pixels32 =
+      UNSAFE_BUFFERS(base::span(static_cast<uint32_t*>(bits32), 32u * 32u));
+  for (size_t y = 0; y < 16; ++y) {
+    for (size_t x = 0; x < 16; ++x) {
+      pixels32[y * 32 + x] = 0xFF00FF00;
+    }
+    for (size_t x = 16; x < 32; ++x) {
+      pixels32[y * 32 + x] = 0xFF0000FF;
+    }
+  }
+  for (size_t y = 16; y < 32; ++y) {
+    for (size_t x = 0; x < 16; ++x) {
+      pixels32[y * 32 + x] = 0x00000000;
+    }
+    for (size_t x = 16; x < 32; ++x) {
+      pixels32[y * 32 + x] = 0x80FF0000;
+    }
+  }
+
+  base::win::ScopedGDIObject<HICON> icon =
+      CreateIconFromHBitmap(bmp32.get(), 32, 32);
+  ASSERT_TRUE(icon.is_valid());
+
+  ICONINFO info = {};
+  ASSERT_TRUE(::GetIconInfo(icon.get(), &info));
+  base::win::ScopedGDIObject<HBITMAP> color_bmp(info.hbmColor);
+  base::win::ScopedGDIObject<HBITMAP> mask_bmp(info.hbmMask);
+  ASSERT_TRUE(color_bmp.is_valid());
+  ASSERT_TRUE(mask_bmp.is_valid());
+
+  BITMAP bm_color = {};
+  ASSERT_NE(::GetObject(color_bmp.get(), sizeof(bm_color), &bm_color), 0);
+  EXPECT_EQ(bm_color.bmWidth, 32);
+  EXPECT_EQ(bm_color.bmHeight, 32);
+  EXPECT_EQ(bm_color.bmBitsPixel, 32);
+
+  // Read back color pixels using a 32bpp header.
+  std::vector<uint32_t> color_pixels(32u * 32u, 0);
+  ASSERT_EQ(::GetDIBits(dc, color_bmp.get(), 0, 32, color_pixels.data(), &bi32,
+                        DIB_RGB_COLORS),
+            32);
+
+  // In bottom-up DIB rows:
+  // Visual top-left (x=8, visual_y=8 -> dib_y = 23): fully transparent.
+  EXPECT_EQ(color_pixels[23 * 32 + 8] >> 24, 0u);
+
+  const uint8_t red_alpha =
+      static_cast<uint8_t>(color_pixels[23 * 32 + 24] >> 24);
+  EXPECT_GE(red_alpha, 126u);
+  EXPECT_LE(red_alpha, 130u);
+  // Red is premultiplied by alpha for Windows DWM: (255 * 128) / 255 = 128.
+  const uint8_t red_val =
+      static_cast<uint8_t>((color_pixels[23 * 32 + 24] >> 16) & 0xFF);
+  EXPECT_GE(red_val, 126u);
+  EXPECT_LE(red_val, 130u);
+
+  // Visual bottom-left (x=8, visual_y=24 -> dib_y = 7): opaque green.
+  EXPECT_EQ(color_pixels[7 * 32 + 8] >> 24, 255u);
+  EXPECT_GT((color_pixels[7 * 32 + 8] >> 8) & 0xFF, 200u);
+
+  // Visual bottom-right (x=24, visual_y=24 -> dib_y = 7): opaque blue.
+  EXPECT_EQ(color_pixels[7 * 32 + 24] >> 24, 255u);
+  EXPECT_GT(color_pixels[7 * 32 + 24] & 0xFF, 200u);
+
+  // Verify 1bpp mask is all 0s (transparency handled by 32bpp alpha channel).
+  struct {
+    BITMAPINFOHEADER bmiHeader;
+    RGBQUAD bmiColors[2];
+  } mask_bi = {};
+  mask_bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+  mask_bi.bmiHeader.biWidth = 32;
+  mask_bi.bmiHeader.biHeight = 32;
+  mask_bi.bmiHeader.biPlanes = 1;
+  mask_bi.bmiHeader.biBitCount = 1;
+  mask_bi.bmiHeader.biCompression = BI_RGB;
+
+  const size_t row_bytes = ((32 + 31) / 32) * 4;
+  std::vector<uint8_t> mask_pixels(row_bytes * 32, 0xFF);
+  ASSERT_EQ(
+      ::GetDIBits(dc, mask_bmp.get(), 0, 32, mask_pixels.data(),
+                  reinterpret_cast<BITMAPINFO*>(&mask_bi), DIB_RGB_COLORS),
+      32);
+  for (uint8_t byte : mask_pixels) {
+    EXPECT_EQ(byte, 0u);
+  }
+}
+
+TEST(UiUtilTest, CreateIconFromBitmap_ColorKeying) {
+  if (!base::win::IsUser32AndGdi32Available()) {
+    return;
+  }
+
+  base::win::ScopedGetDC dc(nullptr);
+
+  // Test 1: 24bpp bitmap with white background and an interior enclosed white
+  // region (simulating the Chrome logo with an outer background and an enclosed
+  // white ring between the center and outer circle).
+  {
+    BITMAPINFO bi24 = {};
+    bi24.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    bi24.bmiHeader.biWidth = 48;
+    bi24.bmiHeader.biHeight = 48;
+    bi24.bmiHeader.biPlanes = 1;
+    bi24.bmiHeader.biBitCount = 24;
+    bi24.bmiHeader.biCompression = BI_RGB;
+
+    void* bits24 = nullptr;
+    base::win::ScopedGDIObject<HBITMAP> bmp24(
+        ::CreateDIBSection(dc, &bi24, DIB_RGB_COLORS, &bits24, nullptr, 0));
+    ASSERT_TRUE(bmp24.is_valid());
+    ASSERT_NE(bits24, nullptr);
+
+    BITMAP dib_bm24 = {};
+    ASSERT_NE(::GetObject(bmp24.get(), sizeof(dib_bm24), &dib_bm24), 0);
+    const size_t stride = dib_bm24.bmWidthBytes;
+    const size_t bytes24 = stride * dib_bm24.bmHeight;
+    base::span<uint8_t> span24 =
+        UNSAFE_BUFFERS(base::span(static_cast<uint8_t*>(bits24), bytes24));
+
+    auto set_pixel = [&](int x, int y, uint8_t r, uint8_t g, uint8_t b) {
+      const size_t dib_y = 47 - y;
+      const size_t offset = dib_y * stride + static_cast<size_t>(x) * 3;
+      span24[offset + 0] = b;
+      span24[offset + 1] = g;
+      span24[offset + 2] = r;
+    };
+
+    // 1. Fill entire image with white (RGB 255, 255, 255).
+    for (int y = 0; y < 48; ++y) {
+      for (int x = 0; x < 48; ++x) {
+        set_pixel(x, y, 255, 255, 255);
+      }
+    }
+
+    // 2. Draw a red ring enclosing the center: [10..37, 10..37].
+    for (int y = 10; y <= 37; ++y) {
+      for (int x = 10; x <= 37; ++x) {
+        set_pixel(x, y, 255, 0, 0);
+      }
+    }
+
+    // 3. Draw an enclosed white region inside the red ring: [18..29, 18..29].
+    for (int y = 18; y <= 29; ++y) {
+      for (int x = 18; x <= 29; ++x) {
+        set_pixel(x, y, 255, 255, 255);
+      }
+    }
+
+    // 4. Draw a blue center inside the enclosed white region: [22..25, 22..25].
+    for (int y = 22; y <= 25; ++y) {
+      for (int x = 22; x <= 25; ++x) {
+        set_pixel(x, y, 0, 0, 255);
+      }
+    }
+
+    base::win::ScopedGDIObject<HICON> icon =
+        CreateIconFromHBitmap(bmp24.get(), 48, 48);
+    ASSERT_TRUE(icon.is_valid());
+
+    ICONINFO info = {};
+    ASSERT_TRUE(::GetIconInfo(icon.get(), &info));
+    base::win::ScopedGDIObject<HBITMAP> color_bmp(info.hbmColor);
+    base::win::ScopedGDIObject<HBITMAP> mask_bmp(info.hbmMask);
+    ASSERT_TRUE(color_bmp.is_valid());
+    ASSERT_TRUE(mask_bmp.is_valid());
+
+    struct {
+      BITMAPINFOHEADER bmiHeader;
+      RGBQUAD bmiColors[2];
+    } mask_bi = {};
+    mask_bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    mask_bi.bmiHeader.biWidth = 48;
+    mask_bi.bmiHeader.biHeight = 48;
+    mask_bi.bmiHeader.biPlanes = 1;
+    mask_bi.bmiHeader.biBitCount = 1;
+    mask_bi.bmiHeader.biCompression = BI_RGB;
+
+    const size_t mask_stride = ((48 + 31) / 32) * 4;
+    std::vector<uint8_t> mask_pixels(mask_stride * 48, 0);
+    ASSERT_EQ(
+        ::GetDIBits(dc, mask_bmp.get(), 0, 48, mask_pixels.data(),
+                    reinterpret_cast<BITMAPINFO*>(&mask_bi), DIB_RGB_COLORS),
+        48);
+
+    BITMAPINFO color_bi = {};
+    color_bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    color_bi.bmiHeader.biWidth = 48;
+    color_bi.bmiHeader.biHeight = 48;
+    color_bi.bmiHeader.biPlanes = 1;
+    color_bi.bmiHeader.biBitCount = 24;
+    color_bi.bmiHeader.biCompression = BI_RGB;
+
+    const size_t color_stride = ((48 * 24 + 31) / 32) * 4;
+    std::vector<uint8_t> color_pixels(color_stride * 48, 0);
+    ASSERT_EQ(::GetDIBits(dc, color_bmp.get(), 0, 48, color_pixels.data(),
+                          &color_bi, DIB_RGB_COLORS),
+              48);
+
+    auto get_mask_bit = [&](int x, int y) -> bool {
+      const size_t dib_y = 47 - y;
+      const uint8_t byte = mask_pixels[dib_y * mask_stride + (x / 8)];
+      return (byte & (1 << (7 - (x % 8)))) != 0;
+    };
+
+    auto get_color = [&](int x, int y) -> COLORREF {
+      const size_t dib_y = 47 - y;
+      const size_t offset = dib_y * color_stride + static_cast<size_t>(x) * 3;
+      return RGB(color_pixels[offset + 2], color_pixels[offset + 1],
+                 color_pixels[offset + 0]);
+    };
+
+    // A. Outer white background is transparent (mask bit = 1, color = 0).
+    EXPECT_TRUE(get_mask_bit(0, 0));
+    EXPECT_EQ(get_color(0, 0), RGB(0, 0, 0));
+    EXPECT_TRUE(get_mask_bit(47, 0));
+    EXPECT_EQ(get_color(47, 0), RGB(0, 0, 0));
+    EXPECT_TRUE(get_mask_bit(0, 47));
+    EXPECT_EQ(get_color(0, 47), RGB(0, 0, 0));
+    EXPECT_TRUE(get_mask_bit(47, 47));
+    EXPECT_EQ(get_color(47, 47), RGB(0, 0, 0));
+
+    // B. Red ring is opaque (mask bit = 0, color = red).
+    EXPECT_FALSE(get_mask_bit(12, 12));
+    EXPECT_EQ(get_color(12, 12), RGB(255, 0, 0));
+
+    // C. Enclosed white region is opaque (mask bit = 0, color = white).
+    EXPECT_FALSE(get_mask_bit(20, 20));
+    EXPECT_EQ(get_color(20, 20), RGB(255, 255, 255));
+
+    // D. Blue center is opaque (mask bit = 0, color = blue).
+    EXPECT_FALSE(get_mask_bit(23, 23));
+    EXPECT_EQ(get_color(23, 23), RGB(0, 0, 255));
+  }
+
+  // Test 2: Dark dialog background auto-detection (RGB 31, 31, 31).
+  {
+    BITMAPINFO bi24 = {};
+    bi24.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    bi24.bmiHeader.biWidth = 32;
+    bi24.bmiHeader.biHeight = 32;
+    bi24.bmiHeader.biPlanes = 1;
+    bi24.bmiHeader.biBitCount = 24;
+    bi24.bmiHeader.biCompression = BI_RGB;
+
+    void* bits = nullptr;
+    base::win::ScopedGDIObject<HBITMAP> bmp(
+        ::CreateDIBSection(dc, &bi24, DIB_RGB_COLORS, &bits, nullptr, 0));
+    ASSERT_TRUE(bmp.is_valid());
+    const size_t stride = ((32 * 24 + 31) / 32) * 4;
+    base::span<uint8_t> span =
+        UNSAFE_BUFFERS(base::span(static_cast<uint8_t*>(bits), stride * 32));
+    // Fill with RGB(31, 31, 31).
+    std::ranges::fill(span, 31);
+
+    // Center green square [10..21, 10..21].
+    for (int y = 10; y <= 21; ++y) {
+      const size_t dib_y = 31 - y;
+      for (int x = 10; x <= 21; ++x) {
+        span[dib_y * stride + x * 3 + 0] = 0;
+        span[dib_y * stride + x * 3 + 1] = 255;
+        span[dib_y * stride + x * 3 + 2] = 0;
+      }
+    }
+
+    base::win::ScopedGDIObject<HICON> icon =
+        CreateIconFromHBitmap(bmp.get(), 32, 32);
+    ASSERT_TRUE(icon.is_valid());
+
+    ICONINFO info = {};
+    ASSERT_TRUE(::GetIconInfo(icon.get(), &info));
+    base::win::ScopedGDIObject<HBITMAP> color_bmp(info.hbmColor);
+    base::win::ScopedGDIObject<HBITMAP> mask_bmp(info.hbmMask);
+
+    struct {
+      BITMAPINFOHEADER bmiHeader;
+      RGBQUAD bmiColors[2];
+    } mask_bi = {};
+    mask_bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    mask_bi.bmiHeader.biWidth = 32;
+    mask_bi.bmiHeader.biHeight = 32;
+    mask_bi.bmiHeader.biPlanes = 1;
+    mask_bi.bmiHeader.biBitCount = 1;
+    mask_bi.bmiHeader.biCompression = BI_RGB;
+
+    const size_t mask_stride = ((32 + 31) / 32) * 4;
+    std::vector<uint8_t> mask_pixels(mask_stride * 32, 0);
+    ASSERT_EQ(
+        ::GetDIBits(dc, mask_bmp.get(), 0, 32, mask_pixels.data(),
+                    reinterpret_cast<BITMAPINFO*>(&mask_bi), DIB_RGB_COLORS),
+        32);
+
+    auto get_mask_bit = [&](int x, int y) -> bool {
+      const size_t dib_y = 31 - y;
+      const uint8_t byte = mask_pixels[dib_y * mask_stride + (x / 8)];
+      return (byte & (1 << (7 - (x % 8)))) != 0;
+    };
+
+    EXPECT_TRUE(get_mask_bit(0, 0));
+    EXPECT_FALSE(get_mask_bit(16, 16));
+  }
+
+  // Test 3: Explicit transparent_color override (e.g. Magenta RGB 255, 0, 255).
+  {
+    BITMAPINFO bi24 = {};
+    bi24.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    bi24.bmiHeader.biWidth = 32;
+    bi24.bmiHeader.biHeight = 32;
+    bi24.bmiHeader.biPlanes = 1;
+    bi24.bmiHeader.biBitCount = 24;
+    bi24.bmiHeader.biCompression = BI_RGB;
+
+    void* bits = nullptr;
+    base::win::ScopedGDIObject<HBITMAP> bmp(
+        ::CreateDIBSection(dc, &bi24, DIB_RGB_COLORS, &bits, nullptr, 0));
+    ASSERT_TRUE(bmp.is_valid());
+    const size_t stride = ((32 * 24 + 31) / 32) * 4;
+    base::span<uint8_t> span =
+        UNSAFE_BUFFERS(base::span(static_cast<uint8_t*>(bits), stride * 32));
+
+    // Fill with Magenta RGB(255, 0, 255) -> BGR: (255, 0, 255).
+    for (int y = 0; y < 32; ++y) {
+      for (int x = 0; x < 32; ++x) {
+        span[y * stride + x * 3 + 0] = 255;
+        span[y * stride + x * 3 + 1] = 0;
+        span[y * stride + x * 3 + 2] = 255;
+      }
+    }
+
+    // Center Cyan square RGB(0, 255, 255) -> BGR: (255, 255, 0).
+    for (int y = 10; y <= 21; ++y) {
+      for (int x = 10; x <= 21; ++x) {
+        span[y * stride + x * 3 + 0] = 255;
+        span[y * stride + x * 3 + 1] = 255;
+        span[y * stride + x * 3 + 2] = 0;
+      }
+    }
+
+    base::win::ScopedGDIObject<HICON> icon =
+        CreateIconFromHBitmap(bmp.get(), 32, 32, /*dpi=*/0, RGB(255, 0, 255));
+    ASSERT_TRUE(icon.is_valid());
+
+    ICONINFO info = {};
+    ASSERT_TRUE(::GetIconInfo(icon.get(), &info));
+    base::win::ScopedGDIObject<HBITMAP> color_bmp(info.hbmColor);
+    base::win::ScopedGDIObject<HBITMAP> mask_bmp(info.hbmMask);
+
+    struct {
+      BITMAPINFOHEADER bmiHeader;
+      RGBQUAD bmiColors[2];
+    } mask_bi = {};
+    mask_bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    mask_bi.bmiHeader.biWidth = 32;
+    mask_bi.bmiHeader.biHeight = 32;
+    mask_bi.bmiHeader.biPlanes = 1;
+    mask_bi.bmiHeader.biBitCount = 1;
+    mask_bi.bmiHeader.biCompression = BI_RGB;
+
+    const size_t mask_stride = ((32 + 31) / 32) * 4;
+    std::vector<uint8_t> mask_pixels(mask_stride * 32, 0);
+    ASSERT_EQ(
+        ::GetDIBits(dc, mask_bmp.get(), 0, 32, mask_pixels.data(),
+                    reinterpret_cast<BITMAPINFO*>(&mask_bi), DIB_RGB_COLORS),
+        32);
+
+    auto get_mask_bit = [&](int x, int y) -> bool {
+      const size_t dib_y = 31 - y;
+      const uint8_t byte = mask_pixels[dib_y * mask_stride + (x / 8)];
+      return (byte & (1 << (7 - (x % 8)))) != 0;
+    };
+
+    EXPECT_TRUE(get_mask_bit(0, 0));
+    EXPECT_FALSE(get_mask_bit(16, 16));
+  }
+
+  // Test 4: Opaque 32bpp bitmap (all alpha = 0) with background color keying.
+  {
+    BITMAPINFO bi32 = {};
+    bi32.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    bi32.bmiHeader.biWidth = 32;
+    bi32.bmiHeader.biHeight = 32;
+    bi32.bmiHeader.biPlanes = 1;
+    bi32.bmiHeader.biBitCount = 32;
+    bi32.bmiHeader.biCompression = BI_RGB;
+
+    void* bits = nullptr;
+    base::win::ScopedGDIObject<HBITMAP> bmp(
+        ::CreateDIBSection(dc, &bi32, DIB_RGB_COLORS, &bits, nullptr, 0));
+    ASSERT_TRUE(bmp.is_valid());
+    base::span<uint32_t> span =
+        UNSAFE_BUFFERS(base::span(static_cast<uint32_t*>(bits), 32u * 32u));
+
+    // Fill with white RGB(255, 255, 255) with alpha = 0 (opaque 32bpp).
+    std::ranges::fill(span, 0x00FFFFFF);
+
+    // Center Red square.
+    for (int y = 10; y <= 21; ++y) {
+      for (int x = 10; x <= 21; ++x) {
+        span[y * 32 + x] = 0x00FF0000;
+      }
+    }
+
+    base::win::ScopedGDIObject<HICON> icon =
+        CreateIconFromHBitmap(bmp.get(), 32, 32);
+    ASSERT_TRUE(icon.is_valid());
+
+    ICONINFO info = {};
+    ASSERT_TRUE(::GetIconInfo(icon.get(), &info));
+    base::win::ScopedGDIObject<HBITMAP> color_bmp(info.hbmColor);
+    base::win::ScopedGDIObject<HBITMAP> mask_bmp(info.hbmMask);
+
+    struct {
+      BITMAPINFOHEADER bmiHeader;
+      RGBQUAD bmiColors[2];
+    } mask_bi = {};
+    mask_bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    mask_bi.bmiHeader.biWidth = 32;
+    mask_bi.bmiHeader.biHeight = 32;
+    mask_bi.bmiHeader.biPlanes = 1;
+    mask_bi.bmiHeader.biBitCount = 1;
+    mask_bi.bmiHeader.biCompression = BI_RGB;
+
+    const size_t mask_stride = ((32 + 31) / 32) * 4;
+    std::vector<uint8_t> mask_pixels(mask_stride * 32, 0);
+    ASSERT_EQ(
+        ::GetDIBits(dc, mask_bmp.get(), 0, 32, mask_pixels.data(),
+                    reinterpret_cast<BITMAPINFO*>(&mask_bi), DIB_RGB_COLORS),
+        32);
+
+    auto get_mask_bit = [&](int x, int y) -> bool {
+      const size_t dib_y = 31 - y;
+      const uint8_t byte = mask_pixels[dib_y * mask_stride + (x / 8)];
+      return (byte & (1 << (7 - (x % 8)))) != 0;
+    };
+
+    EXPECT_TRUE(get_mask_bit(0, 0));
+    EXPECT_FALSE(get_mask_bit(16, 16));
   }
 }
 
