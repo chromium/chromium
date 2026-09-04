@@ -65,6 +65,7 @@
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/map_coordinates_flags.h"
 #include "third_party/blink/renderer/core/paint/compositing/compositing_reason_finder.h"
+#include "third_party/blink/renderer/core/paint/contoured_border_geometry.h"
 #include "third_party/blink/renderer/core/style/applied_text_decoration.h"
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
@@ -83,11 +84,13 @@
 #include "third_party/blink/renderer/core/style/style_non_inherited_variables.h"
 #include "third_party/blink/renderer/core/style/style_ray.h"
 #include "third_party/blink/renderer/core/style/style_shape.h"
+#include "third_party/blink/renderer/core/style/superellipse.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_geometry_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length_functions.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector.h"
+#include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/geometry/path.h"
 #include "third_party/blink/renderer/platform/geometry/path_builder.h"
@@ -1556,6 +1559,17 @@ gfx::PointF GetStartingPointOfThePath(
   return PointForLengthPoint(offset_position, reference_box_size);
 }
 
+Path MakeContouredMotionPath(const ContouredRect& rect) {
+  PathBuilder builder;
+  builder.MoveTo(rect.TopLeftCorner().End());
+  builder.AddCorner(rect.TopRightCorner());
+  builder.AddCorner(rect.BottomRightCorner());
+  builder.AddCorner(rect.BottomLeftCorner());
+  builder.AddCorner(rect.TopLeftCorner());
+  builder.Close();
+  return builder.Finalize();
+}
+
 }  // namespace
 
 PointAndTangent ComputedStyle::CalculatePointAndTangentOnBasicShape(
@@ -1709,24 +1723,41 @@ void ComputedStyle::ApplyMotionPathTransform(float origin_x,
     }
   } else if (IsA<CoordBoxOffsetPathOperation>(offset_path)) {
     if (box && box->ContainingBlock()) {
-      BasicShapeInset* inset = MakeGarbageCollected<BasicShapeInset>();
-      inset->SetTop(Length::Fixed(0));
-      inset->SetBottom(Length::Fixed(0));
-      inset->SetLeft(Length::Fixed(0));
-      inset->SetRight(Length::Fixed(0));
       const ComputedStyle& style = box->ContainingBlock()->StyleRef();
-      inset->SetTopLeftRadius(style.BorderTopLeftRadius());
-      inset->SetTopRightRadius(style.BorderTopRightRadius());
-      inset->SetBottomRightRadius(style.BorderBottomRightRadius());
-      inset->SetBottomLeftRadius(style.BorderBottomLeftRadius());
       const gfx::RectF reference_box = GetReferenceBox(box, coord_box);
       const gfx::PointF offset_from_reference_box =
           GetOffsetFromContainingBlock(box) - reference_box.OffsetFromOrigin();
       const gfx::SizeF& reference_box_size = reference_box.size();
-      const gfx::PointF starting_point = GetStartingPointOfThePath(
-          offset_from_reference_box, position, reference_box_size);
-      path_position = CalculatePointAndTangentOnBasicShape(
-          *inset, starting_point, reference_box_size);
+      const bool has_ordinary_rounded_corners =
+          style.CornerTopLeftShape() == Superellipse::Round() &&
+          style.CornerTopRightShape() == Superellipse::Round() &&
+          style.CornerBottomRightShape() == Superellipse::Round() &&
+          style.CornerBottomLeftShape() == Superellipse::Round();
+      if (has_ordinary_rounded_corners) {
+        BasicShapeInset* inset = MakeGarbageCollected<BasicShapeInset>();
+        inset->SetTop(Length::Fixed(0));
+        inset->SetBottom(Length::Fixed(0));
+        inset->SetLeft(Length::Fixed(0));
+        inset->SetRight(Length::Fixed(0));
+        inset->SetTopLeftRadius(style.BorderTopLeftRadius());
+        inset->SetTopRightRadius(style.BorderTopRightRadius());
+        inset->SetBottomRightRadius(style.BorderBottomRightRadius());
+        inset->SetBottomLeftRadius(style.BorderBottomLeftRadius());
+        const gfx::PointF starting_point = GetStartingPointOfThePath(
+            offset_from_reference_box, position, reference_box_size);
+        path_position = CalculatePointAndTangentOnBasicShape(
+            *inset, starting_point, reference_box_size);
+      } else {
+        // Use the contoured border geometry so that the path follows
+        // corner-shape in addition to border-radius.
+        const ContouredRect contoured_rect =
+            ContouredBorderGeometry::ContouredBorder(
+                style,
+                PhysicalRect(PhysicalOffset(),
+                             PhysicalSize::FromSizeFRound(reference_box_size)));
+        path_position = CalculatePointAndTangentOnPath(
+            MakeContouredMotionPath(contoured_rect), 1);
+      }
       // `path_position.point` is now relative to the containing block.
       // Make it relative to the box.
       path_position.point -= offset_from_reference_box.OffsetFromOrigin();
