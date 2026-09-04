@@ -7,8 +7,8 @@
 
 #include <string_view>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "ui/events/event_handler.h"
 
 namespace aura {
@@ -37,8 +37,11 @@ class FocusManagerEventHandler : public ui::EventHandler {
  private:
   base::WeakPtr<Widget> widget_;
 
-  // |window_| is the event target that is associated with this class.
-  raw_ptr<aura::Window> window_;
+  // Registers `this` as a pre-target handler on the aura::Window associated
+  // with this class, via ScopedObservationTraits<ui::EventTarget,
+  // ui::EventHandler>.
+  base::ScopedObservation<ui::EventTarget, ui::EventHandler>
+      window_observation_{this};
 };
 
 }  // namespace views

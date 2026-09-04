@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "ui/aura/window.h"
+#include "ui/events/event_target.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/widget/widget.h"
 
@@ -14,14 +15,12 @@ namespace views {
 
 FocusManagerEventHandler::FocusManagerEventHandler(Widget* widget,
                                                    aura::Window* window)
-    : widget_(widget->GetWeakPtr()), window_(window) {
-  DCHECK(window_);
-  window_->AddPreTargetHandler(this);
+    : widget_(widget->GetWeakPtr()) {
+  DCHECK(window);
+  window_observation_.Observe(window);
 }
 
-FocusManagerEventHandler::~FocusManagerEventHandler() {
-  window_->RemovePreTargetHandler(this);
-}
+FocusManagerEventHandler::~FocusManagerEventHandler() = default;
 
 void FocusManagerEventHandler::OnKeyEvent(ui::KeyEvent* event) {
   if (widget_ && widget_->GetFocusManager() &&
