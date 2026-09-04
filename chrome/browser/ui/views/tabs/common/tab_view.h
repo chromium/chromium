@@ -207,6 +207,8 @@ class TabView : public views::View,
   // Applies rounded corners to the view's layer.
   void UpdateLayerRoundedCorners();
 
+  void UpdateZOrder();
+
   raw_ptr<TabCollectionNode> collection_node_ = nullptr;
   TabStripOrientation orientation_ = TabStripOrientation::kHorizontal;
 

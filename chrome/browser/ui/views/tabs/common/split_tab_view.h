@@ -8,6 +8,7 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
+#include "chrome/browser/ui/views/tabs/common/tab_collection_z_order_manager.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/view.h"
@@ -22,8 +23,9 @@ enum class VerticalTabStripCollapseState;
 // The view class for vertical split tab container. It manages layout
 // of the tabs within the split. It also ensures hover states are synchronized
 // with tab views within the split.
-class SplitTabView : public views::View, public views::LayoutDelegate {
-  METADATA_HEADER(SplitTabView, views::View)
+class SplitTabView : public TabCollectionZOrderManager,
+                     public views::LayoutDelegate {
+  METADATA_HEADER(SplitTabView, TabCollectionZOrderManager)
 
  public:
   // This represents the gap between the two tabs in a Split View. This might be

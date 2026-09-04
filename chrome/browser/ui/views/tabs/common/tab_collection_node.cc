@@ -324,11 +324,6 @@ void TabCollectionNode::MoveChild(base::PassKey<TabCollectionNode> pass_key,
                 children_.begin() + old_index + 1);
   }
 
-  // Move the child view to the top of the z-order to ensure the moved child
-  // appears over the other tabs in its parent container.
-  TabCollectionNode* moved_node = children_[target_index].get();
-  node_view_->ReorderChildView(moved_node->node_view_,
-                               static_cast<int>(children_.size() - 1));
   node_view_->InvalidateLayout();
 
   EnsureFocusOrder(target_index);

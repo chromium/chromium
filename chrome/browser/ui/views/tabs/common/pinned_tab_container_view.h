@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "chrome/browser/ui/views/tabs/common/dragged_tabs_container.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_animating_layout_manager.h"
+#include "chrome/browser/ui/views/tabs/common/tab_collection_z_order_manager.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/view.h"
@@ -19,11 +20,11 @@ class TabCollectionNode;
 // tab strip. It manages the layout of all the pinned tabs and serves
 // as the drag target for pinned tabs.
 class PinnedTabContainerView
-    : public views::View,
+    : public TabCollectionZOrderManager,
       public views::LayoutDelegate,
       public DraggedTabsContainer,
       public TabCollectionAnimatingLayoutManager::Delegate {
-  METADATA_HEADER(PinnedTabContainerView, views::View)
+  METADATA_HEADER(PinnedTabContainerView, TabCollectionZOrderManager)
 
  public:
   explicit PinnedTabContainerView(TabCollectionNode* collection_node);

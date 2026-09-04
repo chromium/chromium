@@ -137,15 +137,6 @@ void TabGroupView::OnGestureEvent(ui::GestureEvent* event) {
   }
 }
 
-views::View::Views TabGroupView::GetChildrenInZOrder() {
-  views::View::Views paint_order = views::View::GetChildrenInZOrder();
-  auto it = std::ranges::find(paint_order, group_line_.get());
-  if (it != paint_order.end() && std::next(it) != paint_order.end()) {
-    std::rotate(it, it + 1, paint_order.end());
-  }
-  return paint_order;
-}
-
 void TabGroupView::ToggleCollapsedState(
     ToggleTabGroupCollapsedStateOrigin origin) {
   // If the group is in the process of being closed, then ignore updates.

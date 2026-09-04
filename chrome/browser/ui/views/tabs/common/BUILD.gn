@@ -13,6 +13,7 @@ source_set("common") {
     "split_tab_view.h",
     "tab_collection_animating_layout_manager.h",
     "tab_collection_node.h",
+    "tab_collection_z_order_manager.h",
     "tab_drag_scroll_handler.h",
     "tab_group_view_layout.h",
     "tab_strip_layout_utils.h",
@@ -52,6 +53,7 @@ source_set("impl") {
     "split_tab_view.cc",
     "tab_collection_animating_layout_manager.cc",
     "tab_collection_node.cc",
+    "tab_collection_z_order_manager.cc",
     "tab_drag_handler.cc",
     "tab_drag_handler.h",
     "tab_drag_scroll_handler.cc",
@@ -212,6 +214,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "tab_collection_animating_layout_manager_unittest.cc",
+    "tab_collection_z_order_manager_unittest.cc",
     "tab_group_header_view_unittest.cc",
     "tab_strip_layout_unittest.cc",
   ]

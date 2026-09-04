@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/common/split_tab_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
+#include "chrome/browser/ui/views/tabs/common/tab_collection_z_order_manager.h"
 #include "chrome/browser/ui/views/tabs/common/tab_drag_handler.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
@@ -486,6 +487,7 @@ void TabView::UpdateHovered(bool hovered) {
   }
 
   UpdateColors();
+  UpdateZOrder();
   InvalidateLayout();
 }
 
@@ -796,6 +798,8 @@ void TabView::RemovedFromWidget() {
 void TabView::OnFocus() {
   views::View::OnFocus();
 
+  UpdateZOrder();
+
   if (collection_node_ && collection_node_->GetController()) {
     collection_node_->GetController()->TabKeyboardFocusChangedTo(
         GetTabInterface());
@@ -811,6 +815,8 @@ void TabView::OnFocus() {
 
 void TabView::OnBlur() {
   views::View::OnBlur();
+
+  UpdateZOrder();
 
   if (collection_node_ && collection_node_->GetController()) {
     collection_node_->GetController()->TabKeyboardFocusChangedTo(nullptr);
@@ -984,6 +990,7 @@ void TabView::ResetCollectionNode() {
   // background.
   active_ = false;
   selected_ = false;
+  UpdateZOrder();
 
   // Update the callbacks for the buttons so that we don't call anything that
   // needs the node.
@@ -1042,7 +1049,29 @@ void TabView::OnTabStateChanged() {
   UpdateFocusFreezing();
 
   UpdateColors();
+  UpdateZOrder();
   InvalidateLayout();
+}
+
+void TabView::UpdateZOrder() {
+  using ZOrderLevel = TabCollectionZOrderManager::ZOrderLevel;
+  ZOrderLevel target_z = ZOrderLevel::kDefault;
+
+  if (active_) {
+    target_z = ZOrderLevel::kActive;
+  } else if (selected_) {
+    target_z = ZOrderLevel::kSelected;
+  } else if (hovered_ || HasFocus()) {
+    target_z = ZOrderLevel::kHovered;
+  }
+
+  if (GetProperty(kTabZOrderKey) != target_z) {
+    SetProperty(kTabZOrderKey, target_z);
+    if (auto* container =
+            views::AsViewClass<TabCollectionZOrderManager>(parent())) {
+      container->OnChildZOrderChanged(this);
+    }
+  }
 }
 
 void TabView::OnTabDataChanged(TabChangeType change_type,

@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "chrome/browser/ui/views/tabs/common/dragged_tabs_container.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_animating_layout_manager.h"
+#include "chrome/browser/ui/views/tabs/common/tab_collection_z_order_manager.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_header_view.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -27,11 +28,11 @@ class TabGroupDataObserver;
 // The view class for the tab group container. It hosts the group header,
 // underline and all the tabs within the group, and serves as the drag target
 // for tab dragging. Layout is managed by TabGroupViewLayout.
-class TabGroupView : public views::View,
+class TabGroupView : public TabCollectionZOrderManager,
                      public TabGroupHeaderView::Delegate,
                      public DraggedTabsContainer,
                      public TabCollectionAnimatingLayoutManager::Delegate {
-  METADATA_HEADER(TabGroupView, views::View)
+  METADATA_HEADER(TabGroupView, TabCollectionZOrderManager)
 
  public:
   static constexpr int kTabLeadingPadding = 10;
@@ -46,7 +47,6 @@ class TabGroupView : public views::View,
   void RemovedFromWidget() override;
   void OnThemeChanged() override;
   void OnGestureEvent(ui::GestureEvent* event) override;
-  views::View::Views GetChildrenInZOrder() override;
 
   // TabGroupHeaderView::Delegate:
   void ToggleCollapsedState(ToggleTabGroupCollapsedStateOrigin origin) override;

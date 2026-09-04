@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
+#include "chrome/browser/ui/views/tabs/common/tab_collection_z_order_manager.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
@@ -37,6 +38,8 @@ constexpr int kGroupLineCornerRadius = 4;
 
 TabGroupLineView::TabGroupLineView(TabGroupView& tab_group_view)
     : tab_group_view_(tab_group_view) {
+  SetProperty(kTabZOrderKey,
+              TabCollectionZOrderManager::ZOrderLevel::kGroupUnderline);
   SetCanProcessEventsWithinSubtree(false);
   SetFocusBehavior(views::View::FocusBehavior::NEVER);
 }
