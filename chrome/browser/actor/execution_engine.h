@@ -162,7 +162,7 @@ class ExecutionEngine : public ToolDelegate,
     kRejected = 2,
     kMaxValue = kRejected
   };
-  // LINT.ThenChange(//tools/metrics/histograms/actor/enums.xml:ActorServerConfirmationResult)
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:ActorServerConfirmationResult)
 
   // Tests can provide a factory function which will be used to create
   // test-instrumented ExecutionEngine instances. See the

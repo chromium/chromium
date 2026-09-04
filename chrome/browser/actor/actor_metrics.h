@@ -107,6 +107,7 @@ void RecordObservationOutcomeHistogram(
 inline constexpr std::string_view kActorPageContextObservationOutcome =
     "Actor.PageContext.ObservationOutcome";
 
+// LINT.IfChange(ActorObservationOutcome)
 enum class ActorObservationOutcome {
   kSuccess,
   kSuccessAfterRetry,
@@ -114,6 +115,7 @@ enum class ActorObservationOutcome {
   kFailureAfterRetry,
   kMaxValue = kFailureAfterRetry,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:ActorObservationOutcome)
 
 // Records the outcome of an post-performActions observation fetch.
 void RecordTabObservationResultHistogram(
@@ -124,6 +126,7 @@ void RecordTabObservationResultHistogram(
 inline constexpr std::string_view kActorPageContextTabObservationResult =
     "Actor.PageContext.TabObservationResult";
 
+// LINT.IfChange(ActorTabObservationResult)
 enum class ActorTabObservationResult {
   kSuccess,
   kTabWentAway,
@@ -138,6 +141,7 @@ enum class ActorTabObservationResult {
   kApcAndScreenshotNotOk,
   kMaxValue = kApcAndScreenshotNotOk,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:ActorTabObservationResult)
 
 // LINT.IfChange(SplitModeTimeOfUseFrameStatus)
 enum class SplitModeTimeOfUseFrameStatus {

@@ -39,7 +39,7 @@ public class ActorMetrics implements ActorKeyedService.Observer {
         int NUM_ENTRIES = 2;
     }
 
-    // LINT.ThenChange(//chrome/browser/actor/actor_metrics.cc:ActorPipStatus)
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:ActorPipStatus)
 
     // LINT.IfChange(ActorPipExitReason)
 
@@ -56,7 +56,7 @@ public class ActorMetrics implements ActorKeyedService.Observer {
         int NUM_ENTRIES = 3;
     }
 
-    // LINT.ThenChange(//chrome/browser/actor/actor_metrics.cc:ActorPipExitReason)
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:ActorPipExitReason)
 
     // LINT.IfChange(ActorPipUserInteraction)
 
@@ -73,7 +73,7 @@ public class ActorMetrics implements ActorKeyedService.Observer {
         int NUM_ENTRIES = 3;
     }
 
-    // LINT.ThenChange(//chrome/browser/actor/actor_metrics.cc:ActorPipUserInteraction)
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:ActorPipUserInteraction)
 
     @IntDef({
         ActorPauseResumeSource.PIP,
