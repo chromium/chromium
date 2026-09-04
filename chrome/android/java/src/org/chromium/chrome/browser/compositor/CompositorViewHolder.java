@@ -1159,7 +1159,7 @@ public class CompositorViewHolder extends FrameLayout
         if ((AndroidSidePanelEnabledFn.isEnabled()
                         || VerticalTabUtils.isVerticalTabsEligible(mActivity))
                 && mSideUiStateProvider != null) {
-            SideUiSpecs sideUiSpecs = mSideUiStateProvider.getExpectedSideUiSpecsForTab(tab);
+            SideUiSpecs sideUiSpecs = mSideUiStateProvider.getCurrentSideUiSpecs();
             sideUiLeftMargin = sideUiSpecs.getWidth(AnchorSide.LEFT);
             horizontalViewportInsets = sideUiLeftMargin + sideUiSpecs.getWidth(AnchorSide.RIGHT);
         }
@@ -1592,10 +1592,9 @@ public class CompositorViewHolder extends FrameLayout
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
     private void repositionTabViewForSideUi() {
-        Tab currentTab = getCurrentTab();
-        if (mSideUiStateProvider == null || currentTab == null) return;
-
-        repositionTabViewForSideUi(mSideUiStateProvider.getExpectedSideUiSpecsForTab(currentTab));
+        if (mSideUiStateProvider != null) {
+            repositionTabViewForSideUi(mSideUiStateProvider.getCurrentSideUiSpecs());
+        }
     }
 
     private void repositionTabViewForSideUi(SideUiSpecs sideUiSpecs) {
