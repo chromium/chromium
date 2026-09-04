@@ -1696,8 +1696,9 @@ class GetContextsWithDeveloperToolsOpened
       const GetContextsWithDeveloperToolsOpened&) = delete;
 };
 
-// TODO(crbug.com/357845909): flaky on ChromeOS and Linux MSAN.
-#if defined(MEMORY_SANITIZER) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
+// TODO(crbug.com/556930566): flaky on Linux.
+// TODO(crbug.com/357845909): also flaky on ChromeOS MSAN.
+#if BUILDFLAG(IS_LINUX) || (defined(MEMORY_SANITIZER) && BUILDFLAG(IS_CHROMEOS))
 #define MAYBE_ReturnsDevToolsContext DISABLED_ReturnsDevToolsContext
 #else
 #define MAYBE_ReturnsDevToolsContext ReturnsDevToolsContext
