@@ -26,9 +26,7 @@ HeadlessCrashReporterClient::~HeadlessCrashReporterClient() = default;
 
 void HeadlessCrashReporterClient::GetProductInfo(
     ProductInfo* product_info) {
-  product_info->product_name = kChromeHeadlessProductName;
-  product_info->version = PRODUCT_VERSION;
-  product_info->channel = "";
+  *product_info = ProductInfo(kChromeHeadlessProductName, PRODUCT_VERSION, "");
 }
 
 bool HeadlessCrashReporterClient::GetCrashDumpLocation(

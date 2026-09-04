@@ -36,9 +36,7 @@ class MockCrashEndpoint::Client : public crash_reporter::CrashReporterClient {
     return owner_->consented_;
   }
   void GetProductInfo(ProductInfo* product_info) override {
-    product_info->product_name = "Chrome_ChromeOS";
-    product_info->version = "1.2.3.4";
-    product_info->channel = "Stable";
+    *product_info = ProductInfo("Chrome_ChromeOS", "1.2.3.4", "Stable");
   }
  private:
   raw_ptr<MockCrashEndpoint> owner_;

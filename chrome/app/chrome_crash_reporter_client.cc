@@ -132,27 +132,28 @@ bool ChromeCrashReporterClient::GetCrashDumpLocation(
 void ChromeCrashReporterClient::GetProductInfo(ProductInfo* product_info) {
   CHECK(product_info);
 
+  const char* product_name = "";
 #if BUILDFLAG(IS_ANDROID)
-  product_info->product_name = "Chrome_Android";
+  product_name = "Chrome_Android";
 #elif BUILDFLAG(IS_CHROMEOS)
-  product_info->product_name = "Chrome_ChromeOS";
+  product_name = "Chrome_ChromeOS";
 #elif BUILDFLAG(IS_LINUX)
 #if defined(ADDRESS_SANITIZER)
-  product_info->product_name = "Chrome_Linux_ASan";
+  product_name = "Chrome_Linux_ASan";
 #else
-  product_info->product_name = "Chrome_Linux";
+  product_name = "Chrome_Linux";
 #endif  // defined(ADDRESS_SANITIZER)
 #elif BUILDFLAG(IS_MAC)
-  product_info->product_name = "Chrome_Mac";
+  product_name = "Chrome_Mac";
 #elif BUILDFLAG(IS_WIN)
-  product_info->product_name = "Chrome";
+  product_name = "Chrome";
 #else
   NOTREACHED();
 #endif
 
-  product_info->version = UpdaterVersion();
-  product_info->channel =
-      chrome::GetChannelName(chrome::WithExtendedStable(true));
+  *product_info =
+      ProductInfo(product_name, UpdaterVersion(),
+                  chrome::GetChannelName(chrome::WithExtendedStable(true)));
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

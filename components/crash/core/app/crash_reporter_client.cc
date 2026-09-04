@@ -27,9 +27,6 @@ const char kDefaultUploadURL[] = "https://clients2.google.com/cr/report";
 
 }  // namespace
 
-ProductInfo::ProductInfo() = default;
-ProductInfo::~ProductInfo() = default;
-
 void SetCrashReporterClient(CrashReporterClient* client) {
   g_client = client;
 }
