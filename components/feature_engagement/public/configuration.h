@@ -10,6 +10,7 @@
 #include <ostream>
 #include <set>
 #include <string>
+#include <string_view>
 #include <unordered_set>
 #include <vector>
 
@@ -72,10 +73,17 @@ std::ostream& operator<<(std::ostream& os, const Comparator& comparator);
 struct EventConfig {
  public:
   EventConfig();
-  EventConfig(const std::string& name,
+  // Takes std::string_view rather than const std::string& so that the many
+  // static-configuration call sites do not each materialize a temporary
+  // std::string inline.
+  EventConfig(std::string_view name,
               Comparator comparator,
               uint32_t window,
               uint32_t storage);
+  EventConfig(const EventConfig&);
+  EventConfig& operator=(const EventConfig&);
+  EventConfig(EventConfig&&) noexcept;
+  EventConfig& operator=(EventConfig&&) noexcept;
   ~EventConfig();
 
   friend bool operator==(const EventConfig&, const EventConfig&) = default;

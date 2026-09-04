@@ -105,12 +105,16 @@ std::ostream& operator<<(std::ostream& os, const Comparator& comparator) {
 
 EventConfig::EventConfig() : window(0), storage(0) {}
 
-EventConfig::EventConfig(const std::string& name,
+EventConfig::EventConfig(std::string_view name,
                          Comparator comparator,
                          uint32_t window,
                          uint32_t storage)
     : name(name), comparator(comparator), window(window), storage(storage) {}
 
+EventConfig::EventConfig(const EventConfig&) = default;
+EventConfig& EventConfig::operator=(const EventConfig&) = default;
+EventConfig::EventConfig(EventConfig&&) noexcept = default;
+EventConfig& EventConfig::operator=(EventConfig&&) noexcept = default;
 EventConfig::~EventConfig() = default;
 
 std::ostream& operator<<(std::ostream& os, const EventConfig& event_config) {
