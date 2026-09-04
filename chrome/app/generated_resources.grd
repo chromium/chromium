@@ -10182,6 +10182,25 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_PRESENTATION_MODE_IPH_SCREENREADER" is_accessibility_with_no_ui="true" desc="Text for the help bubble describing how to toggle reading mode from immersive mode to side panel mode.">
         Switch back to the side-by-side view by opening Settings, then View, and select Side Panel.
       </message>
+      <message name="IDS_READING_MODE_LINE_FOCUS_IPH_TITLE" desc="Title for the help bubble describing the line focus feature in Reading Mode.">
+        Try line focus
+      </message>
+      <if expr="is_macosx">
+        <message name="IDS_READING_MODE_LINE_FOCUS_IPH_BODY" desc="Text for the help bubble describing how to turn on line focus.">
+          Apply a reading line or window to help with focus. Press ⌥L or go to Settings.
+        </message>
+        <message name="IDS_READING_MODE_LINE_FOCUS_IPH_SCREENREADER" is_accessibility_with_no_ui="true" desc="Accessible text for the help bubble describing how to turn on line focus.">
+          Apply a reading line or window to help with focus. Press ⌥L or go to Settings.
+        </message>
+      </if>
+      <if expr="not is_macosx">
+        <message name="IDS_READING_MODE_LINE_FOCUS_IPH_BODY" desc="Text for the help bubble describing how to turn on line focus.">
+          Apply a reading line or window to help with focus. Press Alt+L or go to Settings.
+        </message>
+        <message name="IDS_READING_MODE_LINE_FOCUS_IPH_SCREENREADER" is_accessibility_with_no_ui="true" desc="Accessible text for the help bubble describing how to turn on line focus.">
+          Apply a reading line or window to help with focus. Press Alt+L or go to Settings.
+        </message>
+      </if>
 
       <!-- Google Lens side panel -->
       <message name="IDS_GOOGLE_LENS_TITLE" desc="Title of the Google Lens side panel">

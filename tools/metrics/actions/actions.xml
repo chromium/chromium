@@ -790,6 +790,8 @@ should be able to be added at any place in this file.
       summary="For ReadingListMessages feature."/>
   <variant name="_ReadingModeKeyboardShortcut"
       summary="For reading mode keyboard shortcut feature."/>
+  <variant name="_ReadingModeLineFocus"
+      summary="For reading mode line focus feature."/>
   <variant name="_ReadingModePageActionLabel"
       summary="For reading mode omnibox entrypoint."/>
   <variant name="_ReadingModePresentationMode"

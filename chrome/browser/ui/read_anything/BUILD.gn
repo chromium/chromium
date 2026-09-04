@@ -169,6 +169,7 @@ source_set("interactive_ui_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   sources = [
+    "read_anything_controller_interactive_uitest.cc",
     "read_anything_omnibox_controller_interactive_uitest.cc",
     "read_anything_service_interactive_uitest.cc",
     "read_anything_side_panel_controller_interactive_uitest.cc",

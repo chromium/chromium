@@ -21,6 +21,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/read_anything/read_anything_immersive_web_view.h"
 #include "chrome/browser/ui/read_anything/read_anything_prefs.h"
@@ -32,6 +33,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
 #include "chrome/browser/user_education/user_education_service.h"
@@ -43,6 +45,8 @@
 #include "chrome/test/base/chrome_test_path_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/user_education/mock_browser_user_education_interface.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/language_detection/core/constants.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/tabs/public/tab_interface.h"
@@ -2796,5 +2800,54 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
       "Accessibility.ReadAnything.RendererRequestForSelection.Result",
       ReadAnythingRendererRequestResult::kAllowed,
       /*expected_bucket_count=*/1);
+}
+
+class ReadAnythingUntrustedPageHandlerUserEducationTest
+    : public ReadAnythingUntrustedPageHandlerTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    ReadAnythingUntrustedPageHandlerTest::SetUpInProcessBrowserTestFixture();
+    user_ed_override_ =
+        BrowserWindowFeatures::GetUserDataFactoryForTesting()
+            .AddOverrideForTesting(
+                base::BindRepeating([](BrowserWindowInterface& window) {
+                  return std::make_unique<
+                      testing::NiceMock<MockBrowserUserEducationInterface>>(
+                      &window);
+                }));
+  }
+
+  MockBrowserUserEducationInterface* mock_user_education_interface() {
+    return static_cast<MockBrowserUserEducationInterface*>(
+        BrowserUserEducationInterface::From(browser()));
+  }
+
+ protected:
+  ui::UserDataFactory::ScopedOverride user_ed_override_;
+};
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerUserEducationTest,
+                       OnLineFocusChanged_NotifiesFeatureUsed) {
+  handler_ = CreateHandler();
+
+  // Setting line focus to kOff should not mark the feature as used.
+  EXPECT_CALL(
+      *mock_user_education_interface(),
+      NotifyFeaturePromoFeatureUsed(
+          testing::Ref(feature_engagement::kIPHReadingModeLineFocusFeature),
+          FeaturePromoFeatureUsedAction::kClosePromoIfPresent))
+      .Times(0);
+  handler_->OnLineFocusChanged(read_anything::mojom::LineFocus::kOff,
+                               read_anything::mojom::LineFocus::kLineStatic);
+
+  // Setting line focus to an active mode marks the feature as used.
+  EXPECT_CALL(
+      *mock_user_education_interface(),
+      NotifyFeaturePromoFeatureUsed(
+          testing::Ref(feature_engagement::kIPHReadingModeLineFocusFeature),
+          FeaturePromoFeatureUsedAction::kClosePromoIfPresent))
+      .Times(1);
+  handler_->OnLineFocusChanged(read_anything::mojom::LineFocus::kLineStatic,
+                               read_anything::mojom::LineFocus::kLineStatic);
 }
 }  // namespace

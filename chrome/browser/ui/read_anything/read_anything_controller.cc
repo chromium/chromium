@@ -674,13 +674,30 @@ void ReadAnythingController::OnDistillationStateChanged(
     return;
   }
 
-  if (new_state == DistillationState::kDistillationEmpty &&
-      GetPresentationState() == PresentationState::kInImmersiveOverlay) {
-    base::UmaHistogramEnumeration(
-        "Accessibility.ReadAnything.SidePanelTriggeredByEmptyState",
-        ReadAnythingOpenTrigger::kReadAnythingTogglePresentationButton);
+  auto* user_ed =
+      BrowserUserEducationInterface::From(tab_->GetBrowserWindowInterface());
 
-    TogglePresentation(/*is_user_initiated=*/false);
+  if (new_state == DistillationState::kDistillationEmpty) {
+    if (user_ed) {
+      user_ed->AbortFeaturePromo(
+          feature_engagement::kIPHReadingModeLineFocusFeature);
+    }
+
+    if (GetPresentationState() == PresentationState::kInImmersiveOverlay) {
+      base::UmaHistogramEnumeration(
+          "Accessibility.ReadAnything.SidePanelTriggeredByEmptyState",
+          ReadAnythingOpenTrigger::kReadAnythingTogglePresentationButton);
+
+      TogglePresentation(/*is_user_initiated=*/false);
+    }
+  } else if (features::IsReadAnythingLineFocusEnabled() &&
+             new_state == DistillationState::kDistillationWithContent &&
+             GetPresentationState() != PresentationState::kInactive &&
+             user_ed) {
+    // Only show the line focus IPH if there is content because line focus does
+    // not do anything on an empty page.
+    user_ed->MaybeShowFeaturePromo(
+        feature_engagement::kIPHReadingModeLineFocusFeature);
   }
   distillation_state_ = new_state;
 }

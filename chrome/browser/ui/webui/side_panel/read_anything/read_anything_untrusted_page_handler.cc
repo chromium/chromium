@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/read_anything/read_anything_prefs.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/read_anything/read_anything.mojom-shared.h"
@@ -43,6 +44,7 @@
 #include "components/dom_distiller/core/distiller_page.h"
 #include "components/dom_distiller/core/dom_distiller_service.h"
 #include "components/dom_distiller/core/task_tracker.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/language/core/common/locale_util.h"
@@ -1039,6 +1041,19 @@ void ReadAnythingUntrustedPageHandler::OnLineFocusChanged(
     profile_->GetPrefs()->SetInteger(
         prefs::kAccessibilityReadAnythingLastNonDisabledLineFocus,
         static_cast<size_t>(last_non_disabled_line_focus));
+
+    if (current_line_focus == read_anything::mojom::LineFocus::kOff) {
+      return;
+    }
+
+    if (tab_ && tab_->GetBrowserWindowInterface()) {
+      if (auto* user_ed = BrowserUserEducationInterface::From(
+              tab_->GetBrowserWindowInterface())) {
+        user_ed->NotifyFeaturePromoFeatureUsed(
+            feature_engagement::kIPHReadingModeLineFocusFeature,
+            FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+      }
+    }
   }
 }
 

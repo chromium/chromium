@@ -1288,6 +1288,22 @@ void MaybeRegisterChromeFeaturePromos(
                        "Triggered to educate users about the keyboard shortcut "
                        "for Reading Mode.")));
 
+  // kIPHReadingModeLineFocusFeature:
+  registry.RegisterFeature(std::move(
+      user_education::FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPHReadingModeLineFocusFeature,
+          kReadAnythingSettingsButtonElementId,
+          IDS_READING_MODE_LINE_FOCUS_IPH_BODY,
+          IDS_READING_MODE_LINE_FOCUS_IPH_SCREENREADER,
+          user_education::FeaturePromoSpecification::AcceleratorInfo())
+          .SetBubbleTitleText(IDS_READING_MODE_LINE_FOCUS_IPH_TITLE)
+          .SetBubbleIcon(&vector_icons::kWbIncandescentIcon)
+          .SetBubbleArrow(user_education::HelpBubbleArrow::kTopRight)
+          .SetInAnyContext(true)
+          .SetMetadata(155, "kristislee@google.com",
+                       "Triggered to educate users about the line focus "
+                       "feature in Reading Mode.")));
+
   // kIPHReadingModePresentationModeFeature:
   registry.RegisterFeature(std::move(
       user_education::FeaturePromoSpecification::CreateForToastPromo(
