@@ -346,6 +346,7 @@ BASE_DECLARE_FEATURE(kUnparcelIntentFileDescriptors);
 BASE_DECLARE_FEATURE(kUseActivityManagerForTabActivation);
 BASE_DECLARE_FEATURE(kUseAppTaskForCustomTabActivation);
 BASE_DECLARE_FEATURE(kUseLibunwindstackNativeUnwinderAndroid);
+BASE_DECLARE_FEATURE(kUseWebUiNtp3PDSE);
 BASE_DECLARE_FEATURE(kUseWebUiNtpAndroid);
 BASE_DECLARE_FEATURE(kVerifyStartupSigninState);
 BASE_DECLARE_FEATURE(kVirtualKeyboardResizesContentTransientOvershootFix);

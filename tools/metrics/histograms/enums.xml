@@ -11986,6 +11986,7 @@ from previous Chrome versions.
   <int value="-855412738" label="CrosShortstand:enabled"/>
   <int value="-855277252" label="CookiesWithoutSameSiteMustBeSecure:disabled"/>
   <int value="-855130893" label="enable-touch-calibration-setting"/>
+  <int value="-854845963" label="UseWebUiNtp3PDSE:enabled"/>
   <int value="-854716639" label="TranslateAndroidManualTrigger:enabled"/>
   <int value="-854519621" label="PointerLockOptions:disabled"/>
   <int value="-854202736" label="ActorObserveScreenshotDefault:disabled"/>
@@ -16003,6 +16004,7 @@ from previous Chrome versions.
   <int value="388632022" label="JavaScriptExperimentalSharedMemory:disabled"/>
   <int value="388786873" label="EnableUnifiedMultiDeviceSettings:enabled"/>
   <int value="388996324" label="CustomContextMenu:disabled"/>
+  <int value="389811054" label="UseWebUiNtp3PDSE:disabled"/>
   <int value="390360656" label="TrustSafetySentimentSurvey:enabled"/>
   <int value="390675143" label="AXTreeFixing:enabled"/>
   <int value="391632490" label="NtpDriveModule:enabled"/>
