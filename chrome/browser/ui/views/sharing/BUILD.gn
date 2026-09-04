@@ -35,7 +35,7 @@ source_set("impl") {
   deps = [
     ":sharing",
     "//chrome/app/vector_icons",
-    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/views:intent_picker_bubble_view",
     "//chrome/browser/ui/views:layout_provider",
     "//chrome/browser/ui/views/accessibility",
     "//chrome/browser/ui/views/controls",
@@ -54,16 +54,6 @@ source_set("impl") {
     "//ui/strings",
     "//ui/views",
   ]
-
-  # sharing_dialog_view.cc includes
-  # chrome/browser/ui/views/intent_picker_bubble_view.h (IntentPickerBubbleView)
-  # under an IS_CHROMEOS guard; it is still compiled in //chrome/browser/ui:ui
-  # with no modular home yet. The dependency is unconditional (not guarded under
-  # is_chromeos) because gn check on some platforms flags the guarded include
-  # regardless of the build flag. Reach it via browser_public_dependencies; the
-  # reverse edge is the allow_circular_includes_from entry on
-  # //chrome/browser/ui:ui.
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("unit_tests") {

@@ -1186,11 +1186,6 @@ static_library("ui") {
     "//chrome/browser/search_engine_choice:impl",
 
     # TODO(crbug.com/353332589): Remove this circular dependency when the
-    # following header gets componentized:
-    # c/b/ui/views/dotted_icon.h
-    "//chrome/browser/profiles:profile_util_impl",
-
-    # TODO(crbug.com/353332589): Remove this circular dependency when the
     # following headers get componentized:
     # c/b/ui/browser_commands.h, browser_window.h
     # c/b/ui/scoped_tabbed_browser_displayer.h
@@ -2572,8 +2567,6 @@ static_library("ui") {
       "views/frame/vertical_tab_strip_background_blur_backdrop.h",
       "views/frame/vertical_tab_strip_region_view.cc",
       "views/frame/vertical_tab_strip_region_view.h",
-      "views/intent_picker_bubble_view.cc",
-      "views/intent_picker_bubble_view.h",
       "views/tab_search_bubble_host.cc",
       "views/tab_search_bubble_host.h",
       "views/web_apps/frame_toolbar/web_app_frame_toolbar_view.cc",
@@ -2654,6 +2647,7 @@ static_library("ui") {
       "//chrome/browser/ui/views:global_error_bubble_view",
       "//chrome/browser/ui/views:idle_bubble",
       "//chrome/browser/ui/views:incognito_clear_browsing_data_dialog",
+      "//chrome/browser/ui/views:intent_picker_bubble_view",
       "//chrome/browser/ui/views:javascript_tab_modal_dialog_view_views",
       "//chrome/browser/ui/views:layout_provider_impl",
       "//chrome/browser/ui/views:login_handler_views",
@@ -3059,14 +3053,6 @@ static_library("ui") {
       # c/b/ui/browser.h
       # c/b/ui/views/frame/browser_view.h, contents_web_view.h
       "//chrome/browser/ui/views/omnibox:impl",
-
-      # TODO(crbug.com/353332589): Remove this circular dependency when the
-      # following header gets componentized:
-      # c/b/ui/views/intent_picker_bubble_view.h
-      # (sharing_dialog_view.cc includes it under an IS_CHROMEOS guard, but the
-      # entry is unconditional because gn check flags the guarded include on
-      # platforms where it is not compiled)
-      "//chrome/browser/ui/views/sharing:impl",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when the
       # following headers get componentized:

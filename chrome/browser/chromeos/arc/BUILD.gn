@@ -20,6 +20,7 @@ static_library("arc") {
     "//base",
     "//chrome/browser:browser_public_dependencies",
     "//chromeos/ash/experiences/arc/intent_helper",
+    "//components/apps/link_capturing",
     "//components/renderer_context_menu",
     "//content/public/browser",
     "//ui/base",

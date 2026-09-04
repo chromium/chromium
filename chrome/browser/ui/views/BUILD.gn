@@ -1499,3 +1499,40 @@ source_set("session_crashed_bubble_view") {
     "//ui/views",
   ]
 }
+
+source_set("intent_picker_bubble_view") {
+  public = [ "intent_picker_bubble_view.h" ]
+  sources = [ "intent_picker_bubble_view.cc" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/views/location_bar",
+    "//components/apps/link_capturing",
+    "//ui/base",
+    "//ui/views",
+    "//url",
+  ]
+  deps = [
+    ":layout_provider",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/views/controls",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:features",
+    "//chrome/common:chrome_features",
+    "//components/services/app_service",
+    "//components/url_formatter",
+    "//content/public/browser",
+    "//skia",
+    "//ui/accessibility:ax_base",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/color:color_headers",
+    "//ui/events",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/strings:ui_strings",
+  ]
+  if (is_chromeos) {
+    deps += [ "//ui/chromeos" ]
+  }
+}

@@ -82,6 +82,7 @@
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button.h"
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_contextual_menu.h"
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.h"
+#include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
 #include "chrome/browser/ui/views/page_action/page_action_container_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
@@ -1244,10 +1245,10 @@ bool ToolbarView::GetAppMenuFocused() const {
 }
 
 void ToolbarView::ShowIntentPickerBubble(
-    std::vector<IntentPickerBubbleView::AppInfo> app_info,
+    std::vector<apps::IntentPickerAppInfo> app_info,
     bool show_stay_in_chrome,
     bool show_remember_selection,
-    IntentPickerBubbleView::BubbleType bubble_type,
+    apps::IntentPickerBubbleType bubble_type,
     const std::optional<url::Origin>& initiating_origin,
     IntentPickerResponse callback) {
   std::optional<ui::ElementIdentifier> higlighted_element;
