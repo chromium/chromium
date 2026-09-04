@@ -258,6 +258,7 @@ source_set("ui") {
     sources += [
       "contextual_tasks_panel_host_desktop.h",
       "contextual_tasks_web_view.h",
+      "location_bar_stub.h",
     ]
   }
 
@@ -310,6 +311,7 @@ source_set("ui") {
   } else {
     public_deps += [
       "//chrome/browser/glic/browser_ui",
+      "//chrome/browser/ui/location_bar",
       "//chrome/browser/ui/side_panel:side_panel_views_dependent",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/views/bubble",
@@ -447,6 +449,7 @@ source_set("ui_impl") {
     sources += [
       "contextual_tasks_panel_host_desktop.cc",
       "contextual_tasks_web_view.cc",
+      "location_bar_stub.cc",
     ]
     deps += [
       "//chrome/browser/pdf",
@@ -458,6 +461,7 @@ source_set("ui_impl") {
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/user_education",
+      "//chrome/browser/ui/views:bubble_anchor_util_views",
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/views/interaction",
       "//chrome/browser/ui/views/page_info",
