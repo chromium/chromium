@@ -19,6 +19,7 @@ mojom("mojo_bindings") {
   public_deps = [
     "//chrome/browser/pwc:features",
     "//mojo/public/mojom/base",
+    "//mojo/public/mojom/base:protobuf_support",
     "//url/mojom:url_mojom_gurl",
   ]
   webui_module_path = "/"
@@ -64,11 +65,13 @@ source_set("geic") {
     public += [
       "geic_browser_host_impl.h",
       "geic_pwc_manager.h",
+      "geic_tab_context_extraction_runner.h",
     ]
 
     sources += [
       "geic_browser_host_impl.cc",
       "geic_pwc_manager.cc",
+      "geic_tab_context_extraction_runner.cc",
     ]
 
     deps += [
@@ -79,8 +82,11 @@ source_set("geic") {
       "//chrome/browser/ui/tabs:tab_strip",
       "//components/content_extraction/content/browser",
       "//components/favicon/content",
+      "//components/optimization_guide/content/browser",
+      "//components/optimization_guide/proto:optimization_guide_proto",
       "//components/tabs:public",
       "//google_apis",
+      "//mojo/public/cpp/base:protobuf_support",
       "//skia",
       "//ui/base",
       "//ui/gfx",
@@ -111,12 +117,17 @@ source_set("unit_tests") {
     sources += [
       "geic_browser_host_impl_unittest.cc",
       "geic_pwc_manager_unittest.cc",
+      "geic_tab_context_extraction_runner_unittest.cc",
+      "geic_tab_context_test_util.cc",
+      "geic_tab_context_test_util.h",
     ]
     deps += [
       "//chrome/browser/ui",
       "//chrome/browser/ui/browser_window/test:test_support",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/tabs:test_support",
+      "//components/optimization_guide/content/browser",
+      "//components/optimization_guide/proto:optimization_guide_proto",
       "//components/tabs:public",
       "//components/tabs:test_support",
     ]

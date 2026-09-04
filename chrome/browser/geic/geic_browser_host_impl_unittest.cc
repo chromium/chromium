@@ -12,6 +12,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/geic/geic.mojom.h"
 #include "chrome/browser/geic/geic_pwc_manager.h"
+#include "chrome/browser/geic/geic_tab_context_test_util.h"
 #include "chrome/browser/pwc/privileged_web_contents.h"
 #include "chrome/browser/pwc/pwc_component_policy.h"
 #include "chrome/browser/pwc/pwc_features.mojom-features.h"
@@ -29,6 +30,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -78,6 +80,13 @@ class GeicBrowserHostImplTest : public ChromeRenderViewHostTestHarness {
     tab_ = tab_strip_model_->GetActiveTab();
     ASSERT_TRUE(tab_);
 
+    // Needed to run unit tests that extract inner text/APC.
+    // `ChromeRenderViewHostTestHarness` doesn't have a renderer process running
+    // so things end up hanging. Adding this helper is needed to keep the fake
+    // agents alive during the test.
+    tab_context_helper_ = std::make_unique<TabContextTestHelper>(
+        tab_strip_model_->GetActiveWebContents());
+
     host_impl_ = std::make_unique<GeicBrowserHostImpl>(tab_);
     host_impl_->BindBrowserHost(host_remote_.BindNewPipeAndPassReceiver());
 
@@ -93,6 +102,7 @@ class GeicBrowserHostImplTest : public ChromeRenderViewHostTestHarness {
   }
 
   void TearDown() override {
+    tab_context_helper_.reset();
     host_impl_.reset();
     tab_ = nullptr;
     tab_strip_model_->CloseAllTabs();
@@ -164,6 +174,7 @@ class GeicBrowserHostImplTest : public ChromeRenderViewHostTestHarness {
   base::test::ScopedFeatureList scoped_feature_list_;
   tabs::TabModel::PreventFeatureInitializationForTesting prevent_tab_features_;
   raw_ptr<tabs::TabInterface> tab_ = nullptr;
+  std::unique_ptr<TabContextTestHelper> tab_context_helper_;
   FakeGeicClient client_;
   mojo::Receiver<mojom::GeicClient> client_receiver_{&client_};
   std::unique_ptr<GeicBrowserHostImpl> host_impl_;
@@ -326,6 +337,21 @@ TEST_F(GeicBrowserHostImplTest,
   EXPECT_EQ(result.value()->metadata->url, GURL("https://example.com/initial"));
 }
 
+TEST_F(GeicBrowserHostImplTest, HostDestroyedDuringExtractionReturnsTabClosed) {
+  auto options = mojom::TabContextOptions::New();
+  options->include_inner_text = true;
+  base::test::TestFuture<GetContextResult> future;
+  host_impl_->GetContextFromFocusedTab(std::move(options),
+                                       future.GetCallback());
+
+  // Destroy the host while extraction is in flight.
+  host_impl_.reset();
+
+  auto result = future.Take();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), mojom::GetTabContextError::kTabClosed);
+}
+
 TEST_F(GeicBrowserHostImplTest, IsTabValidForSharingAllowsHttpAndHttpsOnly) {
   EXPECT_FALSE(IsTabValidForSharing(nullptr));
 
@@ -410,6 +436,29 @@ TEST_F(GeicBrowserHostImplTest, CloseSignInTabReturnsNoSignInTabWhenNeverOpened)
   EXPECT_EQ(close_future.Take(), mojom::CloseSignInTabResult::kNoSignInTab);
   EXPECT_EQ(tab_strip_model_->count(), 1);
   EXPECT_EQ(tab_strip_model_->active_index(), 0);
+}
+
+TEST_F(GeicBrowserHostImplTest, GetContextFromFocusedTab) {
+  auto options = mojom::TabContextOptions::New();
+  options->include_inner_text = true;
+  options->include_annotated_page_content = true;
+  options->include_screenshot = true;
+
+  base::test::TestFuture<GetContextResult> future;
+  host_remote_->GetContextFromFocusedTab(std::move(options),
+                                         future.GetCallback());
+  auto result = future.Take();
+  ASSERT_TRUE(result.has_value());
+  ASSERT_TRUE(result.value());
+  EXPECT_EQ(result.value()->metadata->url, GURL("https://example.com/initial"));
+  EXPECT_TRUE(result.value()->inner_text.has_value());
+  EXPECT_TRUE(result.value()->annotated_page_data.has_value());
+  // In unit tests with ChromeRenderViewHostTestHarness, CopyFromSurface on the
+  // test RenderWidgetHostView completes with an empty result because no GPU
+  // compositor surface exists. Real pixel capture and JPEG encoding are covered
+  // in browser tests (geic_host_browsertest.cc).
+  EXPECT_FALSE(result.value()->screenshot_data.has_value());
+  EXPECT_FALSE(result.value()->screenshot_mime_type.has_value());
 }
 
 }  // namespace

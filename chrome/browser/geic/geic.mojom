@@ -5,6 +5,7 @@
 module geic.mojom;
 
 import "chrome/browser/pwc/pwc_features.mojom";
+import "mojo/public/mojom/base/proto_wrapper.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "url/mojom/url.mojom";
 
@@ -103,6 +104,7 @@ struct GeicInitialState {
 };
 
 // Options for on-demand page content capture.
+// Next version: 2
 struct TabContextOptions {
   // Whether to extract innerText from the active tab. Defaults to false.
   bool include_inner_text = false;
@@ -118,9 +120,12 @@ struct TabContextOptions {
   // Maximum height in pixels for the captured screenshot. 0 selects the
   // browser default (viewport height).
   uint32 screenshot_max_height = 0;
+  // Whether to extract AnnotatedPageContent protobuf data.
+  [MinVersion=1] bool? include_annotated_page_content;
 };
 
 // Full extracted tab context payload for GEiC grounding.
+// Next version: 2
 struct TabContextData {
   // Metadata for the tab from which context was extracted.
   TabMetadata metadata;
@@ -130,6 +135,11 @@ struct TabContextData {
   array<uint8>? screenshot_data;
   // MIME type of the screenshot data (e.g. "image/jpeg").
   string? screenshot_mime_type;
+  // Serialized AnnotatedPageContent proto, if requested.
+  // Transmitted as a ProtoWrapper rather than structured Mojom structs
+  // because the downstream web app and model backend consume the
+  // raw AnnotatedPageContent protobuf directly for AI grounding.
+  [MinVersion=1] mojo_base.mojom.ProtoWrapper? annotated_page_data;
 };
 
 // Error codes returned when tab context extraction fails.
@@ -215,8 +225,8 @@ interface GeicBrowserHost {
   // or `NoFocusedTabData` explaining why tab data cannot be shared.
   GetFocusedTab() => (FocusedTabData data);
 
-  // Extracts full page context (e.g. inner text and/or screenshot) from the
-  // active tab.
+  // Extracts full page context (e.g. inner text, annotated page content,
+  // and/or screenshot) from the active tab.
   // `options`: Configuration specifying what data to capture (e.g. byte limits,
   // screenshot dimensions).
   // Returns `result` containing `TabContextData` on success, or a

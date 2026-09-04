@@ -7,18 +7,15 @@
 
 #include <memory>
 #include <string>
-#include <string_view>
 
 #include "base/callback_list.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/geic/geic.mojom.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "components/content_extraction/content/browser/inner_text.h"
 #include "components/tabs/public/tab_interface.h"
-#include "content/public/browser/render_widget_host_view.h"
-#include "content/public/browser/weak_document_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -27,11 +24,12 @@ class BrowserWindowInterface;
 class Profile;
 
 namespace content {
-class RenderFrameHost;
 class WebContents;
 }  // namespace content
 
 namespace geic {
+
+class TabContextExtractionRunner;
 
 // Returns true if `wc` is eligible to be shared as tab context with GEiC.
 // Uses an allowlist approach based on SchemeIsHTTPOrHTTPS and explicitly
@@ -57,16 +55,18 @@ class GeicBrowserHostImpl : public mojom::GeicBrowserHost,
   // indicating the failure kind.
   //
   // Async lifetime invariants:
-  // - `contents` is used synchronously within each dispatch step and is never
-  //   passed across an async boundary. Resumption callbacks re-derive the
-  //   active tab via GetValidatedActiveTab() and verify that the bound
+  // - `contents` is used synchronously when initiating parallel extraction and
+  //   is never passed across an async boundary. Resumption callbacks re-derive
+  //   the active tab via GetValidatedActiveTab() and verify that the bound
   //   WeakDocumentPtr still resolves to the active tab's primary main frame
   //   rather than reusing earlier WebContents pointers.
-  // - Both upstream async APIs guarantee that their completion callbacks will
-  //   always run even if the underlying tab/frame is destroyed:
+  // - All upstream async APIs guarantee that their completion callbacks
+  //   will always run even if the underlying tab/frame is destroyed:
   //   1) content_extraction::GetInnerText wraps its reply in
   //      mojo::WrapCallbackWithDefaultInvokeIfNotRun(..., nullptr).
-  //   2) RenderWidgetHostView::CopyFromSurface guarantees callback execution
+  //   2) optimization_guide::GetAIPageContent uses timeout helpers and
+  //      mojo::WrapCallbackWithDefaultInvokeIfNotRun.
+  //   3) RenderWidgetHostView::CopyFromSurface guarantees callback execution
   //      (with bitmap drawsNothing() on failure / surface teardown).
   // - This ensures the Mojo response callback is never dropped unrun (which
   //   would trigger InterfaceEndpointClient::RaiseError() and disconnect the
@@ -118,32 +118,18 @@ class GeicBrowserHostImpl : public mojom::GeicBrowserHost,
   // NoFocusedTabData with reason).
   mojom::FocusedTabDataPtr GetCurrentFocusedTabData();
 
+  base::WeakPtr<GeicBrowserHostImpl> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  TabContextExtractionRunner* tab_context_runner_for_testing() {
+    return tab_context_runner_.get();
+  }
+
  private:
   void OnTabWillDetach(tabs::TabInterface* tab,
                        tabs::TabInterface::DetachReason reason);
-
-  void GetInnerText(content::RenderFrameHost* primary_main_frame,
-                    uint32_t inner_text_bytes_limit,
-                    bool capture_screenshot,
-                    gfx::Size screenshot_size,
-                    mojom::TabContextDataPtr data,
-                    GetContextFromFocusedTabCallback callback);
-  void DidGetInnerText(
-      content::WeakDocumentPtr document_ptr,
-      uint32_t inner_text_bytes_limit,
-      bool capture_screenshot,
-      gfx::Size screenshot_size,
-      mojom::TabContextDataPtr data,
-      GetContextFromFocusedTabCallback callback,
-      std::unique_ptr<content_extraction::InnerTextResult> result);
-  void CaptureScreenshot(content::RenderFrameHost* primary_main_frame,
-                         gfx::Size screenshot_size,
-                         mojom::TabContextDataPtr data,
-                         GetContextFromFocusedTabCallback callback);
-  void DidCaptureScreenshot(content::WeakDocumentPtr document_ptr,
-                            mojom::TabContextDataPtr data,
-                            GetContextFromFocusedTabCallback callback,
-                            const content::CopyFromSurfaceResult& result);
+  void ResetTabContextRunner();
 
   raw_ptr<tabs::TabInterface> tab_ = nullptr;
   const raw_ptr<Profile> profile_ = nullptr;
@@ -152,6 +138,7 @@ class GeicBrowserHostImpl : public mojom::GeicBrowserHost,
   base::WeakPtr<tabs::TabInterface> original_tab_;
   base::WeakPtr<content::WebContents> signin_web_contents_;
   bool has_opened_signin_tab_ = false;
+  std::unique_ptr<TabContextExtractionRunner> tab_context_runner_;
   mojo::Receiver<mojom::GeicBrowserHost> receiver_{this};
   mojo::Remote<mojom::GeicClient> client_remote_;
   base::WeakPtrFactory<GeicBrowserHostImpl> weak_ptr_factory_{this};
