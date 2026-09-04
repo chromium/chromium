@@ -2376,7 +2376,8 @@ void RenderProcessHostImpl::BindBucketManagerHost(
       mojo::GetBadMessageCallback());
 }
 
-void RenderProcessHostImpl::ForceCrash() {
+void RenderProcessHostImpl::CrashHungProcess() {
+  shutdown_exit_code_ = RESULT_CODE_HUNG;
   child_process_->CrashHungProcess();
 }
 

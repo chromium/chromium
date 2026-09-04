@@ -11684,7 +11684,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTestFallbackEnabledDisabled,
     RenderProcessHost* process =
         GetPrerenderedMainFrameHost(host_id)->GetProcess();
     ScopedAllowRendererCrashes allow_renderer_crashes(process);
-    process->ForceCrash();
+    process->CrashHungProcess();
     host_observer.WaitForDestroyed();
   }
   ExpectFinalStatusForSpeculationRule(

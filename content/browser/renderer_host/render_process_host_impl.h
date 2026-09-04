@@ -360,7 +360,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void BindBucketManagerHost(
       base::WeakPtr<BucketContext> bucket_context,
       mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver) override;
-  void ForceCrash() override;
+  void CrashHungProcess() override;
   std::string GetInfoForBrowserContextDestructionCrashReporting() override;
   void WriteIntoTrace(perfetto::TracedProto<TraceProto> proto) const override;
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
@@ -395,8 +395,9 @@ class CONTENT_EXPORT RenderProcessHostImpl
   bool IsForOutermostMainFrame() override;
 #endif
 
-  const std::string& GetUnresponsiveDocumentJavascriptCallStack() const;
-  const blink::LocalFrameToken& GetUnresponsiveDocumentToken() const;
+  const std::string& GetUnresponsiveDocumentJavascriptCallStack()
+      const override;
+  const blink::LocalFrameToken& GetUnresponsiveDocumentToken() const override;
 
   void SetUnresponsiveDocumentJSCallStackAndToken(
       const std::string& untrusted_javascript_call_stack,

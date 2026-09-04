@@ -17381,6 +17381,16 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
   }
   CHECK(is_local_root());
 
+  // All frames in the same renderer process share the main thread and V8
+  // isolate. If one frame hangs, the entire process is blocked and killed.
+  // Therefore, unresponsiveness is attributed to all local root frames in this
+  // process (individual documents are differentiated later by stack capture).
+  const bool is_unresponsive =
+      exit_code == RESULT_CODE_HUNG ||
+      (GetRenderWidgetHost() &&
+       GetRenderWidgetHost()->IsCurrentlyUnresponsive()) ||
+      !GetProcess()->GetUnresponsiveDocumentJavascriptCallStack().empty();
+
   // Check the termination status to see if a crash occurred (and potentially
   // determine the |reason| for the crash).
   std::string reason;
@@ -17388,12 +17398,12 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
     case base::TERMINATION_STATUS_ABNORMAL_TERMINATION:
       break;
     case base::TERMINATION_STATUS_PROCESS_CRASHED:
-      if (exit_code == RESULT_CODE_HUNG) {
+      if (is_unresponsive) {
         reason = "unresponsive";
       }
       break;
     case base::TERMINATION_STATUS_PROCESS_WAS_KILLED:
-      if (exit_code == RESULT_CODE_HUNG) {
+      if (is_unresponsive) {
         reason = "unresponsive";
       } else {
         return;
@@ -17437,12 +17447,10 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
   if (reason == "unresponsive" &&
       base::FeatureList::IsEnabled(
           blink::features::kDocumentPolicyIncludeJSCallStacksInCrashReports)) {
-    RenderProcessHostImpl* rph =
-        static_cast<RenderProcessHostImpl*>(GetProcess());
     const std::string& unresponsive_document_javascript_call_stack =
-        rph->GetUnresponsiveDocumentJavascriptCallStack();
+        GetProcess()->GetUnresponsiveDocumentJavascriptCallStack();
     const blink::LocalFrameToken& unresponsive_document_token =
-        rph->GetUnresponsiveDocumentToken();
+        GetProcess()->GetUnresponsiveDocumentToken();
 
     if (!unresponsive_document_javascript_call_stack.empty()) {
       if (unresponsive_document_token == GetFrameToken()) {

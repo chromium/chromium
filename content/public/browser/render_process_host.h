@@ -38,6 +38,7 @@
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/background_sync/background_sync.mojom.h"
 #include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom-forward.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-forward.h"
@@ -782,8 +783,24 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Listener,
   // be posted back on the UI thread).
   void PostTaskWhenProcessIsReady(base::OnceClosure task);
 
-  // Forces the renderer process to crash ASAP.
-  virtual void ForceCrash() {}
+  // Tells the renderer process that it is hung and should crash itself.
+  virtual void CrashHungProcess() {}
+
+  // Note: The following two methods are exposed here rather than kept
+  // internal to RenderProcessHostImpl so that callers like
+  // RenderFrameHostImpl::MaybeGenerateCrashReport() can inspect unresponsive
+  // state without unsafe downcasts, ensuring compatibility with test
+  // environments where GetProcess() returns a MockRenderProcessHost.
+
+  // Returns the JavaScript call stack captured while the renderer process was
+  // unresponsive, if any.
+  virtual const std::string& GetUnresponsiveDocumentJavascriptCallStack()
+      const = 0;
+
+  // Returns the frame token of the document that was unresponsive when the
+  // JavaScript call stack was captured.
+  virtual const blink::LocalFrameToken& GetUnresponsiveDocumentToken()
+      const = 0;
 
   // Returns a string that contains information useful for debugging
   // crashes related to RenderProcessHost objects staying alive longer than

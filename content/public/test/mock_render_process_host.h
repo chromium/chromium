@@ -278,6 +278,12 @@ class MockRenderProcessHost : public RenderProcessHost {
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
   std::string GetInfoForBrowserContextDestructionCrashReporting() override;
+  const std::string& GetUnresponsiveDocumentJavascriptCallStack()
+      const override;
+  const blink::LocalFrameToken& GetUnresponsiveDocumentToken() const override;
+  void SetUnresponsiveDocumentJSCallStackAndToken(
+      std::string javascript_call_stack,
+      blink::LocalFrameToken token);
   void WriteIntoTrace(perfetto::TracedProto<TraceProto> proto) const override;
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -368,6 +374,8 @@ class MockRenderProcessHost : public RenderProcessHost {
   std::set<GlobalRenderFrameHostId> render_frame_host_id_set_;
   mojo::PendingReceiver<blink::mojom::CacheStorage> cache_storage_receiver_;
   mojo::PendingReceiver<blink::mojom::IDBFactory> idb_factory_receiver_;
+  std::string unresponsive_document_javascript_call_stack_;
+  blink::LocalFrameToken unresponsive_document_token_;
   base::WeakPtrFactory<MockRenderProcessHost> weak_ptr_factory_{this};
 };
 

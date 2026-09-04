@@ -965,9 +965,10 @@ bool CanCommitURLForTesting(int child_id, const GURL& url) {
 
 void SimulateUnresponsiveRenderer(WebContents* web_contents,
                                   RenderWidgetHost* widget) {
-  static_cast<WebContentsImpl*>(web_contents)
-      ->RendererUnresponsive(RenderWidgetHostImpl::From(widget),
-                             base::DoNothing());
+  RenderWidgetHostImpl::From(widget)->RendererIsUnresponsive(
+      RenderWidgetHostImpl::RendererIsUnresponsiveReason::
+          kOnInputEventAckTimeout,
+      base::DoNothing());
 }
 
 #if defined(USE_AURA)

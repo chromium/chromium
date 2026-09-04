@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
@@ -123,6 +124,20 @@ class BaseReportingBrowserTest : public CertVerifierBrowserTest,
 #endif
   }
 
+  void ExecuteInfiniteLoopScriptAsync(content::RenderFrameHost* frame) {
+    content::ExecuteScriptAsync(frame, R"(
+    function infiniteLoop() {
+      let cnt = 0;
+      while (true) {
+        if (cnt++ == 0) {
+          console.log('infiniteLoop');
+        }
+      }
+    }
+    infiniteLoop();
+  )");
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   net::EmbeddedTestServer https_server_;
@@ -167,6 +182,34 @@ class ReportingBrowserTest : public BaseReportingBrowserTest {
   ReportingBrowserTest& operator=(const ReportingBrowserTest&) = delete;
 
   ~ReportingBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// This is a subclass of `ReportingBrowserTest` for testing unresponsive crash
+// reports when the process is killed without an explicit hung exit code.
+class ReportingBrowserTestUnresponsiveWithoutHungExitCode
+    : public ReportingBrowserTest {
+ public:
+  ReportingBrowserTestUnresponsiveWithoutHungExitCode() {
+    // Disable WebUI toolbar features to avoid intermittent timeouts in
+    // InProcessBrowserTest::PreRunTestOnMainThread() when waiting for the
+    // initial WebUI toolbar paint callback.
+    // TODO(http://crbug.com/556719977): Fix WebUI toolbar flakiness.
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{
+            features::kInitialWebUI, features::kWebUIToolbar,
+            features::kWebUIToolbarProcessOverheadExperiment});
+  }
+
+  ReportingBrowserTestUnresponsiveWithoutHungExitCode(
+      const ReportingBrowserTestUnresponsiveWithoutHungExitCode&) = delete;
+  ReportingBrowserTestUnresponsiveWithoutHungExitCode& operator=(
+      const ReportingBrowserTestUnresponsiveWithoutHungExitCode&) = delete;
+
+  ~ReportingBrowserTestUnresponsiveWithoutHungExitCode() override = default;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -293,20 +336,6 @@ class JSCallStackReportingBrowserTest : public BaseReportingBrowserTest {
 
   std::string GetDocumentPolicyHeader() const {
     return "Document-Policy: include-js-call-stacks-in-crash-reports";
-  }
-
-  void ExecuteInfiniteLoopScriptAsync(content::RenderFrameHost* frame) {
-    content::ExecuteScriptAsync(frame, R"(
-    function infiniteLoop() {
-      let cnt = 0;
-      while (true) {
-        if (cnt++ == 0) {
-          console.log('infiniteLoop');
-        }
-      }
-    }
-    infiniteLoop();
-  )");
   }
 
  private:
@@ -560,6 +589,8 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest,
 #define MAYBE_CrashReportUnresponsive DISABLED_CrashReportUnresponsive
 #define MAYBE_CrashReportUnresponsiveCrossOriginIframe \
   DISABLED_CrashReportUnresponsiveCrossOriginIframe
+#define MAYBE_CrashReportUnresponsiveWithoutHungExitCode \
+  DISABLED_CrashReportUnresponsiveWithoutHungExitCode
 #define MAYBE_MainPageOptedIn DISABLED_MainPageOptedIn
 #define MAYBE_MainPageNotOptedIn DISABLED_MainPageNotOptedIn
 #define MAYBE_IframeUnresponsiveWithJSCallStackOptedIn \
@@ -572,6 +603,8 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest,
 #define MAYBE_CrashReportUnresponsive CrashReportUnresponsive
 #define MAYBE_CrashReportUnresponsiveCrossOriginIframe \
   CrashReportUnresponsiveCrossOriginIframe
+#define MAYBE_CrashReportUnresponsiveWithoutHungExitCode \
+  CrashReportUnresponsiveWithoutHungExitCode
 #define MAYBE_MainPageOptedIn MainPageOptedIn
 #define MAYBE_MainPageNotOptedIn MainPageNotOptedIn
 #define MAYBE_IframeUnresponsiveWithJSCallStackOptedIn \
@@ -634,6 +667,57 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, MAYBE_CrashReportUnresponsive) {
   upload_response()->Done();
 
   // Verify the contents of the report that we received.
+  const base::DictValue& report = response.begin()->GetDict();
+  const std::string* type = report.FindString("type");
+  const std::string* url = report.FindString("url");
+  const base::DictValue* body = report.FindDict("body");
+  const std::string* reason = body->FindString("reason");
+
+  EXPECT_EQ("crash", *type);
+  EXPECT_EQ(*url, main_url.spec());
+  EXPECT_EQ("unresponsive", *reason);
+}
+
+IN_PROC_BROWSER_TEST_P(ReportingBrowserTestUnresponsiveWithoutHungExitCode,
+                       MAYBE_CrashReportUnresponsiveWithoutHungExitCode) {
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  GURL main_url = server()->GetURL(
+      kReportingHost, "/set-header?" + GetAppropriateReportingHeader());
+  EXPECT_TRUE(NavigateToURL(contents, main_url));
+
+  content::RenderFrameHost* frame = contents->GetPrimaryMainFrame();
+  ASSERT_TRUE(frame);
+
+  content::WebContentsConsoleObserver console_observer(contents);
+  console_observer.SetPattern("infiniteLoop");
+  ExecuteInfiniteLoopScriptAsync(frame);
+  ASSERT_TRUE(console_observer.Wait());
+
+  content::RenderProcessHost* rph = frame->GetProcess();
+  content::RenderProcessHostWatcher watcher(
+      rph, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+
+  // Mark the widget as unresponsive.
+  content::SimulateUnresponsiveRenderer(contents, frame->GetRenderWidgetHost());
+
+  // Simulate process kill with a generic exit code (e.g. RESULT_CODE_KILLED),
+  // not RESULT_CODE_HUNG.
+  content::ScopedAllowRendererCrashes allow_renderer_crashes(contents);
+  rph->Shutdown(content::RESULT_CODE_KILLED);
+  watcher.Wait();
+
+  upload_response()->WaitForRequest();
+  base::ListValue response =
+      ParseReportUpload(upload_response()->http_request()->content);
+  upload_response()->Send("HTTP/1.1 200 OK\r\n");
+  upload_response()->Send("\r\n");
+  upload_response()->Done();
+
+  // Verify that the crash report was still generated with reason:
+  // "unresponsive" because the browser detected that the renderer was
+  // unresponsive.
   const base::DictValue& report = response.begin()->GetDict();
   const std::string* type = report.FindString("type");
   const std::string* url = report.FindString("url");
@@ -1207,6 +1291,9 @@ IN_PROC_BROWSER_TEST_P(HistogramReportingBrowserTest,
 }
 
 INSTANTIATE_TEST_SUITE_P(All, ReportingBrowserTest, ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         ReportingBrowserTestUnresponsiveWithoutHungExitCode,
+                         ::testing::Bool());
 INSTANTIATE_TEST_SUITE_P(All,
                          NonIsolatedReportingBrowserTest,
                          ::testing::Bool());
