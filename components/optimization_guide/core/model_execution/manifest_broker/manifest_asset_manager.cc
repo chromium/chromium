@@ -127,9 +127,14 @@ void ManifestAssetManager::ComponentContext::SetAssetId(
 }
 
 void ManifestAssetManager::ComponentContext::SetUninstallComplete() {
-  CHECK_EQ(state_, ComponentState::kUninstalling);
-  state_ = ComponentState::kNotRegistered;
-  requested_version_ = "";
+  // A registration could be mid-flight if this was uninstalled externally.
+  // We still expect the new registration to finish in that case.
+  if (state_ != ComponentState::kRegistering) {
+    state_ = ComponentState::kNotRegistered;
+    requested_version_ = "";
+  }
+  install_dir_ = std::nullopt;
+  version_ = std::nullopt;
 }
 
 void ManifestAssetManager::ComponentContext::SetRegistering(
@@ -712,12 +717,20 @@ void ManifestAssetManager::OnAssetUninstalled(const std::string& public_key) {
   TRACE_EVENT("optimization_guide", "ManifestAssetManager::OnAssetUninstalled",
               perfetto::Flow::FromPointer(this), "public_key", public_key);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ComponentContext* context = ledger_.GetContext(public_key);
+  if (!context) {
+    // The component is not tracked by this manager, so there is no state to
+    // update.
+    return;
+  }
+  // The uninstall may have been requested by this manager or by something
+  // else (e.g. the component updater unregistering the component).
+  context->SetUninstallComplete();
   const proto::OnDemandComponent* component =
       factory_->manifest().GetAssetByPublicKey(public_key);
   if (component) {
-    // We've finished an uninstall, but the manifest might need this component.
-    // Keep tracking it in the ledger, and check if we should install it again.
-    ledger_.GetContext(public_key)->SetUninstallComplete();
+    // The manifest might need this component. Keep tracking it in the ledger,
+    // and check if we should install it again.
     ledger_.SaveContexts({public_key});
     UpdateRegistrations();
     return;

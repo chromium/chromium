@@ -93,6 +93,8 @@ class TestManifestAssetManagerComponentState final {
     // Whether a background OnDemandUpdate has been requested for this
     // registration.
     bool has_background_update_requested = false;
+    // Number of times RegisterOnDemandComponent was called for this key.
+    int registration_count = 0;
   };
 
   TestManifestAssetManagerComponentState();
@@ -144,6 +146,13 @@ class TestManifestAssetManagerComponentState final {
   // Clears all installed components.
   void ClearInstalledComponents();
   void Uninstall(const std::string& public_key);
+  // Simulates the component being uninstalled by something other than the
+  // manager (e.g. the component updater unregistering it): removes the
+  // installed component and notifies the manager.
+  void SimulateExternalUninstall(const std::string& public_key);
+  // Returns how many times RegisterOnDemandComponent was called for
+  // `public_key`.
+  int GetRegistrationCount(const std::string& public_key) const;
 
   //////////////////////
   // Test assertions  //
@@ -210,6 +219,9 @@ class TestManifestAssetManagerComponentState final {
   bool defer_registration_callbacks_ = false;
   // The simulated state of CUS registrations for on-demand components.
   absl::flat_hash_map<std::string, Registration> registrations_;
+  // The manager most recently seen by the delegate. Used to deliver
+  // notifications for keys the manager never registered.
+  base::WeakPtr<ManifestAssetManager> manager_;
 
   // All registrations for the Manifest component.
   base::RepeatingCallbackList<void(base::FilePath)> manifest_ready_callbacks_;

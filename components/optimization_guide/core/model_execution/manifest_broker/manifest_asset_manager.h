@@ -212,6 +212,9 @@ class ManifestAssetManager : public UsageTracker::Observer {
     void SetAssetId(const std::string& asset_id);
 
     // ComponentState transitions methods:
+    // Resets the context after the component was uninstalled, whether by this
+    // manager or by something else (e.g. the component updater unregistered
+    // it). A registration in flight is left to complete.
     void SetUninstallComplete();
     void SetRegistering(const std::string& target_version);
     void SetRegistered();

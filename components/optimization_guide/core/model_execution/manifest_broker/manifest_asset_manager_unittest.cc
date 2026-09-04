@@ -764,6 +764,67 @@ TEST_F(ManifestAssetManagerTest, RegisterWhileUninstallPending) {
   EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
 }
 
+TEST_F(ManifestAssetManagerTest, ExternalUninstallOfReadyAssetReregisters) {
+  DummyAsset asset = DummyAsset::For("compose");
+  usage_tracker_.RaisePriority(asset.use_case,
+                               UsageTracker::Priority::kUserBlocking);
+  MakeAssetsInstallable(DummyManifest().Add(asset));
+  Startup();
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
+  EXPECT_EQ(1, component_state_.GetRegistrationCount(asset.public_key));
+
+  // The component is uninstalled by something other than the manager, e.g.
+  // the component updater unregistering it. The manager did not request an
+  // uninstall, so it must tolerate the notification and, because the manifest
+  // still needs the asset, register it again.
+  component_state_.SimulateExternalUninstall(asset.public_key);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(component_state_.WasUninstallRequested(asset.public_key));
+  EXPECT_EQ(2, component_state_.GetRegistrationCount(asset.public_key));
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
+}
+
+TEST_F(ManifestAssetManagerTest, ExternalUninstallWhileRegisteringIsIgnored) {
+  DummyAsset asset = DummyAsset::For("compose");
+  usage_tracker_.RaisePriority(asset.use_case,
+                               UsageTracker::Priority::kUserBlocking);
+  component_state_.SetDeferRegistrationCallbacks(true);
+  UpdateManifest(DummyManifest().Add(asset));
+  Startup();
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
+  EXPECT_EQ(1, component_state_.GetRegistrationCount(asset.public_key));
+
+  // An uninstall notification while the registration is in flight is ignored;
+  // the registration callback determines the state.
+  component_state_.SimulateExternalUninstall(asset.public_key);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(1, component_state_.GetRegistrationCount(asset.public_key));
+
+  component_state_.RunPendingRegistrations();
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(1, component_state_.GetRegistrationCount(asset.public_key));
+  EXPECT_FALSE(component_state_.WasUninstallRequested(asset.public_key));
+}
+
+TEST_F(ManifestAssetManagerTest, UninstallNotificationForUnknownKeyIsIgnored) {
+  DummyAsset asset = DummyAsset::For("compose");
+  usage_tracker_.RaisePriority(asset.use_case,
+                               UsageTracker::Priority::kUserBlocking);
+  MakeAssetsInstallable(DummyManifest().Add(asset));
+  Startup();
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
+
+  // A notification for a key the manager never tracked must not crash.
+  DummyAsset unknown = DummyAsset::For("test");
+  component_state_.SimulateExternalUninstall(unknown.public_key);
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(component_state_.IsRegistered(asset.ToInstallTarget()));
+  EXPECT_TRUE(component_state_.IsInstalled(asset.ToInstallTarget()));
+  EXPECT_FALSE(component_state_.WasUninstallRequested(unknown.public_key));
+  EXPECT_EQ(component_state_.GetRegistrationCount(unknown.public_key), 0);
+}
+
 TEST_F(ManifestAssetManagerTest, RemainsInstalledWhenReferencedInManifest) {
   DummyAsset asset_compose = DummyAsset::For("compose").WithAssetId("asset_1");
   DummyAsset asset_test = DummyAsset::For("test").WithAssetId("asset_1");

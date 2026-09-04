@@ -92,8 +92,10 @@ class TestManifestAssetManagerComponentState::DelegateImpl final
     CHECK(!registration.pending_registration);
     CHECK(!registration.pending_uninstall);
     registration.manager = manager;
+    state_->manager_ = manager;
     registration.target = {public_key_hex, base::Version(target_version)};
     registration.pending_registration = true;
+    registration.registration_count++;
 
     if (!state_->defer_registration_callbacks_) {
       state_->RunPendingRegistrations(registration);
@@ -110,6 +112,7 @@ class TestManifestAssetManagerComponentState::DelegateImpl final
     CHECK(!registration.pending_registration);
     CHECK(!registration.pending_uninstall);
     registration.manager = manager;
+    state_->manager_ = manager;
     registration.target.public_key_hex = public_key_hex;
     registration.target.version = std::nullopt;
     registration.pending_uninstall = true;
@@ -344,6 +347,7 @@ void TestManifestAssetManagerComponentState::UpdateLanguageDetectionModel(
 void TestManifestAssetManagerComponentState::SimulateRestart() {
   VLOG(2) << "SimulateRestart";
   registrations_.clear();
+  manager_.reset();
 }
 
 void TestManifestAssetManagerComponentState::ClearInstalledComponents() {
@@ -353,6 +357,23 @@ void TestManifestAssetManagerComponentState::ClearInstalledComponents() {
 void TestManifestAssetManagerComponentState::Uninstall(
     const std::string& public_key) {
   installed_components_.erase(public_key);
+}
+
+void TestManifestAssetManagerComponentState::SimulateExternalUninstall(
+    const std::string& public_key) {
+  installed_components_.erase(public_key);
+  if (!manager_) {
+    return;
+  }
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&ManifestAssetManager::OnAssetUninstalled,
+                                manager_, public_key));
+}
+
+int TestManifestAssetManagerComponentState::GetRegistrationCount(
+    const std::string& public_key) const {
+  auto it = registrations_.find(public_key);
+  return it == registrations_.end() ? 0 : it->second.registration_count;
 }
 
 bool TestManifestAssetManagerComponentState::IsRegistered(
