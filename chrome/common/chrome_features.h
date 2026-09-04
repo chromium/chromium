@@ -1016,6 +1016,9 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE_PARAM(bool, kLazyKeyedServiceInstantiationExtensions);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE_PARAM(bool, kLazyKeyedServiceInstantiationSafeBrowsing);
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE_PARAM(bool,
+                           kLazyKeyedServiceInstantiationVisitedUrlRanking);
 
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kNativeNotifications);
 

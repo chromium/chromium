@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/visited_url_ranking/url_deduplication/search_engine_url_strip_handler.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/common/chrome_features.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history_clusters/core/config.h"
@@ -198,6 +200,10 @@ VisitedURLRankingServiceFactory::BuildServiceInstanceForBrowserContext(
 
 bool VisitedURLRankingServiceFactory::ServiceIsCreatedWithBrowserContext()
     const {
+  if (base::FeatureList::IsEnabled(::features::kLazyKeyedServiceInstantiation) &&
+      ::features::kLazyKeyedServiceInstantiationVisitedUrlRanking.Get()) {
+    return false;
+  }
   return true;
 }
 
