@@ -10,7 +10,6 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
@@ -18,6 +17,7 @@
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_coordinator.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "components/content_settings/core/common/cookie_controls_state.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -74,7 +74,8 @@ class BubbleDelegateImpl
     }
     return coordinator->ShowBubble(
         toolbar_button_provider, web_contents,
-        bwi->GetFeatures().cookie_controls_controller());
+        content_settings::CookieControlsController::Get(
+            bwi->GetUnownedUserDataHost()));
   }
 
   base::CallbackListSubscription RegisterBubbleClosingCallback(
@@ -91,7 +92,8 @@ class BubbleDelegateImpl
     if (!bwi) {
       return nullptr;
     }
-    return bwi->GetFeatures().cookie_controls_controller();
+    return content_settings::CookieControlsController::Get(
+        bwi->GetUnownedUserDataHost());
   }
 
  private:

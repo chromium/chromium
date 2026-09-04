@@ -388,6 +388,7 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 
   cookie_controls_controller_ =
       std::make_unique<content_settings::CookieControlsController>(
+          browser->GetUnownedUserDataHost(),
           CookieSettingsFactory::GetForProfile(profile),
           profile->IsOffTheRecord() ? CookieSettingsFactory::GetForProfile(
                                           profile->GetOriginalProfile())

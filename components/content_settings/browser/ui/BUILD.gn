@@ -12,6 +12,8 @@ source_set("ui") {
     "javascript_optimizer_setting.h",
   ]
 
+  public_deps = [ "//ui/base/unowned_user_data" ]
+
   deps = [
     "//base",
     "//components/browsing_data/content",

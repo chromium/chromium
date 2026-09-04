@@ -319,10 +319,6 @@ class BrowserWindowFeatures {
     return browser_command_controller_.get();
   }
 
-  content_settings::CookieControlsController* cookie_controls_controller() {
-    return cookie_controls_controller_.get();
-  }
-
   ExtensionInstalledWatcher* extension_installed_watcher() {
     return extension_installed_watcher_.get();
   }

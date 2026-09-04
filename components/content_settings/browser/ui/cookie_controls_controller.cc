@@ -92,6 +92,8 @@ ThirdPartySiteDataAccessType GetSiteDataAccessType(int allowed_sites,
 
 namespace content_settings {
 
+DEFINE_USER_DATA(CookieControlsController);
+
 CookieControlsController::CookieControlsController(
     scoped_refptr<CookieSettings> cookie_settings,
     scoped_refptr<CookieSettings> original_cookie_settings,
@@ -102,6 +104,19 @@ CookieControlsController::CookieControlsController(
       settings_map_(settings_map) {
   CHECK(cookie_settings_);
   cookie_observation_.Observe(cookie_settings_.get());
+}
+
+CookieControlsController::CookieControlsController(
+    ui::UnownedUserDataHost& host,
+    scoped_refptr<CookieSettings> cookie_settings,
+    scoped_refptr<CookieSettings> original_cookie_settings,
+    HostContentSettingsMap* settings_map,
+    bool is_incognito_profile)
+    : CookieControlsController(cookie_settings,
+                               original_cookie_settings,
+                               settings_map,
+                               is_incognito_profile) {
+  scoped_unowned_user_data_.emplace(host, *this);
 }
 
 CookieControlsController::Status::Status(CookieControlsState controls_state,
