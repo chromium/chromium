@@ -3068,7 +3068,7 @@ void RenderWidgetHostViewAura::OnDidUpdateVisualPropertiesComplete(
 
   if (host()->delegate()) {
     host()->delegate()->SetTopControlsShownRatio(
-        host(), metadata.top_controls_shown_ratio);
+        host(), metadata.browser_controls_metadata.top_controls_shown_ratio);
   }
 
   if (host()->IsHidden()) {

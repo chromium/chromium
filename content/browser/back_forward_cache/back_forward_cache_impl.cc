@@ -349,10 +349,11 @@ void RestoreBrowserControlsState(RenderFrameHostImpl* cached_rfh) {
 
   DCHECK_NE(current_rfh, cached_rfh);
 
-  float prev_top_controls_shown_ratio = current_rfh->GetRenderWidgetHost()
-                                            ->render_frame_metadata_provider()
-                                            ->LastRenderFrameMetadata()
-                                            .top_controls_shown_ratio;
+  float prev_top_controls_shown_ratio =
+      current_rfh->GetRenderWidgetHost()
+          ->render_frame_metadata_provider()
+          ->LastRenderFrameMetadata()
+          .browser_controls_metadata.top_controls_shown_ratio;
   if (prev_top_controls_shown_ratio < 1) {
     // Make sure the state in the restored renderer matches the current one.
     // If we currently aren't showing the controls let the cached renderer

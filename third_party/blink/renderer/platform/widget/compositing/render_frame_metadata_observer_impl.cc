@@ -189,8 +189,7 @@ bool RenderFrameMetadataObserverImpl::ShouldSendRenderFrameMetadata(
       rfm1.delegated_ink_metadata != rfm2.delegated_ink_metadata ||
       rfm1.device_scale_factor != rfm2.device_scale_factor ||
       rfm1.viewport_size_in_pixels != rfm2.viewport_size_in_pixels ||
-      rfm1.top_controls_height != rfm2.top_controls_height ||
-      rfm1.top_controls_shown_ratio != rfm2.top_controls_shown_ratio ||
+      rfm1.browser_controls_metadata != rfm2.browser_controls_metadata ||
       rfm1.local_surface_id != rfm2.local_surface_id ||
       rfm1.tracked_element_rects != rfm2.tracked_element_rects ||
       rfm2.new_vertical_scroll_direction !=
@@ -204,13 +203,7 @@ bool RenderFrameMetadataObserverImpl::ShouldSendRenderFrameMetadata(
   }
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  if (rfm1.bottom_controls_height != rfm2.bottom_controls_height ||
-      rfm1.bottom_controls_shown_ratio != rfm2.bottom_controls_shown_ratio ||
-      rfm1.top_controls_min_height_offset !=
-          rfm2.top_controls_min_height_offset ||
-      rfm1.bottom_controls_min_height_offset !=
-          rfm2.bottom_controls_min_height_offset ||
-      rfm1.min_page_scale_factor != rfm2.min_page_scale_factor ||
+  if (rfm1.min_page_scale_factor != rfm2.min_page_scale_factor ||
       rfm1.max_page_scale_factor != rfm2.max_page_scale_factor ||
       rfm1.root_overflow_y_hidden != rfm2.root_overflow_y_hidden ||
       rfm1.scrollable_viewport_size != rfm2.scrollable_viewport_size ||

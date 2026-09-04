@@ -962,7 +962,8 @@ void RenderWidgetHostViewAndroid::OnRenderFrameMetadataChangedBeforeActivation(
   // Note that the height of browser control is not affected by page scale
   // factor. Thus, |top_content_offset| in CSS pixels is also in DIPs.
   float top_content_offset =
-      metadata.top_controls_height * metadata.top_controls_shown_ratio;
+      metadata.browser_controls_metadata.top_controls_height *
+      metadata.browser_controls_metadata.top_controls_shown_ratio;
   float top_shown_pix = top_content_offset;
 
   if (ime_adapter_android_) {
@@ -976,10 +977,11 @@ void RenderWidgetHostViewAndroid::OnRenderFrameMetadataChangedBeforeActivation(
   base::WeakPtr<RenderWidgetHostViewAndroid> weak_this =
       weak_ptr_factory_.GetWeakPtr();
 
-  UpdateTouchSelectionController(metadata.selection, metadata.page_scale_factor,
-                                 metadata.top_controls_height,
-                                 metadata.top_controls_shown_ratio,
-                                 scrollable_viewport_size_dip);
+  UpdateTouchSelectionController(
+      metadata.selection, metadata.page_scale_factor,
+      metadata.browser_controls_metadata.top_controls_height,
+      metadata.browser_controls_metadata.top_controls_shown_ratio,
+      scrollable_viewport_size_dip);
 
   // Abort if the view was destroyed during UpdateTouchSelectionController
   // (e.g. via synchronous JNI callout to Java).
@@ -990,12 +992,16 @@ void RenderWidgetHostViewAndroid::OnRenderFrameMetadataChangedBeforeActivation(
   // ViewAndroid::content_offset() must be in dip.
   float top_content_offset_dip = top_content_offset / dip_scale;
   view_.UpdateFrameInfo({scrollable_viewport_size_dip, top_content_offset_dip});
+  // TODO(b/555766816): UpdateControls() should take in
+  // `browser_controls_metadata`.
   bool controls_changed = UpdateControls(
-      view_.GetDipScale(), metadata.top_controls_height,
-      metadata.top_controls_shown_ratio,
-      metadata.top_controls_min_height_offset, metadata.bottom_controls_height,
-      metadata.bottom_controls_shown_ratio,
-      metadata.bottom_controls_min_height_offset);
+      view_.GetDipScale(),
+      metadata.browser_controls_metadata.top_controls_height,
+      metadata.browser_controls_metadata.top_controls_shown_ratio,
+      metadata.browser_controls_metadata.top_controls_min_height_offset,
+      metadata.browser_controls_metadata.bottom_controls_height,
+      metadata.browser_controls_metadata.bottom_controls_shown_ratio,
+      metadata.browser_controls_metadata.bottom_controls_min_height_offset);
 
   // TODO(crbug.com/40219248): Remove toSkColor and make all SkColor4f.
   SetContentBackgroundColor(is_transparent

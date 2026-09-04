@@ -33,6 +33,46 @@ struct COMPONENT_EXPORT(CC_SHARED_MOJOM_TRAITS)
 
 template <>
 struct COMPONENT_EXPORT(CC_SHARED_MOJOM_TRAITS)
+    StructTraits<cc::mojom::BrowserControlsMetadataDataView,
+                 cc::BrowserControlsMetadata> {
+  static float top_controls_height(
+      const cc::BrowserControlsMetadata& metadata) {
+    return metadata.top_controls_height;
+  }
+
+  static float top_controls_shown_ratio(
+      const cc::BrowserControlsMetadata& metadata) {
+    return metadata.top_controls_shown_ratio;
+  }
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  static float bottom_controls_height(
+      const cc::BrowserControlsMetadata& metadata) {
+    return metadata.bottom_controls_height;
+  }
+
+  static float bottom_controls_shown_ratio(
+      const cc::BrowserControlsMetadata& metadata) {
+    return metadata.bottom_controls_shown_ratio;
+  }
+
+  static float top_controls_min_height_offset(
+      const cc::BrowserControlsMetadata& metadata) {
+    return metadata.top_controls_min_height_offset;
+  }
+
+  static float bottom_controls_min_height_offset(
+      const cc::BrowserControlsMetadata& metadata) {
+    return metadata.bottom_controls_min_height_offset;
+  }
+#endif
+
+  static bool Read(cc::mojom::BrowserControlsMetadataDataView data,
+                   cc::BrowserControlsMetadata* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(CC_SHARED_MOJOM_TRAITS)
     StructTraits<cc::mojom::RenderFrameMetadataDataView,
                  cc::RenderFrameMetadata> {
   static SkColor4f root_background_color(
@@ -86,13 +126,9 @@ struct COMPONENT_EXPORT(CC_SHARED_MOJOM_TRAITS)
     return metadata.external_page_scale_factor;
   }
 
-  static float top_controls_height(const cc::RenderFrameMetadata& metadata) {
-    return metadata.top_controls_height;
-  }
-
-  static float top_controls_shown_ratio(
+  static const cc::BrowserControlsMetadata& browser_controls_metadata(
       const cc::RenderFrameMetadata& metadata) {
-    return metadata.top_controls_shown_ratio;
+    return metadata.browser_controls_metadata;
   }
 
   static viz::VerticalScrollDirection new_vertical_scroll_direction(
@@ -111,25 +147,6 @@ struct COMPONENT_EXPORT(CC_SHARED_MOJOM_TRAITS)
   }
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  static float bottom_controls_height(const cc::RenderFrameMetadata& metadata) {
-    return metadata.bottom_controls_height;
-  }
-
-  static float bottom_controls_shown_ratio(
-      const cc::RenderFrameMetadata& metadata) {
-    return metadata.bottom_controls_shown_ratio;
-  }
-
-  static float top_controls_min_height_offset(
-      const cc::RenderFrameMetadata& metadata) {
-    return metadata.top_controls_min_height_offset;
-  }
-
-  static float bottom_controls_min_height_offset(
-      const cc::RenderFrameMetadata& metadata) {
-    return metadata.bottom_controls_min_height_offset;
-  }
-
   static float min_page_scale_factor(const cc::RenderFrameMetadata& metadata) {
     return metadata.min_page_scale_factor;
   }

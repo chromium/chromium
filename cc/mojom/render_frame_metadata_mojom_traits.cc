@@ -37,6 +37,23 @@ bool StructTraits<cc::mojom::DelegatedInkBrowserMetadataDataView,
 }
 
 // static
+bool StructTraits<cc::mojom::BrowserControlsMetadataDataView,
+                  cc::BrowserControlsMetadata>::
+    Read(cc::mojom::BrowserControlsMetadataDataView data,
+         cc::BrowserControlsMetadata* out) {
+  out->top_controls_height = data.top_controls_height();
+  out->top_controls_shown_ratio = data.top_controls_shown_ratio();
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  out->bottom_controls_height = data.bottom_controls_height();
+  out->bottom_controls_shown_ratio = data.bottom_controls_shown_ratio();
+  out->top_controls_min_height_offset = data.top_controls_min_height_offset();
+  out->bottom_controls_min_height_offset =
+      data.bottom_controls_min_height_offset();
+#endif
+  return true;
+}
+
+// static
 bool StructTraits<
     cc::mojom::RenderFrameMetadataDataView,
     cc::RenderFrameMetadata>::Read(cc::mojom::RenderFrameMetadataDataView data,
@@ -46,21 +63,18 @@ bool StructTraits<
   out->device_scale_factor = data.device_scale_factor();
   out->page_scale_factor = data.page_scale_factor();
   out->external_page_scale_factor = data.external_page_scale_factor();
-  out->top_controls_height = data.top_controls_height();
-  out->top_controls_shown_ratio = data.top_controls_shown_ratio();
   out->primary_main_frame_item_sequence_number =
       data.primary_main_frame_item_sequence_number();
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  out->bottom_controls_height = data.bottom_controls_height();
-  out->bottom_controls_shown_ratio = data.bottom_controls_shown_ratio();
-  out->top_controls_min_height_offset = data.top_controls_min_height_offset();
-  out->bottom_controls_min_height_offset =
-      data.bottom_controls_min_height_offset();
   out->min_page_scale_factor = data.min_page_scale_factor();
   out->max_page_scale_factor = data.max_page_scale_factor();
   out->root_overflow_y_hidden = data.root_overflow_y_hidden();
   out->has_transparent_background = data.has_transparent_background();
 #endif
+  if (!data.ReadBrowserControlsMetadata(&out->browser_controls_metadata)) {
+    SetFailedCheckCrashKey("browser_controls_metadata");
+    return false;
+  }
   if (!data.ReadRootScrollOffset(&out->root_scroll_offset)) {
     SetFailedCheckCrashKey("root_scroll_offset");
     return false;

@@ -18,6 +18,7 @@
 #include "cc/input/scroll_velocity_tracker.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/trees/browser_controls_params.h"
+#include "cc/trees/render_frame_metadata.h"
 #include "components/viz/common/quads/offset_tag.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/size.h"
@@ -94,8 +95,6 @@ class CC_EXPORT BrowserControlsOffsetManager {
 
   viz::OffsetTag BottomControlsOffsetTag() const;
 
-  bool HasOffsetTag() const;
-
   // Valid shown ratio range for the top controls. The values will be (0, 1) if
   // there is no animation running.
   std::pair<float, float> TopControlsShownRatioRange();
@@ -132,6 +131,8 @@ class CC_EXPORT BrowserControlsOffsetManager {
       const {
     return offset_tag_modifications_;
   }
+
+  BrowserControlsMetadata GetMetadata() const;
 
   // Return the browser control constraint that must be synced to the
   // main renderer thread (to trigger viewport and related changes).

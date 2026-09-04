@@ -77,6 +77,14 @@ mojom("mojom") {
     {
       types = [
         {
+          mojom = "cc.mojom.BrowserControlsMetadata"
+          cpp = "::cc::BrowserControlsMetadata"
+        },
+        {
+          mojom = "cc.mojom.DelegatedInkBrowserMetadata"
+          cpp = "::cc::DelegatedInkBrowserMetadata"
+        },
+        {
           mojom = "cc.mojom.RenderFrameMetadata"
           cpp = "::cc::RenderFrameMetadata"
         },

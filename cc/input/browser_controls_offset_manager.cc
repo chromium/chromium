@@ -180,9 +180,19 @@ float BrowserControlsOffsetManager::BottomControlsMinHeightOffset() const {
   return bottom_controls_min_height_offset_;
 }
 
-bool BrowserControlsOffsetManager::HasOffsetTag() const {
-  return BottomControlsOffsetTag() || ContentOffsetTag() ||
-         TopControlsOffsetTag();
+BrowserControlsMetadata BrowserControlsOffsetManager::GetMetadata() const {
+  BrowserControlsMetadata metadata;
+  metadata.top_controls_height = TopControlsHeight();
+  metadata.top_controls_shown_ratio = TopControlsShownRatio();
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  metadata.bottom_controls_height = BottomControlsHeight();
+  metadata.bottom_controls_shown_ratio = BottomControlsShownRatio();
+  metadata.top_controls_min_height_offset = TopControlsMinHeightOffset();
+  metadata.bottom_controls_min_height_offset = BottomControlsMinHeightOffset();
+  metadata.has_offset_tag =
+      BottomControlsOffsetTag() || ContentOffsetTag() || TopControlsOffsetTag();
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  return metadata;
 }
 
 std::pair<float, float>

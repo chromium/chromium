@@ -2680,19 +2680,9 @@ RenderFrameMetadata LayerTreeHostImpl::MakeRenderFrameMetadata(
   metadata.external_page_scale_factor =
       active_tree_->external_page_scale_factor();
 
-  metadata.top_controls_height =
-      browser_controls_offset_manager_->TopControlsHeight();
-  metadata.top_controls_shown_ratio =
-      browser_controls_offset_manager_->TopControlsShownRatio();
+  metadata.browser_controls_metadata =
+      browser_controls_offset_manager_->GetMetadata();
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  metadata.bottom_controls_height =
-      browser_controls_offset_manager_->BottomControlsHeight();
-  metadata.bottom_controls_shown_ratio =
-      browser_controls_offset_manager_->BottomControlsShownRatio();
-  metadata.top_controls_min_height_offset =
-      browser_controls_offset_manager_->TopControlsMinHeightOffset();
-  metadata.bottom_controls_min_height_offset =
-      browser_controls_offset_manager_->BottomControlsMinHeightOffset();
   metadata.scrollable_viewport_size = active_tree_->ScrollableViewportSize();
   metadata.min_page_scale_factor = active_tree_->min_page_scale_factor();
   metadata.max_page_scale_factor = active_tree_->max_page_scale_factor();
@@ -2705,7 +2695,6 @@ RenderFrameMetadata LayerTreeHostImpl::MakeRenderFrameMetadata(
   }
   metadata.has_transparent_background =
       frame.render_passes.back()->has_transparent_background;
-  metadata.has_offset_tag = browser_controls_offset_manager_->HasOffsetTag();
 #endif
 
   bool allocate_new_local_surface_id = false;
@@ -2745,53 +2734,12 @@ RenderFrameMetadata LayerTreeHostImpl::MakeRenderFrameMetadata(
     }
 
     allocate_new_local_surface_id =
+        metadata.browser_controls_metadata.RequiresNewLocalSurfaceId(
+            last_draw_render_frame_metadata_->browser_controls_metadata) ||
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-        last_draw_render_frame_metadata_->top_controls_height !=
-            metadata.top_controls_height ||
-        last_draw_render_frame_metadata_->top_controls_shown_ratio !=
-            metadata.top_controls_shown_ratio ||
         last_draw_render_frame_metadata_->tracked_element_rects !=
             metadata.tracked_element_rects;
-#elif BUILDFLAG(IS_ANDROID)
-        last_draw_render_frame_metadata_->top_controls_height !=
-            metadata.top_controls_height ||
-        last_draw_render_frame_metadata_->bottom_controls_height !=
-            metadata.bottom_controls_height ||
-        last_draw_render_frame_metadata_->selection != metadata.selection ||
-        last_draw_render_frame_metadata_->has_transparent_background !=
-            metadata.has_transparent_background;
-
-    // When the browser controls become locked, the browser will update the
-    // offset tags, and also update the controls' offsets if they don't match
-    // the current renderer scroll position. These updates result in a new
-    // renderer frame, but sometimes it gets drawn before the browser frame
-    // with the updated offsets arrives, which causes the controls to jump, so
-    // we need a new surface id here to sync the updates.
-    allocate_new_local_surface_id |=
-        (last_draw_render_frame_metadata_->has_offset_tag &&
-         !metadata.has_offset_tag);
-
-    // If BCIV is enabled but there's no offset tags, it means the controls
-    // aren't scrollable, and any movement of the controls is the result of
-    // the browser updating their offsets and submitting a new browser frame.
-    // We need a new surface id in this case, as this is identical to the
-    // situation without BCIV.
-    if (!browser_controls_offset_manager_->HasOffsetTag()) {
-      allocate_new_local_surface_id |=
-          last_draw_render_frame_metadata_->top_controls_shown_ratio !=
-              metadata.top_controls_shown_ratio ||
-          last_draw_render_frame_metadata_->bottom_controls_shown_ratio !=
-              metadata.bottom_controls_shown_ratio;
-    }
 #else
-        last_draw_render_frame_metadata_->top_controls_height !=
-            metadata.top_controls_height ||
-        last_draw_render_frame_metadata_->top_controls_shown_ratio !=
-            metadata.top_controls_shown_ratio ||
-        last_draw_render_frame_metadata_->bottom_controls_height !=
-            metadata.bottom_controls_height ||
-        last_draw_render_frame_metadata_->bottom_controls_shown_ratio !=
-            metadata.bottom_controls_shown_ratio ||
         last_draw_render_frame_metadata_->selection != metadata.selection ||
         last_draw_render_frame_metadata_->has_transparent_background !=
             metadata.has_transparent_background;
