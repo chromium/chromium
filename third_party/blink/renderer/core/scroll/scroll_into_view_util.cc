@@ -211,6 +211,15 @@ bool AllowedToPropagateToParent(
   return !from_frame.GetDocument()->IsVerticalScrollEnforced();
 }
 
+// Anchor-positioned fixed boxes still need to move with the anchor when the
+// frame scrolls (https://www.w3.org/TR/css-anchor-position/#scroll).
+bool IsFixedToFrame(const LayoutBox& box) {
+  return box.StyleRef().GetPosition() == EPosition::kFixed &&
+         box.Container() == box.View() &&
+         !box.NeedsAnchorPositionScrollAdjustmentInX() &&
+         !box.NeedsAnchorPositionScrollAdjustmentInY();
+}
+
 // Helper to return the parent LayoutBox, crossing local frame boundaries, that
 // a scroll should bubble up to or nullptr if the local root has been reached.
 // The return optional will be empty if the scroll is blocked from bubbling to
@@ -218,8 +227,7 @@ bool AllowedToPropagateToParent(
 std::optional<LayoutBox*> GetScrollParent(
     const LayoutBox& box,
     const mojom::blink::ScrollIntoViewParamsPtr& params) {
-  bool is_fixed_to_frame = box.StyleRef().GetPosition() == EPosition::kFixed &&
-                           box.Container() == box.View();
+  bool is_fixed_to_frame = IsFixedToFrame(box);
 
   // Within a document scrolls bubble along the containing block chain but if
   // we're in a position:fixed element, we want to immediately bubble up across
@@ -408,9 +416,7 @@ BubblingScrollResult PerformBubblingScrollIntoViewWithResult(
       previous_current_box = current_box;
     }
 
-    bool is_fixed_to_frame =
-        current_box->StyleRef().GetPosition() == EPosition::kFixed &&
-        current_box->Container() == current_box->View();
+    bool is_fixed_to_frame = IsFixedToFrame(*current_box);
 
     VisualViewport& visual_viewport =
         current_box->GetFrame()->GetPage()->GetVisualViewport();
