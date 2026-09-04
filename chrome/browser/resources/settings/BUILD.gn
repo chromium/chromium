@@ -510,6 +510,7 @@ build_webui("build") {
     "downloads_page/downloads_page.css",
     "languages_page/add_languages_dialog.css",
     "languages_page/edit_dictionary_page.css",
+    "languages_page/languages_page.css",
     "languages_page/spell_check_page.css",
     "on_startup_page/startup_url_entry.css",
     "on_startup_page/startup_urls_page.css",

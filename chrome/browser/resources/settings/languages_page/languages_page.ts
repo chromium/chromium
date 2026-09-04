@@ -6,53 +6,41 @@
  * @fileoverview 'settings-languages-page' is the settings page
  * for language and input method settings.
  */
-// clang-format off
 
 import 'chrome://resources/cr_components/managed_dialog/managed_dialog.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/js/action_link.js';
-import 'chrome://resources/cr_elements/action_link.css.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import './add_languages_dialog.js';
-import '../icons.html.js';
 import '../relaunch_confirmation_dialog.js';
 import '../settings_page/settings_section.js';
-import '../settings_shared.css.js';
-import '../settings_vars.css.js';
 
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
-import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import type {CrLazyRenderLitElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {isWindows} from 'chrome://resources/js/platform.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import { PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// <if expr="is_win">
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// </if>
+import {isWindows} from 'chrome://resources/js/platform.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
+import {RelaunchMixinLit, RestartType} from '../relaunch_mixin_lit.js';
 import {routes} from '../route.js';
+import {RouteObserverMixinLit} from '../router.js';
 import type {Route} from '../router.js';
-import { RouteObserverMixin} from '../router.js';
 
-import {getTemplate} from './languages_page.html.js';
+import {getLanguageHelperInstance} from './languages.js';
+import {getCss} from './languages_page.css.js';
+import {getHtml} from './languages_page.html.js';
 import type {LanguageSettingsMetricsProxy} from './languages_settings_metrics_proxy.js';
 import {LanguageSettingsActionType, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType} from './languages_settings_metrics_proxy.js';
 import type {LanguageHelper, LanguagesModel, LanguageState} from './languages_types.js';
-import {getLanguageHelperInstance} from './languages.js';
 import {convertLanguageCodeForTranslate} from './languages_util.js';
-
-// clang-format on
 
 /**
  * Millisecond delay that can be used when closing an action menu to keep it
@@ -62,12 +50,16 @@ export const kMenuCloseDelay: number = 100;
 
 export interface SettingsLanguagesPageElement {
   $: {
-    menu: CrLazyRenderElement<CrActionMenuElement>,
+    addLanguages: CrButtonElement,
+    languagesSection: HTMLElement,
+    menu: CrLazyRenderLitElement<CrActionMenuElement>,
   };
 }
 
+export type LanguagesPageElement = SettingsLanguagesPageElement;
+
 const SettingsLanguagesPageElementBase =
-    RouteObserverMixin(RelaunchMixin(I18nMixin(PolymerElement)));
+    RouteObserverMixinLit(RelaunchMixinLit(I18nMixinLit(CrLitElement)));
 
 export class SettingsLanguagesPageElement extends
     SettingsLanguagesPageElementBase {
@@ -75,58 +67,48 @@ export class SettingsLanguagesPageElement extends
     return 'settings-languages-page';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
-    return {
-      supportedLanguages_: {
-        type: Array,
-        value: () => [],
-      },
-      enabledLanguages_: {
-        type: Array,
-        value: () => [],
-      },
-      translateTarget_: String,
-      canEnableSomeSupportedLanguage_: {
-        type: Boolean,
-        value: false,
-      },
+  override render() {
+    return getHtml.bind(this)();
+  }
 
-      // <if expr="is_win">
-      prospectiveUILanguage_: String,
-      // </if>
+  static override get properties() {
+    return {
+      supportedLanguages_: {type: Array},
+      enabledLanguages_: {type: Array},
+      translateTarget_: {type: String},
+      canEnableSomeSupportedLanguage_: {type: Boolean},
+      prospectiveUILanguage_: {type: String},
 
       /**
        * The language to display the details for.
        */
-      detailLanguage_: Object,
+      detailLanguage_: {type: Object},
 
-      showAddLanguagesDialog_: Boolean,
-      addLanguagesDialogLanguages_: Array,
+      showAddLanguagesDialog_: {type: Boolean},
+      addLanguagesDialogLanguages_: {type: Array},
 
-      showManagedLanguageDialog_: {
-        type: Boolean,
-        value: false,
-      },
+      showManagedLanguageDialog_: {type: Boolean},
+      restartTypeEnum: {type: Object},
     };
   }
 
-  declare private supportedLanguages_:
-      chrome.languageSettingsPrivate.Language[];
-  declare private enabledLanguages_: LanguageState[];
-  declare private translateTarget_: string;
-  declare private canEnableSomeSupportedLanguage_: boolean;
-  // <if expr="is_win">
-  declare private prospectiveUILanguage_: string;
-  // </if>
-  declare private detailLanguage_?: LanguageState;
-  declare private showAddLanguagesDialog_: boolean;
-  declare private addLanguagesDialogLanguages_:
-      chrome.languageSettingsPrivate.Language[]|null;
-  declare private showManagedLanguageDialog_: boolean;
+  protected accessor supportedLanguages_:
+      chrome.languageSettingsPrivate.Language[] = [];
+  protected accessor enabledLanguages_: LanguageState[] = [];
+  protected accessor translateTarget_: string = '';
+  protected accessor canEnableSomeSupportedLanguage_: boolean = false;
+  protected accessor prospectiveUILanguage_: string = '';
+  protected accessor detailLanguage_: LanguageState|undefined = undefined;
+  protected accessor showAddLanguagesDialog_: boolean = false;
+  protected accessor addLanguagesDialogLanguages_:
+      chrome.languageSettingsPrivate.Language[] = [];
+  protected accessor showManagedLanguageDialog_: boolean = false;
+  protected accessor restartTypeEnum = RestartType;
+
   private languageHelper_: LanguageHelper;
   private boundOnLanguagesChanged_: ((e: Event) => void)|null = null;
   private languageSettingsMetricsProxy_: LanguageSettingsMetricsProxy =
@@ -161,23 +143,20 @@ export class SettingsLanguagesPageElement extends
   }
 
   private onLanguagesChanged_(languages: LanguagesModel) {
-    this.set('supportedLanguages_', languages.supported);
-    this.set('enabledLanguages_', languages.enabled);
-    this.set('translateTarget_', languages.translateTarget);
+    this.supportedLanguages_ = languages.supported;
+    this.enabledLanguages_ = languages.enabled;
+    this.translateTarget_ = languages.translateTarget;
     // <if expr="is_win">
-    this.set('prospectiveUILanguage_', languages.prospectiveUILanguage);
+    this.prospectiveUILanguage_ = languages.prospectiveUILanguage ?? '';
     // </if>
-    this.set(
-        'canEnableSomeSupportedLanguage_',
-        languages.supported.some(
-            language => this.languageHelper_.canEnableLanguage(language)));
+    this.canEnableSomeSupportedLanguage_ = languages.supported.some(
+        language => this.languageHelper_.canEnableLanguage(language));
   }
 
   /**
-   * Stamps and opens the Add Languages dialog, registering a listener to
-   * disable the dialog's dom-if again on close.
+   * Renders the add languages dialog.
    */
-  private onAddLanguagesClick_(e: Event) {
+  protected onAddLanguagesClick_(e: Event) {
     e.preventDefault();
     this.languageSettingsMetricsProxy_.recordPageImpressionMetric(
         LanguageSettingsPageImpressionType.ADD_LANGUAGE);
@@ -186,7 +165,7 @@ export class SettingsLanguagesPageElement extends
     this.showAddLanguagesDialog_ = true;
   }
 
-  private onLanguagesAdded_(e: CustomEvent<string[]>) {
+  protected onLanguagesAdded_(e: CustomEvent<string[]>) {
     const languagesToAdd = e.detail;
     languagesToAdd.forEach(languageCode => {
       this.languageHelper_.enableLanguage(languageCode);
@@ -195,11 +174,10 @@ export class SettingsLanguagesPageElement extends
     });
   }
 
-  private onAddLanguagesDialogClose_() {
+  protected onAddLanguagesDialogClose_() {
     this.showAddLanguagesDialog_ = false;
-    this.addLanguagesDialogLanguages_ = null;
-    const toFocus =
-        this.shadowRoot!.querySelector<HTMLElement>('#addLanguages');
+    this.addLanguagesDialogLanguages_ = [];
+    const toFocus = this.shadowRoot.querySelector<HTMLElement>('#addLanguages');
     assert(toFocus);
     focusWithoutInk(toFocus);
   }
@@ -207,7 +185,7 @@ export class SettingsLanguagesPageElement extends
   /**
    * Formats language index (zero-indexed)
    */
-  private formatIndex_(index: number): string {
+  protected formatIndex_(index: number): string {
     return (index + 1).toLocaleString();
   }
 
@@ -217,7 +195,7 @@ export class SettingsLanguagesPageElement extends
    * @return True if |language| is at the |n|th index in the list of enabled
    *     languages.
    */
-  private isNthLanguage_(n: number): boolean {
+  protected isNthLanguage_(n: number): boolean {
     if (this.enabledLanguages_ === undefined ||
         this.detailLanguage_ === undefined) {
       return false;
@@ -234,7 +212,7 @@ export class SettingsLanguagesPageElement extends
   /**
    * @return True if the "Move to top" option for |language| should be visible.
    */
-  private showMoveUp_(): boolean {
+  protected showMoveUp_(): boolean {
     // "Move up" is a no-op for the top language, and redundant with
     // "Move to top" for the 2nd language.
     return !this.isNthLanguage_(0) && !this.isNthLanguage_(1);
@@ -243,7 +221,7 @@ export class SettingsLanguagesPageElement extends
   /**
    * @return True if the "Move down" option for |language| should be visible.
    */
-  private showMoveDown_(): boolean {
+  protected showMoveDown_(): boolean {
     return this.enabledLanguages_ !== undefined &&
         !this.isNthLanguage_(this.enabledLanguages_.length - 1);
   }
@@ -254,7 +232,7 @@ export class SettingsLanguagesPageElement extends
    * @return 'target' if |languageCode| matches the target language,
    *     'non-target' otherwise.
    */
-  private isTranslationTarget_(languageCode: string, translateTarget: string):
+  protected isTranslationTarget_(languageCode: string, translateTarget: string):
       string {
     if (convertLanguageCodeForTranslate(languageCode) === translateTarget) {
       return 'target';
@@ -270,7 +248,7 @@ export class SettingsLanguagesPageElement extends
    * @return True if the prospective UI language is set to
    *     |languageCode| but requires a restart to take effect.
    */
-  private isRestartRequired_(
+  protected isRestartRequired_(
       languageCode: string, prospectiveUILanguage: string): boolean {
     if (!this.isConnected) {
       // Mysteriously happens in SettingsLanguagePageTest.LanguageMenu.
@@ -283,14 +261,14 @@ export class SettingsLanguagesPageElement extends
         getLanguageHelperInstance().requiresRestart();
   }
 
-  private onCloseMenu_() {
+  protected async onMenuClose_() {
     if (!this.isChangeInProgress_) {
       return;
     }
-    flush();
+    await this.updateComplete;
     this.isChangeInProgress_ = false;
     const restartButton =
-        this.shadowRoot!.querySelector<HTMLElement>('#restartButton');
+        this.shadowRoot.querySelector<HTMLElement>('#restartButton');
     if (!restartButton) {
       return;
     }
@@ -302,9 +280,10 @@ export class SettingsLanguagesPageElement extends
    * @return True if the given language cannot be set as the
    *     prospective UI language by the user.
    */
-  private disableUiLanguageCheckbox_(
-      languageState: LanguageState, prospectiveUILanguage: string): boolean {
-    if (this.detailLanguage_ === undefined) {
+  protected disableUiLanguageCheckbox_(
+      languageState?: LanguageState, prospectiveUILanguage?: string): boolean {
+    if (this.detailLanguage_ === undefined || languageState === undefined ||
+        prospectiveUILanguage === undefined) {
       return true;
     }
 
@@ -332,7 +311,7 @@ export class SettingsLanguagesPageElement extends
   /**
    * Handler for changes to the UI language checkbox.
    */
-  private onUiLanguageChange_(e: Event) {
+  protected onUiLanguageChange_(e: Event) {
     // We don't support unchecking this checkbox. TODO(michaelpg): Ask for a
     // simpler widget.
     assert((e.target as CrCheckboxElement).checked);
@@ -357,7 +336,7 @@ export class SettingsLanguagesPageElement extends
    * @return True if the given language matches the prospective UI pref (which
    *     may be different from the actual UI language).
    */
-  private isProspectiveUiLanguage_(
+  protected isProspectiveUiLanguage_(
       languageCode: string, prospectiveUILanguage: string): boolean {
     return languageCode === prospectiveUILanguage;
   }
@@ -365,7 +344,7 @@ export class SettingsLanguagesPageElement extends
   /**
    * Handler for the restart button.
    */
-  private onRestartClick_() {
+  protected onRestartClick_() {
     this.performRestart(RestartType.RESTART);
   }
   // </if>
@@ -373,7 +352,7 @@ export class SettingsLanguagesPageElement extends
   /**
    * Moves the language to the top of the list.
    */
-  private onMoveToTopClick_() {
+  protected onMoveToTopClick_() {
     this.$.menu.get().close();
     if (this.detailLanguage_!.isForced) {
       // If language is managed, show dialog to inform user it can't be modified
@@ -389,7 +368,7 @@ export class SettingsLanguagesPageElement extends
   /**
    * Moves the language up in the list.
    */
-  private onMoveUpClick_() {
+  protected onMoveUpClick_() {
     this.$.menu.get().close();
     if (this.detailLanguage_!.isForced) {
       // If language is managed, show dialog to inform user it can't be modified
@@ -405,7 +384,7 @@ export class SettingsLanguagesPageElement extends
   /**
    * Moves the language down in the list.
    */
-  private onMoveDownClick_() {
+  protected onMoveDownClick_() {
     this.$.menu.get().close();
     if (this.detailLanguage_!.isForced) {
       // If language is managed, show dialog to inform user it can't be modified
@@ -421,7 +400,7 @@ export class SettingsLanguagesPageElement extends
   /**
    * Disables the language.
    */
-  private onRemoveLanguageClick_() {
+  protected onRemoveLanguageClick_() {
     this.$.menu.get().close();
     if (this.detailLanguage_!.isForced) {
       // If language is managed, show dialog to inform user it can't be modified
@@ -438,23 +417,25 @@ export class SettingsLanguagesPageElement extends
    * prospective UI language, or an empty string. Languages can only be
    * selected on Chrome OS and Windows.
    * @param languageCode The language code identifying a language.
-   * @param prospectiveUILanguage The prospective UI language.
    * @return The class name for the language item.
    */
-  private getLanguageItemClass_(
-      languageCode: string, prospectiveUILanguage: string): string {
-    if (isWindows && languageCode === prospectiveUILanguage) {
+  protected getLanguageItemClass_(languageCode: string): string {
+    if (isWindows && languageCode === this.prospectiveUILanguage_) {
       return 'selected';
     }
     return '';
   }
 
-  private onDotsClick_(e: DomRepeatEvent<LanguageState>) {
+  protected onDotsClick_(e: Event) {
+    const target = e.currentTarget as HTMLElement;
+    const index = Number(target.dataset['index']);
+    const item = this.enabledLanguages_[index];
+    assert(item);
     // Set a copy of the LanguageState object since it is not data-bound to
     // the languages model directly.
-    this.detailLanguage_ = Object.assign({}, e.model.item);
+    this.detailLanguage_ = Object.assign({}, item);
 
-    this.$.menu.get().showAt(e.target as HTMLElement);
+    this.$.menu.get().showAt(target);
     this.languageSettingsMetricsProxy_.recordPageImpressionMetric(
         LanguageSettingsPageImpressionType.LANGUAGE_OVERFLOW_MENU_OPENED);
   }
@@ -475,7 +456,7 @@ export class SettingsLanguagesPageElement extends
   /**
    * Triggered when the managed language dialog is dismissed.
    */
-  private onManagedLanguageDialogClosed_() {
+  protected onManagedLanguageDialogClose_() {
     this.showManagedLanguageDialog_ = false;
   }
 

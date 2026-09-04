@@ -5,7 +5,6 @@
 // clang-format off
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrCheckboxElement, LanguageHelper, SettingsAddLanguagesDialogElement, SettingsLanguagesPageElement} from 'chrome://settings/lazy_load.js';
 import {LanguageHelperImpl, LanguagesBrowserProxyImpl, getLanguageHelperInstance} from 'chrome://settings/lazy_load.js';
 import type {CrActionMenuElement, CrButtonElement} from 'chrome://settings/settings.js';
@@ -24,6 +23,7 @@ suite('LanguagesPage', function() {
   let languagesPage: SettingsLanguagesPageElement;
   let actionMenu: CrActionMenuElement;
   let browserProxy: TestLanguagesBrowserProxy;
+  let prefService: PrefService;
 
   /*
    * Finds, asserts and returns the menu item for the given i18n key.
@@ -51,7 +51,8 @@ suite('LanguagesPage', function() {
     const prefsBrowserProxy = new TestPrefsBrowserProxy(getFakeLanguagePrefs());
     PrefsBrowserProxy.setInstance(prefsBrowserProxy);
     PrefService.resetInstanceForTesting();
-    await PrefService.getInstance().whenInitialized();
+    prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
 
     // Set up test browser proxy.
     browserProxy = new TestLanguagesBrowserProxy();
@@ -63,7 +64,6 @@ suite('LanguagesPage', function() {
 
     languagesPage = document.createElement('settings-languages-page');
     document.body.appendChild(languagesPage);
-    flush();
     actionMenu = languagesPage.$.menu.get();
   });
 
@@ -89,7 +89,7 @@ suite('LanguagesPage', function() {
         // Sanity check: the dialog should no longer be in the DOM.
         assertEquals(
             null,
-            languagesPage.shadowRoot!.querySelector(
+            languagesPage.shadowRoot.querySelector(
                 'settings-add-languages-dialog'));
         observer.disconnect();
         assertTrue(!!dialogClosedResolver);
@@ -98,9 +98,7 @@ suite('LanguagesPage', function() {
     }
 
     setup(async function() {
-      addLanguagesButton =
-          languagesPage.shadowRoot!.querySelector<CrButtonElement>(
-              '#addLanguages')!;
+      addLanguagesButton = languagesPage.$.addLanguages;
       const whenDialogOpen = eventToPromise('cr-dialog-open', languagesPage);
       addLanguagesButton.click();
 
@@ -108,24 +106,28 @@ suite('LanguagesPage', function() {
       // DOM asynchronously at microtask timing, so wait for a new task.
       await whenDialogOpen;
 
-      dialog = languagesPage.shadowRoot!.querySelector(
-          'settings-add-languages-dialog')!;
-      assertTrue(!!dialog);
+      const addLanguagesDialog = languagesPage.shadowRoot.querySelector(
+          'settings-add-languages-dialog');
+      assertTrue(!!addLanguagesDialog);
+      dialog = addLanguagesDialog;
 
       // Observe the removal of the dialog via MutationObserver since the
       // HTMLDialogElement 'close' event fires at an unpredictable time.
       dialogClosedResolver = new PromiseResolver();
       dialogClosedObserver = new MutationObserver(onMutation);
-      dialogClosedObserver.observe(
-          languagesPage.shadowRoot!.querySelector('settings-section')!,
-          {childList: true});
+      const settingsSection =
+          languagesPage.shadowRoot.querySelector('settings-section');
+      assertTrue(!!settingsSection);
+      dialogClosedObserver.observe(settingsSection, {childList: true});
 
-      actionButton =
-          dialog.shadowRoot.querySelector<CrButtonElement>('.action-button')!;
-      assertTrue(!!actionButton);
-      cancelButton =
-          dialog.shadowRoot.querySelector<CrButtonElement>('.cancel-button')!;
-      assertTrue(!!cancelButton);
+      const foundActionButton =
+          dialog.shadowRoot.querySelector<CrButtonElement>('.action-button');
+      assertTrue(!!foundActionButton);
+      actionButton = foundActionButton;
+      const foundCancelButton =
+          dialog.shadowRoot.querySelector<CrButtonElement>('.cancel-button');
+      assertTrue(!!foundCancelButton);
+      cancelButton = foundCancelButton;
       await microtasksFinished();
 
       dialogItems = dialog.shadowRoot.querySelectorAll<CrCheckboxElement>(
@@ -141,7 +143,7 @@ suite('LanguagesPage', function() {
       dialogClosedObserver.disconnect();
     });
 
-    test('undefined languages', function() {
+    test('undefined languages', async function() {
       assertFalse(addLanguagesButton.disabled);
 
       // Make the languages empty and make sure the button is disabled.
@@ -150,6 +152,7 @@ suite('LanguagesPage', function() {
           supported: [],
         }),
       }));
+      await microtasksFinished();
       assertTrue(addLanguagesButton.disabled);
     });
 
@@ -172,17 +175,16 @@ suite('LanguagesPage', function() {
       cancelButton.click();
       await dialogClosedResolver.promise;
       assertEquals(
-          initialLanguages,
-          PrefService.getInstance().getPref('intl.accept_languages').value);
+          initialLanguages, prefService.getPref('intl.accept_languages').value);
     });
 
     test('add languages and confirm', async function() {
       // No languages have been checked, so the action button is inert.
       actionButton.click();
-      flush();
+      await microtasksFinished();
       assertEquals(
           dialog,
-          languagesPage.shadowRoot!.querySelector(
+          languagesPage.shadowRoot.querySelector(
               'settings-add-languages-dialog'));
 
       // Check and uncheck one language.
@@ -206,7 +208,7 @@ suite('LanguagesPage', function() {
 
       assertEquals(
           initialLanguages + ',en,tk',
-          PrefService.getInstance().getPref('intl.accept_languages').value);
+          prefService.getPref('intl.accept_languages').value);
 
       return dialogClosedResolver.promise;
     });
@@ -246,7 +248,8 @@ suite('LanguagesPage', function() {
     });
 
     test('AddLanguagesDialogFocusgroup', function() {
-      const list = dialog.shadowRoot.querySelector('#list')!;
+      const list = dialog.shadowRoot.querySelector('#list');
+      assertTrue(!!list);
       assertEquals('listbox block', list.getAttribute('focusgroup'));
     });
 
@@ -282,32 +285,27 @@ suite('LanguagesPage', function() {
       assertTrue(languageHelper.languages!.enabled.some(
           l => convertLanguageCodeForTranslate(l.language.code) !==
               targetLanguageCode));
-      let translateTargetLabel = null;
-      let item = null;
 
       const listItems =
-          languagesPage.shadowRoot!.querySelector('#languagesSection')!
-              .querySelectorAll<HTMLElement>('.list-item');
-      const domRepeat = languagesPage.shadowRoot!.querySelector('dom-repeat');
-      assertTrue(!!domRepeat);
+          languagesPage.$.languagesSection.querySelectorAll<HTMLElement>(
+              '.list-item');
+      assertEquals(languageHelper.languages!.enabled.length, listItems.length);
 
-      let num_visibles = 0;
-      Array.from(listItems).forEach(function(el) {
-        item = domRepeat.itemForElement(el);
-        if (item) {
-          translateTargetLabel = el.querySelector('.target-info');
-          assertTrue(!!translateTargetLabel);
-          if (getComputedStyle(translateTargetLabel).display !== 'none') {
-            num_visibles++;
-            assertEquals(
-                targetLanguageCode,
-                convertLanguageCodeForTranslate(item.language.code));
-          }
+      let numVisibles = 0;
+      listItems.forEach(function(el, i) {
+        const item = languageHelper.languages!.enabled[i]!;
+        const translateTargetLabel = el.querySelector('.target-info');
+        assertTrue(!!translateTargetLabel);
+        if (getComputedStyle(translateTargetLabel).display !== 'none') {
+          numVisibles++;
+          assertEquals(
+              targetLanguageCode,
+              convertLanguageCodeForTranslate(item.language.code));
         }
-        assertEquals(
-            1, num_visibles,
-            'Not exactly one target info label (' + num_visibles + ').');
       });
+      assertEquals(
+          1, numVisibles,
+          'Not exactly one target info label (' + numVisibles + ').');
     });
 
     /*
@@ -326,28 +324,20 @@ suite('LanguagesPage', function() {
       }
     }
 
-
-    test('remove language when starting with 3 languages', function() {
+    test('remove language when starting with 3 languages', async function() {
       // Enable a language which we can then disable.
       languageHelper.enableLanguage('no');
 
-      // Populate the dom-repeat.
-      flush();
+      await microtasksFinished();
 
       // Find the new language item.
-      const items =
-          languagesPage.shadowRoot!.querySelector('#languagesSection')!
-              .querySelectorAll<HTMLElement>('.list-item');
-      const domRepeat = languagesPage.shadowRoot!.querySelector('dom-repeat');
-      assertTrue(!!domRepeat);
-      const item = Array.from(items).find(function(el) {
-        return domRepeat.itemForElement(el) &&
-            domRepeat.itemForElement(el).language.code === 'no';
-      });
-      assertTrue(!!item);
+      const moreButton =
+          languagesPage.shadowRoot.querySelector<HTMLElement>('#more-no');
+      assertTrue(!!moreButton);
 
       // Open the menu and select Remove.
-      item.querySelector('cr-icon-button')!.click();
+      moreButton.click();
+      await microtasksFinished();
 
       assertTrue(actionMenu.open);
       const removeMenuItem = getMenuItem<HTMLButtonElement>('removeLanguage');
@@ -357,24 +347,17 @@ suite('LanguagesPage', function() {
       assertFalse(actionMenu.open);
 
       assertEquals(
-          initialLanguages,
-          PrefService.getInstance().getPref('intl.accept_languages').value);
+          initialLanguages, prefService.getPref('intl.accept_languages').value);
     });
 
-    test('remove language when starting with 2 languages', function() {
-      const items =
-          languagesPage.shadowRoot!.querySelector('#languagesSection')!
-              .querySelectorAll<HTMLElement>('.list-item');
-      const domRepeat = languagesPage.shadowRoot!.querySelector('dom-repeat');
-      assertTrue(!!domRepeat);
-      const item = Array.from(items).find(function(el) {
-        return domRepeat.itemForElement(el) &&
-            domRepeat.itemForElement(el).language.code === 'sw';
-      });
-      assertTrue(!!item);
+    test('remove language when starting with 2 languages', async function() {
+      const moreButton =
+          languagesPage.shadowRoot.querySelector<HTMLElement>('#more-sw');
+      assertTrue(!!moreButton);
 
       // Open the menu and select Remove.
-      item.querySelector('cr-icon-button')!.click();
+      moreButton.click();
+      await microtasksFinished();
 
       assertTrue(actionMenu.open);
       const removeMenuItem = getMenuItem<HTMLButtonElement>('removeLanguage');
@@ -383,26 +366,24 @@ suite('LanguagesPage', function() {
       removeMenuItem.click();
       assertFalse(actionMenu.open);
 
-      assertEquals(
-          'en-US',
-          PrefService.getInstance().getPref('intl.accept_languages').value);
+      assertEquals('en-US', prefService.getPref('intl.accept_languages').value);
     });
 
-    test('move up/down buttons', function() {
+    test('move up/down buttons', async function() {
       // Add several languages.
       for (const language of ['en-CA', 'en-US', 'tk', 'no']) {
         languageHelper.enableLanguage(language);
       }
 
-      flush();
+      await microtasksFinished();
 
       const menuButtons =
-          languagesPage.shadowRoot!.querySelector('#languagesSection')!
-              .querySelectorAll<HTMLElement>(
-                  '.list-item cr-icon-button.icon-more-vert');
-
+          languagesPage.$.languagesSection.querySelectorAll<HTMLElement>(
+              '.list-item cr-icon-button.icon-more-vert');
+      assertGT(menuButtons.length, 3);
       // First language should not have "Move up" or "Move to top".
       menuButtons[0]!.click();
+      await microtasksFinished();
       assertMenuItemButtonsVisible({
         moveToTop: false,
         moveUp: false,
@@ -412,6 +393,7 @@ suite('LanguagesPage', function() {
 
       // Second language should not have "Move up".
       menuButtons[1]!.click();
+      await microtasksFinished();
       assertMenuItemButtonsVisible({
         moveToTop: true,
         moveUp: false,
@@ -421,6 +403,7 @@ suite('LanguagesPage', function() {
 
       // Middle languages should have all buttons.
       menuButtons[2]!.click();
+      await microtasksFinished();
       assertMenuItemButtonsVisible({
         moveToTop: true,
         moveUp: true,
@@ -430,6 +413,7 @@ suite('LanguagesPage', function() {
 
       // Last language should not have "Move down".
       menuButtons[menuButtons.length - 1]!.click();
+      await microtasksFinished();
       assertMenuItemButtonsVisible({
         moveToTop: true,
         moveUp: true,
