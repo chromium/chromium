@@ -589,7 +589,9 @@ public class TopToolbarOverlayMediator implements ThemeColorObserver {
         Tab tab = mTabSupplier.get();
         if (mSuppressToolbarSceneLayerSupplier.get()
                 || (tab != null && tab.isNativePage() && tab.isDisplayingBackForwardAnimation())
-                || (ChromeFeatureList.sBrowserControlsHidingToken.isEnabled()
+                || (tab != null
+                        && tab.isTrustedWebActivity()
+                        && ChromeFeatureList.sBrowserControlsHidingToken.isEnabled()
                         && mBrowserControlsVisibilityManager.hasHidingTokens())) {
             // TODO(crbug.com/365818512): Add a screenshot capture test to cover this case.
             mModel.set(TopToolbarOverlayProperties.VISIBLE, false);

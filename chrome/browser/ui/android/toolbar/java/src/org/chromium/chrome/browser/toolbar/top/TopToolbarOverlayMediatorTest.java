@@ -378,6 +378,7 @@ public class TopToolbarOverlayMediatorTest {
     @Test
     @EnableFeatures(ChromeFeatureList.BROWSER_CONTROLS_HIDING_TOKEN)
     public void testUpdateVisibility_hasHidingTokens() {
+        when(mTab.isTrustedWebActivity()).thenReturn(true);
         assertTrue("View should be visible.", mModel.get(TopToolbarOverlayProperties.VISIBLE));
 
         when(mBrowserControlsVisibilityManager.hasHidingTokens()).thenReturn(true);
@@ -394,6 +395,22 @@ public class TopToolbarOverlayMediatorTest {
 
         assertTrue(
                 "View should be restored when hiding tokens are released.",
+                mModel.get(TopToolbarOverlayProperties.VISIBLE));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.BROWSER_CONTROLS_HIDING_TOKEN)
+    public void testUpdateVisibility_hasHidingTokens_notTwa() {
+        when(mTab.isTrustedWebActivity()).thenReturn(false);
+        assertTrue("View should be visible.", mModel.get(TopToolbarOverlayProperties.VISIBLE));
+
+        when(mBrowserControlsVisibilityManager.hasHidingTokens()).thenReturn(true);
+        mBrowserControlsObserverCaptor
+                .getValue()
+                .onAndroidControlsVisibilityChanged(View.INVISIBLE);
+
+        assertTrue(
+                "View should remain visible when not a TWA.",
                 mModel.get(TopToolbarOverlayProperties.VISIBLE));
     }
 
