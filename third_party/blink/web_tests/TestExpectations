@@ -9347,3 +9347,6 @@ crbug.com/552768634 external/wpt/scroll-to-text-fragment/scroll-to-text-fragment
 crbug.com/531033724 [ Linux ] external/wpt/webdriver/tests/bidi/storage/get_cookies/filter.py [ Failure Pass ]
 crbug.com/543994288 [ Linux ] external/wpt/webdriver/tests/classic/get_title/user_prompts.py [ Failure Pass ]
 crbug.com/554722975 [ Win11-arm64 ] external/wpt/webtransport/stats.https.any.html [ Failure Pass ]
+
+# Gardener 2026-09-04
+crbug.com/40940279 [ Debug ] external/wpt/css/css-anchor-position/anchor-position-multicol-nested-001.html [ Crash Pass ]
