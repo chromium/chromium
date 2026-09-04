@@ -91,9 +91,10 @@ public final class PointerLockEventHelper {
                             && event.getActionMasked() != MotionEvent.ACTION_POINTER_UP
                             && event.getActionMasked() != MotionEvent.ACTION_POINTER_DOWN);
         } else if (event.isFromSource(InputDevice.SOURCE_MOUSE_RELATIVE)) {
-            // Input device is Mouse, getX & getY return the relative change of the pointer position
-            offsetX = event.getX();
-            offsetY = event.getY();
+            // Captured mouse events report this source, and contain relative (delta) coordinates.
+            float scale = getScaleFactor();
+            offsetX = event.getX() * scale;
+            offsetY = event.getY() * scale;
         } else {
             // Unexpected source
             return event;
@@ -252,5 +253,23 @@ public final class PointerLockEventHelper {
             case Surface.ROTATION_270 -> offsetX;
             default -> offsetY; // unreachable
         };
+    }
+
+    // Scaling multiplier for captured physical mouse movement (https://crbug.com/490206349). When
+    // pointer lock is active, Android delivers raw unaccelerated relative coordinates without
+    // applying system pointer speed, causing physical mouse movement to feel sluggish compared to
+    // unlocked mode.
+    @VisibleForTesting public static final float MOUSE_MOVEMENT_SCALE_FACTOR = 1.2f;
+
+    private static float getScaleFactor() {
+        if (!UiAndroidFeatureList.sPointerLockMouseScaling.isEnabled()) {
+            return 1.0f;
+        }
+        return (float)
+                UiAndroidFeatureMap.getInstance()
+                        .getFieldTrialParamByFeatureAsDouble(
+                                UiAndroidFeatures.POINTER_LOCK_MOUSE_SCALING,
+                                "factor",
+                                MOUSE_MOVEMENT_SCALE_FACTOR);
     }
 }
