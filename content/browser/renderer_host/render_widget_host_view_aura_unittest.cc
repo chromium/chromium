@@ -7045,6 +7045,13 @@ class DestroyingMockInputMethod : public ui::MockInputMethod {
     }
   }
 
+  void DetachTextInputClient(ui::TextInputClient* client) override {
+    ui::MockInputMethod::DetachTextInputClient(client);
+    if (on_detach_text_input_client_) {
+      std::move(on_detach_text_input_client_).Run();
+    }
+  }
+
   void set_on_caret_bounds_changed(base::OnceClosure closure) {
     on_caret_bounds_changed_ = std::move(closure);
   }
@@ -7053,9 +7060,14 @@ class DestroyingMockInputMethod : public ui::MockInputMethod {
     on_text_input_type_changed_ = std::move(closure);
   }
 
+  void set_on_detach_text_input_client(base::OnceClosure closure) {
+    on_detach_text_input_client_ = std::move(closure);
+  }
+
  private:
   base::OnceClosure on_caret_bounds_changed_;
   base::OnceClosure on_text_input_type_changed_;
+  base::OnceClosure on_detach_text_input_client_;
 };
 
 class RenderWidgetHostViewAuraReentrantDestructionIME
@@ -7141,6 +7153,46 @@ TEST_F(RenderWidgetHostViewAuraReentrantDestructionIME,
   // Dispatching this state notifies `view_` (a TextInputManager observer) via
   // OnUpdateTextInputStateCalled(), which calls into the input method above.
   GetTextInputManager(view_)->UpdateTextInputState(view_, state);
+}
+
+// RWHVA::OnWindowFocused()'s lost-focus branch calls
+// DetachFromInputMethod(false). On Windows this reaches
+// TSFBridge::RemoveFocusedClient() -> ITfThreadMgr::AssociateFocus(), a
+// synchronous COM call into the platform text-services framework that can run
+// arbitrary code registered by a third-party Text Input Processor (e.g. an
+// IME). DetachFromInputMethod() already guards its own remaining statements
+// with a weak_ptr check in case that callout destroys the view re-entrantly,
+// but OnWindowFocused()'s lost-focus branch does not: it unconditionally
+// continues on to
+// `selection_controller_->HideAndDisallowShowingAutomatically()` afterward,
+// touching the now-freed `this`.
+TEST_F(RenderWidgetHostViewAuraReentrantDestructionIME,
+       DestroyDuringDetachTextInputClientOnLostFocus) {
+  InitViewForFrame(nullptr);
+  ParentHostView(view_, parent_view_);
+  // `view_` shares the root window (and thus the InputMethod) with
+  // `parent_view_`.
+  ASSERT_EQ(static_cast<ui::InputMethod*>(input_method_.get()),
+            GetInputMethod());
+
+  // Focus `view_` so that DetachTextInputClient(view_) below is not a no-op.
+  input_method_->SetFocusedTextInputClient(view_.get());
+
+  // Arrange for the view to be synchronously destroyed inside
+  // DetachTextInputClient, simulating re-entrant destruction triggered by a
+  // TSF/IME callout that pumps a queued window.close() task
+  // while the view is losing focus.
+  FakeRenderWidgetHostViewAura* raw_view = view_.get();
+  input_method_->set_on_detach_text_input_client(
+      base::BindLambdaForTesting([&]() {
+        widget_host_ = nullptr;
+        view_.ExtractAsDangling()->Destroy();
+      }));
+
+  // If the weak_ptr check wasn't in place, OnWindowFocused()'s lost-focus
+  // branch resumes after DetachFromInputMethod() returns and dereferences
+  // `this->selection_controller_` on the freed view.
+  raw_view->OnWindowFocused(nullptr, raw_view->GetNativeView());
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
