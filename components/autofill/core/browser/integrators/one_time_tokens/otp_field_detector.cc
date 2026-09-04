@@ -28,7 +28,8 @@ bool OtpFieldDetector::IsOtpForm(const FormStructure& form) {
 
   bool has_otp_field = false;
   for (const std::unique_ptr<AutofillField>& f : form.fields()) {
-    if (!f->Type().GetTypes().contains(ONE_TIME_CODE) || !f->is_focusable()) {
+    if (!f->Type().GetTypes().contains(ONE_TIME_CODE) || !f->is_focusable() ||
+        f->IsPasswordInputElement()) {
       continue;
     }
     has_otp_field = true;

@@ -176,14 +176,15 @@ class OtpFieldDetectorAutofillManagerObserverTest
   FormData CreateSimpleOtp(
       bool is_focusable = true,
       const GURL& url = GURL("https://www.foo.com"),
-      std::optional<url::Origin> main_frame_origin = std::nullopt) {
+      std::optional<url::Origin> main_frame_origin = std::nullopt,
+      FormControlType form_control_type = FormControlType::kInputText) {
     FormData form;
     form.set_url(url);
     form.set_main_frame_origin(
         main_frame_origin.value_or(url::Origin::Create(url)));
     form.set_renderer_id(test::MakeFormRendererId());
     FormFieldData field = {test::CreateTestFormField(
-        "some_label", "some_name", "some_value", FormControlType::kInputText)};
+        "some_label", "some_name", "some_value", form_control_type)};
     field.set_origin(url::Origin::Create(url));
     field.set_is_focusable(is_focusable);
     form.set_fields({field});
@@ -287,6 +288,23 @@ TEST_P(OtpFieldDetectorAutofillManagerObserverTest,
 
   EXPECT_CALL(otp_detected_callback, Run()).Times(0);
   AddOtpToThePage(CreateSimpleOtp(/*is_focusable=*/false));
+}
+
+// Verify that an OTP form containing only password fields does not trigger the
+// OTP detected callback.
+TEST_P(OtpFieldDetectorAutofillManagerObserverTest,
+       DiscoverOTPs_IgnorePasswordFields) {
+  base::MockRepeatingCallback<void()> otp_detected_callback;
+  base::CallbackListSubscription subscription =
+      otp_field_detector().RegisterOtpFieldsDetectedCallback(
+          otp_detected_callback.Get());
+
+  EXPECT_CALL(otp_detected_callback, Run()).Times(0);
+  AddOtpToThePage(CreateSimpleOtp(
+      /*is_focusable=*/true, GURL("https://www.foo.com"),
+      /*main_frame_origin=*/std::nullopt,
+      /*form_control_type=*/FormControlType::kInputPassword));
+  EXPECT_FALSE(otp_field_detector().IsOtpFieldPresent());
 }
 
 // Verify that a navigation which drops all forms is recognized.
@@ -431,12 +449,14 @@ std::unique_ptr<FormStructure> CreateFormWithField(
     const url::Origin& main_frame_origin,
     const url::Origin& field_origin,
     FieldType type,
-    bool is_focusable = true) {
+    bool is_focusable = true,
+    FormControlType form_control_type = FormControlType::kInputText) {
   FormData form;
   form.set_main_frame_origin(main_frame_origin);
   FormFieldData field;
   field.set_origin(field_origin);
   field.set_is_focusable(is_focusable);
+  field.set_form_control_type(form_control_type);
   form.set_fields({field});
 
   auto form_structure = std::make_unique<FormStructure>(form);
@@ -552,6 +572,41 @@ TEST(OtpFieldDetectorIsOtpFormTest, MultipleOtpFieldsOneMismatched) {
   form_structure.field(1)->SetTypeTo(AutofillType(ONE_TIME_CODE), std::nullopt);
 
   EXPECT_FALSE(OtpFieldDetector::IsOtpForm(form_structure));
+}
+
+// Tests that `IsOtpForm` returns false when the only OTP field is a password
+// field.
+TEST(OtpFieldDetectorIsOtpFormTest, PasswordOtpField) {
+  std::unique_ptr<FormStructure> form_structure = CreateFormWithField(
+      /*main_frame_origin=*/url::Origin::Create(GURL("https://example.com")),
+      /*field_origin=*/url::Origin::Create(GURL("https://example.com")),
+      /*type=*/ONE_TIME_CODE, /*is_focusable=*/true,
+      /*form_control_type=*/FormControlType::kInputPassword);
+  ASSERT_TRUE(form_structure);
+  EXPECT_FALSE(OtpFieldDetector::IsOtpForm(*form_structure));
+}
+
+// Tests that `IsOtpForm` returns true when there is both a password field
+// and a text-based OTP field.
+TEST(OtpFieldDetectorIsOtpFormTest, PasswordFieldAndTextOtpField) {
+  FormData form;
+  form.set_main_frame_origin(url::Origin::Create(GURL("https://example.com")));
+  FormFieldData field1;
+  field1.set_origin(url::Origin::Create(GURL("https://example.com")));
+  field1.set_is_focusable(true);
+  field1.set_form_control_type(FormControlType::kInputPassword);
+  FormFieldData field2;
+  field2.set_origin(url::Origin::Create(GURL("https://example.com")));
+  field2.set_is_focusable(true);
+  field2.set_form_control_type(FormControlType::kInputText);
+  form.set_fields({field1, field2});
+
+  FormStructure form_structure(form);
+  ASSERT_EQ(form_structure.fields().size(), 2u);
+  form_structure.field(0)->SetTypeTo(AutofillType(ONE_TIME_CODE), std::nullopt);
+  form_structure.field(1)->SetTypeTo(AutofillType(ONE_TIME_CODE), std::nullopt);
+
+  EXPECT_TRUE(OtpFieldDetector::IsOtpForm(form_structure));
 }
 
 }  // namespace autofill
