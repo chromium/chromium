@@ -8,6 +8,7 @@
 #include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/search_engines/template_url_service.h"
+#include "ui/base/page_transition_types.h"
 
 ChromeTemplateURLServiceClient::ChromeTemplateURLServiceClient(
     history::HistoryService* history_service)

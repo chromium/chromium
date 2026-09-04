@@ -60,6 +60,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/window_open_disposition.h"
 
 constexpr char kBlockedContentUkmName[] = "FamilyLinkUser.BlockedContent";
 constexpr char kBlockedContentUkmMainFrameMetricName[] = "MainFrameBlocked";

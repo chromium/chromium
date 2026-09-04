@@ -6,7 +6,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"

@@ -5,6 +5,7 @@
 #include "chrome/browser/sync/glue/web_contents_state_synced_tab_delegate.h"
 
 #include "chrome/browser/sync/glue/synced_tab_delegate_android.h"
+#include "components/sessions/core/session_id.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 

@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/segmentation_platform/embedder/input_delegate/tab_session_source.h"
@@ -15,6 +15,7 @@
 #include "components/segmentation_platform/internal/execution/processing/feature_processor_state.h"
 #include "components/sync_sessions/mock_session_sync_service.h"
 #include "components/sync_sessions/session_sync_service.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"

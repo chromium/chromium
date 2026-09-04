@@ -25,6 +25,7 @@
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
 namespace {

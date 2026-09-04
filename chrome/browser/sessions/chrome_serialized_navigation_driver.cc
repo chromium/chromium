@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "chrome/common/url_constants.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/common/referrer.h"
 
 #if BUILDFLAG(IS_ANDROID)

@@ -12,7 +12,6 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/sharing/sms/sms_remote_fetcher_metrics.h"
 #include "chrome/browser/shell_integration.h"
-#include "chrome/browser/ui/browser.h"
 #include "components/sharing_message/sharing_constants.h"
 #include "components/sharing_message/sharing_dialog.h"
 #include "components/sharing_message/sharing_target_device_info.h"

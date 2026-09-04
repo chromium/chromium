@@ -12,6 +12,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
 #include "net/base/net_errors.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
 namespace {

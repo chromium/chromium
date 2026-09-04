@@ -22,9 +22,10 @@
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/sessions/content/session_tab_helper.h"
-#include "content/public/browser/download_item_utils.h"
 #include "components/safe_browsing/core/common/utils.h"
+#include "components/sessions/content/session_tab_helper.h"
+#include "components/sessions/core/session_id.h"
+#include "content/public/browser/download_item_utils.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)

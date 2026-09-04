@@ -142,6 +142,7 @@ source_set("impl") {
     deps += [
       "//chrome/browser/ui",
       "//chrome/browser/ui/sync",
+      "//chrome/browser/ui/tabs:tab_strip",
       "//components/tabs:public",
     ]
   }

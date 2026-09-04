@@ -24,6 +24,7 @@
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "extensions/buildflags/buildflags.h"
 
 namespace supervised_user_test_util {
 

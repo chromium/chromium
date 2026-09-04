@@ -22,6 +22,7 @@
 #include "components/supervised_user/core/browser/supervised_user_url_checker_client.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "content/public/browser/storage_partition.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/supervised_user/android/supervised_user_service_platform_delegate.h"

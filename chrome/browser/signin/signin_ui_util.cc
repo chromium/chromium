@@ -56,6 +56,8 @@
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "third_party/re2/src/re2/re2.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/text_elider.h"
 

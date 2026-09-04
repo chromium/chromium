@@ -9,7 +9,6 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/serial/chrome_serial_delegate.h"
 #include "chrome/browser/serial/web_serial_chooser.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/serial/serial_chooser_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"

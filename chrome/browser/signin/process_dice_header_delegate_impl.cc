@@ -34,6 +34,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
 namespace {

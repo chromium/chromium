@@ -5,6 +5,8 @@
 #include <utility>
 #include <vector>
 
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+
 // spellcheck_per_process_browsertest.cc
 
 #include "base/feature_list.h"

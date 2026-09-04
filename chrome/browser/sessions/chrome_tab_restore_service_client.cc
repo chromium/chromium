@@ -9,6 +9,7 @@
 #include "chrome/browser/sessions/session_common_utils.h"
 #include "chrome/common/url_constants.h"
 #include "components/sessions/content/content_live_tab.h"
+#include "components/sessions/core/session_id.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/mojom/window_show_state.mojom.h"

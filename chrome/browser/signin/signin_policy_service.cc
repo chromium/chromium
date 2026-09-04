@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/one_shot_event.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/browser/extension_registrar.h"

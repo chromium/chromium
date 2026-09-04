@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/skills/skills_interactive_uitest_base.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/skills/skills_dialog_view.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/test/browser_test.h"

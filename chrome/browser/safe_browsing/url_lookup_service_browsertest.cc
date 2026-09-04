@@ -13,6 +13,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/utils.h"
+#include "components/sessions/core/session_id.h"
 #include "components/variations/pref_names.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
