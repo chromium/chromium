@@ -48,8 +48,18 @@ public class BottomSheetListViewBaseUnitTest {
         private @Px int mDesiredHeight = 300;
         private @Px int mMaxHeight = 600;
 
+        int mLastContainerWidth;
+        int mLastContainerHeight;
+
         TestBottomSheetListView(BottomSheetController bottomSheetController, View contentView) {
             super(bottomSheetController, contentView, /* suppressCollectionA11y= */ false);
+        }
+
+        @Override
+        protected void onContainerSizeChanged(@Px int width, @Px int height) {
+            super.onContainerSizeChanged(width, height);
+            mLastContainerWidth = width;
+            mLastContainerHeight = height;
         }
 
         void setHeightsForTesting(@Px int desiredHeight, @Px int maxHeight) {
@@ -375,5 +385,49 @@ public class BottomSheetListViewBaseUnitTest {
         TestBottomSheetListView listView =
                 new TestBottomSheetListView(mMockBottomSheetController, contentView);
         assertEquals(View.LAYOUT_DIRECTION_LTR, listView.getContentView().getLayoutDirection());
+    }
+
+    // Verifies that onContainerSizeChanged clears cached height measurements and propagates
+    // updated container dimensions to subclasses.
+    @Test
+    public void testOnContainerSizeChanged_invalidatesMeasurementCacheAndNotifiesSubclass() {
+        when(mMockBottomSheetController.getCurrentSheetContent()).thenReturn(mListViewBase);
+
+        // Pre-populate cached measurements to verify they get invalidated on container resize.
+        mListViewBase.setCachedHeightsForTesting(300, 600);
+        assertEquals(300, mListViewBase.getCachedDesiredSheetHeightPxForTesting());
+        assertEquals(600, mListViewBase.getCachedMaximumSheetHeightPxForTesting());
+
+        // Notify that the container size changed (e.g. orientation switch or window resize).
+        mListViewBase.getBottomSheetObserverForTesting().onContainerSizeChanged(1200, 800);
+
+        // Both desired and maximum sheet height caches should be reset to invalid dimension (-1).
+        assertEquals(
+                BottomSheetListViewBase.INVALID_PX_DIMENSION,
+                mListViewBase.getCachedDesiredSheetHeightPxForTesting());
+        assertEquals(
+                BottomSheetListViewBase.INVALID_PX_DIMENSION,
+                mListViewBase.getCachedMaximumSheetHeightPxForTesting());
+
+        // Verify that the subclass received the updated container dimensions.
+        assertEquals(1200, mListViewBase.mLastContainerWidth);
+        assertEquals(800, mListViewBase.mLastContainerHeight);
+    }
+
+    // Verifies that container size changes are ignored when this sheet is not the active content.
+    @Test
+    public void testOnContainerSizeChanged_inactiveContent_doesNotInvalidateOrNotify() {
+        when(mMockBottomSheetController.getCurrentSheetContent()).thenReturn(null);
+
+        // Pre-populate cached measurements.
+        mListViewBase.setCachedHeightsForTesting(300, 600);
+
+        mListViewBase.getBottomSheetObserverForTesting().onContainerSizeChanged(1200, 800);
+
+        // Cache must remain intact and subclass should not be notified.
+        assertEquals(300, mListViewBase.getCachedDesiredSheetHeightPxForTesting());
+        assertEquals(600, mListViewBase.getCachedMaximumSheetHeightPxForTesting());
+        assertEquals(0, mListViewBase.mLastContainerWidth);
+        assertEquals(0, mListViewBase.mLastContainerHeight);
     }
 }
