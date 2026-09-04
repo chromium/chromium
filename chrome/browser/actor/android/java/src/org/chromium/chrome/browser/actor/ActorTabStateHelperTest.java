@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.actor;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -16,30 +17,41 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.os.Looper;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Shadows;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -65,10 +77,16 @@ public class ActorTabStateHelperTest {
     @Mock private TabCreator mTabCreator;
     @Mock private Tab mPlaceholderTab;
     @Mock private Callback<Tab> mOnTabDetaching;
+    @Mock private LayoutManager mLayoutManager;
+    @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
     @Before
     public void setUp() {
         ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
+        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
+        when(mTabModelSelector.getCurrentTabModelSupplier())
+                .thenReturn(ObservableSuppliers.createMonotonic(mTabModel));
+        when(mTabModelSelector.getModels()).thenReturn(Collections.singletonList(mTabModel));
     }
 
     @After
@@ -305,5 +323,160 @@ public class ActorTabStateHelperTest {
         assertEquals(1, sessions.size());
         assertEquals(1, sessions.get(0).getTabDataList().size());
         assertEquals(tab2, sessions.get(0).getTabDataList().get(0).getTab());
+    }
+
+    @Test
+    public void testSelectTabAndShow_nullSelector() {
+        assertNull(ActorTabStateHelper.selectTabAndShow(null, mLayoutManager, TAB_ID));
+    }
+
+    @Test
+    public void testSelectTabAndShow_tabNotFound() {
+        when(mTabModelSelector.getTabById(TAB_ID)).thenReturn(null);
+        assertNull(ActorTabStateHelper.selectTabAndShow(mTabModelSelector, mLayoutManager, TAB_ID));
+    }
+
+    @Test
+    public void testSelectTabAndShow_tabFound() {
+        when(mTabModelSelector.getTabById(TAB_ID)).thenReturn(mTab);
+        when(mTab.isIncognito()).thenReturn(false);
+        when(mTabModel.indexOf(mTab)).thenReturn(1);
+
+        Tab selected =
+                ActorTabStateHelper.selectTabAndShow(mTabModelSelector, mLayoutManager, TAB_ID);
+
+        assertEquals(mTab, selected);
+        verify(mTabModelSelector).selectModel(false);
+        verify(mTabModel).setIndex(1, TabSelectionType.FROM_USER);
+    }
+
+    @Test
+    public void testSelectTabAndShow_hubVisible_switchesToBrowsing() {
+        when(mTabModelSelector.getTabById(TAB_ID)).thenReturn(mTab);
+        when(mTab.isIncognito()).thenReturn(false);
+        when(mTabModel.indexOf(mTab)).thenReturn(1);
+        when(mLayoutManager.isLayoutVisible(LayoutType.HUB)).thenReturn(true);
+
+        ActorTabStateHelper.selectTabAndShow(mTabModelSelector, mLayoutManager, TAB_ID);
+
+        verify(mLayoutManager).showLayout(LayoutType.BROWSING, false);
+    }
+
+    @Test
+    public void testListenAndSelectTabOnAdded_nullSelector() {
+        ActorTabStateHelper.listenAndSelectTabOnAdded(null, mLayoutManager, TAB_ID);
+        verify(mTabModel, never()).addObserver(any());
+    }
+
+    @Test
+    public void
+            testListenAndSelectTabOnAdded_alreadyInitialized_tabNotFound_attachesObserverAndCleansUp() {
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
+        when(mTabModelSelector.getTabById(TAB_ID)).thenReturn(null);
+
+        ActorTabStateHelper.listenAndSelectTabOnAdded(mTabModelSelector, mLayoutManager, TAB_ID);
+
+        verify(mTabModel).addObserver(mTabModelObserverCaptor.capture());
+        TabModelObserver tabModelObserver = mTabModelObserverCaptor.getValue();
+
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        verify(mTabModel).removeObserver(tabModelObserver);
+        verify(mTabModelSelector, never()).selectModel(anyBoolean());
+    }
+
+    @Test
+    public void testListenAndSelectTabOnAdded_alreadyInitialized_tabExists_selectsImmediately() {
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
+        when(mTab.getId()).thenReturn(TAB_ID);
+        when(mTab.isIncognito()).thenReturn(false);
+        when(mTabModelSelector.getTabById(TAB_ID)).thenReturn(mTab);
+        when(mTabModel.indexOf(mTab)).thenReturn(0);
+
+        ActorTabStateHelper.listenAndSelectTabOnAdded(mTabModelSelector, mLayoutManager, TAB_ID);
+
+        verify(mTabModelSelector).selectModel(false);
+        verify(mTabModel).setIndex(0, TabSelectionType.FROM_USER);
+        verify(mTabModelSelector, never()).addObserver(any());
+        verify(mTabModel, never()).addObserver(any());
+    }
+
+    @Test
+    public void testListenAndSelectTabOnAdded_alreadyExists_selectsImmediately() {
+        when(mTab.getId()).thenReturn(TAB_ID);
+        when(mTab.isIncognito()).thenReturn(false);
+        when(mTabModelSelector.getTabById(TAB_ID)).thenReturn(mTab);
+        when(mTabModel.indexOf(mTab)).thenReturn(0);
+
+        ActorTabStateHelper.listenAndSelectTabOnAdded(mTabModelSelector, mLayoutManager, TAB_ID);
+
+        verify(mTabModelSelector).selectModel(false);
+        verify(mTabModel).setIndex(0, TabSelectionType.FROM_USER);
+        verify(mTabModelSelector, never()).addObserver(any());
+        verify(mTabModel, never()).addObserver(any());
+    }
+
+    @Test
+    public void testListenAndSelectTabOnAdded_didAddTab_matchingId() {
+        when(mTab.getId()).thenReturn(TAB_ID);
+        when(mTab.isIncognito()).thenReturn(false);
+        when(mTabModelSelector.getTabById(TAB_ID)).thenReturn(null).thenReturn(mTab);
+        when(mTabModel.indexOf(mTab)).thenReturn(0);
+
+        ActorTabStateHelper.listenAndSelectTabOnAdded(mTabModelSelector, mLayoutManager, TAB_ID);
+
+        verify(mTabModel).addObserver(mTabModelObserverCaptor.capture());
+        TabModelObserver observer = mTabModelObserverCaptor.getValue();
+
+        observer.didAddTab(
+                mTab,
+                TabLaunchType.FROM_RESTORE,
+                TabCreationState.LIVE_IN_BACKGROUND,
+                /* markedForSelection= */ false);
+
+        verify(mTabModelSelector).selectModel(false);
+        verify(mTabModel).setIndex(0, TabSelectionType.FROM_USER);
+        verify(mTabModel).removeObserver(observer);
+    }
+
+    @Test
+    public void testListenAndSelectTabOnAdded_didAddTab_nonMatchingId_doesNotSelect() {
+        Tab otherTab = mock(Tab.class);
+        when(otherTab.getId()).thenReturn(999);
+
+        ActorTabStateHelper.listenAndSelectTabOnAdded(mTabModelSelector, mLayoutManager, TAB_ID);
+
+        verify(mTabModel).addObserver(mTabModelObserverCaptor.capture());
+        TabModelObserver observer = mTabModelObserverCaptor.getValue();
+
+        observer.didAddTab(
+                otherTab,
+                TabLaunchType.FROM_RESTORE,
+                TabCreationState.LIVE_IN_BACKGROUND,
+                /* markedForSelection= */ false);
+
+        verify(mTabModelSelector, never()).selectModel(anyBoolean());
+        verify(mTabModel, never()).setIndex(anyInt(), anyInt());
+        verify(mTabModel, never()).removeObserver(any());
+    }
+
+    @Test
+    public void testListenAndSelectTabOnAdded_tabStateInitialized_destroysObserver() {
+        ArgumentCaptor<TabModelSelectorObserver> selectorObserverCaptor =
+                ArgumentCaptor.forClass(TabModelSelectorObserver.class);
+
+        ActorTabStateHelper.listenAndSelectTabOnAdded(mTabModelSelector, mLayoutManager, TAB_ID);
+
+        verify(mTabModel).addObserver(mTabModelObserverCaptor.capture());
+        TabModelObserver tabModelObserver = mTabModelObserverCaptor.getValue();
+
+        verify(mTabModelSelector).addObserver(selectorObserverCaptor.capture());
+        TabModelSelectorObserver selectorObserver = selectorObserverCaptor.getValue();
+
+        selectorObserver.onTabStateInitialized();
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        verify(mTabModel).removeObserver(tabModelObserver);
+        verify(mTabModelSelector, never()).selectModel(anyBoolean());
     }
 }

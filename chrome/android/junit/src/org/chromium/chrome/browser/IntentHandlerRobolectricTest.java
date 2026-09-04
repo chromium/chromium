@@ -55,10 +55,12 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.IntentHandler.ExternalAppId;
+import org.chromium.chrome.browser.actor.ActorNotificationFactory;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
 import org.chromium.chrome.browser.tabmodel.MultiTabMetadata;
@@ -926,5 +928,20 @@ public class IntentHandlerRobolectricTest {
             IntentUtils.addTrustedIntentExtras(intent);
         }
         return intent;
+    }
+
+    @Test
+    public void testIsActorNotificationIntent() {
+        assertFalse(IntentHandler.isActorNotificationIntent(null));
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        assertFalse(IntentHandler.isActorNotificationIntent(intent));
+
+        intent.putExtra(ActorNotificationFactory.EXTRA_SHOW_ACTOR_CONTROL, true);
+        assertTrue(IntentHandler.isActorNotificationIntent(intent));
+
+        intent = new Intent(Intent.ACTION_VIEW);
+        intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, 123);
+        assertTrue(IntentHandler.isActorNotificationIntent(intent));
     }
 }
