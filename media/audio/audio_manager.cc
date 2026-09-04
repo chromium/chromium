@@ -138,6 +138,12 @@ AudioManager* AudioManager::Get() {
   return g_last_created;
 }
 
+std::optional<base::CallbackListSubscription>
+AudioManager::AddInputMuteStateChangeCallback(
+    base::RepeatingCallback<void(bool)> /*callback*/) {
+  return std::nullopt;
+}
+
 bool AudioManager::Shutdown() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 

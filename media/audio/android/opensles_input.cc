@@ -180,7 +180,7 @@ bool OpenSLESInputStream::GetAutomaticGainControl() {
 }
 
 bool OpenSLESInputStream::IsMuted() {
-  return false;
+  return audio_manager_->IsMicrophoneMuted();
 }
 
 void OpenSLESInputStream::SetOutputDeviceForAec(

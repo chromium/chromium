@@ -60,6 +60,10 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
     // state reported by the OS.
     virtual void InitScoStateListener() = 0;
 
+    // Initializes the microphone mute state listener and returns the current
+    // system microphone mute state.
+    virtual bool InitMicrophoneMuteStateListener() = 0;
+
     // Returns metadata about the available audio devices as reported by the
     // Android framework, filtered to input devices if `inputs` is true, and to
     // output devices otherwise.
@@ -160,6 +164,14 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
   // changes. Note that this is called on the main thread.
   void OnScoStateChanged(JNIEnv* env, bool state);
 
+  // Called by the Java `AudioManagerAndroid` on the main thread when the system
+  // microphone mute state changes.
+  void OnMicrophoneMuteStateChanged(JNIEnv* env, bool muted);
+
+  [[nodiscard]] std::optional<base::CallbackListSubscription>
+  AddInputMuteStateChangeCallback(
+      base::RepeatingCallback<void(bool)> callback) override;
+
   // Sets a volume that applies to all this manager's output audio streams.
   // This overrides other SetVolume calls (e.g. through AudioHostMsg_SetVolume).
   // TODO(https://crbug.com/422733084): this functionality is likely unused.
@@ -172,6 +184,8 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
   // b/80326798 to adjust (hackily) for hardware latency that OpenSLES isn't
   // otherwise accounting for.
   base::TimeDelta GetOutputLatency();
+
+  bool IsMicrophoneMuted();
 
   // Returns a bitmask of audio encoding formats supported by all connected HDMI
   // output devices.
@@ -250,6 +264,7 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
   void DoSetMuteOnAudioThread(bool muted);
   void DoSetVolumeOnAudioThread(double volume);
   void OnScoStateChangedOnAudioThread(bool state);
+  void OnMicrophoneMuteStateChangedOnAudioThread(bool muted);
 
   std::unique_ptr<JniDelegate> jni_delegate_;
 
@@ -257,6 +272,10 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
   // `true`, an SCO state change callback will immediately update the value, so
   // it can initially be assumed to be `false` here.
   bool is_bluetooth_sco_enabled_ = false;
+
+  bool is_microphone_muted_ = false;
+  base::RepeatingCallbackList<void(bool)>
+      microphone_mute_state_change_callbacks_;
 
   // Most recently fetched device data. See `GetDeviceCache` for more details.
   DeviceCache input_device_cache_;

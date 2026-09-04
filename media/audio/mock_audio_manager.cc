@@ -79,6 +79,15 @@ void MockAudioManager::RemoveOutputDeviceChangeListener(
     AudioDeviceListener* listener) {
 }
 
+std::optional<base::CallbackListSubscription>
+MockAudioManager::AddInputMuteStateChangeCallback(
+    base::RepeatingCallback<void(bool)> callback) {
+  if (!supports_input_mute_state_change_notifications_) {
+    return std::nullopt;
+  }
+  return input_mute_state_change_callbacks_.Add(std::move(callback));
+}
+
 std::string MockAudioManager::GetDeviceNameFromCache(
     const std::string& device_id,
     bool is_input) {
@@ -194,6 +203,15 @@ void MockAudioManager::SetOutputDeviceDescriptionsCallback(
 void MockAudioManager::SetAssociatedOutputDeviceIDCallback(
     GetAssociatedOutputDeviceIDCallback callback) {
   get_associated_output_device_id_cb_ = std::move(callback);
+}
+
+void MockAudioManager::SetSupportsInputMuteStateChangeNotifications(
+    bool supported) {
+  supports_input_mute_state_change_notifications_ = supported;
+}
+
+void MockAudioManager::NotifyInputMuteStateChanged(bool is_muted) {
+  input_mute_state_change_callbacks_.Notify(is_muted);
 }
 
 }  // namespace media

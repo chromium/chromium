@@ -550,6 +550,39 @@ TEST_F(InputControllerTest, TestOnmutedCallbackInitiallyMuted) {
   controller_->Close();
 }
 
+TEST_F(InputControllerTestWithMockAudioManager,
+       UsesMuteStateChangeNotifications) {
+  MockAudioInputStream mock_stream;
+  auto* audio_manager =
+      static_cast<media::MockAudioManager*>(audio_manager_.get());
+  audio_manager->SetSupportsInputMuteStateChangeNotifications(true);
+  audio_manager->SetMakeInputStreamCB(base::BindRepeating(
+      [](media::AudioInputStream* stream, const media::AudioParameters& params,
+         const std::string& device_id) { return stream; },
+      &mock_stream));
+
+  EXPECT_CALL(mock_stream, IsMuted()).WillOnce(Return(false));
+  EXPECT_CALL(event_handler_, OnCreated(false));
+  CreateAudioController();
+  ASSERT_TRUE(controller_);
+
+  testing::Mock::VerifyAndClearExpectations(&mock_stream);
+  EXPECT_CALL(mock_stream, IsMuted()).Times(0);
+
+  EXPECT_CALL(event_handler_, OnMuted(true));
+  audio_manager->NotifyInputMuteStateChanged(true);
+  testing::Mock::VerifyAndClearExpectations(&event_handler_);
+
+  // A manager which provides notifications should not also be polled.
+  task_environment_.FastForwardBy(kOnMutePollInterval * 2);
+
+  EXPECT_CALL(event_handler_, OnMuted(false));
+  audio_manager->NotifyInputMuteStateChanged(false);
+
+  EXPECT_CALL(sync_writer_, Close());
+  controller_->Close();
+}
+
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 class InputControllerTestHelper {
  public:

@@ -6,8 +6,10 @@
 #define MEDIA_AUDIO_MOCK_AUDIO_MANAGER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "media/audio/audio_debug_recording_manager.h"
 #include "media/audio/audio_manager.h"
@@ -60,6 +62,10 @@ class MockAudioManager : public AudioManager {
   void AddOutputDeviceChangeListener(AudioDeviceListener* listener) override;
   void RemoveOutputDeviceChangeListener(AudioDeviceListener* listener) override;
 
+  [[nodiscard]] std::optional<base::CallbackListSubscription>
+  AddInputMuteStateChangeCallback(
+      base::RepeatingCallback<void(bool)> callback) override;
+
   std::string GetDeviceNameFromCache(const std::string& device_id,
                                      bool is_input) override;
 
@@ -89,6 +95,8 @@ class MockAudioManager : public AudioManager {
       GetDeviceDescriptionsCallback callback);
   void SetAssociatedOutputDeviceIDCallback(
       GetAssociatedOutputDeviceIDCallback callback);
+  void SetSupportsInputMuteStateChangeNotifications(bool supported);
+  void NotifyInputMuteStateChanged(bool is_muted);
 
  protected:
   void ShutdownOnAudioThread() override;
@@ -125,6 +133,8 @@ class MockAudioManager : public AudioManager {
   GetDeviceDescriptionsCallback get_input_device_descriptions_cb_;
   GetDeviceDescriptionsCallback get_output_device_descriptions_cb_;
   GetAssociatedOutputDeviceIDCallback get_associated_output_device_id_cb_;
+  bool supports_input_mute_state_change_notifications_ = false;
+  base::RepeatingCallbackList<void(bool)> input_mute_state_change_callbacks_;
   std::unique_ptr<AudioDebugRecordingManager> debug_recording_manager_;
 };
 

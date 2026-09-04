@@ -137,6 +137,8 @@ class AudioManagerAndroid {
 
     private @Nullable ScoStateListener mScoStateListener;
 
+    private @Nullable MicrophoneMuteStateListener mMicrophoneMuteStateListener;
+
     private final CommunicationDeviceSelector mCommunicationDeviceSelector;
 
     /** Construction */
@@ -221,6 +223,20 @@ class AudioManagerAndroid {
                         });
     }
 
+    /** Initializes the listener for system microphone mute state changes. */
+    @CalledByNative
+    private boolean initMicrophoneMuteStateListener() {
+        mThreadChecker.assertOnValidThread();
+        mMicrophoneMuteStateListener =
+                new MicrophoneMuteStateListener(
+                        mAudioManager,
+                        muted ->
+                                AudioManagerAndroidJni.get()
+                                        .onMicrophoneMuteStateChanged(
+                                                mNativeAudioManagerAndroid, muted));
+        return mAudioManager.isMicrophoneMute();
+    }
+
     /**
      * Unregister all previously registered intent receivers and restore the stored state (stored in
      * {@link #init()}).
@@ -239,6 +255,10 @@ class AudioManagerAndroid {
 
         if (mScoStateListener != null) {
             mScoStateListener.destroy();
+        }
+
+        if (mMicrophoneMuteStateListener != null) {
+            mMicrophoneMuteStateListener.destroy();
         }
 
         mCommunicationDeviceSelector.close();
@@ -793,6 +813,8 @@ class AudioManagerAndroid {
         void setMute(long nativeAudioManagerAndroid, boolean muted);
 
         void onScoStateChanged(long nativeAudioManagerAndroid, boolean state);
+
+        void onMicrophoneMuteStateChanged(long nativeAudioManagerAndroid, boolean muted);
 
         boolean isAudioPlaybackCaptureAllowedFeatureEnabled();
     }

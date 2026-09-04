@@ -13,6 +13,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -295,7 +296,13 @@ class InputController final {
                        float* average_power_dbfs,
                        int* mic_volume_percent);
 
+  // Polls the input stream's mute state when push notifications are not
+  // supported by the platform.
   void CheckMutedState();
+
+  // Deduplicates and forwards mute state changes received through either push
+  // notifications or polling.
+  void OnMuteStateChanged(bool is_muted);
 
   // Called once at first audio callback.
   void ReportIsAlive();
@@ -389,6 +396,10 @@ class InputController final {
   base::TimeTicks stream_create_time_;
 
   bool is_muted_ = false;
+
+  // Mute state changes are monitored by either a platform subscription or,
+  // when subscriptions are not supported, the polling timer.
+  std::optional<base::CallbackListSubscription> mute_state_subscription_;
   base::RepeatingTimer check_muted_state_timer_;
 
   // If configured, used to add chromium playout to the captured audio signal.

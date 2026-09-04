@@ -121,6 +121,11 @@ class JniDelegateImpl : public AudioManagerAndroid::JniDelegate {
                                                   j_audio_manager_);
   }
 
+  bool InitMicrophoneMuteStateListener() override {
+    return Java_AudioManagerAndroid_initMicrophoneMuteStateListener(
+        AttachCurrentThread(), j_audio_manager_);
+  }
+
   std::vector<JniAudioDevice> GetDevices(bool inputs) override {
     JNIEnv* env = AttachCurrentThread();
     ScopedJavaLocalRef<jobjectArray> j_devices =
@@ -1009,6 +1014,30 @@ void AudioManagerAndroid::OnScoStateChanged(JNIEnv* env, bool state) {
                      base::Unretained(this), state));
 }
 
+void AudioManagerAndroid::OnMicrophoneMuteStateChanged(JNIEnv* env,
+                                                       bool muted) {
+  if (GetTaskRunner()->BelongsToCurrentThread()) {
+    OnMicrophoneMuteStateChangedOnAudioThread(muted);
+    return;
+  }
+
+  // `base::Unretained` is safe because `ShutdownOnAudioThread()` unregisters
+  // the Java listener, and `Shutdown()` stops and joins this task runner before
+  // `this` is destroyed.
+  GetTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &AudioManagerAndroid::OnMicrophoneMuteStateChangedOnAudioThread,
+          base::Unretained(this), muted));
+}
+
+std::optional<base::CallbackListSubscription>
+AudioManagerAndroid::AddInputMuteStateChangeCallback(
+    base::RepeatingCallback<void(bool)> callback) {
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+  return microphone_mute_state_change_callbacks_.Add(std::move(callback));
+}
+
 void AudioManagerAndroid::SetOutputVolumeOverride(double volume) {
   GetTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&AudioManagerAndroid::DoSetVolumeOnAudioThread,
@@ -1025,6 +1054,11 @@ bool AudioManagerAndroid::HasOutputVolumeOverride(double* out_volume) const {
 base::TimeDelta AudioManagerAndroid::GetOutputLatency() {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   return GetJniDelegate().GetOutputLatency();
+}
+
+bool AudioManagerAndroid::IsMicrophoneMuted() {
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+  return is_microphone_muted_;
 }
 
 AudioParameters AudioManagerAndroid::GetPreferredOutputStreamParameters(
@@ -1140,6 +1174,8 @@ AudioManagerAndroid::JniDelegate& AudioManagerAndroid::GetJniDelegate() {
     // Create the JNI delegate on the audio thread; prepare the list of audio
     // devices and register receivers for device notifications.
     jni_delegate_ = std::make_unique<JniDelegateImpl>(this);
+
+    is_microphone_muted_ = jni_delegate_->InitMicrophoneMuteStateListener();
 
     // These features are checked for on the native side in order to avoid build
     // dependency conflicts when using the Java `ChromeFeatureList`.
@@ -1257,6 +1293,17 @@ void AudioManagerAndroid::OnScoStateChangedOnAudioThread(bool state) {
   for (auto stream : bluetooth_output_streams_) {
     stream->SetUseSco(state);
   }
+}
+
+void AudioManagerAndroid::OnMicrophoneMuteStateChangedOnAudioThread(
+    bool muted) {
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+  if (is_microphone_muted_ == muted) {
+    return;
+  }
+
+  is_microphone_muted_ = muted;
+  microphone_mute_state_change_callbacks_.Notify(muted);
 }
 
 ChannelLayoutConfig AudioManagerAndroid::GetLayoutWithMaxChannels() {

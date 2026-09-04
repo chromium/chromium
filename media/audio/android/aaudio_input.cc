@@ -395,7 +395,7 @@ bool AAudioInputStream::GetAutomaticGainControl() {
 }
 
 bool AAudioInputStream::IsMuted() {
-  return false;
+  return audio_manager_->IsMicrophoneMuted();
 }
 
 void AAudioInputStream::SetOutputDeviceForAec(

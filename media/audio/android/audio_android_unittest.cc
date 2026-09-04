@@ -182,6 +182,7 @@ class MockJniDelegate : public JniDelegate {
 
   MOCK_METHOD(void, InitDeviceListener, (), (override));
   MOCK_METHOD(void, InitScoStateListener, (), (override));
+  MOCK_METHOD(bool, InitMicrophoneMuteStateListener, (), (override));
   MOCK_METHOD(std::vector<JniAudioDevice>, GetDevices, (bool), (override));
   MOCK_METHOD(std::optional<std::vector<JniAudioDevice>>,
               GetCommunicationDevices,
@@ -833,6 +834,42 @@ class AudioAndroidInputTest : public AudioAndroidOutputTest {
   raw_ptr<AudioInputStream> audio_input_stream_;
   AudioParameters audio_input_parameters_;
 };
+
+TEST_F(AudioAndroidOutputTest, NotifiesMicrophoneMuteStateChanges) {
+  RunOnAudioThread(base::BindOnce(
+      [](AudioManagerAndroid* audio_manager) {
+        audio_manager->OnMicrophoneMuteStateChanged(/*env=*/nullptr,
+                                                    /*muted=*/false);
+
+        int callback_count = 0;
+        bool last_state = false;
+        auto subscription =
+            audio_manager->AddInputMuteStateChangeCallback(base::BindRepeating(
+                [](int* callback_count, bool* last_state, bool muted) {
+                  ++*callback_count;
+                  *last_state = muted;
+                },
+                &callback_count, &last_state));
+
+        audio_manager->OnMicrophoneMuteStateChanged(/*env=*/nullptr,
+                                                    /*muted=*/true);
+        EXPECT_TRUE(audio_manager->IsMicrophoneMuted());
+        EXPECT_EQ(callback_count, 1);
+        EXPECT_TRUE(last_state);
+
+        // Duplicate broadcasts should not result in duplicate notifications.
+        audio_manager->OnMicrophoneMuteStateChanged(/*env=*/nullptr,
+                                                    /*muted=*/true);
+        EXPECT_EQ(callback_count, 1);
+
+        audio_manager->OnMicrophoneMuteStateChanged(/*env=*/nullptr,
+                                                    /*muted=*/false);
+        EXPECT_FALSE(audio_manager->IsMicrophoneMuted());
+        EXPECT_EQ(callback_count, 2);
+        EXPECT_FALSE(last_state);
+      },
+      base::Unretained(audio_manager())));
+}
 
 // Get the default audio input parameters.
 TEST_P(AudioAndroidInputTest, GetDefaultInputStreamParameters) {
