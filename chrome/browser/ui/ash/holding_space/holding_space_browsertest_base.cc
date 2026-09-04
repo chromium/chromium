@@ -59,6 +59,11 @@ void HoldingSpaceBrowserTestBase::SetUpOnMainThread() {
   test_api_ = std::make_unique<HoldingSpaceTestApi>();
 }
 
+void HoldingSpaceBrowserTestBase::TearDownOnMainThread() {
+  test_api_.reset();
+  SystemWebAppBrowserTestBase::TearDownOnMainThread();
+}
+
 // static
 aura::Window* HoldingSpaceBrowserTestBase::GetRootWindowForNewWindows() {
   return HoldingSpaceTestApi::GetRootWindowForNewWindows();

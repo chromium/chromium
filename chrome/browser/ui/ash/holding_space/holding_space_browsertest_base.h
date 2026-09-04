@@ -34,6 +34,8 @@ class HoldingSpaceBrowserTestBase : public SystemWebAppBrowserTestBase {
   void SetUpInProcessBrowserTestFixture() override;
   void SetUpOnMainThread() override;
 
+  void TearDownOnMainThread() override;
+
   // Returns the root window that newly created windows should be added to.
   static aura::Window* GetRootWindowForNewWindows();
 
