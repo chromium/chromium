@@ -97,9 +97,10 @@ class COMPONENT_EXPORT(LANGUAGE_TAG) LanguageTag {
   // Notice that this does not necessarily represent the language itself as some
   // of them need their region, script and variant to be properly represented.
   constexpr std::string_view language_subtag() const LIFETIME_BOUND {
-    return i18n_internal::ParseBcp47Tag(tag_string())
-        .value_or(i18n_internal::ParsedBcp47Tag())
-        .language;
+    std::string_view tag = tag_string();
+    size_t hyphen_pos = tag.find('-');
+    return hyphen_pos == std::string_view::npos ? tag
+                                                : tag.substr(0, hyphen_pos);
   }
   // Creates a new `LanguageTag` containing only the language subtag.
   LanguageTag WithLanguageSubtagOnly() const;
