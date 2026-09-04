@@ -476,35 +476,6 @@ std::vector<AddressToken> TokenizeValue(std::u16string_view value) {
   return tokens;
 }
 
-bool IsSubsequence(base::span<const std::u16string_view> super,
-                   base::span<const std::u16string_view> sub) {
-  size_t super_idx = 0;
-  size_t sub_idx = 0;
-  while (sub_idx < sub.size()) {
-    if (sub[sub_idx].empty()) {
-      ++sub_idx;
-      continue;
-    }
-    // All `super` tokens are consumed. The current `sub` token is not
-    // empty, so it cannot be matched.
-    if (super_idx == super.size()) {
-      return false;
-    }
-    if (super[super_idx].empty()) {
-      ++super_idx;
-      continue;
-    }
-    if (super[super_idx] == sub[sub_idx]) {
-      ++super_idx;
-      ++sub_idx;
-      continue;
-    }
-    ++super_idx;
-  }
-
-  return true;
-}
-
 bool IsAbbreviatedConcatenatedSubsequence(
     base::span<const std::u16string_view> super,
     base::span<const std::u16string_view> sub) {

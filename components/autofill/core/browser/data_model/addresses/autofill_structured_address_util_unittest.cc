@@ -277,8 +277,6 @@ TEST(AutofillStructuredAddressUtils, SubsequenceMatching) {
   };
 
   for (const auto& test_case : test_cases) {
-    EXPECT_EQ(IsSubsequence(test_case.super, test_case.sub),
-              test_case.is_subsequence);
     EXPECT_EQ(
         IsAbbreviatedConcatenatedSubsequence(test_case.super, test_case.sub),
         test_case.is_subsequence);

@@ -236,36 +236,6 @@ bool IsNormalizedNameVariantOfExponential(std::u16string_view full_name_1,
   return false;
 }
 
-// Tokenizes CJK names into individual characters.
-// Unlike names written in the Latin script, CJK names are not separated
-// by spaces, and the boundary between family and given names can be
-// ambiguous.
-//
-// The UTF16CharIterator is used here to correctly handle surrogate pairs
-// (e.g., rare CJK Extension B characters). These characters require two
-// 16-bit units; a simple loop would incorrectly split them into invalid
-// fragments.
-std::vector<std::u16string_view> TokenizeNormalizedCjkName(
-    std::u16string_view name) {
-  std::vector<std::u16string_view> tokens;
-  tokens.reserve(name.size());
-
-  base::i18n::UTF16CharIterator iter(name);
-  while (!iter.end()) {
-    size_t start = iter.array_pos();
-    iter.Advance();
-
-    // Other separators (e.g., the ideographic space \u3000) are expected to be
-    // replaced by `kSpace` during normalization, so only `kSpace` is filtered
-    // out here.
-    if (auto token = name.substr(start, iter.array_pos() - start);
-        token != kSpace) {
-      tokens.push_back(token);
-    }
-  }
-  return tokens;
-}
-
 // An implementation of `IsNormalizedNameVariantOf` with linear time complexity
 // in the number of tokens in `full_name_1` and `full_name_2`.
 bool IsNormalizedNameVariantOfLinear(std::u16string_view full_name_1,
@@ -284,6 +254,11 @@ bool IsNormalizedNameVariantOfLinear(std::u16string_view full_name_1,
 
   data_util::NameParts name_1_parts = data_util::SplitName(full_name_1);
 
+  auto tokenize = [](std::u16string_view str) {
+    return base::SplitStringPiece(str, kSpace, base::TRIM_WHITESPACE,
+                                  base::SPLIT_WANT_NONEMPTY);
+  };
+
   // Family name abbreviations are not allowed; the family name must match
   // exactly or be completely omitted. If found, it is stripped first (from the
   // beginning for CJK, or from the end for non-CJK), leaving only given and
@@ -293,16 +268,11 @@ bool IsNormalizedNameVariantOfLinear(std::u16string_view full_name_1,
     std::u16string_view given_name_2 =
         base::RemovePrefix(full_name_2, name_1_parts.family)
             .value_or(full_name_2);
-    if (IsSubsequence(TokenizeNormalizedCjkName(name_1_parts.given),
-                      TokenizeNormalizedCjkName(given_name_2))) {
+    if (IsAbbreviatedConcatenatedSubsequence(tokenize(name_1_parts.given),
+                                             tokenize(given_name_2))) {
       return true;
     }
   }
-
-  auto tokenize = [](std::u16string_view str) {
-    return base::SplitStringPiece(str, kSpace, base::TRIM_WHITESPACE,
-                                  base::SPLIT_WANT_NONEMPTY);
-  };
 
   std::vector<std::u16string_view> tokens_1 = tokenize(name_1_parts.given);
   std::vector<std::u16string_view> middle_tokens =

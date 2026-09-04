@@ -291,25 +291,6 @@ SortedTokenComparisonResult CompareSortedTokens(
 SortedTokenComparisonResult CompareSortedTokens(std::u16string_view first,
                                                 std::u16string_view second);
 
-// Returns true if `sub` is a subsequence of `super`.
-//
-// A subsequence of span of strings `super` is a span of strings that can be
-// derived from `super` by deleting zero or more span items (strings) without
-// changing the relative order of the remaining items.
-//
-// For example, for the span
-//   ["john", "quincy", "public"],
-// the following spans are valid subsequences:
-//   ["john", "quincy"          ],
-//   [        "quincy"          ],
-//   ["john",          "public" ]...
-//
-// Note: Empty tokens are considered to be equivalent to the absence of the
-// token and just bypassed by the algorithm.
-//
-// The number of iterations does not exceed `super.size() + sub.size()`.
-bool IsSubsequence(base::span<const std::u16string_view> super,
-                   base::span<const std::u16string_view> sub);
 
 // Returns true if `sub` is an abbreviated concatenated subsequence of `super`.
 //
