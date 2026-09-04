@@ -13,6 +13,7 @@
 #include "base/base_switches.h"
 #include "base/check.h"
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/install_service_work_item.h"
 
@@ -25,8 +26,8 @@ ScopedInstallService::ScopedInstallService(std::wstring_view service_name,
   const std::wstring name(service_name);
   const std::wstring display(display_name);
   const std::wstring description_text(description);
-  const std::vector<GUID> clsids{clsid};
-  const std::vector<GUID> iids{iid};
+  const std::vector<GUID> clsids = {clsid};
+  const std::vector<GUID> iids = {iid};
 
   // Delete an old instance if one was left behind by a previous crash.
   installer::InstallServiceWorkItem::DeleteService(name, display, clsids, iids);
@@ -41,7 +42,8 @@ ScopedInstallService::ScopedInstallService(std::wstring_view service_name,
       name, display, description_text, SERVICE_DEMAND_START,
       std::move(service_command),
       base::CommandLine(base::CommandLine::NO_PROGRAM),
-      install_static::GetClientStateKeyPath(), clsids, iids);
+      install_static::GetClientStateKeyPath(), clsids, iids,
+      base::span<const GUID>());
   if (work_item->Do()) {
     service_name_ = std::move(name);
     work_item_ = std::move(work_item);

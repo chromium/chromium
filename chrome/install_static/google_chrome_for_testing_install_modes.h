@@ -78,6 +78,7 @@ inline constexpr auto kInstallModes = std::to_array<InstallConstants>({
                          {0x8F, 0x89, 0x07, 0x92, 0xFC, 0x61, 0x15,
                           0x67}},  // IElevator IID and TypeLib
                                    // {3DC48E97-47D0-476F-8F89-0792FC611567}
+        .old_elevator_iids = {},
         .default_channel_name =
             L"",  // Empty default channel name since no update integration.
         .channel_strategy = ChannelStrategy::UNSUPPORTED,

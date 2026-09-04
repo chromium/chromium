@@ -6,6 +6,8 @@
 
 #include <objbase.h>
 
+#include <guiddef.h>
+
 #include <tuple>
 
 #include "base/compiler_specific.h"
@@ -23,9 +25,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::testing::Contains;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::HasSubstr;
+using ::testing::Not;
 using ::testing::Optional;
 using ::testing::StrCaseEq;
 using ::testing::StrNe;
@@ -758,6 +762,17 @@ TEST_P(InstallStaticUtilTest, GetElevatorIid) {
   EXPECT_THAT(
       iid_str.c_str(),
       StrCaseEq(UNSAFE_TODO(kElevatorIidsString[std::get<0>(GetParam())])));
+}
+
+TEST_P(InstallStaticUtilTest, GetOldElevatorIids) {
+  EXPECT_THAT(GetOldElevatorIids(), Not(Contains(GetElevatorIid())));
+  EXPECT_THAT(GetOldElevatorIids(), Not(Contains(GUID_NULL)));
+}
+
+TEST_P(InstallStaticUtilTest, GetOldTracingServiceIids) {
+  EXPECT_THAT(GetOldTracingServiceIids(),
+              Not(Contains(GetTracingServiceIid())));
+  EXPECT_THAT(GetOldTracingServiceIids(), Not(Contains(GUID_NULL)));
 }
 
 TEST_P(InstallStaticUtilTest, UsageStatsAbsent) {

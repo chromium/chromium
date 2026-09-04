@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/win/windows_types.h"
 #include "chrome/install_static/install_constants.h"
 #include "chrome/install_static/install_modes.h"
@@ -139,6 +140,11 @@ class InstallDetails {
   // elevation functionality.
   const IID& elevator_iid() const { return payload_->mode->elevator_iid; }
 
+  // Previous IIDs of the IElevator interface.
+  base::span<const IID> old_elevator_iids() const {
+    return payload_->mode->old_elevator_iids;
+  }
+
   // The CLSID of the COM server that provides ETW tracing functionality.
   const CLSID& tracing_service_clsid() const {
     return payload_->mode->tracing_service_clsid;
@@ -148,6 +154,11 @@ class InstallDetails {
   // ETW tracing functionality.
   const IID& tracing_service_iid() const {
     return payload_->mode->tracing_service_iid;
+  }
+
+  // Previous IIDs of the ISystemTraceSession interface.
+  base::span<const IID> old_tracing_service_iids() const {
+    return payload_->mode->old_tracing_service_iids;
   }
 
   // Returns the unsuffixed portion of the AppUserModelId. The AppUserModelId is
