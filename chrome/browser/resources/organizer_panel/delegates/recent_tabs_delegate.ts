@@ -4,15 +4,24 @@
 
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import type {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
 
 import type {OrganizerListSectionClient, OrganizerListSectionDelegate} from '../organizer_list_section_delegate.js';
 import type {OrganizerListSectionItem} from '../organizer_list_section_item.js';
-import type {BrowserProxy, ProfileData, RecentlyClosedTab, TabsRemovedInfo} from '../tab_search.mojom-webui.js';
+import type {BrowserProxy, ProfileData, RecentlyClosedTab, RecentlyClosedTabGroup, TabsRemovedInfo} from '../tab_search.mojom-webui.js';
 import {browserProxyFactory} from '../tab_search.mojom-webui.js';
 
 // Union type to represent all possible recently closed items (tabs, tab groups,
 // split views).
-export type RecentlyClosedItem = RecentlyClosedTab;
+export type RecentlyClosedItem = RecentlyClosedTab|RecentlyClosedTabGroup;
+
+function isTabGroup(item: RecentlyClosedItem): item is RecentlyClosedTabGroup {
+  return 'sessionId' in item;
+}
+
+function tokenEquals(a: Token, b: Token): boolean {
+  return a.high === b.high && a.low === b.low;
+}
 
 export class RecentTabsDelegate implements
     OrganizerListSectionDelegate<RecentlyClosedItem> {
@@ -20,6 +29,7 @@ export class RecentTabsDelegate implements
   private client_?: OrganizerListSectionClient;
   private listenerIds_: number[] = [];
   private tabs_: RecentlyClosedTab[] = [];
+  private tabGroups_: RecentlyClosedTabGroup[] = [];
   private items_: RecentlyClosedItem[] = [];
 
   init(sectionClient: OrganizerListSectionClient) {
@@ -48,12 +58,14 @@ export class RecentTabsDelegate implements
   onItemClick(item: OrganizerListSectionItem<RecentlyClosedItem>) {
     const data = item.data;
     assert(data);
-    this.browserProxy_.handler.openRecentlyClosedEntry(data.tabId);
+    const id = isTabGroup(data) ? data.sessionId : data.tabId;
+    this.browserProxy_.handler.openRecentlyClosedEntry(id);
   }
 
   private async updateItems_() {
     const {profileData} = await this.browserProxy_.handler.getProfileData();
     this.tabs_ = profileData.recentlyClosedTabs;
+    this.tabGroups_ = profileData.recentlyClosedTabGroups;
     this.items_ = this.extractAndSortItems_();
   }
 
@@ -64,6 +76,7 @@ export class RecentTabsDelegate implements
 
   private onTabsChanged_(profileData: ProfileData) {
     this.tabs_ = profileData.recentlyClosedTabs;
+    this.tabGroups_ = profileData.recentlyClosedTabGroups;
     this.items_ = this.extractAndSortItems_();
     this.notifyClient_();
   }
@@ -85,7 +98,15 @@ export class RecentTabsDelegate implements
   }
 
   private extractAndSortItems_(): RecentlyClosedItem[] {
-    return this.sortItems_(this.tabs_);
+    const groupIds = this.tabGroups_.map(group => group.id);
+    const filteredTabs = this.tabs_.filter(tab => {
+      return !tab.groupId ||
+          !groupIds.some(groupId => tokenEquals(groupId, tab.groupId!));
+    });
+
+    const allItems: RecentlyClosedItem[] =
+        [...filteredTabs, ...this.tabGroups_];
+    return this.sortItems_(allItems);
   }
 
   private sortItems_(items: RecentlyClosedItem[]): RecentlyClosedItem[] {
@@ -100,11 +121,12 @@ export class RecentTabsDelegate implements
 
   private toSectionItem_(item: RecentlyClosedItem):
       OrganizerListSectionItem<RecentlyClosedItem> {
-    return this.tabToSectionItem_(item);
+    return isTabGroup(item) ? this.tabGroupToSectionItem_(item) :
+                              this.tabToSectionItem_(item);
   }
 
   private tabToSectionItem_(tab: RecentlyClosedTab):
-      OrganizerListSectionItem<RecentlyClosedTab> {
+      OrganizerListSectionItem<RecentlyClosedItem> {
     const description: string[] = [];
     try {
       const url = new URL(tab.url);
@@ -124,6 +146,24 @@ export class RecentTabsDelegate implements
         urls: [tab.url],
       },
       data: tab,
+    };
+  }
+
+  private tabGroupToSectionItem_(tabGroup: RecentlyClosedTabGroup):
+      OrganizerListSectionItem<RecentlyClosedItem> {
+    const description: string[] = [];
+    const tabCount = tabGroup.tabCount;
+    description.push(loadTimeData.getStringF(
+        tabCount === 1 ? 'oneTab' : 'tabCount', tabCount));
+
+    if (tabGroup.lastActiveElapsedText) {
+      description.push(tabGroup.lastActiveElapsedText);
+    }
+
+    return {
+      title: tabGroup.title,
+      description,
+      data: tabGroup,
     };
   }
 }

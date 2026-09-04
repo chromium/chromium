@@ -38,8 +38,10 @@ OrganizerPanelUI::OrganizerPanelUI(content::WebUI* web_ui)
       {"clearSearch", IDS_CLEAR_SEARCH},
       {"closeTab", IDS_TAB_SEARCH_CLOSE_TAB},
       {"openTabs", IDS_TAB_SEARCH_OPEN_TABS},
+      {"oneTab", IDS_TAB_SEARCH_ONE_TAB},
       {"recentlyClosed", IDS_TAB_SEARCH_RECENTLY_CLOSED},
       {"searchTabs", IDS_TAB_SEARCH_SEARCH_TABS},
+      {"tabCount", IDS_TAB_SEARCH_TAB_COUNT},
       {"tabGroups", IDS_ORGANIZER_PANEL_TAB_GROUPS},
       {"title", IDS_ORGANIZER_PANEL},
   };
