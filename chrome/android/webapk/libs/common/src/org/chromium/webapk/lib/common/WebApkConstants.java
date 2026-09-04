@@ -39,6 +39,9 @@ public final class WebApkConstants {
     public static final String WEBAPK_OPAQUE_MAIN_ACTIVITY_CLASS_NAME =
             "org.chromium.webapk.shell_apk.h2o.H2OOpaqueMainActivity";
 
+    public static final String DEFAULT_NOTIFICATION_CHANNEL_ID = "default_channel_id";
+    public static final String HIGH_PRIORITY_NOTIFICATION_CHANNEL_ID = "default_channel_id_high";
+
     // Must be kept in sync with components/webapps/browser/android/shortcut_info.h.
     public @interface ShortcutSource {
         int UNKNOWN = 0;

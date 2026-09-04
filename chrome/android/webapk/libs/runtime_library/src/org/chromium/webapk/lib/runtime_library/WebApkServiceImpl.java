@@ -24,6 +24,14 @@ import org.chromium.build.annotations.Nullable;
 /** Implements services offered by the WebAPK to Chrome. */
 @NullMarked
 public class WebApkServiceImpl extends IWebApkApi.Stub {
+    /**
+     * Keeps these 2 values consistent with {@link
+     * org.chromium.webapk.lib.common.WebApkConstants#DEFAULT_NOTIFICATION_CHANNEL_ID} and {@link
+     * org.chromium.webapk.lib.common.WebApkConstants#HIGH_PRIORITY_NOTIFICATION_CHANNEL_ID}.
+     */
+    private static final String DEFAULT_NOTIFICATION_CHANNEL_ID = "default_channel_id";
+
+    private static final String HIGH_PRIORITY_NOTIFICATION_CHANNEL_ID = "default_channel_id_high";
 
     public static final String KEY_SMALL_ICON_ID = "small_icon_id";
     public static final String KEY_HOST_BROWSER_UID = "host_browser_uid";
@@ -144,13 +152,24 @@ public class WebApkServiceImpl extends IWebApkApi.Stub {
     public void notifyNotificationWithChannel(
             String platformTag, int platformID, Notification notification, String channelName) {
         NotificationManager notificationManager = getNotificationManager();
-        if (notification.getChannelId() != null) {
+        String channelId = notification.getChannelId();
+        if (channelId != null) {
+            boolean isHighPriority = HIGH_PRIORITY_NOTIFICATION_CHANNEL_ID.equals(channelId);
+            int importance =
+                    isHighPriority
+                            ? NotificationManager.IMPORTANCE_HIGH
+                            : NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel channel =
-                    new NotificationChannel(
-                            notification.getChannelId(),
-                            channelName,
-                            NotificationManager.IMPORTANCE_DEFAULT);
+                    new NotificationChannel(channelId, channelName, importance);
             notificationManager.createNotificationChannel(channel);
+
+            // Bidirectional cleanup of old notification channels on upgrade/downgrade.
+            if (HIGH_PRIORITY_NOTIFICATION_CHANNEL_ID.equals(channelId)) {
+                notificationManager.deleteNotificationChannel(DEFAULT_NOTIFICATION_CHANNEL_ID);
+            } else if (DEFAULT_NOTIFICATION_CHANNEL_ID.equals(channelId)) {
+                notificationManager.deleteNotificationChannel(
+                        HIGH_PRIORITY_NOTIFICATION_CHANNEL_ID);
+            }
         }
 
         notificationManager.notify(platformTag, platformID, notification);

@@ -4,6 +4,9 @@
 
 package org.chromium.webapk.lib.runtime_library;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -91,6 +94,68 @@ public class WebApkServiceImplTest {
             e.printStackTrace();
             Assert.fail("Should not have thrown an exception when permission is granted.");
         }
+    }
+
+    /** Test that notifyNotificationWithChannel creates channel with IMPORTANCE_HIGH. */
+    @Test
+    @SmallTest
+    public void testNotifyNotificationWithChannel_createsHighImportanceChannel() throws Exception {
+        IWebApkApi api = bindService(mContext, mTargetUid, SMALL_ICON_ID);
+        String channelId = "default_channel_id_high";
+        String channelName = "Test WebAPK Channel";
+        Notification notification =
+                new Notification.Builder(mContext, channelId)
+                        .setContentTitle("Title")
+                        .setContentText("Text")
+                        .setSmallIcon(SMALL_ICON_ID)
+                        .build();
+        api.notifyNotificationWithChannel("tag", 100, notification, channelName);
+        NotificationManager notificationManager =
+                (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationChannel channel = notificationManager.getNotificationChannel(channelId);
+        Assert.assertNotNull(channel);
+        Assert.assertEquals(NotificationManager.IMPORTANCE_HIGH, channel.getImportance());
+    }
+
+    /**
+     * Test that notifyNotificationWithChannel deletes the unused channel (bidirectional cleanup).
+     */
+    @Test
+    @SmallTest
+    public void testNotifyNotificationWithChannel_deletesOldChannels() throws Exception {
+        IWebApkApi api = bindService(mContext, mTargetUid, SMALL_ICON_ID);
+        NotificationManager notificationManager =
+                (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // 1. Post a high priority notification. It should create the high priority channel.
+        String highChannelId = "default_channel_id_high";
+        String channelName = "Test WebAPK Channel";
+        Notification highNotification =
+                new Notification.Builder(mContext, highChannelId)
+                        .setContentTitle("High Title")
+                        .setSmallIcon(SMALL_ICON_ID)
+                        .build();
+        api.notifyNotificationWithChannel("tag", 100, highNotification, channelName);
+        Assert.assertNotNull(notificationManager.getNotificationChannel(highChannelId));
+
+        // 2. Post a default priority notification. It should create the default channel AND delete
+        // the high priority channel.
+        String defaultChannelId = "default_channel_id";
+        Notification defaultNotification =
+                new Notification.Builder(mContext, defaultChannelId)
+                        .setContentTitle("Default Title")
+                        .setSmallIcon(SMALL_ICON_ID)
+                        .build();
+        api.notifyNotificationWithChannel("tag", 101, defaultNotification, channelName);
+
+        Assert.assertNotNull(notificationManager.getNotificationChannel(defaultChannelId));
+        Assert.assertNull(notificationManager.getNotificationChannel(highChannelId));
+
+        // 3. Post a high priority notification again. It should recreate the high priority channel
+        // AND delete the default channel.
+        api.notifyNotificationWithChannel("tag", 102, highNotification, channelName);
+        Assert.assertNotNull(notificationManager.getNotificationChannel(highChannelId));
+        Assert.assertNull(notificationManager.getNotificationChannel(defaultChannelId));
     }
 
     /** Returns the uid for {@link context}. */

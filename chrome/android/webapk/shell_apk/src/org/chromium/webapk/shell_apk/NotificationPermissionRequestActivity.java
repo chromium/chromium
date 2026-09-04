@@ -21,6 +21,7 @@ import android.util.Log;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.webapk.lib.common.WebApkConstants;
 
 /**
  * A simple transparent activity for requesting the notification permission. On either approve or
@@ -93,9 +94,14 @@ public class NotificationPermissionRequestActivity extends Activity {
         // the first time will trigger the permission dialog.
         if (getApplicationContext().getApplicationInfo().targetSdkVersion
                 < Build.VERSION_CODES.TIRAMISU) {
+            boolean isHighPriority =
+                    WebApkConstants.HIGH_PRIORITY_NOTIFICATION_CHANNEL_ID.equals(mChannelId);
+            int importance =
+                    isHighPriority
+                            ? NotificationManager.IMPORTANCE_HIGH
+                            : NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel channel =
-                    new NotificationChannel(
-                            mChannelId, mChannelName, NotificationManager.IMPORTANCE_DEFAULT);
+                    new NotificationChannel(mChannelId, mChannelName, importance);
             getNotificationManager().createNotificationChannel(channel);
         }
 

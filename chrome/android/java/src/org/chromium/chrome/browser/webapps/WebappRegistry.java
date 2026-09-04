@@ -248,6 +248,24 @@ public class WebappRegistry {
     }
 
     /**
+     * Returns the WebappDataStorage object for the specified WebAPK package name, or null if one
+     * cannot be found.
+     *
+     * @param packageName The package name of the WebAPK to look up.
+     * @return The storage object for the WebAPK, or null if one cannot be found.
+     */
+    public @Nullable WebappDataStorage getWebappDataStorageForPackage(
+            @Nullable String packageName) {
+        if (packageName == null) return null;
+        for (WebappDataStorage storage : mStorages.values()) {
+            if (packageName.equals(storage.getWebApkPackageName())) {
+                return storage;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Returns the WebappDataStorage object whose scope most closely matches the provided URL, or
      * null if a matching web app cannot be found. The most closely matching scope is the longest
      * scope which has the same prefix as the URL to open. Note: this function skips any storage

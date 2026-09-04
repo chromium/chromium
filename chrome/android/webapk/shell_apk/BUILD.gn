@@ -96,6 +96,7 @@ template("webapk_with_service_java") {
     ]
     deps += [
       ":compiled_in_runtime_library_java",
+      "//chrome/android/webapk/libs/common:common_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
     errorprone_args = [ "-Xep:NoAndroidLog:OFF" ]

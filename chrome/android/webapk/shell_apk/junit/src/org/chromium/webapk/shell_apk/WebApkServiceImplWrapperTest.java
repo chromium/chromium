@@ -5,6 +5,8 @@
 package org.chromium.webapk.shell_apk;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -19,6 +21,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.shadows.ShadowBinder;
 
+import org.chromium.webapk.lib.common.WebApkConstants;
 import org.chromium.webapk.lib.runtime_library.IWebApkApi;
 import org.chromium.webapk.lib.runtime_library.WebApkServiceImpl;
 
@@ -78,9 +81,6 @@ public class WebApkServiceImplWrapperTest {
         }
 
         @Override
-        protected void ensureNotificationChannelExists() {}
-
-        @Override
         protected int getApiCode(String name) {
             return getApiCodeHelper(name);
         }
@@ -132,6 +132,67 @@ public class WebApkServiceImplWrapperTest {
             e.printStackTrace();
             Assert.fail();
         }
+    }
+
+    @Test
+    public void testEnsureNotificationChannelExists_importanceDefault() {
+        Context context = RuntimeEnvironment.application;
+        WebApkServiceImplWrapper wrapper =
+                new MockWebApkServiceImplWrapper(context, null, HOST_BROWSER_UID);
+        Notification notification =
+                new Notification.Builder(context, WebApkConstants.DEFAULT_NOTIFICATION_CHANNEL_ID)
+                        .build();
+        String channelId = notification.getChannelId();
+        Assert.assertNotNull(channelId);
+        wrapper.ensureNotificationChannelExists(channelId);
+        NotificationManager notificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationChannel channel =
+                notificationManager.getNotificationChannel(
+                        WebApkConstants.DEFAULT_NOTIFICATION_CHANNEL_ID);
+        Assert.assertNotNull(channel);
+        Assert.assertEquals(NotificationManager.IMPORTANCE_DEFAULT, channel.getImportance());
+    }
+
+    @Test
+    public void
+            testEnsureNotificationChannelExists_trustsExplicitHighPriorityChannelIdEvenWithoutPriority() {
+        Context context = RuntimeEnvironment.application;
+        WebApkServiceImplWrapper wrapper =
+                new MockWebApkServiceImplWrapper(context, null, HOST_BROWSER_UID);
+        Notification notification =
+                new Notification.Builder(
+                                context, WebApkConstants.HIGH_PRIORITY_NOTIFICATION_CHANNEL_ID)
+                        .build();
+        String channelId = notification.getChannelId();
+        Assert.assertNotNull(channelId);
+        wrapper.ensureNotificationChannelExists(channelId);
+
+        NotificationManager notificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationChannel channel =
+                notificationManager.getNotificationChannel(
+                        WebApkConstants.HIGH_PRIORITY_NOTIFICATION_CHANNEL_ID);
+        Assert.assertNotNull(channel);
+        Assert.assertEquals(NotificationManager.IMPORTANCE_HIGH, channel.getImportance());
+    }
+
+    @Test
+    @SuppressWarnings("NewApi")
+    public void testNotifyNotification_nullChannelIdFallback() {
+        Context context = RuntimeEnvironment.application;
+        WebApkServiceImplWrapper wrapper =
+                new WebApkServiceImplWrapper(context, mMockWebApkServiceImpl, HOST_BROWSER_UID);
+        Notification notification = new Notification.Builder(context).build();
+        wrapper.notifyNotification("tag", 1, notification);
+
+        NotificationManager notificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationChannel channel =
+                notificationManager.getNotificationChannel(
+                        WebApkConstants.DEFAULT_NOTIFICATION_CHANNEL_ID);
+        Assert.assertNotNull(channel);
+        Assert.assertEquals(NotificationManager.IMPORTANCE_DEFAULT, channel.getImportance());
     }
 
     private static int getApiCodeHelper(String name) {
