@@ -373,11 +373,18 @@ void TextControlElement::ClearValueBeforeFirstUserEdit() {
 }
 
 void TextControlElement::SetFocused(bool flag,
-                                    mojom::blink::FocusType focus_type) {
-  HTMLFormControlElementWithState::SetFocused(flag, focus_type);
+                                    mojom::blink::FocusType focus_type,
+                                    BlurEventBehavior blur_event_behavior) {
+  HTMLFormControlElementWithState::SetFocused(flag, focus_type,
+                                              blur_event_behavior);
 
-  if (!flag)
-    DispatchFormControlChangeEvent();
+  if (!flag) {
+    if (blur_event_behavior != BlurEventBehavior::kDropWhenRemoving) {
+      DispatchFormControlChangeEvent();
+    } else {
+      ClearValueBeforeFirstUserEdit();
+    }
+  }
 
   if (auto* inner_editor = InnerEditorElement())
     inner_editor->FocusChanged();
@@ -386,6 +393,8 @@ void TextControlElement::SetFocused(bool flag,
 void TextControlElement::DispatchFormControlChangeEvent() {
   if (!value_before_first_user_edit_.IsNull() &&
       !EqualIgnoringNullity(value_before_first_user_edit_, Value())) {
+    // We need to clear after checking the condition, because clearing
+    // changes Value().
     ClearValueBeforeFirstUserEdit();
     DispatchChangeEvent();
   } else {

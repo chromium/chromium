@@ -111,7 +111,8 @@ class DateTimeFieldElement : public HTMLSpanElement {
   virtual int ValueForARIAValueNow() const;
 
   // Node functions.
-  void SetFocused(bool, mojom::blink::FocusType) override;
+  using Element::SetFocused;
+  void SetFocused(bool, mojom::blink::FocusType, BlurEventBehavior) override;
 
  private:
   void DefaultKeyboardEventHandler(KeyboardEvent&);

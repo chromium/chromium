@@ -167,11 +167,12 @@ void HTMLPlugInElement::SetPersistedPlugin(WebPluginContainerImpl* plugin) {
 }
 
 void HTMLPlugInElement::SetFocused(bool focused,
-                                   mojom::blink::FocusType focus_type) {
+                                   mojom::blink::FocusType focus_type,
+                                   BlurEventBehavior blur_event_behavior) {
   WebPluginContainerImpl* plugin = OwnedPlugin();
   if (plugin)
     plugin->SetFocused(focused, focus_type);
-  HTMLFrameOwnerElement::SetFocused(focused, focus_type);
+  HTMLFrameOwnerElement::SetFocused(focused, focus_type, blur_event_behavior);
 }
 
 bool HTMLPlugInElement::CanProcessDrag() const {

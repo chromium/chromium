@@ -76,7 +76,8 @@ class CORE_EXPORT HTMLAreaElement final : public HTMLAnchorElementBase {
                             UpdateBehavior::kStyleAndLayout) const override;
   void UpdateSelectionOnFocus(SelectionBehaviorOnFocus,
                               const FocusOptions*) override;
-  void SetFocused(bool, mojom::blink::FocusType) override;
+  using HTMLAnchorElementBase::SetFocused;
+  void SetFocused(bool, mojom::blink::FocusType, BlurEventBehavior) override;
 
   enum Shape { kDefault, kPoly, kRect, kCircle };
   void InvalidateCachedPath();

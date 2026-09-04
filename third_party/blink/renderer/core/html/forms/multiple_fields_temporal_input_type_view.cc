@@ -187,7 +187,7 @@ void MultipleFieldsTemporalInputTypeView::DidBlurFromControl(
     return;
   EventQueueScope scope;
   // Remove focus ring by CSS "focus" pseudo-class.
-  GetElement().SetFocused(false, focus_type);
+  GetElement().SetFocused(false, focus_type, BlurEventBehavior::kFire);
 }
 
 void MultipleFieldsTemporalInputTypeView::DidFocusOnControl(
@@ -199,7 +199,7 @@ void MultipleFieldsTemporalInputTypeView::DidFocusOnControl(
     return;
   // Add focus ring by CSS "focus" pseudo-class.
   // FIXME: Setting the focus flag to non-focused element is too tricky.
-  GetElement().SetFocused(true, focus_type);
+  GetElement().SetFocused(true, focus_type, BlurEventBehavior::kFire);
 }
 
 void MultipleFieldsTemporalInputTypeView::EditControlValueChanged() {

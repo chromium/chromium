@@ -105,7 +105,7 @@ class DateTimeNumericFieldElement : public DateTimeFieldElement {
   String Value() const final;
 
   // Node functions.
-  void SetFocused(bool, mojom::blink::FocusType) final;
+  void SetFocused(bool, mojom::blink::FocusType, BlurEventBehavior) final;
 
   String FormatValue(int) const;
   int RoundUp(int) const;

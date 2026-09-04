@@ -226,11 +226,13 @@ bool HTMLAreaElement::IsFocusableStyle(UpdateBehavior update_behavior) const {
 }
 
 void HTMLAreaElement::SetFocused(bool should_be_focused,
-                                 mojom::blink::FocusType focus_type) {
+                                 mojom::blink::FocusType focus_type,
+                                 BlurEventBehavior blur_event_behavior) {
   if (IsFocused() == should_be_focused)
     return;
 
-  HTMLAnchorElementBase::SetFocused(should_be_focused, focus_type);
+  HTMLAnchorElementBase::SetFocused(should_be_focused, focus_type,
+                                    blur_event_behavior);
 
   HTMLImageElement* image_element = ImageElement();
   if (!image_element)

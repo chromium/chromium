@@ -98,14 +98,15 @@ int DateTimeNumericFieldElement::DefaultValueForStepUp() const {
 
 void DateTimeNumericFieldElement::SetFocused(
     bool value,
-    mojom::blink::FocusType focus_type) {
+    mojom::blink::FocusType focus_type,
+    BlurEventBehavior blur_event_behavior) {
   if (!value) {
     int type_ahead_value = TypeAheadValue();
     type_ahead_buffer_.Clear();
     if (type_ahead_value >= 0)
       SetValueAsInteger(type_ahead_value, kDispatchEvent);
   }
-  DateTimeFieldElement::SetFocused(value, focus_type);
+  DateTimeFieldElement::SetFocused(value, focus_type, blur_event_behavior);
 }
 
 String DateTimeNumericFieldElement::FormatValue(int value) const {

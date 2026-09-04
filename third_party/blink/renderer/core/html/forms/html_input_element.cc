@@ -2753,8 +2753,9 @@ bool HTMLInputElement::HandleCommandInternal(HTMLElement& invoker,
 }
 
 void HTMLInputElement::SetFocused(bool is_focused,
-                                  mojom::blink::FocusType focus_type) {
-  TextControlElement::SetFocused(is_focused, focus_type);
+                                  mojom::blink::FocusType focus_type,
+                                  BlurEventBehavior blur_event_behavior) {
+  TextControlElement::SetFocused(is_focused, focus_type, blur_event_behavior);
   if (input_type_) {
     input_type_->UpdateWheelEventRegistration(/*is_detaching=*/false);
   }

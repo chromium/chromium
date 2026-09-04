@@ -224,8 +224,9 @@ int HTMLFrameElementBase::DefaultTabIndex() const {
 }
 
 void HTMLFrameElementBase::SetFocused(bool received,
-                                      mojom::blink::FocusType focus_type) {
-  HTMLFrameOwnerElement::SetFocused(received, focus_type);
+                                      mojom::blink::FocusType focus_type,
+                                      BlurEventBehavior blur_event_behavior) {
+  HTMLFrameOwnerElement::SetFocused(received, focus_type, blur_event_behavior);
   if (Page* page = GetDocument().GetPage()) {
     if (received) {
       page->GetFocusController().SetFocusedFrame(ContentFrame());

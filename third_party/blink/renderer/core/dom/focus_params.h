@@ -53,7 +53,7 @@ struct FocusParams {
   mojom::blink::FocusType type = mojom::blink::FocusType::kNone;
   InputDeviceCapabilities* source_capabilities = nullptr;
   const FocusOptions* options = nullptr;
-  bool omit_blur_events = false;
+  BlurEventBehavior blur_event_behavior = BlurEventBehavior::kFire;
   FocusTrigger focus_trigger = FocusTrigger::kScript;
   // The frame whose script initiated the focus call. Used by the
   // `focus-without-user-activation` policy to check against the correct setter

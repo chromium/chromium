@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] <input> element does not fire change event upon DOM removal
+  assert_false: Change event was not fired expected false got true
+[FAIL] <textarea> element does not fire change event upon DOM removal
+  assert_false: Change event was not fired expected false got true
+Harness: the test ran to completion.
+

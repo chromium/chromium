@@ -915,12 +915,13 @@ String HTMLTextAreaElement::DefaultToolTip() const {
 }
 
 void HTMLTextAreaElement::SetFocused(bool is_focused,
-                                     mojom::blink::FocusType focus_type) {
+                                     mojom::blink::FocusType focus_type,
+                                     BlurEventBehavior blur_event_behavior) {
   // See comment in HTMLInputElement::SetFocused.
   if (UserHasEditedTheField()) {
     SetUserHasEditedTheFieldAndBlurred();
   }
-  TextControlElement::SetFocused(is_focused, focus_type);
+  TextControlElement::SetFocused(is_focused, focus_type, blur_event_behavior);
 }
 
 WebFormControlElement::TextInfo HTMLTextAreaElement::GetTextInfo() const {

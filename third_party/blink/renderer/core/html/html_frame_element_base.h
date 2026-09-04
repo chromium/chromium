@@ -73,7 +73,7 @@ class CORE_EXPORT HTMLFrameElementBase : public HTMLFrameOwnerElement {
     return FocusableState::kFocusable;
   }
   int DefaultTabIndex() const final;
-  void SetFocused(bool, mojom::blink::FocusType) final;
+  void SetFocused(bool, mojom::blink::FocusType, BlurEventBehavior) final;
 
   bool IsURLAttribute(const Attribute&) const final;
   bool HasLegalLinkAttribute(const QualifiedName&) const final;

@@ -5829,9 +5829,11 @@ void Document::RemoveFocusedElementOfSubtree(Node& node,
       // up with the new node's position in the DOM.
       SetShouldUpdateSelectionAfterLayout(true);
     } else {
-      bool omit_blur_events =
-          RuntimeEnabledFeatures::OmitBlurEventOnElementRemovalEnabled();
-      ClearFocusedElement(omit_blur_events);
+      BlurEventBehavior blur_event_behavior =
+          RuntimeEnabledFeatures::OmitBlurEventOnElementRemovalEnabled()
+              ? BlurEventBehavior::kDropWhenRemoving
+              : BlurEventBehavior::kFire;
+      ClearFocusedElement(blur_event_behavior);
     }
   }
 }
@@ -5942,7 +5944,8 @@ bool Document::SetFocusedElement(Element* new_focused_element,
 
   // Remove focus from the existing focus node (if any)
   if (old_focused_element) {
-    old_focused_element->SetFocused(false, params.type);
+    old_focused_element->SetFocused(false, params.type,
+                                    params.blur_event_behavior);
     old_focused_element->SetHasFocusWithinUpToAncestor(
         false, ancestor, /*need_snap_container_search=*/true);
 
@@ -5951,7 +5954,7 @@ bool Document::SetFocusedElement(Element* new_focused_element,
     // Dispatch the blur event and let the node do any other blur related
     // activities (important for text fields)
     // If page lost focus, blur event will have already been dispatched
-    if (!params.omit_blur_events && GetPage() &&
+    if (params.blur_event_behavior == BlurEventBehavior::kFire && GetPage() &&
         (GetPage()->GetFocusController().IsFocused())) {
       old_focused_element->DispatchBlurEvent(new_focused_element, params.type,
                                              params.source_capabilities);
@@ -6132,10 +6135,10 @@ bool Document::SetFocusedElement(Element* new_focused_element,
   return !focus_change_blocked;
 }
 
-void Document::ClearFocusedElement(bool omit_blur_events) {
+void Document::ClearFocusedElement(BlurEventBehavior blur_event_behavior) {
   FocusParams params(SelectionBehaviorOnFocus::kNone,
                      mojom::blink::FocusType::kNone, nullptr);
-  params.omit_blur_events = omit_blur_events;
+  params.blur_event_behavior = blur_event_behavior;
   SetFocusedElement(nullptr, params);
 }
 

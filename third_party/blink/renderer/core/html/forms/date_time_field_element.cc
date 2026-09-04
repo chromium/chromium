@@ -140,7 +140,8 @@ void DateTimeFieldElement::DefaultKeyboardEventHandler(
 }
 
 void DateTimeFieldElement::SetFocused(bool value,
-                                      mojom::blink::FocusType focus_type) {
+                                      mojom::blink::FocusType focus_type,
+                                      BlurEventBehavior blur_event_behavior) {
   if (field_owner_) {
     if (value) {
       field_owner_->DidFocusOnField(focus_type);
@@ -158,7 +159,7 @@ void DateTimeFieldElement::SetFocused(bool value,
     }
   }
 
-  Element::SetFocused(value, focus_type);
+  Element::SetFocused(value, focus_type, blur_event_behavior);
 }
 
 void DateTimeFieldElement::FocusOnNextField() {

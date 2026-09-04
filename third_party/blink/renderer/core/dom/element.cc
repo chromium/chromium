@@ -8596,7 +8596,9 @@ void Element::Focus(const FocusParams& params) {
   }
 }
 
-void Element::SetFocused(bool now_focused, mojom::blink::FocusType focus_type) {
+void Element::SetFocused(bool now_focused,
+                         mojom::blink::FocusType focus_type,
+                         BlurEventBehavior blur_event_behavior) {
   // FocusType::kPage represents a page-level focus change (e.g. switching
   // tabs) rather than focusing a different element, so preserve the existing
   // value in that case.
@@ -8610,7 +8612,8 @@ void Element::SetFocused(bool now_focused, mojom::blink::FocusType focus_type) {
   // as <input type="date"> the same way as author shadow.
   if (ShadowRoot* root = ContainingShadowRoot()) {
     if (!root->IsUserAgent()) {
-      OwnerShadowHost()->SetFocused(now_focused, focus_type);
+      OwnerShadowHost()->SetFocused(now_focused, focus_type,
+                                    blur_event_behavior);
     }
   }
 

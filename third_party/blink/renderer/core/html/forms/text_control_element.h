@@ -71,7 +71,8 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
 
   void ForwardEvent(Event&);
 
-  void SetFocused(bool, mojom::blink::FocusType) override;
+  using HTMLFormControlElementWithState::SetFocused;
+  void SetFocused(bool, mojom::blink::FocusType, BlurEventBehavior) override;
 
   bool IsRichlyEditableForAccessibility() const override { return false; }
 

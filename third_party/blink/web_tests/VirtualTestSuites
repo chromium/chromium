@@ -262,7 +262,9 @@
     "owners": [
       "nrosenthal@chromium.org"
     ],
-    "bases": [],
+    "bases": [
+      "external/wpt/dom/nodes/insertion-removing-steps/change-event.window.js"
+    ],
     "args": [
       "--disable-blink-features=OmitBlurEventOnElementRemoval"
     ],
