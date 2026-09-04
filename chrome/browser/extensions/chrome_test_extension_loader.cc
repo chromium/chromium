@@ -430,6 +430,13 @@ bool ChromeTestExtensionLoader::CheckInstallWarnings(
   if (ignore_manifest_warnings_)
     return true;
 
+  // CRX installs can legitimately contain a _metadata directory, and
+  // ValidateExtension warns on any top-level underscore name; production
+  // ignores install warnings, so the test loader shouldn't fail on this one.
+  const std::string kMetadataReservedNameWarning =
+      "Cannot load extension with file or directory name _metadata. "
+      "Filenames starting with \"_\" are reserved for use by the system.";
+
   const std::vector<InstallWarning>& install_warnings =
       extension.install_warnings();
   std::string install_warnings_string;
@@ -438,6 +445,8 @@ bool ChromeTestExtensionLoader::CheckInstallWarnings(
     // TODO(crbug.com/40804030): Stop skipping this warning when all
     // tests are updated to MV3.
     if (warning.message == manifest_errors::kManifestV2IsDeprecatedWarning)
+      continue;
+    if (warning.message == kMetadataReservedNameWarning)
       continue;
     install_warnings_string += "  " + warning.message + "\n";
   }
