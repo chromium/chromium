@@ -14575,6 +14575,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "allow_declarative_net_request": "true"
+                    },
                     "enable_features": [
                         "OptimizeWebRequestProxyForServiceWorkerAutoPreload"
                     ]
