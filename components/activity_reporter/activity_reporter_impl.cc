@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -103,10 +102,6 @@ class ActivityReporterImpl : public ActivityReporter {
                   component.updates_enabled = false;
                   component.version = version_info::GetVersion();
                   components.push_back(component);
-                  // TODO(crbug.com/525166489): remove after verifying the fix.
-                  VLOG(3) << "Active reported for Chrome: " << component.version
-                          << ", " << component.channel << ", "
-                          << component.brand;
                 } else {
                   components.push_back(std::nullopt);
                 }
