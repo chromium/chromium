@@ -18,7 +18,7 @@
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/base/list_accounts_test_utils.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -57,15 +57,15 @@ constexpr char kMultiloginSuccessResponse[] =
 
 }  // namespace
 
-class DiceInterceptedSessionStartupHelperTest
-    : public BrowserWithTestWindowTest {
+class DiceInterceptedSessionStartupHelperTest : public testing::Test {
  public:
-  DiceInterceptedSessionStartupHelperTest()
-      : BrowserWithTestWindowTest(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  DiceInterceptedSessionStartupHelperTest() = default;
   ~DiceInterceptedSessionStartupHelperTest() override = default;
 
-  TestingProfile::TestingFactories GetTestingFactories() override {
+  void SetUp() override {
+    network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
+        net::NetworkChangeNotifier::CONNECTION_WIFI);
+
     TestingProfile::TestingFactories testing_factories =
         IdentityTestEnvironmentProfileAdaptor::
             GetIdentityTestEnvironmentFactories();
@@ -73,15 +73,14 @@ class DiceInterceptedSessionStartupHelperTest
         {ChromeSigninClientFactory::GetInstance(),
          base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
                              &test_url_loader_factory_)});
-    return testing_factories;
-  }
 
-  void SetUp() override {
-    network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-        net::NetworkChangeNotifier::CONNECTION_WIFI);
-    BrowserWithTestWindowTest::SetUp();
+    TestingProfile::Builder profile_builder;
+    profile_builder.AddTestingFactories(std::move(testing_factories));
+    profile_builder.DisallowBrowserWindows();
+    profile_ = profile_builder.Build();
+
     identity_test_env_adaptor_ =
-        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
     identity_test_env()->SetTestURLLoaderFactory(&test_url_loader_factory_);
     identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
     identity_test_env()->SetFreshnessOfAccountsInGaiaCookie(true);
@@ -110,8 +109,15 @@ class DiceInterceptedSessionStartupHelperTest
           }
         }));
     signin::SetListAccountsResponseNoAccounts(&test_url_loader_factory_);
-    AccountReconcilorFactory::GetForProfile(profile());
+    AccountReconcilorFactory::GetForProfile(profile_.get());
   }
+
+  void TearDown() override {
+    identity_test_env_adaptor_.reset();
+    profile_.reset();
+  }
+
+  Profile* profile() { return profile_.get(); }
 
   signin::IdentityTestEnvironment* identity_test_env() {
     return identity_test_env_adaptor_->identity_test_env();
@@ -125,7 +131,10 @@ class DiceInterceptedSessionStartupHelperTest
   std::optional<network::ResourceRequest> last_multilogin_request_;
 
  private:
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   network::TestURLLoaderFactory test_url_loader_factory_;
+  std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
 };
