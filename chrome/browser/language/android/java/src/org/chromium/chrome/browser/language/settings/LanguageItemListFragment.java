@@ -166,7 +166,7 @@ public abstract class LanguageItemListFragment extends Fragment
                     if (!ChromeFeatureList.sSettingsSingleActivity.isEnabled()) {
                         // Use an Intent with extra. Return value is received via onActivityResult.
                         Intent intent =
-                                SettingsNavigationFactory.createSettingsNavigation()
+                                SettingsNavigationFactory.createSettingsNavigation(getContext())
                                         .createSettingsIntent(
                                                 getActivity(), SelectLanguageFragment.class, args);
                         startActivityForResult(intent, REQUEST_CODE_SELECT_LANGUAGE);
@@ -186,7 +186,7 @@ public abstract class LanguageItemListFragment extends Fragment
                                 assumeNonNull(code);
                                 onSelectLanguageResult(code);
                             });
-                    SettingsNavigationFactory.createSettingsNavigation()
+                    SettingsNavigationFactory.createSettingsNavigation(getContext())
                             .startSettings(
                                     getActivity(),
                                     SelectLanguageFragment.class,

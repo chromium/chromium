@@ -25,14 +25,14 @@ public class PersonalContextSettingsLauncher {
             return false;
         }
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)) {
-            SettingsNavigationFactory.createSettingsNavigation()
+            SettingsNavigationFactory.createSettingsNavigation(context)
                     .startSettings(
                             context,
                             AutofillPersonalContextFragment.class,
                             /* fragmentArgs= */ null,
                             /* addToBackStack= */ true);
         } else {
-            SettingsNavigationFactory.createSettingsNavigation()
+            SettingsNavigationFactory.createSettingsNavigation(context)
                     .startSettings(
                             context,
                             AutofillOptionsFragment.class,

@@ -405,7 +405,7 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
         if (!ChromeFeatureList.sSettingsSingleActivity.isEnabled()) {
             // Use an Intent with extra. Return value is received via onActivityResult.
             Intent intent =
-                    SettingsNavigationFactory.createSettingsNavigation()
+                    SettingsNavigationFactory.createSettingsNavigation(getContext())
                             .createSettingsIntent(
                                     getActivity(), SelectLanguageFragment.class, args);
             startActivityForResult(intent, requestCode);
@@ -423,7 +423,7 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
                     assumeNonNull(code);
                     onSelectLanguageResult(requestCode, code);
                 });
-        SettingsNavigationFactory.createSettingsNavigation()
+        SettingsNavigationFactory.createSettingsNavigation(getContext())
                 .startSettings(
                         getActivity(),
                         SelectLanguageFragment.class,
@@ -439,7 +439,7 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
     private void setLanguageListPreferenceClickListener(LanguageItemListPreference listPreference) {
         listPreference.setOnPreferenceClickListener(
                 preference -> {
-                    SettingsNavigationFactory.createSettingsNavigation()
+                    SettingsNavigationFactory.createSettingsNavigation(getContext())
                             .startSettings(
                                     getActivity(),
                                     listPreference.getFragmentClass(),

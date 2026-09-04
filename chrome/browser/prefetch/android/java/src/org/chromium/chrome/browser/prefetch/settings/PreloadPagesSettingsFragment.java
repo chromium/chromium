@@ -68,14 +68,14 @@ public class PreloadPagesSettingsFragment extends PreloadPagesSettingsFragmentBa
     @Override
     public void onPreloadPagesStateDetailsRequested(@PreloadPagesState int preloadPagesState) {
         if (preloadPagesState == PreloadPagesState.EXTENDED_PRELOADING) {
-            SettingsNavigationFactory.createSettingsNavigation()
+            SettingsNavigationFactory.createSettingsNavigation(requireContext())
                     .startSettings(
                             getActivity(),
                             ExtendedPreloadingSettingsFragment.class,
                             /* fragmentArgs= */ null,
                             /* addToBackStack= */ true);
         } else if (preloadPagesState == PreloadPagesState.STANDARD_PRELOADING) {
-            SettingsNavigationFactory.createSettingsNavigation()
+            SettingsNavigationFactory.createSettingsNavigation(requireContext())
                     .startSettings(
                             getActivity(),
                             StandardPreloadingSettingsFragment.class,

@@ -103,14 +103,14 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
     public void onSafeBrowsingModeDetailsRequested(@SafeBrowsingState int safeBrowsingState) {
         recordUserActionHistogramForStateDetailsClicked(safeBrowsingState);
         if (safeBrowsingState == SafeBrowsingState.ENHANCED_PROTECTION) {
-            SettingsNavigationFactory.createSettingsNavigation()
+            SettingsNavigationFactory.createSettingsNavigation(requireContext())
                     .startSettings(
                             getActivity(),
                             EnhancedProtectionSettingsFragment.class,
                             /* fragmentArgs= */ null,
                             /* addToBackStack= */ true);
         } else if (safeBrowsingState == SafeBrowsingState.STANDARD_PROTECTION) {
-            SettingsNavigationFactory.createSettingsNavigation()
+            SettingsNavigationFactory.createSettingsNavigation(requireContext())
                     .startSettings(
                             getActivity(),
                             StandardProtectionSettingsFragment.class,

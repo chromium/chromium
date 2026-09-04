@@ -158,7 +158,7 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                     // does not implement EmbeddableSettingsPage, it will work as standalone mode.
                     // In details it is still a part of SettingsActivity, it will let user find
                     // it is an independent flow.
-                    SettingsNavigationFactory.createSettingsNavigation()
+                    SettingsNavigationFactory.createSettingsNavigation(requireContext())
                             .startSettings(
                                     getActivity(),
                                     PrivacyGuideFragment.class,
@@ -309,7 +309,7 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                 new ClickableSpan() {
                     @Override
                     public void onClick(View view) {
-                        SettingsNavigationFactory.createSettingsNavigation()
+                        SettingsNavigationFactory.createSettingsNavigation(requireContext())
                                 .startSettings(
                                         getActivity(),
                                         GoogleServicesSettings.class,
@@ -322,7 +322,7 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                 new ClickableSpan() {
                     @Override
                     public void onClick(View view) {
-                        SettingsNavigationFactory.createSettingsNavigation()
+                        SettingsNavigationFactory.createSettingsNavigation(requireContext())
                                 .startSettings(
                                         getActivity(),
                                         ManageSyncSettings.class,

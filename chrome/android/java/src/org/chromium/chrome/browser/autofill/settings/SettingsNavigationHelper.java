@@ -41,7 +41,7 @@ public class SettingsNavigationHelper {
         fragmentArgs.putInt(
                 AutofillAndPasswordsFragment.EXTRA_REFERRER,
                 AutofillSettingsReferrer.SETTINGS_MENU);
-        SettingsNavigationFactory.createSettingsNavigation()
+        SettingsNavigationFactory.createSettingsNavigation(context)
                 .startSettings(context, AutofillAndPasswordsFragment.class, fragmentArgs);
         return true;
     }
@@ -56,7 +56,7 @@ public class SettingsNavigationHelper {
         if (context == null) {
             return false;
         }
-        SettingsNavigationFactory.createSettingsNavigation()
+        SettingsNavigationFactory.createSettingsNavigation(context)
                 .startSettings(
                         context,
                         AutofillIdentityDocsFragment.class,
@@ -75,7 +75,7 @@ public class SettingsNavigationHelper {
         if (context == null) {
             return false;
         }
-        SettingsNavigationFactory.createSettingsNavigation()
+        SettingsNavigationFactory.createSettingsNavigation(context)
                 .startSettings(
                         context,
                         AutofillShoppingFragment.class,
@@ -105,7 +105,7 @@ public class SettingsNavigationHelper {
         if (context == null) {
             return false;
         }
-        SettingsNavigationFactory.createSettingsNavigation()
+        SettingsNavigationFactory.createSettingsNavigation(context)
                 .startSettings(
                         context,
                         AutofillTravelFragment.class,
@@ -124,7 +124,7 @@ public class SettingsNavigationHelper {
         if (context == null) {
             return false;
         }
-        SettingsNavigationFactory.createSettingsNavigation()
+        SettingsNavigationFactory.createSettingsNavigation(context)
                 .startSettings(
                         context,
                         AutofillOptionsFragment.class,
@@ -158,7 +158,7 @@ public class SettingsNavigationHelper {
         }
         RecordUserAction.record("AutofillAddressesViewed");
 
-        SettingsNavigationFactory.createSettingsNavigation()
+        SettingsNavigationFactory.createSettingsNavigation(context)
                 .startSettings(
                         context,
                         AutofillProfilesFragment.class,
@@ -192,7 +192,7 @@ public class SettingsNavigationHelper {
         }
         RecordUserAction.record("AutofillCreditCardsViewed");
 
-        SettingsNavigationFactory.createSettingsNavigation()
+        SettingsNavigationFactory.createSettingsNavigation(context)
                 .startSettings(
                         context,
                         AutofillPaymentMethodsFragment.class,

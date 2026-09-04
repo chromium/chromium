@@ -197,7 +197,7 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
                     assumeNonNull(mDelegate)
                             .getSiteSettingsNavigation()
                             .startSettings(
-                                    ContextUtils.getApplicationContext(),
+                                    requireContext(),
                                     AllSiteSettings.class,
                                     initialArguments,
                                     /* addToBackStack= */ true);
