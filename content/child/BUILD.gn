@@ -22,7 +22,6 @@ target(link_target_type, "child") {
   visibility = [
     ":*",
     "//content/gpu/*",
-    "//content/public/child:child_sources",
     "//content/renderer/*",
     "//content/utility/*",
   ]
@@ -86,6 +85,7 @@ target(link_target_type, "child") {
     "//content/common",
     "//content/common:mojo_bindings",
     "//content/common/memory_coordinator/mojom",
+    "//content/public/child:child_sources",
     "//content/public/common:common_sources",
     "//device/base",
     "//device/gamepad/public/cpp:switches",
