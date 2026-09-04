@@ -1381,7 +1381,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                                         activity,
                                         currentTab.getProfile(),
                                         new Handler(Looper.getMainLooper())),
-                                getSecurityIconView());
+                                mSecurityButton);
             }
         }
 
@@ -1727,11 +1727,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         @Override
         public View getContainerView() {
             return CustomTabToolbar.this;
-        }
-
-        @Override
-        public View getSecurityIconView() {
-            return mSecurityButton;
         }
 
         @Override

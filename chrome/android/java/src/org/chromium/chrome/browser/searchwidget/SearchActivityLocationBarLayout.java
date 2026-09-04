@@ -197,11 +197,6 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
     }
 
     @Override
-    public boolean shouldClearTextOnFocus() {
-        return false;
-    }
-
-    @Override
     public int getVoiceRecognitionSource() {
         return mInteractionFromWidget
                 ? VoiceRecognitionIntentHandler.VoiceInteractionSource.SEARCH_WIDGET

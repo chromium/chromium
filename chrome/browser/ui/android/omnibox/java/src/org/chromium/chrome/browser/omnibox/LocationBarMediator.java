@@ -316,7 +316,6 @@ class LocationBarMediator
     private boolean mNativeInitialized;
     private boolean mUrlFocusedWithoutAnimations;
     private boolean mIsUrlFocusChangeInProgress;
-    private boolean mShouldShowLensButtonWhenUnfocused;
     private boolean mShouldShowMicButtonWhenUnfocused;
     // Whether the microphone and bookmark buttons should be shown in the tablet location bar. These
     // buttons are hidden if the window size is < 600dp.
@@ -1899,11 +1898,6 @@ class LocationBarMediator
         mShouldShowMicButtonWhenUnfocused = shouldShow;
     }
 
-    /* package */ void setShouldShowLensButtonWhenUnfocusedForPhone(boolean shouldShow) {
-        assert !mIsTablet;
-        mShouldShowLensButtonWhenUnfocused = shouldShow;
-    }
-
     /* package */ void setMiniOriginMode(boolean active) {
         mMiniOriginMode = active;
         updateBackButtonVisibility();
@@ -2671,10 +2665,7 @@ class LocationBarMediator
             return (mUrlHasFocus || mIsUrlFocusChangeInProgress) && isLensOnOmniboxEnabled();
         }
 
-        return (mUrlHasFocus
-                        || mIsUrlFocusChangeInProgress
-                        || mIsLocationBarFocusedFromNtpScroll
-                        || mShouldShowLensButtonWhenUnfocused)
+        return (mUrlHasFocus || mIsUrlFocusChangeInProgress || mIsLocationBarFocusedFromNtpScroll)
                 && isLensOnOmniboxEnabled();
     }
 

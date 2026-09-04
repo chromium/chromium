@@ -2911,17 +2911,6 @@ public class ToolbarManager
     }
 
     /**
-     * TODO(twellington): Try to remove this method. It's only used to return an in-product help
-     * bubble anchor view... which should be moved out of tab and perhaps into the status bar icon
-     * component.
-     *
-     * @return The view containing the security icon.
-     */
-    public View getSecurityIconView() {
-        return mLocationBar.getSecurityIconView();
-    }
-
-    /**
      * Adds a custom action button to the {@link Toolbar}, if it is supported.
      *
      * @param drawable The {@link Drawable} to use as the background for the button.

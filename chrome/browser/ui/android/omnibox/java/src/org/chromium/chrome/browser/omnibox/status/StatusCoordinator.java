@@ -256,7 +256,7 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
     }
 
     /** Returns the view displaying the security icon. */
-    public View getSecurityIconView() {
+    private View getSecurityIconView() {
         return mStatusView.getSecurityView();
     }
 

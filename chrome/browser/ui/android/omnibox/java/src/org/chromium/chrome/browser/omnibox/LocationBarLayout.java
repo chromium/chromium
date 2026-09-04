@@ -273,10 +273,6 @@ public class LocationBarLayout extends ConstraintLayout {
 
     protected void onNtpStartedLoading() {}
 
-    public View getSecurityIconView() {
-        return mStatusCoordinator.getSecurityIconView();
-    }
-
     /**
      * Apply the X translation to the LocationBar buttons to match the NTP fakebox -> omnibox
      * transition.
@@ -524,11 +520,6 @@ public class LocationBarLayout extends ConstraintLayout {
     /** Returns the entrypoint used to launch Lens. */
     public int getLensEntryPoint() {
         return LensEntryPoint.OMNIBOX;
-    }
-
-    /** Returns whether the Omnibox text should be cleared on focus. */
-    public boolean shouldClearTextOnFocus() {
-        return true;
     }
 
     /**
