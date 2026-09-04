@@ -14,4 +14,7 @@ per-file DeviceFormFactor.java=skavuluru@google.com
 per-file ActivityResultTracker.java=myuu@google.com
 per-file ActivityResultTrackerImpl.java=myuu@google.com
 
+# Input events
+per-file PointerLockEventHelper.java=mustaq@chromium.org
+
 per-file ViewUtils.java=clhager@google.com
