@@ -902,6 +902,9 @@ std::unique_ptr<views::View> PageInfoMainView::CreateSuspiciousSiteBannerView(
           l10n_util::GetStringUTF16(
               IDS_PAGE_INFO_SUSPICIOUS_SITE_BUTTON_MARK_AS_SAFE)));
   mark_as_safe_btn->SetStyle(ui::ButtonStyle::kTonal);
+  mark_as_safe_btn->SetID(
+      PageInfoViewFactory::
+          VIEW_ID_PAGE_INFO_SUSPICIOUS_SITE_MARK_AS_SAFE_BUTTON);
 
   auto* back_to_safety_btn =
       buttons_row->AddChildView(std::make_unique<views::MdTextButton>(
@@ -916,6 +919,9 @@ std::unique_ptr<views::View> PageInfoMainView::CreateSuspiciousSiteBannerView(
           l10n_util::GetStringUTF16(
               IDS_PAGE_INFO_SUSPICIOUS_SITE_BUTTON_BACK_TO_SAFETY)));
   back_to_safety_btn->SetStyle(ui::ButtonStyle::kProminent);
+  back_to_safety_btn->SetID(
+      PageInfoViewFactory::
+          VIEW_ID_PAGE_INFO_SUSPICIOUS_SITE_BACK_TO_SAFETY_BUTTON);
 
   return banner;
 }

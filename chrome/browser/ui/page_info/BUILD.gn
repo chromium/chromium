@@ -60,6 +60,7 @@ source_set("impl") {
     deps += [
       "//chrome/browser:certificate_viewer",
       "//chrome/browser/extensions",
+      "//chrome/browser/safe_browsing/suspicious_site_warnings",
       "//chrome/browser/smart_card",
       "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui/browser_web_contents_delegate",
