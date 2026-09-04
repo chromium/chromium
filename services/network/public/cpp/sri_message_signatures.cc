@@ -442,7 +442,7 @@ const std::string* GetSignatureValue(
         mojom::SRIMessageSignatureError::kSignatureHeaderValueIsNotByteSequence,
         issues);
     return nullptr;
-  } else if (!signature_entry.params.empty()) {
+  } else if (!item_and_params->second.empty()) {
     AddIssueFromErrorEnum(
         mojom::SRIMessageSignatureError::kSignatureHeaderValueIsParameterized,
         issues);
