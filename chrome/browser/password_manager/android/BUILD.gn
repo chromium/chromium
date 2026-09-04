@@ -674,3 +674,34 @@ group("password_manager_android") {
     "grouped_affiliations:public",
   ]
 }
+
+source_set("android_browsertests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "password_manager_android_browsertest.cc" ]
+  deps = [
+    ":test_support",
+    "//chrome/browser/keyboard_accessory/android",
+    "//chrome/browser/password_manager",
+    "//chrome/browser/password_manager:test_support",
+    "//chrome/browser/password_manager/factories",
+    "//chrome/browser/policy:test_support",
+    "//chrome/browser/touch_to_fill/password_manager/password_generation/android",
+    "//chrome/test/base:android_browser_test",
+    "//chrome/test/base:chrome_test_utils",
+    "//components/autofill/core/common",
+    "//components/autofill/core/common:test_support",
+    "//components/enterprise:test_support",
+    "//components/enterprise/connectors/core",
+    "//components/enterprise/connectors/core:test_support",
+    "//components/keyed_service/core",
+    "//components/password_manager/content/browser",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser/password_store:password_store_interface",
+    "//components/password_manager/core/browser/password_store:test_support",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//testing/gtest",
+  ]
+}

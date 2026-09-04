@@ -325,6 +325,28 @@ if (is_android) {
   java_cpp_enum("secure_dns_management_mode_generated_enum") {
     sources = [ "secure_dns_config.h" ]
   }
+
+  source_set("android_browsertests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "cert_verifier_policy_browsertest.cc" ]
+    deps = [
+      ":net",
+      "//base",
+      "//chrome/browser",
+      "//chrome/browser/interstitials:test_support",
+      "//chrome/browser/policy:test_support",
+      "//chrome/test/base:android_browser_test",
+      "//chrome/test/base:chrome_test_utils",
+      "//components/policy:generated",
+      "//components/policy/core/common",
+      "//components/server_certificate_database",
+      "//content/test:test_support",
+      "//net:test_support",
+      "//testing/gtest",
+    ]
+  }
 } else {
   source_set("storage_test_utils") {
     testonly = true
