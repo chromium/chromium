@@ -151,6 +151,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.gesturenav.NavigationSheet;
 import org.chromium.chrome.browser.glic.GlicButtonDelegate;
+import org.chromium.chrome.browser.glic.GlicKeyedService;
 import org.chromium.chrome.browser.history.HistoryManager;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.history.HistoryPane;
@@ -2071,6 +2072,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         int tabId = IntentHandler.getTabId(intent);
         boolean hasTabWaitingForReparenting =
                 AsyncTabParamsManagerSingleton.getInstance().hasParamsForTabId(tabId);
+        String glicConversationId =
+                ChromeFeatureList.sActorNotificationIntentRouting.isEnabled()
+                        ? IntentHandler.getGlicConversationId(intent)
+                        : null;
         if (url == null
                 && tabIdToBringToFront == Tab.INVALID_TAB_ID
                 && !hasTabWaitingForReparenting) {
@@ -2097,32 +2102,39 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                         tabOpenType,
                         IntentUtils.safeGetStringExtra(intent, Browser.EXTRA_APPLICATION_ID),
                         tabIdToBringToFront,
-                        intent);
+                        intent,
+                        glicConversationId);
+        if (tab != null) {
+            postProcessOpenedTab(tab, intent, glicConversationId);
+            return true;
+        }
         boolean isActorBringToFront =
                 tabOpenType == TabOpenType.BRING_TAB_TO_FRONT
                         && IntentHandler.isActorNotificationIntent(intent);
-        if (tab == null && !isActorBringToFront) {
-            Log.e(TAG, "processUrlViewIntent returned null, failing to handle intent.");
-            return false;
+        if (isActorBringToFront) {
+            return true;
         }
-        if (tab != null) {
-            boolean shouldPin = IntentHandler.getPinnedState(intent);
-            if (shouldPin && !tab.getIsPinned()) {
-                getTabModelSelector()
-                        .getModel(tab.isIncognito())
-                        .pinTab(tab.getId(), /* showUngroupDialog= */ false);
-            }
-            int destTabId = IntentHandler.getDestTabId(intent);
-            if (destTabId != Tab.INVALID_TAB_ID) {
-                TabGroupUtils.mergeTabsToDest(
-                        Collections.singletonList(tab),
-                        destTabId,
-                        getTabModelSelector().getModel(tab.isIncognito()),
-                        null);
-                IntentUtils.safeRemoveExtra(intent, IntentHandler.EXTRA_DEST_TAB_ID);
-            }
+        Log.e(TAG, "processUrlViewIntent returned null, failing to handle intent.");
+        return false;
+    }
+
+    private void postProcessOpenedTab(Tab tab, Intent intent, @Nullable String glicConversationId) {
+        if (IntentHandler.getPinnedState(intent) && !tab.getIsPinned()) {
+            getTabModelSelector()
+                    .getModel(tab.isIncognito())
+                    .pinTab(tab.getId(), /* showUngroupDialog= */ false);
         }
-        return true;
+        int destTabId = IntentHandler.getDestTabId(intent);
+        if (destTabId != Tab.INVALID_TAB_ID) {
+            TabGroupUtils.mergeTabsToDest(
+                    Collections.singletonList(tab),
+                    destTabId,
+                    getTabModelSelector().getModel(tab.isIncognito()),
+                    null);
+            IntentUtils.safeRemoveExtra(intent, IntentHandler.EXTRA_DEST_TAB_ID);
+        }
+        GlicKeyedService.maybeInvokeGlic(
+                this, getTabModelSelector(), getProfileProviderSupplier(), tab, glicConversationId);
     }
 
     /**
@@ -2275,7 +2287,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 tabOpenType,
                 IntentUtils.safeGetStringExtra(intent, Browser.EXTRA_APPLICATION_ID),
                 Tab.INVALID_TAB_ID,
-                intent);
+                intent,
+                /* glicConversationId= */ null);
     }
 
     private void handleMhtmlFileOrContentIntent(
@@ -2291,7 +2304,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             TabOpenType.OPEN_NEW_TAB,
                             null,
                             Tab.INVALID_TAB_ID,
-                            intent);
+                            intent,
+                            /* glicConversationId= */ null);
                 },
                 profile);
     }
@@ -2856,7 +2870,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             @TabOpenType int tabOpenType,
             String externalAppId,
             int tabIdToBringToFront,
-            Intent intent) {
+            Intent intent,
+            @Nullable String glicConversationId) {
         if (isActivityFinishingOrDestroyed()) {
             return null;
         }
@@ -2960,9 +2975,22 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 resultTab =
                         ActorTabStateHelper.selectTabAndShow(
                                 getTabModelSelector(), getLayoutManager(), tabIdToBringToFront);
-                if (resultTab == null && isActorIntent) {
+                if (resultTab == null
+                        && isActorIntent
+                        && tabIdToBringToFront != Tab.INVALID_TAB_ID) {
                     ActorTabStateHelper.listenAndSelectTabOnAdded(
-                            getTabModelSelector(), getLayoutManager(), tabIdToBringToFront);
+                            getTabModelSelector(),
+                            getLayoutManager(),
+                            tabIdToBringToFront,
+                            selectedTab -> {
+                                if (isActivityFinishingOrDestroyed()) return;
+                                GlicKeyedService.maybeInvokeGlic(
+                                        ChromeTabbedActivity.this,
+                                        getTabModelSelector(),
+                                        getProfileProviderSupplier(),
+                                        selectedTab,
+                                        glicConversationId);
+                            });
                 }
                 break;
             case TabOpenType.CLOBBER_CURRENT_TAB:

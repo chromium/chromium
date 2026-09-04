@@ -29,14 +29,20 @@ public class ActorTask {
     private final int mId;
     private final String mTitle;
     private final WeakReference<Profile> mProfile;
+    private final @Nullable String mGlicConversationId;
 
     @CalledByNative
     private ActorTask(
-            long nativeTask, int id, @JniType("std::string") String title, Profile profile) {
+            long nativeTask,
+            int id,
+            @JniType("std::string") String title,
+            Profile profile,
+            @Nullable @JniType("std::optional<std::string>") String glicConversationId) {
         mNativeTask = nativeTask;
         mId = id;
         mTitle = title;
         mProfile = new WeakReference<>(profile);
+        mGlicConversationId = glicConversationId;
     }
 
     /**
@@ -44,6 +50,13 @@ public class ActorTask {
      */
     public int getId() {
         return mId;
+    }
+
+    /**
+     * @return The conversation ID associated with this task, if any.
+     */
+    public @Nullable String getGlicConversationId() {
+        return mGlicConversationId;
     }
 
     /**

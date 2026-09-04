@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.actor;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -30,13 +31,16 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowApplication;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -51,6 +55,7 @@ import java.util.Collections;
 
 /** Unit tests for {@link ActorForegroundServiceControllerImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
 public class ActorForegroundServiceControllerImplTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -182,12 +187,15 @@ public class ActorForegroundServiceControllerImplTest {
 
     @Test
     public void testCreateTrustedBringTabToFrontIntent() {
+        FeatureOverrides.overrideFlag(ChromeFeatureList.ACTOR_NOTIFICATION_INTENT_ROUTING, true);
         int tabId = 123;
         int taskId = 456;
         int taskState = ActorTaskState.ACTING;
+        String glicConversationId = "conv_test_123";
         when(mActorTask.getId()).thenReturn(taskId);
         when(mActorTask.getState()).thenReturn(taskState);
         when(mActorTask.getLastActuatedTabId()).thenReturn(tabId);
+        when(mActorTask.getGlicConversationId()).thenReturn(glicConversationId);
 
         Intent intent = mController.createTrustedBringTabToFrontIntent(mActorTask);
         assertNotNull("Intent should not be null.", intent);
@@ -195,6 +203,44 @@ public class ActorForegroundServiceControllerImplTest {
                 "Intent extra should contain the correct tabId.",
                 tabId,
                 IntentHandler.getBringTabToFrontId(intent));
+        assertEquals(
+                "Intent extra should contain EXTRA_GLIC_CONVERSATION_ID.",
+                glicConversationId,
+                intent.getStringExtra(NotificationConstants.EXTRA_GLIC_CONVERSATION_ID));
+        assertTrue(
+                "Intent should have EXTRA_SHOW_ACTOR_CONTROL.",
+                intent.getBooleanExtra(ActorNotificationFactory.EXTRA_SHOW_ACTOR_CONTROL, false));
+        assertEquals(
+                "Intent should have the correct taskId.",
+                taskId,
+                intent.getIntExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, -1));
+        assertEquals(
+                "Intent should have the correct task state.",
+                taskState,
+                intent.getIntExtra(NotificationConstants.EXTRA_ACTOR_TASK_STATE, -1));
+    }
+
+    @Test
+    public void testCreateTrustedBringTabToFrontIntent_FlagDisabled() {
+        FeatureOverrides.overrideFlag(ChromeFeatureList.ACTOR_NOTIFICATION_INTENT_ROUTING, false);
+        int tabId = 123;
+        int taskId = 456;
+        int taskState = ActorTaskState.ACTING;
+        String glicConversationId = "conv_test_123";
+        when(mActorTask.getId()).thenReturn(taskId);
+        when(mActorTask.getState()).thenReturn(taskState);
+        when(mActorTask.getLastActuatedTabId()).thenReturn(tabId);
+        when(mActorTask.getGlicConversationId()).thenReturn(glicConversationId);
+
+        Intent intent = mController.createTrustedBringTabToFrontIntent(mActorTask);
+        assertNotNull("Intent should not be null.", intent);
+        assertEquals(
+                "Intent extra should contain the correct tabId.",
+                tabId,
+                IntentHandler.getBringTabToFrontId(intent));
+        assertNull(
+                "Intent extra should not contain EXTRA_GLIC_CONVERSATION_ID when flag is disabled.",
+                intent.getStringExtra(NotificationConstants.EXTRA_GLIC_CONVERSATION_ID));
         assertTrue(
                 "Intent should have EXTRA_SHOW_ACTOR_CONTROL.",
                 intent.getBooleanExtra(ActorNotificationFactory.EXTRA_SHOW_ACTOR_CONTROL, false));

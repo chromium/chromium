@@ -6,6 +6,7 @@ package org.chromium.chrome.browser;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
@@ -891,6 +892,40 @@ public class IntentHandlerRobolectricTest {
         // Untrusted Custom Tab should also be ignored.
         Assert.assertTrue(
                 IntentHandler.shouldIgnoreIntent(untrustedIntent, /* isCustomTab= */ true));
+    }
+
+    @Test
+    public void testGetGlicConversationId() {
+        Context context = ContextUtils.getApplicationContext();
+
+        assertNull(IntentHandler.getGlicConversationId(null));
+        assertNull(IntentHandler.getGlicConversationId(new Intent(Intent.ACTION_VIEW)));
+
+        // Untrusted intent with EXTRA_GLIC_CONVERSATION_ID and non-Chrome appId should return null.
+        Intent untrustedIntent = new Intent(Intent.ACTION_VIEW);
+        untrustedIntent.putExtra(NotificationConstants.EXTRA_GLIC_CONVERSATION_ID, "conv_123");
+        untrustedIntent.putExtra(Browser.EXTRA_APPLICATION_ID, "com.example.otherapp");
+        assertNull(IntentHandler.getGlicConversationId(untrustedIntent));
+
+        // Untrusted intent with EXTRA_GLIC_CONVERSATION_ID and Chrome's appId
+        // (wasIntentSenderChrome
+        // is false because it lacks trusted extras) should return null.
+        Intent chromeAppIdIntent = new Intent(Intent.ACTION_VIEW);
+        chromeAppIdIntent.putExtra(NotificationConstants.EXTRA_GLIC_CONVERSATION_ID, "conv_123");
+        chromeAppIdIntent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
+        assertNull(IntentHandler.getGlicConversationId(chromeAppIdIntent));
+
+        // Trusted intent from Chrome with EXTRA_GLIC_CONVERSATION_ID should return the conversation
+        // ID.
+        try {
+            IntentUtils.setForceIsTrustedIntentForTesting(true);
+            Intent trustedIntent = new Intent(Intent.ACTION_VIEW);
+            trustedIntent.putExtra(NotificationConstants.EXTRA_GLIC_CONVERSATION_ID, "conv_123");
+            trustedIntent.setPackage(context.getPackageName());
+            assertEquals("conv_123", IntentHandler.getGlicConversationId(trustedIntent));
+        } finally {
+            IntentUtils.setForceIsTrustedIntentForTesting(false);
+        }
     }
 
     private Intent createTabGroupIntent(boolean isIncognito, boolean isTrusted) {

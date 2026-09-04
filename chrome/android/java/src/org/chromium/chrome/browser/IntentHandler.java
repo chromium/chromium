@@ -1813,6 +1813,16 @@ public class IntentHandler {
         return IntentUtils.safeGetStringExtra(intent, BRING_TAB_GROUP_TO_FRONT_EXTRA);
     }
 
+    /**
+     * @return The Glic conversation ID extra from an intent, or null if not present or if the
+     *     intent is not trusted from Chrome.
+     */
+    public static @Nullable String getGlicConversationId(@Nullable Intent intent) {
+        if (!wasIntentSenderChrome(intent)) return null;
+        return IntentUtils.safeGetStringExtra(
+                intent, NotificationConstants.EXTRA_GLIC_CONVERSATION_ID);
+    }
+
     /** Sets the Tab Id extra for a given intent. Will only be usable by trusted Chrome intents. */
     public static void setTabId(Intent intent, int tabId) {
         intent.putExtra(IntentHandler.EXTRA_TAB_ID, tabId);

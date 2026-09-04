@@ -146,6 +146,22 @@ void GlicKeyedServiceAndroid::Invoke(JNIEnv* env,
   service_->Invoke(std::move(options));
 }
 
+void GlicKeyedServiceAndroid::InvokeWithConversation(
+    JNIEnv* env,
+    TabAndroid* tab,
+    std::string glic_conversation_id,
+    int32_t source) {
+  if (glic_conversation_id.empty()) {
+    return;
+  }
+  Target target =
+      tab ? Target(*tab, ConversationId(std::move(glic_conversation_id)))
+          : Target(ConversationId(std::move(glic_conversation_id)));
+  GlicInvokeOptions options(std::move(target),
+                            static_cast<mojom::InvocationSource>(source));
+  service_->Invoke(std::move(options));
+}
+
 bool GlicKeyedServiceAndroid::IsPanelShowingForBrowser(
     JNIEnv* env,
     int64_t browser_window_ptr) {

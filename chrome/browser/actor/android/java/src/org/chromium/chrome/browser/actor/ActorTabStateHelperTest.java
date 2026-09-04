@@ -14,9 +14,11 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
 import android.os.Looper;
 
 import org.junit.After;
@@ -36,10 +38,14 @@ import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.glic.GlicKeyedService;
+import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
@@ -82,7 +88,11 @@ public class ActorTabStateHelperTest {
     @Mock private TabCreator mTabCreator;
     @Mock private Tab mPlaceholderTab;
     @Mock private Callback<Tab> mOnTabDetaching;
+    @Mock private Callback<Tab> mOnTabSelected;
     @Mock private LayoutManager mLayoutManager;
+    @Mock private Activity mActivity;
+    @Mock private ProfileProvider mProfileProvider;
+    @Mock private GlicKeyedService mGlicKeyedService;
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
     @Before
@@ -97,6 +107,7 @@ public class ActorTabStateHelperTest {
     @After
     public void tearDown() {
         ActorKeyedServiceFactory.setForTesting(null);
+        GlicKeyedServiceFactory.setForTesting(null);
         TabStateExtractor.resetTabStatesForTesting();
     }
 
@@ -486,6 +497,110 @@ public class ActorTabStateHelperTest {
     }
 
     @Test
+    public void testListenAndSelectTabOnAdded_invalidTabId_returnsNullImmediately() {
+        ActorTabStateHelper.listenAndSelectTabOnAdded(
+                mTabModelSelector, mLayoutManager, Tab.INVALID_TAB_ID, mOnTabSelected);
+
+        verify(mOnTabSelected).onResult(null);
+        verify(mTabModelSelector, never()).getModel(anyBoolean());
+        verify(mTabModelSelector, never()).addObserver(any());
+    }
+
+    @Test
+    public void testListenAndSelectTabOnAdded_withCallback_alreadyExists_invokesCallback() {
+        when(mTab.getId()).thenReturn(TAB_ID);
+        when(mTab.isIncognito()).thenReturn(false);
+        when(mTabModelSelector.getTabById(TAB_ID)).thenReturn(mTab);
+        when(mTabModel.indexOf(mTab)).thenReturn(0);
+
+        ActorTabStateHelper.listenAndSelectTabOnAdded(
+                mTabModelSelector, mLayoutManager, TAB_ID, mOnTabSelected);
+
+        verify(mOnTabSelected).onResult(mTab);
+        verify(mTabModelSelector).selectModel(false);
+        verify(mTabModel).setIndex(0, TabSelectionType.FROM_USER);
+    }
+
+    @Test
+    public void testListenAndSelectTabOnAdded_withCallback_didAddTab_invokesCallback() {
+        when(mTab.getId()).thenReturn(TAB_ID);
+        when(mTab.isIncognito()).thenReturn(false);
+        when(mTabModelSelector.getTabById(TAB_ID)).thenReturn(null).thenReturn(mTab);
+        when(mTabModel.indexOf(mTab)).thenReturn(0);
+
+        ArgumentCaptor<TabModelSelectorObserver> selectorObserverCaptor =
+                ArgumentCaptor.forClass(TabModelSelectorObserver.class);
+
+        ActorTabStateHelper.listenAndSelectTabOnAdded(
+                mTabModelSelector, mLayoutManager, TAB_ID, mOnTabSelected);
+
+        verify(mTabModel).addObserver(mTabModelObserverCaptor.capture());
+        TabModelObserver observer = mTabModelObserverCaptor.getValue();
+
+        verify(mTabModelSelector).addObserver(selectorObserverCaptor.capture());
+        TabModelSelectorObserver selectorObserver = selectorObserverCaptor.getValue();
+
+        observer.didAddTab(
+                mTab,
+                TabLaunchType.FROM_RESTORE,
+                TabCreationState.LIVE_IN_BACKGROUND,
+                /* markedForSelection= */ false);
+
+        selectorObserver.onTabStateInitialized();
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        verify(mOnTabSelected, times(1)).onResult(mTab);
+        verify(mTabModelSelector).selectModel(false);
+        verify(mTabModel).setIndex(0, TabSelectionType.FROM_USER);
+        verify(mTabModel).removeObserver(observer);
+    }
+
+    @Test
+    public void
+            testListenAndSelectTabOnAdded_withCallback_restoredOnTabStateInitialized_invokesCallback() {
+        when(mTab.getId()).thenReturn(TAB_ID);
+        when(mTab.isIncognito()).thenReturn(false);
+        when(mTabModelSelector.getTabById(TAB_ID)).thenReturn(null).thenReturn(mTab);
+        when(mTabModel.indexOf(mTab)).thenReturn(0);
+
+        ArgumentCaptor<TabModelSelectorObserver> selectorObserverCaptor =
+                ArgumentCaptor.forClass(TabModelSelectorObserver.class);
+
+        ActorTabStateHelper.listenAndSelectTabOnAdded(
+                mTabModelSelector, mLayoutManager, TAB_ID, mOnTabSelected);
+
+        verify(mTabModelSelector).addObserver(selectorObserverCaptor.capture());
+        TabModelSelectorObserver selectorObserver = selectorObserverCaptor.getValue();
+
+        selectorObserver.onTabStateInitialized();
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        verify(mOnTabSelected, times(1)).onResult(mTab);
+        verify(mTabModelSelector).selectModel(false);
+        verify(mTabModel).setIndex(0, TabSelectionType.FROM_USER);
+    }
+
+    @Test
+    public void testListenAndSelectTabOnAdded_withCallback_nullSelector_invokesWithNull() {
+        ActorTabStateHelper.listenAndSelectTabOnAdded(null, mLayoutManager, TAB_ID, mOnTabSelected);
+
+        verify(mOnTabSelected).onResult(null);
+    }
+
+    @Test
+    public void testListenAndSelectTabOnAdded_withCallback_notFound_invokesWithNull() {
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
+        when(mTabModelSelector.getTabById(TAB_ID)).thenReturn(null);
+
+        ActorTabStateHelper.listenAndSelectTabOnAdded(
+                mTabModelSelector, mLayoutManager, TAB_ID, mOnTabSelected);
+
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        verify(mOnTabSelected).onResult(null);
+    }
+
+    @Test
     public void testPersistTabsForCompletedTask() {
         Tab tab1 = mock(Tab.class);
         when(tab1.getId()).thenReturn(101);
@@ -528,5 +643,100 @@ public class ActorTabStateHelperTest {
 
         // Calling with unknown taskId is a no-op
         ActorTabStateHelper.persistTabsForCompletedTask(sessions, 999);
+    }
+
+    @Test
+    public void testMaybeInvokeGlic_validConversationId_invokesGlic() {
+        GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
+        when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
+        when(mTab.isIncognito()).thenReturn(false);
+        when(mTab.isDestroyed()).thenReturn(false);
+        when(mActivity.isFinishing()).thenReturn(false);
+        when(mActivity.isDestroyed()).thenReturn(false);
+
+        OneshotSupplierImpl<ProfileProvider> supplier = new OneshotSupplierImpl<>();
+        supplier.set(mProfileProvider);
+
+        GlicKeyedService.maybeInvokeGlic(
+                mActivity, mTabModelSelector, supplier, mTab, "test_glic_conv_id");
+
+        verify(mGlicKeyedService)
+                .invokeWithConversation(
+                        mTab,
+                        "test_glic_conv_id",
+                        GlicKeyedService.GlicInvocationSource.TOOLBAR_BUTTON);
+    }
+
+    @Test
+    public void testMaybeInvokeGlic_emptyGlicConversationId_noOp() {
+        GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
+        OneshotSupplierImpl<ProfileProvider> supplier = new OneshotSupplierImpl<>();
+        supplier.set(mProfileProvider);
+
+        GlicKeyedService.maybeInvokeGlic(mActivity, mTabModelSelector, supplier, mTab, null);
+        GlicKeyedService.maybeInvokeGlic(mActivity, mTabModelSelector, supplier, mTab, "");
+
+        verify(mGlicKeyedService, never()).invokeWithConversation(any(), any(), anyInt());
+    }
+
+    @Test
+    public void testMaybeInvokeGlic_incognitoTab_switchesModel() {
+        GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
+        when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
+        when(mTab.isIncognito()).thenReturn(true);
+        Tab regularTab = mock(Tab.class);
+        when(regularTab.isIncognito()).thenReturn(false);
+        when(regularTab.isDestroyed()).thenReturn(false);
+        when(mTabModelSelector.getCurrentTab()).thenReturn(regularTab);
+        when(mActivity.isFinishing()).thenReturn(false);
+        when(mActivity.isDestroyed()).thenReturn(false);
+
+        OneshotSupplierImpl<ProfileProvider> supplier = new OneshotSupplierImpl<>();
+        supplier.set(mProfileProvider);
+
+        GlicKeyedService.maybeInvokeGlic(
+                mActivity, mTabModelSelector, supplier, mTab, "test_glic_conv_id");
+
+        verify(mTabModelSelector).selectModel(false);
+        verify(mGlicKeyedService)
+                .invokeWithConversation(
+                        regularTab,
+                        "test_glic_conv_id",
+                        GlicKeyedService.GlicInvocationSource.TOOLBAR_BUTTON);
+    }
+
+    @Test
+    public void testMaybeInvokeGlic_activityFinishing_noOp() {
+        GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
+        when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
+        when(mTab.isIncognito()).thenReturn(false);
+        when(mTab.isDestroyed()).thenReturn(false);
+        when(mActivity.isFinishing()).thenReturn(true);
+
+        OneshotSupplierImpl<ProfileProvider> supplier = new OneshotSupplierImpl<>();
+        supplier.set(mProfileProvider);
+
+        GlicKeyedService.maybeInvokeGlic(
+                mActivity, mTabModelSelector, supplier, mTab, "test_glic_conv_id");
+
+        verify(mGlicKeyedService, never()).invokeWithConversation(any(), any(), anyInt());
+    }
+
+    @Test
+    public void testMaybeInvokeGlic_tabDestroyed_noOp() {
+        GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
+        when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
+        when(mTab.isIncognito()).thenReturn(false);
+        when(mTab.isDestroyed()).thenReturn(true);
+        when(mActivity.isFinishing()).thenReturn(false);
+        when(mActivity.isDestroyed()).thenReturn(false);
+
+        OneshotSupplierImpl<ProfileProvider> supplier = new OneshotSupplierImpl<>();
+        supplier.set(mProfileProvider);
+
+        GlicKeyedService.maybeInvokeGlic(
+                mActivity, mTabModelSelector, supplier, mTab, "test_glic_conv_id");
+
+        verify(mGlicKeyedService, never()).invokeWithConversation(any(), any(), anyInt());
     }
 }

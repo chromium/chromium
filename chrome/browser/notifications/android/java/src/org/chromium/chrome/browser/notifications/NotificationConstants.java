@@ -73,6 +73,8 @@ public class NotificationConstants {
             "org.chromium.chrome.browser.actor.TASK_STATE";
     public static final String EXTRA_ACTOR_PAUSE_RESUME_SOURCE =
             "org.chromium.chrome.browser.actor.PAUSE_RESUME_SOURCE";
+    public static final String EXTRA_GLIC_CONVERSATION_ID =
+            "org.chromium.chrome.browser.glic.CONVERSATION_ID";
 
     static final String EXTRA_ALLOW_REPORTING_AS_SPAM_IS_NOTIFICATION_WARNED =
             "notification_allow_reporting_as_spam_is_notification_warned";
