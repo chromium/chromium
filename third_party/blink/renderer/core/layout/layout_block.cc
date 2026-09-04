@@ -524,8 +524,7 @@ const LayoutBlock* LayoutBlock::FirstLineStyleParentBlock() const {
   // ::first-line style from our ancestors.
   const LayoutObject* first_child = parent_layout_block->FirstChild();
   while (first_child->IsFloatingOrOutOfFlowPositioned() ||
-         (RuntimeEnabledFeatures::FirstLineOnListItemEnabled() &&
-          first_child->IsListMarker())) {
+         first_child->IsListMarker()) {
     first_child = first_child->NextSibling();
   }
   if (first_child != first_line_block)
