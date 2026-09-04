@@ -132,10 +132,17 @@ bool DownloadCollectionBridge::RenameDownloadUri(
 
 // static
 void DownloadCollectionBridge::GetDisplayNamesForDownloads(
+    const std::vector<base::FilePath>& download_uris,
     GetDisplayNamesCallback cb) {
   JNIEnv* env = base::android::AttachCurrentThread();
+  std::vector<std::string> uri_strings;
+  uri_strings.reserve(download_uris.size());
+  for (const auto& uri : download_uris) {
+    uri_strings.push_back(uri.value());
+  }
   ScopedJavaLocalRef<jobjectArray> jdisplay_infos =
-      Java_DownloadCollectionBridge_getDisplayNamesForDownloads(env);
+      Java_DownloadCollectionBridge_getDisplayNamesForDownloads(env,
+                                                                uri_strings);
   auto result = std::make_unique<std::map<std::string, base::FilePath>>();
   if (!jdisplay_infos) {
     std::move(cb).Run(std::move(result));

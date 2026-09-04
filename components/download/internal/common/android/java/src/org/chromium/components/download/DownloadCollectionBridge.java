@@ -281,40 +281,24 @@ public class DownloadCollectionBridge {
     }
 
     /**
-     * Gets the display names for all downloads
+     * Gets the display names for the given download Uris.
      *
+     * @param downloadUris array of download Uris.
      * @return an array of download Uri and display name pair.
      */
     @CalledByNative
-    private static DisplayNameInfo @Nullable [] getDisplayNamesForDownloads() {
-        ContentResolver resolver = ContextUtils.getApplicationContext().getContentResolver();
-        Cursor cursor = null;
-        try {
-            Uri uri = Downloads.EXTERNAL_CONTENT_URI;
-            cursor =
-                    resolver.query(
-                            MediaStore.setIncludePending(uri),
-                            new String[] {BaseColumns._ID, MediaColumns.DISPLAY_NAME},
-                            null,
-                            null,
-                            null);
-            if (cursor == null || cursor.getCount() == 0) return null;
-            List<DisplayNameInfo> infos = new ArrayList<DisplayNameInfo>();
-            while (cursor.moveToNext()) {
-                String displayName =
-                        cursor.getString(cursor.getColumnIndexOrThrow(MediaColumns.DISPLAY_NAME));
-                Uri downloadUri =
-                        ContentUris.withAppendedId(
-                                uri, cursor.getInt(cursor.getColumnIndexOrThrow(BaseColumns._ID)));
-                infos.add(new DisplayNameInfo(downloadUri.toString(), displayName));
+    private static DisplayNameInfo @Nullable [] getDisplayNamesForDownloads(
+            @JniType("std::vector<std::string>") String[] downloadUris) {
+        if (downloadUris == null || downloadUris.length == 0) return null;
+        List<DisplayNameInfo> infos = new ArrayList<>();
+        for (String uriString : downloadUris) {
+            if (TextUtils.isEmpty(uriString)) continue;
+            String displayName = getDisplayName(uriString);
+            if (!TextUtils.isEmpty(displayName)) {
+                infos.add(new DisplayNameInfo(uriString, displayName));
             }
-            return infos.toArray(new DisplayNameInfo[0]);
-        } catch (Exception e) {
-            Log.e(TAG, "Unable to get display names for downloads.", e);
-        } finally {
-            if (cursor != null) cursor.close();
         }
-        return null;
+        return infos.toArray(new DisplayNameInfo[0]);
     }
 
     /**
@@ -456,16 +440,17 @@ public class DownloadCollectionBridge {
         ContentResolver resolver = ContextUtils.getApplicationContext().getContentResolver();
         Cursor cursor = null;
         try {
+            Uri uri = Uri.parse(downloadUri);
+            if (MediaStore.AUTHORITY.equals(uri.getAuthority())) {
+                uri = MediaStore.setIncludePending(uri);
+            }
             cursor =
-                    resolver.query(
-                            Uri.parse(downloadUri),
-                            new String[] {MediaColumns.DISPLAY_NAME},
-                            null,
-                            null,
-                            null);
-            if (cursor == null || cursor.getCount() == 0) return null;
-            if (cursor.moveToNext()) {
-                return cursor.getString(cursor.getColumnIndexOrThrow(MediaColumns.DISPLAY_NAME));
+                    resolver.query(uri, new String[] {MediaColumns.DISPLAY_NAME}, null, null, null);
+            if (cursor != null && cursor.moveToNext()) {
+                int index = cursor.getColumnIndex(MediaColumns.DISPLAY_NAME);
+                if (index != -1) {
+                    return cursor.getString(index);
+                }
             }
         } catch (Exception e) {
             Log.e(TAG, "Unable to get display name for download.", e);

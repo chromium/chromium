@@ -234,11 +234,24 @@ base::FilePath CreateLocalTempFile() {
 
 #if BUILDFLAG(IS_ANDROID)
 const char kPdfDirName[] = "pdfs";
+constexpr char kDownloadContentUri[] =
+    "content://com.android.externalstorage.documents/document/"
+    "primary%3ADownload";
 
 bool IsDownloadSaveAsContextMenuEnabled() {
   return base::FeatureList::IsEnabled(
              download::features::kEnableDownloadSaveAsContextMenu) &&
          base::android::device_info::is_desktop();
+}
+
+base::FilePath GetTargetContentUri(const base::FilePath& suggested_path) {
+  if (suggested_path.IsContentUri()) {
+    return suggested_path;
+  }
+  if (suggested_path.empty()) {
+    return base::FilePath(kDownloadContentUri).AsEndingWithSeparator();
+  }
+  return base::FilePath(kDownloadContentUri).Append(suggested_path.BaseName());
 }
 #endif
 
@@ -1321,14 +1334,12 @@ void ChromeDownloadManagerDelegate::ChooseSavePath(
     return;
   }
 
-  if (base::android::device_info::is_desktop() &&
-      base::FeatureList::IsEnabled(
-          download::features::kEnableDownloadSaveAsContextMenu) &&
+  if (IsDownloadSaveAsContextMenuEnabled() &&
       base::FeatureList::IsEnabled(
           download::features::kEnableDownloadSaveAsSystemFileDialog)) {
-    new SavePackageFilePicker(web_contents, suggested_path, default_extension,
-                              can_save_as_complete, download_prefs_.get(),
-                              std::move(callback));
+    new SavePackageFilePicker(web_contents, GetTargetContentUri(suggested_path),
+                              default_extension, can_save_as_complete,
+                              download_prefs_.get(), std::move(callback));
     return;
   }
 
@@ -1598,14 +1609,11 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
     return;
   }
 
-  if (reason == DownloadConfirmationReason::SAVE_AS &&
-      base::android::device_info::is_desktop() &&
-      base::FeatureList::IsEnabled(
-          download::features::kEnableDownloadSaveAsContextMenu) &&
+  if (reason == DownloadConfirmationReason::SAVE_AS && is_save_as_enabled &&
       base::FeatureList::IsEnabled(
           download::features::kEnableDownloadSaveAsSystemFileDialog)) {
-    ShowFilePickerWithUserTakeover(download, suggested_path,
-                                   std::move(callback));
+    ShowFilePickerWithUserTakeover(
+        download, GetTargetContentUri(suggested_path), std::move(callback));
     return;
   }
 

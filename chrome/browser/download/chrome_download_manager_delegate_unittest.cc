@@ -3295,7 +3295,12 @@ TEST_F(ChromeDownloadManagerDelegateTest, RequestConfirmation_AndroidDesktop) {
                                     future.GetCallback());
     EXPECT_TRUE(delegate()->show_file_picker_called());
     EXPECT_EQ(DownloadConfirmationResult::CONFIRMED, future.Get<0>());
-    EXPECT_EQ(ui::SelectedFileInfo(fake_path), future.Get<1>());
+    base::FilePath expected_path =
+        base::FilePath(
+            "content://com.android.externalstorage.documents/"
+            "document/primary%3ADownload")
+            .Append(fake_path.BaseName());
+    EXPECT_EQ(ui::SelectedFileInfo(expected_path), future.Get<1>());
   }
 
   {
