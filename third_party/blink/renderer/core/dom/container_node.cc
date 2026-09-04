@@ -1980,8 +1980,8 @@ WritableStream* ContainerNode::streamAppendHTMLUnsafe(
     ExceptionState& exception_state) {
   std::optional<FragmentParserOptions> resolved_options =
       TrustedTypesCheckForStreaming(
-          FragmentParserOptions::From(options),
-          ExecutionContext::From(script_state), TrustedTypesInterfaceName(this),
+          FragmentParserOptions::From(options), GetExecutionContext(),
+          TrustedTypesInterfaceName(this),
           trusted_types_names::kStreamAppendHTMLUnsafe, exception_state);
   if (!resolved_options) {
     return nullptr;
@@ -2011,8 +2011,8 @@ WritableStream* ContainerNode::streamPrependHTMLUnsafe(
     ExceptionState& exception_state) {
   std::optional<FragmentParserOptions> resolved_options =
       TrustedTypesCheckForStreaming(
-          FragmentParserOptions::From(options),
-          ExecutionContext::From(script_state), TrustedTypesInterfaceName(this),
+          FragmentParserOptions::From(options), GetExecutionContext(),
+          TrustedTypesInterfaceName(this),
           trusted_types_names::kStreamPrependHTMLUnsafe, exception_state);
   if (!resolved_options) {
     return nullptr;
@@ -2040,8 +2040,8 @@ WritableStream* ContainerNode::streamHTMLUnsafe(
     ExceptionState& exception_state) {
   std::optional<FragmentParserOptions> resolved_options =
       TrustedTypesCheckForStreaming(
-          FragmentParserOptions::From(options),
-          ExecutionContext::From(script_state), TrustedTypesInterfaceName(this),
+          FragmentParserOptions::From(options), GetExecutionContext(),
+          TrustedTypesInterfaceName(this),
           trusted_types_names::kStreamHTMLUnsafe, exception_state);
   if (!resolved_options) {
     return nullptr;

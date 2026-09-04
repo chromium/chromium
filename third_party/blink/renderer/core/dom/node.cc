@@ -1223,8 +1223,8 @@ WritableStream* Node::streamBeforeHTMLUnsafe(
     ExceptionState& exception_state) {
   std::optional<FragmentParserOptions> resolved_options =
       TrustedTypesCheckForStreaming(
-          FragmentParserOptions::From(options),
-          ExecutionContext::From(script_state), trusted_types_names::kNode,
+          FragmentParserOptions::From(options), GetExecutionContext(),
+          trusted_types_names::kNode,
           trusted_types_names::kStreamBeforeHTMLUnsafe, exception_state);
   if (!resolved_options) {
     return nullptr;
@@ -1248,8 +1248,8 @@ WritableStream* Node::streamAfterHTMLUnsafe(
     ExceptionState& exception_state) {
   std::optional<FragmentParserOptions> resolved_options =
       TrustedTypesCheckForStreaming(
-          FragmentParserOptions::From(options),
-          ExecutionContext::From(script_state), trusted_types_names::kNode,
+          FragmentParserOptions::From(options), GetExecutionContext(),
+          trusted_types_names::kNode,
           trusted_types_names::kStreamAfterHTMLUnsafe, exception_state);
   if (!resolved_options) {
     return nullptr;
@@ -1273,8 +1273,8 @@ WritableStream* Node::streamReplaceWithHTMLUnsafe(
     ExceptionState& exception_state) {
   std::optional<FragmentParserOptions> resolved_options =
       TrustedTypesCheckForStreaming(
-          FragmentParserOptions::From(options),
-          ExecutionContext::From(script_state), trusted_types_names::kNode,
+          FragmentParserOptions::From(options), GetExecutionContext(),
+          trusted_types_names::kNode,
           trusted_types_names::kStreamReplaceWithHTMLUnsafe, exception_state);
   if (!resolved_options) {
     return nullptr;
