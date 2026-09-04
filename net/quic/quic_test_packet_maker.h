@@ -150,6 +150,17 @@ class QuicTestPacketMaker {
       size_t* spdy_headers_frame_length,
       quic::QuicRstStreamErrorCode error_code);
 
+  std::unique_ptr<quic::QuicReceivedPacket> MakeAckAndRequestHeadersPacket(
+      uint64_t packet_number,
+      quic::QuicStreamId stream_id,
+      bool fin,
+      spdy::SpdyPriority spdy_priority,
+      quiche::HttpHeaderBlock headers,
+      uint64_t largest_received,
+      uint64_t smallest_received,
+      size_t* spdy_headers_frame_length = nullptr,
+      bool should_include_priority_frame = true);
+
   // If |spdy_headers_frame_length| is non-null, it will be set to the size of
   // the SPDY headers frame created for this packet.
   std::unique_ptr<quic::QuicReceivedPacket> MakeResponseHeadersPacket(
@@ -231,6 +242,14 @@ class QuicTestPacketMaker {
  private:
   void AddPriorityHeader(spdy::SpdyPriority spdy_priority,
                          quiche::HttpHeaderBlock* headers);
+
+  void AddRequestHeadersFrames(QuicTestPacketBuilder& builder,
+                               quic::QuicStreamId stream_id,
+                               bool fin,
+                               spdy::SpdyPriority spdy_priority,
+                               quiche::HttpHeaderBlock headers,
+                               size_t* spdy_headers_frame_length,
+                               bool should_include_priority_frame);
 
   quic::QuicStreamId GetFirstBidirectionalStreamId() const;
 
