@@ -67,12 +67,10 @@ constexpr std::string_view kDifferentUrlPattern = "different.example.com/";
 constexpr int kCacheDurationSec = 60;
 constexpr char kPhishingUrl[] = "https://phishing.example.com";
 constexpr char kReferrerUrl[] = "https://referrer.example.com/";
-constexpr char kLoopbackIpStr[] = "127.0.0.1";
 constexpr char kLoopbackIpUrl[] = "http://127.0.0.1";
 constexpr char kPrivateIpStr[] = "192.168.1.1";
 constexpr char kPrivateIpUrl[] = "http://192.168.1.1";
 constexpr char kLocalhostUrl[] = "http://localhost";
-constexpr char kIntranetUrl[] = "http://intranet-page";
 
 class MockIntelligentScanDelegate
     : public safe_browsing::IntelligentScanDelegate {
@@ -1032,7 +1030,7 @@ TEST_F(ClientSideDetectionHostIOSTest, CacheHitPreventsClassification) {
 }
 
 TEST_F(ClientSideDetectionHostIOSTest,
-       LocalIPAndIntranetPreventClassification) {
+       LocalhostAndPrivateIPPreventClassification) {
   safe_browsing::SetSafeBrowsingState(
       profile_->GetPrefs(),
       safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
@@ -1061,23 +1059,6 @@ TEST_F(ClientSideDetectionHostIOSTest,
       safe_browsing::PreClassificationCheckResult::NO_CLASSIFY_LOCAL_RESOURCE,
       1);
 
-  context.SetUrl(GURL(kIntranetUrl));
-  web_state_.SetCurrentURL(GURL(kIntranetUrl));
-  web_state_.OnNavigationFinished(&context);
-
-  host->MaybeStartPreClassification(
-      safe_browsing::ClientSideDetectionType::TRIGGER_MODELS);
-
-  histogram_tester_.ExpectBucketCount(
-      "SBClientPhishing.PreClassificationCheckResult",
-      safe_browsing::PreClassificationCheckResult::NO_CLASSIFY_LOCAL_RESOURCE,
-      2);
-
-  EXPECT_CALL(mock_service_,
-              IsPrivateIPAddress(testing::Property(
-                  &net::IPAddress::ToString, testing::Eq(kLoopbackIpStr))))
-      .WillOnce(testing::Return(true));
-
   context.SetUrl(GURL(kLoopbackIpUrl));
   web_state_.SetCurrentURL(GURL(kLoopbackIpUrl));
   web_state_.OnNavigationFinished(&context);
@@ -1087,7 +1068,8 @@ TEST_F(ClientSideDetectionHostIOSTest,
 
   histogram_tester_.ExpectBucketCount(
       "SBClientPhishing.PreClassificationCheckResult",
-      safe_browsing::PreClassificationCheckResult::NO_CLASSIFY_PRIVATE_IP, 1);
+      safe_browsing::PreClassificationCheckResult::NO_CLASSIFY_LOCAL_RESOURCE,
+      2);
 
   EXPECT_CALL(mock_service_,
               IsPrivateIPAddress(testing::Property(&net::IPAddress::ToString,
@@ -1103,7 +1085,7 @@ TEST_F(ClientSideDetectionHostIOSTest,
 
   histogram_tester_.ExpectBucketCount(
       "SBClientPhishing.PreClassificationCheckResult",
-      safe_browsing::PreClassificationCheckResult::NO_CLASSIFY_PRIVATE_IP, 2);
+      safe_browsing::PreClassificationCheckResult::NO_CLASSIFY_PRIVATE_IP, 1);
 }
 
 TEST_F(ClientSideDetectionHostIOSTest, SuccessfulGatingLogsClassify) {
@@ -1625,13 +1607,9 @@ TEST_F(ClientSideDetectionHostIOSTest,
 }
 
 // Tests that local resources (file://) are caught before unsupported
-// scheme checks when kClientSideDetectionLocalResourceCheckFix is enabled.
+// scheme checks.
 TEST_F(ClientSideDetectionHostIOSTest,
        PreClassificationLocalResourcePreventsClassification) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      safe_browsing::kClientSideDetectionLocalResourceCheckFix);
-
   safe_browsing::SetSafeBrowsingState(
       profile_->GetPrefs(),
       safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);

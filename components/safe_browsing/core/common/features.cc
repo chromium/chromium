@@ -168,7 +168,7 @@ const base::FeatureParam<bool> kCsdImageEmbeddingMatchWithIntelligentScan{
 BASE_FEATURE(kClientSideDetectionKillswitch, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kClientSideDetectionLocalResourceCheckFix,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kClientSideDetectionNewObservers,
              base::FEATURE_ENABLED_BY_DEFAULT);
