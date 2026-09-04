@@ -12,7 +12,6 @@
 #include "chrome/browser/record_replay/task_parameters_extractor_factory.h"
 #include "chrome/browser/record_replay/task_service_factory.h"
 #include "chrome/browser/record_replay/task_store_factory.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
@@ -229,10 +228,7 @@ void ChromeRecordReplayClient::OnShouldOfferTask(bool offered) {
   }
 
   if (glic::GlicNudgeController* nudge_controller =
-          tab()
-              .GetBrowserWindowInterface()
-              ->GetFeatures()
-              .glic_nudge_controller()) {
+          glic::GlicNudgeController::From(tab().GetBrowserWindowInterface())) {
     std::optional<record_replay::TaskDiscoveryService::AutomationMetadata>
         metadata = task_discovery_service_->GetMetadata();
     if (metadata.has_value()) {

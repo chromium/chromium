@@ -20,7 +20,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_observer.h"
 #include "chrome/browser/ui/tabs/features.h"
@@ -60,7 +59,7 @@ class GlicNudgeControllerInteractiveUiTest : public test::InteractiveGlicTest {
   }
 
   GlicNudgeController* nudge_controller() {
-    return browser()->GetFeatures().glic_nudge_controller();
+    return GlicNudgeController::From(browser());
   }
 
   TabStripActionContainer* tab_strip_action_container() {

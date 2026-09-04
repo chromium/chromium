@@ -31,7 +31,6 @@
 #include "chrome/browser/enterprise/data_protection/data_protection_ui_controller.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_iph_controller.h"
-#include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -1261,12 +1260,6 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   }
   browser_animation_controller_.reset();
   actor_border_view_controller_.reset();
-}
-
-glic::GlicNudgeController* BrowserWindowFeatures::glic_nudge_controller() {
-  return glic_split_button_controller_
-             ? glic_split_button_controller_->nudge_controller()
-             : nullptr;
 }
 
 actions::ActionItem* BrowserWindowFeatures::GetRootActionItem() {

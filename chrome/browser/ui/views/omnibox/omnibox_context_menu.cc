@@ -13,7 +13,6 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_context_menu_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
@@ -149,13 +148,15 @@ void OmniboxContextMenu::RunMenuAt(const gfx::Point& point,
   if (menu_ && menu_->HasSubmenu()) {
     if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox) &&
         base::FeatureList::IsEnabled(omnibox::kContextManagementInOmnibox)) {
-      menu_->GetSubmenu()->set_minimum_preferred_width(GetMinimumMenuWidth(menu_));
+      menu_->GetSubmenu()->set_minimum_preferred_width(
+          GetMinimumMenuWidth(menu_));
       // Apply preferred width to each submenu width; this is more robust
       // than applying the width to the submenu itself or a command ID, which
       // causes the width of submenu items to be incorrect.
       for (views::MenuItemView* item : menu_->GetSubmenu()->GetMenuItems()) {
         if (item->HasSubmenu()) {
-          item->GetSubmenu()->set_minimum_preferred_width(GetMinimumMenuWidth(item));
+          item->GetSubmenu()->set_minimum_preferred_width(
+              GetMinimumMenuWidth(item));
         }
       }
     } else {
@@ -177,7 +178,7 @@ void OmniboxContextMenu::RunMenuAt(const gfx::Point& point,
     return;
   }
   auto* glic_nudge_controller =
-      browser_window_interface->GetFeatures().glic_nudge_controller();
+      glic::GlicNudgeController::From(browser_window_interface);
   if (!glic_nudge_controller) {
     return;
   }
@@ -297,7 +298,8 @@ void OmniboxContextMenu::OnMenuStructureChanged() {
   BuildMenuTree();
 }
 
-int OmniboxContextMenu::GetMinimumMenuWidth(const views::MenuItemView* menu) const {
+int OmniboxContextMenu::GetMinimumMenuWidth(
+    const views::MenuItemView* menu) const {
   if (menu != menu_) {
     return kDefaultMenuWidth;
   }

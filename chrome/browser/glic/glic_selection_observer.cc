@@ -44,7 +44,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/skills/skills_update_observer.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
@@ -799,7 +798,7 @@ void GlicSelectionObserver::ShowSelectionAffordance(
       !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return;
   }
-  auto* controller = bwi->GetFeatures().glic_nudge_controller();
+  auto* controller = GlicNudgeController::From(bwi);
   if (controller) {
     bool is_post_fre = GlicEnabling::HasConsentedForProfile(
         Profile::FromBrowserContext(web_contents()->GetBrowserContext()));

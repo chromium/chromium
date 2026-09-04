@@ -191,7 +191,6 @@ class ExtensionSidePanelManager;
 
 namespace glic {
 class GlicIphController;
-class GlicNudgeController;
 class GlicSplitButtonController;
 }  // namespace glic
 
@@ -336,8 +335,6 @@ class BrowserWindowFeatures {
   FindBarController* GetFindBarController();
 
   actions::ActionItem* GetRootActionItem();
-
-  glic::GlicNudgeController* glic_nudge_controller();
 
   // Returns true if a FindBarController exists for this browser window.
   bool HasFindBarController() const;

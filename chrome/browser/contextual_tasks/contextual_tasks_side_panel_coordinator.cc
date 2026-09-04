@@ -52,7 +52,6 @@
 #include "ui/webui/tracked_element/tracked_element_handler.h"
 #include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
 #endif
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
@@ -371,7 +370,7 @@ void ContextualTasksSidePanelCoordinator::Show(
 #if !BUILDFLAG(IS_ANDROID)
   // Hide the GLIC nudge when the panel is opened.
   if (auto* glic_nudge_controller =
-          browser_window_->GetFeatures().glic_nudge_controller()) {
+          glic::GlicNudgeController::From(browser_window_)) {
     glic_nudge_controller->UpdateNudgeLabel(
         active_tab_interface->GetContents(), "", std::nullopt,
         glic::GlicNudgeActivity::kNudgeIgnoredOpenedContextualTasksSidePanel,
