@@ -126,7 +126,7 @@ public class FuseboxSessionStateUnitTest {
     public void testFrom() {
         doReturn("Title").when(mLocationBarDataProvider).getTitle();
         doReturn(SAMPLE_PAGE_URL).when(mLocationBarDataProvider).getCurrentGurl();
-        doReturn(1).when(mLocationBarDataProvider).getPageClassification(false);
+        doReturn(1).when(mLocationBarDataProvider).getPageClassification(/* prefetch= */ false);
 
         FuseboxSessionState session = FuseboxSessionState.from(mLocationBarDataProvider);
         assertNotNull(session);
@@ -230,7 +230,7 @@ public class FuseboxSessionStateUnitTest {
         doReturn(SAMPLE_PAGE_URL).when(mLocationBarDataProvider).getCurrentGurl();
         doReturn(PageClassification.OTHER)
                 .when(mLocationBarDataProvider)
-                .getPageClassification(false);
+                .getPageClassification(/* prefetch= */ false);
 
         FuseboxSessionState session = FuseboxSessionState.from(mLocationBarDataProvider);
         session.activate(ContextUtils.getApplicationContext(), null, mProfileSupplier, null);
@@ -246,7 +246,7 @@ public class FuseboxSessionStateUnitTest {
         doReturn(SAMPLE_PAGE_URL).when(mLocationBarDataProvider).getCurrentGurl();
         doReturn(PageClassification.ANDROID_SEARCH_WIDGET)
                 .when(mLocationBarDataProvider)
-                .getPageClassification(false);
+                .getPageClassification(/* prefetch= */ false);
 
         FuseboxSessionState session = FuseboxSessionState.from(mLocationBarDataProvider);
         session.activate(ContextUtils.getApplicationContext(), null, mProfileSupplier, null);
@@ -262,7 +262,7 @@ public class FuseboxSessionStateUnitTest {
         doReturn(SAMPLE_PAGE_URL).when(mLocationBarDataProvider).getCurrentGurl();
         doReturn(PageClassification.ANDROID_SHORTCUTS_WIDGET)
                 .when(mLocationBarDataProvider)
-                .getPageClassification(false);
+                .getPageClassification(/* prefetch= */ false);
 
         FuseboxSessionState session = FuseboxSessionState.from(mLocationBarDataProvider);
         session.activate(ContextUtils.getApplicationContext(), null, mProfileSupplier, null);
