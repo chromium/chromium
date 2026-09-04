@@ -34,10 +34,12 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationTestHelper;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
@@ -61,6 +63,8 @@ import java.time.Duration;
 @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
 @DisableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
 public class NtpCustomizationPromoManagerUnitTest {
+    private static final int NTP_OPENED_COUNT_FOR_BOTTOM_SHEET = 2;
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
@@ -471,5 +475,37 @@ public class NtpCustomizationPromoManagerUnitTest {
         assertTrue(
                 NtpCustomizationPromoManager.canTriggerCustomizationPromo(
                         mWindowAndroid, /* isLff= */ true));
+    }
+
+    @Test
+    @CommandLineFlags.Add(ChromeSwitches.DISABLE_NTP_THEME_PROMO_BOTTOM_SHEET_FOR_TESTING)
+    public void testCanTriggerCustomizationBottomSheet_disableNtpThemePromoSwitchEnabled() {
+        testCanTriggerCustomizationBottomSheet_disableNtpThemePromoSwitchImpl(
+                /* expectedCanTrigger= */ false);
+    }
+
+    @Test
+    public void testCanTriggerCustomizationBottomSheet_disableNtpThemePromoSwitchDisabled() {
+        testCanTriggerCustomizationBottomSheet_disableNtpThemePromoSwitchImpl(
+                /* expectedCanTrigger= */ true);
+    }
+
+    private void testCanTriggerCustomizationBottomSheet_disableNtpThemePromoSwitchImpl(
+            boolean expectedCanTrigger) {
+        mFakeTimeTestRule.advanceMillis(Duration.ofDays(10).toMillis());
+        ChromeFeatureList.sNewTabPageCustomizationV2ShowTipBottomSheet.setForTesting(true);
+        NtpCustomizationConfigManager configManager = mock(NtpCustomizationConfigManager.class);
+        NtpCustomizationConfigManager.setInstanceForTesting(configManager);
+        when(configManager.getBackgroundType()).thenReturn(NtpBackgroundType.DEFAULT);
+
+        assertEquals(
+                expectedCanTrigger,
+                NtpCustomizationPromoManager.canTriggerCustomizationBottomSheet(
+                        mWindowAndroid,
+                        /* isLff= */ false,
+                        /* ntpOpenedCount= */ NTP_OPENED_COUNT_FOR_BOTTOM_SHEET));
+
+        ChromeFeatureList.sNewTabPageCustomizationV2ShowTipBottomSheet.setForTesting(false);
+        NtpCustomizationConfigManager.setInstanceForTesting(null);
     }
 }
