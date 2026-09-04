@@ -3096,6 +3096,12 @@ void StyleEngine::ApplyRuleSetChanges(
       old_style_sheets, new_style_sheets, diffs, changed_rule_sets);
 
   unsigned changed_rule_flags = GetRuleSetFlags(changed_rule_sets);
+  if (changed_rule_flags & kLayerRules && change == kActiveSheetsChanged) {
+    // When we have layer changes other than appended, existing layer ordering
+    // may be changed, which requires rebuilding all at-rule registries and
+    // full document style recalc.
+    changed_rule_flags = kRuleSetFlagsAll;
+  }
 
   bool invalidated_fonts = false;
   bool rebuild_font_face_cache = change == kActiveSheetsChanged &&
@@ -3115,6 +3121,20 @@ void StyleEngine::ApplyRuleSetChanges(
     return;
   }
 
+  unsigned append_start_index =
+      change == kActiveSheetsAppended ? old_style_sheets.size() : 0;
+
+  if (!new_style_sheets.empty()) {
+    // We need to add implicit scope triggers before InvalidateForRuleSetChanges
+    // because the selector matching relies on these implicit scopes both for
+    // old and new active stylesheets.
+    tree_scope.EnsureScopedStyleResolver().AddImplicitScopeTriggers(
+        append_start_index, new_style_sheets);
+  }
+
+  InvalidateForRuleSetChanges(tree_scope, changed_rule_sets, changed_rule_flags,
+                              kInvalidateCurrentScope);
+
   // With rules added or removed, we need to re-aggregate rule meta data.
   global_rule_set_->MarkDirty();
 
@@ -3126,7 +3146,6 @@ void StyleEngine::ApplyRuleSetChanges(
     MarkCounterStylesNeedUpdate();
   }
 
-  unsigned append_start_index = 0;
   bool rebuild_cascade_layer_map = changed_rule_flags & kLayerRules;
   if (scoped_resolver) {
     // - If all sheets were removed, we remove the ScopedStyleResolver
@@ -3137,9 +3156,7 @@ void StyleEngine::ApplyRuleSetChanges(
     if (new_style_sheets.empty()) {
       rebuild_cascade_layer_map = false;
       ResetAuthorStyle(tree_scope);
-    } else if (change == kActiveSheetsAppended) {
-      append_start_index = old_style_sheets.size();
-    } else {
+    } else if (change == kActiveSheetsChanged) {
       rebuild_cascade_layer_map = (changed_rule_flags & kLayerRules) ||
                                   scoped_resolver->HasCascadeLayerMap();
       scoped_resolver->ResetStyle();
@@ -3154,16 +3171,6 @@ void StyleEngine::ApplyRuleSetChanges(
   if (changed_rule_flags & kLayerRules) {
     if (resolver_) {
       resolver_->InvalidateMatchedPropertiesCache();
-    }
-
-    // When we have layer changes other than appended, existing layer ordering
-    // may be changed, which requires rebuilding all at-rule registries and
-    // full document style recalc.
-    if (change == kActiveSheetsChanged) {
-      changed_rule_flags = kRuleSetFlagsAll;
-      if (tree_scope.RootNode().IsDocumentNode()) {
-        rebuild_font_face_cache = true;
-      }
     }
   }
 
@@ -3229,12 +3236,17 @@ void StyleEngine::ApplyRuleSetChanges(
   }
 
   if (!new_style_sheets.empty()) {
-    tree_scope.EnsureScopedStyleResolver().AppendActiveStyleSheets(
-        append_start_index, new_style_sheets);
+    ScopedStyleResolver& resolver = tree_scope.EnsureScopedStyleResolver();
+    resolver.AppendActiveStyleSheets(append_start_index, new_style_sheets);
+    if (change == kActiveSheetsChanged) {
+      // If change was kActiveSheetsAdded, the implicit scope triggers were
+      // already added before InvalidateForRuleSetChanges(). If not, all scopes
+      // were removed by ResetStyle()/ResetAuthorStyle(), and we need to re-add
+      // them.
+      resolver.AddImplicitScopeTriggers(0, new_style_sheets);
+    }
   }
 
-  InvalidateForRuleSetChanges(tree_scope, changed_rule_sets, changed_rule_flags,
-                              kInvalidateCurrentScope);
   if (invalidated_fonts) {
     GetFontSelector()->FontFaceInvalidated(
         FontInvalidationReason::kGeneralInvalidation);

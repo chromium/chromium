@@ -128,6 +128,9 @@ class CORE_EXPORT ScopedStyleResolver final
   static void KeyframesRulesAdded(const TreeScope&);
   static Element& InvalidationRootForTreeScope(const TreeScope&);
 
+  void AddImplicitScopeTriggers(unsigned start_index,
+                                const ActiveStyleSheetVector&);
+
   void Trace(Visitor*) const;
 
  private:
