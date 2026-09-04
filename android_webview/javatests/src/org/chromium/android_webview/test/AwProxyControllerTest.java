@@ -37,7 +37,6 @@ public class AwProxyControllerTest extends AwParameterizedTest {
     private static final String CONTENT = "CONTENT";
     private static final String PROXY = "PROXY";
 
-    private AwProxyController mAwProxyController;
     private TestWebServer mContentServer;
     private TestWebServer mProxyServer;
     private String mContentUrl;
@@ -49,7 +48,6 @@ public class AwProxyControllerTest extends AwParameterizedTest {
 
     @Before
     public void setup() throws Exception {
-        mAwProxyController = new AwProxyController();
         mContentServer = TestWebServer.start();
         mProxyServer = TestWebServer.startAdditional();
         mContentUrl =
@@ -261,7 +259,7 @@ public class AwProxyControllerTest extends AwParameterizedTest {
         int callCount = ch.getCallCount();
         runOnUiThreadBlocking(
                 () -> {
-                    mAwProxyController.setProxyOverride(
+                    AwProxyController.setProxyOverride(
                             proxyRules,
                             bypassRules,
                             new Runnable() {
@@ -281,7 +279,7 @@ public class AwProxyControllerTest extends AwParameterizedTest {
         int callCount = ch.getCallCount();
         runOnUiThreadBlocking(
                 () -> {
-                    mAwProxyController.clearProxyOverride(
+                    AwProxyController.clearProxyOverride(
                             new Runnable() {
                                 @Override
                                 public void run() {

@@ -55,9 +55,6 @@ public class StartupController {
         /** Returns the function table pointer for software drawing. */
         long getDrawSWFunctionTable();
 
-        /** Initializes thread-unsafe singletons in the glue layer. */
-        void initThreadUnsafeSingletons();
-
         // TODO: Inline SelectionActionMenuClient call once aconfig flag is cleaned up.
         /** Returns the framework-level selection action menu client, if available. */
         @Nullable SelectionActionMenuClientWrapper getSelectionActionMenuClient();
@@ -396,8 +393,6 @@ public class StartupController {
                 ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion;
         RecordHistogram.recordSparseHistogram("Android.WebView.TargetSdkVersion", targetSdkVersion);
 
-        mDelegate.initThreadUnsafeSingletons();
-
         if (ApkInfo.isDebugAndroidOrApp()) {
             AwDevToolsServer.setRemoteDebuggingEnabled(true);
         }
@@ -410,6 +405,7 @@ public class StartupController {
         AwBrowserProcess.setupSupervisedUser();
         AwBrowserProcess.handleMinidumpsAndSetMetricsConsent(/* updateMetricsConsent= */ true);
         AwBrowserProcess.startObservingOsAccessibilitySettingChanges();
+        AwTracingController.getInstance();
 
         AwBrowserProcess.postBackgroundTasks();
 

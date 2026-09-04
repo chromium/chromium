@@ -12,6 +12,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.common.Lifetime;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceRecordMode;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -77,9 +78,20 @@ public class AwTracingController {
                             CATEGORIES_WEB_DEVELOPER_LIST, // CATEGORIES_WEB_DEVELOPER
                             CATEGORIES_INPUT_LATENCY_LIST, // CATEGORIES_INPUT_LATENCY
                             CATEGORIES_RENDERING_LIST, // CATEGORIES_RENDERING
-                            CATEGORIES_JAVASCRIPT_AND_RENDERING_LIST, // CATEGORIES_JAVASCRIPT_AND_RENDERING
+                            CATEGORIES_JAVASCRIPT_AND_RENDERING_LIST,
+                            // CATEGORIES_JAVASCRIPT_AND_RENDERING
                             CATEGORIES_FRAME_VIEWER_LIST // CATEGORIES_FRAME_VIEWER
                             ));
+
+    private static volatile @Nullable AwTracingController sInstance;
+
+    public static AwTracingController getInstance() {
+        if (sInstance == null) {
+            ThreadUtils.assertOnUiThread();
+            sInstance = new AwTracingController();
+        }
+        return sInstance;
+    }
 
     private @Nullable OutputStream mOutputStream;
 
@@ -87,6 +99,7 @@ public class AwTracingController {
     // boolean mIsTracing;
 
     public AwTracingController() {
+        ThreadUtils.assertOnUiThread();
         mNativeAwTracingController = AwTracingControllerJni.get().init(AwTracingController.this);
     }
 
@@ -95,6 +108,7 @@ public class AwTracingController {
             Collection<Integer> predefinedCategories,
             Collection<String> customIncludedCategories,
             int mode) {
+        ThreadUtils.assertOnUiThread();
         if (isTracing()) return RESULT_ALREADY_TRACING;
         if (!isValid(customIncludedCategories)) return RESULT_INVALID_CATEGORIES;
         if (!isValidMode(mode)) return RESULT_INVALID_MODE;
@@ -107,6 +121,7 @@ public class AwTracingController {
 
     // Stop tracing and flush tracing data.
     public boolean stopAndFlush(@Nullable OutputStream outputStream) {
+        ThreadUtils.assertOnUiThread();
         if (!isTracing()) return false;
         mOutputStream = outputStream;
         AwTracingControllerJni.get().stopAndFlush(mNativeAwTracingController);
@@ -114,6 +129,7 @@ public class AwTracingController {
     }
 
     public boolean isTracing() {
+        ThreadUtils.assertOnUiThread();
         return AwTracingControllerJni.get().isTracing(mNativeAwTracingController);
     }
 

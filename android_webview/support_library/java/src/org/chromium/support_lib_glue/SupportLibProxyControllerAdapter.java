@@ -19,12 +19,9 @@ import java.util.concurrent.Executor;
 /** Adapter between AwProxyController and ProxyControllerBoundaryInterface. */
 public class SupportLibProxyControllerAdapter implements ProxyControllerBoundaryInterface {
     private final WebViewChromiumRunQueue mRunQueue;
-    private final AwProxyController mProxyController;
 
-    public SupportLibProxyControllerAdapter(
-            WebViewChromiumRunQueue runQueue, AwProxyController proxyController) {
+    public SupportLibProxyControllerAdapter(WebViewChromiumRunQueue runQueue) {
         mRunQueue = runQueue;
-        mProxyController = proxyController;
     }
 
     @Override
@@ -52,7 +49,7 @@ public class SupportLibProxyControllerAdapter implements ProxyControllerBoundary
                         mRunQueue.runOnUiThreadBlocking(
                                 () -> {
                                     try {
-                                        mProxyController.setProxyOverride(
+                                        AwProxyController.setProxyOverride(
                                                 proxyRules,
                                                 bypassRules,
                                                 listener,
@@ -65,7 +62,7 @@ public class SupportLibProxyControllerAdapter implements ProxyControllerBoundary
                                 });
                 maybeThrowUnwrappedException(exception);
             } else {
-                mProxyController.setProxyOverride(
+                AwProxyController.setProxyOverride(
                         proxyRules, bypassRules, listener, executor, reverseBypass);
             }
         }
@@ -81,7 +78,7 @@ public class SupportLibProxyControllerAdapter implements ProxyControllerBoundary
                         mRunQueue.runOnUiThreadBlocking(
                                 () -> {
                                     try {
-                                        mProxyController.clearProxyOverride(listener, executor);
+                                        AwProxyController.clearProxyOverride(listener, executor);
                                     } catch (RuntimeException e) {
                                         return e;
                                     }
@@ -89,7 +86,7 @@ public class SupportLibProxyControllerAdapter implements ProxyControllerBoundary
                                 });
                 maybeThrowUnwrappedException(exception);
             } else {
-                mProxyController.clearProxyOverride(listener, executor);
+                AwProxyController.clearProxyOverride(listener, executor);
             }
         }
     }

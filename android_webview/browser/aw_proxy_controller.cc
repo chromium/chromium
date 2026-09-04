@@ -29,14 +29,13 @@ namespace android_webview {
 
 namespace {
 
-void ProxyOverrideChanged(const JavaRef<jobject>& obj,
-                          const JavaRef<jobject>& listener,
+void ProxyOverrideChanged(const JavaRef<jobject>& listener,
                           const JavaRef<jobject>& executor) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!listener)
     return;
   JNIEnv* env = AttachCurrentThread();
-  Java_AwProxyController_proxyOverrideChanged(env, obj, listener, executor);
+  Java_AwProxyController_proxyOverrideChanged(env, listener, executor);
   if (HasException(env)) {
     // Tell the chromium message loop to not perform any tasks after the current
     // one - we want to make sure we return to Java cleanly without first making
@@ -49,7 +48,6 @@ void ProxyOverrideChanged(const JavaRef<jobject>& obj,
 
 static std::string JNI_AwProxyController_SetProxyOverride(
     JNIEnv* env,
-    const JavaRef<jobject>& obj,
     const base::android::JavaRef<jobjectArray>& jurl_schemes,
     const base::android::JavaRef<jobjectArray>& jproxy_urls,
     const base::android::JavaRef<jobjectArray>& jbypass_rules,
@@ -76,7 +74,6 @@ static std::string JNI_AwProxyController_SetProxyOverride(
   result = AwProxyConfigMonitor::GetInstance()->SetProxyOverride(
       proxy_rules, bypass_rules, reverse_bypass,
       base::BindOnce(&ProxyOverrideChanged,
-                     ScopedJavaGlobalRef<jobject>(env, obj),
                      ScopedJavaGlobalRef<jobject>(env, listener),
                      ScopedJavaGlobalRef<jobject>(env, executor)));
   return result;
@@ -84,12 +81,10 @@ static std::string JNI_AwProxyController_SetProxyOverride(
 
 static void JNI_AwProxyController_ClearProxyOverride(
     JNIEnv* env,
-    const JavaRef<jobject>& obj,
     const JavaRef<jobject>& listener,
     const JavaRef<jobject>& executor) {
   AwProxyConfigMonitor::GetInstance()->ClearProxyOverride(base::BindOnce(
-      &ProxyOverrideChanged, ScopedJavaGlobalRef<jobject>(env, obj),
-      ScopedJavaGlobalRef<jobject>(env, listener),
+      &ProxyOverrideChanged, ScopedJavaGlobalRef<jobject>(env, listener),
       ScopedJavaGlobalRef<jobject>(env, executor)));
 }
 

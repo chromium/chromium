@@ -22,7 +22,6 @@ import com.android.webview.chromium.WebContent;
 import com.android.webview.chromium.WebViewChromiumAwInit;
 import com.android.webview.chromium.WebkitToSharedGlueConverter;
 
-import org.chromium.android_webview.AwProxyController;
 import org.chromium.android_webview.AwServiceWorkerController;
 import org.chromium.android_webview.AwTracingController;
 import org.chromium.android_webview.StartupCallSite;
@@ -841,13 +840,11 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.AndroidX.GET_PROXY_CONTROLLER")) {
             recordApiCall(ApiCall.GET_PROXY_CONTROLLER);
-            AwProxyController proxyController = mAwInit.getAwProxyController();
             synchronized (mAwInit.getLazyInitLock()) {
                 if (mProxyController == null) {
                     mProxyController =
                             BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                                    new SupportLibProxyControllerAdapter(
-                                            mAwInit.getRunQueue(), proxyController));
+                                    new SupportLibProxyControllerAdapter(mAwInit.getRunQueue()));
                 }
 
                 return mProxyController;

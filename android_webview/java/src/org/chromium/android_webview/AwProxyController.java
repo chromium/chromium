@@ -17,9 +17,7 @@ import java.util.concurrent.Executor;
 @Lifetime.Singleton
 @JNINamespace("android_webview")
 public class AwProxyController {
-    public AwProxyController() {}
-
-    public void setProxyOverride(
+    public static void setProxyOverride(
             String[][] proxyRules,
             String[] bypassRules,
             Runnable listener,
@@ -55,7 +53,6 @@ public class AwProxyController {
         String result =
                 AwProxyControllerJni.get()
                         .setProxyOverride(
-                                this,
                                 urlSchemes,
                                 proxyUrls,
                                 bypassRules,
@@ -67,16 +64,16 @@ public class AwProxyController {
         }
     }
 
-    public void clearProxyOverride(Runnable listener, Executor executor) {
+    public static void clearProxyOverride(Runnable listener, Executor executor) {
         if (executor == null) {
             throw new IllegalArgumentException("Executor must not be null");
         }
 
-        AwProxyControllerJni.get().clearProxyOverride(this, listener, executor);
+        AwProxyControllerJni.get().clearProxyOverride(listener, executor);
     }
 
     @CalledByNativeUnchecked
-    private void proxyOverrideChanged(Runnable listener, Executor executor) {
+    private static void proxyOverrideChanged(Runnable listener, Executor executor) {
         if (listener == null) return;
         executor.execute(listener);
     }
@@ -85,7 +82,6 @@ public class AwProxyController {
     interface Natives {
         @JniType("std::string")
         String setProxyOverride(
-                AwProxyController self,
                 String[] urlSchemes,
                 String[] proxyUrls,
                 String[] bypassRules,
@@ -93,6 +89,6 @@ public class AwProxyController {
                 Executor executor,
                 boolean reverseBypass);
 
-        void clearProxyOverride(AwProxyController self, Runnable listener, Executor executor);
+        void clearProxyOverride(Runnable listener, Executor executor);
     }
 }
