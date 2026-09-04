@@ -351,7 +351,7 @@ public class FuseboxViewBinderUnitTest {
 
     @Test
     public void reanchorViewsForCompactFusebox_deduplicatesWhenOptimizationsEnabled() {
-        OmniboxFeatures.sModelPickerOptimizations.setForTesting(/* overrideValue= */ true);
+        OmniboxFeatures.sModelPickerOptimizations.setForTesting(true);
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         FuseboxMetrics.REANCHOR_VIEWS_DURATION_HISTOGRAM);

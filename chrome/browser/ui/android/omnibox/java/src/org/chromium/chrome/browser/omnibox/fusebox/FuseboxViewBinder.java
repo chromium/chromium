@@ -302,7 +302,10 @@ class FuseboxViewBinder {
             } else {
                 buttonView =
                         LayoutInflater.from(group.getContext())
-                                .inflate(R.layout.fusebox_list_item, group, false);
+                                .inflate(
+                                        R.layout.fusebox_list_item,
+                                        group,
+                                        /* attachToRoot= */ false);
                 group.addView(buttonView, startIndex + i);
             }
             bindDynamicButton(
