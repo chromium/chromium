@@ -7,9 +7,6 @@
 
 #include <memory>
 #include <string>
-#include <vector>
-
-#include "chrome/browser/ash/printing/usb_printer_notification.h"
 
 class Profile;
 

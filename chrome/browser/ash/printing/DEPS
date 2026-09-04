@@ -28,6 +28,8 @@ include_rules = [
   "+chrome/browser/ui/chrome_pages.h",
   "+chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h",
   "+chrome/grit",
+
+  "+ui/message_center/message_center.h",
 ]
 
 specific_include_rules = {

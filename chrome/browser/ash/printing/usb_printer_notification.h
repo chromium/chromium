@@ -5,26 +5,22 @@
 #ifndef CHROME_BROWSER_ASH_PRINTING_USB_PRINTER_NOTIFICATION_H_
 #define CHROME_BROWSER_ASH_PRINTING_USB_PRINTER_NOTIFICATION_H_
 
-#include <memory>
+#include <optional>
 #include <string>
-#include <vector>
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/printing/printer_configurer.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
-class Profile;
-
-namespace message_center {
-class Notification;
-}  // namespace message_center
+namespace user_manager {
+class User;
+}  // namespace user_manager
 
 namespace ash {
 
-// UsbPrinterNotification is used to update the notification of a print job
-// according to its state and respond to the user's action.
+// UsbPrinterNotification is used to create and manage the notification for a
+// USB printer and respond to the user's action.
 class UsbPrinterNotification : public message_center::NotificationObserver {
  public:
   enum class Type { kEphemeral, kSaved, kConfigurationRequired };
@@ -32,7 +28,7 @@ class UsbPrinterNotification : public message_center::NotificationObserver {
   UsbPrinterNotification(const chromeos::Printer& printer,
                          const std::string& notification_id,
                          Type type,
-                         Profile* profile);
+                         const user_manager::User& user);
 
   UsbPrinterNotification(const UsbPrinterNotification&) = delete;
   UsbPrinterNotification& operator=(const UsbPrinterNotification&) = delete;
@@ -42,22 +38,17 @@ class UsbPrinterNotification : public message_center::NotificationObserver {
   // Closes the notification, removing it from the notification tray.
   void CloseNotification();
 
-  // message_center::NotificationObserver
-  void Close(bool by_user) override;
+  // message_center::NotificationObserver:
   void Click(const std::optional<int>& button_index,
              const std::optional<std::u16string>& reply) override;
 
  private:
-  void UpdateContents();
-
   void ShowNotification();
 
   const chromeos::Printer printer_;
-  std::string notification_id_;
-  Type type_;
-  raw_ptr<Profile> profile_;  // Not owned.
-  std::unique_ptr<message_center::Notification> notification_;
-  bool visible_;
+  const std::string notification_id_;
+  const Type type_;
+  const raw_ref<const user_manager::User> user_;
 
   base::WeakPtrFactory<UsbPrinterNotification> weak_factory_{this};
 };

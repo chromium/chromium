@@ -149,6 +149,7 @@ static_library("printing") {
     "//printing/backend",
     "//third_party/libipp",
     "//ui/chromeos/styles:cros_tokens_color_mappings",
+    "//ui/message_center",
   ]
 
   if (use_cups) {

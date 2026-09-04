@@ -4,22 +4,19 @@
 
 #include "chrome/browser/ash/printing/usb_printer_notification.h"
 
+#include <memory>
+
 #include "ash/constants/notifier_catalogs.h"
+#include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
-#include "base/check_deref.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/notifications/notification_display_service.h"
-#include "chrome/browser/notifications/notification_display_service_factory.h"
-#include "chrome/browser/notifications/notification_handler.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
+#include "components/user_manager/user.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
-#include "ui/gfx/image/image.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "url/gurl.h"
@@ -36,59 +33,29 @@ UsbPrinterNotification::UsbPrinterNotification(
     const chromeos::Printer& printer,
     const std::string& notification_id,
     Type type,
-    Profile* profile)
+    const user_manager::User& user)
     : printer_(printer),
-      notification_id_(notification_id),
+      notification_id_(CreateUserScopedNotificationId(notification_id,
+                                                      user.username_hash())),
       type_(type),
-      profile_(profile) {
-  message_center::RichNotificationData rich_notification_data;
-  rich_notification_data.vector_small_image = &ash::kNotificationPrintingIcon;
-  rich_notification_data.accent_color_id = cros_tokens::kCrosSysPrimary;
-  notification_ = std::make_unique<message_center::Notification>(
-      message_center::NOTIFICATION_TYPE_SIMPLE, notification_id_,
-      std::u16string(),  // title
-      std::u16string(),  // body
-      ui::ImageModel(),  // icon
-      l10n_util::GetStringUTF16(IDS_PRINT_JOB_NOTIFICATION_DISPLAY_SOURCE),
-      GURL(),  // origin_url
-      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kNotifierId,
-                                 NotificationCatalogName::kUsbPrinter),
-      rich_notification_data,
-      base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
-          weak_factory_.GetWeakPtr()));
-
-  UpdateContents();
-
+      user_(user) {
   ShowNotification();
 }
 
 UsbPrinterNotification::~UsbPrinterNotification() = default;
 
 void UsbPrinterNotification::CloseNotification() {
-  NotificationDisplayService* display_service =
-      NotificationDisplayServiceFactory::GetForProfile(profile_);
-  display_service->Close(NotificationHandler::Type::TRANSIENT,
-                         notification_id_);
-}
-
-void UsbPrinterNotification::Close(bool by_user) {
-  visible_ = false;
+  message_center::MessageCenter::Get()->RemoveNotification(notification_id_,
+                                                           /*by_user=*/false);
 }
 
 void UsbPrinterNotification::Click(const std::optional<int>& button_index,
                                    const std::optional<std::u16string>& reply) {
   if (!button_index) {
     // Body of notification clicked.
-    visible_ = false;
     if (type_ == Type::kConfigurationRequired) {
-      // If we are in guest mode then we need to use the OffTheRecord profile to
-      // open the Settings page. There is a check in Browser::Browser that only
-      // OffTheRecord profiles can open browser windows in guest mode.
-      auto* user = ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
-          profile_.get());
-      ash::SettingsAppManager::Get()->Open(
-          CHECK_DEREF(user),
+      SettingsAppManager::Get()->Open(
+          *user_,
           {.sub_page = chromeos::settings::mojom::kPrintingDetailsSubpagePath});
     }
     return;
@@ -98,32 +65,42 @@ void UsbPrinterNotification::Click(const std::optional<int>& button_index,
 }
 
 void UsbPrinterNotification::ShowNotification() {
-  NotificationDisplayService* display_service =
-      NotificationDisplayServiceFactory::GetForProfile(profile_);
-  display_service->Display(NotificationHandler::Type::TRANSIENT, *notification_,
-                           /*metadata=*/nullptr);
-  visible_ = true;
-}
+  message_center::NotifierId notifier_id(
+      message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId,
+      NotificationCatalogName::kUsbPrinter);
+  notifier_id.profile_id = user_->GetAccountId().GetUserEmail();
 
-void UsbPrinterNotification::UpdateContents() {
+  std::u16string title;
+  std::u16string message;
   switch (type_) {
     case Type::kEphemeral:
     case Type::kSaved:
-      notification_->set_title(l10n_util::GetStringUTF16(
-          IDS_USB_PRINTER_NOTIFICATION_CONNECTED_TITLE));
-      notification_->set_message(l10n_util::GetStringFUTF16(
+      title = l10n_util::GetStringUTF16(
+          IDS_USB_PRINTER_NOTIFICATION_CONNECTED_TITLE);
+      message = l10n_util::GetStringFUTF16(
           IDS_USB_PRINTER_NOTIFICATION_CONNECTED_MESSAGE,
-          base::UTF8ToUTF16(printer_.display_name())));
-      return;
+          base::UTF8ToUTF16(printer_.display_name()));
+      break;
     case Type::kConfigurationRequired:
-      notification_->set_title(l10n_util::GetStringUTF16(
-          IDS_USB_PRINTER_NOTIFICATION_CONFIGURATION_REQUIRED_TITLE));
-      notification_->set_message(l10n_util::GetStringFUTF16(
+      title = l10n_util::GetStringUTF16(
+          IDS_USB_PRINTER_NOTIFICATION_CONFIGURATION_REQUIRED_TITLE);
+      message = l10n_util::GetStringFUTF16(
           IDS_USB_PRINTER_NOTIFICATION_CONFIGURATION_REQUIRED_MESSAGE,
-          base::UTF8ToUTF16(printer_.display_name())));
-      return;
+          base::UTF8ToUTF16(printer_.display_name()));
+      break;
   }
-  NOTREACHED();
+
+  message_center::MessageCenter::Get()->AddNotification(
+      CreateSystemNotificationPtr(
+          message_center::NOTIFICATION_TYPE_SIMPLE, notification_id_, title,
+          message,
+          l10n_util::GetStringUTF16(IDS_PRINT_JOB_NOTIFICATION_DISPLAY_SOURCE),
+          /*origin_url=*/GURL(), notifier_id,
+          message_center::RichNotificationData(),
+          base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
+              weak_factory_.GetWeakPtr()),
+          kNotificationPrintingIcon,
+          message_center::SystemNotificationWarningLevel::NORMAL));
 }
 
 }  // namespace ash
