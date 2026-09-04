@@ -54,7 +54,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -477,7 +476,6 @@ public class NtpCustomizationMediatorUnitTest {
         assertEquals(List.of(MVT, NTP_CARDS, THEME), listContent);
     }
 
-    @DisabledTest(message = "crbug.com/525121740")
     @Test
     public void testBuildListContentWhenProfileIsNotReady() {
         List<Integer> listContent = mMediator.buildListContent(mContext);
@@ -501,7 +499,6 @@ public class NtpCustomizationMediatorUnitTest {
         assertEquals(List.of(MVT, NTP_CARDS, THEME), mMediator.buildListContent(mContext));
     }
 
-    @DisabledTest(message = "crbug.com/525121740")
     @Test
     public void testBuildListContent_themeDisabledByPolicy() {
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
