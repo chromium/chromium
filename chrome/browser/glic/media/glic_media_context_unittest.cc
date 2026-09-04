@@ -16,6 +16,7 @@
 #include "components/optimization_guide/content/browser/media_transcript_provider.h"
 #include "components/optimization_guide/content/browser/mock_media_transcript_provider.h"
 #include "components/prefs/pref_service.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/document_picture_in_picture_window_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_media_session.h"
@@ -716,6 +717,27 @@ TEST_F(GlicMediaContextTest, ClearAllTranscriptsClearsTranscripts) {
   // Verify that it is now empty.
   EXPECT_EQ(GetTranscriptText(context()), "");
   EXPECT_FALSE(context()->HasTranscriptChunks());
+}
+
+TEST_F(GlicMediaContextTest, RecordsUkmOnDestruction) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  auto test_context = std::make_unique<TestGlicMediaContext>(rfh());
+  test_context->SetMediaSession(&mock_media_session());
+  test_context->OnResult(CreateSpeechRecognitionResult("test", true));
+  EXPECT_TRUE(test_context->HasTranscriptChunks());
+  test_context.reset();
+
+  auto entries = ukm_recorder.GetEntriesByName("Glic.MediaContext");
+  ASSERT_EQ(entries.size(), 1u);
+  ukm_recorder.ExpectEntryMetric(entries[0], "HasTranscript", 1);
+
+  test_context = std::make_unique<TestGlicMediaContext>(rfh());
+  test_context.reset();
+
+  entries = ukm_recorder.GetEntriesByName("Glic.MediaContext");
+  ASSERT_EQ(entries.size(), 2u);
+  ukm_recorder.ExpectEntryMetric(entries[1], "HasTranscript", 0);
 }
 
 }  // namespace glic

@@ -24,13 +24,18 @@
 #include "content/public/browser/web_contents.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
 #include "services/media_session/public/cpp/media_metadata.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 
 namespace glic {
 
 DOCUMENT_USER_DATA_KEY_IMPL(GlicMediaContext);
 
 GlicMediaContext::GlicMediaContext(content::RenderFrameHost* frame)
-    : DocumentUserData(frame) {}
+    : DocumentUserData(frame),
+      // It is safe to access the frame here because DocumentUserData ensures
+      // that GlicMediaContext is only constructed for a valid RenderFrameHost.
+      ukm_source_id_(frame->GetPageUkmSourceId()) {}
 
 GlicMediaContext::~GlicMediaContext() {
   // If we got any transcript, then record its max length we saw as its total.
@@ -43,6 +48,10 @@ GlicMediaContext::~GlicMediaContext() {
                                transcript->max_transcript_size_);
     }
   }
+
+  ukm::builders::Glic_MediaContext(ukm_source_id_)
+      .SetHasTranscript(has_recorded_any_final_chunk_)
+      .Record(ukm::UkmRecorder::Get());
 }
 
 bool GlicMediaContext::OnResult(const media::SpeechRecognitionResult& result) {
@@ -137,6 +146,7 @@ void GlicMediaContext::HandleNonFinalResult(Transcript* transcript,
 
 void GlicMediaContext::HandleFinalResult(Transcript* transcript,
                                          TranscriptChunk new_chunk) {
+  has_recorded_any_final_chunk_ = true;
   if (transcript->nonfinal_chunk_it_ != transcript->transcript_chunks_.end()) {
     // A non-final chunk exists and we will remove it so that the new final
     // chunk can be added in media time order.
@@ -262,6 +272,7 @@ bool GlicMediaContext::HasTranscriptChunks() const {
 
 void GlicMediaContext::ClearAllTranscripts() {
   transcripts_by_title_.clear();
+  has_recorded_any_final_chunk_ = false;
 }
 
 void GlicMediaContext::OnPeerConnectionAdded() {

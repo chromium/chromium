@@ -39,6 +39,7 @@ source_set("media") {
       "//components/optimization_guide/content/browser",
       "//components/optimization_guide/proto:optimization_guide_proto",
       "//services/media_session/public/cpp",
+      "//services/metrics/public/cpp:ukm_builders",
     ]
   }
 }
@@ -66,6 +67,7 @@ if (!is_android) {
       "//components/optimization_guide/content/browser",
       "//components/optimization_guide/content/browser:test_support",
       "//components/soda",
+      "//components/ukm:test_support",
       "//testing/gmock",
       "//testing/gtest",
     ]

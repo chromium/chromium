@@ -10755,6 +10755,28 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Glic.MediaContext">
+  <owner>ahmedmoussa@google.com</owner>
+  <owner>liberato@chromium.org</owner>
+  <summary>
+    Recorded when a GlicMediaContext (associated with a document/frame) is
+    destroyed, storing the origin/domain of the document and whether any
+    transcripts were recorded.
+  </summary>
+  <metric name="HasTranscript" enum="Boolean">
+    <summary>
+      Whether any transcript chunks were recorded in GlicMediaContext.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="Glic.Onboarding">
   <owner>sanaakbani@google.com</owner>
   <owner>birnie@google.com</owner>
