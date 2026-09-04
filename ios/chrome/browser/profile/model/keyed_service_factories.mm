@@ -81,6 +81,7 @@
 #import "ios/chrome/browser/enterprise/groups/model/enterprise_groups_profile_handler_factory.h"
 #import "ios/chrome/browser/enterprise/identifiers/profile_id_service_factory_ios.h"
 #import "ios/chrome/browser/enterprise/model/idle/idle_service_factory.h"
+#import "ios/chrome/browser/enterprise/proxy/model/proxy_service_controller_factory.h"
 #import "ios/chrome/browser/enterprise/signals/model/ios_signals_aggregator_factory.h"
 #import "ios/chrome/browser/external_files/model/external_file_remover_factory.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
@@ -420,6 +421,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   PriceInsightsModelFactory::GetInstance();
   PrivateAiServiceFactory::GetInstance();
   PromosManagerFactory::GetInstance();
+  ProxyServiceControllerFactory::GetInstance();
   ProvisionalPushNotificationServiceFactory::GetInstance();
   PushNotificationProfileServiceFactory::GetInstance();
   ReadingListModelFactory::GetInstance();
