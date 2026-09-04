@@ -213,6 +213,10 @@ class CONTENT_EXPORT WebContentsViewAura
   virtual void EndDrag(base::WeakPtr<RenderWidgetHostImpl> source_rwh_weak_ptr,
                        ui::mojom::DragOperation op);
 
+  // Clears drag-and-drop state when a drag attempt fails to start (e.g. due to
+  // drag failures from system/OS errors during initiation).
+  void ClearDragStateOnStartFailure(RenderWidgetHostImpl* source_rwh);
+
   void InstallOverscrollControllerDelegate(RenderWidgetHostViewAura* view);
 
   ui::TouchSelectionController* GetSelectionController() const;
