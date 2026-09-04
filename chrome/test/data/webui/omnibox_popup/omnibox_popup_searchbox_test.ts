@@ -2301,4 +2301,41 @@ suite('OmniboxPopupSearchboxTest', function() {
    assertEquals(
        'temporary text', searchbox.getInputElement().inputElement.value);
  });
+
+ test('TabKeyWithVirtualFocusNavigatesToKeywordChip', async () => {
+   loadTimeData.overrideValues({realboxVirtualFocusNavigation: true});
+   searchbox.virtualFocusEnabled = true;
+
+   const match = createSearchMatchForTesting({
+     allowedToBeDefaultMatch: true,
+     fillIntoEdit: 'youtube.com',
+     keywordModel: createMatchKeywordModelForTesting({
+       type: KeywordType.kChip,
+       keyword: 'youtube.com',
+       chipHint: 'Search YouTube',
+     }),
+   });
+   searchbox.activeQueryId = 0;
+   searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+     queryId: 0,
+     input: 'youtube.com',
+     matches: [match],
+   }));
+   await microtasksFinished();
+
+   searchbox.focusInput();
+   const tabEvent = new KeyboardEvent('keydown', {
+     key: 'Tab',
+     cancelable: true,
+     bubbles: true,
+   });
+   await searchbox.handleKeyNavigation(tabEvent);
+   await microtasksFinished();
+
+   assertEquals(0, searchbox.selection.line);
+   assertEquals(SelectionLineState.kKeywordMode, searchbox.selection.state);
+   assertTrue(searchbox.keywordModeManager.isInKeywordMode);
+   assertEquals('youtube.com', searchbox.inputKeywordModel?.keyword);
+   assertEquals('', searchbox.getInputElement().inputElement.value);
+ });
 });

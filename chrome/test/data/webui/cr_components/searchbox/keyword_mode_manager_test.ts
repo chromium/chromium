@@ -5,7 +5,7 @@
 import {KeywordModeEntryMethod, KeywordModeManager} from '//resources/cr_components/searchbox/keyword_mode_manager.js';
 import type {KeywordClearedEvent} from '//resources/cr_components/searchbox/keyword_mode_manager.js';
 import {createMatchKeywordModelForTesting, createSearchMatchForTesting} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
-import {KeywordType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {KeywordType, SelectionLineState} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('KeywordModeManagerTest', () => {
@@ -397,6 +397,8 @@ suite('KeywordModeManagerTest', () => {
         'other fill',
         manager.formatMatchFillIntoEdit(otherMatch, /*matchIndex=*/ 1));
 
+    manager.exit();
+
     // Default match with lastQueriedInput -> restores lastQueriedInput +
     // inlineAutocompletion.
     const urlMatch = createSearchMatchForTesting({
@@ -471,13 +473,57 @@ suite('KeywordModeManagerTest', () => {
     manager.onSelectedMatchChanged(matchWithoutKeyword);
     assertFalse(manager.isInKeywordMode);
     assertEquals(null, manager.inputKeywordModel);
+
+    // Match with keyword chip when chip is selected -> enters keyword mode.
+    manager.onSelectedMatchChanged(
+        matchWithKeyword,
+        {line: 0, state: SelectionLineState.kKeywordMode, actionIndex: 0});
+    assertTrue(manager.isInKeywordMode);
+    assertEquals(KeywordType.kInKeyword, manager.inputKeywordModel?.type);
+    assertEquals('youtube.com', manager.inputKeywordModel?.keyword);
+    assertEquals('Search YouTube', manager.inputKeywordModel?.displayText);
+
+    // Navigating away from keyword chip to action button -> exits keyword mode.
+    manager.onSelectedMatchChanged(matchWithKeyword, {
+      line: 0,
+      state: SelectionLineState.kFocusedButtonAction,
+      actionIndex: 0,
+    });
+    assertFalse(manager.isInKeywordMode);
+    assertEquals(KeywordType.kChip, manager.inputKeywordModel?.type);
   });
 
-  test('formatMatchFillIntoEdit for exact keyword', () => {
-    manager.enter('@bookmarks', 'Bookmarks', KeywordModeEntryMethod.TAB);
-    const match = createSearchMatchForTesting({
-      fillIntoEdit: '@bookmarks',
+  test('formatMatchFillIntoEdit in keyword mode', () => {
+    manager.enter('youtube.com', 'Search YouTube', KeywordModeEntryMethod.TAB);
+
+    // Exact keyword fill on default match with lastQueriedInput -> returns ''.
+    const defaultKeywordMatch = createSearchMatchForTesting({
+      fillIntoEdit: 'youtube.com',
+      allowedToBeDefaultMatch: true,
+      keywordModel: createMatchKeywordModelForTesting({
+        type: KeywordType.kChip,
+        keyword: 'youtube.com',
+      }),
     });
-    assertEquals('', manager.formatMatchFillIntoEdit(match, /*matchIndex=*/ 1));
+    assertEquals(
+        '',
+        manager.formatMatchFillIntoEdit(
+            defaultKeywordMatch, /*matchIndex=*/ 0,
+            /*lastQueriedInput=*/ 'youtube.com'));
+
+    // Keyword match with query fill -> returns query part.
+    const searchMatch = createSearchMatchForTesting({
+      fillIntoEdit: 'youtube.com funny cats',
+    });
+    assertEquals(
+        'funny cats',
+        manager.formatMatchFillIntoEdit(searchMatch, /*matchIndex=*/ 1));
+
+    // Keyword match with exact keyword fill -> returns ''.
+    const exactMatch = createSearchMatchForTesting({
+      fillIntoEdit: 'youtube.com',
+    });
+    assertEquals(
+        '', manager.formatMatchFillIntoEdit(exactMatch, /*matchIndex=*/ 1));
   });
 });

@@ -8,7 +8,7 @@ import {SearchboxBrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import type {SearchboxMatchElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {createAutocompleteMatch, createMatchKeywordModelForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {NavigationPredictor} from 'chrome://resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
-import {SelectionLineState} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {KeywordType, SelectionLineState} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertArrayEquals, assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -394,5 +394,41 @@ suite('CrComponentsRealboxMatchTest', () => {
     };
     await microtasksFinished();
     assertEquals('Search Google, Google', matchEl.ariaLabel);
+  });
+
+  test('InstantKeywordMatchClickFiresKeywordClickAndRefocuses', async () => {
+    matchEl.match = createAutocompleteMatch({
+      destinationUrl: 'http://bookmarks',
+      keywordModel: createMatchKeywordModelForTesting({
+        type: KeywordType.kInstant,
+        keyword: '@bookmarks',
+        chipHint: 'Bookmarks',
+      }),
+    });
+    matchEl.matchIndex = 1;
+    await microtasksFinished();
+
+    // Mousedown on instant keyword match prevents default (avoiding focus
+    // loss).
+    const mousedownEvent = new MouseEvent('mousedown', {
+      button: 0,
+      cancelable: true,
+    });
+    matchEl.dispatchEvent(mousedownEvent);
+    assertTrue(mousedownEvent.defaultPrevented);
+
+    const keywordClickPromise = eventToPromise('keyword-click', matchEl);
+    const clickEvent = new MouseEvent('click', {
+      button: 0,
+      cancelable: true,
+    });
+    matchEl.dispatchEvent(clickEvent);
+
+    const event = await keywordClickPromise as CustomEvent;
+    assertEquals(matchEl.match, event.detail.match);
+    assertEquals(1, event.detail.matchIndex);
+
+    assertEquals(1, testProxy.handler.getCallCount('activateKeyword'));
+    assertEquals(0, testProxy.handler.getCallCount('openAutocompleteMatch'));
   });
 });
