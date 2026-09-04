@@ -543,4 +543,28 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
             }
         }
     }
+
+    /**
+     * Sets the selected suggestion in the accessory bar by its original backend index.
+     *
+     * <p>This is an absolute visual selection setter used to synchronize the UI with an external
+     * selection state (e.g., when hover or selection is driven externally by pointer/mouse, or
+     * cleared with {@code null}). It updates the visual hover/selected state of the matching
+     * accessory bar item without notifying the {@link AutofillDelegate}, preventing duplicate or
+     * cyclical callbacks back to the backend.
+     *
+     * @param suggestionIndex The original index of the suggestion in the backend list, or {@code
+     *     null} to clear the selection.
+     */
+    public void setSelectedSuggestion(@Nullable Integer suggestionIndex) {
+        mMediator.setSelectedSuggestion(suggestionIndex);
+    }
+
+    /**
+     * Returns the original backend index of the currently selected suggestion, or {@code null} if
+     * no suggestion is selected.
+     */
+    @Nullable Integer getSelectedSuggestionForTesting() {
+        return mModel.get(KeyboardAccessoryProperties.SELECTED_SUGGESTION_INDEX);
+    }
 }

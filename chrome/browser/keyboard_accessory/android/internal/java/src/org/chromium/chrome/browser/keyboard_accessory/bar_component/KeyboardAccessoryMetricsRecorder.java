@@ -62,6 +62,7 @@ class KeyboardAccessoryMetricsRecorder {
                     || propertyKey == KeyboardAccessoryProperties.OBFUSCATED_CHILD_AT_CALLBACK
                     || propertyKey == KeyboardAccessoryProperties.HAS_SUGGESTIONS
                     || propertyKey == KeyboardAccessoryProperties.HAS_STICKY_LAST_ITEM
+                    || propertyKey == KeyboardAccessoryProperties.SELECTED_SUGGESTION_INDEX
                     || propertyKey == KeyboardAccessoryProperties.ANIMATE_SUGGESTIONS_FROM_TOP
                     || propertyKey == KeyboardAccessoryProperties.ANIMATION_LISTENER) {
                 return;

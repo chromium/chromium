@@ -14,6 +14,7 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.HAS_SUGGESTIONS;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.OBFUSCATED_CHILD_AT_CALLBACK;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ON_TOUCH_EVENT_CALLBACK;
+import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SELECTED_SUGGESTION_INDEX;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHEET_OPENER_ITEM;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHOW_SWIPING_IPH;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SKIP_CLOSING_ANIMATION;
@@ -152,6 +153,9 @@ class KeyboardAccessoryMediator
      *     views.
      */
     void setSuggestions(List<AutofillSuggestion> suggestions, AutofillDelegate delegate) {
+        // TODO(crbug.com/542535472): Identify and restore the selected element across suggestion
+        // updates to avoid losing selection on async loads.
+        mModel.set(SELECTED_SUGGESTION_INDEX, null);
         List<BarItem> retainedItems = collectItemsToRetain(AccessoryAction.AUTOFILL_SUGGESTION);
         retainedItems.addAll(toBarItems(suggestions, delegate));
         setBarContents(retainedItems);
@@ -164,6 +168,26 @@ class KeyboardAccessoryMediator
             }
         }
         return false;
+    }
+
+    /**
+     * Updates the visual selection/hover state of the suggestion chips in the accessory bar to
+     * match the given {@code suggestionIndex} (which refers to the original index in the backend
+     * suggestions list). If no item matches (or if {@code suggestionIndex} is {@code null}), all
+     * suggestion items are unselected.
+     *
+     * <p>This method is a pure UI synchronizer for absolute selection (e.g., when hover or
+     * selection is driven externally by mouse/touch or when clearing preview). It deliberately does
+     * NOT notify {@link AutofillDelegate#suggestionSelectionStateChanged} to avoid circular or
+     * duplicate callback events.
+     *
+     * @param suggestionIndex The original index of the suggestion in the backend list to select, or
+     *     {@code null} to clear selection.
+     */
+    void setSelectedSuggestion(@Nullable Integer suggestionIndex) {
+        assert suggestionIndex == null || suggestionIndex >= 0
+                : "Suggestion index must be null or non-negative: " + suggestionIndex;
+        mModel.set(SELECTED_SUGGESTION_INDEX, suggestionIndex);
     }
 
     @Override
@@ -516,6 +540,7 @@ class KeyboardAccessoryMediator
                 || propertyKey == SHOW_SWIPING_IPH
                 || propertyKey == HAS_SUGGESTIONS
                 || propertyKey == HAS_STICKY_LAST_ITEM
+                || propertyKey == SELECTED_SUGGESTION_INDEX
                 || propertyKey == ANIMATE_SUGGESTIONS_FROM_TOP
                 || propertyKey == ANIMATION_LISTENER
                 || propertyKey == BAR_ITEMS_FIXED) {

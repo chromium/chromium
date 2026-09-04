@@ -16,6 +16,7 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.HAS_SUGGESTIONS;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.OBFUSCATED_CHILD_AT_CALLBACK;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ON_TOUCH_EVENT_CALLBACK;
+import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SELECTED_SUGGESTION_INDEX;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHEET_OPENER_ITEM;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHOW_SWIPING_IPH;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SKIP_CLOSING_ANIMATION;
@@ -607,6 +608,8 @@ class KeyboardAccessoryViewBinder {
             view.setHasStickyLastItem(model.get(HAS_STICKY_LAST_ITEM));
         } else if (propertyKey == ANIMATE_SUGGESTIONS_FROM_TOP) {
             view.setAnimateSuggestionsFromTop(model.get(ANIMATE_SUGGESTIONS_FROM_TOP));
+        } else if (propertyKey == SELECTED_SUGGESTION_INDEX) {
+            // TODO(crbug.com/542535472): Binding will be added in the next CL.
         } else if (propertyKey == SHEET_OPENER_ITEM || propertyKey == DISMISS_ITEM) {
             // No binding required.
         } else {
