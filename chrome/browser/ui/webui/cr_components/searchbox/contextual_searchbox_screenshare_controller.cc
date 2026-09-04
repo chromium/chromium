@@ -106,6 +106,11 @@ std::optional<lens::ImageEncodingOptions> CreateImageEncodingOptions() {
 }
 
 }  // namespace
+
+#if BUILDFLAG(IS_MAC)
+BASE_FEATURE(kOmniboxEverywhereNativeScreenPicker,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 ContextualSearchboxScreenshareController::
@@ -184,10 +189,9 @@ void ContextualSearchboxScreenshareController::StartScreenshareInternal(
 
   bool use_native_picker = false;
 #if BUILDFLAG(IS_MAC)
-  if (base::mac::MacOSMajorVersion() >= 14) {
-    use_native_picker =
-        base::FeatureList::IsEnabled(media::kUseSCContentSharingPicker);
-  }
+  use_native_picker =
+      base::mac::MacOSVersion() >= 26'04'00 &&
+      base::FeatureList::IsEnabled(kOmniboxEverywhereNativeScreenPicker);
 #endif
 
   auto safe_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(

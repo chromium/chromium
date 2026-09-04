@@ -180,6 +180,8 @@ class ContextualSearchboxScreenshareControllerTest
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 #if BUILDFLAG(IS_MAC)
+    scoped_feature_list_.InitAndDisableFeature(
+        kOmniboxEverywhereNativeScreenPicker);
     default_picker_test_flags_.expect_screens = true;
     default_picker_test_flags_.expect_windows = false;
     default_picker_test_flags_.picker_result =
@@ -194,6 +196,9 @@ class ContextualSearchboxScreenshareControllerTest
 
   void TearDown() override {
     controller_.reset();
+#if BUILDFLAG(IS_MAC)
+    scoped_feature_list_.Reset();
+#endif
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -246,6 +251,7 @@ class ContextualSearchboxScreenshareControllerTest
   std::unique_ptr<ContextualSearchboxScreenshareController> controller_;
   ntp_composebox::ScopedFeatureConfigForTesting scoped_config_;
 #if BUILDFLAG(IS_MAC)
+  base::test::ScopedFeatureList scoped_feature_list_;
   FakeDesktopMediaPickerFactory default_picker_factory_;
   FakeDesktopMediaPickerFactory::TestFlags default_picker_test_flags_;
 #endif
@@ -686,12 +692,13 @@ using content::desktop_capture::ScopedNativePickerForTesting;
 
 TEST_F(ContextualSearchboxScreenshareControllerTest,
        StartScreenshare_NativePicker_Success) {
-  if (base::mac::MacOSMajorVersion() < 14) {
-    GTEST_SKIP() << "Native picker only supported on macOS 14+";
+  if (base::mac::MacOSVersion() < 26'04'00) {
+    GTEST_SKIP() << "Native picker only supported on macOS 26.4+";
   }
 
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(media::kUseSCContentSharingPicker);
+  scoped_feature_list.InitAndEnableFeature(
+      kOmniboxEverywhereNativeScreenPicker);
   SetupScreenshotUploadConfig();
 
   EXPECT_CALL(delegate(), OnScreensharePickerOpened());
@@ -736,12 +743,13 @@ TEST_F(ContextualSearchboxScreenshareControllerTest,
 
 TEST_F(ContextualSearchboxScreenshareControllerTest,
        StartScreenshare_NativePicker_Cancelled) {
-  if (base::mac::MacOSMajorVersion() < 14) {
-    GTEST_SKIP() << "Native picker only supported on macOS 14+";
+  if (base::mac::MacOSVersion() < 26'04'00) {
+    GTEST_SKIP() << "Native picker only supported on macOS 26.4+";
   }
 
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(media::kUseSCContentSharingPicker);
+  scoped_feature_list.InitAndEnableFeature(
+      kOmniboxEverywhereNativeScreenPicker);
 
   EXPECT_CALL(delegate(), OnScreensharePickerOpened());
   EXPECT_CALL(delegate(), OnScreensharePickerClosed());
@@ -758,12 +766,13 @@ TEST_F(ContextualSearchboxScreenshareControllerTest,
 
 TEST_F(ContextualSearchboxScreenshareControllerTest,
        StartScreenshare_NativePicker_Error_FallsBackToDefaultPicker) {
-  if (base::mac::MacOSMajorVersion() < 14) {
-    GTEST_SKIP() << "Native picker only supported on macOS 14+";
+  if (base::mac::MacOSVersion() < 26'04'00) {
+    GTEST_SKIP() << "Native picker only supported on macOS 26.4+";
   }
 
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(media::kUseSCContentSharingPicker);
+  scoped_feature_list.InitAndEnableFeature(
+      kOmniboxEverywhereNativeScreenPicker);
   SetupScreenshotUploadConfig();
 
   EXPECT_CALL(delegate(), OnScreensharePickerOpened());
@@ -817,13 +826,14 @@ TEST_F(ContextualSearchboxScreenshareControllerTest,
 }
 TEST_F(ContextualSearchboxScreenshareControllerTest,
        CaptureRegionScreenshot_NativePicker_Success) {
-  if (base::mac::MacOSMajorVersion() < 14) {
+  if (base::mac::MacOSVersion() < 26'04'00) {
     GTEST_SKIP()
-        << "Native picker for region capture only supported on macOS 14+";
+        << "Native picker for region capture only supported on macOS 26.4+";
   }
 
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(media::kUseSCContentSharingPicker);
+  scoped_feature_list.InitAndEnableFeature(
+      kOmniboxEverywhereNativeScreenPicker);
   SetupScreenshotUploadConfig();
 
   EXPECT_CALL(delegate(), OnScreensharePickerOpened());
@@ -875,13 +885,14 @@ TEST_F(ContextualSearchboxScreenshareControllerTest,
 
 TEST_F(ContextualSearchboxScreenshareControllerTest,
        CaptureRegionScreenshot_NativePicker_Cancelled) {
-  if (base::mac::MacOSMajorVersion() < 14) {
+  if (base::mac::MacOSVersion() < 26'04'00) {
     GTEST_SKIP()
-        << "Native picker for region capture only supported on macOS 14+";
+        << "Native picker for region capture only supported on macOS 26.4+";
   }
 
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(media::kUseSCContentSharingPicker);
+  scoped_feature_list.InitAndEnableFeature(
+      kOmniboxEverywhereNativeScreenPicker);
 
   EXPECT_CALL(delegate(), OnScreensharePickerOpened());
   EXPECT_CALL(delegate(), OnScreensharePickerClosed());
