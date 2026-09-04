@@ -364,6 +364,11 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // factors.
   feature_overrides.EnableFeature(chrome::android::kAccountPickerDialog);
 
+  // Disables the Grid Tab Switcher (Hub layout) on Desktop Android in favor of
+  // the desktop tab strip.
+  // TODO(crbug.com/545634112): Remove when launched to 100% on Desktop Android.
+  feature_overrides.EnableFeature(chrome::android::kDisableGridTabSwitcher);
+
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
   // Desktop-first features which are past incubation should either end up here,
   // or to a finch trial that enables it for all form factors.

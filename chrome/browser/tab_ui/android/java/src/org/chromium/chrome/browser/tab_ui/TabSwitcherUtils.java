@@ -8,6 +8,8 @@ import static org.chromium.build.NullUtil.assertNonNull;
 
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.FeatureOverrides;
+import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -29,10 +31,25 @@ public class TabSwitcherUtils {
      * Returns whether the Grid Tab Switcher should be disabled. True when the
      * DisableGridTabSwitcher feature flag is enabled on Desktop Android.
      *
+     * <p>In test environments, this defaults to false unless explicitly overridden via
+     * {@code @EnableFeatures} or {@link FeatureOverrides}.
+     *
      * TODO(crbug.com/545634112): This may also be considered for tablets behind a different flag.
      */
     public static boolean isGridTabSwitcherDisabled() {
-        return ChromeFeatureList.sDisableGridTabSwitcher.isEnabled() && DeviceInfo.isDesktop();
+        if (!DeviceInfo.isDesktop()) {
+            return false;
+        }
+        if (BuildConfig.IS_FOR_TEST) {
+            Boolean testValue =
+                    FeatureOverrides.getTestValueForFeature(
+                            ChromeFeatureList.DISABLE_GRID_TAB_SWITCHER);
+            if (testValue == null) {
+                return false;
+            }
+            return testValue;
+        }
+        return ChromeFeatureList.sDisableGridTabSwitcher.isEnabled();
     }
 
     /**
