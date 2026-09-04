@@ -102,6 +102,7 @@ class WebApkInstallService : public KeyedService {
   // Removes current notifications about an ongoing install and adds a
   // installed-notification if the installation was successful.
   void HandleFinishInstallNotificationsAndMaybeLaunch(
+      content::WebContents* web_contents,
       const GURL& manifest_url,
       const GURL& url,
       const std::u16string& short_name,
@@ -121,6 +122,7 @@ class WebApkInstallService : public KeyedService {
 
   // Shows a notification that an install is completed.
   static void ShowInstalledNotificationAndMaybeLaunch(
+      content::WebContents* web_contents,
       const GURL& manifest_url,
       const std::u16string& short_name,
       const GURL& url,

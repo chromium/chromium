@@ -4,17 +4,29 @@
 
 package org.chromium.chrome.browser.webapps;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
+import android.app.Application;
 import android.app.Notification;
 import android.app.Notification.Action;
 import android.app.NotificationManager;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -28,13 +40,19 @@ import org.robolectric.shadows.ShadowNotificationManager;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.AsyncTabParams;
 import org.chromium.components.browser_ui.notifications.NotificationFeatureMap;
 import org.chromium.components.webapps.WebApkInstallResult;
+import org.chromium.content_public.browser.WebContents;
 
 /** Tests WebAPKs install notifications from {@link WebApkInstallService}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -60,6 +78,14 @@ public class WebApkInstallNotificationTest {
                 shadowOf(
                         (NotificationManager)
                                 mContext.getSystemService(Context.NOTIFICATION_SERVICE));
+    }
+
+    @After
+    public void tearDown() {
+        IntentHandler.setTestIntentsEnabled(false);
+        DeviceInfo.setIsDesktopForTesting(false);
+        ContextUtils.initApplicationContextForTests(ApplicationProvider.getApplicationContext());
+        WebApkReparentingHandler.getInstance().clear();
     }
 
     @Test
@@ -90,7 +116,13 @@ public class WebApkInstallNotificationTest {
     @Test
     public void testCompleteNotification() {
         WebApkInstallService.showInstalledNotificationAndMaybeLaunch(
-                PACKAGE_NAME, MANIFEST_URL, SHORT_NAME, URL, mIcon, /* isIconMaskable= */ false);
+                /* originatingTab= */ null,
+                PACKAGE_NAME,
+                MANIFEST_URL,
+                SHORT_NAME,
+                URL,
+                mIcon,
+                /* isIconMaskable= */ false);
 
         Notification notification = mShadowNotificationManager.getAllNotifications().get(0);
 
@@ -155,9 +187,100 @@ public class WebApkInstallNotificationTest {
         DeviceInfo.setIsDesktopForTesting(true);
 
         WebApkInstallService.showInstalledNotificationAndMaybeLaunch(
-                PACKAGE_NAME, MANIFEST_URL, SHORT_NAME, URL, mIcon, /* isIconMaskable= */ false);
+                /* originatingTab= */ null,
+                PACKAGE_NAME,
+                MANIFEST_URL,
+                SHORT_NAME,
+                URL,
+                mIcon,
+                /* isIconMaskable= */ false);
 
         Notification notification = mShadowNotificationManager.getAllNotifications().get(0);
         Assert.assertNotNull(notification);
+    }
+
+    @Test
+    public void testCompleteNotification_desktopAutoLaunch_withReparenting() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        IntentHandler.setTestIntentsEnabled(true);
+
+        final int tabId = 10;
+        Tab mockTab = mock(Tab.class);
+        UserDataHost userDataHost = new UserDataHost();
+        when(mockTab.getUserDataHost()).thenReturn(userDataHost);
+        when(mockTab.getId()).thenReturn(tabId);
+
+        WebContents mockWebContents = mock(WebContents.class);
+        when(mockTab.getWebContents()).thenReturn(mockWebContents);
+
+        WebApkInstallService.showInstalledNotificationAndMaybeLaunch(
+                mockTab,
+                PACKAGE_NAME,
+                MANIFEST_URL,
+                SHORT_NAME,
+                URL,
+                mIcon,
+                /* isIconMaskable= */ false);
+
+        // Verify the WebAPK is launched via an Intent
+        Intent launchedIntent = shadowOf((Application) mContext).getNextStartedActivity();
+        Assert.assertNotNull(launchedIntent);
+
+        // Verify that the launch Intent has the reparent token attached
+        Assert.assertTrue(
+                launchedIntent.hasExtra(WebApkReparentingHandler.EXTRA_WEBAPK_REPARENT_TOKEN));
+        Assert.assertEquals(
+                tabId,
+                WebApkReparentingHandler.getInstance()
+                        .detachAndRegisterTabAndClear(launchedIntent));
+
+        AsyncTabParams params = AsyncTabParamsManagerSingleton.getInstance().remove(tabId);
+        Assert.assertNotNull(params);
+        Assert.assertEquals(mockTab, params.getTabToReparent());
+
+        // Verify that the tab was detached from the window for reparenting
+        verify(mockWebContents).setTopLevelNativeWindow(null);
+        verify(mockTab).updateAttachment(null, null);
+    }
+
+    @Test
+    public void testCompleteNotification_desktopAutoLaunch_startActivityFails_doesNotDetachTab() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        IntentHandler.setTestIntentsEnabled(true);
+
+        final int tabId = 10;
+        Tab mockTab = mock(Tab.class);
+        UserDataHost userDataHost = new UserDataHost();
+        lenient().when(mockTab.getUserDataHost()).thenReturn(userDataHost);
+        when(mockTab.getId()).thenReturn(tabId);
+
+        WebContents mockWebContents = mock(WebContents.class);
+        lenient().when(mockTab.getWebContents()).thenReturn(mockWebContents);
+
+        Context spyContext = spy(mContext);
+        doThrow(new ActivityNotFoundException("Activity not found"))
+                .when(spyContext)
+                .startActivity(any());
+        ContextUtils.initApplicationContextForTests(spyContext);
+
+        WebApkInstallService.showInstalledNotificationAndMaybeLaunch(
+                mockTab,
+                PACKAGE_NAME,
+                MANIFEST_URL,
+                SHORT_NAME,
+                URL,
+                mIcon,
+                /* isIconMaskable= */ false);
+
+        // Verify that the notification is still shown even if auto-launch fails
+        Notification notification = mShadowNotificationManager.getAllNotifications().get(0);
+        Assert.assertNotNull(notification);
+
+        // Verify that the tab was NOT stored in AsyncTabParamsManager
+        Assert.assertFalse(AsyncTabParamsManagerSingleton.getInstance().hasParamsForTabId(tabId));
+
+        // Verify that the tab was NEVER detached
+        verify(mockWebContents, never()).setTopLevelNativeWindow(any());
+        verify(mockTab, never()).updateAttachment(any(), any());
     }
 }

@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.intents.BrowserIntentUtils;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.webapk.lib.common.WebApkConstants;
@@ -386,6 +387,12 @@ public class WebappLauncherActivity extends Activity {
 
         if (launchData.isForWebApk) {
             WebappIntentUtils.copyWebApkLaunchIntentExtras(intent, launchIntent);
+            int reparentTabId =
+                    WebApkReparentingHandler.getInstance().detachAndRegisterTabAndClear(intent);
+            if (reparentTabId != Tab.INVALID_TAB_ID) {
+                IntentHandler.setTabId(launchIntent, reparentTabId);
+                IntentUtils.addTrustedIntentExtras(launchIntent);
+            }
         } else {
             WebappIntentUtils.copyWebappLaunchIntentExtras(intent, launchIntent);
             launchIntent.putExtra(WebappConstants.EXTRA_IS_ICON_TRUSTED, launchData.isIconTrusted);

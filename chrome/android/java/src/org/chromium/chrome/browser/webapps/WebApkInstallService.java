@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.SystemNotificationType;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
@@ -49,6 +50,7 @@ public class WebApkInstallService {
     @CalledByNative
     @VisibleForTesting
     static void showInstalledNotificationAndMaybeLaunch(
+            @Nullable Tab originatingTab,
             @JniType("std::string") String webApkPackage,
             @JniType("std::string") String notificationId,
             @JniType("std::u16string") String shortName,
@@ -64,7 +66,7 @@ public class WebApkInstallService {
                 PendingIntentProvider.getActivity(
                         context, /* requestCode= */ 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        maybeLaunchWebApp(context, intent);
+        maybeLaunchWebApp(context, intent, originatingTab, webApkPackage, url);
 
         if (isIconMaskable) {
             icon = WebappsIconUtils.generateAdaptiveIconBitmap(icon);
@@ -80,13 +82,26 @@ public class WebApkInstallService {
                 clickPendingIntent);
     }
 
-    private static void maybeLaunchWebApp(Context context, Intent intent) {
+    private static void maybeLaunchWebApp(
+            Context context,
+            Intent intent,
+            @Nullable Tab originatingTab,
+            String webApkPackage,
+            String url) {
         if (!DeviceInfo.isDesktop()) return;
 
         try {
+            if (originatingTab != null && !originatingTab.isDestroyed()) {
+                WebApkReparentingHandler.getInstance()
+                        .prepareIntentForReparenting(intent, originatingTab, webApkPackage, url);
+            }
+
             // Auto-launch the installed WebAPK in its own standalone window on Desktop Android.
             context.startActivity(intent);
         } catch (Exception e) {
+            if (originatingTab != null) {
+                WebApkReparentingHandler.getInstance().clear();
+            }
             org.chromium.base.Log.e("WebApkInstallService", "Failed to launch installed WebAPK", e);
         }
     }
