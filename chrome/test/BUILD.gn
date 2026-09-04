@@ -2860,6 +2860,7 @@ if (!is_android) {
       "../renderer/accessibility/read_anything/read_anything_app_model_browsertest.cc",
       "../renderer/accessibility/read_anything/read_anything_test_utils.cc",
       "../renderer/accessibility/read_anything/read_anything_test_utils.h",
+      "../renderer/accessibility/read_anything/screen2x_distiller_browsertest.cc",
       "../renderer/autofill/autofill_renderer_browsertest.cc",
       "../renderer/autofill/fake_mojo_password_manager_driver.cc",
       "../renderer/autofill/fake_mojo_password_manager_driver.h",

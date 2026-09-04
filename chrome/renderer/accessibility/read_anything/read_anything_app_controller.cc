@@ -35,7 +35,9 @@
 #include "chrome/renderer/accessibility/phrase_segmentation/dependency_parser_model.h"
 #include "chrome/renderer/accessibility/read_anything/read_aloud_traversal_utils.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_app_model.h"
+#include "chrome/renderer/accessibility/read_anything/read_anything_distiller.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_node_utils.h"
+#include "chrome/renderer/accessibility/read_anything/screen2x_distiller.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/translate/core/common/translate_constants.h"
 #include "content/public/renderer/chrome_object_extensions_utils.h"
@@ -171,10 +173,19 @@ ReadAnythingAppController::ReadAnythingAppController(
       base::BindRepeating(&ReadAnythingAppController::OnPdfDebounceFinished,
                           weak_ptr_factory_.GetWeakPtr()));
   renderer_load_triggered_time_ms_ = base::TimeTicks::Now();
-  distiller_ = std::make_unique<AXTreeDistiller>(
-      render_frame,
-      base::BindRepeating(&ReadAnythingAppController::OnAXTreeDistilled,
-                          weak_ptr_factory_.GetWeakPtr()));
+  if (features::IsReadAnythingDistillerRefactorEnabled()) {
+    active_distiller_ = std::make_unique<Screen2xDistiller>(
+        render_frame,
+        base::BindRepeating(&ReadAnythingAppModel::is_screen_ai_service_ready,
+                            base::Unretained(&model_)),
+        base::BindRepeating(&ReadAnythingAppController::OnDistillationComplete,
+                            weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    distiller_ = std::make_unique<AXTreeDistiller>(
+        render_frame,
+        base::BindRepeating(&ReadAnythingAppController::OnAXTreeDistilled,
+                            weak_ptr_factory_.GetWeakPtr()));
+  }
   // TODO(crbug.com/40915547): Use a global ukm recorder instance instead.
   mojo::Remote<ukm::mojom::UkmRecorderFactory> factory;
   content::RenderThread::Get()->BindHostReceiver(
@@ -802,13 +813,6 @@ void ReadAnythingAppController::Distill() {
     waiting_for_tree_id_ = true;
     return;
   }
-  std::unique_ptr<
-      ui::AXTreeSource<const ui::AXNode*, ui::AXTreeData*, ui::AXNodeData>>
-      tree_source(tree->CreateTreeSource());
-  ui::AXTreeSerializer<const ui::AXNode*, std::vector<const ui::AXNode*>,
-                       ui::AXTreeUpdate*, ui::AXTreeData*, ui::AXNodeData>
-      serializer(tree_source.get());
-  ui::AXTreeUpdate snapshot;
   if (!tree->root()) {
     return;
   }
@@ -820,13 +824,29 @@ void ReadAnythingAppController::Distill() {
                         ? read_aloud_model_.default_language_code()
                         : tree_lang);
   }
-  CHECK(serializer.SerializeChanges(tree->root(), &snapshot));
+
   distillation_attempts_++;
   model_.set_screen2x_distiller_running(true);
   SetDistillationState(read_anything::mojom::ReadAnythingDistillationState::
                            kDistillationInProgress);
   VLOG(1) << "Distilling tree with ID: " << tree->GetAXTreeID();
-  distiller_->Distill(*tree, snapshot, model_.GetUkmSourceId());
+
+  if (features::IsReadAnythingDistillerRefactorEnabled()) {
+    DistillationRequest request;
+    request.tree = tree;
+    request.ukm_source_id = model_.GetUkmSourceId();
+    active_distiller_->Distill(request);
+  } else {
+    std::unique_ptr<
+        ui::AXTreeSource<const ui::AXNode*, ui::AXTreeData*, ui::AXNodeData>>
+        tree_source(tree->CreateTreeSource());
+    ui::AXTreeSerializer<const ui::AXNode*, std::vector<const ui::AXNode*>,
+                         ui::AXTreeUpdate*, ui::AXTreeData*, ui::AXNodeData>
+        serializer(tree_source.get());
+    ui::AXTreeUpdate snapshot;
+    CHECK(serializer.SerializeChanges(tree->root(), &snapshot));
+    distiller_->Distill(*tree, snapshot, model_.GetUkmSourceId());
+  }
 
   if (!has_logged_distillation_status_ &&
       !distillation_status_logging_delay_timer_.IsRunning()) {
@@ -835,6 +855,19 @@ void ReadAnythingAppController::Distill() {
         base::BindOnce(
             &ReadAnythingAppController::RecordScreen2xDistillationStatus,
             base::Unretained(this), /*just_hidden=*/false));
+  }
+}
+
+void ReadAnythingAppController::OnDistillationComplete(
+    const DistillationResult& result) {
+  CHECK(features::IsReadAnythingDistillerRefactorEnabled());
+  switch (result.type) {
+    case DistillationResult::Type::kAXNodeIds:
+      OnAXTreeDistilled(result.tree_id, result.node_ids);
+      break;
+    case DistillationResult::Type::kHTML:
+      // TODO(b/543987370): Implement readability distiller.
+      break;
   }
 }
 
@@ -1140,7 +1173,9 @@ void ReadAnythingAppController::OnSettingsRestoredFromPrefs(
 
 void ReadAnythingAppController::ScreenAIServiceReady() {
   model_.set_is_screen_ai_service_ready(true);
-  distiller_->ScreenAIServiceReady();
+  if (!features::IsReadAnythingDistillerRefactorEnabled() && distiller_) {
+    distiller_->ScreenAIServiceReady();
+  }
 }
 
 void ReadAnythingAppController::TogglePinState() {

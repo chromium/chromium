@@ -51,8 +51,10 @@ class MojoUkmRecorder;
 
 class AXTreeDistiller;
 class DependencyParserModel;
-class ReadAnythingAppControllerTest;
+struct DistillationResult;
 class ReadAnythingAppControllerReadabilityTest;
+class ReadAnythingAppControllerTest;
+class ReadAnythingDistiller;
 
 ///////////////////////////////////////////////////////////////////////////////
 // ReadAnythingAppController
@@ -409,6 +411,9 @@ class ReadAnythingAppController
   void OnAXTreeDistilled(const ui::AXTreeID& tree_id,
                          const std::vector<ui::AXNodeID>& content_node_ids);
 
+  // Called when distillation completes from the active ReadAnythingDistiller.
+  void OnDistillationComplete(const DistillationResult& result);
+
   // Inits the AXPosition with a starting node.
   // TODO(crbug.com/40927698): We should be able to use AXPosition in a way
   // where this isn't needed.
@@ -569,6 +574,8 @@ class ReadAnythingAppController
 
   bool IsHidden() const;
 
+  // TODO(crbug.com/554114724): Remove `distiller_` once the
+  // ReadAnythingDistiller refactoring is complete and enabled by default.
   std::unique_ptr<AXTreeDistiller> distiller_;
   mojo::Remote<read_anything::mojom::UntrustedPageHandlerFactory>
       page_handler_factory_;
@@ -604,6 +611,8 @@ class ReadAnythingAppController
   base::ScopedObservation<ReadAnythingAppModel,
                           ReadAnythingAppModel::ModelObserver>
       model_observer_{this};
+
+  std::unique_ptr<ReadAnythingDistiller> active_distiller_;
 
   // Observers of AXTrees, which are added / removed  as the `model_` changes
   // state.
