@@ -47,11 +47,12 @@ void BookmarkIOSUnitTestSupport::SetUp() {
       ManagedBookmarkServiceFactory::GetInstance(),
       ManagedBookmarkServiceFactory::GetDefaultFactory());
 
-  profile_ = std::move(test_profile_builder).Build();
+  profile_ =
+      profile_manager_.AddProfileWithBuilder(std::move(test_profile_builder));
 
   SetUpBrowserStateBeforeCreatingServices();
 
-  bookmark_model_ = ios::BookmarkModelFactory::GetForProfile(profile_.get());
+  bookmark_model_ = ios::BookmarkModelFactory::GetForProfile(profile_);
   if (wait_for_initialization_) {
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
   }
@@ -62,11 +63,19 @@ void BookmarkIOSUnitTestSupport::SetUp() {
   if (wait_for_initialization_) {
     // Some tests exercise account bookmarks. Make sure their permanent
     // folders exist.
-    ios::BookmarkModelFactory::GetForProfile(profile_.get())
-        ->CreateAccountPermanentFolders();
+    bookmark_model_->CreateAccountPermanentFolders();
   }
 
-  browser_ = std::make_unique<TestBrowser>(profile_.get());
+  browser_ = std::make_unique<TestBrowser>(profile_);
+}
+
+void BookmarkIOSUnitTestSupport::TearDown() {
+  browser_.reset();
+  profile_ = nullptr;
+  bookmark_model_ = nullptr;
+  managed_bookmark_service_ = nullptr;
+  pref_service_ = nullptr;
+  PlatformTest::TearDown();
 }
 
 void BookmarkIOSUnitTestSupport::SetUpBrowserStateBeforeCreatingServices() {}

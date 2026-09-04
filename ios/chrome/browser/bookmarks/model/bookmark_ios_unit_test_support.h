@@ -8,11 +8,12 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
-#include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "testing/platform_test.h"
+#import "base/memory/raw_ptr.h"
+#import "base/test/scoped_feature_list.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/platform_test.h"
 
 class Browser;
 class GURL;
@@ -33,6 +34,7 @@ class BookmarkIOSUnitTestSupport : public PlatformTest {
 
  protected:
   void SetUp() override;
+  void TearDown() override;
 
   // Allows subclasses to add custom logic immediately following the creation
   // of the BrowserState, before keyed services are created.
@@ -55,11 +57,13 @@ class BookmarkIOSUnitTestSupport : public PlatformTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestProfileManagerIOS profile_manager_;
   std::unique_ptr<Browser> browser_;
-  std::unique_ptr<TestProfileIOS> profile_;
-  raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
-  raw_ptr<bookmarks::ManagedBookmarkService> managed_bookmark_service_;
-  raw_ptr<PrefService> pref_service_;
+  raw_ptr<TestProfileIOS> profile_ = nullptr;
+  raw_ptr<bookmarks::BookmarkModel> bookmark_model_ = nullptr;
+  raw_ptr<bookmarks::ManagedBookmarkService> managed_bookmark_service_ =
+      nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
 };
 
 #endif  // IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARK_IOS_UNIT_TEST_SUPPORT_H_

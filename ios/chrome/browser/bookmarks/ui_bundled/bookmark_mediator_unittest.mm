@@ -60,13 +60,21 @@ class BookmarkMediatorUnitTest
   void SetUp() override {
     BookmarkIOSUnitTestSupport::SetUp();
     authentication_service_ =
-        AuthenticationServiceFactory::GetForProfile(profile_.get());
+        AuthenticationServiceFactory::GetForProfile(profile_);
 
     mediator_ =
         [[BookmarkMediator alloc] initWithBookmarkModel:bookmark_model_.get()
                                                   prefs:profile_->GetPrefs()
                                   authenticationService:authentication_service_
                                             syncService:&sync_service_];
+  }
+
+  void TearDown() override {
+    [mediator_ disconnect];
+    mediator_ = nil;
+    authentication_service_ = nullptr;
+    account_manager_service_ = nullptr;
+    BookmarkIOSUnitTestSupport::TearDown();
   }
 
   // Number of bookmark saved.
@@ -160,9 +168,9 @@ class BookmarkMediatorUnitTest
     return base::SysUTF16ToNSString(message);
   }
 
-  BookmarkMediator* mediator_;
-  raw_ptr<ChromeAccountManagerService> account_manager_service_;
-  raw_ptr<AuthenticationService> authentication_service_;
+  BookmarkMediator* __strong mediator_ = nil;
+  raw_ptr<ChromeAccountManagerService> account_manager_service_ = nullptr;
+  raw_ptr<AuthenticationService> authentication_service_ = nullptr;
   syncer::TestSyncService sync_service_;
   base::test::ScopedFeatureList scope_;
   base::HistogramTester histogram_tester_;
