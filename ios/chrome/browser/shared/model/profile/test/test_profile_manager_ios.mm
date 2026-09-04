@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 
+#import <utility>
 #import <vector>
 
 #import "base/check.h"
@@ -39,10 +40,7 @@ TestProfileManagerIOS::TestProfileManagerIOS()
 TestProfileManagerIOS::~TestProfileManagerIOS() {
   CHECK_EQ(GetApplicationContext()->GetProfileManager(), this);
 
-  // Notify observers before unregistering from ApplicationContext.
-  for (auto& observer : observers_) {
-    observer.OnProfileManagerDestroyed(this);
-  }
+  PrepareForDestruction();
 
   // Unload all the profiles. This ensure that all their KeyedServices
   // (which may be using the AccountProfileMapper) are destroyed before
@@ -52,6 +50,12 @@ TestProfileManagerIOS::~TestProfileManagerIOS() {
     for (auto& observer : observers_) {
       observer.OnProfileUnloaded(this, profile.get());
     }
+  }
+  profiles_map.clear();
+
+  // Notify observers before unregistering from ApplicationContext.
+  for (auto& observer : observers_) {
+    observer.OnProfileManagerDestroyed(this);
   }
 
   TestingApplicationContext* app_context =
