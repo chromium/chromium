@@ -4118,7 +4118,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
                 Profile* profile = bwi->GetProfile();
-                if (profile->IsIncognitoProfile()) {
+                if (profile->IsPrimaryOTRProfileWithRegularParent()) {
                   chrome::CloseAllBrowsersWithIncognitoProfile(profile);
                 } else {
                   profiles::CloseProfileWindows(profile);
