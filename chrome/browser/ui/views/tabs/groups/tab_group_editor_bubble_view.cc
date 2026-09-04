@@ -15,6 +15,7 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
@@ -216,7 +217,8 @@ std::unique_ptr<views::Widget> TabGroupEditorBubbleView::Show(
 
   // In ozone/wayland platforms, BubbleDialogDelegateView ignores calls to
   // `set_adjust_if_offscreen()`. Instead calculate if there is not enough room
-  // below or to the right of the bubble and adjust the arrow position instead.
+  // below or to the trailing side of the bubble and adjust the arrow position
+  // instead.
 #if BUILDFLAG(IS_OZONE)
   if (!ui::OzonePlatform::GetInstance()
            ->GetPlatformProperties()
@@ -234,17 +236,20 @@ std::unique_ptr<views::Widget> TabGroupEditorBubbleView::Show(
           window_bounds.height() > 2 * bubble_size.height() &&
           window_bounds.bottom() - bubble_anchor_rect.bottom() <
               bubble_size.height();
-      const bool near_right =
+      const bool near_trailing =
           window_bounds.width() > 2 * bubble_size.width() &&
-          window_bounds.right() - bubble_anchor_rect.right() <
-              bubble_size.width();
-      if (near_bottom && near_right) {
+          (base::i18n::IsRTL()
+               ? bubble_anchor_rect.x() - window_bounds.x() <
+                     bubble_size.width()
+               : window_bounds.right() - bubble_anchor_rect.right() <
+                     bubble_size.width());
+      if (near_bottom && near_trailing) {
         tab_group_editor_bubble_view->SetArrow(
             views::BubbleBorder::Arrow::BOTTOM_RIGHT);
       } else if (near_bottom) {
         tab_group_editor_bubble_view->SetArrow(
             views::BubbleBorder::Arrow::BOTTOM_LEFT);
-      } else if (near_right) {
+      } else if (near_trailing) {
         tab_group_editor_bubble_view->SetArrow(
             views::BubbleBorder::Arrow::TOP_RIGHT);
       }
