@@ -427,7 +427,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
             if (!preferAndroidMediaPicker() && !window.hasPermission(storagePermission)) {
                 missingPermissions.add(storagePermission);
             }
-        } else {
+        } else if (!DeviceInfo.isDesktop()) {
             if (((mSupportsImageCapture && shouldShowImageTypes())
                             || (mSupportsVideoCapture && shouldShowVideoTypes()))
                     && !window.hasPermission(Manifest.permission.CAMERA)) {
@@ -737,6 +737,10 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
      * valid Android Activity associated with the file request.
      */
     private boolean shouldUsePhotoPicker() {
+        if (DeviceInfo.isDesktop()) {
+            return false;
+        }
+
         boolean isSupportedVideoType =
                 !UiAndroidFeatureMap.isEnabled(
                                 UiAndroidFeatures.DISABLE_PHOTO_PICKER_FOR_VIDEO_CAPTURE)

@@ -1675,4 +1675,57 @@ public class SelectFileDialogTest {
 
         runAllAsyncTasks();
     }
+
+    @Test
+    public void testExternalPickerMediaMimeTypeDesktopDoesNotUsePhotoPicker() throws Exception {
+        DeviceInfo.setIsDesktopForTesting(true);
+        assertTrue(DeviceInfo.isDesktop());
+
+        TestSelectFileDialog selectFileDialog = new TestSelectFileDialog(0);
+        WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
+
+        // Mock camera intent resolution.
+        IntentArgumentMatcher imageCaptureIntentArgumentMatcher =
+                new IntentArgumentMatcher(MediaStore.ACTION_IMAGE_CAPTURE);
+        when(windowAndroid.canResolveActivity(
+                        ArgumentMatchers.argThat(imageCaptureIntentArgumentMatcher)))
+                .thenReturn(true);
+
+        // Setup WindowAndroid#showIntent to succeed and validate the chooser intent.
+        IntentArgumentMatcher chooserIntentArgumentMatcher =
+                new IntentArgumentMatcher(Intent.ACTION_CHOOSER);
+        Mockito.doAnswer(
+                        (invocation) -> {
+                            Intent chooserIntent = (Intent) invocation.getArguments()[0];
+                            Intent getContentIntent =
+                                    (Intent) chooserIntent.getExtra(Intent.EXTRA_INTENT);
+                            assertEquals("*/*", getContentIntent.getType());
+                            String[] mimeTypes =
+                                    (String[]) getContentIntent.getExtra(Intent.EXTRA_MIME_TYPES);
+                            assertArrayEquals(
+                                    new String[] {"image/*", "type/nonexistent"}, mimeTypes);
+                            // On desktop, EXTRA_INITIAL_INTENTS should be null or empty.
+                            assertFalse(chooserIntent.hasExtra(Intent.EXTRA_INITIAL_INTENTS));
+                            return true;
+                        })
+                .when(windowAndroid)
+                .showIntent(
+                        ArgumentMatchers.argThat(chooserIntentArgumentMatcher),
+                        (WindowAndroid.IntentCallback) any(),
+                        anyInt());
+
+        selectFileDialog.selectFile(
+                Intent.ACTION_GET_CONTENT,
+                new String[] {"image/*"},
+                /* capture= */ false,
+                /* multiple= */ false,
+                /* defaultDirectory= */ null,
+                /* suggestedName= */ null,
+                windowAndroid);
+
+        // On desktop, redundant camera/audio permissions should not be requested.
+        Mockito.verify(windowAndroid, Mockito.never()).requestPermissions(any(), any());
+
+        runAllAsyncTasks();
+    }
 }
