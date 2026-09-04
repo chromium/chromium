@@ -102,6 +102,7 @@ class TestGlicSelectionObserver : public GlicSelectionObserver {
     last_affordance_text_.reset();
     trigger_region_capture_called_ = false;
     mock_side_panel_open_ = true;
+    show_selection_overlay_called_ = false;
   }
 
   // Expose methods for testing.
@@ -139,6 +140,10 @@ class TestGlicSelectionObserver : public GlicSelectionObserver {
     return trigger_region_capture_called_;
   }
 
+  bool show_selection_overlay_called() const {
+    return show_selection_overlay_called_;
+  }
+
  protected:
   bool IsSelectionPromptEnabled() const override { return true; }
 
@@ -170,6 +175,11 @@ class TestGlicSelectionObserver : public GlicSelectionObserver {
 
   bool IsSidePanelOpen() const override { return mock_side_panel_open_; }
 
+  void ShowSelectionOverlay() override {
+    show_selection_overlay_called_ = true;
+    GlicSelectionObserver::ShowSelectionOverlay();
+  }
+
  private:
   std::optional<std::u16string> last_processed_text_;
   int update_count_ = 0;
@@ -184,6 +194,7 @@ class TestGlicSelectionObserver : public GlicSelectionObserver {
   bool show_selection_affordance_called_ = false;
   std::optional<std::u16string> last_affordance_text_;
   bool trigger_region_capture_called_ = false;
+  bool show_selection_overlay_called_ = false;
 };
 
 }  // namespace
@@ -285,6 +296,7 @@ class GlicSelectionObserverTest : public ChromeRenderViewHostTestHarness {
   }
 
   void CallOnHide() { observer_->OnHide(); }
+  void CallOnAskGemini() { observer_->OnAskGemini(); }
 
   void CallOnLinkGenerated(
       const GURL& fallback_url,
@@ -1710,6 +1722,21 @@ TEST_F(GlicSelectionObserverTest,
   EXPECT_FALSE(observer->has_sent_selection_context());
   EXPECT_TRUE(observer->send_context_called());
   EXPECT_EQ(u"", *observer->last_sent_context());
+}
+
+TEST_F(GlicSelectionObserverTest, OnAskGeminiWithSmallChipDismissesUI) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicSelectionSmallChip);
+
+  TestGlicSelectionObserver* observer = GetObserver();
+  ASSERT_TRUE(observer);
+
+  CallOnAskGemini();
+
+  EXPECT_TRUE(observer->dismiss_ui_called());
+  EXPECT_EQ(GlicSelectionObserver::DismissReason::kActionTaken,
+            observer->dismiss_ui_reason());
+  EXPECT_TRUE(observer->show_selection_overlay_called());
 }
 
 }  // namespace glic

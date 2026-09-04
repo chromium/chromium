@@ -38,6 +38,7 @@
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/selection/explain_selection_trigger.h"
 #include "chrome/browser/glic/selection/inline_cue_blocklist_utils.h"
+#include "chrome/browser/glic/selection/selection_overlay_controller.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -1104,7 +1105,24 @@ void GlicSelectionObserver::OnGlobalPanelShowHide() {
                        SelectionSource::kAutomatic);
 }
 
+void GlicSelectionObserver::ShowSelectionOverlay() {
+  auto* tab_interface =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  if (!tab_interface) {
+    return;
+  }
+  if (auto* controller =
+          SelectionOverlayController::FromTabWebContents(web_contents())) {
+    controller->Show(/*options=*/nullptr);
+  }
+}
+
 void GlicSelectionObserver::OnAskGemini() {
+  if (base::FeatureList::IsEnabled(features::kGlicSelectionSmallChip)) {
+    DismissUI(DismissReason::kActionTaken);
+    ShowSelectionOverlay();
+    return;
+  }
   if (ExplainSelectionTrigger::IsInlineFulfillmentSupported()) {
     is_explaining_ = true;
     if (explain_selection_trigger_) {

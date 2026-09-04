@@ -64,6 +64,10 @@ base::flat_set<std::string> GetGlicSelectionDefaultBlockedSites() {
   return base::flat_set<std::string>(std::move(sites));
 }
 
+BASE_FEATURE(kGlicSelectionSmallChip, base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<bool> kGlicSelectionSmallChipOnTop{
+    &kGlicSelectionSmallChip, "on_top", true};
+
 BASE_FEATURE(kGlicClearTurnIdOnPanelWillOpen,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

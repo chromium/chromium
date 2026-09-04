@@ -496,4 +496,53 @@ TEST_F(GlicSelectionWidgetTest,
 }
 #endif  // !BUILDFLAG(IS_MAC)
 
+TEST_F(GlicSelectionWidgetTest, SmallChip) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicSelectionSmallChip);
+
+  gfx::Rect anchor_rect(10, 10, 100, 100);
+  std::u16string selected_text = u"selected text";
+
+  auto test_delegate = std::make_unique<TestWidgetActionDelegate>();
+  auto widget_delegate = std::make_unique<GlicSelectionWidgetDelegate>(
+      *test_delegate, anchor_rect, gfx::Rect(), selected_text);
+
+  EXPECT_EQ(widget_delegate->arrow(), views::BubbleBorder::BOTTOM_LEFT);
+
+  views::View* contents_view = widget_delegate->GetContentsView();
+  ASSERT_TRUE(contents_view);
+  ASSERT_EQ(contents_view->children().size(), 1u);
+
+  auto pill_children = contents_view->children()[0]->children();
+  ASSERT_EQ(pill_children.size(), 1u);
+
+  auto* ask_gemini_btn =
+      views::AsViewClass<views::MdTextButton>(pill_children[0]);
+  ASSERT_TRUE(ask_gemini_btn);
+  EXPECT_TRUE(ask_gemini_btn->GetText().empty());
+  EXPECT_EQ(ask_gemini_btn->GetPreferredSize(), gfx::Size(28, 28));
+
+  views::test::ButtonTestApi(ask_gemini_btn)
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
+                                  gfx::Point(), ui::EventTimeForNow(),
+                                  ui::EF_LEFT_MOUSE_BUTTON,
+                                  ui::EF_LEFT_MOUSE_BUTTON));
+  EXPECT_TRUE(test_delegate->ask_gemini_called);
+}
+
+TEST_F(GlicSelectionWidgetTest, SmallChipBottom) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kGlicSelectionSmallChip, {{"on_top", "false"}});
+
+  gfx::Rect anchor_rect(10, 10, 100, 100);
+  std::u16string selected_text = u"selected text";
+
+  auto test_delegate = std::make_unique<TestWidgetActionDelegate>();
+  auto widget_delegate = std::make_unique<GlicSelectionWidgetDelegate>(
+      *test_delegate, anchor_rect, gfx::Rect(), selected_text);
+
+  EXPECT_EQ(widget_delegate->arrow(), views::BubbleBorder::TOP_LEFT);
+}
+
 }  // namespace glic

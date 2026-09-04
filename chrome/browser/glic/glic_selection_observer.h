@@ -131,6 +131,10 @@ class GlicSelectionObserver
   // Virtual for testing.
   virtual void TriggerRegionCapture();
 
+  // Shows the selection overlay.
+  // Virtual for testing.
+  virtual void ShowSelectionOverlay();
+
   // Returns true if mouse shake trigger is enabled by feature flag and pref.
   // Virtual for testing.
   virtual bool IsShakeTriggerEnabled() const;
