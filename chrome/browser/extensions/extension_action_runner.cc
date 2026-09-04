@@ -15,6 +15,7 @@
 #include "base/location.h"
 #include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
 #include "chrome/browser/extensions/extension_action_dispatcher.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/tab_helper.h"
@@ -48,8 +49,7 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_window.h"
 #endif
 
@@ -98,7 +98,6 @@ ExtensionAction::ShowAction ExtensionActionRunner::RunAction(
     return ExtensionAction::ShowAction::kNone;
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Anything that gets here should have a page or browser action, or toggle the
   // extension's side panel, and not blocked actions.
   // This method is only called to execute an action by the user, so we can
@@ -117,7 +116,6 @@ ExtensionAction::ShowAction ExtensionActionRunner::RunAction(
       side_panel_service->HasSidePanelActionForTab(*extension, tab_id)) {
     return ExtensionAction::ShowAction::kToggleSidePanel;
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   if (grant_tab_permissions) {
     GrantTabPermissions({extension});

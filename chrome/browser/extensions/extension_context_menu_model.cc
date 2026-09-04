@@ -71,17 +71,18 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/color/color_id.h"
 
-#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
-#include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/extension_side_panel_utils.h"
-#include "chrome/browser/ui/extensions/extensions_container.h"
-#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"   // nogncheck
 #include "chrome/browser/ui/side_panel/side_panel_entry_key.h"  // nogncheck
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"         // nogncheck
 #include "chrome/common/extensions/api/side_panel.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/extensions/extensions_container.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #endif
@@ -566,7 +567,6 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
       break;
     }
     case TOGGLE_SIDE_PANEL_VISIBILITY: {
-#if !BUILDFLAG(IS_ANDROID)
       // Do nothing if the web contents have navigated to a different origin.
       auto* web_contents = GetActiveWebContents();
       if (!web_contents ||
@@ -575,7 +575,11 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
       }
 
       SidePanelService* const side_panel_service = GetSidePanelService();
-      CHECK(side_panel_service);
+      // side_panel_service can be nullptr in unit tests and is unsupported in
+      // system/guest profiles.
+      if (!side_panel_service) {
+        return;
+      }
 
       // The state of the tab could have changed since we opened the context
       // menu. This check ensures that the extension has a valid side panel it
@@ -585,7 +589,6 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
                                                                   tab_id)) {
         side_panel_util::ToggleExtensionSidePanel(browser_, extension->id());
       }
-#endif  // !BUILDFLAG(IS_ANDROID)
       break;
     }
     case MANAGE_EXTENSIONS: {
@@ -892,9 +895,7 @@ void ExtensionContextMenuModel::InitMenuWithFeature(
     AddItemWithStringId(UNINSTALL, IDS_EXTENSIONS_UNINSTALL);
   }
 
-#if !BUILDFLAG(IS_ANDROID)
   AddSidePanelEntryIfPresent(*extension);
-#endif
 
   // Settings section.
   if (!is_component_) {
@@ -995,9 +996,7 @@ void ExtensionContextMenuModel::InitMenu(const Extension* extension,
     }
   }
 
-#if !BUILDFLAG(IS_ANDROID)
   AddSidePanelEntryIfPresent(*extension);
-#endif
 
   if (!is_component_) {
     AddSeparator(ui::NORMAL_SEPARATOR);
@@ -1013,7 +1012,6 @@ void ExtensionContextMenuModel::InitMenu(const Extension* extension,
   }
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void ExtensionContextMenuModel::AddSidePanelEntryIfPresent(
     const Extension& extension) {
   if (!extension.permissions_data()->HasAPIPermission(
@@ -1022,7 +1020,11 @@ void ExtensionContextMenuModel::AddSidePanelEntryIfPresent(
   }
 
   SidePanelService* const side_panel_service = GetSidePanelService();
-  CHECK(side_panel_service);
+  // side_panel_service can be nullptr in unit tests and is unsupported in
+  // system/guest profiles.
+  if (!side_panel_service) {
+    return;
+  }
 
   int tab_id = ExtensionTabUtil::GetTabId(GetActiveWebContents());
   if (!side_panel_service->HasSidePanelContextMenuActionForTab(extension,
@@ -1030,9 +1032,14 @@ void ExtensionContextMenuModel::AddSidePanelEntryIfPresent(
     return;
   }
 
-  AddSeparator(ui::NORMAL_SEPARATOR);
   SidePanelUI* const side_panel_ui = SidePanelUI::From(browser_);
-  CHECK(side_panel_ui);
+  // side_panel_ui can be nullptr in unit tests, app popups, custom windows,
+  // and during teardown.
+  if (!side_panel_ui) {
+    return;
+  }
+
+  AddSeparator(ui::NORMAL_SEPARATOR);
   bool is_side_panel_open = side_panel_ui->IsSidePanelEntryShowing(
       SidePanelEntryKey(SidePanelEntryId::kExtension, extension.id()));
   AddItemWithStringId(TOGGLE_SIDE_PANEL_VISIBILITY,
@@ -1040,7 +1047,6 @@ void ExtensionContextMenuModel::AddSidePanelEntryIfPresent(
                           ? IDS_EXTENSIONS_SUBMENU_CLOSE_SIDE_PANEL_ITEM
                           : IDS_EXTENSIONS_SUBMENU_OPEN_SIDE_PANEL_ITEM);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 const Extension* ExtensionContextMenuModel::GetExtension() const {
   return ExtensionRegistry::Get(profile_)->enabled_extensions().GetByID(
@@ -1109,13 +1115,13 @@ void ExtensionContextMenuModel::CreatePageAccessItems(
 }
 
 content::WebContents* ExtensionContextMenuModel::GetActiveWebContents() const {
-  return TabListInterface::From(browser_)->GetActiveTab()->GetContents();
+  tabs::TabInterface* active_tab =
+      TabListInterface::From(browser_)->GetActiveTab();
+  return active_tab ? active_tab->GetContents() : nullptr;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 SidePanelService* ExtensionContextMenuModel::GetSidePanelService() const {
   return SidePanelService::Get(profile_);
 }
-#endif
 
 }  // namespace extensions
