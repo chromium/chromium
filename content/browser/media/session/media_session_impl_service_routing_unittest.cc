@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "content/browser/media/session/media_session_impl.h"
 #include "content/browser/media/session/mock_media_session_service_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/media_session_player_observer.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_media_session_client.h"
@@ -1506,6 +1507,36 @@ TEST_F(MediaSessionImplServiceRoutingThrottleTest,
 
     observer.WaitForExpectedPosition(expected_position);
   }
+}
+
+TEST_F(MediaSessionImplServiceRoutingTest, InactiveFrameIgnoredForRouting) {
+  CreateServiceForFrame(main_frame_);
+  CreateServiceForFrame(sub_frame_);
+  StartPlayerForFrame(sub_frame_);
+
+  ASSERT_EQ(services_[sub_frame_].get(), ComputeServiceForRouting());
+
+  // Make sub_frame inactive.
+  static_cast<RenderFrameHostImpl*>(sub_frame_.get())
+      ->SetLifecycleState(
+          RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers);
+  ASSERT_FALSE(sub_frame_->IsActive());
+
+  // sub_frame must not be routed. main_frame (which is active) should be
+  // routed.
+  ASSERT_EQ(services_[main_frame_].get(), ComputeServiceForRouting());
+}
+
+TEST_F(MediaSessionImplServiceRoutingTest, CannotAddPlayerForInactiveFrame) {
+  static_cast<RenderFrameHostImpl*>(sub_frame_.get())
+      ->SetLifecycleState(
+          RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers);
+  ASSERT_FALSE(sub_frame_->IsActive());
+
+  auto observer = std::make_unique<NiceMock<MockMediaSessionPlayerObserver>>(
+      sub_frame_, MediaAudioVideoState::kAudioOnly,
+      media::MediaContentType::kPersistent);
+  EXPECT_FALSE(GetMediaSession()->AddPlayer(observer.get(), 0));
 }
 
 class MediaSessionImplServiceRoutingFencedFrameTest

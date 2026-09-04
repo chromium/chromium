@@ -27,6 +27,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/back_forward_cache/back_forward_cache_impl.h"
 #include "content/browser/media/session/audio_focus_delegate.h"
+#include "content/browser/media/session/media_session_service_impl.h"
 #include "content/browser/media/session/mock_media_session_player_observer.h"
 #include "content/browser/media/session/mock_media_session_service_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -281,6 +282,10 @@ class MediaSessionImplBrowserTest : public ContentBrowserTest {
   }
 
   bool IsActive() { return media_session_->IsActive(); }
+
+  MediaSessionServiceImpl* GetRoutedService() const {
+    return media_session_->routed_service_;
+  }
 
   std::optional<AudioFocusType> GetSessionAudioFocusType() {
     return mock_audio_focus_delegate_->GetCurrentFocusType();
@@ -3651,9 +3656,11 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplWithBackForwardCacheBrowserTest,
   EXPECT_TRUE(frame_host->IsInBackForwardCache());
 
   // Add a player on the new page
-  StartNewPlayer(player_observer.get());
+  auto new_player_observer = std::make_unique<MockMediaSessionPlayerObserver>(
+      GetPrimaryMainFrame(), media::MediaContentType::kPersistent);
+  StartNewPlayer(new_player_observer.get());
   ResolveAudioFocusSuccess();
-  EXPECT_TRUE(player_observer->IsPlaying(1));
+  EXPECT_TRUE(new_player_observer->IsPlaying(0));
 
   // Evict the page from the back-forward cache.
   shell()->web_contents()->GetController().GetBackForwardCache().Flush();
@@ -3661,7 +3668,62 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplWithBackForwardCacheBrowserTest,
 
   // The page being removed from the back-forward cache should not affect the
   // play state of the current page.
-  EXPECT_TRUE(player_observer->IsPlaying(1));
+  EXPECT_TRUE(new_player_observer->IsPlaying(0));
+}
+
+IN_PROC_BROWSER_TEST_F(MediaSessionImplWithBackForwardCacheBrowserTest,
+                       BFCachedFrameCannotHijackMediaSession) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.test", "/title1.html")));
+
+  RenderFrameHostImplWrapper frame_host_a(GetPrimaryMainFrame());
+  mojo::Remote<blink::mojom::MediaSessionService> service_remote_a;
+  MediaSessionServiceImpl::Create(
+      frame_host_a.get(), service_remote_a.BindNewPipeAndPassReceiver());
+
+  auto metadata_a = blink::mojom::SpecMediaMetadata::New();
+  metadata_a->title = u"Page A Title";
+  service_remote_a->SetMetadata(std::move(metadata_a));
+  service_remote_a.FlushForTesting();
+
+  // Page A is routed.
+  EXPECT_NE(nullptr, GetRoutedService());
+  EXPECT_EQ(frame_host_a.get(), GetRoutedService()->GetRenderFrameHost());
+
+  // Navigate to Page B. Page A is cached in back-forward cache.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.test", "/title1.html")));
+  EXPECT_TRUE(frame_host_a->IsInBackForwardCache());
+
+  // Page A must no longer be routed while in BFCache.
+  EXPECT_EQ(nullptr, GetRoutedService());
+
+  // A document in BFCache cannot bind a new MediaSessionService.
+  mojo::Remote<blink::mojom::MediaSessionService> bad_service_remote;
+  MediaSessionServiceImpl::Create(
+      frame_host_a.get(), bad_service_remote.BindNewPipeAndPassReceiver());
+  bad_service_remote.FlushForTesting();
+  EXPECT_EQ(nullptr, GetRoutedService());
+
+  // A document in BFCache cannot update metadata on an existing Mojo pipe.
+  auto malicious_metadata = blink::mojom::SpecMediaMetadata::New();
+  malicious_metadata->title = u"Malicious Spoofed Title";
+  service_remote_a->SetMetadata(std::move(malicious_metadata));
+  service_remote_a.FlushForTesting();
+  EXPECT_EQ(nullptr, GetRoutedService());
+
+  // A document in BFCache cannot add a media player.
+  auto bad_player_observer = std::make_unique<MockMediaSessionPlayerObserver>(
+      frame_host_a.get(), media::MediaContentType::kPersistent);
+  EXPECT_FALSE(AddPlayer(bad_player_observer.get(), 0));
+  EXPECT_EQ(nullptr, GetRoutedService());
+
+  // Restoring Page A from BFCache allows it to be routed again.
+  shell()->web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  EXPECT_FALSE(frame_host_a->IsInBackForwardCache());
+  EXPECT_NE(nullptr, GetRoutedService());
+  EXPECT_EQ(frame_host_a.get(), GetRoutedService()->GetRenderFrameHost());
 }
 
 // TODO(crbug.com/521159836): Re-enable on Linux MSAN.

@@ -427,6 +427,7 @@ void MediaSessionImpl::RenderFrameHostStateChanged(
       RemovePlayer(player.first.observer, player.first.player_id);
       hidden_players_.insert(player.first);
     }
+    UpdateRoutedService();
     return;
   }
 
@@ -447,12 +448,18 @@ void MediaSessionImpl::RenderFrameHostStateChanged(
     if (added_players)
       OnSuspendInternal(SuspendType::kSystem, State::SUSPENDED);
 
+    UpdateRoutedService();
     return;
   }
 }
 
 bool MediaSessionImpl::AddPlayer(MediaSessionPlayerObserver* observer,
                                  int player_id) {
+  RenderFrameHost* rfh = observer->render_frame_host();
+  if (rfh && !rfh->IsActive()) {
+    return false;
+  }
+
   media::MediaContentType media_content_type = observer->GetMediaContentType();
 
   if (media_content_type == media::MediaContentType::kOneShot) {
@@ -1720,14 +1727,17 @@ void MediaSessionImpl::DidReceiveAction(
     }
   }
 
-  if (!routed_service_)
+  if (!routed_service_ || !routed_service_->GetRenderFrameHost() ||
+      !routed_service_->GetRenderFrameHost()->IsActive()) {
     return;
+  }
 
   routed_service_->GetClient()->DidReceiveAction(action, std::move(details));
 }
 
 bool MediaSessionImpl::IsServiceActiveForRenderFrameHost(RenderFrameHost* rfh) {
-  return services_.find(rfh->GetGlobalId()) != services_.end();
+  return rfh && rfh->IsActive() &&
+         services_.find(rfh->GetGlobalId()) != services_.end();
 }
 
 void MediaSessionImpl::UpdateRoutedService() {
@@ -1756,13 +1766,13 @@ RenderFrameHost* MediaSessionImpl::ComputeFrameForRouting(bool ensure_service) {
   std::set<RenderFrameHost*> frames;
   for (const auto& player : normal_players_) {
     RenderFrameHost* frame = player.first.observer->render_frame_host();
-    if (frame) {
+    if (frame && frame->IsActive()) {
       frames.insert(frame);
     }
   }
   for (const auto& player : one_shot_players_) {
     RenderFrameHost* frame = player.observer->render_frame_host();
-    if (frame) {
+    if (frame && frame->IsActive()) {
       frames.insert(frame);
     }
   }
