@@ -21,32 +21,32 @@ class StatusViewBinder implements ViewBinder<PropertyModel, StatusView, Property
 
     @Override
     public void bind(PropertyModel model, StatusView view, PropertyKey propertyKey) {
-        if (StatusProperties.ALPHA.equals(propertyKey)) {
+        if (propertyKey == StatusProperties.ALPHA) {
             view.setAlpha(model.get(StatusProperties.ALPHA));
-        } else if (StatusProperties.ANIMATIONS_ENABLED.equals(propertyKey)) {
+        } else if (propertyKey == StatusProperties.ANIMATIONS_ENABLED) {
             view.setAnimationsEnabled(model.get(StatusProperties.ANIMATIONS_ENABLED));
-        } else if (StatusProperties.INCOGNITO_BADGE_VISIBLE.equals(propertyKey)) {
+        } else if (propertyKey == StatusProperties.INCOGNITO_BADGE_VISIBLE) {
             view.setIncognitoBadgeVisibility(model.get(StatusProperties.INCOGNITO_BADGE_VISIBLE));
-        } else if (StatusProperties.SEPARATOR_COLOR.equals(propertyKey)) {
+        } else if (propertyKey == StatusProperties.SEPARATOR_COLOR) {
             view.setSeparatorColor(model.get(StatusProperties.SEPARATOR_COLOR));
-        } else if (StatusProperties.SHOW_STATUS_VIEW.equals(propertyKey)) {
+        } else if (propertyKey == StatusProperties.SHOW_STATUS_VIEW) {
             int visibility =
                     model.get(StatusProperties.SHOW_STATUS_VIEW) ? View.VISIBLE : View.GONE;
             view.setVisibility(visibility);
-        } else if (StatusProperties.STATUS_ACCESSIBILITY_DOUBLE_TAP_DESCRIPTION_RES.equals(
-                propertyKey)) {
+        } else if (propertyKey
+                == StatusProperties.STATUS_ACCESSIBILITY_DOUBLE_TAP_DESCRIPTION_RES) {
             view.setStatusAccessibilityDoubleTapDescription(
                     model.get(StatusProperties.STATUS_ACCESSIBILITY_DOUBLE_TAP_DESCRIPTION_RES));
-        } else if (StatusProperties.STATUS_ACCESSIBILITY_TOAST_RES.equals(propertyKey)) {
+        } else if (propertyKey == StatusProperties.STATUS_ACCESSIBILITY_TOAST_RES) {
             view.setStatusAccessibilityToast(
                     model.get(StatusProperties.STATUS_ACCESSIBILITY_TOAST_RES));
-        } else if (StatusProperties.STATUS_CLICK_LISTENER.equals(propertyKey)) {
+        } else if (propertyKey == StatusProperties.STATUS_CLICK_LISTENER) {
             view.setStatusClickListener(model.get(StatusProperties.STATUS_CLICK_LISTENER));
-        } else if (StatusProperties.STATUS_ICON_CORNER_RADIUS.equals(propertyKey)) {
+        } else if (propertyKey == StatusProperties.STATUS_ICON_CORNER_RADIUS) {
             view.setCornerRadiusRes(model.get(StatusProperties.STATUS_ICON_CORNER_RADIUS));
-        } else if (StatusProperties.STATUS_ICON_DESCRIPTION_RES.equals(propertyKey)) {
+        } else if (propertyKey == StatusProperties.STATUS_ICON_DESCRIPTION_RES) {
             view.setStatusIconDescription(model.get(StatusProperties.STATUS_ICON_DESCRIPTION_RES));
-        } else if (StatusProperties.STATUS_ICON_RESOURCE.equals(propertyKey)) {
+        } else if (propertyKey == StatusProperties.STATUS_ICON_RESOURCE) {
             StatusIconResource res = model.get(StatusProperties.STATUS_ICON_RESOURCE);
             if (res == null) {
                 view.setStatusIconResources(null, StatusView.IconTransitionType.CROSSFADE, null);
@@ -56,15 +56,15 @@ class StatusViewBinder implements ViewBinder<PropertyModel, StatusView, Property
                     res.getDrawable(view.getContext()),
                     res.getTransitionType(),
                     res.getAnimationFinishedCallback());
-        } else if (StatusProperties.STATUS_VIEW_BACKGROUND.equals(propertyKey)) {
+        } else if (propertyKey == StatusProperties.STATUS_VIEW_BACKGROUND) {
             applyStatusIconAndTooltipProperties(model, view);
-        } else if (StatusProperties.STATUS_VIEW_HOVER_ENABLED.equals(propertyKey)) {
+        } else if (propertyKey == StatusProperties.STATUS_VIEW_HOVER_ENABLED) {
             view.setHoverEnabled(model.get(StatusProperties.STATUS_VIEW_HOVER_ENABLED));
-        } else if (StatusProperties.STATUS_VIEW_TOOLTIP_TEXT.equals(propertyKey)) {
+        } else if (propertyKey == StatusProperties.STATUS_VIEW_TOOLTIP_TEXT) {
             applyStatusIconAndTooltipProperties(model, view);
-        } else if (StatusProperties.TRANSLATION_X.equals(propertyKey)) {
+        } else if (propertyKey == StatusProperties.TRANSLATION_X) {
             view.setTranslationX(model.get(StatusProperties.TRANSLATION_X));
-        } else if (StatusProperties.USE_SMALL_WIDGET.equals(propertyKey)) {
+        } else if (propertyKey == StatusProperties.USE_SMALL_WIDGET) {
             var params = view.getLayoutParams();
             boolean useSmallWidget = model.get(StatusProperties.USE_SMALL_WIDGET);
             params.height =
@@ -73,23 +73,23 @@ class StatusViewBinder implements ViewBinder<PropertyModel, StatusView, Property
                             : view.getResources()
                                     .getDimensionPixelSize(R.dimen.location_bar_height);
             view.setLayoutParams(params);
-        } else if (StatusProperties.USE_WIDE_STATUS_ICON.equals(propertyKey)) {
+        } else if (propertyKey == StatusProperties.USE_WIDE_STATUS_ICON) {
             view.setMinimumWidth(
                     view.getResources()
                             .getDimensionPixelSize(
                                     model.get(StatusProperties.USE_WIDE_STATUS_ICON)
                                             ? R.dimen.status_view_width_wide
                                             : R.dimen.status_view_width_narrow));
-        } else if (StatusProperties.VERBOSE_STATUS_TEXT_COLOR.equals(propertyKey)) {
+        } else if (propertyKey == StatusProperties.VERBOSE_STATUS_TEXT_COLOR) {
             view.setVerboseStatusTextColor(model.get(StatusProperties.VERBOSE_STATUS_TEXT_COLOR));
-        } else if (StatusProperties.VERBOSE_STATUS_TEXT_STRING_RES.equals(propertyKey)) {
+        } else if (propertyKey == StatusProperties.VERBOSE_STATUS_TEXT_STRING_RES) {
             view.setVerboseStatusTextContent(
                     model.get(StatusProperties.VERBOSE_STATUS_TEXT_STRING_RES));
-        } else if (StatusProperties.VERBOSE_STATUS_TEXT_VISIBLE.equals(propertyKey)) {
+        } else if (propertyKey == StatusProperties.VERBOSE_STATUS_TEXT_VISIBLE) {
             view.setVerboseStatusTextVisible(
                     model.get(StatusProperties.VERBOSE_STATUS_TEXT_VISIBLE));
             applyStatusIconAndTooltipProperties(model, view);
-        } else if (StatusProperties.VERBOSE_STATUS_TEXT_WIDTH.equals(propertyKey)) {
+        } else if (propertyKey == StatusProperties.VERBOSE_STATUS_TEXT_WIDTH) {
             view.setVerboseStatusTextWidth(model.get(StatusProperties.VERBOSE_STATUS_TEXT_WIDTH));
 
         } else {
