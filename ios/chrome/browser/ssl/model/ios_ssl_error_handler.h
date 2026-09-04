@@ -70,9 +70,13 @@ class IOSSSLErrorHandler : public web::WebStateUserData<IOSSSLErrorHandler> {
       int64_t navigation_id,
       base::OnceCallback<void(NSString*)> blocking_page_callback);
 
-  // Begins captive portal detection to determine which interstitial should be
-  // displayed.
+  // Begins handling the error by looking up whether `request_url_` requires
+  // strict certificate-error enforcement, then starting captive portal
+  // detection to determine which interstitial should be displayed.
   void StartHandlingError();
+  // Stores the result of the strict-enforcement lookup and begins captive
+  // portal detection.
+  void StartCaptivePortalDetection(bool should_ssl_errors_be_fatal);
   // Presents the appropriate interstitial based on the `results` of the captive
   // portal detection.
   void HandleCaptivePortalDetectionResult(
@@ -102,6 +106,9 @@ class IOSSSLErrorHandler : public web::WebStateUserData<IOSSSLErrorHandler> {
   // Whether or not the user can ignore this error in order to continue loading
   // `request_url_`.
   const bool overridable_ = false;
+  // Whether the host's transport security state requires strict
+  // certificate-error enforcement.
+  bool should_ssl_errors_be_fatal_ = false;
   // The id of the navigation.
   const int64_t navigation_id_ = 0;
   // The callback to run for showing a committed interstitial.

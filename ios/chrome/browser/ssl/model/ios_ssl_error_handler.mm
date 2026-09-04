@@ -10,6 +10,7 @@
 #import "base/memory/ptr_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/single_thread_task_runner.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/captive_portal/core/captive_portal_detector.h"
 #import "components/security_interstitials/core/metrics_helper.h"
@@ -22,9 +23,13 @@
 #import "ios/chrome/browser/ssl/model/ios_ssl_blocking_page.h"
 #import "ios/components/security_interstitials/ios_blocking_page_metrics_helper.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
+#import "ios/web/public/browser_state.h"
 #import "ios/web/public/web_state.h"
+#import "net/http/transport_security_state.h"
 #import "net/ssl/ssl_info.h"
 #import "net/traffic_annotation/network_traffic_annotation.h"
+#import "net/url_request/url_request_context.h"
+#import "net/url_request/url_request_context_getter.h"
 
 using captive_portal::CaptivePortalDetector;
 using security_interstitials::IOSBlockingPageTabHelper;
@@ -45,6 +50,18 @@ CreateMetricsHelper(web::WebState* web_state,
       overridable ? "ssl_overridable" : "ssl_nonoverridable";
   return std::make_unique<security_interstitials::IOSBlockingPageMetricsHelper>(
       web_state, request_url, reporting_info);
+}
+
+// Runs on the network task runner. Returns whether `host` has transport
+// security state that requires certificate errors to be fatal.
+bool ShouldSSLErrorsBeFatalOnNetworkThread(
+    scoped_refptr<net::URLRequestContextGetter> context_getter,
+    const std::string& host) {
+  net::URLRequestContext* context = context_getter->GetURLRequestContext();
+  if (!context || !context->transport_security_state()) {
+    return false;
+  }
+  return context->transport_security_state()->ShouldSSLErrorsBeFatal(host);
 }
 }  // namespace
 
@@ -98,6 +115,20 @@ void IOSSSLErrorHandler::StartHandlingError() {
     return;
   }
 
+  scoped_refptr<net::URLRequestContextGetter> context_getter =
+      web_state_->GetBrowserState()->GetRequestContext();
+  context_getter->GetNetworkTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&ShouldSSLErrorsBeFatalOnNetworkThread, context_getter,
+                     std::string(request_url_.host())),
+      base::BindOnce(&IOSSSLErrorHandler::StartCaptivePortalDetection,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void IOSSSLErrorHandler::StartCaptivePortalDetection(
+    bool should_ssl_errors_be_fatal) {
+  should_ssl_errors_be_fatal_ = should_ssl_errors_be_fatal;
+
   if (captive_portal_detector_) {
     timer_.Stop();
     captive_portal_detector_->Cancel();
@@ -145,8 +176,9 @@ void IOSSSLErrorHandler::ShowSSLInterstitial() {
     captive_portal_detector_.reset();
   }
 
+  const bool overridable = overridable_ && !should_ssl_errors_be_fatal_;
   int options_mask =
-      overridable_
+      overridable
           ? security_interstitials::SSLErrorOptionsMask::SOFT_OVERRIDE_ENABLED
           : security_interstitials::SSLErrorOptionsMask::STRICT_ENFORCEMENT;
   auto page = std::make_unique<IOSSSLBlockingPage>(
@@ -154,7 +186,7 @@ void IOSSSLErrorHandler::ShowSSLInterstitial() {
       base::Time::NowFromSystemTime(),
       std::make_unique<security_interstitials::IOSBlockingPageControllerClient>(
           web_state_,
-          CreateMetricsHelper(web_state_, request_url_, overridable_),
+          CreateMetricsHelper(web_state_, request_url_, overridable),
           GetApplicationContext()->GetApplicationLocaleStorage()->Get()));
   std::string error_html = page->GetHtmlContents();
   IOSBlockingPageTabHelper::FromWebState(web_state_)

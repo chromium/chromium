@@ -7,6 +7,7 @@
 #import "base/functional/bind.h"
 #import "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/test_future.h"
 #import "components/captive_portal/core/captive_portal_detector.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/ssl/model/captive_portal_tab_helper.h"
@@ -16,9 +17,12 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
 #import "net/http/http_status_code.h"
+#import "net/http/transport_security_state.h"
 #import "net/ssl/ssl_info.h"
 #import "net/test/cert_test_util.h"
 #import "net/test/test_data_directory.h"
+#import "net/url_request/url_request_context.h"
+#import "net/url_request/url_request_context_getter.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #import "services/network/test/test_url_loader_factory.h"
 #import "testing/platform_test.h"
@@ -124,20 +128,55 @@ TEST_F(IOSSSLErrorHandlerTest, CommittedInterstitialErrorHtml) {
   net::SSLInfo ssl_info;
   ssl_info.cert = cert();
   GURL url(kTestHostName);
-  __block bool blocking_page_callback_called = false;
-  base::OnceCallback<void(bool)> null_callback;
-  base::OnceCallback<void(NSString*)> blocking_page_callback =
-      base::BindOnce(^(NSString* blocking_page_html) {
-        EXPECT_NE(blocking_page_html, nil);
-        blocking_page_callback_called = true;
-      });
-  IOSSSLErrorHandler::HandleSSLError(
-      web_state(), net::ERR_CERT_AUTHORITY_INVALID, ssl_info, url, true, 0,
-      std::move(blocking_page_callback));
+  base::test::TestFuture<NSString*> test_future;
+  IOSSSLErrorHandler::HandleSSLError(web_state(),
+                                     net::ERR_CERT_AUTHORITY_INVALID, ssl_info,
+                                     url, true, 0, test_future.GetCallback());
 
-  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      base::test::ios::kWaitForActionTimeout, ^bool() {
-        base::RunLoop().RunUntilIdle();
-        return blocking_page_callback_called;
-      }));
+  NSString* blocking_page_html = test_future.Get();
+  EXPECT_NE(blocking_page_html, nil);
+}
+
+// Tests that an otherwise-overridable certificate error is presented as
+// non-overridable when the request host has known transport security state
+// requiring strict enforcement.
+TEST_F(IOSSSLErrorHandlerTest, StrictEnforcementForKnownHSTSHost) {
+  GURL url(kTestHostName);
+  profile_->GetRequestContext()
+      ->GetURLRequestContext()
+      ->transport_security_state()
+      ->AddHSTS(url.host(), base::Time::Now() + base::Days(1000),
+                /*include_subdomains=*/false);
+
+  net::SSLInfo ssl_info;
+  ssl_info.cert = cert();
+  base::test::TestFuture<NSString*> test_future;
+  IOSSSLErrorHandler::HandleSSLError(
+      web_state(), net::ERR_CERT_AUTHORITY_INVALID, ssl_info, url,
+      /*overridable=*/true,
+      /*navigation_id=*/0, test_future.GetCallback());
+
+  NSString* blocking_page_html = test_future.Get();
+  EXPECT_NE(blocking_page_html, nil);
+
+  // The interstitial must not offer a proceed link.
+  EXPECT_FALSE([blocking_page_html containsString:@"id=\"proceed-link\""]);
+}
+
+// Tests that a certificate error remains overridable when the request host has
+// no transport security state requiring strict enforcement.
+TEST_F(IOSSSLErrorHandlerTest, OverridableWithoutKnownHSTS) {
+  net::SSLInfo ssl_info;
+  ssl_info.cert = cert();
+  GURL url(kTestHostName);
+  base::test::TestFuture<NSString*> test_future;
+  IOSSSLErrorHandler::HandleSSLError(
+      web_state(), net::ERR_CERT_AUTHORITY_INVALID, ssl_info, url,
+      /*overridable=*/true,
+      /*navigation_id=*/0, test_future.GetCallback());
+
+  NSString* blocking_page_html = test_future.Get();
+  EXPECT_NE(blocking_page_html, nil);
+
+  EXPECT_TRUE([blocking_page_html containsString:@"id=\"proceed-link\""]);
 }

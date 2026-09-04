@@ -91,13 +91,16 @@ bool IOSSSLBlockingPage::IsOverridable(int options_mask) {
 
 void IOSSSLBlockingPage::HandleCommand(
     security_interstitials::SecurityInterstitialCommand command) {
-  // If a proceed command is received, allowlist the certificate and reload
-  // the page to re-initiate the original navigation.
+  // If a proceed command is received for an overridable error, allowlist the
+  // certificate and reload the page to re-initiate the original navigation.
   if (command == security_interstitials::CMD_PROCEED) {
-    web_state_->GetSessionCertificatePolicyCache()->RegisterAllowedCertificate(
-        ssl_info_.cert, request_url().GetHost(), ssl_info_.cert_status);
-    web_state_->GetNavigationManager()->Reload(web::ReloadType::NORMAL,
-                                               /*check_for_repost=*/true);
+    if (overridable_) {
+      web_state_->GetSessionCertificatePolicyCache()
+          ->RegisterAllowedCertificate(ssl_info_.cert, request_url().GetHost(),
+                                       ssl_info_.cert_status);
+      web_state_->GetNavigationManager()->Reload(web::ReloadType::NORMAL,
+                                                 /*check_for_repost=*/true);
+    }
     return;
   }
 
