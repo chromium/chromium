@@ -1106,11 +1106,6 @@ void GeminiBrowserAgent::PresentFloaty(UIViewController* base_view_controller,
     gemini_tab_helper->FetchZeroStateSuggestions(base::DoNothing());
   }
 
-  // Get partial page context, which is synchronously available to allow for the
-  // floaty to be presented immediately.
-  GeminiPageContext* initial_page_context =
-      gemini_tab_helper->GetPartialPageContext();
-
   // Set up the presentation, depending on whether the floaty is already
   // invoked.
   gemini::EntryPoint entry_point = startup_state.entryPoint;
@@ -1121,7 +1116,9 @@ void GeminiBrowserAgent::PresentFloaty(UIViewController* base_view_controller,
     if (image_attachment) {
       ios::provider::AttachImage(image_attachment);
     }
-    PropagatePageContextToProvider(initial_page_context);
+
+    UpdateFloatyWithPartialPageContext();
+
     if (prepopulated_prompt) {
       ios::provider::UpdatePromptAction(entry_point, prepopulated_prompt);
     }
@@ -1866,16 +1863,11 @@ void GeminiBrowserAgent::OnPageContextUpdated(web::WebState* web_state) {
   // Make sure the given web_state is the active web state.
   web::WebState* active_web_state =
       browser_->GetWebStateList()->GetActiveWebState();
-  GeminiTabHelper* tab_helper = nullptr;
-  if (active_web_state && active_web_state == web_state) {
-    tab_helper = GeminiTabHelper::FromWebState(web_state);
-  }
-  if (!tab_helper) {
+  if (!active_web_state || active_web_state != web_state) {
     return;
   }
 
-  GeminiPageContext* gemini_page_context = tab_helper->GetPartialPageContext();
-  PropagatePageContextToProvider(gemini_page_context);
+  UpdateFloatyWithPartialPageContext();
 }
 
 void GeminiBrowserAgent::OnGeminiTabHelperDestroyed(
@@ -2227,13 +2219,7 @@ void GeminiBrowserAgent::OnPageContentPrefChanged() {
     return;
   }
 
-  GeminiTabHelper* tab_helper = GetActiveTabHelper();
-  if (!tab_helper) {
-    return;
-  }
-
-  GeminiPageContext* gemini_page_context = tab_helper->GetPartialPageContext();
-  PropagatePageContextToProvider(gemini_page_context);
+  UpdateFloatyWithPartialPageContext();
 
   // Trigger UI update for the attachment chip.
   ios::provider::RequestUIChange(
