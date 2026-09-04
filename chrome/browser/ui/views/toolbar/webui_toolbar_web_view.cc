@@ -172,9 +172,11 @@ class WebUIToolbarEventForwarder : public ui::EventHandler {
       // We purposefully don't forward wheel events. They need special phase
       // handling and it doesn't seem like we actually do anything with them.
       return;
-    } else {
-      target->ForwardMouseEvent(ui::MakeWebMouseEvent(*event));
     }
+    if (event->type() == ui::EventType::kMousePressed) {
+      web_view_->RequestFocus();
+    }
+    target->ForwardMouseEvent(ui::MakeWebMouseEvent(*event));
   }
 
   bool HaveOpenOmniboxPopup() {
