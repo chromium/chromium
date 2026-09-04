@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/frame/browser_frame_view_linux.h"
 #include "chrome/browser/ui/views/frame/browser_native_widget_aura_linux.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/safe_invoke/safe_invoke.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
@@ -46,12 +47,9 @@ absl::flat_hash_set<std::string>& SentStartupIds() {
 
 // Returns the event source for the active tab drag session.
 std::optional<ui::mojom::DragEventSource> GetCurrentTabDragEventSource() {
-  if (auto* source_context = TabDragController::GetSourceContext()) {
-    if (auto* drag_controller = source_context->GetDragController()) {
-      return drag_controller->event_source();
-    }
-  }
-  return std::nullopt;
+  return SafeInvoke(TabDragController::GetSourceContext())
+      .Then(&TabDragContext::GetDragController)
+      .Then(&TabDragController::event_source);
 }
 
 bool IsShowingFrame(bool use_custom_frame,

@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/safe_invoke/safe_invoke.h"
 #include "chrome/browser/ui/views/tabs/common/pinned_tab_container_view.h"
 #include "chrome/browser/ui/views/tabs/common/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
@@ -176,14 +177,10 @@ void BaseTabStripRegionView::UpdateLoadingAnimations(
     return;
   }
   for (tabs::TabInterface* tab : *tab_strip_model_) {
-    const TabCollectionNode* node =
-        root_node_->GetNodeForHandle(tab->GetHandle());
-    if (node) {
-      TabView* tab_view = views::AsViewClass<TabView>(node->view());
-      if (tab_view) {
-        tab_view->StepLoadingAnimation(elapsed_time);
-      }
-    }
+    SafeInvoke(root_node_->GetNodeForHandle(tab->GetHandle()))
+        .Then(&TabCollectionNode::view)
+        .Then(Overload<views::View*>(&views::AsViewClass<TabView>))
+        .Then(&TabView::StepLoadingAnimation, elapsed_time);
   }
 }
 
@@ -668,14 +665,8 @@ void BaseTabStripRegionView::OnGlassFrameEligibilityChanged(bool is_eligible) {
   SchedulePaint();
   // The parent of the Tab views are layer backed, so we need to explicitly
   // schedule a repaint on them.
-  if (UnpinnedTabContainerView* unpinned_tabs_container_view =
-          GetUnpinnedTabsContainer()) {
-    unpinned_tabs_container_view->SchedulePaint();
-  }
-  if (PinnedTabContainerView* pinned_tab_container_view =
-          GetPinnedTabsContainer()) {
-    pinned_tab_container_view->SchedulePaint();
-  }
+  SafeInvoke(GetUnpinnedTabsContainer()).Then(&views::View::SchedulePaint);
+  SafeInvoke(GetPinnedTabsContainer()).Then(&views::View::SchedulePaint);
 }
 
 BEGIN_METADATA(BaseTabStripRegionView)

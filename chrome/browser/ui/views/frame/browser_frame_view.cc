@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/safe_invoke/safe_invoke.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/grit/theme_resources.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -305,10 +306,9 @@ void BrowserFrameView::PaintAsActiveChanged() {
 }
 
 ClientFrameElementInfo BrowserFrameView::GetClientFrameElementInfo() const {
-  if (auto* const browser_view = GetBrowserView()) {
-    return browser_view->GetFrameElementInfo();
-  }
-  return ClientFrameElementInfo();
+  return SafeInvoke(GetBrowserView())
+      .Then(&BrowserView::GetFrameElementInfo)
+      .value_or(ClientFrameElementInfo());
 }
 
 BrowserFrameView::BoundsAndMargins BrowserFrameView::GetCaptionButtonBounds()
