@@ -130,6 +130,11 @@ TabStripCollectionController::GetFocusedGroup() const {
   return model_->GetFocusedGroup();
 }
 
+bool TabStripCollectionController::IsGroupCollapsed(
+    const tab_groups::TabGroupId& group_id) const {
+  return model_->SupportsTabGroups() && model_->IsGroupCollapsed(group_id);
+}
+
 std::optional<SkColor> TabStripCollectionController::GetGroupColor(
     const tabs::TabInterface* tab_interface) const {
   std::optional<tab_groups::TabGroupId> group_id = tab_interface->GetGroup();

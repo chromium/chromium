@@ -60,6 +60,7 @@ class TabStripCollectionController : public TabContextMenuController::Delegate {
       const tabs::TabInterface* tab_interface,
       bool leading) const;
   std::optional<tab_groups::TabGroupId> GetFocusedGroup() const;
+  bool IsGroupCollapsed(const tab_groups::TabGroupId& group_id) const;
   std::optional<SkColor> GetGroupColor(
       const tabs::TabInterface* tab_interface) const;
 

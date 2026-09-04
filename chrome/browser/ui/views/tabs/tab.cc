@@ -187,6 +187,11 @@ class TabStyleViewDelegateImpl : public TabStyleViewDelegate {
     const std::optional<tab_groups::TabGroupId> group = tab_->group();
     return group.has_value() && tab_->controller()->GetFocusedGroup() == group;
   }
+  bool IsGroupCollapsed() const override {
+    const std::optional<tab_groups::TabGroupId> group = tab_->group();
+    return group.has_value() &&
+           tab_->controller()->IsGroupCollapsed(group.value());
+  }
   bool IsSplit() const override { return tab_->split().has_value(); }
   std::optional<split_tabs::SplitTabId> GetSplit() const override {
     return tab_->split();
