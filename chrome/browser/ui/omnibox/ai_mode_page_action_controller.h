@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/page_action/page_action_observer.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/search_engines/search_engine_type.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
@@ -143,6 +144,7 @@ class AiModePageActionController : public OmniboxEditModel::Observer,
   base::ScopedObservation<OmniboxEditModel, OmniboxEditModel::Observer>
       omnibox_edit_model_observation_{this};
 
+  PrefChangeRegistrar pref_change_registrar_;
   base::CallbackListSubscription ai_mode_config_subscription_;
 
   std::optional<ImageCacheKey> cached_image_key_;

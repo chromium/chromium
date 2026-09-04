@@ -373,16 +373,7 @@ class OmniboxAimWebUiInteractiveTestBase
     return Steps(
         FocusElement(kOmniboxElementId),
         WaitForPageActionChipVisible(kActionAiMode),
-        // TODO(crbug.com/553004577): `InvokePageAction(kActionAiMode)` cannot
-        // be used here because it prefers `PressButton(element_id)` for actions
-        // with an element ID, which fails when `kWebUILocationBar` is enabled
-        // since the button is rendered in WebUI rather than as a Views View.
-        // Update `InvokePageAction` to support WebUILocationBar.
-        Do([this]() {
-          page_actions::PageActionTestAccessor(browser(), kActionAiMode)
-              .Click();
-        }),
-        WaitForAimPopupReady(),
+        InvokePageAction(kActionAiMode), WaitForAimPopupReady(),
         InAnyContext(WaitForElementToRender(kAimPopupWebView, kAimInput)),
         InAnyContext(ExecuteJsAt(
             kAimPopupWebView, {"omnibox-aim-app"},

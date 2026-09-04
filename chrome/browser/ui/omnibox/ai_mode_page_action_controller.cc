@@ -118,6 +118,12 @@ AiModePageActionController::AiModePageActionController(
           base::IgnoreArgs<const AiModeButtonUiConfig*>(
               base::BindRepeating(&AiModePageActionController::UpdatePageAction,
                                   weak_factory_.GetWeakPtr())));
+
+  pref_change_registrar_.Init(profile.GetPrefs());
+  pref_change_registrar_.Add(
+      omnibox::kShowAiModeOmniboxButton,
+      base::BindRepeating(&AiModePageActionController::UpdatePageAction,
+                          weak_factory_.GetWeakPtr()));
 }
 
 AiModePageActionController::~AiModePageActionController() = default;

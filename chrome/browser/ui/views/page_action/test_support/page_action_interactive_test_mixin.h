@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/page_action/page_action_properties_provider.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
@@ -38,6 +39,13 @@ class PageActionInteractiveTestMixin : public T {
  protected:
   // Utility to reliably wait for the page action view to be visible.
   auto WaitForPageActionButtonVisible(actions::ActionId action_id) {
+    if (features::IsWebUILocationBarEnabled()) {
+      return WaitForPageActionState(
+          action_id,
+          base::BindRepeating(
+              &page_actions::PageActionTestAccessor::GetVisible),
+          "WaitForPageActionButtonVisible()");
+    }
     page_actions::PageActionPropertiesProvider provider;
     CHECK(provider.Contains(action_id));
     ui::ElementIdentifier element_id =
@@ -52,13 +60,26 @@ class PageActionInteractiveTestMixin : public T {
   }
 
   // Utility to invoke the page action.
-  auto InvokePageAction(actions::ActionId action_id) {
+  auto InvokePageAction(
+      actions::ActionId action_id,
+      ui::test::InteractiveTestApi::InputType input_type =
+          ui::test::InteractiveTestApi::InputType::kDontCare) {
+    if (features::IsWebUILocationBarEnabled()) {
+      page_actions::PageActionTrigger trigger =
+          (input_type == ui::test::InteractiveTestApi::InputType::kKeyboard)
+              ? page_actions::PageActionTrigger::kKeyboard
+              : page_actions::PageActionTrigger::kMouse;
+      return T::Steps(T::Do([this, action_id, trigger]() {
+        page_actions::PageActionTestAccessor(T::browser(), action_id)
+            .Click(trigger);
+      }));
+    }
     page_actions::PageActionPropertiesProvider provider;
     CHECK(provider.Contains(action_id));
     ui::ElementIdentifier element_id =
         provider.GetProperties(action_id).element_identifier;
     if (element_id) {
-      return T::Steps(T::PressButton(element_id));
+      return T::Steps(T::PressButton(element_id, input_type));
     }
     return T::Steps(T::Do([this, action_id]() {
       page_actions::PageActionTestAccessor(T::browser(), action_id).Click();
