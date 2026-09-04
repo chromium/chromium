@@ -14,6 +14,16 @@ import sys
 # Utils
 
 
+import re
+
+
+def strip_comments(text):
+  """Strips C/C++ single-line (// ...) and multi-line (/* ... */) comments."""
+  text = re.sub(r'/\*.*?\*/', '', text, flags=re.DOTALL)
+  text = re.sub(r'//.*', '', text)
+  return text
+
+
 def count_matching_files(
   abs_directory,
   include_file_content_strings=None,
@@ -86,10 +96,16 @@ def count_matching_files(
     with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
       content = f.read()
 
+    # Strip comments to prevent false positives from historical/explanatory
+    # comments.
+    code_content = strip_comments(content)
+
     # 4. File content filter.
     if include_file_content_strings:
-      if not any(s_str in content for s_str in include_file_content_strings):
-        continue  # Skip if no include strings to match.
+      if not any(
+        s_str in code_content for s_str in include_file_content_strings
+      ):
+        continue  # Skip if no include strings to match in actual code.
     matched_file_count += 1
 
     # 5. Content string counts.
@@ -97,7 +113,7 @@ def count_matching_files(
       file_string_matches_count = 0
       for s_str in content_match_strings:
         if s_str:  # Avoid issues with empty search strings.
-          file_string_matches_count += content.count(s_str)
+          file_string_matches_count += code_content.count(s_str)
       string_matches_count += file_string_matches_count
 
   return matched_file_count, string_matches_count
