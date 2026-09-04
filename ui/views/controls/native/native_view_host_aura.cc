@@ -40,7 +40,7 @@ NativeViewHostAura::NativeViewHostAura(NativeViewHost* host) : host_(host) {}
 
 NativeViewHostAura::~NativeViewHostAura() {
   if (host_->native_view()) {
-    host_->native_view()->RemoveObserver(this);
+    native_view_observation_.Reset();
     if (host_->layer_managed_by_views()) {
       host_->native_view()->SetLayerManagedByParent(true);
     } else {
@@ -82,7 +82,7 @@ void NativeViewHostAura::AttachNativeView() {
     }
     host_->layer()->Add(GetUILayer());
   }
-  host_->native_view()->AddObserver(this);
+  native_view_observation_.Observe(host_->native_view());
   original_transform_ = host_->native_view()->transform();
   original_transform_changed_ = false;
   UpdateLayerClip();
@@ -121,7 +121,7 @@ void NativeViewHostAura::NativeViewDetaching(bool destroyed) {
   }
 
   if (!destroyed) {
-    host_->native_view()->RemoveObserver(this);
+    native_view_observation_.Reset();
     if (host_->layer_managed_by_views()) {
       host_->native_view()->SetLayerManagedByParent(true);
       if (host_->create_layer()) {
@@ -304,6 +304,7 @@ void NativeViewHostAura::OnWindowDestroying(aura::Window* window) {
 
 void NativeViewHostAura::OnWindowDestroyed(aura::Window* window) {
   DCHECK(window == host_->native_view());
+  native_view_observation_.Reset();
   host_->NativeViewDestroyed();
 }
 

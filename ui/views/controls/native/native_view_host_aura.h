@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "ui/aura/window_observer.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/transform.h"
@@ -108,6 +109,11 @@ class NativeViewHostAura : public NativeViewHostWrapper,
   // If attached, this contains the value of owned_by_parent of the
   // native view.
   std::optional<bool> owned_by_parent_;
+
+  // Observation of the attached NativeView. Points at host_->native_view()
+  // between AttachNativeView() and NativeViewDetaching()/window destruction.
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      native_view_observation_{this};
 };
 
 }  // namespace views
