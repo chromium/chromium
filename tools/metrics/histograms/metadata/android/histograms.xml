@@ -893,7 +893,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.BackgroundRestrictions.StandbyBucket.WithUserRestriction"
-    enum="StandbyBucket" expires_after="2023-04-30">
+    enum="StandbyBucket" expires_after="2027-09-03">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
@@ -905,7 +905,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.TaskCanceled"
-    enum="BackgroundTaskId" expires_after="2025-06-08">
+    enum="BackgroundTaskId" expires_after="2027-09-03">
   <owner>nyquist@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
   <summary>
@@ -917,7 +917,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.TaskFinished.{TaskType}"
-    units="ms" expires_after="2027-02-07">
+    units="ms" expires_after="2027-09-03">
   <owner>nyquist@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
   <summary>
@@ -931,7 +931,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.TaskFinished2"
-    enum="BackgroundTaskId" expires_after="2025-07-06">
+    enum="BackgroundTaskId" expires_after="2027-09-03">
   <owner>hnakashima@chromium.org</owner>
   <owner>smaier@chromium.org</owner>
   <summary>
@@ -948,7 +948,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.TaskLoadedNative"
-    enum="BackgroundTaskId" expires_after="2025-06-22">
+    enum="BackgroundTaskId" expires_after="2027-09-03">
   <owner>nyquist@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
   <summary>
@@ -961,7 +961,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.TaskScheduled.Failure"
-    enum="BackgroundTaskId" expires_after="2025-06-08">
+    enum="BackgroundTaskId" expires_after="2027-09-03">
   <owner>nyquist@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
   <summary>
@@ -973,7 +973,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.TaskScheduled.Success"
-    enum="BackgroundTaskId" expires_after="2024-10-05">
+    enum="BackgroundTaskId" expires_after="2027-09-03">
   <owner>nyquist@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
   <summary>
@@ -985,7 +985,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.TaskStarted"
-    enum="BackgroundTaskId" expires_after="2025-06-22">
+    enum="BackgroundTaskId" expires_after="2027-09-03">
   <owner>nyquist@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
   <summary>
@@ -997,7 +997,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.TaskStopped"
-    enum="BackgroundTaskId" expires_after="2025-06-08">
+    enum="BackgroundTaskId" expires_after="2027-09-03">
   <owner>nyquist@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
   <summary>
