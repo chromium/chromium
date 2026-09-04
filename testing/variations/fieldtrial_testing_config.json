@@ -20349,6 +20349,29 @@
             ]
         }
     ],
+    "VariationsFeatureAccessLogging": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260901",
+                    "params": {
+                        "histogram_denylist": "\"\""
+                    },
+                    "enable_features": [
+                        "HistogramDenylist"
+                    ]
+                }
+            ]
+        }
+    ],
     "VariationsRuntimeMutability": [
         {
             "platforms": [
