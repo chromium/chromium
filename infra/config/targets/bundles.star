@@ -4297,11 +4297,6 @@ targets.bundle(
     targets = [
         # arm64 tests are the arm tests + Graphite equivalents.
         "gpu_fyi_android_arm_release_telemetry_tests",
-        "gpu_webrtc_validating_graphite_telemetry_test",
-
-        # Migrated individual tests below.
-        # TODO(crbug.com/541312843): Remove this comment once all tests are
-        # directly included.
         "context_lost_passthrough_graphite_tests",
         "expected_color_pixel_passthrough_graphite_test",
         "pixel_skia_gold_passthrough_graphite_test",
@@ -4309,6 +4304,7 @@ targets.bundle(
         "webcodecs_graphite_tests",
         "webgl_conformance_gles_passthrough_graphite_tests",
         "webgl_conformance_validating_graphite_tests",
+        "webrtc_graphite_tests",
     ],
 )
 
@@ -4768,13 +4764,6 @@ targets.bundle(
             ),
         ],
     },
-)
-
-targets.bundle(
-    name = "gpu_webrtc_validating_graphite_telemetry_test",
-    targets = [
-        "webrtc_graphite_tests",
-    ],
 )
 
 targets.bundle(
