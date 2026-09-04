@@ -3,25 +3,38 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string>
 
 #include "base/check_deref.h"
 #include "base/files/file_path.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
+#include "chrome/browser/devtools/devtools_availability_checker.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
+#include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/fake_iwa_runtime_data_provider_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/prefs/pref_service.h"
+#include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
+#include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -45,7 +58,7 @@ constexpr std::string_view kIsolatedAppName = "Simple Isolated App";
 constexpr std::string_view kIsolatedAppVersion = "1.0.0";
 constexpr std::string_view kIsolatedAppDevToolsTitle =
     "Simple Isolated App (1.0.0)";
-}
+}  // namespace
 class IsolatedWebAppDevToolsTest : public base::test::WithFeatureOverride,
                                    public IsolatedWebAppBrowserTestHarness {
  public:
@@ -289,5 +302,177 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppDevToolsTest, SubAppManifestResolution) {
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(IsolatedWebAppDevToolsTest);
+
+namespace {
+
+constexpr char kWorkerIndexHtml[] = R"(
+<!doctype html>
+<script src="/register.js"></script>
+)";
+
+constexpr char kWorkerRegisterScript[] = R"(
+const workerPolicy = trustedTypes.createPolicy('iwa-worker-test', {
+  createScriptURL: value => value,
+});
+window.workerReady = navigator.serviceWorker.register(
+        workerPolicy.createScriptURL('/sw.js'))
+    .then(() => navigator.serviceWorker.ready)
+    .then(() => true);
+)";
+
+constexpr char kServiceWorkerScript[] = R"(
+self.IWA_POLICY_SECRET = 'iwa-worker-secret';
+self.addEventListener('install', event => event.waitUntil(self.skipWaiting()));
+self.addEventListener('activate', event => event.waitUntil(self.clients.claim()));
+)";
+
+class DirectWorkerProtocolClient final
+    : public content::TestDevToolsProtocolClient {
+ public:
+  bool AttachTo(scoped_refptr<content::DevToolsAgentHost> host) {
+    if (!host->AttachClient(this)) {
+      return false;
+    }
+    agent_host_ = std::move(host);
+    return true;
+  }
+};
+
+}  // namespace
+
+class DevToolsIwaWorkerPolicyBrowserTest
+    : public IsolatedWebAppBrowserTestHarness {
+ protected:
+  void SetUpOnMainThread() override {
+    IsolatedWebAppBrowserTestHarness::SetUpOnMainThread();
+    const auto web_bundle_id = test::GetDefaultEd25519WebBundleId();
+    data_provider_->Update(
+        [&](auto& update) { update.AddToManagedAllowlist(web_bundle_id); });
+
+    update_server_.AddBundle(
+        IsolatedWebAppBuilder(
+            ManifestBuilder().SetName("Policy IWA worker").SetVersion("1.0.0"))
+            .AddHtml("/", kWorkerIndexHtml)
+            .AddJs("/register.js", kWorkerRegisterScript)
+            .AddJs("/sw.js", kServiceWorkerScript)
+            .BuildBundle(web_bundle_id, {test::GetDefaultEd25519KeyPair()}));
+  }
+
+  IsolatedWebAppUrlInfo InstallPolicyIwa() {
+    const auto web_bundle_id = test::GetDefaultEd25519WebBundleId();
+    IsolatedWebAppUrlInfo url_info =
+        IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id);
+
+    WebAppTestInstallObserver observer(profile());
+    observer.BeginListening({url_info.app_id()});
+    test::AddForceInstalledIwaToPolicy(
+        profile()->GetPrefs(),
+        update_server_.CreateForceInstallPolicyEntry(web_bundle_id));
+    EXPECT_EQ(url_info.app_id(), observer.Wait());
+    return url_info;
+  }
+
+ private:
+  IsolatedWebAppTestUpdateServer update_server_;
+  FakeIwaRuntimeDataProviderMixin data_provider_{&mixin_host_};
+};
+
+IN_PROC_BROWSER_TEST_F(DevToolsIwaWorkerPolicyBrowserTest,
+                       AttachPolicyIwaServiceWorkerDisallowed) {
+  IsolatedWebAppUrlInfo url_info = InstallPolicyIwa();
+  const WebApp* web_app =
+      provider().registrar_unsafe().GetAppById(url_info.app_id());
+  ASSERT_TRUE(web_app);
+  ASSERT_TRUE(web_app->IsIwaPolicyInstalledApp());
+
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+  ASSERT_TRUE(app_frame);
+  ASSERT_EQ(true, content::EvalJs(app_frame, "window.workerReady"));
+
+  profile()->GetPrefs()->SetInteger(
+      prefs::kDevToolsAvailability,
+      static_cast<int>(policy::DeveloperToolsAvailability::
+                           kDisallowedForForceInstalledExtensions));
+
+  // The app's page target is rejected by the intended WebApp policy branch.
+  EXPECT_FALSE(IsInspectionAllowed(profile(), web_app));
+
+  const GURL worker_url = url_info.origin().GetURL().Resolve("/sw.js");
+  scoped_refptr<content::DevToolsAgentHost> worker_target;
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    for (auto& host : content::DevToolsAgentHost::GetOrCreateAll()) {
+      if (host->GetType() == content::DevToolsAgentHost::kTypeServiceWorker &&
+          host->GetURL() == worker_url) {
+        worker_target = host;
+        return true;
+      }
+    }
+    return false;
+  }));
+
+  ASSERT_TRUE(worker_target);
+  ASSERT_EQ(nullptr, worker_target->GetWebContents());
+  ASSERT_EQ(profile(), worker_target->GetBrowserContext());
+
+  // Policy decision: WebApp lookup occurs for URL-only targets.
+  EXPECT_FALSE(IsInspectionAllowed(profile(), worker_target.get()));
+
+  // Exercise AllowInspectingTarget gate and verify attaching to the managed
+  // IWA worker target is rejected.
+  DirectWorkerProtocolClient client;
+  EXPECT_FALSE(client.AttachTo(worker_target));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    DevToolsIwaWorkerPolicyBrowserTest,
+    AttachAndEvaluatePolicyIwaServiceWorkerWhenDevToolsAllowed) {
+  IsolatedWebAppUrlInfo url_info = InstallPolicyIwa();
+  const WebApp* web_app =
+      provider().registrar_unsafe().GetAppById(url_info.app_id());
+  ASSERT_TRUE(web_app);
+  ASSERT_TRUE(web_app->IsIwaPolicyInstalledApp());
+
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+  ASSERT_TRUE(app_frame);
+  ASSERT_EQ(true, content::EvalJs(app_frame, "window.workerReady"));
+
+  profile()->GetPrefs()->SetInteger(
+      prefs::kDevToolsAvailability,
+      static_cast<int>(policy::DeveloperToolsAvailability::kAllowed));
+
+  EXPECT_TRUE(IsInspectionAllowed(profile(), web_app));
+
+  const GURL worker_url = url_info.origin().GetURL().Resolve("/sw.js");
+  scoped_refptr<content::DevToolsAgentHost> worker_target;
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    for (auto& host : content::DevToolsAgentHost::GetOrCreateAll()) {
+      if (host->GetType() == content::DevToolsAgentHost::kTypeServiceWorker &&
+          host->GetURL() == worker_url) {
+        worker_target = host;
+        return true;
+      }
+    }
+    return false;
+  }));
+
+  ASSERT_TRUE(worker_target);
+  ASSERT_EQ(nullptr, worker_target->GetWebContents());
+  ASSERT_EQ(profile(), worker_target->GetBrowserContext());
+
+  EXPECT_TRUE(IsInspectionAllowed(profile(), worker_target.get()));
+
+  DirectWorkerProtocolClient client;
+  ASSERT_TRUE(client.AttachTo(worker_target));
+  base::DictValue params;
+  params.Set("expression", "self.IWA_POLICY_SECRET");
+  params.Set("returnByValue", true);
+  const base::DictValue* result =
+      client.SendCommandSync("Runtime.evaluate", std::move(params));
+  ASSERT_TRUE(result);
+  const std::string* value = result->FindStringByDottedPath("result.value");
+  ASSERT_TRUE(value);
+  EXPECT_EQ("iwa-worker-secret", *value);
+  client.DetachProtocolClient();
+}
 
 }  // namespace web_app
