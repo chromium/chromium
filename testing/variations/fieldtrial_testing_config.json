@@ -14808,6 +14808,24 @@
             ]
         }
     ],
+    "PageContentCacheDesktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260826",
+                    "enable_features": [
+                        "PageContentCache"
+                    ]
+                }
+            ]
+        }
+    ],
     "PageInfoAboutThisSite40Langs": [
         {
             "platforms": [
