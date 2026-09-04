@@ -30,12 +30,27 @@ namespace payments {
 namespace {
 
 using testing::_;
+using testing::ElementsAre;
 
 static constexpr char kNoContent[] = "";
 static constexpr char kNoError[] = "";
 static constexpr std::nullopt_t kNoLinkHeader = std::nullopt;
 static constexpr char kEmptyLinkHeader[] = "";
 static constexpr char kNoResponseBody[] = "";
+
+class TestErrorLogger : public ErrorLogger {
+ public:
+  void Error(const std::string& error_message) const override {
+    logged_errors_.push_back(error_message);
+  }
+
+  const std::vector<std::string>& logged_errors() const {
+    return logged_errors_;
+  }
+
+ private:
+  mutable std::vector<std::string> logged_errors_;
+};
 
 }  // namespace
 
@@ -57,10 +72,16 @@ class PaymentManifestDownloaderTestBase
   void InitDownloader() {
     mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_rfh;
     test_factory_.Clone(url_loader_factory_rfh.BindNewPipeAndPassReceiver());
+    auto logger = std::make_unique<TestErrorLogger>();
+    test_error_logger_ = logger.get();
     downloader_ = std::make_unique<PaymentManifestDownloader>(
-        std::make_unique<ErrorLogger>(), const_csp_checker_->GetWeakPtr(),
+        std::move(logger), const_csp_checker_->GetWeakPtr(),
         shared_url_loader_factory_, std::move(url_loader_factory_rfh),
         main_rfh()->GetWeakDocumentPtr());
+  }
+
+  const std::vector<std::string>& logged_errors() const {
+    return test_error_logger_->logged_errors();
   }
 
   MOCK_METHOD3(OnManifestDownload,
@@ -121,6 +142,7 @@ class PaymentManifestDownloaderTestBase
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   std::unique_ptr<ConstCSPChecker> const_csp_checker_;
   std::unique_ptr<PaymentManifestDownloader> downloader_;
+  raw_ptr<TestErrorLogger> test_error_logger_ = nullptr;
 };
 
 class PaymentMethodManifestDownloaderTest
@@ -139,153 +161,206 @@ class PaymentMethodManifestDownloaderTest
 };
 
 TEST_F(PaymentMethodManifestDownloaderTest, FirstHttpResponse404IsFailure) {
-  EXPECT_CALL(*this, OnManifestDownload(
-                         _, kNoContent,
-                         "Unable to download payment manifest "
-                         "\"https://bobpay.test/\". HTTP 404 Not Found."));
+  EXPECT_CALL(
+      *this,
+      OnManifestDownload(
+          _, kNoContent,
+          "Unable to download payment manifest \"https://bobpay.test/\"."));
 
   ServerResponse(404, Headers::kSend, kNoLinkHeader, kNoResponseBody, net::OK);
+
+  EXPECT_THAT(logged_errors(),
+              ElementsAre("Unable to download payment manifest "
+                          "\"https://bobpay.test/\". HTTP 404 Not Found."));
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest,
        NoHttpHeadersAndEmptyResponseBodyIsFailure) {
-  EXPECT_CALL(*this,
-              OnManifestDownload(
-                  _, kNoContent,
-                  "No \"Link: rel=payment-method-manifest\" HTTP header found "
-                  "at \"https://bobpay.test/\"."));
+  EXPECT_CALL(
+      *this,
+      OnManifestDownload(
+          _, kNoContent,
+          "Unable to download payment manifest \"https://bobpay.test/\"."));
 
   ServerResponse(200, Headers::kOmit, kNoLinkHeader, kNoResponseBody, net::OK);
+
+  EXPECT_THAT(logged_errors(),
+              ElementsAre("No \"Link: rel=payment-method-manifest\" HTTP "
+                          "header found at \"https://bobpay.test/\"."));
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest,
        NoHttpHeadersButWithResponseBodyIsFailure) {
-  EXPECT_CALL(*this,
-              OnManifestDownload(
-                  _, kNoContent,
-                  "No \"Link: rel=payment-method-manifest\" HTTP header found "
-                  "at \"https://bobpay.test/\"."));
+  EXPECT_CALL(
+      *this,
+      OnManifestDownload(
+          _, kNoContent,
+          "Unable to download payment manifest \"https://bobpay.test/\"."));
 
   ServerResponse(200, Headers::kOmit, kNoLinkHeader, "response body", net::OK);
+
+  EXPECT_THAT(logged_errors(),
+              ElementsAre("No \"Link: rel=payment-method-manifest\" HTTP "
+                          "header found at \"https://bobpay.test/\"."));
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest,
        EmptyHttpHeaderAndEmptyResponseBodyIsFailure) {
-  EXPECT_CALL(*this,
-              OnManifestDownload(
-                  _, kNoContent,
-                  "No \"Link: rel=payment-method-manifest\" HTTP header found "
-                  "at \"https://bobpay.test/\"."));
+  EXPECT_CALL(
+      *this,
+      OnManifestDownload(
+          _, kNoContent,
+          "Unable to download payment manifest \"https://bobpay.test/\"."));
 
   ServerResponse(200, Headers::kSend, kNoLinkHeader, kNoResponseBody, net::OK);
+
+  EXPECT_THAT(logged_errors(),
+              ElementsAre("No \"Link: rel=payment-method-manifest\" HTTP "
+                          "header found at \"https://bobpay.test/\"."));
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest,
        EmptyHttpHeaderButWithResponseBodyIsFailure) {
-  EXPECT_CALL(*this,
-              OnManifestDownload(
-                  _, kNoContent,
-                  "No \"Link: rel=payment-method-manifest\" HTTP header found "
-                  "at \"https://bobpay.test/\"."));
+  EXPECT_CALL(
+      *this,
+      OnManifestDownload(
+          _, kNoContent,
+          "Unable to download payment manifest \"https://bobpay.test/\"."));
 
   ServerResponse(200, Headers::kSend, kNoLinkHeader, "response content",
                  net::OK);
+
+  EXPECT_THAT(logged_errors(),
+              ElementsAre("No \"Link: rel=payment-method-manifest\" HTTP "
+                          "header found at \"https://bobpay.test/\"."));
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest,
        EmptyHttpLinkHeaderWithoutResponseBodyIsFailure) {
-  EXPECT_CALL(*this,
-              OnManifestDownload(
-                  _, kNoContent,
-                  "No \"Link: rel=payment-method-manifest\" HTTP header found "
-                  "at \"https://bobpay.test/\"."));
+  EXPECT_CALL(
+      *this,
+      OnManifestDownload(
+          _, kNoContent,
+          "Unable to download payment manifest \"https://bobpay.test/\"."));
 
   ServerResponse(200, Headers::kSend, kEmptyLinkHeader, kNoResponseBody,
                  net::OK);
+
+  EXPECT_THAT(logged_errors(),
+              ElementsAre("No \"Link: rel=payment-method-manifest\" HTTP "
+                          "header found at \"https://bobpay.test/\"."));
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest,
        EmptyHttpLinkHeaderButWithResponseBodyIsFailure) {
-  EXPECT_CALL(*this,
-              OnManifestDownload(
-                  _, kNoContent,
-                  "No \"Link: rel=payment-method-manifest\" HTTP header found "
-                  "at \"https://bobpay.test/\"."));
+  EXPECT_CALL(
+      *this,
+      OnManifestDownload(
+          _, kNoContent,
+          "Unable to download payment manifest \"https://bobpay.test/\"."));
 
   ServerResponse(200, Headers::kSend, kEmptyLinkHeader, "response body",
                  net::OK);
+
+  EXPECT_THAT(logged_errors(),
+              ElementsAre("No \"Link: rel=payment-method-manifest\" HTTP "
+                          "header found at \"https://bobpay.test/\"."));
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest,
        NoRelInHttpLinkHeaderAndNoResponseBodyIsFailure) {
-  EXPECT_CALL(*this,
-              OnManifestDownload(
-                  _, kNoContent,
-                  "No \"Link: rel=payment-method-manifest\" HTTP header found "
-                  "at \"https://bobpay.test/\"."));
+  EXPECT_CALL(
+      *this,
+      OnManifestDownload(
+          _, kNoContent,
+          "Unable to download payment manifest \"https://bobpay.test/\"."));
 
   ServerResponse(200, Headers::kSend, "<manifest.json>", kNoResponseBody,
                  net::OK);
+
+  EXPECT_THAT(logged_errors(),
+              ElementsAre("No \"Link: rel=payment-method-manifest\" HTTP "
+                          "header found at \"https://bobpay.test/\"."));
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest,
        NoRelInHttpLinkHeaderButWithResponseBodyIsFailure) {
-  EXPECT_CALL(*this,
-              OnManifestDownload(
-                  _, kNoContent,
-                  "No \"Link: rel=payment-method-manifest\" HTTP header found "
-                  "at \"https://bobpay.test/\"."));
+  EXPECT_CALL(
+      *this,
+      OnManifestDownload(
+          _, kNoContent,
+          "Unable to download payment manifest \"https://bobpay.test/\"."));
 
   ServerResponse(200, Headers::kSend, "<manifest.json>", "response body",
                  net::OK);
+
+  EXPECT_THAT(logged_errors(),
+              ElementsAre("No \"Link: rel=payment-method-manifest\" HTTP "
+                          "header found at \"https://bobpay.test/\"."));
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest,
        NoUrlInHttpLinkHeaderAndNoResponseBodyIsFailure) {
-  EXPECT_CALL(*this,
-              OnManifestDownload(
-                  _, kNoContent,
-                  "No \"Link: rel=payment-method-manifest\" HTTP header found "
-                  "at \"https://bobpay.test/\"."));
+  EXPECT_CALL(
+      *this,
+      OnManifestDownload(
+          _, kNoContent,
+          "Unable to download payment manifest \"https://bobpay.test/\"."));
 
   ServerResponse(200, Headers::kSend, "rel=payment-method-manifest",
                  kNoResponseBody, net::OK);
+
+  EXPECT_THAT(logged_errors(),
+              ElementsAre("No \"Link: rel=payment-method-manifest\" HTTP "
+                          "header found at \"https://bobpay.test/\"."));
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest,
        NoUrlInHttpLinkHeaderButWithResponseBodyIsFailure) {
-  EXPECT_CALL(*this,
-              OnManifestDownload(
-                  _, kNoContent,
-                  "No \"Link: rel=payment-method-manifest\" HTTP header found "
-                  "at \"https://bobpay.test/\"."));
+  EXPECT_CALL(
+      *this,
+      OnManifestDownload(
+          _, kNoContent,
+          "Unable to download payment manifest \"https://bobpay.test/\"."));
 
   ServerResponse(200, Headers::kSend, "rel=payment-method-manifest",
                  "response body", net::OK);
+
+  EXPECT_THAT(logged_errors(),
+              ElementsAre("No \"Link: rel=payment-method-manifest\" HTTP "
+                          "header found at \"https://bobpay.test/\"."));
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest,
        NoManifestRellInHttpLinkHeaderAndNoResponseBodyIsFailure) {
-  EXPECT_CALL(*this,
-              OnManifestDownload(
-                  _, kNoContent,
-                  "No \"Link: rel=payment-method-manifest\" HTTP header found "
-                  "at \"https://bobpay.test/\"."));
+  EXPECT_CALL(
+      *this,
+      OnManifestDownload(
+          _, kNoContent,
+          "Unable to download payment manifest \"https://bobpay.test/\"."));
 
   ServerResponse(200, Headers::kSend, "<manifest.json>; rel=web-app-manifest",
                  kNoResponseBody, net::OK);
+
+  EXPECT_THAT(logged_errors(),
+              ElementsAre("No \"Link: rel=payment-method-manifest\" HTTP "
+                          "header found at \"https://bobpay.test/\"."));
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest,
        NoManifestRellInHttpLinkHeaderButWithResponseBodyIsFailure) {
-  EXPECT_CALL(*this,
-              OnManifestDownload(
-                  _, kNoContent,
-                  "No \"Link: rel=payment-method-manifest\" HTTP header found "
-                  "at \"https://bobpay.test/\"."));
+  EXPECT_CALL(
+      *this,
+      OnManifestDownload(
+          _, kNoContent,
+          "Unable to download payment manifest \"https://bobpay.test/\"."));
 
   ServerResponse(200, Headers::kSend, "<manifest.json>; rel=web-app-manifest",
                  "response body", net::OK);
+
+  EXPECT_THAT(logged_errors(),
+              ElementsAre("No \"Link: rel=payment-method-manifest\" HTTP "
+                          "header found at \"https://bobpay.test/\"."));
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest, SecondHttpResponse404IsFailure) {
@@ -293,13 +368,16 @@ TEST_F(PaymentMethodManifestDownloaderTest, SecondHttpResponse404IsFailure) {
                  "<manifest.json>; rel=payment-method-manifest",
                  kNoResponseBody, net::OK);
 
-  EXPECT_CALL(
-      *this, OnManifestDownload(
-                 _, kNoContent,
-                 "Unable to download payment manifest "
-                 "\"https://bobpay.test/manifest.json\". HTTP 404 Not Found."));
+  EXPECT_CALL(*this, OnManifestDownload(_, kNoContent,
+                                        "Unable to download payment manifest "
+                                        "\"https://bobpay.test/\"."));
 
   ServerResponse(404, Headers::kSend, kNoLinkHeader, kNoResponseBody, net::OK);
+
+  EXPECT_THAT(logged_errors(),
+              ElementsAre("Unable to download payment manifest "
+                          "\"https://bobpay.test/manifest.json\". HTTP 404 Not "
+                          "Found."));
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest, EmptySecondResponseIsFailure) {
@@ -307,12 +385,15 @@ TEST_F(PaymentMethodManifestDownloaderTest, EmptySecondResponseIsFailure) {
                  "<manifest.json>; rel=payment-method-manifest",
                  kNoResponseBody, net::OK);
 
-  EXPECT_CALL(*this,
-              OnManifestDownload(_, kNoContent,
-                                 "No content found in payment manifest "
-                                 "\"https://bobpay.test/manifest.json\"."));
+  EXPECT_CALL(*this, OnManifestDownload(_, kNoContent,
+                                        "Unable to download payment manifest "
+                                        "\"https://bobpay.test/\"."));
 
   ServerResponse(200, Headers::kSend, kNoLinkHeader, kNoResponseBody, net::OK);
+
+  EXPECT_THAT(logged_errors(),
+              ElementsAre("No content found in payment manifest "
+                          "\"https://bobpay.test/manifest.json\"."));
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest,
@@ -333,12 +414,15 @@ TEST_F(PaymentMethodManifestDownloaderTest,
                  "<manifest.json>; rel=payment-method-manifest",
                  kNoResponseBody, net::OK);
 
-  EXPECT_CALL(*this,
-              OnManifestDownload(_, kNoContent,
-                                 "No content found in payment manifest "
-                                 "\"https://bobpay.test/manifest.json\"."));
+  EXPECT_CALL(*this, OnManifestDownload(_, kNoContent,
+                                        "Unable to download payment manifest "
+                                        "\"https://bobpay.test/\"."));
 
   ServerResponse(200, Headers::kOmit, kNoLinkHeader, kNoResponseBody, net::OK);
+
+  EXPECT_THAT(logged_errors(),
+              ElementsAre("No content found in payment manifest "
+                          "\"https://bobpay.test/manifest.json\"."));
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest, NonEmptySecondResponseIsSuccess) {
@@ -355,14 +439,19 @@ TEST_F(PaymentMethodManifestDownloaderTest, NonEmptySecondResponseIsSuccess) {
 TEST_F(PaymentMethodManifestDownloaderTest,
        InsufficientResourcesInHttpLinkFailure) {
   EXPECT_CALL(
-      *this, OnManifestDownload(
-                 _, kNoContent,
-                 "Unable to download payment manifest "
-                 "\"https://bobpay.test/\". ERR_INSUFFICIENT_RESOURCES (-12)"));
+      *this,
+      OnManifestDownload(
+          _, kNoContent,
+          "Unable to download payment manifest \"https://bobpay.test/\"."));
 
   ServerResponse(200, Headers::kSend,
                  "<manifest.json>; rel=payment-method-manifest",
                  kNoResponseBody, net::ERR_INSUFFICIENT_RESOURCES);
+
+  EXPECT_THAT(logged_errors(),
+              ElementsAre("Unable to download payment manifest "
+                          "\"https://bobpay.test/\". "
+                          "ERR_INSUFFICIENT_RESOURCES (-12)"));
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest,
@@ -371,14 +460,17 @@ TEST_F(PaymentMethodManifestDownloaderTest,
                  "<manifest.json>; rel=payment-method-manifest",
                  kNoResponseBody, net::OK);
 
-  EXPECT_CALL(*this,
-              OnManifestDownload(_, kNoContent,
-                                 "Unable to download payment manifest "
-                                 "\"https://bobpay.test/manifest.json\". "
-                                 "ERR_INSUFFICIENT_RESOURCES (-12)"));
+  EXPECT_CALL(*this, OnManifestDownload(_, kNoContent,
+                                        "Unable to download payment manifest "
+                                        "\"https://bobpay.test/\"."));
 
   ServerResponse(200, Headers::kSend, kNoLinkHeader, "manifest content",
                  net::ERR_INSUFFICIENT_RESOURCES);
+
+  EXPECT_THAT(logged_errors(),
+              ElementsAre("Unable to download payment manifest "
+                          "\"https://bobpay.test/manifest.json\". "
+                          "ERR_INSUFFICIENT_RESOURCES (-12)"));
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest, FirstResponseCode204IsSuccess) {
@@ -397,15 +489,17 @@ TEST_F(PaymentMethodManifestDownloaderTest, SecondResponseCode204IsFailure) {
                  "<manifest.json>; rel=payment-method-manifest",
                  kNoResponseBody, net::OK);
 
-  EXPECT_CALL(
-      *this,
-      OnManifestDownload(
-          _, kNoContent,
-          "Unable to download payment manifest "
-          "\"https://bobpay.test/manifest.json\". HTTP 204 No Content."));
+  EXPECT_CALL(*this, OnManifestDownload(_, kNoContent,
+                                        "Unable to download payment manifest "
+                                        "\"https://bobpay.test/\"."));
 
   ServerResponse(204, Headers::kSend, kNoLinkHeader, "manifest content",
                  net::OK);
+
+  EXPECT_THAT(logged_errors(),
+              ElementsAre("Unable to download payment manifest "
+                          "\"https://bobpay.test/manifest.json\". HTTP 204 "
+                          "No Content."));
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest,
@@ -414,14 +508,17 @@ TEST_F(PaymentMethodManifestDownloaderTest,
                  "<manifest.json>; rel=payment-method-manifest",
                  kNoResponseBody, net::OK);
 
-  EXPECT_CALL(*this,
-              OnManifestDownload(_, kNoContent,
-                                 "No content found in payment manifest "
-                                 "\"https://bobpay.test/manifest.json\"."));
+  EXPECT_CALL(*this, OnManifestDownload(_, kNoContent,
+                                        "Unable to download payment manifest "
+                                        "\"https://bobpay.test/\"."));
 
   ServerResponse(200, Headers::kSend,
                  "<manifest.json>; rel=payment-method-manifest",
                  kNoResponseBody, net::OK);
+
+  EXPECT_THAT(logged_errors(),
+              ElementsAre("No content found in payment manifest "
+                          "\"https://bobpay.test/manifest.json\"."));
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest,
@@ -474,27 +571,36 @@ TEST_F(PaymentMethodManifestDownloaderTest,
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest, AbsoluteHttpHeaderLinkUrl) {
-  EXPECT_CALL(*this,
-              OnManifestDownload(
-                  _, kNoContent,
-                  "\"http://bobpay.test/manifest.json\" is not a valid payment "
-                  "manifest "
-                  "URL with HTTPS scheme (or HTTP scheme for localhost)."));
+  EXPECT_CALL(
+      *this,
+      OnManifestDownload(
+          _, kNoContent,
+          "Unable to download payment manifest \"https://bobpay.test/\"."));
 
   ServerResponse(
       200, Headers::kSend,
       "<http://bobpay.test/manifest.json>; rel=payment-method-manifest",
       kNoResponseBody, net::OK);
+
+  EXPECT_THAT(logged_errors(),
+              ElementsAre("\"http://bobpay.test/manifest.json\" is not a valid "
+                          "payment manifest URL with HTTPS scheme (or HTTP "
+                          "scheme for localhost)."));
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest, 300IsUnsupportedRedirect) {
-  EXPECT_CALL(*this,
-              OnManifestDownload(
-                  _, kNoContent,
-                  "HTTP status code 300 \"Multiple Choices\" not allowed for "
-                  "payment method manifest \"https://bobpay.test/\"."));
+  EXPECT_CALL(
+      *this,
+      OnManifestDownload(
+          _, kNoContent,
+          "Unable to download payment manifest \"https://bobpay.test/\"."));
 
   ServerRedirect(300, GURL("https://pay.bobpay.test"));
+
+  EXPECT_THAT(logged_errors(),
+              ElementsAre("HTTP status code 300 \"Multiple Choices\" not "
+                          "allowed for payment method manifest "
+                          "\"https://bobpay.test/\"."));
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest, 301And302AreSupportedRedirects) {
@@ -522,12 +628,15 @@ TEST_F(PaymentMethodManifestDownloaderTest,
                  "<manifest.json>; rel=payment-method-manifest",
                  kNoResponseBody, net::OK);
 
-  EXPECT_CALL(*this, OnManifestDownload(
-                         _, kNoContent,
-                         "Unable to download the payment manifest because "
-                         "reached the maximum number of redirects."));
+  EXPECT_CALL(*this, OnManifestDownload(_, kNoContent,
+                                        "Unable to download payment manifest "
+                                        "\"https://bobpay.test/\"."));
 
   ServerRedirect(301, GURL("https://pay.bobpay.test"));
+
+  EXPECT_THAT(logged_errors(),
+              ElementsAre("Unable to download the payment manifest because "
+                          "reached the maximum number of redirects."));
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest, 302And303AreSupportedRedirects) {
@@ -550,22 +659,32 @@ TEST_F(PaymentMethodManifestDownloaderTest, 302And303AreSupportedRedirects) {
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest, 304IsUnsupportedRedirect) {
-  EXPECT_CALL(*this,
-              OnManifestDownload(
-                  _, kNoContent,
-                  "HTTP status code 304 \"Not Modified\" not allowed for "
-                  "payment method manifest \"https://bobpay.test/\"."));
+  EXPECT_CALL(
+      *this,
+      OnManifestDownload(
+          _, kNoContent,
+          "Unable to download payment manifest \"https://bobpay.test/\"."));
 
   ServerRedirect(304, GURL("https://pay.bobpay.test"));
+
+  EXPECT_THAT(logged_errors(),
+              ElementsAre("HTTP status code 304 \"Not Modified\" not allowed "
+                          "for payment method manifest "
+                          "\"https://bobpay.test/\"."));
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest, 305IsUnsupportedRedirect) {
-  EXPECT_CALL(*this, OnManifestDownload(
-                         _, kNoContent,
-                         "HTTP status code 305 \"Use Proxy\" not allowed for "
-                         "payment method manifest \"https://bobpay.test/\"."));
+  EXPECT_CALL(
+      *this,
+      OnManifestDownload(
+          _, kNoContent,
+          "Unable to download payment manifest \"https://bobpay.test/\"."));
 
   ServerRedirect(305, GURL("https://pay.bobpay.test"));
+
+  EXPECT_THAT(logged_errors(),
+              ElementsAre("HTTP status code 305 \"Use Proxy\" not allowed for "
+                          "payment method manifest \"https://bobpay.test/\"."));
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest, 307And308AreSupportedRedirects) {
@@ -600,21 +719,29 @@ TEST_F(PaymentMethodManifestDownloaderTest, NoMoreThanThreeRedirects) {
 
   EXPECT_EQ(GetOriginalURL(), GURL("https://newpay.bobpay.test"));
 
-  EXPECT_CALL(*this, OnManifestDownload(
-                         _, kNoContent,
-                         "Unable to download the payment manifest because "
-                         "reached the maximum number of redirects."));
+  EXPECT_CALL(*this, OnManifestDownload(_, kNoContent,
+                                        "Unable to download payment manifest "
+                                        "\"https://bobpay.test/\"."));
 
   ServerRedirect(308, GURL("https://newpay.bobpay.test"));
+
+  EXPECT_THAT(logged_errors(),
+              ElementsAre("Unable to download the payment manifest because "
+                          "reached the maximum number of redirects."));
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest, InvalidRedirectUrlIsFailure) {
-  EXPECT_CALL(*this, OnManifestDownload(
-                         _, kNoContent,
-                         "\"\" is not a valid payment manifest URL with HTTPS "
-                         "scheme (or HTTP scheme for localhost)."));
+  EXPECT_CALL(
+      *this,
+      OnManifestDownload(
+          _, kNoContent,
+          "Unable to download payment manifest \"https://bobpay.test/\"."));
 
   ServerRedirect(308, GURL("pay.bobpay.test"));
+
+  EXPECT_THAT(logged_errors(),
+              ElementsAre("\"\" is not a valid payment manifest URL with HTTPS "
+                          "scheme (or HTTP scheme for localhost)."));
 }
 
 TEST_F(PaymentMethodManifestDownloaderTest, NotAllowCrossSiteRedirects) {
@@ -622,10 +749,14 @@ TEST_F(PaymentMethodManifestDownloaderTest, NotAllowCrossSiteRedirects) {
       *this,
       OnManifestDownload(
           _, kNoContent,
-          "Cross-site redirect from \"https://bobpay.test/\" to "
-          "\"https://alicepay.test/\" not allowed for payment manifests."));
+          "Unable to download payment manifest \"https://bobpay.test/\"."));
 
   ServerRedirect(301, GURL("https://alicepay.test"));
+
+  EXPECT_THAT(logged_errors(),
+              ElementsAre("Cross-site redirect from \"https://bobpay.test/\" "
+                          "to \"https://alicepay.test/\" not allowed for "
+                          "payment manifests."));
 }
 
 class WebAppManifestDownloaderTest : public PaymentManifestDownloaderTestBase {
@@ -643,12 +774,17 @@ class WebAppManifestDownloaderTest : public PaymentManifestDownloaderTestBase {
 };
 
 TEST_F(WebAppManifestDownloaderTest, HttpGetResponse404IsFailure) {
-  EXPECT_CALL(*this, OnManifestDownload(
-                         _, kNoContent,
-                         "Unable to download payment manifest "
-                         "\"https://bobpay.test/\". HTTP 404 Not Found."));
+  EXPECT_CALL(
+      *this,
+      OnManifestDownload(
+          _, kNoContent,
+          "Unable to download payment manifest \"https://bobpay.test/\"."));
 
   ServerResponse(404, kNoResponseBody, net::OK);
+
+  EXPECT_THAT(logged_errors(),
+              ElementsAre("Unable to download payment manifest "
+                          "\"https://bobpay.test/\". HTTP 404 Not Found."));
 }
 
 TEST_F(WebAppManifestDownloaderTest, EmptyHttpGetResponseIsFailure) {
@@ -656,9 +792,13 @@ TEST_F(WebAppManifestDownloaderTest, EmptyHttpGetResponseIsFailure) {
       *this,
       OnManifestDownload(
           _, kNoContent,
-          "No content found in payment manifest \"https://bobpay.test/\"."));
+          "Unable to download payment manifest \"https://bobpay.test/\"."));
 
   ServerResponse(200, kNoResponseBody, net::OK);
+
+  EXPECT_THAT(logged_errors(),
+              ElementsAre("No content found in payment manifest "
+                          "\"https://bobpay.test/\"."));
 }
 
 TEST_F(WebAppManifestDownloaderTest, NonEmptyHttpGetResponseIsSuccess) {
@@ -669,12 +809,17 @@ TEST_F(WebAppManifestDownloaderTest, NonEmptyHttpGetResponseIsSuccess) {
 
 TEST_F(WebAppManifestDownloaderTest, InsufficientResourcesFailure) {
   EXPECT_CALL(
-      *this, OnManifestDownload(
-                 _, kNoContent,
-                 "Unable to download payment manifest "
-                 "\"https://bobpay.test/\". ERR_INSUFFICIENT_RESOURCES (-12)"));
+      *this,
+      OnManifestDownload(
+          _, kNoContent,
+          "Unable to download payment manifest \"https://bobpay.test/\"."));
 
   ServerResponse(200, "manifest content", net::ERR_INSUFFICIENT_RESOURCES);
+
+  EXPECT_THAT(logged_errors(),
+              ElementsAre("Unable to download payment manifest "
+                          "\"https://bobpay.test/\". "
+                          "ERR_INSUFFICIENT_RESOURCES (-12)"));
 }
 
 using PaymentManifestDownloaderCSPTest = PaymentManifestDownloaderTestBase;
@@ -695,6 +840,10 @@ TEST_F(PaymentManifestDownloaderCSPTest,
       url::Origin::Create(GURL("https://chromium.org")), test_url_,
       base::BindOnce(&PaymentManifestDownloaderCSPTest::OnManifestDownload,
                      base::Unretained(this)));
+
+  EXPECT_THAT(logged_errors(),
+              ElementsAre("Unable to download payment manifest "
+                          "\"https://bobpay.test/\"."));
 }
 
 // Download fails when CSP checker is gone, e.g., during shutdown.
@@ -712,6 +861,10 @@ TEST_F(PaymentManifestDownloaderCSPTest, WebAppManifestCSPCheckerMissing) {
       url::Origin::Create(test_url_), test_url_,
       base::BindOnce(&PaymentManifestDownloaderCSPTest::OnManifestDownload,
                      base::Unretained(this)));
+
+  EXPECT_THAT(logged_errors(),
+              ElementsAre("Unable to download payment manifest "
+                          "\"https://bobpay.test/\"."));
 }
 
 // Download fails when CSP checker denies it.
@@ -719,15 +872,20 @@ TEST_F(PaymentManifestDownloaderCSPTest, PaymentMethodManifestCSPDenied) {
   const_csp_checker_ = std::make_unique<ConstCSPChecker>(/*allow=*/false);
   InitDownloader();
 
-  EXPECT_CALL(*this, OnManifestDownload(
-                         _, kNoContent,
-                         "Content Security Policy denied the download of "
-                         "payment manifest \"https://bobpay.test/\"."));
+  EXPECT_CALL(
+      *this,
+      OnManifestDownload(
+          _, kNoContent,
+          "Unable to download payment manifest \"https://bobpay.test/\"."));
 
   downloader_->DownloadPaymentMethodManifest(
       url::Origin::Create(GURL("https://chromium.org")), test_url_,
       base::BindOnce(&PaymentManifestDownloaderCSPTest::OnManifestDownload,
                      base::Unretained(this)));
+
+  EXPECT_THAT(logged_errors(),
+              ElementsAre("Content Security Policy denied the download of "
+                          "payment manifest \"https://bobpay.test/\"."));
 }
 
 // Download fails when CSP checker denies it.
@@ -735,15 +893,20 @@ TEST_F(PaymentManifestDownloaderCSPTest, WebAppManifestCSPDenied) {
   const_csp_checker_ = std::make_unique<ConstCSPChecker>(/*allow=*/false);
   InitDownloader();
 
-  EXPECT_CALL(*this, OnManifestDownload(
-                         _, kNoContent,
-                         "Content Security Policy denied the download of "
-                         "payment manifest \"https://bobpay.test/\"."));
+  EXPECT_CALL(
+      *this,
+      OnManifestDownload(
+          _, kNoContent,
+          "Unable to download payment manifest \"https://bobpay.test/\"."));
 
   downloader_->DownloadWebAppManifest(
       url::Origin::Create(test_url_), test_url_,
       base::BindOnce(&PaymentManifestDownloaderCSPTest::OnManifestDownload,
                      base::Unretained(this)));
+
+  EXPECT_THAT(logged_errors(),
+              ElementsAre("Content Security Policy denied the download of "
+                          "payment manifest \"https://bobpay.test/\"."));
 }
 
 }  // namespace payments

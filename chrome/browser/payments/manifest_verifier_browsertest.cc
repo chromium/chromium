@@ -450,7 +450,7 @@ IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest,
                        SinglePaymentMethodName404) {
   std::string expected_pattern =
       "Unable to download payment manifest "
-      "\"https://127.0.0.1:\\d+/404.test/webpay\". HTTP 404 Not Found.";
+      "\"https://127.0.0.1:\\d+/404.test/webpay\".";
   {
     content::InstalledPaymentAppsFinder::PaymentApps apps;
     apps[0] = std::make_unique<content::StoredPaymentApp>();
@@ -489,8 +489,7 @@ IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest,
                        MultiplePaymentMethodName404) {
   std::string expected_pattern =
       "Unable to download payment manifest "
-      "\"https://127.0.0.1:\\d+/404(aswell)?.test/webpay\". HTTP 404 Not "
-      "Found.";
+      "\"https://127.0.0.1:\\d+/404(aswell)?.test/webpay\".";
   {
     content::InstalledPaymentAppsFinder::PaymentApps apps;
     apps[0] = std::make_unique<content::StoredPaymentApp>();

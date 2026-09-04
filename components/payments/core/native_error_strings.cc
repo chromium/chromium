@@ -146,6 +146,9 @@ const char kPaymentHandlerInsecureNavigation[] =
 const char kPaymentHandlerInstallFailed[] =
     "Failed to install the payment handler.";
 
+const char kPaymentHandlerInstallFailedForMethod[] =
+    "Failed to install the payment handler for \"$1\".";
+
 const char kPaymentHandlerActivityDied[] =
     "The payment handler is closed because the Android activity is destroyed.";
 

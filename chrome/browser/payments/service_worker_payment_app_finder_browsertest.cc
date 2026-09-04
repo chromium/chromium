@@ -659,8 +659,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderBrowserTest,
 IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderBrowserTest,
                        InvalidDifferentSiteRedirect) {
   std::string expected_pattern =
-      "Cross-site redirect from \"https://larrypay.test:\\d+/webpay\" to "
-      "\"https://kylepay.test/webpay\" not allowed for payment manifests.";
+      "Unable to download payment manifest "
+      "\"https://larrypay.test:\\d+/webpay\".";
 
   {
     GetAllPaymentAppsForMethods({"https://larrypay.test/webpay"});
@@ -688,15 +688,17 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderBrowserTest,
 // it redirects 4 times (charlie -> david -> frank -> george -> harry).
 IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderBrowserTest,
                        FourRedirectsIsNotValid) {
-  std::string expected_error_message =
-      "Unable to download the payment manifest because reached the maximum "
-      "number of redirects.";
+  std::string expected_pattern =
+      "Unable to download payment manifest "
+      "\"https://charlie.example.test:\\d+/webpay\".";
   {
     GetAllPaymentAppsForMethods({"https://charlie.example.test/webpay"});
 
     EXPECT_TRUE(apps().empty());
     EXPECT_TRUE(installable_apps().empty());
-    EXPECT_EQ(expected_error_message, error_message());
+    EXPECT_TRUE(RE2::FullMatch(error_message(), expected_pattern))
+        << "Actual error message \"" << error_message()
+        << "\" did not match expected pattern \"" << expected_pattern << "\".";
   }
 
   // Repeat lookups should have identical results.
@@ -705,7 +707,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderBrowserTest,
 
     EXPECT_TRUE(apps().empty());
     EXPECT_TRUE(installable_apps().empty());
-    EXPECT_EQ(expected_error_message, error_message());
+    EXPECT_TRUE(RE2::FullMatch(error_message(), expected_pattern))
+        << "Actual error message \"" << error_message()
+        << "\" did not match expected pattern \"" << expected_pattern << "\".";
   }
 }
 
@@ -763,10 +767,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderBrowserTest,
 IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderBrowserTest,
                        CrossOriginHttpLinkHeaderIsInvalid) {
   std::string expected_pattern =
-      "Cross-origin payment method manifest "
-      "\"https://harry.example.test/payment-manifest.json\" not allowed for "
-      "the "
-      "payment method \"https://ike.example.test:\\d+/webpay\".";
+      "Unable to download payment manifest "
+      "\"https://ike.example.test:\\d+/webpay\".";
   {
     GetAllPaymentAppsForMethods({"https://ike.example.test/webpay"});
 
@@ -793,19 +795,15 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderBrowserTest,
 // its cross-origin default application https://harry.example.test/app.json.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderBrowserTest,
                        CrossOriginDefaultApplicationIsInvalid) {
-  std::string expected_pattern =
-      "Cross-origin default application https://harry.example.test/app.json "
-      "not "
-      "allowed in payment method manifest "
-      "https://john.example.test:\\d+/payment-manifest.json.";
+  std::string expected_error_message =
+      "Failed to install the payment handler for "
+      "\"https://john.example.test/webpay\".";
   {
     GetAllPaymentAppsForMethods({"https://john.example.test/webpay"});
 
     EXPECT_TRUE(apps().empty());
     EXPECT_TRUE(installable_apps().empty());
-    EXPECT_TRUE(RE2::FullMatch(error_message(), expected_pattern))
-        << "Actual error message \"" << error_message()
-        << "\" did not match expected pattern \"" << expected_pattern << "\".";
+    EXPECT_EQ(expected_error_message, error_message());
   }
 
   // Repeat lookups should have identical results.
@@ -814,9 +812,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderBrowserTest,
 
     EXPECT_TRUE(apps().empty());
     EXPECT_TRUE(installable_apps().empty());
-    EXPECT_TRUE(RE2::FullMatch(error_message(), expected_pattern))
-        << "Actual error message \"" << error_message()
-        << "\" did not match expected pattern \"" << expected_pattern << "\".";
+    EXPECT_EQ(expected_error_message, error_message());
   }
 }
 
@@ -825,9 +821,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderBrowserTest,
 IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderBrowserTest,
                        CrossOriginServiceWorkerIsInvalid) {
   std::string expected_error_message =
-      "Cross-origin \"serviceworker\".\"src\" "
-      "https://harry.example.test/app.js "
-      "not allowed in web app manifest https://kyle.example.test/app.json.";
+      "Failed to install the payment handler for "
+      "\"https://kyle.example.test/webpay\".";
   {
     GetAllPaymentAppsForMethods({"https://kyle.example.test/webpay"});
 
@@ -869,9 +864,8 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderBrowserTest,
                        CrossOriginServiceWorkerScopeIsInvalid) {
   std::string expected_error_message =
-      "Cross-origin \"serviceworker\".\"scope\" "
-      "https://harry.example.test/webpay not allowed in web app manifest "
-      "https://larry.example.test/app.json.";
+      "Failed to install the payment handler for "
+      "\"https://larry.example.test/webpay\".";
   {
     GetAllPaymentAppsForMethods({"https://larry.example.test/webpay"});
 

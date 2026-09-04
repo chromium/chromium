@@ -107,7 +107,7 @@ class InstallablePaymentAppCrawler {
       const GURL& web_app_manifest_url,
       const GURL& web_app_manifest_url_after_redirects,
       const std::string& content,
-      const std::string& error_message);
+      const std::string& unused_error_message);
   bool CompleteAndStorePaymentWebAppInfoIfValid(
       const GURL& method_manifest_url,
       const GURL& web_app_manifest_url,
@@ -123,7 +123,19 @@ class InstallablePaymentAppCrawler {
                                              const SkBitmap& icon);
   void PostTaskToFinishCrawlingPaymentAppsIfReady();
   void FinishCrawlingPaymentAppsIfReady();
-  void SetFirstError(const std::string& error_message);
+  // Sets a generic client-facing error message constructed for
+  // |method_manifest_url| if |first_error_message_| is not already set. Does
+  // not log to the DevTools console.
+  void SetInstallErrorForMethod(const GURL& method_manifest_url);
+  // Logs a rich |devtools_error_message| to the developer console and sets a
+  // generic client-facing error message constructed for |method_manifest_url|
+  // if |first_error_message_| is not already set.
+  void ReportAppInstallError(const std::string& devtools_error_message,
+                             const GURL& method_manifest_url);
+  // Sets |client_error_message| if |first_error_message_| is not already set.
+  // Does not log to the DevTools console as PaymentManifestDownloader has
+  // already done that.
+  void ReportManifestDownloaderError(const std::string& client_error_message);
 
   DeveloperConsoleLogger log_;
   const url::Origin merchant_origin_;

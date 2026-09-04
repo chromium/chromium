@@ -168,6 +168,10 @@ extern const char kPaymentHandlerInsecureNavigation[];
 // Payment handler installation has failed.
 extern const char kPaymentHandlerInstallFailed[];
 
+// Used when payment handler installation for method A has failed. This format
+// should be used with base::ReplaceStringPlaceholders(fmt, {A}, nullptr).
+extern const char kPaymentHandlerInstallFailedForMethod[];
+
 // The payment handler is closed because the Android activity is destroyed.
 extern const char kPaymentHandlerActivityDied[];
 

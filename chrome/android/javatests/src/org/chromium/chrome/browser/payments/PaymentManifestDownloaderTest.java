@@ -156,10 +156,7 @@ public class PaymentManifestDownloaderTest implements ManifestDownloadCallback {
 
         Assert.assertTrue("Web app manifest should not have been downloaded.", mDownloadFailure);
         Assert.assertEquals(
-                "Unable to download payment manifest \""
-                        + url.getSpec()
-                        + "\". HTTP 404 Not Found.",
-                mErrorMessage);
+                "Unable to download payment manifest \"" + url.getSpec() + "\".", mErrorMessage);
     }
 
     @Test
@@ -188,10 +185,7 @@ public class PaymentManifestDownloaderTest implements ManifestDownloadCallback {
         Assert.assertTrue(
                 "Payment method manifest should have not have been downloaded.", mDownloadFailure);
         Assert.assertEquals(
-                "Unable to download payment manifest \""
-                        + url.getSpec()
-                        + "\". HTTP 404 Not Found.",
-                mErrorMessage);
+                "Unable to download payment manifest \"" + url.getSpec() + "\".", mErrorMessage);
     }
 
     @Test

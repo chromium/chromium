@@ -52,82 +52,109 @@ static_assert(kMaxManifestSize <=
                   network::SimpleURLLoader::kMaxBoundedStringDownloadSize,
               "Max manifest size bigger than largest allowed download size");
 
-void RespondWithHttpStatusCodeError(const GURL& final_url,
-                                    int response_code,
-                                    const ErrorLogger& log,
-                                    PaymentManifestDownloadCallback callback) {
-  std::string error_message =
-      GenerateHttpStatusCodeError(final_url, response_code);
-  log.Error(error_message);
-  std::move(callback).Run(final_url, std::string(), error_message);
+// Returns a generic client-facing error message for manifest download failures
+// using |url_before_redirects|.
+std::string CreateManifestDownloadFailureMessage(
+    const GURL& url_before_redirects) {
+  return base::ReplaceStringPlaceholders(errors::kPaymentManifestDownloadFailed,
+                                         {url_before_redirects.spec()},
+                                         nullptr);
 }
 
-void RespondWithNetworkError(const GURL& final_url,
-                             int net_error,
-                             const ErrorLogger& log,
-                             PaymentManifestDownloadCallback callback) {
-  std::string error_message = GenerateNetworkErrorMessage(final_url, net_error);
-  log.Error(error_message);
-  std::move(callback).Run(final_url, std::string(), error_message);
-}
-
-// Invokes |callback| with |error_format|.
-void RespondWithError(std::string_view error_format,
+// Invokes |callback| with a generic failure message using
+// |url_before_redirects| and logs |devtools_error_message| to |log|.
+void RespondWithError(const std::string& devtools_error_message,
+                      const GURL& url_before_redirects,
                       const GURL& final_url,
                       const ErrorLogger& log,
                       PaymentManifestDownloadCallback callback) {
-  std::string error_message = base::ReplaceStringPlaceholders(
-      error_format, {final_url.spec()}, nullptr);
-  log.Error(error_message);
-  std::move(callback).Run(final_url, std::string(), error_message);
+  log.Error(devtools_error_message);
+  std::move(callback).Run(
+      final_url, /*contents=*/std::string(),
+      CreateManifestDownloadFailureMessage(url_before_redirects));
 }
 
-// Invokes the |callback| with |response_body|. If |response_body| is empty,
-// then invokes |callback| with |empty_error_format|.
+// Invokes |callback| with a generic failure message using
+// |url_before_redirects| and logs |devtools_error_format| formatted with
+// |final_url| to |log|.
+void RespondWithTemplateError(std::string_view devtools_error_format,
+                              const GURL& url_before_redirects,
+                              const GURL& final_url,
+                              const ErrorLogger& log,
+                              PaymentManifestDownloadCallback callback) {
+  RespondWithError(base::ReplaceStringPlaceholders(devtools_error_format,
+                                                   {final_url.spec()}, nullptr),
+                   url_before_redirects, final_url, log, std::move(callback));
+}
+
+// Invokes |callback| with a generic failure message using
+// |url_before_redirects| and logs an HTTP status code error with |final_url| to
+// |log|.
+void RespondWithHttpStatusCodeError(const GURL& url_before_redirects,
+                                    const GURL& final_url,
+                                    int response_code,
+                                    const ErrorLogger& log,
+                                    PaymentManifestDownloadCallback callback) {
+  RespondWithError(GenerateHttpStatusCodeError(final_url, response_code),
+                   url_before_redirects, final_url, log, std::move(callback));
+}
+
+// Invokes |callback| with a generic failure message using
+// |url_before_redirects| and logs a network error message with |final_url| to
+// |log|.
+void RespondWithNetworkError(const GURL& url_before_redirects,
+                             const GURL& final_url,
+                             int net_error,
+                             const ErrorLogger& log,
+                             PaymentManifestDownloadCallback callback) {
+  RespondWithError(GenerateNetworkErrorMessage(final_url, net_error),
+                   url_before_redirects, final_url, log, std::move(callback));
+}
+
+// Invokes |callback| with |response_body|. If |response_body| is empty, invokes
+// |RespondWithTemplateError| with |empty_error_format|.
 void RespondWithContent(const std::string& response_body,
                         std::string_view empty_error_format,
+                        const GURL& url_before_redirects,
                         const GURL& final_url,
                         const ErrorLogger& log,
                         PaymentManifestDownloadCallback callback) {
   if (response_body.empty()) {
-    RespondWithError(empty_error_format, final_url, log, std::move(callback));
+    RespondWithTemplateError(empty_error_format, url_before_redirects,
+                             final_url, log, std::move(callback));
   } else {
-    std::move(callback).Run(final_url, response_body, std::string());
+    std::move(callback).Run(final_url, response_body,
+                            /*error_message=*/std::string());
   }
 }
 
-bool IsValidManifestUrl(const GURL& url,
-                        const ErrorLogger& log,
-                        std::string* out_error_message) {
+bool IsValidManifestUrl(const GURL& url, const ErrorLogger& log) {
   bool is_valid = UrlUtil::IsValidManifestUrl(url);
   if (!is_valid) {
-    *out_error_message = base::ReplaceStringPlaceholders(
-        errors::kInvalidManifestUrl, {url.spec()}, nullptr);
-    log.Error(*out_error_message);
+    log.Error(base::ReplaceStringPlaceholders(errors::kInvalidManifestUrl,
+                                              {url.spec()}, nullptr));
   }
   return is_valid;
 }
 
 GURL ParseRedirectUrl(const net::RedirectInfo& redirect_info,
                       const GURL& original_url,
-                      const ErrorLogger& log,
-                      std::string* out_error_message) {
+                      const ErrorLogger& log) {
   if (redirect_info.status_code != net::HTTP_MOVED_PERMANENTLY &&   // 301
       redirect_info.status_code != net::HTTP_FOUND &&               // 302
       redirect_info.status_code != net::HTTP_SEE_OTHER &&           // 303
       redirect_info.status_code != net::HTTP_TEMPORARY_REDIRECT &&  // 307
       redirect_info.status_code != net::HTTP_PERMANENT_REDIRECT) {  // 308
-    *out_error_message = base::ReplaceStringPlaceholders(
+    log.Error(base::ReplaceStringPlaceholders(
         errors::kHttpStatusCodeNotAllowed,
         {base::NumberToString(redirect_info.status_code),
          std::string(net::GetHttpReasonPhrase(redirect_info.status_code)),
          original_url.spec()},
-        nullptr);
-    log.Error(*out_error_message);
+        nullptr));
     return GURL();
   }
 
-  if (!IsValidManifestUrl(redirect_info.new_url, log, out_error_message)) {
+  if (!IsValidManifestUrl(redirect_info.new_url, log)) {
     return GURL();
   }
 
@@ -212,11 +239,10 @@ void PaymentManifestDownloader::OnURLLoaderRedirect(
   downloads_.erase(download_it);
 
   // Manually follow some type of redirects.
-  std::string error_message;
   if (download->allowed_number_of_redirects > 0) {
     DCHECK(download->IsLinkHeaderDownload());
-    GURL redirect_url = ParseRedirectUrl(redirect_info, download->original_url,
-                                         *log_, &error_message);
+    GURL redirect_url =
+        ParseRedirectUrl(redirect_info, download->original_url, *log_);
     if (!redirect_url.is_empty()) {
       // Do not allow cross site redirects.
       if (net::registry_controlled_domains::SameDomainOrHost(
@@ -234,16 +260,17 @@ void PaymentManifestDownloader::OnURLLoaderRedirect(
             std::move(download->callback));
         return;
       }
-      error_message = base::ReplaceStringPlaceholders(
+      log_->Error(base::ReplaceStringPlaceholders(
           errors::kPaymentManifestCrossSiteRedirectNotAllowed,
-          {download->original_url.spec(), redirect_url.spec()}, nullptr);
+          {download->original_url.spec(), redirect_url.spec()}, nullptr));
     }
   } else {
-    error_message = errors::kReachedMaximumNumberOfRedirects;
+    log_->Error(errors::kReachedMaximumNumberOfRedirects);
   }
-  log_->Error(error_message);
   std::move(download->callback)
-      .Run(download->original_url, std::string(), error_message);
+      .Run(
+          download->original_url, /*contents=*/std::string(),
+          CreateManifestDownloadFailureMessage(download->url_before_redirects));
 }
 
 void PaymentManifestDownloader::OnURLLoaderComplete(
@@ -276,19 +303,20 @@ void PaymentManifestDownloader::OnURLLoaderCompleteInternal(
 
   if (net_error != net::OK &&
       net_error != net::ERR_HTTP_RESPONSE_CODE_FAILURE) {
-    RespondWithNetworkError(final_url, net_error, *log_,
-                            std::move(download->callback));
+    RespondWithNetworkError(download->url_before_redirects, final_url,
+                            net_error, *log_, std::move(download->callback));
     return;
   }
 
-  std::string error_message;
   if (download->IsResponseBodyDownload()) {
     if (headers && headers->response_code() != net::HTTP_OK) {
-      RespondWithHttpStatusCodeError(final_url, headers->response_code(), *log_,
+      RespondWithHttpStatusCodeError(download->url_before_redirects, final_url,
+                                     headers->response_code(), *log_,
                                      std::move(download->callback));
     } else {
       RespondWithContent(response_body, errors::kNoContentInPaymentManifest,
-                         final_url, *log_, std::move(download->callback));
+                         download->url_before_redirects, final_url, *log_,
+                         std::move(download->callback));
     }
     return;
   }
@@ -296,14 +324,16 @@ void PaymentManifestDownloader::OnURLLoaderCompleteInternal(
   DCHECK(download->IsLinkHeaderDownload());
 
   if (!headers) {
-    RespondWithError(errors::kNoLinkHeader, final_url, *log_,
-                     std::move(download->callback));
+    RespondWithTemplateError(errors::kNoLinkHeader,
+                             download->url_before_redirects, final_url, *log_,
+                             std::move(download->callback));
     return;
   }
 
   if (headers->response_code() != net::HTTP_OK &&
       headers->response_code() != net::HTTP_NO_CONTENT) {
-    RespondWithHttpStatusCodeError(final_url, headers->response_code(), *log_,
+    RespondWithHttpStatusCodeError(download->url_before_redirects, final_url,
+                                   headers->response_code(), *log_,
                                    std::move(download->callback));
     return;
   }
@@ -311,8 +341,9 @@ void PaymentManifestDownloader::OnURLLoaderCompleteInternal(
   std::string link_header =
       headers->GetNormalizedHeader("link").value_or(std::string());
   if (link_header.empty()) {
-    RespondWithError(errors::kNoLinkHeader, final_url, *log_,
-                     std::move(download->callback));
+    RespondWithTemplateError(errors::kNoLinkHeader,
+                             download->url_before_redirects, final_url, *log_,
+                             std::move(download->callback));
     return;
   }
 
@@ -336,20 +367,22 @@ void PaymentManifestDownloader::OnURLLoaderCompleteInternal(
     if (std::ranges::contains(rel_parts, "payment-method-manifest")) {
       GURL payment_method_manifest_url = final_url.Resolve(*link_url);
 
-      if (!IsValidManifestUrl(payment_method_manifest_url, *log_,
-                              &error_message)) {
+      if (!IsValidManifestUrl(payment_method_manifest_url, *log_)) {
         std::move(download->callback)
-            .Run(final_url, std::string(), error_message);
+            .Run(final_url, /*contents=*/std::string(),
+                 CreateManifestDownloadFailureMessage(
+                     download->url_before_redirects));
         return;
       }
 
       if (!url::IsSameOriginWith(final_url, payment_method_manifest_url)) {
-        error_message = base::ReplaceStringPlaceholders(
-            errors::kCrossOriginPaymentMethodManifestNotAllowed,
-            {payment_method_manifest_url.spec(), final_url.spec()}, nullptr);
-        log_->Error(error_message);
-        std::move(download->callback)
-            .Run(final_url, std::string(), error_message);
+        RespondWithError(
+            base::ReplaceStringPlaceholders(
+                errors::kCrossOriginPaymentMethodManifestNotAllowed,
+                {payment_method_manifest_url.spec(), final_url.spec()},
+                nullptr),
+            download->url_before_redirects, final_url, *log_,
+            std::move(download->callback));
         return;
       }
 
@@ -368,8 +401,9 @@ void PaymentManifestDownloader::OnURLLoaderCompleteInternal(
 
   // HTTP HEAD response has no Link header that has a
   // rel="payment-method-manifest" entry.
-  RespondWithError(errors::kNoLinkHeader, final_url, *log_,
-                   std::move(download->callback));
+  RespondWithTemplateError(errors::kNoLinkHeader,
+                           download->url_before_redirects, final_url, *log_,
+                           std::move(download->callback));
 }
 
 network::SimpleURLLoader* PaymentManifestDownloader::GetLoaderForTesting() {
@@ -461,9 +495,9 @@ void PaymentManifestDownloader::InitiateDownload(
       initiator_document_.AsRenderFrameHostIfValid();
   if (!initiator_frame) {
     // The initiator frame is gone. No request should be made.
-    RespondWithError(errors::kPaymentManifestDownloadFailed,
-                     download->original_url, *log_,
-                     std::move(download->callback));
+    RespondWithTemplateError(
+        errors::kPaymentManifestDownloadFailed, download->url_before_redirects,
+        download->original_url, *log_, std::move(download->callback));
     return;
   }
 
@@ -476,18 +510,18 @@ void PaymentManifestDownloader::InitiateDownload(
     // browser process, which does not have the network restriction id of the
     // initiator frame. The url loader factory does not check the connection
     // allowlist. The request URL has to be checked here.
-    RespondWithNetworkError(download->original_url,
-                            did_follow_redirect
-                                ? net::ERR_UNSAFE_REDIRECT
-                                : net::ERR_NETWORK_ACCESS_REVOKED,
-                            *log_, std::move(download->callback));
+    RespondWithNetworkError(
+        download->url_before_redirects, download->original_url,
+        did_follow_redirect ? net::ERR_UNSAFE_REDIRECT
+                            : net::ERR_NETWORK_ACCESS_REVOKED,
+        *log_, std::move(download->callback));
     return;
   }
 
   if (!csp_checker_) {  // Can be null when the webpage closes.
-    RespondWithError(errors::kPaymentManifestDownloadFailed,
-                     download->original_url, *log_,
-                     std::move(download->callback));
+    RespondWithTemplateError(
+        errors::kPaymentManifestDownloadFailed, download->url_before_redirects,
+        download->original_url, *log_, std::move(download->callback));
     return;
   }
 
@@ -502,8 +536,9 @@ void PaymentManifestDownloader::OnCSPCheck(std::unique_ptr<Download> download,
                                            bool use_url_loader_factory_rfh,
                                            bool csp_allowed) {
   if (!csp_allowed) {
-    RespondWithError(errors::kPaymentManifestCSPDenied, download->original_url,
-                     *log_, std::move(download->callback));
+    RespondWithTemplateError(
+        errors::kPaymentManifestCSPDenied, download->url_before_redirects,
+        download->original_url, *log_, std::move(download->callback));
     return;
   }
 
