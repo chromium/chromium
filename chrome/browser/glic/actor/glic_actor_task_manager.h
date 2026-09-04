@@ -256,6 +256,8 @@ class GlicActorClientSession : public GlicActorClientSessionInterface {
   void NotifyActorTaskStateChanged(actor::ActorTask& task);
   void StopTaskImpl(actor::TaskId task_id,
                     actor::ActorTask::StoppedReason reason);
+  bool ValidateTaskIdMatchesCurrent(actor::TaskId task_id,
+                                    std::string_view method_name);
   actor::ActorKeyedService& actor_keyed_service() const;
   GlicActorPolicyChecker& actor_policy_checker() const;
   GlicInstanceMetrics& instance_metrics() const;

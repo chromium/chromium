@@ -462,7 +462,8 @@ void GlicActorClientSession::PerformActions(
   }
 
   actor::TaskId task_id(actions.task_id());
-  if (!actor_keyed_service().GetTask(task_id)) {
+  if (!ValidateTaskIdMatchesCurrent(task_id, "GlicPerformActions") ||
+      !actor_keyed_service().GetTask(task_id)) {
     actor_keyed_service().GetJournal().Log(GURL::EmptyGURL(), task_id,
                                            "Act Failed",
                                            actor::JournalDetailsBuilder()
@@ -511,6 +512,10 @@ void GlicActorClientSession::PerformActions(
 void GlicActorClientSession::CancelActions(int32_t task_id,
                                            CancelActionsCallback callback) {
   auto actor_task_id = actor::TaskId(task_id);
+  if (!ValidateTaskIdMatchesCurrent(actor_task_id, "CancelActions")) {
+    std::move(callback).Run(mojom::CancelActionsResult::kTaskNotFound);
+    return;
+  }
   actor::ActorTask* task = actor_keyed_service().GetTask(actor_task_id);
   if (!task) {
     std::move(callback).Run(mojom::CancelActionsResult::kTaskNotFound);
@@ -529,6 +534,9 @@ void GlicActorClientSession::StopActorTask(
     int32_t task_id,
     mojom::ActorTaskStopReason stop_reason) {
   auto actor_task_id = actor::TaskId(task_id);
+  if (!ValidateTaskIdMatchesCurrent(actor_task_id, "StopActorTask")) {
+    return;
+  }
   instance_metrics().OnStopActorTask();
   actor::ActorTask::StoppedReason reason;
   switch (stop_reason) {
@@ -572,6 +580,9 @@ void GlicActorClientSession::PauseActorTask(
     mojom::ActorTaskPauseReason pause_reason,
     std::optional<int32_t> tab_handle) {
   auto actor_task_id = actor::TaskId(task_id);
+  if (!ValidateTaskIdMatchesCurrent(actor_task_id, "PauseActorTask")) {
+    return;
+  }
   tabs::TabInterface::Handle handle;
   if (tab_handle.has_value()) {
     handle = tabs::TabInterface::Handle(*tab_handle);
@@ -604,6 +615,12 @@ void GlicActorClientSession::ResumeActorTask(
     mojom::TabContextOptionsPtr context_options,
     ResumeActorTaskCallback callback) {
   auto actor_task_id = actor::TaskId(task_id);
+  if (!ValidateTaskIdMatchesCurrent(actor_task_id, "ResumeActorTask")) {
+    std::string error_message = "No such task";
+    std::move(callback).Run(mojom::GetContextResultWithActionResultCode::New(
+        mojom::GetContextResult::NewErrorReason(error_message), std::nullopt));
+    return;
+  }
   instance_metrics().OnResumeActorTask();
   actor::ActorTask* task = actor_keyed_service().GetTask(actor_task_id);
   if (!task || !task->IsUnderUserControl()) {
@@ -769,6 +786,9 @@ void GlicActorClientSession::InterruptActorTask(
     int32_t task_id,
     std::optional<mojom::ActorTaskInterruptReason> interrupt_reason) {
   auto actor_task_id = actor::TaskId(task_id);
+  if (!ValidateTaskIdMatchesCurrent(actor_task_id, "InterruptActorTask")) {
+    return;
+  }
   instance_metrics().InterruptActorTask();
 
   actor::ActorTask* task = actor_keyed_service().GetTask(actor_task_id);
@@ -789,6 +809,9 @@ void GlicActorClientSession::InterruptActorTask(
 
 void GlicActorClientSession::UninterruptActorTask(int32_t task_id) {
   auto actor_task_id = actor::TaskId(task_id);
+  if (!ValidateTaskIdMatchesCurrent(actor_task_id, "UninterruptActorTask")) {
+    return;
+  }
   instance_metrics().UninterruptActorTask();
   actor::ActorTask* task = actor_keyed_service().GetTask(actor_task_id);
   if (!task) {
@@ -811,6 +834,10 @@ void GlicActorClientSession::UpdateActorTaskStepProgress(
     int32_t task_id,
     const std::string& step_progress) {
   auto actor_task_id = actor::TaskId(task_id);
+  if (!ValidateTaskIdMatchesCurrent(actor_task_id,
+                                    "UpdateActorTaskStepProgress")) {
+    return;
+  }
   actor::ActorTask* task = actor_keyed_service().GetTask(actor_task_id);
   if (!task) {
     actor_keyed_service().GetJournal().Log(
@@ -830,6 +857,10 @@ void GlicActorClientSession::CreateActorTab(
     mojom::CreateActorTabOptionsPtr options,
     CreateActorTabCallback callback) {
   auto actor_task_id = actor::TaskId(task_id);
+  if (!ValidateTaskIdMatchesCurrent(actor_task_id, "CreateActorTab")) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
   tabs::TabHandle initiator_tab_handle =
       options->initiator_tab_id.has_value()
           ? tabs::TabHandle(*options->initiator_tab_id)
@@ -934,6 +965,22 @@ void GlicActorClientSession::StopTaskImpl(
   }
 
   actor_keyed_service().StopTask(task->id(), reason);
+}
+
+bool GlicActorClientSession::ValidateTaskIdMatchesCurrent(
+    actor::TaskId task_id,
+    std::string_view method_name) {
+  if (current_task_id_.is_null() || task_id != current_task_id_) {
+    actor_keyed_service().GetJournal().Log(
+        GURL::EmptyGURL(), task_id, method_name,
+        actor::JournalDetailsBuilder()
+            .AddError("Task ID does not match current task")
+            .Add("expected_task_id", current_task_id_.value())
+            .Add("provided_task_id", task_id.value())
+            .Build());
+    return false;
+  }
+  return true;
 }
 
 actor::ActorKeyedService& GlicActorClientSession::actor_keyed_service() const {

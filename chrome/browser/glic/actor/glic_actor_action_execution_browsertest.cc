@@ -258,47 +258,47 @@ INSTANTIATE_TEST_SUITE_P(
 
 IN_PROC_BROWSER_TEST_F(GlicActorActionExecutionFunctionalBrowserTest,
                        PerformConcurrentAsyncWaitActions) {
-  // Manually create tasks via ActorKeyedService.
-  TaskId task_id_1 = actor_keyed_service()->CreateTask(
-      MockGlicTaskSourceInfo(), ::actor::NoEnterprisePolicyChecker());
-  TaskId task_id_2 = actor_keyed_service()->CreateTask(
-      MockGlicTaskSourceInfo(), ::actor::NoEnterprisePolicyChecker());
+  ASSERT_OK_AND_ASSIGN(TaskId task_id, CreateTask());
+  ASSERT_NE(task_id, TaskId());
 
-  // Create tabs for each task using CreateActorTab API to ensure a
+  // Create tabs for the task using CreateActorTab API to ensure a
   // TabObservation is included in its result.
   ASSERT_OK_AND_ASSIGN(
       tabs::TabHandle tab_1,
-      CreateActorTab(task_id_1, /*open_in_background=*/false,
+      CreateActorTab(task_id, /*open_in_background=*/false,
                      base::ToString(active_tab()->GetHandle().raw_value()),
                      base::ToString(browser()->GetSessionID().id())));
   ASSERT_OK_AND_ASSIGN(
       tabs::TabHandle tab_2,
-      CreateActorTab(task_id_2, /*open_in_background=*/false,
+      CreateActorTab(task_id, /*open_in_background=*/false,
                      base::ToString(active_tab()->GetHandle().raw_value()),
                      base::ToString(browser()->GetSessionID().id())));
 
-  // Perform two WaitActions where the first resolves after the second
-  Actions action_1 = ::actor::MakeWait(kShortWaitTime * 2, tab_1, task_id_1);
-  Actions action_2 = ::actor::MakeWait(kShortWaitTime, tab_2, task_id_2);
-
+  // Perform two WaitActions
+  Actions action_1 = ::actor::MakeWait(kShortWaitTime, tab_1, task_id);
   std::unique_ptr<AsyncActionWaiter> waiter_1 = PerformActionsAsync(action_1);
-  std::unique_ptr<AsyncActionWaiter> waiter_2 = PerformActionsAsync(action_2);
-
-  // We should still be able to wait for result_2 after result_1 despite
-  // action_2 resolving first.
   ASSERT_OK_AND_ASSIGN(ActionsResult result_1, waiter_1->Wait());
+
+  Actions action_2 = ::actor::MakeWait(kShortWaitTime, tab_2, task_id);
+  std::unique_ptr<AsyncActionWaiter> waiter_2 = PerformActionsAsync(action_2);
   ASSERT_OK_AND_ASSIGN(ActionsResult result_2, waiter_2->Wait());
 
-  // Verify a tab observation was included in the results.
+  // Verify tab observations were included in the results.
   EXPECT_THAT(result_1, HasResultCode(::actor::mojom::ActionResultCode::kOk));
-  EXPECT_THAT(result_1.tabs(), testing::SizeIs(1));
+  EXPECT_THAT(result_1.tabs(), testing::SizeIs(2));
   EXPECT_THAT(result_1.tabs().at(0).result(),
+              TabObservation::TAB_OBSERVATION_OK);
+  EXPECT_THAT(result_1.tabs().at(1).result(),
               TabObservation::TAB_OBSERVATION_OK);
 
   EXPECT_THAT(result_2, HasResultCode(::actor::mojom::ActionResultCode::kOk));
-  EXPECT_THAT(result_2.tabs(), testing::SizeIs(1));
+  EXPECT_THAT(result_2.tabs(), testing::SizeIs(2));
   EXPECT_THAT(result_2.tabs().at(0).result(),
               TabObservation::TAB_OBSERVATION_OK);
+  EXPECT_THAT(result_2.tabs().at(1).result(),
+              TabObservation::TAB_OBSERVATION_OK);
+
+  StopActorTask(task_id, glic::mojom::ActorTaskStopReason::kTaskComplete);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicActorActionExecutionFunctionalBrowserTest,
@@ -409,6 +409,69 @@ IN_PROC_BROWSER_TEST_F(GlicActorActionExecutionFunctionalBrowserTest,
               base::test::ValueIs(glic::mojom::CancelActionsResult::kSuccess));
   EXPECT_EQ(actor_keyed_service()->GetTask(task_id)->GetState(),
             ActorTask::State::kCreated);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorActionExecutionFunctionalBrowserTest,
+                       PerformActionsRejectsMismatchedTaskId) {
+  ASSERT_OK_AND_ASSIGN(TaskId task_id, CreateTask());
+  EXPECT_NE(task_id, TaskId());
+
+  const GURL target_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/blank.html?target");
+  // Construct actions targeting a different/foreign task ID.
+  TaskId foreign_task_id(task_id.value() + 999);
+  Actions action = ::actor::MakeNavigate(active_tab()->GetHandle(),
+                                         target_url.spec(), foreign_task_id);
+
+  ASSERT_OK_AND_ASSIGN(ActionsResult result, PerformActions(action));
+  EXPECT_THAT(result,
+              HasResultCode(::actor::mojom::ActionResultCode::kTaskWentAway));
+
+  StopActorTask(task_id, glic::mojom::ActorTaskStopReason::kTaskComplete);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorActionExecutionFunctionalBrowserTest,
+                       CancelActionsRejectsMismatchedTaskId) {
+  ASSERT_OK_AND_ASSIGN(TaskId task_id, CreateTask());
+  EXPECT_NE(task_id, TaskId());
+
+  TaskId foreign_task_id(task_id.value() + 999);
+  EXPECT_THAT(
+      CancelActions(foreign_task_id),
+      base::test::ValueIs(glic::mojom::CancelActionsResult::kTaskNotFound));
+
+  StopActorTask(task_id, glic::mojom::ActorTaskStopReason::kTaskComplete);
+}
+
+// Security regression test for bug 5:
+// Verifies that a Glic guest cannot hijack a foreign task in the profile
+// (e.g. created by experimental_actor) when the Glic session has no active
+// task (current_task_id_ is null).
+IN_PROC_BROWSER_TEST_F(GlicActorActionExecutionFunctionalBrowserTest,
+                       PerformActionsRejectsForeignTaskWhenNoCurrentTask) {
+  const TaskId victim_task_id = actor_keyed_service()->CreateTask(
+      ::actor::TaskSourceInfo(
+          ::actor::TaskSourceInfo::Client::kExperimentalActor,
+          /*id=*/std::nullopt),
+      ::actor::NoEnterprisePolicyChecker());
+  ASSERT_FALSE(victim_task_id.is_null());
+  ActorTask* victim_task = actor_keyed_service()->GetTask(victim_task_id);
+  ASSERT_NE(victim_task, nullptr);
+
+  const GURL initial_url = web_contents()->GetURL();
+  const GURL target_url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/blank.html?hijacked-by-glic-guest");
+  ASSERT_NE(target_url, initial_url);
+
+  Actions hijack = ::actor::MakeNavigate(active_tab()->GetHandle(),
+                                         target_url.spec(), victim_task_id);
+
+  ASSERT_OK_AND_ASSIGN(ActionsResult result, PerformActions(hijack));
+  EXPECT_THAT(result,
+              HasResultCode(::actor::mojom::ActionResultCode::kTaskWentAway));
+
+  EXPECT_EQ(initial_url, web_contents()->GetURL());
+  EXPECT_EQ(ActorTask::State::kCreated, victim_task->GetState());
 }
 
 }  // namespace
