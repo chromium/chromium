@@ -51,6 +51,8 @@
 #include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "chrome/browser/policy/developer_tools_policy_checker.h"
+#include "chrome/browser/policy/developer_tools_policy_checker_factory.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
@@ -334,6 +336,31 @@ scoped_refptr<DevToolsAgentHost> GetOrCreateDevToolsHostForWebContents(
     WebContents* wc) {
   return content::DevToolsAgentHost::GetOrCreateForTab(wc);
 }
+
+class TestDevToolsAgentHostClient : public content::DevToolsAgentHostClient {
+ public:
+  ~TestDevToolsAgentHostClient() override {
+    if (agent_host_) {
+      agent_host_->DetachClient(this);
+    }
+  }
+
+  bool Attach(scoped_refptr<content::DevToolsAgentHost> agent_host) {
+    agent_host_ = std::move(agent_host);
+    return agent_host_->AttachClient(this);
+  }
+
+  void DispatchProtocolMessage(content::DevToolsAgentHost* host,
+                               base::span<const uint8_t> message) override {}
+  void AgentHostClosed(content::DevToolsAgentHost* host) override {
+    closed_ = true;
+  }
+  bool closed() const { return closed_; }
+
+ private:
+  scoped_refptr<content::DevToolsAgentHost> agent_host_;
+  bool closed_ = false;
+};
 
 }  // namespace
 
@@ -2943,21 +2970,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, PolicyDisallowedDetachesAttachedClient) {
   content::WebContents* web_contents = GetWebContentsAt(0);
   auto agent_host = GetOrCreateDevToolsHostForWebContents(web_contents);
 
-  class TestClient : public content::DevToolsAgentHostClient {
-   public:
-    void DispatchProtocolMessage(content::DevToolsAgentHost* host,
-                                 base::span<const uint8_t> message) override {}
-    void AgentHostClosed(content::DevToolsAgentHost* host) override {
-      closed_ = true;
-    }
-    bool closed() const { return closed_; }
-
-   private:
-    bool closed_ = false;
-  };
-
-  TestClient client;
-  EXPECT_TRUE(agent_host->AttachClient(&client));
+  TestDevToolsAgentHostClient client;
+  EXPECT_TRUE(client.Attach(agent_host));
   EXPECT_TRUE(agent_host->IsAttached());
 
   // Policy change must forcefully detach all active sessions from the agent
@@ -4280,6 +4294,141 @@ IN_PROC_BROWSER_TEST_F(DevToolsPolicyTest, AllowlistedUrlStaysOpenOnReload) {
 
   // Check that devtools window is still open.
   EXPECT_TRUE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsPolicyTest,
+                       BlocklistPolicyUpdateDetachesAttachedClient) {
+  GURL page_url(embedded_test_server()->GetURL("/devtools/empty.html"));
+
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(web_contents, page_url));
+
+  auto agent_host = GetOrCreateDevToolsHostForWebContents(web_contents);
+
+  TestDevToolsAgentHostClient client;
+  EXPECT_TRUE(client.Attach(agent_host));
+  EXPECT_TRUE(agent_host->IsAttached());
+
+  // Block the page URL.
+  base::ListValue blocklist;
+  blocklist.Append(page_url.spec());
+
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kDeveloperToolsAvailabilityBlocklist,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(std::move(blocklist)),
+               nullptr);
+  provider_.UpdateChromePolicy(policies);
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !agent_host->IsAttached(); }));
+  EXPECT_TRUE(client.closed());
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsPolicyTest,
+                       AllowlistPolicyUpdateDetachesAttachedClient) {
+  GURL page_url(embedded_test_server()->GetURL("/devtools/empty.html"));
+  GURL other_url(embedded_test_server()->GetURL("/title1.html"));
+
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(web_contents, page_url));
+
+  auto agent_host = GetOrCreateDevToolsHostForWebContents(web_contents);
+
+  TestDevToolsAgentHostClient client;
+  EXPECT_TRUE(client.Attach(agent_host));
+  EXPECT_TRUE(agent_host->IsAttached());
+
+  // Allowlist only a different URL. Since page_url is not on the allowlist and
+  // the blocklist is empty, page_url becomes disallowed.
+  base::ListValue allowlist;
+  allowlist.Append(other_url.spec());
+
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kDeveloperToolsAvailabilityAllowlist,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(std::move(allowlist)),
+               nullptr);
+  provider_.UpdateChromePolicy(policies);
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !agent_host->IsAttached(); }));
+  EXPECT_TRUE(client.closed());
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsPolicyTest,
+                       AllowlistPolicyUpdateKeepsAttachedClient) {
+  GURL page_url(embedded_test_server()->GetURL("/devtools/empty.html"));
+
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(web_contents, page_url));
+
+  auto agent_host = GetOrCreateDevToolsHostForWebContents(web_contents);
+
+  TestDevToolsAgentHostClient client;
+  EXPECT_TRUE(client.Attach(agent_host));
+  EXPECT_TRUE(agent_host->IsAttached());
+
+  // Allowlist the page URL.
+  base::ListValue allowlist;
+  allowlist.Append(page_url.spec());
+
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kDeveloperToolsAvailabilityAllowlist,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(std::move(allowlist)),
+               nullptr);
+  provider_.UpdateChromePolicy(policies);
+
+  auto* checker =
+      policy::DeveloperToolsPolicyCheckerFactory::GetForBrowserContext(
+          chrome_test_utils::GetProfile(this));
+  ASSERT_TRUE(checker);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return checker->IsUrlAllowedByPolicy(page_url); }));
+
+  EXPECT_TRUE(agent_host->IsAttached());
+  EXPECT_FALSE(client.closed());
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsPolicyTest,
+                       BlocklistPolicyUpdateKeepsAttachedClient) {
+  GURL page_url(embedded_test_server()->GetURL("/devtools/empty.html"));
+  GURL other_url(embedded_test_server()->GetURL("/title1.html"));
+
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(web_contents, page_url));
+
+  auto agent_host = GetOrCreateDevToolsHostForWebContents(web_contents);
+
+  TestDevToolsAgentHostClient client;
+  EXPECT_TRUE(client.Attach(agent_host));
+  EXPECT_TRUE(agent_host->IsAttached());
+
+  // Blocklist a different URL.
+  base::ListValue blocklist;
+  blocklist.Append(other_url.spec());
+
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kDeveloperToolsAvailabilityBlocklist,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(std::move(blocklist)),
+               nullptr);
+  provider_.UpdateChromePolicy(policies);
+
+  auto* checker =
+      policy::DeveloperToolsPolicyCheckerFactory::GetForBrowserContext(
+          chrome_test_utils::GetProfile(this));
+  ASSERT_TRUE(checker);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return checker->IsUrlBlockedByPolicy(other_url); }));
+
+  EXPECT_TRUE(agent_host->IsAttached());
+  EXPECT_FALSE(client.closed());
 }
 
 class DevToolsPolicyBFCacheTest : public DevToolsPolicyTest {

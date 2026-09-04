@@ -15,6 +15,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
 #include "chrome/browser/devtools/devtools_availability_checker.h"
+#include "chrome/browser/policy/developer_tools_policy_checker.h"
+#include "chrome/browser/policy/developer_tools_policy_checker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "content/public/browser/browser_context.h"
@@ -42,6 +44,14 @@ ChromeDevToolsSessionBase::ChromeDevToolsSessionBase(
         prefs::kDevToolsAvailability,
         base::BindRepeating(&ChromeDevToolsSessionBase::OnDevToolsPolicyChanged,
                             base::Unretained(this)));
+    if (policy::DeveloperToolsPolicyChecker* checker =
+            policy::DeveloperToolsPolicyCheckerFactory::GetForBrowserContext(
+                profile)) {
+      policy_checker_callback_subscription_ =
+          checker->AddObserver(base::BindRepeating(
+              &ChromeDevToolsSessionBase::OnDevToolsPolicyChanged,
+              base::Unretained(this)));
+    }
   }
 }
 

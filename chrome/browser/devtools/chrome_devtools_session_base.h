@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/devtools/protocol/protocol.h"
@@ -49,6 +50,7 @@ class ChromeDevToolsSessionBase : public protocol::FrontendChannel {
   protocol::UberDispatcher dispatcher_;
   raw_ptr<content::DevToolsAgentHostClientChannel> client_channel_;
   PrefChangeRegistrar pref_change_registrar_;
+  base::CallbackListSubscription policy_checker_callback_subscription_;
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_CHROME_DEVTOOLS_SESSION_BASE_H_
