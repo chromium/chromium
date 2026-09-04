@@ -226,6 +226,25 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest, AppRemovedFromPolicyList) {
   ASSERT_EQ(GetValues({kKey1, kKey2}), std::nullopt);
 }
 
+IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
+                       ReapplySameConfigurationAfterRemoval) {
+  EnableTestServer({{kConfigurationUrl1, {kConfigurationData1}}});
+  SetConfiguration(kConfigurationUrl1, kConfigurationHash1);
+  WaitForUpdate();
+  ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}),
+                              {{kKey1, kValue1}, {kKey2, kValue2}}));
+
+  ClearConfiguration();
+  WaitForUpdate();
+  ASSERT_EQ(GetValues({kKey1, kKey2}), std::nullopt);
+
+  // Re-applying the same configuration should re-download and restore values.
+  SetConfiguration(kConfigurationUrl1, kConfigurationHash1);
+  WaitForUpdate();
+  ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}),
+                              {{kKey1, kValue1}, {kKey2, kValue2}}));
+}
+
 IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest, UnknownKeys) {
   EnableTestServer({{kConfigurationUrl1, {kConfigurationData1}}});
   SetConfiguration(kConfigurationUrl1, kConfigurationHash1);

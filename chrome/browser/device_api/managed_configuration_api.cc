@@ -268,6 +268,9 @@ void ManagedConfigurationAPI::UpdateStoredDataForOrigin(
   }
 
   if (configuration_url.empty()) {
+    ScopedDictPrefUpdate update(profile_->GetPrefs(),
+                                prefs::kLastManagedConfigurationHashForOrigin);
+    update->Remove(GetOriginEncoded(origin));
     PostStoreConfiguration(origin, base::DictValue());
     return;
   }
