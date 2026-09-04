@@ -2134,6 +2134,21 @@
             ]
         }
     ],
+    "AutofillAndroidKeyboardAccessoryHoverPreview": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillAndroidKeyboardAccessoryHoverPreview"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillAndroidUseGlobalIdForFormComparison": [
         {
             "platforms": [
