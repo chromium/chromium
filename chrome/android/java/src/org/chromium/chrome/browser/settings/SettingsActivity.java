@@ -462,7 +462,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                         titleContainer,
                         this::setTitle,
                         this::onTitleTapped,
-                        mInitialBreadcrumbPath);
+                        mInitialBreadcrumbPath,
+                        /* onSearchVisibilityChanged= */ null);
         mMultiColumnSettings.addObserver(mMultiColumnTitleUpdater);
     }
 

@@ -14,6 +14,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
@@ -141,6 +142,7 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
 
     private final @Nullable List<SettingsIndexData.Entry> mInitialBreadcrumbPath;
     private @Nullable List<SettingsIndexData.Entry> mCachedDeepLinkPath;
+    private final @Nullable Runnable mOnSearchVisibilityChanged;
 
     MultiColumnTitleUpdater(
             @Nullable Bundle savedInstanceState,
@@ -148,13 +150,15 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
             LinearLayout container,
             Callback<String> mainTitleSetter,
             Callback<@Nullable String> titleTapCallback,
-            @Nullable List<SettingsIndexData.Entry> initialBreadcrumbPath) {
+            @Nullable List<SettingsIndexData.Entry> initialBreadcrumbPath,
+            @Nullable Runnable onSearchVisibilityChanged) {
         mMultiColumnSettings = multiColumnSettings;
         mContext = container.getContext();
         mContainer = container;
         mMainTitleSetter = mainTitleSetter;
         mTitleTapCallback = titleTapCallback;
         mInitialBreadcrumbPath = initialBreadcrumbPath;
+        mOnSearchVisibilityChanged = onSearchVisibilityChanged;
 
         restoreInstanceState(savedInstanceState);
 
@@ -352,6 +356,9 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
         if (mBackPressedCallback != null) {
             mBackPressedCallback.setEnabled(false);
         }
+        if (mOnSearchVisibilityChanged != null) {
+            mOnSearchVisibilityChanged.run();
+        }
 
         List<MultiColumnSettings.Title> titles = initTitlesList();
 
@@ -495,6 +502,23 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
                 // not have its close listener overwritten.
                 searchViewProvider.initSearchView(searchView);
 
+                // TODO(crbug.com/557197237): Move search view visibility handling and key
+                // processing to a separate class.
+                View.OnKeyListener escKeyListener =
+                        (v, keyCode, event) -> {
+                            if (keyCode == KeyEvent.KEYCODE_ESCAPE && event.hasNoModifiers()) {
+                                if (event.getAction() == KeyEvent.ACTION_DOWN
+                                        && event.getRepeatCount() == 0) {
+                                    handleBackAction();
+                                }
+                                return true;
+                            }
+                            return false;
+                        };
+                searchView.setOnKeyListener(escKeyListener);
+                View searchSrcTextView = searchView.requireViewById(R.id.search_src_text);
+                searchSrcTextView.setOnKeyListener(escKeyListener);
+
                 mContainer.addView(searchButton);
                 mContainer.addView(searchView);
             }
@@ -521,10 +545,15 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
             mActiveSearchView.setVisibility(View.VISIBLE);
             mActiveSearchView.setIconified(false);
             mActiveSearchView.requestFocus();
+            View searchSrcTextView = mActiveSearchView.requireViewById(R.id.search_src_text);
+            SettingsMenuHelper.requestAccessibilityFocus(searchSrcTextView);
         }
         ensureBackPressedCallback();
         if (mBackPressedCallback != null) {
             mBackPressedCallback.setEnabled(true);
+        }
+        if (mOnSearchVisibilityChanged != null) {
+            mOnSearchVisibilityChanged.run();
         }
     }
 
@@ -534,10 +563,10 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
         if (!isSearchOpen()) return;
 
         if (mActiveSearchView != null) {
+            mActiveSearchView.clearFocus();
             mActiveSearchView.setVisibility(View.GONE);
             mActiveSearchView.setQuery("", false);
             mActiveSearchView.setIconified(true);
-            mActiveSearchView.clearFocus();
         }
         if (mActiveTitleView != null) {
             mActiveTitleView.setVisibility(View.VISIBLE);
@@ -548,12 +577,27 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
         if (mBackPressedCallback != null) {
             mBackPressedCallback.setEnabled(false);
         }
+        if (mOnSearchVisibilityChanged != null) {
+            mOnSearchVisibilityChanged.run();
+        }
     }
 
-    private boolean isSearchOpen() {
-        assert SettingsInTab.isEnabled();
-
+    /** Returns whether the search view in the detailed pane title is open. */
+    public boolean isSearchOpen() {
         return mActiveSearchView != null && mActiveSearchView.getVisibility() == View.VISIBLE;
+    }
+
+    /**
+     * Handles back action (e.g. back press or Escape key). Closes search if open.
+     *
+     * @return True if back was consumed by closing search, false otherwise.
+     */
+    public boolean handleBackAction() {
+        if (isSearchOpen()) {
+            closeSearch();
+            return true;
+        }
+        return false;
     }
 
     private void ensureBackPressedCallback() {

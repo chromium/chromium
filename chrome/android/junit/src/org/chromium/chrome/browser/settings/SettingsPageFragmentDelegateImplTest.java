@@ -785,6 +785,24 @@ public class SettingsPageFragmentDelegateImplTest {
     }
 
     @Test
+    public void testHandleBackPress_multiColumnTitleUpdaterSearchOpen() {
+        mDelegate.initSettings(mContainerView, "");
+        when(mMockSettingsHostFragment.isAttachedToActivity()).thenReturn(true);
+        when(mMockSettingsHostFragment.getActiveFragment()).thenReturn(mMultiColumnSettings);
+        when(mMultiColumnSettings.getBackStackEntryCount()).thenReturn(1);
+
+        MultiColumnTitleUpdater mockTitleUpdater = mock(MultiColumnTitleUpdater.class);
+        when(mockTitleUpdater.handleBackAction()).thenReturn(true);
+        mDelegate.setMultiColumnTitleUpdaterForTesting(mockTitleUpdater);
+
+        ShadowLooper.idleMainLooper();
+        assertEquals(BackPressResult.SUCCESS, mDelegate.handleBackPress());
+        verify(mockTitleUpdater).handleBackAction();
+        // Back stack should not be popped when search consumed the back press.
+        verify(mMultiColumnSettings, never()).popBackStack();
+    }
+
+    @Test
     public void testUpdateBackPressState() {
         mDelegate.initSettings(mContainerView, "");
         when(mMockSettingsHostFragment.isAttachedToActivity()).thenReturn(true);
@@ -796,6 +814,22 @@ public class SettingsPageFragmentDelegateImplTest {
         assertFalse(mDelegate.getHandleBackPressChangedSupplier().get());
 
         when(mMultiColumnSettings.getBackStackEntryCount()).thenReturn(1);
+        mDelegate.onHeaderLayoutUpdated();
+        ShadowLooper.idleMainLooper();
+        assertTrue(mDelegate.getHandleBackPressChangedSupplier().get());
+    }
+
+    @Test
+    public void testUpdateBackPressState_multiColumnTitleUpdaterSearchOpen() {
+        mDelegate.initSettings(mContainerView, "");
+        when(mMockSettingsHostFragment.isAttachedToActivity()).thenReturn(true);
+        when(mMockSettingsHostFragment.getActiveFragment()).thenReturn(mMultiColumnSettings);
+        when(mMultiColumnSettings.getBackStackEntryCount()).thenReturn(0);
+
+        MultiColumnTitleUpdater mockTitleUpdater = mock(MultiColumnTitleUpdater.class);
+        when(mockTitleUpdater.isSearchOpen()).thenReturn(true);
+        mDelegate.setMultiColumnTitleUpdaterForTesting(mockTitleUpdater);
+
         mDelegate.onHeaderLayoutUpdated();
         ShadowLooper.idleMainLooper();
         assertTrue(mDelegate.getHandleBackPressChangedSupplier().get());
