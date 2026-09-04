@@ -302,10 +302,6 @@ class SimpleFeature : public Feature {
   // Immutable configuration, owned by whoever constructed this feature. For
   // generated features this is static storage; tests own their own copy.
   RAW_PTR_EXCLUSION const SimpleFeatureConfig* simple_feature_config_;
-  // Whether to ignore channel-based restrictions (such as because the user has
-  // enabled experimental extension APIs). Note: this is lazily calculated, and
-  // then cached.
-  mutable std::optional<bool> ignore_channel_;
 
   // If set and the feature needs to be overridden, this is the handler used
   // to perform the override availability check.

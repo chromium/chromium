@@ -1767,13 +1767,14 @@ TEST(SimpleFeatureUnitTest, AvailableToEnvironmentChecksDependencies) {
 TEST(SimpleFeatureUnitTest, TestExperimentalExtensionApisSwitch) {
   ScopedCurrentChannel current_channel(Channel::STABLE);
 
-  auto test_feature = []() {
-    static constexpr SimpleFeatureData kData = {
-        .config = {.channel = Channel::UNKNOWN}};
-    SimpleFeature feature{StaticFeatureData(kData)};
+  static constexpr SimpleFeatureData kData = {
+      .config = {.channel = Channel::UNKNOWN}};
+  SimpleFeature feature{StaticFeatureData(kData)};
+  auto test_feature = [&feature]() {
     return feature.IsAvailableToEnvironment(kUnspecifiedContextId).result();
   };
 
+  // Reuse one feature so each query must observe the current command line.
   {
     base::test::ScopedCommandLine scoped_command_line;
     EXPECT_EQ(Feature::AvailabilityResult::kUnsupportedChannel, test_feature());
@@ -1784,6 +1785,11 @@ TEST(SimpleFeatureUnitTest, TestExperimentalExtensionApisSwitch) {
     scoped_command_line.GetProcessCommandLine()->AppendSwitch(
         switches::kEnableExperimentalExtensionApis);
     EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable, test_feature());
+  }
+
+  {
+    base::test::ScopedCommandLine scoped_command_line;
+    EXPECT_EQ(Feature::AvailabilityResult::kUnsupportedChannel, test_feature());
   }
 }
 

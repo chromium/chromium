@@ -723,13 +723,10 @@ Feature::Availability SimpleFeature::GetEnvironmentAvailability(
   if (required_channel && *required_channel < GetCurrentChannel()) {
     // If the user has the kEnableExperimentalExtensionApis commandline flag
     // appended, we ignore channel restrictions.
-    if (!ignore_channel_) {
-      ignore_channel_ =
-          command_line->HasSwitch(switches::kEnableExperimentalExtensionApis);
-    }
-    if (!(*ignore_channel_))
+    if (!command_line->HasSwitch(switches::kEnableExperimentalExtensionApis)) {
       return CreateAvailability(AvailabilityResult::kUnsupportedChannel,
                                 *required_channel);
+    }
   }
 
   const StaticCString required_switch = command_line_switch_data();
