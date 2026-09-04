@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.customtabs;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Rect;
 import android.text.TextUtils;
@@ -277,7 +279,14 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 if (tryBringingTwaToForeground()) return;
             }
 
-            // Fallback for when the flag is disabled, or startActivity fails.
+            // Fallback for when the flag is disabled, or when starting the client activity fails.
+            // Note on the fallback path: Calling moveTaskToFront() directly from the host browser
+            // works reliably to restore occluded/covered windows, but cannot restore minimized
+            // windows due to Android's Background Activity Launch (BAL) restrictions. Full
+            // minimization support requires the client app (such as a TWA) to properly configure
+            // its manifest with REORDER_TASKS permission and a valid taskAffinity.
+            // TODO(crbug.com/555937489): Some 1P TWA configs are pending uprev to declare
+            // REORDER_TASKS and valid taskAffinity.
             ApiCompatibilityUtils.moveTaskToFront(mActivity, mActivity.getTaskId(), 0);
         }
 
@@ -424,6 +433,39 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
 
             String twaPackageName = mIntentDataProvider.getClientPackageName();
             if (TextUtils.isEmpty(twaPackageName)) return false;
+
+            PackageManager packageManager = mActivity.getPackageManager();
+            if (packageManager != null) {
+                // FocusActivity requires REORDER_TASKS to invoke moveTaskToFront().
+                if (packageManager.checkPermission(
+                                Manifest.permission.REORDER_TASKS, twaPackageName)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    Log.w(
+                            TAG,
+                            "TWA package %s lacks REORDER_TASKS permission; skipping"
+                                    + " FocusActivity.",
+                            twaPackageName);
+                    return false;
+                }
+
+                // If taskAffinity is empty (e.g. android:taskAffinity=""), FocusActivity
+                // launches in a separate task and cannot bring the TWA task to front.
+                Intent resolveIntent = new Intent();
+                resolveIntent.setComponent(
+                        new ComponentName(twaPackageName, TWA_FOCUS_ACTIVITY_CLASS_NAME));
+                ResolveInfo resolveInfo = packageManager.resolveActivity(resolveIntent, 0);
+                if (resolveInfo == null || resolveInfo.activityInfo == null) {
+                    Log.w(TAG, "FocusActivity not found in %s; skipping.", twaPackageName);
+                    return false;
+                }
+                if (TextUtils.isEmpty(resolveInfo.activityInfo.taskAffinity)) {
+                    Log.w(
+                            TAG,
+                            "FocusActivity in %s has empty taskAffinity; skipping.",
+                            twaPackageName);
+                    return false;
+                }
+            }
 
             Intent intent = new Intent();
             intent.setComponent(new ComponentName(twaPackageName, TWA_FOCUS_ACTIVITY_CLASS_NAME));
