@@ -54,6 +54,9 @@ The Omnibox Java code resides under `chrome/browser/ui/android/omnibox/java/src/
 - **OmniboxResourceProvider Migration**: Do not add new static methods to `OmniboxResourceProvider`. The component is actively being migrated to instance methods to eliminate redundant client-side caching and prevent UI inconsistencies. Any new functionality must be added as an instance method and accessed through an `OmniboxResourceProvider` instance (typically supplied via `PropertyModel` or dependency injection).
 - **Listener & Observer Cleanup**: Always remove listeners and observers in the component's `destroy()` method to prevent memory leaks. Observe strict MVC boundaries during destruction: Coordinators and Mediators unregister observers from models, data providers, and child components; View click listeners and UI callback teardowns belong inside the View / `ViewBinder` lifecycle (e.g. `LocationBarLayout.destroy()`), not directly held or cleared in the Coordinator.
 - **Destruction Propagation**: A parent component `X` **must** implement a `destroy()` method if any of the subcomponents it owns implements a `destroy()` method. The parent's `destroy()` method must clean up and invoke `destroy()` on all its children.
+- **Try-With-Resources**:
+  - In production code, always use `try`-with-resources blocks (or explicitly document why it cannot be used) whenever referencing a class that supports it (implements `AutoCloseable`, e.g. `TimingMetric`).
+  - In test code, the use of `try`-with-resources is recommended but not required.
 - **View Inflation**: Prefer using `AsyncViewInflation` where possible to keep the Main Thread free and reduce startup latency.
 - **Imports**: Use `import` statements whenever possible instead of using fully qualified class names within the code.
 - **Javadoc & Method Contracts**:
@@ -61,11 +64,23 @@ The Omnibox Java code resides under `chrome/browser/ui/android/omnibox/java/src/
   - When updating classes, always read the top-level class comment to catch any critical context, invariants, or restrictions (what is / what is not allowed).
 - **Reuse & Pre-research**: Research relevant existing libraries, utilities, and methods before implementing something new. Follow existing patterns in the codebase when applicable.
 - **Resource & Type Annotations**: Always annotate integer resource IDs and typed values with appropriate AndroidX annotations (e.g., `@ColorInt`, `@ColorRes`, `@DrawableRes`, `@StringRes`, `@Px`).
+- **`@CheckResult` Annotation**:
+  - Use `@CheckResult` (from `androidx.annotation.CheckResult`) to annotate results that, if thrown away or ignored, would result in a memory leak, resource leak, or failure to satisfy contract (e.g., "returns `true` if callback will be emitted").
+  - At call sites, it is acceptable to skip/ignore the return value only if annotated with an explanatory comment (e.g., `// Attempt to retrieve actual icon if we have it, otherwise show fallback icon`).
 - **Constants over Magic Numbers**: Do not create or use magic numbers directly in the code. Define and use descriptive constants instead.
+- **Minimum Visibility**:
+  - Visibility should always reflect the minimum visibility required to satisfy the purpose of a class or method; do not make things `public` by default.
+  - Prefer `private`, `/* package */`, and `protected`, in that order.
+  - `/* package */` is preferred when visibility is required; if both `/* package */` and `protected` satisfy the need, use `/* package */` (reserve `protected` for when subclass access is required and package visibility does not suffice).
 - **Method Signatures & Parameter Comments**:
   - Avoid creating constructors or methods that accept too many boolean parameters, as this degrades readability.
-  - **Boolean Parameter Annotations**: Call-site boolean literals must be documented with a `/* paramName= */` comment unless the parameter's meaning is unmistakably clear from the method name (e.g., `setVisible(true)` is fine, but `open(view, /* animated= */ true)` is not). Note that ErrorProne strictly verifies that `paramName` matches the exact formal parameter name in the method declaration (`[ParameterName]`). Always check the target method declaration, or use `/* comment */` without `=` if not matching.
-  - **Repeated Plain-Old-Data (POD) Parameters**: Repeated primitive / POD parameters (e.g., consecutive `int`, `long`, `float`, `boolean` values) unconditionally must be documented at call sites with `/* paramName= */` comments unless the parameter order is self-evident from the method name (e.g., `new Rect(...)` is fine, but `MotionEvent.obtain(/* downTime= */ 0, /* eventTime= */ 0, /* action= */ ACTION_DOWN, /* x= */ 0, /* y= */ 0, /* metaState= */ 0)` is not). Exact formal parameter names are required by ErrorProne.
+  - **Boolean Parameter Annotations**: Call-site boolean literals (`true` / `false`) must be documented with a `/* paramName= */` comment unless the parameter's meaning is unmistakably clear from the method name (e.g., `setVisible(true)` is fine, but `open(view, /* animated= */ true)` is not).
+  - **Repeated Plain-Old-Data (POD) Parameters**: Consecutive primitive / POD parameters (e.g., consecutive `int`, `long`, `float`, `boolean` literals) should be documented at call sites with `/* paramName= */` comments when their meaning or order is ambiguous (e.g., `MotionEvent.obtain(/* downTime= */ 0, /* eventTime= */ 0, /* action= */ ACTION_DOWN, /* x= */ 0, /* y= */ 0, /* metaState= */ 0)`).
+  - **Avoid Redundant Annotations**:
+    - Do **not** add `/* paramName= */` comments when an argument is passed from a variable already named like that parameter (e.g., `new Rect(l, t, r, b)` assuming `Rect` takes `(l, t, r, b)`, or `updateSize(width, height)`). It is completely fine (and preferred) to skip them.
+    - Do **not** add comments for self-evident single-argument calls or setters (e.g., `setValue(/* value= */ value)` is completely unnecessary and discouraged).
+    - Parameter comments are intended to clarify ambiguous literals and unclear expressions, not to duplicate variable names.
+  - **ErrorProne `[ParameterName]` Strict Rule**: When using `/* paramName= */`, ErrorProne strictly verifies that `paramName` matches the exact formal parameter name in the method declaration (`[ParameterName]`). Always check the target method declaration, or use `/* comment */` without `=` if not matching.
 - **Complexity & Early Returns**: Prefer early return statements over deeply nested conditional statements. Keep the cyclomatic complexity of methods low.
 - **Prefer Switch Expressions (`return switch (...)` / `variable = switch (...)`)**:
   - Prefer modern Java `switch` expressions over verbose `if / else if` ladders or legacy statement `switch` blocks when mapping or resolving discrete `@IntDef`, `enum`, or primitive/string values to a result.
@@ -113,6 +128,9 @@ The Omnibox Java code resides under `chrome/browser/ui/android/omnibox/java/src/
 - **Avoid `instanceof` Checks**: Avoid using `instanceof` and explicit downcasting. `instanceof` is typically a code smell indicating that concrete implementation details are being shoehorned into code that should be properly abstracted. Prefer polymorphism, interface contracts, or delegating behavior directly to the class hierarchy rather than type-checking and branching on concrete types.
 - **Placement**: Ensure logic is implemented in the correct architectural location as early as possible in the flow.
 - **OmniboxUrlUtils for NTP Evaluation**: In Omnibox and LocationBar UI logic, always use `OmniboxUrlUtils.isNtpUrl(url)` rather than calling `UrlUtilities.isNtpUrl(url)` directly. This ensures consistent handling of transient empty/invalid URLs occurring during new tab or new window creation before navigation commits (see crbug.com/553118979), preventing UI flickers (such as showing a globe icon instead of the search engine logo) and enabling early cursor focus.
+- **JNI Type Conversions (`@JniType`)**:
+  - Rely on `@JniType` when declaring native methods to avoid manually converting types.
+  - If a conversion doesn't exist and is used more than 3 times already, the conversion should be added and existing call sites should be updated.
 
 ## Feature Flags
 
