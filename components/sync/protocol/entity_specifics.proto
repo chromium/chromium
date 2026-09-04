@@ -198,6 +198,8 @@ message EntitySpecifics {
     EmptySpecifics managed_user_shared_setting = 202026 [deprecated = true];
     EmptySpecifics managed_user_allowlist = 306060 [deprecated = true];
     EmptySpecifics accessibility_annotation = 1588764 [deprecated = true];
+    EmptySpecifics plus_address = 1267844 [deprecated = true];
+    EmptySpecifics plus_address_setting = 1303742 [deprecated = true];
     TypedUrlSpecifics typed_url = 40781 [deprecated = true];
   }
   reserved 161496;
@@ -216,10 +218,6 @@ message EntitySpecifics {
   reserved "segmentation";
   reserved 1073150;
   reserved "power_bookmark";
-  reserved 1267844;
-  reserved "plus_address";
-  reserved 1303742;
-  reserved "plus_address_setting";
 }
 
 message EmptySpecifics {}
