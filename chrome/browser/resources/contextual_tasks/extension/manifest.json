@@ -30,7 +30,9 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "input_plate.html"
+        "chip.html",
+        "input_plate.html",
+        "lens_button.html"
       ],
       "matches": [
         "https://*.google.com/*",
