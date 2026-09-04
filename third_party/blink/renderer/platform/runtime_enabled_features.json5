@@ -1569,10 +1569,6 @@
       status: "stable",
     },
     {
-      name: "CSSColorQuantizedAlphaOnlyLegacy",
-      status: "stable",
-    },
-    {
       name: "CSSColorTypedOM",
       status: "experimental",
     },

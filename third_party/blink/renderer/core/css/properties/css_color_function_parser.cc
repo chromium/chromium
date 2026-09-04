@@ -174,13 +174,6 @@ bool IsInGamutRec2020(Color color) {
          -kEpsilon <= color.Param2() && color.Param2() <= 1.f + kEpsilon;
 }
 
-bool ShouldQuantizeAlphaTo8Bits(bool is_relative_color, bool is_legacy_syntax) {
-  if (RuntimeEnabledFeatures::CSSColorQuantizedAlphaOnlyLegacyEnabled()) {
-    return is_legacy_syntax;
-  }
-  return !is_relative_color;
-}
-
 }  // namespace
 
 bool ColorFunctionParser::ConsumeColorSpaceAndOriginColor(
@@ -391,8 +384,7 @@ void ColorFunctionParser::MakePerColorSpaceAdjustments(
     // See compositing/background-color/background-color-alpha.html for example.
     // Ideally we would allow alpha to be any float value, but we have to clean
     // up all spots where this compression happens before this is possible.
-    if (ShouldQuantizeAlphaTo8Bits(is_relative_color, is_legacy_syntax) &&
-        alpha.has_value()) {
+    if (is_legacy_syntax && alpha.has_value()) {
       alpha = round(alpha.value() * 255.0) / 255.0;
     }
   }
