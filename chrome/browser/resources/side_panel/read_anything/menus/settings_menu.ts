@@ -243,6 +243,11 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     this.keyDownCallback_ = this.onKeyDown_.bind(this);
   }
 
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.close();
+  }
+
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
@@ -439,13 +444,14 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       return;
     }
 
-    this.fire(ToolbarEvent.OPEN_SETTINGS_SUBMENU, {
-      id: newMenuId,
-      previousId: this.currentOpenId_,
-      target: currentTarget,
-    });
+    const previousId = this.currentOpenId_;
     this.currentOpenId_ = newMenuId;
     this.lastMenuOpenTime_ = Date.now();
+    this.fire(ToolbarEvent.OPEN_SETTINGS_SUBMENU, {
+      id: newMenuId,
+      previousId,
+      target: currentTarget,
+    });
   }
 
   private onToggleMenuItemClick_(item: SettingsItem) {
@@ -515,13 +521,14 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
         MENU_SHOW_DELAY_MS;
 
     this.openTimer_ = window.setTimeout(() => {
-      this.fire(ToolbarEvent.OPEN_SETTINGS_SUBMENU, {
-        id: newMenuId,
-        previousId: this.currentOpenId_,
-        target: currentTarget,
-      });
+      const previousId = this.currentOpenId_;
       this.currentOpenId_ = newMenuId;
       this.lastMenuOpenTime_ = Date.now();
+      this.fire(ToolbarEvent.OPEN_SETTINGS_SUBMENU, {
+        id: newMenuId,
+        previousId,
+        target: currentTarget,
+      });
     }, delay);
   }
 

@@ -11,7 +11,7 @@ import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue
 import {keyDownOn} from 'chrome-untrusted://webui-test/keyboard_mock_interactions.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {TestUserEducationMixedTrustHandler} from 'chrome-untrusted://webui-test/test_user_education_mixed_trust_handler.js';
-import {eventToPromise, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished, whenAttributeIs} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {setupTestEnvironment} from './common.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
@@ -47,6 +47,10 @@ suite('SettingsMenuElement', () => {
 
     settingsMenu.$.lazyMenu.get();
     await microtasksFinished();
+  });
+
+  teardown(() => {
+    settingsMenu.close();
   });
 
   test('click outside fires close-all-menus event', async () => {
@@ -259,12 +263,14 @@ suite('SettingsMenuElement', () => {
         assertTrue(!!targetItem);
         targetItem.click();
 
-        const whenFired =
+        let whenFired =
             eventToPromise(ToolbarEvent.CLOSE_SUBMENU_REQUESTED, settingsMenu);
         keyDownOn(settingsMenu, 0, undefined, 'Escape');
         await whenFired;
 
         targetItem.click();
+        whenFired =
+            eventToPromise(ToolbarEvent.CLOSE_SUBMENU_REQUESTED, settingsMenu);
         keyDownOn(settingsMenu, 0, undefined, 'ArrowLeft');
         await whenFired;
       });
@@ -278,16 +284,17 @@ suite('SettingsMenuElement', () => {
     assertTrue(!!targetItem);
 
     let openSubmenuWasFiredAfterClose = false;
-    actionMenu.addEventListener(ToolbarEvent.OPEN_SETTINGS_SUBMENU, () => {
+    settingsMenu.addEventListener(ToolbarEvent.OPEN_SETTINGS_SUBMENU, () => {
       openSubmenuWasFiredAfterClose = true;
     });
 
     const timer = new MockTimer();
+    timer.install();
     targetItem.dispatchEvent(new PointerEvent(
         'pointerenter', {bubbles: true, cancelable: true, view: window}));
-    timer.tick(SUBMENU_SHOW_DELAY_MS - 1);
-    actionMenu.close();
-    timer.tick(1);
+    timer.tick(MENU_SHOW_DELAY_MS - 1);
+    settingsMenu.close();
+    timer.tick(MENU_SHOW_DELAY_MS + 1);
 
     assertFalse(openSubmenuWasFiredAfterClose);
     timer.uninstall();
@@ -406,6 +413,7 @@ suite('SettingsMenuElement', () => {
         eventToPromise(ToolbarEvent.OPEN_SETTINGS_SUBMENU, settingsMenu);
     fontItem.click();
     await whenFired;
+    await whenAttributeIs(fontItem, 'aria-expanded', 'true');
     await microtasksFinished();
 
     menuItems =
@@ -524,7 +532,10 @@ suite('SettingsMenuElement', () => {
     assertTrue(!!translateItem);
 
     // Click fontItem to open its submenu.
+    const whenSubmenuOpened =
+        eventToPromise(ToolbarEvent.OPEN_SETTINGS_SUBMENU, settingsMenu);
     fontItem.click();
+    await whenSubmenuOpened;
     await microtasksFinished();
 
     const whenFired = eventToPromise<CustomEvent<{previousId: SettingsOption}>>(
