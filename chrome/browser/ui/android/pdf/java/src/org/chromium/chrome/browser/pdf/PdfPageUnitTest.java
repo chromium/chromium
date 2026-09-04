@@ -861,4 +861,19 @@ public class PdfPageUnitTest {
         // Destroying the PdfPage should not throw IllegalStateException.
         pdfPage.destroy();
     }
+
+    @Test
+    public void testDownload_DelegatesToCoordinator() {
+        PdfPage pdfPage =
+                new PdfPage(
+                        mMockNativePageHost,
+                        mMockTab,
+                        mActivity,
+                        mPdfPageUrl,
+                        mPdfInfo,
+                        DEFAULT_TAB_TITLE,
+                        mPdfFragmentViewTracker);
+        pdfPage.download();
+        verify(mMockNativePageHost).downloadUrl(PDF_LINK);
+    }
 }

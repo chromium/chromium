@@ -148,6 +148,7 @@ public class PdfCoordinatorUnitTest {
     private PdfView mPdfView;
     private static final String PDF_URL =
             "chrome-native://pdf/link?url=https%3A%2F%2Fwww.irs.gov%2Fpub%2Firs-pdf%2Ffw4.pdf";
+    private static final String PDF_DOWNLOAD_URL = "https://www.irs.gov/pub/irs-pdf/fw4.pdf";
     private static final String PDF_TITLE = "fw4.pdf";
     private static final String LINK_URL = "https://www.bar.com";
     private String mFilePath;
@@ -2765,14 +2766,153 @@ public class PdfCoordinatorUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
-    public void testDownload_ShowsDownloadingToastImmediately() {
+    public void testDownload_WithAnnotations_ShowsDownloadingToastImmediately() {
         createPdfCoordinator();
         mPdfCoordinator.onDownloadComplete(mFilePath, PDF_TITLE);
+        mPdfCoordinator.onEditsApplied();
 
         mPdfCoordinator.download();
 
         assertEquals(
                 mActivity.getString(R.string.pdf_downloading), ShadowToast.getTextOfLatestToast());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testDownload_NoAnnotations_CallsHostDownload() {
+        createPdfCoordinator();
+        mPdfCoordinator.onDownloadComplete(mFilePath, PDF_TITLE);
+
+        mPdfCoordinator.download();
+
+        verify(mNativePageHost).downloadUrl(PDF_DOWNLOAD_URL);
+        assertNull(ShadowToast.getTextOfLatestToast());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testDownload_NoAnnotations_LocalPdf_IsNoOp() {
+        mPdfCoordinator =
+                new PdfCoordinator(
+                        mNativePageHost,
+                        mProfile,
+                        mActivity,
+                        mFilePath,
+                        PDF_TITLE,
+                        mTab,
+                        TEST_CONTENT_URI,
+                        mPdfFragmentViewTracker);
+        mPdfCoordinator.onDownloadComplete(mFilePath, PDF_TITLE);
+
+        mPdfCoordinator.download();
+
+        verify(mNativePageHost, never()).downloadUrl(any());
+        assertNull(ShadowToast.getTextOfLatestToast());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testDownload_NoAnnotations_BlobPdf_CallsHostDownload() {
+        String blobUrl = "blob:https://www.irs.gov/1234-5678";
+        String encodedBlobPdfUrl = PdfUtils.encodePdfPageUrl(blobUrl);
+        mPdfCoordinator =
+                new PdfCoordinator(
+                        mNativePageHost,
+                        mProfile,
+                        mActivity,
+                        mFilePath,
+                        PDF_TITLE,
+                        mTab,
+                        encodedBlobPdfUrl,
+                        mPdfFragmentViewTracker);
+        mPdfCoordinator.onDownloadComplete(mFilePath, PDF_TITLE);
+
+        mPdfCoordinator.download();
+
+        verify(mNativePageHost).downloadUrl(blobUrl);
+        assertNull(ShadowToast.getTextOfLatestToast());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testDownload_NoAnnotations_DataPdf_CallsHostDownload() {
+        String dataUrl = "data:application/pdf;base64,JVBERi0xLjc=";
+        String encodedDataPdfUrl = PdfUtils.encodePdfPageUrl(dataUrl);
+        mPdfCoordinator =
+                new PdfCoordinator(
+                        mNativePageHost,
+                        mProfile,
+                        mActivity,
+                        mFilePath,
+                        PDF_TITLE,
+                        mTab,
+                        encodedDataPdfUrl,
+                        mPdfFragmentViewTracker);
+        mPdfCoordinator.onDownloadComplete(mFilePath, PDF_TITLE);
+
+        mPdfCoordinator.download();
+
+        verify(mNativePageHost).downloadUrl(dataUrl);
+        assertNull(ShadowToast.getTextOfLatestToast());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testDownload_NoAnnotations_DisallowedScheme_IsNoOp() {
+        String disallowedUrl = "javascript:alert(1)";
+        String encodedUrl = PdfUtils.encodePdfPageUrl(disallowedUrl);
+        mPdfCoordinator =
+                new PdfCoordinator(
+                        mNativePageHost,
+                        mProfile,
+                        mActivity,
+                        mFilePath,
+                        PDF_TITLE,
+                        mTab,
+                        encodedUrl,
+                        mPdfFragmentViewTracker);
+        mPdfCoordinator.onDownloadComplete(mFilePath, PDF_TITLE);
+
+        mPdfCoordinator.download();
+
+        verify(mNativePageHost, never()).downloadUrl(any());
+        assertNull(ShadowToast.getTextOfLatestToast());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testDownload_WithAnnotations_LocalPdf_CallsDownloadAnnotatedPdf() {
+        mPdfCoordinator =
+                new PdfCoordinator(
+                        mNativePageHost,
+                        mProfile,
+                        mActivity,
+                        mFilePath,
+                        PDF_TITLE,
+                        mTab,
+                        TEST_CONTENT_URI,
+                        mPdfFragmentViewTracker);
+        mPdfCoordinator.onDownloadComplete(mFilePath, PDF_TITLE);
+        mPdfCoordinator.onEditsApplied();
+
+        mPdfCoordinator.download();
+
+        verify(mNativePageHost, never()).downloadUrl(any());
+        assertEquals(
+                mActivity.getString(R.string.pdf_downloading), ShadowToast.getTextOfLatestToast());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testDownload_FeatureDisabled_CallsHostDownload() {
+        createPdfCoordinator();
+        mPdfCoordinator.onDownloadComplete(mFilePath, PDF_TITLE);
+        mPdfCoordinator.onEditsApplied();
+
+        mPdfCoordinator.download();
+
+        verify(mNativePageHost).downloadUrl(PDF_DOWNLOAD_URL);
+        assertNull(ShadowToast.getTextOfLatestToast());
     }
 
     @Test

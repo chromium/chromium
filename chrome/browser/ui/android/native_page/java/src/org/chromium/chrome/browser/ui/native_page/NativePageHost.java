@@ -65,4 +65,11 @@ public interface NativePageHost {
 
     /** Triggers printing for the hosted page. */
     default void print() {}
+
+    /**
+     * Triggers downloading the given URL using the default download method.
+     *
+     * @param url The URL to download.
+     */
+    default void downloadUrl(String url) {}
 }
