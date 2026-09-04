@@ -89,6 +89,7 @@
 #import "ios/chrome/browser/search_engine_choice/coordinator/search_engine_choice_coordinator.h"
 #import "ios/chrome/browser/send_tab_to_self/coordinator/send_tab_to_self_coordinator.h"
 #import "ios/chrome/browser/send_tab_to_self/coordinator/send_tab_to_self_coordinator_delegate.h"
+#import "ios/chrome/browser/settings/clear_browsing_data/coordinator/quick_delete_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -134,6 +135,7 @@
 #import "ios/chrome/browser/shared/public/commands/policy_change_commands.h"
 #import "ios/chrome/browser/shared/public/commands/price_tracked_items_commands.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
+#import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reminder_notifications_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_image_to_photos_command.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_drive_commands.h"
@@ -155,6 +157,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/layout_guide/layout_guide_swift.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/shared/ui/util/top_view_controller.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_coordinator.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_params.h"
@@ -224,6 +227,7 @@ const char kContextPanelDismissedHistogram[] =
                                 PictureInPictureCommands,
                                 PolicyChangeCommands,
                                 PriceTrackedItemsCommands,
+                                QuickDeleteCommands,
                                 ReminderNotificationsCommands,
                                 ReminderNotificationsCoordinatorDelegate,
                                 SaveToDriveCommands,
@@ -304,6 +308,7 @@ const char kContextPanelDismissedHistogram[] =
       _paymentsSuggestionBottomSheetCoordinator;
   PictureInPictureCoordinator* _pictureInPictureCoordinator;
   PriceNotificationsViewCoordinator* _priceNotificationsViewCoordinator;
+  QuickDeleteCoordinator* _quickDeleteCoordinator;
   ReminderNotificationsCoordinator* _reminderNotificationsCoordinator;
   SaveCardBottomSheetCoordinator* _saveCardBottomSheetCoordinator;
   SaveToDriveCoordinator* _saveToDriveCoordinator;
@@ -403,6 +408,7 @@ const char kContextPanelDismissedHistogram[] =
   [self dismissPageActionMenuWithCompletion:nil];
   [self hideParentAccessBottomSheet];
   [self hidePriceTrackedItems];
+  [self stopQuickDelete];
   [self stopReminderNotificationsCoordinator];
   [self hideSaveToDriveAnimated:NO];
   [self stopSaveToPhotos];
@@ -484,6 +490,14 @@ const char kContextPanelDismissedHistogram[] =
   [_reminderNotificationsCoordinator stop];
   _reminderNotificationsCoordinator.delegate = nil;
   _reminderNotificationsCoordinator = nil;
+}
+
+// Stops quick delete and opens the password settings after all the view
+// controllers on top of BrowserViewController have been dismissed.
+- (void)stopQuickDeleteAndOpenPasswordSettingsPageAfterVCDismissed {
+  [self stopQuickDelete];
+  [HandlerForProtocol(self.dispatcher, SettingsCommands)
+      showPasswordSettingsFromViewController:self.activeBaseViewController];
 }
 
 // Exits fullscreen mode.
@@ -639,6 +653,7 @@ const char kContextPanelDismissedHistogram[] =
     @protocol(PictureInPictureCommands),
     @protocol(PolicyChangeCommands),
     @protocol(PriceTrackedItemsCommands),
+    @protocol(QuickDeleteCommands),
     @protocol(ReminderNotificationsCommands),
     @protocol(SaveToDriveCommands),
     @protocol(SaveToPhotosCommands),
@@ -1977,6 +1992,87 @@ const char kContextPanelDismissedHistogram[] =
                              browser:_browser];
   _priceNotificationsViewCoordinator.showCurrentPage = showCurrentPage;
   [_priceNotificationsViewCoordinator start];
+}
+
+#pragma mark - QuickDeleteCommands
+
+// TODO(crbug.com/555685925): Rename this method. Also, the parameter is almost
+// always YES except in one case where it's YES only on tablet form factors.
+// Ideally the child coordinator should be able to decide how to present,
+// including the animation.
+- (void)showQuickDeleteAndCanPerformRadialWipeAnimation:
+    (BOOL)canPerformRadialWipeAnimation {
+  CHECK(!_browser->GetProfile()->IsOffTheRecord());
+
+  [_quickDeleteCoordinator stop];
+
+  _quickDeleteCoordinator = [[QuickDeleteCoordinator alloc]
+         initWithBaseViewController:
+             top_view_controller::TopPresentedViewControllerFrom(
+                 _browser->GetSceneState().window.rootViewController)
+                            browser:_browser
+      canPerformRadialWipeAnimation:canPerformRadialWipeAnimation];
+  [_quickDeleteCoordinator start];
+}
+
+- (void)stopQuickDelete {
+  [_quickDeleteCoordinator stop];
+  _quickDeleteCoordinator = nil;
+}
+
+- (void)stopQuickDeleteAndOpenPasswordSettingsPage {
+  __weak __typeof(self) weakSelf = self;
+  ProceduralBlock dismissalCompletion = ^{
+    [weakSelf stopQuickDeleteAndOpenPasswordSettingsPageAfterVCDismissed];
+  };
+  [_baseViewController dismissViewControllerAnimated:YES
+                                          completion:dismissalCompletion];
+}
+
+- (void)stopQuickDeleteForAnimationWithCompletion:(ProceduralBlock)completion {
+  // TODO(crbug.com/555682992): Investigate why QuickDelete is doing so much UI
+  // management.
+
+  // If BrowserViewController has not presented any view controller (i.e. QD has
+  // been dismissed) and the tab grid is also not visible, then just trigger
+  // `completion` immediately.
+  if (!_baseViewController.presentedViewController &&
+      !_browser->GetSceneState().controller.isTabGridVisible) {
+    if (completion) {
+      completion();
+    }
+    [self stopQuickDelete];
+    return;
+  }
+
+  // If BrowserViewController has presented a view controller, then dismiss
+  // every VC on top of it.
+  __weak __typeof(self.dispatcher) weakDispatcher = self.dispatcher;
+
+  // TODO(crbug.com/555685927): This block is too long. Also, why is it
+  // introducing another way of dismissing all UI by calling the existing
+  // commands?
+  ProceduralBlock dismissalCompletion = ^{
+    if (completion) {
+      completion();
+    }
+
+    // Properly shutdown all coordinators started either by this coordinator or
+    // by the scene controller. This should include Quick Delete, History and
+    // the Privacy Settings.
+    [HandlerForProtocol(weakDispatcher, BrowserCoordinatorCommands)
+        clearPresentedStateWithCompletion:nil
+                           dismissOmnibox:YES];
+    // The protocol might not have a valid target when the shutdown of Quick
+    // Delete is happening at the same time the UI is being shutdown.
+    if ([weakDispatcher dispatchingForProtocol:@protocol(SceneCommands)]) {
+      id<SceneCommands> sceneHandler =
+          HandlerForProtocol(weakDispatcher, SceneCommands);
+      [sceneHandler dismissModalDialogsWithCompletion:nil];
+    }
+  };
+  [_baseViewController dismissViewControllerAnimated:YES
+                                          completion:dismissalCompletion];
 }
 
 #pragma mark - ReminderNotificationsCommands

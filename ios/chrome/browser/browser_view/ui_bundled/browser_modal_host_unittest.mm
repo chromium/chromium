@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
 #import "ios/chrome/browser/save_to_photos/ui_bundled/save_to_photos_coordinator.h"
 #import "ios/chrome/browser/send_tab_to_self/coordinator/send_tab_to_self_coordinator.h"
+#import "ios/chrome/browser/settings/clear_browsing_data/coordinator/quick_delete_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_ui_provider.h"
@@ -30,6 +31,7 @@
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
 #import "ios/chrome/browser/shared/public/commands/download_list_commands.h"
 #import "ios/chrome/browser/shared/public/commands/non_modal_signin_promo_commands.h"
+#import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_image_to_photos_command.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_photos_commands.h"
 #import "ios/chrome/browser/shared/public/commands/send_tab_to_self_commands.h"
@@ -497,4 +499,28 @@ TEST_F(BrowserModalHostTest, DismissesContextualPanelEntrypointIPH) {
   id<ContextualPanelEntrypointIPHCommands> handler =
       HandlerForProtocol(dispatcher, ContextualPanelEntrypointIPHCommands);
   [handler dismissContextualPanelEntrypointIPH:NO];
+}
+
+// Tests that `-showQuickDeleteAndCanPerformRadialWipeAnimation:` starts
+// QuickDeleteCoordinator and `-stopQuickDelete` stops it.
+TEST_F(BrowserModalHostTest, StartsAndStopsQuickDeleteCoordinator) {
+  id classMock = OCMClassMock([QuickDeleteCoordinator class]);
+  QuickDeleteCoordinator* mockCoordinator = classMock;
+  OCMExpect([classMock alloc]).andReturn(classMock);
+  OCMExpect([[classMock ignoringNonObjectArgs]
+                   initWithBaseViewController:[OCMArg any]
+                                      browser:browser_.get()
+                canPerformRadialWipeAnimation:YES])
+      .andReturn(mockCoordinator);
+  OCMExpect([mockCoordinator start]);
+
+  CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+  id<QuickDeleteCommands> handler =
+      HandlerForProtocol(dispatcher, QuickDeleteCommands);
+  [handler showQuickDeleteAndCanPerformRadialWipeAnimation:YES];
+  EXPECT_OCMOCK_VERIFY(classMock);
+
+  OCMExpect([mockCoordinator stop]);
+  [handler stopQuickDelete];
+  EXPECT_OCMOCK_VERIFY(classMock);
 }

@@ -317,7 +317,6 @@
     PasswordControllerDelegate,
     PrerenderBrowserAgentDelegate,
     PromosManagerCommands,
-    QuickDeleteCommands,
     ReSigninPresenter,
     ReaderModeBrowserAgentDelegate,
     ReaderModeCommands,
@@ -505,10 +504,6 @@
   // Callback to remove the activity overlay started by the browser coordinator
   // itself.
   base::ScopedClosureRunner _activityOverlayCallback;
-
-  // The coordinator for the new Delete Browsing Data screen, also called Quick
-  // Delete.
-  QuickDeleteCoordinator* _quickDeleteCoordinator;
 
   LensPromoCoordinator* _lensPromoCoordinator;
   EnhancedSafeBrowsingPromoCoordinator* _enhancedSafeBrowsingPromoCoordinator;
@@ -958,7 +953,6 @@
     @protocol(FindInPageCommands),
     @protocol(ReaderModeCommands),
     @protocol(NewTabPageCommands),
-    @protocol(QuickDeleteCommands),
     @protocol(SyncPresenterCommands),
     @protocol(TextZoomCommands),
     @protocol(DefaultBrowserGenericPromoCommands),
@@ -1422,9 +1416,6 @@
 
   [self.choiceCoordinator stop];
   self.choiceCoordinator = nil;
-
-  [_quickDeleteCoordinator stop];
-  _quickDeleteCoordinator = nil;
 
   [self dismissLensPromo];
   [self dismissEnhancedSafeBrowsingPromo];
@@ -2067,9 +2058,6 @@
   [self stopRepostFormCoordinator];
 
   [_formInputAccessoryCoordinator clearPresentedState];
-
-  [_quickDeleteCoordinator stop];
-  _quickDeleteCoordinator = nil;
 
   [self updateLensUIForBackground];
 
@@ -3325,81 +3313,6 @@
                     ->IsWebUsageEnabled();
 }
 
-#pragma mark - QuickDeleteCommands
-
-- (void)showQuickDeleteAndCanPerformRadialWipeAnimation:
-    (BOOL)canPerformRadialWipeAnimation {
-  CHECK(!self.isOffTheRecord);
-
-  [_quickDeleteCoordinator stop];
-
-  _quickDeleteCoordinator = [[QuickDeleteCoordinator alloc]
-         initWithBaseViewController:
-             top_view_controller::TopPresentedViewControllerFrom(
-                 self.sceneState.window.rootViewController)
-                            browser:self.browser
-      canPerformRadialWipeAnimation:canPerformRadialWipeAnimation];
-  [_quickDeleteCoordinator start];
-}
-
-- (void)stopQuickDelete {
-  [_quickDeleteCoordinator stop];
-  _quickDeleteCoordinator = nil;
-}
-
-- (void)stopQuickDeleteAndOpenPasswordSettingsPage {
-  __weak __typeof(self) weakSelf = self;
-  ProceduralBlock dismissalCompletion = ^{
-    [weakSelf stopQuickDeleteAndOpenPasswordSettingsPageAfterVCDismissed];
-  };
-  [self.viewController dismissViewControllerAnimated:YES
-                                          completion:dismissalCompletion];
-}
-
-// Stop quick delete and open the password settings after all the
-// VC on top of BrowserViewController have been dismissed.
-- (void)stopQuickDeleteAndOpenPasswordSettingsPageAfterVCDismissed {
-  [self stopQuickDelete];
-  [self openSettingsForPage:AutofillSettingsPage::kPasswordSettings];
-}
-
-- (void)stopQuickDeleteForAnimationWithCompletion:(ProceduralBlock)completion {
-  // If BrowserViewController has not presented any view controller (i.e. QD has
-  // been dismissed) and the tab grid is also not visible, then just trigger
-  // `completion` immediately.
-  if (!self.viewController.presentedViewController &&
-      !self.sceneState.controller.isTabGridVisible) {
-    if (completion) {
-      completion();
-    }
-    [self stopQuickDelete];
-    return;
-  }
-
-  // If BrowserViewController has presented a view controller, then dismiss
-  // every VC on top of it.
-  __weak __typeof(self) weakSelf = self;
-  __weak __typeof(self.dispatcher) weakDispatcher = self.dispatcher;
-  ProceduralBlock dismissalCompletion = ^{
-    if (completion) {
-      completion();
-    }
-
-    // Properly shutdown all coordinators started either by this coordinator or
-    // by the scene controller. This should include Quick Delete, History and
-    // the Privacy Settings.
-    [weakSelf clearPresentedStateWithCompletion:nil dismissOmnibox:YES];
-    // The protocol might not have a valid target when the shutdown of Quick
-    // Delete is happening at the same time the UI is being shutdown.
-    if ([weakDispatcher dispatchingForProtocol:@protocol(SceneCommands)]) {
-      id<SceneCommands> sceneHandler =
-          HandlerForProtocol(weakDispatcher, SceneCommands);
-      [sceneHandler dismissModalDialogsWithCompletion:nil];
-    }
-  };
-  [self.viewController dismissViewControllerAnimated:YES
-                                          completion:dismissalCompletion];
-}
 
 #pragma mark - NotificationsOptInCoordinatorDelegate
 
