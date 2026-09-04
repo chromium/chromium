@@ -562,30 +562,30 @@ void OmniboxEverywhereUI::ClearContextualSessionHandle() {
 //    traversal.
 void OmniboxEverywhereUI::ShowScreenshotMenu(
     const gfx::Rect& anchor_rect,
-    base::WeakPtr<ContextualSearchboxHandler> source_handler) {
+    base::WeakPtr<ContextualSearchboxScreenshareController> controller) {
   if (screenshot_menu_runner_ && screenshot_menu_runner_->IsRunning()) {
-    if (source_handler) {
-      source_handler->OnScreenshotMenuClosed();
+    if (controller) {
+      controller->OnScreenshotMenuClosed();
     }
     return;
   }
   content::WebContents* web_contents = web_ui()->GetWebContents();
   if (!web_contents) {
-    if (source_handler) {
-      source_handler->OnScreenshotMenuClosed();
+    if (controller) {
+      controller->OnScreenshotMenuClosed();
     }
     return;
   }
   views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
       web_contents->GetTopLevelNativeWindow());
   if (!widget || !widget->GetContentsView()) {
-    if (source_handler) {
-      source_handler->OnScreenshotMenuClosed();
+    if (controller) {
+      controller->OnScreenshotMenuClosed();
     }
     return;
   }
 
-  active_screenshot_handler_ = std::move(source_handler);
+  active_screenshot_controller_ = std::move(controller);
 
   screenshot_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
   screenshot_menu_model_->AddTitle(
@@ -628,27 +628,28 @@ void OmniboxEverywhereUI::ShowScreenshotMenu(
 }
 
 void OmniboxEverywhereUI::OnScreenshotMenuClosed() {
-  if (active_screenshot_handler_) {
-    active_screenshot_handler_->OnScreenshotMenuClosed();
+  if (active_screenshot_controller_) {
+    active_screenshot_controller_->OnScreenshotMenuClosed();
   }
 }
 
 void OmniboxEverywhereUI::ExecuteCommand(int command_id, int event_flags) {
-  if (!active_screenshot_handler_) {
+  if (!active_screenshot_controller_) {
     return;
   }
-  auto handler = std::move(active_screenshot_handler_);
+  auto controller = std::move(active_screenshot_controller_);
+  controller->OnScreenshotMenuClosed();
   switch (command_id) {
     case kScreenshotEntireScreen:
-      handler->StartScreenshare(
+      controller->StartScreenshare(
           /*prefer_entire_screen=*/true, base::DoNothing());
       break;
     case kScreenshotWindow:
-      handler->StartScreenshare(
+      controller->StartScreenshare(
           /*prefer_entire_screen=*/false, base::DoNothing());
       break;
     case kScreenshotRegion:
-      handler->CaptureRegionScreenshot(base::DoNothing());
+      controller->CaptureRegionScreenshot(base::DoNothing());
       break;
   }
 }

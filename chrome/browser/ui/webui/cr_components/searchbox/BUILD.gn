@@ -11,6 +11,7 @@ assert(!is_ios || enable_webui_ntp)
 source_set("searchbox") {
   sources = [
     "contextual_searchbox_handler.h",
+    "contextual_searchbox_screenshare_controller.h",
     "contextual_searchbox_tab_favicon_helper.h",
     "searchbox_handler.h",
     "searchbox_omnibox_client.h",
@@ -54,6 +55,7 @@ source_set("searchbox") {
 source_set("searchbox_impl") {
   sources = [
     "contextual_searchbox_handler.cc",
+    "contextual_searchbox_screenshare_controller.cc",
     "contextual_searchbox_tab_favicon_helper.cc",
     "searchbox_handler.cc",
     "searchbox_omnibox_client.cc",
