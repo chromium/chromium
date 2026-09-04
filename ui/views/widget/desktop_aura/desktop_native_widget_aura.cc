@@ -384,7 +384,7 @@ void DesktopNativeWidgetAura::OnHostClosed() {
 
   host_->window()->RemovePreTargetHandler(root_window_event_filter_.get());
 
-  host_->RemoveObserver(this);
+  host_observation_.Reset();
   // |drag_drop_client_| holds a raw_ptr on |desktop_window_tree_host_|, so we
   // need to destroy it first.
   drag_drop_client_.reset();
@@ -702,7 +702,7 @@ void DesktopNativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
 
   OnHostResized(host());
 
-  host_->AddObserver(this);
+  host_observation_.Observe(host_.get());
 
   window_parenting_client_ =
       std::make_unique<DesktopNativeWidgetAuraWindowParentingClient>(

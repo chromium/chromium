@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/window_delegate.h"
@@ -386,6 +387,9 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   // generate them in some circumstances after a key press.
   gfx::Point last_mouse_loc_;
 #endif
+
+  base::ScopedObservation<aura::WindowTreeHost, aura::WindowTreeHostObserver>
+      host_observation_{this};
 
   // The following factory is used to provide references to the
   // DesktopNativeWidgetAura instance and used for calls to close to run drop
