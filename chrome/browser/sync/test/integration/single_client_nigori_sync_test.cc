@@ -17,7 +17,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
@@ -90,6 +89,8 @@
 #include "chrome/browser/ash/sync/sync_error_notifier_factory.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "ui/message_center/message_center.h"
+#include "ui/message_center/public/cpp/notification.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
@@ -1423,7 +1424,6 @@ IN_PROC_BROWSER_TEST_P(SingleClientNigoriWithWebApiAndDialogUIParamTest,
 
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetBrowser(0));
-  NotificationDisplayServiceTester display_service(GetProfile(0));
 
   // SyncErrorNotifier needs explicit instantiation in tests, because the test
   // profile at hands doesn't exercise ChromeBrowserMainExtraPartsAsh.
@@ -1438,10 +1438,11 @@ IN_PROC_BROWSER_TEST_P(SingleClientNigoriWithWebApiAndDialogUIParamTest,
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::WIFI_CONFIGURATIONS));
 
   // Verify that a notification was displayed.
-  const std::string notification_id =
+  const std::string& notification_id =
       sync_error_notifier->GetNotificationIdForTesting();
-  std::optional<message_center::Notification> notification =
-      display_service.GetNotification(notification_id);
+  const message_center::Notification* notification =
+      message_center::MessageCenter::Get()->FindNotificationById(
+          notification_id);
   ASSERT_TRUE(notification);
   int expected_title_id =
       GetSetupSyncMode() == SyncTest::SetupSyncMode::kSyncTransportOnly
@@ -1457,11 +1458,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientNigoriWithWebApiAndDialogUIParamTest,
   EXPECT_THAT(notification->message(),
               Eq(l10n_util::GetStringUTF16(expected_message_id)));
 
-  // Mimic the user clickling on the system notification, which opens up a
+  // Mimic the user clicking on the system notification, which opens up a
   // tab where the user can interact with the retrieval flow.
-  display_service.SimulateClick(NotificationHandler::Type::TRANSIENT,
-                                notification_id, /*action_index=*/std::nullopt,
-                                /*reply=*/std::nullopt);
+  message_center::MessageCenter::Get()->ClickOnNotification(notification_id);
 
   // Wait until successful completion.
   EXPECT_TRUE(WaitForTrustedVaultReauthCompletion());
@@ -1491,8 +1490,6 @@ IN_PROC_BROWSER_TEST_P(
       /*last_key_version=*/GetSecurityDomainsServer()->GetCurrentEpoch(),
       /*trigger=*/std::nullopt);
 
-  NotificationDisplayServiceTester display_service(GetProfile(0));
-
   // SyncErrorNotifier needs explicit instantiation in tests, because the test
   // profile at hands doesn't exercise ChromeBrowserMainExtraPartsAsh.
   const ash::SyncErrorNotifier* const sync_error_notifier =
@@ -1506,10 +1503,11 @@ IN_PROC_BROWSER_TEST_P(
                   .Wait());
 
   // Verify that a notification was displayed.
-  const std::string notification_id =
+  const std::string& notification_id =
       sync_error_notifier->GetNotificationIdForTesting();
-  std::optional<message_center::Notification> notification =
-      display_service.GetNotification(notification_id);
+  const message_center::Notification* notification =
+      message_center::MessageCenter::Get()->FindNotificationById(
+          notification_id);
   ASSERT_TRUE(notification);
   int expected_title_id =
       GetSetupSyncMode() == SyncTest::SetupSyncMode::kSyncTransportOnly
@@ -1525,11 +1523,9 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_THAT(notification->message(),
               Eq(l10n_util::GetStringUTF16(expected_message_id)));
 
-  // Mimic the user clickling on the system notification, which opens up a
+  // Mimic the user clicking on the system notification, which opens up a
   // tab where the user can interact with the degraded recoverability flow.
-  display_service.SimulateClick(NotificationHandler::Type::TRANSIENT,
-                                notification_id, /*action_index=*/std::nullopt,
-                                /*reply=*/std::nullopt);
+  message_center::MessageCenter::Get()->ClickOnNotification(notification_id);
 
   // Wait until successful completion.
   EXPECT_TRUE(WaitForTrustedVaultReauthCompletion());

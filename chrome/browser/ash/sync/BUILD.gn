@@ -33,14 +33,12 @@ static_library("sync") {
     "//ash/public/cpp",
     "//ash/webui/settings/public/constants:mojom",
     "//chrome/app:generated_resources",
-    "//chrome/app/theme:theme_resources",
-    "//chrome/browser/notifications",
     "//chrome/browser/sync",
     "//chrome/browser/sync:factories",
     "//chrome/browser/ui:chrome_pages",
-    "//chrome/browser/ui/ash/multi_user",
     "//chrome/browser/ui/webui/signin:login_ui_service",
     "//chrome/common",
+    "//chromeos/ash/components/browser_context_helper",
     "//components/account_id",
     "//components/account_manager_core",
     "//components/signin/public/identity_manager",
@@ -52,6 +50,7 @@ static_library("sync") {
     "//components/user_manager",
     "//components/vector_icons",
     "//ui/base",
+    "//ui/message_center",
     "//ui/message_center/public/cpp",
   ]
 }
@@ -89,6 +88,7 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/gfx",
     "//ui/gfx:test_support",
+    "//ui/message_center",
     "//ui/message_center/public/cpp",
     "//url",
   ]

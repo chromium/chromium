@@ -5,6 +5,7 @@ include_rules = [
 specific_include_rules = {
   "single_client_nigori_sync_test\\.cc": [
     "+ash/multi_user/multi_user_window_manager.h",
+    "+ui/message_center/message_center.h",
   ],
   "two_client_web_apps_integration_test_base\\.h": [
     "+chrome/browser/ui/views",

@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/sync/sync_error_notifier_factory.h"
 
 #include "chrome/browser/ash/sync/sync_error_notifier.h"
-#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 
@@ -24,7 +23,6 @@ SyncErrorNotifierFactory::SyncErrorNotifierFactory()
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(SyncServiceFactory::GetInstance());
-  DependsOn(NotificationDisplayServiceFactory::GetInstance());
 }
 
 SyncErrorNotifierFactory::~SyncErrorNotifierFactory() = default;

@@ -8,16 +8,11 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
-#include "base/feature_list.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
-#include "base/strings/utf_string_conversions.h"
-#include "build/build_config.h"
-#include "chrome/browser/notifications/notification_display_service.h"
-#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -25,18 +20,17 @@
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/grit/theme_resources.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_id/account_id.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
-#include "components/sync/service/sync_service_utils.h"
 #include "components/sync/service/sync_user_settings.h"
-#include "components/trusted_vault/features.h"
-#include "components/user_manager/user_manager.h"
+#include "components/trusted_vault/trusted_vault_client.h"
+#include "components/user_manager/user.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -117,9 +111,9 @@ BubbleViewParameters GetBubbleViewParameters(
     params.message_id = IsNewSignInNonSyncingUser(sync_service)
                             ? IDS_SYNC_PASSPHRASE_ERROR_BUBBLE_VIEW_MESSAGE_2
                             : IDS_SYNC_PASSPHRASE_ERROR_BUBBLE_VIEW_MESSAGE;
-    // |profile| is guaranteed to outlive the callback because the ownership of
-    // the notification gets transferred to NotificationDisplayService, which is
-    // a keyed service that cannot outlive the profile.
+    // |profile| outlives the click callback since notifications are tied to the
+    // active user session and MessageCenter is torn down before profiles during
+    // shutdown.
     params.click_action =
         base::BindRepeating(&OpenSyncSettings, base::Unretained(profile));
     return params;
@@ -182,9 +176,11 @@ std::string SyncErrorNotifier::GetDestinationSubpage(
 SyncErrorNotifier::SyncErrorNotifier(syncer::SyncService* sync_service,
                                      Profile* profile)
     : sync_service_(sync_service), profile_(profile) {
-  // Create a unique notification ID for this profile.
-  notification_id_ =
-      kProfileSyncNotificationId + profile_->GetProfileUserName();
+  // Create a unique user-scoped notification ID for this profile.
+  const user_manager::User& user = CHECK_DEREF(
+      BrowserContextHelper::Get()->GetUserByBrowserContext(profile_));
+  notification_id_ = CreateUserScopedNotificationId(kProfileSyncNotificationId,
+                                                    user.username_hash());
 
   sync_service_->AddObserver(this);
   OnStateChanged(sync_service_);
@@ -213,12 +209,10 @@ void SyncErrorNotifier::OnStateChanged(syncer::SyncService* service) {
     return;
   }
 
-  auto* display_service =
-      NotificationDisplayServiceFactory::GetForProfile(profile_);
   if (!should_display_notification) {
     notification_displayed_ = false;
-    display_service->Close(NotificationHandler::Type::TRANSIENT,
-                           notification_id_);
+    message_center::MessageCenter::Get()->RemoveNotification(notification_id_,
+                                                             /*by_user=*/false);
     return;
   }
 
@@ -232,27 +226,28 @@ void SyncErrorNotifier::OnStateChanged(syncer::SyncService* service) {
 
   // Set |profile_id| for multi-user notification blocker.
   notifier_id.profile_id =
-      multi_user_util::GetAccountIdFromProfile(profile_).GetUserEmail();
+      CHECK_DEREF(
+          BrowserContextHelper::Get()->GetUserByBrowserContext(profile_))
+          .GetAccountId()
+          .GetUserEmail();
 
   BubbleViewParameters parameters =
       GetBubbleViewParameters(profile_, sync_service_);
 
   // Add a new notification.
-  message_center::Notification notification = ash::CreateSystemNotification(
-      message_center::NOTIFICATION_TYPE_SIMPLE, notification_id_,
-      l10n_util::GetStringUTF16(parameters.title_id),
-      l10n_util::GetStringUTF16(parameters.message_id), std::u16string(),
-      GURL(notification_id_), notifier_id,
-      message_center::RichNotificationData(),
-      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-          parameters.click_action),
-      ::features::IsRoundedIconsEnabled()
-          ? vector_icons::kInfoFilledIcon
-          : vector_icons::kNotificationWarningOldIcon,
-      message_center::SystemNotificationWarningLevel::WARNING);
-
-  display_service->Display(NotificationHandler::Type::TRANSIENT, notification,
-                           /*metadata=*/nullptr);
+  message_center::MessageCenter::Get()->AddNotification(
+      ash::CreateSystemNotificationPtr(
+          message_center::NOTIFICATION_TYPE_SIMPLE, notification_id_,
+          l10n_util::GetStringUTF16(parameters.title_id),
+          l10n_util::GetStringUTF16(parameters.message_id), std::u16string(),
+          /*origin_url=*/GURL(), notifier_id,
+          message_center::RichNotificationData(),
+          base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+              parameters.click_action),
+          ::features::IsRoundedIconsEnabled()
+              ? vector_icons::kInfoFilledIcon
+              : vector_icons::kNotificationWarningOldIcon,
+          message_center::SystemNotificationWarningLevel::WARNING));
   notification_displayed_ = true;
 }
 

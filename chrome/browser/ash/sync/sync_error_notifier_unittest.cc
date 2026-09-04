@@ -6,26 +6,19 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
-#include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace ash {
 
 namespace {
-
-// Notification ID corresponding to kProfileSyncNotificationId + the test
-// profile's name.
-constexpr char kNotificationId[] =
-    "chrome://settings/sync/testing_profile@test";
 
 class FakeLoginUI : public LoginUIService::LoginUI {
  public:
@@ -52,9 +45,6 @@ class SyncErrorNotifierTest : public BrowserWithTestWindowTest {
     login_ui_service->SetLoginUI(&login_ui_);
 
     error_notifier_ = std::make_unique<SyncErrorNotifier>(&service_, profile());
-
-    display_service_ =
-        std::make_unique<NotificationDisplayServiceTester>(profile());
   }
 
   void TearDown() override {
@@ -66,9 +56,17 @@ class SyncErrorNotifierTest : public BrowserWithTestWindowTest {
   }
 
  protected:
+  const std::string& GetNotificationId() const {
+    return error_notifier_->GetNotificationIdForTesting();
+  }
+
+  const message_center::Notification* GetNotification() const {
+    return message_center::MessageCenter::Get()->FindNotificationById(
+        GetNotificationId());
+  }
+
   void ExpectNotificationShown(bool expected_notification) {
-    std::optional<message_center::Notification> notification =
-        display_service_->GetNotification(kNotificationId);
+    const message_center::Notification* notification = GetNotification();
     if (expected_notification) {
       ASSERT_TRUE(notification);
       EXPECT_FALSE(notification->title().empty());
@@ -81,7 +79,6 @@ class SyncErrorNotifierTest : public BrowserWithTestWindowTest {
   std::unique_ptr<SyncErrorNotifier> error_notifier_;
   syncer::TestSyncService service_;
   FakeLoginUI login_ui_;
-  std::unique_ptr<NotificationDisplayServiceTester> display_service_;
 };
 
 TEST_F(SyncErrorNotifierTest, NoNotificationWhenNoPassphrase) {
@@ -132,8 +129,8 @@ TEST_F(SyncErrorNotifierTest, NotificationShownOnce) {
   ExpectNotificationShown(true);
 
   // Close the notification and verify it isn't shown again.
-  display_service_->RemoveNotification(NotificationHandler::Type::TRANSIENT,
-                                       kNotificationId, true /* by_user */);
+  message_center::MessageCenter::Get()->RemoveNotification(GetNotificationId(),
+                                                           /*by_user=*/true);
   error_notifier_->OnStateChanged(&service_);
   ExpectNotificationShown(false);
 }

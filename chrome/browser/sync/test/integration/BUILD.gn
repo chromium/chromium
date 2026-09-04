@@ -366,6 +366,7 @@ source_set("sync_integration_tests_impl") {
         "//chromeos/printing",
         "//chromeos/services/network_config/public/cpp",
         "//components/desks_storage",
+        "//ui/message_center",
       ]
     }
 
