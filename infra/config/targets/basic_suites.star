@@ -882,9 +882,63 @@ targets.legacy_basic_suite(
 targets.legacy_basic_suite(
     # TODO(crbug.com/554055689): Remove this thin wrapper and directly use the
     # underlying test once V8 is migrated to use Starlark test specs.
+    name = "legacy_context_lost_validating_tests",
+    tests = {
+        "context_lost_validating_tests": targets.legacy_test_config(),
+    },
+)
+
+targets.legacy_basic_suite(
+    # TODO(crbug.com/554055689): Remove this thin wrapper and directly use the
+    # underlying test once V8 is migrated to use Starlark test specs.
+    name = "legacy_expected_color_pixel_validating_test",
+    tests = {
+        "expected_color_pixel_validating_test": targets.legacy_test_config(),
+    },
+)
+
+targets.legacy_basic_suite(
+    # TODO(crbug.com/554055689): Remove this thin wrapper and directly use the
+    # underlying test once V8 is migrated to use Starlark test specs.
+    name = "legacy_gpu_process_launch_tests",
+    tests = {
+        "gpu_process_launch_tests": targets.legacy_test_config(),
+    },
+)
+
+targets.legacy_basic_suite(
+    # TODO(crbug.com/554055689): Remove this thin wrapper and directly use the
+    # underlying test once V8 is migrated to use Starlark test specs.
+    name = "legacy_hardware_accelerated_feature_tests",
+    tests = {
+        "hardware_accelerated_feature_tests": targets.legacy_test_config(),
+    },
+)
+
+targets.legacy_basic_suite(
+    # TODO(crbug.com/554055689): Remove this thin wrapper and directly use the
+    # underlying test once V8 is migrated to use Starlark test specs.
     name = "legacy_info_collection_tests",
     tests = {
         "info_collection_tests": targets.legacy_test_config(),
+    },
+)
+
+targets.legacy_basic_suite(
+    # TODO(crbug.com/554055689): Remove this thin wrapper and directly use the
+    # underlying test once V8 is migrated to use Starlark test specs.
+    name = "legacy_pixel_skia_gold_validating_test",
+    tests = {
+        "pixel_skia_gold_validating_test": targets.legacy_test_config(),
+    },
+)
+
+targets.legacy_basic_suite(
+    # TODO(crbug.com/554055689): Remove this thin wrapper and directly use the
+    # underlying test once V8 is migrated to use Starlark test specs.
+    name = "legacy_screenshot_sync_validating_tests",
+    tests = {
+        "screenshot_sync_validating_tests": targets.legacy_test_config(),
     },
 )
 
@@ -971,18 +1025,6 @@ targets.legacy_basic_suite(
                 "--extra-browser-args=--force-online-connection-state-for-indicator",
             ],
         ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "gpu_validating_telemetry_tests",
-    tests = {
-        "context_lost_validating_tests": targets.legacy_test_config(),
-        "expected_color_pixel_validating_test": targets.legacy_test_config(),
-        "gpu_process_launch_tests": targets.legacy_test_config(),
-        "hardware_accelerated_feature_tests": targets.legacy_test_config(),
-        "pixel_skia_gold_validating_test": targets.legacy_test_config(),
-        "screenshot_sync_validating_tests": targets.legacy_test_config(),
     },
 )
 

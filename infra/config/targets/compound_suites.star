@@ -108,14 +108,19 @@ targets.legacy_compound_suite(
 targets.legacy_compound_suite(
     name = "gpu_telemetry_tests_v8",
     basic_suites = [
-        "gpu_validating_telemetry_tests",
         "gpu_webgl_conformance_validating_telemetry_tests",
 
         # Migrated individual tests below.
         # TODO(crbug.com/541312843): Remove this comment once all tests are
         # directly included.
+        "legacy_context_lost_validating_tests",
+        "legacy_expected_color_pixel_validating_test",
+        "legacy_gpu_process_launch_tests",
+        "legacy_hardware_accelerated_feature_tests",
         "legacy_info_collection_tests",
         "legacy_trace_test",
+        "legacy_pixel_skia_gold_validating_test",
+        "legacy_screenshot_sync_validating_tests",
         "legacy_webgl_conformance_gles_passthrough_tests",
     ],
 )

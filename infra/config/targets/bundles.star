@@ -2732,7 +2732,12 @@ targets.bundle(
         "fuchsia_sizes_tests",
         targets.bundle(
             targets = [
-                "gpu_validating_telemetry_tests",
+                "context_lost_validating_tests",
+                "expected_color_pixel_validating_test",
+                "gpu_process_launch_tests",
+                "hardware_accelerated_feature_tests",
+                "pixel_skia_gold_validating_test",
+                "screenshot_sync_validating_tests",
                 "fuchsia_gtests",
                 targets.bundle(
                     targets = "gpu_angle_fuchsia_unittests_isolated_scripts",
@@ -3007,7 +3012,12 @@ targets.bundle(
 targets.bundle(
     name = "fuchsia_standard_tests",
     targets = [
-        "gpu_validating_telemetry_tests",
+        "context_lost_validating_tests",
+        "expected_color_pixel_validating_test",
+        "gpu_process_launch_tests",
+        "hardware_accelerated_feature_tests",
+        "pixel_skia_gold_validating_test",
+        "screenshot_sync_validating_tests",
         "fuchsia_gtests",
         targets.bundle(
             targets = "fuchsia_isolated_scripts",
@@ -3296,13 +3306,18 @@ targets.bundle(
 targets.bundle(
     name = "gpu_android_arm_release_telemetry_tests",
     targets = [
-        "gpu_validating_telemetry_tests",
         "gpu_webgl_conformance_validating_telemetry_tests",
 
         # Migrated individual tests below.
         # TODO(crbug.com/541312843): Remove this comment once all tests are
         # directly included.
+        "context_lost_validating_tests",
+        "expected_color_pixel_validating_test",
+        "gpu_process_launch_tests",
+        "hardware_accelerated_feature_tests",
         "info_collection_tests",
+        "pixel_skia_gold_validating_test",
+        "screenshot_sync_validating_tests",
         "trace_test",
     ],
 )
