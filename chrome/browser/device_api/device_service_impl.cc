@@ -127,8 +127,8 @@ bool IsAffiliatedUser(Profile* profile) {
 
 bool IsTrustedContext(content::RenderFrameHost& host,
                       const url::Origin& origin) {
-  // Do not create the service for the incognito mode.
-  if (GetProfile(host)->IsIncognitoProfile()) {
+  // Do not create the service for incognito or enterprise isolated mode.
+  if (GetProfile(host)->IsPrimaryOTRProfileWithRegularParent()) {
     return false;
   }
 

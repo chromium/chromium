@@ -362,6 +362,15 @@ TEST_F(DeviceAPIServiceWebAppTest, DoesNotConnectForIncognitoProfile) {
   ASSERT_FALSE(remote()->is_connected());
 }
 
+TEST_F(DeviceAPIServiceWebAppTest, DoesNotConnectForEnterpriseIsolatedProfile) {
+  profile_metrics::SetBrowserProfileType(
+      profile(), profile_metrics::BrowserProfileType::kEnterpriseIsolated);
+  TryCreatingService(GURL(kTrustedUrl),
+                     std::make_unique<DeviceAttributeApiImpl>());
+  remote()->FlushForTesting();
+  ASSERT_FALSE(remote()->is_connected());
+}
+
 TEST_F(DeviceAPIServiceWebAppTest, DoesNotConnectForUntrustedApps) {
   TryCreatingService(GURL(kUntrustedUrl),
                      std::make_unique<DeviceAttributeApiImpl>());
