@@ -14,6 +14,7 @@ import static org.mockito.Mockito.when;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -36,8 +37,10 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSignalsDisclaimerController.CoordinatorFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.SigninFeatures;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.test.util.FakeIdentityManager;
 import org.chromium.components.signin.test.util.TestAccounts;
+import org.chromium.google_apis.gaia.GaiaId;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /** Unit tests for {@link EnterpriseSignalsDisclaimerController}. */
@@ -55,19 +58,28 @@ public class EnterpriseSignalsDisclaimerControllerUnitTest {
     @Mock private CoordinatorFactory mCoordinatorFactory;
     @Mock private EnterpriseSignalsDisclaimerCoordinator.Delegate mDelegate;
     @Mock private ManagedBrowserUtils.Natives mManagedBrowserUtilsJniMock;
+    @Mock private EnterpriseSignalsDisclaimerBridge.Natives mBridgeNativesMock;
 
     private final FakeIdentityManager mIdentityManager = new FakeIdentityManager();
 
     @Before
     public void setUp() {
         ManagedBrowserUtilsJni.setInstanceForTesting(mManagedBrowserUtilsJniMock);
+        EnterpriseSignalsDisclaimerBridgeJni.setInstanceForTesting(mBridgeNativesMock);
         IdentityServicesProvider.setSigninManagerForTesting(mSigninManager);
 
         when(mSigninManager.getIdentityManager()).thenReturn(mIdentityManager);
         when(mCoordinatorFactory.create(any(), any(), any(), any(), any(), any()))
                 .thenReturn(mCoordinator);
+        when(mBridgeNativesMock.hasAccountAcknowledgedSignalsDisclaimer(any())).thenReturn(false);
 
         mIdentityManager.setPrimaryAccount(TestAccounts.ACCOUNT1);
+    }
+
+    @After
+    public void tearDown() {
+        ManagedBrowserUtilsJni.setInstanceForTesting(null);
+        EnterpriseSignalsDisclaimerBridgeJni.setInstanceForTesting(null);
     }
 
     private EnterpriseSignalsDisclaimerController createController() {
@@ -167,6 +179,8 @@ public class EnterpriseSignalsDisclaimerControllerUnitTest {
 
         Assert.assertNotNull(controller);
         Assert.assertTrue(controller.maybeShow());
+        verify(mBridgeNativesMock)
+                .hasAccountAcknowledgedSignalsDisclaimer(eq(TestAccounts.ACCOUNT1.getGaiaId()));
         verify(mCoordinatorFactory)
                 .create(
                         eq(mActivity),
@@ -176,6 +190,22 @@ public class EnterpriseSignalsDisclaimerControllerUnitTest {
                         eq(mDelegate),
                         any());
         verify(mCoordinator).show();
+    }
+
+    @Test
+    public void maybeShow_accountAlreadyAcknowledged_returnsFalse() {
+        when(mProfile.isOffTheRecord()).thenReturn(false);
+        when(mManagedBrowserUtilsJniMock.isProfileManaged(mProfile)).thenReturn(true);
+        when(mBridgeNativesMock.hasAccountAcknowledgedSignalsDisclaimer(
+                        eq(TestAccounts.ACCOUNT1.getGaiaId())))
+                .thenReturn(true);
+
+        EnterpriseSignalsDisclaimerController controller = createController();
+        Assert.assertNotNull(controller);
+
+        Assert.assertFalse(controller.maybeShow());
+        verify(mCoordinatorFactory, never()).create(any(), any(), any(), any(), any(), any());
+        verify(mCoordinator, never()).show();
     }
 
     @Test
@@ -191,6 +221,28 @@ public class EnterpriseSignalsDisclaimerControllerUnitTest {
         Assert.assertFalse(controller.maybeShow());
 
         verify(mCoordinator).isActive();
+    }
+
+    @Test
+    public void maybeShow_emptyGaiaId_returnsFalse() {
+        mIdentityManager.setPrimaryAccount(null);
+
+        when(mProfile.isOffTheRecord()).thenReturn(false);
+        when(mManagedBrowserUtilsJniMock.isProfileManaged(mProfile)).thenReturn(true);
+        mIdentityManager.setPrimaryAccount(
+                new AccountInfo.Builder(TestAccounts.MANAGED_ACCOUNT.getEmail(), new GaiaId(""))
+                        .fullName(TestAccounts.MANAGED_ACCOUNT.getFullName())
+                        .givenName(TestAccounts.MANAGED_ACCOUNT.getGivenName())
+                        .accountImage(TestAccounts.MANAGED_ACCOUNT.getAccountImage())
+                        .accountCapabilities(TestAccounts.MANAGED_ACCOUNT.getAccountCapabilities())
+                        .build());
+
+        EnterpriseSignalsDisclaimerController controller = createController();
+        Assert.assertNotNull(controller);
+
+        Assert.assertFalse(controller.maybeShow());
+        verify(mCoordinatorFactory, never()).create(any(), any(), any(), any(), any(), any());
+        verify(mCoordinator, never()).show();
     }
 
     @Test
@@ -296,6 +348,23 @@ public class EnterpriseSignalsDisclaimerControllerUnitTest {
     public void onSignedIn_accountNotManaged_doesNotShowDisclaimer() {
         when(mProfile.isOffTheRecord()).thenReturn(false);
         when(mManagedBrowserUtilsJniMock.isProfileManaged(mProfile)).thenReturn(false);
+
+        EnterpriseSignalsDisclaimerController controller = createController();
+        Assert.assertNotNull(controller);
+
+        controller.onSignedIn();
+
+        verify(mCoordinatorFactory, never()).create(any(), any(), any(), any(), any(), any());
+        verify(mCoordinator, never()).show();
+    }
+
+    @Test
+    public void onSignedIn_accountAlreadyAcknowledged_doesNotShowDisclaimer() {
+        when(mProfile.isOffTheRecord()).thenReturn(false);
+        when(mManagedBrowserUtilsJniMock.isProfileManaged(mProfile)).thenReturn(true);
+        when(mBridgeNativesMock.hasAccountAcknowledgedSignalsDisclaimer(
+                        eq(TestAccounts.ACCOUNT1.getGaiaId())))
+                .thenReturn(true);
 
         EnterpriseSignalsDisclaimerController controller = createController();
         Assert.assertNotNull(controller);

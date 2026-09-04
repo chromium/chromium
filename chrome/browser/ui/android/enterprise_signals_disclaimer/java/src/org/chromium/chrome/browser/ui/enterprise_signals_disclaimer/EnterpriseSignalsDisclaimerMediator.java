@@ -133,7 +133,11 @@ class EnterpriseSignalsDisclaimerMediator implements ProfileDataCache.Observer {
     private void onAcceptButtonClicked() {
         if (mIsDecisionHandled) return;
         mIsDecisionHandled = true;
-        // TODO(b/527872237): Mark the disclaimer as acknowledged.
+
+        assert !mPrimaryAccount.getGaiaId().toString().isEmpty();
+        EnterpriseSignalsDisclaimerBridge.setAccountAcknowledgedSignalsDisclaimer(
+                mPrimaryAccount.getGaiaId());
+
         if (mHideDialogCallback != null) {
             mHideDialogCallback.run();
             mHideDialogCallback = null;

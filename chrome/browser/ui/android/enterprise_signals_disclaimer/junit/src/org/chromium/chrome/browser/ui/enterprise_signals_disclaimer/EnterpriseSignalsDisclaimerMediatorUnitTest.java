@@ -18,6 +18,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.Spanned;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -49,12 +50,15 @@ public class EnterpriseSignalsDisclaimerMediatorUnitTest {
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
+    @Mock private EnterpriseSignalsDisclaimerBridge.Natives mBridgeNativesMock;
     @Mock private EnterpriseSignalsDisclaimerCoordinator.Delegate mDelegate;
     @Mock private SigninManager mSigninManager;
     @Mock private Runnable mHideDialogCallback;
 
     @Before
     public void setUp() {
+        EnterpriseSignalsDisclaimerBridgeJni.setInstanceForTesting(mBridgeNativesMock);
+
         doAnswer(
                         invocation -> {
                             Runnable runnable = invocation.getArgument(0);
@@ -63,6 +67,11 @@ public class EnterpriseSignalsDisclaimerMediatorUnitTest {
                         })
                 .when(mSigninManager)
                 .runAfterOperationInProgress(any());
+    }
+
+    @After
+    public void tearDown() {
+        EnterpriseSignalsDisclaimerBridgeJni.setInstanceForTesting(null);
     }
 
     private EnterpriseSignalsDisclaimerMediator createMediatorForAccount(AccountInfo accountInfo) {
@@ -131,6 +140,9 @@ public class EnterpriseSignalsDisclaimerMediatorUnitTest {
         model.get(EnterpriseSignalsDisclaimerProperties.ON_ACCEPT_CLICKED).onClick(null);
 
         verify(mHideDialogCallback).run();
+        verify(mBridgeNativesMock)
+                .setAccountAcknowledgedSignalsDisclaimer(
+                        eq(TestAccounts.MANAGED_ACCOUNT.getGaiaId()));
     }
 
     @Test
@@ -145,6 +157,7 @@ public class EnterpriseSignalsDisclaimerMediatorUnitTest {
         verify(mHideDialogCallback).run();
         verify(mSigninManager)
                 .signOut(eq(SignoutReason.USER_DECLINED_ENTERPRISE_SIGNALS_DISCLAIMER));
+        verify(mBridgeNativesMock, never()).setAccountAcknowledgedSignalsDisclaimer(any());
     }
 
     @Test
@@ -156,6 +169,7 @@ public class EnterpriseSignalsDisclaimerMediatorUnitTest {
         mediator.signOutUser();
 
         verify(mSigninManager, never()).signOut(anyInt());
+        verify(mBridgeNativesMock, never()).setAccountAcknowledgedSignalsDisclaimer(any());
     }
 
     @Test
@@ -169,6 +183,9 @@ public class EnterpriseSignalsDisclaimerMediatorUnitTest {
         onAccept.onClick(null);
 
         verify(mHideDialogCallback, times(1)).run();
+        verify(mBridgeNativesMock, times(1))
+                .setAccountAcknowledgedSignalsDisclaimer(
+                        eq(TestAccounts.MANAGED_ACCOUNT.getGaiaId()));
     }
 
     @Test
@@ -185,6 +202,7 @@ public class EnterpriseSignalsDisclaimerMediatorUnitTest {
         verify(mHideDialogCallback, times(1)).run();
         verify(mSigninManager, times(1))
                 .signOut(eq(SignoutReason.USER_DECLINED_ENTERPRISE_SIGNALS_DISCLAIMER));
+        verify(mBridgeNativesMock, never()).setAccountAcknowledgedSignalsDisclaimer(any());
     }
 
     @Test
@@ -199,6 +217,9 @@ public class EnterpriseSignalsDisclaimerMediatorUnitTest {
 
         verify(mHideDialogCallback, times(1)).run();
         verify(mSigninManager, never()).signOut(anyInt());
+        verify(mBridgeNativesMock, times(1))
+                .setAccountAcknowledgedSignalsDisclaimer(
+                        eq(TestAccounts.MANAGED_ACCOUNT.getGaiaId()));
     }
 
     @Test
@@ -214,6 +235,7 @@ public class EnterpriseSignalsDisclaimerMediatorUnitTest {
         verify(mHideDialogCallback, times(1)).run();
         verify(mSigninManager, times(1))
                 .signOut(eq(SignoutReason.USER_DECLINED_ENTERPRISE_SIGNALS_DISCLAIMER));
+        verify(mBridgeNativesMock, never()).setAccountAcknowledgedSignalsDisclaimer(any());
     }
 
     @Test
@@ -227,6 +249,9 @@ public class EnterpriseSignalsDisclaimerMediatorUnitTest {
 
         verify(mHideDialogCallback, times(1)).run();
         verify(mSigninManager, times(0)).signOut(anyInt());
+        verify(mBridgeNativesMock, times(1))
+                .setAccountAcknowledgedSignalsDisclaimer(
+                        eq(TestAccounts.MANAGED_ACCOUNT.getGaiaId()));
     }
 
     @Test
@@ -241,6 +266,7 @@ public class EnterpriseSignalsDisclaimerMediatorUnitTest {
 
         verify(mHideDialogCallback, times(1)).run();
         verify(mSigninManager, times(1)).signOut(anyInt());
+        verify(mBridgeNativesMock, never()).setAccountAcknowledgedSignalsDisclaimer(any());
     }
 
     @Test
@@ -255,6 +281,7 @@ public class EnterpriseSignalsDisclaimerMediatorUnitTest {
 
         verify(mHideDialogCallback, times(0)).run();
         verify(mSigninManager, times(1)).signOut(anyInt());
+        verify(mBridgeNativesMock, never()).setAccountAcknowledgedSignalsDisclaimer(any());
     }
 
     @Test
@@ -269,5 +296,6 @@ public class EnterpriseSignalsDisclaimerMediatorUnitTest {
 
         verify(mHideDialogCallback, times(0)).run();
         verify(mSigninManager, times(1)).signOut(anyInt());
+        verify(mBridgeNativesMock, never()).setAccountAcknowledgedSignalsDisclaimer(any());
     }
 }

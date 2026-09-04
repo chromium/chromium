@@ -63,6 +63,10 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvi
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.browser_ui.bottomsheet.TestBottomSheetContent;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
+import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
+import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -82,6 +86,19 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
     @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Mock private ManagedBrowserUtils.Natives mManagedBrowserUtilsMock;
+
+    private static final AccountInfo MANAGED_ACCOUNT_2 =
+            new AccountInfo.Builder(
+                            "test2@example.com",
+                            FakeAccountManagerFacade.toGaiaId("test2@example.com"))
+                    .fullName("Managed2 Full")
+                    .givenName("Managed2 Given")
+                    .hostedDomain("example.com")
+                    .accountCapabilities(
+                            new AccountCapabilitiesBuilder()
+                                    .setIsSubjectToEnterpriseFeatures(true)
+                                    .build())
+                    .build();
 
     @Before
     public void setUp() {
@@ -108,6 +125,7 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
         mManagedBrowserUtilsMock = null;
         ManagedBrowserUtilsJni.setInstanceForTesting(null);
         mSigninTestRule.forceSignOut();
+        waitForSignout();
         mSigninTestRule.removeAccount(TestAccounts.MANAGED_ACCOUNT.getId());
     }
 
@@ -286,6 +304,13 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
         }
     }
 
+    private boolean hasAccountAcknowledgedSignalsDisclaimer(CoreAccountInfo account) {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        EnterpriseSignalsDisclaimerBridge.hasAccountAcknowledgedSignalsDisclaimer(
+                                account.getGaiaId()));
+    }
+
     @Test
     @LargeTest
     public void disclaimerShowsOnStartup() {
@@ -364,6 +389,7 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
         waitForDisclaimerNotShowing();
 
         Assert.assertNotNull(mSigninTestRule.getPrimaryAccount());
+        Assert.assertFalse(hasAccountAcknowledgedSignalsDisclaimer(TestAccounts.MANAGED_ACCOUNT));
     }
 
     @Test
@@ -373,10 +399,13 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
         final EnterpriseSignalsDisclaimerController controller =
                 createControllerAndShowDisclaimer();
 
+        Assert.assertFalse(hasAccountAcknowledgedSignalsDisclaimer(TestAccounts.MANAGED_ACCOUNT));
+
         onView(withId(R.id.disclaimer_accept_button)).perform(scrollTo(), click());
 
         waitForDisclaimerNotShowing();
         Assert.assertNotNull(mSigninTestRule.getPrimaryAccount());
+        Assert.assertTrue(hasAccountAcknowledgedSignalsDisclaimer(TestAccounts.MANAGED_ACCOUNT));
         ThreadUtils.runOnUiThreadBlocking(controller::destroy);
     }
 
@@ -391,6 +420,7 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
 
         waitForDisclaimerNotShowing();
         waitForSignout();
+        Assert.assertFalse(hasAccountAcknowledgedSignalsDisclaimer(TestAccounts.MANAGED_ACCOUNT));
         ThreadUtils.runOnUiThreadBlocking(controller::destroy);
     }
 
@@ -410,6 +440,7 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
 
         waitForDisclaimerNotShowing();
         waitForSignout();
+        Assert.assertFalse(hasAccountAcknowledgedSignalsDisclaimer(TestAccounts.MANAGED_ACCOUNT));
         ThreadUtils.runOnUiThreadBlocking(controller::destroy);
     }
 
@@ -428,6 +459,7 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
 
         waitForDisclaimerNotShowing();
         waitForSignout();
+        Assert.assertFalse(hasAccountAcknowledgedSignalsDisclaimer(TestAccounts.MANAGED_ACCOUNT));
         ThreadUtils.runOnUiThreadBlocking(controller::destroy);
     }
 
@@ -450,6 +482,7 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
 
         waitForDisclaimerNotShowing();
         waitForSignout();
+        Assert.assertFalse(hasAccountAcknowledgedSignalsDisclaimer(TestAccounts.MANAGED_ACCOUNT));
         ThreadUtils.runOnUiThreadBlocking(controller::destroy);
     }
 
@@ -464,6 +497,7 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
 
         waitForDisclaimerNotShowing();
         waitForSignout();
+        Assert.assertFalse(hasAccountAcknowledgedSignalsDisclaimer(TestAccounts.MANAGED_ACCOUNT));
         ThreadUtils.runOnUiThreadBlocking(controller::destroy);
     }
 
@@ -547,5 +581,44 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
 
         waitForDisclaimerVisible();
         ThreadUtils.runOnUiThreadBlocking(controller::destroy);
+    }
+
+    @Test
+    @LargeTest
+    public void acknowledgmentPersistsAcrossSignouts() {
+        waitForDisclaimerVisible();
+
+        onView(withId(R.id.disclaimer_accept_button)).perform(scrollTo(), click());
+        waitForDisclaimerNotShowing();
+
+        mSigninTestRule.signOut();
+        waitForSignout();
+
+        mSigninTestRule.addAccountThenSignin(TestAccounts.MANAGED_ACCOUNT);
+        Assert.assertTrue(hasAccountAcknowledgedSignalsDisclaimer(TestAccounts.MANAGED_ACCOUNT));
+        waitForDisclaimerNotShowing();
+    }
+
+    @Test
+    @LargeTest
+    public void acknowledgmentIsPerAccount() {
+        waitForDisclaimerVisible();
+
+        onView(withId(R.id.disclaimer_accept_button)).perform(scrollTo(), click());
+        waitForDisclaimerNotShowing();
+        Assert.assertTrue(hasAccountAcknowledgedSignalsDisclaimer(TestAccounts.MANAGED_ACCOUNT));
+
+        mSigninTestRule.signOut();
+        waitForSignout();
+
+        mSigninTestRule.addAccountThenSignin(MANAGED_ACCOUNT_2);
+
+        waitForDisclaimerVisible();
+        Assert.assertFalse(hasAccountAcknowledgedSignalsDisclaimer(MANAGED_ACCOUNT_2));
+        Assert.assertTrue(hasAccountAcknowledgedSignalsDisclaimer(TestAccounts.MANAGED_ACCOUNT));
+
+        mSigninTestRule.forceSignOut();
+        waitForSignout();
+        mSigninTestRule.removeAccount(MANAGED_ACCOUNT_2.getId());
     }
 }

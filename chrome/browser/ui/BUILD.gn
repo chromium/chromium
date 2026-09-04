@@ -1275,6 +1275,7 @@ static_library("ui") {
       "//chrome/browser/finds/core",
       "//chrome/browser/keyboard_accessory/android",
       "//chrome/browser/keyboard_accessory/android:impl",
+      "//chrome/browser/ui/android/enterprise_signals_disclaimer",
       "//chrome/browser/ui/android/hats",
       "//chrome/browser/ui/android/hats:impl",
       "//chrome/browser/ui/android/tab_model",

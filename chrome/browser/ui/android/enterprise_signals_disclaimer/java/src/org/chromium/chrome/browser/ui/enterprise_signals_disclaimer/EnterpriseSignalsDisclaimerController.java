@@ -16,7 +16,9 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.google_apis.gaia.GaiaId;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.Objects;
@@ -142,7 +144,8 @@ public class EnterpriseSignalsDisclaimerController implements SigninManager.Sign
         }
 
         final IdentityManager identityManager = mSigninManager.getIdentityManager();
-        if (!identityManager.hasPrimaryAccount()) {
+        final AccountInfo primaryAccountInfo = identityManager.getPrimaryAccountInfo();
+        if (primaryAccountInfo == null) {
             return false;
         }
 
@@ -151,7 +154,14 @@ public class EnterpriseSignalsDisclaimerController implements SigninManager.Sign
             return false;
         }
 
-        // TODO(b/512836948): Check whether the disclaimer has been already accepted or not.
+        final GaiaId gaiaId = primaryAccountInfo.getGaiaId();
+        if (gaiaId.toString().isEmpty()) {
+            // If this happens something is very wrong.
+            return false;
+        }
+        if (EnterpriseSignalsDisclaimerBridge.hasAccountAcknowledgedSignalsDisclaimer(gaiaId)) {
+            return false;
+        }
 
         if (mCoordinator != null) {
             mCoordinator.destroy();
