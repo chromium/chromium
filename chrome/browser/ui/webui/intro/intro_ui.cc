@@ -229,6 +229,8 @@ IntroUI::IntroUI(content::WebUI* web_ui)
   source->AddBoolean("isDeviceManaged", is_device_managed);
   source->AddBoolean("isFirstRunDesktopRevampEnabled",
                      is_first_run_desktop_revamp_enabled);
+  source->AddBoolean("isPreFirstRunDesktopRefreshEnabled",
+                     switches::IsPreFirstRunDesktopRefreshEnabled());
   source->AddBoolean("showDefaultBrowserToggle",
                      ShouldShowDefaultBrowserToggle());
   source->AddBoolean("showMetricsOptIn", ShouldShowMetricsOptIn());
