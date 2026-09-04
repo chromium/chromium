@@ -481,7 +481,7 @@ public class LocationBarTabletUnitTest {
                         MotionEvent.TOOL_TYPE_MOUSE));
         assertNull(mLocationBarTablet.getForeground());
 
-        mLocationBarTablet.onSpecializedFuseboxModeActivated(true);
+        mLocationBarTablet.onSpecializedFuseboxModeActivated(/* isSpecializedRequestType= */ true);
         assertNull(mLocationBarTablet.getForeground());
         GlifStrokeDrawable glifStrokeDrawable =
                 (GlifStrokeDrawable) ((FrameLayout) mLocationBarTablet.getParent()).getForeground();
@@ -504,7 +504,7 @@ public class LocationBarTabletUnitTest {
                 mLocationBarTablet.getPaddingTop());
         assertEquals(0, urlBar.getTranslationY(), MathUtils.EPSILON);
 
-        mLocationBarTablet.onSpecializedFuseboxModeActivated(false);
+        mLocationBarTablet.onSpecializedFuseboxModeActivated(/* isSpecializedRequestType= */ false);
         assertNull(((FrameLayout) mLocationBarTablet.getParent()).getForeground());
     }
 
@@ -515,7 +515,7 @@ public class LocationBarTabletUnitTest {
         int prefocusWidth = 400;
         measureHolder(prefocusWidth);
         mLocationBarTablet.onFuseboxStateChanged(FuseboxState.EXPANDED);
-        mLocationBarTablet.onSuggestionsChanged(false);
+        mLocationBarTablet.onSuggestionsChanged(/* hasSuggestions= */ false);
 
         int expansionPx =
                 mLocationBarTablet
