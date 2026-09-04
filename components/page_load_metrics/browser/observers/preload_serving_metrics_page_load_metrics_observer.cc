@@ -216,7 +216,16 @@ void RecordFirstContentfulPaint(
   const std::array<std::string_view, 2> used_instant_loads = {
       "All", used_instant_load_string};
 
-  if (is_in_foreground) {
+  static constexpr std::string_view kWithoutFilteringOnly[] = {
+      "WithoutFiltering."};
+  static constexpr std::string_view kForegroundAndWithoutFiltering[] = {
+      "", "WithoutFiltering."};
+  const base::span<const std::string_view> filterings =
+      is_in_foreground
+          ? base::span<const std::string_view>(kForegroundAndWithoutFiltering)
+          : base::span<const std::string_view>(kWithoutFilteringOnly);
+
+  for (const auto filtering : filterings) {
     for (const auto navigation_initiator : navigation_initiators) {
       for (const auto srp_all : srp_alls) {
         for (const auto instant_load : used_instant_loads) {
@@ -224,23 +233,10 @@ void RecordFirstContentfulPaint(
               base::StrCat(
                   {"PreloadServingMetrics.PageLoad.Clients.PaintTiming."
                    "NavigationToFirstContentfulPaint.",
-                   navigation_initiator, ".", srp_all, ".", instant_load}),
+                   filtering, navigation_initiator, ".", srp_all, ".",
+                   instant_load}),
               corrected_first_contentful_paint);
         }
-      }
-    }
-  }
-
-  for (const auto navigation_initiator : navigation_initiators) {
-    for (const auto srp_all : srp_alls) {
-      for (const auto instant_load : used_instant_loads) {
-        PAGE_LOAD_HISTOGRAM(
-            base::StrCat({"PreloadServingMetrics.PageLoad.Clients.PaintTiming."
-                          "NavigationToFirstContentfulPaint."
-                          "WithoutFiltering.",
-                          navigation_initiator, ".", srp_all, ".",
-                          instant_load}),
-            corrected_first_contentful_paint);
       }
     }
   }
@@ -258,30 +254,17 @@ void RecordFirstContentfulPaint(
                         pre_prefetch_suffix}),
           corrected_first_contentful_paint);
 
-      if (is_in_foreground) {
+      for (const auto filtering : filterings) {
         for (const auto navigation_initiator : navigation_initiators) {
           for (const auto srp_all : srp_alls) {
             PAGE_LOAD_HISTOGRAM(
                 base::StrCat(
                     {"PreloadServingMetrics.PageLoad.Clients.PaintTiming."
                      "NavigationToFirstContentfulPaint.",
-                     navigation_initiator, ".", srp_all, ".Prefetch",
+                     filtering, navigation_initiator, ".", srp_all, ".Prefetch",
                      pre_prefetch_suffix}),
                 corrected_first_contentful_paint);
           }
-        }
-      }
-
-      for (const auto navigation_initiator : navigation_initiators) {
-        for (const auto srp_all : srp_alls) {
-          PAGE_LOAD_HISTOGRAM(
-              base::StrCat(
-                  {"PreloadServingMetrics.PageLoad.Clients.PaintTiming."
-                   "NavigationToFirstContentfulPaint."
-                   "WithoutFiltering.",
-                   navigation_initiator, ".", srp_all, ".Prefetch",
-                   pre_prefetch_suffix}),
-              corrected_first_contentful_paint);
         }
       }
     }
