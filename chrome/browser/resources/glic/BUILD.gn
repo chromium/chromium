@@ -147,7 +147,6 @@ glic_api_ts_files = [
   "glic_api_impl/host/conversions.ts",
   "glic_api_impl/host/glic_api_host.ts",
   "glic_api_impl/host/host_from_client.ts",
-  "glic_api_impl/host/host_to_client.ts",
   "glic_api_impl/host/host_utils.ts",
   "glic_api_impl/host/types.ts",
   "glic_api_impl/mojo_bindings_stub.ts",

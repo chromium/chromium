@@ -6,12 +6,11 @@ import {assert} from '//resources/js/assert.js';
 
 import {enumFromClient, enumToClient} from '../../enum_conversions.js';
 import {SkillsClientReceiver, SkillsHandlerRemote, SkillSource as SkillSourceMojo} from '../../glic.mojom-webui.js';
-import type {Skill as SkillMojo, SkillPreview as SkillPreviewMojo, SkillsClientInterface, WebClientHandlerRemote} from '../../glic.mojom-webui.js';
+import type {Skill as SkillMojo, SkillPreview as SkillPreviewMojo, SkillsClientInterface, WebClientHandlerRemote, WebClientInitialState} from '../../glic.mojom-webui.js';
 import type {CreateSkillRequest, GlicBrowserHost, GlicBrowserSkills, ObservableValue, Skill, SkillPreview, SkillsWebClientEvent, UpdateSkillRequest} from '../../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl} from '../../observable.js';
 import {optionalToClient, timeToClient, urlToClient} from '../host/conversions.js';
 import {maybeWrapWithLogging} from '../mojo_logging.js';
-import type {WebClientInitialStatePrivate} from '../request_types.js';
 
 export function skillPreviewToClient(
     preview: SkillPreviewMojo, isContextual: boolean): SkillPreview {
@@ -98,8 +97,7 @@ export class GlicBrowserHostSkills implements SkillsClientInterface,
   private skillsInstance = new GlicBrowserSkillsImpl(this);
 
   initialize(
-      initialState: WebClientInitialStatePrivate,
-      handler: WebClientHandlerRemote) {
+      initialState: WebClientInitialState, handler: WebClientHandlerRemote) {
     this.setSkillsEnabled(initialState.enableSkills);
 
     // Support legacy behavior (which had these functions exist or not exist

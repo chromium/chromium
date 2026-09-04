@@ -489,6 +489,7 @@ class GlicWebClientHandler
   void WebClientCreated(
       ::mojo::PendingRemote<glic::mojom::WebClient> web_client,
       WebClientCreatedCallback callback) override {
+    LogApiRequestCount(GlicHostApiRequestId::kWebClientCreated);
     VLOG(1) << "Glic [WebClientHandler] WebClientCreated";
     web_client_.Bind(std::move(web_client));
     web_client_.set_disconnect_handler(base::BindOnce(
@@ -624,6 +625,7 @@ class GlicWebClientHandler
   }
 
   void WebClientInitialized() override {
+    LogApiRequestCount(GlicHostApiRequestId::kWebClientInitialized);
     VLOG(1) << "Glic [WebClientHandler] WebClientInitialized";
     host().WebClientInitialized();
     SetState(mojom::WebClientState::kResponsive);

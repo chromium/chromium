@@ -7,8 +7,10 @@
 
 import {assert} from '//resources/js/assert.js';
 
+import {enumToClient} from '../../enum_conversions.js';
 import {ActorClientReceiver, ActorHandlerRemote, AnnotationHandlerRemote, ExperimentalTriggeringClientReceiver, GlicRequestEvent as MojomGlicRequestEvent, WebClientHandlerRemote, ZeroStateSuggestionsHandlerRemote} from '../../glic.mojom-webui.js';
 import type {ExperimentalTriggeringUpdatesHandlerRemote, WebClientInitialState} from '../../glic.mojom-webui.js';
+import {ClientCapabilities} from '../../glic_api/glic_api.js';
 import {ObservableValue} from '../../observable.js';
 import type {ObservableValueReadOnly} from '../../observable.js';
 import {TaskQueue} from '../../task_queue.js';
@@ -28,7 +30,7 @@ import type {InterfaceDef, PendingReceiver, PendingRemote, PostMessageLifecycleO
 import {ZeroStateSuggestionsHostMessageHandler} from '../zero_state_suggestions/zero_state_suggestions_host.js';
 import {ZeroStateSuggestionsHostDef} from '../zero_state_suggestions/zero_state_suggestions_types.js';
 
-import {urlFromClient} from './conversions.js';
+import {conversionSettings, urlFromClient} from './conversions.js';
 import {HostMessageHandler} from './host_from_client.js';
 import type {CaptureRegionObserverImpl} from './host_from_client.js';
 import {PanelOpenState} from './types.js';
@@ -100,8 +102,6 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
 
   zeroStateSuggestionsHandler?: ZeroStateSuggestionsHandlerRemote;
   private isDestroyed = false;
-  private isSubscribedToZoomLevel = false;
-  private zoomFactor?: number;
 
   private experimentalTriggeringUpdatesHandler =
       new Map<number, ExperimentalTriggeringUpdatesHandlerRemote>();
@@ -158,15 +158,22 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
     this.experimentalTriggeringUpdatesHandler.clear();
   }
 
-  setInitialState(initialState: WebClientInitialState): {
+  setInitialState(
+      initialState: WebClientInitialState,
+      clientCapabilities: Set<ClientCapabilities>): {
     actorRemote?: PendingRemote<ActorHost>,
     actorReceiver?: PendingReceiver<ActorClient>,
     experimentalTriggeringReceiver?: PendingReceiver<
                                       ExperimentalTriggeringClient>,
     zeroStateSuggestionsRemote?: PendingRemote<ZeroStateSuggestionsHost>,
   } {
+    this.detailedWebClientState =
+        DetailedWebClientState.WEB_CLIENT_NOT_INITIALIZED;
     this.panelIsActive = initialState.panelIsActive;
-    this.zoomFactor = initialState.zoomFactor;
+    this.instanceIsActive = initialState.instanceIsActive;
+    conversionSettings.platform = enumToClient(initialState.platform);
+    conversionSettings.omitFaviconInTabData =
+        clientCapabilities.has(ClientCapabilities.IGNORES_TAB_DATA_FAVICONS);
 
     let actorRemote: PendingRemote<ActorHost>|undefined;
     let actorReceiver: PendingReceiver<ActorClient>|undefined;
@@ -235,24 +242,11 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
         receiver, annotationHostMessageHandler, AnnotationHostDef);
   }
 
-  subscribeToZoomLevel() {
-    this.isSubscribedToZoomLevel = true;
-    if (this.zoomFactor !== undefined) {
-      this.sender.requestNoResponse(
-          'notifyZoomLevelChanged', {zoomFactor: this.zoomFactor});
-    }
-  }
+  subscribeToZoomLevel() {}
 
-  unsubscribeFromZoomLevel() {
-    this.isSubscribedToZoomLevel = false;
-  }
+  unsubscribeFromZoomLevel() {}
 
-  onZoomLevelChanged(zoomFactor: number) {
-    this.zoomFactor = zoomFactor;
-    if (this.isSubscribedToZoomLevel) {
-      this.sender.requestNoResponse('notifyZoomLevelChanged', {zoomFactor});
-    }
-  }
+  onZoomLevelChanged(_zoomFactor: number) {}
 
   waitingOnPanelWillOpen() {
     return this.waitingOnPanelWillOpenValue;

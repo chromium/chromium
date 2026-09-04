@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {WebClientInitialState} from '../../glic.mojom-webui.js';
 import type {GlicBrowserHost, ScrollToParams} from '../../glic_api/glic_api.js';
 import type {GlicBrowserHostBaseContext} from '../client/glic_client_common.js';
-import type {WebClientInitialStatePrivate} from '../request_types.js';
 import type {PendingReceiver, PostMessageRemote} from '../transport/post_message_transport.js';
 
 import {AnnotationHostDef} from './annotation_types.js';
@@ -16,7 +16,7 @@ export class GlicBrowserHostAnnotation implements Partial<GlicBrowserHost> {
 
   constructor(private host: GlicBrowserHostBaseContext) {}
 
-  initialize(initialState: WebClientInitialStatePrivate) {
+  initialize(initialState: WebClientInitialState) {
     if (!initialState.enableScrollTo) {
       this.scrollTo = undefined;
       this.dropScrollToHighlight = undefined;

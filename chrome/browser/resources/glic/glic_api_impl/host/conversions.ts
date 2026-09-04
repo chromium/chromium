@@ -265,15 +265,16 @@ export function tabDataToClient(tabData: TabDataMojo|null): TabData|undefined {
 
   let faviconResult: Promise<Blob>|undefined;
   const bitmap = tabData.favicon;
-  const getFavicon = bitmap ? async () => {
-    if (!faviconResult) {
-      const rgbaImage = bitmapN32ToRGBAImage(bitmap);
-      if (rgbaImage) {
-        faviconResult = Promise.resolve(rgbaImageToBlob(rgbaImage));
-      }
-    }
-    return faviconResult;
-  } : undefined;
+  const getFavicon =
+      (bitmap && !conversionSettings.omitFaviconInTabData) ? async () => {
+        if (!faviconResult) {
+          const rgbaImage = bitmapN32ToRGBAImage(bitmap);
+          if (rgbaImage) {
+            faviconResult = Promise.resolve(rgbaImageToBlob(rgbaImage));
+          }
+        }
+        return faviconResult;
+      } : undefined;
 
   return {
     tabId: idToClient(tabData.tabId),

@@ -5,12 +5,12 @@
 import {assert} from '//resources/js/assert.js';
 
 import {kBuiltInToolDefinitions} from '../../generated_tool_definitions.js';
-import type {WebClientHandlerRemote} from '../../glic.mojom-webui.js';
+import type {WebClientHandlerRemote, WebClientInitialState} from '../../glic.mojom-webui.js';
 import {ChromeToolBlockingBehavior, ChromeToolResponseScheduling, ExecuteToolErrorReason, HostCapability} from '../../glic_api/glic_api.js';
 import type {ChromeTool, ChromeToolExecutionResult, GlicBrowserHost, GlicToolsHost} from '../../glic_api/glic_api.js';
 import {AiOverlayToolsRemote, ScrollGranularity} from '../../tools.mojom-webui.js';
+import {hostCapabilitiesToClient} from '../host/conversions.js';
 import {maybeWrapWithLogging} from '../mojo_logging.js';
-import type {WebClientInitialStatePrivate} from '../request_types.js';
 
 class InvalidArgumentError extends Error {}
 
@@ -230,9 +230,9 @@ export class GlicBrowserHostTools implements Partial<GlicBrowserHost> {
   private toolsInstance?: GlicToolsHost;
 
   initialize(
-      initialState: WebClientInitialStatePrivate,
-      handler?: WebClientHandlerRemote) {
-    if (initialState.hostCapabilities.includes(HostCapability.CHROME_TOOLS) &&
+      initialState: WebClientInitialState, handler?: WebClientHandlerRemote) {
+    if (hostCapabilitiesToClient(initialState.hostCapabilities)
+            .includes(HostCapability.CHROME_TOOLS) &&
         handler) {
       const toolsRemote = new AiOverlayToolsRemote();
       this.toolsRemote =

@@ -6,13 +6,13 @@
 
 import {assert} from '//resources/js/assert.js';
 
+import type {WebClientInitialState} from '../../glic.mojom-webui.js';
 import type {ActorTaskInterruptReason, CancelActionsResult, CreateActorTabOptions, FormFillingResponse, GlicBrowserHost, GlicBrowserHostJournal, GmailOtpConfirmationRequest, GmailOtpOptInRequest, Journal, NavigationConfirmationRequest, Observable, ObservableValue, ResumeActorTaskResult, SelectAutofillSuggestionsDialogRequest, SelectCredentialDialogRequest, TabContextOptions, TabContextResult, TabData, TaskOptions, UserConfirmationDialogRequest} from '../../glic_api/glic_api.js';
 import {ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason} from '../../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl, Subject} from '../../observable.js';
 import {convertTabContextResultFromPrivate, convertTabDataFromPrivate} from '../client/glic_api_client.js';
 import type {GlicBrowserHostBaseContext} from '../client/glic_client_common.js';
 import {rgbaImageToBlob} from '../client/image_utils.js';
-import type {WebClientInitialStatePrivate} from '../request_types.js';
 import type {PendingReceiver, PendingRemote, PostMessageHandler, PostMessageRemote} from '../transport/post_message_transport.js';
 
 import {ActorClientDef, ConfirmationRequestErrorReason, GmailOtpErrorReason, SelectAutofillSuggestionsDialogErrorReason, SelectCredentialDialogErrorReason} from './actor_types.js';
@@ -36,6 +36,7 @@ export class GlicBrowserHostActor implements Partial<GlicBrowserHost> {
       new Subject<GmailOtpOptInRequest>();
   readonly selectGmailOtpConfirmationRequestSubject =
       new Subject<GmailOtpConfirmationRequest>();
+
   private journalHost?: GlicBrowserHostJournalImpl;
   actOnWebCapabilityValue = ObservableValueImpl.withNoValue<boolean>();
   readonly actorTaskListRowClickedSubject = new Subject<number>();
@@ -47,7 +48,7 @@ export class GlicBrowserHostActor implements Partial<GlicBrowserHost> {
   }
 
   initialize(
-      initialState: WebClientInitialStatePrivate,
+      initialState: WebClientInitialState,
       actorRemote: PendingRemote<ActorHost>|undefined,
       actorReceiver: PendingReceiver<ActorClient>|undefined) {
     if (actorRemote === undefined || actorReceiver === undefined ||

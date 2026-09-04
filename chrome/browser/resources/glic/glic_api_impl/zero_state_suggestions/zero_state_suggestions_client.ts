@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {WebClientInitialState} from '../../glic.mojom-webui.js';
 import type {GlicBrowserHost, ObservableValue, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl} from '../../observable.js';
 import type {GlicBrowserHostBaseContext} from '../client/glic_client_common.js';
-import type {WebClientInitialStatePrivate} from '../request_types.js';
 import type {PendingRemote, PostMessageHandler, PostMessageReceiver, PostMessageRemote} from '../transport/post_message_transport.js';
 
 import {ZeroStateSuggestionsClientDef} from './zero_state_suggestions_types.js';
@@ -36,7 +36,7 @@ export class GlicBrowserHostZeroStateSuggestions implements
   constructor(private host: GlicBrowserHostBaseContext) {}
 
   initialize(
-      initialState: WebClientInitialStatePrivate,
+      initialState: WebClientInitialState,
       zeroStateSuggestionsRemote: PendingRemote<ZeroStateSuggestionsHost>|
       undefined) {
     if (zeroStateSuggestionsRemote === undefined ||

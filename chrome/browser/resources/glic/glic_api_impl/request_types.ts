@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {WebClientInitialState} from '../glic.mojom-webui.js';
-import type {AdditionalContext, AdditionalContextPart, AnnotatedPageData, CaptureRegionErrorReason, CaptureRegionParams, CaptureRegionResult, ChromeVersion, ClientCapabilities, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, ErrorReasonTypes, ErrorWithReason, ExperimentalTriggeringUpdate, FileUploadPolicyState, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, FormFactor, GeminiEnterpriseSettings, HostCapability, InvokeOptions, MetricUserInputReactionType, MicrophoneStatus, OnResponseStoppedDetails, OpenPanelInfo, OpenPinnedTabPickerOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinTabsOptions, Platform, PromptType, ResumeActorTaskResult, Screenshot, TabContextOptions, TabContextResult, TabData, UnpinTabsOptions, UserProfileInfo, WebClientMode, ZeroStateSuggestions} from '../glic_api/glic_api.js';
+import type {AdditionalContext, AdditionalContextPart, AnnotatedPageData, CaptureRegionErrorReason, CaptureRegionParams, CaptureRegionResult, ClientErrorDialogType, ConversationInfo, CounterAbuseVerdict, ErrorReasonTypes, ErrorWithReason, ExperimentalTriggeringUpdate, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, InvokeOptions, MetricUserInputReactionType, MicrophoneStatus, OnResponseStoppedDetails, OpenPinnedTabPickerOptions, PageMetadata, PdfDocumentData, PinTabsOptions, PromptType, ResumeActorTaskResult, Screenshot, TabContextOptions, TabContextResult, TabData, UnpinTabsOptions, UserProfileInfo, WebClientMode, ZeroStateSuggestions} from '../glic_api/glic_api.js';
 
 import type {ActorClient, ActorHost} from './actor/actor_types.js';
 import type {AnnotationClient, AnnotationHost} from './annotation/annotation_types.js';
 import type {ExperimentalTriggeringClient} from './experimental_triggering/experimental_triggering_types.js';
-import type {InterfaceDef, InterfaceDefMethods, ReplaceProperties} from './transport/messaging.js';
+import type {InterfaceDef, InterfaceDefMethods} from './transport/messaging.js';
 import {defInterface, defMessage} from './transport/messaging.js';
 import type {ErrorCodec, PendingReceiver, PendingRemote, TransferableException} from './transport/post_message_transport.js';
 import type {ZeroStateSuggestionsClient, ZeroStateSuggestionsHost} from './zero_state_suggestions/zero_state_suggestions_types.js';
@@ -36,21 +35,6 @@ export const WebClientHostDef = defInterface({
   name: 'WebClientHost',
   methods: [
     {
-      name: 'webClientCreated',
-      request: defMessage<{
-        clientCapabilities: ClientCapabilities[],
-      }>(),
-      response: defMessage<{
-        initialState: WebClientInitialStatePrivate,
-        actorRemote?: PendingRemote<ActorHost>,
-        actorReceiver?: PendingReceiver<ActorClient>,
-        experimentalTriggeringReceiver?: PendingReceiver<
-                                          ExperimentalTriggeringClient>,
-        zeroStateSuggestionsRemote?: PendingRemote<ZeroStateSuggestionsHost>,
-      }>(),
-      histogram: {name: 'WebClientCreated', id: 1},
-    },
-    {
       name: 'webClientInitialized',
       request: defMessage<{
         success: boolean,
@@ -58,7 +42,6 @@ export const WebClientHostDef = defInterface({
         // (success is false).
         exception?: GlicException,
       }>(),
-      histogram: {id: 2},
     },
     {
       name: 'onExperimentalTriggeringUpdate',
@@ -484,179 +467,7 @@ export type WebClientHost = typeof WebClientHostDef;
 // Types of requests to the GlicWebClient.
 export const WebClientDef = defInterface({
   name: 'WebClient',
-  methods: [
-    {
-      name: 'notifyPanelWillOpen',
-      request: defMessage<{
-        panelOpeningData: PanelOpeningData,
-      }>(),
-      response: defMessage<{
-        openPanelInfo?: OpenPanelInfo,
-      }>(),
-    },
-    {
-      name: 'notifyPanelWasClosed',
-    },
-    {
-      name: 'stopMicrophone',
-    },
-    {
-      name: 'panelStateChanged',
-      request: defMessage<{
-        panelState: PanelState,
-      }>(),
-    },
-    {
-      name: 'canAttachStateChanged',
-      request: defMessage<{
-        canAttach: boolean,
-      }>(),
-    },
-    {
-      name: 'notifyGeminiEnterpriseSettingsChanged',
-      request: defMessage<{
-        settings: GeminiEnterpriseSettings | undefined,
-      }>(),
-    },
-    {
-      name: 'notifyMicrophonePermissionStateChanged',
-      request: defMessage<{
-        enabled: boolean,
-      }>(),
-    },
-    {
-      name: 'notifyLocationPermissionStateChanged',
-      request: defMessage<{
-        enabled: boolean,
-      }>(),
-    },
-    {
-      name: 'notifyTabContextPermissionStateChanged',
-      request: defMessage<{
-        enabled: boolean,
-      }>(),
-    },
-    {
-      name: 'notifyDefaultTabContextPermissionStateChanged',
-      request: defMessage<{
-        enabled: boolean,
-      }>(),
-    },
-    {
-      name: 'notifyOsLocationPermissionStateChanged',
-      request: defMessage<{
-        enabled: boolean,
-      }>(),
-    },
-    {
-      name: 'notifyClosedCaptioningSettingChanged',
-      request: defMessage<{
-        enabled: boolean,
-      }>(),
-    },
-    {
-      name: 'notifyActuationOnWebSettingChanged',
-      request: defMessage<{
-        enabled: boolean,
-      }>(),
-    },
-    {
-      name: 'notifyFileUploadStateChanged',
-      request: defMessage<{
-        state: FileUploadPolicyState,
-      }>(),
-    },
-    {
-      name: 'notifyFocusedTabChanged',
-      request: defMessage<{
-        focusedTabDataPrivate: FocusedTabDataPrivate,
-      }>(),
-    },
-    {
-      name: 'notifyPanelActiveChanged',
-      request: defMessage<{
-        panelActive: boolean,
-      }>(),
-    },
-    {
-      name: 'checkResponsive',
-    },
-    {
-      name: 'notifyManualResizeChanged',
-      request: defMessage<{
-        resizing: boolean,
-      }>(),
-    },
-    {
-      name: 'browserIsOpenChanged',
-      request: defMessage<{
-        browserIsOpen: boolean,
-      }>(),
-    },
-    {
-      name: 'notifyOsHotkeyStateChanged',
-      request: defMessage<{
-        hotkey: string,
-      }>(),
-    },
-    {
-      name: 'notifyPinnedTabsChanged',
-      request: defMessage<{
-        tabData: TabDataPrivate[],
-      }>(),
-    },
-    {
-      name: 'notifyPinnedTabDataChanged',
-      request: defMessage<{
-        tabData: TabDataPrivate,
-      }>(),
-    },
-
-    {
-      name: 'pageMetadataChanged',
-      request: defMessage<{
-        tabId: string,
-        pageMetadata: PageMetadata | null,
-      }>(),
-    },
-    {
-      name: 'notifyAdditionalContext',
-      request: defMessage<{
-        context: AdditionalContextPrivate,
-      }>(),
-    },
-
-    {
-      name: 'notifyActOnWebCapabilityChanged',
-      request: defMessage<{
-        canActOnWeb: boolean,
-      }>(),
-    },
-    {
-      name: 'onboardingCompletedChanged',
-      request: defMessage<{
-        completed: boolean,
-      }>(),
-    },
-    {
-      name: 'notifyActorTaskListRowClicked',
-      request: defMessage<{
-        taskId: number,
-      }>(),
-    },
-    {
-      name: 'invoke',
-      request: defMessage<{
-        options: InvokeOptionsPrivate,
-      }>(),
-    },
-    {
-      name: 'notifyZoomLevelChanged',
-      request: defMessage<{
-        zoomFactor: number,
-      }>(),
-    },
-  ],
+  methods: [],
 });
 
 export type WebClient = typeof WebClientDef;
@@ -722,8 +533,8 @@ type InterfaceHistogramIds<I extends InterfaceDef> = {
 // trimmed down and fully deleted eventually.
 // See chrome/browser/glic/public/glic_api_metrics.h.
 export const RECORDED_REQUEST_IDS = {
-  WebClientCreated: 1,
-  WebClientInitialized: 2,
+  // Do not reuse deleted request ID: 1,
+  // Do not reuse deleted request ID: 2,
   // Do not reuse deleted request ID: 3,
   // Do not reuse deleted request ID: 4,
   // Do not reuse deleted request ID: 5,
@@ -868,21 +679,6 @@ export function getHostRequestHistogramInfo(
 // have the same name, but different type. This ensures that we don't
 // accidentally leave the private data on the returned object.
 //
-
-export type WebClientInitialStatePrivate =
-    ReplaceProperties<WebClientInitialState, {
-      panelState: PanelState,
-      chromeVersion: ChromeVersion,
-      platform: Platform,
-      formFactor: FormFactor,
-      focusedTabData: FocusedTabDataPrivate,
-      loggingEnabled: boolean,
-      maxInFlightRequests: number,
-      sendResponsesForAllRequests: boolean,
-      enableZeroStateSuggestions: boolean,
-      enableCachedGetUserProfileInfo: boolean,
-      hostCapabilities: HostCapability[],
-    }>;
 
 // TabData format for postMessage transport.
 export declare interface TabDataPrivate extends Omit<TabData, 'favicon'> {

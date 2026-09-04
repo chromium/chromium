@@ -63,7 +63,7 @@ class InFrameGlicBoot {
             hostApi.hostMessageHandler, WebClientHostDef);
 
         const clientHostRegistry =
-            new GlicHostRegistryImpl(directPair, hostApi.handler);
+            new GlicHostRegistryImpl(directPair, hostApi);
         return clientHostRegistry.registerWebClient(webClient);
       },
     };
