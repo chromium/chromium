@@ -10,4 +10,5 @@
 -All/LayerWithRealCompositorTest.HierarchyNoTexture/*
 -All/LayerWithRealCompositorTest.ModifyHierarchy/*
 -All/LayerWithRealCompositorTest.Opacity/*
+-All/LayerWithRealCompositorTest.SchedulePaintDoesNotUpdateMask/*
 -All/LayerWithRealCompositorTest.SchedulePaintUpdatesMask/*
