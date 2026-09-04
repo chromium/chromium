@@ -31,28 +31,28 @@ import org.chromium.ui.util.AttrUtils;
 @NullMarked
 class OmniboxChipViewBinder {
     public static void bind(PropertyModel model, MaterialButton view, PropertyKey propertyKey) {
-        if (AVAILABLE_WIDTH.equals(propertyKey)) {
+        if (propertyKey == AVAILABLE_WIDTH) {
             int availableWidth = model.get(AVAILABLE_WIDTH);
             view.setVisibility(availableWidth > 0 ? View.VISIBLE : View.GONE);
             view.setMaxWidth(availableWidth);
             updatePaddingAndText(view, model);
-        } else if (CONTENT_DESC.equals(propertyKey)) {
+        } else if (propertyKey == CONTENT_DESC) {
             String contentDesc = model.get(CONTENT_DESC);
             view.setContentDescription(contentDesc);
             TooltipCompat.setTooltipText(view, contentDesc);
-        } else if (ICON.equals(propertyKey)) {
+        } else if (propertyKey == ICON) {
             Drawable icon = model.get(ICON);
             if (icon != null) {
                 icon = scaleIcon(view.getContext(), icon);
             }
             view.setIcon(icon);
-        } else if (ON_CLICK.equals(propertyKey)) {
+        } else if (propertyKey == ON_CLICK) {
             Runnable onClick = model.get(ON_CLICK);
             view.setOnClickListener(
                     v -> {
                         if (onClick != null) onClick.run();
                     });
-        } else if (TEXT.equals(propertyKey)) {
+        } else if (propertyKey == TEXT) {
             updatePaddingAndText(view, model);
         }
     }

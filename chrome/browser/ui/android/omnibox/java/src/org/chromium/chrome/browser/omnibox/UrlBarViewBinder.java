@@ -32,21 +32,21 @@ class UrlBarViewBinder {
      * @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object)
      */
     public static void bind(PropertyModel model, UrlBar view, PropertyKey propertyKey) {
-        if (UrlBarProperties.ACCESSIBILITY_WARNING.equals(propertyKey)) {
+        if (propertyKey == UrlBarProperties.ACCESSIBILITY_WARNING) {
             view.setAccessibilityWarning(model.get(UrlBarProperties.ACCESSIBILITY_WARNING));
-        } else if (UrlBarProperties.ACTION_MODE_CALLBACK.equals(propertyKey)) {
+        } else if (propertyKey == UrlBarProperties.ACTION_MODE_CALLBACK) {
             ActionMode.Callback callback = model.get(UrlBarProperties.ACTION_MODE_CALLBACK);
             if (callback == null && view.getCustomSelectionActionModeCallback() == null) return;
             view.setCustomSelectionActionModeCallback(callback);
-        } else if (UrlBarProperties.AI_MODE_PREF_ENABLED.equals(propertyKey)) {
+        } else if (propertyKey == UrlBarProperties.AI_MODE_PREF_ENABLED) {
             view.setShowAiMode(model.get(UrlBarProperties.AI_MODE_PREF_ENABLED));
-        } else if (UrlBarProperties.AI_MODE_PREF_TOGGLE_CALLBACK.equals(propertyKey)) {
+        } else if (propertyKey == UrlBarProperties.AI_MODE_PREF_TOGGLE_CALLBACK) {
             view.setShowAiModeCallback(model.get(UrlBarProperties.AI_MODE_PREF_TOGGLE_CALLBACK));
-        } else if (UrlBarProperties.ALLOW_FOCUS.equals(propertyKey)) {
+        } else if (propertyKey == UrlBarProperties.ALLOW_FOCUS) {
             view.setAllowFocus(model.get(UrlBarProperties.ALLOW_FOCUS));
-        } else if (UrlBarProperties.ALLOW_MULTILINE_INPUT.equals(propertyKey)) {
+        } else if (propertyKey == UrlBarProperties.ALLOW_MULTILINE_INPUT) {
             view.setAllowMultilineInput(model.get(UrlBarProperties.ALLOW_MULTILINE_INPUT));
-        } else if (UrlBarProperties.AUTOCOMPLETE_TEXT.equals(propertyKey)) {
+        } else if (propertyKey == UrlBarProperties.AUTOCOMPLETE_TEXT) {
             AutocompleteText autocomplete = model.get(UrlBarProperties.AUTOCOMPLETE_TEXT);
             boolean shouldAutocomplete = view.shouldAutocomplete();
             view.setAutocompleteText(
@@ -56,11 +56,11 @@ class UrlBarViewBinder {
                             ? autocomplete.additionalText
                             : null,
                     autocomplete.siteSearchLabel);
-        } else if (UrlBarProperties.DELEGATE.equals(propertyKey)) {
+        } else if (propertyKey == UrlBarProperties.DELEGATE) {
             view.setDelegate(model.get(UrlBarProperties.DELEGATE));
-        } else if (UrlBarProperties.FOCUS_CHANGE_CALLBACK.equals(propertyKey)) {
+        } else if (propertyKey == UrlBarProperties.FOCUS_CHANGE_CALLBACK) {
             view.setFocusChangeCallback(model.get(UrlBarProperties.FOCUS_CHANGE_CALLBACK));
-        } else if (UrlBarProperties.HAS_URL_SUGGESTIONS.equals(propertyKey)) {
+        } else if (propertyKey == UrlBarProperties.HAS_URL_SUGGESTIONS) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                 view.setHandwritingBoundsOffsets(
                         view.getHandwritingBoundsOffsetLeft(),
@@ -70,35 +70,35 @@ class UrlBarViewBinder {
                                 ? view.getHandwritingBoundsOffsetTop()
                                 : 0);
             }
-        } else if (UrlBarProperties.HINT_TEXT.equals(propertyKey)) {
+        } else if (propertyKey == UrlBarProperties.HINT_TEXT) {
             view.setHint(getHintForModelState(model));
-        } else if (UrlBarProperties.HINT_TEXT_COLOR.equals(propertyKey)) {
+        } else if (propertyKey == UrlBarProperties.HINT_TEXT_COLOR) {
             view.setHintTextColor(model.get(UrlBarProperties.HINT_TEXT_COLOR));
-        } else if (UrlBarProperties.INCOGNITO_COLORS_ENABLED.equals(propertyKey)) {
+        } else if (propertyKey == UrlBarProperties.INCOGNITO_COLORS_ENABLED) {
             final boolean incognitoColorsEnabled =
                     model.get(UrlBarProperties.INCOGNITO_COLORS_ENABLED);
             updateHighlightColor(view, incognitoColorsEnabled);
             updateCursorAndSelectHandleColor(view, incognitoColorsEnabled);
-        } else if (UrlBarProperties.KEY_DOWN_LISTENER.equals(propertyKey)) {
+        } else if (propertyKey == UrlBarProperties.KEY_DOWN_LISTENER) {
             view.setKeyDownListener(model.get(UrlBarProperties.KEY_DOWN_LISTENER));
-        } else if (UrlBarProperties.LONG_CLICK_LISTENER.equals(propertyKey)) {
+        } else if (propertyKey == UrlBarProperties.LONG_CLICK_LISTENER) {
             view.setOnLongClickListener(model.get(UrlBarProperties.LONG_CLICK_LISTENER));
-        } else if (UrlBarProperties.MANAGE_SEARCH_ENGINES_CALLBACK.equals(propertyKey)) {
+        } else if (propertyKey == UrlBarProperties.MANAGE_SEARCH_ENGINES_CALLBACK) {
             view.setManageSearchEnginesCallback(
                     model.get(UrlBarProperties.MANAGE_SEARCH_ENGINES_CALLBACK));
-        } else if (UrlBarProperties.RICH_TEXT_CHANGE_LISTENER.equals(propertyKey)) {
+        } else if (propertyKey == UrlBarProperties.RICH_TEXT_CHANGE_LISTENER) {
             view.setRichTextChangeListener(model.get(UrlBarProperties.RICH_TEXT_CHANGE_LISTENER));
-        } else if (UrlBarProperties.SELECT_ALL_ON_FOCUS.equals(propertyKey)) {
+        } else if (propertyKey == UrlBarProperties.SELECT_ALL_ON_FOCUS) {
             view.setSelectAllOnFocus(model.get(UrlBarProperties.SELECT_ALL_ON_FOCUS));
-        } else if (UrlBarProperties.SHOW_HINT_TEXT.equals(propertyKey)) {
+        } else if (propertyKey == UrlBarProperties.SHOW_HINT_TEXT) {
             view.setHint(getHintForModelState(model));
-        } else if (UrlBarProperties.TEXT_CHANGE_LISTENER.equals(propertyKey)) {
+        } else if (propertyKey == UrlBarProperties.TEXT_CHANGE_LISTENER) {
             view.setTextChangeListener(model.get(UrlBarProperties.TEXT_CHANGE_LISTENER));
-        } else if (UrlBarProperties.TEXT_COLOR.equals(propertyKey)) {
+        } else if (propertyKey == UrlBarProperties.TEXT_COLOR) {
             view.setTextColor(model.get(UrlBarProperties.TEXT_COLOR));
-        } else if (UrlBarProperties.TEXT_CONTEXT_MENU_DELEGATE.equals(propertyKey)) {
+        } else if (propertyKey == UrlBarProperties.TEXT_CONTEXT_MENU_DELEGATE) {
             view.setTextContextMenuDelegate(model.get(UrlBarProperties.TEXT_CONTEXT_MENU_DELEGATE));
-        } else if (UrlBarProperties.TEXT_STATE.equals(propertyKey)) {
+        } else if (propertyKey == UrlBarProperties.TEXT_STATE) {
             UrlBarTextState state = model.get(UrlBarProperties.TEXT_STATE);
             view.setIgnoreTextChangesForAutocomplete(true);
             view.setTextWithTruncation(state.text, state.scrollType, state.scrollToIndex);
@@ -122,12 +122,12 @@ class UrlBarViewBinder {
                 view.setSelection(selection.from, selection.to);
                 view.requestAccessibilityFocus();
             }
-        } else if (UrlBarProperties.TEXT_WRAPPED_CALLBACK.equals(propertyKey)) {
+        } else if (propertyKey == UrlBarProperties.TEXT_WRAPPED_CALLBACK) {
             view.setUrlTextWrappingChangeListener(
                     model.get(UrlBarProperties.TEXT_WRAPPED_CALLBACK));
-        } else if (UrlBarProperties.URL_DIRECTION_LISTENER.equals(propertyKey)) {
+        } else if (propertyKey == UrlBarProperties.URL_DIRECTION_LISTENER) {
             view.setUrlDirectionListener(model.get(UrlBarProperties.URL_DIRECTION_LISTENER));
-        } else if (UrlBarProperties.USE_SMALL_TEXT.equals(propertyKey)) {
+        } else if (propertyKey == UrlBarProperties.USE_SMALL_TEXT) {
             boolean useSmallText = model.get(UrlBarProperties.USE_SMALL_TEXT);
             // Small text mode is used in a state where available vertical space is much lower and
             // there is no location bar "pill" that we must draw inside. Removing the padding avoids
