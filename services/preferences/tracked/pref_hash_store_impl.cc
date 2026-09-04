@@ -217,12 +217,12 @@ base::DictValue PrefHashStoreImpl::ComputeSplitHmacs(
 
   base::DictValue split_macs;
 
-  for (const auto item : *split_values) {
+  for (const auto [key, split_value] : *split_values) {
     // Keep the common part from the old |keyed_path| and replace the key to
     // get the new |keyed_path|.
-    keyed_path.replace(common_part_length, std::string::npos, item.first);
+    keyed_path.replace(common_part_length, std::string::npos, key);
 
-    split_macs.Set(item.first, ComputeHmac(keyed_path, &item.second));
+    split_macs.Set(key, ComputeHmac(keyed_path, &split_value));
   }
 
   return split_macs;
@@ -269,15 +269,15 @@ base::DictValue PrefHashStoreImpl::ComputeSplitEncryptedHashes(
   const size_t common_part_length = keyed_path.length();
 
   base::DictValue split_encrypted_hashes;
-  for (const auto item : *split_values) {
-    keyed_path.replace(common_part_length, std::string::npos, item.first);
+  for (const auto [key, split_value] : *split_values) {
+    keyed_path.replace(common_part_length, std::string::npos, key);
 
     std::optional<std::string> result_opt =
-        pref_hash_calculator_.CalculateEncryptedHash(keyed_path, &item.second,
+        pref_hash_calculator_.CalculateEncryptedHash(keyed_path, &split_value,
                                                      encryptor);
 
     if (result_opt.has_value()) {
-      split_encrypted_hashes.Set(item.first, std::move(*result_opt));
+      split_encrypted_hashes.Set(key, std::move(*result_opt));
     }
   }
   return split_encrypted_hashes;
@@ -287,16 +287,16 @@ base::DictValue PrefHashStoreImpl::ComputeSplitEncryptedHashes(
 void PrefHashStoreImpl::FilterEncryptedHashesRecursive(
     const base::DictValue& src,
     base::DictValue& dest) {
-  for (const auto item : src) {
-    bool is_encrypted_key = item.first.ends_with("_encrypted_hash");
+  for (const auto [key, value] : src) {
+    bool is_encrypted_key = key.ends_with("_encrypted_hash");
 
     if (is_encrypted_key) {
-      dest.Set(item.first, item.second.Clone());
-    } else if (item.second.is_dict()) {
+      dest.Set(key, value.Clone());
+    } else if (value.is_dict()) {
       base::DictValue sub_dest;
-      FilterEncryptedHashesRecursive(item.second.GetDict(), sub_dest);
+      FilterEncryptedHashesRecursive(value.GetDict(), sub_dest);
       if (!sub_dest.empty()) {
-        dest.Set(item.first, std::move(sub_dest));
+        dest.Set(key, std::move(sub_dest));
       }
     }
   }
@@ -606,25 +606,25 @@ PrefHashStoreImpl::PrefHashStoreTransactionImpl::CheckSplitValueInternal(
       std::map<std::string, std::string> current_encrypted =
           split_encrypted_hashes;
       if (initial_split_value) {
-        for (const auto item : *initial_split_value) {
-          auto it = current_encrypted.find(item.first);
+        for (const auto [key, value] : *initial_split_value) {
+          auto it = current_encrypted.find(key);
           if (it == current_encrypted.end()) {
-            invalid_keys->push_back(item.first);
+            invalid_keys->push_back(key);
           } else {
-            const std::string keyed_path = path + "." + item.first;
+            const std::string keyed_path = path + "." + key;
             const auto validation_result =
                 outer_->pref_hash_calculator_.ValidateEncryptedHash(
-                    keyed_path, &item.second, it->second, encryptor_.get());
+                    keyed_path, &value, it->second, encryptor_.get());
             if (validation_result != ValidationResult::VALID_ENCRYPTED) {
               MaybeReportWeakHash(validation_result, reporting_id);
-              invalid_keys->push_back(item.first);
+              invalid_keys->push_back(key);
             }
             current_encrypted.erase(it);
           }
         }
       }
-      for (const auto& pair : current_encrypted) {
-        invalid_keys->push_back(pair.first);
+      for (const auto& [key, _] : current_encrypted) {
+        invalid_keys->push_back(key);
       }
 
       if (invalid_keys->empty()) {
@@ -640,22 +640,22 @@ PrefHashStoreImpl::PrefHashStoreTransactionImpl::CheckSplitValueInternal(
       if (has_hmacs) {
         std::map<std::string, std::string> current_macs = split_hmacs;
         if (initial_split_value) {
-          for (const auto item : *initial_split_value) {
-            const std::string keyed_path = path + "." + item.first;
-            auto it = current_macs.find(item.first);
+          for (const auto [key, value] : *initial_split_value) {
+            const std::string keyed_path = path + "." + key;
+            auto it = current_macs.find(key);
             if (it == current_macs.end() ||
-                outer_->pref_hash_calculator_.ValidateHmac(
-                    keyed_path, &item.second, it->second) !=
+                outer_->pref_hash_calculator_.ValidateHmac(keyed_path, &value,
+                                                           it->second) !=
                     ValidationResult::VALID_HMAC) {
-              invalid_keys->push_back(item.first);
+              invalid_keys->push_back(key);
             }
             if (it != current_macs.end()) {
               current_macs.erase(it);
             }
           }
         }
-        for (const auto& pair : current_macs) {
-          invalid_keys->push_back(pair.first);
+        for (const auto& [key, _] : current_macs) {
+          invalid_keys->push_back(key);
         }
 
         if (invalid_keys->empty()) {
@@ -670,22 +670,22 @@ PrefHashStoreImpl::PrefHashStoreTransactionImpl::CheckSplitValueInternal(
     if (has_hmacs) {
       std::map<std::string, std::string> current_macs = split_hmacs;
       if (initial_split_value) {
-        for (const auto item : *initial_split_value) {
-          const std::string keyed_path = path + "." + item.first;
-          auto it = current_macs.find(item.first);
+        for (const auto [key, value] : *initial_split_value) {
+          const std::string keyed_path = path + "." + key;
+          auto it = current_macs.find(key);
           if (it == current_macs.end() ||
-              outer_->pref_hash_calculator_.ValidateHmac(
-                  keyed_path, &item.second, it->second) !=
+              outer_->pref_hash_calculator_.ValidateHmac(keyed_path, &value,
+                                                         it->second) !=
                   ValidationResult::VALID_HMAC) {
-            invalid_keys->push_back(item.first);
+            invalid_keys->push_back(key);
           }
           if (it != current_macs.end()) {
             current_macs.erase(it);
           }
         }
       }
-      for (const auto& pair : current_macs) {
-        invalid_keys->push_back(pair.first);
+      for (const auto& [key, _] : current_macs) {
+        invalid_keys->push_back(key);
       }
 
       if (invalid_keys->empty()) {
@@ -769,11 +769,9 @@ void PrefHashStoreImpl::PrefHashStoreTransactionImpl::StoreSplitHmac(
   if (split_value) {
     base::DictValue split_macs = outer_->ComputeSplitHmacs(path, split_value);
 
-    for (const auto item : split_macs) {
-      DCHECK(item.second.is_string());
-
-      contents_->SetSplitPrefAuthenticator(path, item.first,
-                                           item.second.GetString());
+    for (const auto [key, value] : split_macs) {
+      DCHECK(value.is_string());
+      contents_->SetSplitPrefAuthenticator(path, key, value.GetString());
     }
   }
   super_hmac_dirty_ = true;
@@ -798,11 +796,11 @@ void PrefHashStoreImpl::PrefHashStoreTransactionImpl::StoreSplitEncryptedHash(
         outer_->ComputeSplitEncryptedHashes(path, split_value,
                                             encryptor_.get());
 
-    for (const auto item : split_encrypted_hashes) {
-      DCHECK(item.second.is_string());
+    for (const auto [key, split_encrypted_hash] : split_encrypted_hashes) {
+      DCHECK(split_encrypted_hash.is_string());
       // Store using the derived base key.
-      contents_->SetSplitPrefAuthenticator(encrypted_hash_base_key, item.first,
-                                           item.second.GetString());
+      contents_->SetSplitPrefAuthenticator(encrypted_hash_base_key, key,
+                                           split_encrypted_hash.GetString());
     }
   }
   super_hmac_dirty_ = true;
