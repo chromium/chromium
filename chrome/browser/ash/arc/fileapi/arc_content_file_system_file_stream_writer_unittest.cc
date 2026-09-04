@@ -106,6 +106,8 @@ class ArcContentFileSystemFileStreamWriterTest : public testing::Test {
     fake_file_system_.AddFile(
         File(ArcUrl(name), data, "application/octet-stream",
              seekable ? File::Seekable::YES : File::Seekable::NO));
+    ArcFileSystemOperationRunner::GetForBrowserContext(profile_.get())
+        ->GrantAccessToContentUrl(GURL(file_url));
     return file_url;
   }
 

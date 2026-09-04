@@ -1147,6 +1147,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.FileSystem.ContentUrlAccessCheckResult"
+    enum="ArcContentUrlAccessCheckResult" expires_after="2027-07-17">
+  <owner>youkichihosoi@chromium.org</owner>
+  <owner>djacobo@chromium.org</owner>
+  <summary>
+    The result of checking whether an Android content:// URL is recorded as
+    known/explicitly granted access by the browser. Recorded upon every
+    access-check in ArcFileSystemOperationRunner (e.g., on file operations like
+    GetFileSize, GetMimeType, or OpenFileSessionToRead/Write). Helps identify
+    the frequency of Cache hits, Database hits, or Denied accesses.
+  </summary>
+</histogram>
+
+<histogram name="Arc.FileSystem.ContentUrlGrantAccessResult"
+    enum="ArcContentUrlGrantAccessResult" expires_after="2027-07-17">
+  <owner>youkichihosoi@chromium.org</owner>
+  <owner>djacobo@chromium.org</owner>
+  <summary>
+    The result of attempting to record that an Android content:// URL is known/
+    explicitly granted access by the browser. Recorded upon every request to
+    grant access in ArcOpenUrlDelegateImpl or ShareInfoFileHandler. Helps
+    identify early failures (such as a missing browser context or missing
+    operation runner) during ARC file sharing/opening flows.
+  </summary>
+</histogram>
+
 <histogram name="Arc.FirstAppLaunchDelay.TimeDelta" units="ms"
     expires_after="2026-05-03">
   <owner>khmel@google.com</owner>

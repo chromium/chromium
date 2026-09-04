@@ -18,6 +18,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/safe_base_name.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_url_util.h"
+#include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -149,12 +151,43 @@ constexpr auto kAboutPagesMap =
         {ChromePage::ABOUTHISTORY, "chrome://history/"},
     });
 
+// Records that the ARC content file system may forward `url` to the file
+// system instance.
+void GrantAccessToArcUrl(const AccountId& account_id, const GURL& url) {
+  auto* browser_context =
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          account_id);
+  if (!browser_context) {
+    LOG(WARNING) << "BrowserContext is unavailable. "
+                 << "Content URL access will not be granted.";
+    base::UmaHistogramEnumeration(
+        "Arc.FileSystem.ContentUrlGrantAccessResult",
+        arc::ArcContentUrlGrantAccessResult::kNoBrowserContext);
+    return;
+  }
+  auto* runner =
+      arc::ArcFileSystemOperationRunner::GetForBrowserContext(browser_context);
+  if (!runner) {
+    LOG(WARNING) << "ArcFileSystemOperationRunner is unavailable. "
+                 << "Content URL access will not be granted.";
+    base::UmaHistogramEnumeration(
+        "Arc.FileSystem.ContentUrlGrantAccessResult",
+        arc::ArcContentUrlGrantAccessResult::kNoOperationRunner);
+    return;
+  }
+  runner->GrantAccessToContentUrl(url);
+  base::UmaHistogramEnumeration("Arc.FileSystem.ContentUrlGrantAccessResult",
+                                arc::ArcContentUrlGrantAccessResult::kSuccess);
+}
+
 // Converts the given ARC URL to an external file URL to read it via ARC content
 // file system when necessary. Otherwise, returns the given URL unchanged.
-GURL ConvertArcUrlToExternalFileUrlIfNeeded(const GURL& url) {
+GURL ConvertArcUrlToExternalFileUrlIfNeeded(const AccountId& account_id,
+                                            const GURL& url) {
   if (url.SchemeIs(url::kFileScheme) || url.SchemeIs(url::kContentScheme)) {
     // Chrome cannot open this URL. Read the contents via ARC content file
     // system with an external file URL.
+    GrantAccessToArcUrl(account_id, url);
     return arc::ArcUrlToExternalFileUrl(url);
   }
   return url;
@@ -164,6 +197,11 @@ GURL ConvertArcUrlToExternalFileUrlIfNeeded(const GURL& url) {
 // system. This Moniker file is readable on the Linux filesystem like any other
 // file. Returns an empty URL if a Moniker could not be created.
 GURL ConvertToMonikerFileUrl(Profile* profile, GURL content_url) {
+  const auto* user =
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
+  if (user) {
+    GrantAccessToArcUrl(user->GetAccountId(), content_url);
+  }
   return ash::ExternalFileURLToFuseboxMonikerFileURL(
       profile, arc::ArcUrlToExternalFileUrl(content_url),
       /*read_only=*/true, webshare::PrepareDirectoryTask::kSharedFileLifetime);
@@ -232,7 +270,15 @@ void ArcOpenUrlDelegateImpl::OpenUrlFromArc(const GURL& url) {
     return;
   }
 
-  GURL url_to_open = ConvertArcUrlToExternalFileUrlIfNeeded(url);
+  const auto* user = user_manager::UserManager::Get()->GetPrimaryUser();
+  if (!user) {
+    LOG(WARNING) << "Primary user is unavailable. "
+                 << "Content URL access will not be granted.";
+    return;
+  }
+
+  GURL url_to_open =
+      ConvertArcUrlToExternalFileUrlIfNeeded(user->GetAccountId(), url);
   ash::NewWindowDelegate::GetInstance()->OpenUrl(
       url_to_open, ash::NewWindowDelegate::OpenUrlFrom::kArc,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
