@@ -323,10 +323,6 @@ class BrowserWindowFeatures {
     return cookie_controls_controller_.get();
   }
 
-  ExclusiveAccessManager* exclusive_access_manager() {
-    return exclusive_access_manager_.get();
-  }
-
   ExtensionInstalledWatcher* extension_installed_watcher() {
     return extension_installed_watcher_.get();
   }
