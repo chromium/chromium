@@ -4753,7 +4753,6 @@ const InlineBreakToken* LineBreaker::CreateBreakToken(
   InlineItemTextIndex next_start = current_;
   if (line_info.UseFirstLineStyle()) [[unlikely]] {
     if (const auto& offset_map = node_.FirstLineOffsetMap()) [[unlikely]] {
-      DCHECK(RuntimeEnabledFeatures::FirstLineTextTransformEnabled());
       // The `::first-line` style has changed the text length.
       // Adjust `next_start` to the offset for the text without `::first-line`.
       next_start.text_offset =

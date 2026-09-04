@@ -458,8 +458,7 @@ InlineCursorPosition::InlineItemsFor(const LayoutText& layout_text) const {
   if (!items || items->empty()) [[unlikely]] {
     return {{}, false};
   }
-  if (UsesFirstLineStyle() &&
-      RuntimeEnabledFeatures::FirstLineTextTransformEnabled()) [[unlikely]] {
+  if (UsesFirstLineStyle()) [[unlikely]] {
     if (const LayoutBlockFlow* block_flow =
             layout_text.FragmentItemsContainer()) {
       if (const InlineNodeData* node_data = block_flow->GetInlineNodeData()) {

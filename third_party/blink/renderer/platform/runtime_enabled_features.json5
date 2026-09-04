@@ -3029,10 +3029,6 @@
       // remove if that goes well. crbug.com/41362700
       name: "FirstLineTextMetrics",
     },
-    {
-      name: "FirstLineTextTransform",
-      status: "stable",
-    },
     // When enabled, HTMLFormControlElement::IsReadOnly() returns false for
     // types that don't support readonly.
     {
