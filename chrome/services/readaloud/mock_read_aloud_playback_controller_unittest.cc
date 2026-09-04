@@ -10,9 +10,9 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/mojom/base/work_in_progress.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_features.mojom-features.h"
 
 namespace readaloud {
 
@@ -59,10 +59,11 @@ class MockPlaybackControllerTest : public ::testing::Test {
  public:
   MockPlaybackControllerTest() {
     scoped_feature_list_.InitAndEnableFeature(
-        mojo_base::mojom::kMojomWorkInProgress);
+        ax::mojom::features::kReadAloudNative);
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   // Helper to create a single-segment text payload for test brevity.
   std::vector<read_aloud::mojom::TextSegmentPtr> CreateSingleSegment(
       uint32_t segment_index,
@@ -76,7 +77,6 @@ class MockPlaybackControllerTest : public ::testing::Test {
     return segments;
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 

@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.ui.accessibility.AccessibilityFeatures;
 import org.chromium.ui.accessibility.AccessibilityFeaturesMap;
 
 import java.util.List;
@@ -116,10 +115,12 @@ public final class ReadAloudFeatures {
         return sIneligibilityReason;
     }
 
+    public static final String READ_ALOUD_NATIVE = "ReadAloudNative";
+
     public static final MutableFlagWithSafeDefault sReadAloudNative =
             new MutableFlagWithSafeDefault(
                     AccessibilityFeaturesMap.getInstance(),
-                    AccessibilityFeatures.READ_ALOUD_NATIVE,
+                    READ_ALOUD_NATIVE,
                     /* defaultValue= */ false);
 
     /** Returns true if the native C++ Read Aloud implementation is enabled. */

@@ -122,7 +122,6 @@ import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.ConnectionType;
-import org.chromium.ui.accessibility.AccessibilityFeatures;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -137,7 +136,7 @@ import java.util.Locale;
 @DisableFeatures({
     ChromeFeatureList.READALOUD_AUDIO_OVERVIEWS,
     ChromeFeatureList.GLIC,
-    AccessibilityFeatures.READ_ALOUD_NATIVE
+    ReadAloudFeatures.READ_ALOUD_NATIVE
 })
 public class ReadAloudControllerUnitTest {
     private static final GURL sTestGURL = JUnitTestGURLs.EXAMPLE_URL;
@@ -464,19 +463,19 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
-    @EnableFeatures(AccessibilityFeatures.READ_ALOUD_NATIVE)
+    @EnableFeatures(ReadAloudFeatures.READ_ALOUD_NATIVE)
     public void testReadAloudNativeEnabled() {
         assertTrue(ReadAloudFeatures.isNativeEnabled());
     }
 
     @Test
-    @DisableFeatures(AccessibilityFeatures.READ_ALOUD_NATIVE)
+    @DisableFeatures(ReadAloudFeatures.READ_ALOUD_NATIVE)
     public void testReadAloudNativeDisabled() {
         assertFalse(ReadAloudFeatures.isNativeEnabled());
     }
 
     @Test
-    @EnableFeatures(AccessibilityFeatures.READ_ALOUD_NATIVE)
+    @EnableFeatures(ReadAloudFeatures.READ_ALOUD_NATIVE)
     public void testCreatePlayback_nativeEnabled_createsNativePlayback() {
         when(mNativeBridgeNatives.init(any(), any())).thenReturn(12345L);
         mController.onProfileAvailable(mMockProfile);
@@ -821,7 +820,7 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
-    @EnableFeatures(AccessibilityFeatures.READ_ALOUD_NATIVE)
+    @EnableFeatures(ReadAloudFeatures.READ_ALOUD_NATIVE)
     public void testCheckReadability_nativeEnabled() {
         when(mNativeBridgeNatives.init(any(), any())).thenReturn(12345L);
         mController.onProfileAvailable(mMockProfile);
@@ -836,7 +835,7 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
-    @EnableFeatures(AccessibilityFeatures.READ_ALOUD_NATIVE)
+    @EnableFeatures(ReadAloudFeatures.READ_ALOUD_NATIVE)
     public void testOnReadabilityResult_nativeEnabled() {
         when(mNativeBridgeNatives.init(any(), any())).thenReturn(12345L);
         mController.onProfileAvailable(mMockProfile);
@@ -850,7 +849,7 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
-    @EnableFeatures(AccessibilityFeatures.READ_ALOUD_NATIVE)
+    @EnableFeatures(ReadAloudFeatures.READ_ALOUD_NATIVE)
     public void testIsAllowed_nativeEnabled() {
         UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(false);
         assertTrue(ReadAloudFeatures.isAllowed(mMockProfile));

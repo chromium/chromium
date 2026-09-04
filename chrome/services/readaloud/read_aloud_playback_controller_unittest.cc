@@ -28,9 +28,9 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
-#include "mojo/public/mojom/base/work_in_progress.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_features.mojom-features.h"
 
 namespace readaloud {
 
@@ -141,7 +141,7 @@ class ReadAloudPlaybackControllerTest : public testing::Test {
   ReadAloudPlaybackControllerTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     scoped_feature_list_.InitAndEnableFeature(
-        mojo_base::mojom::kMojomWorkInProgress);
+        ax::mojom::features::kReadAloudNative);
   }
 
   void SetUp() override {

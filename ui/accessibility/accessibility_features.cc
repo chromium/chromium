@@ -333,12 +333,11 @@ bool IsAccessibilityAndroidMathEnabled() {
   return base::FeatureList::IsEnabled(::features::kAccessibilityAndroidMath);
 }
 
-BASE_FEATURE(kReadAloudNative, base::FEATURE_DISABLED_BY_DEFAULT);
-bool IsReadAloudNativeEnabled() {
-  return base::FeatureList::IsEnabled(::features::kReadAloudNative);
-}
-
 #endif  // BUILDFLAG(IS_ANDROID)
+
+bool IsReadAloudNativeEnabled() {
+  return base::FeatureList::IsEnabled(ax::mojom::features::kReadAloudNative);
+}
 
 #if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kAXTreeFixing, base::FEATURE_DISABLED_BY_DEFAULT);

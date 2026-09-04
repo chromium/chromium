@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_base_export.h"
+#include "ui/accessibility/ax_features.mojom-features.h"
 
 // This file declares base::Features related to the ui/accessibility code.
 //
@@ -276,12 +277,12 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityAndroidMath);
 AX_BASE_EXPORT bool IsAccessibilityAndroidMathEnabled();
 
-// Controls the new native C++ implementation for Read Aloud on Android,
-// replacing the previous Speakr service integration.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAloudNative);
-AX_BASE_EXPORT bool IsReadAloudNativeEnabled();
-
 #endif  // BUILDFLAG(IS_ANDROID)
+
+// Controls the new native C++ implementation for Read Aloud,
+// replacing the previous Speakr service integration.
+using ax::mojom::features::kReadAloudNative;
+AX_BASE_EXPORT bool IsReadAloudNativeEnabled();
 
 #if !BUILDFLAG(IS_ANDROID)
 // Use the AXTree fixing code, which may be an assortment of different

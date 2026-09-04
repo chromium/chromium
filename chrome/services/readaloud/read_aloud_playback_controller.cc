@@ -56,6 +56,7 @@ void ReadAloudPlaybackController::CreateController(
         "controller and client handles to be valid");
     return;
   }
+
   ResetSession();
   controller_receiver_.Bind(std::move(controller));
   controller_receiver_.set_disconnect_handler(

@@ -32,7 +32,6 @@
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
-#include "mojo/public/mojom/base/work_in_progress.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -250,9 +249,7 @@ class ReadAloudServiceTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    scoped_feature_list_.InitWithFeatures(
-        {features::kReadAloudNative, mojo_base::mojom::kMojomWorkInProgress},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(features::kReadAloudNative);
 
     dom_distiller::DomDistillerServiceFactory::GetInstance()->SetTestingFactory(
         profile(), base::BindRepeating(&BuildMockDomDistillerService));

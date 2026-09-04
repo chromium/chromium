@@ -10,8 +10,8 @@ import "media/mojo/mojom/audio_parameters.mojom";
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
-import "mojo/public/mojom/base/work_in_progress.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
+import "ui/accessibility/ax_features.mojom";
 
 struct TextSegment {
   // 0-based index of this segment in reading order. Echoed back in
@@ -29,9 +29,7 @@ enum PlaybackState {
 
 // Interface for controlling playback (ReadAloudService [Browser] ->
 // ReadAloudPlaybackController [Utility])
-// TODO(b/529882158): Migrate from kMojomWorkInProgress to a production
-// feature flag.
-[RuntimeFeature=mojo_base.mojom.kMojomWorkInProgress]
+[RuntimeFeature=ax.mojom.features.kReadAloudNative]
 interface ReadAloudPlaybackController {
   InitializeAudio(pending_remote<media.mojom.AudioOutputStream> stream,
                   media.mojom.ReadWriteAudioDataPipe data_pipe,
@@ -59,9 +57,7 @@ interface ReadAloudPlaybackController {
 
 // Interface for receiving status updates
 // (ReadAloudPlaybackController [Utility] -> ReadAloudService [Browser])
-// TODO(b/529882158): Migrate from kMojomWorkInProgress to a production
-// feature flag.
-[RuntimeFeature=mojo_base.mojom.kMojomWorkInProgress]
+[RuntimeFeature=ax.mojom.features.kReadAloudNative]
 interface ReadAloudPlaybackControllerClient {
   OnPlaybackStateChanged(PlaybackState state);
   OnPlaybackDurationChanged(mojo_base.mojom.TimeDelta duration);
@@ -84,9 +80,6 @@ interface ReadAloudPlaybackControllerClient {
 // connection to the ReadAloudPlaybackController.
 [ServiceSandbox=sandbox.mojom.Sandbox.kUtility]
 interface ReadAloudPlaybackControllerFactory {
-  // TODO(b/529882158): `controller` and `client` parameters form a unified session pair.
-  // They are temporarily nullable (`?`) to satisfy `kMojomWorkInProgress` validation rules.
-  // Make them non-nullable once `kMojomWorkInProgress` is replaced with the production flag.
   // Creates a new controller instance. Successive calls to this method will
   // terminate any existing controller instance and replace it with the new one.
   CreateController(pending_receiver<ReadAloudPlaybackController>? controller,
