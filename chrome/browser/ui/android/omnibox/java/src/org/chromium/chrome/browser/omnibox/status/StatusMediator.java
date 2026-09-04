@@ -88,8 +88,6 @@ public class StatusMediator
                 SearchEngineIconObserver,
                 PermissionStatusHandler.Delegate {
 
-    static final String COOKIE_CONTROLS_ICON = "COOKIE_CONTROLS_ICON";
-
     private final PropertyModel mModel;
     private final OneshotSupplier<TemplateUrlService> mTemplateUrlServiceSupplier;
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
@@ -1006,14 +1004,6 @@ public class StatusMediator
                         updateLocationBarIcon(IconTransitionType.CROSSFADE);
                     }
                 });
-    }
-
-    void setTranslationX(float translationX) {
-        mModel.set(StatusProperties.TRANSLATION_X, translationX);
-    }
-
-    void setTooltipText(@StringRes int tooltipTextResId) {
-        applyBackgroundAndTooltipProperties();
     }
 
     void setBackground() {

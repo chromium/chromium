@@ -40,7 +40,6 @@ import org.chromium.components.browser_ui.widget.ChromeTransitionDrawable;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.util.TokenHolder;
 import org.chromium.ui.widget.Toast;
@@ -147,7 +146,7 @@ public class StatusView extends LinearLayout {
                 getResources()
                         .getDimensionPixelSize(R.dimen.omnibox_search_engine_logo_composed_size);
         setCornerRadiusRes(R.dimen.omnibox_search_engine_logo_composed_half_size);
-        mIconView.setClipToOutline(/* clipToOutline= */ true);
+        mIconView.setClipToOutline(true);
 
         configureAccessibilityDescriptions();
     }
@@ -336,7 +335,7 @@ public class StatusView extends LinearLayout {
                     if (duration > 0) {
                         keepControlsShownForAnimation();
                     }
-                    newImage.setCrossFadeEnabled(/* crossFade= */ true);
+                    newImage.setCrossFadeEnabled(true);
                     newImage.startTransition()
                             .setDuration(duration)
                             .withEndAction(this::resetAnimationStatus);
@@ -473,34 +472,6 @@ public class StatusView extends LinearLayout {
             @Nullable Runnable animationFinishedCallback) {
         mStatusIconDrawable = statusIconDrawable;
         animateStatusIcon(transitionType, animationFinishedCallback);
-    }
-
-    /** Specify the status icon visibility. */
-    public void setStatusIconShown(boolean showIcon) {
-        if (mStatusIconView == null) return;
-        // Check if layout was requested before changing our child view.
-        boolean wasLayoutPreviouslyRequested = isLayoutRequested();
-
-        // Set StatusIcon visibility and check whether we should set hover action on StatusView.
-        setStatusIconVisibility(showIcon ? VISIBLE : GONE);
-
-        updateTouchDelegate();
-        if (mIsAnimatingStatusIconChange && !showIcon) {
-            // If the icon view is hidden before it gets a chance to draw, our animation status will
-            // become stale. Reset it.
-            resetAnimationStatus();
-        }
-
-        // If the icon's visibility changes while layout is pending, we can end up in a bad state
-        // due to a stale measurement cache. Post a task to request layout to force this visibility
-        // change (crbug.com/40853631).
-        if (wasLayoutPreviouslyRequested && getHandler() != null) {
-            getHandler()
-                    .post(
-                            () ->
-                                    ViewUtils.requestLayout(
-                                            this, "StatusView.setStatusIconShown Runnable"));
-        }
     }
 
     /** Specify accessibility string presented to user upon long click. */

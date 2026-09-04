@@ -609,12 +609,12 @@ public final class StatusMediatorUnitTest {
                 .getPageClassification(/* prefetch= */ false);
 
         mMediator.setStatusClickListener(null);
-        mMediator.setTooltipText(Resources.ID_NULL);
+        mMediator.setBackground();
         // If there is no registered click listener, the tooltip text should be null.
         assertEquals(Resources.ID_NULL, mModel.get(StatusProperties.STATUS_VIEW_TOOLTIP_TEXT));
 
         mMediator.setStatusClickListener(ViewUtils.emptyClickListener());
-        mMediator.setTooltipText(Resources.ID_NULL);
+        mMediator.setBackground();
         assertEquals(
                 R.string.accessibility_menu_info,
                 mModel.get(StatusProperties.STATUS_VIEW_TOOLTIP_TEXT));
@@ -627,7 +627,7 @@ public final class StatusMediatorUnitTest {
                 .when(mLocationBarDataProvider)
                 .getPageClassification(/* prefetch= */ false);
 
-        mMediator.setTooltipText(Resources.ID_NULL);
+        mMediator.setBackground();
         assertEquals(Resources.ID_NULL, mModel.get(StatusProperties.STATUS_VIEW_TOOLTIP_TEXT));
     }
 
@@ -747,9 +747,9 @@ public final class StatusMediatorUnitTest {
 
     @Test
     public void showStatusView_toggleVisibility() {
-        mMediator.setShowStatusView(/* show= */ false);
+        mMediator.setShowStatusView(false);
         assertFalse(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
-        mMediator.setShowStatusView(/* show= */ true);
+        mMediator.setShowStatusView(true);
         assertTrue(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
     }
 
@@ -762,7 +762,7 @@ public final class StatusMediatorUnitTest {
                 /* pageIsPaintPreview= */ false);
         assertTrue(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
 
-        mMediator.setShowStatusIconForSecureOrigins(/* showStatusIconForSecureOrigins= */ false);
+        mMediator.setShowStatusIconForSecureOrigins(false);
         assertFalse(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
         assertNull(mModel.get(StatusProperties.STATUS_ICON_RESOURCE));
 
@@ -785,7 +785,7 @@ public final class StatusMediatorUnitTest {
         assertFalse(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
         assertNull(mModel.get(StatusProperties.STATUS_ICON_RESOURCE));
 
-        mMediator.setShowStatusIconForSecureOrigins(/* showStatusIconForSecureOrigins= */ true);
+        mMediator.setShowStatusIconForSecureOrigins(true);
         assertTrue(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
         assertNotNull(mModel.get(StatusProperties.STATUS_ICON_RESOURCE));
         assertEquals(
@@ -809,7 +809,7 @@ public final class StatusMediatorUnitTest {
                 mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes());
 
         // Simulate Mini Origin Bar hiding status icon for secure origins.
-        mMediator.setShowStatusIconForSecureOrigins(/* showStatusIconForSecureOrigins= */ false);
+        mMediator.setShowStatusIconForSecureOrigins(false);
         assertFalse(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
         assertNull(mModel.get(StatusProperties.STATUS_ICON_RESOURCE));
 
@@ -819,7 +819,7 @@ public final class StatusMediatorUnitTest {
         assertNull(mModel.get(StatusProperties.STATUS_ICON_RESOURCE));
 
         // Simulate Mini Origin Bar closing and restoring status icon for secure origins.
-        mMediator.setShowStatusIconForSecureOrigins(/* showStatusIconForSecureOrigins= */ true);
+        mMediator.setShowStatusIconForSecureOrigins(true);
         assertTrue(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
         assertNotNull(mModel.get(StatusProperties.STATUS_ICON_RESOURCE));
         assertEquals(
@@ -847,7 +847,7 @@ public final class StatusMediatorUnitTest {
         assertTrue(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
 
         // Secure pages should not show the status view if the flag is off.
-        mMediator.setShowStatusIconForSecureOrigins(/* showStatusIconForSecureOrigins= */ false);
+        mMediator.setShowStatusIconForSecureOrigins(false);
         mMediator.updateVerboseStatus(
                 ConnectionSecurityLevel.SECURE,
                 /* pageIsOffline= */ false,
@@ -857,7 +857,7 @@ public final class StatusMediatorUnitTest {
 
     @Test
     public void testUpdateStatusViewVisibility_withPermissionIcon() {
-        mMediator.setShowStatusIconForSecureOrigins(/* showStatusIconForSecureOrigins= */ false);
+        mMediator.setShowStatusIconForSecureOrigins(false);
         mMediator.updateVerboseStatus(
                 ConnectionSecurityLevel.SECURE,
                 /* pageIsOffline= */ false,
@@ -865,7 +865,7 @@ public final class StatusMediatorUnitTest {
         assertFalse(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
 
         StatusProperties.PermissionIconResource icon =
-                new StatusProperties.PermissionIconResource(null, false, "test_icon");
+                new StatusProperties.PermissionIconResource(null, /* isIncognito= */ false);
         mMediator.showPermissionIcon(icon);
 
         assertTrue(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
@@ -873,7 +873,7 @@ public final class StatusMediatorUnitTest {
 
     @Test
     public void testUpdateStatusViewVisibility_withVerboseStatusText() {
-        mMediator.setShowStatusIconForSecureOrigins(/* showStatusIconForSecureOrigins= */ false);
+        mMediator.setShowStatusIconForSecureOrigins(false);
         mMediator.updateVerboseStatus(
                 ConnectionSecurityLevel.SECURE,
                 /* pageIsOffline= */ false,
@@ -890,7 +890,7 @@ public final class StatusMediatorUnitTest {
 
     @Test
     public void testUpdateStatusViewVisibility_withPaintPreview() {
-        mMediator.setShowStatusIconForSecureOrigins(/* showStatusIconForSecureOrigins= */ false);
+        mMediator.setShowStatusIconForSecureOrigins(false);
         mMediator.updateVerboseStatus(
                 ConnectionSecurityLevel.SECURE,
                 /* pageIsOffline= */ false,
@@ -918,7 +918,7 @@ public final class StatusMediatorUnitTest {
 
         // Try to show the status icon, it should not work because the page info is moved to app
         // menu.
-        mMediator.setShowStatusIconForSecureOrigins(/* showStatusIconForSecureOrigins= */ true);
+        mMediator.setShowStatusIconForSecureOrigins(true);
         assertFalse(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
     }
 
@@ -936,7 +936,7 @@ public final class StatusMediatorUnitTest {
         assertTrue(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
 
         // Try to hide the status icon, it should work because page info is not moved to app menu.
-        mMediator.setShowStatusIconForSecureOrigins(/* showStatusIconForSecureOrigins= */ false);
+        mMediator.setShowStatusIconForSecureOrigins(false);
         assertFalse(mModel.get(StatusProperties.SHOW_STATUS_VIEW));
     }
 
@@ -950,7 +950,7 @@ public final class StatusMediatorUnitTest {
         doReturn(JUnitTestGURLs.BLUE_1).when(mLocationBarDataProvider).getCurrentGurl();
         mMediator.updateSecurityIcon(R.drawable.ic_globe_24dp, /* tintList= */ 0, /* desc= */ 0);
 
-        mModel.get(StatusProperties.STATUS_CLICK_LISTENER).onClick(/* view= */ null);
+        mModel.get(StatusProperties.STATUS_CLICK_LISTENER).onClick(null);
         verify(mPageInfoAction).show(any(), any());
     }
 
@@ -962,7 +962,7 @@ public final class StatusMediatorUnitTest {
         mMediator.setOnStatusIconNavigateBackButtonPress(mOnClickListener);
         mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);
 
-        mModel.get(StatusProperties.STATUS_CLICK_LISTENER).onClick(/* view= */ null);
+        mModel.get(StatusProperties.STATUS_CLICK_LISTENER).onClick(null);
         verify(mOnClickListener).onClick(any());
     }
 
@@ -974,7 +974,7 @@ public final class StatusMediatorUnitTest {
         mMediator.setOnStatusIconNavigateBackButtonPress(mOnClickListener);
         mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);
 
-        mModel.get(StatusProperties.STATUS_CLICK_LISTENER).onClick(/* view= */ null);
+        mModel.get(StatusProperties.STATUS_CLICK_LISTENER).onClick(null);
         verify(mOnClickListener).onClick(any());
     }
 
@@ -988,7 +988,7 @@ public final class StatusMediatorUnitTest {
     public void testFuseboxCompactMode_plusButton_allConditionsMet() {
         mFuseboxStateSupplier.set(FuseboxState.COMPACT);
         mMediator.beginInput(mFuseboxSessionState);
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
         mAutocompleteInput.setRequestType(AutocompleteRequestType.SEARCH);
 
         mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);
@@ -999,7 +999,7 @@ public final class StatusMediatorUnitTest {
                 mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes());
 
         assertNotNull(mModel.get(StatusProperties.STATUS_CLICK_LISTENER));
-        mModel.get(StatusProperties.STATUS_CLICK_LISTENER).onClick(/* view= */ null);
+        mModel.get(StatusProperties.STATUS_CLICK_LISTENER).onClick(null);
         verify(mTogglePopupCallback).run();
     }
 
@@ -1023,7 +1023,7 @@ public final class StatusMediatorUnitTest {
     public void testFuseboxCompactMode_fallbackToSpark_notDesktop() {
         mFuseboxStateSupplier.set(FuseboxState.COMPACT);
         mMediator.beginInput(mFuseboxSessionState);
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ false);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
         mAutocompleteInput.setRequestType(AutocompleteRequestType.SEARCH);
 
         mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);
@@ -1038,7 +1038,7 @@ public final class StatusMediatorUnitTest {
     public void testFuseboxCompactMode_fallbackToSpark_notConventional() {
         mFuseboxStateSupplier.set(FuseboxState.COMPACT);
         mMediator.beginInput(mFuseboxSessionState);
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
         mAutocompleteInput.setRequestType(AutocompleteRequestType.AI_MODE);
 
         mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);
@@ -1054,7 +1054,7 @@ public final class StatusMediatorUnitTest {
         mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
         mFuseboxStateSupplier.set(FuseboxState.COMPACT);
         mMediator.beginInput(mFuseboxSessionState);
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
         mAutocompleteInput.setRequestType(AutocompleteRequestType.SEARCH);
 
         mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);

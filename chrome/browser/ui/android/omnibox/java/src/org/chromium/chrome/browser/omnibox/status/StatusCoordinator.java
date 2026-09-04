@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
@@ -189,16 +188,6 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
         mMediator.setShowStatusIconForSecureOrigins(showStatusIconForSecureOrigins);
     }
 
-    /** Set the x translation of the status view. */
-    public void setTranslationX(float translationX) {
-        mMediator.setTranslationX(translationX);
-    }
-
-    /** Set the tooltip text of the status view. */
-    public void setTooltipText(@StringRes int tooltipTextResId) {
-        mMediator.setTooltipText(tooltipTextResId);
-    }
-
     /** Set the highlight background of the status view. */
     public void setBackground() {
         mMediator.setBackground();
@@ -283,11 +272,6 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
         return mStatusView.isSearchEngineStatusIconVisible();
     }
 
-    /** Returns {@code true} if the search engine icon is currently being displayed. */
-    public boolean shouldDisplaySearchEngineIcon() {
-        return mMediator.shouldDisplaySearchEngineIcon();
-    }
-
     /** Returns the ID of the drawable currently shown in the security icon. */
     public @DrawableRes int getSecurityIconResourceIdForTesting() {
         return mModel.get(StatusProperties.STATUS_ICON_RESOURCE) == null
@@ -325,14 +309,6 @@ public class StatusCoordinator implements LocationBarDataProvider.Observer {
     public int getStatusIconWidth() {
         // TODO(crbug.com/40707964): try to hide this method
         return mStatusView.getStatusIconWidth();
-    }
-
-    /**
-     * @see View#getMeasuredWidth()
-     */
-    public int getMeasuredWidth() {
-        // TODO(crbug.com/40707964): try to hide this method
-        return mStatusView.getMeasuredWidth();
     }
 
     /**

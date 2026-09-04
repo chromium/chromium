@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.omnibox.status;
 import android.graphics.Rect;
 import android.view.View;
 
-import androidx.annotation.StringRes;
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.omnibox.R;
@@ -55,27 +53,6 @@ public class PageInfoIphController {
                         .setAutoDismissTimeout(iphTimeout)
                         .setAnchorView(mStatusView)
                         .setInsetRect(new Rect())
-                        .build());
-    }
-
-    /**
-     * Show the IPH for store icon in omnibox.
-     *
-     * @param iphTimeout The timeout after which the IPH bubble should disappear if it was shown.
-     * @param stringId Resource id of the string displayed. The string will also be used for
-     *     accessibility.
-     */
-    public void showStoreIconIph(int iphTimeout, @StringRes int stringId) {
-        mUserEducationHelper.requestShowIph(
-                new IphCommandBuilder(
-                                mStatusView.getContext().getResources(),
-                                FeatureConstants.PAGE_INFO_STORE_INFO_FEATURE,
-                                stringId,
-                                stringId)
-                        .setAutoDismissTimeout(iphTimeout)
-                        .setAnchorView(mStatusView)
-                        .setInsetRect(new Rect())
-                        .setDismissOnTouch(true)
                         .build());
     }
 }

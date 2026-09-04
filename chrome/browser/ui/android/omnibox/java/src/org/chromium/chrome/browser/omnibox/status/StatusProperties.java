@@ -53,12 +53,6 @@ public class StatusProperties {
             mDrawable = drawable;
         }
 
-        /** Constructor for a custom drawable with identifier. */
-        public StatusIconResource(@Nullable Drawable drawable, String iconIdentifier) {
-            mDrawable = drawable;
-            mIconIdentifier = iconIdentifier;
-        }
-
         /** Constructor for a custom bitmap. */
         public StatusIconResource(
                 @Nullable String iconIdentifier, Bitmap bitmap, @ColorRes int tint) {
@@ -71,14 +65,6 @@ public class StatusProperties {
         public StatusIconResource(@DrawableRes int iconRes, @ColorRes int tint) {
             mIconRes = iconRes;
             mTint = tint;
-        }
-
-        /**
-         * @return The tint associated with this resource.
-         */
-        @ColorRes
-        int getTint() {
-            return mTint;
         }
 
         /**
@@ -189,13 +175,6 @@ public class StatusProperties {
             mContentDescriptionRes = contentDescriptionRes;
         }
 
-        PermissionIconResource(
-                @Nullable Drawable drawable, boolean isIncognito, String iconIdentifier) {
-            super(drawable, iconIdentifier);
-            mIsIncognito = isIncognito;
-            mContentDescriptionRes = 0;
-        }
-
         /**
          * Returns the resource ID for the accessibility description string associated with the
          * current permission icon. This is used by screen readers to announce the permission status
@@ -295,9 +274,6 @@ public class StatusProperties {
     /** The StatusView tooltip text resource. */
     static final WritableIntPropertyKey STATUS_VIEW_TOOLTIP_TEXT = new WritableIntPropertyKey();
 
-    /** The x translation of the status view. */
-    static final WritableFloatPropertyKey TRANSLATION_X = new WritableFloatPropertyKey();
-
     /** Specifies the preferred size of the Status field. */
     static final WritableBooleanPropertyKey USE_SMALL_WIDGET = new WritableBooleanPropertyKey();
 
@@ -336,7 +312,6 @@ public class StatusProperties {
                 STATUS_VIEW_BACKGROUND,
                 STATUS_VIEW_HOVER_ENABLED,
                 STATUS_VIEW_TOOLTIP_TEXT,
-                TRANSLATION_X,
                 USE_SMALL_WIDGET,
                 USE_WIDE_STATUS_ICON,
                 VERBOSE_STATUS_TEXT_COLOR,

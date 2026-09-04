@@ -62,8 +62,6 @@ class StatusViewBinder implements ViewBinder<PropertyModel, StatusView, Property
             view.setHoverEnabled(model.get(StatusProperties.STATUS_VIEW_HOVER_ENABLED));
         } else if (propertyKey == StatusProperties.STATUS_VIEW_TOOLTIP_TEXT) {
             applyStatusIconAndTooltipProperties(model, view);
-        } else if (propertyKey == StatusProperties.TRANSLATION_X) {
-            view.setTranslationX(model.get(StatusProperties.TRANSLATION_X));
         } else if (propertyKey == StatusProperties.USE_SMALL_WIDGET) {
             var params = view.getLayoutParams();
             boolean useSmallWidget = model.get(StatusProperties.USE_SMALL_WIDGET);
