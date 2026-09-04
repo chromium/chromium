@@ -249,6 +249,8 @@ std::string EntryPointToString(omnibox::ChromeAimEntryPoint entry_point) {
       return "omnibox_tab_search";
     case omnibox::DESKTOP_CHROME_COBROWSE_OMNIBOX_CONTEXTUAL_SUGGESTION:
       return "omnibox_contextual_suggestion";
+    case omnibox::DESKTOP_CHROME_COBROWSE_OMNIBOX_POPUP_BUTTON:
+      return "omnibox_popup_button";
     default:
       return "unknown";
   }

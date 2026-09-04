@@ -107,4 +107,7 @@ enum ChromeAimEntryPoint {
 
   // AIM is entered from a contextual search suggestion in the omnibox.
   DESKTOP_CHROME_COBROWSE_OMNIBOX_CONTEXTUAL_SUGGESTION = 207;
+
+  // AIM is entered from the omnibox popup button.
+  DESKTOP_CHROME_COBROWSE_OMNIBOX_POPUP_BUTTON = 210;
 }

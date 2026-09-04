@@ -891,7 +891,8 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
     }
     return this.entryPoint_ === 'omnibox_tab_search' ||
         this.entryPoint_ === 'omnibox_action' ||
-        this.entryPoint_ === 'omnibox_contextual_suggestion';
+        this.entryPoint_ === 'omnibox_contextual_suggestion' ||
+        this.entryPoint_ === 'omnibox_popup_button';
   }
 
   // <if expr="not is_android">
