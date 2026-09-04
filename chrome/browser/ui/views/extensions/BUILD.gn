@@ -310,11 +310,13 @@ source_set("browser_tests") {
       ":extension_post_install_dialog_view_utils",
       ":extension_view_utils",
       ":extensions_menu_button",
+      ":extensions_menu_coordinator",
       ":extensions_menu_delegate_desktop",
       ":extensions_menu_entry_view",
       ":extensions_menu_item_view",
       ":extensions_menu_main_page_view",
       ":extensions_menu_site_permissions_page_view",
+      ":extensions_menu_view",
       ":extensions_request_access_button",
       ":extensions_request_access_hover_card_coordinator",
       ":extensions_toolbar_button",
@@ -395,11 +397,13 @@ source_set("interactive_ui_tests") {
   deps = [
     ":extension_popup",
     ":extensions_menu_button",
+    ":extensions_menu_coordinator",
     ":extensions_menu_delegate_desktop",
     ":extensions_menu_entry_view",
     ":extensions_menu_item_view",
     ":extensions_menu_main_page_view",
     ":extensions_menu_site_permissions_page_view",
+    ":extensions_menu_view",
     ":extensions_request_access_button",
     ":extensions_toolbar_button",
     ":security_dialog_tracker",
@@ -555,8 +559,21 @@ source_set("extensions_toolbar_coordinator") {
   public_deps = [ "//ui/views" ]
 }
 
+source_set("extensions_toolbar_coordinator_impl") {
+  sources = [ "extensions_toolbar_coordinator.cc" ]
+  public_deps = [
+    ":extensions_toolbar_coordinator",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+  deps = [
+    ":extensions_toolbar_desktop_view_controller",
+    "//base",
+  ]
+}
+
 source_set("extensions_menu_delegate_desktop") {
   public = [ "extensions_menu_delegate_desktop.h" ]
+  sources = [ "extensions_menu_delegate_desktop.cc" ]
   public_deps = [
     "//base",
     "//chrome/browser/ui/extensions",
@@ -565,6 +582,91 @@ source_set("extensions_menu_delegate_desktop") {
     "//extensions/common",
     "//ui/views",
     "//url",
+  ]
+  deps = [
+    ":extension_action_delegate_desktop",
+    ":extension_view_utils",
+    ":extensions_container_views",
+    ":extensions_menu_entry_view",
+    ":extensions_menu_main_page_view",
+    ":extensions_menu_site_permissions_page_view",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/tabs:tab_strip_model_observer",
+    "//chrome/browser/ui/toolbar",
+    "//chrome/browser/ui/views:layout_provider",
+    "//content/public/browser",
+    "//ui/base",
+  ]
+}
+
+source_set("extensions_menu_coordinator") {
+  public = [ "extensions_menu_coordinator.h" ]
+  sources = [ "extensions_menu_coordinator.cc" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/extensions",
+    "//ui/views",
+  ]
+  deps = [
+    ":extensions_menu_delegate_desktop",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/views:layout_provider",
+    "//extensions/common",
+    "//ui/base/mojom:ui_base_types",
+  ]
+}
+
+source_set("extensions_toolbar_desktop_view_controller") {
+  public = [ "extensions_toolbar_desktop_view_controller.h" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/tabs:tab_strip_model_observer",
+    "//chrome/browser/ui/toolbar",
+  ]
+}
+
+source_set("extensions_toolbar_desktop_view_controller_impl") {
+  sources = [ "extensions_toolbar_desktop_view_controller.cc" ]
+  public_deps = [
+    ":extensions_toolbar_desktop_view_controller",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+  deps = [ "//ui/views" ]
+}
+
+source_set("extensions_menu_view") {
+  public = [ "extensions_menu_view.h" ]
+  sources = [ "extensions_menu_view.cc" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/tabs:tab_strip_model_observer",
+    "//chrome/browser/ui/toolbar",
+    "//extensions/browser",
+    "//ui/base/metadata",
+    "//ui/views",
+  ]
+  deps = [
+    ":extension_action_delegate_desktop",
+    ":extensions_container_views",
+    ":extensions_menu_item_view",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ui:chrome_pages",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/extensions",
+    "//chrome/browser/ui/tabs:tab_enums",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/views:bubble_menu_item_factory",
+    "//chrome/browser/ui/views:layout_provider",
+    "//chrome/browser/ui/views/controls",
+    "//components/vector_icons",
+    "//extensions/common",
+    "//ui/base",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/color:color_headers",
+    "//ui/gfx/geometry",
   ]
 }
 
@@ -679,6 +781,8 @@ source_set("extensions_toolbar_button_impl") {
     "//chrome/browser:browser_public_dependencies",
   ]
   deps = [
+    ":extensions_menu_coordinator",
+    ":extensions_menu_view",
     ":extensions_request_access_button",
     "//base",
     "//chrome/app:generated_resources",

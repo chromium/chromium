@@ -2505,16 +2505,8 @@ static_library("ui") {
       "views/browser_dialogs_views.cc",
       "views/bubble_anchor_util_views.cc",
       "views/extensions/extension_view_utils.cc",
-      "views/extensions/extensions_menu_coordinator.cc",
-      "views/extensions/extensions_menu_coordinator.h",
-      "views/extensions/extensions_menu_delegate_desktop.cc",
-      "views/extensions/extensions_menu_view.cc",
-      "views/extensions/extensions_menu_view.h",
-      "views/extensions/extensions_toolbar_coordinator.cc",
       "views/extensions/extensions_toolbar_desktop.cc",
       "views/extensions/extensions_toolbar_desktop.h",
-      "views/extensions/extensions_toolbar_desktop_view_controller.cc",
-      "views/extensions/extensions_toolbar_desktop_view_controller.h",
       "views/frame/app_menu_button.cc",
       "views/frame/app_menu_button.h",
       "views/frame/base_tab_strip_region_view.cc",
@@ -2740,17 +2732,22 @@ static_library("ui") {
       "//chrome/browser/ui/views/extensions:extension_install_dialog_view_impl",
       "//chrome/browser/ui/views/extensions:extension_view_utils",
       "//chrome/browser/ui/views/extensions:extensions_container_views",
+      "//chrome/browser/ui/views/extensions:extensions_menu_coordinator",
       "//chrome/browser/ui/views/extensions:extensions_menu_delegate_desktop",
       "//chrome/browser/ui/views/extensions:extensions_menu_entry_view",
       "//chrome/browser/ui/views/extensions:extensions_menu_item_view",
       "//chrome/browser/ui/views/extensions:extensions_menu_main_page_view",
       "//chrome/browser/ui/views/extensions:extensions_menu_site_permissions_page_view",
+      "//chrome/browser/ui/views/extensions:extensions_menu_view",
       "//chrome/browser/ui/views/extensions:extensions_request_access_button",
       "//chrome/browser/ui/views/extensions:extensions_request_access_button_impl",
       "//chrome/browser/ui/views/extensions:extensions_request_access_hover_card_coordinator",
       "//chrome/browser/ui/views/extensions:extensions_toolbar_button",
       "//chrome/browser/ui/views/extensions:extensions_toolbar_button_impl",
       "//chrome/browser/ui/views/extensions:extensions_toolbar_coordinator",
+      "//chrome/browser/ui/views/extensions:extensions_toolbar_coordinator_impl",
+      "//chrome/browser/ui/views/extensions:extensions_toolbar_desktop_view_controller",
+      "//chrome/browser/ui/views/extensions:extensions_toolbar_desktop_view_controller_impl",
       "//chrome/browser/ui/views/extensions:security_dialog_tracker",
       "//chrome/browser/ui/views/extensions:windows_utils_views",
       "//chrome/browser/ui/views/frame:app_menu_button_observer",
@@ -3019,6 +3016,12 @@ static_library("ui") {
       # following header gets componentized:
       # c/b/ui/views/extensions/extensions_toolbar_desktop.h
       "//chrome/browser/ui/views/extensions:extensions_toolbar_button_impl",
+
+      # extensions_toolbar_coordinator_impl and
+      # extensions_toolbar_desktop_view_controller_impl include
+      # extensions_toolbar_desktop.h which cannot be split out yet.
+      "//chrome/browser/ui/views/extensions:extensions_toolbar_coordinator_impl",
+      "//chrome/browser/ui/views/extensions:extensions_toolbar_desktop_view_controller_impl",
 
       # TODO(crbug.com/353332589): These targets include headers from
       # //chrome/browser/ui:ui.
@@ -3984,10 +3987,12 @@ static_library("test_support") {
       "//chrome/browser/ui/views/controls",
       "//chrome/browser/ui/views/extensions:extension_popup",
       "//chrome/browser/ui/views/extensions:extensions_menu_button",
+      "//chrome/browser/ui/views/extensions:extensions_menu_coordinator",
       "//chrome/browser/ui/views/extensions:extensions_menu_delegate_desktop",
       "//chrome/browser/ui/views/extensions:extensions_menu_entry_view",
       "//chrome/browser/ui/views/extensions:extensions_menu_item_view",
       "//chrome/browser/ui/views/extensions:extensions_menu_main_page_view",
+      "//chrome/browser/ui/views/extensions:extensions_menu_view",
       "//chrome/browser/ui/views/extensions:extensions_toolbar_button",
       "//chrome/browser/ui/views/extensions:extensions_toolbar_coordinator",
       "//chrome/browser/ui/views/web_apps/isolated_web_apps:installer_base",

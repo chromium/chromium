@@ -71,6 +71,8 @@ source_set("impl") {
     "//chrome/browser/ui/views:layout_provider",
     "//chrome/browser/ui/views/extensions:extension_action_delegate_desktop",
     "//chrome/browser/ui/views/extensions:extensions_container_views",
+    "//chrome/browser/ui/views/extensions:extensions_menu_coordinator",
+    "//chrome/browser/ui/views/extensions:extensions_menu_view",
     "//chrome/browser/ui/views/permissions/chip",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/browser/ui/waap",
