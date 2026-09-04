@@ -549,10 +549,6 @@ bool IsReservedNameOnWindows(const base::FilePath::StringType& filename) {
       // shell.
       "desktop.ini",
       "thumbs.db",
-      // Windows console input/output devices. Unlike legacy DOS devices (e.g.
-      // CON), Windows does not strip extensions for CONIN$/CONOUT$.
-      "conin$",
-      "conout$",
   });
 
 #if BUILDFLAG(IS_WIN)
@@ -561,21 +557,16 @@ bool IsReservedNameOnWindows(const base::FilePath::StringType& filename) {
   std::string filename_lower = base::ToLowerASCII(filename);
 #endif
 
-  // On Windows, trailing spaces and dots are stripped by Win32 API path
-  // canonicalization (e.g., "con " or "con. " resolves to device "\\.\CON").
-  std::string_view trimmed_filename =
-      base::TrimString(filename_lower, " .", base::TRIM_TRAILING);
-
   return std::ranges::any_of(kKnownDevices,
-                             [trimmed_filename](std::string_view device) {
-                               if (trimmed_filename == device) {
+                             [&filename_lower](std::string_view device) {
+                               if (filename_lower == device) {
                                  return true;
                                }
                                auto parts =
-                                   SplitStringOnce(trimmed_filename, '.');
+                                   SplitStringOnce(filename_lower, '.');
                                return parts && parts->first == device;
                              }) ||
-         kMagicNames.contains(trimmed_filename);
+         kMagicNames.contains(filename_lower);
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
