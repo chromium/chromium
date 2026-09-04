@@ -4603,6 +4603,7 @@ public class LocationBarMediatorUnitTest {
 
         var input = mSessionState.getAutocompleteInput();
         input.setRequestType(AutocompleteRequestType.SEARCH);
+        input.setDisplayState(DisplayState.SUGGESTIONS);
         mMediator.beginInput(input);
         input.setInitialUserText("page.com");
         doReturn("page.com").when(mUrlCoordinator).getTextWithoutAutocomplete();
@@ -5510,6 +5511,7 @@ public class LocationBarMediatorUnitTest {
         setUpMediatorAndCoordinator();
         AutocompleteInput input = mSessionState.getAutocompleteInput();
         input.setRequestType(AutocompleteRequestType.SEARCH);
+        input.setDisplayState(DisplayState.SUGGESTIONS);
         mMediator.beginInput(input);
         input.setInitialUserText("google.com");
         doReturn("google.com").when(mUrlCoordinator).getTextWithoutAutocomplete();
@@ -5526,6 +5528,7 @@ public class LocationBarMediatorUnitTest {
         setUpMediatorAndCoordinator();
         AutocompleteInput input = mSessionState.getAutocompleteInput();
         input.setRequestType(AutocompleteRequestType.SEARCH);
+        input.setDisplayState(DisplayState.SUGGESTIONS);
         mMediator.beginInput(input);
         input.setInitialUserText("google.com");
         doReturn("different text").when(mUrlCoordinator).getTextWithoutAutocomplete();
@@ -5541,9 +5544,24 @@ public class LocationBarMediatorUnitTest {
         setUpMediatorAndCoordinator();
         AutocompleteInput input = mSessionState.getAutocompleteInput();
         input.setRequestType(AutocompleteRequestType.SEARCH);
+        input.setDisplayState(DisplayState.SUGGESTIONS);
         mMediator.beginInput(input);
         input.setInitialUserText("google.com");
-        doReturn("").when(mUrlCoordinator).getTextWithoutAutocomplete();
+        clearInvocations(mUrlCoordinator);
+
+        mMediator.onActivationChipSelectionChanged(true);
+
+        verify(mUrlCoordinator, never()).setUrlBarData(any(), anyInt(), any());
+    }
+
+    @Test
+    public void testActivationChipSelectionChanged_doesNotClearInDraftingState() {
+        setUpMediatorAndCoordinator();
+        AutocompleteInput input = mSessionState.getAutocompleteInput();
+        input.setRequestType(AutocompleteRequestType.SEARCH);
+        input.setDisplayState(DisplayState.DRAFTING);
+        mMediator.beginInput(input);
+        input.setInitialUserText("google.com");
         clearInvocations(mUrlCoordinator);
 
         mMediator.onActivationChipSelectionChanged(true);

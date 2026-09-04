@@ -3779,7 +3779,8 @@ class LocationBarMediator
 
     /* package */ void onActivationChipSelectionChanged(boolean selected) {
         if (selected && mCurrentInput != null) {
-            if (isUrlBarTextUnchanged()
+            if (displayStateEquals(DisplayState.SUGGESTIONS)
+                    && isUrlBarTextUnchanged()
                     && !TextUtils.isEmpty(mUrlCoordinator.getTextWithoutAutocomplete())) {
                 clearEditingAndUserText();
             }
