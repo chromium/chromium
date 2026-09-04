@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
@@ -446,6 +447,11 @@ class CONTENT_EXPORT Request
   bool IsUsingAmbient() const;
 
   blink::mojom::RpMode GetRpMode() const { return rp_mode_; }
+
+  // Shows a FedCM UI and returns true if it succeeded and the Request was not
+  // destroyed. Showing a FedCM UI may cause the tab to drop fullscreen or lose
+  // focus, during which the frame may be detached and this Request destroyed.
+  bool ShowDialog(base::FunctionRef<bool()> show_dialog_callback);
 
   // If the client metadata has not been received yet the UI may not be able to
   // show a correct title, so we need to indicate that in the RelyingPartyData.
