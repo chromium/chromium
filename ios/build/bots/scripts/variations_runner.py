@@ -13,9 +13,10 @@ import sys
 import iossim_util
 import test_apps
 import test_runner
+import xcode_util
 from test_result_util import ResultCollection, TestResult, TestStatus
 from xcodebuild_runner import SimulatorParallelTestRunner
-from xcode_log_parser import XcodeLogParser
+from xcode_log_parser import Xcode16LogParser, XcodeLogParser
 
 _THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 _SRC_DIR = os.path.join(
@@ -176,6 +177,8 @@ class VariationsSimulatorParallelTestRunner(SimulatorParallelTestRunner):
       if arg in self.test_app.test_args:
         self.test_app.test_args.remove(arg)
 
+    if xcode_util.using_xcode_16_or_higher():
+      return Xcode16LogParser.collect_test_results(launch_out_dir, output)
     return XcodeLogParser.collect_test_results(launch_out_dir, output)
 
   def _launch_variations_smoke_test(self):
