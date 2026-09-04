@@ -156,7 +156,8 @@ bool IsNewTabPageUICleanupEnabled() {
          variation == NTPUICleanupVariation::kPreferredPadding;
 }
 
-bool IsNewTabPageUICleanupFakeboxOnlyEnabled() {
-  return GetNewTabPageUICleanupVariation() ==
-         NTPUICleanupVariation::kFakeboxBackgroundAndShadow;
+bool ShouldApplyFakeboxBackgroundAndShadow() {
+  return IsNewTabPageUICleanupEnabled() ||
+         GetNewTabPageUICleanupVariation() ==
+             NTPUICleanupVariation::kFakeboxBackgroundAndShadow;
 }

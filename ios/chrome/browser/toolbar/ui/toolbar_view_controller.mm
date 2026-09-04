@@ -15,6 +15,10 @@
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_image_background_trait.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/scene_layout_state.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -49,6 +53,9 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
+
+// The name of the default NTP background color asset.
+NSString* const kNTPBackgroundColor = @"ntp_background_color";
 
 // Spacing between buttons in the toolbar's horizontal stack view.
 constexpr CGFloat kStackViewSpacing = 9;
@@ -412,11 +419,7 @@ constexpr CGFloat kGlassFullscreenScaleFactor = 0.8;
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.view.translatesAutoresizingMaskIntoConstraints = NO;
-  if (IsGlassToolbarEnabled()) {
-    self.view.backgroundColor = [UIColor clearColor];
-  } else {
-    self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
-  }
+  self.view.backgroundColor = [self toolbarBackgroundColor];
   self.view.accessibilityIdentifier = _topPosition
                                           ? kPrimaryToolbarViewIdentifier
                                           : kSecondaryToolbarViewIdentifier;
@@ -443,7 +446,8 @@ constexpr CGFloat kGlassFullscreenScaleFactor = 0.8;
           @[ UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class ]
                    withAction:@selector(sizeClassDidChange)];
 
-  [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
+  [self registerForTraitChanges:
+            @[ UITraitUserInterfaceStyle.class, NewTabPageTrait.class ]
                      withAction:@selector(userInterfaceStyleDidChange)];
 }
 
@@ -581,6 +585,7 @@ constexpr CGFloat kGlassFullscreenScaleFactor = 0.8;
   if (loadingStateChanged || ntpVisibilityChanged) {
     if (ntpVisibilityChanged) {
       _NTPVisible = NTPVisible;
+      [self updateBackgroundColors];
       [self updateToolbarVisibility];
     }
 
@@ -1023,6 +1028,56 @@ constexpr CGFloat kGlassFullscreenScaleFactor = 0.8;
 
 #pragma mark - Private
 
+// Updates the background colors of the toolbar view and location bar.
+- (void)updateBackgroundColors {
+  _locationBarBackground.backgroundColor = [self locationBarBackgroundColor];
+  self.view.backgroundColor = [self toolbarBackgroundColor];
+}
+
+// Returns the background color for the location bar based on current state.
+- (UIColor*)locationBarBackgroundColor {
+  // On iPhone, the location bar matches the fakebox color (white or custom
+  // palette) when `kNewTabPageUICleanup` is enabled. Otherwise, fallback to the
+  // standard location bar background color.
+  if (!CanShowTabStrip(self) && _NTPVisible &&
+      ShouldApplyFakeboxBackgroundAndShadow()) {
+    NewTabPageColorPalette* colorPalette =
+        [self.traitCollection objectForNewTabPageTrait];
+    return colorPalette ? colorPalette.omniboxColor
+                        : [UIColor colorNamed:kSolidWhiteColor];
+  }
+  return ToolbarElementBackgroundColor(_incognito);
+}
+
+// Returns the background color for the toolbar view based on current state.
+- (UIColor*)toolbarBackgroundColor {
+  if (IsGlassToolbarEnabled()) {
+    return [UIColor clearColor];
+  }
+
+  if (!CanShowTabStrip(self) && _NTPVisible) {
+    NewTabPageColorPalette* colorPalette =
+        [self.traitCollection objectForNewTabPageTrait];
+    if (colorPalette) {
+      return colorPalette.primaryColor;
+    } else if ([self.traitCollection boolForNewTabPageImageBackgroundTrait]) {
+      return [UIColor colorNamed:kBackgroundColor];
+    } else if (IsNewTabPageUICleanupEnabled()) {
+      // Matches the updated NTP UI cleanup background color.
+      return [UIColor colorNamed:kNewTabPageBackgroundColor];
+    } else if (ShouldApplyFakeboxBackgroundAndShadow()) {
+      // In light mode, matches the default light blue NTP background
+      // color to prevent the white pinned omnibox from blending into a white
+      // toolbar. In dark mode, matches standard `kBackgroundColor`.
+      if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
+        return [UIColor colorNamed:kBackgroundColor];
+      }
+      return [UIColor colorNamed:kNTPBackgroundColor];
+    }
+  }
+  return [UIColor colorNamed:kBackgroundColor];
+}
+
 // Creates and configures a separator line for the toolbar.
 - (UIView*)createSeparator {
   UIView* separator = [[UIView alloc] init];
@@ -1198,10 +1253,7 @@ constexpr CGFloat kGlassFullscreenScaleFactor = 0.8;
   UIView* locationBarBackground = [[UIView alloc] init];
   locationBarBackground.translatesAutoresizingMaskIntoConstraints = NO;
   locationBarBackground.layer.cornerRadius = kLocationBarHeight / 2.0;
-
-  locationBarBackground.backgroundColor =
-      ToolbarElementBackgroundColor(_incognito);
-
+  locationBarBackground.backgroundColor = [self locationBarBackgroundColor];
   ConfigureShadowForToolbarElement(locationBarBackground);
 
   return locationBarBackground;
@@ -1988,6 +2040,7 @@ constexpr CGFloat kGlassFullscreenScaleFactor = 0.8;
   [self updateToolbarVisibility];
   [self updateTabGroupIndicatorAvailability];
   [self updateTabSwitcherGuide];
+  [self updateBackgroundColors];
   if (_topPosition) {
     [self updateBannerConstraints];
     _bannerPromoBackgroundHeightConstraint.constant = [self
@@ -2000,6 +2053,7 @@ constexpr CGFloat kGlassFullscreenScaleFactor = 0.8;
   if (_locationBarBackground) {
     ConfigureShadowForToolbarElement(_locationBarBackground);
   }
+  [self updateBackgroundColors];
 }
 
 // Safely updates a layout guide by either referencing `view` or unreferencing
