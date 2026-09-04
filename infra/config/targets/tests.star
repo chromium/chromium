@@ -3081,6 +3081,14 @@ targets.tests.gpu_telemetry_test(
         "gpu_force_high_performance_gpu",
         "gpu_integration_test_webgl1_args",
         "gpu_integration_test_common_args",
+        targets.mixin(
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+            android_swarming = targets.swarming(
+                shards = 6,
+            ),
+        ),
     ],
     module_scheme = "flat",
 )

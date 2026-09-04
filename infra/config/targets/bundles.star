@@ -4297,7 +4297,6 @@ targets.bundle(
     targets = [
         # arm64 tests are the arm tests + Graphite equivalents.
         "gpu_fyi_android_arm_release_telemetry_tests",
-        "gpu_webgl_conformance_validating_graphite_telemetry_tests",
         "gpu_webrtc_validating_graphite_telemetry_test",
 
         # Migrated individual tests below.
@@ -4309,6 +4308,7 @@ targets.bundle(
         "screenshot_sync_passthrough_graphite_tests",
         "webcodecs_graphite_tests",
         "webgl_conformance_gles_passthrough_graphite_tests",
+        "webgl_conformance_validating_graphite_tests",
     ],
 )
 
@@ -4764,25 +4764,6 @@ targets.bundle(
                 ),
                 chromeos_swarming = targets.swarming(
                     shards = 20,
-                ),
-            ),
-        ],
-    },
-)
-
-targets.bundle(
-    name = "gpu_webgl_conformance_validating_graphite_telemetry_tests",
-    targets = [
-        "webgl_conformance_validating_graphite_tests",
-    ],
-    per_test_modifications = {
-        "webgl_conformance_validating_graphite_tests": [
-            targets.mixin(
-                swarming = targets.swarming(
-                    shards = 2,
-                ),
-                android_swarming = targets.swarming(
-                    shards = 6,
                 ),
             ),
         ],
