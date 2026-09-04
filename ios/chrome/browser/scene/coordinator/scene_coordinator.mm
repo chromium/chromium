@@ -2847,6 +2847,13 @@ inline LayoutStateScenePassKey PassKey() {
 
 
 - (void)minimizeGeminiIfInvoked {
+  if (IsIOSGeminiBottomSheetMigrationEnabled()) {
+    [_geminiContainerCoordinator minimize];
+    return;
+  }
+
+  // Calling CollapseFloatyIfInvoked would minimize the floaty for the overlay
+  // use case.
   GeminiBrowserAgent* geminiBrowserAgent =
       GeminiBrowserAgent::FromBrowser(_regularBrowser.get());
   if (geminiBrowserAgent) {

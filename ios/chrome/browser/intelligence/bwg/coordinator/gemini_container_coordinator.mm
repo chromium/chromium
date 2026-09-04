@@ -89,6 +89,11 @@
                                             completion:completion];
 }
 
+- (void)minimize {
+  [_containerHandler
+      animateAssistantContainerToDetent:AssistantContainerDetent::kMinimized];
+}
+
 - (void)stop {
   [_mediator disconnect];
   _mediator = nil;

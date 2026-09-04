@@ -25,6 +25,10 @@
 // Dismisses the assistant container.
 - (void)dismissWithCompletion:(void (^)(void))completion;
 
+// Minimizes the assistant container to its smallest detent while keeping it
+// visible.
+- (void)minimize;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_COORDINATOR_GEMINI_CONTAINER_COORDINATOR_H_
