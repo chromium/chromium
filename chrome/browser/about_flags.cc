@@ -4115,6 +4115,14 @@ const FeatureEntry::FeatureVariation kAndroidTipsNotificationsV2Variations[] = {
      kAndroidTipsNotificationsV2UtilityAndOrganization, nullptr},
 };
 
+const FeatureEntry::FeatureParam
+    kRobustWindowManagementExperimentalOpenAdjacently[] = {
+        {"open_adjacently", "false"}};
+const FeatureEntry::FeatureVariation
+    kRobustWindowManagementExperimentalVariations[] = {
+        {"Open Fullscreen", kRobustWindowManagementExperimentalOpenAdjacently,
+         nullptr}};
+
 const FeatureEntry::FeatureParam kAndroidNavigationBlurSkipSrpParams[] = {
     {"skip_srp", "true"}};
 const FeatureEntry::FeatureVariation kNavigationBlurVariations[] = {
@@ -11731,6 +11739,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidAdaptiveFrameRateName,
      flag_descriptions::kAndroidAdaptiveFrameRateDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kUseFrameIntervalDeciderAdaptiveFrameRate)},
+
+    {"robust-window-management-experimental",
+     flag_descriptions::kRobustWindowManagementExperimentalName,
+     flag_descriptions::kRobustWindowManagementExperimentalDescription,
+     kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kRobustWindowManagementExperimental,
+         kRobustWindowManagementExperimentalVariations,
+         "RobustWindowManagementExperimental")},
 
     {"schedule-window-cleaning", flag_descriptions::kScheduleWindowCleaningName,
      flag_descriptions::kScheduleWindowCleaningDescription, kOsAndroid,

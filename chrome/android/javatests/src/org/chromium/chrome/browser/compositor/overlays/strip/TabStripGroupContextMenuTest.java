@@ -9,7 +9,6 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
 import static androidx.test.espresso.action.ViewActions.pressKey;
 import static androidx.test.espresso.action.ViewActions.replaceText;
-import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
@@ -595,14 +594,14 @@ public class TabStripGroupContextMenuTest {
                                 R.plurals.move_group_to_another_window_context_menu_item, 2);
 
         // Click on "Move tab to other window" to open a submenu.
-        onView(withText(moveToAnotherWindow)).perform(scrollTo(), click());
+        onView(withText(moveToAnotherWindow)).perform(click());
 
         // Sub-menu should be scrollable and should not have excess space.
         onView(withId(R.id.tab_group_action_menu_list)).check(matches(isScrollContainerMatcher));
         onView(withId(R.id.tab_group_action_menu_list)).check(matches(layoutParamsMatcher));
 
         // Go back to the main menu.
-        onView(withText(moveToAnotherWindow)).perform(scrollTo(), click());
+        onView(withText(moveToAnotherWindow)).perform(click());
 
         // Main menu should not be scrollable again.
         onView(withId(R.id.tab_group_action_menu_list))
