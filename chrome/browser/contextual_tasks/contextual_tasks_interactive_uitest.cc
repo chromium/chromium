@@ -454,6 +454,18 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
     return WaitForStateChange(contents_id, change);
   }
 
+  static auto WaitForElementVisible(const ui::ElementIdentifier& contents_id,
+                                    const DeepQuery& element) {
+    StateChange change;
+    change.type = StateChange::Type::kExistsAndConditionTrue;
+    change.where = element;
+    change.test_function =
+        "(el) => { const r = el.getBoundingClientRect(); return r.width > 0 && "
+        "r.height > 0; }";
+    change.event = kElementExistsEvent;
+    return WaitForStateChange(contents_id, change);
+  }
+
   static auto ClickButton(const ui::ElementIdentifier& contents_id,
                           const DeepQuery& element) {
     return ExecuteJsAt(contents_id, element, "el => el.click()");
@@ -1106,8 +1118,8 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
 };
 
 // TODO(crbug.com/500717050): Parameterize this test suite on the feature flag.
-// TODO(crbug.com/524797987): Re-enable this test.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+// TODO(crbug.com/524797987): Re-enable this test on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_AddAndRemovePdfChipFromComposebox \
   DISABLED_AddAndRemovePdfChipFromComposebox
 #else
@@ -1155,8 +1167,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
                   ForceClickMenuButton(kPrimaryTab, "fileUpload"),
 
                   WaitForDocumentChipWithTitle(kPrimaryTab, "download.pdf"),
+                  WaitForElementVisible(kPrimaryTab, kDocumentChip),
                   WaitForComposeboxFilesCount(1),
 
+                  WaitForElementVisible(kPrimaryTab, kRemoveDocumentButton),
                   ClickButton(kPrimaryTab, kRemoveDocumentButton),
                   WaitForElementDoesNotExist(kPrimaryTab, kDocumentChip),
                   WaitForComposeboxFilesCount(0));
