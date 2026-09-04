@@ -149,21 +149,6 @@ void SendTabToSelfToolbarBubbleView::Hide() {
       ->ShowActionEphemerallyInToolbar(kActionSendTabToSelf, false);
 }
 
-void SendTabToSelfToolbarBubbleView::ReplaceEntry(
-    const SendTabToSelfEntry& new_entry) {
-  SendTabToSelfSyncServiceFactory::GetForProfile(browser_->GetProfile())
-      ->GetSendTabToSelfModel()
-      ->DismissEntry(entry_.GetGUID());
-  title_label_->SetText(base::UTF8ToUTF16(new_entry.GetTitle()));
-
-  url_label_->SetText(
-      url_formatter::FormatUrlForSecurityDisplay(new_entry.GetURL()));
-  device_label_->SetText(l10n_util::GetStringFUTF16(
-      IDS_TOOLBAR_BUTTON_SEND_TAB_TO_SELF_FROM_DEVICE,
-      base::UTF8ToUTF16(new_entry.GetDeviceName())));
-  entry_ = new_entry;
-}
-
 BEGIN_METADATA(SendTabToSelfToolbarBubbleView)
 END_METADATA
 

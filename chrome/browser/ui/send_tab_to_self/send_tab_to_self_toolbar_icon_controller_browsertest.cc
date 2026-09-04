@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service_factory.h"
@@ -201,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerDisabledAutoOpenTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerDisabledAutoOpenTest,
-                       ReplaceExistingEntry) {
+                       DoNotReplaceExistingEntry) {
   controller()->set_ignore_active_for_testing(true);
   SendTabToSelfEntry existing_entry(
       "a", GURL("https://www.example-a.com"), "a site", base::Time(),
@@ -211,6 +212,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerDisabledAutoOpenTest,
                                PageContext(), NavigationHistory());
 
   controller()->DisplayNewEntries({&existing_entry});
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return bubble_controller()->IsBubbleShowing(); }));
   EXPECT_EQ(existing_entry.GetGUID(),
             bubble_controller()->bubble()->GetGuidForTesting());
 
@@ -220,8 +223,25 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfToolbarIconControllerDisabledAutoOpenTest,
   WaitUntilBrowserBecomeActiveOrLastActive(browser());
 
   controller()->DisplayNewEntries({&new_entry});
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return bubble_controller()->IsBubbleShowing() &&
+           bubble_controller()->bubble()->GetGuidForTesting() ==
+               existing_entry.GetGUID();
+  }));
+  EXPECT_EQ(existing_entry.GetGUID(),
+            bubble_controller()->bubble()->GetGuidForTesting());
+
+  bubble_controller()->HideBubble();
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return bubble_controller()->IsBubbleShowing() &&
+           bubble_controller()->bubble()->GetGuidForTesting() ==
+               new_entry.GetGUID();
+  }));
   EXPECT_EQ(new_entry.GetGUID(),
             bubble_controller()->bubble()->GetGuidForTesting());
+  bubble_controller()->HideBubble();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&] { return !bubble_controller()->IsBubbleShowing(); }));
 }
 
 class SendTabToSelfToolbarIconControllerAutoOpenTest

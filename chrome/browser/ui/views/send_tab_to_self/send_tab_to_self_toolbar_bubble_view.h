@@ -32,8 +32,6 @@ class SendTabToSelfToolbarBubbleView : public views::BubbleDialogDelegateView {
       views::BubbleAnchor anchor,
       const SendTabToSelfEntry& entry);
 
-  // Overwrites the existing entry in the bubble with `new_entry`.
-  void ReplaceEntry(const SendTabToSelfEntry& new_entry);
   void Hide();
 
   void OpenInNewTab();
