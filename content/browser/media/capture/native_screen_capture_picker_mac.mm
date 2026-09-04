@@ -595,6 +595,11 @@ void NativeScreenCapturePickerMac::OnPickerObserverUpdated(
 
   Source source;
   source.id = session_id;
+  if (@available(macOS 15.2, *)) {
+    if (filter && filter.includedDisplays.count > 0) {
+      source.display_id = filter.includedDisplays.firstObject.displayID;
+    }
+  }
   std::move(picker_callback_).Run(source);
 }
 
