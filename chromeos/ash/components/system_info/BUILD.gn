@@ -10,7 +10,6 @@ component("system_info") {
     "cpu_data.h",
     "cpu_usage_data.cc",
     "cpu_usage_data.h",
-    "memory_data.h",
     "system_info_util.cc",
     "system_info_util.h",
   ]
