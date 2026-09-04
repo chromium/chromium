@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_legend_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -533,7 +534,15 @@ void TextIteratorAlgorithm<Strategy>::Advance() {
 template <typename Strategy>
 void TextIteratorAlgorithm<Strategy>::HandleTextNode() {
   if (ExcludesAutofilledValue()) {
-    TextControlElement* control = EnclosingTextControl(node_);
+    HTMLFormControlElement* control = nullptr;
+    if (RuntimeEnabledFeatures::
+            TextIteratorExcludeAutofilledSelectFixEnabled()) {
+      if (node_->IsInUserAgentShadowRoot()) {
+        control = DynamicTo<HTMLFormControlElement>(node_->OwnerShadowHost());
+      }
+    } else {
+      control = EnclosingTextControl(node_);
+    }
     // For security reason, we don't expose suggested value if it is
     // auto-filled.
     // TODO(crbug.com/1472209): Only hide suggested value of previews.

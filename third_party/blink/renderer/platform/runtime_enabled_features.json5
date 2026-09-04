@@ -6325,6 +6325,11 @@
       status: {"Android": "stable"},
     },
     {
+      // crbug.com/556235808
+      name: "TextIteratorExcludeAutofilledSelectFix",
+      status: "stable",
+    },
+    {
       name: "TextMetricsBaselines",
       status: "stable",
     },
