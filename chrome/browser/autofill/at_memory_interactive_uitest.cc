@@ -171,7 +171,8 @@ class AtMemoryInteractiveUiTest : public AutofillUiTest,
       case TargetElementType::kInputText:
       case TargetElementType::kTextArea:
       case TargetElementType::kContentEditable:
-        return "Foo" + base::UTF16ToUTF8(GetFilledValue(type)) + "Bar";
+        // The spaces come from PasteText()'s smart replace.
+        return "Foo " + base::UTF16ToUTF8(GetFilledValue(type)) + " Bar";
       case TargetElementType::kInputNumber:
         return base::UTF16ToUTF8(GetFilledValue(type));
     }

@@ -677,8 +677,8 @@ TEST_F(AtMemoryHandlerTest,
   autofill_agent().TriggerSuggestions(
       field_id, AutofillSuggestionTriggerSource::kAtMemoryContextMenu);
   WaitForApplyFieldAction();
-  EXPECT_EQ(input.Value().Utf16(), u"hello resultextra");
-  EXPECT_EQ(input.SelectionStart(), 17u);
+  EXPECT_EQ(input.Value().Utf16(), u"hello result extra");
+  EXPECT_EQ(input.SelectionStart(), 18u);
 }
 
 // Tests that trigger string removal does NOT happen when triggered by keyboard
@@ -696,7 +696,7 @@ TEST_F(AtMemoryHandlerTest,
   autofill_agent().TriggerSuggestions(
       field_id, AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut);
   WaitForApplyFieldAction();
-  EXPECT_EQ(input.Value().Utf16(), u"hello @@result");
+  EXPECT_EQ(input.Value().Utf16(), u"hello @@ result");
 }
 
 // Tests that trigger string removal DOES happen when triggered by trigger
@@ -1033,13 +1033,14 @@ TEST_F(AtMemoryHandlerContentEditableTest,
   WaitForApplyFieldAction();
 
   // 4. Verify the text was inserted.
-  EXPECT_EQ(ce.TextContent().Utf16(), u"PrefixresultSuffix");
+  // Smart pasting adds whitespace.
+  EXPECT_EQ(ce.TextContent().Utf16(), u"Prefix result Suffix");
 
   // 5. Verify the cursor position (at the end of "result").
-  // "Prefix" (6) + "result " (6) = 12.
+  // "Prefix" (6) + " result " (8) = 12.
   blink::WebRange selection =
       GetMainFrame()->GetInputMethodController()->GetSelectionOffsets();
-  EXPECT_EQ(selection.StartOffset(), 12);
+  EXPECT_EQ(selection.StartOffset(), 14);
 }
 
 // Tests that kReplaceSelectionForAtMemory replaces a pre-existing selection.
@@ -1069,13 +1070,14 @@ TEST_F(AtMemoryHandlerContentEditableTest,
   WaitForApplyFieldAction();
 
   // 3. Verify "Selected" was replaced by "result".
-  EXPECT_EQ(ce.TextContent().Utf16(), u"PrefixresultSuffix");
+  // Smart pasting adds whitespace.
+  EXPECT_EQ(ce.TextContent().Utf16(), u"Prefix result Suffix");
 
   // 4. Verify the cursor position (at the end of "Result").
-  // "Prefix " (6) + "result" (6) = 12.
+  // "Prefix " (6) + " result " (8) = 14.
   blink::WebRange selection =
       GetMainFrame()->GetInputMethodController()->GetSelectionOffsets();
-  EXPECT_EQ(selection.StartOffset(), 12);
+  EXPECT_EQ(selection.StartOffset(), 14);
 }
 
 // Tests that ApplyFieldAction() with kReplaceSelectionForAtMemory aborts if the
@@ -1210,6 +1212,35 @@ TEST_F(AtMemoryHandlerTest, DoubleCtrlTriggersAtMemoryInContentEditable) {
   WaitForApplyFieldAction();
   blink::WebElement f = GetWebElementById("f");
   EXPECT_EQ(f.TextContent().Utf16(), u"result");
+}
+
+// Tests that even a non-contenteditable element within a contenteditable does
+// not break filling.
+//
+// WebLocalFrame::ExtendSelectionAndReplace() cannot handle such cases because
+// the selection, even if it is empty and unchanged, is put into the
+// non-editable <span>.
+// WebElement::PasteText() handles the case fine.
+//
+// This test mimics Gmail's placeholder (crbug.com/555717699).
+TEST_F(AtMemoryHandlerTest, DoubleCtrlWithNonContentEditable) {
+  LoadHTML(
+      "<div contenteditable id=f>"
+      "<span contenteditable=false>Foo</span>"
+      "</div>");
+  WaitForFormsSeen();
+  Focus("f");
+
+  EXPECT_CALL(autofill_driver(),
+              AskForValuesToFill(
+                  _, _, _,
+                  Eq(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl), _));
+
+  SendCtrlKeyDown();
+  SendCtrlKeyDown();
+  WaitForApplyFieldAction();
+  blink::WebElement f = GetWebElementById("f");
+  EXPECT_EQ(f.TextContent().Utf16(), u"Fooresult");
 }
 
 // Tests that pressing Ctrl twice triggers AtMemory even when a non-empty

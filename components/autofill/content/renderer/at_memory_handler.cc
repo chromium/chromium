@@ -523,8 +523,14 @@ void AtMemoryHandler::WaitForFocusAndReplaceSelectionForAtMemory(
     offset = GetTriggerString().size();
   }
 
-  frame->ExtendSelectionAndReplace(/*before=*/offset,
-                                   /*after=*/0, WebString::FromUtf16(value));
+  if (offset == 0 &&
+      base::FeatureList::IsEnabled(features::kAutofillAtMemoryPasteText)) {
+    field.PasteText(WebString::FromUtf16(value), /*replace_all=*/false,
+                    /*smart_replace=*/true);
+  } else {
+    frame->ExtendSelectionAndReplace(/*before=*/offset,
+                                     /*after=*/0, WebString::FromUtf16(value));
+  }
 }
 
 std::optional<AtMemoryHandler::AskForValuesToFillInfo>

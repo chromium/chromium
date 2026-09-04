@@ -564,6 +564,11 @@ BASE_FEATURE_PARAM(base::TimeDelta,
 BASE_FEATURE(kAutofillAtMemoryInactivityNudge,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Kill switch: If enabled, AtMemory fills by simulating a paste. If disabled,
+// AtMemory uses ExtendSelectionAndReplace().
+// TODO(crbug.com/553143213): Clean up when PasteText() has proved robust.
+BASE_FEATURE(kAutofillAtMemoryPasteText, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls whether the previously filled suggestions from AtMemory are shown.
 // Takes no effect when `kAutofillAtMemorySearchStatefulness` is disabled.
 BASE_FEATURE(kAutofillAtMemoryPreviouslyFilled,
