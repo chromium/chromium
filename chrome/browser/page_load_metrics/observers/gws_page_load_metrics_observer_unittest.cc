@@ -21,7 +21,9 @@
 #include "components/page_load_metrics/google/browser/histogram_suffixes.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "net/base/load_timing_internal_info.h"
 #include "net/dns/public/resolution_details.h"
+#include "net/spdy/multiplexed_session_creation_initiator.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
@@ -29,6 +31,19 @@
 namespace {
 
 constexpr char kGoogleSearchResultsUrl[] = "https://www.google.com/search?q=d";
+
+class GwsMockNavigationHandle : public content::MockNavigationHandle {
+ public:
+  using content::MockNavigationHandle::MockNavigationHandle;
+
+  bool NetworkAccessed() override { return network_accessed_; }
+  void set_network_accessed(bool network_accessed) {
+    network_accessed_ = network_accessed;
+  }
+
+ private:
+  bool network_accessed_ = false;
+};
 
 }  // namespace
 
@@ -95,6 +110,19 @@ class GWSPageLoadMetricsObserverTest
         100u;
 
     PopulateRequiredTimingFields(timing);
+  }
+
+  void PopulateNavigationTimingMilestones(
+      content::NavigationHandleTiming* timing,
+      base::TimeTicks base_time = base::TimeTicks::Now() +
+                                  base::Milliseconds(10)) {
+    timing->first_request_start_time = base_time;
+    timing->first_response_start_time = base_time + base::Milliseconds(10);
+    timing->first_loader_callback_time = base_time + base::Milliseconds(20);
+    timing->final_request_start_time = base_time + base::Milliseconds(30);
+    timing->final_response_start_time = base_time + base::Milliseconds(40);
+    timing->final_loader_callback_time = base_time + base::Milliseconds(50);
+    timing->navigation_commit_sent_time = base_time + base::Milliseconds(60);
   }
 
  protected:
@@ -937,4 +965,349 @@ TEST_F(GWSPageLoadMetricsObserverTest, FastFetchOpportunityTime) {
       internal::kHistogramGWSFastFetchOpportunityTimeFetchStart, 20, 1);
 }
 
-// trivial comment to force rebuild
+TEST_F(GWSPageLoadMetricsObserverTest,
+       QuicSessionEstablishmentAndReuseReasons) {
+  struct TestCase {
+    const char* description;
+    base::TimeDelta domain_lookup_delay;
+    base::TimeDelta connect_delay;
+    const char* expected_suffix;
+    std::vector<const char*> unexpected_suffixes;
+  } kTestCases[] = {
+      {"ConnectionReuse",
+       base::Milliseconds(0),
+       base::Milliseconds(0),
+       internal::kConnectionReuseSuffix,
+       {internal::kDNSReuseSuffix, internal::kNonConnectionReuseSuffix}},
+      {"DNSReuse",
+       base::Milliseconds(0),
+       base::Milliseconds(10),
+       internal::kDNSReuseSuffix,
+       {internal::kConnectionReuseSuffix, internal::kNonConnectionReuseSuffix}},
+      {"NonConnectionReuse",
+       base::Milliseconds(10),
+       base::Milliseconds(10),
+       internal::kNonConnectionReuseSuffix,
+       {internal::kConnectionReuseSuffix, internal::kDNSReuseSuffix}},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.description);
+    base::HistogramTester histogram_tester;
+
+    net::QuicConnectionReuseDetails quic_details;
+    quic_details.establishment_reason =
+        net::QuicSessionEstablishmentReason::kSessionExistedButNotPreconnect;
+    quic_details.non_reuse_reason =
+        net::QuicSessionNonReuseReason::kNoSessionExisted_TrueColdStart;
+
+    content::NavigationHandleTiming timing;
+    timing.first_request_domain_lookup_delay = test_case.domain_lookup_delay;
+    timing.first_request_connect_delay = test_case.connect_delay;
+    timing.session_details = {
+        .session_source = net::SessionSource::kNew,
+        .quic_connection_reuse_details = quic_details,
+        .session_creation_initiator =
+            net::MultiplexedSessionCreationInitiator::kPreconnect,
+    };
+    PopulateNavigationTimingMilestones(&timing);
+
+    NavigateAndCommit(GURL(kGoogleSearchResultsUrl));
+
+    GwsMockNavigationHandle handle(GURL(kGoogleSearchResultsUrl), main_rfh());
+    EXPECT_CALL(handle, GetNavigationHandleTiming())
+        .WillRepeatedly(testing::ReturnRef(timing));
+    EXPECT_CALL(handle, GetConnectionInfo())
+        .WillRepeatedly(testing::Return(net::HttpConnectionInfo::kQUIC_35));
+    handle.set_was_response_cached(false);
+    handle.set_network_accessed(true);
+
+    observer_->OnCommit(&handle);
+
+    page_load_metrics::mojom::PageLoadTiming page_load_timing;
+    InitializeTestPageLoadTiming(&page_load_timing);
+    tester()->SimulateTimingUpdate(page_load_timing);
+
+    tester()->NavigateToUntrackedUrl();
+
+    // Verify Base histograms.
+    histogram_tester.ExpectUniqueSample(
+        internal::kHistogramGWSQuicSessionEstablishmentReason,
+        static_cast<int>(net::QuicSessionEstablishmentReason::
+                             kSessionExistedButNotPreconnect),
+        1);
+    histogram_tester.ExpectUniqueSample(
+        internal::kHistogramGWSQuicSessionNonReuseReason,
+        static_cast<int>(
+            net::QuicSessionNonReuseReason::kNoSessionExisted_TrueColdStart),
+        1);
+    histogram_tester.ExpectUniqueSample(
+        base::StrCat(
+            {internal::kHistogramGWSSessionCreationInitiator, ".Http3"}),
+        static_cast<int>(net::MultiplexedSessionCreationInitiator::kPreconnect),
+        1);
+
+    // Verify Expected Suffix-specific histograms.
+    histogram_tester.ExpectUniqueSample(
+        base::StrCat({internal::kHistogramGWSQuicSessionEstablishmentReason,
+                      test_case.expected_suffix}),
+        static_cast<int>(net::QuicSessionEstablishmentReason::
+                             kSessionExistedButNotPreconnect),
+        1);
+    histogram_tester.ExpectUniqueSample(
+        base::StrCat({internal::kHistogramGWSQuicSessionNonReuseReason,
+                      test_case.expected_suffix}),
+        static_cast<int>(
+            net::QuicSessionNonReuseReason::kNoSessionExisted_TrueColdStart),
+        1);
+    histogram_tester.ExpectUniqueSample(
+        base::StrCat({internal::kHistogramGWSSessionCreationInitiator, ".Http3",
+                      test_case.expected_suffix}),
+        static_cast<int>(net::MultiplexedSessionCreationInitiator::kPreconnect),
+        1);
+
+    // Verify Unexpected Suffix-specific histograms are NOT recorded.
+    for (const char* unexpected_suffix : test_case.unexpected_suffixes) {
+      histogram_tester.ExpectTotalCount(
+          base::StrCat({internal::kHistogramGWSQuicSessionEstablishmentReason,
+                        unexpected_suffix}),
+          0);
+      histogram_tester.ExpectTotalCount(
+          base::StrCat({internal::kHistogramGWSQuicSessionNonReuseReason,
+                        unexpected_suffix}),
+          0);
+      histogram_tester.ExpectTotalCount(
+          base::StrCat({internal::kHistogramGWSSessionCreationInitiator,
+                        ".Http3", unexpected_suffix}),
+          0);
+    }
+  }
+}
+
+TEST_F(GWSPageLoadMetricsObserverTest,
+       SessionDetails_Http2AndNonQuicProtocols) {
+  struct TestCase {
+    const char* description;
+    net::HttpConnectionInfo connection_info;
+    base::TimeDelta domain_lookup_delay;
+    base::TimeDelta connect_delay;
+    const char* expected_suffix;
+    bool expect_initiator_recorded;
+    const char* initiator_protocol_suffix;
+  } kTestCases[] = {
+      {"HTTP2_ConnectionReuse", net::HttpConnectionInfo::kHTTP2,
+       base::Milliseconds(0), base::Milliseconds(0),
+       internal::kConnectionReuseSuffix, true, ".Http2"},
+      {"HTTP2_DNSReuse", net::HttpConnectionInfo::kHTTP2, base::Milliseconds(0),
+       base::Milliseconds(10), internal::kDNSReuseSuffix, true, ".Http2"},
+      {"HTTP2_NonConnectionReuse", net::HttpConnectionInfo::kHTTP2,
+       base::Milliseconds(10), base::Milliseconds(10),
+       internal::kNonConnectionReuseSuffix, true, ".Http2"},
+      {"HTTP11_NoMetrics", net::HttpConnectionInfo::kHTTP1_1,
+       base::Milliseconds(0), base::Milliseconds(0),
+       internal::kConnectionReuseSuffix, false, ".Http1"},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.description);
+    base::HistogramTester histogram_tester;
+
+    net::QuicConnectionReuseDetails quic_details;
+    quic_details.establishment_reason =
+        net::QuicSessionEstablishmentReason::kSessionExistedButNotPreconnect;
+    quic_details.non_reuse_reason =
+        net::QuicSessionNonReuseReason::kNoSessionExisted_TrueColdStart;
+
+    content::NavigationHandleTiming timing;
+    timing.first_request_domain_lookup_delay = test_case.domain_lookup_delay;
+    timing.first_request_connect_delay = test_case.connect_delay;
+    timing.session_details = {
+        .session_source = net::SessionSource::kNew,
+        .quic_connection_reuse_details = quic_details,
+        .session_creation_initiator =
+            net::MultiplexedSessionCreationInitiator::kPreconnect,
+    };
+    PopulateNavigationTimingMilestones(&timing);
+
+    NavigateAndCommit(GURL(kGoogleSearchResultsUrl));
+
+    GwsMockNavigationHandle handle(GURL(kGoogleSearchResultsUrl), main_rfh());
+    EXPECT_CALL(handle, GetNavigationHandleTiming())
+        .WillRepeatedly(testing::ReturnRef(timing));
+    EXPECT_CALL(handle, GetConnectionInfo())
+        .WillRepeatedly(testing::Return(test_case.connection_info));
+    handle.set_was_response_cached(false);
+    handle.set_network_accessed(true);
+
+    observer_->OnCommit(&handle);
+
+    page_load_metrics::mojom::PageLoadTiming page_load_timing;
+    InitializeTestPageLoadTiming(&page_load_timing);
+    tester()->SimulateTimingUpdate(page_load_timing);
+
+    tester()->NavigateToUntrackedUrl();
+
+    if (test_case.expect_initiator_recorded) {
+      histogram_tester.ExpectUniqueSample(
+          base::StrCat({internal::kHistogramGWSSessionCreationInitiator,
+                        test_case.initiator_protocol_suffix}),
+          static_cast<int>(
+              net::MultiplexedSessionCreationInitiator::kPreconnect),
+          1);
+      histogram_tester.ExpectUniqueSample(
+          base::StrCat({internal::kHistogramGWSSessionCreationInitiator,
+                        test_case.initiator_protocol_suffix,
+                        test_case.expected_suffix}),
+          static_cast<int>(
+              net::MultiplexedSessionCreationInitiator::kPreconnect),
+          1);
+    } else {
+      histogram_tester.ExpectTotalCount(
+          base::StrCat({internal::kHistogramGWSSessionCreationInitiator,
+                        test_case.initiator_protocol_suffix}),
+          0);
+    }
+
+    // QUIC specific histograms must NOT be logged for non-QUIC connections.
+    histogram_tester.ExpectTotalCount(
+        internal::kHistogramGWSQuicSessionEstablishmentReason, 0);
+    histogram_tester.ExpectTotalCount(
+        internal::kHistogramGWSQuicSessionNonReuseReason, 0);
+  }
+}
+
+TEST_F(GWSPageLoadMetricsObserverTest, SessionDetails_NetworkNotAccessed) {
+  base::HistogramTester histogram_tester;
+
+  net::QuicConnectionReuseDetails quic_details;
+  quic_details.establishment_reason =
+      net::QuicSessionEstablishmentReason::kSessionExistedButNotPreconnect;
+  quic_details.non_reuse_reason =
+      net::QuicSessionNonReuseReason::kNoSessionExisted_TrueColdStart;
+
+  content::NavigationHandleTiming timing;
+  timing.session_details = {
+      .session_source = net::SessionSource::kNew,
+      .quic_connection_reuse_details = quic_details,
+      .session_creation_initiator =
+          net::MultiplexedSessionCreationInitiator::kPreconnect,
+  };
+  PopulateNavigationTimingMilestones(&timing);
+
+  NavigateAndCommit(GURL(kGoogleSearchResultsUrl));
+
+  GwsMockNavigationHandle handle(GURL(kGoogleSearchResultsUrl), main_rfh());
+  EXPECT_CALL(handle, GetNavigationHandleTiming())
+      .WillRepeatedly(testing::ReturnRef(timing));
+  EXPECT_CALL(handle, GetConnectionInfo())
+      .WillRepeatedly(testing::Return(net::HttpConnectionInfo::kQUIC_35));
+  handle.set_was_response_cached(false);
+  handle.set_network_accessed(false);
+
+  observer_->OnCommit(&handle);
+
+  page_load_metrics::mojom::PageLoadTiming page_load_timing;
+  InitializeTestPageLoadTiming(&page_load_timing);
+  tester()->SimulateTimingUpdate(page_load_timing);
+
+  tester()->NavigateToUntrackedUrl();
+
+  // No session details metrics should be recorded when the network was not
+  // accessed.
+  histogram_tester.ExpectTotalCount(
+      internal::kHistogramGWSQuicSessionEstablishmentReason, 0);
+  histogram_tester.ExpectTotalCount(
+      internal::kHistogramGWSQuicSessionNonReuseReason, 0);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({internal::kHistogramGWSSessionCreationInitiator, ".Http3"}),
+      0);
+
+  for (const char* suffix :
+       {internal::kConnectionReuseSuffix, internal::kDNSReuseSuffix,
+        internal::kNonConnectionReuseSuffix}) {
+    histogram_tester.ExpectTotalCount(
+        base::StrCat(
+            {internal::kHistogramGWSQuicSessionEstablishmentReason, suffix}),
+        0);
+    histogram_tester.ExpectTotalCount(
+        base::StrCat(
+            {internal::kHistogramGWSQuicSessionNonReuseReason, suffix}),
+        0);
+    histogram_tester.ExpectTotalCount(
+        base::StrCat({internal::kHistogramGWSSessionCreationInitiator, ".Http3",
+                      suffix}),
+        0);
+  }
+}
+
+TEST_F(GWSPageLoadMetricsObserverTest, SessionDetails_ResponseCached) {
+  base::HistogramTester histogram_tester;
+
+  net::QuicConnectionReuseDetails quic_details;
+  quic_details.establishment_reason =
+      net::QuicSessionEstablishmentReason::kSessionExistedButNotPreconnect;
+  quic_details.non_reuse_reason =
+      net::QuicSessionNonReuseReason::kNoSessionExisted_TrueColdStart;
+
+  content::NavigationHandleTiming timing;
+  timing.session_details = {
+      .session_source = net::SessionSource::kNew,
+      .quic_connection_reuse_details = quic_details,
+      .session_creation_initiator =
+          net::MultiplexedSessionCreationInitiator::kPreconnect,
+  };
+  PopulateNavigationTimingMilestones(&timing);
+
+  NavigateAndCommit(GURL(kGoogleSearchResultsUrl));
+
+  GwsMockNavigationHandle handle(GURL(kGoogleSearchResultsUrl), main_rfh());
+  EXPECT_CALL(handle, GetNavigationHandleTiming())
+      .WillRepeatedly(testing::ReturnRef(timing));
+  EXPECT_CALL(handle, GetConnectionInfo())
+      .WillRepeatedly(testing::Return(net::HttpConnectionInfo::kQUIC_35));
+  handle.set_was_response_cached(true);
+  handle.set_network_accessed(true);
+
+  observer_->OnCommit(&handle);
+
+  page_load_metrics::mojom::PageLoadTiming page_load_timing;
+  InitializeTestPageLoadTiming(&page_load_timing);
+  tester()->SimulateTimingUpdate(page_load_timing);
+
+  tester()->NavigateToUntrackedUrl();
+
+  // Base histograms should be recorded.
+  histogram_tester.ExpectUniqueSample(
+      internal::kHistogramGWSQuicSessionEstablishmentReason,
+      static_cast<int>(
+          net::QuicSessionEstablishmentReason::kSessionExistedButNotPreconnect),
+      1);
+  histogram_tester.ExpectUniqueSample(
+      internal::kHistogramGWSQuicSessionNonReuseReason,
+      static_cast<int>(
+          net::QuicSessionNonReuseReason::kNoSessionExisted_TrueColdStart),
+      1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({internal::kHistogramGWSSessionCreationInitiator, ".Http3"}),
+      static_cast<int>(net::MultiplexedSessionCreationInitiator::kPreconnect),
+      1);
+
+  // Connection reuse suffixes should be omitted when the response was served
+  // from cache.
+  for (const char* suffix :
+       {internal::kConnectionReuseSuffix, internal::kDNSReuseSuffix,
+        internal::kNonConnectionReuseSuffix}) {
+    histogram_tester.ExpectTotalCount(
+        base::StrCat(
+            {internal::kHistogramGWSQuicSessionEstablishmentReason, suffix}),
+        0);
+    histogram_tester.ExpectTotalCount(
+        base::StrCat(
+            {internal::kHistogramGWSQuicSessionNonReuseReason, suffix}),
+        0);
+    histogram_tester.ExpectTotalCount(
+        base::StrCat({internal::kHistogramGWSSessionCreationInitiator, ".Http3",
+                      suffix}),
+        0);
+  }
+}

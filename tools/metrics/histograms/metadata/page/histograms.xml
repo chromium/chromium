@@ -70,6 +70,14 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//net/http/http_connection_info.cc) -->
 
+<variants name="ConnectionReuseStatus">
+  <variant name="" summary="for any case"/>
+  <variant name=".ConnectionReuse"
+      summary="for possible connection reuse cases"/>
+  <variant name=".DNSReuse" summary="for possible dns reuse cases"/>
+  <variant name=".NonConnectionReuse" summary="for non connection reuse cases"/>
+</variants>
+
 <variants name="Gap">
   <variant name="1000ms"/>
 </variants>
@@ -2277,14 +2285,7 @@ chromium-metrics-reviews@google.com.
     loads. This is only recorded for Search navigations and is recorded once
     after navigation commit. This metric is recorded {ConnectionReuseStatus}.
   </summary>
-  <token key="ConnectionReuseStatus">
-    <variant name="" summary="for any case"/>
-    <variant name=".ConnectionReuse"
-        summary="for possible connection reuse cases"/>
-    <variant name=".DNSReuse" summary="for possible dns reuse cases"/>
-    <variant name=".NonConnectionReuse"
-        summary="for non connection reuse cases"/>
-  </token>
+  <token key="ConnectionReuseStatus" variants="ConnectionReuseStatus"/>
 </histogram>
 
 <histogram
@@ -3007,6 +3008,49 @@ chromium-metrics-reviews@google.com.
     cache or network. Recorded once upon navigation commit of the prerendered
     prewarm page.
   </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.GoogleSearch.QuicSessionEstablishmentReason{ConnectionReuseStatus}"
+    enum="QuicSessionEstablishmentReason" expires_after="2027-08-30">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures the reason for QUIC session establishment for Google Search page
+    loads. Recorded when the navigation is completed or the app is backgrounded
+    on Android after reaching LCP. This metric is recorded
+    {ConnectionReuseStatus}.
+  </summary>
+  <token key="ConnectionReuseStatus" variants="ConnectionReuseStatus"/>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.GoogleSearch.QuicSessionNonReuseReason{ConnectionReuseStatus}"
+    enum="QuicSessionNonReuseReason" expires_after="2027-08-30">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures the reason why a QUIC session was not reused for Google Search page
+    loads. Recorded when the navigation is completed or the app is backgrounded
+    on Android after reaching LCP. This metric is recorded
+    {ConnectionReuseStatus}.
+  </summary>
+  <token key="ConnectionReuseStatus" variants="ConnectionReuseStatus"/>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.GoogleSearch.SessionCreationInitiator{ConnectionProtocolType}{ConnectionReuseStatus}"
+    enum="MultiplexedSessionCreationInitiator" expires_after="2027-08-30">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Measures the session creation initiator for Google Search page loads with
+    {ConnectionProtocolType}. Recorded when the navigation is completed or the
+    app is backgrounded on Android after reaching LCP. This metric is recorded
+    {ConnectionReuseStatus}.
+  </summary>
+  <token key="ConnectionProtocolType" variants="ConnectionProtocolType"/>
+  <token key="ConnectionReuseStatus" variants="ConnectionReuseStatus"/>
 </histogram>
 
 <histogram
