@@ -10,6 +10,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/run_until.h"
+#import "base/test/test_future.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/form_util/child_frame_registrar.h"
@@ -489,6 +490,57 @@ TEST_F(PasskeyTabHelperTest, MarkPasskeyAsUserVerified) {
   // The last verification status should now be kCompleted.
   EXPECT_EQ(client_->last_user_verification_status(),
             PasskeyUserVerificationStatus::kCompleted);
+}
+
+// Tests that duplicate passkey selection attempts are ignored and do not
+// trigger multiple assertions.
+TEST_F(PasskeyTabHelperTest, DuplicateSelectPasskeyIgnored) {
+  SetUpWebFramesManagerAndWebFrame(GURL(kOriginURL));
+  SetUpIOSPasswordManagerDriver();
+  SetUpChildFrameRegistrarAndRegisterFrame(web::kMainFakeFrameId,
+                                           kMainRemoteFrameId);
+
+  // Add passkey with `kCredentialId`.
+  sync_pb::WebauthnCredentialSpecifics passkey = GetTestPasskey(kCredentialId);
+  passkey_model_->AddNewPasskeyForTesting(std::move(passkey));
+
+  IOSWebAuthnCredentialsDelegate* delegate =
+      IOSWebAuthnCredentialsDelegateFactory::GetFactory(&fake_web_state_)
+          ->GetDelegateForFrameId(web::kMainFakeFrameId);
+
+  AssertionRequestParams params = BuildTestAssertionRequestParams(
+      /*allow_credentials=*/{}, device::UserVerificationRequirement::kPreferred,
+      kFakeRequestId, web::kMainFakeFrameId, kMainRemoteFrameId);
+  passkey_tab_helper()->HandleGetRequestedEvent(std::move(params));
+
+  // Verify that the delegate has received the passkey.
+  auto passkeys = delegate->GetPasskeys();
+  ASSERT_TRUE(passkeys.has_value());
+  ASSERT_EQ(passkeys.value()->size(), 1u);
+  EXPECT_FALSE(delegate->HasPendingPasskeySelection());
+
+  // Base64 encode the credential ID to use as backend_id.
+  std::string backend_id = base::Base64Encode(kCredentialId);
+
+  // Select the passkey.
+  base::test::TestFuture<void> future;
+  delegate->SelectPasskey(backend_id, future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_TRUE(delegate->HasPendingPasskeySelection());
+
+  // A second selection attempt should be ignored without running callback or
+  // triggering DumpWithoutCrashing.
+  base::test::TestFuture<void> second_future;
+  delegate->SelectPasskey(backend_id, second_future.GetCallback());
+  EXPECT_FALSE(second_future.IsReady());
+  EXPECT_TRUE(delegate->HasPendingPasskeySelection());
+
+  // Receiving new credentials resets the pending selection state.
+  AssertionRequestParams params2 = BuildTestAssertionRequestParams(
+      /*allow_credentials=*/{}, device::UserVerificationRequirement::kPreferred,
+      "fake_request_id_2", web::kMainFakeFrameId, kMainRemoteFrameId);
+  passkey_tab_helper()->HandleGetRequestedEvent(std::move(params2));
+  EXPECT_FALSE(delegate->HasPendingPasskeySelection());
 }
 
 // Tests that example.ca can access passkeys using relying party id

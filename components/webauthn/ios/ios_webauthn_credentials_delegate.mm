@@ -4,6 +4,8 @@
 
 #import "components/webauthn/ios/ios_webauthn_credentials_delegate.h"
 
+#import <utility>
+
 #import "base/base64.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/notimplemented.h"
@@ -33,14 +35,16 @@ std::optional<std::string> IOSWebAuthnCredentialsDelegate::GetCableQrString()
 void IOSWebAuthnCredentialsDelegate::SelectPasskey(
     const std::string& backend_id,
     OnPasskeySelectedCallback callback) {
-  // Nothing can be done if the web state is not valid.
-  if (!web_state_) {
+  // Nothing can be done if the web state is not valid, a passkey was already
+  // selected, or no passkey request is pending.
+  if (!web_state_ || passkey_selected_ || passkey_request_id_.empty()) {
     return;
   }
+  passkey_selected_ = true;
 
-  // Note: HasPendingPasskeySelection() should always return false since this
-  // callback is run unconditionally.
   std::move(callback).Run();
+
+  std::string passkey_request_id = std::exchange(passkey_request_id_, "");
 
   // `backend_id` is the base64-encoded credential ID.
   std::string selected_credential_id;
@@ -54,8 +58,9 @@ void IOSWebAuthnCredentialsDelegate::SelectPasskey(
   // verification status by removing it from the set.
   bool did_complete_uv = verified_backend_ids_.erase(backend_id) > 0;
 
-  passkey_tab_helper->StartPasskeyAssertion(
-      passkey_request_id_, std::move(selected_credential_id), did_complete_uv);
+  passkey_tab_helper->StartPasskeyAssertion(std::move(passkey_request_id),
+                                            std::move(selected_credential_id),
+                                            did_complete_uv);
 }
 
 base::expected<const std::vector<password_manager::PasskeyCredential>*,
@@ -94,9 +99,7 @@ void IOSWebAuthnCredentialsDelegate::RequestNotificationWhenPasskeysReady(
 }
 
 bool IOSWebAuthnCredentialsDelegate::HasPendingPasskeySelection() {
-  // Always return false since the callback in SelectPasskey is run
-  // unconditionally.
-  return false;
+  return passkey_selected_;
 }
 
 base::WeakPtr<password_manager::WebAuthnCredentialsDelegate>
@@ -121,6 +124,7 @@ void IOSWebAuthnCredentialsDelegate::OnCredentialsReceived(
 
   passkeys_ = std::move(credentials);
   passkey_request_id_ = passkey_request_id;
+  passkey_selected_ = false;
   NotifyClientsOfPasskeyAvailability();
 }
 

@@ -84,6 +84,9 @@ class IOSWebAuthnCredentialsDelegate
   // A backend_id is the base64-encoded credential ID.
   base::flat_set<std::string> verified_backend_ids_;
 
+  // Set to true when a passkey has been selected for the current request.
+  bool passkey_selected_ = false;
+
   // The WebState associated with this delegate.
   base::WeakPtr<web::WebState> web_state_;
 
