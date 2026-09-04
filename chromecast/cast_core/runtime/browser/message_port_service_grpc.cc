@@ -26,7 +26,6 @@ MessagePortServiceGrpc::~MessagePortServiceGrpc() = default;
 cast_receiver::Status MessagePortServiceGrpc::HandleMessage(
     cast::web::Message message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  cast::web::MessagePortStatus response;
   const uint32_t channel_id = message.channel().channel_id();
   auto entry = ports_.find(channel_id);
   if (entry == ports_.end()) {
