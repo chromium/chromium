@@ -52,14 +52,11 @@ enum class SetAccountsInCookieResult;
 
 }  // namespace signin
 
-// Merges a Google account known to Chrome into the cookie jar.  When merging
-// multiple accounts, one instance of the helper is better than multiple
-// instances if there is the possibility that they run concurrently, since
-// changes to the cookie must be serialized.
+// Manages Google authentication cookies (the Gaia cookie jar) and keeps the
+// list of signed-in Gaia accounts synchronized with Chrome's identity state.
 //
-// Also checks the External CC result to ensure no services that consume the
-// GAIA cookie are blocked (such as youtube). This is executed once for the
-// lifetime of this object, when the first call is made to SetAccountsInCookie.
+// See docs/gaia_cookie_manager_service.md for architectural details, server
+// endpoints, serialized request queue management, and cookie change detection.
 class GaiaCookieManagerService
     : public GaiaAuthConsumer,
       public signin::AccountsCookieMutator::PartitionDelegate,
