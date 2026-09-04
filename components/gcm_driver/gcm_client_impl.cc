@@ -25,7 +25,6 @@
 #include "base/timer/timer.h"
 #include "components/crx_file/id_util.h"
 #include "components/gcm_driver/crypto/gcm_decryption_result.h"
-#include "components/gcm_driver/features.h"
 #include "components/gcm_driver/gcm_account_mapper.h"
 #include "components/gcm_driver/gcm_backoff_policy.h"
 #include "google_apis/gcm/base/encryptor.h"
@@ -82,6 +81,7 @@ const char kSubtypeKey[] = "subtype";
 const char kSendMessageFromValue[] = "gcm@chrome.com";
 const int64_t kDefaultUserSerialNumber = 0LL;
 const int kDestroyGCMStoreDelayMS = 5 * 60 * 1000;  // 5 minutes.
+constexpr base::TimeDelta kTokenInvalidationInterval = base::Days(7);
 
 GCMClient::Result ToGCMClientResult(MCSClient::MessageSendStatus status) {
   switch (status) {
@@ -827,14 +827,10 @@ void GCMClientImpl::Register(
 
     if (matched) {
       // Skip registration if token is fresh.
-      base::TimeDelta token_invalidation_period =
-          features::GetTokenInvalidationInterval();
       base::TimeDelta time_since_last_validation =
           clock_->Now() - registrations_iter->first->last_validated;
-      if (token_invalidation_period.is_zero() ||
-          time_since_last_validation < token_invalidation_period) {
-        // Token is fresh, or token invalidation is disabled.
-        // Use cached registration.
+      if (time_since_last_validation < kTokenInvalidationInterval) {
+        // Token is fresh. Use cached registration.
         delegate_->OnRegisterFinished(registration_info,
                                       registrations_iter->second, SUCCESS);
         RecordRegistrationRequestToUMA(

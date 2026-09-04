@@ -19,12 +19,10 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "components/gcm_driver/features.h"
 #include "google_apis/gcm/base/fake_encryptor.h"
 #include "google_apis/gcm/base/mcs_message.h"
 #include "google_apis/gcm/base/mcs_util.h"
@@ -80,7 +78,7 @@ const char kRawData[] = "example raw data";
 const char kInstanceID[] = "iid_1";
 const char kScope[] = "GCM";
 const char kDeleteTokenResponse[] = "token=foo";
-const int kTestTokenInvalidationPeriod = 5;
+constexpr base::TimeDelta kTokenInvalidationPeriod = base::Days(7);
 const char kMessageId[] = "0:12345%5678";
 
 const char kRegisterUrl[] = "https://android.clients.google.com/c2dm/register3";
@@ -284,11 +282,6 @@ class GCMClientImplTest : public testing::Test,
   void SetUp() override;
   void TearDown() override;
 
-  void SetFeatureParams(const base::Feature& feature,
-                        const base::FieldTrialParams& params);
-
-  void InitializeInvalidationFieldTrial();
-
   void BuildGCMClient(base::TimeDelta clock_step);
   void InitializeGCMClient();
   void StartGCMClient();
@@ -359,10 +352,6 @@ class GCMClientImplTest : public testing::Test,
 
   const CheckinRequest& checkin_request() const {
     return *gcm_client_->checkin_request_;
-  }
-
-  base::test::ScopedFeatureList& scoped_feature_list() {
-    return scoped_feature_list_;
   }
 
   void reset_last_event() {
@@ -447,7 +436,6 @@ class GCMClientImplTest : public testing::Test,
 
   // Injected to GCM client.
   network::TestURLLoaderFactory test_url_loader_factory_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 GCMClientImplTest::GCMClientImplTest()
@@ -461,7 +449,6 @@ void GCMClientImplTest::SetUp() {
   BuildGCMClient(base::TimeDelta());
   InitializeGCMClient();
   StartGCMClient();
-  InitializeInvalidationFieldTrial();
   ASSERT_NO_FATAL_FAILURE(
       CompleteCheckin(kDeviceAndroidId, kDeviceSecurityToken, std::string(),
                       std::map<std::string, std::string>()));
@@ -471,24 +458,6 @@ void GCMClientImplTest::TearDown() {
   gcm_client_.reset();
   PumpLoopUntilIdle();
   testing::Test::TearDown();
-}
-
-void GCMClientImplTest::SetFeatureParams(const base::Feature& feature,
-                                         const base::FieldTrialParams& params) {
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(feature, params);
-
-  base::FieldTrialParams actual_params;
-  EXPECT_TRUE(base::GetFieldTrialParamsByFeature(
-      features::kInvalidateTokenFeature, &actual_params));
-  EXPECT_EQ(params, actual_params);
-}
-
-void GCMClientImplTest::InitializeInvalidationFieldTrial() {
-  std::map<std::string, std::string> params;
-  params[features::kParamNameTokenInvalidationPeriodDays] =
-      base::NumberToString(kTestTokenInvalidationPeriod);
-  ASSERT_NO_FATAL_FAILURE(
-      SetFeatureParams(features::kInvalidateTokenFeature, std::move(params)));
 }
 
 void GCMClientImplTest::PumpLoopUntilIdle() {
@@ -950,8 +919,8 @@ TEST_F(GCMClientImplTest, RegisterAgainWhenTokenIsFresh) {
 
   reset_last_event();
 
-  // Advance time by (kTestTokenInvalidationPeriod)/2
-  clock()->Advance(base::Days(kTestTokenInvalidationPeriod / 2));
+  // Advance time by (kTokenInvalidationPeriod)/2
+  clock()->Advance(kTokenInvalidationPeriod / 2);
 
   // Register the same sender again. The same registration ID as the
   // previous one should be returned, and we should *not* send a
@@ -981,8 +950,8 @@ TEST_F(GCMClientImplTest, RegisterAgainWhenTokenIsStale) {
 
   reset_last_event();
 
-  // Advance time by kTestTokenInvalidationPeriod
-  clock()->Advance(base::Days(kTestTokenInvalidationPeriod));
+  // Advance time by kTokenInvalidationPeriod
+  clock()->Advance(kTokenInvalidationPeriod);
 
   // Register the same sender again. Different registration ID from the
   // previous one should be returned.
