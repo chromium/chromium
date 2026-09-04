@@ -27,10 +27,13 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
+import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.extensions.api.messaging.NativeMessagingConnection.DisconnectionReason;
 
 import java.util.concurrent.TimeUnit;
 
@@ -203,6 +206,16 @@ public class NativeMessagingConnectionTest {
         // 1. Connect extension that will fail auth (returns null).
         Assert.assertNull(connectExtension(connection, EXT_FAIL));
 
+        var reasonWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Extensions.NativeMessaging.Android.DisconnectionReason",
+                        DisconnectionReason.CLEAN_UNBIND);
+        var durationWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                "Extensions.NativeMessaging.Android.UnexpectedDisconnectionDuration")
+                        .build();
+
         mTestContext.triggerServiceConnected(mFakeBrowserService.asBinder());
         RobolectricUtil.runAllBackgroundAndUi();
 
@@ -210,6 +223,8 @@ public class NativeMessagingConnectionTest {
         Assert.assertNull(connection.getSessionForTesting(EXT_FAIL));
         Assert.assertFalse(connection.isBound());
         Mockito.verify(mObserver).onUnbound(TARGET_PACKAGE);
+        reasonWatcher.assertExpected();
+        durationWatcher.assertExpected();
     }
 
     // Test that authentication failure from one extension does not affect the
@@ -255,12 +270,24 @@ public class NativeMessagingConnectionTest {
 
         Assert.assertNotNull(connection.getSessionForTesting(EXT_1));
 
+        ShadowSystemClock.advanceBy(5000, TimeUnit.MILLISECONDS);
+
+        var reasonWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Extensions.NativeMessaging.Android.DisconnectionReason",
+                        DisconnectionReason.SERVICE_DISCONNECTED);
+        var durationWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Extensions.NativeMessaging.Android.UnexpectedDisconnectionDuration");
+
         // App crashes / disconnects.
         mTestContext.triggerServiceDisconnected();
 
         Assert.assertFalse(connection.isBound());
         Assert.assertNull(connection.getSessionForTesting(EXT_1));
         Mockito.verify(mObserver).onUnbound(TARGET_PACKAGE);
+        reasonWatcher.assertExpected();
+        durationWatcher.assertExpected();
     }
 
     // Test that addPort on an unbound connection returns getUnableToConnectError.
@@ -376,12 +403,24 @@ public class NativeMessagingConnectionTest {
                 });
         Assert.assertNull(connection.addPort(EXT_1, false, port));
 
+        var reasonWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Extensions.NativeMessaging.Android.DisconnectionReason",
+                        DisconnectionReason.SERVICE_CONNECTION_TIMED_OUT);
+        var durationWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                "Extensions.NativeMessaging.Android.UnexpectedDisconnectionDuration")
+                        .build();
+
         // Advance time to trigger the timeout.
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         Assert.assertFalse(connection.isBound());
         Assert.assertEquals("Unable to connect to " + TARGET_PACKAGE + ".", closedError[0]);
         Mockito.verify(mObserver).onUnbound(TARGET_PACKAGE);
+        reasonWatcher.assertExpected();
+        durationWatcher.assertExpected();
     }
 
     @Test
@@ -741,5 +780,31 @@ public class NativeMessagingConnectionTest {
 
         Assert.assertNull(connection.getSessionForTesting(EXT_1));
         Mockito.verify(mockExtensionService1Reconnected).closeConnection();
+    }
+
+    // Test that onBindingDied tears down connection and logs DisconnectionReason.BINDING_DIED
+    // and duration.
+    @Test
+    public void testOnBindingDiedTeardownAndHistogram() {
+        NativeMessagingConnection connection =
+                new NativeMessagingConnection(TARGET_PACKAGE, mObserver);
+        mTestContext.triggerServiceConnected(mFakeBrowserService.asBinder());
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        ShadowSystemClock.advanceBy(5000, TimeUnit.MILLISECONDS);
+
+        var reasonWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Extensions.NativeMessaging.Android.DisconnectionReason",
+                        DisconnectionReason.BINDING_DIED);
+        var durationWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Extensions.NativeMessaging.Android.UnexpectedDisconnectionDuration");
+
+        connection.onBindingDied(null);
+
+        Assert.assertFalse(connection.isBound());
+        reasonWatcher.assertExpected();
+        durationWatcher.assertExpected();
     }
 }

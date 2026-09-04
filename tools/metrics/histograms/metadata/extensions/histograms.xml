@@ -108,6 +108,14 @@ chromium-metrics-reviews@google.com.
                kCommandLine and kUnpacked)"/>
 </variants>
 
+<variants name="NativeMessagingAndroidSendMessageStatus">
+  <variant name="Success"
+      summary="messages sent successfully to the external Android app"/>
+  <variant name="TooLarge"
+      summary="messages that failed to send due to
+               TransactionTooLargeException"/>
+</variants>
+
 <variants name="NativeMessagingSource">
   <variant name=".Extension" summary="the extension to the native app"/>
   <variant name=".NativeApp" summary="the native app to the extension"/>
@@ -3650,6 +3658,44 @@ This is emitted for two scenarios when a worker may be unregistered:
     disable MV2 extensions. Only emitted for non-component MV2 extensions.
   </summary>
   <token key="ManifestLocation" variants="ManifestLocationGroup"/>
+</histogram>
+
+<histogram name="Extensions.NativeMessaging.Android.DisconnectionReason"
+    enum="NativeMessagingAndroidDisconnectionReason" expires_after="2027-09-01">
+  <owner>kelvinjiang@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Recorded when an Android native messaging ServiceConnection is disconnected,
+    indicating whether it was a clean unbind or an unexpected disconnection
+    (e.g. service process crash, binding death, null binding, or connection
+    timeout).
+  </summary>
+</histogram>
+
+<histogram
+    name="Extensions.NativeMessaging.Android.SentMessageSize.{SendMessageStatus}"
+    units="bytes" expires_after="2027-09-01">
+  <owner>kelvinjiang@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The size of the message in bytes sent from an extension to an external
+    Android app for native messaging ({SendMessageStatus}).
+  </summary>
+  <token key="SendMessageStatus"
+      variants="NativeMessagingAndroidSendMessageStatus"/>
+</histogram>
+
+<histogram
+    name="Extensions.NativeMessaging.Android.UnexpectedDisconnectionDuration"
+    units="ms" expires_after="2027-09-01">
+  <owner>kelvinjiang@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Recorded when an Android native messaging ServiceConnection unexpectedly
+    drops (via onServiceDisconnected or onBindingDied), measuring the duration
+    from when the service was connected from onServiceConnected to when it
+    dropped.
+  </summary>
 </histogram>
 
 <histogram name="Extensions.NativeMessaging.MessageSize{NativeMessagingSource}"
