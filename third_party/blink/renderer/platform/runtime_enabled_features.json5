@@ -4980,10 +4980,6 @@
       status: "stable",
     },
     {
-      name: "QuoteFirstLineStyle",
-      status: "stable",
-    },
-    {
       // Sets Range boundaries relative to a sibling node lazily, avoiding the
       // O(n) Node::NodeIndex()/NodeTraversal::ChildAt walks so that selectNode()
       // is O(1) instead of O(n). See crbug.com/515812864.

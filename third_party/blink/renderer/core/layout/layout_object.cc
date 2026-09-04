@@ -4660,18 +4660,14 @@ const ComputedStyle* LayoutObject::FirstLineStyleWithoutFallback() const {
     }
   } else if ((!IsAnonymous() && IsLayoutInline() &&
               !GetNode()->IsFirstLetterPseudoElement()) ||
-             (RuntimeEnabledFeatures::QuoteFirstLineStyleEnabled() &&
-              IsQuote())) {
+             IsQuote()) {
     if (const ComputedStyle* cached =
             StyleRef().GetCachedPseudoElementStyle(kPseudoIdFirstLineInherited))
       return cached;
 
     // Quote doesn't have an associated Node because it's generated thus always
     // anonymous. So, we need to access a parent LayoutObject.
-    const auto* layout_object =
-        RuntimeEnabledFeatures::QuoteFirstLineStyleEnabled() && IsQuote()
-            ? Parent()
-            : this;
+    const LayoutObject* layout_object = IsQuote() ? Parent() : this;
     if (layout_object->Parent()) {
       if (const ComputedStyle* parent_first_line_style =
               layout_object->Parent()->FirstLineStyleWithoutFallback()) {
