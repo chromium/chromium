@@ -472,6 +472,7 @@ if (is_clang_or_gcc) {
       "internal_allocator.cc",
       "internal_allocator.h",
       "internal_allocator_forward.h",
+      "linux_name_region.h",
       "memory_reclaimer.cc",
       "memory_reclaimer.h",
       "oom.cc",
