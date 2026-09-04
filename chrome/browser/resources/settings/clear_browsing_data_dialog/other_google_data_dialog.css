@@ -1,0 +1,75 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #import=//resources/cr_elements/cr_icons_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #import=../settings_shared_lit.css.js
+ * #include=cr-icons-lit cr-shared-style-lit settings-shared-lit
+ * #css_wrapper_metadata_end */
+
+#subpageDescription {
+  padding-bottom: 16px;
+}
+
+.cancel-button {
+  margin: 0;
+}
+
+.icon-arrow-back {
+  --cr-icon-button-margin-end: 12px;
+  --cr-icon-button-margin-start: 0;
+}
+
+.label {
+  color: var(--cr-primary-text-color);
+  font-weight: 500;
+}
+
+.link-rows-block > * {
+  background-color: var(--dbd-container-color);
+  padding: 4px 16px;
+}
+
+cr-link-row:first-of-type {
+  border-bottom-left-radius: var(--dbd-container-stacked-border-radius);
+  border-bottom-right-radius: var(--dbd-container-stacked-border-radius);
+  border-top-left-radius: var(--dbd-container-border-radius);
+  border-top-right-radius: var(--dbd-container-border-radius);
+  margin-bottom: 2px;
+}
+
+cr-link-row:last-of-type {
+  border-bottom-left-radius: var(--dbd-container-border-radius);
+  border-bottom-right-radius: var(--dbd-container-border-radius);
+  border-top-left-radius: var(--dbd-container-stacked-border-radius);
+  border-top-right-radius: var(--dbd-container-stacked-border-radius);
+  margin-bottom: 0;
+}
+
+cr-link-row:not(:first-of-type):not(:last-of-type) {
+  border-radius: var(--dbd-container-stacked-border-radius);
+  margin-bottom: 2px;
+}
+
+cr-link-row:only-of-type {
+  border-radius: var(--dbd-container-border-radius);
+  margin-bottom: 0;
+}
+
+cr-link-row.hide-icon::part(icon) {
+  display: none;
+}
+
+div[slot='title'] {
+  --cr-dialog-title-slot-padding-bottom: 12px;
+  --cr-dialog-title-slot-padding-top: 18px;
+  align-items: center;
+  display: flex;
+  font-size: 16px;
+  font-weight: 500;
+}

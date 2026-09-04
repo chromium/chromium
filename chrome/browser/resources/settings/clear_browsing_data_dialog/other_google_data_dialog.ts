@@ -12,17 +12,16 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 
 import type {SyncBrowserProxy, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {PasswordManagerImpl, PasswordManagerPage} from '../autofill_page/passwords/password_manager_proxy.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
@@ -31,7 +30,8 @@ import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 import type {ClearBrowsingDataBrowserProxy, UpdateSyncStateEvent} from './clear_browsing_data_browser_proxy.js';
 import {ClearBrowsingDataBrowserProxyImpl} from './clear_browsing_data_browser_proxy.js';
 import {isSignedIn} from './clear_browsing_data_signin_util.js';
-import {getTemplate} from './other_google_data_dialog.html.js';
+import {getCss} from './other_google_data_dialog.css.js';
+import {getHtml} from './other_google_data_dialog.html.js';
 
 export interface SettingsOtherGoogleDataDialogElement {
   $: {
@@ -41,7 +41,9 @@ export interface SettingsOtherGoogleDataDialogElement {
 }
 
 const SettingsOtherGoogleDataDialogElementBase =
-    WebUiListenerMixin(PolymerElement);
+    WebUiListenerMixinLit(CrLitElement);
+
+export type OtherGoogleDataDialogElement = SettingsOtherGoogleDataDialogElement;
 
 export class SettingsOtherGoogleDataDialogElement extends
     SettingsOtherGoogleDataDialogElementBase {
@@ -49,31 +51,25 @@ export class SettingsOtherGoogleDataDialogElement extends
     return 'settings-other-google-data-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
-  static get properties() {
+
+  override render() {
+    return getHtml.bind(this)();
+  }
+  static override get properties() {
     return {
-      dialogTitle_: {
-        type: String,
-        computed: 'computeDialogTitle_(isGoogleDse_)',
-      },
-
-      isGoogleDse_: {
-        type: Boolean,
-        value: false,
-      },
-
-      nonGoogleSearchHistorySubLabel_: String,
-
-      syncStatus_: Object,
+      isGoogleDse_: {type: Boolean},
+      nonGoogleSearchHistorySubLabel_: {type: String},
+      syncStatus_: {type: Object},
     };
   }
 
-  declare private dialogTitle_: string;
-  declare private isGoogleDse_: boolean;
-  declare private nonGoogleSearchHistorySubLabel_: TrustedHTML;
-  declare private syncStatus_: SyncStatus|undefined;
+  protected accessor isGoogleDse_: boolean = false;
+  protected accessor nonGoogleSearchHistorySubLabel_: TrustedHTML =
+      window.trustedTypes!.emptyHTML;
+  private accessor syncStatus_: SyncStatus|undefined = undefined;
 
   private clearBrowsingDataBrowserProxy_: ClearBrowsingDataBrowserProxy =
       ClearBrowsingDataBrowserProxyImpl.getInstance();
@@ -82,8 +78,8 @@ export class SettingsOtherGoogleDataDialogElement extends
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
 
-  override ready() {
-    super.ready();
+  override connectedCallback() {
+    super.connectedCallback();
 
     this.addWebUiListener(
         'sync-status-changed', this.handleSyncStatus_.bind(this));
@@ -106,16 +102,16 @@ export class SettingsOtherGoogleDataDialogElement extends
     this.syncStatus_ = syncStatus;
   }
 
-  private computeDialogTitle_() {
+  protected computeDialogTitle_() {
     return this.isGoogleDse_ ? loadTimeData.getString('otherGoogleDataTitle') :
                                loadTimeData.getString('otherDataTitle');
   }
 
-  private onBackOrCancelClick_() {
+  protected onBackOrCancelClick_() {
     this.$.dialog.cancel();
   }
 
-  private onPasswordManagerClick_() {
+  protected onPasswordManagerClick_() {
     PasswordManagerImpl.getInstance().showPasswordManager(
         PasswordManagerPage.PASSWORDS);
 
@@ -123,7 +119,7 @@ export class SettingsOtherGoogleDataDialogElement extends
         'Settings.DeleteBrowsingData.PasswordManagerLinkClick');
   }
 
-  private onMyActivityLinkClick_() {
+  protected onMyActivityLinkClick_() {
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('deleteBrowsingDataMyActivityUrl'));
 
@@ -131,7 +127,7 @@ export class SettingsOtherGoogleDataDialogElement extends
         'Settings.DeleteBrowsingData.MyActivityLinkClick');
   }
 
-  private onGoogleSearchHistoryLinkClick_() {
+  protected onGoogleSearchHistoryLinkClick_() {
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('deleteBrowsingDataSearchHistoryUrl'));
 
@@ -139,7 +135,7 @@ export class SettingsOtherGoogleDataDialogElement extends
         'Settings.DeleteBrowsingData.GoogleSearchHistoryLinkClick');
   }
 
-  private onGeminiAppsActivityClick_() {
+  protected onGeminiAppsActivityClick_() {
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('myActivityGeminiAppsUrl'));
 
@@ -147,15 +143,15 @@ export class SettingsOtherGoogleDataDialogElement extends
         'Settings.DeleteBrowsingData.GeminiAppsActivityLinkClick');
   }
 
-  private shouldShowMyActivityLink_() {
+  protected shouldShowMyActivityLink_() {
     return isSignedIn(this.syncStatus_);
   }
 
-  private shouldShowGoogleSearchHistoryLink_() {
+  protected shouldShowGoogleSearchHistoryLink_() {
     return isSignedIn(this.syncStatus_) && this.isGoogleDse_;
   }
 
-  private shouldShowGeminiAppsActivityLink_() {
+  protected shouldShowGeminiAppsActivityLink_() {
     return isSignedIn(this.syncStatus_) &&
         loadTimeData.getBoolean('showGlicSettings');
   }

@@ -770,7 +770,7 @@ suite('DeleteBrowsingDataDialog', function() {
     assertTrue(dialog.$.deleteBrowsingDataDialog.hidden);
 
     const cancelButton =
-        otherGoogleDataDialog.shadowRoot!.querySelector<HTMLElement>(
+        otherGoogleDataDialog.shadowRoot.querySelector<HTMLElement>(
             '.cancel-button');
     assertTrue(!!cancelButton);
     cancelButton.click();

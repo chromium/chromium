@@ -5,16 +5,18 @@
 import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
+import {ClearBrowsingDataBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import type {SettingsOtherGoogleDataDialogElement} from 'chrome://settings/lazy_load.js';
 import type {CrLinkRowElement} from 'chrome://settings/settings.js';
-import {loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PasswordManagerImpl, PasswordManagerPage, SignedInState} from 'chrome://settings/settings.js';
+import {loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PasswordManagerImpl, PasswordManagerPage, SignedInState, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
-import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
+import {isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
+import {TestClearBrowsingDataBrowserProxy} from './test_clear_browsing_data_browser_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
+import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
 // TODO(crbug.com/422340428): Add tests for back & cancel buttons.
 suite('OtherGoogleDataDialog', function() {
@@ -22,9 +24,10 @@ suite('OtherGoogleDataDialog', function() {
   let passwordManagerProxy: TestPasswordManagerProxy;
   let testOpenWindowProxy: TestOpenWindowProxy;
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
+  let testSyncBrowserProxy: TestSyncBrowserProxy;
+  let testClearBrowsingDataBrowserProxy: TestClearBrowsingDataBrowserProxy;
 
-
-  setup(function() {
+  setup(async function() {
     passwordManagerProxy = new TestPasswordManagerProxy();
     PasswordManagerImpl.setInstance(passwordManagerProxy);
 
@@ -34,17 +37,30 @@ suite('OtherGoogleDataDialog', function() {
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
 
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    testSyncBrowserProxy = new TestSyncBrowserProxy();
+    SyncBrowserProxyImpl.setInstance(testSyncBrowserProxy);
+
+    testClearBrowsingDataBrowserProxy = new TestClearBrowsingDataBrowserProxy();
+    ClearBrowsingDataBrowserProxyImpl.setInstance(
+        testClearBrowsingDataBrowserProxy);
+
     loadTimeData.overrideValues({
       showGlicSettings: true,
     });
-    return createDialog();
+    await createDialog();
   });
 
-  function createDialog() {
+  async function createDialog() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    testSyncBrowserProxy.resetResolver('getSyncStatus');
+    testClearBrowsingDataBrowserProxy.resetResolver('getSyncState');
     dialog = document.createElement('settings-other-google-data-dialog');
     document.body.appendChild(dialog);
-    return flushTasks();
+    await Promise.all([
+      testSyncBrowserProxy.whenCalled('getSyncStatus'),
+      testClearBrowsingDataBrowserProxy.whenCalled('getSyncState'),
+    ]);
+    await microtasksFinished();
   }
 
   function setSignedInAndDseState(
@@ -73,10 +89,10 @@ suite('OtherGoogleDataDialog', function() {
 
   test('MyActivityLinkClick', async function() {
     setSignedInAndDseState(SignedInState.SIGNED_IN, /*isGoogleDse=*/ true);
-    await flushTasks();
+    await microtasksFinished();
 
     const myActivityLink =
-        dialog.shadowRoot!.querySelector<CrLinkRowElement>('#myActivityLink');
+        dialog.shadowRoot.querySelector<CrLinkRowElement>('#myActivityLink');
     assertTrue(!!myActivityLink);
     assertTrue(isVisible(myActivityLink));
     myActivityLink.click();
@@ -92,10 +108,10 @@ suite('OtherGoogleDataDialog', function() {
 
   test('GoogleSearchHistoryLinkClick', async function() {
     setSignedInAndDseState(SignedInState.SIGNED_IN, /*isGoogleDse=*/ true);
-    await flushTasks();
+    await microtasksFinished();
 
     const googleSearchHistoryLink =
-        dialog.shadowRoot!.querySelector<CrLinkRowElement>(
+        dialog.shadowRoot.querySelector<CrLinkRowElement>(
             '#googleSearchHistoryLink');
     assertTrue(!!googleSearchHistoryLink);
     assertTrue(isVisible(googleSearchHistoryLink));
@@ -114,10 +130,10 @@ suite('OtherGoogleDataDialog', function() {
     setSignedInAndDseState(
         SignedInState.SIGNED_IN, /*isGoogleDse=*/ false,
         /*nonGoogleSearchHistoryString=*/ 'test');
-    await flushTasks();
+    await microtasksFinished();
 
     const nonGoogleSearchHistoryLink =
-        dialog.shadowRoot!.querySelector<CrLinkRowElement>(
+        dialog.shadowRoot.querySelector<CrLinkRowElement>(
             '#nonGoogleSearchHistoryLink');
     assertTrue(!!nonGoogleSearchHistoryLink);
     assertTrue(isVisible(nonGoogleSearchHistoryLink));
@@ -127,29 +143,29 @@ suite('OtherGoogleDataDialog', function() {
   test('MyActivityVisibility', async function() {
     // Case 1: User is signed in, MyActivity link should be visible.
     setSignedInAndDseState(SignedInState.SIGNED_IN, /*isGoogleDse=*/ true);
-    await flushTasks();
+    await microtasksFinished();
     assertTrue(isChildVisible(dialog, '#myActivityLink'));
 
     // Case 2: User is syncing, MyActivity link should be visible.
     setSignedInAndDseState(SignedInState.SYNCING, /*isGoogleDse=*/ true);
-    await flushTasks();
+    await microtasksFinished();
     assertTrue(isChildVisible(dialog, '#myActivityLink'));
 
     // Case 3: User is signed in paused, MyActivity link should be visible.
     setSignedInAndDseState(
         SignedInState.SIGNED_IN_PAUSED, /*isGoogleDse=*/ true);
-    await flushTasks();
+    await microtasksFinished();
     assertTrue(isChildVisible(dialog, '#myActivityLink'));
 
     // Case 4: User has web only sign-in in, MyActivity link should be hidden.
     setSignedInAndDseState(
         SignedInState.WEB_ONLY_SIGNED_IN, /*isGoogleDse=*/ true);
-    await flushTasks();
+    await microtasksFinished();
     assertFalse(isChildVisible(dialog, '#myActivityLink'));
 
     // Case 5: User is signed out, MyActivity link should be hidden.
     setSignedInAndDseState(SignedInState.SIGNED_OUT, /*isGoogleDse=*/ true);
-    await flushTasks();
+    await microtasksFinished();
     assertFalse(isChildVisible(dialog, '#myActivityLink'));
   });
 
@@ -158,7 +174,7 @@ suite('OtherGoogleDataDialog', function() {
     // history link should be visible, non-Google search history row should be
     // hidden.
     setSignedInAndDseState(SignedInState.SIGNED_IN, /*isGoogleDse=*/ true);
-    await flushTasks();
+    await microtasksFinished();
     assertTrue(isChildVisible(dialog, '#googleSearchHistoryLink'));
     assertFalse(isChildVisible(dialog, '#nonGoogleSearchHistoryLink'));
 
@@ -166,7 +182,7 @@ suite('OtherGoogleDataDialog', function() {
     // history link should be visible, non-Google search history row should be
     // hidden.
     setSignedInAndDseState(SignedInState.SYNCING, /*isGoogleDse=*/ true);
-    await flushTasks();
+    await microtasksFinished();
     assertTrue(isChildVisible(dialog, '#googleSearchHistoryLink'));
     assertFalse(isChildVisible(dialog, '#nonGoogleSearchHistoryLink'));
 
@@ -175,7 +191,7 @@ suite('OtherGoogleDataDialog', function() {
     // should be hidden.
     setSignedInAndDseState(
         SignedInState.SIGNED_IN_PAUSED, /*isGoogleDse=*/ true);
-    await flushTasks();
+    await microtasksFinished();
     assertTrue(isChildVisible(dialog, '#googleSearchHistoryLink'));
     assertFalse(isChildVisible(dialog, '#nonGoogleSearchHistoryLink'));
 
@@ -183,7 +199,7 @@ suite('OtherGoogleDataDialog', function() {
     // search history link should be hidden, non-Google search history row
     // should be visible.
     setSignedInAndDseState(SignedInState.SIGNED_IN, /*isGoogleDse=*/ false);
-    await flushTasks();
+    await microtasksFinished();
     assertFalse(isChildVisible(dialog, '#googleSearchHistoryLink'));
     assertTrue(isChildVisible(dialog, '#nonGoogleSearchHistoryLink'));
 
@@ -191,14 +207,14 @@ suite('OtherGoogleDataDialog', function() {
     // Google search history link should be hidden, non-Google search history
     // row should be visible.
     setSignedInAndDseState(SignedInState.SIGNED_OUT, /*isGoogleDse=*/ false);
-    await flushTasks();
+    await microtasksFinished();
     assertFalse(isChildVisible(dialog, '#googleSearchHistoryLink'));
     assertTrue(isChildVisible(dialog, '#nonGoogleSearchHistoryLink'));
 
     // Case 6: User is signed out and has Google as their DSE, Google search
     // history link and non-Google search history row should be hidden.
     setSignedInAndDseState(SignedInState.SIGNED_OUT, /*isGoogleDse=*/ true);
-    await flushTasks();
+    await microtasksFinished();
     assertFalse(isChildVisible(dialog, '#googleSearchHistoryLink'));
     assertFalse(isChildVisible(dialog, '#nonGoogleSearchHistoryLink'));
   });
@@ -206,8 +222,8 @@ suite('OtherGoogleDataDialog', function() {
   test('DialogTitle', async function() {
     // Case 1: DSE is Google.
     setSignedInAndDseState(SignedInState.SIGNED_IN, /*isGoogleDse=*/ true);
-    await flushTasks();
-    const title = dialog.shadowRoot!.querySelector('[slot=title]');
+    await microtasksFinished();
+    const title = dialog.shadowRoot.querySelector('[slot=title]');
     assertTrue(!!title);
     assertEquals(
         loadTimeData.getString('otherGoogleDataTitle'),
@@ -215,17 +231,17 @@ suite('OtherGoogleDataDialog', function() {
 
     // Case 2: DSE is not Google.
     setSignedInAndDseState(SignedInState.SIGNED_IN, /*isGoogleDse=*/ false);
-    await flushTasks();
+    await microtasksFinished();
     assertEquals(
         loadTimeData.getString('otherDataTitle'), title.textContent.trim());
   });
 
   test('GeminiAppsActivityLinkClick', async function() {
     setSignedInAndDseState(SignedInState.SIGNED_IN, /*isGoogleDse=*/ true);
-    await flushTasks();
+    await microtasksFinished();
 
     const geminiAppsActivityLink =
-        dialog.shadowRoot!.querySelector<CrLinkRowElement>(
+        dialog.shadowRoot.querySelector<CrLinkRowElement>(
             '#geminiAppsActivityLink');
     assertTrue(!!geminiAppsActivityLink);
     assertTrue(isVisible(geminiAppsActivityLink));
@@ -241,11 +257,11 @@ suite('OtherGoogleDataDialog', function() {
 
   test('GeminiAppsActivityVisibility', async function() {
     setSignedInAndDseState(SignedInState.SIGNED_IN, /*isGoogleDse=*/ true);
-    await flushTasks();
+    await microtasksFinished();
     assertTrue(isChildVisible(dialog, '#geminiAppsActivityLink'));
 
     setSignedInAndDseState(SignedInState.SIGNED_OUT, /*isGoogleDse=*/ true);
-    await flushTasks();
+    await microtasksFinished();
     assertFalse(isChildVisible(dialog, '#geminiAppsActivityLink'));
 
     loadTimeData.overrideValues({
@@ -253,7 +269,7 @@ suite('OtherGoogleDataDialog', function() {
     });
     await createDialog();
     setSignedInAndDseState(SignedInState.SIGNED_IN, /*isGoogleDse=*/ true);
-    await flushTasks();
+    await microtasksFinished();
     assertFalse(isChildVisible(dialog, '#geminiAppsActivityLink'));
   });
 });
