@@ -246,9 +246,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Configures Gemini with startup parameters.
   void ConfigureGemini();
 
-  // Helper to get the GeminiTabHelper for the active web state if it matches
-  // the provided web state.
-  GeminiTabHelper* GetActiveTabHelper(web::WebState* web_state) const;
+  // Helper to get the GeminiTabHelper for the active web state, or nullptr if
+  // none exists.
+  GeminiTabHelper* GetActiveTabHelper() const;
 
   // Returns the ID of the active web state, or an invalid ID if none exists.
   web::WebStateID GetActiveWebStateID() const;
