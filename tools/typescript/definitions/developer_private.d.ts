@@ -136,6 +136,8 @@ declare global {
         parentDisabledPermissions: boolean;
         unsupportedManifestVersion: boolean;
         unsupportedDeveloperExtension: boolean;
+        disabledByAnotherExtension: boolean;
+        disabledByExtensionName?: string;
       }
 
       export interface OptionsPage {

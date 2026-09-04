@@ -313,3 +313,32 @@ TEST_F(ExtensionsInternalsUnitTest, RegistryExtensionStatus) {
     EXPECT_EQ("BLOCKED", *info.GetDict().FindString("registry_status"));
   }
 }
+
+// Test that the disable reasons are correctly serialized to JSON.
+TEST_F(ExtensionsInternalsUnitTest, DisableReasons) {
+  InitializeEmptyExtensionService();
+  extensions::EventRouterFactory::GetInstance()->SetTestingFactory(
+      profile(), base::BindRepeating(&BuildEventRouter));
+
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ExtensionBuilder("test")
+          .SetID("ddchlicdkolnonkihahngkmmmjnjlkkf")
+          .Build();
+  registrar()->AddExtension(extension.get());
+  registrar()->DisableExtension(
+      extension->id(),
+      {extensions::disable_reason::DISABLE_BY_ANOTHER_EXTENSION});
+
+  ExtensionsInternalsSource source(profile());
+  auto extensions_list = base::JSONReader::Read(
+      source.WriteToString(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(extensions_list) << "Failed to parse extensions internals json.";
+  base::DictValue& extension_json = extensions_list->GetList()[0].GetDict();
+
+  const base::ListValue* disable_reasons =
+      extension_json.FindList("disable_reasons");
+  ASSERT_TRUE(disable_reasons);
+  EXPECT_EQ(1U, disable_reasons->size());
+  EXPECT_EQ("DISABLE_BY_ANOTHER_EXTENSION",
+            disable_reasons->front().GetString());
+}

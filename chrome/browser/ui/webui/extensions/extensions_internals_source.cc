@@ -13,6 +13,7 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
@@ -152,7 +153,7 @@ base::ListValue CreationFlagsToList(int creation_flags) {
 
 base::ListValue DisableReasonsToList(
     const extensions::DisableReasonSet& disable_reasons) {
-  static_assert(extensions::disable_reason::DISABLE_REASON_LAST == 1 << 27,
+  static_assert(extensions::disable_reason::DISABLE_REASON_LAST == (1LL << 28),
                 "Please add your new disable reason here.");
 
   base::ListValue disable_reasons_value;
@@ -237,6 +238,10 @@ base::ListValue DisableReasonsToList(
   if (disable_reasons.contains(
           extensions::disable_reason::DISABLE_BLOCKED_BY_CLOUD_POLICY_CHECK)) {
     disable_reasons_value.Append("DISABLE_BLOCKED_BY_CLOUD_POLICY_CHECK");
+  }
+  if (disable_reasons.contains(
+          extensions::disable_reason::DISABLE_BY_ANOTHER_EXTENSION)) {
+    disable_reasons_value.Append("DISABLE_BY_ANOTHER_EXTENSION");
   }
   if (disable_reasons.contains(extensions::disable_reason::DISABLE_UNKNOWN)) {
     disable_reasons_value.Append("DISABLE_UNKNOWN");

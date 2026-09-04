@@ -47,6 +47,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/management_policy.h"
+#include "extensions/browser/pref_types.h"
 #include "extensions/browser/supervised_user_extensions_delegate.h"
 #include "extensions/browser/test_management_policy.h"
 #include "extensions/browser/uninstall_reason.h"
@@ -342,6 +343,38 @@ TEST_F(ManagementApiUnitTest, ComponentPolicyEnabling) {
   EXPECT_TRUE(extension_can_enable_extension(component, policy));
   EXPECT_TRUE(extension_can_enable_extension(policy2, policy));
   EXPECT_FALSE(extension_can_enable_extension(internal, policy));
+}
+
+// Test that when an extension disables another extension, it uses the correct
+// disable reason.
+TEST_F(ManagementApiUnitTest, DisabledByAnotherExtension) {
+  scoped_refptr<const Extension> target_extension =
+      ExtensionBuilder("target").Build();
+  registrar()->AddExtension(target_extension.get());
+  scoped_refptr<const Extension> source_extension =
+      ExtensionBuilder("source").Build();
+  registrar()->AddExtension(source_extension.get());
+
+  const ExtensionId& id = target_extension->id();
+  base::ListValue args;
+  args.Append(id);
+  args.Append(false /* disable the extension */);
+
+  auto function = base::MakeRefCounted<ManagementSetEnabledFunction>();
+  function->set_extension(source_extension);
+  EXPECT_TRUE(RunFunction(function, args));
+
+  EXPECT_TRUE(registry()->disabled_extensions().Contains(id));
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+  EXPECT_TRUE(prefs->HasDisableReason(
+      id, disable_reason::DISABLE_BY_ANOTHER_EXTENSION));
+  EXPECT_FALSE(
+      prefs->HasDisableReason(id, disable_reason::DISABLE_USER_ACTION));
+
+  std::string disabling_id;
+  EXPECT_TRUE(
+      prefs->ReadPrefAsString(id, kDisableReasonByExtensionId, &disabling_id));
+  EXPECT_EQ(disabling_id, source_extension->id());
 }
 
 // Tests management.uninstall.

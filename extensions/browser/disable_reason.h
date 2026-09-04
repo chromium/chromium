@@ -68,8 +68,10 @@ enum DisableReason {
   // Disabled because the extension failed cloud policy-related checks. See also
   // ExtensionInstallCloudPolicyChecksEnabled policy.
   DISABLE_BLOCKED_BY_CLOUD_POLICY_CHECK = 1 << 26,
+  // Disabled by another extension via the management API.
+  DISABLE_BY_ANOTHER_EXTENSION = 1 << 27,
   // This should always be the last value.
-  DISABLE_REASON_LAST = 1LL << 27,
+  DISABLE_REASON_LAST = 1LL << 28,
 };
 
 static_assert(DISABLE_REASON_LAST - 1 <= std::numeric_limits<int>::max(),

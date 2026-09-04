@@ -125,6 +125,8 @@ dictionary DisableReasons {
   required boolean parentDisabledPermissions;
   required boolean unsupportedManifestVersion;
   required boolean unsupportedDeveloperExtension;
+  required boolean disabledByAnotherExtension;
+  DOMString? disabledByExtensionName;
 };
 
 dictionary OptionsPage {

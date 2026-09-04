@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
@@ -671,6 +672,29 @@ void ExtensionInfoGenerator::FillExtensionInfo(const Extension& extension,
   info.disable_reasons.unsupported_developer_extension =
       disable_reasons.contains(
           disable_reason::DISABLE_UNSUPPORTED_DEVELOPER_EXTENSION);
+  info.disable_reasons.disabled_by_another_extension =
+      disable_reasons.contains(disable_reason::DISABLE_BY_ANOTHER_EXTENSION);
+  if (info.disable_reasons.disabled_by_another_extension) {
+    std::string id;
+    extension_prefs_->ReadPrefAsString(extension.id(),
+                                       kDisableReasonByExtensionId, &id);
+    std::string name;
+    if (!id.empty()) {
+      const Extension* disabling_extension =
+          ExtensionRegistry::Get(browser_context_)
+              ->GetExtensionById(id, ExtensionRegistry::EVERYTHING);
+      if (disabling_extension) {
+        name = disabling_extension->short_name().empty()
+                   ? disabling_extension->name()
+                   : disabling_extension->short_name();
+      }
+    }
+
+    if (!name.empty()) {
+      info.disable_reasons.disabled_by_extension_name = base::UTF16ToUTF8(
+          ui_util::GetFixupExtensionNameForUIDisplay(base::UTF8ToUTF16(name)));
+    }
+  }
 
   // Error collection.
   bool error_console_enabled =

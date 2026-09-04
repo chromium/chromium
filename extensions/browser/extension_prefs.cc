@@ -18,6 +18,7 @@
 #include "base/containers/flat_set.h"
 #include "base/json/values_util.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -1108,12 +1109,8 @@ void ExtensionPrefs::AddRawDisableReasons(
   const base::flat_set<int> new_reasons =
       base::STLSetUnion<base::flat_set<int>>(current_reasons, incoming_reasons);
 
-  if (new_reasons == current_reasons) {
-    return;
-  }
-
-  WriteDisableReasonsToPrefs(extension_id, new_reasons);
-  OnDisableReasonsChanged(extension_id, current_reasons, new_reasons);
+  ReplaceRawDisableReasons(DisableReasonRawManipulationPasskey(), extension_id,
+                           new_reasons);
 }
 
 void ExtensionPrefs::RemoveDisableReason(
@@ -1130,12 +1127,9 @@ void ExtensionPrefs::RemoveDisableReasons(const ExtensionId& extension_id,
 
   base::flat_set<int> new_reasons =
       base::STLSetDifference<base::flat_set<int>>(current_reasons, to_remove);
-  if (new_reasons == current_reasons) {
-    return;
-  }
 
-  WriteDisableReasonsToPrefs(extension_id, new_reasons);
-  OnDisableReasonsChanged(extension_id, current_reasons, new_reasons);
+  ReplaceRawDisableReasons(disable_reason_raw_manipulation_passkey_,
+                           extension_id, new_reasons);
 }
 
 void ExtensionPrefs::ReplaceRawDisableReasons(
@@ -1151,18 +1145,16 @@ void ExtensionPrefs::ReplaceRawDisableReasons(
   WriteDisableReasonsToPrefs(extension_id, disable_reasons);
   OnDisableReasonsChanged(extension_id, current_disable_reasons,
                           disable_reasons);
+
+  if (!disable_reasons.contains(disable_reason::DISABLE_BY_ANOTHER_EXTENSION)) {
+    UpdateExtensionPref(extension_id, kDisableReasonByExtensionId.name,
+                        std::nullopt);
+  }
 }
 
 void ExtensionPrefs::ClearDisableReasons(const ExtensionId& extension_id) {
-  const base::flat_set<int> current_disable_reasons =
-      ReadDisableReasonsFromPrefs(extension_id);
-
-  if (current_disable_reasons.empty()) {
-    return;
-  }
-
-  WriteDisableReasonsToPrefs(extension_id, {});
-  OnDisableReasonsChanged(extension_id, current_disable_reasons, {});
+  ReplaceRawDisableReasons(disable_reason_raw_manipulation_passkey_,
+                           extension_id, {});
 }
 
 void ExtensionPrefs::ClearInapplicableDisableReasonsForComponentExtension(

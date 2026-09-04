@@ -477,7 +477,8 @@ void ExtensionRegistrar::DisableExtensionWithSource(
     disable_reason::DisableReason disable_reason) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(disable_reason == disable_reason::DISABLE_USER_ACTION ||
-         disable_reason == disable_reason::DISABLE_BLOCKED_BY_POLICY);
+         disable_reason == disable_reason::DISABLE_BLOCKED_BY_POLICY ||
+         disable_reason == disable_reason::DISABLE_BY_ANOTHER_EXTENSION);
   if (disable_reason == disable_reason::DISABLE_BLOCKED_BY_POLICY) {
     DCHECK(Manifest::IsPolicyLocation(source_extension->location()) ||
            Manifest::IsComponentLocation(source_extension->location()));
@@ -487,7 +488,16 @@ void ExtensionRegistrar::DisableExtensionWithSource(
       registry_->GetExtensionById(extension_id, ExtensionRegistry::EVERYTHING);
   CHECK(extension_system_->management_policy()->ExtensionMayModifySettings(
       source_extension, extension, nullptr));
+
   DisableExtension(extension_id, {disable_reason});
+
+  // Always update the disabling extension to the latest one, as it's simpler
+  // and reflects the most recent attempt to disable.
+  if (disable_reason == disable_reason::DISABLE_BY_ANOTHER_EXTENSION &&
+      extension_prefs_->HasDisableReason(extension_id, disable_reason)) {
+    extension_prefs_->SetStringPref(extension_id, kDisableReasonByExtensionId,
+                                    source_extension->id());
+  }
 }
 
 void ExtensionRegistrar::EnabledReloadableExtensions() {

@@ -1543,4 +1543,94 @@ TEST_P(ExtensionInfoGeneratorSettingPendingUnitTest,
   }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+// Test the `disabled_by_another_extension` and `disabled_by_extension_name`
+// fields.
+TEST_F(ExtensionInfoGeneratorUnitTest, DisabledByExtension) {
+  // Create two extensions. One will be disabled by the other.
+  const scoped_refptr<const Extension> disabling_extension = CreateExtension(
+      "disabling", base::ListValue(), mojom::ManifestLocation::kInternal);
+  const scoped_refptr<const Extension> disabled_extension = CreateExtension(
+      "disabled", base::ListValue(), mojom::ManifestLocation::kInternal);
+
+  // Disable the extension, and set the disable reason.
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+  prefs->SetStringPref(disabled_extension->id(), kDisableReasonByExtensionId,
+                       disabling_extension->id());
+  registrar()->DisableExtension(disabled_extension->id(),
+                                {disable_reason::DISABLE_BY_ANOTHER_EXTENSION});
+
+  // Generate the info, and verify the `disabled_by_another_extension` and
+  // `disabled_by_extension_name` are correct.
+  std::unique_ptr<developer::ExtensionInfo> info =
+      GenerateExtensionInfo(disabled_extension->id());
+  EXPECT_TRUE(info->runtime_warnings.empty());
+  EXPECT_TRUE(info->disable_reasons.disabled_by_another_extension);
+
+  ASSERT_TRUE(info->disable_reasons.disabled_by_extension_name);
+  EXPECT_EQ(disabling_extension->name(),
+            *info->disable_reasons.disabled_by_extension_name);
+
+  auto check_disabled_by_info_with_short_name = [&](const char* short_name) {
+    const scoped_refptr<const Extension> disabling_extension =
+        ExtensionBuilder()
+            .SetManifest(base::DictValue()
+                             .Set("name", "Test")
+                             .Set("short_name", short_name)
+                             .Set("manifest_version", 3)
+                             .Set("version", "1.0.0"))
+            .SetLocation(mojom::ManifestLocation::kInternal)
+            .Build();
+    registrar()->AddExtension(disabling_extension.get());
+    prefs->SetStringPref(disabled_extension->id(), kDisableReasonByExtensionId,
+                         disabling_extension->id());
+    info = GenerateExtensionInfo(disabled_extension->id());
+    EXPECT_TRUE(info->runtime_warnings.empty());
+    EXPECT_TRUE(info->disable_reasons.disabled_by_another_extension);
+    ASSERT_TRUE(info->disable_reasons.disabled_by_extension_name);
+  };
+
+  // Test with a short name.
+  {
+    const char kShortName[] = "short name";
+    check_disabled_by_info_with_short_name(kShortName);
+    EXPECT_EQ(kShortName, *info->disable_reasons.disabled_by_extension_name);
+  }
+
+  const char kLongShortName[] =
+      "This is a placeholder name of a fake extension that is much longer "
+      "than it would normally be";
+
+  // Test with a long short name which should be truncated.
+  {
+    check_disabled_by_info_with_short_name(kLongShortName);
+    EXPECT_LT(info->disable_reasons.disabled_by_extension_name->size(),
+              strlen(kLongShortName));
+  }
+
+  // Test with a long name which should be truncated.
+  const scoped_refptr<const Extension> long_name_disabling_extension =
+      CreateExtension(kLongShortName, base::ListValue(),
+                      mojom::ManifestLocation::kInternal);
+  prefs->SetStringPref(disabled_extension->id(), kDisableReasonByExtensionId,
+                       long_name_disabling_extension->id());
+  info = GenerateExtensionInfo(disabled_extension->id());
+  EXPECT_TRUE(info->runtime_warnings.empty());
+  EXPECT_TRUE(info->disable_reasons.disabled_by_another_extension);
+  ASSERT_TRUE(info->disable_reasons.disabled_by_extension_name);
+  EXPECT_NE(long_name_disabling_extension->name(),
+            *info->disable_reasons.disabled_by_extension_name);
+  EXPECT_LT(info->disable_reasons.disabled_by_extension_name->size(),
+            long_name_disabling_extension->name().size());
+
+  // Test with the disabling extension uninstalled.
+  registrar()->RemoveExtension(long_name_disabling_extension->id(),
+                               UnloadedExtensionReason::UNINSTALL);
+  info = GenerateExtensionInfo(disabled_extension->id());
+  EXPECT_TRUE(info->runtime_warnings.empty());
+  EXPECT_TRUE(info->disable_reasons.disabled_by_another_extension);
+  // The name should not be present since the extension is uninstalled.
+  EXPECT_FALSE(info->disable_reasons.disabled_by_extension_name);
+}
+
 }  // namespace extensions

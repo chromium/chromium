@@ -298,6 +298,7 @@ export function createDummyExtensionInfo():
       parentDisabledPermissions: false,
       unsupportedManifestVersion: false,
       unsupportedDeveloperExtension: false,
+      disabledByAnotherExtension: false,
     },
     errorCollection: {isEnabled: false, isActive: false},
     fileAccess: {isEnabled: false, isActive: false},

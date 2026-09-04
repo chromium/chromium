@@ -89,6 +89,11 @@ export function getHtml(this: ItemElement) {
                   !this.data.disableReasons.unsupportedDeveloperExtension}">
             $i18n{itemUnsupportedDeveloperMode}
           </span>
+          <span id="disabled-by-another-extension-warning"
+              class="cr-secondary-text"
+              ?hidden="${!this.isDisabledByAnotherExtension_()}">
+            ${this.getDisabledByExtensionWarningText_()}
+          </span>
         </div>
       ` : ''}
       ${this.showMv2DeprecationWarning_() ? html`

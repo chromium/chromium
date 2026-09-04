@@ -12,7 +12,7 @@
 namespace extensions {
 
 bool IsValidDisableReason(int reason) {
-  static_assert(extensions::disable_reason::DISABLE_REASON_LAST == (1LL << 27),
+  static_assert(extensions::disable_reason::DISABLE_REASON_LAST == (1LL << 28),
                 "Please update this method whenever a new disable reason is "
                 "added / removed.");
   return reason == disable_reason::DISABLE_NONE ||
@@ -37,8 +37,9 @@ bool IsValidDisableReason(int reason) {
              disable_reason::DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY ||
          reason == disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION ||
          reason == disable_reason::DISABLE_UNSUPPORTED_DEVELOPER_EXTENSION ||
+         reason == disable_reason::DISABLE_UNKNOWN ||
          reason == disable_reason::DISABLE_BLOCKED_BY_CLOUD_POLICY_CHECK ||
-         reason == disable_reason::DISABLE_UNKNOWN;
+         reason == disable_reason::DISABLE_BY_ANOTHER_EXTENSION;
 }
 
 int IntegerSetToBitflag(const base::flat_set<int>& set) {

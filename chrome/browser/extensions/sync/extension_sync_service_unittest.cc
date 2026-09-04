@@ -50,6 +50,8 @@
 #include "components/sync/protocol/extension_specifics.pb.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
+#include "components/sync/test/fake_sync_change_processor.h"
+#include "components/sync/test/sync_change_processor_wrapper_for_test.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -128,7 +130,6 @@ SyncChangeList MakeSyncChangeList(const std::string& id,
       syncer::SyncData::CreateLocalData(id, "Name", specifics);
   return SyncChangeList(1, SyncChange(FROM_HERE, change_type, sync_data));
 }
-
 
 
 }  // namespace
@@ -1049,6 +1050,46 @@ TEST_F(ExtensionSyncServiceTest, GetSyncAppDataUserSettingsOnExtensionMoved) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+TEST_F(ExtensionSyncServiceTest, DisableByExtensionDataNotSynced) {
+  InitializeEmptyExtensionService();
+  service()->Init();
+  extension_sync_service()->MergeDataAndStartSyncing(
+      syncer::EXTENSIONS, syncer::SyncDataList(),
+      std::make_unique<syncer::FakeSyncChangeProcessor>());
+
+  // Create two extensions, one to disable the other.
+  scoped_refptr<const Extension> disabling_extension =
+      extensions::ExtensionBuilder("disabling")
+          .SetManifestKey("update_url",
+                          extension_urls::kChromeWebstoreUpdateURL)
+          .AddFlags(Extension::FROM_WEBSTORE)
+          .SetLocation(ManifestLocation::kInternal)
+          .Build();
+  registrar()->AddExtension(disabling_extension.get());
+  scoped_refptr<const Extension> disabled_extension =
+      extensions::ExtensionBuilder("disabled")
+          .SetManifestKey("update_url",
+                          extension_urls::kChromeWebstoreUpdateURL)
+          .AddFlags(Extension::FROM_WEBSTORE)
+          .SetLocation(ManifestLocation::kInternal)
+          .Build();
+  registrar()->AddExtension(disabled_extension.get());
+
+  // Disable one extension by the other.
+  registrar()->DisableExtensionWithSource(
+      disabling_extension.get(), disabled_extension->id(),
+      extensions::disable_reason::DISABLE_BY_ANOTHER_EXTENSION);
+
+  ExtensionSyncData sync_data =
+      extension_sync_service()->CreateSyncData(*disabled_extension);
+
+  // The disable reason should not be synced.
+  EXPECT_TRUE(sync_data.disable_reasons().empty());
+  // Since disable reasons are empty, the extension should appear enabled in
+  // sync.
+  EXPECT_TRUE(sync_data.enabled());
+}
+
 TEST_F(ExtensionSyncServiceTest, GetSyncDataList) {
   InitializeEmptyExtensionService();
   InstallCRX(data_dir().AppendASCII("good.crx"), INSTALL_NEW);
@@ -1463,9 +1504,9 @@ TEST_F(ExtensionSyncServiceTest, ProcessSyncDataEnableDisable) {
   const ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
 
   constexpr int kUnknownDisableReason_1 =
-      (extensions::disable_reason::DISABLE_REASON_LAST << 2);
+      (extensions::disable_reason::DISABLE_REASON_LAST << 1);
   constexpr int kUnknownDisableReason_2 =
-      (extensions::disable_reason::DISABLE_REASON_LAST << 3);
+      (extensions::disable_reason::DISABLE_REASON_LAST << 2);
 
   struct TestCase {
     const char* name;  // For failure output only.

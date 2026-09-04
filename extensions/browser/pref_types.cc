@@ -19,4 +19,9 @@ const PrefMap kUserScriptsWorldsConfiguration = {
     "user_scripts_worlds.configuration", PrefType::kDictionary,
     PrefScope::kExtensionSpecific};
 
+// The ID of the extension that disabled this extension.
+const PrefMap kDisableReasonByExtensionId = {"disable_reason_by_extension_id",
+                                             PrefType::kString,
+                                             PrefScope::kExtensionSpecific};
+
 }  // namespace extensions

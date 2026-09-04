@@ -35,6 +35,8 @@ extern const PrefMap kCorruptedDisableCount;
 extern const PrefMap kUserPermissions;
 extern const PrefMap kUserScriptsWorldsConfiguration;
 
+extern const PrefMap kDisableReasonByExtensionId;
+
 }  // namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_PREF_TYPES_H_

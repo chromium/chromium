@@ -128,7 +128,7 @@ std::vector<ExtensionSyncData> ToExtensionSyncDataList(
 // reasons.
 base::flat_set<int> GetSyncableDisableReasons(
     const base::flat_set<int>& disable_reasons) {
-  static_assert(extensions::disable_reason::DISABLE_REASON_LAST == (1LL << 27),
+  static_assert(extensions::disable_reason::DISABLE_REASON_LAST == (1LL << 28),
                 "Please consider whether your new disable reason should be"
                 " syncable, and if so update the list below accordingly!");
   const base::flat_set<int> kKnownSyncableDisableReasons = {

@@ -277,6 +277,12 @@
   <message name="IDS_EXTENSIONS_ITEM_RATE_IT" desc="The text on the link allowing the user to rate an extension on the Chrome Web Store.">
     Rate it
   </message>
+  <message name="IDS_EXTENSIONS_ITEM_DISABLED_BY_EXTENSION" desc="The text to indicate that an extension was disabled by another, known extension.">
+    Extension disabled by <ph name="EXTENSION_NAME">$1<ex>AdBlock</ex></ph>
+  </message>
+  <message name="IDS_EXTENSIONS_ITEM_DISABLED_BY_EXTENSION_GENERIC" desc="The text to indicate that an extension was disabled by another extension, but that specific extension is not known.">
+    Extension disabled by another extension
+  </message>
   <message name="IDS_EXTENSIONS_DETAILS_BACK_BUTTON_ARIA_LABEL" desc="Text read by screen readers when focusing on the back button on details page. If the back button is activated, it will navigate to the previous page. This text will only be announced by screen readers and will not be visible in the UI." is_accessibility_with_no_ui="true">
     <ph name="SUBPAGE_TITLE">$1<ex>Google Docs</ex></ph> details page back button
   </message>
