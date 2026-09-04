@@ -718,6 +718,14 @@ class MediaStreamManager::DeviceRequest {
     return state_[static_cast<int>(stream_type)];
   }
 
+  bool ShouldCloseDeviceOnTeardown(MediaStreamType stream_type) const {
+    const MediaRequestState request_state = state(stream_type);
+    return request_state == MEDIA_REQUEST_STATE_OPENING ||
+           request_state == MEDIA_REQUEST_STATE_DONE ||
+           (request_type_ == blink::MEDIA_DEVICE_UPDATE &&
+            request_state == MEDIA_REQUEST_STATE_PENDING_APPROVAL);
+  }
+
   void ResetDevicesOpened(MediaStreamType stream_type) {
     devices_opened_count_[static_cast<int>(stream_type)] = 0;
   }
@@ -2039,7 +2047,7 @@ void MediaStreamManager::StopDevice(MediaStreamType type,
       if (devices.audio_device.has_value() &&
           devices.audio_device->type == type &&
           devices.audio_device->session_id() == session_id) {
-        if (request->state(type) == MEDIA_REQUEST_STATE_DONE) {
+        if (request->ShouldCloseDeviceOnTeardown(type)) {
           CloseDevice(type, session_id);
         }
         devices.audio_device = std::nullopt;
@@ -2047,7 +2055,7 @@ void MediaStreamManager::StopDevice(MediaStreamType type,
       if (devices.video_device.has_value() &&
           devices.video_device->type == type &&
           devices.video_device->session_id() == session_id) {
-        if (request->state(type) == MEDIA_REQUEST_STATE_DONE) {
+        if (request->ShouldCloseDeviceOnTeardown(type)) {
           CloseDevice(type, session_id);
         }
         devices.video_device = std::nullopt;
@@ -2574,10 +2582,8 @@ void MediaStreamManager::CancelRequest(
         continue;
       }
       const blink::MediaStreamDevice& device = device_ptr->value();
-      const MediaRequestState state = request->state(device.type);
       // If we have not yet requested the device to be opened - just ignore it.
-      if (state != MEDIA_REQUEST_STATE_OPENING &&
-          state != MEDIA_REQUEST_STATE_DONE) {
+      if (!request->ShouldCloseDeviceOnTeardown(device.type)) {
         continue;
       }
       // Stop the opening/opened devices of the requests.
