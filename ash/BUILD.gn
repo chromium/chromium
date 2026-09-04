@@ -40,7 +40,6 @@ component("ash") {
     "accelerators/accelerator_encoding.h",
     "accelerators/accelerator_history_impl.cc",
     "accelerators/accelerator_history_impl.h",
-    "accelerators/accelerator_ids.h",
     "accelerators/accelerator_launcher_state_machine.cc",
     "accelerators/accelerator_launcher_state_machine.h",
     "accelerators/accelerator_lookup.cc",
