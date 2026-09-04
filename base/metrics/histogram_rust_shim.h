@@ -32,6 +32,21 @@ void record_counts_10m(::rust::Str name, int32_t sample);
 void record_memory_kb(::rust::Str name, int32_t sample_kb);
 void record_memory_mb(::rust::Str name, int32_t sample_mb);
 void record_memory_large_mb(::rust::Str name, int32_t sample_mb);
+void record_custom_times(::rust::Str name,
+                         int64_t sample_us,
+                         int64_t min_us,
+                         int64_t max_us,
+                         size_t buckets);
+void record_times(::rust::Str name, int64_t sample_us);
+void record_medium_times(::rust::Str name, int64_t sample_us);
+void record_long_times(::rust::Str name, int64_t sample_us);
+void record_long_times_100(::rust::Str name, int64_t sample_us);
+void record_custom_microseconds_times(::rust::Str name,
+                                      int64_t sample_us,
+                                      int64_t min_us,
+                                      int64_t max_us,
+                                      size_t buckets);
+void record_microseconds_times(::rust::Str name, int64_t sample_us);
 
 }  // namespace base::rust
 

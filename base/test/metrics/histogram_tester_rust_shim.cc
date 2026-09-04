@@ -34,6 +34,22 @@ void HistogramTesterRs::ExpectTotalCount(::rust::Str name,
   histogram_tester_.ExpectTotalCount(std::string_view(name), expected_count);
 }
 
+void HistogramTesterRs::ExpectTimeBucketCount(::rust::Str name,
+                                              int64_t sample_us,
+                                              int32_t expected_count) const {
+  histogram_tester_.ExpectTimeBucketCount(
+      std::string_view(name), base::Microseconds(sample_us), expected_count);
+}
+
+void HistogramTesterRs::ExpectUniqueTimeSample(
+    ::rust::Str name,
+    int64_t sample_us,
+    int32_t expected_bucket_count) const {
+  histogram_tester_.ExpectUniqueTimeSample(std::string_view(name),
+                                           base::Microseconds(sample_us),
+                                           expected_bucket_count);
+}
+
 std::unique_ptr<HistogramTesterRs> CreateHistogramTesterRs() {
   return std::make_unique<HistogramTesterRs>();
 }

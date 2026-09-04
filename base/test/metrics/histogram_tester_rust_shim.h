@@ -26,6 +26,12 @@ class HistogramTesterRs {
                          int32_t sample,
                          int32_t expected_count) const;
   void ExpectTotalCount(::rust::Str name, int32_t expected_count) const;
+  void ExpectTimeBucketCount(::rust::Str name,
+                             int64_t sample_us,
+                             int32_t expected_count) const;
+  void ExpectUniqueTimeSample(::rust::Str name,
+                              int64_t sample_us,
+                              int32_t expected_bucket_count) const;
 
  private:
   base::HistogramTester histogram_tester_;

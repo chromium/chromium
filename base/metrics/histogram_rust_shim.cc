@@ -76,4 +76,44 @@ void record_memory_large_mb(::rust::Str name, int32_t sample_mb) {
   UmaHistogramMemoryLargeMB(std::string_view(name), sample_mb);
 }
 
+void record_custom_times(::rust::Str name,
+                         int64_t sample_us,
+                         int64_t min_us,
+                         int64_t max_us,
+                         size_t buckets) {
+  UmaHistogramCustomTimes(std::string_view(name), Microseconds(sample_us),
+                          Microseconds(min_us), Microseconds(max_us), buckets);
+}
+
+void record_times(::rust::Str name, int64_t sample_us) {
+  UmaHistogramTimes(std::string_view(name), Microseconds(sample_us));
+}
+
+void record_medium_times(::rust::Str name, int64_t sample_us) {
+  UmaHistogramMediumTimes(std::string_view(name), Microseconds(sample_us));
+}
+
+void record_long_times(::rust::Str name, int64_t sample_us) {
+  UmaHistogramLongTimes(std::string_view(name), Microseconds(sample_us));
+}
+
+void record_long_times_100(::rust::Str name, int64_t sample_us) {
+  UmaHistogramLongTimes100(std::string_view(name), Microseconds(sample_us));
+}
+
+void record_custom_microseconds_times(::rust::Str name,
+                                      int64_t sample_us,
+                                      int64_t min_us,
+                                      int64_t max_us,
+                                      size_t buckets) {
+  UmaHistogramCustomMicrosecondsTimes(
+      std::string_view(name), Microseconds(sample_us), Microseconds(min_us),
+      Microseconds(max_us), buckets);
+}
+
+void record_microseconds_times(::rust::Str name, int64_t sample_us) {
+  UmaHistogramMicrosecondsTimes(std::string_view(name),
+                                Microseconds(sample_us));
+}
+
 }  // namespace base::rust

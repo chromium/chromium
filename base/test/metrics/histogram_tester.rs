@@ -23,6 +23,18 @@ mod ffi {
             expected_count: i32,
         );
         fn ExpectTotalCount(self: &HistogramTesterRs, name: &str, expected_count: i32);
+        fn ExpectTimeBucketCount(
+            self: &HistogramTesterRs,
+            name: &str,
+            sample_us: i64,
+            expected_count: i32,
+        );
+        fn ExpectUniqueTimeSample(
+            self: &HistogramTesterRs,
+            name: &str,
+            sample_us: i64,
+            expected_bucket_count: i32,
+        );
     }
 }
 
@@ -45,6 +57,26 @@ impl HistogramTester {
 
     pub fn expect_total_count(&self, name: &str, expected_count: i32) {
         self.inner.ExpectTotalCount(name, expected_count);
+    }
+
+    pub fn expect_time_bucket_count(
+        &self,
+        name: &str,
+        sample: core::time::Duration,
+        expected_count: i32,
+    ) {
+        let sample_us = i64::try_from(sample.as_micros()).unwrap_or(i64::MAX);
+        self.inner.ExpectTimeBucketCount(name, sample_us, expected_count);
+    }
+
+    pub fn expect_unique_time_sample(
+        &self,
+        name: &str,
+        sample: core::time::Duration,
+        expected_bucket_count: i32,
+    ) {
+        let sample_us = i64::try_from(sample.as_micros()).unwrap_or(i64::MAX);
+        self.inner.ExpectUniqueTimeSample(name, sample_us, expected_bucket_count);
     }
 }
 

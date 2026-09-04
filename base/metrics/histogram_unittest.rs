@@ -154,3 +154,68 @@ fn test_uma_histogram_memory() {
     histogram::record_memory_large_mb("Test.Rust.MemoryLargeMB", 10240);
     tester.expect_unique_sample("Test.Rust.MemoryLargeMB", 10240, 1);
 }
+
+#[gtest(RustHistogramTest, UmaHistogramTimes)]
+fn test_uma_histogram_times() {
+    let tester = HistogramTester::new();
+    histogram::record_times("Test.Rust.Times", core::time::Duration::from_millis(500));
+    tester.expect_unique_time_sample("Test.Rust.Times", core::time::Duration::from_millis(500), 1);
+
+    histogram::record_medium_times("Test.Rust.MediumTimes", core::time::Duration::from_secs(30));
+    tester.expect_unique_time_sample(
+        "Test.Rust.MediumTimes",
+        core::time::Duration::from_secs(30),
+        1,
+    );
+
+    histogram::record_long_times("Test.Rust.LongTimes", core::time::Duration::from_secs(1200));
+    tester.expect_unique_time_sample(
+        "Test.Rust.LongTimes",
+        core::time::Duration::from_secs(1200),
+        1,
+    );
+
+    histogram::record_long_times_100(
+        "Test.Rust.LongTimes100",
+        core::time::Duration::from_secs(1800),
+    );
+    tester.expect_unique_time_sample(
+        "Test.Rust.LongTimes100",
+        core::time::Duration::from_secs(1800),
+        1,
+    );
+
+    histogram::record_custom_times(
+        "Test.Rust.CustomTimes",
+        core::time::Duration::from_secs(2),
+        core::time::Duration::from_secs(1),
+        core::time::Duration::from_secs(10),
+        50,
+    );
+    tester.expect_unique_time_sample(
+        "Test.Rust.CustomTimes",
+        core::time::Duration::from_secs(2),
+        1,
+    );
+}
+
+#[gtest(RustHistogramTest, UmaHistogramMicrosecondsTimes)]
+fn test_uma_histogram_microseconds_times() {
+    let tester = HistogramTester::new();
+    histogram::record_microseconds_times(
+        "Test.Rust.MicrosecondsTimes",
+        core::time::Duration::from_micros(500),
+    );
+    tester.expect_bucket_count("Test.Rust.MicrosecondsTimes", 500, 1);
+    tester.expect_total_count("Test.Rust.MicrosecondsTimes", 1);
+
+    histogram::record_custom_microseconds_times(
+        "Test.Rust.CustomMicrosecondsTimes",
+        core::time::Duration::from_micros(2000),
+        core::time::Duration::from_micros(1000),
+        core::time::Duration::from_micros(50000),
+        50,
+    );
+    tester.expect_bucket_count("Test.Rust.CustomMicrosecondsTimes", 2000, 1);
+    tester.expect_total_count("Test.Rust.CustomMicrosecondsTimes", 1);
+}
