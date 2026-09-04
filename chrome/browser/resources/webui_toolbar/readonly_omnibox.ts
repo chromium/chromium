@@ -565,22 +565,6 @@ export class ReadonlyOmniboxElement extends CrLitElement {
   }
 
   private onInputBlur(): void {
-    // Blink has somewhat strange behavior when it comes to mouse interaction
-    // w/elements that lost focus, particularly due to their document losing
-    // focus: the selection isn't visible, but on click it acts as if it's
-    // there, so for example trying to drag-select in an element with a
-    // "secret" select all state (quite common for the location bar!) results
-    // in a text drag instead.
-    //
-    // So, if we lose focus due to document losing focus, clear both focus
-    // and selection, so mouse interactions are more predictable. Unfortunately
-    // this does result in location bar losing selection on window switch.
-    //
-    // TODO(crbug.com/503784990): Perhaps there is a better way.
-    if (!document.hasFocus()) {
-      document.getSelection()!.removeAllRanges();
-      this.$.textInput.blur();
-    }
     this.switchView_(/*hasFocus=*/ false);
     this.lastFocusAcquisition_ = null;
 
@@ -637,6 +621,17 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     if (this.selectAllOnMouseRelease_) {
       this.clientXAtMouseDown_ = event.clientX;
       this.clientYAtMouseDown_ = event.clientY;
+    }
+
+    // Blink has somewhat strange behavior when it comes to mouse interaction
+    // w/unfocused input elements: the selection isn't visible, but on mouse
+    // down it acts as if it's there, so for example trying to drag-select in an
+    // element with a "secret" select all state (quite common for the location
+    // bar!) results in a text drag instead, so clear the selection to extent we
+    // can on first focus-in mouse down.
+    if (event.detail === 1 && !wasAlreadyFocused) {
+      input.setSelectionRange(0, 0);
+      document.getSelection()!.removeAllRanges();
     }
 
     if (event.detail === 2 && isOnlyLeftButton(event)) {

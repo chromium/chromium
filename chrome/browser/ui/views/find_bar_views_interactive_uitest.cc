@@ -48,6 +48,7 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/base/ui_base_features.h"
@@ -64,6 +65,7 @@
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/webui/tracked_element/tracked_element_web_ui.h"
 
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
@@ -308,12 +310,62 @@ class FindBarViewsUiTest : public InteractiveBrowserTest,
 
 #define CheckHasFocus(matcher) CheckHasFocusImpl(matcher, #matcher)
 
-  static auto Focus(ui::ElementIdentifier view) {
-    auto result =
-        Steps(WithView(view, [](views::View* view) { view->RequestFocus(); }),
-              WaitForState(views::test::kCurrentFocusedViewId, view));
-    AddDescriptionPrefix(result, "Focus()");
-    return result;
+  // Version that also works with WebUI; CheckHasFocus is more efficient,
+  // though. Succeeds if any of the elements in `ids` has focus.
+  auto CheckElementFocus(std::vector<ui::ElementIdentifier> ids) {
+    std::vector<std::string> id_names;
+    for (const auto& id : ids) {
+      id_names.push_back(id.GetName());
+    }
+    return Steps(
+        Log("Waiting for focus " + base::JoinString(id_names, ", ")),
+        PollUntil(
+            [ids]() {
+              const char kCheckFocusScriptTemplate[] = R"(
+                (function() {
+                    const manager = window._trackedElementManager;
+                    if (!manager) return false;
+                    const tracked = manager.getElementWithId({
+                      nativeIdentifier: $1,
+                      secondaryIdentifier: $2
+                    });
+                    const el = tracked?.element;
+                    if (!el) {
+                      return false;
+                    }
+                    return el.matches(':focus');
+                })();
+              )";
+              for (auto id : ids) {
+                auto* element = ui::ElementTracker::GetElementTracker()
+                                    ->GetElementInAnyContext(id);
+                if (!element) {
+                  continue;
+                }
+                if (auto* view_el =
+                        element->AsA<views::TrackedElementViews>()) {
+                  if (view_el->view()->HasFocus()) {
+                    return true;
+                  }
+                }
+                if (auto* webui_el = element->AsA<ui::TrackedElementWebUI>()) {
+                  // Must have both WebView and DOM focus.
+                  if (!webui_el->GetWebView()->HasFocus()) {
+                    continue;
+                  }
+                  auto result = content::EvalJs(
+                      webui_el->GetWebView()->GetWebContents(),
+                      content::JsReplace(kCheckFocusScriptTemplate,
+                                         webui_el->identifier().GetName(),
+                                         webui_el->GetSecondaryIdentifier()));
+                  if (result.is_bool() && result.ExtractBool()) {
+                    return true;
+                  }
+                }
+              }
+              return false;
+            },
+            "CheckElementFocus"));
   }
 
  protected:
@@ -348,7 +400,7 @@ IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, CrashEscHandlers) {
             1, TabCloseTypes::CLOSE_NONE);
       }),
       // Set focus to the omnibox.
-      Focus(kOmniboxElementId),
+      FocusElement(kOmniboxElementId),
       // This used to crash until bug 1303709 was fixed.
       SendKeyPress(ui::VKEY_ESCAPE, false, false));
 }
@@ -524,11 +576,11 @@ IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, MAYBE_FocusRestore) {
       Init(page_a),
 
       // Set focus to the omnibox.
-      Focus(kOmniboxElementId),
+      FocusElement(kOmniboxElementId),
       // Show the Find bar.
       ShowFindBar(), CheckHasFocus(FindBarView::kTextField),
       // Dismiss the Find bar, the omnibox view should get focus.
-      HideFindBar(), CheckHasFocus(kOmniboxElementId),
+      HideFindBar(), CheckElementFocus({kOmniboxElementId}),
 
       // Show the Find bar and search for "a".
       ShowFindBar(),
@@ -550,15 +602,15 @@ IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, MAYBE_FocusRestore) {
       // Focus the location bar, open and close the find box, focus should
       // return to the location bar (same as before, just checking that
       // http://crbug.com/41009575 is fixed).
-      Focus(kOmniboxElementId),
+      FocusElement(kOmniboxElementId),
       // Show the Find bar.
       ShowFindBar(), CheckHasFocus(FindBarView::kTextField),
       // Dismiss the Find bar, the omnibox or web contents should get focus.
       // Since there is still text in the box, it's possible that the contents
       // pane will receive focus instead.
       HideFindBar(),
-      CheckHasFocus(testing::Matcher<ui::ElementIdentifier>(testing::AnyOf(
-          kOmniboxElementId, ContentsWebView::kContentsWebViewElementId))));
+      CheckElementFocus(
+          {kOmniboxElementId, ContentsWebView::kContentsWebViewElementId}));
 }
 
 IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, SelectionRestoreOnTabSwitch) {
@@ -634,11 +686,11 @@ IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, FocusRestoreOnTabSwitch) {
       CheckViewProperty(FindBarView::kElementId, &FindBarView::GetFindText,
                         kSearchB),
       // Set focus away from the Find bar (to the omnibox).
-      Focus(kOmniboxElementId),
+      FocusElement(kOmniboxElementId),
       // Select tab A, Find bar should get focus.
       SelectTab(kTabStripElementId, 0), CheckHasFocus(FindBarView::kTextField),
       // Select tab B, Omnibox should get focus.
-      SelectTab(kTabStripElementId, 1), CheckHasFocus(kOmniboxElementId));
+      SelectTab(kTabStripElementId, 1), CheckElementFocus({kOmniboxElementId}));
 }
 
 // TODO(crbug.com/361216144): Re-enable on Mac.
@@ -682,7 +734,7 @@ IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest,
       Init(page_a), ShowFindBar(), EnsurePresent(FindBarView::kElementId),
       CheckHasFocus(FindBarView::kTextField),
       // Focus tab A content.
-      Focus(ContentsWebView::kContentsWebViewElementId),
+      FocusElement(ContentsWebView::kContentsWebViewElementId),
       CheckHasFocus(ContentsWebView::kContentsWebViewElementId),
       // Open tab B.
       AddInstrumentedTab(kTabBId, page_b), WaitForHide(FindBarView::kTextField),
@@ -1092,7 +1144,7 @@ IN_PROC_BROWSER_TEST_P(FindBarViewsUiTest, SelectionDuringFindPolicy) {
                     testing::HasSubstr(base::UTF16ToUTF8(kExpectedText))),
 
       ShowFindBar(), EnterText(FindBarView::kTextField, u"42"), HideFindBar(),
-      Focus(ContentsWebView::kContentsWebViewElementId),
+      FocusElement(ContentsWebView::kContentsWebViewElementId),
 
       // Select all text.
       Do([this]() {
