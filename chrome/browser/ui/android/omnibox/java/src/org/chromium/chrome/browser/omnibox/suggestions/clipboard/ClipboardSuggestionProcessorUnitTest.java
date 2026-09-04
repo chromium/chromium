@@ -82,8 +82,8 @@ public class ClipboardSuggestionProcessorUnitTest {
     @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
     @Mock private BookmarkState mBookmarkState;
     @Mock private OmniboxActionDelegate mActionDelegate;
-    @Mock private AutocompleteInput mInput;
 
+    private final AutocompleteInput mInput = new AutocompleteInput();
     private Context mContext;
     private ClipboardSuggestionProcessor mProcessor;
     private AutocompleteMatch mSuggestion;

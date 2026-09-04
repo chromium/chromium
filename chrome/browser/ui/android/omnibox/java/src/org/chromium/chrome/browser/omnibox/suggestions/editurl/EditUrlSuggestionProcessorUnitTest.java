@@ -103,11 +103,11 @@ public final class EditUrlSuggestionProcessorUnitTest {
     @Mock private BookmarkState mBookmarkState;
     @Mock private OmniboxActionDelegate mActionDelegate;
     @Mock private UkmRecorder.Natives mUkmRecorderJniMock;
-    @Mock private AutocompleteInput mInput;
     @Mock private DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
     @Mock private SadTab mSadTab;
     @Captor private ArgumentCaptor<ClipData> mClipDataCaptor;
 
+    private final AutocompleteInput mInput = new AutocompleteInput();
     private final UserDataHost mTabUserData = new UserDataHost();
     private final Supplier<Tab> mTabSupplier = () -> mTab;
     private final Supplier<ShareDelegate> mShareDelegateSupplier = () -> mShareDelegate;

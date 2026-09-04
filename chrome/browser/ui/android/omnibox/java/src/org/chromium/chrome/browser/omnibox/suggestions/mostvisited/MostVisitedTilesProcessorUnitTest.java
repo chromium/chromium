@@ -89,12 +89,13 @@ public final class MostVisitedTilesProcessorUnitTest {
     @Mock private Drawable mFallbackDrawable;
     @Mock private SuggestionHost mSuggestionHost;
     @Mock private OmniboxImageSupplier mImageSupplier;
-    @Mock private AutocompleteInput mInput;
     @Mock private UrlBarEditingTextStateProvider mTextProvider;
     @Mock private Supplier<Tab> mTabSupplier;
     @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
     @Mock private BookmarkState mBookmarkState;
     @Mock private OmniboxActionDelegate mActionDelegate;
+
+    private final AutocompleteInput mInput = new AutocompleteInput();
 
     static class TileData {
         public final String title;

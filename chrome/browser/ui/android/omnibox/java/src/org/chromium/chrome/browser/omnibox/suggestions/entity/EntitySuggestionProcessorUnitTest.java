@@ -82,11 +82,11 @@ public class EntitySuggestionProcessorUnitTest {
     @Mock private Bitmap mBitmap;
     @Mock private BookmarkState mBookmarkState;
     @Mock private UrlBarEditingTextStateProvider mTextProvider;
-    @Mock private AutocompleteInput mInput;
     @Mock private Supplier<Tab> mTabSupplier;
     @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
     @Mock private OmniboxActionDelegate mActionDelegate;
 
+    private final AutocompleteInput mInput = new AutocompleteInput();
     private Context mContext;
     private EntitySuggestionProcessor mProcessor;
 

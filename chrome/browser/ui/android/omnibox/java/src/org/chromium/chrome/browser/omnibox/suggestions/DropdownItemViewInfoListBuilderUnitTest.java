@@ -69,9 +69,9 @@ public class DropdownItemViewInfoListBuilderUnitTest {
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock private SuggestionProcessor mMockSuggestionProcessor;
-    @Mock private AutocompleteInput mInput;
     @Captor private ArgumentCaptor<PropertyModel> mPropertyModelCaptor;
 
+    private final AutocompleteInput mInput = new AutocompleteInput();
     DropdownItemViewInfoListBuilder mBuilder;
 
     @Before
@@ -345,7 +345,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
     @Test
     @EnableFeatures(OmniboxFeatureList.AIM_SUPPRESS_VERBATIM_MATCH)
     public void buildDropdownViewInfoList_aimMode_removesVerbatimMatches() {
-        when(mInput.getRequestType()).thenReturn(AutocompleteRequestType.AI_MODE);
+        mInput.setRequestType(AutocompleteRequestType.AI_MODE);
         when(mMockSuggestionProcessor.doesProcessSuggestion(any(), anyInt())).thenReturn(true);
 
         AutocompleteMatch verbatim1 =

@@ -48,7 +48,6 @@ public class TailSuggestionProcessorUnitTest {
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock private SuggestionHost mSuggestionHost;
-    @Mock private AutocompleteInput mInput;
     @Mock private UrlBarEditingTextStateProvider mTextProvider;
     @Mock private OmniboxImageSupplier mImageSupplier;
     @Mock private Supplier<Tab> mTabSupplier;
@@ -56,6 +55,7 @@ public class TailSuggestionProcessorUnitTest {
     @Mock private BookmarkState mBookmarkState;
     @Mock private OmniboxActionDelegate mActionDelegate;
 
+    private final AutocompleteInput mInput = new AutocompleteInput();
     private TailSuggestionProcessor mProcessor;
     private AutocompleteMatch mSuggestion;
     private PropertyModel mModel;

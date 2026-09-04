@@ -98,7 +98,6 @@ public class VoiceRecognitionHandlerUnitTest {
     @Mock private OmniboxStub mOmniboxStub;
     @Mock private AndroidPermissionDelegate mPermissionDelegate;
     @Mock private FuseboxSessionState mFuseboxSessionState;
-    @Mock private AutocompleteInput mAutocompleteInput;
     @Mock private Profile mProfile;
     @Mock private Profile mProfile2;
     @Mock private PrefService mPrefs;
@@ -107,6 +106,7 @@ public class VoiceRecognitionHandlerUnitTest {
     @Captor private ArgumentCaptor<WindowAndroid.IntentCallback> mIntentCallback;
     @Captor private ArgumentCaptor<AutocompleteInput> mInputCaptor;
 
+    private final AutocompleteInput mAutocompleteInput = new AutocompleteInput();
     private VoiceRecognitionIntentHandler mIntentHandler;
     private VoiceRecognitionHandler mHandler;
     private WindowAndroid mWindowAndroid;
@@ -463,9 +463,9 @@ public class VoiceRecognitionHandlerUnitTest {
         float confidence = 0;
         setVoiceResult(Activity.RESULT_OK, /* text= */ "voice text", confidence);
 
+        mAutocompleteInput.setRequestType(AutocompleteRequestType.AI_MODE);
         doReturn(mFuseboxSessionState).when(mDataProvider).getFuseboxSessionState();
         doReturn(mAutocompleteInput).when(mFuseboxSessionState).getAutocompleteInput();
-        doReturn(AutocompleteRequestType.AI_MODE).when(mAutocompleteInput).getRequestType();
 
         mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX, () -> {});
 
