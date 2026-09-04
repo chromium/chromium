@@ -23,6 +23,7 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 using base::test::ios::kWaitForDownloadTimeout;
+using base::test::ios::kWaitForUIElementTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace {
@@ -126,6 +127,33 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   GREYAssert(
       [title waitForExistenceWithTimeout:kWaitForDownloadTimeout.InSecondsF()],
       @"PassKit dialog UI was not presented");
+}
+
+// Tests that Chrome PassKit dialog is dismissed when web state navigation
+// occurs.
+- (void)testDismissPassKitOnNavigation {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Wallet app is not supported on iPads.");
+  }
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/single")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Good"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"good"];
+
+  XCUIApplication* app = [[XCUIApplication alloc] init];
+  XCUIElement* title = app.staticTexts[@"Toy Town"];
+  GREYAssert(
+      [title waitForExistenceWithTimeout:kWaitForDownloadTimeout.InSecondsF()],
+      @"PassKit dialog UI was not presented");
+
+  // Navigate away in the same tab.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/single")];
+
+  // Verify PassKit dialog UI is dismissed.
+  GREYAssert(
+      [title
+          waitForNonExistenceWithTimeout:kWaitForUIElementTimeout.InSecondsF()],
+      @"PassKit dialog UI was not dismissed");
 }
 
 // Tests that Chrome PassKit dialog is shown for sucessfully downloaded bundle

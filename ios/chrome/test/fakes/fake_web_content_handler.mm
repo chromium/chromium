@@ -33,4 +33,9 @@
   }
 }
 
+- (void)dismissPassKitDialog {
+  self.called = YES;
+  self.dismissPassKitDialogCalled = YES;
+}
+
 @end

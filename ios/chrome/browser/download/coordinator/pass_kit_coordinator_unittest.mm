@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/fakes/fake_web_content_handler.h"
 #import "ios/chrome/test/scoped_key_window.h"
@@ -54,6 +55,9 @@ class PassKitCoordinatorTest : public PlatformTest {
         WebStateList::InsertionParams::Automatic().Activate());
     web_state_ = browser_->GetWebStateList()->GetActiveWebState();
     handler_ = [[FakeWebContentHandler alloc] init];
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:handler_
+                     forProtocol:@protocol(WebContentCommands)];
 
     PassKitTabHelper::CreateForWebState(web_state_);
     PassKitTabHelper::FromWebState(web_state_)->SetWebContentsHandler(handler_);
@@ -104,25 +108,28 @@ TEST_F(PassKitCoordinatorTest, ValidPassKitObject) {
 #endif
   supported |= (!simulator) && runningIOS18_2;
   if (!supported) {
-    // Wallet app is not supported on iPads.
-  } else {
-    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
-      return [base_view_controller_.presentedViewController class] ==
-             [PKAddPassesViewController class];
-    }));
-
+    EXPECT_TRUE(handler_.dismissPassKitDialogCalled);
     [coordinator_ stop];
-
-    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
-      return base_view_controller_.presentedViewController == nil;
-    }));
-
-    histogram_tester_.ExpectUniqueSample(
-        kUmaPresentAddPassesDialogResult,
-        static_cast<base::HistogramBase::Sample32>(
-            PresentAddPassesDialogResult::kSuccessful),
-        1);
+    EXPECT_FALSE(coordinator_.passes);
+    return;
   }
+
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
+    return [base_view_controller_.presentedViewController class] ==
+           [PKAddPassesViewController class];
+  }));
+
+  [coordinator_ stop];
+
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
+    return base_view_controller_.presentedViewController == nil;
+  }));
+
+  histogram_tester_.ExpectUniqueSample(
+      kUmaPresentAddPassesDialogResult,
+      static_cast<base::HistogramBase::Sample32>(
+          PresentAddPassesDialogResult::kSuccessful),
+      1);
 
   EXPECT_FALSE(coordinator_.passes);
 }
@@ -232,6 +239,8 @@ TEST_F(PassKitCoordinatorTest, InvalidPassKitObject) {
   ASSERT_TRUE(delegate);
   DCHECK_EQ(l10n_util::GetStringUTF16(IDS_IOS_GENERIC_PASSKIT_ERROR),
             delegate->GetMessageText());
+  EXPECT_TRUE(handler_.dismissPassKitDialogCalled);
+  [coordinator_ stop];
   EXPECT_FALSE(coordinator_.passes);
 
   histogram_tester_.ExpectTotalCount(kUmaPresentAddPassesDialogResult, 0);
@@ -252,6 +261,8 @@ TEST_F(PassKitCoordinatorTest, EmptyPassKitObject) {
   ASSERT_TRUE(delegate);
   DCHECK_EQ(l10n_util::GetStringUTF16(IDS_IOS_GENERIC_PASSKIT_ERROR),
             delegate->GetMessageText());
+  EXPECT_TRUE(handler_.dismissPassKitDialogCalled);
+  [coordinator_ stop];
   EXPECT_FALSE(coordinator_.passes);
 
   histogram_tester_.ExpectTotalCount(kUmaPresentAddPassesDialogResult, 0);

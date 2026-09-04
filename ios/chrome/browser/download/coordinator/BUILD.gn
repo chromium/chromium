@@ -21,6 +21,8 @@ source_set("coordinator") {
     "download_manager_mediator.mm",
     "pass_kit_coordinator.h",
     "pass_kit_coordinator.mm",
+    "pass_kit_mediator.h",
+    "pass_kit_mediator.mm",
     "safari_download_coordinator.h",
     "safari_download_coordinator.mm",
     "vcard_coordinator.h",
@@ -85,6 +87,7 @@ source_set("unit_tests") {
     "download_manager_coordinator_unittest.mm",
     "download_manager_mediator_unittest.mm",
     "pass_kit_coordinator_unittest.mm",
+    "pass_kit_mediator_unittest.mm",
     "safari_download_coordinator_unittest.mm",
     "vcard_coordinator_unittest.mm",
   ]

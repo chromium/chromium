@@ -2461,6 +2461,11 @@ const char kContextPanelDismissedHistogram[] =
   [_passKitCoordinator start];
 }
 
+- (void)dismissPassKitDialog {
+  [_passKitCoordinator stop];
+  _passKitCoordinator = nil;
+}
+
 #pragma mark - WelcomeBackPromoCommands
 
 - (void)showWelcomeBackPromoWithPromosUIHandler:

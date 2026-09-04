@@ -23,6 +23,9 @@
 // Whether any method on this fake object has been called.
 @property(nonatomic, assign) BOOL called;
 
+// Whether -dismissPassKitDialog has been called.
+@property(nonatomic, assign) BOOL dismissPassKitDialogCalled;
+
 @end
 
 #endif  // IOS_CHROME_TEST_FAKES_FAKE_WEB_CONTENT_HANDLER_H_

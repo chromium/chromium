@@ -10,10 +10,13 @@
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "components/infobars/core/simple_alert_infobar_delegate.h"
+#import "ios/chrome/browser/download/coordinator/pass_kit_mediator.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/infobar_utils.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/web_content_commands.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -43,6 +46,8 @@ PresentAddPassesDialogResult GetUmaResult(
 }  // namespace
 
 @interface PassKitCoordinator () <PKAddPassesViewControllerDelegate> {
+  // Mediator that monitors the active WebState and triggers dialog dismissal.
+  PassKitMediator* _mediator;
   // Native OS view controller for handling passkit additions.
   PKAddPassesViewController* _viewController;
 }
@@ -51,6 +56,12 @@ PresentAddPassesDialogResult GetUmaResult(
 @implementation PassKitCoordinator
 
 - (void)start {
+  _mediator = [[PassKitMediator alloc]
+      initWithWebStateList:self.browser->GetWebStateList()
+         webContentHandler:HandlerForProtocol(
+                               self.browser->GetCommandDispatcher(),
+                               WebContentCommands)];
+
   if (self.passes.count > 0) {
     [self presentAddPassUI];
   } else {
@@ -59,6 +70,8 @@ PresentAddPassesDialogResult GetUmaResult(
 }
 
 - (void)stop {
+  [_mediator disconnect];
+  _mediator = nil;
   [_viewController dismissViewControllerAnimated:YES completion:nil];
   _viewController = nil;
   _passes = nil;
@@ -69,7 +82,8 @@ PresentAddPassesDialogResult GetUmaResult(
 // Presents PKAddPassesViewController.
 - (void)presentAddPassUI {
   if (![PKAddPassesViewController canAddPasses]) {
-    [self stop];
+    [HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                        WebContentCommands) dismissPassKitDialog];
     return;
   }
 
@@ -102,14 +116,16 @@ PresentAddPassesDialogResult GetUmaResult(
           /*should_animate=*/true)));
 
   // Infobar does not provide callback on dismissal.
-  [self stop];
+  [HandlerForProtocol(self.browser->GetCommandDispatcher(), WebContentCommands)
+      dismissPassKitDialog];
 }
 
 #pragma mark - PKAddPassesViewControllerDelegate
 
 - (void)addPassesViewControllerDidFinish:
     (PKAddPassesViewController*)controller {
-  [self stop];
+  [HandlerForProtocol(self.browser->GetCommandDispatcher(), WebContentCommands)
+      dismissPassKitDialog];
 }
 
 @end

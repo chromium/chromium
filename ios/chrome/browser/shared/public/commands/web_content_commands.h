@@ -18,6 +18,9 @@
 // Opens the system PassKit dialog to add `passes`.
 - (void)showDialogForPassKitPasses:(NSArray<PKPass*>*)passes;
 
+// Dismisses the system PassKit dialog.
+- (void)dismissPassKitDialog;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_WEB_CONTENT_COMMANDS_H_

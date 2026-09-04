@@ -85,6 +85,8 @@ class PassKitTabHelper : public web::WebStateUserData<PassKitTabHelper>,
   void WasShown(web::WebState* web_state) override;
   void DidStartNavigation(web::WebState* web_state,
                           web::NavigationContext* navigation_context) override;
+  void DidFinishNavigation(web::WebState* web_state,
+                           web::NavigationContext* navigation_context) override;
 
   // web::DownloadTaskObserver overrides:
   void OnDownloadUpdated(web::DownloadTask* task) override;
