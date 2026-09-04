@@ -555,6 +555,31 @@ void RebuildNestedSubgridLayoutData(
                  });
 }
 
+// Returns true if any lane of `lane_span` has content that has to resume in a
+// later fragmentainer.
+bool HasBreakInsideInSpannedLanes(
+    const GridSpan& lane_span,
+    const Vector<bool>& has_inflow_child_break_inside_lane) {
+  for (wtf_size_t lane_idx = lane_span.StartLine();
+       lane_idx < lane_span.EndLine(); ++lane_idx) {
+    if (has_inflow_child_break_inside_lane[lane_idx]) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// Marks every lane of `lane_span` as having content that has to resume in a
+// later fragmentainer, which defers the rest of the content of those lanes.
+void MarkBreakInsideInSpannedLanes(
+    const GridSpan& lane_span,
+    Vector<bool>& has_inflow_child_break_inside_lane) {
+  for (wtf_size_t lane_idx = lane_span.StartLine();
+       lane_idx < lane_span.EndLine(); ++lane_idx) {
+    has_inflow_child_break_inside_lane[lane_idx] = true;
+  }
+}
+
 }  // namespace
 
 LayoutUnit GridLanesLayoutAlgorithm::CalculateItemInlineContribution(
@@ -827,8 +852,8 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
     LayoutUnit total_intrinsic_block_size) {
   DCHECK(InvolvedInBlockFragmentation(container_builder_));
 
-  const bool is_columns =
-      Style().GridLanesTrackSizingDirection() == kForColumns;
+  const auto grid_axis_direction = Style().GridLanesTrackSizingDirection();
+  const bool is_columns = grid_axis_direction == kForColumns;
   const LayoutUnit fragmentainer_space = FragmentainerSpaceLeftForChildren();
 
   GridLanesItemIterator item_iterator(grid_lanes, GetBreakToken(), is_columns);
@@ -870,6 +895,11 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
     GridItemData& item = *grid_lanes_item->item;
     const BlockBreakToken* item_break_token = entry.token;
 
+    // Every lane entry of a spanner shares the same item, so per-lane
+    // fragmentation state is applied across the item's complete span, while the
+    // item itself is laid out once.
+    const GridSpan& lane_span = item.Span(grid_axis_direction);
+
     const bool is_first_item_in_lane = grid_lane_idx != previous_grid_lane_idx;
     previous_grid_lane_idx = grid_lane_idx;
 
@@ -899,10 +929,13 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
     if (is_columns) {
       // TODO(almaher): Columns will eventually require extra logic here for
       // early breaks.
-      if (has_inflow_child_break_inside_lane[grid_lane_idx]) {
-        if (!is_last_item_in_lane) {
-          item_iterator.NextLane();
-        }
+      if (HasBreakInsideInSpannedLanes(lane_span,
+                                       has_inflow_child_break_inside_lane)) {
+        // A lane this item spans has content that resumes in a later
+        // fragmentainer, so this item has to wait for it. Everything after this
+        // item in the lanes it spans has to wait, too.
+        MarkBreakInsideInSpannedLanes(lane_span,
+                                      has_inflow_child_break_inside_lane);
         continue;
       }
     }
@@ -1011,7 +1044,14 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
     if (is_at_block_end) {
       // TODO(almaher): Persist and include the item's block-end margin once it
       // reaches the end of its content.
+    } else if (is_columns) {
+      // A spanner occupies every lane it spans, so its break defers the rest of
+      // the content in all of them.
+      MarkBreakInsideInSpannedLanes(lane_span,
+                                    has_inflow_child_break_inside_lane);
     } else {
+      // TODO(almaher): Determine how a break inside a row spanner affects the
+      // remaining rows when row fragmentation and expansion are implemented.
       has_inflow_child_break_inside_lane[grid_lane_idx] = true;
     }
 

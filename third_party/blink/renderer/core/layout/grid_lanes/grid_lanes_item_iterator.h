@@ -30,7 +30,7 @@ class BlockBreakToken;
 // This class does not handle modifications to its arguments after it has been
 // constructed.
 //
-// TODO(almaher): Handle spanners correctly (as mentioned above).
+// TODO(almaher): Handle spanners for row containers.
 class CORE_EXPORT GridLanesItemIterator {
   STACK_ALLOCATED();
 
@@ -67,6 +67,36 @@ class CORE_EXPORT GridLanesItemIterator {
       const BlockBreakToken* item_break_token = nullptr);
   void AdjustItemIndexForNewLane();
 
+  // Identifies a column spanner that cannot be returned until every preceding
+  // item in each lane it spans has been processed.
+  struct PendingColumnSpanner {
+    // The index of the lane the spanner starts in, as well as its index in that
+    // lanes.
+    wtf_size_t lane_idx;
+    wtf_size_t item_idx;
+    // The index immediately after the last lane occupied by the spanner. The
+    // iterator visits lanes in increasing order, so when it reaches this index,
+    // it has processed every lane the spanner occupies and can return to the
+    // spanner.
+    wtf_size_t end_lane_idx;
+  };
+
+  // If `item_data` starts a spanner in a column container, this adds the
+  // spanner to `pending_column_spanners_` so that preceding items in the rest
+  // of its span are processed first and returns true. Otherwise returns false.
+  bool StartPendingColumnSpanner(const GridLanesItemData& item_data);
+
+  // Returns the next pending spanner once every lane it spans has processed
+  // items before the spanner, moving the iterator to that entry. Returns
+  // nullptr if there is no pending spanner or if the next pending spanner isn't
+  // ready to be processed yet.
+  GridLanesItemData* MaybeProcessNextPendingColumnSpanner();
+
+  // Returns true if `item_data` is an entry in `pending_column_spanners_`.
+  bool IsPendingColumnSpanner(const GridLanesItemData& item_data) const;
+
+  void MaybeAdvanceLanesPastColumnSpanner(const GridLanesItemData& item_data);
+
   GridLanesItemData* next_unstarted_item_ = nullptr;
   const GridLanesDataVector& grid_lanes_;
   const BlockBreakToken* break_token_;
@@ -82,6 +112,13 @@ class CORE_EXPORT GridLanesItemIterator {
   wtf_size_t grid_lanes_item_idx_ = 0;
   // Stores the next item index to process for each lane, if applicable.
   Vector<wtf_size_t> next_item_idx_for_lane_;
+  // When a spanner is reached in a column grid lanes container, every item
+  // before it in each lane it spans must be laid out first. A break in a later
+  // lane may otherwise push the spanner into another fragmentainer after it has
+  // already been laid out. This stack holds spanners while those earlier items
+  // are processed; a spanner reached while processing another is resolved
+  // first.
+  Vector<PendingColumnSpanner, 1> pending_column_spanners_;
 };
 
 struct GridLanesItemIterator::Entry {

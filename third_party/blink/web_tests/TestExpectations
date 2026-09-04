@@ -976,8 +976,7 @@ crbug.com/750992 external/wpt/css/css-overflow/margin-block-end-scroll-area-001.
 # the next fragment which we don't do. We will need to update the expectation for
 # this.
 crbug.com/1076027 external/wpt/css/css-break/grid/grid-lanes/grid-lanes-fragmentation-001.html [ Failure ]
-# Column Grid Lanes fragmentation with spanners is not yet supported.
-crbug.com/1076027 external/wpt/css/css-break/grid/grid-lanes/grid-lanes-fragmentation-002.html [ Failure ]
+crbug.com/1076027 external/wpt/css/css-break/grid/grid-lanes/grid-lanes-fragmentation-002.html [ Failure Crash ]
 # Grid-lanes fragmentation does not yet honor break rules or apply row expansion.
 crbug.com/343257585 external/wpt/css/css-break/grid/grid-lanes/column-grid-lanes-oof-fragmentation-012.html [ Failure ]
 crbug.com/343257585 external/wpt/css/css-break/grid/grid-lanes/row-grid-lanes-oof-fragmentation-006.html [ Failure ]
