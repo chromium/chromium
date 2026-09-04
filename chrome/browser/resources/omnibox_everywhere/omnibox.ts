@@ -36,6 +36,7 @@ import {ModelMode, ToolMode} from '//resources/mojo/components/omnibox/composebo
 import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
+import {OmniboxEverywhereBrowserProxyImpl} from './browser_proxy.js';
 import {getCss} from './omnibox.css.js';
 import {getHtml} from './omnibox.html.js';
 import {UnboundedMenuManager} from './unbounded_utils.js';
@@ -134,6 +135,11 @@ export class OmniboxEverywhereOmniboxElement extends
         type: Boolean,
         reflect: true,
       },
+      isContextMenuOpen: {
+        type: Boolean,
+        reflect: true,
+        attribute: 'is-context-menu-open',
+      },
     };
   }
 
@@ -144,6 +150,7 @@ export class OmniboxEverywhereOmniboxElement extends
   accessor entrypointName: string = 'OmniboxEverywhere';
   accessor isDraggingFile: boolean = false;
   accessor isScreenshotMenuOpen: boolean = false;
+  accessor isContextMenuOpen: boolean = false;
   protected dragAndDropHandler: DragAndDropHandler;
   protected accessor energyEffectAnimationEnabled_: boolean =
       loadTimeData.getBoolean('energyEffectAnimationEnabled');
@@ -256,6 +263,15 @@ export class OmniboxEverywhereOmniboxElement extends
 
   focusInput() {
     this.$.input.focus();
+  }
+
+  // Returns the current text value of the Omnibox search input. Used by
+  // `OmniboxEverywhereAppElement` to seamlessly migrate user-typed queries into
+  // the Composebox input field when transitioning into Composebox mode (e.g.
+  // when clicking a tool or attaching a tab from the '+' context menu) so typed
+  // text is never lost.
+  getInputText(): string {
+    return this.$.input?.getInputValue() || '';
   }
 
   setInputText(text: string) {
@@ -493,8 +509,33 @@ export class OmniboxEverywhereOmniboxElement extends
     }
   }
 
-  protected onContextMenuEntrypointClick_() {
+  protected onContextMenuEntrypointClick_(e?: CustomEvent<{
+    anchorRect?: {x: number, y: number, width: number, height: number},
+  }>) {
     this.pageHandler().activateMetricsFunnel('PlusButton');
+    this.isContextMenuOpen = true;
+    // `anchorRect` is in WebUI viewport coordinates (CSS DIPs). Forward the
+    // full bounding box so C++ can translate it to screen coordinates and
+    // position the native context menu.
+    const rect = e?.detail?.anchorRect ||
+        this.shadowRoot?.querySelector('#context')?.getBoundingClientRect();
+    if (rect) {
+      OmniboxEverywhereBrowserProxyImpl.getInstance()
+          .handler.showContextActionMenu({
+            x: Math.round(rect.x),
+            y: Math.round(rect.y),
+            width: Math.round(rect.width),
+            height: Math.round(rect.height),
+          });
+    }
+  }
+
+  onContextMenuClosed() {
+    this.isContextMenuOpen = false;
+    const entrypoint =
+        this.shadowRoot?.querySelector<ContextualEntrypointAndMenuElement>(
+            '#context');
+    entrypoint?.closeMenu();
   }
 
   protected async refreshTabSuggestions_(forceRefresh: boolean = false) {

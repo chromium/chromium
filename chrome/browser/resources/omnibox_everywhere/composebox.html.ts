@@ -104,6 +104,8 @@ export function getHtml(this: OmniboxEverywhereComposeboxElement) {
                         @tool-click="${this.onToolClick}"
                         @model-click="${this.onModelClick}"
                         @get-tab-preview="${this.onGetTabPreview}"
+                        @context-menu-entrypoint-click="${
+                            this.onContextMenuEntrypointClick_}"
                         @context-menu-closed="${this.onContextMenuClosed}"
                         @context-menu-opened="${this.onContextMenuOpened}"
                         @open-image-upload="${this.onOpenImageUpload}"
@@ -132,7 +134,6 @@ export function getHtml(this: OmniboxEverywhereComposeboxElement) {
                         .fileNum="${this.attachedContext.size}"
                         .sharedTabs="${this.getSharedTabs()}"
                         ?upload-button-disabled="${this.uploadButtonDisabled}"
-                        unbounded-menu-enabled
                         ?show-context-menu-description="${
                             this.showContextMenuDescription}">
                     </cr-composebox-contextual-entrypoint-and-menu>

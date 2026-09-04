@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {PageCallbackRouter as OmniboxEverywherePageCallbackRouter, PageHandlerRemote as OmniboxEverywherePageHandlerRemote} from 'chrome://omnibox-everywhere.top-chrome/omnibox_everywhere.mojom-webui.js';
+import type {PageRemote as OmniboxEverywherePageRemote} from 'chrome://omnibox-everywhere.top-chrome/omnibox_everywhere.mojom-webui.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
@@ -56,5 +58,18 @@ export class TestSearchboxBrowserProxy {
   initVisibilityPrefs() {
     this.page.updateAimPopupEligibility(true);
     this.page.updateContentSharingPolicy(true);
+  }
+}
+
+export class TestOmniboxEverywhereBrowserProxy {
+  callbackRouter: OmniboxEverywherePageCallbackRouter;
+  handler: TestMock<OmniboxEverywherePageHandlerRemote>&
+      OmniboxEverywherePageHandlerRemote;
+  page: OmniboxEverywherePageRemote;
+
+  constructor() {
+    this.callbackRouter = new OmniboxEverywherePageCallbackRouter();
+    this.page = this.callbackRouter.$.bindNewPipeAndPassRemote();
+    this.handler = TestMock.fromClass(OmniboxEverywherePageHandlerRemote);
   }
 }

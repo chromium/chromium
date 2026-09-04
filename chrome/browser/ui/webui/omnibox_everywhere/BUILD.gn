@@ -33,15 +33,18 @@ source_set("omnibox_everywhere") {
   sources = [
     "composebox_everywhere_handler.cc",
     "omnibox_everywhere_handler.cc",
+    "omnibox_everywhere_page_handler.cc",
     "omnibox_everywhere_ui.cc",
   ]
   public = [
     "composebox_everywhere_handler.h",
     "omnibox_everywhere_handler.h",
+    "omnibox_everywhere_page_handler.h",
     "omnibox_everywhere_ui.h",
   ]
   public_deps = [
     "debug:mojo_bindings",
+    "mojom:mojo_bindings",
     "//chrome/browser:browser_public_dependencies",
   ]
   deps = [
@@ -58,6 +61,8 @@ source_set("omnibox_everywhere") {
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/omnibox/omnibox_everywhere",
     "//chrome/browser/ui/profiles",
+    "//chrome/browser/ui/views/location_bar",
+    "//chrome/browser/ui/views/omnibox",
     "//chrome/browser/ui/views/user_education",
     "//chrome/browser/ui/webui:favicon_source",
     "//chrome/browser/ui/webui:plural_string_handler",
@@ -81,6 +86,7 @@ source_set("omnibox_everywhere") {
     "//content/public/browser",
     "//ui/base",
     "//ui/strings:ui_strings",
+    "//ui/views",
     "//ui/webui/resources/cr_components/composebox:mojo_bindings",
     "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
     "//ui/webui/resources/cr_components/most_visited:mojom",

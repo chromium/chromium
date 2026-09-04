@@ -184,3 +184,20 @@ help-bubble {
   width: 340px;
 }
 
+#context,
+#contextEntrypoint {
+  position: relative;
+  /* Stack above #bottomControls (z-index: 1000) and suggestion dropdowns. */
+  z-index: var(--cr-composebox-context-menu-z-index, 1001);
+}
+
+#context::part(entrypoint-button),
+#contextEntrypoint::part(entrypoint-button) {
+  --cr-icon-button-size: 36px;
+}
+
+:host([is-context-menu-open]) #context::part(entrypoint-button),
+:host([is-context-menu-open]) #contextEntrypoint::part(entrypoint-button) {
+  --cr-hover-background-color: var(--cr-icon-button-hover-background-color);
+  background-color: var(--cr-icon-button-hover-background-color);
+}

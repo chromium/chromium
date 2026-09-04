@@ -4,12 +4,12 @@
 
 import 'chrome://omnibox-everywhere.top-chrome/omnibox_everywhere.js';
 
-import {ComposeboxProxyImpl, getContextMenuDialog, SearchboxBrowserProxy, UnboundedMenuManager, updateUnboundedElementVisibility} from 'chrome://omnibox-everywhere.top-chrome/omnibox_everywhere.js';
+import {ComposeboxProxyImpl, getContextMenuDialog, OmniboxEverywhereBrowserProxyImpl, SearchboxBrowserProxy, UnboundedMenuManager, updateUnboundedElementVisibility} from 'chrome://omnibox-everywhere.top-chrome/omnibox_everywhere.js';
 import type {OmniboxEverywhereAppElement, OmniboxEverywhereComposeboxElement, OmniboxEverywhereOmniboxElement, OmniboxEverywhereProfileIconElement, UnboundedElement} from 'chrome://omnibox-everywhere.top-chrome/omnibox_everywhere.js';
 import {ComposeboxFile, TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
 import type {ComposeboxState} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
-import {InputType} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {InputType, ModelMode, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import type {SearchAnimatedGlowElement} from 'chrome://resources/cr_components/search/animated_glow.js';
 import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
@@ -22,7 +22,7 @@ import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://w
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestSearchboxBrowserProxy} from './test_searchbox_browser_proxy.js';
+import {TestOmniboxEverywhereBrowserProxy, TestSearchboxBrowserProxy} from './test_searchbox_browser_proxy.js';
 
 function getInputValue(
     inputElement: HTMLInputElement|HTMLTextAreaElement|HTMLElement): string {
@@ -1770,7 +1770,6 @@ suite('OmniboxEverywhereAppTest', () => {
 
         assertFalse(app.hasAttribute('show-voice-search-overlay_'));
       });
-
   test('addFileContext Mojo event updates composebox thumbnail', async () => {
     const omniboxElement =
         app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
@@ -1810,36 +1809,6 @@ suite('OmniboxEverywhereAppTest', () => {
         Array.from(composeboxElement.attachedContext.values())[0]!;
     assertEquals('data:image/png;base64,image_data', updatedFile.dataUrl);
   });
-
-  test(
-      'addFileContext Mojo event automatically opens composebox when in ' +
-          'omnibox mode',
-      async () => {
-        assertFalse(
-            !!app.shadowRoot.querySelector('omnibox-everywhere-composebox'));
-
-        const mockToken: UnguessableToken = 'FEDCBA0987654321FEDCBA0987654321';
-        const fileInfo = {
-          fileName: 'Screenshot.png',
-          mimeType: 'image/png',
-          imageDataUrl: 'data:image/png;base64,image_data_buffered',
-          isDeletable: true,
-          selectionTime: new Date(),
-          thumbnailUrl: null,
-        };
-
-        // Mojo event arrives while in standard omnibox mode.
-        testProxy.page.addFileContext(mockToken, fileInfo as SelectedFileInfo);
-        await testProxy.page.$.flushForTesting();
-        await microtasksFinished();
-
-        const composeboxElement =
-            app.shadowRoot.querySelector('omnibox-everywhere-composebox')!;
-        assertTrue(!!composeboxElement);
-        assertEquals(1, composeboxElement.attachedContext.size);
-        const file = Array.from(composeboxElement.attachedContext.values())[0]!;
-        assertEquals('data:image/png;base64,image_data_buffered', file.dataUrl);
-      });
 });
 
 suite('OmniboxEverywhereProfileIconTest', () => {
@@ -1905,4 +1874,107 @@ suite('OmniboxEverywhereProfileIconTest', () => {
         profileIcon.shadowRoot.querySelector<HTMLElement>('#enterpriseBadge');
     assertTrue(!!enterpriseBadge);
   });
+});
+
+suite('OmniboxEverywhereContextMenuTest', () => {
+  let app: OmniboxEverywhereAppElement;
+  let testProxy: TestSearchboxBrowserProxy;
+  let testEverywhereProxy: TestOmniboxEverywhereBrowserProxy;
+
+  setup(async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({
+      isFuseboxEnabled: true,
+      searchboxVoiceSearch: true,
+      searchboxLensSearch: true,
+      searchboxShowComposeEntrypoint: true,
+      ntpRealboxDynamicAiModeButton: true,
+      composeboxContextDragAndDropEnabled: true,
+      energyEffectAnimationEnabled: false,
+      composeboxEnergyEffectAnimationEnabled: false,
+      searchboxCr23Theming: true,
+      searchboxCr23SteadyStateShadow: false,
+      contextManagementInComposeboxEnabled: false,
+      profileAvatarUrl: 'chrome://theme/IDR_PROFILE_AVATAR_0',
+      profileName: 'Test Profile',
+      profileEmail: 'test@example.com',
+      omniboxEverywhereProfilePickerEnabled: false,
+      searchboxLayoutMode: 'TallBottomContext',
+    });
+    testProxy = new TestSearchboxBrowserProxy();
+    SearchboxBrowserProxy.setInstance(testProxy);
+    testEverywhereProxy = new TestOmniboxEverywhereBrowserProxy();
+    OmniboxEverywhereBrowserProxyImpl.setInstance(testEverywhereProxy);
+    const mockPageHandler = TestMock.fromClass(PageHandlerRemote);
+    ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
+        mockPageHandler,
+        testProxy.handler as unknown as SearchboxPageHandlerRemote,
+        testProxy.callbackRouter as unknown as SearchboxPageCallbackRouter));
+
+    app = document.createElement('omnibox-everywhere-app');
+    document.body.appendChild(app);
+    await microtasksFinished();
+  });
+
+  test('clicking entrypoint triggers showContextActionMenu', async () => {
+    const omnibox = app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+    const entrypoint =
+        omnibox.shadowRoot.querySelector<ContextualEntrypointAndMenuElement>(
+            '#context')!;
+    assertTrue(!!entrypoint);
+
+    entrypoint.dispatchEvent(new CustomEvent('context-menu-entrypoint-click', {
+      detail: {
+        anchorRect: {x: 10, y: 20, width: 30, height: 40},
+      },
+      bubbles: true,
+      composed: true,
+    }));
+
+    const args =
+        await testEverywhereProxy.handler.whenCalled('showContextActionMenu');
+    assertEquals(10, args.x);
+    assertEquals(20, args.y);
+    assertEquals(30, args.width);
+    assertEquals(40, args.height);
+  });
+
+  test(
+      'openComposebox with tool Mojo listener switches app to composebox mode',
+      async () => {
+        assertFalse(app.hasAttribute('is-composebox-mode_'));
+        testEverywhereProxy.page.openComposebox({
+          tool: ToolMode.kDeepSearch,
+          model: ModelMode.kUnspecified,
+          tab: null,
+        });
+        await microtasksFinished();
+
+        const composebox =
+            app.shadowRoot.querySelector('omnibox-everywhere-composebox');
+        assertTrue(!!composebox);
+      });
+
+  test(
+      'openComposebox with tab Mojo listener adds tab to composebox',
+      async () => {
+        assertFalse(app.hasAttribute('is-composebox-mode_'));
+        testEverywhereProxy.page.openComposebox({
+          tool: ToolMode.kUnspecified,
+          model: ModelMode.kUnspecified,
+          tab: {
+            tabId: 123,
+            title: 'Test Tab Title',
+            url: 'https://example.com',
+            showInCurrentTabChip: false,
+            showInPreviousTabChip: false,
+            lastActive: {internalValue: 0n},
+          },
+        });
+        await microtasksFinished();
+
+        const composebox =
+            app.shadowRoot.querySelector('omnibox-everywhere-composebox');
+        assertTrue(!!composebox);
+      });
 });

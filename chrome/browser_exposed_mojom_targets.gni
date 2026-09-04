@@ -358,6 +358,7 @@ if (!is_android) {
     "//chrome/browser/ui/webui/feedback/report_unsafe_site:mojo_bindings",
     "//chrome/browser/ui/webui/iwa_dev:mojo_bindings",
     "//chrome/browser/ui/webui/omnibox_everywhere/debug:mojo_bindings",
+    "//chrome/browser/ui/webui/omnibox_everywhere/mojom:mojo_bindings",
   ]
 }
 

@@ -9,6 +9,7 @@
 
 #include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_handler.h"
 #include "chrome/browser/ui/webui/omnibox_everywhere/debug/omnibox_everywhere_debug.mojom.h"
+#include "chrome/browser/ui/webui/omnibox_everywhere/mojom/omnibox_everywhere.mojom.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/common/webui_url_constants.h"
@@ -37,7 +38,10 @@ class ComposeboxEverywhereHandler;
 class MostVisitedHandler;
 class MostVisitedPrefObserver;
 class OmniboxEverywhereHandler;
+class OmniboxEverywherePageHandler;
 class Profile;
+class OmniboxPopupFileSelector;
+class OmniboxContextMenu;
 
 namespace contextual_search {
 class ContextualSearchSessionHandle;
@@ -60,6 +64,7 @@ class OmniboxEverywhereUI
     : public TopChromeWebUIController,
       public composebox::mojom::PageHandlerFactory,
       public searchbox::mojom::PageHandlerFactory,
+      public omnibox_everywhere::mojom::PageHandlerFactory,
       public omnibox_everywhere_debug::mojom::PageHandlerFactory,
       public most_visited::mojom::MostVisitedPageHandlerFactory,
       public help_bubble::mojom::HelpBubbleHandlerFactory,
@@ -102,6 +107,19 @@ class OmniboxEverywhereUI
       mojo::PendingRemote<searchbox::mojom::Page> page,
       mojo::PendingReceiver<searchbox::mojom::PageHandler> handler) override;
 
+  // omnibox_everywhere::mojom::PageHandlerFactory:
+  void BindInterface(
+      mojo::PendingReceiver<omnibox_everywhere::mojom::PageHandlerFactory>
+          receiver);
+  void CreatePageHandler(
+      mojo::PendingRemote<omnibox_everywhere::mojom::Page> pending_page,
+      mojo::PendingReceiver<omnibox_everywhere::mojom::PageHandler>
+          pending_page_handler) override;
+
+  // Shows the native Views context menu anchored below the WebUI entrypoint
+  // button. `anchor_rect` is in WebUI viewport coordinates (CSS DIPs).
+  void ShowContextActionMenu(const gfx::Rect& anchor_rect);
+
   // omnibox_everywhere_debug::mojom::PageHandlerFactory:
   void BindInterface(
       mojo::PendingReceiver<omnibox_everywhere_debug::mojom::PageHandlerFactory>
@@ -123,7 +141,9 @@ class OmniboxEverywhereUI
   ComposeboxEverywhereHandler* composebox_handler() {
     return composebox_handler_.get();
   }
+
   OmniboxEverywhereHandler* omnibox_handler() { return omnibox_handler_.get(); }
+  OmniboxEverywherePageHandler* page_handler() { return page_handler_.get(); }
 
   // TODO(b/555331826): Clean up handler retrieval to avoid inspecting handler
   // instantiation state.
@@ -149,6 +169,14 @@ class OmniboxEverywhereUI
   bool IsCommandIdEnabled(int command_id) const override;
   bool IsCommandIdVisible(int command_id) const override;
 
+  void OnFileChooserOpened();
+  void OnFileChooserClosed();
+
+  void OpenComposebox(
+      omnibox_everywhere::mojom::ComposeboxInitialStatePtr initial_state);
+
+  void OnContextMenuClosed();
+
   contextual_search::ContextualSearchSessionHandle*
   GetOrCreateContextualSessionHandle();
   void ClearContextualSessionHandle();
@@ -158,6 +186,7 @@ class OmniboxEverywhereUI
 
   std::unique_ptr<ComposeboxEverywhereHandler> composebox_handler_;
   std::unique_ptr<OmniboxEverywhereHandler> omnibox_handler_;
+  std::unique_ptr<OmniboxEverywherePageHandler> page_handler_;
   std::unique_ptr<MostVisitedHandler> most_visited_handler_;
   std::unique_ptr<MostVisitedPrefObserver> most_visited_pref_observer_;
 
@@ -175,12 +204,16 @@ class OmniboxEverywhereUI
   base::WeakPtr<ContextualSearchboxScreenshareController>
       active_screenshot_controller_;
 
+  std::unique_ptr<OmniboxPopupFileSelector> file_selector_;
+  std::unique_ptr<OmniboxContextMenu> context_menu_;
   mojo::Receiver<composebox::mojom::PageHandlerFactory>
       composebox_page_factory_receiver_{this};
   mojo::Receiver<most_visited::mojom::MostVisitedPageHandlerFactory>
       most_visited_page_factory_receiver_{this};
   mojo::Receiver<searchbox::mojom::PageHandlerFactory>
       searchbox_page_factory_receiver_{this};
+  mojo::Receiver<omnibox_everywhere::mojom::PageHandlerFactory>
+      page_factory_receiver_{this};
   mojo::Receiver<omnibox_everywhere_debug::mojom::PageHandlerFactory>
       debug_page_factory_receiver_{this};
   mojo::Receiver<help_bubble::mojom::HelpBubbleHandlerFactory>

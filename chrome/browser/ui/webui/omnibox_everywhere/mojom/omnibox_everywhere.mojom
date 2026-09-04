@@ -1,0 +1,41 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module omnibox_everywhere.mojom;
+
+import "components/omnibox/browser/searchbox.mojom";
+import "components/omnibox/composebox/composebox_query.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// Initial state when transitioning into composebox mode (e.g. from context
+// menu actions).
+struct ComposeboxInitialState {
+  composebox_query.mojom.ToolMode tool = kUnspecified;
+  composebox_query.mojom.ModelMode model = kUnspecified;
+  searchbox.mojom.TabInfo? tab;
+};
+
+// The browser-side handler factory for Omnibox Everywhere.
+interface PageHandlerFactory {
+  // Creates and binds a new PageHandler to handle calls from the WebUI page.
+  CreatePageHandler(
+      pending_remote<Page> page,
+      pending_receiver<PageHandler> handler);
+};
+
+// The browser-side handler for Omnibox Everywhere lifecycle actions.
+interface PageHandler {
+  // Shows the native contextual '+' dropdown menu anchored at `anchor_rect`.
+  ShowContextActionMenu(gfx.mojom.Rect anchor_rect);
+};
+
+// The WebUI page for Omnibox Everywhere lifecycle events.
+interface Page {
+  // Notifies the WebUI that the native context menu was closed.
+  OnContextMenuClosed();
+
+  // Notifies the page to open composebox mode (e.g. from native context menu
+  // actions) with optional initial configuration (tool, model, or tab).
+  OpenComposebox(ComposeboxInitialState? initial_state);
+};

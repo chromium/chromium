@@ -23,6 +23,8 @@
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service_factory.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/search/most_visited_metrics_logger.h"
+#include "chrome/browser/ui/views/location_bar/omnibox_popup_file_selector.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_context_menu.h"
 #include "chrome/browser/ui/views/user_education/browser_help_bubble.h"
 #include "chrome/browser/ui/webui/cr_components/most_visited/most_visited_handler.h"
 #include "chrome/browser/ui/webui/cr_components/most_visited/most_visited_pref_observer.h"
@@ -33,6 +35,7 @@
 #include "chrome/browser/ui/webui/omnibox_everywhere/composebox_everywhere_handler.h"
 #include "chrome/browser/ui/webui/omnibox_everywhere/debug/omnibox_everywhere_debug_page_handler.h"
 #include "chrome/browser/ui/webui/omnibox_everywhere/omnibox_everywhere_handler.h"
+#include "chrome/browser/ui/webui/omnibox_everywhere/omnibox_everywhere_page_handler.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/sanitized_image/sanitized_image_source.h"
 #include "chrome/common/webui_url_constants.h"
@@ -481,6 +484,26 @@ void OmniboxEverywhereUI::CreatePageHandler(
       this);
 }
 
+void OmniboxEverywhereUI::BindInterface(
+    mojo::PendingReceiver<omnibox_everywhere::mojom::PageHandlerFactory>
+        receiver) {
+  if (!omnibox::IsOmniboxEverywhereEnabled(profile_)) {
+    return;
+  }
+  if (page_factory_receiver_.is_bound()) {
+    page_factory_receiver_.reset();
+  }
+  page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void OmniboxEverywhereUI::CreatePageHandler(
+    mojo::PendingRemote<omnibox_everywhere::mojom::Page> pending_page,
+    mojo::PendingReceiver<omnibox_everywhere::mojom::PageHandler>
+        pending_page_handler) {
+  page_handler_ = std::make_unique<OmniboxEverywherePageHandler>(
+      std::move(pending_page_handler), std::move(pending_page), this);
+}
+
 void OmniboxEverywhereUI::OnScreensharePickerOpened() {
   if (auto* service =
           OmniboxEverywhereServiceFactory::GetForProfile(profile_)) {
@@ -707,6 +730,78 @@ bool OmniboxEverywhereUI::IsCommandIdEnabled(int command_id) const {
 
 bool OmniboxEverywhereUI::IsCommandIdVisible(int command_id) const {
   return true;
+}
+
+void OmniboxEverywhereUI::OpenComposebox(
+    omnibox_everywhere::mojom::ComposeboxInitialStatePtr initial_state) {
+  if (page_handler_) {
+    page_handler_->OpenComposebox(std::move(initial_state));
+  }
+}
+
+void OmniboxEverywhereUI::OnContextMenuClosed() {
+  if (page_handler_) {
+    page_handler_->OnContextMenuClosed();
+  }
+}
+
+void OmniboxEverywhereUI::OnFileChooserOpened() {
+  if (auto* service =
+          OmniboxEverywhereServiceFactory::GetForProfile(profile_)) {
+    service->OnFileChooserOpened();
+  }
+}
+
+void OmniboxEverywhereUI::OnFileChooserClosed() {
+  if (auto* service =
+          OmniboxEverywhereServiceFactory::GetForProfile(profile_)) {
+    service->OnFileChooserClosed();
+  }
+}
+
+void OmniboxEverywhereUI::ShowContextActionMenu(const gfx::Rect& anchor_rect) {
+  if (context_menu_) {
+    context_menu_->Cancel();
+  }
+  content::WebContents* web_contents = web_ui()->GetWebContents();
+  if (!web_contents) {
+    OnContextMenuClosed();
+    return;
+  }
+  views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
+      web_contents->GetTopLevelNativeWindow());
+  if (!widget || !widget->GetContentsView()) {
+    OnContextMenuClosed();
+    return;
+  }
+
+  if (!file_selector_) {
+    file_selector_ = std::make_unique<OmniboxPopupFileSelector>(
+        web_contents->GetTopLevelNativeWindow());
+    file_selector_->set_open_ai_mode_callback(base::BindRepeating(
+        &OmniboxEverywhereUI::OpenComposebox, weak_factory_.GetWeakPtr(),
+        /*initial_state=*/nullptr));
+    file_selector_->set_file_chooser_opened_callback(base::BindRepeating(
+        &OmniboxEverywhereUI::OnFileChooserOpened, weak_factory_.GetWeakPtr()));
+    file_selector_->set_file_chooser_closed_callback(base::BindRepeating(
+        &OmniboxEverywhereUI::OnFileChooserClosed, weak_factory_.GetWeakPtr()));
+  }
+
+  // `anchor_rect` is the bounding box of the '+' entrypoint button in WebUI
+  // viewport coordinates (CSS DIPs relative to the top-left of the
+  // WebContents). We offset it by `GetContainerBounds().OffsetFromOrigin()`
+  // (the screen position of the WebContents) to convert
+  // `anchor_rect.bottom_left()` into desktop screen DIP coordinates expected by
+  // Views MenuRunner.
+  gfx::Point screen_point =
+      anchor_rect.bottom_left() +
+      web_contents->GetContainerBounds().OffsetFromOrigin();
+
+  context_menu_ = std::make_unique<OmniboxContextMenu>(
+      widget, file_selector_.get(), web_contents,
+      base::BindRepeating(&OmniboxEverywhereUI::OnContextMenuClosed,
+                          weak_factory_.GetWeakPtr()));
+  context_menu_->RunMenuAt(screen_point, ui::mojom::MenuSourceType::kNone);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(OmniboxEverywhereUI)

@@ -88,15 +88,6 @@
   flex-direction: row;
 }
 
-#contextEntrypoint {
-  position: relative;
-  z-index: var(--cr-composebox-context-menu-z-index, 1001);
-}
-
-#contextEntrypoint::part(entrypoint-button) {
-  --cr-icon-button-size: 36px;
-}
-
 cr-composebox-tool-chip {
   padding-inline-start: 8px;
 }

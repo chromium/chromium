@@ -73,7 +73,8 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
       this.onFileChange_}">
             <div class="context-menu-container" id="contextMenuContainer">
               <cr-composebox-contextual-entrypoint-and-menu id="context"
-                  exportparts="context-menu-entrypoint-icon"
+                  exportparts="context-menu-entrypoint-icon,
+                               entrypoint-button"
                   class="upload-button"
                   disable-auto-reposition
                   .inputState="${this.inputState_}"
@@ -82,7 +83,6 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
                   .tabSuggestionsState="${this.tabSuggestionsState_}"
                   .contextManagementInComposeboxEnabled="${
       this.contextManagementInComposeboxEnabled}"
-                  unbounded-menu-enabled
                   @context-menu-entrypoint-click="${
       this.onContextMenuEntrypointClick_}"
                   @context-menu-opened="${this.onContextMenuOpened_}"

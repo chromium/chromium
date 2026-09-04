@@ -271,6 +271,13 @@ export const ComposeboxEmbedderMixin =
         }
 
         accessor canSubmitFilesAndInput: boolean = true;
+        /**
+         * When true (e.g. in Omnibox Everywhere / Loomnibox), each submission
+         * is an independent one-shot query rather than a multi-turn
+         * conversation thread in the same page. Forces clearing all attached
+         * input, modes, and restored tabs upon query submission, and skips
+         * caching submitted tabs across turns.
+         */
         accessor clearAllInputsWhenSubmittingQuery: boolean = false;
         accessor closeOnEscape: boolean = true;
         accessor composeboxNoFlickerSuggestionsFix: boolean = false;
@@ -787,8 +794,10 @@ export const ComposeboxEmbedderMixin =
           metaKey: boolean,
           shiftKey: boolean,
         }>) {
-          this.submitting = true;
-          this.clearAutocompleteMatches();
+          // Perform submission cleanup (clearing autocomplete matches and
+          // resetting transient input state) to ensure the composebox is left
+          // in a clean state.
+          this.submitCleanup();
           // We only close the composebox when opening in a new tab because
           // doing so in the current tab causes a visual jitter where the
           // composebox closes before the new results page finishes loading.
@@ -1886,11 +1895,12 @@ export const ComposeboxEmbedderMixin =
           // Let `querySubmit` handle clearing files if the tool mode is a tool
           // mode that should be cleared after submitting. For all other general
           // clearing, clear input here.
-          if (!querySubmitted) {
+          if (!querySubmitted || this.clearAllInputsWhenSubmittingQuery) {
             this.resetModes();
             // If context management flag is on, do not delete persisted
             // (restored) tabs unless the source is Omnibox.
             if (this.composeboxSource === 'Omnibox' ||
+                this.clearAllInputsWhenSubmittingQuery ||
                 !this.contextManagementInComposeboxEnabled) {
               this.resetRestoredTabs();
             }
@@ -2194,7 +2204,8 @@ export const ComposeboxEmbedderMixin =
         }
 
         cacheSubmittedTabs() {
-          if (!this.contextManagementInComposeboxEnabled) {
+          if (!this.contextManagementInComposeboxEnabled ||
+              this.clearAllInputsWhenSubmittingQuery) {
             return;
           }
           if (this.hasCachedSubmittedTabsThisTurn) {
@@ -2232,11 +2243,11 @@ export const ComposeboxEmbedderMixin =
             this.attachedContext = new Map(this.attachedContext);
             this.addedTabsIds = new Map(this.addedTabsIds);
           }
-          // Standard behavior: clear inputs if flag is enabled
           if (this.clearAllInputsWhenSubmittingQuery) {
             this.clearAllInputs(
                 /* querySubmitted= */ true,
                 /* shouldBlockAutoSuggestedTabs= */ false);
+            this.resetRestoredTabs();
           }
           this.fire('composebox-submit');
           this.hasCachedSubmittedTabsThisTurn = false;

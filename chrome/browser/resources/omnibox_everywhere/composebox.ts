@@ -28,6 +28,7 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 
+import {OmniboxEverywhereBrowserProxyImpl} from './browser_proxy.js';
 import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
 import {UnboundedMenuManager} from './unbounded_utils.js';
@@ -73,6 +74,10 @@ export class OmniboxEverywhereComposeboxElement extends
         type: Boolean,
         reflect: true,
       },
+      isContextMenuOpen: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
@@ -84,6 +89,7 @@ export class OmniboxEverywhereComposeboxElement extends
   accessor disableComposeboxAnimation: boolean = false;
   accessor applyContextButtonBackground: boolean = false;
   accessor isScreenshotMenuOpen: boolean = false;
+  accessor isContextMenuOpen: boolean = false;
   override accessor energyEffectAnimationEnabled: boolean =
       getLoadTimeBoolean('composeboxEnergyEffectAnimationEnabled', true);
   override accessor submitButtonIconType = SubmitButtonIconType.FORWARD;
@@ -109,6 +115,23 @@ export class OmniboxEverywhereComposeboxElement extends
       width: Math.round(rect.width),
       height: Math.round(rect.height),
     });
+  }
+
+  protected onContextMenuEntrypointClick_(e?: CustomEvent<{
+    anchorRect?: {x: number, y: number, width: number, height: number},
+  }>) {
+    this.isContextMenuOpen = true;
+    const rect = e?.detail?.anchorRect ||
+        this.getContextEntrypointElement()?.getBoundingClientRect();
+    if (rect) {
+      OmniboxEverywhereBrowserProxyImpl.getInstance()
+          .handler.showContextActionMenu({
+            x: Math.round(rect.x),
+            y: Math.round(rect.y),
+            width: Math.round(rect.width),
+            height: Math.round(rect.height),
+          });
+    }
   }
   private webuiOmniboxSimplificationEnabled_: boolean =
       getLoadTimeBoolean('webuiOmniboxSimplificationEnabled', false);
@@ -205,6 +228,11 @@ export class OmniboxEverywhereComposeboxElement extends
   }
 
   override async onContextMenuClosed(): Promise<void> {
+    this.isContextMenuOpen = false;
+    const entrypoint =
+        this.shadowRoot?.querySelector<ContextualEntrypointAndMenuElement>(
+            '#contextEntrypoint');
+    entrypoint?.closeMenu();
     await super.onContextMenuClosed();
     this.showDropdown = this.computeShowDropdown();
     this.unboundedMenuManager_.onContextMenuClosed();

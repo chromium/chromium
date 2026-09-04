@@ -10,6 +10,7 @@ import '//resources/cr_components/composebox/composebox_voice_search.js';
 import '//resources/cr_components/most_visited/most_visited.js';
 import '//resources/cr_components/search/animated_glow.js';
 
+import {TabUploadOrigin} from '//resources/cr_components/composebox/common.js';
 import type {ComposeboxState} from '//resources/cr_components/composebox/common.js';
 import type {ComposeboxVoiceSearchElement, VoicePermissionPromptState} from '//resources/cr_components/composebox/composebox_voice_search.js';
 import type {MostVisitedElement} from '//resources/cr_components/most_visited/most_visited.js';
@@ -20,13 +21,15 @@ import {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchb
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import type {PageCallbackRouter, SelectedFileInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
+import type {PageCallbackRouter} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {ModelMode, ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
+import {OmniboxEverywhereBrowserProxyImpl} from './browser_proxy.js';
 import type {OmniboxEverywhereComposeboxElement} from './composebox.js';
 import type {OmniboxEverywhereOmniboxElement} from './omnibox.js';
+import type {ComposeboxInitialState} from './omnibox_everywhere.mojom-webui.js';
 
 const PERMISSION_PROMPT_CSS_CLASS = 'permission-prompt-showing';
 const VOICE_IDLE_TIMEOUT_MS = 8000;
@@ -57,6 +60,20 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
 
   override render() {
     return getHtml.bind(this)();
+  }
+
+  // `#composebox` and `#searchbox` are conditionally rendered in app.html.ts
+  // based on `isComposeboxMode_`, so they are mutually exclusive in the DOM.
+  get composebox(): OmniboxEverywhereComposeboxElement|null {
+    return this.shadowRoot?.querySelector<OmniboxEverywhereComposeboxElement>(
+               '#composebox') ??
+        null;
+  }
+
+  get searchbox(): OmniboxEverywhereOmniboxElement|null {
+    return this.shadowRoot?.querySelector<OmniboxEverywhereOmniboxElement>(
+               '#searchbox') ??
+        null;
   }
 
   static override get properties() {
@@ -124,27 +141,58 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
   protected accessor showFreModal_: boolean =
       loadTimeData.getBoolean('initialShowFre');
   private eventTracker_ = new EventTracker();
-  private addFileContextListenerId_: number|null = null;
   private mostVisitedListenerId_: number|null = null;
-  // TODO(crbug.com/552539106): Refactor client-side file context buffering once
-  // the C++ OpenComposeboxWithFile flow (crrev.com/c/8287107) lands.
-  private pendingFileContexts_:
-      Map<UnguessableToken,
-          {token: UnguessableToken, fileInfo: SelectedFileInfo}> = new Map();
+  private searchboxListenerIds_: number[] = [];
+  private omniboxEverywhereListenerIds_: number[] = [];
 
   override connectedCallback() {
     super.connectedCallback();
     this.eventTracker_.add(
         document.documentElement, 'visibilitychange',
         this.onVisibilitychange_.bind(this));
+    this.setupListeners_();
     this.onVisibilitychange_();
-    this.addFileContextListenerId_ =
-        this.callbackRouter_.addFileContext.addListener(
-            this.onAddFileContext_.bind(this));
+  }
 
-    this.callbackRouter_.setShowFre.addListener((show: boolean) => {
-      this.showFreModal_ = show;
-    });
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.eventTracker_.removeAll();
+    this.removeListeners_();
+  }
+
+  private setupListeners_() {
+    const onOpenComposebox = (initialState: ComposeboxInitialState|null) => {
+      const state: Partial<ComposeboxState> = {};
+      if (initialState) {
+        if (initialState.tab) {
+          state.files = [{
+            ...initialState.tab,
+            delayUpload: false,
+            origin: TabUploadOrigin.CONTEXT_MENU,
+          }];
+        }
+        if (initialState.tool !== undefined &&
+            initialState.tool !== ToolMode.kUnspecified) {
+          state.mode = initialState.tool;
+        }
+        if (initialState.model !== undefined &&
+            initialState.model !== ModelMode.kUnspecified) {
+          state.model = initialState.model;
+        }
+      }
+      this.openComposebox(state);
+    };
+
+    const onContextMenuClosed = () => {
+      this.composebox?.onContextMenuClosed();
+      this.searchbox?.onContextMenuClosed();
+    };
+
+    this.searchboxListenerIds_.push(
+        this.callbackRouter_.setShowFre.addListener((show: boolean) => {
+          this.showFreModal_ = show;
+        }),
+    );
 
     if (this.mostVisitedEnabled_) {
       this.mostVisitedListenerId_ =
@@ -155,15 +203,72 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
                         info.visible && !!info.tiles && info.tiles.length > 0;
                   });
     }
+
+    const omniboxEverywhereCallbackRouter =
+        OmniboxEverywhereBrowserProxyImpl.getInstance().callbackRouter;
+    this.omniboxEverywhereListenerIds_.push(
+        omniboxEverywhereCallbackRouter.openComposebox.addListener(
+            onOpenComposebox),
+        omniboxEverywhereCallbackRouter.onContextMenuClosed.addListener(
+            onContextMenuClosed),
+    );
   }
 
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    this.eventTracker_.removeAll();
-    this.pendingFileContexts_.clear();
-    if (this.addFileContextListenerId_ !== null) {
-      this.callbackRouter_.removeListener(this.addFileContextListenerId_);
-      this.addFileContextListenerId_ = null;
+  private removeListeners_() {
+    if (this.mostVisitedListenerId_ !== null) {
+      browserProxyFactory.getInstance().callbackRouter.removeListener(
+          this.mostVisitedListenerId_);
+      this.mostVisitedListenerId_ = null;
+    }
+    for (const id of this.searchboxListenerIds_) {
+      this.callbackRouter_.removeListener(id);
+    }
+    this.searchboxListenerIds_ = [];
+    const omniboxEverywhereCallbackRouter =
+        OmniboxEverywhereBrowserProxyImpl.getInstance().callbackRouter;
+    for (const id of this.omniboxEverywhereListenerIds_) {
+      omniboxEverywhereCallbackRouter.removeListener(id);
+    }
+    this.omniboxEverywhereListenerIds_ = [];
+  }
+
+  async openComposebox(state?: Partial<ComposeboxState>) {
+    if (this.isComposeboxMode_) {
+      if (!this.composebox || !state) {
+        return;
+      }
+      for (const file of state.files ?? []) {
+        if ('tabId' in file) {
+          this.composebox.addTabContextHandleCallback(file);
+        }
+      }
+      if (state.mode !== undefined && state.mode !== ToolMode.kUnspecified) {
+        this.composebox.getSearchboxHandler().setActiveToolMode(
+            state.mode, false);
+      }
+      if (state.model !== undefined && state.model !== ModelMode.kUnspecified) {
+        this.composebox.getSearchboxHandler().setActiveModelMode(
+            state.model, false);
+      }
+      return;
+    }
+    // Migrate any typed text from the Omnibox search input into the Composebox
+    // state so user queries are preserved when switching to Composebox mode
+    // (e.g. when clicking a tool or attaching a tab from the '+' context menu).
+    const text = this.searchbox ? this.searchbox.getInputText?.() || '' : '';
+    this.composeboxState_ = {
+      text,
+      files: [],
+      mode: ToolMode.kUnspecified,
+      model: ModelMode.kUnspecified,
+      smartTabSharingActive: false,
+      ...state,
+    };
+    this.isComposeboxMode_ = true;
+    await this.updateComplete;
+    if (this.composebox) {
+      this.composebox.focusInput();
+      this.composebox.playGlowAnimation();
     }
     if (this.mostVisitedListenerId_ !== null) {
       browserProxyFactory.getInstance().callbackRouter.removeListener(
@@ -203,26 +308,23 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
         this.shadowRoot?.querySelector<OmniboxEverywhereComposeboxElement>(
             'omnibox-everywhere-composebox');
     if (composebox) {
-      await composebox.updateComplete;
-      this.flushPendingFileContexts_(composebox);
       composebox.focusInput();
       composebox.playGlowAnimation();
     }
   }
 
   protected async onCloseComposebox_() {
-    this.pendingFileContexts_.clear();
     this.isComposeboxMode_ = false;
     await this.updateComplete;
     const searchbox =
-        this.shadowRoot.querySelector('omnibox-everywhere-omnibox');
+        this.shadowRoot?.querySelector<OmniboxEverywhereOmniboxElement>(
+            'omnibox-everywhere-omnibox');
     if (searchbox) {
       searchbox.focusInput();
     }
   }
 
   protected onComposeboxSubmit_() {
-    this.pendingFileContexts_.clear();
     this.isComposeboxMode_ = false;
   }
 
@@ -384,34 +486,6 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
 
   protected onVoiceSearchRecordingStopped_(e: CustomEvent<string>) {
     this.handleVoiceSearchResult_(e.detail, /*submit=*/ false);
-  }
-
-  private async onAddFileContext_(
-      token: UnguessableToken, fileInfo: SelectedFileInfo) {
-    // If composebox is already mounted, its own listener in ComposeboxMixin
-    // will handle this event directly.
-    if (this.isComposeboxMode_) {
-      return;
-    }
-    this.pendingFileContexts_.set(token, {token, fileInfo});
-    this.isComposeboxMode_ = true;
-    await this.updateComplete;
-    const composebox =
-        this.shadowRoot?.querySelector<OmniboxEverywhereComposeboxElement>(
-            'omnibox-everywhere-composebox');
-    if (composebox) {
-      await composebox.updateComplete;
-      this.flushPendingFileContexts_(composebox);
-      composebox.focusInput();
-    }
-  }
-
-  private flushPendingFileContexts_(
-      composebox: OmniboxEverywhereComposeboxElement) {
-    for (const {token, fileInfo} of this.pendingFileContexts_.values()) {
-      composebox.addFileContextFromBrowser(token, fileInfo);
-    }
-    this.pendingFileContexts_.clear();
   }
 }
 

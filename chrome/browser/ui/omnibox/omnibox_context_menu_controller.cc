@@ -876,6 +876,23 @@ void OmniboxContextMenuController::UpdateSearchboxContext(
     std::optional<TabInfo> tab_info,
     std::optional<omnibox::ToolMode> tool_mode,
     std::vector<searchbox::mojom::SearchContextAttachmentPtr> attachments) {
+  if (auto* omnibox_everywhere_ui = GetOmniboxEverywhereUI(web_contents)) {
+    auto initial_state =
+        omnibox_everywhere::mojom::ComposeboxInitialState::New();
+    if (tab_info) {
+      auto mojo_tab = searchbox::mojom::TabInfo::New();
+      mojo_tab->tab_id = tab_info->tab_id;
+      mojo_tab->title = base::UTF16ToUTF8(tab_info->title);
+      mojo_tab->url = tab_info->url;
+      initial_state->tab = std::move(mojo_tab);
+    }
+    if (tool_mode) {
+      initial_state->tool = *tool_mode;
+    }
+    omnibox_everywhere_ui->OpenComposebox(std::move(initial_state));
+    return;
+  }
+
   auto* browser_window_interface =
       webui::GetBrowserWindowInterface(web_contents);
   if (!browser_window_interface) {
@@ -1594,7 +1611,15 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
           contextual_searchbox_handler->RecordToolSelectionAction(tool_mode);
         }
 
-        OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu);
+        if (auto* omnibox_everywhere_ui =
+                GetOmniboxEverywhereUI(web_contents_.get())) {
+          auto initial_state =
+              omnibox_everywhere::mojom::ComposeboxInitialState::New();
+          initial_state->tool = it->second;
+          omnibox_everywhere_ui->OpenComposebox(std::move(initial_state));
+        } else {
+          OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu);
+        }
         return;
       }
 
@@ -1616,7 +1641,15 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
           }
         }
 
-        OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu);
+        if (auto* omnibox_everywhere_ui =
+                GetOmniboxEverywhereUI(web_contents_.get())) {
+          auto initial_state =
+              omnibox_everywhere::mojom::ComposeboxInitialState::New();
+          initial_state->model = it->second;
+          omnibox_everywhere_ui->OpenComposebox(std::move(initial_state));
+        } else {
+          OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu);
+        }
         return;
       }
     }
@@ -2039,6 +2072,13 @@ void OmniboxContextMenuController::OpenAiMode(
     OmniboxEditModel::AimActivation activation) {
   if (OmniboxEditModel* edit_model = GetEditModel()) {
     edit_model->OpenAiMode(activation);
+  } else if (web_contents_) {
+    // Omnibox Everywhere does not utilize OmniboxEditModel; expand the WebUI
+    // composebox view directly upon context item / tool selection.
+    if (auto* omnibox_everywhere_ui =
+            GetOmniboxEverywhereUI(web_contents_.get())) {
+      omnibox_everywhere_ui->OpenComposebox(/*initial_state=*/nullptr);
+    }
   } else {
     DLOG(WARNING) << "OpenAiMode called but no edit model present.";
   }

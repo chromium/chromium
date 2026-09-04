@@ -146,6 +146,12 @@ OmniboxEverywhereHandler::OmniboxEverywhereHandler(
         &g_browser_process->profile_manager()->GetProfileAttributesStorage());
   }
   UpdatePromoState();
+
+  // Explicitly initialize the `InputStateModel` for the standalone Omnibox
+  // Everywhere searchbox. This ensures that dynamic context menu items and
+  // input tools are available immediately from the classic Omnibox view before
+  // transitioning into Composebox view.
+  InitializeInputStateModel();
 }
 
 OmniboxEverywhereHandler::~OmniboxEverywhereHandler() = default;
