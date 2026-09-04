@@ -22,9 +22,44 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<variants name="Cras_Direction">
-  <variant name=".Input" summary="Capture"/>
-  <variant name=".Output" summary="Playback"/>
+<variants name="CrasClientAndStreamType">
+  <variant name="" summary="all streams"/>
+  <variant name=".ARC" summary="A client created by ARC++."/>
+  <variant name=".ARC.Default" summary="ARC client, Default stream."/>
+  <variant name=".ARC.ProAudio" summary="ARC client, ProAudio stream."/>
+  <variant name=".ARC.VoiceCommunication" summary="ARC client, WebRTC stream."/>
+  <variant name=".ARCVM" summary="A client created by ARCVM."/>
+  <variant name=".ARCVM.Default" summary="ARCVM client, Default stream."/>
+  <variant name=".ARCVM.ProAudio" summary="ARCVM client, ProAudio stream."/>
+  <variant name=".ARCVM.VoiceCommunication"
+      summary="ARCVM client, WebRTC stream."/>
+  <variant name=".BOREALIS" summary="A client created by BOREALIS."/>
+  <variant name=".BOREALIS.Default" summary="BOREALIS client, Default stream."/>
+  <variant name=".BOREALIS.ProAudio"
+      summary="BOREALIS client, ProAudio stream."/>
+  <variant name=".BOREALIS.VoiceCommunication"
+      summary="BOREALIS client, WebRTC stream."/>
+  <variant name=".Chrome" summary="A client created by Chrome."/>
+  <variant name=".Chrome.Default" summary="Chrome client, Default stream."/>
+  <variant name=".Chrome.ProAudio" summary="Chrome client, ProAudio stream."/>
+  <variant name=".Chrome.VoiceCommunication"
+      summary="Chrome client, WebRTC stream."/>
+  <variant name=".CrOSVM" summary="A client created by ChromeOS VM."/>
+  <variant name=".CrOSVM.Default" summary="CrOSVM client, Default stream."/>
+  <variant name=".CrOSVM.ProAudio" summary="CrOSVM client, ProAudio stream."/>
+  <variant name=".CrOSVM.VoiceCommunication"
+      summary="CrOSVM client, WebRTC stream."/>
+  <variant name=".InvalidType" summary="Invalid client."/>
+  <variant name=".LaCrOS" summary="A client created by LaCrOS."/>
+  <variant name=".LaCrOS.Default" summary="LaCrOS client, Default stream."/>
+  <variant name=".LaCrOS.ProAudio" summary="LaCrOS client, ProAudio stream."/>
+  <variant name=".LaCrOS.VoiceCommunication"
+      summary="LaCrOS client, WebRTC stream."/>
+  <variant name=".Legacy" summary="A client using an old CRAS lib."/>
+  <variant name=".PCM" summary="A client created by PCM."/>
+  <variant name=".ServerStream" summary="A client created by CRAS server."/>
+  <variant name=".Test" summary="A client created by cras_test_client."/>
+  <variant name=".Unknown" summary="Unknown client."/>
 </variants>
 
 <variants name="CrasDlcType">
@@ -87,6 +122,180 @@ This collects each final device metric type. For example,
   <variant name=".SilentHotword"/>
   <variant name=".Unknown"/>
   <variant name=".USB"/>
+</variants>
+
+<variants name="CrasStreamDirectionAndClient">
+  <variant name="" summary="all streams"/>
+  <variant name=".Input" summary="Capture stream."/>
+  <variant name=".Input.ARC"
+      summary="Capture stream, A client created by ARC++."/>
+  <variant name=".Input.ARCVM"
+      summary="Capture stream, A client created by ARCVM."/>
+  <variant name=".Input.BOREALIS"
+      summary="Capture stream, A client created by BOREALIS."/>
+  <variant name=".Input.Chrome"
+      summary="Capture stream, A client created by Chrome."/>
+  <variant name=".Input.CrOSVM"
+      summary="Capture stream, A client created by ChromeOS VM."/>
+  <variant name=".Input.InvalidType" summary="Capture stream, Invalid client."/>
+  <variant name=".Input.LaCrOS"
+      summary="Capture stream, A client created by LaCrOS."/>
+  <variant name=".Input.Legacy"
+      summary="Capture stream, A client using an old CRAS lib."/>
+  <variant name=".Input.PCM"
+      summary="Capture stream, A client created by PCM."/>
+  <variant name=".Input.ServerStream"
+      summary="Capture stream, A client created by CRAS server."/>
+  <variant name=".Input.Test"
+      summary="Capture stream, A client created by cras_test_client."/>
+  <variant name=".Input.Unknown" summary="Capture stream, Unknown client."/>
+  <variant name=".Output" summary="Playback stream."/>
+  <variant name=".Output.ARC"
+      summary="Playback stream, A client created by ARC++."/>
+  <variant name=".Output.ARCVM"
+      summary="Playback stream, A client created by ARCVM."/>
+  <variant name=".Output.BOREALIS"
+      summary="Playback stream, A client created by BOREALIS."/>
+  <variant name=".Output.Chrome"
+      summary="Playback stream, A client created by Chrome."/>
+  <variant name=".Output.CrOSVM"
+      summary="Playback stream, A client created by ChromeOS VM."/>
+  <variant name=".Output.InvalidType"
+      summary="Playback stream, Invalid client."/>
+  <variant name=".Output.LaCrOS"
+      summary="Playback stream, A client created by LaCrOS."/>
+  <variant name=".Output.Legacy"
+      summary="Playback stream, A client using an old CRAS lib."/>
+  <variant name=".Output.PCM"
+      summary="Playback stream, A client created by PCM."/>
+  <variant name=".Output.ServerStream"
+      summary="Playback stream, A client created by CRAS server."/>
+  <variant name=".Output.Test"
+      summary="Playback stream, A client created by cras_test_client."/>
+  <variant name=".Output.Unknown" summary="Playback stream, Unknown client."/>
+</variants>
+
+<variants name="CrasStreamRuntimeDirectionAndClient">
+  <variant name="" summary="all streams"/>
+  <variant name=".Input" summary="Capture stream."/>
+  <variant name=".Input.ARC"
+      summary="Capture stream, A client created by ARC++."/>
+  <variant name=".Input.ARC.Default"
+      summary="Capture stream, ARC client, Default stream."/>
+  <variant name=".Input.ARC.ProAudio"
+      summary="Capture stream, ARC client, ProAudio stream."/>
+  <variant name=".Input.ARC.VoiceCommunication"
+      summary="Capture stream, ARC client, WebRTC stream."/>
+  <variant name=".Input.ARCVM"
+      summary="Capture stream, A client created by ARCVM."/>
+  <variant name=".Input.ARCVM.Default"
+      summary="Capture stream, ARCVM client, Default stream."/>
+  <variant name=".Input.ARCVM.ProAudio"
+      summary="Capture stream, ARCVM client, ProAudio stream."/>
+  <variant name=".Input.ARCVM.VoiceCommunication"
+      summary="Capture stream, ARCVM client, WebRTC stream."/>
+  <variant name=".Input.BOREALIS"
+      summary="Capture stream, A client created by BOREALIS."/>
+  <variant name=".Input.BOREALIS.Default"
+      summary="Capture stream, BOREALIS client, Default stream."/>
+  <variant name=".Input.BOREALIS.ProAudio"
+      summary="Capture stream, BOREALIS client, ProAudio stream."/>
+  <variant name=".Input.BOREALIS.VoiceCommunication"
+      summary="Capture stream, BOREALIS client, WebRTC stream."/>
+  <variant name=".Input.Chrome"
+      summary="Capture stream, A client created by Chrome."/>
+  <variant name=".Input.Chrome.Default"
+      summary="Capture stream, Chrome client, Default stream."/>
+  <variant name=".Input.Chrome.ProAudio"
+      summary="Capture stream, Chrome client, ProAudio stream."/>
+  <variant name=".Input.Chrome.VoiceCommunication"
+      summary="Capture stream, Chrome client, WebRTC stream."/>
+  <variant name=".Input.CrOSVM"
+      summary="Capture stream, A client created by ChromeOS VM."/>
+  <variant name=".Input.CrOSVM.Default"
+      summary="Capture stream, CrOSVM client, Default stream."/>
+  <variant name=".Input.CrOSVM.ProAudio"
+      summary="Capture stream, CrOSVM client, ProAudio stream."/>
+  <variant name=".Input.CrOSVM.VoiceCommunication"
+      summary="Capture stream, CrOSVM client, WebRTC stream."/>
+  <variant name=".Input.InvalidType" summary="Capture stream, Invalid client."/>
+  <variant name=".Input.LaCrOS"
+      summary="Capture stream, A client created by LaCrOS."/>
+  <variant name=".Input.LaCrOS.Default"
+      summary="Capture stream, LaCrOS client, Default stream."/>
+  <variant name=".Input.LaCrOS.ProAudio"
+      summary="Capture stream, LaCrOS client, ProAudio stream."/>
+  <variant name=".Input.LaCrOS.VoiceCommunication"
+      summary="Capture stream, LaCrOS client, WebRTC stream."/>
+  <variant name=".Input.Legacy"
+      summary="Capture stream, A client using an old CRAS lib."/>
+  <variant name=".Input.PCM"
+      summary="Capture stream, A client created by PCM."/>
+  <variant name=".Input.ServerStream"
+      summary="Capture stream, A client created by CRAS server."/>
+  <variant name=".Input.Test"
+      summary="Capture stream, A client created by cras_test_client."/>
+  <variant name=".Input.Unknown" summary="Capture stream, Unknown client."/>
+  <variant name=".Output" summary="Playback stream."/>
+  <variant name=".Output.ARC"
+      summary="Playback stream, A client created by ARC++."/>
+  <variant name=".Output.ARC.Default"
+      summary="Playback stream, ARC client, Default stream."/>
+  <variant name=".Output.ARC.ProAudio"
+      summary="Playback stream, ARC client, ProAudio stream."/>
+  <variant name=".Output.ARC.VoiceCommunication"
+      summary="Playback stream, ARC client, WebRTC stream."/>
+  <variant name=".Output.ARCVM"
+      summary="Playback stream, A client created by ARCVM."/>
+  <variant name=".Output.ARCVM.Default"
+      summary="Playback stream, ARCVM client, Default stream."/>
+  <variant name=".Output.ARCVM.ProAudio"
+      summary="Playback stream, ARCVM client, ProAudio stream."/>
+  <variant name=".Output.ARCVM.VoiceCommunication"
+      summary="Playback stream, ARCVM client, WebRTC stream."/>
+  <variant name=".Output.BOREALIS"
+      summary="Playback stream, A client created by BOREALIS."/>
+  <variant name=".Output.BOREALIS.Default"
+      summary="Playback stream, BOREALIS client, Default stream."/>
+  <variant name=".Output.BOREALIS.ProAudio"
+      summary="Playback stream, BOREALIS client, ProAudio stream."/>
+  <variant name=".Output.BOREALIS.VoiceCommunication"
+      summary="Playback stream, BOREALIS client, WebRTC stream."/>
+  <variant name=".Output.Chrome"
+      summary="Playback stream, A client created by Chrome."/>
+  <variant name=".Output.Chrome.Default"
+      summary="Playback stream, Chrome client, Default stream."/>
+  <variant name=".Output.Chrome.ProAudio"
+      summary="Playback stream, Chrome client, ProAudio stream."/>
+  <variant name=".Output.Chrome.VoiceCommunication"
+      summary="Playback stream, Chrome client, WebRTC stream."/>
+  <variant name=".Output.CrOSVM"
+      summary="Playback stream, A client created by ChromeOS VM."/>
+  <variant name=".Output.CrOSVM.Default"
+      summary="Playback stream, CrOSVM client, Default stream."/>
+  <variant name=".Output.CrOSVM.ProAudio"
+      summary="Playback stream, CrOSVM client, ProAudio stream."/>
+  <variant name=".Output.CrOSVM.VoiceCommunication"
+      summary="Playback stream, CrOSVM client, WebRTC stream."/>
+  <variant name=".Output.InvalidType"
+      summary="Playback stream, Invalid client."/>
+  <variant name=".Output.LaCrOS"
+      summary="Playback stream, A client created by LaCrOS."/>
+  <variant name=".Output.LaCrOS.Default"
+      summary="Playback stream, LaCrOS client, Default stream."/>
+  <variant name=".Output.LaCrOS.ProAudio"
+      summary="Playback stream, LaCrOS client, ProAudio stream."/>
+  <variant name=".Output.LaCrOS.VoiceCommunication"
+      summary="Playback stream, LaCrOS client, WebRTC stream."/>
+  <variant name=".Output.Legacy"
+      summary="Playback stream, A client using an old CRAS lib."/>
+  <variant name=".Output.PCM"
+      summary="Playback stream, A client created by PCM."/>
+  <variant name=".Output.ServerStream"
+      summary="Playback stream, A client created by CRAS server."/>
+  <variant name=".Output.Test"
+      summary="Playback stream, A client created by cras_test_client."/>
+  <variant name=".Output.Unknown" summary="Playback stream, Unknown client."/>
 </variants>
 
 <!--
@@ -464,34 +673,27 @@ This collects each top-level device metric type. For example,
   <token key="DlcType" variants="CrasDlcType"/>
 </histogram>
 
-<histogram name="Cras.FetchDelayCount" units="count" expires_after="2027-02-14">
-<!-- Name completed by histogram_suffixes
-     name="Cras.ClientType" and
-     name="Cras.StreamType" -->
-
+<histogram name="Cras.FetchDelayCount{CrasClientAndStreamType}" units="count"
+    expires_after="2027-02-14">
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
     The number of times that CRAS(ChromeOS audio server) ever waits for a stream
     exceeding the timeout threshold. This value is recorded per stream when it
     gets removed and used to investigate the audio glitch/skip problem on
-    ChromeOS.
+    ChromeOS. {CrasClientAndStreamType}
   </summary>
 </histogram>
 
-<histogram name="Cras.FetchDelayMilliSeconds" units="ms"
-    expires_after="2026-09-06">
-<!-- Name completed by histogram_suffixes
-     name="Cras.ClientType" and
-     name="Cras.StreamType" -->
-
+<histogram name="Cras.FetchDelayMilliSeconds{CrasClientAndStreamType}"
+    units="ms" expires_after="2026-09-06">
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
     The longest additional time CRAS(ChromeOS audio server) ever waits for a
     stream exceeding the timeout threshold. This value is recorded per stream
     when it gets removed and used to investigate the audio glitch/skip problem
-    on ChromeOS.
+    on ChromeOS. {CrasClientAndStreamType}
   </summary>
 </histogram>
 
@@ -947,39 +1149,25 @@ This collects each top-level device metric type. For example,
   </summary>
 </histogram>
 
-<histogram name="Cras.StreamCallbackThreshold{Cras_Direction}" units="frames"
-    expires_after="2027-06-10">
-<!-- Name completed by histogram_suffixes
-     name="Cras.Direction" and
-     name="Cras.ClientType" -->
-
+<histogram name="Cras.StreamCallbackThreshold{CrasStreamDirectionAndClient}"
+    units="frames" expires_after="2027-06-10">
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
     The callback threshold of stream in CRAS(Chrome OS audio server). It is the
     number of frames when to request more from the client. This value is
-    recorded when the stream is created. {Cras_Direction}
+    recorded when the stream is created. {CrasStreamDirectionAndClient}
   </summary>
-  <token key="Cras_Direction" variants="Cras_Direction">
-    <variant name=""/>
-  </token>
 </histogram>
 
-<histogram name="Cras.StreamChannelCount{Cras_Direction}" units="channels"
-    expires_after="2025-11-30">
-<!-- Name completed by histogram_suffixes
-     name="Cras.Direction" and
-     name="Cras.ClientType" -->
-
+<histogram name="Cras.StreamChannelCount{CrasStreamDirectionAndClient}"
+    units="channels" expires_after="2025-11-30">
   <owner>pteerapong@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
     The channel count of stream in CRAS(Chrome OS audio server). This value is
-    recorded when the stream is created. {Cras_Direction}
+    recorded when the stream is created. {CrasStreamDirectionAndClient}
   </summary>
-  <token key="Cras_Direction" variants="Cras_Direction">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram name="Cras.StreamClientTypeInput" enum="CrasClientType"
@@ -1020,22 +1208,15 @@ This collects each top-level device metric type. For example,
   <summary>Record the errors happen when CRAS server creats a stream.</summary>
 </histogram>
 
-<histogram name="Cras.StreamEffectsOnDestroy{Cras_Direction}" units="value"
-    expires_after="2027-06-10">
-<!-- Name completed by histogram_suffixes
-     name="Cras.Direction" and
-     name="Cras.ClientType" -->
-
+<histogram name="Cras.StreamEffectsOnDestroy{CrasStreamDirectionAndClient}"
+    units="value" expires_after="2027-06-10">
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
     The bit map of effects to be enabled on this stream. This value is recorded
     when the stream is destroyed and has a duration of at least 10 seconds.
-    {Cras_Direction}
+    {CrasStreamDirectionAndClient}
   </summary>
-  <token key="Cras_Direction" variants="Cras_Direction">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram name="Cras.StreamEffectState{Effect}" enum="StreamEffectState"
@@ -1051,105 +1232,68 @@ This collects each top-level device metric type. For example,
   </token>
 </histogram>
 
-<histogram name="Cras.StreamFlags{Cras_Direction}" units="value"
+<histogram name="Cras.StreamFlags{CrasStreamDirectionAndClient}" units="value"
     expires_after="2027-06-10">
-<!-- Name completed by histogram_suffixes
-     name="Cras.Direction" and
-     name="Cras.ClientType" -->
-
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
     The flags of stream in CRAS(Chrome OS audio server). It is the special
     handling for stream. This value is recorded when the stream is created.
-    {Cras_Direction}
+    {CrasStreamDirectionAndClient}
   </summary>
-  <token key="Cras_Direction" variants="Cras_Direction">
-    <variant name=""/>
-  </token>
 </histogram>
 
-<histogram name="Cras.StreamOverrunCount" units="count"
-    expires_after="2027-06-10">
-<!-- Name completed by histogram_suffixes
-     name="Cras.ClientType" and
-     name="Cras.StreamType" -->
-
+<histogram name="Cras.StreamOverrunCount{CrasClientAndStreamType}"
+    units="count" expires_after="2027-06-10">
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
     The number of overruns happened on a stream. This value is recorded per
     stream when it gets removed and used to investigate the audio glitch/skip
-    problem on ChromeOS.
+    problem on ChromeOS. {CrasClientAndStreamType}
   </summary>
 </histogram>
 
-<histogram name="Cras.StreamOverrunFrames" units="frames"
-    expires_after="2027-06-10">
-<!-- Name completed by histogram_suffixes
-     name="Cras.ClientType" and
-     name="Cras.StreamType" -->
-
+<histogram name="Cras.StreamOverrunFrames{CrasClientAndStreamType}"
+    units="frames" expires_after="2027-06-10">
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
     The number of overrun frames on a stream. This value is recorded per stream
     when it gets removed and used to investigate the audio glitch/skip problem
-    on ChromeOS.
+    on ChromeOS. {CrasClientAndStreamType}
   </summary>
 </histogram>
 
-<histogram name="Cras.StreamRuntime{Cras_Direction}" units="seconds"
-    expires_after="2027-06-10">
-<!-- Name completed by histogram_suffixes
-     name="Cras.Direction" and
-     name="Cras.ClientType" and
-     name="Cras.StreamType" -->
-
+<histogram name="Cras.StreamRuntime{CrasStreamRuntimeDirectionAndClient}"
+    units="seconds" expires_after="2027-06-10">
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
     The runtime of stream in CRAS(ChromeOS audio server). The runtime is the
     duration between creating and destroying a stream. The value is recorded
-    when the stream is destroyed. {Cras_Direction}
+    when the stream is destroyed. {CrasStreamRuntimeDirectionAndClient}
   </summary>
-  <token key="Cras_Direction" variants="Cras_Direction">
-    <variant name=""/>
-  </token>
 </histogram>
 
-<histogram name="Cras.StreamSamplingFormat{Cras_Direction}"
+<histogram name="Cras.StreamSamplingFormat{CrasStreamDirectionAndClient}"
     enum="AlsaSampleFormatType" expires_after="2026-12-30">
-<!-- Name completed by histogram_suffixes
-     name="Cras.Direction" and
-     name="Cras.ClientType" -->
-
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
     The sampling format of stream in CRAS(Chrome OS audio server). This value is
-    recorded when the stream is created. {Cras_Direction}
+    recorded when the stream is created. {CrasStreamDirectionAndClient}
   </summary>
-  <token key="Cras_Direction" variants="Cras_Direction">
-    <variant name=""/>
-  </token>
 </histogram>
 
-<histogram name="Cras.StreamSamplingRate{Cras_Direction}" units="bps"
-    expires_after="2026-12-30">
-<!-- Name completed by histogram_suffixes
-     name="Cras.Direction" and
-     name="Cras.ClientType" -->
-
+<histogram name="Cras.StreamSamplingRate{CrasStreamDirectionAndClient}"
+    units="bps" expires_after="2026-12-30">
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
     The sampling rate of stream in CRAS(Chrome OS audio server). This value is
-    recorded when the stream is created. {Cras_Direction}
+    recorded when the stream is created. {CrasStreamDirectionAndClient}
   </summary>
-  <token key="Cras_Direction" variants="Cras_Direction">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram name="Cras.UcmCreateStatus.{Type}" enum="UcmCreateStatus"
