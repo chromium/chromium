@@ -89,6 +89,15 @@
   font-size: var(--omnibox-primary-body-3-emphasis-font-size);
   font-weight: var(--omnibox-primary-body-3-emphasis-font-weight);
   line-height: var(--omnibox-primary-body-3-emphasis-line-height, inherit);
+  /* text-box: trim-both removes half-leading to properly center the text with
+   * the icon due to how CSS lays out text with font-metric leading. Trimming
+   * the box down to cap height and baseline causes glyph ascenders and
+   * descenders to extend outside it. We clip horizontally (overflow-x: clip) to
+   * contain text during width collapse animations, while keeping vertical
+   * overflow visible (overflow-y: visible) so those glyphs are not clipped. */
+  overflow-x: clip;
+  overflow-y: visible;
+  text-box: trim-both cap alphabetic;
   text-overflow: clip;
   white-space: nowrap;
 }

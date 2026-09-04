@@ -16,6 +16,7 @@
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+#include "ui/views/controls/webview/web_contents_set_background_color.h"
 
 DEFINE_USER_DATA(InitialWebUIManager);
 
@@ -81,6 +82,8 @@ void InitialWebUIManager::ConfigureToolbarWebContents(
   // Ensure the browser window interface is associated with the WebContents
   // before the WebUI acts on it.
   webui::SetBrowserWindowInterface(web_contents, browser);
+  views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
+      web_contents, SK_ColorTRANSPARENT);
 }
 
 bool InitialWebUIManager::RequestDeferShow(base::OnceClosure unsafe_callback) {

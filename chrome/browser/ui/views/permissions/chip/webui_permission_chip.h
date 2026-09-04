@@ -80,6 +80,7 @@ class WebUIPermissionChip : public PermissionChipInterface {
  private:
   void NotifyVisibilityChanged();
   void UpdateState();
+  void FinishAnimation(AnimationState state);
 
   raw_ptr<LocationBar> location_bar_;
 

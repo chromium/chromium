@@ -148,9 +148,16 @@ void WebUIPermissionChip::AnimateCollapse(base::TimeDelta duration) {
   if (should_collapse_) {
     return;
   }
-  is_animating_ = true;
   should_collapse_ = true;
   UpdateState();
+  // CSS transitions and Web Animations with a 0s duration often do not fire
+  // transitionend or animationend events, so complete the collapse
+  // synchronously.
+  if (duration.is_zero()) {
+    FinishAnimation(AnimationState::kCollapsed);
+    return;
+  }
+  is_animating_ = true;
 }
 
 void WebUIPermissionChip::AnimateExpand(base::TimeDelta duration) {
@@ -161,10 +168,16 @@ void WebUIPermissionChip::AnimateExpand(base::TimeDelta duration) {
   if (!should_collapse_) {
     return;
   }
-  is_animating_ = true;
   is_fully_collapsed_ = false;
   should_collapse_ = false;
   UpdateState();
+  // CSS transitions and Web Animations with a 0s duration often do not fire
+  // transitionend or animationend events, so complete the expand synchronously.
+  if (duration.is_zero()) {
+    FinishAnimation(AnimationState::kExpanded);
+    return;
+  }
+  is_animating_ = true;
 }
 
 void WebUIPermissionChip::AnimateToFit(base::TimeDelta duration) {
@@ -281,6 +294,17 @@ void WebUIPermissionChip::EndAnimationForTesting() {
   ResetAnimation(AnimationState::kCollapsed);
 }
 
+void WebUIPermissionChip::FinishAnimation(AnimationState state) {
+  is_animating_ = false;
+  is_fully_collapsed_ = (state == AnimationState::kCollapsed);
+  if (state == AnimationState::kExpanded) {
+    AnnounceAlert(message_);
+    observers_.Notify(&Observer::OnExpandAnimationEnded);
+  } else {
+    observers_.Notify(&Observer::OnCollapseAnimationEnded);
+  }
+}
+
 void WebUIPermissionChip::OnExpandAnimationEnded() {
   // Ignore blind IPCs sent by the WebUI frontend after a forced synchronous
   // snap triggered by ResetAnimation().
@@ -292,10 +316,7 @@ void WebUIPermissionChip::OnExpandAnimationEnded() {
   if (should_collapse_) {
     return;
   }
-  is_animating_ = false;
-  is_fully_collapsed_ = false;
-  AnnounceAlert(message_);
-  observers_.Notify(&Observer::OnExpandAnimationEnded);
+  FinishAnimation(AnimationState::kExpanded);
 }
 
 void WebUIPermissionChip::OnCollapseAnimationEnded() {
@@ -309,9 +330,7 @@ void WebUIPermissionChip::OnCollapseAnimationEnded() {
   if (!should_collapse_) {
     return;
   }
-  is_animating_ = false;
-  is_fully_collapsed_ = true;
-  observers_.Notify(&Observer::OnCollapseAnimationEnded);
+  FinishAnimation(AnimationState::kCollapsed);
 }
 
 void WebUIPermissionChip::OnMousePressed() {

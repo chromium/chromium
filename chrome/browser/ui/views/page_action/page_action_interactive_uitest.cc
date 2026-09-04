@@ -22,10 +22,12 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/page_action/anchored_message_view.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -249,6 +251,17 @@ class PageActionUiTestBase {
 
     // Immediately unhide the page actions.
     page_action_controller()->SetShouldHidePageActions(false);
+    if (features::IsWebUILocationBarEnabled()) {
+      if (auto* browser_view =
+              BrowserView::GetBrowserViewForBrowser(GetBrowser())) {
+        if (auto* webui_view = browser_view->toolbar_button_provider()
+                                   ->GetWebUIToolbarViewForTesting()) {
+          if (auto* loc_bar = webui_view->GetLocationBar()) {
+            loc_bar->page_action_control().SetShouldHidePageActions(false);
+          }
+        }
+      }
+    }
 
     EnsureLayout();
   }

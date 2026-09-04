@@ -13,6 +13,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
@@ -300,6 +301,14 @@ class IntentChipButtonBrowserUiTest
         {{apps::PickerEntryType::kWeb, ui::ImageModel(), "app_id",
           "Test app"}});
     run_loop.Run();
+    if (features::IsWebUILocationBarEnabled()) {
+      auto intent_chip = GetIntentChip(browser());
+      EXPECT_TRUE(base::test::RunUntil([&]() {
+        return intent_chip.GetVisible() &&
+               !IsIntentChipFullyCollapsed(browser()) &&
+               intent_chip.GetElement() != nullptr;
+      }));
+    }
   }
 
   bool VerifyUi() override {

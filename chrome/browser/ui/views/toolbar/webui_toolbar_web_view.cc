@@ -106,6 +106,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
+#include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -208,6 +209,7 @@ class WebUIToolbarInternalWebView : public views::WebView {
                               WebUIToolbarWebView* webui_toolbar_web_view)
       : views::WebView(browser_context),
         webui_toolbar_web_view_(webui_toolbar_web_view) {
+    SetBackground(nullptr);
 #if BUILDFLAG(IS_MAC)
     forwarder_ = std::make_unique<WebUIToolbarEventForwarder>(
         *webui_toolbar_web_view, *this);
@@ -459,6 +461,8 @@ WebUIToolbarWebView::WebUIToolbarWebView(
 
   content::WebContents* web_contents = web_view->GetWebContents();
   if (web_contents) {
+    views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
+        web_contents, SK_ColorTRANSPARENT);
     WebUIToolbarUIDependencyProviderUserData::CreateForWebContents(web_contents,
                                                                    this);
     scoped_accessibility_mode_ =
