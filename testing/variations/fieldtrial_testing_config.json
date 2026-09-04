@@ -18729,28 +18729,6 @@
             ]
         }
     ],
-    "SuppressesNetworkActivitiesOnSlowNetwork": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "SuppressesAll",
-                    "params": {
-                        "slow_network_threshold": "208ms"
-                    },
-                    "enable_features": [
-                        "SuppressesLoadingPredictorOnSlowNetwork"
-                    ]
-                }
-            ]
-        }
-    ],
     "SuspiciousSiteWarningSurvey": [
         {
             "platforms": [

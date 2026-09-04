@@ -1535,57 +1535,6 @@ INSTANTIATE_TEST_SUITE_P(Flags,
                          ::testing::Bool(),
                          ::testing::PrintToStringParamName());
 
-class SuppressesLoadingPredictorOnSlowNetworkBrowserTest
-    : public LoadingPredictorBrowserTest {
- public:
-  SuppressesLoadingPredictorOnSlowNetworkBrowserTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kSuppressesLoadingPredictorOnSlowNetwork,
-          {{features::kSuppressesLoadingPredictorOnSlowNetworkThreshold.name,
-            "500ms"}}}},
-        {});
-  }
-
-  network::NetworkQualityTracker& GetNetworkQualityTracker() const {
-    return *g_browser_process->network_quality_tracker();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Tests that kSuppressesLoadingPredictorOnSlowNetwork feature suppresses
-// LoadingPredictor on slow network.
-IN_PROC_BROWSER_TEST_F(SuppressesLoadingPredictorOnSlowNetworkBrowserTest,
-                       SuppressesOnSlowNetwork) {
-  GURL url = embedded_test_server()->GetURL("/nocontent");
-  base::TimeDelta http_rtt = GetNetworkQualityTracker().GetHttpRTT();
-  int32_t downstream_throughput_kbps =
-      GetNetworkQualityTracker().GetDownstreamThroughputKbps();
-
-  {
-    // LoadingPredictor will be suppressed on slow networks.
-    GetNetworkQualityTracker().ReportRTTsAndThroughputForTesting(
-        base::Milliseconds(501), downstream_throughput_kbps);
-    auto observer = NavigateToURLAsync(url);
-    ASSERT_TRUE(observer->WaitForNavigationFinished());
-    EXPECT_EQ(0u, loading_predictor()->GetTotalHintsActivatedForTesting());
-  }
-
-  {
-    // LoadingPredictor will not be suppressed on fast networks.
-    GetNetworkQualityTracker().ReportRTTsAndThroughputForTesting(
-        base::Milliseconds(500), downstream_throughput_kbps);
-    auto observer = NavigateToURLAsync(url);
-    ASSERT_TRUE(observer->WaitForNavigationFinished());
-    EXPECT_EQ(1u, loading_predictor()->GetTotalHintsActivatedForTesting());
-  }
-
-  // Reset to the original values.
-  GetNetworkQualityTracker().ReportRTTsAndThroughputForTesting(
-      http_rtt, downstream_throughput_kbps);
-}
-
 enum class NetworkIsolationKeyMode {
   kDisabled,
   kEnabled,

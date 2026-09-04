@@ -34,15 +34,6 @@ namespace base {
 class UnguessableToken;
 }  // namespace base
 
-namespace features {
-
-BASE_DECLARE_FEATURE(kSuppressesLoadingPredictorOnSlowNetwork);
-
-extern const base::FeatureParam<base::TimeDelta>
-    kSuppressesLoadingPredictorOnSlowNetworkThreshold;
-
-}  // namespace features
-
 namespace predictors {
 
 class ResourcePrefetchPredictor;

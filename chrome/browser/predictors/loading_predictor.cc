@@ -7,12 +7,10 @@
 #include <algorithm>
 #include <vector>
 
-#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h"
 #include "chrome/browser/predictors/lcp_critical_path_predictor/prewarm_http_disk_cache_manager.h"
 #include "chrome/browser/predictors/loading_data_collector.h"
@@ -26,7 +24,6 @@
 #include "content/public/common/origin_util.h"
 #include "net/base/network_anonymization_key.h"
 #include "services/network/public/cpp/constants.h"
-#include "services/network/public/cpp/network_quality_tracker.h"
 #include "services/network/public/cpp/request_destination.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -36,19 +33,6 @@
 #include "base/android/radio_utils.h"
 #include "base/power_monitor/power_monitor.h"
 #endif  // BUILDFLAG(IS_ANDROID)
-
-namespace features {
-
-// If enabled, suppresses LoadingPredictor (https://crbug.com/350519234)
-BASE_FEATURE(kSuppressesLoadingPredictorOnSlowNetwork,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<base::TimeDelta>
-    kSuppressesLoadingPredictorOnSlowNetworkThreshold{
-        &kSuppressesLoadingPredictorOnSlowNetwork, "slow_network_threshold",
-        base::Milliseconds(208)};
-
-}  // namespace features
 
 namespace predictors {
 
@@ -157,24 +141,6 @@ bool LoadingPredictor::PrepareForPageLoad(
   CHECK(!shutdown_);
 
   TRACE_EVENT("loading", "LoadingPredictor::PrepareForPageLoad");
-
-  // Suppresses network activities.
-  static const bool kSuppressesLoadingPredictorOnSlowNetworkIsEnabled =
-      base::FeatureList::IsEnabled(
-          features::kSuppressesLoadingPredictorOnSlowNetwork);
-  static const base::TimeDelta kSlowNetworkThreshold =
-      features::kSuppressesLoadingPredictorOnSlowNetworkThreshold.Get();
-  if (kSuppressesLoadingPredictorOnSlowNetworkIsEnabled && g_browser_process &&
-      g_browser_process->network_quality_tracker()) {
-    const bool is_slow_network =
-        g_browser_process->network_quality_tracker()->GetHttpRTT() >
-        kSlowNetworkThreshold;
-    base::UmaHistogramBoolean("LoadingPredictor.IsSlowNetwork",
-                              is_slow_network);
-    if (is_slow_network) {
-      return true;
-    }
-  }
 
   // Prewarm disk cache before preconnecting network.
   MaybePrewarmResources(initiator_origin, url);
