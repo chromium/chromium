@@ -519,6 +519,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Signin.AccountFetcher.AccountInfoFetchSuccess"
+    enum="BooleanSuccess" expires_after="2027-02-19">
+  <owner>bsazonov@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records whether fetching account information (except avatar) for one account
+    in AccountFetcherService was successful. Recorded when user info fetch
+    completes.
+  </summary>
+</histogram>
+
 <histogram name="Signin.AccountFetcher.AccountUserInfoFetchTime" units="ms"
     expires_after="2027-02-19">
   <owner>triploblastic@chromium.org</owner>

@@ -606,6 +606,8 @@ TEST_F(AccountTrackerServiceTest, TokenAvailable_UserInfo_ImageSuccess) {
             AccountKeyToPictureURLWithSize(kAccountKeyAlpha));
   histogram_tester.ExpectTotalCount(
       "Signin.AccountFetcher.AccountUserInfoFetchTime", 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.AccountFetcher.AccountInfoFetchSuccess", true, 1);
 }
 
 TEST_F(AccountTrackerServiceTest, TokenAvailable_UserInfo_ImageFailure) {
@@ -630,6 +632,8 @@ TEST_F(AccountTrackerServiceTest, TokenAvailable_UserInfo_ImageFailure) {
   EXPECT_FALSE(account_info.GetLastDownloadedAvatarUrlWithSize().has_value());
   histogram_tester.ExpectTotalCount(
       "Signin.AccountFetcher.AccountUserInfoFetchTime", 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.AccountFetcher.AccountInfoFetchSuccess", true, 1);
 }
 
 TEST_F(AccountTrackerServiceTest, TokenAvailable_UserInfo_Revoked) {
@@ -656,7 +660,9 @@ TEST_F(AccountTrackerServiceTest, TokenAvailable_UserInfoFailed) {
   EXPECT_TRUE(account_fetcher()->IsAllUserInfoFetched());
   EXPECT_TRUE(CheckAccountTrackerEvents({}));
   histogram_tester.ExpectTotalCount(
-      "Signin.AccountFetcher.AccountInfoFetchTime", 0);
+      "Signin.AccountFetcher.AccountUserInfoFetchTime", 0);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.AccountFetcher.AccountInfoFetchSuccess", false, 1);
 }
 
 TEST_F(AccountTrackerServiceTest, TokenAvailable_AccountCapabilitiesSuccess) {

@@ -283,6 +283,8 @@ void AccountFetcherService::RefreshAccountInfo(const CoreAccountId& account_id,
 void AccountFetcherService::OnUserInfoFetchCompleted(
     const CoreAccountId& account_id,
     std::optional<AccountInfo> fetched_account_info) {
+  base::UmaHistogramBoolean("Signin.AccountFetcher.AccountInfoFetchSuccess",
+                            fetched_account_info.has_value());
   if (!fetched_account_info) {
     LOG(WARNING) << "Failed to get UserInfo for " << account_id;
     user_info_fetch_start_times_.erase(account_id);
