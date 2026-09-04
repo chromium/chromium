@@ -11,7 +11,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/memory/raw_ref.h"
+#include "base/memory/stack_allocated.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
@@ -88,11 +88,14 @@ template <typename T>
 // Helper class that describes the desired actions for the runtime feature
 // depending on a check for chromium base::Feature.
 struct RuntimeFeatureToChromiumFeatureMap {
+  STACK_ALLOCATED();
+
+ public:
   // This can be either an enabler function defined in web_runtime_features.cc
   // or the string name of the feature in runtime_enabled_features.json5.
   T feature_enabler;
   // The chromium base::Feature to check.
-  const raw_ref<const base::Feature> chromium_feature;
+  const base::Feature& chromium_feature;
   const RuntimeFeatureEnableOptions option = kDefault;
 };
 
@@ -130,135 +133,113 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
   // enabler function defined. Otherwise add the entry with string name
   // in the next list.
   const RuntimeFeatureToChromiumFeatureMap<void (*)(bool)>
-      blinkFeatureToBaseFeatureMapping[] = {
+      blink_feature_to_base_feature_mapping[] = {
           {wf::EnableAccessibilityUseAXPositionForDocumentMarkers,
-           raw_ref(features::kUseAXPositionForDocumentMarkers)},
-          {wf::EnableBackgroundFetch, raw_ref(features::kBackgroundFetch)},
+           features::kUseAXPositionForDocumentMarkers},
+          {wf::EnableBackgroundFetch, features::kBackgroundFetch},
           {wf::EnableBoundaryEventDispatchTracksNodeRemoval,
-           raw_ref(blink::features::kBoundaryEventDispatchTracksNodeRemoval)},
+           blink::features::kBoundaryEventDispatchTracksNodeRemoval},
           {wf::EnableCompositeBGColorAnimation,
-           raw_ref(features::kCompositeBGColorAnimation)},
-          {wf::EnableDigitalGoods, raw_ref(features::kDigitalGoodsApi),
+           features::kCompositeBGColorAnimation},
+          {wf::EnableDigitalGoods, features::kDigitalGoodsApi,
            kSetOnlyIfOverridden},
           {wf::EnableDocumentPolicyNegotiation,
-           raw_ref(features::kDocumentPolicyNegotiation)},
+           features::kDocumentPolicyNegotiation},
           {wf::EnableEmailVerificationProtocol,
-           raw_ref(features::kEmailVerificationProtocol), kSetOnlyIfOverridden},
-          {wf::EnableEyeDropperAPI, raw_ref(features::kEyeDropper),
+           features::kEmailVerificationProtocol, kSetOnlyIfOverridden},
+          {wf::EnableEyeDropperAPI, features::kEyeDropper,
            kSetOnlyIfOverridden},
-          {wf::EnableFedCm, raw_ref(features::kFedCm), kSetOnlyIfOverridden},
+          {wf::EnableFedCm, features::kFedCm, kSetOnlyIfOverridden},
           {wf::EnableFedCmActiveModeMultipleIdentityProviders,
-           raw_ref(features::kFedCmActiveModeMultipleIdentityProviders),
+           features::kFedCmActiveModeMultipleIdentityProviders, kDefault},
+          {wf::EnableFedCmAutofill, features::kFedCmAutofill, kDefault},
+          {wf::EnableFedCmDelegation, features::kFedCmDelegation, kDefault},
+          {wf::EnableFedCmIdentityHandler, features::kFedCmIdentityHandler,
            kDefault},
-          {wf::EnableFedCmAutofill, raw_ref(features::kFedCmAutofill),
+          {wf::EnableFedCmIdPRegistration, features::kFedCmIdPRegistration,
            kDefault},
-          {wf::EnableFedCmDelegation, raw_ref(features::kFedCmDelegation),
+          {wf::EnableFedCmLightweightMode, features::kFedCmLightweightMode,
            kDefault},
-          {wf::EnableFedCmIdentityHandler,
-           raw_ref(features::kFedCmIdentityHandler), kDefault},
-          {wf::EnableFedCmIdPRegistration,
-           raw_ref(features::kFedCmIdPRegistration), kDefault},
-          {wf::EnableFedCmLightweightMode,
-           raw_ref(features::kFedCmLightweightMode), kDefault},
           // We want to enable interception when either of these two flags is
           // enabled because interception can happen with either flag.
           {wf::EnableFedCmNavigationInterception,
-           raw_ref(features::kFedCmNavigationInterception), kDefault},
+           features::kFedCmNavigationInterception, kDefault},
           {wf::EnableFedCmNavigationInterception,
-           raw_ref(features::kFedCmEmbedderInitiatedLogin), kDefault},
-          {wf::EnableGamepadMultitouch,
-           raw_ref(features::kEnableGamepadMultitouch)},
+           features::kFedCmEmbedderInitiatedLogin, kDefault},
+          {wf::EnableGamepadMultitouch, features::kEnableGamepadMultitouch},
           {wf::EnableGamepadRawInputChangeEvent,
-           raw_ref(features::kGamepadRawInputChangeEvent),
+           features::kGamepadRawInputChangeEvent, kSetOnlyIfOverridden},
+          {wf::EnableFencedFrames, features::kPrivacySandboxAdsAPIsOverride,
            kSetOnlyIfOverridden},
-          {wf::EnableFencedFrames,
-           raw_ref(features::kPrivacySandboxAdsAPIsOverride),
-           kSetOnlyIfOverridden},
-          {wf::EnableFencedFrames,
-           raw_ref(features::kPrivacySandboxAdsAPIsM1Override)},
-          {wf::EnableForcedColors, raw_ref(features::kForcedColors)},
+          {wf::EnableFencedFrames, features::kPrivacySandboxAdsAPIsM1Override},
+          {wf::EnableForcedColors, features::kForcedColors},
           {wf::EnableFractionalScrollOffsets,
-           raw_ref(features::kFractionalScrollOffsets)},
-          {wf::EnableSensorExtraClasses,
-           raw_ref(features::kGenericSensorExtraClasses)},
+           features::kFractionalScrollOffsets},
+          {wf::EnableSensorExtraClasses, features::kGenericSensorExtraClasses},
 #if BUILDFLAG(IS_ANDROID)
-          {wf::EnableGetDisplayMedia,
-           raw_ref(features::kUserMediaScreenCapturing)},
-          {wf::EnableRegionCapture,
-           raw_ref(features::kUserMediaScreenCapturing)},
-          {wf::EnableElementCapture,
-           raw_ref(features::kUserMediaScreenCapturing)},
+          {wf::EnableGetDisplayMedia, features::kUserMediaScreenCapturing},
+          {wf::EnableRegionCapture, features::kUserMediaScreenCapturing},
+          {wf::EnableElementCapture, features::kUserMediaScreenCapturing},
 
 #endif
-          {wf::EnableInstalledApp, raw_ref(features::kInstalledApp)},
+          {wf::EnableInstalledApp, features::kInstalledApp},
           {wf::EnableIntegrityPolicyScript,
-           raw_ref(network::features::kIntegrityPolicyScript)},
+           network::features::kIntegrityPolicyScript},
 #if BUILDFLAG(IS_CHROMEOS)
-          {wf::EnableLockedMode, raw_ref(blink::features::kLockedMode)},
+          {wf::EnableLockedMode, blink::features::kLockedMode},
 #endif
           {wf::EnableMediaEngagementBypassAutoplayPolicies,
-           raw_ref(media::kMediaEngagementBypassAutoplayPolicies)},
-          {wf::EnablePaymentApp, raw_ref(features::kServiceWorkerPaymentApps)},
-          {wf::EnablePeriodicBackgroundSync,
-           raw_ref(features::kPeriodicBackgroundSync)},
+           media::kMediaEngagementBypassAutoplayPolicies},
+          {wf::EnablePaymentApp, features::kServiceWorkerPaymentApps},
+          {wf::EnablePeriodicBackgroundSync, features::kPeriodicBackgroundSync},
           {wf::EnableSecurePaymentConfirmation,
-           raw_ref(features::kSecurePaymentConfirmation)},
+           features::kSecurePaymentConfirmation},
           {wf::EnableSecurePaymentConfirmationDebug,
-           raw_ref(features::kSecurePaymentConfirmationDebug)},
+           features::kSecurePaymentConfirmationDebug},
           {wf::EnableSendBeaconThrowForBlobWithNonSimpleType,
-           raw_ref(features::kSendBeaconThrowForBlobWithNonSimpleType)},
-          {wf::EnableSharedArrayBuffer, raw_ref(features::kSharedArrayBuffer)},
+           features::kSendBeaconThrowForBlobWithNonSimpleType},
+          {wf::EnableSharedArrayBuffer, features::kSharedArrayBuffer},
 #if BUILDFLAG(IS_ANDROID)
-          {wf::EnableSmartZoom, raw_ref(features::kSmartZoom)},
+          {wf::EnableSmartZoom, features::kSmartZoom},
 #endif
-          {wf::EnableTouchDragAndDrop, raw_ref(features::kTouchDragAndDrop)},
+          {wf::EnableTouchDragAndDrop, features::kTouchDragAndDrop},
           {wf::EnableTouchDragAndContextMenu,
-           raw_ref(features::kTouchDragAndContextMenu)},
-          {wf::EnableWebAuthenticationAmbient,
-           raw_ref(device::kWebAuthnAmbientSignin)},
+           features::kTouchDragAndContextMenu},
+          {wf::EnableWebAuthenticationAmbient, device::kWebAuthnAmbientSignin},
           {wf::EnableWebAuthenticationCrossDeviceFallbackUrl,
-           raw_ref(device::kWebAuthnCrossDeviceFallbackUrl)},
-          {wf::EnableWebBluetooth, raw_ref(features::kWebBluetooth),
+           device::kWebAuthnCrossDeviceFallbackUrl},
+          {wf::EnableWebBluetooth, features::kWebBluetooth,
            kSetOnlyIfOverridden},
           {wf::EnableWebBluetoothGetDevices,
-           raw_ref(features::kWebBluetoothNewPermissionsBackend),
-           kSetOnlyIfOverridden},
+           features::kWebBluetoothNewPermissionsBackend, kSetOnlyIfOverridden},
           {wf::EnableWebBluetoothWatchAdvertisements,
-           raw_ref(features::kWebBluetoothNewPermissionsBackend),
-           kSetOnlyIfOverridden},
+           features::kWebBluetoothNewPermissionsBackend, kSetOnlyIfOverridden},
           {wf::EnableWebIdentityDigitalCredentials,
-           raw_ref(features::kWebIdentityDigitalCredentials), kDefault},
+           features::kWebIdentityDigitalCredentials, kDefault},
           {wf::EnableWebIdentityDigitalCredentialsCreation,
-           raw_ref(features::kWebIdentityDigitalCredentialsCreation),
+           features::kWebIdentityDigitalCredentialsCreation,
            kSetOnlyIfOverridden},
-          {wf::EnableWebOTP, raw_ref(features::kWebOTP), kSetOnlyIfOverridden},
+          {wf::EnableWebOTP, features::kWebOTP, kSetOnlyIfOverridden},
           {wf::EnableWebOTPAssertionFeaturePolicy,
-           raw_ref(features::kWebOTPAssertionFeaturePolicy),
-           kSetOnlyIfOverridden},
-          {wf::EnableWebUSB, raw_ref(features::kWebUsb)},
-          {wf::EnableWebXR, raw_ref(features::kWebXr)},
+           features::kWebOTPAssertionFeaturePolicy, kSetOnlyIfOverridden},
+          {wf::EnableWebUSB, features::kWebUsb},
+          {wf::EnableWebXR, features::kWebXr},
 #if BUILDFLAG(ENABLE_VR)
-          {wf::EnableWebXRFrontFacing,
-           raw_ref(device::features::kWebXRIncubations)},
-          {wf::EnableWebXRFrameRate,
-           raw_ref(device::features::kWebXRIncubations)},
-          {wf::EnableWebXRGPUBinding,
-           raw_ref(device::features::kWebXRWebGPUBinding)},
-          {wf::EnableWebXRImageTracking,
-           raw_ref(device::features::kWebXRIncubations)},
-          {wf::EnableWebXRLayers, raw_ref(device::features::kWebXRLayers)},
+          {wf::EnableWebXRFrontFacing, device::features::kWebXRIncubations},
+          {wf::EnableWebXRFrameRate, device::features::kWebXRIncubations},
+          {wf::EnableWebXRGPUBinding, device::features::kWebXRWebGPUBinding},
+          {wf::EnableWebXRImageTracking, device::features::kWebXRIncubations},
+          {wf::EnableWebXRLayers, device::features::kWebXRLayers},
           {wf::EnableWebXRPlaneDetection,
-           raw_ref(device::features::kWebXRPlaneDetection)},
-          {wf::EnableWebXRPoseMotionData,
-           raw_ref(device::features::kWebXRIncubations)},
-          {wf::EnableWebXRSpecParity,
-           raw_ref(device::features::kWebXRIncubations)},
+           device::features::kWebXRPlaneDetection},
+          {wf::EnableWebXRPoseMotionData, device::features::kWebXRIncubations},
+          {wf::EnableWebXRSpecParity, device::features::kWebXRIncubations},
 #endif
-          {wf::EnableXSLT, raw_ref(blink::features::kXSLT)},
+          {wf::EnableXSLT, blink::features::kXSLT},
       };
-  for (const auto& mapping : blinkFeatureToBaseFeatureMapping) {
+  for (const auto& mapping : blink_feature_to_base_feature_mapping) {
     SetRuntimeFeatureFromChromiumFeature(
-        *mapping.chromium_feature, mapping.option, mapping.feature_enabler);
+        mapping.chromium_feature, mapping.option, mapping.feature_enabler);
   }
 
   if (features::IsPushSubscriptionChangeEventEnabled()) {
@@ -269,77 +250,64 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
   // enabler function and using feature string name with
   // EnableFeatureFromString.
   const RuntimeFeatureToChromiumFeatureMap<const char*>
-      runtimeFeatureNameToChromiumFeatureMapping[] = {
+      runtime_feature_name_to_chromium_feature_mapping[] = {
           {"AllowContentInitiatedDataUrlNavigations",
-           raw_ref(features::kAllowContentInitiatedDataUrlNavigations)},
+           features::kAllowContentInitiatedDataUrlNavigations},
           {"AllowSameSiteNoneCookiesInSandbox",
-           raw_ref(net::features::kAllowSameSiteNoneCookiesInSandbox)},
-          {"AllowURNsInIframes", raw_ref(blink::features::kAllowURNsInIframes)},
-          {"AllowURNsInIframes",
-           raw_ref(features::kPrivacySandboxAdsAPIsOverride),
+           net::features::kAllowSameSiteNoneCookiesInSandbox},
+          {"AllowURNsInIframes", blink::features::kAllowURNsInIframes},
+          {"AllowURNsInIframes", features::kPrivacySandboxAdsAPIsOverride,
            kSetOnlyIfOverridden},
-          {"AllowURNsInIframes",
-           raw_ref(features::kPrivacySandboxAdsAPIsM1Override)},
+          {"AllowURNsInIframes", features::kPrivacySandboxAdsAPIsM1Override},
           {"AttributionReporting",
-           raw_ref(attribution_reporting::features::kConversionMeasurement)},
+           attribution_reporting::features::kConversionMeasurement},
           {"ApproximateGeolocationPermission",
-           raw_ref(
-               content_settings::features::kApproximateGeolocationPermission)},
+           content_settings::features::kApproximateGeolocationPermission},
           {"AndroidDownloadableFontsMatching",
-           raw_ref(features::kAndroidDownloadableFontsMatching)},
+           features::kAndroidDownloadableFontsMatching},
 #if BUILDFLAG(IS_ANDROID)
-          {"CCTNewRFMPushBehavior",
-           raw_ref(blink::features::kCCTNewRFMPushBehavior)},
+          {"CCTNewRFMPushBehavior", blink::features::kCCTNewRFMPushBehavior},
 #endif
           {"CompressionDictionaryTransport",
-           raw_ref(network::features::kCompressionDictionaryTransport)},
-          {"CookieStoreAPIMaxAge",
-           raw_ref(blink::features::kCookieStoreAPIMaxAge)},
+           network::features::kCompressionDictionaryTransport},
+          {"CookieStoreAPIMaxAge", blink::features::kCookieStoreAPIMaxAge},
           {"DocumentPolicyIncludeJSCallStacksInCrashReports",
-           raw_ref(blink::features::
-                       kDocumentPolicyIncludeJSCallStacksInCrashReports),
+           blink::features::kDocumentPolicyIncludeJSCallStacksInCrashReports,
            kSetOnlyIfOverridden},
           {"FencedFramesLocalUnpartitionedDataAccess",
-           raw_ref(blink::features::kFencedFramesLocalUnpartitionedDataAccess)},
+           blink::features::kFencedFramesLocalUnpartitionedDataAccess},
 
 #if BUILDFLAG(IS_WIN)
           {"FontDataServiceForCSSLocalFonts",
-           raw_ref(features::kFontDataServiceForCSSLocalFonts)},
+           features::kFontDataServiceForCSSLocalFonts},
 #endif
           {"HstsTopLevelNavigationsOnly",
-           raw_ref(net::features::kHstsTopLevelNavigationsOnly)},
-          {"KeyboardAccessibleTooltip",
-           raw_ref(features::kKeyboardAccessibleTooltip)},
+           net::features::kHstsTopLevelNavigationsOnly},
+          {"KeyboardAccessibleTooltip", features::kKeyboardAccessibleTooltip},
           {"MachineLearningNeuralNetwork",
-           raw_ref(webnn::mojom::features::kWebMachineLearningNeuralNetwork),
+           webnn::mojom::features::kWebMachineLearningNeuralNetwork,
            kSetOnlyIfOverridden},
-          {"OriginIsolationHeader", raw_ref(features::kOriginIsolationHeader)},
-          {"ReduceAcceptLanguage",
-           raw_ref(network::features::kReduceAcceptLanguage)},
+          {"OriginIsolationHeader", features::kOriginIsolationHeader},
+          {"ReduceAcceptLanguage", network::features::kReduceAcceptLanguage},
           {"RelatedWebsitePartitionAPI",
-           raw_ref(net::features::kRelatedWebsitePartitionAPI)},
-          {"SerialPortConnected", raw_ref(features::kSerialPortConnected)},
+           net::features::kRelatedWebsitePartitionAPI},
+          {"SerialPortConnected", features::kSerialPortConnected},
           {"WebSerialWorldIsolatedCache",
-           raw_ref(features::kWebSerialWorldIsolatedCache)},
-          {"TopicsAPI", raw_ref(network::features::kBrowsingTopics)},
-          {"TouchTextEditingRedesign",
-           raw_ref(features::kTouchTextEditingRedesign)},
-          {"TrustedTypesFromLiteral",
-           raw_ref(features::kTrustedTypesFromLiteral)},
-          {"MediaStreamTrackTransfer",
-           raw_ref(features::kMediaStreamTrackTransfer)},
+           features::kWebSerialWorldIsolatedCache},
+          {"TopicsAPI", network::features::kBrowsingTopics},
+          {"TouchTextEditingRedesign", features::kTouchTextEditingRedesign},
+          {"TrustedTypesFromLiteral", features::kTrustedTypesFromLiteral},
+          {"MediaStreamTrackTransfer", features::kMediaStreamTrackTransfer},
           {"ExperimentalMachineLearningNeuralNetwork",
-           raw_ref(webnn::mojom::features::
-                       kExperimentalWebMachineLearningNeuralNetwork),
+           webnn::mojom::features::kExperimentalWebMachineLearningNeuralNetwork,
            kSetOnlyIfOverridden},
           {"RequestStorageAccessFor",
-           raw_ref(content_settings::features::
-                       kStorageAccessAPIRelatedWebsiteSets)},
+           content_settings::features::kStorageAccessAPIRelatedWebsiteSets},
           {"LocalNetworkAccessPermissionPolicy",
-           raw_ref(network::features::kLocalNetworkAccessChecks)}};
-  for (const auto& mapping : runtimeFeatureNameToChromiumFeatureMapping) {
+           network::features::kLocalNetworkAccessChecks}};
+  for (const auto& mapping : runtime_feature_name_to_chromium_feature_mapping) {
     SetRuntimeFeatureFromChromiumFeature(
-        *mapping.chromium_feature, mapping.option, [&mapping](bool enabled) {
+        mapping.chromium_feature, mapping.option, [&mapping](bool enabled) {
           wf::EnableFeatureFromString(mapping.feature_enabler, enabled);
         });
   }
@@ -367,7 +335,7 @@ void SetRuntimeFeaturesFromCommandLine(const base::CommandLine& command_line) {
   // using base::Feature instead.
   // https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/configuration.md#switches
   using wrf = WebRuntimeFeatures;
-  const SwitchToFeatureMap switchToFeatureMapping[] = {
+  const SwitchToFeatureMap switch_to_feature_mapping[] = {
       // Stable Features
       {wrf::EnablePresentation, switches::kDisablePresentationAPI, false},
       {wrf::EnableRemotePlayback, switches::kDisableRemotePlaybackAPI, false},
@@ -411,7 +379,7 @@ void SetRuntimeFeaturesFromCommandLine(const base::CommandLine& command_line) {
 #endif
   };
 
-  for (const auto& mapping : switchToFeatureMapping) {
+  for (const auto& mapping : switch_to_feature_mapping) {
     if (command_line.HasSwitch(mapping.switch_name)) {
       mapping.feature_enabler(mapping.target_enabled_state);
     }
