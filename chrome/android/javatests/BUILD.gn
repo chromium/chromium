@@ -648,6 +648,7 @@ android_library(
     "src/org/chromium/chrome/browser/browserservices/TrustedWebActivityOrientationTest.java",
     "src/org/chromium/chrome/browser/browserservices/TrustedWebActivityShareTargetTest.java",
     "src/org/chromium/chrome/browser/browserservices/TrustedWebActivityTest.java",
+    "src/org/chromium/chrome/browser/browserservices/TwaValidatorTest.java",
     "src/org/chromium/chrome/browser/browserservices/digitalgoods/DigitalGoodsTest.java",
     "src/org/chromium/chrome/browser/browserservices/digitalgoods/FakeDigitalGoods.java",
     "src/org/chromium/chrome/browser/browserservices/permissiondelegation/TrustedWebActivityLocationDelegationTest.java",

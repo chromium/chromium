@@ -1139,6 +1139,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TrustedWebActivity.QueryFirstTwaPackageTime" units="ms"
+    expires_after="2027-06-13">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>peconn@chromium.org</owner>
+  <owner>
+    src/chrome/android/java/src/org/chromium/chrome/browser/browserservices/OWNERS
+  </owner>
+  <summary>
+    Records the time taken to query the PackageManager for the first installed
+    TWA package that can handle a given URL.
+
+    Recorded on page navigations when checking if an installed web app exists
+    for the current URL to display the 'Open in app' button in the toolbar /
+    omnibar, as well as when determining app installation state in the app menu.
+  </summary>
+</histogram>
+
 <histogram
     name="TrustedWebActivity.Startup.TimeToFirstCommitNavigation2.{suffix}"
     units="ms" expires_after="2026-09-30">
