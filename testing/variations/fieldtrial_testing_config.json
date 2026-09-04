@@ -17794,6 +17794,21 @@
             ]
         }
     ],
+    "SettingsInTab": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SettingsInTab"
+                    ]
+                }
+            ]
+        }
+    ],
     "SharedHighlightingIphClank": [
         {
             "platforms": [
