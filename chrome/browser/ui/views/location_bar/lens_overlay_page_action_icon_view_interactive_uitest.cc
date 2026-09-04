@@ -11,13 +11,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
-#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
-#include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -26,7 +25,6 @@
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "ui/events/test/test_event.h"
 #include "ui/views/test/widget_test.h"
 #include "url/url_constants.h"
 
@@ -60,20 +58,19 @@ class LensOverlayPageActionIconViewTestBase : public InProcessBrowserTest {
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
-  LocationBarView* location_bar() {
-    return BrowserElementsViews::From(browser())->GetViewAs<LocationBarView>(
-        kLocationBarElementId);
+  BrowserView* GetBrowserView() {
+    return BrowserView::GetBrowserViewForBrowser(browser());
   }
 
-  page_actions::PageActionView* lens_overlay_page_action_view() {
-    return static_cast<page_actions::PageActionView*>(
-        views::test::AnyViewMatchingPredicate(
-            location_bar(), [=](const views::View* candidate) -> bool {
-              return IsViewClass<page_actions::PageActionView>(candidate) &&
-                     static_cast<const page_actions::PageActionView*>(candidate)
-                             ->GetActionId() ==
-                         kActionSidePanelShowLensOverlayResults;
-            }));
+  LocationBar* location_bar() { return GetBrowserView()->GetLocationBar(); }
+
+  page_actions::PageActionTestAccessor PageActionAccessor() {
+    return page_actions::PageActionTestAccessor(
+        browser(), kActionSidePanelShowLensOverlayResults);
+  }
+
+  void CheckVisibility(bool expected) {
+    EXPECT_EQ(expected, PageActionAccessor().GetVisible());
   }
 
   page_actions::PageActionController* page_action_controller() {
@@ -100,16 +97,17 @@ class LensOverlayPageActionIconViewTest
         {lens::features::kLensOverlayKeyboardSelection});
   }
 
-  // Returns the page action view that should be enabled for the current
-  // feature flag state.
-  views::LabelButton* PageActionView() {
-    return lens_overlay_page_action_view();
-  }
-
   void FocusLocationBarAndWaitForUpdate() {
     location_bar()->FocusLocation(/*is_user_initiated=*/false,
                                   /*clear_focus_if_failed=*/false);
-    EXPECT_TRUE(PageActionView()->GetFocusManager()->GetFocusedView());
+    EXPECT_TRUE(base::test::RunUntil(
+        [&]() { return location_bar()->IsFocusWithin(); }));
+    EXPECT_TRUE(GetBrowserView()->GetFocusManager()->GetFocusedView());
+  }
+
+  void WaitForNoLocationBarFocus() {
+    EXPECT_TRUE(base::test::RunUntil(
+        [&]() { return location_bar()->IsFocusWithin() == false; }));
   }
 };
 
@@ -131,15 +129,15 @@ IN_PROC_BROWSER_TEST_F(LensOverlayPageActionIconViewTest,
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
-  views::View* page_action_view = PageActionView();
-  views::FocusManager* focus_manager = page_action_view->GetFocusManager();
+  views::FocusManager* focus_manager = GetBrowserView()->GetFocusManager();
   focus_manager->ClearFocus();
   EXPECT_FALSE(focus_manager->GetFocusedView());
-  EXPECT_FALSE(page_action_view->GetVisible());
+  WaitForNoLocationBarFocus();
+  CheckVisibility(false);
 
   // Focus in the location bar should show the icon.
   FocusLocationBarAndWaitForUpdate();
-  EXPECT_TRUE(page_action_view->GetVisible());
+  CheckVisibility(true);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayPageActionIconViewTest,
@@ -156,21 +154,20 @@ IN_PROC_BROWSER_TEST_F(LensOverlayPageActionIconViewTest,
         ->CompletedFirstVisuallyNonEmptyPaint();
   }));
 
-  views::View* page_action_view = PageActionView();
-  views::FocusManager* focus_manager = page_action_view->GetFocusManager();
+  views::FocusManager* focus_manager = GetBrowserView()->GetFocusManager();
   focus_manager->ClearFocus();
   EXPECT_FALSE(focus_manager->GetFocusedView());
-  EXPECT_FALSE(page_action_view->GetVisible());
+  WaitForNoLocationBarFocus();
+  CheckVisibility(false);
 
   // Focus in the location bar should show the icon.
   FocusLocationBarAndWaitForUpdate();
-  EXPECT_TRUE(page_action_view->GetVisible());
+  CheckVisibility(true);
 
   // Executing the lens overlay icon view with keyboard source should open a
   // new tab.
   ui_test_utils::TabAddedWaiter tab_add(browser());
-  lens_overlay_page_action_view()->NotifyClick(
-      ui::test::TestEvent(ui::EventType::kKeyPressed));
+  PageActionAccessor().Click(page_actions::PageActionTrigger::kKeyboard);
 
   auto* new_tab_contents = tab_add.Wait();
 
@@ -190,15 +187,15 @@ IN_PROC_BROWSER_TEST_F(LensOverlayPageActionIconViewTest,
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
-  views::View* page_action_view = PageActionView();
-  views::FocusManager* focus_manager = page_action_view->GetFocusManager();
+  views::FocusManager* focus_manager = GetBrowserView()->GetFocusManager();
   focus_manager->ClearFocus();
   EXPECT_FALSE(focus_manager->GetFocusedView());
-  EXPECT_FALSE(page_action_view->GetVisible());
+  WaitForNoLocationBarFocus();
+  CheckVisibility(false);
 
   // The icon should remain hidden despite focus in the location bar.
   FocusLocationBarAndWaitForUpdate();
-  EXPECT_FALSE(page_action_view->GetVisible());
+  CheckVisibility(false);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayPageActionIconViewTest, DoesNotShowOnNTP) {
@@ -206,16 +203,16 @@ IN_PROC_BROWSER_TEST_F(LensOverlayPageActionIconViewTest, DoesNotShowOnNTP) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), chrome::ChromeUINewTabPageURLAsGURL()));
 
-  views::View* page_action_view = PageActionView();
-  views::FocusManager* focus_manager = page_action_view->GetFocusManager();
+  auto page_action_accessor = PageActionAccessor();
+  views::FocusManager* focus_manager = GetBrowserView()->GetFocusManager();
   focus_manager->ClearFocus();
   EXPECT_FALSE(focus_manager->GetFocusedView());
-  EXPECT_FALSE(page_action_view->GetVisible());
+  WaitForNoLocationBarFocus();
+  CheckVisibility(false);
 
   // The icon should remain hidden despite focus in the location bar.
   FocusLocationBarAndWaitForUpdate();
-
-  EXPECT_FALSE(page_action_view->GetVisible());
+  CheckVisibility(false);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -225,11 +222,8 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
-  location_bar()->FocusLocation(/*is_user_initiated=*/false,
-                                /*clear_focus_if_failed=*/false);
-  views::View* page_action_view = PageActionView();
-  ASSERT_NE(nullptr, page_action_view);
-  EXPECT_FALSE(page_action_view->GetVisible());
+  FocusLocationBarAndWaitForUpdate();
+  CheckVisibility(false);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayPageActionIconViewTest,
@@ -242,11 +236,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayPageActionIconViewTest,
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
-  views::View* page_action_view = PageActionView();
-  views::FocusManager* focus_manager = page_action_view->GetFocusManager();
+  views::FocusManager* focus_manager = GetBrowserView()->GetFocusManager();
   focus_manager->ClearFocus();
   EXPECT_FALSE(focus_manager->GetFocusedView());
-  EXPECT_FALSE(page_action_view->GetVisible());
+  WaitForNoLocationBarFocus();
+  CheckVisibility(false);
 
   // Focus in the location bar should show the icon.
   FocusLocationBarAndWaitForUpdate();
@@ -254,13 +248,13 @@ IN_PROC_BROWSER_TEST_F(LensOverlayPageActionIconViewTest,
   // Disable the preference, the entrypoint should immediately disappear.
   browser()->GetProfile()->GetPrefs()->SetBoolean(
       omnibox::kShowGoogleLensShortcut, false);
-  EXPECT_FALSE(page_action_view->GetVisible());
+  CheckVisibility(false);
 
   // Re-enable the preference, the entrypoint should immediately become
   // visible.
   browser()->GetProfile()->GetPrefs()->SetBoolean(
       omnibox::kShowGoogleLensShortcut, true);
-  EXPECT_TRUE(page_action_view->GetVisible());
+  CheckVisibility(true);
 }
 
 }  // namespace

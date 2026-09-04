@@ -10,16 +10,17 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/lens/lens_keyed_service.h"
 #include "chrome/browser/ui/lens/lens_keyed_service_factory.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/location_bar/lens_overlay_homework_page_action_controller.h"
-#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -36,41 +37,6 @@ namespace {
 constexpr char kDocumentWithNamedElement[] = "/select.html";
 constexpr char kDocument2[] = "/title1.html";
 
-class ViewVisibilityWaiter : public views::ViewObserver {
- public:
-  explicit ViewVisibilityWaiter(views::View* observed_view,
-                                bool expected_visible)
-      : view_(observed_view), expected_visible_(expected_visible) {
-    observation_.Observe(view_.get());
-  }
-  ViewVisibilityWaiter(const ViewVisibilityWaiter&) = delete;
-  ViewVisibilityWaiter& operator=(const ViewVisibilityWaiter&) = delete;
-
-  ~ViewVisibilityWaiter() override = default;
-
-  // Wait for changes to occur, or return immediately if view already has
-  // expected visibility.
-  void Wait() {
-    if (expected_visible_ != view_->GetVisible()) {
-      run_loop_.Run();
-    }
-  }
-
- private:
-  // views::ViewObserver:
-  void OnViewVisibilityChanged(views::View* observed_view,
-                               views::View* starting_view,
-                               bool visible) override {
-    if (expected_visible_ == observed_view->GetVisible()) {
-      run_loop_.Quit();
-    }
-  }
-
-  raw_ptr<views::View> view_;
-  const bool expected_visible_;
-  base::RunLoop run_loop_;
-  base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
-};
 
 class LensOverlayHomeworkPageActionTestBase : public InProcessBrowserTest {
  public:
@@ -96,10 +62,9 @@ class LensOverlayHomeworkPageActionTestBase : public InProcessBrowserTest {
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
-  IconLabelBubbleView* lens_overlay_homework_icon_view() {
-    return BrowserElementsViews::From(browser())
-        ->GetViewAs<IconLabelBubbleView>(
-            kLensOverlayHomeworkPageActionIconElementId);
+  page_actions::PageActionTestAccessor lens_overlay_homework_icon_accessor() {
+    return page_actions::PageActionTestAccessor(browser(),
+                                                kActionLensOverlayHomework);
   }
 
   void PressOnView() {
@@ -107,10 +72,19 @@ class LensOverlayHomeworkPageActionTestBase : public InProcessBrowserTest {
         *browser()->tab_strip_model()->GetActiveTab())
         ->HandlePageActionEvent(/*is_from_keyboard=*/true);
   }
+  BrowserView* GetBrowserView() {
+    return BrowserView::GetBrowserViewForBrowser(browser());
+  }
 
-  LocationBarView* location_bar_view() {
-    return BrowserElementsViews::From(browser())->GetViewAs<LocationBarView>(
-        kLocationBarElementId);
+  LocationBar* location_bar() { return GetBrowserView()->GetLocationBar(); }
+
+  void WaitForLocationBarFocus(bool expected) {
+    EXPECT_TRUE(base::test::RunUntil(
+        [&]() { return location_bar()->IsFocusWithin() == expected; }));
+  }
+
+  void CheckVisibility(bool expected) {
+    EXPECT_EQ(expected, lens_overlay_homework_icon_accessor().GetVisible());
   }
 
   // Sets the number of times the edu action chip has been shown.
@@ -166,19 +140,19 @@ IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest, ShowsOnMatchingPage) {
   const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
 
-  IconLabelBubbleView* icon_view = lens_overlay_homework_icon_view();
-  views::FocusManager* focus_manager = icon_view->GetFocusManager();
+  views::FocusManager* focus_manager = GetBrowserView()->GetFocusManager();
   focus_manager->ClearFocus();
   EXPECT_FALSE(focus_manager->GetFocusedView());
-  EXPECT_TRUE(icon_view->GetVisible());
+  WaitForLocationBarFocus(false);
+  CheckVisibility(true);
 
   // Focus in the location bar should hide the icon.
-  location_bar_view()->FocusLocation(/*is_user_initiated=*/false,
-                                     /*clear_focus_if_failed=*/false);
-  ViewVisibilityWaiter(icon_view, false).Wait();
+  location_bar()->FocusLocation(/*is_user_initiated=*/false,
+                                /*clear_focus_if_failed=*/false);
+  WaitForLocationBarFocus(true);
+  CheckVisibility(false);
 
   EXPECT_TRUE(focus_manager->GetFocusedView());
-  EXPECT_FALSE(icon_view->GetVisible());
   EXPECT_EQ(GetLensOverlayEduActionChipShownCount(browser()->GetProfile()), 1);
 }
 
@@ -190,19 +164,19 @@ IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest,
   const GURL url = embedded_test_server()->GetURL(kDocument2);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
 
-  IconLabelBubbleView* icon_view = lens_overlay_homework_icon_view();
-  views::FocusManager* focus_manager = icon_view->GetFocusManager();
+  views::FocusManager* focus_manager = GetBrowserView()->GetFocusManager();
   focus_manager->ClearFocus();
   EXPECT_FALSE(focus_manager->GetFocusedView());
-  EXPECT_FALSE(icon_view->GetVisible());
+  WaitForLocationBarFocus(false);
+  CheckVisibility(false);
 
   // Focus in the location bar should not show the icon.
-  location_bar_view()->FocusLocation(/*is_user_initiated=*/false,
-                                     /*clear_focus_if_failed=*/false);
-  ViewVisibilityWaiter(icon_view, false).Wait();
+  location_bar()->FocusLocation(/*is_user_initiated=*/false,
+                                /*clear_focus_if_failed=*/false);
+  WaitForLocationBarFocus(true);
+  CheckVisibility(false);
 
   EXPECT_TRUE(focus_manager->GetFocusedView());
-  EXPECT_FALSE(icon_view->GetVisible());
   EXPECT_EQ(GetLensOverlayEduActionChipShownCount(browser()->GetProfile()), 0);
 }
 
@@ -214,19 +188,19 @@ IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest,
   const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
 
-  IconLabelBubbleView* icon_view = lens_overlay_homework_icon_view();
-  views::FocusManager* focus_manager = icon_view->GetFocusManager();
+  views::FocusManager* focus_manager = GetBrowserView()->GetFocusManager();
   focus_manager->ClearFocus();
   EXPECT_FALSE(focus_manager->GetFocusedView());
-  EXPECT_FALSE(icon_view->GetVisible());
+  WaitForLocationBarFocus(false);
+  CheckVisibility(false);
 
   // Focus in the location bar should not show the icon.
-  location_bar_view()->FocusLocation(/*is_user_initiated=*/false,
-                                     /*clear_focus_if_failed=*/false);
-  ViewVisibilityWaiter(icon_view, false).Wait();
+  location_bar()->FocusLocation(/*is_user_initiated=*/false,
+                                /*clear_focus_if_failed=*/false);
+  WaitForLocationBarFocus(true);
+  CheckVisibility(false);
 
   EXPECT_TRUE(focus_manager->GetFocusedView());
-  EXPECT_FALSE(icon_view->GetVisible());
   EXPECT_EQ(GetLensOverlayEduActionChipShownCount(browser()->GetProfile()), 4);
 }
 
@@ -255,11 +229,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionTest,
         ->CompletedFirstVisuallyNonEmptyPaint();
   }));
 
-  IconLabelBubbleView* icon_view = lens_overlay_homework_icon_view();
-  views::FocusManager* focus_manager = icon_view->GetFocusManager();
+  views::FocusManager* focus_manager = GetBrowserView()->GetFocusManager();
   focus_manager->ClearFocus();
   EXPECT_FALSE(focus_manager->GetFocusedView());
-  EXPECT_TRUE(icon_view->GetVisible());
+  WaitForLocationBarFocus(false);
+  CheckVisibility(true);
 
   // Executing the lens overlay icon view with keyboard source should open a new
   // tab.

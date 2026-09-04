@@ -141,6 +141,7 @@ source_set("page_action_test_support") {
     "//content/test:test_support",
     "//ui/base",
     "//ui/events",
+    "//ui/events:test_support",
     "//ui/views",
     "//ui/views:test_support",
     "//ui/webui/tracked_element",

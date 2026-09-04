@@ -29,6 +29,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
+#include "ui/events/test/test_event.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/button.h"
@@ -600,10 +601,15 @@ void PageActionTestAccessor::Click(page_actions::PageActionTrigger trigger) {
     return;
   }
   if (auto* pav = GetPageActionView()) {
-    ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(),
-                         gfx::Point(), ui::EventTimeForNow(),
-                         ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
-    views::test::ButtonTestApi(pav).NotifyClick(event);
+    if (trigger == page_actions::PageActionTrigger::kKeyboard) {
+      ui::test::TestEvent event(ui::EventType::kKeyPressed);
+      views::test::ButtonTestApi(pav).NotifyClick(event);
+    } else {
+      ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(),
+                           gfx::Point(), ui::EventTimeForNow(),
+                           ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+      views::test::ButtonTestApi(pav).NotifyClick(event);
+    }
   }
 }
 

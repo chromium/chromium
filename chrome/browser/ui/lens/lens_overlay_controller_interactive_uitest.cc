@@ -1149,7 +1149,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerEduActionChipTest,
 
   RunTestSequence(
       // Ensure homework chip is visible.
-      EnsurePresent(kLensOverlayHomeworkPageActionIconElementId),
+      WaitForShow(kLensOverlayHomeworkPageActionIconElementId),
 
       PressButton(kLensOverlayHomeworkPageActionIconElementId),
 
@@ -1163,7 +1163,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerEduActionChipTest,
               kOverlayId, GURL(chrome::kChromeUILensOverlayUntrustedURL))),
 
       // Ensure homework chip is not visible after the overlay opens.
-      EnsureNotPresent(kLensOverlayHomeworkPageActionIconElementId),
+      WaitForHide(kLensOverlayHomeworkPageActionIconElementId),
 
       OpenArbitraryNewTab(),
 
@@ -1179,7 +1179,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerEduActionChipTest,
                     WaitForHide(kOverlayId)),
 
       // Ensure homework chip is visible again.
-      EnsurePresent(kLensOverlayHomeworkPageActionIconElementId));
+      WaitForShow(kLensOverlayHomeworkPageActionIconElementId));
 }
 
 class LensOverlayControllerCsbTest : public LensOverlayControllerCUJTest {

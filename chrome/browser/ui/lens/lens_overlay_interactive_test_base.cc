@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_interactive_test_base.h"
 
 #include "base/functional/bind.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service_delegate.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -267,14 +269,14 @@ LensOverlayInteractiveTestBase::FinishScreenshotUpload(int tab_id) {
 }
 
 bool LensOverlayInteractiveTestBase::TriggerLenOverlayHomeworkPageAction() {
-  auto* icon_view =
-      BrowserElementsViews::From(browser())->GetViewAs<IconLabelBubbleView>(
-          kLensOverlayHomeworkPageActionIconElementId);
-
-  views::FocusManager* focus_manager = icon_view->GetFocusManager();
+  page_actions::PageActionTestAccessor page_action_accessor(
+      browser(), kActionLensOverlayHomework);
+  views::FocusManager* focus_manager =
+      BrowserView::GetBrowserViewForBrowser(browser())->GetFocusManager();
   focus_manager->ClearFocus();
   EXPECT_FALSE(focus_manager->GetFocusedView());
-  return icon_view->GetVisible();
+  return base::test::RunUntil(
+      [&]() { return page_action_accessor.GetVisible(); });
 }
 
 ui::test::InteractiveTestApi::MultiStep
