@@ -149,11 +149,12 @@ PeerSessionImpl::PeerSessionImpl(
       connection_(std::move(connection)) {
   connection_->SetEventHandler(this);
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-  // LocalMouseInputMonitorWin and LocalPointerInputMonitorChromeos filter out
-  // an echo of the injected input before it reaches `remote_input_filter_`.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
+  // LocalMouseInputMonitorWin, LocalPointerInputMonitorChromeos, and
+  // LocalMouseInputMonitorMac filter out an echo of the injected input before
+  // it reaches `remote_input_filter_`.
   input_pipeline_.remote_input_filter()->SetExpectLocalEcho(false);
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 }
 
 void PeerSessionImpl::Start(

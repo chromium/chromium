@@ -520,11 +520,11 @@ TEST_F(PeerSessionImplTest, LocalInputTest) {
   connection_->input_stub()->InjectMouseEvent(MakeFractionalMouseMoveEvent(
       100, 101, kDisplay1Id, kDisplay1Width, kDisplay1Height));
 
-#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_MAC)
   // The OS echoes the injected event back.
   peer_session_->OnLocalPointerMoved(webrtc::DesktopVector(100, 101),
                                      ui::EventType::kMouseMoved);
-#endif  // !BUILDFLAG(IS_WIN)
+#endif  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_MAC)
 
   // This one should get through as well.
   connection_->input_stub()->InjectMouseEvent(MakeFractionalMouseMoveEvent(
