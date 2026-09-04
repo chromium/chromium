@@ -8,10 +8,10 @@
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/ash/login/challenge_response_auth_keys_loader.h"
 #include "chrome/browser/ash/login/security_token_session_controller.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "extensions/browser/extension_registry_factory.h"
@@ -61,8 +61,11 @@ SecurityTokenSessionControllerFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   if (!profile)
     return nullptr;
-  const bool is_primary_profile = ProfileHelper::IsPrimaryProfile(profile);
-  const bool is_signin_profile = ProfileHelper::IsSigninProfile(profile);
+  auto* const user_manager = user_manager::UserManager::Get();
+  DCHECK(user_manager);
+  const bool is_primary_profile = user_manager->IsPrimaryUser(
+      BrowserContextHelper::Get()->GetUserByBrowserContext(profile));
+  const bool is_signin_profile = IsSigninBrowserContext(profile);
   if (!is_primary_profile && !is_signin_profile)
     return nullptr;
 
@@ -73,8 +76,6 @@ SecurityTokenSessionControllerFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
-  auto* const user_manager = user_manager::UserManager::Get();
-  DCHECK(user_manager);
   const user_manager::User* primary_user = user_manager->GetPrimaryUser();
   DCHECK(primary_user);
 
