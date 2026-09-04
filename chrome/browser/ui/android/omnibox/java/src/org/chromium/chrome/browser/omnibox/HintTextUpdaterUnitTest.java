@@ -56,7 +56,6 @@ import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteInput.DisplayState;
 import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
 import org.chromium.components.omnibox.AutocompleteRequestType;
-import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.ToolConfigProto.ToolConfig;
 import org.chromium.components.omnibox.ToolModeProto.ToolMode;
@@ -294,34 +293,19 @@ public class HintTextUpdaterUnitTest {
     }
 
     @Test
-    public void testGetOmniboxHintText_UseAskHintForNtp() {
+    public void testGetOmniboxHintText_DefaultSearchEngine() {
         when(mSearchEngineService.getSearchEngineName()).thenReturn("Google");
         when(mSearchEngineService.getOmniboxHintString()).thenReturn("Search Google or type URL");
 
         clearInvocations(mUpdateHintTextCallback);
-        OmniboxFeatures.sUseAskHintForNtp.setForTesting(false);
         mUpdater.onTitleChanged();
         verify(mUpdateHintTextCallback).onResult(eq("Search Google or type URL"));
-
-        clearInvocations(mUpdateHintTextCallback);
-        OmniboxFeatures.sUseAskHintForNtp.setForTesting(true);
-        when(mSearchEngineService.getOmniboxHintString()).thenReturn("Ask Google or type URL");
-        mUpdater.onTitleChanged();
-        verify(mUpdateHintTextCallback).onResult(eq("Ask Google or type URL"));
-
-        clearInvocations(mUpdateHintTextCallback);
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
-        mUpdater.onTitleChanged();
-        verify(mUpdateHintTextCallback).onResult(eq("Ask Google or type URL"));
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
 
         clearInvocations(mUpdateHintTextCallback);
         when(mSearchEngineService.getSearchEngineName()).thenReturn("Yahoo");
         when(mSearchEngineService.getOmniboxHintString()).thenReturn("Search Yahoo or type URL");
         mSearchEngineNameObserver.onSearchEngineNameChanged();
         verify(mUpdateHintTextCallback).onResult(eq("Search Yahoo or type URL"));
-
-        OmniboxFeatures.sUseAskHintForNtp.setForTesting(false);
     }
 
     @Test

@@ -20,6 +20,7 @@ import android.os.SystemClock;
 import android.view.KeyEvent;
 import android.widget.ImageView;
 
+import androidx.annotation.StringRes;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -61,6 +62,7 @@ import org.chromium.chrome.test.transit.omnibox.OmniboxFacility;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -117,14 +119,17 @@ public class OmniboxTest {
         Assert.assertNotNull(urlBar);
         assertEquals("Location bar has text.", "", urlBar.getText().toString());
 
+        @StringRes
+        int expectedHintRes =
+                OmniboxCapabilities.isDesktopPlatform()
+                        ? R.string.omnibox_empty_ask_hint_with_dse_name
+                        : R.string.omnibox_empty_hint_with_dse_name;
         CriteriaHelper.pollUiThread(
                 () -> {
                     assertEquals(
                             "Location bar has incorrect hint.",
                             OmniboxResourceProvider.getString(
-                                    mActivityTestRule.getActivity(),
-                                    R.string.omnibox_empty_hint_with_dse_name,
-                                    "Google"),
+                                    mActivityTestRule.getActivity(), expectedHintRes, "Google"),
                             urlBar.getHint().toString());
                 });
 

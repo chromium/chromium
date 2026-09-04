@@ -386,10 +386,20 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
     }
 
     private @StringRes int getHintStringRes(boolean isNtpSearchBox) {
-        if (OmniboxFeatures.sUseAskHintForNtp.getValue() && isDefaultSearchEngineGoogle()) {
-            return OmniboxCapabilities.isDesktopPlatform() && isNtpSearchBox
+        if (!isDefaultSearchEngineGoogle()) {
+            return R.string.omnibox_empty_hint_with_dse_name;
+        }
+
+        // Desktop (AL) always uses the updated "Ask" hint string.
+        if (OmniboxCapabilities.isDesktopPlatform()) {
+            return isNtpSearchBox
                     ? R.string.omnibox_empty_ask_hint_short_with_dse_name
                     : R.string.omnibox_empty_ask_hint_with_dse_name;
+        }
+
+        // Mobile/Tablet uses "Ask" only if the feature flag is explicitly enabled.
+        if (OmniboxFeatures.sUseAskHintForNtp.getValue()) {
+            return R.string.omnibox_empty_ask_hint_with_dse_name;
         }
 
         return R.string.omnibox_empty_hint_with_dse_name;

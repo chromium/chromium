@@ -499,10 +499,19 @@ public class SearchEngineServiceUnitTest {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
         configureSearchEngine("google", "Google");
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
-        OmniboxFeatures.sUseAskHintForNtp.setForTesting(true);
         var searchEngineService = new SearchEngineService(mProfile, mFaviconHelper);
 
         assertEquals("Ask Google", searchEngineService.getNtpHintText(mContext));
+    }
+
+    @Test
+    public void testGetNtpHintText_Default_onMobile() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
+        configureSearchEngine("google", "Google");
+        OmniboxFeatures.sUseAskHintForNtp.setForTesting(false);
+        var searchEngineService = new SearchEngineService(mProfile, mFaviconHelper);
+
+        assertEquals("Search Google or type URL", searchEngineService.getNtpHintText(mContext));
     }
 
     @Test
@@ -526,13 +535,16 @@ public class SearchEngineServiceUnitTest {
 
     @Test
     public void testGetOmniboxHintString_Default() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
         configureSearchEngine("google", "Google");
+        OmniboxFeatures.sUseAskHintForNtp.setForTesting(false);
         var searchEngineService = new SearchEngineService(mProfile, mFaviconHelper);
         assertEquals("Search Google or type URL", searchEngineService.getOmniboxHintString());
     }
 
     @Test
     public void testGetOmniboxHintString_AskHint() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
         configureSearchEngine("google", "Google");
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         OmniboxFeatures.sUseAskHintForNtp.setForTesting(true);
@@ -541,11 +553,10 @@ public class SearchEngineServiceUnitTest {
     }
 
     @Test
-    public void testGetOmniboxHintString_AskHint_onDesktop_stillLong() {
+    public void testGetOmniboxHintString_onDesktop() {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
         configureSearchEngine("google", "Google");
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
-        OmniboxFeatures.sUseAskHintForNtp.setForTesting(true);
         var searchEngineService = new SearchEngineService(mProfile, mFaviconHelper);
         assertEquals("Ask Google or type URL", searchEngineService.getOmniboxHintString());
     }
