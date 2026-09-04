@@ -173,6 +173,7 @@ BASE_DECLARE_FEATURE(kDefaultBrowserPromoEntryPoint);
 BASE_DECLARE_FEATURE(kDefaultBrowserPromoFre);
 BASE_DECLARE_FEATURE(kDeferNavigationStateChanged);
 BASE_DECLARE_FEATURE(kDesktopAndroidBackgroundTabLoading);
+BASE_DECLARE_FEATURE(kDesktopAndroidFilePickerForMedia);
 BASE_DECLARE_FEATURE(kDesktopAndroidLinkCapturing);
 BASE_DECLARE_FEATURE(kDesktopAndroidTWADeleteBrowserData);
 BASE_DECLARE_FEATURE(kDesktopAndroidTWADisclosures);

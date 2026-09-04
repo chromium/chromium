@@ -522,6 +522,8 @@ public abstract class ChromeFeatureList {
     public static final String DEFAULT_BROWSER_PROMO_ENTRY_POINT = "DefaultBrowserPromoEntryPoint";
     public static final String DEFAULT_BROWSER_PROMO_FRE = "DefaultBrowserPromoFre";
     public static final String DEFER_NAVIGATION_STATE_CHANGED = "DeferNavigationStateChanged";
+    public static final String DESKTOP_ANDROID_FILE_PICKER_FOR_MEDIA =
+            "DesktopAndroidFilePickerForMedia";
     public static final String DESKTOP_ANDROID_LINK_CAPTURING = "DesktopAndroidLinkCapturing";
     public static final String DESKTOP_ANDROID_TWA_DELETE_BROWSER_DATA =
             "DesktopAndroidTWADeleteBrowserData";

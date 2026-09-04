@@ -20813,6 +20813,7 @@ from previous Chrome versions.
   <int value="1866995531" label="AndroidMetaClickHistoryNavigation:disabled"/>
   <int value="1867085340" label="brotli-encoding:enabled"/>
   <int value="1867437206" label="XplatSyncedSetupThemes:disabled"/>
+  <int value="1869408523" label="DesktopAndroidFilePickerForMedia:disabled"/>
   <int value="1870023694" label="AccessibilityDeprecateChromeVoxTabs:enabled"/>
   <int value="1870187746" label="TabStripTransitionInDesktopWindow:enabled"/>
   <int value="1870858634" label="SymphoniaDemuxing:disabled"/>
@@ -21170,6 +21171,7 @@ from previous Chrome versions.
   <int value="1982280338" label="IOSPromoAddressBubble:disabled"/>
   <int value="1982520858" label="XplatSyncedSetup:enabled"/>
   <int value="1982576646" label="PanelSelfRefresh2:disabled"/>
+  <int value="1983589390" label="DesktopAndroidFilePickerForMedia:enabled"/>
   <int value="1983635890" label="TabGroupColorRefresh:enabled"/>
   <int value="1983761109" label="NtpRealboxCyclingPlaceholders:enabled"/>
   <int value="1983968737" label="PdfGlicSummarize:disabled"/>

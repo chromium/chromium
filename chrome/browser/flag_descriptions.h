@@ -5723,6 +5723,12 @@ inline constexpr char kContextualPanelCloseButtonDescription[] =
     "When this is enabled, the contextual search panel will show a close "
     "button. Its scrim will also be hidden.";
 
+inline constexpr char kDesktopAndroidFilePickerForMediaName[] =
+    "Desktop Android File Picker For Media";
+inline constexpr char kDesktopAndroidFilePickerForMediaDescription[] =
+    "Show the desktop Files app instead of the mobile photo picker for media "
+    "file inputs on Android desktop.";
+
 inline constexpr char kDisableGridTabSwitcherName[] =
     "Disable Grid Tab Switcher";
 inline constexpr char kDisableGridTabSwitcherDescription[] =

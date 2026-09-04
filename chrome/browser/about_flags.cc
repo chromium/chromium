@@ -14088,6 +14088,13 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::
              kAutofillEnableWalletDirectOffersNotificationBubble)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"desktop-android-file-picker-for-media",
+     flag_descriptions::kDesktopAndroidFilePickerForMediaName,
+     flag_descriptions::kDesktopAndroidFilePickerForMediaDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kDesktopAndroidFilePickerForMedia)},
+#endif
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
