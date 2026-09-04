@@ -34,6 +34,7 @@
 #include "build/build_config.h"
 #include "content/browser/back_forward_cache/back_forward_cache_disable.h"
 #include "content/browser/payments/stub_secure_payment_confirmation_service.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webauth/authenticator_environment.h"
 #include "content/browser/webauth/authenticator_impl.h"

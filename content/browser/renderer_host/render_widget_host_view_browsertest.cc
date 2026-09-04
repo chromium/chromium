@@ -82,6 +82,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/browser/renderer_host/compositor_impl_android.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "ui/android/delegated_frame_host_android.h"
