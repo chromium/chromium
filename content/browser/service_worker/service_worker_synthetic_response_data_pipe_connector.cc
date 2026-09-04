@@ -74,7 +74,7 @@ void ServiceWorkerSyntheticResponseDataPipeConnector::OnDataAvailable(
       return;
     }
     data = data.subspan(actual_written_bytes);
-    DCHECK_GT(actual_written_bytes, 0u);
+    CHECK_GT(actual_written_bytes, 0u, base::NotFatalUntil::M159);
   } while (!data.empty());
 }
 

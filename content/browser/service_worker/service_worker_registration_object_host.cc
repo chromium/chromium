@@ -41,8 +41,8 @@ ServiceWorkerRegistrationObjectHost::ServiceWorkerRegistrationObjectHost(
     : container_host_(container_host),
       context_(context),
       registration_(registration) {
-  DCHECK(registration_.get());
-  DCHECK(container_host_);
+  CHECK(registration_.get(), base::NotFatalUntil::M159);
+  CHECK(container_host_, base::NotFatalUntil::M159);
   registration_->AddListener(this);
   receivers_.set_disconnect_handler(base::BindRepeating(
       &ServiceWorkerRegistrationObjectHost::OnConnectionError,
@@ -50,7 +50,7 @@ ServiceWorkerRegistrationObjectHost::ServiceWorkerRegistrationObjectHost(
 }
 
 ServiceWorkerRegistrationObjectHost::~ServiceWorkerRegistrationObjectHost() {
-  DCHECK(registration_.get());
+  CHECK(registration_.get(), base::NotFatalUntil::M159);
   registration_->RemoveListener(this);
 }
 
@@ -77,7 +77,7 @@ ServiceWorkerRegistrationObjectHost::CreateObjectInfo() {
 void ServiceWorkerRegistrationObjectHost::OnVersionAttributesChanged(
     ServiceWorkerRegistration* registration,
     blink::mojom::ChangedServiceWorkerObjectsMaskPtr changed_mask) {
-  DCHECK_EQ(registration->id(), registration_->id());
+  CHECK_EQ(registration->id(), registration_->id(), base::NotFatalUntil::M159);
   SetServiceWorkerObjects(
       std::move(changed_mask), registration->installing_version(),
       registration->waiting_version(), registration->active_version());
@@ -90,7 +90,7 @@ void ServiceWorkerRegistrationObjectHost::OnUpdateViaCacheChanged(
 
 void ServiceWorkerRegistrationObjectHost::OnRegistrationFailed(
     ServiceWorkerRegistration* registration) {
-  DCHECK_EQ(registration->id(), registration_->id());
+  CHECK_EQ(registration->id(), registration_->id(), base::NotFatalUntil::M159);
   auto changed_mask =
       blink::mojom::ChangedServiceWorkerObjectsMask::New(true, true, true);
   SetServiceWorkerObjects(std::move(changed_mask), nullptr, nullptr, nullptr);
@@ -98,7 +98,7 @@ void ServiceWorkerRegistrationObjectHost::OnRegistrationFailed(
 
 void ServiceWorkerRegistrationObjectHost::OnUpdateFound(
     ServiceWorkerRegistration* registration) {
-  DCHECK(remote_registration_);
+  CHECK(remote_registration_, base::NotFatalUntil::M159);
   remote_registration_->UpdateFound();
 }
 
@@ -110,7 +110,7 @@ void ServiceWorkerRegistrationObjectHost::Update(
   // https://w3c.github.io/ServiceWorker/#service-worker-registration-update
 
   // 1. Let |registration| be the service worker registration.
-  DCHECK(registration_);
+  CHECK(registration_, base::NotFatalUntil::M159);
 
   // 2. Let |newest_worker| be the result of running Get Newest Worker algorithm
   // passing |registration| as its argument.
@@ -311,7 +311,7 @@ void ServiceWorkerRegistrationObjectHost::SetServiceWorkerObjects(
   if (changed_mask->active)
     active = CreateCompleteObjectInfoToSend(container_host_, active_version);
 
-  DCHECK(remote_registration_);
+  CHECK(remote_registration_, base::NotFatalUntil::M159);
   remote_registration_->SetServiceWorkerObjects(
       std::move(changed_mask), std::move(installing), std::move(waiting),
       std::move(active));

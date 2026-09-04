@@ -722,7 +722,7 @@ void ServiceWorkerRegistry::NotifyDoneInstallingRegistration(
 void ServiceWorkerRegistry::NotifyDoneUninstallingRegistration(
     ServiceWorkerRegistration* registration,
     ServiceWorkerRegistration::Status new_status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   registration->SetStatus(new_status);
   uninstalling_registrations_.erase(registration->id());
 }
@@ -730,7 +730,7 @@ void ServiceWorkerRegistry::NotifyDoneUninstallingRegistration(
 void ServiceWorkerRegistry::UpdateToActiveState(int64_t registration_id,
                                                 const blink::StorageKey& key,
                                                 StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   CreateInvokerAndStartRemoteCall(
       &storage::mojom::ServiceWorkerStorageControl::UpdateToActiveState,
       base::BindOnce(&ServiceWorkerRegistry::DidUpdateToActiveState,
@@ -743,7 +743,7 @@ void ServiceWorkerRegistry::UpdateLastUpdateCheckTime(
     const blink::StorageKey& key,
     base::Time last_update_check_time,
     StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   CreateInvokerAndStartRemoteCall(
       &storage::mojom::ServiceWorkerStorageControl::UpdateLastUpdateCheckTime,
       base::BindOnce(&ServiceWorkerRegistry::DidUpdateRegistration,
@@ -757,7 +757,7 @@ void ServiceWorkerRegistry::UpdateNavigationPreloadEnabled(
     const blink::StorageKey& key,
     bool enable,
     StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   CreateInvokerAndStartRemoteCall(
       &storage::mojom::ServiceWorkerStorageControl::
           UpdateNavigationPreloadEnabled,
@@ -772,7 +772,7 @@ void ServiceWorkerRegistry::UpdateNavigationPreloadHeader(
     const blink::StorageKey& key,
     const std::string& value,
     StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   CreateInvokerAndStartRemoteCall(
       &storage::mojom::ServiceWorkerStorageControl::
           UpdateNavigationPreloadHeader,
@@ -786,7 +786,7 @@ void ServiceWorkerRegistry::UpdateFetchHandlerType(
     const blink::StorageKey& key,
     blink::mojom::ServiceWorkerFetchHandlerType fetch_handler_type,
     StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   CreateInvokerAndStartRemoteCall(
       &storage::mojom::ServiceWorkerStorageControl::UpdateFetchHandlerType,
       base::BindOnce(&ServiceWorkerRegistry::DidUpdateRegistration,
@@ -801,7 +801,7 @@ void ServiceWorkerRegistry::UpdateResourceSha256Checksums(
     const blink::StorageKey& key,
     const base::flat_map<int64_t, std::string>& updated_sha256_checksums,
     StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   CreateInvokerAndStartRemoteCall(
       &storage::mojom::ServiceWorkerStorageControl::
           UpdateResourceSha256Checksums,
@@ -814,7 +814,7 @@ void ServiceWorkerRegistry::UpdateResourceSha256Checksums(
 void ServiceWorkerRegistry::StoreUncommittedResourceId(
     int64_t resource_id,
     const blink::StorageKey& key) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   CreateInvokerAndStartRemoteCall(
       &storage::mojom::ServiceWorkerStorageControl::StoreUncommittedResourceId,
       base::BindOnce(&ServiceWorkerRegistry::DidWriteUncommittedResourceIds,
@@ -823,7 +823,7 @@ void ServiceWorkerRegistry::StoreUncommittedResourceId(
 }
 
 void ServiceWorkerRegistry::DoomUncommittedResource(int64_t resource_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   std::vector<int64_t> resource_ids = {resource_id};
   DoomUncommittedResources(resource_ids);
 }
@@ -831,7 +831,7 @@ void ServiceWorkerRegistry::DoomUncommittedResource(int64_t resource_id) {
 void ServiceWorkerRegistry::GetUserData(int64_t registration_id,
                                         const std::vector<std::string>& keys,
                                         GetUserDataCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   CreateInvokerAndStartRemoteCall(
       &storage::mojom::ServiceWorkerStorageControl::GetUserData,
       base::BindOnce(&ServiceWorkerRegistry::DidGetUserData,
@@ -843,7 +843,7 @@ void ServiceWorkerRegistry::GetUserDataByKeyPrefix(
     int64_t registration_id,
     const std::string& key_prefix,
     GetUserDataCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   CreateInvokerAndStartRemoteCall(
       &storage::mojom::ServiceWorkerStorageControl::GetUserDataByKeyPrefix,
       base::BindOnce(&ServiceWorkerRegistry::DidGetUserData,
@@ -855,7 +855,7 @@ void ServiceWorkerRegistry::GetUserKeysAndDataByKeyPrefix(
     int64_t registration_id,
     const std::string& key_prefix,
     GetUserKeysAndDataCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   CreateInvokerAndStartRemoteCall(
       &storage::mojom::ServiceWorkerStorageControl::
           GetUserKeysAndDataByKeyPrefix,
@@ -869,7 +869,7 @@ void ServiceWorkerRegistry::StoreUserData(
     const blink::StorageKey& key,
     const std::vector<std::pair<std::string, std::string>>& key_value_pairs,
     StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (registration_id == blink::mojom::kInvalidServiceWorkerRegistrationId ||
       key_value_pairs.empty()) {
     RunSoon(FROM_HERE,
@@ -899,7 +899,7 @@ void ServiceWorkerRegistry::StoreUserData(
 void ServiceWorkerRegistry::ClearUserData(int64_t registration_id,
                                           const std::vector<std::string>& keys,
                                           StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), blink::ServiceWorkerStatusCode::kErrorFailed);
   CreateInvokerAndStartRemoteCall(
@@ -913,7 +913,7 @@ void ServiceWorkerRegistry::ClearUserDataByKeyPrefixes(
     int64_t registration_id,
     const std::vector<std::string>& key_prefixes,
     StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), blink::ServiceWorkerStatusCode::kErrorFailed);
   CreateInvokerAndStartRemoteCall(
@@ -926,7 +926,7 @@ void ServiceWorkerRegistry::ClearUserDataByKeyPrefixes(
 void ServiceWorkerRegistry::ClearUserDataForAllRegistrationsByKeyPrefix(
     const std::string& key_prefix,
     StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), blink::ServiceWorkerStatusCode::kErrorFailed);
   CreateInvokerAndStartRemoteCall(
@@ -940,7 +940,7 @@ void ServiceWorkerRegistry::ClearUserDataForAllRegistrationsByKeyPrefix(
 void ServiceWorkerRegistry::GetUserDataForAllRegistrations(
     const std::string& key,
     GetUserDataForAllRegistrationsCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), std::vector<std::pair<int64_t, std::string>>(),
       blink::ServiceWorkerStatusCode::kErrorFailed);
@@ -955,7 +955,7 @@ void ServiceWorkerRegistry::GetUserDataForAllRegistrations(
 void ServiceWorkerRegistry::GetUserDataForAllRegistrationsByKeyPrefix(
     const std::string& key_prefix,
     GetUserDataForAllRegistrationsCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), std::vector<std::pair<int64_t, std::string>>(),
       blink::ServiceWorkerStatusCode::kErrorFailed);
@@ -969,7 +969,7 @@ void ServiceWorkerRegistry::GetUserDataForAllRegistrationsByKeyPrefix(
 
 void ServiceWorkerRegistry::GetRegisteredStorageKeys(
     GetRegisteredStorageKeysCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), std::vector<blink::StorageKey>());
   CreateInvokerAndStartRemoteCall(
@@ -987,7 +987,7 @@ void ServiceWorkerRegistry::DidGetRegisteredStorageKeysOnStartupDeprecated(
   TRACE_EVENT(
       "ServiceWorker",
       "ServiceWorkerRegistry::DidGetRegisteredStorageKeysOnStartupDeprecated");
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   // Discard RegisteredKeys from `storage_shared_buffer_`.
   storage_shared_buffer().TakeRegisteredKeys();
@@ -1022,7 +1022,7 @@ bool ServiceWorkerRegistry::MaybeHasRegistrationForStorageKey(
     const blink::StorageKey& key) {
   TRACE_EVENT("ServiceWorker",
               "ServiceWorkerRegistry::MaybeHasRegistrationForStorageKey");
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   // The following code implements a performance optimization: it retrieves
   // `storage_keys` from the `ServiceWorkerStorage` in the thread pool without
   // waiting for `DidGetRegisteredStorageKeys()` to be called. This can speed up
@@ -1044,7 +1044,7 @@ bool ServiceWorkerRegistry::MaybeHasRegistrationForStorageKey(
 
 void ServiceWorkerRegistry::
     WaitForRegistrationsInitializedForTest() {  // IN-TEST
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   CHECK_IS_TEST();
   if (registrations_initialized_) {
     return;
@@ -1055,7 +1055,7 @@ void ServiceWorkerRegistry::
 }
 
 void ServiceWorkerRegistry::PerformStorageCleanup(base::OnceClosure callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   auto wrapped_callback =
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback));
   CreateInvokerAndStartRemoteCall(
@@ -1074,7 +1074,7 @@ void ServiceWorkerRegistry::PrepareForDeleteAndStartOver() {
 }
 
 void ServiceWorkerRegistry::DeleteAndStartOver(StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   CreateInvokerAndStartRemoteCall(
       &storage::mojom::ServiceWorkerStorageControl::Delete,
       base::BindOnce(&ServiceWorkerRegistry::DidDeleteAndStartOver,
@@ -1087,7 +1087,7 @@ void ServiceWorkerRegistry::DisableStorageForTesting(
 }
 
 void ServiceWorkerRegistry::Start(base::TimeTicks start_time) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   if (special_storage_policy_) {
     storage_policy_observer_.emplace(
@@ -1112,7 +1112,7 @@ void ServiceWorkerRegistry::FindRegistrationForIdInternal(
     int64_t registration_id,
     const std::optional<blink::StorageKey>& key,
     FindRegistrationCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   // Registration lookup is expected to abort when storage is disabled.
   if (is_storage_disabled_) {
     CompleteFindNow(nullptr, blink::ServiceWorkerStatusCode::kErrorAbort,
@@ -1157,8 +1157,8 @@ ServiceWorkerRegistration*
 ServiceWorkerRegistry::FindInstallingRegistrationForClientUrl(
     const GURL& client_url,
     const blink::StorageKey& key) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!client_url.has_ref());
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  CHECK(!client_url.has_ref(), base::NotFatalUntil::M159);
 
   blink::ServiceWorkerLongestScopeMatcher matcher(client_url);
   ServiceWorkerRegistration* match = nullptr;
@@ -1176,7 +1176,7 @@ ServiceWorkerRegistration*
 ServiceWorkerRegistry::FindInstallingRegistrationForScope(
     const GURL& scope,
     const blink::StorageKey& key) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   for (const auto& registration : installing_registrations_)
     if (registration.second->key() == key &&
         registration.second->scope() == scope)
@@ -1187,7 +1187,7 @@ ServiceWorkerRegistry::FindInstallingRegistrationForScope(
 ServiceWorkerRegistration*
 ServiceWorkerRegistry::FindInstallingRegistrationForId(
     int64_t registration_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   RegistrationRefsById::const_iterator found =
       installing_registrations_.find(registration_id);
   if (found == installing_registrations_.end())
@@ -1201,7 +1201,7 @@ ServiceWorkerRegistry::GetOrCreateRegistration(
     const ResourceList& resources,
     mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>
         version_reference) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   scoped_refptr<ServiceWorkerRegistration> registration =
       context_->GetLiveRegistration(data.registration_id);
   if (registration) {
@@ -1231,7 +1231,8 @@ ServiceWorkerRegistry::GetOrCreateRegistration(
   registration->SetStored();
   registration->set_resources_total_size(data.resources_total_size);
   registration->set_last_update_check(data.last_update_check);
-  DCHECK(!uninstalling_registrations_.contains(data.registration_id));
+  CHECK(!uninstalling_registrations_.contains(data.registration_id),
+        base::NotFatalUntil::M159);
 
   scoped_refptr<ServiceWorkerVersion> version =
       context_->GetLiveVersion(data.version_id);
@@ -1314,7 +1315,7 @@ ServiceWorkerRegistry::GetOrCreateRegistration(
 
 std::optional<scoped_refptr<ServiceWorkerRegistration>>
 ServiceWorkerRegistry::FindFromLiveRegistrationsForId(int64_t registration_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   scoped_refptr<ServiceWorkerRegistration> registration =
       context_->GetLiveRegistration(registration_id);
   if (registration) {
@@ -1335,7 +1336,7 @@ ServiceWorkerRegistry::FindFromLiveRegistrationsForId(int64_t registration_id) {
 
 void ServiceWorkerRegistry::DoomUncommittedResources(
     const std::vector<int64_t>& resource_ids) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   CreateInvokerAndStartRemoteCall(
       &storage::mojom::ServiceWorkerStorageControl::DoomUncommittedResources,
       base::BindOnce(&ServiceWorkerRegistry::DidDoomUncommittedResourceIds,
@@ -1354,7 +1355,7 @@ void ServiceWorkerRegistry::DidFindRegistrationForClientUrl(
   TRACE_EVENT(
       "ServiceWorker", "ServiceWorkerRegistry::DidFindRegistrationForClientUrl",
       perfetto::Flow::ProcessScoped(trace_event_id, "ServiceWorkerRegistry"));
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   // Discard RegistrationScopes from storage_shared_buffer.
   storage_shared_buffer().TakeRegistrationScopes();
   // Discard FindRegistrationResult from storage_shared_buffer.
@@ -1408,9 +1409,9 @@ void ServiceWorkerRegistry::DidFindRegistrationForClientUrl(
 
   scoped_refptr<ServiceWorkerRegistration> registration;
   if (status == blink::ServiceWorkerStatusCode::kOk) {
-    DCHECK(result);
-    DCHECK(result->registration);
-    DCHECK(result->version_reference);
+    CHECK(result, base::NotFatalUntil::M159);
+    CHECK(result->registration, base::NotFatalUntil::M159);
+    CHECK(result->version_reference, base::NotFatalUntil::M159);
     registration =
         GetOrCreateRegistration(*(result->registration), result->resources,
                                 std::move(result->version_reference));
@@ -1444,7 +1445,7 @@ void ServiceWorkerRegistry::RunFindRegistrationCallbacks(
                "ServiceWorkerRegistry::RunFindRegistrationCallbacks",
                "client_url", client_url, "status",
                blink::ServiceWorkerStatusToString(status));
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   auto iter =
       find_registration_callbacks_.find(std::make_pair(client_url, key));
   CHECK(iter != find_registration_callbacks_.end());
@@ -1459,7 +1460,7 @@ void ServiceWorkerRegistry::DidFindRegistrationForScope(
     FindRegistrationCallback callback,
     storage::mojom::ServiceWorkerDatabaseStatus database_status,
     storage::mojom::ServiceWorkerFindRegistrationResultPtr result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (database_status != storage::mojom::ServiceWorkerDatabaseStatus::kOk &&
       database_status !=
           storage::mojom::ServiceWorkerDatabaseStatus::kErrorNotFound) {
@@ -1471,9 +1472,9 @@ void ServiceWorkerRegistry::DidFindRegistrationForScope(
 
   scoped_refptr<ServiceWorkerRegistration> registration;
   if (status == blink::ServiceWorkerStatusCode::kOk) {
-    DCHECK(result);
-    DCHECK(result->registration);
-    DCHECK(result->version_reference);
+    CHECK(result, base::NotFatalUntil::M159);
+    CHECK(result->registration, base::NotFatalUntil::M159);
+    CHECK(result->version_reference, base::NotFatalUntil::M159);
     registration =
         GetOrCreateRegistration(*(result->registration), result->resources,
                                 std::move(result->version_reference));
@@ -1494,7 +1495,7 @@ void ServiceWorkerRegistry::DidFindRegistrationForId(
     FindRegistrationCallback callback,
     storage::mojom::ServiceWorkerDatabaseStatus database_status,
     storage::mojom::ServiceWorkerFindRegistrationResultPtr result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (database_status != storage::mojom::ServiceWorkerDatabaseStatus::kOk &&
       database_status !=
           storage::mojom::ServiceWorkerDatabaseStatus::kErrorNotFound) {
@@ -1517,9 +1518,9 @@ void ServiceWorkerRegistry::DidFindRegistrationForId(
 
   scoped_refptr<ServiceWorkerRegistration> registration;
   if (status == blink::ServiceWorkerStatusCode::kOk) {
-    DCHECK(result);
-    DCHECK(result->registration);
-    DCHECK(result->version_reference);
+    CHECK(result, base::NotFatalUntil::M159);
+    CHECK(result->registration, base::NotFatalUntil::M159);
+    CHECK(result->version_reference, base::NotFatalUntil::M159);
     registration =
         GetOrCreateRegistration(*(result->registration), result->resources,
                                 std::move(result->version_reference));
@@ -1540,7 +1541,7 @@ void ServiceWorkerRegistry::DidGetRegistrationsForStorageKey(
     storage::mojom::ServiceWorkerDatabaseStatus database_status,
     std::vector<storage::mojom::ServiceWorkerFindRegistrationResultPtr>
         entries) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   blink::ServiceWorkerStatusCode status =
       DatabaseStatusToStatusCode(database_status);
@@ -1557,8 +1558,8 @@ void ServiceWorkerRegistry::DidGetRegistrationsForStorageKey(
   std::set<int64_t> registration_ids;
   std::vector<scoped_refptr<ServiceWorkerRegistration>> registrations;
   for (const auto& entry : entries) {
-    DCHECK(entry->registration);
-    DCHECK(entry->version_reference);
+    CHECK(entry->registration, base::NotFatalUntil::M159);
+    CHECK(entry->version_reference, base::NotFatalUntil::M159);
     registration_ids.insert(entry->registration->registration_id);
     registrations.push_back(
         GetOrCreateRegistration(*entry->registration, entry->resources,
@@ -1581,7 +1582,7 @@ void ServiceWorkerRegistry::DidGetAllRegistrations(
     GetRegistrationsInfosCallback callback,
     storage::mojom::ServiceWorkerDatabaseStatus database_status,
     RegistrationList registration_data_list) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   blink::ServiceWorkerStatusCode status =
       DatabaseStatusToStatusCode(database_status);
 
@@ -1599,7 +1600,7 @@ void ServiceWorkerRegistry::DidGetAllRegistrations(
   for (const auto& registration_data : registration_data_list) {
     const bool inserted =
         pushed_registrations.insert(registration_data->registration_id).second;
-    DCHECK(inserted);
+    CHECK(inserted, base::NotFatalUntil::M159);
 
     scoped_refptr<ServiceWorkerRegistration> registration =
         context_->GetLiveRegistration(registration_data->registration_id);
@@ -1679,7 +1680,7 @@ void ServiceWorkerRegistry::DidGetStorageUsageForStorageKey(
     GetStorageUsageForStorageKeyCallback callback,
     storage::mojom::ServiceWorkerDatabaseStatus database_status,
     int64_t usage) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   blink::ServiceWorkerStatusCode status =
       DatabaseStatusToStatusCode(database_status);
   std::move(callback).Run(status, usage);
@@ -1693,7 +1694,7 @@ void ServiceWorkerRegistry::DidStoreRegistration(
     StatusCallback callback,
     storage::mojom::ServiceWorkerDatabaseStatus database_status,
     uint64_t deleted_resources_size) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   blink::ServiceWorkerStatusCode status =
       DatabaseStatusToStatusCode(database_status);
 
@@ -1754,7 +1755,7 @@ void ServiceWorkerRegistry::DidDeleteRegistration(
     storage::mojom::ServiceWorkerDatabaseStatus database_status,
     uint64_t deleted_resources_size,
     storage::mojom::ServiceWorkerStorageStorageKeyState storage_key_state) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   blink::ServiceWorkerStatusCode status =
       DatabaseStatusToStatusCode(database_status);
 
@@ -1809,7 +1810,7 @@ void ServiceWorkerRegistry::NotifyRegistrationDeletedForStorageKey(
 void ServiceWorkerRegistry::DidUpdateRegistration(
     StatusCallback callback,
     storage::mojom::ServiceWorkerDatabaseStatus status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (status != storage::mojom::ServiceWorkerDatabaseStatus::kOk &&
       status != storage::mojom::ServiceWorkerDatabaseStatus::kErrorNotFound) {
     ScheduleDeleteAndStartOver();
@@ -1828,7 +1829,7 @@ void ServiceWorkerRegistry::DidUpdateToActiveState(
 void ServiceWorkerRegistry::DidWriteUncommittedResourceIds(
     const blink::StorageKey& key,
     storage::mojom::ServiceWorkerDatabaseStatus status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   CheckForClientWriteFailure(quota_manager_proxy_, status, key);
   if (status != storage::mojom::ServiceWorkerDatabaseStatus::kOk)
     ScheduleDeleteAndStartOver();
@@ -1836,7 +1837,7 @@ void ServiceWorkerRegistry::DidWriteUncommittedResourceIds(
 
 void ServiceWorkerRegistry::DidDoomUncommittedResourceIds(
     storage::mojom::ServiceWorkerDatabaseStatus status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (status != storage::mojom::ServiceWorkerDatabaseStatus::kOk)
     ScheduleDeleteAndStartOver();
 }
@@ -1845,7 +1846,7 @@ void ServiceWorkerRegistry::DidGetUserData(
     GetUserDataCallback callback,
     storage::mojom::ServiceWorkerDatabaseStatus status,
     const std::vector<std::string>& data) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (status != storage::mojom::ServiceWorkerDatabaseStatus::kOk &&
       status != storage::mojom::ServiceWorkerDatabaseStatus::kErrorNotFound) {
     ScheduleDeleteAndStartOver();
@@ -1857,7 +1858,7 @@ void ServiceWorkerRegistry::DidGetUserKeysAndData(
     GetUserKeysAndDataCallback callback,
     storage::mojom::ServiceWorkerDatabaseStatus status,
     const base::flat_map<std::string, std::string>& data_map) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (status != storage::mojom::ServiceWorkerDatabaseStatus::kOk &&
       status != storage::mojom::ServiceWorkerDatabaseStatus::kErrorNotFound) {
     ScheduleDeleteAndStartOver();
@@ -1869,7 +1870,7 @@ void ServiceWorkerRegistry::DidStoreUserData(
     StatusCallback callback,
     const blink::StorageKey& key,
     storage::mojom::ServiceWorkerDatabaseStatus status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   CheckForClientWriteFailure(quota_manager_proxy_, status, key);
   // |status| can be NOT_FOUND when the associated registration did not exist in
   // the database. In the case, we don't have to schedule the corruption
@@ -1884,7 +1885,7 @@ void ServiceWorkerRegistry::DidStoreUserData(
 void ServiceWorkerRegistry::DidClearUserData(
     StatusCallback callback,
     storage::mojom::ServiceWorkerDatabaseStatus status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (status != storage::mojom::ServiceWorkerDatabaseStatus::kOk)
     ScheduleDeleteAndStartOver();
   std::move(callback).Run(DatabaseStatusToStatusCode(status));
@@ -1894,7 +1895,7 @@ void ServiceWorkerRegistry::DidGetUserDataForAllRegistrations(
     GetUserDataForAllRegistrationsCallback callback,
     storage::mojom::ServiceWorkerDatabaseStatus status,
     std::vector<storage::mojom::ServiceWorkerUserDataPtr> entries) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   // TODO(crbug.com/40120038): Update call sites of
   // GetUserDataForAllRegistrations so that we can avoid converting mojo struct
   // to a pair.
@@ -1913,7 +1914,7 @@ void ServiceWorkerRegistry::DidGetNewRegistrationId(
     blink::mojom::AncestorFrameType ancestor_frame_type,
     NewRegistrationCallback callback,
     int64_t registration_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (registration_id == blink::mojom::kInvalidServiceWorkerRegistrationId) {
     std::move(callback).Run(nullptr);
     return;
@@ -1935,7 +1936,7 @@ void ServiceWorkerRegistry::DidGetNewVersionId(
     int64_t version_id,
     mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>
         version_reference) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (version_id == blink::mojom::kInvalidServiceWorkerVersionId) {
     std::move(callback).Run(nullptr);
     return;
@@ -1954,7 +1955,7 @@ void ServiceWorkerRegistry::DidGetNewVersionId(
 }
 
 void ServiceWorkerRegistry::ScheduleDeleteAndStartOver() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   ClearAllInternalCache();
   if (!should_schedule_delete_and_start_over_) {
     // Recovery process has already been scheduled.
@@ -1967,14 +1968,14 @@ void ServiceWorkerRegistry::ScheduleDeleteAndStartOver() {
   DVLOG(1) << "Schedule to delete the context and start over.";
   context_->ScheduleDeleteAndStartOver();
   // ServiceWorkerContextCore should call PrepareForDeleteAndStartOver().
-  DCHECK(!should_schedule_delete_and_start_over_);
-  DCHECK(is_storage_disabled_);
+  CHECK(!should_schedule_delete_and_start_over_, base::NotFatalUntil::M159);
+  CHECK(is_storage_disabled_, base::NotFatalUntil::M159);
 }
 
 void ServiceWorkerRegistry::DidDeleteAndStartOver(
     StatusCallback callback,
     storage::mojom::ServiceWorkerDatabaseStatus status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   remote_storage_control_.reset();
   ClearAllInternalCache();
   std::move(callback).Run(DatabaseStatusToStatusCode(status));
@@ -1983,30 +1984,30 @@ void ServiceWorkerRegistry::DidDeleteAndStartOver(
 void ServiceWorkerRegistry::DidGetRegisteredStorageKeys(
     GetRegisteredStorageKeysCallback callback,
     const std::vector<blink::StorageKey>& keys) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   std::move(callback).Run(keys);
 }
 
 void ServiceWorkerRegistry::DidPerformStorageCleanup(
     base::OnceClosure callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   std::move(callback).Run();
 }
 
 void ServiceWorkerRegistry::DidDisable() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 }
 
 void ServiceWorkerRegistry::DidApplyPolicyUpdates(
     storage::mojom::ServiceWorkerDatabaseStatus status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 }
 
 void ServiceWorkerRegistry::DidGetRegisteredStorageKeysOnStartup(
     base::TimeTicks start_time,
     const std::vector<blink::StorageKey>& storage_keys) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(special_storage_policy_);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  CHECK(special_storage_policy_, base::NotFatalUntil::M159);
   std::vector<url::Origin> origins;
   origins.reserve(storage_keys.size());
   for (const blink::StorageKey& storage_key : storage_keys) {
@@ -2020,7 +2021,7 @@ void ServiceWorkerRegistry::DidGetRegisteredStorageKeysOnStartup(
 
 void ServiceWorkerRegistry::ApplyPolicyUpdates(
     std::vector<storage::mojom::StoragePolicyUpdatePtr> policy_updates) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (is_storage_disabled_)
     return;
   if (policy_updates.empty())
@@ -2055,7 +2056,7 @@ ServiceWorkerRegistry::GetRemoteStorageControl() {
     BindStorageControl(remote_storage_control_.BindNewPipeAndPassReceiver(
         GetUIThreadTaskRunner(
             {BrowserTaskType::kServiceWorkerStorageControlResponse})));
-    DCHECK(remote_storage_control_.is_bound());
+    CHECK(remote_storage_control_.is_bound(), base::NotFatalUntil::M159);
     remote_storage_control_.set_disconnect_handler(
         base::BindOnce(&ServiceWorkerRegistry::OnRemoteStorageDisconnected,
                        weak_factory_.GetWeakPtr()));
@@ -2067,7 +2068,7 @@ ServiceWorkerRegistry::GetRemoteStorageControl() {
 void ServiceWorkerRegistry::BindStorageControl(
     mojo::PendingReceiver<storage::mojom::ServiceWorkerStorageControl>
         receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   if (context_->wrapper()->storage_control_binder_for_test()) {
     CHECK_IS_TEST();
@@ -2135,7 +2136,7 @@ void ServiceWorkerRegistry::OnRemoteStorageDisconnected() {
 }
 
 void ServiceWorkerRegistry::DidRecover() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   recovery_retry_counts_ = 0;
   connection_state_ = ConnectionState::kNormal;
@@ -2155,7 +2156,7 @@ void ServiceWorkerRegistry::StartRemoteCall(
 }
 
 void ServiceWorkerRegistry::FinishRemoteCall(const InflightCall* call) {
-  DCHECK(inflight_calls_.contains(call));
+  CHECK(inflight_calls_.contains(call), base::NotFatalUntil::M159);
   inflight_calls_.erase(call);
 }
 
@@ -2235,9 +2236,9 @@ void ServiceWorkerRegistry::CreateInvokerAndStartRemoteCall(
       [](Functor f, PassingType<std::decay_t<Args>>... args,
          InflightCallWithInvokerType* inflight_call,
          base::OnceCallback<void(ReplyArgs...)> reply_callback) {
-        DCHECK(inflight_call->registry()
-                   ->GetRemoteStorageControl()
-                   .is_connected());
+        CHECK(
+            inflight_call->registry()->GetRemoteStorageControl().is_connected(),
+            base::NotFatalUntil::M159);
         ((*inflight_call->registry()->GetRemoteStorageControl()).*f)(
             CloneTraits<std::decay_t<Args>>::CloneIfNeeded(args)...,
             std::move(reply_callback));

@@ -68,9 +68,10 @@ ServiceWorkerUpdateChecker::ServiceWorkerUpdateChecker(
       creator_network_restrictions_id_(creator_network_restrictions_id),
       network_restrictions_id_(network_restrictions_id),
       creator_policies_(std::move(creator_policies)) {
-  DCHECK(context_);
-  DCHECK(fetch_client_settings_object_);
-  DCHECK(fetch_client_settings_object_->outgoing_referrer.is_valid());
+  CHECK(context_, base::NotFatalUntil::M159);
+  CHECK(fetch_client_settings_object_, base::NotFatalUntil::M159);
+  CHECK(fetch_client_settings_object_->outgoing_referrer.is_valid(),
+        base::NotFatalUntil::M159);
 }
 
 ServiceWorkerUpdateChecker::~ServiceWorkerUpdateChecker() = default;
@@ -80,7 +81,7 @@ void ServiceWorkerUpdateChecker::Start(UpdateStatusCallback callback) {
               perfetto::Flow::FromPointer(this), "main_script_url",
               main_script_url_.spec());
 
-  DCHECK(!scripts_to_compare_.empty());
+  CHECK(!scripts_to_compare_.empty(), base::NotFatalUntil::M159);
   callback_ = std::move(callback);
 
   if (context_->process_manager()->IsShutdown()) {

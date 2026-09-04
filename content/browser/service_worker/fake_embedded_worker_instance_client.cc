@@ -33,7 +33,7 @@ class FakeServiceWorkerInstalledScriptsManager
       base::RunLoop loop;
       quit_closure_ = loop.QuitClosure();
       loop.Run();
-      DCHECK(script_info_);
+      CHECK(script_info_, base::NotFatalUntil::M159);
     }
     return std::move(script_info_);
   }
@@ -121,7 +121,7 @@ void FakeEmbeddedWorkerInstanceClient::RunUntilBound() {
 
 blink::mojom::ServiceWorkerScriptInfoPtr
 FakeEmbeddedWorkerInstanceClient::WaitForTransferInstalledScript() {
-  DCHECK(installed_scripts_manager_);
+  CHECK(installed_scripts_manager_, base::NotFatalUntil::M159);
   return installed_scripts_manager_->WaitForTransferInstalledScript();
 }
 
@@ -336,7 +336,7 @@ void DelayedFakeEmbeddedWorkerInstanceClient::StopWorker() {
 void DelayedFakeEmbeddedWorkerInstanceClient::CompleteStopWorker() {
   if (!host()) {
     // host() might not be bound if start never was called or is blocked.
-    DCHECK(start_params_);
+    CHECK(start_params_, base::NotFatalUntil::M159);
     host().Bind(std::move(start_params_->instance_host));
   }
   // Destroys |this|.
