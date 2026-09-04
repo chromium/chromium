@@ -132,9 +132,7 @@ MinMaxSizesResult GridLanesLayoutAlgorithm::ComputeMinMaxSizes(
       return track_collection.CalculateSetSpanSize();
     } else {
       if (grid_items->IsEmpty()) {
-        // If there are no grid-lanes items, the intrinsic inline size is only
-        // border, scrollbar, and padding.
-        return BorderScrollbarPadding().InlineSum();
+        return LayoutUnit();
       }
 
       GridLanesRunningPositions running_positions(
