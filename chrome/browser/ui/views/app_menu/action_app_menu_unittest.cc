@@ -733,8 +733,8 @@ TEST_F(ActionAppMenuTest, SearchBarEnabledWithFeatureFlag) {
   EXPECT_EQ(insets.left(), 16);
   EXPECT_EQ(insets.right(), 16);
 
-  // Search bar is at index 0 of submenu.
-  EXPECT_EQ(root->GetSubmenu()->children()[0], search_bar);
+  // Search bar is hosted inside the first MenuItemView of submenu.
+  EXPECT_EQ(root->GetSubmenu()->GetMenuItemAt(0)->children()[0], search_bar);
 
   // Check initial empty state.
   views::ImageView* icon = search_bar->search_icon_for_testing();

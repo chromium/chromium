@@ -362,10 +362,17 @@ void ActionAppMenuManager::CreateMenuHierarchy() {
     return;
   }
 
+  AddSearchBarAction(root);
   AddBlockHeaderActions(root);
   AddYourChromeActions(root);
   AddToolsAndActionsActions(root);
   AddFooterActions(root);
+}
+
+void ActionAppMenuManager::AddSearchBarAction(actions::ActionItem* root) {
+  if (base::FeatureList::IsEnabled(features::kChroMenuSearch)) {
+    root->AddChild(CreateSectionActionItem(DisplayType::kSearch));
+  }
 }
 
 void ActionAppMenuManager::AddBlockHeaderActions(actions::ActionItem* root) {

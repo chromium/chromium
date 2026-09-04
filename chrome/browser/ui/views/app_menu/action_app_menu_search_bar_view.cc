@@ -15,49 +15,15 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
-#include "ui/events/event_handler.h"
+#include "ui/events/event_observer.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
-
-#if defined(USE_AURA)
-#include "ui/aura/env.h"
-#include "ui/events/event_target.h"
-#endif
-
-class SearchBarKeyEventHandler : public ui::EventHandler {
- public:
-  explicit SearchBarKeyEventHandler(ActionAppMenuSearchBarView* search_bar)
-      : search_bar_(search_bar) {
-#if defined(USE_AURA)
-    aura::Env::GetInstance()->AddPreTargetHandler(
-        this, ui::EventTarget::Priority::kAccessibility);
-#endif
-  }
-
-  SearchBarKeyEventHandler(const SearchBarKeyEventHandler&) = delete;
-  SearchBarKeyEventHandler& operator=(const SearchBarKeyEventHandler&) = delete;
-
-  ~SearchBarKeyEventHandler() override {
-#if defined(USE_AURA)
-    aura::Env::GetInstance()->RemovePreTargetHandler(this);
-#endif
-  }
-
-  // ui::EventHandler:
-  void OnKeyEvent(ui::KeyEvent* event) override {
-    if (search_bar_) {
-      search_bar_->HandleKeyEvent(event);
-    }
-  }
-
- private:
-  raw_ptr<ActionAppMenuSearchBarView> search_bar_ = nullptr;
-};
-
+#include "ui/views/event_monitor.h"
+#include "ui/views/widget/widget.h"
 ActionAppMenuSearchBarView::ActionAppMenuSearchBarView() {
   const auto* provider = ChromeLayoutProvider::Get();
   int icon_size =
@@ -92,11 +58,23 @@ ActionAppMenuSearchBarView::ActionAppMenuSearchBarView() {
                                                /*highlight_on_focus=*/true);
   ink_drop->SetBaseColor(ui::kColorSysStateHoverOnSubtle);
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(), 8);
-
-  key_event_handler_ = std::make_unique<SearchBarKeyEventHandler>(this);
 }
 
 ActionAppMenuSearchBarView::~ActionAppMenuSearchBarView() = default;
+
+void ActionAppMenuSearchBarView::AddedToWidget() {
+  views::Textfield::AddedToWidget();
+  SetTextfieldFocused(true);
+  if (GetWidget()) {
+    event_monitor_ = views::EventMonitor::CreateApplicationMonitor(
+        this, GetWidget()->GetNativeWindow(), {ui::EventType::kKeyPressed});
+  }
+}
+
+void ActionAppMenuSearchBarView::RemovedFromWidget() {
+  event_monitor_.reset();
+  views::Textfield::RemovedFromWidget();
+}
 
 void ActionAppMenuSearchBarView::Layout(PassKey) {
   LayoutSuperclass<views::Textfield>(this);
@@ -116,31 +94,52 @@ bool ActionAppMenuSearchBarView::OnMousePressed(const ui::MouseEvent& event) {
 
 void ActionAppMenuSearchBarView::SetTextfieldFocused(bool focused) {
   is_active_ = focused;
+  SetCursorEnabled(focused);
   if (focused) {
-    SetCursorEnabled(true);
     RequestFocus();
+  } else if (GetFocusManager()) {
+    GetFocusManager()->ClearFocus();
   }
   SchedulePaint();
 }
 
+void ActionAppMenuSearchBarView::OnEvent(const ui::Event& event) {
+  if (event.IsKeyEvent()) {
+    ui::KeyEvent key_event = *event.AsKeyEvent();
+    HandleKeyEvent(&key_event);
+  }
+}
+
 void ActionAppMenuSearchBarView::HandleKeyEvent(ui::KeyEvent* event) {
-  if (event->key_code() == ui::VKEY_ESCAPE) {
+  if (event->type() != ui::EventType::kKeyPressed) {
     return;
   }
 
-  if (event->key_code() == ui::VKEY_RETURN) {
-    event->StopPropagation();
-    event->SetHandled();
+  // Only handle keys when the search bar is active/focused.
+  if (!is_active_) {
     return;
   }
 
-  if (event->type() == ui::EventType::kKeyPressed) {
-    ui::TextEditCommand command = GetCommandForKeyEvent(*event);
-    if (command != ui::TextEditCommand::INVALID_COMMAND) {
-      ExecuteTextEditCommand(command);
-    } else if (event->GetCharacter() != 0) {
-      InsertChar(*event);
-    }
+  const ui::KeyboardCode key_code = event->key_code();
+
+  // Down Arrow clears focus from search bar and lets menu navigate down.
+  if (key_code == ui::VKEY_DOWN) {
+    SetTextfieldFocused(false);
+    return;
+  }
+
+  // Leave menu action/dismissal keys for MenuController.
+  if (key_code == ui::VKEY_ESCAPE || key_code == ui::VKEY_RETURN ||
+      key_code == ui::VKEY_UP) {
+    return;
+  }
+
+  // Typing and cursor editing (Backspace, Delete, Left/Right arrow).
+  ui::TextEditCommand command = GetCommandForKeyEvent(*event);
+  if (command != ui::TextEditCommand::INVALID_COMMAND) {
+    ExecuteTextEditCommand(command);
+  } else if (event->GetCharacter() != 0) {
+    InsertChar(*event);
   }
 
   event->StopPropagation();

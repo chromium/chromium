@@ -75,15 +75,8 @@ void ActionAppMenu::RunMenu(views::MenuButtonController* host) {
   root_->set_children_use_full_width(true);
   views::SubmenuView* submenu = root_->CreateSubmenu();
 
-  gfx::Insets insets = provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_POPUP);
-  if (base::FeatureList::IsEnabled(features::kChroMenuSearch)) {
-    auto search_bar = std::make_unique<ActionAppMenuSearchBarView>();
-    search_bar_ = search_bar.get();
-    submenu->AddChildViewAt(std::move(search_bar), 0);
-    insets.set_top(4);
-  }
-
-  submenu->SetBorder(views::CreateEmptyBorder(insets));
+  submenu->SetBorder(views::CreateEmptyBorder(
+      provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_POPUP)));
   submenu->set_minimum_preferred_width(
       provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_MINIMUM_WIDTH));
 
@@ -160,7 +153,9 @@ void ActionAppMenu::PopulateMenu(views::MenuItemView* view_parent,
     const ActionAppMenuManager::DisplayType display_type =
         child_ptr->GetProperty(ActionAppMenuManager::kDisplayTypeKey);
 
-    if (display_type == ActionAppMenuManager::DisplayType::kFooter) {
+    if (display_type == ActionAppMenuManager::DisplayType::kSearch) {
+      PopulateSearchBar(view_parent, child_ptr);
+    } else if (display_type == ActionAppMenuManager::DisplayType::kFooter) {
       PopulateFooter(view_parent, child_ptr);
     } else if (display_type == ActionAppMenuManager::DisplayType::kBlock) {
       PopulateBlockMenuItem(view_parent, child_ptr);
@@ -289,6 +284,17 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
     // Apply darker hover selection states matching section theme.
     menu_item->SetSelectedColorId(ui::kColorSysStateHoverOnSubtle);
   }
+}
+
+void ActionAppMenu::PopulateSearchBar(views::MenuItemView* view_parent,
+                                      actions::ActionItem* search_action_item) {
+  auto* search_item = view_parent->AppendMenuItem(0);
+  search_item->SetTriggerActionWithNonIconChildViews(false);
+  search_item->set_children_use_full_width(true);
+
+  auto search_bar = std::make_unique<ActionAppMenuSearchBarView>();
+  search_bar_ = search_bar.get();
+  search_item->AddChildView(std::move(search_bar));
 }
 
 void ActionAppMenu::PopulateFooter(views::MenuItemView* view_parent,

@@ -88,8 +88,12 @@ gfx::Insets ChromeLayoutProvider::GetInsetsMetric(int metric) const {
       return gfx::Insets::TLBR(4, 20, 20, 20);
     case INSETS_PAGE_INFO_FOOTER_BUTTON:
       return gfx::Insets::VH(12, 20);
-    case INSETS_ACTION_APP_MENU_POPUP:
+    case INSETS_ACTION_APP_MENU_POPUP: {
+      if (base::FeatureList::IsEnabled(features::kChroMenuSearch)) {
+        return gfx::Insets::TLBR(4, 16, 16, 16);
+      }
       return gfx::Insets::VH(16, 16);
+    }
     case INSETS_ACTION_APP_MENU_ITEM:
       return gfx::Insets::TLBR(0, 16, 0, 12);
     case INSETS_ACTION_APP_MENU_FOOTER:

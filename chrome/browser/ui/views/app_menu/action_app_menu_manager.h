@@ -31,6 +31,7 @@ class ActionAppMenuManager {
     kFooter,
     kDivider,
     kSection,
+    kSearch,
     kCustom,
   };
 
@@ -71,6 +72,7 @@ class ActionAppMenuManager {
   actions::ActionItem* GetAppMenuRoot() const;
 
  private:
+  void AddSearchBarAction(actions::ActionItem* root);
   void AddBlockHeaderActions(actions::ActionItem* root);
   void AddYourChromeActions(actions::ActionItem* root);
   void AddToolsAndActionsActions(actions::ActionItem* root);

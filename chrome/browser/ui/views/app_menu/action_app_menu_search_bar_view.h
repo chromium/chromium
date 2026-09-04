@@ -10,19 +10,22 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
+#include "ui/events/event_observer.h"
 #include "ui/views/controls/textfield/textfield.h"
 
 namespace views {
+class EventMonitor;
 class ImageView;
 }  // namespace views
 
-class SearchBarKeyEventHandler;
-
 // Search bar view placed at the top of the Block Style ChroMenu.
-class ActionAppMenuSearchBarView : public views::Textfield {
+class ActionAppMenuSearchBarView : public views::Textfield,
+                                   public ui::EventObserver {
   METADATA_HEADER(ActionAppMenuSearchBarView, views::Textfield)
 
  public:
+  using views::Textfield::OnEvent;
+
   ActionAppMenuSearchBarView();
   ActionAppMenuSearchBarView(const ActionAppMenuSearchBarView&) = delete;
   ActionAppMenuSearchBarView& operator=(const ActionAppMenuSearchBarView&) =
@@ -37,7 +40,12 @@ class ActionAppMenuSearchBarView : public views::Textfield {
 
   void HandleKeyEvent(ui::KeyEvent* event);
 
+  // ui::EventObserver:
+  void OnEvent(const ui::Event& event) override;
+
   // views::Textfield:
+  void AddedToWidget() override;
+  void RemovedFromWidget() override;
   void Layout(PassKey) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
 
@@ -46,7 +54,7 @@ class ActionAppMenuSearchBarView : public views::Textfield {
 
   bool is_active_ = false;
   raw_ptr<views::ImageView> search_icon_ = nullptr;
-  std::unique_ptr<SearchBarKeyEventHandler> key_event_handler_;
+  std::unique_ptr<views::EventMonitor> event_monitor_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APP_MENU_ACTION_APP_MENU_SEARCH_BAR_VIEW_H_

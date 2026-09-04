@@ -99,4 +99,37 @@ TEST_F(ActionAppMenuSearchBarViewTest, MouseAndKeyboardInteractions) {
   EXPECT_EQ(search_bar->GetText(), u"");
 }
 
+TEST_F(ActionAppMenuSearchBarViewTest, InactiveIgnoresTyping) {
+  auto search_bar = std::make_unique<ActionAppMenuSearchBarView>();
+  EXPECT_FALSE(search_bar->is_active_for_testing());
+
+  ui::KeyEvent key_a(ui::EventType::kKeyPressed, ui::VKEY_A, ui::EF_NONE);
+  key_a.set_character('a');
+  search_bar->HandleKeyEvent(&key_a);
+  EXPECT_FALSE(key_a.handled());
+  EXPECT_TRUE(search_bar->GetText().empty());
+}
+
+TEST_F(ActionAppMenuSearchBarViewTest, ActiveOnAddedToWidget) {
+  auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* search_bar =
+      widget->SetContentsView(std::make_unique<ActionAppMenuSearchBarView>());
+  EXPECT_TRUE(search_bar->is_active_for_testing());
+  EXPECT_TRUE(search_bar->GetCursorEnabled());
+}
+
+TEST_F(ActionAppMenuSearchBarViewTest, DownArrowDeactivatesFocus) {
+  auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* search_bar =
+      widget->SetContentsView(std::make_unique<ActionAppMenuSearchBarView>());
+  EXPECT_TRUE(search_bar->is_active_for_testing());
+
+  ui::KeyEvent down_key(ui::EventType::kKeyPressed, ui::VKEY_DOWN, ui::EF_NONE);
+  search_bar->HandleKeyEvent(&down_key);
+  EXPECT_FALSE(search_bar->is_active_for_testing());
+  EXPECT_FALSE(search_bar->GetCursorEnabled());
+  // Down key should be unhandled so MenuController can process it.
+  EXPECT_FALSE(down_key.handled());
+}
+
 }  // namespace

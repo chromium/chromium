@@ -76,6 +76,9 @@ class ActionAppMenu : public views::MenuDelegate {
                          bool is_first_item,
                          bool is_last_item);
 
+  void PopulateSearchBar(views::MenuItemView* view_parent,
+                         actions::ActionItem* search_action_item);
+
   void PopulateFooter(views::MenuItemView* view_parent,
                       actions::ActionItem* footer_action_item);
 
