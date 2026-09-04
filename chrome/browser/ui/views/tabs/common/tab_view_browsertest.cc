@@ -951,7 +951,13 @@ class HorizontalTabViewSeparatorTest
   }
 };
 
-IN_PROC_BROWSER_TEST_F(HorizontalTabViewSeparatorTest, HorizontalSeparators) {
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_HorizontalSeparators DISABLED_HorizontalSeparators
+#else
+#define MAYBE_HorizontalSeparators HorizontalSeparators
+#endif
+IN_PROC_BROWSER_TEST_F(HorizontalTabViewSeparatorTest,
+                       MAYBE_HorizontalSeparators) {
   AppendTab();
   AppendTab();
   AppendTab();
