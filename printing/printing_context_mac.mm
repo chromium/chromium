@@ -469,9 +469,13 @@ void PrintingContextMac::AskUserForSettings(int max_pages,
     // This function may be called in the middle of a CATransaction, where
     // running a modal panel is forbidden. That situation isn't ideal, but from
     // this code's POV the right answer is to defer running the panel until
-    // after the current transaction. See https://crbug.com/849538.
+    // after the current transaction. See https://crbug.com/40579303.
+
+    // Schedule the modal panel from the main run loop. Do not run it from a
+    // CoreAnimation completion block because the callback would remain active
+    // until the panel closes.
     __block auto block_callback = std::move(callback);
-    [CATransaction setCompletionBlock:^{
+    CFRunLoopPerformBlock(CFRunLoopGetMain(), kCFRunLoopCommonModes, ^{
       NSInteger selection = [panel runModalWithPrintInfo:print_info_];
       if (selection == NSModalResponseOK) {
         print_info_ = [panel printInfo];
@@ -492,7 +496,8 @@ void PrintingContextMac::AskUserForSettings(int max_pages,
       } else {
         std::move(block_callback).Run(mojom::ResultCode::kCanceled);
       }
-    }];
+    });
+    CFRunLoopWakeUp(CFRunLoopGetMain());
   }
 }
 
