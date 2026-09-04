@@ -22020,9 +22020,118 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(initial_site_instance, contents()->GetSiteInstance());
 }
 
-// TODO(crbug.com/511774376): Add a browser test to verify that the navigate
-// event for a cross-document history traversal is not dispatched when the
-// destination entry was committed at an opaque origin due to CSP sandbox.
+// Verify that the navigate event for a cross-document history traversal is not
+// dispatched when the destination entry was committed at an opaque origin due
+// to CSP sandbox, even though its URL shares the current document's tuple
+// origin.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
+                       NavigateEventNotFiredForTraversalToCSPSandboxedEntry) {
+  net::test_server::ControllableHttpResponse response1(embedded_test_server(),
+                                                       "/sandboxed_page");
+  net::test_server::ControllableHttpResponse response2(embedded_test_server(),
+                                                       "/sandboxed_page");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Ensure a.com requires a dedicated process across all platforms (including
+  // Android), so that CSP-sandboxed pages are isolated into a separate
+  // sandboxed SiteInstance from non-sandboxed pages of the same tuple origin.
+  IsolateOriginsForTesting(embedded_test_server(), shell()->web_contents(),
+                           {"a.com"});
+
+  NavigationControllerImpl& controller =
+      static_cast<NavigationControllerImpl&>(contents()->GetController());
+  FrameTreeNode* root = contents()->GetPrimaryFrameTree().root();
+
+  // Load a CSP-sandboxed page, which commits at an opaque origin.
+  GURL sandboxed_url(
+      embedded_test_server()->GetURL("a.com", "/sandboxed_page"));
+  {
+    TestNavigationObserver nav_observer(contents());
+    shell()->LoadURL(sandboxed_url);
+    response1.WaitForRequest();
+    response1.Send(
+        "HTTP/1.1 200 OK\r\n"
+        "Content-Type: text/html; charset=utf-8\r\n"
+        "Content-Security-Policy: sandbox\r\n"
+        "Cache-Control: no-store\r\n"
+        "\r\n"
+        "sandboxed document");
+    response1.Done();
+    nav_observer.Wait();
+  }
+
+  ASSERT_TRUE(root->current_frame_host()->GetLastCommittedOrigin().opaque());
+  scoped_refptr<SiteInstance> sandboxed_site_instance =
+      root->current_frame_host()->GetSiteInstance();
+  FrameNavigationEntry* sandboxed_frame_entry =
+      controller.GetLastCommittedEntry()->GetFrameEntry(root);
+  ASSERT_TRUE(sandboxed_frame_entry->committed_origin().has_value());
+  EXPECT_TRUE(sandboxed_frame_entry->committed_origin()->opaque());
+  int64_t sandboxed_isn = sandboxed_frame_entry->item_sequence_number();
+  int64_t sandboxed_dsn = sandboxed_frame_entry->document_sequence_number();
+  // The history navigation below must reach the network, so prevent this page
+  // from being restored from BFCache.
+  DisableBFCacheForRFHForTesting(root->current_frame_host()->GetGlobalId());
+
+  // Load a non-sandboxed page from the same tuple origin.
+  GURL non_sandboxed_url(
+      embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), non_sandboxed_url));
+  EXPECT_FALSE(root->current_frame_host()->GetLastCommittedOrigin().opaque());
+  EXPECT_NE(sandboxed_site_instance, contents()->GetSiteInstance());
+
+  // Register a navigate event listener and traverse back to the sandboxed
+  // entry.
+  EXPECT_TRUE(ExecJs(root, R"(
+      window.navigate_event_fired = false;
+      navigation.onnavigate = e => { window.navigate_event_fired = true; };
+  )"));
+  TestNavigationManager nav_manager(contents(), sandboxed_url);
+  controller.GoBack();
+
+  // Delay the server response using ControllableHttpResponse until after the
+  // speculative RenderFrameHost is created, to verify that it speculatively
+  // uses the destination sandboxed SiteInstance before response headers arrive.
+  nav_manager.WaitForSpeculativeRenderFrameHostCreation();
+  EXPECT_EQ(
+      sandboxed_site_instance,
+      root->render_manager()->speculative_frame_host()->GetSiteInstance());
+
+  // Ensure the URLLoader has started sending the request before waiting for
+  // the server request.
+  ASSERT_TRUE(nav_manager.WaitForLoaderStart());
+
+  // Send the server response now that the speculative RFH has been verified.
+  response2.WaitForRequest();
+  response2.Send(
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Type: text/html; charset=utf-8\r\n"
+      "Content-Security-Policy: sandbox\r\n"
+      "Cache-Control: no-store\r\n"
+      "\r\n"
+      "sandboxed document");
+  response2.Done();
+
+  // Pause at WillProcessResponse so the listener result can be read from the
+  // still-current document before it is replaced.
+  ASSERT_TRUE(nav_manager.WaitForResponse());
+
+  // The sandboxed entry's committed origin is opaque and therefore
+  // cross-origin to the current document, so no navigate event should fire and
+  // no PageState should be sent to the current renderer.
+  EXPECT_EQ(false, EvalJs(root, "window.navigate_event_fired"));
+
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
+  EXPECT_EQ(sandboxed_url, controller.GetLastCommittedEntry()->GetURL());
+  EXPECT_EQ(sandboxed_site_instance,
+            root->current_frame_host()->GetSiteInstance());
+  FrameNavigationEntry* final_frame_entry =
+      controller.GetLastCommittedEntry()->GetFrameEntry(root);
+  EXPECT_EQ(sandboxed_isn, final_frame_entry->item_sequence_number());
+  EXPECT_EQ(sandboxed_dsn, final_frame_entry->document_sequence_number());
+  ASSERT_TRUE(final_frame_entry->committed_origin().has_value());
+  EXPECT_TRUE(final_frame_entry->committed_origin()->opaque());
+}
 
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                        NavigateToNavigationApiKey_NullCommittedOrigin) {
