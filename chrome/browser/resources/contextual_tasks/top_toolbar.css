@@ -25,12 +25,21 @@
   margin: 6px 4px 0 4px;
 }
 
+:host([is-side-panel-rearchitecture-enabled]) {
+  margin: 0;
+  padding: 9px 8px;
+}
+
 #top-row {
   align-items: center;
   display: flex;
   flex-direction: row;
   height: 20px;
   width: 100%;
+}
+
+:host([is-side-panel-rearchitecture-enabled]) #top-row {
+  height: 28px;
 }
 
 .top-toolbar-title {
@@ -51,6 +60,17 @@
   width: 18px;
 }
 
+:host([is-side-panel-rearchitecture-enabled]) .top-toolbar-logo-container {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  height: auto;
+  justify-content: center;
+  margin-inline-end: 12px;
+  margin-right: 0;
+  width: auto;
+}
+
 .top-toolbar-logo-button {
   align-items: center;
   display: flex;
@@ -65,22 +85,19 @@
   background: var(--toolbar-background-color, #FFF);
   border: none;
   border-radius: 100px;
-  box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.2), 0 0 2px 0 rgba(0, 0, 0, 0.12);
+  box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.17);
   cursor: pointer;
   display: flex;
   height: 28px;
   justify-content: center;
-  left: -5px;
   min-width: 28px;
   padding: 0;
-  position: absolute;
-  top: -5px;
   width: 28px;
 }
 
 :host([dark-mode]) .top-toolbar-logo-button.clickable {
   background: var(--toolbar-background-color, #292a2d);
-  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.6);
+  box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.6);
 }
 
 .top-toolbar-logo-button.clickable:focus-visible {

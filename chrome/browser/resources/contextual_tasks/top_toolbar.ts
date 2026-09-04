@@ -104,7 +104,11 @@ export class TopToolbarElement extends TopToolbarElementBase {
       contextualTasksEnableSpatialModelToolbarLayoutNewThreadInOverflow_:
           {type: Boolean},
       overflowMenuOpen_: {type: Boolean},
-      isSidePanelRearchitectureEnabled_: {type: Boolean},
+      isSidePanelRearchitectureEnabled_: {
+        type: Boolean,
+        reflect: true,
+        attribute: 'is-side-panel-rearchitecture-enabled',
+      },
       webuiRoundedIconsEnabled_: {type: Boolean},
       permissionDashboardState: {type: Object},
     };

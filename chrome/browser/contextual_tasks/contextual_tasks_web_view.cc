@@ -54,7 +54,7 @@ ContextualTasksWebView::ContextualTasksWebView(
             : blink::mojom::PreferredColorScheme::kLight;
     toolbar_web_view_->GetWebContents()->SetWebPreferences(prefs);
 
-    toolbar_web_view_->SetPreferredSize(gfx::Size(0, 40));
+    toolbar_web_view_->SetPreferredSize(gfx::Size(0, 46));
     toolbar_web_view_->LoadInitialURL(
         GURL(chrome::kChromeUIContextualTasksToolbarURL));
     webui::SetBrowserWindowInterface(toolbar_web_view_->GetWebContents(),
