@@ -6,6 +6,9 @@
 
 #include <windows.h>
 
+#include <utility>
+
+#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/current_module.h"
 #include "base/win/scoped_gdi_object.h"
@@ -55,8 +58,7 @@ LRESULT SplashWnd::OnCreate(UINT, WPARAM, LPARAM) {
                  /*y=*/(::GetSystemMetrics(SM_CYSCREEN) - height) / 2, width,
                  height, SWP_SHOWWINDOW);
 
-  SetWindowIcon(hwnd(), IDI_MINI_INSTALLER,
-                base::win::ScopedGDIObject<HICON>::Receiver(hicon_).get());
+  UpdateIcons(dpi);
 
   return 0;
 }
@@ -98,7 +100,7 @@ LRESULT SplashWnd::OnPaint(UINT, WPARAM, LPARAM) {
   return 0;
 }
 
-LRESULT SplashWnd::OnDpiChanged(UINT, WPARAM, LPARAM lparam) {
+LRESULT SplashWnd::OnDpiChanged(UINT, WPARAM wparam, LPARAM lparam) {
   // Resize the window.
   const RECT* new_window_rect = reinterpret_cast<RECT*>(lparam);
   ::SetWindowPos(hwnd(), nullptr, new_window_rect->left, new_window_rect->top,
@@ -106,14 +108,30 @@ LRESULT SplashWnd::OnDpiChanged(UINT, WPARAM, LPARAM lparam) {
                  new_window_rect->bottom - new_window_rect->top,
                  SWP_NOZORDER | SWP_NOACTIVATE);
 
+  UpdateIcons(LOWORD(wparam));
+
   // Force a full repaint to redraw the logo at the new scale.
   ::InvalidateRect(hwnd(), nullptr, TRUE);
   return 0;
 }
 
+// Updates both big (task switcher / Alt+Tab) and small (title bar / taskbar)
+// window icons using DPI-scaled system metrics.
+void SplashWnd::UpdateIcons(UINT dpi) {
+  WindowIcons icons = LoadResourceIcons(IDI_MINI_INSTALLER, dpi);
+  if (!icons.icon_big.is_valid() || !icons.icon_small.is_valid()) {
+    VLOG(1) << __func__ << ": Failed to load splash window icons";
+    return;
+  }
+  SetWindowIcons(hwnd(), std::move(icons), window_icons_);
+}
+
 int SplashWnd::GetScaledValue(int value, UINT dpi) const {
-  // Standard Win32 scaling formula: (value * dpi) / 96.
-  return ::MulDiv(value, static_cast<int>(dpi), USER_DEFAULT_SCREEN_DPI);
+  // Standard Win32 scaling formula: (value * dpi) / 96. Fall back to
+  // USER_DEFAULT_SCREEN_DPI if dpi is 0.
+  const int effective_dpi =
+      dpi ? static_cast<int>(dpi) : USER_DEFAULT_SCREEN_DPI;
+  return ::MulDiv(value, effective_dpi, USER_DEFAULT_SCREEN_DPI);
 }
 
 LRESULT SplashWnd::OnClose(UINT, WPARAM, LPARAM) {

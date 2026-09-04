@@ -12,6 +12,8 @@
 #include <string>
 #include <vector>
 
+#include "base/win/scoped_gdi_object.h"
+
 namespace updater::ui {
 
 // Finds all the primary windows owned by the given process. A primary window is
@@ -34,9 +36,57 @@ bool IsMainWindow(HWND wnd);
 // Returns true if the window has a system menu.
 bool HasSystemMenu(HWND wnd);
 
-// Sets the icon of a window icon given the |icon_id| in the resources of
-// the EXE module.
-HRESULT SetWindowIcon(HWND hwnd, WORD icon_id, HICON* hicon);
+// System icon dimensions for big (ICON_BIG) and small (ICON_SMALL) icons.
+struct IconSizes {
+  int cx_big = 0;
+  int cy_big = 0;
+  int cx_small = 0;
+  int cy_small = 0;
+};
+
+// Returns system icon dimensions scaled for `dpi` (or standard unscaled 96 DPI
+// system metrics if `dpi` is 0).
+IconSizes GetIconSizesForDpi(UINT dpi);
+
+// Holds a pair of big (ICON_BIG) and small (ICON_SMALL) icon handles.
+struct WindowIcons {
+  base::win::ScopedGDIObject<HICON> icon_big;
+  base::win::ScopedGDIObject<HICON> icon_small;
+};
+
+// Loads both big and small icons for `icon_resource_id` from the executable
+// instance, scaled for `dpi` with symmetrical fallback to unscaled metrics if
+// DPI-scaled loading fails.
+WindowIcons LoadResourceIcons(int icon_resource_id, UINT dpi = 0);
+
+// Dispatches WM_SETICON for both ICON_BIG and ICON_SMALL before replacing the
+// handles in `current_icons`, ensuring the window never holds dangling
+// references to destroyed handles.
+void SetWindowIcons(HWND hwnd,
+                    WindowIcons new_icons,
+                    WindowIcons& current_icons);
+
+// Creates an icon from an opaque HBITMAP (such as an updater 24bpp 48x48 app
+// logo BMP or a 32bpp compatible bitmap), scaled to the specified dimensions.
+// If one dimension is 0, the specified dimension is used for both (square
+// aspect). If both dimensions are omitted (width = 0, height = 0), dimensions
+// default specifically to DPI-aware ICON_BIG system metrics for `dpi` (or
+// 96 DPI system metrics if `dpi` is 0). Callers should pass explicit DPI-scaled
+// metrics (e.g. from GetIconSizesForDpi) for small icons.
+// Non-square source bitmaps (such as wide rectangular app logos) are fitted and
+// centered within the target dimensions while preserving their aspect ratio;
+// any unused letterbox margin is made transparent in the 1bpp mask.
+// Synthesizes an HICON using an explicit 24bpp DIBSection and a 1bpp
+// monochrome mask, ensuring deterministic opacity without alpha channel
+// artifacts in Windows DWM.
+// Note: 32bpp source bitmaps are treated as opaque RGB; per-pixel alpha
+// transparency is ignored by StretchBlt and rendered fully opaque. If
+// transparent 32bpp ARGB logos are supported in the future, explicit alpha
+// channel extraction or 32bpp ARGB icon synthesis will be required.
+base::win::ScopedGDIObject<HICON> CreateIconFromHBitmap(HBITMAP bitmap,
+                                                        int width = 0,
+                                                        int height = 0,
+                                                        UINT dpi = 0);
 
 // Returns a localized installer name for a bundle. If |bundle_name| is empty,
 // the friendly company name is used.

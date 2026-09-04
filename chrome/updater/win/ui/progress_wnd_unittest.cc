@@ -4,6 +4,7 @@
 
 #include "chrome/updater/win/ui/progress_wnd.h"
 
+#include <cstdlib>
 #include <memory>
 #include <string>
 #include <vector>
@@ -15,6 +16,7 @@
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "base/win/registry.h"
+#include "base/win/scoped_gdi_object.h"
 #include "base/win/scoped_hdc.h"
 #include "chrome/updater/test/test_scope.h"
 #include "chrome/updater/test/unit_test_util.h"
@@ -52,6 +54,21 @@ class MockProgressWndEvents : public ui::ProgressWndEvents {
   MOCK_METHOD(bool, DoReboot, (), (override));
   MOCK_METHOD(void, DoCancel, (), (override));
 };
+
+base::win::ScopedGDIObject<HBITMAP> CreateTestDIB24(HDC dc,
+                                                    int width,
+                                                    int height) {
+  BITMAPINFO bi = {};
+  bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+  bi.bmiHeader.biWidth = width;
+  bi.bmiHeader.biHeight = height;
+  bi.bmiHeader.biPlanes = 1;
+  bi.bmiHeader.biBitCount = 24;
+  bi.bmiHeader.biCompression = BI_RGB;
+  void* bits = nullptr;
+  return base::win::ScopedGDIObject<HBITMAP>(
+      ::CreateDIBSection(dc, &bi, DIB_RGB_COLORS, &bits, nullptr, 0));
+}
 
 }  // namespace
 
@@ -173,17 +190,17 @@ TEST_F(ProgressWndTest, ClickedButton) {
 }
 
 TEST_F(ProgressWndTest, OnInstallStopped) {
-    mock_progress_wnd_events_ = std::make_unique<MockProgressWndEvents>();
-    MessageLoop ui_message_loop;
-    std::unique_ptr<ProgressWnd> progress_wnd =
-        MakeProgressWindow(&ui_message_loop);
-    progress_wnd->OnCheckingForUpdate();
-    EXPECT_EQ(progress_wnd->cur_state_,
-              ProgressWnd::States::STATE_CHECKING_FOR_UPDATE);
-    EXPECT_CALL(*mock_progress_wnd_events_, DoCancel());
-    progress_wnd->OnClose(WM_CLOSE, 0, 0);
-    EXPECT_TRUE(progress_wnd->is_canceled_);
-    progress_wnd->DestroyWindow();
+  mock_progress_wnd_events_ = std::make_unique<MockProgressWndEvents>();
+  MessageLoop ui_message_loop;
+  std::unique_ptr<ProgressWnd> progress_wnd =
+      MakeProgressWindow(&ui_message_loop);
+  progress_wnd->OnCheckingForUpdate();
+  EXPECT_EQ(progress_wnd->cur_state_,
+            ProgressWnd::States::STATE_CHECKING_FOR_UPDATE);
+  EXPECT_CALL(*mock_progress_wnd_events_, DoCancel());
+  progress_wnd->OnClose(WM_CLOSE, 0, 0);
+  EXPECT_TRUE(progress_wnd->is_canceled_);
+  progress_wnd->DestroyWindow();
 }
 
 TEST_F(ProgressWndTest, MaybeCloseWindow) {
@@ -457,8 +474,8 @@ TEST_F(ProgressWndTest, SetAppLogoDynamicSizing) {
   base::win::ScopedGetDC dc(nullptr);
 
   // Test with a 48x48 square logo.
-  base::win::ScopedGDIObject<HBITMAP> square_bitmap(
-      ::CreateCompatibleBitmap(dc, 48, 48));
+  base::win::ScopedGDIObject<HBITMAP> square_bitmap =
+      CreateTestDIB24(dc, 48, 48);
   EXPECT_TRUE(square_bitmap.is_valid());
 
   ::SendMessage(progress_wnd->hwnd(), WM_SET_APP_LOGO,
@@ -474,8 +491,7 @@ TEST_F(ProgressWndTest, SetAppLogoDynamicSizing) {
             ::MulDiv(48, effective_dpi, USER_DEFAULT_SCREEN_DPI));
 
   // Test with a 92x24 rectangular logo.
-  base::win::ScopedGDIObject<HBITMAP> rect_bitmap(
-      ::CreateCompatibleBitmap(dc, 92, 24));
+  base::win::ScopedGDIObject<HBITMAP> rect_bitmap = CreateTestDIB24(dc, 92, 24);
   EXPECT_TRUE(rect_bitmap.is_valid());
 
   ::SendMessage(progress_wnd->hwnd(), WM_SET_APP_LOGO,
@@ -525,19 +541,34 @@ TEST_F(ProgressWndTest, SetAppLogoThemeSwitching) {
   base::win::ScopedGetDC dc(nullptr);
 
   // Light logo: 32x32, Dark logo: 48x48.
-  base::win::ScopedGDIObject<HBITMAP> light_bitmap(
-      ::CreateCompatibleBitmap(dc, 32, 32));
-  base::win::ScopedGDIObject<HBITMAP> dark_bitmap(
-      ::CreateCompatibleBitmap(dc, 48, 48));
+  base::win::ScopedGDIObject<HBITMAP> light_bitmap =
+      CreateTestDIB24(dc, 32, 32);
+  base::win::ScopedGDIObject<HBITMAP> dark_bitmap = CreateTestDIB24(dc, 48, 48);
   EXPECT_TRUE(light_bitmap.is_valid());
   EXPECT_TRUE(dark_bitmap.is_valid());
 
   const HBITMAP light_hbitmap = light_bitmap.get();
   const HBITMAP dark_hbitmap = dark_bitmap.get();
 
+  const HICON initial_big_icon = reinterpret_cast<HICON>(
+      ::SendMessage(progress_wnd->hwnd(), WM_GETICON, ICON_BIG, 0));
+  const HICON initial_small_icon = reinterpret_cast<HICON>(
+      ::SendMessage(progress_wnd->hwnd(), WM_GETICON, ICON_SMALL, 0));
+  EXPECT_NE(initial_big_icon, nullptr);
+  EXPECT_NE(initial_small_icon, nullptr);
+
   ::SendMessage(progress_wnd->hwnd(), WM_SET_APP_LOGO,
                 reinterpret_cast<WPARAM>(light_bitmap.release()),
                 reinterpret_cast<LPARAM>(dark_bitmap.release()));
+
+  const HICON custom_big_icon = reinterpret_cast<HICON>(
+      ::SendMessage(progress_wnd->hwnd(), WM_GETICON, ICON_BIG, 0));
+  const HICON custom_small_icon = reinterpret_cast<HICON>(
+      ::SendMessage(progress_wnd->hwnd(), WM_GETICON, ICON_SMALL, 0));
+  EXPECT_NE(custom_big_icon, nullptr);
+  EXPECT_NE(custom_small_icon, nullptr);
+  EXPECT_NE(custom_big_icon, initial_big_icon);
+  EXPECT_NE(custom_small_icon, initial_small_icon);
 
   EXPECT_EQ(progress_wnd->light_app_logo_bmp_.get(), light_hbitmap);
   EXPECT_EQ(progress_wnd->dark_app_logo_bmp_.get(), dark_hbitmap);
@@ -576,13 +607,20 @@ TEST_F(ProgressWndTest, SetAppLogoThemeSwitching) {
             ::MulDiv(32, effective_dpi, USER_DEFAULT_SCREEN_DPI));
 
   // Test with only a single fallback logo (light provided, dark is null).
-  base::win::ScopedGDIObject<HBITMAP> fallback_bitmap(
-      ::CreateCompatibleBitmap(dc, 64, 64));
+  base::win::ScopedGDIObject<HBITMAP> fallback_bitmap =
+      CreateTestDIB24(dc, 64, 64);
   EXPECT_TRUE(fallback_bitmap.is_valid());
   const HBITMAP fallback_hbitmap = fallback_bitmap.get();
 
   ::SendMessage(progress_wnd->hwnd(), WM_SET_APP_LOGO,
                 reinterpret_cast<WPARAM>(fallback_bitmap.release()), 0);
+
+  EXPECT_NE(reinterpret_cast<HICON>(
+                ::SendMessage(progress_wnd->hwnd(), WM_GETICON, ICON_BIG, 0)),
+            nullptr);
+  EXPECT_NE(reinterpret_cast<HICON>(
+                ::SendMessage(progress_wnd->hwnd(), WM_GETICON, ICON_SMALL, 0)),
+            nullptr);
 
   EXPECT_EQ(progress_wnd->light_app_logo_bmp_.get(), fallback_hbitmap);
   EXPECT_EQ(progress_wnd->dark_app_logo_bmp_.get(), nullptr);
@@ -615,6 +653,158 @@ TEST_F(ProgressWndTest, SetAppLogoThemeSwitching) {
             ::MulDiv(64, effective_dpi, USER_DEFAULT_SCREEN_DPI));
   EXPECT_EQ(ctl_rect.bottom - ctl_rect.top,
             ::MulDiv(64, effective_dpi, USER_DEFAULT_SCREEN_DPI));
+
+  // Test window icon re-scaling across dynamic DPI changes (WM_DPICHANGED).
+  RECT suggested_rect = {0, 0, 600, 400};
+  ::SendMessage(progress_wnd->hwnd(), WM_DPICHANGED, MAKELPARAM(192, 192),
+                reinterpret_cast<LPARAM>(&suggested_rect));
+  EXPECT_NE(reinterpret_cast<HICON>(
+                ::SendMessage(progress_wnd->hwnd(), WM_GETICON, ICON_BIG, 0)),
+            nullptr);
+  EXPECT_NE(reinterpret_cast<HICON>(
+                ::SendMessage(progress_wnd->hwnd(), WM_GETICON, ICON_SMALL, 0)),
+            nullptr);
+
+  // Clear the app logo and verify the window icon falls back to the default
+  // app icon (IDI_APP).
+  ::SendMessage(progress_wnd->hwnd(), WM_SET_APP_LOGO, 0, 0);
+  EXPECT_NE(reinterpret_cast<HICON>(
+                ::SendMessage(progress_wnd->hwnd(), WM_GETICON, ICON_BIG, 0)),
+            nullptr);
+  EXPECT_NE(reinterpret_cast<HICON>(
+                ::SendMessage(progress_wnd->hwnd(), WM_GETICON, ICON_SMALL, 0)),
+            nullptr);
+
+  progress_wnd->DestroyWindow();
+}
+
+TEST_F(ProgressWndTest, AppLogoScalingFailureFallback) {
+  MessageLoop ui_message_loop;
+  std::unique_ptr<ProgressWnd> progress_wnd =
+      MakeProgressWindow(&ui_message_loop);
+
+  // Dialog initializes with default IDI_APP icons.
+  EXPECT_NE(reinterpret_cast<HICON>(
+                ::SendMessage(progress_wnd->hwnd(), WM_GETICON, ICON_BIG, 0)),
+            nullptr);
+  EXPECT_NE(reinterpret_cast<HICON>(
+                ::SendMessage(progress_wnd->hwnd(), WM_GETICON, ICON_SMALL, 0)),
+            nullptr);
+
+  // Set a valid logo so custom derived window icons are active.
+  base::win::ScopedGetDC dc(progress_wnd->hwnd());
+  base::win::ScopedGDIObject<HBITMAP> valid_logo = CreateTestDIB24(dc, 48, 48);
+  ASSERT_TRUE(valid_logo.is_valid());
+  ::SendMessage(progress_wnd->hwnd(), WM_SET_APP_LOGO,
+                reinterpret_cast<WPARAM>(valid_logo.release()), 0);
+  EXPECT_NE(reinterpret_cast<HICON>(
+                ::SendMessage(progress_wnd->hwnd(), WM_GETICON, ICON_BIG, 0)),
+            nullptr);
+  EXPECT_NE(reinterpret_cast<HICON>(
+                ::SendMessage(progress_wnd->hwnd(), WM_GETICON, ICON_SMALL, 0)),
+            nullptr);
+
+  // Simulate a logo update where bitmap scaling or icon creation fails
+  // (e.g. source bitmap is locked into another device context).
+  base::win::ScopedCreateDC lock_dc(::CreateCompatibleDC(dc));
+  ASSERT_TRUE(lock_dc.is_valid());
+  base::win::ScopedGDIObject<HBITMAP> locked_logo = CreateTestDIB24(dc, 48, 48);
+  ASSERT_TRUE(locked_logo.is_valid());
+  const HBITMAP locked_hbitmap = locked_logo.get();
+  HGDIOBJ old_selected = ::SelectObject(lock_dc.get(), locked_hbitmap);
+  ASSERT_TRUE(old_selected && old_selected != HGDI_ERROR);
+
+  ::SendMessage(progress_wnd->hwnd(), WM_SET_APP_LOGO,
+                reinterpret_cast<WPARAM>(locked_logo.release()), 0);
+
+  // Verify WM_GETICON returns valid IDI_APP fallback handles rather than null
+  // or destroyed handles.
+  const HICON fallback_big_icon = reinterpret_cast<HICON>(
+      ::SendMessage(progress_wnd->hwnd(), WM_GETICON, ICON_BIG, 0));
+  const HICON fallback_small_icon = reinterpret_cast<HICON>(
+      ::SendMessage(progress_wnd->hwnd(), WM_GETICON, ICON_SMALL, 0));
+  EXPECT_NE(fallback_big_icon, nullptr);
+  EXPECT_NE(fallback_small_icon, nullptr);
+
+  // Deselect from lock_dc before progress_wnd destroys the bitmap to ensure
+  // clean GDI object deletion.
+  ::SelectObject(lock_dc.get(), old_selected);
+
+  // Now that the bitmap is unlocked, dispatching WM_THEMECHANGED invokes
+  // UpdateAppLogo(). Because current_logo_ was cleared on fallback, the method
+  // retries icon creation rather than early-returning due to a stale cache hit.
+  ::SendMessage(progress_wnd->hwnd(), WM_THEMECHANGED, 0, 0);
+  const HICON retried_big_icon = reinterpret_cast<HICON>(
+      ::SendMessage(progress_wnd->hwnd(), WM_GETICON, ICON_BIG, 0));
+  const HICON retried_small_icon = reinterpret_cast<HICON>(
+      ::SendMessage(progress_wnd->hwnd(), WM_GETICON, ICON_SMALL, 0));
+  EXPECT_NE(retried_big_icon, nullptr);
+  EXPECT_NE(retried_small_icon, nullptr);
+  EXPECT_NE(retried_big_icon, fallback_big_icon);
+  EXPECT_NE(retried_small_icon, fallback_small_icon);
+
+  progress_wnd->DestroyWindow();
+}
+
+TEST_F(ProgressWndTest, ApplyDpiScalingIconMetrics) {
+  MessageLoop ui_message_loop;
+  std::unique_ptr<ProgressWnd> progress_wnd =
+      MakeProgressWindow(&ui_message_loop);
+
+  base::win::ScopedGetDC dc(progress_wnd->hwnd());
+  base::win::ScopedGDIObject<HBITMAP> logo = CreateTestDIB24(dc, 48, 48);
+  ASSERT_TRUE(logo.is_valid());
+  ::SendMessage(progress_wnd->hwnd(), WM_SET_APP_LOGO,
+                reinterpret_cast<WPARAM>(logo.release()), 0);
+
+  // Choose a target DPI that strictly differs from the window's current DPI
+  // (e.g. 192 vs 96) to simulate WM_DPICHANGED arriving before window rect
+  // adjustment finishes.
+  const UINT window_dpi = ::GetDpiForWindow(progress_wnd->hwnd());
+  const UINT target_dpi = (window_dpi == 192) ? 96 : 192;
+  ASSERT_NE(target_dpi, window_dpi);
+  progress_wnd->ApplyDpiScaling(target_dpi);
+
+  const HICON big_icon = reinterpret_cast<HICON>(
+      ::SendMessage(progress_wnd->hwnd(), WM_GETICON, ICON_BIG, 0));
+  const HICON small_icon = reinterpret_cast<HICON>(
+      ::SendMessage(progress_wnd->hwnd(), WM_GETICON, ICON_SMALL, 0));
+  ASSERT_NE(big_icon, nullptr);
+  ASSERT_NE(small_icon, nullptr);
+
+  ICONINFO big_info = {};
+  ASSERT_TRUE(::GetIconInfo(big_icon, &big_info));
+  base::win::ScopedGDIObject<HBITMAP> big_color(big_info.hbmColor);
+  base::win::ScopedGDIObject<HBITMAP> big_mask(big_info.hbmMask);
+  BITMAP bm_big = {};
+  ASSERT_NE(::GetObject(big_color.get(), sizeof(bm_big), &bm_big), 0);
+
+  ICONINFO small_info = {};
+  ASSERT_TRUE(::GetIconInfo(small_icon, &small_info));
+  base::win::ScopedGDIObject<HBITMAP> small_color(small_info.hbmColor);
+  base::win::ScopedGDIObject<HBITMAP> small_mask(small_info.hbmMask);
+  BITMAP bm_small = {};
+  ASSERT_NE(::GetObject(small_color.get(), sizeof(bm_small), &bm_small), 0);
+
+  const int expected_cx_big = ::GetSystemMetricsForDpi(SM_CXICON, target_dpi);
+  const int expected_cy_big = ::GetSystemMetricsForDpi(SM_CYICON, target_dpi);
+  const int expected_cx_small =
+      ::GetSystemMetricsForDpi(SM_CXSMICON, target_dpi);
+  const int expected_cy_small =
+      ::GetSystemMetricsForDpi(SM_CYSMICON, target_dpi);
+
+  const int stale_cx_big = ::GetSystemMetricsForDpi(SM_CXICON, window_dpi);
+  const int stale_cx_small = ::GetSystemMetricsForDpi(SM_CXSMICON, window_dpi);
+
+  // Assert icons match the target DPI, proving they were not overwritten by
+  // a stale GetDpiForWindow() call.
+  EXPECT_EQ(bm_big.bmWidth, expected_cx_big);
+  EXPECT_EQ(std::abs(bm_big.bmHeight), expected_cy_big);
+  EXPECT_NE(bm_big.bmWidth, stale_cx_big);
+
+  EXPECT_EQ(bm_small.bmWidth, expected_cx_small);
+  EXPECT_EQ(std::abs(bm_small.bmHeight), expected_cy_small);
+  EXPECT_NE(bm_small.bmWidth, stale_cx_small);
 
   progress_wnd->DestroyWindow();
 }

@@ -177,6 +177,7 @@ HBITMAP ProgressWnd::GetCurrentAppLogoBitmap() const {
 
 void ProgressWnd::SetAppLogo(HBITMAP light_bitmap, HBITMAP dark_bitmap) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ResetWindowIconCache();
   if (light_app_logo_bmp_.get() != light_bitmap) {
     light_app_logo_bmp_.reset(light_bitmap);
   }
@@ -186,22 +187,29 @@ void ProgressWnd::SetAppLogo(HBITMAP light_bitmap, HBITMAP dark_bitmap) {
   UpdateAppLogo();
 }
 
-void ProgressWnd::UpdateAppLogo() {
+void ProgressWnd::UpdateAppLogo(UINT target_dpi) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsWindow()) {
     return;
   }
 
+  const UINT effective_dpi =
+      target_dpi ? target_dpi : ::GetDpiForWindow(hwnd());
+
   const HWND app_bitmap_ctl = ::GetDlgItem(hwnd(), IDC_APP_BITMAP);
   if (!app_bitmap_ctl) {
+    UpdateWindowIcon(nullptr, effective_dpi);
     return;
   }
 
-  auto clear_logo = [this, app_bitmap_ctl]() {
+  // Clears the logo image control and resets the window icon back to the
+  // default application icon (IDI_APP).
+  auto clear_logo = [this, app_bitmap_ctl, effective_dpi]() {
     const RECT ctl_rect = GetControlClientRect(app_bitmap_ctl);
     ::SendMessage(app_bitmap_ctl, STM_SETIMAGE, IMAGE_BITMAP, 0);
     scaled_app_logo_bmp_.reset();
     ::InvalidateRect(hwnd(), &ctl_rect, TRUE);
+    UpdateWindowIcon(nullptr, effective_dpi);
   };
 
   HBITMAP current_logo = GetCurrentAppLogoBitmap();
@@ -219,12 +227,11 @@ void ProgressWnd::UpdateAppLogo() {
   }
 
   // Scale the bitmap dimensions based on the window's effective DPI.
-  const int dpi = ::GetDpiForWindow(hwnd());
-  const int effective_dpi = dpi ? dpi : USER_DEFAULT_SCREEN_DPI;
+  const int dpi_val = effective_dpi ? effective_dpi : USER_DEFAULT_SCREEN_DPI;
   const int width_pixels =
-      ::MulDiv(bm.bmWidth, effective_dpi, USER_DEFAULT_SCREEN_DPI);
+      ::MulDiv(bm.bmWidth, dpi_val, USER_DEFAULT_SCREEN_DPI);
   const int height_pixels =
-      ::MulDiv(bm.bmHeight, effective_dpi, USER_DEFAULT_SCREEN_DPI);
+      ::MulDiv(bm.bmHeight, dpi_val, USER_DEFAULT_SCREEN_DPI);
 
   if (width_pixels <= 0 || height_pixels <= 0) {
     VLOG(1) << __func__ << " Invalid logo dimensions: " << width_pixels << "x"
@@ -240,6 +247,8 @@ void ProgressWnd::UpdateAppLogo() {
     clear_logo();
     return;
   }
+
+  UpdateWindowIcon(current_logo, effective_dpi);
 
   RECT client_rect = {};
   ::GetClientRect(hwnd(), &client_rect);
@@ -385,10 +394,10 @@ int ProgressWnd::GetScaledCornerRadius() const {
   return ::MulDiv(11, ::GetDpiForWindow(hwnd()), USER_DEFAULT_SCREEN_DPI);
 }
 
-void ProgressWnd::ApplyDpiScaling(int dpi) {
+void ProgressWnd::ApplyDpiScaling(UINT dpi) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   OmahaWnd::ApplyDpiScaling(dpi);
-  UpdateAppLogo();
+  UpdateAppLogo(dpi);
 }
 
 LRESULT ProgressWnd::OnEraseBkgnd(UINT, WPARAM wparam, LPARAM) {

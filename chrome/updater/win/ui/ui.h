@@ -17,6 +17,7 @@
 #include "chrome/updater/win/ui/message_loop.h"
 #include "chrome/updater/win/ui/owner_draw_controls.h"
 #include "chrome/updater/win/ui/resources/resources.grh"
+#include "chrome/updater/win/ui/ui_util.h"
 #include "chrome/updater/win/ui/window_impl.h"
 #include "ui/gfx/win/msg_util.h"
 
@@ -95,7 +96,7 @@ class OmahaWnd : public DialogImpl,
   LRESULT OnSetCursor(UINT msg, WPARAM wparam, LPARAM lparam);
   void OnCancel(UINT notify_code, int id, HWND wnd_ctl);
 
-  void ApplyDpiScaling(int dpi);
+  virtual void ApplyDpiScaling(UINT dpi);
 
   // Returns true if the window is closed.
   virtual bool MaybeCloseWindow() = 0;
@@ -111,6 +112,9 @@ class OmahaWnd : public DialogImpl,
 
   void SetControlAttributes(int control_id,
                             const ControlAttributes& attributes);
+
+  // Updates or clears the window icon derived from the given bitmap.
+  void UpdateWindowIcon(HBITMAP bitmap, UINT dpi = 0);
 
   void SetVisible(bool visible) {
     ::ShowWindow(hwnd(), visible ? SW_SHOWNORMAL : SW_HIDE);
@@ -130,9 +134,9 @@ class OmahaWnd : public DialogImpl,
   static const ControlAttributes kVisibleImageAttributes;
   static const ControlAttributes kDisabledNonButtonAttributes;
 
- private:
-  HRESULT SetWindowIcon();
+  void ResetWindowIconCache();
 
+ private:
   void MaybeRequestExitProcess();
   void RequestExitProcess();
 
@@ -150,8 +154,11 @@ class OmahaWnd : public DialogImpl,
   UpdaterScope scope_;
   std::u16string bundle_name_;
 
-  // Handle to large icon to show when ALT-TAB.
-  base::win::ScopedGDIObject<HICON> hicon_;
+  // Handles to icons to show when ALT-TAB (big) and in taskbar/titlebar
+  // (small).
+  WindowIcons window_icons_;
+  HBITMAP current_logo_ = nullptr;
+  UINT current_dpi_ = 0;
 
   base::win::ScopedGDIObject<HFONT> default_font_;
   base::win::ScopedGDIObject<HFONT> header_font_;

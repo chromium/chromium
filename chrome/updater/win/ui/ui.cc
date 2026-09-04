@@ -10,9 +10,11 @@
 
 #include <cstdint>
 #include <string_view>
+#include <utility>
 
 #include "base/check_op.h"
 #include "base/logging.h"
+#include "base/sequence_checker.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/ui/ui_constants.h"
@@ -128,8 +130,7 @@ void OmahaWnd::InitializeDialog() {
                    GetInstallerDisplayName(bundle_name(), lang()).c_str());
 
   CenterWindow(hwnd(), nullptr);
-  ui::SetWindowIcon(hwnd(), IDI_APP,
-                    base::win::ScopedGDIObject<HICON>::Receiver(hicon_).get());
+  UpdateWindowIcon(nullptr);
 
   // Disable the maximize system menu item.
   HMENU menu = ::GetSystemMenu(hwnd(), FALSE);
@@ -157,6 +158,55 @@ void OmahaWnd::InitializeDialog() {
   SetCustomDlgColors(kTextColor, kBkColor);
 
   EnableFlatButtons(hwnd());
+}
+
+void OmahaWnd::ResetWindowIconCache() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Clears cached logo and DPI state to prevent false cache hits if Windows GDI
+  // reallocates a new bitmap at the same handle address. Note that
+  // window_icons_ handles are intentionally not destroyed here so the window
+  // never holds dangling icon references before UpdateWindowIcon() dispatches
+  // new handles.
+  current_logo_ = nullptr;
+  current_dpi_ = 0;
+}
+
+void OmahaWnd::UpdateWindowIcon(HBITMAP bitmap, UINT dpi) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!IsWindow()) {
+    return;
+  }
+  // Prefer the explicit DPI passed from ApplyDpiScaling during WM_DPICHANGED,
+  // as GetDpiForWindow() may not yet reflect the updated DPI before window
+  // bounds adjustment completes.
+  const UINT target_dpi = dpi ? dpi : ::GetDpiForWindow(hwnd());
+  if (bitmap == current_logo_ && target_dpi == current_dpi_ &&
+      window_icons_.icon_big.is_valid() &&
+      window_icons_.icon_small.is_valid()) {
+    return;
+  }
+  WindowIcons icons;
+  if (bitmap) {
+    const IconSizes sizes = GetIconSizesForDpi(target_dpi);
+    icons.icon_big = CreateIconFromHBitmap(bitmap, sizes.cx_big, sizes.cy_big);
+    icons.icon_small =
+        CreateIconFromHBitmap(bitmap, sizes.cx_small, sizes.cy_small);
+  }
+  // If custom icon creation fails for either size, reset both handles so
+  // that both big and small icons consistently fall back to the default
+  // application icon (IDI_APP) rather than leaving the window in a mixed
+  // state.
+  if (!icons.icon_big.is_valid() || !icons.icon_small.is_valid()) {
+    icons = LoadResourceIcons(IDI_APP, target_dpi);
+    // Fallback occurred: do not cache `bitmap` as active so future attempts
+    // can retry generating icons from it.
+    current_logo_ = nullptr;
+  } else {
+    current_logo_ = bitmap;
+  }
+  current_dpi_ = target_dpi;
+
+  SetWindowIcons(hwnd(), std::move(icons), window_icons_);
 }
 
 LRESULT OmahaWnd::OnClose(UINT, WPARAM, LPARAM) {
@@ -202,7 +252,7 @@ LRESULT OmahaWnd::OnDpiChanged(UINT, WPARAM wparam, LPARAM lparam) {
                  SWP_NOZORDER | SWP_NOACTIVATE);
 
   // Re-render text/graphics for the new DPI.
-  ApplyDpiScaling(/*new_dpi=*/HIWORD(wparam));
+  ApplyDpiScaling(/*new_dpi=*/LOWORD(wparam));
 
   // Resize the title bar.
   RecalcLayout(hwnd(), ::GetDlgItem(hwnd(), IDC_TITLE_BAR_SPACER));
@@ -270,10 +320,14 @@ void OmahaWnd::Show() {
   }
 }
 
-void OmahaWnd::ApplyDpiScaling(int dpi) {
+void OmahaWnd::ApplyDpiScaling(UINT dpi) {
+  const UINT effective_dpi =
+      dpi ? dpi
+          : (IsWindow() ? ::GetDpiForWindow(hwnd()) : USER_DEFAULT_SCREEN_DPI);
   // Calculate new font height: (DesiredPointSize * dpi) / 72. Use a negative
   // number for height to request the character height in CreateFontW.
-  const int font_height = ::MulDiv(10, dpi, 72);
+  const int dpi_val = static_cast<int>(effective_dpi);
+  const int font_height = ::MulDiv(10, dpi_val, 72);
 
   default_font_.reset(::CreateFontW(
       -font_height,                 // nHeight
@@ -296,14 +350,14 @@ void OmahaWnd::ApplyDpiScaling(int dpi) {
   SendMessageToDescendants(hwnd(), WM_SETFONT,
                            reinterpret_cast<WPARAM>(default_font_.get()), TRUE);
 
-  const int header_height = ::MulDiv(18, dpi, 72);
+  const int header_height = ::MulDiv(18, dpi_val, 72);
   header_font_.reset(::CreateFontW(
       -header_height, 0, 0, 0, FW_MEDIUM, FALSE, FALSE, 0, DEFAULT_CHARSET,
       OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY,
       DEFAULT_PITCH | FF_DONTCARE, kDialogFont));
   SetItemFont(hwnd(), IDC_INSTALLER_STATE_TEXT, header_font_.get());
 
-  const int body_height = ::MulDiv(16, dpi, 72);
+  const int body_height = ::MulDiv(16, dpi_val, 72);
   font_.reset(::CreateFontW(-body_height, 0, 0, 0, FW_NORMAL, FALSE, FALSE, 0,
                             DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
                             CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY,
@@ -311,6 +365,8 @@ void OmahaWnd::ApplyDpiScaling(int dpi) {
   SetItemFont(hwnd(), IDC_INFO_TEXT, font_.get());
   SetItemFont(hwnd(), IDC_COMPLETE_TEXT, font_.get());
   SetItemFont(hwnd(), IDC_ERROR_TEXT, font_.get());
+
+  UpdateWindowIcon(current_logo_, effective_dpi);
 }
 
 bool OmahaWnd::OnComplete() {

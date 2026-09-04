@@ -9,6 +9,7 @@
 
 #include "base/win/scoped_gdi_object.h"
 #include "chrome/updater/win/installer/installer_resource.h"
+#include "chrome/updater/win/ui/ui_util.h"
 #include "ui/gfx/win/msg_util.h"
 #include "ui/gfx/win/window_impl.h"
 
@@ -45,9 +46,10 @@ class SplashWnd : public gfx::WindowImpl {
   LRESULT OnSetCursor(UINT msg, WPARAM wparam, LPARAM lparam);
 
   int GetScaledValue(int value, UINT dpi) const;
+  void UpdateIcons(UINT dpi);
 
   base::win::ScopedGDIObject<HBITMAP> logo_bmp_;
-  base::win::ScopedGDIObject<HICON> hicon_;
+  WindowIcons window_icons_;
   SIZE logo_size_ = {0, 0};
 
   CR_MSG_MAP_CLASS_DECLARATIONS(SplashWnd)
