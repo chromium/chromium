@@ -21596,6 +21596,7 @@
                         "InitialWebUISurfaceSync",
                         "InitialWebUISyncNavStartToCommit",
                         "InitialWebUIWithoutExtensions",
+                        "PrioritizeResizeTaskRunnerOnStartup",
                         "SendGPUChannelEarly",
                         "SkipIPCChannelPausingForNonGuests",
                         "WebUIBundledCodeCache",
