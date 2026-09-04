@@ -117,6 +117,9 @@ suite('SkillsWebviewTest', () => {
     const webview = document.createElement('webview');
     webview.id = 'webview';
     webview.setAttribute('hidden', '');
+    webview.setAttribute('autosize', 'on');
+    webview.setAttribute('minheight', '200');
+    webview.setAttribute('maxheight', '710');
     const loadingPage = document.createElement('loading-page');
     loadingPage.id = 'loading-page';
     const errorPage = document.createElement('error-page');
@@ -141,6 +144,11 @@ suite('SkillsWebviewTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const webview = document.createElement('webview');
     webview.id = 'webview';
+    webview.setAttribute('autosize', 'on');
+    webview.setAttribute('minwidth', '512');
+    webview.setAttribute('minheight', '200');
+    webview.setAttribute('maxwidth', '512');
+    webview.setAttribute('maxheight', '710');
     const loadingPage = document.createElement('loading-page');
     loadingPage.id = 'loading-page';
     const errorPage = document.createElement('error-page');

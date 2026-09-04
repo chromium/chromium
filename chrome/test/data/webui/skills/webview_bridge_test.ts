@@ -164,6 +164,9 @@ suite('SkillsWebviewBridgeTest', () => {
     // element's `contentWindow` property is non-configurable and cannot be
     // redefined via Object.defineProperty.
     const div = document.createElement('div');
+    div.setAttribute('autosize', 'on');
+    div.setAttribute('minheight', '200');
+    div.setAttribute('maxheight', '710');
     Object.assign(div, {
       contentWindow: window,
     });

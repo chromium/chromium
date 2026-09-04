@@ -6,7 +6,6 @@
   <style>
     html,
     body {
-      height: 100%;
       margin: 0;
       overflow: hidden;
       background-color:
@@ -16,7 +15,6 @@
       display: block;
       border: none;
       width: 100%;
-      height: 100%;
     }
     webview[hidden] {
       display: block !important;
@@ -33,6 +31,7 @@
 </head>
 <body>
   <webview id="webview" partition="glicskillspart" autosize="on"
+      minwidth="512" maxwidth="512" minheight="200" maxheight="710"
       hidden></webview>
   <loading-page id="loading-page" dialog></loading-page>
   <error-page id="error-page" hidden></error-page>

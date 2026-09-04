@@ -31,7 +31,7 @@ constexpr int kWebViewWidth = 512;
 constexpr int kWebViewMinHeight = 527;
 constexpr int kWebViewMaxHeight = 601;  // Extra space needed for errors and
                                         // multi-line user account info.
-constexpr int kWebViewMinHeight2 = 636;
+constexpr int kWebViewMinHeight2 = 200;
 constexpr int kWebViewMaxHeight2 = 710;  // Extra space needed for errors and
                                          // multi-line user account info.
 
