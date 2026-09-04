@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
@@ -57,20 +58,28 @@ class PostRestoreProfileAgentTest : public PlatformTest {
                               base::BindRepeating(&CreateTestSyncService));
     builder.AddTestingFactory(PromosManagerFactory::GetInstance(),
                               base::BindOnce(&CreateMockPromosManager));
-    profile_ = std::move(builder).Build();
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 
     promos_manager_ = static_cast<NiceMock<MockPromosManager>*>(
-        PromosManagerFactory::GetForProfile(profile_.get()));
-    auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
+        PromosManagerFactory::GetForProfile(profile_));
+    auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_);
 
     profile_state_ = [[ProfileState alloc] initWithAppState:nil];
-    profile_state_.profile = profile_.get();
+    profile_state_.profile = profile_;
 
     profile_agent_ = [[PostRestoreProfileAgent alloc] init];
     [profile_state_ addAgent:profile_agent_];
   }
 
-  ~PostRestoreProfileAgentTest() override { profile_state_.profile = nullptr; }
+  void TearDown() override {
+    profile_state_.profile = nullptr;
+    profile_agent_ = nil;
+    profile_state_ = nil;
+    auth_service_ = nullptr;
+    promos_manager_ = nullptr;
+    profile_ = nullptr;
+    PlatformTest::TearDown();
+  }
 
   void TriggerProfileStateChange() {
     [profile_agent_ profileState:profile_state_
@@ -101,12 +110,13 @@ class PostRestoreProfileAgentTest : public PlatformTest {
                           signin_metrics::AccessPoint::kStartPage);
   }
 
-  PrefService* pref_service() { return profile_.get()->GetPrefs(); }
+  PrefService* pref_service() { return profile_->GetPrefs(); }
 
  protected:
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestProfileIOS> profile_;
+  TestProfileManagerIOS profile_manager_;
+  raw_ptr<TestProfileIOS> profile_ = nullptr;
   raw_ptr<NiceMock<MockPromosManager>> promos_manager_;
   raw_ptr<AuthenticationService> auth_service_;
   PostRestoreProfileAgent* profile_agent_;
