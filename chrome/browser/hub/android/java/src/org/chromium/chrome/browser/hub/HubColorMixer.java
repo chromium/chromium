@@ -13,6 +13,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
@@ -90,6 +91,12 @@ public interface HubColorMixer {
      * not enabled.
      */
     NonNullObservableSupplier<Integer> getOverviewColorSupplier();
+
+    /**
+     * Supplies the current bottom overview mode color (matching the bottom bar) if configured, or
+     * null otherwise.
+     */
+    @Nullable NonNullObservableSupplier<Integer> getBottomOverviewColorSupplier();
 
     /**
      * Updates overview mode based on the provided reason for the state change.

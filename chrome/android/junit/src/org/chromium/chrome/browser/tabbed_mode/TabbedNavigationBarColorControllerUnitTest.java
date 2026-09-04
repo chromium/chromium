@@ -392,24 +392,6 @@ public class TabbedNavigationBarColorControllerUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_bottom_bar_on_gts/true"})
-    public void testOverviewMode_BottomBarEnabledInGts() {
-        mNavColorController.updateActiveTabForTesting();
-        mNavColorController.enableOverviewMode();
-        mOverviewColorSupplier.set(Color.BLUE);
-        runColorUpdateAnimation();
-
-        Mockito.clearInvocations(mEdgeToEdgeSystemBarColorHelper);
-
-        mNavColorController.onBottomAttachedColorChanged(Color.RED, false, false);
-        runColorUpdateAnimation();
-
-        verify(mEdgeToEdgeSystemBarColorHelper).setNavigationBarColor(eq(Color.RED));
-        verify(mEdgeToEdgeSystemBarColorHelper, Mockito.never())
-                .setNavigationBarColor(eq(Color.BLUE));
-    }
-
-    @Test
     public void testLayoutStateObserver_onStartedShowing_swappedOrder() {
         when(mTab.getBackgroundColor()).thenReturn(Color.LTGRAY);
         when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);

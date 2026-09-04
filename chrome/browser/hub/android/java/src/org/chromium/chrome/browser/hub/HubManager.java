@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.hub;
 
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.TabId;
 
 /**
@@ -50,4 +51,9 @@ public interface HubManager {
 
     /** Gets the supplier providing the Hub Overview color. */
     NonNullObservableSupplier<Integer> getHubOverviewColorSupplier();
+
+    /**
+     * Gets the supplier providing the Hub Bottom Overview color if configured, or null otherwise.
+     */
+    @Nullable NonNullObservableSupplier<Integer> getHubBottomOverviewColorSupplier();
 }

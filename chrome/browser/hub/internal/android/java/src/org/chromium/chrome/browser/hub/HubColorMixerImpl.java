@@ -26,6 +26,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.ui.animation.AnimationHandler;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.util.ColorUtils;
@@ -41,6 +42,7 @@ public class HubColorMixerImpl implements HubColorMixer {
 
     private final SettableNonNullObservableSupplier<Integer> mOverviewColorSupplier =
             ObservableSuppliers.createNonNull(Color.TRANSPARENT);
+    private final @Nullable SettableNonNullObservableSupplier<Integer> mBottomOverviewColorSupplier;
     private final Callback<Boolean> mOnHubVisibilityObserver = this::onHubVisibilityChange;
     private final Callback<Pane> mOnFocusedPaneObserver =
             (Callback<Pane>) this::onFocusedPaneChange;
@@ -78,6 +80,10 @@ public class HubColorMixerImpl implements HubColorMixer {
                 new HubColorBlendAnimatorSetHelper(),
                 new AnimationHandler(),
                 colorScheme -> HubColors.getBackgroundColor(context, colorScheme),
+                BottomBarConfigUtils.isBottomBarEnabled(context)
+                                && BottomBarConfigUtils.shouldShowOnGts()
+                        ? colorScheme -> HubColors.getHubBottomToolbarColor(context, colorScheme)
+                        : null,
                 DeviceFormFactor.isNonMultiDisplayContextOnTablet(context));
     }
 
@@ -89,6 +95,7 @@ public class HubColorMixerImpl implements HubColorMixer {
             HubColorBlendAnimatorSetHelper animatorSetHelper,
             AnimationHandler animationHandler,
             HubOverviewColorProvider hubOverviewColorProvider,
+            @Nullable HubOverviewColorProvider hubBottomOverviewColorProvider,
             boolean isTablet) {
         mHubVisibilitySupplier = hubVisibilitySupplier;
         mFocusedPaneSupplier = focusedPaneSupplier;
@@ -103,12 +110,31 @@ public class HubColorMixerImpl implements HubColorMixer {
                 mOnSwipeAnimationProgressObserver);
 
         mOverviewColorAlpha = 1f;
+        if (hubBottomOverviewColorProvider != null) {
+            SettableNonNullObservableSupplier<Integer> bottomOverviewColorSupplier =
+                    ObservableSuppliers.createNonNull(Color.TRANSPARENT);
+            mBottomOverviewColorSupplier = bottomOverviewColorSupplier;
+            registerBlend(
+                    new SingleHubViewColorBlend(
+                            PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
+                            hubBottomOverviewColorProvider,
+                            color ->
+                                    processOverviewColor(
+                                            bottomOverviewColorSupplier,
+                                            color,
+                                            mOverviewColorAlpha)));
+        } else {
+            mBottomOverviewColorSupplier = null;
+        }
         disableOverviewMode();
+
         registerBlend(
                 new SingleHubViewColorBlend(
                         PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
                         hubOverviewColorProvider,
-                        color -> processOverviewColor(color, mOverviewColorAlpha)));
+                        color ->
+                                processOverviewColor(
+                                        mOverviewColorSupplier, color, mOverviewColorAlpha)));
     }
 
     @Override
@@ -121,6 +147,11 @@ public class HubColorMixerImpl implements HubColorMixer {
     @Override
     public NonNullObservableSupplier<Integer> getOverviewColorSupplier() {
         return mOverviewColorSupplier;
+    }
+
+    @Override
+    public @Nullable NonNullObservableSupplier<Integer> getBottomOverviewColorSupplier() {
+        return mBottomOverviewColorSupplier;
     }
 
     @Override
@@ -169,7 +200,13 @@ public class HubColorMixerImpl implements HubColorMixer {
     private void onOverviewModeAlphaChanged(double alpha) {
         mOverviewColorAlpha = (float) alpha;
         @ColorInt int color = mOverviewColorSupplier.get();
-        processOverviewColor(color, mOverviewColorAlpha);
+        processOverviewColor(mOverviewColorSupplier, color, mOverviewColorAlpha);
+        if (mBottomOverviewColorSupplier != null) {
+            SettableNonNullObservableSupplier<Integer> bottomSupplier =
+                    mBottomOverviewColorSupplier;
+            @ColorInt int bottomColor = bottomSupplier.get();
+            processOverviewColor(bottomSupplier, bottomColor, mOverviewColorAlpha);
+        }
     }
 
     private void onSwipeAnimationProgressChanged(@Nullable ColorBlendProgress progress) {
@@ -198,6 +235,9 @@ public class HubColorMixerImpl implements HubColorMixer {
     private void disableOverviewMode() {
         mOverviewMode = false;
         mOverviewColorSupplier.set(Color.TRANSPARENT);
+        if (mBottomOverviewColorSupplier != null) {
+            mBottomOverviewColorSupplier.set(Color.TRANSPARENT);
+        }
         mColorSchemeUpdate = null;
     }
 
@@ -236,12 +276,14 @@ public class HubColorMixerImpl implements HubColorMixer {
     }
 
     private void processOverviewColor(
-            @ColorInt int color, @FloatRange(from = 0f, to = 1f) float alpha) {
+            SettableNonNullObservableSupplier<Integer> supplier,
+            @ColorInt int color,
+            @FloatRange(from = 0f, to = 1f) float alpha) {
         if (mOverviewMode) {
             color = ColorUtils.setAlphaComponentWithFloat(color, alpha);
-            mOverviewColorSupplier.set(color);
+            supplier.set(color);
         } else {
-            mOverviewColorSupplier.set(Color.TRANSPARENT);
+            supplier.set(Color.TRANSPARENT);
         }
     }
 

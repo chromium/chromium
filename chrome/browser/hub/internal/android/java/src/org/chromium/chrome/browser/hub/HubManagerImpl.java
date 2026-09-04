@@ -219,6 +219,11 @@ public class HubManagerImpl implements HubManager, HubController {
     }
 
     @Override
+    public @Nullable NonNullObservableSupplier<Integer> getHubBottomOverviewColorSupplier() {
+        return mHubColorMixer.getBottomOverviewColorSupplier();
+    }
+
+    @Override
     public void setHubLayoutController(HubLayoutController hubLayoutController) {
         assert mHubLayoutController == null : "setHubLayoutController should only be called once.";
         mHubLayoutController = hubLayoutController;

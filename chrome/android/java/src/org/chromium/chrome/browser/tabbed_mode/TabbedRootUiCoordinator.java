@@ -374,6 +374,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private final @Nullable MultiInstanceManager mMultiInstanceManager;
     private int mStatusIndicatorHeight;
     private final OneshotSupplier<HubManager> mHubManagerSupplier;
+    private @Nullable NonNullObservableSupplier<Integer> mBottomOverviewColorSupplier;
     private @Nullable TouchEventObserver mDragDropTouchObserver;
     private @Nullable ViewGroup mCoordinator;
     private final OneshotSupplierImpl<SystemBarColorHelper> mSystemBarColorHelperSupplier;
@@ -653,7 +654,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 backPressManager,
                 savedInstanceState,
                 persistentState,
-                initHubOverviewColorSupplier(hubManagerSupplier),
+                initHubOverviewColorSupplier(
+                        hubManagerSupplier, HubManager::getHubOverviewColorSupplier),
                 edgeToEdgeManager,
                 xrSpaceModeObservableSupplier,
                 initAppHeaderCoordinator(
@@ -668,6 +670,13 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 bottomBarHostManager);
 
         if (BottomBarConfigUtils.isBottomBarEnabled(activity)) {
+            if (BottomBarConfigUtils.shouldShowOnGts()) {
+                Function<HubManager, NonNullObservableSupplier<Integer>> supplierGetter =
+                        hubManager ->
+                                assumeNonNull(hubManager.getHubBottomOverviewColorSupplier());
+                mBottomOverviewColorSupplier =
+                        initHubOverviewColorSupplier(hubManagerSupplier, supplierGetter);
+            }
             mCountrySupplier = new OneshotSupplierImpl<>();
             mActionRegistry = new ActionRegistry();
             ActionUtils.registerBottomBarActions(mActionRegistry);
@@ -1048,7 +1057,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         bottomSheetController,
                         toolbarManager.getLocationBar().getOmniboxSuggestionsVisualState(),
                         mManualFillingComponentSupplier.get(),
-                        mOverviewColorSupplier,
+                        mBottomOverviewColorSupplier != null
+                                ? mBottomOverviewColorSupplier
+                                : mOverviewColorSupplier,
                         mInsetObserver,
                         mEdgeToEdgeManager.getEdgeToEdgeSystemBarColorHelper());
     }
@@ -2115,13 +2126,14 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * HubManager} lifecycle.
      */
     private static NonNullObservableSupplier<Integer> initHubOverviewColorSupplier(
-            OneshotSupplier<HubManager> hubManagerSupplier) {
+            OneshotSupplier<HubManager> hubManagerSupplier,
+            Function<HubManager, NonNullObservableSupplier<Integer>> supplierGetter) {
         SettableNonNullObservableSupplier<Integer> overviewColorSupplier =
                 ObservableSuppliers.createNonNull(Color.TRANSPARENT);
         hubManagerSupplier.onAvailable(
                 (hubManager) -> {
                     NonNullObservableSupplier<Integer> hubOverviewColorSupplier =
-                            hubManager.getHubOverviewColorSupplier();
+                            supplierGetter.apply(hubManager);
                     hubOverviewColorSupplier.addSyncObserverAndPostIfNonNull(
                             overviewColorSupplier::set);
                 });

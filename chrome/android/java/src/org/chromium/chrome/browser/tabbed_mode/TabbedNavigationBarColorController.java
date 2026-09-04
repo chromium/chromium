@@ -44,7 +44,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.NavigationBarColorProvider;
@@ -108,7 +107,6 @@ class TabbedNavigationBarColorController
     private boolean mOverviewMode;
     private @Nullable ValueAnimator mNavbarColorTransitionAnimation;
     private @TriState int mEnabledBottomChinForTesting;
-    private final boolean mIsBottomBarEnabledInGts;
 
     /**
      * Creates a new {@link TabbedNavigationBarColorController} instance.
@@ -186,9 +184,6 @@ class TabbedNavigationBarColorController
         mContext = context;
         mFullScreenManager = fullscreenManager;
         mEdgeToEdgeSystemBarColorHelper = edgeToEdgeSystemBarColorHelper;
-        mIsBottomBarEnabledInGts =
-                BottomBarConfigUtils.isBottomBarEnabled(context)
-                        && BottomBarConfigUtils.shouldShowOnGts();
 
         mBottomAttachedUiObserver = bottomAttachedUiObserver;
         mBottomAttachedUiObserver.addObserver(this);
@@ -265,8 +260,8 @@ class TabbedNavigationBarColorController
         if (mActiveTab != null) mActiveTab.removeObserver(mTabObserver);
         if (mLayoutManager != null) {
             mLayoutManager.removeObserver(mLayoutStateObserver);
-            mOverviewColorSupplier.removeObserver(mOnOverviewColorChanged);
         }
+        mOverviewColorSupplier.removeObserver(mOnOverviewColorChanged);
         if (mCallbackController != null) {
             mCallbackController.destroy();
             mCallbackController = null;
@@ -449,9 +444,7 @@ class TabbedNavigationBarColorController
     }
 
     private @ColorInt int getNavigationBarColor(boolean forceDarkNavigationBar) {
-        if (mOverviewMode && mIsBottomBarEnabledInGts && useBottomAttachedUiColor()) {
-            return mBottomAttachedUiColor;
-        } else if (mOverviewMode && mOverviewColorSupplier.get() != null) {
+        if (mOverviewMode && mOverviewColorSupplier.get() != null) {
             return mOverviewColorSupplier.get();
         } else if (useBottomAttachedUiColor()) {
             return mBottomAttachedUiColor;
@@ -467,9 +460,7 @@ class TabbedNavigationBarColorController
     @VisibleForTesting
     @ColorInt
     int getNavigationBarDividerColor(boolean forceDarkNavigationBar, boolean forceShowDivider) {
-        if (mOverviewMode && mIsBottomBarEnabledInGts && useBottomAttachedUiColor()) {
-            return mBottomAttachedUiColor;
-        } else if (mOverviewMode && mOverviewColorSupplier.get() != null) {
+        if (mOverviewMode && mOverviewColorSupplier.get() != null) {
             return mOverviewColorSupplier.get();
         } else if (!forceShowDivider && useBottomAttachedUiColor()) {
             return mBottomAttachedUiColor;

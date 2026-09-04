@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
@@ -81,6 +82,7 @@ public class HubColorMixerImplUnitTest {
                         mAnimatorSetBuilder,
                         mAnimationHandler,
                         HubColorMixerImplUnitTest::getBackgroundColorForTests,
+                        /* hubBottomOverviewColorProvider= */ null,
                         isTablet);
         RobolectricUtil.runAllBackgroundAndUi();
     }
@@ -132,9 +134,11 @@ public class HubColorMixerImplUnitTest {
                         mAnimatorSetBuilder,
                         mAnimationHandler,
                         HubColorMixerImplUnitTest::getBackgroundColorForTests,
+                        /* hubBottomOverviewColorProvider= */ null,
                         false);
 
         assertEquals(Color.TRANSPARENT, (int) mHubColorMixer.getOverviewColorSupplier().get());
+        assertNull(mHubColorMixer.getBottomOverviewColorSupplier());
         assertFalse(mHubColorMixer.getOverviewMode());
 
         assertTrue(mHubVisibilitySupplier.hasObservers());
@@ -290,6 +294,9 @@ public class HubColorMixerImplUnitTest {
         assertFalse(mHubColorMixer.getOverviewMode());
         @ColorInt Integer expectedColor = Color.TRANSPARENT;
         assertEquals(expectedColor, mHubColorMixer.getOverviewColorSupplier().get());
+        if (mHubColorMixer.getBottomOverviewColorSupplier() != null) {
+            assertEquals(expectedColor, mHubColorMixer.getBottomOverviewColorSupplier().get());
+        }
     }
 
     @Test
@@ -402,6 +409,48 @@ public class HubColorMixerImplUnitTest {
                 mHubColorMixer.getColorSchemeUpdateForTesting().previousColorScheme);
     }
 
+    @Test
+    public void testBottomOverviewColorSupplier_distinctFromOverviewColor() {
+        mHubColorMixer.destroy();
+        mHubColorMixer =
+                new HubColorMixerImpl(
+                        mHubVisibilitySupplier,
+                        mFocusedPaneSupplier,
+                        mSwipeAnimationProgressSupplier,
+                        new HubColorBlendAnimatorSetHelper(),
+                        mAnimationHandler,
+                        HubColorMixerImplUnitTest::getBackgroundColorForTests,
+                        HubColorMixerImplUnitTest::getBottomToolbarColorForTests,
+                        /* isTablet= */ false);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        enableOverviewMode();
+        mFocusedPaneSupplier.set(mPane1);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertEquals(Integer.valueOf(Color.BLUE), mHubColorMixer.getOverviewColorSupplier().get());
+        assertEquals(
+                Integer.valueOf(Color.GREEN),
+                mHubColorMixer.getBottomOverviewColorSupplier().get());
+
+        mFocusedPaneSupplier.set(mPane2);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertEquals(Integer.valueOf(Color.RED), mHubColorMixer.getOverviewColorSupplier().get());
+        assertEquals(
+                Integer.valueOf(Color.YELLOW),
+                mHubColorMixer.getBottomOverviewColorSupplier().get());
+
+        mHubColorMixer.getOverviewModeAlphaObserver().accept(0.5f);
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertEquals(
+                Integer.valueOf(ColorUtils.setAlphaComponentWithFloat(Color.RED, 0.5f)),
+                mHubColorMixer.getOverviewColorSupplier().get());
+        assertEquals(
+                Integer.valueOf(ColorUtils.setAlphaComponentWithFloat(Color.YELLOW, 0.5f)),
+                mHubColorMixer.getBottomOverviewColorSupplier().get());
+    }
+
     private void enableOverviewMode() {
         mHubColorMixer.processStateChange(TRANSLATE_UP_TABLET_ANIMATION_END);
     }
@@ -414,6 +463,17 @@ public class HubColorMixerImplUnitTest {
         return switch (colorScheme) {
             case HubColorScheme.DEFAULT -> Color.BLUE;
             case HubColorScheme.INCOGNITO -> Color.RED;
+            default -> {
+                fail("Should never be called.");
+                yield Color.TRANSPARENT;
+            }
+        };
+    }
+
+    private static @ColorInt int getBottomToolbarColorForTests(@HubColorScheme int colorScheme) {
+        return switch (colorScheme) {
+            case HubColorScheme.DEFAULT -> Color.GREEN;
+            case HubColorScheme.INCOGNITO -> Color.YELLOW;
             default -> {
                 fail("Should never be called.");
                 yield Color.TRANSPARENT;
