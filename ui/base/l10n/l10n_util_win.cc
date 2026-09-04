@@ -29,12 +29,13 @@ class OverrideLocaleHolder {
   OverrideLocaleHolder(const OverrideLocaleHolder&) = delete;
   OverrideLocaleHolder& operator=(const OverrideLocaleHolder&) = delete;
 
-  const std::vector<std::string>& value() const { return value_; }
-  void swap_value(std::vector<std::string>* override_value) {
+  const std::vector<base::i18n::LanguageTag>& value() const { return value_; }
+  void swap_value(std::vector<base::i18n::LanguageTag>* override_value) {
     value_.swap(*override_value);
   }
+
  private:
-  std::vector<std::string> value_;
+  std::vector<base::i18n::LanguageTag> value_;
 };
 
 base::LazyInstance<OverrideLocaleHolder>::DestructorAtExit
@@ -61,7 +62,7 @@ void HWNDSetRTLLayout(HWND hwnd) {
 
 void AdjustUiFont(gfx::win::FontAdjustment& font_adjustment) {
   // This is rather simple-minded to deal with the UI font size issue for some
-  // Indian locales (ml, bn, hi) for which/ the default Windows fonts are too
+  // Indian locales (ml, bn, hi) for which the default Windows fonts are too
   // small to be legible.  For those locales, IDS_UI_FONT_FAMILY is set to an
   // actual font family to use, while for other locales, it's set to "default".
   std::wstring ui_font_family = GetWideString(IDS_UI_FONT_FAMILY);
@@ -82,16 +83,13 @@ void AdjustUiFont(gfx::win::FontAdjustment& font_adjustment) {
 }
 
 void OverrideLocaleWithUILanguageList() {
-  std::vector<std::wstring> ui_languages;
-  CHECK(base::win::i18n::GetThreadPreferredUILanguageList(&ui_languages));
-  std::vector<std::string> ascii_languages;
-  ascii_languages.reserve(ui_languages.size());
-  std::ranges::transform(ui_languages, std::back_inserter(ascii_languages),
-                         &base::WideToASCII);
-  override_locale_holder.Get().swap_value(&ascii_languages);
+  std::vector<base::i18n::LanguageTag> ui_languages =
+      base::i18n::GetThreadPreferredUILanguageList();
+  CHECK(!ui_languages.empty());
+  override_locale_holder.Get().swap_value(&ui_languages);
 }
 
-const std::vector<std::string>& GetLocaleOverrides() {
+const std::vector<base::i18n::LanguageTag>& GetLocaleOverrides() {
   return override_locale_holder.Get().value();
 }
 

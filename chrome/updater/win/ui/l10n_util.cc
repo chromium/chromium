@@ -42,13 +42,13 @@ size_t GetLanguageOffset(const std::wstring& lang) {
 }  // namespace
 
 std::wstring GetPreferredLanguage() {
-  std::vector<std::wstring> languages;
-  if (!base::win::i18n::GetUserPreferredUILanguageList(&languages) ||
-      languages.size() == 0) {
+  const std::vector<base::i18n::LanguageTag> languages =
+      base::i18n::GetUserPreferredUILanguageList();
+  if (languages.empty()) {
     return L"en-us";
   }
 
-  return languages[0];
+  return base::ASCIIToWide(languages[0].tag_string());
 }
 
 std::wstring GetLocalizedString(unsigned int base_message_id,

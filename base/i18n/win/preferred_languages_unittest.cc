@@ -10,55 +10,29 @@
 #include <string.h>
 
 #include "base/compiler_specific.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/string_util.h"
 #include "base/win/windows_version.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace win {
-namespace i18n {
+namespace base::i18n {
 
 // Tests that at least one user preferred UI language can be obtained.
 TEST(I18NTest, GetUserPreferredUILanguageList) {
-  std::vector<std::wstring> languages;
-  EXPECT_TRUE(GetUserPreferredUILanguageList(&languages));
+  const std::vector<LanguageTag> languages = GetUserPreferredUILanguageList();
   EXPECT_FALSE(languages.empty());
   for (const auto& language : languages) {
-    EXPECT_FALSE(language.empty());
-    // Ensure there's no extra trailing 0 characters.
-    EXPECT_EQ(language.size(), UNSAFE_TODO(wcslen(language.c_str())));
+    EXPECT_FALSE(language.tag_string().empty());
   }
 }
 
 // Tests that at least one thread preferred UI language can be obtained.
 TEST(I18NTest, GetThreadPreferredUILanguageList) {
-  std::vector<std::wstring> languages;
-  EXPECT_TRUE(GetThreadPreferredUILanguageList(&languages));
+  const std::vector<LanguageTag> languages = GetThreadPreferredUILanguageList();
   EXPECT_FALSE(languages.empty());
   for (const auto& language : languages) {
-    EXPECT_FALSE(language.empty());
-    EXPECT_EQ(language.size(), UNSAFE_TODO(wcslen(language.c_str())));
+    EXPECT_FALSE(language.tag_string().empty());
   }
 }
 
-// Tests that GetThreadPreferredUILanguageList appends to the given vector
-// rather than replacing it.
-TEST(I18NTest, GetUserPreferredUILanguageListAppends) {
-  std::vector<std::wstring> languages{std::wstring(L"dummylang")};
-  EXPECT_TRUE(GetUserPreferredUILanguageList(&languages));
-  ASSERT_GT(languages.size(), 1U);
-  EXPECT_EQ(languages[0], L"dummylang");
-}
-
-// Tests that GetThreadPreferredUILanguageList appends to the given vector
-// rather than replacing it.
-TEST(I18NTest, GetThreadPreferredUILanguageListAppends) {
-  std::vector<std::wstring> languages{std::wstring(L"dummylang")};
-  EXPECT_TRUE(GetThreadPreferredUILanguageList(&languages));
-  ASSERT_GT(languages.size(), 1U);
-  EXPECT_EQ(languages[0], L"dummylang");
-}
-
-}  // namespace i18n
-}  // namespace win
-}  // namespace base
+}  // namespace base::i18n

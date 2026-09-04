@@ -78,10 +78,10 @@ DefaultBrowserPromptSurface GetDefaultBrowserPromptSurface() {
     }
 
     std::string os_locale;
-    std::vector<std::wstring> os_languages;
-    if (base::win::i18n::GetUserPreferredUILanguageList(&os_languages) &&
-        !os_languages.empty()) {
-      os_locale = base::WideToUTF8(os_languages[0]);
+    const std::vector<base::i18n::LanguageTag> os_languages =
+        base::i18n::GetUserPreferredUILanguageList();
+    if (!os_languages.empty()) {
+      os_locale = os_languages[0].tag_string();
     } else if (g_browser_process) {
       os_locale = g_browser_process->GetApplicationLocale();
     }

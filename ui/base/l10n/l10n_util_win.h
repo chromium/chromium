@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/i18n/language_tag.h"
 
 namespace gfx::win {
 struct FontAdjustment;
@@ -38,7 +39,8 @@ COMPONENT_EXPORT(UI_BASE) void OverrideLocaleWithUILanguageList();
 
 // Retrieve the locale override, or an empty vector if the locale has not been
 // or failed to be overridden.
-COMPONENT_EXPORT(UI_BASE) const std::vector<std::string>& GetLocaleOverrides();
+COMPONENT_EXPORT(UI_BASE)
+const std::vector<base::i18n::LanguageTag>& GetLocaleOverrides();
 
 // Pulls resource string from the string bundle and returns it.
 COMPONENT_EXPORT(UI_BASE) std::wstring GetWideString(int message_id);

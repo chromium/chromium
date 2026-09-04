@@ -309,7 +309,9 @@ std::vector<std::wstring> GetCandidatesFromSystem(
 
   // Now try the UI languages.  Use the thread preferred ones since that will
   // kindly return us a list of all kinds of fallbacks.
-  win::i18n::GetThreadPreferredUILanguageList(&candidates);
+  for (const auto& tag : ::base::i18n::GetThreadPreferredUILanguageList()) {
+    candidates.emplace_back(ASCIIToWide(tag.tag_string()));
+  }
   return candidates;
 }
 
