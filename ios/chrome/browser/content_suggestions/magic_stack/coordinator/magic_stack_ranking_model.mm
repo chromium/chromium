@@ -1131,14 +1131,11 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
 - (NSString*)titleForCategory:(LevelUpTaskCategory)category {
   switch (category) {
     case LevelUpTaskCategory::kProductivity:
-      // TODO(crbug.com/513244362): Add localization strings.
-      return @"";
+      return l10n_util::GetNSString(IDS_IOS_LEVEL_UP_PRODUCTIVITY_TITLE);
     case LevelUpTaskCategory::kSearch:
-      // TODO(crbug.com/513244362): Add localization strings.
-      return @"";
+      return l10n_util::GetNSString(IDS_IOS_LEVEL_UP_SEARCH_TITLE);
     case LevelUpTaskCategory::kSafety:
-      // TODO(crbug.com/513244362): Add localization strings.
-      return @"";
+      return l10n_util::GetNSString(IDS_IOS_LEVEL_UP_SAFETY_TITLE);
   }
 }
 
