@@ -585,14 +585,6 @@ class GraphBuilderTflite final {
   base::expected<TensorIndex, std::string> SerializeTransposedConstant2D(
       OperandId operand_id);
 
-  // Serialize a sub graph (pow appending mul operation) for erf operation.
-  base::expected<TensorIndex, std::string> SerializeSubGraphPowMul(
-      base::span<const int32_t> input_dimensions,
-      ::tflite::TensorType input_tensor_type,
-      TensorIndex input_tensor_index,
-      int pow_exponent,
-      float mul_alpha);
-
   // Serialize a sub graph (input * weight + bias) for gru cell.
   base::expected<TensorIndex, std::string> SerializeSubGraphMatmulAdd(
       base::span<const int32_t> input_dimensions,
