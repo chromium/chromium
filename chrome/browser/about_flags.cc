@@ -6118,6 +6118,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabClosureMethodRefactorDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabClosureMethodRefactor)},
 
+    {"undoable-tab-closure-rework",
+     flag_descriptions::kUndoableTabClosureReworkName,
+     flag_descriptions::kUndoableTabClosureReworkDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kUndoableTabClosureRework)},
+
     {"tab-sharing-toolbar-android",
      flag_descriptions::kTabSharingToolbarAndroidName,
      flag_descriptions::kTabSharingToolbarAndroidDescription, kOsAndroid,

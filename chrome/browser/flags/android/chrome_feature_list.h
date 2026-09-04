@@ -340,6 +340,7 @@ BASE_DECLARE_FEATURE(kTweakApplicationPreloadSkipNewInstance);
 BASE_DECLARE_FEATURE(kTweakApplicationPreloadSkipWarmUp);
 BASE_DECLARE_FEATURE(kUmaBackgroundSessions);
 BASE_DECLARE_FEATURE(kUmaSessionCorrectnessFixes);
+BASE_DECLARE_FEATURE(kUndoableTabClosureRework);
 BASE_DECLARE_FEATURE(kUniversalKeyboardHandling);
 BASE_DECLARE_FEATURE(kUnparcelIntentFileDescriptors);
 BASE_DECLARE_FEATURE(kUseActivityManagerForTabActivation);

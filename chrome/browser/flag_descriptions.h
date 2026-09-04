@@ -5805,6 +5805,12 @@ inline constexpr char kToolbarProgressBarRefactorDescription[] =
     "Enables the Toolbar Progress Bar Refactor feature which decouples the "
     "progress bar from the Toolbar";
 
+inline constexpr char kUndoableTabClosureReworkName[] =
+    "Undoable tab closure rework";
+inline constexpr char kUndoableTabClosureReworkDescription[] =
+    "Enables immediate tab destruction on close with key-based historical "
+    "restoration via TabRestoreService.";
+
 inline constexpr char kUniversalKeyboardHandlingName[] =
     "Universal Keyboard Handling";
 inline constexpr char kUniversalKeyboardHandlingDescription[] =
