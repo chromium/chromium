@@ -86,8 +86,8 @@ NativeViewHostAuraWithClipWindow::NativeViewHostAuraWithClipWindow(
     : host_(host) {}
 
 NativeViewHostAuraWithClipWindow::~NativeViewHostAuraWithClipWindow() {
+  native_view_observation_.Reset();
   if (host_->native_view()) {
-    host_->native_view()->RemoveObserver(this);
     host_->native_view()->ClearProperty(views::kHostViewKey);
     host_->native_view()->ClearProperty(aura::client::kHostWindowKey);
     host_->native_view()->ClearProperty(
@@ -106,7 +106,7 @@ void NativeViewHostAuraWithClipWindow::AttachNativeView() {
     CreateClippingWindow();
   }
   clipping_window_delegate_->set_native_view(host_->native_view());
-  host_->native_view()->AddObserver(this);
+  native_view_observation_.Observe(host_->native_view());
   host_->native_view()->SetProperty(views::kHostViewKey,
                                     static_cast<View*>(host_));
 
@@ -148,7 +148,7 @@ void NativeViewHostAuraWithClipWindow::NativeViewDetaching(bool destroyed) {
   clipping_window_delegate_->set_native_view(nullptr);
   RemoveClippingWindow();
   if (!destroyed) {
-    host_->native_view()->RemoveObserver(this);
+    native_view_observation_.Reset();
     host_->native_view()->ClearProperty(views::kHostViewKey);
     host_->native_view()->ClearProperty(aura::client::kHostWindowKey);
     host_->native_view()->ClearProperty(
@@ -336,6 +336,7 @@ void NativeViewHostAuraWithClipWindow::OnWindowDestroying(
 
 void NativeViewHostAuraWithClipWindow::OnWindowDestroyed(aura::Window* window) {
   DCHECK(window == host_->native_view());
+  native_view_observation_.Reset();
   host_->NativeViewDestroyed();
 }
 

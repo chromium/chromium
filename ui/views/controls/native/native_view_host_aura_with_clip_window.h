@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "ui/aura/window_observer.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/transform.h"
@@ -115,6 +116,9 @@ class NativeViewHostAuraWithClipWindow : public NativeViewHostWrapper,
 
   // The top insets to exclude the underlying native view from the target.
   int top_inset_ = 0;
+
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      native_view_observation_{this};
 };
 
 }  // namespace views
