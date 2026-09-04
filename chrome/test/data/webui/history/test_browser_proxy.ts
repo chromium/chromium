@@ -4,7 +4,7 @@
 
 import type {BrowserProxy, HistoryIdentityState} from 'chrome://history/history.js';
 import {HistorySignInState, SyncState} from 'chrome://history/history.js';
-import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
+import {OpenConversationResult, PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import type {PageRemote} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy as BaseTestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -58,6 +58,11 @@ export class TestHistoryBrowserProxy extends BaseTestBrowserProxy implements
         accountImageSrc: 'http://example.com/image.png',
       },
     }));
+
+    this.handler.setResultFor(
+        'openCriticalActionConversation', Promise.resolve({
+          result: OpenConversationResult.kSuccess,
+        }));
 
     // <if expr="not is_chromeos">
     this.handler.setResultFor(

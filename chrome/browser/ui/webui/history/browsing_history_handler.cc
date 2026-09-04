@@ -27,6 +27,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/critical_actions/critical_action_factory.h"
 #include "chrome/browser/critical_actions/critical_action_ui_utils.h"
+#include "chrome/browser/critical_actions/glic_linkout_handler.h"
 #include "chrome/browser/favicon/large_icon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/history_utils.h"
@@ -51,6 +52,7 @@
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/glic_enums.mojom.h"
 #include "chrome/common/pref_names.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
@@ -108,6 +110,14 @@ history::mojom::AccountInfoPtr CreateAccountInfoDataMojo(
   return account_info_mojo;
 }
 #endif
+
+constexpr char kOpenConversationResultHistogram[] =
+    "CriticalActions.OpenConversationResult";
+
+void RecordOpenConversationResult(
+    critical_actions::OpenConversationResult result) {
+  base::UmaHistogramEnumeration(kOpenConversationResultHistogram, result);
+}
 
 // Identifiers for the type of device from which a history entry originated.
 static const char kDeviceTypeLaptop[] = "laptop";
@@ -989,4 +999,56 @@ void BrowsingHistoryHandler::OnExtendedAccountInfoUpdated(
   // function is never shown for ChromeOS (using <if expr="not is_chromeos">).
   NOTREACHED();
 #endif
+}
+
+void BrowsingHistoryHandler::OpenCriticalActionConversation(
+    const std::string& critical_action_id,
+    OpenCriticalActionConversationCallback callback) {
+  if (critical_action_id.empty()) {
+    RecordOpenConversationResult(
+        critical_actions::OpenConversationResult::kErrorInvalidActionEntry);
+    std::move(callback).Run(
+        history::mojom::OpenConversationResult::kErrorInvalidActionEntry);
+    return;
+  }
+
+  critical_actions::CriticalActionService* critical_action_service =
+      critical_actions::CriticalActionFactory::GetForProfile(profile_);
+  if (!critical_action_service) {
+    RecordOpenConversationResult(
+        critical_actions::OpenConversationResult::kErrorInternal);
+    std::move(callback).Run(
+        history::mojom::OpenConversationResult::kErrorInternal);
+    return;
+  }
+
+  critical_action_service->GetCriticalAction(
+      critical_action_id,
+      base::BindOnce(
+          &BrowsingHistoryHandler::OnCriticalActionRetrievedForLinkout,
+          weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void BrowsingHistoryHandler::OnCriticalActionRetrievedForLinkout(
+    OpenCriticalActionConversationCallback callback,
+    std::optional<critical_actions::CriticalActionEntry> entry) {
+  if (!entry) {
+    RecordOpenConversationResult(
+        critical_actions::OpenConversationResult::kErrorInvalidActionEntry);
+    std::move(callback).Run(
+        history::mojom::OpenConversationResult::kErrorInvalidActionEntry);
+    return;
+  }
+
+  critical_actions::GlicLinkoutHandler::GetInstance()->OpenConversation(
+      web_contents_, *entry,
+      glic::mojom::InvocationSource::kHistoryPageChatLinkout,
+      base::BindOnce(
+          [](OpenCriticalActionConversationCallback cb,
+             critical_actions::OpenConversationResult result) {
+            RecordOpenConversationResult(result);
+            std::move(cb).Run(
+                static_cast<history::mojom::OpenConversationResult>(result));
+          },
+          std::move(callback)));
 }

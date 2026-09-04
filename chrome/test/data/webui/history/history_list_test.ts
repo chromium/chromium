@@ -4,6 +4,7 @@
 
 import type {CrA11yAnnouncerMessagesSentEvent, HistoryAppElement, HistoryEntry, HistoryItemElement, HistoryListElement, HistoryToolbarElement} from 'chrome://history/history.js';
 import {BrowserProxyImpl, CrRouter} from 'chrome://history/history.js';
+import {CriticalActionType, OpenConversationResult} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isMac} from 'chrome://resources/js/platform.js';
@@ -583,6 +584,135 @@ suite('HistoryListTest', function() {
     const hr = element.shadowRoot.querySelector<HTMLElement>('#sharedMenu .hr');
     assertTrue(!!hr);
     assertTrue(hr.hidden);
+  });
+
+  test('GoToGeminiChatViaMenuButton', async function() {
+    loadTimeData.overrideValues({
+      isCriticalActionsEnabled: true,
+      isCriticalActionsChatLinkoutsEnabled: true,
+    });
+    const historyEntry =
+        createHistoryEntry('2025-08-26 10:00', 'http://www.google.com');
+    historyEntry.isActorVisit = true;
+    historyEntry.criticalActions = [
+      {
+        id: 'action-123',
+        label: 'Downloaded item',
+        tooltip: 'Downloads',
+        linkoutUrl: 'chrome://downloads',
+        actionType: CriticalActionType.kDownload,
+      },
+    ];
+    await finishSetup([historyEntry]);
+
+    const item = element.shadowRoot.querySelector('history-item');
+    assertTrue(!!item);
+    item.$.menuButton.click();
+    await microtasksFinished();
+
+    element.$.sharedMenu.get();
+    const goToGeminiChatButton = element.shadowRoot.querySelector<HTMLElement>(
+        '#menuGoToGeminiChatButton');
+    assertTrue(!!goToGeminiChatButton);
+    assertFalse(goToGeminiChatButton.hidden);
+
+    const reviewButton = element.shadowRoot.querySelector<HTMLElement>(
+        '#menuReviewGeminiActivityButton');
+    assertTrue(!!reviewButton);
+    assertTrue(reviewButton.hidden);
+
+    const hr = element.shadowRoot.querySelector<HTMLElement>('.hr');
+    assertTrue(!!hr);
+    assertFalse(hr.hidden);
+
+    goToGeminiChatButton.click();
+    await microtasksFinished();
+
+    const actionId =
+        await testProxy.handler.whenCalled('openCriticalActionConversation');
+    assertEquals('action-123', actionId);
+    assertFalse(element.$.errorToast.open);
+  });
+
+  test('GoToGeminiChatShowsErrorToastOnFailure', async function() {
+    loadTimeData.overrideValues({
+      isCriticalActionsEnabled: true,
+      isCriticalActionsChatLinkoutsEnabled: true,
+    });
+    testProxy.handler.setResultFor(
+        'openCriticalActionConversation', Promise.resolve({
+          result: OpenConversationResult.kErrorInternal,
+        }));
+    const historyEntry =
+        createHistoryEntry('2025-08-26 10:00', 'http://www.google.com');
+    historyEntry.isActorVisit = true;
+    historyEntry.criticalActions = [
+      {
+        id: 'action-123',
+        label: 'Downloaded item',
+        tooltip: 'Downloads',
+        linkoutUrl: 'chrome://downloads',
+        actionType: CriticalActionType.kDownload,
+      },
+    ];
+    await finishSetup([historyEntry]);
+
+    const item = element.shadowRoot.querySelector('history-item');
+    assertTrue(!!item);
+    item.$.menuButton.click();
+    await microtasksFinished();
+
+    element.$.sharedMenu.get();
+    const goToGeminiChatButton = element.shadowRoot.querySelector<HTMLElement>(
+        '#menuGoToGeminiChatButton');
+    assertTrue(!!goToGeminiChatButton);
+    assertFalse(goToGeminiChatButton.hidden);
+
+    assertFalse(element.$.errorToast.open);
+    goToGeminiChatButton.click();
+    await microtasksFinished();
+
+    const actionId =
+        await testProxy.handler.whenCalled('openCriticalActionConversation');
+    assertEquals('action-123', actionId);
+    assertTrue(element.$.errorToast.open);
+  });
+
+  test('GoToGeminiChatHiddenWhenChatLinkoutsDisabled', async function() {
+    loadTimeData.overrideValues({
+      isCriticalActionsEnabled: true,
+      isCriticalActionsChatLinkoutsEnabled: false,
+      myActivityGeminiAppsUrl: 'https://myactivity.google.com/product/gemini',
+    });
+    const historyEntry =
+        createHistoryEntry('2025-08-26 10:00', 'http://www.google.com');
+    historyEntry.isActorVisit = true;
+    historyEntry.criticalActions = [
+      {
+        id: 'action-123',
+        label: 'Downloaded item',
+        tooltip: 'Downloads',
+        linkoutUrl: 'chrome://downloads',
+        actionType: CriticalActionType.kDownload,
+      },
+    ];
+    await finishSetup([historyEntry]);
+
+    const item = element.shadowRoot.querySelector('history-item');
+    assertTrue(!!item);
+    item.$.menuButton.click();
+    await microtasksFinished();
+
+    element.$.sharedMenu.get();
+    const goToGeminiChatButton = element.shadowRoot.querySelector<HTMLElement>(
+        '#menuGoToGeminiChatButton');
+    assertTrue(!!goToGeminiChatButton);
+    assertTrue(goToGeminiChatButton.hidden);
+
+    const reviewButton = element.shadowRoot.querySelector<HTMLElement>(
+        '#menuReviewGeminiActivityButton');
+    assertTrue(!!reviewButton);
+    assertFalse(reviewButton.hidden);
   });
 
   test('DeleteDisabledWhilePending', async function() {

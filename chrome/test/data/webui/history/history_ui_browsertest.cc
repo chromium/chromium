@@ -215,6 +215,20 @@ IN_PROC_BROWSER_TEST_F(HistoryListTest, SharedMenuClosesOnFocusout) {
   RunTestCase("SharedMenuClosesOnFocusout");
 }
 
+IN_PROC_BROWSER_TEST_F(HistoryListTest, GoToGeminiChatViaMenuButton) {
+  RunTestCase("GoToGeminiChatViaMenuButton");
+}
+
+IN_PROC_BROWSER_TEST_F(HistoryListTest,
+                       GoToGeminiChatShowsErrorToastOnFailure) {
+  RunTestCase("GoToGeminiChatShowsErrorToastOnFailure");
+}
+
+IN_PROC_BROWSER_TEST_F(HistoryListTest,
+                       GoToGeminiChatHiddenWhenChatLinkoutsDisabled) {
+  RunTestCase("GoToGeminiChatHiddenWhenChatLinkoutsDisabled");
+}
+
 class HistoryWithHistoryEmbeddingsTest : public WebUIMochaBrowserTest {
  protected:
   HistoryWithHistoryEmbeddingsTest() {

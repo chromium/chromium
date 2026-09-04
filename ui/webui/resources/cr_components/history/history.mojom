@@ -195,6 +195,14 @@ struct AccountInfo {
   string email;
 };
 
+// LINT.IfChange(OpenConversationResult)
+enum OpenConversationResult {
+  kSuccess = 0,
+  kErrorInvalidActionEntry = 1,
+  kErrorInternal = 2,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/critical_actions/enums.xml:OpenConversationResult)
+
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
   // The BrowserProxy singleton calls this when it's first initialized.
@@ -235,6 +243,11 @@ interface PageHandler {
 
   // The user turns on the history sync by clicking the "Sync history" button.
   TurnOnHistorySync();
+
+  // Opens the conversation associated with the given critical action in
+  // split view.
+  OpenCriticalActionConversation(string critical_action_id)
+      => (OpenConversationResult result);
 
   // Checks if the history sync promo should be shown on the history page.
   [EnableIfNot=is_chromeos]

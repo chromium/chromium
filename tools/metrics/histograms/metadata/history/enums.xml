@@ -324,6 +324,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Remove from history clicked"/>
   <int value="2" label="Remove bookmark clicked"/>
   <int value="3" label="Review Gemini activity clicked"/>
+  <int value="4" label="Go to Gemini chat clicked"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/resources/history/constants.ts:VisitContextMenuAction) -->

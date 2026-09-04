@@ -7,14 +7,17 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_infinite_list/cr_infinite_list.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
+import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import './history_item.js';
 
 import type {HistoryEntry, HistoryQuery, PageCallbackRouter, QueryState} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
+import {OpenConversationResult} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrInfiniteListElement} from 'chrome://resources/cr_elements/cr_infinite_list/cr_infinite_list.js';
 import type {CrLazyRenderLitElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
+import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -42,6 +45,7 @@ type HistoryCheckboxSelectEvent = CustomEvent<{
 
 export interface HistoryListElement {
   $: {
+    errorToast: CrToastElement,
     infiniteList: CrInfiniteListElement<HistoryEntry>,
     dialog: CrLazyRenderLitElement<CrDialogElement>,
     noResults: HTMLElement,
@@ -522,8 +526,36 @@ export class HistoryListElement extends HistoryListElementBase {
     return loadTimeData.getBoolean('isCriticalActionsEnabled');
   }
 
+  private isChatLinkoutsEnabled_(): boolean {
+    return loadTimeData.valueExists('isCriticalActionsChatLinkoutsEnabled') &&
+        loadTimeData.getBoolean('isCriticalActionsChatLinkoutsEnabled');
+  }
+
+  protected canShowGoToGeminiChat_(): boolean {
+    return this.isCriticalActionsEnabled_() && this.isChatLinkoutsEnabled_() &&
+        !!this.actionMenuModel_?.item.isActorVisit &&
+        (this.actionMenuModel_?.item.criticalActions?.length ?? 0) > 0;
+  }
+
+  protected async onGoToGeminiChatClick_() {
+    BrowserProxyImpl.getInstance().recordAction('EntryMenuGoToGeminiChat');
+    this.recordContextMenuActionsHistogram_(
+        VisitContextMenuAction.GO_TO_GEMINI_CHAT_CLICKED);
+
+    const actionId = this.actionMenuModel_?.item.criticalActions?.[0]?.id;
+    this.closeMenu_();
+
+    if (actionId) {
+      const {result} = await BrowserProxyImpl.getInstance()
+                           .handler.openCriticalActionConversation(actionId);
+      if (result !== OpenConversationResult.kSuccess) {
+        this.$.errorToast.show();
+      }
+    }
+  }
+
   protected canShowReviewGeminiActivity_(): boolean {
-    return this.isCriticalActionsEnabled_() &&
+    return this.isCriticalActionsEnabled_() && !this.isChatLinkoutsEnabled_() &&
         !!this.actionMenuModel_?.item.isActorVisit;
   }
 

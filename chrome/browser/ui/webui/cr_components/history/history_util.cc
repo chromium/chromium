@@ -52,6 +52,8 @@ content::WebUIDataSource* HistoryUtil::PopulateCommonSourceForHistory(
       {"entrySummary", IDS_HISTORY_ENTRY_SUMMARY},
       {"expandSessionButton", IDS_HISTORY_OTHER_SESSIONS_EXPAND_SESSION},
       {"foundSearchResults", IDS_HISTORY_FOUND_SEARCH_RESULTS},
+      {"goToGeminiChat", IDS_HISTORY_GO_TO_GEMINI_CHAT},
+      {"goToGeminiChatError", IDS_HISTORY_GO_TO_GEMINI_CHAT_ERROR},
       {"historyMenuButton", IDS_HISTORY_HISTORY_MENU_DESCRIPTION},
       {"historyMenuItem", IDS_HISTORY_HISTORY_MENU_ITEM},
       {"itemsSelected", IDS_HISTORY_ITEMS_SELECTED},

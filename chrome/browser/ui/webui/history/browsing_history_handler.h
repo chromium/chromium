@@ -100,6 +100,9 @@ class BrowsingHistoryHandler : public history::mojom::PageHandler,
   // history::mojom::PageHandler:
   void RequestAccountInfo(RequestAccountInfoCallback callback) override;
   void TurnOnHistorySync() override;
+  void OpenCriticalActionConversation(
+      const std::string& critical_action_id,
+      OpenCriticalActionConversationCallback callback) override;
 #if !BUILDFLAG(IS_CHROMEOS)
   void ShouldShowHistoryPageHistorySyncPromo(
       ShouldShowHistoryPageHistorySyncPromoCallback callback) override;
@@ -167,6 +170,10 @@ class BrowsingHistoryHandler : public history::mojom::PageHandler,
       const history::BrowsingHistoryService::QueryResultsInfo&
           query_results_info,
       std::vector<critical_actions::CriticalActionEntry> critical_actions);
+
+  void OnCriticalActionRetrievedForLinkout(
+      OpenCriticalActionConversationCallback callback,
+      std::optional<critical_actions::CriticalActionEntry> entry);
 
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;

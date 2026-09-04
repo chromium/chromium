@@ -996,6 +996,57 @@ TEST_F(BrowsingHistoryHandlerCriticalActionsTest,
   EXPECT_EQ(results->value[0]->critical_actions[1]->id, "action-3");
 }
 
+TEST_F(BrowsingHistoryHandlerTest,
+       OpenCriticalActionConversationInvalidAction) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {critical_actions::features::kCriticalActionHistory,
+       history::kBrowsingHistoryActorIntegrationM3},
+      {});
+
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<history::mojom::OpenConversationResult> future;
+  handler()->OpenCriticalActionConversation("non-existent-action",
+                                            future.GetCallback());
+  EXPECT_EQ(future.Get(),
+            history::mojom::OpenConversationResult::kErrorInvalidActionEntry);
+  histogram_tester.ExpectUniqueSample(
+      "CriticalActions.OpenConversationResult",
+      critical_actions::OpenConversationResult::kErrorInvalidActionEntry, 1);
+}
+
+TEST_F(BrowsingHistoryHandlerTest,
+       OpenCriticalActionConversationCallsLinkoutHandler) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {critical_actions::features::kCriticalActionHistory,
+       history::kBrowsingHistoryActorIntegrationM3},
+      {});
+
+  critical_actions::CriticalActionService* critical_action_service =
+      critical_actions::CriticalActionFactory::GetForProfile(profile());
+  ASSERT_NE(critical_action_service, nullptr);
+
+  critical_actions::CriticalActionEntry action;
+  action.critical_action_id = "test-action-1";
+  action.conversation_id = "c_test_conversation";
+  action.timestamp = base::Time::Now();
+  action.visit_id = 1001;
+  action.action_type = critical_actions::ActionType::kDownload;
+  action.url = GURL("http://example.com");
+  critical_action_service->AddCriticalAction(action);
+
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<history::mojom::OpenConversationResult> future;
+  handler()->OpenCriticalActionConversation("test-action-1",
+                                            future.GetCallback());
+  EXPECT_EQ(future.Get(),
+            history::mojom::OpenConversationResult::kErrorInternal);
+  histogram_tester.ExpectUniqueSample(
+      "CriticalActions.OpenConversationResult",
+      critical_actions::OpenConversationResult::kErrorInternal, 1);
+}
+
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 class BrowsingHistoryHandlerHatsSurveyTest

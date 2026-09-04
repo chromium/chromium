@@ -14675,6 +14675,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="HistoryPage_EntryMenuGoToGeminiChat">
+  <owner>heychirag@google.com</owner>
+  <owner>polonium@google.com</owner>
+  <description>
+    Triggered when the user clicks 'Go to Gemini chat' in a context menu on
+    chrome://history. This option is shown for actor (agent-initiated) visits
+    with critical action entries when critical action linkouts are enabled.
+  </description>
+</action>
+
 <action name="HistoryPage_EntryMenuRemoveFromHistory">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

@@ -49,6 +49,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/critical_actions/core/browser/critical_action_service.h:CriticalActionVisitIdResolutionOutcome) -->
 
+<!-- LINT.IfChange(OpenConversationResult) -->
+
+<enum name="OpenConversationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Error: Invalid action entry"/>
+  <int value="2" label="Error: Internal failure"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/critical_actions/core/browser/critical_action_types.h:OpenConversationResult, //ui/webui/resources/cr_components/history/history.mojom:OpenConversationResult) -->
+
 </enums>
 
 </histogram-configuration>
