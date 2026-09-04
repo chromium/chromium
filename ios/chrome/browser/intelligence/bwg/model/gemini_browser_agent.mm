@@ -1955,7 +1955,6 @@ bool GeminiBrowserAgent::UpdateLiveModeUIAndMaybeContext() {
       return true;
     }
     UpdateFloatyWithPartialPageContext();
-    RequestPageContextGeneration();
     return true;
   }
   return false;
