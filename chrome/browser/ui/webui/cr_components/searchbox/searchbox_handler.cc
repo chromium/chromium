@@ -1494,8 +1494,13 @@ void SearchboxHandler::SetPopupSelection(
     searchbox::mojom::OmniboxPopupSelectionPtr selection) {
   if (!base::FeatureList::IsEnabled(
           omnibox::kWebUISearchboxWithoutModelController)) {
-    edit_model()->SetPopupSelection(ConvertSelection(std::move(selection)),
-                                    false, false, false);
+    OmniboxPopupSelection popup_selection =
+        ConvertSelection(std::move(selection));
+    if (popup_selection.line != OmniboxPopupSelection::kNoMatch &&
+        popup_selection.line >= autocomplete_controller()->result().size()) {
+      return;
+    }
+    edit_model()->SetPopupSelection(popup_selection, false, false, false);
   }
 }
 

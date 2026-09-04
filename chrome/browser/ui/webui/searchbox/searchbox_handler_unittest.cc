@@ -1263,6 +1263,48 @@ TEST_F(WebuiOmniboxHandlerTest, WebuiOmniboxUpdatesSelection) {
       selection->state);
 }
 
+TEST_F(WebuiOmniboxHandlerTest, SetPopupSelection_IgnoresOutOfBounds) {
+  scoped_refptr<FakeAutocompleteProvider> provider =
+      new FakeAutocompleteProvider(AutocompleteProvider::TYPE_SEARCH);
+  AutocompleteMatch match1(provider.get(), 1000, false,
+                           AutocompleteMatchType::URL_WHAT_YOU_TYPED);
+  match1.destination_url = GURL("https://example1.com");
+  AutocompleteMatch match2(provider.get(), 1000, false,
+                           AutocompleteMatchType::URL_WHAT_YOU_TYPED);
+  match2.destination_url = GURL("https://example2.com");
+
+  auto fake_autocomplete_controller =
+      std::make_unique<FakeAutocompleteController>(&task_environment_);
+  fake_autocomplete_controller->providers_.push_back(provider);
+  fake_autocomplete_controller->internal_result_.AppendMatches(
+      {match1, match2});
+  fake_autocomplete_controller->published_result_.AppendMatches(
+      {match1, match2});
+  handler_->autocomplete_controller_observation_.Reset();
+  handler_->SetAutocompleteControllerForTesting(
+      std::move(fake_autocomplete_controller));
+
+  omnibox_controller_->edit_model()->SetPopupSelection(
+      OmniboxPopupSelection(0, OmniboxPopupSelection::NORMAL));
+  EXPECT_EQ(0U, omnibox_controller_->edit_model()->GetPopupSelection().line);
+
+  // Calling SetPopupSelection with an out-of-bounds index should be ignored.
+  auto selection = searchbox::mojom::OmniboxPopupSelection::New();
+  selection->line = 5;
+  selection->state = searchbox::mojom::SelectionLineState::kNormal;
+  selection->action_index = 0;
+  handler_->SetPopupSelection(std::move(selection));
+  EXPECT_EQ(0U, omnibox_controller_->edit_model()->GetPopupSelection().line);
+
+  // Calling SetPopupSelection with a valid index should succeed.
+  selection = searchbox::mojom::OmniboxPopupSelection::New();
+  selection->line = 1;
+  selection->state = searchbox::mojom::SelectionLineState::kNormal;
+  selection->action_index = 0;
+  handler_->SetPopupSelection(std::move(selection));
+  EXPECT_EQ(1U, omnibox_controller_->edit_model()->GetPopupSelection().line);
+}
+
 TEST_F(WebuiOmniboxHandlerTest, OnActiveTabChanged_SavesAndRestoresState) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(omnibox::kWebUIOmniboxFullPopup);
