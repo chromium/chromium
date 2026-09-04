@@ -59,6 +59,15 @@ export function getHtml(this: OmniboxEverywhereDebugAppElement) {
     Invoke Omnibox Everywhere
   </button>
 </div>
+<div class="iph-container">
+  <h2>IPH / User Education</h2>
+  <div class="button-row">
+    <button id="invokeWithIphBtn" class="action-button"
+        @click="${this.onLaunchWithIphClick}">
+      Invoke Omnibox Everywhere & Show IPH
+    </button>
+  </div>
+</div>
 <div class="shortcut-container">
   <h2>Shortcut & Pinning Setup</h2>
   <div class="button-row">

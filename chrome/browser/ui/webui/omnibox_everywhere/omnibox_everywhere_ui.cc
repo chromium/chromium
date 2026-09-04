@@ -522,7 +522,7 @@ void OmniboxEverywhereUI::CreatePageHandler(
         handler) {
   debug_page_handler_ = std::make_unique<
       omnibox_everywhere_debug::OmniboxEverywhereDebugPageHandler>(
-      profile_, std::move(page), std::move(handler));
+      web_ui(), profile_, std::move(page), std::move(handler));
 }
 
 void OmniboxEverywhereUI::BindInterface(

@@ -109,12 +109,14 @@ input:checked + .slider:before {
   background-color: #174ea6;
 }
 
+.iph-container,
 .shortcut-container {
   border-top: 1px solid #e0e0e0;
   margin-top: 32px;
   padding-top: 16px;
 }
 
+.iph-container h2,
 .shortcut-container h2 {
   font-size: 16px;
   font-weight: 500;

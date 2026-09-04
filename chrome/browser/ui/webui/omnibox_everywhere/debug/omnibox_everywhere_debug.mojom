@@ -63,6 +63,9 @@ interface PageHandler {
   // invocation source.
   InvokeOmniboxEverywhere(InvocationSource source);
 
+  // Triggers the Lens IPH promo via UserEducationInternals.
+  ShowLensIph();
+
   // Creates the Start Menu shortcut and sets up AppUserModelId and icon.
   CreateStartMenuShortcut() => (bool success);
 

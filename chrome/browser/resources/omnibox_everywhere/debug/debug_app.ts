@@ -155,6 +155,12 @@ export class OmniboxEverywhereDebugAppElement extends CrLitElement {
         this.selectedInvocationSource);
   }
 
+  protected onLaunchWithIphClick() {
+    browserProxyFactory.getInstance().handler.invokeOmniboxEverywhere(
+        this.selectedInvocationSource);
+    browserProxyFactory.getInstance().handler.showLensIph();
+  }
+
   protected async onCreateShortcutClick() {
     this.shortcutStatus = 'Creating Start Menu shortcut...';
     const res = await browserProxyFactory.getInstance()
