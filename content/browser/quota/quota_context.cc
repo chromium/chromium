@@ -50,13 +50,13 @@ void QuotaContext::BindQuotaManagerHost(
 }
 
 QuotaContext::~QuotaContext() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
 }
 
 void QuotaContext::BindQuotaManagerHostOnIOThread(
     const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::QuotaManagerHost> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
 
   // The quota manager currently runs on the I/O thread.
   auto host =

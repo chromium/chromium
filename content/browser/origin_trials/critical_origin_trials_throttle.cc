@@ -56,7 +56,7 @@ void CriticalOriginTrialsThrottle::BeforeWillProcessResponse(
     const network::mojom::URLResponseHead& response_head,
     RestartWithURLReset* restart_with_url_reset) {
   if (is_navigation_request_) {
-    DCHECK_EQ(response_url, request_url_);
+    CHECK_EQ(response_url, request_url_, base::NotFatalUntil::M159);
     MaybeRestartWithTrials(response_head, restart_with_url_reset);
   }
 }

@@ -167,7 +167,7 @@ void ScreenOrientationProvider::OnOrientationChange() {
     return;
 
   if (LockMatchesCurrentOrientation(pending_lock_orientation_.value())) {
-    DCHECK(!pending_callback_.is_null());
+    CHECK(!pending_callback_.is_null(), base::NotFatalUntil::M159);
     NotifyLockResult(
         ScreenOrientationLockResult::SCREEN_ORIENTATION_LOCK_RESULT_SUCCESS);
   }
@@ -266,7 +266,7 @@ void ScreenOrientationProvider::DidToggleFullscreenModeForTab(
   if (!delegate_->FullScreenRequired(web_contents()))
     return;
 
-  DCHECK(!entered_fullscreen);
+  CHECK(!entered_fullscreen, base::NotFatalUntil::M159);
   UnlockOrientation();
 }
 

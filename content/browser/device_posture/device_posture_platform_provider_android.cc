@@ -17,7 +17,7 @@ using blink::mojom::DevicePostureType;
 
 DevicePosturePlatformProviderAndroid::DevicePosturePlatformProviderAndroid(
     WebContents* web_contents) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M159);
   WebContentsAndroid* web_contents_android =
       static_cast<WebContentsImpl*>(web_contents)->GetWebContentsAndroid();
   java_device_posture_provider_.Reset(

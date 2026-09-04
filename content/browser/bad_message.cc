@@ -34,7 +34,8 @@ void LogBadMessage(BadMessageReason reason) {
 
 void ReceivedBadMessageOnUIThread(ChildProcessId render_process_id,
                                   BadMessageReason reason) {
-  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI),
+        base::NotFatalUntil::M159);
   RenderProcessHost* host = RenderProcessHost::FromID(render_process_id);
   if (!host)
     return;

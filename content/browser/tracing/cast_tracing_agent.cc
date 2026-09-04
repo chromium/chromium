@@ -102,7 +102,7 @@ class CastSystemTracingSession {
                             const std::string& categories,
                             SuccessCallback callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(worker_sequence_checker_);
-    DCHECK(!is_tracing_);
+    CHECK(!is_tracing_, base::NotFatalUntil::M159);
     system_tracer_ = chromecast::SystemTracer::Create();
     system_tracer_->StartTracing(
         categories,
@@ -172,7 +172,7 @@ class CastDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
   void StartTracingImpl(
       const perfetto::DataSourceConfig& data_source_config) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(perfetto_sequence_checker_);
-    DCHECK(!session_);
+    CHECK(!session_, base::NotFatalUntil::M159);
     target_buffer_ = data_source_config.target_buffer();
     session_ = std::make_unique<CastSystemTracingSession>(worker_task_runner_);
     session_->StartTracing(data_source_config.chrome_config().trace_config(),
@@ -183,7 +183,7 @@ class CastDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
   // Called from the tracing::PerfettoProducer on its sequence.
   void StopTracingImpl(base::OnceClosure stop_complete_callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(perfetto_sequence_checker_);
-    DCHECK(session_);
+    CHECK(session_, base::NotFatalUntil::M159);
     if (!session_started_) {
       session_started_callback_ =
           base::BindOnce(&CastDataSource::StopTracing, base::Unretained(this),
@@ -236,8 +236,8 @@ class CastDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
     if (!stop_complete_callback_) {
       return;
     }
-    DCHECK(trace_writer_);
-    DCHECK(session_);
+    CHECK(trace_writer_, base::NotFatalUntil::M159);
+    CHECK(session_, base::NotFatalUntil::M159);
 
     if (status != chromecast::SystemTracer::Status::FAIL) {
       trace_writer_->WriteData(trace_data);
@@ -250,7 +250,7 @@ class CastDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
   }
 
   void OnTraceDataCommitted() {
-    DCHECK(stop_complete_callback_);
+    CHECK(stop_complete_callback_, base::NotFatalUntil::M159);
     trace_writer_.reset();
     session_.reset();
     session_started_ = false;

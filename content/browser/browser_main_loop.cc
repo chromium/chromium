@@ -474,7 +474,7 @@ void BrowserMainLoop::EnableStartupTasks(bool enabled) {
 // BrowserMainLoop construction / destruction =============================
 
 BrowserMainLoop* BrowserMainLoop::GetInstance() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   return g_current_browser_main_loop;
 }
 
@@ -499,14 +499,14 @@ BrowserMainLoop::BrowserMainLoop(
       scoped_best_effort_execution_fence_(std::in_place)
 #endif
 {
-  DCHECK(!g_current_browser_main_loop);
+  CHECK(!g_current_browser_main_loop, base::NotFatalUntil::M159);
   DCHECK(scoped_execution_fence_)
       << "ThreadPool must be halted before kicking off content.";
   g_current_browser_main_loop = this;
 }
 
 BrowserMainLoop::~BrowserMainLoop() {
-  DCHECK_EQ(this, g_current_browser_main_loop);
+  CHECK_EQ(this, g_current_browser_main_loop, base::NotFatalUntil::M159);
   ui::Clipboard::DestroyClipboardForCurrentThread();
   g_current_browser_main_loop = nullptr;
 }
@@ -522,10 +522,10 @@ void BrowserMainLoop::Init() {
     // resets it). The thread owned by the data will be registered as
     // BrowserThread::IO in CreateThreads() instead of creating a brand new
     // thread.
-    DCHECK(!io_thread_);
+    CHECK(!io_thread_, base::NotFatalUntil::M159);
     io_thread_ = std::move(startup_data->io_thread);
 
-    DCHECK(!mojo_ipc_support_);
+    CHECK(!mojo_ipc_support_, base::NotFatalUntil::M159);
     mojo_ipc_support_ = std::move(startup_data->mojo_ipc_support);
 
     // The StartupDataImpl was destined to BrowserMainLoop, do not pass it
@@ -547,7 +547,8 @@ int BrowserMainLoop::EarlyInitialization() {
   // process and requires no thread been forked. The initialization has happened
   // by now since a thread to start the ServiceManager has been created
   // before the browser main loop starts.
-  DCHECK(SandboxHostLinux::GetInstance()->IsInitialized());
+  CHECK(SandboxHostLinux::GetInstance()->IsInitialized(),
+        base::NotFatalUntil::M159);
 #endif
 
   // GLib's spawning of new processes is buggy, so it's important that at this
@@ -575,7 +576,7 @@ int BrowserMainLoop::EarlyInitialization() {
 
   // SetCurrentThreadType relies on CurrentUIThread on some platforms. The
   // MessagePumpForUI needs to be bound to the main thread by this point.
-  DCHECK(base::CurrentUIThread::IsSet());
+  CHECK(base::CurrentUIThread::IsSet(), base::NotFatalUntil::M159);
   base::PlatformThread::SetDefaultThreadType(base::ThreadType::kPresentation);
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
@@ -651,8 +652,9 @@ void BrowserMainLoop::CreateMainMessageLoop() {
 
   // Register the main thread. The main thread's task runner should already have
   // been initialized but it's not yet known as BrowserThread::UI.
-  DCHECK(base::SingleThreadTaskRunner::HasCurrentDefault());
-  DCHECK(base::CurrentUIThread::IsSet());
+  CHECK(base::SingleThreadTaskRunner::HasCurrentDefault(),
+        base::NotFatalUntil::M159);
+  CHECK(base::CurrentUIThread::IsSet(), base::NotFatalUntil::M159);
   main_thread_.reset(new BrowserThreadImpl(
       BrowserThread::UI, base::SingleThreadTaskRunner::GetCurrentDefault()));
 }
@@ -793,7 +795,7 @@ int BrowserMainLoop::PreCreateThreads() {
       CreateBackgroundTracingManager(tracing_controller_->tracing_delegate());
 
   // Make sure no accidental call to initialize GpuDataManager earlier.
-  DCHECK(!GpuDataManagerImpl::Initialized());
+  CHECK(!GpuDataManagerImpl::Initialized(), base::NotFatalUntil::M159);
   if (parts_) {
     result_code_ = parts_->PreCreateThreads();
   }
@@ -846,7 +848,7 @@ int BrowserMainLoop::PreCreateThreads() {
   // It's unsafe to append the gpu command line switches to the global
   // CommandLine::ForCurrentProcess object after threads are created.
   GpuDataManagerImpl::GetInstance();
-  DCHECK(GpuDataManagerImpl::Initialized());
+  CHECK(GpuDataManagerImpl::Initialized(), base::NotFatalUntil::M159);
   // We report Uma metrics on a periodic basis when running the full browser,
   // while avoiding doing so in unit tests by making it explicitly enabled here.
   GpuDataManagerImpl::GetInstance()->StartUmaTimer();
@@ -908,7 +910,7 @@ int BrowserMainLoop::PreCreateThreads() {
 void BrowserMainLoop::CreateStartupTasks() {
   TRACE_EVENT0("startup", "BrowserMainLoop::CreateStartupTasks");
 
-  DCHECK(!startup_task_runner_);
+  CHECK(!startup_task_runner_, base::NotFatalUntil::M159);
 #if BUILDFLAG(IS_ANDROID)
   // Some java scheduler tests need to test migration to C++, but the browser
   // environment isn't set up fully and if these tasks run they may crash.
@@ -1164,7 +1166,7 @@ void BrowserMainLoop::RunMainMessageLoop() {
     parameters_.autorelease_pool->Recycle();
 #endif  // BUILDFLAG(IS_MAC)
 
-  DCHECK(main_run_loop);
+  CHECK(main_run_loop, base::NotFatalUntil::M159);
   main_run_loop->Run();
 #endif  // BUILDFLAG(IS_ANDROID)
 }
@@ -1633,12 +1635,13 @@ void BrowserMainLoop::InitializeMojo() {
 }
 
 void BrowserMainLoop::InitializeAudio() {
-  DCHECK(!audio_manager_);
+  CHECK(!audio_manager_, base::NotFatalUntil::M159);
 
   audio_manager_ = GetContentClient()->browser()->CreateAudioManager(
       MediaInternals::GetInstance());
-  DCHECK_EQ(!!audio_manager_,
-            GetContentClient()->browser()->OverridesAudioManager());
+  CHECK_EQ(!!audio_manager_,
+           GetContentClient()->browser()->OverridesAudioManager(),
+           base::NotFatalUntil::M159);
 
   // Do not initialize |audio_manager_| if running out of process.
   if (!audio_manager_ &&
@@ -1658,7 +1661,8 @@ void BrowserMainLoop::InitializeAudio() {
 #if BUILDFLAG(IS_MAC)
     // On Mac, the audio task runner must belong to the main thread.
     // See audio_thread_impl.cc and https://crbug.com/158170.
-    DCHECK(audio_manager_->GetTaskRunner()->BelongsToCurrentThread());
+    CHECK(audio_manager_->GetTaskRunner()->BelongsToCurrentThread(),
+          base::NotFatalUntil::M159);
 #endif
     audio::Service::GetInProcessTaskRunner()->StartWithTaskRunner(
         audio_manager_->GetTaskRunner());

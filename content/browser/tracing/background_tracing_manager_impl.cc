@@ -65,7 +65,7 @@ BackgroundTracingManagerImpl::BackgroundTracingManagerImpl(
 }
 
 BackgroundTracingManagerImpl::~BackgroundTracingManagerImpl() {
-  DCHECK_EQ(this, g_background_tracing_manager_impl);
+  CHECK_EQ(this, g_background_tracing_manager_impl, base::NotFatalUntil::M159);
   g_background_tracing_manager_impl = nullptr;
   DisableScenarios();
   TracingAgentObserverManager::SetInstance(nullptr);
@@ -125,7 +125,7 @@ BackgroundTracingManagerImpl::GetAllScenarios() const {
 
 void BackgroundTracingManagerImpl::AddAgent(
     tracing::mojom::BackgroundTracingAgent* agent) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   agents_.insert(agent);
 
   for (AgentObserver* observer : agent_observers_) {
@@ -135,7 +135,7 @@ void BackgroundTracingManagerImpl::AddAgent(
 
 void BackgroundTracingManagerImpl::RemoveAgent(
     tracing::mojom::BackgroundTracingAgent* agent) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   for (AgentObserver* observer : agent_observers_) {
     observer->OnAgentRemoved(agent);
   }
@@ -145,7 +145,7 @@ void BackgroundTracingManagerImpl::RemoveAgent(
 
 void BackgroundTracingManagerImpl::AddAgentObserver(
     tracing::TracingAgentObserverManager::AgentObserver* observer) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   agent_observers_.insert(observer);
 
   MaybeConstructPendingAgents();
@@ -157,7 +157,7 @@ void BackgroundTracingManagerImpl::AddAgentObserver(
 
 void BackgroundTracingManagerImpl::RemoveAgentObserver(
     tracing::TracingAgentObserverManager::AgentObserver* observer) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   agent_observers_.erase(observer);
 
   for (tracing::mojom::BackgroundTracingAgent* agent : agents_) {
@@ -170,7 +170,7 @@ void BackgroundTracingManagerImpl::AddPendingAgent(
     int child_process_id,
     mojo::PendingRemote<tracing::mojom::BackgroundTracingAgentProvider>
         pending_provider) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   // Delay agent initialization until we have an interested AgentObserver.
   // We set disconnect handler for cleanup when the tracing target is closed.
   mojo::Remote<tracing::mojom::BackgroundTracingAgentProvider> provider(
@@ -185,12 +185,12 @@ void BackgroundTracingManagerImpl::AddPendingAgent(
 
 // static
 void BackgroundTracingManagerImpl::ClearPendingAgent(int child_process_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   GetInstance().pending_agents_.erase(child_process_id);
 }
 
 void BackgroundTracingManagerImpl::MaybeConstructPendingAgents() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   if (agent_observers_.empty() && enabled_scenarios_.empty()) {
     return;

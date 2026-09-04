@@ -222,7 +222,7 @@ audio::mojom::AudioService& GetAudioService() {
 base::AutoReset<audio::mojom::AudioService*>
 OverrideAudioServiceForTesting(  // IN-TEST
     audio::mojom::AudioService* service) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   return {&g_service_override, service};
 }
 

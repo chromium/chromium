@@ -56,9 +56,9 @@ void DevicePostureRegistryWatcherWin::AddObserver(
     return;
   }
 
-  DCHECK(!observers_.HasObserver(observer));
+  CHECK(!observers_.HasObserver(observer), base::NotFatalUntil::M159);
   if (observers_.empty()) {
-    DCHECK(!registry_key_);
+    CHECK(!registry_key_, base::NotFatalUntil::M159);
     registry_key_.emplace(HKEY_CURRENT_USER, kFoledRegKeyPath,
                           KEY_NOTIFY | KEY_QUERY_VALUE);
     if (registry_key_->Valid()) {

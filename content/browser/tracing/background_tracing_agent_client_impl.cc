@@ -52,7 +52,7 @@ void BackgroundTracingAgentClientImpl::OnTriggerBackgroundTrace(
 BackgroundTracingAgentClientImpl::BackgroundTracingAgentClientImpl(
     mojo::Remote<tracing::mojom::BackgroundTracingAgent> agent)
     : agent_(std::move(agent)) {
-  DCHECK(agent_);
+  CHECK(agent_, base::NotFatalUntil::M159);
 }
 
 }  // namespace content

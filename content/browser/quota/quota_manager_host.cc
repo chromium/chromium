@@ -20,7 +20,7 @@ namespace content {
 QuotaManagerHost::QuotaManagerHost(const blink::StorageKey& storage_key,
                                    storage::QuotaManager* quota_manager)
     : storage_key_(storage_key), quota_manager_(quota_manager) {
-  DCHECK(quota_manager);
+  CHECK(quota_manager, base::NotFatalUntil::M159);
 }
 
 void QuotaManagerHost::QueryStorageUsageAndQuota(

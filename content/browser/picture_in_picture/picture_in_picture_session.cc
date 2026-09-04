@@ -31,7 +31,7 @@ PictureInPictureSession::PictureInPictureSession(
 }
 
 PictureInPictureSession::~PictureInPictureSession() {
-  DCHECK(is_stopping_);
+  CHECK(is_stopping_, base::NotFatalUntil::M159);
 }
 
 void PictureInPictureSession::Stop(StopCallback callback) {
@@ -72,7 +72,7 @@ void PictureInPictureSession::NotifyWindowResized(const gfx::Size& size) {
 
 mojo::AssociatedRemote<media::mojom::MediaPlayer>&
 PictureInPictureSession::GetMediaPlayerRemote() {
-  DCHECK(media_player_remote_.is_bound());
+  CHECK(media_player_remote_.is_bound(), base::NotFatalUntil::M159);
   return media_player_remote_;
 }
 

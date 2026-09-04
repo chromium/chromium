@@ -58,9 +58,9 @@ BASE_FEATURE(kServiceGroupImportance, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Stops a child process based on the handle returned from StartChildProcess.
 void StopChildProcess(base::ProcessHandle handle) {
-  DCHECK(CurrentlyOnProcessLauncherTaskRunner());
+  CHECK(CurrentlyOnProcessLauncherTaskRunner(), base::NotFatalUntil::M159);
   JNIEnv* env = AttachCurrentThread();
-  DCHECK(env);
+  CHECK(env, base::NotFatalUntil::M159);
   Java_ChildProcessLauncherHelperImpl_stop(env, handle);
 }
 
@@ -75,7 +75,7 @@ ChildProcessLauncherHelper::CreateNamedPlatformChannelOnLauncherThread() {
 
 std::unique_ptr<PosixFileDescriptorInfo>
 ChildProcessLauncherHelper::GetFilesToMap() {
-  DCHECK(CurrentlyOnProcessLauncherTaskRunner());
+  CHECK(CurrentlyOnProcessLauncherTaskRunner(), base::NotFatalUntil::M159);
 
   // Android WebView runs in single process, ensure that we never get here when
   // running in single process mode.
@@ -102,7 +102,7 @@ bool ChildProcessLauncherHelper::IsUsingLaunchOptions() {
 bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
     PosixFileDescriptorInfo& files_to_register,
     base::LaunchOptions* options) {
-  DCHECK(!options);
+  CHECK(!options, base::NotFatalUntil::M159);
 
   // Android only supports renderer, sandboxed utility and gpu.
   std::string process_type =
@@ -113,8 +113,9 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
       << "Unsupported process type: " << process_type;
 
   // Non-sandboxed utility or renderer process are currently not supported.
-  DCHECK(process_type == switches::kGpuProcess ||
-         !command_line()->HasSwitch(sandbox::policy::switches::kNoSandbox));
+  CHECK(process_type == switches::kGpuProcess ||
+            !command_line()->HasSwitch(sandbox::policy::switches::kNoSandbox),
+        base::NotFatalUntil::M159);
 
   // The child processes can't correctly retrieve host package information so we
   // rather feed this information through the command line.
@@ -143,18 +144,18 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
     bool is_for_outermost_main_frame,
     bool* is_synchronous_launch,
     int* launch_result) {
-  DCHECK(!options);
+  CHECK(!options, base::NotFatalUntil::M159);
   *is_synchronous_launch = false;
 
   JNIEnv* env = AttachCurrentThread();
-  DCHECK(env);
+  CHECK(env, base::NotFatalUntil::M159);
 
   // Create the Command line String[]
   ScopedJavaLocalRef<jobjectArray> j_argv =
       ToJavaArrayOfStrings(env, command_line()->argv());
 
   size_t file_count = files_to_register->GetMappingSize();
-  DCHECK(file_count > 0);
+  CHECK(file_count > 0, base::NotFatalUntil::M159);
 
   std::vector<int32_t> ids(file_count);
   std::vector<int32_t> fds(file_count);
@@ -280,7 +281,7 @@ bool ChildProcessLauncherHelper::TerminateProcess(const base::Process& process,
 // static
 void ChildProcessLauncherHelper::ForceNormalProcessTerminationSync(
     ChildProcessLauncherHelper::Process process) {
-  DCHECK(CurrentlyOnProcessLauncherTaskRunner());
+  CHECK(CurrentlyOnProcessLauncherTaskRunner(), base::NotFatalUntil::M159);
   VLOG(1) << "ChromeProcess: Stopping process with handle "
           << process.process.Handle();
   StopChildProcess(process.process.Handle());
@@ -294,7 +295,7 @@ base::File OpenFileToShare(const base::FilePath& path,
 base::android::ChildBindingState
 ChildProcessLauncherHelper::GetEffectiveChildBindingState() {
   JNIEnv* env = AttachCurrentThread();
-  DCHECK(env);
+  CHECK(env, base::NotFatalUntil::M159);
   return static_cast<base::android::ChildBindingState>(
       Java_ChildProcessLauncherHelperImpl_getEffectiveChildBindingState(
           env, java_peer_));
@@ -303,7 +304,7 @@ ChildProcessLauncherHelper::GetEffectiveChildBindingState() {
 void ChildProcessLauncherHelper::DumpProcessStack(
     const base::Process& process) {
   JNIEnv* env = AttachCurrentThread();
-  DCHECK(env);
+  CHECK(env, base::NotFatalUntil::M159);
   return Java_ChildProcessLauncherHelperImpl_dumpProcessStack(env, java_peer_,
                                                               process.Handle());
 }
@@ -317,7 +318,7 @@ void ChildProcessLauncherHelper::SetRenderProcessPriorityOnLauncherThread(
       "ChildProcessLauncherHelper::SetRenderProcessPriorityOnLauncherThread",
       "pid", process.Handle());
   JNIEnv* env = AttachCurrentThread();
-  DCHECK(env);
+  CHECK(env, base::NotFatalUntil::M159);
   int32_t result = Java_ChildProcessLauncherHelperImpl_setPriority(
       env, java_peer_, process.Handle(), priority.visible,
       priority.has_media_stream, priority.has_immersive_xr_session,
@@ -344,7 +345,7 @@ void ChildProcessLauncherHelper::SetRenderProcessPriorityOnLauncherThread(
 // the ChildProcess could not be created.
 void ChildProcessLauncherHelper::OnChildProcessStarted(JNIEnv*,
                                                        int32_t handle) {
-  DCHECK(CurrentlyOnProcessLauncherTaskRunner());
+  CHECK(CurrentlyOnProcessLauncherTaskRunner(), base::NotFatalUntil::M159);
   scoped_refptr<ChildProcessLauncherHelper> ref(this);
   Release();  // Balances with LaunchProcessOnLauncherThread.
 

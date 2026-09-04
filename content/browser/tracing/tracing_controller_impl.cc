@@ -107,8 +107,8 @@ TracingController* TracingController::GetInstance() {
 
 TracingControllerImpl::TracingControllerImpl()
     : delegate_(GetContentClient()->browser()->CreateTracingDelegate()) {
-  DCHECK(!g_tracing_controller);
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(!g_tracing_controller, base::NotFatalUntil::M159);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   CHECK(delegate_);
   InitializeDataSources();
   g_tracing_controller = this;
@@ -184,12 +184,12 @@ void TracingControllerImpl::GenerateMetadataPacket(
 }
 
 TracingControllerImpl* TracingControllerImpl::GetInstance() {
-  DCHECK(g_tracing_controller);
+  CHECK(g_tracing_controller, base::NotFatalUntil::M159);
   return g_tracing_controller;
 }
 
 bool TracingControllerImpl::GetCategories(GetCategoriesDoneCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   ConnectToServiceIfNeeded();
   tracing::QueryTrackEventCategories(
       perfetto::Tracing::NewTrace(perfetto::BackendType::kCustomBackend),
@@ -209,7 +209,7 @@ bool TracingControllerImpl::GetCategories(GetCategoriesDoneCallback callback) {
 
 bool TracingControllerImpl::GetTrackEventDescriptor(
     GetTrackEventDescriptorDoneCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   ConnectToServiceIfNeeded();
   tracing::QueryTrackEventCategories(
       perfetto::Tracing::NewTrace(perfetto::BackendType::kCustomBackend),
@@ -231,7 +231,7 @@ bool TracingControllerImpl::StartTracingImpl(
     const base::trace_event::TraceConfig& trace_config,
     StartTracingDoneCallback callback,
     bool privacy_filtering_enabled) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   // TODO(chiniforooshan): The actual value should be received by callback and
   // this function should return void.
   if (IsTracing()) {
@@ -254,7 +254,7 @@ bool TracingControllerImpl::StartTracingImpl(
   trace_config_ =
       std::make_unique<base::trace_event::TraceConfig>(trace_config);
 
-  DCHECK(!tracing_session_host_);
+  CHECK(!tracing_session_host_, base::NotFatalUntil::M159);
   ConnectToServiceIfNeeded();
 
   perfetto::TraceConfig perfetto_config =
@@ -287,7 +287,7 @@ bool TracingControllerImpl::StopTracing(
     const std::string& agent_label) {
   if (!IsTracing() || drainer_ || !tracing_session_host_)
     return false;
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   trace_data_endpoint_ = std::move(trace_data_endpoint);
   is_data_complete_ = false;
@@ -316,7 +316,7 @@ bool TracingControllerImpl::StopTracing(
 
 bool TracingControllerImpl::GetTraceBufferUsage(
     GetTraceBufferUsageCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   if (!tracing_session_host_) {
     std::move(callback).Run(0.0, 0);

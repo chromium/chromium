@@ -39,7 +39,7 @@ class CrOSSystemTracingSession {
   // Begin tracing if configured in |config|. Calls |success_callback| with
   // |true| if tracing was started and |false| otherwise.
   void StartTracing(const std::string& config, SuccessCallback callback) {
-    DCHECK(!is_tracing_);
+    CHECK(!is_tracing_, base::NotFatalUntil::M159);
     if (!ash::DBusThreadManager::IsInitialized()) {
       if (callback)
         std::move(callback).Run(/*success=*/false);
@@ -68,7 +68,7 @@ class CrOSSystemTracingSession {
       std::move(callback).Run(nullptr);
       return;
     }
-    DCHECK(debug_daemon_);
+    CHECK(debug_daemon_, base::NotFatalUntil::M159);
     is_tracing_ = false;
     debug_daemon_->StopAgentTracing(
         base::BindOnce(&CrOSSystemTracingSession::OnTraceData,
@@ -145,7 +145,7 @@ class CrOSDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
 
   void StartTracingOnUI(const perfetto::DataSourceConfig& data_source_config) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
-    DCHECK(!session_);
+    CHECK(!session_, base::NotFatalUntil::M159);
     target_buffer_ = data_source_config.target_buffer();
     session_ = std::make_unique<CrOSSystemTracingSession>();
     session_->StartTracing(
@@ -163,7 +163,7 @@ class CrOSDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
 
   void StopTracingOnUI(base::OnceClosure stop_complete_callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
-    DCHECK(session_);
+    CHECK(session_, base::NotFatalUntil::M159);
     if (!session_started_) {
       on_session_started_callback_ =
           base::BindOnce(&CrOSDataSource::StopTracing, base::Unretained(this),

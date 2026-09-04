@@ -55,7 +55,7 @@ void TracesInternalsUI::BindInterface(
 void TracesInternalsUI::CreatePageHandler(
     mojo::PendingRemote<traces_internals::mojom::Page> page,
     mojo::PendingReceiver<traces_internals::mojom::PageHandler> receiver) {
-  DCHECK(page);
+  CHECK(page, base::NotFatalUntil::M159);
   ui_handler_ = std::make_unique<TracesInternalsHandler>(std::move(receiver),
                                                          std::move(page));
 }

@@ -83,7 +83,7 @@ using perfetto::protos::pbzero::ChromeTrackEvent;
 
 base::WeakPtr<storage::BlobStorageContext> BlobStorageContextGetterForBrowser(
     scoped_refptr<ChromeBlobStorageContext> blob_context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
   return blob_context->context()->AsWeakPtr();
 }
 
@@ -110,7 +110,7 @@ BrowserContext::~BrowserContext() {
 }
 
 DownloadManager* BrowserContext::GetDownloadManager() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   return impl()->GetDownloadManager();
 }
 
@@ -123,7 +123,7 @@ BrowsingDataRemover* BrowserContext::GetBrowsingDataRemover() {
 }
 
 PermissionController* BrowserContext::GetPermissionController() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   return impl()->GetPermissionController();
 }
 
@@ -131,7 +131,8 @@ StoragePartition* BrowserContext::GetStoragePartition(
     SiteInstance* site_instance,
     bool can_create) {
   if (site_instance)
-    DCHECK_EQ(this, site_instance->GetBrowserContext());
+    CHECK_EQ(this, site_instance->GetBrowserContext(),
+             base::NotFatalUntil::M159);
 
   auto partition_config =
       site_instance
@@ -213,7 +214,7 @@ BrowserContext::StartBrowserPrefetchRequest(
     bool should_append_variations_header,
     bool should_disable_block_until_head_timeout,
     bool should_bypass_http_cache) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   TRACE_EVENT0("loading", "BrowserContext::StartBrowserPrefetchRequest");
 
   PrefetchService* prefetch_service =
@@ -250,7 +251,7 @@ BrowserContext::StartBrowserPrefetchRequest(
 std::unique_ptr<content::PrefetchHandle>
 BrowserContext::StartPrefetchFromPrePrefetch(
     std::unique_ptr<content::PrePrefetchHandle> pre_prefetch_handle) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   TRACE_EVENT0("loading", "BrowserContext::StartPrefetchFromPrePrefetch");
 
   PrefetchService* prefetch_service =
@@ -291,7 +292,7 @@ bool BrowserContext::IsPrefetchDuplicate(
 void BrowserContext::CreateMemoryBackedBlob(base::span<const uint8_t> data,
                                             const std::string& content_type,
                                             BlobCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   ChromeBlobStorageContext* blob_context =
       ChromeBlobStorageContext::GetFor(this);
@@ -303,7 +304,7 @@ void BrowserContext::CreateMemoryBackedBlob(base::span<const uint8_t> data,
 }
 
 BrowserContext::BlobContextGetter BrowserContext::GetBlobStorageContext() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   scoped_refptr<ChromeBlobStorageContext> chrome_blob_context =
       ChromeBlobStorageContext::GetFor(this);
   return base::BindRepeating(&BlobStorageContextGetterForBrowser,
@@ -312,7 +313,7 @@ BrowserContext::BlobContextGetter BrowserContext::GetBlobStorageContext() {
 
 mojo::PendingRemote<blink::mojom::Blob> BrowserContext::GetBlobRemote(
     const std::string& uuid) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   return ChromeBlobStorageContext::GetBlobRemote(this, uuid);
 }
 
@@ -323,7 +324,7 @@ void BrowserContext::DeliverPushMessage(
     std::optional<std::string> payload,
     bool record_network_requests,
     base::OnceCallback<void(blink::mojom::PushEventStatus)> callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   PushMessagingRouter::DeliverMessage(
       this, origin, service_worker_registration_id, message_id,
       std::move(payload), record_network_requests, std::move(callback));
@@ -335,7 +336,7 @@ void BrowserContext::FirePushSubscriptionChangeEvent(
     blink::mojom::PushSubscriptionPtr new_subscription,
     blink::mojom::PushSubscriptionPtr old_subscription,
     base::OnceCallback<void(blink::mojom::PushEventStatus)> callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   PushMessagingRouter::FireSubscriptionChangeEvent(
       this, origin, service_worker_registration_id, std::move(new_subscription),
       std::move(old_subscription), std::move(callback));
@@ -378,8 +379,8 @@ void BrowserContext::SetDownloadManagerForTesting(
 
 void BrowserContext::SetPermissionControllerForTesting(
     std::unique_ptr<PermissionController> permission_controller) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(permission_controller);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  CHECK(permission_controller, base::NotFatalUntil::M159);
   impl()->SetPermissionControllerForTesting(  // IN-TEST
       std::move(permission_controller));
 }
@@ -458,7 +459,7 @@ variations::VariationsClient* BrowserContext::GetVariationsClient() {
 
 std::unique_ptr<media::VideoDecodePerfHistory>
 BrowserContext::CreateVideoDecodePerfHistory() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   const char kUseInMemoryDBParamName[] = "db_in_memory";
   const bool kUseInMemoryDBDefault = false;

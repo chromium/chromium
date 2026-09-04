@@ -76,7 +76,7 @@ TracingServiceController::RegisterClient(base::ProcessId pid,
 }
 
 tracing::mojom::TracingService& TracingServiceController::GetService() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   if (!service_) {
     auto receiver = service_.BindNewPipeAndPassReceiver();
@@ -123,7 +123,7 @@ tracing::mojom::TracingService& TracingServiceController::GetService() {
 }
 
 void TracingServiceController::OnTracingServiceDisconnected() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   service_.reset();
   GetContentClient()->browser()->OnTracingServiceStopped();
 }
@@ -131,7 +131,7 @@ void TracingServiceController::OnTracingServiceDisconnected() {
 void TracingServiceController::RegisterClientOnUIThread(
     base::ProcessId pid,
     EnableTracingCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   // If the service is currently running, immediately connect the new client.
   if (service_) {
@@ -152,12 +152,12 @@ void TracingServiceController::RemoveClient(base::ProcessId pid) {
     return;
   }
 
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   clients_.erase(pid);
 }
 
 tracing::mojom::TracingService& GetTracingService() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   return TracingServiceController::Get().GetService();
 }
 
