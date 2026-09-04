@@ -10,7 +10,6 @@
 
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_test_util.h"
-#include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/extensions/chrome_app_icon.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/image/icon_standardizer.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_skia_rep.h"
 
@@ -90,7 +90,7 @@ gfx::ImageSkia WebAppIconTestHelper::GenerateWebAppIcon(
   if (!skip_icon_effects) {
     extensions::ChromeAppIcon::ResizeFunction resize_function;
     if (purpose == IconPurpose::ANY) {
-      output_image_skia = apps::CreateStandardIconImage(output_image_skia);
+      output_image_skia = gfx::CreateStandardAppIconImage(output_image_skia);
     }
     if (purpose == IconPurpose::MASKABLE) {
       output_image_skia = apps::ApplyBackgroundAndMask(output_image_skia);

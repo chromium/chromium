@@ -37,7 +37,7 @@ constexpr base::TimeDelta kProxyAnimationDuration = base::Milliseconds(200);
 // icon that makes the icon looks smaller than its actual size. The shadow is
 // needed to resize to align with the visual icon. Note that this constant is
 // the same as `kBackgroundCircleScale` in
-// chrome/browser/apps/icon_standardizer.cc
+// ui/gfx/image/icon_standardizer.cc
 constexpr float kShadowScaleFactor = 176.f / 192.f;
 
 AppDragIconProxy::AppDragIconProxy(

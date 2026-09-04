@@ -2600,7 +2600,6 @@ static_library("ui") {
       "//chrome/browser:resources",
       "//chrome/browser/actor/ui/task_list_bubble:controller",
       "//chrome/browser/actor/ui/task_list_bubble:ui",
-      "//chrome/browser/apps:icon_standardizer",
       "//chrome/browser/collaboration",
       "//chrome/browser/collaboration/messaging",
       "//chrome/browser/desktop_to_mobile_promos:utils",
@@ -3448,7 +3447,6 @@ static_library("ui") {
     public_deps +=
         [ "//chrome/browser/ui/views/extensions:extension_view_views" ]
     deps += [
-      "//chrome/browser/apps:icon_standardizer",
       "//chrome/browser/apps/platform_apps",
       "//chrome/browser/apps/platform_apps/api",
       "//chrome/browser/ui/views/extensions:extension_action_delegate_desktop",

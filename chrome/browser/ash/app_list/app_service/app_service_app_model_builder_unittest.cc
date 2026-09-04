@@ -24,7 +24,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
-#include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/ash/app_list/app_list_test_util.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_item.h"
 #include "chrome/browser/ash/app_list/md_icon_normalizer.h"
@@ -82,6 +81,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/test/test_screen.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/image/icon_standardizer.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -279,7 +279,7 @@ class ExtensionAppTest : public AppServiceAppModelBuilderTest {
         extension, gfx::Size(size_in_dip, size_in_dip),
         image_future.GetCallback());
     output_image_skia =
-        apps::CreateStandardIconImage(image_future.Take().AsImageSkia());
+        gfx::CreateStandardAppIconImage(image_future.Take().AsImageSkia());
   }
 
   std::vector<uint8_t> GenerateExtensionAppCompressedIcon(std::string app_id) {

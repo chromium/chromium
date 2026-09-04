@@ -25,7 +25,6 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/dip_px_util.h"
-#include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/extensions/chrome_app_icon.h"
 #include "chrome/browser/extensions/chrome_app_icon_loader.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
@@ -49,6 +48,7 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/icon_standardizer.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -275,7 +275,7 @@ apps::IconValuePtr ApplyEffects(apps::IconEffects icon_effects,
   if (icon_effects & apps::IconEffects::kCrOsStandardIcon) {
     // We should never reapply the icon shaping logic.
     DCHECK(!(icon_effects & apps::IconEffects::kCrOsStandardMask));
-    iv->uncompressed = apps::CreateStandardIconImage(iv->uncompressed);
+    iv->uncompressed = gfx::CreateStandardAppIconImage(iv->uncompressed);
   }
 #if BUILDFLAG(IS_CHROMEOS)
   if (icon_effects & apps::IconEffects::kMdIconStyle) {

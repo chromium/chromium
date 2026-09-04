@@ -27,7 +27,6 @@ static_library("desks") {
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
-    "//chrome/browser/apps:icon_standardizer",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/app_restore",
     "//chrome/browser/ash/browser_delegate",

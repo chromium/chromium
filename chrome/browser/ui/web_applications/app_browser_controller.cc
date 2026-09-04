@@ -80,9 +80,9 @@
 #include "url/url_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/apps/icon_standardizer.h"
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
+#include "ui/gfx/image/icon_standardizer.h"
 #endif
 
 namespace {
@@ -934,7 +934,7 @@ ui::ImageModel AppBrowserController::GetFallbackAppIcon() const {
   if (!page_icon.isNull()) {
 #if BUILDFLAG(IS_CHROMEOS)
     return ui::ImageModel::FromImageSkia(
-        apps::CreateStandardIconImage(page_icon));
+        gfx::CreateStandardAppIconImage(page_icon));
 #else
     return ui::ImageModel::FromImageSkia(page_icon);
 #endif

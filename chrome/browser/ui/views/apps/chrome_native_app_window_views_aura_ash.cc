@@ -21,7 +21,6 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/ash/note_taking/note_taking_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_context_menu.h"
@@ -52,6 +51,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/image/icon_standardizer.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -287,7 +287,7 @@ ui::ImageModel ChromeNativeAppWindowViewsAuraAsh::GetWindowIcon() {
   DCHECK(image.IsImage());
   const gfx::ImageSkia image_skia = image.Rasterize(nullptr);
   return ui::ImageModel::FromImageSkia(
-      apps::CreateStandardIconImage(image_skia));
+      gfx::CreateStandardAppIconImage(image_skia));
 }
 
 bool ChromeNativeAppWindowViewsAuraAsh::ShouldRemoveStandardFrame() {
@@ -678,7 +678,7 @@ gfx::Image ChromeNativeAppWindowViewsAuraAsh::GetCustomImage() {
   TRACE_EVENT0("ui", "ChromeNativeAppWindowViewsAuraAsh::GetCustomImage");
   gfx::Image image = ChromeNativeAppWindowViews::GetCustomImage();
   return !image.IsEmpty()
-             ? gfx::Image(apps::CreateStandardIconImage(image.AsImageSkia()))
+             ? gfx::Image(gfx::CreateStandardAppIconImage(image.AsImageSkia()))
              : gfx::Image();
 }
 

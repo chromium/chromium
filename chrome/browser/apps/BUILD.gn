@@ -4,17 +4,6 @@
 
 import("//extensions/buildflags/buildflags.gni")
 
-source_set("icon_standardizer") {
-  public = [ "icon_standardizer.h" ]
-  sources = [ "icon_standardizer.cc" ]
-
-  deps = [
-    "//base",
-    "//skia",
-    "//ui/gfx",
-  ]
-}
-
 source_set("user_type_filter") {
   public = [ "user_type_filter.h" ]
   sources = [ "user_type_filter.cc" ]
@@ -33,12 +22,8 @@ source_set("user_type_filter") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "icon_standardizer_unittest.cc",
-    "user_type_filter_unittest.cc",
-  ]
+  sources = [ "user_type_filter_unittest.cc" ]
   deps = [
-    ":icon_standardizer",
     ":user_type_filter",
     "//base",
     "//chrome/browser/policy",

@@ -78,7 +78,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/app:generated_resources",
-    "//chrome/browser/apps:icon_standardizer",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:test_support",
     "//chrome/browser/ash/app_list",

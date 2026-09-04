@@ -1357,7 +1357,6 @@ source_set("task_manager_view") {
     "//chrome/app/theme:theme_resources",
     "//chrome/app/vector_icons",
     "//chrome/browser:browser_process",
-    "//chrome/browser/apps:icon_standardizer",
     "//chrome/browser/task_manager/common",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/color:color_headers",

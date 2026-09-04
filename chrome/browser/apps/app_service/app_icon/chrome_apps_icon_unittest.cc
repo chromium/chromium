@@ -11,7 +11,6 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_test_util.h"
-#include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/profiles/profile.h"
@@ -24,6 +23,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/image/icon_standardizer.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_skia_rep.h"
@@ -82,7 +82,7 @@ class ChromeAppsIconFactoryTest : public extensions::ExtensionServiceTestBase {
     output_image_skia =
         skip_effects
             ? result.Take().AsImageSkia()
-            : apps::CreateStandardIconImage(result.Take().AsImageSkia());
+            : gfx::CreateStandardAppIconImage(result.Take().AsImageSkia());
   }
 
   std::vector<uint8_t> GenerateExtensionAppCompressedIcon(

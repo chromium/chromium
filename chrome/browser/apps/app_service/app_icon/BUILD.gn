@@ -18,7 +18,6 @@ source_set("app_icon") {
     ":util",
     "//base",
     "//chrome/app/theme:chrome_unscaled_resources",
-    "//chrome/browser/apps:icon_standardizer",
     "//chrome/browser/favicon",
     "//chrome/browser/icon_transcoder",
     "//chrome/browser/profiles",
@@ -110,7 +109,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//cc:test_support",
     "//chrome/app/theme:chrome_unscaled_resources_grit",
-    "//chrome/browser/apps:icon_standardizer",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/resources:component_extension_resources_grit",
     "//chrome/browser/web_applications",
@@ -169,7 +167,6 @@ source_set("test_support") {
 
   deps = [
     ":app_icon",
-    "//chrome/browser/apps:icon_standardizer",
     "//chrome/browser/apps/app_service/publishers",
     "//chrome/test:test_support",
     "//components/services/app_service",

@@ -104,7 +104,6 @@ source_set("impl") {
     deps += [
       "//ash",
       "//ash/public/cpp",
-      "//chrome/browser/apps:icon_standardizer",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/ash/note_taking",
       "//chrome/browser/ui/apps",

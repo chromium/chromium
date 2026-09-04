@@ -19,7 +19,6 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -54,6 +53,7 @@
 #include "ui/base/themed_vector_icon.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/gfx/image/icon_standardizer.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/wm/core/window_properties.h"
 #include "url/gurl.h"
@@ -183,7 +183,7 @@ void ImageResultToImageSkia(
   auto image =
       gfx::Image::CreateFrom1xPNGBytes(result.bitmap_data).AsImageSkia();
   image.EnsureRepsForSupportedScales();
-  std::move(callback).Run(apps::CreateStandardIconImage(image));
+  std::move(callback).Run(gfx::CreateStandardAppIconImage(image));
 }
 
 // Creates a callback for when a app icon image is retrieved which creates a
@@ -198,7 +198,7 @@ AppIconResultToImageSkia(
         auto image = icon_value->uncompressed;
         image.EnsureRepsForSupportedScales();
         std::move(image_skia_callback)
-            .Run(apps::CreateStandardIconImage(image));
+            .Run(gfx::CreateStandardAppIconImage(image));
       },
       std::move(callback));
 }
@@ -351,7 +351,7 @@ ChromeSavedDeskDelegate::MaybeRetrieveIconForSpecialIdentifier(
       "ui", "ChromeSavedDeskDelegate::MaybeRetrieveIconForSpecialIdentifier");
   if (identifier == ash::chrome_urls::kChromeUINewTabURL) {
     ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-    return apps::CreateStandardIconImage(
+    return gfx::CreateStandardAppIconImage(
         rb.GetImageNamed(IDR_PRODUCT_LOGO_32).AsImageSkia());
   } else if (identifier == ash::DeskTemplate::kIncognitoWindowIdentifier) {
     DCHECK(color_provider);
@@ -362,7 +362,7 @@ ChromeSavedDeskDelegate::MaybeRetrieveIconForSpecialIdentifier(
                 .GetVectorIcon())
             .GetImageSkia(color_provider);
     icon.EnsureRepsForSupportedScales();
-    return apps::CreateStandardIconImage(icon);
+    return gfx::CreateStandardAppIconImage(icon);
   }
 
   return std::nullopt;

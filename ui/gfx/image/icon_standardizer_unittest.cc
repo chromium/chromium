@@ -1,8 +1,8 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/icon_standardizer.h"
+#include "ui/gfx/image/icon_standardizer.h"
 
 #include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -59,7 +59,7 @@ TEST_F(CreateStandardIconTest, SquareIconToStandardIcon) {
   square_icon_bitmap.allocN32Pixels(kIconSize, kIconSize);
   square_icon_bitmap.eraseColor(SK_ColorRED);
 
-  gfx::ImageSkia standard_icon = apps::CreateStandardIconImage(
+  gfx::ImageSkia standard_icon = gfx::CreateStandardAppIconImage(
       gfx::ImageSkia::CreateFrom1xBitmap(square_icon_bitmap));
 
   // Create |test_standard_bitmap| which will be a manually created standard
@@ -103,7 +103,7 @@ TEST_F(CreateStandardIconTest, CircularIconToStandardIcon) {
                     paint_circle_icon);
 
   // Get the standard icon version of the red circle icon.
-  gfx::ImageSkia generated_standard_icon = apps::CreateStandardIconImage(
+  gfx::ImageSkia generated_standard_icon = gfx::CreateStandardAppIconImage(
       gfx::ImageSkia::CreateFromBitmap(circle_icon_bitmap, 2.0f));
 
   // Scale the bitmap to fit the size of a standardized circle icon.
@@ -141,7 +141,7 @@ TEST_F(CreateStandardIconTest, StandardCircularIconToStandardIcon) {
                     kStandardCircleRadius, paint_circle_icon);
 
   // Get the standard icon version of the red circle icon.
-  gfx::ImageSkia standard_icon = apps::CreateStandardIconImage(
+  gfx::ImageSkia standard_icon = gfx::CreateStandardAppIconImage(
       gfx::ImageSkia::CreateFromBitmap(circle_icon_bitmap, 2.0f));
 
   EXPECT_FALSE(DoesIconHaveWhiteBackgroundCircle(*standard_icon.bitmap()));
@@ -168,7 +168,7 @@ TEST_F(CreateStandardIconTest, AlmostCircularIconToStandardIcon) {
   canvas.drawRect(SkRect::MakeXYWH(6, 6, 15, 15), paint_flags);
 
   // Get the standard icon version of the almost red circle icon.
-  gfx::ImageSkia standard_icon = apps::CreateStandardIconImage(
+  gfx::ImageSkia standard_icon = gfx::CreateStandardAppIconImage(
       gfx::ImageSkia::CreateFromBitmap(almost_circle_icon_bitmap, 2.0f));
 
   EXPECT_TRUE(DoesIconHaveWhiteBackgroundCircle(*standard_icon.bitmap()));
