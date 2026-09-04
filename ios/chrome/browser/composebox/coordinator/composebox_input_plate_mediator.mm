@@ -1418,7 +1418,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 
 // Removes all non tabs attached items.
 - (void)clearNonTabItems {
-  for (ComposeboxInputItem* item in _items.containedItems) {
+  for (ComposeboxInputItem* item in [_items.containedItems copy]) {
     if (item.type != ComposeboxInputItemType::kComposeboxInputItemTypeTab) {
       [self removeItem:item];
     }
