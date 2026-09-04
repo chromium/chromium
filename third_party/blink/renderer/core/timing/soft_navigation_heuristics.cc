@@ -490,7 +490,13 @@ void SoftNavigationHeuristics::OnElementLastContentfulPaint(
 template <IsDerivedFromPaintTimingRecord T>
 void SoftNavigationHeuristics::OnContentfulPaintImpl(T* record) const {
   Node* node = record->GetNode();
-  CHECK(node);
+  // TODO(crbug.com/441914208, crbug.com/557111456): `node` can be null here,
+  // which is unexpected. Change this back to a CHECK when the root cause is
+  // understood and fixed.
+  if (!node) {
+    return;
+  }
+
   SoftNavigationContext* context =
       paint_attribution_tracker_->GetSoftNavigationContextForNode(node);
   if (!context || !context->ShouldTrackForPaintTiming(*record)) {
