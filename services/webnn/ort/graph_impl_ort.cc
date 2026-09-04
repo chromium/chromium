@@ -152,8 +152,15 @@ BuildDescriptorsFromSession(
     descriptor_pairs.emplace_back(operand_name, std::move(descriptor.value()));
   }
 
-  return base::flat_map<std::string, OperandDescriptor>(
+  base::flat_map<std::string, OperandDescriptor> descriptors(
       std::move(descriptor_pairs));
+  if (descriptors.size() != operand_count) {
+    // Reject if any session I/O names collided when read as C strings (e.g. "x"
+    // and "x\0alias" both truncate to "x"), which would collapse distinct
+    // operands.
+    return std::nullopt;
+  }
+  return descriptors;
 }
 
 }  // namespace
