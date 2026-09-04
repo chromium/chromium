@@ -158,6 +158,7 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/public/common",
+    "//ui/base:test_support",
     "//ui/events",
     "//ui/events:test_support",
     "//ui/views",

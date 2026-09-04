@@ -13,11 +13,11 @@
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/waap/waap_utils.h"
-#include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/base/test/mock_base_window.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace {
@@ -619,8 +619,8 @@ TEST_F(InitialWebUIWindowMetricsManagerTest,
   InitialWebUIWindowMetricsManager::ResetForTesting();
   base::HistogramTester tester;
 
-  TestBrowserWindow test_window;
-  test_window.set_is_minimized(true);
+  testing::NiceMock<ui::MockBaseWindow> test_window;
+  EXPECT_CALL(test_window, IsMinimized()).WillRepeatedly(testing::Return(true));
   EXPECT_CALL(browser_window_, GetWindow())
       .WillRepeatedly(testing::Return(&test_window));
 
