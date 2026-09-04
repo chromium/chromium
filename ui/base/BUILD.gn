@@ -246,8 +246,6 @@ component("base") {
       "l10n/l10n_util_win.h",
       "resource/resource_bundle_win.cc",
       "resource/resource_bundle_win.h",
-      "resource/resource_data_dll_win.cc",
-      "resource/resource_data_dll_win.h",
       "win/accessibility_ids_win.h",
       "win/atl_module.h",
       "win/event_creation_utils.cc",

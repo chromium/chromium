@@ -44,12 +44,5 @@ bool GetResourceFromModule(HMODULE module,
   return true;
 }
 
-bool GetDataResourceFromModule(HMODULE module,
-                               int resource_id,
-                               void** data,
-                               size_t* length) {
-  return GetResourceFromModule(module, resource_id, L"BINDATA", data, length);
-}
-
 }  // namespace win
 }  // namespace base

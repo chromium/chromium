@@ -6,13 +6,10 @@
 
 #include <windows.h>
 
-#include <memory>
-
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "skia/ext/image_operations.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/base/resource/resource_data_dll_win.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_source.h"
@@ -32,10 +29,6 @@ HINSTANCE GetCurrentResourceDLL() {
 }  // namespace
 
 void ResourceBundle::LoadCommonResources() {
-  // As a convenience, add the current resource module as a data packs.
-  resource_handles_.push_back(
-      std::make_unique<ResourceDataDLL>(GetCurrentResourceDLL()));
-
   LoadChromeResources();
 }
 
