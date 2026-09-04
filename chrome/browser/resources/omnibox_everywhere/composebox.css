@@ -15,8 +15,7 @@
   -webkit-app-region: drag;
   position: relative;
   /* Preserves 2px border width parity with omnibox-everywhere-omnibox to
-   * prevent layout shift when toggling between searchbox and composebox,
-   * and matches the -2px search-animated-glow inset. */
+   * prevent layout shift when toggling between searchbox and composebox. */
   border: 2px solid transparent;
   border-radius: 28px;
   box-sizing: border-box;
@@ -93,11 +92,29 @@ cr-composebox-tool-chip {
 }
 
 search-animated-glow {
+  --animated-glow-stroke-width: 2px;
+  --gradient-burst-duration: 1000ms;
+  --gradient-angle-start: 160deg;
+  --gradient-angle-end: 233.5deg;
+  --mask-angle-start: -110deg;
+  --mask-angle-end: 267deg;
+  --standard-decelerate-curve: cubic-bezier(0, 0, 0, 1);
+  --emphasized-accelerate-curve: cubic-bezier(0.3, 0, 0.8, 0.15);
   border-radius: inherit;
-  inset: -2px;
+  inset: 0;
   pointer-events: none;
   position: absolute;
   z-index: 1;
+}
+
+search-animated-glow[animation-state='expanding']::part(
+    composebox-background) {
+  inset: var(--animated-glow-stroke-width, 2px);
+}
+
+search-animated-glow:not([animation-state='expanding'])::part(
+    composebox-background) {
+  inset: 0;
 }
 
 #shadow-container {

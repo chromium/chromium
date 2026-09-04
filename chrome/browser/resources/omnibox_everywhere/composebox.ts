@@ -137,6 +137,8 @@ export class OmniboxEverywhereComposeboxElement extends
   private pageHandler_: PageHandlerRemote;
   private searchboxCallbackRouter_: SearchboxPageCallbackRouter;
   private searchboxHandler_: SearchboxPageHandlerRemote;
+  private glowAnimationRafId_: number|null = null;
+  private glowAnimationTimeoutId_: number|null = null;
 
   constructor() {
     super();
@@ -148,13 +150,25 @@ export class OmniboxEverywhereComposeboxElement extends
 
   override connectedCallback() {
     super.connectedCallback();
-    this.animationState = GlowAnimationState.EXPANDING;
+    this.playGlowAnimation();
     this.refreshTabSuggestions(/*forceRefresh=*/ true);
     this.searchboxListenerIds.push(
         this.getSearchboxCallbackRouter().onScreenshotMenuClosed.addListener(
             () => {
               this.isScreenshotMenuOpen = false;
             }));
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this.glowAnimationRafId_ !== null) {
+      cancelAnimationFrame(this.glowAnimationRafId_);
+      this.glowAnimationRafId_ = null;
+    }
+    if (this.glowAnimationTimeoutId_ !== null) {
+      clearTimeout(this.glowAnimationTimeoutId_);
+      this.glowAnimationTimeoutId_ = null;
+    }
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -282,10 +296,25 @@ export class OmniboxEverywhereComposeboxElement extends
     }
   }
 
-  playGlowAnimation() {
+  playGlowAnimation(timeoutMs: number = 1000) {
+    if (this.glowAnimationRafId_ !== null) {
+      cancelAnimationFrame(this.glowAnimationRafId_);
+      this.glowAnimationRafId_ = null;
+    }
+    if (this.glowAnimationTimeoutId_ !== null) {
+      clearTimeout(this.glowAnimationTimeoutId_);
+      this.glowAnimationTimeoutId_ = null;
+    }
     this.animationState = GlowAnimationState.NONE;
-    requestAnimationFrame(() => {
+    this.glowAnimationRafId_ = requestAnimationFrame(() => {
+      this.glowAnimationRafId_ = null;
       this.animationState = GlowAnimationState.EXPANDING;
+      this.glowAnimationTimeoutId_ = setTimeout(() => {
+        if (this.animationState === GlowAnimationState.EXPANDING) {
+          this.animationState = GlowAnimationState.NONE;
+        }
+        this.glowAnimationTimeoutId_ = null;
+      }, timeoutMs);
     });
   }
 }

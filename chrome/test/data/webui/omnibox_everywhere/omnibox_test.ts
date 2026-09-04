@@ -544,7 +544,9 @@ suite('OmniboxEverywhereComposeboxTest', () => {
     await microtasksFinished();
   });
 
-  test('configures animated glow on composebox correctly', () => {
+  test('configures animated glow on composebox correctly', async () => {
+    await new Promise(r => setTimeout(r, 0));
+    await microtasksFinished();
     const glow = composebox.shadowRoot.querySelector<SearchAnimatedGlowElement>(
         '#animatedSearchElement');
     assertTrue(!!glow);
@@ -552,6 +554,46 @@ suite('OmniboxEverywhereComposeboxTest', () => {
     assertEquals('expanding', glow.animationState);
     assertTrue(glow.energyEffectAnimationEnabled);
   });
+
+  test(
+      'playGlowAnimation resets animation state to NONE after timeout',
+      async () => {
+        composebox.playGlowAnimation(/*timeoutMs=*/ 10);
+        assertEquals(GlowAnimationState.NONE, composebox.animationState);
+
+        await new Promise(r => setTimeout(r, 0));
+        await microtasksFinished();
+
+        // After rAF callback runs, animationState is EXPANDING.
+        assertEquals(GlowAnimationState.EXPANDING, composebox.animationState);
+
+        // After timeoutMs elapses, animationState resets to NONE.
+        await new Promise(r => setTimeout(r, 20));
+        await microtasksFinished();
+
+        assertEquals(GlowAnimationState.NONE, composebox.animationState);
+      });
+
+  test(
+      'disconnectedCallback cancels pending glow animation rAF and timeout',
+      async () => {
+        const testElem =
+            document.createElement('omnibox-everywhere-composebox');
+        document.body.appendChild(testElem);
+        await microtasksFinished();
+
+        testElem.playGlowAnimation(/*timeoutMs=*/ 50);
+        assertEquals(GlowAnimationState.NONE, testElem.animationState);
+
+        // Disconnect immediately before the next animation frame executes.
+        testElem.remove();
+
+        await new Promise(r => setTimeout(r, 60));
+        await microtasksFinished();
+
+        // Animation should not have transitioned to EXPANDING.
+        assertEquals(GlowAnimationState.NONE, testElem.animationState);
+      });
 
   test('AddTabContext event adds tab to composebox files', async () => {
     const mockToken = {high: 1234n, low: 5678n};
