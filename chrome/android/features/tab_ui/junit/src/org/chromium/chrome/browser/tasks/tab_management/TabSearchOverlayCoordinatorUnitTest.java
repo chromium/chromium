@@ -30,6 +30,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -979,31 +980,48 @@ public class TabSearchOverlayCoordinatorUnitTest {
 
     @Test
     public void testPanelTopMargin_AlignsWithControlContainer() {
-        int[] containerLocation = new int[] {0, 48};
-        View controlContainer =
-                new View(mActivity) {
-                    @Override
-                    public void getLocationInWindow(int[] outLocation) {
-                        outLocation[0] = containerLocation[0];
-                        outLocation[1] = containerLocation[1];
-                    }
-                };
+        FrameLayout controlContainer = new FrameLayout(mActivity);
         controlContainer.setId(R.id.control_container);
+        View toolbarContainer = new View(mActivity);
+        toolbarContainer.setId(R.id.toolbar_container);
+        int tabStripHeight =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.tab_strip_height);
+        toolbarContainer.setTop(48 + tabStripHeight);
+        controlContainer.addView(toolbarContainer);
         mActivity.setContentView(controlContainer);
 
+        // Non-caption mode (e.g. fullscreen tablet): topMargin aligns with tab strip, header
+        // visible.
         showOverlay();
 
         View panelView = mPanelContainer.findViewById(R.id.tab_search_overlay_panel);
+        View headerView = mPanelContainer.findViewById(R.id.tab_search_overlay_header);
         var params = (LinearLayout.LayoutParams) panelView.getLayoutParams();
         assertEquals(48, params.topMargin);
+        assertNotNull(headerView);
+        assertEquals(View.VISIBLE, headerView.getVisibility());
 
-        // In desktop windowing mode, control container sits at y = 0.
+        // In desktop windowing mode (freeform window, caption offset = 0): topMargin is 0,
+        // header remains visible.
         mCoordinator.hide(TabSearchDismissalReason.CLOSE_BUTTON);
-        containerLocation[1] = 0;
+        when(mAppHeaderState.isInDesktopWindow()).thenReturn(true);
+        when(mAppHeaderState.getAppHeaderHeight()).thenReturn(144);
+        when(mAppHeaderState.getCaptionControlsTopOffset()).thenReturn(0);
         showOverlay();
 
         params = (LinearLayout.LayoutParams) panelView.getLayoutParams();
         assertEquals(0, params.topMargin);
+        assertEquals(View.VISIBLE, headerView.getVisibility());
+
+        // In desktop windowing mode with status bar offset (e.g. split-screen mode):
+        // topMargin matches caption top offset so overlay aligns below the status bar.
+        mCoordinator.hide(TabSearchDismissalReason.CLOSE_BUTTON);
+        when(mAppHeaderState.getCaptionControlsTopOffset()).thenReturn(48);
+        showOverlay();
+
+        params = (LinearLayout.LayoutParams) panelView.getLayoutParams();
+        assertEquals(48, params.topMargin);
+        assertEquals(View.VISIBLE, headerView.getVisibility());
     }
 
     @Test
@@ -1201,6 +1219,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
         assertTrue(popupWindow.isFocusable());
         assertTrue(popupWindow.isOutsideTouchable());
         assertFalse(popupWindow.isClippingEnabled());
+        assertTrue(popupWindow.isAttachedInDecor());
         assertEquals(PopupWindow.INPUT_METHOD_NEEDED, popupWindow.getInputMethodMode());
         assertEquals(
                 WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE,

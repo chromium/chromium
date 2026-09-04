@@ -272,6 +272,7 @@ found in the LICENSE file.
 
     <!-- Dimens for tab search -->
     <dimen name="tab_search_overlay_width">264dp</dimen>
+    <dimen name="tab_search_overlay_header_height">42dp</dimen>
     <dimen name="tab_search_close_button_size">24dp</dimen>
     <dimen name="tab_search_close_button_size_desktop">20dp</dimen>
     <dimen name="tab_search_close_button_margin_end">8dp</dimen>
