@@ -6,8 +6,13 @@
 
 #include <utility>
 
+#include "chrome/browser/ui/tabs/tab_model.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/interaction_sequence.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/webui/tracked_element/tracked_element_handler.h"
+#include "ui/webui/tracked_element/tracked_element_web_ui.h"
 
 InteractiveBrowserTestApi::MultiStep
 InteractiveBrowserTestApi::InstrumentNonTabWebView(ui::ElementIdentifier id,
@@ -40,6 +45,45 @@ InteractiveBrowserTestApi::InstrumentNonTabWebView(
             InstrumentNonTabWebView(id, kTemporaryElementName, wait_for_ready));
   AddDescriptionPrefix(steps, "InstrumentNonTabWebView()");
   return steps;
+}
+
+InteractiveBrowserTestApi::StepBuilder
+InteractiveBrowserTestApi::InstrumentWebContentsContaining(
+    ui::ElementIdentifier id,
+    ElementSpecifier webui_element) {
+  return AfterShow(
+             webui_element,
+             base::BindLambdaForTesting([this, id](ui::InteractionSequence* seq,
+                                                   ui::TrackedElement* el) {
+               auto* const web_el = el->AsA<ui::TrackedElementWebUI>();
+               if (!web_el) {
+                 LOG(ERROR) << "Element " << *el << " is not a WebUI element.";
+                 seq->FailForTesting();
+                 return;
+               }
+               auto* const tab = tabs::TabModel::MaybeGetFromContents(
+                   web_el->handler()->web_contents());
+               if (tab) {
+                 auto* const browser = tab->GetBrowserWindowInterface();
+                 int index = browser->tab_strip_model()->GetIndexOfTab(tab);
+                 CHECK_NE(TabStripModel::kNoTab, index);
+                 browser_test_impl().AddInstrumentedWebContents(
+                     WebContentsInteractionTestUtil::ForExistingTabInBrowser(
+                         browser, id, index));
+               } else {
+                 auto* const view = web_el->GetWebView();
+                 if (!view) {
+                   LOG(ERROR) << "Element " << *el << " has no web view.";
+                   seq->FailForTesting();
+                   return;
+                 }
+                 browser_test_impl().AddInstrumentedWebContents(
+                     WebContentsInteractionTestUtil::ForNonTabWebView(view,
+                                                                      id));
+               }
+             }))
+      .AddDescriptionPrefix(base::StringPrintf(
+          "InstrumentNonTabWebViewContaining( %s )", id.GetName().c_str()));
 }
 
 InteractiveBrowserTestApi::MultiStep InteractiveBrowserTestApi::MoveMouseTo(

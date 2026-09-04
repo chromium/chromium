@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_entry_point_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
+#include "chrome/browser/ui/read_anything/read_anything_prefs.h"
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_controller_utils.h"
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
@@ -40,6 +41,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/interaction/element_identifier.h"
 
 using read_anything::mojom::ReadAnythingOpenTrigger;
 
@@ -419,4 +421,66 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingPresentationModeCUJTest, ShowAndHideIph) {
       NavigateWebContents(kActiveTab, non_distillable_url_),
       WaitForHide(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
+}
+
+namespace {
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kReadAnythingWebContentsId);
+}
+
+using ReadAnythingSidePanelInteractiveTest =
+    ReadAnythingSidePanelControllerInteractiveTest;
+
+// Regression test for https://crbug.com/557055820.
+// Verifies that the "toggle images" menu button toggles the value in prefs.
+IN_PROC_BROWSER_TEST_F(ReadAnythingSidePanelInteractiveTest, ToggleImages) {
+  ui::Accelerator reading_mode_accelerator;
+  ASSERT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())->GetAccelerator(
+      IDC_SHOW_READING_MODE_KEYBOARD, &reading_mode_accelerator));
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+
+  auto* const prefs = browser()->GetProfile()->GetPrefs();
+  const bool old_setting =
+      prefs->GetBoolean(prefs::kAccessibilityReadAnythingImagesEnabled);
+
+  const DeepQuery kSettingsButtonQuery{"read-anything-app",
+                                       "read-anything-toolbar", "#more"};
+  const DeepQuery kMediaMenuQuery{"read-anything-app", "read-anything-toolbar",
+                                  "settings-menu", "#media"};
+  const DeepQuery kToggleImagesQuery{"read-anything-app",
+                                     "read-anything-toolbar", "media-menu",
+                                     "#images-toggle-button"};
+
+  RunTestSequence(
+      InstrumentTab(kActiveTab),
+      NavigateWebContents(kActiveTab, embedded_test_server()->GetURL(
+                                          kDocumentWithNamedElement)),
+
+      // Show Read Anything side panel.
+      Do([this]() {
+        auto* controller = ReadAnythingController::From(
+            browser()->GetTabStripModel()->GetActiveTab());
+        controller->ShowSidePanelUI(
+            SidePanelOpenTrigger::kReadAnythingTogglePresentationButton);
+      }),
+      WaitForShow(kSidePanelElementId),
+      // This is an element in the page.
+      InAnyContext(WaitForShow(kReadAnythingSettingsButtonElementId)),
+      InSameContext(InstrumentWebContentsContaining(
+          kReadAnythingWebContentsId, kReadAnythingSettingsButtonElementId)),
+      InAnyContext(
+          WaitForElementVisible(kReadAnythingWebContentsId,
+                                kSettingsButtonQuery),
+          ClickElement(kReadAnythingWebContentsId, kSettingsButtonQuery),
+          WaitForElementVisible(kReadAnythingWebContentsId, kMediaMenuQuery),
+          ClickElement(kReadAnythingWebContentsId, kMediaMenuQuery),
+          WaitForElementVisible(kReadAnythingWebContentsId, kToggleImagesQuery),
+          ClickElement(kReadAnythingWebContentsId, kToggleImagesQuery),
+          PollUntil(
+              [prefs, old_setting]() {
+                return prefs->GetBoolean(
+                           prefs::kAccessibilityReadAnythingImagesEnabled) !=
+                       old_setting;
+              },
+              "Wait for setting to change.")));
 }

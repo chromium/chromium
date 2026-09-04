@@ -53,6 +53,13 @@ class InteractiveBrowserTestApi
       AbsoluteViewSpecifier web_view,
       bool wait_for_ready = true);
 
+  // Instruments the WebContents containing `webui_element`, which should be a
+  // `TrackedElementWebUI` (i.e. a help bubble anchor or other named element in
+  // a WebUI). Otherwise functions the same as the other "instrument" verbs.
+  [[nodiscard]] StepBuilder InstrumentWebContentsContaining(
+      ui::ElementIdentifier id,
+      ElementSpecifier webui_element);
+
   // These are required so the following overloads don't hide the base class
   // variations.
   using InteractiveMouseTestApi::DragMouseTo;
