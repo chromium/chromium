@@ -5,6 +5,7 @@
 #include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
 
 #include "base/check_op.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -155,8 +156,11 @@ std::vector<sk_sp<SkSurface>> SkiaGLImageRepresentation::BeginWriteAccess(
         promise_textures_[plane_index]->backendTexture(), surface_origin(),
         final_msaa_count, sk_color_type,
         backing()->color_space().ToSkColorSpace(), &surface_props);
-    if (!surface)
+    if (!surface) {
+      DLOG(ERROR) << "WrapBackendTexture() failed.";
+      gl_representation_->EndAccess();
       return {};
+    }
     surfaces.push_back(surface);
   }
 
