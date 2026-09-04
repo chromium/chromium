@@ -27,6 +27,7 @@
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
+#include "sql/transaction.h"
 #include "storage/browser/quota/quota_internals.mojom-forward.h"
 #include "storage/browser/quota/storage_directory.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -288,6 +289,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   const base::FilePath legacy_db_file_path_;
 
   std::unique_ptr<sql::Database> db_ GUARDED_BY_CONTEXT(sequence_checker_);
+  // The long-running transaction that batches writes between two commits.
+  // Re-created by Commit(). Empty while the database is not open, and after a
+  // failed Begin(), in which case statements run in autocommit. Declared
+  // after `db_` so that it is destroyed first.
+  std::optional<sql::Transaction> transaction_
+      GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<sql::MetaTable> meta_table_
       GUARDED_BY_CONTEXT(sequence_checker_);
   bool is_recreating_ GUARDED_BY_CONTEXT(sequence_checker_) = false;

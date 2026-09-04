@@ -35,6 +35,7 @@
 #include "sql/statement.h"
 #include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
+#include "sql/transaction.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_features.h"
 #include "storage/browser/quota/quota_internals.mojom.h"
@@ -101,14 +102,12 @@ class QuotaDatabaseTest : public testing::TestWithParam<bool> {
     return db->EnsureOpened() == QuotaError::kNone;
   }
 
-  int IsGlobalTransactionValid(QuotaDatabase* db) {
+  bool IsGlobalTransactionValid(QuotaDatabase* db) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(db->sequence_checker_);
-    // There should always be a single global transaction active. If we commit
-    // it, there should be no transactions left.
-    bool is_valid = db->db_->CommitTransactionDeprecated() &&
-                    !db->db_->HasActiveTransactions();
-    EXPECT_TRUE(db->db_->BeginTransactionDeprecated());
-    return is_valid;
+    // There should always be a single global transaction active.
+    return db->transaction_.has_value() &&
+           db->transaction_->IsActiveForTesting() &&
+           db->db_->HasActiveTransactions();
   }
 
   template <typename EntryType>
@@ -868,6 +867,18 @@ TEST_P(QuotaDatabaseTest, OpenCorruptedDatabase) {
   histograms.ExpectTotalCount("Quota.QuotaDatabaseReset", 1);
   histograms.ExpectBucketCount("Quota.QuotaDatabaseReset",
                                DatabaseResetReason::kOpenDatabase, 1);
+}
+
+// The long-running transaction that batches writes must be re-established
+// after every commit. Without it, writes would run unbatched for the rest of
+// the session, which no other test would notice: they would still be durable.
+TEST_P(QuotaDatabaseTest, LongRunningTransactionIsReopenedAfterCommit) {
+  auto db = CreateDatabase(use_in_memory_db());
+  ASSERT_TRUE(EnsureOpened(db.get()));
+  EXPECT_TRUE(IsGlobalTransactionValid(db.get()));
+
+  db->CommitNow();
+  EXPECT_TRUE(IsGlobalTransactionValid(db.get()));
 }
 
 TEST_P(QuotaDatabaseTest, QuotaDatabasePathMigration) {
