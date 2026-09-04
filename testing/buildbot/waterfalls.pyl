@@ -984,27 +984,6 @@
       'chrome-tester-service-account',
     ],
     'machines': {
-      'ai_wpt-mac-arm64': {
-        'mixins': [
-          'chrome-swarming-pool',
-          'mac_default_arm64',
-        ],
-        'test_suites': {
-           'isolated_scripts': 'chrome_ai_wpt_tests_suite',
-        },
-        'os_type': 'mac',
-      },
-      'ai_wpt-mac-x64': {
-        'mixins': [
-          'chrome-swarming-pool',
-          'mac_15_x64',
-          'x64_ai_wpt_shards',
-        ],
-        'test_suites': {
-           'isolated_scripts': 'chrome_ai_wpt_tests_suite',
-        },
-        'os_type': 'mac',
-      },
       'model_validation-linux': {
         'mixins': [
           'chrome-intelligence-swarming-pool',
