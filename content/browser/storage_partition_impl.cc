@@ -208,7 +208,7 @@ mojo::Remote<storage::mojom::StorageService>& GetStorageServiceRemoteStorage() {
 
 void RunInProcessStorageService(
     mojo::PendingReceiver<storage::mojom::StorageService> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
   static base::SequenceLocalStorageSlot<
       std::unique_ptr<storage::StorageServiceImpl>>
       service_storage_slot;
@@ -309,7 +309,7 @@ void OnLocalStorageUsageInfo(
     const base::Time delete_end,
     base::OnceClosure callback,
     const std::vector<StorageUsageInfo>& infos) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   base::OnceClosure done_callback =
       perform_storage_cleanup
@@ -341,7 +341,7 @@ void OnSessionStorageUsageInfo(
     bool perform_storage_cleanup,
     base::OnceClosure callback,
     const std::vector<SessionStorageUsageInfo>& infos) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   base::OnceClosure done_callback =
       perform_storage_cleanup
@@ -370,7 +370,7 @@ void ClearQuotaManagedData(
     StoragePartition::StorageKeyPolicyMatcherFunction storage_key_matcher,
     bool perform_storage_cleanup,
     base::OnceClosure callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   auto on_got_modified_buckets = base::BindOnce(
       [](scoped_refptr<storage::QuotaManager> quota_manager,
@@ -380,7 +380,7 @@ void ClearQuotaManagedData(
          storage::QuotaClientTypes quota_client_types,
          bool perform_storage_cleanup, base::OnceClosure callback,
          const std::set<storage::BucketLocator>& buckets) {
-        DCHECK_CURRENTLY_ON(BrowserThread::IO);
+        CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
         if (buckets.empty()) {
           std::move(callback).Run();
           return;

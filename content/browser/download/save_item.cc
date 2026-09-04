@@ -18,7 +18,7 @@ namespace {
 
 SaveItemId GetNextSaveItemId() {
   static SaveItemId::Generator g_save_item_id_generator;
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   return g_save_item_id_generator.GenerateNextId();
 }
 
@@ -47,14 +47,14 @@ SaveItem::SaveItem(const GURL& url,
       is_success_(false),
       save_source_(save_source),
       package_(package) {
-  DCHECK(package);
+  CHECK(package, base::NotFatalUntil::M159);
 }
 
 SaveItem::~SaveItem() {}
 
 // Set start state for save item.
 void SaveItem::Start() {
-  DCHECK_EQ(state_, WAIT_START);
+  CHECK_EQ(state_, WAIT_START, base::NotFatalUntil::M159);
   state_ = IN_PROGRESS;
 }
 
@@ -89,15 +89,15 @@ void SaveItem::Cancel() {
 
 // Set finish state for a save item
 void SaveItem::Finish(int64_t size, bool is_success) {
-  DCHECK(has_final_name() || !is_success_);
+  CHECK(has_final_name() || !is_success_, base::NotFatalUntil::M159);
   state_ = COMPLETE;
   is_success_ = is_success;
   UpdateSize(size);
 }
 
 void SaveItem::SetTargetPath(const base::FilePath& full_path) {
-  DCHECK(!full_path.empty());
-  DCHECK(!has_final_name());
+  CHECK(!full_path.empty(), base::NotFatalUntil::M159);
+  CHECK(!has_final_name(), base::NotFatalUntil::M159);
   full_path_ = full_path;
 }
 

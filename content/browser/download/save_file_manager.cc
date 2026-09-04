@@ -164,14 +164,14 @@ class SaveFileManager::SimpleURLLoaderHelper
 };
 
 SaveFileManager::SaveFileManager() {
-  DCHECK(g_save_file_manager == nullptr);
+  CHECK(g_save_file_manager == nullptr, base::NotFatalUntil::M159);
   g_save_file_manager = this;
 }
 
 SaveFileManager::~SaveFileManager() {
   // Check for clean shutdown.
-  DCHECK(save_file_map_.empty());
-  DCHECK(g_save_file_manager);
+  CHECK(save_file_map_.empty(), base::NotFatalUntil::M159);
+  CHECK(g_save_file_manager, base::NotFatalUntil::M159);
   g_save_file_manager = nullptr;
 }
 
@@ -189,19 +189,21 @@ void SaveFileManager::Shutdown() {
 
 // Stop file thread operations.
 void SaveFileManager::OnShutdown() {
-  DCHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence());
+  CHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M159);
   save_file_map_.clear();
 }
 
 SaveFile* SaveFileManager::LookupSaveFile(SaveItemId save_item_id) {
-  DCHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence());
+  CHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M159);
   auto it = save_file_map_.find(save_item_id);
   return it == save_file_map_.end() ? nullptr : it->second.get();
 }
 
 // Look up a SavePackage according to a save id.
 SavePackage* SaveFileManager::LookupPackage(SaveItemId save_item_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   auto it = packages_.find(save_item_id);
   if (it != packages_.end())
     return it->second;
@@ -226,10 +228,10 @@ void SaveFileManager::SaveURL(
     SavePackage* save_package,
     const std::string& client_guid,
     mojo::PendingRemote<quarantine::mojom::Quarantine> remote_quarantine) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   // Insert started saving job to tracking list.
-  DCHECK(!packages_.contains(save_item_id));
+  CHECK(!packages_.contains(save_item_id), base::NotFatalUntil::M159);
   packages_[save_item_id] = save_package;
 
   base::OnceCallback<void(const GURL&)> quarantine_callback = base::BindOnce(
@@ -239,7 +241,7 @@ void SaveFileManager::SaveURL(
 
   // Register a saving job.
   if (save_source == SaveFileCreateInfo::SAVE_FILE_FROM_NET) {
-    DCHECK(url.is_valid());
+    CHECK(url.is_valid(), base::NotFatalUntil::M159);
     // Starts the actual download.
     if (!ChildProcessSecurityPolicyImpl::GetInstance()->CanRequestURL(
             render_process_host_id, url)) {
@@ -355,8 +357,8 @@ void SaveFileManager::SaveURL(
 // so we just look up the save id and remove it from the tracking table.
 void SaveFileManager::RemoveSaveFile(SaveItemId save_item_id,
                                      SavePackage* save_package) {
-  DCHECK(save_package);
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(save_package, base::NotFatalUntil::M159);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   // A save page job (SavePackage) can only have one manager,
   // so remove it if it exists.
   auto it = packages_.find(save_item_id);
@@ -384,7 +386,7 @@ SavePackage* SaveFileManager::GetSavePackageFromRenderIds(
 
 void SaveFileManager::SendCancelRequest(SaveItemId save_item_id) {
   // Cancel the request which has specific save id.
-  DCHECK(!save_item_id.is_null());
+  CHECK(!save_item_id.is_null(), base::NotFatalUntil::M159);
   download::GetDownloadTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&SaveFileManager::CancelSave, this, save_item_id));
@@ -398,7 +400,8 @@ void SaveFileManager::QuarantineItem(
     mojo::PendingRemote<quarantine::mojom::Quarantine> remote_quarantine,
     bool is_off_the_record,
     const GURL& url) {
-  DCHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence());
+  CHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M159);
   SaveFile* save_file = LookupSaveFile(save_item_id);
   CHECK(save_file);
 
@@ -413,7 +416,8 @@ void SaveFileManager::OnQuarantineComplete(
     SaveItemId save_item_id,
     SavePackageId save_package_id,
     download::DownloadInterruptReason result) {
-  DCHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence());
+  CHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M159);
   SaveCompleted(save_item_id, save_package_id,
                 result == download::DOWNLOAD_INTERRUPT_REASON_NONE);
 }
@@ -424,8 +428,9 @@ void SaveFileManager::OnQuarantineComplete(
 // to create a SaveFile which will hold and finally destroy |info|. It will
 // then passes |info| to the UI thread for reporting saving status.
 void SaveFileManager::StartSave(std::unique_ptr<SaveFileCreateInfo> info) {
-  DCHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence());
-  DCHECK(info);
+  CHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M159);
+  CHECK(info, base::NotFatalUntil::M159);
   // No need to calculate hash.
   auto save_file =
       std::make_unique<SaveFile>(std::move(info), /*calculate_hash=*/false);
@@ -434,7 +439,7 @@ void SaveFileManager::StartSave(std::unique_ptr<SaveFileCreateInfo> info) {
   save_file->Initialize();
 
   const SaveFileCreateInfo& save_file_create_info = save_file->create_info();
-  DCHECK(!LookupSaveFile(save_file->save_item_id()));
+  CHECK(!LookupSaveFile(save_file->save_item_id()), base::NotFatalUntil::M159);
   save_file_map_[save_file->save_item_id()] = std::move(save_file);
 
   GetUIThreadTaskRunner({})->PostTask(
@@ -448,10 +453,11 @@ void SaveFileManager::StartSave(std::unique_ptr<SaveFileCreateInfo> info) {
 // cancel message. We just delete the data since the SaveFile has been deleted.
 void SaveFileManager::UpdateSaveProgress(SaveItemId save_item_id,
                                          const std::string& data) {
-  DCHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence());
+  CHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M159);
   SaveFile* save_file = LookupSaveFile(save_item_id);
   if (save_file) {
-    DCHECK(save_file->InProgress());
+    CHECK(save_file->InProgress(), base::NotFatalUntil::M159);
 
     download::DownloadInterruptReason reason =
         save_file->AppendDataToFile(base::as_byte_span(data));
@@ -466,7 +472,8 @@ void SaveFileManager::UpdateSaveProgress(SaveItemId save_item_id,
 void SaveFileManager::SaveFinished(SaveItemId save_item_id,
                                    SavePackageId save_package_id,
                                    bool is_success) {
-  DCHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence());
+  CHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M159);
 
   SaveFile* save_file = LookupSaveFile(save_item_id);
   if (!is_success || !save_file) {
@@ -483,7 +490,8 @@ void SaveFileManager::SaveCompleted(SaveItemId save_item_id,
   DVLOG(20) << __func__ << "() save_item_id = " << save_item_id
             << " save_package_id = " << save_package_id
             << " is_success = " << is_success;
-  DCHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence());
+  CHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M159);
 
   int64_t bytes_so_far = 0;
   SaveFile* save_file = LookupSaveFile(save_item_id);
@@ -491,7 +499,7 @@ void SaveFileManager::SaveCompleted(SaveItemId save_item_id,
   // thread but the load is canceled on the UI thread. The request might finish
   // while thread hoping.
   if (save_file) {
-    DCHECK(save_file->InProgress());
+    CHECK(save_file->InProgress(), base::NotFatalUntil::M159);
     DVLOG(20) << __func__ << "() save_file = " << save_file->DebugString();
     bytes_so_far = save_file->BytesSoFar();
     save_file->Finish();
@@ -505,7 +513,7 @@ void SaveFileManager::SaveCompleted(SaveItemId save_item_id,
 
 // Notifications sent from the file thread and run on the UI thread.
 void SaveFileManager::OnStartSave(const SaveFileCreateInfo& info) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   SavePackage* save_package = GetSavePackageFromRenderIds(
       info.render_process_id, info.render_frame_routing_id);
   if (!save_package) {
@@ -521,7 +529,7 @@ void SaveFileManager::OnStartSave(const SaveFileCreateInfo& info) {
 void SaveFileManager::OnUpdateSaveProgress(SaveItemId save_item_id,
                                            int64_t bytes_so_far,
                                            bool write_success) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   SavePackage* package = LookupPackage(save_item_id);
   if (package)
     package->UpdateSaveProgress(save_item_id, bytes_so_far, write_success);
@@ -532,7 +540,7 @@ void SaveFileManager::OnUpdateSaveProgress(SaveItemId save_item_id,
 void SaveFileManager::OnSaveCompleted(SaveItemId save_item_id,
                                       int64_t bytes_so_far,
                                       bool is_success) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   ClearURLLoader(save_item_id);
   SavePackage* package = LookupPackage(save_item_id);
   if (package)
@@ -547,7 +555,8 @@ void SaveFileManager::OnSaveCompleted(SaveItemId save_item_id,
 // sent from the UI thread, the saving job may have already completed and
 // won't exist in our map.
 void SaveFileManager::CancelSave(SaveItemId save_item_id) {
-  DCHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence());
+  CHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M159);
   auto it = save_file_map_.find(save_item_id);
   if (it != save_file_map_.end()) {
     std::unique_ptr<SaveFile> save_file = std::move(it->second);
@@ -571,7 +580,7 @@ void SaveFileManager::CancelSave(SaveItemId save_item_id) {
 }
 
 void SaveFileManager::ClearURLLoader(SaveItemId save_item_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   auto url_loader_iter = url_loader_helpers_.find(save_item_id);
   if (url_loader_iter != url_loader_helpers_.end())
     url_loader_helpers_.erase(url_loader_iter);
@@ -582,7 +591,8 @@ void SaveFileManager::RenameAllFiles(const FinalNamesMap& final_names,
                                      int render_process_id,
                                      int render_frame_routing_id,
                                      SavePackageId save_package_id) {
-  DCHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence());
+  CHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M159);
 
   if (!resource_dir.empty() && !base::PathExists(resource_dir)) {
     // Use `NativeFileUtil::CreateDirectory` instead of `base::CreateDirectory`
@@ -598,7 +608,7 @@ void SaveFileManager::RenameAllFiles(const FinalNamesMap& final_names,
     auto it = save_file_map_.find(save_item_id);
     if (it != save_file_map_.end()) {
       SaveFile* save_file = it->second.get();
-      DCHECK(!save_file->InProgress());
+      CHECK(!save_file->InProgress(), base::NotFatalUntil::M159);
       save_file->Rename(final_name);
       save_file_map_.erase(it);
     }
@@ -613,7 +623,7 @@ void SaveFileManager::RenameAllFiles(const FinalNamesMap& final_names,
 void SaveFileManager::OnFinishSavePageJob(int render_process_id,
                                           int render_frame_routing_id,
                                           SavePackageId save_package_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   SavePackage* save_package =
       GetSavePackageFromRenderIds(render_process_id, render_frame_routing_id);
@@ -624,13 +634,14 @@ void SaveFileManager::OnFinishSavePageJob(int render_process_id,
 
 void SaveFileManager::RemoveSavedFileFromFileMap(
     const std::vector<SaveItemId>& save_item_ids) {
-  DCHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence());
+  CHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M159);
 
   for (const SaveItemId save_item_id : save_item_ids) {
     auto it = save_file_map_.find(save_item_id);
     if (it != save_file_map_.end()) {
       SaveFile* save_file = it->second.get();
-      DCHECK(!save_file->InProgress());
+      CHECK(!save_file->InProgress(), base::NotFatalUntil::M159);
       base::DeleteFile(save_file->FullPath());
       save_file_map_.erase(it);
     }
@@ -642,7 +653,8 @@ void SaveFileManager::GetSaveFilePaths(
         ids_and_final_paths,
     base::OnceCallback<void(base::flat_map<base::FilePath, base::FilePath>)>
         callback) {
-  DCHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence());
+  CHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M159);
   base::flat_map<base::FilePath, base::FilePath> tmp_paths_and_final_paths;
 
   for (const auto& id_and_final_path : ids_and_final_paths) {

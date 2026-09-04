@@ -19,14 +19,16 @@ namespace content {
 SaveFile::SaveFile(std::unique_ptr<SaveFileCreateInfo> info,
                    bool calculate_hash)
     : file_(download::DownloadItem::kInvalidId), info_(std::move(info)) {
-  DCHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence());
+  CHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M159);
 
-  DCHECK(info_);
-  DCHECK(info_->path.empty());
+  CHECK(info_, base::NotFatalUntil::M159);
+  CHECK(info_->path.empty(), base::NotFatalUntil::M159);
 }
 
 SaveFile::~SaveFile() {
-  DCHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence());
+  CHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M159);
 }
 
 download::DownloadInterruptReason SaveFile::Initialize() {

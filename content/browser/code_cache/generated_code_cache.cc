@@ -1011,7 +1011,7 @@ void GeneratedCodeCache::CloseOperationAndIssueNext(PendingOperation* op) {
 void GeneratedCodeCache::EnqueueOperationAndIssueIfNext(
     std::unique_ptr<PendingOperation> op) {
   // GetBackend ops have no key and shouldn't be enqueued here.
-  DCHECK_NE(Operation::kGetBackend, op->operation());
+  CHECK_NE(Operation::kGetBackend, op->operation(), base::NotFatalUntil::M159);
   auto it = active_entries_map_.find(op->key());
   bool can_issue = false;
   if (it == active_entries_map_.end()) {
@@ -1028,10 +1028,10 @@ std::unique_ptr<GeneratedCodeCache::PendingOperation>
 GeneratedCodeCache::DequeueOperation(PendingOperation* op) {
   auto it = active_entries_map_.find(op->key());
   CHECK(it != active_entries_map_.end());
-  DCHECK(!it->second.empty());
+  CHECK(!it->second.empty(), base::NotFatalUntil::M159);
   std::unique_ptr<PendingOperation> result = std::move(it->second.front());
   // |op| should be at the front.
-  DCHECK_EQ(op, result.get());
+  CHECK_EQ(op, result.get(), base::NotFatalUntil::M159);
   it->second.pop();
   // Delete the queue if it becomes empty.
   if (it->second.empty()) {
@@ -1043,11 +1043,11 @@ GeneratedCodeCache::DequeueOperation(PendingOperation* op) {
 void GeneratedCodeCache::DoPendingGetBackend(PendingOperation* op) {
   // |op| is kept alive in |IssuePendingOperations| for the duration of this
   // call. We shouldn't access |op| after returning from this function.
-  DCHECK_EQ(kGetBackend, op->operation());
+  CHECK_EQ(kGetBackend, op->operation(), base::NotFatalUntil::M159);
   if (backend_state_ == kInitialized) {
     op->TakeBackendCallback().Run(backend_.get());
   } else {
-    DCHECK_EQ(backend_state_, kFailed);
+    CHECK_EQ(backend_state_, kFailed, base::NotFatalUntil::M159);
     op->TakeBackendCallback().Run(nullptr);
   }
 }
@@ -1072,7 +1072,7 @@ void GeneratedCodeCache::SetLastUsedTimeForTest(
   // This is used only for tests. So reasonable to assume that backend is
   // initialized here. All other operations handle the case when backend was not
   // yet opened.
-  DCHECK_EQ(backend_state_, kInitialized);
+  CHECK_EQ(backend_state_, kInitialized, base::NotFatalUntil::M159);
   auto split = base::SplitOnceCallback(std::move(user_callback));
 
   disk_cache::EntryResultCallback callback = base::BindOnce(
@@ -1096,10 +1096,10 @@ void GeneratedCodeCache::OpenCompleteForSetLastUsedForTest(
     base::Time time,
     base::OnceClosure callback,
     disk_cache::EntryResult result) {
-  DCHECK_EQ(result.net_error(), net::OK);
+  CHECK_EQ(result.net_error(), net::OK, base::NotFatalUntil::M159);
   {
     disk_cache::ScopedEntryPtr disk_entry(result.ReleaseEntry());
-    DCHECK(disk_entry);
+    CHECK(disk_entry, base::NotFatalUntil::M159);
     disk_entry->SetLastUsedTimeForTest(time);
   }
   std::move(callback).Run();

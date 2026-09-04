@@ -71,7 +71,7 @@ void SafeAreaInsetsHostImpl::DidFinishNavigation(
       !navigation_handle->IsSameDocument() &&
       navigation_handle->IsInPrimaryMainFrame()) {
     RenderFrameHost* rfh = navigation_handle->GetRenderFrameHost();
-    DCHECK(rfh);
+    CHECK(rfh, base::NotFatalUntil::M159);
     current_rfh_ = static_cast<RenderFrameHostImpl*>(rfh)->GetWeakPtr();
 
     blink::mojom::DisplayMode mode = web_contents_impl_->GetDisplayMode();
@@ -99,7 +99,7 @@ void SafeAreaInsetsHostImpl::SetDisplayCutoutSafeArea(gfx::Insets insets) {
 void SafeAreaInsetsHostImpl::ViewportFitChangedForFrame(
     RenderFrameHost* rfh,
     blink::mojom::ViewportFit value) {
-  DCHECK(rfh);
+  CHECK(rfh, base::NotFatalUntil::M159);
   SetViewportFitValue(rfh, value);
 
   // If we are the active `RenderFrameHost` frame then notify
@@ -112,7 +112,7 @@ void SafeAreaInsetsHostImpl::ViewportFitChangedForFrame(
 void SafeAreaInsetsHostImpl::ComplexSafeAreaConstraintChangedForFrame(
     RenderFrameHost* rfh,
     bool has_constraint) {
-  DCHECK(rfh);
+  CHECK(rfh, base::NotFatalUntil::M159);
   SetSafeAreaConstraintValue(rfh, has_constraint);
 
   if (rfh == active_render_frame_host()) {

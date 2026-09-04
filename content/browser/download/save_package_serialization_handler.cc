@@ -19,13 +19,13 @@ SavePackageSerializationHandler::~SavePackageSerializationHandler() = default;
 void SavePackageSerializationHandler::DidReceiveData(
     const std::string& data_buffer) {
   // This callback should always have been set.
-  DCHECK(did_serialize_data_callback_);
+  CHECK(did_serialize_data_callback_, base::NotFatalUntil::M159);
   did_serialize_data_callback_.Run(data_buffer);
 }
 
 void SavePackageSerializationHandler::Done() {
   // This callback should always have been set and only called once.
-  DCHECK(done_callback_);
+  CHECK(done_callback_, base::NotFatalUntil::M159);
   std::move(done_callback_).Run();
 }
 

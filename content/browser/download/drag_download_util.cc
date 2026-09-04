@@ -24,7 +24,7 @@
 namespace content {
 
 base::File CreateFileForDrop(base::FilePath* file_path) {
-  DCHECK(file_path && !file_path->empty());
+  CHECK(file_path && !file_path->empty(), base::NotFatalUntil::M159);
 
   const int kMaxSeq = 99;
   for (int seq = 0; seq <= kMaxSeq; seq++) {
