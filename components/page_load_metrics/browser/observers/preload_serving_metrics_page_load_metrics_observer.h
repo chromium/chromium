@@ -83,6 +83,11 @@ class PreloadServingMetricsPageLoadMetricsObserver
 
   void MaybeRecord();
 
+  // Holds data for a single navigation (or BFCache restore) needed to record
+  // metrics.
+  //
+  // Created on commit (or BFCache restore) and reset when entering BFCache or
+  // after metrics are recorded.
   struct NavigationData {
     NavigationData();
     ~NavigationData();
