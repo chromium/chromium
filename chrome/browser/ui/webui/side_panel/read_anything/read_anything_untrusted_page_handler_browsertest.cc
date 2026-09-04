@@ -41,6 +41,7 @@
 #include "components/prefs/pref_value_map.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/translate/core/browser/translate_manager.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -60,6 +61,9 @@
 #include "ui/accessibility/mojom/ax_tree_update.mojom.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
+#include "ui/base/clipboard/clipboard_sequence_number_token.h"
 #include "ui/gfx/geometry/size.h"
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/test/bind.h"
@@ -184,23 +188,25 @@ class TestReadAnythingUntrustedPageHandler
 #if BUILDFLAG(IS_CHROMEOS)
   explicit TestReadAnythingUntrustedPageHandler(
       mojo::PendingRemote<read_anything::mojom::UntrustedPage> page,
+      mojo::PendingReceiver<read_anything::mojom::UntrustedPageHandler>
+          receiver,
       content::WebUI* test_web_ui,
       std::unique_ptr<ChromeOsExtensionWrapper> extension_wrapper)
-      : ReadAnythingUntrustedPageHandler(
-            std::move(page),
-            mojo::PendingReceiver<read_anything::mojom::UntrustedPageHandler>(),
-            test_web_ui,
-            /*use_screen_ai_service=*/false,
-            std::move(extension_wrapper)) {}
+      : ReadAnythingUntrustedPageHandler(std::move(page),
+                                         std::move(receiver),
+                                         test_web_ui,
+                                         /*use_screen_ai_service=*/false,
+                                         std::move(extension_wrapper)) {}
 #else
   explicit TestReadAnythingUntrustedPageHandler(
       mojo::PendingRemote<read_anything::mojom::UntrustedPage> page,
+      mojo::PendingReceiver<read_anything::mojom::UntrustedPageHandler>
+          receiver,
       content::WebUI* test_web_ui)
-      : ReadAnythingUntrustedPageHandler(
-            std::move(page),
-            mojo::PendingReceiver<read_anything::mojom::UntrustedPageHandler>(),
-            test_web_ui,
-            /*use_screen_ai_service=*/false) {}
+      : ReadAnythingUntrustedPageHandler(std::move(page),
+                                         std::move(receiver),
+                                         test_web_ui,
+                                         /*use_screen_ai_service=*/false) {}
 #endif
 };
 
@@ -315,6 +321,7 @@ class ReadAnythingUntrustedPageHandlerTest
 #if BUILDFLAG(IS_CHROMEOS)
     extension_wrapper_ptr_ = nullptr;
 #endif
+    handler_remote_.reset();
     handler_.reset();
     test_web_ui_.reset();
     web_contents_.reset();
@@ -322,17 +329,19 @@ class ReadAnythingUntrustedPageHandlerTest
   }
 
   std::unique_ptr<TestReadAnythingUntrustedPageHandler> CreateHandler() {
+    handler_remote_.reset();
 #if BUILDFLAG(IS_CHROMEOS)
     std::unique_ptr<ChromeOsExtensionWrapper> extension_wrapper_mock =
         std::make_unique<testing::NiceMock<MockChromeOsExtensionWrapper>>();
     extension_wrapper_ptr_ = static_cast<MockChromeOsExtensionWrapper*>(
         extension_wrapper_mock.get());
     return std::make_unique<TestReadAnythingUntrustedPageHandler>(
-        page_.BindAndGetRemote(), test_web_ui_.get(),
-        std::move(extension_wrapper_mock));
+        page_.BindAndGetRemote(), handler_remote_.BindNewPipeAndPassReceiver(),
+        test_web_ui_.get(), std::move(extension_wrapper_mock));
 #else
     return std::make_unique<TestReadAnythingUntrustedPageHandler>(
-        page_.BindAndGetRemote(), test_web_ui_.get());
+        page_.BindAndGetRemote(), handler_remote_.BindNewPipeAndPassReceiver(),
+        test_web_ui_.get());
 #endif
   }
 
@@ -519,6 +528,7 @@ class ReadAnythingUntrustedPageHandlerTest
 #endif
   testing::NiceMock<MockPage> page_;
   FakeTtsEngineDelegate engine_delegate_;
+  mojo::Remote<read_anything::mojom::UntrustedPageHandler> handler_remote_;
   std::unique_ptr<ReadAnythingUntrustedPageHandler> handler_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<content::TestWebUI> test_web_ui_;
@@ -1497,8 +1507,8 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
   EXPECT_CALL(*extension_wrapper_ptr_, ActivateSpeechEngine).Times(1);
 
   handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
-      page_.BindAndGetRemote(), test_web_ui_.get(),
-      std::move(extension_wrapper_mock));
+      page_.BindAndGetRemote(), handler_remote_.BindNewPipeAndPassReceiver(),
+      test_web_ui_.get(), std::move(extension_wrapper_mock));
 }
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
@@ -2395,6 +2405,189 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerAutomationTest,
   // Ensure that no distillation occurs.
   EXPECT_FALSE(handler_->dom_distiller_title().has_value());
   EXPECT_FALSE(handler_->dom_distiller_content().has_value());
+}
+
+IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
+                       OnLinkClicked_RequiresTransientUserActivation) {
+  const std::string histogram_name =
+      "Accessibility.ReadAnything.RendererRequestForLinkClick."
+      "IsFromObservedTree";
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents_.get(), GURL(url::kAboutBlankURL)));
+  test_web_ui_->set_render_frame_host(web_contents_->GetPrimaryMainFrame());
+  handler_ = CreateHandler();
+
+  content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
+  content::RenderFrameHost* main_rfh =
+      browser()->GetActiveTabInterface()->GetContents()->GetPrimaryMainFrame();
+  ui::AXTreeID tree_id = main_rfh->GetAXTreeID();
+  ui::AXNodeID node_id = 1;
+
+  // Initial state with no transient user activation
+  EXPECT_FALSE(rfh->HasTransientUserActivation());
+  handler_remote_->OnLinkClicked(tree_id, node_id);
+  handler_remote_.FlushForTesting();
+  histogram_tester.ExpectTotalCount(histogram_name, 0);
+
+  // Grant User Activation via simulated mouse click.
+  content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents_.get());
+  content::SimulateMouseClick(web_contents_.get(), 0,
+                              blink::WebMouseEvent::Button::kLeft);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return rfh->HasTransientUserActivation(); }));
+  EXPECT_TRUE(rfh->HasTransientUserActivation());
+  handler_remote_->OnLinkClicked(tree_id, node_id);
+  handler_remote_.FlushForTesting();
+  histogram_tester.ExpectUniqueSample(histogram_name, /*sample=*/true,
+                                      /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
+                       OnSelectionChange_RequiresTransientUserActivation) {
+  const std::string histogram_name =
+      "Accessibility.ReadAnything.RendererRequestForSelection."
+      "IsFromObservedTree";
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents_.get(), GURL(url::kAboutBlankURL)));
+  test_web_ui_->set_render_frame_host(web_contents_->GetPrimaryMainFrame());
+  handler_ = CreateHandler();
+
+  content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
+  content::RenderFrameHost* main_rfh =
+      browser()->GetActiveTabInterface()->GetContents()->GetPrimaryMainFrame();
+  ui::AXTreeID tree_id = main_rfh->GetAXTreeID();
+
+  // Initial state with no transient user activation
+  EXPECT_FALSE(rfh->HasTransientUserActivation());
+  handler_remote_->OnSelectionChange(tree_id, /*anchor_node_id=*/1, 0,
+                                     /*focus_node_id=*/2, 5);
+  handler_remote_.FlushForTesting();
+  histogram_tester.ExpectTotalCount(histogram_name, 0);
+
+  // Grant User Activation via simulated mouse click.
+  content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents_.get());
+  content::SimulateMouseClick(web_contents_.get(), 0,
+                              blink::WebMouseEvent::Button::kLeft);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return rfh->HasTransientUserActivation(); }));
+  EXPECT_TRUE(rfh->HasTransientUserActivation());
+  handler_remote_->OnSelectionChange(tree_id, /*anchor_node_id=*/1, 0,
+                                     /*focus_node_id=*/2, 5);
+  handler_remote_.FlushForTesting();
+  histogram_tester.ExpectUniqueSample(histogram_name, /*sample=*/true,
+                                      /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
+                       NullRenderFrameHost_ReturnsSafely) {
+  test_web_ui_->set_render_frame_host(nullptr);
+  handler_ = CreateHandler();
+
+  content::RenderFrameHost* main_rfh =
+      browser()->GetActiveTabInterface()->GetContents()->GetPrimaryMainFrame();
+  ui::AXTreeID tree_id = main_rfh->GetAXTreeID();
+
+  handler_remote_->OnCopy();
+  handler_remote_->OnLinkClicked(tree_id, 1);
+  handler_remote_->OnSelectionChange(tree_id, 1, 0, 1, 1);
+  handler_remote_->OnCollapseSelection();
+  handler_remote_.FlushForTesting();
+}
+
+IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
+                       OnCopy_RequiresTransientUserActivation) {
+  content::WebContents* main_contents =
+      browser()->GetActiveTabInterface()->GetContents();
+  ASSERT_TRUE(content::NavigateToURL(
+      main_contents, GURL("data:text/html,<div>Hello World</div>")));
+  main_contents->Focus();
+  main_contents->SelectAll();
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    content::RenderWidgetHostView* view =
+        main_contents->GetRenderWidgetHostView();
+    return view && !view->GetSelectedText().empty();
+  }));
+
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents_.get(), GURL(url::kAboutBlankURL)));
+  test_web_ui_->set_render_frame_host(web_contents_->GetPrimaryMainFrame());
+  handler_ = CreateHandler();
+
+  content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
+  ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+  const ui::ClipboardSequenceNumberToken initial_seq =
+      clipboard->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste);
+
+  // Initial state with no transient user activation
+  EXPECT_FALSE(rfh->HasTransientUserActivation());
+  handler_remote_->OnCopy();
+  handler_remote_.FlushForTesting();
+  EXPECT_EQ(clipboard->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste),
+            initial_seq);
+
+  // Grant User Activation via simulated mouse click.
+  content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents_.get());
+  content::SimulateMouseClick(web_contents_.get(), 0,
+                              blink::WebMouseEvent::Button::kLeft);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return rfh->HasTransientUserActivation(); }));
+
+  handler_remote_->OnCopy();
+  handler_remote_.FlushForTesting();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return clipboard->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste) !=
+           initial_seq;
+  }));
+}
+
+IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
+                       OnCollapseSelection_RequiresTransientUserActivation) {
+  content::WebContents* main_contents =
+      browser()->GetActiveTabInterface()->GetContents();
+  ASSERT_TRUE(content::NavigateToURL(
+      main_contents, GURL("data:text/html,<div>Selected Text</div>")));
+  main_contents->Focus();
+  main_contents->SelectAll();
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    content::RenderWidgetHostView* view =
+        main_contents->GetRenderWidgetHostView();
+    return view && !view->GetSelectedText().empty();
+  }));
+
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents_.get(), GURL(url::kAboutBlankURL)));
+  test_web_ui_->set_render_frame_host(web_contents_->GetPrimaryMainFrame());
+  handler_ = CreateHandler();
+
+  content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
+
+  // Initial state with no transient user activation
+  EXPECT_FALSE(rfh->HasTransientUserActivation());
+  handler_remote_->OnCollapseSelection();
+  handler_remote_.FlushForTesting();
+  EXPECT_FALSE(
+      main_contents->GetRenderWidgetHostView()->GetSelectedText().empty());
+
+  // Grant User Activation via simulated mouse click.
+  content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents_.get());
+  content::SimulateMouseClick(web_contents_.get(), 0,
+                              blink::WebMouseEvent::Button::kLeft);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return rfh->HasTransientUserActivation(); }));
+
+  handler_remote_->OnCollapseSelection();
+  handler_remote_.FlushForTesting();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    content::RenderWidgetHostView* view =
+        main_contents->GetRenderWidgetHostView();
+    return view && view->GetSelectedText().empty();
+  }));
 }
 
 }  // namespace

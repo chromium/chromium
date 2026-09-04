@@ -812,6 +812,11 @@ void ReadAnythingUntrustedPageHandler::UninstallVoice(
 }
 
 void ReadAnythingUntrustedPageHandler::OnCopy() {
+  if (!HasTransientUserActivation()) {
+    VLOG(1) << "OnCopy failed with no transient user activation";
+    return;
+  }
+
   if (main_observer_ && main_observer_->web_contents()) {
     main_observer_->web_contents()->Copy();
   }
@@ -989,6 +994,11 @@ void ReadAnythingUntrustedPageHandler::OnReadAloudAudioStateChange(
 void ReadAnythingUntrustedPageHandler::OnLinkClicked(
     const ui::AXTreeID& target_tree_id,
     ui::AXNodeID target_node_id) {
+  if (!HasTransientUserActivation()) {
+    VLOG(1) << "OnLinkClicked failed with no transient user activation";
+    return;
+  }
+
   bool is_observing_tree = IsObservingTree(target_tree_id);
   base::UmaHistogramBoolean(kRendererLinkRequestHistogram, is_observing_tree);
   if (!is_observing_tree) {
@@ -1167,6 +1177,11 @@ void ReadAnythingUntrustedPageHandler::OnSelectionChange(
     int anchor_offset,
     ui::AXNodeID focus_node_id,
     int focus_offset) {
+  if (!HasTransientUserActivation()) {
+    VLOG(1) << "OnSelectionChange failed with no transient user activation";
+    return;
+  }
+
   bool is_observing_tree = IsObservingTree(target_tree_id);
   base::UmaHistogramBoolean(kRendererSelectionRequestHistogram,
                             is_observing_tree);
@@ -1197,6 +1212,11 @@ void ReadAnythingUntrustedPageHandler::OnSelectionChange(
 }
 
 void ReadAnythingUntrustedPageHandler::OnCollapseSelection() {
+  if (!HasTransientUserActivation()) {
+    VLOG(1) << "OnCollapseSelection failed with no transient user activation";
+    return;
+  }
+
   if (main_observer_ && main_observer_->web_contents()) {
     main_observer_->web_contents()->CollapseSelection();
   }
@@ -1885,3 +1905,8 @@ void ReadAnythingUntrustedPageHandler::OnLockStateChanged(bool locked) {
   }
 }
 #endif
+
+bool ReadAnythingUntrustedPageHandler::HasTransientUserActivation() const {
+  return web_ui_ && web_ui_->GetRenderFrameHost() &&
+         web_ui_->GetRenderFrameHost()->HasTransientUserActivation();
+}

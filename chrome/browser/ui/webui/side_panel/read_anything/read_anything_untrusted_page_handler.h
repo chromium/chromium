@@ -366,6 +366,8 @@ class ReadAnythingUntrustedPageHandler :
 
   content::WebContents* GetWebContents() const;
 
+  bool HasTransientUserActivation() const;
+
   void OnScreenAIServiceInitialized(bool successful);
 
   // Called to notify this instance that the dependency parser loader
