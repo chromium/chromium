@@ -431,7 +431,7 @@ text-decoration-color: rgb(0, 0, 0)
 text-decoration-inset: 0px
 text-decoration-line: none
 text-decoration-skip-ink: auto
-text-decoration-skip-spaces: none
+text-decoration-skip-spaces: start end
 text-decoration-style: solid
 text-decoration-thickness: auto
 text-emphasis-color: rgb(0, 0, 0)

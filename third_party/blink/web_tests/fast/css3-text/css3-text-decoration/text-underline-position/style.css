@@ -1,5 +1,6 @@
 body {
     -webkit-font-smoothing: none;
+    text-decoration-skip-spaces: none;
 }
 
 div {

@@ -27,7 +27,7 @@
 <!-- ========================================================================= -->
 <?xml-stylesheet type="text/css" href="../resources/test.css" ?>  
 
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="body" width="450" height="500" viewBox="0 0 450 500">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="body" width="450" height="500" viewBox="0 0 450 500" style="text-decoration-skip-spaces: none">
 <title>Text decoration test</title>
 
     <style type="text/css"><![CDATA[

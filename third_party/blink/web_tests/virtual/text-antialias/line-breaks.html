@@ -7,13 +7,13 @@
     </head>
     <body>
         This is good:
-        <div style="font-family:'Lucida Grande'; font-size:16pt; text-decoration:underline; width:100px; text-align:right;">
+        <div style="font-family:'Lucida Grande'; font-size:16pt; text-decoration:underline; text-decoration-skip-spaces:none; width:100px; text-align:right;">
             <p style="border:solid green 1px;">
             Lorem ipsum
             </p>
         </div>
         The following three should look like &ldquo;good&rdquo;:
-        <div style="font-family:'Lucida Grande'; font-size:16pt; text-decoration:underline; width:100px; text-align:right;">
+        <div style="font-family:'Lucida Grande'; font-size:16pt; text-decoration:underline; text-decoration-skip-spaces:none; width:100px; text-align:right;">
             <p style="border:solid blue 1px;">
             Lorem &#x0131;psum
             </p>
@@ -25,7 +25,7 @@
             </p>
         </div>
         This is bad:
-        <div style="font-family:'Lucida Grande'; font-size:16pt; text-decoration:underline; width:100px; text-align:right;">
+        <div style="font-family:'Lucida Grande'; font-size:16pt; text-decoration:underline; text-decoration-skip-spaces:none; width:100px; text-align:right;">
             <p style="border:solid red 1px;">
             Lorem&nbsp; ipsum
             </p>

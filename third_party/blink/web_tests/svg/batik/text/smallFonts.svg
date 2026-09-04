@@ -28,7 +28,7 @@
 <!-- @version $Id: smallFonts.svg,v 1.4 2004/08/18 07:12:21 vhardy Exp $                                                             -->
 <!-- ========================================================================= -->
 <?xml-stylesheet type="text/css" href="../resources/test.css" ?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="450" height="500" viewBox="0 0 9 10">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="450" height="500" viewBox="0 0 9 10" style="text-decoration-skip-spaces: none">
     <!-- ============================================================= -->
     <!-- Test content                                                  -->
     <!-- ============================================================= -->
