@@ -10,6 +10,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
+#include "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -99,9 +101,9 @@ TEST_F(AtMemoryPersistedStateManagerTest,
   suggestions.emplace_back(u"123 Main St", SuggestionType::kAddressEntry);
   state_manager().OnSuggestionsChanged(suggestions);
 
-  EXPECT_EQ(state_manager().GetStateForField(other_field_id(),
-                                                    OtherFieldOrigin()),
-            std::nullopt);
+  EXPECT_EQ(
+      state_manager().GetStateForField(other_field_id(), OtherFieldOrigin()),
+      std::nullopt);
   EXPECT_EQ(state_manager().field_origin(), OtherFieldOrigin());
 }
 
@@ -368,6 +370,177 @@ TEST_F(AtMemoryPersistedStateManagerTest, EvictsOldestWhenLimitReached) {
       u"20");
 }
 
+// Tests that non-SPII previously filled suggestions expire and are
+// auto-destructed after the default TTL.
+TEST_F(AtMemoryPersistedStateManagerTest,
+       NonSpiiSuggestionsExpireAfterDefaultTtl) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemoryPreviouslyFilled};
+
+  Suggestion s(u"Address", SuggestionType::kAtMemorySearchResult);
+  s.payload =
+      Suggestion::AtMemoryPayload(u"123 Main St", MemoryDataType::kAddressFull);
+
+  state_manager().OnSuggestionAccepted(s);
+  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 1u);
+
+  // Fast forward to 1 minute before the default TTL.
+  task_environment().FastForwardBy(
+      AtMemoryPersistedStateManager::kDefaultTimeToLive - base::Minutes(1));
+  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 1u);
+
+  // Fast forward by 1 more minute (default TTL expires).
+  task_environment().FastForwardBy(base::Minutes(1));
+  EXPECT_TRUE(state_manager().previously_filled_suggestions().empty());
+}
+
+// Tests that sensitive personal information (SPII) previously filled
+// suggestions expire and are auto-destructed after the SPII TTL.
+TEST_F(AtMemoryPersistedStateManagerTest, SpiiSuggestionsExpireAfterSpiiTtl) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemoryPreviouslyFilled};
+
+  Suggestion s(u"Passport", SuggestionType::kAtMemorySearchResult);
+  s.payload =
+      Suggestion::AtMemoryPayload(u"12345678", MemoryDataType::kPassportNumber);
+
+  state_manager().OnSuggestionAccepted(s);
+  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 1u);
+
+  // Fast forward to 1 second before the SPII TTL.
+  task_environment().FastForwardBy(
+      AtMemoryPersistedStateManager::kSpiiTimeToLive - base::Seconds(1));
+  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 1u);
+
+  // Fast forward by 1 more second (SPII TTL expires).
+  task_environment().FastForwardBy(base::Seconds(1));
+  EXPECT_TRUE(state_manager().previously_filled_suggestions().empty());
+}
+
+// Tests that suggestions with SPII child metadata expire after the SPII TTL.
+TEST_F(AtMemoryPersistedStateManagerTest,
+       SpiiSuggestionWithChildSpiiExpiresAfterSpiiTtl) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemoryPreviouslyFilled};
+
+  Suggestion primary_suggestion(u"Primary",
+                                SuggestionType::kAtMemorySearchResult);
+  Suggestion child_suggestion(u"12345678",
+                              SuggestionType::kAtMemorySearchResult);
+  child_suggestion.payload =
+      Suggestion::AtMemoryPayload(u"12345678", MemoryDataType::kPassportNumber);
+  primary_suggestion.children = {child_suggestion};
+
+  state_manager().OnSuggestionAccepted(primary_suggestion);
+  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 1u);
+
+  // Fast forward to 1 second before the SPII TTL.
+  task_environment().FastForwardBy(
+      AtMemoryPersistedStateManager::kSpiiTimeToLive - base::Seconds(1));
+  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 1u);
+
+  // Fast forward by 1 more second (SPII TTL expires).
+  task_environment().FastForwardBy(base::Seconds(1));
+  EXPECT_TRUE(state_manager().previously_filled_suggestions().empty());
+}
+
+// Tests that non-SPII and SPII suggestions expire according to their respective
+// TTLs independently.
+TEST_F(AtMemoryPersistedStateManagerTest,
+       MixedSuggestionsExpireAccordingToRespectiveTtl) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemoryPreviouslyFilled};
+
+  Suggestion non_spii(u"Non-SPII", SuggestionType::kAtMemorySearchResult);
+  non_spii.payload =
+      Suggestion::AtMemoryPayload(u"123 Main St", MemoryDataType::kAddressFull);
+  Suggestion spii(u"SPII", SuggestionType::kAtMemorySearchResult);
+  spii.payload =
+      Suggestion::AtMemoryPayload(u"12345678", MemoryDataType::kPassportNumber);
+
+  state_manager().OnSuggestionAccepted(non_spii);
+  state_manager().OnSuggestionAccepted(spii);
+  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 2u);
+
+  // Fast forward to SPII TTL: SPII expires, Non-SPII remains.
+  task_environment().FastForwardBy(
+      AtMemoryPersistedStateManager::kSpiiTimeToLive);
+  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 1u);
+  EXPECT_EQ(state_manager().previously_filled_suggestions()[0].main_text.value,
+            u"Non-SPII");
+
+  // Fast forward remaining time to default TTL: Non-SPII expires.
+  task_environment().FastForwardBy(
+      AtMemoryPersistedStateManager::kDefaultTimeToLive -
+      AtMemoryPersistedStateManager::kSpiiTimeToLive);
+  EXPECT_TRUE(state_manager().previously_filled_suggestions().empty());
+}
+
+// Tests that when an SPII suggestion is accepted before a non-SPII suggestion,
+// both expire according to their respective TTLs.
+TEST_F(AtMemoryPersistedStateManagerTest,
+       SpiiAcceptedBeforeNonSpiiExpiresCorrectly) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemoryPreviouslyFilled};
+
+  Suggestion spii(u"SPII", SuggestionType::kAtMemorySearchResult);
+  spii.payload =
+      Suggestion::AtMemoryPayload(u"12345678", MemoryDataType::kPassportNumber);
+  Suggestion non_spii(u"Non-SPII", SuggestionType::kAtMemorySearchResult);
+  non_spii.payload =
+      Suggestion::AtMemoryPayload(u"123 Main St", MemoryDataType::kAddressFull);
+
+  state_manager().OnSuggestionAccepted(spii);
+  state_manager().OnSuggestionAccepted(non_spii);
+  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 2u);
+
+  // Fast forward to SPII TTL: SPII expires, Non-SPII remains.
+  task_environment().FastForwardBy(
+      AtMemoryPersistedStateManager::kSpiiTimeToLive);
+  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 1u);
+  EXPECT_EQ(state_manager().previously_filled_suggestions()[0].main_text.value,
+            u"Non-SPII");
+
+  // Fast forward remaining time to default TTL: Non-SPII expires.
+  task_environment().FastForwardBy(
+      AtMemoryPersistedStateManager::kDefaultTimeToLive -
+      AtMemoryPersistedStateManager::kSpiiTimeToLive);
+  EXPECT_TRUE(state_manager().previously_filled_suggestions().empty());
+}
+
+// Tests that re-accepting an existing suggestion refreshes its TTL.
+TEST_F(AtMemoryPersistedStateManagerTest, ReAcceptingSuggestionRefreshesTtl) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemoryPreviouslyFilled};
+
+  Suggestion s(u"Address", SuggestionType::kAtMemorySearchResult);
+  s.payload =
+      Suggestion::AtMemoryPayload(u"123 Main St", MemoryDataType::kAddressFull);
+
+  state_manager().OnSuggestionAccepted(s);
+  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 1u);
+
+  const base::TimeDelta partial_duration =
+      AtMemoryPersistedStateManager::kDefaultTimeToLive - base::Minutes(10);
+
+  // Fast forward by partial duration (less than default TTL).
+  task_environment().FastForwardBy(partial_duration);
+  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 1u);
+
+  // Re-accept the suggestion, which should refresh its TTL.
+  state_manager().OnSuggestionAccepted(s);
+  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 1u);
+
+  // Fast forward by another partial duration.
+  task_environment().FastForwardBy(partial_duration);
+  ASSERT_EQ(state_manager().previously_filled_suggestions().size(), 1u);
+
+  // Fast forward remaining time to reach full TTL since re-accept.
+  task_environment().FastForwardBy(
+      AtMemoryPersistedStateManager::kDefaultTimeToLive - partial_duration);
+  EXPECT_TRUE(state_manager().previously_filled_suggestions().empty());
+}
+
 // Tests that history deletion clears persisted suggestions and resets the
 // state.
 TEST_F(AtMemoryPersistedStateManagerTest,
@@ -434,8 +607,8 @@ TEST_F(AtMemoryPersistedStateManagerTest, StateExpiresAfterTtl) {
   state_manager().OnSuggestionsChanged(suggestions);
 
   // Before TTL expires, state is intact.
-  task_environment().FastForwardBy(AtMemoryPersistedStateManager::kTimeToLive -
-                                   base::Seconds(1));
+  task_environment().FastForwardBy(
+      AtMemoryPersistedStateManager::kDefaultTimeToLive - base::Seconds(1));
   const std::optional<AtMemorySearchState>& active_state =
       state_manager().GetStateForField(field_id(), FieldOrigin());
   ASSERT_TRUE(active_state.has_value());
@@ -454,15 +627,15 @@ TEST_F(AtMemoryPersistedStateManagerTest, MutationsResetTtl) {
   state_manager().GetStateForField(field_id(), FieldOrigin());
   state_manager().OnFilterSubmitted(u"address");
 
-  // Advance by 20 minutes (less than 30-minute TTL).
-  task_environment().FastForwardBy(base::Minutes(20));
+  // Advance by partial duration (less than default TTL).
+  task_environment().FastForwardBy(
+      AtMemoryPersistedStateManager::kDefaultTimeToLive - base::Minutes(10));
 
-  // 1. OnFilterChanged: modify query, resetting TTL timer for 30 minutes.
+  // 1. OnFilterChanged: modify query, resetting TTL timer.
   state_manager().OnFilterChanged(u"new address");
 
-  // Advance another 20 minutes (40 minutes total, 20 minutes since last
-  // mutation).
-  task_environment().FastForwardBy(base::Minutes(20));
+  // Advance to the total default TTL.
+  task_environment().FastForwardBy(base::Minutes(10));
   EXPECT_TRUE(
       state_manager().GetStateForField(field_id(), FieldOrigin()).has_value());
 
@@ -471,26 +644,25 @@ TEST_F(AtMemoryPersistedStateManagerTest, MutationsResetTtl) {
   suggestions.emplace_back(u"123 Main St", SuggestionType::kAddressEntry);
   state_manager().OnSuggestionsChanged(suggestions);
 
-  // Advance another 20 minutes (60 minutes total, 20 minutes since last
-  // mutation).
-  task_environment().FastForwardBy(base::Minutes(20));
+  // Advance another partial duration.
+  task_environment().FastForwardBy(
+      AtMemoryPersistedStateManager::kDefaultTimeToLive - base::Minutes(10));
   EXPECT_TRUE(
       state_manager().GetStateForField(field_id(), FieldOrigin()).has_value());
 
   // 3. OnFilterSubmitted: submit new query, resetting TTL timer.
   state_manager().OnFilterSubmitted(u"submitted address");
 
-  // Advance another 20 minutes (80 minutes total, 20 minutes since last
-  // mutation).
-  task_environment().FastForwardBy(base::Minutes(20));
+  // Advance another partial duration.
+  task_environment().FastForwardBy(
+      AtMemoryPersistedStateManager::kDefaultTimeToLive - base::Minutes(10));
   const std::optional<AtMemorySearchState>& active_state =
       state_manager().GetStateForField(field_id(), FieldOrigin());
   ASSERT_TRUE(active_state.has_value());
   EXPECT_EQ(active_state->filter, u"submitted address");
   EXPECT_EQ(state_manager().field_origin(), FieldOrigin());
 
-  // Advance remaining 10 minutes to cross the new 30-minute deadline (90
-  // minutes total).
+  // Advance remaining duration to cross the default TTL deadline.
   task_environment().FastForwardBy(base::Minutes(10));
   EXPECT_EQ(state_manager().GetStateForField(field_id(), FieldOrigin()),
             std::nullopt);

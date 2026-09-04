@@ -44,8 +44,14 @@ namespace autofill {
 // a query.
 class AtMemoryPersistedStateManager : public history::HistoryServiceObserver {
  public:
+  struct ExpiringSuggestion {
+    Suggestion suggestion;
+    base::TimeTicks expiration_time;
+  };
+
   static constexpr size_t kMaxPreviouslyFilledSuggestions = 20;
-  static constexpr base::TimeDelta kTimeToLive = base::Minutes(30);
+  static constexpr base::TimeDelta kDefaultTimeToLive = base::Minutes(30);
+  static constexpr base::TimeDelta kSpiiTimeToLive = base::Minutes(1);
 
   explicit AtMemoryPersistedStateManager(
       history::HistoryService* history_service);
@@ -70,9 +76,7 @@ class AtMemoryPersistedStateManager : public history::HistoryServiceObserver {
   bool IsSearching() const;
   void StopSearching();
 
-  const std::vector<Suggestion>& previously_filled_suggestions() const {
-    return previously_filled_suggestions_;
-  }
+  std::vector<Suggestion> previously_filled_suggestions() const;
 
   const url::Origin& field_origin() const {
     CHECK(field_id_);
@@ -89,6 +93,10 @@ class AtMemoryPersistedStateManager : public history::HistoryServiceObserver {
   void Reset();
   void ResetSearchState();
   void RestartSearchStateTimer();
+  void RestartPreviouslyFilledSuggestionsTimer();
+
+  // Removes previously filled suggestions that have exceeded their TTL.
+  void RemoveExpiredPreviouslyFilledSuggestions();
 
   // Field id for which the `search_state_` is kept.
   FieldGlobalId field_id_;
@@ -97,9 +105,11 @@ class AtMemoryPersistedStateManager : public history::HistoryServiceObserver {
   // State of the search for the active field. Reset if
   // `GetStateForField` is called for another field.
   std::optional<AtMemorySearchState> search_state_;
-  // Stores previously filled suggestions.
-  std::vector<Suggestion> previously_filled_suggestions_;
   base::OneShotTimer search_state_timer_;
+
+  // Stores previously filled suggestions along with their expiration time.
+  std::vector<ExpiringSuggestion> previously_filled_suggestions_;
+  base::OneShotTimer previously_filled_suggestions_timer_;
 
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>

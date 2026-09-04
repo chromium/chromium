@@ -742,8 +742,12 @@ void AtMemoryManager::MaybeAppendPersonalContextNotice(
 void AtMemoryManager::MaybeAppendPreviouslyFilledSuggestions(
     std::vector<Suggestion>& suggestions) const {
   if (!base::FeatureList::IsEnabled(
-          features::kAutofillAtMemoryPreviouslyFilled) ||
-      state_manager_.previously_filled_suggestions().empty()) {
+          features::kAutofillAtMemoryPreviouslyFilled)) {
+    return;
+  }
+  std::vector<Suggestion> prev_suggestions =
+      state_manager_.previously_filled_suggestions();
+  if (prev_suggestions.empty()) {
     return;
   }
   Suggestion suggestion(
@@ -753,8 +757,9 @@ void AtMemoryManager::MaybeAppendPreviouslyFilledSuggestions(
   suggestion.acceptability =
       Suggestion::Acceptability::kUnselectableAndUnacceptable;
   suggestions.push_back(std::move(suggestion));
-  base::Extend(suggestions,
-               base::Reversed(state_manager_.previously_filled_suggestions()));
+  suggestions.insert(suggestions.end(),
+                     std::make_move_iterator(prev_suggestions.rbegin()),
+                     std::make_move_iterator(prev_suggestions.rend()));
 }
 
 void AtMemoryManager::ExecuteQuery(const std::u16string& filter) {
