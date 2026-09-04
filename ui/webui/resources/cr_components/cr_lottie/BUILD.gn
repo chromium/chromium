@@ -15,12 +15,14 @@ build_webui("build") {
   ts_files = [
     "cr_lottie.html.ts",
     "cr_lottie.ts",
+    "lottie_json_processor.ts",
   ]
 
   ts_out_dir = "$root_gen_dir/ui/webui/resources/tsc/cr_components/cr_lottie"
   ts_composite = true
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]

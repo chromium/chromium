@@ -5,12 +5,20 @@
 // clang-format off
 import 'chrome://resources/cr_components/cr_lottie/cr_lottie.js';
 
-import type {CrLottieElement} from 'chrome://resources/cr_components/cr_lottie/cr_lottie.js';
+import {COLOR_PROVIDER_CHANGED, ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import type {CrLottieElement, DataMessageReason} from 'chrome://resources/cr_components/cr_lottie/cr_lottie.js';
+import {ProcessedLottieJson} from 'chrome://resources/cr_components/cr_lottie/lottie_json_processor.js';
 import {assertDeepEquals, assertEquals, assertNotEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MockMethod} from 'chrome://webui-test/mock_controller.js';
 import {MockController} from 'chrome://webui-test/mock_controller.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 // clang-format on
+
+/**
+ * A URL that produces a sample json lottie animation with dynamic CDDS tokens.
+ */
+const SAMPLE_LOTTIE_TOKENIZED: string =
+    'chrome://webui-test/cr_components/cr_lottie/cr_lottie_tokenized.json';
 
 /** @fileoverview Suite of tests for cr-lottie. */
 suite('cr_lottie_test', function() {
@@ -401,6 +409,182 @@ suite('cr_lottie_test', function() {
     crLottieElement.animationUrl = SAMPLE_LOTTIE_BLUE;
     await microtasksFinished();
 
+    // Detach the element before verifying mocks so the in-flight second request
+    // is aborted cleanly, avoiding an unhandled disconnectedCallback in the
+    // next test.
+    (mockXhr.abort as unknown as MockMethod).addExpectation();
+    crLottieElement.remove();
+
     mockController.verifyMocks();
+  });
+
+  test('TestDynamicFalseIgnoresThemeChange', async function() {
+    createLottieElement(/*autoplay=*/ true);
+    assertFalse(crLottieElement.dynamic);
+    crLottieElement.animationUrl = SAMPLE_LOTTIE_TOKENIZED;
+    crLottieElement.style.setProperty(
+        '--color-sys-illo-primary-max', '#00ff00');
+    await waitForInitializeEvent;
+    await waitForPlayingEvent;
+    await pollUntilRendered(GREEN_PIXEL);
+
+    // Change CSS variable and notify color provider changed.
+    crLottieElement.style.setProperty(
+        '--color-sys-illo-primary-max', '#0000ff');
+    ColorChangeUpdater.forDocument().eventTarget.dispatchEvent(
+        new CustomEvent(COLOR_PROVIDER_CHANGED));
+    await microtasksFinished();
+
+    // Since dynamic is false, the canvas must NOT update to blue.
+    const pixel = await samplePixel();
+    assertDeepEquals(GREEN_PIXEL, pixel);
+  });
+
+  test('TestDynamicTrueUpdatesColorsOnThemeChange', async function() {
+    createLottieElement(/*autoplay=*/ true);
+    crLottieElement.dynamic = true;
+    crLottieElement.animationUrl = SAMPLE_LOTTIE_TOKENIZED;
+    crLottieElement.style.setProperty(
+        '--color-sys-illo-primary-max', '#00ff00');
+
+    await waitForInitializeEvent;
+    await waitForPlayingEvent;
+    await pollUntilRendered(GREEN_PIXEL);
+
+    // Change CSS variable and notify color provider changed.
+    crLottieElement.style.setProperty(
+        '--color-sys-illo-primary-max', '#0000ff');
+    ColorChangeUpdater.forDocument().eventTarget.dispatchEvent(
+        new CustomEvent(COLOR_PROVIDER_CHANGED));
+
+    // The canvas should re-render with the new blue color.
+    await pollUntilRendered(BLUE_PIXEL);
+  });
+
+  test(
+      'TestDynamicThemeChangeFiresInitializedWithColorsChangedReason',
+      async () => {
+        createLottieElement(/*autoplay=*/ true);
+        crLottieElement.dynamic = true;
+        crLottieElement.animationUrl = SAMPLE_LOTTIE_TOKENIZED;
+        const firstRunEvent =
+            await waitForInitializeEvent as CustomEvent<DataMessageReason>;
+        assertEquals('first-run', firstRunEvent.detail);
+
+        const colorsChangedEventPromise =
+            eventToPromise('cr-lottie-initialized', crLottieElement);
+        ColorChangeUpdater.forDocument().eventTarget.dispatchEvent(
+            new CustomEvent(COLOR_PROVIDER_CHANGED));
+        const colorsChangedEvent =
+            await colorsChangedEventPromise as CustomEvent<DataMessageReason>;
+        assertEquals('colors-changed', colorsChangedEvent.detail);
+      });
+});
+
+suite('ProcessedLottieJson', function() {
+  interface SampleTokenizedLottie {
+    layers: Array<{
+      shapes: Array<{
+        it: Array<{
+          c?: {k: number[]},
+          g?: {p: number, k: {a: number, k: number[]}},
+        }>,
+      }>,
+    }>;
+  }
+
+  let sampleLottieData: SampleTokenizedLottie;
+
+  suiteSetup(async () => {
+    sampleLottieData =
+        await new Promise<SampleTokenizedLottie>((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          xhr.open('GET', SAMPLE_LOTTIE_TOKENIZED, true);
+          xhr.responseType = 'json';
+          xhr.onreadystatechange = () => {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+              if (xhr.status === 200) {
+                resolve(xhr.response as SampleTokenizedLottie);
+              } else {
+                reject(new Error(`Failed to load ${
+                    SAMPLE_LOTTIE_TOKENIZED}: status ${xhr.status}`));
+              }
+            }
+          };
+          xhr.send();
+        });
+  });
+
+  function getSampleLottie(): SampleTokenizedLottie {
+    return structuredClone(sampleLottieData);
+  }
+
+  test('detects and counts valid CDDS tokens only', () => {
+    const lottieData = getSampleLottie();
+    const processor = new ProcessedLottieJson(lottieData);
+    // 1 stroke + 1 fill + 1 gradient fill (with 2 stops) = 3 mapped shapes.
+    assertEquals(3, processor.numMappedColors);
+  });
+
+  test('updates solid fill and stroke colors from computed styles', () => {
+    const lottieData = getSampleLottie();
+    const processor = new ProcessedLottieJson(lottieData);
+
+    const mockStyles = {
+      getPropertyValue(prop: string): string {
+        if (prop === '--color-sys-illo-primary-max') {
+          return '#00ff00';
+        }
+        if (prop === '--color-sys-illo-secondary-low') {
+          return '#ff0000';
+        }
+        return '';
+      },
+    } as unknown as CSSStyleDeclaration;
+
+    processor.updateColors(mockStyles);
+    const updated = processor.getAnimationData();
+    const items = updated.layers[0]!.shapes[0]!.it;
+
+    // Fill updated to green [0, 1, 0, 1]
+    assertDeepEquals([0, 1, 0, 1], items[1]!.c!.k);
+    // Stroke updated to red [1, 0, 0, 1]
+    assertDeepEquals([1, 0, 0, 1], items[2]!.c!.k);
+    // Untracked stroke unchanged
+    assertDeepEquals([1, 0, 0, 1], items[4]!.c!.k);
+  });
+
+  test('updates multi-stop gradient fill colors', () => {
+    const lottieData = getSampleLottie();
+    const processor = new ProcessedLottieJson(lottieData);
+
+    const mockStyles = {
+      getPropertyValue(prop: string): string {
+        if (prop === '--color-sys-illo-tertiary-min') {
+          return '#ffffff';
+        }
+        if (prop === '--color-sys-illo-tertiary-max') {
+          return '#000000';
+        }
+        return '';
+      },
+    } as unknown as CSSStyleDeclaration;
+
+    processor.updateColors(mockStyles);
+    const updated = processor.getAnimationData();
+    const gradientStops = updated.layers[0]!.shapes[0]!.it[3]!.g!.k.k;
+
+    // Stride 4: [pos, r, g, b, pos, r, g, b]
+    // Stop 0: offset 0 unchanged, RGB -> [1, 1, 1]
+    assertEquals(0, gradientStops[0]);
+    assertEquals(1, gradientStops[1]);
+    assertEquals(1, gradientStops[2]);
+    assertEquals(1, gradientStops[3]);
+
+    // Stop 1: offset 1 unchanged, RGB -> [0, 0, 0]
+    assertEquals(1, gradientStops[4]);
+    assertEquals(0, gradientStops[5]);
+    assertEquals(0, gradientStops[6]);
+    assertEquals(0, gradientStops[7]);
   });
 });

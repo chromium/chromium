@@ -11,7 +11,8 @@
  * document CSP to be set to "trusted-types lottie-worker-script-loader;".
  *
  * Fires a 'cr-lottie-initialized' event when the animation was successfully
- * initialized.
+ * initialized and carries a 'reason'. Will be resent when animation either
+ * changes its asset path or its colors due to a theme change.
  * Fires a 'cr-lottie-playing' event when the animation starts playing.
  * Fires a 'cr-lottie-paused' event when the animation has paused.
  * Fires a 'cr-lottie-stopped' event when animation has stopped.
@@ -20,12 +21,14 @@
  * drawn on is resized.
  */
 
+import {COLOR_PROVIDER_CHANGED, ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {assert, assertNotReached} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './cr_lottie.css.js';
 import {getHtml} from './cr_lottie.html.js';
+import {ProcessedLottieJson} from './lottie_json_processor.js';
 
 let workerLoaderPolicy: TrustedTypePolicy|null = null;
 
@@ -51,8 +54,16 @@ function getLottieWorkerURL(): TrustedScriptURL {
   return workerLoaderPolicy.createScriptURL('');
 }
 
+/**
+ * The reason cr-lottie initialized an animation. Can be either because of being
+ * rendered for the first time, because the color scheme changed, or because
+ * the animation asset URL changed.
+ */
+export type DataMessageReason =
+    'first-run'|'colors-changed'|'asset-url-changed'|'unknown';
+
 interface MessageData {
-  animationData: object|null|string;
+  animationData: Record<string, unknown>;
   drawSize: {width: number, height: number};
   params: {loop: boolean, autoplay: boolean};
   canvas?: OffscreenCanvas;
@@ -85,6 +96,7 @@ export class CrLottieElement extends CrLitElement {
     return {
       animationUrl: {type: String},
       autoplay: {type: Boolean},
+      dynamic: {type: Boolean},
       hidden: {type: Boolean},
       singleLoop: {type: Boolean},
     };
@@ -94,10 +106,21 @@ export class CrLottieElement extends CrLitElement {
   accessor autoplay: boolean = false;
   override accessor hidden: boolean = false;
   accessor singleLoop: boolean = false;
+  /**
+   * Whether or not the animation should render using a dynamic palette
+   * taken from the computed style, or the default colors each asset comes with.
+   */
+  accessor dynamic: boolean = false;
 
   private canvasElement_: CanvasElementWithOffscreen|null = null;
   private isAnimationLoaded_: boolean = false;
   private offscreenCanvas_: OffscreenCanvas|null = null;
+
+  /**
+   * Wrapper over a Lottie JSON file that can inject new values for dynamic
+   * colors at runtime.
+   */
+  private currentProcessor_: ProcessedLottieJson|null = null;
 
   /** Whether the canvas has been transferred to the worker thread. */
   private hasTransferredCanvas_: boolean = false;
@@ -144,6 +167,9 @@ export class CrLottieElement extends CrLitElement {
    */
   private workerNeedsPlaySegmentsUpdate_: boolean = false;
 
+  /** The reason we sent the last message to the worker. */
+  private lastDataMessageSendReason_: DataMessageReason = 'unknown';
+
   private worker_: Worker|null = null;
 
   /** The current in-flight request. */
@@ -156,10 +182,16 @@ export class CrLottieElement extends CrLitElement {
         new Worker(getLottieWorkerURL() as unknown as URL, {type: 'module'});
     this.worker_.onmessage = this.onMessage_.bind(this);
     this.initialize_();
+
+    ColorChangeUpdater.forDocument().eventTarget.addEventListener(
+        COLOR_PROVIDER_CHANGED, this.onColorProviderChanged_);
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+
+    ColorChangeUpdater.forDocument().eventTarget.removeEventListener(
+        COLOR_PROVIDER_CHANGED, this.onColorProviderChanged_);
     if (this.resizeObserver_) {
       this.resizeObserver_.disconnect();
     }
@@ -197,8 +229,11 @@ export class CrLottieElement extends CrLitElement {
       this.worker_.postMessage({control: {stop: true}});
       this.isAnimationLoaded_ = false;
     }
+    this.lastDataMessageSendReason_ =
+        this.hasTransferredCanvas_ ? 'asset-url-changed' : 'first-run';
     this.sendXmlHttpRequest_(
-        this.animationUrl, 'json', this.initAnimation_.bind(this));
+        this.animationUrl, 'json',
+        p => this.initAnimation_(p as Record<string, unknown>| null));
   }
 
   /**
@@ -265,8 +300,10 @@ export class CrLottieElement extends CrLitElement {
     }
 
     // Open animation file and start playing the animation.
+    this.lastDataMessageSendReason_ = 'first-run';
     this.sendXmlHttpRequest_(
-        this.animationUrl, 'json', this.initAnimation_.bind(this));
+        this.animationUrl, 'json',
+        p => this.initAnimation_(p as Record<string, unknown>| null));
   }
 
   /**
@@ -349,11 +386,27 @@ export class CrLottieElement extends CrLitElement {
     this.worker_.postMessage({drawSize: this.getCanvasDrawBufferSize_()});
   }
 
+
   /**
-   * Initializes the the animation on the web worker with the data provided.
-   * @param animationData The animation that will be played.
+   * Re-evaluates CSS token colors and pushes the updated animation data to the
+   * worker thread whenever the color provider or theme changes.
    */
-  private initAnimation_(animationData: object|null|string) {
+  private onColorProviderChanged_ = () => {
+    if (!this.dynamic || !this.currentProcessor_ ||
+        this.currentProcessor_.numMappedColors === 0) {
+      return;
+    }
+    this.currentProcessor_.updateColors(getComputedStyle(this));
+    this.lastDataMessageSendReason_ = 'colors-changed';
+    this.sendAnimationToWorker_(this.currentProcessor_.getAnimationData());
+  };
+
+  /**
+   * Sends the animation configuration and payload to the web worker.
+   * The offscreen canvas is transferred across to the WebWorker once on initial
+   * load; subsequent updates only post the updated animation data.
+   */
+  private sendAnimationToWorker_(animationData: Record<string, unknown>) {
     const message: MessageData = {
       animationData,
       drawSize: this.getCanvasDrawBufferSize_(),
@@ -370,6 +423,25 @@ export class CrLottieElement extends CrLitElement {
     }
   }
 
+
+  /**
+   * Initializes the animation on the web worker with the data provided.
+   * @param animationData The animation that will be played.
+   */
+  private initAnimation_(animationData: Record<string, unknown>|null) {
+    if (!animationData) {
+      return;
+    }
+
+    let payload = animationData;
+    this.currentProcessor_ = new ProcessedLottieJson(animationData);
+    if (this.dynamic && this.currentProcessor_.numMappedColors > 0) {
+      this.currentProcessor_.updateColors(getComputedStyle(this));
+      payload = this.currentProcessor_.getAnimationData();
+    }
+    this.sendAnimationToWorker_(payload);
+  }
+
   /**
    * Handles the messages sent from the web worker to its parent thread.
    * @param event Event sent by the web worker.
@@ -378,7 +450,7 @@ export class CrLottieElement extends CrLitElement {
     if (event.data.name === 'initialized' && event.data.success) {
       this.isAnimationLoaded_ = true;
       this.sendPendingInfo_();
-      this.fire('cr-lottie-initialized');
+      this.fire('cr-lottie-initialized', this.lastDataMessageSendReason_);
     } else if (event.data.name === 'playing') {
       this.fire('cr-lottie-playing', {segments: event.data.segments});
     } else if (event.data.name === 'paused') {
