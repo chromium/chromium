@@ -12,12 +12,6 @@
 
 class SafeBrowsingUrlAllowList;
 
-// Runs `resource`'s callback on the appropriate thread.
-void RunUnsafeResourceCallback(
-    const security_interstitials::UnsafeResource& resource,
-    bool proceed,
-    bool showed_interstitial);
-
 // Returns the interstitial reason for `resource`.
 security_interstitials::BaseSafeBrowsingErrorUI::SBInterstitialReason
 GetUnsafeResourceInterstitialReason(
