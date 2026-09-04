@@ -295,6 +295,10 @@ void WebkitStorageDeleted(base::FilePath profile_path, NSError* error) {
   return !_browserState->IsOffTheRecord();
 }
 
+- (BOOL)hasActiveWebViews {
+  return _webViews.allObjects.count > 0;
+}
+
 #pragma mark - Private Methods
 
 - (ios_web_view::WebViewBrowserState*)browserState {

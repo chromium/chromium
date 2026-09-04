@@ -93,6 +93,10 @@ CWV_EXPORT
 // data on disk, for example cookies.
 @property(nonatomic, readonly, getter=isPersistent) BOOL persistent;
 
+// Returns YES if there are any active CWVWebView instances currently using
+// this configuration.
+@property(nonatomic, readonly) BOOL hasActiveWebViews;
+
 @end
 
 NS_ASSUME_NONNULL_END
