@@ -27,8 +27,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus;
 import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
@@ -41,7 +39,6 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.components.autofill.AndroidAutofillFeatures;
 import org.chromium.components.browser_ui.http_auth.LoginPrompt;
 import org.chromium.components.browser_ui.http_auth.R;
 import org.chromium.components.browser_ui.widget.text.AlertDialogEditText;
@@ -196,8 +193,7 @@ public class ChromeHttpAuthHandlerTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(AndroidAutofillFeatures.ANDROID_AUTOFILL_SUPPORT_FOR_HTTP_AUTH_ORIGIN_NAME)
-    public void testAutofillUrlProvidedWhenFeatureOriginEnabled() throws Exception {
+    public void testAutofillUrlProvided() throws Exception {
         AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting(
                 AndroidAutofillAvailabilityStatus.AVAILABLE);
 
@@ -208,23 +204,6 @@ public class ChromeHttpAuthHandlerTest {
                     Criteria.checkThat(
                             handler, hasAutofillImportance(View.IMPORTANT_FOR_AUTOFILL_YES));
                     Criteria.checkThat(handler, hasAutofillUrl(mTestServer.getURL("/")));
-                });
-    }
-
-    @Test
-    @MediumTest
-    @DisableFeatures(AndroidAutofillFeatures.ANDROID_AUTOFILL_SUPPORT_FOR_HTTP_AUTH_ORIGIN_NAME)
-    public void testAutofillUrlProvidedWhenFeatureOriginDisabled() throws Exception {
-        AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting(
-                AndroidAutofillAvailabilityStatus.AVAILABLE);
-
-        ChromeHttpAuthHandler handler = triggerAuth();
-        verifyAuthDialogVisibility(handler, true);
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(
-                            handler, hasAutofillImportance(View.IMPORTANT_FOR_AUTOFILL_YES));
-                    Criteria.checkThat(handler, hasAutofillUrl(mTestServer.getURL("/auth-basic")));
                 });
     }
 

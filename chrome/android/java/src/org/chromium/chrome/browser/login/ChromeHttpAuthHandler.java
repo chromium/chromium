@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabObserver;
-import org.chromium.components.autofill.AndroidAutofillFeatures;
 import org.chromium.components.browser_ui.http_auth.LoginPrompt;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.WindowAndroid;
@@ -115,11 +114,7 @@ public class ChromeHttpAuthHandler implements TabObserver, LoginPrompt.Observer 
 
         GURL autofillUrl = null;
         if (shouldProvideAutofillUrl()) {
-            if (AndroidAutofillFeatures.ANDROID_AUTOFILL_SUPPORT_FOR_HTTP_AUTH_ORIGIN.isEnabled()) {
-                autofillUrl = challengerUrl;
-            } else {
-                autofillUrl = mTab.getUrl();
-            }
+            autofillUrl = challengerUrl;
         }
 
         mLoginPrompt = new LoginPrompt(activity, messageBody, autofillUrl, this);
