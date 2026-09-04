@@ -483,16 +483,34 @@ ScopedWindowCaptureRequest Window::MakeWindowCapturable() {
 }
 
 gfx::Rect Window::GetBoundsInRootWindow() const {
-  if (!GetRootWindow())
+  if (!GetRootWindow()) {
     return bounds();
+  }
+  // When the layer is not managed by the parent (e.g. hosted in
+  // NativeViewHost), the window may be reparented across root windows before
+  // its layer is reparented into the new root layer tree. In that transient
+  // state, return `bounds()`.
+  if (!layer_managed_by_parent() &&
+      GetRootLayer(layer()) != GetRootWindow()->layer()) {
+    return bounds();
+  }
   gfx::Rect bounds_in_root(bounds().size());
   ConvertRectToTarget(this, GetRootWindow(), &bounds_in_root);
   return bounds_in_root;
 }
 
 gfx::Rect Window::GetActualBoundsInRootWindow() const {
-  if (!GetRootWindow())
+  if (!GetRootWindow()) {
     return bounds();
+  }
+  // When the layer is not managed by the parent (e.g. hosted in
+  // NativeViewHost), the window may be reparented across root windows before
+  // its layer is reparented into the new root layer tree. In that transient
+  // state, return `bounds()`.
+  if (!layer_managed_by_parent() &&
+      GetRootLayer(layer()) != GetRootWindow()->layer()) {
+    return bounds();
+  }
   gfx::Rect bounds_in_root(bounds().size());
   gfx::PointF origin_f = gfx::PointF(bounds_in_root.origin());
   ui::Layer::ConvertPointToLayer(layer(), GetRootWindow()->layer(),
@@ -893,8 +911,17 @@ void Window::SetEventTargetingPolicy(EventTargetingPolicy policy) {
 
 bool Window::ContainsPointInRoot(const gfx::Point& point_in_root) const {
   const Window* root_window = GetRootWindow();
-  if (!root_window)
+  if (!root_window) {
     return false;
+  }
+  // When the layer is not managed by the parent (e.g. hosted in
+  // NativeViewHost), the window may be reparented across root windows before
+  // its layer is reparented into the new root layer tree. In that transient
+  // state, return false.
+  if (!layer_managed_by_parent() &&
+      GetRootLayer(layer()) != root_window->layer()) {
+    return false;
+  }
   gfx::Point local_point(point_in_root);
   ConvertPointToTarget(root_window, this, &local_point);
   return gfx::Rect(GetTargetBounds().size()).Contains(local_point);
