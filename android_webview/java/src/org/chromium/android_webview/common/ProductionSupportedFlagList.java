@@ -1487,6 +1487,9 @@ public final class ProductionSupportedFlagList {
                 "DomStorageSqliteNewDatabases",
                 "Controls the on-disk rollout of the SQLite backend for DomStorage on new"
                         + " databases."),
+        Flag.baseFeature(
+                PaymentFeatureList.THREE_D_SECURE_TELEMETRY,
+                "When enabled, collect telemetry for 3D Secure challenge flow."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
