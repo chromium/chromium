@@ -14,7 +14,10 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/tag_converters.h"
+#include "base/i18n/test/scoped_icu_locale.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
@@ -5158,7 +5161,8 @@ TEST_F(ViewTest, AddExistingChild) {
 }
 
 TEST_F(ViewTest, UseMirroredLayoutDisableMirroring) {
-  base::i18n::SetICUDefaultLocale("ar");
+  base::i18n::ScopedDefaultIcuLocale scoped_locale(
+      base::i18n::GetKnownLanguageTag("ar"));
   ASSERT_TRUE(base::i18n::IsRTL());
 
   View parent, child1, child2;
@@ -5186,7 +5190,8 @@ TEST_F(ViewTest, UseMirroredLayoutDisableMirroring) {
 }
 
 TEST_F(ViewTest, UseMirroredLayoutEnableMirroring) {
-  base::i18n::SetICUDefaultLocale("en");
+  base::i18n::ScopedDefaultIcuLocale scoped_locale(
+      base::i18n::GetKnownLanguageTag("en"));
   ASSERT_FALSE(base::i18n::IsRTL());
 
   View parent, child1, child2;

@@ -12,6 +12,8 @@
 
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/test/scoped_icu_locale.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -835,7 +837,7 @@ class FocusManagerArrowKeyTraversalTest
     if (testing::UnitTest::GetInstance()->current_test_info()->value_param()) {
       is_rtl_ = GetParam();
       if (is_rtl_) {
-        base::i18n::SetICUDefaultLocale("he");
+        locale_override_.emplace(base::i18n::GetKnownLanguageTag("he"));
       }
     }
 
@@ -845,8 +847,7 @@ class FocusManagerArrowKeyTraversalTest
   bool is_rtl_ = false;
 
  private:
-  // Restores the locale to default when the destructor is called.
-  base::test::ScopedRestoreICUDefaultLocale restore_locale_;
+  std::optional<base::i18n::ScopedDefaultIcuLocale> locale_override_;
 };
 
 // Instantiate the Boolean which is used to toggle RTL in

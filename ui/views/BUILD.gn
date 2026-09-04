@@ -1423,6 +1423,7 @@ test("views_unittests") {
     ":views",
     "//base",
     "//base:i18n",
+    "//base/i18n:test_support",
     "//base/test:test_support",
     "//cc:test_support",
     "//cc/paint",

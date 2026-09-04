@@ -14,7 +14,10 @@
 #include "base/command_line.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/tag_converters.h"
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/gtest_util.h"
@@ -101,13 +104,6 @@ class TestLabel : public Label {
 
 BEGIN_METADATA(TestLabel)
 END_METADATA
-
-// A test utility function to set the application default text direction.
-void SetRTL(bool rtl) {
-  // Override the current locale/direction.
-  base::i18n::SetICUDefaultLocale(rtl ? "he" : "en");
-  EXPECT_EQ(rtl, base::i18n::IsRTL());
-}
 
 std::u16string GetClipboardText(ui::ClipboardBuffer clipboard_buffer) {
   return ui::clipboard_test_util::ReadText(ui::Clipboard::GetForCurrentThread(),
@@ -357,7 +353,7 @@ TEST_F(LabelTest, AlignmentProperty) {
 
   for (size_t i = 0; i < 2; ++i) {
     // Toggle the application default text direction (to try each direction).
-    SetRTL(!base::i18n::IsRTL());
+    base::i18n::ScopedRTLForTesting scoped_rtl(!base::i18n::IsRTL());
     bool reverse_alignment = base::i18n::IsRTL();
 
     // The alignment should be flipped in RTL UI.

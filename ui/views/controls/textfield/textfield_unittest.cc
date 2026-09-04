@@ -14,7 +14,9 @@
 
 #include "base/command_line.h"
 #include "base/format_macros.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/test/scoped_icu_locale.h"
 #include "base/memory/raw_ptr.h"
 #include "base/pickle.h"
 #include "base/strings/stringprintf.h"
@@ -3279,8 +3281,8 @@ TEST_F(TextfieldTest, TextCursorDisplayTest) {
 }
 
 TEST_F(TextfieldTest, TextCursorDisplayInRTLTest) {
-  std::string locale = base::i18n::GetConfiguredLocale();
-  base::i18n::SetICUDefaultLocale("he");
+  base::i18n::ScopedDefaultIcuLocale scoped_locale(
+      base::i18n::GetKnownLanguageTag("he"));
 
   InitTextfield();
   // LTR-RTL string in RTL context.
@@ -3338,14 +3340,11 @@ TEST_F(TextfieldTest, TextCursorDisplayInRTLTest) {
       textfield_->GetText());
   x = GetCursorBounds().x();
   EXPECT_GE(1, std::abs(x - prev_x));
-
-  // Reset locale.
-  base::i18n::SetICUDefaultLocale(locale);
 }
 
 TEST_F(TextfieldTest, TextCursorPositionInRTLTest) {
-  std::string locale = base::i18n::GetConfiguredLocale();
-  base::i18n::SetICUDefaultLocale("he");
+  base::i18n::ScopedDefaultIcuLocale scoped_locale(
+      base::i18n::GetKnownLanguageTag("he"));
 
   InitTextfield();
   // LTR-RTL string in RTL context.
@@ -3356,9 +3355,6 @@ TEST_F(TextfieldTest, TextCursorPositionInRTLTest) {
   int text_cursor_position_new = GetTextfieldTestApi().GetCursorViewRect().x();
   // Text cursor stays at same place after inserting new characters in RTL mode.
   EXPECT_EQ(text_cursor_position_prev, text_cursor_position_new);
-
-  // Reset locale.
-  base::i18n::SetICUDefaultLocale(locale);
 }
 
 TEST_F(TextfieldTest, TextCursorPositionInLTRTest) {
@@ -3466,8 +3462,8 @@ TEST_F(TextfieldTest, HitOutsideTextAreaTest) {
 }
 
 TEST_F(TextfieldTest, HitOutsideTextAreaInRTLTest) {
-  std::string locale = base::i18n::GetConfiguredLocale();
-  base::i18n::SetICUDefaultLocale("he");
+  base::i18n::ScopedDefaultIcuLocale scoped_locale(
+      base::i18n::GetKnownLanguageTag("he"));
 
   InitTextfield();
 
@@ -3499,9 +3495,6 @@ TEST_F(TextfieldTest, HitOutsideTextAreaInRTLTest) {
   bound = GetCursorBounds();
   MouseClick(bound, 10);
   EXPECT_EQ(bound, GetCursorBounds());
-
-  // Reset locale.
-  base::i18n::SetICUDefaultLocale(locale);
 }
 
 // TODO(https://crbug.com/361276581, https://crbug.com/361247468): Flakes on
@@ -3542,8 +3535,8 @@ TEST_F(TextfieldTest, MAYBE_OverflowTest) {
 }
 
 TEST_F(TextfieldTest, MAYBE_OverflowInRTLTest) {
-  std::string locale = base::i18n::GetConfiguredLocale();
-  base::i18n::SetICUDefaultLocale("he");
+  base::i18n::ScopedDefaultIcuLocale scoped_locale(
+      base::i18n::GetKnownLanguageTag("he"));
 
   InitTextfield();
 
@@ -3569,9 +3562,6 @@ TEST_F(TextfieldTest, MAYBE_OverflowInRTLTest) {
 
   MouseClick(GetCursorBounds(), 1);
   EXPECT_EQ(500U, textfield_->GetCursorPosition());
-
-  // Reset locale.
-  base::i18n::SetICUDefaultLocale(locale);
 }
 
 TEST_F(TextfieldTest, PasswordProtected) {

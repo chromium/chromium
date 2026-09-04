@@ -893,6 +893,7 @@ test("gfx_unittests") {
     ":gfx",
     ":test_support",
     "//base",
+    "//base/i18n:test_support",
     "//base/test:test_support",
     "//skia",
     "//skia:skcms",

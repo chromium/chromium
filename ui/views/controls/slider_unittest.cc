@@ -9,7 +9,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/tag_converters.h"
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -200,8 +203,6 @@ void SliderTest::SetUp() {
 
 void SliderTest::TearDown() {
   widget_.reset();
-  base::i18n::SetICUDefaultLocale(default_locale_);
-
   views::ViewsTestBase::TearDown();
 }
 
@@ -230,7 +231,7 @@ TEST_P(SliderTest, UpdateFromClickHorizontal) {
 }
 
 TEST_P(SliderTest, UpdateFromClickRTLHorizontal) {
-  base::i18n::SetICUDefaultLocale("he");
+  base::i18n::ScopedRTLForTesting scoped_rtl(true);
 
   ClickAt(0, 0);
   EXPECT_EQ(GetMaxValue(), slider()->GetValue());
@@ -445,7 +446,7 @@ TEST_P(SliderTest, SliderValueForKeyboard) {
   EXPECT_LT(slider()->GetValue(), value);
 
   // RTL reverse left/right but not up/down.
-  base::i18n::SetICUDefaultLocale("he");
+  base::i18n::ScopedRTLForTesting scoped_rtl(true);
   EXPECT_TRUE(base::i18n::IsRTL());
 
   event_generator()->PressKey(ui::VKEY_RIGHT, 0);

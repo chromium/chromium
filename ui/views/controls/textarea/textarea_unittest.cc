@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/format_macros.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/test/scoped_icu_locale.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -297,17 +299,14 @@ TEST_F(TextareaTest, OverflowTest) {
 TEST_F(TextareaTest, OverflowInRTLTest) {
   const size_t count = 50U;
   textarea_->SetBounds(0, 0, 60, 40);
-  std::string locale = base::i18n::GetConfiguredLocale();
-  base::i18n::SetICUDefaultLocale("he");
+  base::i18n::ScopedDefaultIcuLocale scoped_locale(
+      base::i18n::GetKnownLanguageTag("he"));
 
   textarea_->SetText(std::u16string(count, 'a'));
   EXPECT_TRUE(GetDisplayRect().Contains(GetCursorBounds()));
 
   textarea_->SetText(std::u16string(count, kHebrewLetterSamekh));
   EXPECT_TRUE(GetDisplayRect().Contains(GetCursorBounds()));
-
-  // Reset locale.
-  base::i18n::SetICUDefaultLocale(locale);
 }
 
 TEST_F(TextareaTest, OnBlurTest) {

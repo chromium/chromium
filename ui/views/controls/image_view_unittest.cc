@@ -8,7 +8,10 @@
 #include <string>
 #include <utility>
 
+#include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/tag_converters.h"
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -33,13 +36,6 @@ enum class Axis {
   kHorizontal,
   kVertical,
 };
-
-// A test utility function to set the application default text direction.
-void SetRTL(bool rtl) {
-  // Override the current locale/direction.
-  base::i18n::SetICUDefaultLocale(rtl ? "he" : "en");
-  EXPECT_EQ(rtl, base::i18n::IsRTL());
-}
 
 }  // namespace
 
@@ -119,21 +115,25 @@ TEST_P(ImageViewTest, CenterAlignment) {
   views::test::RunScheduledLayout(image_view());
   EXPECT_EQ(kInset, CurrentImageOriginForParam());
 
-  SetRTL(true);
-  views::test::RunScheduledLayout(image_view());
-  EXPECT_EQ(kInset, CurrentImageOriginForParam());
-
   // Check this still holds true when the insets are asymmetrical.
   constexpr int kLeadingInset = 4;
   constexpr int kTrailingInset = 6;
-  image_view()->SetBorder(CreateEmptyBorder(gfx::Insets::TLBR(
-      kLeadingInset, kLeadingInset, kTrailingInset, kTrailingInset)));
-  views::test::RunScheduledLayout(image_view());
-  EXPECT_EQ(kLeadingInset, CurrentImageOriginForParam());
+  {
+    base::i18n::ScopedRTLForTesting scoped_rtl(true);
+    views::test::RunScheduledLayout(image_view());
+    EXPECT_EQ(kInset, CurrentImageOriginForParam());
 
-  SetRTL(false);
-  views::test::RunScheduledLayout(image_view());
-  EXPECT_EQ(kLeadingInset, CurrentImageOriginForParam());
+    image_view()->SetBorder(CreateEmptyBorder(gfx::Insets::TLBR(
+        kLeadingInset, kLeadingInset, kTrailingInset, kTrailingInset)));
+    views::test::RunScheduledLayout(image_view());
+    EXPECT_EQ(kLeadingInset, CurrentImageOriginForParam());
+  }
+
+  {
+    base::i18n::ScopedRTLForTesting scoped_rtl(false);
+    views::test::RunScheduledLayout(image_view());
+    EXPECT_EQ(kLeadingInset, CurrentImageOriginForParam());
+  }
 }
 
 TEST_P(ImageViewTest, ImageOriginForCustomViewBounds) {

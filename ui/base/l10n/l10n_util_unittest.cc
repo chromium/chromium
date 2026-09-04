@@ -22,7 +22,9 @@
 #include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/tag_converters.h"
+#include "base/i18n/test/scoped_icu_locale.h"
 #include "base/i18n/time_formatting.h"
+#include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/pattern.h"
 #include "base/strings/strcat.h"
@@ -112,9 +114,7 @@ class L10nUtilTest : public PlatformTest {
   L10nUtilTest()
       : locale_dir_override_(ui::DIR_LOCALES),
         env_(base::Environment::Create()) {}
-  ~L10nUtilTest() override {
-    base::i18n::SetICUDefaultLocale(original_locale_);
-  }
+  ~L10nUtilTest() override = default;
 
   void SetUpLocales(base::span<const std::string_view> locales) {
     // Use a temporary locale dir so we don't have to actually build the locale
@@ -140,12 +140,17 @@ class L10nUtilTest : public PlatformTest {
     }
   }
 
+  void SetIcuLocaleForTest(const LanguageTag& tag) {
+    icu_locale_override_.reset();
+    icu_locale_override_.emplace(tag);
+  }
+
   base::Environment& env() { return *env_; }
 
  private:
   base::ScopedPathOverride locale_dir_override_;
   std::unique_ptr<base::Environment> env_;
-  std::string original_locale_ = base::i18n::GetConfiguredLocale();
+  std::optional<base::i18n::ScopedDefaultIcuLocale> icu_locale_override_;
 };
 
 TEST_F(L10nUtilTest, GetString) {
@@ -171,7 +176,7 @@ TEST_F(L10nUtilTest, GetAppLocale_HasDefaultLocale_UseLocaleFromEnvironment) {
     SetUpLocales(kDefaultLocalesOnDisk);
 
     // Test the support of LANGUAGE environment variable.
-    base::i18n::SetICUDefaultLocale("en-US");
+    SetIcuLocaleForTest(GetKnownLanguageTag("en-US"));
     env().SetVar("LANGUAGE", "xx:fr_CA");
     EXPECT_EQ("fr", l10n_util::GetApplicationLocale(std::string()));
     EXPECT_STREQ("fr", icu::Locale::getDefault().getLanguage());
@@ -188,7 +193,7 @@ TEST_F(L10nUtilTest, GetAppLocale_HasDefaultLocale_UseLocaleFromEnvironment) {
     // when LANGUAGE is specified. If no language specified in LANGUAGE is
     // valid,
     // then just fallback to the default language, which is en-US for us.
-    base::i18n::SetICUDefaultLocale("fr-FR");
+    SetIcuLocaleForTest(GetKnownLanguageTag("fr-FR"));
     env().SetVar("LANGUAGE", "xx:yy");
     EXPECT_EQ("en-US", l10n_util::GetApplicationLocale(std::string()));
     EXPECT_STREQ("en", icu::Locale::getDefault().getLanguage());
@@ -395,13 +400,13 @@ TEST_F(L10nUtilTest, GetAppLocale_SupportsLocalePreference) {
     SetUpLocales(kDefaultLocalesOnDisk);
     SetDefaultLocaleForTest(GetKnownLanguageTag("en-US"));
     // On windows, the user can override the locale in preferences.
-    base::i18n::SetICUDefaultLocale("en-US");
+    SetIcuLocaleForTest(GetKnownLanguageTag("en-US"));
     EXPECT_EQ("fr", l10n_util::GetApplicationLocale("fr"));
     EXPECT_STREQ("fr", icu::Locale::getDefault().getLanguage());
     EXPECT_EQ("fr", l10n_util::GetApplicationLocale("fr-CA"));
     EXPECT_STREQ("fr", icu::Locale::getDefault().getLanguage());
 
-    base::i18n::SetICUDefaultLocale("en-US");
+    SetIcuLocaleForTest(GetKnownLanguageTag("en-US"));
     // Aliases iw, no, tl to he, nb, fil.
     EXPECT_EQ("he", l10n_util::GetApplicationLocale("iw"));
     EXPECT_STREQ("he", icu::Locale::getDefault().getLanguage());
@@ -418,35 +423,35 @@ TEST_F(L10nUtilTest, GetAppLocale_SupportsLocalePreference) {
     EXPECT_EQ("es-419", l10n_util::GetApplicationLocale("es-AR"));
     EXPECT_STREQ("es", icu::Locale::getDefault().getLanguage());
 
-    base::i18n::SetICUDefaultLocale("es-AR");
+    SetIcuLocaleForTest(GetKnownLanguageTag("es-AR"));
     EXPECT_EQ("es", l10n_util::GetApplicationLocale("es"));
     EXPECT_STREQ("es", icu::Locale::getDefault().getLanguage());
 
-    base::i18n::SetICUDefaultLocale("zh-HK");
+    SetIcuLocaleForTest(GetKnownLanguageTag("zh-HK"));
     EXPECT_EQ("zh-CN", l10n_util::GetApplicationLocale("zh-CN"));
     EXPECT_STREQ("zh", icu::Locale::getDefault().getLanguage());
 
-    base::i18n::SetICUDefaultLocale("he");
+    SetIcuLocaleForTest(GetKnownLanguageTag("he"));
     EXPECT_EQ("en-US", l10n_util::GetApplicationLocale("en"));
     EXPECT_STREQ("en", icu::Locale::getDefault().getLanguage());
 
-    base::i18n::SetICUDefaultLocale("he");
+    SetIcuLocaleForTest(GetKnownLanguageTag("he"));
     EXPECT_EQ("en-US", l10n_util::GetApplicationLocale("en", false));
     EXPECT_STREQ("he", icu::Locale::getDefault().getLanguage());
 
-    base::i18n::SetICUDefaultLocale("de");
+    SetIcuLocaleForTest(GetKnownLanguageTag("de"));
     EXPECT_EQ("en-US", l10n_util::GetApplicationLocale("xx", false));
     EXPECT_STREQ("de", icu::Locale::getDefault().getLanguage());
 
-    base::i18n::SetICUDefaultLocale("de");
+    SetIcuLocaleForTest(GetKnownLanguageTag("de"));
     EXPECT_EQ("fr", l10n_util::GetApplicationLocale("fr", false));
     EXPECT_STREQ("de", icu::Locale::getDefault().getLanguage());
 
-    base::i18n::SetICUDefaultLocale("de");
+    SetIcuLocaleForTest(GetKnownLanguageTag("de"));
     EXPECT_EQ("en-US", l10n_util::GetApplicationLocale("en", false));
     EXPECT_STREQ("de", icu::Locale::getDefault().getLanguage());
 
-    base::i18n::SetICUDefaultLocale("de");
+    SetIcuLocaleForTest(GetKnownLanguageTag("de"));
     EXPECT_EQ("en-US", l10n_util::GetApplicationLocale("en-US", true));
     EXPECT_STREQ("en", icu::Locale::getDefault().getLanguage());
   }
@@ -456,11 +461,11 @@ TEST_F(L10nUtilTest, GetAppLocale_NoSupportsLocalePreference) {
   if (!kSupportsLocalePreference) {
     SetDefaultLocaleForTest(GetKnownLanguageTag("en-US"));
     SetUpLocales(kDefaultLocalesOnDisk);
-    base::i18n::SetICUDefaultLocale("de");
+    SetIcuLocaleForTest(GetKnownLanguageTag("de"));
     EXPECT_EQ("en-US", l10n_util::GetApplicationLocale(std::string(), false));
     EXPECT_STREQ("de", icu::Locale::getDefault().getLanguage());
 
-    base::i18n::SetICUDefaultLocale("de");
+    SetIcuLocaleForTest(GetKnownLanguageTag("de"));
     EXPECT_EQ("en-US", l10n_util::GetApplicationLocale(std::string(), true));
     EXPECT_STREQ("en", icu::Locale::getDefault().getLanguage());
   }
@@ -485,10 +490,10 @@ TEST_F(L10nUtilTest, MAYBE_GetAppLocale_NoSupportsLocalePreference_Nb) {
 #if BUILDFLAG(IS_WIN)
 TEST_F(L10nUtilTest, GetAppLocaleWin) {
   SetUpLocales(kDefaultLocalesOnDisk);
-  base::i18n::SetICUDefaultLocale("am");
+  SetIcuLocaleForTest(GetKnownLanguageTag("am"));
   EXPECT_EQ("am", l10n_util::GetApplicationLocale(""));
   EXPECT_STREQ("am", icu::Locale::getDefault().getLanguage());
-  base::i18n::SetICUDefaultLocale("en-GB");
+  SetIcuLocaleForTest(GetKnownLanguageTag("en-GB"));
   EXPECT_EQ("am", l10n_util::GetApplicationLocale("am"));
   EXPECT_STREQ("am", icu::Locale::getDefault().getLanguage());
 }
@@ -606,15 +611,12 @@ TEST_F(L10nUtilTest, GetDisplayNameForLocale) {
   // Check for directional markers when using RTL languages to ensure that
   // direction neutral characters such as parentheses are properly formatted.
 
-  // Keep a copy of ICU's default locale before we overwrite it.
-  const std::string original_locale = base::i18n::GetConfiguredLocale();
-
-  base::i18n::SetICUDefaultLocale("he");
-  CheckUiDisplayNameForLocale("en-US", "en", false);
-  CheckUiDisplayNameForLocale("en-US", "he", true);
-
-  // Clean up.
-  base::i18n::SetICUDefaultLocale(original_locale);
+  {
+    base::i18n::ScopedDefaultIcuLocale scoped_locale(
+        base::i18n::GetKnownLanguageTag("he"));
+    CheckUiDisplayNameForLocale("en-US", "en", false);
+    CheckUiDisplayNameForLocale("en-US", "he", true);
+  }
 
   // ToUpper and ToLower should work with embedded NULLs.
   const size_t length_with_null = 4;
@@ -747,7 +749,8 @@ TEST_F(L10nUtilTest, KeepAcceptedLanguages) {
 }
 
 TEST_F(L10nUtilTest, FormatStringComputeCorrectOffsetInRTL) {
-  base::i18n::SetICUDefaultLocale("ar");
+  base::i18n::ScopedDefaultIcuLocale scoped_locale(
+      base::i18n::GetKnownLanguageTag("ar"));
   ASSERT_EQ(true, base::i18n::IsRTL());
   // Use a format string that contains Strong RTL Chars.
   const std::u16string kFormatString(u"كلمة مرور $1");
