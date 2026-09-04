@@ -6,14 +6,24 @@
 
 #include <utility>
 
+#include "base/check.h"
+#include "base/feature_list.h"
+#include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/ui/views/location_bar/location_icon_view.h"
+#include "chrome/browser/ui/views/payments/payment_handler_web_flow_view_controller.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
+#include "components/omnibox/browser/location_bar_model_util.h"
 #include "components/payments/content/icon/icon_size.h"
+#include "components/payments/core/features.h"
+#include "components/security_state/core/security_state.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -26,11 +36,18 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/table_layout.h"
+#include "ui/views/style/typography_provider.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 
 namespace payments {
 
 namespace {
+
+constexpr int kVerticalInset = 8;
+constexpr int kHeaderHorizontalInset = 16;
+constexpr int kHeaderIconWidth = 32;
+constexpr int kCloseButtonWidth = 32;
 
 // Returns a Google color closest to light_mode_color or dark_mode_color based
 // on whether background_color is considered dark mode, with a minimum
@@ -62,6 +79,22 @@ SkColor GetEffectiveHeaderBackgroundColor(const views::View* view,
              ? color_utils::GetResultingPaintColor(theme_color.value(),
                                                    dialog_background_color)
              : dialog_background_color;
+}
+
+void AddAppIconView(views::View* container, const SkBitmap* icon_bitmap) {
+  views::ImageView* app_icon_view = container->AddChildView(CreateAppIconView(
+      /*icon_resource_id=*/0, icon_bitmap,
+      /*tooltip_text=*/l10n_util::GetStringUTF16(IDS_PAYMENT_HANDLER_ICON)));
+  app_icon_view->SetID(static_cast<int>(DialogViewID::PAYMENT_APP_HEADER_ICON));
+  // TODO(crbug.com/40259861): If the downloaded app icon was a vector image,
+  // see if we can store and rasterize it here instead of at download time.
+  float adjusted_width =
+      icon_bitmap->width() *
+      (IconSizeCalculator::kPaymentAppDeviceIndependentIdealIconHeight /
+       base::checked_cast<float>(icon_bitmap->height()));
+  app_icon_view->SetImageSize(gfx::Size(
+      adjusted_width,
+      IconSizeCalculator::kPaymentAppDeviceIndependentIdealIconHeight));
 }
 
 }  // namespace
@@ -225,94 +258,107 @@ PaymentHandlerCloseButton::GetWeakPtr() {
 BEGIN_METADATA(PaymentHandlerCloseButton)
 END_METADATA
 
+std::unique_ptr<views::View> CreatePaymentHandlerLoadingIconView() {
+  auto page_info_icon_view = std::make_unique<views::ImageView>();
+  page_info_icon_view->SetID(
+      static_cast<int>(DialogViewID::PAYMENT_APP_HEADER_ICON));
+  // During loading, the WebContents has not loaded yet so no security state
+  // exists. Pass a default VisibleSecurityState to satisfy
+  // GetSecurityVectorIcon and retrieve the standard secure PageInfo icon.
+  security_state::VisibleSecurityState visible_security_state;
+  page_info_icon_view->SetImage(ui::ImageModel::FromVectorIcon(
+      location_bar_model::GetSecurityVectorIcon(security_state::SECURE,
+                                                &visible_security_state),
+      ui::kColorIconDisabled,
+      GetLayoutConstant(LayoutConstant::kLocationBarIconSize)));
+  return page_info_icon_view;
+}
+
+std::unique_ptr<LocationIconView> CreatePaymentHandlerLocationIconView(
+    IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
+    LocationIconView::Delegate* location_icon_delegate) {
+  CHECK(icon_label_bubble_delegate);
+  CHECK(location_icon_delegate);
+
+  const gfx::FontList& font_list = views::TypographyProvider::Get().GetFont(
+      CONTEXT_OMNIBOX_PRIMARY, views::style::STYLE_PRIMARY);
+  auto icon_view = std::make_unique<LocationIconView>(
+      font_list, icon_label_bubble_delegate, location_icon_delegate);
+  // LocationIconView defaults to kLocationIconElementId, but Payment Handler
+  // shares the browser window's ElementContext with the Omnibox. Retagging
+  // with kAppIconElementId avoids duplicate element IDs in the same context.
+  icon_view->SetProperty(
+      views::kElementIdentifierKey,
+      PaymentHandlerWebFlowViewController::kAppIconElementId);
+  return icon_view;
+}
+
 PaymentHandlerHeaderViews PopulatePaymentHandlerHeaderView(
     views::View* container,
+    std::unique_ptr<views::View> icon_view,
     const SkBitmap* icon_bitmap,
     const std::u16string& origin_text,
     views::Button::PressedCallback close_callback) {
-  // The PaymentHandler header consists of the payment app icon (if available),
-  // the current web contents origin, and a close button. The origin is centered
+  // The PaymentHandler header consists of the payment app icon (or PageInfo
+  // security icon button if kPaymentHandlerCameraAccessUx is enabled), the
+  // current web contents origin, and a close button. The origin is centered
   // on the dialog, whilst the icon and close are aligned with the LHS and RHS
   // respectively.
   //
-  // +-----------------------------------------+
-  // | ICON |          origin          | CLOSE |
-  // +-----------------------------------------+
+  // +-------------------------------------------------+
+  // | ICON / PAGEINFO |        origin        | CLOSE |
+  // +-------------------------------------------------+
 
   container->SetID(static_cast<int>(DialogViewID::PAYMENT_APP_HEADER));
-  constexpr int kVerticalInset = 8;
-  constexpr int kHeaderHorizontalInset = 16;
   container->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::TLBR(kVerticalInset, kHeaderHorizontalInset, kVerticalInset,
-                        kHeaderHorizontalInset)));
+      gfx::Insets::VH(kVerticalInset, kHeaderHorizontalInset)));
+
+  const bool has_icon =
+      icon_view || (icon_bitmap && !icon_bitmap->drawsNothing());
 
   views::TableLayout* layout =
       container->SetLayoutManager(std::make_unique<views::TableLayout>());
 
-  // Icon column.
-  const bool has_icon = icon_bitmap && !icon_bitmap->drawsNothing();
-  constexpr int kHeaderIconWidth = 32;
+  // Column 1 (Leading): App icon or PageInfo button.
   if (has_icon) {
-    layout->AddColumn(views::LayoutAlignment::kStart,
-                      views::LayoutAlignment::kCenter,
-                      views::TableLayout::kFixedSize,
-                      views::TableLayout::ColumnSize::kFixed, kHeaderIconWidth,
-                      /*min_width=*/0);
+    layout->AddColumn(
+        views::LayoutAlignment::kStart, views::LayoutAlignment::kCenter,
+        views::TableLayout::kFixedSize, views::TableLayout::ColumnSize::kFixed,
+        kHeaderIconWidth, /*min_width=*/0);
   } else {
     layout->AddPaddingColumn(views::TableLayout::kFixedSize, kHeaderIconWidth);
   }
 
-  // Origin column.
+  // Column 2 (Center): Origin label.
   layout->AddColumn(
       views::LayoutAlignment::kStretch, views::LayoutAlignment::kStretch,
       /*horizontal_resize=*/1.0, views::TableLayout::ColumnSize::kUsePreferred,
-      /*fixed_width=*/0,
-      /*min_width=*/0);
+      /*fixed_width=*/0, /*min_width=*/0);
 
-  // Close button column.
-  layout->AddColumn(
-      views::LayoutAlignment::kEnd, views::LayoutAlignment::kCenter,
-      views::TableLayout::kFixedSize, views::TableLayout::ColumnSize::kFixed,
-      /*fixed_width=*/32,
-      /*min_width=*/0);
+  // Column 3 (Trailing): Close button.
+  layout->AddColumn(views::LayoutAlignment::kEnd,
+                    views::LayoutAlignment::kCenter,
+                    views::TableLayout::kFixedSize,
+                    views::TableLayout::ColumnSize::kFixed, kCloseButtonWidth,
+                    /*min_width=*/0);
 
+  // Single header row sized to the preferred height of its views.
   layout->AddRows(1, views::TableLayout::kFixedSize);
 
-  // Add the icon to the header. As we support non-square icons, resize it to
-  // fit the target header height.
-  //
-  // We should set image size in density independent pixels here, since
-  // views::ImageView objects are rastered at the device scale factor.
-  if (has_icon) {
-    views::ImageView* app_icon_view = container->AddChildView(CreateAppIconView(
-        /*icon_resource_id=*/0, icon_bitmap,
-        /*tooltip_text=*/l10n_util::GetStringUTF16(IDS_PAYMENT_HANDLER_ICON)));
-    app_icon_view->SetID(
-        static_cast<int>(DialogViewID::PAYMENT_APP_HEADER_ICON));
-    // TODO(crbug.com/40259861): If the downloaded app icon was a vector image,
-    // see if we can store and rasterize it here instead of at download time.
-    float adjusted_width =
-        icon_bitmap->width() *
-        (IconSizeCalculator::kPaymentAppDeviceIndependentIdealIconHeight /
-         base::checked_cast<float>(icon_bitmap->height()));
-    app_icon_view->SetImageSize(gfx::Size(
-        adjusted_width,
-        IconSizeCalculator::kPaymentAppDeviceIndependentIdealIconHeight));
+  if (icon_view) {
+    container->AddChildView(std::move(icon_view));
+  } else if (icon_bitmap && !icon_bitmap->drawsNothing()) {
+    AddAppIconView(container, icon_bitmap);
   }
 
-  // Add the origin label to the header.
-  base::WeakPtr<PaymentHandlerOriginLabel> origin_label =
-      container->AddChildView(std::make_unique<PaymentHandlerOriginLabel>())
-          ->GetWeakPtr();
+  auto* origin_label =
+      container->AddChildView(std::make_unique<PaymentHandlerOriginLabel>());
+  origin_label->SetText(origin_text);
 
-  // Add close button to the header.
-  base::WeakPtr<PaymentHandlerCloseButton> close_button =
-      container
-          ->AddChildView(std::make_unique<PaymentHandlerCloseButton>(
-              std::move(close_callback)))
-          ->GetWeakPtr();
+  auto* close_button = container->AddChildView(
+      std::make_unique<PaymentHandlerCloseButton>(std::move(close_callback)));
 
-  return {origin_label, close_button};
+  return {origin_label->GetWeakPtr(), close_button->GetWeakPtr()};
 }
 
 void SetHeaderColors(views::View* header_view,

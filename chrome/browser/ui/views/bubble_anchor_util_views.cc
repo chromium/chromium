@@ -153,16 +153,18 @@ AnchorConfiguration GetPermissionPromptBubbleAnchorConfiguration(
             views::BubbleBorder::TOP_LEFT};
   }
 
-  // For Payment Handler windows anchor to the header location icon.
+  // For Payment Handler windows anchor to the header PageInfo icon.
   if (base::FeatureList::IsEnabled(
           payments::features::kPaymentHandlerCameraAccessUx)) {
     if (auto* payment_handler =
             payments::PaymentHandlerWebFlowViewController::FromWebContents(
                 web_contents)) {
-      if (views::View* location_icon = payment_handler->GetLocationIconView()) {
-        return {views::BubbleAnchor(location_icon),
-                /*highlighted_element=*/std::nullopt,
-                views::BubbleBorder::TOP_LEFT};
+      if (views::View* page_info_icon =
+              payment_handler->GetPageInfoIconView()) {
+        return {
+            views::BubbleAnchor(page_info_icon),
+            payments::PaymentHandlerWebFlowViewController::kAppIconElementId,
+            views::BubbleBorder::TOP_LEFT};
       }
     }
   }
