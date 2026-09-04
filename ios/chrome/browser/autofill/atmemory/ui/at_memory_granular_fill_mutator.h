@@ -7,11 +7,13 @@
 
 #import <Foundation/Foundation.h>
 
+@class AtMemoryGranularFillItem;
+
 // Mutator protocol for user actions in the AtMemory granular fill UI.
 @protocol AtMemoryGranularFillMutator <NSObject>
 
-// Called when the user taps to fill `content`.
-- (void)didSelectContent:(NSString*)content;
+// Called when the user taps to fill `item`.
+- (void)didSelectGranularFillItem:(AtMemoryGranularFillItem*)item;
 
 @end
 

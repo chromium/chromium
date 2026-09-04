@@ -29,7 +29,8 @@ NSArray<AtMemoryGranularFillItem*>* AtMemoryGranularFillItemsForSuggestion(
   NSMutableArray<AtMemoryGranularFillItem*>* items =
       [[NSMutableArray alloc] init];
 
-  for (const Suggestion& child : suggestion.children) {
+  for (size_t i = 0; i < suggestion.children.size(); ++i) {
+    const Suggestion& child = suggestion.children[i];
     if (child.type != SuggestionType::kAtMemorySearchResult) {
       continue;
     }
@@ -42,7 +43,8 @@ NSArray<AtMemoryGranularFillItem*>* AtMemoryGranularFillItemsForSuggestion(
                          initWithAttributeName:base::SysUTF16ToNSString(
                                                    child_payload->type_name)
                                 attributeValue:base::SysUTF16ToNSString(
-                                                   child_payload->value)]];
+                                                   child_payload->value)
+                                         index:static_cast<NSInteger>(i)]];
   }
 
   return [items copy];

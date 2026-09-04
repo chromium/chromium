@@ -17,10 +17,14 @@
 // The value of the attribute.
 @property(nonatomic, copy, readonly) NSString* attributeValue;
 
-// Initializes an AtMemoryGranularFillItem with `attributeName` and
-// `attributeValue`.
+// The index of the child suggestion in the parent suggestion's children.
+@property(nonatomic, assign, readonly) NSInteger index;
+
+// Initializes an AtMemoryGranularFillItem with `attributeName`,
+// `attributeValue`, and `index`.
 - (instancetype)initWithAttributeName:(NSString*)attributeName
                        attributeValue:(NSString*)attributeValue
+                                index:(NSInteger)index
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

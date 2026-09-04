@@ -21,6 +21,7 @@ namespace {
 
 NSString* const kTestAttributeName = @"Passport Number";
 NSString* const kTestAttributeValue = @"AB123456";
+constexpr NSInteger kTestIndex = 0;
 
 }  // namespace
 
@@ -36,7 +37,8 @@ TEST_F(AtMemoryGranularFillViewControllerTest, TestSetGranularFillItems) {
 
   AtMemoryGranularFillItem* item = [[AtMemoryGranularFillItem alloc]
       initWithAttributeName:kTestAttributeName
-             attributeValue:kTestAttributeValue];
+             attributeValue:kTestAttributeValue
+                      index:kTestIndex];
 
   [viewController setGranularFillItems:@[ item ]];
 

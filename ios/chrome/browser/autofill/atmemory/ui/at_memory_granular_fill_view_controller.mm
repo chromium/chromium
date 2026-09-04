@@ -242,9 +242,7 @@ enum ItemIdentifier {
   configuration.attributeValue = item.attributeValue;
   __weak __typeof(self) weakSelf = self;
   configuration.selectionHandler = ^(NSString* content) {
-    if (content.length > 0) {
-      [weakSelf.mutator didSelectContent:content];
-    }
+    [weakSelf.mutator didSelectGranularFillItem:item];
   };
   cell.contentConfiguration = configuration;
   cell.accessibilityIdentifier =

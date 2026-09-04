@@ -11,17 +11,20 @@
 // Read-write redeclaration of properties.
 @property(nonatomic, copy, readwrite) NSString* attributeName;
 @property(nonatomic, copy, readwrite) NSString* attributeValue;
+@property(nonatomic, assign, readwrite) NSInteger index;
 
 @end
 
 @implementation AtMemoryGranularFillItem
 
 - (instancetype)initWithAttributeName:(NSString*)attributeName
-                       attributeValue:(NSString*)attributeValue {
+                       attributeValue:(NSString*)attributeValue
+                                index:(NSInteger)index {
   self = [super init];
   if (self) {
     _attributeName = [attributeName copy];
     _attributeValue = [attributeValue copy];
+    _index = index;
   }
   return self;
 }
@@ -38,11 +41,12 @@
   AtMemoryGranularFillItem* other =
       base::apple::ObjCCastStrict<AtMemoryGranularFillItem>(object);
   return [self.attributeName isEqualToString:other.attributeName] &&
-         [self.attributeValue isEqualToString:other.attributeValue];
+         [self.attributeValue isEqualToString:other.attributeValue] &&
+         self.index == other.index;
 }
 
 - (NSUInteger)hash {
-  return [self.attributeName hash] ^ [self.attributeValue hash];
+  return [self.attributeName hash] ^ [self.attributeValue hash] ^ self.index;
 }
 
 @end

@@ -46,8 +46,8 @@ using autofill::Suggestion;
 
 #pragma mark - AtMemoryGranularFillMutator
 
-- (void)didSelectContent:(NSString*)content {
-  [self.fillHandler fillWithContent:content];
+- (void)didSelectGranularFillItem:(AtMemoryGranularFillItem*)item {
+  [self.fillHandler fillWithContent:item.attributeValue];
   [self.atMemoryHandler dismissAtMemory];
 }
 
