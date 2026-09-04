@@ -7,11 +7,9 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/test_support/glic_api_test.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
-#include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
-#include "ui/views/view.h"
 
 namespace glic {
 namespace {
@@ -43,10 +41,7 @@ IN_PROC_BROWSER_TEST_F(GlicFocusBrowserTest, testBlurOnOmniboxFocus) {
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();
 
-  views::View* omnibox = BrowserElementsViews::From(GetBrowserWindowInterface())
-                             ->GetView(kOmniboxElementId);
-  ASSERT_TRUE(omnibox);
-  omnibox->RequestFocus();
+  chrome::FocusLocationBar(GetBrowserWindowInterface());
 
   ContinueJsTest();
 }
