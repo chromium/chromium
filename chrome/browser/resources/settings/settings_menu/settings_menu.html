@@ -6,6 +6,36 @@
         padding-top: 8px;
       }
 
+      :host-context([settings-refresh-2026]) .cr-nav-menu-item {
+        --cr-nav-menu-item-content-height: 20px;
+        border-radius: 100px;
+        line-height: var(--cr-nav-menu-item-content-height);
+        padding-block: 14px;
+        padding-inline-end: 24px;
+        padding-inline-start: 16px;
+
+        /* Colors */
+        --cr-nav-menu-item-background-color-selected: var(--color-settings-nav-menu-item-background);
+        --cr-nav-menu-item-color: var(--color-settings-nav-menu-item-foreground);
+        --cr-nav-menu-item-color-selected: var(--color-settings-nav-menu-item-foreground-selected);
+        --cr-nav-menu-item-icon-color: var(--color-settings-nav-menu-item-icon);
+        --cr-nav-menu-item-icon-color-selected: var(--color-settings-nav-menu-item-foreground-selected);
+      }
+
+      :host-context([settings-refresh-2026]) .cr-nav-menu-item:focus {
+        border-radius: 100px;
+      }
+
+      :host-context([settings-refresh-2026]) .cr-nav-menu-item:focus:not(:focus-visible) {
+        outline: none;
+      }
+
+      :host-context([settings-refresh-2026]) .cr-nav-menu-item cr-icon {
+        height: var(--cr-nav-menu-item-content-height);
+        width: var(--cr-nav-menu-item-content-height);
+        margin-inline-end: 16px;
+      }
+
       :host * {
         -webkit-tap-highlight-color: transparent;
       }

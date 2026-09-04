@@ -63,6 +63,11 @@ void ApplyChromeSettingsRefresh2026ColorOverrides(ui::ColorMixer& mixer) {
   mixer[kColorSettingsWebuiPageBackground] = {ui::kColorSysSurface2};
   mixer[kColorSettingsTitleText] = {ui::kColorSysOnSurface};
   mixer[kColorSettingsSectionBackground] = {ui::kColorSysBase};
+  mixer[kColorSettingsNavMenuItemBackground] = {ui::kColorSysTonalContainer};
+  mixer[kColorSettingsNavMenuItemForeground] = {ui::kColorSysOnSurface};
+  mixer[kColorSettingsNavMenuItemForegroundSelected] = {
+      ui::kColorSysOnTonalContainer};
+  mixer[kColorSettingsNavMenuItemIcon] = {ui::kColorSysOnSurfaceSubtle};
 }
 
 }  // namespace

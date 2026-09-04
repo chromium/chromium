@@ -854,6 +854,10 @@
   /* Settings info card colors. */ \
   E_CPONLY(kColorSettingsInfoCardBackground) \
   /* Settings page colors. */ \
+  E_CPONLY(kColorSettingsNavMenuItemBackground) \
+  E_CPONLY(kColorSettingsNavMenuItemForeground) \
+  E_CPONLY(kColorSettingsNavMenuItemForegroundSelected) \
+  E_CPONLY(kColorSettingsNavMenuItemIcon) \
   E_CPONLY(kColorSettingsWebuiPageBackground) \
   E_CPONLY(kColorSettingsTitleText) \
   E_CPONLY(kColorSettingsSectionBackground) \
