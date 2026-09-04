@@ -87,6 +87,7 @@
 #include "third_party/omnibox_proto/rich_answer_template.pb.h"
 #include "third_party/omnibox_proto/rule_set.pb.h"
 #include "third_party/omnibox_proto/searchbox_config.pb.h"
+#include "third_party/omnibox_proto/suggest_template_info.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
@@ -1000,6 +1001,15 @@ SearchboxHandler::CreateAutocompleteMatch(
       match.type == AutocompleteMatchType::CALCULATOR ||
       match.enterprise_search_aggregator_type ==
           AutocompleteMatch::EnterpriseSearchAggregatorType::PEOPLE;
+  if (match.suggest_template) {
+    if (match.suggest_template->secondary_text_placement() ==
+        omnibox::SuggestTemplateInfo::BELOW_PRIMARY_TEXT) {
+      mojom_match->is_two_row_suggestion = true;
+    } else if (match.suggest_template->secondary_text_placement() ==
+               omnibox::SuggestTemplateInfo::IN_FRONT_OF_PRIMARY_TEXT) {
+      mojom_match->is_two_row_suggestion = false;
+    }
+  }
   if (!match.from_keyword) {
     for (const auto& action : match.actions) {
 // TODO(b/544764632): Implement Pedals for Android.

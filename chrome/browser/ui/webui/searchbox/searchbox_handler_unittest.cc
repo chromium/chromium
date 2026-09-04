@@ -1422,6 +1422,79 @@ TEST_F(WebuiOmniboxHandlerTest, CreateAutocompleteMatch_PopulatesSuggestStyle) {
             searchbox::mojom::SuggestStyle::kRichImage);
 }
 
+TEST_F(WebuiOmniboxHandlerTest,
+       CreateAutocompleteMatch_SecondaryTextPlacement) {
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile());
+  bookmark_model->LoadEmptyForTest();
+
+  // Suggestion without secondary_text_placement and without image defaults to
+  // single-line.
+  {
+    AutocompleteMatch match;
+    match.destination_url = GURL("https://example.com");
+    auto mojom_match = handler_->CreateAutocompleteMatch(
+        match, 0, bookmark_model, omnibox::GroupConfigMap(),
+        omnibox_controller_->client()->GetTemplateURLService());
+    ASSERT_TRUE(mojom_match.has_value());
+    EXPECT_FALSE(mojom_match.value()->is_two_row_suggestion);
+  }
+
+  // Suggestion with secondary_text_placement = BELOW_PRIMARY_TEXT shows on
+  // second line (two-row suggestion).
+  {
+    AutocompleteMatch match;
+    match.destination_url = GURL("https://example.com");
+    omnibox::SuggestTemplateInfo suggest_template;
+    suggest_template.set_secondary_text_placement(
+        omnibox::SuggestTemplateInfo::BELOW_PRIMARY_TEXT);
+    match.suggest_template = suggest_template;
+
+    auto mojom_match = handler_->CreateAutocompleteMatch(
+        match, 0, bookmark_model, omnibox::GroupConfigMap(),
+        omnibox_controller_->client()->GetTemplateURLService());
+    ASSERT_TRUE(mojom_match.has_value());
+    EXPECT_TRUE(mojom_match.value()->is_two_row_suggestion);
+  }
+
+  // Suggestion with secondary_text_placement = IN_FRONT_OF_PRIMARY_TEXT shows
+  // on same line even if it has an image.
+  {
+    AutocompleteMatch match;
+    match.destination_url = GURL("https://example.com");
+    match.image_url = GURL("https://example.com/image.png");
+    omnibox::SuggestTemplateInfo suggest_template;
+    suggest_template.set_secondary_text_placement(
+        omnibox::SuggestTemplateInfo::IN_FRONT_OF_PRIMARY_TEXT);
+    match.suggest_template = suggest_template;
+
+    auto mojom_match = handler_->CreateAutocompleteMatch(
+        match, 0, bookmark_model, omnibox::GroupConfigMap(),
+        omnibox_controller_->client()->GetTemplateURLService());
+    ASSERT_TRUE(mojom_match.has_value());
+    EXPECT_FALSE(mojom_match.value()->is_two_row_suggestion);
+  }
+
+  // Suggestion with secondary_text_placement =
+  // SECONDARY_TEXT_PLACEMENT_UNSPECIFIED falls back to default logic (e.g.
+  // two-row if it has an image).
+  {
+    AutocompleteMatch match;
+    match.destination_url = GURL("https://example.com");
+    match.image_url = GURL("https://example.com/image.png");
+    omnibox::SuggestTemplateInfo suggest_template;
+    suggest_template.set_secondary_text_placement(
+        omnibox::SuggestTemplateInfo::SECONDARY_TEXT_PLACEMENT_UNSPECIFIED);
+    match.suggest_template = suggest_template;
+
+    auto mojom_match = handler_->CreateAutocompleteMatch(
+        match, 0, bookmark_model, omnibox::GroupConfigMap(),
+        omnibox_controller_->client()->GetTemplateURLService());
+    ASSERT_TRUE(mojom_match.has_value());
+    EXPECT_TRUE(mojom_match.value()->is_two_row_suggestion);
+  }
+}
+
 TEST_F(WebuiOmniboxHandlerTest, OpenAutocompleteMatch_KeyboardModifiers) {
   scoped_refptr<FakeAutocompleteProvider> provider =
       new FakeAutocompleteProvider(AutocompleteProvider::TYPE_SEARCH);
