@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
+#include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -39,13 +39,9 @@
 #include "extensions/test/test_extension_dir.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
-#include "ui/events/base_event_utils.h"
 #include "ui/gfx/native_ui_types.h"
-#include "ui/views/interaction/element_tracker_views.h"
-#include "ui/views/test/button_test_api.h"
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
-#include "ui/views/view_utils.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -231,14 +227,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
   LocationBar* lb = browser_view->toolbar()->location_bar();
   if (lb->GetChipController()->IsPermissionPromptChipVisible() &&
       !lb->GetChipController()->IsBubbleShowing()) {
-    views::test::ButtonTestApi(
-        views::AsViewClass<views::Button>(
-            views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-                PermissionChipView::kPermissionRequestChipElementId,
-                views::ElementTrackerViews::GetContextForView(browser_view))))
-        .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
-                                    gfx::Point(), ui::EventTimeForNow(),
-                                    ui::EF_LEFT_MOUSE_BUTTON, 0));
+    lb->GetChipController()->chip()->ExecuteForTesting();
     base::RunLoop().RunUntilIdle();
   }
 
