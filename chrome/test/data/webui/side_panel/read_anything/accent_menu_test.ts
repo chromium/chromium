@@ -5,8 +5,9 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AccentMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
-import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
+import {NotificationType, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {eventToPromise, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {createSpeechSynthesisVoice, setupTestEnvironment} from './common.js';
 
@@ -42,19 +43,116 @@ suite('AccentMenu', () => {
     await microtasksFinished();
   });
 
-  test('renders accent list with selected item marked', () => {
+  test('renders radio accessibility semantics and active checkmark', () => {
+    const body =
+        accentMenu.$.accentMenu.querySelector<HTMLElement>('.accent-menu-body');
+    assertTrue(!!body);
+    assertEquals('radiogroup', body.getAttribute('role'));
+
     const buttons = getAccentButtons();
     assertTrue(buttons.length >= 2);
 
-    const checkMarks =
-        accentMenu.$.accentMenu.querySelectorAll<HTMLElement>('.check-mark');
-    assertTrue(checkMarks.length >= 2);
+    buttons.forEach(button => {
+      assertEquals('radio', button.getAttribute('role'));
+    });
 
-    // en-gb is not selected -> check-mark-showing-false
-    assertTrue(checkMarks[0]!.classList.contains('check-mark-showing-false'));
-    // en-us is selected -> check-mark-showing-true
-    assertTrue(checkMarks[1]!.classList.contains('check-mark-showing-true'));
+    // en-gb is index 0 (alphabetical by readable language), en-us is index 1
+    const enGbButton = buttons[0]!;
+    const enUsButton = buttons[1]!;
+
+    assertEquals('false', enGbButton.getAttribute('aria-checked'));
+    assertEquals('true', enUsButton.getAttribute('aria-checked'));
+
+    const activeCheckMarks =
+        accentMenu.$.accentMenu.querySelectorAll<HTMLElement>(
+            '.check-mark-showing-true');
+    assertEquals(1, activeCheckMarks.length);
   });
+
+  test('fires LANGUAGE_SELECTED event on unselected accent click', async () => {
+    const whenFired = eventToPromise<CustomEvent<{language: string}>>(
+        ToolbarEvent.LANGUAGE_SELECTED, accentMenu);
+    const buttons = getAccentButtons();
+    const enGbButton = buttons[0]!;
+    enGbButton.click();
+    const event = await whenFired;
+    assertEquals('en-gb', event.detail.language);
+  });
+
+  test('retains checkmark on active accent during download', async () => {
+    accentMenu.notify(NotificationType.DOWNLOADING, 'en-gb');
+    await microtasksFinished();
+
+    const buttons = getAccentButtons();
+    const enGbButton = buttons[0]!;
+    const enUsButton = buttons[1]!;
+
+    const enUsCheckMark =
+        enUsButton.querySelector<HTMLElement>('.check-mark-showing-true');
+    assertTrue(!!enUsCheckMark);
+
+    const enGbCheckMark =
+        enGbButton.querySelector<HTMLElement>('.check-mark-showing-false');
+    assertTrue(!!enGbCheckMark);
+
+    const notification = accentMenu.$.accentMenu.querySelector<HTMLElement>(
+        '#notificationText-0');
+    assertTrue(!!notification);
+    assertFalse(notification.classList.contains('notification-error-true'));
+    assertTrue(notification.classList.contains('notification-text'));
+  });
+
+  test('displays error notification without shifting checkmark', async () => {
+    accentMenu.notify(NotificationType.GENERIC_ERROR, 'en-gb');
+    await microtasksFinished();
+
+    const buttons = getAccentButtons();
+    const enUsButton = buttons[1]!;
+
+    const enUsCheckMark =
+        enUsButton.querySelector<HTMLElement>('.check-mark-showing-true');
+    assertTrue(!!enUsCheckMark);
+
+    const notification = accentMenu.$.accentMenu.querySelector<HTMLElement>(
+        '#notificationText-0');
+    assertTrue(!!notification);
+    assertTrue(notification.classList.contains('notification-error-true'));
+    assertTrue(notification.classList.contains('notification-text'));
+  });
+
+  test(
+      'maintains accurate click index binding during search filtering',
+      async () => {
+        accentMenu.availableVoices = [
+          ...availableVoices,
+          createSpeechSynthesisVoice({name: 'Voice 3', lang: 'es-ES'}),
+        ];
+        accentMenu.localesOfLangPackVoices =
+            new Set(['en-us', 'en-gb', 'es-es']);
+        accentMenu.localeToDisplayName = {
+          ...accentMenu.localeToDisplayName,
+          'es-es': 'Spanish (Spain)',
+        };
+        await microtasksFinished();
+
+        let selectedLanguage = '';
+        accentMenu.addEventListener(
+            ToolbarEvent.LANGUAGE_SELECTED, (e: Event) => {
+              selectedLanguage =
+                  (e as CustomEvent<{language: string}>).detail.language;
+            });
+
+        getSearchField().value = 'United Kingdom';
+        await microtasksFinished();
+
+        const filteredButtons = getAccentButtons();
+        assertEquals(1, filteredButtons.length);
+
+        filteredButtons[0]!.click();
+        await microtasksFinished();
+
+        assertEquals('en-gb', selectedLanguage);
+      });
 
   test('clears search on clear button click', async () => {
     getSearchField().value = 'United Kingdom';

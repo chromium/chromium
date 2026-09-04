@@ -2389,6 +2389,7 @@ Unknown properties are collapsed to zero. -->
   <int value="1" label="Voice name change"/>
   <int value="2" label="Highlight change"/>
   <int value="3" label="Language toggle"/>
+  <int value="4" label="Accent change"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/shared/metrics_browser_proxy.ts:ReadAloudSettingsChange) -->

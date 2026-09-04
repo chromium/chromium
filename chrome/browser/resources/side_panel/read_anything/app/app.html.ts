@@ -40,6 +40,7 @@ export function getHtml(this: AppElement) {
         .isLineFocusShowing="${this.computeIsLineFocusShowing_()}"
         @select-voice="${this.onSelectVoice_}"
         @voice-language-toggle="${this.onVoiceLanguageToggle_}"
+        @voice-language-selected="${this.onVoiceLanguageSelected_}"
         @preview-voice="${this.onPreviewVoice_}"
         @voice-menu-close="${this.onVoiceMenuClose_}"
         @voice-menu-open="${this.onVoiceMenuOpen_}"

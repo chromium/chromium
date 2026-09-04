@@ -48,6 +48,9 @@ export class VoiceLanguageModel {
   private currentVoice_: SpeechSynthesisVoice|null = null;
   private currentLanguage_: string = '';
 
+  // In-flight language download requested by single-selection UI.
+  private pendingTargetLanguage_: string|null = null;
+
   getWaitingForNewEngine(): boolean {
     return this.waitingForNewEngine_;
   }
@@ -146,5 +149,13 @@ export class VoiceLanguageModel {
 
   setCurrentLanguage(language: string): void {
     this.currentLanguage_ = language;
+  }
+
+  getPendingTargetLanguage(): string|null {
+    return this.pendingTargetLanguage_;
+  }
+
+  setPendingTargetLanguage(lang: string|null): void {
+    this.pendingTargetLanguage_ = lang;
   }
 }

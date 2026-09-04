@@ -31,7 +31,9 @@ export function getHtml(this: AccentMenuElement) {
         </cr-icon-button>` : ''}
     </cr-input>
   </div>
-  <div slot="body" class="accent-menu-body">
+  <div slot="body" class="accent-menu-body"
+      role="radiogroup"
+      aria-label="$i18n{accentMenuLabel}">
     <span id="noResultsMessage" ?hidden="${this.searchHasLanguages()}"
       aria-live="polite">
       $i18n{languageMenuNoResults}
@@ -39,9 +41,11 @@ export function getHtml(this: AccentMenuElement) {
     ${this.availableLanguages_.map((item, index) => html`
       <button class="dropdown-item"
           data-index="${index}"
+          role="radio"
+          aria-checked="${this.getItemAriaChecked_(item)}"
           @click="${this.onLanguageSelectClick_}"
           aria-labelledby="accent-name-${index}">
-        <cr-icon id="check-mark"
+        <cr-icon id="check-mark-${index}"
             class="check-mark check-mark-showing-${item.selected}"
             icon="cr:check">
         </cr-icon>
@@ -49,8 +53,9 @@ export function getHtml(this: AccentMenuElement) {
           ${item.readableLanguage}
         </span>
       </button>
-      <span id="notificationText"
-          class="notification-error-${item.notification.isError}"
+      <span id="notificationText-${index}"
+          class="notification-text notification-error-${
+              item.notification.isError}"
           aria-live="polite">
         ${item.notification.text ? this.i18n(item.notification.text) : ''}
       </span>

@@ -95,7 +95,8 @@ cr-icon {
   color: var(--color-sys-error);
 }
 
-#notificationText {
+#notificationText,
+.notification-text {
   white-space: normal;
 }
 

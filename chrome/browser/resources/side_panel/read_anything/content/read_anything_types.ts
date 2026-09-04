@@ -146,6 +146,7 @@ export enum ToolbarEvent {
   IMAGES = 'images-toggle',
   VOICE = 'select-voice',
   LANGUAGE_TOGGLE = 'voice-language-toggle',
+  LANGUAGE_SELECTED = 'voice-language-selected',
   PLAY_PREVIEW = 'preview-voice',
   LANGUAGE_MENU_OPEN = 'language-menu-open',
   LANGUAGE_MENU_CLOSE = 'language-menu-close',

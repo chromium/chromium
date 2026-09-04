@@ -130,9 +130,10 @@ export enum ReadAloudSettingsChange {
   VOICE_NAME_CHANGE = 1,
   HIGHLIGHT_CHANGE = 2,
   LANGUAGE_TOGGLE = 3,
+  ACCENT_CHANGE = 4,
 
   // Must be last.
-  COUNT = 4,
+  COUNT = 5,
 }
 // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingReadAloudSettingsChange)
 

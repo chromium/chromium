@@ -652,6 +652,12 @@ export class AppElement extends AppElementBase implements SpeechListener,
     this.voiceLanguageController_.onLanguageToggle(event.detail.language);
   }
 
+  protected onVoiceLanguageSelected_(event: CustomEvent<{language: string}>) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.voiceLanguageController_.onLanguageSelected(event.detail.language);
+  }
+
   protected onReadabilityAnchorsReady_() {
     if (this.contentBrowserProxy_.isReadabilityEnabled()) {
       this.contentController_.updateAnchorsForReadability(this.shadowRoot);
