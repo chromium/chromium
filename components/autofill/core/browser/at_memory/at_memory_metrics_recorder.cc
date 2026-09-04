@@ -232,6 +232,12 @@ AtMemoryMetricsRecorder::~AtMemoryMetricsRecorder() {
   }
   base::UmaHistogramEnumeration("Autofill.AtMemory.UiSessionOutcome",
                                 session_outcome);
+  if (session_outcome == AtMemoryUiSessionOutcome::kDismissedBeforeResults &&
+      query_to_suggestions_shown_timer_) {
+    base::UmaHistogramMediumTimes(
+        "Autofill.AtMemory.Latency.DismissedBeforeResults",
+        query_to_suggestions_shown_timer_->Elapsed());
+  }
 
   base::UmaHistogramBoolean("Autofill.AtMemory.QuerySubmitted",
                             query_count_ > 0);

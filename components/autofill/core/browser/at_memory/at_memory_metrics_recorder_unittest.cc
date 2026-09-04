@@ -1091,7 +1091,7 @@ TEST_F(AtMemoryMetricsRecorderTest, UiSessionOutcome_DismissedBeforeQuery) {
 }
 
 // Tests that closing the popup after submitting a query but before receiving
-// results emits kDismissedBeforeResults.
+// results emits kDismissedBeforeResults and logs the latency wait time.
 TEST_F(AtMemoryMetricsRecorderTest, UiSessionOutcome_DismissedBeforeResults) {
   {
     AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
@@ -1101,12 +1101,15 @@ TEST_F(AtMemoryMetricsRecorderTest, UiSessionOutcome_DismissedBeforeResults) {
         AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
         /*metadata=*/{});
     metrics.OnQuerySubmitted(u"query");
+    task_environment_.FastForwardBy(base::Seconds(2));
     // Destructor called before SendResponse(metrics).
   }
 
   histogram_tester_.ExpectUniqueSample(
       "Autofill.AtMemory.UiSessionOutcome",
       AtMemoryUiSessionOutcome::kDismissedBeforeResults, 1);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Autofill.AtMemory.Latency.DismissedBeforeResults", base::Seconds(2), 1);
 }
 
 // Tests that closing the popup after receiving search results without

@@ -2394,6 +2394,17 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.AtMemory.Latency.DismissedBeforeResults" units="ms"
+    expires_after="2027-09-01">
+  <owner>ireneuszszulc@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the duration of time the user waited after submitting a search query
+    before dismissing AtMemory suggestions. Emitted when suggestions are hidden
+    before receiving any query results.
+  </summary>
+</histogram>
+
 <!-- LINT.IfChange(Autofill.AtMemory.Latency.FetchPii) -->
 
 <histogram name="Autofill.AtMemory.Latency.FetchPii.{source}" units="ms"
