@@ -36,6 +36,8 @@ export class IndigoImageReplacementAppElement extends CrLitElement {
       overlayAnimationState_: {type: String},
       imageSrc_: {type: String},
       objectFit_: {type: String},
+      showWatermark_: {type: Boolean},
+      watermarkEnabledString: {type: String, attribute: 'show-watermark'},
     };
   }
 
@@ -43,6 +45,9 @@ export class IndigoImageReplacementAppElement extends CrLitElement {
   protected accessor overlayAnimationState_: 'entry'|'exit'|'none' = 'none';
   protected accessor imageSrc_: string = '';
   protected accessor objectFit_: ObjectFit = 'contain';
+  protected accessor showWatermark_: boolean = false;
+  protected accessor watermarkEnabledString: string = 'false';
+
   private invocationId_: number|undefined;
   private isGenerating_: boolean = false;
   private entryAnimationResolve_: (() => void)|null = null;
@@ -110,6 +115,7 @@ export class IndigoImageReplacementAppElement extends CrLitElement {
         URL.revokeObjectURL(this.imageSrc_);
         this.imageSrc_ = imageData.value;
         this.objectFit_ = this.computeObjectFitForReplacement_(img);
+        this.showWatermark_ = this.watermarkEnabledString === 'true';
         await this.updateComplete;
       }
     } finally {
