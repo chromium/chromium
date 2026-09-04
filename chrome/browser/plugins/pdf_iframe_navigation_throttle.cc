@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/escape.h"
 #include "base/task/sequenced_task_runner.h"
+#include "build/build_config.h"
 #include "chrome/common/pdf_util.h"
 #include "components/pdf/common/constants.h"
 #include "components/pdf/common/pdf_util.h"
@@ -26,6 +27,11 @@
 #include "chrome/browser/plugins/chrome_plugin_service_filter.h"
 #include "content/public/browser/plugin_service.h"
 #include "content/public/common/webplugininfo.h"
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+#include "content/public/browser/render_widget_host_view.h"
+#include "third_party/blink/public/common/features.h"
 #endif
 
 namespace {
@@ -115,6 +121,28 @@ PDFIFrameNavigationThrottle::WillProcessResponse() {
   // to the placeholder case.
   if (IsPDFPluginEnabled(navigation_handle())) {
     return content::NavigationThrottle::PROCEED;
+  }
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          blink::features::kAndroidHandlePdfInIframe)) {
+    content::RenderFrameHost* rfh = navigation_handle()->GetRenderFrameHost();
+    content::RenderWidgetHostView* view = rfh ? rfh->GetView() : nullptr;
+    bool is_hidden_view = !view || view->GetViewBounds().IsEmpty();
+    // Open PDFs in a new tab if the view is hidden and the user tried to access
+    // it.
+    if (is_hidden_view && navigation_handle()->HasUserGesture()) {
+      // Open in new tab
+      content::OpenURLParams params =
+          content::OpenURLParams::FromNavigationHandle(navigation_handle());
+      params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+      navigation_handle()->GetWebContents()->OpenURL(
+          params, /*navigation_handle_callback=*/{});
+      // Cancel the navigation in the original frame so it doesn't show
+      // placeholder.
+      return content::NavigationThrottle::CANCEL_AND_IGNORE;
+    }
   }
 #endif
 

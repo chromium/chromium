@@ -113,6 +113,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAndroidDesktopUASpoofAsChromeOS);
 
 // Gated prewarming of system fonts on Android to background threads.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAndroidSystemFontPrewarming);
+
+// Opens PDFs in iframe in standalone tabs on Android.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAndroidHandlePdfInIframe);
 #endif
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
