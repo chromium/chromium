@@ -73,29 +73,6 @@ class ContentFacilitatedPaymentsDriverFactoryTest
 
 TEST_F(
     ContentFacilitatedPaymentsDriverFactoryTest,
-    OnTextCopiedToClipboard_PixCodeInIFrame_DoesNotTriggerPixDetection_PixFlowExitedReasonLogged) {
-  base::HistogramTester histogram_tester;
-  NavigateAndCommit(GURL("https://example.com"));
-  content::RenderFrameHost* main_frame = web_contents()->GetPrimaryMainFrame();
-  content::RenderFrameHost* subframe =
-      content::RenderFrameHostTester::For(main_frame)->AppendChild("subframe");
-
-  const std::u16string kValidPixCode = u"00020126180014br.gov.bcb.pix63041D3D";
-
-  // Expect that the client is not called because the copy happened in an
-  // iframe.
-  EXPECT_CALL(*client_, ShowPixPaymentPrompt).Times(0);
-
-  factory_->OnTextCopiedToClipboard(subframe, kValidPixCode);
-
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.PayflowExitedReason",
-      /*sample=*/PixFlowExitedReason::kPixCodeInIFrame,
-      /*expected_bucket_count=*/1);
-}
-
-TEST_F(
-    ContentFacilitatedPaymentsDriverFactoryTest,
     OnTextCopiedToClipboard_PixCodeInIFrame_FlagEnabled_PixFlowExitedReasonNotLogged) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(kEnableIframeForPix);

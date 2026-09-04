@@ -27,7 +27,7 @@ BASE_FEATURE(kEnableEwalletNewAccountLinking,
 
 // When enabled, pix pay flow will be triggered when users click the copy button
 // within iframe.
-BASE_FEATURE(kEnableIframeForPix, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableIframeForPix, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, Chrome will prompt users without linked Pix accounts to link
 // their Pix accounts to Google Wallet.
