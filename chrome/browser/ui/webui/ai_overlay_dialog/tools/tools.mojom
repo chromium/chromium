@@ -158,12 +158,11 @@ interface AiOverlayTools {
       => result<mojo_base.mojom.Empty, string>;
 
   // @NON_BLOCKING
-  // Opens the Gemini in Chrome side panel to handle complex multi-step browser
-  // tasks, autonomous actuation (e.g. multi-step workflows, shopping, booking,
-  // filling multi-page forms), image generation, or conversational queries.
+  // Opens the Gemini side panel in Chrome. Use this for image generation or
+  // when the user explicitly asks to open Gemini or the side panel.
   //
-  // prompt: The request or instruction to send to Gemini in the side panel.
-  InvokeGlic(string prompt) => result<string, string>;
+  // prompt: The request, question, or prompt to send to the Gemini side panel.
+  OpenGeminiPanel(string prompt) => result<string, string>;
 };
 
 // Infrastructure interface for tool manifest discovery.

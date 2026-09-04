@@ -77,8 +77,8 @@ class AiOverlayTools : public ai_overlay_dialog::mojom::AiOverlayTools,
   void SelectOption(const blink::DOMNodeIdType& dom_node_id,
                     const std::string& value,
                     SelectOptionCallback callback) override;
-  void InvokeGlic(const std::string& prompt,
-                  InvokeGlicCallback callback) override;
+  void OpenGeminiPanel(const std::string& prompt,
+                       OpenGeminiPanelCallback callback) override;
   void GetToolDefinitions(GetToolDefinitionsCallback callback) override;
 
  private:

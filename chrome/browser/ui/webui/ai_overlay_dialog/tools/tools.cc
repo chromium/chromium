@@ -441,9 +441,9 @@ void AiOverlayTools::PauseVideo(PauseVideoCallback callback) {
   }
 }
 
-void AiOverlayTools::InvokeGlic(const std::string& prompt,
-                                InvokeGlicCallback callback) {
-  RecordToolCallInvoked("InvokeGlic");
+void AiOverlayTools::OpenGeminiPanel(const std::string& prompt,
+                                     OpenGeminiPanelCallback callback) {
+  RecordToolCallInvoked("OpenGeminiPanel");
   glic::GlicKeyedService* glic_service =
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(
           browser_->GetProfile());
@@ -469,14 +469,14 @@ void AiOverlayTools::InvokeGlic(const std::string& prompt,
   auto split_callback = base::SplitOnceCallback(std::move(callback));
 
   options.on_success = base::BindOnce(
-      [](InvokeGlicCallback cb) {
-        std::move(cb).Run(base::ok("Glic panel opened and task completed."));
+      [](OpenGeminiPanelCallback cb) {
+        std::move(cb).Run(base::ok("Gemini panel opened."));
       },
       std::move(split_callback.first));
 
   options.on_error = base::BindOnce(
-      [](InvokeGlicCallback cb, glic::GlicInvokeError error) {
-        std::move(cb).Run(base::unexpected("Glic invocation failed"));
+      [](OpenGeminiPanelCallback cb, glic::GlicInvokeError error) {
+        std::move(cb).Run(base::unexpected("Failed to open Gemini panel"));
       },
       std::move(split_callback.second));
 
