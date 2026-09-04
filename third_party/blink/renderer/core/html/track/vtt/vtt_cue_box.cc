@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_entry.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -48,7 +49,15 @@ class VttCueBoxResizeDelegate final : public ResizeObserver::Delegate {
   void OnResize(
       const HeapVector<Member<ResizeObserverEntry>>& entries) override {
     DCHECK_EQ(entries.size(), 1u);
-    VttCueLayoutAlgorithm(*To<VTTCueBox>(entries[0]->target())).Layout();
+    auto& cue_box = *To<VTTCueBox>(entries[0]->target());
+    if (RuntimeEnabledFeatures::WebVTTCueTightLineBoxEnabled()) {
+      // The adjustment was computed from the box geometry before this
+      // resize (e.g., a line box height measured before a web font
+      // finished loading). Recompute it from the new geometry; otherwise,
+      // the stale position persists until the container is reset.
+      cue_box.RevertAdjustment();
+    }
+    VttCueLayoutAlgorithm(cue_box).Layout();
   }
 };
 
@@ -117,6 +126,15 @@ void VTTCueBox::ApplyCSSProperties(
   // text alignment:
   SetInlineStyleProperty(CSSPropertyID::kTextAlign,
                          display_parameters.text_align);
+
+  if (RuntimeEnabledFeatures::WebVTTCueTightLineBoxEnabled()) {
+    // With a zero strut, the height of each line box comes from the cue
+    // text itself, so the box hugs the text regardless of the container
+    // font. The UA stylesheet gives video::cue an explicit normal
+    // line-height so the zero value does not inherit into the cue text.
+    SetInlineStyleProperty(CSSPropertyID::kLineHeight, 0,
+                           CSSPrimitiveValue::UnitType::kNumber);
+  }
 
   // For non-snap-to-lines cues, the top/left CSS properties already position
   // the cue box's alignment edge at the computed line/position percentage

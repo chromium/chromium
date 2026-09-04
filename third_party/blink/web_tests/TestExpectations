@@ -1795,9 +1795,7 @@ crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/evil/9_cues_overlapping_completely_all_cues_have_same_timestamp.html [ Failure ]
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/evil/9_cues_overlapping_completely.html [ Failure ]
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/evil/single_quote.html [ Failure ]
-crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/evil/size_90.html [ Failure ]
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/evil/size_99.html [ Failure ]
-crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/selectors/cue/background_shorthand_css_relative_url.html [ Failure ]
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/selectors/cue/color_hex.html [ Failure Pass Timeout ]
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/selectors/cue/color_hsla.html [ Failure Pass ]
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/selectors/cue_function/bold_object/bold_font_properties.html [ Failure Pass ]
@@ -1957,8 +1955,6 @@ crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/selectors/default_styles/inherit_as_default_value_inherits_values_from_media_element.html [ Failure Pass ]
 crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/selectors/default_styles/underline_object_default_font-style.html [ Failure Pass ]
 
-# Fails on both content_shell and headless shell.
-crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model/align_center_position_lt_50_size_gt_maximum_size.html [ Failure ]
 
 crbug.com/1002514 external/wpt/web-share/share-sharePromise-internal-slot.https.html [ Crash Failure ]
 

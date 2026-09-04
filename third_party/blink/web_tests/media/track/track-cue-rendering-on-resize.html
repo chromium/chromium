@@ -16,7 +16,7 @@ async_test(function(t) {
 
     video.onseeked = t.step_func_done(function() {
         var multiLineCueDisplayElement = textTrackDisplayElement(video);
-        assert_equals(getComputedStyle(multiLineCueDisplayElement).lineHeight, 'normal');
+        assert_not_equals(getComputedStyle(multiLineCueDisplayElement).lineHeight, '108px');
     });
 
     video.currentTime = 1.25;

@@ -1346,6 +1346,7 @@ video::-webkit-media-text-track-container {
 
 video::cue {
     display: inline;
+    line-height: normal;
 
     background-color: rgba(0, 0, 0, 0.8);
 }

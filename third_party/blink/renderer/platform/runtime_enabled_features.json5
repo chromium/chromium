@@ -7245,6 +7245,13 @@
       status: "stable",
     },
     {
+      // Killswitch for sizing each cue line box using the cue text font
+      // instead of the text track container font, keeping the cue box tight
+      // around the rendered cue text.
+      name: "WebVTTCueTightLineBox",
+      status: "stable",
+    },
+    {
       name: "WebVTTLineAndPositionAlignment",
       status: "experimental",
       // No base::Feature while experimental: avoids a mutable-constant
