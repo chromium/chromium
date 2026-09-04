@@ -126,11 +126,6 @@ TreeView::~TreeView() {
     // TreeView should have been blurred before destroy.
     DCHECK(selector_.get() != GetInputMethod()->GetTextInputClient());
   }
-
-  if (focus_manager_) {
-    focus_manager_->RemoveFocusChangeListener(this);
-    focus_manager_ = nullptr;
-  }
 }
 
 // static
@@ -225,9 +220,8 @@ void TreeView::StartEditing(TreeModelNode* node) {
   editor_->SelectAll(false);
 
   // Listen for focus changes so that we can cancel editing.
-  focus_manager_ = GetFocusManager();
-  if (focus_manager_) {
-    focus_manager_->AddFocusChangeListener(this);
+  if (FocusManager* focus_manager = GetFocusManager()) {
+    focus_manager_observation_.Observe(focus_manager);
   }
 
   // Accelerators to commit/cancel edit.
@@ -243,10 +237,7 @@ void TreeView::CancelEdit() {
   // WARNING: don't touch |selected_node_|, it may be bogus.
 
   editing_ = false;
-  if (focus_manager_) {
-    focus_manager_->RemoveFocusChangeListener(this);
-    focus_manager_ = nullptr;
-  }
+  focus_manager_observation_.Reset();
   editor_->SetVisible(false);
   SchedulePaint();
 
