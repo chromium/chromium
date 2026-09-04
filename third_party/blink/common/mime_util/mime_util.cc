@@ -165,12 +165,20 @@ bool IsJSONMimeType(std::string_view mime_type) {
       net::MimeTypeValidationLevel::kWildcardSlashAndTokens);
 }
 
-// TODO(crbug.com/362282752): Allow other `*/*+xml` MIME types.
 // https://mimesniff.spec.whatwg.org/#xml-mime-type
+// Full `*+xml` matching is behind SpecCompliantXmlMimeTypes; without the
+// flag, only `application/*+xml` is recognized (legacy behavior).
 bool IsXMLMimeType(std::string_view mime_type) {
-  return net::MatchesMimeType("text/xml", mime_type) ||
-         net::MatchesMimeType("application/xml", mime_type) ||
-         net::MatchesMimeType("application/*+xml", mime_type);
+  if (net::MatchesMimeType("text/xml", mime_type) ||
+      net::MatchesMimeType("application/xml", mime_type)) {
+    return true;
+  }
+  if (base::FeatureList::IsEnabled(features::kSpecCompliantXmlMimeTypes)) {
+    return net::MatchesMimeType(
+        "*+xml", mime_type,
+        net::MimeTypeValidationLevel::kWildcardSlashAndTokens);
+  }
+  return net::MatchesMimeType("application/*+xml", mime_type);
 }
 
 // From step 3 of

@@ -50,6 +50,55 @@ TEST(MimeUtilJsonMimeTypeTest, IsJSON) {
   EXPECT_FALSE(IsJSONMimeType("text/halé+json"));
 }
 
+class MimeUtilXmlMimeTypeTest : public testing::TestWithParam<bool> {};
+
+TEST_P(MimeUtilXmlMimeTypeTest, IsXML) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatureState(blink::features::kSpecCompliantXmlMimeTypes,
+                                GetParam());
+  const bool spec_compliant = GetParam();
+
+  EXPECT_TRUE(IsXMLMimeType("text/xml"));
+  EXPECT_TRUE(IsXMLMimeType("application/xml"));
+  EXPECT_TRUE(IsXMLMimeType("application/atom+xml"));
+  EXPECT_TRUE(IsXMLMimeType("Application/XML"));
+  EXPECT_TRUE(IsXMLMimeType("Text/XML"));
+  EXPECT_TRUE(IsXMLMimeType("application/xml;x=1"));
+  EXPECT_TRUE(IsXMLMimeType("application/atom+xml;x=1"));
+
+  EXPECT_EQ(IsXMLMimeType("text/+xml"), spec_compliant);
+  EXPECT_EQ(IsXMLMimeType("text/html+xml"), spec_compliant);
+  EXPECT_EQ(IsXMLMimeType("image/svg+xml"), spec_compliant);
+  EXPECT_EQ(IsXMLMimeType("text/blah+xml;x=1"), spec_compliant);
+  EXPECT_EQ(IsXMLMimeType("image/svg+xml;x=1"), spec_compliant);
+
+  EXPECT_FALSE(IsXMLMimeType("xml"));
+  EXPECT_FALSE(IsXMLMimeType("+xml"));
+  EXPECT_FALSE(IsXMLMimeType("text+xml"));
+  EXPECT_FALSE(IsXMLMimeType("application/"));
+  EXPECT_FALSE(IsXMLMimeType("application/xmlabcd"));
+  EXPECT_FALSE(IsXMLMimeType("application/blahxml"));
+  EXPECT_FALSE(IsXMLMimeType("application/blah+xmlabcd"));
+  EXPECT_FALSE(IsXMLMimeType("application/foo+xml bar"));
+  EXPECT_FALSE(IsXMLMimeType("application/foo+xmlbar;a=b"));
+  EXPECT_FALSE(IsXMLMimeType("application/xml+blah"));
+  EXPECT_FALSE(IsXMLMimeType("application/problem+"));
+  EXPECT_FALSE(IsXMLMimeType("application/+"));
+  EXPECT_FALSE(IsXMLMimeType("text/html;+xml"));
+  EXPECT_FALSE(IsXMLMimeType("text/html+xml+json"));
+  EXPECT_FALSE(IsXMLMimeType("text/xml/xml"));
+  EXPECT_FALSE(IsXMLMimeType("text/xsl"));
+
+  EXPECT_FALSE(IsXMLMimeType("te xt/hal+xml"));
+  EXPECT_FALSE(IsXMLMimeType("text/ha l+xml"));
+  EXPECT_FALSE(IsXMLMimeType("aplicación/hal+xml"));
+  EXPECT_FALSE(IsXMLMimeType("text/halé+xml"));
+}
+
+INSTANTIATE_TEST_SUITE_P(MimeUtilTest,
+                         MimeUtilXmlMimeTypeTest,
+                         testing::Bool());
+
 TEST(MimeUtilTest, LookupTypes) {
   EXPECT_FALSE(IsUnsupportedTextMimeType("text/banana"));
   EXPECT_TRUE(IsUnsupportedTextMimeType("text/vcard"));

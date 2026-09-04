@@ -5875,6 +5875,14 @@
       status: "experimental",
     },
     {
+      // Enables spec-compliant suffix matching for XML MIME types
+      // (e.g., text/html+xml) by allowing *+xml patterns.
+      // https://mimesniff.spec.whatwg.org/#xml-mime-type
+      // https://crbug.com/362282752
+      name: "SpecCompliantXmlMimeTypes",
+      status: "experimental",
+    },
+    {
       // Exposes speculation measurement data (preloads, prefetches, prerenders)
       // on performance.speculations.
       name: "SpeculationMeasurement",
