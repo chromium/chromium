@@ -85,7 +85,7 @@ bool IsolatedOriginPattern::Parse(const std::string_view& unparsed_pattern) {
     return false;
   }
 
-  DCHECK(!is_valid_ || !origin_.opaque());
+  CHECK(!is_valid_ || !origin_.opaque(), base::NotFatalUntil::M159);
   is_valid_ = true;
   return true;
 }
