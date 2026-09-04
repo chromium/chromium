@@ -604,6 +604,7 @@ void FullscreenController::EnterFullscreenModeInternal(
                       requesting_frame) !=
               blink::mojom::PermissionStatus::GRANTED) {
         display_id = display::kInvalidDisplayId;
+        fullscreen_tab_params.display_id = display::kInvalidDisplayId;
       } else if (entering_tab_fullscreen) {
         display_id_prior_to_tab_fullscreen_ = current_display;
       }
