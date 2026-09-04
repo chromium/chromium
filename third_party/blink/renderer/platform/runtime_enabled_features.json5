@@ -1153,6 +1153,12 @@
       status: "stable",
     },
     {
+      // This is a kill switch for a refactor of the way activation
+      // behaviors are triggered. It should not affect behavior.
+      name: "CleanUpActivationBehavior",
+      status: "experimental",
+    },
+    {
       // Set currentTarget to null after dispatch for EventTarget.
       // This was added in M142 and can be removed after M144.
       // https://issues.chromium.org/issues/346766786

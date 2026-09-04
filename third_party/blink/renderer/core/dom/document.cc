@@ -4575,8 +4575,13 @@ bool Document::DispatchBeforeUnloadEvent(
     dom_window_->DispatchEvent(before_unload_event, this);
   }
 
-  if (!before_unload_event.defaultPrevented())
-    DefaultEventHandler(before_unload_event);
+  if (!before_unload_event.defaultPrevented()) {
+    if (RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled()) {
+      DefaultBeforeUnloadEventHandler(before_unload_event);
+    } else {
+      DefaultEventHandler(before_unload_event);
+    }
+  }
 
   bool cancelled_by_script = !before_unload_event.returnValue().empty() ||
                              before_unload_event.defaultPrevented();
@@ -4641,6 +4646,8 @@ bool Document::DispatchBeforeUnloadEvent(
 
   return false;
 }
+
+void Document::DefaultBeforeUnloadEventHandler(BeforeUnloadEvent&) {}
 
 void Document::DispatchUnloadEvents(
     UnloadEventTimingInfo* unload_timing_info,

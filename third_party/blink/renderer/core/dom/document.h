@@ -156,6 +156,7 @@ class AnchorElementInteractionTracker;
 class AnimationClock;
 class AriaNotificationOptions;
 class Attr;
+class BeforeUnloadEvent;
 class BeforeUnloadEventListener;
 class BoxQuadOptions;
 class ViewTransitionSupplement;
@@ -946,6 +947,7 @@ class CORE_EXPORT Document : public ContainerNode,
       bool& did_allow_navigation,
       base::TimeTicks& out_before_unload_dialog_opened_time,
       base::TimeTicks& out_before_unload_dialog_closed_time);
+  void DefaultBeforeUnloadEventHandler(BeforeUnloadEvent&);
 
   // Dispatches "pagehide", "visibilitychange" and "unload" events, if not
   // dispatched already. Fills `unload_timing_info` if present.

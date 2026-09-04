@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/html/media/media_controls.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_track_selector_list_element.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/timer.h"
 
 namespace blink {
@@ -372,7 +373,12 @@ class MODULES_EXPORT MediaControlsImpl final : public HTMLDivElement,
   void OnExitedFullscreen();
   void OnPictureInPictureChanged();
   void OnPanelKeypress();
-  void OnMediaKeyboardEvent(Event* event) { DefaultEventHandler(*event); }
+  void OnMediaKeyboardEvent(Event* event) {
+    DCHECK(!RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled());
+    DefaultEventHandler(*event);
+  }
+  void HandlePointerEventFromMediaElement(Event*);
+  void HandleKeyboardEventFromMediaElement(Event*);
   void OnWaiting();
   void OnLoadingProgress();
   void OnLoadedData();

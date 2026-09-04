@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
 #include "third_party/blink/renderer/modules/remoteplayback/availability_callback_wrapper.h"
 #include "third_party/blink/renderer/modules/remoteplayback/remote_playback.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -167,6 +168,11 @@ HTMLMediaElement& MediaControlsMediaEventListener::GetMediaElement() {
 void MediaControlsMediaEventListener::Invoke(
     ExecutionContext* execution_context,
     Event* event) {
+  if (RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled() &&
+      !event->isTrusted()) {
+    return;
+  }
+
   if (event->type() == event_type_names::kVolumechange) {
     media_controls_->OnVolumeChange();
     return;
@@ -263,7 +269,11 @@ void MediaControlsMediaEventListener::Invoke(
   if (event->type() == event_type_names::kKeypress ||
       event->type() == event_type_names::kKeydown ||
       event->type() == event_type_names::kKeyup) {
-    media_controls_->OnMediaKeyboardEvent(event);
+    if (RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled()) {
+      media_controls_->HandleKeyboardEventFromMediaElement(event);
+    } else {
+      media_controls_->OnMediaKeyboardEvent(event);
+    }
     return;
   }
 
@@ -278,7 +288,11 @@ void MediaControlsMediaEventListener::Invoke(
   if (event->type() == event_type_names::kPointermove ||
       event->type() == event_type_names::kPointerout ||
       event->type() == event_type_names::kPointerenter) {
-    media_controls_->DefaultEventHandler(*event);
+    if (RuntimeEnabledFeatures::CleanUpActivationBehaviorEnabled()) {
+      media_controls_->HandlePointerEventFromMediaElement(event);
+    } else {
+      media_controls_->DefaultEventHandler(*event);
+    }
     return;
   }
 

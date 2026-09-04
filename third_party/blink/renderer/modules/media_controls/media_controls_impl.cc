@@ -1659,44 +1659,87 @@ void MediaControlsImpl::OnAccessibleBlur() {
   ResetHideMediaControlsTimer();
 }
 
-void MediaControlsImpl::DefaultEventHandler(Event& event) {
-  HTMLDivElement::DefaultEventHandler(event);
-
-  // Do not handle events to not interfere with the rest of the page if no
-  // controls should be visible.
-  if (!MediaElement().ShouldShowControls())
+void MediaControlsImpl::HandlePointerEventFromMediaElement(Event* event) {
+  if (!MediaElement().ShouldShowControls()) {
     return;
+  }
 
   // Add IgnoreControlsHover to m_hideTimerBehaviorFlags when we see a touch
   // event, to allow the hide-timer to do the right thing when it fires.
   // FIXME: Preferably we would only do this when we're actually handling the
   // event here ourselves.
-  bool is_touch_event = IsTouchEvent(&event);
+  bool is_touch_event = IsTouchEvent(event);
   hide_timer_behavior_flags_ |=
       is_touch_event ? kIgnoreControlsHover : kIgnoreNone;
 
   // Touch events are treated differently to avoid fake mouse events to trigger
   // random behavior. The expect behaviour for touch is that a tap will show the
   // controls and they will hide when the timer to hide fires.
-  if (is_touch_event)
-    HandleTouchEvent(&event);
+  if (is_touch_event) {
+    HandleTouchEvent(event);
+  }
 
   // Reset the touch interaction state if we receive any native mouse/pointer
   // events indicating the user has switched from touch to mouse/pointer
   // interaction.
-  if (IsMouseInteractionEvent(event) && !is_touch_event) {
+  if (IsMouseInteractionEvent(*event) && !is_touch_event) {
     is_touch_interaction_ = false;
   }
 
-  if ((event.type() == event_type_names::kPointerover ||
-       event.type() == event_type_names::kPointermove ||
-       event.type() == event_type_names::kPointerout) &&
+  if ((event->type() == event_type_names::kPointerover ||
+       event->type() == event_type_names::kPointermove ||
+       event->type() == event_type_names::kPointerout) &&
       !is_touch_interaction_) {
-    HandlePointerEvent(&event);
+    HandlePointerEvent(event);
+  }
+}
+
+void MediaControlsImpl::HandleKeyboardEventFromMediaElement(Event* event) {
+  if (!MediaElement().ShouldShowControls()) {
+    return;
   }
 
-  if (event.type() == event_type_names::kClick && !is_touch_interaction_)
+  auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
+  if (keyboard_event && !event->defaultPrevented() &&
+      !IsSpatialNavigationEnabled(GetDocument().GetFrame())) {
+    const AtomicString key(keyboard_event->key());
+    if (key == keywords::kCapitalEnter || keyboard_event->keyCode() == ' ') {
+      if (overlay_play_button_) {
+        overlay_play_button_->OnMediaKeyboardEvent(event);
+      } else {
+        play_button_->OnMediaKeyboardEvent(event);
+      }
+      return;
+    }
+    if (key == keywords::kArrowLeft || key == keywords::kArrowRight ||
+        key == keywords::kHome || key == keywords::kEnd) {
+      timeline_->OnMediaKeyboardEvent(event);
+      return;
+    }
+    if (volume_slider_ &&
+        (key == keywords::kArrowDown || key == keywords::kArrowUp)) {
+      for (int i = 0; i < 5; i++) {
+        volume_slider_->OnMediaKeyboardEvent(event);
+      }
+      return;
+    }
+  }
+}
+
+void MediaControlsImpl::DefaultEventHandler(Event& event) {
+  HTMLDivElement::DefaultEventHandler(event);
+
+  HandlePointerEventFromMediaElement(&event);
+
+  // Do not handle events to not interfere with the rest of the page if no
+  // controls should be visible.
+  if (!MediaElement().ShouldShowControls()) {
+    return;
+  }
+
+  if (event.type() == event_type_names::kClick && !is_touch_interaction_) {
     HandleClickEvent(&event);
+  }
 
   // If the user is interacting with the controls via the keyboard, don't hide
   // the controls. This will fire when the user tabs between controls (focusin)
@@ -1706,30 +1749,7 @@ void MediaControlsImpl::DefaultEventHandler(Event& event) {
     ResetHideMediaControlsTimer();
   }
 
-  auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
-  if (keyboard_event && !event.defaultPrevented() &&
-      !IsSpatialNavigationEnabled(GetDocument().GetFrame())) {
-    const AtomicString key(keyboard_event->key());
-    if (key == keywords::kCapitalEnter || keyboard_event->keyCode() == ' ') {
-      if (overlay_play_button_) {
-        overlay_play_button_->OnMediaKeyboardEvent(&event);
-      } else {
-        play_button_->OnMediaKeyboardEvent(&event);
-      }
-      return;
-    }
-    if (key == keywords::kArrowLeft || key == keywords::kArrowRight ||
-        key == keywords::kHome || key == keywords::kEnd) {
-      timeline_->OnMediaKeyboardEvent(&event);
-      return;
-    }
-    if (volume_slider_ &&
-        (key == keywords::kArrowDown || key == keywords::kArrowUp)) {
-      for (int i = 0; i < 5; i++)
-        volume_slider_->OnMediaKeyboardEvent(&event);
-      return;
-    }
-  }
+  HandleKeyboardEventFromMediaElement(&event);
 }
 
 void MediaControlsImpl::HandlePointerEvent(Event* event) {
