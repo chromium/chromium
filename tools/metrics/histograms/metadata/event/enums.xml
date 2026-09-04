@@ -349,6 +349,30 @@ chromium-metrics-reviews@google.com.
   <int value="36" label="Tap unconfirmed"/>
 </enum>
 
+<enum name="UserActivationTriggerEnum">
+  <summary>
+    The user activation trigger types as defined in
+    blink.mojom.UserActivationNotificationType.
+  </summary>
+  <int value="0" label="kNone"/>
+  <int value="1" label="kInteraction"/>
+  <int value="2" label="kDevTools"/>
+  <int value="3" label="kExtensionEvent"/>
+  <int value="4" label="kExtensionGuestView"/>
+  <int value="5" label="kExtensionMessaging"/>
+  <int value="6" label="kMedia"/>
+  <int value="7" label="kFileSystemAccess"/>
+  <int value="8" label="kPlugin"/>
+  <int value="9" label="kTest"/>
+  <int value="10" label="kWebScriptExec"/>
+  <int value="11" label="kVoiceSearch"/>
+  <int value="12" label="kExtensionMessagingBothPrivileged"/>
+  <int value="13" label="kExtensionMessagingSenderPrivileged"/>
+  <int value="14" label="kExtensionMessagingReceiverPrivileged"/>
+  <int value="15" label="kExtensionMessagingNeitherPrivileged"/>
+  <int value="16" label="kActorWebMCP"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>

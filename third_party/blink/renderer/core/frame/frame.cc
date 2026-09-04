@@ -374,6 +374,12 @@ bool Frame::ConsumeTransientUserActivationInFrameTree() {
   bool was_active = user_activation_state_.IsActive();
   Frame& root = Tree().Top();
 
+  // To record UMA once per consumption, we arbitrarily picked the LocalFrame
+  // for root.
+  if (IsA<LocalFrame>(root)) {
+    root.user_activation_state_.RecordPreconsumptionUma();
+  }
+
   for (Frame* node = &root; node; node = node->Tree().TraverseNext())
     node->user_activation_state_.ConsumeIfActive();
 
