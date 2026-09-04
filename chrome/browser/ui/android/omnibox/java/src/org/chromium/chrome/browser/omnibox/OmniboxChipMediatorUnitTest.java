@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -22,7 +23,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Unit tests for {@link OmniboxChipMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class OmniboxChipMediatorUnitTest {
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
     @Mock private Drawable mDrawable;
     private PropertyModel mModel;
     private OmniboxChipMediator mMediator;

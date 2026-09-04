@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omnibox;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -24,6 +25,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.base.WindowAndroid;
@@ -38,7 +40,8 @@ public class DeferredIMEWindowInsetApplicationCallbackUnitTest {
     private static final Insets STATUS_BAR_INSETS = Insets.of(0, 62, 0, 0);
     private static final Insets NAV_BAR_INSETS = Insets.of(0, 0, 0, 84);
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     private DeferredIMEWindowInsetApplicationCallback mCallback;
     private WindowInsetsCompat.Builder mBaseWindowInsets;
@@ -54,10 +57,10 @@ public class DeferredIMEWindowInsetApplicationCallbackUnitTest {
     @Before
     public void setUp() {
         WeakReference<Activity> activityRef = new WeakReference<>(mActivity);
-        when(mActivity.isFinishing()).thenReturn(false);
-        when(mWindowAndroid.getActivity()).thenReturn(activityRef);
-        when(mWindowAndroid.isDestroyed()).thenReturn(false);
-        when(mWindowAndroid.getInsetObserver()).thenReturn(mInsetObserver);
+        lenient().when(mActivity.isFinishing()).thenReturn(false);
+        lenient().when(mWindowAndroid.getActivity()).thenReturn(activityRef);
+        lenient().when(mWindowAndroid.isDestroyed()).thenReturn(false);
+        lenient().when(mWindowAndroid.getInsetObserver()).thenReturn(mInsetObserver);
         mAnimation = new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.ime(), null, 160);
         mAnimation2 = new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.ime(), null, 160);
         mCallback = new DeferredIMEWindowInsetApplicationCallback(mUpdateRunnable);
