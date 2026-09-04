@@ -4276,6 +4276,23 @@ TEST_F(ContextualSearchboxHandlerTest,
   handler().ShowScreenshotMenu(gfx::Rect(1, 2, 3, 4));
   mock_searchbox_page_.FlushForTesting();
 }
+
+TEST_F(ContextualSearchboxHandlerTest, AddFileContextToPage_ForwardsToPage) {
+  const auto token = base::UnguessableToken::Create();
+  auto file_info = searchbox::mojom::SelectedFileInfo::New();
+  file_info->file_name = "test.png";
+  file_info->mime_type = "image/png";
+  file_info->is_deletable = true;
+
+  EXPECT_CALL(
+      mock_searchbox_page_,
+      AddFileContext(token, testing::Pointee(testing::Field(
+                                &searchbox::mojom::SelectedFileInfo::file_name,
+                                "test.png"))));
+
+  handler().AddFileContextToPage(token, std::move(file_info));
+  mock_searchbox_page_.FlushForTesting();
+}
 #else
 TEST_F(ContextualSearchboxHandlerTest, StartScreenshare_AndroidAlwaysFails) {
   base::test::TestFuture<const std::optional<base::UnguessableToken>&> future;

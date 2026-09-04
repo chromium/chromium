@@ -2482,7 +2482,7 @@ void ContextualSearchboxHandler::UploadScreenshot(
 void ContextualSearchboxHandler::AddFileContextToPage(
     const base::UnguessableToken& token,
     searchbox::mojom::SelectedFileInfoPtr file_info) {
-  SearchboxHandler::AddFileContextFromBrowser(token, std::move(file_info));
+  AddFileContextFromBrowser(token, std::move(file_info));
 }
 
 void ContextualSearchboxHandler::OnScreenshotMenuClosed() {

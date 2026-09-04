@@ -302,4 +302,18 @@ TEST_F(OmniboxEverywhereHandlerTest, FileContextHandoffDoesNotCrash) {
       contextual_search::ContextUploadStatus::kUploadSuccessful, std::nullopt);
 }
 
+TEST_F(OmniboxEverywhereHandlerTest,
+       AddFileContextToPageInvokesAddFileContextFromBrowser) {
+  const auto token = base::UnguessableToken::Create();
+  auto file_info = searchbox::mojom::SelectedFileInfo::New();
+  file_info->file_name = "screenshot.png";
+  file_info->mime_type = "image/png";
+  file_info->is_deletable = true;
+
+  // AddFileContextToPage (called by ContextualSearchboxScreenshareController)
+  // should dynamically route through AddFileContextFromBrowser without
+  // crashing.
+  handler_->AddFileContextToPage(token, std::move(file_info));
+}
+
 }  // namespace
