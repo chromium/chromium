@@ -344,6 +344,7 @@ source_set("impl") {
     ]
     deps += [
       "//chrome/browser/ui/startup/default_browser_prompt",
+      "//chrome/browser/ui/views/profiles:profile_picker_utils",
       "//chrome/browser/ui/web_applications",
     ]
   }

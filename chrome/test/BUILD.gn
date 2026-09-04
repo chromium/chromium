@@ -3649,6 +3649,8 @@ if (!is_android) {
           "../browser/ui/views/profiles/batch_upload_dialog_view_browsertest.cc",
           "../browser/ui/views/profiles/batch_upload_dialog_view_pixel_browsertest.cc",
         ]
+        deps +=
+            [ "//chrome/browser/ui/views/profiles:batch_upload_dialog_view" ]
       }
       deps += [
         ":test_support_ui",
@@ -4388,6 +4390,8 @@ if (!is_android) {
         "//chrome/browser/ui/supervised_user",
         "//chrome/browser/ui/supervised_user:browser_tests",
         "//chrome/browser/ui/views/profiles:profile_management_types",
+        "//chrome/browser/ui/views/profiles:profile_picker_reauth_provider",
+        "//chrome/browser/ui/views/profiles:profile_picker_sign_in_provider",
         "//chrome/browser/ui/views/profiles:profile_picker_utils",
         "//chrome/browser/ui/views/supervised_user",
       ]

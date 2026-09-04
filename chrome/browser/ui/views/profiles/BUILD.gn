@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/ui.gni")
+import("//components/safe_browsing/buildflags.gni")
 import("//components/signin/features.gni")
 
 if (is_chromeos) {
@@ -497,6 +498,7 @@ source_set("profile_picker_feature_promo_controller") {
 if (enable_dice_support) {
   source_set("profile_picker_sign_in_provider") {
     public = [ "profile_picker_sign_in_provider.h" ]
+    sources = [ "profile_picker_sign_in_provider.cc" ]
     public_deps = [
       ":profile_management_types",
       ":profile_picker_web_contents_host",
@@ -504,13 +506,36 @@ if (enable_dice_support) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/profiles/keep_alive",
       "//chrome/browser/ui:chrome_web_modal_dialog_manager_delegate",
-      "//components/signin/public/base",
+      "//components/signin/public/base:signin_buildflags",
       "//content/public/browser",
     ]
+    deps = [
+      ":profile_picker_utils",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/profiles:profile_util",
+      "//chrome/browser/signin",
+      "//chrome/browser/themes",
+      "//chrome/browser/trusted_vault",
+      "//chrome/browser/ui/webui/signin:signin_ui_error",
+      "//chrome/common:constants",
+      "//components/safe_browsing:buildflags",
+      "//components/signin/public/identity_manager",
+      "//components/sync/base:features",
+      "//components/web_modal",
+      "//google_apis",
+      "//net",
+      "//ui/views/controls/webview",
+      "//url",
+    ]
+    if (safe_browsing_mode != 0) {
+      deps += [ "//chrome/browser/safe_browsing" ]
+    }
   }
 
   source_set("profile_picker_reauth_provider") {
     public = [ "profile_picker_reauth_provider.h" ]
+    sources = [ "profile_picker_reauth_provider.cc" ]
     public_deps = [
       ":profile_management_types",
       ":profile_picker_web_contents_host",
@@ -522,6 +547,14 @@ if (enable_dice_support) {
       "//components/signin/public/identity_manager",
       "//content/public/browser",
       "//google_apis",
+    ]
+    deps = [
+      ":profile_picker_sign_in_provider",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/signin",
+      "//chrome/common:constants",
+      "//components/web_modal",
+      "//url",
     ]
   }
 
