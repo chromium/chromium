@@ -640,6 +640,24 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <variants name="AutofillFormType.Address">
   <variant name="Address" summary="Address form"/>
+  <variant name="Address.AddressOnly"
+      summary="Form has address and maybe name fields"/>
+  <variant name="Address.AddressPlusContact"
+      summary="Encompasses AddressPlusEmail, AddressPlusPhone, and
+               AddressPlusEmailPlusPhone"/>
+  <variant name="Address.AddressPlusEmail"
+      summary="Form has address, email, and maybe name fields"/>
+  <variant name="Address.AddressPlusEmailPlusPhone"
+      summary="Form has address, email, phone, and maybe name fields"/>
+  <variant name="Address.AddressPlusPhone"
+      summary="Form has address, phone, and maybe name fields"/>
+  <variant name="Address.ContactOnly"
+      summary="Form has name and phone; name and email; or phone, email, and
+               maybe name fields"/>
+  <variant name="Address.Other"
+      summary="Another form type was encountered, such as a form with all
+               unknown fields"/>
+  <variant name="Address.PhoneOnly" summary="Form has phone field only"/>
   <variant name="EmailOnly" summary="Email-only form"/>
   <variant name="PostalAddress" summary="Postal address form"/>
 </variants>
@@ -668,6 +686,26 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name="CreditCardArt" summary="credit card art image"/>
   <variant name="PixAccountImage" summary="Pix account image"/>
   <variant name="ValuableImage" summary="Google Wallet valuable image"/>
+</variants>
+
+<variants name="AutofillLocalSaveCardPromptOfferType">
+  <variant name="" summary="aggregated across all situations"/>
+  <variant name=".RequestingCardholderName"
+      summary="explicitly requesting cardholder name"/>
+  <variant name=".RequestingExpirationDate"
+      summary="explicitly requesting expiration date"/>
+  <variant name=".SavingWithCvc"
+      summary="saved security code at the same time"/>
+  <variant name=".SavingWithoutCvc"
+      summary="did not save security code at the same time"/>
+  <variant name=".SignedIn" summary="Signed in"/>
+  <variant name=".SignedInAndSyncFeatureEnabled"
+      summary="Signed in and sync feature enabled"/>
+  <variant name=".SignedInAndWalletSyncTransportEnabled"
+      summary="Signed in and sync transport enabled for Wallet data types"/>
+  <variant name=".SignedOut" summary="Signed out"/>
+  <variant name=".SyncPaused" summary="Sync paused"/>
+  <variant name=".Unknown" summary="Unknown"/>
 </variants>
 
 <variants name="AutofillPopupInteractionLevel">
@@ -799,6 +837,24 @@ Called by update_autofill_enums.py. This is a manual comment.-->
                Autofill's visibility detection (IsWebElementVisible())."/>
 </variants>
 
+<variants name="AutofillServerCreditCardInfoBarSaveType">
+  <variant name="" summary="aggregated across all situations"/>
+  <variant name=".LegalMessageLinesMentionPersonalization"
+      summary="When legal message mentions personalization"/>
+  <variant name=".RequestingCardholderName"
+      summary="explicitly requesting cardholder name"/>
+  <variant name=".RequestingExpirationDate"
+      summary="explicitly requesting expiration date"/>
+  <variant name=".SavingWithCvc"
+      summary="saved security code at the same time"/>
+  <variant name=".SavingWithoutCvc"
+      summary="did not save security code at the same time"/>
+  <variant name=".WithMultipleLegalLines"
+      summary="When legal message has multiple lines"/>
+  <variant name=".WithSameLastFourButDifferentExpiration"
+      summary="When the same last four but different expiration dates"/>
+</variants>
+
 <variants name="AutofillServerSaveCardSituation">
   <variant name="LegalMessageLinesMentionPersonalization"
       summary="has a legal message that mentions personalization"/>
@@ -817,6 +873,49 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name="IBANSave" summary="IBAN save"/>
   <variant name="SaveAndFill" summary="save and fill"/>
   <variant name="VirtualCardEnrollment" summary="virtual card enrollment"/>
+</variants>
+
+<variants name="AutofillSyncState">
+  <variant name="" summary="all sync states"/>
+  <variant name=".SignedIn" summary="Signed in"/>
+  <variant name=".SignedInAndSyncFeatureEnabled"
+      summary="Signed in and sync feature enabled"/>
+  <variant name=".SignedInAndWalletSyncTransportEnabled"
+      summary="Signed in and sync transport enabled for Wallet data types"/>
+  <variant name=".SignedOut" summary="Signed out"/>
+  <variant name=".SyncPaused" summary="Sync paused"/>
+  <variant name=".Unknown" summary="Unknown"/>
+</variants>
+
+<variants name="AutofillUnmaskPromptNickname">
+  <variant name="" summary=""/>
+  <variant name=".WithNickname" summary="Credit Card has a valid nickname"/>
+</variants>
+
+<variants name="AutofillUploadSaveCardPromptOfferType">
+  <variant name="" summary="aggregated across all situations"/>
+  <variant name=".LegalMessageLinesMentionPersonalization"
+      summary="When legal message mentions personalization"/>
+  <variant name=".RequestingCardholderName"
+      summary="explicitly requesting cardholder name"/>
+  <variant name=".RequestingExpirationDate"
+      summary="explicitly requesting expiration date"/>
+  <variant name=".SavingWithCvc"
+      summary="saved security code at the same time"/>
+  <variant name=".SavingWithoutCvc"
+      summary="did not save security code at the same time"/>
+  <variant name=".SignedIn" summary="Signed in"/>
+  <variant name=".SignedInAndSyncFeatureEnabled"
+      summary="Signed in and sync feature enabled"/>
+  <variant name=".SignedInAndWalletSyncTransportEnabled"
+      summary="Signed in and sync transport enabled for Wallet data types"/>
+  <variant name=".SignedOut" summary="Signed out"/>
+  <variant name=".SyncPaused" summary="Sync paused"/>
+  <variant name=".Unknown" summary="Unknown"/>
+  <variant name=".WithMultipleLegalLines"
+      summary="When legal message has multiple lines"/>
+  <variant name=".WithSameLastFourButDifferentExpiration"
+      summary="When the same last four but different expiration dates"/>
 </variants>
 
 <variants name="CreditCardDataAvailability">
@@ -1275,13 +1374,13 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram name="Autofill.Address.IsEnabled.PageLoad" enum="BooleanEnabled"
-    expires_after="2027-02-14">
+<histogram name="Autofill.Address.IsEnabled.PageLoad{AutofillSyncState}"
+    enum="BooleanEnabled" expires_after="2027-02-14">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Tracks whether Profile (Address) Autofill is enabled on page load for a page
-    containing forms.
+    containing forms. {AutofillSyncState}
   </summary>
 </histogram>
 
@@ -3481,14 +3580,15 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram name="Autofill.CardUploadEnabled2" enum="AutofillCardUploadEnabled"
-    expires_after="2027-04-30">
+<histogram name="Autofill.CardUploadEnabled2{AutofillSyncState}"
+    enum="AutofillCardUploadEnabled" expires_after="2027-04-30">
   <owner>osaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Detailed reasons why (or why not) card upload was enabled. When a user
     submits a form from which a card was extracted, this check is triggered to
     decide whether to ask the user if they want to upload the card.
+    {AutofillSyncState}
   </summary>
 </histogram>
 
@@ -3528,14 +3628,14 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram name="Autofill.CreditCard.IsEnabled.PageLoad" enum="BooleanEnabled"
-    expires_after="2027-04-30">
+<histogram name="Autofill.CreditCard.IsEnabled.PageLoad{AutofillSyncState}"
+    enum="BooleanEnabled" expires_after="2027-04-30">
   <owner>osaul@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Tracks whether Credit Card Autofill is enabled on page load for a page
-    containing forms.
+    containing forms. {AutofillSyncState}
   </summary>
 </histogram>
 
@@ -3759,8 +3859,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram
-    name="Autofill.CreditCardInfoBar.{AutofillCreditCardInfoBarSaveType}{SaveType}"
+<histogram name="Autofill.CreditCardInfoBar.Local{SaveType}"
     enum="AutofillCreditCardInfoBar" expires_after="2027-04-30">
   <owner>osaul@google.com</owner>
   <owner>battre@chromium.org</owner>
@@ -3768,14 +3867,22 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     The relative frequency with which users accept, deny, or ignore the Autofill
-    credit card info bar prompt. {AutofillCreditCardInfoBarSaveType},
-    {SaveType}.
+    credit card info bar prompt. Local credit card save, {SaveType}.
   </summary>
-  <token key="AutofillCreditCardInfoBarSaveType">
-    <variant name="Local" summary="Local credit card save"/>
-    <variant name="Server" summary="Server/upload credit card save"/>
-  </token>
   <token key="SaveType" variants="AutofillCreditCardSaveType"/>
+</histogram>
+
+<histogram name="Autofill.CreditCardInfoBar.Server{SaveType}"
+    enum="AutofillCreditCardInfoBar" expires_after="2027-04-30">
+  <owner>osaul@google.com</owner>
+  <owner>battre@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The relative frequency with which users accept, deny, or ignore the Autofill
+    credit card info bar prompt. Server/upload credit card save, {SaveType}.
+  </summary>
+  <token key="SaveType" variants="AutofillServerCreditCardInfoBarSaveType"/>
 </histogram>
 
 <histogram name="Autofill.CreditCardSaveFlowResult.{SaveDestination}{SaveType}"
@@ -4880,6 +4987,31 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="CardBenefitSource" variants="Autofill.CreditCardBenefitSource"/>
 </histogram>
 
+<histogram
+    name="Autofill.FormEvents.CreditCard.{CreditCardDataAvailability}{AutofillSyncState}"
+    enum="AutofillFormEvent" expires_after="2027-02-14">
+  <owner>osaul@google.com</owner>
+  <owner>battre@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Autofill form events for CreditCard forms. These are recorded when the user
+    interacts with a form requesting a credit card and has
+    {CreditCardDataAvailability}. {AutofillSyncState}
+
+    Important caveat about submission metrics: - Submission using autofill data
+    is determined by simply evaluating if there was a fill operation in this
+    page. So, if the user filled with local data, then completed, erased, or
+    modified the data after and then submitted, we would only emit one
+    &quot;Submitted with server suggestion filled (once)&quot;; - The submission
+    segmentation works by checking what kind of data was last filled for this
+    type of form in the page load. So, if a user initially filled with local
+    data and after that filled with server, we will only emit &quot;Submitted
+    with server suggestion filled (once)&quot;.
+  </summary>
+  <token key="CreditCardDataAvailability"
+      variants="CreditCardDataAvailability"/>
+</histogram>
+
 <histogram name="Autofill.FormEvents.Iban" enum="AutofillIbanFormEvent"
     expires_after="2027-04-30">
   <owner>qihuizhao@google.com</owner>
@@ -4892,6 +5024,31 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     switching from a local to a server-based IBAN), only the first sequence of
     events is recorded.
   </summary>
+</histogram>
+
+<histogram
+    name="Autofill.FormEvents.StandaloneCvc.{CreditCardDataAvailability}"
+    enum="AutofillFormEvent" expires_after="2027-02-14">
+  <owner>osaul@google.com</owner>
+  <owner>battre@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Autofill form events for StandaloneCvc forms. These are recorded when the
+    user interacts with a form requesting a credit card and has
+    {CreditCardDataAvailability}.
+
+    Important caveat about submission metrics: - Submission using autofill data
+    is determined by simply evaluating if there was a fill operation in this
+    page. So, if the user filled with local data, then completed, erased, or
+    modified the data after and then submitted, we would only emit one
+    &quot;Submitted with server suggestion filled (once)&quot;; - The submission
+    segmentation works by checking what kind of data was last filled for this
+    type of form in the page load. So, if a user initially filled with local
+    data and after that filled with server, we will only emit &quot;Submitted
+    with server suggestion filled (once)&quot;.
+  </summary>
+  <token key="CreditCardDataAvailability"
+      variants="CreditCardDataAvailability"/>
 </histogram>
 
 <histogram name="Autofill.FormEvents.{AddressFormType}"
@@ -4936,32 +5093,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     with server suggestion filled (once)&quot;.
   </summary>
   <token key="CreditCardFormType" variants="AutofillFormType.CreditCard"/>
-</histogram>
-
-<histogram
-    name="Autofill.FormEvents.{CreditCardFormType}.{CreditCardDataAvailability}"
-    enum="AutofillFormEvent" expires_after="2027-02-14">
-  <owner>osaul@google.com</owner>
-  <owner>battre@chromium.org</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    Autofill form events for {CreditCardFormType} forms. These are recorded when
-    the user interacts with a form requesting a credit card and has
-    {CreditCardDataAvailability}.
-
-    Important caveat about submission metrics: - Submission using autofill data
-    is determined by simply evaluating if there was a fill operation in this
-    page. So, if the user filled with local data, then completed, erased, or
-    modified the data after and then submitted, we would only emit one
-    &quot;Submitted with server suggestion filled (once)&quot;; - The submission
-    segmentation works by checking what kind of data was last filled for this
-    type of form in the page load. So, if a user initially filled with local
-    data and after that filled with server, we will only emit &quot;Submitted
-    with server suggestion filled (once)&quot;.
-  </summary>
-  <token key="CreditCardFormType" variants="AutofillFormType.CreditCard"/>
-  <token key="CreditCardDataAvailability"
-      variants="CreditCardDataAvailability"/>
 </histogram>
 
 <histogram name="Autofill.FormFillingComplexScore{AutofillFormType}"
@@ -5659,8 +5790,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </token>
 </histogram>
 
-<histogram name="Autofill.IsEnabled.PageLoad" enum="BooleanEnabled"
-    expires_after="2027-02-14">
+<histogram name="Autofill.IsEnabled.PageLoad{AutofillSyncState}"
+    enum="BooleanEnabled" expires_after="2027-02-14">
   <owner>battre@chromium.org</owner>
   <owner>osaul@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -5669,7 +5800,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     Autofill.CreditCard.IsEnabled.PageLoad, and tracks whether either profile
     Autofill or payment Autofill is enabled on page load for a page containing
     forms. It helps deduce the overlap by showing what percentage of users have
-    one type of Autofill enabled but not the other.
+    one type of Autofill enabled but not the other. {AutofillSyncState}
   </summary>
 </histogram>
 
@@ -8200,6 +8331,37 @@ Called by update_autofill_enums.py. This is a manual comment.-->
       variants="AutofillSaveCardWithCvcSituation"/>
 </histogram>
 
+<histogram name="Autofill.SaveCreditCardPromptOffer.Local.{ShowType}{SaveType}"
+    enum="AutofillSavePaymentMethodPromptOfferEnum" expires_after="2027-04-30">
+  <owner>osaul@google.com</owner>
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The relative frequency with which the Autofill save credit card prompt is
+    shown or not to save a credit card locally, {SaveType}. Logged when the flow
+    is triggered and the decision of whether or not to offer credit card save is
+    made. It was a {ShowType}.
+  </summary>
+  <token key="ShowType" variants="FirstShowOrReshow"/>
+  <token key="SaveType" variants="AutofillLocalSaveCardPromptOfferType"/>
+</histogram>
+
+<histogram
+    name="Autofill.SaveCreditCardPromptOffer.Upload.{ShowType}{SaveType}"
+    enum="AutofillSavePaymentMethodPromptOfferEnum" expires_after="2027-04-30">
+  <owner>osaul@google.com</owner>
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The relative frequency with which the Autofill save credit card prompt is
+    shown or not to save a credit card to server, {SaveType}. Logged when the
+    flow is triggered and the decision of whether or not to offer credit card
+    save is made. It was a {ShowType}.
+  </summary>
+  <token key="ShowType" variants="FirstShowOrReshow"/>
+  <token key="SaveType" variants="AutofillUploadSaveCardPromptOfferType"/>
+</histogram>
+
 <histogram name="Autofill.SaveCreditCardPromptOffer.{SaveDestination}"
     enum="AutofillSavePaymentMethodPromptOfferEnum" expires_after="2027-04-30">
   <owner>kavitasoni@google.com</owner>
@@ -8212,24 +8374,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     (e.g., prompt reshown from the omnibox icon on desktop).
   </summary>
   <token key="SaveDestination" variants="AutofillSaveCardDestination"/>
-</histogram>
-
-<histogram
-    name="Autofill.SaveCreditCardPromptOffer.{SaveDestination}.{ShowType}{SaveType}"
-    enum="AutofillSavePaymentMethodPromptOfferEnum" expires_after="2027-04-30">
-  <owner>osaul@google.com</owner>
-  <owner>siyua@chromium.org</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    The relative frequency with which the Autofill save credit card prompt is
-    shown or not to save a credit card {SaveDestination}, {SaveType}. Logged
-    when the flow is triggered and the decision of whether or not to offer
-    credit card save is made. It was a {ShowType}.
-  </summary>
-  <token key="SaveDestination"
-      variants="AutofillSaveCreditCardPromptDestination"/>
-  <token key="ShowType" variants="FirstShowOrReshow"/>
-  <token key="SaveType" variants="AutofillCreditCardSaveType"/>
 </histogram>
 
 <histogram
@@ -8338,6 +8482,36 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="SaveType" variants="AutofillCreditCardSaveType"/>
 </histogram>
 
+<histogram
+    name="Autofill.SaveCreditCardPromptResult.Local.{ShowType}{SaveType}"
+    enum="AutofillSavePaymentMethodPromptResultEnum" expires_after="2027-04-30">
+  <owner>osaul@google.com</owner>
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The relative frequency with which (and how) users accept or deny the
+    Autofill save credit card prompt to save credit card locally. Logged when
+    the prompt closes. It was a {ShowType}, {SaveType}.
+  </summary>
+  <token key="ShowType" variants="FirstShowOrReshow"/>
+  <token key="SaveType" variants="AutofillLocalSaveCardPromptOfferType"/>
+</histogram>
+
+<histogram
+    name="Autofill.SaveCreditCardPromptResult.Upload.{ShowType}{SaveType}"
+    enum="AutofillSavePaymentMethodPromptResultEnum" expires_after="2027-04-30">
+  <owner>osaul@google.com</owner>
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The relative frequency with which (and how) users accept or deny the
+    Autofill save credit card prompt to save credit card to server. Logged when
+    the prompt closes. It was a {ShowType}, {SaveType}.
+  </summary>
+  <token key="ShowType" variants="FirstShowOrReshow"/>
+  <token key="SaveType" variants="AutofillUploadSaveCardPromptOfferType"/>
+</histogram>
+
 <histogram name="Autofill.SaveCreditCardPromptResult.{SaveDestination}"
     enum="AutofillSaveCardPromptResultEnum" expires_after="2027-04-30">
   <owner>kavitasoni@google.com</owner>
@@ -8349,23 +8523,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     re-shows (e.g., prompt reshown from the omnibox icon on desktop).
   </summary>
   <token key="SaveDestination" variants="AutofillSaveCardDestination"/>
-</histogram>
-
-<histogram
-    name="Autofill.SaveCreditCardPromptResult.{SaveDestination}.{ShowType}{SaveType}"
-    enum="AutofillSavePaymentMethodPromptResultEnum" expires_after="2027-04-30">
-  <owner>osaul@google.com</owner>
-  <owner>siyua@chromium.org</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    The relative frequency with which (and how) users accept or deny the
-    Autofill save credit card prompt to save credit card {SaveDestination}.
-    Logged when the prompt closes.
-  </summary>
-  <token key="SaveDestination"
-      variants="AutofillSaveCreditCardPromptDestination"/>
-  <token key="ShowType" variants="FirstShowOrReshow"/>
-  <token key="SaveType" variants="AutofillCreditCardSaveType"/>
 </histogram>
 
 <histogram
@@ -8814,6 +8971,16 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     value otherwise.
   </summary>
   <token key="SnackbarType" variants="Autofill.Snackbar.Type"/>
+</histogram>
+
+<histogram name="Autofill.StoredCreditCardCount.Local.WithInvalidCardNumber"
+    units="cards" expires_after="2027-04-30">
+  <owner>smcgruer@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    The number of local credit cards a user has stored with an invalid card
+    number, measured at Chrome profile launch time.
+  </summary>
 </histogram>
 
 <histogram name="Autofill.StoredCreditCardCount.Server.WithCardArtImage"
@@ -9840,7 +10007,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram
-    name="Autofill.UnmaskPrompt.Duration{AutofillUnmaskPromptCloseReasonEvents}"
+    name="Autofill.UnmaskPrompt.Duration{AutofillUnmaskPromptCloseReasonEvents}{AutofillUnmaskPromptNickname}"
     units="ms" expires_after="2027-04-30">
   <owner>osaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
@@ -9849,6 +10016,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     Duration of the interaction with the UnmaskPrompt since it was shown until
     it was closed. This prompt is triggered when a user selects a masked card in
     an autofill dropdown. {AutofillUnmaskPromptCloseReasonEvents}
+    {AutofillUnmaskPromptNickname}
   </summary>
   <token key="AutofillUnmaskPromptCloseReasonEvents">
     <variant name=""/>
@@ -9859,14 +10027,15 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </token>
 </histogram>
 
-<histogram name="Autofill.UnmaskPrompt.Events" enum="AutofillUnmaskPromptEvent"
-    expires_after="2027-04-30">
+<histogram name="Autofill.UnmaskPrompt.Events{AutofillUnmaskPromptNickname}"
+    enum="AutofillUnmaskPromptEvent" expires_after="2027-04-30">
   <owner>osaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Events tracking the usage of the unmasking prompt. This prompt is triggered
     when a user selects a masked card in a autofill dropdown.
+    {AutofillUnmaskPromptNickname}
   </summary>
 </histogram>
 
@@ -9922,8 +10091,9 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
 </histogram>
 
-<histogram name="Autofill.UnmaskPrompt.TimeBeforeAbandonUnmasking" units="ms"
-    expires_after="2027-04-30">
+<histogram
+    name="Autofill.UnmaskPrompt.TimeBeforeAbandonUnmasking{AutofillUnmaskPromptNickname}"
+    units="ms" expires_after="2027-04-30">
   <owner>osaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -9932,7 +10102,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     scenario, the user is cancelling a pending unmasking operation (possibly
     because it is taking too long). The time measured here corresponds to the
     time between the user clicking the &quot;Verify&quot; button and then
-    clicking &quot;Cancel&quot;.
+    clicking &quot;Cancel&quot;. {AutofillUnmaskPromptNickname}
   </summary>
 </histogram>
 
