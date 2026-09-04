@@ -889,6 +889,7 @@ source_set("browser_tests") {
     "host/context/glic_pinned_tab_manager_browsertest.cc",
     "host/glic_api_browsertest.cc",
     "host/glic_api_skills_browsertest.cc",
+    "host/glic_api_zss_browsertest.cc",
     "host/glic_chrome_tools_browsertest.cc",
     "host/glic_internals_browsertest.cc",
     "host/glic_no_webview_contents_manager_browsertest.cc",
