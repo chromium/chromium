@@ -266,15 +266,27 @@ std::optional<std::string> MaybeReconstructAsURLString(
   if (!pattern.port.empty()) {
     return std::nullopt;
   }
+  const std::string hostname =
+      ConvertToPatternString(pattern, URLPatternFieldType::kHostname);
+  if (IsSimpleFullWildcardField(pattern.pathname)) {
+    // Do not support when `search` or `hash` is not a wildcard. For example,
+    // reconstructing as "https://example.com?q=1" would cause the URL parser
+    // to interpret the pathname as "/", losing the wildcard pathname "*".
+    if (!IsSimpleFullWildcardField(pattern.search) ||
+        !IsSimpleFullWildcardField(pattern.hash)) {
+      return std::nullopt;
+    }
+    return base::StrCat({"https://", hostname});
+  }
+
   const std::string pathname =
       ConvertToPatternString(pattern, URLPatternFieldType::kPathname);
   if (pathname.empty() || pathname[0] != '/') {
     return std::nullopt;
   }
-  return base::StrCat(
-      {"https://",
-       ConvertToPatternString(pattern, URLPatternFieldType::kHostname),
-       pathname, ReconstructSearchAndHash(pattern, pathname)});
+
+  return base::StrCat({"https://", hostname, pathname,
+                       ReconstructSearchAndHash(pattern, pathname)});
 }
 
 base::Value OrConditionToValue(
