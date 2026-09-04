@@ -23,11 +23,10 @@
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
 #include "chrome/browser/ui/content_settings/fake_owner.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/content_setting_bubble_contents.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
-#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -50,6 +49,8 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/test/test_event.h"
+#include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/view_utils.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -185,20 +186,32 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, ModelAllowsRedirection) {
   }
   EXPECT_TRUE(helper->HasBlockedUrls());
 
-  LocationBarView* location_bar_view =
-      BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView();
-  ContentSettingImageView& image_view =
-      **std::ranges::find(location_bar_view->GetContentSettingViewsForTest(),
-                          ContentSettingImageModel::ImageType::kFramebust,
-                          &ContentSettingImageView::GetType);
+  LocationBarTesting* location_bar_testing =
+      browser()->GetFeatures().location_bar()->GetLocationBarForTesting();
+  ASSERT_TRUE(location_bar_testing);
 
-  EXPECT_TRUE(image_view.GetVisible());
-  EXPECT_FALSE(image_view.IsBubbleShowing());
+  const size_t framebust_index =
+      ContentSettingImageModel::GetContentSettingImageModelIndexForTesting(
+          ContentSettingImageModel::ImageType::kFramebust);
 
-  image_view.ShowBubble(ui::test::TestEvent());
+  EXPECT_TRUE(
+      location_bar_testing->IsContentSettingImageVisible(framebust_index));
+  EXPECT_FALSE(
+      location_bar_testing->IsContentSettingBubbleShowing(framebust_index));
+
+  EXPECT_TRUE(
+      location_bar_testing->TestContentSettingImagePressed(framebust_index));
+  EXPECT_TRUE(
+      location_bar_testing->IsContentSettingBubbleShowing(framebust_index));
 
   EXPECT_FALSE(clicked_index_.has_value());
   EXPECT_FALSE(clicked_url_.has_value());
+
+  auto* bubble_view = views::AsViewClass<ContentSettingBubbleContents>(
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          ContentSettingBubbleContents::kMainElementId,
+          BrowserElements::From(browser())->GetContext()));
+  ASSERT_TRUE(bubble_view);
 
   // Simulate clicking on the second blocked URL.
   content::TestNavigationObserver observer(GetWebContents());
@@ -206,9 +219,7 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, ModelAllowsRedirection) {
                              gfx::Point(), ui::EventTimeForNow(),
                              ui::EF_LEFT_MOUSE_BUTTON,
                              ui::EF_LEFT_MOUSE_BUTTON);
-  static_cast<ContentSettingBubbleContents*>(
-      image_view.GetBubbleViewForTesting())
-      ->LinkClicked(/*row=*/1, click_event);
+  bubble_view->LinkClicked(/*row=*/1, click_event);
   observer.Wait();
 
   EXPECT_TRUE(clicked_index_.has_value());
