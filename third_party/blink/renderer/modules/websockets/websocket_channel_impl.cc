@@ -374,7 +374,6 @@ bool WebSocketChannelImpl::Connect(
 
   connector->Connect(
       url, protocols, execution_context_->UserAgent(),
-      execution_context_->GetStorageAccessApiStatus(),
       handshake_client_receiver_.BindNewPipeAndPassRemote(
           execution_context_->GetTaskRunner(TaskType::kWebSocket)),
       /*throttling_profile_id=*/devtools_throttling_token,

@@ -72,6 +72,7 @@ WebSocketConnectorImpl::WebSocketConnectorImpl(
     const url::Origin& origin,
     const net::IsolationInfo& isolation_info,
     network::mojom::ClientSecurityStatePtr client_security_state,
+    net::StorageAccessApiStatus storage_access_api_status,
     const base::UnguessableToken& network_restrictions_id,
     std::optional<base::UnguessableToken> devtools_worker_token)
     : frame_id_(frame_id),
@@ -79,6 +80,7 @@ WebSocketConnectorImpl::WebSocketConnectorImpl(
       origin_(MaybeTreatLocalOriginAsOpaque(origin)),
       isolation_info_(isolation_info),
       client_security_state_(std::move(client_security_state)),
+      storage_access_api_status_(storage_access_api_status),
       network_restrictions_id_(network_restrictions_id),
       devtools_worker_token_(std::move(devtools_worker_token)) {
   CHECK(!network_restrictions_id.is_empty(), base::NotFatalUntil::M165);
@@ -90,7 +92,6 @@ void WebSocketConnectorImpl::Connect(
     const GURL& url,
     const std::vector<std::string>& requested_protocols,
     const std::optional<std::string>& user_agent,
-    net::StorageAccessApiStatus storage_access_api_status,
     mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
         handshake_client,
     const std::optional<base::UnguessableToken>& throttling_profile_id,
@@ -127,7 +128,7 @@ void WebSocketConnectorImpl::Connect(
 
   content::ContentBrowserClient::WebSocketFactory factory = base::BindOnce(
       ConnectCalledByContentBrowserClient, requested_protocols,
-      storage_access_api_status, isolation_info_, frame_id_,
+      storage_access_api_status_, isolation_info_, frame_id_,
       devtools_worker_token_, origin_, client_security_state_->Clone(),
       options.options, std::move(throttling_profile_id),
       network_restrictions_id_, target_address_space);

@@ -269,6 +269,7 @@
 #include "net/cookies/cookie_setting_override.h"
 #include "net/http/http_util.h"
 #include "net/net_buildflags.h"
+#include "net/storage_access_api/status.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/connection_allowlist.h"
@@ -15183,11 +15184,17 @@ void RenderFrameHostImpl::CreateWebSocketConnector(
     mojo::ReportBadMessage("WebSockets are not allowed in MHTML documents.");
     return;
   }
+  net::StorageAccessApiStatus storage_access_api_status =
+      GetCookieSettingOverrides().Has(
+          net::CookieSettingOverride::kStorageAccessGrantEligible)
+          ? net::StorageAccessApiStatus::kAccessViaAPI
+          : net::StorageAccessApiStatus::kNone;
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<WebSocketConnectorImpl>(
           GlobalRenderFrameHostId(GetProcess()->GetID(), routing_id_),
           GetWeakDocumentPtr(), last_committed_origin_, isolation_info_,
-          BuildClientSecurityState(), GetNetworkRestrictionsID(),
+          BuildClientSecurityState(), storage_access_api_status,
+          GetNetworkRestrictionsID(),
           /*devtools_worker_token=*/std::nullopt),
       std::move(receiver));
 }

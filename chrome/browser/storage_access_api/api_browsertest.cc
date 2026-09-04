@@ -2167,7 +2167,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest, DedicatedWorker_ABA) {
 }
 
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
-                       WebsocketRequestsUseStorageAccessGrants) {
+                       WebSocketRequestsUseStorageAccessGrants) {
   SetBlockThirdPartyCookies(true);
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::ACCEPT_ALL);
@@ -2201,6 +2201,51 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
     EXPECT_TRUE(message_queue.WaitForMessage(&message));
     EXPECT_THAT(message, testing::HasSubstr("cross-site=b.test"));
   }
+}
+
+IN_PROC_BROWSER_TEST_F(
+    StorageAccessAPIBrowserTest,
+    DedicatedWorker_WebSocketRequestsUseStorageAccessGrants) {
+  SetBlockThirdPartyCookies(true);
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(
+      GetURL(kHostB,
+             "/workers/fetch_from_worker.html?start_worker_manually&script="
+             "websocket_from_worker.js"));
+  ASSERT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+
+  // Start a worker before storage access is granted to the frame.
+  EXPECT_TRUE(content::ExecJs(GetFrame(), "start_worker()"));
+
+  GURL ws_url = net::test_server::GetWebSocketURL(https_server(), kHostB,
+                                                  "/echo-request-headers");
+
+  // The WebSocket request from the worker created before the grant should not
+  // send unpartitioned cookies.
+  EXPECT_THAT(content::EvalJs(GetFrame(), content::JsReplace(
+                                              "fetch_from_worker($1);", ws_url))
+                  .ExtractString(),
+              testing::Not(testing::HasSubstr("cross-site=b.test")));
+
+  // Now grant storage access to the frame.
+  ASSERT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+
+  // The worker created before the grant still does not have storage access.
+  EXPECT_THAT(content::EvalJs(GetFrame(), content::JsReplace(
+                                              "fetch_from_worker($1);", ws_url))
+                  .ExtractString(),
+              testing::Not(testing::HasSubstr("cross-site=b.test")));
+
+  // Start a new worker after storage access was granted. It should inherit
+  // storage access and send unpartitioned cookies.
+  EXPECT_TRUE(content::ExecJs(GetFrame(), "start_worker()"));
+  EXPECT_THAT(content::EvalJs(GetFrame(), content::JsReplace(
+                                              "fetch_from_worker($1);", ws_url))
+                  .ExtractString(),
+              testing::HasSubstr("cross-site=b.test"));
 }
 
 // Validate that in a A(B) frame tree, the embedded B iframe can obtain cookie

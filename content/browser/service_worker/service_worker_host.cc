@@ -33,6 +33,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/origin_util.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "net/storage_access_api/status.h"
 #include "storage/browser/blob/blob_url_store_impl.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
@@ -112,6 +113,7 @@ void ServiceWorkerHost::CreateWebSocketConnector(
           WeakDocumentPtr(), storage_key.origin(),
           storage_key.ToPartialNetIsolationInfo(),
           version_->BuildClientSecurityState()->Clone(),
+          net::StorageAccessApiStatus::kNone,
           version_->network_restrictions_id(),
           version_->embedded_worker()->WorkerDevtoolsId()),
       std::move(receiver));

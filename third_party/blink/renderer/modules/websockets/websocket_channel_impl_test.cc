@@ -17,7 +17,6 @@
 #include "base/test/mock_callback.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-#include "net/storage_access_api/status.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/websockets/websocket_connector.mojom-blink.h"
@@ -217,7 +216,6 @@ class WebSocketChannelImplTest : public WebSocketChannelImplTestBase {
         const KURL& url,
         const Vector<String>& requested_protocols,
         const String& user_agent,
-        net::StorageAccessApiStatus storage_access_api_status,
         mojo::PendingRemote<network::mojom::blink::WebSocketHandshakeClient>
             handshake_client,
         const std::optional<base::UnguessableToken>& throttling_profile_id,
@@ -1742,7 +1740,6 @@ class MockWebSocketConnector : public mojom::blink::WebSocketConnector {
       (const KURL&,
        const Vector<String>&,
        const String&,
-       net::StorageAccessApiStatus,
        mojo::PendingRemote<network::mojom::blink::WebSocketHandshakeClient>,
        const std::optional<base::UnguessableToken>&,
        network::mojom::blink::IPAddressSpace));
@@ -1779,7 +1776,7 @@ TEST_F(WebSocketChannelImplMultipleTest, ConnectionLimit) {
       handshake_clients;
   auto handshake_client_add_action =
       [&handshake_clients](
-          Unused, Unused, Unused, Unused,
+          Unused, Unused, Unused,
           mojo::PendingRemote<network::mojom::blink::WebSocketHandshakeClient>
               handshake_client,
           Unused,
@@ -1797,7 +1794,7 @@ TEST_F(WebSocketChannelImplMultipleTest, ConnectionLimit) {
 
   {
     InSequence s;
-    EXPECT_CALL(connector_, Connect(_, _, _, _, _, _, _))
+    EXPECT_CALL(connector_, Connect(_, _, _, _, _, _))
         .Times(WebSocketChannelImpl::kMaxWebSocketsPerRenderProcess)
         .WillRepeatedly(handshake_client_add_action);
 
@@ -1813,7 +1810,7 @@ TEST_F(WebSocketChannelImplMultipleTest, ConnectionLimit) {
     EXPECT_CALL(checkpoint, Call(2));
 
     EXPECT_CALL(*successful_handshake_throttle, ThrottleHandshake(_, _, _, _));
-    EXPECT_CALL(connector_, Connect(_, _, _, _, _, _, _))
+    EXPECT_CALL(connector_, Connect(_, _, _, _, _, _))
         .WillOnce(handshake_client_add_action);
     EXPECT_CALL(*successful_handshake_throttle, Destructor());
   }

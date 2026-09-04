@@ -49,6 +49,7 @@
 #include "content/public/common/content_client.h"
 #include "net/base/isolation_info.h"
 #include "net/cookies/site_for_cookies.h"
+#include "net/storage_access_api/status.h"
 #include "services/metrics/public/cpp/delegating_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -718,7 +719,8 @@ void SharedWorkerHost::CreateWebSocketConnector(
                                   IPC::mojom::kRoutingIdNone),
           WeakDocumentPtr(), storage_key.origin(),
           ComputeIsolationInfoForWebSocket(),
-          worker_client_security_state_->Clone(), network_restrictions_id_,
+          worker_client_security_state_->Clone(),
+          net::StorageAccessApiStatus::kNone, network_restrictions_id_,
           GetDevToolsToken()),
       std::move(receiver));
 }

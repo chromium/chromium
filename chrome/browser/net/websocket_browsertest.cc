@@ -1177,6 +1177,39 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserHTTPSConnectToTest,
   EXPECT_EQ("PASS", WaitAndGetTitle());
 }
 
+IN_PROC_BROWSER_TEST_F(WebSocketBrowserHTTPSConnectToTest,
+                       ConnectFromDedicatedWorker) {
+  wss_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  ASSERT_TRUE(wss_server_.Start());
+  ConnectTo(kHostA,
+            net::test_server::GetWebSocketURL(wss_server_, kHostA,
+                                              "/echo-with-no-extension"),
+            "/websocket/connect_to_using_worker.html");
+  EXPECT_EQ("PASS", WaitAndGetTitle());
+}
+
+IN_PROC_BROWSER_TEST_F(WebSocketBrowserHTTPSConnectToTest,
+                       ConnectFromSharedWorker) {
+  wss_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  ASSERT_TRUE(wss_server_.Start());
+  ConnectTo(kHostA,
+            net::test_server::GetWebSocketURL(wss_server_, kHostA,
+                                              "/echo-with-no-extension"),
+            "/websocket/connect_to_using_shared_worker.html");
+  EXPECT_EQ("PASS", WaitAndGetTitle());
+}
+
+IN_PROC_BROWSER_TEST_F(WebSocketBrowserHTTPSConnectToTest,
+                       ConnectFromServiceWorker) {
+  wss_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  ASSERT_TRUE(wss_server_.Start());
+  ConnectTo(kHostA,
+            net::test_server::GetWebSocketURL(wss_server_, kHostA,
+                                              "/echo-with-no-extension"),
+            "/websocket/connect_to_using_service_worker.html");
+  EXPECT_EQ("PASS", WaitAndGetTitle());
+}
+
 class TestTrustedHeaderClient : public network::mojom::TrustedHeaderClient {
  public:
   explicit TestTrustedHeaderClient(base::OnceClosure quit)

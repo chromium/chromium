@@ -835,8 +835,8 @@ void DedicatedWorkerHost::CreateWebSocketConnector(
           ancestor_render_frame_host->GetGlobalId(), ancestor_document_,
           GetWorkerStorageKey().origin(),
           ancestor_render_frame_host->GetIsolationInfoForSubresources(),
-          worker_client_security_state_->Clone(), network_restrictions_id_,
-          GetToken().value()),
+          worker_client_security_state_->Clone(), storage_access_api_status_,
+          network_restrictions_id_, GetToken().value()),
       std::move(receiver));
 }
 
