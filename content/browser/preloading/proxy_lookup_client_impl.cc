@@ -27,7 +27,7 @@ void ProxyLookupClientImpl::CreateAndStart(
     ProxyLookupCallback callback,
     network::mojom::NetworkContext* network_context) {
   CHECK(network_context);
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   auto client = std::make_unique<ProxyLookupClientImpl>(std::move(callback));
 

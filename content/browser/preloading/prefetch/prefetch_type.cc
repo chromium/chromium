@@ -29,7 +29,7 @@ PrefetchType::PrefetchType(PreloadingTriggerType trigger_type,
 }
 
 void PrefetchType::SetProxyBypassedForTest() {
-  DCHECK(use_prefetch_proxy_);
+  CHECK(use_prefetch_proxy_, base::NotFatalUntil::M159);
   proxy_bypassed_for_testing_ = true;
 }
 

@@ -53,11 +53,11 @@ bool IsPathRestrictionSatisfiedInternal(
     bool service_worker_allowed_header_supported,
     const std::optional<std::string_view>& service_worker_allowed_header_value,
     std::string* error_message) {
-  DCHECK(scope.is_valid());
-  DCHECK(!scope.has_ref());
-  DCHECK(script_url.is_valid());
-  DCHECK(!script_url.has_ref());
-  DCHECK(error_message);
+  CHECK(scope.is_valid(), base::NotFatalUntil::M159);
+  CHECK(!scope.has_ref(), base::NotFatalUntil::M159);
+  CHECK(script_url.is_valid(), base::NotFatalUntil::M159);
+  CHECK(!script_url.has_ref(), base::NotFatalUntil::M159);
+  CHECK(error_message, base::NotFatalUntil::M159);
 
   if (blink::ServiceWorkerScopeOrScriptUrlContainsDisallowedCharacter(
           scope, script_url, error_message)) {
@@ -249,7 +249,7 @@ void CheckVersionStatusBeforeWorkerScriptLoad(
     blink::mojom::ScriptType script_type) {
   if (is_main_script) {
     // The service worker main script should be fetched during worker startup.
-    DCHECK_EQ(status, ServiceWorkerVersion::NEW);
+    CHECK_EQ(status, ServiceWorkerVersion::NEW, base::NotFatalUntil::M159);
     return;
   }
 
@@ -258,13 +258,14 @@ void CheckVersionStatusBeforeWorkerScriptLoad(
   switch (script_type) {
     case blink::mojom::ScriptType::kClassic:
       // importScripts() should be called until completion of the install event.
-      DCHECK(status == ServiceWorkerVersion::NEW ||
-             status == ServiceWorkerVersion::INSTALLING);
+      CHECK(status == ServiceWorkerVersion::NEW ||
+                status == ServiceWorkerVersion::INSTALLING,
+            base::NotFatalUntil::M159);
       break;
     case blink::mojom::ScriptType::kModule:
       // Static-import should be handled during worker startup along with the
       // main script.
-      DCHECK_EQ(status, ServiceWorkerVersion::NEW);
+      CHECK_EQ(status, ServiceWorkerVersion::NEW, base::NotFatalUntil::M159);
       break;
   }
 }
@@ -277,7 +278,7 @@ network::ResourceRequest CreateRequestForServiceWorkerScript(
     blink::mojom::ScriptType worker_script_type,
     const blink::mojom::FetchClientSettingsObject& fetch_client_settings_object,
     BrowserContext& browser_context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   network::ResourceRequest request;
   request.url = script_url;
@@ -353,7 +354,8 @@ network::ResourceRequest CreateRequestForServiceWorkerScript(
       // about mode and credentials mode. Use the default value, which is
       // "no-cors".
       // https://html.spec.whatwg.org/C/#fetch-a-classic-worker-imported-script
-      DCHECK_EQ(network::mojom::RequestMode::kNoCors, request.mode);
+      CHECK_EQ(network::mojom::RequestMode::kNoCors, request.mode,
+               base::NotFatalUntil::M159);
 
       // The request's destination is "script" for the imported script.
       // https://w3c.github.io/ServiceWorker/#update-algorithm
@@ -513,7 +515,7 @@ storage::mojom::ServiceWorkerFindRegistrationResultPtr
 GetOrCreateSyntheticRegistration(ServiceWorkerContextCore* context,
                                  const GURL& client_url,
                                  const blink::StorageKey& key) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   // Extract the first path segment (e.g. "/foo" from
   // "https://example.com/foo/bar") to establish a broader synthetic scope. This
   // guarantees that subsequent navigations across different paths within the

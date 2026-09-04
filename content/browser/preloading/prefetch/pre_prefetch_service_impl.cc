@@ -52,7 +52,7 @@ void RecordPrePrefetchStartResultHistogram(PrePrefetchStartResult result) {
 network::HttpRequestHeadersUpdateParams PreCalculatePrePrefetchHeadersOnUI(
     BrowserContext* browser_context,
     const PrePrefetchPreCalculatedHeadersKey& key) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   // Create a tentative `PrefetchRequest` to pre-calculate headers based on
   // `PrePrefetchPreCalculatedHeadersKey`.
   // TODO(crbug.com/470242977): Creating a full `PrefetchRequest` just to
@@ -211,7 +211,7 @@ class PrePrefetchServiceCore {
         FROM_HERE,
         base::BindOnce(
             [](base::WeakPtr<BrowserContext> browser_context) {
-              DCHECK_CURRENTLY_ON(BrowserThread::UI);
+              CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
               return browser_context ? CreatePrePrefetchURLLoaderFactoryOnUI(
                                            browser_context.get())
                                      : mojo::PendingRemote<
@@ -250,7 +250,7 @@ class PrePrefetchServiceCore {
             [](base::WeakPtr<BrowserContext> browser_context,
                PrePrefetchPreCalculatedHeadersKey key)
                 -> std::optional<network::HttpRequestHeadersUpdateParams> {
-              DCHECK_CURRENTLY_ON(BrowserThread::UI);
+              CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
               return browser_context ? std::make_optional(
                                            PreCalculatePrePrefetchHeadersOnUI(
                                                browser_context.get(), key))
@@ -312,7 +312,7 @@ std::unique_ptr<PrePrefetchService> PrePrefetchService::Create(
     std::optional<bool> initial_javascript_enabled_hint,
     std::optional<bool> initial_should_append_variations_header_hint) {
   CHECK(base::FeatureList::IsEnabled(features::kPrefetchOffTheMainThread));
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   return std::make_unique<PrePrefetchServiceImpl>(
       browser_context,
       std::move(embedder_non_ui_thread_update_headers_callbacks),
@@ -327,7 +327,7 @@ PrePrefetchServiceImpl::PrePrefetchServiceImpl(
     std::optional<url::Origin> initial_origin_hint,
     std::optional<bool> initial_javascript_enabled_hint,
     std::optional<bool> initial_should_append_variations_header_hint) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   TRACE_EVENT("loading", "PrePrefetchServiceImpl::PrePrefetchServiceImpl");
 
   browser_context_weak_on_ui_thread_ = browser_context->GetWeakPtr();
@@ -363,7 +363,7 @@ PrePrefetchServiceImpl::PrePrefetchServiceImpl(
 }
 
 PrePrefetchServiceImpl::~PrePrefetchServiceImpl() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 }
 
 std::unique_ptr<PrePrefetchHandle>
@@ -379,7 +379,8 @@ PrePrefetchServiceImpl::StartPrePrefetchRequest(
     bool should_append_variations_header,
     bool should_disable_block_until_head_timeout,
     bool should_bypass_http_cache) {
-  DCHECK(!BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(!BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M159);
   TRACE_EVENT("loading", "PrePrefetchServiceImpl::StartPrePrefetchRequest",
               "url", url);
 
@@ -408,7 +409,8 @@ PrePrefetchServiceImpl::StartPrePrefetchRequestForTesting(  // IN-TEST
 std::unique_ptr<PrePrefetchHandle>
 PrePrefetchServiceImpl::StartPrePrefetchRequestInternal(
     std::unique_ptr<const PrefetchRequest> prefetch_request) {
-  DCHECK(!BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(!BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M159);
   CHECK(prefetch_request);
   std::unique_ptr<PrePrefetchHandle> handle;
   base::WaitableEvent event(base::WaitableEvent::ResetPolicy::MANUAL,

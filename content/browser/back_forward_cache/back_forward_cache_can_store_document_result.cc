@@ -633,10 +633,13 @@ void BackForwardCacheCanStoreDocumentResult::No(
     BackForwardCacheMetrics::NotRestoredReason reason) {
   // Either |NoDueToFeatures()| or |NoDueToDisableForRenderFrameHostCalled|
   // should be called instead.
-  DCHECK_NE(reason,
-            BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures);
-  DCHECK_NE(reason, BackForwardCacheMetrics::NotRestoredReason::
-                        kDisableForRenderFrameHostCalled);
+  CHECK_NE(reason,
+           BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures,
+           base::NotFatalUntil::M159);
+  CHECK_NE(reason,
+           BackForwardCacheMetrics::NotRestoredReason::
+               kDisableForRenderFrameHostCalled,
+           base::NotFatalUntil::M159);
 
   AddNotRestoredReason(reason);
 }
@@ -675,7 +678,7 @@ void BackForwardCacheCanStoreDocumentResult::
         const BackForwardCacheCanStoreDocumentResult::DisabledReasonsMap&
             reasons) {
   // This should only be called with non-empty reasons.
-  DCHECK(reasons.size());
+  CHECK(reasons.size(), base::NotFatalUntil::M159);
   for (const auto& reason : reasons) {
     disabled_reasons_.insert(reason);
     // This will be a no-op after the first time but it's written like this to

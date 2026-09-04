@@ -24,7 +24,7 @@ ServiceWorkerContentSettingsProxyImpl::ServiceWorkerContentSettingsProxyImpl(
       context_wrapper_(context_wrapper),
       receiver_(this, std::move(receiver)),
       storage_key_(std::move(storage_key)) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 }
 
 ServiceWorkerContentSettingsProxyImpl::
@@ -32,7 +32,7 @@ ServiceWorkerContentSettingsProxyImpl::
 
 void ServiceWorkerContentSettingsProxyImpl::AllowIndexedDB(
     AllowIndexedDBCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   // May be shutting down.
   if (!context_wrapper_->browser_context()) {
     std::move(callback).Run(false);
@@ -54,7 +54,7 @@ void ServiceWorkerContentSettingsProxyImpl::AllowIndexedDB(
 
 void ServiceWorkerContentSettingsProxyImpl::AllowCacheStorage(
     AllowCacheStorageCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   // May be shutting down.
   if (!context_wrapper_->browser_context()) {
     std::move(callback).Run(false);
@@ -77,7 +77,7 @@ void ServiceWorkerContentSettingsProxyImpl::AllowCacheStorage(
 
 void ServiceWorkerContentSettingsProxyImpl::AllowWebLocks(
     AllowWebLocksCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   // May be shutting down.
   if (!context_wrapper_->browser_context()) {
     std::move(callback).Run(false);

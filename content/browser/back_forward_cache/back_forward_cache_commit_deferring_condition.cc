@@ -22,7 +22,7 @@ BackForwardCacheCommitDeferringCondition::MaybeCreate(
 
   // Currently only navigations in the primary main frame can restore pages
   // from BFCache.
-  DCHECK(navigation_request.IsInPrimaryMainFrame());
+  CHECK(navigation_request.IsInPrimaryMainFrame(), base::NotFatalUntil::M159);
 
   return base::WrapUnique(
       new BackForwardCacheCommitDeferringCondition(navigation_request));
@@ -39,7 +39,8 @@ BackForwardCacheCommitDeferringCondition::
 CommitDeferringCondition::Result
 BackForwardCacheCommitDeferringCondition::WillCommitNavigation(
     base::OnceClosure resume) {
-  DCHECK(GetNavigationHandle().IsServedFromBackForwardCache());
+  CHECK(GetNavigationHandle().IsServedFromBackForwardCache(),
+        base::NotFatalUntil::M159);
 
   BackForwardCacheImpl& bfcache =
       NavigationRequest::From(&GetNavigationHandle())

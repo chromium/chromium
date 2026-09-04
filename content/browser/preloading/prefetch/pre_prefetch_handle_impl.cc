@@ -13,14 +13,15 @@ PrePrefetchHandleImpl::PrePrefetchHandleImpl(
     std::unique_ptr<PrePrefetchContainer> pre_prefetch_container)
     : pre_prefetch_container_(std::move(pre_prefetch_container)) {
   CHECK(base::FeatureList::IsEnabled(features::kPrefetchOffTheMainThread));
-  DCHECK(!BrowserThread::CurrentlyOn(BrowserThread::UI));
+  CHECK(!BrowserThread::CurrentlyOn(BrowserThread::UI),
+        base::NotFatalUntil::M159);
 }
 
 PrePrefetchHandleImpl::~PrePrefetchHandleImpl() = default;
 
 std::unique_ptr<PrePrefetchContainer>
 PrePrefetchHandleImpl::TakePrePrefetchContainerOnUI() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   CHECK(pre_prefetch_container_);
   return std::move(pre_prefetch_container_);
 }

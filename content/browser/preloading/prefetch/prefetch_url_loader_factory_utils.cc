@@ -128,7 +128,7 @@ scoped_refptr<network::SharedURLLoaderFactory> CreatePrefetchURLLoaderFactory(
 
 mojo::PendingRemote<network::mojom::URLLoaderFactory>
 CreatePrePrefetchURLLoaderFactoryOnUI(BrowserContext* browser_context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   CHECK(browser_context);
 
   // This is the same default network context that should be used in normal

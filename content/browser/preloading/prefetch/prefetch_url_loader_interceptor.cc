@@ -254,7 +254,7 @@ void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
       // TODO(https://crbug.com/413207408): Monitor the reports and fix
       // `ServiceWorkerClient::CalculateStorageKeyForUpdateUrls()` if there
       // are actual mismatches.
-      DCHECK(false);
+      CHECK(false, base::NotFatalUntil::M159);
       base::debug::DumpWithoutCrashing();
 
       // We anyway gracefully fallback to non-prefetch path.

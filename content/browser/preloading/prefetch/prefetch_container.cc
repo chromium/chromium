@@ -250,7 +250,7 @@ GetPrefetchResponseCompletedCallbackForTesting() {
 
 void RecordPrefetchProxyPrefetchMainframeTotalTime(
     network::mojom::URLResponseHead* head) {
-  DCHECK(head);
+  CHECK(head, base::NotFatalUntil::M159);
 
   base::Time start = head->request_time;
   base::Time end = head->response_time;
@@ -266,7 +266,7 @@ void RecordPrefetchProxyPrefetchMainframeTotalTime(
 
 void RecordPrefetchProxyPrefetchMainframeConnectTime(
     network::mojom::URLResponseHead* head) {
-  DCHECK(head);
+  CHECK(head, base::NotFatalUntil::M159);
 
   base::TimeTicks start = head->load_timing.connect_timing.connect_start;
   base::TimeTicks end = head->load_timing.connect_timing.connect_end;
@@ -900,7 +900,7 @@ void PrefetchContainer::SetPrefetchStatus(PrefetchStatus prefetch_status) {
 }
 
 PrefetchStatus PrefetchContainer::GetPrefetchStatus() const {
-  DCHECK(prefetch_status_);
+  CHECK(prefetch_status_, base::NotFatalUntil::M159);
   return prefetch_status_.value();
 }
 

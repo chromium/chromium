@@ -152,7 +152,7 @@ std::unique_ptr<const PrefetchRequest> PrefetchRequest::CreateRendererInitiated(
     base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager,
     scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
     base::WeakPtr<PreloadingAttempt> attempt) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   return std::make_unique<PrefetchRequest>(
       base::PassKey<PrefetchRequest>(), prefetch_type,
       PrefetchKey(referring_document_token, url),
@@ -192,7 +192,7 @@ std::unique_ptr<const PrefetchRequest> PrefetchRequest::CreateBrowserInitiated(
     PreloadingHoldbackStatus holdback_status_override,
     std::optional<base::TimeDelta> ttl,
     bool should_ignore_saver_modes) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   return std::make_unique<PrefetchRequest>(
       base::PassKey<PrefetchRequest>(), prefetch_type,
       PrefetchKey(std::optional<blink::DocumentToken>(std::nullopt), url),
@@ -234,7 +234,7 @@ PrefetchRequest::CreateBrowserInitiatedWithoutWebContents(
     bool should_append_variations_header,
     bool should_disable_block_until_head_timeout,
     bool should_bypass_http_cache) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   return std::make_unique<PrefetchRequest>(
       base::PassKey<PrefetchRequest>(), prefetch_type,
       PrefetchKey(std::optional<blink::DocumentToken>(std::nullopt), url),

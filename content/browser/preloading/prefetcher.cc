@@ -16,7 +16,7 @@ Prefetcher::Prefetcher(RenderFrameHost& render_frame_host)
     : render_frame_host_(render_frame_host),
       render_frame_host_impl_(
           static_cast<RenderFrameHostImpl*>(&render_frame_host)) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 }
 Prefetcher::~Prefetcher() = default;
 

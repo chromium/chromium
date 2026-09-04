@@ -440,7 +440,7 @@ network::HttpRequestHeadersUpdateParams PrepareInitialHeadersForPrefetchPhase2(
     const GURL& request_url,
     const PrefetchRequest& prefetch_request,
     bool is_first_party_context_for_variations_header) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   network::HttpRequestHeadersUpdateParams headers_update_params;
 
@@ -739,7 +739,7 @@ MakeInitialResourceRequestWithoutHeadersForPrefetch(
 std::unique_ptr<network::ResourceRequest> MakeInitialResourceRequestForPrefetch(
     const PrefetchRequest& prefetch_request,
     bool is_decoy) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   auto resource_request = MakeInitialResourceRequestWithoutHeadersForPrefetch(
       prefetch_request, is_decoy);

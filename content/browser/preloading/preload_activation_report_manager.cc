@@ -37,7 +37,7 @@ const void* const kPreloadActivationReportManagerKey =
 PreloadActivationReportManager*
 PreloadActivationReportManager::GetOrCreateForBrowserContext(
     BrowserContext* browser_context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   CHECK(browser_context);
 
   auto* manager = static_cast<PreloadActivationReportManager*>(
@@ -65,7 +65,7 @@ PreloadActivationReportManager::~PreloadActivationReportManager() = default;
 
 void PreloadActivationReportManager::ReportActivation(const GURL& endpoint,
                                                       RenderFrameHost* rfh) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   CHECK(rfh);
 
   url::Origin original_origin = url::Origin::Create(endpoint);
@@ -181,7 +181,7 @@ void PreloadActivationReportManager::OnRedirect(
     const GURL& url_before_redirect,
     const net::RedirectInfo& redirect_info,
     const network::mojom::URLResponseHead& response_head) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   // Enforce that the HTTP method must remain GET.
   if (redirect_info.new_method != net::HttpRequestHeaders::kGetMethod) {
@@ -221,7 +221,7 @@ void PreloadActivationReportManager::OnRedirect(
 void PreloadActivationReportManager::OnComplete(
     UrlLoaderList::iterator it,
     scoped_refptr<net::HttpResponseHeaders> headers) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   if (it->loader->ResponseInfo()) {
     devtools_instrumentation::OnPrefetchActivationBeaconResponseReceived(
@@ -237,7 +237,7 @@ void PreloadActivationReportManager::OnComplete(
 }
 
 void PreloadActivationReportManager::RemoveLoader(UrlLoaderList::iterator it) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   loaders_.erase(it);
 }
 

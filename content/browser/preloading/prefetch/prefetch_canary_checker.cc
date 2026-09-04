@@ -162,9 +162,10 @@ PrefetchCanaryChecker::PrefetchCanaryChecker(
       revalidate_cache_after_(revalidate_cache_after),
       cache_(kMaxCacheSize) {
   // The NetworkConnectionTracker can only be used directly on the UI thread.
-  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI),
+        base::NotFatalUntil::M159);
   network_connection_tracker_ = GetNetworkConnectionTracker();
-  DCHECK(network_connection_tracker_);
+  CHECK(network_connection_tracker_, base::NotFatalUntil::M159);
 }
 
 PrefetchCanaryChecker::~PrefetchCanaryChecker() {
@@ -206,7 +207,7 @@ void PrefetchCanaryChecker::OnCheckEnd(bool success) {
       base::BindOnce(&PrefetchCanaryChecker::UpdateCacheEntry, GetWeakPtr(),
                      entry));
 
-  DCHECK(time_when_set_active_.has_value());
+  CHECK(time_when_set_active_.has_value(), base::NotFatalUntil::M159);
   base::TimeDelta active_time =
       base::Time::Now() - time_when_set_active_.value();
   if (success) {
@@ -265,9 +266,10 @@ void PrefetchCanaryChecker::ProcessFailure(int net_error) {
   TRACE_EVENT("loading", "PrefetchCanaryChecker::ProcessFailure", "net_error",
               net_error);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!retry_timer_ || !retry_timer_->IsRunning());
-  DCHECK(!timeout_timer_ || !timeout_timer_->IsRunning());
-  DCHECK(time_when_set_active_.has_value());
+  CHECK(!retry_timer_ || !retry_timer_->IsRunning(), base::NotFatalUntil::M159);
+  CHECK(!timeout_timer_ || !timeout_timer_->IsRunning(),
+        base::NotFatalUntil::M159);
+  CHECK(time_when_set_active_.has_value(), base::NotFatalUntil::M159);
 
   backoff_entry_.InformOfRequest(false);
 
@@ -293,9 +295,10 @@ void PrefetchCanaryChecker::ProcessFailure(int net_error) {
 void PrefetchCanaryChecker::ProcessSuccess() {
   TRACE_EVENT("loading", "PrefetchCanaryChecker::ProcessSuccess");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!retry_timer_ || !retry_timer_->IsRunning());
-  DCHECK(!timeout_timer_ || !timeout_timer_->IsRunning());
-  DCHECK(time_when_set_active_.has_value());
+  CHECK(!retry_timer_ || !retry_timer_->IsRunning(), base::NotFatalUntil::M159);
+  CHECK(!timeout_timer_ || !timeout_timer_->IsRunning(),
+        base::NotFatalUntil::M159);
+  CHECK(time_when_set_active_.has_value(), base::NotFatalUntil::M159);
 
   base::LinearHistogram::FactoryGet(
       AppendNameToHistogram(kAttemptsBeforeSuccessHistogram), 1 /* minimum */,

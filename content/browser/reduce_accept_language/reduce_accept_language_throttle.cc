@@ -85,7 +85,7 @@ void ReduceAcceptLanguageThrottle::BeforeWillProcessResponse(
     const GURL& response_url,
     const network::mojom::URLResponseHead& response_head,
     RestartWithURLReset* restart_with_url_reset) {
-  DCHECK_EQ(response_url, last_request_url_);
+  CHECK_EQ(response_url, last_request_url_, base::NotFatalUntil::M159);
   MaybeRestartWithLanguageNegotiation(response_head, restart_with_url_reset);
 }
 

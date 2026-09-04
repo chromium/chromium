@@ -266,7 +266,7 @@ void PrefetchOriginProber::DoTLSProbeAfterDNSResolution(
     const GURL& url,
     OnProbeResultCallback callback,
     const net::AddressList& addresses) {
-  DCHECK(!addresses.empty());
+  CHECK(!addresses.empty(), base::NotFatalUntil::M159);
 
   std::unique_ptr<TLSProber> prober =
       std::make_unique<TLSProber>(url, std::move(callback));

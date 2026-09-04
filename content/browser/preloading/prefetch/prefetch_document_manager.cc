@@ -310,8 +310,9 @@ PrefetchService* PrefetchDocumentManager::GetPrefetchService() const {
     return g_prefetch_service_for_testing;
   }
 
-  DCHECK(BrowserContextImpl::From(render_frame_host().GetBrowserContext())
-             ->GetPrefetchService());
+  CHECK(BrowserContextImpl::From(render_frame_host().GetBrowserContext())
+            ->GetPrefetchService(),
+        base::NotFatalUntil::M159);
   return BrowserContextImpl::From(render_frame_host().GetBrowserContext())
       ->GetPrefetchService();
 }
@@ -380,7 +381,7 @@ PrefetchDocumentManager::CanPrefetchNow(PrefetchContainer* prefetch) {
     }
     // We are at capacity, and now need to evict the oldest non-immediate
     // prefetch to make space for a new one.
-    DCHECK(GetPrefetchService());
+    CHECK(GetPrefetchService(), base::NotFatalUntil::M159);
     base::WeakPtr<PrefetchContainer> oldest_prefetch =
         completed_non_immediate_prefetches_.front();
     // TODO(crbug.com/40064525): We should also be checking if the prefetch is

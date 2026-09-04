@@ -31,7 +31,7 @@ ResolveHostClientImpl::ResolveHostClientImpl(
     ResolveHostCallback callback,
     network::mojom::NetworkContext* network_context)
     : callback_(std::move(callback)) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M159);
 
   network::mojom::ResolveHostParametersPtr parameters =
       network::mojom::ResolveHostParameters::New();
@@ -73,7 +73,7 @@ void ResolveHostClientImpl::OnComplete(
   // As this method is executed as a callback from a Mojo call, it should be
   // executed via RunTask() and thus have a non-delayed PendingTask associated
   // with it.
-  DCHECK(!task || task->delayed_run_time.is_null());
+  CHECK(!task || task->delayed_run_time.is_null(), base::NotFatalUntil::M159);
 
   // The task will have a null |queue_time| if run synchronously (this happens
   // in unit tests, for example).

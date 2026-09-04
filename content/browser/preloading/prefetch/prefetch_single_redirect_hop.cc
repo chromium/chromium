@@ -136,7 +136,7 @@ void PrefetchSingleRedirectHop::
 }
 
 void PrefetchSingleRedirectHop::OnIsolatedCookieCopyStart() {
-  DCHECK(!IsIsolatedCookieCopyInProgress());
+  CHECK(!IsIsolatedCookieCopyInProgress(), base::NotFatalUntil::M159);
 
   // We should temporarily ignore the cookie monitoring by
   // `PrefetchCookieListener` during the isolated cookie is written to the
@@ -160,7 +160,7 @@ void PrefetchSingleRedirectHop::OnIsolatedCookieCopyStart() {
 }
 
 void PrefetchSingleRedirectHop::OnIsolatedCookiesReadCompleteAndWriteStart() {
-  DCHECK(IsIsolatedCookieCopyInProgress());
+  CHECK(IsIsolatedCookieCopyInProgress(), base::NotFatalUntil::M159);
   cookie_read_end_and_write_start_time_ = base::TimeTicks::Now();
 }
 
@@ -232,7 +232,7 @@ void PrefetchSingleRedirectHop::OnGotIsolatedCookiesForCopy(
 }
 
 void PrefetchSingleRedirectHop::OnIsolatedCookieCopyComplete() {
-  DCHECK(IsIsolatedCookieCopyInProgress());
+  CHECK(IsIsolatedCookieCopyInProgress(), base::NotFatalUntil::M159);
 
   // Resumes `PrefetchCookieListener` so that we can keep monitoring the
   // cookie change for the prefetch, which may be served again.
@@ -265,7 +265,7 @@ void PrefetchSingleRedirectHop::OnInterceptorCheckCookieCopy() {
 
 void PrefetchSingleRedirectHop::SetOnCookieCopyCompleteCallback(
     base::OnceClosure callback) {
-  DCHECK(IsIsolatedCookieCopyInProgress());
+  CHECK(IsIsolatedCookieCopyInProgress(), base::NotFatalUntil::M159);
   on_cookie_copy_complete_callback_ = std::move(callback);
 }
 

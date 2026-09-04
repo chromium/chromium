@@ -215,21 +215,21 @@ void PreloadingConfig::ParseConfig() {
 
   for (const base::Value& entry : *entries) {
     const base::DictValue* config_dict = entry.GetIfDict();
-    DCHECK(config_dict);
+    CHECK(config_dict, base::NotFatalUntil::M159);
     if (!config_dict) {
       continue;
     }
 
     const std::string* preloading_type =
         config_dict->FindString("preloading_type");
-    DCHECK(preloading_type);
+    CHECK(preloading_type, base::NotFatalUntil::M159);
     if (!preloading_type) {
       continue;
     }
 
     const std::string* preloading_predictor =
         config_dict->FindString("preloading_predictor");
-    DCHECK(preloading_predictor);
+    CHECK(preloading_predictor, base::NotFatalUntil::M159);
     if (!preloading_predictor) {
       continue;
     }
