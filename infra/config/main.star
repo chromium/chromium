@@ -271,7 +271,7 @@ chromium_luci.configure_targets(
             "mac_toolchain": True,
             "x64_ai_wpt_shards": True,
             "non-gce": True,
-            "no_xvfb": True,
+            "no_xvfb_for_real_hardware": True,
             "nvidia_geforce_gtx_1660": True,
             "out_dir_arg": True,
             "skia_gold_test": True,

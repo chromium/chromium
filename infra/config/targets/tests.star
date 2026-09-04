@@ -201,7 +201,7 @@ targets.tests.gtest_test(
     mixins = [
         "android_extra_verbosity",
         "gpu_gtest_common_args",
-        "no_xvfb",
+        "no_xvfb_for_real_hardware",
         "use_isolated_scripts_api",
     ],
 )

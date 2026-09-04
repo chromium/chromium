@@ -817,9 +817,9 @@
       '--do-not-store-tombstones',
     ],
   },
-  'no_xvfb': {
+  'no_xvfb_for_real_hardware': {
     'linux_args': [
-      '--no-xvfb',
+      '$$MAGIC_SUBSTITUTION_GPUNoXvfbForRealHardware',
     ],
   },
   'non-gce': {

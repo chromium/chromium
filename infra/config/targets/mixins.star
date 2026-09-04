@@ -1774,9 +1774,9 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "no_xvfb",
+    name = "no_xvfb_for_real_hardware",
     linux_args = [
-        "--no-xvfb",
+        targets.magic_args.GPU_NO_XVFB_FOR_REAL_HARDWARE,
     ],
 )
 

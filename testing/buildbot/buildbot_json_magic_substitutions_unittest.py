@@ -435,6 +435,55 @@ class GPUExpectedDeviceId(unittest.TestCase):
     )
 
 
+class GPUNoXvfbForRealHardware(unittest.TestCase):
+  def testNoOsType(self):
+    test_config = CreateConfigWithGpu('vendor:device1-driver')
+    with self.assertRaises(AssertionError):
+      magic_substitutions.GPUNoXvfbForRealHardware(test_config, 'name', {})
+
+  def testNonLinuxOsType(self):
+    test_config = CreateConfigWithGpu('vendor:device1-driver')
+    for os_type in ['android', 'lacros', 'mac', 'win']:
+      with self.assertRaises(AssertionError):
+        magic_substitutions.GPUNoXvfbForRealHardware(
+          test_config, 'name', {'os_type': os_type}
+        )
+
+  def testGceExplicitlyRequested(self):
+    test_config = CreateConfigWithGpu('vendor:device1-driver')
+    test_config['swarming']['dimensions']['gce'] = '1'
+    tester_config = {'os_type': 'linux'}
+    retval = magic_substitutions.GPUNoXvfbForRealHardware(
+      test_config, 'name', tester_config
+    )
+    self.assertEqual(retval, [])
+
+  def testGceNoGpu(self):
+    test_config = CreateConfigWithGpu('vendor:device1-driver')
+    del test_config['swarming']['dimensions']['gpu']
+    tester_config = {'os_type': 'linux'}
+    retval = magic_substitutions.GPUNoXvfbForRealHardware(
+      test_config, 'name', tester_config
+    )
+    self.assertEqual(retval, [])
+
+  def testGceNoneGpu(self):
+    test_config = CreateConfigWithGpu('none')
+    tester_config = {'os_type': 'linux'}
+    retval = magic_substitutions.GPUNoXvfbForRealHardware(
+      test_config, 'name', tester_config
+    )
+    self.assertEqual(retval, [])
+
+  def testNonGce(self):
+    test_config = CreateConfigWithGpu('vendor:device1-driver')
+    tester_config = {'os_type': 'linux'}
+    retval = magic_substitutions.GPUNoXvfbForRealHardware(
+      test_config, 'name', tester_config
+    )
+    self.assertEqual(retval, ['--no-xvfb'])
+
+
 class GPUParallelJobs(unittest.TestCase):
   def testNoOsType(self):
     test_config = CreateConfigWithGpu('vendor:device1-driver')
