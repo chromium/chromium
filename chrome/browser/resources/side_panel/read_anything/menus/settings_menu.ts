@@ -331,10 +331,18 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
 
     this.options_ = optionIDs.map(id => {
       const original = MENU_ITEM_DATA[id];
-      const title = loadTimeData.getString(original.title);
+      let title = loadTimeData.getString(original.title);
       let ariaLabel = title;
       let checked = false;
       let disabled = false;
+      let icon = original.icon;
+
+      if (id === SettingsOption.LINE_FOCUS &&
+          this.visualBrowserProxy_.isReadAnythingImprovedUiEnabled()) {
+        icon = 'read-anything:service_toolbox';
+        title = loadTimeData.getString('toolsLabel');
+        ariaLabel = title;
+      }
 
       if (id === SettingsOption.IMAGES) {
         checked = this.visualBrowserProxy_.isImagesEnabled();
@@ -361,6 +369,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
         ...original,
         id,
         title,
+        icon,
         ariaLabel,
         checked,
         disabled,

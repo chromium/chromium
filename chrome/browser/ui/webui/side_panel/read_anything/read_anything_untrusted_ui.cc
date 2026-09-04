@@ -63,6 +63,7 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
       {"audioTitle", IDS_READING_MODE_AUDIO_LABEL},
       {"textSettingsTitle", IDS_READING_MODE_TEXT_STYLE_LABEL},
       {"mediaTitle", IDS_READING_MODE_MEDIA_LABEL},
+      {"toolsLabel", IDS_READING_MODE_TOOLS_LABEL},
       {"themeTitle", IDS_READING_MODE_COLORS_COMBOBOX_LABEL},
       {"letterSpacingTitle", IDS_READING_MODE_LETTER_SPACING_COMBOBOX_LABEL},
       {"fontSizeTitle", IDS_READING_MODE_FONT_SIZE},

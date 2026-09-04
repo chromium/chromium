@@ -165,4 +165,38 @@ suite('LineFocusMenuElement', () => {
     lineFocusMenu.close();
     assertFalse(lineFocusMenu.$.menu.$.lazyMenu.get().open);
   });
+
+  suite('with read anything improved ui', () => {
+    setup(async () => {
+      setupTestEnvironment({readAnythingImprovedUiEnabled: true});
+
+      lineFocusMenu = document.createElement('line-focus-menu');
+      document.body.appendChild(lineFocusMenu);
+      await microtasksFinished();
+    });
+
+    test(
+        'line focus enabled prop update changes visible submenus', async () => {
+          assertEquals(1, lineFocusMenu.$.menu.menuGroups.length);
+
+          lineFocusMenu.lineFocusEnabled = true;
+          await microtasksFinished();
+
+          assertEquals(3, lineFocusMenu.$.menu.menuGroups.length);
+          assertEquals(
+              lineFocusMenu.$.menu.menuGroups[0]!.header.title,
+              loadTimeData.getString('lineFocusLabel'));
+          assertEquals(
+              lineFocusMenu.$.menu.menuGroups[1]!.header.title,
+              loadTimeData.getString('lineFocusStyleHeading'));
+          assertEquals(
+              lineFocusMenu.$.menu.menuGroups[2]!.header.title,
+              loadTimeData.getString('lineFocusMovementHeading'));
+
+          lineFocusMenu.lineFocusEnabled = false;
+          await microtasksFinished();
+
+          assertEquals(1, lineFocusMenu.$.menu.menuGroups.length);
+        });
+  });
 });

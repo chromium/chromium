@@ -7,6 +7,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 import {KEYBOARD_NAV_CLASS, LINE_FOCUS_FEATURE_NAME, MENU_SHOW_DELAY_MS, ReadAnythingSettingsChange, SUBMENU_SHOW_DELAY_MS, userEducationProxyFactory} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {SettingsMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {SettingsOption, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome-untrusted://webui-test/keyboard_mock_interactions.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
@@ -483,6 +484,50 @@ suite('SettingsMenuElement', () => {
             !menuItems.find(item => item.id === SettingsOption.APPEARANCE));
         assertTrue(!!menuItems.find(item => item.id === SettingsOption.COLOR));
       });
+
+  test('LINE_FOCUS uses tools label and icon with improved ui', async () => {
+    visualBrowserProxy.readAnythingImprovedUiEnabled = true;
+    settingsMenu.settingsPrefs = {...settingsMenu.settingsPrefs};
+    await microtasksFinished();
+
+    const actionMenu = settingsMenu.$.lazyMenu.get();
+    let menuItems = Array.from(
+        actionMenu.querySelectorAll<HTMLButtonElement>('.menu-row'));
+    let lineFocusItem =
+        menuItems.find(item => item.id === SettingsOption.LINE_FOCUS);
+    assertTrue(!!lineFocusItem);
+
+    let icon = lineFocusItem.querySelector('cr-icon');
+    assertTrue(!!icon);
+    assertEquals(icon.icon, 'read-anything:service_toolbox');
+
+    let title = lineFocusItem.querySelector('.label');
+    assertTrue(!!title);
+    assertEquals(
+        title.textContent.trim(), loadTimeData.getString('toolsLabel'));
+
+    visualBrowserProxy.readAnythingImprovedUiEnabled = false;
+    settingsMenu.settingsPrefs = {...settingsMenu.settingsPrefs};
+    await microtasksFinished();
+
+    menuItems = Array.from(
+        actionMenu.querySelectorAll<HTMLButtonElement>('.menu-row'));
+    lineFocusItem =
+        menuItems.find(item => item.id === SettingsOption.LINE_FOCUS);
+    assertTrue(!!lineFocusItem);
+
+    icon = lineFocusItem.querySelector('cr-icon');
+    assertTrue(!!icon);
+    const expectedIcon = loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'read-anything:wb-incandescent' :
+        'read-anything:line-focus-old';
+    assertEquals(icon.icon, expectedIcon);
+
+    title = lineFocusItem.querySelector('.label');
+    assertTrue(!!title);
+    assertEquals(
+        title.textContent.trim(), loadTimeData.getString('lineFocusLabel'));
+  });
 
   test('translate action fires event when clicked', async () => {
     visualBrowserProxy.translateEntryPointEnabled = true;
