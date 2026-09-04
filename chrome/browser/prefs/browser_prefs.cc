@@ -591,42 +591,6 @@ namespace {
 // the bottom of the list, not here at the top.
 
 #if BUILDFLAG(IS_ANDROID)
-// Deprecated 08/2025.
-constexpr char kObsoleteAccountStorageNoticeShown[] =
-    "password_manager.account_storage_notice_shown";
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if !BUILDFLAG(IS_ANDROID)
-// Deprecated 08/2025.
-constexpr char kObsoleteAutofillableCredentialsProfileStoreLoginDatabase[] =
-    "password_manager.autofillable_credentials_profile_store_login_database";
-constexpr char kObsoleteAutofillableCredentialsAccountStoreLoginDatabase[] =
-    "password_manager.autofillable_credentials_account_store_login_database";
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_CHROMEOS)
-// Deprecated 08/2025.
-constexpr char kAutoScreenBrightnessMetricsDailySample[] =
-    "auto_screen_brightness.metrics.daily_sample";
-constexpr char kAutoScreenBrightnessMetricsAtlasUserAdjustmentCount[] =
-    "auto_screen_brightness.metrics.atlas_user_adjustment_count";
-constexpr char kAutoScreenBrightnessMetricsEveUserAdjustmentCount[] =
-    "auto_screen_brightness.metrics.eve_user_adjustment_count";
-constexpr char kAutoScreenBrightnessMetricsNocturneUserAdjustmentCount[] =
-    "auto_screen_brightness.metrics.nocturne_user_adjustment_count";
-constexpr char kAutoScreenBrightnessMetricsKohakuUserAdjustmentCount[] =
-    "auto_screen_brightness.metrics.kohaku_user_adjustment_count";
-constexpr char kAutoScreenBrightnessMetricsNoAlsUserAdjustmentCount[] =
-    "auto_screen_brightness.metrics.no_als_user_adjustment_count";
-constexpr char kAutoScreenBrightnessMetricsSupportedAlsUserAdjustmentCount[] =
-    "auto_screen_brightness.metrics.supported_als_user_adjustment_count";
-constexpr char kAutoScreenBrightnessMetricsUnsupportedAlsUserAdjustmentCount[] =
-    "auto_screen_brightness.metrics.unsupported_als_user_adjustment_count";
-constexpr char kDesksLacrosProfileIdList[] =
-    "ash.desks.desks_lacros_profile_id_list";
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_ANDROID)
 // Deprecated 09/2025.
 constexpr char kObsoleteUpmUnmigratedPasswordsExported[] =
     "profile.upm_unmigrated_passwords_exported";
@@ -1051,25 +1015,6 @@ inline constexpr char kInvalidationPerSenderActiveRegistrationTokens[] =
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
-#if BUILDFLAG(IS_CHROMEOS)
-  // Deprecated 08/2025.
-  registry->RegisterDictionaryPref(kAutoScreenBrightnessMetricsDailySample);
-  registry->RegisterIntegerPref(
-      kAutoScreenBrightnessMetricsAtlasUserAdjustmentCount, 0);
-  registry->RegisterIntegerPref(
-      kAutoScreenBrightnessMetricsEveUserAdjustmentCount, 0);
-  registry->RegisterIntegerPref(
-      kAutoScreenBrightnessMetricsNocturneUserAdjustmentCount, 0);
-  registry->RegisterIntegerPref(
-      kAutoScreenBrightnessMetricsKohakuUserAdjustmentCount, 0);
-  registry->RegisterIntegerPref(
-      kAutoScreenBrightnessMetricsNoAlsUserAdjustmentCount, 0);
-  registry->RegisterIntegerPref(
-      kAutoScreenBrightnessMetricsSupportedAlsUserAdjustmentCount, 0);
-  registry->RegisterIntegerPref(
-      kAutoScreenBrightnessMetricsUnsupportedAlsUserAdjustmentCount, 0);
-#endif
-
   // Deprecated 09/2025.
   registry->RegisterBooleanPref(kRendererCodeIntegrityEnabledNeedsDeletion,
                                 false);
@@ -1083,12 +1028,6 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kPrivacyBudgetGeneration, 0);
   registry->RegisterStringPref(kPrivacyBudgetSeenSurfaces, std::string());
   registry->RegisterStringPref(kPrivacyBudgetSelectedOffsets, std::string());
-
-  // Deprecated 03/2026.
-  registry->RegisterBooleanPref(kGlicMultiInstanceEnabledBySubscriptionTier,
-                                false);
-  registry->RegisterIntegerPref(kPrivacyBudgetSelectedBlock, -1);
-  registry->RegisterDoublePref(kPrivacyBudgetMetaExperimentActivationSalt, 0);
 
   // Deprecated 12/2025.
   registry->RegisterStringPref(kAutofillStatesDataDir, std::string());
@@ -1124,6 +1063,12 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 
   // Deprecated 02/2026.
   registry->RegisterListPref(kProfilesDeletedOld);
+
+  // Deprecated 03/2026.
+  registry->RegisterBooleanPref(kGlicMultiInstanceEnabledBySubscriptionTier,
+                                false);
+  registry->RegisterIntegerPref(kPrivacyBudgetSelectedBlock, -1);
+  registry->RegisterDoublePref(kPrivacyBudgetMetaExperimentActivationSalt, 0);
 
   // Deprecated 04/2026.
   registry->RegisterDictionaryPref(kTpcdMetadataCohorts);
@@ -1163,28 +1108,11 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 // Register prefs used only for migration (clearing or moving to a new key).
 void RegisterProfilePrefsForMigration(
     user_prefs::PrefRegistrySyncable* registry) {
-#if BUILDFLAG(IS_ANDROID)
-  // Deprecated 08/2025.
-  registry->RegisterBooleanPref(kObsoleteAccountStorageNoticeShown, false);
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Deprecated 08/2025.
-  registry->RegisterBooleanPref(
-      kObsoleteAutofillableCredentialsProfileStoreLoginDatabase, false);
-  registry->RegisterBooleanPref(
-      kObsoleteAutofillableCredentialsAccountStoreLoginDatabase, false);
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_WEBUI_NTP)
   // Deprecated 08/2025.
+  // TODO(crbug.com/557083938): Cleanup migrated pref.
   registry->RegisterBooleanPref(ntp_prefs::kNtpUseMostVisitedTiles, false);
 #endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_WEBUI_NTP)
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Deprecated 08/2025.
-  registry->RegisterListPref(kDesksLacrosProfileIdList);
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
   // Deprecated 09/2025.
@@ -2392,21 +2320,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // BEGIN_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // Added 08/2025.
-  local_state->ClearPref(kAutoScreenBrightnessMetricsDailySample);
-  local_state->ClearPref(kAutoScreenBrightnessMetricsNoAlsUserAdjustmentCount);
-  local_state->ClearPref(
-      kAutoScreenBrightnessMetricsSupportedAlsUserAdjustmentCount);
-  local_state->ClearPref(
-      kAutoScreenBrightnessMetricsUnsupportedAlsUserAdjustmentCount);
-  local_state->ClearPref(kAutoScreenBrightnessMetricsAtlasUserAdjustmentCount);
-  local_state->ClearPref(kAutoScreenBrightnessMetricsEveUserAdjustmentCount);
-  local_state->ClearPref(
-      kAutoScreenBrightnessMetricsNocturneUserAdjustmentCount);
-  local_state->ClearPref(kAutoScreenBrightnessMetricsKohakuUserAdjustmentCount);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
   // Added 09/2025
   local_state->ClearPref(kRendererCodeIntegrityEnabledNeedsDeletion);
 
@@ -2556,29 +2469,12 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Check MigrateDeprecatedAutofillPrefs() to see if this is safe to remove.
   autofill::prefs::MigrateDeprecatedAutofillPrefs(profile_prefs);
 
-#if BUILDFLAG(IS_ANDROID)
-  // Added 08/2025.
-  profile_prefs->ClearPref(kObsoleteAccountStorageNoticeShown);
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Deprecated 08/2025.
-  profile_prefs->ClearPref(
-      kObsoleteAutofillableCredentialsProfileStoreLoginDatabase);
-  profile_prefs->ClearPref(
-      kObsoleteAutofillableCredentialsAccountStoreLoginDatabase);
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
   // Added 08/2025.
+  // TODO(crbug.com/557083938): Cleanup migration.
   MostVisitedPrefObserver::MigrateDeprecatedUseMostVisitedTilesPref(
       profile_prefs);
 #endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Added 08/2025.
-  profile_prefs->ClearPref(kDesksLacrosProfileIdList);
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
   // Added 09/2025.
