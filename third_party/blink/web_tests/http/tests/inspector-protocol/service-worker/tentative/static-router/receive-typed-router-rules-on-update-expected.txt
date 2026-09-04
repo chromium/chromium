@@ -11,7 +11,7 @@ Tests receiving static router rules from the service worker.
     }
     [1] : {
         condition : {
-            urlPattern : {"hash":"*","hostname":"127.0.0.1","password":"*","pathname":"/**/*.txt","port":"8000","protocol":"http","search":"*","username":"*"}
+            urlPattern : {"hostname":"127.0.0.1","pathname":"/**/*.txt","port":"8000","protocol":"http"}
         }
         id : <number>
         source : {

@@ -182,19 +182,14 @@ std::string RunningStatusToString(
   }
 }
 
-// A struct representation requires default port/credentials and at least one
-// specified component (e.g. `pathname`).
+// A struct representation requires at least one specified component (e.g.
+// `pathname`).
 bool CanReconstructAsStruct(const blink::SafeUrlPattern& pattern) {
-  // TODO(crbug.com/540469610): Support custom port, username, and password in
-  // struct reconstruction in a follow-up.
-  if (!IsSimpleFullWildcardField(pattern.port) ||
-      !IsSimpleFullWildcardField(pattern.username) ||
-      !IsSimpleFullWildcardField(pattern.password)) {
-    return false;
-  }
-
   return !IsSimpleFullWildcardField(pattern.protocol) ||
+         !IsSimpleFullWildcardField(pattern.username) ||
+         !IsSimpleFullWildcardField(pattern.password) ||
          !IsSimpleFullWildcardField(pattern.hostname) ||
+         !IsSimpleFullWildcardField(pattern.port) ||
          !IsSimpleFullWildcardField(pattern.pathname) ||
          !IsSimpleFullWildcardField(pattern.search) ||
          !IsSimpleFullWildcardField(pattern.hash);
