@@ -3073,9 +3073,13 @@ void DevToolsUIBindings::ReadyToCommitNavigation(
     if (frontend_host_) {
       return;
     }
-    if (content::RenderFrameHost* opener = web_contents_->GetOpener()) {
+    // If the window was opened by another window, ensure the root opener in
+    // the live opener chain is a DevTools WebContents with active DevTools
+    // frontend bindings. This also covers cases where `window.opener` was
+    // severed (e.g. via `window.opener = null` or `rel="noopener"`).
+    if (web_contents_->HasLiveOriginalOpenerChain()) {
       content::WebContents* opener_wc =
-          content::WebContents::FromRenderFrameHost(opener);
+          web_contents_->GetFirstWebContentsInLiveOriginalOpenerChain();
       DevToolsUIBindings* opener_bindings =
           opener_wc ? DevToolsUIBindings::ForWebContents(opener_wc) : nullptr;
       if (!opener_bindings || !opener_bindings->frontend_host_) {
