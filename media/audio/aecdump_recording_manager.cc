@@ -54,8 +54,7 @@ void AecdumpRecordingManager::StartRecording(AecdumpRecordingSource* source,
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(IsDebugRecordingEnabled());
 
-  if (aecdump_recording_sources_.find(source) !=
-      aecdump_recording_sources_.end()) {
+  if (aecdump_recording_sources_.contains(source)) {
     source->StartAecdump(std::move(file));
     return;
   }
@@ -81,8 +80,7 @@ void AecdumpRecordingManager::DisableDebugRecording() {
 void AecdumpRecordingManager::RegisterAecdumpSource(
     AecdumpRecordingSource* source) {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK(aecdump_recording_sources_.find(source) ==
-         aecdump_recording_sources_.end());
+  DCHECK(!aecdump_recording_sources_.contains(source));
 
   const uint32_t id = recording_id_counter_++;
 
@@ -97,8 +95,7 @@ void AecdumpRecordingManager::RegisterAecdumpSource(
 void AecdumpRecordingManager::DeregisterAecdumpSource(
     AecdumpRecordingSource* source) {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK(aecdump_recording_sources_.find(source) !=
-         aecdump_recording_sources_.end());
+  DCHECK(aecdump_recording_sources_.contains(source));
 
   if (IsDebugRecordingEnabled()) {
     source->StopAecdump();

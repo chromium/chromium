@@ -4,6 +4,7 @@
 
 #include "media/audio/audio_opus_encoder.h"
 
+#include <algorithm>
 #include <array>
 #include <utility>
 
@@ -95,8 +96,7 @@ AudioParameters CreateOpusCompatibleParams(const AudioParameters& params,
 
 // Check if the duration is explicitly 2.5ms, 5, 10, 20, 40, 60.
 bool IsStandardFrameDuration(base::TimeDelta frame_duration) {
-  return std::ranges::find(kStandardDurations, frame_duration) !=
-         kStandardDurations.end();
+  return std::ranges::contains(kStandardDurations, frame_duration);
 }
 
 // Checks that we are only giving Valid Frame durations.

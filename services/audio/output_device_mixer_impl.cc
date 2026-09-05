@@ -443,7 +443,7 @@ void OutputDeviceMixerImpl::StartListening(Listener* listener) {
   switch_to_unmixed_playback_delay_timer_.Stop();
   {
     base::AutoLock scoped_lock(listener_lock_);
-    DCHECK(listeners_.find(listener) == listeners_.end());
+    DCHECK(!listeners_.contains(listener));
     listeners_.insert(listener);
     if (MixingInProgress()) {
       DCHECK(mixing_graph_output_stream_);  // We are mixing.
