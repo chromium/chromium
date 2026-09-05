@@ -1496,6 +1496,10 @@ BoxStrut ComputeBorders(const ConstraintSpace& constraint_space,
     return To<TableNode>(node).GetTableBorders()->TableBorder();
   }
 
+  if (node.IsTableSection() || node.IsTableRow()) {
+    return BoxStrut();
+  }
+
   return ComputeBordersInternal(node.Style());
 }
 
