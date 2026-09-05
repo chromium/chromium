@@ -3746,7 +3746,7 @@ NavigationControllerImpl::NavigateToExistingPendingEntry(
     initiator_frame_token = initiator_rfh->GetFrameToken();
     initiator_process_id = initiator_rfh->GetProcess()->GetID();
     initiator_navigation_state =
-        initiator_rfh->CreateInitiatorStateFromCurrentFrame();
+        initiator_rfh->GetCurrentInitiatorNavigationState();
     DCHECK(initiator_frame_token);
   }
 

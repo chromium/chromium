@@ -686,7 +686,7 @@ void NavigateClient(
       rfhi, url, &(rfhi->GetFrameToken()) /* initiator_frame_token */,
       rfhi->GetProcess()->GetDeprecatedID() /* initiator_process_id */,
       url::Origin::Create(script_url), /* initiator_base_url= */ std::nullopt,
-      rfhi->CreateInitiatorStateFromCurrentFrame(), nullptr /* post_body */,
+      rfhi->GetCurrentInitiatorNavigationState(), nullptr /* post_body */,
       std::string() /* extra_headers */,
       Referrer::SanitizeForRequest(
           url, Referrer(script_url, network::mojom::ReferrerPolicy::kDefault)),

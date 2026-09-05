@@ -18,7 +18,7 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaAdditionalNavigationParams(
     RenderFrameHost& initiator_frame_host) {
   auto* rfhi = static_cast<RenderFrameHostImpl*>(&initiator_frame_host);
   scoped_refptr<InitiatorNavigationState> initiator_navigation_state =
-      rfhi->CreateInitiatorStateFromCurrentFrame();
+      rfhi->GetCurrentInitiatorNavigationState();
   int64_t native_state_ptr = 0;
   if (initiator_navigation_state) {
     initiator_navigation_state->AddRef();

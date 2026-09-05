@@ -2595,7 +2595,7 @@ RenderFrameHostImpl::GetInitiatorNavigationStateFromFrameToken(
   RenderFrameHostImpl* initiator_rfh =
       RenderFrameHostImpl::FromFrameToken(initiator_process_id, *frame_token);
   if (initiator_rfh) {
-    return initiator_rfh->CreateInitiatorStateFromCurrentFrame();
+    return initiator_rfh->GetCurrentInitiatorNavigationState();
   }
 
   // Otherwise get it from the NavigationStateKeepAlive stored in
@@ -11402,11 +11402,11 @@ void RenderFrameHostImpl::IssueKeepAliveHandle(
   browser_context->RegisterKeepAliveHandle(
       std::move(receiver),
       base::WrapUnique(new NavigationStateKeepAlive(
-          CreateInitiatorStateFromCurrentFrame(), browser_context)));
+          GetCurrentInitiatorNavigationState(), browser_context)));
 }
 
 scoped_refptr<InitiatorNavigationState>
-RenderFrameHostImpl::CreateInitiatorStateFromCurrentFrame() {
+RenderFrameHostImpl::GetCurrentInitiatorNavigationState() {
   return base::WrapRefCounted(new InitiatorNavigationStateImpl(
       GetFrameToken(), GetProcess()->GetID(), policy_container_host(),
       site_instance_));

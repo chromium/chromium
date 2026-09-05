@@ -3388,8 +3388,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Records the current navigation state of this RFH. It should be passed to
   // NavigationRequests initiated by this RFH.
-  scoped_refptr<InitiatorNavigationState>
-  CreateInitiatorStateFromCurrentFrame();
+  scoped_refptr<InitiatorNavigationState> GetCurrentInitiatorNavigationState();
 
  protected:
   friend class RenderFrameHostFactory;
