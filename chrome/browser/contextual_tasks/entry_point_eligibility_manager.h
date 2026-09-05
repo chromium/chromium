@@ -36,6 +36,10 @@ class EntryPointEligibilityManager {
   // profile. Returns false otherwise.
   static bool IsEligible(Profile* profile);
 
+  // Returns true if the pin button is eligible to be shown for the given
+  // profile. Returns false otherwise.
+  static bool IsPinningEligible(Profile* profile);
+
   // Runs callback when the entry point eligibility changes
   using EntryPointEligibilityChangeCallbackList =
       base::RepeatingCallbackList<void(bool)>;

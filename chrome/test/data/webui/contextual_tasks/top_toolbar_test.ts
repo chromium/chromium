@@ -409,7 +409,6 @@ suite('TopToolbarTest', () => {
       });
       topToolbar = document.createElement('top-toolbar');
       topToolbar.isHandshakeComplete = true;
-      topToolbar.isAimEligible = true;
       document.body.appendChild(topToolbar);
       await microtasksFinished();
     });
@@ -449,8 +448,8 @@ suite('TopToolbarTest', () => {
       assertFalse(!!pinButton);
     });
 
-    test('hides pin button when not aim eligible', async () => {
-      topToolbar.isAimEligible = false;
+    test('hides pin button when pin button is not enabled', async () => {
+      topToolbar.isPinButtonEnabled = false;
       await microtasksFinished();
 
       const moreButton =

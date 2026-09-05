@@ -125,8 +125,7 @@ bool GetEffectivePinState(Profile* profile);
 
 #if !BUILDFLAG(IS_ANDROID)
 // Updates the visibility of the contextual tasks pinned toolbar ActionItem.
-void UpdatePinButtonVisibilityState(BrowserWindowInterface* browser_window,
-                                    bool eligible);
+void UpdatePinButtonVisibilityState(BrowserWindowInterface* browser_window);
 #endif
 
 // Returns whether dark mode should be used for the given profile and URL.

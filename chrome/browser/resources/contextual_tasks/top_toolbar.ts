@@ -130,7 +130,7 @@ export class TopToolbarElement extends TopToolbarElementBase {
   private listenerIds_: number[] = [];
   protected accessor isExpandButtonEnabled: boolean =
       loadTimeData.getBoolean('expandButtonEnabled');
-  protected accessor isPinButtonEnabled: boolean =
+  accessor isPinButtonEnabled: boolean =
       loadTimeData.getBoolean('enablePinButton');
   private hideOverflowMenuOnAiPageEnabled_: boolean =
       loadTimeData.getBoolean('hideMenuOnAiPageEnabled');

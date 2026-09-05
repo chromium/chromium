@@ -608,10 +608,12 @@ base::DictValue ContextualTasksUI::GetContextualTasksLoadTimeData(
   dict.Set(
       "composeboxSkillsEnabled",
       base::FeatureList::IsEnabled(omnibox::kComposeboxSkillsContextualTasks));
-  dict.Set("enablePinButton",
-           contextual_tasks::IsContextualTasksPinButtonInToolbarEnabled());
+  const bool is_pinning_eligible =
+      contextual_tasks::EntryPointEligibilityManager::IsPinningEligible(
+          profile);
+  dict.Set("enablePinButton", is_pinning_eligible);
   dict.Set("isSidePanelPinned",
-           contextual_tasks::IsContextualTasksPinButtonInToolbarEnabled() &&
+           is_pinning_eligible &&
                contextual_tasks::GetEffectivePinState(profile));
   dict.Set("showOnboardingTooltip",
            base::FeatureList::IsEnabled(

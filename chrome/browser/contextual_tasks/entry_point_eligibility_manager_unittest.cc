@@ -13,6 +13,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service_delegate.h"
@@ -367,6 +368,91 @@ TEST_F(EntryPointEligibilityManagerTest,
           GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
               GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
   EXPECT_EQ(notified_eligibility, false);
+}
+
+TEST_F(EntryPointEligibilityManagerTest, IsPinningEligible_True) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      contextual_tasks::kEnableContextualTasksPinButtonInToolbar);
+
+  auto account_info =
+      identity_test_env_adaptor_->identity_test_env()->MakeAccountAvailable(
+          "test@example.com");
+  identity_test_env_adaptor_->identity_test_env()->SetCookieAccounts(
+      {{.email = account_info.email, .gaia_id = account_info.gaia}});
+  identity_test_env_adaptor_->identity_test_env()->SetPrimaryAccount(
+      account_info.email, signin::ConsentLevel::kSignin);
+
+  EXPECT_CALL(*mock_ui_service_, IsSignedInToBrowserWithValidCredentials())
+      .WillRepeatedly(testing::Return(true));
+
+  profile_->GetPrefs()->SetInteger(omnibox::kAIModeSettings, 0);  // Allowed
+
+  InitializeManager();
+
+  EXPECT_TRUE(EntryPointEligibilityManager::IsPinningEligible(profile_.get()));
+}
+
+TEST_F(EntryPointEligibilityManagerTest,
+       IsPinningEligible_False_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      contextual_tasks::kEnableContextualTasksPinButtonInToolbar);
+
+  auto account_info =
+      identity_test_env_adaptor_->identity_test_env()->MakeAccountAvailable(
+          "test@example.com");
+  identity_test_env_adaptor_->identity_test_env()->SetCookieAccounts(
+      {{.email = account_info.email, .gaia_id = account_info.gaia}});
+  identity_test_env_adaptor_->identity_test_env()->SetPrimaryAccount(
+      account_info.email, signin::ConsentLevel::kSignin);
+
+  EXPECT_CALL(*mock_ui_service_, IsSignedInToBrowserWithValidCredentials())
+      .WillRepeatedly(testing::Return(true));
+
+  profile_->GetPrefs()->SetInteger(omnibox::kAIModeSettings, 0);  // Allowed
+
+  InitializeManager();
+
+  EXPECT_FALSE(EntryPointEligibilityManager::IsPinningEligible(profile_.get()));
+}
+
+TEST_F(EntryPointEligibilityManagerTest,
+       IsPinningEligible_False_NotEligible) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      contextual_tasks::kEnableContextualTasksPinButtonInToolbar);
+
+  auto account_info =
+      identity_test_env_adaptor_->identity_test_env()
+          ->MakePrimaryAccountAvailable("test@example.com",
+                                        signin::ConsentLevel::kSignin);
+  identity_test_env_adaptor_->identity_test_env()->SetCookieAccounts(
+      {{.email = account_info.email, .gaia_id = account_info.gaia}});
+
+  EXPECT_CALL(*mock_ui_service_, IsSignedInToBrowserWithValidCredentials())
+      .WillRepeatedly(testing::Return(true));
+
+  // Feature disabled for entrypoint eligibility.
+  mock_ui_service_->GetFakeEligibilityManager()->SetEligibilityOverride(false);
+
+  profile_->GetPrefs()->SetInteger(omnibox::kAIModeSettings, 0);
+
+  InitializeManager();
+
+  EXPECT_FALSE(EntryPointEligibilityManager::IsPinningEligible(profile_.get()));
+}
+
+TEST_F(EntryPointEligibilityManagerTest,
+       IsPinningEligible_False_Incognito) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      contextual_tasks::kEnableContextualTasksPinButtonInToolbar);
+
+  Profile* otr_profile =
+      profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+
+  EXPECT_FALSE(EntryPointEligibilityManager::IsPinningEligible(otr_profile));
 }
 
 }  // namespace contextual_tasks

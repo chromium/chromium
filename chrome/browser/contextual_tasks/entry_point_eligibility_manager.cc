@@ -9,6 +9,7 @@
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -88,6 +89,12 @@ bool EntryPointEligibilityManager::IsEligible(Profile* profile) {
   }
 
   return eligibility_manager->IsEligible();
+}
+
+// static
+bool EntryPointEligibilityManager::IsPinningEligible(Profile* profile) {
+  return contextual_tasks::IsContextualTasksPinButtonInToolbarEnabled() &&
+         IsEligible(profile);
 }
 
 void EntryPointEligibilityManager::MaybeNotifyEntryPointEligibilityChanged(

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_browser_controller.h"
 
+#include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider_impl.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_host.h"
@@ -57,14 +58,15 @@ ContextualTasksBrowserController::ContextualTasksBrowserController(
           browser_window_interface_, eligibility_manager_.get(),
           side_panel_coordinator_.get());
 
-  UpdatePinButtonVisibilityState(
-      browser_window_interface_,
-      eligibility_manager_->AreEntryPointsEligible());
+  UpdatePinButtonVisibilityState(browser_window_interface_);
 
+  // This subscription is safe because the browser_window_interface_
+  // BrowserWindowFeatures, which owns this controller and this subscription.
   actions_visibility_subscription_ =
       eligibility_manager_->RegisterOnEntryPointEligibilityChanged(
-          base::BindRepeating(&UpdatePinButtonVisibilityState,
-                              base::Unretained(browser_window_interface_)));
+          base::IgnoreArgs<bool>(
+              base::BindRepeating(&UpdatePinButtonVisibilityState,
+                                  base::Unretained(browser_window_interface_))));
 #endif
 }
 

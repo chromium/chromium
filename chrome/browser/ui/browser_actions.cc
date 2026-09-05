@@ -662,8 +662,8 @@ void BrowserActions::InitializeSidePanelActions() {
                     std::underlying_type_t<actions::ActionPinnableState>>(
                     actions::ActionPinnableState::kPinnable))
             .SetVisible(
-                contextual_tasks::EntryPointEligibilityManager::IsEligible(
-                    profile))
+                contextual_tasks::EntryPointEligibilityManager::
+                    IsPinningEligible(profile))
             .Build());
   }
 
