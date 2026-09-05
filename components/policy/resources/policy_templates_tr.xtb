@@ -8898,7 +8898,7 @@ Politika, boş bir dizeye ayarlanır veya ayarlanmadan bırakılırsa hiçbir be
 <translation id="6518286606938091609">Güvenli olmayan SwiftShader WebGL yedeğini devre dışı bırak</translation>
 <translation id="6520053715392444458">Bu politika etkinleştirildiğinde veya ayarlanmadan bırakıldığında <ph name="PRODUCT_NAME" />, Güvenli Tarama'yı etkinleştirmiş kullanıcıların gerçekleştirdiği şüpheli indirme işlemlerini, kötü amaçlı yazılım açısından taraması için Google'a gönderebilir veya şifrelenmiş arşivler için kullanıcıların şifre girmesini isteyebilir.
 Bu politika devre dışı bırakıldığında tarama yapılmaz.
-Bu politika, Chrome Enterprise Connectors tarafından yapılandırılan indirme içeriği analizini etkilemez.</translation>
+Bu politika, Chrome Enterprise Connectors tarafından yapılandırılan indirilen içerik analizini etkilemez.</translation>
 <translation id="6520802717075138474">İlk çalıştırmada arama motorlarını varsayılan tarayıcıdan içe aktar</translation>
 <translation id="6521971538031711337">Yönetilen kullanıcının, cihazın ana makine adını yapılandırmasını engelle</translation>
 <translation id="6523079496775454310">Yönetilmeyen cihazlarda, yönetilen kullanıcılar için cihaz sinyali izni verilmesini etkinleştir</translation>

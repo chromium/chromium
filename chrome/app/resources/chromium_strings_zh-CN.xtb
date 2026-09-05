@@ -267,7 +267,8 @@
 <translation id="3941890832296813527">安装时出错：安装程序文件名无效或不受支持。</translation>
 <translation id="3945058413678539331">Chromium 正在尝试复制密码。请输入您的 Windows 密码以允许此操作。</translation>
 <translation id="3954172517175569325">您在 Google 账号中保存的密码、支付方式和地址将从此设备中移除。如需在 Chromium 中重新使用这些数据，请重新登录。</translation>
-<translation id="395904275706073188">无法读取受保护的页面，请尝试其他页面。</translation>
+<translation id="395904275706073188">受保护页面无法读取，
+请尝试其他页面。</translation>
 <translation id="3962647064319009959">了解 Chromium 如何保障您的安全</translation>
 <translation id="3967822245660637423">下载完毕</translation>
 <translation id="3971865010372729242">当您在地址栏或搜索框中输入内容时，Chromium 会将您输入的内容发送给组织的搜索、AI 和代理工具，以便获取建议。</translation>

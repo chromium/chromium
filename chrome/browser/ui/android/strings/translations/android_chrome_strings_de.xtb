@@ -646,7 +646,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3701515417135397388">Warnen, wenn ein Passwort nach einer Datenpanne nicht mehr sicher ist</translation>
 <translation id="3703166520839776970">Wenn das Problem weiterhin auftritt, wähle unten „Weitere Details“ aus, um mehr Informationen von <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> zu erhalten.</translation>
 <translation id="3708100450779900829">Wenn dein Gerät zugeklappt ist, kannst du eine Option auswählen oder die Adressleiste gedrückt halten, um die Position zu ändern</translation>
-<translation id="3709577906275923507"><ph name="FILE_NAME" /> enthält möglicherweise vertrauliche Informationen und sollte nicht freigegeben werden</translation>
+<translation id="3709577906275923507">„<ph name="FILE_NAME" />“ enthält möglicherweise vertrauliche Informationen und sollte nicht freigegeben werden</translation>
 <translation id="3710501561113687889"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> teilt zum Fortfahren <ph name="FIELDS_STRING" /> mit dieser Website.</translation>
 <translation id="3710560693796335511">Zusammenarbeit</translation>
 <translation id="3714430408451673233">Tab-Ansicht am unteren Rand ist halb geöffnet.</translation>

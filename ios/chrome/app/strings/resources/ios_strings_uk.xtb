@@ -1126,7 +1126,7 @@
 <translation id="4796496140132859135">Група вкладок. Згорнуто.</translation>
 <translation id="4802185666270672526">Сховати опцію "Версія сайту для комп’ютера"</translation>
 <translation id="4802678077012980341">Завдання щодо перевірки паролів виконано.</translation>
-<translation id="4803185665210547709">Веб-переглядачем керує ваша організація.
+<translation id="4803185665210547709">Вебпереглядачем керує ваша організація.
 <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="4803728135431112209">Обведіть, виділіть або натисніть об’єкт на екрані, щоб виконати пошук, не залишаючи вкладку</translation>
 <translation id="4807098396393229769">Ім'я на картці</translation>
@@ -1443,7 +1443,7 @@
 <translation id="58081802114142635">Ваша історія дій покращує ШІ від Google</translation>
 <translation id="5817176759448082654">Перевірка паролів</translation>
 <translation id="5818161931099046557">Редагувати в обліковому записі Google</translation>
-<translation id="5819208479324046259">Веб-переглядачем керує <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
+<translation id="5819208479324046259">Вебпереглядачем керує <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Синхронізація…</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -1735,7 +1735,7 @@
 <translation id="6705491067826837934">Елементи керування завжди напохваті</translation>
 <translation id="6708501134077648845">Параметри паролів</translation>
 <translation id="6709964700841491574">Режим блокування входу</translation>
-<translation id="6710079714193676716">Веб-переглядачем керує ваша організація. Деякі функції можуть бути недоступними. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
+<translation id="6710079714193676716">Вебпереглядачем керує ваша організація. Деякі функції можуть бути недоступними. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="6713676799463473249">Змінено <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Отримані вкладки</translation>
 <translation id="6722638373100589752">Щоб автоматично заповнювати інформацію, увімкніть опцію "Використовувати картки й квитки в сервісах Google" у налаштуваннях Гаманця</translation>

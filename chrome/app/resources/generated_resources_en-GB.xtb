@@ -234,7 +234,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1164015913575846413">alt + click</translation>
 <translation id="1164891049599601209">Entered on deceptive site</translation>
 <translation id="1165039591588034296">Error</translation>
-<translation id="1166212789817575481">Close Tabs to the Right</translation>
+<translation id="1166212789817575481">Close tabs to the right</translation>
 <translation id="1166457390969131095">Use and save passwords and passkeys from your Google Account</translation>
 <translation id="1166583374608765787">Review name update</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> belongs to desk <ph name="DESK_TITLE" /></translation>
@@ -4360,7 +4360,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4320177379694898372">No internet connection</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="432160826079505197">Show <ph name="FILE_NAME" /> in finder</translation>
-<translation id="4322394346347055525">Close Other Tabs</translation>
+<translation id="4322394346347055525">Close other tabs</translation>
 <translation id="4322400254469690320">Find your <ph name="FILENAME" /> in the <ph name="FEATURE_NAME" /> folder</translation>
 <translation id="4324577459193912240">File incomplete</translation>
 <translation id="4325433082696797523">Storage and power</translation>
@@ -4466,7 +4466,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4404843640767531781"><ph name="APP_NAME" /> is blocked by your parent. Ask your parent for permission to use this app.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Move to…</translation>
-<translation id="4405580203042711503">New Tab Below</translation>
+<translation id="4405580203042711503">New tab below</translation>
 <translation id="4405781821077215583">Make items on your screen, including text, smaller or larger</translation>
 <translation id="4406308048672435032">You can make this tab inactive or refresh to see the full list again</translation>
 <translation id="4406881185911439342">Focus group</translation>
@@ -6004,7 +6004,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5609231933459083978">The application appears to be invalid.</translation>
 <translation id="5610867721023328944">Try again or select from one of the available themes below.</translation>
 <translation id="5611398002774823980">Save in account</translation>
-<translation id="5611474372949142946">Close Tabs Below</translation>
+<translation id="5611474372949142946">Close tabs below</translation>
 <translation id="5614553682702429503">Save password?</translation>
 <translation id="5614947000616625327">iCloud Keychain</translation>
 <translation id="561552177910095306">List of recent sites that you visited that can suggest ads to other sites as you keep browsing</translation>
@@ -6333,7 +6333,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="587234395549708302">Clean up Bookmarks?</translation>
 <translation id="5875534259258494936">Screen sharing has ended</translation>
 <translation id="5876691914815078365">Chrome Apps &gt; <ph name="APP_NAME" /></translation>
-<translation id="5876851302954717356">New Tab to the Right</translation>
+<translation id="5876851302954717356">New tab to the right</translation>
 <translation id="5877064549588274448">Channel changed. Restart your device to apply changes.</translation>
 <translation id="5877584842898320529">The selected printer is not available or not installed correctly. <ph name="BR" /> Check your printer or try selecting another printer.</translation>
 <translation id="5878945009165002849">Block sign-in prompts from identity services</translation>
@@ -6969,7 +6969,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6388152137132427505">Always share wisely. Links expire in 48 hours.</translation>
 <translation id="6388429472088318283">Search languages</translation>
 <translation id="6388577073199278153">Can't access your mobile account</translation>
-<translation id="6390020764191254941">Move Tab to New Window</translation>
+<translation id="6390020764191254941">Move tab to new window</translation>
 <translation id="6390046581187330789">{COUNT,plural, =0{None}=1{For <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> and 1 more}other{For <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /> and {COUNT} more}}</translation>
 <translation id="6391131092053186625">Your device IMEI is <ph name="IMEI_NUMBER" />. This number can be used to help activate service.</translation>
 <translation id="6393156038355142111">Suggest strong password</translation>

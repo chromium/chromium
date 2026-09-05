@@ -117,7 +117,7 @@
 <translation id="1076882167394279216">Učitavanje rječnika za provjeru pravopisa za <ph name="LANGUAGE" /> nije uspjelo. Ponovite.</translation>
 <translation id="1078037449555275327">Postavke ChromeVoxa</translation>
 <translation id="1078497917067602920">Aplikacija <ph name="APP_NAME" /> automatski otvara nove prozore.</translation>
-<translation id="1079242569060319448">Jeste li zaboravili PIN?</translation>
+<translation id="1079242569060319448">Zaboravili ste PIN?</translation>
 <translation id="1079766198702302550">Uvijek blokiraj pristup kameri</translation>
 <translation id="1081893794570042235">{COUNT,plural, =1{Vaš anonimni prozor neće se ponovno otvoriti nakon ponovnog pokretanja}one{Vaš {COUNT} anonimni prozor neće se ponovno otvoriti nakon ponovnog pokretanja}few{Vaša {COUNT} anonimna prozora neće se ponovno otvoriti nakon ponovnog pokretanja}other{Vaših {COUNT} anonimnih prozora neće se ponovno otvoriti nakon ponovnog pokretanja}}</translation>
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 kartica}one{<ph name="GROUP_TITLE" /> – # kartica}few{<ph name="GROUP_TITLE" /> – # kartice}other{<ph name="GROUP_TITLE" /> – # kartica}}</translation>
@@ -2179,7 +2179,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2677748264148917807">Napusti</translation>
 <translation id="267829273183481634">{NUM_GROUPS,plural, =1{Želite li zadržati grupu kartica?}one{Želite li zadržati grupe kartica?}few{Želite li zadržati grupe kartica?}other{Želite li zadržati grupe kartica?}}</translation>
 <translation id="268053382412112343">Hi&amp;story (Povijest)</translation>
-<translation id="2682498795777673382">Ažuriranje tvog roditelja</translation>
+<translation id="2682498795777673382">Ažuriranje od tvojeg roditelja</translation>
 <translation id="2683638487103917598">Mapa je sortirana</translation>
 <translation id="2685193395980129388">Dopušteno – <ph name="PERMISSION_DETAILS" /></translation>
 <translation id="2688734475209947648">Nećete morati pamtiti tu zaporku. Spremit će se u Google upravitelj zaporki za <ph name="ACCOUNT" />.</translation>

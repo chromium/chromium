@@ -612,7 +612,7 @@
 <translation id="1467432559032391204">向左</translation>
 <translation id="1468571364034902819">无法使用这份个人资料</translation>
 <translation id="1469702495092129863">请检查麦克风</translation>
-<translation id="1470084204649225129">{NUM_TABS,plural, =1{向新群组中添加标签页}other{向新群组中添加标签页}}</translation>
+<translation id="1470084204649225129">{NUM_TABS,plural, =1{向新分组添加标签页}other{向新分组添加标签页}}</translation>
 <translation id="1470946456740188591">如需开启或关闭光标浏览模式，请使用快捷键 Ctrl + 搜索键 + 7</translation>
 <translation id="1471034383866732283">朗读模式在此页面中找不到主要内容</translation>
 <translation id="1472675084647422956">展开</translation>
@@ -1178,7 +1178,7 @@
 <translation id="1907044622262489040">使用语音输入内容。使用搜索键 + D，然后开始说话。</translation>
 <translation id="1907659324308286326">某些 Thunderbolt 或 USB4 配件需拥有内存访问权限才能正常工作。</translation>
 <translation id="1908591798274282246">重新打开已关闭的群组</translation>
-<translation id="1909677622563887527">Chrome 正受到自动测试软件的控制</translation>
+<translation id="1909677622563887527">自动测试软件正在控制 Chrome</translation>
 <translation id="1909880997794698664">您确定要让此设备永远处于自助服务终端模式吗？</translation>
 <translation id="1910721550319506122">欢迎使用！</translation>
 <translation id="1910736334623230603">无法搜索多张图片。一次只能添加 1 张图片。</translation>
@@ -2460,7 +2460,7 @@
 <translation id="2893168226686371498">默认浏览器</translation>
 <translation id="2893318819023133318">反转视图</translation>
 <translation id="2894596417096093634">崩溃报告标识符</translation>
-<translation id="2894757982205307093">在组内添加新标签页</translation>
+<translation id="2894757982205307093">在分组内添加新标签页</translation>
 <translation id="2895194086130800590">仅当此设备处于唤醒状态且 Chrome 正在运行时，Gemini Spark 才能在此设备上使用自动浏览功能。</translation>
 <translation id="289695669188700754">密钥 ID：<ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">当您关闭所有无痕式窗口后，系统将会撤消这项自定义设置</translation>
@@ -7959,7 +7959,7 @@
 <translation id="7168109975831002660">最小字号</translation>
 <translation id="7169122689956315694">附近有其他设备时开启通知</translation>
 <translation id="7171000599584840888">添加个人资料…</translation>
-<translation id="7172470549472604877">{NUM_TABS,plural, =1{向新群组中添加标签页}other{向新群组中添加标签页}}</translation>
+<translation id="7172470549472604877">{NUM_TABS,plural, =1{向新分组添加标签页}other{向新分组添加标签页}}</translation>
 <translation id="7173114856073700355">打开“设置”</translation>
 <translation id="7174199383876220879">新功能！控制您的音乐、视频等媒体内容。</translation>
 <translation id="7175037578838465313">配置“<ph name="NAME" />”</translation>
@@ -9266,7 +9266,7 @@
 <translation id="8165997195302308593">Crostini 端口转发</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{1 个电话号码}other{# 个电话号码}}</translation>
 <translation id="8168435359814927499">内容</translation>
-<translation id="8169165065843881617">{NUM_TABS,plural, =1{向阅读清单中添加 1 个标签页}other{向阅读清单中添加多个标签页}}</translation>
+<translation id="8169165065843881617">{NUM_TABS,plural, =1{向阅读清单添加标签页}other{向阅读清单添加标签页}}</translation>
 <translation id="8172303073969862496">右侧</translation>
 <translation id="8174047975335711832">设备信息</translation>
 <translation id="8176332201990304395">粉色和白色</translation>
@@ -9341,7 +9341,7 @@
 <translation id="8230134520748321204">要保存 <ph name="ORIGIN" /> 的密码吗？</translation>
 <translation id="8230326817897075865">删除<ph name="CREDENTIAL_TYPE" /></translation>
 <translation id="8230446983261649357">不允许网站显示图片</translation>
-<translation id="8231438895476693774">向新的拆分视图中添加标签页</translation>
+<translation id="8231438895476693774">向新拆分视图添加标签页</translation>
 <translation id="823226567613548870">删除<ph name="BRAND" />数据</translation>
 <translation id="8233028084277069927">立即打开</translation>
 <translation id="8234795456569844941">请告诉我们在您收到个人资料出错提示之前发生的情况，以帮助我们的工程师解决此问题：</translation>
@@ -9352,7 +9352,7 @@
 <translation id="8239932336306009582">不允许发送通知</translation>
 <translation id="8241040075392580210">晴间多云</translation>
 <translation id="8241338426526905580">没有证书</translation>
-<translation id="8241650983304689286">向新的拆分视图中添加标签页</translation>
+<translation id="8241650983304689286">向新拆分视图添加标签页</translation>
 <translation id="8241868517363889229">读取和更改您的书签</translation>
 <translation id="8242273718576931540">您的设备无法连接到此网络。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8242370300221559051">启用 Play 商店</translation>
@@ -9387,7 +9387,7 @@
 <translation id="8261506727792406068">删除</translation>
 <translation id="8263149565724023141">相关应用</translation>
 <translation id="8263228331881858381">已保存通行密钥</translation>
-<translation id="8263336784344783289">为此组命名</translation>
+<translation id="8263336784344783289">为此分组命名</translation>
 <translation id="8264024885325823677">此设置由您的管理员管理。</translation>
 <translation id="8264195025773092348">系统仅会显示受支持的设备。在断开连接之前，原生应用将无法使用 USB 设备。</translation>
 <translation id="8265018477030547118">仅在该设备上</translation>
@@ -9527,7 +9527,7 @@
 <translation id="8370294614544004647">合上笔记本电脑后休眠</translation>
 <translation id="8370419414641876532">点击“密码和自动填充”</translation>
 <translation id="8371695176452482769">请开始说话</translation>
-<translation id="8371925839118813971">{NUM_TABS,plural, =1{将这个网站静音}other{将这些网站静音}}</translation>
+<translation id="8371925839118813971">{NUM_TABS,plural, =1{将网站静音}other{将网站静音}}</translation>
 <translation id="8372441176515901959">取消请求</translation>
 <translation id="8372678064309688510">您的地址已保存</translation>
 <translation id="8373652277231415614">Crostini 共享目录</translation>

@@ -292,7 +292,8 @@
 <translation id="3892148308691398805">复制文字</translation>
 <translation id="3893650521827656233">畅享 Google 顶级安全功能，Chrome 随时随地守护您。</translation>
 <translation id="3941890832296813527">安装时出错：安装程序文件名无效或不受支持。</translation>
-<translation id="395904275706073188">无法读取受保护的页面，请尝试其他页面。</translation>
+<translation id="395904275706073188">受保护页面无法读取，
+请尝试其他页面。</translation>
 <translation id="3965532487635448963">在系统任务栏中显示 Chrome 中的 Gemini 并开启键盘快捷键</translation>
 <translation id="3967822245660637423">下载完毕</translation>
 <translation id="3968962723676998462">请输入您的口令，以便将 Chrome 数据保存在您的账号 <ph name="ACCOUNT_EMAIL" /> 中并使用这些数据</translation>
