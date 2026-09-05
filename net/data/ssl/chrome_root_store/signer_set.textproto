@@ -87,7 +87,7 @@ issuers: {
       seconds: 1787162400
     }
   }
-  base_url: "https://log.mtc-staging.trustasia.com/44494.3.1.1/1"
+  base_url: "https://log.mtc-staging.trustasia.com/44494.3.1.1"
   type: SIGNER_TYPE_ISSUER
   realm: REALM_UNTRUSTED_VALIDATION_ONLY
   max_cert_lifetime: {
@@ -113,7 +113,7 @@ issuers: {
       seconds: 1787162400
     }
   }
-  base_url: "https://log.mtc-staging.trustasia.com/44494.3.1.2/1"
+  base_url: "https://log.mtc-staging.trustasia.com/44494.3.1.2"
   type: SIGNER_TYPE_ISSUER
   realm: REALM_UNTRUSTED_VALIDATION_ONLY
   max_cert_lifetime: {
