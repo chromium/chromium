@@ -57,6 +57,7 @@
 <translation id="1181037720776840403">हटाएं</translation>
 <translation id="1183189057400844278">जब चाहें, अपने Google खाते में सेव किए गए पासवर्ड का इस्तेमाल करने के लिए, अपनी पहचान की पुष्टि करें</translation>
 <translation id="1187810343066461819">इस कार से बुकमार्क, इतिहास और अन्य जानकारी भी मिटाएं</translation>
+<translation id="1191987227666124897">इस्तेमाल बंद या सीमित करने का अनुरोध</translation>
 <translation id="1193729455103054076">क्या आपको मज़बूत पासवर्ड बनाना है?</translation>
 <translation id="11947597112837849">ईमेल पता</translation>
 <translation id="1197267115302279827">बुकमार्क ले जाएं</translation>
@@ -212,6 +213,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="1832459821645506983">हां, वॉइस सर्च करें</translation>
 <translation id="1845958458910716240">अपने डेटा को सुरक्षित रखने के लिए, Chrome को उन साइटों को दी गई अनुमतियां हटाने दें जिन्हें आपने हाल ही में इस्तेमाल नहीं किया है</translation>
 <translation id="1851551847729706116">इस टैब के साथ <ph name="TAB_NAME" /> शेयर किया जा रहा है</translation>
+<translation id="1855268219431673036"><ph name="TOTAL_PAGE_COUNT" /> में से <ph name="CURRENT_PAGE" /> पेज</translation>
 <translation id="1869691326892615940">पासवर्ड की बेहतर सुरक्षा और तेज़ी से साइन-इन की सुविधा</translation>
 <translation id="1871098866036088250">Chrome ब्राउज़र में खोलें</translation>
 <translation id="1877026089748256423">Chrome पुराना हो गया है</translation>
@@ -1341,6 +1343,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="634208815998129842">काम का मैनेजर</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> अन्य}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> अन्य}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> अन्य}}</translation>
 <translation id="6345878117466430440">'पढ़ा गया' के तौर पर मार्क करें</translation>
+<translation id="63490081267265251">Google के साथ-साथ, जिन साइटों पर विज़िट किया जाता है वे यह तय करती हैं कि इस अनुरोध का जवाब कैसे दिया जाए. आपके देश/इलाके के कानूनों के हिसाब से, साइटें आपके डेटा की बिक्री और शेयर करने की सुविधा को सीमित कर सकती हैं. इसके अलावा, साइटें दिलचस्पी के हिसाब से दिखाए जाने वाले विज्ञापनों के लिए भी आपके डेटा के इस्तेमाल को सीमित कर सकती हैं. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="6350745006329795504">अपने डिवाइस मैनेज करें</translation>
 <translation id="6356893102071098867">देखें कि आपने सही खाता चुना है या नहीं</translation>
 <translation id="6364438453358674297">सुझाव को इतिहास से निकालें?</translation>
@@ -1665,6 +1668,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="7493994139787901920"><ph name="VERSION" /> (<ph name="TIME_SINCE_UPDATE" /> अपडेट किया गया)</translation>
 <translation id="7498271377022651285">कृपया इंतज़ार करें...</translation>
 <translation id="7499065150275272675"><ph name="TAB_TITLE" />, पिन किया गया ऐसा टैब जिसे म्यूट किया गया है</translation>
+<translation id="7500851014030446046">PDF डाउनलोड हो रही है</translation>
 <translation id="7501135638693251872">सभी बुकमार्क</translation>
 <translation id="7507207699631365376">इस सेवा देने वाले की <ph name="BEGIN_LINK" />निजता नीति<ph name="END_LINK" /> देखें</translation>
 <translation id="750886945254958667">बाद में टैब जोड़ने के लिए, इस ग्रुप को बनाए रखें या छोड़ दें</translation>
@@ -1732,6 +1736,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अन्य}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अन्य}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अन्य}}</translation>
 <translation id="777637629667389858">अगर आप साइन इन हैं, तो यह Google की सभी सेवाओं पर आपकी सुरक्षा करती है.</translation>
 <translation id="7778840695157240389">नई खबरों के लिए कुछ समय बाद आएं</translation>
+<translation id="7780992949171378848">अपने डेटा के इस्तेमाल को बंद या सीमित करने के लिए साइटों को अनुरोध भेजें</translation>
 <translation id="7791543448312431591">जोड़ें</translation>
 <translation id="7792388396321542707">शेयर करना बंद करें</translation>
 <translation id="780287761701992588">अपने सभी डिवाइसों पर बुकमार्क, पासवर्ड वगैरह का ऐक्सेस पाएं</translation>

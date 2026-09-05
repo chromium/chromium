@@ -601,7 +601,7 @@
 <translation id="2888631381369839306">已开启价格跟踪通知</translation>
 <translation id="2893168226686371498">默认浏览器</translation>
 <translation id="2893791155497534382">密码和其他活动记录可在相应管理设置中删除</translation>
-<translation id="2894757982205307093">在组内添加新标签页</translation>
+<translation id="2894757982205307093">在分组内添加新标签页</translation>
 <translation id="2902312830803030883">更多操作</translation>
 <translation id="2904788871580817212">您打开的标签页中有降价，原价为 <ph name="PREVIOUS_PRICE" />，现价为 <ph name="PRICE" />，<ph name="PRODUCT_NAME" />，<ph name="DOMAIN" /></translation>
 <translation id="2905479111267140204">您有 <ph name="NUMBER_OF_PASSWORDS" /> 个密码重复使用，可能会导致安全风险。</translation>
@@ -740,7 +740,6 @@
 <translation id="3409785640040772790">地图</translation>
 <translation id="3416023309465857378">2023 年 10 月 25 日</translation>
 <translation id="3419787211763835342">帮助改进增强型自动填充功能</translation>
-<translation id="3426715535827854458">隐藏“隐藏工具栏”</translation>
 <translation id="3435738964857648380">安全</translation>
 <translation id="3441673211568148613">让浏览记录不留痕迹</translation>
 <translation id="3443810440409579745">收到标签页。</translation>
@@ -1173,6 +1172,7 @@
 <translation id="484280513275854557">您已退出账号；浏览数据已被删除</translation>
 <translation id="484462545196658690">自动</translation>
 <translation id="4846662396507502151">使用新工具栏，浏览速度更快</translation>
+<translation id="4850669014075537160">滚动</translation>
 <translation id="4850886885716139402">查看</translation>
 <translation id="4854068532375923088">允许“Gemini”使用摄像头</translation>
 <translation id="4860895144060829044">致电</translation>
@@ -1947,6 +1947,9 @@
 <translation id="7280980607183752256">无法导入此文件</translation>
 <translation id="7282197670900591579">香橼黄色主题</translation>
 <translation id="7293429513719260019">选择语言</translation>
+<translation id="72961285530871072">这将永久删除您的 Level Up 进度，且系统将不再针对您的个人资料向 Google 发送 Level Up 功能使用情况数据。
+
+您可以随时重新开始。</translation>
 <translation id="7300448350764260141">多一层保障，抵御网络威胁。</translation>
 <translation id="7311244614769792472">找不到任何结果</translation>
 <translation id="7312823817809783355">您的任务</translation>

@@ -740,7 +740,6 @@
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 अक्टूबर, 2023</translation>
 <translation id="3419787211763835342">बेहतर ऑटोफ़िल की सुविधा को सुधारने में मदद करें</translation>
-<translation id="3426715535827854458">'टूलबार छिपाएं' को छिपाएं</translation>
 <translation id="3435738964857648380">सुरक्षा</translation>
 <translation id="3441673211568148613">अपनी ब्राउज़िंग को निजी रखें</translation>
 <translation id="3443810440409579745">टैब मिला.</translation>
@@ -1173,6 +1172,7 @@
 <translation id="484280513275854557">आपको साइन आउट कर दिया गया था. साथ ही, ब्राउज़िंग डेटा मिटा दिया गया था</translation>
 <translation id="484462545196658690">ऑटो</translation>
 <translation id="4846662396507502151">नया टूलबार आज़माएं और तेज़ी से ब्राउज़ करें</translation>
+<translation id="4850669014075537160">स्क्रॉल करना</translation>
 <translation id="4850886885716139402">देखें</translation>
 <translation id="4854068532375923088">“Gemini” को अपने डिवाइस का कैमरा इस्तेमाल करने की अनुमति दें</translation>
 <translation id="4860895144060829044">कॉल करें</translation>
@@ -1947,6 +1947,9 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="7280980607183752256">इस फ़ाइल को इंपोर्ट नहीं किया जा सकता</translation>
 <translation id="7282197670900591579">सिट्रन रंग वाली थीम</translation>
 <translation id="7293429513719260019">भाषा चुनें</translation>
+<translation id="72961285530871072">ऐसा करने पर, Level Up में आपकी अब तक की प्रोग्रेस हमेशा के लिए मिट जाएगी. साथ ही, आपकी प्रोफ़ाइल के लिए Level Up के इस्तेमाल से जुड़ा डेटा, अब Google को नहीं भेजा जाएगा.
+
+इसे किसी भी समय फिर से शुरू किया जा सकता है.</translation>
 <translation id="7300448350764260141">ऑनलाइन खतरों से बचने के लिए सुरक्षा को और बेहतर बनाएं.</translation>
 <translation id="7311244614769792472">कोई नतीजा नहीं मिला</translation>
 <translation id="7312823817809783355">आपके काम</translation>

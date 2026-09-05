@@ -7,6 +7,7 @@
 <translation id="1046742265332833834">Mavi tema</translation>
 <translation id="1070329623210597193">Bu sitenin görüntüleyebileceği veya düzenleyebileceği dosyalar</translation>
 <translation id="1074758928858737435">Sitelerin masaüstü sürümünü görüntülemeyi talep edebilirsiniz</translation>
+<translation id="1089791933924803646">Diğer uygulamalarda Chrome'dan öneriler al</translation>
 <translation id="1109482864356262001">Hareket veya ışık sensörlerinin kullanılmasını gerektiren özellikler çalışmaz</translation>
 <translation id="1126523729897810826">Chrome'dan en iyi şekilde yararlanmak için aşağıdaki önerilen işlemleri tamamlayın</translation>
 <translation id="113098737392899175">Klavye bağlıyken sayfalarda metin imleciyle gezin</translation>
@@ -453,6 +454,7 @@
 <translation id="5668404140385795438">Web sitesinin yakınlaştırmayı önleme isteğini geçersiz kılın</translation>
 <translation id="5668843533782548925">Siteler daha yavaş ancak daha güvenli olur</translation>
 <translation id="5677928146339483299">Engelleniyor</translation>
+<translation id="5679089750838794164">Chrome artık son tarama geçmişi gibi tarama verilerinize dayalı olarak diğer uygulamalarda öneriler gösterebilir. Bu veriler, cihazınızda güvenli bir şekilde işlenir. Bu özelliği Chrome ayarlarından istediğiniz zaman kapatabilirsiniz.</translation>
 <translation id="5689516760719285838">Konum</translation>
 <translation id="5690795753582697420">Kamera, Android ayarlarında kapatıldı</translation>
 <translation id="5700761515355162635">Üçüncü taraf çerezlerine izin verildi</translation>
@@ -507,6 +509,7 @@
 <translation id="6085954183010297841">Dosya düzenleme izni silinsin mi? <ph name="FILE" /></translation>
 <translation id="6104860901391833523">Bu ayar açıkken siteler pencere içinde pencere moduna otomatik olarak geçebilir. Bu ayar kapalıyken siteler pencere içinde pencere moduna otomatik olarak geçemez.</translation>
 <translation id="6120483543004435978">Bu düğme açıkken siteler cihazınızı etkin olarak kullandığınız zamanı bilmek isteyebilir. Düğme kapalıyken siteler cihazınızı etkin olarak kullandığınız zamanı bilemez.</translation>
+<translation id="612871598708395517">Diğer uygulamalarda Chrome'dan öneriler al seçeneğini gizle</translation>
 <translation id="6132075343662013154">Chrome, şifrenizi kaydetmeyi önerir</translation>
 <translation id="615886654739818377">Sitelerin tüm ekranlarımda pencereleri yönetmesine izin verme</translation>
 <translation id="6165508094623778733">Daha fazla bilgi</translation>

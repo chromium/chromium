@@ -7,6 +7,7 @@
 <translation id="1046742265332833834">Motyw niebieski</translation>
 <translation id="1070329623210597193">Pliki, które ta witryna może wyświetlać lub edytować</translation>
 <translation id="1074758928858737435">Możesz poprosić o wyświetlenie witryn w wersji na komputer</translation>
+<translation id="1089791933924803646">Otrzymuj sugestie Chrome w innych aplikacjach</translation>
 <translation id="1109482864356262001">Nie będą działać funkcje, które potrzebują czujników ruchu lub światła</translation>
 <translation id="1126523729897810826">Wykonaj te sugerowane działania, aby w pełni wykorzystać możliwości Chrome</translation>
 <translation id="113098737392899175">Gdy klawiatura jest podłączona, poruszaj się po stronach przy użyciu kursora tekstowego</translation>
@@ -453,6 +454,7 @@
 <translation id="5668404140385795438">Zignoruj żądanie strony, gdy chce zapobiec powiększeniu widoku</translation>
 <translation id="5668843533782548925">Strony są wolniejsze, ale bezpieczniejsze</translation>
 <translation id="5677928146339483299">Zablokowane</translation>
+<translation id="5679089750838794164">Chrome może teraz wyświetlać sugestie w innych aplikacjach na podstawie Twoich danych przeglądania, takich jak ostatnia historia przeglądania. Dane te są bezpiecznie przetwarzane na Twoim urządzeniu. Tę funkcję możesz w każdej chwili wyłączyć w ustawieniach Chrome.</translation>
 <translation id="5689516760719285838">Lokalizacja</translation>
 <translation id="5690795753582697420">Kamera jest wyłączona w ustawieniach Androida</translation>
 <translation id="5700761515355162635">Pliki cookie innych firm są dozwolone</translation>
@@ -507,6 +509,7 @@
 <translation id="6085954183010297841">Usunąć uprawnienia do edycji pliku? <ph name="FILE" /></translation>
 <translation id="6104860901391833523">Gdy ta opcja jest włączona, strony internetowe mogą automatycznie włączać obraz w obrazie. Gdy jest wyłączona, strony nie mogą automatycznie włączać obrazu w obrazie.</translation>
 <translation id="6120483543004435978">Gdy ta opcja jest włączona, strony internetowe mogą prosić o pozwolenie na sprawdzanie, kiedy używasz urządzenia. Gdy jest wyłączona, strony nie mogą się dowiedzieć, kiedy używasz urządzenia.</translation>
+<translation id="612871598708395517">Ukryj opcję „Otrzymuj sugestie Chrome w innych aplikacjach”</translation>
 <translation id="6132075343662013154">Chrome zaproponuje zapisanie hasła</translation>
 <translation id="615886654739818377">Nie zezwalaj stronom na zarządzanie oknami na wszystkich wyświetlaczach</translation>
 <translation id="6165508094623778733">Dowiedz się więcej</translation>

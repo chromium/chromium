@@ -29,6 +29,7 @@
 <translation id="1197860368385086056">La prossima volta che aprirai Chrome sul tuo <ph name="DEVICE_TYPE" />, ti verrà chiesto se vuoi attivare gli avvisi di monitoraggio del prezzo.</translation>
 <translation id="1203500561924088507">L'installazione è terminata. Dovrai riavviare il browser per poter utilizzare <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1278833599417554002">Riavvia per aggiornare &amp;Chrome</translation>
+<translation id="1289911795790071537">Apri la ricerca con Chrome</translation>
 <translation id="1290883685122687410">Errore di configurazione: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Attendi mentre Chrome installa gli aggiornamenti di sistema più recenti.</translation>
 <translation id="1330562121671411446">Rileva lingua</translation>
@@ -73,6 +74,7 @@
 <translation id="1640672724030957280">Download in corso...</translation>
 <translation id="1651617469580841801">Quando utilizzi Google Lens, il titolo della pagina, l'URL e i contenuti, inclusi i PDF, vengono inviati a Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Informazioni su ChromeOS Flex</translation>
+<translation id="1664094661346151467">Cerca e fai domande ovunque ti trovi, anche se Chrome è ridotto a icona</translation>
 <translation id="1674870198290878346">Apri link in una finestra di navigazione in inco&amp;gnito di Chrome</translation>
 <translation id="1682634494516646069">Google Chrome non è in grado di leggere e scrivere nella directory dei dati: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">Quando digiti nella barra degli indirizzi o nella casella di ricerca, Chrome invia ciò che digiti agli strumenti di ricerca, all'AI e all'agente della tua organizzazione per ricevere suggerimenti.</translation>
@@ -108,6 +110,7 @@
 <translation id="2034233344106846793">Quando possibile, Chrome esegue automaticamente l'upgrade delle connessioni non sicure a HTTPS</translation>
 <translation id="2039417478970545937">Impostazioni.</translation>
 <translation id="2040220733769034247">Scansiona il codice QR con lo smartphone per scaricare Chrome e accedere al tuo Account Google.</translation>
+<translation id="2044908892530830113">Mostra la ricerca con Chrome nella barra dei menu di Mac e attiva la scorciatoia da tastiera</translation>
 <translation id="2050189601866423230">Puoi fissare AI Mode di Ricerca Google per porre domande mentre navighi</translation>
 <translation id="2091012649849228750">Per ricevere gli aggiornamenti futuri di Google Chrome, devi avere Windows 10 o versioni successive. Su questo computer è installato Windows 8.</translation>
 <translation id="2094648590148273905">Termini di ChromeOS Flex</translation>
@@ -135,6 +138,7 @@
 <translation id="2284380654876659752">Quando visiti un sito, Chrome invia una parte offuscata dell'URL a <ph name="BEGIN_LINK" />Google Navigazione sicura<ph name="END_LINK" /> tramite un server per la privacy che nasconde il tuo indirizzo IP. Se un sito effettua attività sospette, vengono inviati anche URL completi e frammenti dei contenuti delle pagine.</translation>
 <translation id="2290014774651636340">Mancano le chiavi dell'API di Google. Alcune funzionalità di Google Chrome verranno disattivate.</translation>
 <translation id="2290095356545025170">Sei sicuro di voler disinstallare Google Chrome?</translation>
+<translation id="2295218613066132598">Mostra scorciatoie per i siti su Chrome</translation>
 <translation id="2301513536169703857">Accedi a Chrome per avere password, preferiti  e altro su tutti i dispositivi</translation>
 <translation id="2307973900865360088">Mantieni nel dock</translation>
 <translation id="2309047409763057870">Questa è un'installazione secondaria, di conseguenza Google Chrome non può essere impostato come browser predefinito.</translation>
@@ -346,6 +350,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="436060642166082913">Chrome ha bloccato questo download perché il file può danneggiare i tuoi account personali e dei social network</translation>
 <translation id="4367027658822022112">Puoi bloccare Google Lens per un facile accesso; fai clic sul pulsante Blocca nella parte superiore del riquadro laterale</translation>
 <translation id="4372389195695053189">Chrome è ora il browser predefinito</translation>
+<translation id="4381814455597163081">Stai contribuendo a migliorare Chrome inviando a Google statistiche sull'utilizzo e report sugli arresti anomali. <ph name="BEGIN_LINK" />Gestisci<ph name="END_LINK" /></translation>
 <translation id="4389991535395284064">Quando navighi in modalità Incognito, Chrome ti avvisa prima di caricare un sito utilizzando una connessione non sicura</translation>
 <translation id="4400772909124543403">Nessun aggiornamento disponibile</translation>
 <translation id="4427306783828095590">La protezione avanzata blocca malware e tentativi di phishing con maggiore efficacia</translation>
@@ -517,6 +522,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="6180522807229584611">Questa scheda utilizza risorse aggiuntive. Per migliorare le prestazioni, consenti a Chrome di renderla inattiva.</translation>
 <translation id="6182736845697986886">Installazione non riuscita a causa di un errore interno del server di aggiornamento.</translation>
 <translation id="6192058120268468905">Il tuo account in Chrome</translation>
+<translation id="6195202018542972563">Mostra la ricerca con Chrome nella barra delle applicazioni e attiva la scorciatoia da tastiera</translation>
 <translation id="6235018212288296708">Regola inbound per consentire il traffico mDNS in Google Chrome.</translation>
 <translation id="624230925347970731">Chrome verrà chiuso a breve</translation>
 <translation id="6247557882553405851">Gestore delle password di Google</translation>
@@ -558,8 +564,10 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="652948702951888897">Cronologia di Chrome</translation>
 <translation id="6532945796722480006">Apri Gemini in Chrome Canary</translation>
 <translation id="6539493053177300926">Accedi facilmente per usare Gemini in Chrome sul tuo dispositivo, anche se Chrome è ridotto a icona.</translation>
+<translation id="6556755379298048869">Cerca con una scorciatoia da tastiera.</translation>
 <translation id="6585124893636629274">Chiudi Gemini in Chrome</translation>
 <translation id="659498884637196217">In Gestore delle password di Google su questo dispositivo</translation>
+<translation id="6612152958212564387">Non stai inviando a Google le statistiche sull'utilizzo e i report sugli arresti anomali. <ph name="BEGIN_LINK" />Gestisci<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Mantieni password, preferiti e cronologia perfettamente sincronizzati tra i dispositivi impostando Chrome come browser predefinito.</translation>
 <translation id="6631524303639368205">Continua da dove avevi interrotto: Chrome ha ripristinato le schede dell'ultima sessione. Puoi disattivare questa opzione in</translation>
 <translation id="6632473616050862500">La realizzazione di ChromeOS Flex è stata possibile grazie a un <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> aggiuntivo.</translation>
@@ -584,7 +592,9 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="683440813066116847">Regola inbound per consentire il traffico mDNS in Google Chrome Canary.</translation>
 <translation id="684888714667046800">Impossibile connettersi a internet. Se utilizzi un firewall, assicurati che <ph name="PRODUCT_EXE_NAME" /> sia nella lista consentita.</translation>
 <translation id="6859580922007887573">Tocca per continuare</translation>
+<translation id="6869568587896659271">Accedi facilmente ai siti web sotto la barra degli indirizzi</translation>
 <translation id="6877155553248388166">angolo in basso a destra dell'area di ricerca: destra <ph name="RIGHT" />%, in basso <ph name="BOTTOM" />%</translation>
+<translation id="6879791154455204815">Apri la ricerca con Chrome</translation>
 <translation id="6881299373831449287">Aggiornamento di Chrome</translation>
 <translation id="6885412569789873916">App di Chrome Beta</translation>
 <translation id="6893363893008038481">Rimuovi account da Chrome</translation>
@@ -643,6 +653,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="7449333426561673451">{COUNT,plural, =1{La tua organizzazione chiude automaticamente Chrome quando non viene utilizzato per 1 minuto.}other{La tua organizzazione chiude automaticamente Chrome quando non viene utilizzato per # minuti.}}</translation>
 <translation id="7450541714075000668">Testo copiato</translation>
 <translation id="7452987490177144319">{COUNT,plural, =1{La tua organizzazione elimina automaticamente i dati di navigazione quando Chrome non viene utilizzato per 1 minuto. Potrebbero essere inclusi cronologia, compilazione automatica e download. Le schede rimarranno aperte.}other{La tua organizzazione elimina automaticamente i dati di navigazione quando Chrome non viene utilizzato per # minuti. Potrebbero essere inclusi cronologia, compilazione automatica e download. Le schede rimarranno aperte.}}</translation>
+<translation id="7466577301922356468">L'invio automatico di questi dati a Google contribuisce a migliorare Chrome. Puoi modificare questa impostazione in qualsiasi momento.</translation>
 <translation id="7477130805345743099">Chrome ti avvisa prima di caricare qualsiasi sito che utilizza una connessione non sicura</translation>
 <translation id="7481213027396403996">Usa la funzionalità di sicurezza più efficace di Chrome</translation>
 <translation id="749228101751499733">Se hai eseguito l'accesso, puoi usare le password e altri dati del tuo Account Google in Chrome. <ph name="SHORTCUT" /> può modificare le impostazioni dei servizi Google.</translation>
@@ -676,6 +687,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="7736869414036750079">La tua organizzazione richiede l'accesso a Chrome</translation>
 <translation id="7747138024166251722">Il programma di installazione non ha creato una directory temporanea. Verifica di disporre di spazio libero sul disco e dell'autorizzazione per l'installazione del software.</translation>
 <translation id="7748969056734910029">Non hai visitato il sito di recente. Chrome ha rimosso <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" />.</translation>
+<translation id="7759944311003584891">Cerca con Chrome</translation>
 <translation id="7761834446675418963">Fai clic sul tuo nome per aprire Chrome e iniziare a navigare.</translation>
 <translation id="7777080907402804672">Se un'immagine è senza descrizione utile, Chrome proverà a fornirne una. Per la creazione delle descrizioni, le immagini vengono inviate a Google. Puoi disattivare questa funzionalità in qualsiasi momento nelle Impostazioni.</translation>
 <translation id="778331955594035129">Chrome deve avere l'autorizzazione di accesso alla posizione per questo sito</translation>
@@ -791,6 +803,7 @@ Non è possibile salvare nuovi preferiti nel tuo account finché non ne elimini 
 <translation id="8747073452963259673">angolo in basso a sinistra dell'area di ricerca: sinistra <ph name="LEFT" />%, in basso <ph name="BOTTOM" />%</translation>
 <translation id="8748735421235723888">Chrome libera la memoria dalle schede non attive. In questo modo, le schede attive e altre app hanno più risorse per il computer e mantengono Chrome veloce. Le schede inattive si riattivano automaticamente quando ci torni. <ph name="BEGIN_LINK" />Scopri di più sulla modalità Risparmio memoria<ph name="END_LINK" /></translation>
 <translation id="8765470054473112089">Quando digiti nella barra degli indirizzi o nella casella di ricerca, Chrome invia ciò che digiti al tuo motore di ricerca predefinito per ricevere suggerimenti migliori. Questa opzione è disattivata nella modalità Incognito</translation>
+<translation id="8771516687880083607">Scegli cosa condividere con Chrome</translation>
 <translation id="8781673607513845160">Per usare la fotocamera, consenti l'accesso a Chrome nelle <ph name="BEGIN_LINK" />impostazioni di sistema<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Errore di installazione: l'amministratore di rete ha applicato una policy di gruppo che impedisce l'installazione: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796919761992612392">P&amp;ersonalizza Chrome</translation>

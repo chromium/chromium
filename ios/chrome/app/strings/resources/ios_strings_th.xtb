@@ -740,7 +740,6 @@
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 ต.ค. 2023</translation>
 <translation id="3419787211763835342">ช่วยปรับปรุงการป้อนข้อความอัตโนมัติที่ดียิ่งขึ้น</translation>
-<translation id="3426715535827854458">ซ่อนตัวเลือกซ่อนแถบเครื่องมือ</translation>
 <translation id="3435738964857648380">ความปลอดภัย</translation>
 <translation id="3441673211568148613">รักษาความเป็นส่วนตัวในการท่องเว็บ</translation>
 <translation id="3443810440409579745">ได้รับแท็บแล้ว</translation>
@@ -1173,6 +1172,7 @@
 <translation id="484280513275854557">คุณออกจากระบบแล้ว ลบข้อมูลการท่องเว็บแล้ว</translation>
 <translation id="484462545196658690">อัตโนมัติ</translation>
 <translation id="4846662396507502151">ท่องเว็บได้เร็วขึ้นด้วยแถบเครื่องมือใหม่</translation>
+<translation id="4850669014075537160">การเลื่อน</translation>
 <translation id="4850886885716139402">ดู</translation>
 <translation id="4854068532375923088">อนุญาตให้ "Gemini" ใช้กล้อง</translation>
 <translation id="4860895144060829044">โทร</translation>
@@ -1947,6 +1947,9 @@
 <translation id="7280980607183752256">นำเข้าไฟล์นี้ไม่ได้</translation>
 <translation id="7282197670900591579">ธีมสีเหลืองมะนาว</translation>
 <translation id="7293429513719260019">เลือกภาษา</translation>
+<translation id="72961285530871072">การดำเนินการนี้จะลบความคืบหน้าของ Level Up อย่างถาวร และระบบจะไม่ส่งข้อมูลการใช้งานฟีเจอร์สำหรับ Level Up ไปยัง Google สำหรับโปรไฟล์ของคุณอีกต่อไป
+
+คุณเริ่มใหม่ได้ทุกเมื่อ</translation>
 <translation id="7300448350764260141">เพิ่มการป้องกันภัยคุกคามทางออนไลน์ขึ้นอีกชั้น</translation>
 <translation id="7311244614769792472">ไม่พบผลการค้นหา</translation>
 <translation id="7312823817809783355">งานของคุณ</translation>

@@ -1548,6 +1548,7 @@
 <translation id="3634530185120165534">ट्रे 5</translation>
 <translation id="3634567936866541746">आपने अभी जिस साइट पर अपना पासवर्ड डाला है वह सुरक्षित नहीं है. खातों को सुरक्षित करने के लिए, Chrome का सुझाव है कि आप सेव किए गए पासवर्ड की जांच करें.</translation>
 <translation id="3638102297696182302">‘लिखने में मेरी मदद करें’ सुविधा को फिर से शुरू करें. खोलने के लिए, टैप करें और Enter दबाएं</translation>
+<translation id="3639626391482300575">यह आईबीएएन Google Wallet में सेव है, ताकि आप Google के सभी प्रॉडक्ट पर इसका इस्तेमाल कर सकें.</translation>
 <translation id="3642196846309122856">अपनी फ़ाइलें फिर से डाउनलोड करने की कोशिश करें</translation>
 <translation id="3642638418806704195">ऐप्लिकेशन:</translation>
 <translation id="3647286794400715637">हर यूआरएल स्ट्रिंग में, यूआरएल की संख्या एक से दो के बीच होनी चाहिए.</translation>
@@ -3181,7 +3182,6 @@
 <translation id="6361757823711327522">बी7</translation>
 <translation id="6363786367719063276">लॉग देखें</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />प्रॉक्सी, फ़ायरवॉल, और सुरक्षित डीएनएस कॉन्फ़िगरेशन की जांच करें<ph name="END_LINK" /></translation>
-<translation id="6365513578140103119">आपके ईमेल पते की पुष्टि अपने-आप होगी</translation>
 <translation id="6366710531182496394">बाईं ओर ड्युएल स्टेपल</translation>
 <translation id="6367196786591004737">एंट्री मिटाएं</translation>
 <translation id="6370022303958842211">डिवाइस को ऐक्सेस करने से जुड़ी कार्रवाइयां, जैसे कि लॉगिन (इसमें लॉगिन न हो पाने की वजहें भी शामिल हैं), लॉगआउट, लॉक, और अनलॉक से जुड़ी जानकारी</translation>
@@ -3306,6 +3306,7 @@
 <translation id="6578434528542148658">अमान्य एक्सटेंशन आईडी.</translation>
 <translation id="658230438113661756">आपने जिस साइट पर जाने की कोशिश की है उससे जुड़े हमलावर, धोखे से आपके डिवाइस में नुकसान पहुंचाने वाला सॉफ़्टवेयर इंस्टॉल करवा सकते हैं. ये सॉफ़्टवेयर आपके पासवर्ड, फ़ोटो, मैसेज या क्रेडिट कार्ड नंबर जैसी जानकारी चोरी कर सकते हैं या उन्हें मिटा सकते हैं. Chrome का सुझाव है कि आप इस साइट पर न जाएं. <ph name="BEGIN_LEARN_MORE_LINK" />इस चेतावनी के बारे में ज़्यादा जानें<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6583309742916093092">Google Wallet में सेव किए गए</translation>
+<translation id="6585589684832019248">यह कार्ड Google Wallet में सेव है, ताकि आप Google के सभी प्रॉडक्ट पर इसका इस्तेमाल कर सकें</translation>
 <translation id="6587893660316489419">B5 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="6587923378399804057">आपका कॉपी किया हुआ लिंक</translation>
 <translation id="6591833882275308647">आपका <ph name="DEVICE_TYPE" /> प्रबंधित नहीं किया जाता</translation>
@@ -4660,7 +4661,6 @@
 <translation id="8963117664422609631">साइट की सेटिंग पर जाएं</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />सुझाव:<ph name="MARKUP_2" />तय करें कि आपके पास डेटा कनेक्शन है<ph name="MARKUP_3" />इस वेबपेज को बाद में फिर लोड करें<ph name="MARKUP_4" />आपने जो पता डाला है उसकी जाँच करें<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">आपकी लोकल फ़ाइलें <ph name="HOURS" /> घंटे में मिटा दी जाएंगी</translation>
-<translation id="8964904785315870349">पुष्टि किया गया ईमेल पता</translation>
 <translation id="8968766641738584599">कार्ड सेव करें</translation>
 <translation id="8970887620466824814">कुछ गड़बड़ी हुई.</translation>
 <translation id="8971063699422889582">सर्वर के प्रमाणपत्र की समय-सीमा खत्म हो चुकी है.</translation>
@@ -4871,6 +4871,7 @@
 <translation id="988159990683914416">डेवलपर बिल्ड</translation>
 <translation id="989988560359834682">पते में बदलाव करें</translation>
 <translation id="990164307229195234"><ph name="DEVICE_NAME" /> (<ph name="DISAMBIGUATION_LABEL" />)</translation>
+<translation id="990812705189376036">मर्कल ट्री प्रूफ़</translation>
 <translation id="992110854164447044">वर्चुअल कार्ड आपके असली कार्ड की पहचान ज़ाहिर नहीं होने देता है. इससे, आपको धोखाधड़ी से बचने में मदद मिलती है. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>
 <translation id="992256792861109788">गुलाबी</translation>

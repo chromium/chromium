@@ -9,6 +9,7 @@
 <translation id="1016495303386450659">आयटम अपडेट केला</translation>
 <translation id="1018804590490383958">स्कॅन करा आणि ऑटोफिल करा</translation>
 <translation id="1019990162050689579">Gemini ॲप ॲक्टिव्हिटी</translation>
+<translation id="102645702181682900">टास्क सुरू केली आहे</translation>
 <translation id="102916930470544692">पासकी</translation>
 <translation id="1030376737535466765">Password Manager उघडा</translation>
 <translation id="1035980983510608210">सर्व टॅब बंद केल्यामुळे पिन केलेले टॅबदेखील बंद केले जातील.</translation>
@@ -29,7 +30,7 @@
 <translation id="1074827084851510304">तुमचे {password_count} पासवर्ड आणि तुम्ही साइन-इन माहिती कधीही सेव्ह न करण्याचे निवडलेल्या साइट आणि ॲप्सची सूची हटवणार आहात. एखाद्या साइट आणि ॲप्ससाठी तुम्ही तयार केलेले कोणतेही खाते हटवले जाणार नाही.</translation>
 <translation id="1076421457278169141">कोड स्कॅन केला</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} टॅब}other{{count} टॅब}}</translation>
-<translation id="1081948304372277788">लेव्हल अप बंद करा</translation>
+<translation id="1081948304372277788">Level Up बंद करा</translation>
 <translation id="1082554859195167538">तुमच्यासाठी उत्पादन परीक्षणे</translation>
 <translation id="1084365883616172403">Facebook पोस्ट पूर्ण केले.</translation>
 <translation id="108485301461714610">Google Search AI मोड आणि कनेक्ट केलेली ॲप्स</translation>
@@ -239,6 +240,7 @@
 <translation id="1709916727352927457">पासकी हटवा</translation>
 <translation id="1715515772563243997"><ph name="SITE" /> वर तुमचा विश्वास असल्यास, साइन इन करण्यासाठी तुम्ही सेव्ह केलेला पासवर्ड वापरू शकता.</translation>
 <translation id="1718835860248848330">शेवटच्या तासामधील</translation>
+<translation id="1726013039921383235">नेहमी अनुमती द्या</translation>
 <translation id="1728549374069268714">पेस्ट करा आणि जा</translation>
 <translation id="1732468323901456775"><ph name="MODULE_NAME" /> साठी नोटिफिकेशन सुरू करा</translation>
 <translation id="1739364174357629566">ओळखीच्या प्रवाशाचा नंबर अपडेट करा</translation>
@@ -740,7 +742,7 @@
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">२५ ऑक्टोबर २०२३</translation>
 <translation id="3419787211763835342">वर्धित ऑटोफिलमध्ये सुधारणा करण्यात मदत करा</translation>
-<translation id="3426715535827854458">टूलबार लपवा हे लपवा</translation>
+<translation id="3430407169377889553">Gemini काळजीपूर्वक वापरा आणि आवश्यक असल्यास, नियंत्रण स्वतःकडे घ्या. टास्कदरम्यान Gemini ने केलेल्या कृतींसाठी तुम्ही जबाबदार असता.</translation>
 <translation id="3435738964857648380">सुरक्षितता</translation>
 <translation id="3441673211568148613">तुमचे ब्राउझिंग खाजगी ठेवा</translation>
 <translation id="3443810440409579745">टॅब मिळाला.</translation>
@@ -928,6 +930,7 @@
 <translation id="4021447724486050609">तुमचा ब्राउझर अपडेट करा</translation>
 <translation id="4021931095789478915">वाचन सूचीमध्ये ${url} जोडा</translation>
 <translation id="4028871427853484857">खात्यामध्ये सेव्ह करा…</translation>
+<translation id="4034354558246368274">या वेळी अनुमती द्या</translation>
 <translation id="4038354071007134711">या डिव्हाइसवरील कोणतीही ॲप्लिकेशन फाइल उघडू शकत नाही.</translation>
 <translation id="4042870976416480368">पेजमध्ये शोधा</translation>
 <translation id="4045441967987592849">पुन्हा उघडा</translation>
@@ -1089,6 +1092,7 @@
 <translation id="4592672037257622855">{count,plural, =1{पेज तुमच्या वाचन सूचीमध्ये जोडले आहे}other{{count} पेज तुमच्या वाचन सूचीमध्ये जोडली आहेत}}</translation>
 <translation id="459644946100970322">किमतीविषयी सूचना सुरू करायच्या आहेत का?</translation>
 <translation id="4597892826846980979">टॅबची नोटिफिकेशन मिळवा</translation>
+<translation id="459792494991530234">टाइप करत आहे</translation>
 <translation id="4601095002996233687">संशयास्पद डाउनलोडसाठी तपशीलवार स्कॅनची सुविधा.</translation>
 <translation id="4606247758155004938">तुमचा ब्राउझर तुमच्या संस्थेद्वारे व्यवस्थापित केला जातो.</translation>
 <translation id="4607887340472970274">किमतीचा माग ठेवणे</translation>
@@ -1154,6 +1158,7 @@
 <translation id="4792385443586519711">कंपनी नाव</translation>
 <translation id="479628432297359449">डाउनलोड थांबवायचा आहे का?</translation>
 <translation id="4796496140132859135">टॅब गट. कोलॅप्स केला आहे.</translation>
+<translation id="4800912004582762296">क्लिक करत आहे</translation>
 <translation id="4802185666270672526">डेस्कटॉप साइटची विनंती करा हे लपवा</translation>
 <translation id="4802678077012980341">पासवर्ड तपासणी पूर्ण झाली आहे!</translation>
 <translation id="4803185665210547709">तुमच्या संस्थेने व्यवस्थापित केलेले.
@@ -1173,6 +1178,7 @@
 <translation id="484280513275854557">तुम्हाला साइन आउट केले गेले होते; ब्राउझिंग डेटा हटवला गेला होता</translation>
 <translation id="484462545196658690">ऑटो</translation>
 <translation id="4846662396507502151">नवीन टूलबारसह आणखी जलद ब्राउझ करा</translation>
+<translation id="4850669014075537160">स्क्रोलिंग</translation>
 <translation id="4850886885716139402">पहा</translation>
 <translation id="4854068532375923088">“Gemini” ला तुमचा कॅमेरा वापरण्याची अनुमती द्या</translation>
 <translation id="4860895144060829044">कॉल करा</translation>
@@ -1625,6 +1631,7 @@
 <translation id="6259928806013786178">वाचन मोड सुरू करता आला नाही</translation>
 <translation id="626335165106398104">Gemini इतर सेवांसोबत काम करते</translation>
 <translation id="6268773951964630964">कॉपी केलेली इमेज शोधा</translation>
+<translation id="6270944267518310103">प्रतीक्षा करत आहे</translation>
 <translation id="6271462272606946663">मोबाइल साइट ची विनंती करा हे लपवा</translation>
 <translation id="6271824294945464304">पासवर्ड शेअर करत आहे</translation>
 <translation id="628251768213143684">तुमच्या Google खाते मध्ये सेव्ह केलेल्या गोष्टी तुम्ही कधीही व्यवस्थापित करू शकता</translation>
@@ -1659,6 +1666,7 @@
 <translation id="6350745006329795504">तुमची डिव्हाइस व्यवस्थापित करा</translation>
 <translation id="6351147166808964033">टॅब स्विचरमध्ये प्रवेश करा</translation>
 <translation id="63519665078626091">वेब इन्स्पेक्टर वापरण्यासाठी, केबल वापरून तुमच्या कॉंप्युटरवर Safari शी कनेक्ट करा आणि डेव्हलप मेनूमधून तुमचा iPad अ‍ॅक्सेस करा. तुम्ही तुमच्या कॉंप्युटरवरील Safari सेटिंग्जच्या प्रगत विभागात डेव्हलप मेनू सुरू करू शकता.</translation>
+<translation id="6354695695659930684">पासवर्ड भरत आहे</translation>
 <translation id="6355820183143562453">किमतीचा माग ठेवण्याशी संबंधित कार्ड लपवा</translation>
 <translation id="6355820205320395730">कमकुवत पासवर्ड ओळखणे सोपे असते. तुम्ही क्लिष्ट पासवर्ड तयार करत आहात याची खात्री करा. <ph name="BEGIN_LINK" />आणखी सुरक्षा टिपा पहा.<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">पासवर्ड, बुकमार्क आणि आणखी बऱ्याच गोष्टींसारखा तुमचा सर्व आशय मिळवण्यासाठी साइन इन करा.</translation>
@@ -1948,6 +1956,9 @@
 <translation id="7280980607183752256">ही फाइल इंपोर्ट करता आली नाही</translation>
 <translation id="7282197670900591579">सिट्रोन थीम</translation>
 <translation id="7293429513719260019">भाषा निवडा</translation>
+<translation id="72961285530871072">यामुळे तुमची लेव्हल अप प्रगती कायमची हटवली जाईल आणि लेव्हल अप साठी वैशिष्ट्य वापर डेटा यापुढे तुमच्या प्रोफाइलसाठी Google ला पाठवला जाणार नाही.
+
+तुम्ही कधीही रीस्टार्ट करू शकता.</translation>
 <translation id="7300448350764260141">ऑनलाइन धोक्यांपासून बचाव करण्यासाठी संरक्षणाचा अतिरिक्त स्तर जोडा.</translation>
 <translation id="7311244614769792472">कोणतेही परिणाम आढळले नाहीत</translation>
 <translation id="7312823817809783355">तुमच्या टास्क</translation>
@@ -2248,6 +2259,7 @@
 <translation id="8233237502828137700">बॅनर प्रोमो बंद करा</translation>
 <translation id="823339794112333264">मायक्रोफोन सुरू करा</translation>
 <translation id="8240217649914883113">हे माझ्या कॅलेंडरमध्ये जोडा</translation>
+<translation id="824379025871762038">कधीही अनुमती देऊ नका</translation>
 <translation id="8250920743982581267">दस्तऐवज</translation>
 <translation id="8252980988000695656">Google Lens पूर्ण झाले!</translation>
 <translation id="8258734532103758067">मी माझा डेटा एक्सपोर्ट केला आहे</translation>

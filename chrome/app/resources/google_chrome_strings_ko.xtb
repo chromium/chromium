@@ -31,6 +31,7 @@
 <translation id="1197860368385086056">다음번에 <ph name="DEVICE_TYPE" />에서 Chrome을 열면 가격 추적 알림을 사용 설정하라는 메시지가 표시됩니다.</translation>
 <translation id="1203500561924088507">설치해 주셔서 감사합니다. <ph name="BUNDLE_NAME" />을(를) 사용하려면 브라우저를 다시 시작해야 합니다.</translation>
 <translation id="1278833599417554002">다시 실행하여 Chrome 업데이트</translation>
+<translation id="1289911795790071537">Chrome으로 검색 열기</translation>
 <translation id="1290883685122687410">설정 오류: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Chrome에서 최신 시스템 업데이트를 설치하는 동안 잠시 기다려 주세요.</translation>
 <translation id="1330562121671411446">언어 감지</translation>
@@ -52,7 +53,7 @@
 <translation id="1492280395845991349">다시 실행하여 Chrome 업데이트 완료</translation>
 <translation id="1497802159252041924">설치 오류: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">새로운 Chrome 프로필 맞춤설정</translation>
-<translation id="1518627427551567882">보호된 페이지입니다.</translation>
+<translation id="1518627427551567882">보호된 페이지입니다</translation>
 <translation id="1547295885616600893">ChromeOS는 추가 <ph name="BEGIN_LINK_CROS_OSS" />오픈소스 소프트웨어<ph name="END_LINK_CROS_OSS" />를 사용하여 개발되었습니다.</translation>
 <translation id="1547469039832541117">강조 표시된 작업을 종료합니다.</translation>
 <translation id="1553358976309200471">Chrome 업데이트</translation>
@@ -75,6 +76,7 @@
 <translation id="1640672724030957280">다운로드 중...</translation>
 <translation id="1651617469580841801">Google 렌즈를 사용하면 페이지 제목, URL, PDF를 포함한 콘텐츠가 Google로 전송됩니다. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">ChromeOS Flex 정보</translation>
+<translation id="1664094661346151467">Chrome이 최소화된 상태에서도 어디서나 검색하고 질문</translation>
 <translation id="1674870198290878346">Chrome 시크릿 창에서 링크 열기(&amp;G)</translation>
 <translation id="1682634494516646069">Chrome에서 다음 데이터 디렉터리를 읽고 쓸 수 없습니다.
 
@@ -112,6 +114,7 @@
 <translation id="2034233344106846793">가능한 경우 Chrome이 비보안 연결을 HTTPS로 자동 업그레이드합니다.</translation>
 <translation id="2039417478970545937">설정</translation>
 <translation id="2040220733769034247">휴대전화로 QR 코드를 스캔하여 Chrome을 다운로드하고 Google 계정에 로그인하세요.</translation>
+<translation id="2044908892530830113">Mac 메뉴 바에 Chrome으로 검색 표시 및 키보드 단축키 사용 설정</translation>
 <translation id="2050189601866423230">Google 검색 AI 모드를 고정하여 탐색 중에 질문할 수 있습니다.</translation>
 <translation id="2091012649849228750">향후 Chrome 업데이트를 받으려면 Windows 10 이상이 필요합니다. 이 컴퓨터에서는 Windows 8을 사용 중입니다.</translation>
 <translation id="2094648590148273905">ChromeOS Flex 약관</translation>
@@ -139,6 +142,7 @@
 <translation id="2284380654876659752">사이트를 방문하면 Chrome에서 IP 주소를 숨기는 개인 정보 보호 서버를 통해 URL의 난독화된 부분을 <ph name="BEGIN_LINK" />Google 세이프 브라우징<ph name="END_LINK" />으로 전송합니다. 사이트에서 의심스러운 작업이 수행되면 전체 URL과 페이지 콘텐츠 일부도 전송됩니다.</translation>
 <translation id="2290014774651636340">Google API 키가 누락되었습니다. Chrome의 일부 기능이 사용 중지됩니다.</translation>
 <translation id="2290095356545025170">Chrome을 제거하시겠습니까?</translation>
+<translation id="2295218613066132598">Chrome 사이트 바로가기 표시</translation>
 <translation id="2301513536169703857">모든 기기에서 비밀번호, 북마크 등을 사용하려면 Chrome에 로그인하세요</translation>
 <translation id="2307973900865360088">도크에 고정</translation>
 <translation id="2309047409763057870">Chrome의 보조 설치이며 기본 브라우저로 설정할 수 없습니다.</translation>
@@ -350,6 +354,7 @@
 <translation id="436060642166082913">파일이 개인 및 소셜 네트워크 계정에 피해를 줄 수 있기 때문에 Chrome에서 이 다운로드를 차단했습니다</translation>
 <translation id="4367027658822022112">측면 패널 상단의 고정 버튼을 클릭하여 Google 렌즈를 고정하면 쉽게 액세스할 수 있습니다</translation>
 <translation id="4372389195695053189">Chrome이 기본 브라우저로 설정됨</translation>
+<translation id="4381814455597163081">사용 통계 및 비정상 종료 보고서를 Google에 전송하여 Chrome 개선에 참여하고 있습니다. <ph name="BEGIN_LINK" />관리<ph name="END_LINK" /></translation>
 <translation id="4389991535395284064">시크릿 모드로 탐색할 때 Chrome에서 안전하지 않은 연결을 사용해 사이트를 로드하기 전에 경고를 표시합니다.</translation>
 <translation id="4400772909124543403">사용 가능한 업데이트가 없습니다</translation>
 <translation id="4427306783828095590">향상된 보호 기능이 피싱 및 멀웨어를 더욱 효과적으로 차단합니다.</translation>
@@ -525,6 +530,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6180522807229584611">이 탭은 추가 리소스를 사용하고 있습니다. 성능을 개선하려면 Chrome에서 이 탭을 비활성화하도록 허용하세요.</translation>
 <translation id="6182736845697986886">업데이트 서버 내부 오류로 인해 설치할 수 없습니다.</translation>
 <translation id="6192058120268468905">Chrome의 내 계정</translation>
+<translation id="6195202018542972563">작업 표시줄에 Chrome으로 검색 표시 및 키보드 단축키 사용 설정</translation>
 <translation id="6235018212288296708">Chrome이 mDNS 트래픽을 허용하는 인바운드 규칙입니다.</translation>
 <translation id="624230925347970731">Chrome이 곧 종료됩니다</translation>
 <translation id="6247557882553405851">Google 비밀번호 관리자</translation>
@@ -566,8 +572,10 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="652948702951888897">Chrome 방문 기록</translation>
 <translation id="6532945796722480006">Chrome Canary의 Gemini 열기</translation>
 <translation id="6539493053177300926">Chrome이 최소화된 상태에서도 모든 기기에서 Chrome의 Gemini를 쉽게 사용할 수 있습니다.</translation>
+<translation id="6556755379298048869">키보드 단축키로 검색합니다.</translation>
 <translation id="6585124893636629274">Chrome의 Gemini 종료</translation>
 <translation id="659498884637196217">이 기기의 Google 비밀번호 관리자에서</translation>
+<translation id="6612152958212564387">사용 통계 및 비정상 종료 보고서를 Google에 전송하지 않습니다. <ph name="BEGIN_LINK" />관리<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Chrome을 기본 브라우저로 설정하여 비밀번호, 북마크, 방문 기록을 모든 기기에서 완벽하게 동기화하세요.</translation>
 <translation id="6631524303639368205">중단한 위치에서 계속하기: Chrome에서 마지막 세션의 탭을 복원했습니다. 다음에서 이 기능을 사용 중지할 수 있습니다.</translation>
 <translation id="6632473616050862500">ChromeOS Flex는 추가 <ph name="BEGIN_LINK_CROS_OSS" />오픈소스 소프트웨어<ph name="END_LINK_CROS_OSS" />를 사용하여 개발되었습니다.</translation>
@@ -592,7 +600,9 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="683440813066116847">Chrome Canary가 mDNS 트래픽을 허용하는 인바운드 규칙입니다.</translation>
 <translation id="684888714667046800">인터넷에 연결할 수 없습니다. 방화벽을 사용하는 경우 <ph name="PRODUCT_EXE_NAME" />이(가) 허용 목록에 있는지 확인해 주세요.</translation>
 <translation id="6859580922007887573">탭하여 계속하기</translation>
+<translation id="6869568587896659271">주소 표시줄 아래에서 웹사이트에 간편하게 액세스합니다.</translation>
 <translation id="6877155553248388166">검색 영역의 오른쪽 하단: 오른쪽 <ph name="RIGHT" />%, 하단 <ph name="BOTTOM" />%</translation>
+<translation id="6879791154455204815">Chrome으로 검색 열기</translation>
 <translation id="6881299373831449287">Chrome 업데이트 중</translation>
 <translation id="6885412569789873916">Chrome 베타 앱</translation>
 <translation id="6893363893008038481">Chrome에서 계정 삭제</translation>
@@ -651,6 +661,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7449333426561673451">{COUNT,plural, =1{Chrome을 1분 동안 사용하지 않으면 조직에서 자동으로 종료합니다.}other{Chrome을 #분 동안 사용하지 않으면 조직에서 자동으로 종료합니다.}}</translation>
 <translation id="7450541714075000668">텍스트 복사됨</translation>
 <translation id="7452987490177144319">{COUNT,plural, =1{Chrome을 1분 동안 사용하지 않으면 조직에서 인터넷 사용 기록을 자동으로 삭제합니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다. 탭이 열린 상태로 유지됩니다.}other{Chrome을 #분 동안 사용하지 않으면 조직에서 인터넷 사용 기록을 자동으로 삭제합니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다. 탭이 열린 상태로 유지됩니다.}}</translation>
+<translation id="7466577301922356468">이 데이터를 Google에 자동으로 전송하면 Chrome을 개선하는 데 도움이 됩니다. 언제든지 이 설정을 변경할 수 있습니다.</translation>
 <translation id="7477130805345743099">Chrome에서 안전하지 않은 연결을 사용해 사이트를 로드하기 전에 경고를 표시합니다.</translation>
 <translation id="7481213027396403996">Chrome의 가장 강력한 보안 기능을 이용하세요</translation>
 <translation id="749228101751499733">로그인한 상태로 Chrome에서 Google 계정의 비밀번호 등을 사용할 수 있습니다. <ph name="SHORTCUT" />에서 Google 서비스 설정을 변경할 수 있습니다.</translation>
@@ -684,6 +695,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7736869414036750079">조직에서 Chrome에 로그인할 것을 요구합니다</translation>
 <translation id="7747138024166251722">설치 프로그램이 임시 디렉터리를 만들지 못했습니다. 디스크 공간 및 설치 권한을 확인해 보세요.</translation>
 <translation id="7748969056734910029">최근에 사이트를 방문하지 않았습니다. Chrome에서 <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 권한을 삭제했습니다.</translation>
+<translation id="7759944311003584891">Chrome으로 검색</translation>
 <translation id="7761834446675418963">Chrome을 열고 탐색을 시작하려면 내 이름을 클릭하세요.</translation>
 <translation id="7777080907402804672">이미지에 유용한 설명이 없으면 Chrome에서 자동으로 설명을 제공하려고 시도합니다. 설명을 생성하기 위해 이미지가 Google로 전송됩니다. 이 기능은 언제든지 설정에서 사용 중지할 수 있습니다.</translation>
 <translation id="778331955594035129">Chrome에서 사이트에 대한 위치 정보 액세스 권한이 필요합니다.</translation>
@@ -800,6 +812,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8747073452963259673">검색 영역의 왼쪽 하단: 왼쪽 <ph name="LEFT" />%, 하단 <ph name="BOTTOM" />%</translation>
 <translation id="8748735421235723888">Chrome이 비활성 탭에서 메모리를 확보합니다. 이에 따라 활성 탭과 기타 앱에 더 많은 컴퓨터 리소스가 제공되고 Chrome의 빠른 속도가 유지됩니다. 비활성 탭으로 돌아가면 탭이 자동으로 다시 활성화됩니다. <ph name="BEGIN_LINK" />메모리 절약 모드에 관해 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="8765470054473112089">주소 표시줄이나 검색창에 검색어를 입력하면 Chrome은 더 나은 추천을 위해 사용자가 입력한 내용을 기본 검색엔진에 전송합니다. 시크릿 모드에서는 이 기능이 사용 중지되어 있습니다.</translation>
+<translation id="8771516687880083607">Chrome과 공유할 항목 선택하기</translation>
 <translation id="8781673607513845160">카메라를 사용하려면 <ph name="BEGIN_LINK" />시스템 설정<ph name="END_LINK" />에서 Chrome에 액세스 권한을 부여하세요.</translation>
 <translation id="878572486461146056">설치 오류: 네트워크 관리자가 설치를 방지하는 그룹 정책을 적용했습니다: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796919761992612392">Chrome 맞춤설정(&amp;U)</translation>

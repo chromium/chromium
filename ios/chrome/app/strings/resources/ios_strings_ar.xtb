@@ -740,7 +740,6 @@
 <translation id="3409785640040772790">‏خرائط Google</translation>
 <translation id="3416023309465857378">‫25 تشرين الأول (أكتوبر) 2023</translation>
 <translation id="3419787211763835342">بانتظار مساهمتك في تحسين "الملء التلقائي المحسّن"</translation>
-<translation id="3426715535827854458">إخفاء خيار "إخفاء شريط الأدوات"</translation>
 <translation id="3435738964857648380">أمن المعلومات</translation>
 <translation id="3441673211568148613">تحافظ هذه الميزة على خصوصية بيانات التصفح المتخفي</translation>
 <translation id="3443810440409579745">تم استلام علامة تبويب.</translation>
@@ -1173,6 +1172,7 @@
 <translation id="484280513275854557">تم تسجيل خروجك من الحساب وحذف بيانات التصفُّح</translation>
 <translation id="484462545196658690">تلقائي</translation>
 <translation id="4846662396507502151">أصبح التصفّح أسرع باستخدام شريط الأدوات الجديد</translation>
+<translation id="4850669014075537160">التمرير</translation>
 <translation id="4850886885716139402">عرض</translation>
 <translation id="4854068532375923088">‏السماح لـ Gemini باستخدام الكاميرا</translation>
 <translation id="4860895144060829044">اتصال</translation>
@@ -1945,6 +1945,9 @@
 <translation id="7280980607183752256">يتعذّر استيراد هذا الملف</translation>
 <translation id="7282197670900591579">مظهر باللون الليموني</translation>
 <translation id="7293429513719260019">اختيار لغة</translation>
+<translation id="72961285530871072">‏سيؤدي هذا الإجراء إلى حذف مستوى تقدّمك في برنامج Level Up نهائيًا، ولن يتم إرسال بيانات استخدام ميزات البرنامج إلى Google لملفك الشخصي بعد الآن.
+
+ويمكنك البدء من جديد في أي وقت.</translation>
 <translation id="7300448350764260141">يمكنك إضافة طبقة حماية إضافية من التهديدات الإلكترونية.</translation>
 <translation id="7311244614769792472">لم يتم العثور على نتائج.</translation>
 <translation id="7312823817809783355">مهامك</translation>

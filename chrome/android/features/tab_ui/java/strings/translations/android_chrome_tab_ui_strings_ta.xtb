@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> வாரத்திற்கு முன் உருவாக்கப்பட்டது}other{<ph name="NUM_WEEKS_MANY" /> வாரங்களுக்கு முன் உருவாக்கப்பட்டது}}</translation>
 <translation id="1063300264396686489">பிற சாதனங்களில் உருவாக்கப்பட்டிருக்கும் பக்கக் குழுக்களைத் தானாகத் திற</translation>
 <translation id="1075622780330595106">உங்கள் <ph name="NUMBER_OF_TABS" /> தாவல்கள் சமீபத்தில் பயன்படுத்தவில்லை. அவற்றை மூடவா?</translation>
+<translation id="1089791933924803646">பிற ஆப்ஸில் Chrome பரிந்துரைகளைக் காட்டு</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> ஆண்டிற்கு முன் உருவாக்கப்பட்டது}other{<ph name="NUM_YEARS_MANY" /> ஆண்டுகளுக்கு முன் உருவாக்கப்பட்டது}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{செயலில் இல்லாத பக்கங்களும் குழுக்களும் 1 மாதத்திற்குப் பிறகு நீக்கப்படும்}other{செயலில் இல்லாத பக்கங்களும் குழுக்களும் <ph name="MONTH_COUNT_MANY" /> மாதங்களுக்குப் பிறகு நீக்கப்படும்}}</translation>
 <translation id="1173894706177603556">பெயர் மாற்று</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{பக்கத்தைக் குழுவில் சேர்}other{பக்கங்களைக் குழுவில் சேர்}}</translation>
 <translation id="8138067144082174140">14 நாட்கள் செயலில் இல்லாததற்குப் பிறகு</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> வண்ணத்தில் <ph name="TABS_COUNT_ONE" /> பக்கத்துடன் உள்ள <ph name="TITLE_OF_GROUP" /> பக்கக் குழுவை விரிவாக்கும்.}other{<ph name="COLOR_NAME" /> வண்ணத்தில் <ph name="TABS_COUNT_MANY" /> பக்கங்களுடன் உள்ள <ph name="TITLE_OF_GROUP" /> பக்கக் குழுவை விரிவாக்கும்.}}</translation>
+<translation id="8172214054247281626">தேர்ந்தெடுக்கப்பட்ட ஆப்ஸில் பரிந்துரைகளைப் பெற, உங்கள் சமீபத்திய பிரவுசிங் பதிவுகள் போன்ற பிரவுசிங் தரவைப் பகிரலாம். இந்தத் தரவு உங்கள் சாதனத்தில் பாதுகாப்பாகச் செயலாக்கப்படும்.</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{பக்கத்தைப் பிரித்தெடு}other{பக்கங்களைப் பிரித்தெடு}}</translation>
 <translation id="8205266828577616993">தாவலை மேலே நகர்த்து</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> நிமிடத்திற்கு முன் புதுப்பிக்கப்பட்டது}other{<ph name="NUM_MINS_MANY" /> நிமிடங்களுக்கு முன் புதுப்பிக்கப்பட்டது}}</translation>

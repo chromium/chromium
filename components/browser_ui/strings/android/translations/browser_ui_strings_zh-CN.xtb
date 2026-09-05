@@ -7,6 +7,7 @@
 <translation id="1046742265332833834">蓝色主题</translation>
 <translation id="1070329623210597193">此网站可以查看或修改的文件</translation>
 <translation id="1074758928858737435">您可以查看桌面版网站</translation>
+<translation id="1089791933924803646">在其他应用中获取 Chrome 建议</translation>
 <translation id="1109482864356262001">需要使用移动传感器或光传感器的功能将无法正常运行</translation>
 <translation id="1126523729897810826">完成下方操作建议，充分利用 Chrome</translation>
 <translation id="113098737392899175">连接到键盘时，使用文本光标浏览网页</translation>
@@ -453,6 +454,7 @@
 <translation id="5668404140385795438">覆盖网站的请求，以防止放大</translation>
 <translation id="5668843533782548925">网站速度更慢，但安全性更高</translation>
 <translation id="5677928146339483299">已阻止</translation>
+<translation id="5679089750838794164">Chrome 现在可以根据您的浏览数据（例如近期浏览记录）在其他应用中向您显示建议。这些数据会在您的设备上安全地进行处理。您可以随时在 Chrome 设置中关闭此功能。</translation>
 <translation id="5689516760719285838">位置信息</translation>
 <translation id="5690795753582697420">已在 Android 设置中关闭摄像头</translation>
 <translation id="5700761515355162635">已允许使用第三方 Cookie</translation>
@@ -507,6 +509,7 @@
 <translation id="6085954183010297841">要撤消文件修改权限吗？<ph name="FILE" /></translation>
 <translation id="6104860901391833523">开启此设置后，网站可以自动进入画中画模式。关闭此设置后，网站无法自动进入画中画模式。</translation>
 <translation id="6120483543004435978">开启此设置后，网站可以请求监测您是否正在使用设备。关闭此设置后，网站无法得知您是否正在使用设备。</translation>
+<translation id="612871598708395517">隐藏“在其他应用中获取 Chrome 建议”</translation>
 <translation id="6132075343662013154">Chrome 会询问您是否保存密码</translation>
 <translation id="615886654739818377">不允许网站管理所有显示屏上的窗口</translation>
 <translation id="6165508094623778733">了解详情</translation>

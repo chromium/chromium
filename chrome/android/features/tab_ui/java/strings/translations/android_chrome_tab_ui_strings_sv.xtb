@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Skapades för <ph name="NUM_WEEKS_ONE" /> vecka sedan}other{Skapades för <ph name="NUM_WEEKS_MANY" /> veckor sedan}}</translation>
 <translation id="1063300264396686489">Öppna flikgrupper automatiskt från andra enheter</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> av flikarna har inte använts på länge. Vill du stänga dem?</translation>
+<translation id="1089791933924803646">Få Chrome-förslag i andra appar</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Skapades för <ph name="NUM_YEARS_ONE" /> år sedan}other{Skapades för <ph name="NUM_YEARS_MANY" /> år sedan}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Inaktiva flikar och grupper stängs efter en månad}other{Inaktiva flikar och grupper stängs efter <ph name="MONTH_COUNT_MANY" /> månader}}</translation>
 <translation id="1173894706177603556">Ändra namn</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Lägg till fliken i gruppen}other{Lägg till flikarna i gruppen}}</translation>
 <translation id="8138067144082174140">Efter 14 dagar utan aktivitet</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Utöka flikgruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_ONE" /> flik, färgen <ph name="COLOR_NAME" />.}other{Utöka flikgruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_MANY" /> flikar, färgen <ph name="COLOR_NAME" />.}}</translation>
+<translation id="8172214054247281626">Dela webbinformation, till exempel din senaste webbhistorik, för att få förslag i utvalda appar. Denna data behandlas säkert på enheten.</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{Lossa flik}other{Lossa flikar}}</translation>
 <translation id="8205266828577616993">Flytta fliken uppåt</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Uppdaterades för <ph name="NUM_MINS_ONE" /> minut sedan}other{Uppdaterades för <ph name="NUM_MINS_MANY" /> minuter sedan}}</translation>

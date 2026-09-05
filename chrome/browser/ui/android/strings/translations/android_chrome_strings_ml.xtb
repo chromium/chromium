@@ -57,6 +57,7 @@
 <translation id="1181037720776840403">നീക്കംചെയ്യൂ</translation>
 <translation id="1183189057400844278">നിങ്ങളുടെ Google Account-ൽ പാസ്‌വേഡുകൾ എല്ലായ്‌പ്പോഴും ഉപയോഗിക്കാനാകുമെന്ന് ഉറപ്പാക്കാൻ, ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>
 <translation id="1187810343066461819">കൂടാതെ, ഈ കാറിൽ നിന്ന് ബുക്ക്‌മാർക്കുകൾ, ചരിത്രം എന്നിവയും മറ്റും ഇല്ലാതാക്കുക</translation>
+<translation id="1191987227666124897">ഓപ്റ്റ് ഔട്ട് അഭ്യർത്ഥന</translation>
 <translation id="1193729455103054076">ശക്തമായ പാസ്‌വേഡ് ഉപയോഗിക്കണോ?</translation>
 <translation id="11947597112837849">ഇമെയിൽ വിലാസം</translation>
 <translation id="1197267115302279827">ബു‌ക്ക്‌മാർക്കുകൾ നീക്കുക</translation>
@@ -212,6 +213,7 @@
 <translation id="1832459821645506983">ഞാൻ സമ്മതിക്കുന്നു</translation>
 <translation id="1845958458910716240">നിങ്ങളുടെ ഡാറ്റ പരിരക്ഷിക്കുന്നതിന്, അടുത്തിടെ സന്ദർശിച്ചിട്ടില്ലാത്ത സൈറ്റുകളിൽ നിന്നുള്ള അനുമതികൾ നീക്കം ചെയ്യാൻ Chrome-നെ അനുവദിക്കുക</translation>
 <translation id="1851551847729706116">ഈ ടാബിലേക്ക് <ph name="TAB_NAME" /> പങ്കിടുന്നു</translation>
+<translation id="1855268219431673036"><ph name="TOTAL_PAGE_COUNT" /> പേജുകളിൽ <ph name="CURRENT_PAGE" />-ാമത്തേത്</translation>
 <translation id="1869691326892615940">സുരക്ഷിതമായ പാസ്‌വേഡുകൾ, വേഗത്തിലുള്ള സൈൻ ഇൻ ചെയ്യൽ</translation>
 <translation id="1871098866036088250">Chrome ബ്രൗസറിൽ തുറക്കുക</translation>
 <translation id="1877026089748256423">Chrome കാലഹരണപ്പെട്ടതാണ്</translation>
@@ -1341,6 +1343,7 @@
 <translation id="634208815998129842">ടാസ്‌ക് മാനേജർ</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> പേയ്‌മെന്റ് രീതികളും}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> പേയ്‌മെന്റ് രീതികളും}}</translation>
 <translation id="6345878117466430440">വായിച്ചതായി അടയാളപ്പെടുത്തുക</translation>
+<translation id="63490081267265251">Google ഉൾപ്പെടെ, നിങ്ങൾ സന്ദർശിക്കുന്ന സൈറ്റുകൾക്കാണ് ഈ അഭ്യർത്ഥനയോട് എങ്ങനെ പ്രതികരിക്കണമെന്ന് നിർണ്ണയിക്കാനുള്ള ഉത്തരവാദിത്തം. നിങ്ങളുടെ പ്രദേശത്തെ നിയമങ്ങൾ അനുസരിച്ച്, നിങ്ങളുടെ ഡാറ്റയുടെ വിൽപ്പനയും പങ്കിടലും അല്ലെങ്കിൽ വ്യക്തിപരമാക്കിയ പരസ്യങ്ങൾക്കായുള്ള അതിന്റെ ഉപയോഗം പരിമിതപ്പെടുത്തിക്കൊണ്ട് സൈറ്റുകൾ പ്രതികരിച്ചേക്കാം. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="6350745006329795504">നിങ്ങളുടെ ഉപകരണങ്ങൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="6356893102071098867">നിങ്ങൾ ശരിയായ അക്കൗണ്ടാണോ തിരഞ്ഞെടുത്തതെന്ന് പരിശോധിക്കുക</translation>
 <translation id="6364438453358674297">ചരിത്രത്തിൽ നിന്ന് നിർദ്ദേശം നീക്കംചെയ്യണോ?</translation>
@@ -1665,6 +1668,7 @@
 <translation id="7493994139787901920"><ph name="VERSION" /> (അപ്‌ഡേറ്റ് ചെയ്‌തു, <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">കാത്തിരിക്കുക...</translation>
 <translation id="7499065150275272675"><ph name="TAB_TITLE" />, പിൻ ചെയ്ത, മ്യൂട്ട് ചെയ്ത ടാബ്</translation>
+<translation id="7500851014030446046">PDF ഡൗൺലോഡ് ചെയ്യുന്നു</translation>
 <translation id="7501135638693251872">എല്ലാ ബുക്ക്മാർക്കുകളും</translation>
 <translation id="7507207699631365376">ഈ ദാതാവിന്റെ <ph name="BEGIN_LINK" />സ്വകാര്യതാ നയം<ph name="END_LINK" /> കാണുക</translation>
 <translation id="750886945254958667">പിന്നീട് ടാബുകൾ ചേർക്കാൻ ഈ ഗ്രൂപ്പ് നിലനിർത്തുക, അല്ലെങ്കിൽ നിങ്ങൾക്ക് അതിലേക്ക് ആക്‌സസ് വേണ്ടെങ്കിൽ അതിൽ നിന്ന് പുറത്തുകടക്കുക</translation>
@@ -1732,6 +1736,7 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> പേയ്‌മെന്റ് രീതികളും}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> പേയ്‌മെന്റ് രീതികളും}}</translation>
 <translation id="777637629667389858">സൈൻ ഇൻ ചെയ്തിരിക്കുമ്പോൾ, Google സേവനങ്ങളിലുടനീളം നിങ്ങളെ പരിരക്ഷിക്കുന്നു.</translation>
 <translation id="7778840695157240389">പുതിയ സ്‌റ്റോറികൾക്ക് പിന്നീട് വീണ്ടും പരിശോധിക്കൂ</translation>
+<translation id="7780992949171378848">നിങ്ങളുടെ ഡാറ്റ ഉപയോഗിക്കുന്നത് സംബന്ധിച്ച് സൈറ്റുകളിലേക്ക് ഓപ്റ്റ് ഔട്ട് അഭ്യർത്ഥന അയയ്ക്കുക</translation>
 <translation id="7791543448312431591">ചേര്‍ക്കൂ</translation>
 <translation id="7792388396321542707">പങ്കിടൽ നിർത്തുക</translation>
 <translation id="780287761701992588">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും ബുക്ക്‌മാർക്കുകൾ, പാസ്‌വേഡുകൾ എന്നിവയും മറ്റും നേടുക</translation>

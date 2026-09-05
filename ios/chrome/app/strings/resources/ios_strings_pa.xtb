@@ -740,7 +740,6 @@
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 ਅਕਤੂਬਰ 2023</translation>
 <translation id="3419787211763835342">ਵਿਸਤ੍ਰਿਤ ਆਟੋਫਿਲ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰੋ</translation>
-<translation id="3426715535827854458">'ਟੂਲਬਾਰ ਲੁਕਾਓ' ਨੂੰ ਲੁਕਾਓ</translation>
 <translation id="3435738964857648380">ਸੁਰੱਖਿਆ</translation>
 <translation id="3441673211568148613">ਆਪਣੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਨਿੱਜੀ ਰੱਖੋ</translation>
 <translation id="3443810440409579745">ਟੈਬ ਪ੍ਰਾਪਤ ਹੋਇਆ।</translation>
@@ -1173,6 +1172,7 @@
 <translation id="484280513275854557">ਤੁਸੀਂ ਸਾਈਨ-ਆਊਟ ਹੋ ਗਏ ਸੀ; ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਮਿਟਾ ਦਿੱਤਾ ਗਿਆ ਸੀ</translation>
 <translation id="484462545196658690">ਸਵੈ</translation>
 <translation id="4846662396507502151">ਨਵੇਂ ਟੂਲਬਾਰ ਨਾਲ ਤੇਜ਼ੀ ਨਾਲ ਬ੍ਰਾਊਜ਼ ਕਰੋ</translation>
+<translation id="4850669014075537160">ਸਕ੍ਰੋਲਿੰਗ</translation>
 <translation id="4850886885716139402">ਦੇਖੋ</translation>
 <translation id="4854068532375923088">“Gemini” ਨੂੰ ਤੁਹਾਡੇ ਕੈਮਰੇ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦਿਓ</translation>
 <translation id="4860895144060829044">ਕਾਲ ਕਰੋ</translation>
@@ -1947,6 +1947,9 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="7280980607183752256">ਇਸ ਫ਼ਾਈਲ ਨੂੰ ਆਯਾਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="7282197670900591579">ਨਿੰਬੂ ਰੰਗਾ ਥੀਮ</translation>
 <translation id="7293429513719260019">ਭਾਸ਼ਾ ਚੁਣੋ</translation>
+<translation id="72961285530871072">ਇਸ ਨਾਲ ਤੁਹਾਡੀ ਅਗਲੇ ਪੱਧਰ ਦੀ ਪ੍ਰਗਤੀ ਪੱਕੇ ਤੌਰ 'ਤੇ ਮਿਟ ਜਾਵੇਗੀ ਅਤੇ ਅਗਲੇ ਪੱਧਰ ਲਈ ਵਿਸ਼ੇਸ਼ਤਾ ਦਾ ਵਰਤੋਂ ਡਾਟਾ ਹੁਣ ਤੁਹਾਡੇ ਪ੍ਰੋਫਾਈਲ ਲਈ Google ਨੂੰ ਨਹੀਂ ਭੇਜਿਆ ਜਾਵੇਗਾ।
+
+ਤੁਸੀਂ ਕਿਸੇ ਵੀ ਵੇਲੇ ਮੁੜ-ਸ਼ੁਰੂ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="7300448350764260141">ਆਨਲਾਈਨ ਖਤਰਿਆਂ ਤੋਂ ਬਚਣ ਲਈ ਸੁਰੱਖਿਆ ਦੀ ਇੱਕ ਵਾਧੂ ਲੇਅਰ ਸ਼ਾਮਲ ਕਰੋ।</translation>
 <translation id="7311244614769792472">ਕੋਈ ਨਤੀਜਾ ਨਹੀਂ ਮਿਲਿਆ</translation>
 <translation id="7312823817809783355">ਤੁਹਾਡੇ ਕਾਰਜ</translation>

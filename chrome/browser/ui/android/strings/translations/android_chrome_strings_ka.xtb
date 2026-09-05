@@ -57,6 +57,7 @@
 <translation id="1181037720776840403">ამოშლა</translation>
 <translation id="1183189057400844278">თქვენს Google ანგარიშში არსებული პაროლები დაუბრკოლებლად რომ გამოიყენოთ, დაადასტურეთ ვინაობა</translation>
 <translation id="1187810343066461819">ასევე, გასუფთავდეს სანიშნეები, ისტორია და სხვა კონტენტი ამ მანქანიდან</translation>
+<translation id="1191987227666124897">უარის თქმის მოთხოვნა</translation>
 <translation id="1193729455103054076">გსურთ, გამოიყენოთ ძლიერი პაროლი?</translation>
 <translation id="11947597112837849">ელფოსტის მისამართი</translation>
 <translation id="1197267115302279827">სანიშნეების გადატანა</translation>
@@ -212,6 +213,7 @@
 <translation id="1832459821645506983">დიახ, თანახმა ვარ</translation>
 <translation id="1845958458910716240">თქვენი მონაცემების დაცვის მიზნით, მიეცით საშუალება Chrome-ს, გაუუქმოს ნებართვები საიტებს, რომლებზეც ბოლო დროს არ შესულხართ</translation>
 <translation id="1851551847729706116"><ph name="TAB_NAME" /> ზიარდება ამ ჩანართში</translation>
+<translation id="1855268219431673036">გვერდი <ph name="CURRENT_PAGE" /> / <ph name="TOTAL_PAGE_COUNT" />-დან</translation>
 <translation id="1869691326892615940">უფრო დაცული პაროლები, უფრო სწრაფი ავტორიზაცია</translation>
 <translation id="1871098866036088250">Chrome-ის ბრაუზერში გახსნა</translation>
 <translation id="1877026089748256423">Chrome მოძველებულია</translation>
@@ -906,6 +908,7 @@
 <translation id="4595805675102978678">Google ანგარიშის შეცდომა</translation>
 <translation id="4599585406846903742">ერთგვერდიანი ხედი</translation>
 <translation id="4601095002996233687">საეჭვო ჩამოტვირთვების სიღრმისეული სკანირების ფუნქცია.</translation>
+<translation id="4604434672720336227">Chrome-ის დახურვა</translation>
 <translation id="4606559747793337066">როცა საიტი ან აპი გთხოვთ, უფლება მისცეთ, კონფიდენციალურად ჩატვირთოს თავის გვერდზე არსებული ბმულები, Chrome დაშიფრავს და წინასწარ ჩატვირთავს გვერდებს Google-ის სერვერების მეშვეობით, ქუქი-ჩანაწერების გარეშე. აღნიშნული დამალავს თქვენს ვინაობას წინასწარ ჩატვირთული საიტისგან.</translation>
 <translation id="4619615317237390068">ჩანართები სხვა მოწყობილობებიდან</translation>
 <translation id="4624065194742029982">Chrome-ის ინკოგნიტო რეჟიმი</translation>
@@ -1341,6 +1344,7 @@
 <translation id="634208815998129842">ამოცანების მმართველი</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 და <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> სხვა}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 და <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> სხვა}}</translation>
 <translation id="6345878117466430440">წაკითხულად მონიშვნა</translation>
+<translation id="63490081267265251">თქვენ მიერ მონახულებული საიტები, Google-ის ჩათვლით, თავად განსაზღვრავს, თუ როგორ უპასუხოს ამ მოთხოვნას. თქვენს რეგიონში მოქმედი კანონმდებლობის შესაბამისად, საიტებმა შეიძლება რეაგირება მოახდინოს თქვენი მონაცემების გაყიდვისა და გაზიარების, ან პერსონალიზებული რეკლამებისთვის მათი გამოყენების, შეზღუდვით. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="6350745006329795504">თქვენი მოწყობილობების მართვა</translation>
 <translation id="6356893102071098867">შეამოწმეთ, სწორი ანგარიში აირჩიეთ თუ არა</translation>
 <translation id="6364438453358674297">ამოიშალოს შემოთავაზება ისტორიიდან?</translation>
@@ -1427,6 +1431,7 @@
 <translation id="6669390930482049506">შემატყობინეთ</translation>
 <translation id="6671495933530132209">გამოსახულების კოპირება</translation>
 <translation id="6672697278890207089">შეიყვანეთ თქვენი საიდუმლო ფრაზა</translation>
+<translation id="6675622031235530028">დასახურად დააჭირეთ კომბინაციას Ctrl+Q</translation>
 <translation id="6676927815633975364">შედით ამ საიტსა და Chrome-ში</translation>
 <translation id="6684262542644248484">შედით ვებსაიტის სისტემაში</translation>
 <translation id="6684809838922667136">გააუმჯობესეთ Chrome</translation>
@@ -1665,6 +1670,7 @@
 <translation id="7493994139787901920"><ph name="VERSION" /> (განახლებულია <ph name="TIME_SINCE_UPDATE" /> )</translation>
 <translation id="7498271377022651285">გთხოვთ, დაელოდოთ…</translation>
 <translation id="7499065150275272675"><ph name="TAB_TITLE" />, ჩამაგრებულია დადუმებული ჩანართი</translation>
+<translation id="7500851014030446046">მიმდინარეობს PDF-ის ჩამოტვირთვა</translation>
 <translation id="7501135638693251872">ყველა სანიშნე</translation>
 <translation id="7507207699631365376">ამ პროვაიდერის <ph name="BEGIN_LINK" />კონფიდენციალურობის დებულების<ph name="END_LINK" /> ნახვა</translation>
 <translation id="750886945254958667">შეინარჩუნეთ ეს ჯგუფი, რომ მოგვიანებით მასში დაამატოთ ჩანართები, ან დატოვეთ ის, თუ აღარ გსურთ მასზე წვდომა</translation>
@@ -1732,6 +1738,7 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 და <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> სხვა}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 და <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> სხვა}}</translation>
 <translation id="777637629667389858">როცა შესული ხართ სისტემაში, გიცავთ Google სერვისების ფარგლებში.</translation>
 <translation id="7778840695157240389">ეწვიეთ მოგვიანებით დამატებითი სიახლეებისთვის</translation>
+<translation id="7780992949171378848">გაუგზავნეთ საიტებს უარის თქმის მოთხოვნა თქვენი მონაცემების გამოყენებასთან დაკავშირებით</translation>
 <translation id="7791543448312431591">დამატება</translation>
 <translation id="7792388396321542707">შეწყვიტეთ გაზიარება</translation>
 <translation id="780287761701992588">მიიღეთ თქვენი სანიშნეები, პაროლები და სხვა მონაცემები თქვენს ყველა მოწყობილობაზე</translation>

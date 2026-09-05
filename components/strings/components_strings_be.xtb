@@ -1548,6 +1548,7 @@
 <translation id="3634530185120165534">Латок 5</translation>
 <translation id="3634567936866541746">Вы толькі што ўвялі свой пароль на сайце, вядомым падманнымі паводзінамі. Chrome рэкамендуе вам праверыць захаваныя паролі, каб абараніць свае ўліковыя запісы.</translation>
 <translation id="3638102297696182302">Узнавіце дапамогу з напісаннем. Каб адкрыць, націсніце Tab + Увод.</translation>
+<translation id="3639626391482300575">Гэты нумар IBAN захаваны ў Google Кашальку, таму вы можаце выкарыстоўваць яго ў розных прадуктах Google.</translation>
 <translation id="3642196846309122856">Паспрабуйце спампаваць файлы яшчэ раз</translation>
 <translation id="3642638418806704195">Праграма:</translation>
 <translation id="3647286794400715637">Кожны запіс павінен змяшчаць 1-2 URL-адрасы.</translation>
@@ -3180,7 +3181,6 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Праглядзець журналы</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Праверыць канфігурацыю абароненай DNS, проксі-сервера і брандмаўэра.<ph name="END_LINK" /></translation>
-<translation id="6365513578140103119">Аўтаматычна спраўджваць адрасы электроннай пошты</translation>
 <translation id="6366710531182496394">Дзве скабы злева</translation>
 <translation id="6367196786591004737">Выдаліць запіс</translation>
 <translation id="6370022303958842211">Усе дзеянні, звязаныя з доступам да прылады, такія як уваход (у тым ліку прычыны, па якіх увайсці не ўдалося), выхад, блакіроўка і разблакіроўка</translation>
@@ -3305,6 +3305,7 @@
 <translation id="6578434528542148658">Недапушчальны ідэнтыфікатар пашырэння.</translation>
 <translation id="658230438113661756">На сайце, які вы спрабавалі наведаць, дзейнічаюць зламыснікі. Яны могуць усталяваць шкоднае праграмнае забеспячэнне, якое выкрадае або выдаляе вашы даныя, напрыклад паролі, фота, паведамленні ці нумары крэдытных картак. Chrome настойліва рэкамендуе вярнуцца на бяспечную старонку. <ph name="BEGIN_LEARN_MORE_LINK" />Даведацца больш пра гэта папярэджанне<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6583309742916093092">Захоўваюцца ў Google Кашальку</translation>
+<translation id="6585589684832019248">Гэта картка захавана ў Google Кашальку, таму вы можаце выкарыстоўваць яе ў розных прадуктах Google</translation>
 <translation id="6587893660316489419">Канверт B5</translation>
 <translation id="6587923378399804057">Скапіраваная вамі спасылка</translation>
 <translation id="6591833882275308647">Прылада <ph name="DEVICE_TYPE" /> не знаходзіцца пад кіраваннем</translation>
@@ -4658,7 +4659,6 @@
 <translation id="8963117664422609631">Перайсці ў налады сайтаў</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Рэкамендацыі:<ph name="MARKUP_2" />Праверце, ці ёсць у вас падключэнне для перадачы даных.<ph name="MARKUP_3" />Перазагрузіце старонку пазней.<ph name="MARKUP_4" />Праверце ўведзены адрас.<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Лакальныя файлы будуць выдалены праз <ph name="HOURS" /> гадз</translation>
-<translation id="8964904785315870349">Спраўджаны адрас электроннай пошты</translation>
 <translation id="8968766641738584599">Захаваць картку</translation>
 <translation id="8970887620466824814">Нешта пайшло не так.</translation>
 <translation id="8971063699422889582">Тэрмін дзеяння сертыфіката сервера скончыўся.</translation>
@@ -4869,6 +4869,7 @@
 <translation id="988159990683914416">Зборка для распрацоўшчыкаў</translation>
 <translation id="989988560359834682">Рэдагаваць адрас</translation>
 <translation id="990164307229195234"><ph name="DEVICE_NAME" /> (<ph name="DISAMBIGUATION_LABEL" />)</translation>
+<translation id="990812705189376036">Доказ дрэва Меркла</translation>
 <translation id="992110854164447044">Каб абараніць вас ад патэнцыяльнага махлярства, замест захаванай вамі карткі будзе паказвацца віртуальная. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992256792861109788">Ружовы</translation>
 <translation id="992432478773561401">Праграма "<ph name="SOFTWARE_NAME" />" няправільна ўсталявана на камп’ютар або ў сетцы:

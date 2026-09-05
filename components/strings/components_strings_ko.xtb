@@ -1548,6 +1548,7 @@
 <translation id="3634530185120165534">트레이 5</translation>
 <translation id="3634567936866541746">사기성 사이트에 비밀번호를 입력했습니다. 계정을 안전하게 보호하려면 저장된 비밀번호를 확인해 보시기 바랍니다.</translation>
 <translation id="3638102297696182302">작성 지원 기능을 재개합니다. 탭하고 Enter를 눌러 여세요</translation>
+<translation id="3639626391482300575">이 IBAN은 다양한 Google 제품에서 사용할 수 있도록 Google 월렛에 저장됩니다.</translation>
 <translation id="3642196846309122856">파일을 다시 다운로드해 보세요.</translation>
 <translation id="3642638418806704195">애플리케이션:</translation>
 <translation id="3647286794400715637">모든 URL 문자열 항목에는 1~2개의 URL이 포함되어야 합니다.</translation>
@@ -3181,7 +3182,6 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">로그 보기</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />프록시, 방화벽, 보안 DNS 설정 확인<ph name="END_LINK" /></translation>
-<translation id="6365513578140103119">이메일을 자동으로 확인</translation>
 <translation id="6366710531182496394">왼쪽 듀얼 스테이플</translation>
 <translation id="6367196786591004737">항목 삭제</translation>
 <translation id="6370022303958842211">로그인(로그인 실패 이유 포함), 로그아웃, 잠금, 잠금 해제와 같은 기기 액세스 작업</translation>
@@ -3306,6 +3306,7 @@
 <translation id="6578434528542148658">확장 프로그램 ID가 잘못되었습니다.</translation>
 <translation id="658230438113661756">방문하려고 한 사이트의 공격자가 비밀번호, 사진, 메시지, 신용카드 번호 등을 도용하거나 삭제하는 유해한 소프트웨어를 설치할 수도 있습니다. Chrome에서는 안전한 위치로 돌아갈 것을 적극 권장합니다. <ph name="BEGIN_LEARN_MORE_LINK" />이 경고에 대해 자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6583309742916093092">Google 월렛에 저장됨</translation>
+<translation id="6585589684832019248">다양한 Google 제품에서 사용할 수 있도록 Google 월렛에 카드가 저장되었습니다.</translation>
 <translation id="6587893660316489419">봉투 B5</translation>
 <translation id="6587923378399804057">복사한 링크</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> 기기는 관리 대상 기기가 아닙니다.</translation>
@@ -4658,7 +4659,6 @@
 <translation id="8963117664422609631">사이트 설정으로 이동</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />제안사항:<ph name="MARKUP_2" />데이터 연결 상태 확인<ph name="MARKUP_3" />나중에 페이지 새로고침<ph name="MARKUP_4" />입력한 주소 확인<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">로컬 파일이 <ph name="HOURS" />시간 후에 삭제됩니다</translation>
-<translation id="8964904785315870349">인증된 이메일</translation>
 <translation id="8968766641738584599">카드 저장</translation>
 <translation id="8970887620466824814">문제 발생</translation>
 <translation id="8971063699422889582">서버 인증서가 만료되었습니다.</translation>
@@ -4868,6 +4868,7 @@
 <translation id="988159990683914416">개발자 빌드</translation>
 <translation id="989988560359834682">주소 수정</translation>
 <translation id="990164307229195234"><ph name="DEVICE_NAME" />(<ph name="DISAMBIGUATION_LABEL" />)</translation>
+<translation id="990812705189376036">머클 트리 증명</translation>
 <translation id="992110854164447044">가상 카드는 실제 카드를 숨겨서 사기당할 위험을 줄여줍니다. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>
 <translation id="992256792861109788">분홍색</translation>

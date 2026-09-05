@@ -1549,6 +1549,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="3634530185120165534">Lokero 5</translation>
 <translation id="3634567936866541746">Lisäsit juuri salasanasi petolliselle sivustolle. Chrome suosittelee tarkistamaan tallennetut salasanasi tilisi suojaamiseksi.</translation>
 <translation id="3638102297696182302">Jatka Auta minua kirjoittamaan ‐ominaisuuden käyttöä. Avaa painamalla sarkainta ja Enter-näppäintä.</translation>
+<translation id="3639626391482300575">Tämä IBAN on tallennettu Google Walletiin, joten voit käyttää sitä Googlen tuotteissa.</translation>
 <translation id="3642196846309122856">Yritä ladata tiedostot uudelleen</translation>
 <translation id="3642638418806704195">Sovellus:</translation>
 <translation id="3647286794400715637">Jokaisessa lisätyssä URL-merkkijonossa on oltava 1–2 URL-osoitetta.</translation>
@@ -3182,7 +3183,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Katso lokit</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Tarkista välityspalvelimen, palomuurin ja suojatun DNS:n määritykset<ph name="END_LINK" /></translation>
-<translation id="6365513578140103119">Vahvista sähköpostit automaattisesti</translation>
 <translation id="6366710531182496394">Kaksi niittiä vasemmalla</translation>
 <translation id="6367196786591004737">Poista merkintä</translation>
 <translation id="6370022303958842211">Laitteen pääsytoiminnot, kuten kirjautumiset (myös epäonnistuneiden kirjautumisten syyt), uloskirjautumiset, lukitukset ja lukituksen avaukset</translation>
@@ -3307,6 +3307,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="6578434528542148658">Virheellinen laajennuksen tunnus.</translation>
 <translation id="658230438113661756">Hyökkääjät sivustolla, jolle yritit siirtyä, voivat asentaa haittaohjelmia, jotka varastavat tai poistavat esimerkiksi salasanojasi, kuviasi, viestejäsi tai credit-korttisi numeroita. Chrome suosittelee, että siirryt takaisin turvalliselle sivustolle. <ph name="BEGIN_LEARN_MORE_LINK" />Lue lisää tästä varoituksesta<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6583309742916093092">Tallennettu Google Walletiin</translation>
+<translation id="6585589684832019248">Tämä kortti on tallennettu Google Walletiin, joten voit käyttää sitä Googlen tuotteissa</translation>
 <translation id="6587893660316489419">Kirjekuori B5</translation>
 <translation id="6587923378399804057">Kopioimasi linkki</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> ei ole ylläpidetty</translation>
@@ -4661,7 +4662,6 @@ Lisätietoja:
 <translation id="8963117664422609631">Avaa sivustoasetukset</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Ehdotuksia:<ph name="MARKUP_2" />Varmista tiedonsiirtoyhteyden saatavuus.<ph name="MARKUP_3" />Lataa verkkosivu uudelleen.<ph name="MARKUP_4" />Tarkista syöttämäsi osoite.<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Paikalliset tiedostot poistetaan <ph name="HOURS" /> tunnin kuluttua</translation>
-<translation id="8964904785315870349">Vahvistettu sähköposti</translation>
 <translation id="8968766641738584599">Tallenna kortti</translation>
 <translation id="8970887620466824814">Tapahtui virhe.</translation>
 <translation id="8971063699422889582">Palvelimen varmenne on vanhentunut.</translation>
@@ -4872,6 +4872,7 @@ Lisätietoja:
 <translation id="988159990683914416">Kehittäjän koontiversio</translation>
 <translation id="989988560359834682">Osoitteen muokkaus</translation>
 <translation id="990164307229195234"><ph name="DEVICE_NAME" /> (<ph name="DISAMBIGUATION_LABEL" />)</translation>
+<translation id="990812705189376036">Merkle Tree ‑todiste</translation>
 <translation id="992110854164447044">Virtuaalinen kortti piilottaa käyttämäsi kortin ja saat paremman suojauksen mahdollisia petoksia vastaan. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>
 <translation id="992256792861109788">Vaaleanpunainen</translation>

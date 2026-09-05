@@ -9,6 +9,7 @@
 <translation id="1016495303386450659">Item atualizado</translation>
 <translation id="1018804590490383958">Digitalizar e preencher automaticamente</translation>
 <translation id="1019990162050689579">Atividade nos apps do Gemini</translation>
+<translation id="102645702181682900">Tarefa iniciada</translation>
 <translation id="102916930470544692">Chave de acesso</translation>
 <translation id="1030376737535466765">Abra o Gerenciador de senhas</translation>
 <translation id="1035980983510608210">Ao fechar todas as guias, as fixadas também vão ser fechadas.</translation>
@@ -32,7 +33,7 @@
 <translation id="1081948304372277788">Desativar o Level Up</translation>
 <translation id="1082554859195167538">Avaliações de produtos para você</translation>
 <translation id="1084365883616172403">A postagem no Facebook foi concluída.</translation>
-<translation id="108485301461714610">Modo IA da Pesquisa Google e apps conectados</translation>
+<translation id="108485301461714610">Modo IA da Pesquisa Google e Apps Conectados</translation>
 <translation id="1085677983426914530">Não foi possível abrir o arquivo <ph name="FILENAME" /></translation>
 <translation id="1086486568852410168">Pesquisar com o Lens</translation>
 <translation id="1095093219235104018">Encontrar e preencher com o Gemini</translation>
@@ -239,6 +240,7 @@
 <translation id="1709916727352927457">Excluir chave de acesso</translation>
 <translation id="1715515772563243997">Se você confia no site <ph name="SITE" />, pode fazer login com uma senha salva.</translation>
 <translation id="1718835860248848330">Última hora</translation>
+<translation id="1726013039921383235">Sempre permitir</translation>
 <translation id="1728549374069268714">Colar e ir</translation>
 <translation id="1732468323901456775">Ative as notificações de <ph name="MODULE_NAME" /></translation>
 <translation id="1739364174357629566">Atualizar o número do programa de passageiro conhecido</translation>
@@ -740,7 +742,7 @@
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 outubro de 2023</translation>
 <translation id="3419787211763835342">Ajude a melhorar o preenchimento automático aprimorado</translation>
-<translation id="3426715535827854458">Não mostrar a opção Ocultar Barra de Ferramentas</translation>
+<translation id="3430407169377889553">Use o Gemini com cuidado e assuma o controle se necessário. Você é responsável pelas ações do Gemini durante as tarefas.</translation>
 <translation id="3435738964857648380">Segurança</translation>
 <translation id="3441673211568148613">Mantenha a privacidade da sua navegação</translation>
 <translation id="3443810440409579745">Guia recebida.</translation>
@@ -928,6 +930,7 @@
 <translation id="4021447724486050609">Atualize o navegador</translation>
 <translation id="4021931095789478915">Adicionar ${url} à Lista de leitura</translation>
 <translation id="4028871427853484857">Salvar na conta…</translation>
+<translation id="4034354558246368274">Permitir desta vez</translation>
 <translation id="4038354071007134711">Nenhum app deste dispositivo pode abrir o arquivo.</translation>
 <translation id="4042870976416480368">Buscar na página</translation>
 <translation id="4045441967987592849">Reabrir</translation>
@@ -1089,6 +1092,7 @@
 <translation id="4592672037257622855">{count,plural, =1{Página adicionada à Lista de leitura}one{{count} página adicionada à Lista de leitura}other{{count} páginas adicionadas à Lista de leitura}}</translation>
 <translation id="459644946100970322">Ativar os alertas de preço?</translation>
 <translation id="4597892826846980979">Receber notificações de guias</translation>
+<translation id="459792494991530234">Digitando</translation>
 <translation id="4601095002996233687">Faz verificações detalhadas de downloads suspeitos.</translation>
 <translation id="4606247758155004938">O navegador é gerenciado pela sua organização.</translation>
 <translation id="4607887340472970274">Monitoramento de preços</translation>
@@ -1154,6 +1158,7 @@
 <translation id="4792385443586519711">Nome da empresa</translation>
 <translation id="479628432297359449">Parar o download?</translation>
 <translation id="4796496140132859135">Grupo de guias. Fechado.</translation>
+<translation id="4800912004582762296">Clicando</translation>
 <translation id="4802185666270672526">Ocultar "Pedir site para computador"</translation>
 <translation id="4802678077012980341">Check-up de senha concluído!</translation>
 <translation id="4803185665210547709">Gerenciado pela sua organização.
@@ -1173,6 +1178,7 @@
 <translation id="484280513275854557">Sua conta foi desconectada e os dados de navegação foram excluídos</translation>
 <translation id="484462545196658690">Automática</translation>
 <translation id="4846662396507502151">Navegue mais rápido com a nova barra de ferramentas</translation>
+<translation id="4850669014075537160">Rolagem</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="4854068532375923088">Permitir que o "Gemini" use sua câmera</translation>
 <translation id="4860895144060829044">Ligar</translation>
@@ -1625,6 +1631,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6259928806013786178">Falha no modo de leitura</translation>
 <translation id="626335165106398104">O Gemini funciona com outros serviços</translation>
 <translation id="6268773951964630964">Pesquisar imagem copiada</translation>
+<translation id="6270944267518310103">Aguardando</translation>
 <translation id="6271462272606946663">Ocultar opção "Solicitar o site móvel"</translation>
 <translation id="6271824294945464304">Compartilhando senha</translation>
 <translation id="628251768213143684">Você pode gerenciar quando quiser o que é salvo na sua Conta do Google</translation>
@@ -1658,6 +1665,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6350745006329795504">Gerenciar seus dispositivos</translation>
 <translation id="6351147166808964033">Entrar no Seletor de guias</translation>
 <translation id="63519665078626091">Para usar o Web Inspector, conecte-se ao Safari no computador usando um cabo e acesse o iPad no menu de desenvolvimento. Você pode ativar o menu de desenvolvimento na seção "Avançado" das configurações do Safari no computador.</translation>
+<translation id="6354695695659930684">Preenchendo senha</translation>
 <translation id="6355820183143562453">Ocultar o card "Monitoramento de preços"</translation>
 <translation id="6355820205320395730">Senhas fracas são fáceis de adivinhar. Você precisa criar senhas fortes. <ph name="BEGIN_LINK" />Confira mais dicas de segurança<ph name="END_LINK" />.</translation>
 <translation id="6357455205205567365">Faça login para acessar todos os seus itens, como senhas, favoritos e muito mais.</translation>
@@ -2247,6 +2255,7 @@ Para continuar pelo computador, mude para <ph name="OTHER_EMAIL" />. Você vai r
 <translation id="8233237502828137700">Fechar banner promocional</translation>
 <translation id="823339794112333264">Ativar microfone</translation>
 <translation id="8240217649914883113">Adicione à minha agenda</translation>
+<translation id="824379025871762038">Nunca permitir</translation>
 <translation id="8250920743982581267">Documentos</translation>
 <translation id="8252980988000695656">Google Lens concluído!</translation>
 <translation id="8258734532103758067">Exportei meus dados</translation>

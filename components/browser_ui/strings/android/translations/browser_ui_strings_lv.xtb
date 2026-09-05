@@ -7,6 +7,7 @@
 <translation id="1046742265332833834">Zils motīvs</translation>
 <translation id="1070329623210597193">Faili, ko šī vietne drīkst skatīt vai rediģēt</translation>
 <translation id="1074758928858737435">Varat pieprasīt skatīt vietņu datora versiju.</translation>
+<translation id="1089791933924803646">Saņemt Chrome ieteikumus citās lietotnēs</translation>
 <translation id="1109482864356262001">Funkcijas, kurām nepieciešama piekļuve kustību vai gaismas sensoriem, nedarbosies.</translation>
 <translation id="1126523729897810826">Lai pilnvērtīgi izmantotu pārlūku Chrome, veiciet tālāk ieteiktās darbības.</translation>
 <translation id="113098737392899175">Pārvietošanās lapās, izmantojot teksta kursoru, kad ir pievienota tastatūra</translation>
@@ -453,6 +454,7 @@
 <translation id="5668404140385795438">Ignorēt vietnes pieprasījumu, lai novērstu tuvināšanu</translation>
 <translation id="5668843533782548925">Vietnes darbojas lēnāk, taču ir drošākas</translation>
 <translation id="5677928146339483299">Bloķēts</translation>
+<translation id="5679089750838794164">Tagad Chrome var rādīt ieteikumus citās lietotnēs, pamatojoties uz jūsu pārlūkošanas datiem, piemēram, neseno pārlūkošanas vēsturi. Šie dati tiek apstrādāti drošā veidā jūsu ierīcē. Chrome iestatījumos varat jebkurā laikā izslēgt šo funkciju.</translation>
 <translation id="5689516760719285838">Atrašanās vieta</translation>
 <translation id="5690795753582697420">Android iestatījumos ir izslēgta kameras atļauja</translation>
 <translation id="5700761515355162635">Trešo pušu sīkfailu ir atļauti</translation>
@@ -507,6 +509,7 @@
 <translation id="6085954183010297841">Vai dzēst faila rediģēšanas atļauju? <ph name="FILE" /></translation>
 <translation id="6104860901391833523">Kad šis slēdzis ir ieslēgts, vietnēs var automātiski aktivizēt režīmu “Attēls attēlā”. Kad šis slēdzis ir izslēgts, vietnēs nevar automātiski aktivizēt režīmu “Attēls attēlā”.</translation>
 <translation id="6120483543004435978">Kad šis slēdzis ir ieslēgts, vietnes var pieprasīt informāciju par to, kad jūs aktīvi lietojat savu ierīci. Kad šis slēdzis ir izslēgts, vietnes nevar iegūt informāciju par to, kad jūs aktīvi lietojat savu ierīci.</translation>
+<translation id="612871598708395517">Paslēpt Saņemt Chrome ieteikumus citās lietotnēs</translation>
 <translation id="6132075343662013154">Pārlūkā Chrome tiks piedāvāts saglabāt jūsu paroli.</translation>
 <translation id="615886654739818377">Neatļaut vietnēm pārvaldīt logus visos jūsu displejos</translation>
 <translation id="6165508094623778733">Uzzināt vairāk</translation>

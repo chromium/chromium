@@ -740,7 +740,6 @@
 <translation id="3409785640040772790">Карти</translation>
 <translation id="3416023309465857378">25 жовтня 2023 року</translation>
 <translation id="3419787211763835342">Допоможіть удосконалити покращене автозаповнення</translation>
-<translation id="3426715535827854458">Сховати дію "Сховати панель інструментів"</translation>
 <translation id="3435738964857648380">Безпека</translation>
 <translation id="3441673211568148613">Захищайте конфіденційність вебперегляду</translation>
 <translation id="3443810440409579745">Вкладку отримано.</translation>
@@ -1156,7 +1155,7 @@
 <translation id="4796496140132859135">Група вкладок. Згорнуто.</translation>
 <translation id="4802185666270672526">Сховати опцію "Версія сайту для комп’ютера"</translation>
 <translation id="4802678077012980341">Завдання щодо перевірки паролів виконано.</translation>
-<translation id="4803185665210547709">Веб-переглядачем керує ваша організація.
+<translation id="4803185665210547709">Вебпереглядачем керує ваша організація.
 <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="4803728135431112209">Обведіть, виділіть або натисніть об’єкт на екрані, щоб виконати пошук, не залишаючи вкладку</translation>
 <translation id="4807098396393229769">Ім'я на картці</translation>
@@ -1173,6 +1172,7 @@
 <translation id="484280513275854557">Ви вийшли з облікового запису, а дані веб-перегляду було видалено</translation>
 <translation id="484462545196658690">Автоматично</translation>
 <translation id="4846662396507502151">Переглядайте вебсторінки швидше за допомогою нової панелі інструментів</translation>
+<translation id="4850669014075537160">Прокручування</translation>
 <translation id="4850886885716139402">Перегляд</translation>
 <translation id="4854068532375923088">Дозвольте Gemini використовувати камеру</translation>
 <translation id="4860895144060829044">Зателефонувати</translation>
@@ -1482,7 +1482,7 @@
 <translation id="58081802114142635">Ваша історія дій покращує ШІ від Google</translation>
 <translation id="5817176759448082654">Перевірка паролів</translation>
 <translation id="5818161931099046557">Редагувати в обліковому записі Google</translation>
-<translation id="5819208479324046259">Веб-переглядачем керує <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
+<translation id="5819208479324046259">Вебпереглядачем керує <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Синхронізація…</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -1780,7 +1780,7 @@
 <translation id="6705491067826837934">Елементи керування завжди напохваті</translation>
 <translation id="6708501134077648845">Параметри паролів</translation>
 <translation id="6709964700841491574">Режим блокування входу</translation>
-<translation id="6710079714193676716">Веб-переглядачем керує ваша організація. Деякі функції можуть бути недоступними. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
+<translation id="6710079714193676716">Вебпереглядачем керує ваша організація. Деякі функції можуть бути недоступними. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="6713676799463473249">Змінено <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Отримані вкладки</translation>
 <translation id="6722638373100589752">Щоб автоматично заповнювати інформацію, увімкніть опцію "Використовувати картки й квитки в сервісах Google" у налаштуваннях Гаманця</translation>
@@ -1947,6 +1947,9 @@
 <translation id="7280980607183752256">Не вдалось імпортувати цей файл</translation>
 <translation id="7282197670900591579">Лимонна тема</translation>
 <translation id="7293429513719260019">Вибрати мову</translation>
+<translation id="72961285530871072">Ваш прогрес у функції "Новий рівень" буде видалено назавжди, а дані про її використання у вашому профілі більше не надсилатимуться в Google.
+
+Ви можете будь-коли знову ввімкнути її.</translation>
 <translation id="7300448350764260141">Додайте ще один рівень захисту від загроз в Інтернеті.</translation>
 <translation id="7311244614769792472">Результатів не знайдено</translation>
 <translation id="7312823817809783355">Ваші завдання</translation>

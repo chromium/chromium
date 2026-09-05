@@ -57,6 +57,7 @@
 <translation id="1181037720776840403">Alisin</translation>
 <translation id="1183189057400844278">Para matiyak na magagamit mo sa anumang oras ang mga password sa iyong Google Account, i-verify na ikaw ito</translation>
 <translation id="1187810343066461819">Mag-delete din ng mga bookmark, history, at higit pa sa kotseng ito</translation>
+<translation id="1191987227666124897">Request sa pag-opt out</translation>
 <translation id="1193729455103054076">Gumamit ng malakas na password?</translation>
 <translation id="11947597112837849">email address</translation>
 <translation id="1197267115302279827">Ilipat ang mga bookmark</translation>
@@ -212,6 +213,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="1832459821645506983">Oo, payag ako</translation>
 <translation id="1845958458910716240">Para protektahan ang iyong data, hayaan ang Chrome na alisin ang mga pahintulot sa mga site na hindi mo binisita kamakailan</translation>
 <translation id="1851551847729706116">Shine-share ang <ph name="TAB_NAME" /> sa tab na ito</translation>
+<translation id="1855268219431673036">Page <ph name="CURRENT_PAGE" /> sa <ph name="TOTAL_PAGE_COUNT" /></translation>
 <translation id="1869691326892615940">Mas ligtas na mga password, mas mabilis na pag-sign in</translation>
 <translation id="1871098866036088250">Buksan sa Chrome browser</translation>
 <translation id="1877026089748256423">Luma na ang Chrome</translation>
@@ -250,6 +252,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="1984087999855033707">numero ng telepono</translation>
 <translation id="1984417487208496350">Walang proteksyon (hindi inirerekomenda)</translation>
 <translation id="1986685561493779662">May ganito nang pangalan</translation>
+<translation id="1992244793717364584">Na-uninstall ang app</translation>
 <translation id="200114059308480249">Isama ang katabing text sa mga paghahanap sa Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, Naka-pin at Naka-mute na Tab na Incognito</translation>
 <translation id="2021896219286479412">Control ng full screen sa site</translation>
@@ -736,6 +739,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="3950820424414687140">Mag-sign in</translation>
 <translation id="395377504920307820">Gamitin nang walang account</translation>
 <translation id="3955353672249727801">Idinagdag ang mga page sa listahan ng babasahin</translation>
+<translation id="3958283758104508528">Na-uninstall ang <ph name="APP_NAME" /></translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Ilo-load ng Chrome ang iyong page kapag handa na}one{Ilo-load ng Chrome ang iyong mga page kapag handa na}other{Ilo-load ng Chrome ang iyong mga page kapag handa na}}</translation>
 <translation id="3969142555815019568">Hindi masuri ng Chrome ang iyong mga password</translation>
 <translation id="3969863827134279083">Lumipat Pataas</translation>
@@ -1341,6 +1345,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="634208815998129842">Task manager</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> iba pa}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> iba pa}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> na iba pa}}</translation>
 <translation id="6345878117466430440">Markahang nabasa na</translation>
+<translation id="63490081267265251">Ang mga site na binibisita mo, kasama ang Google, ay responsable sa pagtukoy kung paano tutugon ang mga ito sa request na ito. Depende sa mga batas sa iyong rehiyon, posibleng sumagot ang mga site sa pamamagitan ng paglilimita sa pagbebenta at pag-share ng data mo o paggamit nito para sa mga naka-personalize na ad. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="6350745006329795504">Pamahalaan ang iyong mga device</translation>
 <translation id="6356893102071098867">Tiyaking tamang account ang pinili mo</translation>
 <translation id="6364438453358674297">Alisin ang suhestyon mula sa history?</translation>
@@ -1733,6 +1738,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> iba pa}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> iba pa}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> na iba pa}}</translation>
 <translation id="777637629667389858">Kapag naka-sign in ka, poprotektahan ka nito sa lahat ng serbisyo ng Google.</translation>
 <translation id="7778840695157240389">Bumalik sa ibang pagkakataon para sa mga bagong kuwento</translation>
+<translation id="7780992949171378848">Magpadala ng request sa pag-opt out sa mga site kaugnay ng paggamit ng iyong data</translation>
 <translation id="7791543448312431591">Idagdag</translation>
 <translation id="7792388396321542707">Ihinto ang pagbabahagi</translation>
 <translation id="780287761701992588">Makuha ang iyong mga bookmark, password, at higit pa sa lahat ng device mo</translation>
@@ -1951,6 +1957,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8580435650274205305">Nire-require ang petsa ng pag-expire</translation>
 <translation id="8582529315803410153">Makikita mo rito ang iyong mga tab mula sa iba pang device</translation>
 <translation id="8585103689515290060">Mga serbisyo ng autofill</translation>
+<translation id="8586116786993312006">I-tap para i-delete ang data ng pag-browse sa Chrome</translation>
 <translation id="859046281437143747">Subaybayan ang presyo mula sa button na Higit pang opsyon</translation>
 <translation id="859064343657890103">Na-delete ang grupo ng tab na <ph name="TAB_GROUP_TITLE" /></translation>
 <translation id="860043288473659153">Pangalan ng cardholder</translation>

@@ -57,6 +57,7 @@
 <translation id="1181037720776840403">Премахване</translation>
 <translation id="1183189057400844278">Потвърдете, че това сте вие, така че винаги да можете да използвате паролите в профила си в Google</translation>
 <translation id="1187810343066461819">Изтриване и на отметките, историята и др. от този автомобил</translation>
+<translation id="1191987227666124897">Заявка за отказ</translation>
 <translation id="1193729455103054076">Да се използва ли надеждна парола?</translation>
 <translation id="11947597112837849">имейл адрес</translation>
 <translation id="1197267115302279827">Преместване на отметки</translation>
@@ -212,6 +213,7 @@
 <translation id="1832459821645506983">Да, ще участвам</translation>
 <translation id="1845958458910716240">За да защитите данните си, разрешете на Chrome да премахва разрешенията от сайтовете, които не сте посещавали наскоро</translation>
 <translation id="1851551847729706116"><ph name="TAB_NAME" /> се споделя в този раздел</translation>
+<translation id="1855268219431673036">Страница <ph name="CURRENT_PAGE" /> от <ph name="TOTAL_PAGE_COUNT" /></translation>
 <translation id="1869691326892615940">По-надеждни пароли, по-бързо влизане в профила</translation>
 <translation id="1871098866036088250">Отваряне в браузъра Chrome</translation>
 <translation id="1877026089748256423">Chrome не е актуален</translation>
@@ -1341,6 +1343,7 @@
 <translation id="634208815998129842">Диспечер на задачите</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">Означаване като прочетено</translation>
+<translation id="63490081267265251">Сайтовете, които посещавате, включително Google, са отговорни за определянето на начина, по който да отговорят на тази заявка. В зависимост от законите в региона ви сайтовете може да отговорят, като ограничат продажбата и споделянето на данните ви или използването им за персонализирани реклами. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="6350745006329795504">Управление на устройствата ви</translation>
 <translation id="6356893102071098867">Проверете дали сте избрали правилния профил</translation>
 <translation id="6364438453358674297">Предложението да се премахне ли от историята?</translation>
@@ -1665,6 +1668,7 @@
 <translation id="7493994139787901920"><ph name="VERSION" /> (Актуализирано: <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Моля, изчакайте...</translation>
 <translation id="7499065150275272675"><ph name="TAB_TITLE" /> – фиксиран раздел, чийто звук е спрян</translation>
+<translation id="7500851014030446046">PDF файлът се изтегля</translation>
 <translation id="7501135638693251872">Всички отметки</translation>
 <translation id="7507207699631365376">Вижте <ph name="BEGIN_LINK" />декларацията за поверителност<ph name="END_LINK" /> на този доставчик</translation>
 <translation id="750886945254958667">Запазете тази група, за да добавяте раздели по-късно, или я напуснете, ако вече не искате достъп до нея</translation>
@@ -1732,6 +1736,7 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="777637629667389858">Защитава ви в услугите на Google, когато сте влезли в профила си.</translation>
 <translation id="7778840695157240389">Проверете отново по-късно за нови истории</translation>
+<translation id="7780992949171378848">Изпращане на заявка за отказ до сайтовете относно използването на данните ви</translation>
 <translation id="7791543448312431591">Добавяне</translation>
 <translation id="7792388396321542707">Спиране на споделянето</translation>
 <translation id="780287761701992588">Получавайте своите отметки, пароли и др. на всичките си устройства.</translation>

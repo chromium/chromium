@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> апта мурун түзүлдү}other{<ph name="NUM_WEEKS_MANY" /> апта мурун түзүлдү}}</translation>
 <translation id="1063300264396686489">Башка түзмөктөрдөгү өтмөк топторун автоматтык түрдө ачуу</translation>
 <translation id="1075622780330595106">Өтмөктөрүңүздүн <ph name="NUMBER_OF_TABS" /> акыркы убакта колдонулган жок. Алар жабылсынбы?</translation>
+<translation id="1089791933924803646">Башка колдонмолордо Chrome сунуштарын алыңыз</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> жыл мурун түзүлдү}other{<ph name="NUM_YEARS_MANY" /> жыл мурун түзүлдү}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Жигерсиз өтмөктөр жана өтмөк топтору 1 айдын ичинде жабылат}other{Жигерсиз өтмөктөр жана өтмөк топтору <ph name="MONTH_COUNT_MANY" /> айдын ичинде жабылат}}</translation>
 <translation id="1173894706177603556">Атын өзгөртүү</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Өтмөктү топто кошуу}other{Өтмөктү топто кошуу}}</translation>
 <translation id="8138067144082174140">14 күндөн бери жигерсиз болсо</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөктөн турган <ph name="TITLE_OF_GROUP" /> өтмөктөр тобун жайып көрсөтүү, түсү: <ph name="COLOR_NAME" />.}other{<ph name="TABS_COUNT_MANY" /> өтмөктөн турган <ph name="TITLE_OF_GROUP" /> өтмөктөр тобун жайып көрсөтүү, түсү: <ph name="COLOR_NAME" />.}}</translation>
+<translation id="8172214054247281626">Тандалган колдонмолор боюнча сунуштарды алуу үчүн акыркы көрүлгөн вебсайттар сыяктуу серептөө маалыматын бөлүшүңүз. Бул маалымат түзмөгүңүздө коопсуз иштетилет.</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{Өтмөктү бошотуу}other{Өтмөктөрдү бошотуу}}</translation>
 <translation id="8205266828577616993">Өтмөктү жогору жылдыруу</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> мүнөт мурун жаңыртылган}other{<ph name="NUM_MINS_MANY" /> мүнөт мурун жаңыртылган}}</translation>

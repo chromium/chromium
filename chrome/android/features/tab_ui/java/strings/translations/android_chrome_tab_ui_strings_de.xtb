@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Vor <ph name="NUM_WEEKS_ONE" /> Woche erstellt}other{Vor <ph name="NUM_WEEKS_MANY" /> Wochen erstellt}}</translation>
 <translation id="1063300264396686489">Tabgruppen von anderen Geräten automatisch öffnen</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> von deinen Tabs wurden längere Zeit nicht verwendet. Möchtest du sie schließen?</translation>
+<translation id="1089791933924803646">Chrome-Vorschläge in anderen Apps erhalten</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Vor <ph name="NUM_YEARS_ONE" /> Jahr erstellt}other{Vor <ph name="NUM_YEARS_MANY" /> Jahren erstellt}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Inaktive Tabs und Gruppen werden nach 1 Monat geschlossen}other{Inaktive Tabs und Gruppen werden nach <ph name="MONTH_COUNT_MANY" /> Monaten geschlossen}}</translation>
 <translation id="1173894706177603556">Umbenennen</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Tab zu Gruppe hinzufügen}other{Tabs zu Gruppe hinzufügen}}</translation>
 <translation id="8138067144082174140">Nach 14 Tagen Inaktivität</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Tabgruppe „<ph name="TITLE_OF_GROUP" />“ mit <ph name="TABS_COUNT_ONE" /> Tab maximieren, Farbe: <ph name="COLOR_NAME" />.}other{Tabgruppe „<ph name="TITLE_OF_GROUP" />“ mit <ph name="TABS_COUNT_MANY" /> Tabs maximieren, Farbe: <ph name="COLOR_NAME" />.}}</translation>
+<translation id="8172214054247281626">Du kannst Browserdaten wie deinen aktuellen Browserverlauf teilen, um Vorschläge in ausgewählten Apps zu erhalten. Diese Daten werden unter Einhaltung aller Sicherheitsvorgaben auf deinem Gerät verarbeitet.</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{Tab loslösen}other{Tabs loslösen}}</translation>
 <translation id="8205266828577616993">Tab nach oben verschieben</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Vor <ph name="NUM_MINS_ONE" /> Minute aktualisiert}other{Vor <ph name="NUM_MINS_MANY" /> Minuten aktualisiert}}</translation>

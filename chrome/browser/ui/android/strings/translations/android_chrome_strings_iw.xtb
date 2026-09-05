@@ -105,6 +105,7 @@
 <translation id="138181280295369883">רוצה לקבל את הנתונים השמורים שלך ועוד? עליך להיכנס לחשבון</translation>
 <translation id="1381838868249179644">כדי להגן עליך, הוסרו הרשאות מכמה אתרים</translation>
 <translation id="1383876407941801731">חיפוש</translation>
+<translation id="1384568202352682721">שמירה בשם…</translation>
 <translation id="1384704387250346179">‏תרגום תמונה באמצעות Google Lens‏ <ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">‏יכול להיות שתוצג היסטוריה מאפליקציות אחרות שפותחות קישורים ב-Chrome. בחשבון שלך ב-Google עשויים להופיע סוגים אחרים של היסטוריית גלישה בכתובת <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">הגיליון התחתון של מדדי המחירים נפתח בגובה מלא</translation>
@@ -133,6 +134,7 @@
 <translation id="147982357559798527">השתנתה</translation>
 <translation id="1480287803138246127">‏יכול להיות שחלק מההיסטוריה שלך לא תוצג כאן. צריך לפתוח את ההיסטוריה המלאה ב-Chrome כדי לראות את כולה.</translation>
 <translation id="1483493594462132177">שליחה</translation>
+<translation id="1485343711570311792">פתיחה באפליקציה <ph name="NATIVE_APP_NAME" /> • מהמכשיר <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">חזרה לכרטיסייה</translation>
 <translation id="1496514951988037011">שם משתמש</translation>
 <translation id="1501480321619201731">מחיקת קבוצה</translation>
@@ -327,6 +329,7 @@
 <translation id="232137538351753795">כדי לחזור למסך הקודם, מחליקים מהקצה השמאלי</translation>
 <translation id="2323763861024343754">נתוני אתר מאוחסנים</translation>
 <translation id="2327445548174191329">מהמכשיר <ph name="DEVICE_NAME" /></translation>
+<translation id="232757965409810352">שמירת הדף בשם…</translation>
 <translation id="2328474416100889417">כולם יאבדו באופן מיידי את הגישה לקבוצת הכרטיסיות '<ph name="GROUP_NAME" />' וכל הקישורים להזמנה יושבתו</translation>
 <translation id="2329500425421091035">‏חדש: מצב AI ב-Chrome</translation>
 <translation id="2330186936255788117">עוד סימניות</translation>
@@ -1662,6 +1665,7 @@
 <translation id="7493994139787901920"><ph name="VERSION" /> (עודכן <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">נא להמתין…</translation>
 <translation id="7499065150275272675">‫<ph name="TAB_TITLE" />, כרטיסייה שהוצמדה והתוכן בה מושתק</translation>
+<translation id="7500851014030446046">‏המערכת מורידה את קובץ ה-PDF</translation>
 <translation id="7501135638693251872">כל הסימניות</translation>
 <translation id="7507207699631365376">הצגת <ph name="BEGIN_LINK" />מדיניות הפרטיות<ph name="END_LINK" /> של הספק הזה</translation>
 <translation id="750886945254958667">אפשר לשמור את הקבוצה הזו כדי להוסיף כרטיסיות מאוחר יותר, או לעזוב אותה אם אין לך יותר צורך בה</translation>
@@ -1874,6 +1878,7 @@
 <translation id="8313599942510782709">המשימה עדיין בתהליך</translation>
 <translation id="8317318757008452355">פתיחת האפשרויות להדפסה</translation>
 <translation id="8320212361750431956">פעילות אחרונה</translation>
+<translation id="8322452989119079156">פתיחה באפליקציה <ph name="NATIVE_APP_NAME" /> – הכרטיסייה נשלחה מהמכשיר <ph name="DEVICE_NAME" /></translation>
 <translation id="832514020744584629">‫<ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
 <translation id="8333026248928723981">סימניות ורשימות</translation>
 <translation id="8342727528718219152">‏‫Chrome יודיע לך על אתרים שעלולים לשלוח יותר מדי התראות</translation>

@@ -57,6 +57,7 @@
 <translation id="1181037720776840403">அகற்று</translation>
 <translation id="1183189057400844278">உங்கள் Google கணக்கில் உள்ள கடவுச்சொற்களை எப்போதும் பயன்படுத்த இது நீங்கள்தான் என்பதை உறுதிப்படுத்தவும்</translation>
 <translation id="1187810343066461819">இந்தக் காரில் இருந்து புக்மார்க்குகள், பதிவுகள் மற்றும் பலவற்றையும் நீக்கு</translation>
+<translation id="1191987227666124897">ஒப்புதல் நீக்கக் கோரிக்கை</translation>
 <translation id="1193729455103054076">வலிமையான கடவுச்சொல்லைப் பயன்படுத்தவா?</translation>
 <translation id="11947597112837849">மின்னஞ்சல் முகவரி</translation>
 <translation id="1197267115302279827">புத்தகக்குறிகளை நகர்த்து</translation>
@@ -212,6 +213,7 @@
 <translation id="1832459821645506983">ஏற்கிறேன்</translation>
 <translation id="1845958458910716240">உங்கள் தரவைப் பாதுகாக்க, நீங்கள் சமீபத்தில் பார்வையிடாத தளங்களில் இருந்து அனுமதிகளை அகற்ற Chromeமை அனுமதியுங்கள்</translation>
 <translation id="1851551847729706116">இந்தப் பக்கத்தில் <ph name="TAB_NAME" /> பகிரப்படுகிறது</translation>
+<translation id="1855268219431673036">பக்கம் <ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGE_COUNT" /></translation>
 <translation id="1869691326892615940">பாதுகாப்பான கடவுச்சொற்கள், விரைவான உள்நுழைவு</translation>
 <translation id="1871098866036088250">Chrome உலாவியில் திற</translation>
 <translation id="1877026089748256423">Chrome காலாவதியானது</translation>
@@ -1341,6 +1343,7 @@
 <translation id="634208815998129842">செயல் நிர்வாகி</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> முகவரி}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> முகவரிகள்}}</translation>
 <translation id="6345878117466430440">படித்ததாகக் குறி</translation>
+<translation id="63490081267265251">இந்தக் கோரிக்கைக்கு எப்படிப் பதிலளிக்க வேண்டும் என்பதைத் தீர்மானிப்பது Google உட்பட நீங்கள் பார்வையிடும் தளங்களின் பொறுப்பாகும். உங்கள் பிராந்தியத்தில் உள்ள சட்டங்களைப் பொறுத்து, உங்கள் தரவை விற்பனை செய்வதையும் பகிர்வதையும் அல்லது பிரத்தியேகமான விளம்பரங்களுக்குப் பயன்படுத்துவதையும் கட்டுப்படுத்துவதன் மூலம் தளங்கள் இதற்குப் பதிலளிக்கலாம். <ph name="BEGIN_LINK" />மேலும் தெரிந்துகொள்ளுங்கள்<ph name="END_LINK" /></translation>
 <translation id="6350745006329795504">சாதனங்களை நிர்வகியுங்கள்</translation>
 <translation id="6356893102071098867">நீங்கள் சரியான கணக்கைத் தேர்வுசெய்துள்ளீர்களா என்பதைச் சரிபாருங்கள்</translation>
 <translation id="6364438453358674297">வரலாற்றிலிருந்து பரிந்துரையை அகற்றவா?</translation>
@@ -1665,6 +1668,7 @@
 <translation id="7493994139787901920"><ph name="VERSION" /> (புதுப்பித்தது: <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">காத்திருக்கவும்…</translation>
 <translation id="7499065150275272675"><ph name="TAB_TITLE" />, பின் செய்யப்பட்ட ஒலியடக்கப்பட்டுள்ள பக்கம்</translation>
+<translation id="7500851014030446046">PDF பதிவிறக்குகிறது</translation>
 <translation id="7501135638693251872">எல்லா புத்தகக்குறிகளும்</translation>
 <translation id="7507207699631365376">இந்த வழங்குநரின் <ph name="BEGIN_LINK" />தனியுரிமைக் கொள்கையைக்<ph name="END_LINK" /> காட்டு</translation>
 <translation id="750886945254958667">பக்கங்களைப் பின்னர் சேர்ப்பதற்காக இந்தக் குழுவை வைத்திருக்கலாம், வேண்டாமென்றால் வெளியேறிவிடலாம்</translation>
@@ -1732,6 +1736,7 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> கட்டண முறை}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> கட்டண முறைகள்}}</translation>
 <translation id="777637629667389858">நீங்கள் உள்நுழைந்திருக்கும்போது Google சேவைகள் முழுவதிலும் உங்களைப் பாதுகாப்பாக வைத்திருக்கிறது.</translation>
 <translation id="7778840695157240389">புதிய கட்டுரைகளைப் பார்க்க பின்னர் வந்து பாருங்கள்</translation>
+<translation id="7780992949171378848">எனது தரவைப் பயன்படுத்த வேண்டாம் என்று தளங்களுக்குக் கோரிக்கை அனுப்பு</translation>
 <translation id="7791543448312431591">சேர்</translation>
 <translation id="7792388396321542707">பகிர்தலை நிறுத்து</translation>
 <translation id="780287761701992588">உங்கள் புக்மார்க்குகள், கடவுச்சொற்கள் மற்றும் பலவற்றை உங்கள் சாதனங்கள் அனைத்திலும் பெறலாம்</translation>

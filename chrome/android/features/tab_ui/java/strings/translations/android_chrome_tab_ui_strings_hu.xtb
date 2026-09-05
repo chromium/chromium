@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> hete létrehozva}other{<ph name="NUM_WEEKS_MANY" /> hete létrehozva}}</translation>
 <translation id="1063300264396686489">Más eszközökről származó lapcsoportok automatikus megnyitása</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> lapot nem használt mostanában. Szeretné bezárni őket?</translation>
+<translation id="1089791933924803646">Chrome-javaslatok fogadása más alkalmazásokban</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> éve létrehozva}other{<ph name="NUM_YEARS_MANY" /> éve létrehozva}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Az inaktív lapok és csoportok 1 hónap után bezáródnak}other{Az inaktív lapok és csoportok <ph name="MONTH_COUNT_MANY" /> hónap után bezáródnak}}</translation>
 <translation id="1173894706177603556">Átnevezés</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Lap hozzáadása csoporthoz}other{Lapok hozzáadása csoporthoz}}</translation>
 <translation id="8138067144082174140">14 nap inaktivitás után</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{A következő, <ph name="TABS_COUNT_ONE" /> lapot tartalmazó, <ph name="COLOR_NAME" /> színű lapcsoport kibontása: <ph name="TITLE_OF_GROUP" />.}other{A következő, <ph name="TABS_COUNT_MANY" /> lapot tartalmazó, <ph name="COLOR_NAME" /> színű lapcsoport kibontása: <ph name="TITLE_OF_GROUP" />.}}</translation>
+<translation id="8172214054247281626">Megoszthatja böngészési adatait (például a legutóbbi böngészési előzményeit), hogy javaslatokat kaphasson a kiválasztott alkalmazásokban. Az adatok feldolgozása biztonságos módon, az eszközön történik.</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{Lap rögzítésének feloldása}other{Lapok rögzítésének feloldása}}</translation>
 <translation id="8205266828577616993">Lap mozgatása felfelé</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Frissítve: <ph name="NUM_MINS_ONE" /> perccel ezelőtt}other{Frissítve: <ph name="NUM_MINS_MANY" /> perccel ezelőtt}}</translation>

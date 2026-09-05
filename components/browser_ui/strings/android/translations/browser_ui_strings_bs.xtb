@@ -7,6 +7,7 @@
 <translation id="1046742265332833834">Plava tema</translation>
 <translation id="1070329623210597193">Fajlovi koje ova web lokacija može pregledati ili urediti</translation>
 <translation id="1074758928858737435">Možete zatražiti da vidite računarsku verziju web lokacija</translation>
+<translation id="1089791933924803646">Dobijanje prijedloga u Chromeu u drugim aplikacijama</translation>
 <translation id="1109482864356262001">Funkcije koje trebaju senzore kretanja ili svjetlosti neće funkcionirati</translation>
 <translation id="1126523729897810826">Izvršite predložene radnje u nastavku da iskoristite sve prednosti Chromea</translation>
 <translation id="113098737392899175">Krećite se stranicama putem kursora za tekst kada je tastatura povezana</translation>
@@ -453,6 +454,7 @@
 <translation id="5668404140385795438">Zaobilaženje zahtjeva web lokacije kako bi se spriječilo zumiranje</translation>
 <translation id="5668843533782548925">Web lokacije su sporije, ali su sigurnije</translation>
 <translation id="5677928146339483299">Blokirano</translation>
+<translation id="5679089750838794164">Chrome vam sada može prikazivati prijedloge u drugim aplikacijama na osnovu podataka o pregledanju, kao što je nedavna historija pregledanja. Ovi podaci se sigurno obrađuju na uređaju. Ovo možete isključiti bilo kada u postavkama Chromea.</translation>
 <translation id="5689516760719285838">Lokacija</translation>
 <translation id="5690795753582697420">Kamera je isključena u postavkama Androida</translation>
 <translation id="5700761515355162635">Kolačići treće strane su dozvoljeni</translation>
@@ -507,6 +509,7 @@
 <translation id="6085954183010297841">Izbrisati odobrenje za uređivanje fajla? <ph name="FILE" /></translation>
 <translation id="6104860901391833523">Kada je ovo uključeno, web lokacije mogu automatski aktivirati sliku u slici. Kada je ovo isključeno, web lokacije ne mogu automatski aktivirati sliku u slici.</translation>
 <translation id="6120483543004435978">Kada je postavka uključena, web lokacije mogu zatražiti informacije o tome kada aktivno koristite uređaj. Kada je postavka isključena, web lokacije ne mogu znati kada aktivno koristite uređaj.</translation>
+<translation id="612871598708395517">Sakrij Dobijanje prijedloga u Chromeu u drugim aplikacijama</translation>
 <translation id="6132075343662013154">Chrome će ponuditi opciju da sačuva lozinku</translation>
 <translation id="615886654739818377">Nemoj dozvoliti web lokacijama da upravljaju prozorima na svim mojim ekranima</translation>
 <translation id="6165508094623778733">Saznajte više</translation>

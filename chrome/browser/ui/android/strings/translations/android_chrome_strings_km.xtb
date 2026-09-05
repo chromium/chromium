@@ -57,6 +57,7 @@
 <translation id="1181037720776840403">ដកចេញ</translation>
 <translation id="1183189057400844278">ដើម្បីប្រាកដថា អ្នកអាចប្រើពាក្យ​សម្ងាត់​នៅក្នុងគណនី Google របស់អ្នកបានជានិច្ច សូមផ្ទៀងផ្ទាត់ថាជាអ្នក</translation>
 <translation id="1187810343066461819">លុប​ចំណាំ ប្រវត្តិ និងអ្វីៗជាច្រើនទៀត​ពីរថយន្តនេះ​ផងដែរ</translation>
+<translation id="1191987227666124897">សំណើសុំ​ផ្ដាច់ចេញ</translation>
 <translation id="1193729455103054076">ប្រើ​ពាក្យសម្ងាត់ខ្លាំងឬ?</translation>
 <translation id="11947597112837849">អាសយដ្ឋាន​អ៊ីមែល</translation>
 <translation id="1197267115302279827">ផ្លាស់ទីចំណាំ</translation>
@@ -212,6 +213,7 @@
 <translation id="1832459821645506983">បាទ/ចាស ខ្ញុំយល់ព្រម</translation>
 <translation id="1845958458910716240">ដើម្បី​ការពារ​ទិន្នន័យ​របស់អ្នក សូមឱ្យ Chrome ដក​ការអនុញ្ញាត​ចេញពី​គេហទំព័រ​ដែលអ្នក​មិនបាន​ចូលមើល​នាពេល​ថ្មីៗនេះ</translation>
 <translation id="1851551847729706116">កំពុង​ចែករំលែក <ph name="TAB_NAME" /> ជាមួយ​ផ្ទាំងនេះ</translation>
+<translation id="1855268219431673036">ទំព័រទី <ph name="CURRENT_PAGE" /> នៃ <ph name="TOTAL_PAGE_COUNT" /></translation>
 <translation id="1869691326892615940">ពាក្យសម្ងាត់កាន់តែមានសុវត្ថិភាព ការចូលគណនីកាន់តែរហ័ស</translation>
 <translation id="1871098866036088250">បើកនៅក្នុង​កម្មវិធីរុករក​តាមអ៊ីនធឺណិត Chrome</translation>
 <translation id="1877026089748256423">Chrome ហួសសម័យហើយ</translation>
@@ -250,6 +252,7 @@
 <translation id="1984087999855033707">លេខទូរសព្ទ</translation>
 <translation id="1984417487208496350">គ្មានការការពារ (មិនណែនាំ)</translation>
 <translation id="1986685561493779662">ឈ្មោះមាន​រួច​ហើយ</translation>
+<translation id="1992244793717364584">កម្មវិធីត្រូវបានលុប</translation>
 <translation id="200114059308480249">រួមបញ្ចូល​អក្សរដែលនៅជុំវិញ​នៅក្នុង​ការស្វែងរកនៅលើ Google ឬ?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, ផ្ទាំងឯកជន​ដែលបានបិទ​សំឡេង និងបាន​ខ្ទាស់</translation>
 <translation id="2021896219286479412">ការគ្រប់គ្រងទំព័រពេញអេក្រង់</translation>
@@ -736,6 +739,7 @@
 <translation id="3950820424414687140">ចូល</translation>
 <translation id="395377504920307820">ប្រើ​ដោយមិនចាំបាច់​មានគណនី</translation>
 <translation id="3955353672249727801">បានបញ្ចូល​ទំព័រ​ទៅក្នុង​បញ្ជីអាន</translation>
+<translation id="3958283758104508528"><ph name="APP_NAME" /> ត្រូវបានលុប</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome នឹងផ្ទុកទំព័រ​របស់អ្នក នៅពេលរួចរាល់}other{Chrome នឹងផ្ទុកទំព័រ​របស់អ្នក នៅពេលរួចរាល់}}</translation>
 <translation id="3969142555815019568">Chrome មិន​អាចពិនិត្យ​ពាក្យសម្ងាត់របស់អ្នកបានទេ</translation>
 <translation id="3969863827134279083">ផ្លាស់ទីទៅលើ</translation>
@@ -1341,6 +1345,7 @@
 <translation id="634208815998129842">កម្មវិធីគ្រប់គ្រងភារកិច្ច</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 និង <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ទៀត}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 និង <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ទៀត}}</translation>
 <translation id="6345878117466430440">សម្គាល់​ថា​បានអាន​ហើយ</translation>
+<translation id="63490081267265251">គេហទំព័រដែលអ្នកចូលមើល រួមទាំង Google ទទួលខុសត្រូវក្នុងការកំណត់របៀបដែលគេហទំព័រទាំងនោះឆ្លើយតបនឹងសំណើនេះ។ អាស្រ័យលើ​ច្បាប់​នៅក្នុង​តំបន់​របស់អ្នក គេហទំព័រ​អាចឆ្លើយតប​ដោយ​ដាក់កំហិតលើ​ការលក់ និង​ការចែករំលែក​ទិន្នន័យ​របស់អ្នក ឬ​ការប្រើប្រាស់​ទិន្នន័យនោះ​សម្រាប់ការផ្សាយពាណិជ្ជកម្មដែលមានលក្ខណៈផ្ទាល់ខ្លួន។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
 <translation id="6350745006329795504">គ្រប់គ្រងឧបករណ៍របស់អ្នក</translation>
 <translation id="6356893102071098867">ពិនិត្យមើលថា​អ្នកបាន​ជ្រើសរើស​គណនី​ដែលត្រឹមត្រូវ</translation>
 <translation id="6364438453358674297">យកការផ្តល់យោបល់ចេញពីប្រវត្តិ?</translation>
@@ -1733,6 +1738,7 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 និង <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ទៀត}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 និង <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ទៀត}}</translation>
 <translation id="777637629667389858">ការពារអ្នក​នៅលើ​សេវាកម្ម Google នៅពេលអ្នក​ចូលគណនី។</translation>
 <translation id="7778840695157240389">សូមពិនិត្យមើល​ម្ដងទៀត​នៅពេលក្រោយ ដើម្បីទទួលបាន​អត្ថបទថ្មីៗ</translation>
+<translation id="7780992949171378848">ផ្ញើសំណើសុំផ្ដាច់ចេញទៅគេហទំព័រទាក់ទងនឹងការប្រើប្រាស់ទិន្នន័យរបស់អ្នក</translation>
 <translation id="7791543448312431591">បន្ថែម</translation>
 <translation id="7792388396321542707">ឈប់ចែករំលែក</translation>
 <translation id="780287761701992588">ទទួលបាន​ចំណាំ ពាក្យសម្ងាត់​របស់អ្នក និង​អ្វីៗជា​ច្រើនទៀត​នៅលើ​ឧបករណ៍​ទាំងអស់​របស់អ្នក</translation>
@@ -1951,6 +1957,7 @@
 <translation id="8580435650274205305">កាលបរិច្ឆេទ​ផុតកំណត់ (តម្រូវឲ្យមាន)</translation>
 <translation id="8582529315803410153">អ្នក​នឹង​ឃើញ​ផ្ទាំង​របស់អ្នក​ពី​ឧបករណ៍​ផ្សេងទៀត​នៅទីនេះ</translation>
 <translation id="8585103689515290060">សេវាកម្មបំពេញស្វ័យប្រវត្តិ</translation>
+<translation id="8586116786993312006">ចុចដើម្បីលុប​ទិន្នន័យរុករក​នៅក្នុង Chrome</translation>
 <translation id="859046281437143747">តាមដានតម្លៃពីប៊ូតុងជម្រើសច្រើនទៀត</translation>
 <translation id="859064343657890103">បានលុបក្រុមផ្ទាំង <ph name="TAB_GROUP_TITLE" /></translation>
 <translation id="860043288473659153">ឈ្មោះ​ម្ចាស់​កាត</translation>

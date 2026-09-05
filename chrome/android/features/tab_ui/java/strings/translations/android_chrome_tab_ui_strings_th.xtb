@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{สร้างเมื่อ <ph name="NUM_WEEKS_ONE" /> สัปดาห์ที่ผ่านมา}other{สร้างเมื่อ <ph name="NUM_WEEKS_MANY" /> สัปดาห์ที่ผ่านมา}}</translation>
 <translation id="1063300264396686489">เปิดกลุ่มแท็บจากอุปกรณ์อื่นๆ โดยอัตโนมัติ</translation>
 <translation id="1075622780330595106">คุณไม่ได้ใช้แท็บ <ph name="NUMBER_OF_TABS" /> แท็บมาระยะหนึ่งแล้ว ปิดแท็บเหล่านั้นไหม</translation>
+<translation id="1089791933924803646">รับคำแนะนำจาก Chrome ในแอปอื่นๆ</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{สร้างเมื่อ <ph name="NUM_YEARS_ONE" /> ปีที่ผ่านมา}other{สร้างเมื่อ <ph name="NUM_YEARS_MANY" /> ปีที่ผ่านมา}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{แท็บและกลุ่มที่ไม่ได้ใช้งานจะปิดหลังจากผ่านไป 1 เดือน}other{แท็บและกลุ่มที่ไม่ได้ใช้งานจะปิดหลังจากผ่านไป <ph name="MONTH_COUNT_MANY" /> เดือน}}</translation>
 <translation id="1173894706177603556">เปลี่ยนชื่อ</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{เพิ่มแท็บไปยังกลุ่ม}other{เพิ่มแท็บไปยังกลุ่ม}}</translation>
 <translation id="8138067144082174140">หลังจากไม่มีการใช้งาน 14 วัน</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{ขยายกลุ่มแท็บ<ph name="TITLE_OF_GROUP" />ที่มี <ph name="TABS_COUNT_ONE" /> แท็บ สี<ph name="COLOR_NAME" />}other{ขยายกลุ่มแท็บ<ph name="TITLE_OF_GROUP" />ที่มี <ph name="TABS_COUNT_MANY" /> แท็บ สี<ph name="COLOR_NAME" />}}</translation>
+<translation id="8172214054247281626">แชร์ข้อมูลการท่องเว็บ เช่น ประวัติการท่องเว็บล่าสุด เพื่อรับคำแนะนำในแอปที่เลือก ข้อมูลนี้จะได้รับการประมวลผลอย่างปลอดภัยในอุปกรณ์ของคุณ</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{เลิกปักหมุดแท็บ}other{เลิกปักหมุดแท็บ}}</translation>
 <translation id="8205266828577616993">เลื่อนแท็บขึ้น</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{อัปเดตเมื่อ <ph name="NUM_MINS_ONE" /> นาทีที่ผ่านมา}other{อัปเดตเมื่อ <ph name="NUM_MINS_MANY" /> นาทีที่ผ่านมา}}</translation>

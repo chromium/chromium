@@ -100,9 +100,6 @@
 <translation id="1060020040574767394">맞춤 워터마크 설정 구성</translation>
 <translation id="1062011392452772310">기기에 대한 원격 인증을 사용합니다.</translation>
 <translation id="1062407476771304334">바꾸기</translation>
-<translation id="1063860513136880926">정책을 '사용'으로 설정하면 키보드 단축키나 확장 프로그램 API를 통해 스크린샷을 캡처할 수 없습니다. 정책을 설정하지 않거나 '사용 안함'으로 설정하면 스크린샷을 캡처할 수 있습니다.
-
-정책 설정과 관계없이 <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" />, <ph name="LINUX_OS_NAME" />에서는 운영체제나 서드 파티 애플리케이션으로 찍은 스크린샷이 차단되지 않습니다.</translation>
 <translation id="1065175969514496951">정책을 설정하면 로그인 화면 및 잠금 화면 등 인증 중에 나열된 URL에 액세스할 수 있습니다. <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />는 예외입니다. 목록 항목의 형식은 정책 설명을 확인하세요. 예를 들어 <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />를 <ph name="WILDCARD_VALUE" /> 기호로 설정하면 모든 요청이 차단되며 이 정책을 사용하여 제한된 URL 목록에 액세스하도록 허용할 수 있습니다. 또한 https://support.google.com/chrome/a?p=url_blocklist_filter_format에 지정된 형식을 사용하여 특정 스키마, 다른 도메인의 하위 도메인, 포트, 특정 경로에 대한 예외 목록을 열 수도 있습니다. 가장 구체적인 필터에 따라 URL 차단 또는 허용 여부가 결정됩니다. <ph name="DEVICE_AUTHENTICATION_URL_ALLOWLIST_POLICY_NAME" /> 정책은 <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />보다 우선 적용됩니다. 정책의 항목은 1,000개로 제한됩니다.
 
 정책을 설정하지 않으면 <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />에 예외가 허용되지 않습니다.</translation>
@@ -188,6 +185,19 @@ DLP 관련 엔터프라이즈 정책 및 강제 설치된 확장 프로그램을
 <translation id="1110426799149444997"><ph name="GOOGLE_LENS_PRODUCT_NAME" /> 영역 검색을 사용 중지합니다.</translation>
 <translation id="1111324374369583989">로그인 시 디스플레이 크기 설정 화면 표시하지 않음</translation>
 <translation id="1111824532252882775">사용 설정됨: 기본적으로 스크롤러가 포커스 가능합니다.</translation>
+<translation id="1113523086451291158">이 정책을 사용하여 특정 URL에서 <ph name="CHROME_DEVTOOLS_NAME" />를 허용할 수 있습니다.
+
+<ph name="CHROME_DEVTOOLS_NAME" /> 사용 가능 여부는 타겟 수준에서 평가됩니다. URL 패턴이 검사 중인 각 타겟(예: 페이지의 기본 프레임, 삽입된 서브프레임, 확장 프로그램, 웹 애플리케이션)의 URL과 일치합니다. <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 정책도 설정되어 있는지에 따라 결과 동작이 달라집니다.
+
+이 정책이 설정되어 있고 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 정책은 설정되어 있지 않은 경우, 타겟에 대해 <ph name="CHROME_DEVTOOLS_NAME" />가 허용되려면 해당 타겟의 URL이 해당 허용 목록의 패턴과 일치해야 합니다. 타겟의 URL이 해당 허용 목록과 일치하지 않으면 해당 타겟에 대해 <ph name="CHROME_DEVTOOLS_NAME" />가 차단됩니다. 예를 들어 URL이 허용 목록에 없는 서브프레임은 검사할 수 없지만, URL이 허용 목록에 있는 경우 기본 페이지는 계속 검사할 수 있습니다. URL 형식에 대한 정보는 https://support.google.com/chrome/a?p=url_blocklist_filter_format에서 확인하세요.
+
+이 정책과 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 정책이 모두 설정된 경우 이 허용 목록이 우선 적용됩니다. 타겟의 URL이 해당 허용 목록의 패턴과 일치하는 경우, 차단 목록의 패턴과도 일치하더라도 해당 URL은 허용됩니다. 타겟의 URL이 차단 목록의 패턴과 일치하지만 허용 목록의 패턴과는 일치하지 않을 경우 차단됩니다. 타겟의 URL이 어느 쪽과도 일치하지 않으면 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 정책이 대체 정책으로 사용됩니다.
+
+이 정책을 설정하지 않은 경우, <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 및 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 정책에 따라 <ph name="CHROME_DEVTOOLS_NAME" />의 사용 가능 여부가 결정됩니다.
+
+포괄적 호스트 와일드 카드(즉, '*' 또는 '[*]')는 허용되지 않습니다. 전체적으로 기능을 사용 설정하려면 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 정책을 사용하세요.
+
+정책의 항목은 1,000개로 제한됩니다.</translation>
 <translation id="1117535567637097036">Android 인텐트를 처리할 때 이 정책을 통해 설정된 프로토콜 핸들러는 사용되지 않습니다.</translation>
 <translation id="1118093128235245168">사이트에서 사용자에게 연결된 USB 기기의 액세스 권한을 부여할지 묻도록 허용합니다.</translation>
 <translation id="111910763555783249">알림 설정</translation>
@@ -7421,6 +7431,7 @@ https://chromeenterprise.google/policies/url-patterns 페이지를 참고하세�
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5605676983184673391">Chrome 앱이 키오스크 세션에서 실행되도록 허용합니다.</translation>
 <translation id="5606477661985737162">자동 다운로드 설정</translation>
+<translation id="5606816003654129603">확장 프로그램 리뷰 프롬프트 및 평점 링크 제어</translation>
 <translation id="5607021831414604820">기기 저장용량 상태 보고 사용 설정</translation>
 <translation id="5607808178576647930">AI 모드 통합을 허용합니다.</translation>
 <translation id="5608114828230655271">기본 기기 동작</translation>
@@ -8066,6 +8077,17 @@ URL이 <ph name="AUTOMATIC_DOWNLOADS_ALLOWED_FOR_URLS_POLICY_NAME" /> 및 <ph na
 이 정책은 M124부터 지원이 중단됩니다.</translation>
 <translation id="6022948604095165524">시작 시 동작</translation>
 <translation id="602318745029752898">텍스트 읽어주기의 향상된 네트워크 텍스트 음성 변환 음성 허용</translation>
+<translation id="6023434563562800942">이 정책을 사용하여 특정 URL에서 <ph name="CHROME_DEVTOOLS_NAME" />를 차단할 수 있습니다. URL 형식에 대한 정보는 https://support.google.com/chrome/a?p=url_blocklist_filter_format에서 확인하세요.
+
+<ph name="CHROME_DEVTOOLS_NAME" /> 사용 가능 여부는 타겟 수준에서 평가됩니다. URL 패턴이 검사 중인 각 타겟(예: 페이지의 기본 프레임, 삽입된 서브프레임, 확장 프로그램, 웹 애플리케이션)의 URL과 일치합니다. <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> 정책도 설정되어 있는지에 따라 결과 동작이 달라집니다.
+
+이 정책이 설정되어 있고 <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> 정책은 설정되어 있지 않은 경우 이 차단 목록의 패턴과 일치하는 타겟의 URL은 해당 타겟에 대해 <ph name="CHROME_DEVTOOLS_NAME" />를 차단합니다. 예를 들어 URL이 해당 차단 목록과 일치하는 서브프레임은 검사할 수 없지만, URL이 차단 목록에 포함되지 않은 경우 기본 페이지는 계속 검사할 수 있습니다. 타겟의 URL이 어떤 패턴과도 일치하지 않으면 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 정책에 따라 사용 가능 여부가 결정됩니다.
+
+이 정책과 <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> 정책이 모두 설정된 경우 해당 허용 목록이 우선 적용됩니다. 타겟의 URL이 허용 목록의 패턴과 일치하는 경우, 이 차단 목록의 패턴과도 일치하더라도 해당 URL은 허용됩니다. 타겟의 URL이 해당 차단 목록의 패턴과 일치하지만 허용 목록의 패턴과는 일치하지 않을 경우 차단됩니다. 타겟의 URL이 어느 쪽과도 일치하지 않으면 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 정책이 대체 정책으로 사용됩니다.
+
+이 정책을 설정하지 않은 경우, <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> 및 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 정책에 따라 <ph name="CHROME_DEVTOOLS_NAME" />의 사용 가능 여부가 결정됩니다.
+
+정책의 항목은 1,000개로 제한됩니다.</translation>
 <translation id="6026722971789064331">쓰기 관련 File System API 사용 제어</translation>
 <translation id="602728333950205286">기본 검색 공급자 순간 검색 URL</translation>
 <translation id="603410445099326293">POST를 사용하는 추천 URL용 매개변수</translation>
@@ -8296,6 +8318,7 @@ ArcEnabled 및 UnaffiliatedArcAllowed 정책에서 적용하는 제한사항과 
 
 정책을 설정하지 않으면 모든 사이트에 전체 기본값이 사용됩니다(자동 액세스 없음).</translation>
 <translation id="6207607210601267301">원격 액세스 호스트에 PIN을 사용하지 않는 인증을 사용 중지</translation>
+<translation id="6207673917710036736">기본 확장 프로그램 리뷰 프롬프트 및 평점 링크 사용 설정</translation>
 <translation id="6208896993204286313"><ph name="PRODUCT_NAME" /> 정책 정보 보고</translation>
 <translation id="6210259502936598222">OS 및 <ph name="PRODUCT_NAME" /> 버전 정보 보고</translation>
 <translation id="6214712395769944855">이 정책은 특정 규정 준수 체계에서 승인한 알고리즘에 대한 선호도를 반영하기 위해 <ph name="PRODUCT_NAME" />이 TLS 1.3에서 선호하는 암호화를 우선하도록 설정합니다.
@@ -9366,6 +9389,7 @@ false로 설정되면 Crostini 컨테이너로 포트 전달이 사용 중지됩
       참고: 이 정책은 서드 파티 쿠키가 차단되고 사이트 수준에서만 허용될 수 있는 시크릿 모드에는 적용되지 않습니다. 사이트 수준에서 쿠키를 허용하려면 <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" /> 정책을 사용하세요.</translation>
 <translation id="6810445994095397827">이 사이트에서 자바스크립트 차단</translation>
 <translation id="6813263547126514821">전원 및 종료</translation>
+<translation id="6813752387426088259">기본 확장 프로그램 리뷰 프롬프트 및 평점 링크 사용 중지</translation>
 <translation id="681446116407619279">지원되는 인증 스키마</translation>
 <translation id="6815628711329903153">Graphics3D API PPAPI 플러그인에 최신 버퍼 할당을 허용합니다.</translation>
 <translation id="6819031008957510729">정책을 사용 설정하면 기본적으로 <ph name="PRODUCT_NAME" /> 사용량 및 비정상 종료 관련 데이터가 익명으로 Google에 보고되는 방안이 권장되지만 사용자는 이 설정을 변경할 수 있습니다.
@@ -10068,6 +10092,14 @@ JavaScript 최적화 정책 예외는 사이트 세부사항에서만 시행됩�
 <ph name="MS_WIN_NAME" />의 경우 이 정책은 <ph name="MS_AD_NAME" /> 도메인에 연결되거나, <ph name="MS_AAD_NAME" />에 연결되거나, <ph name="CHROME_ENTERPRISE_CORE_NAME" />에 등록된 인스턴스에서만 사용할 수 있습니다.
 
 <ph name="MAC_OS_NAME" />의 경우 정책은 MDM을 통해 관리되거나, MCX를 통해 도메인에 연결되거나, <ph name="CHROME_ENTERPRISE_CORE_NAME" />에 등록된 인스턴스에서만 사용할 수 있습니다.</translation>
+<translation id="7152157730070066152">가운데 슬롯 알림 기능이 새 탭 페이지에서 삭제되었으므로 이 정책은 지원 중단되며 아무런 영향을 미치지 않습니다.
+
+      이 정책은 새 탭 페이지에서 가운데 슬롯 알림을 표시할지 여부를 제어합니다.
+
+      정책을 사용 설정하면 가운데 슬롯을 사용할 수 있을 때 새 탭 페이지에 알림이 표시됩니다.
+
+      사용 중지하면 가운데 슬롯을 사용할 수 있어도 새 탭 페이지에 알림이 표시되지 않습니다.
+      </translation>
 <translation id="7152640356717355643">기기 네트워크 인터페이스 보고 사용 설정</translation>
 <translation id="7153786895642570081">이 정책은 EphemeralNetworkPolicies 기능의 사용 설정을 제어합니다.
 정책을 true로 설정하면 DeviceOpenNetworkConfiguration 항목인 RecommendedValuesAreEphemeral 및 UserCreatedNetworkConfigurationsAreEphemeral이 적용됩니다.
@@ -10638,15 +10670,6 @@ URL 패턴은 <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_BLOCKED_FOR_URLS_P
 
 정책을 설정하지 않으면 CastAllowAllIPs 기능이 사용 설정되어 있지 않은 한 <ph name="PRODUCT_NAME" />가 RFC1918/RFC4193에서만 Cast 기기에 연결됩니다.</translation>
 <translation id="7534199150025803530">이 정책은 Android Google Drive 앱에 아무런 영향도 미치지 않습니다. 모바일 연결을 통해 Google Drive를 사용하지 못하게 하려면 Android Google Drive 앱 설치를 허용하지 않아야 합니다.</translation>
-<translation id="7537404002861344834">Chrome의 Gemini 기능의 대답이 개선되도록 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />의 연결 설정을 구성합니다.
-
-이 정책을 설정하면 지정된 프로젝트 및 앱 ID에 연결된 관리 계정으로 로그인한 사용자에게 제공되는 Chrome의 Gemini 대답을 개선하는 데 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />(을)를 사용할 수 있습니다. 개인 계정으로 로그인된 프로필에서는 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />(이)가 제공되지 않습니다.
-
-이 정책을 설정하지 않으면 Chrome의 Gemini 대답을 개선하는 데 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />(이)가 사용되지 않습니다.
-
-이 정책은 일반적인 <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> 통합을 제어하지 않습니다. 일반적인 통합은 <ph name="GEMINI_SETTINGS_POLICY_NAME" /> 정책으로 제어할 수 있습니다.
-
-이 정책의 모든 설정은 <ph name="GOOGLE_CLOUD_PRODUCT_NAME" /> 콘솔의 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 프로젝트 구성과 일치해야 합니다. 불일치가 있는 경우 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />(을)를 사용할 때 예기치 않은 동작이 발생합니다.</translation>
 <translation id="7538583957913002726">이 정책은 기본적으로 사용으로 설정됩니다. 등록된 기기에서 CPU 모델 이름, 아키텍처, 최대 클럭 속도(M96 이상의 경우 CPU 사용률 및 온도 포함)를 보고하도록 제어합니다.
 
       정책을 사용 안함으로 설정하면 등록된 기기에서 CPU 정보를 보고하지 않습니다.
@@ -12501,6 +12524,11 @@ False로 설정되면 관련 웹사이트 세트 기능이 사용 중지됩니�
 <translation id="8757552286070680084">Wilco DTC 설정입니다.</translation>
 <translation id="8758831693895931466">필수 클라우드 관리 등록 사용</translation>
 <translation id="8759829385824155666">허용된 Kerberos 암호화 유형</translation>
+<translation id="876034218754933846">설치된 Chrome 확장 프로그램의 기본 리뷰 프롬프트 및 평점 링크('평가하기' 등)를 Chrome 사용자 인터페이스에서 사용할 수 있는지 제어합니다.
+
+이 정책을 사용 설정하거나 설정하지 않으면 사용자가 툴바, 컨텍스트 메뉴, 확장 프로그램 관리 페이지(chrome://extensions)에서 요건을 충족하는 확장 프로그램을 검토하고 평가하기 위한 기본 진입점을 확인할 수 있습니다.
+
+정책을 사용 중지로 설정하면 모든 기본 리뷰 프롬프트 및 평점 링크가 표시되지 않으며 사용할 수 없게 됩니다.</translation>
 <translation id="8762128467207353085">원격 호스트의 탐색 세션에서 시작된 WebAuthn API
 요청을 실행할 수 있는 원격 데스크톱 클라이언트 앱의 출처 목록입니다.
 
@@ -12948,19 +12976,6 @@ https://chromeenterprise.google/policies/url-patterns 페이지를 참고하세�
           정책이 설정되면 사용자가 변경하거나 재정의할 수 없습니다.
 
           정책이 설정되지 않으면 처음에는 키보드 포커스 강조표시가 사용 중지되어 있으나 사용자가 언제든지 사용 설정할 수 있습니다.</translation>
-<translation id="9037098514292099199">정책을 설정하면 기존 확장 프로그램 관련 정책으로 제어되는 설정을 포함해 <ph name="PRODUCT_NAME" />의 확장 프로그램 관리 설정을 제어할 수 있습니다.
-
-이 정책은 확장 프로그램 ID 또는 업데이트 URL을 특정 설정에만 매핑합니다. 특수 ID <ph name="DEFAULT_SCOPE" />에 기본 구성을 설정할 수 있으며, 정책에서 맞춤 구성이 설정되지 않은 모든 확장 프로그램에 기본 구성이 적용됩니다.
-
-이 정책은 기존 정책의 확장 프로그램별 구성보다 우선될 수 있습니다.
-
-<ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> 또는 <ph name="EXTENSION_SETTINGS_POLICY_NAME" />의 ID별 확장 프로그램 설정은 <ph name="DEFAULT_SCOPE" /> 기본값에서 'installation_mode' 및 'update_url'만 상속받습니다. 다른 속성은 상속받지 않습니다. 업데이트 URL이 있으면 구성은 확장 프로그램 매니페스트(http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy)에 규정된 정확한 업데이트 URL을 포함하는 확장 프로그램에 적용됩니다. 'override_update_url' 플래그가 true로 설정된 경우 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 정책 또는 이 정책의 'update_url' 필드에 지정된 'update' URL을 사용하여 확장 프로그램이 설치 및 업데이트됩니다. 'update_url'이 Chrome 웹 스토어 URL인 경우 'override_update_url' 플래그가 무시됩니다.
-
-<ph name="MS_WIN_NAME" /> 인스턴스의 경우 인스턴스가 <ph name="MS_AD_NAME" /> 도메인에 연결되거나, <ph name="MS_AAD_NAME" />에 연결되거나, <ph name="CHROME_ENTERPRISE_CORE_NAME" />에 등록된 경우에만 Chrome 웹 스토어 외부의 앱 및 확장 프로그램이 강제 설치될 수 있습니다.
-
-<ph name="MAC_OS_NAME" /> 인스턴스의 경우 인스턴스가 MDM을 통해 관리되거나, MCX를 통해 도메인에 연결되거나, <ph name="CHROME_ENTERPRISE_CORE_NAME" />에 등록된 경우에만 Chrome 웹 스토어 외부의 앱 및 확장 프로그램이 강제 설치될 수 있습니다.
-
-참고: 이 정책은 확장 프로그램을 지원하는 플랫폼에만 적용됩니다.</translation>
 <translation id="9038839118379817310">Wi-Fi 사용</translation>
 <translation id="9039822628127365650">이 정책을 설정하면 사용자가 자동으로 로그아웃되고 세션을 종료해야 하는 시간을 지정합니다. 사용자는 작업 표시줄에 있는 카운트다운 타이머를 통해 남은 시간을 확인할 수 있습니다.
 

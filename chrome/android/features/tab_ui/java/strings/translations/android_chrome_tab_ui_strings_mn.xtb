@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> долоо хоногийн өмнө үүсгэсэн}other{<ph name="NUM_WEEKS_MANY" /> долоо хоногийн өмнө үүсгэсэн}}</translation>
 <translation id="1063300264396686489">Бусад төхөөрөмжөөс табын бүлгийг автоматаар нээх</translation>
 <translation id="1075622780330595106">Таны табуудаас <ph name="NUMBER_OF_TABS" />-г нь сүүлийн үед ашиглаагүй байна. Тэдгээрийг хаах уу?</translation>
+<translation id="1089791933924803646">Бусад аппад Chrome-н зөвлөмж авах</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> жилийн өмнө үүсгэсэн}other{<ph name="NUM_YEARS_MANY" /> жилийн өмнө үүсгэсэн}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Идэвхгүй таб, бүлгийг 1 сарын дараа хаана}other{Идэвхгүй таб, бүлгийг <ph name="MONTH_COUNT_MANY" /> сарын дараа хаана}}</translation>
 <translation id="1173894706177603556">Нэр солих</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Табыг бүлэгт нэмэх}other{Табуудыг бүлэгт нэмэх}}</translation>
 <translation id="8138067144082174140">14 хоног идэвхгүй байсны дараа</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> таб, <ph name="COLOR_NAME" /> өнгөтэй <ph name="TITLE_OF_GROUP" /> табын бүлгийг дэлгэнэ үү.}other{<ph name="TABS_COUNT_MANY" /> таб, <ph name="COLOR_NAME" /> өнгөтэй <ph name="TITLE_OF_GROUP" /> табын бүлгийг дэлгэнэ үү.}}</translation>
+<translation id="8172214054247281626">Сонгосон аппууд дээр зөвлөмж авахын тулд саяхны хөтчийн түүх зэрэг интернэтээр үзсэн өгөгдөл хуваалцана уу. Энэ өгөгдлийг таны төхөөрөмж дээр аюулгүй боловсруулдаг.</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{Табыг бэхэлснийг болиулах}other{Табуудыг бэхэлснийг болиулах}}</translation>
 <translation id="8205266828577616993">Табыг дээш зөөх</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> минутын өмнө шинэчилсэн}other{<ph name="NUM_MINS_MANY" /> минутын өмнө шинэчилсэн}}</translation>

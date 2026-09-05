@@ -740,7 +740,6 @@
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">ଅକ୍ଟୋବର 25, 2023</translation>
 <translation id="3419787211763835342">ଉନ୍ନତ ଅଟୋଫିଲକୁ ଅଧିକ ସମୃଦ୍ଧ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ</translation>
-<translation id="3426715535827854458">'ଟୁଲବାର ଲୁଚାନ୍ତୁ'କୁ ଲୁଚାନ୍ତୁ</translation>
 <translation id="3435738964857648380">ସୁରକ୍ଷା</translation>
 <translation id="3441673211568148613">ଆପଣଙ୍କ ବ୍ରାଉଜିଂକୁ ପ୍ରାଇଭେଟ ରଖନ୍ତୁ</translation>
 <translation id="3443810440409579745">ଟାବ୍ ପ୍ରାପ୍ତ ହେଲା।</translation>
@@ -1173,6 +1172,7 @@
 <translation id="484280513275854557">ଆପଣ ସାଇନ ଆଉଟ ହୋଇଯାଇଛନ୍ତି; ବ୍ରାଉଜିଂ ଡାଟାକୁ ଡିଲିଟ କରାଯାଇଛି</translation>
 <translation id="484462545196658690">ସ୍ୱତଃ</translation>
 <translation id="4846662396507502151">ନୂଆ ଟୁଲବାର ସହ ଶୀଘ୍ର ବ୍ରାଉଜ କରନ୍ତୁ</translation>
+<translation id="4850669014075537160">ସ୍କ୍ରୋଲିଂ</translation>
 <translation id="4850886885716139402">ଦେଖନ୍ତୁ</translation>
 <translation id="4854068532375923088">ଆପଣଙ୍କ କେମେରା ବ୍ୟବହାର କରିବା ପାଇଁ “Gemini”କୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="4860895144060829044">କଲ୍ କରନ୍ତୁ</translation>
@@ -1947,6 +1947,9 @@ Handoff, ନିଶ୍ଚିତ ରୂପେ ସେଟିଂସ୍‍ର ସା�
 <translation id="7280980607183752256">ଏହି ଫାଇଲକୁ ଇମ୍ପୋର୍ଟ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="7282197670900591579">ସାଇଟ୍ରନ ଥିମ</translation>
 <translation id="7293429513719260019">ଭାଷା ଚୟନ କରନ୍ତୁ</translation>
+<translation id="72961285530871072">ଏହା ଆପଣଙ୍କର ଲେଭେଲ ଅପ ପ୍ରୋଗ୍ରେସକୁ ସ୍ଥାୟୀ ଭାବରେ ଡିଲିଟ କରିଦେବ ଏବଂ ଲେଭେଲ ଅପ ପାଇଁ ଫିଚର ବ୍ୟବହାର ଡାଟା ଆଉ ଆପଣଙ୍କ ପ୍ରୋଫାଇଲ ପାଇଁ Googleକୁ ପଠାଯିବ ନାହିଁ।
+
+ଆପଣ ଯେ କୌଣସି ସମୟରେ ରିଷ୍ଟାର୍ଟ କରିପାରିବେ।</translation>
 <translation id="7300448350764260141">ଅନଲାଇନ ବିପଦଗୁଡ଼ିକରୁ ସୁରକ୍ଷାର ଏକ ଅତିରିକ୍ତ ଲେୟର ଯୋଗ କରନ୍ତୁ।</translation>
 <translation id="7311244614769792472">କୌଣସି ଫଳାଫଳ ମିଳିଲା ନାହିଁ</translation>
 <translation id="7312823817809783355">ଆପଣଙ୍କ ଟାସ୍କ</translation>

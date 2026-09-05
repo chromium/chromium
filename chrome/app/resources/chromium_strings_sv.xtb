@@ -11,6 +11,7 @@
 Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna sparas inte.</translation>
 <translation id="1083934481477628225">Din förälder har inaktiverat Behörigheter för webbplatser, appar och tillägg för Chromium.</translation>
 <translation id="1090946077924227754">Om du vill söka efter en specifik funktion eller ett specifikt tillägg i Chromium skriver du kortkommandot i adressfältet följt av önskad tangent</translation>
+<translation id="1098493699368672217">Visa Sök med Chromium i systemfältet och aktivera kortkommandot</translation>
 <translation id="1104942323762546749">Lösenorden exporteras från Chromium. Skriv ditt Windows-lösenord om du tillåter detta.</translation>
 <translation id="112640046208448578">Identifiera saker eller platser och kopiera eller översätt text. När du använder bildsökning skickas en skärmbild av sidan till servern. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium är din standardwebbläsare</translation>
@@ -307,6 +308,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4298125729853015961">Exportera lösenord från Chromium</translation>
 <translation id="4304713468139749426">Lösenordshantering</translation>
 <translation id="4334241893986177674">Sök i den här skärmbilden</translation>
+<translation id="4368547723231502008">Sök och ställ frågor var som helst, även när Chromium är minimerat</translation>
 <translation id="4384331407722351213">Starta Chromium när Windows startas</translation>
 <translation id="4400772909124543403">Det finns ingen tillgänglig uppdatering</translation>
 <translation id="4407044323746248786">Vill du avsluta Chromium ändå?</translation>
@@ -336,6 +338,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4613863813562375431">Chromium OS-version</translation>
 <translation id="4621240073146040695">Nästan klart! Slutför uppdateringen genom att starta om Chromium.</translation>
 <translation id="4625064703209785397">Detta gör webbplatser snabbare med Chromiums V8-motor men Chromium blir något mindre motståndskraftigt mot attacker</translation>
+<translation id="4626321472657185181">Öppna sökning med Chromium</translation>
 <translation id="4665829708273112819">Varning! Chromium kan inte förhindra att tillägg registrerar din webbhistorik. Om du vill inaktivera det här tillägget i inkognitoläge avmarkerar du det här alternativet.</translation>
 <translation id="4673151026126227699">Om du även delar Chromium-användningsrapporter ingår webbadresserna du besöker i dessa rapporter</translation>
 <translation id="4673710618874938871">Inloggad som <ph name="USER_NAME" />, medlemskap. Öppna kontomenyn</translation>
@@ -377,6 +380,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="5286907366254680517">Identifierades</translation>
 <translation id="5289287148052354622">Skaffa Chromium-appen</translation>
 <translation id="5294316920224716406">När du surfar i inkognitoläge visas en varning i Chromium innan en webbplats läses in med en osäker anslutning</translation>
+<translation id="5296581118566748922">Sök med Chromium</translation>
 <translation id="5313228254328109263">Intern tjänst för Chromium-uppdatering</translation>
 <translation id="5324450571874973775">Använd dem tillsammans med andra Gemini-funktioner i Chromium</translation>
 <translation id="5346389065299425353">Fördjupa sökningen genom att lägga till flera flikar, filer och verktyg</translation>
@@ -387,6 +391,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="5358375970380395591">Du loggar in med ett hanterat konto och ger dess administratör kontroll över din Chromium-profil. Dina uppgifter i Chromium, t.ex. dina appar, bokmärken, din historik, ditt lösenord och andra inställningar, kopplas då permanent till <ph name="USER_NAME" />. Du kommer att kunna ta bort dessa uppgifter via instrumentpanelen i Google Konton, men du kommer inte att kunna koppla dem till något annat konto. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Extra kod: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">Om du vill få tillgång till anpassning kan du ta med Chromium i webb- och appaktiviteten</translation>
+<translation id="5382964351116519680">Öppna sökning med Chromium</translation>
 <translation id="5383439451358640070">Läs mer om varför vissa filer blockeras i Chromium</translation>
 <translation id="5386450000063123300">Chromium uppdateras (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Tillåt inloggning i Chromium</translation>
@@ -506,6 +511,7 @@ Om sidan inte fungerar som förväntat kan du testa att tillåta optimering.</tr
 <translation id="651535675648445253">Genvägar öppnas i Chromium</translation>
 <translation id="6539122709674868420">Organisationen avslutar Chromium när det inte har använts på <ph name="TIMEOUT_DURATION" />. Webbinformation har raderats. Detta kan innefatta historik, autofyll och nedladdningar.</translation>
 <translation id="6542839706527980775">I alla profiler sparas egen Chromium-information som bokmärken, historik, lösenord och annat</translation>
+<translation id="6556755379298048869">Sök med ett kortkommando.</translation>
 <translation id="6563921047760808519">Läs mer om <ph name="BEGIN_LINK" />hur Chromium skyddar din data<ph name="END_LINK" /></translation>
 <translation id="6564039629497156115">Ändringar av den här inställningen tillämpas när Chromium startas om.</translation>
 <translation id="6567032987737689854">Hantera dina tillägg genom att klicka på Tillägg i Chromiums huvudmeny.</translation>
@@ -540,6 +546,7 @@ Vissa funktioner är kanske inte tillgängliga. Ange en annan profilkatalog elle
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6859580922007887573">Tryck på tabbtangenten för att fortsätta</translation>
 <translation id="6862030660799253820">Sök i den här bilden med bildsökning</translation>
+<translation id="6869568587896659271">Enkel åtkomst till webbplatser under adressfältet</translation>
 <translation id="6873893289264747459">Chromium har upptäckt att <ph name="EXTENSION_NAME" /> innehåller skadlig kod</translation>
 <translation id="6877155553248388166">nedre högra hörnet av sökområdet: <ph name="RIGHT" /> % åt höger, <ph name="BOTTOM" /> % nedåt</translation>
 <translation id="6896758677409633944">Kopiera</translation>
@@ -644,6 +651,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7803986347287457849">Gör det svårare för personer som har åtkomst till din internettrafik att se vilka webbplatser du besöker. Chromium använder en säker anslutning för att söka efter en webbplats IP-adress i domännamnssystemet (DNS).</translation>
 <translation id="7810005234485217901">Du kan fästa Bildsökning för enkel åtkomst</translation>
+<translation id="7828527096541974699">Välj vad du vill dela med Chromium</translation>
 <translation id="7828947555739565424">Det finns redan en Chromium-profil med detta konto på enheten</translation>
 <translation id="7845233973568007926">Tack för att du installerat programmet. Du måste starta om datorn innan du använder <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7847673590271334840">Din sökmotor har ändrats utanför Chromium. Chromium har återställt den till standardinställningen för att skydda dig. <ph name="LEARN_MORE_LINK" /></translation>
@@ -763,6 +771,7 @@ Chromium kan inte återställa dina inställningar.</translation>
             • radera cookies och annan tillfällig webbplatsdata.
             <ph name="LINE_BREAKS" />
             Bokmärken, historiken och sparade lösenord påverkas inte.</translation>
+<translation id="8966875421152977384">Visa webbplatsgenvägar i Chromium</translation>
 <translation id="897581876605952338">Logotypen för Chromium Enterprise</translation>
 <translation id="8980139959902937527">Ta med dig Googles säkerhet var du än är med Chromium-appen på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="8981150672034878610">Det går inte att starta Chromium eftersom något gick fel när profilen öppnades. Testa att starta om Chromium.</translation>
@@ -771,6 +780,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="9018218886431812662">Installationen har slutförts</translation>
 <translation id="9019929317751753759">Vi har gjort Chromium säkrare genom att inaktivera följande tillägg som inte anges i <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> och som kan ha lagts till utan att du vet om det.</translation>
 <translation id="9022552996538154597">Logga in i Chromium</translation>
+<translation id="9035791714111278917">Visa Sök med Chromium i menyraden på Mac och aktivera kortkommandot</translation>
 <translation id="904366664621834601">Den här nedladdningen blockerades av Chromium eftersom arkivfilen innehåller andra filer som kan dölja skadlig kod</translation>
 <translation id="9053882453960391422">Håll dina lösenord, bokmärken och din historik helt synkroniserade på alla enheter. Få enkel åtkomst till funktionerna du känner till och gillar genom att uppdatera standardwebbläsaren till Chromium. Chromium fästs i aktivitetsfältet för snabb åtkomst.</translation>
 <translation id="9056398481763999048">Använd Googles bästa AI-verktyg med Chromium-appen på telefonen</translation>

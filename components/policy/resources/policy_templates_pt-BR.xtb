@@ -100,11 +100,6 @@ Se esta política for desativada, o recurso de correção automática no teclado
 <translation id="1060020040574767394">Configurações de marca-d'água personalizada</translation>
 <translation id="1062011392452772310">Ativar declaração remota para o dispositivo</translation>
 <translation id="1062407476771304334">Substituir</translation>
-<translation id="1063860513136880926">Se a política for ativada, não vai ser permitido fazer capturas de tela com os atalhos do teclado
-ou as APIs de extensão. Se ela for desativada ou deixada sem definição, será possível fazer capturas de tela.
-
-No <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> e <ph name="LINUX_OS_NAME" />,
-isso não impede capturas de tela com apps do sistema operacional ou de terceiros.</translation>
 <translation id="1065175969514496951">A definição da política fornece acesso aos URLs listados durante a autenticação (por exemplo, na tela de login e de bloqueio), como exceções a <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />. Consulte a descrição da política para saber o formato das entradas dessa lista. Por exemplo, se <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /> for definida como <ph name="WILDCARD_VALUE" />, todas as solicitações serão bloqueadas, e você poderá usar a política para limitar o acesso a uma lista de URLs. Ela pode abrir exceções para alguns esquemas, subdomínios de outros domínios, portas ou caminhos específicos usando o formato especificado em ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ). O filtro mais específico determina se um URL vai ser bloqueado ou permitido. A política <ph name="DEVICE_AUTHENTICATION_URL_ALLOWLIST_POLICY_NAME" /> tem precedência sobre a <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />. Esta política tem um limite de 1.000 entradas.
 
 Se a política não for definida, nenhuma exceção a <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /> será permitida.</translation>
@@ -197,6 +192,19 @@ Esta política exige uma licença do <ph name="CHROME_ENTERPRISE_PREMIUM_NAME" /
 <translation id="1110426799149444997">Desativar a pesquisa por região do <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1111324374369583989">Não mostrar a tela de configuração do tamanho de exibição durante o login</translation>
 <translation id="1111824532252882775">Ativada: os controles de rolagem podem ser focalizados por padrão.</translation>
+<translation id="1113523086451291158">Esta política pode ser usada para permitir o <ph name="CHROME_DEVTOOLS_NAME" /> em URLs específicos.
+
+A disponibilidade do <ph name="CHROME_DEVTOOLS_NAME" /> é avaliada no nível do destino. Os padrões de URL são comparados ao URL de cada destino que está sendo inspecionado, como o frame principal de uma página, um subframe incorporado, uma extensão ou um aplicativo da web. O comportamento resultante depende de a política <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> também estar definida.
+
+Se esta política estiver definida e a <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> não, o URL de um destino precisará corresponder a um padrão nesta lista de permissões para que o <ph name="CHROME_DEVTOOLS_NAME" /> seja permitido para esse destino. Se o URL de um destino não corresponder a esta lista de permissões, o <ph name="CHROME_DEVTOOLS_NAME" /> será bloqueado para esse destino. Por exemplo, um subframe com um URL que não está na lista de permissões não pode ser inspecionado, mas a página principal permanece inspecionável caso o URL dela esteja na lista. Para informações sobre o formato do URL, consulte https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Se tanto esta como a <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> estiverem definidas, a lista de permissões terá precedência. Se um URL de destino corresponder a um padrão nesta lista de permissões, ele será permitido, mesmo que também corresponda a um padrão na lista de bloqueio. Se um URL de destino corresponder a um padrão na lista de bloqueio, mas não na lista de permissões, ele será bloqueado. Se um URL de destino não corresponder a nenhuma delas, a política <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> será usada como substituta.
+
+Se esta política for deixada sem definição, a disponibilidade do <ph name="CHROME_DEVTOOLS_NAME" /> será determinada pelas políticas <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> e <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Curingas genéricos para hosts (ou seja, "*" ou "[*]") não são permitidos. Use a política <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> para ativar o recurso globalmente.
+
+Esta política tem um limite de 1.000 entradas.</translation>
 <translation id="1117535567637097036">Os gerenciadores de protocolo definidos por esta política não são usados na manipulação de intents do Android.</translation>
 <translation id="1118093128235245168">Permitir que os sites peçam ao usuário para conceder acesso a um dispositivo USB conectado</translation>
 <translation id="111910763555783249">Configurações de notificação</translation>
@@ -6034,6 +6042,21 @@ a otimização do JavaScript será ativada.</translation>
 <translation id="4725691087141147920">Consentimento para sincronização da tela durante o login</translation>
 <translation id="4725801978265372736">Exigir correspondência entre o nome do usuário local e o proprietário do host de acesso remoto</translation>
 <translation id="4726228171190098009">Não permitir que o dispositivo solicite a execução de um Powerwash</translation>
+<translation id="4726236283425627939">Se definida, a política controlará as configurações de gerenciamento de extensões do <ph name="PRODUCT_NAME" />, inclusive aquelas controladas pelas políticas existentes relacionadas a extensões.
+
+Esta política mapeia um ID de extensão ou um URL de atualização apenas para a própria configuração específica. Uma configuração padrão pode ser definida para o ID especial <ph name="DEFAULT_SCOPE" />, que será aplicada a todas as extensões que não tiverem uma configuração personalizada definida nesta política.
+
+Esta política pode substituir a configuração de extensão de políticas legadas.
+
+Qualquer configuração de extensão por ID de <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> ou <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> vai herdar apenas "installation_mode" e "update_url" dos padrões de <ph name="DEFAULT_SCOPE" />. A configuração não vai herdar outras propriedades. Com um URL de atualização, a configuração será aplicada a todas as extensões com o URL de atualização exato indicado no manifesto da extensão (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Se a flag "override_update_url" for definida como verdadeira, a extensão será instalada e atualizada usando o URL de atualização especificado na política <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> ou no campo "update_url" desta política. A flag "override_update_url" será ignorada se o campo "update_url" for um URL da Chrome Web Store.
+
+A partir da versão 154 do <ph name="PRODUCT_NAME" />, a aplicação de "runtime_blocked_hosts" a uma extensão com a permissão "debugger" vai desativar completamente o "chrome.debugger.attach()" em todos os destinos.
+
+Em instâncias do <ph name="MS_WIN_NAME" />, apps e extensões de fora da Chrome Web Store só poderão ter a instalação forçada se a instância for associada a um domínio do <ph name="MS_AD_NAME" />, associada ao <ph name="MS_AAD_NAME" /> ou estiver registrada no <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Em instâncias do <ph name="MAC_OS_NAME" />, apps e extensões de fora da Chrome Web Store só poderão ter a instalação forçada se a instância for gerenciada por MDM, associada a um domínio via MCX ou registrada em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Observação: esta política só se aplica a plataformas que são compatíveis com extensões.</translation>
 <translation id="4726895359147376813">Mapeamento de IDs persistentes para as configurações da VM</translation>
 <translation id="4732069502693984686">Ativa a captura automática de várias telas</translation>
 <translation id="4733471537137819387">Políticas relacionadas à autenticação integrada de HTTP.</translation>
@@ -6744,6 +6767,13 @@ Quando a política não está definida ou é desativada, os cookies e os dados p
 <translation id="5152787786897382519">O Chromium e o Google Chrome têm alguns grupos de políticas que dependem umas das outras para oferecer controle sobre um recurso. Esses conjuntos são representados pelos seguintes grupos de políticas. Como essas políticas podem ter diversas fontes, apenas os valores da fonte de maior prioridade serão aplicados. Os valores de uma fonte de menor prioridade presente no mesmo grupo serão ignorados. A ordem da prioridade está definida em <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
 <translation id="5153187201534281749">Ícone dos experimentos do navegador na barra de ferramentas</translation>
 <translation id="5159674159887919923">Não enviar mais dados de hardware no ChromeOS Flex</translation>
+<translation id="5162562564734598188">Se a política for ativada, não vai ser permitido fazer capturas de tela com os atalhos do teclado
+ou as APIs de extensão. Se ela for desativada ou deixada sem definição, será possível fazer capturas de tela.
+
+A partir da versão 154 do <ph name="PRODUCT_NAME" />, a ativação dessa política também impede que as extensões anexem o depurador usando "chrome.debugger.attach()".
+
+No <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> e <ph name="LINUX_OS_NAME" />,
+isso não impede capturas de tela com apps do sistema operacional ou de terceiros.</translation>
 <translation id="5162571264806471078">Ativar os relatórios de nuvem de indicadores de segurança em perfis gerenciados</translation>
 <translation id="5162982931329320509">Lista de domínios a serem resolvidos usando DNS sobre HTTPS. Outros domínios não incluídos na lista não serão resolvidos usando DNS sobre HTTPS. Esta política é ignorada quando o modo de DNS seguro está desativado (DNS em texto simples usado sempre).
 
@@ -8206,6 +8236,17 @@ configurados.</translation>
 Esta política foi descontinuada na versão M124.</translation>
 <translation id="6022948604095165524">Ação na inicialização</translation>
 <translation id="602318745029752898">Permitir as vozes aprimoradas da conversão de texto em voz da rede no Selecionar para Ouvir</translation>
+<translation id="6023434563562800942">Esta política pode ser usada para bloquear o <ph name="CHROME_DEVTOOLS_NAME" /> em URLs específicos. Para obter informações sobre o formato do URL, consulte https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+A disponibilidade do <ph name="CHROME_DEVTOOLS_NAME" /> é avaliada no nível do destino. Os padrões de URL são comparados ao URL de cada destino que está sendo inspecionado, como o frame principal de uma página, um subframe incorporado, uma extensão ou um aplicativo da web. O comportamento resultante depende de a política <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> também estar definida.
+
+Se esta política estiver definida e a <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> não estiver, o URL de um destino que corresponder a um padrão nesta lista de bloqueio vai bloquear o <ph name="CHROME_DEVTOOLS_NAME" /> para esse destino. Por exemplo, um subframe com um URL que corresponda à lista de bloqueio não pode ser inspecionado, mas a página principal continua inspecionável caso o URL dela não esteja na lista. Se o URL de um destino não corresponder a nenhum padrão, a disponibilidade será determinada pela política <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Se tanto esta como a <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> estiverem definidas, a lista de permissões terá precedência. Se o URL de um destino corresponder a um padrão na lista de permissões, ele será permitido, mesmo que também corresponda a um padrão nesta lista de bloqueio. Se corresponder a um padrão nesta lista de bloqueio, mas não na lista de permissões, o URL será bloqueado. Se um URL de destino não corresponder a nenhuma delas, a política <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> será usada como substituta.
+
+Se esta política for deixada sem definição, a disponibilidade do <ph name="CHROME_DEVTOOLS_NAME" /> será determinada pelas políticas <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> e <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Esta política tem um limite de 1.000 entradas.</translation>
 <translation id="6026722971789064331">Controlar o uso da API File System para gravação</translation>
 <translation id="602728333950205286">URL instantâneo do provedor de pesquisa padrão</translation>
 <translation id="603410445099326293">Parâmetros para URL de sugestões que usa POST</translation>
@@ -10884,15 +10925,6 @@ Se a política for definida como desativada, o <ph name="PRODUCT_NAME" /> será 
 
 Se a política não for definida, o <ph name="PRODUCT_NAME" /> será conectado aos dispositivos Cast apenas em RFC1918/RFC4193, exceto se o recurso CastAllowAllIPs estiver ativado.</translation>
 <translation id="7534199150025803530">Esta política não tem nenhum efeito sobre o app Google Drive para Android. Para impedir o uso do Google Drive por conexões celulares, bloqueie a instalação do app Google Drive para Android.</translation>
-<translation id="7537404002861344834">Configura as definições de conexão do <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> para melhorar as respostas dos recursos do Gemini no Chrome.
-
-Se esta política for ativada, o <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> poderá ser usado para aprimorar as respostas do Gemini no Chrome para usuários que fizeram login com uma conta gerenciada associada ao projeto e ao ID do app especificados. O <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> não estará disponível para perfis que fizeram login com contas pessoais.
-
-Se a política não for ativada, o <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> não será usado para aprimorar as respostas do Gemini no Chrome.
-
-Esta política não controla a integração geral do <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, que pode ser controlada pela política <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
-
-Todas as configurações desta política precisam ser compatíveis com a configuração do projeto <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> no console do <ph name="GOOGLE_CLOUD_PRODUCT_NAME" />. Qualquer incompatibilidade vai causar um comportamento inesperado ao usar o <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
 <translation id="7538583957913002726">Esta política fica ativada por padrão. Ela controla quais dispositivos registrados informam o nome do modelo, a arquitetura e a velocidade máxima do clock da CPU, além da temperatura e utilização da CPU no M96 e versões mais recentes.
 
       Se a política for desativada, os dispositivos registrados não vão enviar informações sobre a CPU.
@@ -13233,19 +13265,6 @@ Observação: no momento, apenas a primeira entrada será considerada. Extensõe
           Se você definir esta política, o usuário não poderá alterá-la ou modificá-la.
 
           Se esta política não for definida, o destaque do foco no teclado ficará desativado inicialmente, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
-<translation id="9037098514292099199">Se definida, a política controlará as configurações de gerenciamento de extensões do <ph name="PRODUCT_NAME" />, inclusive aquelas controladas pelas políticas existentes relacionadas a extensões.
-
-Esta política mapeia um ID de extensão ou um URL de atualização apenas para a própria configuração específica. Uma configuração padrão pode ser definida para o ID especial <ph name="DEFAULT_SCOPE" />, que será aplicada a todas as extensões que não tiverem uma configuração personalizada definida nesta política.
-
-Esta política pode substituir a configuração de extensão de políticas legadas.
-
-Qualquer configuração de extensão por ID de <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> ou <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> vai herdar apenas "installation_mode" e "update_url" dos padrões de <ph name="DEFAULT_SCOPE" />. A configuração não vai herdar outras propriedades. Com um URL de atualização, a configuração será aplicada a todas as extensões com o URL de atualização exato indicado no manifesto da extensão (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Se a flag "override_update_url" for definida como verdadeira, a extensão será instalada e atualizada usando o URL de atualização especificado na política <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> ou no campo "update_url" desta política. A flag "override_update_url" será ignorada se o campo "update_url" for um URL da Chrome Web Store.
-
-Em instâncias do <ph name="MS_WIN_NAME" />, apps e extensões de fora da Chrome Web Store só poderão ter a instalação forçada se a instância for associada a um domínio do <ph name="MS_AD_NAME" />, associada ao <ph name="MS_AAD_NAME" /> ou estiver registrada em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Em instâncias do <ph name="MAC_OS_NAME" />, apps e extensões de fora da Chrome Web Store só poderão ter a instalação forçada se a instância for gerenciada por MDM, associada a um domínio via MCX ou registrada em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Observação: esta política só se aplica a plataformas que são compatíveis com extensões.</translation>
 <translation id="9038839118379817310">Ativar Wi-Fi</translation>
 <translation id="9039822628127365650">Quando esta política for definida, ela especificará o tempo que um usuário tem até ser desconectado automaticamente, encerrando a sessão. O usuário será informado sobre o tempo restante por um timer de contagem regressiva mostrado na bandeja do sistema.
 

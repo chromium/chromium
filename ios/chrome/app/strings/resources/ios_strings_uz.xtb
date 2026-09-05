@@ -740,7 +740,6 @@
 <translation id="3409785640040772790">Xaritalar</translation>
 <translation id="3416023309465857378">2023-yil 25-oktabr</translation>
 <translation id="3419787211763835342">Yaxshilangan avtomatik kiritishni yaxshilashga yordam bering</translation>
-<translation id="3426715535827854458">Asboblar panelini berkitish</translation>
 <translation id="3435738964857648380">Xavfsizlik</translation>
 <translation id="3441673211568148613">Internetni maxfiy kezing</translation>
 <translation id="3443810440409579745">Varaq qabul qilindi.</translation>
@@ -1173,6 +1172,7 @@
 <translation id="484280513275854557">Hisobingizdan chiqasiz va brauzer tarixi tozalanadi</translation>
 <translation id="484462545196658690">Avto</translation>
 <translation id="4846662396507502151">Yangi asboblar paneli bilan internetni tezroq kezing</translation>
+<translation id="4850669014075537160">Sahifani aylantirish</translation>
 <translation id="4850886885716139402">Ko‘rish</translation>
 <translation id="4854068532375923088">Gemini kamerangizdan foydalanishiga ruxsat bering</translation>
 <translation id="4860895144060829044">Chaqiruv</translation>
@@ -1947,6 +1947,9 @@ Kompyuterda davom etish uchun <ph name="OTHER_EMAIL" /> hisobiga almashtiring. B
 <translation id="7280980607183752256">Bu faylni import qilish imkonsiz</translation>
 <translation id="7282197670900591579">Toʻq limon mavzu</translation>
 <translation id="7293429513719260019">Til tanlash</translation>
+<translation id="72961285530871072">Bunda Level Up rivojingiz butunlay oʻchirib tashlanadi va Level Up funksiyasidan foydalanish maʼlumotlari profilingiz uchun Googlega yuborilmaydi.
+
+Istalgan vaqtda qayta ishga tushirishingiz mumkin.</translation>
 <translation id="7300448350764260141">Onlayn tahdidlarga qarshi qoʻshimcha himoya darajasini kiriting.</translation>
 <translation id="7311244614769792472">Hech narsa topilmadi</translation>
 <translation id="7312823817809783355">Vazifalaringiz</translation>

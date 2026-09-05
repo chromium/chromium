@@ -7,6 +7,7 @@
 <translation id="1046742265332833834">Tema blu</translation>
 <translation id="1070329623210597193">Skedarët që mund të shikojë ose modifikojë ky sajt</translation>
 <translation id="1074758928858737435">Mund të kërkosh për të parë versionin e desktopit të sajteve</translation>
+<translation id="1089791933924803646">Merr sugjerime të Chrome në aplikacione të tjera</translation>
 <translation id="1109482864356262001">Veçoritë që kanë nevojë për sensorët e lëvizjes ose të dritës nuk do të funksionojnë</translation>
 <translation id="1126523729897810826">Përfundo këto veprime të sugjeruara më poshtë për të përfituar sa më shumë nga Chrome</translation>
 <translation id="113098737392899175">Navigo te faqet me një kursor teksti kur lidhet një tastierë</translation>
@@ -453,6 +454,7 @@
 <translation id="5668404140385795438">Zëvendësoje kërkesën e një sajti uebi për të parandaluar zmadhimin</translation>
 <translation id="5668843533782548925">Sajtet janë më të ngadalta, por më të sigurta</translation>
 <translation id="5677928146339483299">Të bllokuara</translation>
+<translation id="5679089750838794164">Chrome tani mund të të shfaqë sugjerime në aplikacione të tjera bazuar në të dhënat e tua të shfletimit, si p.sh. historiku i fundit i shfletimit. Këto të dhëna përpunohen në mënyrë të sigurt në pajisjen tënde. Mund ta çaktivizosh këtë në çdo kohë te cilësimet e Chrome.</translation>
 <translation id="5689516760719285838">Vendndodhja</translation>
 <translation id="5690795753582697420">Kamera është çaktivizuar në cilësimet e Android</translation>
 <translation id="5700761515355162635">Kukit e palëve të treta lejohen</translation>
@@ -507,6 +509,7 @@
 <translation id="6085954183010297841">Të fshihet leja për modifikimin e skedarëve? <ph name="FILE" /></translation>
 <translation id="6104860901391833523">Kur cilësimi është aktiv, sajtet mund të kalojnë automatikisht në modalitetin "figurë brenda figurës". Kur cilësimi është joaktiv, sajtet nuk mund të kalojnë automatikisht në modalitetin "figurë brenda figurës".</translation>
 <translation id="6120483543004435978">Kur cilësimi është aktiv, sajtet mund të kërkojnë që të mësojnë se kur e përdor ti pajisjen tënde. Kur cilësimi është joaktiv, sajtet nuk mund të mësojnë se kur e përdor ti pajisjen tënde.</translation>
+<translation id="612871598708395517">Fshih "Merr sugjerimet e Chrome në aplikacione të tjera"</translation>
 <translation id="6132075343662013154">Chrome do të ofrojë që të ruajë fjalëkalimin</translation>
 <translation id="615886654739818377">Mos i lejo sajtet të menaxhojnë dritaret në të gjitha ekranet e tua</translation>
 <translation id="6165508094623778733">Mëso më shumë</translation>

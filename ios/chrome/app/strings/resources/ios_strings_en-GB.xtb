@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1053651653201045802">Signed out. Sign back in to use the bookmarks, passwords and more in your account.</translation>
 <translation id="1054745118061919935">By continuing, you agree to the <ph name="BEGIN_LINK" />Terms of Service<ph name="END_LINK" />.</translation>
+<translation id="1056818261333183659">Which should I buy?</translation>
 <translation id="10614374240317010">Never saved</translation>
 <translation id="1062138828266376352">Your PIN wasn't changed. Please check your Internet connection and try again</translation>
 <translation id="1063070031224282617">Choose where to save '<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />' (<ph name="FILE_SIZE" />)</translation>
@@ -739,7 +740,6 @@
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 Oct 2023</translation>
 <translation id="3419787211763835342">Help improve enhanced autofill</translation>
-<translation id="3426715535827854458">Hide Hide Toolbar</translation>
 <translation id="3435738964857648380">Security</translation>
 <translation id="3441673211568148613">Keep your browsing private</translation>
 <translation id="3443810440409579745">Tab received.</translation>
@@ -1008,7 +1008,7 @@
 <translation id="4310738531374808763">Customise your homepage</translation>
 <translation id="4316794575239200608">Neither your conversations with Gemini nor your <ph name="BEGIN_LINK" />Google Workspace data<ph name="END_LINK" /> will be reviewed by human reviewers or used to improve generative AI models.</translation>
 <translation id="4320848494125124980">Recent</translation>
-<translation id="4322394346347055525">Close Other Tabs</translation>
+<translation id="4322394346347055525">Close other tabs</translation>
 <translation id="4323122584592971322">OID.</translation>
 <translation id="4324735664183300693">Turn on notifications</translation>
 <translation id="4326912346867677256">Tap 'Use password' to sign in securely.</translation>
@@ -1172,6 +1172,7 @@
 <translation id="484280513275854557">You were signed out; browsing data was deleted</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4846662396507502151">Browse faster with the new toolbar</translation>
+<translation id="4850669014075537160">Scrolling</translation>
 <translation id="4850886885716139402">View</translation>
 <translation id="4854068532375923088">Allow 'Gemini' to use your camera</translation>
 <translation id="4860895144060829044">Call</translation>
@@ -1505,6 +1506,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5898848375214731122">Mass</translation>
 <translation id="5899314093904173337">To share with people nearby, let them scan this QR code with their camera or QR scanner app</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} new tab}other{{count} new tabs}}</translation>
+<translation id="5906163261248594192">Dan's birthday</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5912796581727968237">Open Google Wallet</translation>
 <translation id="5922999516621365983">Drag tab here to pin it.</translation>
@@ -1924,6 +1926,7 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="720399613139435155">Translation failed</translation>
 <translation id="7204922488054642675">Personalised news</translation>
 <translation id="7206979415662233817">Terms of Service</translation>
+<translation id="721218676460477064">Summarise this article</translation>
 <translation id="7215621211572884440">Pop-ups allowed</translation>
 <translation id="7218491361283758048">Postcode</translation>
 <translation id="7221173315674413369">Explore new features and tips in 'What’s new'</translation>
@@ -1944,6 +1947,9 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="7280980607183752256">This file can't be imported</translation>
 <translation id="7282197670900591579">Citron theme</translation>
 <translation id="7293429513719260019">Select language</translation>
+<translation id="72961285530871072">This will permanently delete your Level Up progress and feature usage data for Level Up will no longer be sent to Google for your profile.
+
+You can restart at any time.</translation>
 <translation id="7300448350764260141">Add an extra layer of protection against online threats.</translation>
 <translation id="7311244614769792472">No results found</translation>
 <translation id="7312823817809783355">Your tasks</translation>
@@ -2185,6 +2191,7 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="8035133914807600019">New folder…</translation>
 <translation id="8035412398498507358">Photos</translation>
 <translation id="8037713009824540257">Add Site</translation>
+<translation id="8038078082340255234">Market report</translation>
 <translation id="8040407350301524547">For route options, tap 'Get directions'.</translation>
 <translation id="804427445359061970">You'll find your tabs from other devices here</translation>
 <translation id="8058655154417507695">Expiry year</translation>
@@ -2242,6 +2249,7 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="8232956427053453090">Keep data</translation>
 <translation id="8233237502828137700">Close banner promo</translation>
 <translation id="823339794112333264">Turn on microphone</translation>
+<translation id="8240217649914883113">Add this to my calendar</translation>
 <translation id="8250920743982581267">Documents</translation>
 <translation id="8252980988000695656">Google Lens completed!</translation>
 <translation id="8258734532103758067">I've exported my data</translation>
@@ -2286,6 +2294,7 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="8368198938968349418">Turn on Autofill…</translation>
 <translation id="8370406443343902172">Go to Settings...</translation>
 <translation id="8370929854657845191">Expand to medium</translation>
+<translation id="8371494817541821097">Passkey created on <ph name="DATE" /></translation>
 <translation id="8372471489238799313">{count,plural, =1{Delete address}other{Delete addresses}}</translation>
 <translation id="8378714024927312812">Managed by your organisation</translation>
 <translation id="8385363453480067273">Search what you see with Google Lens</translation>

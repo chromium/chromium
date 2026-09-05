@@ -7,6 +7,7 @@
 <translation id="1046742265332833834">藍色主題</translation>
 <translation id="1070329623210597193">此網站可以查看或編輯的檔案</translation>
 <translation id="1074758928858737435">你可要求查看桌面版網站</translation>
+<translation id="1089791933924803646">在其他應用程式中取得 Chrome 建議</translation>
 <translation id="1109482864356262001">需要動作或光線感應器的功能將無法運作</translation>
 <translation id="1126523729897810826">完成下列建議操作，充分運用 Chrome 的各項功能</translation>
 <translation id="113098737392899175">接駁鍵盤後，使用文字游標瀏覽頁面</translation>
@@ -453,6 +454,7 @@
 <translation id="5668404140385795438">覆寫網站禁止放大的要求</translation>
 <translation id="5668843533782548925">網站較慢，但安全性更高</translation>
 <translation id="5677928146339483299">已封鎖</translation>
+<translation id="5679089750838794164">Chrome 現在可根據你的瀏覽資料 (例如最近的瀏覽記錄)，在其他應用程式中顯示建議。有關資料會在裝置上安全處理。你可隨時在 Chrome 設定中關閉此功能。</translation>
 <translation id="5689516760719285838">位置</translation>
 <translation id="5690795753582697420">相機已在 Android 設定中關閉</translation>
 <translation id="5700761515355162635">已允許使用第三方 Cookie</translation>
@@ -507,6 +509,7 @@
 <translation id="6085954183010297841">要刪除檔案編輯權限嗎？<ph name="FILE" /></translation>
 <translation id="6104860901391833523">開咗之後，網站就可以自動進入畫中畫模式。閂咗之後，網站就唔可以自動進入畫中畫模式。</translation>
 <translation id="6120483543004435978">開咗之後，網站可以要求偵測你有冇主動用緊裝置。閂咗之後，網站唔可以偵測你有冇主動用緊裝置。</translation>
+<translation id="612871598708395517">隱藏「在其他應用程式中取得 Chrome 建議」</translation>
 <translation id="6132075343662013154">Chrome 會詢問你是否要儲存密碼</translation>
 <translation id="615886654739818377">不允許網站管理你所有顯示屏上的視窗</translation>
 <translation id="6165508094623778733">瞭解更多資料</translation>

@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> અઠવાડિયા પહેલાં બનાવ્યું}one{<ph name="NUM_WEEKS_MANY" /> અઠવાડિયા પહેલાં બનાવ્યું}other{<ph name="NUM_WEEKS_MANY" /> અઠવાડિયા પહેલાં બનાવ્યું}}</translation>
 <translation id="1063300264396686489">અન્ય ડિવાઇસમાંથી ટૅબના ગ્રૂપ ઑટોમૅટિક રીતે ખોલો</translation>
 <translation id="1075622780330595106">હજુ સુધી તમારા ટૅબમાંથી <ph name="NUMBER_OF_TABS" /> ટૅબનો ઉપયોગ કરવામાં આવ્યો નથી. તેને બંધ કરીએ?</translation>
+<translation id="1089791933924803646">અન્ય ઍપમાં Chromeના સૂચનો મેળવો</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> વર્ષ પહેલાં બનાવ્યું}one{<ph name="NUM_YEARS_MANY" /> વર્ષ પહેલાં બનાવ્યું}other{<ph name="NUM_YEARS_MANY" /> વર્ષ પહેલાં બનાવ્યું}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{નિષ્ક્રિય ટૅબ અને ગ્રૂપ 1 મહિના પછી બંધ કરવામાં આવશે}one{નિષ્ક્રિય ટૅબ અને ગ્રૂપ <ph name="MONTH_COUNT_MANY" /> મહિના પછી બંધ કરવામાં આવશે}other{નિષ્ક્રિય ટૅબ અને ગ્રૂપ <ph name="MONTH_COUNT_MANY" /> મહિના પછી બંધ કરવામાં આવશે}}</translation>
 <translation id="1173894706177603556">નામ બદલો</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{ગ્રૂપમાં ટૅબ ઉમેરો}one{ગ્રૂપમાં ટૅબ ઉમેરો}other{ગ્રૂપમાં ટૅબ ઉમેરો}}</translation>
 <translation id="8138067144082174140">14 દિવસ પછી નિષ્ક્રિય</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> રંગનું <ph name="TABS_COUNT_ONE" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબના ગ્રૂપને મોટું કરો.}one{<ph name="COLOR_NAME" /> રંગનું <ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબના ગ્રૂપને મોટું કરો.}other{<ph name="COLOR_NAME" /> રંગના <ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબના ગ્રૂપને મોટું કરો.}}</translation>
+<translation id="8172214054247281626">પસંદ કરેલી ઍપ પર સૂચનો મેળવવા માટે, તમારો તાજેતરનો બ્રાઉઝિંગ ઇતિહાસ જેવો બ્રાઉઝિંગ ડેટા શેર કરો. આ ડેટા પર તમારા ડિવાઇસ પર સુરક્ષિત રીતે પ્રક્રિયા કરવામાં આવે છે.</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{ટૅબને અનપિન કરો}one{ટૅબને અનપિન કરો}other{ટૅબને અનપિન કરો}}</translation>
 <translation id="8205266828577616993">ટૅબ ઉપર ખસેડો</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> મિનિટ પહેલાં અપડેટ કરવામાં આવ્યું}one{<ph name="NUM_MINS_MANY" /> મિનિટ પહેલાં અપડેટ કરવામાં આવ્યું}other{<ph name="NUM_MINS_MANY" /> મિનિટ પહેલાં અપડેટ કરવામાં આવ્યું}}</translation>

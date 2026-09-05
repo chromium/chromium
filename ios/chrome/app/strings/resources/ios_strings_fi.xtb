@@ -740,7 +740,6 @@
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25.10.2023</translation>
 <translation id="3419787211763835342">Auta kehittämään parannettua automaattista täyttöä</translation>
-<translation id="3426715535827854458">Piilota työkalupalkki</translation>
 <translation id="3435738964857648380">Suojaus</translation>
 <translation id="3441673211568148613">Pidä selaaminen yksityisenä</translation>
 <translation id="3443810440409579745">Välilehti vastaanotettu</translation>
@@ -1173,6 +1172,7 @@
 <translation id="484280513275854557">Sinut kirjattiin ulos ja selausdata poistettiin</translation>
 <translation id="484462545196658690">Automaattinen</translation>
 <translation id="4846662396507502151">Selaa nopeammin uuden yläpalkin avulla</translation>
+<translation id="4850669014075537160">Vieritys</translation>
 <translation id="4850886885716139402">Näytä</translation>
 <translation id="4854068532375923088">Salli "Geminin" käyttää kameraa</translation>
 <translation id="4860895144060829044">Soita</translation>
@@ -1947,6 +1947,9 @@ Jos haluat jatkaa tietokoneella, vaihda tiliksi <ph name="OTHER_EMAIL" />. Saat 
 <translation id="7280980607183752256">Tiedostoa ei voi tuoda</translation>
 <translation id="7282197670900591579">Sitruunankeltainen teema</translation>
 <translation id="7293429513719260019">Valitse kieli</translation>
+<translation id="72961285530871072">Tämä poistaa Level Up ‑edistymisesi pysyvästi, eikä ominaisuuksien käyttödataa enää lähetetä Googlelle profiiliasi varten.
+
+Voit aloittaa uudelleen milloin tahansa.</translation>
 <translation id="7300448350764260141">Lisäsuojaus verkkouhkia vastaan.</translation>
 <translation id="7311244614769792472">Ei tuloksia</translation>
 <translation id="7312823817809783355">Omat tehtävät</translation>

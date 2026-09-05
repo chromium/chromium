@@ -7,6 +7,7 @@
 <translation id="1046742265332833834">Mandhari ya buluu</translation>
 <translation id="1070329623210597193">Faili ambazo tovuti hii inaweza kuona au kubadilisha</translation>
 <translation id="1074758928858737435">Unaweza kuomba kuona toleo la eneokazi la tovuti</translation>
+<translation id="1089791933924803646">Pata mapendekezo ya Chrome kwenye programu nyingine</translation>
 <translation id="1109482864356262001">Vipengele vinavyohitaji vitambuzi vya mwendo au mwangaza havitafanya kazi</translation>
 <translation id="1126523729897810826">Kamilisha vitendo hivi vilivyopendekezwa hapa chini ili unufaike zaidi na Chrome</translation>
 <translation id="113098737392899175">Sogeza kwenye kurasa ukitumia kiteuzi cha maandishi wakati umeunganisha kibodi</translation>
@@ -217,7 +218,7 @@
 <translation id="3115898365077584848">Onyesha Maelezo</translation>
 <translation id="3120204271988747891">Tovuti zinaweza kuomba idhini ya kufikia vifaa vingine kwenye mtandao wako wa karibu</translation>
 <translation id="3123473560110926937">Yamezuiwa kwenye baadhi ya tovuti</translation>
-<translation id="3132996321662585180">Onyesha upya kila siku</translation>
+<translation id="3132996321662585180">Badilisha kila siku</translation>
 <translation id="3134859781443140237">Mtandao wa karibu</translation>
 <translation id="3143754809889689516">Cheza kuanzia mwanzo</translation>
 <translation id="3164169438034704658">Unaweza kuwasha mipangilio ya eneo mahususi katika <ph name="BEGIN_LINK" />Mipangilio ya Android<ph name="END_LINK" />.</translation>
@@ -453,6 +454,7 @@
 <translation id="5668404140385795438">Batilisha ombi la tovuti ili kuzuia kuvuta karibu</translation>
 <translation id="5668843533782548925">Tovuti zinapakia kwa kasi ya chini lakini ni salama sana</translation>
 <translation id="5677928146339483299">Kumezuiwa</translation>
+<translation id="5679089750838794164">Chrome sasa inaweza kukuonyesha mapendekezo katika programu nyingine kulingana na data yako ya kuvinjari, kama vile historia ya kuvinjari ya hivi majuzi. Data hii huchakatwa kwa njia salama kwenye kifaa chako. Unaweza kuzima hali hii wakati wowote kwenye mipangilio ya Chrome.</translation>
 <translation id="5689516760719285838">Mahali</translation>
 <translation id="5690795753582697420">Kamera imezimwa katika mipangilio ya Android</translation>
 <translation id="5700761515355162635">Vidakuzi vya mshirika mwingine vimeruhusiwa</translation>
@@ -507,6 +509,7 @@
 <translation id="6085954183010297841">Ungependa kufuta ruhusa ya kubadilisha faili? <ph name="FILE" /></translation>
 <translation id="6104860901391833523">Ukiwa umewasha, tovuti zitaweza kutumia kipengele cha kupachika picha ndani ya picha nyingine kiotomatiki. Ukiwa umezima, tovuti hazitaweza kutumia kipengele cha kupachika picha ndani ya picha nyingine kiotomatiki.</translation>
 <translation id="6120483543004435978">Kikiwashwa, tovuti zinaweza kuomba ruhusa ya kujua unapotumia kifaa chako sana. Kikizimwa, tovuti haziwezi kujua unapotumia kifaa chako sana.</translation>
+<translation id="612871598708395517">Ficha kipengele cha Pata mapendekezo ya Chrome katika programu nyingine</translation>
 <translation id="6132075343662013154">Chrome itakuomba kuhifadhi nenosiri lako</translation>
 <translation id="615886654739818377">Usiruhusu tovuti zidhibiti madirisha kwenye skrini zako zote</translation>
 <translation id="6165508094623778733">Pata maelezo zaidi</translation>

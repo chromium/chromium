@@ -740,7 +740,6 @@
 <translation id="3409785640040772790">नक्सा</translation>
 <translation id="3416023309465857378">अक्टोबर २५, २०२३</translation>
 <translation id="3419787211763835342">अटोफिल गर्ने परिष्कृत सुविधाको गुणस्तर सुधार गर्न मद्दत गर्नुहोस्</translation>
-<translation id="3426715535827854458">टुलबार लुकाउनुहोस्</translation>
 <translation id="3435738964857648380">सुरक्षा</translation>
 <translation id="3441673211568148613">आफ्नो ब्राउजिङ गोप्य राख्नुहोस्</translation>
 <translation id="3443810440409579745">ट्याब प्राप्त गरियो।</translation>
@@ -1173,6 +1172,7 @@
 <translation id="484280513275854557">तपाईं साइन आउट हुनुभयो; ब्राउजिङ डेटा मेटाइयो</translation>
 <translation id="484462545196658690">स्वतः</translation>
 <translation id="4846662396507502151">नयाँ टुलबार प्रयोग गरी अझ छिटो ब्राउज गर्नुहोस्</translation>
+<translation id="4850669014075537160">स्क्रोलिङ</translation>
 <translation id="4850886885716139402">हेर्नुहोस्</translation>
 <translation id="4854068532375923088">“Gemini” लाई तपाईंको क्यामेरा प्रयोग गर्ने अनुमति दिनुहोस्</translation>
 <translation id="4860895144060829044">कल गर्नुहोस्</translation>
@@ -1947,6 +1947,9 @@
 <translation id="7280980607183752256">यो फाइल इम्पोर्ट गर्न मिल्दैन</translation>
 <translation id="7282197670900591579">ज्यामिर रङको थिम</translation>
 <translation id="7293429513719260019">भाषा चयन गर्नुहोस्</translation>
+<translation id="72961285530871072">तपाईंले यसो गर्नुभयो भने तपाईंको Level Up को प्रगति सदाका लागि मेटिने छ र तपाईंको प्रोफाइलका हकमा Level Up को सुविधा प्रयोगसम्बन्धी डेटा अबदेखि Google मा पठाइने छैन।
+
+तपाईं जुनसुकै बेला फेरि सुरु गर्न सक्नुहुन्छ।</translation>
 <translation id="7300448350764260141">अनलाइन जोखिमहरूबाट सुरक्षित रहन सुरक्षाको एउटा अतिरिक्त तह थप्नुहोस्।</translation>
 <translation id="7311244614769792472">कुनै पनि परिणाम भेटिएन</translation>
 <translation id="7312823817809783355">तपाईंका कार्यहरू</translation>

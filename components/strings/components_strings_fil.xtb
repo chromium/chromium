@@ -934,6 +934,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2544644783021658368">Isang dokumento</translation>
 <translation id="254524874071906077">Itakda ang Chrome bilang Default na Browser</translation>
 <translation id="2546283357679194313">Cookies at data ng site</translation>
+<translation id="254672217349157196">Awtomatikong i-verify ang iyong email</translation>
 <translation id="254947805923345898">Di-wasto ang value ng patakaran.</translation>
 <translation id="255002559098805027">Nagpadala ng di-wastong tugon ang <ph name="HOST_NAME" />.</translation>
 <translation id="2551608178605132291">Address: <ph name="ADDRESS" />.</translation>
@@ -1180,6 +1181,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3008410317623852235">Makakahanap at makakapaglagay ka na ngayon ng impormasyon mula sa Gmail at higit pa.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab para i-browse ang mga available na pagkilos, pagkatapos ay ang Enter para i-execute ang napiling pagkilos.</translation>
 <translation id="3010991137650052245">Para magamit ang iyong <ph name="PERMISSION" /> sa site na ito, bigyan ng access ang <ph name="SHORT_PRODUCT_NAME" /></translation>
+<translation id="3013536714390403689">Na-verify na email</translation>
 <translation id="3014726756341138577">Mga advanced na feature ng printer</translation>
 <translation id="301521992641321250">Awtomatikong na-block</translation>
 <translation id="3016780570757425217">Alamin ang iyong lokasyon</translation>
@@ -1548,6 +1550,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3634530185120165534">Tray 5</translation>
 <translation id="3634567936866541746">Kakalagay mo lang ng iyong password sa isang mapanlinang na site. Para ma-secure ang iyong mga account, inirerekomenda ng Chrome na suriin mo ang yong mga na-save na password.</translation>
 <translation id="3638102297696182302">Ipagpatuloy ang Tulungan akong magsulat. I-tap at pindutin ang enter para mabuksan</translation>
+<translation id="3639626391482300575">Na-save ang IBAN na ito sa Google Wallet para magamit mo ito sa mga produkto ng Google.</translation>
 <translation id="3642196846309122856">Subukang i-download ulit ang iyong mga file</translation>
 <translation id="3642638418806704195">Application:</translation>
 <translation id="3647286794400715637">Ang bawat entry ng string ng mga url ay dapat na maglaman ng 1 hanggang 2 URL.</translation>
@@ -3181,7 +3184,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Tingnan ang mga log</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Suriin ang configuration ng proxy, firewall, at Secure na DNS<ph name="END_LINK" /></translation>
-<translation id="6365513578140103119">Awtomatikong kumpirmahin ang iyong mga email</translation>
 <translation id="6366710531182496394">Dual staple left</translation>
 <translation id="6367196786591004737">I-delete ang entry</translation>
 <translation id="6370022303958842211">Mga pagkilos sa access sa device gaya ng mga pag-log in (kabilang ang mga dahilan ng hindi nagtagumpay na pag-log in), pag-log out, pag-lock, at pag-unlock</translation>
@@ -3306,6 +3308,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="6578434528542148658">Invalid na extension ID.</translation>
 <translation id="658230438113661756">Posibleng mag-install ang mga attacker sa site na sinubukan mong bisitahin ng mapaminsalang software na nagnanakaw o nagde-delete ng mga bagay na tulad ng iyong mga password, larawan, mensahe, o numero ng credit card. Lubos na inirerekomenda ng Chrome na bumalik sa ligtas na lugar. <ph name="BEGIN_LEARN_MORE_LINK" />Matuto pa tungkol sa babalang ito<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6583309742916093092">Naka-store sa Google Wallet</translation>
+<translation id="6585589684832019248">Na-save ang card na ito sa Google Wallet para magamit mo ito sa mga produkto ng Google</translation>
 <translation id="6587893660316489419">Envelope B5</translation>
 <translation id="6587923378399804057">Link na kinopya mo</translation>
 <translation id="6591833882275308647">Hindi pinapamahalaan ang iyong <ph name="DEVICE_TYPE" /></translation>
@@ -4659,7 +4662,6 @@ Mga karagdagang detalye:
 <translation id="8963117664422609631">Pumunta sa mga setting ng site</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Mga suhestyon:<ph name="MARKUP_2" />Tiyaking may koneksyon ka ng data<ph name="MARKUP_3" />Muling i-load ang webpage na ito sa ibang pagkakataon<ph name="MARKUP_4" />Tingnan ang inilagay mong address<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Made-delete ang iyong mga lokal na file sa loob ng <ph name="HOURS" /> (na) oras</translation>
-<translation id="8964904785315870349">Na-verify na Email</translation>
 <translation id="8968766641738584599">I-save ang card</translation>
 <translation id="8970887620466824814">Nagkaproblema.</translation>
 <translation id="8971063699422889582">Nag-expire na ang certificate ng server.</translation>

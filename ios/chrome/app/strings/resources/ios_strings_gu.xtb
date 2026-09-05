@@ -740,7 +740,6 @@
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 ઑક્ટોબર, 2023</translation>
 <translation id="3419787211763835342">ઑટોમૅટિક રીતે ભરવાની બહેતર સુવિધાને વધુ સારી બનાવવામાં મદદ કરો</translation>
-<translation id="3426715535827854458">'ટૂલબાર છુપાવો' છુપાવો</translation>
 <translation id="3435738964857648380">સુરક્ષા</translation>
 <translation id="3441673211568148613">તમારા બ્રાઉઝિંગને ખાનગી રાખો</translation>
 <translation id="3443810440409579745">ટૅબ પ્રાપ્ત થયું.</translation>
@@ -1173,6 +1172,7 @@
 <translation id="484280513275854557">તમને સાઇન આઉટ કરવામાં આવ્યા બ્રાઉઝિંગ ડેટા ડિલીટ કરવામાં આવ્યો</translation>
 <translation id="484462545196658690">ઑટો</translation>
 <translation id="4846662396507502151">નવા ટૂલબાર વડે વધુ ઝડપથી બ્રાઉઝ કરો</translation>
+<translation id="4850669014075537160">સ્ક્રોલિંગ</translation>
 <translation id="4850886885716139402">જુઓ</translation>
 <translation id="4854068532375923088">“Gemini”ને તમારા કૅમેરાનો ઉપયોગ કરવાની મંજૂરી આપો</translation>
 <translation id="4860895144060829044">કૉલ કરો</translation>
@@ -1947,6 +1947,9 @@
 <translation id="7280980607183752256">આ ફાઇલની આયાત કરી શકાતી નથી</translation>
 <translation id="7282197670900591579">સિટ્રન થીમ</translation>
 <translation id="7293429513719260019">ભાષા પસંદ કરો</translation>
+<translation id="72961285530871072">આનાથી તમારી લેવલ અપની પ્રગતિ કાયમ માટે ડિલીટ થઈ જશે અને લેવલ અપ માટે સુવિધાના વપરાશનો ડેટા હવેથી તમારી પ્રોફાઇલ માટે Googleને મોકલવામાં આવશે નહીં.
+
+તમે કોઈપણ સમયે ફરી શરૂ કરી શકો છો.</translation>
 <translation id="7300448350764260141">ઑનલાઇન જોખમો સામે સુરક્ષાનું વધારાનું લેયર ઉમેરો.</translation>
 <translation id="7311244614769792472">કોઈ પરિણામ મળ્યું નથી</translation>
 <translation id="7312823817809783355">તમારા કાર્યો</translation>

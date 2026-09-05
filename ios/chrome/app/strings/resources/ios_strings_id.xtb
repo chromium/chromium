@@ -740,7 +740,6 @@
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 Oktober 2023</translation>
 <translation id="3419787211763835342">Bantu tingkatkan kualitas isi otomatis yang ditingkatkan</translation>
-<translation id="3426715535827854458">Sembunyikan Sembunyikan Toolbar</translation>
 <translation id="3435738964857648380">Keamanan</translation>
 <translation id="3441673211568148613">Jaga privasi penjelajahan Anda</translation>
 <translation id="3443810440409579745">Tab diterima.</translation>
@@ -1173,6 +1172,7 @@
 <translation id="484280513275854557">Anda telah logout; data penjelajahan dihapus</translation>
 <translation id="484462545196658690">Otomatis</translation>
 <translation id="4846662396507502151">Menjelajah lebih cepat dengan toolbar baru</translation>
+<translation id="4850669014075537160">Scroll</translation>
 <translation id="4850886885716139402">Lihat</translation>
 <translation id="4854068532375923088">Izinkan “Gemini” menggunakan kamera</translation>
 <translation id="4860895144060829044">Telepon</translation>
@@ -1947,6 +1947,9 @@ Untuk melanjutkan dari komputer, beralihlah ke <ph name="OTHER_EMAIL" />. Anda a
 <translation id="7280980607183752256">File ini tidak dapat diimpor</translation>
 <translation id="7282197670900591579">Tema sitrun</translation>
 <translation id="7293429513719260019">Pilih bahasa</translation>
+<translation id="72961285530871072">Tindakan ini akan menghapus permanen progres Level Up Anda dan data penggunaan fitur untuk Level Up tidak akan lagi dikirim ke Google untuk profil Anda.
+
+Anda dapat memulai ulang kapan saja.</translation>
 <translation id="7300448350764260141">Berikan lapisan perlindungan tambahan terhadap ancaman online.</translation>
 <translation id="7311244614769792472">Tidak ditemukan hasil</translation>
 <translation id="7312823817809783355">Tugas Anda</translation>

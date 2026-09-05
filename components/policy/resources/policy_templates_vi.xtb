@@ -100,9 +100,6 @@ Nếu bạn đặt chính sách này thành Tắt, tính năng tự động sử
 <translation id="1060020040574767394">Thiết lập chế độ cài đặt hình mờ tuỳ chỉnh</translation>
 <translation id="1062011392452772310">Cho phép chứng thực từ xa cho thiết bị</translation>
 <translation id="1062407476771304334">Thay thế</translation>
-<translation id="1063860513136880926">Nếu bạn đặt chính sách này thành Bật thì người dùng sẽ không thể dùng phím tắt hoặc API tiện ích để chụp ảnh màn hình. Nếu bạn đặt chính sách này thành Tắt hoặc không đặt thì người dùng có thể chụp ảnh màn hình.
-
-Xin lưu ý rằng chính sách này không ngăn người dùng chụp ảnh màn hình bằng hệ điều hành hoặc các ứng dụng của bên thứ ba trên <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> và <ph name="LINUX_OS_NAME" />.</translation>
 <translation id="1065175969514496951">Việc đặt chính sách này sẽ cho phép truy cập vào các URL có trong danh sách trong quá trình xác thực (ví dụ như trên màn hình đăng nhập và màn hình khoá), với tư cách là các trường hợp ngoại lệ của <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />. Hãy xem thông tin mô tả của chính sách đó để biết định dạng của các mục trong danh sách này. Ví dụ: Khi bạn đặt <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /> thành <ph name="WILDCARD_VALUE" />, tất cả yêu cầu sẽ bị chặn và bạn có thể dùng chính sách này để cho phép truy cập vào một danh sách hạn chế gồm các URL. Hãy dùng danh sách này để mở các trường hợp ngoại lệ đối với một số phương pháp truy cập, miền con của các miền khác, cổng hoặc đường dẫn cụ thể theo định dạng được nêu tại (https://support.google.com/chrome/a?p=url_blocklist_filter_format). Bộ lọc cụ thể nhất sẽ xác định việc chặn hay cho phép URL. Chính sách <ph name="DEVICE_AUTHENTICATION_URL_ALLOWLIST_POLICY_NAME" /> sẽ được ưu tiên hơn chính sách <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />. Chính sách này chỉ áp dụng cho 1.000 mục.
 
 Việc không đặt chính sách này sẽ không cho phép trường hợp ngoại lệ đối với <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />.</translation>
@@ -187,6 +184,19 @@ Chính sách này chỉ có hiệu lực khi người dùng có giấy phép "<p
 <translation id="1110426799149444997">Tắt tính năng tìm kiếm khu vực của <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1111324374369583989">Không hiển thị màn hình cài đặt kích thước trên màn hình trong khi đăng nhập</translation>
 <translation id="1111824532252882775">Bật: Theo mặc định, trình cuộn có thể lấy tiêu điểm.</translation>
+<translation id="1113523086451291158">Bạn có thể dùng chính sách này để cho phép <ph name="CHROME_DEVTOOLS_NAME" /> trên các URL cụ thể.
+
+Khả năng sử dụng <ph name="CHROME_DEVTOOLS_NAME" /> sẽ được đánh giá ở cấp mục tiêu. Các mẫu URL sẽ được so khớp với URL của từng mục tiêu đang được kiểm tra (chẳng hạn như khung chính của một trang, khung phụ được nhúng, tiện ích hoặc ứng dụng web). Hành vi kết quả phụ thuộc vào việc bạn có đặt cả chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> hay không.
+
+Nếu bạn đặt chính sách này nhưng không đặt <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />, URL của mục tiêu phải khớp với một mẫu trong danh sách cho phép thì <ph name="CHROME_DEVTOOLS_NAME" /> mới được cho phép đối với mục tiêu đó. Nếu URL của một mục tiêu không khớp với danh sách cho phép thì <ph name="CHROME_DEVTOOLS_NAME" /> sẽ bị chặn đối với mục tiêu đó (ví dụ: không thể kiểm tra một khung phụ có URL không nằm trong danh sách cho phép, nhưng vẫn có thể kiểm tra trang chính nếu URL của trang đó nằm trong danh sách cho phép). Để biết thông tin về định dạng URL, hãy truy cập https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Nếu bạn đặt cả chính sách này và chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> thì danh sách cho phép sẽ được ưu tiên áp dụng. Nếu URL của một mục tiêu khớp với một mẫu trong danh sách cho phép thì URL đó sẽ được cho phép, ngay cả khi URL đó cũng khớp với một mẫu trong danh sách chặn. Nếu URL của một mục tiêu khớp với một mẫu trong danh sách chặn (nhưng không khớp với mẫu nào trong danh sách cho phép) thì URL đó sẽ bị chặn. Nếu URL của một mục tiêu không khớp với cả hai danh sách thì chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> sẽ được dùng làm chính sách dự phòng.
+
+Nếu bạn không đặt chính sách này thì khả năng sử dụng <ph name="CHROME_DEVTOOLS_NAME" /> sẽ được xác định theo chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> và <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Không được sử dụng ký tự đại diện chung chung dùng để khớp với mọi máy chủ lưu trữ (ví dụ: "*" hoặc "[*]"); hãy dùng chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> để bật tính năng này trên phạm vi toàn cục.
+
+Chính sách này chỉ áp dụng cho 1.000 mục.</translation>
 <translation id="1117535567637097036">Trình xử lý giao thức được đặt qua chính sách này không được sử dụng khi xử lý các cơ chế của Android.</translation>
 <translation id="1118093128235245168">Cho phép các trang web yêu cầu người dùng cấp quyền truy cập vào một thiết bị USB đã kết nối</translation>
 <translation id="111910763555783249">Cài đặt thông báo</translation>
@@ -8051,6 +8061,17 @@ Nếu bạn không đặt chính sách này nhưng có đặt chính sách <ph n
 Chính sách này không còn được dùng kể từ M124.</translation>
 <translation id="6022948604095165524">Tác vụ khi khởi động</translation>
 <translation id="602318745029752898">Cho phép dùng các giọng nói của tính năng chuyển văn bản sang lời nói trên mạng nâng cao trong tính năng Chọn để nói</translation>
+<translation id="6023434563562800942">Bạn có thể dùng chính sách này để chặn <ph name="CHROME_DEVTOOLS_NAME" /> trên các URL cụ thể. Để biết thông tin về định dạng URL, hãy truy cập https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Khả năng sử dụng <ph name="CHROME_DEVTOOLS_NAME" /> sẽ được đánh giá ở cấp mục tiêu. Các mẫu URL sẽ được so khớp với URL của từng mục tiêu đang được kiểm tra (chẳng hạn như khung chính của một trang, khung phụ được nhúng, tiện ích hoặc ứng dụng web). Hành vi kết quả phụ thuộc vào việc bạn có đặt cả chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> hay không.
+
+Nếu bạn đặt chính sách này nhưng không đặt <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> và URL của một mục tiêu khớp với một mẫu trong danh sách chặn này thì URL đó sẽ chặn <ph name="CHROME_DEVTOOLS_NAME" /> đối với mục tiêu đó (ví dụ: không thể kiểm tra khung phụ có URL khớp với danh sách chặn này, nhưng vẫn có thể kiểm tra trang chính nếu URL của trang đó không nằm trong danh sách chặn). Nếu URL của một mục tiêu không khớp với mẫu nào thì khả năng sử dụng sẽ được xác định theo chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Nếu bạn đặt cả chính sách này và chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> thì danh sách cho phép sẽ được ưu tiên áp dụng. Nếu URL của một mục tiêu khớp với một mẫu trong danh sách cho phép thì URL đó sẽ được cho phép, ngay cả khi URL đó cũng khớp với một mẫu trong danh sách chặn này. Nếu URL của một mục tiêu khớp với một mẫu trong danh sách chặn này (nhưng không khớp với mẫu nào trong danh sách cho phép) thì URL đó sẽ bị chặn. Nếu URL của một mục tiêu không khớp với cả hai danh sách thì chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> sẽ được dùng làm chính sách dự phòng.
+
+Nếu bạn không đặt chính sách này thì khả năng sử dụng <ph name="CHROME_DEVTOOLS_NAME" /> sẽ được xác định theo chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> và <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Chính sách này chỉ áp dụng cho 1.000 mục.</translation>
 <translation id="6026722971789064331">Kiểm soát việc sử dụng API Hệ thống tệp để ghi</translation>
 <translation id="602728333950205286">URL instant của nhà cung cấp dịch vụ tìm kiếm mặc định</translation>
 <translation id="603410445099326293">Tham số cho URL đề xuất sử dụng POST</translation>
@@ -10643,15 +10664,6 @@ Nếu bạn đặt chính sách này thành Tắt, thì <ph name="PRODUCT_NAME" 
 
 Nếu bạn không đặt chính sách này, thì <ph name="PRODUCT_NAME" /> sẽ chỉ kết nối với các thiết bị truyền trên địa chỉ RFC1918/RFC4193, trừ phi tính năng CastAllowAllIPs được bật.</translation>
 <translation id="7534199150025803530">Chính sách này không ảnh hưởng đến ứng dụng Google Drive trên Android. Nếu muốn ngăn việc sử dụng Google Drive trên kết nối di động thì bạn phải không cho phép cài đặt ứng dụng Google Drive trên Android.</translation>
-<translation id="7537404002861344834">Định cấu hình chế độ cài đặt kết nối cho <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> để cải thiện câu trả lời cho các tính năng của Gemini trong Chrome.
-
-Nếu bạn đặt chính sách này, thì <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> có thể được dùng để cải thiện câu trả lời của Gemini trong Chrome cho những người dùng đã đăng nhập bằng tài khoản được quản lý liên kết với mã dự án và mã ứng dụng được chỉ định. <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> sẽ không dùng được cho những hồ sơ đăng nhập bằng tài khoản cá nhân.
-
-Nếu bạn không đặt chính sách này, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> sẽ không được dùng để cải thiện câu trả lời của Gemini trong Chrome.
-
-Xin lưu ý rằng chính sách này không kiểm soát việc tích hợp <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> nói chung. Bạn có thể kiểm soát việc tích hợp này qua chính sách <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
-
-Tất cả chế độ cài đặt của chính sách này phải khớp với cấu hình của dự án <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> trong Bảng điều khiển <ph name="GOOGLE_CLOUD_PRODUCT_NAME" />. Mọi trường hợp không khớp sẽ dẫn đến hành vi không mong muốn khi sử dụng <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
 <translation id="7538583957913002726">Chính sách này được bật theo mặc định. Chính sách này kiểm soát các thiết bị đã đăng ký để báo cáo tên kiểu máy, cấu trúc và tốc độ xung nhịp tối đa của CPU (cũng như nhiệt độ và quá trình sử dụng CPU trong M96 trở lên).
 
       Nếu bạn tắt chính sách này thì các thiết bị đã đăng ký sẽ không báo cáo bất kỳ thông tin CPU nào.
@@ -12939,19 +12951,6 @@ Lưu ý: Hiện tại, hệ thống sẽ chỉ xem xét mục nhập đầu tiê
           Nếu bạn đặt chính sách này, thì người dùng sẽ không thể thay đổi hay ghi đè chính sách.
 
           Nếu bạn không đặt chính sách này, thì ban đầu, tính năng làm nổi bật tiêu điểm bằng bàn phím sẽ tắt nhưng người dùng có thể bật bất cứ lúc nào.</translation>
-<translation id="9037098514292099199">Nếu bạn đặt chính sách này, hệ thống sẽ kiểm soát các chế độ cài đặt quản lý tiện ích cho <ph name="PRODUCT_NAME" />, bao gồm cả những chế độ cài đặt chịu sự kiểm soát của các chính sách hiện có liên quan đến tiện ích.
-
-Chính sách này chỉ ánh xạ một mã tiện ích hoặc một URL cập nhật với chế độ cài đặt cụ thể tương ứng. Bạn có thể đặt cấu hình mặc định cho mã đặc biệt <ph name="DEFAULT_SCOPE" />. Cấu hình này sẽ áp dụng cho tất cả tiện ích chưa đặt cấu hình tuỳ chỉnh trong chính sách này.
-
-Chính sách này có thể ghi đè cấu hình theo từng tiện ích từ các chính sách cũ.
-
-Lưu ý: Mọi chế độ cài đặt tiện ích theo mã nhận dạng từ <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> hoặc <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> sẽ chỉ kế thừa "installation_mode" và "update_url" từ các giá trị mặc định của <ph name="DEFAULT_SCOPE" />. Chế độ cài đặt sẽ không kế thừa bất kỳ thuộc tính nào khác. Với URL cập nhật, cấu hình sẽ áp dụng cho những tiện ích có URL cập nhật chính xác được nêu trong tệp kê khai của tiện ích đó (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Nếu bạn đặt cờ "override_update_url" thành true (đúng), thì tiện ích đó sẽ được cài đặt và cập nhật bằng URL "cập nhật" được chỉ định trong chính sách <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> hoặc trong trường "update_url" của chính sách này. Cờ "override_update_url" sẽ bị bỏ qua nếu "update_url" là một URL của Cửa hàng Chrome trực tuyến.
-
-Trên các phiên bản <ph name="MS_WIN_NAME" />, bạn chỉ có thể buộc cài đặt các ứng dụng và tiện ích từ bên ngoài Cửa hàng Chrome trực tuyến nếu phiên bản đó đã liên kết với một miền <ph name="MS_AD_NAME" />, <ph name="MS_AAD_NAME" /> hoặc đã đăng ký <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Trên các phiên bản <ph name="MAC_OS_NAME" />, bạn chỉ có thể buộc cài đặt các ứng dụng và tiện ích từ bên ngoài Cửa hàng Chrome trực tuyến nếu phiên bản đó được quản lý qua MDM, đã liên kết với một miền qua MCX hoặc đã đăng ký <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Lưu ý: Chính sách này chỉ áp dụng cho những nền tảng hỗ trợ tiện ích.</translation>
 <translation id="9038839118379817310">Bật Wi-Fi</translation>
 <translation id="9039822628127365650">Khi bạn đặt chính sách này, chính sách sẽ chỉ định thời lượng mà sau đó một người dùng tự động bị đăng xuất, chấm dứt phiên. Người dùng được thông báo về thời gian còn lại bằng đồng hồ đếm ngược hiển thị trong khay hệ thống.
 

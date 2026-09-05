@@ -7,6 +7,7 @@
 <translation id="1046742265332833834">Blue theme</translation>
 <translation id="1070329623210597193">Files this site can view or edit</translation>
 <translation id="1074758928858737435">You can ask to see the desktop version of sites</translation>
+<translation id="1089791933924803646">Get Chrome suggestions in other apps</translation>
 <translation id="1109482864356262001">Features that need motion or light sensors won't work</translation>
 <translation id="1126523729897810826">Complete these suggested actions below to get the most out of Chrome</translation>
 <translation id="113098737392899175">Navigate pages with a text cursor when a keyboard is attached</translation>
@@ -453,6 +454,7 @@
 <translation id="5668404140385795438">Override a website’s request to prevent zooming in</translation>
 <translation id="5668843533782548925">Sites are slower but more secure</translation>
 <translation id="5677928146339483299">Blocked</translation>
+<translation id="5679089750838794164">Chrome can now show you suggestions in other apps based on your browsing data, such as recent browsing history. This data is processed securely on your device. You can turn this off at any time in Chrome settings.</translation>
 <translation id="5689516760719285838">Location</translation>
 <translation id="5690795753582697420">Camera is turned off in Android settings</translation>
 <translation id="5700761515355162635">Third-party cookies allowed</translation>
@@ -507,6 +509,7 @@
 <translation id="6085954183010297841">Delete file editing grant? <ph name="FILE" /></translation>
 <translation id="6104860901391833523">When on, sites can enter picture-in-picture automatically. When off, sites can't enter picture-in-picture automatically.</translation>
 <translation id="6120483543004435978">When on, sites can ask to know when you're actively using your device. When off, sites can't know when you're actively using your device.</translation>
+<translation id="612871598708395517">Hide Get Chrome suggestions in other apps</translation>
 <translation id="6132075343662013154">Chrome will offer to save your password</translation>
 <translation id="615886654739818377">Don't allow sites to manage windows on all your displays</translation>
 <translation id="6165508094623778733">Learn more</translation>

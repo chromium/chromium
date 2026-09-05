@@ -740,7 +740,6 @@
 <translation id="3409785640040772790">Mapy</translation>
 <translation id="3416023309465857378">25 października 2023 r.</translation>
 <translation id="3419787211763835342">Pomóż nam poprawić ulepszone autouzupełnianie</translation>
-<translation id="3426715535827854458">Ukryj pasek narzędzi Ukryj</translation>
 <translation id="3435738964857648380">Bezpieczeństwo</translation>
 <translation id="3441673211568148613">Zadbaj o prywatność podczas przeglądania</translation>
 <translation id="3443810440409579745">Odebrano kartę.</translation>
@@ -1173,6 +1172,7 @@
 <translation id="484280513275854557">Nastąpiło wylogowanie, a dane przeglądania zostały usunięte</translation>
 <translation id="484462545196658690">Automatycznie</translation>
 <translation id="4846662396507502151">Przeglądaj szybciej dzięki nowemu paskowi narzędzi</translation>
+<translation id="4850669014075537160">Przewijanie</translation>
 <translation id="4850886885716139402">Wyświetl</translation>
 <translation id="4854068532375923088">Zezwól „Gemini” na korzystanie z aparatu</translation>
 <translation id="4860895144060829044">Zadzwoń</translation>
@@ -1947,6 +1947,9 @@ Aby kontynuować na komputerze, przełącz się na <ph name="OTHER_EMAIL" />. B�
 <translation id="7280980607183752256">Nie można zaimportować tego pliku</translation>
 <translation id="7282197670900591579">Motyw cytrynowy</translation>
 <translation id="7293429513719260019">Wybierz język</translation>
+<translation id="72961285530871072">Spowoduje to trwałe usunięcie Twoich postępów w Level Up, a dane o korzystaniu z tej funkcji nie będą już wysyłane do Google z Twojego profilu.
+
+Możesz to wznowić w dowolnym momencie.</translation>
 <translation id="7300448350764260141">Wprowadź dodatkową warstwę ochrony przed zagrożeniami online.</translation>
 <translation id="7311244614769792472">Brak wyników</translation>
 <translation id="7312823817809783355">Twoje zadania</translation>

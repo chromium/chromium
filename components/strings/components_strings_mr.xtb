@@ -934,6 +934,7 @@
 <translation id="2544644783021658368">एक दस्तऐवज</translation>
 <translation id="254524874071906077">Chrome ला डीफॉल्ट ब्राउझर म्हणून सेट करा</translation>
 <translation id="2546283357679194313">कुकीज आणि साइट डेटा</translation>
+<translation id="254672217349157196">तुमच्या ईमेलची आपोआप पडताळणी करा</translation>
 <translation id="254947805923345898">धोरण मूल्य वैध नाही.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> नी एक चुकीचे प्रतिसाद पाठविला.</translation>
 <translation id="2551608178605132291">पत्ता: <ph name="ADDRESS" />.</translation>
@@ -1180,6 +1181,7 @@
 <translation id="3008410317623852235">आता तुम्ही Gmail आणि इतर ठिकाणांहून माहिती शोधू शकता आणि ती आपोआप भरू शकता.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, उपलब्ध असलेल्या कृती ब्राउझ करण्यासाठी टॅब प्रेस करा, त्यानंतर निवडलेली कृती अमलात आणण्यासाठी एंटर प्रेस करा.</translation>
 <translation id="3010991137650052245">या साइटवर तुमच्या <ph name="PERMISSION" /> चा वापर करण्यासाठी, <ph name="SHORT_PRODUCT_NAME" /> ला ॲक्सेस द्या</translation>
+<translation id="3013536714390403689">पडताळणी केलेला ईमेल</translation>
 <translation id="3014726756341138577">प्रगत प्रिंटर वैशिष्ट्ये</translation>
 <translation id="301521992641321250">आपोआप ब्लॉक केलेले</translation>
 <translation id="3016780570757425217">तुमचे स्थान जाणून घ्या</translation>
@@ -1547,6 +1549,7 @@
 <translation id="3634530185120165534">ट्रे ५</translation>
 <translation id="3634567936866541746">तुम्ही आताच एका फसव्या साइटवर तुमचा पासवर्ड एंटर केला. तुमची खाती सुरक्षित करण्यासाठी, Chrome तुमचे सेव्ह केलेले पासवर्ड तपासण्याची शिफारस करते.</translation>
 <translation id="3638102297696182302">मला लिहिण्यात मदत करा पुन्‍हा सुरू करा. उघडण्यासाठी टॅब करून एंटर प्रेस करा</translation>
+<translation id="3639626391482300575">Google Wallet मध्ये हा IBAN सेव्ह केला आहे, जेणेकरून तुम्ही तो सर्व Google उत्पादनांवर वापरू शकता.</translation>
 <translation id="3642196846309122856">तुमच्या फाइल पुन्हा डाउनलोड करण्याचा प्रयत्न करा</translation>
 <translation id="3642638418806704195">ॲप्लिकेशन:</translation>
 <translation id="3647286794400715637">प्रत्येक URLs स्ट्रिंग एंट्रीमध्ये एक ते दोन URLs असणे आवश्यक आहे.</translation>
@@ -3181,7 +3184,6 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">लॉग पहा</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />प्रॉक्सी, फायरवॉल आणि सुरक्षित DNS कॉन्फिगरेशन तपासत आहे<ph name="END_LINK" /></translation>
-<translation id="6365513578140103119">तुमचे ईमेल आपोआप कन्फर्म करा</translation>
 <translation id="6366710531182496394">ड्युअल स्टेपल लेफ्ट</translation>
 <translation id="6367196786591004737">एंट्री हटवा</translation>
 <translation id="6370022303958842211">डिव्हाइस अ‍ॅक्सेस करण्याशी संबंधित कृती, जसे की लॉग इन (लॉग इन न करता आल्याची कारणे यांच्या समावेशासह), लॉगआउट, लॉक आणि अनलॉक</translation>
@@ -3306,6 +3308,7 @@
 <translation id="6578434528542148658">एक्स्टेंशन आयडी चुकीचा आहे.</translation>
 <translation id="658230438113661756">तुम्ही भेट देण्याचा प्रयत्न केलेल्या साइटवरील हल्लेखोर हानिकारक सॉफ्टवेअर इंस्टॉल करू शकतात, जी तुमचे पासवर्ड, फोटो, मेसेज किंवा क्रेडिट कार्ड क्रमांक यांसारख्या गोष्टी चोरतात अथवा हटवतात. Chrome हे सुरक्षिततेकडे परतण्याची आवर्जून शिफारस करते. <ph name="BEGIN_LEARN_MORE_LINK" />या चेतावणीबद्दल अधिक जाणून घ्या<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6583309742916093092">Google Wallet मध्ये स्टोअर केले आहे</translation>
+<translation id="6585589684832019248">हे कार्ड Google Wallet मध्ये सेव्ह केले आहे, जेणेकरून तुम्ही ते सर्व Google उत्पादनांवर वापरू शकाल</translation>
 <translation id="6587893660316489419">एन्व्हलप बी५</translation>
 <translation id="6587923378399804057">तुम्ही कॉपी केलेली लिंक</translation>
 <translation id="6591833882275308647">तुमचे <ph name="DEVICE_TYPE" /> व्यवस्थापित केलेले नाही</translation>
@@ -4659,7 +4662,6 @@
 <translation id="8963117664422609631">साइट सेटिंग्जवर जा</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />सूचना:<ph name="MARKUP_2" />आपल्याकडे डेटा कनेक्शन असल्याचे निश्चित करा<ph name="MARKUP_3" />हे वेबपेज नंतर रीलोड करा<ph name="MARKUP_4" />तुम्ही एंटर केलेला ॲड्रेस तपासा<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">तुमच्या स्थानिक फाइल <ph name="HOURS" /> तासांमध्ये हटवल्या जातील</translation>
-<translation id="8964904785315870349">पडताळणी केलेला ईमेल</translation>
 <translation id="8968766641738584599">कार्ड सेव्ह करा</translation>
 <translation id="8970887620466824814">काहीतरी चूक झाली.</translation>
 <translation id="8971063699422889582">सर्व्हरचे सर्टिफिकेट एक्स्पायर झाले आहे.</translation>

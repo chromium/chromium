@@ -57,6 +57,7 @@
 <translation id="1181037720776840403">કાઢી નાખો</translation>
 <translation id="1183189057400844278">તમે હંમેશાં તમારા Google એકાઉન્ટમાં પાસવર્ડનો ઉપયોગ કરી શકો તેની ખાતરી કરવા માટે, આ તમે જ છો તેની ચકાસણી કરો</translation>
 <translation id="1187810343066461819">આ કારમાંથી બુકમાર્ક, ઇતિહાસ અને બીજું ઘણું પણ ડિલીટ કરો</translation>
+<translation id="1191987227666124897">નાપસંદ કરવાની વિનંતી</translation>
 <translation id="1193729455103054076">શું સશક્ત પાસવર્ડનો ઉપયોગ કરીએ?</translation>
 <translation id="11947597112837849">ઇમેઇલ ઍડ્રેસ</translation>
 <translation id="1197267115302279827">બુકમાર્ક ખસેડો</translation>
@@ -212,6 +213,7 @@
 <translation id="1832459821645506983">હા, મને માન્ય છે</translation>
 <translation id="1845958458910716240">તમારા ડેટાને સુરક્ષિત કરવા માટે, Chromeને તમે તાજેતરમાં મુલાકાત લીધી ન હોય તેવી સાઇટમાંથી પરવાનગીઓ દૂર કરવા દો</translation>
 <translation id="1851551847729706116"><ph name="TAB_NAME" />ને આ ટૅબ પર શેર કરી રહ્યાં છીએ</translation>
+<translation id="1855268219431673036"><ph name="TOTAL_PAGE_COUNT" />માંથી પેજ <ph name="CURRENT_PAGE" /></translation>
 <translation id="1869691326892615940">વધુ સલામત પાસવર્ડ, વધુ ઝડપી સાઇન-ઇન</translation>
 <translation id="1871098866036088250">Chrome બ્રાઉઝરમાં ખોલો</translation>
 <translation id="1877026089748256423">Chrome જૂનું થઈ ગયું છે</translation>
@@ -1341,6 +1343,7 @@
 <translation id="634208815998129842">કાર્ય સંચાલક</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">વાંચેલાં તરીકે માર્ક કરો</translation>
+<translation id="63490081267265251">Google સહિત તમે મુલાકાત લો છો તે સાઇટ, આ વિનંતીનો જવાબ કેવી રીતે આપે છે તે નિર્ધારિત કરવા માટે જવાબદાર છે. તમારા પ્રદેશના કાયદાના આધારે, સાઇટ તમારા ડેટાના વેચાણ અને શેરિંગને અથવા મનગમતી બનાવેલી જાહેરાતો માટે તેના ઉપયોગને મર્યાદિત કરીને જવાબ આપી શકે છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="6350745006329795504">તમારા ડિવાઇસ મેનેજ કરો</translation>
 <translation id="6356893102071098867">ચેક કરો કે તમે યોગ્ય એકાઉન્ટ પસંદ કર્યું હોય</translation>
 <translation id="6364438453358674297">ઇતિહાસમાંથી સૂચનને દૂર કરીએ?</translation>
@@ -1665,6 +1668,7 @@
 <translation id="7493994139787901920"><ph name="VERSION" /> (અપડેટ કર્યું <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">કૃપા કરીને રાહ જુઓ…</translation>
 <translation id="7499065150275272675"><ph name="TAB_TITLE" />, પિન કરેલું મ્યૂટ કરેલું ટૅબ</translation>
+<translation id="7500851014030446046">PDF ડાઉનલોડ કરી રહ્યાં છીએ</translation>
 <translation id="7501135638693251872">બધા બુકમાર્ક્સ</translation>
 <translation id="7507207699631365376">આ પ્રદાતાની <ph name="BEGIN_LINK" />પ્રાઇવસી પૉલિસી<ph name="END_LINK" /> જુઓ</translation>
 <translation id="750886945254958667">પછીથી ટૅબ ઉમેરવા માટે આ ગ્રૂપ રાખો અથવા જો તમને હવે તેનો ઍક્સેસ ન જોઈતો હોય તો તેને છોડી દો</translation>
@@ -1732,6 +1736,7 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="777637629667389858">તમે સાઇન ઇન હો ત્યારે, તમને સમગ્ર Google સેવાઓમાં સંરક્ષિત કરે છે.</translation>
 <translation id="7778840695157240389">નવી સ્ટોરી માટે થોડા સમય પછી ફરી ચેક કરો</translation>
+<translation id="7780992949171378848">તમારા ડેટાના ઉપયોગ સંબંધિત સાઇટને નાપસંદ કરવાની વિનંતી મોકલો</translation>
 <translation id="7791543448312431591">ઉમેરો</translation>
 <translation id="7792388396321542707">શેર કરવાનું રોકો</translation>
 <translation id="780287761701992588">તમારા બધા ડિવાઇસ પર તમારા બુકમાર્ક, પાસવર્ડ અને બીજું ઘણું મેળવો</translation>

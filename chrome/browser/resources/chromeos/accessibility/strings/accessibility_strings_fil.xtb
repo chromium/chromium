@@ -218,6 +218,7 @@
 <translation id="2365384324219615024">Puwede mo ring pindutin ang Enter para mag-activate ng mga item. Halimbawa, magagamit ang Enter para magsumite ng text sa isang form. Para magpatuloy, pindutin ang Enter.</translation>
 <translation id="2371402123699727805">Aktibo ang dictation. <ph name="GESTURE" /> para huminto. Pansamantalang hindi available ang iba pang galaw.</translation>
 <translation id="2381733276052567791">I-toggle pa-on o pa-off ang pananalita</translation>
+<translation id="2386248289416625097">Mga Kandidato</translation>
 <translation id="2390264819538553347">Upang magpatuloy, pindutin ang enter; upang bumalik, pindutin ang backspace.</translation>
 <translation id="2397408693730730860">.input {$$COUNT :number} .match $$COUNT 1{{asterisk}} *{{{$$COUNT} (na) asterisk}}</translation>
 <translation id="2398579267367951220">Mag-type para maghanap sa page. Pindutin ang enter para pumunta sa resulta, pataas o pababang arrow para i-browse ang mga resulta, patuloy na mag-type para baguhin ang iyong paghahanap, o lumabas para kanselahin.</translation>

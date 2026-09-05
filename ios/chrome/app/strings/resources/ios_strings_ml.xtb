@@ -740,7 +740,6 @@
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">2023 ഒക്‌ടോബർ 25</translation>
 <translation id="3419787211763835342">'മെച്ചപ്പെടുത്തിയ സ്വയമേവ പൂരിപ്പിക്കൽ' മെച്ചപ്പെടുത്താൻ സഹായിക്കൂ</translation>
-<translation id="3426715535827854458">'ടൂൾബാർ മറയ്ക്കുക' മറയ്ക്കുക</translation>
 <translation id="3435738964857648380">സുരക്ഷ</translation>
 <translation id="3441673211568148613">നിങ്ങളുടെ ബ്രൗസിംഗ് സ്വകാര്യമായി നിലനിർത്തുക</translation>
 <translation id="3443810440409579745">ടാബ് സ്വീകരിച്ചു.</translation>
@@ -1173,6 +1172,7 @@
 <translation id="484280513275854557">നിങ്ങൾ സൈൻ ഔട്ട് ആയി; ബ്രൗസിംഗ് ഡാറ്റ ഇല്ലാതാക്കി</translation>
 <translation id="484462545196658690">സ്വയമേവ</translation>
 <translation id="4846662396507502151">പുതിയ ടൂൾബാർ ഉപയോഗിച്ച് വേഗത്തിൽ ബ്രൗസ് ചെയ്യുക</translation>
+<translation id="4850669014075537160">സ്‌ക്രോൾ ചെയ്യൽ</translation>
 <translation id="4850886885716139402">കാണുക</translation>
 <translation id="4854068532375923088">നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കാൻ “Gemini-യെ” അനുവദിക്കുക</translation>
 <translation id="4860895144060829044">വിളിക്കുക</translation>
@@ -1947,6 +1947,9 @@
 <translation id="7280980607183752256">ഈ ഫയൽ ഇമ്പോർട്ട് ചെയ്യാനാകില്ല</translation>
 <translation id="7282197670900591579">സിട്രൺ തീം</translation>
 <translation id="7293429513719260019">ഭാഷ തിരഞ്ഞെടുക്കുക</translation>
+<translation id="72961285530871072">ഇത് നിങ്ങളുടെ Level Up പുരോഗതി ശാശ്വതമായി ഇല്ലാതാക്കും, നിങ്ങളുടെ പ്രൊഫൈലിൽ നിന്നുള്ള Level Up ഫീച്ചർ ഉപയോഗ ഡാറ്റ ഇനിമുതൽ Google-ലേക്ക് അയയ്ക്കില്ല.
+
+നിങ്ങൾക്ക് ഏതുസമയത്തും പുനരാരംഭിക്കാം.</translation>
 <translation id="7300448350764260141">ഓൺലൈൻ ഭീഷണികൾക്കെതിരെ ഒരു അധിക സുരക്ഷ ചേർക്കുക.</translation>
 <translation id="7311244614769792472">ഫലങ്ങളൊന്നും കണ്ടെത്തിയില്ല</translation>
 <translation id="7312823817809783355">നിങ്ങളുടെ ടാസ്‌ക്കുകൾ</translation>

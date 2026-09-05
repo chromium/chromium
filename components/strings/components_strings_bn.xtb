@@ -1549,6 +1549,7 @@
 <translation id="3634530185120165534">ট্রে ৫</translation>
 <translation id="3634567936866541746">আপনি এইমাত্র একটি প্রতারণামূলক সাইটে আপনার পাসওয়ার্ড লিখেছেন। আপনার অ্যাকাউন্ট সুরক্ষিত করার জন্য, Chrome আপনার সেভ করা পাসওয়ার্ড চেক করে নিতে সাজেস্ট করছে।</translation>
 <translation id="3638102297696182302">লেখার ব্যাপারে সাহায্য করার বিকল্প আবার চালু করুন। খোলার জন্য ট্যাপ করে Enter প্রেস করুন</translation>
+<translation id="3639626391482300575">এই IBAN আপনার Google Wallet-এ সেভ করা হয়েছে, যাতে আপনি বিভিন্ন Google প্রোডাক্টে তা ব্যবহার করতে পারেন।</translation>
 <translation id="3642196846309122856">আপনার ফাইল আবার ডাউনলোড করার চেষ্টা করে দেখুন</translation>
 <translation id="3642638418806704195">অ্যাপ্লিকেশন:</translation>
 <translation id="3647286794400715637">প্রতিটি URL স্ট্রিং এন্ট্রিতে ১ থেকে ২টি URL থাকতে হবে।</translation>
@@ -3181,7 +3182,6 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">লগ দেখুন</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />প্রক্সি, ফায়ারওয়াল এবং নিরাপদ DNS কনফিগারেশন পরীক্ষা করে দেখা হচ্ছে<ph name="END_LINK" /></translation>
-<translation id="6365513578140103119">আপনার ইমেল অটোমেটিক কনফার্ম করুন</translation>
 <translation id="6366710531182496394">বাঁদিকে ডুয়াল স্টেপল</translation>
 <translation id="6367196786591004737">এন্ট্রি মুছুন</translation>
 <translation id="6370022303958842211">ডিভাইস অ্যাক্সেস অ্যাকশন যেমন লগ-ইন (লগ-ইন করা যায়নি এমন কারণ সহ), লগ-আউট, লক এবং আনলক</translation>
@@ -3306,6 +3306,7 @@
 <translation id="6578434528542148658">ভুল এক্সটেনশন আইডি।</translation>
 <translation id="658230438113661756">আপনি যে সাইট ভিজিট করার চেষ্টা করেছেন সেখানে আক্রমণকারীরা ক্ষতিকর সফ্টওয়্যার ইনস্টল করে দিতে পারে, যা পাসওয়ার্ড, ফটো, মেসেজ বা ক্রেডিট কার্ড নম্বর চুরি করতে বা মুছে দিতে পারে। Chrome সম্পূর্ণভাবে নিরাপদ সাইটে ফিরে যাওয়ার সাজেশন দেয়। <ph name="BEGIN_LEARN_MORE_LINK" />এই সতর্কতা সম্পর্কে আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6583309742916093092">Google Wallet-এ সেভ করা হয়েছে</translation>
+<translation id="6585589684832019248">এই কার্ড আপনার Google Wallet-এ সেভ করা হয়েছে, যা আপনি বিভিন্ন Google প্রোডাক্টে ব্যবহার করতে পারেন</translation>
 <translation id="6587893660316489419">এনভেলপ B5</translation>
 <translation id="6587923378399804057">আপনার কপি করা লিঙ্ক</translation>
 <translation id="6591833882275308647">আপনার <ph name="DEVICE_TYPE" /> ম্যানেজ করা হয়নি</translation>
@@ -4659,7 +4660,6 @@
 <translation id="8963117664422609631">সাইট সেটিংসে যান</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />পরামর্শগুলি:<ph name="MARKUP_2" />নিশ্চিত হোন যে আপনার একটি ডেটা কানেকশন আছে<ph name="MARKUP_3" />পরবর্তীতে এই ওয়েব পৃষ্ঠাটি পুনরায় লোড করুন<ph name="MARKUP_4" />আপনার লেখা ঠিকানাটি পরীক্ষা করুন<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">আপনার স্থানীয় ফাইল <ph name="HOURS" /> ঘণ্টার মধ্যে মুছে যাবে</translation>
-<translation id="8964904785315870349">যাচাই করা ইমেল</translation>
 <translation id="8968766641738584599">কার্ড সেভ করুন</translation>
 <translation id="8970887620466824814">কিছু সমস্যা হয়েছে।</translation>
 <translation id="8971063699422889582">সার্ভারের সার্টিফিকেটের মেয়াদ ফুরিয়েছে৷</translation>
@@ -4870,6 +4870,7 @@
 <translation id="988159990683914416">ডেভেলপার বিল্ড</translation>
 <translation id="989988560359834682">ঠিকানা সম্পাদনা করুন</translation>
 <translation id="990164307229195234"><ph name="DEVICE_NAME" /> (<ph name="DISAMBIGUATION_LABEL" />)</translation>
+<translation id="990812705189376036">Merkle Tree প্রমাণপত্র</translation>
 <translation id="992110854164447044">আপনাকে সম্ভাব্য জালিয়াতির হাত থেকে রক্ষা করতে, ভার্চুয়াল কার্ড আসল কার্ডটি লুকায়। <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>
 <translation id="992256792861109788">গোলাপী</translation>

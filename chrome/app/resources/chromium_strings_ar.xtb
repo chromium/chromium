@@ -9,6 +9,7 @@
 <translation id="1065672644894730302">لا يمكن قراءة إعداداتك المفضّلة. قد تكون بعض الميزات غير متاحة، ولن يتم حفظ التغييرات في الإعدادات المفضّلة.</translation>
 <translation id="1083934481477628225">‏أوقفَ أحد والدَيك "أذونات المواقع الإلكترونية والتطبيقات والإضافات" لمتصفِّح Chromium.</translation>
 <translation id="1090946077924227754">‏للبحث عن ميزة أو إضافة محدّدة في Chromium، عليك كتابة اختصارها في شريط العناوين متبوعًا بمفتاح لوحة المفاتيح الذي تم اختياره</translation>
+<translation id="1098493699368672217">‏عرض ميزة "البحث باستخدام Chromium" في لوحة النظام وتفعيل اختصارات لوحة المفاتيح</translation>
 <translation id="1104942323762546749">‏يرغب Chromium في تصدير كلمات المرور، لذا يُرجى كتابة كلمة مرور Windows للسماح بذلك.</translation>
 <translation id="112640046208448578">يمكنك التعرّف على الصور أو الأماكن ونسخ النصوص أو ترجمتها. وعند استخدام ميزة "البحث بالصور"، يتمّ إرسال لقطة شاشة للصفحة إلى الخادم. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">‏Chromium هو متصفحك التلقائي</translation>
@@ -305,6 +306,7 @@
 <translation id="4298125729853015961">‏تصدير كلمات المرور من Chromium</translation>
 <translation id="4304713468139749426">مدير كلمات المرور</translation>
 <translation id="4334241893986177674">البحث في لقطة الشاشة هذه</translation>
+<translation id="4368547723231502008">‏يتيح لك هذا الإعداد البحث وطرح الأسئلة من أي مكان، حتى إذا كان Chromium مصغّرًا</translation>
 <translation id="4384331407722351213">‏يمكنك فتح Chromium تلقائيًا عند بدء تشغيل Windows</translation>
 <translation id="4400772909124543403">ما مِن تحديث متاح</translation>
 <translation id="4407044323746248786">‏هل تريد الخروج من Chromium على أي حال؟</translation>
@@ -334,6 +336,7 @@
 <translation id="4613863813562375431">‏إصدار نظام التشغيل Chromium</translation>
 <translation id="4621240073146040695">‏أوشك التحديث على الانتهاء! إعادة تشغيل Chromium لإنهاء التحديث.</translation>
 <translation id="4625064703209785397">‏يعمل هذا الإعداد على زيادة سرعة المواقع الإلكترونية باستخدام محرّك V8 في Chromium، ولكنه يحد قليلاً من قدرة Chromium على مقاومة الهجمات</translation>
+<translation id="4626321472657185181">‏فتح ميزة "البحث في Chromium"</translation>
 <translation id="4665829708273112819">‏تحذير: لا يستطيع Chromium منع الإضافات من تسجيل سجلّ التصفُّح. لإيقاف هذه الإضافة في وضع التصفُّح المتخفي، يجب إلغاء تحديد هذا الخيار.</translation>
 <translation id="4673151026126227699">‏في حال مشاركة تقارير استخدام Chromium أيضًا، ستتضمّن هذه التقارير عناوين URL التي تنتقل إليها.</translation>
 <translation id="4673710618874938871">تم تسجيل الدخول باسم <ph name="USER_NAME" />، ولديك اشتراك. يمكنك فتح قائمة الحسابات</translation>
@@ -375,6 +378,7 @@
 <translation id="5286907366254680517">تمّ رصد اللغة</translation>
 <translation id="5289287148052354622">‏تنزيل تطبيق Chromium</translation>
 <translation id="5294316920224716406">‏سيحذرك Chromium قبل تحميل موقع إلكتروني يستخدم اتصالاً غير آمن عند التصفّح في "وضع التصفّح المتخفي".</translation>
+<translation id="5296581118566748922">‏البحث باستخدام Chromium</translation>
 <translation id="5313228254328109263">‏خدمة Chromium Updater الداخلية</translation>
 <translation id="5324450571874973775">‏يمكنك استخدامها مع ميزات Gemini الأخرى في Chromium</translation>
 <translation id="5346389065299425353">يمكنك تعزيز نتائج بحثك من خلال إضافة علامات تبويب وملفات وأدوات متعدّدة</translation>
@@ -385,6 +389,7 @@
 <translation id="5358375970380395591">‏أنت تسجل الدخول باستخدام حساب يخضع للإدارة وتتيح للمشرف إمكانية التحكم في ملفك الشخصي على Chromium. وستكون بياناتك في Chromium مثل تطبيقاتك وإشاراتك المرجعية وسجلك وكلمات المرور التابعة لك والإعدادات الأخرى مرتبطة دائمًا بالمستخدم <ph name="USER_NAME" />. ستتمكن من حذف هذه البيانات عبر لوحة تحكم حسابات Google، ولكنك لن تتمكن من إقران هذه البيانات بحساب آخر. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">الرمز البرمجي الإضافي: <ph name="EXTRA_CODE" /></translation>
 <translation id="5377622451696208284">‏للحصول على خيارات مخصَّصة، يُرجى تضمين متصفّح Chromium في "النشاط على الويب وفي التطبيقات"</translation>
+<translation id="5382964351116519680">‏فتح ميزة "البحث في Chromium"</translation>
 <translation id="5383439451358640070">‏التعرّف على سبب حظر Chromium لبعض الملفات</translation>
 <translation id="5386450000063123300">‏جارٍ تحديث Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">‏السماح بتسجيل الدخول إلى Chromium</translation>
@@ -504,6 +509,7 @@
 <translation id="651535675648445253">‏يتم فتح الاختصارات في Chromium</translation>
 <translation id="6539122709674868420">‏تغلق مؤسستك Chromium في حال عدم استخدامه لمدّة <ph name="TIMEOUT_DURATION" />. تم حذف بيانات التصفُّح. ويمكن أن يشمل ذلك بيانات السجلّ والملء التلقائي وعمليات التنزيل.</translation>
 <translation id="6542839706527980775">‏يحتفظ كل ملف شخصي بالمعلومات الخاصة به على Chromium، مثل الإشارات المرجعية والسجلّ وكلمات المرور وغير ذلك.</translation>
+<translation id="6556755379298048869">يمكنك البحث باستخدام أحد اختصارات لوحة المفاتيح.</translation>
 <translation id="6563921047760808519">‏مزيد من المعلومات حول <ph name="BEGIN_LINK" />الطريقة التي يتّبعها Chromium للحفاظ على خصوصية بياناتك<ph name="END_LINK" /></translation>
 <translation id="6564039629497156115">‏سيتم تطبيق التغييرات في هذا الإعداد بعد إعادة تشغيل Chromium.</translation>
 <translation id="6567032987737689854">‏يمكنك إدارة الإضافات من خلال النقر على "الإضافات" في قائمة Chromium الرئيسية.</translation>
@@ -538,6 +544,7 @@
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6859580922007887573">‏يجب النقر على مفتاح Tab للمتابعة</translation>
 <translation id="6862030660799253820">البحث عن هذه الصورة باستخدام ميزة "البحث بالصور"</translation>
+<translation id="6869568587896659271">يمكنك الوصول بسهولة إلى المواقع الإلكترونية أسفل شريط العناوين</translation>
 <translation id="6873893289264747459">‏رصد Chromium أنّ الإضافة "<ph name="EXTENSION_NAME" />" تحتوي على برامج ضارة.</translation>
 <translation id="6877155553248388166">أسفل يسار مساحة البحث: %<ph name="RIGHT" /> من الجهة اليسرى و%<ph name="BOTTOM" /> من الأسفل</translation>
 <translation id="6896758677409633944">نسخ</translation>
@@ -642,6 +649,7 @@
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">‏يمكنك جعل الاطّلاع على المواقع الإلكترونية التي تزورها أكثر صعوبة على الجهات التي يمكنها الوصول إلى حركة مرور بياناتك على الإنترنت. يستخدم Chromium اتصالاً آمنًا للبحث عن عنوان IP الخاص بأي موقع إلكتروني في نظام أسماء النطاقات (DNS).</translation>
 <translation id="7810005234485217901">يمكنك تثبيت ميزة "البحث بالصور" للوصول إليها بسهولة</translation>
+<translation id="7828527096541974699">‏اختيار المحتوى الذي تتم مشاركته مع Chromium</translation>
 <translation id="7828947555739565424">‏يتوفّر حاليًا على هذا الجهاز ملف شخصي لهذا الحساب على Chromium.</translation>
 <translation id="7845233973568007926">شكرًا على التثبيت. عليك إعادة تشغيل الكمبيوتر قبل استخدام <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7847673590271334840">‏تم تغيير محرك البحث من مصدر خارج Chromium. ولحمايتك، أعاد Chromium ضبطه على الخيار التلقائي الأصلي. <ph name="LEARN_MORE_LINK" /></translation>
@@ -761,6 +769,7 @@
             • حذف ملفات تعريف الارتباط وبيانات الموقع الإلكتروني المؤقَّتة الأخرى
             <ph name="LINE_BREAKS" />
             لن يؤثّر هذا الإجراء في الإشارات المرجعية والسجلّ وكلمات المرور المحفوظة.</translation>
+<translation id="8966875421152977384">‏عرض اختصارات المواقع الإلكترونية في Chromium</translation>
 <translation id="897581876605952338">‏شعار Chromium Enterprise</translation>
 <translation id="8980139959902937527">‏ميزات الأمان من Google ستكون متاحة لك أثناء التنقل باستخدام تطبيق Chromium على "<ph name="DEVICE_TYPE" />"</translation>
 <translation id="8981150672034878610">‏يتعذّر بدء تشغيل Chromium بسبب حدوث خطأ أثناء فتح ملفك الشخصي. يُرجى تجربة إعادة تشغيله.</translation>
@@ -769,6 +778,7 @@
 <translation id="9018218886431812662">اكتمل التثبيت</translation>
 <translation id="9019929317751753759">‏لجعل Chromium أكثر أمنًا، أوقفنا الإضافة التالية التي لم تُدرج في <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> وربما تكون قد أضيفت بدون علمك.</translation>
 <translation id="9022552996538154597">‏تسجيل الدخول إلى Chromium</translation>
+<translation id="9035791714111278917">‏عرض ميزة "البحث باستخدام Chromium" في شريط قوائم Mac وتفعيل اختصارات لوحة المفاتيح</translation>
 <translation id="904366664621834601">‏حَظَر Chromium عملية التنزيل هذه لأنّ ملف الأرشيف يتضمّن ملفات أخرى قد تخفي برامج ضارة</translation>
 <translation id="9053882453960391422">‏يمكنك الحفاظ على مزامنة كلمات المرور والإشارات المرجعية والسجلّ بشكل مثالي على جميع الأجهزة، وكذلك الوصول بسهولة إلى الميزات المألوفة والمفضَّلة لديك من خلال ضبط Chromium كمتصفِّحك التلقائي، وتثبيته في شريط المهام للوصول إليه بسرعة.</translation>
 <translation id="9056398481763999048">‏يمكنك استخدام أفضل أدوات الذكاء الاصطناعي من Google من خلال تطبيق Chromium على هاتفك</translation>

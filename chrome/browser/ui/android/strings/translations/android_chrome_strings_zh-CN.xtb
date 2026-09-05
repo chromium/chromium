@@ -57,6 +57,7 @@
 <translation id="1181037720776840403">移除</translation>
 <translation id="1183189057400844278">为了确保您可以一直使用 Google 账号中的密码，请验证是您本人在操作</translation>
 <translation id="1187810343066461819">同时从此车载系统中删除书签、历史记录等信息</translation>
+<translation id="1191987227666124897">选择拒绝请求</translation>
 <translation id="1193729455103054076">使用安全系数高的密码？</translation>
 <translation id="11947597112837849">邮箱</translation>
 <translation id="1197267115302279827">移动书签</translation>
@@ -212,6 +213,7 @@
 <translation id="1832459821645506983">立即开启</translation>
 <translation id="1845958458910716240">为保护您的数据，对于您近期未访问的网站，请允许 Chrome 撤消网站权限</translation>
 <translation id="1851551847729706116">正在将“<ph name="TAB_NAME" />”共享到此标签页</translation>
+<translation id="1855268219431673036">第 <ph name="CURRENT_PAGE" /> 页，共 <ph name="TOTAL_PAGE_COUNT" /> 页</translation>
 <translation id="1869691326892615940">密码更安全，登录更快捷</translation>
 <translation id="1871098866036088250">在 Chrome 浏览器中打开</translation>
 <translation id="1877026089748256423">Chrome 版本太旧</translation>
@@ -1341,6 +1343,7 @@
 <translation id="634208815998129842">任务管理器</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026以及另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 个地址}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026以及另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 个地址}}</translation>
 <translation id="6345878117466430440">标记为已读</translation>
+<translation id="63490081267265251">您访问的网站（包括 Google）负责确定如何响应此请求。根据您所在地区的法律，网站可能会通过限制出售和分享您的数据或限制将您的数据用于投放个性化广告来做出响应。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="6350745006329795504">管理设备</translation>
 <translation id="6356893102071098867">确保您选择的是正确的账号</translation>
 <translation id="6364438453358674297">要从历史记录中移除建议吗？</translation>
@@ -1663,6 +1666,7 @@
 <translation id="7493994139787901920"><ph name="VERSION" />（上次更新时间：<ph name="TIME_SINCE_UPDATE" />）</translation>
 <translation id="7498271377022651285">请稍候…</translation>
 <translation id="7499065150275272675"><ph name="TAB_TITLE" />，已设为静音的固定标签页</translation>
+<translation id="7500851014030446046">正在下载 PDF</translation>
 <translation id="7501135638693251872">所有书签</translation>
 <translation id="7507207699631365376">请参阅此提供商的<ph name="BEGIN_LINK" />隐私权政策<ph name="END_LINK" /></translation>
 <translation id="750886945254958667">您可以保留此分组，以便日后添加标签页；如果不再想访问它，也可以退出分组</translation>
@@ -1730,6 +1734,7 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026以及另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 种付款方式}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026以及另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 种付款方式}}</translation>
 <translation id="777637629667389858">当您登录后，在各种 Google 服务中保护您。</translation>
 <translation id="7778840695157240389">请稍后再回来查看是否有新报道</translation>
+<translation id="7780992949171378848">向网站发送选择拒绝请求，以限制其使用您的数据</translation>
 <translation id="7791543448312431591">添加</translation>
 <translation id="7792388396321542707">停止分享</translation>
 <translation id="780287761701992588">在所有设备上获取保存的书签、密码等信息</translation>

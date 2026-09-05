@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Tạo <ph name="NUM_WEEKS_ONE" /> tuần trước}other{Tạo <ph name="NUM_WEEKS_MANY" /> tuần trước}}</translation>
 <translation id="1063300264396686489">Tự động mở nhóm thẻ từ các thiết bị khác</translation>
 <translation id="1075622780330595106">Gần đây, bạn không sử dụng <ph name="NUMBER_OF_TABS" /> trong tổng số các thẻ của mình. Bạn có muốn đóng các thẻ này không?</translation>
+<translation id="1089791933924803646">Nhận đề xuất trong Chrome trên các ứng dụng khác</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Tạo <ph name="NUM_YEARS_ONE" /> năm trước}other{Tạo <ph name="NUM_YEARS_MANY" /> năm trước}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Các thẻ và nhóm không hoạt động sẽ bị đóng sau 1 tháng}other{Các thẻ và nhóm không hoạt động sẽ bị đóng sau <ph name="MONTH_COUNT_MANY" /> tháng}}</translation>
 <translation id="1173894706177603556">Đổi tên</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Thêm thẻ vào nhóm}other{Thêm các thẻ vào nhóm}}</translation>
 <translation id="8138067144082174140">Sau 14 ngày không hoạt động</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Mở rộng nhóm thẻ <ph name="TITLE_OF_GROUP" /> có <ph name="TABS_COUNT_ONE" /> thẻ, màu <ph name="COLOR_NAME" />.}other{Mở rộng nhóm thẻ <ph name="TITLE_OF_GROUP" /> có <ph name="TABS_COUNT_MANY" /> thẻ, màu <ph name="COLOR_NAME" />.}}</translation>
+<translation id="8172214054247281626">Chia sẻ dữ liệu duyệt web, chẳng hạn như nhật ký duyệt web gần đây, để nhận đề xuất trên các ứng dụng đã chọn. Dữ liệu này sẽ được xử lý một cách an toàn trên thiết bị của bạn.</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{Bỏ ghim thẻ}other{Bỏ ghim các thẻ}}</translation>
 <translation id="8205266828577616993">Chuyển thẻ lên trên</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Cập nhật <ph name="NUM_MINS_ONE" /> phút trước}other{Cập nhật <ph name="NUM_MINS_MANY" /> phút trước}}</translation>

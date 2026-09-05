@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> వారం క్రితం క్రియేట్ చేయడం జరిగింది}other{<ph name="NUM_WEEKS_MANY" /> వారాల క్రితం క్రియేట్ చేయడం జరిగింది}}</translation>
 <translation id="1063300264396686489">ఇతర పరికరాల నుండి ట్యాబ్ గ్రూప్‌లను ఆటోమేటిక్‌గా తెరవండి</translation>
 <translation id="1075622780330595106">మీ <ph name="NUMBER_OF_TABS" /> ట్యాబ్‌లు ఇటీవల ఉపయోగించబడలేదు. వాటిని మూసివేయాలా?</translation>
+<translation id="1089791933924803646">ఇతర యాప్‌లలో Chrome సూచనలను పొందండి</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> సంవత్సరం క్రితం క్రియేట్ చేయడం జరిగింది}other{<ph name="NUM_YEARS_MANY" /> సంవత్సరాల క్రితం క్రియేట్ చేయడం జరిగింది}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{ఇన్‌యాక్టివ్ ట్యాబ్‌లు, గ్రూప్‌లు 1 నెల తర్వాత మూసివేయబడతాయి}other{ఇన్‌యాక్టివ్ ట్యాబ్‌లు, గ్రూప్‌లు <ph name="MONTH_COUNT_MANY" /> నెలల తర్వాత మూసివేయబడతాయి}}</translation>
 <translation id="1173894706177603556">పేరుమార్చు</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{ట్యాబ్‌ను గ్రూప్‌నకు జోడించండి}other{ట్యాబ్‌లను గ్రూప్‌నకు జోడించండి}}</translation>
 <translation id="8138067144082174140">14 రోజుల వరకు ఇన్‌యాక్టివ్‌గా ఉన్న తర్వాత</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ట్యాబ్‌తో ఉన్న <ph name="TITLE_OF_GROUP" /> ట్యాబ్ గ్రూప్‌ను, <ph name="COLOR_NAME" /> రంగుతో విస్తరించండి.}other{<ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లతో ఉన్న <ph name="TITLE_OF_GROUP" /> ట్యాబ్ గ్రూప్‌ను, <ph name="COLOR_NAME" /> రంగుతో విస్తరించండి.}}</translation>
+<translation id="8172214054247281626">ఎంచుకున్న యాప్‌లలో సూచనలను పొందడానికి మీ ఇటీవలి బ్రౌజింగ్ హిస్టరీ వంటి బ్రౌజింగ్ డేటాను షేర్ చేయండి. ఈ డేటా మీ డివైజ్‌లో సురక్షితంగా ప్రాసెస్ అవుతుంది.</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{ట్యాబ్ పిన్ తీసివేయండి}other{ట్యాబ్‌ల పిన్‌ను తీసివేయండి}}</translation>
 <translation id="8205266828577616993">ట్యాబ్‌ను పైక్ తరలించండి</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> నిమిషం క్రితం అప్‌డేట్ చేయబడింది}other{<ph name="NUM_MINS_MANY" /> నిమిషాల క్రితం అప్‌డేట్ చేయబడింది}}</translation>

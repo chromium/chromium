@@ -740,7 +740,6 @@
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">2023. gada 25. oktobris</translation>
 <translation id="3419787211763835342">Palīdziet pilnveidot uzlaboto automātisko aizpildi</translation>
-<translation id="3426715535827854458">Paslēpt rīkjoslu</translation>
 <translation id="3435738964857648380">Drošība</translation>
 <translation id="3441673211568148613">Saglabājiet pārlūkošanas konfidencialitāti</translation>
 <translation id="3443810440409579745">Saņemta cilne.</translation>
@@ -1173,6 +1172,7 @@
 <translation id="484280513275854557">Jūs tikāt izrakstīts; pārlūkošanas dati tika dzēsti</translation>
 <translation id="484462545196658690">Autom.</translation>
 <translation id="4846662396507502151">Veiciet pārlūkošanu ātrāk, izmantojot jauno rīkjoslu.</translation>
+<translation id="4850669014075537160">Ritināšana</translation>
 <translation id="4850886885716139402">Skatīt</translation>
 <translation id="4854068532375923088">Atļaujiet Gemini izmantot jūsu kameru</translation>
 <translation id="4860895144060829044">Zvanīt</translation>
@@ -1947,6 +1947,9 @@ Lai turpinātu datorā, pārslēdzieties uz kontu <ph name="OTHER_EMAIL" />. Jū
 <translation id="7280980607183752256">Šo failu nevar importēt.</translation>
 <translation id="7282197670900591579">Citronu krāsas motīvs</translation>
 <translation id="7293429513719260019">Atlasīt valodu</translation>
+<translation id="72961285530871072">Tiks neatgriezeniski dzēsts jūsu Level Up progress, un ar jūsu profilu saistītie Level Up funkciju lietojuma dati vairs netiks sūtīti uzņēmumam Google.
+
+Varat jebkurā laikā atkal iespējot Level Up.</translation>
 <translation id="7300448350764260141">Pievienojiet papildu aizsardzības līmeni pret draudiem tiešsaistē.</translation>
 <translation id="7311244614769792472">Netika atrasts neviens rezultāts</translation>
 <translation id="7312823817809783355">Jūsu uzdevumi</translation>

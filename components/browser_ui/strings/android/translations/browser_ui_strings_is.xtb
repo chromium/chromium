@@ -7,6 +7,7 @@
 <translation id="1046742265332833834">Blátt þema</translation>
 <translation id="1070329623210597193">Skrár sem þetta svæði getur skoðað eða breytt</translation>
 <translation id="1074758928858737435">Þú getur beðið um að sjá borðtölvuútgáfu vefsvæða</translation>
+<translation id="1089791933924803646">Fá tillögur Chrome í öðrum forritum</translation>
 <translation id="1109482864356262001">Eiginleikar sem þurfa hreyfi- eða birtuskynjara virka ekki</translation>
 <translation id="1126523729897810826">Ljúktu ráðlögðu aðgerðunum hér að neðan til að nýta Chrome sem best</translation>
 <translation id="113098737392899175">Skoða síður með textabendli þegar lyklaborðið er tengt</translation>
@@ -453,6 +454,7 @@
 <translation id="5668404140385795438">Hunsa beiðni vefsvæðis um að koma í veg fyrir aðdrátt</translation>
 <translation id="5668843533782548925">Vefsvæði eru hægari en öruggari</translation>
 <translation id="5677928146339483299">Lokað fyrir aðgang</translation>
+<translation id="5679089750838794164">Chrome getur nú birt þér tillögur í öðrum forritum á grunni vefskoðunargagnanna þinna, t.d. nýlegum vafraferli. Þessi gögn eru unnin á öruggan hátt í tækinu þínu. Þú getur slökkt á þessu hvenær sem er í stillingum Chrome.</translation>
 <translation id="5689516760719285838">Staðsetning</translation>
 <translation id="5690795753582697420">Slökkt er á myndavél í stillingum Android</translation>
 <translation id="5700761515355162635">Fótspor þriðju aðila leyfð</translation>
@@ -507,6 +509,7 @@
 <translation id="6085954183010297841">Eyða leyfi til að breyta skrám? <ph name="FILE" /></translation>
 <translation id="6104860901391833523">Þegar kveikt geta vefsvæði notað mynd í mynd sjálfkrafa. Þegar slökkt geta vefsvæði ekki notað mynd í mynd sjálfkrafa.</translation>
 <translation id="6120483543004435978">Þegar kveikt er á þessu geta vefsvæði beðið um að fá að vita hvenær þú ert að nota tækið með virkum hætti. Þegar slökkt er á þessu geta vefsvæði ekki vitað hvenær þú ert að nota tækið með virkum hætti.</translation>
+<translation id="612871598708395517">Fela „Fá tillögur Chrome í öðrum forritum“</translation>
 <translation id="6132075343662013154">Chrome býðst til að vista aðgangsorðið þitt</translation>
 <translation id="615886654739818377">Ekki leyfa vefsvæðum að stjórna gluggum á öllum skjáunum</translation>
 <translation id="6165508094623778733">Frekari upplýsingar</translation>

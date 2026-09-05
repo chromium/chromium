@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> সপ্তাহ পূৰ্বে সৃষ্টি কৰা হৈছে}one{<ph name="NUM_WEEKS_MANY" /> সপ্তাহ পূৰ্বে সৃষ্টি কৰা হৈছে}other{<ph name="NUM_WEEKS_MANY" /> সপ্তাহ পূৰ্বে সৃষ্টি কৰা হৈছে}}</translation>
 <translation id="1063300264396686489">অন্য ডিভাইচসমূহৰ পৰা টেবৰ গোটসমূহ স্বয়ংক্ৰিয়ভাৱে খোলক</translation>
 <translation id="1075622780330595106">শেহতীয়াকৈ আপোনাৰ <ph name="NUMBER_OF_TABS" />টা টেব ব্যৱহাৰ কৰা হোৱা নাই। সেইকেইটা বন্ধ কৰিবনে?</translation>
+<translation id="1089791933924803646">অন্য এপত Chromeৰ পৰামৰ্শ লাভ কৰক</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> বছৰ পূৰ্বে সৃষ্টি কৰা হৈছে}one{<ph name="NUM_YEARS_MANY" /> বছৰ পূৰ্বে সৃষ্টি কৰা হৈছে}other{<ph name="NUM_YEARS_MANY" /> বছৰ পূৰ্বে সৃষ্টি কৰা হৈছে}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{নিষ্ক্ৰিয় টেব আৰু গোটসমূহ ১ মাহৰ পাছত বন্ধ কৰা হ’ব}one{নিষ্ক্ৰিয় টেব আৰু গোটসমূহ <ph name="MONTH_COUNT_MANY" /> মাহৰ পাছত বন্ধ কৰা হ’ব}other{নিষ্ক্ৰিয় টেব আৰু গোটসমূহ <ph name="MONTH_COUNT_MANY" /> মাহৰ পাছত বন্ধ কৰা হ’ব}}</translation>
 <translation id="1173894706177603556">নতুন নাম দিয়ক</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{গোটত টেব যোগ দিয়ক}one{গোটত টেবসমূহ যোগ দিয়ক}other{গোটত টেবসমূহ যোগ দিয়ক}}</translation>
 <translation id="8138067144082174140">১৪ দিন নিষ্ক্ৰিয় হৈ থকাৰ পাছত</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="TITLE_OF_GROUP" /> টেবৰ গোটটো <ph name="TABS_COUNT_ONE" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙৰ সৈতে বিস্তাৰ কৰক।}one{<ph name="TITLE_OF_GROUP" /> টেবৰ গোটটো <ph name="TABS_COUNT_MANY" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙৰ সৈতে বিস্তাৰ কৰক।}other{<ph name="TITLE_OF_GROUP" /> টেবৰ গোটটো <ph name="TABS_COUNT_MANY" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙৰ সৈতে বিস্তাৰ কৰক।}}</translation>
+<translation id="8172214054247281626">বাছনি কৰা এপ্‌সমূহত পৰামৰ্শ লাভ কৰিবলৈ আপোনাৰ শেহতীয়া ব্ৰাউজিঙৰ ইতিহাসৰ দৰে ব্ৰাউজিঙৰ ডেটা শ্বেয়াৰ কৰক। এই ডেটাখিনি আপোনাৰ ডিভাইচত সুৰক্ষিতভাৱে প্ৰক্ৰিয়াকৰণ কৰা হয়।</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{টেব আনপিন কৰক}one{টেবসমূহ আনপিন কৰক}other{টেবসমূহ আনপিন কৰক}}</translation>
 <translation id="8205266828577616993">টেবটো ওপৰলৈ নিয়ক</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> মিনিট পূৰ্বে আপডে’ট কৰা হৈছে}one{<ph name="NUM_MINS_MANY" /> মিনিট পূৰ্বে আপডে’ট কৰা হৈছে}other{<ph name="NUM_MINS_MANY" /> মিনিট পূৰ্বে আপডে’ট কৰা হৈছে}}</translation>

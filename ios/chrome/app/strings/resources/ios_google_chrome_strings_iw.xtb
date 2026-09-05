@@ -40,6 +40,7 @@
 <translation id="1580570086594302477">‏פתיחת כרטיסייה פרטית חדשה ב-Chrome.</translation>
 <translation id="1605168141396675642">‏לא צריך יותר להעתיק קישורים. אפשר לפתוח אותם ישירות ב-Chrome.</translation>
 <translation id="1646463005043273333">‏פתיחה של הגדרות Chrome כדי להגדיר את Chrome כדפדפן ברירת המחדל.</translation>
+<translation id="1668930590094369898">‏שימוש ב-Chrome כדפדפן ברירת המחדל</translation>
 <translation id="1670609221633730681">‏טיפ ל-Chrome: אפשר לבחור את המיקום של סרגל הכתובות</translation>
 <translation id="1683863426423719967">‏כדי לקבל תזכורות לגבי כרטיסיות מ-Chrome, צריך להפעיל את ההתראות בהגדרות iOS.</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -56,6 +57,7 @@
 <translation id="1973910962341002002">‏בהגדרות של "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />", מפעילים את "Chrome"</translation>
 <translation id="1984705450038014246">‏סנכרון הנתונים מ-Chrome</translation>
 <translation id="1987779152850321833">‏השלמת הפעולות הבאות תעזור לך להשתמש ב-Chrome בדרך היעילה ביותר.</translation>
+<translation id="2049569996960148258">‏הסתרת ההצעה להגדיר את Chrome כדפדפן ברירת מחדל</translation>
 <translation id="2055826352861631739">‏שימוש ב-Chrome באייפד כברירת מחדל</translation>
 <translation id="2056123005618757196">‏Google Chrome מאפשר לך להספיק יותר באופן פשוט, מאובטח ומהיר מאי פעם.</translation>
 <translation id="2120238739383482109">‏פתיחת הסימניות ב-Chrome.</translation>
@@ -236,7 +238,6 @@
 <translation id="6484712497741564393">‏נכנסת לחשבון בתור <ph name="EMAIL" />.
 
 הנתונים שלך מוצפנים באמצעות ביטוי הסיסמה. כדי להשתמש בנתוני Chrome ולשמור אותם בחשבון Google, עליך להזין אותו.</translation>
-<translation id="6511034852811155835">‏‫Chrome תמיד איתך</translation>
 <translation id="6533470733797826516">‏כניסה מהירה יותר עם המילוי האוטומטי של Chrome</translation>
 <translation id="6536544321553662809">‏אפשר להגדיר את Chrome כדפדפן ברירת המחדל כדי לשתף ולפתוח קישורים בקלות</translation>
 <translation id="6545449117344801102">‏Chrome מזהה כתובות ונעזר במפות Google כדי לספק מסלולים ומידע מקומי.</translation>
@@ -258,6 +259,7 @@
 כדי לראות אילו הגדרות נוספות מתבססות על נתונים לצורך שיפור חוויית השימוש ב-Chrome, אפשר לעבור אל <ph name="BEGIN_LINK" />שירותי Google<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">‏מחיקה של נתוני הגלישה ב-Chrome.</translation>
 <translation id="6924922227983877439">‏פתיחת קישורים ב-Chrome כברירת מחדל</translation>
+<translation id="6926395711547387358">‏הגדרת Chrome כדפדפן ברירת המחדל</translation>
 <translation id="6975725306479268850">‏בחירת Chrome למילוי אוטומטי</translation>
 <translation id="7038674195294813388">‏פותחים את הגדרות אפליקציות ברירת המחדל ב-iOS, לוחצים על "אפליקציית דפדפן" ובוחרים ב-Chrome.</translation>
 <translation id="7056826488869329999">‏פתיחה והפעלה של 'טיימר לדיווח על מצב מסוכן' ב-Chrome.</translation>

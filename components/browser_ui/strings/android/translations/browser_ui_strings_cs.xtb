@@ -7,6 +7,7 @@
 <translation id="1046742265332833834">Modrý motiv</translation>
 <translation id="1070329623210597193">Soubory, které může tento web prohlížet nebo upravovat</translation>
 <translation id="1074758928858737435">Můžete požádat o zobrazení verze webů pro počítače</translation>
+<translation id="1089791933924803646">Zobrazovat návrhy Chromu v jiných aplikacích</translation>
 <translation id="1109482864356262001">Funkce vyžadující senzory pohybu nebo světla nebudou k dispozici</translation>
 <translation id="1126523729897810826">Pokud Chrome chcete využít na maximum, proveďte níže uvedené navrhované akce</translation>
 <translation id="113098737392899175">Když je připojená klávesnice, procházet stránky pomocí textového kurzoru</translation>
@@ -453,6 +454,7 @@
 <translation id="5668404140385795438">Přepsat požadavek webu na zákaz přiblížení</translation>
 <translation id="5668843533782548925">Weby jsou pomalejší, ale bezpečnější</translation>
 <translation id="5677928146339483299">Zablokováno</translation>
+<translation id="5679089750838794164">Chrome vám teď může v jiných aplikacích zobrazovat návrhy na základě vašich údajů o prohlížení, jako je nedávná historie prohlížení. Tato data se bezpečně zpracovávají ve vašem zařízení. Tuto funkci můžete v nastavení Chromu kdykoli vypnout.</translation>
 <translation id="5689516760719285838">Poloha</translation>
 <translation id="5690795753582697420">Fotoaparát je vypnutý v nastavení zařízení Android</translation>
 <translation id="5700761515355162635">Soubory cookie třetích stran jsou povoleny</translation>
@@ -507,6 +509,7 @@
 <translation id="6085954183010297841">Smazat udělené oprávnění k úpravám souboru? <ph name="FILE" /></translation>
 <translation id="6104860901391833523">Když je tato možnost zapnutá, mohou weby automaticky přepínat do režimu obrazu v obraze. Pokud je vypnutá, weby do režimu obrazu v obraze automaticky přepínat nemohou.</translation>
 <translation id="6120483543004435978">Když je tato možnost zapnutá, weby mohou žádat o informace o tom, zda své zařízení aktivně používáte. Když je vypnutá, weby se nemohou dozvědět, zda zařízení aktivně používáte.</translation>
+<translation id="612871598708395517">Skrýt možnost Zobrazovat návrhy Chromu v jiných aplikacích</translation>
 <translation id="6132075343662013154">Chrome vám nabídne uložení hesla</translation>
 <translation id="615886654739818377">Nepovolovat webům spravovat okna na všech obrazovkách</translation>
 <translation id="6165508094623778733">Další informace</translation>

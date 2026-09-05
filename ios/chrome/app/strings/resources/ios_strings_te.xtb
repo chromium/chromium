@@ -740,7 +740,6 @@
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">అక్టో 25, 2023</translation>
 <translation id="3419787211763835342">మెరుగైన ఆటోఫిల్‌ను మెరుగుపరచడంలో సహాయపడండి</translation>
-<translation id="3426715535827854458">టూల్‌బార్‌ను దాచండి</translation>
 <translation id="3435738964857648380">భద్రత</translation>
 <translation id="3441673211568148613">మీ బ్రౌజింగ్‌ను ప్రైవేట్‌గా ఉంచండి</translation>
 <translation id="3443810440409579745">ట్యాబ్‌ను అందుకున్నారు.</translation>
@@ -1173,6 +1172,7 @@
 <translation id="484280513275854557">మీరు సైన్ అవుట్ చేయబడ్డారు; బ్రౌజింగ్ డేటా తొలగించబడింది</translation>
 <translation id="484462545196658690">ఆటో</translation>
 <translation id="4846662396507502151">కొత్త టూల్‌బార్‌తో వేగంగా బ్రౌజ్ చేయండి</translation>
+<translation id="4850669014075537160">స్క్రోలింగ్</translation>
 <translation id="4850886885716139402">వీక్షణ</translation>
 <translation id="4854068532375923088">మీ కెమెరాను ఉపయోగించడానికి “Gemini”ని అనుమతించండి</translation>
 <translation id="4860895144060829044">కాల్ చేయండి</translation>
@@ -1947,6 +1947,9 @@
 <translation id="7280980607183752256">ఈ ఫైల్‌ను దిగుమతి చేసుకోవడం సాధ్యం కాదు</translation>
 <translation id="7282197670900591579">సిట్రాన్ థీమ్</translation>
 <translation id="7293429513719260019">భాషను ఎంచుకోండి</translation>
+<translation id="72961285530871072">ఇది మీ Level Up ప్రోగ్రెస్‌ను శాశ్వతంగా తొలగిస్తుంది. అలాగే మీ ప్రొఫైల్ తాలూకు Level Up ఫీచర్ వినియోగ డేటా ఇకపై Googleకు వెళ్లదు.
+
+మీరు ఎప్పుడైనా రీస్టార్ట్ చేయవచ్చు.</translation>
 <translation id="7300448350764260141">ఆన్‌లైన్ అపాయాల నుండి సురక్షితంగా ఉండేలా అదనపు భద్రతను జోడించండి.</translation>
 <translation id="7311244614769792472">ఫలితాలు ఏవీ కనుగొనబడలేదు</translation>
 <translation id="7312823817809783355">మీ టాస్క్‌లు</translation>

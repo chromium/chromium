@@ -740,7 +740,6 @@
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 octombrie 2023</translation>
 <translation id="3419787211763835342">Ajută la optimizarea completării automate îmbunătățite</translation>
-<translation id="3426715535827854458">Ascunde bara de instrumente</translation>
 <translation id="3435738964857648380">Securitate</translation>
 <translation id="3441673211568148613">Păstrează-ți navigarea privată</translation>
 <translation id="3443810440409579745">Fila a fost primită.</translation>
@@ -1173,6 +1172,7 @@
 <translation id="484280513275854557">Te-ai deconectat și datele de navigare au fost șterse</translation>
 <translation id="484462545196658690">Automat</translation>
 <translation id="4846662396507502151">Navighează mai rapid cu noua bară de instrumente</translation>
+<translation id="4850669014075537160">Derulare</translation>
 <translation id="4850886885716139402">Afișează</translation>
 <translation id="4854068532375923088">Permite ca Gemini să utilizeze camera</translation>
 <translation id="4860895144060829044">Apelează</translation>
@@ -1947,6 +1947,9 @@ Pentru a continua de pe computer, treci la <ph name="OTHER_EMAIL" />. Vei accesa
 <translation id="7280980607183752256">Fișierul nu poate fi importat</translation>
 <translation id="7282197670900591579">Temă galben-lămâi</translation>
 <translation id="7293429513719260019">Selectează limba</translation>
+<translation id="72961285530871072">Astfel, progresul tău în Level Up va fi șters definitiv, iar datele privind folosirea funcțiilor pentru Level Up nu vor mai fi trimise la Google pentru profilul tău.
+
+Poți reporni oricând.</translation>
 <translation id="7300448350764260141">Adaugă un nivel suplimentar de protecție împotriva amenințărilor online.</translation>
 <translation id="7311244614769792472">Niciun rezultat</translation>
 <translation id="7312823817809783355">Sarcinile tale</translation>

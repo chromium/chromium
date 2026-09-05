@@ -740,7 +740,6 @@
 <translation id="3409785640040772790">지도</translation>
 <translation id="3416023309465857378">2023년 10월 25일</translation>
 <translation id="3419787211763835342">향상된 자동 완성 개선에 참여하기</translation>
-<translation id="3426715535827854458">툴바 숨기기</translation>
 <translation id="3435738964857648380">보안</translation>
 <translation id="3441673211568148613">인터넷 사용 기록을 비공개로 유지하세요.</translation>
 <translation id="3443810440409579745">탭을 수신했습니다.</translation>
@@ -1173,6 +1172,7 @@
 <translation id="484280513275854557">로그아웃되고 인터넷 사용 기록이 삭제되었습니다</translation>
 <translation id="484462545196658690">자동</translation>
 <translation id="4846662396507502151">새로운 툴바를 사용해 더 빠르게 탐색하세요.</translation>
+<translation id="4850669014075537160">스크롤</translation>
 <translation id="4850886885716139402">보기</translation>
 <translation id="4854068532375923088">'Gemini'가 카메라를 사용하도록 허용</translation>
 <translation id="4860895144060829044">전화걸기</translation>
@@ -1947,6 +1947,9 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="7280980607183752256">이 파일은 가져올 수 없습니다.</translation>
 <translation id="7282197670900591579">시트론 테마</translation>
 <translation id="7293429513719260019">언어 선택</translation>
+<translation id="72961285530871072">이렇게 하면 Level Up 진행 상황이 영구적으로 삭제되며, 더 이상 프로필을 위해 Level Up 기능 사용 데이터가 Google로 전송되지 않습니다.
+
+언제든지 다시 시작할 수 있습니다.</translation>
 <translation id="7300448350764260141">온라인 위협에 대비해 한층 강화된 보호 기능을 사용하세요</translation>
 <translation id="7311244614769792472">검색 결과 없음</translation>
 <translation id="7312823817809783355">내 작업</translation>

@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Creat acum <ph name="NUM_WEEKS_ONE" /> săptămână}few{Creat acum <ph name="NUM_WEEKS_MANY" /> săptămâni}other{Creat acum <ph name="NUM_WEEKS_MANY" /> de săptămâni}}</translation>
 <translation id="1063300264396686489">Deschide automat grupuri de file de pe alte dispozitive</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> dintre file nu au fost folosite în ultima vreme. Vrei să le închizi?</translation>
+<translation id="1089791933924803646">Primește sugestii Chrome în alte aplicații</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Creat acum <ph name="NUM_YEARS_ONE" /> an}few{Creat acum <ph name="NUM_YEARS_MANY" /> ani}other{Creat acum <ph name="NUM_YEARS_MANY" /> de ani}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Filele și grupurile inactive vor fi închise după o lună}few{Filele și grupurile inactive se vor închide după <ph name="MONTH_COUNT_MANY" /> luni}other{Filele și grupurile inactive vor fi închise după <ph name="MONTH_COUNT_MANY" /> de luni}}</translation>
 <translation id="1173894706177603556">Redenumește</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Adaugă fila în grup}few{Adaugă filele în grup}other{Adaugă filele în grup}}</translation>
 <translation id="8138067144082174140">După 14 zile de inactivitate</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Extinde grupul de file <ph name="TITLE_OF_GROUP" /> cu <ph name="TABS_COUNT_ONE" /> filă, culoarea <ph name="COLOR_NAME" />.}few{Extinde grupul de file <ph name="TITLE_OF_GROUP" /> cu <ph name="TABS_COUNT_MANY" /> file, culoarea <ph name="COLOR_NAME" />.}other{Extinde grupul de file <ph name="TITLE_OF_GROUP" /> cu <ph name="TABS_COUNT_MANY" /> de file, culoarea <ph name="COLOR_NAME" />.}}</translation>
+<translation id="8172214054247281626">Trimite date de navigare, cum ar fi istoricul de navigare recent, pentru a primi sugestii în aplicațiile selectate. Aceste date sunt prelucrate în siguranță pe dispozitivul tău.</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{Anulează fixarea filei}few{Anulează fixarea filelor}other{Anulează fixarea filelor}}</translation>
 <translation id="8205266828577616993">Mută fila mai sus</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{S-a actualizat acum <ph name="NUM_MINS_ONE" /> minut}few{S-a actualizat acum <ph name="NUM_MINS_MANY" /> minute}other{S-a actualizat acum <ph name="NUM_MINS_MANY" /> de minute}}</translation>

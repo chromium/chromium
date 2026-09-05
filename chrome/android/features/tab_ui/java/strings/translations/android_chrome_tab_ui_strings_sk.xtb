@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Vytvorená pred <ph name="NUM_WEEKS_ONE" /> týždňom}few{Vytvorená pred <ph name="NUM_WEEKS_MANY" /> týždňami}many{Vytvorená pred <ph name="NUM_WEEKS_MANY" /> týždňa}other{Vytvorená pred <ph name="NUM_WEEKS_MANY" /> týždňami}}</translation>
 <translation id="1063300264396686489">Automaticky otvárať skupiny kariet z iných zariadení</translation>
 <translation id="1075622780330595106">V poslednom čase ste nepoužili tento počet kariet: <ph name="NUMBER_OF_TABS" />. Chcete ich zavrieť?</translation>
+<translation id="1089791933924803646">Dostávať návrhy z Chromu v iných aplikáciách</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Vytvorená pred <ph name="NUM_YEARS_ONE" /> rokom}few{Vytvorená pred <ph name="NUM_YEARS_MANY" /> rokmi}many{Vytvorená pred <ph name="NUM_YEARS_MANY" /> roka}other{Vytvorená pred <ph name="NUM_YEARS_MANY" /> rokmi}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Neaktívne karty a skupiny budú zavreté po 1 mesiaci}few{Neaktívne karty a skupiny budú zavreté po <ph name="MONTH_COUNT_MANY" /> mesiacoch}many{Neaktívne karty a skupiny budú zavreté po <ph name="MONTH_COUNT_MANY" /> mesiaca}other{Neaktívne karty a skupiny budú zavreté po <ph name="MONTH_COUNT_MANY" /> mesiacoch}}</translation>
 <translation id="1173894706177603556">Premenovať</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Pridať kartu do skupiny}few{Pridať karty do skupiny}many{Add tabs to group}other{Pridať karty do skupiny}}</translation>
 <translation id="8138067144082174140">Po 14 dňoch nečinnosti</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Rozbaľte skupinu kariet <ph name="TITLE_OF_GROUP" /> vo farbe <ph name="COLOR_NAME" /> s <ph name="TABS_COUNT_ONE" /> kartou.}few{Rozbaľte skupinu kariet <ph name="TITLE_OF_GROUP" /> vo farbe <ph name="COLOR_NAME" /> s <ph name="TABS_COUNT_MANY" /> kartami.}many{Expand <ph name="TITLE_OF_GROUP" /> tab group with <ph name="TABS_COUNT_MANY" /> tabs, color <ph name="COLOR_NAME" />.}other{Rozbaľte skupinu kariet <ph name="TITLE_OF_GROUP" /> vo farbe <ph name="COLOR_NAME" /> s <ph name="TABS_COUNT_MANY" /> kartami.}}</translation>
+<translation id="8172214054247281626">Zdieľať dáta prehliadania, napríklad nedávnu históriu prehliadania, a dostávať návrhy vo vybraných aplikáciách. Tieto dáta sa bezpečne spracúvajú vo vašom zariadení.</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{Odopnúť kartu}few{Odopnúť karty}many{Unpin tabs}other{Odopnúť karty}}</translation>
 <translation id="8205266828577616993">Presunúť kartu nahor</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Aktualizované pred <ph name="NUM_MINS_ONE" /> minútou}few{Aktualizované pred <ph name="NUM_MINS_MANY" /> minútami}many{Aktualizované pred <ph name="NUM_MINS_MANY" /> minúty}other{Aktualizované pred <ph name="NUM_MINS_MANY" /> minútami}}</translation>

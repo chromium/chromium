@@ -3181,7 +3181,6 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">မှတ်တမ်းများ ကြည့်ရန်</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />ပရောက်စီ၊ firewall နှင့် လုံခြုံသော DNS စီစဉ်သတ်မှတ်မှုကို စစ်ဆေးနေသည်<ph name="END_LINK" /></translation>
-<translation id="6365513578140103119">သင့်အီးမေးလ်များကို အလိုအလျောက် အတည်ပြုရန်</translation>
 <translation id="6366710531182496394">ဘယ်ဘက်တွင် ချုပ်စက်ဖြင့် နှစ်ချက်ချုပ်ရန်</translation>
 <translation id="6367196786591004737">ထည့်သွင်းမှု ဖျက်ရန်</translation>
 <translation id="6370022303958842211">အကောင့်ဝင်ခြင်း (အောင်မြင်ခြင်းမရှိသည့် အကောင့်ဝင်ခြင်း အကြောင်းရင်းများ အပါအဝင်)၊ အကောင့်ထွက်ခြင်း၊ လော့ခ်ချခြင်းနှင့် လော့ခ်ဖွင့်ခြင်းများစသည့် စက်သို့ ဝင်သုံးခွင့် လုပ်ဆောင်ချက်များ</translation>
@@ -4660,7 +4659,6 @@
 <translation id="8963117664422609631">ဝဘ်ဆိုက်ဆက်တင်များသို့ သွားရန်</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />အကြံပေးချက်များ:<ph name="MARKUP_2" />သင့်ဆီတွင် ဒေတာ ချိတ်ဆက်မှု ရှိနေတာ စစ်ကြည့်ပါ<ph name="MARKUP_3" />ဒီဝက်ဘ်စာမျက်နှာကို နောက်မှာ ပြန်တင်ပါ<ph name="MARKUP_4" />သင် ထည့်ပေးခဲ့တဲ့ လိပ်စာကို စစ်ကြည့်ပါ<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">စက်တွင်းဖိုင်များကို <ph name="HOURS" /> နာရီအတွင်း ဖျက်ပါမည်</translation>
-<translation id="8964904785315870349">စိစစ်ထားသော အီးမေးလ်</translation>
 <translation id="8968766641738584599">ကတ်သိမ်းရန်</translation>
 <translation id="8970887620466824814">တစ်ခုခု မှားသွားပါသည်။</translation>
 <translation id="8971063699422889582">ဆာဗာ၏ လက်မှတ် သက်တမ်း ကုန်ဆုံးသွားပြီ။</translation>
@@ -4871,6 +4869,7 @@
 <translation id="988159990683914416">ပြုစုသူ၏ တည်ဆောက်မှု</translation>
 <translation id="989988560359834682">လိပ်စာ တည်းဖြတ်ရန်</translation>
 <translation id="990164307229195234"><ph name="DEVICE_NAME" /> (<ph name="DISAMBIGUATION_LABEL" />)</translation>
+<translation id="990812705189376036">Merkle Tree အထောက်အထား</translation>
 <translation id="992110854164447044">လိမ်လည်ခံရခြင်းမှ ကာကွယ်ပေးနိုင်ရန်အတွက် ပကတိအသွင်ကတ်သည် သင့်ကတ်အစစ်ကို ဖျောက်ပေးသည်။ <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>
 <translation id="992256792861109788">ပန်းရောင်</translation>

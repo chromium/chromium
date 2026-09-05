@@ -7,6 +7,7 @@
 <translation id="1046742265332833834">Giao diện màu xanh dương</translation>
 <translation id="1070329623210597193">Các tệp mà trang web này có thể xem hoặc chỉnh sửa</translation>
 <translation id="1074758928858737435">Bạn có thể yêu cầu xem phiên bản trang web dành cho máy tính</translation>
+<translation id="1089791933924803646">Nhận đề xuất trong Chrome trên các ứng dụng khác</translation>
 <translation id="1109482864356262001">Các tính năng cần dùng cảm biến chuyển động hoặc cảm biến ánh sáng sẽ không hoạt động</translation>
 <translation id="1126523729897810826">Làm theo các đề xuất dưới đây để sử dụng Chrome hiệu quả nhất</translation>
 <translation id="113098737392899175">Di chuyển giữa các trang bằng con trỏ văn bản khi kết nối bàn phím</translation>
@@ -453,6 +454,7 @@
 <translation id="5668404140385795438">Ghi đè yêu cầu chặn phóng to của trang web</translation>
 <translation id="5668843533782548925">Các trang web tải chậm hơn nhưng an toàn hơn</translation>
 <translation id="5677928146339483299">Bị chặn</translation>
+<translation id="5679089750838794164">Giờ đây, Chrome có thể hiển thị đề xuất cho bạn trên những ứng dụng khác dựa trên dữ liệu duyệt web, chẳng hạn như nhật ký duyệt web gần đây. Dữ liệu này sẽ được xử lý một cách an toàn trên thiết bị của bạn. Bạn có thể tắt tính năng này bất cứ lúc nào trong phần cài đặt của Chrome.</translation>
 <translation id="5689516760719285838">Vị trí</translation>
 <translation id="5690795753582697420">Bạn đã tắt máy ảnh trong phần cài đặt của Android</translation>
 <translation id="5700761515355162635">Đã cho phép cookie của bên thứ ba</translation>
@@ -507,6 +509,7 @@
 <translation id="6085954183010297841">Xoá quyền chỉnh sửa tệp? <ph name="FILE" /></translation>
 <translation id="6104860901391833523">Khi bạn bật lựa chọn này, các trang web có thể tự động chuyển sang chế độ hình trong hình. Khi bạn tắt lựa chọn này, các trang web không thể tự động chuyển sang chế độ hình trong hình.</translation>
 <translation id="6120483543004435978">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu được biết khi nào bạn đang sử dụng thiết bị. Khi bạn tắt tuỳ chọn này, các trang web sẽ không được biết khi nào bạn đang sử dụng thiết bị.</translation>
+<translation id="612871598708395517">Ẩn thẻ Nhận đề xuất trong Chrome trên các ứng dụng khác</translation>
 <translation id="6132075343662013154">Chrome sẽ đề xuất lưu mật khẩu của bạn</translation>
 <translation id="615886654739818377">Không cho phép các trang web quản lý các cửa sổ trên tất cả màn hình của bạn</translation>
 <translation id="6165508094623778733">Tìm hiểu thêm</translation>

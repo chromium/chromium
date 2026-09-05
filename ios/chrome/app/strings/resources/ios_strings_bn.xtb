@@ -740,7 +740,6 @@
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">২৫ অক্টোবর, ২০২৩</translation>
 <translation id="3419787211763835342">উন্নত অটোফিল ফিচার আরও কার্যকর করে তুলতে সাহায্য করুন</translation>
-<translation id="3426715535827854458">হাইড টুলবার লুকান</translation>
 <translation id="3435738964857648380">নিরাপত্তা</translation>
 <translation id="3441673211568148613">আপনার ব্রাউজিং ব্যক্তিগত রাখুন</translation>
 <translation id="3443810440409579745">ট্যাব পাওয়া গেছে।</translation>
@@ -1173,6 +1172,7 @@
 <translation id="484280513275854557">আপনি সাইন-আউট হয়ে গেছেন; ব্রাউজ করা ডেটা মুছে দেওয়া হয়েছে</translation>
 <translation id="484462545196658690">অটো</translation>
 <translation id="4846662396507502151">নতুন টুলবার ব্যবহার করে আরও দ্রুত ব্রাউজ করুন</translation>
+<translation id="4850669014075537160">স্ক্রোলিং</translation>
 <translation id="4850886885716139402">দেখুন</translation>
 <translation id="4854068532375923088">আপনার ক্যামেরা ব্যবহার করার জন্য “Gemini”-কে অনুমতি দিন</translation>
 <translation id="4860895144060829044">কল করুন</translation>
@@ -1948,6 +1948,9 @@
 <translation id="7280980607183752256">এই ফাইল ইমপোর্ট করা যাবে না</translation>
 <translation id="7282197670900591579">সিট্রন থিম</translation>
 <translation id="7293429513719260019">ভাষা বেছে নিন</translation>
+<translation id="72961285530871072">এর ফলে আপনার Level Up সংক্রান্ত প্রোগ্রেস স্থায়ীভাবে মুছে যাবে এবং Level Up-এর জন্য ফিচার ব্যবহারের ডেটা আপনার প্রোফাইলের জন্য Google-এর কাছে আর পাঠানো হবে না।
+
+আপনি যেকোনও সময় রিস্টার্ট করতে পারবেন।</translation>
 <translation id="7300448350764260141">অনলাইন ঝুঁকির বিরুদ্ধে অতিরিক্ত সুরক্ষার স্তর যোগ করুন।</translation>
 <translation id="7311244614769792472">কোনও ফলাফল পাওয়া যায়নি</translation>
 <translation id="7312823817809783355">আপনার টাস্ক</translation>

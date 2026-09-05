@@ -40,6 +40,7 @@ Wichtige Hinweise:
 <translation id="1580570086594302477">Dadurch wird ein neuer Chrome-Inkognitotab geöffnet.</translation>
 <translation id="1605168141396675642">Kein lästiges Kopieren mehr. Du kannst Links direkt in Chrome öffnen.</translation>
 <translation id="1646463005043273333">Öffnet die Chrome-Einstellung, mit der Chrome als Standardbrowser festgelegt wird.</translation>
+<translation id="1668930590094369898">Chrome als Standardbrowser verwenden</translation>
 <translation id="1670609221633730681">Chrome-Tipp: Position der Adressleiste auswählen</translation>
 <translation id="1683863426423719967">Wenn du Tab-Erinnerungen von Chrome erhalten möchtest, aktiviere Benachrichtigungen in deinen iOS-Einstellungen.</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -56,6 +57,7 @@ Wichtige Hinweise:
 <translation id="1973910962341002002">Aktiviere in den Einstellungen unter „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“ die Option „Chrome“</translation>
 <translation id="1984705450038014246">Chrome-Daten synchronisieren</translation>
 <translation id="1987779152850321833">Mit den unten vorgeschlagenen Aktionen lässt sich das Beste aus Chrome herausholen.</translation>
+<translation id="2049569996960148258">„Chrome als Standardbrowser verwenden“ ausblenden</translation>
 <translation id="2055826352861631739">Standardmäßig Chrome für iPad verwenden</translation>
 <translation id="2056123005618757196">Jetzt mit dem neuen ultraschnellen Google Chrome ganz einfach und sicherer noch mehr erledigen.</translation>
 <translation id="2120238739383482109">Öffnet die Chrome-Lesezeichen.</translation>
@@ -236,7 +238,6 @@ Warte einige Minuten, bevor du das Konto wechselst. Wenn du jetzt das Konto wech
 <translation id="6484712497741564393">Angemeldet als <ph name="EMAIL" />.
 
 Deine Daten werden mit deiner Passphrase verschlüsselt. Gib sie ein, um Chrome-Daten in deinem Google-Konto zu verwenden und zu speichern.</translation>
-<translation id="6511034852811155835">Chrome überall nutzen</translation>
 <translation id="6533470733797826516">Mit Chrome Autofill schneller anmelden</translation>
 <translation id="6536544321553662809">Lege Chrome als Standardbrowser fest, um Links ganz einfach zu teilen und zu öffnen</translation>
 <translation id="6545449117344801102">Chrome erkennt Adressen über Google Maps, um dir Wegbeschreibungen und lokale Informationen bereitzustellen.</translation>
@@ -258,6 +259,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 Weitere Einstellungen, bei denen Daten zur Verbesserung von Chrome verwendet werden, findest du in den <ph name="BEGIN_LINK" />Google-Diensten<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Browserdaten in Chrome löschen.</translation>
 <translation id="6924922227983877439">Links standardmäßig in Chrome öffnen</translation>
+<translation id="6926395711547387358">Chrome als Standardbrowser festlegen</translation>
 <translation id="6975725306479268850">Chrome für Autofill auswählen</translation>
 <translation id="7038674195294813388">Öffne unter iOS die Einstellungen für Standard-Apps, tippe auf „Browser-App“ und wähle „Chrome“ aus.</translation>
 <translation id="7056826488869329999">Dadurch wird der Sicherheitscheck in Chrome geöffnet und ausgeführt.</translation>

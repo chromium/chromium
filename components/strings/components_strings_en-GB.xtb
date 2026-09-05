@@ -1457,6 +1457,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3495081129428749620">Find in page
     <ph name="PAGE_TITLE" /></translation>
 <translation id="3495818359064790343">Salary</translation>
+<translation id="3496531230994554300">Wallet notice opened at full height.</translation>
 <translation id="3497627066518778351">Review a list of on-device site data in a new window</translation>
 <translation id="3498215018399854026">We could not reach your parent at the moment. Please try again.</translation>
 <translation id="350069200438440499">File name:</translation>
@@ -1547,6 +1548,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3634530185120165534">Tray 5</translation>
 <translation id="3634567936866541746">You just entered your password on a deceptive site. To secure your accounts, Chrome recommends checking your saved passwords.</translation>
 <translation id="3638102297696182302">Resume Help me write. Tab and press enter to open</translation>
+<translation id="3639626391482300575">This IBAN is saved in Google Wallet so that you can use it across Google products.</translation>
 <translation id="3642196846309122856">Try downloading your files again</translation>
 <translation id="3642638418806704195">Application:</translation>
 <translation id="3647286794400715637">Each URL string entry must contain between 1 and 2 URLs.</translation>
@@ -2668,6 +2670,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5499229993630251170">Continue this thread?</translation>
 <translation id="5506286895894263601">The list contains no valid shortcuts.</translation>
 <translation id="5507756662695126555">Non-repudiation</translation>
+<translation id="5508515366054931524">Verify email prompt opened at full height</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Managed bookmarks</translation>
 <translation id="5510766032865166053">It may have been moved or deleted.</translation>
@@ -3179,7 +3182,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">View logs</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Checking the proxy, firewall and secure DNS configuration<ph name="END_LINK" /></translation>
-<translation id="6365513578140103119">Automatically confirm your emails</translation>
 <translation id="6366710531182496394">Dual staple left</translation>
 <translation id="6367196786591004737">Delete entry</translation>
 <translation id="6370022303958842211">Device access actions such as logins (including failed login reasons), logouts, locks and unlocks</translation>
@@ -3304,6 +3306,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6578434528542148658">Invalid extension ID.</translation>
 <translation id="658230438113661756">Attackers on the site that you tried visiting might install harmful software that steals or deletes things like your passwords, photos, messages or credit card numbers. Chrome strongly recommends going back to safety. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more about this warning<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6583309742916093092">Stored in Google Wallet</translation>
+<translation id="6585589684832019248">This card is saved in Google Wallet so that you can use it across Google products</translation>
 <translation id="6587893660316489419">Envelope B5</translation>
 <translation id="6587923378399804057">Link that you copied</translation>
 <translation id="6591833882275308647">Your <ph name="DEVICE_TYPE" /> is not managed</translation>
@@ -3450,6 +3453,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6860888819347870819">Can ask to enter picture-in-picture</translation>
 <translation id="6864189428899665393">267 x 389 mm</translation>
 <translation id="6865412394715372076">This card can't be verified at the moment</translation>
+<translation id="6871073333584947219">Wallet notice closed.</translation>
 <translation id="6871813064737840684">Price history across the web for this option</translation>
 <translation id="6873456682041376666">Top tray</translation>
 <translation id="6874604403660855544">&amp;Redo add</translation>
@@ -3969,6 +3973,7 @@ Additional details:
 <translation id="7705085181312584869">Help me write</translation>
 <translation id="7705992072972338699">Optical disc (high gloss)</translation>
 <translation id="7706689436519265630">Files that you copy or move are sent to Google Cloud or third parties for analysis. For example, they might be scanned for sensitive data or malware and might be stored based on company policies.</translation>
+<translation id="7709934467582922028">Verify email prompt closed</translation>
 <translation id="7714351089363296478">You just visited</translation>
 <translation id="7714404809393719981">Photo (semi-gloss)</translation>
 <translation id="7714464543167945231">Certificate</translation>
@@ -4655,7 +4660,6 @@ Additional details:
 <translation id="8963117664422609631">Go to site settings</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Suggestions:<ph name="MARKUP_2" />Make sure that you have a data connection<ph name="MARKUP_3" />Reload this web page later<ph name="MARKUP_4" />Check the address that you entered<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Your local files will be deleted in <ph name="HOURS" /> hours</translation>
-<translation id="8964904785315870349">Verified email</translation>
 <translation id="8968766641738584599">Save card</translation>
 <translation id="8970887620466824814">Something went wrong.</translation>
 <translation id="8971063699422889582">Server's certificate has expired.</translation>
@@ -4866,6 +4870,7 @@ Additional details:
 <translation id="988159990683914416">Developer Build</translation>
 <translation id="989988560359834682">Edit Address</translation>
 <translation id="990164307229195234"><ph name="DEVICE_NAME" /> (<ph name="DISAMBIGUATION_LABEL" />)</translation>
+<translation id="990812705189376036">Merkle tree proof</translation>
 <translation id="992110854164447044">A virtual card hides your actual card to help protect you from potential fraud. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>
 <translation id="992256792861109788">Pink</translation>

@@ -1545,6 +1545,7 @@
 <translation id="3634530185120165534">ट्रे ५</translation>
 <translation id="3634567936866541746">तपाईंले भर्खरै कुनै असुरक्षित साइटमा आफ्नो पासवर्ड हाल्नुभएको छ। तपाईंका खाताहरूको सुरक्षार्थ Chrome तपाईंलाई तपाईंका सेभ गरिएका पासवर्डहरूको जाँच गर्न सिफारिस गर्छ।</translation>
 <translation id="3638102297696182302">"मलाई लेख्न मद्दत गर्नुहोस्" सुविधा सुचारु गर्नुहोस्। खोल्न ट्याब की थिचिराखेका बेला इन्टर की थिच्नुहोस्</translation>
+<translation id="3639626391482300575">तपाईं Google का विभिन्न उत्पादनहरूमा यो IBAN प्रयोग गर्न सक्नुहोस् भन्नाका लागि यसलाई Google Wallet मा सेभ गरिएको छ।</translation>
 <translation id="3642196846309122856">आफ्ना फाइलहरू फेरि डाउनलोड गरी हेर्नुहोस्</translation>
 <translation id="3642638418806704195">एप:</translation>
 <translation id="3647286794400715637">प्रत्येक URL स्ट्रिङ प्रविष्टिमा १ देखि २ वटा URL हुनु पर्छ।</translation>
@@ -3179,7 +3180,6 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">लगहरू हेर्नुहोस्</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />प्रोक्सी, फायरवाल र सुरक्षित DNS कन्फिगुरेसनको जाँच गर्दै<ph name="END_LINK" /></translation>
-<translation id="6365513578140103119">आफ्ना इमेलहरू स्वतः पुष्टि गर्नुहोस्</translation>
 <translation id="6366710531182496394">बायाँपट्टि दुई स्टिच</translation>
 <translation id="6367196786591004737">हालेको जानकारी मेटाउनुहोस्</translation>
 <translation id="6370022303958842211">लग इन (यसअन्तर्गत लग इन नहुनुको कारण पनि समावेश हुन्छ), लग आउट, लक तथा अनलकलगायतका डिभाइस एक्सेससम्बन्धी कार्यहरू</translation>
@@ -3304,6 +3304,7 @@
 <translation id="6578434528542148658">एक्स्टेन्सनको अवैध ID।</translation>
 <translation id="658230438113661756">तपाईंले खोल्न खोज्नुभएको साइटमा ह्याकरहरूले तपाईंलाई झुक्याएर तपाईंका पासवर्ड, फोटो, म्यासेज वा क्रेडिट कार्ड नम्बर जस्ता जानकारी चोरी गर्न वा मेटाउन प्रयोग गरिने हानिकारक सफ्टवेयर इन्स्टल गर्न लगाउन सक्छन्। ह्याकरहरूबाट सुरक्षित रहनका लागि Chrome ले तपाईंलाई यो साइट नखोल्न सिफारिस गर्छ। <ph name="BEGIN_LEARN_MORE_LINK" />यो चेतावनीका बारेमा थप जान्नुहोस्<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6583309742916093092">Google Wallet मा भण्डारण गरिएको छ</translation>
+<translation id="6585589684832019248">तपाईं Google का विभिन्न उत्पादनहरूमा यो कार्ड प्रयोग गर्न सक्नुहोस् भन्नाका लागि यसलाई Google Wallet मा सेभ गरिएको छ</translation>
 <translation id="6587893660316489419">Envelope B5</translation>
 <translation id="6587923378399804057">तपाईंले प्रतिलिपि गर्नुभएको लिंक</translation>
 <translation id="6591833882275308647">तपाईंको <ph name="DEVICE_TYPE" /> व्यवस्थित छैन</translation>
@@ -4656,7 +4657,6 @@
 <translation id="8963117664422609631">साइटका सेटिङमा जानुहोस्</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />सुझावहरू:<ph name="MARKUP_2" />तपाईँसँग डेटा जडान रहेको निश्चित गर्नुहोस्<ph name="MARKUP_3" />यो वेबपृष्ठ पछि पुन:लोड गर्नुहोस्<ph name="MARKUP_4" />तपाईँले प्रविष्ट गर्नुभएको ठेगानाको जाँच गर्नुहोस्<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">डिभाइसमा भएका तपाईंका फाइलहरू अबको <ph name="HOURS" /> घण्टामा मेटाइने छन्</translation>
-<translation id="8964904785315870349">पुष्टि गरिएको इमेल</translation>
 <translation id="8968766641738584599">कार्ड सेभ गर्नुहोस्</translation>
 <translation id="8970887620466824814">कुनै समस्या आयो।</translation>
 <translation id="8971063699422889582">सर्भरको प्रमाणपत्रको म्याद सकिएको छ।</translation>
@@ -4867,6 +4867,7 @@
 <translation id="988159990683914416">विकासकर्ताद्वारा निर्मित</translation>
 <translation id="989988560359834682">इमेल ठेगाना</translation>
 <translation id="990164307229195234"><ph name="DEVICE_NAME" /> (<ph name="DISAMBIGUATION_LABEL" />)</translation>
+<translation id="990812705189376036">Merkle Tree प्रुफ</translation>
 <translation id="992110854164447044">भर्चुअल कार्डले तपाईंलाई ठगीबाट जोगाउनका निम्ति तपाईंको कार्डको वास्तविक जानकारी लुकाउँछ। <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>
 <translation id="992256792861109788">गुलाबी</translation>

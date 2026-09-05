@@ -1548,6 +1548,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="3634530185120165534">Salv 5</translation>
 <translation id="3634567936866541746">Sisestasite äsja oma parooli kahtlasele saidile. Teie kontode turvalisuse tagamiseks soovitab Chrome teil salvestatud paroole kohe kontrollida.</translation>
 <translation id="3638102297696182302">Jätkake funktsiooni Aita mul kirjutada kasutamist. Avamiseks vajutage tabulaatorit ja siis sisestusklahvi</translation>
+<translation id="3639626391482300575">See IBAN salvestati Google Walletisse, nii et saate seda kasutada kõigis Google'i teenustes.</translation>
 <translation id="3642196846309122856">Proovige oma failid uuesti alla laadida</translation>
 <translation id="3642638418806704195">Rakendus:</translation>
 <translation id="3647286794400715637">Iga URL-i string peab sisaldama 1–2 URL-i.</translation>
@@ -3181,7 +3182,6 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Kuva logid</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Kontrollitakse puhverserveri, tulemüüri ja turvalise DNS-i seadistust<ph name="END_LINK" /></translation>
-<translation id="6365513578140103119">Kinnita mu e-posti aadressid automaatselt</translation>
 <translation id="6366710531182496394">Kaks kirjaklambrit vasakul</translation>
 <translation id="6367196786591004737">Kustuta sisestus</translation>
 <translation id="6370022303958842211">Seadme juurdepääsutoimingud, näiteks sisselogimised (sealhulgas ebaõnnestunud sisselogimiskatsete põhjused), väljalogimised, lukustamised ja avamised</translation>
@@ -3306,6 +3306,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="6578434528542148658">Sobimatu laienduse ID.</translation>
 <translation id="658230438113661756">Saidil, mida proovisite külastada, võivad ründajad installida kahjuliku tarkvara, mis varastab või kustutab näiteks teie paroolid, fotod, sõnumid või krediitkaardinumbrid. Chrome soovitab tungivalt turvalisse keskkonda naasta. <ph name="BEGIN_LEARN_MORE_LINK" />Lisateave selle hoiatuse kohta<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6583309742916093092">Salvestatud Google Walletisse</translation>
+<translation id="6585589684832019248">See kaart salvestati Google Walletisse, nii et saate seda kasutada kõigis Google'i teenustes.</translation>
 <translation id="6587893660316489419">Ümbrik B5</translation>
 <translation id="6587923378399804057">Teie kopeeritud link</translation>
 <translation id="6591833882275308647">Teie seadet <ph name="DEVICE_TYPE" /> ei hallata</translation>
@@ -4659,7 +4660,6 @@ Lisateave:
 <translation id="8963117664422609631">Saidi seadete avamine</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Soovitused.<ph name="MARKUP_2" />Veenduge, et andmesideühendus oleks olemas<ph name="MARKUP_3" />Laadige veebileht hiljem uuesti<ph name="MARKUP_4" />Kontrollige sisestatud aadressi<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Teie kohalikud failid kustutatakse <ph name="HOURS" /> tunni pärast</translation>
-<translation id="8964904785315870349">Kinnitatud e-posti aadress</translation>
 <translation id="8968766641738584599">Salvesta kaart</translation>
 <translation id="8970887620466824814">Midagi läks valesti.</translation>
 <translation id="8971063699422889582">Serveri sertifikaat on aegunud.</translation>

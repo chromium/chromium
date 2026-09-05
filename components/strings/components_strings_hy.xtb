@@ -3180,7 +3180,6 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Դիտել մատյանները</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Ստուգել պրոքսի-սերվերի, հրապատի և ապահով DNS-ի կազմաձևումը<ph name="END_LINK" /></translation>
-<translation id="6365513578140103119">Ավտոմատ հաստատել էլ․ հասցեները</translation>
 <translation id="6366710531182496394">Երկու ամրակ ձախ կողմում</translation>
 <translation id="6367196786591004737">Ջնջել գրառումը</translation>
 <translation id="6370022303958842211">Սարք մուտք գործելու գործողությունները, օր․՝ մուտքերը (ներառյալ չհաջողված մուտքերի ձախողման պատճառները), ելքերը, կողպումներն ու ապակողպումները</translation>
@@ -4657,7 +4656,6 @@
 <translation id="8963117664422609631">Անցնել կայքի կարգավորումներ</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Առաջարկներ.<ph name="MARKUP_2" />Համոզվեք, որ ունեք ինտերնետ կապ<ph name="MARKUP_3" />Մի փոքր ուշ վերաբեռնեք այս կայքէջը<ph name="MARKUP_4" />Ստուգեք ձեր մուտքագրած հասցեն<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Ձեր տեղական ֆայլերը կջնջվեն <ph name="HOURS" /> ժամից</translation>
-<translation id="8964904785315870349">Հաստատված էլ․ հասցե</translation>
 <translation id="8968766641738584599">Պահել քարտը</translation>
 <translation id="8970887620466824814">Սխալ առաջացավ:</translation>
 <translation id="8971063699422889582">Սերվերի վկայագրի ժամկետն սպառվել է:</translation>
@@ -4867,6 +4865,7 @@
 <translation id="988159990683914416">Մշակողների տարբերակ</translation>
 <translation id="989988560359834682">Փոխել հասցեն</translation>
 <translation id="990164307229195234"><ph name="DEVICE_NAME" /> (<ph name="DISAMBIGUATION_LABEL" />)</translation>
+<translation id="990812705189376036">Մերկլի ծառի ապացույց</translation>
 <translation id="992110854164447044">Վիրտուալ քարտը թաքցնում է ձեր իրական քարտը՝ օգնելով պաշտպանել ձեզ հնարավոր խարդախությունից։ <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>
 <translation id="992256792861109788">Վարդագույն</translation>

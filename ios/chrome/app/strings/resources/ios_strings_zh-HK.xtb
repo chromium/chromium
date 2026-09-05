@@ -740,7 +740,6 @@
 <translation id="3409785640040772790">地圖</translation>
 <translation id="3416023309465857378">2023 年 10 月 25 日</translation>
 <translation id="3419787211763835342">協助改善加強版自動填入</translation>
-<translation id="3426715535827854458">隱藏「隱藏工具列」</translation>
 <translation id="3435738964857648380">安全性</translation>
 <translation id="3441673211568148613">確保瀏覽資料保密</translation>
 <translation id="3443810440409579745">已收到分頁。</translation>
@@ -1173,6 +1172,7 @@
 <translation id="484280513275854557">系統已將你登出並刪除瀏覽資料</translation>
 <translation id="484462545196658690">自動</translation>
 <translation id="4846662396507502151">全新工具列讓你加快瀏覽速度</translation>
+<translation id="4850669014075537160">捲動</translation>
 <translation id="4850886885716139402">檢視</translation>
 <translation id="4854068532375923088">允許「Gemini」使用相機</translation>
 <translation id="4860895144060829044">撥號</translation>
@@ -1945,6 +1945,9 @@
 <translation id="7280980607183752256">無法匯入此檔案</translation>
 <translation id="7282197670900591579">青檸色主題</translation>
 <translation id="7293429513719260019">選取語言</translation>
+<translation id="72961285530871072">這項操作會永久刪除 Level Up 進度，且與你設定檔相關聯的 Level Up 功能使用資料不會再傳送給 Google。
+
+你隨時可以重新啟用。</translation>
 <translation id="7300448350764260141">為對抗網上威脅增添多一重安全保障。</translation>
 <translation id="7311244614769792472">找不到任何結果</translation>
 <translation id="7312823817809783355">你的任務</translation>

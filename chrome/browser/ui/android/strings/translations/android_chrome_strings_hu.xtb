@@ -57,6 +57,7 @@
 <translation id="1181037720776840403">Eltávolítás</translation>
 <translation id="1183189057400844278">Annak érdekében, hogy mindig használhassa a Google-fiókjában lévő jelszavakat, igazolja személyazonosságát</translation>
 <translation id="1187810343066461819">A könyvjelzők, előzmények és egyebek is törlődjenek erről az autóról</translation>
+<translation id="1191987227666124897">Leiratkozási kérelem</translation>
 <translation id="1193729455103054076">Erős jelszót kíván használni?</translation>
 <translation id="11947597112837849">e-mail-cím</translation>
 <translation id="1197267115302279827">Könyvjelzők áthelyezése</translation>
@@ -212,6 +213,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="1832459821645506983">Benne vagyok!</translation>
 <translation id="1845958458910716240">Adatainak védelme érdekében engedélyezheti, hogy a Chrome eltávolítsa azoknak a webhelyeknek az engedélyeit, amelyeket Ön nem keresett fel mostanában</translation>
 <translation id="1851551847729706116"><ph name="TAB_NAME" /> megosztása erre a lapra</translation>
+<translation id="1855268219431673036"><ph name="TOTAL_PAGE_COUNT" />/<ph name="CURRENT_PAGE" />. oldal</translation>
 <translation id="1869691326892615940">Biztonságosabb jelszavak, gyorsabb bejelentkezés</translation>
 <translation id="1871098866036088250">Megnyitás a Chrome böngészőben</translation>
 <translation id="1877026089748256423">A Chrome elavult</translation>
@@ -1341,6 +1343,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="634208815998129842">Feladatkezelő</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 és további <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 és további <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">Megjelölés olvasottként</translation>
+<translation id="63490081267265251">Az Ön által felkeresett webhelyek (beleértve a Google-t is) felelősek annak meghatározásáért, hogy hogyan reagálnak erre a kérésre. A régiójában érvényes jogszabályoktól függően a webhelyek úgy reagálhatnak, hogy korlátozzák az Ön adatainak értékesítését és megosztását, illetve a személyre szabott hirdetésekhez való felhasználását. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="6350745006329795504">Saját eszközök kezelése</translation>
 <translation id="6356893102071098867">Ellenőrizze, hogy a megfelelő fiókot választotta-e ki</translation>
 <translation id="6364438453358674297">Eltávolítja a javaslatot az előzményekből?</translation>
@@ -1665,6 +1668,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="7493994139787901920"><ph name="VERSION" /> (Frissítve: <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Kérjük, várjon…</translation>
 <translation id="7499065150275272675"><ph name="TAB_TITLE" />, rögzített némított lap</translation>
+<translation id="7500851014030446046">PDF letöltése</translation>
 <translation id="7501135638693251872">Minden könyvjelző</translation>
 <translation id="7507207699631365376">Olvassa el a szolgáltató <ph name="BEGIN_LINK" />adatvédelmi irányelveit<ph name="END_LINK" /></translation>
 <translation id="750886945254958667">Megtarthatja a csoportot, ha később szeretne lapokat hozzáadni, de ki is léphet belőle, ha a továbbiakban nem kíván hozzáférni.</translation>
@@ -1732,6 +1736,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 és további <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 és további <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="777637629667389858">Amikor be van jelentkezve, védi Önt a Google szolgáltatásaiban.</translation>
 <translation id="7778840695157240389">Új hírekért látogasson vissza később</translation>
+<translation id="7780992949171378848">Leiratkozási kérelem küldése a webhelyeknek az Ön adatainak felhasználásával kapcsolatban</translation>
 <translation id="7791543448312431591">Hozzáadás</translation>
 <translation id="7792388396321542707">Megosztás leállítása</translation>
 <translation id="780287761701992588">Bármely eszközéről elérheti a könyvjelzőit, jelszavait és egyebéb tartalmait</translation>

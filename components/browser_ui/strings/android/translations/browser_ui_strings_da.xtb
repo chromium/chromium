@@ -7,6 +7,7 @@
 <translation id="1046742265332833834">Blåt tema</translation>
 <translation id="1070329623210597193">Filer, som dette website kan se eller redigere</translation>
 <translation id="1074758928858737435">Du kan anmode om at se computerversionen af websites</translation>
+<translation id="1089791933924803646">Få Chrome-forslag i andre apps</translation>
 <translation id="1109482864356262001">Funktioner, der skal bruge bevægelses- eller lyssensorer, fungerer ikke</translation>
 <translation id="1126523729897810826">Udfør de foreslåede handlinger nedenfor for at få mest muligt ud af Chrome</translation>
 <translation id="113098737392899175">Naviger på sider med en tekstmarkør, når der er tilsluttet et tastatur</translation>
@@ -453,6 +454,7 @@
 <translation id="5668404140385795438">Tilsidesæt en anmodning fra et website om at undgå at zoome ind</translation>
 <translation id="5668843533782548925">Websites er langsommere, men mere sikre</translation>
 <translation id="5677928146339483299">Blokeret</translation>
+<translation id="5679089750838794164">Chrome kan nu vise dig forslag i andre apps baseret på dine browserdata, f.eks. din seneste browserhistorik. Disse data behandles på sikker vis på din enhed. Du kan til enhver tid deaktivere dette i Chrome-indstillingerne.</translation>
 <translation id="5689516760719285838">Placering</translation>
 <translation id="5690795753582697420">Kameraet er deaktiveret i Android-indstillingerne</translation>
 <translation id="5700761515355162635">Tredjepartscookies er tilladt</translation>
@@ -507,6 +509,7 @@
 <translation id="6085954183010297841">Vil du slette tilladelsen til filredigering? <ph name="FILE" /></translation>
 <translation id="6104860901391833523">Når indstillingen er aktiveret, kan websites automatisk åbne integreret billede. Når indstillingen er deaktiveret, kan websites ikke automatisk åbne integreret billede.</translation>
 <translation id="6120483543004435978">Når dette er slået til, kan websites anmode om tilladelse til at blive underrettet, når du aktivt bruger din enhed. Når dette er slået fra, kan websites ikke se, hvornår du aktivt bruger din enhed.</translation>
+<translation id="612871598708395517">Skjul Få Chrome-forslag i andre apps</translation>
 <translation id="6132075343662013154">Chrome tilbyder at gemme din adgangskode</translation>
 <translation id="615886654739818377">Tillad ikke, at websites administrerer vinduer på alle dine skærme</translation>
 <translation id="6165508094623778733">Flere oplysninger</translation>

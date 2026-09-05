@@ -7,6 +7,7 @@
 <translation id="1046742265332833834">Tema blau</translation>
 <translation id="1070329623210597193">Fitxers que aquest lloc web pot visualitzar o editar</translation>
 <translation id="1074758928858737435">Pots sol·licitar que es mostri la versió per a ordinadors dels llocs web</translation>
+<translation id="1089791933924803646">Obtén suggeriments de Chrome en altres aplicacions</translation>
 <translation id="1109482864356262001">Les funcions que necessitin sensors de moviment o de llum no funcionaran</translation>
 <translation id="1126523729897810826">Completa aquestes accions suggerides per treure el màxim profit de Chrome</translation>
 <translation id="113098737392899175">Navega per les pàgines amb un cursor de text quan hi hagi un teclat connectat</translation>
@@ -453,6 +454,7 @@
 <translation id="5668404140385795438">Ignora la sol·licitud d'un lloc web per evitar que s'apropi el zoom</translation>
 <translation id="5668843533782548925">Els llocs web són més lents, però més segurs</translation>
 <translation id="5677928146339483299">Bloquejat</translation>
+<translation id="5679089750838794164">Ara Chrome pot mostrar-te suggeriments en altres aplicacions en funció de les teves dades de navegació, com ara l'historial de navegació recent. Aquestes dades es processen de manera segura al dispositiu. Pots desactivar aquesta opció en qualsevol moment a la configuració de Chrome.</translation>
 <translation id="5689516760719285838">Ubicació</translation>
 <translation id="5690795753582697420">La càmera està desactivada a la configuració d'Android</translation>
 <translation id="5700761515355162635">Galetes de tercers permeses</translation>
@@ -507,6 +509,7 @@
 <translation id="6085954183010297841">Vols suprimir el permís per editar fitxers? <ph name="FILE" /></translation>
 <translation id="6104860901391833523">Quan aquesta opció està activada, els llocs web poden entrar automàticament al mode d'imatge sobre imatge. Quan aquesta opció està desactivada, els llocs web no poden entrar automàticament al mode d'imatge sobre imatge.</translation>
 <translation id="6120483543004435978">Quan aquesta opció està activada, els llocs web poden demanar permís per saber si estàs utilitzant el teu dispositiu de manera activa. Quan aquesta opció està desactivada, els llocs web no poden saber si estàs utilitzant el teu dispositiu de manera activa.</translation>
+<translation id="612871598708395517">Amaga l'opció Obtén suggeriments de Chrome en altres aplicacions</translation>
 <translation id="6132075343662013154">Chrome t'oferirà desar la contrasenya</translation>
 <translation id="615886654739818377">No permetis que els llocs web gestionin finestres en totes les pantalles</translation>
 <translation id="6165508094623778733">Més informació</translation>

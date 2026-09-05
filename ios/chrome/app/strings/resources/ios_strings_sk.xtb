@@ -740,7 +740,6 @@
 <translation id="3409785640040772790">Mapy</translation>
 <translation id="3416023309465857378">25. október 2023</translation>
 <translation id="3419787211763835342">Pomôžte zlepšiť vylepšené automatické dopĺňanie</translation>
-<translation id="3426715535827854458">Skryť panel s nástrojmi</translation>
 <translation id="3435738964857648380">Zabezpečenie</translation>
 <translation id="3441673211568148613">Zachovajte si prehliadanie súkromné</translation>
 <translation id="3443810440409579745">Karta bola prijatá.</translation>
@@ -1173,6 +1172,7 @@
 <translation id="484280513275854557">Systém vás odhlásil a dáta prehliadania boli odstránené</translation>
 <translation id="484462545196658690">Automaticky</translation>
 <translation id="4846662396507502151">Prehliadajte rýchlejšie s novým panelom s nástrojmi</translation>
+<translation id="4850669014075537160">Posúvanie</translation>
 <translation id="4850886885716139402">Zobraziť</translation>
 <translation id="4854068532375923088">Povoľte aplikácii Gemini používať kameru</translation>
 <translation id="4860895144060829044">Volajte</translation>
@@ -1947,6 +1947,9 @@ Ak chcete pokračovať v počítači, prepnite na účet <ph name="OTHER_EMAIL"
 <translation id="7280980607183752256">Tento súbor sa nedá importovať</translation>
 <translation id="7282197670900591579">Citrónový motív</translation>
 <translation id="7293429513719260019">Vybrať jazyk</translation>
+<translation id="72961285530871072">Týmto natrvalo odstránite svoj postup v programe Level Up a údaje o využívaní funkcií v rámci programu Level Up sa už v súvislosti s vaším profilom nebudú odosielať Googlu.
+
+Kedykoľvek môžete začať odznova.</translation>
 <translation id="7300448350764260141">Pridajte ďalšiu úroveň ochrany pred hrozbami na internete.</translation>
 <translation id="7311244614769792472">Neboli nájdené žiadne výsledky</translation>
 <translation id="7312823817809783355">Vaše úlohy</translation>

@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Se creó hace <ph name="NUM_WEEKS_ONE" /> semana}other{Se creó hace <ph name="NUM_WEEKS_MANY" /> semanas}}</translation>
 <translation id="1063300264396686489">Abrir automáticamente grupos de pestañas de otros dispositivos</translation>
 <translation id="1075622780330595106">Últimamente no usaste <ph name="NUMBER_OF_TABS" /> de tus pestañas. ¿Quieres cerrarlas?</translation>
+<translation id="1089791933924803646">Obtener sugerencias de Chrome en otras apps</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Se creó hace <ph name="NUM_YEARS_ONE" /> año}other{Se creó hace <ph name="NUM_YEARS_MANY" /> años}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Las pestañas y los grupos inactivos se cerrarán después de 1 mes}other{Las pestañas y los grupos inactivos se cerrarán después de <ph name="MONTH_COUNT_MANY" /> meses}}</translation>
 <translation id="1173894706177603556">Cambiar nombre</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Agregar pestaña al grupo}other{Agregar pestañas al grupo}}</translation>
 <translation id="8138067144082174140">Después de 14 días de inactividad</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Expandir el grupo de pestañas <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_ONE" /> pestaña, en color <ph name="COLOR_NAME" />.}other{Expandir el grupo de pestañas <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_MANY" /> pestañas, en color <ph name="COLOR_NAME" />.}}</translation>
+<translation id="8172214054247281626">Comparte datos de navegación, como tu historial de navegación reciente, para obtener sugerencias en determinadas apps. Estos datos se procesan de forma segura en tu dispositivo.</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{No fijar pestaña}other{No fijar pestañas}}</translation>
 <translation id="8205266828577616993">Mover la pestaña hacia arriba</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Se actualizó hace <ph name="NUM_MINS_ONE" /> minuto}other{Se actualizó hace <ph name="NUM_MINS_MANY" /> minutos}}</translation>

@@ -1549,6 +1549,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="3634530185120165534">5 dėklas</translation>
 <translation id="3634567936866541746">Ką tik savo slaptažodį įvedėte apgaulingoje svetainėje. Kad apsaugotumėte paskyras, „Chrome“ rekomenduoja patikrinti išsaugotus slaptažodžius.</translation>
 <translation id="3638102297696182302">Toliau naudoti funkciją „Padėkite man rašyti“. Paspauskite tabuliavimo klavišą ir „Enter“, kad atidarytumėte</translation>
+<translation id="3639626391482300575">Šis IBAN išsaugotas „Google Wallet“, kad galėtumėte jį naudoti „Google“ produktuose.</translation>
 <translation id="3642196846309122856">Pabandykite dar kartą atsisiųsti failus</translation>
 <translation id="3642638418806704195">Programa:</translation>
 <translation id="3647286794400715637">Kiekviename URL eilutės įraše turi būti nuo vieno iki dviejų URL.</translation>
@@ -3182,7 +3183,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Žr. žurnalus</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Tikrinama tarpinio serverio, užkardos ir saugios DNS konfigūracija<ph name="END_LINK" /></translation>
-<translation id="6365513578140103119">Automatiškai patvirtinkite el. pašto adresus</translation>
 <translation id="6366710531182496394">Dvi sankabėlės kairėje</translation>
 <translation id="6367196786591004737">Ištrinti įrašą</translation>
 <translation id="6370022303958842211">Įrenginių prieigos veiksmai, pvz., prisijungimai (įskaitant nepavykusių prisijungimų priežastis), atsijungimai, užrakinimai ir atrakinimai</translation>
@@ -3307,6 +3307,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="6578434528542148658">Netinkamas plėtinio ID.</translation>
 <translation id="658230438113661756">Svetainės, kurioje bandėte apsilankyti, atakos vykdytojai gali įdiegti žalingą programinę įrangą, kuri vagia arba ištrina informaciją, pvz., slaptažodžius, nuotraukas, pranešimus ar kredito kortelių numerius. „Chrome“ primygtinai rekomenduoja vėl naudoti saugos režimą. <ph name="BEGIN_LEARN_MORE_LINK" />Sužinokite daugiau apie šį perspėjimą<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="6583309742916093092">Saugoma „Google Wallet“</translation>
+<translation id="6585589684832019248">Ši kortelė išsaugota „Google Wallet“, kad galėtumėte ją naudoti „Google“ produktuose</translation>
 <translation id="6587893660316489419">B5 vokas</translation>
 <translation id="6587923378399804057">Nukopijuota nuoroda</translation>
 <translation id="6591833882275308647">Jūsų „<ph name="DEVICE_TYPE" />“ netvarkomas</translation>
@@ -4661,7 +4662,6 @@ Papildoma išsami informacija:
 <translation id="8963117664422609631">Eiti į svetainės nustatymus</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Pasiūlymai:<ph name="MARKUP_2" />įsitikinkite, kad veikia duomenų ryšys;<ph name="MARKUP_3" />vėliau iš naujo įkelkite šį tinklalapį;<ph name="MARKUP_4" />patikrinkite įvestą adresą<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Vietiniai failai bus ištrinti po <ph name="HOURS" /> val.</translation>
-<translation id="8964904785315870349">Patvirtintas el. pašto adresas</translation>
 <translation id="8968766641738584599">Išsaugoti kortelę</translation>
 <translation id="8970887620466824814">Kažkas ne taip.</translation>
 <translation id="8971063699422889582">Baigėsi serverio sertifikato galiojimo laikas.</translation>
@@ -4872,6 +4872,7 @@ Papildoma išsami informacija:
 <translation id="988159990683914416">Vykdymo programa sukurta</translation>
 <translation id="989988560359834682">Adreso redagavimas</translation>
 <translation id="990164307229195234"><ph name="DEVICE_NAME" /> (<ph name="DISAMBIGUATION_LABEL" />)</translation>
+<translation id="990812705189376036">Merklio medžio įrodymas</translation>
 <translation id="992110854164447044">Virtuali kortelė slepia tikrąją kortelę, kad padėtų apsaugoti jus nuo galimų apgaulių. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>
 <translation id="992256792861109788">Rožinė</translation>

@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Criado há <ph name="NUM_WEEKS_ONE" /> semana}other{Criado há <ph name="NUM_WEEKS_MANY" /> semanas}}</translation>
 <translation id="1063300264396686489">Abrir automaticamente grupos de separadores de outros dispositivos</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> dos seus separadores não foram utilizados recentemente. Quer fechá-los?</translation>
+<translation id="1089791933924803646">Receba sugestões do Chrome noutras apps</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Criado há <ph name="NUM_YEARS_ONE" /> ano}other{Criado há <ph name="NUM_YEARS_MANY" /> anos}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Os separadores e os grupos inativos são fechados após 1 mês}other{Os separadores e os grupos inativos são fechados após <ph name="MONTH_COUNT_MANY" /> meses}}</translation>
 <translation id="1173894706177603556">Mudar nome</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Adicionar separador a grupo}other{Adicionar separadores a grupo}}</translation>
 <translation id="8138067144082174140">Após 14 dias de inatividade</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Expanda o grupo de separadores <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_ONE" /> separador, cor <ph name="COLOR_NAME" />.}other{Expanda o grupo de separadores <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_MANY" /> separadores, cor <ph name="COLOR_NAME" />.}}</translation>
+<translation id="8172214054247281626">Partilhe dados de navegação, como o seu histórico de navegação recente, para receber sugestões em apps selecionadas. Estes dados são tratados de forma segura no seu dispositivo.</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{Desafixar separador}other{Desafixar separadores}}</translation>
 <translation id="8205266828577616993">Mover separador para cima</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Atualizado há <ph name="NUM_MINS_ONE" /> minuto}other{Atualizado há <ph name="NUM_MINS_MANY" /> minutos}}</translation>

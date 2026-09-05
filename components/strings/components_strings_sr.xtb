@@ -1548,6 +1548,7 @@
 <translation id="3634530185120165534">5. фиока</translation>
 <translation id="3634567936866541746">Управо сте унели лозинку на обмањујућем сајту. Да бисте заштитили налоге, Chrome препоручује да проверите сачуване лозинке.</translation>
 <translation id="3638102297696182302">Наставите функцију Помоћ за писање. Притисните Tab и Enter да бисте отворили</translation>
+<translation id="3639626391482300575">Овај IBAN се чува у Google новчанику да бисте могли да га користите у свим Google производима.</translation>
 <translation id="3642196846309122856">Пробајте да поново преузмете фајлове</translation>
 <translation id="3642638418806704195">Апликација:</translation>
 <translation id="3647286794400715637">Унос сваког стринга URL-а мора да садржи између 1 и 2 URL-а.</translation>
@@ -3180,7 +3181,6 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Прегледајте евиденције</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />да проверите конфигурацију проксија, заштитног зида и безбедног DNS-а<ph name="END_LINK" /></translation>
-<translation id="6365513578140103119">Аутоматски потврђујте имејлове</translation>
 <translation id="6366710531182496394">Двоструко спајање на левој страни</translation>
 <translation id="6367196786591004737">Избриши унос</translation>
 <translation id="6370022303958842211">Радње приступа уређајима попут пријављивања (укључујући неуспеле разлоге за пријављивање), одјављивања, закључавања и откључавања</translation>
@@ -3305,6 +3305,7 @@
 <translation id="6578434528542148658">Неважећи ИД додатка.</translation>
 <translation id="658230438113661756">Нападачи на сајту који сте пробали да посетите могу да инсталирају штетан софтвер који краде или брише ствари попут лозинки, слика, порука или бројева кредитних картица. Chrome топло препоручује да се вратите на безбедно место. <ph name="BEGIN_LEARN_MORE_LINK" />Сазнајте више о овом упозорењу<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6583309742916093092">Чува се у Google новчанику</translation>
+<translation id="6585589684832019248">Ова картица се чува у Google новчанику да бисте могли да је користите у свим Google производима</translation>
 <translation id="6587893660316489419">Коверта B5</translation>
 <translation id="6587923378399804057">Линк који сте копирали</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" />-ом се не управља</translation>
@@ -4659,7 +4660,6 @@
 <translation id="8963117664422609631">Идите на подешавања сајта</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Предлози:<ph name="MARKUP_2" />Проверите да ли је успостављена веза за пренос података<ph name="MARKUP_3" />Поново учитајте ову веб-страницу касније<ph name="MARKUP_4" />Проверите адресу коју сте унели<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Локални фајлови ће бити избрисани за <ph name="HOURS" /> с</translation>
-<translation id="8964904785315870349">Верификовани имејл</translation>
 <translation id="8968766641738584599">Сачувај картицу</translation>
 <translation id="8970887620466824814">Дошло је до грешке.</translation>
 <translation id="8971063699422889582">Сертификат сервера је истекао.</translation>
@@ -4870,6 +4870,7 @@
 <translation id="988159990683914416">Верзија за програмере</translation>
 <translation id="989988560359834682">Измена адресе</translation>
 <translation id="990164307229195234"><ph name="DEVICE_NAME" /> (<ph name="DISAMBIGUATION_LABEL" />)</translation>
+<translation id="990812705189376036">Доказ хеш стабла</translation>
 <translation id="992110854164447044">Виртуелна картица крије вашу стварну картицу да би вас заштитила од потенцијалне преваре. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>
 <translation id="992256792861109788">Ружичаста</translation>

@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{ከ<ph name="NUM_WEEKS_ONE" /> ሳምንት በፊት የተፈጠረ}one{ከ<ph name="NUM_WEEKS_MANY" /> ሳምንት በፊት የተፈጠረ}other{ከ<ph name="NUM_WEEKS_MANY" /> ሳምንቶች በፊት የተፈጠረ}}</translation>
 <translation id="1063300264396686489">ከሌሎች መሣሪያዎች ሆነው የትር ቡድኖችን በራስ-ሰር ይክፈቱ</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> ትሮችዎ በቅርቡ ሥራ ላይ አልዋሉም። ይዘጉ?</translation>
+<translation id="1089791933924803646">በሌሎች መተግበሪያዎች ውስጥ የChrome ጥቆማዎችን ያግኙ</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{ከ<ph name="NUM_YEARS_ONE" /> ዓመት በፊት የተፈጠረ}one{ከ<ph name="NUM_YEARS_MANY" /> ዓመት በፊት የተፈጠረ}other{ከ<ph name="NUM_YEARS_MANY" /> ዓመታት በፊት የተፈጠረ}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{የቦዘኑ ትሮች እና ቡድኖች ከ1 ወር በኋላ ይዘጋሉ}one{የቦዘኑ ትሮች እና ቡድኖች ከ<ph name="MONTH_COUNT_MANY" /> ወር በኋላ ይዘጋሉ}other{የቦዘኑ ትሮች እና ቡድኖች ከ<ph name="MONTH_COUNT_MANY" /> ወራት}}</translation>
 <translation id="1173894706177603556">ዳግም ሰይም</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{ትርን ወደ ቡድን ያክሉ}one{ትርን ወደ ቡድን ያክሉ}other{ትሮችን ወደ ቡድን ያክሉ}}</translation>
 <translation id="8138067144082174140">ከ14 የቦዘኑ ቀናት በኋላ</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{የ<ph name="TITLE_OF_GROUP" /> ትር ቡድንን በ<ph name="TABS_COUNT_ONE" /> ትር፣ በ<ph name="COLOR_NAME" /> ቀለም ዘርጋ።}one{የ<ph name="TITLE_OF_GROUP" /> ትር ቡድንን በ<ph name="TABS_COUNT_MANY" /> ትር፣ በ<ph name="COLOR_NAME" /> ቀለም ዘርጋ።}other{የ<ph name="TITLE_OF_GROUP" /> ትር ቡድንን በ<ph name="TABS_COUNT_MANY" /> ትሮች፣ በ<ph name="COLOR_NAME" /> ቀለም ዘርጋ።}}</translation>
+<translation id="8172214054247281626">በተመረጡ መተግበሪያዎች ላይ ጥቆማዎችን ለማግኘት እንደ የቅርብ ጊዜ የአሰሳ ታሪክዎ ያለ የአሰሳ ውሂብን ያጋሩ። ይህ ውሂብ በመሣሪያዎ ላይ ደኅንነቱ በተጠበቀ ሁኔታ ይሰናዳል።</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{ትር ንቀል}one{ትር ንቀል}other{ትሮችን ንቀል}}</translation>
 <translation id="8205266828577616993">ትርን ወደ ላይ አንቀሳቅስ</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{ከ<ph name="NUM_MINS_ONE" /> ደቂቃ በፊት ተዘምኗል}one{ከ<ph name="NUM_MINS_MANY" /> ደቂቃ በፊት ተዘምኗል}other{ከ<ph name="NUM_MINS_MANY" /> ደቂቃዎች በፊት ተዘምኗል}}</translation>

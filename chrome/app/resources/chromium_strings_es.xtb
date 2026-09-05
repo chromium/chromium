@@ -338,6 +338,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="4613863813562375431">Versión de ChromiumOS</translation>
 <translation id="4621240073146040695">Chromium casi ha terminado de actualizarse. Reinícialo para completar la actualización.</translation>
 <translation id="4625064703209785397">Acelera los sitios con el motor V8 de Chromium, pero hace que Chromium sea un poco menos resistente a los ataques</translation>
+<translation id="4626321472657185181">Abrir la búsqueda con Chromium</translation>
 <translation id="4665829708273112819">Advertencia: Chromium no puede evitar que las extensiones registren el historial de navegación. Para inhabilitar esta extensión en modo Incógnito, desmarca esta opción.</translation>
 <translation id="4673151026126227699">Si también compartes informes de uso de Chromium, esos informes incluyen las URLs que visitas</translation>
 <translation id="4673710618874938871">Has iniciado sesión como <ph name="USER_NAME" />, suscripción. Abre el menú de la cuenta.</translation>
@@ -390,6 +391,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="5358375970380395591">Vas a iniciar sesión con una cuenta gestionada, lo que significa que proporcionarás a su administrador control sobre tu perfil de Chromium. Tus datos de Chromium como, por ejemplo, tus aplicaciones, tus marcadores, tu historial, tus contraseñas y otras opciones se vincularán de forma permanente a la cuenta <ph name="USER_NAME" />. Podrás eliminar estos datos a través del Panel de control de cuentas de Google, pero no podrás asociarlos a otra cuenta. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Código adicional: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">Para disfrutar de personalización, incluye Chromium en Actividad en la Web y en Aplicaciones</translation>
+<translation id="5382964351116519680">Abrir la búsqueda con Chromium</translation>
 <translation id="5383439451358640070">Averigua por qué bloquea Chromium algunos archivos</translation>
 <translation id="5386450000063123300">Actualizando Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Permitir el inicio de sesión en Chromium</translation>
@@ -649,6 +651,7 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> ‑ Chromium Canary</translation>
 <translation id="7803986347287457849">Haz que a las personas con acceso a tu tráfico de Internet les resulte más complicado ver los sitios que visitas. Chromium usa una conexión segura para buscar la dirección IP de un sitio en el DNS (sistema de nombres de dominio).</translation>
 <translation id="7810005234485217901">Puedes fijar la búsqueda por imágenes para acceder a ella fácilmente</translation>
+<translation id="7828527096541974699">Decide qué quieres compartir con Chromium</translation>
 <translation id="7828947555739565424">Ya existe un perfil de Chromium con esa cuenta en este dispositivo.</translation>
 <translation id="7845233973568007926">Gracias por realizar la instalación. Debes reiniciar tu ordenador para poder usar <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7847673590271334840">Tu buscador se ha cambiado desde fuera de Chromium. Para protegerte, Chromium lo ha restablecido a su valor predeterminado original. <ph name="LEARN_MORE_LINK" /></translation>

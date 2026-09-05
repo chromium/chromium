@@ -7,6 +7,7 @@
 <translation id="1046742265332833834">Mavi tema</translation>
 <translation id="1070329623210597193">Bu saytın görə və ya redaktə edə biləcəyi fayllar</translation>
 <translation id="1074758928858737435">Saytların masaüstü versiyasına baxmağı istəyə bilərsiniz</translation>
+<translation id="1089791933924803646">Digər tətbiqlərdə Chrome təklifləri əldə edin</translation>
 <translation id="1109482864356262001">Hərəkət və ya işıq sensoru tələb edən funksiyalar işləməyəcək</translation>
 <translation id="1126523729897810826">Chrome-dan maksimum yararlanmaq üçün aşağıda təklif edilən əməliyyatları tamamlayın</translation>
 <translation id="113098737392899175">Klaviatura qoşulduqda mətn kursoru ilə səhifələrə keçin</translation>
@@ -453,6 +454,7 @@
 <translation id="5668404140385795438">Böyüdülmənin qarşısını almaq üçün saytın sorğusunu kənarlaşdırın</translation>
 <translation id="5668843533782548925">Saytlar daha yavaş, lakin daha təhlükəsizdir</translation>
 <translation id="5677928146339483299">Bloklananlar</translation>
+<translation id="5679089750838794164">Chrome artıq son brauzer tarixçəsi kimi brauzer datanıza əsasən digər tətbiqlərdə sizə təkliflər göstərə bilər. Bu data cihazınızda təhlükəsiz şəkildə emal edilir. Bunu istənilən vaxt Chrome ayarlarında deaktiv edə bilərsiniz.</translation>
 <translation id="5689516760719285838">Məkan</translation>
 <translation id="5690795753582697420">Kamera Android ayarlarında deaktiv edilib</translation>
 <translation id="5700761515355162635">Üçüncü tərəf kukilərinə icazə verildi</translation>
@@ -507,6 +509,7 @@
 <translation id="6085954183010297841">Fayl redaktə qrantı silinsin? <ph name="FILE" /></translation>
 <translation id="6104860901391833523">Yanılı olduqda saytlar şəkildə şəkil rejiminə avtomatik daxil ola bilər. Sönülü olduqda saytlar şəkildə şəkil rejiminə avtomatik daxil ola bilməz.</translation>
 <translation id="6120483543004435978">Aktiv ediləndə saytlar cihazdan nə vaxt aktiv istifadə etdiyinizi öyrənmək üçün icazə istəyə bilər. Deaktiv ediləndə saytlar cihazdan nə vaxt aktiv istifadə etdiyinizi öyrənə bilməz.</translation>
+<translation id="612871598708395517">Digər tətbiqlərdə "Chrome təklifləri əldə edin" bölməsi gizlədilsin</translation>
 <translation id="6132075343662013154">Chrome parolu yadda saxlamağı təklif edəcək</translation>
 <translation id="615886654739818377">Saytlara bütün displeylərdəki pəncərələri idarə etməyə icazə verməyin</translation>
 <translation id="6165508094623778733">Ətraflı öyrənin</translation>

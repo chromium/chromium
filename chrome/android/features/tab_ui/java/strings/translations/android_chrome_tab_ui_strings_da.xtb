@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Oprettet for <ph name="NUM_WEEKS_ONE" /> uge siden}one{Oprettet for <ph name="NUM_WEEKS_MANY" /> uge siden}other{Oprettet for <ph name="NUM_WEEKS_MANY" /> uger siden}}</translation>
 <translation id="1063300264396686489">Åbn automatisk fanegrupper fra andre enheder</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> af dine faner er ikke blevet brugt for nylig. Vil du lukke dem?</translation>
+<translation id="1089791933924803646">Få Chrome-forslag i andre apps</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Oprettet for <ph name="NUM_YEARS_ONE" /> år siden}one{Oprettet for <ph name="NUM_YEARS_MANY" /> år siden}other{Oprettet for <ph name="NUM_YEARS_MANY" /> år siden}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Inaktive faner og grupper lukkes efter 1 måned}one{Inaktive faner og grupper lukkes efter <ph name="MONTH_COUNT_MANY" /> måned}other{Inaktive faner og grupper lukkes efter <ph name="MONTH_COUNT_MANY" /> måneder}}</translation>
 <translation id="1173894706177603556">Omdøb</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Føj fane til gruppe}one{Føj fane til gruppe}other{Føj faner til gruppe}}</translation>
 <translation id="8138067144082174140">Efter 14 dages inaktivitet</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Udvid fanegruppen <ph name="TITLE_OF_GROUP" /> i farven <ph name="COLOR_NAME" /> med <ph name="TABS_COUNT_ONE" /> fane.}one{Udvid fanegruppen <ph name="TITLE_OF_GROUP" /> i farven <ph name="COLOR_NAME" /> med <ph name="TABS_COUNT_MANY" /> fane.}other{Udvid fanegruppen <ph name="TITLE_OF_GROUP" /> i farven <ph name="COLOR_NAME" /> med <ph name="TABS_COUNT_MANY" /> faner.}}</translation>
+<translation id="8172214054247281626">Del browserdata, f.eks. din seneste browserhistorik, for at få forslag i udvalgte apps. Disse data behandles på sikker vis på din enhed.</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{Frigør fane}one{Frigør fane}other{Frigør faner}}</translation>
 <translation id="8205266828577616993">Flyt fane op</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Opdateret for <ph name="NUM_MINS_ONE" /> minut siden}one{Opdateret for <ph name="NUM_MINS_MANY" /> minut siden}other{Opdateret for <ph name="NUM_MINS_MANY" /> minutter siden}}</translation>

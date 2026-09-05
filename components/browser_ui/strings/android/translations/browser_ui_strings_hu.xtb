@@ -7,6 +7,7 @@
 <translation id="1046742265332833834">Kék téma</translation>
 <translation id="1070329623210597193">A webhely által megtekinthető vagy szerkeszthető fájlok</translation>
 <translation id="1074758928858737435">Kérheti a webhelyek asztali verziójának megjelenítését.</translation>
+<translation id="1089791933924803646">Chrome-javaslatok fogadása más alkalmazásokban</translation>
 <translation id="1109482864356262001">A mozgás- vagy fényérzékelőket igénylő funkciók nem működnek</translation>
 <translation id="1126523729897810826">Hajtsa végre az alábbi javasolt műveleteket, hogy a lehető legtöbbet ki tudja hozni a Chrome-ból.</translation>
 <translation id="113098737392899175">Navigálás az oldalakon szövegkurzorral, ha csatlakoztatva van billentyűzet</translation>
@@ -453,6 +454,7 @@
 <translation id="5668404140385795438">Felülbírálja a webhely kérelmét, mely megakadályozná a nagyítást</translation>
 <translation id="5668843533782548925">A webhelyek lassabbak, de biztonságosabbak</translation>
 <translation id="5677928146339483299">Letiltva</translation>
+<translation id="5679089750838794164">A Chrome mostantól a böngészési adatai (például a legutóbbi böngészési előzményei) alapján javaslatokat jeleníthet meg más alkalmazásokban. Az adatok feldolgozása biztonságos módon, az eszközön történik. Ezt bármikor kikapcsolhatja a Chrome beállításai között.</translation>
 <translation id="5689516760719285838">Tartózkodási hely</translation>
 <translation id="5690795753582697420">A kamera ki van kapcsolva az Android-beállítások között</translation>
 <translation id="5700761515355162635">Harmadik féltől származó cookie-k engedélyezve</translation>
@@ -507,6 +509,7 @@
 <translation id="6085954183010297841">Visszavonja a fájlszerkesztési engedélyt? <ph name="FILE" /></translation>
 <translation id="6104860901391833523">Amikor be van kapcsolva, a webhelyek automatikusan bekapcsolhatják a kép a képben funkciót. Amikor ki van kapcsolva, a webhelyek nem indíthatják el automatikusan a kép a képben funkciót.</translation>
 <translation id="6120483543004435978">Ha be van kapcsolva, a webhelyek lekérdezhetik, hogy Ön mikor használja aktívan az eszközét. Ha ki van kapcsolva, a webhelyek nem tudhatják, hogy Ön mikor használja aktívan az eszközt.</translation>
+<translation id="612871598708395517">A Chrome-javaslatok fogadása beállítás elrejtése más alkalmazásokban</translation>
 <translation id="6132075343662013154">A Chrome felkínálja a jelszó mentését.</translation>
 <translation id="615886654739818377">A webhelyek nem kezelhetnek ablakokat egyik kijelzőn sem</translation>
 <translation id="6165508094623778733">További információ</translation>

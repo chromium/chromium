@@ -740,7 +740,6 @@
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 de outubro de 2023</translation>
 <translation id="3419787211763835342">Axuda a mellorar a función de autocompletar mellorada</translation>
-<translation id="3426715535827854458">Ocultar a opción Ocultar barra de ferramentas</translation>
 <translation id="3435738964857648380">Seguranza</translation>
 <translation id="3441673211568148613">Mantén a túa navegación privada</translation>
 <translation id="3443810440409579745">Recibiuse unha pestana.</translation>
@@ -1173,6 +1172,7 @@
 <translation id="484280513275854557">Pechouse a túa sesión e elimináronse os datos de navegación</translation>
 <translation id="484462545196658690">Automático</translation>
 <translation id="4846662396507502151">Navega máis rápido coa nova barra de ferramentas</translation>
+<translation id="4850669014075537160">Desprazamento</translation>
 <translation id="4850886885716139402">Vista</translation>
 <translation id="4854068532375923088">Permite que Gemini use a túa cámara</translation>
 <translation id="4860895144060829044">Chamar</translation>
@@ -1947,6 +1947,9 @@ Para continuar desde o ordenador, cambia a <ph name="OTHER_EMAIL" />. Obterás o
 <translation id="7280980607183752256">Este ficheiro non se pode importar</translation>
 <translation id="7282197670900591579">Tema cidra</translation>
 <translation id="7293429513719260019">Seleccionar idioma</translation>
+<translation id="72961285530871072">Con esta acción, eliminarase de forma permanente o teu progreso en Level Up e os datos de uso das funcións deste programa deixarán de enviarse ao teu perfil de Google.
+
+Podes reinicialo cando queiras.</translation>
 <translation id="7300448350764260141">Engade unha capa máis de protección contra as ameazas en liña.</translation>
 <translation id="7311244614769792472">Non se encontraron resultados</translation>
 <translation id="7312823817809783355">As túas tarefas</translation>
@@ -2581,7 +2584,7 @@ Para continuar desde o ordenador, cambia a <ph name="OTHER_EMAIL" />. Obterás o
 <translation id="954667170699278022">Lista de lectura</translation>
 <translation id="956066588046842680">A política da túa organización non permite importar estes datos.</translation>
 <translation id="956218893102219091">Usa a túa localización precisa en lugar dunha localización estimada baseada no teu enderezo IP para obter os resultados máis precisos de Gemini. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
-<translation id="960590623979248167">Mostrar as hiperligazóns</translation>
+<translation id="960590623979248167">Mostrar as ligazóns</translation>
 <translation id="961856697154696964">Eliminar datos navegación</translation>
 <translation id="963102227019621224">Actividade web e das aplicacións</translation>
 <translation id="965259330007686240">Crea unha imaxe con Gemini</translation>

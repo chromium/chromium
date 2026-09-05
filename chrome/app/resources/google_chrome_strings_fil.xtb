@@ -31,6 +31,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1197860368385086056">Sa susunod na buksan mo ang Chrome sa iyong <ph name="DEVICE_TYPE" />, makakakita ka ng prompt para i-enable ang mga alerto sa pagsubaybay sa presyo.</translation>
 <translation id="1203500561924088507">Salamat sa pag-install. Dapat mong i-restart ang iyong browser bago gamitin ang <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1278833599417554002">Ilunsad ulit para ma-update ang Chrome</translation>
+<translation id="1289911795790071537">Buksan ang paghahanap gamit ang Chrome</translation>
 <translation id="1290883685122687410">Error sa pag-set up: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Mangyaring maghintay habang ini-install ng Chrome ang mga pinakabagong update sa system.</translation>
 <translation id="1330562121671411446">I-detect ang wika</translation>
@@ -354,6 +355,7 @@ Kung hindi gumagana ang page na ito gaya ng inaasahan, subukang payagan ang pag-
 <translation id="436060642166082913">Na-block ng Chrome ang pag-download na ito dahil puwedeng mapinsala ng file ang iyong mga personal na account at account sa social network</translation>
 <translation id="4367027658822022112">Puwede mong i-pin ang Google Lens para sa madaling pag-access; i-click ang button na I-pin sa itaas ng panel sa gilid</translation>
 <translation id="4372389195695053189">Chrome na ang iyong default browser</translation>
+<translation id="4381814455597163081">Tumutulong kang pahusayin ang Chrome sa pamamagitan ng pagpapadala ng mga istatistika sa paggamit at ulat ng pag-crash sa Google. <ph name="BEGIN_LINK" />Pamahalaan<ph name="END_LINK" /></translation>
 <translation id="4389991535395284064">Kapag nagba-browse sa Incognito mode, bibigyan ka ng babala ng Chrome bago nito i-load ang isang site na gumagamit ng hindi secure na koneksyon</translation>
 <translation id="4400772909124543403">Walang available na update</translation>
 <translation id="4427306783828095590">Mas maraming magagawa ang pinahusay na proteksyon para mag-block ng phishing and malware</translation>
@@ -574,6 +576,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="6556755379298048869">Maghanap gamit ang keyboard shortcut.</translation>
 <translation id="6585124893636629274">Isara ang Gemini sa Chrome</translation>
 <translation id="659498884637196217">Sa Google Password Manager sa device na ito</translation>
+<translation id="6612152958212564387">Hindi ka nagpapadala ng mga istatistika sa paggamit at ulat ng pag-crash sa Google. <ph name="BEGIN_LINK" />Pamahalaan<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Panatilihing ganap na naka-sync ang iyong mga password, bookmark, at history sa lahat ng device sa pamamagitan ng pagtatakda ng Chrome bilang default browser mo.</translation>
 <translation id="6631524303639368205">Magpatuloy kung saan ka huminto: Ni-restore ng Chrome ang iyong mga tab mula sa huling session mo. Puwede mo itong i-off sa</translation>
 <translation id="6632473616050862500">Pinapagana ng karagdagang <ph name="BEGIN_LINK_CROS_OSS" />open source na software<ph name="END_LINK_CROS_OSS" /> ang ChromeOS Flex.</translation>
@@ -600,6 +603,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="6859580922007887573">Pindutin ang tab para magpatuloy</translation>
 <translation id="6869568587896659271">Madaling pag-access sa mga website sa ibaba ng address bar</translation>
 <translation id="6877155553248388166">kanang sulok sa ibaba ng lugar para sa paghahanap: kanan <ph name="RIGHT" />%, ibaba <ph name="BOTTOM" />%</translation>
+<translation id="6879791154455204815">Buksan ang Paghahanap gamit ang Chrome</translation>
 <translation id="6881299373831449287">Ina-update ang Chrome</translation>
 <translation id="6885412569789873916">Mga Chrome Beta App</translation>
 <translation id="6893363893008038481">Alisin ang Account sa Chrome</translation>
@@ -658,6 +662,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="7449333426561673451">{COUNT,plural, =1{Awtomatikong isinasara ng iyong organisasyon ang Chrome kapag hindi ito nagamit nang 1 minuto.}one{Awtomatikong isinasara ng iyong organisasyon ang Chrome kapag hindi ito nagamit nang # minuto.}other{Awtomatikong isinasara ng iyong organisasyon ang Chrome kapag hindi ito nagamit nang # na minuto.}}</translation>
 <translation id="7450541714075000668">Nakopya ang text</translation>
 <translation id="7452987490177144319">{COUNT,plural, =1{Awtomatikong ide-delete ng iyong organisasyon ang data mula sa pag-browse kapag hindi nagamit ang Chrome nang 1 minuto. Posibleng kasama rito ang history, autofill, at mga download. Mananatiling nakabukas ang iyong mga tab.}one{Awtomatikong ide-delete ng iyong organisasyon ang data mula sa pag-browse kapag hindi nagamit ang Chrome nang # minuto. Posibleng kasama rito ang history, autofill, at mga download. Mananatiling nakabukas ang iyong mga tab.}other{Awtomatikong ide-delete ng iyong organisasyon ang data mula sa pag-browse kapag hindi nagamit ang Chrome nang # na minuto. Posibleng kasama rito ang history, autofill, at mga download. Mananatiling nakabukas ang iyong mga tab.}}</translation>
+<translation id="7466577301922356468">Nakakatulong sa pagpapahusay ng Chrome ang awtomatikong pagpapadala ng data na ito sa Google. Puwede mong baguhin ang setting na ito anumang oras.</translation>
 <translation id="7477130805345743099">Bibigyan ka ng babala ng Chrome bago nito i-load ang anumang site na gumagamit ng hindi secure na koneksyon</translation>
 <translation id="7481213027396403996">Kunin ang pinakamahusay na seguridad ng Chrome</translation>
 <translation id="749228101751499733">Habang naka-sign in ka, magagamit mo ang iyong mga password at higit pa mula sa Google Account mo sa Chrome. Gamit ang <ph name="SHORTCUT" />, puwede mong baguhin ang iyong mga setting ng Mga serbisyo ng Google.</translation>

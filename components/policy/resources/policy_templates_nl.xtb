@@ -100,9 +100,6 @@ Als je dit beleid niet toepast, is de functie voor autocorrectie op het fysieke 
 <translation id="1060020040574767394">Aangepaste watermerkinstellingen configureren</translation>
 <translation id="1062011392452772310">Externe bevestiging van apparaat aanzetten</translation>
 <translation id="1062407476771304334">Vervangen</translation>
-<translation id="1063860513136880926">Als je het beleid toepast, zijn screenshots die worden gemaakt met sneltoetsen of extensie-API's niet toegestaan. Als je het beleid niet toepast of niet instelt, zijn screenshots toegestaan.
-
-Op <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> en <ph name="LINUX_OS_NAME" /> voorkomt dit niet dat screenshots worden gemaakt met het besturingssysteem of apps van derden.</translation>
 <translation id="1065175969514496951">Als je dit beleid instelt, wordt toegang geboden tot de vermelde URL's tijdens de verificatie (bijvoorbeeld het inlog- en vergrendelscherm), als uitzonderingen op <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />. Zie de beschrijving van dat beleid voor de indeling van items in deze lijst. Als je <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" /> bijvoorbeeld instelt op <ph name="WILDCARD_VALUE" />, worden alle verzoeken geblokkeerd en kun je dit beleid gebruiken om toegang tot een beperkte lijst met URL's toe te staan. Je kunt dit beleid gebruiken om uitzonderingen voor bepaalde schema's, subdomeinen van andere domeinen, poorten of specifieke paden op te geven met de indeling die wordt gespecificeerd op (https://support.google.com/chrome/a?p=url_blocklist_filter_format). Het meest specifieke filter bepaalt of een URL wordt geblokkeerd of toegestaan. Het beleid <ph name="DEVICE_AUTHENTICATION_URL_ALLOWLIST_POLICY_NAME" /> krijgt voorrang op <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />. Dit beleid is beperkt tot 1000 items.
 
 Als je het beleid niet instelt, zijn er geen uitzonderingen toegestaan op <ph name="DEVICE_AUTHENTICATION_URL_BLOCKLIST_POLICY_NAME" />.</translation>
@@ -7296,6 +7293,7 @@ Als je het beleid niet instelt of instelt op een lege lijst, worden bevestigings
 <translation id="5601503069213153581">Pincode</translation>
 <translation id="5605676983184673391">Chrome-apps uitvoeren in kiosksessies toestaan.</translation>
 <translation id="5606477661985737162">Instellingen voor automatische downloads</translation>
+<translation id="5606816003654129603">Prompts voor extensiereviews en links voor beoordelingen beheren</translation>
 <translation id="5607021831414604820">Rapportage van opslagstatus van apparaat aanzetten</translation>
 <translation id="5607808178576647930">Integraties van de AI-modus toestaan.</translation>
 <translation id="5608114828230655271">Standaard apparaatgedrag</translation>
@@ -8158,6 +8156,7 @@ Ga naar https://support.google.com/chrome/a?p=url_blocklist_filter_format voor u
 
 Als je het beleid niet instelt, wordt de algemene standaardwaarde gebruikt voor alle sites (geen automatische toegang).</translation>
 <translation id="6207607210601267301">Verificatie zonder pincode uitzetten voor de host voor externe toegang</translation>
+<translation id="6207673917710036736">Prompts voor reviews en links voor beoordelingen van native extensies aanzetten</translation>
 <translation id="6208896993204286313">Beleidsgegevens van <ph name="PRODUCT_NAME" /> rapporteren</translation>
 <translation id="6210259502936598222">OS- en <ph name="PRODUCT_NAME" />-versiegegevens rapporteren</translation>
 <translation id="6214712395769944855">Met dit beleid stel je <ph name="PRODUCT_NAME" /> in om de voorkeursversleutelingsalgoritmen in TLS 1.3 te ordenen op basis van een voorkeur voor algoritmen die zijn goedgekeurd door een specifiek nalevingsregime.
@@ -9205,6 +9204,7 @@ Dit vervangt het beëindigde beleid <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_
       Opmerking: Dit beleid is niet van toepassing in de incognitomodus, waar cookies van derden worden geblokkeerd en alleen op siteniveau kunnen worden toegestaan. Gebruik het beleid <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" /> om cookies op siteniveau toe te staan.</translation>
 <translation id="6810445994095397827">JavaScript blokkeren op deze sites</translation>
 <translation id="6813263547126514821">Energiebeheer en uitzetten</translation>
+<translation id="6813752387426088259">Prompts voor reviews en links voor beoordelingen van native extensies uitzetten</translation>
 <translation id="681446116407619279">Ondersteunde authenticatieschema's</translation>
 <translation id="6815628711329903153">Moderne buffertoewijzing toestaan voor Graphics3D-API's in PPAPI-plug-in.</translation>
 <translation id="6819031008957510729">Als je dit beleid toepast, wordt aanbevolen dat anonieme rapportage van gebruiks- en crashgegevens over <ph name="PRODUCT_NAME" /> aan Google standaard aanstaat. Gebruikers kunnen deze instelling nog steeds wijzigen.
@@ -9891,6 +9891,14 @@ Beide beleidsregels zijn beëindigd na de beëindiging van de functie <ph name="
 In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein of aan <ph name="MS_AAD_NAME" /> of die zijn ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
 
 In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
+<translation id="7152157730070066152">Dit beleid is beëindigd en heeft geen effect omdat de functie voor aankondigingen in de middelste ruimte is verwijderd van de pagina Nieuw tabblad.
+
+      Met dit beleid bepaal je de zichtbaarheid van de aankondiging in de middelste ruimte op de pagina Nieuw tabblad.
+
+      Als je het beleid toepast, toont de pagina Nieuw tabblad de aankondiging in de middelste ruimte als die beschikbaar is.
+
+      Als je het beleid niet toepast, toont de pagina Nieuw tabblad de aankondiging in de middelste ruimte niet, ook niet als die beschikbaar is.
+      </translation>
 <translation id="7152640356717355643">Rapportage voor netwerkinterface van apparaat aanzetten</translation>
 <translation id="7153786895642570081">Met dit beleid bepaal je of de functie EphemeralNetworkPolicies wordt aangezet.
 Als je dit beleid instelt op True, worden de DeviceOpenNetworkConfiguration-vermeldingen RecommendedValuesAreEphemeral en UserCreatedNetworkConfigurationsAreEphemeral gerespecteerd.
@@ -10439,15 +10447,6 @@ Als je het beleid niet toepast, maakt <ph name="PRODUCT_NAME" /> alleen verbindi
 
 Als je het beleid niet instelt, maakt <ph name="PRODUCT_NAME" /> alleen verbinding met cast-apparaten op RFC1918/RFC4193, tenzij de functie CastAllowAllIPs aanstaat.</translation>
 <translation id="7534199150025803530">Dit beleid is niet van invloed op de Google Drive-app voor Android. Als je wilt voorkomen dat Google Drive kan worden gebruikt via een mobiele verbinding, moet je de installatie van de Google Drive-app voor Android blokkeren.</translation>
-<translation id="7537404002861344834">Stelt de verbindingsinstellingen voor <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> in om de reacties voor Gemini in Chrome-functies te verbeteren.
-
-Als je dit beleid instelt, kan <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> worden gebruikt om de reacties van Gemini in Chrome te verbeteren voor gebruikers die zijn ingelogd met een beheerd account dat is gekoppeld aan de ingevoerde project- en app-ID. <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> is niet beschikbaar voor profielen die zijn ingelogd met persoonlijke accounts.
-
-Als je het beleid niet instelt, wordt <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> niet gebruikt om de reacties van Gemini in Chrome te verbeteren.
-
-Dit beleid beheert niet de algemene integratie van <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />. Die kan worden beheerd door het beleid <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
-
-Alle instellingen van dit beleid moeten overeenkomen met de configuratie van het <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />-project in de <ph name="GOOGLE_CLOUD_PRODUCT_NAME" /> Console. Als de instellingen niet overeenkomen, kan dit onverwacht gedrag veroorzaken tijdens het gebruik van <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
 <translation id="7538583957913002726">Dit beleid wordt standaard toegepast. Het beheert de ingeschreven apparaten om de CPU-modelnaam, architectuur en maximale kloksnelheid (en CPU-gebruik en -temperatuur voor M96 en hoger) te rapporteren.
 
       Als je het beleid niet toepast, betekent dit dat ingeschreven apparaten geen CPU-informatie rapporteren.
@@ -12265,6 +12264,11 @@ Dit beleid is beëindigd vanaf <ph name="PRODUCT_NAME" /> versie 144 met de beë
 <translation id="8757552286070680084">Wilco DTC-configuratie</translation>
 <translation id="8758831693895931466">Inschrijving voor cloudbeheer verplichten</translation>
 <translation id="8759829385824155666">Toegestane Kerberos-versleutelingstypen</translation>
+<translation id="876034218754933846">Bepaalt of systeemeigen reviewprompts en beoordelingslinks (zoals Beoordelen) voor geïnstalleerde Chrome-extensies beschikbaar zijn in Chrome-gebruikersinterfaces.
+
+Als je dit beleid toepast of niet instelt, kunnen gebruikers systeemeigen toegangspunten zien om in aanmerking komende extensies te beoordelen en te beoordelen in de werkbalk, contextmenu's en de pagina voor extensiebeheer (chrome://extensions).
+
+Als je dit beleid niet toepast, worden alle systeemeigen reviewprompts en beoordelingslinks onderdrukt en zijn ze niet beschikbaar.</translation>
 <translation id="8762128467207353085">Een lijst met oorsprongen van Remote Desktop-client-apps die WebAuthn API-verzoeken kunnen uitvoeren die afkomstig zijn van een browsesessie op een externe host.
 
 Elke oorsprong die is ingesteld in dit beleid, kan WebAuthn-verzoeken indienen voor Relying Party-ID's (RP-ID's) die normaal gesproken niet kunnen worden geclaimd.
@@ -12699,19 +12703,6 @@ Opmerking: Op dit moment wordt alleen rekening gehouden met de eerste vermelding
           Als je dit beleid instelt, kunnen gebruikers het niet wijzigen of overschrijven.
 
           Als dit beleid niet is ingesteld, staat de functie voor markeren via toetsenbordfocus in eerste instantie uit, maar kan de gebruiker deze op elk gewenst moment aanzetten.</translation>
-<translation id="9037098514292099199">Als je dit beleid instelt, worden de extensiebeheerinstellingen voor <ph name="PRODUCT_NAME" /> beheerd, waaronder instellingen die worden beheerd door bestaande, aan extensies gerelateerde beleidsregels.
-
-Met dit beleid wordt alleen een extensie-ID of een update-URL toegewezen aan de bijbehorende specifieke instelling. Er kan een standaardconfiguratie worden ingesteld voor de speciale ID <ph name="DEFAULT_SCOPE" />, die van toepassing is op alle extensies waarvoor geen aangepaste configuratie is ingesteld in dit beleid.
-
-Dit beleid kan de configuratie per extensie uit oudere beleidsregels overschrijven.
-
-Instellingen voor extensies per ID van <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> of <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> nemen alleen de standaardinstellingen voor <ph name="DEFAULT_SCOPE" /> over voor installation_mode en update_url. De property neemt geen andere property's over. Bij een update-URL is de configuratie van toepassing op alle extensies met de exacte update-URL die wordt vermeld in het manifest van de extensie (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Als de flag override_update_url is ingesteld op Waar, wordt de extensie geïnstalleerd en aangepast met de update-URL die is gespecificeerd in het beleid <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> of in het veld update_url in dit beleid. De markering override_update_url wordt genegeerd als de update_url een URL voor de Chrome Web Store is.
-
-In <ph name="MS_WIN_NAME" /> kunnen instanties, apps en extensies van buiten de Chrome Web Store alleen afgedwongen worden geïnstalleerd als de instantie is gekoppeld aan een <ph name="MS_AD_NAME" />-domein of aan <ph name="MS_AAD_NAME" />, of is ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-In <ph name="MAC_OS_NAME" /> kunnen instanties, apps en extensies van buiten de Chrome Web Store alleen afgedwongen worden geïnstalleerd als de instantie wordt beheerd via MDM, via MCX aan een domein is gekoppeld of is ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Opmerking: Dit beleid geldt alleen voor platforms die extensies ondersteunen.</translation>
 <translation id="9038839118379817310">Wifi aanzetten</translation>
 <translation id="9039822628127365650">Als dit beleid is ingesteld, geeft het de periode op waarna een gebruiker automatisch wordt uitgelogd en de sessie wordt beëindigd. De gebruiker wordt geïnformeerd over de resterende tijd door een afteltimer die in het systeemvak wordt getoond.
 

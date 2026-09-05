@@ -29,6 +29,7 @@
 <translation id="1197860368385086056">次回 <ph name="DEVICE_TYPE" /> で Chrome を開いたときに、価格トラッキングのアラートを有効にするよう促すメッセージが表示されます。</translation>
 <translation id="1203500561924088507">インストールいただきありがとうございます。<ph name="BUNDLE_NAME" /> を使用するにはブラウザを再起動してください。</translation>
 <translation id="1278833599417554002">再起動して Chrome を更新(&amp;C)</translation>
+<translation id="1289911795790071537">「Chrome で検索」を開く</translation>
 <translation id="1290883685122687410">設定エラー: <ph name="METAINSTALLER_EXIT_CODE" />。<ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Chrome は最新のシステム アップデートをインストールしています。しばらくお待ちください。</translation>
 <translation id="1330562121671411446">検出言語</translation>
@@ -347,6 +348,7 @@
 <translation id="436060642166082913">このダウンロードは Chrome でブロックされました。ファイルが個人アカウントやソーシャル ネットワークのアカウントに危害を及ぼす可能性があります</translation>
 <translation id="4367027658822022112">Google レンズを固定して簡単にアクセスできます。固定するには、サイドパネルの上部にある [固定] ボタンをクリックします</translation>
 <translation id="4372389195695053189">Chrome を既定のブラウザに設定しました</translation>
+<translation id="4381814455597163081">使用統計情報と障害レポートを Google に送信して Chrome の機能向上に役立てます。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="4389991535395284064">シークレット モードでブラウジングする際、Chrome で安全でない接続を使用してサイトを読み込む前に警告を表示します</translation>
 <translation id="4400772909124543403">利用できるアップデートはありません</translation>
 <translation id="4427306783828095590">保護強化機能により、フィッシングを防ぎ、不正なソフトウェアをより強力にブロックします</translation>
@@ -563,6 +565,7 @@
 <translation id="6556755379298048869">キーボード ショートカットを使用して検索します。</translation>
 <translation id="6585124893636629274">Gemini in Chrome を閉じる</translation>
 <translation id="659498884637196217">このデバイスの Google パスワード マネージャー</translation>
+<translation id="6612152958212564387">使用統計情報と障害レポートを Google に送信していません。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Chrome を既定のブラウザに設定すると、パスワード、ブックマーク、履歴をデバイス間で完全に同期できます。</translation>
 <translation id="6631524303639368205">前回開いていたページを開く: Chrome で前回のセッションからタブが復元されました。この機能をオフにするには、</translation>
 <translation id="6632473616050862500">ChromeOS Flex は、追加の<ph name="BEGIN_LINK_CROS_OSS" />オープンソース ソフトウェア<ph name="END_LINK_CROS_OSS" />によって実現しました。</translation>
@@ -589,6 +592,7 @@
 <translation id="6859580922007887573">タブキーで続行</translation>
 <translation id="6869568587896659271">アドレスバーの下からウェブサイトに簡単にアクセスできます</translation>
 <translation id="6877155553248388166">検索範囲の右下隅: 右 <ph name="RIGHT" />%、下 <ph name="BOTTOM" />%</translation>
+<translation id="6879791154455204815">「Chrome で検索」を開く</translation>
 <translation id="6881299373831449287">Chrome を更新しています</translation>
 <translation id="6885412569789873916">Chrome ベータ版アプリ</translation>
 <translation id="6893363893008038481">Chrome からアカウントを削除</translation>
@@ -647,6 +651,7 @@
 <translation id="7449333426561673451">{COUNT,plural, =1{1 分間使用しなかった場合、組織は Chrome を自動的に終了します。}other{# 分間使用しなかった場合、組織は Chrome を自動的に終了します。}}</translation>
 <translation id="7450541714075000668">テキストをコピーしました</translation>
 <translation id="7452987490177144319">{COUNT,plural, =1{1 分間使用しなかった場合、組織は Chrome の閲覧データを自動的に削除します。これには、履歴、自動入力、ダウンロードが含まれます。タブは開いたままになります。}other{# 分間使用しなかった場合、組織は Chrome の閲覧データを自動的に削除します。これには、履歴、自動入力、ダウンロードが含まれます。タブは開いたままになります。}}</translation>
+<translation id="7466577301922356468">このデータを Google に自動送信すると、Chrome の機能向上に役立ちます。この設定はいつでも変更できます。</translation>
 <translation id="7477130805345743099">Chrome で安全でない接続を使用してサイトを読み込む前に警告を表示します</translation>
 <translation id="7481213027396403996">Chrome の最高水準のセキュリティで保護</translation>
 <translation id="749228101751499733">Chrome にログイン中は、Google アカウントのパスワードやその他の設定を使用できます。<ph name="SHORTCUT" /> キーを押すと Google サービスの設定を変更できます。</translation>
@@ -797,6 +802,7 @@
 <translation id="8747073452963259673">検索範囲の左下隅: 左 <ph name="LEFT" />%、下 <ph name="BOTTOM" />%</translation>
 <translation id="8748735421235723888">アクティブでないタブのメモリを解放します。これにより、アクティブなタブや他のアプリで利用できるコンピュータ リソースが増え、Chrome の速度低下を抑えられます。アクティブでないタブは、再度アクセスすると自動的にアクティブになります。<ph name="BEGIN_LINK" />メモリセーバーの詳細<ph name="END_LINK" /></translation>
 <translation id="8765470054473112089">Chrome でアドレスバーや検索ボックスに入力を始めると、入力内容がデフォルトの検索エンジンに送信され、より関連性の高い検索候補が表示されます。シークレット モードの場合、この設定はオフになっています。</translation>
+<translation id="8771516687880083607">Chrome と共有する内容を選択</translation>
 <translation id="8781673607513845160">カメラを使用するには、<ph name="BEGIN_LINK" />システム設定<ph name="END_LINK" />で Chrome にアクセスを許可してください</translation>
 <translation id="878572486461146056">インストール エラー: ネットワーク管理者により、インストールを許可しないというグループ ポリシーが適用されています: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796919761992612392">Chrome をカスタマイズ(&amp;U)</translation>

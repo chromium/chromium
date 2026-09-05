@@ -7,6 +7,7 @@
 <translation id="1046742265332833834">Tema biru</translation>
 <translation id="1070329623210597193">File yang dapat dilihat atau diedit oleh situs ini</translation>
 <translation id="1074758928858737435">Anda dapat meminta untuk melihat situs versi desktop</translation>
+<translation id="1089791933924803646">Dapatkan saran Chrome di aplikasi lain</translation>
 <translation id="1109482864356262001">Fitur yang memerlukan sensor gerakan atau cahaya tidak akan berfungsi</translation>
 <translation id="1126523729897810826">Selesaikan tindakan yang disarankan berikut untuk mengoptimalkan Chrome</translation>
 <translation id="113098737392899175">Buka halaman dengan kursor teks saat keyboard terhubung</translation>
@@ -453,6 +454,7 @@
 <translation id="5668404140385795438">Abaikan permintaan situs web untuk mencegah zoom</translation>
 <translation id="5668843533782548925">Situs lebih lambat, tetapi lebih aman</translation>
 <translation id="5677928146339483299">Diblokir</translation>
+<translation id="5679089750838794164">Chrome kini dapat menampilkan saran di aplikasi lain berdasarkan data penjelajahan Anda, seperti histori penjelajahan terbaru. Data ini diproses dengan aman di perangkat Anda. Anda dapat menonaktifkannya kapan saja di setelan Chrome.</translation>
 <translation id="5689516760719285838">Lokasi</translation>
 <translation id="5690795753582697420">Kamera dinonaktifkan di setelan Android</translation>
 <translation id="5700761515355162635">Cookie pihak ketiga diizinkan</translation>
@@ -507,6 +509,7 @@
 <translation id="6085954183010297841">Hapus pemberian izin edit file? <ph name="FILE" /></translation>
 <translation id="6104860901391833523">Jika diaktifkan, situs dapat masuk ke mode picture-in-picture secara otomatis. Jika dinonaktifkan, situs tidak dapat masuk ke mode picture-in-picture secara otomatis.</translation>
 <translation id="6120483543004435978">Jika diaktifkan, situs dapat meminta untuk mengetahui saat Anda aktif menggunakan perangkat. Jika dinonaktifkan, situs tidak dapat mengetahui saat Anda aktif menggunakan perangkat.</translation>
+<translation id="612871598708395517">Sembunyikan Dapatkan saran Chrome di aplikasi lain</translation>
 <translation id="6132075343662013154">Chrome akan menawarkan penyimpanan sandi Anda</translation>
 <translation id="615886654739818377">Jangan izinkan situs mengelola jendela di semua layar Anda</translation>
 <translation id="6165508094623778733">Pelajari lebih lanjut</translation>

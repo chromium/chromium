@@ -57,6 +57,7 @@
 <translation id="1181037720776840403">Remove</translation>
 <translation id="1183189057400844278">To make sure that you can always use the passwords in your Google Account, verify that it's you</translation>
 <translation id="1187810343066461819">Also delete bookmarks, history and more from this car</translation>
+<translation id="1191987227666124897">Opt-out request</translation>
 <translation id="1193729455103054076">Use strong password?</translation>
 <translation id="11947597112837849">email address</translation>
 <translation id="1197267115302279827">Move bookmarks</translation>
@@ -105,6 +106,7 @@
 <translation id="138181280295369883">Sign in to get your saved info and more on all your devices</translation>
 <translation id="1381838868249179644">To help keep you safe, permissions were removed from some sites</translation>
 <translation id="1383876407941801731">Search</translation>
+<translation id="1384568202352682721">Save as…</translation>
 <translation id="1384704387250346179">Translate image with Google Lens <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="1390418506739274310">You may see the history from other apps that open links in Chrome. Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Price insights bottom sheet opened at full height</translation>
@@ -133,6 +135,7 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
 <translation id="147982357559798527">Changed</translation>
 <translation id="1480287803138246127">Some of your history might not show up here. To see all your Chrome history, open full Chrome history.</translation>
 <translation id="1483493594462132177">Send</translation>
+<translation id="1485343711570311792">Open in <ph name="NATIVE_APP_NAME" /> • From <ph name="DEVICE_NAME" /></translation>
 <translation id="1495677929897281669">Back to tab</translation>
 <translation id="1496514951988037011">username</translation>
 <translation id="1501480321619201731">Delete group</translation>
@@ -210,6 +213,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1832459821645506983">Yes, I’m in</translation>
 <translation id="1845958458910716240">To protect your data, let Chrome remove permissions from sites that you haven't visited recently</translation>
 <translation id="1851551847729706116">Sharing <ph name="TAB_NAME" /> to this tab</translation>
+<translation id="1855268219431673036">Page <ph name="CURRENT_PAGE" /> of <ph name="TOTAL_PAGE_COUNT" /></translation>
 <translation id="1869691326892615940">Safer passwords, faster sign-in</translation>
 <translation id="1871098866036088250">Open in Chrome browser</translation>
 <translation id="1877026089748256423">Chrome is out of date</translation>
@@ -327,6 +331,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="232137538351753795">Swipe from the left edge to go back</translation>
 <translation id="2323763861024343754">Site storage</translation>
 <translation id="2327445548174191329">From <ph name="DEVICE_NAME" /></translation>
+<translation id="232757965409810352">Save page as…</translation>
 <translation id="2328474416100889417">Everyone will immediately lose access to the '<ph name="GROUP_NAME" />' tab group, and all invitation links will be turned off</translation>
 <translation id="2329500425421091035">Introducing AI Mode in Chrome</translation>
 <translation id="2330186936255788117">More bookmarks</translation>
@@ -1338,6 +1343,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="634208815998129842">Task manager</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> more}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> more}}</translation>
 <translation id="6345878117466430440">Mark as read</translation>
+<translation id="63490081267265251">The sites that you visit, including Google, are responsible for determining how they respond to this request. Depending on the laws in your region, sites may respond by limiting the sale and sharing of your data or its use for personalised ads. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="6350745006329795504">Manage your devices</translation>
 <translation id="6356893102071098867">Check that you chose the right account.</translation>
 <translation id="6364438453358674297">Remove suggestion from history?</translation>
@@ -1662,6 +1668,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7493994139787901920"><ph name="VERSION" /> (Updated <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Please wait…</translation>
 <translation id="7499065150275272675"><ph name="TAB_TITLE" />, pinned muted tab</translation>
+<translation id="7500851014030446046">Downloading PDF</translation>
 <translation id="7501135638693251872">All bookmarks</translation>
 <translation id="7507207699631365376">See this provider's <ph name="BEGIN_LINK" />privacy policy<ph name="END_LINK" /></translation>
 <translation id="750886945254958667">Keep this group to add tabs later, or leave it if you no longer want access to it</translation>
@@ -1729,6 +1736,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> more}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> more}}</translation>
 <translation id="777637629667389858">When you're signed in, protects you across Google services.</translation>
 <translation id="7778840695157240389">Check back later for new stories</translation>
+<translation id="7780992949171378848">Send an opt-out request to sites regarding use of your data</translation>
 <translation id="7791543448312431591">Add</translation>
 <translation id="7792388396321542707">Stop sharing</translation>
 <translation id="780287761701992588">Get your bookmarks, passwords and more on all your devices</translation>
@@ -1874,6 +1882,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8313599942510782709">Your task is still in progress</translation>
 <translation id="8317318757008452355">Open options to print</translation>
 <translation id="8320212361750431956">Recent activity</translation>
+<translation id="8322452989119079156">Open in <ph name="NATIVE_APP_NAME" /> – sent from <ph name="DEVICE_NAME" /></translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="8333026248928723981">Bookmarks and lists</translation>
 <translation id="8342727528718219152">Chrome will let you know about sites that may be sending too many notifications</translation>

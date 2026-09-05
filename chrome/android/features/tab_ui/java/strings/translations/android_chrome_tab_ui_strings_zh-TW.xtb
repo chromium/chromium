@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> 週前建立}other{<ph name="NUM_WEEKS_MANY" /> 週前建立}}</translation>
 <translation id="1063300264396686489">自動開啟其他裝置建立的分頁群組</translation>
 <translation id="1075622780330595106">你有 <ph name="NUMBER_OF_TABS" /> 個分頁最近沒有使用過。要關閉這些分頁嗎？</translation>
+<translation id="1089791933924803646">在其他應用程式中取得 Chrome 建議</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> 年前建立}other{<ph name="NUM_YEARS_MANY" /> 年前建立}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{閒置分頁和群組會在 1 個月後關閉}other{閒置分頁和群組會在 <ph name="MONTH_COUNT_MANY" /> 個月後關閉}}</translation>
 <translation id="1173894706177603556">重新命名</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{將分頁加入群組}other{將分頁加入群組}}</translation>
 <translation id="8138067144082174140">閒置 14 天後</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{展開含有 <ph name="TABS_COUNT_ONE" /> 個分頁「<ph name="TITLE_OF_GROUP" />」分頁群組，顏色為<ph name="COLOR_NAME" />。}other{展開含有 <ph name="TABS_COUNT_MANY" /> 個分頁「<ph name="TITLE_OF_GROUP" />」分頁群組，顏色為<ph name="COLOR_NAME" />。}}</translation>
+<translation id="8172214054247281626">分享近期瀏覽記錄等瀏覽資料，在特定應用程式中取得建議。系統會在你的裝置上處理這類資料，安全有保障。</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{取消固定分頁}other{取消固定分頁}}</translation>
 <translation id="8205266828577616993">將分頁上移</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> 分鐘前更新}other{<ph name="NUM_MINS_MANY" /> 分鐘前更新}}</translation>

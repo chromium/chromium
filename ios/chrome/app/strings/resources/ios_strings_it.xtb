@@ -740,7 +740,6 @@
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 ott 2023</translation>
 <translation id="3419787211763835342">Contribuisci a migliorare la compilazione automatica avanzata</translation>
-<translation id="3426715535827854458">Nascondi Nascondi barra degli strumenti</translation>
 <translation id="3435738964857648380">Sicurezza</translation>
 <translation id="3441673211568148613">Mantieni privata la navigazione</translation>
 <translation id="3443810440409579745">Scheda ricevuta.</translation>
@@ -1173,6 +1172,7 @@
 <translation id="484280513275854557">Il tuo account è stato disconnesso; i dati di navigazione sono stati eliminati</translation>
 <translation id="484462545196658690">Automatico</translation>
 <translation id="4846662396507502151">Naviga più velocemente con la nuova barra degli strumenti</translation>
+<translation id="4850669014075537160">Scorrimento</translation>
 <translation id="4850886885716139402">Visualizza</translation>
 <translation id="4854068532375923088">Consenti a "Gemini" di usare la fotocamera</translation>
 <translation id="4860895144060829044">Chiama</translation>
@@ -1947,6 +1947,9 @@ Per continuare dal computer, passa a <ph name="OTHER_EMAIL" />. Potrai usare le 
 <translation id="7280980607183752256">Impossibile importare questo file</translation>
 <translation id="7282197670900591579">Tema cedro</translation>
 <translation id="7293429513719260019">Seleziona lingua</translation>
+<translation id="72961285530871072">Questa operazione eliminerà definitivamente i tuoi progressi in Level Up e i dati sull'utilizzo della funzionalità non verranno più inviati a Google per il tuo profilo.
+
+Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="7300448350764260141">Aggiungi un ulteriore livello di protezione dalle minacce online.</translation>
 <translation id="7311244614769792472">Nessun risultato trovato</translation>
 <translation id="7312823817809783355">Le tue attività</translation>

@@ -1548,6 +1548,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="3634530185120165534">Hambwrdd 5</translation>
 <translation id="3634567936866541746">Rydych newydd roi'ch cyfrinair ar wefan dwyllodrus. I ddiogelu eich cyfrifon, mae Chrome yn argymell eich bod yn gwirio'ch cyfrineiriau sydd wedi'u cadw.</translation>
 <translation id="3638102297696182302">Parhau â helpu fi i ysgrifennu. Pwyswch Tab ac Enter i agor</translation>
+<translation id="3639626391482300575">Mae'r IBAN hwn wedi'i gadw yn Google Wallet fel y gallwch ei ddefnyddio ar draws cynhyrchion Google.</translation>
 <translation id="3642196846309122856">Rhowch gynnig ar lawrlwytho'ch ffeiliau eto</translation>
 <translation id="3642638418806704195">Rhaglen:</translation>
 <translation id="3647286794400715637">Rhaid i bob cofnod llinyn cyfeiriadau URL gynnwys rhwng 1 a 2 gyfeiriad URL.</translation>
@@ -3181,7 +3182,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Gweld cofnodion</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Wrthi'n gwirio'r dirprwy weinydd, y wal dân, a'r Ffurfweddiad DNS Diogel<ph name="END_LINK" /></translation>
-<translation id="6365513578140103119">Cadarnhewch eich e-byst yn awtomatig</translation>
 <translation id="6366710531182496394">Dwy stapl ar y chwith</translation>
 <translation id="6367196786591004737">Dileu'r cofnod</translation>
 <translation id="6370022303958842211">Camau gweithredu mynediad at ddyfeisiau megis mewngofnodi (gan gynnwys rhesymau mewngofnodi aflwyddiannus), allgofnodi, cloeon, a datgloeon</translation>
@@ -3306,6 +3306,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="6578434528542148658">ID estyniad annilys.</translation>
 <translation id="658230438113661756">Gallai ymosodwyr ar y wefan y gwnaethoch geisio ymweld â hi osod meddalwedd niweidiol sy'n dwyn neu'n dileu pethau megis eich cyfrineiriau, eich lluniau, eich negeseuon, neu'ch rhifau cardiau credyd. Mae Chrome yn argymell yn gryf i fynd yn ôl i ddiogelwch. <ph name="BEGIN_LEARN_MORE_LINK" />Dysgu rhagor am y rhybudd hwn<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6583309742916093092">Wedi'i storio yn Google Wallet</translation>
+<translation id="6585589684832019248">Mae'r cerdyn hwn wedi'i gadw yn Google Wallet fel y gallwch ei ddefnyddio ar draws cynhyrchion Google</translation>
 <translation id="6587893660316489419">Amlen B5</translation>
 <translation id="6587923378399804057">Dolen y gwnaethoch ei chopïo</translation>
 <translation id="6591833882275308647">Ni rheoli eich <ph name="DEVICE_TYPE" /></translation>
@@ -4472,7 +4473,7 @@ Manylion ychwanegol:
 <translation id="8619130384334725124">Diofyn presennol</translation>
 <translation id="8620276786115098679">Amlen Kaku 7</translation>
 <translation id="8622864575115813231">Cysylltu â'ch sefydliad ariannol...</translation>
-<translation id="8632584659860846053">Bydd eich hanes pori, cwcis a data gwefan, storfa, a gwybodaeth a roddir mewn ffurflenni yn cael eu dileu ar ôl i chi gau pob ffenestr Ynysig</translation>
+<translation id="8632584659860846053">Bydd eich hanes pori, cwcis a data gwefan, storfa dros dro, a gwybodaeth a roddir mewn ffurflenni yn cael eu dileu ar ôl i chi gau pob ffenestr Ynysig</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
 <translation id="8637362707224133343">Mae gan Chrome nodweddion diogelwch integredig i'ch amddiffyn wrth bori - megis Pori'n Ddiogel gyda Google, a <ph name="BEGIN_LINK" />ddaeth o hyd i we-rwydo yn ddiweddar<ph name="END_LINK" /> ar y wefan y gwnaethoch geisio ymweld â hi. Mae gwefannau gwe-rwydo yn dynwared bod yn wefannau eraill i'ch twyllo chi.<ph name="NEW_LINE" />Mae hyd yn oed y gwefannau sydd fel arfer yn ddiogel yn cael eu peryglu gan ymosodwyr weithiau. <ph name="BEGIN_ERROR_LINK" />Rhowch wybod i ni<ph name="END_ERROR_LINK" /> os ydych yn meddwl y bu camgymeriad ac nad yw'r wefan hon yn achosi niwed.</translation>
 <translation id="8640996933372643759">I rannu tabiau a chydweithio ag eraill, rhaid i chi allu mewngofnodi i Chrome</translation>
@@ -4658,7 +4659,6 @@ Manylion ychwanegol:
 <translation id="8963117664422609631">Ewch i'r gosodiadau gwefan</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Awgrymiadau:<ph name="MARKUP_2" />Gwnewch yn siŵr bod gennych gysylltiad data<ph name="MARKUP_3" />Ail-lwythwch y dudalen we hon yn nes ymlaen<ph name="MARKUP_4" />Gwiriwch y cyfeiriad y gwnaethoch ei nodi<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Bydd eich ffeiliau lleol yn cael eu dileu mewn <ph name="HOURS" /> awr</translation>
-<translation id="8964904785315870349">E-bost wedi'i Ddilysu</translation>
 <translation id="8968766641738584599">Cadw'r cerdyn</translation>
 <translation id="8970887620466824814">Aeth rywbeth o'i le.</translation>
 <translation id="8971063699422889582">Mae tystysgrif y gweinydd wedi darfod.</translation>

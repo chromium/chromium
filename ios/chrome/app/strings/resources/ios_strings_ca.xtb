@@ -740,7 +740,6 @@
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 d'octubre de 2023</translation>
 <translation id="3419787211763835342">Ajuda a millorar l'emplenament automàtic millorat</translation>
-<translation id="3426715535827854458">Amaga la barra d'eines</translation>
 <translation id="3435738964857648380">Seguretat</translation>
 <translation id="3441673211568148613">Mantén la navegació privada</translation>
 <translation id="3443810440409579745">S'ha rebut una pestanya.</translation>
@@ -1173,6 +1172,7 @@
 <translation id="484280513275854557">S'ha tancat la teva sessió; les dades de navegació s'han suprimit</translation>
 <translation id="484462545196658690">Automàtic</translation>
 <translation id="4846662396507502151">Navega més ràpid amb la barra d'eines nova</translation>
+<translation id="4850669014075537160">Desplaçament</translation>
 <translation id="4850886885716139402">Mostra</translation>
 <translation id="4854068532375923088">Permet que Gemini utilitzi la càmera</translation>
 <translation id="4860895144060829044">Truca</translation>
@@ -1947,6 +1947,9 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="7280980607183752256">Aquest fitxer no es pot importar</translation>
 <translation id="7282197670900591579">Tema groc verdós</translation>
 <translation id="7293429513719260019">Selecciona l'idioma</translation>
+<translation id="72961285530871072">Aquesta acció suprimirà permanentment el teu progrés a Level Up i les dades d'ús de les funcions de Level Up ja no s'enviaran a Google per al teu perfil.
+
+Pots reiniciar Level Up en qualsevol moment.</translation>
 <translation id="7300448350764260141">Afegeix una capa addicional de protecció contra les amenaces en línia.</translation>
 <translation id="7311244614769792472">No s'ha trobat cap resultat</translation>
 <translation id="7312823817809783355">Les teves tasques</translation>

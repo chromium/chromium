@@ -1548,6 +1548,7 @@
 <translation id="3634530185120165534">Лоток 5</translation>
 <translation id="3634567936866541746">Щойно ви ввели пароль на оманливому сайті. Щоб захистити ваші облікові записи, Chrome радить перевірити збережені паролі.</translation>
 <translation id="3638102297696182302">Відновіть функцію "Допомога з текстом". Для цього натисніть Tab і Enter.</translation>
+<translation id="3639626391482300575">Цей номер IBAN збережено в Google Гаманці. Тепер ви можете використовувати його в усіх продуктах Google.</translation>
 <translation id="3642196846309122856">Спробуйте повторно завантажити файли</translation>
 <translation id="3642638418806704195">Додаток:</translation>
 <translation id="3647286794400715637">Кожен рядок URL-адреси має містити від 1 до 2 URL-адрес.</translation>
@@ -3181,7 +3182,6 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Переглянути журнали</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />перевірити конфігурацію проксі-сервера, брандмауера та DNS-сервера<ph name="END_LINK" /></translation>
-<translation id="6365513578140103119">Автоматично підтверджувати електронні адреси</translation>
 <translation id="6366710531182496394">Двічі скріпити ліворуч</translation>
 <translation id="6367196786591004737">Видалити запис</translation>
 <translation id="6370022303958842211">Дії, пов’язані з доступом на пристрої, як-от входи (зокрема причини невдалих спроб входу), виходи, блокування й розблокування</translation>
@@ -3306,6 +3306,7 @@
 <translation id="6578434528542148658">Недійсний ідентифікатор розширення.</translation>
 <translation id="658230438113661756">На сайті, який ви намагалися відвідати, зловмисники можуть установити програмне забезпечення, яке викрадає або видаляє вашу інформацію, зокрема паролі, фотографії, повідомлення або номери кредитних карток. Chrome радить повернутися на безпечну сторінку. <ph name="BEGIN_LEARN_MORE_LINK" />Докладніше про це попередження<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6583309742916093092">Збережено в Google Гаманці</translation>
+<translation id="6585589684832019248">Цю картку збережено в Google Гаманці. Тепер ви можете використовувати її в усіх продуктах Google.</translation>
 <translation id="6587893660316489419">Конверт B5</translation>
 <translation id="6587923378399804057">Скопійоване посилання</translation>
 <translation id="6591833882275308647">Пристроєм <ph name="DEVICE_TYPE" /> не керує адміністратор</translation>
@@ -4660,7 +4661,6 @@
 <translation id="8963117664422609631">Перейти до налаштувань сайту</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Пропозиції.<ph name="MARKUP_2" />Переконайтеся, що пристрій під’єднано до мобільного Інтернету.<ph name="MARKUP_3" />Оновіть цю веб-сторінку пізніше<ph name="MARKUP_4" />Перевірне адресу, яку ви ввели<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Локальні файли буде видалено через <ph name="HOURS" /> год</translation>
-<translation id="8964904785315870349">Підтверджена електронна адреса</translation>
 <translation id="8968766641738584599">Зберегти картку</translation>
 <translation id="8970887620466824814">Сталася помилка.</translation>
 <translation id="8971063699422889582">Термін дії сертифіката сервера завершився.</translation>
@@ -4745,7 +4745,7 @@
 <translation id="9101630580131696064">Лоток 1</translation>
 <translation id="9103872766612412690">Веб-сайт <ph name="SITE" /> зазвичай використовує шифрування для захисту вашої інформації. Під час цієї спроби Chromium під’єднатися до сторінки <ph name="SITE" /> з неї отримано незвичні й неправильні облікові дані. Це може статися, коли зловмисник намагається видавати себе за веб-сайт <ph name="SITE" /> або з’єднання перервано екраном входу Wi-Fi. Ваша інформація залишається захищеною, оскільки Chromium припинив з’єднання до того, як почався обмін будь-якими даними.</translation>
 <translation id="9107199998619088551">Вашим профілем керує <ph name="MANAGER" /></translation>
-<translation id="9107467864910557787">Вашим веб-переглядачем керує <ph name="MANAGER" /></translation>
+<translation id="9107467864910557787">Вашим вебпереглядачем керує <ph name="MANAGER" /></translation>
 <translation id="91108059142052966">Адміністратор заборонив показувати екран за допомогою додатка <ph name="APPLICATION_TITLE" />, коли видно конфіденційний контент</translation>
 <translation id="9114101423898634479">Додати номер надійного мандрівника</translation>
 <translation id="9114524666733003316">Підтверджуються дані картки…</translation>
@@ -4871,6 +4871,7 @@
 <translation id="988159990683914416">Конструкція розробника</translation>
 <translation id="989988560359834682">Редагувати адресу</translation>
 <translation id="990164307229195234"><ph name="DEVICE_NAME" /> (<ph name="DISAMBIGUATION_LABEL" />)</translation>
+<translation id="990812705189376036">Підтвердження наявності сертифіката в дереві Меркла</translation>
 <translation id="992110854164447044">Для захисту від потенційного шахрайства замість справжньої картки можна використовувати віртуальну. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>
 <translation id="992256792861109788">Рожевий</translation>

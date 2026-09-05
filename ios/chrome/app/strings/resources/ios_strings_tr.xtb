@@ -740,7 +740,6 @@
 <translation id="3409785640040772790">Haritalar</translation>
 <translation id="3416023309465857378">25 Ekim 2023</translation>
 <translation id="3419787211763835342">Gelişmiş otomatik doldurma özelliğinin iyileştirilmesine yardım edin</translation>
-<translation id="3426715535827854458">Araç Çubuğunu Gizle</translation>
 <translation id="3435738964857648380">Güvenlik</translation>
 <translation id="3441673211568148613">Tarama işlemlerinizi gizli tutun</translation>
 <translation id="3443810440409579745">Sekme alındı.</translation>
@@ -780,7 +779,7 @@
 <translation id="3530206579861815432">Senkronize edilmiş cihazlarınızdaki açık ve yakın zamanda kapatılan sekmeleri hızlıca bulun.</translation>
 <translation id="3530767473765895035">Bu cihazdaki hesapları yönet…</translation>
 <translation id="3533436815740441613">Yeni Sekme</translation>
-<translation id="3534738261102690620">Gemini'a sorun</translation>
+<translation id="3534738261102690620">Gemini'a Sor</translation>
 <translation id="3540141921715814660">Yer İşaretlerine Ekle</translation>
 <translation id="3546122170015471515">Google.com'da Haritalar Önizlemeleri</translation>
 <translation id="3547356470684043247">Kararlarınızı şekillendirmenize yardımcı olacak yorumlar için ürün, hizmet veya deneyimle ilgili müşteri değerlendirmelerini okuyun.</translation>
@@ -1173,6 +1172,7 @@
 <translation id="484280513275854557">Oturumunuz kapatıldı ve tarama verileri silindi</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4846662396507502151">Yeni araç çubuğuyla daha hızlı göz atın</translation>
+<translation id="4850669014075537160">Kaydırma</translation>
 <translation id="4850886885716139402">Görüntüle</translation>
 <translation id="4854068532375923088">"Gemini"ın kameranızı kullanmasına izin verin</translation>
 <translation id="4860895144060829044">Telefon et</translation>
@@ -1947,6 +1947,9 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="7280980607183752256">Bu dosya içe aktarılamıyor</translation>
 <translation id="7282197670900591579">Limon sarısı tema</translation>
 <translation id="7293429513719260019">Dil seç</translation>
+<translation id="72961285530871072">Bu işlemle, Seviye Atla ilerlemeniz kalıcı olarak silinir ve Seviye Atla özelliği kullanım verileri artık profiliniz için Google'a gönderilmez.
+
+İstediğiniz zaman yeniden başlatabilirsiniz.</translation>
 <translation id="7300448350764260141">İnternet ortamındaki tehditlere karşı ek koruma katmanı sağlayın.</translation>
 <translation id="7311244614769792472">Sonuç bulunamadı</translation>
 <translation id="7312823817809783355">Görevleriniz</translation>

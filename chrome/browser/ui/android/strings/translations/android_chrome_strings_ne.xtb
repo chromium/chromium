@@ -57,6 +57,7 @@
 <translation id="1181037720776840403">हटाउनुहोस्</translation>
 <translation id="1183189057400844278">आफ्नो Google खातामा सेभ गरिएका पासवर्डहरू सधैँ प्रयोग गर्न सकियोस् भन्नाका लागि आफ्नो पहिचान पुष्टि गर्नुहोस्</translation>
 <translation id="1187810343066461819">यो कारबाट बुकमार्क, हिस्ट्री र अन्य डेटा पनि मेटाउनुहोस्</translation>
+<translation id="1191987227666124897">अप्ट-आउट गर्ने अनुरोध</translation>
 <translation id="1193729455103054076">भरपर्दो पासवर्ड प्रयोग गर्ने हो?</translation>
 <translation id="11947597112837849">इमेल ठेगाना</translation>
 <translation id="1197267115302279827">बुकमार्कहरू सार्नुहोस्</translation>
@@ -212,6 +213,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="1832459821645506983">अँ, म सहमत छु</translation>
 <translation id="1845958458910716240">तपाईंको जानकारीको सुरक्षार्थ Chrome लाई तपाईंले हालसालै नखोलेका साइटहरूलाई दिइएका अनुमति रद्द गर्न दिनुहोस्</translation>
 <translation id="1851551847729706116">यो ट्याबमा <ph name="TAB_NAME" /> सेयर गरिँदै छ</translation>
+<translation id="1855268219431673036">पेज <ph name="TOTAL_PAGE_COUNT" /> मध्ये <ph name="CURRENT_PAGE" /></translation>
 <translation id="1869691326892615940">अझ सुरक्षित पासवर्ड, अझ छिटो साइन इन</translation>
 <translation id="1871098866036088250">Chrome ब्राउजरमा खोलियोस्</translation>
 <translation id="1877026089748256423">Chrome को मिति समाप्त भएको छ</translation>
@@ -1340,6 +1342,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="634208815998129842">कार्य व्वयस्थापक</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> थप}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> थप}}</translation>
 <translation id="6345878117466430440">पढिसकिएको सामग्रीका रूपमा चिन्ह लगाउनुहोस्</translation>
+<translation id="63490081267265251">तपाईंले खोल्ने Google लगायतका साइटहरूले यो अनुरोधको जवाफ कसरी दिने भन्ने कुरा निर्धारण गर्छन्। तपाईंको क्षेत्रमा लागू हुने कानुनका आधारमा साइटहरूले तपाईंको डेटाको बिक्री र सेयरिङ वा पर्सनलाइज गरिएका विज्ञापनका लागि यसको प्रयोगलाई सीमित गरेर यो अनुरोधको जवाफ दिन सक्छन्। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="6350745006329795504">आफ्ना डिभाइसहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="6356893102071098867">तपाईंले सही खाता छनौट गर्नुभएको छ भन्ने कुरा पुष्टि गर्नुहोस्</translation>
 <translation id="6364438453358674297">इतिहासबाट सुझाव हटाउने?</translation>
@@ -1664,6 +1667,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7493994139787901920"><ph name="VERSION" /> (अद्यावधिक गरियो <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">प्रतीक्षा गर्नुहोस्...</translation>
 <translation id="7499065150275272675"><ph name="TAB_TITLE" />, पिन गरिएको म्युट गरिएको ट्याब</translation>
+<translation id="7500851014030446046">PDF डाउनलोड गरिँदै छ</translation>
 <translation id="7501135638693251872">सबै पुस्तक चिन्हहरू</translation>
 <translation id="7507207699631365376">यो प्रदायकको <ph name="BEGIN_LINK" />गोपनीयता नीति<ph name="END_LINK" /> हेर्नुहोस्</translation>
 <translation id="750886945254958667">ट्याबहरू पछि हाल्न यो समूह राखिराख्नुहोस् वा तपाईं अबदेखि यो एक्सेस गर्न चाहनुहुन्न भने यसबाट बाहिरिनुहोस्</translation>
@@ -1731,6 +1735,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> थप}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> थप}}</translation>
 <translation id="777637629667389858">तपाईं साइन इन हुनुभएका अवस्थामा Google का सेवाहरूमा तपाईंको जानकारी सुरक्षित राख्छ।</translation>
 <translation id="7778840695157240389">नयाँ समाचार हेर्न पछि फर्केर आउनुहोस्</translation>
+<translation id="7780992949171378848">तपाईंको डेटाको प्रयोगका सम्बन्धमा साइटहरूलाई अप्ट-आउट गर्ने अनुरोध पठाउनुहोस्</translation>
 <translation id="7791543448312431591">थप्नुहोस्</translation>
 <translation id="7792388396321542707">साझा गर्न बन्द गर्नुहोस्</translation>
 <translation id="780287761701992588">आफूले प्रयोग गर्ने सबै डिभाइसमा आफ्ना बुकमार्क, पासवर्डलगायतका थप कुरा प्राप्त गर्नुहोस्</translation>

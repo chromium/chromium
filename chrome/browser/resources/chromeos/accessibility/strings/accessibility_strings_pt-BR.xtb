@@ -218,6 +218,7 @@
 <translation id="2365384324219615024">Você também pode pressionar a tecla Enter para ativar itens. Por exemplo, é possível usá-la para enviar textos em um formulário. Pressione Enter para continuar.</translation>
 <translation id="2371402123699727805">Ditado ativado. <ph name="GESTURE" /> para interromper. Os outros gestos estão temporariamente indisponíveis.</translation>
 <translation id="2381733276052567791">Ativa ou desativa a fala</translation>
+<translation id="2386248289416625097">Candidatos</translation>
 <translation id="2390264819538553347">Para avançar, pressione Enter. Para voltar, pressione Backspace.</translation>
 <translation id="2397408693730730860">.input {$$COUNT :number} .match $$COUNT 1{{asterisco}} *{{{$$COUNT} asteriscos}}</translation>
 <translation id="2398579267367951220">Digite para pesquisar na página. Pressione Enter para ir para o resultado, as setas para cima ou para baixo para navegar pelos resultados, Esc para cancelar ou continue digitando para mudar a pesquisa.</translation>

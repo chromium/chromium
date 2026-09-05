@@ -609,7 +609,7 @@
 <translation id="2918688092312652908">Marcar como no leído</translation>
 <translation id="2922210239002704889">Ve a la página principal o al teclado</translation>
 <translation id="2924940770243654951">Abrir en Incógnito</translation>
-<translation id="2934607171563543600">desde que completaste "Comprobar tus contraseñas"</translation>
+<translation id="2934607171563543600">desde que completaste Comprueba tus contraseñas</translation>
 <translation id="2952278131021475699">Búsqueda mediante la cámara con Lens</translation>
 <translation id="2953821385349876107">Elegir otra cuenta de Google</translation>
 <translation id="2962516096219646456">Ver todos los datos de Autocompletar</translation>
@@ -740,7 +740,6 @@
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 oct 2023</translation>
 <translation id="3419787211763835342">Ayuda a optimizar Autocompletar mejorado</translation>
-<translation id="3426715535827854458">Ocultar Ocultar barra de herramientas</translation>
 <translation id="3435738964857648380">Seguridad</translation>
 <translation id="3441673211568148613">Mantén tu navegación privada</translation>
 <translation id="3443810440409579745">Se ha recibido una pestaña.</translation>
@@ -1173,6 +1172,7 @@
 <translation id="484280513275854557">Se ha cerrado tu sesión y se han eliminado los datos de navegación</translation>
 <translation id="484462545196658690">Automático</translation>
 <translation id="4846662396507502151">Navega más rápido con la nueva barra de herramientas</translation>
+<translation id="4850669014075537160">Desplazamiento</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="4854068532375923088">Permitir que Gemini use tu cámara</translation>
 <translation id="4860895144060829044">Llamar</translation>
@@ -1694,7 +1694,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6454311990702999318">Datos no válidos</translation>
 <translation id="6459411599807878608">Se han ocultado los detalles</translation>
 <translation id="646394917185284261">Archivos</translation>
-<translation id="6470721056280836221">Google usa tus datos de uso de funciones para recomendarte tareas y actualizar el progreso. Puedes desactivar Level Up en cualquier momento.</translation>
+<translation id="6470721056280836221">Google usa tus datos de uso de funciones para recomendarte tareas y actualizar el progreso. Puedes desactivar Subir de nivel en cualquier momento.</translation>
 <translation id="6472069383518492189">Aquí se mostrarán tus descargas</translation>
 <translation id="6476253015009698798">El seguimiento de precios no está disponible para esta página.</translation>
 <translation id="6476284679642588870">Gestionar métodos de pago</translation>

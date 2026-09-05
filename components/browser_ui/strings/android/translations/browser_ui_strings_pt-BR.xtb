@@ -7,6 +7,7 @@
 <translation id="1046742265332833834">Tema azul</translation>
 <translation id="1070329623210597193">Arquivos que este site pode ver ou editar</translation>
 <translation id="1074758928858737435">Você pode pedir para ver a versão para computador dos sites</translation>
+<translation id="1089791933924803646">Receber sugestões do Chrome em outros apps</translation>
 <translation id="1109482864356262001">Recursos que precisam de sensores de movimento ou de luz não vão funcionar</translation>
 <translation id="1126523729897810826">Para aproveitar o Chrome ao máximo, use as configurações sugeridas abaixo.</translation>
 <translation id="113098737392899175">Acessar páginas com um cursor de texto quando um teclado está conectado</translation>
@@ -453,6 +454,7 @@
 <translation id="5668404140385795438">Aplica zoom mesmo que o site tente impedir</translation>
 <translation id="5668843533782548925">Os sites ficam mais lentos, mas mais seguros</translation>
 <translation id="5677928146339483299">Bloqueado</translation>
+<translation id="5679089750838794164">Agora, o Chrome pode mostrar sugestões em outros apps com base nos seus dados de navegação, como o histórico recente. O tratamento desses dados ocorre de forma segura no dispositivo. É possível desativar essa opção a qualquer momento nas configurações do Chrome.</translation>
 <translation id="5689516760719285838">Local</translation>
 <translation id="5690795753582697420">A câmera está desativada nas configurações do Android</translation>
 <translation id="5700761515355162635">Cookies de terceiros permitidos</translation>
@@ -507,6 +509,7 @@
 <translation id="6085954183010297841">Excluir a permissão de edição do arquivo? <ph name="FILE" /></translation>
 <translation id="6104860901391833523">Quando essa opção está ativada, os sites podem entrar no modo picture-in-picture automaticamente. Quando está desativada, os sites não podem entrar no modo picture-in-picture automaticamente.</translation>
 <translation id="6120483543004435978">Quando essa configuração está ativada, os sites podem pedir para saber quando você está usando o dispositivo ativamente. Quando está desativada, os sites não conseguem saber quando você está usando o dispositivo ativamente.</translation>
+<translation id="612871598708395517">Ocultar sugestões do Chrome em outros apps</translation>
 <translation id="6132075343662013154">O Chrome vai oferecer a opção de salvar sua senha</translation>
 <translation id="615886654739818377">Não permitir que os sites gerenciem janelas em todas as telas</translation>
 <translation id="6165508094623778733">Saiba mais</translation>

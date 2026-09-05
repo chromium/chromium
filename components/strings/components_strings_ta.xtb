@@ -1544,6 +1544,7 @@
 <translation id="3634530185120165534">தட்டு 5</translation>
 <translation id="3634567936866541746">ஏமாற்றக்கூடிய தளத்தில் கடவுச்சொல்லை உள்ளிட்டுள்ளீர்கள். உங்கள் கணக்குகளைப் பாதுகாக்க, நீங்கள் சேமித்துள்ள கடவுச்சொற்களைச் சரிபார்க்குமாறு Chrome பரிந்துரைக்கிறது.</translation>
 <translation id="3638102297696182302">’எழுத எனக்கு உதவு' அம்சத்தை மீண்டும் தொடங்கும். திறக்க, Tab பட்டனை அழுத்தி Enter பட்டனை அழுத்தவும்</translation>
+<translation id="3639626391482300575">இந்த IBAN Google Walletடில் சேமிக்கப்பட்டுள்ளதால் Google தயாரிப்புகள் முழுவதிலும் இதைப் பயன்படுத்தலாம்.</translation>
 <translation id="3642196846309122856">ஃபைல்களை மீண்டும் பதிவிறக்க முயலவும்</translation>
 <translation id="3642638418806704195">ஆப்ஸ்:</translation>
 <translation id="3647286794400715637">ஒவ்வொரு URLலுக்கும் அதன் வார்த்தைகள் பகுதியில் 1 முதல் 2 URLகள் வரை இருக்க வேண்டும்.</translation>
@@ -3176,7 +3177,6 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">பதிவுகளைக் காட்டு</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />ப்ராக்ஸி, ஃபயர்வால், பாதுகாப்பான DNS உள்ளமைவு ஆகியவற்றைச் சரிபாருங்கள்<ph name="END_LINK" /></translation>
-<translation id="6365513578140103119">எனது ஈமெயில்களைத் தானாகவே உறுதிப்படுத்து</translation>
 <translation id="6366710531182496394">டூயல் ஸ்டேப்பில் லெஃப்ட்</translation>
 <translation id="6367196786591004737">உள்ளீட்டை நீக்கும்</translation>
 <translation id="6370022303958842211">உள்நுழைதல் (உள்நுழைய முடியாமல் போனதற்கான காரணங்கள் உட்பட), வெளியேறுதல், லாக் செய்தல், அன்லாக் செய்தல் போன்ற சாதன அணுகல் செயல்கள்</translation>
@@ -3301,6 +3301,7 @@
 <translation id="6578434528542148658">தவறான நீட்டிப்பு ஐடி.</translation>
 <translation id="658230438113661756">நீங்கள் பார்க்க முயன்ற தளத்தில் உள்ள ஹேக்கர்கள் தீங்கிழைக்கும் மென்பொருளை நிறுவக்கூடும். அந்த மென்பொருள் மூலம் அவர்கள் உங்கள் கடவுச்சொற்கள், படங்கள், மெசேஜ்கள், கிரெடிட் கார்டு எண்கள் போன்றவற்றைத் திருடவோ நீக்கவோ செய்யலாம். இந்தத் தளத்தைவிட்டு உடனடியாக வெளியேறும்படி Chrome பரிந்துரைக்கிறது. <ph name="BEGIN_LEARN_MORE_LINK" />இந்த எச்சரிக்கை குறித்து மேலும் தெரிந்துகொள்ளுங்கள்<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6583309742916093092">Google Walletடில் சேமிக்கப்பட்டுள்ளது</translation>
+<translation id="6585589684832019248">இந்தக் கார்டு Google Walletடில் சேமிக்கப்பட்டுள்ளதால் Google தயாரிப்புகள் முழுவதிலும் இதைப் பயன்படுத்தலாம்</translation>
 <translation id="6587893660316489419">என்வெலப் B5</translation>
 <translation id="6587923378399804057">நீங்கள் நகலெடுத்த இணைப்பு</translation>
 <translation id="6591833882275308647">உங்கள் <ph name="DEVICE_TYPE" /> சாதனம் நிர்வகிக்கப்படவில்லை</translation>
@@ -4654,7 +4655,6 @@
 <translation id="8963117664422609631">தள அமைப்புகளுக்குச் செல்லும்</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />பரிந்துரைகள்:<ph name="MARKUP_2" />உங்களுடைய டேட்டா இணைப்பைச் சரிபார்க்கவும்<ph name="MARKUP_3" />இந்த இணையப்பக்கத்தைப் பின்னர் ஏற்றவும்<ph name="MARKUP_4" />நீங்கள் உள்ளிட்ட முகவரியைச் சரிபார்க்கவும்<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">உங்கள் சாதனத்தில் உள்ள ஃபைல்கள் இன்னும் <ph name="HOURS" /> மணிநேரத்தில் நீக்கப்படும்</translation>
-<translation id="8964904785315870349">சரிபார்க்கப்பட்ட ஈமெயில்</translation>
 <translation id="8968766641738584599">கார்டைச் சேமி</translation>
 <translation id="8970887620466824814">ஏதோ தவறாகிவிட்டது.</translation>
 <translation id="8971063699422889582">சேவையகச் சான்றிதழ் காலாவதியானது.</translation>
@@ -4866,6 +4866,7 @@
 <translation id="988159990683914416">டெவெலப்பர் கட்டமைப்பு</translation>
 <translation id="989988560359834682">முகவரியைத் திருத்து</translation>
 <translation id="990164307229195234"><ph name="DEVICE_NAME" /> (<ph name="DISAMBIGUATION_LABEL" />)</translation>
+<translation id="990812705189376036">Merkle Tree சான்று</translation>
 <translation id="992110854164447044">மோசடி அபாயங்களில் இருந்து பாதுகாக்க உங்கள் அசல் கார்டை விர்ச்சுவல் கார்டு மறைக்கிறது. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>
 <translation id="992256792861109788">பிங்க்</translation>

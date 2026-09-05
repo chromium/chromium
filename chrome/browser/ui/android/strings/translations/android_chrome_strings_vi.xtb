@@ -57,6 +57,7 @@
 <translation id="1181037720776840403">Xoá</translation>
 <translation id="1183189057400844278">Xác minh danh tính của bạn để đảm bảo bạn luôn dùng được mật khẩu trong Tài khoản Google</translation>
 <translation id="1187810343066461819">Xoá cả dấu trang, nhật ký và các dữ liệu khác khỏi ô tô này</translation>
+<translation id="1191987227666124897">Yêu cầu không sử dụng</translation>
 <translation id="1193729455103054076">Dùng mật khẩu mạnh?</translation>
 <translation id="11947597112837849">địa chỉ email</translation>
 <translation id="1197267115302279827">Di chuyển dấu trang</translation>
@@ -212,6 +213,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="1832459821645506983">Có, tôi đồng ý</translation>
 <translation id="1845958458910716240">Để bảo vệ dữ liệu của bạn, hãy cho phép Chrome loại bỏ quyền của các trang web mà gần đây bạn không truy cập</translation>
 <translation id="1851551847729706116">Đang chia sẻ <ph name="TAB_NAME" /> với thẻ này</translation>
+<translation id="1855268219431673036">Trang <ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGE_COUNT" /></translation>
 <translation id="1869691326892615940">Mật khẩu an toàn hơn, đăng nhập nhanh hơn</translation>
 <translation id="1871098866036088250">Mở trong trình duyệt Chrome</translation>
 <translation id="1877026089748256423">Chrome đã lỗi thời</translation>
@@ -1341,6 +1343,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="634208815998129842">Trình quản lý tác vụ</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 và <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> tùy chọn khác}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 và <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> tùy chọn khác}}</translation>
 <translation id="6345878117466430440">Đánh dấu là đã đọc</translation>
+<translation id="63490081267265251">Các trang web bạn truy cập (bao gồm cả Google) có trách nhiệm xác định cách phản hồi yêu cầu này. Tuỳ thuộc vào luật pháp khu vực, các trang web có thể phản hồi bằng cách hạn chế việc bán và chia sẻ dữ liệu của bạn hoặc việc sử dụng dữ liệu đó cho quảng cáo được cá nhân hoá. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="6350745006329795504">Quản lý thiết bị của bạn</translation>
 <translation id="6356893102071098867">Kiểm tra để đảm bảo bạn đã chọn đúng tài khoản</translation>
 <translation id="6364438453358674297">Xóa đề xuất khỏi lịch sử?</translation>
@@ -1665,6 +1668,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7493994139787901920"><ph name="VERSION" /> (Đã cập nhật <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Vui lòng đợi…</translation>
 <translation id="7499065150275272675"><ph name="TAB_TITLE" />, Thẻ đã tắt tiếng và được ghim</translation>
+<translation id="7500851014030446046">Đang tải tệp PDF xuống</translation>
 <translation id="7501135638693251872">Tất cả dấu trang</translation>
 <translation id="7507207699631365376">Xem <ph name="BEGIN_LINK" />chính sách quyền riêng tư<ph name="END_LINK" /> của nhà cung cấp này</translation>
 <translation id="750886945254958667">Giữ lại nhóm này để thêm thẻ sau hoặc rời khỏi nhóm nếu bạn không còn muốn truy cập vào nhóm</translation>
@@ -1732,6 +1736,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 và <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> tùy chọn khác}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 và <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> tùy chọn khác}}</translation>
 <translation id="777637629667389858">Bảo vệ bạn trên các dịch vụ của Google khi bạn đăng nhập.</translation>
 <translation id="7778840695157240389">Hãy kiểm tra lại sau để xem các tin bài mới</translation>
+<translation id="7780992949171378848">Gửi yêu cầu không sử dụng dữ liệu của bạn đến các trang web</translation>
 <translation id="7791543448312431591">Thêm</translation>
 <translation id="7792388396321542707">Dừng chia sẻ</translation>
 <translation id="780287761701992588">Sử dụng dấu trang, mật khẩu và nhiều nội dung khác trên mọi thiết bị của bạn</translation>

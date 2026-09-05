@@ -1547,6 +1547,7 @@
 <translation id="3634530185120165534">Лоток 5</translation>
 <translation id="3634567936866541746">Вы только что ввели пароль на поддельном сайте. Чтобы защитить свои аккаунты, проверьте сохраненные пароли в браузере Chrome.</translation>
 <translation id="3638102297696182302">Возобновите работу с генератором текстов. Чтобы открыть его, нажмите Tab и Ввод.</translation>
+<translation id="3639626391482300575">Код IBAN сохранен в Google Кошельке. Теперь вам будет удобнее использовать его в продуктах Google.</translation>
 <translation id="3642196846309122856">Попробуйте скачать файлы ещё раз.</translation>
 <translation id="3642638418806704195">Приложение:</translation>
 <translation id="3647286794400715637">Каждая запись должна содержать 1–2 URL.</translation>
@@ -3180,7 +3181,6 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Посмотреть журналы</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Проверить настройки прокси-сервера, брандмауэра и безопасного DNS-сервера<ph name="END_LINK" /></translation>
-<translation id="6365513578140103119">Автоматически подтверждать адреса электронной почты</translation>
 <translation id="6366710531182496394">Две скобы слева</translation>
 <translation id="6367196786591004737">Удалить запись</translation>
 <translation id="6370022303958842211">Действия, связанные с доступом к устройству, например вход в систему (в том числе неудачные попытки), выход из системы, блокировка и разблокировка</translation>
@@ -3305,6 +3305,7 @@
 <translation id="6578434528542148658">Недействительный идентификатор расширения.</translation>
 <translation id="658230438113661756">На этом сайте злоумышленники могут установить вредоносное ПО, которое крадет или удаляет личную информацию, например пароли, фотографии, сообщения или данные кредитных карт. Мы настоятельно рекомендуем вернуться на безопасную страницу. Подробнее <ph name="BEGIN_LEARN_MORE_LINK" />об этом предупреждении<ph name="END_LEARN_MORE_LINK" />…</translation>
 <translation id="6583309742916093092">Сохранено в Google Кошельке</translation>
+<translation id="6585589684832019248">Карта сохранена в Google Кошельке. Теперь вам будет удобнее использовать ее в продуктах Google.</translation>
 <translation id="6587893660316489419">Конверт B5</translation>
 <translation id="6587923378399804057">Скопированная ссылка</translation>
 <translation id="6591833882275308647">Это устройство <ph name="DEVICE_TYPE" /> не управляется администратором.</translation>
@@ -4658,7 +4659,6 @@
 <translation id="8963117664422609631">Открыть настройки сайтов</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Что делать?<ph name="MARKUP_2" />Убедитесь, что вы подключены к Интернету.<ph name="MARKUP_3" />Через некоторое время обновите страницу.<ph name="MARKUP_4" />Проверьте, правильно ли указан веб-адрес.<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Ваши локальные файлы будут удалены через <ph name="HOURS" /> ч.</translation>
-<translation id="8964904785315870349">Подтвержденный адрес электронной почты</translation>
 <translation id="8968766641738584599">Сохранить карту</translation>
 <translation id="8970887620466824814">Произошла ошибка</translation>
 <translation id="8971063699422889582">Сертификат сервера устарел.</translation>
@@ -4869,6 +4869,7 @@
 <translation id="988159990683914416">Сборка для разработчиков</translation>
 <translation id="989988560359834682">Изменение адреса</translation>
 <translation id="990164307229195234"><ph name="DEVICE_NAME" /> (<ph name="DISAMBIGUATION_LABEL" />)</translation>
+<translation id="990812705189376036">Доказательство дерева Меркла</translation>
 <translation id="992110854164447044">Виртуальная карта помогает скрыть ваши данные от мошенников. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>
 <translation id="992256792861109788">Розовый</translation>

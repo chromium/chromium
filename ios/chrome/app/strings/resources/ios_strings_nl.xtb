@@ -740,7 +740,6 @@
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 okt 2023</translation>
 <translation id="3419787211763835342">Help ons verbeterd automatisch invullen te verbeteren</translation>
-<translation id="3426715535827854458">Optie verbergen voor Werkbalk verbergen</translation>
 <translation id="3435738964857648380">Beveiliging</translation>
 <translation id="3441673211568148613">Houd je browsen privé</translation>
 <translation id="3443810440409579745">Tabblad ontvangen.</translation>
@@ -1173,6 +1172,7 @@
 <translation id="484280513275854557">Je bent uitgelogd en browsegegevens zijn verwijderd</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4846662396507502151">Sneller browsen met de nieuwe werkbalk</translation>
+<translation id="4850669014075537160">Scrollen</translation>
 <translation id="4850886885716139402">Weergave</translation>
 <translation id="4854068532375923088">Gemini toegang geven tot je camera</translation>
 <translation id="4860895144060829044">Bellen</translation>
@@ -1947,6 +1947,9 @@ Wissel naar <ph name="OTHER_EMAIL" /> om door te gaan vanaf je computer. Je krij
 <translation id="7280980607183752256">Dit bestand kan niet worden geïmporteerd</translation>
 <translation id="7282197670900591579">Citroenkleurig thema</translation>
 <translation id="7293429513719260019">Taal selecteren</translation>
+<translation id="72961285530871072">Hiermee wordt je Level Up-voortgang definitief verwijderd en worden gegevens over functiegebruik voor Level Up niet meer naar Google gestuurd voor je profiel.
+
+Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="7300448350764260141">Voeg een extra beveiligingslaag toe tegen online dreigingen.</translation>
 <translation id="7311244614769792472">Geen resultaten gevonden</translation>
 <translation id="7312823817809783355">Je taken</translation>

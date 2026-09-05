@@ -1543,6 +1543,7 @@
 <translation id="3634530185120165534">ట్రే 5</translation>
 <translation id="3634567936866541746">మీరు మోసపూరితమైన సైట్‌లో మీ పాస్‌వర్డ్‌ను ఎంటర్ చేశారు. మీ ఖాతాలను సురక్షితంగా ఉంచడానికి, Chrome మీ సేవ్ చేసిన పాస్‌వర్డ్‌లను చెక్ చేయాలని సిఫార్సు చేస్తోంది.</translation>
 <translation id="3638102297696182302">'రాయడంలో నాకు సహాయపడండి' అనే ఫీచర్‌ను కొనసాగించండి తెరవడానికి, Tabతో పాటు, Enter కీని నొక్కండి</translation>
+<translation id="3639626391482300575">ఈ IBAN, Google Walletలో సేవ్ అయింది. కాబట్టి మీరు దీనిని అన్ని Google ప్రోడక్ట్‌లలో ఉపయోగించవచ్చు.</translation>
 <translation id="3642196846309122856">మీ ఫైళ్లను మళ్లీ డౌన్‌లోడ్ చేయడానికి ట్రై చేయండి</translation>
 <translation id="3642638418806704195">యాప్:</translation>
 <translation id="3647286794400715637">ప్రతి url స్ట్రింగ్ ఎంట్రీ తప్పనిసరిగా 1 నుండి 2 URLలను కలిగి ఉండాలి.</translation>
@@ -3176,7 +3177,6 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">లాగ్‌లను చూడండి</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />ప్రాక్సీ, ఫైర్‌వాల్ మరియు సెక్యూర్ DNS కాన్ఫిగరేషన్‌ను చెక్ చేయడం<ph name="END_LINK" /></translation>
-<translation id="6365513578140103119">మీ ఈమెయిల్స్‌ను ఆటోమేటిక్‌గా నిర్ధారించండి</translation>
 <translation id="6366710531182496394">ఎడమవైపు డ్యుయల్ స్టేపుల్</translation>
 <translation id="6367196786591004737">ఎంట్రీని తొలగించండి</translation>
 <translation id="6370022303958842211">లాగిన్‌లు (విఫలమైన లాగిన్ కారణాలతో సహా), లాగ్‌అవుట్‌లు, లాక్‌లు, ఇంకా అన్‌లాక్‌లు వంటి పరికర యాక్సెస్ చర్యలు</translation>
@@ -3301,6 +3301,7 @@
 <translation id="6578434528542148658">చెల్లని ఎక్స్‌టెన్షన్ ID.</translation>
 <translation id="658230438113661756">మీరు చూడటానికి ట్రై చేసిన సైట్‌లో అటాకర్‌లు మీ పాస్‌వర్డ్‌లు, ఫోటోలు, మెసేజ్‌లు, లేదా క్రెడిట్ కార్డ్ నంబర్‌లు వంటి వాటిని దొంగిలించే లేదా తొలగించే హానికరమైన సాఫ్ట్‌వేర్‌ను ఇన్‌స్టాల్ చేయవచ్చు. భద్రత కోసం ఆ సైట్ నుండి నిష్క్రమించాల్సిందిగా మీకు Chrome సూచిస్తోంది. <ph name="BEGIN_LEARN_MORE_LINK" />ఈ హెచ్చరిక గురించి మరింత తెలుసుకోండి<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6583309742916093092">Google Walletలో స్టోర్ చేయబడింది</translation>
+<translation id="6585589684832019248">ఈ కార్డ్ Google Walletలో సేవ్ అయింది. కాబట్టి మీరు దీనిని అన్ని Google ప్రోడక్ట్‌లలో ఉపయోగించవచ్చు.</translation>
 <translation id="6587893660316489419">ఎన్వలప్ B5</translation>
 <translation id="6587923378399804057">మీరు కాపీ చేసిన లింక్</translation>
 <translation id="6591833882275308647">మీ <ph name="DEVICE_TYPE" /> నిర్వహించబడటం లేదు</translation>
@@ -4654,7 +4655,6 @@
 <translation id="8963117664422609631">సైట్ సెట్టింగ్‌లకు వెళ్లండి</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />సూచనలు:<ph name="MARKUP_2" />మీకు డేటా కనెక్షన్ ఉందని నిర్ధారించుకోండి<ph name="MARKUP_3" />ఈ వెబ్‌పేజీని తర్వాత మళ్లీ లోడ్ చేయండి<ph name="MARKUP_4" />మీరు నమోదు చేసిన అడ్రస్‌ చెక్ చేయండి<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">మీ లోకల్ ఫైల్స్ <ph name="HOURS" /> గంటల్లో తొలగించబడతాయి</translation>
-<translation id="8964904785315870349">వెరిఫై చేసిన ఈమెయిల్</translation>
 <translation id="8968766641738584599">కార్డ్‌ని సేవ్ చేయండి</translation>
 <translation id="8970887620466824814">ఏదో తప్పు జరిగింది.</translation>
 <translation id="8971063699422889582">సర్వర్ ప్రమాణపత్రం గడువు ముగిసింది.</translation>
@@ -4865,6 +4865,7 @@
 <translation id="988159990683914416">డెవలపర్ బిల్డ్</translation>
 <translation id="989988560359834682">అడ్రస్‌ను ఎడిట్ చేయండి</translation>
 <translation id="990164307229195234"><ph name="DEVICE_NAME" /> (<ph name="DISAMBIGUATION_LABEL" />)</translation>
+<translation id="990812705189376036">మెర్కిల్ ట్రీ ప్రూఫ్</translation>
 <translation id="992110854164447044">మోసం జరిగే అవకాశమున్న సందర్భంలో మిమ్మల్ని రక్షించడంలో సహాయపడటానికి, వర్చువల్ కార్డ్ మీ అసలు కార్డ్ సమాచారాన్ని దాచిపెడుతుంది. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>
 <translation id="992256792861109788">గులాబి రంగు</translation>
