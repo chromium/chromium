@@ -909,8 +909,7 @@ public class PaymentRequestUi
         if (!isAcceptingUserInput()) return;
 
         // Users can only expand incomplete sections by clicking on their edit buttons.
-        if (v instanceof PaymentRequestSection) {
-            PaymentRequestSection section = (PaymentRequestSection) v;
+        if (v instanceof PaymentRequestSection section) {
             if (section.getEditButtonState() != EDIT_BUTTON_GONE) return;
         }
 
@@ -1235,9 +1234,8 @@ public class PaymentRequestUi
         boolean mayEnableButton = !mIsClientCheckingSelection;
         for (int i = 0; i < mPaymentContainerLayout.getChildCount(); i++) {
             View child = mPaymentContainerLayout.getChildAt(i);
-            if (!(child instanceof PaymentRequestSection)) continue;
+            if (!(child instanceof PaymentRequestSection section)) continue;
 
-            PaymentRequestSection section = (PaymentRequestSection) child;
             section.setIsEditButtonEnabled(mayEnableButton);
             if (section.getEditButtonState() != EDIT_BUTTON_GONE) mayEnableButton = false;
         }

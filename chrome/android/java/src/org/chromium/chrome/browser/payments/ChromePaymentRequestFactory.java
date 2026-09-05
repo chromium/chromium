@@ -109,9 +109,8 @@ public class ChromePaymentRequestFactory implements InterfaceFactory<@Nullable P
                     PaymentRequestServiceUtil.getLiveWebContents(mRenderFrameHost);
             if (liveWebContents == null) return null;
             Activity activity = ActivityUtils.getActivityFromWebContents(liveWebContents);
-            if (!(activity instanceof CustomTabActivity)) return null;
+            if (!(activity instanceof CustomTabActivity customTabActivity)) return null;
 
-            CustomTabActivity customTabActivity = ((CustomTabActivity) activity);
             if (!customTabActivity.isInTwaMode()) return null;
             return customTabActivity.getTwaPackage();
         }

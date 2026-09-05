@@ -117,9 +117,8 @@ public class DuplicateDownloadDialog {
                         && dismissalCause != DialogDismissalCause.NEGATIVE_BUTTON_CLICKED) {
                     callback.onResult(false);
                 }
-                if (context instanceof AsyncInitializationActivity) {
-                    NewDownloadTab.closeExistingNewDownloadTab(
-                            ((AsyncInitializationActivity) context).getWindowAndroid());
+                if (context instanceof AsyncInitializationActivity asyncActivity) {
+                    NewDownloadTab.closeExistingNewDownloadTab(asyncActivity.getWindowAndroid());
                 }
             }
         };

@@ -58,14 +58,14 @@ public class DuplicateDownloadDialogBridge {
             OtrProfileId otrProfileId,
             long callbackId) {
         Activity activity = windowAndroid.getActivity().get();
-        if (!(activity instanceof ModalDialogManagerHolder)) {
+        if (!(activity instanceof ModalDialogManagerHolder modalDialogManagerHolder)) {
             onConfirmed(callbackId, false);
             return;
         }
         new DuplicateDownloadDialog()
                 .show(
                         activity,
-                        ((ModalDialogManagerHolder) activity).getModalDialogManager(),
+                        modalDialogManagerHolder.getModalDialogManager(),
                         filePath,
                         pageUrl,
                         totalBytes,

@@ -75,93 +75,97 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
         if (mActivity == null) {
             return;
         }
-        if (observer instanceof InflationObserver) {
-            mInflationObservers.addObserver((InflationObserver) observer);
+        if (observer instanceof InflationObserver inflationObserver) {
+            mInflationObservers.addObserver(inflationObserver);
         }
-        if (observer instanceof PauseResumeWithNativeObserver) {
-            mPauseResumeObservers.addObserver((PauseResumeWithNativeObserver) observer);
+        if (observer instanceof PauseResumeWithNativeObserver pauseResumeWithNativeObserver) {
+            mPauseResumeObservers.addObserver(pauseResumeWithNativeObserver);
         }
-        if (observer instanceof StartStopWithNativeObserver) {
-            mStartStopObservers.addObserver((StartStopWithNativeObserver) observer);
+        if (observer instanceof StartStopWithNativeObserver startStopWithNativeObserver) {
+            mStartStopObservers.addObserver(startStopWithNativeObserver);
         }
-        if (observer instanceof NativeInitObserver) {
-            mNativeInitObservers.addObserver((NativeInitObserver) observer);
+        if (observer instanceof NativeInitObserver nativeInitObserver) {
+            mNativeInitObservers.addObserver(nativeInitObserver);
         }
-        if (observer instanceof DestroyObserver) {
-            mDestroyables.addObserver((DestroyObserver) observer);
+        if (observer instanceof DestroyObserver destroyObserver) {
+            mDestroyables.addObserver(destroyObserver);
         }
-        if (observer instanceof SaveInstanceStateObserver) {
-            mSaveInstanceStateObservers.addObserver((SaveInstanceStateObserver) observer);
+        if (observer instanceof SaveInstanceStateObserver saveInstanceStateObserver) {
+            mSaveInstanceStateObservers.addObserver(saveInstanceStateObserver);
         }
-        if (observer instanceof WindowFocusChangedObserver) {
-            mWindowFocusChangesObservers.addObserver((WindowFocusChangedObserver) observer);
+        if (observer instanceof WindowFocusChangedObserver windowFocusChangedObserver) {
+            mWindowFocusChangesObservers.addObserver(windowFocusChangedObserver);
         }
-        if (observer instanceof ActivityResultWithNativeObserver) {
-            mActivityResultWithNativeObservers.addObserver(
-                    (ActivityResultWithNativeObserver) observer);
+        if (observer instanceof ActivityResultWithNativeObserver activityResultWithNativeObserver) {
+            mActivityResultWithNativeObservers.addObserver(activityResultWithNativeObserver);
         }
-        if (observer instanceof ConfigurationChangedObserver) {
-            mConfigurationChangedListeners.addObserver((ConfigurationChangedObserver) observer);
+        if (observer instanceof ConfigurationChangedObserver configurationChangedObserver) {
+            mConfigurationChangedListeners.addObserver(configurationChangedObserver);
         }
-        if (observer instanceof RecreateObserver) {
-            mRecreateObservers.addObserver((RecreateObserver) observer);
+        if (observer instanceof RecreateObserver recreateObserver) {
+            mRecreateObservers.addObserver(recreateObserver);
         }
-        if (observer instanceof OnUserLeaveHintObserver) {
-            mOnUserLeaveHintObservers.addObserver((OnUserLeaveHintObserver) observer);
+        if (observer instanceof OnUserLeaveHintObserver onUserLeaveHintObserver) {
+            mOnUserLeaveHintObservers.addObserver(onUserLeaveHintObserver);
         }
-        if (observer instanceof TopResumedActivityChangedObserver) {
-            mTopResumedActivityChangedObservers.addObserver(
-                    (TopResumedActivityChangedObserver) observer);
+        if (observer
+                instanceof TopResumedActivityChangedObserver topResumedActivityChangedObserver) {
+            mTopResumedActivityChangedObservers.addObserver(topResumedActivityChangedObserver);
         }
-        if (observer instanceof TopResumedActivityChangedWithNativeObserver) {
+        if (observer
+                instanceof
+                TopResumedActivityChangedWithNativeObserver
+                        topResumedActivityChangedWithNativeObserver) {
             mTopResumedActivityChangedWithNativeObservers.addObserver(
-                    (TopResumedActivityChangedWithNativeObserver) observer);
+                    topResumedActivityChangedWithNativeObserver);
         }
     }
 
     @Override
     public void unregister(LifecycleObserver observer) {
-        if (observer instanceof InflationObserver) {
-            mInflationObservers.removeObserver((InflationObserver) observer);
+        if (observer instanceof InflationObserver inflationObserver) {
+            mInflationObservers.removeObserver(inflationObserver);
         }
-        if (observer instanceof PauseResumeWithNativeObserver) {
-            mPauseResumeObservers.removeObserver((PauseResumeWithNativeObserver) observer);
+        if (observer instanceof PauseResumeWithNativeObserver pauseResumeWithNativeObserver) {
+            mPauseResumeObservers.removeObserver(pauseResumeWithNativeObserver);
         }
-        if (observer instanceof StartStopWithNativeObserver) {
-            mStartStopObservers.removeObserver((StartStopWithNativeObserver) observer);
+        if (observer instanceof StartStopWithNativeObserver startStopWithNativeObserver) {
+            mStartStopObservers.removeObserver(startStopWithNativeObserver);
         }
-        if (observer instanceof NativeInitObserver) {
-            mNativeInitObservers.removeObserver((NativeInitObserver) observer);
+        if (observer instanceof NativeInitObserver nativeInitObserver) {
+            mNativeInitObservers.removeObserver(nativeInitObserver);
         }
-        if (observer instanceof DestroyObserver) {
-            mDestroyables.removeObserver((DestroyObserver) observer);
+        if (observer instanceof DestroyObserver destroyObserver) {
+            mDestroyables.removeObserver(destroyObserver);
         }
-        if (observer instanceof SaveInstanceStateObserver) {
-            mSaveInstanceStateObservers.removeObserver((SaveInstanceStateObserver) observer);
+        if (observer instanceof SaveInstanceStateObserver saveInstanceStateObserver) {
+            mSaveInstanceStateObservers.removeObserver(saveInstanceStateObserver);
         }
-        if (observer instanceof WindowFocusChangedObserver) {
-            mWindowFocusChangesObservers.removeObserver((WindowFocusChangedObserver) observer);
+        if (observer instanceof WindowFocusChangedObserver windowFocusChangedObserver) {
+            mWindowFocusChangesObservers.removeObserver(windowFocusChangedObserver);
         }
-        if (observer instanceof ActivityResultWithNativeObserver) {
-            mActivityResultWithNativeObservers.removeObserver(
-                    (ActivityResultWithNativeObserver) observer);
+        if (observer instanceof ActivityResultWithNativeObserver activityResultWithNativeObserver) {
+            mActivityResultWithNativeObservers.removeObserver(activityResultWithNativeObserver);
         }
-        if (observer instanceof ConfigurationChangedObserver) {
-            mConfigurationChangedListeners.removeObserver((ConfigurationChangedObserver) observer);
+        if (observer instanceof ConfigurationChangedObserver configurationChangedObserver) {
+            mConfigurationChangedListeners.removeObserver(configurationChangedObserver);
         }
-        if (observer instanceof RecreateObserver) {
-            mRecreateObservers.removeObserver((RecreateObserver) observer);
+        if (observer instanceof RecreateObserver recreateObserver) {
+            mRecreateObservers.removeObserver(recreateObserver);
         }
-        if (observer instanceof OnUserLeaveHintObserver) {
-            mOnUserLeaveHintObservers.removeObserver((OnUserLeaveHintObserver) observer);
+        if (observer instanceof OnUserLeaveHintObserver onUserLeaveHintObserver) {
+            mOnUserLeaveHintObservers.removeObserver(onUserLeaveHintObserver);
         }
-        if (observer instanceof TopResumedActivityChangedObserver) {
-            mTopResumedActivityChangedObservers.removeObserver(
-                    (TopResumedActivityChangedObserver) observer);
+        if (observer
+                instanceof TopResumedActivityChangedObserver topResumedActivityChangedObserver) {
+            mTopResumedActivityChangedObservers.removeObserver(topResumedActivityChangedObserver);
         }
-        if (observer instanceof TopResumedActivityChangedWithNativeObserver) {
+        if (observer
+                instanceof
+                TopResumedActivityChangedWithNativeObserver
+                        topResumedActivityChangedWithNativeObserver) {
             mTopResumedActivityChangedWithNativeObservers.removeObserver(
-                    (TopResumedActivityChangedWithNativeObserver) observer);
+                    topResumedActivityChangedWithNativeObserver);
         }
     }
 
