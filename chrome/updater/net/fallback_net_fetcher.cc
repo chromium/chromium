@@ -82,7 +82,7 @@ void FallbackNetFetcher::PostRequestDone(
     const std::string& header_set_cookie,
     int64_t xheader_retry_after_sec) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const int should_fallback = net_error || (http_status_code_ != 200);
+  const bool should_fallback = net_error || (http_status_code_ != 200);
   if (should_fallback && next_) {
     VLOG(1) << __func__ << " Falling back to next NetFetcher for " << url
             << ", error: " << net_error
@@ -134,7 +134,7 @@ void FallbackNetFetcher::DownloadToFileDone(
     int64_t content_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   cancellation_->Clear();
-  const int should_fallback = net_error || (http_status_code_ != 200);
+  const bool should_fallback = net_error || (http_status_code_ != 200);
   if (should_fallback && next_) {
     VLOG(1) << __func__ << " Falling back to next NetFetcher for " << url;
     cancellation_->OnCancel(next_->DownloadToFile(
