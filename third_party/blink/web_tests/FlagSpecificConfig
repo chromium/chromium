@@ -65,7 +65,8 @@
   {
     "name": "surface-embed",
     "args": [
-          "--enable-features=SurfaceEmbed,Webium"
+          "--enable-features=SurfaceEmbed,Webium",
+          "--enable-blink-test-features"
     ],
     "comments": [
           "Used for testing web capabilities when a web page is embedded using",
