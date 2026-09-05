@@ -53,9 +53,6 @@ class VIEWS_EXPORT ProgressBar : public View, public gfx::AnimationDelegate {
 
   // The color of the portion that displays potential progress.
   SkColor GetBackgroundColor() const;
-  std::optional<ui::ColorVariant> background_color() const {
-    return background_color_;
-  }
   void SetBackgroundColor(std::optional<ui::ColorVariant> color);
 
   int GetPreferredHeight() const;
