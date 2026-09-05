@@ -2228,10 +2228,11 @@ public class CronetUrlRequestContextTest {
         builder.setExperimentalOptions("");
         builder.setStoragePath(getTestStorage(mTestRule.getTestFramework().getContext()));
         builder.enablePublicKeyPinningBypassForLocalTrustAnchors(false);
+        CronetEngineBuilderImpl builderImpl = CronetTestUtil.getCronetEngineBuilderImpl(builder);
         CronetUrlRequestContextTestJni.get()
                 .verifyUrlRequestContextConfig(
                         CronetUrlRequestContext.createNativeUrlRequestContextConfig(
-                                CronetTestUtil.getCronetEngineBuilderImpl(builder)),
+                                builderImpl, builderImpl.experimentalOptions()),
                         getTestStorage(mTestRule.getTestFramework().getContext()));
     }
 
@@ -2257,10 +2258,12 @@ public class CronetUrlRequestContextTest {
         builder.setUserAgent("efgh");
         builder.setStoragePath(getTestStorage(mTestRule.getTestFramework().getContext()));
         builder.enablePublicKeyPinningBypassForLocalTrustAnchors(false);
+        CronetEngineBuilderImpl quicOffBuilderImpl =
+                CronetTestUtil.getCronetEngineBuilderImpl(builder);
         CronetUrlRequestContextTestJni.get()
                 .verifyUrlRequestContextQuicOffConfig(
                         CronetUrlRequestContext.createNativeUrlRequestContextConfig(
-                                CronetTestUtil.getCronetEngineBuilderImpl(builder)),
+                                quicOffBuilderImpl, quicOffBuilderImpl.experimentalOptions()),
                         getTestStorage(mTestRule.getTestFramework().getContext()));
     }
 

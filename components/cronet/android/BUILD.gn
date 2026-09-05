@@ -313,6 +313,7 @@ android_library("cronet_shared_api_dependencies_java") {
   srcjar_deps = [ ":url_request_close_source_java" ]
   sources = [
     "java/src/org/chromium/net/httpflags/BaseFeature.java",
+    "java/src/org/chromium/net/httpflags/ExperimentalOptionsFlags.java",
     "java/src/org/chromium/net/httpflags/HttpFlagsLoader.java",
     "java/src/org/chromium/net/httpflags/ResolvedFlags.java",
     "java/src/org/chromium/net/impl/CronetLogger.java",
@@ -1804,6 +1805,7 @@ android_library("cronet_javatests") {
     "test/javatests/src/org/chromium/net/apihelpers/ContentTypeParametersParserTest.java",
     "test/javatests/src/org/chromium/net/apihelpers/UploadDataProvidersTest.java",
     "test/javatests/src/org/chromium/net/httpflags/BaseFeatureTest.java",
+    "test/javatests/src/org/chromium/net/httpflags/ExperimentalOptionsFlagsTest.java",
     "test/javatests/src/org/chromium/net/httpflags/HttpFlagsLoaderTest.java",
     "test/javatests/src/org/chromium/net/httpflags/ResolvedFlagsTest.java",
     "test/javatests/src/org/chromium/net/impl/AdaptiveBidirectionalStreamTest.java",

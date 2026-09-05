@@ -538,6 +538,27 @@ public class ExperimentalOptionsTest {
     }
 
     @Test
+    @SmallTest
+    @Flags(
+            stringFlags = {
+                @StringFlag(
+                        name = "CronetExperimentalOption_QUIC_KEY_connection_options",
+                        value = "FLAG")
+            })
+    public void testExperimentalOptionsFlagOverridesBuilderOptions() {
+        mTestRule
+                .getTestFramework()
+                .applyEngineBuilderPatch(
+                        (builder) -> {
+                            builder.setQuicOptions(
+                                    QuicOptions.builder().addConnectionOption("ABCD").build());
+                        });
+        ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
+        String[] copts = CronetTestUtil.nativeGetConnectionOptions(cronetEngine);
+        assertThat(copts).asList().containsExactly("FLAG");
+    }
+
+    @Test
     @MediumTest
     public void testDetectBrokenConnection() throws Exception {
         String url = Http2TestServer.getEchoMethodUrl();

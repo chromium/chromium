@@ -8,6 +8,7 @@ import android.os.ConditionVariable;
 import android.os.SystemClock;
 import android.util.Pair;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -32,6 +33,7 @@ import org.chromium.net.RequestFinishedInfo;
 import org.chromium.net.RttThroughputValues;
 import org.chromium.net.UploadDataProvider;
 import org.chromium.net.UrlRequest;
+import org.chromium.net.httpflags.ExperimentalOptionsFlags;
 import org.chromium.net.impl.CronetLogger.CronetVersion;
 import org.chromium.net.impl.proto.RequestContextConfigOptions;
 import org.chromium.net.urlconnection.CronetHttpURLConnection;
@@ -186,6 +188,8 @@ public class CronetUrlRequestContext extends CronetEngineBase {
 
     private List<VersionSafeProxyCallback> mProxyCallbacks;
 
+    @Nullable private final String mEffectiveExperimentalOptions;
+
     @VisibleForTesting final CronetAdaptiveRequestContext mAdaptiveRequestContext;
 
     long getLogId() {
@@ -194,6 +198,12 @@ public class CronetUrlRequestContext extends CronetEngineBase {
 
     CronetLogger getCronetLogger() {
         return mLogger;
+    }
+
+    @VisibleForTesting
+    @Nullable
+    public String getEffectiveExperimentalOptionsForTesting() {
+        return mEffectiveExperimentalOptions;
     }
 
     /**
@@ -272,6 +282,13 @@ public class CronetUrlRequestContext extends CronetEngineBase {
             if (builder.getProxyOptions() != null) {
                 mProxyCallbacks = builder.getProxyOptions().createProxyCallbackList();
             }
+            var cronetSource = NativeCronetEngineBuilderImpl.getCronetSource();
+            mEffectiveExperimentalOptions =
+                    ExperimentalOptionsFlags.applyOverrides(
+                            builder.experimentalOptions(),
+                            HttpFlagsForImpl.getHttpFlags(
+                                            ContextUtils.getApplicationContext(), cronetSource)
+                                    .flags());
             synchronized (mLock) {
                 try (var adapterTraceEvent =
                         ScopedSysTraceEvent.scoped(
@@ -280,13 +297,13 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                     mUrlRequestContextAdapter =
                             CronetUrlRequestContextJni.get()
                                     .createRequestContextAdapter(
-                                            createNativeUrlRequestContextConfig(builder));
+                                            createNativeUrlRequestContextConfig(
+                                                    builder, mEffectiveExperimentalOptions));
                 }
                 if (mUrlRequestContextAdapter == 0) {
                     throw new NullPointerException("Context Adapter creation failed.");
                 }
             }
-            var cronetSource = NativeCronetEngineBuilderImpl.getCronetSource();
             mLogger = CronetLoggerFactory.createLogger(builder.getContext(), cronetSource);
             mLogId = mLogger.generateId();
             var builderLoggerInfo = builder.toLoggerInfo();
@@ -362,11 +379,14 @@ public class CronetUrlRequestContext extends CronetEngineBase {
     }
 
     @VisibleForTesting
-    public static long createNativeUrlRequestContextConfig(CronetEngineBuilderImpl builder) {
+    public static long createNativeUrlRequestContextConfig(
+            CronetEngineBuilderImpl builder, @Nullable String effectiveExperimentalOptions) {
         final long urlRequestContextConfig =
                 CronetUrlRequestContextJni.get()
                         .createRequestContextConfig(
-                                createRequestContextConfigOptions(builder).toByteArray());
+                                createRequestContextConfigOptions(
+                                                builder, effectiveExperimentalOptions)
+                                        .toByteArray());
         if (urlRequestContextConfig == 0) {
             throw new IllegalArgumentException("Experimental options parsing failed.");
         }
@@ -400,7 +420,7 @@ public class CronetUrlRequestContext extends CronetEngineBase {
     public static final String ALWAYS_ENABLE_BROTLI_FLAG_NAME = "Cronet_always_enable_brotli";
 
     private static RequestContextConfigOptions createRequestContextConfigOptions(
-            CronetEngineBuilderImpl engineBuilder) {
+            CronetEngineBuilderImpl engineBuilder, @Nullable String effectiveExperimentalOptions) {
         var flags =
                 HttpFlagsForImpl.getHttpFlags(
                                 ContextUtils.getApplicationContext(),
@@ -446,8 +466,8 @@ public class CronetUrlRequestContext extends CronetEngineBase {
             resultBuilder.setQuicDefaultUserAgentId(engineBuilder.getDefaultQuicUserAgentId());
         }
 
-        if (engineBuilder.experimentalOptions() != null) {
-            resultBuilder.setExperimentalOptions(engineBuilder.experimentalOptions());
+        if (effectiveExperimentalOptions != null) {
+            resultBuilder.setExperimentalOptions(effectiveExperimentalOptions);
         }
 
         return resultBuilder.build();
