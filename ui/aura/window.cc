@@ -1291,10 +1291,20 @@ void Window::SetBoundsInternal(const gfx::Rect& new_bounds) {
   // This may cause important side effects such as stopping animation.
   layer()->SetBounds(layer_bounds);
 
-  // If we are currently not the layer's delegate, we will not get bounds
-  // changed notification from the layer (this typically happens after animating
-  // hidden). We must notify ourselves.
-  if (layer()->delegate() != this) {
+  // We will not get bounds changed notification
+  // from the layer (this typically happens after animating hidden).
+  // This can happen if:
+  // 1) we are currently not the layer's delegate.
+  //    We must notify ourselves because layer will notify
+  //    another delegatee.
+  // 2) The layer_bounds is the same, but window bounds is different.
+  //    If `layer_managed_by_parent` is off, we need to notify to
+  //    update the window bounds based on the layer hierarchy.
+  bool notify_now =
+      layer()->delegate() != this ||
+      (new_bounds != bounds_ && old_layer_bounds == layer_bounds &&
+       !layer_managed_by_parent());
+  if (notify_now) {
     OnLayerBoundsChanged(old_layer_bounds,
                          ui::PropertyChangeReason::NOT_FROM_ANIMATION);
   }
