@@ -1467,6 +1467,42 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
+    public void onProfileDestroyed_removesProfileScopedFeaturesInLifoOrder() throws Exception {
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var profile = chromeAndroidTaskWithMockDeps.mMockProfile;
+        var activityScopedObjects1 = chromeAndroidTaskWithMockDeps.mActivityScopedObjects;
+        var activityScopedObjects2 = createActivityScopedObjects(/* taskId= */ 1);
+        chromeAndroidTask.addActivityScopedObjects(activityScopedObjects2);
+
+        List<String> removalOrder = new ArrayList<>();
+
+        var feature1 = new TestChromeAndroidTaskFeature(chromeAndroidTask);
+        feature1.mOnFeatureRemovedCallback = () -> removalOrder.add("feature1");
+        var featureKey1 =
+                new ChromeAndroidTaskFeatureKey(
+                        TestChromeAndroidTaskFeature.class,
+                        profile,
+                        activityScopedObjects1.mActivityWindowAndroid);
+        chromeAndroidTask.addFeature(featureKey1, () -> feature1);
+
+        var feature2 = new TestChromeAndroidTaskFeature(chromeAndroidTask);
+        feature2.mOnFeatureRemovedCallback = () -> removalOrder.add("feature2");
+        var featureKey2 =
+                new ChromeAndroidTaskFeatureKey(
+                        TestChromeAndroidTaskFeature.class,
+                        profile,
+                        activityScopedObjects2.mActivityWindowAndroid);
+        chromeAndroidTask.addFeature(featureKey2, () -> feature2);
+
+        ProfileManager.onProfileDestroyed(profile);
+
+        // Check feature2 (added 2nd) is removed before feature1 (added 1st).
+        assertEquals(List.of("feature2", "feature1"), removalOrder);
+    }
+
+    @Test
     @SuppressLint("NewApi" /* @Config already specifies the required SDK */)
     public void onDecorViewLayoutChange_windowResized_invokesOnTaskBoundsChangedForFeature() {
         // Arrange.
@@ -4475,9 +4511,15 @@ public class ChromeAndroidTaskImplUnitTest {
             mInitInfoHistory.add(initInfo);
         }
 
+        Runnable mOnFeatureRemovedCallback;
+
         @Override
         public void onFeatureRemoved() {
             mOnFeatureRemovedHelper.notifyCalled();
+
+            if (mOnFeatureRemovedCallback != null) {
+                mOnFeatureRemovedCallback.run();
+            }
 
             if (mShouldRefuseToBeRemoved) {
                 var featureKey =

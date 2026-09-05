@@ -65,9 +65,10 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /** Implements {@link ChromeAndroidTask}. */
@@ -283,7 +284,7 @@ final class ChromeAndroidTaskImpl
      * ChromeAndroidTask}.
      */
     private final Map<ChromeAndroidTaskFeatureKey, ChromeAndroidTaskFeature> mFeatures =
-            new ArrayMap<>();
+            new LinkedHashMap<>();
 
     /**
      * When the Task is PENDING, this variable is used to store the associated {@link
@@ -1678,30 +1679,39 @@ final class ChromeAndroidTaskImpl
         }
     }
 
-    private void removeAllFeaturesForActivityInternal(ActivityWindowAndroid activityWindowAndroid) {
-        Iterator<Entry<ChromeAndroidTaskFeatureKey, ChromeAndroidTaskFeature>> iterator =
-                mFeatures.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Entry<ChromeAndroidTaskFeatureKey, ChromeAndroidTaskFeature> entry = iterator.next();
+    /**
+     * Removes and destroys features matching the given filter in LIFO (Last-In-First-Out / reverse
+     * insertion) order.
+     *
+     * <p>Features added later may depend on features added earlier. Destroying features in reverse
+     * insertion order ensures that dependent features are torn down before the services they rely
+     * on.
+     *
+     * @param filter A predicate indicating which feature keys to remove.
+     */
+    private void removeFeaturesIf(Predicate<ChromeAndroidTaskFeatureKey> filter) {
+        if (mFeatures.isEmpty()) {
+            return;
+        }
+        var entries = new ArrayList<>(mFeatures.entrySet());
+        for (int i = entries.size() - 1; i >= 0; i--) {
+            var entry = entries.get(i);
             ChromeAndroidTaskFeatureKey key = entry.getKey();
-            if (activityWindowAndroid == key.mActivityWindowAndroid) {
-                entry.getValue().onFeatureRemoved();
-                iterator.remove();
+            if (filter.test(key)) {
+                ChromeAndroidTaskFeature feature = mFeatures.remove(key);
+                if (feature != null) {
+                    feature.onFeatureRemoved();
+                }
             }
         }
     }
 
+    private void removeAllFeaturesForActivityInternal(ActivityWindowAndroid activityWindowAndroid) {
+        removeFeaturesIf(key -> activityWindowAndroid == key.mActivityWindowAndroid);
+    }
+
     private void removeAllFeaturesForTabModel(TabModel tabModel) {
-        Iterator<Entry<ChromeAndroidTaskFeatureKey, ChromeAndroidTaskFeature>> iterator =
-                mFeatures.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Entry<ChromeAndroidTaskFeatureKey, ChromeAndroidTaskFeature> entry = iterator.next();
-            ChromeAndroidTaskFeatureKey key = entry.getKey();
-            if (tabModel == key.mTabModel) {
-                entry.getValue().onFeatureRemoved();
-                iterator.remove();
-            }
-        }
+        removeFeaturesIf(key -> tabModel == key.mTabModel);
     }
 
     private void removeAllActivityScopedObjects() {
@@ -1744,22 +1754,11 @@ final class ChromeAndroidTaskImpl
     }
 
     private void removeAllFeatures() {
-        for (var feature : mFeatures.values()) {
-            feature.onFeatureRemoved();
-        }
-        mFeatures.clear();
+        removeFeaturesIf(key -> true);
     }
 
     private void removeAllFeaturesForProfile(Profile profile) {
-        var iterator = mFeatures.entrySet().iterator();
-        while (iterator.hasNext()) {
-            var entry = iterator.next();
-            ChromeAndroidTaskFeatureKey key = entry.getKey();
-            if (profile.equals(key.mProfile)) {
-                entry.getValue().onFeatureRemoved();
-                iterator.remove();
-            }
-        }
+        removeFeaturesIf(key -> profile.equals(key.mProfile));
     }
 
     private void assertAlive() {
