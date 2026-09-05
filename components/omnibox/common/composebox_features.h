@@ -70,6 +70,9 @@ extern const base::FeatureParam<bool>
 // true.
 bool IsTabDeselectionInComposeboxEnabled();
 
+// If enabled, tooltips will be shown in the composebox context menu.
+extern const base::FeatureParam<bool> kContextManagementInComposeboxTooltips;
+
 }  // namespace omnibox
 
 #endif  // COMPONENTS_OMNIBOX_COMMON_COMPOSEBOX_FEATURES_H_
