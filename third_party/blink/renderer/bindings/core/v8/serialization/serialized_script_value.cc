@@ -737,8 +737,19 @@ bool SerializedScriptValue::IsLockedToAgentCluster() const {
          shared_value_conveyor_.has_value();
 }
 
+SerializedScriptValue::OriginCheckRequirement
+SerializedScriptValue::GetOriginCheckRequirement() const {
+  if (!file_system_access_tokens_.empty()) {
+    return OriginCheckRequirement::kStrict;
+  }
+  if (!wasm_modules_.empty()) {
+    return OriginCheckRequirement::kAllowRelatedAudioWorklet;
+  }
+  return OriginCheckRequirement::kNone;
+}
+
 bool SerializedScriptValue::IsOriginCheckRequired() const {
-  return file_system_access_tokens_.size() > 0 || wasm_modules_.size() > 0;
+  return GetOriginCheckRequirement() != OriginCheckRequirement::kNone;
 }
 
 bool SerializedScriptValue::CanDeserializeIn(

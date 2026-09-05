@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
+#include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/thread_debugger.h"
@@ -62,6 +63,39 @@
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
+
+namespace {
+
+const SecurityOrigin* GetMessagePortOriginForOriginCheck(
+    ExecutionContext* context,
+    const SerializedScriptValue& message) {
+  if (context->IsAudioWorkletGlobalScope() &&
+      message.GetOriginCheckRequirement() ==
+          SerializedScriptValue::OriginCheckRequirement::
+              kAllowRelatedAudioWorklet) {
+    // The WebAssembly serialization algorithm restricts modules to an agent
+    // cluster; it does not impose a same-origin restriction. HTML places a
+    // worklet in its creator's agent cluster even though the worklet has a
+    // unique opaque origin. Use the creator's origin for Chromium's additional
+    // origin check so that it does not reject an otherwise valid transfer. The
+    // agent-cluster check in CreateMessageEvent() remains enforced, and using
+    // the creator origin still rejects messages across document origins. See:
+    // https://html.spec.whatwg.org/multipage/webappapis.html#obtain-a-worklet-agent
+    // https://html.spec.whatwg.org/multipage/worklets.html#set-up-a-worklet-environment-settings-object
+    // https://webassembly.github.io/spec/web-api/#serialization
+    // File System Access handles, in contrast, require a strict same-origin
+    // check:
+    // https://fs.spec.whatwg.org/#filesystemhandle
+    auto* worklet_global_scope = To<WorkletGlobalScope>(context);
+    if (const SecurityOrigin* document_origin =
+            worklet_global_scope->DocumentSecurityOrigin()) {
+      return document_origin;
+    }
+  }
+  return context->GetSecurityOrigin();
+}
+
+}  // namespace
 
 MessagePort::MessagePort(ExecutionContext& execution_context)
     : ActiveScriptWrappable<MessagePort>({}),
@@ -135,8 +169,9 @@ void MessagePort::postMessage(ScriptState* script_state,
   msg.user_activation = PostMessageHelper::CreateUserActivationSnapshot(
       GetExecutionContext(), options);
 
-  msg.sender_origin =
-      GetExecutionContext()->GetSecurityOrigin()->IsolatedCopy();
+  const SecurityOrigin* sender_origin =
+      GetMessagePortOriginForOriginCheck(GetExecutionContext(), *msg.message);
+  msg.sender_origin = sender_origin->IsolatedCopy();
 
   ThreadDebugger* debugger = ThreadDebugger::From(script_state->GetIsolate());
   if (debugger)
@@ -429,7 +464,8 @@ Event* MessagePort::CreateMessageEvent(BlinkTransferableMessage& message) {
   // Dispatch a messageerror event when the target is a remote origin that is
   // not allowed to access the message's data.
   if (message.message->IsOriginCheckRequired()) {
-    const SecurityOrigin* target_origin = context->GetSecurityOrigin();
+    const SecurityOrigin* target_origin =
+        GetMessagePortOriginForOriginCheck(context, *message.message);
     if (!message.sender_origin ||
         !message.sender_origin->IsSameOriginWith(target_origin)) {
       return MessageEvent::CreateError();

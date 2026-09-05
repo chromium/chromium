@@ -337,6 +337,22 @@ class CORE_EXPORT SerializedScriptValue
 
   bool IsLockedToAgentCluster() const;
 
+  enum class OriginCheckRequirement {
+    // No additional origin check is required.
+    kNone,
+
+    // The origins of the contexts must match, except that a related audio
+    // worklet is acceptable (for WebAssembly modules, which are subject to
+    // a Chromium-specific restriction).
+    kAllowRelatedAudioWorklet,
+
+    // The origins of the sender and receiver contexts must match.
+    kStrict,
+  };
+
+  // Returns the origin check required to receive this value.
+  OriginCheckRequirement GetOriginCheckRequirement() const;
+
   // Returns true after serializing script values that remote origins cannot
   // access.
   bool IsOriginCheckRequired() const;
