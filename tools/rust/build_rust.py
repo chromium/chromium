@@ -122,6 +122,9 @@ EXCLUDED_TESTS_WINDOWS = [
     os.path.join('tests', 'ui', 'sanitizer', 'asan_odr_windows.rs'),
     # Temporarily disabled due to https://crbug.com/400524229
     os.path.join('tests', 'ui', 'process', 'win-command-child-path.rs'),
+    # Temporarily disabled due to https://crbug.com/556516031
+    os.path.join('tests', 'codegen-llvm', 'async-fn-debug-msvc.rs'),
+    os.path.join('tests', 'codegen-llvm', 'coroutine-debug-msvc.rs'),
 ]
 EXCLUDED_TESTS_MAC = []
 EXCLUDED_TESTS_MAC_ARM64 = [
@@ -770,6 +773,14 @@ def GitApplyCherryPicks():
     # TODO(crbug.com/534823432): Remove once
     # https://github.com/rust-lang/rust/pull/159331 rolls into rust.
     GitCherryPick(RUST_SRC_DIR, '9e25e3aab5f22179038b3c60d3bafa530492d271',
+                  'https://github.com/rust-lang/rust.git')
+
+    # TODO(crbug.com/556516031): Remove once
+    # https://github.com/rust-lang/rust/pull/162230 and
+    # https://github.com/rust-lang/rust/pull/162236 roll into rust.
+    GitCherryPick(RUST_SRC_DIR, 'c5c326ba70147a51f20e6f8ae530c6784ed7f644',
+                  'https://github.com/rust-lang/rust.git')
+    GitCherryPick(RUST_SRC_DIR, 'aa97bab747e287d1fc7cfdc9f8c49333fd9d76f7',
                   'https://github.com/rust-lang/rust.git')
 
     print('Finished applying cherry-picks.')

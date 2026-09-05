@@ -36,6 +36,7 @@ EXPORTS
     ??$AddData@$00@CordRepBtree@cord_internal@absl@@CAPEAV012@PEAV012@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@_K@Z
     ??$AddData@$0A@@CordRepBtree@cord_internal@absl@@AEAA?AV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@V345@_K@Z
     ??$AddData@$0A@@CordRepBtree@cord_internal@absl@@CAPEAV012@PEAV012@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@_K@Z
+    ??$AddEdge@$00@CordRepBtree@cord_internal@absl@@QEAA?AUOpResult@012@_NPEAUCordRep@12@_K@Z
     ??$AddEdge@$0A@@CordRepBtree@cord_internal@absl@@QEAA?AUOpResult@012@_NPEAUCordRep@12@_K@Z
     ??$AllocateBackingArray@$07V?$allocator@D@__Cr@std@@@container_internal@absl@@YAPEAXPEAX_K@Z
     ??$Append@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@$0A@@Cord@absl@@QEAAX$$QEAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@Z
