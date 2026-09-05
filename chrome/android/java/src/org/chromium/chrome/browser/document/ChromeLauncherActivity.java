@@ -144,7 +144,7 @@ public class ChromeLauncherActivity extends Activity {
             return;
         }
 
-        if (LaunchIntentDispatcher.dispatchToActorForegroundService(this, intent)
+        if (LaunchIntentDispatcher.dispatchGlicExternalTrigger(this, intent)
                 != LaunchIntentDispatcher.Action.CONTINUE) {
             return;
         }

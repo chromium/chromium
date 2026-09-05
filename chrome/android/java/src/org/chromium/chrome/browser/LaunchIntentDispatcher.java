@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.customtabs.content.WebAppLaunchHandler;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -69,6 +70,9 @@ public class LaunchIntentDispatcher {
 
     private static final String START_ACTOR_FOREGROUND_SERVICE =
             "org.chromium.chrome.browser.actor.START_ACTOR_FOREGROUND_SERVICE";
+
+    private static final String GLIC_EXTERNAL_TRIGGERING_ACTION =
+            "org.chromium.chrome.browser.glic.EXTERNAL_TRIGGERING";
 
     private static final String TAG = "ActivityDispatcher";
 
@@ -126,13 +130,13 @@ public class LaunchIntentDispatcher {
     }
 
     /**
-     * Dispatches the intent to start ActorForegroundService securely. Synchronously loads native to
-     * ensure ActorForegroundServiceManager can bind and issue the Foreground Notification.
+     * Dispatches the intent to start ActorForegroundService securely for Glic triggering.
+     * Synchronously loads native to check the explicit opt-in state before routing.
      */
-    public static @Action int dispatchToActorForegroundService(
-            Activity currentActivity, Intent intent) {
-        Log.d(TAG, "dispatchToActorForegroundService");
-        if (!START_ACTOR_FOREGROUND_SERVICE.equals(intent.getAction())) {
+    public static @Action int dispatchGlicExternalTrigger(Activity currentActivity, Intent intent) {
+        Log.d(TAG, "dispatchGlicExternalTrigger");
+        if (!ChromeFeatureList.sGlicBackgroundTriggering.isEnabled()
+                || !GLIC_EXTERNAL_TRIGGERING_ACTION.equals(intent.getAction())) {
             return Action.CONTINUE;
         }
 
@@ -140,24 +144,39 @@ public class LaunchIntentDispatcher {
         // TODO(b/548542183): Check calling package.
         if (ExternalAuthUtils.getInstance().isGoogleSigned(callingPackage)) {
 
-            // Load native before starting the service so the Manager acts on it.
-            // TODO(b/548905266): Should move to the foreground service imp.
+            // Load native before checking consent state and starting the service.
+            // TODO(b/548905266): Should move to the foreground service imp if possible.
             ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
 
-            Intent serviceIntent =
-                    new Intent(
-                            currentActivity,
-                            org.chromium.chrome.browser.actor.ActorForegroundService.class);
-            serviceIntent.setAction(START_ACTOR_FOREGROUND_SERVICE);
-            IntentUtils.addTrustedIntentExtras(serviceIntent);
-            ForegroundServiceUtils.getInstance().startForegroundService(serviceIntent);
-            // TODO(b/548905982): Ensure foreground service started before finishing activity.
-            currentActivity.setResult(Activity.RESULT_OK);
+            Profile profile = ProfileManager.getLastUsedRegularProfile();
+
+            if (!GlicEnabling.isEnabledForProfile(profile)) {
+                currentActivity.setResult(Activity.RESULT_CANCELED);
+                return Action.FINISH_ACTIVITY;
+            }
+
+            // TODO(b/549302429): Check notification setting, if it's enabled, launch the fgs
+            // intent.
+            // TODO(b/557413667): It should be possible to warm up Glic instance here as
+            // well, in the future.
+            if (!GlicEnabling.experimentalOptInIsNeeded(profile)) {
+                Intent serviceIntent =
+                        new Intent(
+                                currentActivity,
+                                org.chromium.chrome.browser.actor.ActorForegroundService.class);
+                serviceIntent.setAction(START_ACTOR_FOREGROUND_SERVICE);
+                IntentUtils.addTrustedIntentExtras(serviceIntent);
+                ForegroundServiceUtils.getInstance().startForegroundService(serviceIntent);
+                // TODO(b/548905982): Ensure foreground service started before finishing activity.
+                currentActivity.setResult(Activity.RESULT_OK);
+                return Action.FINISH_ACTIVITY;
+            }
+
+            return Action.CONTINUE;
         } else {
             currentActivity.setResult(Activity.RESULT_CANCELED);
+            return Action.FINISH_ACTIVITY;
         }
-
-        return Action.FINISH_ACTIVITY;
     }
 
     private LaunchIntentDispatcher(Activity activity, Intent intent) {

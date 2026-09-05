@@ -85,5 +85,17 @@ void JNI_GlicEnabling_SetBypassEnablementChecksForTesting(JNIEnv* env,
     stack.pop_back();
   }
 }
+
+jboolean JNI_GlicEnabling_ExperimentalOptInIsNeeded(JNIEnv* env,
+                                                    Profile* profile) {
+  CHECK(glic::GlicEnabling::IsEnabledForProfile(profile));
+
+  auto* glic_service =
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
+  CHECK(glic_service);
+  return glic_service->enabling().GetRequiredExperimentalOptIn() !=
+         glic::RequiredExperimentalOptIn::kNotNeeded;
+}
+
 }  // namespace glic
 DEFINE_JNI(GlicEnabling)

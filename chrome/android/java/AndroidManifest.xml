@@ -272,7 +272,7 @@ by a child template that "extends" this file.
                  user. Caller needs to be a trusted google app and need to use
                  startActivityForResult. -->
             <intent-filter>
-                <action android:name="org.chromium.chrome.browser.actor.START_ACTOR_FOREGROUND_SERVICE" />
+                <action android:name="org.chromium.chrome.browser.glic.EXTERNAL_TRIGGERING" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             {% endif %}

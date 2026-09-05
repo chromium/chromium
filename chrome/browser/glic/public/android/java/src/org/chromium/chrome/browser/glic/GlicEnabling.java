@@ -131,6 +131,16 @@ public class GlicEnabling {
         return GlicEnablingJni.get().isPolicyEnforced(profile);
     }
 
+    /**
+     * Returns true if explicit experimental opt-in is required for the given profile.
+     *
+     * <p>Note: Caller must ensure {@link #isEnabledForProfile(Profile)} returns true before calling
+     * this method.
+     */
+    public static boolean experimentalOptInIsNeeded(Profile profile) {
+        return GlicEnablingJni.get().experimentalOptInIsNeeded(profile);
+    }
+
     @NativeMethods
     public interface Natives {
         boolean isEnabledByFlags();
@@ -152,6 +162,8 @@ public class GlicEnabling {
         boolean isProfileManaged(@JniType("Profile*") Profile profile);
 
         boolean isPolicyEnforced(@JniType("Profile*") Profile profile);
+
+        boolean experimentalOptInIsNeeded(@JniType("Profile*") Profile profile);
 
         void setBypassEnablementChecksForTesting(boolean bypass);
     }

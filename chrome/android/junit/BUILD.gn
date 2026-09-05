@@ -131,6 +131,7 @@ if (is_android) {
       "//chrome/browser/glic:public_java",
       "//chrome/browser/glic/android:common_java",
       "//chrome/browser/glic/android:java",
+      "//chrome/browser/glic/android:jni_headers_java",
       "//chrome/browser/glic/android:menu_java",
       "//chrome/browser/gsa:java",
       "//chrome/browser/history:java",
