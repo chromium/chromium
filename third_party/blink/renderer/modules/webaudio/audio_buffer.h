@@ -144,7 +144,7 @@ class SharedAudioBuffer final {
     return channel_spans_[channel_index];
   }
 
-  void Zero();
+  void Zero(size_t start_frame = 0);
 
  private:
   float sample_rate_;

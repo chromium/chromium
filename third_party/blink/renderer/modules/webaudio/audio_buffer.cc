@@ -30,6 +30,7 @@
 
 #include <memory>
 
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_buffer_options.h"
@@ -336,9 +337,11 @@ SharedAudioBuffer::SharedAudioBuffer(AudioBuffer* buffer)
   }
 }
 
-void SharedAudioBuffer::Zero() {
+void SharedAudioBuffer::Zero(size_t start_frame) {
+  DCHECK_LE(start_frame, length_);
   for (auto& channel : channels_) {
-    std::ranges::fill(channel.ByteSpan(), 0);
+    std::ranges::fill(channel.ByteSpan().subspan(start_frame * sizeof(float)),
+                      0);
   }
 }
 
