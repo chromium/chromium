@@ -5786,16 +5786,15 @@ auto GraphBuilderTflite::SerializeGather(const mojom::Gather& gather)
                    SerializeInputTensorInfo(gather.input_operand_id,
                                             /*quantize_params=*/0,
                                             supports_float16, fuse_dequantize));
-  TensorIndex output_tensor_index;
+  TensorInfo output_tensor_info;
   if (fuse_dequantize) {
-    output_tensor_index = quantized_output->index;
+    output_tensor_info = *quantized_output;
   } else {
     ASSIGN_OR_RETURN(
-        const TensorInfo output_tensor_info,
+        output_tensor_info,
         SerializeOutputTensorInfo(gather.output_operand_id,
                                   /*quantize_params=*/0, supports_float16,
                                   input_tensor_info.data_type));
-    output_tensor_index = output_tensor_info.index;
   }
 
   ASSIGN_OR_RETURN(const TensorInfo& indices_tensor_info,
@@ -5813,16 +5812,62 @@ auto GraphBuilderTflite::SerializeGather(const mojom::Gather& gather)
                          indices_tensor_info, input_tensor_info, gather.axis));
   }
 
+  // The ML Drift accelerator only supports 1-D INT32 indices. Reshape the
+  // indices to 1-D here and reshape the gathered result back; the
+  // empty dimension list of a scalar has product 1, so it becomes [1]
+  // and needs no special case.
+  const bool requires_1d_int32_indices =
+      context_device_ == mojom::Device::kGpu &&
+      indices_tensor_info.data_type == ::tflite::TensorType_INT32;
+  const std::vector<int32_t>& indices_dims = indices_tensor_info.dimensions;
+  const bool flatten_indices =
+      requires_1d_int32_indices && indices_dims.size() != 1 && !fuse_dequantize;
+  TensorIndex gather_output_index = output_tensor_info.index;
+  if (flatten_indices) {
+    base::CheckedNumeric<int32_t> checked_count = 1;
+    for (int32_t dim : indices_dims) {
+      checked_count *= dim;
+    }
+    int32_t indices_count;
+    if (!checked_count.AssignIfValid(&indices_count)) {
+      return base::unexpected("The gather indices are too large.");
+    }
+    const std::array<int32_t, 1> flat_dims = {indices_count};
+    CHECK_EQ(indices_tensor_info.data_type, ::tflite::TensorType_INT32);
+    ASSIGN_OR_RETURN(const TensorIndex flat_indices_index,
+                     SerializeTemporaryTensorWithByteSizeCheck(
+                         flat_dims, indices_tensor_info.data_type));
+    operators_.emplace_back(SerializeReshapeOperation(
+        indices_tensor_index, flat_indices_index, flat_dims));
+    indices_tensor_index = flat_indices_index;
+
+    // The gathered result before the reshape: the input dimensions with `axis`
+    // replaced by the number of indices.
+    std::vector<int32_t> gathered_dims = input_tensor_info.dimensions;
+    gathered_dims[gather.axis] = indices_count;
+    ASSIGN_OR_RETURN(gather_output_index,
+                     SerializeTemporaryTensorWithByteSizeCheck(
+                         gathered_dims, input_tensor_info.data_type));
+  }
+
   const OperatorCodeIndex operator_code_index =
       GetOperatorCodeIndex(::tflite::BuiltinOperator_GATHER);
   const std::array<TensorIndex, 2> op_inputs = {input_tensor_info.index,
                                                 indices_tensor_index};
-  const std::array<TensorIndex, 1> op_outputs = {output_tensor_index};
-  return ::tflite::CreateOperator(
+  const std::array<TensorIndex, 1> op_outputs = {gather_output_index};
+  OperatorOffset gather_offset = ::tflite::CreateOperator(
       builder_, operator_code_index,
       builder_.CreateVector<TensorIndex>(op_inputs),
       builder_.CreateVector<TensorIndex>(op_outputs),
       ::tflite::BuiltinOptions_GatherOptions, gather_options.Union());
+  if (!flatten_indices) {
+    return gather_offset;
+  }
+  operators_.emplace_back(gather_offset);
+
+  return SerializeReshapeOperation(gather_output_index,
+                                   output_tensor_info.index,
+                                   output_tensor_info.dimensions);
 }
 
 template <typename DataType>
