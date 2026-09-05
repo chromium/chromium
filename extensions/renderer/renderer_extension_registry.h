@@ -72,11 +72,20 @@ class RendererExtensionRegistry {
   std::optional<base::UnguessableToken> GetWorkerActivationToken(
       const ExtensionId& extension_id) const;
 
+  // Returns true if Mojo JS bindings are enabled in service workers for
+  // `extension_id`.
+  bool IsMojoJsEnabledForServiceWorker(const ExtensionId& extension_id) const;
+  void SetMojoJsEnabledForServiceWorker(const ExtensionId& extension_id,
+                                        bool enabled);
+
  private:
   ExtensionSet extensions_;
 
   // Maps extension id to activation token, for worker based extensions.
   std::map<ExtensionId, base::UnguessableToken> worker_activation_tokens_;
+
+  // Set of extension IDs that have Mojo JS enabled in service workers.
+  ExtensionIdSet service_worker_mojo_js_enabled_extensions_;
 
   mutable base::Lock lock_;
 };

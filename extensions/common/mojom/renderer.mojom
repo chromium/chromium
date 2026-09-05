@@ -57,6 +57,10 @@ struct ExtensionLoadedParams {
 
   // Reuse the extension guid when creating the extension in the renderer.
   string guid;
+
+  // Whether Mojo JS bindings should be enabled in service workers for this
+  // extension.
+  bool is_mojo_js_enabled_for_service_worker;
 };
 
 // Settings for a given user script world.

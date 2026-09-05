@@ -59,6 +59,15 @@ AimEligibilityExtensionBinderProvider::AimEligibilityExtensionBinderProvider()
 AimEligibilityExtensionBinderProvider::
     ~AimEligibilityExtensionBinderProvider() = default;
 
+bool AimEligibilityExtensionBinderProvider::IsMojoJsEnabledForFrame() const {
+  return true;
+}
+
+bool AimEligibilityExtensionBinderProvider::IsMojoJsEnabledForServiceWorker()
+    const {
+  return true;
+}
+
 void AimEligibilityExtensionBinderProvider::PopulateFrameBinders(
     mojo::BinderMapWithContext<content::RenderFrameHost*>& binder_map,
     content::RenderFrameHost* render_frame_host,

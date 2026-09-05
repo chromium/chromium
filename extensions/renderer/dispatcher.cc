@@ -1000,6 +1000,8 @@ void Dispatcher::LoadExtensions(
   for (auto& param : loaded_extensions) {
     std::u16string error;
     ExtensionId id = param->id;
+    bool is_mojo_js_enabled_for_service_worker =
+        param->is_mojo_js_enabled_for_service_worker;
     std::optional<base::UnguessableToken> worker_activation_token =
         param->worker_activation_token;
     SetCurrentUserScriptAllowedState(kRendererProfileId, id,
@@ -1015,6 +1017,9 @@ void Dispatcher::LoadExtensions(
 
     RendererExtensionRegistry* extension_registry =
         RendererExtensionRegistry::Get();
+
+    extension_registry->SetMojoJsEnabledForServiceWorker(
+        id, is_mojo_js_enabled_for_service_worker);
 
     // The order of setting the token before inserting the extension is
     // intentional so that DidInitializeServiceWorkerContextOnWorkerThread()

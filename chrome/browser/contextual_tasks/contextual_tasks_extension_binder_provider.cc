@@ -42,6 +42,10 @@ ContextualTasksExtensionBinderProvider::ContextualTasksExtensionBinderProvider()
 ContextualTasksExtensionBinderProvider::
     ~ContextualTasksExtensionBinderProvider() = default;
 
+bool ContextualTasksExtensionBinderProvider::IsMojoJsEnabledForFrame() const {
+  return true;
+}
+
 void ContextualTasksExtensionBinderProvider::PopulateFrameBinders(
     mojo::BinderMapWithContext<content::RenderFrameHost*>& binder_map,
     content::RenderFrameHost* render_frame_host,

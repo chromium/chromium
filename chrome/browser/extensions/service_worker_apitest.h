@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_SERVICE_WORKER_APITEST_H_
 #define CHROME_BROWSER_EXTENSIONS_SERVICE_WORKER_APITEST_H_
 
+#include "base/types/pass_key.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/common/page_type.h"
@@ -29,6 +30,10 @@ class ServiceWorkerTest : public ExtensionApiTest {
  public:
   ServiceWorkerTest(const ServiceWorkerTest&) = delete;
   ServiceWorkerTest& operator=(const ServiceWorkerTest&) = delete;
+
+  base::PassKey<ServiceWorkerTest> GetPassKey() {
+    return base::PassKey<ServiceWorkerTest>();
+  }
 
  protected:
   ServiceWorkerTest() = default;

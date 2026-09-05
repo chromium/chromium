@@ -27,6 +27,8 @@
 #include "content/public/browser/render_process_host.h"
 #include "extensions/browser/bad_message.h"
 #include "extensions/browser/extension_function_dispatcher.h"
+#include "extensions/browser/extension_mojo_binder_registry.h"
+#include "extensions/browser/extension_mojo_binder_registry_factory.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -197,6 +199,13 @@ mojom::ExtensionLoadedParamsPtr CreateExtensionLoadedParams(
       user_script_manager &&
       user_script_manager->AreUserScriptsAllowed(extension);
 
+  bool is_mojo_js_enabled_for_service_worker = false;
+  if (auto* registry = ExtensionMojoBinderRegistryFactory::GetForBrowserContext(
+          browser_context)) {
+    is_mojo_js_enabled_for_service_worker =
+        registry->IsMojoJsEnabledForServiceWorker(extension);
+  }
+
   return mojom::ExtensionLoadedParams::New(
       extension.manifest()->value()->Clone(), extension.location(),
       extension.path(),
@@ -208,7 +217,8 @@ mojom::ExtensionLoadedParamsPtr CreateExtensionLoadedParams(
       permissions_data->UsesDefaultPolicyHostRestrictions(),
       user_scripts_allowed, extension.id(),
       GetWorkerActivationToken(browser_context, extension),
-      extension.creation_flags(), extension.guid());
+      extension.creation_flags(), extension.guid(),
+      is_mojo_js_enabled_for_service_worker);
 }
 
 base::flat_map<std::string, std::string> ToFlatMap(

@@ -40,12 +40,24 @@ class TestBinderProvider : public ExtensionMojoBinderProvider {
       base::RepeatingCallback<void(content::BrowserContext*,
                                    const content::ServiceWorkerVersionBaseInfo&,
                                    mojo::PendingReceiver<TestInterface>)>
-          sw_binder)
+          sw_binder,
+      bool is_mojo_js_enabled_for_frame = false,
+      bool is_mojo_js_enabled_for_service_worker = false)
       : ExtensionMojoBinderProvider(std::move(extension_id)),
         frame_binder_(std::move(frame_binder)),
-        sw_binder_(std::move(sw_binder)) {}
+        sw_binder_(std::move(sw_binder)),
+        is_mojo_js_enabled_for_frame_(is_mojo_js_enabled_for_frame),
+        is_mojo_js_enabled_for_service_worker_(
+            is_mojo_js_enabled_for_service_worker) {}
   ~TestBinderProvider() override = default;
 
+  bool IsMojoJsEnabledForFrame() const override {
+    return is_mojo_js_enabled_for_frame_;
+  }
+
+  bool IsMojoJsEnabledForServiceWorker() const override {
+    return is_mojo_js_enabled_for_service_worker_;
+  }
   void PopulateFrameBinders(
       mojo::BinderMapWithContext<content::RenderFrameHost*>& binder_map,
       content::RenderFrameHost* render_frame_host,
@@ -74,6 +86,8 @@ class TestBinderProvider : public ExtensionMojoBinderProvider {
                                const content::ServiceWorkerVersionBaseInfo&,
                                mojo::PendingReceiver<TestInterface>)>
       sw_binder_;
+  const bool is_mojo_js_enabled_for_frame_ = false;
+  const bool is_mojo_js_enabled_for_service_worker_ = false;
 };
 
 }  // namespace
@@ -195,7 +209,39 @@ TEST_F(ExtensionMojoBinderRegistryTest,
   EXPECT_FALSE(future.IsReady());
 }
 
-TEST_F(ExtensionMojoBinderRegistryTest, IsMojoJsEnabled) {
+TEST_F(ExtensionMojoBinderRegistryTest, IsMojoJsEnabledForFrame) {
+  scoped_refptr<const Extension> component_extension_1 =
+      ExtensionBuilder("Component Extension 1")
+          .SetLocation(mojom::ManifestLocation::kComponent)
+          .Build();
+  scoped_refptr<const Extension> component_extension_2 =
+      ExtensionBuilder("Component Extension 2")
+          .SetLocation(mojom::ManifestLocation::kComponent)
+          .Build();
+  scoped_refptr<const Extension> unpacked_extension =
+      ExtensionBuilder("Unpacked Extension")
+          .SetLocation(mojom::ManifestLocation::kUnpacked)
+          .Build();
+
+  EXPECT_FALSE(registry()->IsMojoJsEnabledForFrame(*component_extension_1));
+  EXPECT_FALSE(registry()->IsMojoJsEnabledForFrame(*component_extension_2));
+  EXPECT_FALSE(registry()->IsMojoJsEnabledForFrame(*unpacked_extension));
+
+  // Provider with default settings (Mojo JS disabled for frame).
+  RegisterTestProvider(std::make_unique<TestBinderProvider>(
+      component_extension_1->id(), base::NullCallback(), base::NullCallback()));
+
+  // Provider with frame Mojo JS explicitly enabled.
+  RegisterTestProvider(std::make_unique<TestBinderProvider>(
+      component_extension_2->id(), base::NullCallback(), base::NullCallback(),
+      /*is_mojo_js_enabled_for_frame=*/true));
+
+  EXPECT_FALSE(registry()->IsMojoJsEnabledForFrame(*component_extension_1));
+  EXPECT_TRUE(registry()->IsMojoJsEnabledForFrame(*component_extension_2));
+  EXPECT_FALSE(registry()->IsMojoJsEnabledForFrame(*unpacked_extension));
+}
+
+TEST_F(ExtensionMojoBinderRegistryTest, IsMojoJsEnabledForServiceWorker) {
   scoped_refptr<const Extension> component_extension =
       ExtensionBuilder("Component Extension")
           .SetLocation(mojom::ManifestLocation::kComponent)
@@ -205,14 +251,20 @@ TEST_F(ExtensionMojoBinderRegistryTest, IsMojoJsEnabled) {
           .SetLocation(mojom::ManifestLocation::kUnpacked)
           .Build();
 
-  EXPECT_FALSE(registry()->IsMojoJsEnabled(*component_extension));
-  EXPECT_FALSE(registry()->IsMojoJsEnabled(*unpacked_extension));
+  EXPECT_FALSE(
+      registry()->IsMojoJsEnabledForServiceWorker(*component_extension));
+  EXPECT_FALSE(
+      registry()->IsMojoJsEnabledForServiceWorker(*unpacked_extension));
 
   RegisterTestProvider(std::make_unique<TestBinderProvider>(
-      component_extension->id(), base::NullCallback(), base::NullCallback()));
+      component_extension->id(), base::NullCallback(), base::NullCallback(),
+      /*is_mojo_js_enabled_for_frame=*/false,
+      /*is_mojo_js_enabled_for_service_worker=*/true));
 
-  EXPECT_TRUE(registry()->IsMojoJsEnabled(*component_extension));
-  EXPECT_FALSE(registry()->IsMojoJsEnabled(*unpacked_extension));
+  EXPECT_FALSE(registry()->IsMojoJsEnabledForFrame(*component_extension));
+  EXPECT_TRUE(
+      registry()->IsMojoJsEnabledForServiceWorker(*component_extension));
+  EXPECT_FALSE(
+      registry()->IsMojoJsEnabledForServiceWorker(*unpacked_extension));
 }
-
 }  // namespace extensions

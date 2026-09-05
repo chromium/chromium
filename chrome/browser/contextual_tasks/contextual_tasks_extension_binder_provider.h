@@ -34,6 +34,7 @@ class ContextualTasksExtensionBinderProvider
   ~ContextualTasksExtensionBinderProvider() override;
 
   // extensions::ExtensionMojoBinderProvider:
+  bool IsMojoJsEnabledForFrame() const override;
   void PopulateFrameBinders(
       mojo::BinderMapWithContext<content::RenderFrameHost*>& binder_map,
       content::RenderFrameHost* render_frame_host,

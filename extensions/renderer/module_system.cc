@@ -15,6 +15,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/renderer/console.h"
+#include "extensions/renderer/renderer_extension_registry.h"
 #include "extensions/renderer/safe_builtins.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_context_set.h"
@@ -144,6 +145,14 @@ bool ContextNeedsMojoBindings(ScriptContext* context) {
     if (context->GetAvailability(api).is_available())
       return true;
   }
+
+  const Extension* extension = context->extension();
+  if (context->IsForServiceWorker() && extension &&
+      RendererExtensionRegistry::Get()->IsMojoJsEnabledForServiceWorker(
+          extension->id())) {
+    return true;
+  }
+
   return false;
 }
 

@@ -17,6 +17,9 @@ class AimEligibilityExtensionBinderProvider
   AimEligibilityExtensionBinderProvider();
   ~AimEligibilityExtensionBinderProvider() override;
 
+  // extensions::ExtensionMojoBinderProvider:
+  bool IsMojoJsEnabledForFrame() const override;
+  bool IsMojoJsEnabledForServiceWorker() const override;
   void PopulateFrameBinders(
       mojo::BinderMapWithContext<content::RenderFrameHost*>& binder_map,
       content::RenderFrameHost* render_frame_host,

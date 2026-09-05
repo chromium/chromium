@@ -673,6 +673,8 @@
 #include "chrome/browser/extensions/chrome_extension_cookies.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
+#include "extensions/browser/extension_mojo_binder_registry.h"
+#include "extensions/browser/extension_mojo_binder_registry_factory.h"
 #include "extensions/browser/extension_protocols.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
@@ -2302,8 +2304,13 @@ bool ChromeContentBrowserClient::ShouldAllowMojoJsBindingsForFrame(
         extensions::ExtensionRegistry::Get(browser_context)
             ->enabled_extensions()
             .GetByID(site_url.GetHost());
-    return extensions::util::IsMojoJsEnabledForExtension(extension,
-                                                         browser_context);
+    if (!extension) {
+      return false;
+    }
+    const auto* registry =
+        extensions::ExtensionMojoBinderRegistryFactory::GetForBrowserContext(
+            browser_context);
+    return registry && registry->IsMojoJsEnabledForFrame(*extension);
   }
 #endif
   return false;

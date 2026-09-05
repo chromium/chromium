@@ -103,10 +103,6 @@ bool AreExtensionsDisabled(const base::CommandLine& command_line,
 // main extensions page.
 GURL GetExtensionsPageUrl(const ExtensionId& extension_id);
 
-// Returns true if `extension` is allowed to use MojoJS bindings.
-bool IsMojoJsEnabledForExtension(const Extension* extension,
-                                 content::BrowserContext* context);
-
 // Represents the type of settings override configured by the extension.
 // DSE = Default Search Engine.
 // NTP = New Tab Page.

@@ -29,8 +29,6 @@
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/site_instance.h"
 #include "extensions/browser/disable_reason.h"
-#include "extensions/browser/extension_mojo_binder_registry.h"
-#include "extensions/browser/extension_mojo_binder_registry_factory.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
@@ -372,16 +370,6 @@ GURL GetExtensionsPageUrl(const ExtensionId& extension_id) {
     url = url.ReplaceComponents(replacements);
   }
   return url;
-}
-
-bool IsMojoJsEnabledForExtension(const Extension* extension,
-                                 content::BrowserContext* context) {
-  if (!extension) {
-    return false;
-  }
-  auto* registry =
-      ExtensionMojoBinderRegistryFactory::GetForBrowserContext(context);
-  return registry && registry->IsMojoJsEnabled(*extension);
 }
 
 DseNtpOverrideType GetDseNtpOverrideType(const Extension& extension) {

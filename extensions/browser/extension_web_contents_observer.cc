@@ -421,7 +421,7 @@ bool ExtensionWebContentsObserver::IsMojoJsEnabled(
   const auto* registry =
       ExtensionMojoBinderRegistryFactory::GetForBrowserContext(
           browser_context_);
-  return registry && registry->IsMojoJsEnabled(extension);
+  return registry && registry->IsMojoJsEnabledForFrame(extension);
 }
 
 bool ExtensionWebContentsObserver::IsJsErrorReportingEnabled(

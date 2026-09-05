@@ -84,6 +84,7 @@ bool RendererExtensionRegistry::Remove(const ExtensionId& id) {
   DCHECK(content::RenderThread::Get());
   base::AutoLock lock(lock_);
   worker_activation_tokens_.erase(id);
+  service_worker_mojo_js_enabled_extensions_.erase(id);
   return extensions_.Remove(id);
 }
 
@@ -151,6 +152,23 @@ RendererExtensionRegistry::GetWorkerActivationToken(
     return std::nullopt;
   }
   return iter->second;
+}
+
+bool RendererExtensionRegistry::IsMojoJsEnabledForServiceWorker(
+    const ExtensionId& extension_id) const {
+  base::AutoLock lock(lock_);
+  return service_worker_mojo_js_enabled_extensions_.contains(extension_id);
+}
+
+void RendererExtensionRegistry::SetMojoJsEnabledForServiceWorker(
+    const ExtensionId& extension_id,
+    bool enabled) {
+  base::AutoLock lock(lock_);
+  if (enabled) {
+    service_worker_mojo_js_enabled_extensions_.insert(extension_id);
+  } else {
+    service_worker_mojo_js_enabled_extensions_.erase(extension_id);
+  }
 }
 
 }  // namespace extensions
