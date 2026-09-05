@@ -1064,8 +1064,8 @@ std::string MediaDrmBridge::GetVersionInternal() {
 }
 
 HdcpVersion MediaDrmBridge::GetCurrentHdcpLevel() {
-  if (security_level_ == SECURITY_LEVEL_SW_SECURE_CRYPTO ||
-      security_level_ == SECURITY_LEVEL_SW_SECURE_DECODE) {
+  // Software DRM (L3) cannot enforce hardware HDCP output protection.
+  if (security_level_ == SECURITY_LEVEL_SW_SECURE_CRYPTO) {
     return HdcpVersion::kHdcpVersionNone;
   }
 

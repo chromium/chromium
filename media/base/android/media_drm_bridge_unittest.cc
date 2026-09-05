@@ -392,7 +392,7 @@ TEST_F(MediaDrmBridgeTest, GetStatusForPolicy_ExternalClearKey) {
   EXPECT_EQ(CdmKeyInformation::KeyStatus::OUTPUT_RESTRICTED, key_status);
 }
 
-TEST_F(MediaDrmBridgeTest, DISABLED_GetStatusForPolicyL3_Widevine) {
+TEST_F(MediaDrmBridgeTest, GetStatusForPolicyL3_Widevine) {
   // Only test this if Widevine is supported. Otherwise
   // CreateWithoutSessionSupport() will return null and it can't be
   // tested.
