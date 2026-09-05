@@ -957,6 +957,39 @@ TEST_F(OmniboxEverywhereUIManagerTest,
           gfx::NativeView(), gfx::Point(400, 50)));
 }
 
+TEST_F(OmniboxEverywhereUIManagerTest,
+       NonDraggableRegionTakesPrecedenceOverSubsequentDraggableRegion) {
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->widget_delegate());
+
+  std::vector<blink::mojom::DraggableRegionPtr> regions;
+
+  // Non-draggable region added before the overlapping draggable region.
+  auto no_drag_region = blink::mojom::DraggableRegion::New();
+  no_drag_region->bounds = gfx::Rect(100, 100, 200, 200);
+  no_drag_region->draggable = false;
+  regions.push_back(std::move(no_drag_region));
+
+  // Large draggable region enclosing the non-draggable region added afterwards.
+  auto drag_region = blink::mojom::DraggableRegion::New();
+  drag_region->bounds = gfx::Rect(0, 0, 800, 600);
+  drag_region->draggable = true;
+  regions.push_back(std::move(drag_region));
+
+  ui_manager->DraggableRegionsChanged(regions, nullptr);
+
+  // Inner non-draggable area should remain non-draggable and receive clicks.
+  EXPECT_TRUE(
+      ui_manager->widget_delegate()->ShouldDescendIntoChildForEventHandling(
+          gfx::NativeView(), gfx::Point(150, 150)));
+
+  // Draggable background area outside should remain draggable.
+  EXPECT_FALSE(
+      ui_manager->widget_delegate()->ShouldDescendIntoChildForEventHandling(
+          gfx::NativeView(), gfx::Point(10, 10)));
+}
+
 TEST_F(OmniboxEverywhereUIManagerTest, EarlyDraggableRegionsChangedPreserved) {
   auto ui_manager = CreateUIManager();
   std::vector<blink::mojom::DraggableRegionPtr> regions;
