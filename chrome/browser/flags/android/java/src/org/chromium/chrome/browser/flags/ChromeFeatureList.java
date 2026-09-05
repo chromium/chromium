@@ -1217,7 +1217,10 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sGlic =
             newCachedFlag(GLIC, true, /* defaultValueInTests= */ true);
     public static final CachedFlag sGlicBackgroundActuation =
-            newCachedFlag(GLIC_BACKGROUND_ACTUATION, false);
+            newCachedFlag(
+                    GLIC_BACKGROUND_ACTUATION,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sGlicBackgroundTriggering =
             newCachedFlag(GLIC_BACKGROUND_TRIGGERING, false);
     public static final CachedFlag sGmscoreBindServiceOptimization =
