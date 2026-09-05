@@ -11,54 +11,26 @@ optimize_ts("education_page_detector") {
 
 source_set("page_classification") {
   sources = [
-    "education_eligibility_vertical.h",
-    "education_eligibility_vertical.mm",
     "education_java_script_feature.h",
     "education_java_script_feature.mm",
-    "optimization_guide_page_classification_service.h",
-    "optimization_guide_page_classification_service.mm",
-    "page_classification_service.h",
-    "page_classification_service_factory.h",
-    "page_classification_service_factory.mm",
   ]
-  public_deps = [ "//components/page_content_annotations/core" ]
   deps = [
     ":education_page_detector",
     "//base",
-    "//components/keyed_service/core",
-    "//components/keyed_service/ios",
-    "//components/optimization_guide/core",
-    "//components/optimization_guide/proto:optimization_guide_proto",
-    "//ios/chrome/browser/optimization_guide/model",
-    "//ios/chrome/browser/shared/model/profile",
-    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
-    "//ios/public/provider/chrome/browser/intelligence:intelligence_api",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
-    "//url",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "education_eligibility_vertical_unittest.mm",
-    "education_java_script_feature_unittest.mm",
-    "optimization_guide_page_classification_service_unittest.mm",
-    "page_classification_service_factory_unittest.mm",
-  ]
+  sources = [ "education_java_script_feature_unittest.mm" ]
   deps = [
     ":page_classification",
     "//base",
     "//base/test:test_support",
-    "//components/keyed_service/core",
-    "//components/optimization_guide/core",
-    "//components/optimization_guide/proto:optimization_guide_proto",
-    "//ios/chrome/browser/optimization_guide/model",
-    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
-    "//url",
   ]
 }

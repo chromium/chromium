@@ -1,4 +1,0 @@
-include_rules = [
-  "+components/page_content_annotations/core",
-  "+ios/chrome/browser/optimization_guide/model",
-]

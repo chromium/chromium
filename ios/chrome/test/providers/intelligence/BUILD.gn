@@ -6,7 +6,6 @@ source_set("intelligence") {
   testonly = true
   sources = [
     "classification_metrics_tab_helper_api.mm",
-    "page_classification_api.mm",
     "page_context_wrapper_api.mm",
   ]
   deps = [
