@@ -126,8 +126,8 @@ const CGFloat kFloatingBottomMargin = 10;
 // TODO(crbug.com/512576285): Confirm offset value with UI.
 // TODO(crbug.com/513881624): Get the actual floaty height separately, if
 // possible, so these constants can just represent the offset.
-const CGFloat kDormantSnackbarOffsetFromFloatyLegacy = 135.0;
-const CGFloat kDormantSnackbarOffsetFromFloatyNext = 117.0;
+const CGFloat kDormantSnackbarOffsetFromFloatyLegacy = 105.0;
+const CGFloat kDormantSnackbarOffsetFromFloatyNext = 97.0;
 
 // Used for forcing fullscreen progress value.
 const CGFloat kFullscreenEnabled = 0.0;
