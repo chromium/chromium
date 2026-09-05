@@ -327,7 +327,7 @@ inline constexpr char kIndigoExtensionId[] = "gcgachbpjjonjloecffgdajegokngglh";
 
 // The extension id of the AIM Eligibility component extension.
 inline constexpr char kAimEligibilityExtensionId[] =
-    "kgjeljgkbckpoekmgjfplammhcggiiaf";
+    "kabpfonokkamggpgbldambnmkliehlbh";
 
 // The extension id of the Contextual Tasks component extension.
 inline constexpr char kContextualTasksExtensionId[] =

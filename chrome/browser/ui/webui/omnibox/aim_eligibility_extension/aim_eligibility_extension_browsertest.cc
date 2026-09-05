@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -302,18 +303,19 @@ IN_PROC_BROWSER_TEST_F(AimEligibilityExtensionBrowserTest,
 
   // Try to fetch the strings.m.js of the AIM eligibility component extension
   // (Extension B).
-  static constexpr char kScript[] = R"(
+  static constexpr char kScriptTemplate[] = R"(
     (async () => {
       try {
-        let response = await fetch('chrome-extension://kgjeljgkbckpoekmgjfplammhcggiiaf/strings.m.js');
+        let response = await fetch('chrome-extension://%s/strings.m.js');
         return response.status.toString();
       } catch (e) {
         return 'failed: ' + e.toString();
       }
     })()
   )";
-
-  std::string result = content::EvalJs(web_contents(), kScript).ExtractString();
+  std::string script = base::StringPrintf(
+      kScriptTemplate, extension_misc::kAimEligibilityExtensionId);
+  std::string result = content::EvalJs(web_contents(), script).ExtractString();
   // Fetch should either fail completely due to CORS/network errors, or return
   // 404.
   EXPECT_TRUE(base::StartsWith(result, "failed:") || result == "404")

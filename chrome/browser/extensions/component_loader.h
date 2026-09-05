@@ -19,6 +19,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "base/version.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -44,6 +45,10 @@ class ExtensionSystem;
 class ComponentLoader : public KeyedService {
  public:
   static ComponentLoader* Get(content::BrowserContext* context);
+
+  // Extracts the extension version from an extension manifest JSON string.
+  static base::Version GetVersionFromManifest(
+      std::string_view manifest_contents);
 
   ComponentLoader(const ComponentLoader&) = delete;
   ComponentLoader& operator=(const ComponentLoader&) = delete;
@@ -160,6 +165,20 @@ class ComponentLoader : public KeyedService {
   friend class TtsApiTest;
   FRIEND_TEST_ALL_PREFIXES(ComponentLoaderTest, ParseManifest);
   FRIEND_TEST_ALL_PREFIXES(ComponentLoaderTest, AddGlicExtension);
+  FRIEND_TEST_ALL_PREFIXES(ComponentLoaderTest,
+                           AddAimEligibilityExtensionLoadsStagedVersionIfNewer);
+  FRIEND_TEST_ALL_PREFIXES(
+      ComponentLoaderTest,
+      AddAimEligibilityExtensionLoadsBundledIfStagedOlderOrEqual);
+  FRIEND_TEST_ALL_PREFIXES(
+      ComponentLoaderTest,
+      AddAimEligibilityExtensionLoadsBundledIfFeatureParamDisabled);
+  FRIEND_TEST_ALL_PREFIXES(
+      ComponentLoaderTest,
+      AddAimEligibilityExtensionLoadsBundledIfStagedManifestCorrupted);
+  FRIEND_TEST_ALL_PREFIXES(
+      ComponentLoaderTest,
+      AddAimEligibilityExtensionLoadsBundledIfStagedVersionMismatch);
 
   // Information about a registered component extension.
   struct ComponentExtensionInfo {

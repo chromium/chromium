@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -21,16 +22,23 @@
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_path_override.h"
 #include "base/values.h"
+#include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/chrome_extension_registrar_delegate.h"
 #include "chrome/browser/extensions/extension_service_user_test_base.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/component_updater/component_updater_paths.h"
+#include "components/omnibox/common/omnibox_features.h"
+#include "components/prefs/pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_registrar.h"
@@ -50,6 +58,28 @@
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
+
+namespace {
+
+std::string CreateAimEligibilityManifest(std::string_view version) {
+  constexpr char kAimEligibilityExtensionKey[] =
+      "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApBqd0NT1c0F+CI4e"
+      "NK09isJoysNY8QZhW7UrqO2XWwOCG5QH8TykzpAHNdM5vDJwSxDg1vO69dZKhjMdyg4e"
+      "MaL4U3qoYAwqobmZilZ/ig/Bzi0XdGKY6rN5xDakWKdR9BkhJlE+xEVqKXd5NoV1gg69s"
+      "4RNRq88GiT+r/GTMxg3lSrIa5u1ROesujmifZbgoyuuLiNE9hr3WVB1OzhWuFkm/mVzoo"
+      "EcNhiqs8UcsAKWgJK65fHMlktmDzW6K+g0WVOHkkgtp7H9w6K5nz3UAM4XyTHSESIZuw9"
+      "D07/BkKr2U+TSPxjSya/goCm7KMjQbuMbaqj5SYQoMFIgOvJr2QIDAQAB";
+  constexpr char kAimEligibilityManifestTemplate[] =
+      R"({
+        "key": "%s",
+        "version": "%s",
+        "manifest_version": 3,
+        "name": "AIM Staged"
+      })";
+  return base::StringPrintf(kAimEligibilityManifestTemplate,
+                            kAimEligibilityExtensionKey, version.data());
+}
+
 class ExtensionUnloadedObserver : public ExtensionRegistryObserver {
  public:
   explicit ExtensionUnloadedObserver(ExtensionRegistry* registry) {
@@ -75,6 +105,8 @@ class ExtensionUnloadedObserver : public ExtensionRegistryObserver {
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       observation_{this};
 };
+
+}  // namespace
 
 // TODO(crbug.com/408458901): Use an extensions test base class once we have
 // one that works on desktop Android.
@@ -463,5 +495,159 @@ TEST_F(ComponentLoaderTest, RemovePendingAdd) {
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(ComponentLoaderTest,
+       AddAimEligibilityExtensionLoadsStagedVersionIfNewer) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kAimEligibilityComponentExtension);
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::ScopedPathOverride path_override(component_updater::DIR_COMPONENT_USER,
+                                         temp_dir.GetPath());
+  base::FilePath version_dir =
+      temp_dir.GetPath()
+          .Append(extension_misc::kAimEligibilityExtensionDirName)
+          .AppendASCII("2.0");
+  ASSERT_TRUE(base::CreateDirectory(version_dir));
+
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+  local_state->SetString(
+      extension_misc::kAimEligibilityExtensionStagedVersionPref, "2.0");
+  local_state->SetString(
+      extension_misc::kAimEligibilityExtensionStagedManifestPref,
+      CreateAimEligibilityManifest("2.0"));
+
+  component_loader_->AddAimEligibilityExtension();
+  component_loader_->LoadAll();
+
+  ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
+  const Extension* extension = registry->enabled_extensions().GetByID(
+      extension_misc::kAimEligibilityExtensionId);
+  ASSERT_TRUE(extension);
+  EXPECT_EQ(extension->version(), base::Version("2.0"));
+  EXPECT_EQ(extension->name(), "AIM Staged");
+}
+
+TEST_F(ComponentLoaderTest,
+       AddAimEligibilityExtensionLoadsBundledIfStagedOlderOrEqual) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kAimEligibilityComponentExtension);
+
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+  // Staged version 1.0 is <= bundled 1.0.
+  local_state->SetString(
+      extension_misc::kAimEligibilityExtensionStagedVersionPref, "1.0");
+  local_state->SetString(
+      extension_misc::kAimEligibilityExtensionStagedManifestPref,
+      CreateAimEligibilityManifest("1.0"));
+
+  component_loader_->AddAimEligibilityExtension();
+  component_loader_->LoadAll();
+
+  ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
+  const Extension* extension = registry->enabled_extensions().GetByID(
+      extension_misc::kAimEligibilityExtensionId);
+  ASSERT_TRUE(extension);
+  EXPECT_EQ(extension->version(), base::Version("1.0"));
+  EXPECT_EQ(extension->name(), "AIM Eligibility Component Extension");
+}
+
+TEST_F(ComponentLoaderTest,
+       AddAimEligibilityExtensionLoadsBundledIfFeatureParamDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{omnibox::kAimEligibilityComponentExtension,
+        {{"use_component_updater", "false"}}}},
+      {});
+
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+  // Staged version 2.0 exists in prefs, but use_component_updater is false.
+  local_state->SetString(
+      extension_misc::kAimEligibilityExtensionStagedVersionPref, "2.0");
+  local_state->SetString(
+      extension_misc::kAimEligibilityExtensionStagedManifestPref,
+      CreateAimEligibilityManifest("2.0"));
+
+  component_loader_->AddAimEligibilityExtension();
+  component_loader_->LoadAll();
+
+  ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
+  const Extension* extension = registry->enabled_extensions().GetByID(
+      extension_misc::kAimEligibilityExtensionId);
+  ASSERT_TRUE(extension);
+  EXPECT_EQ(extension->version(), base::Version("1.0"));
+  EXPECT_EQ(extension->name(), "AIM Eligibility Component Extension");
+}
+
+TEST_F(ComponentLoaderTest,
+       AddAimEligibilityExtensionLoadsBundledIfStagedManifestCorrupted) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kAimEligibilityComponentExtension);
+
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+  // Staged version 2.0 exists in prefs, but manifest is invalid/corrupted JSON.
+  local_state->SetString(
+      extension_misc::kAimEligibilityExtensionStagedVersionPref, "2.0");
+  local_state->SetString(
+      extension_misc::kAimEligibilityExtensionStagedManifestPref,
+      "invalid-corrupted-json");
+
+  component_loader_->AddAimEligibilityExtension();
+  component_loader_->LoadAll();
+
+  ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
+  const Extension* extension = registry->enabled_extensions().GetByID(
+      extension_misc::kAimEligibilityExtensionId);
+  ASSERT_TRUE(extension);
+  EXPECT_EQ(extension->version(), base::Version("1.0"));
+  EXPECT_EQ(extension->name(), "AIM Eligibility Component Extension");
+  EXPECT_TRUE(
+      local_state
+          ->GetString(extension_misc::kAimEligibilityExtensionStagedVersionPref)
+          .empty());
+  EXPECT_TRUE(
+      local_state
+          ->GetString(
+              extension_misc::kAimEligibilityExtensionStagedManifestPref)
+          .empty());
+}
+
+TEST_F(ComponentLoaderTest,
+       AddAimEligibilityExtensionLoadsBundledIfStagedVersionMismatch) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      omnibox::kAimEligibilityComponentExtension);
+
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+  // Staged version pref says 2.0, but manifest version says 1.5.
+  local_state->SetString(
+      extension_misc::kAimEligibilityExtensionStagedVersionPref, "2.0");
+  local_state->SetString(
+      extension_misc::kAimEligibilityExtensionStagedManifestPref,
+      CreateAimEligibilityManifest("1.5"));
+
+  component_loader_->AddAimEligibilityExtension();
+  component_loader_->LoadAll();
+
+  ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
+  const Extension* extension = registry->enabled_extensions().GetByID(
+      extension_misc::kAimEligibilityExtensionId);
+  ASSERT_TRUE(extension);
+  EXPECT_EQ(extension->version(), base::Version("1.0"));
+  EXPECT_EQ(extension->name(), "AIM Eligibility Component Extension");
+  EXPECT_TRUE(
+      local_state
+          ->GetString(extension_misc::kAimEligibilityExtensionStagedVersionPref)
+          .empty());
+  EXPECT_TRUE(
+      local_state
+          ->GetString(
+              extension_misc::kAimEligibilityExtensionStagedManifestPref)
+          .empty());
+}
 
 }  // namespace extensions

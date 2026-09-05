@@ -51,8 +51,13 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "device/vr/buildflags/buildflags.h"
+#include "extensions/buildflags/buildflags.h"
 #include "third_party/widevine/cdm/buildflags.h"
 #include "ui/accessibility/accessibility_features.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/component_updater/aim_eligibility_component_installer.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "chrome/browser/component_updater/recovery_improved_component_installer.h"
@@ -242,6 +247,9 @@ void RegisterComponentsForUpdate() {
     if (!history_embeddings::IsHistoryEmbeddingsFeatureEnabled()) {
       DeleteHistorySearchStringsComponent(path);
     }
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+    ManageAimEligibilityComponentRegistration(cus);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     base::ThreadPool::PostTask(
         FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
         base::BindOnce(&DeleteOldComponents, path));

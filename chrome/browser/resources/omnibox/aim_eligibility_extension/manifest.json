@@ -2,7 +2,7 @@
   "name": "AIM Eligibility Component Extension",
   "version": "1.0",
   "manifest_version": 3,
-  "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDAv7LaUkPmrLmT9bbz0Zz6u7+FGmGo9xUfGlNEy4krUinwAIugLc+WqU/wQqhTsS26fgsnKk6WbsabcMtq8pDhanJgygcsXrs9nG1B2FO3VhEKRqCs+zrpl7vm6AzBMW1sHGCDkisSZt99QXoHjd99UzeJMnRVISMSxoG+B1I2EQIDAQAB",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApBqd0NT1c0F+CI4eNK09isJoysNY8QZhW7UrqO2XWwOCG5QH8TykzpAHNdM5vDJwSxDg1vO69dZKhjMdyg4eMaL4U3qoYAwqobmZilZ/ig/Bzi0XdGKY6rN5xDakWKdR9BkhJlE+xEVqKXd5NoV1gg69s4RNRq88GiT+r/GTMxg3lSrIa5u1ROesujmifZbgoyuuLiNE9hr3WVB1OzhWuFkm/mVzooEcNhiqs8UcsAKWgJK65fHMlktmDzW6K+g0WVOHkkgtp7H9w6K5nz3UAM4XyTHSESIZuw9D07/BkKr2U+TSPxjSya/goCm7KMjQbuMbaqj5SYQoMFIgOvJr2QIDAQAB",
   "host_permissions": [
     "chrome://resources/*",
     "chrome://theme/*"

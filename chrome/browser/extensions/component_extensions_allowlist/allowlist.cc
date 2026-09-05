@@ -36,6 +36,7 @@ namespace extensions {
 
 bool IsComponentExtensionAllowlisted(const std::string& extension_id) {
   constexpr auto kAllowed = base::MakeFixedFlatSet<std::string_view>({
+      extension_misc::kAimEligibilityExtensionId,
       extension_misc::kContextualTasksExtensionId,
       extension_misc::kGlicExtensionId,
       extension_misc::kInAppPaymentsSupportAppId,
@@ -61,7 +62,6 @@ bool IsComponentExtensionAllowlisted(const std::string& extension_id) {
       extension_misc::kComponentUpdaterTTSEngineExtensionId,
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #if !BUILDFLAG(IS_ANDROID)
-      extension_misc::kAimEligibilityExtensionId,
       extension_misc::kIndigoExtensionId,
       extension_misc::kDictationConnectorExtensionId,
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -173,6 +173,8 @@ BASE_FEATURE(kRichAutocompletion, "OmniboxRichAutocompletion", ENABLED);
 
 // Enables the AIM eligibility diagnostic component extension.
 BASE_FEATURE(kAimEligibilityComponentExtension, DISABLED);
+const base::FeatureParam<bool> kAimEligibilityUseComponentUpdater{
+    &kAimEligibilityComponentExtension, "use_component_updater", true};
 
 // Whether the aim button should dynamically change to portray the submission
 // type.

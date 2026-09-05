@@ -10,9 +10,14 @@
 #include "chrome/browser/component_updater/wasm_tts_engine_component_installer.h"
 #include "chrome/common/buildflags.h"
 #include "components/component_updater/component_updater_service.h"
+#include "extensions/buildflags/buildflags.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/component_updater/soda_component_installer.h"
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/component_updater/aim_eligibility_component_installer.h"
 #endif
 
 namespace component_updater {
@@ -21,6 +26,9 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
   RegisterComponentUpdateServicePrefs(registry);
   PlatformRuntimeComponentInstallerPolicy::RegisterPrefs(registry);
   WasmTtsEngineComponentInstallerPolicy::RegisterPrefs(registry);
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  AimEligibilityComponentInstallerPolicy::RegisterPrefs(registry);
+#endif
 }
 
 }  // namespace component_updater

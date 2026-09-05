@@ -60,7 +60,7 @@ build_webui("build") {
 
   optimize = optimize_webui
   if (optimize) {
-    optimize_webui_host = "chrome-extension://kgjeljgkbckpoekmgjfplammhcggiiaf"
+    optimize_webui_host = "chrome-extension://kabpfonokkamggpgbldambnmkliehlbh"
     optimize_webui_in_files = [ "app.js" ]
   }
 }
