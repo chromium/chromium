@@ -460,7 +460,7 @@ void ToolbarView::Init() {
     if (!vts_controller || !vts_controller->ShouldDisplayVerticalTabs()) {
       button->SetProperty(views::kMarginsKey, gfx::Insets());
     }
-    AddChildViewAt(std::move(button), 0);
+    contextual_tasks_button_ = AddChildViewAt(std::move(button), 0);
   }
 
   if (location_bar_view) {
@@ -1669,11 +1669,14 @@ void ToolbarView::LayoutCommon() {
   gfx::Insets interior_margin =
       GetLayoutInsets(LayoutInset::TOOLBAR_INTERIOR_MARGIN);
 
-  auto* vts_controller = tabs::VerticalTabStripStateController::From(browser_);
-  if (contextual_tasks::IsContextualTasksUIEnabled() &&
-      (contextual_tasks::kShowEntryPoint.Get() ==
-       contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) &&
-      (!vts_controller || !vts_controller->ShouldDisplayVerticalTabs())) {
+  // Only zero out the leading interior margin if the contextual tasks button
+  // is actually visible and not in vertical tabs mode (where the button does
+  // not sit flush at the window edge). When the button is hidden, we must
+  // retain the default interior margin so that the Back button is not
+  // incorrectly shifted to the toolbar's edge. Layout is in logical /
+  // RTL-relative DIPs where `left()` is the leading edge.
+  if (contextual_tasks_button_ && contextual_tasks_button_->GetVisible() &&
+      !should_display_vertical_tabs_) {
     interior_margin.set_left(0);
   }
 
@@ -1692,6 +1695,13 @@ void ToolbarView::LayoutCommon() {
   if (avatar_) {
     SetRefreshMargins(avatar_, avatar_->IsLabelPresentAndVisible());
   }
+
+  // Record whether there is leading interior margin available before zeroing it
+  // out for WebUI toolbar below. If a leading button (such as the ephemeral
+  // contextual tasks button) sits flush at the container edge, the leading
+  // interior margin is zero and subsequent buttons (like the Back button) must
+  // not extend their hit target for Fitts' law.
+  const int leading_interior_margin = interior_margin.left();
 
   const bool is_rtl = base::i18n::IsRTL();
 
@@ -1730,11 +1740,23 @@ void ToolbarView::LayoutCommon() {
       browser_->GetWindow() && (browser_->GetWindow()->IsMaximized() ||
                                 browser_->GetWindow()->IsFullscreen());
 
+  const int margin = is_maximized_or_fullscreen ? leading_interior_margin : 0;
+
   if (features::IsWebUIBackForwardButtonEnabled()) {
-    toolbar_webview_->SetIsMaximizedOrFullscreen(is_maximized_or_fullscreen);
+    if (toolbar_webview_) {
+      // `SetIsMaximizedOrFullscreen` signals the WebUI back/forward buttons
+      // whether to apply Fitts' law edge padding. When a leading button
+      // (e.g. contextual tasks) sits flush against the window edge, the
+      // available margin is 0, so Fitts' law padding must be suppressed even
+      // if the window itself is maximized or fullscreen.
+      const bool should_apply_webui_fitts_law = margin > 0;
+      toolbar_webview_->SetIsMaximizedOrFullscreen(
+          should_apply_webui_fitts_law);
+    }
   } else {
-    const int margin = is_maximized_or_fullscreen ? interior_margin.left() : 0;
-    back_->SetLeadingMargin(margin);
+    if (back_) {
+      back_->SetLeadingMargin(margin);
+    }
   }
 
   GetAppMenuControl()->SetIsMaximizedOrFullscreen(is_maximized_or_fullscreen);
