@@ -8,21 +8,24 @@ export function getHtml(this: DummyTestElement) {
   return html`<!--_html_template_start_-->
 <div id="container">
   <cr-icon ?hidden="${!this.someCondition}"
-      icon="${this.someOtherConditionProperty ? 'my-dummy-icons:hello' :
-                                        'my-dummy-icons:world'}"
+      icon="${
+          this.someOtherConditionProperty ? 'my-dummy-icons:hello' :
+                                            'my-dummy-icons:world'}"
       alt="" title="hello world">
   </cr-icon>
   <button
-      ?hidden="${this.someLongHiddenCondition && this.myCoolFeature &&
-          !this.someOtherConditionThatIsLong}"
+      ?hidden="${
+          this.someLongHiddenCondition && this.myCoolFeature &&
+              !this.someOtherConditionThatIsLong}"
       @some-very-very-long-event-name="${
           this.onMyButtonWithExtraTextSomeVeryVeryLongEventName}">
     Click Me!
   </button>
   <select>
     <option value="${this.someConfigObject.someSelectedOptionValue}"
-        ?selected="${this.isSomeOptionSelected_(
-            this.someConfigObject.someSelectedOptionValue)}">
+        ?selected="${
+            this.isSomeOptionSelected_(
+                this.someConfigObject.someSelectedOptionValue)}">
       Some Option
     </option>
   </select>

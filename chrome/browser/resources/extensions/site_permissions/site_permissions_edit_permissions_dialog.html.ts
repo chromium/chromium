@@ -52,23 +52,27 @@ export function getHtml(this: SitePermissionsEditPermissionsDialogElement) {
                 ?disabled="${item.addedByPolicy}"
                 @change="${this.onHostAccessChange_}" data-index="${index}">
               <option value="${chrome.developerPrivate.HostAccess.ON_CLICK}"
-                  .selected="${this.isSelected_(
-                      item.id, item.siteAccess,
-                      chrome.developerPrivate.HostAccess.ON_CLICK)}">
+                  .selected="${
+                      this.isSelected_(
+                          item.id, item.siteAccess,
+                          chrome.developerPrivate.HostAccess.ON_CLICK)}">
                 $i18n{sitePermissionsAskOnEveryVisit}
               </option>
               <option
                   value="${
                       chrome.developerPrivate.HostAccess.ON_SPECIFIC_SITES}"
-                  .selected="${this.isSelected_(
-                      item.id, item.siteAccess,
-                      chrome.developerPrivate.HostAccess.ON_SPECIFIC_SITES)}">
+                  .selected="${
+                      this.isSelected_(
+                          item.id, item.siteAccess,
+                          chrome.developerPrivate.HostAccess
+                              .ON_SPECIFIC_SITES)}">
                 $i18n{sitePermissionsAlwaysOnThisSite}
               </option>
               <option value="${chrome.developerPrivate.HostAccess.ON_ALL_SITES}"
-                  .selected="${this.isSelected_(
-                      item.id, item.siteAccess,
-                      chrome.developerPrivate.HostAccess.ON_ALL_SITES)}"
+                  .selected="${
+                      this.isSelected_(
+                          item.id, item.siteAccess,
+                          chrome.developerPrivate.HostAccess.ON_ALL_SITES)}"
                   ?disabled="${!item.canRequestAllSites}">
                 $i18n{sitePermissionsAlwaysOnAllSites}
               </option>

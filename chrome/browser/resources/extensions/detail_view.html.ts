@@ -31,9 +31,10 @@ this text can be found by Ctrl + F because it isn't hidden. -->
       ${this.showAccountUploadButton_() ? html`
         <cr-icon-button id="account-upload-button" class="no-overlap"
             title="$i18n{itemUpload}" aria-label="$i18n{itemUpload}"
-            iron-icon="${this.webuiRoundedIconsEnabled_ ?
-                'extensions-icons:cloud-upload' :
-                'extensions-icons:extension_cloud_upload-old'}"
+            iron-icon="${
+                this.webuiRoundedIconsEnabled_ ?
+                    'extensions-icons:cloud-upload' :
+                    'extensions-icons:extension_cloud_upload-old'}"
             aria-describedby="a11yAssociation" @click="${this.onUploadClick_}">
         </cr-icon-button>
       ` : ''}
@@ -48,9 +49,10 @@ this text can be found by Ctrl + F because it isn't hidden. -->
     ${this.showSafetyCheck_ ? html`
       <div id="safetyCheckWarningContainer" class="message-container">
         <cr-icon aria-hidden="true"
-            icon="${this.webuiRoundedIconsEnabled_ ?
-                'extensions-icons:chrome-extension' :
-                'extensions-icons:my_extensions-old'}"
+            icon="${
+                this.webuiRoundedIconsEnabled_ ?
+                    'extensions-icons:chrome-extension' :
+                    'extensions-icons:my_extensions-old'}"
             class="message-icon">
         </cr-icon>
         <div class="message-text">
@@ -197,9 +199,10 @@ this text can be found by Ctrl + F because it isn't hidden. -->
     ${this.showAllowlistWarning_() ? html`
       <div id="allowlist-warning" class="cr-row continuation">
         <cr-icon class="warning-icon"
-            icon="${this.webuiRoundedIconsEnabled_ ?
-                'extensions-icons:android-security-privacy-alert' :
-                'extensions-icons:safebrowsing_warning-old'}">
+            icon="${
+                this.webuiRoundedIconsEnabled_ ?
+                    'extensions-icons:android-security-privacy-alert' :
+                    'extensions-icons:safebrowsing_warning-old'}">
         </cr-icon>
         <span class="cr-secondary-text">
           $i18n{itemAllowlistWarning}

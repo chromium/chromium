@@ -82,8 +82,9 @@ export function getHtml(this: DownloadsItemElement) {
       <!-- Menu and/or quick action(s). -->
       <div id="action-icon-buttons">
         <cr-icon-button id="copy-download-link"
-            iron-icon="${this.webuiRoundedIconsEnabled_ ? 'downloads:link' :
-                                             'downloads:link-old'}"
+            iron-icon="${
+                this.webuiRoundedIconsEnabled_ ? 'downloads:link' :
+                                                 'downloads:link-old'}"
             ?hidden="${!this.computeShowCopyDownloadLink_()}"
             title="$i18n{controlCopyDownloadLink}"
             aria-label="$i18n{controlCopyDownloadLink}"

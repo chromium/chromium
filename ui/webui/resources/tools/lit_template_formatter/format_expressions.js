@@ -44,14 +44,14 @@ const ExpressionConfig = {
     wrap: (code) => code + '` : \'\'',
     restore: (formatted) => formatted.replace(/\s*`\s*:\s*['"]['"]\s*$/, ''),
     prependToFinal: '${',
-    columnLimitAdjustment: 3,
+    columnLimitAdjustment: -2,
   },
   [ExpressionType.ARROW]: {
     unwrap: (code) => code.substring(2),
     wrap: (code) => code + '`)',
     restore: (formatted) => formatted.replace(/\s*`\s*\)\s*$/, ''),
     prependToFinal: '${',
-    columnLimitAdjustment: 0,
+    columnLimitAdjustment: -2,
   },
   [ExpressionType.TERNARY_FALSE]: {
     unwrap: (code) => code,
@@ -120,7 +120,8 @@ export async function formatTsExpressions(
 
     const config = ExpressionConfig[type];
     let codeToFormat = config.wrap(config.unwrap(code));
-    codeToFormat = codeToFormat.trim();
+    codeToFormat =
+        codeToFormat.trim().split('\n').map(l => l.trim()).join('\n');
 
     const limit = computeColumnLimit(value, type);
 
@@ -144,14 +145,18 @@ export async function formatTsExpressions(
     let baseIndent =
         (value.indent || 0) + (value.attrName ? WRAPPED_LINE_INDENT_SIZE : 0);
     // For attributes (e.g. attr="${expr}"), the opening line has the attribute
-    // name, '="' (2 chars), and the closing '"' (1 char). Subtract the
-    // additional characters beyond what columnLimitAdjustment (-3 for '${' and
-    // '}') already accounts for to check if the first line fits with the
-    // attribute name. If not, put the expression on a new line after "${".
+    // name, '="' (2 chars), the closing '"' (1 char), and potentially the
+    // closing '>' (1 char) on the tag. Subtract the additional characters
+    // beyond what columnLimitAdjustment (-3 for '${' and '}') already accounts
+    // for to check if the first line fits with the attribute name. If not, put
+    // the expression on a new line after "${". Note: this will be slightly
+    // conservative for cases where ">" does not occur on the first line, but
+    // line breaks have not been determined at this point.
     const firstLineLimit =
-        value.attrName ? limit - (value.attrName.length + 3) : limit;
+        value.attrName ? limit - (value.attrName.length + 4) : limit;
     if (value.attrName &&
-        formattedCode.split('\n')[0].length > firstLineLimit) {
+        (formattedCode.includes('\n') ||
+         formattedCode.length > firstLineLimit)) {
       baseIndent += WRAPPED_LINE_INDENT_SIZE;
       const newLimit = 80 - baseIndent + config.columnLimitAdjustment;
       if (newLimit !== limit) {

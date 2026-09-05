@@ -5,11 +5,13 @@
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 export function getHtml(this: DummyTestElement) {
-  // clang-format off
-  return html`
-<dummy-button id="${this.buttonId}" class="${this.buttonClass}"
-    aria-label="${this.buttonLabel}" @click="${this.onClick}">
-  ${this.buttonText}
-</dummy-button>`;
-  // clang-format on
+  return html`<!--_html_template_start_-->
+<div>
+  <div>
+    ${this.isFirstVeryLongConditionActive() && this.isSecondVeryLongConditionActive() ? html`
+      <div>Sample content</div>
+    ` : ''}
+  </div>
+</div>
+<!--_html_template_end_-->`;
 }

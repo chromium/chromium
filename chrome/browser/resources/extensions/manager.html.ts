@@ -118,7 +118,7 @@ ${this.showLoadErrorDialog_ ? html`
   <extensions-load-error id="load-error" .delegate="${this.delegate}"
       @close="${this.onLoadErrorDialogClose_}">
   </extensions-load-error>
-`: ''}
+` : ''}
 ${this.showInstallWarningsDialog_ ? html`
   <extensions-install-warnings-dialog
       @close="${this.onInstallWarningsDialogClose_}"

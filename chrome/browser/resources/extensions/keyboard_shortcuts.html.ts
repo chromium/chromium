@@ -24,12 +24,14 @@ export function getHtml(this: KeyboardShortcutsElement) {
                 $i18n{shortcutInputLabel}
               </span>
               <cr-shortcut-input .shortcut="${command.keybinding}"
-                  input-aria-label="${this.i18n(
-                      'editShortcutInputLabel', command.description,
-                      item.name)}"
-                  edit-button-aria-label="${this.i18n(
-                      'editShortcutButtonLabel', command.description,
-                      item.name)}"
+                  input-aria-label="${
+                      this.i18n(
+                          'editShortcutInputLabel', command.description,
+                          item.name)}"
+                  edit-button-aria-label="${
+                      this.i18n(
+                          'editShortcutButtonLabel', command.description,
+                          item.name)}"
                   .inputDisabled="${this.computeInputDisabled_(item, command)}"
                   @input-capture-change="${this.onInputCaptureChange_}"
                   @shortcut-updated="${

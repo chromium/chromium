@@ -157,10 +157,16 @@ class LitTemplateFormatterTest(unittest.TestCase):
       "test_single_line_template.html.ts", "test_single_line_template.html.ts"
     )
 
-  def testMultilineTagWithTextChild(self):
+  def testTernaryColumnLimitWrap(self):
     self._run_test(
-      "test_multiline_tag_with_text_child.html.ts",
-      "test_multiline_tag_with_text_child.html.ts",
+      "test_ternary_column_limit.html.ts",
+      "test_ternary_column_limit.html.ts",
+    )
+
+  def testLineLengthWrapping(self):
+    self._run_test(
+      "test_line_length_wrapping.html.ts",
+      "test_line_length_wrapping.html.ts",
     )
 
   def testDryRunModeFormatted(self):

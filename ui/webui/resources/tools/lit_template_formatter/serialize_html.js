@@ -73,26 +73,67 @@ function sortResolvedAttributes(resolvedAttrs) {
   });
 }
 
-function analyzeChildNodes(node, placeholderMap) {
+/**
+ * Analyzes the child nodes of an element to determine:
+ * 1. Whether it contains any non-text/comment child elements (hasChildElement).
+ * 2. The length of any inline content (text plus closing tag) that will appear
+ *    on the same line as the opening tag (inlineChildLength).
+ *
+ * For single-line elements with text children (e.g. `<span
+ * class="...">*</span>`), the text and closing tag remain inline on the opening
+ * tag's line. In this case, `inlineChildLength` accounts for both the text
+ * content and closing tag length so attribute wrapping can respect the
+ * 80-character limit.
+ *
+ * For elements whose text content spans multiple lines, or elements with child
+ * elements, the children and closing tag will be placed on separate lines, so
+ * no trailing child content is attached to the opening tag's line (length is
+ * 0).
+ *
+ * @param {Object} node The AST node whose children to analyze.
+ * @param {string} tagName The tag name of the element.
+ * @param {Map<string, Object>} placeholderMap Map of placeholders to code.
+ * @return {{hasChildElement: boolean, inlineChildLength: number}}
+ */
+function analyzeChildNodes(node, tagName, placeholderMap) {
   let firstLineLength = 0;
   let hasChildElement = false;
-  let newline = -1;
+  let hasNonWhitespaceText = false;
+  let hasNewline = false;
   for (const child of node.childNodes) {
     if (child.nodeName !== '#text' && child.nodeName !== '#comment') {
       hasChildElement = true;
       break;
     }
-    if (newline !== -1) {
+
+    if (hasNewline) {
       continue;
     }
 
     const content = child.nodeName === '#text' ?
         resolvePlaceholders(child.value, placeholderMap) :
         `<!--${child.data}-->`;
-    newline = content.indexOf('\n');
-    firstLineLength += newline === -1 ? content.length : newline;
+    if (content.trim() !== '') {
+      hasNonWhitespaceText = true;
+    }
+    const newlineIdx = content.indexOf('\n');
+    hasNewline = newlineIdx !== -1;
+    firstLineLength += hasNewline ? newlineIdx : content.length;
   }
-  return {hasChildElement, firstLineLength};
+
+  // If the element has non-whitespace text on a single line with no child
+  // elements, the text and closing tag stay on the same line as the opening
+  // tag. Account for both the text length and the closing tag length.
+  let inlineChildLength = 0;
+  if (!hasChildElement && hasNonWhitespaceText && !hasNewline &&
+      !VOID_ELEMENTS.includes(tagName)) {
+    const closingPlaceholder = '/' + tagName;
+    const endTagLen = placeholderMap.get(closingPlaceholder)?.code.length ??
+        (tagName.length + 3);
+    inlineChildLength = firstLineLength + endTagLen;
+  }
+
+  return {hasChildElement, inlineChildLength};
 }
 
 /**
@@ -101,15 +142,15 @@ function analyzeChildNodes(node, placeholderMap) {
  * @param {Array<Object>} attrs The attributes of the element.
  * @param {number} depth The current nesting depth.
  * @param {Map<string, Object>} placeholderMap The placeholder map.
- * @param {number} childLen The length of the child content that needs to be
- *     placed onto the last line with the closing tag.
+ * @param {number} inlineChildLength The length of any inline child text and
+ *     closing tag that will be placed onto the same line as the opening tag.
  * @param {Object} sourceCodeLocation The source code location info from parse5.
  * @param {boolean} [sortAttributes] Whether to sort attributes.
  * @return {string} The formatted attributes joined with the tag.
  */
 function formatAttributes(
-    tagName, attrs, depth, placeholderMap, childLen, sourceCodeLocation,
-    sortAttributes = false) {
+    tagName, attrs, depth, placeholderMap, inlineChildLength,
+    sourceCodeLocation, sortAttributes = false) {
   const elementIndentStr =
       ' '.repeat(getDepthForTagName(tagName, depth - 1) * INDENT_SIZE);
   const resolvedAttrs = attrs.map(attr => {
@@ -135,7 +176,7 @@ function formatAttributes(
   const fullTag = `<${tagName}${resolvedAttrs.join('')}>`;
 
   // Handle tags that fit on one line first
-  if ((elementIndentStr.length + fullTag.length + childLen) <=
+  if ((elementIndentStr.length + fullTag.length + inlineChildLength) <=
       LINE_LENGTH_LIMIT) {
     return fullTag;
   }
@@ -156,10 +197,18 @@ function formatAttributes(
 
     const currentIndent =
         lines.length === 0 ? elementIndentStr.length : attrIndentStr.length;
-    const extraLen = (i === resolvedAttrs.length - 1) ? childLen + 1 : 0;
+    const extraLen =
+        (i === resolvedAttrs.length - 1) ? inlineChildLength + 1 : 0;
     const exceedsLimit = (currentIndent + currentLine.length +
                           firstLine.length + extraLen) > LINE_LENGTH_LIMIT;
-    const isMultiline = attrLines.length > 1;
+    // For pure expressions that wrapped onto a newline after '${', if they
+    // appear on lines 2..N, the attribute is already at the wrapped indent
+    // level so we don't need a newline before the attribute name. On line 1,
+    // force it to a new line to avoid an awkward +8 indent jump from the tag.
+    const isPureWrappedExpr = attrLines[0].endsWith('"${');
+    const isMultiline = lines.length === 0 ?
+        attrLines.length > 1 :
+        attrLines.length > 1 && !isPureWrappedExpr;
 
     if (currentLine !== '' && (isMultiline || exceedsLimit)) {
       // The first line of the attribute doesn't fit, so push the current line
@@ -210,7 +259,10 @@ export function serializeNode(
   }
 
   if (node.nodeName === '#text') {
-    return resolvePlaceholders(node.value, placeholderMap);
+    // Re-escape '<' and '>' which parse5 unescapes into raw characters when
+    // parsing HTML text nodes.
+    const text = node.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+    return resolvePlaceholders(text, placeholderMap);
   }
 
   if (node.nodeName === '#comment') {
@@ -242,9 +294,9 @@ export function serializeNode(
   // Avoid adding extra newlines between the opening and closing tag if
   // the element contains only text and/or comment node children. To do
   // the best possible job respecting 80 chars in such cases, also get the
-  // length of the first line of child contents to account for when wrapping.
-  const {hasChildElement, firstLineLength} =
-      analyzeChildNodes(node, placeholderMap);
+  // length of any inline child contents to account for when wrapping.
+  const {hasChildElement, inlineChildLength} =
+      analyzeChildNodes(node, tagName, placeholderMap);
 
   // Resolve opening tag placeholders if they exist
   let startTag = '';
@@ -254,7 +306,7 @@ export function serializeNode(
     startTag = `<${tagName}>`;
   } else {
     startTag = formatAttributes(
-        tagName, node.attrs, depth, placeholderMap, firstLineLength,
+        tagName, node.attrs, depth, placeholderMap, inlineChildLength,
         node.sourceCodeLocation, sortAttributes);
   }
 
@@ -312,15 +364,14 @@ export function serializeNode(
   // characters).
   // For templates (e.g. html`...`), wrap non-empty template contents across
   // lines if the template exceeds 80 characters, but keep empty templates
-  // (html``) on a single line. For regular HTML elements, wrap if the opening
-  // tag is multiline, or if the full element exceeds 80 characters and has
-  // child elements or is empty.
+  // (html``) on a single line. For regular HTML elements, only wrap if there
+  // are child elements or if the element is empty.
   const tagIsMultiline = startTag.includes('\n');
   const exceedsLineLimit = fullLength > LINE_LENGTH_LIMIT;
   const shouldWrap = isTemplateNode ?
       childrenHtml.trim() !== '' && (tagIsMultiline || exceedsLineLimit) :
-      tagIsMultiline ||
-          (exceedsLineLimit && (hasChildElement || childrenHtml.trim() === ''));
+      (tagIsMultiline || exceedsLineLimit) &&
+          (hasChildElement || childrenHtml.trim() === '');
 
   if (shouldWrap) {
     if (lastChildSuppressesWhitespace) {
@@ -333,9 +384,6 @@ export function serializeNode(
     // and indent if they're not already on one.
     if (!childrenHtml.startsWith('\n') && childrenHtml.trim() !== '') {
       if (firstChildSuppressesWhitespace) {
-        if (!/\n\s*$/.test(childrenHtml)) {
-          return `${startTag}${childrenHtml}${endTag}`;
-        }
         return `${startTag}${childrenHtml.trimEnd()}${endTagIndent}${endTag}`;
       }
       const childIndentSize = nextDepth > 0 ? (nextDepth - 1) * INDENT_SIZE : 0;
