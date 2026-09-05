@@ -65,9 +65,9 @@ AudioWorkletNode::AudioWorkletNode(
     param_handler_map.Set(param_name, WrapRefCounted(&audio_param->Handler()));
 
     if (options->hasParameterData()) {
-      for (const auto& key_value_pair : options->parameterData()) {
-        if (key_value_pair.first == param_name) {
-          audio_param->setValue(key_value_pair.second);
+      for (const auto& [param, val] : options->parameterData()) {
+        if (param == param_name) {
+          audio_param->setValue(val);
         }
       }
     }

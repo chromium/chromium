@@ -474,8 +474,7 @@ void AudioOutputResampler::StopStreamInternal(
     const CallbackMap::value_type& item) {
   DCHECK(audio_manager()->GetTaskRunner()->BelongsToCurrentThread());
   DCHECK(dispatcher_);
-  AudioOutputProxy* stream_proxy = item.first;
-  OnMoreDataConverter* callback = item.second.get();
+  const auto& [stream_proxy, callback] = item;
   DCHECK(callback->started());
 
   // Stop the underlying physical stream.

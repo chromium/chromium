@@ -30,10 +30,8 @@ void AudioDebugRecordingManager::EnableDebugRecording(
   DCHECK(!create_file_callback.is_null());
   create_file_callback_ = std::move(create_file_callback);
 
-  for (const auto& it : debug_recording_helpers_) {
-    uint32_t id = it.first;
-    AudioDebugRecordingHelper* recording_helper = it.second.first;
-    AudioDebugRecordingStreamType stream_type = it.second.second;
+  for (const auto& [id, helper_stream_type] : debug_recording_helpers_) {
+    const auto& [recording_helper, stream_type] = helper_stream_type;
     recording_helper->EnableDebugRecording(stream_type, id,
                                            create_file_callback_);
   }
@@ -42,8 +40,8 @@ void AudioDebugRecordingManager::EnableDebugRecording(
 void AudioDebugRecordingManager::DisableDebugRecording() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!create_file_callback_.is_null());
-  for (const auto& it : debug_recording_helpers_) {
-    AudioDebugRecordingHelper* recording_helper = it.second.first;
+  for (const auto& [_, helper_stream_type] : debug_recording_helpers_) {
+    AudioDebugRecordingHelper* recording_helper = helper_stream_type.first;
     recording_helper->DisableDebugRecording();
   }
   create_file_callback_.Reset();

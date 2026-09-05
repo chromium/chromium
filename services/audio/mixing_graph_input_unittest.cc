@@ -406,10 +406,7 @@ TEST_F(MixingGraphInputTest, InvalidInput) {
       {std::numeric_limits<float>::quiet_NaN(), 0.0f},   // NaN.
       {std::numeric_limits<float>::signaling_NaN(), 0.0f},  // NaN.
   }};
-  for (const auto& test_pair : test_values) {
-    float input_value = test_pair.first;
-    float expected_output_value = test_pair.second;
-
+  for (const auto& [input_value, expected_output_value] : test_values) {
     auto input = mixing_graph_->CreateInput(output_params_);
     ConstantInput source_callback(input_value);
     input->Start(&source_callback);

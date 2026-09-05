@@ -298,9 +298,10 @@ void RendererWebMediaPlayerDelegate::CleanUpIdlePlayers(
   // Create a list of stale players before making any possibly reentrant calls
   // to OnIdleTimeout().
   std::vector<int> stale_players;
-  for (const auto& it : idle_player_map_) {
-    if (now - it.second >= timeout)
-      stale_players.push_back(it.first);
+  for (const auto& [player_id, idle_time] : idle_player_map_) {
+    if (now - idle_time >= timeout) {
+      stale_players.push_back(player_id);
+    }
   }
 
   // Notify stale players.

@@ -186,8 +186,9 @@ void MediaPermissionDispatcher::OnPermissionServiceConnectionError() {
   // Fire all pending callbacks with |false|.
   RequestMap requests;
   requests.swap(requests_);
-  for (auto& request : requests)
-    std::move(request.second).Run(false);
+  for (auto& [_, callback] : requests) {
+    std::move(callback).Run(false);
+  }
 }
 
 }  // namespace content

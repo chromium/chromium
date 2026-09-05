@@ -54,9 +54,10 @@ AudioContextManagerImpl::AudioContextManagerImpl(
 AudioContextManagerImpl::~AudioContextManagerImpl() {
   // Takes care pending "audible start" times.
   base::TimeTicks now = clock_->NowTicks();
-  for (const auto& entry : pending_audible_durations_) {
-    if (!entry.second.is_null())
-      RecordAudibleTime(now - entry.second);
+  for (const auto& [_, audible_time] : pending_audible_durations_) {
+    if (!audible_time.is_null()) {
+      RecordAudibleTime(now - audible_time);
+    }
   }
   pending_audible_durations_.clear();
   UMA_HISTOGRAM_EXACT_LINEAR("WebAudio.AudioContext.ConcurrentAudioContexts",

@@ -40,9 +40,7 @@ void AecdumpRecordingManager::EnableDebugRecording(
   DCHECK(!create_file_callback_);
   create_file_callback_ = std::move(create_file_callback);
 
-  for (const auto& it : aecdump_recording_sources_) {
-    AecdumpRecordingSource* source = it.first;
-    uint32_t id = it.second;
+  for (const auto& [source, id] : aecdump_recording_sources_) {
     create_file_callback_.Run(
         id, /*reply_callback=*/base::BindOnce(
             &StartRecordingIfValidPointer, weak_factory_.GetWeakPtr(), source));

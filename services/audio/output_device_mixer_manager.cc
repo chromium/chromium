@@ -316,9 +316,10 @@ OutputDeviceMixer* OutputDeviceMixerManager::AddMixer(
   output_device_mixers_.push_back(std::move(output_device_mixer));
 
   // Attach any interested listeners.
-  for (auto&& listener_device_kvp : listener_registration_) {
-    if (ToMixerDeviceId(listener_device_kvp.second) == mixer->device_id())
-      mixer->StartListening(listener_device_kvp.first);
+  for (const auto& [listener, registered_device_id] : listener_registration_) {
+    if (ToMixerDeviceId(registered_device_id) == mixer->device_id()) {
+      mixer->StartListening(listener);
+    }
   }
 
   return mixer;

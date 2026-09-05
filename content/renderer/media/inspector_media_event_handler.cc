@@ -49,11 +49,10 @@ std::optional<blink::InspectorPlayerError> ErrorFromParams(
 
   std::vector<blink::InspectorPlayerError::Data> data_vec;
   if (auto* data = param.FindDict(media::StatusConstants::kDataKey)) {
-    for (const auto pair : *data) {
-      std::string json = base::WriteJson(pair.second).value_or("");
+    for (const auto [key, value] : *data) {
+      std::string json = base::WriteJson(value).value_or("");
       blink::InspectorPlayerError::Data entry = {
-          blink::WebString::FromUtf8(pair.first),
-          blink::WebString::FromUtf8(json)};
+          blink::WebString::FromUtf8(key), blink::WebString::FromUtf8(json)};
       data_vec.push_back(std::move(entry));
     }
   }
@@ -124,18 +123,18 @@ void InspectorMediaEventHandler::SendQueuedMediaEvents(
   for (media::MediaLogRecord event : events_to_send) {
     switch (event.type) {
       case media::MediaLogRecord::Type::kMessage: {
-        for (auto&& itr : event.params) {
+        for (const auto [level, text] : event.params) {
           blink::InspectorPlayerMessage msg = {
-              LevelFromString(itr.first),
-              blink::WebString::FromUtf8(itr.second.GetString())};
+              LevelFromString(level),
+              blink::WebString::FromUtf8(text.GetString())};
           messages.emplace_back(std::move(msg));
         }
         break;
       }
       case media::MediaLogRecord::Type::kMediaPropertyChange: {
-        for (auto&& itr : event.params) {
+        for (const auto [name, value] : event.params) {
           blink::InspectorPlayerProperty prop = {
-              blink::WebString::FromUtf8(itr.first), ToString(itr.second)};
+              blink::WebString::FromUtf8(name), ToString(value)};
           properties.emplace_back(std::move(prop));
         }
         break;
