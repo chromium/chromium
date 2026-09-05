@@ -29,6 +29,7 @@
 <translation id="1197860368385086056">Saat lain kali membuka Chrome di <ph name="DEVICE_TYPE" />, Anda akan melihat perintah untuk mengaktifkan notifikasi pemantauan harga.</translation>
 <translation id="1203500561924088507">Terima kasih telah menginstal. Anda harus memulai ulang browser sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1278833599417554002">Luncurkan kembali untuk mengupdate &amp;Chrome</translation>
+<translation id="1289911795790071537">Buka penelusuran dengan Chrome</translation>
 <translation id="1290883685122687410">Kesalahan saat penyiapan: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Harap tunggu selagi Chrome memasang pembaruan sistem terkini.</translation>
 <translation id="1330562121671411446">Deteksi bahasa</translation>
@@ -73,6 +74,7 @@
 <translation id="1640672724030957280">Mengunduh...</translation>
 <translation id="1651617469580841801">Saat Anda menggunakan Google Lens, judul halaman, URL, dan konten halaman, termasuk PDF, akan dikirim ke Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Tentang ChromeOS Flex</translation>
+<translation id="1664094661346151467">Telusuri dan ajukan pertanyaan dari mana saja, termasuk saat Chrome sedang diminimalkan</translation>
 <translation id="1674870198290878346">Buka Link di Jendela Sa&amp;maran Chrome</translation>
 <translation id="1682634494516646069">Google Chrome tidak dapat membaca dan menulis ke direktori datanya: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">Saat Anda mengetik di kolom URL atau kotak penelusuran, Chrome akan mengirimkan hal yang Anda ketik ke alat penelusuran, AI, dan agen milik organisasi Anda untuk mendapatkan saran.</translation>
@@ -108,6 +110,7 @@
 <translation id="2034233344106846793">Chrome mengupgrade koneksi tidak aman ke HTTPS secara otomatis jika memungkinkan</translation>
 <translation id="2039417478970545937">Setelan.</translation>
 <translation id="2040220733769034247">Pindai kode QR dengan ponsel Anda untuk mendownload Chrome dan login ke Akun Google Anda.</translation>
+<translation id="2044908892530830113">Tampilkan penelusuran dengan Chrome di panel menu Mac dan aktifkan pintasan keyboard</translation>
 <translation id="2050189601866423230">Anda dapat menyematkan Mode AI Google Penelusuran untuk mengajukan pertanyaan saat menjelajah</translation>
 <translation id="2091012649849228750">Untuk mendapatkan update Google Chrome berikutnya, Anda perlu Windows 10 atau yang lebih baru. Komputer ini menggunakan Windows 8.</translation>
 <translation id="2094648590148273905">Persyaratan ChromeOS Flex</translation>
@@ -135,6 +138,7 @@
 <translation id="2284380654876659752">Saat Anda membuka situs, Chrome mengirimkan bagian URL yang di-obfuscate ke <ph name="BEGIN_LINK" />Google Safe Browsing<ph name="END_LINK" /> melalui server privasi yang menyembunyikan alamat IP Anda. Jika situs melakukan hal yang mencurigakan, URL lengkap dan bit konten halaman juga akan dikirim.</translation>
 <translation id="2290014774651636340">Kunci API Google tidak ada. Beberapa fungsi Google Chrome tidak akan berfungsi.</translation>
 <translation id="2290095356545025170">Apakah Anda yakin ingin mencopot penginstalan Google Chrome?</translation>
+<translation id="2295218613066132598">Tampilkan pintasan situs Chrome</translation>
 <translation id="2301513536169703857">Untuk mendapatkan sandi, bookmark, dan info Anda yang lain di semua perangkat Anda, login ke Chrome</translation>
 <translation id="2307973900865360088">Simpan di Dok</translation>
 <translation id="2309047409763057870">Ini adalah pemasangan Google Chrome sekunder, dan tidak dapat digunakan sebagai browser default.</translation>
@@ -347,6 +351,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="436060642166082913">Chrome memblokir download ini karena file tersebut dapat membahayakan akun pribadi dan jejaring sosial Anda</translation>
 <translation id="4367027658822022112">Anda dapat menyematkan Google Lens agar mudah diakses; klik tombol Sematkan di bagian atas panel samping</translation>
 <translation id="4372389195695053189">Chrome kini menjadi browser default Anda</translation>
+<translation id="4381814455597163081">Anda membantu meningkatkan kualitas Chrome dengan mengirimkan statistik penggunaan dan laporan error ke Google. <ph name="BEGIN_LINK" />Kelola<ph name="END_LINK" /></translation>
 <translation id="4389991535395284064">Jika menjelajah dalam mode Samaran, Chrome akan memperingatkan Anda sebelum memuat situs menggunakan koneksi yang tidak aman</translation>
 <translation id="4400772909124543403">Tidak ada update yang tersedia</translation>
 <translation id="4427306783828095590">Perlindungan yang ditingkatkan akan memblokir phishing dan malware dengan lebih optimal</translation>
@@ -518,6 +523,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="6180522807229584611">Tab ini menggunakan resource tambahan. Untuk meningkatkan performa Anda, izinkan Chrome menonaktifkannya.</translation>
 <translation id="6182736845697986886">Penginstalan gagal karena server update mengalami error internal.</translation>
 <translation id="6192058120268468905">Akun Anda di Chrome</translation>
+<translation id="6195202018542972563">Tampilkan penelusuran dengan Chrome di area notifikasi dan aktifkan pintasan keyboard</translation>
 <translation id="6235018212288296708">Inbound rule untuk Google Chrome guna mengizinkan lalu lintas mDNS.</translation>
 <translation id="624230925347970731">Chrome akan segera ditutup</translation>
 <translation id="6247557882553405851">Pengelola Sandi Google</translation>
@@ -559,8 +565,10 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="652948702951888897">Histori Chrome</translation>
 <translation id="6532945796722480006">Buka Gemini di Chrome Canary</translation>
 <translation id="6539493053177300926">Akses mudah untuk menggunakan Gemini di Chrome di berbagai perangkat Anda, bahkan saat Chrome diperkecil.</translation>
+<translation id="6556755379298048869">Telusuri dengan pintasan keyboard.</translation>
 <translation id="6585124893636629274">Tutup Gemini di Chrome</translation>
 <translation id="659498884637196217">Di Pengelola Sandi Google di perangkat ini</translation>
+<translation id="6612152958212564387">Anda tidak mengirimkan statistik penggunaan dan laporan error ke Google. <ph name="BEGIN_LINK" />Kelola<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Selalu sinkronkan sandi, bookmark, dan histori lintas perangkat dengan menyetel Chrome sebagai browser default Anda.</translation>
 <translation id="6631524303639368205">Lanjutkan dari halaman terakhir yang dibuka: Chrome memulihkan tab Anda dari sesi terakhir. Anda dapat menonaktifkannya di</translation>
 <translation id="6632473616050862500">ChromeOS Flex terwujud karena adanya <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> tambahan.</translation>
@@ -585,7 +593,9 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="683440813066116847">Inbound rule untuk Google Chrome Canary guna mengizinkan lalu lintas mDNS.</translation>
 <translation id="684888714667046800">Tidak dapat terhubung ke internet. Jika Anda menggunakan firewall, pastikan <ph name="PRODUCT_EXE_NAME" /> tercantum dalam daftar yang diizinkan.</translation>
 <translation id="6859580922007887573">Tab untuk melanjutkan</translation>
+<translation id="6869568587896659271">Akses mudah ke situs di bawah kolom URL</translation>
 <translation id="6877155553248388166">pojok kanan bawah area penelusuran: kanan <ph name="RIGHT" />%, bawah <ph name="BOTTOM" />%</translation>
+<translation id="6879791154455204815">Buka Penelusuran dengan Chrome</translation>
 <translation id="6881299373831449287">Mengupdate Chrome</translation>
 <translation id="6885412569789873916">Aplikasi Chrome Beta</translation>
 <translation id="6893363893008038481">Hapus Akun dari Chrome</translation>
@@ -644,6 +654,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="7449333426561673451">{COUNT,plural, =1{Organisasi akan otomatis menutup Chrome jika tidak digunakan selama 1 menit.}other{Organisasi akan otomatis menutup Chrome jika tidak digunakan selama # menit.}}</translation>
 <translation id="7450541714075000668">Teks disalin</translation>
 <translation id="7452987490177144319">{COUNT,plural, =1{Organisasi akan otomatis menghapus data penjelajahan jika Chrome tidak digunakan selama 1 menit. Data ini dapat mencakup histori, isi otomatis, dan download. Tab Anda akan tetap terbuka.}other{Organisasi akan otomatis menghapus data penjelajahan jika Chrome tidak digunakan selama # menit. Data ini dapat mencakup histori, isi otomatis, dan download. Tab Anda akan tetap terbuka.}}</translation>
+<translation id="7466577301922356468">Mengirimkan data ini secara otomatis ke Google membantu meningkatkan kualitas Chrome. Anda dapat mengubah setelan ini kapan saja.</translation>
 <translation id="7477130805345743099">Chrome akan memperingatkan Anda sebelum memuat situs apa pun menggunakan koneksi yang tidak aman</translation>
 <translation id="7481213027396403996">Dapatkan keamanan terkuat Chrome</translation>
 <translation id="749228101751499733">Saat Anda login, Anda dapat menggunakan sandi Anda dan lainnya dari Akun Google Anda di Chrome. <ph name="SHORTCUT" /> dapat mengubah setelan layanan Google Anda.</translation>
@@ -677,6 +688,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="7736869414036750079">Organisasi Anda mengharuskan Anda login ke Chrome</translation>
 <translation id="7747138024166251722">Pemasang tidak dapat membuat direktori sementara. Periksa kapasitas kosong pada disk dan izin untuk memasang software.</translation>
 <translation id="7748969056734910029">Anda tidak membuka situs ini baru-baru ini. Chrome menghapus izin <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
+<translation id="7759944311003584891">Telusuri dengan Chrome</translation>
 <translation id="7761834446675418963">Klik nama Anda untuk membuka Chrome dan mulai menjelajah.</translation>
 <translation id="7777080907402804672">Jika gambar tidak memiliki deskripsi yang berguna, Chrome akan mencoba memberikan deskripsi untuk Anda. Untuk membuat deskripsi, gambar akan dikirim ke Google. Anda dapat menonaktifkannya kapan saja di setelan.</translation>
 <translation id="778331955594035129">Chrome memerlukan izin akses lokasi untuk situs ini</translation>
@@ -791,6 +803,7 @@ Bookmark baru tidak dapat disimpan di akun hingga Anda menghapus beberapa bookma
 <translation id="8747073452963259673">pojok kiri bawah area penelusuran: kiri <ph name="LEFT" />%, bawah <ph name="BOTTOM" />%</translation>
 <translation id="8748735421235723888">Chrome akan membebaskan memori dari tab yang tidak aktif. Tindakan ini akan memberikan lebih banyak resource komputer untuk tab aktif dan aplikasi lainnya, serta menjaga Chrome tetap cepat. Tab yang tidak aktif akan otomatis menjadi aktif lagi saat Anda kembali ke tab tersebut. <ph name="BEGIN_LINK" />Pelajari lebih lanjut Penghemat Memori<ph name="END_LINK" /></translation>
 <translation id="8765470054473112089">Saat Anda mengetik di kolom URL atau kotak penelusuran, Chrome akan mengirimkan hal yang Anda ketik ke mesin telusur default untuk mendapatkan saran yang lebih baik. Fitur ini nonaktif dalam mode Samaran.</translation>
+<translation id="8771516687880083607">Pilih informasi yang akan dibagikan ke Chrome</translation>
 <translation id="8781673607513845160">Untuk menggunakan kamera, beri Chrome akses di <ph name="BEGIN_LINK" />setelan sistem<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Error penginstalan: Administrator jaringan Anda telah menerapkan Kebijakan Grup yang mencegah penginstalan: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796919761992612392">S&amp;esuaikan Chrome Anda</translation>

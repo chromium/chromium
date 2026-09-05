@@ -11,6 +11,7 @@
 Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.</translation>
 <translation id="1083934481477628225">Tvoj starš je izklopil »Dovoljenja za spletna mesta, aplikacije in razširitve« za Chromium</translation>
 <translation id="1090946077924227754">Če želite iskati po določeni funkciji ali razširitvi Chromiuma, v naslovni vrstici vnesite ustrezno bližnjico in nato izbrano tipko na tipkovnici</translation>
+<translation id="1098493699368672217">Prikaz iskanja s Chromiumom v sistemski vrstici in vklop bližnjičnih tipk</translation>
 <translation id="1104942323762546749">Chromium želi izvoziti gesla. Če želite omogočiti to, vnesite geslo za Windows.</translation>
 <translation id="112640046208448578">Določite stvari ali mesta in kopirajte ali prevedite besedilo. Če uporabljate slikovno iskanje, se posnetek zaslona strani pošlje strežniku. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium je privzeti brskalnik</translation>
@@ -307,6 +308,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4298125729853015961">Izvoz gesel iz Chromiuma</translation>
 <translation id="4304713468139749426">Upravitelj gesel</translation>
 <translation id="4334241893986177674">Iskanje po tem posnetku zaslona</translation>
+<translation id="4368547723231502008">Iščite in postavljajte vprašanja kjer koli, tudi če je Chromium pomanjšan</translation>
 <translation id="4384331407722351213">Zaženi Chromium, ko se zažene Windows</translation>
 <translation id="4400772909124543403">Na voljo ni nobena posodobitev</translation>
 <translation id="4407044323746248786">Želite vseeno zapreti Chromium?</translation>
@@ -336,6 +338,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4613863813562375431">Različica sistema Chromium OS</translation>
 <translation id="4621240073146040695">Samo še malo. Znova zaženite Chromium, da dokončate posodobitev.</translation>
 <translation id="4625064703209785397">S Chromiumovim mehanizmom V8 pospešite delovanje spletnih mest, vendar je Chromium zato nekoliko manj odporen proti napadom</translation>
+<translation id="4626321472657185181">Odpiranje Iskanja s Chromiumom</translation>
 <translation id="4665829708273112819">Opozorilo: Chromium razširitvam ne more preprečiti beleženja zgodovine brskanja. Če želite onemogočiti to razširitev v anonimnem načinu, počistite to možnost.</translation>
 <translation id="4673151026126227699">Če delite tudi poročila o uporabi Chromiuma, so v teh poročilih vključeni URL-ji, ki jih obiščete.</translation>
 <translation id="4673710618874938871">Prijavljeni ste kot <ph name="USER_NAME" />, naročnina. Odpri meni računa</translation>
@@ -377,6 +380,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="5286907366254680517">Zaznano</translation>
 <translation id="5289287148052354622">Prenos aplikacije Chromium</translation>
 <translation id="5294316920224716406">Pri brskanju v anonimnem načinu vas bo Chromium opozoril pred nalaganjem spletnega mesta prek povezave, ki ni varna</translation>
+<translation id="5296581118566748922">Iskanje s Chromiumom</translation>
 <translation id="5313228254328109263">Chromiumova notranja storitev za posodabljanje</translation>
 <translation id="5324450571874973775">Uporabljajte jih skupaj z drugimi funkcijami Geminija v Chromiumu</translation>
 <translation id="5346389065299425353">Poglobite iskanje tako, da dodate več zavihkov, datotek in orodij</translation>
@@ -387,6 +391,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="5358375970380395591">Prijavljate se z upravljanim računom in s tem njegovemu skrbniku omogočate nadzor vašega profila v Chromiumu. Vaši podatki v Chromiumu, kot so aplikacije, zaznamki, zgodovina, gesla in druge nastavitve, bodo postali trajno povezani z uporabnikom <ph name="USER_NAME" />. Te podatke boste lahko izbrisali na nadzorni plošči za Google Račune, vendar jih ne boste mogli povezati z drugim računom. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Dodatna koda: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">Če želite omogočiti osebno prilagajanje, vključite Chromium v dejavnost v spletu in aplikacijah</translation>
+<translation id="5382964351116519680">Odpiranje iskanja s Chromiumom</translation>
 <translation id="5383439451358640070">Preberite, zakaj Chromium blokira nekatere datoteke</translation>
 <translation id="5386450000063123300">Posodabljanje Chromiuma (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Omogočanje prijave v Chromium</translation>
@@ -506,6 +511,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="651535675648445253">Bližnjice, odprte v Chromiumu</translation>
 <translation id="6539122709674868420">Vaša organizacija zapre Chromium, če se ne uporablja <ph name="TIMEOUT_DURATION" />. Podatki brskanja so bili izbrisani. To lahko vključuje zgodovino, samodejno izpolnjene podatke in prenose.</translation>
 <translation id="6542839706527980775">Vsak profil ima svoje podatke v Chromiumu, kot so zaznamki, zgodovina, gesla in drugo.</translation>
+<translation id="6556755379298048869">Iščite z bližnjičnimi tipkami.</translation>
 <translation id="6563921047760808519">Preberite več o tem, <ph name="BEGIN_LINK" />kako Chromium zagotavlja zasebnost vaših podatkov<ph name="END_LINK" /></translation>
 <translation id="6564039629497156115">Spremembe te nastavitve bodo uveljavljene, ko se bo Chromium znova zagnal.</translation>
 <translation id="6567032987737689854">Razširitve lahko upravljate tako, da v glavnem meniju Chromiuma kliknete »Razširitve«.</translation>
@@ -540,6 +546,7 @@ Nekatere funkcije morda ne bodo na voljo. Določite drug imenik profila ali upor
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6859580922007887573">Pritisnite tabulatorko za nadaljevanje</translation>
 <translation id="6862030660799253820">Iščite to sliko s slikovnim iskanjem</translation>
+<translation id="6869568587896659271">Preprost dostop do spletnih mest pod naslovno vrstico</translation>
 <translation id="6873893289264747459">Chromium je ugotovil, da razširitev »<ph name="EXTENSION_NAME" />« vsebuje zlonamerno programsko opremo.</translation>
 <translation id="6877155553248388166">spodnji desni kot območja za iskanje: desno <ph name="RIGHT" /> %, spodaj <ph name="BOTTOM" /> %</translation>
 <translation id="6896758677409633944">Kopiraj</translation>
@@ -644,6 +651,7 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – delovna različica Chromiuma</translation>
 <translation id="7803986347287457849">Ljudem z dostopom do vašega internetnega prometa otežite ogled spletnih mest, ki jih obiskujete. Chromium uporablja varno povezavo za iskanje naslova IP spletnega mesta v DNS-ju (imenskem sistemu domen).</translation>
 <translation id="7810005234485217901">Slikovno iskanje lahko pripnete za preprost dostop</translation>
+<translation id="7828527096541974699">Izberite, kaj želite deliti s Chromiumom</translation>
 <translation id="7828947555739565424">Profil v Chromiumu s tem računom že obstaja v tej napravi.</translation>
 <translation id="7845233973568007926">Hvala, ker ste se odločili za namestitev. Preden uporabite <ph name="BUNDLE_NAME" />, morate znova zagnati računalnik.</translation>
 <translation id="7847673590271334840">Iskalnik je bil spremenjen zunaj Chromiuma. Chromium ga je ponastavil na prvotno privzeto vrednost zaradi vaše zaščite. <ph name="LEARN_MORE_LINK" /></translation>
@@ -763,6 +771,7 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
             • izbrisani bodo piškotki in drugi začasni podatki spletnih mest.
             <ph name="LINE_BREAKS" />
             To ne bo vplivalo na zaznamke, zgodovino in shranjena gesla.</translation>
+<translation id="8966875421152977384">Prikaz bližnjic do spletnih mest v Chromiumu</translation>
 <translation id="897581876605952338">Logotip za Chromium Enterprise</translation>
 <translation id="8980139959902937527">Vzemite Googlovo varnost s sabo na pot z aplikacijo Chromium v napravi <ph name="DEVICE_TYPE" /></translation>
 <translation id="8981150672034878610">Chromiuma ni mogoče zagnati, ker je prišlo do težave pri odpiranju profila. Poskusite znova zagnati Chromium.</translation>
@@ -771,6 +780,7 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="9018218886431812662">Namestitev je dokončana</translation>
 <translation id="9019929317751753759">Zaradi večje varnosti smo v Chromiumu onemogočili to razširitev, ki ni navedena tukaj in je bila morda dodana brez vaše vednosti: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="9022552996538154597">Prijava v Chromium</translation>
+<translation id="9035791714111278917">Prikaz iskanja s Chromiumom v menijski vrstici sistema macOS in vklop bližnjičnih tipk</translation>
 <translation id="904366664621834601">Chromium je blokiral ta prenos, ker arhivska datoteka vsebuje druge datoteke, ki morda skrivajo zlonamerno programsko opremo</translation>
 <translation id="9053882453960391422">Poskrbite, da so gesla, zaznamki in zgodovina popolnoma sinhronizirani v vseh napravah. Posodobite privzeti brskalnik na Chromium in preprosto dostopajte do funkcij, ki jih poznate in so vam všeč. Chromium bo pripet v opravilno vrstico za hitri dostop.</translation>
 <translation id="9056398481763999048">Z aplikacijo Chromium v telefonu uporabljajte Googlova najboljša orodja z umetno inteligenco</translation>

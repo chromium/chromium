@@ -196,6 +196,19 @@ Per essere applicata, questa policy richiede una licenza "<ph name="CHROME_ENTER
 <translation id="1110426799149444997">Disattiva la ricerca per sezione di <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1111324374369583989">Non visualizzare la schermata di impostazione delle dimensioni di visualizzazione durante l'accesso</translation>
 <translation id="1111824532252882775">Attivato: le barre di scorrimento sono attivabili per impostazione predefinita.</translation>
+<translation id="1113523086451291158">Questa policy può essere utilizzata per consentire <ph name="CHROME_DEVTOOLS_NAME" /> su URL specifici.
+
+La disponibilità di <ph name="CHROME_DEVTOOLS_NAME" /> viene valutata a livello di target. I pattern URL vengono confrontati con l'URL di ogni target ispezionato (ad esempio il frame principale di una pagina, un frame secondario incorporato, un'estensione o un'applicazione web). Il comportamento risultante dipende dal fatto che sia impostata anche la policy <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />.
+
+Se questa policy viene impostata, ma <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> no, l'URL di un target deve corrispondere a un pattern in questa lista consentita per consentire <ph name="CHROME_DEVTOOLS_NAME" /> per quel target. Se l'URL di un target non corrisponde a questa lista consentita, <ph name="CHROME_DEVTOOLS_NAME" /> verrà bloccato per quel target (ad esempio, un frame secondario il cui URL non è nella lista consentita non può essere ispezionato, ma la pagina principale rimane ispezionabile se il suo URL è nella lista consentita). Per informazioni sul formato dell'URL, visita la pagina https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Se vengono impostate sia questa policy sia la policy <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />, questa lista consentita ha la precedenza. Se l'URL di un target corrisponde a un pattern in questa lista consentita, verrà consentito, anche se corrisponde ugualmente a un pattern nella lista bloccata. Se l'URL di un target corrisponde a un pattern nella lista bloccata (ma non nella lista consentita), verrà bloccato. Se l'URL di un target non corrisponde a nessuno dei due, verrà utilizzata la policy <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> come riserva.
+
+Se questa policy non viene configurata, la disponibilità di <ph name="CHROME_DEVTOOLS_NAME" /> viene determinata dalle policy <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> e <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+I caratteri jolly host onnicomprensivi (ad es. "*" o "[*]") non sono consentiti; utilizza la policy <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> per attivare la funzionalità a livello globale.
+
+Per questa policy è possibile definire al massimo 1000 voci.</translation>
 <translation id="1117535567637097036">I gestori di protocollo impostati tramite questa norma non sono utilizzati durante la gestione degli intent di Android.</translation>
 <translation id="1118093128235245168">Consenti ai siti di chiedere all'utente di concedere l'accesso a un dispositivo USB collegato</translation>
 <translation id="111910763555783249">Impostazioni di notifica</translation>
@@ -8044,6 +8057,17 @@ la configurazione.</translation>
 Questa policy è stata ritirata a partire dalla versione M124.</translation>
 <translation id="6022948604095165524">Azione all'avvio</translation>
 <translation id="602318745029752898">Consenti le voci di sintesi vocale di rete migliorate in di Seleziona per ascoltare</translation>
+<translation id="6023434563562800942">Questa policy può essere utilizzata per bloccare <ph name="CHROME_DEVTOOLS_NAME" /> su URL specifici. Per informazioni sul formato dell'URL, visita la pagina https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+La disponibilità di <ph name="CHROME_DEVTOOLS_NAME" /> viene valutata a livello di target. I pattern URL vengono confrontati con l'URL di ogni target ispezionato (ad esempio il frame principale di una pagina, un frame secondario incorporato, un'estensione o un'applicazione web). Il comportamento risultante dipende dal fatto che sia impostata anche la policy <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" />.
+
+Se questa policy viene impostata, ma <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> no, l'URL di un target che corrisponde a un pattern in questa lista bloccata bloccherà <ph name="CHROME_DEVTOOLS_NAME" /> per quel target (ad esempio, un frame secondario il cui URL corrisponde a questa lista bloccata non può essere ispezionato, ma la pagina principale rimane ispezionabile se il suo URL non è nella lista bloccata). Se l'URL di un target non corrisponde a nessun pattern, la disponibilità viene determinata dalla policy <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Se vengono impostate sia questa policy sia la policy <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" />, la lista consentita ha la precedenza. Se l'URL di un target corrisponde a un pattern nella lista consentita, verrà consentito, anche se corrisponde anche a un pattern in questa lista bloccata. Se l'URL di un target corrisponde a un pattern in questa lista bloccata (ma non nella lista consentita), verrà bloccato. Se l'URL di un target non corrisponde a nessuno dei due, verrà utilizzata la policy <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> come riserva.
+
+Se questa policy non viene configurata, la disponibilità di <ph name="CHROME_DEVTOOLS_NAME" /> viene determinata dalle policy <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> e <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Per questa policy è possibile definire al massimo 1000 voci.</translation>
 <translation id="6026722971789064331">Controlla l'utilizzo dell'API file system per la scrittura</translation>
 <translation id="602728333950205286">URL di ricerca istantanea del provider di ricerca predefinito</translation>
 <translation id="603410445099326293">Parametri per l'URL del suggerimento che utilizza POST</translation>

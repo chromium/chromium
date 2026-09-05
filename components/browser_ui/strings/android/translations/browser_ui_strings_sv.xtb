@@ -7,6 +7,7 @@
 <translation id="1046742265332833834">Blått tema</translation>
 <translation id="1070329623210597193">Filer som webbplatsen kan visa eller redigera</translation>
 <translation id="1074758928858737435">Du kan begära att se webbplatsernas datorversion</translation>
+<translation id="1089791933924803646">Få Chrome-förslag i andra appar</translation>
 <translation id="1109482864356262001">Funktioner som kräver rörelse- eller ljussensorer kommer inte att fungera</translation>
 <translation id="1126523729897810826">Slutför de rekommenderade åtgärderna nedan så att du får ut mesta möjliga av Chrome</translation>
 <translation id="113098737392899175">Navigera på sidor med en textmarkör när ett tangentbord är anslutet</translation>
@@ -453,6 +454,7 @@
 <translation id="5668404140385795438">Åsidosätt en webbplats begäran att hindra inzoomning</translation>
 <translation id="5668843533782548925">Webbplatserna är långsammare men säkrare</translation>
 <translation id="5677928146339483299">Blockerat</translation>
+<translation id="5679089750838794164">Chrome kan nu visa förslag i andra appar baserat på din webbinformation, till exempel din senaste webbhistorik. Denna data behandlas säkert på enheten. Du kan inaktivera detta när som helst i Chrome-inställningarna.</translation>
 <translation id="5689516760719285838">Plats</translation>
 <translation id="5690795753582697420">Kameran har inaktiverats i inställningarna för Android</translation>
 <translation id="5700761515355162635">Tredjepartscookies tillåts</translation>
@@ -507,6 +509,7 @@
 <translation id="6085954183010297841">Vill du radera behörigheten för filredigering? <ph name="FILE" /></translation>
 <translation id="6104860901391833523">När detta är aktiverat kan webbplatser öppna bild-i-bild automatiskt. När detta är inaktiverat kan webbplatser inte öppna bild-i-bild automatiskt.</translation>
 <translation id="6120483543004435978">När detta är aktiverat kan webbplatser be om att få veta om du använder enheten aktivt. När detta är inaktiverat får webbplatser inte veta om du använder enheten aktivt.</translation>
+<translation id="612871598708395517">Dölj Få Chrome-förslag i andra appar</translation>
 <translation id="6132075343662013154">Chrome frågar om du vill spara lösenordet</translation>
 <translation id="615886654739818377">Tillåt inte att webbplatser hanterar fönster på alla skärmar</translation>
 <translation id="6165508094623778733">Läs mer</translation>

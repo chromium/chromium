@@ -57,6 +57,7 @@
 <translation id="1181037720776840403">తీసివేయండి</translation>
 <translation id="1183189057400844278">మీరు మీ Google ఖాతాలోని పాస్‌వర్డ్‌లను ఎల్లప్పుడూ ఉపయోగించగలరని నిర్ధారించుకోవడానికి, ఇది మీరేనని వెరిఫై చేయండి</translation>
 <translation id="1187810343066461819">ఈ కారు నుండి బుక్‌మార్క్‌లు, హిస్టరీ, మరిన్నింటిని కూడా తొలగించండి</translation>
+<translation id="1191987227666124897">సమ్మతి నిలిపివేత రిక్వెస్ట్</translation>
 <translation id="1193729455103054076">శక్తివంతమైన పాస్‌వర్డ్‌ను ఉపయోగించాలా?</translation>
 <translation id="11947597112837849">ఈమెయిల్ అడ్రస్</translation>
 <translation id="1197267115302279827">బుక్‌మార్క్‌లను తరలించు</translation>
@@ -1339,6 +1340,7 @@
 <translation id="634208815998129842">విధి నిర్వాహికి</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">చదివినట్లుగా గుర్తించు</translation>
+<translation id="63490081267265251">Googleతో సహా మీరు సందర్శించే సైట్‌లు ఈ రిక్వెస్ట్‌కు ఎలా ప్రతిస్పందిస్తాయో నిర్ణయించడానికి బాధ్యత వహిస్తాయి. మీ ప్రాంతంలోని చట్టాలను బట్టి, మీ డేటా విక్రయాన్ని, షేరింగ్‌ను లేదా వ్యక్తిగతీకరించిన యాడ్‌ల కోసం దాని వినియోగాన్ని పరిమితం చేయడం ద్వారా సైట్‌లు ప్రతిస్పందించవచ్చు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="6350745006329795504">మీ డివైజ్‌లను మేనేజ్ చేయండి</translation>
 <translation id="6356893102071098867">మీరు సరైన ఖాతాను ఎంచుకున్నారో లేదో చెక్ చేయండి</translation>
 <translation id="6364438453358674297">హిస్టరీ నుండి సూచనను తీసివేయాలా?</translation>
@@ -1663,6 +1665,7 @@
 <translation id="7493994139787901920"><ph name="VERSION" /> (నవీకరించినది <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">దయచేసి వేచి ఉండండి...</translation>
 <translation id="7499065150275272675"><ph name="TAB_TITLE" />, మ్యూట్ అయిన పిన్ చేసిన ట్యాబ్</translation>
+<translation id="7500851014030446046">PDF డౌన్‌లోడ్ అవుతోంది</translation>
 <translation id="7501135638693251872">అన్ని బుక్‌మార్క్‌లు</translation>
 <translation id="7507207699631365376">ఈ ప్రొవైడర్ <ph name="BEGIN_LINK" />గోప్యతా పాలసీ<ph name="END_LINK" />ని చూడండి</translation>
 <translation id="750886945254958667">తర్వాత ట్యాబ్‌లను జోడించడానికి ఈ గ్రూప్‌ను అలాగే ఉంచుకోండి లేదా మీరు ఇకపై దీనికి యాక్సెస్ చేయకూడదనుకుంటే వదిలివేయండి</translation>
@@ -1730,6 +1733,7 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="777637629667389858">మీరు సైన్ ఇన్ చేసినప్పుడు, Google సర్వీస్‌లన్నింటిలో మిమ్మల్ని సురక్షితంగా ఉంచుతుంది.</translation>
 <translation id="7778840695157240389">కొత్త కథనాల కోసం తర్వాత మళ్లీ చెక్ చేయండి</translation>
+<translation id="7780992949171378848">మీ డేటా వినియోగానికి సంబంధించి సైట్‌లకు సమ్మతి నిలిపివేత రిక్వెస్ట్‌ను పంపండి</translation>
 <translation id="7791543448312431591">జోడించండి</translation>
 <translation id="7792388396321542707">భాగస్వామ్యం చేయడాన్ని ఆపివేయి</translation>
 <translation id="780287761701992588">మీ బుక్‌మార్క్‌లు, పాస్‌వర్డ్‌లు, అలాగే మరిన్నింటిని మీ పరికరాలన్నింటిలో పొందండి</translation>

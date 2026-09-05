@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> हप्ताअघि बनाइएको}other{<ph name="NUM_WEEKS_MANY" /> हप्ताअघि बनाइएको}}</translation>
 <translation id="1063300264396686489">अन्य डिभाइसहरूमा भएका ट्याब समूह स्वतः खोल्नुहोस्</translation>
 <translation id="1075622780330595106">तपाईंले केही समय यता आफ्ना <ph name="NUMBER_OF_TABS" /> वटा ट्याबहरू प्रयोग गर्नुभएको छैन। तिनलाई बन्द गर्ने हो?</translation>
+<translation id="1089791933924803646">अन्य एपहरूमा Chrome का सुझावहरू प्राप्त गर्नुहोस्</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> वर्षअघि बनाइएको}other{<ph name="NUM_YEARS_MANY" /> वर्षअघि बनाइएको}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{निष्क्रिय ट्याब र ट्याब समूहहरू १ महिनापछि बन्द गरिने छन्}other{निष्क्रिय ट्याब र ट्याब समूहहरू <ph name="MONTH_COUNT_MANY" /> महिनापछि बन्द गरिने छन्}}</translation>
 <translation id="1173894706177603556">पुन: नामाकरण गर्नुहोस्</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{समूहमा ट्याब हाल्नुहोस्}other{समूहमा ट्याबहरू हाल्नुहोस्}}</translation>
 <translation id="8138067144082174140">१४ दिनसम्म निष्क्रिय भएपछि</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब भएको <ph name="COLOR_NAME" /> रङको <ph name="TITLE_OF_GROUP" /> को ट्याब समूह एक्स्पान्ड गर्नुहोस्।}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब भएको <ph name="COLOR_NAME" /> रङको <ph name="TITLE_OF_GROUP" /> को ट्याब समूह एक्स्पान्ड गर्नुहोस्।}}</translation>
+<translation id="8172214054247281626">चयन गरिएका एपहरूमा सुझावहरू प्राप्त गर्न आफ्नो हालसालैको ब्राउजिङ हिस्ट्री जस्ता ब्राउजिङ डेटा सेयर गर्नुहोस्। यो डेटा तपाईंको डिभाइसमा सुरक्षित तरिकाले प्रोसेस गरिन्छ।</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{ट्याब अनपिन गर्नुहोस्}other{ट्याबहरू अनपिन गर्नुहोस्}}</translation>
 <translation id="8205266828577616993">ट्याब माथि सार्नुहोस्</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> मिनेटअघि अपडेट गरिएको}other{<ph name="NUM_MINS_MANY" /> मिनेटअघि अपडेट गरिएको}}</translation>

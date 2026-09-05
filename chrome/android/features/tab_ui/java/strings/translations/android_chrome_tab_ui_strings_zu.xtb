@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Kusungulwe evikini elingu-<ph name="NUM_WEEKS_ONE" /> eledlule}one{Kusungulwe emavikini angu-<ph name="NUM_WEEKS_MANY" /> adlule}other{Kusungulwe emavikini angu-<ph name="NUM_WEEKS_MANY" /> adlule}}</translation>
 <translation id="1063300264396686489">Vula ngokuzenzekelayo amaqembu amathebhu asuka kwamanye amadivaysi</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> yamathebhu akho awakasetshenziswa kamuva nje. Wavale?</translation>
+<translation id="1089791933924803646">Thola iziphakamiso zeChrome kwamanye ama-app</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Kusungulwe onyakeni ongu-<ph name="NUM_YEARS_ONE" /> odlule}one{Kusungulwe eminyakeni engu-<ph name="NUM_YEARS_MANY" /> edlule}other{Kusungulwe eminyakeni engu-<ph name="NUM_YEARS_MANY" /> edlule}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Amathebhu namaqembu angasebenzi azovalwa ngemva kwenyanga e-1}one{Amathebhu namaqembu angasebenzi azovalwa ngemva kwezinyanga ezingu- <ph name="MONTH_COUNT_MANY" />}other{Amathebhu namaqembu angasebenzi azovalwa ngemva kwezinyanga ezingu- <ph name="MONTH_COUNT_MANY" />}}</translation>
 <translation id="1173894706177603556">Qamba kabusha</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Engeza ithebhu eqenjini}one{Engeza amathebhu eqenjini}other{Engeza amathebhu eqenjini}}</translation>
 <translation id="8138067144082174140">Ngemva kwezinsuku eziyi-14 ingasebenzi</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Nweba ithebhu leqembu le-<ph name="TITLE_OF_GROUP" /> ngethebhu ye-<ph name="TABS_COUNT_ONE" />, umbala <ph name="COLOR_NAME" />.}one{Nweba ithebhu leqembu le-<ph name="TITLE_OF_GROUP" /> ngamathebhu we-<ph name="TABS_COUNT_MANY" />, umbala <ph name="COLOR_NAME" />.}other{Nweba ithebhu leqembu le-<ph name="TITLE_OF_GROUP" /> ngamathebhu we-<ph name="TABS_COUNT_MANY" />, umbala <ph name="COLOR_NAME" />.}}</translation>
+<translation id="8172214054247281626">Yabelana ngedatha yokubhrawuza, njengomlando wakho wakamuva wokubhrawuza, ukuze uthole iziphakamiso kuma-app akhethiwe. Le datha icutshungulwa ngokuvikelekile kudivayisi yakho.</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{Susa ukuphina ithebhu}one{Susa ukuphina amathebhu}other{Susa ukuphina amathebhu}}</translation>
 <translation id="8205266828577616993">Yisa ithebhu phezulu</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Kubuyekezwe eminithini elingu-<ph name="NUM_MINS_ONE" /> eledlule}one{Kubuyekezwe emaminithini angu-<ph name="NUM_MINS_MANY" /> adlule}other{Kubuyekezwe emaminithini angu-<ph name="NUM_MINS_MANY" /> adlule}}</translation>

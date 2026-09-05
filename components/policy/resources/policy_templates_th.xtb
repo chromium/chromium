@@ -191,6 +191,19 @@ https://chromeenterprise.google/policies/url-patterns/ * ไม่ใช่ค�
 <translation id="1110426799149444997">ปิดใช้การค้นหาเฉพาะส่วนของ <ph name="GOOGLE_LENS_PRODUCT_NAME" /></translation>
 <translation id="1111324374369583989">ไม่แสดงหน้าจอการตั้งค่าขนาดการแสดงผลระหว่างการลงชื่อเข้าใช้</translation>
 <translation id="1111824532252882775">เปิดใช้: แถบเลื่อนจะโฟกัสได้โดยค่าเริ่มต้น</translation>
+<translation id="1113523086451291158">คุณสามารถใช้นโยบายนี้เพื่ออนุญาต <ph name="CHROME_DEVTOOLS_NAME" /> ใน URL ที่เฉพาะเจาะจงได้
+
+ระบบจะประเมินความพร้อมใช้งานของ <ph name="CHROME_DEVTOOLS_NAME" /> ที่ระดับเป้าหมาย รูปแบบ URL จะจับคู่กับ URL ของแต่ละเป้าหมายที่กำลังตรวจสอบ (เช่น เฟรมหลักของหน้าเว็บ เฟรมย่อยแบบฝัง ส่วนขยาย หรือเว็บแอปพลิเคชัน) ลักษณะการทำงานที่ได้จะขึ้นอยู่กับว่ามีการตั้งค่านโยบาย <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> ด้วยหรือไม่
+
+หากตั้งค่านโยบายนี้และไม่ได้ตั้งค่า <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> URL ของเป้าหมายต้องตรงกับรูปแบบในรายการที่อนุญาตนี้เพื่อให้ระบบอนุญาต <ph name="CHROME_DEVTOOLS_NAME" /> สำหรับเป้าหมายนั้น หาก URL ของเป้าหมายไม่ตรงกับรายการที่อนุญาตนี้ ระบบจะบล็อก <ph name="CHROME_DEVTOOLS_NAME" /> สำหรับเป้าหมายนั้น (เช่น เฟรมย่อยที่มี URL ไม่อยู่ในรายการที่อนุญาตจะไม่สามารถตรวจสอบได้ แต่หน้าหลักจะยังคงตรวจสอบได้หาก URL อยู่ในรายการที่อนุญาต) ดูข้อมูลเกี่ยวกับรูปแบบ URL ได้ที่ https://support.google.com/chrome/a?p=url_blocklist_filter_format
+
+หากตั้งค่าทั้งนโยบายนี้และนโยบาย <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> รายการที่อนุญาตนี้จะมีความสำคัญเหนือกว่า หาก URL ของเป้าหมายตรงกับรูปแบบในรายการที่อนุญาตนี้ ระบบจะอนุญาตให้ใช้ได้ แม้ว่าจะตรงกับรูปแบบในรายการที่บล็อกด้วยก็ตาม หาก URL ของเป้าหมายตรงกับรูปแบบในรายการที่บล็อก (แต่ไม่ตรงกับรายการที่อนุญาต) ระบบจะบล็อก URL นั้น หาก URL ของเป้าหมายไม่ตรงกับรูปแบบในรายการใดๆ เลย ระบบจะใช้นโยบาย <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> เป็นตัวเลือกสำรอง
+
+หากไม่ได้ตั้งค่านโยบายนี้ ความพร้อมใช้งานของ <ph name="CHROME_DEVTOOLS_NAME" /> จะกำหนดโดยนโยบาย <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> และ <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />
+
+ไวลด์การ์ดโฮสต์แบบครอบคลุม (คือ ไม่อนุญาตให้ใช้ "*" หรือ "[*]") ให้ใช้นโยบาย <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> เพื่อเปิดใช้ฟีเจอร์ทั่วโลก
+
+นโยบายนี้ระบุรายการได้ไม่เกิน 1,000 รายการ</translation>
 <translation id="1117535567637097036">ไม่มีการใช้เครื่องจัดการโปรโตคอลที่ตั้งค่าผ่านนโยบายนี้ระหว่างการจัดการ Intent ของ Android</translation>
 <translation id="1118093128235245168">อนุญาตให้เว็บไซต์ขอสิทธิ์จากผู้ใช้เพื่อเข้าถึงอุปกรณ์ USB ที่เชื่อมต่ออยู่</translation>
 <translation id="111910763555783249">การตั้งค่าการแจ้งเตือน</translation>
@@ -7920,6 +7933,17 @@ https://chromeenterprise.google/policies/url-patterns รองรับไว�
 นโยบายนี้เลิกใช้งานไปแล้วตั้งแต่รุ่น M124</translation>
 <translation id="6022948604095165524">การดำเนินการเมื่อเริ่มต้นใช้งาน</translation>
 <translation id="602318745029752898">อนุญาตเสียงของการอ่านออกเสียงข้อความของเครือข่ายที่ปรับปรุงใน "เลือกเพื่อให้อ่าน"</translation>
+<translation id="6023434563562800942">คุณสามารถใช้นโยบายนี้เพื่อบล็อก <ph name="CHROME_DEVTOOLS_NAME" /> ใน URL ที่เฉพาะเจาะจงได้ ดูข้อมูลเกี่ยวกับรูปแบบ URL ได้ที่ https://support.google.com/chrome/a?p=url_blocklist_filter_format
+
+ระบบจะประเมินความพร้อมใช้งานของ <ph name="CHROME_DEVTOOLS_NAME" /> ที่ระดับเป้าหมาย รูปแบบ URL จะจับคู่กับ URL ของแต่ละเป้าหมายที่กำลังตรวจสอบ (เช่น เฟรมหลักของหน้าเว็บ เฟรมย่อยแบบฝัง ส่วนขยาย หรือเว็บแอปพลิเคชัน) ลักษณะการทำงานที่ได้จะขึ้นอยู่กับว่ามีการตั้งค่านโยบาย <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> ด้วยหรือไม่
+
+หากตั้งค่านโยบายนี้และไม่ได้ตั้งค่า <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> ระบบจะบล็อก <ph name="CHROME_DEVTOOLS_NAME" /> สำหรับเป้าหมายที่มี URL ตรงกับรูปแบบในรายการที่บล็อกนี้ (เช่น เฟรมย่อยที่มี URL ตรงกับรายการที่บล็อกนี้จะตรวจสอบไม่ได้ แต่หน้าหลักจะยังตรวจสอบได้หาก URL ของหน้าหลักไม่อยู่ในรายการที่บล็อก) หาก URL ของเป้าหมายไม่ตรงกับรูปแบบใดๆ ความพร้อมใช้งานจะกำหนดโดยนโยบาย <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />
+
+หากตั้งค่าทั้งนโยบายนี้และนโยบาย <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> รายการที่อนุญาตนี้จะมีความสำคัญเหนือกว่า หาก URL ของเป้าหมายตรงกับรูปแบบในรายการที่อนุญาต ระบบจะอนุญาตให้ใช้ได้ แม้ว่าจะตรงกับรูปแบบในรายการที่บล็อกนี้ด้วยก็ตาม หาก URL ของเป้าหมายตรงกับรูปแบบในรายการที่บล็อกนี้ (แต่ไม่ตรงกับรายการที่อนุญาต) ระบบจะบล็อก URL นั้น หาก URL ของเป้าหมายไม่ตรงกับรูปแบบในรายการใดๆ เลย ระบบจะใช้นโยบาย <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> เป็นตัวเลือกสำรอง
+
+หากไม่ได้ตั้งค่านโยบายนี้ ความพร้อมใช้งานของ <ph name="CHROME_DEVTOOLS_NAME" /> จะกำหนดโดยนโยบาย <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> และ <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />
+
+นโยบายนี้ระบุรายการได้ไม่เกิน 1,000 รายการ</translation>
 <translation id="6026722971789064331">ควบคุมการใช้ File System API สำหรับการเขียน</translation>
 <translation id="602728333950205286">URL ค้นหาทันใจของผู้ให้บริการการค้นหาเริ่มต้น</translation>
 <translation id="603410445099326293">พารามิเตอร์สำหรับการแนะนำ URL ที่ใช้ POST</translation>

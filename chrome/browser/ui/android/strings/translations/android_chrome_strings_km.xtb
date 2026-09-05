@@ -57,6 +57,7 @@
 <translation id="1181037720776840403">ដកចេញ</translation>
 <translation id="1183189057400844278">ដើម្បីប្រាកដថា អ្នកអាចប្រើពាក្យ​សម្ងាត់​នៅក្នុងគណនី Google របស់អ្នកបានជានិច្ច សូមផ្ទៀងផ្ទាត់ថាជាអ្នក</translation>
 <translation id="1187810343066461819">លុប​ចំណាំ ប្រវត្តិ និងអ្វីៗជាច្រើនទៀត​ពីរថយន្តនេះ​ផងដែរ</translation>
+<translation id="1191987227666124897">សំណើសុំ​ផ្ដាច់ចេញ</translation>
 <translation id="1193729455103054076">ប្រើ​ពាក្យសម្ងាត់ខ្លាំងឬ?</translation>
 <translation id="11947597112837849">អាសយដ្ឋាន​អ៊ីមែល</translation>
 <translation id="1197267115302279827">ផ្លាស់ទីចំណាំ</translation>
@@ -1341,6 +1342,7 @@
 <translation id="634208815998129842">កម្មវិធីគ្រប់គ្រងភារកិច្ច</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 និង <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ទៀត}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 និង <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ទៀត}}</translation>
 <translation id="6345878117466430440">សម្គាល់​ថា​បានអាន​ហើយ</translation>
+<translation id="63490081267265251">គេហទំព័រដែលអ្នកចូលមើល រួមទាំង Google ទទួលខុសត្រូវក្នុងការកំណត់របៀបដែលគេហទំព័រទាំងនោះឆ្លើយតបនឹងសំណើនេះ។ អាស្រ័យលើ​ច្បាប់​នៅក្នុង​តំបន់​របស់អ្នក គេហទំព័រ​អាចឆ្លើយតប​ដោយ​ដាក់កំហិតលើ​ការលក់ និង​ការចែករំលែក​ទិន្នន័យ​របស់អ្នក ឬ​ការប្រើប្រាស់​ទិន្នន័យនោះ​សម្រាប់ការផ្សាយពាណិជ្ជកម្មដែលមានលក្ខណៈផ្ទាល់ខ្លួន។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
 <translation id="6350745006329795504">គ្រប់គ្រងឧបករណ៍របស់អ្នក</translation>
 <translation id="6356893102071098867">ពិនិត្យមើលថា​អ្នកបាន​ជ្រើសរើស​គណនី​ដែលត្រឹមត្រូវ</translation>
 <translation id="6364438453358674297">យកការផ្តល់យោបល់ចេញពីប្រវត្តិ?</translation>
@@ -1733,6 +1735,7 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 និង <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ទៀត}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 និង <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ទៀត}}</translation>
 <translation id="777637629667389858">ការពារអ្នក​នៅលើ​សេវាកម្ម Google នៅពេលអ្នក​ចូលគណនី។</translation>
 <translation id="7778840695157240389">សូមពិនិត្យមើល​ម្ដងទៀត​នៅពេលក្រោយ ដើម្បីទទួលបាន​អត្ថបទថ្មីៗ</translation>
+<translation id="7780992949171378848">ផ្ញើសំណើសុំផ្ដាច់ចេញទៅគេហទំព័រទាក់ទងនឹងការប្រើប្រាស់ទិន្នន័យរបស់អ្នក</translation>
 <translation id="7791543448312431591">បន្ថែម</translation>
 <translation id="7792388396321542707">ឈប់ចែករំលែក</translation>
 <translation id="780287761701992588">ទទួលបាន​ចំណាំ ពាក្យសម្ងាត់​របស់អ្នក និង​អ្វីៗជា​ច្រើនទៀត​នៅលើ​ឧបករណ៍​ទាំងអស់​របស់អ្នក</translation>

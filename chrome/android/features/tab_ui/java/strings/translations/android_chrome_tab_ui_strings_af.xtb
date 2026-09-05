@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> week gelede geskep}other{<ph name="NUM_WEEKS_MANY" /> weke gelede geskep}}</translation>
 <translation id="1063300264396686489">Maak oortjiegroepe outomaties van ander toestelle af oop</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> van jou oortjies is nie onlangs gebruik nie. Maak hulle toe?</translation>
+<translation id="1089791933924803646">Kry Chrome-voorstelle in ander apps</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> jaar gelede geskep}other{<ph name="NUM_YEARS_MANY" /> jaar gelede geskep}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Onaktiewe oortjies en groepe sal ná 1 maand toegemaak word}other{Onaktiewe oortjies en groepe sal ná <ph name="MONTH_COUNT_MANY" /> maande toegemaak word}}</translation>
 <translation id="1173894706177603556">Hernoem</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Voeg oortjie by groep}other{Voeg oortjies by groep}}</translation>
 <translation id="8138067144082174140">Ná 14 dae onaktief</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Vou <ph name="TITLE_OF_GROUP" />-oortjiegroep met <ph name="TABS_COUNT_ONE" /> oortjie, kleur <ph name="COLOR_NAME" /> uit.}other{Vou <ph name="TITLE_OF_GROUP" />-oortjiegroep met <ph name="TABS_COUNT_MANY" /> oortjies, kleur <ph name="COLOR_NAME" /> uit.}}</translation>
+<translation id="8172214054247281626">Deel blaaierdata, soos jou onlangse blaaigeskiedenis, om voorstelle in uitgesoekte apps te kry. Hierdie data word veilig op jou toestel verwerk.</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{Ontspeld oortjie}other{Ontspeld oortjies}}</translation>
 <translation id="8205266828577616993">Skuif oortjie op</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> minuut gelede opgedateer}other{<ph name="NUM_MINS_MANY" /> minute gelede opgedateer}}</translation>

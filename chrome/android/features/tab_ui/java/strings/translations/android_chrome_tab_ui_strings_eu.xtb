@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Duela <ph name="NUM_WEEKS_ONE" /> aste sortua}other{Duela <ph name="NUM_WEEKS_MANY" /> aste sortua}}</translation>
 <translation id="1063300264396686489">Ireki beste gailu batzuetako fitxa taldeak automatikoki</translation>
 <translation id="1075622780330595106">Fitxetako <ph name="NUMBER_OF_TABS" /> ez dira erabili azkenaldian. Itxi nahi dituzu?</translation>
+<translation id="1089791933924803646">Lortu Chrome-ren iradokizunak beste aplikazio batzuetan</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Duela <ph name="NUM_YEARS_ONE" /> urte sortua}other{Duela <ph name="NUM_YEARS_MANY" /> urte sortua}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Fitxa eta talde inaktiboak hilabeteren buruan itxiko dira}other{Fitxa eta talde inaktiboak <ph name="MONTH_COUNT_MANY" /> hilabeteren buruan itxiko dira}}</translation>
 <translation id="1173894706177603556">Aldatu izena</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Gehitu fitxa taldean}other{Gehitu fitxak taldean}}</translation>
 <translation id="8138067144082174140">14 egunez inaktibo egon ostean</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Zabaldu <ph name="TABS_COUNT_ONE" /> fitxa duen <ph name="TITLE_OF_GROUP" /> fitxa taldea, <ph name="COLOR_NAME" /> kolorekoa.}other{Zabaldu <ph name="TABS_COUNT_MANY" /> fitxa dituen <ph name="TITLE_OF_GROUP" /> fitxa taldea, <ph name="COLOR_NAME" /> kolorekoa.}}</translation>
+<translation id="8172214054247281626">Partekatu arakatze-datuak (adibidez, azkenaldiko arakatze-historia) hautatutako aplikazioetan iradokizunak lortzeko. Datu horiek modu seguruan prozesatzen dira gailuan.</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{Kendu aingura fitxari}other{Kendu aingura fitxei}}</translation>
 <translation id="8205266828577616993">Eraman fitxa gora</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Duela minutu <ph name="NUM_MINS_ONE" /> eguneratuta}other{Duela <ph name="NUM_MINS_MANY" /> minutu eguneratuta}}</translation>

@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> həftə əvvəl yaradıldı}other{<ph name="NUM_WEEKS_MANY" /> həftə əvvəl yaradıldı}}</translation>
 <translation id="1063300264396686489">Digər cihazlardan tab qruplarını avtomatik açın</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> tab son zamanlarda istifadə edilməyib. Onlar bağlansın?</translation>
+<translation id="1089791933924803646">Digər tətbiqlərdə Chrome təklifləri əldə edin</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> il əvvəl yaradıldı}other{<ph name="NUM_YEARS_MANY" /> il əvvəl yaradıldı}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Qeyri-aktiv tab və tab qrupları 1 ay sonra bağlanacaq}other{Qeyri-aktiv tab və tab qrupları <ph name="MONTH_COUNT_MANY" /> ay sonra bağlanacaq}}</translation>
 <translation id="1173894706177603556">Adını dəyişin</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Qrupa tab əlavə edin}other{Qrupa tablar əlavə edin}}</translation>
 <translation id="8138067144082174140">14 gün qeyri-aktiv olduqdan sonra</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> tabdan ibarət <ph name="TITLE_OF_GROUP" /> tab qrupunu genişləndirin, rəng <ph name="COLOR_NAME" />.}other{<ph name="TABS_COUNT_MANY" /> tabdan ibarət <ph name="TITLE_OF_GROUP" /> tab qrupunu genişləndirin, rəng <ph name="COLOR_NAME" />.}}</translation>
+<translation id="8172214054247281626">Seçilmiş tətbiqlərdə təkliflər almaq üçün son brauzer tarixçəsi kimi brauzer datasını paylaşın. Bu data cihazınızda təhlükəsiz şəkildə emal edilir.</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{Tabın bərkidilməsini ləğv edin}other{Tabların bərkidilməsini ləğv edin}}</translation>
 <translation id="8205266828577616993">Tabı yuxarıya daşıyın</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> dəqiqə əvvəl yenilənib}other{<ph name="NUM_MINS_MANY" /> dəqiqə əvvəl yenilənib}}</translation>

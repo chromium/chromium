@@ -336,6 +336,7 @@
 <translation id="1235458158152011030">ज्ञात नेटवर्क</translation>
 <translation id="123578888592755962">डिस्क भरली</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{मजकूर}other{# मजकूर}}</translation>
+<translation id="1236564420496412501">तुम्हाला पाठवायच्या असलेल्या लिंकसह टॅबवर राइट-क्लिक करा</translation>
 <translation id="1237950098253310325">कंट्रोल आणि अ‍ॅरो अप किंवा अ‍ॅरो डाउन वापरून <ph name="BUTTON_NAME" /> पुन्हा क्रमाने लावा</translation>
 <translation id="1238293488628890871">प्रोफाइल स्विच करायची आहे का?</translation>
 <translation id="1239841552505950173">ॲप्लिकेशन लाँच करा</translation>
@@ -645,6 +646,7 @@
 <translation id="1496514951988037011">वापरकर्ता नाव</translation>
 <translation id="1498498210836053409">मजकूर संपादित करताना स्टिकी मोड बंद करा (स्मार्ट स्टिकी मोड)</translation>
 <translation id="1499041187027566160">आवाज वाढवा</translation>
+<translation id="1499948601784722399">साइट विनंत्या</translation>
 <translation id="1500297251995790841">अज्ञात डिव्हाइस [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">सपोर्ट नसलेल्या Chrome अ‍ॅप्सबद्दल अधिक जाणून घ्या</translation>
 <translation id="1501480321619201731">गट हटवा</translation>
@@ -1141,6 +1143,7 @@
 <translation id="1873920700418191231"><ph name="WEBSITE" /> साठी पुन्हा परवानग्यांना अनुमती द्या</translation>
 <translation id="1874248162548993294">कोणत्याही जाहिराती दाखवण्याची अनुमती आहे</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{टॅब दुसर्‍या विंडोवर हलवा}other{टॅब दुसर्‍या विंडोवर हलवा}}</translation>
+<translation id="1875939313868351773">तृतीय पक्ष कुकी आणि साइट डेटा</translation>
 <translation id="1877377290348678128">लेबल (पर्यायी)</translation>
 <translation id="1877860345998737529">स्विच ॲक्शन असाइनमेंट</translation>
 <translation id="1878477879455105085">उघडला</translation>
@@ -1437,6 +1440,7 @@
 <translation id="2111670510994270194">उजवीकडील नवीन टॅब</translation>
 <translation id="2111778868023567359">तुम्हाला या पेजवर टॅब गट पुन्हा दिसणार नाहीत</translation>
 <translation id="2112554630428445878">स्वागत आहे, <ph name="USERNAME" /></translation>
+<translation id="2113314491145966441">MacOS मधून इंपोर्ट केलेली प्रमाणपत्रे पहा</translation>
 <translation id="21133533946938348">टॅब पिन करा</translation>
 <translation id="2113479184312716848">&amp;फाइल उघडा...</translation>
 <translation id="2114326799768592691">रीलोड आणि फ्रेम करा</translation>
@@ -2106,6 +2110,7 @@
 <translation id="262373406453641243">कोलमॅक</translation>
 <translation id="2624045385113367716">MIDI डिव्हाइस नियंत्रित आणि रीप्रोग्राम करण्याला अनुमती आहे</translation>
 <translation id="2624142942574147739">हे पेज तुमचा कॅमेरा आणि मायक्रोफोन अ‍ॅक्सेस करत आहे.</translation>
+<translation id="2626746300781063303">या विनंतीला प्रतिसाद देताना Google सह साइट त्यांची विवेकबुद्धी वापरतात</translation>
 <translation id="2626799779920242286">कृपया नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="2627424346328942291">शेअर करू शकत नाही</translation>
 <translation id="2627970398976286795">Gemini Spark शी संबंधित धोक्यांचे पुनरावलोकन करा</translation>
@@ -2677,6 +2682,7 @@
 <translation id="3031417829280473749">एजंट X</translation>
 <translation id="3031532026314193077">राइट-क्लिक करण्यासाठी टचपॅड आणि कीबोर्ड वापरा</translation>
 <translation id="3031557471081358569">इंपोर्ट करण्यासाठी आयटम निवडा:</translation>
+<translation id="3032115590613559078">MacOS वरून इंपोर्ट केलेली प्रमाणपत्रे व्यवस्थापित करा</translation>
 <translation id="3032204772252313646">ऑटो कॅप्शन</translation>
 <translation id="3032272345862007156">अलीकडील AI थीम <ph name="INDEX" /></translation>
 <translation id="3033167916029856961">व्यत्यय आणू नका सुरू केले आहे</translation>
@@ -3415,6 +3421,7 @@
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} खाते हाच पासवर्ड वापरत आहे}other{{COUNT} खाती हाच पासवर्ड वापरत आहेत}}</translation>
 <translation id="3605515937536882518">फॉर्मची मूल्ये अपडेट केली आहेत</translation>
 <translation id="3605780360466892872">बटनडाउन</translation>
+<translation id="3605907346217095465">MacOS मधून इंपोर्ट केलेली</translation>
 <translation id="3607799000129481474"><ph name="SITE" /> ला हे तुम्हीच असल्याची पडताळणी करण्याची आवश्यकता आहे</translation>
 <translation id="3608460311600621471">कृपया हा डेटा प्रिंट करण्याचे कारण एंटर करा:</translation>
 <translation id="3608730769702025110">पायरी ४ पैकी ३: वैयक्तिकरीत्या ओळखण्यायोग्य माहितीचे पुनरावलोकन करा</translation>
@@ -5964,6 +5971,7 @@
 <translation id="5563460629751333413">आम्हाला सर्व्हरशी कनेक्ट करण्यात समस्या येत आहे. कृपया नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="5563698194918415761">अपडेट हे नेटवर्क धोरण किंवा प्रॉक्सी सर्व्हरद्वारे ब्लॉक केले गेले होते.</translation>
 <translation id="5563824734298958390">टॅब गटामधून बाहेर पडायचे आहे का?</translation>
+<translation id="5565606467367006469">तुमच्या फोनवर किंवा तुम्ही साइन इन केलेल्या इतर कोणत्याही डिव्हाइसवर झटपट लिंक पाठवा</translation>
 <translation id="5565735124758917034">ॲक्टिव्ह</translation>
 <translation id="5568069709869097550">साइन इन करणे शक्य नाही</translation>
 <translation id="5568525251731145240"><ph name="SITE_NAME" /> साठी, त्याच्या अंतर्गत सर्व साइटसाठी आणि त्याची इंस्टॉल केलेली अ‍ॅप्स यांच्याकरिता साइट डेटा व परवानग्या हटवायच्या आहेत का?</translation>
@@ -6496,6 +6504,7 @@
 <translation id="5992652489368666106">बॉर्डर नाही</translation>
 <translation id="5996490984199062729">तुमची प्रोफाइल सेट केलेली नाही</translation>
 <translation id="5997337190805127100">साइट ॲक्सेसबद्दल अधिक जाणून घ्या</translation>
+<translation id="5997802678829218272">तुम्ही Chrome मध्ये समान खाते वापरून साइन इन केलेले असते, तेव्हा कोणत्याही डिव्हाइसदरम्यान झटपट लिंक पाठवू शकता</translation>
 <translation id="5998458948782718639">ऑटोफिलमध्ये सुधारणा करण्यात मदत करा</translation>
 <translation id="5998976983953384016">कन्फर्म करून सुरू करा</translation>
 <translation id="5999630716831179808">व्हॉइस</translation>
@@ -7727,6 +7736,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6944854424004126054">विंडो पुनर्संचयित करा</translation>
 <translation id="6945221475159498467">निवडा</translation>
 <translation id="694592694773692225">या पेजवर रीडिरेक्‍ट ब्लॉक केले.</translation>
+<translation id="6946083836254858787">“तुमच्या डिव्हाइसवर पाठवा” निवडा आणि तुम्हाला लिंक कुठे मिळवायची आहे ते निवडा</translation>
 <translation id="6949089178006131285">ChromeOS Flex नेटवर्कशी संबंधित माहिती वाचा</translation>
 <translation id="6949434160682548041">पासवर्ड (पर्यायी)</translation>
 <translation id="6950143189069683062">मेमरी तपशील</translation>
@@ -8242,6 +8252,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7357271391997763660">पासवर्ड तपासणी रन करायची आहे का?</translation>
 <translation id="735745346212279324">VPN डिस्कनेक्ट केले</translation>
 <translation id="7359680654975233185">टॅब कास्ट करता आला नाही</translation>
+<translation id="7360162988015675077">तुम्ही भेट देता त्या साइट, Google च्या समावेशासह, या विनंतीला कसा प्रतिसाद देतात हे निर्धारित करण्यासाठी जबाबदार असतात. तुमच्या प्रदेशातील कायद्यांनुसार, साइट तुमच्या डेटाची विक्री आणि शेअरिंग किंवा पर्सनलाइझ केलेल्या जाहिरातींसाठी त्याचा वापर मर्यादित करून प्रतिसाद देऊ शकतात.</translation>
 <translation id="7360257054721917104">सेव्ह केलेली डेस्क आणि टेंप्लेट पाहत आहे. नेव्हिगेट करण्यासाठी टॅब प्रेस करा.</translation>
 <translation id="7360333718677093875">इमोजी पिकार</translation>
 <translation id="7360460316021916328">विंडो निवडा</translation>
@@ -8799,6 +8810,7 @@ I feel - विटांची इमारत</translation>
 <translation id="777852709704682967">&amp;बुकमार्क व्यवस्थापक उघडा</translation>
 <translation id="7779840061887151693">डिस्प्ले</translation>
 <translation id="7780716468751073938">Gemini सोबतची तुमची संभाषणे किंवा तुमचा <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />Google Workspace डेटा<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> यांचे पुनरावलोकन केले जाणार नाही अथवा जनरेटिव्ह AI मॉडेलमध्ये सुधारणा करण्यासाठी त्यांचा वापर केला जाणार नाही. Gemini हे AI आहे आणि ते चुका करू शकते. काही आशय प्रत्येकासाठी योग्य नसू शकतो.</translation>
+<translation id="7780992949171378848">तुमच्या डेटाच्या वापराबाबत साइटना निवड रद्द करण्याची विनंती पाठवा</translation>
 <translation id="7782102568078991263">Google कडून कोणत्याही आणखी सूचना नाहीत</translation>
 <translation id="7782717250816686129">लॉगिन स्क्रीनवर सतत वापरात असलेला डेटा स्टोअर करा आणि सेशनमध्ये क्रेडेंशियल घाला.</translation>
 <translation id="7784020347632229094">कीबोर्ड शॉर्टकटबद्दल अधिक जाणून घ्या</translation>
@@ -9106,6 +9118,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8018192911041116887">टॅब शेअर करा</translation>
 <translation id="8018298733481692628">ही प्रोफाइल हटवायची आहे का?</translation>
 <translation id="8018313076035239964">वेबसाइट कोणती माहिती वापरू शकतात आणि कोणती आशय तुम्हाला दर्शवू शकतात ते नियंत्रित करा</translation>
+<translation id="801927266093816478">साइट कुकी आणि तुमचा डेटा कसा वापरतात हे व्यवस्थापित करा</translation>
 <translation id="802154636333426148">डाउनलोड अयशस्वी झाले</translation>
 <translation id="8023133589013344428">ChromeOS Flex सेटिंग्जमध्ये भाषा व्यवस्थापित करा</translation>
 <translation id="8023801379949507775">एक्स्टेंशन त्वरित अपडेट करा</translation>

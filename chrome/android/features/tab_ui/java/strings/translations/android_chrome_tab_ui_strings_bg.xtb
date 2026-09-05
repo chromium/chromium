@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Създадено преди <ph name="NUM_WEEKS_ONE" /> седмица}other{Създадено преди <ph name="NUM_WEEKS_MANY" /> седмици}}</translation>
 <translation id="1063300264396686489">Автоматично отваряне на групи раздели от други устройства</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> от разделите ви не са използвани наскоро. Искате ли да ги затворите?</translation>
+<translation id="1089791933924803646">Получаване на предложения от Chrome в други приложения</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Създадено преди <ph name="NUM_YEARS_ONE" /> година}other{Създадено преди <ph name="NUM_YEARS_MANY" /> години}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Неактивните раздели и групи ще бъдат затворени след 1 месец}other{Неактивните раздели и групи ще бъдат затворени след <ph name="MONTH_COUNT_MANY" /> месеца}}</translation>
 <translation id="1173894706177603556">Преименуване</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Добавяне на раздела към група}other{Добавяне на разделите към група}}</translation>
 <translation id="8138067144082174140">След 14 дни неактивност</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Разгъване на групата раздели „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="COLOR_NAME" /> цвят, в която има <ph name="TABS_COUNT_ONE" /> раздел.}other{Разгъване на групата раздели „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="COLOR_NAME" /> цвят, в която има <ph name="TABS_COUNT_MANY" /> раздела.}}</translation>
+<translation id="8172214054247281626">Споделяйте данни за сърфирането, като например скорошната си история на сърфиране, за да получавате предложения в определени приложения. Тези данни се обработват по сигурен начин на устройството ви.</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{Освобождаване на раздела}other{Освобождаване на разделите}}</translation>
 <translation id="8205266828577616993">Преместване на раздела нагоре</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Актуализирано преди <ph name="NUM_MINS_ONE" /> минута}other{Актуализирано преди <ph name="NUM_MINS_MANY" /> минути}}</translation>

@@ -57,6 +57,7 @@
 <translation id="1181037720776840403">Rimuovi</translation>
 <translation id="1183189057400844278">Verifica la tua identità per assicurarti di poter usare sempre le password nel tuo Account Google</translation>
 <translation id="1187810343066461819">Elimina anche preferiti, cronologia e altri dati da questa auto</translation>
+<translation id="1191987227666124897">Richiesta di revoca del consenso</translation>
 <translation id="1193729455103054076">Vuoi usare una password efficace?</translation>
 <translation id="11947597112837849">indirizzo email</translation>
 <translation id="1197267115302279827">Sposta i Preferiti</translation>
@@ -1341,6 +1342,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="634208815998129842">Task Manager</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 e altri <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 e altri <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">Segna come letto</translation>
+<translation id="63490081267265251">Spetta ai siti che visiti, incluso Google, stabilire come rispondere a questa richiesta. In base alle leggi vigenti nella tua regione, i siti potrebbero rispondere limitando la vendita e la condivisione dei tuoi dati o il loro utilizzo per gli annunci personalizzati. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="6350745006329795504">Gestisci i tuoi dispositivi</translation>
 <translation id="6356893102071098867">Verifica di aver scelto l'account corretto</translation>
 <translation id="6364438453358674297">Rimuovere il suggerimento dalla cronologia?</translation>
@@ -1665,6 +1667,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7493994139787901920"><ph name="VERSION" /> (Ultimo aggiornamento: <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Attendi…</translation>
 <translation id="7499065150275272675"><ph name="TAB_TITLE" />, scheda con audio disattivato fissata</translation>
+<translation id="7500851014030446046">Download del PDF in corso…</translation>
 <translation id="7501135638693251872">Tutti i Preferiti</translation>
 <translation id="7507207699631365376">Vedi le <ph name="BEGIN_LINK" />norme sulla privacy<ph name="END_LINK" /> del fornitore di servizi</translation>
 <translation id="750886945254958667">Mantieni questo gruppo per aggiungere schede in un secondo momento o esci se non vuoi più accedervi</translation>
@@ -1732,6 +1735,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 e altri <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 e altri <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="777637629667389858">Se hai eseguito l'accesso, ti protegge nei servizi Google.</translation>
 <translation id="7778840695157240389">Ricontrolla più tardi se ci sono nuove notizie</translation>
+<translation id="7780992949171378848">Invia una richiesta di revoca del consenso ai siti in merito all'utilizzo dei tuoi dati</translation>
 <translation id="7791543448312431591">Aggiungi</translation>
 <translation id="7792388396321542707">Interrompi condivisione</translation>
 <translation id="780287761701992588">Trova i preferiti, le password e altri dati su tutti i dispositivi</translation>

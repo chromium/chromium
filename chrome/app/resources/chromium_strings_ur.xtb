@@ -11,6 +11,7 @@
 کچھ خصوصیات غیر دستیاب ہو سکتی ہیں اور ترجیحات میں تبدیلیاں محفوظ نہیں ہونگی۔</translation>
 <translation id="1083934481477628225">‏آپ کے والدین نے "Chromium کی خاطر سائٹس، ایپس اور ایکسٹینشنز کے لیے اجازتوں" کو آف کر دیا ہے</translation>
 <translation id="1090946077924227754">‏کسی مخصوص Chromium خصوصیت یا ایکسٹینشن کو تلاش کرنے کے لیے، ایڈریس بار میں اس کا شارٹ کٹ ٹائپ کریں، پھر اپنی منتخب کردہ کی بورڈ کلید دبائیں</translation>
+<translation id="1098493699368672217">‏سسٹم ٹرے میں Chromium کے ساتھ تلاش دکھائیں اور کی بورڈ شارٹ کٹ آن کریں</translation>
 <translation id="1104942323762546749">‏Chromium آپ کے پاس ورڈز برآمد کرنا چاہتا ہے۔ اس کی اجازت دینے کیلئے، اپنا Windows پاس ورڈ ٹائپ کریں۔</translation>
 <translation id="112640046208448578">چیزوں یا مقامات کی شناخت کریں اور ٹیکسٹ کو کاپی یا اس کا ترجمہ کریں۔ جب آپ تصاویر کا استعمال کر کے تلاش استعمال کرتے ہیں تو صفحہ کا اسکرین شاٹ سرور کو بھیجا جاتا ہے۔ <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">‏Chromium آپ کا ڈیفالٹ براؤزر ہے</translation>
@@ -306,6 +307,7 @@
 <translation id="4298125729853015961">‏‫Chromium سے پاس ورڈز برآمد کریں</translation>
 <translation id="4304713468139749426">پاس ورڈ مینیجر</translation>
 <translation id="4334241893986177674">اس اسکرین شاٹ کو تلاش کریں</translation>
+<translation id="4368547723231502008">‏‫Chromium کے چھوٹا کیے جانے پر بھی کہیں سے بھی تلاش کریں اور سوالات پوچھیں</translation>
 <translation id="4384331407722351213">‏‫Windows شروع ہونے پر Chromium شروع کریں</translation>
 <translation id="4400772909124543403">کوئی اپ ڈیٹ دستیاب نہیں ہے</translation>
 <translation id="4407044323746248786">‏بہر حال Chromium کو بند کریں؟</translation>
@@ -335,6 +337,7 @@
 <translation id="4613863813562375431">‏ChromiumOS ورژن</translation>
 <translation id="4621240073146040695">‏تقریباً اپ ٹو ڈیٹ! اپ ڈیٹ کرنے کو مکمل کرنے کیلئے Chromium کو دوبارہ شروع کریں۔</translation>
 <translation id="4625064703209785397">‏‫Chromium کے V8 انجن کے ساتھ سائٹس کو تیز رفتار بناتا ہے لیکن Chromium کو حملوں کے خلاف قدرے کم مزاحم بناتا ہے</translation>
+<translation id="4626321472657185181">‏‫Chromium کے ساتھ تلاش کھولیں</translation>
 <translation id="4665829708273112819">‏وارننگ: Chromium ایکسٹینشنز کو آپ کی براؤزنگ سرگزشت ریکارڈ کرنے سے نہیں روک سکتا۔ اس ایکسٹینشن کو پوشیدگی وضع میں غیر فعال کرنے کے لیے اس اختیار کو غیر منتخب کریں۔</translation>
 <translation id="4673151026126227699">‏اگر آپ Chromium کے استعمال کی رپورٹس کا بھی اشتراک کرتے ہیں تو ان رپورٹس میں آپ کے ملاحظہ کردہ URLs شامل ہوں گے</translation>
 <translation id="4673710618874938871">بطور <ph name="USER_NAME" />، رکنیت سائن ان ہے۔ اکاؤنٹ مینیو کھولیں</translation>
@@ -376,6 +379,7 @@
 <translation id="5286907366254680517">پتا چلا</translation>
 <translation id="5289287148052354622">‏‫Chromium ایپ حاصل کریں</translation>
 <translation id="5294316920224716406">‏پوشیدگی وضع میں براؤز کرتے وقت، غیر محفوظ کنکشن کا استعمال کرتے ہوئے کسی سائٹ کو لوڈ کرنے سے پہلے Chromium آپ کو متنبہ کرے گا</translation>
+<translation id="5296581118566748922">‏‫Chromium کے ساتھ تلاش کریں</translation>
 <translation id="5313228254328109263">‏‫Chromium اپڈیٹر انٹرنل سروس</translation>
 <translation id="5324450571874973775">‏Chromium میں Gemini کی دیگر خصوصیات کے ساتھ ان کا بھرپور فائدہ اٹھائیں</translation>
 <translation id="5346389065299425353">متعدد ٹیبز، فائلز اور ٹولز شامل کر کے اپنی تلاش کو گہرا کریں</translation>
@@ -386,6 +390,7 @@
 <translation id="5358375970380395591">‏آپ زیر انتظام اکاؤنٹ سے سائن ان کر رہے ہیں اور اس کے منتظم کو اپنے Chromium پروفائل پر کنٹرول دے رہے ہیں. آپ کا Chromium کا ڈیٹا، جیسے آپ کی ایپس، بُک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات <ph name="USER_NAME" /> سے مستقل طور پر مربوط ہو جائیں گی۔ آپ Google اکاؤنٹس ڈیش بورڈ کے ذریعہ یا ڈیٹا حذف کر سکیں گے لیکن آپ اس ڈیٹا کو دوسرے اکاؤنٹ کے ساتھ وابستہ نہیں کر سکیں گے۔ <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">اضافی کوڈ: <ph name="EXTRA_CODE" />۔</translation>
 <translation id="5377622451696208284">‏ذاتی نوعیت سازی حاصل کرنے کے لیے، ویب اور ایپ سرگرمی میں Chromium شامل کریں</translation>
+<translation id="5382964351116519680">‏‫Chromium کے ساتھ تلاش کھولیں</translation>
 <translation id="5383439451358640070">‏Chromium کے کچھ فائلز کو مسدود کرنے کی وجہ جانیں</translation>
 <translation id="5386450000063123300">‏Chromium کو اپ ڈیٹ کیا جا رہا ہے (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">‏Chromium میں سائن ان کی اجازت دیں</translation>
@@ -505,6 +510,7 @@
 <translation id="651535675648445253">‏شارٹ کٹس Chromium میں کھلتے ہیں</translation>
 <translation id="6539122709674868420">‏آپ کی تنظیم Chromium کو بند کر دیتی ہے جب اسے <ph name="TIMEOUT_DURATION" /> کے لیے استعمال نہیں کیا جاتا ہے۔ براؤزنگ ڈیٹا کو حذف کر دیا گیا تھا۔ اس میں سرگزشت، آٹو فل اور ڈاؤن لوڈز شامل ہو سکتے ہیں۔</translation>
 <translation id="6542839706527980775">‏ہر پروفائل میں بُک مارکس، سرگزشت اور پاس ورڈز وغیرہ جیسی Chromium کی اپنی ذاتی معلومات ہوتی ہے</translation>
+<translation id="6556755379298048869">کی بورڈ شارٹ کٹ کے ساتھ تلاش کریں۔</translation>
 <translation id="6563921047760808519">‏اس بارے میں مزید جانیں کہ <ph name="BEGIN_LINK" />Chromium آپ کے ڈیٹا کو کس طرح نجی رکھتا ہے<ph name="END_LINK" /></translation>
 <translation id="6564039629497156115">‏اس ترتیب پر تبدیلیوں کا اطلاق Chromium ری سٹارٹ ہونے کے بعد ہوگا۔</translation>
 <translation id="6567032987737689854">‏‫Chromium کے مرکزی مینیو میں ایکسٹینشنز پر کلک کر کے اپنی ایکسٹینشنز کا نظم کریں۔</translation>
@@ -539,6 +545,7 @@
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" />‎</translation>
 <translation id="6859580922007887573">جاری رکھنے کے لیے ٹیب کلید دبائیں</translation>
 <translation id="6862030660799253820">تصاویر کا استعمال کر کے تلاش کے ساتھ اس تصویر کو تلاش کریں</translation>
+<translation id="6869568587896659271">ایڈریس بار کے نیچے ویب سائٹس تک آسان رسائی</translation>
 <translation id="6873893289264747459">‏Chromium کو پتا چلا ہے کہ "<ph name="EXTENSION_NAME" />" میلوئیر پر مشتمل ہے</translation>
 <translation id="6877155553248388166">تلاش کے حلقے کا نیچے والا بایاں کونا: <ph name="RIGHT" /> فیصد بائیں، <ph name="BOTTOM" /> فیصد نیچے</translation>
 <translation id="6896758677409633944">کاپی کریں</translation>
@@ -643,6 +650,7 @@ Chromium آپ کی ترتیبات کو بازیافت کرنے سے قاصر ہ�
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">‏آپ کے انٹرنیٹ ٹریفک تک رسائی والے لوگوں کے لیے یہ دیکھنا مشکل بنائیں کہ آپ کون سی سائٹس ملاحظہ کرتے ہیں۔ Chromium DNS (ڈومین ناموں کے نظم) میں سائٹ کا IP پتہ تلاش کرنے کے لیے ایک محفوظ کنکشن کا استعمال کرتا ہے۔</translation>
 <translation id="7810005234485217901">آپ آسان رسائی کے لیے تصاویر کا استعمال کر کے تلاش کو پن کر سکتے ہیں</translation>
+<translation id="7828527096541974699">‏منتخب کریں کہ Chromium کے ساتھ کس چیز کا اشتراک کرنا ہے</translation>
 <translation id="7828947555739565424">‏اس آلے پر اس اکاؤنٹ کے ساتھ ایک Chromium پروفائل پہلے سے موجود ہے</translation>
 <translation id="7845233973568007926">انسٹال کرنے کا شکریہ۔ آپ کو <ph name="BUNDLE_NAME" /> استعمال کرنے سے پہلے اپنا کمپیوٹر لازمی طور سے ری اسٹارٹ کرنا چاہیے۔</translation>
 <translation id="7847673590271334840">‏آپ کا سرچ انجن Chromium کے باہر سے تبدیل کیا گیا تھا۔ آپ کی حفاظت کیلئے، Chromium نے اسے اس کے اصل ڈیفالٹ پر ری سیٹ کر دیا۔ <ph name="LEARN_MORE_LINK" /></translation>
@@ -762,6 +770,7 @@ Chromium آپ کی ترتیبات کو بازیافت کرنے سے قاصر ہ�
             • کوکیز اور سائٹ کا دیگر عارضی ڈیٹا حذف ہو جائے گا
             <ph name="LINE_BREAKS" />
             بُک مارکس، سرگزشت اور محفوظ کردہ پاس ورڈز متاثر نہیں ہوں گے۔</translation>
+<translation id="8966875421152977384">‏‫Chromium سائٹ کے شارٹ کٹس دکھائیں</translation>
 <translation id="897581876605952338">‏Chromium Enterprise لوگو</translation>
 <translation id="8980139959902937527">‏اپنے <ph name="DEVICE_TYPE" /> پر Chromium ایپ کے ساتھ Google کی حفاظت کو چلتے پھرتے لے جائیں</translation>
 <translation id="8981150672034878610">‏‫Chromium شروع نہیں کیا جا سکتا کیونکہ آپ کی پروفائل کھولتے وقت کچھ غلط ہو گیا۔ ‫Chromium کو ری اسٹارٹ کرنے کی کوشش کریں۔</translation>
@@ -770,6 +779,7 @@ Chromium آپ کی ترتیبات کو بازیافت کرنے سے قاصر ہ�
 <translation id="9018218886431812662">انسٹالیشن مکمل ہو گئی</translation>
 <translation id="9019929317751753759">‏Chromium کو محفوظ تر بنانے کیلئے، ہم نے مندرجہ ذیل ایکسٹینشن کو غیر فعال کر دیا ہے جو <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> میں مندرج نہیں ہے اور ممکن ہے کہ اسے آپ کے علم کے بغیر شامل کر دیا گیا ہو۔</translation>
 <translation id="9022552996538154597">‏Chromium میں سائن ان کریں</translation>
+<translation id="9035791714111278917">‏‫Mac مینیو بار میں Chromium کے ساتھ تلاش دکھائیں اور کی بورڈ شارٹ کٹ آن کریں</translation>
 <translation id="904366664621834601">‏Chromium نے اس ڈاؤن لوڈ کو مسدود کر دیا کیونکہ آرکائیو فائل میں دوسری فائلز شامل ہیں جو میلوئیر کو چھپا سکتی ہیں</translation>
 <translation id="9053882453960391422">‏اپنے پاس ورڈز، بُک مارکس اور سرگزشت کو آلات پر مکمل طور پر مطابقت پذیر رکھیں۔ اپنے ڈیفالٹ براؤزر کو Chromium میں اپ ڈیٹ کر کے ان خصوصیات تک آسانی سے رسائی حاصل کریں جنہیں آپ جانتے اور پسند کرتے ہیں۔ فوری رسائی کے لیے Chromium کو آپ کے ٹاسک بار میں پن کر دیا جائے گا۔</translation>
 <translation id="9056398481763999048">‏اپنے فون پر Chromium ایپ کے ساتھ Google کے بہترین AI ٹولز کا استعمال کریں</translation>

@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Kiliundwa wiki <ph name="NUM_WEEKS_ONE" /> iliyopita}other{Kiliundwa wiki <ph name="NUM_WEEKS_MANY" /> zilizopita}}</translation>
 <translation id="1063300264396686489">Fungua kiotomatiki vichupo vya vikundi kwenye vifaa vingine</translation>
 <translation id="1075622780330595106">Hujatumia vichupo vyako <ph name="NUMBER_OF_TABS" /> hivi karibuni. Je, tuvifunge?</translation>
+<translation id="1089791933924803646">Pata mapendekezo ya Chrome kwenye programu nyingine</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Kiliundwa mwaka <ph name="NUM_YEARS_ONE" /> uliopita}other{Kiliundwa miaka <ph name="NUM_YEARS_MANY" /> iliyopita}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Vichupo na vikundi vya vichupo visivyotumika vitafungwa baada ya mwezi 1}other{Vichupo na vikundi vya vichupo visivyotumika vitafungwa baada ya miezi <ph name="MONTH_COUNT_MANY" />}}</translation>
 <translation id="1173894706177603556">Ipe jina jipya</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Weka kichupo kwenye kikundi}other{Weka vichupo kwenye kikundi}}</translation>
 <translation id="8138067144082174140">Baada ya kutotumiwa kwa siku 14</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Panua kikundi cha vichupo cha <ph name="TITLE_OF_GROUP" /> chenye kichupo <ph name="TABS_COUNT_ONE" />, cha rangi ya <ph name="COLOR_NAME" />.}other{Panua kikundi cha vichupo cha <ph name="TITLE_OF_GROUP" /> chenye vichupo <ph name="TABS_COUNT_MANY" />, vya rangi ya <ph name="COLOR_NAME" />.}}</translation>
+<translation id="8172214054247281626">Ruhusu data ya kuvinjari ifikiwe, kama vile historia yako ya kuvinjari ya hivi majuzi, ili upate mapendekezo kwenye programu ulizochagua. Data hii huchakatwa kwa njia salama kwenye kifaa chako.</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{Bandua kichupo}other{Bandua vichupo}}</translation>
 <translation id="8205266828577616993">Sogeza kichupo juu</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Kilisasishwa dakika <ph name="NUM_MINS_ONE" /> iliyopita}other{Kilisasishwa dakika <ph name="NUM_MINS_MANY" /> zilizopita}}</translation>

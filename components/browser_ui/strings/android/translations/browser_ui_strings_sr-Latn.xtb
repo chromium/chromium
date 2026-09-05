@@ -7,6 +7,7 @@
 <translation id="1046742265332833834">Plava tema</translation>
 <translation id="1070329623210597193">Fajlovi koje ovaj sajt može da pregleda ili menja</translation>
 <translation id="1074758928858737435">Možete da zatražite da vidite verziju sajtova za računare</translation>
+<translation id="1089791933924803646">Dobijajte Chrome predloge u drugim aplikacijama</translation>
 <translation id="1109482864356262001">Funkcije koje zahtevaju senzore pokreta i svetlosti neće raditi</translation>
 <translation id="1126523729897810826">Obavite ove predložene radnje u nastavku da biste iskoristili Chrome na najbolji način</translation>
 <translation id="113098737392899175">Krećite se stranicama pomoću kursora za tekst kada je priključena tastatura</translation>
@@ -453,6 +454,7 @@
 <translation id="5668404140385795438">Odbijanje zahteva veb-sajta da se spreči uvećavanje</translation>
 <translation id="5668843533782548925">Sajtovi su sporiji, ali bezbedniji</translation>
 <translation id="5677928146339483299">Blokirano</translation>
+<translation id="5679089750838794164">Chrome sada može da vam prikazuje predloge u drugim aplikacijama na osnovu podataka pregledanja, poput nedavne istorije pregledanja. Ti podaci se bezbedno obrađuju na uređaju. To možete da isključite u svakom trenutku u Chrome podešavanjima.</translation>
 <translation id="5689516760719285838">Lokacija</translation>
 <translation id="5690795753582697420">Kamera je isključena u Android podešavanjima</translation>
 <translation id="5700761515355162635">Kolačići trećih strana su dozvoljeni</translation>
@@ -507,6 +509,7 @@
 <translation id="6085954183010297841">Želite da izbrišete dozvolu za izmene fajlova? <ph name="FILE" /></translation>
 <translation id="6104860901391833523">Kada je uključeno, sajtovi mogu automatski da uđu u sliku u slici. Kada je isključeno, sajtovi ne mogu automatski da ulaze u sliku u slici.</translation>
 <translation id="6120483543004435978">Kada je uključeno, sajtovi mogu da zatraže da znaju kada aktivno koristite uređaj. Kada je isključeno, sajtovi ne mogu da znaju kada aktivno koristite uređaj.</translation>
+<translation id="612871598708395517">Sakrij opciju Dobijajte Chrome predloge u drugim aplikacijama</translation>
 <translation id="6132075343662013154">Chrome će vam ponuditi da sačuva lozinku</translation>
 <translation id="615886654739818377">Ne dozvoljavaj sajtovima da upravljaju prozorima na svim ekranima</translation>
 <translation id="6165508094623778733">Saznajte više</translation>

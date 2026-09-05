@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{创建时间：<ph name="NUM_WEEKS_ONE" /> 周前}other{创建时间：<ph name="NUM_WEEKS_MANY" /> 周前}}</translation>
 <translation id="1063300264396686489">自动打开其他设备的标签页分组</translation>
 <translation id="1075622780330595106">您有 <ph name="NUMBER_OF_TABS" /> 个标签页最近未被使用过。关闭它们？</translation>
+<translation id="1089791933924803646">在其他应用中获取 Chrome 建议</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{创建时间：<ph name="NUM_YEARS_ONE" /> 年前}other{创建时间：<ph name="NUM_YEARS_MANY" /> 年前}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{闲置标签页和分组将在 1 个月后关闭}other{闲置标签页和分组将在 <ph name="MONTH_COUNT_MANY" /> 个月后关闭}}</translation>
 <translation id="1173894706177603556">重命名</translation>
@@ -71,7 +72,7 @@
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{创建时间：<ph name="NUM_HOURS_ONE" /> 小时前}other{创建时间：<ph name="NUM_HOURS_MANY" /> 小时前}}</translation>
 <translation id="2801787514987684416">查看商店信息？</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{已关闭 <ph name="ONE_CLOSED" /> 个标签页}other{已关闭 <ph name="MANY_CLOSED" /> 个标签页}}</translation>
-<translation id="2894757982205307093">在组内添加新标签页</translation>
+<translation id="2894757982205307093">在分组内添加新标签页</translation>
 <translation id="2918484639460781603">前往“设置”</translation>
 <translation id="2928243913527329289">Google | 关于此商店</translation>
 <translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{已选择 <ph name="ITEMS_COUNT_ONE" /> 项}other{已选择 <ph name="ITEMS_COUNT_MANY" /> 项}}</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{向分组中添加标签页}other{向分组中添加标签页}}</translation>
 <translation id="8138067144082174140">闲置 14 天后</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{展开包含 <ph name="TABS_COUNT_ONE" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”标签页分组，颜色为<ph name="COLOR_NAME" />。}other{展开包含 <ph name="TABS_COUNT_MANY" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”标签页分组，颜色为<ph name="COLOR_NAME" />。}}</translation>
+<translation id="8172214054247281626">分享浏览数据（例如近期浏览记录），以便在所选应用中获取建议。这些数据会在您的设备上安全地进行处理。</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{取消固定标签页}other{取消固定标签页}}</translation>
 <translation id="8205266828577616993">上移标签页</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> 分钟前更新}other{<ph name="NUM_MINS_MANY" /> 分钟前更新}}</translation>

@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Создадено пред <ph name="NUM_WEEKS_ONE" /> седмица}one{Создадено пред <ph name="NUM_WEEKS_MANY" /> седмица}other{Создадено пред <ph name="NUM_WEEKS_MANY" /> седмици}}</translation>
 <translation id="1063300264396686489">Автоматски отворај групи картички од други уреди</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> ваши картички не се користени во последно време. Дали да се затворат?</translation>
+<translation id="1089791933924803646">Добивајте предлози во Chrome во други апликации</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Создадено пред <ph name="NUM_YEARS_ONE" /> година}one{Создадено пред <ph name="NUM_YEARS_MANY" /> година}other{Создадено пред <ph name="NUM_YEARS_MANY" /> години}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Неактивните картички и групи ќе се затворат по 1 месец}one{Неактивните картички и групи ќе се затворат по <ph name="MONTH_COUNT_MANY" /> месец}other{Неактивните картички и групи ќе се затворат по <ph name="MONTH_COUNT_MANY" /> месеци}}</translation>
 <translation id="1173894706177603556">Преименувај</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Додајте картичка во групата}one{Додајте картички во групата}other{Додајте картички во групата}}</translation>
 <translation id="8138067144082174140">По неактивност од 14 дена</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Прошири ја групата картички „<ph name="TITLE_OF_GROUP" />“ со <ph name="TABS_COUNT_ONE" /> картичка, во <ph name="COLOR_NAME" /> боја.}one{Прошири ја групата картички „<ph name="TITLE_OF_GROUP" />“ со <ph name="TABS_COUNT_MANY" /> картичка, во <ph name="COLOR_NAME" /> боја.}other{Прошири ја групата картички „<ph name="TITLE_OF_GROUP" />“ со <ph name="TABS_COUNT_MANY" /> картички, во <ph name="COLOR_NAME" /> боја.}}</translation>
+<translation id="8172214054247281626">Споделувајте податоци од прелистување, како неодамнешната историја на прелистувањето, за да добивате предлози во избраните апликации. Податоциве се обработуваат безбедно на вашиот уред.</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{Откачи ја картичката}one{Откачи ги картичките}other{Откачи ги картичките}}</translation>
 <translation id="8205266828577616993">Помести картичка нагоре</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Ажурирано пред <ph name="NUM_MINS_ONE" /> минута}one{Ажурирано пред <ph name="NUM_MINS_MANY" /> минута}other{Ажурирано пред <ph name="NUM_MINS_MANY" /> минути}}</translation>

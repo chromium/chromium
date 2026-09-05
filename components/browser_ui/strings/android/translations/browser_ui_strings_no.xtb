@@ -7,6 +7,7 @@
 <translation id="1046742265332833834">Blått tema</translation>
 <translation id="1070329623210597193">Filer dette nettstedet kan se eller redigere</translation>
 <translation id="1074758928858737435">Du kan be om å få datamaskinversjonen av nettsteder</translation>
+<translation id="1089791933924803646">Få Chrome-forslag i andre apper</translation>
 <translation id="1109482864356262001">Funksjoner som krever bevegelses- eller lyssensorer, kommer ikke til å virke</translation>
 <translation id="1126523729897810826">Fullfør de foreslåtte handlingene nedenfor for å få mest mulig ut av Chrome</translation>
 <translation id="113098737392899175">Naviger på sider med en tekstmarkør når et tastatur er koblet til</translation>
@@ -453,6 +454,7 @@
 <translation id="5668404140385795438">Overstyr nettstedets forespørsel om å forhindre zooming</translation>
 <translation id="5668843533782548925">Nettsteder er tregere, men sikrere</translation>
 <translation id="5677928146339483299">Blokkert</translation>
+<translation id="5679089750838794164">Nå kan Chrome vise deg forslag i andre apper basert på nettlesingsdataene dine, for eksempel nylig nettleserlogg. Disse dataene behandles på en sikker måte på enheten. Du kan slå dette av når som helst i Chrome-innstillingene.</translation>
 <translation id="5689516760719285838">Sted</translation>
 <translation id="5690795753582697420">Kameraet er slått av i Android-innstillingene</translation>
 <translation id="5700761515355162635">Informasjonskapsler fra tredjeparter tillates</translation>
@@ -507,6 +509,7 @@
 <translation id="6085954183010297841">Vil du fjerne tilgangen til å redigere filen? <ph name="FILE" /></translation>
 <translation id="6104860901391833523">Når dette er på, kan nettsteder bruke bilde-i-bilde automatisk. Når dette er av, kan ikke nettsteder bruke bilde-i-bilde automatisk.</translation>
 <translation id="6120483543004435978">Når dette er på, kan nettsteder be om å få vite når du bruker enheten aktivt. Når dette er av, kan ikke nettsteder vite når du bruker enheten aktivt.</translation>
+<translation id="612871598708395517">Skjul Få Chrome-forslag i andre apper</translation>
 <translation id="6132075343662013154">Chrome tilbyr å lagre passordet ditt</translation>
 <translation id="615886654739818377">Ikke la nettsteder administrere vinduer på alle skjermene dine</translation>
 <translation id="6165508094623778733">Finn ut mer</translation>

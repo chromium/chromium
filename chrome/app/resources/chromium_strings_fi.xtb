@@ -9,6 +9,7 @@
 <translation id="1065672644894730302">Asetuksiasi ei voi lukea. Kaikkia toimintoja ei voi välttämättä käyttää eikä asetuksiin tehtäviä muutoksia tallenneta.</translation>
 <translation id="1083934481477628225">Vanhempasi on laittanut Chromiumin "Sivustojen, sovellusten ja laajennusten käyttöluvat" pois päältä</translation>
 <translation id="1090946077924227754">Etsi tiettyä Chromiumin ominaisuutta tai laajennusta kirjoittamalla sen pikakomento osoitepalkkiin ja painamalla valitsemaasi näppäintä</translation>
+<translation id="1098493699368672217">Näytä "Hae Chromiumilla" ilmaisinalueella ja laita pikanäppäimet päälle</translation>
 <translation id="1104942323762546749">Chromium yrittää viedä salasanojasi tiedostoon. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
 <translation id="112640046208448578">Tunnista asioita tai paikkoja ja kopioi tai käännä tekstiä. Kun käytät kuvahakua, sivusta lähetetään kuvakaappaus palvelimelle. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium on oletusselaimesi.</translation>
@@ -305,6 +306,7 @@
 <translation id="4298125729853015961">Vie salasanoja Chromiumista</translation>
 <translation id="4304713468139749426">Salasanojen ylläpito</translation>
 <translation id="4334241893986177674">Hae tätä kuvakaappausta</translation>
+<translation id="4368547723231502008">Hae ja kysy kysymyksiä mistä tahansa, vaikka Chromium olisi pienennettynä</translation>
 <translation id="4384331407722351213">Käynnistä Chromium, kun Windows käynnistyy</translation>
 <translation id="4400772909124543403">Päivityksiä ei ole saatavilla</translation>
 <translation id="4407044323746248786">Suljetaanko Chromium silti?</translation>
@@ -334,6 +336,7 @@
 <translation id="4613863813562375431">Chromium-käyttöjärjestelmän versio</translation>
 <translation id="4621240073146040695">Melkein valmista. Viimeistele päivitys käynnistämällä Chromium uudelleen.</translation>
 <translation id="4625064703209785397">Nopeuttaa sivustoja Chromiumin V8-moottorilla, mutta heikentää Chromiumin suojaa hyökkäyksiä vastaan</translation>
+<translation id="4626321472657185181">Avaa haku Chromiumilla</translation>
 <translation id="4665829708273112819">Varoitus: Chromium ei voi estää laajennuksia tallentamasta selaushistoriaasi. Voit estää tämän laajennuksen käytön incognito-tilassa poistamalla tämän valinnan.</translation>
 <translation id="4673151026126227699">Jos jaat myös Chromiumin käyttöraportteja, avaamasi URL-osoitteet näkyvät niissä</translation>
 <translation id="4673710618874938871">Kirjautuneena tilillä <ph name="USER_NAME" />, jäsenyys. Avaa tilivalikko</translation>
@@ -375,6 +378,7 @@
 <translation id="5286907366254680517">Tunnistettu</translation>
 <translation id="5289287148052354622">Lataa Chromium-sovellus</translation>
 <translation id="5294316920224716406">Kun selaat incognito-tilassa, Chromium varoittaa sinua ennen kuin sivusto ladataan suojaamattomalla yhteydellä</translation>
+<translation id="5296581118566748922">Hae Chromiumilla</translation>
 <translation id="5313228254328109263">Chromiumin sisäinen päivityspalvelu</translation>
 <translation id="5324450571874973775">Käytä niitä yhdessä muiden Gemini in Chromiumin ominaisuuksien kanssa</translation>
 <translation id="5346389065299425353">Tarkenna hakua lisäämällä useita välilehtiä, tiedostoja ja työkaluja</translation>
@@ -385,6 +389,7 @@
 <translation id="5358375970380395591">Olet kirjautumassa sisään hallinnoidulla tilillä ja antamassa tilin järjestelmänvalvojalle oikeuden hallita Chromium-profiiliasi. Chromium-tietosi, kuten sovelluksesi, kirjanmerkkisi, historiasi, salasanasi ja muut asetuksesi, yhdistetään pysyvästi käyttäjätiliin <ph name="USER_NAME" />. Voit poistaa nämä tiedot Google-tilien Hallintapaneelissa, mutta et voi liittää tietoja toiseen tiliin. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Lisäkoodi: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">Voit käyttää personointia, kun lisäät Chromiumin verkko- ja sovellustoimintaan</translation>
+<translation id="5382964351116519680">Avaa haku Chromiumilla</translation>
 <translation id="5383439451358640070">Lue lisää siitä, miksi Chromium estää joitakin tiedostoja</translation>
 <translation id="5386450000063123300">Päivitetään Chromiumia (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Salli Chromium-kirjautuminen</translation>
@@ -504,6 +509,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="651535675648445253">Pikakuvakkeet avautuvat Chromiumissa</translation>
 <translation id="6539122709674868420">Kun Chromium on ollut käyttämättömänä <ph name="TIMEOUT_DURATION" />, organisaatiosi sulkee sen. Selausdata on poistettu. Data voi sisältää historian, automaattisen täytön ja lataukset.</translation>
 <translation id="6542839706527980775">Jokainen profiili sisältää omat Chromium-tietonsa, esim. kirjanmerkit, historian ja salasanat</translation>
+<translation id="6556755379298048869">Hae pikanäppäimellä.</translation>
 <translation id="6563921047760808519">Lue lisää siitä, <ph name="BEGIN_LINK" />miten Chromium pitää datasi yksityisenä<ph name="END_LINK" /></translation>
 <translation id="6564039629497156115">Asetukseen tehdyt muutokset tulevat voimaan, kun Chromium käynnistetään uudelleen.</translation>
 <translation id="6567032987737689854">Hallinnoi laajennuksia valitsemalla Chromiumin päävalikosta Laajennukset.</translation>
@@ -538,6 +544,7 @@ Kaikki ominaisuudet eivät ehkä ole käytettävissä. Määritä jokin muu prof
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6859580922007887573">Jatka painamalla välilehteä</translation>
 <translation id="6862030660799253820">Hae tätä kuvaa kuvahaulla</translation>
+<translation id="6869568587896659271">Helppo pääsy verkkosivustoille osoitepalkin alta</translation>
 <translation id="6873893289264747459">Chromium havaitsi, että "<ph name="EXTENSION_NAME" />" sisältää haittaohjelmia</translation>
 <translation id="6877155553248388166">hakualueen oikea alakulma: oikea <ph name="RIGHT" /> %, ala <ph name="BOTTOM" /> %</translation>
 <translation id="6896758677409633944">Kopioi</translation>
@@ -642,6 +649,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7803986347287457849">Pyri estämään avaamiesi sivustojen näkyminen henkilöille, joilla on pääsy internetliikenteeseesi. Chromium käyttää turvallista yhteyttä sivuston IP-osoitteen etsimiseen DNS:stä (Domain Name System)</translation>
 <translation id="7810005234485217901">Kiinnitä kuvahaku, niin löydät sen helposti</translation>
+<translation id="7828527096541974699">Valitse, mitä jaat Chromiumille</translation>
 <translation id="7828947555739565424">Tämän tilin Chromium-profiili on jo tällä laitteella</translation>
 <translation id="7845233973568007926">Kiitos asennuksesta. Tietokone pitää käynnistää uudelleen ennen kuin <ph name="BUNDLE_NAME" /> otetaan käyttöön.</translation>
 <translation id="7847673590271334840">Hakukone on vaihdettu Chromiumin ulkopuolelta. Chromium on nollannut sen alkuperäisiin oletusasetuksiin suojatakseen sinua. <ph name="LEARN_MORE_LINK" /></translation>
@@ -761,6 +769,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
             • poistaa evästeet ja muun tilapäisen sivustodatan.
             <ph name="LINE_BREAKS" />
             Tämä ei vaikuta kirjanmerkkeihin, historiaan eikä tallennettuihin salasanoihin.</translation>
+<translation id="8966875421152977384">Näytä Chromium-sivustojen pikakuvakkeet</translation>
 <translation id="897581876605952338">Chromium Enterprise ‑logo</translation>
 <translation id="8980139959902937527">Chromium-sovelluksella saat Googlen turvallisuuden mukaan minne tahansa laitteellasi (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="8981150672034878610">Chromiumia ei voi käynnistää, koska jotain meni pieleen profiilia avattaessa. Kokeile käynnistää Chromium uudelleen.</translation>
@@ -769,6 +778,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="9018218886431812662">Asennus valmis</translation>
 <translation id="9019929317751753759">Paransimme Chromiumin turvallisuutta poistamalla käytöstä sovelluksia, joita <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ei tarjoa ja jotka on voitu lisätä ilman lupaasi.</translation>
 <translation id="9022552996538154597">Kirjaudu sisään Chromiumiin</translation>
+<translation id="9035791714111278917">Näytä "Hae Chromiumilla" Macin valikkopalkissa ja laita pikanäppäimet päälle</translation>
 <translation id="904366664621834601">Chromium on estänyt tämän latauksen, koska arkistotiedosto sisältää muita tiedostoja, jotka voivat piilottaa haittaohjelmia</translation>
 <translation id="9053882453960391422">Pidä salasanat, kirjanmerkit ja historia synkronoituina kaikilla laitteilla. Päivitä oletusselaimeksi Chromium, niin saat tutut ominaisuudet helposti käyttöösi. Chromium kiinnitetään tehtäväpalkkiin, jotta voit käyttää sitä nopeasti.</translation>
 <translation id="9056398481763999048">Chromium-sovelluksella voit käyttää Googlen parhaita tekoälytyökaluja puhelimella</translation>

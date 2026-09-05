@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> ہفتہ پہلے تخلیق کیا گیا}other{<ph name="NUM_WEEKS_MANY" /> ہفتے پہلے تخلیق کیا گیا}}</translation>
 <translation id="1063300264396686489">دوسرے آلات سے ٹیب گروپس کو خودکار طور پر کھولیں</translation>
 <translation id="1075622780330595106">آپ کے ٹیبز میں سے <ph name="NUMBER_OF_TABS" /> کا استعمال حال میں نہیں ہوا ہے۔ انہیں بند کریں؟</translation>
+<translation id="1089791933924803646">‏دیگر ایپس میں Chrome کی تجاویز حاصل کریں</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> سال پہلے تخلیق کیا گیا}other{<ph name="NUM_YEARS_MANY" /> سال پہلے تخلیق کیا گیا}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{غیر فعال ٹیبز اور گروپس کو 1 ماہ کے بعد بند کر دیا جائے گا}other{غیر فعال ٹیبز اور گروپس کو <ph name="MONTH_COUNT_MANY" /> ماہ بعد بند کر دیا جائے گا}}</translation>
 <translation id="1173894706177603556">نام بدلیں</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{ٹیب کو گروپ میں شامل کریں}other{ٹیبز کو گروپ میں شامل کریں}}</translation>
 <translation id="8138067144082174140">‫14 دن غیر فعال ہونے کے بعد</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ٹیب، <ph name="COLOR_NAME" /> رنگ کے ساتھ <ph name="TITLE_OF_GROUP" /> ٹیب گروپ کو پھیلائیں۔}other{<ph name="TABS_COUNT_MANY" /> ٹیبز، <ph name="COLOR_NAME" /> رنگ کے ساتھ <ph name="TITLE_OF_GROUP" /> ٹیب گروپ کو پھیلائیں۔}}</translation>
+<translation id="8172214054247281626">منتخب کردہ ایپس پر تجاویز حاصل کرنے کے لیے براؤزنگ ڈیٹا جیسے کہ آپ کی حالیہ براؤزنگ کی سرگزشت کا اشتراک کریں۔ اس ڈیٹا کو آپ کے آلے پر محفوظ طریقے سے پروسیس کیا جاتا ہے۔</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{ٹیب کی پن ہٹائیں}other{ٹیبز کی پن ہٹائیں}}</translation>
 <translation id="8205266828577616993">ٹیب اوپر منتقل کریں</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{‫<ph name="NUM_MINS_ONE" /> منٹ قبل اپ ڈیٹ کیا گیا}other{‫<ph name="NUM_MINS_MANY" /> منٹ قبل اپ ڈیٹ کیا گیا}}</translation>

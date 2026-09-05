@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> ସପ୍ତାହ ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}other{<ph name="NUM_WEEKS_MANY" /> ସପ୍ତାହ ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}}</translation>
 <translation id="1063300264396686489">ଅନ୍ୟ ଡିଭାଇସରୁ ସ୍ୱତଃ ଟାବ ଗ୍ରୁପକୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="1075622780330595106">ଆପଣଙ୍କର <ph name="NUMBER_OF_TABS" />ଟି ଟାବ୍ ନିକଟରେ ବ୍ୟବହୃତ ହୋଇନାହିଁ। ସେଗୁଡ଼ିକୁ ବନ୍ଦ କରିବେ?</translation>
+<translation id="1089791933924803646">ଅନ୍ୟ ଆପ୍ସରେ Chrome ପରାମର୍ଶଗୁଡ଼ିକ ପାଆନ୍ତୁ</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> ବର୍ଷ ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}other{<ph name="NUM_YEARS_MANY" /> ବର୍ଷ ପୂର୍ବେ ତିଆରି କରାଯାଇଛି}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{ନିଷ୍କ୍ରିୟ ଟାବ ଏବଂ ଗ୍ରୁପଗୁଡ଼ିକୁ 1 ମାସ ପରେ ବନ୍ଦ କରିଦିଆଯିବ}other{ନିଷ୍କ୍ରିୟ ଟାବ ଏବଂ ଗ୍ରୁପଗୁଡ଼ିକୁ <ph name="MONTH_COUNT_MANY" /> ମାସ ପରେ ବନ୍ଦ କରିଦିଆଯିବ}}</translation>
 <translation id="1173894706177603556">ରିନେମ୍ କରନ୍ତୁ</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{ଗ୍ରୁପରେ ଟାବ ଯୋଗ କରନ୍ତୁ}other{ଗ୍ରୁପରେ ଟାବଗୁଡ଼ିକ ଯୋଗ କରନ୍ତୁ}}</translation>
 <translation id="8138067144082174140">ନିଷ୍କ୍ରିୟ ରହିବାର 14 ଦିନ ପରେ</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> ରଙ୍ଗର <ph name="TABS_COUNT_ONE" /> ଟାବ ଥିବା <ph name="TITLE_OF_GROUP" /> ଟାବ ଗ୍ରୁପକୁ ବିସ୍ତାର କରନ୍ତୁ।}other{<ph name="COLOR_NAME" /> ରଙ୍ଗର <ph name="TABS_COUNT_MANY" /> ଟାବ ଥିବା <ph name="TITLE_OF_GROUP" /> ଟାବ ଗ୍ରୁପକୁ ବିସ୍ତାର କରନ୍ତୁ।}}</translation>
+<translation id="8172214054247281626">ଚୟନିତ ଆପ୍ସରେ ପରାମର୍ଶଗୁଡ଼ିକ ପାଇବା ପାଇଁ ଆପଣଙ୍କ ବର୍ତ୍ତମାନର ବ୍ରାଉଜିଂ ଇତିହାସ ପରି ବ୍ରାଉଜିଂ ଡାଟାକୁ ସେୟାର କରନ୍ତୁ। ଏହି ଡାଟା ଆପଣଙ୍କ ଡିଭାଇସରେ ସିକ୍ୟୁର ଭାବେ ପ୍ରକ୍ରିୟାନ୍ୱିତ ହୋଇଥାଏ।</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{ଟାବକୁ ଅନପିନ କରନ୍ତୁ}other{ଟାବଗୁଡ଼ିକୁ ଅନପିନ କରନ୍ତୁ}}</translation>
 <translation id="8205266828577616993">ଟାବ୍‌କୁ ଉପରକୁ ମୁଭ୍ କରନ୍ତୁ</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> ମିନିଟ ପୂର୍ବେ ଅପଡେଟ କରାଯାଇଛି}other{<ph name="NUM_MINS_MANY" /> ମିନିଟ ପୂର୍ବେ ଅପଡେଟ କରାଯାଇଛି}}</translation>

@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{‫<ph name="NUM_WEEKS_ONE" /> هفته پیش ایجاد شد}one{‫<ph name="NUM_WEEKS_MANY" /> هفته پیش ایجاد شد}other{‫<ph name="NUM_WEEKS_MANY" /> هفته پیش ایجاد شد}}</translation>
 <translation id="1063300264396686489">باز شدن خودکار گروه‌های زبانه از دستگاه‌های دیگر</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> مورد از برگه‌هایتان اخیراً استفاده نشده‌اند. آن‌ها را می‌بندید؟</translation>
+<translation id="1089791933924803646">‏دریافت کردن پیشنهادهای Chrome در سایر برنامه‌ها</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{‫<ph name="NUM_YEARS_ONE" /> سال پیش ایجاد شد}one{‫<ph name="NUM_YEARS_MANY" /> سال پیش ایجاد شد}other{‫<ph name="NUM_YEARS_MANY" /> سال پیش ایجاد شد}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{زبانه‌ها و گروه‌های غیرفعال بعداز ۱ ماه بسته می‌شوند}one{زبانه‌ها و گروه‌های غیرفعال بعداز <ph name="MONTH_COUNT_MANY" /> ماه بسته می‌شوند}other{زبانه‌ها و گروه‌های غیرفعال بعداز <ph name="MONTH_COUNT_MANY" /> ماه بسته می‌شوند}}</translation>
 <translation id="1173894706177603556">تغییر نام</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{افزودن زبانه به گروه}one{افزودن زبانه به گروه}other{افزودن زبانه‌ها به گروه}}</translation>
 <translation id="8138067144082174140">پس‌از ۱۴ روز غیرفعال بودن</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{ازهم باز کردن گروه زبانه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_ONE" /> زبانه، رنگ <ph name="COLOR_NAME" />.}one{ازهم باز کردن گروه زبانه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_MANY" /> زبانه، رنگ <ph name="COLOR_NAME" />.}other{ازهم باز کردن گروه زبانه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_MANY" /> زبانه، رنگ <ph name="COLOR_NAME" />.}}</translation>
+<translation id="8172214054247281626">برای دریافت پیشنهاد در برنامه‌های انتخاب‌شده، داده‌های مرور (مثل سابقه مرور اخیر) را هم‌رسانی کنید. این داده‌ها به‌طور ایمن در دستگاهتان پردازش می‌شود.</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{برداشتن سنجاق زبانه}one{برداشتن سنجاق زبانه}other{برداشتن سنجاق زبانه}}</translation>
 <translation id="8205266828577616993">انتقال برگه به بالا</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{‫<ph name="NUM_MINS_ONE" /> دقیقه پیش به‌روز شده است}one{‫<ph name="NUM_MINS_MANY" /> دقیقه پیش به‌روز شده است}other{‫<ph name="NUM_MINS_MANY" /> دقیقه پیش به‌روز شده است}}</translation>

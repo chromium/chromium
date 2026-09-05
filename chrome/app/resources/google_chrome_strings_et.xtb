@@ -29,6 +29,7 @@
 <translation id="1197860368385086056">Järgmisel korral, kui avate oma seadmes <ph name="DEVICE_TYPE" /> Chrome'i, kuvatakse teile hinnajälgimise märguannete lubamise viip.</translation>
 <translation id="1203500561924088507">Täname teid installimise eest. Enne brauseri <ph name="BUNDLE_NAME" /> kasutamist peate selle taaskäivitama.</translation>
 <translation id="1278833599417554002">Taaskäivitage &amp;Chrome'i värskendamiseks</translation>
+<translation id="1289911795790071537">Ava otsing Chrome'iga</translation>
 <translation id="1290883685122687410">Seadistuse viga: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Oodake, kuni Chrome installib uusimad süsteemivärskendused.</translation>
 <translation id="1330562121671411446">Keele tuvastamine</translation>
@@ -73,6 +74,7 @@
 <translation id="1640672724030957280">Allalaadimine ...</translation>
 <translation id="1651617469580841801">Kui kasutate Google Lensi, saadetakse lehe pealkiri, URL ja sisu (sh PDF-id) Google'ile. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Teave Chrome OS Flexi kohta</translation>
+<translation id="1664094661346151467">Otsige ja esitage küsimusi kõikjal, isegi kui Chrome on minimeeritud</translation>
 <translation id="1674870198290878346">Ava link Chrome'i inko&amp;gnito aknas</translation>
 <translation id="1682634494516646069">Google Chrome ei saa andmekataloogi lugeda ega sellesse kirjutada:
 
@@ -110,6 +112,7 @@
 <translation id="2034233344106846793">Chrome uuendab võimalusel ebaturvalised ühendused automaatselt HTTPS-ile</translation>
 <translation id="2039417478970545937">Seaded.</translation>
 <translation id="2040220733769034247">Skannige QR-kood telefoniga, et Chrome alla laadida ja oma Google'i kontoga sisse logida.</translation>
+<translation id="2044908892530830113">Kuva Chrome'iga otsimine Maci menüüribal ja lülita sisse klaviatuuri otsetee</translation>
 <translation id="2050189601866423230">Saate Google'i otsingu AI-režiimi kinnitada, et sirvimise ajal küsimusi esitada.</translation>
 <translation id="2091012649849228750">Google Chrome'i tulevaste värskenduste saamiseks on teil vaja operatsioonisüsteemi Windows 10 või uuemat versiooni. See arvuti kasutab operatsioonisüsteemi Windows 8.</translation>
 <translation id="2094648590148273905">Chrome OS Flexi tingimused</translation>
@@ -137,6 +140,7 @@
 <translation id="2284380654876659752">Kui külastate saiti, saadab Chrome URL-i hägustatud osa <ph name="BEGIN_LINK" />Google'i ohutule sirvimisele<ph name="END_LINK" /> privaatsusserveri kaudu, mis varjab teie IP-aadressi. Kui sait teeb midagi kahtlast, saadetakse nii täielikud URL-id kui ka osa lehe sisust.</translation>
 <translation id="2290014774651636340">Google API võtmed on puudu. Google Chrome'i teatud funktsioonid keelatakse.</translation>
 <translation id="2290095356545025170">Olete kindel, et soovite Google Chrome'i desinstallida?</translation>
+<translation id="2295218613066132598">Kuva Chrome'i saidi otseteed</translation>
 <translation id="2301513536169703857">Kõigis seadmetes paroolide, järjehoidjate ja muude võimaluste kasutamiseks logige sisse Chrome'i</translation>
 <translation id="2307973900865360088">Hoia dokis</translation>
 <translation id="2309047409763057870">See on Google Chrome'i sekundaarne install ja seda ei saa määrata vaikebrauseriks.</translation>
@@ -349,6 +353,7 @@ Kui see leht ei tööta ootuspäraselt, proovige optimeerimine lubada.</translat
 <translation id="436060642166082913">Chrome blokeeris selle allalaadimise, kuna fail võib kahjustada teie isiklikke ja sotsiaalvõrgustiku kontosid</translation>
 <translation id="4367027658822022112">Saate Google Lensi hõlpsaks juurdepääsuks kinnitada; klõpsake külgpaneeli ülaosas nupul Kinnita</translation>
 <translation id="4372389195695053189">Chrome on nüüd teie vaikebrauser.</translation>
+<translation id="4381814455597163081">Kui saadate Google'ile kasutusstatistikat ja krahhiaruandeid, aitate Chrome'i paremaks muuta. <ph name="BEGIN_LINK" />Haldamine<ph name="END_LINK" /></translation>
 <translation id="4389991535395284064">Kui sirvite inkognito režiimis, hoiatab Chrome teid enne saidi laadimist ebaturvalise ühenduse kaudu</translation>
 <translation id="4400772909124543403">Ühtegi värskendust ei ole saadaval</translation>
 <translation id="4427306783828095590">Täiustatud kaitse aitab andmepüüki ja pahavara paremini blokeerida</translation>
@@ -522,6 +527,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6180522807229584611">See vaheleht kasutab lisaressursse. Laske Chrome'il see toimivuse täiustamiseks interaktiivseks teha.</translation>
 <translation id="6182736845697986886">Installimine ebaõnnestus, kuna värskendusserveris ilmnes sisemine viga.</translation>
 <translation id="6192058120268468905">Teie konto Chrome'is</translation>
+<translation id="6195202018542972563">Kuva Chrome'iga otsimine süsteemisalves ja lülita sisse klaviatuuri otsetee</translation>
 <translation id="6235018212288296708">Sissetuleku reegel Google Chrome'ile mDNS-liikluse lubamiseks.</translation>
 <translation id="624230925347970731">Chrome suletakse peagi</translation>
 <translation id="6247557882553405851">Google'i paroolihaldur</translation>
@@ -563,8 +569,10 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="652948702951888897">Chrome'i ajalugu</translation>
 <translation id="6532945796722480006">Avage teenuse Gemini Chrome'is Canary versioon</translation>
 <translation id="6539493053177300926">Pääsete Geminile Chrome'is oma seadmes hõlpsalt juurde, isegi kui Chrome on minimeeritud.</translation>
+<translation id="6556755379298048869">Otsige klaviatuuri otsetee abil.</translation>
 <translation id="6585124893636629274">Sulgege Gemini Chrome'is</translation>
 <translation id="659498884637196217">Selle seadme Google'i paroolihalduris</translation>
+<translation id="6612152958212564387">Te ei saada Google'ile kasutusstatistikat ega krahhiaruandeid. <ph name="BEGIN_LINK" />Haldamine<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Hoidke oma paroolid, järjehoidjad ja ajalugu seadmetes täielikult sünkroonituna, määrates Chrome'i oma vaikebrauseriks.</translation>
 <translation id="6631524303639368205">Jätkake sealt, kus pooleli jäite: Chrome taastas teie eelmise seansi vahelehed. Saate selle välja lülitada menüüs</translation>
 <translation id="6632473616050862500">Chrome OS Flexi aluseks on <ph name="BEGIN_LINK_CROS_OSS" />avatud lähtekoodiga lisatarkvara<ph name="END_LINK_CROS_OSS" />.</translation>
@@ -589,7 +597,9 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="683440813066116847">Sissetuleku reegel Google Chrome Canaryle mDNS-liikluse lubamiseks.</translation>
 <translation id="684888714667046800">Internetiga ei saa ühendust. Kui kasutate tulemüüri, veenduge, et <ph name="PRODUCT_EXE_NAME" /> oleks lubamisloendis.</translation>
 <translation id="6859580922007887573">Jätkamiseks vajutage tabulaatorit</translation>
+<translation id="6869568587896659271">Lihtne juurdepääs veebisaitidele aadressiriba all</translation>
 <translation id="6877155553248388166">otsinguala parem alanurk: <ph name="RIGHT" />% paremal, <ph name="BOTTOM" />% all</translation>
+<translation id="6879791154455204815">Ava otsing Chrome'iga</translation>
 <translation id="6881299373831449287">Chrome'i värskendamine</translation>
 <translation id="6885412569789873916">Chrome'i beetaversiooni rakendused</translation>
 <translation id="6893363893008038481">Konto eemaldamine Chrome'ist</translation>
@@ -648,6 +658,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="7449333426561673451">{COUNT,plural, =1{Teie organisatsioon sulgeb Chrome’i automaatselt, kui seda ei kasutata 1 minuti jooksul.}other{Teie organisatsioon sulgeb Chrome’i automaatselt, kui seda ei kasutata # minuti jooksul.}}</translation>
 <translation id="7450541714075000668">Tekst on kopeeritud</translation>
 <translation id="7452987490177144319">{COUNT,plural, =1{Teie organisatsioon kustutab sirvimisandmed automaatselt, kui Chrome'i ei kasutata 1 minuti jooksul. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi. Teie vahelehed jäävad avatuks.}other{Teie organisatsioon kustutab sirvimisandmed automaatselt, kui Chrome'i ei kasutata # minuti jooksul. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi. Teie vahelehed jäävad avatuks.}}</translation>
+<translation id="7466577301922356468">Nende andmete Google'ile automaatne saatmine aitab Chrome'i paremaks muuta. Seda seadet saab igal ajal muuta.</translation>
 <translation id="7477130805345743099">Chrome hoiatab teid enne mis tahes saidi laadimist ebaturvalise ühenduse kaudu</translation>
 <translation id="7481213027396403996">Hankige Chrome'i parimad turbefunktsioonid</translation>
 <translation id="749228101751499733">Kui olete sisse logitud, siis saate Chrome'is kasutada oma paroole ja oma Google'i konto teisi võimalusi. <ph name="SHORTCUT" /> saab muuta teie Google'i teenuste seadeid.</translation>
@@ -681,6 +692,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="7736869414036750079">Teie organisatsioon nõuab, et logiksite Chrome'i sisse</translation>
 <translation id="7747138024166251722">Installija ei suutnud luua ajutist kataloogi. Palun kontrollige vaba kettaruumi ja tarkvara installimise loa olemasolu.</translation>
 <translation id="7748969056734910029">Te pole hiljuti külastanud. Chrome eemaldas load <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
+<translation id="7759944311003584891">Chrome'iga otsimine</translation>
 <translation id="7761834446675418963">Chrome'i avamiseks ja sirvimise alustamiseks klõpsake oma nimel.</translation>
 <translation id="7777080907402804672">Kui pildil puudub kasulik kirjeldus, üritab Chrome selle ise luua. Kirjelduste loomiseks saadetakse pildid Google'ile. Võite selle seadetes igal ajal välja lülitada.</translation>
 <translation id="778331955594035129">Chrome vajab selle saidi puhul asukohale juurdepääsu luba</translation>

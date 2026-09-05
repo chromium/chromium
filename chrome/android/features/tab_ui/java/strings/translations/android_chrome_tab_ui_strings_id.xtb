@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Dibuat <ph name="NUM_WEEKS_ONE" /> minggu lalu}other{Dibuat <ph name="NUM_WEEKS_MANY" /> minggu lalu}}</translation>
 <translation id="1063300264396686489">Buka otomatis grup tab dari perangkat lain</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> dari beberapa tab Anda belum digunakan akhir-akhir ini. Tutup?</translation>
+<translation id="1089791933924803646">Dapatkan saran Chrome di aplikasi lain</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Dibuat <ph name="NUM_YEARS_ONE" /> tahun lalu}other{Dibuat <ph name="NUM_YEARS_MANY" /> tahun lalu}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Tab dan grup yang tidak aktif akan ditutup setelah 1 bulan}other{Tab dan grup yang tidak aktif akan ditutup setelah <ph name="MONTH_COUNT_MANY" /> bulan}}</translation>
 <translation id="1173894706177603556">Ganti nama</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Tambahkan tab ke grup}other{Tambahkan tab ke grup}}</translation>
 <translation id="8138067144082174140">Setelah 14 hari tidak aktif</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Luaskan grup tab <ph name="TITLE_OF_GROUP" /> yang berisi <ph name="TABS_COUNT_ONE" /> tab, warna <ph name="COLOR_NAME" />.}other{Luaskan grup tab <ph name="TITLE_OF_GROUP" /> yang berisi <ph name="TABS_COUNT_MANY" /> tab, warna <ph name="COLOR_NAME" />.}}</translation>
+<translation id="8172214054247281626">Bagikan data penjelajahan, seperti histori penjelajahan terbaru Anda, untuk mendapatkan saran di aplikasi yang dipilih. Data ini diproses dengan aman di perangkat Anda.</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{Lepaskan sematan tab}other{Lepaskan sematan tab}}</translation>
 <translation id="8205266828577616993">Pindahkan tab ke atas</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Diperbarui <ph name="NUM_MINS_ONE" /> menit lalu}other{Diperbarui <ph name="NUM_MINS_MANY" /> menit lalu}}</translation>

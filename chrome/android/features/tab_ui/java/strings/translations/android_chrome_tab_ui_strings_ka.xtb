@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{შეიქმნა <ph name="NUM_WEEKS_ONE" /> კვირის წინ}other{შეიქმნა <ph name="NUM_WEEKS_MANY" /> კვირის წინ}}</translation>
 <translation id="1063300264396686489">ჩანართების ჯგუფების სხვა მოწყობილობებიდან ავტომატურად გახსნა</translation>
 <translation id="1075622780330595106">თქვენი <ph name="NUMBER_OF_TABS" /> ჩანართი ბოლო დროს არ გამოგიყენებიათ. გსურთ მათი დახურვა?</translation>
+<translation id="1089791933924803646">Chrome-ის შემოთავაზებების მიღება სხვა აპებში</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{შეიქმნა <ph name="NUM_YEARS_ONE" /> წლის წინ}other{შეიქმნა <ph name="NUM_YEARS_MANY" /> წლის წინ}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{არააქტიური ჩანართები და ჯგუფები დაიხურება 1 თვის შემდეგ}other{არააქტიური ჩანართები და ჯგუფები დაიხურება <ph name="MONTH_COUNT_MANY" /> თვის შემდეგ}}</translation>
 <translation id="1173894706177603556">სახელის შეცვლა</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{ჩანართის დამატება ჯგუფში}other{ჩანართის დამატება ჯგუფში}}</translation>
 <translation id="8138067144082174140">14-დღიანი უმოქმედობის შემდეგ</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{გააფართოვეთ ჩანართების <ph name="TABS_COUNT_ONE" />-ჩანართიანი <ph name="COLOR_NAME" /> ფერის ჯგუფი „<ph name="TITLE_OF_GROUP" />“.}other{გააფართოვეთ ჩანართების <ph name="TABS_COUNT_MANY" />-ჩანართიანი <ph name="COLOR_NAME" /> ფერის ჯგუფი „<ph name="TITLE_OF_GROUP" />“.}}</translation>
+<translation id="8172214054247281626">გააზიარეთ დათვალიერების მონაცემები, მაგალითად, ბოლოდროინდელი დათვალიერების ისტორია, რომ მიიღოთ შემოთავაზებები არჩეულ აპებში. ეს მონაცემები უსაფრთხოდ დამუშავდება თქვენს მოწყობილობაში.</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{ჩანართის ჩამაგრების მოხსნა}other{ჩანართების ჩამაგრების მოხსნა}}</translation>
 <translation id="8205266828577616993">ჩანართის ზემოთ გადატანა</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{განახლდა <ph name="NUM_MINS_ONE" /> წუთის წინ}other{განახლდა <ph name="NUM_MINS_MANY" /> წუთის წინ}}</translation>

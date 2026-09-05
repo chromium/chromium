@@ -110,6 +110,7 @@ For more settings that use data to improve your Chromium experience, go to <ph n
 <translation id="3180939591219927904">Turn on 'Lock Incognito tabs when you close Chromium'</translation>
 <translation id="327628223428512207">Enter passphrase to save this password and get Chromium data on all your devices</translation>
 <translation id="328933489847748230">{count,plural, =1{Now showing 1 Chromium window}other{Now showing {count} Chromium windows}}</translation>
+<translation id="3344204225393848305">Set Chromium as default</translation>
 <translation id="3344973607274501920">Chromium couldn't check your passwords. Try checking your Internet connection.</translation>
 <translation id="3366305173356742781">Chromium data in your account</translation>
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{This happens when Chromium isn't used for {THRESHOLD} minute. This could include history and autofill.}other{This happens when Chromium isn't used for {THRESHOLD} minutes. This could include history and autofill.}}</translation>
@@ -284,6 +285,7 @@ Things to consider:
 <translation id="6852799557929001644">Access your Chrome passwords and more across other apps on this device.</translation>
 <translation id="6887138405044152640">To send this tab to another device, sign in to Chromium there.</translation>
 <translation id="6911341667534646387">Keep using the Chromium data in your Google Account</translation>
+<translation id="6992760259282302305">Use Chromium as default</translation>
 <translation id="7018284295775193585">Chromium can't update</translation>
 <translation id="7055269218854630176">Your organisation, <ph name="DOMAIN" />, manages the account that you're signing in to and how Chromium can be used. Your administrator can set up or restrict certain features.</translation>
 <translation id="7099326575020694068">Chromium can't use your camera in Split View mode</translation>
@@ -344,6 +346,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="8385503371191508165">Start saving passkeys with Password Manager</translation>
 <translation id="8390323835464055390">Sign in with your saved passwords and passkeys from any app using Chromium for Autofill</translation>
 <translation id="8409374867500149834">You have Chromium's strongest security against harmful websites</translation>
+<translation id="8428449554948979733">Hide Use Chromium as default</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{This happens when Chromium isn't used for {THRESHOLD} minute. Data saved only to this device while you were signed in will be deleted. This could include history and passwords.}other{This happens when Chromium isn't used for {THRESHOLD} minutes. Data saved only to this device while you were signed in will be deleted. This could include history and passwords.}}</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>
 <translation id="8602103377623855616">Chromium page</translation>

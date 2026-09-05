@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{ပြီးခဲ့သော <ph name="NUM_WEEKS_ONE" /> ပတ်က ပြုလုပ်ထားသည်}other{ပြီးခဲ့သော <ph name="NUM_WEEKS_MANY" /> ပတ်က ပြုလုပ်ထားသည်}}</translation>
 <translation id="1063300264396686489">အခြားစက်များမှ တဘ်အုပ်စုများကို အလိုအလျောက်ဖွင့်ရန်</translation>
 <translation id="1075622780330595106">သင်၏တဘ် <ph name="NUMBER_OF_TABS" /> ခုကို နောက်ပိုင်းတွင် အသုံးပြုမထားပါ။ ၎င်းတို့ကို ပိတ်မလား။</translation>
+<translation id="1089791933924803646">အခြားအက်ပ်များတွင် Chrome အကြံပြုချက်များ ရယူရန်</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{ပြီးခဲ့သော <ph name="NUM_YEARS_ONE" /> လက ပြုလုပ်ထားသည်}other{ပြီးခဲ့သော <ph name="NUM_YEARS_MANY" /> လက ပြုလုပ်ထားသည်}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{အသုံးမပြုသော တဘ်နှင့် အုပ်စုများကို ၁ လအကြာတွင် ပိတ်ပါမည်}other{အသုံးမပြုသော တဘ်နှင့် အုပ်စုများကို <ph name="MONTH_COUNT_MANY" /> လအကြာတွင် ပိတ်ပါမည်}}</translation>
 <translation id="1173894706177603556">အမည်ပြောင်းရန်</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{တဘ်ကို အုပ်စုတွင် ထည့်ရန်}other{တဘ်များကို အုပ်စုတွင် ထည့်ရန်}}</translation>
 <translation id="8138067144082174140">၁၄ ရက်ကြာ အသုံးမပြုသည့်နောက်</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{တဘ် <ph name="TABS_COUNT_ONE" /> ခု၊ <ph name="COLOR_NAME" /> ရောင်ဖြင့် <ph name="TITLE_OF_GROUP" /> တဘ်အုပ်စုကို ဖြန့်ပါ။}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခု၊ <ph name="COLOR_NAME" /> ရောင်ဖြင့် <ph name="TITLE_OF_GROUP" /> တဘ်အုပ်စုကို ဖြန့်ပါ။}}</translation>
+<translation id="8172214054247281626">ရွေးထားသည့် အက်ပ်များတွင် အကြံပြုချက်များ ရယူရန် သင်၏ လတ်တလော ကြည့်ရှုမှုမှတ်တမ်းကဲ့သို့သော ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာကို မျှဝေပါ။ ဤဒေတာကို သင့်စက်ပေါ်တွင် လုံခြုံစွာ စီမံဆောင်ရွက်သည်။</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{တဘ်ကို ပင်ဖြုတ်ရန်}other{တဘ်များကို ပင်ဖြုတ်ရန်}}</translation>
 <translation id="8205266828577616993">တဘ်အပေါ်သို့ ရွှေ့ရန်</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{ပြီးခဲ့သည့် <ph name="NUM_MINS_ONE" /> မိနစ်က အပ်ဒိတ်လုပ်ထားသည်}other{ပြီးခဲ့သည့် <ph name="NUM_MINS_MANY" /> မိနစ်က အပ်ဒိတ်လုပ်ထားသည်}}</translation>

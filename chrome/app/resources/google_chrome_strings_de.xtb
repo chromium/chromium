@@ -29,6 +29,7 @@
 <translation id="1197860368385086056">Wenn du Chrome das nächste Mal auf deinem Gerät (<ph name="DEVICE_TYPE" />) öffnest, wirst du daran erinnert, Benachrichtigungen zum Preis-Tracking zu aktivieren.</translation>
 <translation id="1203500561924088507">Vielen Dank für die Installation. Du musst deinen Browser neu starten, bevor du <ph name="BUNDLE_NAME" /> verwenden kannst.</translation>
 <translation id="1278833599417554002">Neu starten, um &amp;Chrome zu aktualisieren</translation>
+<translation id="1289911795790071537">Suche mit Chrome öffnen</translation>
 <translation id="1290883685122687410">Einrichtungsfehler: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Bitte warte, bis die aktuellen Systemupdates von Chrome installiert wurden.</translation>
 <translation id="1330562121671411446">Sprache erkennen</translation>
@@ -73,6 +74,7 @@
 <translation id="1640672724030957280">Download wird ausgeführt...</translation>
 <translation id="1651617469580841801">Wenn du Google Lens verwendest, werden der Seitentitel, die URL und der Inhalt, einschließlich PDFs, an Google gesendet. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Über Chrome OS Flex</translation>
+<translation id="1664094661346151467">Du kannst von überall aus suchen und Fragen stellen, auch wenn Chrome minimiert ist</translation>
 <translation id="1674870198290878346">Link in Chrome-Inkognitofenster öffnen</translation>
 <translation id="1682634494516646069">Google Chrome kann im folgenden Datenverzeichnis weder lesen noch schreiben: <ph name="USER_DATA_DIRECTORY" />.</translation>
 <translation id="1688214853608504530">Wenn du etwas in die Adressleiste oder das Suchfeld eingibst, sendet Chrome deine Eingabe an die Such-, KI- und Hilfetools deiner Organisation, um Vorschläge zu erhalten.</translation>
@@ -108,6 +110,7 @@
 <translation id="2034233344106846793">Chrome stellt unsichere Verbindungen nach Möglichkeit automatisch auf HTTPS um</translation>
 <translation id="2039417478970545937">den Einstellungen.</translation>
 <translation id="2040220733769034247">Scanne den QR-Code mit deinem Smartphone, um Chrome herunterzuladen und dich in deinem Google-Konto anzumelden.</translation>
+<translation id="2044908892530830113">Suche mit Chrome unter macOS in der Menüleiste anzeigen und die Tastenkombination aktivieren</translation>
 <translation id="2050189601866423230">Du kannst den KI-Modus der Google Suche anpinnen, um während des Surfens Fragen zu stellen</translation>
 <translation id="2091012649849228750">Du benötigst Windows 10 oder höher, um zukünftige Google Chrome-Updates zu erhalten. Auf diesem Computer wird Windows 8 ausgeführt.</translation>
 <translation id="2094648590148273905">Nutzungsbedingungen für Chrome OS Flex</translation>
@@ -135,6 +138,7 @@
 <translation id="2284380654876659752">Wenn du eine Website besuchst, sendet Chrome einen verschleierten Teil der URL über einen Datenschutzserver, der deine IP-Adresse verbirgt, an <ph name="BEGIN_LINK" />Google Safe Browsing<ph name="END_LINK" />. Zeigt eine Website verdächtige Aktivitäten, werden außerdem vollständige URLs und Teile von Seiteninhalten gesendet.</translation>
 <translation id="2290014774651636340">Google API-Schlüssel fehlen. Einige Funktionen von Google Chrome sind deaktiviert.</translation>
 <translation id="2290095356545025170">Möchtest du Google Chrome wirklich deinstallieren?</translation>
+<translation id="2295218613066132598">Chrome-Website-Tastenkombinationen anzeigen</translation>
 <translation id="2301513536169703857">Wenn du auf allen deinen Geräten auf deine Passwörter, Lesezeichen und andere Daten zugreifen möchtest, melde dich in Chrome an</translation>
 <translation id="2307973900865360088">Im Dock behalten</translation>
 <translation id="2309047409763057870">Dies ist eine Zweitinstallation, daher kann Google Chrome nicht als Standardbrowser festgelegt werden.</translation>
@@ -346,6 +350,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="436060642166082913">Chrome hat diesen Download blockiert, weil die Datei deine privaten Konten sowie Konten in sozialen Netzwerken schädigen kann</translation>
 <translation id="4367027658822022112">Du kannst Google Lens anpinnen, um leichter darauf zuzugreifen. Klicke dazu oben in der Seitenleiste auf den Button „Anpinnen“.</translation>
 <translation id="4372389195695053189">Chrome ist jetzt dein Standardbrowser</translation>
+<translation id="4381814455597163081">Das Senden von Nutzungsstatistiken und Absturzberichte an Google hilft uns dabei, Chrome zu verbessern. <ph name="BEGIN_LINK" />Verwalten<ph name="END_LINK" /></translation>
 <translation id="4389991535395284064">Wenn du im Inkognitomodus surfst, warnt Chrome dich, bevor eine Website über eine unsichere Verbindung geladen wird</translation>
 <translation id="4400772909124543403">Es ist kein Update verfügbar</translation>
 <translation id="4427306783828095590">Besserer Schutz vor Phishing und Malware durch erweitertes Safe Browsing</translation>
@@ -517,6 +522,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="6180522807229584611">Dieser Tab verbraucht zusätzliche Ressourcen. Du kannst die Leistung verbessern, wenn du zulässt, dass Chrome ihn deaktiviert.</translation>
 <translation id="6182736845697986886">Die Installation ist aufgrund eines internen Fehlers des Update-Servers fehlgeschlagen.</translation>
 <translation id="6192058120268468905">Mein Konto in Chrome</translation>
+<translation id="6195202018542972563">Suche mit Chrome in der Taskleiste anzeigen und die Tastenkombination aktivieren</translation>
 <translation id="6235018212288296708">Eingangsregel für die Zulassung von mDNS-Verkehr in Google Chrome</translation>
 <translation id="624230925347970731">Chrome wird bald geschlossen</translation>
 <translation id="6247557882553405851">Google Passwortmanager</translation>
@@ -558,8 +564,10 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="652948702951888897">Chrome-Verlauf</translation>
 <translation id="6532945796722480006">Gemini in Chrome Canary öffnen</translation>
 <translation id="6539493053177300926">Du kannst einfach auf Gemini in Chrome auf deinem Gerät zugreifen, auch wenn Chrome minimiert ist.</translation>
+<translation id="6556755379298048869">Mit einer Tastenkombination suchen.</translation>
 <translation id="6585124893636629274">Gemini in Chrome schließen</translation>
 <translation id="659498884637196217">Im Google Passwortmanager auf diesem Gerät</translation>
+<translation id="6612152958212564387">Du sendest keine Nutzungsstatistiken und Absturzberichte an Google. <ph name="BEGIN_LINK" />Verwalten<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Wenn du Chrome als Standardbrowser festlegst, werden deine Passwörter, deine Lesezeichen und dein Verlauf auf allen Geräten synchronisiert.</translation>
 <translation id="6631524303639368205">Mach dort weiter, wo du aufgehört hast: Chrome hat deine Tabs aus der letzten Sitzung wiederhergestellt. Du kannst diese Funktion deaktivieren in</translation>
 <translation id="6632473616050862500">Chrome OS Flex wird durch zusätzliche <ph name="BEGIN_LINK_CROS_OSS" />Open-Source-Software<ph name="END_LINK_CROS_OSS" /> ermöglicht.</translation>
@@ -584,7 +592,9 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="683440813066116847">Eingangsregel für die Zulassung von mDNS-Verkehr in Google Chrome Canary</translation>
 <translation id="684888714667046800">Internetverbindung kann nicht hergestellt werden. Wenn du eine Firewall verwendest, achte darauf, dass <ph name="PRODUCT_EXE_NAME" /> auf der Zulassungsliste steht.</translation>
 <translation id="6859580922007887573">Drücke die Tabulatortaste zum Fortfahren</translation>
+<translation id="6869568587896659271">Einfacher Zugriff auf Websites unter der Adressleiste</translation>
 <translation id="6877155553248388166">Rechte untere Ecke des Suchbereichs: rechts <ph name="RIGHT" /> %, unten <ph name="BOTTOM" /> %</translation>
+<translation id="6879791154455204815">Suche mit Chrome öffnen</translation>
 <translation id="6881299373831449287">Chrome wird aktualisiert</translation>
 <translation id="6885412569789873916">Chrome Beta-Apps</translation>
 <translation id="6893363893008038481">Konto aus Chrome entfernen</translation>
@@ -614,7 +624,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="7085332316435785646">Lege fest, ob der Chrome-Verlauf dafür verwendet werden soll, die Google-Dienste stärker für dich zu personalisieren</translation>
 <translation id="7088681679121566888">Chrome ist auf dem neuesten Stand</translation>
 <translation id="708972073591616506">Mit Chrome für iOS kannst du deine bevorzugten KI-Tools von Google überall nutzen.</translation>
-<translation id="7096221564931416126">Wähle einen beliebigen Text oder ein beliebiges Bild aus, um mit Google Lens zu suchen</translation>
+<translation id="7096221564931416126">Wähle beliebigen Text oder ein beliebiges Bild aus, um mit Google Lens zu suchen</translation>
 <translation id="7098166902387133879">Google Chrome verwendet dein Mikrofon.</translation>
 <translation id="7099479769133613710">Neu starten, um &amp;Chrome OS zu aktualisieren</translation>
 <translation id="7106741999175697885">Task-Manager - Google Chrome</translation>
@@ -643,6 +653,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="7449333426561673451">{COUNT,plural, =1{Deine Organisation hat festgelegt, dass Chrome automatisch geschlossen wird, wenn der Browser eine Minute lang nicht verwendet wird.}other{Deine Organisation hat festgelegt, dass Chrome automatisch geschlossen wird, wenn der Browser # Minuten lang nicht verwendet wird.}}</translation>
 <translation id="7450541714075000668">Text kopiert</translation>
 <translation id="7452987490177144319">{COUNT,plural, =1{Deine Organisation löscht Browserdaten automatisch, wenn Chrome eine Minute lang nicht verwendet wird. Dazu können der Verlauf, Autofill-Daten und Downloads gehören. Deine Tabs bleiben dabei geöffnet.}other{Deine Organisation löscht Browserdaten automatisch, wenn Chrome # Minuten lang nicht verwendet wird. Dazu können der Verlauf, Autofill-Daten und Downloads gehören. Deine Tabs bleiben dabei geöffnet.}}</translation>
+<translation id="7466577301922356468">Das automatische Senden dieser Daten an Google hilft dabei, Chrome zu verbessern. Du kannst diese Einstellung jederzeit ändern.</translation>
 <translation id="7477130805345743099">Chrome warnt dich, bevor eine Website über eine unsichere Verbindung geladen wird</translation>
 <translation id="7481213027396403996">Mehr Sicherheit in Chrome erhalten</translation>
 <translation id="749228101751499733">Solange du angemeldet bist, kannst du deine Passwörter und weitere Daten aus deinem Google‑Konto in Chrome verwenden. Mithilfe des Shortcuts <ph name="SHORTCUT" /> kannst du die Einstellungen für Google‑Dienste jederzeit ändern.</translation>
@@ -676,6 +687,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="7736869414036750079">Deine Organisation verlangt, dass du dich in Chrome anmeldest</translation>
 <translation id="7747138024166251722">Das Installationsprogramm konnte kein temporäres Verzeichnis erstellen. Überprüfe, ob freier Speicherplatz und die Rechte zum Installieren von Software vorhanden sind.</translation>
 <translation id="7748969056734910029">Du hast diese Website in letzter Zeit nicht besucht. Chrome hat „<ph name="PERMISSION_1" />“ und „<ph name="PERMISSION_2" />“ entfernt.</translation>
+<translation id="7759944311003584891">Mit Chrome suchen</translation>
 <translation id="7761834446675418963">Klicke auf deinen Namen, um Chrome zu öffnen und im Web zu surfen.</translation>
 <translation id="7777080907402804672">Wenn ein Bild keine brauchbare Beschreibung hat, versucht Chrome, eine für dich zu finden. Damit entsprechende Beschreibungen erstellt werden können, werden die Bilder an Google gesendet. Du kannst dies jederzeit in den Einstellungen deaktivieren.</translation>
 <translation id="778331955594035129">Chrome benötigt die Berechtigung zur Standortermittlung für diese Website</translation>
@@ -792,6 +804,7 @@ Du kannst erst neue Lesezeichen in deinem Konto speichern, wenn du einige gelös
 <translation id="8747073452963259673">Linke untere Ecke des Suchbereichs: links <ph name="LEFT" /> %, unten <ph name="BOTTOM" /> %</translation>
 <translation id="8748735421235723888">In Chrome wird von inaktiven Tabs belegter Arbeitsspeicher freigegeben. Dadurch können aktive Tabs und andere Apps auf mehr Ressourcen zugreifen und Chrome bleibt schnell. Deine inaktiven Tabs werden automatisch wieder aktiviert, sobald du sie aufrufst. <ph name="BEGIN_LINK" />Weitere Informationen zum Arbeitsspeicher-Sparmodus<ph name="END_LINK" /></translation>
 <translation id="8765470054473112089">Wenn du etwas in die Adressleiste oder das Suchfeld eingibst, sendet Chrome deine Eingabe an deine Standardsuchmaschine, damit du bessere Vorschläge erhältst. Im Inkognitomodus ist diese Funktion deaktiviert.</translation>
+<translation id="8771516687880083607">Festlegen, was mit Chrome geteilt werden soll</translation>
 <translation id="8781673607513845160">Wenn du deine Kamera verwenden möchtest, erlaube Chrome über die <ph name="BEGIN_LINK" />Systemeinstellungen<ph name="END_LINK" /> den Zugriff darauf</translation>
 <translation id="878572486461146056">Installationsfehler: Dein Netzwerkadministrator hat eine Gruppenrichtlinie angewendet, die die Installation verhindert: <ph name="INSTALL_ERROR" />.</translation>
 <translation id="8796919761992612392">Chrome a&amp;npassen</translation>

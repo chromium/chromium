@@ -196,6 +196,19 @@ Kebijakan ini memerlukan lisensi `<ph name="CHROME_ENTERPRISE_PREMIUM_NAME" />` 
 <translation id="1110426799149444997">Nonaktifkan penelusuran region <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1111324374369583989">Jangan tampilkan layar setelan ukuran tampilan selama login</translation>
 <translation id="1111824532252882775">Diaktifkan: Scroller dapat difokuskan secara default.</translation>
+<translation id="1113523086451291158">Kebijakan ini dapat digunakan untuk mengizinkan <ph name="CHROME_DEVTOOLS_NAME" /> di URL tertentu.
+
+Ketersediaan <ph name="CHROME_DEVTOOLS_NAME" /> dievaluasi di tingkat target. Pola URL dicocokkan dengan URL setiap target yang diperiksa (seperti frame utama halaman, subframe yang disematkan, ekstensi, atau aplikasi web). Perilaku yang dihasilkan bergantung pada apakah kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> juga disetel.
+
+Jika kebijakan ini disetel dan <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> tidak disetel, URL target harus cocok dengan pola di daftar yang diizinkan ini agar <ph name="CHROME_DEVTOOLS_NAME" /> diizinkan untuk target tersebut. Jika URL target tidak cocok dengan daftar yang diizinkan ini, <ph name="CHROME_DEVTOOLS_NAME" /> akan diblokir untuk target tersebut (misalnya, subframe yang URL-nya tidak ada dalam daftar yang diizinkan tidak dapat diperiksa, tetapi halaman utama tetap dapat diperiksa jika URL-nya ada dalam daftar yang diizinkan). Untuk mengetahui informasi tentang format URL, lihat https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Jika kebijakan ini dan kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> disetel, daftar yang diizinkan ini akan diprioritaskan. Jika URL target cocok dengan pola di daftar yang diizinkan ini, URL akan tetap diizinkan, meskipun juga cocok dengan pola di daftar yang tidak diizinkan. Jika URL target cocok dengan pola di daftar yang tidak diizinkan (tetapi tidak cocok dengan pola di daftar yang diizinkan), URL target akan diblokir. Jika URL target tidak cocok dengan keduanya, kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> akan digunakan sebagai gantinya.
+
+Jika kebijakan ini tidak disetel, ketersediaan <ph name="CHROME_DEVTOOLS_NAME" /> akan ditentukan oleh kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> dan <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Karakter pengganti host menyeluruh (yaitu, "*" atau "[*]") tidak diperbolehkan; gunakan kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> untuk mengaktifkan fitur ini secara global.
+
+Kebijakan ini terbatas untuk 1.000 entri.</translation>
 <translation id="1117535567637097036">Penanganan protokol yang disetel melalui kebijakan ini tidak digunakan ketika menangani maksud Android.</translation>
 <translation id="1118093128235245168">Izinkan situs meminta pengguna memberikan akses ke perangkat USB yang terhubung</translation>
 <translation id="111910763555783249">Setelan notifikasi</translation>
@@ -8226,6 +8239,17 @@ mengonfigurasi pintasan.</translation>
 Kebijakan ini tidak digunakan lagi mulai M124.</translation>
 <translation id="6022948604095165524">Tindakan saat permulaan</translation>
 <translation id="602318745029752898">Mengizinkan suara text-to-speech enhanced network di fitur Klik untuk Diucapkan</translation>
+<translation id="6023434563562800942">Kebijakan ini dapat digunakan untuk memblokir <ph name="CHROME_DEVTOOLS_NAME" /> di URL tertentu. Untuk mengetahui informasi tentang format URL, lihat https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Ketersediaan <ph name="CHROME_DEVTOOLS_NAME" /> dievaluasi di tingkat target. Pola URL dicocokkan dengan URL setiap target yang diperiksa (seperti frame utama halaman, subframe yang disematkan, ekstensi, atau aplikasi web). Perilaku yang dihasilkan bergantung pada apakah kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> juga disetel.
+
+Jika kebijakan ini disetel dan <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> tidak disetel, URL target yang cocok dengan pola di daftar yang tidak diizinkan ini akan memblokir <ph name="CHROME_DEVTOOLS_NAME" /> untuk target tersebut (misalnya, subframe yang URL-nya cocok dengan daftar yang tidak diizinkan ini tidak dapat diperiksa, tetapi halaman utama tetap dapat diperiksa jika URL-nya tidak ada dalam daftar yang tidak diizinkan). Jika URL target tidak cocok dengan pola apa pun, ketersediaan akan ditentukan oleh kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Jika kebijakan ini dan kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> disetel, daftar yang diizinkan akan diprioritaskan. Jika URL target cocok dengan pola di daftar yang diizinkan, URL akan diizinkan, meskipun juga cocok dengan pola di daftar yang tidak diizinkan ini. Jika URL target cocok dengan pola di daftar yang tidak diizinkan ini (tetapi tidak cocok dengan pola di daftar yang diizinkan), URL akan diblokir. Jika URL target tidak cocok dengan keduanya, kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> akan digunakan sebagai gantinya.
+
+Jika kebijakan ini tidak disetel, ketersediaan <ph name="CHROME_DEVTOOLS_NAME" /> akan ditentukan oleh kebijakan <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> dan <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Kebijakan ini terbatas untuk 1.000 entri.</translation>
 <translation id="6026722971789064331">Mengontrol penggunaan File System API untuk menulis</translation>
 <translation id="602728333950205286">URL sekejap penyedia penelusuran default</translation>
 <translation id="603410445099326293">Parameter untuk URL yang disarankan yang menggunakan POST</translation>

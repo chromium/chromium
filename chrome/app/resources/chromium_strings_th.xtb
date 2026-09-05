@@ -9,6 +9,7 @@
 <translation id="1065672644894730302">ค่ากำหนดของคุณไม่สามารถอ่านได้ ฟีเจอร์บางอย่างอาจใช้ไม่ได้และการเปลี่ยนแปลงค่ากำหนดจะไม่ได้รับการบันทึก</translation>
 <translation id="1083934481477628225">ผู้ปกครองได้ปิด "สิทธิ์สำหรับเว็บไซต์ แอป และส่วนขยาย" ใน Chromium</translation>
 <translation id="1090946077924227754">หากต้องการค้นหาฟีเจอร์หรือส่วนขยาย Chromium ที่เฉพาะเจาะจง ให้พิมพ์ทางลัดของฟีเจอร์หรือส่วนขยายนั้นในแถบที่อยู่ แล้วตามด้วยปุ่มบนแป้นพิมพ์ที่เลือกไว้</translation>
+<translation id="1098493699368672217">แสดงการค้นหาด้วย Chromium ในถาดระบบและเปิดแป้นพิมพ์ลัด</translation>
 <translation id="1104942323762546749">Chromium ต้องการส่งออกรหัสผ่านของคุณ พิมพ์รหัสผ่าน Windows เพื่ออนุญาตให้ดำเนินการ</translation>
 <translation id="112640046208448578">ระบุสิ่งหรือสถานที่ต่างๆ แล้วคัดลอกหรือแปลข้อความ เมื่อใช้การค้นหารูปภาพ ระบบจะส่งภาพหน้าจอของหน้าเว็บไปยังเซิร์ฟเวอร์ <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium เป็นเบราว์เซอร์เริ่มต้นของคุณ</translation>
@@ -304,6 +305,7 @@
 <translation id="4298125729853015961">ส่งออกรหัสผ่านจาก Chromium</translation>
 <translation id="4304713468139749426">เครื่องมือจัดการรหัสผ่าน</translation>
 <translation id="4334241893986177674">ค้นหาในภาพหน้าจอนี้</translation>
+<translation id="4368547723231502008">ค้นหาและถามคำถามได้จากทุกที่ แม้ว่าจะย่อ Chromium อยู่ก็ตาม</translation>
 <translation id="4384331407722351213">เปิด Chromium เมื่อ Windows เริ่มทำงาน</translation>
 <translation id="4400772909124543403">ไม่มีอัปเดตพร้อมใช้งาน</translation>
 <translation id="4407044323746248786">ออกจาก Chromium ใช่ไหม</translation>
@@ -333,6 +335,7 @@
 <translation id="4613863813562375431">เวอร์ชัน Chromium OS</translation>
 <translation id="4621240073146040695">การอัปเดตใกล้จะเสร็จเรียบร้อยแล้ว เปิด Chromium อีกครั้งเพื่อให้การอัปเดตเสร็จสิ้น</translation>
 <translation id="4625064703209785397">เพิ่มความเร็วให้เว็บไซต์ด้วยเครื่องมือ V8 ของ Chromium แต่ทำให้ Chromium ต้านทานการโจมตีได้น้อยลงเล็กน้อย</translation>
+<translation id="4626321472657185181">เปิดการค้นหาด้วย Chromium</translation>
 <translation id="4665829708273112819">คำเตือน: Chromium ไม่สามารถป้องกันไม่ให้ส่วนขยายบันทึกประวัติการท่องเว็บได้ หากคุณต้องการปิดใช้ส่วนขยายนี้ในโหมดไม่ระบุตัวตน ให้ยกเลิกการเลือกตัวเลือกนี้</translation>
 <translation id="4673151026126227699">หากคุณแชร์รายงานการใช้งาน Chromium ด้วย รายงานดังกล่าวจะรวม URL ที่คุณเข้าชม</translation>
 <translation id="4673710618874938871">ลงชื่อเข้าใช้ด้วย <ph name="USER_NAME" />, สมาชิก เปิดเมนูบัญชี</translation>
@@ -374,6 +377,7 @@
 <translation id="5286907366254680517">ตรวจพบ</translation>
 <translation id="5289287148052354622">ดาวน์โหลดแอป Chromium</translation>
 <translation id="5294316920224716406">เมื่อท่องเว็บในโหมดไม่ระบุตัวตน Chromium จะแจ้งเตือนคุณก่อนโหลดเว็บไซต์โดยใช้การเชื่อมต่อที่ไม่ปลอดภัย</translation>
+<translation id="5296581118566748922">ค้นหาด้วย Chromium</translation>
 <translation id="5313228254328109263">บริการภายในของ Chromium Updater</translation>
 <translation id="5324450571874973775">ใช้พร้อมกับฟีเจอร์อื่นๆ ของ Gemini ใน Chromium</translation>
 <translation id="5346389065299425353">เจาะลึกการค้นหาด้วยการเพิ่มแท็บ ไฟล์ และเครื่องมือหลายรายการ</translation>
@@ -384,6 +388,7 @@
 <translation id="5358375970380395591">คุณกำลังลงชื่อเข้าใช้ด้วยบัญชีที่จัดการ และให้การควบคุมระดับผู้ดูแลระบบของบัญชีดังกล่าวเหนือโปรไฟล์ Chromium ของคุณ ข้อมูล Chromium เช่น แอป บุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ จะเชื่อมโยงอย่างถาวรกับ <ph name="USER_NAME" /> คุณจะสามารถลบข้อมูลนี้ผ่านทางแผงควบคุมบัญชี Google แต่คุณจะไม่สามารถเชื่อมโยงข้อมูลนี้กับบัญชีอื่น <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">รหัสเพิ่มเติม: <ph name="EXTRA_CODE" /></translation>
 <translation id="5377622451696208284">รวม Chromium ไว้ในกิจกรรมบนเว็บและแอปเพื่อรับการปรับเปลี่ยนในแบบของคุณ</translation>
+<translation id="5382964351116519680">เปิดการค้นหาด้วย Chromium</translation>
 <translation id="5383439451358640070">ดูสาเหตุที่ Chromium บล็อกบางไฟล์</translation>
 <translation id="5386450000063123300">กำลังอัปเดต Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">อนุญาตให้ลงชื่อเข้าใช้ Chromium</translation>
@@ -503,6 +508,7 @@
 <translation id="651535675648445253">เปิดทางลัดใน Chromium</translation>
 <translation id="6539122709674868420">องค์กรจะปิด Chromium เมื่อไม่มีการใช้งานเป็นเวลา <ph name="TIMEOUT_DURATION" /> ลบข้อมูลการท่องเว็บแล้ว ซึ่งอาจรวมถึงประวัติการเข้าชม การป้อนข้อความอัตโนมัติ และการดาวน์โหลด</translation>
 <translation id="6542839706527980775">แต่ละโปรไฟล์จะเก็บข้อมูล Chromium ของตัวเอง เช่น บุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และอื่นๆ</translation>
+<translation id="6556755379298048869">ค้นหาด้วยแป้นพิมพ์ลัด</translation>
 <translation id="6563921047760808519">ดูข้อมูลเพิ่มเติมเกี่ยวกับ<ph name="BEGIN_LINK" />วิธีที่ Chromium ช่วยรักษาข้อมูลของคุณให้เป็นส่วนตัว<ph name="END_LINK" /></translation>
 <translation id="6564039629497156115">การเปลี่ยนแปลงการตั้งค่านี้จะมีผลเมื่อ Chromium รีสตาร์ท</translation>
 <translation id="6567032987737689854">จัดการส่วนขยายโดยคลิกส่วนขยายในเมนูหลักของ Chromium</translation>
@@ -537,6 +543,7 @@
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6859580922007887573">แตะเพื่อดำเนินการต่อ</translation>
 <translation id="6862030660799253820">ค้นหารูปภาพนี้ด้วยการค้นหารูปภาพ</translation>
+<translation id="6869568587896659271">เข้าถึงเว็บไซต์ใต้แถบที่อยู่ได้ง่ายๆ</translation>
 <translation id="6873893289264747459">Chromium พบว่า "<ph name="EXTENSION_NAME" />" มีมัลแวร์</translation>
 <translation id="6877155553248388166">มุมขวาล่างของพื้นที่การค้นหา: ขวา <ph name="RIGHT" />% ล่าง <ph name="BOTTOM" />%</translation>
 <translation id="6896758677409633944">คัดลอก</translation>
@@ -641,6 +648,7 @@ Chromium ไม่สามารถกู้คืนการตั้งค�
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">ทำให้ผู้ที่มีสิทธิ์เข้าถึงการเข้าใช้อินเทอร์เน็ตของคุณดูว่าคุณเข้าชมเว็บไซต์ไหนบ้างได้ยากขึ้น Chromium ใช้การเชื่อมต่อที่ปลอดภัยเพื่อค้นหาที่อยู่ IP ของเว็บไซต์ใน DNS (ระบบชื่อโดเมน)</translation>
 <translation id="7810005234485217901">คุณสามารถปักหมุดการค้นหารูปภาพเพื่อให้เข้าถึงได้ง่าย</translation>
+<translation id="7828527096541974699">เลือกสิ่งที่จะแชร์กับ Chromium</translation>
 <translation id="7828947555739565424">มีโปรไฟล์ Chromium ที่ใช้บัญชีนี้ในอุปกรณ์นี้อยู่แล้ว</translation>
 <translation id="7845233973568007926">ขอขอบคุณที่ติดตั้ง คุณต้องรีสตาร์ทคอมพิวเตอร์ก่อนใช้ <ph name="BUNDLE_NAME" /></translation>
 <translation id="7847673590271334840">มีการเปลี่ยนเครื่องมือค้นหาของคุณจากภายนอก Chromium Chromium จึงรีเซ็ตเครื่องมือดังกล่าวเป็นค่าเริ่มต้นเดิมเพื่อปกป้องคุณ <ph name="LEARN_MORE_LINK" /></translation>
@@ -760,6 +768,7 @@ Chromium ไม่สามารถกู้คืนการตั้งค�
             • ลบคุกกี้และข้อมูลเว็บไซต์ชั่วคราวอื่นๆ
             <ph name="LINE_BREAKS" />
             การดำเนินการนี้จะไม่มีผลกับบุ๊กมาร์ก ประวัติการเข้าชม และรหัสผ่านที่บันทึกไว้</translation>
+<translation id="8966875421152977384">แสดงทางลัดเว็บไซต์ Chromium</translation>
 <translation id="897581876605952338">โลโก้ Chromium Enterprise</translation>
 <translation id="8980139959902937527">นำความปลอดภัยของ Google ไปได้ทุกที่ทุกเวลาด้วยแอป Chromium ใน <ph name="DEVICE_TYPE" /></translation>
 <translation id="8981150672034878610">เริ่ม Chromium ไม่ได้เนื่องจากเกิดข้อผิดพลาดขณะเปิดโปรไฟล์ ลองรีสตาร์ท Chromium</translation>
@@ -768,6 +777,7 @@ Chromium ไม่สามารถกู้คืนการตั้งค�
 <translation id="9018218886431812662">ติดตั้งเสร็จสมบูรณ์แล้ว</translation>
 <translation id="9019929317751753759">เพื่อให้ Chromium ปลอดภัยขึ้น เราได้ปิดส่วนขยายต่อไปนี้ซึ่งไม่ได้แสดงอยู่ใน <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> และอาจมีการเพิ่มเข้ามาโดยที่คุณไม่รู้ตัว</translation>
 <translation id="9022552996538154597">ลงชื่อเข้าใช้ Chromium</translation>
+<translation id="9035791714111278917">แสดงการค้นหาด้วย Chromium ในแถบเมนูของ Mac และเปิดแป้นพิมพ์ลัด</translation>
 <translation id="904366664621834601">Chromium บล็อกการดาวน์โหลดนี้เนื่องจากไฟล์ที่เก็บถาวรมีไฟล์อื่นๆ ที่อาจซ่อนมัลแวร์ไว้</translation>
 <translation id="9053882453960391422">ซิงค์รหัสผ่าน บุ๊กมาร์ก และประวัติการเข้าชมในอุปกรณ์ต่างๆ ได้อย่างสมบูรณ์แบบ เข้าถึงฟีเจอร์ที่คุณรู้จักและชื่นชอบได้อย่างง่ายดายโดยอัปเดตเบราว์เซอร์เริ่มต้นเป็น Chromium ระบบจะปักหมุด Chromium ไว้ที่แถบงานเพื่อให้เข้าถึงได้อย่างรวดเร็ว</translation>
 <translation id="9056398481763999048">ใช้เครื่องมือ AI ที่ดีที่สุดของ Google ด้วยแอป Chromium ในโทรศัพท์</translation>

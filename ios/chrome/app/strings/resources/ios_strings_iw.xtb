@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">גלישה פרטית</translation>
 <translation id="1053651653201045802">החשבון לא מחובר. כדי להשתמש בסימניות, בסיסמאות ובפרטים נוספים בחשבון שלך, עליך להיכנס שוב לחשבון.</translation>
 <translation id="1054745118061919935">לחיצה על המשך מבטאת הסכמה ל<ph name="BEGIN_LINK" />תנאים ולהגבלות<ph name="END_LINK" />.</translation>
+<translation id="1056818261333183659">מה כדאי לי לקנות?</translation>
 <translation id="10614374240317010">פריטים שאף פעם לא יישמרו</translation>
 <translation id="1062138828266376352">קוד האימות לא השתנה. מומלץ לבדוק את החיבור לאינטרנט ולנסות שוב</translation>
 <translation id="1063070031224282617">צריך לבחור מיקום לשמירת הקובץ "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />)</translation>
@@ -1505,6 +1506,7 @@
 <translation id="5898848375214731122">מסה</translation>
 <translation id="5899314093904173337">‏כדי לשתף עם אנשים שנמצאים בסביבה הקרובה, הם יכולים לסרוק את קוד ה-QR הזה באמצעות המצלמה שלהם או באמצעות אפליקציית סורק QR.</translation>
 <translation id="5902752768726620872">{count,plural, =1{מספר הכרטיסיות החדשות: {count}}one{מספר הכרטיסיות החדשות: {count}}two{מספר הכרטיסיות החדשות: {count}}other{מספר הכרטיסיות החדשות: {count}}}</translation>
+<translation id="5906163261248594192">יום ההולדת של דן</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5912796581727968237">‏לפתיחת Google Wallet</translation>
 <translation id="5922999516621365983">כדי להצמיד את הכרטיסייה, גוררים אותה לכאן.</translation>
@@ -1924,6 +1926,7 @@
 <translation id="720399613139435155">התרגום נכשל</translation>
 <translation id="7204922488054642675">חדשות מותאמות אישית</translation>
 <translation id="7206979415662233817">תנאים והגבלות</translation>
+<translation id="721218676460477064">סכם את המאמר הזה</translation>
 <translation id="7215621211572884440">חלונות קופצים מותרים</translation>
 <translation id="7218491361283758048">מיקוד</translation>
 <translation id="7221173315674413369">בתכונה 'מה חדש' אפשר לגלות תכונות וטיפים חדשים</translation>
@@ -2185,6 +2188,7 @@
 <translation id="8035133914807600019">תיקייה חדשה…</translation>
 <translation id="8035412398498507358">תמונות</translation>
 <translation id="8037713009824540257">הוסף אתר</translation>
+<translation id="8038078082340255234">דוח על מצב השוק</translation>
 <translation id="8040407350301524547">לאפשרויות מסלול, לוחצים על 'קבלת מסלול'.</translation>
 <translation id="804427445359061970">כאן יופיעו הכרטיסיות שפתוחות במכשירים אחרים</translation>
 <translation id="8058655154417507695">שנת תפוגה</translation>
@@ -2242,6 +2246,7 @@
 <translation id="8232956427053453090">שמירת הנתונים</translation>
 <translation id="8233237502828137700">סגירת הבאנר של המבצע</translation>
 <translation id="823339794112333264">הפעלה של המיקרופון</translation>
+<translation id="8240217649914883113">תוסיף את זה ליומן שלי</translation>
 <translation id="8250920743982581267">מסמכים</translation>
 <translation id="8252980988000695656">‏משימת החיפוש של Google Lens הושלמה.</translation>
 <translation id="8258734532103758067">ייצאתי את הנתונים שלי</translation>
@@ -2286,6 +2291,7 @@
 <translation id="8368198938968349418">הפעלת מילוי אוטומטי…</translation>
 <translation id="8370406443343902172">מעבר להגדרות…</translation>
 <translation id="8370929854657845191">הרחבה לגובה בינוני</translation>
+<translation id="8371494817541821097">מפתח הגישה נוצר בתאריך <ph name="DATE" /></translation>
 <translation id="8372471489238799313">{count,plural, =1{מחיקת הכתובת}one{מחיקת הכתובות}two{מחיקת הכתובות}other{מחיקת הכתובות}}</translation>
 <translation id="8378714024927312812">מנוהל על-ידי הארגון</translation>
 <translation id="8385363453480067273">‏‫Google Lens: חיפוש מידע על דברים מסקרנים שראית</translation>

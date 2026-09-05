@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Krijuar <ph name="NUM_WEEKS_ONE" /> javë më parë}other{Krijuar <ph name="NUM_WEEKS_MANY" /> javë më parë}}</translation>
 <translation id="1063300264396686489">Hap automatikisht grupet e skedave nga pajisjet e tjera</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> nga skedat e tua nuk janë përdorur së fundi. Do t'i mbyllësh ato?</translation>
+<translation id="1089791933924803646">Merr sugjerime të Chrome në aplikacione të tjera</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Krijuar <ph name="NUM_YEARS_ONE" /> vit më parë}other{Krijuar <ph name="NUM_YEARS_MANY" /> vite më parë}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Skedat dhe grupet joaktive do të mbyllen pas 1 muaji}other{Skedat dhe grupet joaktive do të mbyllen pas <ph name="MONTH_COUNT_MANY" /> muajsh}}</translation>
 <translation id="1173894706177603556">Riemërto</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Shto skedën te grupi}other{Shto skedat te grupi}}</translation>
 <translation id="8138067144082174140">Pas 14 ditësh pa aktivitet</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Zgjero grupin e skedave "<ph name="TITLE_OF_GROUP" />" me <ph name="TABS_COUNT_ONE" /> skedë, ngjyrë <ph name="COLOR_NAME" />.}other{Zgjero grupin e skedave "<ph name="TITLE_OF_GROUP" />" me <ph name="TABS_COUNT_MANY" /> skeda, ngjyrë <ph name="COLOR_NAME" />.}}</translation>
+<translation id="8172214054247281626">Ndaj të dhënat e shfletimit, si p.sh. historikun e fundit të shfletimit, për të marrë sugjerime në aplikacionet e zgjedhura. Këto të dhëna përpunohen në mënyrë të sigurt në pajisjen tënde.</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{Zhgozhdo skedën}other{Zhgozhdo skedat}}</translation>
 <translation id="8205266828577616993">Lëviz skedën lart</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Përditësuar <ph name="NUM_MINS_ONE" /> minutë më parë}other{Përditësuar <ph name="NUM_MINS_MANY" /> minuta më parë}}</translation>

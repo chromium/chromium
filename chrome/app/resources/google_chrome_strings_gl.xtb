@@ -31,6 +31,7 @@
 <translation id="1197860368385086056">A próxima vez que abras Chrome no teu dispositivo (<ph name="DEVICE_TYPE" />), verás unha solicitude para activar as alertas de seguimento de prezos.</translation>
 <translation id="1203500561924088507">Grazas por levar a cabo a instalación. Para utilizar <ph name="BUNDLE_NAME" />, debes reiniciar o navegador.</translation>
 <translation id="1278833599417554002">Reiniciar para actualizar &amp;Chrome</translation>
+<translation id="1289911795790071537">Abrir busca con Chrome</translation>
 <translation id="1290883685122687410">Produciuse un erro durante a configuración: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Espera a que Chrome instale as actualizacións do sistema máis recentes.</translation>
 <translation id="1330562121671411446">Detectar idioma</translation>
@@ -75,6 +76,7 @@
 <translation id="1640672724030957280">Descargando…</translation>
 <translation id="1651617469580841801">Cando usas Google Lens, envíanse a Google o contido (incluídos os PDF), o URL e o título da páxina. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Acerca de Chrome OS Flex</translation>
+<translation id="1664094661346151467">Fai buscas e preguntas desde calquera lugar, mesmo se Chrome está minimizado</translation>
 <translation id="1674870198290878346">Abrir ligazón nunha ventá do modo de incó&amp;gnito de Chrome</translation>
 <translation id="1682634494516646069">Google Chrome non pode ler nin escribir no seu directorio de datos:
 
@@ -112,6 +114,7 @@
 <translation id="2034233344106846793">Sempre que sexa posible, Chrome cambiará automaticamente as conexións pouco seguras a HTTPS</translation>
 <translation id="2039417478970545937">Configuración.</translation>
 <translation id="2040220733769034247">Escanea o código QR co teléfono para descargar Chrome e iniciar sesión na túa Conta de Google.</translation>
+<translation id="2044908892530830113">Mostrar busca con Chrome na barra de menú de Mac e activar atallo de teclado</translation>
 <translation id="2050189601866423230">Podes fixar o modo IA da Busca de Google para facer preguntas mentres navegas</translation>
 <translation id="2091012649849228750">Se queres recibir actualizacións de Google Chrome no futuro, debes instalar Windows 10 ou unha versión posterior. Este ordenador ten instalado Windows 8.</translation>
 <translation id="2094648590148273905">Condicións de Chrome OS Flex</translation>
@@ -139,6 +142,7 @@
 <translation id="2284380654876659752">Cando visitas un sitio, Chrome envíalle unha parte confusa do URL a <ph name="BEGIN_LINK" />Navegación segura de Google<ph name="END_LINK" /> mediante un servidor de privacidade que oculta o teu enderezo IP. Se un sitio ten un comportamento sospeitoso, tamén se enviarán os URL completos e fragmentos do contido das páxinas.</translation>
 <translation id="2290014774651636340">Non se atopan as claves da API de Google. Desactivaranse algunhas funcións de Google Chrome.</translation>
 <translation id="2290095356545025170">Seguro que queres desinstalar Google Chrome?</translation>
+<translation id="2295218613066132598">Mostrar atallos de sitios de Chrome</translation>
 <translation id="2301513536169703857">Para poder acceder aos teus contrasinais, marcadores e outros datos en todos os teus dispositivos, inicia sesión en Chrome</translation>
 <translation id="2307973900865360088">Manter na barra de aplicacións</translation>
 <translation id="2309047409763057870">Esta é unha instalación secundaria de Google Chrome e non se pode converter no teu navegador predeterminado.</translation>
@@ -351,6 +355,7 @@ Proba a permitila se esta páxina non funciona como debería.</translation>
 <translation id="436060642166082913">Chrome bloqueou esta descarga porque o ficheiro pode ser perigoso para as túas contas de redes sociais e persoais</translation>
 <translation id="4367027658822022112">Podes fixar Google Lens para acceder este servizo facilmente. Fai clic no botón Fixar que está na parte superior do panel lateral</translation>
 <translation id="4372389195695053189">Chrome agora é o teu navegador predeterminado</translation>
+<translation id="4381814455597163081">Estás axudando a mellorar Chrome enviando estatísticas de uso e informes de fallos a Google. <ph name="BEGIN_LINK" />Xestionar<ph name="END_LINK" /></translation>
 <translation id="4389991535395284064">Cando navegues no modo de incógnito, Chrome mostrarache unha advertencia antes de cargar un sitio cunha conexión pouco segura</translation>
 <translation id="4400772909124543403">Non hai ningunha actualización dispoñible</translation>
 <translation id="4427306783828095590">A protección mellorada é máis eficaz á hora de bloquear o phishing e o software malicioso</translation>
@@ -526,6 +531,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6180522807229584611">Esta pestana está usando recursos adicionais. Para mellorar o rendemento, permite que Chrome a desactive.</translation>
 <translation id="6182736845697986886">Produciuse un erro na instalación debido a un erro interno do servidor de actualizacións.</translation>
 <translation id="6192058120268468905">A túa conta en Chrome</translation>
+<translation id="6195202018542972563">Mostrar busca con Chrome na bandexa do sistema e activar atallo de teclado</translation>
 <translation id="6235018212288296708">Norma de entrada de Google Chrome para permitir tráfico mDNS.</translation>
 <translation id="624230925347970731">Chrome pecharase en breve</translation>
 <translation id="6247557882553405851">Xestor de contrasinais de Google</translation>
@@ -567,8 +573,10 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="652948702951888897">Historial de Chrome</translation>
 <translation id="6532945796722480006">Abrir Gemini en Chrome Canary</translation>
 <translation id="6539493053177300926">Accede facilmente a Gemini en Chrome en todo o teu dispositivo, mesmo se Chrome está minimizado.</translation>
+<translation id="6556755379298048869">Fai buscas cun atallo de teclado.</translation>
 <translation id="6585124893636629274">Pechar Gemini en Chrome</translation>
 <translation id="659498884637196217">No xestor de contrasinais de Google neste dispositivo</translation>
+<translation id="6612152958212564387">Non estás enviando estatísticas de uso nin informes de fallos a Google. <ph name="BEGIN_LINK" />Xestionar<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Define Chrome como o navegador predeterminado para manter os contrasinais, os marcadores e o historial perfectamente sincronizados en todos os dispositivos.</translation>
 <translation id="6631524303639368205">Retoma a actividade onde a deixaches: Chrome restaurou as pestanas da última sesión. Podes desactivar esta opción en</translation>
 <translation id="6632473616050862500">Chrome OS Flex é posible grazas a <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional.</translation>
@@ -593,7 +601,9 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="683440813066116847">Regra de entrada para Google Chrome Canary para permitir tráfico mDNS.</translation>
 <translation id="684888714667046800">Non se puido establecer conexión con Internet. Se utilizas un firewall, asegúrate de que <ph name="PRODUCT_EXE_NAME" /> estea na lista de entidades permitidas.</translation>
 <translation id="6859580922007887573">Toca para continuar</translation>
+<translation id="6869568587896659271">Acceso sinxelo aos sitios web desde debaixo da barra de enderezos</translation>
 <translation id="6877155553248388166">esquina inferior dereita da área de busca: <ph name="RIGHT" /> % á dereita, <ph name="BOTTOM" /> % abaixo</translation>
+<translation id="6879791154455204815">Abrir busca con Chrome</translation>
 <translation id="6881299373831449287">Actualizando Chrome</translation>
 <translation id="6885412569789873916">Aplicacións de Chrome Beta</translation>
 <translation id="6893363893008038481">Quitar conta de Chrome</translation>
@@ -652,6 +662,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="7449333426561673451">{COUNT,plural, =1{A túa organización pechará Chrome automaticamente cando leve 1 minuto sen usarse.}other{A túa organización pechará Chrome automaticamente cando leve # minutos sen usarse.}}</translation>
 <translation id="7450541714075000668">Copiouse o texto</translation>
 <translation id="7452987490177144319">{COUNT,plural, =1{A túa organización eliminará os datos de navegación automaticamente cando Chrome leve 1 minuto sen usarse. Entre esa información, poderían incluírse o historial, os datos da función de autocompletar e as descargas. As pestanas permanecerán abertas.}other{A túa organización eliminará os datos de navegación automaticamente cando Chrome leve # minutos sen usarse. Entre esa información, poderían incluírse o historial, os datos da función de autocompletar e as descargas. As pestanas permanecerán abertas.}}</translation>
+<translation id="7466577301922356468">O envío automático destes datos a Google axuda a mellorar Chrome. Podes cambiar esta opción en calquera momento.</translation>
 <translation id="7477130805345743099">Chrome mostrarache unha advertencia antes de cargar un sitio cunha conexión pouco segura</translation>
 <translation id="7481213027396403996">Goza da máxima seguranza de Chrome</translation>
 <translation id="749228101751499733">Mentres teñas a sesión iniciada, poderás usar os teus contrasinais, ademais doutros datos da túa Conta de Google, en Chrome. <ph name="SHORTCUT" /> pode cambiar a túa configuración dos servizos de Google.</translation>
@@ -685,6 +696,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="7736869414036750079">A túa organización esixe que inicies sesión en Chrome</translation>
 <translation id="7747138024166251722">O programa de instalación non puido crear un directorio temporal. Comproba se hai espazo libre no disco e se tes autorización para instalar o software.</translation>
 <translation id="7748969056734910029">Levas un tempo sen entrar. Chrome quitou os seguintes permisos: <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" />.</translation>
+<translation id="7759944311003584891">Facer buscas con Chrome</translation>
 <translation id="7761834446675418963">Fai clic no teu nome para abrir Chrome e comezar a navegar.</translation>
 <translation id="7777080907402804672">Se unha imaxe non ten unha descrición útil, Chrome tentará proporcionarche unha. Para crear descricións, envíanse imaxes a Google. Podes desactivar esta función na configuración cando queiras.</translation>
 <translation id="778331955594035129">Chrome necesita permiso de acceso á localización para este sitio</translation>
@@ -801,6 +813,7 @@ Non poderás gardar máis ata que elimines uns cantos. Se pechas a sesión agora
 <translation id="8747073452963259673">esquina inferior esquerda da área de busca: <ph name="LEFT" /> % á esquerda, <ph name="BOTTOM" /> % abaixo</translation>
 <translation id="8748735421235723888">Chrome libera memoria das pestanas inactivas. Desta forma, as pestanas activas e outras aplicacións dispoñen de máis recursos informáticos e Chrome segue funcionando rápido. As pestanas inactivas volven activarse automaticamente cando regresas a elas. <ph name="BEGIN_LINK" />Máis información sobre o aforro de memoria<ph name="END_LINK" /></translation>
 <translation id="8765470054473112089">Cando escribes algo na barra de enderezos ou na caixa de busca, Chrome envíallo ao motor de busca predeterminado para obter mellores suxestións. Esta opción está desactivada no modo de incógnito.</translation>
+<translation id="8771516687880083607">Escoller o que queres compartir con Chrome</translation>
 <translation id="8781673607513845160">Para usar a cámara, concédelle acceso a Chrome na <ph name="BEGIN_LINK" />configuración do sistema<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Erro de instalación: A persoa que administra a rede aplicou unha política de grupo que non permite a instalación (<ph name="INSTALL_ERROR" />)</translation>
 <translation id="8796919761992612392">P&amp;ersonalizar Chrome</translation>

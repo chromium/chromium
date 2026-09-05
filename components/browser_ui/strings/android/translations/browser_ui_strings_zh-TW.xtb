@@ -7,6 +7,7 @@
 <translation id="1046742265332833834">藍色主題</translation>
 <translation id="1070329623210597193">這個網站可以查看或編輯的檔案</translation>
 <translation id="1074758928858737435">你可以要求查看電腦版網站</translation>
+<translation id="1089791933924803646">在其他應用程式中取得 Chrome 建議</translation>
 <translation id="1109482864356262001">需要動作或光源感應器的功能將無法運作</translation>
 <translation id="1126523729897810826">完成下列建議動作，充分運用 Chrome 的各項功能</translation>
 <translation id="113098737392899175">接上鍵盤時，使用文字游標瀏覽頁面</translation>
@@ -453,6 +454,7 @@
 <translation id="5668404140385795438">覆寫網站禁止放大的要求</translation>
 <translation id="5668843533782548925">網站速度較慢，但安全性較高</translation>
 <translation id="5677928146339483299">已封鎖</translation>
+<translation id="5679089750838794164">Chrome 現在可以根據你的瀏覽資料 (例如近期瀏覽記錄)，在其他應用程式中顯示建議。系統會在你的裝置上處理這類資料，安全有保障。你隨時可以前往 Chrome 設定頁面關閉這項功能。</translation>
 <translation id="5689516760719285838">位置</translation>
 <translation id="5690795753582697420">已關閉 Android 設定中的攝影機</translation>
 <translation id="5700761515355162635">已允許使用第三方 Cookie</translation>
@@ -507,6 +509,7 @@
 <translation id="6085954183010297841">要刪除檔案編輯權限嗎？<ph name="FILE" /></translation>
 <translation id="6104860901391833523">開啟後，網站可以自動進入子母畫面。關閉後，網站將無法自動進入子母畫面。</translation>
 <translation id="6120483543004435978">如果啟用，網站就可以要求偵測你是否正在使用裝置。如果停用，網站將無法得知你是否正在使用裝置。</translation>
+<translation id="612871598708395517">隱藏「在其他應用程式中取得 Chrome 建議」</translation>
 <translation id="6132075343662013154">Chrome 會詢問你是否要儲存密碼</translation>
 <translation id="615886654739818377">不允許網站管理所有螢幕上的視窗</translation>
 <translation id="6165508094623778733">瞭解詳情</translation>

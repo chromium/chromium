@@ -7,6 +7,7 @@
 <translation id="1046742265332833834">Gai urdina</translation>
 <translation id="1070329623210597193">Webgune honek ikusi edo edita ditzakeen fitxategiak</translation>
 <translation id="1074758928858737435">Webguneen ordenagailuetarako bertsioa ikusteko eska dezakezu</translation>
+<translation id="1089791933924803646">Lortu Chrome-ren iradokizunak beste aplikazio batzuetan</translation>
 <translation id="1109482864356262001">Mugimendu- edo argi-sentsoreak behar dituzten eginbideek ez dute funtzionatuko</translation>
 <translation id="1126523729897810826">Gauzatu behean iradokitako ekintzak Chrome-ri etekinik handiena ateratzeko</translation>
 <translation id="113098737392899175">Nabigatu orrietatik testu-kurtsorea erabilita teklatu bat erantsita dagoenean</translation>
@@ -453,6 +454,7 @@
 <translation id="5668404140385795438">Gainidatzi zoom-maila ez handiagotzeko webgune baten eskaera</translation>
 <translation id="5668843533782548925">Webguneek mantsoagoa funtzionatzen dute, baina seguruagoak dira</translation>
 <translation id="5677928146339483299">Blokeatuta</translation>
+<translation id="5679089750838794164">Orain, Chrome-k beste aplikazio batzuetan iradokizunak erakuts diezazkizuke zure arakatze-datuetan oinarrituta, hala nola azkenaldiko arakatze-historian. Datu horiek modu seguruan prozesatzen dira gailuan. Aukera hori desaktibatzeko, joan Chrome-ren ezarpenetara.</translation>
 <translation id="5689516760719285838">Kokapena</translation>
 <translation id="5690795753582697420">Kamera erabiltzeko baimena desaktibatuta dago Android-en ezarpenetan</translation>
 <translation id="5700761515355162635">Hirugarrenen cookieak erabil daitezke</translation>
@@ -507,6 +509,7 @@
 <translation id="6085954183010297841">Fitxategia editatzeko baimena kendu nahi duzu? <ph name="FILE" /></translation>
 <translation id="6104860901391833523">Aktibatuta dagoenean, webguneek Pantaila txiki gainjarria atzi dezakete automatikoki. Desaktibatuta dagoenean, webguneek ezin dute atzitu Pantaila txiki gainjarria automatikoki.</translation>
 <translation id="6120483543004435978">Aktibatuta dagoenean, webguneek gailua noiz erabiltzen ari zaren jakiteko baimena eska dezakete. Desaktibatuta dagoenean, webguneek ezin dute jakin noiz erabiltzen ari zaren gailua.</translation>
+<translation id="612871598708395517">Ezkutatu Chrome-ren iradokizunak beste aplikazio batzuetan lortzeko aukera</translation>
 <translation id="6132075343662013154">Chrome-k pasahitza gorde nahi duzun galdetuko dizu</translation>
 <translation id="615886654739818377">Ez eman leihoak pantaila guztietan kudeatzeko baimena webguneei</translation>
 <translation id="6165508094623778733">Lortu informazio gehiago</translation>

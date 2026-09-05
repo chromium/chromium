@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> hafta önce oluşturuldu}other{<ph name="NUM_WEEKS_MANY" /> hafta önce oluşturuldu}}</translation>
 <translation id="1063300264396686489">Diğer cihazlardaki sekme gruplarını otomatik olarak aç</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> sekmeyi son zamanlarda hiç kullanmadınız. Bunlar kapatılsın mı?</translation>
+<translation id="1089791933924803646">Diğer uygulamalarda Chrome'dan öneriler al</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> yıl önce oluşturuldu}other{<ph name="NUM_YEARS_MANY" /> yıl önce oluşturuldu}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Etkin olmayan sekmeler ve gruplar 1 ay sonra kapatılır.}other{Etkin olmayan sekmeler ve gruplar <ph name="MONTH_COUNT_MANY" /> ay sonra kapatılır.}}</translation>
 <translation id="1173894706177603556">Yeniden adlandır</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Sekmeyi gruba ekle}other{Sekmeleri gruba ekle}}</translation>
 <translation id="8138067144082174140">14 gün boyunca işlem yapılmadığında</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> sekme içeren <ph name="COLOR_NAME" /> renkli <ph name="TITLE_OF_GROUP" /> sekme grubunu genişletin.}other{<ph name="TABS_COUNT_MANY" /> sekme içeren <ph name="COLOR_NAME" /> renkli <ph name="TITLE_OF_GROUP" /> sekme grubunu genişletin.}}</translation>
+<translation id="8172214054247281626">Seçili uygulamalarda öneriler almak için son tarama geçmişiniz gibi tarama verilerini paylaşın. Bu veriler, cihazınızda güvenli bir şekilde işlenir.</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{Sekmenin sabitlemesini kaldır}other{Sekmelerin sabitlemesini kaldır}}</translation>
 <translation id="8205266828577616993">Sekmeyi yukarı taşı</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> dakika önce güncellendi}other{<ph name="NUM_MINS_MANY" /> dakika önce güncellendi}}</translation>

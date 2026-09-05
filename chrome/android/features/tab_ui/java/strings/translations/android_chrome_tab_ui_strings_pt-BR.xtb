@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Criado há <ph name="NUM_WEEKS_ONE" /> semana}one{Criado há <ph name="NUM_WEEKS_MANY" /> semana}other{Criado há <ph name="NUM_WEEKS_MANY" /> semanas}}</translation>
 <translation id="1063300264396686489">Abrir automaticamente grupos de guias de outros dispositivos</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> das suas guias não foram usadas recentemente. Fechar todas elas?</translation>
+<translation id="1089791933924803646">Receber sugestões do Chrome em outros apps</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Criado há <ph name="NUM_YEARS_ONE" /> ano}one{Criado há <ph name="NUM_YEARS_MANY" /> ano}other{Criado há <ph name="NUM_YEARS_MANY" /> anos}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{As guias e os grupos inativos serão fechados após um mês.}one{As guias e os grupos inativos serão fechados após <ph name="MONTH_COUNT_MANY" /> mês.}other{As guias e os grupos inativos serão fechados após <ph name="MONTH_COUNT_MANY" /> meses.}}</translation>
 <translation id="1173894706177603556">Renomear</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Adicionar guia ao grupo}one{Adicionar guia ao grupo}other{Adicionar guias ao grupo}}</translation>
 <translation id="8138067144082174140">Após 14 dias de inatividade</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Abrir o grupo de guias <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_ONE" /> guia na cor <ph name="COLOR_NAME" />.}one{Abrir o grupo de guias <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_MANY" /> guia na cor <ph name="COLOR_NAME" />.}other{Abrir o grupo de guias <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_MANY" /> guias na cor <ph name="COLOR_NAME" />.}}</translation>
+<translation id="8172214054247281626">Compartilhe dados de navegação, como seu histórico recente, para receber sugestões em apps selecionados. O tratamento desses dados ocorre de forma segura no dispositivo.</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{Liberar guia}one{Liberar guia}other{Liberar guias}}</translation>
 <translation id="8205266828577616993">Mover guia para cima</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Atualizado há <ph name="NUM_MINS_ONE" /> minuto}one{Atualizado há <ph name="NUM_MINS_MANY" /> minuto}other{Atualizado há <ph name="NUM_MINS_MANY" /> minutos}}</translation>

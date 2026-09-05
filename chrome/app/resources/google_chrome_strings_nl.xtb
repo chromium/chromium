@@ -31,6 +31,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="1197860368385086056">De volgende keer dat je Chrome op je <ph name="DEVICE_TYPE" /> opent, zie je een prompt om meldingen voor prijzen volgen aan te zetten.</translation>
 <translation id="1203500561924088507">Bedankt voor het installeren. Je moet de browser opnieuw opstarten voordat je <ph name="BUNDLE_NAME" /> kunt gebruiken.</translation>
 <translation id="1278833599417554002">Opnieuw starten om &amp;Chrome te updaten</translation>
+<translation id="1289911795790071537">Zoeken met Chrome openen</translation>
 <translation id="1290883685122687410">Configuratiefout: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Wacht terwijl Chrome de nieuwste systeemupdates installeert.</translation>
 <translation id="1330562121671411446">Taal herkennen</translation>
@@ -307,7 +308,7 @@ Als deze pagina niet werkt zoals verwacht, kun je optimalisatie toestaan.</trans
 <translation id="3892148308691398805">Tekst kopiëren</translation>
 <translation id="3893650521827656233">Profiteer onderweg van de beste beveiligingsfuncties van Google met Chrome.</translation>
 <translation id="3941890832296813527">Installatiefout: De bestandsnaam van het installatieprogramma is ongeldig of wordt niet ondersteund.</translation>
-<translation id="395904275706073188">Beschermde pagina's kunnen niet worden gelezen. Probeer een andere pagina.</translation>
+<translation id="395904275706073188">Je kunt beschermde pagina's niet openen. Probeer een andere pagina.</translation>
 <translation id="3965532487635448963">Gemini in Chrome tonen in systeemvak en sneltoets aanzetten</translation>
 <translation id="3967822245660637423">Downloaden voltooid</translation>
 <translation id="3968962723676998462">Voer je wachtwoordzin in om Chrome-gegevens in je account <ph name="ACCOUNT_EMAIL" /> te gebruiken en op te slaan</translation>
@@ -353,6 +354,7 @@ Als deze pagina niet werkt zoals verwacht, kun je optimalisatie toestaan.</trans
 <translation id="436060642166082913">Chrome heeft deze download geblokkeerd, omdat het bestand schadelijk kan zijn voor je persoonlijke en socialmedia-accounts</translation>
 <translation id="4367027658822022112">Je kunt Google Lens vastzetten voor snelle toegang. Klik op de knop Vastzetten bovenaan het zijvenster.</translation>
 <translation id="4372389195695053189">Chrome is nu je standaardbrowser</translation>
+<translation id="4381814455597163081">Je helpt Chrome beter te maken door gebruiksstatistieken en crashrapporten naar Google te sturen. <ph name="BEGIN_LINK" />Beheren<ph name="END_LINK" /></translation>
 <translation id="4389991535395284064">Als je browst in de incognitomodus, waarschuwt Chrome je voordat een site wordt geladen via een niet-beveiligde verbinding</translation>
 <translation id="4400772909124543403">Er is geen update beschikbaar</translation>
 <translation id="4427306783828095590">Geoptimaliseerde beveiliging die je nog beter beschermt tegen phishing en malware</translation>
@@ -571,6 +573,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="6556755379298048869">Zoeken met een sneltoets.</translation>
 <translation id="6585124893636629274">Gemini in Chrome sluiten</translation>
 <translation id="659498884637196217">In Google Wachtwoordmanager op dit apparaat</translation>
+<translation id="6612152958212564387">Je stuurt geen gebruiksstatistieken en crashrapporten naar Google. <ph name="BEGIN_LINK" />Beheren<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Houd je wachtwoorden, bookmarks en geschiedenis perfect gesynchroniseerd op al je apparaten door Chrome in te stellen als je standaardbrowser.</translation>
 <translation id="6631524303639368205">Ga verder waar je gebleven was: Chrome heeft je tabbladen uit je vorige sessie hersteld. Je kunt dit uitzetten in</translation>
 <translation id="6632473616050862500">Chrome OS Flex wordt mogelijk gemaakt door aanvullende <ph name="BEGIN_LINK_CROS_OSS" />opensource-software<ph name="END_LINK_CROS_OSS" />.</translation>
@@ -597,6 +600,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="6859580922007887573">Druk op Tab om door te gaan</translation>
 <translation id="6869568587896659271">Makkelijke toegang tot websites onder de adresbalk</translation>
 <translation id="6877155553248388166">rechterbenedenhoek van zoekgebied: rechts <ph name="RIGHT" />%, onder <ph name="BOTTOM" />%</translation>
+<translation id="6879791154455204815">Zoeken met Chrome openen</translation>
 <translation id="6881299373831449287">Chrome updaten</translation>
 <translation id="6885412569789873916">Chrome Bèta-apps</translation>
 <translation id="6893363893008038481">Account verwijderen uit Chrome</translation>
@@ -655,6 +659,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="7449333426561673451">{COUNT,plural, =1{Je organisatie sluit Chrome automatisch als deze 1 minuut niet wordt gebruikt.}other{Je organisatie sluit Chrome automatisch als deze # minuten niet wordt gebruikt.}}</translation>
 <translation id="7450541714075000668">Tekst gekopieerd</translation>
 <translation id="7452987490177144319">{COUNT,plural, =1{Je organisatie verwijdert browsegegevens automatisch als Chrome 1 minuut niet wordt gebruikt. Dit kunnen onder andere de geschiedenis, gegevens voor automatisch invullen en downloads zijn. Je tabbladen blijven geopend.}other{Je organisatie verwijdert browsegegevens automatisch als Chrome # minuten niet wordt gebruikt. Dit kunnen onder andere de geschiedenis, gegevens voor automatisch invullen en downloads zijn. Je tabbladen blijven geopend.}}</translation>
+<translation id="7466577301922356468">Als je deze gegevens automatisch naar Google stuurt, kunnen we Chrome verbeteren. Je kunt deze instelling op elk moment aanpassen.</translation>
 <translation id="7477130805345743099">Chrome waarschuwt je voordat een site wordt geladen via een niet-beveiligde verbinding</translation>
 <translation id="7481213027396403996">Gebruik het hoogste beveiligingsniveau van Chrome</translation>
 <translation id="749228101751499733">Als je bent ingelogd, kun je onder andere de wachtwoorden uit je Google-account gebruiken in Chrome. <ph name="SHORTCUT" /> kan de instellingen van je Google-services wijzigen.</translation>

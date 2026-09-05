@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Opprettet for <ph name="NUM_WEEKS_ONE" /> uke siden}other{Opprettet for <ph name="NUM_WEEKS_MANY" /> uker siden}}</translation>
 <translation id="1063300264396686489">Åpne fanegrupper fra andre enheter automatisk</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> av fanene dine er ikke brukt i det siste. Vil du lukke dem?</translation>
+<translation id="1089791933924803646">Få Chrome-forslag i andre apper</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Opprettet for <ph name="NUM_YEARS_ONE" /> år siden}other{Opprettet for <ph name="NUM_YEARS_MANY" /> år siden}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Inaktive faner og grupper lukkes etter 1 måned}other{Inaktive faner og grupper lukkes etter <ph name="MONTH_COUNT_MANY" /> måneder}}</translation>
 <translation id="1173894706177603556">Gi nytt navn</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Legg til fanen i en gruppe}other{Legg til fanene i en gruppe}}</translation>
 <translation id="8138067144082174140">Etter 14 dager med inaktivitet</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Vis fanegruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_ONE" /> fane og fargen <ph name="COLOR_NAME" />.}other{Vis fanegruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_MANY" /> faner og fargen <ph name="COLOR_NAME" />.}}</translation>
+<translation id="8172214054247281626">Del nettlesingsdata, for eksempel den nylige nettleserloggen din, for å få forslag i utvalgte apper. Disse dataene behandles på en sikker måte på enheten.</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{Løsne fane}other{Løsne faner}}</translation>
 <translation id="8205266828577616993">Flytt fanen oppover</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Oppdater for <ph name="NUM_MINS_ONE" /> minutt siden}other{Oppdater for <ph name="NUM_MINS_MANY" /> minutter siden}}</translation>

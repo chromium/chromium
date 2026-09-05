@@ -11,6 +11,7 @@
 કેટલીક સુવિધાઓ ઉપલબ્ધ હોઈ શકે છે અને પસંદગીઓ પરના ફેરફારોને સાચવવામાં આવશે નહીં.</translation>
 <translation id="1083934481477628225">તમારા માતાપિતાએ Chromium માટે "સાઇટ, ઍપ અને એક્સ્ટેન્શન માટેની પરવાનગીઓ" બંધ કરી છે.\</translation>
 <translation id="1090946077924227754">Chromiumની કોઈ ચોક્કસ સુવિધા કે એક્સ્ટેન્શન શોધવા માટે, ઍડ્રેસ બારમાં તેનો શૉર્ટકટ અને તે પછી પસંદ કરેલા તમારા કીબોર્ડની કી ટાઇપ કરો</translation>
+<translation id="1098493699368672217">સિસ્ટમ ટ્રેમાં Chromiumમાં શોધવાની સુવિધા બતાવો અને કીબોર્ડ શૉર્ટકટ ચાલુ કરો</translation>
 <translation id="1104942323762546749">Chromium તમારા પાસવર્ડની નિકાસ કરવા માગે છે. આને મંજૂરી આપવા માટે તમારો Windows પાસવર્ડ ટાઇપ કરો.</translation>
 <translation id="112640046208448578">વસ્તુઓ અથવા સ્થાનોને ઓળખો અને ટેક્સ્ટને કૉપિ કરો અથવા તેનો અનુવાદ કરો. જ્યારે તમે 'છબી વડે શોધ' સુવિધાનો ઉપયોગ કરો, ત્યારે આ પેજનો કોઈ સ્ક્રીનશૉટ સર્વરને મોકલવામાં આવે છે. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium તમારું ડિફૉલ્ટ બ્રાઉઝર છે</translation>
@@ -307,6 +308,7 @@
 <translation id="4298125729853015961">Chromiumમાંથી પાસવર્ડની નિકાસ કરો</translation>
 <translation id="4304713468139749426">પાસવર્ડ મેનેજર</translation>
 <translation id="4334241893986177674">આ સ્ક્રીનશૉટ શોધો</translation>
+<translation id="4368547723231502008">ગમે ત્યાંથી શોધો અને પ્રશ્નો પૂછો, પછી ભલેને Chromium નાનું કર્યું હોય</translation>
 <translation id="4384331407722351213">જ્યારે Windows શરૂ થાય, ત્યારે Chromium લૉન્ચ કરો</translation>
 <translation id="4400772909124543403">કોઈ અપડેટ ઉપલબ્ધ નથી</translation>
 <translation id="4407044323746248786">છતાં પણ Chromiumમાંથી બહાર નિકળવું છે?</translation>
@@ -336,6 +338,7 @@
 <translation id="4613863813562375431">ChromiumOSનું વર્ઝન</translation>
 <translation id="4621240073146040695">અપ ટૂ ડેટ થવામાં છે! અપડેટ સમાપ્ત કરવા માટે Chromium ને ફરીથી લોંચ કરો.</translation>
 <translation id="4625064703209785397">Chromiumના V8 એન્જિન વડે સાઇટની ગતિ વધારે છે પરંતુ Chromiumને અટૅક સામે થોડું ઓછું પ્રતિરોધક બનાવે છે</translation>
+<translation id="4626321472657185181">Chromium વડે શોધ ખોલો</translation>
 <translation id="4665829708273112819">ચેતવણી: એક્સ્ટેન્શનને તમારો બ્રાઉઝિંગ ઇતિહાસ રેકોર્ડ કરવાથી Chromium અટકાવી શકતું નથી. છૂપા મોડમાં આ એક્સ્ટેન્શનને બંધ કરવા માટે, આ વિકલ્પની પસંદગી નાપસંદ કરો.</translation>
 <translation id="4673151026126227699">જો તમે Chromiumના વપરાશના રિપોર્ટ પણ શેર કરતા હો, તો તે રિપોર્ટમાં તમે મુલાકાત લો છો તે URLs શામેલ હોય છે</translation>
 <translation id="4673710618874938871"><ph name="USER_NAME" />, મેમ્બરશિપ તરીકે સાઇન ઇન કર્યું. એકાઉન્ટ મેનૂ ખોલો</translation>
@@ -377,6 +380,7 @@
 <translation id="5286907366254680517">ભાળ મળી</translation>
 <translation id="5289287148052354622">Chromium ઍપ મેળવો</translation>
 <translation id="5294316920224716406">છૂપા મોડમાં બ્રાઉઝ કરતી વખતે, અસુરક્ષિત કનેક્શનનો ઉપયોગ કરીને સાઇટ લોડ કરતા પહેલાં Chromium તમને ચેતવણી આપશે</translation>
+<translation id="5296581118566748922">Chromium વડે શોધો</translation>
 <translation id="5313228254328109263">Chromium અપડેટર આંતરિક સેવા</translation>
 <translation id="5324450571874973775">Chromiumમાં Geminiની અન્ય સુવિધાઓની સાથે તેનો ઉપયોગ કરો</translation>
 <translation id="5346389065299425353">એકથી વધુ ટૅબ, ફાઇલો અને ટૂલ ઉમેરીને તમારી શોધને વધુ ઊંડી બનાવો</translation>
@@ -387,6 +391,7 @@
 <translation id="5358375970380395591">તમે મેનેજ કરેલા એકાઉન્ટ સાથે સાઇન ઇન કરી રહ્યાં છો અને તમારી Chromium પ્રોફાઇલ પર ઍડમિનને એનું નિયંત્રણ આપી રહ્યાં છો. તમારો Chromium ડેટા, જેમ કે ઍપ, બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને બીજા સેટિંગ, કાયમ માટે <ph name="USER_NAME" />થી જોડાયેલા રહેશે. તમે Google એકાઉન્ટ ડૅશબોર્ડથી આ ડેટાને ડિલીટ કરી શકશો, પરંતુ તમે આ ડેટાને બીજા એકાઉન્ટ સાથે સાંકળી શકશો નહીં. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">વધારાનો કોડ: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">મનગમતું બનાવવાની સુવિધા મેળવવા માટે, Chromiumમાં વેબ અને ઍપ ઍક્ટિવિટી ઉમેરો</translation>
+<translation id="5382964351116519680">Chromium વડે શોધ ખોલો</translation>
 <translation id="5383439451358640070">Chromium શા માટે અમુક ફાઇલો બ્લૉક કરે છે, તે જાણો</translation>
 <translation id="5386450000063123300">Chromium અપડેટ થઈ રહ્યું છે (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Chromiumમાં સાઇન-ઇનની મંજૂરી આપો</translation>
@@ -506,6 +511,7 @@
 <translation id="651535675648445253">શૉર્ટકટ Chromiumમાં ખુલે છે</translation>
 <translation id="6539122709674868420">જ્યારે તમારી સંસ્થા <ph name="TIMEOUT_DURATION" /> માટે Chromiumનો ઉપયોગ ન કરે ત્યારે તેને બંધ કરે છે. બ્રાઉઝિંગ ડેટા ડિલીટ કરવામાં આવ્યો હતો. આમાં ઇતિહાસ, ઑટોમૅટિક રીતે ભરવાની સુવિધા અને ડાઉનલોડ કરેલું કન્ટેન્ટ શામેલ હોઈ શકે છે.</translation>
 <translation id="6542839706527980775">દરેક પ્રોફાઇલ બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને બીજી ઘણી બાબતો જેવી તેની પોતાની Chromium માહિતી ધરાવે છે</translation>
+<translation id="6556755379298048869">કીબોર્ડ શૉર્ટકટ વડે શોધો.</translation>
 <translation id="6563921047760808519"><ph name="BEGIN_LINK" />Chromium તમારા ડેટાને કેવી રીતે ખાનગી રાખે છે<ph name="END_LINK" /> તે વિશે વધુ જાણો</translation>
 <translation id="6564039629497156115">આ સેટિંગના ફેરફારો એકવાર Chromium ફરી શરૂ થાય પછી લાગુ થશે.</translation>
 <translation id="6567032987737689854">Chromiumના મુખ્ય મેનૂમાં એક્સ્ટેન્શન પર ક્લિક કરીને તમારા એક્સ્ટેન્શન મેનેજ કરો.</translation>
@@ -540,6 +546,7 @@
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6859580922007887573">ચાલુ રાખવા માટે Tab કી દબાવો</translation>
 <translation id="6862030660799253820">'છબી વડે શોધ' સુવિધા વડે આ છબી શોધો</translation>
+<translation id="6869568587896659271">ઍડ્રેસ બારની નીચે આપેલી વેબસાઇટનો સરળ ઍક્સેસ</translation>
 <translation id="6873893289264747459">Chromiumને "<ph name="EXTENSION_NAME" />"માં માલવેર હોવાનું જાણવા મળ્યું છે</translation>
 <translation id="6877155553248388166">શોધ વિસ્તારના સૌથી નીચે જમણા ખૂણે: જમણી બાજુ <ph name="RIGHT" />%, સૌથી નીચે <ph name="BOTTOM" />%</translation>
 <translation id="6896758677409633944">કૉપિ કરો</translation>
@@ -644,6 +651,7 @@ Chromium તમારા સેટિંગને રિકવર શકતુ�
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">તમારા ઇન્ટરનેટ ટ્રાફિકનો ઍક્સેસ ધરાવતા લોકો માટે, તમે કઈ સાઇટની મુલાકાત લો છો તે જોવાનું વધુ મુશ્કેલ બનાવો. Chromium દ્વારા DNS (ડોમેન નેમ સિસ્ટમ)માં સાઇટનું IP ઍડ્રેસ જોવા માટે સુરક્ષિત કનેક્શનનો ઉપયોગ કરવામાં આવે છે.</translation>
 <translation id="7810005234485217901">તમે સરળ ઍક્સેસ માટે 'છબી વડે શોધ' સુવિધાને પિન કરી શકો છો</translation>
+<translation id="7828527096541974699">Chromium સાથે શું શેર કરવું તે પસંદ કરો</translation>
 <translation id="7828947555739565424">આ એકાઉન્ટ સાથેની Chromium પ્રોફાઇલ પહેલેથી જ આ ડિવાઇસ પર અસ્તિત્વમાં છે</translation>
 <translation id="7845233973568007926">ઇન્સ્ટૉલ કરવા બદલ આભાર. <ph name="BUNDLE_NAME" />નો ઉપયોગ કરતા પહેલાં તમારે તમારું કમ્પ્યુટર ફરી શરૂ કરવું આવશ્યક છે.</translation>
 <translation id="7847673590271334840">Chromiumની બહારથી તમારું શોધ એન્જિન બદલવામાં આવ્યું હતું. તમારી સુરક્ષા માટે, Chromium તેને ફરી તેના ઑરિજિનલ ડિફૉલ્ટ સેટિંગ પર રીસેટ કરે છે. <ph name="LEARN_MORE_LINK" /></translation>
@@ -763,6 +771,7 @@ Chromium તમારા સેટિંગને રિકવર શકતુ�
             • કુકી અને સાઇટનો અન્ય હંગામી ડેટા ડિલીટ થઈ જશે
             <ph name="LINE_BREAKS" />
             બુકમાર્ક, ઇતિહાસ અને સાચવેલા પાસવર્ડને કોઈ અસર થશે નહીં.</translation>
+<translation id="8966875421152977384">Chromium સાઇટના શૉર્ટકટ બતાવો</translation>
 <translation id="897581876605952338">Chromium Enterpriseનો લોગો</translation>
 <translation id="8980139959902937527">તમારા <ph name="DEVICE_TYPE" /> પર Chromium ઍપ વડે મુસાફરીમાં Googleની સલામતી મેળવો</translation>
 <translation id="8981150672034878610">તમારી પ્રોફાઇલ ખોલતી વખતે કંઈક ખોટું થયું હોવાને કારણે Chromium શરૂ કરી શકાતું નથી. Chromium ફરી શરૂ કરવાનો પ્રયાસ કરો.</translation>
@@ -771,6 +780,7 @@ Chromium તમારા સેટિંગને રિકવર શકતુ�
 <translation id="9018218886431812662">ઇન્સ્ટૉલેશન પૂર્ણ</translation>
 <translation id="9019929317751753759">Chromium ને સુરક્ષિત બનાવવા માટે, અમે નીચેના એક્સ્ટેન્શનને અક્ષમ કર્યું છે કે જે <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> માં સૂચિબદ્ધ નથી અને તમારી જાણ વિના ઉમેરવામાં આવ્યું હોઈ શકે છે.</translation>
 <translation id="9022552996538154597">Chromium માં સાઇન ઇન કરો</translation>
+<translation id="9035791714111278917">Macના મેનૂ બારમાં Chromiumમાં શોધવાની સુવિધા બતાવો અને કીબોર્ડ શૉર્ટકટ ચાલુ કરો</translation>
 <translation id="904366664621834601">Chromium દ્વારા આ ડાઉનલોડ બ્લૉક કરવામાં આવ્યું છે, કારણ કે આર્કાઇવ ફાઇલમાં શામેલ અન્ય ફાઇલોમાં માલવેર છુપાવેલા હોઈ શકે છે</translation>
 <translation id="9053882453960391422">તમારા પાસવર્ડ, બુકમાર્ક અને ઇતિહાસને બધા ડિવાઇસ પર સંપૂર્ણ રીતે સિંક કરેલા રાખો. તમારા ડિફૉલ્ટ બ્રાઉઝરને Chromium પર અપડેટ કરીને તમે જાણતા હો એવી અને તમને ગમતી હોય એવી સુવિધાઓને સરળતાથી ઍક્સેસ કરો. ઝડપી ઍક્સેસ માટે Chromiumને તમારા ટાસ્કબાર પર પિન કરવામાં આવશે.</translation>
 <translation id="9056398481763999048">તમારા ફોન પર Chromium ઍપ વડે Googleના શ્રેષ્ઠ AI ટૂલનો ઉપયોગ કરો</translation>

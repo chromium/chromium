@@ -19,6 +19,7 @@
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1053651653201045802">Abgemeldet. Melde dich wieder an, um die Lesezeichen, Passwörter und sonstigen Informationen in deinem Konto zu verwenden.</translation>
 <translation id="1054745118061919935">Wenn du fortfährst, akzeptierst du damit die <ph name="BEGIN_LINK" />Nutzungsbedingungen<ph name="END_LINK" />.</translation>
+<translation id="1056818261333183659">Welche soll ich kaufen?</translation>
 <translation id="10614374240317010">Nie speichern für…</translation>
 <translation id="1062138828266376352">Deine PIN wurde nicht geändert. Prüfe deine Internetverbindung und versuche es noch einmal.</translation>
 <translation id="1063070031224282617">Wähle einen Speicherort für die Datei <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /> (<ph name="FILE_SIZE" />) aus</translation>
@@ -1505,6 +1506,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="5898848375214731122">Gewicht (Masse)</translation>
 <translation id="5899314093904173337">Um diesen Inhalt mit Leuten in deiner Nähe zu teilen, bitte sie, den QR-Code mit ihrer Kamera oder einer entsprechenden App zu scannen.</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} neuer Tab}other{{count} neue Tabs}}</translation>
+<translation id="5906163261248594192">Daniels Geburtstag</translation>
 <translation id="5911030830365207728">Google Übersetzer</translation>
 <translation id="5912796581727968237">Google Wallet öffnen</translation>
 <translation id="5922999516621365983">Ziehe den Tab zum Anpinnen hierher.</translation>
@@ -1924,6 +1926,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="720399613139435155">Fehler beim Übersetzen</translation>
 <translation id="7204922488054642675">Personalisierte Nachrichten</translation>
 <translation id="7206979415662233817">Nutzungsbedingungen</translation>
+<translation id="721218676460477064">Diesen Artikel zusammenfassen</translation>
 <translation id="7215621211572884440">Pop-ups erlaubt</translation>
 <translation id="7218491361283758048">Postleitzahl</translation>
 <translation id="7221173315674413369">Entdecke unter „Neue Funktionen“ Tipps und neue Funktionen</translation>
@@ -2185,6 +2188,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="8035133914807600019">Neuer Ordner…</translation>
 <translation id="8035412398498507358">Fotos</translation>
 <translation id="8037713009824540257">Website hinzufügen</translation>
+<translation id="8038078082340255234">Marktbericht</translation>
 <translation id="8040407350301524547">Tippe für Routenoptionen auf „Route berechnen“.</translation>
 <translation id="804427445359061970">Hier werden deine Tabs von anderen Geräten angezeigt</translation>
 <translation id="8058655154417507695">Ablaufjahr</translation>
@@ -2242,6 +2246,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="8232956427053453090">Daten aufbewahren</translation>
 <translation id="8233237502828137700">Werbebanner schließen</translation>
 <translation id="823339794112333264">Mikrofon einschalten</translation>
+<translation id="8240217649914883113">Meinem Kalender hinzufügen</translation>
 <translation id="8250920743982581267">Dokumente</translation>
 <translation id="8252980988000695656">Google Lens abgeschlossen.</translation>
 <translation id="8258734532103758067">Ich habe meine Daten exportiert</translation>
@@ -2286,6 +2291,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="8368198938968349418">Autofill aktivieren…</translation>
 <translation id="8370406443343902172">Zu den Einstellungen…</translation>
 <translation id="8370929854657845191">Auf mittlere Höhe erweitern</translation>
+<translation id="8371494817541821097">Passkey erstellt am <ph name="DATE" /></translation>
 <translation id="8372471489238799313">{count,plural, =1{Adresse löschen}other{Adressen löschen}}</translation>
 <translation id="8378714024927312812">Von deiner Organisation verwaltet</translation>
 <translation id="8385363453480067273">Infos zu dem, was du gerade siehst – mit Google Lens</translation>

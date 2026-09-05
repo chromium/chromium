@@ -182,6 +182,19 @@ DLP に関連するエンタープライズ ポリシーと自動インストー
 <translation id="1110426799149444997"><ph name="GOOGLE_LENS_PRODUCT_NAME" /> の地域検索を無効にする。</translation>
 <translation id="1111324374369583989">ログイン時にディスプレイ サイズ設定画面を表示しない</translation>
 <translation id="1111824532252882775">有効: デフォルトでスクローラーをフォーカス可能にする。</translation>
+<translation id="1113523086451291158">このポリシーでは、<ph name="CHROME_DEVTOOLS_NAME" /> を許可する URL を指定できます。
+
+<ph name="CHROME_DEVTOOLS_NAME" /> の使用の可否はターゲット レベルで評価されます。検証する各ターゲット（ページのメインフレーム、埋め込みサブフレーム、拡張機能、ウェブ アプリケーションなど）の URL をこのポリシーの URL パターンと照合し、<ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> ポリシーが設定されているかどうかも考慮して、動作が決まります。
+
+このポリシーを設定し、<ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> を未設定のままにした場合、ターゲットの URL がこの許可リストのパターンと一致するときは、そのターゲットに対して <ph name="CHROME_DEVTOOLS_NAME" /> が許可されます。ターゲットの URL がこの許可リストと一致しない場合、そのターゲットに対して <ph name="CHROME_DEVTOOLS_NAME" /> がブロックされます（たとえば、URL が許可リストに登録されていないサブフレームは検証できませんが、メインページの URL が許可リストに登録されていれば、メインページは検証できます）。URL の形式について詳しくは、https://support.google.com/chrome/a?p=url_blocklist_filter_format をご覧ください。
+
+このポリシーと <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> ポリシーの両方を設定した場合、この許可リストが優先されます。ターゲットの URL がこの許可リストのパターンと一致する場合は、ブロックリストのパターンと一致していても許可されます。ターゲットの URL がブロックリストのパターンと一致する（ただし許可リストとは一致しない）場合はブロックされます。ターゲットの URL がどちらにも一致しない場合は、<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> ポリシーが代替として使用されます。
+
+このポリシーを設定しない場合、<ph name="CHROME_DEVTOOLS_NAME" /> の使用の可否は、<ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> ポリシーと <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> ポリシーによって決まります。
+
+ホスト名のワイルドカードを引用符で囲むことはできません（"*"、"[*]" など）。<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> ポリシーを使用して、この機能をグローバルに有効にしてください。
+
+このポリシーで指定できる URL は最大 1,000 件です。</translation>
 <translation id="1117535567637097036">このポリシーで設定したプロトコル ハンドラは、Android インテントの処理には使用されません。</translation>
 <translation id="1118093128235245168">接続されている USB デバイスへのアクセスを求めるメッセージをユーザーに表示することをサイトに許可する</translation>
 <translation id="111910763555783249">通知設定</translation>
@@ -7693,6 +7706,17 @@ URL が <ph name="AUTOMATIC_DOWNLOADS_ALLOWED_FOR_URLS_POLICY_NAME" /> と <ph n
 このポリシーは M124 で非推奨になりました。</translation>
 <translation id="6022948604095165524">起動時の操作</translation>
 <translation id="602318745029752898">「選択して読み上げ」で Enhanced Network のテキスト読み上げ音声を許可する</translation>
+<translation id="6023434563562800942">このポリシーでは、<ph name="CHROME_DEVTOOLS_NAME" /> をブロックする URL を指定できます。URL の形式について詳しくは、https://support.google.com/chrome/a?p=url_blocklist_filter_format をご覧ください。
+
+<ph name="CHROME_DEVTOOLS_NAME" /> の使用の可否は、ターゲット レベルで評価されます。検証する各ターゲット（ページのメインフレーム、埋め込みサブフレーム、拡張機能、ウェブ アプリケーションなど）の URL をこのポリシーの URL パターンと照合し、<ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> ポリシーが設定されているかどうかも考慮して、動作が決まります。
+
+このポリシーを設定し、<ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> を未設定のままにした場合、ターゲットの URL がこのブロックリストのパターンと一致するときは、そのターゲットに対して <ph name="CHROME_DEVTOOLS_NAME" /> がブロックされます（たとえば、URL がこのブロックリストに一致するサブフレームは検証できませんが、メインページの URL がブロックリストに登録されていなければ、メインページは検証できます）。ターゲットの URL がどのパターンとも一致しない場合、デベロッパー ツールの使用の可否は、<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> ポリシーによって決まります。
+
+このポリシーと <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> ポリシーの両方を設定した場合、許可リストが優先されます。ターゲットの URL が許可リストのパターンと一致する場合は、このブロックリストのパターンと一致していても許可されます。ターゲットの URL がこのブロックリストのパターンと一致する（ただし許可リストとは一致しない）場合はブロックされます。ターゲットの URL がどちらにも一致しない場合は、<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> ポリシーが代替として使用されます。
+
+このポリシーを設定しない場合、<ph name="CHROME_DEVTOOLS_NAME" /> の使用の可否は、<ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> ポリシーと <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> ポリシーによって決まります。
+
+このポリシーで指定できる URL は最大 1,000 件です。</translation>
 <translation id="6026722971789064331">書き込みを目的とする File System API の使用を管理する</translation>
 <translation id="602728333950205286">デフォルトの検索プロバイダのインスタント検索 URL</translation>
 <translation id="603410445099326293">POST を使用するキーワード候補による検索 URL のパラメータ</translation>

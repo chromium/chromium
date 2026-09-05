@@ -188,6 +188,19 @@
 <translation id="1110426799149444997">停用 <ph name="GOOGLE_LENS_PRODUCT_NAME" />的區域搜尋功能。</translation>
 <translation id="1111324374369583989">不要在登入時顯示「顯示大小」設定畫面</translation>
 <translation id="1111824532252882775">啟用：捲軸預設為可聚焦。</translation>
+<translation id="1113523086451291158">這項政策可用於允許特定網址使用「<ph name="CHROME_DEVTOOLS_NAME" />」。
+
+系統會在目標層級評估「<ph name="CHROME_DEVTOOLS_NAME" />」的可用性。系統會比對網址模式和要檢查的每個目標網址 (例如網頁的主框架、嵌入的子框架、擴充功能或網頁應用程式)。最終行為取決於是否也設定了 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 政策。
+
+如果設定了這項政策，但未設定 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />，則目標網址必須符合這份許可清單中的模式，才能允許該目標使用「<ph name="CHROME_DEVTOOLS_NAME" />」。如果目標網址不符合這份許可清單，系統就會封鎖該目標的「<ph name="CHROME_DEVTOOLS_NAME" />」(舉例來說，如果子框架的網址不在許可清單中，系統就無法檢查該子框架，但如果主網頁的網址在許可清單中，系統仍可檢查主網頁)。如要瞭解網址格式，請參閱 https://support.google.com/chrome/a?p=url_blocklist_filter_format。
+
+如果同時設定這項政策和 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 政策，系統會優先採用這個許可清單。如果目標網址符合這份許可清單中的模式，系統就會允許存取，即使該網址也與封鎖清單中的模式相符。如果目標網址符合封鎖清單的模式，而不符合許可清單的模式，系統就會封鎖該網址。如果目標網址都不符合，系統會自動改用 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 政策。
+
+如果未設定這項政策，「<ph name="CHROME_DEVTOOLS_NAME" />」是否可用會取決於 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 和 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 政策。
+
+請勿使用主機綜合萬用字元 (即「*」或「[*]」)，請改用 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 政策在全域啟用這項功能。
+
+這項政策最多只能輸入 1,000 個項目。</translation>
 <translation id="1117535567637097036">處理 Android 意圖時，系統不會使用透過這項政策設定的通訊協定處理常式。</translation>
 <translation id="1118093128235245168">允許網站要求使用者授權存取已連線的 USB 裝置</translation>
 <translation id="111910763555783249">通知設定</translation>
@@ -7762,6 +7775,17 @@ IP 位址空間覆寫有兩種形式：
 這項政策已在 M124 淘汰，</translation>
 <translation id="6022948604095165524">起始動作</translation>
 <translation id="602318745029752898">允許使用隨選朗讀中的加強型網路文字轉語音功能</translation>
+<translation id="6023434563562800942">你可以使用這項政策，在特定網址上禁用「<ph name="CHROME_DEVTOOLS_NAME" />」。如要瞭解網址格式，請參閱 https://support.google.com/chrome/a?p=url_blocklist_filter_format。
+
+系統會在目標層級評估「<ph name="CHROME_DEVTOOLS_NAME" />」的可用性。系統會比對網址模式和要檢查的每個目標網址 (例如網頁的主框架、嵌入的子框架、擴充功能或網頁應用程式)。最終行為取決於是否也設定了 <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> 政策。
+
+如果設定了這項政策，但未設定 <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" />，只要目標網址符合這份封鎖清單中的模式，系統就會封鎖該目標的「<ph name="CHROME_DEVTOOLS_NAME" />」(舉例來說，如果子框架的網址符合這份封鎖清單，系統就無法檢查該子框架，但如果主網頁的網址不在封鎖清單中，系統仍可檢查主網頁)。如果目標網址不符合任何模式，系統會根據 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 政策判斷可用性。
+
+如果同時設定這項政策和 <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> 政策，系統會優先採用許可清單。如果目標網址符合許可清單中的模式，系統就會允許存取，即使該網址也與封鎖清單中的模式相符。如果目標網址符合這份封鎖清單的模式，而不符合許可清單的模式，系統就會封鎖該網址。如果目標網址都不符合，系統會自動改用 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 政策。
+
+如果未設定這項政策，「<ph name="CHROME_DEVTOOLS_NAME" />」是否可用會取決於 <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> 和 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 政策。
+
+這項政策最多只能輸入 1,000 個項目。</translation>
 <translation id="6026722971789064331">控管使用 File System API 寫入的權限</translation>
 <translation id="602728333950205286">預設搜尋引擎互動智慧搜尋網址</translation>
 <translation id="603410445099326293">使用 POST 的建議網址參數</translation>

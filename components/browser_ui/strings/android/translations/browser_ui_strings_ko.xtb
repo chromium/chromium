@@ -7,6 +7,7 @@
 <translation id="1046742265332833834">파란색 테마</translation>
 <translation id="1070329623210597193">이 사이트에서 볼 수 있거나 수정할 수 있는 파일</translation>
 <translation id="1074758928858737435">사이트의 데스크톱 버전을 표시하도록 요청할 수 있습니다.</translation>
+<translation id="1089791933924803646">다른 앱에서 Chrome 추천 받기</translation>
 <translation id="1109482864356262001">움직임 감지 센서 또는 조도 센서가 필요한 기능이 작동하지 않습니다</translation>
 <translation id="1126523729897810826">아래의 추천 작업을 완료하여 Chrome을 최대한 활용하세요.</translation>
 <translation id="113098737392899175">키보드가 연결되어 있을 때 텍스트 커서로 페이지 탐색</translation>
@@ -453,6 +454,7 @@
 <translation id="5668404140385795438">웹사이트의 확대 방지 요청 무시</translation>
 <translation id="5668843533782548925">사이트 속도가 느려지지만 보안 수준이 높아집니다.</translation>
 <translation id="5677928146339483299">차단됨</translation>
+<translation id="5679089750838794164">이제 Chrome에서 최근 방문 기록과 같은 인터넷 사용 기록을 기반으로 다른 앱에서 추천을 표시할 수 있습니다. 이 데이터는 기기에서 안전하게 처리됩니다. 이 기능은 Chrome 설정에서 언제든지 사용 중지할 수 있습니다.</translation>
 <translation id="5689516760719285838">위치</translation>
 <translation id="5690795753582697420">Android 설정에서 카메라가 사용 중지됩니다.</translation>
 <translation id="5700761515355162635">서드 파티 쿠키 허용됨</translation>
@@ -507,6 +509,7 @@
 <translation id="6085954183010297841">파일 수정 권한을 삭제하시겠습니까? <ph name="FILE" /></translation>
 <translation id="6104860901391833523">사용 설정하면 사이트에서 PIP 모드로 자동 전환할 수 있습니다. 사용 중지하면 사이트에서 PIP 모드로 자동 전환할 수 없습니다.</translation>
 <translation id="6120483543004435978">사용 설정하면 사이트에서 사용자가 현재 기기를 사용 중인지에 관한 확인을 요청할 수 있습니다. 사용 중지하면 사이트에서 사용자가 현재 기기를 사용 중인지 확인할 수 없습니다.</translation>
+<translation id="612871598708395517">다른 앱에서 Chrome 추천 받기 숨기기</translation>
 <translation id="6132075343662013154">Chrome에서 비밀번호 저장을 제안합니다.</translation>
 <translation id="615886654739818377">사이트에서 모든 디스플레이의 창을 관리하도록 허용 안함</translation>
 <translation id="6165508094623778733">자세히 알아보기</translation>

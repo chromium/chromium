@@ -57,6 +57,7 @@
 <translation id="1181037720776840403">Quitar</translation>
 <translation id="1183189057400844278">Para asegurarte de que siempre puedas usar las contraseñas en tu cuenta de Google, verifica tu identidad</translation>
 <translation id="1187810343066461819">Eliminar también de este coche los marcadores, el historial y otros datos</translation>
+<translation id="1191987227666124897">Solicitud de exclusión</translation>
 <translation id="1193729455103054076">¿Usar contraseña segura?</translation>
 <translation id="11947597112837849">dirección de correo electrónico</translation>
 <translation id="1197267115302279827">Mover marcadores</translation>
@@ -1341,6 +1342,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="634208815998129842">Administrador de tareas</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 y <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> más}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 y <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> más}}</translation>
 <translation id="6345878117466430440">Marcar como leído</translation>
+<translation id="63490081267265251">Los sitios que visitas, incluido Google, son responsables de determinar cómo responden a esta solicitud. En función de las leyes de tu territorio, los sitios pueden responder limitando la venta y el uso compartido de tus datos o su uso para anuncios personalizados. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="6350745006329795504">Gestionar tus dispositivos</translation>
 <translation id="6356893102071098867">Comprueba que has elegido la cuenta correcta.</translation>
 <translation id="6364438453358674297">¿Eliminar sugerencia del historial?</translation>
@@ -1665,6 +1667,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="7493994139787901920"><ph name="VERSION" /> (actualizada el <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Espera…</translation>
 <translation id="7499065150275272675"><ph name="TAB_TITLE" />, pestaña silenciada fijada</translation>
+<translation id="7500851014030446046">Descargando PDF</translation>
 <translation id="7501135638693251872">Todos los marcadores</translation>
 <translation id="7507207699631365376">Consulta la <ph name="BEGIN_LINK" />política de privacidad<ph name="END_LINK" /> de este proveedor</translation>
 <translation id="750886945254958667">Mantén este grupo para añadir pestañas más tarde o abandónalo si ya no quieres tener acceso</translation>
@@ -1732,6 +1735,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 y <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> más}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 y <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> más}}</translation>
 <translation id="777637629667389858">Cuando inicias sesión, te protege en los servicios de Google.</translation>
 <translation id="7778840695157240389">Vuelve en otro momento para descubrir más historias</translation>
+<translation id="7780992949171378848">Enviar una solicitud de exclusión a los sitios en relación con el uso de tus datos</translation>
 <translation id="7791543448312431591">Añadir</translation>
 <translation id="7792388396321542707">Dejar de compartir</translation>
 <translation id="780287761701992588">Accede a tus marcadores, contraseñas y más en todos tus dispositivos</translation>

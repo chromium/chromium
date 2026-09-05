@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Izveidota pirms <ph name="NUM_WEEKS_ONE" /> nedēļas}zero{Izveidota pirms <ph name="NUM_WEEKS_MANY" /> nedēļām}one{Izveidota pirms <ph name="NUM_WEEKS_MANY" /> nedēļas}other{Izveidota pirms <ph name="NUM_WEEKS_MANY" /> nedēļām}}</translation>
 <translation id="1063300264396686489">Automātiski atvērt ciļņu grupas no citām ierīcēm</translation>
 <translation id="1075622780330595106">Vairākas cilnes pēdējā laikā nav izmantotas (kopā <ph name="NUMBER_OF_TABS" />). Vai vēlaties tās aizvērt?</translation>
+<translation id="1089791933924803646">Saņemt Chrome ieteikumus citās lietotnēs</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Izveidota pirms <ph name="NUM_YEARS_ONE" /> gada}zero{Izveidota pirms <ph name="NUM_YEARS_MANY" /> gadiem}one{Izveidota pirms <ph name="NUM_YEARS_MANY" /> gada}other{Izveidota pirms <ph name="NUM_YEARS_MANY" /> gadiem}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Neaktīvās cilnes un grupas tiks aizvērtas pēc viena mēneša}zero{Neaktīvās cilnes un grupas tiks aizvērtas pēc <ph name="MONTH_COUNT_MANY" /> mēnešiem}one{Neaktīvās cilnes un grupas tiks aizvērtas pēc <ph name="MONTH_COUNT_MANY" /> mēneša}other{Neaktīvās cilnes un grupas tiks aizvērtas pēc <ph name="MONTH_COUNT_MANY" /> mēnešiem}}</translation>
 <translation id="1173894706177603556">Pārdēvēt</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Pievienot cilni grupai}zero{Pievienot cilnes grupai}one{Pievienot cilnes grupai}other{Pievienot cilnes grupai}}</translation>
 <translation id="8138067144082174140">Pēc 14 neaktivitātes dienām</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Izvērst ciļņu grupu <ph name="TITLE_OF_GROUP" />, kurā ir <ph name="TABS_COUNT_ONE" /> cilne šādā krāsā: <ph name="COLOR_NAME" />.}zero{Izvērst ciļņu grupu <ph name="TITLE_OF_GROUP" />, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes šādā krāsā: <ph name="COLOR_NAME" />.}one{Izvērst ciļņu grupu <ph name="TITLE_OF_GROUP" />, kurā ir <ph name="TABS_COUNT_MANY" /> cilne šādā krāsā: <ph name="COLOR_NAME" />.}other{Izvērst ciļņu grupu <ph name="TITLE_OF_GROUP" />, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes šādā krāsā: <ph name="COLOR_NAME" />.}}</translation>
+<translation id="8172214054247281626">Kopīgojiet pārlūkošanas datus, piemēram, neseno pārlūkošanas vēsturi, lai saņemtu ieteikumus par atlasītajām lietotnēm. Šie dati tiek apstrādāti drošā veidā jūsu ierīcē.</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{Atspraust cilni}zero{Atspraust cilnes}one{Atspraust cilnes}other{Atspraust cilnes}}</translation>
 <translation id="8205266828577616993">Pārvietot cilni uz augšu</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Atjaunināta pirms <ph name="NUM_MINS_ONE" /> minūtes}zero{Atjaunināta pirms <ph name="NUM_MINS_MANY" /> minūtēm}one{Atjaunināta pirms <ph name="NUM_MINS_MANY" /> minūtes}other{Atjaunināta pirms <ph name="NUM_MINS_MANY" /> minūtēm}}</translation>

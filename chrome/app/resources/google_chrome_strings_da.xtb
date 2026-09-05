@@ -29,6 +29,7 @@
 <translation id="1197860368385086056">Næste gang du åbner Chrome på din <ph name="DEVICE_TYPE" />, får du en meddelelse om at aktivere underretninger om prissporing.</translation>
 <translation id="1203500561924088507">Tak for installationen. Du skal genstarte browseren, før du bruger <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1278833599417554002">Genstart og opdater &amp;Chrome</translation>
+<translation id="1289911795790071537">Åbn søgning med Chrome</translation>
 <translation id="1290883685122687410">Konfigurationsfejl: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">Vent, mens Chrome installerer de nyeste systemopdateringer.</translation>
 <translation id="1330562121671411446">Registrer sprog</translation>
@@ -73,6 +74,7 @@
 <translation id="1640672724030957280">Downloader...</translation>
 <translation id="1651617469580841801">Når du bruger Google Lens, sendes sidetitlen, webadressen og indholdet, herunder PDF-filer, til Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Om ChromeOS Flex</translation>
+<translation id="1664094661346151467">Søg og stil spørgsmål hvor som helst, selvom Chrome er minimeret</translation>
 <translation id="1674870198290878346">Åbn linket i et inko&amp;gnitovindue i Chrome</translation>
 <translation id="1682634494516646069">Google Chrome kan ikke læse og skrive i sin egen datamappe: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">Når du skriver i adresselinjen eller søgefeltet, sender Chrome det, du skriver, til din organisations søge-, AI- og agentværktøjer for at få forslag.</translation>
@@ -108,6 +110,7 @@
 <translation id="2034233344106846793">Chrome opgraderer automatisk usikre forbindelser til HTTPS, når det er muligt</translation>
 <translation id="2039417478970545937">Indstillinger.</translation>
 <translation id="2040220733769034247">Scan QR-koden med din telefon for at downloade Chrome og logge ind på din Google-konto.</translation>
+<translation id="2044908892530830113">Vis søgning med Chrome på Mac-menulinjen, og aktivér tastaturgenvejen</translation>
 <translation id="2050189601866423230">Du kan fastgøre AI-tilstand i Google Søgning for at stille spørgsmål, mens du browser</translation>
 <translation id="2091012649849228750">Hvis du vil have fremtidige Google Chrome-opdateringer, skal du have Windows 10 eller nyere. Denne computer har Windows 8.</translation>
 <translation id="2094648590148273905">Vilkår for ChromeOS Flex</translation>
@@ -135,6 +138,7 @@
 <translation id="2284380654876659752">Når du besøger et website, sender Chrome en sløret del af webadressen til <ph name="BEGIN_LINK" />Google Beskyttet browsing<ph name="END_LINK" /> via en privatlivsbeskyttende server, der skjuler din IP-adresse. Hvis et website foretager sig noget mistænkeligt, sendes hele webadresser og uddrag af sideindhold også.</translation>
 <translation id="2290014774651636340">Google API-nøgler mangler. Nogle funktioner i Google Chrome deaktiveres.</translation>
 <translation id="2290095356545025170">Er du sikker på, at du vil afinstallere Google Chrome?</translation>
+<translation id="2295218613066132598">Vis genveje til Chrome-websites</translation>
 <translation id="2301513536169703857">For at kunne se dine adgangskoder, bogmærker m.m. på alle dine enheder skal du logge ind på Chrome</translation>
 <translation id="2307973900865360088">Behold på applinje</translation>
 <translation id="2309047409763057870">Dette er en sekundær installation af Google Chrome, og den kan ikke gøres til din standardbrowser.</translation>
@@ -347,6 +351,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="436060642166082913">Chrome har blokeret denne download, fordi filen kan skade dine personlige konti og dine konti på sociale netværk</translation>
 <translation id="4367027658822022112">Du kan fastgøre Google Lens for at få nem adgang. Klik på knappen Fastgør øverst i sidepanelet.</translation>
 <translation id="4372389195695053189">Chrome er nu din standardbrowser</translation>
+<translation id="4381814455597163081">Du er med til at gøre Chrome bedre ved at sende brugsstatistik og nedbrudsrapporter til Google. <ph name="BEGIN_LINK" />Administrer<ph name="END_LINK" /></translation>
 <translation id="4389991535395284064">Når du browser i inkognitotilstand, advarer Chrome dig, inden et website indlæses via en usikker forbindelse</translation>
 <translation id="4400772909124543403">Der er ingen tilgængelig opdatering</translation>
 <translation id="4427306783828095590">Forbedret beskyttelse gør mere end at blokere phishing og malware</translation>
@@ -518,6 +523,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="6180522807229584611">Denne fane bruger ekstra ressourcer. Du kan forbedre ydeevnen ved at give Chrome tilladelse til at gøre den inaktiv.</translation>
 <translation id="6182736845697986886">Installationen mislykkedes på grund af en intern fejl i opdateringsserveren.</translation>
 <translation id="6192058120268468905">Din konto i Chrome</translation>
+<translation id="6195202018542972563">Vis søgning med Chrome i systembakken, og aktivér tastaturgenvejen</translation>
 <translation id="6235018212288296708">Indgående regel for Google Chrome om at tillade mDNS-trafik.</translation>
 <translation id="624230925347970731">Chrome lukkes snart</translation>
 <translation id="6247557882553405851">Google Adgangs­ko­de­administrator</translation>
@@ -559,8 +565,10 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="652948702951888897">Chrome-historik</translation>
 <translation id="6532945796722480006">Åbn Gemini i Chrome Canary</translation>
 <translation id="6539493053177300926">Nem adgang til Gemini i Chrome på din enhed, selvom Chrome er minimeret.</translation>
+<translation id="6556755379298048869">Søg med en tastaturgenvej.</translation>
 <translation id="6585124893636629274">Luk Gemini i Chrome</translation>
 <translation id="659498884637196217">I Google Adgangs­kode­admin­istrator på denne enhed</translation>
+<translation id="6612152958212564387">Du sender ikke brugsstatistik og nedbrudsrapporter til Google. <ph name="BEGIN_LINK" />Administrer<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">Hold dine adgangskoder, dine bogmærker og din historik perfekt synkroniseret på alle enheder ved at angive Chrome som din standardbrowser.</translation>
 <translation id="6631524303639368205">Fortsæt, hvor du slap: Chrome har gendannet dine faner fra din seneste session. Du kan deaktivere dette i</translation>
 <translation id="6632473616050862500">ChromeOS Flex leveres ved hjælp af <ph name="BEGIN_LINK_CROS_OSS" />open source-software<ph name="END_LINK_CROS_OSS" />.</translation>
@@ -585,7 +593,9 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="683440813066116847">Indgående regel for Google Chrome Canary om at tillade mDNS-trafik.</translation>
 <translation id="684888714667046800">Der kunne ikke oprettes forbindelse til internettet. Hvis du bruger en firewall, skal du angive <ph name="PRODUCT_EXE_NAME" /> på tilladelseslisten.</translation>
 <translation id="6859580922007887573">Tryk på Tab for at fortsætte</translation>
+<translation id="6869568587896659271">Nem adgang til websites under adresselinjen</translation>
 <translation id="6877155553248388166">nederste højre hjørne af søgeområdet: højre <ph name="RIGHT" /> %, nederste <ph name="BOTTOM" /> %</translation>
+<translation id="6879791154455204815">Åbn søgning med Chrome</translation>
 <translation id="6881299373831449287">Opdaterer Chrome</translation>
 <translation id="6885412569789873916">Apps i Chrome beta</translation>
 <translation id="6893363893008038481">Fjern kontoen fra Chrome</translation>
@@ -644,6 +654,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="7449333426561673451">{COUNT,plural, =1{Din organisation lukker automatisk Chrome, når den ikke bruges i 1 minut.}one{Din organisation lukker automatisk Chrome, når den ikke bruges i # minut.}other{Din organisation lukker automatisk Chrome, når den ikke bruges i # minutter.}}</translation>
 <translation id="7450541714075000668">Teksten blev kopieret</translation>
 <translation id="7452987490177144319">{COUNT,plural, =1{Din organisation sletter automatisk browserdata, når Chrome ikke bruges i 1 minut. Disse kan omfatte historik, autofyld og downloads. Dine faner forbliver åbne.}one{Din organisation sletter automatisk browserdata, når Chrome ikke bruges i # minut. Disse kan omfatte historik, autofyld og downloads. Dine faner forbliver åbne.}other{Din organisation sletter automatisk browserdata, når Chrome ikke bruges i # minutter. Disse kan omfatte historik, autofyld og downloads. Dine faner forbliver åbne.}}</translation>
+<translation id="7466577301922356468">Når disse data automatisk sendes til Google, er det med til at forbedre Chrome. Du kan til enhver tid ændre denne indstilling.</translation>
 <translation id="7477130805345743099">Chrome advarer dig, inden et website indlæses via en usikker forbindelse</translation>
 <translation id="7481213027396403996">Få Chromes stærkeste beskyttelse</translation>
 <translation id="749228101751499733">Mens du er logget ind, kan du bruge dine adgangskoder m.m. fra din Google-konto i Chrome. <ph name="SHORTCUT" /> kan ændre dine indstillinger for Google-tjenester.</translation>
@@ -677,6 +688,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="7736869414036750079">Din organisation kræver, at du logger ind i Chrome</translation>
 <translation id="7747138024166251722">Installationsprogrammet kunne ikke oprette en midlertidig mappe. Tjek, om der er tilstrækkelig diskplads, og om der er tilladelse til at installere software.</translation>
 <translation id="7748969056734910029">Du har ikke besøgt websitet for nylig. Chrome har fjernet <ph name="PERMISSION_1" /> og <ph name="PERMISSION_2" />.</translation>
+<translation id="7759944311003584891">Søg med Chrome</translation>
 <translation id="7761834446675418963">Klik på dit navn for at åbne Chrome og gå i gang med at browse.</translation>
 <translation id="7777080907402804672">Hvis et billede ikke har en brugbar beskrivelse, forsøger Chrome at angive en for dig. Billederne sendes til Google, så der kan oprettes beskrivelser. Du kan til enhver tid deaktivere denne funktion i indstillingerne.</translation>
 <translation id="778331955594035129">Chrome skal have lokationstilladelse for at bruge dette website</translation>
@@ -793,6 +805,7 @@ Nye bogmærker kan ikke gemmes på din konto, før du sletter nogle. Hvis du log
 <translation id="8747073452963259673">nederste venstre hjørne af søgeområdet: venstre <ph name="LEFT" /> %, nederste <ph name="BOTTOM" /> %</translation>
 <translation id="8748735421235723888">Chrome frigør hukommelse fra inaktive faner. Dette tildeler aktive faner og andre apps flere computerressourcer og gør Chrome hurtig. Dine inaktive faner bliver automatisk aktive igen, når du vender tilbage til dem. <ph name="BEGIN_LINK" />Få flere oplysninger om Hukommelsessparefunktion<ph name="END_LINK" /></translation>
 <translation id="8765470054473112089">Når du indtaster noget i adresselinjen eller søgefeltet, sender Chrome det, du skriver, til din standardsøgemaskine for at få bedre forslag. Dette er deaktiveret i inkognitotilstand.</translation>
+<translation id="8771516687880083607">Vælg, hvad du vil dele med Chrome</translation>
 <translation id="8781673607513845160">Giv Chrome adgang i <ph name="BEGIN_LINK" />systemindstillingerne<ph name="END_LINK" /> for at bruge dit kamera</translation>
 <translation id="878572486461146056">Installationsfejl: Din netværksadministrator anvender en gruppepolitik, der forhindrer installationen: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796919761992612392">T&amp;ilpas Chrome</translation>

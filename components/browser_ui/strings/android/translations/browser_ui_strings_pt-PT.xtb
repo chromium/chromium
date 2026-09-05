@@ -7,6 +7,7 @@
 <translation id="1046742265332833834">Tema azul</translation>
 <translation id="1070329623210597193">Ficheiros que este site pode ver ou editar</translation>
 <translation id="1074758928858737435">Pode pedir para ver a versão para computador dos sites</translation>
+<translation id="1089791933924803646">Receba sugestões do Chrome noutras apps</translation>
 <translation id="1109482864356262001">As funcionalidades que precisam de sensores de movimento ou de luz não funcionam</translation>
 <translation id="1126523729897810826">Conclua as ações sugeridas abaixo para tirar o máximo partido do Chrome</translation>
 <translation id="113098737392899175">Navegar pelas páginas com um cursor de texto quando tiver um teclado ligado</translation>
@@ -453,6 +454,7 @@
 <translation id="5668404140385795438">Substituir pedido de um Website para evitar aumentar o zoom</translation>
 <translation id="5668843533782548925">Os sites são mais lentos, mas mais seguros</translation>
 <translation id="5677928146339483299">Bloqueado</translation>
+<translation id="5679089750838794164">Agora, o Chrome pode mostrar-lhe sugestões noutras apps com base nos seus dados de navegação, como o histórico de navegação recente. Estes dados são tratados de forma segura no seu dispositivo. Pode desativar esta opção em qualquer altura nas definições do Chrome.</translation>
 <translation id="5689516760719285838">Localização</translation>
 <translation id="5690795753582697420">A câmara está desativada nas Definições do Android</translation>
 <translation id="5700761515355162635">Cookies de terceiros permitidos</translation>
@@ -507,6 +509,7 @@
 <translation id="6085954183010297841">Eliminar a autorização de edição de ficheiros? <ph name="FILE" /></translation>
 <translation id="6104860901391833523">Quando esta opção está ativada, os sites podem entrar automaticamente no modo ecrã no ecrã. Quando esta opção está desativada, os sites não podem entrar automaticamente no modo ecrã no ecrã.</translation>
 <translation id="6120483543004435978">Quando a opção está ativada, os sites podem pedir para saber quando está a usar ativamente o dispositivo. Quando esta opção está desativada, os sites não sabem quando está a usar ativamente o dispositivo.</translation>
+<translation id="612871598708395517">Oculte a opção Receba sugestões do Chrome noutras apps</translation>
 <translation id="6132075343662013154">O Chrome vai oferecer a opção de guardar a sua palavra-passe</translation>
 <translation id="615886654739818377">Não permitir que os sites façam a gestão de janelas em todos os seus ecrãs</translation>
 <translation id="6165508094623778733">Saiba mais</translation>

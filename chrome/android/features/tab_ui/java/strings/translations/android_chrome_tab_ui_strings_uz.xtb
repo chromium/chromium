@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> hafta oldin yaratilgan}other{<ph name="NUM_WEEKS_MANY" /> hafta oldin yaratilgan}}</translation>
 <translation id="1063300264396686489">Boshqa qurilmalardagi varaqlar guruhini avtomatik ochish</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> ta varaq oxirgi vaqtlarda ishlatilmayapti. Ular yopilsinmi?</translation>
+<translation id="1089791933924803646">Boshqa ilovalarda Chrome takliflarini chiqarish</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> yil oldin yaratilgan}other{<ph name="NUM_YEARS_MANY" /> yil oldin yaratilgan}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Nofaol varaqlar va guruhlar 1 oydan keyin yopiladi}other{Nofaol varaqlar va guruhlar <ph name="MONTH_COUNT_MANY" /> oydan keyin yopiladi}}</translation>
 <translation id="1173894706177603556">Qayta nomlash</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Varaqni guruhga kiritish}other{Varaqlarni guruhga kiritish}}</translation>
 <translation id="8138067144082174140">14 kun nofaol boʻlganidan keyin</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="TITLE_OF_GROUP" /> varaqlar guruhini yoyish, guruh varaqlari: <ph name="TABS_COUNT_ONE" /> ta, rangi: <ph name="COLOR_NAME" />.}other{<ph name="TITLE_OF_GROUP" /> varaqlar guruhini yoyish, varaqlari: <ph name="TABS_COUNT_MANY" /> ta, rangi: <ph name="COLOR_NAME" />.}}</translation>
+<translation id="8172214054247281626">Tanlangan ilovalarda tavsiyalar olish uchun oxirgi ochilgan veb-sahifalar tarixi kabi brauzer maʼlumotlarini ulashing. Bu maʼlumotlar qurilmangizda xavfsiz qayta ishlanadi.</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{Varaqni yechish}other{Varaqlarni yechish}}</translation>
 <translation id="8205266828577616993">Varaqni tepaga surish</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> daqiqa oldin yangilangan}other{<ph name="NUM_MINS_MANY" /> daqiqa oldin yangilangan}}</translation>

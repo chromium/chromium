@@ -7,6 +7,7 @@
 <translation id="1046742265332833834">Tema azul</translation>
 <translation id="1070329623210597193">Ficheiros que pode ver ou editar este sitio</translation>
 <translation id="1074758928858737435">Podes solicitar que se mostre a versión para ordenadores dos sitios</translation>
+<translation id="1089791933924803646">Recibir suxestións de Chrome noutras aplicacións</translation>
 <translation id="1109482864356262001">As funcións que requiran sensores de movemento ou de luz non estarán dispoñibles</translation>
 <translation id="1126523729897810826">Completa as accións suxeridas máis abaixo para sacarlle o máximo partido a Chrome</translation>
 <translation id="113098737392899175">Navega polas páxinas cun cursor de texto cando se conecta un teclado</translation>
@@ -453,6 +454,7 @@
 <translation id="5668404140385795438">Anular a solicitude dun sitio web para evitar ampliar a imaxe</translation>
 <translation id="5668843533782548925">Os sitios son máis lentos, pero máis seguros</translation>
 <translation id="5677928146339483299">Bloqueada</translation>
+<translation id="5679089750838794164">Agora Chrome pode mostrarche suxestións noutras aplicacións en función dos datos de navegación, como o historial de navegación recente. Os datos procésanse de forma segura no teu dispositivo. Desactiva esta opción cando queiras na configuración de Chrome.</translation>
 <translation id="5689516760719285838">Localización</translation>
 <translation id="5690795753582697420">A cámara está desactivada na sección Configuración de Android</translation>
 <translation id="5700761515355162635">Cookies de terceiros permitidas</translation>
@@ -507,6 +509,7 @@
 <translation id="6085954183010297841">Queres eliminar a autorización para editar ficheiros? <ph name="FILE" /></translation>
 <translation id="6104860901391833523">Cando esta opción está activada, os sitios poden acceder ao modo de pantalla superposta automaticamente. Cando está desactivada, non poden acceder a ese modo automaticamente.</translation>
 <translation id="6120483543004435978">Cando esta opción está activada, os sitios poden pedirche permiso para saber se estás utilizando o dispositivo de maneira activa. Cando esta opción está desactivada, os sitios non poden saber se estás utilizando o dispositivo de maneira activa.</translation>
+<translation id="612871598708395517">Ocultar Recibir suxestións de Chrome noutras aplicacións</translation>
 <translation id="6132075343662013154">Chrome ofrecerache gardar o teu contrasinal</translation>
 <translation id="615886654739818377">Non permitir que os sitios xestionen ventás en todas as pantallas</translation>
 <translation id="6165508094623778733">Máis información</translation>
@@ -790,7 +793,7 @@ A Protección avanzada controla estas opcións de Chrome:</translation>
 <translation id="927148002081263046">Compartir un contacto</translation>
 <translation id="947156494302904893">Os sitios que visites poden verificar que es unha persoa real e non un bot</translation>
 <translation id="959682366969460160">Organízate</translation>
-<translation id="960590623979248167">Mostrar as hiperligazóns</translation>
+<translation id="960590623979248167">Mostrar as ligazóns</translation>
 <translation id="961930410699694996">Permítese o uso da localización esta vez</translation>
 <translation id="967624055006145463">Datos almacenados</translation>
 <translation id="969975166333045662">Impide que un sitio use o optimizador de V8.</translation>

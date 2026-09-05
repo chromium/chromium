@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> ആഴ്‌ച മുമ്പ് സൃഷ്‌ടിച്ചത്}other{<ph name="NUM_WEEKS_MANY" /> ആഴ്‌ച മുമ്പ് സൃഷ്‌ടിച്ചത്}}</translation>
 <translation id="1063300264396686489">മറ്റ് ഉപകരണങ്ങളിൽ നിന്നുള്ള ടാബ് ഗ്രൂപ്പുകൾ സ്വയമേവ തുറക്കുക</translation>
 <translation id="1075622780330595106">നിങ്ങളുടെ ടാബുകളിൽ <ph name="NUMBER_OF_TABS" /> എണ്ണം അടുത്തിടെ ഉപയോഗിച്ചിട്ടില്ല. അവ അടയ്‌ക്കണോ?</translation>
+<translation id="1089791933924803646">മറ്റ് ആപ്പുകളിൽ 'Chrome സജഷൻസ്' നേടൂ</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> വർഷം മുമ്പ് സൃഷ്ടിച്ചത്}other{<ph name="NUM_YEARS_MANY" /> വർഷം മുമ്പ് സൃഷ്ടിച്ചത്}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{നിഷ്‌ക്രിയമായ ടാബുകളും ഗ്രൂപ്പുകളും ഒരു മാസത്തിന് ശേഷം അടയ്ക്കും}other{നിഷ്‌ക്രിയമായ ടാബുകളും ഗ്രൂപ്പുകളും <ph name="MONTH_COUNT_MANY" /> മാസത്തിന് ശേഷം അടയ്ക്കും}}</translation>
 <translation id="1173894706177603556">പേരുമാറ്റുക</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{ഗ്രൂപ്പിലേക്ക് ടാബ് ചേർക്കുക}other{ഗ്രൂപ്പിലേക്ക് ടാബുകൾ ചേർക്കുക}}</translation>
 <translation id="8138067144082174140">14 ദിവസത്തിന് ശേഷം നിഷ്‌ക്രിയമായി</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> നിറത്തിലുള്ള <ph name="TABS_COUNT_ONE" /> ടാബ് ഉൾപ്പെടുത്തി <ph name="TITLE_OF_GROUP" /> എന്ന ടാബ് ഗ്രൂപ്പ് വികസിപ്പിക്കുക.}other{<ph name="COLOR_NAME" /> നിറത്തിലുള്ള <ph name="TABS_COUNT_MANY" /> ടാബുകൾ ഉൾപ്പെടുത്തി <ph name="TITLE_OF_GROUP" /> എന്ന ടാബ് ഗ്രൂപ്പ് വികസിപ്പിക്കുക.}}</translation>
+<translation id="8172214054247281626">തിരഞ്ഞെടുത്ത ആപ്പുകളിൽ നിർദ്ദേശങ്ങൾ ലഭിക്കാൻ, നിങ്ങളുടെ സമീപകാലത്തെ ബ്രൗസിംഗ് ചരിത്രം പോലുള്ള ബ്രൗസിംഗ് ഡാറ്റ പങ്കിടുക. ഈ ഡാറ്റ നിങ്ങളുടെ ഉപകരണത്തിൽ സുരക്ഷിതമായി പ്രോസസ് ചെയ്യുന്നു.</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{ടാബ് അൺപിൻ ചെയ്യുക}other{ടാബുകൾ അൺപിൻ ചെയ്യുക}}</translation>
 <translation id="8205266828577616993">ടാബ് മുകളിലേക്ക് നീക്കുക</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> മിനിറ്റ് മുമ്പ് അപ്‌ഡേറ്റ് ചെയ്തു}other{<ph name="NUM_MINS_MANY" /> മിനിറ്റ് മുമ്പ് അപ്‌ഡേറ്റ് ചെയ്തു}}</translation>

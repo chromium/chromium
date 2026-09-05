@@ -57,6 +57,7 @@
 <translation id="1181037720776840403">ဖယ်ရှားရန်</translation>
 <translation id="1183189057400844278">သင်၏ Google Account ရှိ စကားဝှက်များကို အချိန်မရွေးသုံးနိုင်ကြောင်း သေချာစေရန် သင်ဖြစ်ကြောင်း အတည်ပြုပါ</translation>
 <translation id="1187810343066461819">ဤကားရှိ လိပ်စာ၊ မှတ်တမ်း စသည်တို့ကိုလည်း ဖျက်ရန်</translation>
+<translation id="1191987227666124897">မပါဝင်ရန် တောင်းဆိုချက်</translation>
 <translation id="1193729455103054076">လုံခြုံမှုမြင့်သည့် စကားဝှက်သုံးမလား။</translation>
 <translation id="11947597112837849">အီးမေးလ်လိပ်စာ</translation>
 <translation id="1197267115302279827">မှတ်သားချက်များကို ရွှေ့မည်</translation>
@@ -1340,6 +1341,7 @@
 <translation id="634208815998129842">အလုပ်မန်နေဂျာ</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ခု}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ခု}}</translation>
 <translation id="6345878117466430440">ဖတ်ပြီးဟု မှတ်သားရန်</translation>
+<translation id="63490081267265251">Google အပါအဝင် သင်ဝင်ကြည့်သည့် ဝဘ်ဆိုက်များသည် ဤတောင်းဆိုချက်အား မည်သို့တုံ့ပြန်မည်ကို ဆုံးဖြတ်ရန် တာဝန်ရှိသည်။ သင့်ဒေသရှိ ဥပဒေများပေါ်မူတည်၍ ဝဘ်ဆိုက်များသည် သင့်ဒေတာကို ရောင်းချခြင်းနှင့် မျှဝေခြင်း သို့မဟုတ် ပုဂ္ဂိုလ်ရေးသီးသန့် ကြော်ငြာများအတွက် အသုံးပြုခြင်းကို ကန့်သတ်ခြင်းဖြင့် တုံ့ပြန်နိုင်သည်။ <ph name="BEGIN_LINK" />ပိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="6350745006329795504">သင့်စက်များကို စီမံရန်</translation>
 <translation id="6356893102071098867">မှန်ကန်သည့်အကောင့်ကို ရွေးထားခြင်းရှိ၊ မရှိ ကြည့်ပါ</translation>
 <translation id="6364438453358674297">အကြံပေးချက်ကို မှတ်တမ်း ထဲမှ ဖယ်ရှားမလား?</translation>
@@ -1664,6 +1666,7 @@
 <translation id="7493994139787901920"><ph name="VERSION" /> (မွမ်းမံပြင်ဆင်ပြီး<ph name="TIME_SINCE_UPDATE" /> )</translation>
 <translation id="7498271377022651285">ကျေးဇူးပြုပြီး စောင့်ပါ…</translation>
 <translation id="7499065150275272675"><ph name="TAB_TITLE" />၊ ပင်ထိုးထားသည့် အသံပိတ်ထားသောတဘ်</translation>
+<translation id="7500851014030446046">PDF ဒေါင်းလုဒ်လုပ်နေသည်</translation>
 <translation id="7501135638693251872">စာညှပ်များအားလုံး</translation>
 <translation id="7507207699631365376">ဤဝန်ဆောင်မှုပေးသူ၏ <ph name="BEGIN_LINK" />ကိုယ်ရေးအချက်အလက် လုံခြုံမှုဆိုင်ရာ မူဝါဒ<ph name="END_LINK" /> ကို ကြည့်ရန်</translation>
 <translation id="750886945254958667">တဘ်များကို နောက်မှထည့်ရန် ဤအုပ်စုကို ဆက်ထားနိုင်သည်။ သို့မဟုတ် ၎င်းကို မသုံးလိုတော့ပါက ထွက်နိုင်သည်</translation>
@@ -1731,6 +1734,7 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ခု}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ခု}}</translation>
 <translation id="777637629667389858">လက်မှတ်ထိုးဝင်ထားသောအခါ သင့်အား Google ဝန်ဆောင်မှုများတွင် ကာကွယ်ပေးသည်။</translation>
 <translation id="7778840695157240389">သတင်းဆောင်းပါးသစ်များအတွက် နောက်မှ ပြန်လာကြည့်ပါ</translation>
+<translation id="7780992949171378848">သင့်ဒေတာ အသုံးပြုမှုနှင့် ပတ်သက်၍ ဝဘ်ဆိုက်များသို့ ‘မပါဝင်ရန် တောင်းဆိုချက်’ ပို့ရန်</translation>
 <translation id="7791543448312431591">ထည့်ရန်</translation>
 <translation id="7792388396321542707">မျှဝေမှု ရပ်ရန်</translation>
 <translation id="780287761701992588">သင့်စက်အားလုံးပေါ်ရှိ လိပ်စာ၊ စကားဝှက် စသည်တို့ကို ရယူနိုင်သည်</translation>

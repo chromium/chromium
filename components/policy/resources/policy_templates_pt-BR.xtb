@@ -197,6 +197,19 @@ Esta política exige uma licença do <ph name="CHROME_ENTERPRISE_PREMIUM_NAME" /
 <translation id="1110426799149444997">Desativar a pesquisa por região do <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1111324374369583989">Não mostrar a tela de configuração do tamanho de exibição durante o login</translation>
 <translation id="1111824532252882775">Ativada: os controles de rolagem podem ser focalizados por padrão.</translation>
+<translation id="1113523086451291158">Esta política pode ser usada para permitir o <ph name="CHROME_DEVTOOLS_NAME" /> em URLs específicos.
+
+A disponibilidade do <ph name="CHROME_DEVTOOLS_NAME" /> é avaliada no nível do destino. Os padrões de URL são comparados ao URL de cada destino que está sendo inspecionado, como o frame principal de uma página, um subframe incorporado, uma extensão ou um aplicativo da web. O comportamento resultante depende de a política <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> também estar definida.
+
+Se esta política estiver definida e a <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> não, o URL de um destino precisará corresponder a um padrão nesta lista de permissões para que o <ph name="CHROME_DEVTOOLS_NAME" /> seja permitido para esse destino. Se o URL de um destino não corresponder a esta lista de permissões, o <ph name="CHROME_DEVTOOLS_NAME" /> será bloqueado para esse destino. Por exemplo, um subframe com um URL que não está na lista de permissões não pode ser inspecionado, mas a página principal permanece inspecionável caso o URL dela esteja na lista. Para informações sobre o formato do URL, consulte https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Se tanto esta como a <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> estiverem definidas, a lista de permissões terá precedência. Se um URL de destino corresponder a um padrão nesta lista de permissões, ele será permitido, mesmo que também corresponda a um padrão na lista de bloqueio. Se um URL de destino corresponder a um padrão na lista de bloqueio, mas não na lista de permissões, ele será bloqueado. Se um URL de destino não corresponder a nenhuma delas, a política <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> será usada como substituta.
+
+Se esta política for deixada sem definição, a disponibilidade do <ph name="CHROME_DEVTOOLS_NAME" /> será determinada pelas políticas <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> e <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Curingas genéricos para hosts (ou seja, "*" ou "[*]") não são permitidos. Use a política <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> para ativar o recurso globalmente.
+
+Esta política tem um limite de 1.000 entradas.</translation>
 <translation id="1117535567637097036">Os gerenciadores de protocolo definidos por esta política não são usados na manipulação de intents do Android.</translation>
 <translation id="1118093128235245168">Permitir que os sites peçam ao usuário para conceder acesso a um dispositivo USB conectado</translation>
 <translation id="111910763555783249">Configurações de notificação</translation>
@@ -8206,6 +8219,17 @@ configurados.</translation>
 Esta política foi descontinuada na versão M124.</translation>
 <translation id="6022948604095165524">Ação na inicialização</translation>
 <translation id="602318745029752898">Permitir as vozes aprimoradas da conversão de texto em voz da rede no Selecionar para Ouvir</translation>
+<translation id="6023434563562800942">Esta política pode ser usada para bloquear o <ph name="CHROME_DEVTOOLS_NAME" /> em URLs específicos. Para obter informações sobre o formato do URL, consulte https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+A disponibilidade do <ph name="CHROME_DEVTOOLS_NAME" /> é avaliada no nível do destino. Os padrões de URL são comparados ao URL de cada destino que está sendo inspecionado, como o frame principal de uma página, um subframe incorporado, uma extensão ou um aplicativo da web. O comportamento resultante depende de a política <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> também estar definida.
+
+Se esta política estiver definida e a <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> não estiver, o URL de um destino que corresponder a um padrão nesta lista de bloqueio vai bloquear o <ph name="CHROME_DEVTOOLS_NAME" /> para esse destino. Por exemplo, um subframe com um URL que corresponda à lista de bloqueio não pode ser inspecionado, mas a página principal continua inspecionável caso o URL dela não esteja na lista. Se o URL de um destino não corresponder a nenhum padrão, a disponibilidade será determinada pela política <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Se tanto esta como a <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> estiverem definidas, a lista de permissões terá precedência. Se o URL de um destino corresponder a um padrão na lista de permissões, ele será permitido, mesmo que também corresponda a um padrão nesta lista de bloqueio. Se corresponder a um padrão nesta lista de bloqueio, mas não na lista de permissões, o URL será bloqueado. Se um URL de destino não corresponder a nenhuma delas, a política <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> será usada como substituta.
+
+Se esta política for deixada sem definição, a disponibilidade do <ph name="CHROME_DEVTOOLS_NAME" /> será determinada pelas políticas <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> e <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Esta política tem um limite de 1.000 entradas.</translation>
 <translation id="6026722971789064331">Controlar o uso da API File System para gravação</translation>
 <translation id="602728333950205286">URL instantâneo do provedor de pesquisa padrão</translation>
 <translation id="603410445099326293">Parâmetros para URL de sugestões que usa POST</translation>

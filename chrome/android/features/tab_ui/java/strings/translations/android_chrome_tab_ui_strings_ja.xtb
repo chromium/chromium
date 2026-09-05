@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> 週間前に作成}other{<ph name="NUM_WEEKS_MANY" /> 週間前に作成}}</translation>
 <translation id="1063300264396686489">他のデバイスで作成されたタブグループを自動的に開く</translation>
 <translation id="1075622780330595106">しばらく使用していないタブが <ph name="NUMBER_OF_TABS" /> 個あります。これらのタブを閉じますか？</translation>
+<translation id="1089791933924803646">他のアプリで Chrome の提案を表示する</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> 年前に作成}other{<ph name="NUM_YEARS_MANY" /> 年前に作成}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{アクティブでないタブとグループを 1 か月後に閉じます}other{アクティブでないタブとグループを <ph name="MONTH_COUNT_MANY" /> か月後に閉じます}}</translation>
 <translation id="1173894706177603556">名前を変更</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{タブをグループに追加}other{タブをグループに追加}}</translation>
 <translation id="8138067144082174140">アクティブでない状態で 14 日経過</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="TITLE_OF_GROUP" /> タブグループ（タブの数: <ph name="TABS_COUNT_ONE" />、色: <ph name="COLOR_NAME" />）を開きます。}other{<ph name="TITLE_OF_GROUP" /> タブグループ（タブの数: <ph name="TABS_COUNT_MANY" />、色: <ph name="COLOR_NAME" />）を開きます。}}</translation>
+<translation id="8172214054247281626">最近の閲覧履歴などの閲覧データを共有して、選択したアプリで提案を表示します。このデータはデバイス上で安全に処理されます。</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{タブの固定を解除}other{タブの固定を解除}}</translation>
 <translation id="8205266828577616993">タブを上に移動</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> 分前に更新}other{<ph name="NUM_MINS_MANY" /> 分前に更新}}</translation>

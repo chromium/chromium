@@ -336,6 +336,7 @@
 <translation id="1235458158152011030">ເຄືອຂ່າຍທີ່ຮູ້ຈັກ</translation>
 <translation id="123578888592755962">ດິສກ໌​ເຕັມ</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{ຂໍ້ຄວາມ}other{ຂໍ້ຄວາມ # ລາຍການ}}</translation>
+<translation id="1236564420496412501">ຄລິກຂວາໃສ່ແຖບທີ່ມີລິ້ງທີ່ທ່ານຕ້ອງການສົ່ງ</translation>
 <translation id="1237950098253310325">ຈັດຮຽງ <ph name="BUTTON_NAME" /> ໃໝ່ໂດຍໃຊ້ Ctrl + ລູກສອນຂຶ້ນ ຫຼື ລູກສອນລົງ</translation>
 <translation id="1238293488628890871">ສະຫຼັບໂປຣໄຟລ໌ບໍ?</translation>
 <translation id="1239841552505950173">ເປີດໃຊ້ແອັບພລິເຄຊັນ</translation>
@@ -625,6 +626,7 @@
 <translation id="1482626744466814421">ບຸກມາກແຖບນີ້...</translation>
 <translation id="1482772681918035149">ແກ້ໄຂລະຫັດຜ່ານ</translation>
 <translation id="1483137792530497944">ແມ່ນ້ຳ</translation>
+<translation id="1483151333977672176">ສົ່ງແລ້ວ!</translation>
 <translation id="1483431819520123112">ສຳເນົາຊື່ສະແດງໃສ່ຄລິບບອດແລ້ວ</translation>
 <translation id="1483493594462132177">ສົ່ງ</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
@@ -644,6 +646,7 @@
 <translation id="1496514951988037011">ຊື່ຜູ້ໃຊ້</translation>
 <translation id="1498498210836053409">ປິດໂໝດສະຕິກກີ້ໃນເວລາແກ້ໄຂຂໍ້ຄວາມ (ໂໝດສະຕິກກີ້ອັດສະລິຍະ)</translation>
 <translation id="1499041187027566160">ສຽງ​ຂຶ້ນ</translation>
+<translation id="1499948601784722399">ຄຳຮ້ອງຂໍເວັບໄຊ</translation>
 <translation id="1500297251995790841">ອຸປະກອນທີ່ບໍ່ຮູ້ຈັກ [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບແອັບ Chrome ທີ່ບໍ່ຮອງຮັບ</translation>
 <translation id="1501480321619201731">ລຶບກຸ່ມ</translation>
@@ -1139,6 +1142,7 @@
 <translation id="1873920700418191231">ອະນຸຍາດສິດການອະນຸຍາດອີກຄັ້ງສຳລັບ <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">ໄດ້ຮັບອະນຸຍາດໃຫ້ສະແດງໂຄສະນາຕ່າງໆ</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{ຍ້າຍແຖບໄປໃສ່ໜ້າຈໍອື່ນ}other{ຍ້າຍແຖບໄປໃສ່ໜ້າຈໍອື່ນ}}</translation>
+<translation id="1875939313868351773">ຄຸກກີ້ ແລະ ຂໍ້ມູນເວັບໄຊຂອງພາກສ່ວນທີສາມ</translation>
 <translation id="1877377290348678128">ປ້າຍກຳກັບ (ບໍ່ບັງຄັບ)</translation>
 <translation id="1877860345998737529">ການກຳນົດຄຳສັ່ງດ້ວຍສະວິດ</translation>
 <translation id="1878477879455105085">ເປີດແລ້ວ</translation>
@@ -1435,6 +1439,7 @@
 <translation id="2111670510994270194">ແຖບໃໝ່ຢູ່ເບື້ອງຂວາ</translation>
 <translation id="2111778868023567359">ທ່ານຈະບໍ່ເຫັນກຸ່ມແຖບຢູ່ໜ້ານີ້ອີກ</translation>
 <translation id="2112554630428445878">ຍິນດີຕ້ອນຮັບ, <ph name="USERNAME" /></translation>
+<translation id="2113314491145966441">ເບິ່ງໃບຮັບຮອງທີ່ນຳເຂົ້າຈາກ macOS</translation>
 <translation id="21133533946938348">ປັກໝຸດແຖບ</translation>
 <translation id="2113479184312716848">ເປີດໄຟລ໌...</translation>
 <translation id="2114326799768592691">ໂຫຼດ&amp;ເຟຣມຄືນໃໝ່</translation>
@@ -2104,6 +2109,7 @@
 <translation id="262373406453641243">Colemak</translation>
 <translation id="2624045385113367716">ອະນຸຍາດໃຫ້ຄວບຄຸມ ແລະ ຕັ້ງໂປຣແກຣມໃໝ່ໃນອຸປະກອນ MIDI</translation>
 <translation id="2624142942574147739">ໜ້ານີ້ກໍາລັງເຂົ້າຫາກ້ອງຖ່າຍຮູບ ແລະໄມໂຄຣໂຟນຂອງທ່ານ.</translation>
+<translation id="2626746300781063303">ເວັບໄຊ, ຮວມທັງ Google, ຈະໃຊ້ວິຈາລະນະຍານຂອງຕົນເອງໃນເວລາຕອບສະໜອງຕໍ່ຄຳຮ້ອງຂໍນີ້</translation>
 <translation id="2626799779920242286">ກະລຸນາລອງໃໝ່ພາຍຫຼັງ.</translation>
 <translation id="2627424346328942291">ບໍ່ສາມາດແບ່ງປັນໄດ້</translation>
 <translation id="2627970398976286795">ກວດສອບຄວາມສ່ຽງຂອງ Gemini Spark</translation>
@@ -2467,6 +2473,7 @@
 <translation id="2887344147309501015">ສົນທະນາກັບ Gemini ໃນ Chrome ເພື່ອຮັບຄຳຕອບ, ປະເດັນສຳຄັນ ແລະ ອື່ນໆໃນຂະນະທີ່ທ່ານເລືອກເບິ່ງ</translation>
 <translation id="2889043468805635730">ບໍ່ພົບບັນຫາໃດໆ</translation>
 <translation id="2889064240420137087">ເປີດລິ້ງກັບ...</translation>
+<translation id="2889937141553641427">{0,plural, =1{ໂໝດແຍກ}other{ໜ້າຈໍໂໝດແຍກທີ່ເປີດຢູ່ # ໜ້າຈໍ}}</translation>
 <translation id="2891464434568738544">ບໍ່ສາມາດເຂົ້າເບິ່ງເວັບໄຊໃດໄດ້ໃນຕອນນີ້. ເຂົ້າເບິ່ງເວັບໄຊເພື່ອເພີ່ມມັນໃສ່ລາຍຊື່ນີ້.</translation>
 <translation id="2891922230654533301">ໃຊ້ອຸປະກອນຂອງທ່ານເພື່ອເຂົ້າສູ່ລະບົບ <ph name="APP_NAME" /> ບໍ?</translation>
 <translation id="2893168226686371498">ບຣາວ​ເຊີມາດຕະຖານ</translation>
@@ -2674,6 +2681,7 @@
 <translation id="3031417829280473749">ຕົວ​ແທນ X</translation>
 <translation id="3031532026314193077">ໃຊ້ແຜ່ນສໍາຜັດ ແລະ ແປ້ນພິມເພື່ອຄລິກຂວາ</translation>
 <translation id="3031557471081358569">ເລືອກ​ລາຍ​ການ​ທີ່​ຈະ​ນໍາ​ເຂົ້າ​:</translation>
+<translation id="3032115590613559078">ຈັດການໃບຮັບຮອງທີ່ນຳເຂົ້າຈາກ macOS</translation>
 <translation id="3032204772252313646">ຄຳບັນຍາຍອັດຕະໂນມັດ</translation>
 <translation id="3032272345862007156">ຮູບແບບສີສັນ AI ຫຼ້າສຸດທີ <ph name="INDEX" /></translation>
 <translation id="3033167916029856961">ເປີດການນຳໃຊ້ໂໝດຫ້າມລົບກວນແລ້ວ</translation>
@@ -2938,6 +2946,7 @@
 <translation id="3242764115495920926">ສະເໜີໃຫ້ປ່ຽນລະຫັດຜ່ານໂດຍອັດຕະໂນມັດ</translation>
 <translation id="3243017971870859287">ອ່ານອຸປະກອນ ChromeOS Flex ແລະ ໝາຍເລກຊີຣຽວສ່ວນປະກອບ</translation>
 <translation id="324366796737464147">ການຕັດສຽງລົບກວນ</translation>
+<translation id="3243680258677029936">{0,plural, =1{ແຍກຕ່າງຫາກ}other{ແຍກຕ່າງຫາກ (#)}}</translation>
 <translation id="3244271242291266297">ດດ</translation>
 <translation id="3244294424315804309">ສືບຕໍ່ປິດສຽງ</translation>
 <translation id="3247649647204519958">ຈາກບ່ອນນີ້, ທ່ານສາມາດເບິ່ງ ແລະ ຈັດການສິດອະນຸຍາດສ່ວນຂະຫຍາຍສຳລັບເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງໄດ້</translation>
@@ -3411,6 +3420,7 @@
 <translation id="3605156246402033687">{COUNT,plural, =1{ມີ {COUNT} ບັນຊີທີ່ໃຊ້ລະຫັດຜ່ານດຽວກັນ}other{ມີ {COUNT} ບັນຊີທີ່ໃຊ້ລະຫັດຜ່ານດຽວກັນ}}</translation>
 <translation id="3605515937536882518">ອັບເດດຄ່າໃນແບບຟອມແລ້ວ</translation>
 <translation id="3605780360466892872">ປຸ່ມລົງລຸ່ມ</translation>
+<translation id="3605907346217095465">ນຳເຂົ້າຈາກ macOS</translation>
 <translation id="3607799000129481474"><ph name="SITE" /> ຕ້ອງການຢັ້ງຢືນວ່າແມ່ນທ່ານ</translation>
 <translation id="3608460311600621471">ກະລຸນາລະບຸເຫດຜົນສຳລັບການພິມຂໍ້ມູນນີ້:</translation>
 <translation id="3608730769702025110">ຂັ້ນຕອນທີ 3 ຈາກທັງໝົດ 4 ຂັ້ນຕອນ: ກວດສອບຂໍ້ມູນລະບຸຕົວຕົນ</translation>
@@ -5961,6 +5971,7 @@
 <translation id="5563460629751333413">ພວກເຮົາພົບບັນຫາໃນການເຊື່ອມຕໍ່ເຊີບເວີ. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
 <translation id="5563698194918415761">ນະໂຍບາຍເຄືອຂ່າຍ ຫຼື ພຣ໋ອກຊີເຊີເວີບລັອກການອັບເດດນີ້.</translation>
 <translation id="5563824734298958390">ອອກຈາກກຸ່ມແຖບບໍ?</translation>
+<translation id="5565606467367006469">ສົ່ງລິ້ງໄປຫາໂທລະສັບ ຫຼື ອຸປະກອນອື່ນໆທີ່ທ່ານເຂົ້າສູ່ລະບົບໄວ້ໄດ້ຢ່າງວ່ອງໄວ</translation>
 <translation id="5565735124758917034">ເປີດຢູ່</translation>
 <translation id="5568069709869097550">ບໍ່ສາມາດເຂົ້າສູ່ລະບົບໄດ້</translation>
 <translation id="5568525251731145240">ລຶບຂໍ້ມູນເວັບໄຊ ແລະ ການອະນຸຍາດສຳລັບ <ph name="SITE_NAME" />, ເວັບໄຊທັງໝົດພາຍໃຕ້ມັນ ແລະ ແອັບທີ່ຕິດຕັ້ງໄວ້ແລ້ວບໍ?</translation>
@@ -6493,6 +6504,7 @@
 <translation id="5992652489368666106">ບໍ່ມີຂອບ</translation>
 <translation id="5996490984199062729">ຍັງບໍ່ໄດ້ຕັ້ງໂປຣໄຟລ໌ຂອງທ່ານ</translation>
 <translation id="5997337190805127100">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບການເຂົ້າເຖິງເວັບໄຊ</translation>
+<translation id="5997802678829218272">ເມື່ອທ່ານເຂົ້າສູ່ລະບົບ Chrome ດ້ວຍບັນຊີດຽວກັນ, ທ່ານສາມາດສົ່ງລິ້ງລະຫວ່າງອຸປະກອນຕ່າງໆໄດ້ຢ່າງວ່ອງໄວ</translation>
 <translation id="5998458948782718639">ຊ່ວຍປັບປຸງການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ</translation>
 <translation id="5998976983953384016">ຢືນຢັນ ແລະ ເປີດ</translation>
 <translation id="5999630716831179808">ສຽງ</translation>
@@ -7722,6 +7734,7 @@
 <translation id="6944854424004126054">ກູ້ຄືນວິນໂດ</translation>
 <translation id="6945221475159498467">ເລືອກ</translation>
 <translation id="694592694773692225">ບລັອກການປ່ຽນເສັ້ນທາງໃນໜ້ານີ້ແລ້ວ.</translation>
+<translation id="6946083836254858787">ເລືອກ “ສົ່ງໄປຫາອຸປະກອນຂອງທ່ານ” ແລ້ວເລືອກບ່ອນທີ່ທ່ານຕ້ອງການຮັບລິ້ງ</translation>
 <translation id="6949089178006131285">ອ່ານຂໍ້ມູນເຄືອຂ່າຍ ChromeOS Flex</translation>
 <translation id="6949434160682548041">ລະຫັດຜ່ານ (ບໍ່ບັງຄັບ)</translation>
 <translation id="6950143189069683062">ລາຍລະອຽດໜ່ວຍຄວາມຈຳ</translation>
@@ -8236,6 +8249,7 @@
 <translation id="7357271391997763660">ເອີ້ນໃຊ້ການກວດສອບລະຫັດຜ່ານບໍ?</translation>
 <translation id="735745346212279324">VPN ຕັດເຊື່ອມຕໍ່ແລ້ວ</translation>
 <translation id="7359680654975233185">ບໍ່ສາມາດສົ່ງສັນຍານແຖບໄດ້</translation>
+<translation id="7360162988015675077">ເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງ, ຮວມທັງ Google, ມີໜ້າທີ່ຮັບຜິດຊອບໃນການກຳນົດວິທີທີ່ເຂົາເຈົ້າຕອບສະໜອງຕໍ່ຄຳຮ້ອງຂໍນີ້. ໂດຍຂຶ້ນຢູ່ກັບກົດໝາຍໃນພາກພື້ນຂອງທ່ານ, ເວັບໄຊອາດຕອບສະໜອງໂດຍການຈຳກັດການຂາຍ ແລະ ການແບ່ງປັນຂໍ້ມູນຂອງທ່ານ ຫຼື ການໃຊ້ຂໍ້ມູນຂອງທ່ານສຳລັບໂຄສະນາທີ່ປັບແຕ່ງສ່ວນຕົວ.</translation>
 <translation id="7360257054721917104">ກຳລັງເບິ່ງໂຕະ ແລະ ແມ່ແບບທີ່ບັນທຶກໄວ້. ກົດ tab ເພື່ອນຳທາງ.</translation>
 <translation id="7360333718677093875">ຕົວເລືອກອີໂມຈິ</translation>
 <translation id="7360460316021916328">ເລືອກໜ້າຈໍ</translation>
@@ -8613,6 +8627,7 @@
 <translation id="7651754152638505879">ຢຸດໜ້າວຽກຊົ່ວຄາວແລ້ວ</translation>
 <translation id="7651784568388208829">ຄວາມຕໍ່ເນື່ອງຂອງໜ້າວຽກ Phone Hub</translation>
 <translation id="7652954539215530680">ສ້າງ PIN</translation>
+<translation id="7653354650639364202">{0,plural, =1{ປິດໜ້າຈໍແຍກ}other{ປິດໜ້າຈໍແຍກ (# ໜ້າຈໍ)}}</translation>
 <translation id="7654941827281939388">ບັນ​ຊີ​ນີ້ຖືກ​ນໍາ​ໃຊ້​ຢູ່ໃນຄອມພິວເຕີ​ນີ້ແລ້ວ​.</translation>
 <translation id="7655411746932645568">ເວັບໄຊຕ່າງໆສາມາດຂໍເຊື່ອມຕໍ່ກັບຜອດຊີຣຽວໄດ້</translation>
 <translation id="7657090467145778067">ປະຢັດໜ່ວຍຄວາມຈຳໄດ້ໜ້ອຍ</translation>
@@ -8791,6 +8806,7 @@
 <translation id="777852709704682967">&amp;ເປີດຕົວຈັດການບຸກມາກ</translation>
 <translation id="7779840061887151693">ຈໍສະແດງຜົນ</translation>
 <translation id="7780716468751073938">ການສົນທະນາຂອງທ່ານກັບ Gemini ຫຼື <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />ຂໍ້ມູນໃນ Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> ຂອງທ່ານຈະບໍ່ໄດ້ຮັບການກວດສອບ ຫຼື ນຳໄປໃຊ້ເພື່ອປັບປຸງໂມເດວ AI ສ້າງເນື້ອຫາ. Gemini ເປັນ AI ແລະ ອາດເຮັດຜິດພາດໄດ້. ເນື້ອຫາບາງຢ່າງອາດບໍ່ເໝາະສົມສຳລັບທຸກຄົນ.</translation>
+<translation id="7780992949171378848">ສົ່ງຄຳຮ້ອງຂໍການຖອນຕົວໄປຫາເວັບໄຊກ່ຽວກັບການໃຊ້ຂໍ້ມູນຂອງທ່ານ</translation>
 <translation id="7782102568078991263">ບໍ່ມີການແນະນໍາເພີ່ມເຕີມຈາກ Google</translation>
 <translation id="7782717250816686129">ບັນທຶກຂໍ້ມູນທີ່ໃຊ້ຕະຫຼອດໃນໜ້າຈໍເຂົ້າສູ່ລະບົບ ແລະ ແຊກຂໍ້ມູນເຂົ້າສູ່ລະບົບເຂົ້າໃນເຊດຊັນ.</translation>
 <translation id="7784020347632229094">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບຄີລັດ</translation>
@@ -9098,6 +9114,7 @@
 <translation id="8018192911041116887">ແບ່ງປັນແຖບ</translation>
 <translation id="8018298733481692628">ລຶບໂປຣໄຟລ໌ນີ້ບໍ?</translation>
 <translation id="8018313076035239964">ຄວບຄຸມວ່າເວັບໄຊສາມາດໃຊ້ຂໍ້ມູນໃດແດ່ ແລະ ພວກເຂົາສາມາດສະແດງເນື້ອຫາໃດແດ່ໃຫ້ທ່ານເຫັນໄດ້</translation>
+<translation id="801927266093816478">ຈັດການວິທີທີ່ເວັບໄຊໃຊ້ຄຸກກີ້ ແລະ ຂໍ້ມູນຂອງທ່ານ</translation>
 <translation id="802154636333426148">ການດາວໂຫຼດບໍ່ສຳເລັດ</translation>
 <translation id="8023133589013344428">ຈັດການພາສາໃນການຕັ້ງຄ່າ ChromeOS Flex</translation>
 <translation id="8023801379949507775">ອັບເດດສ່ວນຂະຫຍາຍດຽວນີ້</translation>
@@ -9121,6 +9138,7 @@
 <translation id="8035059678007243127">ໜ້າແຄສຍ້ອນຫຼັງແບບບໍ່ເປີດເຜີຍຕົວຕົນ: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036143516314698610">ສະແດງປຸ່ມກຸ່ມແຖບທີ່ບັນທຶກໄວ້</translation>
 <translation id="8036193484521570992">ຊ່ວຍປັບປຸງການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ</translation>
+<translation id="803639495237134713">ປັບແຕ່ງຄີລັດ</translation>
 <translation id="8036504271468642248">ປະໂຫຍກກ່ອນໜ້າ</translation>
 <translation id="8037117027592400564">ອ່ານຂໍ້ຄວາມທັງໝົດທີ່ໄດ້ເວົ້າໃນລະຫວ່າງການໃຊ້ຄໍາເວົ້າທີ່ຊິງໂຄຣໄນແລ້ວ</translation>
 <translation id="8037357227543935929">ຖາມ (ຄ່າເລີ່ມຕົ້ນ)</translation>
@@ -9222,6 +9240,7 @@
 <translation id="8106114112474206597">ໃຊ້ປຸ່ມ “i” ເພື່ອກົດປຸ່ມເມົ້າ</translation>
 <translation id="810728361871746125">ຄວາມລະອຽດຈໍສະແດງຜົນ</translation>
 <translation id="8108161424633979910">ສະມາຊິກ <ph name="NUM" /> ຄົນ</translation>
+<translation id="8108853197309181986">ທ່ານຢູ່ໃນໜ້າຈໍແຍກ</translation>
 <translation id="8109109153262930486">ຮູບແທນຕົວຕາມຄ່າເລີ່ມຕົ້ນ</translation>
 <translation id="8109991406044913868">ຮູບແບບສີສັນທີ່ສ້າງໂດຍ AI</translation>
 <translation id="8110393529211831722">ການສະໝັກສະມາຊິກແມ່ນຕິດຕັ້ງຢູ່ໃນອຸປະກອນນີ້ເທົ່ານັ້ນ ແລະ ບໍ່ໄດ້ຊິ້ງກັບອຸປະກອນອື່ນໆພາຍໃຕ້ບັນຊີຂອງທ່ານ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
@@ -9627,6 +9646,7 @@
 <translation id="8428634594422941299">ເຂົ້າໃຈແລ້ວ</translation>
 <translation id="84297032718407999">ທ່ານຈະຖືກນຳອອກຈາກລະບົບໃນ <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8429928917752180743">ຕົວເລືອກເພີ່ມເຕີມສຳລັບ <ph name="EXTENSION_NAME" /></translation>
+<translation id="8430438016498244645">ເຊດຊັນທີ່ແຍກ</translation>
 <translation id="8431977087510901105">ຣີເຊັດການຕັ້ງຄ່າເຄີເຊີແລ້ວ</translation>
 <translation id="8434109185104929038">ມຸມອ່ານປຶ້ມ</translation>
 <translation id="8434837876193928924">ລາຍລະອຽດກຸ່ມແຖບ</translation>

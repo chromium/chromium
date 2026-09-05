@@ -187,6 +187,19 @@ Cette règle nécessite une licence <ph name="CHROME_ENTERPRISE_PREMIUM_NAME" />
 <translation id="1110426799149444997">Désactiver la recherche par zone <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1111324374369583989">Ne pas afficher l'écran de configuration de la taille d'affichage lors de la connexion</translation>
 <translation id="1111824532252882775">Activé : les barres de défilement sont sélectionnables par défaut.</translation>
+<translation id="1113523086451291158">Cette règle peut être utilisée pour autoriser les <ph name="CHROME_DEVTOOLS_NAME" /> sur des URL spécifiques.
+
+La disponibilité des <ph name="CHROME_DEVTOOLS_NAME" /> est évaluée au niveau de la cible. Les formats d'URL sont mis en correspondance avec l'URL de chaque cible inspectée (par exemple, le frame principal d'une page, un sous-frame intégré, une extension ou une application Web). Le comportement qui en résulte dépend de la configuration ou non de la règle <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />.
+
+Si cette règle est configurée et que <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> ne l'est pas, l'URL d'une cible doit correspondre à un format de cette liste d'autorisation pour que les <ph name="CHROME_DEVTOOLS_NAME" /> soient autorisés pour cette cible. Si l'URL d'une cible ne correspond pas à cette liste d'autorisation, les <ph name="CHROME_DEVTOOLS_NAME" /> seront bloqués pour cette cible (par exemple, un sous-frame dont l'URL ne figure pas dans la liste d'autorisation ne peut pas être inspecté, mais la page principale reste inspectable si son URL est autorisée). Pour en savoir plus sur le format d'URL, consultez https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Si cette règle et la règle <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> sont toutes deux configurées, cette liste d'autorisation prévaut. Si l'URL d'une cible correspond à un format de cette liste d'autorisation, elle est autorisée, même si elle correspond aussi à un format de la liste de blocage. Si l'URL d'une cible correspond à un format de la liste de blocage (mais pas à un format de la liste d'autorisation), elle est bloquée. Si l'URL d'une cible ne correspond à aucun format des deux listes, la règle <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> est utilisée comme règle de remplacement.
+
+Si cette règle n'est pas configurée, la disponibilité des <ph name="CHROME_DEVTOOLS_NAME" /> est déterminée par les règles <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> et <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Les caractères génériques d'hôte globaux (par exemple, "*" ou "[*]") ne sont pas autorisés. Utilisez la règle <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> pour activer la fonctionnalité à l'échelle mondiale.
+
+Cette règle est limitée à 1 000 entrées.</translation>
 <translation id="1117535567637097036">Les gestionnaires de protocoles définis par cette règle ne sont pas utilisés pour gérer les intents Android.</translation>
 <translation id="1118093128235245168">Autoriser les sites à demander à l'utilisateur d'accorder l'accès à un appareil USB connecté</translation>
 <translation id="111910763555783249">Paramètres de notification</translation>
@@ -7944,6 +7957,17 @@ Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_AUTOMATIC_DOW
 Cette règle a été abandonnée dans la version M124.</translation>
 <translation id="6022948604095165524">Action au démarrage</translation>
 <translation id="602318745029752898">Autoriser la synthèse vocale améliorée via le réseau pour Sélectionner pour écouter</translation>
+<translation id="6023434563562800942">Cette règle peut être utilisée pour bloquer les <ph name="CHROME_DEVTOOLS_NAME" /> sur des URL spécifiques. Pour en savoir plus sur le format d'URL, consultez https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+La disponibilité des <ph name="CHROME_DEVTOOLS_NAME" /> est évaluée au niveau de la cible. Les formats d'URL sont mis en correspondance avec l'URL de chaque cible inspectée (par exemple, le frame principal d'une page, un sous-frame intégré, une extension ou une application Web). Le comportement qui en résulte dépend de la configuration ou non de la règle <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" />.
+
+Si cette règle est configurée et que <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> ne l'est pas, l'URL d'une cible correspondant à un format de cette liste de blocage bloquera les <ph name="CHROME_DEVTOOLS_NAME" /> pour cette cible (par exemple, un sous-frame dont l'URL correspond à cette liste de blocage ne peut pas être inspecté, mais la page principale reste inspectable si son URL ne figure pas sur la liste de blocage). Si l'URL d'une cible ne correspond à aucun format, la disponibilité est déterminée par la règle <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Si cette règle et la règle <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> sont toutes deux configurées, la liste d'autorisation prévaut. Si l'URL d'une cible correspond à un format de la liste d'autorisation, elle est autorisée, même si elle correspond aussi à un format de cette liste de blocage. Si l'URL d'une cible correspond à un format de cette liste de blocage (mais pas à un format de la liste d'autorisation), elle est bloquée. Si l'URL d'une cible ne correspond à aucun format des deux listes, la règle <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> est utilisée comme règle de remplacement.
+
+Si cette règle n'est pas configurée, la disponibilité des <ph name="CHROME_DEVTOOLS_NAME" /> est déterminée par les règles <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> et <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Cette règle est limitée à 1 000 entrées.</translation>
 <translation id="6026722971789064331">Contrôler l'utilisation de l'API File System pour l'accès en écriture</translation>
 <translation id="602728333950205286">URL de recherche instantanée du moteur de recherche par défaut</translation>
 <translation id="603410445099326293">Paramètres pour l'URL de suggestion utilisant POST</translation>

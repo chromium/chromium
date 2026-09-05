@@ -9,6 +9,7 @@
 <translation id="1065672644894730302">Preferințele dvs. nu pot fi citite. Este posibil ca unele funcții să nu fie disponibile, iar modificările aduse preferințelor nu vor fi salvate.</translation>
 <translation id="1083934481477628225">Părintele tău a dezactivat opțiunea Permisiuni pentru site-uri, aplicații și extensii în Chromium</translation>
 <translation id="1090946077924227754">Pentru a căuta o anumită funcție sau extensie Chromium, introdu comanda rapidă respectivă în bara de adrese, urmată de tasta de pe tastatură selectată</translation>
+<translation id="1098493699368672217">Afișează căutarea cu Chromium în bara de sistem și activează comanda rapidă de la tastatură</translation>
 <translation id="1104942323762546749">Chromium vrea să îți exporte parolele. Pentru a permite asta, introdu parola pentru Windows.</translation>
 <translation id="112640046208448578">Identifică lucruri sau locuri și copiază sau tradu text. Când folosești Căutarea de imagini, se trimite la server o captură de ecran a paginii. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium este browserul prestabilit</translation>
@@ -305,6 +306,7 @@
 <translation id="4298125729853015961">Exportă parolele din Chromium</translation>
 <translation id="4304713468139749426">Manager de parole</translation>
 <translation id="4334241893986177674">Caută în această captură de ecran</translation>
+<translation id="4368547723231502008">Caută și pune întrebări de oriunde, chiar dacă Chromium este minimizat</translation>
 <translation id="4384331407722351213">Lansează Chromium când pornește Windows</translation>
 <translation id="4400772909124543403">Nu este disponibilă nicio actualizare</translation>
 <translation id="4407044323746248786">Ieși din Chromium oricum?</translation>
@@ -334,6 +336,7 @@
 <translation id="4613863813562375431">Versiunea sistemului de operare Chromium</translation>
 <translation id="4621240073146040695">Aproape actualizat! Repornește Chromium pentru a finaliza actualizarea.</translation>
 <translation id="4625064703209785397">Accelerează site-urile cu motorul V8 din Chromium, dar reduce ușor rezistența Chromium la atacuri</translation>
+<translation id="4626321472657185181">Deschide Căutarea cu Chromium</translation>
 <translation id="4665829708273112819">Avertisment: Chromium nu poate împiedica extensiile să înregistreze istoricul de navigare. Pentru a dezactiva această extensie în modul incognito, debifează această opțiune.</translation>
 <translation id="4673151026126227699">Dacă trimiți rapoarte privind folosirea Chromium, acestea includ adresele URL pe care le accesezi</translation>
 <translation id="4673710618874938871">Te-ai conectat ca <ph name="USER_NAME" />, utilizatoare / utilizator cu abonament. Deschide meniul contului.</translation>
@@ -375,6 +378,7 @@
 <translation id="5286907366254680517">Detectat</translation>
 <translation id="5289287148052354622">Descarcă browserul Chromium.</translation>
 <translation id="5294316920224716406">Atunci când navighezi în modul incognito, Chromium te va avertiza înainte de a încărca un site folosind o conexiune nesecurizată</translation>
+<translation id="5296581118566748922">Caută cu Chromium</translation>
 <translation id="5313228254328109263">Chromium Updater Internal Service</translation>
 <translation id="5324450571874973775">Folosește-le împreună cu alte funcții Gemini în Chromium</translation>
 <translation id="5346389065299425353">Aprofundează căutarea adăugând mai multe file, fișiere și instrumente</translation>
@@ -385,6 +389,7 @@
 <translation id="5358375970380395591">Vă conectați cu un cont gestionat și îi permiteți administratorului acestuia controlul asupra profilului dvs. Chromium. Datele Chromium, cum ar fi aplicațiile, marcajele, istoricul, parolele și alte setări vor fi asociate definitiv cu <ph name="USER_NAME" />. Veți putea să ștergeți aceste date prin intermediul Tabloului de bord pentru Conturi Google, însă nu veți putea să asociați aceste date cu alt cont. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Cod suplimentar: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">Pentru a beneficia de personalizare, include Chromium în Activitatea de pe web și din aplicații</translation>
+<translation id="5382964351116519680">Deschide căutarea cu Chromium</translation>
 <translation id="5383439451358640070">Află de ce Chromium blochează unele fișiere</translation>
 <translation id="5386450000063123300">Chromium se actualizează (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Permite conectarea la Chromium</translation>
@@ -504,6 +509,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="651535675648445253">Comenzile rapide se deschid în Chromium</translation>
 <translation id="6539122709674868420">Organizația ta închide Chromium dacă nu este folosit timp de <ph name="TIMEOUT_DURATION" />. Datele de navigare au fost șterse. Aici pot fi incluse istoricul, completările automate și descărcările.</translation>
 <translation id="6542839706527980775">Fiecare profil conține propriile informații Chromium, cum ar fi marcaje, istoric, parole și altele</translation>
+<translation id="6556755379298048869">Caută folosind o comandă rapidă de la tastatură.</translation>
 <translation id="6563921047760808519">Află mai multe despre <ph name="BEGIN_LINK" />cum îți păstrează Chromium datele private<ph name="END_LINK" /></translation>
 <translation id="6564039629497156115">Modificările acestei setări se vor aplica după ce Chromium repornește.</translation>
 <translation id="6567032987737689854">Gestionează extensiile dând clic pe Extensii în meniul principal Chromium.</translation>
@@ -538,6 +544,7 @@ Este posibil ca unele funcții să nu fie disponibile. Specificați un director 
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6859580922007887573">Atinge pentru a continua</translation>
 <translation id="6862030660799253820">Caută această imagine cu Căutarea de imagini</translation>
+<translation id="6869568587896659271">Acces ușor la site-uri sub bara de adrese</translation>
 <translation id="6873893289264747459">Chromium a descoperit că <ph name="EXTENSION_NAME" /> conține programe malware</translation>
 <translation id="6877155553248388166">colțul din dreapta jos al zonei de căutare: dreapta <ph name="RIGHT" /> %, jos <ph name="BOTTOM" /> %</translation>
 <translation id="6896758677409633944">Copiază</translation>
@@ -642,6 +649,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7803986347287457849">Împiedică persoanele care au acces la traficul tău de internet să vadă ce site-uri accesezi. Chromium folosește o conexiune securizată pentru a căuta adresa IP a unui site în DNS (Sistemul denumirilor de domenii).</translation>
 <translation id="7810005234485217901">Poți să fixezi Căutarea de imagini pentru acces ușor</translation>
+<translation id="7828527096541974699">Alege la ce date permiți accesul serviciului Chromium</translation>
 <translation id="7828947555739565424">Există deja un profil Chromium asociat acestui cont pe dispozitiv</translation>
 <translation id="7845233973568007926">Mulțumim pentru instalare. Înainte să folosești <ph name="BUNDLE_NAME" /> trebuie să repornești computerul.</translation>
 <translation id="7847673590271334840">Motorul de căutare a fost schimbat din afara browserului Chromium. Pentru a te proteja, Chromium l-a resetat la opțiunea prestabilită inițială. <ph name="LEARN_MORE_LINK" /></translation>
@@ -761,6 +769,7 @@ Chromium nu poate recupera setările.</translation>
             • va șterge cookie-urile și alte date temporare privind site-urile.
             <ph name="LINE_BREAKS" />
             Marcajele, istoricul și parolele salvate nu vor fi afectate.</translation>
+<translation id="8966875421152977384">Afișează comenzile rapide pentru site-uri din Chromium</translation>
 <translation id="897581876605952338">Sigla Chromium Enterprise</translation>
 <translation id="8980139959902937527">Profită de siguranța oferită de Google din mers, cu aplicația Chromium pe <ph name="DEVICE_TYPE" /></translation>
 <translation id="8981150672034878610">Nu se poate porni Chromium, deoarece a apărut o eroare la deschiderea profilului. Repornește Chromium.</translation>
@@ -769,6 +778,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="9018218886431812662">Instalare finalizată</translation>
 <translation id="9019929317751753759">Pentru mai multă siguranță în Chromium, am dezactivat următoarea extensie care nu este inclusă în <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> și care este posibil să fi fost adăugată fără știrea ta.</translation>
 <translation id="9022552996538154597">Conectați-vă la Chromium</translation>
+<translation id="9035791714111278917">Afișează căutarea cu Chromium în bara de meniu Mac și activează comanda rapidă de la tastatură</translation>
 <translation id="904366664621834601">Chromium a blocat descărcarea deoarece fișierul arhivă include alte fișiere care pot ascunde programe malware</translation>
 <translation id="9053882453960391422">Păstrează parolele, marcajele și istoricul perfect sincronizate pe toate dispozitivele. Accesează cu ușurință funcțiile pe care le cunoști și apreciezi actualizând browserul prestabilit la Chromium. Chromium va fi fixat în bara de activități pentru acces rapid.</translation>
 <translation id="9056398481763999048">Folosește cele mai bune instrumente AI de la Google cu aplicația Chromium pe telefon</translation>

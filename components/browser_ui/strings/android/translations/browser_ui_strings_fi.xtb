@@ -7,6 +7,7 @@
 <translation id="1046742265332833834">Sininen teema</translation>
 <translation id="1070329623210597193">Tiedostot, jotka sivusto voi katsella tai muokata</translation>
 <translation id="1074758928858737435">Voit pyytää sivustojen tietokoneversiota</translation>
+<translation id="1089791933924803646">Saa Chrome-ehdotuksia muissa sovelluksissa</translation>
 <translation id="1109482864356262001">Liike- tai valoantureita edellyttävät ominaisuudet eivät toimi</translation>
 <translation id="1126523729897810826">Näillä ehdotuksilla saat Chromesta mahdollisimman paljon irti</translation>
 <translation id="113098737392899175">Siirry sivuilla tekstikohdistimen avulla, kun näppäimistö on yhdistetty</translation>
@@ -453,6 +454,7 @@
 <translation id="5668404140385795438">Ohita sivuston zoomauksen estämispyyntö</translation>
 <translation id="5668843533782548925">Sivustot ovat hitaampia mutta turvallisempia</translation>
 <translation id="5677928146339483299">Estetty</translation>
+<translation id="5679089750838794164">Chrome voi nyt näyttää sinulle ehdotuksia muissa sovelluksissa selausdatasi, esimerkiksi viimeaikaisen selaushistoriasi, perusteella. Data käsitellään turvallisesti laitteellasi. Voit laittaa tämän pois päältä milloin tahansa Chromen asetuksista.</translation>
 <translation id="5689516760719285838">Sijainti</translation>
 <translation id="5690795753582697420">Kamera laitettiin pois päältä Androidin asetuksista</translation>
 <translation id="5700761515355162635">Kolmannen osapuolen evästeet sallittu</translation>
@@ -507,6 +509,7 @@
 <translation id="6085954183010297841">Poistetaanko tiedoston muokkauslupa? <ph name="FILE" /></translation>
 <translation id="6104860901391833523">Kun asetus on päällä, sivustot voivat siirtyä automaattisesti pikkuruututilaan. Kun asetus on pois päältä, sivustot eivät voi siirtyä automaattisesti pikkuruututilaan.</translation>
 <translation id="6120483543004435978">Kun tämä on päällä, sivustot voivat pyytää lupaa nähdä, milloin käytät laitetta aktiivisesti. Kun tämä on pois päältä, sivustot eivät saa tietää, milloin käytät laitetta aktiivisesti.</translation>
+<translation id="612871598708395517">Piilota "Saa Chrome-ehdotuksia muissa sovelluksissa"</translation>
 <translation id="6132075343662013154">Chrome tarjoutuu tallentamaan salasanasi</translation>
 <translation id="615886654739818377">Älä salli sivustojen hallinnoida ikkunoita kaikilla näytöillä</translation>
 <translation id="6165508094623778733">Lisätietoja</translation>

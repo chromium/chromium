@@ -9,6 +9,7 @@
 <translation id="1065672644894730302">Không thể đọc tùy chọn của bạn. Một số tính năng có thể không khả dụng và các thay đổi đối với tùy chọn sẽ không được lưu.</translation>
 <translation id="1083934481477628225">Cha mẹ bạn đã tắt tuỳ chọn "Quyền của các trang web, ứng dụng và tiện ích" đối với Chromium</translation>
 <translation id="1090946077924227754">Để tìm kiếm một tính năng hoặc tiện ích cụ thể của Chromium, hãy nhập lối tắt của tính năng hoặc tiện ích đó vào thanh địa chỉ, sau đó nhấn phím bạn chọn trên bàn phím</translation>
+<translation id="1098493699368672217">Hiện tính năng tìm kiếm bằng Chromium trên khay hệ thống và bật phím tắt</translation>
 <translation id="1104942323762546749">Chromium muốn xuất các mật khẩu của bạn. Hãy nhập mật khẩu Windows để cho phép thực hiện việc này.</translation>
 <translation id="112640046208448578">Xác định đồ vật hoặc địa điểm, sao chép hoặc dịch văn bản. Khi bạn sử dụng tính năng Tìm kiếm hình ảnh, ảnh chụp màn hình trang sẽ được gửi đến máy chủ. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium là trình duyệt mặc định của bạn</translation>
@@ -305,6 +306,7 @@
 <translation id="4298125729853015961">Xuất mật khẩu từ Chromium</translation>
 <translation id="4304713468139749426">Trình quản lý mật khẩu</translation>
 <translation id="4334241893986177674">Tìm kiếm thông tin trên ảnh chụp màn hình này</translation>
+<translation id="4368547723231502008">Tìm kiếm và đặt câu hỏi từ bất cứ đâu, ngay cả khi Chromium đang ở trạng thái thu nhỏ</translation>
 <translation id="4384331407722351213">Khởi chạy Chromium khi Windows khởi động</translation>
 <translation id="4400772909124543403">Hiện không có bản cập nhật nào</translation>
 <translation id="4407044323746248786">Bạn vẫn muốn thoát khỏi Chromium?</translation>
@@ -334,6 +336,7 @@
 <translation id="4613863813562375431">Phiên bản ChromiumOS</translation>
 <translation id="4621240073146040695">Gần được cập nhật! Hãy khởi chạy lại Chromium để hoàn tất cập nhật.</translation>
 <translation id="4625064703209785397">Tăng tốc độ tải trang web bằng công cụ V8 của Chromium nhưng làm giảm khả năng chống lại các cuộc tấn công của Chromium</translation>
+<translation id="4626321472657185181">Mở tính năng Tìm kiếm bằng Chromium</translation>
 <translation id="4665829708273112819">Cảnh báo: Chromium không thể ngăn các tiện ích ghi lại nhật ký duyệt web của bạn. Để tắt tiện ích này trong chế độ Ẩn danh, hãy bỏ chọn tùy chọn này.</translation>
 <translation id="4673151026126227699">Nếu bạn cũng chia sẻ báo cáo sử dụng của Chromium, thì các báo cáo đó sẽ bao gồm cả những URL bạn truy cập</translation>
 <translation id="4673710618874938871">Đã đăng nhập bằng tài khoản <ph name="USER_NAME" />, gói thành viên. Mở trình đơn tài khoản</translation>
@@ -375,6 +378,7 @@
 <translation id="5286907366254680517">Đã phát hiện</translation>
 <translation id="5289287148052354622">Tải ứng dụng Chromium</translation>
 <translation id="5294316920224716406">Khi bạn duyệt web ở Chế độ ẩn danh, Chromium sẽ cảnh báo bạn trước khi tải một trang web bằng kết nối không an toàn</translation>
+<translation id="5296581118566748922">Tìm kiếm bằng Chromium</translation>
 <translation id="5313228254328109263">Chromium Updater Internal Service</translation>
 <translation id="5324450571874973775">Sử dụng các kỹ năng này cùng với các tính năng khác của Gemini trong Chromium</translation>
 <translation id="5346389065299425353">Mở rộng phạm vi tìm kiếm bằng cách thêm nhiều thẻ, tệp và công cụ</translation>
@@ -385,6 +389,7 @@
 <translation id="5358375970380395591">Bạn đang đăng nhập bằng tài khoản được quản lý và cấp cho quản trị viên của tài khoản quyền kiểm soát cấu hình Chromium của bạn. Dữ liệu Chromium của bạn, chẳng hạn như ứng dụng, dấu trang, lịch sử, mật khẩu và các cài đặt khác sẽ vĩnh viễn được liên kết với <ph name="USER_NAME" />. Bạn có thể xóa dữ liệu này thông qua Trang tổng quan của tài khoản Google nhưng không thể liên kết dữ liệu này với tài khoản khác. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Mã bổ sung: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">Để sử dụng chế độ cá nhân hoá, hãy thêm Chromium vào mục Hoạt động trên web và ứng dụng</translation>
+<translation id="5382964351116519680">Mở tính năng tìm kiếm bằng Chromium</translation>
 <translation id="5383439451358640070">Tìm hiểu lý do Chromium chặn một số tệp</translation>
 <translation id="5386450000063123300">Đang cập nhật Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Cho phép đăng nhập vào Chromium</translation>
@@ -504,6 +509,7 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="651535675648445253">Phím tắt mở ra trong Chromium</translation>
 <translation id="6539122709674868420">Tổ chức của bạn sẽ đóng Chromium khi Chromium không được dùng đến trong <ph name="TIMEOUT_DURATION" />. Dữ liệu duyệt web đã bị xoá. Dữ liệu này có thể bao gồm nhật ký, nội dung tự động điền và tệp đã tải xuống.</translation>
 <translation id="6542839706527980775">Mỗi hồ sơ đều có thông tin riêng trên Chromium, chẳng hạn như dấu trang, các trang web đã truy cập, mật khẩu và nhiều thông tin khác</translation>
+<translation id="6556755379298048869">Tìm kiếm bằng phím tắt.</translation>
 <translation id="6563921047760808519">Tìm hiểu thêm về <ph name="BEGIN_LINK" />cách Chromium bảo mật dữ liệu của bạn<ph name="END_LINK" /></translation>
 <translation id="6564039629497156115">Các thay đổi đối với chế độ cài đặt này sẽ được áp dụng sau khi Chromium khởi động lại.</translation>
 <translation id="6567032987737689854">Quản lý các tiện ích bằng cách nhấp vào phần Tiện ích trong trình đơn chính của Chromium.</translation>
@@ -538,6 +544,7 @@ Một số tính năng có thể không khả dụng. Hãy chỉ định thư m�
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6859580922007887573">Nhấn phím Tab để tiếp tục</translation>
 <translation id="6862030660799253820">Sử dụng tính năng Tìm kiếm hình ảnh để tìm kiếm hình ảnh này</translation>
+<translation id="6869568587896659271">Dễ dàng truy cập các trang web bên dưới thanh địa chỉ</translation>
 <translation id="6873893289264747459">Chromium nhận thấy rằng "<ph name="EXTENSION_NAME" />" chứa phần mềm độc hại</translation>
 <translation id="6877155553248388166">góc dưới cùng bên phải của khu vực tìm kiếm: <ph name="RIGHT" />% từ bên phải sang, <ph name="BOTTOM" />% từ dưới cùng lên</translation>
 <translation id="6896758677409633944">Sao chép</translation>
@@ -642,6 +649,7 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">Đảm bảo những người có quyền truy cập vào dữ liệu lưu lượng truy cập Internet của bạn khó biết được các trang web bạn truy cập hơn. Chromium dùng một kết nối bảo mật để tra cứu địa chỉ IP của mỗi trang web trong DNS (Hệ thống tên miền).</translation>
 <translation id="7810005234485217901">Bạn có thể ghim tính năng Tìm kiếm hình ảnh để thuận tiện sử dụng</translation>
+<translation id="7828527096541974699">Chọn nội dung bạn muốn chia sẻ với Chromium</translation>
 <translation id="7828947555739565424">Thiết bị này đã có một hồ sơ trên Chromium sử dụng tài khoản này</translation>
 <translation id="7845233973568007926">Cảm ơn bạn đã cài đặt. Bạn phải khởi động lại máy tính trước khi sử dụng <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7847673590271334840">Công cụ tìm kiếm của bạn đã bị thay đổi từ bên ngoài Chromium. Để bảo vệ bạn, Chromium đã đặt lại công cụ này về chế độ mặc định ban đầu. <ph name="LEARN_MORE_LINK" /></translation>
@@ -761,6 +769,7 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
             • Xoá cookie và dữ liệu trang web tạm thời khác
             <ph name="LINE_BREAKS" />
             Dấu trang, nhật ký và mật khẩu đã lưu sẽ không bị ảnh hưởng.</translation>
+<translation id="8966875421152977384">Hiện lối tắt đến các trang web trên Chromium</translation>
 <translation id="897581876605952338">Biểu tượng Chromium Enterprise</translation>
 <translation id="8980139959902937527">Mang theo các tính năng an toàn của Google mọi lúc, mọi nơi nhờ ứng dụng Chromium trên <ph name="DEVICE_TYPE" /></translation>
 <translation id="8981150672034878610">Không thể khởi động Chromium vì đã xảy ra lỗi khi mở hồ sơ của bạn. Hãy thử khởi động lại Chromium.</translation>
@@ -769,6 +778,7 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="9018218886431812662">Đã cài đặt xong</translation>
 <translation id="9019929317751753759">Để làm cho Chromium an toàn hơn, chúng tôi đã vô hiệu hóa tiện ích không được liệt kê trong <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> và có thể đã được thêm mà bạn không biết.</translation>
 <translation id="9022552996538154597">Đăng nhập vào Chromium</translation>
+<translation id="9035791714111278917">Hiện tính năng tìm kiếm bằng Chromium trên thanh trình đơn của máy Mac và bật phím tắt</translation>
 <translation id="904366664621834601">Chromium đã chặn tệp tải xuống này vì tệp lưu trữ gồm các tệp khác có thể ẩn chứa phần mềm độc hại</translation>
 <translation id="9053882453960391422">Mật khẩu, dấu trang và nhật ký của bạn sẽ được đồng bộ hoá liền mạch trên mọi thiết bị. Hãy cập nhật trình duyệt mặc định thành Chromium để dễ dàng sử dụng các tính năng bạn quen thuộc và yêu thích. Chromium sẽ được ghim vào thanh tác vụ để bạn có thể truy cập nhanh chóng.</translation>
 <translation id="9056398481763999048">Sử dụng các công cụ AI tốt nhất của Google nhờ ứng dụng Chromium trên điện thoại</translation>

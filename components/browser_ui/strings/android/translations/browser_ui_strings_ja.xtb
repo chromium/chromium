@@ -7,6 +7,7 @@
 <translation id="1046742265332833834">ブルーのテーマ</translation>
 <translation id="1070329623210597193">このサイトが表示または編集できるファイル</translation>
 <translation id="1074758928858737435">サイトの PC 版を表示するようリクエストできます</translation>
+<translation id="1089791933924803646">他のアプリで Chrome の提案を表示する</translation>
 <translation id="1109482864356262001">モーション センサーまたは光センサーを必要とする機能は動作しなくなります</translation>
 <translation id="1126523729897810826">Chrome を最大限に活用するには、下記のおすすめの設定を行ってください</translation>
 <translation id="113098737392899175">キーボードが接続されているときにテキスト カーソルを使ってページ内を移動する</translation>
@@ -453,6 +454,7 @@
 <translation id="5668404140385795438">ウェブサイトのズーム防止リクエストを上書きします</translation>
 <translation id="5668843533782548925">サイトは遅くなりますが、安全性は向上します</translation>
 <translation id="5677928146339483299">ブロック</translation>
+<translation id="5679089750838794164">Chrome では、最近の閲覧履歴などの閲覧データに基づいて、他のアプリで提案を表示できるようになりました。このデータはデバイス上で安全に処理されます。この機能は Chrome の設定でいつでもオフにできます。</translation>
 <translation id="5689516760719285838">位置情報</translation>
 <translation id="5690795753582697420">Android の設定でカメラがオフになっています</translation>
 <translation id="5700761515355162635">サードパーティ Cookie が許可されています</translation>
@@ -507,6 +509,7 @@
 <translation id="6085954183010297841"><ph name="FILE" /> のファイル編集権限を削除しますか？</translation>
 <translation id="6104860901391833523">オンにすると、サイトはピクチャー イン ピクチャーを自動的に開始できます。オフにすると、サイトはピクチャー イン ピクチャーを自動的に開始できません。</translation>
 <translation id="6120483543004435978">オンにすると、サイトはデバイスのアクティブ状態の検出を要求できます。オフにすると、サイトはデバイスのアクティブ状態を検出できません。</translation>
+<translation id="612871598708395517">他のアプリで Chrome の提案を非表示にする</translation>
 <translation id="6132075343662013154">Chrome でパスワードの保存を確認するメッセージが表示されます</translation>
 <translation id="615886654739818377">全ディスプレイのウィンドウ管理をサイトに許可しない</translation>
 <translation id="6165508094623778733">詳細</translation>

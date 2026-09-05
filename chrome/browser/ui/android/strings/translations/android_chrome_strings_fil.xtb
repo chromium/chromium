@@ -57,6 +57,7 @@
 <translation id="1181037720776840403">Alisin</translation>
 <translation id="1183189057400844278">Para matiyak na magagamit mo sa anumang oras ang mga password sa iyong Google Account, i-verify na ikaw ito</translation>
 <translation id="1187810343066461819">Mag-delete din ng mga bookmark, history, at higit pa sa kotseng ito</translation>
+<translation id="1191987227666124897">Request sa pag-opt out</translation>
 <translation id="1193729455103054076">Gumamit ng malakas na password?</translation>
 <translation id="11947597112837849">email address</translation>
 <translation id="1197267115302279827">Ilipat ang mga bookmark</translation>
@@ -1341,6 +1342,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="634208815998129842">Task manager</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> iba pa}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> iba pa}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> na iba pa}}</translation>
 <translation id="6345878117466430440">Markahang nabasa na</translation>
+<translation id="63490081267265251">Ang mga site na binibisita mo, kasama ang Google, ay responsable sa pagtukoy kung paano tutugon ang mga ito sa request na ito. Depende sa mga batas sa iyong rehiyon, posibleng sumagot ang mga site sa pamamagitan ng paglilimita sa pagbebenta at pag-share ng data mo o paggamit nito para sa mga naka-personalize na ad. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="6350745006329795504">Pamahalaan ang iyong mga device</translation>
 <translation id="6356893102071098867">Tiyaking tamang account ang pinili mo</translation>
 <translation id="6364438453358674297">Alisin ang suhestyon mula sa history?</translation>
@@ -1733,6 +1735,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> iba pa}one{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> iba pa}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> na iba pa}}</translation>
 <translation id="777637629667389858">Kapag naka-sign in ka, poprotektahan ka nito sa lahat ng serbisyo ng Google.</translation>
 <translation id="7778840695157240389">Bumalik sa ibang pagkakataon para sa mga bagong kuwento</translation>
+<translation id="7780992949171378848">Magpadala ng request sa pag-opt out sa mga site kaugnay ng paggamit ng iyong data</translation>
 <translation id="7791543448312431591">Idagdag</translation>
 <translation id="7792388396321542707">Ihinto ang pagbabahagi</translation>
 <translation id="780287761701992588">Makuha ang iyong mga bookmark, password, at higit pa sa lahat ng device mo</translation>

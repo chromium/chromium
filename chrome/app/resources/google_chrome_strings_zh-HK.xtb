@@ -31,6 +31,7 @@
 <translation id="1197860368385086056">下次在 <ph name="DEVICE_TYPE" /> 上開啟 Chrome 時，系統會提示你啟用價格追蹤通知。</translation>
 <translation id="1203500561924088507">多謝安裝。您必須先重新啟動瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="1278833599417554002">重新啟動以更新 &amp;Chrome</translation>
+<translation id="1289911795790071537">開啟 Chrome 搜尋功能</translation>
 <translation id="1290883685122687410">設定錯誤：<ph name="METAINSTALLER_EXIT_CODE" />。<ph name="WINDOWS_ERROR" /></translation>
 <translation id="1302523850133262269">請稍候，Chrome 正在安裝最新的系統更新。</translation>
 <translation id="1330562121671411446">偵測語言</translation>
@@ -75,6 +76,7 @@
 <translation id="1640672724030957280">正在下載…</translation>
 <translation id="1651617469580841801">使用「Google 智能鏡頭」時，網頁標題、網址和內容 (包括 PDF) 會傳送至 Google。<ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">關於 ChromeOS Flex</translation>
+<translation id="1664094661346151467">即使 Chrome 最小化，你亦能隨時隨地搜尋和提問</translation>
 <translation id="1674870198290878346">在 Chrome 無痕式視窗中開啟連結(&amp;G)</translation>
 <translation id="1682634494516646069">Google Chrome 無法讀取及寫入數據目錄：
 
@@ -112,6 +114,7 @@
 <translation id="2034233344106846793">Chrome 會盡可能自動將不安全的連線升級為 HTTPS</translation>
 <translation id="2039417478970545937">「設定」。</translation>
 <translation id="2040220733769034247">使用手機掃瞄二維碼，以下載 Chrome 並登入 Google 帳戶。</translation>
+<translation id="2044908892530830113">在 Mac 選單列顯示 Chrome 的搜尋功能，並啟用鍵盤快速鍵</translation>
 <translation id="2050189601866423230">你可固定「Google 搜尋 AI 模式」以在瀏覽時提問</translation>
 <translation id="2091012649849228750">如要取得日後的 Google Chrome 更新，您需要使用 Windows 10 或以上版本。此電腦目前版本為 Windows 8。</translation>
 <translation id="2094648590148273905">ChromeOS Flex 條款</translation>
@@ -139,6 +142,7 @@
 <translation id="2284380654876659752">瀏覽網站時，Chrome 會透過私隱伺服器隱藏你的 IP 位址，再將經編碼隱匿的部分網址傳送給「<ph name="BEGIN_LINK" />Google 安全瀏覽<ph name="END_LINK" />」。如果網站有可疑行為，系統亦會傳送整個網址和部分網頁內容。</translation>
 <translation id="2290014774651636340">缺少 Google API 金鑰，系統將停用 Google Chrome 的部分功能。</translation>
 <translation id="2290095356545025170">確定要解除安裝 Google Chrome 嗎？</translation>
+<translation id="2295218613066132598">顯示 Chrome 網站捷徑</translation>
 <translation id="2301513536169703857">如要在你的所有裝置上取用密碼、書籤和其他資料，請登入 Chrome</translation>
 <translation id="2307973900865360088">保留在 Dock</translation>
 <translation id="2309047409763057870">這是以並行形式安裝的第二個 Google Chrome，因此無法設定為您的預設瀏覽器。</translation>
@@ -350,6 +354,7 @@
 <translation id="436060642166082913">此檔案可能會損害你的個人和社交網絡帳戶，因此 Chrome 已禁止下載</translation>
 <translation id="4367027658822022112">你可以固定「Google 智能鏡頭」方便存取；㩒一下側面板頂部嘅「固定」按鈕</translation>
 <translation id="4372389195695053189">Chrome 現在是你的預設瀏覽器</translation>
+<translation id="4381814455597163081">將使用情況統計和當機報告傳送給 Google，有助 Chrome 更完善。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="4389991535395284064">使用無痕模式瀏覽時，Chrome 會在使用不安全的連線載入網站前顯示警告</translation>
 <translation id="4400772909124543403">沒有可用的更新</translation>
 <translation id="4427306783828095590">強化保護功能可進一步封鎖仿冒詐騙和惡意軟件</translation>
@@ -525,6 +530,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6180522807229584611">此分頁正在使用額外的資源。為提升效能，請讓 Chrome 將其設定為閒置分頁。</translation>
 <translation id="6182736845697986886">由於更新伺服器發生內部錯誤，因此無法安裝。</translation>
 <translation id="6192058120268468905">你在 Chrome 的帳戶</translation>
+<translation id="6195202018542972563">在系統列顯示 Chrome 的搜尋功能，並啟用鍵盤快速鍵</translation>
 <translation id="6235018212288296708">允許 mDNS 流量的 Google Chrome 輸入規則。</translation>
 <translation id="624230925347970731">Chrome 即將關閉</translation>
 <translation id="6247557882553405851">Google 密碼管理工具</translation>
@@ -566,8 +572,10 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="652948702951888897">Chrome 記錄</translation>
 <translation id="6532945796722480006">開啟 Chrome Canary 版 Gemini</translation>
 <translation id="6539493053177300926">即使 Chrome 最小化，你亦能輕鬆在裝置上使用 Chrome 版 Gemini。</translation>
+<translation id="6556755379298048869">使用鍵盤快速鍵搜尋。</translation>
 <translation id="6585124893636629274">關閉 Chrome 版 Gemini</translation>
 <translation id="659498884637196217">前往此裝置的「Google 密碼管理工具」進行更新</translation>
+<translation id="6612152958212564387">你的使用情況統計和當機報告不會傳送給 Google。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="6613949864921837107">將 Chrome 設定為預設瀏覽器，在所有裝置上同步更新密碼、書籤和記錄。</translation>
 <translation id="6631524303639368205">開啟上次瀏覽的內容：Chrome 已還原上個工作階段的分頁。如要關閉此功能，請前往</translation>
 <translation id="6632473616050862500">ChromeOS Flex 的開發全賴其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟件<ph name="END_LINK_CROS_OSS" />協助才得以面世。</translation>
@@ -592,7 +600,9 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="683440813066116847">允許 mDNS 流量的 Google Chrome Canary 輸入規則。</translation>
 <translation id="684888714667046800">無法連線至互聯網。如果你使用防火牆，請確保已將 <ph name="PRODUCT_EXE_NAME" /> 加入許可名單。</translation>
 <translation id="6859580922007887573">按 Tab 鍵繼續</translation>
+<translation id="6869568587896659271">在網址列下方輕鬆存取網站</translation>
 <translation id="6877155553248388166">搜尋區域嘅右下角：距右側 <ph name="RIGHT" />%，距底部 <ph name="BOTTOM" />%</translation>
+<translation id="6879791154455204815">開啟「Chrome 搜尋」功能</translation>
 <translation id="6881299373831449287">正在更新 Chrome</translation>
 <translation id="6885412569789873916">Chrome 測試版應用程式</translation>
 <translation id="6893363893008038481">從 Chrome 移除帳戶</translation>
@@ -651,6 +661,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="7449333426561673451">{COUNT,plural, =1{根據機構規定，Chrome 會在閒置 1 分鐘後自動關閉。}other{根據機構規定，Chrome 會在閒置 # 分鐘後自動關閉。}}</translation>
 <translation id="7450541714075000668">已複製文字</translation>
 <translation id="7452987490177144319">{COUNT,plural, =1{根據機構規定，Chrome 會在閒置 1 分鐘後自動刪除瀏覽資料。當中可能包括記錄、自動填入資料和下載檔案。這些分頁仍會保持開啟。}other{根據機構規定，Chrome 會在閒置 # 分鐘後自動刪除瀏覽資料。當中可能包括記錄、自動填入資料和下載檔案。這些分頁仍會保持開啟。}}</translation>
+<translation id="7466577301922356468">自動傳送這些資料給 Google 有助 Chrome 更完善。你可隨時變更此設定。</translation>
 <translation id="7477130805345743099">Chrome 將會在使用不安全的連線載入任何網站前顯示警告</translation>
 <translation id="7481213027396403996">取得 Chrome 最強大的安全防護</translation>
 <translation id="749228101751499733">登入後，你可以在 Chrome 使用 Google 帳戶儲存的密碼和其他資料。按 <ph name="SHORTCUT" /> 可以更改 Google 服務設定。</translation>
@@ -684,6 +695,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="7736869414036750079">你的機構要求你登入 Chrome</translation>
 <translation id="7747138024166251722">安裝程式無法建立暫時目錄，請檢查可用磁碟空間與權限，以順利安裝軟件。</translation>
 <translation id="7748969056734910029">由於最近沒有瀏覽記錄，Chrome 已移除<ph name="PERMISSION_1" />和<ph name="PERMISSION_2" />權限。</translation>
+<translation id="7759944311003584891">使用 Chrome 搜尋</translation>
 <translation id="7761834446675418963">按一下您的名稱即可開啟 Chrome 並開始瀏覽。</translation>
 <translation id="7777080907402804672">如果圖片並無有用的說明，Chrome 會嘗試為您提供說明。因此，圖片將傳送至 Google 以建立說明。您可以隨時在設定中關閉此功能。</translation>
 <translation id="778331955594035129">Chrome 需要位置存取權，才能執行此網站要求的功能</translation>
@@ -800,6 +812,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8747073452963259673">搜尋區域嘅左下角：距左側 <ph name="LEFT" />%，距底部 <ph name="BOTTOM" />%</translation>
 <translation id="8748735421235723888">Chrome 會從閒置分頁釋出記憶體，為使用中的分頁和其他應用程式提供更多電腦資源，同時保持 Chrome 的運作速度。閒置分頁會在你使用時自動恢復為「使用中」狀態。<ph name="BEGIN_LINK" />進一步瞭解記憶體節省模式<ph name="END_LINK" /></translation>
 <translation id="8765470054473112089">在網址列或搜尋框中輸入內容時，Chrome 會將輸入的內容傳送至預設搜尋引擎，以便取得更切合需求的建議。此功能不會在無痕模式下啟用。</translation>
+<translation id="8771516687880083607">選擇要與 Chrome 分享的內容</translation>
 <translation id="8781673607513845160">如要使用攝錄機，請在<ph name="BEGIN_LINK" />系統設定<ph name="END_LINK" />中向 Chrome 授予存取權</translation>
 <translation id="878572486461146056">安裝錯誤：網絡管理員已套用防止安裝的群組政策：<ph name="INSTALL_ERROR" /></translation>
 <translation id="8796919761992612392">自訂 Chrome(&amp;U)</translation>

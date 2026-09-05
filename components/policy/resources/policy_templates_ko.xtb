@@ -188,6 +188,19 @@ DLP 관련 엔터프라이즈 정책 및 강제 설치된 확장 프로그램을
 <translation id="1110426799149444997"><ph name="GOOGLE_LENS_PRODUCT_NAME" /> 영역 검색을 사용 중지합니다.</translation>
 <translation id="1111324374369583989">로그인 시 디스플레이 크기 설정 화면 표시하지 않음</translation>
 <translation id="1111824532252882775">사용 설정됨: 기본적으로 스크롤러가 포커스 가능합니다.</translation>
+<translation id="1113523086451291158">이 정책을 사용하여 특정 URL에서 <ph name="CHROME_DEVTOOLS_NAME" />를 허용할 수 있습니다.
+
+<ph name="CHROME_DEVTOOLS_NAME" /> 사용 가능 여부는 타겟 수준에서 평가됩니다. URL 패턴이 검사 중인 각 타겟(예: 페이지의 기본 프레임, 삽입된 서브프레임, 확장 프로그램, 웹 애플리케이션)의 URL과 일치합니다. <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 정책도 설정되어 있는지에 따라 결과 동작이 달라집니다.
+
+이 정책이 설정되어 있고 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 정책은 설정되어 있지 않은 경우, 타겟에 대해 <ph name="CHROME_DEVTOOLS_NAME" />가 허용되려면 해당 타겟의 URL이 해당 허용 목록의 패턴과 일치해야 합니다. 타겟의 URL이 해당 허용 목록과 일치하지 않으면 해당 타겟에 대해 <ph name="CHROME_DEVTOOLS_NAME" />가 차단됩니다. 예를 들어 URL이 허용 목록에 없는 서브프레임은 검사할 수 없지만, URL이 허용 목록에 있는 경우 기본 페이지는 계속 검사할 수 있습니다. URL 형식에 대한 정보는 https://support.google.com/chrome/a?p=url_blocklist_filter_format에서 확인하세요.
+
+이 정책과 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 정책이 모두 설정된 경우 이 허용 목록이 우선 적용됩니다. 타겟의 URL이 해당 허용 목록의 패턴과 일치하는 경우, 차단 목록의 패턴과도 일치하더라도 해당 URL은 허용됩니다. 타겟의 URL이 차단 목록의 패턴과 일치하지만 허용 목록의 패턴과는 일치하지 않을 경우 차단됩니다. 타겟의 URL이 어느 쪽과도 일치하지 않으면 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 정책이 대체 정책으로 사용됩니다.
+
+이 정책을 설정하지 않은 경우, <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 및 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 정책에 따라 <ph name="CHROME_DEVTOOLS_NAME" />의 사용 가능 여부가 결정됩니다.
+
+포괄적 호스트 와일드 카드(즉, '*' 또는 '[*]')는 허용되지 않습니다. 전체적으로 기능을 사용 설정하려면 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 정책을 사용하세요.
+
+정책의 항목은 1,000개로 제한됩니다.</translation>
 <translation id="1117535567637097036">Android 인텐트를 처리할 때 이 정책을 통해 설정된 프로토콜 핸들러는 사용되지 않습니다.</translation>
 <translation id="1118093128235245168">사이트에서 사용자에게 연결된 USB 기기의 액세스 권한을 부여할지 묻도록 허용합니다.</translation>
 <translation id="111910763555783249">알림 설정</translation>
@@ -8066,6 +8079,17 @@ URL이 <ph name="AUTOMATIC_DOWNLOADS_ALLOWED_FOR_URLS_POLICY_NAME" /> 및 <ph na
 이 정책은 M124부터 지원이 중단됩니다.</translation>
 <translation id="6022948604095165524">시작 시 동작</translation>
 <translation id="602318745029752898">텍스트 읽어주기의 향상된 네트워크 텍스트 음성 변환 음성 허용</translation>
+<translation id="6023434563562800942">이 정책을 사용하여 특정 URL에서 <ph name="CHROME_DEVTOOLS_NAME" />를 차단할 수 있습니다. URL 형식에 대한 정보는 https://support.google.com/chrome/a?p=url_blocklist_filter_format에서 확인하세요.
+
+<ph name="CHROME_DEVTOOLS_NAME" /> 사용 가능 여부는 타겟 수준에서 평가됩니다. URL 패턴이 검사 중인 각 타겟(예: 페이지의 기본 프레임, 삽입된 서브프레임, 확장 프로그램, 웹 애플리케이션)의 URL과 일치합니다. <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> 정책도 설정되어 있는지에 따라 결과 동작이 달라집니다.
+
+이 정책이 설정되어 있고 <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> 정책은 설정되어 있지 않은 경우 이 차단 목록의 패턴과 일치하는 타겟의 URL은 해당 타겟에 대해 <ph name="CHROME_DEVTOOLS_NAME" />를 차단합니다. 예를 들어 URL이 해당 차단 목록과 일치하는 서브프레임은 검사할 수 없지만, URL이 차단 목록에 포함되지 않은 경우 기본 페이지는 계속 검사할 수 있습니다. 타겟의 URL이 어떤 패턴과도 일치하지 않으면 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 정책에 따라 사용 가능 여부가 결정됩니다.
+
+이 정책과 <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> 정책이 모두 설정된 경우 해당 허용 목록이 우선 적용됩니다. 타겟의 URL이 허용 목록의 패턴과 일치하는 경우, 이 차단 목록의 패턴과도 일치하더라도 해당 URL은 허용됩니다. 타겟의 URL이 해당 차단 목록의 패턴과 일치하지만 허용 목록의 패턴과는 일치하지 않을 경우 차단됩니다. 타겟의 URL이 어느 쪽과도 일치하지 않으면 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 정책이 대체 정책으로 사용됩니다.
+
+이 정책을 설정하지 않은 경우, <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> 및 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 정책에 따라 <ph name="CHROME_DEVTOOLS_NAME" />의 사용 가능 여부가 결정됩니다.
+
+정책의 항목은 1,000개로 제한됩니다.</translation>
 <translation id="6026722971789064331">쓰기 관련 File System API 사용 제어</translation>
 <translation id="602728333950205286">기본 검색 공급자 순간 검색 URL</translation>
 <translation id="603410445099326293">POST를 사용하는 추천 URL용 매개변수</translation>

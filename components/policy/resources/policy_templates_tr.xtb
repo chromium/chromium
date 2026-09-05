@@ -196,6 +196,19 @@ Bu politikanın geçerli olması için "<ph name="CHROME_ENTERPRISE_PREMIUM_NAME
 <translation id="1110426799149444997"><ph name="GOOGLE_LENS_PRODUCT_NAME" /> bölge aramayı devre dışı bırakın.</translation>
 <translation id="1111324374369583989">Oturum açma sırasında görüntü boyutu ayar ekranını gösterme</translation>
 <translation id="1111824532252882775">Etkin: Kaydırıcılar varsayılan olarak odaklanılabilir özelliğe sahip olur.</translation>
+<translation id="1113523086451291158">Bu politika, belirli URL'lerde <ph name="CHROME_DEVTOOLS_NAME" /> kullanmaya izin vermek için kullanılabilir.
+
+<ph name="CHROME_DEVTOOLS_NAME" /> kullanılabilirliği, hedef düzeyinde değerlendirilir. URL kalıpları, incelenen her hedefin (ör. bir sayfanın ana çerçevesi, yerleştirilmiş alt çerçeve, uzantı veya web uygulaması) URL'siyle eşleştirilir. Sonuçtaki davranış, <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> politikasının da ayarlanıp ayarlanmadığına bağlıdır.
+
+Bu politika ayarlanır ve <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> ayarlanmazsa bir hedefte <ph name="CHROME_DEVTOOLS_NAME" /> kullanımına izin verilebilmesi için bu hedefin URL'sinin bu izin verilenler listesindeki bir kalıpla eşleşmesi gerekir. Bir hedefin URL'si bu izin verilenler listesiyle eşleşmezse <ph name="CHROME_DEVTOOLS_NAME" /> bu hedef için engellenir (örneğin, URL'si izin verilenler listesinde olmayan bir alt çerçeve incelenemez ancak URL'si izin verilenler listesinde olan ana sayfa incelenebilir). URL biçimi hakkında bilgi için https://support.google.com/chrome/a?p=url_blocklist_filter_format adresine bakın.
+
+Hem bu politika hem de <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> politikası ayarlanırsa bu izin verilenler listesi öncelikli olur. Bir hedefin URL'si bu izin verilenler listesindeki bir kalıpla eşleşirse engellenenler listesindeki bir kalıpla eşleşse bile URL'ye izin verilir. Bir hedefin URL'si, engellenenler listesindeki bir kalıpla eşleşir ancak izin verilenler listesindeki bir kalıpla eşleşmezse bu hedef engellenir. Bir hedefin URL'si hiçbiriyle eşleşmezse yedek olarak <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> politikası kullanılır.
+
+Bu politika ayarlanmazsa <ph name="CHROME_DEVTOOLS_NAME" /> kullanılabilirliği <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> ve <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> politikalarına göre belirlenir.
+
+Geniş kapsamlı ana makine joker karakterlerine (ör. "*" veya "[*]") izin verilmez. Özelliği dünya genelinde etkinleştirmek için <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> politikasını kullanın.
+
+Bu politika 1.000 giriş ile sınırlıdır.</translation>
 <translation id="1117535567637097036">Bu politika aracılığıyla ayarlanan protokol işleyicileri, Android amaçları işlenirken kullanılmaz.</translation>
 <translation id="1118093128235245168">Sitelerin, bağlı bir USB cihazına erişmek için kullanıcıdan izin istemesine izin ver</translation>
 <translation id="111910763555783249">Bildirim ayarları</translation>
@@ -8074,6 +8087,17 @@ kısayolları yapılandırmasına olanak tanır.</translation>
 Bu politikanın desteği, M124 sürümüyle birlikte sonlandırılmıştır.</translation>
 <translation id="6022948604095165524">Başlangıçtaki işlem</translation>
 <translation id="602318745029752898">Seç ve Dinle özelliğinde gelişmiş ağ metin okuma seslerine izin ver</translation>
+<translation id="6023434563562800942">Bu politika, belirli URL'lerde <ph name="CHROME_DEVTOOLS_NAME" /> kullanımını engellemek için kullanılabilir. URL biçimi hakkında bilgi için https://support.google.com/chrome/a?p=url_blocklist_filter_format adresine bakın.
+
+<ph name="CHROME_DEVTOOLS_NAME" /> kullanılabilirliği, hedef düzeyinde değerlendirilir. URL kalıpları, incelenen her hedefin (ör. bir sayfanın ana çerçevesi, yerleştirilmiş alt çerçeve, uzantı veya web uygulaması) URL'siyle eşleştirilir. Sonuçtaki davranış, <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> politikasının da ayarlanıp ayarlanmadığına bağlıdır.
+
+Bu politika ayarlanır ve <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> ayarlanmazsa bu engellenenler listesindeki kalıpla eşleşen bir hedefin URL'si, ilgili hedef için <ph name="CHROME_DEVTOOLS_NAME" /> kullanımını engeller (örneğin, URL'si bu engellenenler listesiyle eşleşen bir alt çerçeve incelenemez ancak URL'si engellenenler listesinde değilse ana sayfa incelenebilir). Bir hedefin URL'si hiçbir kalıpla eşleşmiyorsa kullanılabilirlik, <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> politikasına göre belirlenir.
+
+Hem bu politika hem de <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> politikası ayarlanırsa bu izin verilenler listesi öncelikli olur. Bir hedefin URL'si izin verilenler listesindeki kalıpla eşleşirse bu engellenenler listesindeki bir kalıpla eşleşse bile URL'ye izin verilir. Bir hedefin URL'si, bu engellenenler listesindeki bir kalıpla eşleşir ancak izin verilenler listesindeki bir kalıpla bu hedef eşleşmezse engellenir. Bir hedefin URL'si hiçbiriyle eşleşmezse yedek olarak <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> politikası kullanılır.
+
+Bu politika ayarlanmazsa <ph name="CHROME_DEVTOOLS_NAME" /> kullanılabilirliği <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> ve <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> politikalarına göre belirlenir.
+
+Bu politika 1.000 giriş ile sınırlıdır.</translation>
 <translation id="6026722971789064331">Yazma için File System API'nin kullanımını kontrol et</translation>
 <translation id="602728333950205286">Varsayılan arama sağlayıcı anında arama URL'si</translation>
 <translation id="603410445099326293">POST kullanan öneri URL'si parametreleri</translation>
@@ -8941,7 +8965,7 @@ Politika, boş bir dizeye ayarlanır veya ayarlanmadan bırakılırsa hiçbir be
 <translation id="6518286606938091609">Güvenli olmayan SwiftShader WebGL yedeğini devre dışı bırak</translation>
 <translation id="6520053715392444458">Bu politika etkinleştirildiğinde veya ayarlanmadan bırakıldığında <ph name="PRODUCT_NAME" />, Güvenli Tarama'yı etkinleştirmiş kullanıcıların gerçekleştirdiği şüpheli indirme işlemlerini, kötü amaçlı yazılım açısından taraması için Google'a gönderebilir veya şifrelenmiş arşivler için kullanıcıların şifre girmesini isteyebilir.
 Bu politika devre dışı bırakıldığında tarama yapılmaz.
-Bu politika, Chrome Enterprise Connectors tarafından yapılandırılan indirme içeriği analizini etkilemez.</translation>
+Bu politika, Chrome Enterprise Connectors tarafından yapılandırılan indirilen içerik analizini etkilemez.</translation>
 <translation id="6520802717075138474">İlk çalıştırmada arama motorlarını varsayılan tarayıcıdan içe aktar</translation>
 <translation id="6521971538031711337">Yönetilen kullanıcının, cihazın ana makine adını yapılandırmasını engelle</translation>
 <translation id="6523079496775454310">Yönetilmeyen cihazlarda, yönetilen kullanıcılar için cihaz sinyali izni verilmesini etkinleştir</translation>

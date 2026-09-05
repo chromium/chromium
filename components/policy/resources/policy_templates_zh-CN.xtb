@@ -187,6 +187,19 @@
 <translation id="1110426799149444997">停用 <ph name="GOOGLE_LENS_PRODUCT_NAME" />区域搜索。</translation>
 <translation id="1111324374369583989">不在用户登录期间显示“显示大小”设置界面</translation>
 <translation id="1111824532252882775">已启用：滚动条默认可聚焦。</translation>
+<translation id="1113523086451291158">可使用此政策允许在特定网址上使用 <ph name="CHROME_DEVTOOLS_NAME" />。
+
+系统会在目标层面评估 <ph name="CHROME_DEVTOOLS_NAME" />的可用性。系统会将网址格式与正在接受检查的每个目标（例如页面的主框架、嵌入式子框架、扩展程序或 Web 应用）的网址进行比对。最终行为取决于是否也设置了 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 政策。
+
+如果已设置此政策，但未设置 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />，则只有当目标的网址与此许可清单上的格式匹配时，才允许对该目标使用 <ph name="CHROME_DEVTOOLS_NAME" />。如果目标的网址与此许可清单不匹配，系统将对该目标屏蔽 <ph name="CHROME_DEVTOOLS_NAME" />（例如，无法检查网址不在许可清单中的子框架，但如果主页面的网址在许可清单中，则仍可检查主页面）。如需了解网址格式，请参阅 https://support.google.com/chrome/a?p=url_blocklist_filter_format。
+
+如果同时设置了此政策和 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 政策，则以许可清单为准。如果目标的网址与此许可清单上的格式匹配，那么即使它同时匹配屏蔽清单中的格式，也仍会被允许。如果目标的网址与屏蔽清单（而非许可清单）上的格式匹配，则该网址会被屏蔽。如果目标的网址与两者都不匹配，则 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 政策将用作后备政策。
+
+如果未设置此政策，则将由 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 和 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 政策决定 <ph name="CHROME_DEVTOOLS_NAME" />的可用性。
+
+不允许使用全主机通配符（亦即“*”或“[*]”），请使用 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 政策在全局范围内启用该功能。
+
+此政策最多只能包含 1,000 个条目。</translation>
 <translation id="1117535567637097036">通过此政策设置的协议处理程序不会被用于处理 Android intent。</translation>
 <translation id="1118093128235245168">允许网站请求用户授权其访问所连接的 USB 设备</translation>
 <translation id="111910763555783249">通知设置</translation>
@@ -7872,6 +7885,17 @@ IP 地址空间覆盖有两种形式：
 自 M124 起，此政策已被弃用。</translation>
 <translation id="6022948604095165524">启动时的操作</translation>
 <translation id="602318745029752898">允许在“随选朗读”功能中使用增强型网络文字转语音的语音</translation>
+<translation id="6023434563562800942">此政策可用于在特定网址上屏蔽 <ph name="CHROME_DEVTOOLS_NAME" />。如需了解网址格式，请参阅 https://support.google.com/chrome/a?p=url_blocklist_filter_format。
+
+系统会在目标层面评估 <ph name="CHROME_DEVTOOLS_NAME" />的可用性。系统会将网址格式与正在接受检查的每个目标（例如页面的主框架、嵌入式子框架、扩展程序或 Web 应用）的网址进行比对。最终行为取决于是否也设置了 <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> 政策。
+
+如果已设置此政策，但未设置 <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" />，则当目标的网址与此屏蔽清单中的格式匹配时，将对该目标屏蔽 <ph name="CHROME_DEVTOOLS_NAME" />（例如，无法检查网址与此屏蔽清单匹配的子框架，但如果主页面的网址未列入屏蔽清单，则仍可检查主页面）。如果目标的网址与任何格式都不匹配，则将由 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 政策决定可用性。
+
+如果同时设置了此政策和 <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> 政策，则以许可清单为准。如果目标的网址与许可清单上的格式匹配，那么即使它同时匹配屏蔽清单中的格式，也仍会被允许。如果某个目标的网址与此屏蔽清单（而非许可清单）上的格式匹配，则该网址会被屏蔽。如果目标的网址与两者都不匹配，则 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 政策将用作后备政策。
+
+如果未设置此政策，则将由 <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> 和 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 政策决定 <ph name="CHROME_DEVTOOLS_NAME" />的可用性。
+
+此政策最多只能包含 1,000 个条目。</translation>
 <translation id="6026722971789064331">控制 File System API 在写入方面的使用</translation>
 <translation id="602728333950205286">默认搜索服务提供商的即搜即得网址</translation>
 <translation id="603410445099326293">在使用 POST 的建议网址中所需的参数</translation>

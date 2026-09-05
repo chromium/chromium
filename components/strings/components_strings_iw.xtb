@@ -1457,6 +1457,7 @@
 <translation id="3495081129428749620">חיפוש בדף
 <ph name="PAGE_TITLE" /></translation>
 <translation id="3495818359064790343">שכר</translation>
+<translation id="3496531230994554300">‏ההודעה של Wallet נפתחה בגובה מלא.</translation>
 <translation id="3497627066518778351">הצגת רשימה של הנתונים מאתרים ששמורים במכשיר בחלון חדש</translation>
 <translation id="3498215018399854026">לא הצלחנו ליצור קשר עם ההורה שלך. נסה שוב מאוחר יותר.</translation>
 <translation id="350069200438440499">שם הקובץ:</translation>
@@ -2674,6 +2675,7 @@ Del</translation>
 <translation id="5499229993630251170">להמשיך את השרשור הזה?</translation>
 <translation id="5506286895894263601">אין קיצורי דרך תקינים ברשימה.</translation>
 <translation id="5507756662695126555">אי התכחשות</translation>
+<translation id="5508515366054931524">ההודעה לאימות כתובת האימייל נפתחה בגובה מלא</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">סימניות מנוהלות</translation>
 <translation id="5510766032865166053">ייתכן שהוא הועבר או נמחק.</translation>
@@ -3456,6 +3458,7 @@ Del</translation>
 <translation id="6860888819347870819">קבלת בקשות להפעלת תמונה בתוך תמונה</translation>
 <translation id="6864189428899665393">‏267x389 מ"מ</translation>
 <translation id="6865412394715372076">אי אפשר לאמת כרגע את הכרטיס</translation>
+<translation id="6871073333584947219">‏ההודעה של Wallet נסגרה.</translation>
 <translation id="6871813064737840684">היסטוריית המחירים של האפשרות הזו באינטרנט</translation>
 <translation id="6873456682041376666">המגש העליון</translation>
 <translation id="6874604403660855544">&amp;ביצוע מחדש של הוספה</translation>
@@ -3976,6 +3979,7 @@ Del</translation>
 <translation id="7705085181312584869">עזרה בכתיבה</translation>
 <translation id="7705992072972338699">Optical Disc (High-Gloss)</translation>
 <translation id="7706689436519265630">‏קבצים שמעתיקים או שמעבירים יישלחו אל Google Cloud או אל צדדים שלישיים לצורך ניתוח. לדוגמה, יכול להיות שהקבצים יעברו סריקה כדי לאתר מידע אישי רגיש או תוכנות זדוניות, ויישמרו בהתאם למדיניות החברה.</translation>
+<translation id="7709934467582922028">ההנחיה לאימות כתובת האימייל נסגרה</translation>
 <translation id="7714351089363296478">בדיוק ביקרת כאן</translation>
 <translation id="7714404809393719981">Photo (Semi-Gloss)</translation>
 <translation id="7714464543167945231">אישור</translation>
@@ -4873,6 +4877,7 @@ Del</translation>
 <translation id="988159990683914416">גרסת מפתחים</translation>
 <translation id="989988560359834682">עריכת כתובת</translation>
 <translation id="990164307229195234"><ph name="DEVICE_NAME" /> ‏(<ph name="DISAMBIGUATION_LABEL" />)</translation>
+<translation id="990812705189376036">הוכחה שזהו עץ מרקל</translation>
 <translation id="992110854164447044">כרטיס וירטואלי מסתיר את הכרטיס בפועל כדי להגן עליך מפני תרמיות פוטנציאליות. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>
 <translation id="992256792861109788">ורוד</translation>

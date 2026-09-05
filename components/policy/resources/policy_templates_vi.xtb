@@ -187,6 +187,19 @@ Chính sách này chỉ có hiệu lực khi người dùng có giấy phép "<p
 <translation id="1110426799149444997">Tắt tính năng tìm kiếm khu vực của <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1111324374369583989">Không hiển thị màn hình cài đặt kích thước trên màn hình trong khi đăng nhập</translation>
 <translation id="1111824532252882775">Bật: Theo mặc định, trình cuộn có thể lấy tiêu điểm.</translation>
+<translation id="1113523086451291158">Bạn có thể dùng chính sách này để cho phép <ph name="CHROME_DEVTOOLS_NAME" /> trên các URL cụ thể.
+
+Khả năng sử dụng <ph name="CHROME_DEVTOOLS_NAME" /> sẽ được đánh giá ở cấp mục tiêu. Các mẫu URL sẽ được so khớp với URL của từng mục tiêu đang được kiểm tra (chẳng hạn như khung chính của một trang, khung phụ được nhúng, tiện ích hoặc ứng dụng web). Hành vi kết quả phụ thuộc vào việc bạn có đặt cả chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> hay không.
+
+Nếu bạn đặt chính sách này nhưng không đặt <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />, URL của mục tiêu phải khớp với một mẫu trong danh sách cho phép thì <ph name="CHROME_DEVTOOLS_NAME" /> mới được cho phép đối với mục tiêu đó. Nếu URL của một mục tiêu không khớp với danh sách cho phép thì <ph name="CHROME_DEVTOOLS_NAME" /> sẽ bị chặn đối với mục tiêu đó (ví dụ: không thể kiểm tra một khung phụ có URL không nằm trong danh sách cho phép, nhưng vẫn có thể kiểm tra trang chính nếu URL của trang đó nằm trong danh sách cho phép). Để biết thông tin về định dạng URL, hãy truy cập https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Nếu bạn đặt cả chính sách này và chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> thì danh sách cho phép sẽ được ưu tiên áp dụng. Nếu URL của một mục tiêu khớp với một mẫu trong danh sách cho phép thì URL đó sẽ được cho phép, ngay cả khi URL đó cũng khớp với một mẫu trong danh sách chặn. Nếu URL của một mục tiêu khớp với một mẫu trong danh sách chặn (nhưng không khớp với mẫu nào trong danh sách cho phép) thì URL đó sẽ bị chặn. Nếu URL của một mục tiêu không khớp với cả hai danh sách thì chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> sẽ được dùng làm chính sách dự phòng.
+
+Nếu bạn không đặt chính sách này thì khả năng sử dụng <ph name="CHROME_DEVTOOLS_NAME" /> sẽ được xác định theo chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> và <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Không được sử dụng ký tự đại diện chung chung dùng để khớp với mọi máy chủ lưu trữ (ví dụ: "*" hoặc "[*]"); hãy dùng chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> để bật tính năng này trên phạm vi toàn cục.
+
+Chính sách này chỉ áp dụng cho 1.000 mục.</translation>
 <translation id="1117535567637097036">Trình xử lý giao thức được đặt qua chính sách này không được sử dụng khi xử lý các cơ chế của Android.</translation>
 <translation id="1118093128235245168">Cho phép các trang web yêu cầu người dùng cấp quyền truy cập vào một thiết bị USB đã kết nối</translation>
 <translation id="111910763555783249">Cài đặt thông báo</translation>
@@ -8051,6 +8064,17 @@ Nếu bạn không đặt chính sách này nhưng có đặt chính sách <ph n
 Chính sách này không còn được dùng kể từ M124.</translation>
 <translation id="6022948604095165524">Tác vụ khi khởi động</translation>
 <translation id="602318745029752898">Cho phép dùng các giọng nói của tính năng chuyển văn bản sang lời nói trên mạng nâng cao trong tính năng Chọn để nói</translation>
+<translation id="6023434563562800942">Bạn có thể dùng chính sách này để chặn <ph name="CHROME_DEVTOOLS_NAME" /> trên các URL cụ thể. Để biết thông tin về định dạng URL, hãy truy cập https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Khả năng sử dụng <ph name="CHROME_DEVTOOLS_NAME" /> sẽ được đánh giá ở cấp mục tiêu. Các mẫu URL sẽ được so khớp với URL của từng mục tiêu đang được kiểm tra (chẳng hạn như khung chính của một trang, khung phụ được nhúng, tiện ích hoặc ứng dụng web). Hành vi kết quả phụ thuộc vào việc bạn có đặt cả chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> hay không.
+
+Nếu bạn đặt chính sách này nhưng không đặt <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> và URL của một mục tiêu khớp với một mẫu trong danh sách chặn này thì URL đó sẽ chặn <ph name="CHROME_DEVTOOLS_NAME" /> đối với mục tiêu đó (ví dụ: không thể kiểm tra khung phụ có URL khớp với danh sách chặn này, nhưng vẫn có thể kiểm tra trang chính nếu URL của trang đó không nằm trong danh sách chặn). Nếu URL của một mục tiêu không khớp với mẫu nào thì khả năng sử dụng sẽ được xác định theo chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Nếu bạn đặt cả chính sách này và chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> thì danh sách cho phép sẽ được ưu tiên áp dụng. Nếu URL của một mục tiêu khớp với một mẫu trong danh sách cho phép thì URL đó sẽ được cho phép, ngay cả khi URL đó cũng khớp với một mẫu trong danh sách chặn này. Nếu URL của một mục tiêu khớp với một mẫu trong danh sách chặn này (nhưng không khớp với mẫu nào trong danh sách cho phép) thì URL đó sẽ bị chặn. Nếu URL của một mục tiêu không khớp với cả hai danh sách thì chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> sẽ được dùng làm chính sách dự phòng.
+
+Nếu bạn không đặt chính sách này thì khả năng sử dụng <ph name="CHROME_DEVTOOLS_NAME" /> sẽ được xác định theo chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> và <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
+
+Chính sách này chỉ áp dụng cho 1.000 mục.</translation>
 <translation id="6026722971789064331">Kiểm soát việc sử dụng API Hệ thống tệp để ghi</translation>
 <translation id="602728333950205286">URL instant của nhà cung cấp dịch vụ tìm kiếm mặc định</translation>
 <translation id="603410445099326293">Tham số cho URL đề xuất sử dụng POST</translation>

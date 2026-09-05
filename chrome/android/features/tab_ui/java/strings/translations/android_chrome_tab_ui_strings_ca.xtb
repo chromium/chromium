@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Creat fa <ph name="NUM_WEEKS_ONE" /> setmana}other{Creat fa <ph name="NUM_WEEKS_MANY" /> setmanes}}</translation>
 <translation id="1063300264396686489">Obre automàticament grups de pestanyes d'altres dispositius</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> de les teves pestanyes no s'han utilitzat últimament. Vols tancar-les?</translation>
+<translation id="1089791933924803646">Obtén suggeriments de Chrome en altres aplicacions</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Creat fa <ph name="NUM_YEARS_ONE" /> any}other{Creat fa <ph name="NUM_YEARS_MANY" /> anys}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Les pestanyes i els grups inactius es tancaran al cap d'1 mes}other{Les pestanyes i els grups inactius es tancaran al cap de <ph name="MONTH_COUNT_MANY" /> mesos}}</translation>
 <translation id="1173894706177603556">Canvia el nom</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Afegeix una pestanya al grup}other{Afegeix pestanyes al grup}}</translation>
 <translation id="8138067144082174140">Després de 14 dies d'inactivitat</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Desplega el grup de pestanyes <ph name="TITLE_OF_GROUP" /> de color <ph name="COLOR_NAME" /> amb <ph name="TABS_COUNT_ONE" /> pestanya.}other{Desplega el grup de pestanyes <ph name="TITLE_OF_GROUP" /> de color <ph name="COLOR_NAME" /> amb <ph name="TABS_COUNT_MANY" /> pestanyes.}}</translation>
+<translation id="8172214054247281626">Comparteix les dades de navegació, com ara l'historial de navegació recent, per obtenir suggeriments a les aplicacions seleccionades. Aquestes dades es processen de manera segura al dispositiu.</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{Deixa de fixar la pestanya}other{Deixa de fixar les pestanyes}}</translation>
 <translation id="8205266828577616993">Mou la pestanya cap amunt</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{S'ha actualitzat fa <ph name="NUM_MINS_ONE" /> minut}other{S'ha actualitzat fa <ph name="NUM_MINS_MANY" /> minuts}}</translation>

@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Utworzono <ph name="NUM_WEEKS_ONE" /> tydzień temu}few{Utworzono <ph name="NUM_WEEKS_MANY" /> tygodnie temu}many{Utworzono <ph name="NUM_WEEKS_MANY" /> tygodni temu}other{Utworzono <ph name="NUM_WEEKS_MANY" /> tygodnia temu}}</translation>
 <translation id="1063300264396686489">Automatycznie otwieraj grupy kart z innych urządzeń</translation>
 <translation id="1075622780330595106">Karty, które ostatnio nie były używane: <ph name="NUMBER_OF_TABS" />. Zamknąć je?</translation>
+<translation id="1089791933924803646">Otrzymuj sugestie Chrome w innych aplikacjach</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Utworzono <ph name="NUM_YEARS_ONE" /> rok temu}few{Utworzono <ph name="NUM_YEARS_MANY" /> lata temu}many{Utworzono <ph name="NUM_YEARS_MANY" /> lat temu}other{Utworzono <ph name="NUM_YEARS_MANY" /> roku temu}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{Nieaktywne karty i grupy zostaną zamknięte po miesiącu}few{Nieaktywne karty i grupy zostaną zamknięte po <ph name="MONTH_COUNT_MANY" /> miesiącach}many{Nieaktywne karty i grupy zostaną zamknięte po <ph name="MONTH_COUNT_MANY" /> miesiącach}other{Nieaktywne karty i grupy zostaną zamknięte po <ph name="MONTH_COUNT_MANY" /> miesiąca}}</translation>
 <translation id="1173894706177603556">Zmień nazwę</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Dodaj kartę do grupy}few{Dodaj karty do grupy}many{Dodaj karty do grupy}other{Dodaj karty do grupy}}</translation>
 <translation id="8138067144082174140">Po 14 dniach braku aktywności</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Rozwiń grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_ONE" /> kartą, kolor <ph name="COLOR_NAME" />.}few{Rozwiń grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> kartami, kolor <ph name="COLOR_NAME" />.}many{Rozwiń grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> kartami, kolor <ph name="COLOR_NAME" />.}other{Rozwiń grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> karty, kolor <ph name="COLOR_NAME" />.}}</translation>
+<translation id="8172214054247281626">Udostępniaj dane przeglądania, takie jak ostatnia historia przeglądania, aby otrzymywać sugestie w wybranych aplikacjach. Dane te są bezpiecznie przetwarzane na Twoim urządzeniu.</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{Odepnij kartę}few{Odepnij karty}many{Odepnij karty}other{Odepnij karty}}</translation>
 <translation id="8205266828577616993">Przesuń kartę w górę</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Zaktualizowano <ph name="NUM_MINS_ONE" /> minutę temu}few{Zaktualizowano <ph name="NUM_MINS_MANY" /> minuty temu}many{Zaktualizowano <ph name="NUM_MINS_MANY" /> minut temu}other{Zaktualizowano <ph name="NUM_MINS_MANY" /> minuty temu}}</translation>

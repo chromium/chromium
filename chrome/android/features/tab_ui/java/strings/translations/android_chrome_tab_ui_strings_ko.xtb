@@ -4,6 +4,7 @@
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" />주 전 생성됨}other{<ph name="NUM_WEEKS_MANY" />주 전 생성됨}}</translation>
 <translation id="1063300264396686489">다른 기기에서 생성된 탭 그룹 자동 열기</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" />개의 탭을 최근 사용하지 않았습니다. 탭을 닫을까요?</translation>
+<translation id="1089791933924803646">다른 앱에서 Chrome 추천 받기</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" />년 전 생성됨}other{<ph name="NUM_YEARS_MANY" />년 전 생성됨}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{비활성 탭 및 그룹은 1개월 후에 닫힙니다.}other{비활성 탭 및 그룹은 <ph name="MONTH_COUNT_MANY" />개월 후에 닫힙니다.}}</translation>
 <translation id="1173894706177603556">이름 바꾸기</translation>
@@ -226,6 +227,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{그룹에 탭 추가}other{그룹에 탭 추가}}</translation>
 <translation id="8138067144082174140">14일 동안 비활성 상태인 경우</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" />개의 <ph name="COLOR_NAME" /> 탭이 포함된 <ph name="TITLE_OF_GROUP" /> 탭 그룹을 펼칩니다.}other{<ph name="TABS_COUNT_MANY" />개의 <ph name="COLOR_NAME" /> 탭이 포함된 <ph name="TITLE_OF_GROUP" /> 탭 그룹을 펼칩니다.}}</translation>
+<translation id="8172214054247281626">최근 방문 기록과 같은 인터넷 사용 기록을 공유하여 선택한 앱에서 추천을 받습니다. 이 데이터는 기기에서 안전하게 처리됩니다.</translation>
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{탭 고정 해제}other{탭 고정 해제}}</translation>
 <translation id="8205266828577616993">탭을 위로 이동</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" />분 전에 업데이트됨}other{<ph name="NUM_MINS_MANY" />분 전에 업데이트됨}}</translation>
