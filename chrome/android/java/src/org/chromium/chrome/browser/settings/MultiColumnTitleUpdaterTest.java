@@ -676,6 +676,44 @@ public class MultiColumnTitleUpdaterTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
+    public void testCloseSearch() {
+        TestSearchViewProviderFragment searchViewProviderFragment =
+                new TestSearchViewProviderFragment();
+        mMultiColumnSettings
+                .getChildFragmentManager()
+                .beginTransaction()
+                .replace(R.id.preferences_detail, searchViewProviderFragment)
+                .commitNow();
+
+        List<MultiColumnSettings.Title> titles = new ArrayList<>();
+        titles.add(
+                new MultiColumnSettings.Title("uuid1", createTitleSupplier("All Sites"), 0, null));
+        mMultiColumnSettings.setFakeTitles(titles);
+
+        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater();
+        updater.onTitleUpdated();
+
+        View titleView = mContainer.getChildAt(0);
+        ChromeImageButton searchButton = (ChromeImageButton) mContainer.getChildAt(1);
+        SearchView searchView = (SearchView) mContainer.getChildAt(2);
+
+        // Clicking search button opens search.
+        searchButton.performClick();
+        assertEquals(View.GONE, titleView.getVisibility());
+        assertEquals(View.GONE, searchButton.getVisibility());
+        assertEquals(View.VISIBLE, searchView.getVisibility());
+        assertTrue(updater.isSearchOpen());
+
+        // Calling closeSearch closes search and restores the title and search button.
+        updater.closeSearch();
+        assertEquals(View.GONE, searchView.getVisibility());
+        assertEquals(View.VISIBLE, titleView.getVisibility());
+        assertEquals(View.VISIBLE, searchButton.getVisibility());
+        assertFalse(updater.isSearchOpen());
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
     public void testMaybeUpdateMargins_accountsForBackButtonOffset() {
         FrameLayout detailView = new FrameLayout(mActivity);

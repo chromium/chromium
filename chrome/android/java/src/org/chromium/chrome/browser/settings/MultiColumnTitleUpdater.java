@@ -342,6 +342,10 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
     }
 
     private void updateDetailedPageTitle() {
+        if (SettingsInTab.isEnabled()) {
+            closeSearch();
+        }
+
         // Reset the current title items if exists.
         for (int i = 0; i < mContainer.getChildCount(); ++i) {
             View view = mContainer.getChildAt(i);
@@ -557,7 +561,7 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
         }
     }
 
-    private void closeSearch() {
+    void closeSearch() {
         assert SettingsInTab.isEnabled();
 
         if (!isSearchOpen()) return;

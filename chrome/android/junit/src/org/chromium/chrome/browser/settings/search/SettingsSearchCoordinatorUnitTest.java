@@ -14,6 +14,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -622,5 +623,103 @@ public class SettingsSearchCoordinatorUnitTest {
 
         // Flush any remaining tasks; should be a no-op or handled gracefully without crashing.
         ShadowLooper.idleMainLooper();
+    }
+
+    @Test
+    public void testClickSearchIcon_entersSearchState() {
+        SettingsIndexData.createInstance().resetNeedsIndexing();
+        setUpMultiColumnSettings();
+        mUseMultiColumn = true;
+
+        mCoordinator.initializeSearchUi(null);
+        ShadowLooper.idleMainLooper();
+
+        View searchBox = mActivity.findViewById(R.id.search_box);
+        View searchIcon = searchBox.requireViewById(R.id.search_icon);
+        View queryContainer = mActivity.findViewById(R.id.search_query_container);
+        EditText queryEdit = mActivity.findViewById(R.id.search_query);
+
+        assertEquals(View.VISIBLE, searchBox.getVisibility());
+        assertEquals(View.GONE, queryContainer.getVisibility());
+
+        searchIcon.performClick();
+        ShadowLooper.idleMainLooper();
+
+        assertEquals(View.GONE, searchBox.getVisibility());
+        assertEquals(View.VISIBLE, queryContainer.getVisibility());
+        assertTrue(queryEdit.isFocused());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    @Config(qualifiers = "sw600dp")
+    public void testTouchSearchBox_whenUnfocused_entersSearchState() {
+        SettingsIndexData.createInstance().resetNeedsIndexing();
+        setUpMultiColumnSettings();
+        mUseMultiColumn = true;
+
+        mCoordinator.initializeSearchUi(null);
+        ShadowLooper.idleMainLooper();
+
+        View searchBox = mActivity.findViewById(R.id.search_box);
+        View queryContainer = mActivity.findViewById(R.id.search_query_container);
+        EditText queryEdit = mActivity.findViewById(R.id.search_query);
+
+        // Focus another view so searchBox is unfocused.
+        View otherView = new View(mActivity);
+        otherView.setFocusable(true);
+        otherView.setFocusableInTouchMode(true);
+        ((ViewGroup) mActivity.findViewById(R.id.settings_activity)).addView(otherView);
+        otherView.requestFocus();
+        assertFalse(searchBox.isFocused());
+
+        MotionEvent downEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 10f, 10f, 0);
+        MotionEvent upEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 10f, 10f, 0);
+        searchBox.dispatchTouchEvent(downEvent);
+        searchBox.dispatchTouchEvent(upEvent);
+        downEvent.recycle();
+        upEvent.recycle();
+
+        ShadowLooper.idleMainLooper();
+
+        assertEquals(View.GONE, searchBox.getVisibility());
+        assertEquals(View.VISIBLE, queryContainer.getVisibility());
+        assertTrue(queryEdit.isFocused());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    @Config(qualifiers = "sw600dp")
+    public void testTouchSearchBox_whenUnfocused_dragDoesNotEnterSearchState() {
+        SettingsIndexData.createInstance().resetNeedsIndexing();
+        setUpMultiColumnSettings();
+        mUseMultiColumn = true;
+
+        mCoordinator.initializeSearchUi(null);
+        ShadowLooper.idleMainLooper();
+
+        View searchBox = mActivity.findViewById(R.id.search_box);
+        View queryContainer = mActivity.findViewById(R.id.search_query_container);
+
+        // Focus another view so searchBox is unfocused.
+        View otherView = new View(mActivity);
+        otherView.setFocusable(true);
+        otherView.setFocusableInTouchMode(true);
+        ((ViewGroup) mActivity.findViewById(R.id.settings_activity)).addView(otherView);
+        otherView.requestFocus();
+        assertFalse(searchBox.isFocused());
+
+        // Dispatch a drag motion exceeding touch slop.
+        MotionEvent downEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 10f, 10f, 0);
+        MotionEvent upEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 10f, 100f, 0);
+        searchBox.dispatchTouchEvent(downEvent);
+        searchBox.dispatchTouchEvent(upEvent);
+        downEvent.recycle();
+        upEvent.recycle();
+
+        ShadowLooper.idleMainLooper();
+
+        assertEquals(View.VISIBLE, searchBox.getVisibility());
+        assertEquals(View.GONE, queryContainer.getVisibility());
     }
 }

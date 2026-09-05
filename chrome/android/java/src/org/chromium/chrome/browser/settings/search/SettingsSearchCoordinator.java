@@ -28,6 +28,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
@@ -342,12 +343,44 @@ public class SettingsSearchCoordinator
         View searchBox = requireViewById(R.id.search_box);
         setSearchBoxVerticalMargin(searchBox, mUseMultiColumn);
         searchBox.setOnClickListener(this::onClickSearchBox);
+        View searchIcon = searchBox.requireViewById(R.id.search_icon);
+        searchIcon.setOnClickListener(this::onClickSearchBox);
+        searchIcon.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
         TooltipCompat.setTooltipText(
-                searchBox.requireViewById(R.id.search_icon),
-                mActivity.getString(R.string.search_in_settings_hint));
+                searchIcon, mActivity.getString(R.string.search_in_settings_hint));
         if (shouldAutoFocusSearchBox()) {
             searchBox.setFocusable(true);
             searchBox.setFocusableInTouchMode(true);
+            int touchSlop = ViewConfiguration.get(mActivity).getScaledTouchSlop();
+            // In touch mode, Android's View.onTouchEvent consumes the first tap on an unfocused
+            // focusableInTouchMode view to take focus, skipping performClick(). Trigger click
+            // on ACTION_UP within touch slop when unfocused so a single tap opens search.
+            searchBox.setOnTouchListener(
+                    new View.OnTouchListener() {
+                        private float mDownX;
+                        private float mDownY;
+
+                        @Override
+                        public boolean onTouch(View v, MotionEvent event) {
+                            switch (event.getAction()) {
+                                case MotionEvent.ACTION_DOWN -> {
+                                    mDownX = event.getX();
+                                    mDownY = event.getY();
+                                }
+                                case MotionEvent.ACTION_UP -> {
+                                    if (!v.isFocused()) {
+                                        float deltaX = Math.abs(event.getX() - mDownX);
+                                        float deltaY = Math.abs(event.getY() - mDownY);
+                                        if (deltaX <= touchSlop && deltaY <= touchSlop) {
+                                            v.performClick();
+                                            return true;
+                                        }
+                                    }
+                                }
+                            }
+                            return false;
+                        }
+                    });
             searchBox.addOnAttachStateChangeListener(
                     new View.OnAttachStateChangeListener() {
                         @Override

@@ -647,7 +647,9 @@ public class SettingsPageFragmentDelegateImpl
     }
 
     private void updateFirstVisibleTitle(int index) {
-        assumeNonNull(mMultiColumnTitleUpdater).setFirstVisibleTitleIndex(index);
+        MultiColumnTitleUpdater updater = assumeNonNull(mMultiColumnTitleUpdater);
+        updater.closeSearch();
+        updater.setFirstVisibleTitleIndex(index);
     }
 
     @Override
