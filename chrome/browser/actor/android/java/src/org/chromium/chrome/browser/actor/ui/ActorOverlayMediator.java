@@ -77,18 +77,19 @@ class ActorOverlayMediator
         mInflateOverlayCallback = inflateOverlayCallback;
         mBackPressCallback = backPressCallback;
         mDismissSnackbarCallback = dismissSnackbarCallback;
-        updateTakeOverButtonVisibility();
 
         mTabObserver =
                 new TabObserver() {
                     @Override
                     public void onShown(Tab tab, int type) {
                         updateVisibility();
+                        updateTakeOverButtonVisibility();
                     }
 
                     @Override
                     public void onHidden(Tab tab, int reason) {
                         updateVisibility();
+                        updateTakeOverButtonVisibility();
                     }
                 };
 
@@ -125,11 +126,13 @@ class ActorOverlayMediator
         mLayoutManager = layoutManager;
         mLayoutManager.addObserver(this);
         updateVisibility();
+        updateTakeOverButtonVisibility();
     }
 
     @Override
     public void onStartedShowing(int layoutType) {
         updateVisibility();
+        updateTakeOverButtonVisibility();
     }
 
     @Override
@@ -145,13 +148,18 @@ class ActorOverlayMediator
     }
 
     private void updateTakeOverButtonVisibility() {
-        boolean visible = isHandoffButtonActive();
+        if (mCurrentTab == null) {
+            mModel.set(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE, false);
+            return;
+        }
+        boolean visible = calculateCanShowOverlay(mCurrentTab) && isHandoffButtonActive();
         mModel.set(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE, visible);
     }
 
     /** Called when a task state changes, to re-evaluate visibility. */
     void onTaskStateChanged() {
         updateVisibility();
+        updateTakeOverButtonVisibility();
     }
 
     private void updateVisibility() {
@@ -169,8 +177,7 @@ class ActorOverlayMediator
     private void onCurrentTabChanged(@Nullable Tab tab) {
         mDismissSnackbarCallback.run();
         // TODO(crbug.com/520161144): We had to remove "assert mTabController != null;" to pass the
-        // test in
-        // org.chromium.chrome.browser.actor.ui.ActorOverlayCoordinatorTest#testTabSwitchToDestroyedTab.
+        // test in ActorOverlayCoordinatorTest#testTabSwitchToDestroyedTab.
         if (mCurrentTab != null) {
             mCurrentTab.removeObserver(mTabObserver);
             if (mTabController != null) {

@@ -15,20 +15,13 @@ found in the LICENSE file.
     android:clipToPadding="false"
     android:visibility="gone">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/take_over_task_button"
-        style="@style/ActorTakeOverButtonStyle"
+    <ViewStub
+        android:id="@+id/actor_handoff_button_stub"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|center_horizontal"
         android:layout_marginTop="@dimen/actor_overlay_button_margin_top"
-        android:elevation="0dp"
-        android:stateListAnimator="@null"
-        android:paddingStart="@dimen/actor_overlay_button_padding_horizontal"
-        android:paddingTop="@dimen/actor_overlay_button_padding_vertical"
-        android:paddingEnd="@dimen/actor_overlay_button_padding_horizontal"
-        android:paddingBottom="@dimen/actor_overlay_button_padding_vertical"
-        android:text="@string/handoff_take_over_task_label"
-        android:visibility="gone" />
+        android:inflatedId="@+id/actor_handoff_button_container"
+        android:layout="@layout/actor_handoff_button" />
 
 </org.chromium.chrome.browser.actor.ui.ActorOverlayView>
