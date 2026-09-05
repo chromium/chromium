@@ -271,7 +271,12 @@ UIColor* AccountParticleDiscBadgeBackgroundColor(UIUserInterfaceStyle style) {
     foregroundColor = [UIColor colorNamed:kTextPrimaryColor];
   } else {
     foregroundColor =
-        palette ? palette.tintColor : [UIColor colorNamed:kBlue600Color];
+        palette
+            ? palette.tintColor
+            : (IsNewTabPageUICleanupEnabled()
+                   ? [UIColor colorNamed:
+                                  kNTPRedesignCustomizationMenuButtonIconColor]
+                   : [UIColor colorNamed:kBlue600Color]);
     backgroundColor = palette ? palette.headerButtonColor
                               : [self defaultButtonBackgroundColor];
   }
@@ -384,10 +389,13 @@ UIColor* AccountParticleDiscBadgeBackgroundColor(UIUserInterfaceStyle style) {
 - (UIColor*)defaultButtonBackgroundColor {
   return
       [UIColor colorWithDynamicProvider:^UIColor*(UITraitCollection* traits) {
-        return traits.userInterfaceStyle == UIUserInterfaceStyleDark
-                   ? [UIColor colorNamed:kTabGroupFaviconBackgroundColor]
-                   : [[UIColor colorNamed:kSolidWhiteColor]
-                         colorWithAlphaComponent:0.75];
+        if (traits.userInterfaceStyle == UIUserInterfaceStyleDark) {
+          return IsNewTabPageUICleanupEnabled()
+                     ? [UIColor colorNamed:kSurfaceContainerLowColor]
+                     : [UIColor colorNamed:kTabGroupFaviconBackgroundColor];
+        }
+        return [[UIColor colorNamed:kSolidWhiteColor]
+            colorWithAlphaComponent:ntp_home::kNTPMenuButtonLightUnthemedAlpha];
       }];
 }
 

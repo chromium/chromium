@@ -7,6 +7,8 @@
 #import "ios/chrome/browser/content_suggestions/public/ntp_home_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_utils.h"
 #import "ios/chrome/browser/shared/ui/elements/blue_dot_util.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -36,7 +38,10 @@
         ntp_home::kNTPMenuButtonCornerRadius;
     self.configuration = configuration;
 
-    UIColor* unthemedTintColor = [UIColor colorNamed:kBlue600Color];
+    UIColor* unthemedTintColor =
+        IsNewTabPageUICleanupEnabled()
+            ? [UIColor colorNamed:kNTPRedesignCustomizationMenuButtonIconColor]
+            : [UIColor colorNamed:kBlue600Color];
     self.configurationUpdateHandler =
         CreateThemedButtonConfigurationUpdateHandler(
             unthemedTintColor, ^UIColor*(NewTabPageColorPalette* palette) {
@@ -46,13 +51,15 @@
 
               return [UIColor colorWithDynamicProvider:^UIColor*(
                                   UITraitCollection* traits) {
-                return traits.userInterfaceStyle == UIUserInterfaceStyleDark
-                           ? [UIColor
-                                 colorNamed:kTabGroupFaviconBackgroundColor]
-                           : [[UIColor colorNamed:kSolidWhiteColor]
-                                 colorWithAlphaComponent:
-                                     ntp_home::
-                                         kNTPMenuButtonLightUnthemedAlpha];
+                if (traits.userInterfaceStyle == UIUserInterfaceStyleDark) {
+                  return IsNewTabPageUICleanupEnabled()
+                             ? [UIColor colorNamed:kSurfaceContainerLowColor]
+                             : [UIColor
+                                   colorNamed:kTabGroupFaviconBackgroundColor];
+                }
+                return [[UIColor colorNamed:kSolidWhiteColor]
+                    colorWithAlphaComponent:
+                        ntp_home::kNTPMenuButtonLightUnthemedAlpha];
               }];
             });
   }
