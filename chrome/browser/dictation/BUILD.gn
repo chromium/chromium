@@ -185,7 +185,10 @@ source_set("browser_tests") {
 source_set("interactive_ui_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [ "session_ui_impl_interactive_uitest.cc" ]
+  sources = [
+    "dictation_onboarding_interactive_uitest.cc",
+    "session_ui_impl_interactive_uitest.cc",
+  ]
   deps = [
     ":impl",
     ":test_support",

@@ -214,6 +214,10 @@ void OnboardingDialogController::Show(base::OnceClosure complete_callback,
 
   widget_->MakeCloseSynchronous(base::BindOnce(
       &OnboardingDialogController::Close, base::Unretained(this)));
+
+  views::View* initially_focused_view = model_host->GetInitiallyFocusedView();
+  CHECK(initially_focused_view);
+  initially_focused_view->RequestFocus();
 }
 
 bool OnboardingDialogController::IsShowing() const {
@@ -249,6 +253,8 @@ std::unique_ptr<ui::DialogModel> OnboardingDialogController::CreateDialogModel(
                                IDS_DICTATION_ONBOARDING_BUTTON_CANCEL))
                            .SetId(kDictationOnboardingCancelButtonElementId)
                            .SetStyle(ui::ButtonStyle::kTonal))
+      .SetInitiallyFocusedField(kDictationOnboardingOkButtonElementId)
+      .SetIsAlertDialog()
       .Build();
 }
 
