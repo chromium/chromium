@@ -108,6 +108,7 @@ void GlicCueTarget::CheckEligibility(
     contextual_cueing::CueIntrusiveness intrusiveness,
     EligibilityCallback callback) {
   if (!web_contents) {
+    CUEING_LOG("GlicCueTarget::CheckEligibility failed: WebContents gone.");
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), false, ContentGenerator()));
@@ -116,6 +117,7 @@ void GlicCueTarget::CheckEligibility(
 
   GlicCueTabState* cue_tab_state = GlicCueTabState::From(&tab_.get());
   if (!cue_tab_state) {
+    CUEING_LOG("GlicCueTarget::CheckEligibility failed: No GlicCueTabState");
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), false, ContentGenerator()));
@@ -128,11 +130,15 @@ bool GlicCueTarget::IsPageEligible(
     const page_content_annotations::PageContentAnnotationsResult& result,
     content::WebContents* active_web_contents) const {
   if (!active_web_contents) {
+    CUEING_LOG("GlicCueTarget::IsPageEligible failed: No active WebContents.");
     return false;
   }
 
   if (result.GetType() !=
       page_content_annotations::AnnotationType::kCategoryClassifier) {
+    CUEING_LOG(
+        "GlicCueTarget::IsPageEligible failed: invalid "
+        "PageContentAnnotationsResult");
     return false;
   }
 
@@ -153,8 +159,13 @@ bool GlicCueTarget::IsPageEligible(
     }
   }
 
+  CUEING_LOG(base::StringPrintf(
+      "GlicCueTarget::IsPageEligible passes_edu=%d passes_shopping=%d",
+      passes_edu, passes_shopping));
+
   if (contextual_cueing::kDiscardShoppingPdfs.Get() &&
       active_web_contents->GetContentsMimeType() == pdf::kPDFMimeType) {
+    CUEING_LOG("GlicCueTarget::IsPageEligible discard shopping pdf");
     return passes_edu && !passes_shopping;
   }
   return passes_edu || passes_shopping;
@@ -163,18 +174,25 @@ bool GlicCueTarget::IsPageEligible(
 bool GlicCueTarget::IsEligible() const {
   auto* window = tab_->GetBrowserWindowInterface();
   if (!window) {
+    CUEING_LOG("GlicCueTarget::IsEligible failed: No window.");
     return false;
   }
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(tab_->GetProfile());
   if (!sync_service || !sync_service->GetUserSettings()->GetSelectedTypes().Has(
                            syncer::UserSelectableType::kHistory)) {
+    CUEING_LOG(
+        "GlicCueTarget::IsEligible failed: No sync service or no history "
+        "sync.");
     return false;
   }
   if (base::FeatureList::IsEnabled(
           features::kGlicContextualCueV2ActiveUserBackoff)) {
     if (GetTimeSinceLastInvocation(tab_->GetProfile()) <
         base::Days(features::kMinDaysSinceLastInvocation.Get())) {
+      CUEING_LOG(
+          "GlicCueTarget::IsEligible failed: Time since last invocation is too "
+          "short.");
       return false;
     }
   }

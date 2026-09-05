@@ -246,6 +246,9 @@ class ContextualCueingController
                           const favicon_base::FaviconImageResult& image_result);
   void OnShowCueFailed(ContextualCueingDecision decision);
 
+  // Logs and records a contextual cueing decision for this tab to UKM.
+  void RecordContextualCueingDecision(ContextualCueingDecision decision);
+
   void OnSidePanelShown();
 
   void OnTabActivated(tabs::TabInterface* tab);

@@ -48,6 +48,7 @@ enum class CueIntrusiveness {
 };
 
 const char* GetName(CueTargetType type);
+const char* GetName(CueIntrusiveness intrusiveness);
 
 // Glic-specific click data. Conceptually this struct should carry everything
 // needed for invoking Glic from a contextual cue.
