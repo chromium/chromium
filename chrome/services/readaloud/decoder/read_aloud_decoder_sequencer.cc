@@ -7,6 +7,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "chrome/common/readaloud/read_aloud_constants.h"
@@ -68,41 +69,38 @@ void ReadAloudDecoderSequencer::Reset() {
 
 void ReadAloudDecoderSequencer::ReplenishBuffer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!audio_segment_queue_) {
+  if (!audio_segment_queue_ || is_replenishing_) {
     return;
   }
 
-  if (is_decoding_) {
-    return;
-  }
+  base::AutoReset<bool> replenishing_guard(&is_replenishing_, true);
 
-  if (next_chunk_to_decode_ >= prefetch_manager_->GetTimelineChunkCount()) {
-    return;
-  }
+  while (!is_decoding_ &&
+         next_chunk_to_decode_ < prefetch_manager_->GetTimelineChunkCount() &&
+         audio_segment_queue_->GetBufferedDuration() <
+             kMaxDecodedAudioDuration) {
+    const uint32_t chunk_index = next_chunk_to_decode_;
 
-  if (audio_segment_queue_->GetBufferedDuration() >= kMaxDecodedAudioDuration) {
-    return;
-  }
+    // Step 1: Network Lookahead.
+    // Calculate how many future chunks we need to hit the prefetch watermark
+    // and eagerly schedule them to utilize parallel network connections.
+    std::vector<uint32_t> required_chunks =
+        prefetch_manager_->GetRequiredPrefetchChunks(
+            chunk_index, audio_segment_queue_->GetBufferedDuration());
+    for (uint32_t idx : required_chunks) {
+      prefetch_manager_->SchedulePrefetch(idx);
+    }
 
-  const uint32_t chunk_index = next_chunk_to_decode_;
-
-  // Step 1: Network Lookahead.
-  // Calculate how many future chunks we need to hit the prefetch watermark
-  // and eagerly schedule them to utilize parallel network connections.
-  std::vector<uint32_t> required_chunks =
-      prefetch_manager_->GetRequiredPrefetchChunks(
-          chunk_index, audio_segment_queue_->GetBufferedDuration());
-  for (uint32_t idx : required_chunks) {
-    prefetch_manager_->SchedulePrefetch(idx);
-  }
-
-  // Step 2: In-Order Decoding.
-  // If the next sequential chunk is fully downloaded and cached, begin
-  // decoding it. Otherwise, we naturally block and wait for it to arrive.
-  if (prefetch_manager_->HasCachedSegment(chunk_index)) {
+    // Step 2: In-Order Decoding.
+    // If the next sequential chunk is fully downloaded and cached, begin
+    // decoding it. Otherwise, we naturally block and wait for it to arrive.
     const CachedCompressedSegment* cached =
         prefetch_manager_->GetCachedSegment(chunk_index);
-    if (cached && cached->opus_buffer) {
+    if (!cached) {
+      break;
+    }
+
+    if (cached->opus_buffer) {
       is_decoding_ = true;
       const uint64_t sequence_id = prefetch_manager_->GetCurrentSequenceId();
       decoder_helper_->DecodeAndSlice(
@@ -110,7 +108,11 @@ void ReadAloudDecoderSequencer::ReplenishBuffer() {
           base::BindOnce(&ReadAloudDecoderSequencer::OnAudioDecoded,
                          weak_ptr_factory_.GetWeakPtr(), sequence_id,
                          chunk_index));
+      break;
     }
+
+    // Chunk synthesis failed or returned empty audio; skip past it iteratively.
+    next_chunk_to_decode_++;
   }
 }
 

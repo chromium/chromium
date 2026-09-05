@@ -103,7 +103,7 @@ void PrefetchManager::SchedulePrefetch(uint32_t chunk_index) {
   if (chunk_index >= timeline_.size()) {
     return;
   }
-  if (HasCachedSegment(chunk_index) ||
+  if (session_cache_.contains(chunk_index) ||
       inflight_requests_.contains(chunk_index) ||
       std::ranges::find(pending_requests_, chunk_index) !=
           pending_requests_.end()) {
@@ -148,7 +148,10 @@ base::TimeDelta PrefetchManager::GetTargetPrefetchDuration() const {
 
 bool PrefetchManager::HasCachedSegment(uint32_t chunk_index) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return session_cache_.contains(chunk_index);
+  std::map<uint32_t, CachedCompressedSegment>::const_iterator it =
+      session_cache_.find(chunk_index);
+  return it != session_cache_.end() && it->second.opus_buffer &&
+         !it->second.opus_buffer->empty();
 }
 
 const CachedCompressedSegment* PrefetchManager::GetCachedSegment(
@@ -167,10 +170,7 @@ void PrefetchManager::InsertCachedSegment(
     scoped_refptr<media::DecoderBuffer> opus_buffer,
     std::vector<DecodedAudioSegment::WordTiming> timings) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!opus_buffer || opus_buffer->empty()) {
-    return;
-  }
-  if (!timeline_.empty() && chunk_index >= timeline_.size()) {
+  if (!timeline_.empty() && chunk_index >= GetTimelineChunkCount()) {
     return;
   }
   session_cache_.insert_or_assign(
@@ -214,7 +214,7 @@ void PrefetchManager::MaybeIssueSynthesisRequest() {
     uint32_t next_index = pending_requests_.front();
     pending_requests_.pop_front();
 
-    if (HasCachedSegment(next_index) ||
+    if (session_cache_.contains(next_index) ||
         inflight_requests_.contains(next_index)) {
       // Skip chunk indices that are already cached or currently in flight.
       continue;
@@ -244,7 +244,7 @@ std::vector<uint32_t> PrefetchManager::GetRequiredPrefetchChunks(
 
   for (size_t i = start_idx; i < end_idx; ++i) {
     uint32_t chunk_idx = static_cast<uint32_t>(i);
-    if (!HasCachedSegment(chunk_idx)) {
+    if (!session_cache_.contains(chunk_idx)) {
       required_chunks.push_back(chunk_idx);
     }
   }

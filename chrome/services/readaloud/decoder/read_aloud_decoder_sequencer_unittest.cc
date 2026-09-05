@@ -271,4 +271,39 @@ TEST_F(ReadAloudDecoderSequencerTest,
   EXPECT_EQ(audio_queue_->size(), 0u);
 }
 
+TEST_F(ReadAloudDecoderSequencerTest, HandlesNullCachedSegmentWithoutStalling) {
+  SetUpTimeline(/*chunk_count=*/2);
+  // Insert null audio buffer for chunk 0 (simulating failed synthesis response)
+  InsertCachedSegment(/*chunk_index=*/0, /*opus_buffer=*/nullptr);
+  InsertCachedSegment(/*chunk_index=*/1, CreateDummyBuffer());
+
+  // 1. ReplenishBuffer skips null chunk 0 and begins decoding chunk 1
+  sequencer_.ReplenishBuffer();
+  EXPECT_TRUE(sequencer_.is_decoding());
+  EXPECT_EQ(sequencer_.next_chunk_to_decode(), 1u);
+
+  // 2. Deliver decoded PCM segments for chunk 1
+  scoped_refptr<DecodedAudioSegment> segment1 =
+      base::MakeRefCounted<DecodedAudioSegment>(base::Seconds(2));
+  fake_decoder_.DeliverDecodedSegments({segment1});
+
+  // 3. Sequencer finishes chunk 1, advances cursor to 2u, and pushes to queue
+  EXPECT_FALSE(sequencer_.is_decoding());
+  EXPECT_EQ(sequencer_.next_chunk_to_decode(), 2u);
+  EXPECT_EQ(audio_queue_->size(), 1u);
+}
+
+TEST_F(ReadAloudDecoderSequencerTest, ReentrancyGuardPreventsRecursiveReplenish) {
+  SetUpTimeline(/*chunk_count=*/2);
+  InsertCachedSegment(/*chunk_index=*/0, CreateDummyBuffer());
+
+  // Trigger ReplenishBuffer
+  sequencer_.ReplenishBuffer();
+  EXPECT_TRUE(sequencer_.is_decoding());
+
+  // Additional call to ReplenishBuffer while is_decoding is true should return early
+  sequencer_.ReplenishBuffer();
+  EXPECT_EQ(fake_decoder_.decode_call_count(), 1u);
+}
+
 }  // namespace readaloud

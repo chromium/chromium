@@ -75,6 +75,7 @@ class ReadAloudDecoderSequencer {
 
   uint32_t next_chunk_to_decode_ = 0;
   bool is_decoding_ = false;
+  bool is_replenishing_ = false;
 
   base::RepeatingTimer pump_timer_;
 
