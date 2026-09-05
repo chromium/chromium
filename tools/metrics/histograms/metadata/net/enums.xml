@@ -202,7 +202,7 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="CrsRootIds">
-<!-- Generated from net/data/ssl/chrome_root_store/root_store.textproto.
+<!-- Generated from net/data/ssl/chrome_root_store/root_store.textproto and net/data/ssl/chrome_root_store/signer_set.textproto.
 Called by update_crs_root_ids_enum.py.-->
 
 <!-- The first three values are special values defined in
@@ -579,7 +579,15 @@ historical analysis. -->
       label="47487900a1beb9ee08ccbc1116a8ec55f454b638994319f051b984023ced6423
              CN=e-Szigno TLS Root CA 2023,2.5.4.97=VATHU-23584497,O=Microsec
              Ltd.,L=Budapest,C=HU"/>
-  <int value="107" label="44363.48.8"/>
+  <int value="107" label="44363.48.8 cloudflare_experiment_shard3"/>
+  <int value="108"
+      label="d439dd80f1e3bc5c9e5f13e8bff7a8887df9dc1c3e19d76af70c8f8d985eef22
+             CN=OISTE Server Root ECC G1,O=OISTE Foundation,C=CH"/>
+  <int value="109"
+      label="b964e141d3a55cae180ea6a1a8d4a297de26f11833c673569d196fb533a98710
+             CN=OISTE Server Root RSA G1,O=OISTE Foundation,C=CH"/>
+  <int value="110" label="44494.3.1.1 TrustAsia Test CA 1"/>
+  <int value="111" label="44494.3.1.2 TrustAsia Test CA 2"/>
 </enum>
 
 <enum name="CTRequirementStatus">

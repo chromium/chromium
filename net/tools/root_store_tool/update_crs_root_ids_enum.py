@@ -40,9 +40,10 @@ sys.path.append(str(PYPROTO_DIR.resolve()))
 
 try:
   import root_store_pb2  # type: ignore[import-not-found]
-except ImportError:
+  import signer_set_pb2  # type: ignore[import-not-found]
+except ImportError as e:
   print(
-    f"Error: Failed to import root_store_pb2 from {PYPROTO_DIR}",
+    f"Error: Failed to import {e.name} from {PYPROTO_DIR}",
     file=sys.stderr,
   )
   print(
@@ -58,6 +59,9 @@ from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
 
 ROOT_STORE_TEXTPROTO_PATH = (
   'net/data/ssl/chrome_root_store/root_store.textproto'
+)
+SIGNER_SET_TEXTPROTO_PATH = (
+  'net/data/ssl/chrome_root_store/signer_set.textproto'
 )
 ROOT_CERTS_PATH = 'net/data/ssl/chrome_root_store/root_store.certs'
 ADDITIONAL_CERTS_PATH = 'net/data/ssl/chrome_root_store/additional.certs'
@@ -97,17 +101,6 @@ def get_spki_hash(cert):
     Encoding.DER, PublicFormat.SubjectPublicKeyInfo
   )
   return hashlib.sha256(spki_bytes).hexdigest()
-
-
-def relative_oid_to_string(data):
-  parts = []
-  val = 0
-  for b in data:
-    val = (val << 7) | (b & 0x7F)
-    if not (b & 0x80):
-      parts.append(str(val))
-      val = 0
-  return ".".join(parts)
 
 
 def main():
@@ -175,20 +168,27 @@ def main():
     label = f"{spki_sha256} {subject}"
     crs_root_ids_enum[crs_root_id] = label
 
+  signer_set = signer_set_pb2.SignerSet()
+  try:
+    with open(CHROMIUM_SRC_PATH / SIGNER_SET_TEXTPROTO_PATH, 'r') as f:
+      text_data = f.read()
+    text_format.Parse(text_data, signer_set)
+  except Exception as e:
+    print(f"Error parsing {SIGNER_SET_TEXTPROTO_PATH}: {e}", file=sys.stderr)
+    sys.exit(1)
+
   # Generate labels for MTC anchors.
-  # TODO(crbug.com/452983502): switch to using the signer_set proto, and
-  # include friendly name in addition to log id.
-  for anchor in root_store.mtc_anchors:
-    if anchor.HasField('crs_root_id'):
-      crs_root_id = anchor.crs_root_id
-      log_id_text = relative_oid_to_string(anchor.log_id)
-      crs_root_ids_enum[crs_root_id] = log_id_text
+  for issuer in signer_set.issuers:
+    if issuer.base_id and issuer.HasField('crs_root_id'):
+      crs_root_id = issuer.crs_root_id
+      label = f"{issuer.base_id} {issuer.friendly_name}".strip()
+      crs_root_ids_enum[crs_root_id] = label
 
   update_histogram_enum.UpdateHistogramFromDict(
     ENUMS_XML_PATH,
     'CrsRootIds',
     crs_root_ids_enum,
-    ROOT_STORE_TEXTPROTO_PATH,
+    f"{ROOT_STORE_TEXTPROTO_PATH} and {SIGNER_SET_TEXTPROTO_PATH}",
     os.path.basename(__file__),
   )
 
