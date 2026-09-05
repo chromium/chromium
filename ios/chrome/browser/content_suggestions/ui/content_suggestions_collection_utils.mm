@@ -347,7 +347,7 @@ CGFloat HeightForLogoHeader(SearchEngineLogoState logo_state,
 }
 
 CGFloat HeaderBottomPadding(UITraitCollection* trait_collection) {
-  return IsSplitToolbarMode(trait_collection)
+  return IsSplitToolbarMode(trait_collection) || IsNewTabPageUICleanupEnabled()
              ? 0
              : kNTPShrunkLogoSearchFieldBottomPadding;
 }

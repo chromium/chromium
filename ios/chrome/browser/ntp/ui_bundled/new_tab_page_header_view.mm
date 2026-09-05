@@ -1293,6 +1293,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     [self addConstraintsForLogoView:_searchEngineLogoView
                         fakeOmnibox:self.fakeOmniboxContainer
                       andHeaderView:self];
+    [self updateFakeboxDisplay];
   }
 }
 
