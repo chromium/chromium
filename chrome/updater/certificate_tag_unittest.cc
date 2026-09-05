@@ -550,7 +550,7 @@ UNSAFE_TODO(INSTANTIATE_TEST_SUITE_P(
          [] {
            std::vector<uint8_t> expected_tag(8632);
            static constexpr char magic[] = "Gact2.0Omaha";
-           std::memcpy(&expected_tag[0], magic, sizeof(magic));
+           std::memcpy(expected_tag.data(), magic, sizeof(magic));
            static constexpr char tag[] =
                "appguid={8A69D345-D564-463C-AFF1-A69D9E530F96}&iid={2D8C18E9-"
                "8D3A-4EFC-6D61-AE23E3530EA2}&lang=en&browser=4&usagestats=0&"

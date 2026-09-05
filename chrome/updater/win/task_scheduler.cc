@@ -209,7 +209,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
     // local times.
     // The returned local times are already adjusted for DST.
     FILETIME local_file_time = {};
-    if (!::SystemTimeToFileTime(&run_times[0], &local_file_time)) {
+    if (!::SystemTimeToFileTime(run_times.get(), &local_file_time)) {
       return false;
     }
     next_run_time = base::Time::FromFileTime(local_file_time);

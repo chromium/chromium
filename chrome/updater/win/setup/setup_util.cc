@@ -520,8 +520,9 @@ HRESULT RegisterTypeLibs(UpdaterScope scope, bool is_internal) {
     std::wstring typelib_path_str = typelib_path.value().c_str();
     const HRESULT hr =
         IsSystemInstall(scope)
-            ? ::RegisterTypeLib(type_lib.Get(), &typelib_path_str[0], nullptr)
-            : ::RegisterTypeLibForUser(type_lib.Get(), &typelib_path_str[0],
+            ? ::RegisterTypeLib(type_lib.Get(), typelib_path_str.data(),
+                                nullptr)
+            : ::RegisterTypeLibForUser(type_lib.Get(), typelib_path_str.data(),
                                        nullptr);
     if (FAILED(hr)) {
       LOG(ERROR) << __func__ << " ::GetTypeInfoOfGuid failed" << ", "

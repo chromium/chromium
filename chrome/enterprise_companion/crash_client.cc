@@ -15,7 +15,6 @@
 #include "base/base_paths.h"
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/debug/dump_without_crashing.h"
@@ -263,19 +262,20 @@ int CrashReporterMain() {
   // |storage| must be declared before |argv_as_utf8|, to ensure it outlives
   // |argv_as_utf8|, which will hold pointers into |storage|.
   std::vector<std::string> storage;
-  auto argv_as_utf8 = std::make_unique<char*[]>(argv.size() + 1);
+  std::vector<char*> argv_as_utf8;
   storage.reserve(argv.size());
-  for (size_t i = 0; i < argv.size(); ++i) {
+  argv_as_utf8.reserve(argv.size() + 1);
+  for (const auto& arg : argv) {
 #if BUILDFLAG(IS_WIN)
-    storage.push_back(base::WideToUTF8(argv[i]));
+    storage.push_back(base::WideToUTF8(arg));
 #else
-    storage.push_back(argv[i]);
+    storage.push_back(arg);
 #endif
-    UNSAFE_TODO(argv_as_utf8[i]) = &storage[i][0];
+    argv_as_utf8.push_back(storage.back().data());
   }
-  UNSAFE_TODO(argv_as_utf8[argv.size()]) = nullptr;
+  argv_as_utf8.push_back(nullptr);
 
-  return crashpad::HandlerMain(argv.size(), argv_as_utf8.get(),
+  return crashpad::HandlerMain(argv.size(), argv_as_utf8.data(),
                                /*user_stream_sources=*/nullptr);
 }
 

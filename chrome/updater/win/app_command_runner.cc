@@ -380,7 +380,7 @@ HRESULT AppCommandRunner::GetAppCommandFormatComponents(
 
   int num_args = 0;
   base::win::ScopedLocalAllocTyped<wchar_t*> argv(
-      ::CommandLineToArgvW(&command_format[0], &num_args));
+      ::CommandLineToArgvW(command_format.c_str(), &num_args));
   if (!argv || num_args < 1) {
     LOG(ERROR) << __func__ << "!argv || num_args < 1: " << num_args;
     return E_INVALIDARG;

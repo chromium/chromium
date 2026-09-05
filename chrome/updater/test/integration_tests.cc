@@ -1662,7 +1662,7 @@ TEST_F(IntegrationTest, GetUpdaterState) {
           std::vector<uint32_t> components =
               base::Version(kUpdaterVersion).components();
           const base::CheckedNumeric<uint32_t> new_version = components[0] + 1;
-          ASSERT_TRUE(new_version.AssignIfValid(&components[0]));
+          ASSERT_TRUE(new_version.AssignIfValid(components.data()));
 
           EXPECT_THAT(result.inactive_versions,
                       testing::UnorderedElementsAre(

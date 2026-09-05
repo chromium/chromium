@@ -680,7 +680,7 @@ bool GetDlgItemText(HWND dlg, int item_id, std::wstring* text) {
   text->resize(num_chars + 1);
   ::SetLastError(ERROR_SUCCESS);
   const auto chars_copied = ::GetWindowText(
-      item, &text->front(), base::checked_cast<int>(text->size()));
+      item, text->data(), base::checked_cast<int>(text->size()));
   if (!chars_copied) {
     text->clear();
     return ::GetLastError() == ERROR_SUCCESS;

@@ -465,7 +465,7 @@ base::Process LaunchOfflineInstallProcess(bool is_legacy_install,
 DISPID GetDispId(Microsoft::WRL::ComPtr<IDispatch> dispatch,
                  std::wstring name) {
   DISPID id = 0;
-  LPOLESTR name_ptr = &name[0];
+  LPOLESTR name_ptr = name.data();
   EXPECT_HRESULT_SUCCEEDED(dispatch->GetIDsOfNames(IID_NULL, &name_ptr, 1,
                                                    LOCALE_USER_DEFAULT, &id));
   VLOG(2) << __func__ << ": " << name << ": " << id;
@@ -482,7 +482,7 @@ void CallDispatchMethod(
 
   DISPPARAMS dp = {};
   if (!params.empty()) {
-    dp.rgvarg = &params[0];
+    dp.rgvarg = params.data();
     dp.cArgs = params.size();
   }
 

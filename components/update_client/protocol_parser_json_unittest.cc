@@ -418,38 +418,38 @@ TEST(UpdateClientProtocolParserJSONTest, Parse) {
     EXPECT_TRUE(parser->Parse(kJSONValid)) << parser->errors();
     EXPECT_TRUE(parser->errors().empty()) << parser->errors();
     ASSERT_EQ(1u, parser->results().apps.size());
-    const auto* first_result = &parser->results().apps[0];
-    EXPECT_EQ("ok", first_result->status);
-    ASSERT_EQ(1u, first_result->pipelines.size());
-    EXPECT_EQ(first_result->pipelines[0].pipeline_id, "pipe1");
-    ASSERT_EQ(2u, first_result->pipelines[0].operations.size());
-    ASSERT_EQ(1u, first_result->pipelines[0].operations[0].urls.size());
+    const auto& first_result = parser->results().apps[0];
+    EXPECT_EQ("ok", first_result.status);
+    ASSERT_EQ(1u, first_result.pipelines.size());
+    EXPECT_EQ(first_result.pipelines[0].pipeline_id, "pipe1");
+    ASSERT_EQ(2u, first_result.pipelines[0].operations.size());
+    ASSERT_EQ(1u, first_result.pipelines[0].operations[0].urls.size());
     EXPECT_EQ(GURL("http://example.com/extension_1_2_3_4.crx"),
-              first_result->pipelines[0].operations[0].urls[0]);
-    EXPECT_EQ(base::Version("1.2.3.4"), first_result->nextversion);
+              first_result.pipelines[0].operations[0].urls[0]);
+    EXPECT_EQ(base::Version("1.2.3.4"), first_result.nextversion);
   }
   {
     // Parse xml with hash value.
     EXPECT_TRUE(parser->Parse(kJSONHash));
     EXPECT_TRUE(parser->errors().empty()) << parser->errors();
     EXPECT_FALSE(parser->results().apps.empty());
-    const auto* first_result = &parser->results().apps[0];
-    EXPECT_EQ("1234", first_result->pipelines[0].operations[0].sha256_out);
+    const auto& first_result = parser->results().apps[0];
+    EXPECT_EQ("1234", first_result.pipelines[0].operations[0].sha256_out);
   }
   {
     // Parse xml with package size value.
     EXPECT_TRUE(parser->Parse(kJSONInvalidSizes)) << parser->errors();
     EXPECT_TRUE(parser->errors().empty()) << parser->errors();
     EXPECT_FALSE(parser->results().apps.empty());
-    const auto* first_result = &parser->results().apps[0];
-    EXPECT_EQ(first_result->pipelines[0].operations.size(), 7u);
-    EXPECT_EQ(1234, first_result->pipelines[0].operations[0].size);
-    EXPECT_EQ(9007199254740991, first_result->pipelines[0].operations[1].size);
-    EXPECT_EQ(0, first_result->pipelines[0].operations[2].size);
-    EXPECT_EQ(0, first_result->pipelines[0].operations[3].size);
-    EXPECT_EQ(0, first_result->pipelines[0].operations[4].size);
-    EXPECT_EQ(0, first_result->pipelines[0].operations[5].size);
-    EXPECT_EQ(0, first_result->pipelines[0].operations[6].size);
+    const auto& first_result = parser->results().apps[0];
+    EXPECT_EQ(first_result.pipelines[0].operations.size(), 7u);
+    EXPECT_EQ(1234, first_result.pipelines[0].operations[0].size);
+    EXPECT_EQ(9007199254740991, first_result.pipelines[0].operations[1].size);
+    EXPECT_EQ(0, first_result.pipelines[0].operations[2].size);
+    EXPECT_EQ(0, first_result.pipelines[0].operations[3].size);
+    EXPECT_EQ(0, first_result.pipelines[0].operations[4].size);
+    EXPECT_EQ(0, first_result.pipelines[0].operations[5].size);
+    EXPECT_EQ(0, first_result.pipelines[0].operations[6].size);
   }
   {
     // Parse xml with a <daystart> element.
@@ -463,49 +463,49 @@ TEST(UpdateClientProtocolParserJSONTest, Parse) {
     EXPECT_TRUE(parser->Parse(kJSONNoUpdate)) << parser->errors();
     EXPECT_TRUE(parser->errors().empty()) << parser->errors();
     EXPECT_FALSE(parser->results().apps.empty());
-    const auto* first_result = &parser->results().apps[0];
-    EXPECT_EQ("noupdate", first_result->status);
-    EXPECT_EQ(first_result->app_id, "12345");
-    EXPECT_FALSE(first_result->nextversion.IsValid());
+    const auto& first_result = parser->results().apps[0];
+    EXPECT_EQ("noupdate", first_result.status);
+    EXPECT_EQ(first_result.app_id, "12345");
+    EXPECT_FALSE(first_result.nextversion.IsValid());
   }
   {
     // Parse xml with one error and one success <app> tag.
     EXPECT_TRUE(parser->Parse(kJSONTwoAppsOneError));
     EXPECT_TRUE(parser->errors().empty()) << parser->errors();
     ASSERT_EQ(2u, parser->results().apps.size());
-    const auto* first_result = &parser->results().apps[0];
-    EXPECT_EQ(first_result->app_id, "aaaaaaaa");
-    EXPECT_EQ("error-unknownApplication", first_result->status);
-    EXPECT_FALSE(first_result->nextversion.IsValid());
-    const auto* second_result = &parser->results().apps[1];
-    EXPECT_EQ(second_result->app_id, "bbbbbbbb");
-    EXPECT_EQ("ok", second_result->status);
-    EXPECT_EQ(base::Version("1.2.3.4"), second_result->nextversion);
+    const auto& first_result = parser->results().apps[0];
+    EXPECT_EQ(first_result.app_id, "aaaaaaaa");
+    EXPECT_EQ("error-unknownApplication", first_result.status);
+    EXPECT_FALSE(first_result.nextversion.IsValid());
+    const auto& second_result = parser->results().apps[1];
+    EXPECT_EQ(second_result.app_id, "bbbbbbbb");
+    EXPECT_EQ("ok", second_result.status);
+    EXPECT_EQ(base::Version("1.2.3.4"), second_result.nextversion);
   }
   {
     // Parse xml with two apps setting the cohort info.
     EXPECT_TRUE(parser->Parse(kJSONTwoAppsSetCohort));
     EXPECT_TRUE(parser->errors().empty()) << parser->errors();
     ASSERT_EQ(2u, parser->results().apps.size());
-    const auto* first_result = &parser->results().apps[0];
-    EXPECT_EQ(first_result->app_id, "aaaaaaaa");
-    EXPECT_EQ(first_result->cohort.value(), "1:2q3/");
-    EXPECT_FALSE(first_result->cohort_name.has_value());
-    EXPECT_FALSE(first_result->cohort_hint.has_value());
-    const auto* second_result = &parser->results().apps[1];
-    EXPECT_EQ(second_result->app_id, "bbbbbbbb");
-    EXPECT_EQ(second_result->cohort, "1:33z@0.33");
-    EXPECT_EQ(second_result->cohort_name, "cname");
-    EXPECT_FALSE(first_result->cohort_hint.has_value());
+    const auto& first_result = parser->results().apps[0];
+    EXPECT_EQ(first_result.app_id, "aaaaaaaa");
+    EXPECT_EQ(first_result.cohort.value(), "1:2q3/");
+    EXPECT_FALSE(first_result.cohort_name.has_value());
+    EXPECT_FALSE(first_result.cohort_hint.has_value());
+    const auto& second_result = parser->results().apps[1];
+    EXPECT_EQ(second_result.app_id, "bbbbbbbb");
+    EXPECT_EQ(second_result.cohort, "1:33z@0.33");
+    EXPECT_EQ(second_result.cohort_name, "cname");
+    EXPECT_FALSE(first_result.cohort_hint.has_value());
   }
   {
     EXPECT_TRUE(parser->Parse(kJSONUpdateCheckStatusOkWithRunAction));
     EXPECT_TRUE(parser->errors().empty()) << parser->errors();
     EXPECT_FALSE(parser->results().apps.empty());
-    const auto* first_result = &parser->results().apps[0];
-    EXPECT_EQ("ok", first_result->status);
-    EXPECT_EQ(first_result->app_id, "12345");
-    EXPECT_EQ(first_result->pipelines[0].operations[2].path, "file.exe");
+    const auto& first_result = parser->results().apps[0];
+    EXPECT_EQ("ok", first_result.status);
+    EXPECT_EQ(first_result.app_id, "12345");
+    EXPECT_EQ(first_result.pipelines[0].operations[2].path, "file.exe");
   }
   {
     EXPECT_TRUE(parser->Parse(kJSONAppsStatusError));

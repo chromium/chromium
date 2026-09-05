@@ -256,7 +256,7 @@ std::optional<std::vector<std::wstring>> CommandLineToArgv(
     const std::wstring& command_line) {
   int num_args = 0;
   base::win::ScopedLocalAllocTyped<wchar_t*> argv(
-      ::CommandLineToArgvW(&command_line[0], &num_args));
+      ::CommandLineToArgvW(command_line.c_str(), &num_args));
   if (!argv || num_args < 1) {
     LOG(ERROR) << __func__ << "!argv || num_args < 1: " << num_args;
     return std::nullopt;
@@ -1054,7 +1054,7 @@ bool IsGuid(const std::wstring& s) {
   CHECK(!s.empty());
 
   GUID guid = {0};
-  return SUCCEEDED(::IIDFromString(&s[0], &guid));
+  return SUCCEEDED(::IIDFromString(s.c_str(), &guid));
 }
 
 void ForEachRegistryRunValueWithPrefix(

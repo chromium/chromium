@@ -49,7 +49,8 @@ MsiHandleImpl::MsiHandleImpl(MSIHANDLE msi_handle) : msi_handle_(msi_handle) {}
 UINT MsiHandleImpl::GetProperty(const std::wstring& name,
                                 std::vector<wchar_t>& value,
                                 DWORD& value_length) const {
-  return ::MsiGetProperty(msi_handle_, name.c_str(), &value[0], &value_length);
+  return ::MsiGetProperty(msi_handle_, name.c_str(), value.data(),
+                          &value_length);
 }
 
 UINT MsiHandleImpl::SetProperty(const std::string& name,

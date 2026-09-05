@@ -671,8 +671,7 @@ void MSIBinary::PopulateDifatEntries() {
   std::vector<uint32_t> difat_sectors;
   for (uint32_t i = 0; i < header_.num_difat_sectors; ++i) {
     uint32_t sector = 0;
-    sector = i == 0 ? header_.first_difat_sector
-                    : difat_entries[difat_entries.size() - 1];
+    sector = i == 0 ? header_.first_difat_sector : difat_entries.back();
     difat_sectors.push_back(sector);
     uint64_t start = sector * sector_format_.size;
     for (size_t j = 0; j < sector_format_.ints; ++j) {

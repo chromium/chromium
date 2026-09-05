@@ -347,7 +347,7 @@ TEST_P(AppCommandFormatComponentsAndCommandLineTest, TestCases) {
   std::wstring cmd = base::StrCat({L"process.exe ", command_line.value()});
   int num_args = 0;
   base::win::ScopedLocalAllocTyped<wchar_t*> argv_handle(
-      ::CommandLineToArgvW(&cmd[0], &num_args));
+      ::CommandLineToArgvW(cmd.c_str(), &num_args));
   ASSERT_TRUE(argv_handle);
   EXPECT_EQ(num_args, 2) << "substitution '" << GetParam().substitutions[0]
                          << "' gave command line '" << cmd

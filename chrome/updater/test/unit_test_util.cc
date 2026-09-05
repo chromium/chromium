@@ -451,7 +451,7 @@ void SetupFakeUpdaterVersion(UpdaterScope scope,
   std::vector<uint32_t> components = base_version.components();
   base::CheckedNumeric<uint32_t> new_version = components[0];
   new_version += major_version_offset;
-  ASSERT_TRUE(new_version.AssignIfValid(&components[0]));
+  ASSERT_TRUE(new_version.AssignIfValid(components.data()));
   SetupFakeUpdater(scope, base::Version(std::move(components)),
                    should_create_updater_executable);
 }
