@@ -5,8 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_COMPONENT_EXTENSION_RESOURCE_MANAGER_H_
 #define EXTENSIONS_BROWSER_COMPONENT_EXTENSION_RESOURCE_MANAGER_H_
 
-#include <string>
-
 #include "extensions/common/extension_id.h"
 #include "ui/base/template_expressions.h"
 
@@ -40,20 +38,6 @@ class ComponentExtensionResourceManager {
   // valid for the life of this ComponentExtensionResourceManager.
   virtual const ui::TemplateReplacements* GetTemplateReplacementsForExtension(
       const ExtensionId& extension_id,
-      content::BrowserContext* context) const = 0;
-
-  // Checks whether `path` (e.g. "/strings.m.js") is served dynamically for
-  // `extension_id` and `context`.
-  virtual bool IsDynamicComponentExtensionResource(
-      const ExtensionId& extension_id,
-      const std::string& path,
-      content::BrowserContext* context) const = 0;
-
-  // Returns the generated content (e.g., "/strings.m.js") for the dynamic
-  // resource specified by `path` for `extension_id` and `context`.
-  virtual std::string GetDynamicResourceContent(
-      const ExtensionId& extension_id,
-      const std::string& path,
       content::BrowserContext* context) const = 0;
 };
 

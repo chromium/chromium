@@ -360,18 +360,6 @@ TEST_F(ExtensionUserScriptLoaderTest, ComponentExtensionContentScriptIsLoaded) {
         content::BrowserContext* context) const override {
       return nullptr;
     }
-    bool IsDynamicComponentExtensionResource(
-        const ExtensionId& extension_id,
-        const std::string& path,
-        content::BrowserContext* context) const override {
-      return false;
-    }
-    std::string GetDynamicResourceContent(
-        const ExtensionId& extension_id,
-        const std::string& path,
-        content::BrowserContext* context) const override {
-      return "";
-    }
   };
 
   class TestClient : public TestExtensionsBrowserClient {

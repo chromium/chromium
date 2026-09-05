@@ -5,15 +5,12 @@
 #include "chrome/browser/extensions/chrome_component_extension_resource_manager.h"
 
 #include <map>
-#include <string>
 
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/json/json_writer.h"
 #include "base/path_service.h"
-#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -31,7 +28,6 @@
 #include "extensions/browser/extension_config_map.h"
 #include "extensions/browser/extension_config_map_factory.h"
 #include "extensions/buildflags/buildflags.h"
-#include "extensions/common/constants.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "pdf/buildflags.h"
@@ -265,32 +261,6 @@ ChromeComponentExtensionResourceManager::GetTemplateReplacementsForExtension(
 
   auto it = data_->template_replacements().find(extension_id);
   return it != data_->template_replacements().end() ? &it->second : nullptr;
-}
-
-bool ChromeComponentExtensionResourceManager::
-    IsDynamicComponentExtensionResource(
-        const ExtensionId& extension_id,
-        const std::string& path,
-        content::BrowserContext* context) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  return path == kDynamicStringsJsPath &&
-         GetConfigProvider(extension_id, context) != nullptr;
-}
-
-std::string ChromeComponentExtensionResourceManager::GetDynamicResourceContent(
-    const ExtensionId& extension_id,
-    const std::string& path,
-    content::BrowserContext* context) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  CHECK_EQ(path, kDynamicStringsJsPath);
-  CHECK(context);
-
-  auto* provider = GetConfigProvider(extension_id, context);
-  CHECK(provider);
-
-  base::DictValue dict = provider->GetLoadTimeData(*context);
-  return base::StringPrintf(kDynamicStringsModuleTemplate,
-                            base::WriteJson(dict).value_or("{}").c_str());
 }
 
 void ChromeComponentExtensionResourceManager::LazyInitData() const {

@@ -4,10 +4,15 @@
 
 #include "extensions/browser/extension_config_map.h"
 
+#include <string>
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/map_util.h"
+#include "base/json/json_writer.h"
+#include "base/strings/stringprintf.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
 
@@ -33,6 +38,19 @@ ExtensionConfigProvider::GetTemplateReplacements(
     template_replacements_ = std::move(replacements);
   }
   return &template_replacements_.value();
+}
+
+bool ExtensionConfigProvider::IsDynamicResource(const std::string& path) const {
+  return path == kDynamicStringsJsPath;
+}
+
+std::string ExtensionConfigProvider::GetDynamicResourceContent(
+    const std::string& path,
+    content::BrowserContext& context) {
+  CHECK_EQ(path, kDynamicStringsJsPath);
+  base::DictValue dict = GetLoadTimeData(context);
+  return base::StringPrintf(kDynamicStringsModuleTemplate,
+                            base::WriteJson(dict).value_or("{}").c_str());
 }
 
 bool ExtensionConfigProvider::IsJsErrorReportingEnabled() const {

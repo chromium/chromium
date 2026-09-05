@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -45,6 +46,14 @@ class ExtensionConfigProvider {
   // template replacements and `loadTimeData` in dynamic ES modules (e.g.,
   // `strings.m.js`).
   virtual base::DictValue GetLoadTimeData(content::BrowserContext& context);
+
+  // Returns true if `path` is a dynamically generated resource (e.g.
+  // `/strings.m.js`) supplied by this config provider.
+  bool IsDynamicResource(const std::string& path) const;
+
+  // Generates the JavaScript content for the dynamic resource at `path`.
+  std::string GetDynamicResourceContent(const std::string& path,
+                                        content::BrowserContext& context);
 
   // Returns true if JS error reporting is enabled for this extension.
   virtual bool IsJsErrorReportingEnabled() const;
