@@ -670,6 +670,9 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
   source->AddString("composeboxImageFileTypes", image_mime_types);
   source->AddBoolean("lensSendRawFileMediaTypesEnabled",
                      lens::features::IsLensSendRawFileMediaTypesEnabled());
+  source->AddBoolean("lensBypassCompressionForC2pa",
+                     base::FeatureList::IsEnabled(
+                         lens::features::kLensBypassCompressionForC2pa));
   const std::string attachment_mime_types =
       composebox_config.attachment_upload().mime_types_allowed();
   source->AddString("composeboxAttachmentFileTypes", attachment_mime_types);

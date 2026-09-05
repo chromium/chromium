@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {loadTimeData} from './i18n_setup.js';
 import {checkTransparency} from './transparency.js';
 
 export const SUPPORTED_FILE_TYPES = [
@@ -14,6 +15,25 @@ export const SUPPORTED_FILE_TYPES = [
   'image/webp',
   'image/x-icon',
 ];
+
+export const MAX_C2PA_SEARCH_BYTES = 256 * 1024;
+export const C2PA_MARKER = 'urn:c2pa:';
+export const MAX_C2PA_PIXELS = 3000000;
+
+export const SUPPORTED_C2PA_FILE_TYPES = [
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'image/heic',
+  'image/heif',
+];
+
+export async function hasC2paMetadata(file: File): Promise<boolean> {
+  const slice = file.slice(0, MAX_C2PA_SEARCH_BYTES);
+  const buffer = await slice.arrayBuffer();
+  const text = new TextDecoder('utf-8', {fatal: false}).decode(buffer);
+  return text.includes(C2PA_MARKER);
+}
 
 type MimeType = typeof SUPPORTED_FILE_TYPES[number];
 
@@ -59,6 +79,19 @@ export async function processFile(
 
   const originalImageWidth = image.width;
   const originalImageHeight = image.height;
+
+  const isC2paBypassEnabled =
+      loadTimeData.getBoolean('lensBypassCompressionForC2pa');
+  if (isC2paBypassEnabled && SUPPORTED_C2PA_FILE_TYPES.includes(file.type) &&
+      (originalImageWidth * originalImageHeight <= MAX_C2PA_PIXELS)) {
+    if (await hasC2paMetadata(file)) {
+      return {
+        processedFile: file,
+        imageWidth: originalImageWidth,
+        imageHeight: originalImageHeight,
+      };
+    }
+  }
 
   const hasTransparency = checkTransparency(await file.arrayBuffer());
 
