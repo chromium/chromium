@@ -107,11 +107,10 @@ BlinkCongestionControlToMojo(const V8WebTransportCongestionControl& cc) {
   NOTREACHED();
 }
 
-// Creates a mojo DataPipe with the options we use for our stream data pipes. On
-// success, returns true. On failure, throws an exception and returns false.
+// Creates a mojo DataPipe with the options we use for our stream data pipes.
+// Returns true on success.
 bool CreateStreamDataPipe(mojo::ScopedDataPipeProducerHandle* producer,
-                          mojo::ScopedDataPipeConsumerHandle* consumer,
-                          ExceptionState& exception_state) {
+                          mojo::ScopedDataPipeConsumerHandle* consumer) {
   MojoCreateDataPipeOptions options;
   options.struct_size = sizeof(MojoCreateDataPipeOptions);
   options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
@@ -120,14 +119,7 @@ bool CreateStreamDataPipe(mojo::ScopedDataPipeProducerHandle* producer,
   options.capacity_num_bytes = 0;
 
   MojoResult result = mojo::CreateDataPipe(&options, *producer, *consumer);
-  if (result != MOJO_RESULT_OK) {
-    // Probably out of resources.
-    exception_state.ThrowDOMException(DOMExceptionCode::kUnknownError,
-                                      "Insufficient resources.");
-    return false;
-  }
-
-  return true;
+  return result == MOJO_RESULT_OK;
 }
 
 // Validates the conditions outlined in
@@ -175,6 +167,98 @@ bool WebTransport::RecentlyForgottenStreamIdSet::Contains(
 void WebTransport::RecentlyForgottenStreamIdSet::Erase(uint32_t stream_id) {
   id_set_.erase(stream_id);
 }
+
+class WebTransport::PendingStreamCreation final
+    : public GarbageCollected<PendingStreamCreation> {
+ public:
+  PendingStreamCreation(ScriptPromiseResolver<WritableStream>* resolver,
+                        WebTransportSendGroup* send_group,
+                        int64_t send_order)
+      : unidirectional_resolver_(resolver),
+        send_group_(send_group),
+        send_order_(send_order) {}
+
+  PendingStreamCreation(ScriptPromiseResolver<BidirectionalStream>* resolver,
+                        WebTransportSendGroup* send_group,
+                        int64_t send_order)
+      : bidirectional_resolver_(resolver),
+        send_group_(send_group),
+        send_order_(send_order) {}
+
+  void Start(WebTransport* web_transport) {
+    CHECK(web_transport->transport_remote_.is_bound());
+    constexpr char kInsufficientResourcesMessage[] = "Insufficient resources.";
+
+    SendStreamOptions options;
+    options.send_group = send_group_;
+    options.send_order = send_order_;
+    auto priority = BuildMojoPriority(options);
+
+    if (unidirectional_resolver_) {
+      mojo::ScopedDataPipeProducerHandle outgoing_producer;
+      mojo::ScopedDataPipeConsumerHandle outgoing_consumer;
+      if (!CreateStreamDataPipe(&outgoing_producer, &outgoing_consumer)) {
+        unidirectional_resolver_->RejectWithDOMException(
+            DOMExceptionCode::kUnknownError, kInsufficientResourcesMessage);
+        return;
+      }
+
+      web_transport->create_stream_resolvers_.insert(unidirectional_resolver_);
+      web_transport->transport_remote_->CreateStream(
+          std::move(outgoing_consumer), mojo::ScopedDataPipeProducerHandle(),
+          std::move(priority),
+          BindOnce(&WebTransport::OnCreateSendStreamResponse,
+                   WrapWeakPersistent(web_transport),
+                   WrapWeakPersistent(unidirectional_resolver_.Get()),
+                   std::move(outgoing_producer),
+                   WrapPersistent(send_group_.Get()), send_order_));
+      return;
+    }
+
+    CHECK(bidirectional_resolver_);
+    mojo::ScopedDataPipeProducerHandle outgoing_producer;
+    mojo::ScopedDataPipeConsumerHandle outgoing_consumer;
+    mojo::ScopedDataPipeProducerHandle incoming_producer;
+    mojo::ScopedDataPipeConsumerHandle incoming_consumer;
+    if (!CreateStreamDataPipe(&outgoing_producer, &outgoing_consumer) ||
+        !CreateStreamDataPipe(&incoming_producer, &incoming_consumer)) {
+      bidirectional_resolver_->RejectWithDOMException(
+          DOMExceptionCode::kUnknownError, kInsufficientResourcesMessage);
+      return;
+    }
+
+    web_transport->create_stream_resolvers_.insert(bidirectional_resolver_);
+    web_transport->transport_remote_->CreateStream(
+        std::move(outgoing_consumer), std::move(incoming_producer),
+        std::move(priority),
+        BindOnce(&WebTransport::OnCreateBidirectionalStreamResponse,
+                 WrapWeakPersistent(web_transport),
+                 WrapWeakPersistent(bidirectional_resolver_.Get()),
+                 std::move(outgoing_producer), std::move(incoming_consumer),
+                 WrapPersistent(send_group_.Get()), send_order_));
+  }
+
+  void Reject(v8::Local<v8::Value> error) {
+    if (unidirectional_resolver_) {
+      unidirectional_resolver_->Reject(error);
+      return;
+    }
+    CHECK(bidirectional_resolver_);
+    bidirectional_resolver_->Reject(error);
+  }
+
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(unidirectional_resolver_);
+    visitor->Trace(bidirectional_resolver_);
+    visitor->Trace(send_group_);
+  }
+
+ private:
+  Member<ScriptPromiseResolver<WritableStream>> unidirectional_resolver_;
+  Member<ScriptPromiseResolver<BidirectionalStream>> bidirectional_resolver_;
+  Member<WebTransportSendGroup> send_group_;
+  const int64_t send_order_;
+};
 
 // Sends a datagram on write().
 class WebTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
@@ -983,8 +1067,8 @@ ScriptPromise<WritableStream> WebTransport::createUnidirectionalStream(
 
   UseCounter::Count(GetExecutionContext(),
                     WebFeature::kQuicTransportStreamApis);
-  if (!transport_remote_.is_bound()) {
-    // TODO(ricea): Should we wait if we're still connecting?
+  if (!RuntimeEnabledFeatures::WebTransportCreateStreamsBeforeReadyEnabled() &&
+      !transport_remote_.is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNetworkError,
                                       "No connection.");
     return EmptyPromise();
@@ -995,37 +1079,29 @@ ScriptPromise<WritableStream> WebTransport::createUnidirectionalStream(
     return EmptyPromise();
   }
 
-  mojo::ScopedDataPipeProducerHandle data_pipe_producer;
-  mojo::ScopedDataPipeConsumerHandle data_pipe_consumer;
-
-  if (!CreateStreamDataPipe(&data_pipe_producer, &data_pipe_consumer,
-                            exception_state)) {
-    return EmptyPromise();
+  if (!connection_pending_ && !transport_remote_.is_bound()) {
+    constexpr char kInvalidStateMessage[] =
+        "The WebTransport connection is not open.";
+    auto* resolver =
+        MakeGarbageCollected<ScriptPromiseResolver<WritableStream>>(
+            script_state, exception_state.GetContext());
+    resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
+                                     kInvalidStateMessage);
+    return resolver->Promise();
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<WritableStream>>(
       script_state, exception_state.GetContext());
-  create_stream_resolvers_.insert(resolver);
-  // Capture send_group via WrapPersistent so it survives the asynchronous
-  // Mojo round-trip (between CreateStream() and the callback). The
-  // transport's send_groups_ registry uses WeakMember, so without this
-  // strong reference the group could be garbage-collected if JS drops all
-  // references before the callback fires. nullptr is safe — Persistent<T>
-  // accepts null.
-  // Build a Mojo priority struct only when there is a non-default send_group
-  // or send_order.  Passing nullptr avoids a redundant SetPriority() call in
-  // the network service.
-  auto mojo_priority = BuildMojoPriority(*stream_options);
-  transport_remote_->CreateStream(
-      std::move(data_pipe_consumer), mojo::ScopedDataPipeProducerHandle(),
-      std::move(mojo_priority),
-      BindOnce(&WebTransport::OnCreateSendStreamResponse,
-               WrapWeakPersistent(this), WrapWeakPersistent(resolver),
-               std::move(data_pipe_producer),
-               WrapPersistent(stream_options->send_group),
-               stream_options->send_order));
-
-  return resolver->Promise();
+  auto promise = resolver->Promise();
+  auto* pending = MakeGarbageCollected<PendingStreamCreation>(
+      resolver, stream_options->send_group, stream_options->send_order);
+  if (connection_pending_) {
+    pending_stream_creations_.push_back(pending);
+  } else {
+    CHECK(transport_remote_.is_bound());
+    pending->Start(this);
+  }
+  return promise;
 }
 
 ReadableStream* WebTransport::incomingUnidirectionalStreams() {
@@ -1043,8 +1119,8 @@ ScriptPromise<BidirectionalStream> WebTransport::createBidirectionalStream(
 
   UseCounter::Count(GetExecutionContext(),
                     WebFeature::kQuicTransportStreamApis);
-  if (!transport_remote_.is_bound()) {
-    // TODO(ricea): We should wait if we are still connecting.
+  if (!RuntimeEnabledFeatures::WebTransportCreateStreamsBeforeReadyEnabled() &&
+      !transport_remote_.is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNetworkError,
                                       "No connection.");
     return EmptyPromise();
@@ -1055,37 +1131,30 @@ ScriptPromise<BidirectionalStream> WebTransport::createBidirectionalStream(
     return EmptyPromise();
   }
 
-  mojo::ScopedDataPipeProducerHandle outgoing_producer;
-  mojo::ScopedDataPipeConsumerHandle outgoing_consumer;
-  if (!CreateStreamDataPipe(&outgoing_producer, &outgoing_consumer,
-                            exception_state)) {
-    return EmptyPromise();
-  }
-
-  mojo::ScopedDataPipeProducerHandle incoming_producer;
-  mojo::ScopedDataPipeConsumerHandle incoming_consumer;
-  if (!CreateStreamDataPipe(&incoming_producer, &incoming_consumer,
-                            exception_state)) {
-    return EmptyPromise();
+  if (!connection_pending_ && !transport_remote_.is_bound()) {
+    constexpr char kInvalidStateMessage[] =
+        "The WebTransport connection is not open.";
+    auto* resolver =
+        MakeGarbageCollected<ScriptPromiseResolver<BidirectionalStream>>(
+            script_state, exception_state.GetContext());
+    resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
+                                     kInvalidStateMessage);
+    return resolver->Promise();
   }
 
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<BidirectionalStream>>(
           script_state, exception_state.GetContext());
-  create_stream_resolvers_.insert(resolver);
-  // See createUnidirectionalStream — send_group captured via WrapPersistent
-  // to survive the Mojo round-trip; the registry uses WeakMember.
-  auto mojo_priority = BuildMojoPriority(*stream_options);
-  transport_remote_->CreateStream(
-      std::move(outgoing_consumer), std::move(incoming_producer),
-      std::move(mojo_priority),
-      BindOnce(&WebTransport::OnCreateBidirectionalStreamResponse,
-               WrapWeakPersistent(this), WrapWeakPersistent(resolver),
-               std::move(outgoing_producer), std::move(incoming_consumer),
-               WrapPersistent(stream_options->send_group),
-               stream_options->send_order));
-
-  return resolver->Promise();
+  auto promise = resolver->Promise();
+  auto* pending = MakeGarbageCollected<PendingStreamCreation>(
+      resolver, stream_options->send_group, stream_options->send_order);
+  if (connection_pending_) {
+    pending_stream_creations_.push_back(pending);
+  } else {
+    CHECK(transport_remote_.is_bound());
+    pending->Start(this);
+  }
+  return promise;
 }
 
 ReadableStream* WebTransport::incomingBidirectionalStreams() {
@@ -1316,6 +1385,7 @@ void WebTransport::OnConnectionEstablished(
       V8WebTransportReliabilityMode::Enum::kSupportsUnreliable);
   connection_pending_ = false;
   ready_->ResolveWithUndefined();
+  StartPendingStreamCreations();
 
   HeapVector<Member<ScriptPromiseResolver<WebTransportConnectionStats>>>
       stats_resolvers;
@@ -1602,6 +1672,7 @@ void WebTransport::Trace(Visitor* visitor) const {
   visitor->Trace(datagram_underlying_sinks_with_pending_writes_);
   visitor->Trace(script_state_);
   visitor->Trace(create_stream_resolvers_);
+  visitor->Trace(pending_stream_creations_);
   visitor->Trace(connector_);
   visitor->Trace(transport_remote_);
   visitor->Trace(handshake_client_receiver_);
@@ -1881,6 +1952,7 @@ void WebTransport::Dispose() {
   // let the garbage collector free the memory.
   // Clear pending close notifications.
   closed_potentially_pending_streams_.clear();
+  pending_stream_creations_.clear();
   send_groups_.clear();
   connector_.reset();
   transport_remote_.reset();
@@ -1897,7 +1969,12 @@ void WebTransport::Cleanup(WebTransportCloseInfo* info,
   CHECK_EQ(!info, abruptly);
   v8::Isolate* isolate = script_state_->GetIsolate();
 
-  RejectPendingStreamResolvers(error);
+  constexpr char kInvalidStateMessage[] =
+      "The WebTransport connection is not open.";
+  v8::Local<v8::Value> stream_error = V8ThrowDOMException::CreateOrEmpty(
+      isolate, DOMExceptionCode::kInvalidStateError, kInvalidStateMessage);
+  RejectPendingStreamCreations(stream_error);
+  RejectPendingStreamResolvers(stream_error);
   HandlePendingGetStatsResolvers(error);
   ScriptValue error_value(isolate, error);
   datagram_underlying_source_->Error(received_datagrams_controller_, error);
@@ -1964,6 +2041,22 @@ void WebTransport::OnConnectionError() {
       V8WebTransportErrorSource::Enum::kSession);
 
   Cleanup(nullptr, error, /*abruptly=*/true);
+}
+
+void WebTransport::StartPendingStreamCreations() {
+  HeapVector<Member<PendingStreamCreation>> pending;
+  pending.swap(pending_stream_creations_);
+  for (PendingStreamCreation* stream_creation : pending) {
+    stream_creation->Start(this);
+  }
+}
+
+void WebTransport::RejectPendingStreamCreations(v8::Local<v8::Value> error) {
+  HeapVector<Member<PendingStreamCreation>> pending;
+  pending.swap(pending_stream_creations_);
+  for (PendingStreamCreation* stream_creation : pending) {
+    stream_creation->Reject(error);
+  }
 }
 
 void WebTransport::RejectPendingStreamResolvers(v8::Local<v8::Value> error) {

@@ -7184,6 +7184,10 @@
       base_feature: "none",
     },
     {
+      name: "WebTransportCreateStreamsBeforeReady",
+      status: "stable",
+    },
+    {
       name: "WebTransportCustomCertificates",
       origin_trial_feature_name: "WebTransportCustomCertificates",
       status: "stable",

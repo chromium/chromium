@@ -217,6 +217,7 @@ class MODULES_EXPORT WebTransport final
   class StreamVendingUnderlyingSource;
   class ReceiveStreamVendor;
   class BidirectionalStreamVendor;
+  class PendingStreamCreation;
 
   WebTransport(ScriptState*, const String& url, ExecutionContext* context);
 
@@ -229,6 +230,8 @@ class MODULES_EXPORT WebTransport final
                v8::Local<v8::Value> error,
                bool abruptly);
   void OnConnectionError();
+  void StartPendingStreamCreations();
+  void RejectPendingStreamCreations(v8::Local<v8::Value> error);
   void RejectPendingStreamResolvers(v8::Local<v8::Value> error);
   void HandlePendingGetStatsResolvers(v8::Local<v8::Value> error);
   void ForgetDatagramUnderlyingSink(DatagramUnderlyingSink*);
@@ -372,6 +375,9 @@ class MODULES_EXPORT WebTransport final
   // Tracks resolvers for in-progress createSendStream() and
   // createBidirectionalStream() operations so they can be rejected.
   HeapHashSet<Member<ScriptPromiseResolverBase>> create_stream_resolvers_;
+
+  // Stream creation is allowed while the connection is being established.
+  HeapVector<Member<PendingStreamCreation>> pending_stream_creations_;
 
   // The [[ReceivedStreams]] slot.
   // https://w3c.github.io/webtransport/#webtransport-receivedstreams
