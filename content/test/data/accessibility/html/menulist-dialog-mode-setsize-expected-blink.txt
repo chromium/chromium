@@ -1,0 +1,33 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++dialog setSize=2
+++++++++menuItem name='File' setSize=2 posInSet=1
+++++++++++staticText name='File'
+++++++++++++inlineTextBox name='File'
+++++++++menuItem name='Edit' setSize=2 posInSet=2
+++++++++++staticText name='Edit'
+++++++++++++inlineTextBox name='Edit'
+++++++++button name='Invalid'
+++++++++++staticText name='Invalid'
+++++++++++++inlineTextBox name='Invalid'
+++++++popUpButton name='Show Menu'
+++++++++staticText name='Show Menu'
+++++++++++inlineTextBox name='Show Menu'
+++++++dialog name='Show Menu' setSize=3 ispopup=auto
+++++++++menuItem name='Copy' setSize=3 posInSet=1
+++++++++++staticText name='Copy'
+++++++++++++inlineTextBox name='Copy'
+++++++++button name='Invalid'
+++++++++++staticText name='Invalid'
+++++++++++++inlineTextBox name='Invalid'
+++++++++menuItem name='Paste' setSize=3 posInSet=2
+++++++++++staticText name='Paste'
+++++++++++++inlineTextBox name='Paste'
+++++++++group setSize=1
+++++++++++menuItemCheckBox name='Checkbox' setSize=1 posInSet=1 checkedState=false
+++++++++++++staticText name='Checkbox'
+++++++++++++++inlineTextBox name='Checkbox'
+++++++++menuItemRadio name='Radio' setSize=3 posInSet=3 checkedState=false
+++++++++++staticText name='Radio'
+++++++++++++inlineTextBox name='Radio'

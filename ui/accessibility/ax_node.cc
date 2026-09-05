@@ -1950,6 +1950,14 @@ bool AXNode::IsOrderedSet() const {
   if (IsRowGroupInTreeGrid())
     return true;
 
+  if (GetRole() == ax::mojom::Role::kDialog) {
+    const std::string& tag =
+        GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
+    if (tag == "menubar" || tag == "menulist") {
+      return true;
+    }
+  }
+
   return ui::IsSetLike(GetRole());
 }
 
@@ -2019,6 +2027,16 @@ bool AXNode::SetRoleMatchesItemRole(const AXNode* ordered_set) const {
     case ax::mojom::Role::kComboBoxSelect:
       // kComboBoxSelect wraps a kMenuListPopUp.
       return item_role == ax::mojom::Role::kMenuListPopup;
+    case ax::mojom::Role::kDialog: {
+      const std::string& tag =
+          ordered_set->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
+      if (tag == "menubar" || tag == "menulist") {
+        return item_role == ax::mojom::Role::kMenuItem ||
+               item_role == ax::mojom::Role::kMenuItemRadio ||
+               item_role == ax::mojom::Role::kMenuItemCheckBox;
+      }
+      return false;
+    }
     default:
       return false;
   }

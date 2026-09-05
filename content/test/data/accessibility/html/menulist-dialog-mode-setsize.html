@@ -1,0 +1,28 @@
+<!--
+@BLINK-ALLOW:setSize*
+@BLINK-ALLOW:posInSet*
+@AURALINUX-ALLOW:setsize*
+@AURALINUX-ALLOW:posinset*
+-->
+<!DOCTYPE html>
+<menubar>
+  <menuitem>File</menuitem>
+  <menuitem>Edit</menuitem>
+  <button>Invalid</button>
+</menubar>
+
+<button id="button" popovertarget="menu">Show Menu</button>
+<menulist id="menu" popover>
+  <menuitem>Copy</menuitem>
+  <button>Invalid</button>
+  <menuitem>Paste</menuitem>
+  <fieldset checkable="multiple">
+    <menuitem>Checkbox</menuitem>
+  </fieldset>
+  <menuitem role="menuitemradio">Radio</menuitem>
+</menulist>
+<script>
+  window.addEventListener('load', () => {
+    button.click();
+  });
+</script>

@@ -1,0 +1,14 @@
+[document web]
+++[section]
+++++[dialog] setsize:2
+++++++[menu item] name='File' posinset:1 setsize:2
+++++++[menu item] name='Edit' posinset:2 setsize:2
+++++++[push button] name='Invalid'
+++++[push button] name='Show Menu' label-for=[dialog]
+++++[dialog] name='Show Menu' labelled-by=[push button] setsize:3
+++++++[menu item] name='Copy' posinset:1 setsize:3
+++++++[push button] name='Invalid'
+++++++[menu item] name='Paste' posinset:2 setsize:3
+++++++[panel] setsize:1
+++++++++[check menu item] name='Checkbox' checkable checkable:true posinset:1 setsize:1
+++++++[radio menu item] name='Radio' checkable checkable:true posinset:3 setsize:3
