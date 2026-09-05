@@ -13,7 +13,9 @@
 #include "base/memory/weak_ptr.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension_id.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
+class BrowserWindowInterface;
 class Profile;
 
 namespace extensions {
@@ -22,8 +24,16 @@ class Extension;
 
 class ExtensionInstalledWatcher : public extensions::ExtensionRegistryObserver {
  public:
+  DECLARE_USER_DATA(ExtensionInstalledWatcher);
+
   explicit ExtensionInstalledWatcher(Profile* profile);
+  // Constructs a window-scoped watcher, reachable through From(`browser`).
+  explicit ExtensionInstalledWatcher(BrowserWindowInterface* browser);
   ~ExtensionInstalledWatcher() override;
+
+  // Returns the window-scoped watcher for `browser`, or null if there is
+  // none.
+  static ExtensionInstalledWatcher* From(BrowserWindowInterface* browser);
 
   ExtensionInstalledWatcher(const ExtensionInstalledWatcher&) = delete;
   ExtensionInstalledWatcher& operator=(const ExtensionInstalledWatcher&) =
@@ -48,6 +58,11 @@ class ExtensionInstalledWatcher : public extensions::ExtensionRegistryObserver {
   // The bool indicates if the extension was installed or not
   std::map<extensions::ExtensionId, base::OnceCallback<void(bool)>>
       pending_installs_;
+
+  // Only set for the window-scoped instance created by
+  // BrowserWindowFeatures.
+  std::optional<ui::ScopedUnownedUserData<ExtensionInstalledWatcher>>
+      scoped_unowned_user_data_;
 
   base::WeakPtrFactory<ExtensionInstalledWatcher> weak_factory_{this};
 };

@@ -318,10 +318,6 @@ class BrowserWindowFeatures {
     return browser_command_controller_.get();
   }
 
-  ExtensionInstalledWatcher* extension_installed_watcher() {
-    return extension_installed_watcher_.get();
-  }
-
   ExtensionKeybindingRegistryViews* extension_keybinding_registry() {
     return extension_keybinding_registry_.get();
   }

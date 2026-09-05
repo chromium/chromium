@@ -406,7 +406,7 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 #endif
 
   extension_installed_watcher_ =
-      std::make_unique<ExtensionInstalledWatcher>(profile);
+      std::make_unique<ExtensionInstalledWatcher>(browser);
 
   history_clusters_side_panel_coordinator_ =
       GetUserDataFactory().CreateInstance<HistoryClustersSidePanelCoordinator>(

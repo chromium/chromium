@@ -9,12 +9,27 @@
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
+
+DEFINE_USER_DATA(ExtensionInstalledWatcher);
 
 ExtensionInstalledWatcher::ExtensionInstalledWatcher(Profile* profile)
     : profile_(profile) {
   extensions::ExtensionRegistry::Get(profile_)->AddObserver(this);
+}
+
+ExtensionInstalledWatcher::ExtensionInstalledWatcher(
+    BrowserWindowInterface* browser)
+    : ExtensionInstalledWatcher(browser->GetProfile()) {
+  scoped_unowned_user_data_.emplace(browser->GetUnownedUserDataHost(), *this);
+}
+
+// static
+ExtensionInstalledWatcher* ExtensionInstalledWatcher::From(
+    BrowserWindowInterface* browser) {
+  return Get(browser->GetUnownedUserDataHost());
 }
 
 ExtensionInstalledWatcher::~ExtensionInstalledWatcher() {

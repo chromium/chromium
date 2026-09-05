@@ -9,7 +9,6 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -27,10 +26,11 @@ class ExtensionInstalledWatcherBrowserTest
     if (!test_browser) {
       test_browser = browser();
     }
-    test_browser->GetFeatures().extension_installed_watcher()->WaitForInstall(
-        extension->id(),
-        base::BindOnce(&ExtensionInstalledWatcherBrowserTest::Done,
-                       base::Unretained(this)));
+    ExtensionInstalledWatcher::From(test_browser)
+        ->WaitForInstall(
+            extension->id(),
+            base::BindOnce(&ExtensionInstalledWatcherBrowserTest::Done,
+                           base::Unretained(this)));
   }
 
   void Done(bool success) {
