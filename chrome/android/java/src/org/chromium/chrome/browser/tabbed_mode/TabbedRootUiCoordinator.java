@@ -406,7 +406,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private final OneshotSupplierImpl<SideUiStateProvider> mSideUiStateProviderSupplier =
             new OneshotSupplierImpl<>();
     private @Nullable ViewMarginAdjusterForSideUi mSecondaryUiContainerMarginAdjuster;
-    private @Nullable ViewMarginAdjusterForSideUi mSheetContainerMarginAdjuster;
+    private @Nullable BottomSheetContainerMarginAdjusterForSideUi
+            mBottomSheetContainerMarginAdjuster;
     private @Nullable ContextualTasksBridge mContextualTasksBridge;
     private @Nullable GlicUiCoordinator mGlicUiCoordinator;
     private @Nullable ForcedSigninController mForcedSigninController;
@@ -483,6 +484,48 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             }
             super.destroy();
             swapToTab(null);
+        }
+    }
+
+    private static class BottomSheetContainerMarginAdjusterForSideUi
+            extends ViewMarginAdjusterForSideUi implements LayoutStateProvider.LayoutStateObserver {
+        private final Supplier<@Nullable SideUiCoordinator> mSideUiCoordinatorSupplier;
+        private boolean mIsInHub;
+
+        BottomSheetContainerMarginAdjusterForSideUi(
+                View view, Supplier<@Nullable SideUiCoordinator> sideUiCoordinatorSupplier) {
+            super(view);
+            mSideUiCoordinatorSupplier = sideUiCoordinatorSupplier;
+        }
+
+        @Override
+        public void onSideUiSpecsChanged(SideUiCoordinator.SideUiSpecs sideUiSpecs) {
+            if (mIsInHub) {
+                super.onSideUiSpecsChanged(
+                        new SideUiCoordinator.SideUiSpecs(Collections.emptyMap()));
+            } else {
+                super.onSideUiSpecsChanged(sideUiSpecs);
+            }
+        }
+
+        @Override
+        public void onStartedShowing(@LayoutType int layoutType) {
+            if (layoutType == LayoutType.HUB) {
+                mIsInHub = true;
+                super.onSideUiSpecsChanged(
+                        new SideUiCoordinator.SideUiSpecs(Collections.emptyMap()));
+            }
+        }
+
+        @Override
+        public void onStartedHiding(@LayoutType int layoutType) {
+            if (layoutType == LayoutType.HUB) {
+                mIsInHub = false;
+                var sideUiCoordinator = mSideUiCoordinatorSupplier.get();
+                if (sideUiCoordinator != null) {
+                    super.onSideUiSpecsChanged(sideUiCoordinator.getCurrentSideUiSpecs());
+                }
+            }
         }
     }
 
@@ -2399,10 +2442,17 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mSecondaryUiContainerMarginAdjuster = new ViewMarginAdjusterForSideUi(secondaryUiContainer);
         mSideUiCoordinator.addObserver(mSecondaryUiContainerMarginAdjuster);
 
-        View sheetContainer = mActivity.findViewById(R.id.sheet_container);
-        if (sheetContainer != null) {
-            mSheetContainerMarginAdjuster = new ViewMarginAdjusterForSideUi(sheetContainer);
-            mSideUiCoordinator.addObserver(mSheetContainerMarginAdjuster);
+        if (ChromeFeatureList.sBottomSheetOnDesktopWindowing.isEnabled()) {
+            View sheetContainer = mActivity.findViewById(R.id.sheet_container);
+            if (sheetContainer != null) {
+                var adjuster =
+                        new BottomSheetContainerMarginAdjusterForSideUi(
+                                sheetContainer, () -> mSideUiCoordinator);
+                mBottomSheetContainerMarginAdjuster = adjuster;
+                mSideUiCoordinator.addObserver(adjuster);
+                mLayoutStateProviderOneShotSupplier.onAvailable(
+                        layoutStateProvider -> layoutStateProvider.addObserver(adjuster));
+            }
         }
     }
 
@@ -2625,12 +2675,17 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             if (mSecondaryUiContainerMarginAdjuster != null) {
                 mSideUiCoordinator.removeObserver(mSecondaryUiContainerMarginAdjuster);
             }
-            if (mSheetContainerMarginAdjuster != null) {
-                mSideUiCoordinator.removeObserver(mSheetContainerMarginAdjuster);
+            if (mBottomSheetContainerMarginAdjuster != null) {
+                mSideUiCoordinator.removeObserver(mBottomSheetContainerMarginAdjuster);
             }
             mSideUiCoordinator.destroy();
             mSideUiCoordinator = null;
         }
+
+        if (mLayoutStateProvider != null && mBottomSheetContainerMarginAdjuster != null) {
+            mLayoutStateProvider.removeObserver(mBottomSheetContainerMarginAdjuster);
+        }
+        mBottomSheetContainerMarginAdjuster = null;
 
         if (mVerticalTabsSideUiCoordinator != null) {
             if (mVerticalTabsActiveObserver != null) {
