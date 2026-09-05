@@ -195,7 +195,13 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, ThreadsRail) {
   RunTest("new_tab_page/composebox/threads_rail_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, ActionChips) {
+// TODO(crbug.com/554367777): Disabled by Gardener due to flakiness.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_ActionChips DISABLED_ActionChips
+#else
+#define MAYBE_ActionChips ActionChips
+#endif
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, MAYBE_ActionChips) {
   RunTest("new_tab_page/action_chips/action_chips_test.js", "mocha.run()");
 }
 
