@@ -73,7 +73,7 @@ class OmniboxPopupHandler : public omnibox_popup::mojom::PageHandler {
                      bool show_full_url,
                      bool query_zps,
                      searchbox::mojom::InputKeywordModelPtr keyword_model);
-  void SetFocus(bool is_focused);
+  void SetFocus(bool is_focused, bool query_zps = false);
   void ClearAutocompleteMatches();
   void ClearPopup(base::OnceClosure callback);
 

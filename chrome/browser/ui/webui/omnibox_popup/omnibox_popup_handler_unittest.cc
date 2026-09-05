@@ -73,8 +73,20 @@ TEST_F(OmniboxPopupHandlerTest, OnShow) {
 }
 
 TEST_F(OmniboxPopupHandlerTest, SetFocus) {
-  EXPECT_CALL(page_, SetFocus(true));
+  EXPECT_CALL(page_, SetFocus(true, false));
   handler_->SetFocus(true);
+  page_.FlushForTesting();
+}
+
+TEST_F(OmniboxPopupHandlerTest, SetFocusWithQueryZps) {
+  EXPECT_CALL(page_, SetFocus(true, true));
+  handler_->SetFocus(true, /*query_zps=*/true);
+  page_.FlushForTesting();
+}
+
+TEST_F(OmniboxPopupHandlerTest, SetFocusWithoutQueryZps) {
+  EXPECT_CALL(page_, SetFocus(false, false));
+  handler_->SetFocus(false, /*query_zps=*/false);
   page_.FlushForTesting();
 }
 

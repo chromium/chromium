@@ -231,8 +231,8 @@ void OmniboxPopupHandler::SetInputState(
   page_->SetInputState(std::move(state));
 }
 
-void OmniboxPopupHandler::SetFocus(bool is_focused) {
-  page_->SetFocus(is_focused);
+void OmniboxPopupHandler::SetFocus(bool is_focused, bool query_zps) {
+  page_->SetFocus(is_focused, query_zps);
 }
 
 void OmniboxPopupHandler::ClearAutocompleteMatches() {
