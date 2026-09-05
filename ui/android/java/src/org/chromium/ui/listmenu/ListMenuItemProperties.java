@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.StyleRes;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -88,6 +89,14 @@ public class ListMenuItemProperties {
     public static final WritableIntPropertyKey ICON_TINT_COLOR_STATE_LIST_ID =
             new WritableIntPropertyKey();
     public static final ReadableIntPropertyKey TEXT_APPEARANCE_ID = new ReadableIntPropertyKey();
+
+    /** The {@link StyleRes} ID for the subtitle text appearance of the menu item. */
+    public static final ReadableIntPropertyKey SUBTITLE_TEXT_APPEARANCE_ID =
+            new ReadableIntPropertyKey();
+
+    /** The vertical padding in pixels to apply to the menu item view. */
+    public static final ReadableIntPropertyKey VERTICAL_PADDING = new ReadableIntPropertyKey();
+
     public static final ReadableBooleanPropertyKey IS_TEXT_ELLIPSIZED_AT_END =
             new ReadableBooleanPropertyKey();
     public static final ReadableBooleanPropertyKey KEEP_START_ICON_SPACING_WHEN_HIDDEN =
@@ -138,6 +147,8 @@ public class ListMenuItemProperties {
         ENABLED,
         ICON_TINT_COLOR_STATE_LIST_ID,
         TEXT_APPEARANCE_ID,
+        SUBTITLE_TEXT_APPEARANCE_ID,
+        VERTICAL_PADDING,
         IS_TEXT_ELLIPSIZED_AT_END,
         KEEP_START_ICON_SPACING_WHEN_HIDDEN,
         SHOULD_TINT_END_ICON,

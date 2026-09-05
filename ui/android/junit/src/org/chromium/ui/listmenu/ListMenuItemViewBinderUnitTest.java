@@ -129,6 +129,58 @@ public class ListMenuItemViewBinderUnitTest {
 
     @Test
     @SmallTest
+    public void testSubtitleTextAppearance() {
+        int customStyleId = 123;
+        PropertyModel propertyModel =
+                new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                        .with(ListMenuItemProperties.SUBTITLE_TEXT_APPEARANCE_ID, customStyleId)
+                        .build();
+        ListMenuItemViewBinder.binder(
+                propertyModel, mListItemView, ListMenuItemProperties.SUBTITLE_TEXT_APPEARANCE_ID);
+        verify(mSubtitleView).setTextAppearance(customStyleId);
+
+        // Verify resetting when Resources.ID_NULL.
+        PropertyModel resetModel =
+                new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                        .with(ListMenuItemProperties.SUBTITLE_TEXT_APPEARANCE_ID, Resources.ID_NULL)
+                        .build();
+        ListMenuItemViewBinder.binder(
+                resetModel, mListItemView, ListMenuItemProperties.SUBTITLE_TEXT_APPEARANCE_ID);
+        verify(mSubtitleView).setTextAppearance(R.style.TextAppearance_ListMenuItem_Subtitle);
+    }
+
+    @Test
+    @SmallTest
+    public void testVerticalPadding() {
+        int verticalPadding = 24;
+        int paddingStart = 16;
+        int paddingEnd = 16;
+        when(mListItemView.getPaddingStart()).thenReturn(paddingStart);
+        when(mListItemView.getPaddingEnd()).thenReturn(paddingEnd);
+
+        PropertyModel propertyModel =
+                new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                        .with(ListMenuItemProperties.VERTICAL_PADDING, verticalPadding)
+                        .build();
+        ListMenuItemViewBinder.binder(
+                propertyModel, mListItemView, ListMenuItemProperties.VERTICAL_PADDING);
+
+        verify(mListItemView)
+                .setPaddingRelative(paddingStart, verticalPadding, paddingEnd, verticalPadding);
+
+        // Verify resetting when vertical padding is 0.
+        PropertyModel resetModel =
+                new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                        .with(ListMenuItemProperties.VERTICAL_PADDING, 0)
+                        .build();
+        ListMenuItemViewBinder.binder(
+                resetModel, mListItemView, ListMenuItemProperties.VERTICAL_PADDING);
+
+        verify(mListItemView).setPaddingRelative(paddingStart, 0, paddingEnd, 0);
+    }
+
+    @Test
+    @SmallTest
     public void testStartIconBitmap() {
         Bitmap bitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
         PropertyModel propertyModel =

@@ -211,6 +211,27 @@ public class ListMenuItemViewBinder {
             } else {
                 textView.setTextAppearance(textAppearanceId);
             }
+        } else if (propertyKey == ListMenuItemProperties.SUBTITLE_TEXT_APPEARANCE_ID) {
+            int subtitleTextAppearanceId =
+                    model.get(ListMenuItemProperties.SUBTITLE_TEXT_APPEARANCE_ID);
+            @Nullable TextView subtitleView = view.findViewById(R.id.menu_item_subtitle);
+            if (subtitleView != null) {
+                if (subtitleTextAppearanceId == Resources.ID_NULL) {
+                    subtitleView.setTextAppearance(R.style.TextAppearance_ListMenuItem_Subtitle);
+                } else {
+                    subtitleView.setTextAppearance(subtitleTextAppearanceId);
+                }
+            }
+        } else if (propertyKey == ListMenuItemProperties.VERTICAL_PADDING) {
+            // When unset in the model, model.get() defaults to 0. On recycled views, this
+            // resets any custom padding from a previous item back to 0. This works because
+            // ListMenuItemStyle has no vertical padding by default (content is centered via
+            // minHeight). However, if an XML layout or theme ever defines non-zero top/bottom
+            // padding in the future, this would become problematic as recycled views would be
+            // reset to 0 instead of their layout default.
+            int verticalPadding = model.get(ListMenuItemProperties.VERTICAL_PADDING);
+            view.setPaddingRelative(
+                    view.getPaddingStart(), verticalPadding, view.getPaddingEnd(), verticalPadding);
         } else if (propertyKey == ListMenuItemProperties.IS_TEXT_ELLIPSIZED_AT_END) {
             if (model.get(ListMenuItemProperties.IS_TEXT_ELLIPSIZED_AT_END)) {
                 textView.setMaxLines(1);

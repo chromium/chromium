@@ -200,6 +200,12 @@ public class GlicTaskMenuCoordinator {
         ModelList modelList = new ModelList();
         int endIconWidthPx =
                 AttrUtils.getDimensionPixelSize(mContext, R.attr.glicTaskMenuEndIconWidth);
+        int verticalPaddingPx = 0;
+        if (mButtonSource == ButtonSource.TAB_STRIP) {
+            verticalPaddingPx =
+                    mContext.getResources()
+                            .getDimensionPixelSize(R.dimen.glic_task_menu_item_vertical_padding);
+        }
 
         // TODO(crbug.com/498721993): Listen to the task and update menu item when needed.
         for (ActorTask task : tasks) {
@@ -227,7 +233,10 @@ public class GlicTaskMenuCoordinator {
             }
 
             if (mButtonSource == ButtonSource.TAB_STRIP) {
-                builder.withSubtitle(getTaskSubtitle(mContext, task));
+                builder.withVerticalPaddingPx(verticalPaddingPx)
+                        .withTextAppearanceStyle(R.style.TextAppearance_TextLarge)
+                        .withSubtitleTextAppearanceStyle(R.style.TextAppearance_TextMedium)
+                        .withSubtitle(getTaskSubtitle(mContext, task));
             }
 
             int endIconRes = getEndIconRes(needsReview, mButtonSource == ButtonSource.TAB_STRIP);

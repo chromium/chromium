@@ -15,6 +15,7 @@ import android.view.View.OnClickListener;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
+import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 
@@ -48,6 +49,8 @@ public class ListItemBuilder {
     private int mEndIconWidth;
     private @Nullable List<ListItem> mSubmenuItems;
     private @StyleRes int mTextAppearanceStyle;
+    private @StyleRes int mSubtitleTextAppearanceStyle;
+    private @Px int mVerticalPaddingPx;
     private @Nullable CharSequence mTitle;
     private @Nullable String mSubtitle;
 
@@ -59,6 +62,7 @@ public class ListItemBuilder {
         mEndIconRes = Resources.ID_NULL;
         mIconTintColorStateList = Resources.ID_NULL;
         mTextAppearanceStyle = Resources.ID_NULL;
+        mSubtitleTextAppearanceStyle = Resources.ID_NULL;
 
         mEnabled = true;
         mShouldTintIcon = true;
@@ -234,6 +238,32 @@ public class ListItemBuilder {
         return this;
     }
 
+    /**
+     * Sets the appearance of the subtitle in the menu item. By default, this is set to {@link
+     * Resources#ID_NULL}, which causes the view binder to apply the default subtitle text
+     * appearance.
+     *
+     * @param subtitleTextAppearanceStyle The appearance style of the subtitle.
+     * @return This {@link ListItemBuilder} instance.
+     */
+    public ListItemBuilder withSubtitleTextAppearanceStyle(
+            @StyleRes int subtitleTextAppearanceStyle) {
+        mSubtitleTextAppearanceStyle = subtitleTextAppearanceStyle;
+        return this;
+    }
+
+    /**
+     * Sets the vertical padding in pixels to apply to the menu item row. Defaults to 0 (no custom
+     * padding).
+     *
+     * @param verticalPaddingPx The vertical padding in pixels.
+     * @return This {@link ListItemBuilder} instance.
+     */
+    public ListItemBuilder withVerticalPaddingPx(@Px int verticalPaddingPx) {
+        mVerticalPaddingPx = verticalPaddingPx;
+        return this;
+    }
+
     /** Builds the {@link ListItem} with the specified properties. */
     public ListItem build() {
         boolean hasSubmenu = mSubmenuItems != null;
@@ -253,13 +283,18 @@ public class ListItemBuilder {
             builder.with(ListMenuItemProperties.TITLE_ID, mTitleRes);
         }
 
-        if (mSubtitle != null) {
-            builder.with(ListMenuItemProperties.SUBTITLE, mSubtitle);
-        }
-
         builder.with(ListMenuItemProperties.ENABLED, mEnabled);
 
         if (!hasSubmenu) {
+            if (mSubtitle != null) {
+                builder.with(ListMenuItemProperties.SUBTITLE, mSubtitle);
+                builder.with(
+                        ListMenuItemProperties.SUBTITLE_TEXT_APPEARANCE_ID,
+                        mSubtitleTextAppearanceStyle);
+            }
+            if (mVerticalPaddingPx != 0) {
+                builder.with(ListMenuItemProperties.VERTICAL_PADDING, mVerticalPaddingPx);
+            }
             builder.with(ListMenuItemProperties.MENU_ITEM_ID, mMenuId)
                     .with(ListMenuItemProperties.START_ICON_ID, mStartIconRes)
                     .with(ListMenuItemProperties.END_ICON_ID, mEndIconRes)
