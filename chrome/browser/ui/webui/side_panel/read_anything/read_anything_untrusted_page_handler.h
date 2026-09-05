@@ -86,6 +86,18 @@ enum class ReadAnythingDistillationScheme {
 
 // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingDistillationScheme)
 
+// LINT.IfChange(ReadAnythingRendererRequestResult)
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ReadAnythingRendererRequestResult {
+  kAllowed = 0,
+  kNotObservedTree = 1,
+  kDisallowedActionOnPageType = 2,
+  kMaxValue = kDisallowedActionOnPageType,
+};
+
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingRendererRequestResult)
+
 ///////////////////////////////////////////////////////////////////////////////
 // ReadAnythingWebContentsObserver
 //
@@ -311,6 +323,11 @@ class ReadAnythingUntrustedPageHandler :
   // Used to verify that an incoming action request is for the currently
   // observed tree. If it's not, it may be a malicious request.
   bool IsObservingTree(const ui::AXTreeID& tree_id) const;
+
+  // Used to verify if an incoming action request (e.g. clicking a link or
+  // downloading an image) is allowed on the current tree. Actions are allowed
+  // if the page is HTTP/HTTPS or a PDF.
+  bool AreActionsAllowedInTree(const ui::AXTreeID& tree_id) const;
 
   // ui::AXActionHandlerObserver:
   void TreeRemoved(ui::AXTreeID ax_tree_id) override;

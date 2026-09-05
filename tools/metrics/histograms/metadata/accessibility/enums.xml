@@ -2383,6 +2383,20 @@ Unknown properties are collapsed to zero. -->
 
 <!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/shared/metrics_browser_proxy.ts:ReadAnythingVoiceType) -->
 
+<!-- LINT.IfChange(ReadAnythingRendererRequestResult) -->
+
+<enum name="ReadAnythingRendererRequestResult">
+  <summary>
+    The result of an action request from the Read Anything untrusted WebUI
+    renderer to the browser process.
+  </summary>
+  <int value="0" label="Allowed"/>
+  <int value="1" label="Failed: Not from observed tree"/>
+  <int value="2" label="Failed: Disallowed on page type"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_page_handler.h:ReadAnythingRendererRequestResult) -->
+
 <!-- LINT.IfChange(ReadAnythingScrollEvent) -->
 
 <enum name="ReadAnythingScrollEvent">
