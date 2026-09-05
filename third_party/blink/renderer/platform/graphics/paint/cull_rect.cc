@@ -312,9 +312,12 @@ bool CullRect::ApplyPaintProperties(
 
   if (abnormal_hierarchy) {
     // Either the transform or the clip of |source| is not an ancestor of
-    // |destination|. Map infinite rect from the root.
+    // |destination|. Map infinite rect from the root. If |source| is already
+    // the root, the clip of |destination| is not under the root either, and
+    // mapping from the root again would recurse forever; keep the infinite
+    // rect instead.
     *this = Infinite();
-    return root != destination &&
+    return root != source && root != destination &&
            ApplyPaintProperties(root, root, destination, old_cull_rect,
                                 expansion_ratio);
   }
