@@ -18,6 +18,7 @@
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/scoped_hdc.h"
@@ -665,20 +666,26 @@ std::wstring GetInstallerDisplayName(const std::u16string& bundle_name,
 }
 
 bool GetDlgItemText(HWND dlg, int item_id, std::wstring* text) {
+  CHECK(text);
   text->clear();
   auto* item = ::GetDlgItem(dlg, item_id);
   if (!item) {
     return false;
   }
+  ::SetLastError(ERROR_SUCCESS);
   const auto num_chars = ::GetWindowTextLength(item);
   if (!num_chars) {
-    return false;
+    return ::GetLastError() == ERROR_SUCCESS;
   }
-  std::vector<wchar_t> tmp(num_chars + 1);
-  if (!::GetWindowText(item, &tmp.front(), tmp.size())) {
-    return false;
+  text->resize(num_chars + 1);
+  ::SetLastError(ERROR_SUCCESS);
+  const auto chars_copied = ::GetWindowText(
+      item, &text->front(), base::checked_cast<int>(text->size()));
+  if (!chars_copied) {
+    text->clear();
+    return ::GetLastError() == ERROR_SUCCESS;
   }
-  text->assign(tmp.begin(), tmp.end());
+  text->resize(chars_copied);
   return true;
 }
 

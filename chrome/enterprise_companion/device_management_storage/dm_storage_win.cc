@@ -4,8 +4,8 @@
 
 #include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
 
+#include <memory>
 #include <string>
-#include <vector>
 
 #include "base/base_paths_win.h"
 #include "base/files/file_path.h"
@@ -83,37 +83,34 @@ bool ReadTokenBinary(const std::wstring& key_path,
                      const std::wstring& name,
                      REGSAM reg_view,
                      std::string& token) {
+  token.clear();
   base::win::RegKey key;
   if (key.Open(HKEY_LOCAL_MACHINE, key_path.c_str(), reg_view | KEY_READ) !=
       ERROR_SUCCESS) {
     return false;
   }
-  DWORD size = 0;
+  DWORD size = DMStorage::kMaxDmTokenLength;
   DWORD type = 0;
-  LONG error = key.ReadValue(name.c_str(), nullptr, &size, &type);
+  token.resize(size);
+  LONG error = key.ReadValue(name.c_str(), token.data(), &size, &type);
   if (error != ERROR_SUCCESS) {
+    token.clear();
     VLOG(2) << "ReadValue failed: " << error;
-    return false;
-  }
-  if (size == 0) {
-    VLOG(2) << "The token is empty.";
-    return false;
-  }
-  if (size > DMStorage::kMaxDmTokenLength) {
-    VLOG(2) << "Value is too large: " << size;
     return false;
   }
   if (type != REG_BINARY) {
+    token.clear();
     VLOG(2) << "Ignored token value with incompatible type.";
     return false;
   }
-  std::vector<char> value(size);
-  error = key.ReadValue(name.c_str(), &value.front(), &size, &type);
-  if (error != ERROR_SUCCESS) {
-    VLOG(2) << "ReadValue failed: " << error;
+  token.resize(size);
+  while (!token.empty() && token.back() == '\0') {
+    token.pop_back();
+  }
+  if (token.empty()) {
+    VLOG(2) << "The token is empty.";
     return false;
   }
-  token.assign(value.begin(), value.end());
   return true;
 }
 

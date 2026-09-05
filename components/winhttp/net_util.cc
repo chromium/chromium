@@ -4,9 +4,9 @@
 
 #include "components/winhttp/net_util.h"
 
+#include <cstdint>
 #include <ostream>
 #include <string>
-#include <vector>
 
 #include "base/check_op.h"
 #include "base/strings/sys_string_conversions.h"
@@ -22,6 +22,8 @@ HRESULT QueryHeadersString(HINTERNET request_handle,
                            uint32_t info_level,
                            const wchar_t* name,
                            std::wstring* value) {
+  CHECK(value);
+  value->clear();
   DWORD num_bytes = 0;
   ::WinHttpQueryHeaders(request_handle, info_level, name,
                         WINHTTP_NO_OUTPUT_BUFFER, &num_bytes,
@@ -30,14 +32,15 @@ HRESULT QueryHeadersString(HINTERNET request_handle,
   if (hr != HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER)) {
     return hr;
   }
-  std::vector<wchar_t> buffer(num_bytes / sizeof(wchar_t));
-  if (!::WinHttpQueryHeaders(request_handle, info_level, name, &buffer.front(),
+  CHECK_EQ(num_bytes % sizeof(wchar_t), 0u);
+  value->resize(num_bytes / sizeof(wchar_t));
+  if (!::WinHttpQueryHeaders(request_handle, info_level, name, value->data(),
                              &num_bytes, WINHTTP_NO_HEADER_INDEX)) {
+    value->clear();
     return HRESULTFromLastError();
   }
   CHECK_EQ(num_bytes % sizeof(wchar_t), 0u);
-  buffer.resize(num_bytes / sizeof(wchar_t));
-  value->assign(buffer.begin(), buffer.end());
+  value->resize(num_bytes / sizeof(wchar_t));
   return S_OK;
 }
 
