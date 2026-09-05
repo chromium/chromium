@@ -491,6 +491,7 @@ source_set("profile_picker_feature_promo_controller") {
   public = [ "profile_picker_feature_promo_controller.h" ]
   public_deps = [
     "//base",
+    "//chrome/browser/ui/views/user_education",
     "//components/user_education/common",
   ]
 }

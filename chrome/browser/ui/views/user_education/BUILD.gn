@@ -20,6 +20,7 @@ source_set("user_education") {
     "impl/browser_feature_promo_preconditions.h",
     "impl/browser_user_education_context.h",
     "impl/browser_user_education_interface_impl.h",
+    "impl/non_browser_feature_promo_controller.h",
     "ios_promo_bubble_view.h",
   ]
 
@@ -71,6 +72,7 @@ source_set("impl") {
     "impl/browser_feature_promo_preconditions.cc",
     "impl/browser_user_education_context.cc",
     "impl/browser_user_education_interface_impl.cc",
+    "impl/non_browser_feature_promo_controller.cc",
     "ios_promo_bubble_view.cc",
   ]
 

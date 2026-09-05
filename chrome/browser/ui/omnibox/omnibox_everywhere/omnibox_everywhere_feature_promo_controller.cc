@@ -4,16 +4,13 @@
 
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_feature_promo_controller.h"
 
-#include "base/notreached.h"
+#include <memory>
+#include <utility>
+
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
-#include "chrome/browser/ui/views/user_education/browser_help_bubble.h"
-#include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
-#include "chrome/browser/user_education/user_education_service.h"
-#include "components/feature_engagement/public/event_constants.h"
-#include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
@@ -104,34 +101,23 @@ OmniboxEverywhereFeaturePromoController::
         feature_engagement::Tracker* tracker_service,
         UserEducationService* user_education_service,
         base::WeakPtr<OmniboxEverywhereService> service)
-    : user_education::FeaturePromoControllerImpl(
+    : NonBrowserFeaturePromoController(
+          base::PassKey<OmniboxEverywhereFeaturePromoController>(),
           tracker_service,
-          &user_education_service->feature_promo_registry(),
-          &user_education_service->help_bubble_factory_registry(),
-          &user_education_service->user_education_storage_service(),
-          &user_education_service->feature_promo_session_policy(),
-          user_education_service->tutorial_service(),
-          user_education_service->product_messaging_controller()),
-      service_(std::move(service)),
-      context_(base::MakeRefCounted<OmniboxEverywhereUserEducationContext>(
-          service_)) {
-  MaybeRegisterChromeFeaturePromos(
-      user_education_service->feature_promo_registry());
-  RegisterChromeHelpBubbleFactories(
-      user_education_service->help_bubble_factory_registry());
-}
+          user_education_service,
+          base::MakeRefCounted<OmniboxEverywhereUserEducationContext>(service),
+          /*accelerator_provider=*/nullptr),
+      service_(std::move(service)) {}
 
 OmniboxEverywhereFeaturePromoController::
-    ~OmniboxEverywhereFeaturePromoController() {
-  OnDestroying();
-}
+    ~OmniboxEverywhereFeaturePromoController() = default;
 
 void OmniboxEverywhereFeaturePromoController::AddPreconditionProviders(
     user_education::ComposingPreconditionListProvider& to_add_to,
     Priority priority,
     bool required) {
-  FeaturePromoControllerImpl::AddPreconditionProviders(to_add_to, priority,
-                                                       required);
+  NonBrowserFeaturePromoController::AddPreconditionProviders(
+      to_add_to, priority, required);
 
   if (required) {
     to_add_to.AddProvider(base::BindRepeating(
@@ -150,52 +136,6 @@ void OmniboxEverywhereFeaturePromoController::AddPreconditionProviders(
         },
         weak_factory_.GetWeakPtr()));
   }
-}
-
-std::u16string OmniboxEverywhereFeaturePromoController::GetBodyIconAltText()
-    const {
-  NOTREACHED();
-}
-
-const base::Feature*
-OmniboxEverywhereFeaturePromoController::GetScreenReaderPromptPromoFeature()
-    const {
-  return &feature_engagement::kIPHFocusHelpBubbleScreenReaderPromoFeature;
-}
-
-const char*
-OmniboxEverywhereFeaturePromoController::GetScreenReaderPromptPromoEventName()
-    const {
-  return feature_engagement::events::kFocusHelpBubbleAcceleratorPromoRead;
-}
-
-std::u16string
-OmniboxEverywhereFeaturePromoController::GetTutorialScreenReaderHint(
-    const ui::AcceleratorProvider*) const {
-  NOTREACHED();
-}
-
-std::u16string
-OmniboxEverywhereFeaturePromoController::GetFocusHelpBubbleScreenReaderHint(
-    user_education::FeaturePromoSpecification::PromoType promo_type,
-    ui::TrackedElement* anchor_element,
-    const ui::AcceleratorProvider* accelerator_provider) const {
-  if (!accelerator_provider) {
-    return std::u16string();
-  }
-  return BrowserHelpBubble::GetFocusHelpBubbleScreenReaderHint(
-      promo_type, accelerator_provider, anchor_element);
-}
-
-void OmniboxEverywhereFeaturePromoController::MaybeShowPromo(
-    user_education::FeaturePromoParams params) {
-  FeaturePromoControllerImpl::MaybeShowPromo(std::move(params), context_);
-}
-
-user_education::UserEducationContextPtr
-OmniboxEverywhereFeaturePromoController::GetContextForHelpBubble(
-    const ui::TrackedElement* anchor_element) const {
-  return context_;
 }
 
 }  // namespace omnibox_everywhere

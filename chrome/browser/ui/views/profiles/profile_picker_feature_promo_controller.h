@@ -5,21 +5,21 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_FEATURE_PROMO_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_FEATURE_PROMO_CONTROLLER_H_
 
-#include "base/memory/raw_ptr.h"
-#include "components/user_education/common/feature_promo/feature_promo_result.h"
-#include "components/user_education/common/feature_promo/impl/feature_promo_controller_impl.h"
-#include "components/user_education/common/user_education_context.h"
+#include "chrome/browser/ui/views/user_education/impl/non_browser_feature_promo_controller.h"
 
-class UserEducationService;
 class ProfilePickerView;
+class UserEducationService;
 
-// Profile Picker implementation of `FeaturePromoControllerImpl`. There is a
-// single instance owned by the Profile Picker, with the keyed services attached
-// the OTR System Profile.
-// The class allows the management of IPH that are displayed in the Profile
-// Picker.
+namespace feature_engagement {
+class Tracker;
+}
+
+// Profile Picker implementation of `NonBrowserFeaturePromoController`. There is
+// a single instance owned by the Profile Picker, with the keyed services
+// attached the OTR System Profile. The class allows the management of IPH that
+// are displayed in the Profile Picker.
 class ProfilePickerFeaturePromoController
-    : public user_education::FeaturePromoControllerImpl {
+    : public NonBrowserFeaturePromoController {
  public:
   ProfilePickerFeaturePromoController(
       feature_engagement::Tracker* tracker_service,
@@ -28,26 +28,11 @@ class ProfilePickerFeaturePromoController
   ~ProfilePickerFeaturePromoController() override;
 
  private:
-  // FeaturePromoControllerImpl:
+  // NonBrowserFeaturePromoController:
   void AddPreconditionProviders(
       user_education::ComposingPreconditionListProvider& to_add_to,
       Priority priority,
       bool required) override;
-
-  // user_education::FeaturePromoControllerImpl:
-  std::u16string GetBodyIconAltText() const override;
-  const base::Feature* GetScreenReaderPromptPromoFeature() const override;
-  const char* GetScreenReaderPromptPromoEventName() const override;
-  std::u16string GetTutorialScreenReaderHint(
-      const ui::AcceleratorProvider* accelerator_provider) const override;
-  std::u16string GetFocusHelpBubbleScreenReaderHint(
-      user_education::FeaturePromoSpecification::PromoType promo_type,
-      ui::TrackedElement* anchor_element,
-      const ui::AcceleratorProvider* accelerator_provider) const override;
-  user_education::UserEducationContextPtr GetContextForHelpBubble(
-      const ui::TrackedElement* anchor_element) const override;
-
-  const raw_ptr<ProfilePickerView> profile_picker_view_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_FEATURE_PROMO_CONTROLLER_H_
