@@ -16,6 +16,8 @@ struct Foobar {
   map<string, array<foo.bar.mojom.LongNamedType>>
       very_long_name_that_needs_to_wrap_past_this_line;
 
+  hash_map<string, uint32> simple_hash_map;
+
   UpdateService.ErrorCategory error_category =
       UpdateService.ErrorCategory.kNone;
 

@@ -12,16 +12,16 @@ struct TestWTFCodeGeneration {
   array<array<int32>> arrays;
   array<bool> bools;
   array<handle<message_pipe>> handles;
-  map<string, string?> str_map;
-  map<int32, array<int32>> array_map;
-  map<int32, handle<message_pipe>> handle_map;
-  array<map<string, string?>> str_maps;
+  hash_map<string, string?> str_map;
+  hash_map<int32, array<int32>> array_map;
+  hash_map<int32, handle<message_pipe>> handle_map;
+  array<hash_map<string, string?>> str_maps;
 };
 
 union TestWTFCodeGeneration2 {
   string str;
   array<string> strs;
-  map<string, string?> str_map;
+  hash_map<string, string?> str_map;
 };
 
 struct TestWTFStruct {
@@ -36,6 +36,9 @@ struct TestWTFStruct {
 struct TestWTFStructWrapper {
   TestWTFStruct nested_struct;
   array<TestWTFStruct> array_struct;
+  // TODO(crbug.com/527629109): it seems this is never done in practice
+  // (a map which is compiled to blink with a non-typemapped struct as
+  // a key). If so, we should remove this when finalizing the migration.
   map<TestWTFStruct, TestWTFStruct> map_struct;
 };
 
@@ -46,8 +49,8 @@ interface TestWTF {
   };
   EchoString(string? str) => (string? str);
   EchoStringArray(array<string?>? arr) => (array<string?>? arr);
-  EchoStringMap(map<string, string?>? str_map)
-      => (map<string, string?>? str_map);
+  EchoStringMap(hash_map<string, string?>? str_map)
+      => (hash_map<string, string?>? str_map);
 };
 
 enum TopLevelEnum {

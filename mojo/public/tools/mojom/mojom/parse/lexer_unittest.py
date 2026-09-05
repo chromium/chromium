@@ -107,6 +107,9 @@ class LexerTest(unittest.TestCase):
     self.assertEqual(
       self._SingleTokenForInput("map"), _MakeLexTokenForKeyword("map")
     )
+    self.assertEqual(
+      self._SingleTokenForInput("hash_map"), _MakeLexTokenForKeyword("hash_map")
+    )
 
   def testValidIdentifiers(self):
     """Tests identifiers."""

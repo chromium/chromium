@@ -30,6 +30,19 @@ class TranslateTest(unittest.TestCase):
       "m[s][u8]",
     )
 
+  def testHashMap(self):
+    """Tests a simple hash_map<string, uint8>."""
+    # pylint: disable=W0212
+    self.assertEqual(
+      translate._MapKind(
+        ast.HashMap(
+          ast.Identifier('string'),
+          ast.Typename(ast.Identifier('uint8')),
+        )
+      ),
+      "hm[s][u8]",
+    )
+
   def testLeftToRightAssociativeArray(self):
     """Makes sure that parsing is done from right to left on the internal kinds
     in the presence of an associative array."""
@@ -42,6 +55,20 @@ class TranslateTest(unittest.TestCase):
         )
       ),
       "m[s][a:u8]",
+    )
+
+  def testLeftToRightHashMap(self):
+    """Makes sure that parsing is done from right to left on the internal kinds
+    in the presence of a hash map."""
+    # pylint: disable=W0212
+    self.assertEqual(
+      translate._MapKind(
+        ast.HashMap(
+          ast.Identifier('string'),
+          ast.Typename(ast.Array(ast.Typename(ast.Identifier('uint8')))),
+        )
+      ),
+      "hm[s][a:u8]",
     )
 
   def testTranslateSimpleUnions(self):

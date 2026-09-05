@@ -480,6 +480,27 @@ class Generator(generator.Generator):
 
     return modules
 
+  def _UsesHashMap(self):
+    def CheckKind(kind):
+      if mojom.IsHashMapKind(kind):
+        return True
+      if mojom.IsArrayKind(kind):
+        return CheckKind(kind.kind)
+      if mojom.IsMapKind(kind):
+        return CheckKind(kind.key_kind) or CheckKind(kind.value_kind)
+      return False
+
+    for kind in self.module.structs + self.module.unions:
+      for field in kind.fields:
+        if CheckKind(field.kind):
+          return True
+    for interface in self.module.interfaces:
+      for method in interface.methods:
+        for param in method.parameters + (method.response_parameters or []):
+          if CheckKind(param.kind):
+            return True
+    return False
+
   def _GetJinjaExports(self):
     all_enums = list(self.module.enums)
     for struct in self.module.structs:
@@ -519,6 +540,7 @@ class Generator(generator.Generator):
       "uses_message_size_estimator": self._UsesMessageSizeEstimator(),
       "uses_native_types": self._ReferencesAnyNativeType(),
       "uses_stdint_types": self._UsesStdIntTypes(),
+      "uses_hash_map": self._UsesHashMap(),
       "variant": self.variant,
       "send_validation_modules": self._GetSendValidationModules(),
     }
@@ -587,6 +609,7 @@ class Generator(generator.Generator):
       "is_associated_kind": mojom.IsAssociatedKind,
       "is_float_kind": mojom.IsFloatKind,
       "is_feature_kind": mojom.IsFeatureKind,
+      "is_hash_map_kind": mojom.IsHashMapKind,
       "is_hashable": self._IsHashableKind,
       "is_map_kind": mojom.IsMapKind,
       "is_non_const_ref_kind": self._IsNonConstRefKind,
@@ -944,12 +967,20 @@ class Generator(generator.Generator):
       return pattern % self._GetCppWrapperType(
         kind.kind, add_same_module_namespaces=add_same_module_namespaces
       )
-    if mojom.IsMapKind(kind):
+    if mojom.IsHashMapKind(kind):
+      pattern = (
+        "::blink::HashMap<%s, %s>"
+        if self.for_blink
+        else "absl::flat_hash_map<%s, %s>"
+      )
+    elif mojom.IsMapKind(kind):
+      # TODO(crbug.com/527629109): Maybe fail if `for_blink`?
       pattern = (
         "::blink::HashMap<%s, %s>"
         if self.for_blink
         else "base::flat_map<%s, %s>"
       )
+    if mojom.IsMapKind(kind):
       if mojom.IsNullableKind(kind):
         pattern = _AddOptional(pattern)
       return pattern % (

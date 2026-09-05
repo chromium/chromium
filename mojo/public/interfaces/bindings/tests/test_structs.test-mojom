@@ -423,3 +423,14 @@ struct EnumNestedStruct {
 
   [MinVersion=1] StructEnum local_enum_state_;
 };
+
+struct ContainsMap {
+  map<string, int32> map_str_int;
+  map<int32, string>? nullable_map;
+};
+
+struct ContainsHashMap {
+  hash_map<string, int32> map_str_int;
+  hash_map<int32, string>? nullable_map;
+};
+

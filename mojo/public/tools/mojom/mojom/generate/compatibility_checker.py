@@ -23,7 +23,9 @@ class BackwardCompatibilityChecker:
     result = self._cache.get(key)
     if result is None:
       # Ensure that the type of two types are compatible before doing more work.
-      if isinstance(new_kind, type(old_kind)):
+      if isinstance(new_kind, type(old_kind)) or (
+        mojom.IsMapKind(new_kind) and mojom.IsMapKind(old_kind)
+      ):
         # Assume they're compatible at first to effectively ignore recursive
         # checks between these types, e.g. if both kinds are a struct or union
         # that references itself in a field.
@@ -198,10 +200,14 @@ class BackwardCompatibilityChecker:
     )
 
   @_CheckCompat.register(mojom.Map)
-  def _(self, new: mojom.Map, old: mojom.Map):
-    return self.IsBackwardCompatible(
-      new.key_kind, old.key_kind
-    ) and self.IsBackwardCompatible(new.value_kind, old.value_kind)
+  @_CheckCompat.register(mojom.HashMap)
+  def _(self, new, old):  # new and old may be any map types
+    return (
+      mojom.IsMapKind(old)
+      and new.is_nullable == old.is_nullable
+      and self.IsBackwardCompatible(new.key_kind, old.key_kind)
+      and self.IsBackwardCompatible(new.value_kind, old.value_kind)
+    )
 
   @_CheckCompat.register(mojom.PendingRemote)
   def _(self, new: mojom.PendingRemote, old: mojom.PendingRemote):

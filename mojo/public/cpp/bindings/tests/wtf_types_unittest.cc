@@ -16,6 +16,7 @@
 #include "mojo/public/interfaces/bindings/tests/test_wtf_types.test-mojom-blink.h"
 #include "mojo/public/interfaces/bindings/tests/test_wtf_types.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 
 namespace mojo {
@@ -46,7 +47,8 @@ class TestWTFImpl : public TestWTF {
 
   void EchoStringMap(
       const std::optional<
-          base::flat_map<std::string, std::optional<std::string>>>& str_map,
+          absl::flat_hash_map<std::string, std::optional<std::string>>>&
+          str_map,
       EchoStringMapCallback callback) override {
     std::move(callback).Run(std::move(str_map));
   }
@@ -261,7 +263,7 @@ TEST_F(WTFTypesTest, SendStringMap) {
     // is unchanged after the following conversion:
     //   - serialized;
     //   - deserialized as std::optional<
-    //         base::flat_map<std::string, std::optional<std::string>>>;
+    //         absl::flat_hash_map<std::string, std::optional<std::string>>>;
     //   - serialized;
     //   - deserialized as std::optional<blink::HashMap<blink::String,
     //     blink::String>>.

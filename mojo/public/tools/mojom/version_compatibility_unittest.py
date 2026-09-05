@@ -600,3 +600,56 @@ class VersionCompatibilityTest(MojomParserTestCase):
       'struct S { bool has_foo@0; double gap@2; float foo@1; };',
       'struct S { float? foo; double gap; int32 foobear;};',
     )
+
+  def testMapAndHashMapCompatibility(self):
+    """Changing a map to a hash_map (or vice-versa) is backward-compatible
+    as long as keys, values, and nullability are compatible."""
+    # map -> hash_map
+    self.assertBackwardCompatible(
+      'struct S { map<string, int32> m; };',
+      'struct S { hash_map<string, int32> m; };',
+    )
+    # hash_map -> map
+    self.assertBackwardCompatible(
+      'struct S { hash_map<string, int32> m; };',
+      'struct S { map<string, int32> m; };',
+    )
+    # nullable map -> nullable hash_map
+    self.assertBackwardCompatible(
+      'struct S { map<string, int32>? m; };',
+      'struct S { hash_map<string, int32>? m; };',
+    )
+    # nullable hash_map -> nullable map
+    self.assertBackwardCompatible(
+      'struct S { hash_map<string, int32>? m; };',
+      'struct S { map<string, int32>? m; };',
+    )
+    # Incompatible key types
+    self.assertNotBackwardCompatible(
+      'struct S { map<string, int32> m; };',
+      'struct S { hash_map<int32, int32> m; };',
+    )
+    # Incompatible value types
+    self.assertNotBackwardCompatible(
+      'struct S { map<string, int32> m; };',
+      'struct S { hash_map<string, string> m; };',
+    )
+    # Becoming nullable is not compatible
+    self.assertNotBackwardCompatible(
+      'struct S { map<string, int32> m; };',
+      'struct S { hash_map<string, int32>? m; };',
+    )
+    # Becoming non-nullable is not compatible
+    self.assertNotBackwardCompatible(
+      'struct S { map<string, int32>? m; };',
+      'struct S { hash_map<string, int32> m; };',
+    )
+    # Inside union
+    self.assertBackwardCompatible(
+      'union U { map<string, int32> m; };',
+      'union U { hash_map<string, int32> m; };',
+    )
+    self.assertBackwardCompatible(
+      'union U { hash_map<string, int32> m; };',
+      'union U { map<string, int32> m; };',
+    )

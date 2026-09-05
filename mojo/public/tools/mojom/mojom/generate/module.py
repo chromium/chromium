@@ -849,8 +849,19 @@ class Array(ReferenceKind):
     return id(self)
 
 
+def _ValidateMapKeyKind(key_kind):
+  if IsNullableKind(key_kind):
+    raise Exception("Nullable kinds cannot be keys in maps.")
+  if IsAnyHandleKind(key_kind):
+    raise Exception("Handles cannot be keys in maps.")
+  if IsAnyInterfaceKind(key_kind):
+    raise Exception("Interfaces cannot be keys in maps.")
+  if IsArrayKind(key_kind):
+    raise Exception("Arrays cannot be keys in maps.")
+
+
 class Map(ReferenceKind):
-  """A map.
+  """An ordered map.
 
   Attributes:
     key_kind: {Kind} The type of the keys. May be None.
@@ -865,14 +876,7 @@ class Map(ReferenceKind):
       ReferenceKind.__init__(
         self, 'm[' + key_kind.spec + '][' + value_kind.spec + ']'
       )
-      if IsNullableKind(key_kind):
-        raise Exception("Nullable kinds cannot be keys in maps.")
-      if IsAnyHandleKind(key_kind):
-        raise Exception("Handles cannot be keys in maps.")
-      if IsAnyInterfaceKind(key_kind):
-        raise Exception("Interfaces cannot be keys in maps.")
-      if IsArrayKind(key_kind):
-        raise Exception("Arrays cannot be keys in maps.")
+      _ValidateMapKeyKind(key_kind)
     else:
       ReferenceKind.__init__(self)
 
@@ -892,6 +896,53 @@ class Map(ReferenceKind):
 
   def __eq__(self, rhs):
     return isinstance(rhs, Map) and (self.key_kind, self.value_kind) == (
+      rhs.key_kind,
+      rhs.value_kind,
+    )
+
+  def __hash__(self):
+    return id(self)
+
+
+class HashMap(ReferenceKind):
+  """A hash map.
+
+  Attributes:
+    key_kind: {Kind} The type of the keys. May be None.
+    value_kind: {Kind} The type of the elements. May be None.
+  """
+
+  Kind.AddSharedProperty('key_kind')
+  Kind.AddSharedProperty('value_kind')
+
+  def __init__(self, key_kind=None, value_kind=None):
+    if key_kind is not None and value_kind is not None:
+      ReferenceKind.__init__(
+        self, 'hm[' + key_kind.spec + '][' + value_kind.spec + ']'
+      )
+      _ValidateMapKeyKind(key_kind)
+    else:
+      ReferenceKind.__init__(self)
+
+    self.key_kind = key_kind
+    self.value_kind = value_kind
+
+  def Repr(self, as_ref=True):
+    if as_ref:
+      return '<%s spec=%r is_nullable=%r key_kind=%s value_kind=%s>' % (
+        self.__class__.__name__,
+        self.spec,
+        self.is_nullable,
+        Repr(self.key_kind),
+        Repr(self.value_kind),
+      )
+    return GenericRepr(self, {'key_kind': True, 'value_kind': True})
+
+  def __eq__(self, rhs):
+    return isinstance(rhs, HashMap) and (
+      self.key_kind,
+      self.value_kind,
+    ) == (
       rhs.key_kind,
       rhs.value_kind,
     )
@@ -1718,8 +1769,14 @@ def IsNullableKind(kind):
   return kind.is_nullable
 
 
+# TODO(crbug.com/527629109): Add an IsOrderedMapKind and
+# rename this to IsAnyMapKind
 def IsMapKind(kind):
-  return isinstance(kind, Map)
+  return isinstance(kind, (Map, HashMap))
+
+
+def IsHashMapKind(kind):
+  return isinstance(kind, HashMap)
 
 
 def IsObjectKind(kind):

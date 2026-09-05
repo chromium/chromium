@@ -5,6 +5,8 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_MAP_TRAITS_ABSL_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_MAP_TRAITS_ABSL_H_
 
+#include "mojo/public/cpp/bindings/clone_traits.h"
+#include "mojo/public/cpp/bindings/equals_traits.h"
 #include "mojo/public/cpp/bindings/map_traits.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
@@ -40,6 +42,18 @@ struct MapTraits<absl::flat_hash_map<K, V>> {
   }
 
   static void SetToEmpty(absl::flat_hash_map<K, V>* output) { output->clear(); }
+};
+
+template <typename K, typename V>
+struct CloneTraits<absl::flat_hash_map<K, V>> {
+  static absl::flat_hash_map<K, V> Clone(
+      const absl::flat_hash_map<K, V>& input) {
+    absl::flat_hash_map<K, V> result;
+    for (const auto& element : input) {
+      result.insert({mojo::Clone(element.first), mojo::Clone(element.second)});
+    }
+    return result;
+  }
 };
 
 }  // namespace mojo

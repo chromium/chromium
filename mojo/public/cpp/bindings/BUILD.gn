@@ -145,6 +145,7 @@ component("bindings_base") {
     ":mojo_buildflags",
     "//base",
     "//mojo/public/cpp/system",
+    "//third_party/abseil-cpp:absl",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]

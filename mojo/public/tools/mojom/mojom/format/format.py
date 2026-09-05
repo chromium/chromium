@@ -485,8 +485,9 @@ def _write_typename(tnode, state):
             state.write(', ')
             state.write(str(node.fixed_size))
         state.write('>')
-    elif isinstance(node, ast.Map):
-        state.write('map<')
+    elif isinstance(node, (ast.Map, ast.HashMap)):
+        name = 'hash_map<' if isinstance(node, ast.HashMap) else 'map<'
+        state.write(name)
         state.write(node.key_type.id)
         state.write(', ')
         _write_typename(node.value_type, state)

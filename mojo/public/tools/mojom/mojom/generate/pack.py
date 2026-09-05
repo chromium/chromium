@@ -52,6 +52,7 @@ class PackedField:
       (
         mojom.Array,
         mojom.Map,
+        mojom.HashMap,
         mojom.Struct,
         mojom.Interface,
         mojom.PendingRemote,

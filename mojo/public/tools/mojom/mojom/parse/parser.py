@@ -465,8 +465,10 @@ class Parser:
     self._set_lexstate(p, 1, 6)
 
   def p_associative_array(self, p):
-    """associative_array : MAP LANGLE identifier COMMA typename RANGLE"""
-    p[0] = ast.Map(p[3], p[5])
+    """associative_array : MAP LANGLE identifier COMMA typename RANGLE
+                         | HASH_MAP LANGLE identifier COMMA typename RANGLE"""
+    map_cls = ast.HashMap if p.slice[1].type == 'HASH_MAP' else ast.Map
+    p[0] = map_cls(p[3], p[5])
     self._set_lexstate(p, 1, 6)
 
   def p_ordinal_1(self, p):

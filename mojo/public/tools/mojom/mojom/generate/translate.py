@@ -358,8 +358,9 @@ def _MapKind(typename):
   if isinstance(ident, ast.Array):
     size = ident.fixed_size or ''
     return f'a{size}:{_MapKind(ident.value_type)}'
-  if isinstance(ident, ast.Map):
-    return f'm[{_MapKind(ident.key_type)}][{_MapKind(ident.value_type)}]'
+  if isinstance(ident, (ast.Map, ast.HashMap)):
+    prefix = 'hm' if isinstance(ident, ast.HashMap) else 'm'
+    return f'{prefix}[{_MapKind(ident.key_type)}][{_MapKind(ident.value_type)}]'
   if isinstance(ident, ast.Remote):
     t = 'rmt' if not ident.associated else 'rma'
     return f'{t}:{_MapKind(ident.interface)}'
@@ -576,7 +577,9 @@ def _Kind(module, kinds, spec, scope):
     kind = mojom.PendingAssociatedReceiver(
       _Kind(module, kinds, spec[4:], scope)
     )
-  elif spec.startswith('m['):
+  elif spec.startswith('m[') or spec.startswith('hm['):
+    is_hash_map = spec.startswith('hm[')
+    start_idx = 3 if is_hash_map else 2
     # Isolate the two types from their brackets.
 
     # It is not allowed to use map as key, so there shouldn't be nested ']'s
@@ -585,10 +588,11 @@ def _Kind(module, kinds, spec, scope):
     assert key_end != -1 and key_end < len(spec) - 1
     assert spec[key_end + 1] == '[' and spec[-1] == ']'
 
-    first_kind = spec[2:key_end]
+    first_kind = spec[start_idx:key_end]
     second_kind = spec[key_end + 2 : -1]
 
-    kind = mojom.Map(
+    map_cls = mojom.HashMap if is_hash_map else mojom.Map
+    kind = map_cls(
       _Kind(module, kinds, first_kind, scope),
       _Kind(module, kinds, second_kind, scope),
     )

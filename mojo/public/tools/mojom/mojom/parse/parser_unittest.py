@@ -1242,6 +1242,35 @@ class ParserTest(unittest.TestCase):
     )
     self.assertEqual(parser.Parse(source3, "my_file.mojom"), expected3)
 
+    source4 = "struct MyStruct { hash_map<string, uint8> data; };"
+    expected4 = ast.Mojom(
+      None,
+      ast.ImportList(),
+      [
+        ast.Struct(
+          ast.Name('MyStruct'),
+          None,
+          ast.StructBody(
+            [
+              ast.StructField(
+                ast.Name('data'),
+                None,
+                None,
+                ast.Typename(
+                  ast.HashMap(
+                    ast.Identifier('string'),
+                    ast.Typename(ast.Identifier('uint8')),
+                  )
+                ),
+                None,
+              )
+            ]
+          ),
+        )
+      ],
+    )
+    self.assertEqual(parser.Parse(source4, "my_file.mojom"), expected4)
+
   def testValidMethod(self):
     """Tests parsing method declarations."""
 
