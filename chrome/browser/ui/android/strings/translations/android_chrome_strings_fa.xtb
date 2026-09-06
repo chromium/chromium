@@ -1122,7 +1122,7 @@
 <translation id="5465437530117042974">تغییرات «برگ زیرین» بسته شد.</translation>
 <translation id="5469852975082458401">‏با نشانگر نوشتار می‌توانید صفحه‌ها را پیمایش کنید. برای خاموش شدن، F7 را فشار دهید.</translation>
 <translation id="5471273988133666918">زبانه <ph name="TAB_TITLE" /> را نمی‌توان منتقل کرد</translation>
-<translation id="5478718673237429220">لزوم «دسترسی به دستگاه» میانای انسانی</translation>
+<translation id="5478718673237429220">دسترسی به دستگاه میانای انسانی لازم است</translation>
 <translation id="548278423535722844">‏باز کردن در برنامه Maps</translation>
 <translation id="5489222148748465285">‏Chrome به جستجو ادامه دهد؟</translation>
 <translation id="5490848366863949315">‫<ph name="TAB_TITLE" />، زبانه تصویردرتصویر چندانتخابی</translation>
@@ -1974,7 +1974,7 @@
 <translation id="867914734596684889">نشان دادن یا پنهان کردن نوار نشانک‌ها</translation>
 <translation id="8683039184091909753">تصویر</translation>
 <translation id="8688183792442786085">‫<ph name="TAB_TITLE" />، زبانه انتخاب‌شده</translation>
-<translation id="8694622119922491927">‏‫<ph name="APP_NAME" /> برای این سایت باید اجازه «دسترسی به دستگاه‌های میانای انسانی» (HID) داشته باشد. می‌توانید این تنظیم را بعداً در «تنظیمات &gt; برنامه‌ها &gt; دسترسی ویژه برنامه» تغییر دهید.</translation>
+<translation id="8694622119922491927">‏‫<ph name="APP_NAME" /> برای دست‌یابی به دستگاه‌های میانای انسانی (HID) برای این سایت به اجازه نیاز دارد. می‌توانید این تنظیم را بعداً در «تنظیمات &gt; برنامه‌ها &gt; دسترسی ویژه برنامه» تغییر دهید.</translation>
 <translation id="8696297579102085705">ارسال کردن به دستگاه شما</translation>
 <translation id="8699120352855309748">ترجمه این زبان‌ها پیشنهاد نشود</translation>
 <translation id="8700565880437506364">‏معرفی «Gemini در Chrome»</translation>

@@ -336,6 +336,7 @@
 <translation id="1235458158152011030">רשתות מוכרות</translation>
 <translation id="123578888592755962">הדיסק מלא</translation>
 <translation id="1235924639474699896">{COUNT,plural, =1{טקסט}one{# קטעי טקסט}two{# קטעי טקסט}other{# קטעי טקסט}}</translation>
+<translation id="1236564420496412501">לוחצים לחיצה ימנית על כרטיסייה עם הקישור שרוצים לשלוח</translation>
 <translation id="1237950098253310325">‏לשינוי המיקום של <ph name="BUTTON_NAME" />, מקישים על Ctrl ועל החץ למעלה או החץ למטה</translation>
 <translation id="1238293488628890871">לעבור לפרופיל אחר?</translation>
 <translation id="1239841552505950173">הפעלת האפליקציה</translation>
@@ -645,6 +646,7 @@
 <translation id="1496514951988037011">שם משתמש</translation>
 <translation id="1498498210836053409">השבתת ההקשה ביד אחת במהלך עריכת טקסט (הקשה חכמה ביד אחת)</translation>
 <translation id="1499041187027566160">הגברת עוצמת הקול</translation>
+<translation id="1499948601784722399">בקשות לאתרים</translation>
 <translation id="1500297251995790841">מכשיר לא ידוע [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1500801317528437432">‏מידע נוסף על אפליקציות Chrome שלא נתמכות</translation>
 <translation id="1501480321619201731">מחיקת קבוצה</translation>
@@ -1141,6 +1143,7 @@
 <translation id="1873920700418191231">צריך לאשר שוב את ההרשאות עבור <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">מורשים להציג מודעות מכל סוג</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{העברת כרטיסייה לחלון אחר}one{העברת כרטיסיות לחלון אחר}two{העברת כרטיסיות לחלון אחר}other{העברת כרטיסיות לחלון אחר}}</translation>
+<translation id="1875939313868351773">‏קובצי Cookie של צד שלישי ונתונים מאתרים</translation>
 <translation id="1877377290348678128">תווית (אופציונלי)</translation>
 <translation id="1877860345998737529">הקצאת מתגים לפעולות</translation>
 <translation id="1878477879455105085">פתוחה</translation>
@@ -1436,6 +1439,7 @@
 <translation id="2111670510994270194">כרטיסייה חדשה מצד ימין</translation>
 <translation id="2111778868023567359">קבוצות הכרטיסיות לא יוצגו יותר בדף הזה</translation>
 <translation id="2112554630428445878">שלום, <ph name="USERNAME" /></translation>
+<translation id="2113314491145966441">‏הצגת אישורים שיובאו מ-macOS</translation>
 <translation id="21133533946938348">הצמדת כרטיסייה</translation>
 <translation id="2113479184312716848">פתיחת &amp;קובץ...</translation>
 <translation id="2114326799768592691">טעינה מחדש של ה&amp;מסגרת</translation>
@@ -2105,6 +2109,7 @@
 <translation id="262373406453641243">Colemak</translation>
 <translation id="2624045385113367716">‏יש הרשאה לשלוט במכשירי MIDI ולתכנת אותם מחדש</translation>
 <translation id="2624142942574147739">הדף הזה ניגש למצלמה ולמיקרופון שלך.</translation>
+<translation id="2626746300781063303">‏לכל אתר, כולל Google, יש שיקול דעת משלו בתגובה לבקשה הזו</translation>
 <translation id="2626799779920242286">יש לנסות שוב מאוחר יותר.</translation>
 <translation id="2627424346328942291">השיתוף נכשל</translation>
 <translation id="2627970398976286795">‏מידע על הסיכונים של Gemini Spark</translation>
@@ -2676,6 +2681,7 @@
 <translation id="3031417829280473749">‏סוכנת X</translation>
 <translation id="3031532026314193077">שימוש בלוח המגע ובמקלדת כדי ללחוץ לחיצה ימנית</translation>
 <translation id="3031557471081358569">יש לבחור פריטים לייבוא:</translation>
+<translation id="3032115590613559078">‏ניהול אישורים שיובאו מ-macOS</translation>
 <translation id="3032204772252313646">כתוביות אוטומטיות</translation>
 <translation id="3032272345862007156">‏עיצוב מהזמן אחרון שנוצר באמצעות AI‏ <ph name="INDEX" /></translation>
 <translation id="3033167916029856961">מצב 'נא לא להפריע' פועל</translation>
@@ -3414,6 +3420,7 @@
 <translation id="3605156246402033687">{COUNT,plural, =1{חשבון אחד ({COUNT}) משתמש באותה סיסמה}one{{COUNT} חשבונות משתמשים באותה סיסמה}two{{COUNT} חשבונות משתמשים באותה סיסמה}other{{COUNT} חשבונות משתמשים באותה סיסמה}}</translation>
 <translation id="3605515937536882518">הערכים בטופס עודכנו</translation>
 <translation id="3605780360466892872">מר מכופתר</translation>
+<translation id="3605907346217095465">‏יובאו מ-macOS</translation>
 <translation id="3607799000129481474">אתר <ph name="SITE" /> רוצה לאמת את זהותך</translation>
 <translation id="3608460311600621471">עליך להזין סיבה להדפסת הנתונים האלה:</translation>
 <translation id="3608730769702025110">שלב 3 מתוך 4: בדיקת הפרטים האישיים המזהים</translation>
@@ -5966,6 +5973,7 @@
 <translation id="5563460629751333413">יש בעיה בהתחברות לשרת. אפשר לנסות שוב אחר כך.</translation>
 <translation id="5563698194918415761">‏העדכון נחסם בגלל מדיניות הרשת או שרת proxy.</translation>
 <translation id="5563824734298958390">לצאת מקבוצת הכרטיסיות?</translation>
+<translation id="5565606467367006469">אפשר לשלוח במהירות קישורים לטלפון או לכל מכשיר אחר שמחובר לחשבון</translation>
 <translation id="5565735124758917034">פעילה</translation>
 <translation id="5568069709869097550">אי אפשר להיכנס</translation>
 <translation id="5568525251731145240">למחוק את הנתונים ואת ההרשאות לאתר <ph name="SITE_NAME" />, לכל האתרים שתחתיו ולאפליקציות המותקנות?</translation>
@@ -6498,6 +6506,7 @@
 <translation id="5992652489368666106">ללא שוליים</translation>
 <translation id="5996490984199062729">הפרופיל שלך לא הוגדר</translation>
 <translation id="5997337190805127100">מידע נוסף על גישה לאתרים</translation>
+<translation id="5997802678829218272">‏כשמתחברים ל-Chrome עם אותו חשבון, אפשר לשלוח קישורים במהירות בין כל המכשירים</translation>
 <translation id="5998458948782718639">עזרה בשיפור של המילוי האוטומטי</translation>
 <translation id="5998976983953384016">אישור והפעלה</translation>
 <translation id="5999630716831179808">קולות</translation>
@@ -7731,6 +7740,7 @@
 <translation id="6944854424004126054">שחזור חלון</translation>
 <translation id="6945221475159498467">בחירה</translation>
 <translation id="694592694773692225">הפניה לכתובת אתר אחרת נחסמה בדף הזה.</translation>
+<translation id="6946083836254858787">לוחצים על "שליחה למכשיר שלך" ובוחרים לאן לשלוח את הקישור</translation>
 <translation id="6949089178006131285">‏קריאת נתוני הרשת של ChromeOS Flex</translation>
 <translation id="6949434160682548041">סיסמה (אופציונלי)</translation>
 <translation id="6950143189069683062">פרטי הזיכרון</translation>
@@ -8246,6 +8256,7 @@
 <translation id="7357271391997763660">להריץ את בדיקת הסיסמאות?</translation>
 <translation id="735745346212279324">‏VPN מנותק</translation>
 <translation id="7359680654975233185">‏אי אפשר להפעיל Cast של הכרטיסייה</translation>
+<translation id="7360162988015675077">‏האתרים שביקרת בהם, כולל Google, אחראים לקבוע איך הם מגיבים לבקשה הזו. יכול להיות שהאתרים יגיבו בהגבלת המכירה והשיתוף של הנתונים שלך או השימוש בהם לצורך הצגת מודעות בהתאמה אישית, בהתאם לחוקים באזורך.</translation>
 <translation id="7360257054721917104">‏מוצגים שולחנות העבודה הווירטואליים והתבניות ששמרת. צריך להקיש על Tab כדי לנווט.</translation>
 <translation id="7360333718677093875">בורר האמוג'י</translation>
 <translation id="7360460316021916328">בחירת חלון</translation>
@@ -8803,6 +8814,7 @@
 <translation id="777852709704682967">&amp;פתיחת ניהול הסימניות</translation>
 <translation id="7779840061887151693">מסך</translation>
 <translation id="7780716468751073938">‏השיחות שלך עם Gemini <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />והנתונים שלך ב-Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> לא ייבדקו, ולא נשתמש בהם כדי לשפר מודלים של AI גנרטיבי. ‫Gemini מבוסס על AI ועלול לטעות. יכול להיות שחלק מהתוכן לא מתאים לכולם.</translation>
+<translation id="7780992949171378848">שליחת בקשה לאתרים לבטל את ההסכמה לשימוש בנתונים האישיים שלך</translation>
 <translation id="7782102568078991263">‏אין יותר הצעות מ-Google</translation>
 <translation id="7782717250816686129">אחסון נתונים קבועים במסך ההתחברות והזנה אוטומטית של פרטי הכניסה בסשן.</translation>
 <translation id="7784020347632229094">מידע נוסף על מקשי הקיצור</translation>
@@ -9110,6 +9122,7 @@
 <translation id="8018192911041116887">שיתוף הכרטיסיות</translation>
 <translation id="8018298733481692628">למחוק את הפרופיל הזה?</translation>
 <translation id="8018313076035239964">ההגדרות מאפשרות לך לבחור את המידע שאתרים יכולים להשתמש בו ואת התוכן שהם יכולים להציג לך</translation>
+<translation id="801927266093816478">‏ניהול האופן שבו אתרים משתמשים בקובצי Cookie ובנתונים שלך</translation>
 <translation id="802154636333426148">ההורדה נכשלה</translation>
 <translation id="8023133589013344428">‏ניהול השפות בהגדרות של ChromeOS Flex</translation>
 <translation id="8023801379949507775">עדכון תוספים</translation>
