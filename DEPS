@@ -3429,7 +3429,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/media_app/app',
-        'version': 'Sbk54hKn_Ui0evQ1KQexsRsmS-EylOXAX2D3IASHO70C',
+        'version': 'Bwq0y8AThiFm3MpRxwxtCkmdKisszFtB8gF91l-qxYQC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
