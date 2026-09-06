@@ -1,3 +1,4 @@
+# LINT.IfChange
 [submodule "third_party/clang-format/script"]
 	path = third_party/clang-format/script
 	url = https://chromium.googlesource.com/external/github.com/llvm/llvm-project/clang/tools/clang-format
@@ -961,3 +962,4 @@
 	path = webkit/data/test_shell/plugins
 	url = https://chrome-internal.googlesource.com/chrome/data/webkit_plugin_tests
 	gclient-condition = checkout_src_internal
+# LINT.ThenChange(//OWNERS:Submodules)
