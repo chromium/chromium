@@ -471,6 +471,7 @@ source_set("extensions_views_utils") {
     "//components/web_modal",
     "//content/public/browser",
     "//ui/base",
+    "//ui/base/unowned_user_data",
     "//ui/views",
   ]
   deps = [

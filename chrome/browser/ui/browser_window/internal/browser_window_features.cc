@@ -826,8 +826,7 @@ void BrowserWindowFeatures::InitPostWindowConstruction(
   if (focus_manager) {
     extension_keybinding_registry_ =
         std::make_unique<ExtensionKeybindingRegistryViews>(
-            profile, TabListInterface::From(browser),
-            extensions::ExtensionKeybindingRegistry::ALL_EXTENSIONS,
+            browser, extensions::ExtensionKeybindingRegistry::ALL_EXTENSIONS,
             focus_manager);
   }
 

@@ -4164,9 +4164,8 @@ void BrowserView::OnWidgetActivationChanged(views::Widget* widget,
     }
   }
 
-  browser_->GetFeatures()
-      .extension_keybinding_registry()
-      ->OnHostActivationChanged(active);
+  ExtensionKeybindingRegistryViews::From(browser_)->OnHostActivationChanged(
+      active);
 }
 
 void BrowserView::OnWidgetBoundsChanged(views::Widget* widget,

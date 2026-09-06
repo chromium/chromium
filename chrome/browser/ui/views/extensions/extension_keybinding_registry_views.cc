@@ -8,10 +8,14 @@
 #include "chrome/browser/extensions/extension_commands_global_registry.h"
 #include "chrome/browser/extensions/extension_keybinding_registry.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/accelerator_priority.h"
 #include "extensions/common/extension.h"
 #include "ui/base/accelerators/command.h"
 #include "ui/views/focus/focus_manager.h"
+
+DEFINE_USER_DATA(ExtensionKeybindingRegistryViews);
 
 ExtensionKeybindingRegistryViews::ExtensionKeybindingRegistryViews(
     Profile* profile,
@@ -24,6 +28,23 @@ ExtensionKeybindingRegistryViews::ExtensionKeybindingRegistryViews(
       profile_(profile),
       focus_manager_(focus_manager) {
   Init();
+}
+
+ExtensionKeybindingRegistryViews::ExtensionKeybindingRegistryViews(
+    BrowserWindowInterface* browser,
+    ExtensionFilter extension_filter,
+    views::FocusManager* focus_manager)
+    : ExtensionKeybindingRegistryViews(browser->GetProfile(),
+                                       TabListInterface::From(browser),
+                                       extension_filter,
+                                       focus_manager) {
+  scoped_unowned_user_data_.emplace(browser->GetUnownedUserDataHost(), *this);
+}
+
+// static
+ExtensionKeybindingRegistryViews* ExtensionKeybindingRegistryViews::From(
+    BrowserWindowInterface* browser) {
+  return Get(browser->GetUnownedUserDataHost());
 }
 
 ExtensionKeybindingRegistryViews::~ExtensionKeybindingRegistryViews() {

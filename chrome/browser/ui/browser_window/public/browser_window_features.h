@@ -318,10 +318,6 @@ class BrowserWindowFeatures {
     return browser_command_controller_.get();
   }
 
-  ExtensionKeybindingRegistryViews* extension_keybinding_registry() {
-    return extension_keybinding_registry_.get();
-  }
-
   // Get the FindBarController for this browser window, creating it if it does
   // not yet exist.
   FindBarController* GetFindBarController();
