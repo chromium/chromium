@@ -3932,4 +3932,96 @@ suite('ContextualActionMenu', () => {
       assertEquals(2, recordedMetrics.length);
     });
   });
+
+  suite('Accessibility', () => {
+    test(
+        'ensure accessibility of wrappers, dividers, headers, and flyout',
+        async () => {
+          loadTimeData.overrideValues({
+            ShowContextMenuHeaders: true,
+          });
+
+          actionMenu.remove();
+          actionMenu =
+              document.createElement('cr-composebox-contextual-action-menu');
+          actionMenu.contextManagementInComposeboxEnabled = true;
+          const tabs = [
+            createTabSuggestion(
+                {tabId: 1, title: 'Tab 1', url: 'about:blank/1'}),
+            createTabSuggestion(
+                {tabId: 2, title: 'Tab 2', url: 'about:blank/2'}),
+          ];
+          actionMenu.tabSuggestions = tabs;
+          actionMenu.inputState = new MockInputState({
+            allowedInputTypes: [
+              InputType.kBrowserTab,
+              InputType.kLensImage,
+              InputType.kLensFile,
+            ],
+            allowedTools: [
+              ToolMode.kImageGen,
+              ToolMode.kDeepSearch,
+              ToolMode.kCanvas,
+            ],
+            toolsSectionConfig: {header: 'Tools'},
+            allowedModels: [ModelMode.kGeminiRegular],
+            modelSectionConfig: {header: 'Models'},
+          });
+          document.body.appendChild(actionMenu);
+          await microtasksFinished();
+
+          actionMenu.showAt(actionMenu);
+          await microtasksFinished();
+          assertTrue(actionMenu.$.menu.open);
+
+          // Verify wrappers have role="presentation".
+          const outerWrapper =
+              actionMenu.shadowRoot.querySelector('.menu-outer-wrapper');
+          assertTrue(!!outerWrapper);
+          assertEquals('presentation', outerWrapper.getAttribute('role'));
+
+          const mainCard =
+              actionMenu.shadowRoot.querySelector('.main-menu-card');
+          assertTrue(!!mainCard);
+          assertEquals('presentation', mainCard.getAttribute('role'));
+
+          const shareTabsContainer =
+              actionMenu.shadowRoot.querySelector('.share-tabs-container');
+          assertTrue(!!shareTabsContainer);
+          assertEquals('presentation', shareTabsContainer.getAttribute('role'));
+
+          // Verify dividers have aria-hidden="true".
+          const dividers =
+              Array.from(actionMenu.shadowRoot.querySelectorAll('hr'));
+          assertTrue(dividers.length > 0);
+          dividers.forEach(hr => {
+            assertEquals('true', hr.getAttribute('aria-hidden'));
+          });
+
+          // Verify headers have aria-hidden="true".
+          const toolHeader = actionMenu.shadowRoot.querySelector('#toolHeader');
+          assertTrue(!!toolHeader);
+          assertEquals('true', toolHeader.getAttribute('aria-hidden'));
+
+          const modelHeader =
+              actionMenu.shadowRoot.querySelector('#modelHeader');
+          assertTrue(!!modelHeader);
+          assertEquals('true', modelHeader.getAttribute('aria-hidden'));
+
+          // Verify flyout is aria-hidden when closed.
+          const flyout = actionMenu.shadowRoot.querySelector<HTMLElement>(
+              '.share-tabs-flyout');
+          assertTrue(!!flyout);
+          assertEquals('true', flyout.getAttribute('aria-hidden'));
+
+          // Open flyout by hovering over Share Tabs trigger.
+          const trigger = $$(actionMenu, '#shareTabsTrigger') as HTMLElement;
+          assertTrue(!!trigger);
+          trigger.dispatchEvent(new PointerEvent('pointerenter'));
+          await microtasksFinished();
+
+          // Verify flyout is not aria-hidden when open.
+          assertEquals('false', flyout.getAttribute('aria-hidden'));
+        });
+  });
 });

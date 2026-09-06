@@ -13,12 +13,12 @@ export function getHtml(this: ContextualActionMenuElement) {
   <cr-action-menu id="menu" role-description="${this.i18n('menu')}"
       @close="${this.onMenuClose_}"
       ?auto-reposition="${!this.disableAutoReposition}">
-    <div class="menu-outer-wrapper">
-      <div class="main-menu-card">
+    <div class="menu-outer-wrapper" role="presentation">
+      <div class="main-menu-card" role="presentation">
         ${(this.tabSuggestions?.length > 0 || this.smartTabSharingActive) &&
           this.isInputTypeAllowed_(InputType.kBrowserTab) ? html`
           ${this.contextManagementInComposeboxEnabled ? html`
-            <div class="share-tabs-container">
+            <div class="share-tabs-container" role="presentation">
               ${this.smartTabSharingVisible &&
                   this.smartTabSharingActive ? html`
                 <button class="dropdown-item"
@@ -54,13 +54,14 @@ export function getHtml(this: ContextualActionMenuElement) {
                 </button>
               `}
             </div>
-            <hr/>
+            <hr aria-hidden="true"/>
           ` : html`
             ${(this.showContextMenuHeaders_ &&
-                this.tabSuggestions.length > 0) ? html`<h4 id="tabHeader">
+                this.tabSuggestions.length > 0) ? html`
+              <h4 id="tabHeader" aria-hidden="true">
                 ${this.getInputTypeLabel_(InputType.kBrowserTab)}</h4>` : ''}
             ${this.tabSuggestions.map((tab, index) => html`
-              <div class="suggestion-container">
+              <div class="suggestion-container" role="presentation">
                 <button class="dropdown-item"
                     role="${this.enableMultiTabSelection_ ? 'menuitemcheckbox'
                       : 'menuitem'}"
@@ -74,8 +75,8 @@ export function getHtml(this: ContextualActionMenuElement) {
                     @pointerenter="${this.onTabPointerenter_}"
                     @click="${this.onTabClick_}">
                   <cr-composebox-tab-favicon .url="${tab.url}"
-                      .tabId="${tab.tabId}"
-                      .isSubmitted="${this.isTabSelected_(tab)}">
+                       .tabId="${tab.tabId}"
+                       .isSubmitted="${this.isTabSelected_(tab)}">
                   </cr-composebox-tab-favicon>
                   <span class="tab-title">${tab.title}</span>
                   ${this.enableMultiTabSelection_ ? html`
@@ -96,7 +97,7 @@ export function getHtml(this: ContextualActionMenuElement) {
                 ` : ''}
               </div>
             `)}
-          <hr/>
+          <hr aria-hidden="true"/>
           `}
         ` : ''}
       ${this.isInputTypeAllowed_(InputType.kLensImage) ? html`
@@ -126,11 +127,12 @@ export function getHtml(this: ContextualActionMenuElement) {
       ${(this.inputState?.allowedTools.length ?? 0) > 0 &&
           this.isInputTypeAllowed_(
               InputType.kLensImage, InputType.kLensFile, InputType.kDrive) ?
-          html`<hr/>` : ''}
+          html`<hr aria-hidden="true"/>` : ''}
 
       ${(this.inputState?.allowedTools.length ?? 0) > 0 ? html`
           ${this.showContextMenuHeaders_ && this.getToolHeader_() ? html`
-          <h4 id="toolHeader">${this.getToolHeader_()}</h4>` : ''}` : ''}
+            <h4 id="toolHeader" aria-hidden="true">
+              ${this.getToolHeader_()}</h4>` : ''}` : ''}
 
       ${this.inputState?.allowedTools.map(mode => {
         return html`
@@ -158,11 +160,12 @@ export function getHtml(this: ContextualActionMenuElement) {
         ((this.inputState?.allowedTools.length ?? 0) > 0 ||
          this.isInputTypeAllowed_(
              InputType.kLensImage, InputType.kLensFile,
-             InputType.kDrive)) ? html`<hr/>` : ''}
+             InputType.kDrive)) ? html`<hr aria-hidden="true"/>` : ''}
 
       ${(this.inputState?.allowedModels.length ?? 0) > 0 ? html`
           ${this.showContextMenuHeaders_ && this.getModelHeader_() ? html`
-          <h4 id="modelHeader">${this.getModelHeader_()}</h4>` : ''}` : ''}
+            <h4 id="modelHeader" aria-hidden="true">
+              ${this.getModelHeader_()}</h4>` : ''}` : ''}
 
       ${this.inputState?.allowedModels.map(mode => {
         return html`
@@ -192,6 +195,7 @@ export function getHtml(this: ContextualActionMenuElement) {
         (this.tabSuggestions && this.tabSuggestions.length > 0) ? html`
         <div class="share-tabs-flyout" role="menu"
             ?hidden="${!this.shareTabsFlyoutOpen}"
+            aria-hidden="${!this.shareTabsFlyoutOpen}"
             data-position="${this.shareTabsFlyoutPosition_}"
             @pointerenter="${this.onShareTabsFlyoutPointerenter_}"
             @pointerleave="${this.onShareTabsFlyoutPointerleave_}"
@@ -208,11 +212,11 @@ export function getHtml(this: ContextualActionMenuElement) {
               <span class="tab-title">
                 ${this.i18n('stsMegaplusShareRelevantOpenTabs')}</span>
             </button>
-            <hr/>
+            <hr aria-hidden="true"/>
           ` : ''}
 
           ${this.tabSuggestions.map((tab, index) => html`
-            <div class="suggestion-container">
+            <div class="suggestion-container" role="presentation">
               <button class="dropdown-item"
                   role="${this.enableMultiTabSelection_ ?
                       'menuitemcheckbox' : 'menuitem'}"
