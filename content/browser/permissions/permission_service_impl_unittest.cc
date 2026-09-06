@@ -337,6 +337,8 @@ TEST_F(PermissionServiceImplPageEmbeddedTest,
     Tag tag;
     std::vector<blink::mojom::PermissionName> permissions;
   } kCases[] = {
+      {Tag::kGeolocation, {}},
+      {Tag::kGeolocation, {blink::mojom::PermissionName::FULLSCREEN}},
       {Tag::kGeolocation, {blink::mojom::PermissionName::WEB_APP_INSTALLATION}},
       {Tag::kGeolocation, {blink::mojom::PermissionName::AUDIO_CAPTURE}},
       {Tag::kInstall, {blink::mojom::PermissionName::GEOLOCATION}},
@@ -366,6 +368,10 @@ TEST_F(PermissionServiceImplPageEmbeddedTest,
     Tag tag;
     std::vector<blink::mojom::PermissionName> permissions;
   } kCases[] = {
+      {Tag::kGeolocation, {}},
+      {Tag::kInstall, {}},
+      {Tag::kUserMedia, {}},
+      {Tag::kGeolocation, {blink::mojom::PermissionName::FULLSCREEN}},
       {Tag::kGeolocation, {blink::mojom::PermissionName::WEB_APP_INSTALLATION}},
       {Tag::kInstall, {blink::mojom::PermissionName::AUDIO_CAPTURE}},
       {Tag::kUserMedia, {blink::mojom::PermissionName::GEOLOCATION}},

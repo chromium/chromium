@@ -150,25 +150,32 @@ bool HasDuplicatesOrInvalidPermissions(
 bool CheckPageEmbeddedPermissionTypes(
     const std::vector<PermissionDescriptorPtr>& permissions,
     const EmbeddedPermissionRequestDescriptorPtr& descriptor) {
+  if (permissions.empty()) {
+    return false;
+  }
   for (const auto& permission : permissions) {
-    auto type = blink::PermissionDescriptorToPermissionType(permission);
+    std::optional<blink::PermissionType> type =
+        blink::MaybePermissionDescriptorToPermissionType(permission);
+    if (!type.has_value()) {
+      return false;
+    }
     switch (descriptor->detail->which()) {
       case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
           kGeolocation:
-        if (type != blink::PermissionType::GEOLOCATION) {
+        if (*type != blink::PermissionType::GEOLOCATION) {
           return false;
         }
         break;
       case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
           kInstall:
-        if (type != blink::PermissionType::WEB_APP_INSTALLATION) {
+        if (*type != blink::PermissionType::WEB_APP_INSTALLATION) {
           return false;
         }
         break;
       case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
           kUserMedia:
-        if (type != blink::PermissionType::AUDIO_CAPTURE &&
-            type != blink::PermissionType::VIDEO_CAPTURE) {
+        if (*type != blink::PermissionType::AUDIO_CAPTURE &&
+            *type != blink::PermissionType::VIDEO_CAPTURE) {
           return false;
         }
         break;

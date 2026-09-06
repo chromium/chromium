@@ -157,7 +157,7 @@ class EmbeddedPermissionControlCheckerTest
 };
 
 TEST_F(EmbeddedPermissionControlCheckerTest,
-       IgnoreRegisteregisterPageEmbeddedPermissionCheck) {
+       IgnoreRegisterPageEmbeddedPermissionCheck) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(blink::features::kBypassPepcSecurityForTesting);
   for (const auto& [name, source] :
