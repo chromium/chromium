@@ -1204,16 +1204,8 @@ IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest,
   EXPECT_EQ(1, found_ungrouped);
 }
 
-// TODO(crbug.com/537538766): Flaky on Linux and ChromeOS.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_RecentlyClosedTabEntriesFilterOpenTabUrls \
-  DISABLED_RecentlyClosedTabEntriesFilterOpenTabUrls
-#else
-#define MAYBE_RecentlyClosedTabEntriesFilterOpenTabUrls \
-  RecentlyClosedTabEntriesFilterOpenTabUrls
-#endif
 IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest,
-                       MAYBE_RecentlyClosedTabEntriesFilterOpenTabUrls) {
+                       RecentlyClosedTabEntriesFilterOpenTabUrls) {
   AddTabWithTitle(browser1(), tab_url1_, kTabName1);
   AddTabWithTitle(browser1(), tab_url1_, kTabName1);
 
@@ -1307,14 +1299,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest,
   handler()->GetProfileData(std::move(callback2));
 }
 
-// TODO(crbug.com/537538766): Flaky on Linux and ChromeOS.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_RecentlyClosedTabInFuture DISABLED_RecentlyClosedTabInFuture
-#else
-#define MAYBE_RecentlyClosedTabInFuture RecentlyClosedTabInFuture
-#endif
-IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest,
-                       MAYBE_RecentlyClosedTabInFuture) {
+IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest, RecentlyClosedTabInFuture) {
   AddTabWithTitle(browser1(), tab_url1_, kTabName1);
   AddTabWithTitle(browser1(), tab_url2_, kTabName2);
 
@@ -1406,13 +1391,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest, MAYBE_ReplaceActiveSplitTab) {
             tabs_in_split_after_replacement[1]->GetContents()->GetURL().spec());
 }
 
-// TODO(crbug.com/537538766): Flaky on Linux and ChromeOS.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_TabSearchUsedPref DISABLED_TabSearchUsedPref
-#else
-#define MAYBE_TabSearchUsedPref TabSearchUsedPref
-#endif
-IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest, MAYBE_TabSearchUsedPref) {
+IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest, TabSearchUsedPref) {
   AddTabWithTitle(browser1(), tab_url1_, kTabName1);
   AddTabWithTitle(browser1(), tab_url2_, kTabName2);
 
