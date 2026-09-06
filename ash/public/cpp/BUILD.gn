@@ -111,7 +111,6 @@ component("cpp") {
     "feature_discovery_metric_util.h",
     "fwupd_download_client.cc",
     "fwupd_download_client.h",
-    "gesture_action_type.h",
     "graduation/graduation_manager.cc",
     "graduation/graduation_manager.h",
     "hats_bluetooth_revamp_trigger.cc",
