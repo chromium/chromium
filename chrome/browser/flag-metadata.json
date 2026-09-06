@@ -10649,6 +10649,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "window-preview-on-shelf",
+    "owners": [ "oshima@chromium.org" ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "windows-system-tracing",
     "owners": [ "etiennep@chromium.org", "grt@chromium.org" ],
     // This flag allows QA, developers, and users to easily capture Chrometto

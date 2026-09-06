@@ -5484,6 +5484,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"jupiter-screensaver", flag_descriptions::kJupiterScreensaverName,
      flag_descriptions::kJupiterScreensaverDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kJupiterScreensaver)},
+    {"window-preview-on-shelf", flag_descriptions::kWindowPreviewOnShelfName,
+     flag_descriptions::kWindowPreviewOnShelfDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kWindowPreviewOnShelf)},
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
     {

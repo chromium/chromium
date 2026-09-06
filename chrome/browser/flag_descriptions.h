@@ -8416,6 +8416,10 @@ inline constexpr char kWifiConcurrencyDescription[] =
     "When enabled, it uses new WiFi concurrency Shill APIs to start station "
     "WiFi and tethering.";
 
+inline constexpr char kWindowPreviewOnShelfName[] = "Window preview on shelf";
+inline constexpr char kWindowPreviewOnShelfDescription[] =
+    "Enables window mirror previews on hover for shelf icons and menu items.";
+
 inline constexpr char kWindowSplittingName[] = "CrOS Labs - Window splitting";
 inline constexpr char kWindowSplittingDescription[] =
     "Enables splitting windows by dragging one over another.";

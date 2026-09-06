@@ -1960,6 +1960,9 @@ BASE_FEATURE(kWifiSyncUploadProxyConfigs, base::FEATURE_DISABLED_BY_DEFAULT);
 // Wi-Fi networks that are received from Chrome Sync.
 BASE_FEATURE(kWifiSyncApplyProxyConfigs, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables window preview on hover for shelf app icons and menu items.
+BASE_FEATURE(kWindowPreviewOnShelf, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables an experimental feature that splits windows by dragging one window
 // over another window.
 BASE_FEATURE(kWindowSplitting, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -3270,6 +3273,10 @@ bool IsWifiConcurrencyEnabled() {
 
 bool IsWifiSyncAndroidEnabled() {
   return base::FeatureList::IsEnabled(kWifiSyncAndroid);
+}
+
+bool IsWindowPreviewOnShelfEnabled() {
+  return base::FeatureList::IsEnabled(kWindowPreviewOnShelf);
 }
 
 bool IsWindowSplittingEnabled() {

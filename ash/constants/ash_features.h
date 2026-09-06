@@ -875,6 +875,9 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kWifiSyncUploadProxyConfigs);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kWifiSyncApplyProxyConfigs);
+// Enables window preview on hover for shelf app icons and menu items.
+COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kWindowPreviewOnShelf);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kWindowSplitting);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kCrostiniAdvancedAccessControls);
@@ -1301,6 +1304,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWelcomeTourHoldbackEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWelcomeTourV3Enabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWifiConcurrencyEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWifiSyncAndroidEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWindowPreviewOnShelfEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWindowSplittingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldEnterOverviewFromWallpaper();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldOnlyShowNewShortcutApp();
