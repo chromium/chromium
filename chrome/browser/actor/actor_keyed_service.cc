@@ -266,6 +266,15 @@ void ActorKeyedService::CreateActorTab(TaskId task_id,
 
   BrowserWindowInterface* window_for_new_tab = nullptr;
   tabs::TabInterface* initiator_tab = initiator_tab_handle.Get();
+  if (initiator_tab && initiator_tab->GetProfile() != profile_.get()) {
+    GetJournal().Log(
+        GURL(), task_id, "CreateActorTab",
+        JournalDetailsBuilder()
+            .AddError("Initiator tab belongs to a different profile")
+            .Build());
+    std::move(callback).Run(nullptr);
+    return;
+  }
 
   // Special case: if the initiator tab is the NTP, no need to create a new
   // tab, reuse it.
@@ -339,18 +348,17 @@ void ActorKeyedService::CreateActorTab(TaskId task_id,
 #endif
 
   // If the initiating tab is still live, create the new tab in the same window.
-  if (initiator_tab) {
-    if (initiator_tab->IsInNormalWindow()) {
-      window_for_new_tab = initiator_tab->GetBrowserWindowInterface();
-      if (window_for_new_tab) {
-        GetJournal().Log(GURL(), task_id, "CreateActorTab",
-                         JournalDetailsBuilder()
-                             .Add("Using initiator_tab's window",
-                                  window_for_new_tab->GetSessionID().id())
-                             .Build());
-      }
+  // (Cross-profile initiator tabs were already rejected above.)
+  if (initiator_tab && initiator_tab->IsInNormalWindow()) {
+    window_for_new_tab = initiator_tab->GetBrowserWindowInterface();
+    if (window_for_new_tab) {
+      GetJournal().Log(GURL(), task_id, "CreateActorTab",
+                       JournalDetailsBuilder()
+                           .Add("Using initiator_tab's window",
+                                window_for_new_tab->GetSessionID().id())
+                           .Build());
     }
-  } else {
+  } else if (!initiator_tab) {
     // TODO(b/482430429): Figure out how to proceed from just a window ID on
     // Android.
 #if !BUILDFLAG(IS_ANDROID)
@@ -358,11 +366,17 @@ void ActorKeyedService::CreateActorTab(TaskId task_id,
     // task initiation).
     window_for_new_tab =
         BrowserWindowInterface::FromSessionID(initiator_window_id);
-    GetJournal().Log(
-        GURL(), task_id, "CreateActorTab",
-        JournalDetailsBuilder()
-            .Add("Using initiator_window", initiator_window_id.id())
-            .Build());
+    if (window_for_new_tab &&
+        window_for_new_tab->GetProfile() != profile_.get()) {
+      window_for_new_tab = nullptr;
+    }
+    if (window_for_new_tab) {
+      GetJournal().Log(
+          GURL(), task_id, "CreateActorTab",
+          JournalDetailsBuilder()
+              .Add("Using initiator_window", initiator_window_id.id())
+              .Build());
+    }
 #endif
   }
 
@@ -594,6 +608,18 @@ void ActorKeyedService::RequestTabObservation(
         screenshot_collection_options,
     base::OnceCallback<void(TabObservationResult)> callback) {
   TRACE_EVENT0("actor", "ActorKeyedService::RequestTabObservation");
+  if (tab.GetProfile() != profile_.get()) {
+    journal_.Log(GURL(), task_id, "RequestTabObservation",
+                 JournalDetailsBuilder()
+                     .AddError("Cross-profile tab observation denied")
+                     .Build());
+    std::move(callback).Run(
+        base::unexpected(page_content_annotations::FetchPageContextErrorDetails{
+            .error_code = page_content_annotations::FetchPageContextError::
+                kPageContextNotEligible,
+            .message = "Cross-profile tab observation denied"}));
+    return;
+  }
   const GURL& last_committed_url = tab.GetContents()->GetLastCommittedURL();
   auto journal_entry = journal_.CreatePendingAsyncEntry(
       last_committed_url, task_id, MakeBrowserTrackUUID(task_id),

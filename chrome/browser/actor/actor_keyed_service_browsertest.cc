@@ -20,11 +20,13 @@
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
 #if !BUILDFLAG(IS_ANDROID)
@@ -480,7 +482,7 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
 
   auto result = future.Take();
   ASSERT_TRUE(result);
-  EXPECT_EQ(result->code, mojom::ActionResultCode::kTaskWentAway);
+  EXPECT_EQ(result->code, mojom::ActionResultCode::kActionTargetCrossProfile);
 
   browser2->GetWindow()->Close();
 }
@@ -507,6 +509,115 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
   task->ObserveTabOnce(tab2->GetHandle());
 
   EXPECT_FALSE(task->GetLastActedTabs().contains(tab2->GetHandle()));
+
+  browser2->GetWindow()->Close();
+}
+
+IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
+                       AddTabRejectsUnissuedTabHandle) {
+  TaskId task_id = actor_keyed_service()->CreateTask(
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker());
+  ActorTask* task = actor_keyed_service()->GetTask(task_id);
+
+  tabs::TabHandle unissued_handle(99999);
+  base::test::TestFuture<mojom::ActionResultPtr> future;
+  task->AddTab(unissued_handle, /*stop_task_on_detach=*/true,
+               future.GetCallback());
+
+  auto result = future.Take();
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->code, mojom::ActionResultCode::kTabWentAway);
+  EXPECT_FALSE(task->HasTab(unissued_handle));
+  EXPECT_FALSE(task->GetTabs().contains(unissued_handle));
+}
+
+IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
+                       CreateActorTabRejectsCrossProfileInitiatorWindow) {
+  TaskId task_id = actor_keyed_service()->CreateTask(
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker());
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  base::FilePath profile_path =
+      profile_manager->GenerateNextProfileDirectoryPath();
+  Profile& profile2 =
+      profiles::testing::CreateProfileSync(profile_manager, profile_path);
+
+  BrowserWindowInterface* browser2 = CreateBrowserWindow(
+      BrowserWindowCreateParams(&profile2, /*from_user_gesture=*/true));
+  chrome::NewTab(browser2, NewTabTypes::kNoUserAction);
+  const int profile2_tab_count_before = browser2->GetTabStripModel()->count();
+
+  base::test::TestFuture<tabs::TabInterface*> future;
+  actor_keyed_service()->CreateActorTab(
+      task_id, /*open_in_background=*/false,
+      /*initiator_tab_handle=*/tabs::TabHandle::Null(),
+      browser2->GetSessionID(), future.GetCallback());
+
+  tabs::TabInterface* new_tab = future.Take();
+  ASSERT_NE(new_tab, nullptr);
+  EXPECT_EQ(new_tab->GetProfile(), GetProfile());
+  EXPECT_EQ(profile2_tab_count_before, browser2->GetTabStripModel()->count());
+
+  browser2->GetWindow()->Close();
+}
+
+IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
+                       CreateActorTabRejectsCrossProfileInitiatorTab) {
+  TaskId task_id = actor_keyed_service()->CreateTask(
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker());
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  base::FilePath profile_path =
+      profile_manager->GenerateNextProfileDirectoryPath();
+  Profile& profile2 =
+      profiles::testing::CreateProfileSync(profile_manager, profile_path);
+
+  BrowserWindowInterface* browser2 = CreateBrowserWindow(
+      BrowserWindowCreateParams(&profile2, /*from_user_gesture=*/true));
+  chrome::NewTab(browser2, NewTabTypes::kNoUserAction);
+  tabs::TabInterface* tab2 = browser2->GetActiveTabInterface();
+  ASSERT_NE(tab2, nullptr);
+  ASSERT_TRUE(content::NavigateToURL(tab2->GetContents(),
+                                     GURL(chrome::kChromeUINewTabURL)));
+  ASSERT_TRUE(search::IsNTPURL(
+      tab2->GetContents()->GetPrimaryMainFrame()->GetLastCommittedURL()));
+  const int profile2_tab_count_before = browser2->GetTabStripModel()->count();
+
+  base::test::TestFuture<tabs::TabInterface*> future;
+  actor_keyed_service()->CreateActorTab(
+      task_id, /*open_in_background=*/false, tab2->GetHandle(),
+      browser2->GetSessionID(), future.GetCallback());
+
+  tabs::TabInterface* new_tab = future.Take();
+  EXPECT_EQ(new_tab, nullptr);
+  EXPECT_EQ(profile2_tab_count_before, browser2->GetTabStripModel()->count());
+
+  browser2->GetWindow()->Close();
+}
+
+IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
+                       RequestTabObservationRejectsCrossProfileTab) {
+  TaskId task_id = actor_keyed_service()->CreateTask(
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker());
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  base::FilePath profile_path =
+      profile_manager->GenerateNextProfileDirectoryPath();
+  Profile& profile2 =
+      profiles::testing::CreateProfileSync(profile_manager, profile_path);
+
+  BrowserWindowInterface* browser2 = CreateBrowserWindow(
+      BrowserWindowCreateParams(&profile2, /*from_user_gesture=*/true));
+  chrome::NewTab(browser2, NewTabTypes::kNoUserAction);
+  tabs::TabInterface* tab2 = browser2->GetActiveTabInterface();
+
+  base::test::TestFuture<ActorKeyedService::TabObservationResult> future;
+  actor_keyed_service()->RequestTabObservation(
+      *tab2, task_id, /*screenshot_collection_options=*/std::nullopt,
+      future.GetCallback());
+
+  auto result = future.Take();
+  EXPECT_FALSE(result.has_value());
 
   browser2->GetWindow()->Close();
 }

@@ -10,13 +10,17 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
+#include "build/build_config.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
 #include "chrome/common/actor.mojom.h"
 #include "components/actor/core/task_id.h"
+#include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "url/gurl.h"
+
+class BrowserWindowInterface;
 
 namespace optimization_guide::proto {
 class AnnotatedPageContent;
@@ -111,6 +115,18 @@ class Tool {
   TaskId task_id() const { return task_id_; }
   AggregatedJournal& journal() { return tool_delegate().GetJournal(); }
   ToolDelegate& tool_delegate() { return *tool_delegate_; }
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Validates that `browser` exists and belongs to the profile returned by
+  // `tool_delegate()`.
+  // - If `!browser`, returns ActionResult with `kWindowWentAway`.
+  // - If `browser->GetProfile() != &tool_delegate().GetProfile()`, returns
+  //   ActionResult with `kActionTargetCrossProfile`.
+  // - Otherwise, returns `MakeOkResult()`.
+  mojom::ActionResultPtr ValidateBrowserWindow(
+      const BrowserWindowInterface* browser) const;
+  mojom::ActionResultPtr ValidateWindowId(SessionID window_id) const;
+#endif
 
  private:
   TaskId task_id_;

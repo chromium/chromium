@@ -132,7 +132,10 @@ class ActorTaskTest : public testing::Test {
         .Times(1);
   }
 
-  void AddTabAndVerify(tabs::TabInterface& tab) {
+  void AddTabAndVerify(tabs::MockTabInterface& tab) {
+    if (!tab.GetProfile()) {
+      ON_CALL(tab, GetProfile).WillByDefault(::testing::Return(profile_.get()));
+    }
     ExpectTabAddedNotification(tab.GetHandle());
     AddTabToTask(tab, *task_);
     EXPECT_TRUE(task_->HasTab(tab.GetHandle()));
@@ -183,10 +186,25 @@ class ActorTaskTest : public testing::Test {
     service->ResetForTesting();
   }
 
+  std::unique_ptr<tabs::MockTabInterface> CreateCrossProfileMockTab(
+      Profile* other_profile = nullptr) {
+    if (!other_profile) {
+      if (!other_profile_) {
+        other_profile_ = TestingProfile::Builder().Build();
+      }
+      other_profile = other_profile_.get();
+    }
+    auto mock_tab = std::make_unique<tabs::MockTabInterface>();
+    ON_CALL(*mock_tab, GetProfile)
+        .WillByDefault(::testing::Return(other_profile));
+    return mock_tab;
+  }
+
  protected:
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<TestingProfile> other_profile_;
   MockActorTaskDelegate mock_delegate_;
   raw_ptr<ActorTask> task_;
   raw_ptr<ui::MockUiEventDispatcher> mock_ui_event_dispatcher_;
@@ -772,6 +790,61 @@ TEST_F(ActorTaskCompletionMetricsTest,
                               0);
   histograms.ExpectTotalCount("Actor.Task.Duration.Completed.Other", 0);
   histograms.ExpectTotalCount("Actor.Task.Count.Completed.Other", 0);
+}
+
+TEST_F(ActorTaskTest, AddTab_RejectsNonExistentTab) {
+  tabs::TabHandle non_existent_handle(99999);
+  base::test::TestFuture<mojom::ActionResultPtr> add_tab_future;
+  task_->AddTab(non_existent_handle, /*stop_task_on_detach=*/true,
+                add_tab_future.GetCallback());
+  auto result = add_tab_future.Take();
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->code, mojom::ActionResultCode::kTabWentAway);
+  EXPECT_FALSE(task_->HasTab(non_existent_handle));
+  EXPECT_FALSE(task_->GetTabs().contains(non_existent_handle));
+}
+
+TEST_F(ActorTaskTest, AddTab_RejectsCrossProfileTab) {
+  std::unique_ptr<tabs::MockTabInterface> cross_profile_tab =
+      CreateCrossProfileMockTab();
+
+  base::test::TestFuture<mojom::ActionResultPtr> add_tab_future;
+  task_->AddTab(cross_profile_tab->GetHandle(), /*stop_task_on_detach=*/true,
+                add_tab_future.GetCallback());
+  auto result = add_tab_future.Take();
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->code, mojom::ActionResultCode::kActionTargetCrossProfile);
+  EXPECT_FALSE(task_->HasTab(cross_profile_tab->GetHandle()));
+  EXPECT_FALSE(task_->GetTabs().contains(cross_profile_tab->GetHandle()));
+}
+
+TEST_F(ActorTaskTest, AddTab_RejectsCrossProfileTabEvenWithNullContents) {
+  std::unique_ptr<tabs::MockTabInterface> cross_profile_tab =
+      CreateCrossProfileMockTab();
+  ON_CALL(*cross_profile_tab, GetContents)
+      .WillByDefault(::testing::Return(nullptr));
+
+  base::test::TestFuture<mojom::ActionResultPtr> add_tab_future;
+  task_->AddTab(cross_profile_tab->GetHandle(), /*stop_task_on_detach=*/true,
+                add_tab_future.GetCallback());
+  auto result = add_tab_future.Take();
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->code, mojom::ActionResultCode::kActionTargetCrossProfile);
+  EXPECT_FALSE(task_->HasTab(cross_profile_tab->GetHandle()));
+  EXPECT_FALSE(task_->GetTabs().contains(cross_profile_tab->GetHandle()));
+}
+
+TEST_F(ActorTaskTest, ObserveTabOnce_RejectsNonExistentAndCrossProfileTab) {
+  tabs::TabHandle non_existent_handle(99999);
+  task_->ObserveTabOnce(non_existent_handle);
+  EXPECT_FALSE(task_->GetLastActedTabs().contains(non_existent_handle));
+
+  std::unique_ptr<tabs::MockTabInterface> cross_profile_tab =
+      CreateCrossProfileMockTab();
+
+  task_->ObserveTabOnce(cross_profile_tab->GetHandle());
+  EXPECT_FALSE(
+      task_->GetLastActedTabs().contains(cross_profile_tab->GetHandle()));
 }
 
 }  // namespace

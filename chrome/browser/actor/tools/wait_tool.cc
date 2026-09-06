@@ -64,7 +64,7 @@ void WaitTool::UpdateTaskBeforeInvoke(ActorTask& task,
 }
 
 tabs::TabHandle WaitTool::GetTargetTab() const {
-  return tabs::TabHandle::Null();
+  return observe_tab_handle_;
 }
 
 void WaitTool::OnDelayFinished(ToolCallback callback) {

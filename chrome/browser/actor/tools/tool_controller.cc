@@ -16,6 +16,7 @@
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/actor/tools/tool_request.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
@@ -137,6 +138,17 @@ void ToolController::CreateToolAndValidate(
                         std::move(journal_event));
 
   SetState(State::kValidating);
+
+  tabs::TabHandle target_tab_handle = active_state_->tool->GetTargetTab();
+  if (target_tab_handle != tabs::TabHandle::Null()) {
+    mojom::ActionResultPtr tab_result =
+        ValidateTargetTab(target_tab_handle.Get());
+    if (!IsOk(*tab_result)) {
+      PostValidate(std::move(tab_result));
+      return;
+    }
+  }
+
   active_state_->tool->Validate(base::BindOnce(&ToolController::PostValidate,
                                                weak_ptr_factory_.GetWeakPtr()));
 }
@@ -184,6 +196,19 @@ void ToolController::Invoke(ResultCallback result_callback) {
   active_state_->completion_callback = std::move(result_callback);
 
   Tool& tool = *active_state_->tool;
+
+  tabs::TabHandle target_tab_handle = tool.GetTargetTab();
+  if (target_tab_handle != tabs::TabHandle::Null()) {
+    mojom::ActionResultPtr tab_result =
+        ValidateTargetTab(target_tab_handle.Get());
+    if (!IsOk(*tab_result)) {
+      journal().Log(
+          tool.JournalURL(), task_->id(), "Tab Validation Failed",
+          JournalDetailsBuilder().AddError(ToDebugString(*tab_result)).Build());
+      CompleteToolRequest(std::move(tab_result));
+      return;
+    }
+  }
 
   const optimization_guide::proto::AnnotatedPageContent*
       last_observed_page_content = nullptr;
@@ -322,6 +347,21 @@ void ToolController::CompleteToolRequest(mojom::ActionResultPtr result) {
   PostResponseTask(std::move(active_state_->completion_callback),
                    std::move(result));
   active_state_.reset();
+}
+
+mojom::ActionResultPtr ToolController::ValidateTargetTab(
+    const tabs::TabInterface* tab) const {
+  if (!tab) {
+    return MakeResult(mojom::ActionResultCode::kTabWentAway,
+                      /*requires_page_stabilization=*/false,
+                      "The target tab is no longer present.");
+  }
+  if (tab->GetProfile() != &tool_delegate_->GetProfile()) {
+    return MakeResult(mojom::ActionResultCode::kActionTargetCrossProfile,
+                      /*requires_page_stabilization=*/false,
+                      "The target tab belongs to a different profile.");
+  }
+  return MakeOkResult();
 }
 
 }  // namespace actor

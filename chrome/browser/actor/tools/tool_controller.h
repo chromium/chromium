@@ -17,6 +17,10 @@
 #include "chrome/common/actor.mojom-forward.h"
 #include "components/actor/core/aggregated_journal.h"
 
+namespace tabs {
+class TabInterface;
+}
+
 namespace actor {
 
 class ActorTask;
@@ -76,6 +80,8 @@ class ToolController {
   void ObservationDelayComplete(
       mojom::ActionResultPtr action_result,
       ObservationDelayController::Result observation_result);
+
+  mojom::ActionResultPtr ValidateTargetTab(const tabs::TabInterface* tab) const;
 
   AggregatedJournal& journal() { return tool_delegate_->GetJournal(); }
 

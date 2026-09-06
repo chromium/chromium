@@ -10,6 +10,9 @@
 #include "chrome/browser/actor/tools/tools_test_util.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -18,6 +21,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "ui/base/base_window.h"
 #include "ui/base/window_open_disposition.h"
 
 using base::test::TestFuture;
@@ -76,6 +80,56 @@ IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest,
   EXPECT_EQ(initial_tab_count + 1, browser()->tab_strip_model()->count());
   EXPECT_EQ(start_tab_url,
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+}
+
+// Ensure CreateTab fails when targeting a window that belongs to a different
+// profile and that no tab is added to the task.
+IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest,
+                       CreateTabRejectsOtherProfileWindow) {
+  Profile* incognito_profile =
+      GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  BrowserWindowInterface* incognito_browser = CreateBrowserWindow(
+      BrowserWindowCreateParams(incognito_profile, /*from_user_gesture=*/true));
+  chrome::NewTab(incognito_browser, NewTabTypes::kNoUserAction);
+  const int incognito_tab_count =
+      incognito_browser->GetTabStripModel()->count();
+
+  std::unique_ptr<ToolRequest> action = MakeCreateTabRequest(
+      incognito_browser->GetSessionID(), /*foreground=*/true);
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectErrorResult(result, mojom::ActionResultCode::kActionTargetCrossProfile);
+
+  EXPECT_EQ(incognito_tab_count,
+            incognito_browser->GetTabStripModel()->count());
+  EXPECT_TRUE(actor_task().GetTabs().empty());
+
+  incognito_browser->GetWindow()->Close();
+}
+
+// Ensure CloseTab fails when targeting a tab in another profile.
+IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest,
+                       CloseTabRejectsOtherProfileTab) {
+  Profile* incognito_profile =
+      GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  BrowserWindowInterface* incognito_browser = CreateBrowserWindow(
+      BrowserWindowCreateParams(incognito_profile, /*from_user_gesture=*/true));
+  chrome::NewTab(incognito_browser, NewTabTypes::kNoUserAction);
+  tabs::TabInterface* incognito_tab =
+      incognito_browser->GetActiveTabInterface();
+  const int incognito_tab_count =
+      incognito_browser->GetTabStripModel()->count();
+
+  std::unique_ptr<ToolRequest> action =
+      MakeCloseTabRequest(incognito_tab->GetHandle());
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectErrorResult(result, mojom::ActionResultCode::kActionTargetCrossProfile);
+
+  EXPECT_EQ(incognito_tab_count,
+            incognito_browser->GetTabStripModel()->count());
+
+  incognito_browser->GetWindow()->Close();
 }
 
 // Test that the history tool correctly adds the acted on tab to the task's set

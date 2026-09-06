@@ -44,6 +44,14 @@ TabManagementTool::TabManagementTool(TaskId task_id,
 TabManagementTool::~TabManagementTool() = default;
 
 void TabManagementTool::Validate(ToolCallback callback) {
+  if (action_ == kCreate) {
+    if (window_id_.has_value()) {
+      PostResponseTask(
+          std::move(callback),
+          ValidateWindowId(SessionID::FromSerializedValue(window_id_.value())));
+      return;
+    }
+  }
   PostResponseTask(std::move(callback), MakeOkResult());
 }
 
@@ -51,29 +59,16 @@ void TabManagementTool::Invoke(ToolCallback callback) {
   callback_ = std::move(callback);
   CHECK(window_id_.has_value() || target_tab_.has_value());
 
-  if (target_tab_.has_value() && !target_tab_->Get()) {
-    PostResponseTask(std::move(callback_),
-                     MakeResult(mojom::ActionResultCode::kTabWentAway));
-    return;
-  }
-
   BrowserWindowInterface* browser_window_interface =
       window_id_.has_value()
           ? BrowserWindowInterface::FromSessionID(
                 SessionID::FromSerializedValue(window_id_.value()))
           : target_tab_.value().Get()->GetBrowserWindowInterface();
 
-  if (!browser_window_interface) {
-    PostResponseTask(std::move(callback_),
-                     MakeResult(mojom::ActionResultCode::kWindowWentAway));
-    return;
-  }
-
-  if (browser_window_interface->GetProfile() != &tool_delegate().GetProfile()) {
-    PostResponseTask(std::move(callback_),
-                     MakeResult(mojom::ActionResultCode::kWindowWentAway,
-                                /*requires_page_stabilization=*/false,
-                                "Cross-profile access denied."));
+  mojom::ActionResultPtr window_result =
+      ValidateBrowserWindow(browser_window_interface);
+  if (!IsOk(*window_result)) {
+    PostResponseTask(std::move(callback_), std::move(window_result));
     return;
   }
 

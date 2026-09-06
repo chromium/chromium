@@ -163,6 +163,10 @@ enum ActionResultCode {
   // inspections for sensitive data.
   kActionBlockedByEnterpriseContentScan = 51,
 
+  // The action or tool targeted a tab, window, or resource belonging to a
+  // different profile than the active task.
+  kActionTargetCrossProfile = 52,
+
   // Please see the comment above about adding new values.
 
   ///////////////////////////////////////////////////////////////////////

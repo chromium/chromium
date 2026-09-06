@@ -100,6 +100,7 @@ class ActorUiTabControllerTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::SetUp();
 
     tab_strip_model_ = std::make_unique<TabStripModel>(&delegate_, profile());
+    ON_CALL(mock_tab_, GetProfile).WillByDefault(Return(profile()));
     ON_CALL(mock_tab_, GetBrowserWindowInterface())
         .WillByDefault(Return(&mock_browser_window_interface_));
     ON_CALL(mock_tab_, GetUnownedUserDataHost())

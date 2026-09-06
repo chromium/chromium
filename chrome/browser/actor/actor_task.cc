@@ -625,6 +625,17 @@ void ActorTask::AddTab(tabs::TabHandle tab_handle,
                            : mojom::ActionResultCode::kTaskWentAway)));
     return;
   }
+  tabs::TabInterface* tab = tab_handle.Get();
+  if (CheckCrossProfileAndLog(tab, tab_handle, "ActorTask::AddTab")) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            std::move(callback),
+            MakeResult(tab ? mojom::ActionResultCode::kActionTargetCrossProfile
+                           : mojom::ActionResultCode::kTabWentAway)));
+    return;
+  }
+
   if (controlled_tabs_.contains(tab_handle)) {
     last_actuated_tab_ = tab_handle;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -635,15 +646,6 @@ void ActorTask::AddTab(tabs::TabHandle tab_handle,
   journal_->Log(
       GURL(), id(), "ActorTask::AddTab",
       JournalDetailsBuilder().Add("tab_id", tab_handle.raw_value()).Build());
-
-  if (CheckCrossProfileAndLog(tab_handle.Get(), tab_handle,
-                              "ActorTask::AddTab")) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback),
-                       MakeResult(mojom::ActionResultCode::kTaskWentAway)));
-    return;
-  }
 
   controlled_tabs_.emplace(
       tab_handle,
@@ -715,15 +717,6 @@ void ActorTask::ObserveTabOnce(tabs::TabHandle tab_handle) {
   }
 
   tabs::TabInterface* tab = tab_handle.Get();
-  if (!tab) {
-    journal_->Log(GURL(), id(), "ObserveTabOnce",
-                  JournalDetailsBuilder()
-                      .Add("tab_id", tab_handle.raw_value())
-                      .AddError("Tab is gone")
-                      .Build());
-    return;
-  }
-
   if (CheckCrossProfileAndLog(tab, tab_handle, "ObserveTabOnce")) {
     return;
   }
@@ -973,12 +966,12 @@ void ActorTask::DidContentsExitActorControl(
 bool ActorTask::CheckCrossProfileAndLog(tabs::TabInterface* tab,
                                         tabs::TabHandle tab_handle,
                                         std::string_view method_name) {
-  if (tab && tab->GetContents() &&
-      tab->GetContents()->GetBrowserContext() != GetProfile()) {
+  if (!tab || tab->GetProfile() != GetProfile()) {
     journal_->Log(GURL(), id(), method_name,
                   JournalDetailsBuilder()
                       .Add("tab_id", tab_handle.raw_value())
-                      .AddError("Cross-profile access denied")
+                      .AddError(!tab ? "Tab does not exist"
+                                     : "Cross-profile access denied")
                       .Build());
     return true;
   }

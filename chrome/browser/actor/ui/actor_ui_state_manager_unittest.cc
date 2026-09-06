@@ -71,6 +71,7 @@ class ActorUiStateManagerTest : public testing::Test {
     ON_CALL(mock_browser_window_interface_, GetTabStripModel())
         .WillByDefault(Return(tab_strip_model_.get()));
 
+    ON_CALL(mock_tab_, GetProfile).WillByDefault(testing::Return(profile()));
     MockActorUiTabController::SetupDefaultBrowserWindow(
         mock_tab(), mock_browser_window_interface_, user_data_host_);
     mock_actor_ui_tab_controller_.emplace(mock_tab());

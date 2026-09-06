@@ -38,6 +38,7 @@
 #include "chrome/browser/actor/tools/translate_page_tool_request.h"
 #include "chrome/browser/actor/tools/type_tool_request.h"
 #include "chrome/browser/actor/tools/wait_tool_request.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_constants.h"
@@ -980,6 +981,9 @@ ScopedMockTabObservationResult::~ScopedMockTabObservationResult() {
 TestTabState::TestTabState(content::WebContents* web_contents) {
   if (web_contents) {
     ON_CALL(tab, GetContents).WillByDefault(::testing::Return(web_contents));
+    ON_CALL(tab, GetProfile)
+        .WillByDefault(::testing::Return(
+            Profile::FromBrowserContext(web_contents->GetBrowserContext())));
   }
   ON_CALL(tab, RegisterWillDetach)
       .WillByDefault([this](tabs::TabInterface::WillDetach callback) {

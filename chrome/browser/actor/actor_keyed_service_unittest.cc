@@ -29,6 +29,7 @@
 #include "components/actor/core/actor_switches.h"
 #include "components/actor/core/task_source_info.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -73,6 +74,12 @@ class ActorKeyedServiceTest : public testing::Test {
 
   TestingProfile* profile() { return profile_.get(); }
 
+  std::unique_ptr<tabs::MockTabInterface> CreateMockTab() {
+    auto mock_tab = std::make_unique<tabs::MockTabInterface>();
+    ON_CALL(*mock_tab, GetProfile).WillByDefault(testing::Return(profile()));
+    return mock_tab;
+  }
+
   void RunTasksUntilIdle() { task_environment_.RunUntilIdle(); }
 
  protected:
@@ -102,9 +109,11 @@ TEST_F(ActorKeyedServiceTest, StopActiveTask) {
                                         NoEnterprisePolicyChecker());
 
   // Add a tab to the task
+  auto mock_tab = CreateMockTab();
+  const tabs::TabHandle tab_handle = mock_tab->GetHandle();
   base::WeakPtr<ActorTask> task = actor_service->GetTask(id)->GetWeakPtr();
   base::RunLoop loop;
-  task->AddTab(tabs::TabHandle(123),
+  task->AddTab(tab_handle,
                /*stop_task_on_detach=*/true,
                base::BindLambdaForTesting([&](mojom::ActionResultPtr result) {
                  EXPECT_TRUE(IsOk(*result));
@@ -112,8 +121,8 @@ TEST_F(ActorKeyedServiceTest, StopActiveTask) {
                }));
   loop.Run();
 
-  EXPECT_TRUE(task->IsActingOnTab(tabs::TabHandle(123)));
-  EXPECT_TRUE(task->HasTab(tabs::TabHandle(123)));
+  EXPECT_TRUE(task->IsActingOnTab(tab_handle));
+  EXPECT_TRUE(task->HasTab(tab_handle));
   actor_service->StopTask(id, ActorTask::StoppedReason::kTaskComplete);
 
   // Tasks are deleted asynchronously.
@@ -150,7 +159,8 @@ TEST_F(ActorKeyedServiceTest, AddTabToPausedOrStoppedTask) {
 
   base::WeakPtr<ActorTask> task = actor_service->GetTask(id)->GetWeakPtr();
   ASSERT_TRUE(task);
-  const tabs::TabHandle tab_handle(123);
+  auto mock_tab = CreateMockTab();
+  const tabs::TabHandle tab_handle = mock_tab->GetHandle();
 
   // Pause the task and try to add a tab.
   task->Pause(/*from_actor=*/true);
@@ -184,7 +194,8 @@ TEST_F(ActorKeyedServiceTest, PausedTaskTabs) {
 
   base::WeakPtr<ActorTask> task = actor_service->GetTask(id)->GetWeakPtr();
   ASSERT_TRUE(task);
-  const tabs::TabHandle tab_handle(123);
+  auto mock_tab = CreateMockTab();
+  const tabs::TabHandle tab_handle = mock_tab->GetHandle();
 
   {
     base::test::TestFuture<mojom::ActionResultPtr> future;
@@ -277,7 +288,8 @@ TEST_F(ActorKeyedServiceTest, GetActiveTasksDuringStateChangeCallback) {
 
 TEST_F(ActorKeyedServiceTest, InitialTabAssociationOnCreate) {
   auto* actor_service = ActorKeyedService::Get(profile());
-  const tabs::TabHandle tab_handle(123);
+  auto mock_tab = CreateMockTab();
+  const tabs::TabHandle tab_handle = mock_tab->GetHandle();
   auto options = webui::mojom::TaskOptions::New();
   options->actuation_tab_id = tab_handle.raw_value();
 

@@ -46,20 +46,14 @@ void WindowManagementTool::Validate(ToolCallback callback) {
     case Action::kEnterFullscreen:
     case Action::kExitFullscreen: {
       CHECK(window_id_.has_value());
-      BrowserWindowInterface* browser = GetTargetBrowser();
-      if (!browser) {
-        std::move(callback).Run(
-            MakeResult(mojom::ActionResultCode::kWindowWentAway,
-                       /*requires_page_stabilization=*/false,
-                       "The target window could not be found."));
-        return;
-      }
-      mojom::ActionResultPtr result = CheckCrossProfile(browser);
+      mojom::ActionResultPtr result =
+          ValidateWindowId(SessionID::FromSerializedValue(*window_id_));
       if (!IsOk(*result)) {
         std::move(callback).Run(std::move(result));
         return;
       }
       if (action_ == Action::kClose) {
+        BrowserWindowInterface* browser = GetTargetBrowser();
         browser_did_close_subscription_ = browser->RegisterBrowserDidClose(
             base::BindRepeating(&WindowManagementTool::OnBrowserDidClose,
                                 base::Unretained(this)));
@@ -105,15 +99,15 @@ void WindowManagementTool::Invoke(ToolCallback callback) {
     }
     case Action::kActivate: {
       BrowserWindowInterface* browser = GetTargetBrowser();
-      if (!browser || !browser->GetWindow()) {
+      mojom::ActionResultPtr result = ValidateBrowserWindow(browser);
+      if (!IsOk(*result)) {
+        OnInvokeFinished(std::move(result));
+        return;
+      }
+      if (!browser->GetWindow()) {
         OnInvokeFinished(MakeResult(mojom::ActionResultCode::kWindowWentAway,
                                     /*requires_page_stabilization=*/false,
                                     "The target window could not be found."));
-        return;
-      }
-      mojom::ActionResultPtr result = CheckCrossProfile(browser);
-      if (!IsOk(*result)) {
-        OnInvokeFinished(std::move(result));
         return;
       }
       browser_did_become_active_subscription_ =
@@ -125,15 +119,15 @@ void WindowManagementTool::Invoke(ToolCallback callback) {
     }
     case Action::kClose: {
       BrowserWindowInterface* browser = GetTargetBrowser();
-      if (!browser || !browser->GetWindow()) {
+      mojom::ActionResultPtr result = ValidateBrowserWindow(browser);
+      if (!IsOk(*result)) {
+        OnInvokeFinished(std::move(result));
+        return;
+      }
+      if (!browser->GetWindow()) {
         OnInvokeFinished(MakeResult(mojom::ActionResultCode::kWindowWentAway,
                                     /*requires_page_stabilization=*/false,
                                     "The target window could not be found."));
-        return;
-      }
-      mojom::ActionResultPtr result = CheckCrossProfile(browser);
-      if (!IsOk(*result)) {
-        OnInvokeFinished(std::move(result));
         return;
       }
 
@@ -142,15 +136,15 @@ void WindowManagementTool::Invoke(ToolCallback callback) {
     }
     case Action::kEnterFullscreen: {
       BrowserWindowInterface* browser = GetTargetBrowser();
-      if (!browser || !browser->GetWindow()) {
+      mojom::ActionResultPtr result = ValidateBrowserWindow(browser);
+      if (!IsOk(*result)) {
+        OnInvokeFinished(std::move(result));
+        return;
+      }
+      if (!browser->GetWindow()) {
         OnInvokeFinished(MakeResult(mojom::ActionResultCode::kWindowWentAway,
                                     /*requires_page_stabilization=*/false,
                                     "The target window could not be found."));
-        return;
-      }
-      mojom::ActionResultPtr result = CheckCrossProfile(browser);
-      if (!IsOk(*result)) {
-        OnInvokeFinished(std::move(result));
         return;
       }
 
@@ -162,15 +156,15 @@ void WindowManagementTool::Invoke(ToolCallback callback) {
     }
     case Action::kExitFullscreen: {
       BrowserWindowInterface* browser = GetTargetBrowser();
-      if (!browser || !browser->GetWindow()) {
+      mojom::ActionResultPtr result = ValidateBrowserWindow(browser);
+      if (!IsOk(*result)) {
+        OnInvokeFinished(std::move(result));
+        return;
+      }
+      if (!browser->GetWindow()) {
         OnInvokeFinished(MakeResult(mojom::ActionResultCode::kWindowWentAway,
                                     /*requires_page_stabilization=*/false,
                                     "The target window could not be found."));
-        return;
-      }
-      mojom::ActionResultPtr result = CheckCrossProfile(browser);
-      if (!IsOk(*result)) {
-        OnInvokeFinished(std::move(result));
         return;
       }
 
@@ -269,16 +263,6 @@ void WindowManagementTool::OnInvokeFinished(mojom::ActionResultPtr result) {
   }
   browser_did_close_subscription_ = {};
   browser_did_become_active_subscription_ = {};
-}
-
-mojom::ActionResultPtr WindowManagementTool::CheckCrossProfile(
-    BrowserWindowInterface* browser) {
-  if (browser && browser->GetProfile() != &tool_delegate().GetProfile()) {
-    return MakeResult(mojom::ActionResultCode::kWindowWentAway,
-                      /*requires_page_stabilization=*/false,
-                      "Cross-profile access denied.");
-  }
-  return MakeOkResult();
 }
 
 }  // namespace actor

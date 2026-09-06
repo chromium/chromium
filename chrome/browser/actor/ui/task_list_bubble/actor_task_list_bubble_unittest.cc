@@ -100,6 +100,9 @@ class ActorTaskListBubbleTest : public ChromeViewsTestBase {
                          views::Widget::InitParams::TYPE_WINDOW);
     anchor_widget_->Show();
 
+    mock_tab_ = std::make_unique<MockTabInterface>();
+    ON_CALL(*mock_tab_, GetProfile()).WillByDefault(testing::Return(profile_));
+
     browser_window_interface_ = std::make_unique<MockBrowserWindowInterface>();
     ON_CALL(*browser_window_interface_, GetUnownedUserDataHost)
         .WillByDefault(::testing::ReturnRef(user_data_host_));
@@ -135,6 +138,7 @@ class ActorTaskListBubbleTest : public ChromeViewsTestBase {
     glic_split_button_controller_.reset();
     mock_glic_service_ = nullptr;
     browser_window_interface_.reset();
+    mock_tab_.reset();
     anchor_widget_.reset();
     actor_service_ = nullptr;
     profile_ = nullptr;
@@ -186,7 +190,7 @@ class ActorTaskListBubbleTest : public ChromeViewsTestBase {
 
  protected:
   raw_ptr<actor::ActorKeyedServiceFake> actor_service_;
-  MockTabInterface& mock_tab() { return mock_tab_; }
+  MockTabInterface& mock_tab() { return *mock_tab_; }
 
  private:
   glic::GlicEnabling::ScopedBypassEnablementChecksForTesting
@@ -196,7 +200,7 @@ class ActorTaskListBubbleTest : public ChromeViewsTestBase {
   signin::IdentityTestEnvironment identity_test_env_;
   glic::GlicProfileManager glic_profile_manager_;
   glic::GlicUnitTestEnvironment glic_test_env_;
-  MockTabInterface mock_tab_;
+  std::unique_ptr<MockTabInterface> mock_tab_;
   views::UniqueWidgetPtr anchor_widget_;
   std::unique_ptr<MockBrowserWindowInterface> browser_window_interface_;
   ui::UnownedUserDataHost user_data_host_;

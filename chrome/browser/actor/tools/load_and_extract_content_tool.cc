@@ -352,6 +352,14 @@ void LoadAndExtractContentTool::Validate(ToolCallback overall_callback) {
     return;
   }
 
+  mojom::ActionResultPtr window_result = ValidateWindowId(window_id_);
+  if (!IsOk(*window_result)) {
+    journal().Log(GURL::EmptyGURL(), task_id(),
+                  "LoadAndExtractContentTool::WindowValidationFailed", {});
+    PostResponseTask(std::move(overall_callback), std::move(window_result));
+    return;
+  }
+
   // TODO(b/478282022): If any URL is invalid, we could fail immediately instead
   // of waiting for all URLs to return.
   base::RepeatingCallback<void(mojom::ActionResultPtr)> per_url_callback =
@@ -376,17 +384,16 @@ void LoadAndExtractContentTool::Invoke(ToolCallback callback) {
       GURL::EmptyGURL(), task_id(), "LoadAndExtractContentTool::Invoke",
       JournalDetailsBuilder().Add("url_count", per_tab_state_.size()).Build());
 
-  BrowserWindowInterface* browser_window_interface =
-      BrowserWindowInterface::FromSessionID(window_id_);
-
-  if (!browser_window_interface) {
+  mojom::ActionResultPtr window_result = ValidateWindowId(window_id_);
+  if (!IsOk(*window_result)) {
     journal().Log(GURL::EmptyGURL(), task_id(),
-                  "LoadAndExtractContentTool::WindowWentAway", {});
-    PostResponseTask(std::move(invoke_callback_),
-                     MakeResult(mojom::ActionResultCode::kWindowWentAway));
+                  "LoadAndExtractContentTool::WindowValidationFailed", {});
+    PostResponseTask(std::move(invoke_callback_), std::move(window_result));
     return;
   }
 
+  BrowserWindowInterface* browser_window_interface =
+      BrowserWindowInterface::FromSessionID(window_id_);
   const GURL about_blank(url::kAboutBlankURL);
   for (size_t i = 0; i < per_tab_state_.size(); ++i) {
     PerTabState& per_tab_state = per_tab_state_.at(i);

@@ -92,6 +92,7 @@ class PasswordManagerCriticalActionLoggerTest
               Profile::FromBrowserContext(context));
         }));
 
+    ON_CALL(mock_tab_, GetProfile).WillByDefault(testing::Return(profile()));
     tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
                                                          &mock_tab_);
 

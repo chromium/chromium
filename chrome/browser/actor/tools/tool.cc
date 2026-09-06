@@ -4,8 +4,12 @@
 
 #include "chrome/browser/actor/tools/tool.h"
 
+#include "build/build_config.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/core/aggregated_journal.h"
+#include "components/tabs/public/tab_interface.h"
 
 namespace actor {
 
@@ -38,5 +42,27 @@ void Tool::UpdateTaskAfterInvoke(ActorTask& task,
   // Do nothing by default, just trigger the callback.
   std::move(callback).Run(std::move(result));
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+mojom::ActionResultPtr Tool::ValidateBrowserWindow(
+    const BrowserWindowInterface* browser) const {
+  if (!browser) {
+    return MakeResult(mojom::ActionResultCode::kWindowWentAway,
+                      /*requires_page_stabilization=*/false,
+                      "The target window could not be found.");
+  }
+  if (browser->GetProfile() != &tool_delegate_->GetProfile()) {
+    return MakeResult(mojom::ActionResultCode::kActionTargetCrossProfile,
+                      /*requires_page_stabilization=*/false,
+                      "The target window belongs to a different profile.");
+  }
+  return MakeOkResult();
+}
+
+mojom::ActionResultPtr Tool::ValidateWindowId(SessionID window_id) const {
+  return ValidateBrowserWindow(
+      BrowserWindowInterface::FromSessionID(window_id));
+}
+#endif
 
 }  // namespace actor

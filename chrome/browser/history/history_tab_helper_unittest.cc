@@ -664,6 +664,7 @@ TEST_F(HistoryTabHelperTest,
       }));
 
   tabs::MockTabInterface mock_tab;
+  ON_CALL(mock_tab, GetProfile).WillByDefault(testing::Return(profile()));
   tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
                                                        &mock_tab);
 
