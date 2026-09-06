@@ -1604,6 +1604,30 @@ TEST_F(ComposeboxQueryControllerTest,
       "Lens.Composebox.ImageUpload.File.C2paDetected", false, 1);
 }
 
+TEST_F(ComposeboxQueryControllerTest, IsSupportedC2paMimeType) {
+  EXPECT_TRUE(ComposeboxQueryController::IsSupportedC2paMimeType("image/jpeg"));
+  EXPECT_TRUE(ComposeboxQueryController::IsSupportedC2paMimeType("image/jpg"));
+  EXPECT_TRUE(ComposeboxQueryController::IsSupportedC2paMimeType("image/png"));
+  EXPECT_TRUE(ComposeboxQueryController::IsSupportedC2paMimeType("image/webp"));
+  EXPECT_TRUE(ComposeboxQueryController::IsSupportedC2paMimeType("image/heic"));
+  EXPECT_TRUE(ComposeboxQueryController::IsSupportedC2paMimeType("image/heif"));
+  // Case insensitivity
+  EXPECT_TRUE(ComposeboxQueryController::IsSupportedC2paMimeType("IMAGE/JPEG"));
+  EXPECT_TRUE(ComposeboxQueryController::IsSupportedC2paMimeType("image/PNG"));
+  EXPECT_TRUE(ComposeboxQueryController::IsSupportedC2paMimeType("image/WebP"));
+
+  // Unsupported MIME types
+  EXPECT_FALSE(ComposeboxQueryController::IsSupportedC2paMimeType("image/bmp"));
+  EXPECT_FALSE(ComposeboxQueryController::IsSupportedC2paMimeType("image/gif"));
+  EXPECT_FALSE(
+      ComposeboxQueryController::IsSupportedC2paMimeType("image/svg+xml"));
+  EXPECT_FALSE(
+      ComposeboxQueryController::IsSupportedC2paMimeType("application/pdf"));
+  EXPECT_FALSE(ComposeboxQueryController::IsSupportedC2paMimeType(""));
+  EXPECT_FALSE(
+      ComposeboxQueryController::IsSupportedC2paMimeType(std::nullopt));
+}
+
 #if !BUILDFLAG(IS_IOS)
 TEST_F(ComposeboxQueryControllerTest, UploadImageRequestC2paBypass) {
   base::HistogramTester histogram_tester;
@@ -1619,6 +1643,7 @@ TEST_F(ComposeboxQueryControllerTest, UploadImageRequestC2paBypass) {
   std::unique_ptr<lens::ContextualInputData> input_data =
       std::make_unique<lens::ContextualInputData>();
   input_data->primary_content_type = lens::MimeType::kImage;
+  input_data->mime_type_string = "image/jpeg";
   input_data->context_input = std::vector<lens::ContextualInput>();
 
   // Use CreateJPGBytes helper
@@ -1654,6 +1679,57 @@ TEST_F(ComposeboxQueryControllerTest, UploadImageRequestC2paBypass) {
       "Lens.Composebox.ImageUpload.File.C2paDetected", true, 1);
 }
 
+TEST_F(ComposeboxQueryControllerTest,
+       UploadImageRequestC2paUnsupportedMimeType) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeature(
+      lens::features::kLensBypassCompressionForC2pa);
+
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Act: Start the file upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  std::unique_ptr<lens::ContextualInputData> input_data =
+      std::make_unique<lens::ContextualInputData>();
+  input_data->primary_content_type = lens::MimeType::kImage;
+  input_data->mime_type_string = "image/bmp";
+  input_data->context_input = std::vector<lens::ContextualInput>();
+
+  // Use CreateJPGBytes helper
+  std::vector<uint8_t> image_bytes = CreateJPGBytes(100, 100);
+  std::string c2pa_str = "urn:c2pa:";
+  image_bytes.insert(image_bytes.end(), c2pa_str.begin(), c2pa_str.end());
+
+  input_data->context_input->push_back(
+      lens::ContextualInput(image_bytes, lens::MimeType::kImage));
+  input_data->file_name = "test_image.bmp";
+
+  lens::ImageEncodingOptions image_options{.max_size = 1000000,
+                                           .max_height = 1000,
+                                           .max_width = 1000,
+                                           .compression_quality = 30};
+
+  controller().StartFileUploadFlow(file_token, std::move(input_data),
+                                   image_options);
+
+  WaitForClusterInfo();
+  WaitForFileUpload(file_token, lens::MimeType::kImage);
+
+  // Validate the file upload request payload was downscaled (bytes size should
+  // be different) because the MIME type is not supported for C2PA bypass.
+  std::string payload_bytes = controller()
+                                  .last_sent_file_upload_request()
+                                  ->objects_request()
+                                  .image_data()
+                                  .payload()
+                                  .image_bytes();
+  EXPECT_NE(payload_bytes.size(), image_bytes.size());
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Composebox.ImageUpload.File.C2paDetected", true, 1);
+}
+
 TEST_F(ComposeboxQueryControllerTest, UploadImageRequestC2paFlagDisabled) {
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList local_feature_list;
@@ -1668,6 +1744,7 @@ TEST_F(ComposeboxQueryControllerTest, UploadImageRequestC2paFlagDisabled) {
   std::unique_ptr<lens::ContextualInputData> input_data =
       std::make_unique<lens::ContextualInputData>();
   input_data->primary_content_type = lens::MimeType::kImage;
+  input_data->mime_type_string = "image/jpeg";
   input_data->context_input = std::vector<lens::ContextualInput>();
 
   // Use CreateJPGBytes helper
