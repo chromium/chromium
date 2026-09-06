@@ -14,6 +14,7 @@
 #include "media/base/audio_bus.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/fake_audio_render_callback.h"
+#include "media/base/sinc_resampler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -270,6 +271,102 @@ TEST(AudioConverterTest, PropagatesGlitchInfo) {
   converter.ConvertWithInfo(0, {}, audio_bus.get());
   EXPECT_EQ(callback1.cumulative_glitch_info(), glitch_info);
   EXPECT_EQ(callback2.cumulative_glitch_info(), glitch_info);
+}
+
+namespace {
+
+class FrameCheckingInput : public AudioConverter::InputCallback {
+ public:
+  explicit FrameCheckingInput(int expected_frames)
+      : expected_frames_(expected_frames) {}
+  double ProvideInput(AudioBus* bus,
+                      uint32_t frames_delayed,
+                      const AudioGlitchInfo& glitch_info) override {
+    EXPECT_EQ(bus->frames(), expected_frames_);
+    for (auto channel : bus->AllChannels()) {
+      std::ranges::fill(channel, 1.0f);
+    }
+    call_count_++;
+    return 1.0;
+  }
+
+  int call_count() const { return call_count_; }
+
+ private:
+  const int expected_frames_;
+  int call_count_ = 0;
+};
+
+constexpr int kMinRequestSize =
+    static_cast<int>(SincResampler::kMinRequestSize);
+
+}  // namespace
+
+class AudioConverterLowInputBufferSizeTest
+    : public testing::TestWithParam<int> {};
+
+// Verify that AudioConverter handles small input buffer sizes (<=
+// SincResampler::kMinRequestSize) when resampling.
+TEST_P(AudioConverterLowInputBufferSizeTest, Resample) {
+  const int input_frames = GetParam();
+  constexpr int kOutputSampleRate = 48000;
+  constexpr int kOutputFrames = 256;
+
+  for (int input_sample_rate : {3000, 16000}) {
+    AudioParameters input_parameters(AudioParameters::AUDIO_PCM_LINEAR,
+                                     ChannelLayoutConfig::Stereo(),
+                                     input_sample_rate, input_frames);
+    AudioParameters output_parameters(AudioParameters::AUDIO_PCM_LINEAR,
+                                      ChannelLayoutConfig::Stereo(),
+                                      kOutputSampleRate, kOutputFrames);
+
+    AudioConverter converter(input_parameters, output_parameters,
+                             /*disable_fifo=*/false);
+
+    FrameCheckingInput input(input_frames);
+    converter.AddInput(&input);
+
+    auto output_bus = AudioBus::Create(output_parameters);
+    output_bus->Zero();
+    converter.Convert(output_bus.get());
+
+    EXPECT_GT(input.call_count(), 0);
+    EXPECT_FALSE(output_bus->AreFramesZero());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(AudioConverterTest,
+                         AudioConverterLowInputBufferSizeTest,
+                         testing::Values(1,
+                                         10,
+                                         16,
+                                         24,
+                                         30,
+                                         32,
+                                         kMinRequestSize - 1,
+                                         kMinRequestSize),
+                         testing::PrintToStringParamName());
+
+TEST(AudioConverterTest, ResampleLowInputBufferSize_DisableFifo) {
+  AudioParameters input_parameters(AudioParameters::AUDIO_PCM_LINEAR,
+                                   ChannelLayoutConfig::Stereo(), 3000,
+                                   kMinRequestSize / 2);
+  AudioParameters output_parameters(AudioParameters::AUDIO_PCM_LINEAR,
+                                    ChannelLayoutConfig::Stereo(), 48000, 256);
+  AudioConverter converter(input_parameters, output_parameters,
+                           /*disable_fifo=*/true);
+
+  // With FIFO disabled, the callback receives requests in the resampler's
+  // default chunk size, rather than input_parameters.frames_per_buffer().
+  FrameCheckingInput input(SincResampler::kDefaultRequestSize);
+  converter.AddInput(&input);
+
+  auto output_bus = AudioBus::Create(output_parameters);
+  output_bus->Zero();
+  converter.Convert(output_bus.get());
+
+  EXPECT_GT(input.call_count(), 0);
+  EXPECT_FALSE(output_bus->AreFramesZero());
 }
 
 TEST_P(AudioConverterTest, ArbitraryOutputRequestSize) {
