@@ -934,6 +934,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2544644783021658368">Dokumentu bakarra</translation>
 <translation id="254524874071906077">Ezarri Chrome arakatzaile lehenetsi gisa</translation>
 <translation id="2546283357679194313">Cookieak eta webguneetako datuak</translation>
+<translation id="254672217349157196">Egiaztatu helbide elektronikoa automatikoki</translation>
 <translation id="254947805923345898">Gidalerroaren balioak ez du balio.</translation>
 <translation id="255002559098805027">Ez du balio <ph name="HOST_NAME" /> webguneak bidali duen erantzunak.</translation>
 <translation id="2551608178605132291">Helbidea: <ph name="ADDRESS" /></translation>
@@ -1180,6 +1181,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3008410317623852235">Orain, Gmail-eko eta beste zerbitzu batzuetako informazioa aurkitu eta bete dezakezu.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, sakatu tabuladorea gauza daitezkeen ekintzak arakatzeko. Gero, sakatu Sartu hautatutako ekintza exekutatzeko.</translation>
 <translation id="3010991137650052245">Webgune honetan <ph name="PERMISSION" /> erabili ahal izateko, <ph name="SHORT_PRODUCT_NAME" /> zerbitzuari erabiltzeko baimena eman behar diozu</translation>
+<translation id="3013536714390403689">Egiaztatutako helbide elektronikoa</translation>
 <translation id="3014726756341138577">Inprimagailuaren ezarpen aurreratuak</translation>
 <translation id="301521992641321250">Automatikoki blokeatuta</translation>
 <translation id="3016780570757425217">Ezagutu zure kokapena</translation>
@@ -1544,6 +1546,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="3634530185120165534">5. erretilua</translation>
 <translation id="3634567936866541746">Webgune engainagarri batean idatzi duzu pasahitza. Kontuak babesteko, gordetako pasahitzei begiratu bat ematea gomendatzen du Chrome-k.</translation>
 <translation id="3638102297696182302">Aktibatu berriro Idazteko laguntza. Irekitzeko, sakatu tabuladorea eta Sartu.</translation>
+<translation id="3639626391482300575">IBANa Google Diru-zorroa zerbitzuan gorde da; beraz, Google-ren produktu guztietan erabil dezakezu.</translation>
 <translation id="3642196846309122856">Saiatu berriro fitxategiak deskargatzen</translation>
 <translation id="3642638418806704195">Aplikazioa:</translation>
 <translation id="3647286794400715637">URL kate bakoitzak URL bat edo bi izan behar ditu.</translation>
@@ -3300,6 +3303,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="6578434528542148658">Luzapenaren identifikatzaileak ez du balio.</translation>
 <translation id="658230438113661756">Baliteke bisitatu nahi duzun webguneko erasotzaileak software kaltegarria instalatzea, pasahitzak, argazkiak, mezuak, kreditu-txartelen zenbakiak edo beste zerbait lapurtzeko edo ezabatzeko asmoz. Chrome-k atzera egitea gomendatzen dizu, zeure burua babesteko. <ph name="BEGIN_LEARN_MORE_LINK" />Lortu abisu honi buruzko informazio gehiago<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6583309742916093092">Google Diru-zorroa zerbitzuan gordeta</translation>
+<translation id="6585589684832019248">Txartela Google Diru-zorroa zerbitzuan gorde da; beraz, Google-ren produktu guztietan erabil dezakezu</translation>
 <translation id="6587893660316489419">B5 gutun-azala</translation>
 <translation id="6587923378399804057">Kopiatu duzun esteka</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> gailuak ez du kudeatzailerik</translation>

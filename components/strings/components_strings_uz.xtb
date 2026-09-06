@@ -933,6 +933,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2544644783021658368">Bitta hujjat</translation>
 <translation id="254524874071906077">Chrome‘ni standart brauzer etib tayinlash</translation>
 <translation id="2546283357679194313">Cookie fayllari va sayt ma’lumotlari</translation>
+<translation id="254672217349157196">Email manzilingizni avtomatik tasdiqlash</translation>
 <translation id="254947805923345898">Parametr qiymati yaroqsiz.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> yaroqsiz javob qaytardi.</translation>
 <translation id="2551608178605132291">Manzil: <ph name="ADDRESS" />.</translation>
@@ -1179,6 +1180,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3008410317623852235">Endi Gmail va boshqa ilovalardan ma’lumotlarni topishingiz va toʻldirishingiz mumkin</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, mavjud amallarni kezish uchun Tab, tanlangan amalni bajarish uchun Enter tugmasini bosing.</translation>
 <translation id="3010991137650052245">Bu saytda <ph name="PERMISSION" /> ishlatish uchun <ph name="SHORT_PRODUCT_NAME" />ga ruxsat berish kerak</translation>
+<translation id="3013536714390403689">Tasdiqlangan email</translation>
 <translation id="3014726756341138577">Kengaytirilgan printer funksiyalari</translation>
 <translation id="301521992641321250">Avtomatik bloklangan</translation>
 <translation id="3016780570757425217">Joylashuvingiz haqidagi ma’lumotlar</translation>

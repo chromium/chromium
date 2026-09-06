@@ -7323,6 +7323,7 @@ Si cette règle n'est pas configurée ou si elle est définie sur une liste vide
 <translation id="5601503069213153581">Code</translation>
 <translation id="5605676983184673391">Autoriser les applis Chrome à s'exécuter en sessions Kiosque.</translation>
 <translation id="5606477661985737162">Paramètres des téléchargements automatiques</translation>
+<translation id="5606816003654129603">Contrôler les invites d'avis et les liens d'évaluation des extensions</translation>
 <translation id="5607021831414604820">Activer les rapports sur l'état de stockage de l'appareil</translation>
 <translation id="5607808178576647930">Autoriser les intégrations du Mode IA.</translation>
 <translation id="5608114828230655271">Comportement par défaut de l'appareil</translation>
@@ -8195,6 +8196,7 @@ Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez co
 
 Si cette règle n'est pas configurée, la valeur globale par défaut est utilisée pour tous les sites (aucun accès automatique).</translation>
 <translation id="6207607210601267301">Désactiver l'authentification sans code PIN pour l'hôte d'accès à distance</translation>
+<translation id="6207673917710036736">Activer les invites d'avis et les liens d'évaluation natifs des extensions</translation>
 <translation id="6208896993204286313">Enregistrer les informations sur les règles concernant <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Enregistrer les informations sur la version de <ph name="PRODUCT_NAME" /> et l'OS</translation>
 <translation id="6214712395769944855">Cette règle configure <ph name="PRODUCT_NAME" /> pour qu'il ordonne ses algorithmes de chiffrement préférés dans TLS 1.3 afin de refléter une préférence pour les algorithmes approuvés par un régime de conformité spécifique.
@@ -9245,6 +9247,7 @@ Cette règle remplace la règle <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLI
       Remarque : cette règle ne s'applique pas en mode navigation privée, où les cookies tiers sont bloqués et ne peuvent être autorisés qu'au niveau du site. Pour autoriser les cookies au niveau du site, utilisez la règle <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="6810445994095397827">Bloquer JavaScript sur ces sites</translation>
 <translation id="6813263547126514821">Démarrage et arrêt</translation>
+<translation id="6813752387426088259">Désactiver les invites d'avis et les liens d'évaluation natifs des extensions</translation>
 <translation id="681446116407619279">Modèles d'authentification compatibles</translation>
 <translation id="6815628711329903153">Autoriser la nouvelle allocation de tampons pour le plug-in PPAPI des API graphiques 3D</translation>
 <translation id="6819031008957510729">Si cette règle est activée, il est recommandé d'activer par défaut l'envoi à Google de rapports anonymes sur les données liées à l'utilisation et aux plantages de <ph name="PRODUCT_NAME" />. Les utilisateurs pourront toujours modifier ce paramètre.
@@ -9934,6 +9937,14 @@ Ces deux règles sont obsolètes suite à l'abandon de la fonctionnalité liée 
 Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" /> ou à <ph name="MS_AAD_NAME" />, ou qui bénéficient de <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
 
 Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instances gérées via MDM, associées à un domaine via MCX ou qui bénéficient de <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
+<translation id="7152157730070066152">Cette règle est obsolète et n'a aucun effet, car la fonctionnalité d'annonce d'espace intermédiaire a été supprimée de la page "Nouvel onglet".
+
+      Cette règle contrôle la visibilité de l'annonce d'espace intermédiaire sur la page "Nouvel onglet".
+
+      Si la règle est activée, la page "Nouvel onglet" affichera l'annonce d'espace intermédiaire si elle est disponible.
+
+      Si elle est désactivée, la page "Nouvel onglet" n'affichera pas l'annonce d'espace intermédiaire, même si elle est disponible.
+      </translation>
 <translation id="7152640356717355643">Activer les rapports sur l'interface réseau de l'appareil</translation>
 <translation id="7153786895642570081">Cette règle contrôle l'activation de la fonctionnalité EphemeralNetworkPolicies.
 Lorsque cette règle est définie sur "True", les entrées RecommendedValuesAreEphemeral et UserCreatedNetworkConfigurationsAreEphemeral de DeviceOpenNetworkConfiguration seront respectées.
@@ -12301,6 +12312,11 @@ Cette règle est obsolète depuis la version 144 de <ph name="PRODUCT_NAME" />,
 <translation id="8757552286070680084">Configuration d'un dispositif DTC de Wilco</translation>
 <translation id="8758831693895931466">Activer l'inscription obligatoire à la gestion cloud</translation>
 <translation id="8759829385824155666">Types de chiffrement Kerberos autorisés</translation>
+<translation id="876034218754933846">Détermine si les invites d'avis et les liens d'évaluation natifs (comme "Évaluer") pour les extensions Chrome installées sont accessibles dans les interfaces utilisateur de Chrome.
+
+Si cette règle est activée ou n'est pas configurée, les utilisateurs peuvent voir des points d'entrée natifs pour examiner et évaluer les extensions éligibles dans la barre d'outils, les menus contextuels et la page de gestion des extensions (chrome://extensions).
+
+Si cette règle est désactivée, les invites d'avis et les liens d'évaluation natifs sont tous supprimés et indisponibles.</translation>
 <translation id="8762128467207353085">Liste des origines des applis clientes de bureau à distance pouvant exécuter des requêtes API WebAuthn envoyées à partir d'une session de navigation sur un hôte à distance.
 
 Toute origine configurée dans cette règle peut envoyer des requêtes WebAuthn pour des ID de tiers de confiance qu'elle ne devrait normalement pas pouvoir réclamer.

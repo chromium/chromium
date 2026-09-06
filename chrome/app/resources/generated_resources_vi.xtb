@@ -4793,6 +4793,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4652921642122345344">Tốc độ nói: <ph name="RATE" />x</translation>
 <translation id="4654236001025007561">Chia sẻ tệp với Chromebook và thiết bị Android ở gần bạn</translation>
 <translation id="4654801841330730814">Tất cả</translation>
+<translation id="4656949320553787832">Cho phép kéo và thả để màn hình chia đôi ở cạnh trái, cạnh phải hoặc cạnh dưới của cửa sổ</translation>
 <translation id="4657724094180965385">Không quan tâm</translation>
 <translation id="4657810666108475055">Tìm thẻ</translation>
 <translation id="4657914796247705218">Tốc độ TrackPoint</translation>
@@ -7315,6 +7316,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="663569763553406962">Xem tiện ích nào có thể đọc hoặc thay đổi một trang web</translation>
 <translation id="6636258750460740634">Nhật ký</translation>
 <translation id="6636623428211296678">Khám phá thêm về các chế độ cài đặt bên dưới hoặc hoàn tất ngay bây giờ</translation>
+<translation id="6639343220434368353">Tìm trong trình đơn hoặc nhập một thao tác</translation>
 <translation id="6639405694338292402">Tính năng Kỹ năng hiện đang tắt. Hãy cập nhật Chế độ cài đặt Chrome để bắt đầu.</translation>
 <translation id="6639554308659482635">Bộ nhớ SQLite</translation>
 <translation id="6640268266988685324">Thẻ đang mở</translation>
@@ -10589,7 +10591,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="9133568201369135151">Đã thu thập xong dữ liệu chẩn đoán. Dữ liệu này bao gồm một số thông tin cá nhân của bạn.</translation>
 <translation id="9133985615769429248">Nếu dùng chung thiết bị này với người khác, bạn có thể sử dụng phương thức khoá màn hình để xác minh danh tính của mình mỗi khi sử dụng mật khẩu đã lưu</translation>
 <translation id="9134066738478820307">Các trang web có thể dùng giá trị nhận dạng để phát nội dung được bảo vệ</translation>
-<translation id="9137013805542155359">Hiển thị văn bản gốc</translation>
+<translation id="9137013805542155359">Hiện văn bản gốc</translation>
 <translation id="9137157311132182254">Công cụ tìm kiếm ưu tiên</translation>
 <translation id="9137916601698928395">Mở đường liên kết bằng tài khoản <ph name="USER" /></translation>
 <translation id="9138978632494473300">Thêm lối tắt cho các vị trí sau đây:</translation>

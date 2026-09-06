@@ -5855,6 +5855,21 @@ Si no se establece esta política para un sitio, se le aplicará la política de
 <translation id="4725691087141147920">Mostrar Sync Consent durante el inicio de sesión</translation>
 <translation id="4725801978265372736">Requerir que el nombre del usuario local y el propietario del host de acceso remoto coincidan</translation>
 <translation id="4726228171190098009">No permitir que el dispositivo solicite usar la función Powerwash</translation>
+<translation id="4726236283425627939">Si se define esta política, se controlará la configuración de gestión de extensiones de <ph name="PRODUCT_NAME" />, incluidas las que controlen las políticas existentes relacionadas con las extensiones.
+
+Esta política asociará un ID de extensión o una URL de actualización únicamente a su configuración específica. Se puede definir una configuración predeterminada para el ID especial <ph name="DEFAULT_SCOPE" />, que se aplicará a todas las extensiones para las que no se haya definido una configuración personalizada en esta política.
+
+Esta política puede anular los ajustes por extensión de las políticas antiguas.
+
+Ten en cuenta que cualquier ajuste por ID de extensión de <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> o <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> solo heredará "installation_mode" y "update_url" de los valores predeterminados de <ph name="DEFAULT_SCOPE" />. No heredará ninguna otra propiedad. Si se usa una URL de actualización, la configuración se aplicará a las extensiones que incluyan la misma URL de actualización en su archivo de manifiesto (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Si a la marca "override_update_url" se le asigna el valor true, la extensión se instalará y se actualizará mediante la URL de actualización que se especifique en la política <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> o en el campo "update_url" de esta política. Se ignorará el indicador "override_update_url" si el valor de "update_url" es una URL de Chrome Web Store.
+
+A partir de la versión 154 de <ph name="PRODUCT_NAME" />, si se aplica "runtime_blocked_hosts" a una extensión con el permiso "debugger", se inhabilitará por completo "chrome.debugger.attach()" en todos los destinos.
+
+En las instancias de <ph name="MS_WIN_NAME" />, las aplicaciones y extensiones que no estén alojadas en Chrome Web Store solo se podrán instalar de manera forzada si la instancia está vinculada a un dominio de <ph name="MS_AD_NAME" /> o a <ph name="MS_AAD_NAME" />, o si se ha registrado en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+En las instancias de <ph name="MAC_OS_NAME" />, las aplicaciones y extensiones que no estén alojadas en Chrome Web Store solo se podrán instalar de manera forzada si la instancia se gestiona mediante MDM, está vinculada a un dominio a través de MCX o se ha registrado en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
+
+Nota: Esta política solo se aplica a las plataformas compatibles con extensiones.</translation>
 <translation id="4726895359147376813">Asignación desde IDs persistentes a configuraciones de VM</translation>
 <translation id="4732069502693984686">Habilitar la captura automática de varias pantallas</translation>
 <translation id="4733471537137819387">Políticas relacionadas con la autenticación HTTP integrada</translation>
@@ -6552,6 +6567,11 @@ Si no se establece esta política o se inhabilita, las cookies y los datos se po
 <translation id="5152787786897382519">Tanto Chromium como Google Chrome cuentan con algunos grupos de políticas que tienen dependencia mutua para asumir el control de una función. Estos conjuntos están representados por los grupos de políticas que se indican a continuación. Dado que las políticas pueden tener varias fuentes, solo se aplicarán los valores procedentes de la fuente que tenga la mayor prioridad. Se ignorarán los valores procedentes de las fuentes del mismo grupo que tengan menor prioridad. El orden de prioridad se define en la página <ph name="POLICY_PRIORITY_DOC_URL" />.</translation>
 <translation id="5153187201534281749">Icono de experimentos del navegador en la barra de herramientas</translation>
 <translation id="5159674159887919923">No enviar datos adicionales de hardware con ChromeOS Flex</translation>
+<translation id="5162562564734598188">Si se habilita esta política, no se permitirá hacer capturas de pantalla mediante combinaciones de teclas ni APIs de extensión. Si se inhabilita esta política o no se establece, se permitirán las capturas de pantalla.
+
+A partir de la versión 154 de <ph name="PRODUCT_NAME" />, si se habilita esta política, también se impedirá que las extensiones adjunten el depurador mediante "chrome.debugger.attach()".
+
+Ten en cuenta que en <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> y <ph name="LINUX_OS_NAME" />, esta política no impedirá que se hagan capturas de pantalla mediante aplicaciones del sistema operativo o de terceros.</translation>
 <translation id="5162571264806471078">Habilitar los informes en la nube de señales de seguridad en perfiles gestionados</translation>
 <translation id="5162982931329320509">Lista de dominios que se resolverán mediante DNS-over-HTTPS. Los dominios que no se incluyan en la lista no se resolverán mediante DNS-over-HTTPS. Esta política se ignora cuando el modo DNS seguro se desactiva (usa siempre un DNS de texto sin formato).
 
@@ -7351,6 +7371,7 @@ Si no se define esta política o se le asigna una lista vacía, se le mostrarán
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5605676983184673391">Permitir que las aplicaciones de Chrome se ejecuten en sesiones de kiosco.</translation>
 <translation id="5606477661985737162">Configuración de descargas automáticas</translation>
+<translation id="5606816003654129603">Controlar las peticiones de reseñas y los enlaces de valoración de extensiones</translation>
 <translation id="5607021831414604820">Habilitar los informes sobre el estado del almacenamiento del dispositivo</translation>
 <translation id="5607808178576647930">Permitir integraciones de Modo IA.</translation>
 <translation id="5608114828230655271">Comportamiento predeterminado del dispositivo</translation>
@@ -8226,6 +8247,7 @@ Para obtener información detallada sobre los patrones válidos de <ph name="URL
 
 Si no se define esta política, se usará el valor predeterminado global para todos los sitios (sin acceso automático).</translation>
 <translation id="6207607210601267301">Inhabilitar la autenticación sin PIN para el host de acceso remoto</translation>
+<translation id="6207673917710036736">Habilitar peticiones de reseñas y enlaces de valoración de extensiones nativos</translation>
 <translation id="6208896993204286313">Proporcionar información de políticas de <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Proporcionar información de versiones del SO y de <ph name="PRODUCT_NAME" /></translation>
 <translation id="6214712395769944855">Esta política configura <ph name="PRODUCT_NAME" /> para que ordene sus algoritmos de cifrado preferidos en TLS 1.3 de forma que se refleje una preferencia por los algoritmos que hayan sido aprobados por un régimen de cumplimiento específico.
@@ -9291,6 +9313,7 @@ Esta política sustituye a la obsoleta de <ph name="WINDOW_PLACEMENT_BLOCKED_FOR
       Nota: Esta política no se aplica en el modo Incógnito, donde las cookies de terceros están bloqueadas y solo se pueden permitir a nivel de sitio. Para permitir las cookies a nivel de sitio, usa la política <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="6810445994095397827">Bloquear JavaScript en estos sitios</translation>
 <translation id="6813263547126514821">Encendido y apagado</translation>
+<translation id="6813752387426088259">Inhabilitar las peticiones de reseñas y los enlaces de valoración de extensiones nativos</translation>
 <translation id="681446116407619279">Esquemas de autenticación admitidos</translation>
 <translation id="6815628711329903153">Permitir la nueva asignación de búferes para el complemento PPAPI de las APIs Graphics3D</translation>
 <translation id="6819031008957510729">Si se habilita esta política, se recomendará habilitar de forma predeterminada el envío a Google de informes anónimos sobre datos de uso y de fallos de <ph name="PRODUCT_NAME" />. Los usuarios podrán cambiar este ajuste.
@@ -9981,6 +10004,14 @@ Estas dos políticas están obsoletas tras la discontinuación de la función <p
 En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" /> o a <ph name="MS_AAD_NAME" />, o que se hayan registrado en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
 
 En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias que se gestionen mediante MDM, que estén vinculadas a un dominio a través de MCX o que se hayan registrado en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
+<translation id="7152157730070066152">Esta política está obsoleta y no tiene ningún efecto porque la función de anuncio del espacio intermedio se ha retirado de la página Nueva pestaña.
+
+      Esta política controla la visibilidad del anuncio del espacio intermedio en la página Nueva pestaña.
+
+      Si se habilita esta política, la página Nueva pestaña mostrará el anuncio del espacio intermedio en caso de estar disponible.
+
+      Si se inhabilita esta política, la página Nueva pestaña no mostrará el anuncio del espacio intermedio aunque esté disponible.
+      </translation>
 <translation id="7152640356717355643">Habilitar los informes sobre la interfaz de red del dispositivo</translation>
 <translation id="7153786895642570081">Esta política controla si se ha habilitado la función EphemeralNetworkPolicy.
 Si se asigna el valor true a esta política, se respetarán las entradas RecommendedValuesAreEphemeral y UserCreatedNetworkConfigurationsAreEphemeral de DeviceOpenNetworkConfiguration.
@@ -12364,6 +12395,11 @@ Esta política está obsoleta a partir de la versión 144 de <ph name="PRODUCT_N
 <translation id="8757552286070680084">Configuración de Wilco DTC</translation>
 <translation id="8758831693895931466">Activar el registro obligatorio en la gestión en la nube</translation>
 <translation id="8759829385824155666">Tipos de cifrado Kerberos admitidos</translation>
+<translation id="876034218754933846">Controla si las peticiones de reseñas y los enlaces de valoración nativos (como Valorar) de las extensiones de Chrome instaladas están disponibles en las interfaces de usuario de Chrome.
+
+Si se habilita o no se define esta política, los usuarios podrán ver puntos de entrada nativos para reseñar y valorar las extensiones aptas en la barra de herramientas, los menús contextuales y la página de gestión de extensiones (chrome://extensions).
+
+Si se inhabilita esta política, se suprimirán y no estarán disponibles todas las peticiones de reseñas y los enlaces de valoración nativos.</translation>
 <translation id="8762128467207353085">Una lista de orígenes de aplicaciones de cliente de escritorio remoto que pueden realizar solicitudes a la API WebAuthn que se originan en una sesión de navegador en un host remoto.
 
 Cualquier origen configurado en esta política puede hacer solicitudes WebAuthn para obtener IDs de entidad de confianza que normalmente no podría solicitar.

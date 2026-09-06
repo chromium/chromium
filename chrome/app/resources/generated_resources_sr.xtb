@@ -6092,6 +6092,7 @@
 <translation id="5678955352098267522">Читање ваших података на <ph name="WEBSITE_1" /></translation>
 <translation id="5680050361008726776">Желите да уклоните „<ph name="ESIM_PROFILE_NAME" />“?</translation>
 <translation id="5681586175480958839">Фајл се већ отвара</translation>
+<translation id="5682120590308014005">Пријавите се да бисте лако додавали фајлове са Диска у конверзације у AI режиму. Моћи ћете и да приступате лозинкама и другом садржају на свим уређајима.</translation>
 <translation id="5684110242705861346">Додатак <ph name="NAME" /> је додат према смерницама ваше организације и управља овим подешавањем. <ph name="BEGIN_LINK" />Прикажи детаље<ph name="END_LINK" /></translation>
 <translation id="5684181005476681636">Детаљи о WiFi мрежи</translation>
 <translation id="5687340364605915800">Сајтови по сопственом нахођењу одговарају на овај захтев</translation>
@@ -8174,6 +8175,7 @@
 <translation id="7299588179200441056"><ph name="URL" /> – <ph name="FOLDER" /></translation>
 <translation id="730068416968462308">Анимирано</translation>
 <translation id="7301812050652048720">Приступни кључ је избрисан</translation>
+<translation id="7303246449496241344">Да бисте лако додавали фајлове са Диска у конверзације у AI режиму, потврдите идентитет. Моћи ћете и да приступате лозинкама и другом садржају на свим уређајима.</translation>
 <translation id="7303485269821975179">Подеси лозинку за <ph name="DEVICE_TYPE" /></translation>
 <translation id="7303900363563182677">Овом сајту је блокиран увид у текст и слике који су копирани у привремену меморију</translation>
 <translation id="7304030187361489308">Висок</translation>

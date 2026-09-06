@@ -4777,6 +4777,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4652921642122345344">Rychlost hlasu <ph name="RATE" />×</translation>
 <translation id="4654236001025007561">Sdílejte soubory s Chromebooky a zařízeními Android v okolí</translation>
 <translation id="4654801841330730814">Vše</translation>
+<translation id="4656949320553787832">Povolit aktivaci rozděleného zobrazení přetažením na levý, pravý nebo spodní okraj okna</translation>
 <translation id="4657724094180965385">Nemám zájem</translation>
 <translation id="4657810666108475055">Vyhledávání v kartách</translation>
 <translation id="4657914796247705218">Rychlost TrackPointu</translation>
@@ -7298,6 +7299,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="663569763553406962">Podívejte se, která rozšíření mohou číst nebo měnit web</translation>
 <translation id="6636258750460740634">Historie</translation>
 <translation id="6636623428211296678">Níže prozkoumejte další nastavení nebo skončete</translation>
+<translation id="6639343220434368353">Vyhledejte v nabídce nebo zadejte akci</translation>
 <translation id="6639405694338292402">Funkce Dovednosti je momentálně vypnutá. Pokud chcete začít, aktualizujte nastavení Chromu.</translation>
 <translation id="6639554308659482635">Paměť SQLite</translation>
 <translation id="6640268266988685324">Otevřená karta</translation>

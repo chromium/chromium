@@ -934,6 +934,7 @@
 <translation id="2544644783021658368">Дан документ</translation>
 <translation id="254524874071906077">Chrome-ийг стандарт веб хөтөч болго</translation>
 <translation id="2546283357679194313">Cookies болон сайтын дата</translation>
+<translation id="254672217349157196">Имэйлээ автоматаар баталгаажуулах</translation>
 <translation id="254947805923345898">Удирдамжийн утга хүчингүй байна.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> хүчингүй хариу илгээсэн байна.</translation>
 <translation id="2551608178605132291">Хаяг: <ph name="ADDRESS" />.</translation>
@@ -1180,6 +1181,7 @@
 <translation id="3008410317623852235">Одоо та Gmail болон бусад үйлчилгээнээс мэдээлэл олж, бөглөх боломжтой.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, боломжтой үйлдлүүдийг харахын тулд Tab, дараа нь сонгосон үйдлийг гүйцэтгэхийн тулд Enter дарна уу.</translation>
 <translation id="3010991137650052245">Та энэ сайт дээр өөрийн <ph name="PERMISSION" />-г ашиглахын тулд <ph name="SHORT_PRODUCT_NAME" />-д хандах эрх өгнө үү</translation>
+<translation id="3013536714390403689">Баталгаажсан имэйл</translation>
 <translation id="3014726756341138577">Хэвлэгчийн дэвшилтэт онцлогууд</translation>
 <translation id="301521992641321250">Автоматаар блок хийсэн</translation>
 <translation id="3016780570757425217">Байршлаа мэдэж аваарай</translation>

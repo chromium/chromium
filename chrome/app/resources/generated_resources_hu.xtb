@@ -4790,6 +4790,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4652921642122345344">Hang sebessége: <ph name="RATE" />x</translation>
 <translation id="4654236001025007561">Megoszthat fájlokat az Ön közelében lévő Chromebookokkal és Android-eszközökkel</translation>
 <translation id="4654801841330730814">Mind</translation>
+<translation id="4656949320553787832">Osztott nézetes húzás engedélyezése az ablak bal, jobb vagy alsó szélére</translation>
 <translation id="4657724094180965385">Nem érdekel</translation>
 <translation id="4657810666108475055">Keresés a lapok között</translation>
 <translation id="4657914796247705218">TrackPoint-sebesség</translation>
@@ -7313,6 +7314,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="663569763553406962">Megtekintheti, hogy mely bővítmények olvashatják és módosíthatják a webhelyeket</translation>
 <translation id="6636258750460740634">Előzmények</translation>
 <translation id="6636623428211296678">Felfedezheti alább a többi beállítást, vagy befejezheti most az áttekintést</translation>
+<translation id="6639343220434368353">Keresés a menüben, vagy művelet beírása</translation>
 <translation id="6639405694338292402">A Készségek funkció jelenleg le van tiltva. A kezdéshez frissítse a Chrome beállításait.</translation>
 <translation id="6639554308659482635">SQLite memória</translation>
 <translation id="6640268266988685324">Lap megnyitása</translation>

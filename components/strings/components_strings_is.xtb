@@ -1548,6 +1548,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="3634530185120165534">Bakki 5</translation>
 <translation id="3634567936866541746">Þú gafst upp aðgangsorðið þitt á svindlsíðu. Chrome mælir með því að þú athugir vistuðu aðgangsorðin þín núna til að tryggja öryggi reikninganna þinna.</translation>
 <translation id="3638102297696182302">Halda áfram með rithjálp. Haltu Enter inni til að opna</translation>
+<translation id="3639626391482300575">Þetta IBAN-númer er vistað í Google-veski þannig að þú getur notað það í Google-vörum.</translation>
 <translation id="3642196846309122856">Prófaðu að sækja skrárnar þínar aftur</translation>
 <translation id="3642638418806704195">Forrit:</translation>
 <translation id="3647286794400715637">Hver innsleginn vefslóðarstrengur verður að innihalda 1 til 2 vefslóðir</translation>
@@ -3305,6 +3306,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="6578434528542148658">Ógilt kenni viðbótar.</translation>
 <translation id="658230438113661756">Árásaraðilar á vefsvæðinu sem þú reyndir að opna gætu sett upp hugbúnað sem stelur eða eyðir hlutum á borð við aðgangsorðin þín, myndir, skilaboð eða kreditkortanúmer. Chrome mælir eindregið með því að þú lokir vefsvæðinu. <ph name="BEGIN_LEARN_MORE_LINK" />Nánar um þessa viðvörun<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6583309742916093092">Vistað í Google-veski</translation>
+<translation id="6585589684832019248">Þetta kort er vistað í Google-veski þannig að þú getur notað það í Google-vörum</translation>
 <translation id="6587893660316489419">Umslag: B5</translation>
 <translation id="6587923378399804057">Tengill sem þú afritaðir</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> er ekki stjórnað</translation>

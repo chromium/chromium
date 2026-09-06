@@ -218,6 +218,7 @@
 <translation id="2365384324219615024">Možete i da pritisnete Enter da biste aktivirali stavke. Na primer, Enter može da se koristi za unos teksta u obrazac. Da biste nastavili, pritisnite Enter.</translation>
 <translation id="2371402123699727805">Diktiranje je aktivno. <ph name="GESTURE" /> da biste ga zaustavili. Drugi gestovi su privremeno nedostupni.</translation>
 <translation id="2381733276052567791">Uključite ili isključite govor</translation>
+<translation id="2386248289416625097">Kandidati</translation>
 <translation id="2390264819538553347">Da biste išli unapred, pritisnite Enter. Da biste išli unazad, pritisnite taster za nazad (Backspace).</translation>
 <translation id="2397408693730730860">.input {$$COUNT :number} .match $$COUNT 1{{asterisk}} *{{{$$COUNT} asterisks}}</translation>
 <translation id="2398579267367951220">Unesite tekst da biste pretražili stranicu. Pritisnite Enter da biste prešli na rezultat, strelice nagore ili nadole da biste pregledali rezultate, nastavite da unosite tekst da biste promenili termin za pretragu ili pritisnite Escape da biste otkazali.</translation>

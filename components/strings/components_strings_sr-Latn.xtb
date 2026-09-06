@@ -934,6 +934,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2544644783021658368">Jedan dokument</translation>
 <translation id="254524874071906077">Postavi Chrome kao podrazumevani pregledač</translation>
 <translation id="2546283357679194313">Kolačići i podaci o sajtovima</translation>
+<translation id="254672217349157196">Automatski verifikuj imejl</translation>
 <translation id="254947805923345898">Vrednost smernica nije važeća.</translation>
 <translation id="255002559098805027">Host <ph name="HOST_NAME" /> je poslao nevažeći odgovor.</translation>
 <translation id="2551608178605132291">Adresa: <ph name="ADDRESS" />.</translation>
@@ -1180,6 +1181,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3008410317623852235">Sada možete da pronalazite i popunjavate podatke iz Gmail-a i drugih izvora.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab da biste pregledali dostupne radnje, pa Enter da biste izvršili izabranu radnju.</translation>
 <translation id="3010991137650052245">Da biste koristili dozvolu <ph name="PERMISSION" /> na ovom sajtu, odobrite pristup proizvodu <ph name="SHORT_PRODUCT_NAME" /></translation>
+<translation id="3013536714390403689">Verifikovani imejl</translation>
 <translation id="3014726756341138577">Napredne funkcije štampača</translation>
 <translation id="301521992641321250">Automatski je blokirano</translation>
 <translation id="3016780570757425217">zna vašu lokaciju</translation>

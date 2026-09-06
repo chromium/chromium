@@ -9,6 +9,7 @@
 <translation id="1016495303386450659">Stavka je ažurirana</translation>
 <translation id="1018804590490383958">Skeniraj i automatski popuni</translation>
 <translation id="1019990162050689579">Aktivnosti u Gemini aplikacijama</translation>
+<translation id="102645702181682900">Zadatak je pokrenut</translation>
 <translation id="102916930470544692">Pristupni ključ</translation>
 <translation id="1030376737535466765">Otvori Menadžer lozinki</translation>
 <translation id="1035980983510608210">Zatvaranjem svih kartica zatvarate i zakačene kartice.</translation>
@@ -239,6 +240,7 @@
 <translation id="1709916727352927457">Izbrišite pristupni kôd</translation>
 <translation id="1715515772563243997">Ako veb-sajt <ph name="SITE" /> smatrate pouzdanim, možete da koristite sačuvanu lozinku za prijavljivanje.</translation>
 <translation id="1718835860248848330">Poslednjih sat vremena</translation>
+<translation id="1726013039921383235">Uvek dozvoli</translation>
 <translation id="1728549374069268714">Nalepi i idi</translation>
 <translation id="1732468323901456775">Uključi obaveštenja za: <ph name="MODULE_NAME" /></translation>
 <translation id="1739364174357629566">Ažurirajte broj registrovanog putnika</translation>
@@ -740,6 +742,7 @@
 <translation id="3409785640040772790">Mape</translation>
 <translation id="3416023309465857378">25. oktobar 2023.</translation>
 <translation id="3419787211763835342">Pomozite nam da unapredimo poboljšano automatsko popunjavanje</translation>
+<translation id="3430407169377889553">Koristite Gemini pažljivo i preuzmite kontrolu ako je potrebno. Vi ste odgovorni za radnje koje Gemini obavlja tokom zadataka.</translation>
 <translation id="3435738964857648380">Bezbednost</translation>
 <translation id="3441673211568148613">Zaštitite privatnost pregledanja</translation>
 <translation id="3443810440409579745">Kartica je primljena.</translation>
@@ -927,6 +930,7 @@
 <translation id="4021447724486050609">Ažurirajte pregledač</translation>
 <translation id="4021931095789478915">Dodaj ${url} na listu za čitanje</translation>
 <translation id="4028871427853484857">Sačuvaj na nalogu…</translation>
+<translation id="4034354558246368274">Dozvoli ovaj put</translation>
 <translation id="4038354071007134711">Nijedna aplikacija na ovom uređaju ne može da otvori datoteku.</translation>
 <translation id="4042870976416480368">Nađi na stranici</translation>
 <translation id="4045441967987592849">Ponovo otvori</translation>
@@ -1088,6 +1092,7 @@
 <translation id="4592672037257622855">{count,plural, =1{Stranica je dodata na listu za čitanje}one{{count} stranica je dodata na listu za čitanje}few{{count} stranice su dodate na listu za čitanje}other{{count} stranica je dodato na listu za čitanje}}</translation>
 <translation id="459644946100970322">Želite da uključite obaveštenja o cenama?</translation>
 <translation id="4597892826846980979">Dobijajte obaveštenja o karticama</translation>
+<translation id="459792494991530234">Unos teksta</translation>
 <translation id="4601095002996233687">Detaljna skeniranja sumnjivih preuzimanja.</translation>
 <translation id="4606247758155004938">Organizacija upravlja pregledačem.</translation>
 <translation id="4607887340472970274">Praćenje cena</translation>
@@ -1153,6 +1158,7 @@
 <translation id="4792385443586519711">Naziv preduzeća</translation>
 <translation id="479628432297359449">Želite da zaustavite preuzimanje?</translation>
 <translation id="4796496140132859135">Grupa kartica. Skupljeno.</translation>
+<translation id="4800912004582762296">Kliktanje</translation>
 <translation id="4802185666270672526">Sakrij opciju Zahtevaj verziju sajta za računar</translation>
 <translation id="4802678077012980341">Provera lozinki je završena.</translation>
 <translation id="4803185665210547709">Ovim upravlja organizacija.
@@ -1625,6 +1631,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="6259928806013786178">Režim čitanja nije uspeo</translation>
 <translation id="626335165106398104">Gemini radi sa drugim uslugama</translation>
 <translation id="6268773951964630964">Potražite sliku koju ste kopirali</translation>
+<translation id="6270944267518310103">Čeka se</translation>
 <translation id="6271462272606946663">Sakrij opciju Zahtevaj mobilni sajt</translation>
 <translation id="6271824294945464304">Lozinka se deli</translation>
 <translation id="628251768213143684">Uvek možete da upravljate sadržajem koji se čuva na Google nalogu</translation>
@@ -1658,6 +1665,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="6350745006329795504">Upravljajte uređajima</translation>
 <translation id="6351147166808964033">Uđite u prebacivač kartica</translation>
 <translation id="63519665078626091">Da biste koristili Veb-inspektor, povežite se sa Safari-jem na računaru pomoću kabla i pristupite iPad-u iz menija za programiranje. Meni za programiranje možete da omogućite u odeljku Napredno u podešavanjima Safari-ja na računaru.</translation>
+<translation id="6354695695659930684">Popunjava se lozinka</translation>
 <translation id="6355820183143562453">Sakrijte karticu za praćenje cena</translation>
 <translation id="6355820205320395730">Slabe lozinke lako mogu da se pogode. Obavezno napravite jake lozinke. <ph name="BEGIN_LINK" />Pogledajte još saveta za bezbednost.<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">Prijavite se da biste pristupali svim stvarima kao što su lozinke, obeleživači i drugo.</translation>
@@ -2250,6 +2258,7 @@ Možete ponovo da ga pokrenete u bilo kom trenutku.</translation>
 <translation id="8233237502828137700">Zatvorite promotivni baner</translation>
 <translation id="823339794112333264">Uključi mikrofon</translation>
 <translation id="8240217649914883113">Dodaj ovo u kalendar</translation>
+<translation id="824379025871762038">Nikada ne dozvoli</translation>
 <translation id="8250920743982581267">Dokumenti</translation>
 <translation id="8252980988000695656">Radnja Google objektiva je završena.</translation>
 <translation id="8258734532103758067">I've exported my data (Izvezao/la sam podatke)</translation>

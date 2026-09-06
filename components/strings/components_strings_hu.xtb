@@ -1546,6 +1546,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="3634530185120165534">5. tálca</translation>
 <translation id="3634567936866541746">Megtévesztő webhelyen adta meg jelszavát. Fiókjai védelmében a Chrome azt javasolja, hogy ellenőrizze mentett jelszavait.</translation>
 <translation id="3638102297696182302">Folytatás: Segítség az íráshoz. Nyomja meg a Tab billentyűt, majd az Entert a megnyitáshoz</translation>
+<translation id="3639626391482300575">Az IBAN el lett mentve a Google Walletbe, így használhatja a Google-termékekben.</translation>
 <translation id="3642196846309122856">Próbálja meg ismét letölteni a fájlokat</translation>
 <translation id="3642638418806704195">Alkalmazás:</translation>
 <translation id="3647286794400715637">Minden egyes URL-karakterláncnak 1 vagy 2 URL-címet kell tartalmaznia.</translation>
@@ -3302,6 +3303,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="6578434528542148658">Érvénytelen bővítményazonosító.</translation>
 <translation id="658230438113661756">Előfordulhat, hogy az Ön által felkeresni próbált webhelyen a támadók olyan kártékony szoftvereket telepítenek, amelyek ellopják vagy törlik például az Ön jelszavait, fotóit, üzeneteit és bankkártyaszámait. A Chrome kifejezetten javasolja, hogy térjen vissza biztonságos webhelyre. <ph name="BEGIN_LEARN_MORE_LINK" />További információ erről a figyelmeztetésről<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="6583309742916093092">A Google Walletben tárolva</translation>
+<translation id="6585589684832019248">Ez a kártya el lett mentve a Google Walletbe, így használhatja a Google-termékekben.</translation>
 <translation id="6587893660316489419">B5 boríték</translation>
 <translation id="6587923378399804057">Vágólapra másolt link</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> eszköze nem áll felügyelet alatt</translation>

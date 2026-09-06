@@ -7425,6 +7425,7 @@ Nếu bạn đặt chính sách này thành một danh sách trống hoặc khô
 <translation id="5601503069213153581">Mã PIN</translation>
 <translation id="5605676983184673391">Cho phép các ứng dụng Chrome chạy trong các phiên Kiosk.</translation>
 <translation id="5606477661985737162">Chế độ cài đặt cho tính năng tự động tải xuống</translation>
+<translation id="5606816003654129603">Kiểm soát lời nhắc đánh giá và đường liên kết xếp hạng tiện ích</translation>
 <translation id="5607021831414604820">Bật tính năng báo cáo trạng thái bộ nhớ của thiết bị</translation>
 <translation id="5607808178576647930">Cho phép tích hợp chế độ AI.</translation>
 <translation id="5608114828230655271">Hành vi mặc định của thiết bị</translation>
@@ -8310,6 +8311,7 @@ Nếu bạn không đặt hoặc để trống chính sách này thì sẽ khôn
 
 Nếu bạn không đặt chính sách này, một giá trị mặc định chung sẽ được dùng cho tất cả trang web (không có quyền truy cập tự động).</translation>
 <translation id="6207607210601267301">Tắt chế độ xác thực không cần mã PIN đối với máy chủ truy cập từ xa</translation>
+<translation id="6207673917710036736">Bật lời nhắc đánh giá và đường liên kết xếp hạng tích hợp sẵn của tiện ích</translation>
 <translation id="6208896993204286313">Báo cáo thông tin chính sách của <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Báo cáo thông tin hệ điều hành và phiên bản của <ph name="PRODUCT_NAME" /></translation>
 <translation id="6214712395769944855">Chính sách này định cấu hình <ph name="PRODUCT_NAME" /> để sắp xếp thứ tự các thuật toán mật mã mã hoá được ưu tiên trong giao thức TLS 1.3 nhằm thể hiện mức độ ưu tiên đối với các thuật toán đã được một cơ chế tuân thủ cụ thể phê duyệt.
@@ -9407,6 +9409,7 @@ Chính sách này sẽ thay thế chính sách <ph name="WINDOW_PLACEMENT_BLOCKE
       Lưu ý: Chính sách này không áp dụng trong chế độ ẩn danh. Ở chế độ ẩn danh, cookie của bên thứ ba sẽ bị chặn và bạn chỉ có thể cho phép ở cấp trang web. Để cho phép cookie ở cấp trang web, hãy sử dụng chính sách <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="6810445994095397827">Chặn JavaScript trên các trang web này</translation>
 <translation id="6813263547126514821">Bật và tắt nguồn</translation>
+<translation id="6813752387426088259">Tắt lời nhắc đánh giá và đường liên kết xếp hạng tích hợp sẵn của tiện ích</translation>
 <translation id="681446116407619279">Các giao thức xác thực được hỗ trợ</translation>
 <translation id="6815628711329903153">Cho phép phân bổ vùng đệm hiện đại cho trình bổ trợ PPAPI của API Graphics3D.</translation>
 <translation id="6819031008957510729">Khi Bật chính sách này, bạn nên bật tính năng báo cáo ẩn danh về dữ liệu liên quan đến sự cố và mức sử dụng <ph name="PRODUCT_NAME" /> cho Google theo mặc định. Người dùng vẫn có thể thay đổi chế độ cài đặt này.
@@ -10114,6 +10117,14 @@ Cả hai chính sách này đều ngừng hoạt động sau khi tính năng <ph
 Trên <ph name="MS_WIN_NAME" />, chính sách này chỉ có trên các phiên bản đã liên kết với một miền <ph name="MS_AD_NAME" />, <ph name="MS_AAD_NAME" /> hoặc đã đăng ký <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
 
 Trên <ph name="MAC_OS_NAME" />, chính sách này chỉ có trên các phiên bản được quản lý qua MDM (Quản lý thiết bị di động), đã liên kết với một miền qua MCX hoặc đã đăng ký <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
+<translation id="7152157730070066152">Chính sách này không còn được dùng nữa và không có hiệu lực vì tính năng thông báo giữa trang đã bị loại bỏ khỏi trang Thẻ mới.
+
+      Chính sách này kiểm soát chế độ hiển thị của thông báo giữa trang trên trang Thẻ mới.
+
+      Nếu bạn đặt chính sách này thành Enabled (Bật), thông báo giữa trang sẽ hiển thị trên trang Thẻ mới nếu có.
+
+      Nếu bạn đặt chính sách này thành Disabled (Tắt), thông báo giữa trang sẽ không hiển thị trên trang Thẻ mới ngay cả khi có.
+      </translation>
 <translation id="7152640356717355643">Bật tính năng báo cáo giao diện mạng của thiết bị</translation>
 <translation id="7153786895642570081">Chính sách này kiểm soát việc bật tính năng EphemeralNetworkPolicies.
 Khi bạn đặt chính sách này thành true, các mục nhập DeviceOpenNetworkConfiguration, RecommendedValuesAreEphemeral và UserCreatedNetworkConfigurationsAreEphemeral sẽ được áp dụng.
@@ -12512,6 +12523,11 @@ Chính sách này không còn được dùng kể từ <ph name="PRODUCT_NAME" /
 <translation id="8757552286070680084">Cấu hình bộ điều khiển chẩn đoán và đo từ xa (DTC) wilco</translation>
 <translation id="8758831693895931466">Bật đăng ký quản lý đám mây bắt buộc</translation>
 <translation id="8759829385824155666">Các loại mã hóa Kerberos được cho phép</translation>
+<translation id="876034218754933846">Kiểm soát việc đường liên kết xếp hạng (chẳng hạn như "Xếp hạng tiện ích này") và lời nhắc đánh giá tích hợp sẵn cho các tiện ích Chrome đã cài đặt có hiển thị trên các giao diện người dùng của Chrome hay không.
+
+Nếu bạn đặt chính sách này thành Enabled (Bật) hoặc không đặt, người dùng sẽ có thể thấy các điểm truy cập tích hợp sẵn để đánh giá và xếp hạng các tiện ích đủ điều kiện trên thanh công cụ, trình đơn theo bối cảnh và trang quản lý tiện ích (chrome://extensions).
+
+Nếu bạn đặt chính sách này thành Disabled (Tắt), tất cả lời nhắc đánh giá và đường liên kết xếp hạng tích hợp sẵn sẽ bị chặn và không hiển thị.</translation>
 <translation id="8762128467207353085">Danh sách nguồn gốc của các ứng dụng máy tính từ xa có thể thực thi các yêu cầu API WebAuthn
 bắt nguồn từ một phiên duyệt web trên một máy chủ từ xa.
 

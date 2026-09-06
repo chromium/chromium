@@ -3140,7 +3140,7 @@
 <translation id="3394850431319394743">سایت‌هایی که مجاز هستند از شناسه‌ها برای پخش محتوای محافظت‌شده استفاده کنند</translation>
 <translation id="339722927132407568">ثابت می‌ماند</translation>
 <translation id="3399432415385675819">اعلان‌ها غیرفعال خواهند شد</translation>
-<translation id="3400036602686830681">گذرواژه شما در پی سرقت اطلاعات شبکه لو رفته است. اکنون آن را تغییر دهید یا همه مشکلات را در <ph name="BEGIN_LINK" />بازرسی گذرواژه<ph name="END_LINK" /> مرور کنید.</translation>
+<translation id="3400036602686830681">گذرواژه شما در پی سرقت اطلاعات شبکه لو رفته است. اکنون آن را تغییر دهید یا همه مشکلات را در <ph name="BEGIN_LINK" />بازرسی گذرواژه<ph name="END_LINK" /> بازبینی کنید.</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> هرتز) - درهم‌بافته</translation>
 <translation id="3401484564516348917">خواندن اطلاعات مربوط به مرورگر، سیستم‌عامل، دستگاه، نرم‌افزار نصب‌شده، فایل‌ها و مقادیر رجیستری</translation>
 <translation id="3402255108239926910">انتخاب چهرک</translation>
@@ -5647,7 +5647,7 @@
 <translation id="5298315677001348398">آیا می‌خواهید ادامه دهید و به این نرم‌افزار اجازه دهید در دستگاهتان تغییرات ایجاد کند؟</translation>
 <translation id="5299109548848736476">ردیابی نشدن</translation>
 <translation id="5299558715747014286">مشاهده و مدیریت گروه‌های زبانه</translation>
-<translation id="5300667117276823109">‏نه مکالمه‌های شما با Gemini و نه <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />داده‌های Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> شما برای بهبود مدل‌های هوشواره‌ای زایا بازبینی و استفاده نخواهند شد. ‫Gemini هوشواره است و ممکن است اشتباه کند.</translation>
+<translation id="5300667117276823109">‏نه مکالمه‌های شما با Gemini و نه <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />داده‌های Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> شما برای بهبود مدل‌های هوشواره‌ای زایا بازبینی و استفاده نخواهند شد. Gemini هوشواره است و ممکن است اشتباه کند.</translation>
 <translation id="5301398529256275325">چیزی مثل «خلاطه کردن این صفحه» یا سؤال خودتان را بپرسید.</translation>
 <translation id="5301954838959518834">بله، متوجه شدم</translation>
 <translation id="5302032366299160685">قبل‌از تلاش مجدد صبر کنید تا فایل باز شود</translation>
@@ -6048,7 +6048,7 @@
 <translation id="5625225435499354052">‏ویرایش در Google Pay</translation>
 <translation id="5627832140542566187">جهت نمایشگر</translation>
 <translation id="5628434207686266338">تنظیم گذرواژه دستگاه</translation>
-<translation id="5628652442614339066">بازکردن آسان با</translation>
+<translation id="5628652442614339066">به‌آسانی بازکردن با</translation>
 <translation id="562935524653278697">سرپرست شما همگام‌سازی نشانک‌ها، سابقه، گذرواژه‌ها و سایر تنظیماتتان را غیرفعال کرده است.</translation>
 <translation id="5631017369956619646">‏میزان مصرف CPU</translation>
 <translation id="5631272057151918206">با این کار، حداکثر <ph name="OFFLINE_STORAGE_SIZE" /> از فضای استفاده‌شده توسط فایل‌های آفلاین برداشته می‌شود. بعضی‌از فایل‌ها همچنان به‌صورت آفلاین دردسترس خواهند بود. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
@@ -6413,7 +6413,7 @@
 <translation id="5926936390113611560">باز کردن همه نمایه‌ها</translation>
 <translation id="592880897588170157">‏بارگیری فایل‌های PDF به‌جای باز کردن خودکار آن‌ها در Chrome</translation>
 <translation id="5930567261594625340">آسمان شب</translation>
-<translation id="5931292892421325763">باز کردن «مدیر نشانک‌ها»</translation>
+<translation id="5931292892421325763">&amp;باز کردن «مدیر نشانک‌ها»</translation>
 <translation id="5932194499818201827">باز کردن پیوند در پنجره حالت «&amp;ناشناس»</translation>
 <translation id="5932224571077948991">سایتْ آگهی‌های مزاحم یا گمراه‌کننده نشان می‌دهد</translation>
 <translation id="59324397759951282">‏دستگاه USB ساخت <ph name="MANUFACTURER_NAME" /></translation>
@@ -6897,7 +6897,7 @@
 <translation id="6305627295927385295">موارد زیر حذف می‌شود:</translation>
 <translation id="6305702903308659374">‏پخش با صدایی معمولی حتی اگر ChromeVox درحال صحبت کردن باشد</translation>
 <translation id="6307268917612054609">برنامه‌ها و وب‌سایت‌های دارای اجازه دوربین، و همچنین خدمات سیستم می‌توانند از دوربین استفاده کنند</translation>
-<translation id="6307884029666635765">ایجاد رمزینه پاسخ‌سریع</translation>
+<translation id="6307884029666635765">ایجاد رمزینه &amp;پاسخ‌سریع</translation>
 <translation id="6307990684951724544">سیستم مشغول است</translation>
 <translation id="6308778163698400658">افزودن به نوارابزار</translation>
 <translation id="6308937455967653460">ذخیره پی&amp;وند به‌عنوان...</translation>
@@ -8813,7 +8813,7 @@
 <translation id="7777624210360383048">میان‌بر <ph name="SHORTCUT" /> برای <ph name="EXTENSION_NAME" /></translation>
 <translation id="777852709704682967">&amp;باز کردن «مدیر نشانک‌ها»</translation>
 <translation id="7779840061887151693">نمایشگر</translation>
-<translation id="7780716468751073938">‏نه مکالمه‌های شما با Gemini و نه <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />داده‌های Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> شما برای بهبود مدل‌های هوشواره‌ای زایا بازبینی و استفاده نخواهند شد. ‫Gemini هوشواره است و ممکن است اشتباه کند. برخی از محتوا ممکن است برای همه مناسب نباشد.</translation>
+<translation id="7780716468751073938">‏نه مکالمه‌های شما با Gemini و نه <ph name="BEGIN_LINK_WORKSPACE_DATA_PRIVACY" />داده‌های Google Workspace<ph name="END_LINK_WORKSPACE_DATA_PRIVACY" /> شما برای بهبود مدل‌های هوشواره‌ای زایا بازبینی و استفاده نخواهند شد. Gemini هوشواره است و ممکن است اشتباه کند. برخی محتواها ممکن است برای همه مناسب نباشد.</translation>
 <translation id="7780992949171378848">ارسال کردن درخواست انصراف به سایت‌ها درباره استفاده از داده‌های شما</translation>
 <translation id="7782102568078991263">‏پیشنهاد دیگری از Google وجود ندارد</translation>
 <translation id="7782717250816686129">داده‌های دائمی در صفحه ورود به سیستم ذخیره شود و اطلاعات کاربری در جلسه تزریق شود.</translation>

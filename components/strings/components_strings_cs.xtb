@@ -1544,6 +1544,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="3634530185120165534">Přihrádka 5</translation>
 <translation id="3634567936866541746">Právě jste své heslo zadali na klamavém webu. Pokud chcete zabezpečit své účty, Chrome vám doporučuje zkontrolovat uložená hesla.</translation>
 <translation id="3638102297696182302">Obnovit nástroj Pomozte mi s psaním. Procházejte položky tabulátorem a stisknutím klávesy Enter je otevřete</translation>
+<translation id="3639626391482300575">Tento kód IBAN je uložen ve vaší Peněžence Google, aby vám byl k dispozici v různých službách Google.</translation>
 <translation id="3642196846309122856">Zkuste soubory stáhnout znovu</translation>
 <translation id="3642638418806704195">Aplikace:</translation>
 <translation id="3647286794400715637">Každý zadaný řetězec adres URL musí obsahovat 1 až 2 adresy URL.</translation>
@@ -3300,6 +3301,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6578434528542148658">Neplatné ID rozšíření.</translation>
 <translation id="658230438113661756">Útočníci na webu, který jste se pokusili navštívit, by mohli nainstalovat škodlivý software k odcizení nebo vymazání věcí, jako jsou vaše hesla, fotky, zprávy nebo čísla kreditních karet. Chrome důrazně doporučuje vrátit se do bezpečí. <ph name="BEGIN_LEARN_MORE_LINK" />Další informace o tomto upozornění<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6583309742916093092">Uloženo v Peněžence Google</translation>
+<translation id="6585589684832019248">Tato karta je uložená ve vaší Peněžence Google, aby vám byla k dispozici v různých službách Google.</translation>
 <translation id="6587893660316489419">Obálka B5</translation>
 <translation id="6587923378399804057">Zkopírovaný odkaz</translation>
 <translation id="6591833882275308647">Vaše zařízení <ph name="DEVICE_TYPE" /> není spravováno</translation>

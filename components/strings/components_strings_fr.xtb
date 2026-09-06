@@ -1548,6 +1548,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3634530185120165534">Bac 5</translation>
 <translation id="3634567936866541746">Vous venez de saisir votre mot de passe sur un site trompeur. Pour sécuriser vos comptes, Chrome vous recommande de vérifier vos mots de passe enregistrés.</translation>
 <translation id="3638102297696182302">Reprendre Aide-moi à écrire. Appuyez sur Tabulation, puis sur Entrée pour l'ouvrir.</translation>
+<translation id="3639626391482300575">Cet IBAN est enregistré dans Google Wallet afin que vous puissiez l'utiliser dans les produits Google.</translation>
 <translation id="3642196846309122856">Réessayez de télécharger vos fichiers</translation>
 <translation id="3642638418806704195">Application :</translation>
 <translation id="3647286794400715637">Chaque chaîne d'URL doit contenir entre une et deux URL.</translation>
@@ -3305,6 +3306,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="6578434528542148658">ID d'extension non valide.</translation>
 <translation id="658230438113661756">Des pirates informatiques sur le site que vous avez essayé de consulter pourraient installer un logiciel malveillant qui vole ou supprime des éléments comme vos mots de passe, photos, messages ou numéros de carte de crédit. Chrome vous recommande vivement de revenir en lieu sûr. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus sur cet avertissement<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6583309742916093092">Stocké dans Google Wallet</translation>
+<translation id="6585589684832019248">Cette carte est enregistrée dans Google Wallet afin que vous puissiez l'utiliser dans les produits Google</translation>
 <translation id="6587893660316489419">Enveloppe B5</translation>
 <translation id="6587923378399804057">Lien copié</translation>
 <translation id="6591833882275308647">Votre <ph name="DEVICE_TYPE" /> n'est pas géré</translation>

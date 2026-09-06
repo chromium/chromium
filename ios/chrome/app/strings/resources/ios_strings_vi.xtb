@@ -1947,6 +1947,9 @@
 <translation id="7280980607183752256">Không nhập được tệp này</translation>
 <translation id="7282197670900591579">Giao diện màu vàng vỏ chanh</translation>
 <translation id="7293429513719260019">Chọn ngôn ngữ</translation>
+<translation id="72961285530871072">Thao tác này sẽ xoá vĩnh viễn tiến trình của bạn trong Level Up và dữ liệu sử dụng tính năng Level Up liên quan đến hồ sơ của bạn sẽ không được gửi cho Google nữa.
+
+Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="7300448350764260141">Bổ sung một lớp bảo vệ trước các mối đe doạ trên mạng.</translation>
 <translation id="7311244614769792472">Không tìm thấy kết quả nào</translation>
 <translation id="7312823817809783355">Việc bạn cần làm</translation>
@@ -2537,7 +2540,7 @@
 <translation id="9124978074365039456">Mua sản phẩm, dịch văn bản và nhận dạng đối tượng mà bạn nhìn thấy bằng camera và thư viện ảnh của bạn</translation>
 <translation id="9130317582644834675">Ẩn tuỳ chọn Thu phóng văn bản</translation>
 <translation id="913036870884277353">Dễ dàng mở đường liên kết trong các ứng dụng khác.</translation>
-<translation id="9137013805542155359">Hiển thị văn bản gốc</translation>
+<translation id="9137013805542155359">Hiện văn bản gốc</translation>
 <translation id="9140888637198815199">A</translation>
 <translation id="9144152097013965297">Bật Chế độ đọc</translation>
 <translation id="9144230693397287797">Nhận thông tin cập nhật về lời nhắc bạn đặt và thẻ từ các thiết bị khác</translation>

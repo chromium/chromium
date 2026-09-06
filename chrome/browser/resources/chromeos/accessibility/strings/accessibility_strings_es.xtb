@@ -218,6 +218,7 @@
 <translation id="2365384324219615024">También puedes pulsar Intro para activar elementos. Por ejemplo, se puede usar Intro para enviar el texto de un formulario. Para continuar, pulsa Intro.</translation>
 <translation id="2371402123699727805">Dictado activo. <ph name="GESTURE" /> para detenerlo. Otros gestos temporalmente no disponibles.</translation>
 <translation id="2381733276052567791">Activa o desactiva los mensajes de voz</translation>
+<translation id="2386248289416625097">Candidatos</translation>
 <translation id="2390264819538553347">Para avanzar, pulsa Intro. Para retroceder, pulsa Retroceso.</translation>
 <translation id="2397408693730730860">.input {$$COUNT :number} .match $$COUNT 1{{asterisco}} *{{{$$COUNT} asteriscos}}</translation>
 <translation id="2398579267367951220">Escribe para buscar en la página. Pulsa Intro para ir al resultado, usa las flechas hacia arriba o hacia abajo para explorar los resultados, sigue escribiendo para cambiar la búsqueda o pulsa Esc para cancelar.</translation>

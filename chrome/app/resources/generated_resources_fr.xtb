@@ -4778,6 +4778,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4652921642122345344">Vitesse de lecture : <ph name="RATE" /> x</translation>
 <translation id="4654236001025007561">Partagez des fichiers avec des Chromebooks et des appareils Android à proximité</translation>
 <translation id="4654801841330730814">Toutes</translation>
+<translation id="4656949320553787832">Autoriser le glisser-déposer en vue fractionnée sur le bord gauche, droit ou inférieur de la fenêtre</translation>
 <translation id="4657724094180965385">Pas intéressé</translation>
 <translation id="4657810666108475055">Recherche dans les onglets</translation>
 <translation id="4657914796247705218">Vitesse</translation>
@@ -7301,6 +7302,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="663569763553406962">Voir les extensions qui peuvent lire ou modifier un site</translation>
 <translation id="6636258750460740634">Historique</translation>
 <translation id="6636623428211296678">Découvrez d'autres paramètres ci-dessous ou terminez maintenant</translation>
+<translation id="6639343220434368353">Recherchez dans le menu ou saisissez une action</translation>
 <translation id="6639405694338292402">La fonctionnalité Skills est actuellement désactivée. Mettez à jour vos paramètres Chrome pour commencer.</translation>
 <translation id="6639554308659482635">Mémoire SQLite</translation>
 <translation id="6640268266988685324">Onglet ouvert</translation>

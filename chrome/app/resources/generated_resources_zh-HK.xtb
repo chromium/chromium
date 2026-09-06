@@ -4790,7 +4790,7 @@
 <translation id="4652921642122345344">語音速度 <ph name="RATE" /> 倍</translation>
 <translation id="4654236001025007561">與附近的 Chromebook 和 Android 裝置分享檔案</translation>
 <translation id="4654801841330730814">全部</translation>
-<translation id="4656949320553787832">分割畫面可拖曳到視窗左側、右側或底部</translation>
+<translation id="4656949320553787832">允許將分割檢視拖放到視窗左邊、右邊或底部邊緣</translation>
 <translation id="4657724094180965385">不感興趣</translation>
 <translation id="4657810666108475055">分頁搜尋</translation>
 <translation id="4657914796247705218">TrackPoint 速度</translation>
@@ -7308,7 +7308,7 @@
 <translation id="663569763553406962">查看哪些擴充程式可讀取或變更網站</translation>
 <translation id="6636258750460740634">記錄</translation>
 <translation id="6636623428211296678">探索下方更多設定或立即結束審核</translation>
-<translation id="6639343220434368353">搜尋選單或輸入動作</translation>
+<translation id="6639343220434368353">搜尋選單或輸入操作</translation>
 <translation id="6639405694338292402">「技能」功能目前已停用。如要開始使用，請更新 Chrome 設定。</translation>
 <translation id="6639554308659482635">SQLite 記憶體使用量</translation>
 <translation id="6640268266988685324">開啟分頁</translation>

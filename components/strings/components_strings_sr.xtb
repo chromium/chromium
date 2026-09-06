@@ -934,6 +934,7 @@
 <translation id="2544644783021658368">Један документ</translation>
 <translation id="254524874071906077">Постави Chrome као подразумевани прегледач</translation>
 <translation id="2546283357679194313">Колачићи и подаци о сајтовима</translation>
+<translation id="254672217349157196">Аутоматски верификуј имејл</translation>
 <translation id="254947805923345898">Вредност смерница није важећа.</translation>
 <translation id="255002559098805027">Хост <ph name="HOST_NAME" /> је послао неважећи одговор.</translation>
 <translation id="2551608178605132291">Адреса: <ph name="ADDRESS" />.</translation>
@@ -1180,6 +1181,7 @@
 <translation id="3008410317623852235">Сада можете да проналазите и попуњавате податке из Gmail-а и других извора.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab да бисте прегледали доступне радње, па Enter да бисте извршили изабрану радњу.</translation>
 <translation id="3010991137650052245">Да бисте користили дозволу <ph name="PERMISSION" /> на овом сајту, одобрите приступ производу <ph name="SHORT_PRODUCT_NAME" /></translation>
+<translation id="3013536714390403689">Верификовани имејл</translation>
 <translation id="3014726756341138577">Напредне функције штампача</translation>
 <translation id="301521992641321250">Аутоматски је блокирано</translation>
 <translation id="3016780570757425217">зна вашу локацију</translation>

@@ -217,6 +217,7 @@
 <translation id="2365384324219615024">Elementlarni faollashtirish uchun Enter tugmasini bosishingiz mumkin. Masalan, Enter tugmasidan shaklga matn kiritish uchun foydalanish mumkin. Davom etish uchun Enter tugmasini bosing.</translation>
 <translation id="2371402123699727805">Ovoz bilan yozish yoniq. Toʻxtatish uchun “<ph name="GESTURE" />” ishorasini ishlating. Boshqa ishoralar vaqtincha ishlamaydi.</translation>
 <translation id="2381733276052567791">Ovozli bildirgilarni yoqish yoki o‘chirib qo‘yish</translation>
+<translation id="2386248289416625097">Nomzodlar</translation>
 <translation id="2390264819538553347">Davom etish uchun “Enter” tugmasini, ortga qaytish uchun esa “Backspace” tugmasini bosing.</translation>
 <translation id="2397408693730730860">.input {$$COUNT :number} .match $$COUNT 1{{asterisk}} *{{{$$COUNT} asterisks}}</translation>
 <translation id="2398579267367951220">Sahifada qidirish uchun soʻrovni kiriting. Natijaga sakrash uchun Enter tugmasini, natijalarni qarab chiqish uchun yuqoriga yoki pastga strelkalarini bosing. Qidiruvni oʻzgartirish uchun soʻrovni kiritishda davom eting yoki bekor qilish uchun escape tugmasini bosing.</translation>

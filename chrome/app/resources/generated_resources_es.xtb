@@ -4780,6 +4780,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4652921642122345344">Velocidad de la voz x<ph name="RATE" /></translation>
 <translation id="4654236001025007561">Comparte archivos con Chromebooks y dispositivos Android que estén cerca de ti</translation>
 <translation id="4654801841330730814">Todas</translation>
+<translation id="4656949320553787832">Permitir arrastrar y soltar en la vista dividida en el borde izquierdo, derecho o inferior de la ventana</translation>
 <translation id="4657724094180965385">No me interesa</translation>
 <translation id="4657810666108475055">Búsqueda de pestañas</translation>
 <translation id="4657914796247705218">Velocidad del TrackPoint</translation>
@@ -6091,6 +6092,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5678955352098267522">Leer tus datos en <ph name="WEBSITE_1" /></translation>
 <translation id="5680050361008726776">¿Eliminar <ph name="ESIM_PROFILE_NAME" />?</translation>
 <translation id="5681586175480958839">El archivo ya se está abriendo</translation>
+<translation id="5682120590308014005">Inicia sesión para añadir fácilmente archivos de Drive a tus conversaciones del Modo IA. También tendrás tus contraseñas y otra información en todos tus dispositivos.</translation>
 <translation id="5684110242705861346">La extensión "<ph name="NAME" />" se ha añadido mediante la política de tu organización y controla este ajuste. <ph name="BEGIN_LINK" />Ver detalles<ph name="END_LINK" /></translation>
 <translation id="5684181005476681636">Detalles de la red Wi‑Fi</translation>
 <translation id="5687340364605915800">Los sitios pueden responder a esta solicitud según su propio criterio</translation>
@@ -7300,6 +7302,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="663569763553406962">Ver qué extensiones pueden leer o cambiar un sitio</translation>
 <translation id="6636258750460740634">Historial</translation>
 <translation id="6636623428211296678">Consulta más ajustes a continuación o termina ahora</translation>
+<translation id="6639343220434368353">Buscar en el menú o escribir una acción</translation>
 <translation id="6639405694338292402">La función de habilidades está inhabilitada. Actualiza tu configuración de Chrome para empezar.</translation>
 <translation id="6639554308659482635">Memoria de SQLite</translation>
 <translation id="6640268266988685324">Pestaña abierta</translation>
@@ -8168,6 +8171,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7299588179200441056"><ph name="URL" /> - <ph name="FOLDER" /></translation>
 <translation id="730068416968462308">Animado</translation>
 <translation id="7301812050652048720">Llave de acceso eliminada</translation>
+<translation id="7303246449496241344">Para añadir fácilmente archivos de Drive a tus conversaciones del Modo IA, verifica tu identidad. También tendrás tus contraseñas y otra información en todos tus dispositivos.</translation>
 <translation id="7303485269821975179">Establece una contraseña para <ph name="DEVICE_TYPE" /></translation>
 <translation id="7303900363563182677">No se permite que este sitio web vea el texto y las imágenes que se hayan copiado en el portapapeles</translation>
 <translation id="7304030187361489308">Alto</translation>

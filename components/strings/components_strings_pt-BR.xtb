@@ -1550,6 +1550,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="3634530185120165534">Bandeja 5</translation>
 <translation id="3634567936866541746">Você acabou de digitar sua senha em um site suspeito. Para proteger suas contas, o Chrome recomenda conferir as senhas salvas.</translation>
 <translation id="3638102297696182302">Para retomar o recurso "Me ajude a escrever", pressione Tab e depois Enter</translation>
+<translation id="3639626391482300575">Este IBAN foi salvo na Carteira do Google para que possa ser usado em todos os produtos do Google.</translation>
 <translation id="3642196846309122856">Tente baixar os arquivos de novo</translation>
 <translation id="3642638418806704195">Aplicativo:</translation>
 <translation id="3647286794400715637">Cada entrada de string de URL precisa conter entre um e dois URLs.</translation>
@@ -3307,6 +3308,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="6578434528542148658">ID de extensão inválido.</translation>
 <translation id="658230438113661756">Invasores no site que você tentou acessar podem instalar softwares nocivos que roubam ou excluem itens como senhas, fotos, mensagens ou números de cartões de crédito. O Chrome recomenda voltar a uma página segura. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais sobre este aviso<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6583309742916093092">Armazenado na Carteira do Google</translation>
+<translation id="6585589684832019248">Este cartão foi salvo na Carteira do Google e pode ser usado em todos os produtos do Google</translation>
 <translation id="6587893660316489419">Envelope B5</translation>
 <translation id="6587923378399804057">Link que você copiou</translation>
 <translation id="6591833882275308647">Seu <ph name="DEVICE_TYPE" /> não é gerenciado</translation>

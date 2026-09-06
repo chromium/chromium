@@ -252,6 +252,7 @@
 <translation id="1984087999855033707">број телефона</translation>
 <translation id="1984417487208496350">Без заштите (не препоручује се)</translation>
 <translation id="1986685561493779662">Назив већ постоји</translation>
+<translation id="1992244793717364584">Апликација је деинсталирана</translation>
 <translation id="200114059308480249">Желите да уврстите околни текст у Google претраге?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, закачена картица без архивирања са искљученим звуком</translation>
 <translation id="2021896219286479412">Контроле сајта на целом екрану</translation>
@@ -738,6 +739,7 @@
 <translation id="3950820424414687140">Пријави ме</translation>
 <translation id="395377504920307820">Користи без налога</translation>
 <translation id="3955353672249727801">Странице су додате на листу за читање</translation>
+<translation id="3958283758104508528">Апликација <ph name="APP_NAME" /> је деинсталирана</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome ће учитати страницу када буде спремна}one{Chrome ће учитати странице када буду спремне}few{Chrome ће учитати странице када буду спремне}other{Chrome ће учитати странице када буду спремне}}</translation>
 <translation id="3969142555815019568">Chrome не може да вам проверава лозинке</translation>
 <translation id="3969863827134279083">Помери нагоре</translation>
@@ -1955,6 +1957,7 @@ Google налог можда има друге облике историје п�
 <translation id="8580435650274205305">Датум истека, обавезно</translation>
 <translation id="8582529315803410153">Овде ћете пронаћи картице са других уређаја</translation>
 <translation id="8585103689515290060">Услуге аутоматског попуњавања</translation>
+<translation id="8586116786993312006">Додирните да бисте избрисали податке прегледања у Chrome-у</translation>
 <translation id="859046281437143747">Пратите цену помоћу дугмета Још опција</translation>
 <translation id="859064343657890103">Група картица <ph name="TAB_GROUP_TITLE" /> је избрисана</translation>
 <translation id="860043288473659153">Име власника картице</translation>

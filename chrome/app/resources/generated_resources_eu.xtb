@@ -4777,6 +4777,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="4652921642122345344">Ahotsaren abiadura bide <ph name="RATE" /></translation>
 <translation id="4654236001025007561">Partekatu fitxategiak inguruan dituzun Chromebook-ekin eta Android-eko gailuekin</translation>
 <translation id="4654801841330730814">Guztiak</translation>
+<translation id="4656949320553787832">Eman leihoaren eskuineko, ezkerreko edo beheko ertzean ikuspegi zatitua arrastatu eta jaregiteko baimena</translation>
 <translation id="4657724094180965385">Ez zait interesatzen</translation>
 <translation id="4657810666108475055">Fitxa-bilaketa</translation>
 <translation id="4657914796247705218">TrackPoint-aren abiadura</translation>
@@ -6086,6 +6087,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5678955352098267522"><ph name="WEBSITE_1" /> webgunean dituzun datuak irakurri.</translation>
 <translation id="5680050361008726776">"<ph name="ESIM_PROFILE_NAME" />" kendu nahi duzu?</translation>
 <translation id="5681586175480958839">Fitxategia irekitzen ari da jada</translation>
+<translation id="5682120590308014005">Hasi saioa Drive-ko fitxategiak AA moduaren elkarrizketa-harietan erraz gehitzeko. Pasahitzak eta beste ere izango dituzu gailu guztietan.</translation>
 <translation id="5684110242705861346">"<ph name="NAME" />" luzapena erakundearen gidalerroen bidez gehitu da, eta ezarpen hau kontrolatzen ari da. <ph name="BEGIN_LINK" />Ikusi xehetasunak<ph name="END_LINK" /></translation>
 <translation id="5684181005476681636">Wifi-sarearen xehetasunak</translation>
 <translation id="5687340364605915800">Webguneek beren erabakimena erabiltzen dute eskaera honi erantzuteko</translation>
@@ -7294,6 +7296,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="663569763553406962">Ikusi webguneak irakurri edo alda ditzaketen luzapenen zerrenda</translation>
 <translation id="6636258750460740634">Historia</translation>
 <translation id="6636623428211296678">Arakatu ezarpen gehiago hemen behean edo amaitu orain</translation>
+<translation id="6639343220434368353">Bilatu menuan edo idatzi ekintza bat</translation>
 <translation id="6639405694338292402">Une honetan, trebetasunen eginbidea desgaituta dago. Hura erabiltzen hasteko, eguneratu Chrome-ren ezarpenak.</translation>
 <translation id="6639554308659482635">SQLite memoria</translation>
 <translation id="6640268266988685324">Irekitako fitxa</translation>
@@ -8161,6 +8164,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="7299588179200441056"><ph name="URL" /> (<ph name="FOLDER" />)</translation>
 <translation id="730068416968462308">Biziduna</translation>
 <translation id="7301812050652048720">Ezabatu da sarbide-gakoa</translation>
+<translation id="7303246449496241344">Drive-ko fitxategiak AA moduaren elkarrizketa-harietan erraz gehitzeko, egiaztatu zeu zarela. Pasahitzak eta beste ere izango dituzu gailu guztietan.</translation>
 <translation id="7303485269821975179">Konfiguratu pasahitz bat <ph name="DEVICE_TYPE" /> gailurako</translation>
 <translation id="7303900363563182677">Webgune honi arbelean kopiatzen dituzun testuak eta irudiak ikusteko aukera blokeatu zaio</translation>
 <translation id="7304030187361489308">Altua</translation>

@@ -1548,6 +1548,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="3634530185120165534">Skuff 5</translation>
 <translation id="3634567936866541746">Du har nettopp skrevet inn passordet ditt på et villedende nettsted. Chrome anbefaler at du sikrer kontoene dine ved å sjekke de lagrede passordene dine.</translation>
 <translation id="3638102297696182302">Gjenoppta Hjelp meg å skrive. Trykk på Tab og deretter på Enter for å åpne</translation>
+<translation id="3639626391482300575">Dette IBAN-nummeret er lagret i Google Wallet, slik at du kan bruke det i alle Google-produkter.</translation>
 <translation id="3642196846309122856">Prøv å laste ned filene på nytt</translation>
 <translation id="3642638418806704195">Program:</translation>
 <translation id="3647286794400715637">Hver nettadresse-strengoppføring må inneholde 1–2 nettadresser.</translation>
@@ -3305,6 +3306,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="6578434528542148658">Ugyldig utvidelses-ID.</translation>
 <translation id="658230438113661756">Angripere på nettstedet du prøvde å besøke, kan muligens installere skadelig programvare som stjeler eller sletter ting som passord, bilder, meldinger eller kredittkortnumre. Chrome anbefaler på det sterkeste at du går tilbake til trygg grunn. <ph name="BEGIN_LEARN_MORE_LINK" />Finn ut mer om denne advarselen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6583309742916093092">Lagret i Google Wallet</translation>
+<translation id="6585589684832019248">Dette kortet er lagret i Google Wallet, slik at du kan bruke det i alle Google-produkter</translation>
 <translation id="6587893660316489419">B5-konvolutt</translation>
 <translation id="6587923378399804057">Linken du kopierte</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> administreres ikke</translation>

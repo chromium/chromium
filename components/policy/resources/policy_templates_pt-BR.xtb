@@ -7593,6 +7593,7 @@ Se a política for deixada sem definição ou definida como uma lista vazia, cai
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5605676983184673391">Permitir a execução dos apps do Chrome em sessões de quiosque.</translation>
 <translation id="5606477661985737162">Configurações de downloads automáticos</translation>
+<translation id="5606816003654129603">Controlar as solicitações de avaliação de extensões e os links de classificação</translation>
 <translation id="5607021831414604820">Ativar relatórios de status do armazenamento do dispositivo</translation>
 <translation id="5607808178576647930">Permitir integrações do Modo IA.</translation>
 <translation id="5608114828230655271">Comportamento padrão do dispositivo</translation>
@@ -8485,6 +8486,7 @@ Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos
 
 Se a política não for definida, o valor padrão global será usado para todos os sites (sem acesso automático).</translation>
 <translation id="6207607210601267301">Desativar a autenticação sem PIN para o host de acesso remoto</translation>
+<translation id="6207673917710036736">Ativar solicitações de avaliação de extensão nativa e links de classificação</translation>
 <translation id="6208896993204286313">Reportar informações da política do <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Reportar informações sobre a versão do SO e do <ph name="PRODUCT_NAME" /></translation>
 <translation id="6214712395769944855">Esta política configura o <ph name="PRODUCT_NAME" /> de modo que o produto ordene as criptografias no TLS 1.3 para refletir uma preferência por algoritmos que foram aprovados por um regime de compliance específico.
@@ -9618,6 +9620,7 @@ Isso substitui a política <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLICY_NA
       Observação: essa política não se aplica ao modo de navegação anônima, em que os cookies de terceiros são bloqueados e só podem ser permitidos no nível do site. Para permitir cookies no nível do site, use a política <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="6810445994095397827">Bloquear o JavaScript nestes sites</translation>
 <translation id="6813263547126514821">Ligar e desligar</translation>
+<translation id="6813752387426088259">Desativar solicitações de avaliação de extensão nativa e links de classificação</translation>
 <translation id="681446116407619279">Esquemas de autenticação compatíveis</translation>
 <translation id="6815628711329903153">Permitir alocação moderna de buffer para o plug-in PPAPI de APIs Graphics3D.</translation>
 <translation id="6819031008957510729">Se esta política for ativada, será recomendado habilitar o envio de relatórios anônimos de uso e dados de falha do <ph name="PRODUCT_NAME" /> ao Google por padrão. Os usuários ainda poderão mudar essa configuração.
@@ -10356,6 +10359,14 @@ Ambas foram descontinuadas junto ao recurso <ph name="RELATED_WEBSITE_SETS_FEATU
 No <ph name="MS_WIN_NAME" />, esta política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
 
 No <ph name="MAC_OS_NAME" />, esta política só está disponível em instâncias gerenciadas por MDM, associadas a um domínio via MCX ou registradas em <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
+<translation id="7152157730070066152">Esta política foi descontinuada e não tem efeito porque o recurso de anúncio do slot do meio foi removido da Página Nova Guia.
+
+      Esta política controla a visibilidade do anúncio do slot do meio na Página Nova Guia.
+
+      Se a política for definida como ativada, a Página Nova Guia vai mostrar o anúncio do slot do meio, se ele estiver disponível.
+
+      Se a política for definida como desativada, a Página Nova Guia não vai mostrar o anúncio do slot do meio, mesmo se ele estiver disponível.
+      </translation>
 <translation id="7152640356717355643">Ativar relatórios sobre a interface de rede do dispositivo</translation>
 <translation id="7153786895642570081">Esta política controla a ativação do recurso EphemeralNetworkPolicies.
 Quando ela é definida como verdadeira, as entradas RecommendedValuesAreEphemeral e UserCreatedNetworkConfigurationsAreEphemeral de DeviceOpenNetworkConfiguration são respeitadas.
@@ -12812,6 +12823,11 @@ Esta política foi descontinuada na versão 144 do <ph name="PRODUCT_NAME" /> co
 <translation id="8757552286070680084">Configuração do DTC wilco</translation>
 <translation id="8758831693895931466">Permite a inscrição obrigatória no gerenciamento em nuvem</translation>
 <translation id="8759829385824155666">Permitir tipos de criptografia Kerberos</translation>
+<translation id="876034218754933846">Controla se as solicitações de avaliação nativas e os links de classificação (como "Avaliar") para extensões instaladas do Chrome estão disponíveis nas interfaces do usuário do Chrome.
+
+Se esta política for ativada ou deixada sem definição, os usuários vão encontrar pontos de entrada nativos para avaliar as extensões qualificadas na barra de ferramentas, nos menus de contexto e na página de gerenciamento de extensões (chrome://extensions).
+
+Se esta política for desativada, todos os prompts de avaliação nativos e links de classificação serão suprimidos e ficarão indisponíveis.</translation>
 <translation id="8762128467207353085">Uma lista de origens de apps cliente de Área de Trabalho remota que podem executar solicitações de API WebAuthn originadas de uma sessão de navegação em um host remoto.
 
 Qualquer origem configurada nesta política pode fazer solicitações WebAuthn para IDs de terceiros confiáveis (RP IDs) que normalmente não seriam permitidos.
