@@ -35,11 +35,12 @@ suite('<os-settings-input-page>', () => {
   let browserProxy: TestLanguagesBrowserProxy;
   let languageHelper: LanguageHelper;
   let settingsLanguages: SettingsLanguagesElement;
+  let settingsPrivate: FakeSettingsPrivate;
 
   async function createInputPage(): Promise<void> {
     const prefElement: SettingsPrefsElement =
         document.createElement('settings-prefs');
-    const settingsPrivate = new FakeSettingsPrivate(getFakeLanguagePrefs());
+    settingsPrivate = new FakeSettingsPrivate(getFakeLanguagePrefs());
 
     /**
      * Prefs listener to emulate SpellcheckService listeners.
@@ -320,6 +321,31 @@ suite('<os-settings-input-page>', () => {
       flush();
 
       assertTrue(addInputMethodButton.disabled);
+    });
+
+    test('show ime menu toggle is controlled by policy', async () => {
+      await createInputPage();
+
+      const showImeMenu =
+          inputPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+              '#showImeMenu');
+      assertTrue(!!showImeMenu);
+      assertFalse(showImeMenu.disabled);
+      assertFalse(
+          !!showImeMenu.shadowRoot!.querySelector('cr-policy-pref-indicator'));
+
+      settingsPrivate.sendPrefChanges([{
+        key: 'settings.language.ime_menu_activated',
+        value: true,
+        enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+        controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
+      }]);
+      flush();
+
+      assertTrue(showImeMenu.checked);
+      assertTrue(showImeMenu.$.control.disabled);
+      assertTrue(
+          !!showImeMenu.shadowRoot!.querySelector('cr-policy-pref-indicator'));
     });
   });
 

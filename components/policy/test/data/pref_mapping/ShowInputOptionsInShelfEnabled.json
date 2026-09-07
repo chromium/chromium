@@ -1,0 +1,16 @@
+[
+  {
+    "can_be_recommended": true,
+    "os": [
+      "chromeos"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "settings.language.ime_menu_activated",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
+  }
+]

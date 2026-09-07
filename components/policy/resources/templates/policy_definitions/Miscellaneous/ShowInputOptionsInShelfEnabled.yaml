@@ -1,0 +1,29 @@
+caption: Show input options in the shelf
+desc: |-
+  Setting the policy to Enabled displays the input methods selection bubble on the shelf.
+
+  Setting the policy to Disabled hides the input methods selection bubble from the shelf.
+
+  If left unset, the input methods selection bubble is hidden from the shelf by default. The user can choose whether to display the bubble in the Settings page.
+default: null
+example_value: true
+features:
+  can_be_recommended: true
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Show input options in the shelf
+  value: true
+- caption: Hide input options in the shelf
+  value: false
+- caption: Allow the user to decide
+  value: null
+owners:
+- aidazolic@google.com
+- file://ash/OWNERS
+schema:
+  type: boolean
+future_on:
+- chrome_os
+tags: []
+type: main
