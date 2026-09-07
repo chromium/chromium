@@ -242,11 +242,13 @@ class DocumentPictureInPictureWindowControllerBrowserTest
   }
 
   content::RenderWidgetHostView* GetRenderWidgetHostView() {
-    if (!window_controller())
+    if (!window_controller()) {
       return nullptr;
+    }
 
-    if (auto* web_contents = window_controller()->GetChildWebContents())
+    if (auto* web_contents = window_controller()->GetChildWebContents()) {
       return web_contents->GetRenderWidgetHostView();
+    }
 
     return nullptr;
   }
@@ -438,6 +440,13 @@ class DocumentPictureInPictureWindowControllerFrameViewTest
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
+                         DocumentPictureInPictureWindowControllerBackendTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Standalone" : "BrowserBacked";
+                         });
+
+INSTANTIATE_TEST_SUITE_P(All,
                          DocumentPictureInPictureWindowControllerLifecycleTest,
                          testing::Bool(),
                          [](const testing::TestParamInfo<bool>& info) {
@@ -571,8 +580,8 @@ IN_PROC_BROWSER_TEST_P(DocumentPictureInPictureWindowControllerLifecycleTest,
 }
 
 // Tests navigating the opener closes the picture in picture window.
-IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
-                       ClosePictureInPictureWhenOpenerNavigates) {
+IN_PROC_BROWSER_TEST_P(DocumentPictureInPictureWindowControllerBackendTest,
+                       ClosePictureInPictureOnOpenerNavigation) {
   LoadTabAndEnterPictureInPicture(browser());
   GURL test_page_url = chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
@@ -583,7 +592,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
 
 // Navigation by the pip window to a new document should close the pip
 // window.
-IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_P(DocumentPictureInPictureWindowControllerBackendTest,
                        CloseOnPictureInPictureNavigationToNewDocument) {
   LoadTabAndEnterPictureInPicture(browser());
 
@@ -598,7 +607,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
 
 // Navigation within the pip window's document should not close the pip
 // window.
-IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_P(DocumentPictureInPictureWindowControllerBackendTest,
                        DoNotCloseOnPictureInPictureNavigationInsideDocument) {
   LoadTabAndEnterPictureInPicture(browser());
 
@@ -611,7 +620,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
 }
 
 // Refreshing the pip window's document should close the pip window.
-IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_P(DocumentPictureInPictureWindowControllerBackendTest,
                        CloseOnPictureInPictureRefresh) {
   LoadTabAndEnterPictureInPicture(browser());
 
@@ -624,7 +633,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
 
 // Explicitly navigating to about:blank should close the pip window.
 // Regression test for https://crbug.com/40062959.
-IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_P(DocumentPictureInPictureWindowControllerBackendTest,
                        CloseOnPictureInPictureNavigatedToAboutBlank) {
   LoadTabAndEnterPictureInPicture(browser());
 
@@ -638,7 +647,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
 
 // Explicitly navigating to the empty string should close the pip window.
 // Regression test for https://crbug.com/40062959.
-IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_P(DocumentPictureInPictureWindowControllerBackendTest,
                        CloseOnPictureInPictureNavigatedToEmptyString) {
   LoadTabAndEnterPictureInPicture(browser());
 
