@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/css/cssom/css_perspective.h"
 
+#include <algorithm>
+
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
@@ -97,11 +99,6 @@ DOMMatrix* CSSPerspective::toMatrix(ExceptionState& exception_state) const {
     return DOMMatrix::Create();
   }
   const CSSNumericValue* numeric = length_->GetAsCSSNumericValue();
-  if (numeric->IsUnitValue() && To<CSSUnitValue>(numeric)->value() < 0) {
-    // Negative values are invalid.
-    // https://github.com/w3c/css-houdini-drafts/issues/420
-    return nullptr;
-  }
   CSSUnitValue* length = numeric->to(CSSPrimitiveValue::UnitType::kPixels);
   if (!length) {
     exception_state.ThrowTypeError(
@@ -109,7 +106,7 @@ DOMMatrix* CSSPerspective::toMatrix(ExceptionState& exception_state) const {
     return nullptr;
   }
   DOMMatrix* matrix = DOMMatrix::Create();
-  matrix->perspectiveSelf(length->value());
+  matrix->perspectiveSelf(std::max(1.0, length->value()));
   return matrix;
 }
 
