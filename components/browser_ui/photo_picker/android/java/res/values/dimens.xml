@@ -6,15 +6,17 @@ found in the LICENSE file.
 -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- go/keep-sorted start group_start_regex=<dimen -->
     <!-- Photo Picker dimensions -->
-    <dimen name="photo_picker_label_gap">10dp</dimen>
-    <dimen name="photo_picker_tile_min_size">100dp</dimen>
-    <dimen name="photo_picker_tile_gap">4dp</dimen>
     <dimen name="photo_picker_grainy_thumbnail_size">12dp</dimen>
+    <dimen name="photo_picker_label_gap">10dp</dimen>
     <dimen name="photo_picker_play_button_size">84dp</dimen>
-    <dimen name="photo_picker_seek_bar_thickness">4dp</dimen>
     <dimen name="photo_picker_seek_bar_edge_radius">2dp</dimen>
+    <dimen name="photo_picker_seek_bar_thickness">4dp</dimen>
     <dimen name="photo_picker_seek_bar_thumb_size">12dp</dimen>
+    <dimen name="photo_picker_tile_gap">4dp</dimen>
+    <dimen name="photo_picker_tile_min_size">100dp</dimen>
     <dimen name="photo_picker_video_duration_offset">16dp</dimen>
     <dimen name="photo_picker_zoom_button_size">56dp</dimen>
+    <!-- go/keep-sorted end -->
 </resources>
