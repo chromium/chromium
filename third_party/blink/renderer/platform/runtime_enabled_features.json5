@@ -5524,10 +5524,6 @@
       },
     },
     {
-      name: "SelectAutofillPopoverPreview",
-      status: "stable",
-    },
-    {
       // The selectedcontentelement attribute is for connecting select elements
       // to arbitrary <selectedcontent> elements.
       // https://github.com/openui/open-ui/issues/1063

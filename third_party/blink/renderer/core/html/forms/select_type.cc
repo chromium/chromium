@@ -612,10 +612,6 @@ void MenuListSelectType::CreateShadowSubtree(ShadowRoot& root) {
   popover_options_slot_ = MakeGarbageCollected<HTMLSlotElement>(doc);
   popover_options_slot_->SetIdAttribute(shadow_element_names::kSelectOptions);
 
-  if (!RuntimeEnabledFeatures::SelectAutofillPopoverPreviewEnabled()) {
-    CreateAutofillPopover(root);
-  }
-
   if (RuntimeEnabledFeatures::FilterableSelectEnabled() &&
       select_->NumDescendantInputs()) {
     // In this case, the shadow root should have a place to slot inputs and
@@ -646,9 +642,7 @@ void MenuListSelectType::CreateShadowSubtree(ShadowRoot& root) {
     popover_->AppendChild(popover_options_slot_);
   }
 
-  if (RuntimeEnabledFeatures::SelectAutofillPopoverPreviewEnabled()) {
-    CreateAutofillPopover(root);
-  }
+  CreateAutofillPopover(root);
 }
 
 void MenuListSelectType::ManuallyAssignSlots() {
@@ -978,10 +972,7 @@ void MenuListSelectType::DidSetSuggestedOption(HTMLOptionElement* option) {
   if (native_popup_is_visible_) {
     popup_->UpdateFromElement(PopupMenu::kBySelectionChange);
   }
-  if (RuntimeEnabledFeatures::SelectAutofillPopoverPreviewEnabled() ||
-      select_->IsAppearanceBase()) {
-    SelectType::DidSetSuggestedOption(option);
-  }
+  SelectType::DidSetSuggestedOption(option);
 }
 
 void MenuListSelectType::SaveLastSelection() {
@@ -1142,12 +1133,6 @@ HTMLOptionElement* MenuListSelectType::OptionToBeShown() const {
   if (auto* option =
           select_->OptionAtListIndex(select_->index_to_select_on_cancel_))
     return option;
-  // In appearance:base-select mode, we don't want to reveal the suggested
-  // option anywhere except in autofill_popover_.
-  if (!RuntimeEnabledFeatures::SelectAutofillPopoverPreviewEnabled() &&
-      select_->suggested_option_ && !select_->IsAppearanceBase()) {
-    return select_->suggested_option_.Get();
-  }
   // TODO(tkent): We should not call OptionToBeShown() in IsMultiple() case.
   if (select_->IsMultiple())
     return select_->SelectedOption();
@@ -1632,18 +1617,7 @@ void ListBoxSelectType::DidBlur() {
 void ListBoxSelectType::DidSetSuggestedOption(HTMLOptionElement* option) {
   if (!select_->GetLayoutObject())
     return;
-  if (RuntimeEnabledFeatures::SelectAutofillPopoverPreviewEnabled()) {
-    SelectType::DidSetSuggestedOption(option);
-    return;
-  }
-  // When ending preview state, don't leave the scroll position at the
-  // previewed element but return to the active selection end if it is
-  // defined or to the first selectable option. See crbug.com/1261689.
-  if (!option)
-    option = ActiveSelectionEnd();
-  if (!option)
-    option = FirstSelectableOption();
-  ScrollToOption(option);
+  SelectType::DidSetSuggestedOption(option);
 }
 
 void ListBoxSelectType::SaveLastSelection() {
@@ -2081,10 +2055,6 @@ void SelectType::Trace(Visitor* visitor) const {
 }
 
 void SelectType::CreateAutofillPopover(ShadowRoot& root) {
-  if (!RuntimeEnabledFeatures::SelectAutofillPopoverPreviewEnabled() &&
-      !select_->IsAppearanceBase()) {
-    return;
-  }
   select_->SetMayBeImplicitAnchor();
   Document& doc = select_->GetDocument();
   autofill_popover_ =

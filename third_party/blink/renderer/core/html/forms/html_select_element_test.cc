@@ -110,35 +110,6 @@ TEST_F(HTMLSelectElementTest, SetAutofillValuePreservesEditedState) {
   EXPECT_EQ(select->UserHasEditedTheField(), true);
 }
 
-TEST_F(HTMLSelectElementTest, MenuListAutofillPreviewDisabledFallback) {
-  ScopedSelectAutofillPopoverPreviewForTest disable_popover_preview(false);
-  SetHtmlInnerHTML(
-      "<!DOCTYPE HTML><select id='sel'>"
-      "<option value='111' selected>111</option>"
-      "<option value='222'>222</option></select>");
-  auto* select = To<HTMLSelectElement>(GetElementById("sel"));
-
-  // MenuList always supports implicit anchor for the ::picker popover.
-  EXPECT_TRUE(select->MayBeImplicitAnchor());
-
-  // When SelectAutofillPopoverPreview is disabled, the shadow DOM popover
-  // preview element is omitted.
-  EXPECT_EQ(nullptr, select->GetAutofillPreviewElement());
-  EXPECT_EQ("111", select->InnerElement().textContent());
-
-  // Setting the suggested value mutates the menulist inner text node directly
-  // via OptionToBeShown().
-  select->SetSuggestedValue("222");
-  ASSERT_TRUE(select->IsPreviewed());
-  EXPECT_EQ("222", select->InnerElement().textContent());
-  EXPECT_EQ("111", select->SelectedOption()->value());
-  EXPECT_EQ(nullptr, select->GetAutofillPreviewElement());
-
-  // Clearing the preview restores the original selection's inner text.
-  select->SetSuggestedValue("");
-  ASSERT_FALSE(select->IsPreviewed());
-  EXPECT_EQ("111", select->InnerElement().textContent());
-}
 
 TEST_F(HTMLSelectElementTest, ListBoxSuggestedOptionScrollTargetGroup) {
   StringBuilder html;
@@ -279,41 +250,6 @@ TEST_F(HTMLSelectElementTest,
   EXPECT_TRUE(scrollable_area->HasVerticalScrollbar());
   EXPECT_NE(nullptr, scrollable_area->VerticalScrollbar());
   EXPECT_EQ(initial_client_width, select->clientWidth());
-}
-
-TEST_F(HTMLSelectElementTest, ListBoxAutofillPreviewDisabledFallback) {
-  ScopedSelectAutofillPopoverPreviewForTest disable_popover_preview(false);
-  StringBuilder html;
-  html.Append("<!DOCTYPE HTML><select id='sel' size='4'>");
-  for (int i = 0; i < 20; ++i) {
-    FormatTo(html, "<option id='o{}' value='v{}'>option {}</option>", i, i, i);
-  }
-  html.Append("</select>");
-  SetHtmlInnerHTML(html.Utf8());
-  test::RunPendingTasks();
-  UpdateAllLifecyclePhasesForTest();
-
-  auto* select = To<HTMLSelectElement>(GetElementById("sel"));
-
-  // Popover preview element is omitted when feature is disabled.
-  EXPECT_EQ(nullptr, select->GetAutofillPreviewElement());
-  EXPECT_EQ(0.0, select->scrollTop());
-
-  // Setting the suggested value scrolls the listbox to the previewed option,
-  // but scrollTop() is masked to 0.0 to prevent scroll disclosure.
-  select->SetSuggestedValue("v15");
-  ASSERT_TRUE(select->IsPreviewed());
-  test::RunPendingTasks();
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(0.0, select->scrollTop());
-
-  // Clearing the preview resets the scroll position to the first selectable
-  // option.
-  select->SetSuggestedValue("");
-  ASSERT_FALSE(select->IsPreviewed());
-  test::RunPendingTasks();
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(0.0, select->scrollTop());
 }
 
 TEST_F(HTMLSelectElementTest, SaveRestoreSelectSingleFormControlState) {

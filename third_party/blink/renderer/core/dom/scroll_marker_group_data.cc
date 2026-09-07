@@ -592,15 +592,6 @@ Element* ScrollMarkerGroupData::ChooseMarkerRecursively() {
     if (targets.empty()) {
       break;
     }
-    // Form controls in autofill preview state may have been scrolled to bring
-    // the previewed value into view. Keep the current selection so that the
-    // suggested value cannot be observed via the selected scroll marker.
-    if (!RuntimeEnabledFeatures::SelectAutofillPopoverPreviewEnabled()) {
-      if (auto* form_control = DynamicTo<HTMLFormControlElement>(scroller);
-          form_control && form_control->IsPreviewed()) {
-        return selected_marker_;
-      }
-    }
     LayoutBox* scroller_box = scroller->GetLayoutBox();
     DCHECK(scroller_box);
     ScrollableArea* scrollable_area = scroller_box->GetScrollableArea();

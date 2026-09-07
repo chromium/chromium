@@ -2714,15 +2714,6 @@ double Element::scrollTop() {
     return 0;
   }
 
-  // Don't disclose scroll position in preview state. See crbug.com/1261689.
-  if (!RuntimeEnabledFeatures::SelectAutofillPopoverPreviewEnabled()) {
-    auto* select_element = DynamicTo<HTMLSelectElement>(this);
-    if (select_element && !select_element->UsesMenuList() &&
-        select_element->IsPreviewed()) {
-      return 0;
-    }
-  }
-
   LayoutBox* box = GetLayoutBoxForScrolling();
   if (!box) {
     return 0;
