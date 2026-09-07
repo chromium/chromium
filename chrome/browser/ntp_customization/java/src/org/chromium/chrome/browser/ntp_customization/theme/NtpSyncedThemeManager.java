@@ -9,6 +9,8 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtil
 import android.content.Context;
 import android.graphics.Bitmap;
 
+import androidx.annotation.ColorInt;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
@@ -126,13 +128,14 @@ public class NtpSyncedThemeManager {
         } else {
             // Case 2: Synced static theme collection image from another device.
             String fileId = NtpCustomizationUtils.getFileName(info.backgroundUrl.getPath());
+            @ColorInt Integer primaryColor = NtpCustomizationUtils.getContentBasedSeedColor(bitmap);
             NtpBackgroundDataThemeCollection themeCollectionData =
                     new NtpBackgroundDataThemeCollection(
                             PlatformType.ANDROID,
                             info,
                             backgroundImageInfo,
                             bitmap,
-                            /* primaryColor= */ null,
+                            primaryColor,
                             /* fileIdHash= */ fileId);
             NtpCustomizationConfigManager.getInstance()
                     .onSyncedThemeCollectionImageChanged(mContext, themeCollectionData);

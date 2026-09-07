@@ -31,6 +31,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -39,10 +40,12 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.CrossDeviceThemeTracker;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataThemeCollection;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.url.JUnitTestGURLs;
@@ -183,6 +186,10 @@ public class NtpSyncedThemeManagerUnitTest {
 
     @Test
     public void testOnCustomBackgroundImageUpdated_syncedStaticThemeCollection() {
+        NtpCustomizationConfigManager configManagerSpy =
+                Mockito.spy(NtpCustomizationConfigManager.getInstance());
+        NtpCustomizationConfigManager.setInstanceForTesting(configManagerSpy);
+
         mNtpSyncedThemeManager = new NtpSyncedThemeManager(mContext, mProfile);
         mNtpSyncedThemeManager.fetchNextThemeCollectionImageAfterDailyRefreshApplied();
 
@@ -205,6 +212,17 @@ public class NtpSyncedThemeManagerUnitTest {
         mBitmapCallbackCaptor.getValue().onResult(bitmap);
 
         RobolectricUtil.runAllBackgroundAndUi();
+
+        ArgumentCaptor<NtpBackgroundDataThemeCollection> themeCollectionCaptor =
+                ArgumentCaptor.forClass(NtpBackgroundDataThemeCollection.class);
+        verify(configManagerSpy)
+                .onSyncedThemeCollectionImageChanged(eq(mContext), themeCollectionCaptor.capture());
+        NtpBackgroundDataThemeCollection themeCollectionData = themeCollectionCaptor.getValue();
+        assertNotNull(themeCollectionData);
+        assertEquals(
+                NtpCustomizationUtils.getContentBasedSeedColor(bitmap),
+                themeCollectionData.getPrimaryColor());
+        assertNotNull(themeCollectionData.getPrimaryColor());
 
         assertEquals(
                 THEME_COLLECTION, NtpCustomizationUtils.getNtpBackgroundTypeFromSharedPreference());
