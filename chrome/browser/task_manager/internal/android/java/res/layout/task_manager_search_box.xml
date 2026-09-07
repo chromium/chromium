@@ -10,7 +10,7 @@ found in the LICENSE file.
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/search_box_container"
     android:layout_width="@dimen/task_manager_search_box_width"
-    android:layout_height="wrap_content"
+    android:layout_height="@dimen/task_manager_search_box_height"
     android:orientation="horizontal"
     android:baselineAligned="false"
     android:gravity="center_vertical"

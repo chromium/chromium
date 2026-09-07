@@ -61,6 +61,7 @@ android_resources("java_resources") {
     "java/res/layout/task_manager_search_box.xml",
     "java/res/layout/task_manager_toolbar.xml",
     "java/res/values/dimens.xml",
+    "java/res/values/styles.xml",
   ]
   deps = [
     "//chrome/app:java_strings_grd",
