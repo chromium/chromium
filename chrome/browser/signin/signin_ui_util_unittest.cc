@@ -197,5 +197,40 @@ TEST_F(SigninUiUtilTest,
   EXPECT_EQ(ordered[2].GetGaiaId(), account2.GetGaiaId());
 }
 
+TEST_F(
+    SigninUiUtilTest,
+    GetOrderedAccountsForDisplayKeepsPrimaryAccountFirstWithPreferredAccount) {
+  AccountInfo account1 =
+      identity_test_env()->MakeAccountAvailable("acc1@gmail.com");
+  AccountInfo account2 =
+      identity_test_env()->MakeAccountAvailable("acc2@gmail.com");
+  AccountInfo account3 =
+      identity_test_env()->MakeAccountAvailable("acc3@gmail.com");
+  signin::SetCookieAccounts(
+      identity_manager(), &test_url_loader_factory_,
+      {{std::string(account1.GetEmail()), account1.GetGaiaId()},
+       {std::string(account2.GetEmail()), account2.GetGaiaId()},
+       {std::string(account3.GetEmail()), account3.GetGaiaId()}});
+
+  // Set account1 as the primary account.
+  identity_test_env()->SetPrimaryAccount(std::string(account1.GetEmail()),
+                                         signin::ConsentLevel::kSignin);
+
+  // Set preferred promo account to account3.
+  signin::AccountPreviewDataService::AccountPreviewPreference pref;
+  pref.gaia_id = account3.GetGaiaId();
+  account_preview_data_service()->SetPreferredAccountForPromo(pref);
+
+  std::vector<AccountInfo> ordered = GetOrderedAccountsForDisplay(
+      identity_manager(), account_preview_data_service(),
+      /*restrict_to_accounts_eligible_for_signin=*/true);
+  ASSERT_EQ(ordered.size(), 3u);
+  // The primary account must remain first, ignoring the promo preferred
+  // account.
+  EXPECT_EQ(ordered[0].GetGaiaId(), account1.GetGaiaId());
+  EXPECT_EQ(ordered[1].GetGaiaId(), account2.GetGaiaId());
+  EXPECT_EQ(ordered[2].GetGaiaId(), account3.GetGaiaId());
+}
+
 }  // namespace
 }  // namespace signin_ui_util

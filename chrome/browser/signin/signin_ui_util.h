@@ -108,12 +108,14 @@ void EnableSyncFromMultiAccountPromo(Profile* profile,
                                      signin_metrics::AccessPoint access_point,
                                      bool is_default_promo_account);
 
-// Returns the list of all accounts that have a token. The default (first
-// account in the cookie jar) account will be the first account in the list. If
-// `restrict_to_accounts_eligible_for_signin` is true, removes the account that
-// are not suitable for signin promos. If `account_preview_data_service` is
-// provided and has a preferred account for promo, that account is placed at the
-// front of the list.
+// Returns the list of all accounts that have a token. If the user is signed
+// in to Chrome, the primary account is always returned first. Otherwise, the
+// default (first account in the cookie jar) account will be the first account
+// in the list. If `restrict_to_accounts_eligible_for_signin` is true, removes
+// accounts that are not suitable for signin promos. If
+// `account_preview_data_service` is provided and has a preferred account for
+// promo, that account is placed at the front of the list when the user is not
+// signed in.
 std::vector<AccountInfo> GetOrderedAccountsForDisplay(
     const signin::IdentityManager* identity_manager,
     const signin::AccountPreviewDataService* account_preview_data_service,

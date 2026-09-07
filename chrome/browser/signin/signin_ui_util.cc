@@ -410,7 +410,8 @@ std::vector<AccountInfo> GetOrderedAccountsForDisplay(
   std::vector<AccountInfo> accounts =
       signin::GetOrderedAccountsForDisplay(identity_manager, prefs);
 
-  if (account_preview_data_service) {
+  if (account_preview_data_service &&
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     std::optional<signin::AccountPreviewDataService::AccountPreviewPreference>
         preferred_preference =
             account_preview_data_service->GetPreferredAccountForPromo();
