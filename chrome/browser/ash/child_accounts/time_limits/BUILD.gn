@@ -48,7 +48,6 @@ static_library("time_limits") {
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/child_accounts/constants",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/browser_window",
     "//chrome/browser/web_applications",
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
