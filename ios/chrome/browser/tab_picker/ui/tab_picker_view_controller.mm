@@ -89,6 +89,7 @@
 - (void)cancelButtonTapped {
   base::UmaHistogramCounts100("IOS.TabPicker.Cancel.SelectedTabs.Count",
                               static_cast<int>(_tabsCount));
+  [self.mutator cancelTabPicker];
   [self.tabPickerHandler hideTabPicker];
 }
 

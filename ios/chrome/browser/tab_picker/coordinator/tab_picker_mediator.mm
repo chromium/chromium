@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/tab_picker/coordinator/tab_picker_mediator.h"
 
+#import <utility>
+
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
@@ -36,7 +38,8 @@
   __weak id<TabPickerConsumer> _tabPickerConsumer;
   /// Parameters used to configure the Tab Picker.
   TabPickerParams* _params;
-  /// Called when the user confirms a new selection of tabs.
+  /// Called when the user confirms a new selection of tabs or dismisses the
+  /// tab picker.
   TabPickerCompletionBlock _tabPickerCompletionBlock;
   /// Stores the unique identifiers of web states that have valid cached APC
   /// (Annotated Page Content) data.
@@ -90,7 +93,7 @@
 }
 
 - (void)disconnect {
-  _tabPickerCompletionBlock = nil;
+  [self cancelTabPicker];
   [super disconnect];
 }
 
@@ -213,9 +216,20 @@
   // Call this even if `selectedEditingItems` is empty as you can remove tabs
   // from tab picker.
   if (_tabPickerCompletionBlock) {
-    TabPickerCompletionBlock completion = _tabPickerCompletionBlock;
-    _tabPickerCompletionBlock = nil;
-    completion(self.selectedEditingItems.allTabs, cachedWebStateIDs);
+    TabPickerCompletionBlock completion =
+        std::exchange(_tabPickerCompletionBlock, nil);
+    completion(TabPickerSelection{
+        .selected_ids = self.selectedEditingItems.allTabs,
+        .cached_ids = cachedWebStateIDs,
+    });
+  }
+}
+
+- (void)cancelTabPicker {
+  if (_tabPickerCompletionBlock) {
+    TabPickerCompletionBlock completion =
+        std::exchange(_tabPickerCompletionBlock, nil);
+    completion(std::nullopt);
   }
 }
 

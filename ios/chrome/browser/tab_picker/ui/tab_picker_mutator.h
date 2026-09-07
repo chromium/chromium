@@ -8,8 +8,11 @@
 // The tab's picker mutator.
 @protocol TabPickerMutator
 
-// Extract and attaches the selected tabs.
+// Extracts and attaches the selected tabs.
 - (void)attachSelectedTabs;
+
+// Cancels the tab picker.
+- (void)cancelTabPicker;
 
 @end
 

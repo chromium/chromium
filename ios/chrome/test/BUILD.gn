@@ -639,6 +639,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/synced_set_up/public:unit_tests",
     "//ios/chrome/browser/synced_set_up/ui:unit_tests",
     "//ios/chrome/browser/tab_insertion/model:unit_tests",
+    "//ios/chrome/browser/tab_picker/coordinator:unit_tests",
     "//ios/chrome/browser/tab_switcher/tab_grid/base_grid/coordinator:unit_tests",
     "//ios/chrome/browser/tab_switcher/tab_grid/base_grid/suggested_actions:unit_tests",
     "//ios/chrome/browser/tab_switcher/tab_strip/coordinator:unit_tests",

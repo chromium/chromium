@@ -86,6 +86,7 @@
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
+  [_mediator cancelTabPicker];
   [self.tabPickerHandler hideTabPicker];
 }
 
