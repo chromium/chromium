@@ -108,6 +108,16 @@ void GmailOtpBackendImpl::OnIncomingOneTimeTokenBackendNotification(
 
   LOG_OTT(log_sink_) << "Tickle received";
 
+  if (!notification.email_delivered_timestamp.is_null()) {
+    base::TimeDelta latency = notification.notification_received_timestamp -
+                              notification.email_delivered_timestamp;
+    if (!latency.is_negative()) {
+      base::UmaHistogramCustomTimes(kEmailSavedToTickleLatencyHistogram,
+                                    latency, base::Milliseconds(10),
+                                    kNotificationExpirationDuration, 50);
+    }
+  }
+
   if (base::TimeTicks::Now() - notification.notification_received_timeticks >
       kNotificationExpirationDuration) {
     LOG_OTT(log_sink_) << "Incoming tickle ignored: expired";

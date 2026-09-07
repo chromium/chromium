@@ -132,13 +132,21 @@ TEST_F(EmailOneTimeTokenFetchCoordinatorTest,
        DeDuplicatesIncomingTicklesWithDifferentTimestamps) {
   const EncryptedMessageReference reference("test_reference");
   const OneTimeTokenBackendNotification notification1(
-      reference, base::Time::FromTimeT(100), base::Time::FromTimeT(100),
-      base::Time::FromTimeT(100), base::Time::FromTimeT(100),
-      base::TimeTicks::Now());
+      /*encrypted_message_reference=*/reference,
+      /*otp_created_timestamp=*/base::Time::FromTimeT(100),
+      /*email_received_timestamp=*/base::Time::FromTimeT(100),
+      /*email_delivered_timestamp=*/base::Time::FromTimeT(100),
+      /*notification_sent_timestamp=*/base::Time::FromTimeT(100),
+      /*notification_received_timestamp=*/base::Time::FromTimeT(100),
+      /*notification_received_timeticks=*/base::TimeTicks::Now());
   const OneTimeTokenBackendNotification notification2(
-      reference, base::Time::FromTimeT(200), base::Time::FromTimeT(200),
-      base::Time::FromTimeT(200), base::Time::FromTimeT(200),
-      base::TimeTicks::Now());
+      /*encrypted_message_reference=*/reference,
+      /*otp_created_timestamp=*/base::Time::FromTimeT(200),
+      /*email_received_timestamp=*/base::Time::FromTimeT(200),
+      /*email_delivered_timestamp=*/base::Time::FromTimeT(200),
+      /*notification_sent_timestamp=*/base::Time::FromTimeT(200),
+      /*notification_received_timestamp=*/base::Time::FromTimeT(200),
+      /*notification_received_timeticks=*/base::TimeTicks::Now());
 
   // Only 1 request lifecycle should be started.
   EXPECT_CALL(

@@ -45,13 +45,15 @@ class MockGmailOtpBackend : public one_time_tokens::GmailOtpBackend {
   MOCK_METHOD(bool, HasPendingRequests, (), (const, override));
 };
 
-MATCHER_P3(OneTimeTokenNotificationMatches,
+MATCHER_P4(OneTimeTokenNotificationMatches,
            expected_otp_created_timestamp,
            expected_email_received_timestamp,
+           expected_email_delivered_timestamp,
            expected_message_reference,
            "") {
   return arg.otp_created_timestamp == expected_otp_created_timestamp &&
          arg.email_received_timestamp == expected_email_received_timestamp &&
+         arg.email_delivered_timestamp == expected_email_delivered_timestamp &&
          arg.encrypted_message_reference.value() == expected_message_reference;
 }
 
@@ -66,25 +68,34 @@ TEST_F(OneTimeTokenSharingHandlerTest, OnMessageCallsBackendAndRunsCallback) {
   auto handler =
       std::make_unique<OneTimeTokenSharingHandler>(&mock_gmail_otp_backend);
 
+  constexpr int64_t kOtpCreatedSeconds = 123456789;
+  constexpr int64_t kEmailReceivedSeconds = 987654321;
+  constexpr int64_t kEmailDeliveredSeconds = 987654330;
+
   std::string expected_message_reference = "test_message_reference";
   base::Time expected_otp_created_timestamp =
-      base::Time::UnixEpoch() + base::Seconds(123456789);
+      base::Time::UnixEpoch() + base::Seconds(kOtpCreatedSeconds);
   base::Time expected_email_received_timestamp =
-      base::Time::UnixEpoch() + base::Seconds(987654321);
+      base::Time::UnixEpoch() + base::Seconds(kEmailReceivedSeconds);
+  base::Time expected_email_delivered_timestamp =
+      base::Time::UnixEpoch() + base::Seconds(kEmailDeliveredSeconds);
 
   components_sharing_message::SharingMessage message;
   components_sharing_message::GmailMessageReference* gmail_otp =
       message.mutable_one_time_token_backend_notification()
           ->mutable_gmail_one_time_password();
   gmail_otp->set_encrypted_message_reference(expected_message_reference);
-  gmail_otp->mutable_otp_created_timestamp()->set_seconds(123456789);
-  gmail_otp->mutable_email_received_timestamp()->set_seconds(987654321);
+  gmail_otp->mutable_otp_created_timestamp()->set_seconds(kOtpCreatedSeconds);
+  gmail_otp->mutable_email_received_timestamp()->set_seconds(
+      kEmailReceivedSeconds);
+  gmail_otp->mutable_email_delivered_timestamp()->set_seconds(
+      kEmailDeliveredSeconds);
 
   EXPECT_CALL(
       mock_gmail_otp_backend,
       OnIncomingOneTimeTokenBackendNotification(OneTimeTokenNotificationMatches(
           expected_otp_created_timestamp, expected_email_received_timestamp,
-          expected_message_reference)));
+          expected_email_delivered_timestamp, expected_message_reference)));
 
   base::MockCallback<SharingMessageHandler::DoneCallback> done_callback;
   EXPECT_CALL(done_callback, Run(_));

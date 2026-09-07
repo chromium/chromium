@@ -614,6 +614,7 @@ TEST_F(GmailOtpBackendImplTest, ExpiredOnArrivalLogsTickleArrivalMetric) {
       EncryptedMessageReference("ref1"),
       /*otp_created_timestamp=*/base::Time::Now(),
       /*email_received_timestamp=*/base::Time::Now(),
+      /*email_delivered_timestamp=*/base::Time(),
       /*notification_sent_timestamp=*/base::Time::Now(),
       /*notification_received_timestamp=*/base::Time::Now(),
       /*notification_received_timeticks=*/old_timestamp);
@@ -636,6 +637,7 @@ TEST_F(GmailOtpBackendImplTest, ExpiredOnArrival_NotLoggedIfFeatureDisabled) {
       EncryptedMessageReference("ref1"),
       /*otp_created_timestamp=*/base::Time::Now(),
       /*email_received_timestamp=*/base::Time::Now(),
+      /*email_delivered_timestamp=*/base::Time(),
       /*notification_sent_timestamp=*/base::Time::Now(),
       /*notification_received_timestamp=*/base::Time::Now(),
       /*notification_received_timeticks=*/old_timestamp);
@@ -643,6 +645,63 @@ TEST_F(GmailOtpBackendImplTest, ExpiredOnArrival_NotLoggedIfFeatureDisabled) {
   backend_.OnIncomingOneTimeTokenBackendNotification(notification);
 
   histogram_tester.ExpectTotalCount(kTickleArrivalHistogram, 0);
+}
+
+TEST_F(GmailOtpBackendImplTest,
+       EmailSavedToTickleLatency_LoggedUponTickleArrival) {
+  base::HistogramTester histogram_tester;
+  base::Time now = base::Time::Now();
+  base::Time email_delivered = now - base::Milliseconds(500);
+  OneTimeTokenBackendNotification notification(
+      EncryptedMessageReference("ref1"),
+      /*otp_created_timestamp=*/now,
+      /*email_received_timestamp=*/now,
+      /*email_delivered_timestamp=*/email_delivered,
+      /*notification_sent_timestamp=*/now,
+      /*notification_received_timestamp=*/now,
+      /*notification_received_timeticks=*/base::TimeTicks::Now());
+
+  backend_.OnIncomingOneTimeTokenBackendNotification(notification);
+
+  histogram_tester.ExpectUniqueTimeSample(kEmailSavedToTickleLatencyHistogram,
+                                          base::Milliseconds(500), 1);
+}
+
+TEST_F(GmailOtpBackendImplTest,
+       EmailSavedToTickleLatency_NotLoggedIfDeliveredTimestampMissing) {
+  base::HistogramTester histogram_tester;
+  base::Time now = base::Time::Now();
+  OneTimeTokenBackendNotification notification(
+      EncryptedMessageReference("ref1"),
+      /*otp_created_timestamp=*/now,
+      /*email_received_timestamp=*/now,
+      /*email_delivered_timestamp=*/base::Time(),
+      /*notification_sent_timestamp=*/now,
+      /*notification_received_timestamp=*/now,
+      /*notification_received_timeticks=*/base::TimeTicks::Now());
+
+  backend_.OnIncomingOneTimeTokenBackendNotification(notification);
+
+  histogram_tester.ExpectTotalCount(kEmailSavedToTickleLatencyHistogram, 0);
+}
+
+TEST_F(GmailOtpBackendImplTest,
+       EmailSavedToTickleLatency_NotLoggedIfNegativeLatency) {
+  base::HistogramTester histogram_tester;
+  base::Time now = base::Time::Now();
+  base::Time email_delivered_future = now + base::Seconds(1);
+  OneTimeTokenBackendNotification notification(
+      EncryptedMessageReference("ref1"),
+      /*otp_created_timestamp=*/now,
+      /*email_received_timestamp=*/now,
+      /*email_delivered_timestamp=*/email_delivered_future,
+      /*notification_sent_timestamp=*/now,
+      /*notification_received_timestamp=*/now,
+      /*notification_received_timeticks=*/base::TimeTicks::Now());
+
+  backend_.OnIncomingOneTimeTokenBackendNotification(notification);
+
+  histogram_tester.ExpectTotalCount(kEmailSavedToTickleLatencyHistogram, 0);
 }
 
 }  // namespace one_time_tokens

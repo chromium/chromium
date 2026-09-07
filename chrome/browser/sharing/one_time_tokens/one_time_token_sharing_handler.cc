@@ -67,6 +67,9 @@ OneTimeTokenSharingHandler::HandleOneTimeTokenNotification(
           /*email_received_timestamp=*/
           FromSharingProtoTimestamp(
               gmail_message_reference.email_received_timestamp()),
+          /*email_delivered_timestamp=*/
+          FromSharingProtoTimestamp(
+              gmail_message_reference.email_delivered_timestamp()),
           /*notification_sent_timestamp=*/
           FromSharingProtoTimestamp(notification.notification_sent_timestamp()),
           // `notification_received_timestamp` and
