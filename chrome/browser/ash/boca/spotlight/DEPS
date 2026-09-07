@@ -1,4 +1,0 @@
-specific_include_rules = {
-  "spotlight_crd_manager_impl_browsertest\\.cc": [
-  ],
-}
