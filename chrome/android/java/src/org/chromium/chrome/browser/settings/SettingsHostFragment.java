@@ -426,22 +426,6 @@ public class SettingsHostFragment extends Fragment
     }
 
     /**
-     * Returns the enclosing {@link SettingsHostFragment} containing the given fragment, or null if
-     * the fragment is not hosted by a SettingsHostFragment. Works even if the fragment is not shown
-     * (e.g. Chrome is in the background).
-     */
-    public static @Nullable SettingsHostFragment get(@Nullable Fragment fragment) {
-        Fragment current = fragment;
-        while (current != null) {
-            if (current instanceof SettingsHostFragment settingsHostFragment) {
-                return settingsHostFragment;
-            }
-            current = current.getParentFragment();
-        }
-        return null;
-    }
-
-    /**
      * Shows a fragment inside the settings native page container or detail pane. Does nothing if
      * the settings tab is not open (and returns false).
      *
@@ -527,17 +511,15 @@ public class SettingsHostFragment extends Fragment
                 activeFragment instanceof MultiColumnSettings multiColumnSettings
                         ? multiColumnSettings.getChildFragmentManager()
                         : getChildFragmentManager();
-        // Defer popping or navigating back until onStart() if fragment state has already been
-        // saved,
-        // preventing IllegalStateException from performing transactions while stopped or
-        // backgrounded.
-        if (fragmentManager.isStateSaved()) {
-            ++mPendingPopBackCount;
-        } else if (fragmentManager.getBackStackEntryCount() == 0) {
+        if (fragmentManager.getBackStackEntryCount() == 0) {
             // Show the main settings UI (which is represented by null).
             showFragment(null, /* addToBackStack= */ false, /* tag= */ null);
         } else {
-            fragmentManager.popBackStack();
+            if (fragmentManager.isStateSaved()) {
+                ++mPendingPopBackCount;
+            } else {
+                fragmentManager.popBackStack();
+            }
         }
     }
 
