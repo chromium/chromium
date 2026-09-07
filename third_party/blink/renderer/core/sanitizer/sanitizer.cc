@@ -1112,10 +1112,10 @@ Sanitizer::Action Sanitizer::SanitizeSingleNode(Node* node, Mode safe) const {
 }
 
 bool Sanitizer::setFrom(const SanitizerConfig* config,
-                        bool allowCommentsAndDataAttributes) {
+                        bool allowCommentsPIsAndDataAttributes) {
   // https://wicg.github.io/sanitizer-api/#configuration-set
   //
-  // Since out internal representation is quite different from the external
+  // Since our internal representation is quite different from the external
   // one, the structure here is quite different from the spec text.
 
   // This method assumes a newly constructed instance.
@@ -1219,10 +1219,10 @@ bool Sanitizer::setFrom(const SanitizerConfig* config,
           remove_processing_instructions_->insert(target).is_new_entry;
     }
   }
-  setComments(config->getCommentsOr(allowCommentsAndDataAttributes));
+  setComments(config->getCommentsOr(allowCommentsPIsAndDataAttributes));
   if (allow_attrs_ || config->hasDataAttributes()) {
     setDataAttributes(
-        config->getDataAttributesOr(allowCommentsAndDataAttributes));
+        config->getDataAttributesOr(allowCommentsPIsAndDataAttributes));
   }
 
   // https://wicg.github.io/sanitizer-api/#sanitizer-canonicalize-the-configuration,
@@ -1233,8 +1233,15 @@ bool Sanitizer::setFrom(const SanitizerConfig* config,
   if (!config->hasAttributes() && !config->hasRemoveAttributes()) {
     remove_attrs_ = std::make_unique<SanitizerNameSet>();
   }
+  // step 3:
   if (!allow_processing_instructions_ && !remove_processing_instructions_) {
-    remove_processing_instructions_ = std::make_unique<HashSet<AtomicString>>();
+    if (allowCommentsPIsAndDataAttributes) {
+      remove_processing_instructions_ =
+          std::make_unique<HashSet<AtomicString>>();
+    } else {
+      allow_processing_instructions_ =
+          std::make_unique<HashSet<AtomicString>>();
+    }
   }
 
   return all_new_entries && isValid();
