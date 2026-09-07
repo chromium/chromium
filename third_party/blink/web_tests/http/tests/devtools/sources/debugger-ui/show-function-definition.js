@@ -51,19 +51,20 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
       var consoleView = Console.ConsoleView.ConsoleView.instance();
       consoleView.prompt.appendCommand('jumpToMe', true);
 
-      function onConsoleMessagesReceived() {
-        TestRunner.deprecatedRunAfterPendingDispatches(function() {
-          var messages = [];
-          ConsoleTestRunner.disableConsoleViewport();
-          var viewMessages = Console.ConsoleView.ConsoleView.instance().visibleViewMessages;
-          for (var i = 0; i < viewMessages.length; ++i) {
-            var uiMessage = viewMessages[i];
-            var element = uiMessage.contentElement();
-            messages.push(element.deepTextContent());
-          }
-          TestRunner.addResult(messages.join('\n'));
-          next();
-        });
+      async function onConsoleMessagesReceived() {
+        ConsoleTestRunner.disableConsoleViewport();
+        await ConsoleTestRunner.waitForPendingViewportUpdates();
+        await UI.Widget.Widget.allUpdatesComplete;
+        var messages = [];
+        var viewMessages =
+            Console.ConsoleView.ConsoleView.instance().visibleViewMessages;
+        for (var i = 0; i < viewMessages.length; ++i) {
+          var uiMessage = viewMessages[i];
+          var element = uiMessage.contentElement();
+          messages.push(element.deepTextContent());
+        }
+        TestRunner.addResult(messages.join('\n'));
+        next();
       }
     }
   ]);

@@ -74,10 +74,8 @@ import * as Main from 'devtools/entrypoints/main/main.js';
   SDK.ConsoleModel.ConsoleModel.requestClearMessages(Main.MainImpl.MainImpl.universeForTest.targetManager);
   TestRunner.addResult('');
 
-  TestRunner.deprecatedRunAfterPendingDispatches(async () => {
-    await dumpConsoleMessagesSorted();
-    TestRunner.completeTest();
-  });
+  await dumpConsoleMessagesSorted();
+  TestRunner.completeTest();
 
   async function dumpConsoleMessagesSorted() {
     const messages = await ConsoleTestRunner.dumpConsoleMessagesIntoArray(false, false, ConsoleTestRunner.prepareConsoleMessageTextTrimmed);

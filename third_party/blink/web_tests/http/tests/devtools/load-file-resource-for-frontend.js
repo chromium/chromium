@@ -21,7 +21,7 @@ import * as Host from 'devtools/core/host/host.js';
       else {
         TestRunner.addResult('Content: ' + content);
       }
-      TestRunner.deprecatedRunAfterPendingDispatches(next);
+      next();
     }
   }
 

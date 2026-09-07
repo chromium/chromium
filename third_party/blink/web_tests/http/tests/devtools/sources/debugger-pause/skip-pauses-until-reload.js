@@ -53,7 +53,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     testRunner.logToStderr('setUpEventBreakpoints');
     TestRunner.addResult('Set up Event breakpoints.');
     SourcesTestRunner.setEventListenerBreakpoint('listener:click', true);
-    TestRunner.deprecatedRunAfterPendingDispatches(didSetUp);
+    didSetUp();
   }
 
   function didSetUp() {

@@ -48,7 +48,7 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
   function step2(callFrames) {
     var pane = SourcesModule.CallStackSidebarPane.CallStackSidebarPane.instance();
     pane.selectNextCallFrameOnStack();
-    TestRunner.deprecatedRunAfterPendingDispatches(step3);
+    step3();
   }
 
   function step3() {

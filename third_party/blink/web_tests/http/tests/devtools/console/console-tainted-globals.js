@@ -124,7 +124,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
   `);
 
   TestRunner.runTestSuite([
-    function evaluateInConsole(next) {
+    async function evaluateInConsole(next) {
       var expressions = [
         'testOverriddenArrayPushAndMathMax()',
         'testOverriddenConstructorName()',
@@ -144,15 +144,10 @@ import {ConsoleTestRunner} from 'console_test_runner';
         'testOverriddenToString(new Number(1), false)',
       ];
 
-      function iterate() {
-        var expr = expressions.shift();
-        if (!expr) {
-          TestRunner.deprecatedRunAfterPendingDispatches(next);
-          return;
-        }
-        ConsoleTestRunner.evaluateInConsole(expr, iterate);
+      for (const expr of expressions) {
+        await ConsoleTestRunner.evaluateInConsolePromise(expr);
       }
-      iterate();
+      next();
     },
 
     async function testRuntimeAgentCallFunctionOn(next) {

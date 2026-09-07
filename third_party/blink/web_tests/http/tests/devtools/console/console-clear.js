@@ -21,10 +21,8 @@ import * as Console from 'devtools/panels/console/console.js';
   await ConsoleTestRunner.dumpConsoleMessages();
 
   Console.ConsoleView.ConsoleView.instance().clearConsole();
-  TestRunner.deprecatedRunAfterPendingDispatches(callback);
-  async function callback() {
-    TestRunner.addResult("=== After clear ===");
-    await ConsoleTestRunner.dumpConsoleMessages();
-    TestRunner.completeTest();
-  }
+  await ConsoleTestRunner.waitForPendingViewportUpdates();
+  TestRunner.addResult('=== After clear ===');
+  await ConsoleTestRunner.dumpConsoleMessages();
+  TestRunner.completeTest();
 })();

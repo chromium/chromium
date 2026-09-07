@@ -48,8 +48,13 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
     SourcesTestRunner.startDebuggerTest(step2);
   }
 
-  function step2() {
-    TestRunner.deprecatedRunAfterPendingDispatches(step3);
+  async function step2() {
+    await Promise.all([
+      TestRunner.waitForUISourceCode('dynamic-script.js'),
+      TestRunner.waitForUISourceCode('evalSourceURL.js'),
+      TestRunner.waitForUISourceCode('scriptElementContentSourceURL.js'),
+    ]);
+    step3();
   }
 
   function step3() {

@@ -23,10 +23,11 @@ import * as Main from 'devtools/entrypoints/main/main.js';
   var frameworkRegexString = '/framework\\.js$';
   Main.MainImpl.MainImpl.universeForTest.settings.settingForTest('skip-stack-frames-pattern').set(frameworkRegexString);
 
+  const messagesPromise =
+      ConsoleTestRunner.waitUntilNthMessageReceivedPromise(2);
   TestRunner.evaluateInPage('runLogs()');
-  TestRunner.deprecatedRunAfterPendingDispatches(callback);
-  async function callback() {
-    await ConsoleTestRunner.dumpConsoleMessages();
-    TestRunner.completeTest();
-  }
+  await messagesPromise;
+  await ConsoleTestRunner.waitForPendingViewportUpdates();
+  await ConsoleTestRunner.dumpConsoleMessages();
+  TestRunner.completeTest();
 })();

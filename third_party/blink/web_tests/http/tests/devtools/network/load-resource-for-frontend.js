@@ -30,7 +30,7 @@ import * as Host from 'devtools/core/host/host.js';
       TestRunner.addResult('Logged headers: ' + headersArray.join(', '));
       TestRunner.addResult('Content: "' + content + '"');
 
-      TestRunner.deprecatedRunAfterPendingDispatches(next);
+      next();
     }
   }
 

@@ -14,35 +14,19 @@ import * as Console from 'devtools/panels/console/console.js';
 
 
   TestRunner.runTestSuite([
-    function testLastResult(next) {
-      ConsoleTestRunner.evaluateInConsole('1+1', step1);
-
-      function step1() {
-        evaluateLastResultAndDump(next);
-      }
+    async function testLastResult(next) {
+      await ConsoleTestRunner.evaluateInConsolePromise('1+1');
+      await ConsoleTestRunner.evaluateInConsolePromise('$_');
+      await ConsoleTestRunner.dumpConsoleMessages();
+      next();
     },
-    function testLastResultAfterConsoleClear(next) {
-      ConsoleTestRunner.evaluateInConsole('1+1', step1);
-
-      function step1() {
-        Console.ConsoleView.ConsoleView.instance().clearConsole();
-        TestRunner.deprecatedRunAfterPendingDispatches(step2);
-      }
-
-      function step2() {
-        evaluateLastResultAndDump(next);
-      }
+    async function testLastResultAfterConsoleClear(next) {
+      await ConsoleTestRunner.evaluateInConsolePromise('1+1');
+      Console.ConsoleView.ConsoleView.instance().clearConsole();
+      await ConsoleTestRunner.waitForPendingViewportUpdates();
+      await ConsoleTestRunner.evaluateInConsolePromise('$_');
+      await ConsoleTestRunner.dumpConsoleMessages();
+      next();
     }
   ]);
-
-  function evaluateLastResultAndDump(callback) {
-    ConsoleTestRunner.evaluateInConsole('$_', didEvaluate);
-
-    async function didEvaluate() {
-      await ConsoleTestRunner.dumpConsoleMessages();
-
-      if (callback)
-        callback();
-    }
-  }
 })();

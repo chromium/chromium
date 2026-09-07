@@ -63,11 +63,10 @@ import {SourcesTestRunner} from 'sources_test_runner';
         'globalObj.func()', dumpConsoleMessages);
   }
 
-  function dumpConsoleMessages() {
-    TestRunner.deprecatedRunAfterPendingDispatches(async () => {
-      TestRunner.addResult('Dumping console messages:\n');
-      await ConsoleTestRunner.dumpConsoleMessages();
-      SourcesTestRunner.completeDebuggerTest();
-    });
+  async function dumpConsoleMessages() {
+    TestRunner.addResult('Dumping console messages:\n');
+    await ConsoleTestRunner.waitForPendingViewportUpdates();
+    await ConsoleTestRunner.dumpConsoleMessages();
+    SourcesTestRunner.completeDebuggerTest();
   }
 })();

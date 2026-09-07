@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
+import * as ElementsModule from 'devtools/panels/elements/elements.js';
 import {ElementsTestRunner} from 'elements_test_runner';
+import {TestRunner} from 'test_runner';
 
 (async function() {
   TestRunner.addResult(
@@ -34,7 +35,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
       }
   `);
 
-  TestRunner.evaluateInPage('createDynamicElements()', step1);
+  await TestRunner.evaluateInPagePromise('createDynamicElements()');
 
   function selectedNodeId() {
     var selectedElement = ElementsTestRunner.firstElementsTreeOutline().selectedTreeElement;
@@ -43,42 +44,59 @@ import {ElementsTestRunner} from 'elements_test_runner';
     return selectedElement.node().getAttribute('id');
   }
 
-  function step1() {
-    ConsoleTestRunner.evaluateInConsole('inspect(el1)', step2);
+  function waitForSelectedNode(predicate) {
+    const treeOutline = ElementsTestRunner.firstElementsTreeOutline();
+    const currentNode = treeOutline.selectedDOMNode();
+    if (currentNode && predicate(currentNode)) {
+      return Promise.resolve(currentNode);
+    }
+    return new Promise(resolve => {
+      function listener(event) {
+        const node = event.data.node;
+        if (node && predicate(node)) {
+          treeOutline.removeEventListener(
+              ElementsModule.ElementsTreeOutline.ElementsTreeOutline.Events
+                  .SelectedNodeChanged,
+              listener);
+          resolve(node);
+        }
+      }
+      treeOutline.addEventListener(
+          ElementsModule.ElementsTreeOutline.ElementsTreeOutline.Events
+              .SelectedNodeChanged,
+          listener);
+    });
   }
 
-  function step2() {
-    TestRunner.deprecatedRunAfterPendingDispatches(step3);
-  }
+  let selectedPromise =
+      waitForSelectedNode(node => node.getAttribute('id') === 'main-frame-div');
+  await ConsoleTestRunner.evaluateInConsolePromise('inspect(el1)');
+  await selectedPromise;
+  ElementsTestRunner.firstElementsTreeOutline().runPendingUpdates();
+  let id = selectedNodeId();
+  if (id === 'main-frame-div')
+    TestRunner.addResult('PASS: selected node  with id \'' + id + '\'');
+  else
+    TestRunner.addResult('FAIL: unexpected selection ' + id);
 
-  function step3() {
-    var id = selectedNodeId();
-    if (id === 'main-frame-div')
-      TestRunner.addResult('PASS: selected node  with id \'' + id + '\'');
-    else
-      TestRunner.addResult('FAIL: unexpected selection ' + id);
-    // Frame was changed to the iframe. Moving back to the top frame.
-    ConsoleTestRunner.evaluateInConsole('inspect(window.frameElement.parentElement)', step4);
-  }
+  // Frame was changed to the iframe. Moving back to the top frame.
+  selectedPromise = waitForSelectedNode(node => node.nodeName() === 'BODY');
+  await ConsoleTestRunner.evaluateInConsolePromise(
+      'inspect(window.frameElement.parentElement)',
+      /* dontForceMainContext= */ true);
+  await selectedPromise;
+  ElementsTestRunner.firstElementsTreeOutline().runPendingUpdates();
 
-  function step4() {
-    TestRunner.deprecatedRunAfterPendingDispatches(step5);
-  }
+  selectedPromise =
+      waitForSelectedNode(node => node.getAttribute('id') === 'iframe-div');
+  await ConsoleTestRunner.evaluateInConsolePromise('inspect(el2)');
+  await selectedPromise;
+  ElementsTestRunner.firstElementsTreeOutline().runPendingUpdates();
+  id = selectedNodeId();
+  if (id === 'iframe-div')
+    TestRunner.addResult('PASS: selected node  with id \'' + id + '\'');
+  else
+    TestRunner.addResult('FAIL: unexpected selection ' + id);
 
-  function step5() {
-    ConsoleTestRunner.evaluateInConsole('inspect(el2)', step6);
-  }
-
-  function step6() {
-    TestRunner.deprecatedRunAfterPendingDispatches(step7);
-  }
-
-  function step7() {
-    var id = selectedNodeId();
-    if (id === 'iframe-div')
-      TestRunner.addResult('PASS: selected node  with id \'' + id + '\'');
-    else
-      TestRunner.addResult('FAIL: unexpected selection ' + id);
-    TestRunner.completeTest();
-  }
+  TestRunner.completeTest();
 })();

@@ -14,34 +14,31 @@ import * as Main from 'devtools/entrypoints/main/main.js';
   TestRunner.addResult(
       `Tests that XMLHttpRequest Logging works when Enabled and doesn't show logs when Disabled for asynchronous XHRs.\n`);
 
-  step1();
-
-  function makeRequest(callback) {
-    NetworkTestRunner.makeSimpleXHR('GET', 'resources/xhr-exists.html', true, callback);
+  function makeRequest() {
+    return new Promise(resolve => NetworkTestRunner.makeSimpleXHR(
+                           'GET', 'resources/xhr-exists.html', true, resolve));
   }
 
-  function step1() {
-    Main.MainImpl.MainImpl.universeForTest.settings.settingForTest('monitoring-xhr-enabled').set(true);
-    makeRequest(() => {
-      TestRunner.deprecatedRunAfterPendingDispatches(async () => {
-        TestRunner.addResult('XHR with logging enabled: ');
-        // Sorting console messages to prevent flakiness.
-        await ConsoleTestRunner.waitForPendingViewportUpdates();
-        TestRunner.addResults((await ConsoleTestRunner.dumpConsoleMessagesIntoArray()).sort());
-        Console.ConsoleView.ConsoleView.instance().clearConsole();
-        step2();
-      });
-    });
-  }
+  Main.MainImpl.MainImpl.universeForTest.settings
+      .settingForTest('monitoring-xhr-enabled')
+      .set(true);
+  let messagesPromise = ConsoleTestRunner.waitUntilNthMessageReceivedPromise(2);
+  await makeRequest();
+  await messagesPromise;
+  TestRunner.addResult('XHR with logging enabled: ');
+  // Sorting console messages to prevent flakiness.
+  await ConsoleTestRunner.waitForPendingViewportUpdates();
+  TestRunner.addResults(
+      (await ConsoleTestRunner.dumpConsoleMessagesIntoArray()).sort());
+  Console.ConsoleView.ConsoleView.instance().clearConsole();
 
-  function step2() {
-    Main.MainImpl.MainImpl.universeForTest.settings.settingForTest('monitoring-xhr-enabled').set(false);
-    makeRequest(() => {
-      TestRunner.deprecatedRunAfterPendingDispatches(async () => {
-        TestRunner.addResult('XHR with logging disabled: ');
-        await ConsoleTestRunner.dumpConsoleMessages();
-        TestRunner.completeTest();
-      });
-    });
-  }
+  Main.MainImpl.MainImpl.universeForTest.settings
+      .settingForTest('monitoring-xhr-enabled')
+      .set(false);
+  messagesPromise = ConsoleTestRunner.waitUntilMessageReceivedPromise();
+  await makeRequest();
+  await messagesPromise;
+  TestRunner.addResult('XHR with logging disabled: ');
+  await ConsoleTestRunner.dumpConsoleMessages();
+  TestRunner.completeTest();
 })();

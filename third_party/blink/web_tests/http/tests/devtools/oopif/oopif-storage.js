@@ -14,18 +14,35 @@ import * as Application from 'devtools/panels/application/application.js';
   await TestRunner.navigatePromise('resources/page.html');
   await TestRunner.showPanel('resources');
 
-  TestRunner.deprecatedRunAfterPendingDispatches(function() {
-    const localStorageTree = Application.ResourcesPanel.ResourcesPanel.instance().sidebar.localStorageListTreeElement;
-    localStorageTree.expandRecursively(1000);
-    const sessionStorageTree = Application.ResourcesPanel.ResourcesPanel.instance().sidebar.sessionStorageListTreeElement;
-    sessionStorageTree.expandRecursively(1000);
+  const localStorageTree = Application.ResourcesPanel.ResourcesPanel.instance()
+                               .sidebar.localStorageListTreeElement;
+  const sessionStorageTree =
+      Application.ResourcesPanel.ResourcesPanel.instance()
+          .sidebar.sessionStorageListTreeElement;
 
-    TestRunner.addResult('Local Storage:');
-    TestRunner.addResult(localStorageTree.childrenListElement.deepTextContent());
+  if (localStorageTree.childCount() < 2 ||
+      sessionStorageTree.childCount() < 2) {
+    await new Promise(resolve => {
+      const check = () => {
+        if (localStorageTree.childCount() >= 2 &&
+            sessionStorageTree.childCount() >= 2) {
+          resolve();
+        }
+      };
+      TestRunner.addSniffer(localStorageTree, 'appendChild', check, true);
+      TestRunner.addSniffer(sessionStorageTree, 'appendChild', check, true);
+    });
+  }
 
-    TestRunner.addResult('Session Storage:');
-    TestRunner.addResult(sessionStorageTree.childrenListElement.deepTextContent());
+  localStorageTree.expandRecursively(1000);
+  sessionStorageTree.expandRecursively(1000);
 
-    TestRunner.completeTest();
-  });
+  TestRunner.addResult('Local Storage:');
+  TestRunner.addResult(localStorageTree.childrenListElement.deepTextContent());
+
+  TestRunner.addResult('Session Storage:');
+  TestRunner.addResult(
+      sessionStorageTree.childrenListElement.deepTextContent());
+
+  TestRunner.completeTest();
 })();

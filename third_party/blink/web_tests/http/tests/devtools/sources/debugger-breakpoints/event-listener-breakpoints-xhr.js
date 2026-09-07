@@ -90,6 +90,6 @@ import {SourcesTestRunner} from 'sources_test_runner';
     SourcesTestRunner.setEventListenerBreakpoint('listener:loadend', false, 'xmlhttprequest');
     SourcesTestRunner.setEventListenerBreakpoint('listener:progress', false, 'xmlhttprequest');
     SourcesTestRunner.setEventListenerBreakpoint('listener:readystatechange', false, 'xmlhttprequest');
-    TestRunner.deprecatedRunAfterPendingDispatches(SourcesTestRunner.completeDebuggerTest.bind(SourcesTestRunner));
+    SourcesTestRunner.completeDebuggerTest();
   }
 })();

@@ -44,7 +44,7 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
     TestRunner.addResult('Evaluated script on the top frame: ' + result);
     var pane = SourcesModule.CallStackSidebarPane.CallStackSidebarPane.instance();
     pane.selectNextCallFrameOnStack();
-    TestRunner.deprecatedRunAfterPendingDispatches(step4);
+    step4();
   }
 
   function step4() {

@@ -19,12 +19,11 @@ import {TestRunner} from 'test_runner';
   }
 
       TestRunner.expandSidebar =
-          function(panelName, callback) {
+          async function(panelName, callback) {
     var sidebar = TestRunner._extensionSidebar(panelName);
-    TestRunner.deprecatedRunAfterPendingDispatches(function() {
-      sidebar.revealView();
-      callback();
-    });
+    await UI.Widget.Widget.allUpdatesComplete;
+    sidebar.revealView();
+    callback();
   }
 
           TestRunner._extensionSidebar =

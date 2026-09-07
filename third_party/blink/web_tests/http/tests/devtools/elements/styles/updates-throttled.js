@@ -20,13 +20,14 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   var rebuildCount = 0;
 
   ElementsTestRunner.selectNodeAndWaitForStyles('inspected', selectCallback);
-  function selectCallback() {
+  async function selectCallback() {
     TestRunner.addSniffer(Elements.StylesSidebarPane.StylesSidebarPane.prototype, 'innerRebuildUpdate', sniffRebuild, true);
     var stylesPane = Elements.ElementsPanel.ElementsPanel.instance().stylesWidget;
     for (var i = 0; i < UPDATE_COUNT; ++i)
       UI.Context.Context.instance().setFlavor(SDK.DOMModel.DOMModel.DOMNode, stylesPane.node());
 
-    TestRunner.deprecatedRunAfterPendingDispatches(completeCallback);
+    await UI.Widget.Widget.allUpdatesComplete;
+    completeCallback();
   }
 
   function completeCallback() {

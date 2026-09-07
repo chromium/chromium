@@ -23,11 +23,29 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
       TestRunner.addResult('Target added: ' + target.name() + '; type: ' + target.type());
       if (target.type() === SDK.Target.Type.ServiceWorker) {
         var serviceWorkerManager = SDK.TargetManager.TargetManager.instance().primaryPageTarget().model(SDK.ServiceWorkerManager.ServiceWorkerManager);
-        // Allow agents to do rountrips.
-        TestRunner.deprecatedRunAfterPendingDispatches(function() {
-          for (var registration of serviceWorkerManager.registrations().values())
-            serviceWorkerManager.deleteRegistration(registration.id)
-        });
+        function deleteRegistrations() {
+          for (var registration of serviceWorkerManager.registrations()
+                   .values()) {
+            serviceWorkerManager.deleteRegistration(registration.id);
+          }
+        }
+        function tryDelete() {
+          for (var registration of serviceWorkerManager.registrations()
+                   .values()) {
+            for (var version of registration.versions.values()) {
+              if (version.isRunning()) {
+                serviceWorkerManager.removeEventListener(
+                    SDK.ServiceWorkerManager.Events.REGISTRATION_UPDATED,
+                    tryDelete);
+                deleteRegistrations();
+                return;
+              }
+            }
+          }
+        }
+        serviceWorkerManager.addEventListener(
+            SDK.ServiceWorkerManager.Events.REGISTRATION_UPDATED, tryDelete);
+        tryDelete();
       }
     },
 

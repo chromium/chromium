@@ -37,38 +37,37 @@ import * as ElementsModule from 'devtools/panels/elements/elements.js';
       }
   `);
 
-  var dataTreeElement;
-  ElementsTestRunner.nodeWithId('data', step1);
-
-  function step1(node) {
-    dataTreeElement = ElementsTestRunner.firstElementsTreeOutline().findTreeElement(node);
-    dataTreeElement.expandedChildrenLimitInternal = 5;
-    dataTreeElement.reveal();
-    dataTreeElement.expand();
-    TestRunner.deprecatedRunAfterPendingDispatches(step2);
-  }
-
-  function step2() {
-    TestRunner.addResult('=========== Loaded 5 children ===========');
-    dumpElementsTree();
-    TestRunner.addSniffer(ElementsModule.ElementsTreeOutline.ElementsTreeOutline.prototype, 'updateModifiedNodes', step3);
-    TestRunner.evaluateInPage('insertNode()');
-  }
-
-  function step3() {
-    TestRunner.addResult('=========== Modified children ===========');
-    dumpElementsTree();
-    dataTreeElement.expandAllButtonElement.button.click();
-    TestRunner.deprecatedRunAfterPendingDispatches(step4);
-  }
-
-  function step4() {
-    TestRunner.addResult('=========== Loaded all children ===========');
-    dumpElementsTree();
-    TestRunner.completeTest();
-  }
-
   function dumpElementsTree() {
     ElementsTestRunner.dumpElementsTree(null, 0);
   }
+
+  const node = await new Promise(
+      resolve => ElementsTestRunner.nodeWithId('data', resolve));
+  const dataTreeElement =
+      ElementsTestRunner.firstElementsTreeOutline().findTreeElement(node);
+  dataTreeElement.expandedChildrenLimitInternal = 5;
+  dataTreeElement.reveal();
+
+  await dataTreeElement.onpopulate();
+  dataTreeElement.expand();
+  ElementsTestRunner.firstElementsTreeOutline().runPendingUpdates();
+
+  TestRunner.addResult('=========== Loaded 5 children ===========');
+  dumpElementsTree();
+
+  const updatePromise = TestRunner.addSnifferPromise(
+      ElementsModule.ElementsTreeOutline.ElementsTreeOutline.prototype,
+      'updateModifiedNodes');
+  TestRunner.evaluateInPage('insertNode()');
+  await updatePromise;
+
+  TestRunner.addResult('=========== Modified children ===========');
+  dumpElementsTree();
+
+  dataTreeElement.expandAllButtonElement.button.click();
+  ElementsTestRunner.firstElementsTreeOutline().runPendingUpdates();
+
+  TestRunner.addResult('=========== Loaded all children ===========');
+  dumpElementsTree();
+  TestRunner.completeTest();
 })();

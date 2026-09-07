@@ -58,25 +58,34 @@ import * as Console from 'devtools/panels/console/console.js';
     return text.substring(begin);
   }
 
-  function dumpAndClearConsoleMessages(next) {
-    TestRunner.deprecatedRunAfterPendingDispatches(async function() {
-      await ConsoleTestRunner.dumpConsoleMessages();
-      Console.ConsoleView.ConsoleView.instance().clearConsole();
-      TestRunner.deprecatedRunAfterPendingDispatches(next);
-    });
+  async function dumpAndClearConsoleMessages(next) {
+    await ConsoleTestRunner.waitForPendingViewportUpdates();
+    await ConsoleTestRunner.dumpConsoleMessages();
+    Console.ConsoleView.ConsoleView.instance().clearConsole();
+    await ConsoleTestRunner.waitForPendingViewportUpdates();
+    next();
   }
 
   TestRunner.runTestSuite([
-    function testSnippet1(next) {
-      TestRunner.evaluateInPage(bodyText(snippet1), dumpAndClearConsoleMessages.bind(null, next));
+    async function testSnippet1(next) {
+      const messagesPromise =
+          ConsoleTestRunner.waitUntilNthMessageReceivedPromise(2);
+      await TestRunner.evaluateInPagePromise(bodyText(snippet1));
+      await messagesPromise;
+      await dumpAndClearConsoleMessages(next);
     },
 
-    function testSnippet2(next) {
-      TestRunner.evaluateInPage(bodyText(snippet2), dumpAndClearConsoleMessages.bind(null, next));
+    async function testSnippet2(next) {
+      const messagePromise =
+          ConsoleTestRunner.waitUntilMessageReceivedPromise();
+      await TestRunner.evaluateInPagePromise(bodyText(snippet2));
+      await messagePromise;
+      await dumpAndClearConsoleMessages(next);
     },
 
-    function testConsoleEvalPrimitiveValue(next) {
-      ConsoleTestRunner.evaluateInConsole('foo', dumpAndClearConsoleMessages.bind(null, next));
+    async function testConsoleEvalPrimitiveValue(next) {
+      await ConsoleTestRunner.evaluateInConsolePromise('foo');
+      await dumpAndClearConsoleMessages(next);
     },
 
     async function testConsoleEvalObject(next) {
@@ -88,11 +97,10 @@ import * as Console from 'devtools/panels/console/console.js';
       next();
     },
 
-    function testGetEventListenersDoesNotThrow(next) {
-      ConsoleTestRunner.evaluateInConsole(
-        'getEventListeners(document.body.firstChild)',
-        dumpAndClearConsoleMessages.bind(null, next)
-      );
+    async function testGetEventListenersDoesNotThrow(next) {
+      await ConsoleTestRunner.evaluateInConsolePromise(
+          'getEventListeners(document.body.firstChild)');
+      await dumpAndClearConsoleMessages(next);
     }
   ]);
 })();
