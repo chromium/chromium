@@ -2233,10 +2233,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 }
 
 - (UIView*)fakeOmniboxView {
-  if (IsComposeboxIOSEnabled()) {
-    return self.fakeOmniboxContainer;
-  }
-  return self.fakeLocationBar;
+  return self.fakeOmniboxContainer;
 }
 
 - (CGFloat)pinnedOffsetY {

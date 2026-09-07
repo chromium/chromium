@@ -484,9 +484,7 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
   if (autocompleteBrowserAgent) {
     __weak __typeof__(self) weakSelf = self;
     autocompleteBrowserAgent->RegisterWebStateListForPrefetching(
-        IsComposeboxIOSEnabled() ? OmniboxPresentationContext::kComposebox
-                                 : OmniboxPresentationContext::kLocationBar,
-        self.webStateList,
+        OmniboxPresentationContext::kComposebox, self.webStateList,
         base::BindRepeating(^metrics::OmniboxEventProto::PageClassification() {
           return [weakSelf getPageClassification:YES];
         }));

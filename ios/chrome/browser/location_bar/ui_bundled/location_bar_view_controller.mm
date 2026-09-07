@@ -396,13 +396,6 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
       [[UIIndirectScribbleInteraction alloc] initWithDelegate:self];
   [_locationBarSteadyView addInteraction:scribbleInteraction];
 
-  if (!IsComposeboxIOSEnabled()) {
-    DCHECK(self.editView) << "The edit view must be set at this point";
-
-    [self.view addSubview:self.editView];
-    self.editView.translatesAutoresizingMaskIntoConstraints = NO;
-    AddSameConstraints(self.editView, self.view);
-  }
 
   [self.view addSubview:self.locationBarSteadyView];
   self.locationBarSteadyView.translatesAutoresizingMaskIntoConstraints = NO;

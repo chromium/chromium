@@ -302,8 +302,7 @@ const CGFloat kIconPointSize = 16.0;
     return NO;
   }
 
-  BOOL allowedOnDevice =
-      IsComposeboxIOSEnabled() && IsPlusButtonInFakeboxEnabled();
+  BOOL allowedOnDevice = IsPlusButtonInFakeboxEnabled();
   BOOL fuseboxEligible = _aimEligibilityService->IsFuseboxEligible();
   return fuseboxEligible && allowedOnDevice;
 }

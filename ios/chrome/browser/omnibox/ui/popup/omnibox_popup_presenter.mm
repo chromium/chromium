@@ -99,11 +99,9 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
     _popupContainerView.overrideUserInterfaceStyle = userInterfaceStyle;
     viewController.overrideUserInterfaceStyle = userInterfaceStyle;
 
-    if (IsComposeboxIOSEnabled()) {
-      if ([self.delegate
-              respondsToSelector:@selector(popupDidInitializePresenter:)]) {
-        [self.delegate popupDidInitializePresenter:self];
-      }
+    if ([self.delegate
+            respondsToSelector:@selector(popupDidInitializePresenter:)]) {
+      [self.delegate popupDidInitializePresenter:self];
     }
     if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
         _popupContainerView.backgroundColor =

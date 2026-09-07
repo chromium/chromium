@@ -822,7 +822,6 @@ using base::UserMetricsAction;
     // when accepting input, changes will be reverted at endEditing
     // (crbug.com/458055336).
     BOOL skipRevert =
-        IsComposeboxIOSEnabled() &&
         _omniboxPresentationContext == OmniboxPresentationContext::kComposebox;
     if (!skipRevert) {
       base::AutoReset<bool> tmp(&_omniboxTextModel->in_revert, true);

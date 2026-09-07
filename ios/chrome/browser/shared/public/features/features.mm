@@ -701,57 +701,27 @@ const char kEnableFuseboxKeyboardAccessoryBoth[] =
     "kEnableFuseboxKeyboardAccessoryBoth";
 
 bool ShouldShowKeyboardAccessory() {
-  if (!IsComposeboxIOSEnabled()) {
-    // Keyboard accessory is enabled by default.
-    if (!base::FeatureList::IsEnabled(kDisableKeyboardAccessory)) {
-      return true;
-    }
-    std::string feature_param = base::GetFieldTrialParamValueByFeature(
-        kDisableKeyboardAccessory, kDisableKeyboardAccessoryParam);
-    return feature_param != kDisableKeyboardAccessoryCompletely;
-  }
-
   // Fusebox:
   // Keyboard accessory is disabled by default but can be forced with a flag.
   return base::FeatureList::IsEnabled(kEnableFuseboxKeyboardAccessory);
 }
 
 bool ShouldShowKeyboardAccessorySymbols() {
-  if (IsComposeboxIOSEnabled()) {
-    if (base::FeatureList::IsEnabled(kEnableFuseboxKeyboardAccessory)) {
-      std::string feature_param = base::GetFieldTrialParamValueByFeature(
-          kEnableFuseboxKeyboardAccessory,
-          kEnableFuseboxKeyboardAccessoryParam);
-      return feature_param != kEnableFuseboxKeyboardAccessoryOnlyFeatures;
-    }
-    return false;
+  if (base::FeatureList::IsEnabled(kEnableFuseboxKeyboardAccessory)) {
+    std::string feature_param = base::GetFieldTrialParamValueByFeature(
+        kEnableFuseboxKeyboardAccessory, kEnableFuseboxKeyboardAccessoryParam);
+    return feature_param != kEnableFuseboxKeyboardAccessoryOnlyFeatures;
   }
-
-  if (!base::FeatureList::IsEnabled(kDisableKeyboardAccessory)) {
-    return true;
-  }
-  std::string feature_param = base::GetFieldTrialParamValueByFeature(
-      kDisableKeyboardAccessory, kDisableKeyboardAccessoryParam);
-  return feature_param == kDisableKeyboardAccessoryOnlySymbols;
+  return false;
 }
 
 bool ShouldShowKeyboardAccessoryFeatures() {
-  if (IsComposeboxIOSEnabled()) {
-    if (base::FeatureList::IsEnabled(kEnableFuseboxKeyboardAccessory)) {
-      std::string feature_param = base::GetFieldTrialParamValueByFeature(
-          kEnableFuseboxKeyboardAccessory,
-          kEnableFuseboxKeyboardAccessoryParam);
-      return feature_param != kEnableFuseboxKeyboardAccessoryOnlySymbols;
-    }
-    return false;
+  if (base::FeatureList::IsEnabled(kEnableFuseboxKeyboardAccessory)) {
+    std::string feature_param = base::GetFieldTrialParamValueByFeature(
+        kEnableFuseboxKeyboardAccessory, kEnableFuseboxKeyboardAccessoryParam);
+    return feature_param != kEnableFuseboxKeyboardAccessoryOnlySymbols;
   }
-
-  if (!base::FeatureList::IsEnabled(kDisableKeyboardAccessory)) {
-    return true;
-  }
-  std::string feature_param = base::GetFieldTrialParamValueByFeature(
-      kDisableKeyboardAccessory, kDisableKeyboardAccessoryParam);
-  return feature_param == kDisableKeyboardAccessoryOnlyFeatures;
+  return false;
 }
 
 BASE_FEATURE(kLocationBarBadgeMigration, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -856,9 +826,6 @@ constexpr base::FeatureParam<bool> kChromeNextIaShareIconVisible{
     &kChromeNextIa, "chrome_next_ia_share_icon_visible", false};
 
 bool IsChromeNextIaEnabled() {
-  if (!IsComposeboxIOSEnabled()) {
-    return false;
-  }
   return base::FeatureList::IsEnabled(kChromeNextIa);
 }
 
@@ -1064,10 +1031,6 @@ BASE_FEATURE(kPlusButtonInFakebox, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Returns true if the plus button in NTP fakebox is enabled.
 bool IsPlusButtonInFakeboxEnabled() {
-  if (!IsComposeboxIOSEnabled()) {
-    return false;
-  }
-
   return base::FeatureList::IsEnabled(kPlusButtonInFakebox);
 }
 

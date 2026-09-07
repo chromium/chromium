@@ -8,14 +8,10 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 
 bool MaybeShowComposebox(Browser* browser,
                          ComposeboxEntrypoint entrypoint,
                          NSString* query) {
-  if (!IsComposeboxIOSEnabled()) {
-    return false;
-  }
   id<BrowserCoordinatorCommands> commands = HandlerForProtocol(
       browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
   [commands showComposeboxFromEntrypoint:entrypoint withQuery:query];

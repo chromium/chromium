@@ -1966,13 +1966,8 @@
 
 - (void)showComposebox {
   [self exitFullscreen];
-
-  if (IsComposeboxIOSEnabled()) {
-    [self showComposeboxFromEntrypoint:ComposeboxEntrypoint::kOther
-                             withQuery:nil];
-  } else {
-    [_omniboxCommandsHandler focusOmnibox];
-  }
+  [self showComposeboxFromEntrypoint:ComposeboxEntrypoint::kOther
+                           withQuery:nil];
 }
 
 - (void)showComposeboxFromEntrypoint:(ComposeboxEntrypoint)entrypoint
@@ -1984,13 +1979,6 @@
 }
 
 - (void)showComposeboxWithParams:(ComposeboxFocusParams*)params {
-  if (!IsComposeboxIOSEnabled()) {
-    [_omniboxCommandsHandler focusOmnibox];
-    [_omniboxCommandsHandler insertTextToOmnibox:params.query];
-    return;
-  }
-
-  CHECK(IsComposeboxIOSEnabled());
   if (_composeboxCoordinator) {
     return;
   }
@@ -2004,19 +1992,11 @@
 }
 
 - (void)hideComposebox {
-  if (IsComposeboxIOSEnabled()) {
-    [self hideComposeboxImmediately:NO completion:nil];
-  } else {
-    [_omniboxCommandsHandler cancelOmniboxEdit];
-  }
+  [self hideComposeboxImmediately:NO completion:nil];
 }
 
 - (void)hideComposeboxWithCompletion:(ProceduralBlock)completion {
-  if (IsComposeboxIOSEnabled()) {
-    [self hideComposeboxImmediately:NO completion:completion];
-  } else {
-    [_omniboxCommandsHandler cancelOmniboxEditWithCompletion:completion];
-  }
+  [self hideComposeboxImmediately:NO completion:completion];
 }
 
 - (void)clearPresentedStateWithCompletion:(ProceduralBlock)completion
@@ -2053,11 +2033,8 @@
     [self hideComposebox];
   }
 
-  BOOL dismissPresentedViewController = YES;
-  if (IsComposeboxIOSEnabled()) {
-    dismissPresentedViewController =
-        dismissOmnibox || !_composeboxCoordinator.presented;
-  }
+  BOOL dismissPresentedViewController =
+      dismissOmnibox || !_composeboxCoordinator.presented;
 
   [self.viewController
       clearPresentedStateWithCompletion:completion

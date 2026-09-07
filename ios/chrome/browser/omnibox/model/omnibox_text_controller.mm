@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/omnibox/ui/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_input.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_input_delegate.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/common/NSString+Chromium.h"
 #import "net/base/apple/url_conversions.h"
@@ -163,9 +162,8 @@ const char kOmniboxFocusResultedInNavigation[] =
   // Exiting pre edit also shows the selections handle when animating the
   // defocus (crbug.com/458055336).
   BOOL skipExitPreEdit =
-      IsComposeboxIOSEnabled() &&
-      (_presentationContext == OmniboxPresentationContext::kComposebox ||
-       _presentationContext == OmniboxPresentationContext::kCobrowse);
+      _presentationContext == OmniboxPresentationContext::kComposebox ||
+      _presentationContext == OmniboxPresentationContext::kCobrowse;
   if (!skipExitPreEdit) {
     [self.textInput exitPreEditState];
   }
@@ -566,8 +564,7 @@ const char kOmniboxFocusResultedInNavigation[] =
   }
 
   // Don't enter pre-edit if the user has already input text.
-  BOOL userInputInProgress =
-      IsComposeboxIOSEnabled() && _omniboxTextModel->user_input_in_progress;
+  BOOL userInputInProgress = _omniboxTextModel->user_input_in_progress;
 
   // If the omnibox is displaying a URL and the popup is not showing, set the
   // input into pre-editing state.  If the omnibox is displaying search terms,
@@ -604,9 +601,8 @@ const char kOmniboxFocusResultedInNavigation[] =
 
   if ([textInput isPreEditing]) {
     [textInput setClearingPreEditText:YES];
-    if (IsComposeboxIOSEnabled() &&
-        (_presentationContext == OmniboxPresentationContext::kComposebox ||
-         _presentationContext == OmniboxPresentationContext::kCobrowse)) {
+    if (_presentationContext == OmniboxPresentationContext::kComposebox ||
+        _presentationContext == OmniboxPresentationContext::kCobrowse) {
       // Clear pre-edit text manually instead of relying on clearsOnInsertion.
       // clearsOnInsertion calls selectAll: which can can crash when called on
       // begin editing (crbug.com/479185287).

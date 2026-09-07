@@ -386,10 +386,8 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
     attacher.CreateWhen<AssistantAimTabHelper>(attacher.IsForAssistantAim());
   }
 
-  if (IsComposeboxIOSEnabled()) {
-    attacher.CreateWhen<AimTabHelper>(!attacher.IsForPrerender() &&
-                                      !attacher.IsForReaderMode());
-  }
+  attacher.CreateWhen<AimTabHelper>(!attacher.IsForPrerender() &&
+                                    !attacher.IsForReaderMode());
 
   attacher.CreateWhen<GeminiTabHelper>(!attacher.IsOffTheRecord() &&
                                        !attacher.IsForPrerender() &&
