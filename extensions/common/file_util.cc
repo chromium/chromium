@@ -407,6 +407,14 @@ std::vector<base::FilePath> FindPrivateKeyFiles(
   return result;
 }
 
+std::u16string ReservedFilenameWarning(const base::FilePath& file) {
+  return base::StrCat(
+      {u"Cannot load extension with file or directory name ",
+       file.BaseName().LossyDisplayName(),
+       u". Filenames starting with \"_\" are reserved for use by the "
+       u"system."});
+}
+
 bool CheckForIllegalFilenames(const base::FilePath& extension_path,
                               std::u16string* error) {
   // Enumerate all files and directories in the extension root.
@@ -431,11 +439,7 @@ bool CheckForIllegalFilenames(const base::FilePath& extension_path,
       continue;
     }
 
-    *error =
-        base::StrCat({u"Cannot load extension with file or directory name ",
-                      file.BaseName().LossyDisplayName(),
-                      u". Filenames starting with \"_\" are reserved for use "
-                      u"by the system."});
+    *error = ReservedFilenameWarning(file);
     return false;
   }
 

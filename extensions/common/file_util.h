@@ -118,6 +118,10 @@ std::vector<base::FilePath> FindPrivateKeyFiles(
 bool CheckForIllegalFilenames(const base::FilePath& extension_path,
                               std::u16string* error);
 
+// Returns the install warning `CheckForIllegalFilenames()` emits when it
+// finds `file`, whose name starts with the reserved "_" prefix.
+std::u16string ReservedFilenameWarning(const base::FilePath& file);
+
 // We need to reserve the names of special Windows filenames, such as
 // "com2.zip."
 // If any files or directories are found to be using a reserved Windows

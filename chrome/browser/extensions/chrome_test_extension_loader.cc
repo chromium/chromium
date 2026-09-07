@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/files/file_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
@@ -26,6 +27,8 @@
 #include "extensions/browser/unpacked_installer.h"
 #include "extensions/browser/user_script_loader.h"
 #include "extensions/browser/user_script_manager.h"
+#include "extensions/common/constants.h"
+#include "extensions/common/file_util.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
@@ -433,9 +436,9 @@ bool ChromeTestExtensionLoader::CheckInstallWarnings(
   // CRX installs can legitimately contain a _metadata directory, and
   // ValidateExtension warns on any top-level underscore name; production
   // ignores install warnings, so the test loader shouldn't fail on this one.
-  const std::string kMetadataReservedNameWarning =
-      "Cannot load extension with file or directory name _metadata. "
-      "Filenames starting with \"_\" are reserved for use by the system.";
+  const std::string metadata_reserved_name_warning =
+      base::UTF16ToUTF8(file_util::ReservedFilenameWarning(
+          base::FilePath(kMetadataFolder)));
 
   const std::vector<InstallWarning>& install_warnings =
       extension.install_warnings();
@@ -446,7 +449,7 @@ bool ChromeTestExtensionLoader::CheckInstallWarnings(
     // tests are updated to MV3.
     if (warning.message == manifest_errors::kManifestV2IsDeprecatedWarning)
       continue;
-    if (warning.message == kMetadataReservedNameWarning)
+    if (warning.message == metadata_reserved_name_warning)
       continue;
     install_warnings_string += "  " + warning.message + "\n";
   }
