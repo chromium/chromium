@@ -2537,7 +2537,7 @@
 <translation id="8237964652943995219">下一个桌面：<ph name="DESK_NAME" />。第 <ph name="DESK_INDEX" /> 个桌面（共 <ph name="DESK_COUNT" /> 个）。</translation>
 <translation id="8238817965863339552">不妨观看快速导览，了解如何玩转 <ph name="PRODUCT_NAME" />。只需 5 步，即可启动并运行。</translation>
 <translation id="8239034820133090126">启用右侧桌面</translation>
-<translation id="8241650983304689286">向新的拆分视图中添加标签页</translation>
+<translation id="8241650983304689286">向新拆分视图添加标签页</translation>
 <translation id="8244201515061746038">“自动更正”功能的“了解详情”按钮。前往“自动更正”功能的设置页面。若要启用此按钮，请按 Enter 键；若要关闭，请按 Esc 键。</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />，剩余电量为 <ph name="BATTERY_STATUS" /></translation>
 <translation id="8249048954461686687">OEM文件夹</translation>

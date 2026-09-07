@@ -4711,6 +4711,7 @@ Folgendes ist zu beachten:
 <translation id="402759845255257575">Ausführung von JavaScript für keine Website zulassen</translation>
 <translation id="4027608872760987929">Standardsuchmaschine aktivieren</translation>
 <translation id="4030152268425532846">Umgehung der automatischen Anmeldung deaktivieren</translation>
+<translation id="4032740546145417900">Spracheingabe nicht zulassen.</translation>
 <translation id="4043796890723386527">Diese Einstellung hindert Nutzer daran, sekundäre Profile zu erstellen oder zu verwenden und den Gastmodus im <ph name="LACROS_NAME" />-Browser zu verwenden</translation>
 <translation id="4047633048700722778">Mit dieser Richtlinie wird die Anwendung des URL‑Filters „SafeSites“ konfiguriert. Der Filter greift auf die Google Safe Search API zurück, um URLs als pornografisch oder nicht pornografisch einzustufen.
 
@@ -6718,6 +6719,17 @@ Hinweis: Diese Funktion ist noch nicht allgemein verfügbar. Wenn du sie aktivie
 <translation id="5247584184349816217">Bildschirmschoner auf dem Sperrbildschirm aktivieren.</translation>
 <translation id="5247973380763021389">Verhindert, dass Cloud-Richtlinien auf Nutzerebene Cloud-Richtlinien auf Maschinenebene überschreiben.</translation>
 <translation id="5249006530384016395">Mit der Richtlinie wird festgelegt, ob die eingestellte Syntax „<ph name="CUSTOM_STATE_DEPRECATED_SYNTAX" />“ für die Funktion „CSS custom state“ aktiviert ist</translation>
+<translation id="5249271416806588789">Die Spracheingabe ist eine KI-basierte Funktion, mit der Nutzer durch Sprechen Text eingeben und bearbeiten können. Sie basiert auf generativen KI-Modellen, die eine hochwertige Transkription und Formatierung ermöglichen.
+
+„0“ = Die Funktion darf verwendet werden und Google darf relevante Daten nutzen, um seine KI‑Modelle zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftliches Feedback sein. Sie werden möglicherweise auch manuell überprüft, um KI‑Modelle zu verbessern. „0“ ist der Standardwert, sofern unten nicht anders angegeben.
+
+„1“ = Die Funktion darf verwendet werden, Google darf aber keine Modelle mithilfe von Nutzerinhalten (einschließlich Prompts, Eingaben, Ausgaben, Quellmaterialien und schriftlichen Feedbacks) verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, und für Konten einer Bildungseinrichtung, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
+
+„2“ = Die Funktion darf nicht verwendet werden.
+
+Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durch die Richtlinie „<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />“ bestimmt.
+
+Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="5249453807420671499">Nutzer können Kerberos-Konten hinzufügen</translation>
 <translation id="5249555581286638799">Modus für hohe Effizienz aktivieren</translation>
 <translation id="5252210248395576403">Mit dieser Richtlinie erhält die Funktion „Schnellinfo“ die Berechtigung, auf ausgewählte Inhalte zuzugreifen und die Informationen an den Server zu senden, um Übersetzungsergebnisse zu erhalten.
@@ -7866,6 +7878,7 @@ Wenn diese Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_AUTOMATI
       Ist die Richtlinie deaktiviert, können Nutzer kein Feedback an Google senden.</translation>
 <translation id="5976636832661103220">In den Einstellungen von F11 wird die Tastenkombination verwendet, die den Umschalttaste-Modifikator enthält</translation>
 <translation id="5979376378555121803">Gehostete App</translation>
+<translation id="5983016603010860828">Einstellungen für die Spracheingabe</translation>
 <translation id="5983274643567559194">Festlegen einer Tastenkombination für die Aktion „Löschen“ ist deaktiviert.</translation>
 <translation id="5984099692320899605">Keine NTLM-Authentifizierung verwenden</translation>
 <translation id="5984237109586500246">Webinhalte akzeptieren, die als Signed HTTP Exchanges implementiert sind</translation>
@@ -10102,6 +10115,7 @@ Ist die Richtlinie deaktiviert oder nicht konfiguriert, sind die Kontoeinstellun
       Das Aktivieren dieser Richtlinie lässt einige Arten von Cross-Site-Angriffen offen. Nutzer können außerdem durch die Eingaben in den HTTP-Auth-Cache mit in URLs eingebetteten Anmeldedaten über mehrere Websites erfasst werden, selbst wenn sie keine Cookies zulassen.
 
       Diese Richtlinie soll Unternehmen anhand des vergangenen Verhaltens die Möglichkeit geben, ihre Log‑in-Abläufe zu aktualisieren. Sie wird demnächst entfernt.</translation>
+<translation id="7322231030019184787">Spracheingabe ohne Datenerhebung zulassen.</translation>
 <translation id="7322825363493984512">Passwort zur Authentifizierung der Systemdienste für den Remote-Web-Proxy.</translation>
 <translation id="7323773727263636287">Dadurch wird die Bedienungshilfe „Farbkorrektur“ aktiviert.
 
@@ -10558,6 +10572,7 @@ Ausführliche Informationen zu gültigen URL‑Mustern findest du unter https://
       Wenn diese Richtlinie festgelegt ist, kann der Elternzugangscode auf dem Gerät des Kindes überprüft werden.
       Ist die Richtlinie nicht festgelegt, kann der Elternzugangscode auf dem Gerät des Kindes nicht überprüft werden.</translation>
 <translation id="7623431489198474050">Remote-Attestierung zum Schutz von Inhalten deaktivieren</translation>
+<translation id="7624832415093566709">Spracheingabe zulassen.</translation>
 <translation id="7625858205605842562">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die angeben, welche Websites Nutzer nicht um Zugriff auf ein USB-Gerät bitten dürfen.
 
       Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
