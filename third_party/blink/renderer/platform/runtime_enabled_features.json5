@@ -6058,6 +6058,11 @@
       status: "experimental",
     },
     {
+      // Don't accept the empty string as a valid value in some cases.
+      name: "SvgEmptyAttributeStringParsingFix",
+      status: "stable",
+    },
+    {
       name: "SvgEnableTextDecorationCssStyling",
       status: "stable",
     },

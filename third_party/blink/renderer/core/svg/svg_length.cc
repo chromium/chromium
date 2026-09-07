@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/svg/svg_zoom_migration.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -221,7 +222,8 @@ SVGParsingError SVGLength::SetValueAsString(
   // TODO(fs): Preferably we wouldn't need to special-case the null
   // string (which we'll get for example for removeAttribute.)
   // Hopefully work on crbug.com/225807 can help here.
-  if (string.IsNull()) {
+  if (!RuntimeEnabledFeatures::SvgEmptyAttributeStringParsingFixEnabled() &&
+      string.IsNull()) {
     value_ = CSSNumericLiteralValue::Create(
         0, CSSPrimitiveValue::UnitType::kUserUnits);
     return SVGParseStatus::kNoError;

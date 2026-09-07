@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -285,7 +286,8 @@ static SVGParsingError ParseValue(base::span<const CharType> span,
 }
 
 SVGParsingError SVGAngle::SetValueAsString(const String& value) {
-  if (value.empty()) {
+  if (!RuntimeEnabledFeatures::SvgEmptyAttributeStringParsingFixEnabled() &&
+      value.empty()) {
     NewValueSpecifiedUnits(kSvgAngletypeUnspecified, 0);
     return SVGParseStatus::kNoError;
   }

@@ -25,6 +25,7 @@
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
@@ -181,9 +182,18 @@ SVGParsingError SVGPreserveAspectRatio::ParseInternal(
 SVGParsingError SVGPreserveAspectRatio::SetValueAsString(const String& string) {
   SetDefault();
 
-  if (string.empty())
-    return SVGParseStatus::kNoError;
-
+  if (RuntimeEnabledFeatures::SvgEmptyAttributeStringParsingFixEnabled()) {
+    // We have to allow null Strings here, because it corresponds to an
+    // attribute removal. We should hoist this into the attribute parsing
+    // driver instead.
+    if (string.IsNull()) {
+      return SVGParseStatus::kNoError;
+    }
+  } else {
+    if (string.empty()) {
+      return SVGParseStatus::kNoError;
+    }
+  }
   return VisitCharacters(
       string, [&](auto chars) { return ParseInternal(chars, true); });
 }

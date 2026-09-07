@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
 
@@ -67,9 +68,10 @@ SVGParsingError SVGNumber::Parse(base::span<const CharType> span) {
 SVGParsingError SVGNumber::SetValueAsString(const String& string) {
   value_ = 0;
 
-  if (string.empty())
+  if (!RuntimeEnabledFeatures::SvgEmptyAttributeStringParsingFixEnabled() &&
+      string.empty()) {
     return SVGParseStatus::kNoError;
-
+  }
   return VisitCharacters(string, [&](auto chars) { return Parse(chars); });
 }
 
@@ -130,9 +132,10 @@ SVGParsingError SVGNumberAcceptPercentage::SetValueAsString(
     const String& string) {
   value_ = 0;
 
-  if (string.empty())
+  if (!RuntimeEnabledFeatures::SvgEmptyAttributeStringParsingFixEnabled() &&
+      string.empty()) {
     return SVGParseStatus::kExpectedNumberOrPercentage;
-
+  }
   float number = 0;
   SVGParsingError error = VisitCharacters(string, [&](auto chars) {
     return ParseNumberOrPercentage(chars, number);

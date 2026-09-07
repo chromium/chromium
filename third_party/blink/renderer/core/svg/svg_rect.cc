@@ -65,6 +65,8 @@ SVGParsingError SVGRect::SetValueAsString(const String& string) {
   // Also clear the existing values.
   Set(0, 0, 0, 0);
 
+  // We have to allow null Strings here, because it corresponds to an attribute
+  // removal. We should hoist this into the attribute parsing driver instead.
   if (string.IsNull())
     return SVGParseStatus::kNoError;
 

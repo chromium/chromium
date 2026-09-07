@@ -120,6 +120,7 @@ class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
   };
 
   bool HasKeyPoints() const { return !key_points_.empty(); }
+  String ToValue() const;
 
   void SetAlwaysRevalidateAnimationValue(bool value) {
     always_revalidate_animation_value_ = value;
@@ -131,7 +132,6 @@ class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
   bool IsAdditive() const;
   bool IsAccumulated() const;
 
-  String ToValue() const;
   String ByValue() const;
   String FromValue() const;
 

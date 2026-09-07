@@ -30,7 +30,7 @@ SVGSetElement::SVGSetElement(Document& document)
 AnimationMode SVGSetElement::CalculateAnimationMode() {
   // <set> has a constant animation mode of ToAnimation.
   // See: http://www.w3.org/TR/SVG/single-page.html#animate-SetElement
-  return kToAnimation;
+  return !ToValue().IsNull() ? kToAnimation : kNoAnimation;
 }
 
 }  // namespace blink
