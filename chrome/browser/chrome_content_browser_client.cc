@@ -4018,9 +4018,11 @@ GetPreferredColorScheme(const WebPreferences& web_prefs,
     preferred_root_scrollbar_color_scheme = preferred_color_scheme;
   }
 #else  // !BUILDFLAG(IS_ANDROID)
-  if (Profile::FromBrowserContext(web_contents->GetBrowserContext())
-          ->IsIncognitoProfile() &&
-      !security_principal.IsWebUI()) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  if (profile->IsEnterpriseIsolatedModeProfile() && !security_principal.IsWebUI()) {
+    preferred_color_scheme = blink::mojom::PreferredColorScheme::kLight;
+  } else if (profile->IsIncognitoProfile() && !security_principal.IsWebUI()) {
     // Incognito contents follow the device color mode.
     preferred_color_scheme = ToBlinkPreferredColorScheme(
         ui::NativeTheme::GetInstanceForWeb()->preferred_color_scheme());

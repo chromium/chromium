@@ -39,6 +39,7 @@
 #include "chrome/browser/search/instant_service_factory.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -61,6 +62,7 @@
 #include "components/enterprise/connectors/core/cloud_content_scanning/clipboard_request_handler.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/enterprise/data_controls/core/browser/test_utils.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
@@ -645,6 +647,39 @@ INSTANTIATE_TEST_SUITE_P(
                            std::get<1>(info.param) ? "Dark" : "Light",
                            "ColorProvider"});
     });
+
+class PrefersColorSchemeEnterpriseIsolatedTest : public InProcessBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(
+        enterprise_isolated_mode::switches::
+            kForceEnterpriseIsolatedModeReplacesIncognito);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrefersColorSchemeEnterpriseIsolatedTest,
+                       PrefersColorSchemeLightInIsolatedMode) {
+  BrowserWindowInterface* isolated_browser =
+      CreateIncognitoBrowser(browser()->GetProfile());
+  ASSERT_TRUE(
+      isolated_browser->GetProfile()->IsEnterpriseIsolatedModeProfile());
+
+  auto* tab_list = TabListInterface::From(isolated_browser);
+  ASSERT_TRUE(tab_list);
+  auto* web_contents = tab_list->GetActiveTab()->GetContents();
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents,
+      chrome_test_utils::GetTestUrl(
+          base::FilePath(base::FilePath::kCurrentDirectory),
+          base::FilePath(FILE_PATH_LITERAL("prefers-color-scheme.html")))));
+
+  EXPECT_EQ(u"light", web_contents->GetTitle());
+  EXPECT_EQ(
+      true,
+      EvalJs(web_contents,
+             "window.matchMedia('(prefers-color-scheme: light)').matches"));
+}
 
 class PreferredRootScrollbarColorSchemeChromeClientTest
     : public testing::WithParamInterface<std::tuple<bool, bool>>,
