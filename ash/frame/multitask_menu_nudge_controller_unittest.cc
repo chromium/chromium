@@ -34,8 +34,7 @@
 #include "chromeos/ui/frame/multitask_menu/multitask_button.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view_test_api.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_manager.h"
 #include "ui/aura/window.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/size.h"
@@ -244,9 +243,7 @@ TEST_F(MultitaskMenuNudgeControllerTest, NudgeTimeout) {
 TEST_F(MultitaskMenuNudgeControllerTest, NoNudgeForNewUser) {
   chromeos::MultitaskMenuNudgeController::SetSuppressNudgeForTesting(false);
 
-  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
-      fake_user_manager{std::make_unique<user_manager::FakeUserManager>()};
-  fake_user_manager->SetIsCurrentUserNew(true);
+  user_manager::UserManager::Get()->SetIsCurrentUserNew(true);
 
   auto window = CreateWindowWithAppType(AppType::SYSTEM_APP, {300, 300});
   EXPECT_FALSE(GetNudgeWidgetForWindow(window.get()));

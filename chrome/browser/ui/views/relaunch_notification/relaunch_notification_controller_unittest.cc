@@ -947,16 +947,17 @@ class RelaunchNotificationControllerPlatformImplTest : public ::testing::Test {
   ~RelaunchNotificationControllerPlatformImplTest() override = default;
 
   void SetUp() override {
+    user_manager_.Reset(std::make_unique<user_manager::UserManagerImpl>(
+        std::make_unique<user_manager::FakeUserManagerDelegate>(),
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        /*cros_settings=*/nullptr));
+
     // Set up Ash global instances.
     ash::AshTestHelper::InitParams init_params;
     init_params.start_session = false;
     ash_test_helper_ = std::make_unique<ash::AshTestHelper>();
     ash_test_helper_->SetUp(std::move(init_params));
 
-    user_manager_.Reset(std::make_unique<user_manager::UserManagerImpl>(
-        std::make_unique<user_manager::FakeUserManagerDelegate>(),
-        TestingBrowserProcess::GetGlobal()->local_state(),
-        /*cros_settings=*/nullptr));
     auto* session_manager = session_manager::SessionManager::Get();
     session_manager->OnUserManagerCreated(user_manager_.Get());
 

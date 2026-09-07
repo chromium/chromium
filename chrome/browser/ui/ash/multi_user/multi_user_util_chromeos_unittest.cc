@@ -40,11 +40,11 @@ class MultiUserUtilTest : public ChromeAshTestBase {
   ~MultiUserUtilTest() override = default;
 
   void SetUp() override {
-    ChromeAshTestBase::SetUp();
-
     fake_user_manager_ = new FakeChromeUserManager;
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(fake_user_manager_.get()));
+
+    ChromeAshTestBase::SetUp();
 
     profile_.reset(IdentityTestEnvironmentProfileAdaptor::
                        CreateProfileForIdentityTestEnvironment()
@@ -58,6 +58,7 @@ class MultiUserUtilTest : public ChromeAshTestBase {
     identity_test_env_adaptor_.reset();
     profile_.reset();
     ChromeAshTestBase::TearDown();
+    user_manager_enabler_.reset();
   }
 
   // Add a user to the identity manager with given gaia_id and email.

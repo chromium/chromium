@@ -54,6 +54,7 @@ class ProfileHelperImpl : public ProfileHelper {
 
   void SetUserToProfileMappingForTesting(const user_manager::User* user,
                                          Profile* profile) override;
+  void ClearUserToProfileMappingForTesting() override;
 
  private:
   std::unique_ptr<BrowserContextHelper> browser_context_helper_;
@@ -273,6 +274,10 @@ void ProfileHelperImpl::SetUserToProfileMappingForTesting(
     Profile* profile) {
   DCHECK(user);
   user_to_profile_for_testing_[user] = profile;
+}
+
+void ProfileHelperImpl::ClearUserToProfileMappingForTesting() {
+  user_to_profile_for_testing_.clear();
 }
 
 }  // namespace ash

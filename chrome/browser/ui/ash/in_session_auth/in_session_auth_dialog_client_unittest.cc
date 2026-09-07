@@ -74,6 +74,7 @@ class InSessionAuthDialogClientTest : public testing::Test {
   }
 
   ~InSessionAuthDialogClientTest() override {
+    ash::ProfileHelper::Get()->ClearUserToProfileMappingForTesting();
     ash::SystemSaltGetter::Shutdown();
     ash::CryptohomeMiscClient::Shutdown();
     ash::UserDataAuthClient::Shutdown();

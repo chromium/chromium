@@ -11397,10 +11397,6 @@ TEST_P(DesksAcceleratorsTest, DeskSwitchScreenshotMetricsRecording) {
 
 TEST_P(DesksTest, DeskCreationBlockedDuringKioskSession) {
   // Enter Kiosk session.
-  TestingPrefServiceSimple local_state;
-  user_manager::UserManager::RegisterPrefs(local_state.registry());
-  user_manager::ScopedUserManager user_manager(
-      std::make_unique<user_manager::FakeUserManager>(&local_state));
   chromeos::SetUpFakeChromeAppKioskSession();
 
   DesksController* desks_controller = DesksController::Get();

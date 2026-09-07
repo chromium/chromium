@@ -466,13 +466,14 @@ void AmbientBackendControllerImpl::FetchWeather(
           std::move(callback).Run(std::nullopt);
         }
       };
-  // Tests may not have a user manager.
-  if (!user_manager::UserManager::IsInitialized()) {
+  // Tests may not have a user manager, or an active user with a Gaia account.
+  const auto* user = user_manager::UserManager::IsInitialized()
+                         ? user_manager::UserManager::Get()->GetActiveUser()
+                         : nullptr;
+  if (!user || !user->HasGaiaAccount()) {
     std::move(callback).Run(std::nullopt);
     return;
   }
-  const auto* user = user_manager::UserManager::Get()->GetActiveUser();
-  DCHECK(user->HasGaiaAccount());
   BackdropClientConfig::Request request =
       backdrop_client_config_.CreateFetchWeatherInfoRequest(
           user->GetAccountId().GetGaiaId().ToString(), GetClientId(),
