@@ -133,6 +133,7 @@
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/cookie_setting_override.h"
+#include "net/disk_cache/backend_experiment.h"
 #include "net/disk_cache/buildflags.h"
 #include "net/ssl/client_cert_store.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
@@ -3528,6 +3529,14 @@ void StoragePartitionImpl::InitNetworkContext() {
   variations::UpdateCorsExemptHeaderForVariations(context_params.get());
   cors_exempt_header_list_ = context_params->cors_exempt_header_list;
 
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+  supports_renderer_accessible_http_cache_ =
+      !context_params->enable_encrypted_http_cache &&
+      context_params->file_paths &&
+      context_params->file_paths->http_cache_directory &&
+      disk_cache::InSqlBackendExperimentGroup();
+#endif  // ENABLE_DISK_CACHE_SQL_BACKEND
+
   if (base::FeatureList::IsEnabled(
           network::features::kCompressionDictionaryTransport) &&
       GetContentClient()->browser()->AllowCompressionDictionaryTransport(
@@ -3794,6 +3803,24 @@ void StoragePartitionImpl::OnScenarioMatchChanged(
   if (matches_pattern && network_context_owner_->network_context.get()) {
     network_context_owner_->network_context->NotifyBrowserIdle();
   }
+}
+
+bool StoragePartitionImpl::SupportsRendererAccessibleHttpCache() {
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+  if (!base::FeatureList::IsEnabled(
+          net::features::kRendererAccessibleHttpCache)) {
+    return false;
+  }
+  // Ensure NetworkContext (and thus `supports_renderer_accessible_http_cache_`)
+  // is initialized.
+  if (!supports_renderer_accessible_http_cache_) {
+    GetNetworkContext();
+  }
+  CHECK(supports_renderer_accessible_http_cache_.has_value());
+  return *supports_renderer_accessible_http_cache_;
+#else
+  return false;
+#endif  // BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
 }
 
 StoragePartitionImpl::URLLoaderNetworkContext::URLLoaderNetworkContext(

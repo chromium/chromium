@@ -407,6 +407,16 @@ class CONTENT_EXPORT StoragePartitionImpl
     return cors_exempt_header_list_;
   }
 
+  // Returns true if this StoragePartition supports Renderer-Accessible HTTP
+  // Cache. If the NetworkContext has not been initialized yet, this triggers
+  // its initialization to query embedder configuration.
+  bool SupportsRendererAccessibleHttpCache();
+
+  void set_supports_renderer_accessible_http_cache_for_testing(
+      std::optional<bool> supports) {
+    supports_renderer_accessible_http_cache_ = supports;
+  }
+
   // Tracks whether this StoragePartition is for guests (e.g., for a <webview>
   // tag).  This is needed to properly create a SiteInstance for a
   // service worker or a shared worker in a guest. Typically one would use the
@@ -852,6 +862,10 @@ class CONTENT_EXPORT StoragePartitionImpl
   // The list of cors exempt headers that are set on `network_context_`.
   // Initialized in InitNetworkContext() and never updated after then.
   std::vector<std::string> cors_exempt_header_list_;
+
+  // Indicates whether the Renderer-Accessible HTTP Cache is supported.
+  // Lazily initialized in InitNetworkContext().
+  std::optional<bool> supports_renderer_accessible_http_cache_;
 
   // See comments for is_guest().
   bool is_guest_ = false;

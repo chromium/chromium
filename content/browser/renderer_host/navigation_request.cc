@@ -116,6 +116,7 @@
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/url_loader_factory_params_helper.h"
+#include "content/browser/web_exposed_isolation_info.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/content_navigation_policy.h"
@@ -146,6 +147,7 @@
 #include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/tracing_support.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/common/content_client.h"
@@ -165,6 +167,7 @@
 #include "net/base/url_util.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_setting_override.h"
+#include "net/disk_cache/buildflags.h"
 #include "net/filter/source_stream_type.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
@@ -6480,6 +6483,55 @@ void NavigationRequest::OnRedirectChecksComplete(
   }
 
   loader_->FollowRedirect(std::move(headers_update_params));
+}
+
+std::optional<net::NetworkIsolationKey>
+NavigationRequest::GetNetworkIsolationKeyForRendererAccessibleHttpCache() {
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+  if (!static_cast<StoragePartitionImpl*>(
+           GetStoragePartitionWithCurrentSiteInfo())
+           ->SupportsRendererAccessibleHttpCache()) {
+    return std::nullopt;
+  }
+  if (site_info_.GetStoragePartitionConfig().in_memory()) {
+    return std::nullopt;
+  }
+  if (site_info_.IsSandboxed()) {
+    return std::nullopt;
+  }
+  if (site_info_.web_exposed_isolation_info().is_isolated()) {
+    return std::nullopt;
+  }
+  if (site_info_.IsGuest()) {
+    return std::nullopt;
+  }
+  if (site_info_.is_jit_disabled()) {
+    return std::nullopt;
+  }
+  if (site_info_.are_v8_optimizations_disabled()) {
+    return std::nullopt;
+  }
+  if (site_info_.is_pdf()) {
+    return std::nullopt;
+  }
+  if (site_info_.is_fenced()) {
+    return std::nullopt;
+  }
+  if (!site_info_.GetStoragePartitionConfig().is_default()) {
+    return std::nullopt;
+  }
+  if (site_info_.agent_cluster_key().IsOriginKeyed() ||
+      site_info_.agent_cluster_key().IsCrossOriginIsolated()) {
+    return std::nullopt;
+  }
+  auto network_isolation_key = GetIsolationInfo().network_isolation_key();
+  if (network_isolation_key.IsTransient()) {
+    return std::nullopt;
+  }
+  return network_isolation_key;
+#else   // ENABLE_DISK_CACHE_SQL_BACKEND
+  return std::nullopt;
+#endif  // ENABLE_DISK_CACHE_SQL_BACKEND
 }
 
 void NavigationRequest::OnFailureChecksComplete(

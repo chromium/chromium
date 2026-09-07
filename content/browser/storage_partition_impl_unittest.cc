@@ -75,8 +75,10 @@
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
+#include "content/public/test/test_content_browser_client.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
+#include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/schemeful_site.h"
@@ -85,9 +87,12 @@
 #include "net/cookies/cookie_access_params.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_inclusion_status.h"
+#include "net/disk_cache/backend_experiment.h"
+#include "net/disk_cache/buildflags.h"
 #include "net/net_buildflags.h"
 #include "services/network/cookie_manager.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/test/mock_device_bound_session_manager.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager.h"
@@ -2191,5 +2196,142 @@ TEST_F(StoragePartitionImplTest, RemoveDeclarativePerformanceObserverData) {
   EXPECT_FALSE(store->HasEarlyFailurePolicy(kOrigin));
   EXPECT_FALSE(store->HasEarlyFailurePolicy(kOtherOrigin));
 }
+
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+namespace {
+
+class SharedCacheNetworkContextTestBrowserClient
+    : public TestContentBrowserClient {
+ public:
+  SharedCacheNetworkContextTestBrowserClient(const base::FilePath& cache_dir,
+                                             bool enable_encrypted_cache)
+      : cache_dir_(cache_dir),
+        enable_encrypted_cache_(enable_encrypted_cache) {}
+
+  void ConfigureNetworkContextParams(
+      BrowserContext* context,
+      bool in_memory,
+      const base::FilePath& relative_partition_path,
+      network::mojom::NetworkContextParams* network_context_params,
+      cert_verifier::mojom::CertVerifierCreationParams*
+          cert_verifier_creation_params) override {
+    if (!cache_dir_.empty()) {
+      network_context_params->file_paths =
+          network::mojom::NetworkContextFilePaths::New();
+      network_context_params->file_paths->http_cache_directory = cache_dir_;
+    }
+    network_context_params->enable_encrypted_http_cache =
+        enable_encrypted_cache_;
+  }
+
+ private:
+  base::FilePath cache_dir_;
+  bool enable_encrypted_cache_;
+};
+
+}  // namespace
+
+TEST_F(StoragePartitionImplTest, SupportsRendererAccessibleHttpCache) {
+  auto* partition = static_cast<StoragePartitionImpl*>(
+      browser_context()->GetDefaultStoragePartition());
+
+  // 1. Feature disabled: returns false without checking network context.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        net::features::kRendererAccessibleHttpCache);
+    EXPECT_FALSE(partition->SupportsRendererAccessibleHttpCache());
+  }
+
+  // 2. Feature enabled: tests manual override setter.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        net::features::kRendererAccessibleHttpCache);
+
+    partition->set_supports_renderer_accessible_http_cache_for_testing(true);
+    EXPECT_TRUE(partition->SupportsRendererAccessibleHttpCache());
+
+    partition->set_supports_renderer_accessible_http_cache_for_testing(false);
+    EXPECT_FALSE(partition->SupportsRendererAccessibleHttpCache());
+
+    partition->set_supports_renderer_accessible_http_cache_for_testing(
+        std::nullopt);
+  }
+}
+
+TEST_F(StoragePartitionImplTest,
+       SupportsRendererAccessibleHttpCacheInitNetworkContext) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  // Case A: Feature enabled, SQL backend enabled, unencrypted cache dir -> true
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures({net::features::kRendererAccessibleHttpCache,
+                                   net::features::kDiskCacheBackendExperiment},
+                                  {});
+    SharedCacheNetworkContextTestBrowserClient client(
+        temp_dir.GetPath().AppendASCII("cache"),
+        /*enable_encrypted_cache=*/false);
+    ScopedContentBrowserClientSetting setting(&client);
+
+    TestBrowserContext custom_browser_context;
+    auto* partition = static_cast<StoragePartitionImpl*>(
+        custom_browser_context.GetDefaultStoragePartition());
+    EXPECT_TRUE(partition->SupportsRendererAccessibleHttpCache());
+  }
+
+  // Case B: Encrypted cache -> false
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures({net::features::kRendererAccessibleHttpCache,
+                                   net::features::kDiskCacheBackendExperiment},
+                                  {});
+    SharedCacheNetworkContextTestBrowserClient client(
+        temp_dir.GetPath().AppendASCII("cache"),
+        /*enable_encrypted_cache=*/true);
+    ScopedContentBrowserClientSetting setting(&client);
+
+    TestBrowserContext custom_browser_context;
+    auto* partition = static_cast<StoragePartitionImpl*>(
+        custom_browser_context.GetDefaultStoragePartition());
+    EXPECT_FALSE(partition->SupportsRendererAccessibleHttpCache());
+  }
+
+  // Case C: No cache dir (empty file_paths) -> false
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures({net::features::kRendererAccessibleHttpCache,
+                                   net::features::kDiskCacheBackendExperiment},
+                                  {});
+    SharedCacheNetworkContextTestBrowserClient client(
+        base::FilePath(),
+        /*enable_encrypted_cache=*/false);
+    ScopedContentBrowserClientSetting setting(&client);
+
+    TestBrowserContext custom_browser_context;
+    auto* partition = static_cast<StoragePartitionImpl*>(
+        custom_browser_context.GetDefaultStoragePartition());
+    EXPECT_FALSE(partition->SupportsRendererAccessibleHttpCache());
+  }
+
+  // Case D: Not in SQL backend experiment -> false
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures({net::features::kRendererAccessibleHttpCache},
+                                  {net::features::kDiskCacheBackendExperiment});
+    SharedCacheNetworkContextTestBrowserClient client(
+        temp_dir.GetPath().AppendASCII("cache"),
+        /*enable_encrypted_cache=*/false);
+    ScopedContentBrowserClientSetting setting(&client);
+
+    TestBrowserContext custom_browser_context;
+    auto* partition = static_cast<StoragePartitionImpl*>(
+        custom_browser_context.GetDefaultStoragePartition());
+    EXPECT_FALSE(partition->SupportsRendererAccessibleHttpCache());
+  }
+}
+#endif  // ENABLE_DISK_CACHE_SQL_BACKEND
 
 }  // namespace content

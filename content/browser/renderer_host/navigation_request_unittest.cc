@@ -14,8 +14,12 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "content/browser/embedder_isolation_info.h"
 #include "content/browser/renderer_host/navigation_throttle_runner.h"
+#include "content/browser/site_info.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/browser/url_info.h"
+#include "content/browser/web_exposed_isolation_info.h"
 #include "content/common/features.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
@@ -37,6 +41,7 @@
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_web_contents.h"
 #include "net/base/features.h"
+#include "net/disk_cache/buildflags.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/features.h"
@@ -1981,5 +1986,283 @@ TEST_F(NavigationRequestTest, GetRequestHeadersReflectsLaterModifications) {
   // still in scope.
   navigation->Commit();
 }
+
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+TEST_F(NavigationRequestTest,
+       GetNetworkIsolationKeyForRendererAccessibleHttpCache) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      net::features::kRendererAccessibleHttpCache);
+
+  const GURL kUrl("https://example.com");
+  auto navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(kUrl, main_rfh());
+  navigation->Start();
+  NavigationRequest* request =
+      NavigationRequest::From(navigation->GetNavigationHandle());
+
+  auto* storage_partition = static_cast<StoragePartitionImpl*>(
+      browser_context()->GetDefaultStoragePartition());
+  storage_partition->set_supports_renderer_accessible_http_cache_for_testing(
+      true);
+  const SiteInfo original_site_info = request->site_info_for_testing();
+  const net::IsolationInfo original_isolation_info =
+      request->GetIsolationInfo();
+
+  const url::Origin kOrigin = url::Origin::Create(kUrl);
+  const net::IsolationInfo kValidIsolationInfo = net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kMainFrame, kOrigin, kOrigin,
+      net::SiteForCookies::FromOrigin(kOrigin));
+  ASSERT_FALSE(kValidIsolationInfo.network_isolation_key().IsTransient());
+
+  struct SiteInfoParams {
+    bool is_sandboxed = false;
+    bool is_guest = false;
+    bool is_jit_disabled = false;
+    bool are_v8_optimizations_disabled = false;
+    bool is_fenced = false;
+    std::optional<StoragePartitionConfig> partition_config;
+    std::optional<WebExposedIsolationInfo> web_exposed_isolation_info;
+    std::optional<EmbedderIsolationInfo> embedder_isolation_info;
+    std::optional<AgentClusterKey> agent_cluster_key;
+  };
+  auto create_site_info = [&](const SiteInfoParams& params = {}) {
+    return SiteInfo(
+        params.agent_cluster_key.value_or(AgentClusterKey::CreateSiteKeyed(
+            kUrl, AgentClusterKey::OACStatus::kSiteKeyedByDefault)),
+        kUrl, params.is_sandboxed,
+        /*unique_sandbox_id=*/UrlInfo::kInvalidUniqueSandboxId,
+        params.partition_config.value_or(
+            StoragePartitionConfig::CreateDefault(browser_context())),
+        params.web_exposed_isolation_info.value_or(
+            WebExposedIsolationInfo::CreateNonIsolated()),
+        WebExposedIsolationLevel::kNotIsolated, params.is_guest,
+        /*does_site_request_dedicated_process_for_coop=*/false,
+        params.is_jit_disabled, params.are_v8_optimizations_disabled,
+        params.is_fenced,
+        /*browser_context_id=*/base::UnguessableToken(),
+        params.embedder_isolation_info.value_or(
+            EmbedderIsolationInfo::CreateNone()));
+  };
+
+  request->set_isolation_info_for_testing(kValidIsolationInfo);
+
+  // 1. Success case: All requirements satisfied.
+  request->set_site_info_for_testing(create_site_info());
+  EXPECT_EQ(request->GetNetworkIsolationKeyForRendererAccessibleHttpCache(),
+            kValidIsolationInfo.network_isolation_key());
+
+  // 2. StoragePartition does not support shared cache.
+  storage_partition->set_supports_renderer_accessible_http_cache_for_testing(
+      false);
+  EXPECT_EQ(request->GetNetworkIsolationKeyForRendererAccessibleHttpCache(),
+            std::nullopt);
+  storage_partition->set_supports_renderer_accessible_http_cache_for_testing(
+      true);
+
+  // 3. StoragePartitionConfig is in-memory.
+  TestBrowserContext otr_browser_context;
+  otr_browser_context.set_is_off_the_record(true);
+  const auto in_memory_config =
+      StoragePartitionConfig::CreateDefault(&otr_browser_context);
+  auto* in_memory_storage_partition = static_cast<StoragePartitionImpl*>(
+      browser_context()->GetStoragePartition(in_memory_config));
+  in_memory_storage_partition
+      ->set_supports_renderer_accessible_http_cache_for_testing(true);
+  request->set_site_info_for_testing(
+      create_site_info({.partition_config = in_memory_config}));
+  EXPECT_EQ(request->GetNetworkIsolationKeyForRendererAccessibleHttpCache(),
+            std::nullopt);
+
+  // 4. Sandboxed.
+  request->set_site_info_for_testing(create_site_info({.is_sandboxed = true}));
+  EXPECT_EQ(request->GetNetworkIsolationKeyForRendererAccessibleHttpCache(),
+            std::nullopt);
+
+  // 5. Web-exposed isolated (cross-origin isolated).
+  request->set_site_info_for_testing(
+      create_site_info({.web_exposed_isolation_info =
+                            WebExposedIsolationInfo::CreateIsolated(kOrigin)}));
+  EXPECT_EQ(request->GetNetworkIsolationKeyForRendererAccessibleHttpCache(),
+            std::nullopt);
+
+  // 6. Guest.
+  request->set_site_info_for_testing(create_site_info({.is_guest = true}));
+  EXPECT_EQ(request->GetNetworkIsolationKeyForRendererAccessibleHttpCache(),
+            std::nullopt);
+
+  // 7. JIT disabled.
+  request->set_site_info_for_testing(
+      create_site_info({.is_jit_disabled = true}));
+  EXPECT_EQ(request->GetNetworkIsolationKeyForRendererAccessibleHttpCache(),
+            std::nullopt);
+
+  // 8. V8 optimizations disabled.
+  request->set_site_info_for_testing(
+      create_site_info({.are_v8_optimizations_disabled = true}));
+  EXPECT_EQ(request->GetNetworkIsolationKeyForRendererAccessibleHttpCache(),
+            std::nullopt);
+
+  // 9. PDF.
+  request->set_site_info_for_testing(create_site_info(
+      {.embedder_isolation_info = EmbedderIsolationInfo::CreateForPdf()}));
+  EXPECT_EQ(request->GetNetworkIsolationKeyForRendererAccessibleHttpCache(),
+            std::nullopt);
+
+  // 10. Fenced frame.
+  request->set_site_info_for_testing(create_site_info({.is_fenced = true}));
+  EXPECT_EQ(request->GetNetworkIsolationKeyForRendererAccessibleHttpCache(),
+            std::nullopt);
+
+  // 11. StoragePartitionConfig is not default.
+  const auto non_default_config = StoragePartitionConfig::Create(
+      browser_context(), "custom_domain", "custom_name",
+      /*in_memory=*/false);
+  auto* non_default_storage_partition = static_cast<StoragePartitionImpl*>(
+      browser_context()->GetStoragePartition(non_default_config));
+  non_default_storage_partition
+      ->set_supports_renderer_accessible_http_cache_for_testing(true);
+  request->set_site_info_for_testing(
+      create_site_info({.partition_config = non_default_config}));
+  EXPECT_EQ(request->GetNetworkIsolationKeyForRendererAccessibleHttpCache(),
+            std::nullopt);
+
+  // 12. Origin-keyed AgentClusterKey.
+  request->set_site_info_for_testing(create_site_info(
+      {.agent_cluster_key = AgentClusterKey::CreateOriginKeyed(
+           kOrigin, AgentClusterKey::OACStatus::kOriginKeyedByHeader)}));
+  EXPECT_EQ(request->GetNetworkIsolationKeyForRendererAccessibleHttpCache(),
+            std::nullopt);
+
+  // 13. CrossOriginIsolationKey in AgentClusterKey.
+  request->set_site_info_for_testing(create_site_info(
+      {.agent_cluster_key = AgentClusterKey::CreateWithCrossOriginIsolationKey(
+           kOrigin,
+           AgentClusterKey::CrossOriginIsolationKey(
+               kOrigin, blink::mojom::CrossOriginIsolationMode::kConcrete,
+               /*cross_origin_isolated_through_dip=*/false),
+           AgentClusterKey::OACStatus::kSiteKeyedByDefault)}));
+  EXPECT_EQ(request->GetNetworkIsolationKeyForRendererAccessibleHttpCache(),
+            std::nullopt);
+
+  // 14. Transient NetworkIsolationKey.
+  request->set_site_info_for_testing(create_site_info());
+  request->set_isolation_info_for_testing(
+      net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt));
+  EXPECT_EQ(request->GetNetworkIsolationKeyForRendererAccessibleHttpCache(),
+            std::nullopt);
+
+  request->set_site_info_for_testing(original_site_info);
+  request->set_isolation_info_for_testing(original_isolation_info);
+}
+
+TEST_F(NavigationRequestTest,
+       GetNetworkIsolationKeyForRendererAccessibleHttpCacheInMemoryPartition) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      net::features::kRendererAccessibleHttpCache);
+
+  const GURL kUrl("https://example.com");
+  auto navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(kUrl, main_rfh());
+  navigation->Start();
+  NavigationRequest* request =
+      NavigationRequest::From(navigation->GetNavigationHandle());
+
+  const SiteInfo original_site_info = request->site_info_for_testing();
+  const net::IsolationInfo original_isolation_info =
+      request->GetIsolationInfo();
+
+  TestBrowserContext otr_browser_context;
+  otr_browser_context.set_is_off_the_record(true);
+  const auto in_memory_config =
+      StoragePartitionConfig::CreateDefault(&otr_browser_context);
+  auto* in_memory_storage_partition = static_cast<StoragePartitionImpl*>(
+      browser_context()->GetStoragePartition(in_memory_config));
+  // Set supports_renderer_accessible_http_cache to true on the in-memory
+  // StoragePartition to verify that in_memory() check explicitly rejects it.
+  in_memory_storage_partition
+      ->set_supports_renderer_accessible_http_cache_for_testing(true);
+
+  const url::Origin kOrigin = url::Origin::Create(kUrl);
+  const net::IsolationInfo kValidIsolationInfo = net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kMainFrame, kOrigin, kOrigin,
+      net::SiteForCookies::FromOrigin(kOrigin));
+  request->set_isolation_info_for_testing(kValidIsolationInfo);
+
+  SiteInfo in_memory_site_info(
+      AgentClusterKey::CreateSiteKeyed(
+          kUrl, AgentClusterKey::OACStatus::kSiteKeyedByDefault),
+      kUrl, /*is_sandboxed=*/false,
+      /*unique_sandbox_id=*/UrlInfo::kInvalidUniqueSandboxId, in_memory_config,
+      WebExposedIsolationInfo::CreateNonIsolated(),
+      WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
+      /*does_site_request_dedicated_process_for_coop=*/false,
+      /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
+      /*is_fenced=*/false, /*browser_context_id=*/base::UnguessableToken(),
+      EmbedderIsolationInfo::CreateNone());
+  request->set_site_info_for_testing(in_memory_site_info);
+
+  EXPECT_EQ(request->GetNetworkIsolationKeyForRendererAccessibleHttpCache(),
+            std::nullopt);
+
+  request->set_site_info_for_testing(original_site_info);
+  request->set_isolation_info_for_testing(original_isolation_info);
+}
+
+TEST_F(
+    NavigationRequestTest,
+    GetNetworkIsolationKeyForRendererAccessibleHttpCacheNonDefaultPartition) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      net::features::kRendererAccessibleHttpCache);
+
+  const GURL kUrl("https://example.com");
+  auto navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(kUrl, main_rfh());
+  navigation->Start();
+  NavigationRequest* request =
+      NavigationRequest::From(navigation->GetNavigationHandle());
+
+  const SiteInfo original_site_info = request->site_info_for_testing();
+  const net::IsolationInfo original_isolation_info =
+      request->GetIsolationInfo();
+
+  const auto non_default_config = StoragePartitionConfig::Create(
+      browser_context(), "custom_domain", "custom_name",
+      /*in_memory=*/false);
+  auto* non_default_storage_partition = static_cast<StoragePartitionImpl*>(
+      browser_context()->GetStoragePartition(non_default_config));
+  // Set supports_renderer_accessible_http_cache to true on the non-default
+  // StoragePartition to verify that !is_default() check explicitly rejects it.
+  non_default_storage_partition
+      ->set_supports_renderer_accessible_http_cache_for_testing(true);
+
+  const url::Origin kOrigin = url::Origin::Create(kUrl);
+  const net::IsolationInfo kValidIsolationInfo = net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kMainFrame, kOrigin, kOrigin,
+      net::SiteForCookies::FromOrigin(kOrigin));
+  request->set_isolation_info_for_testing(kValidIsolationInfo);
+
+  SiteInfo non_default_site_info(
+      AgentClusterKey::CreateSiteKeyed(
+          kUrl, AgentClusterKey::OACStatus::kSiteKeyedByDefault),
+      kUrl, /*is_sandboxed=*/false,
+      /*unique_sandbox_id=*/UrlInfo::kInvalidUniqueSandboxId,
+      non_default_config, WebExposedIsolationInfo::CreateNonIsolated(),
+      WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
+      /*does_site_request_dedicated_process_for_coop=*/false,
+      /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
+      /*is_fenced=*/false, /*browser_context_id=*/base::UnguessableToken(),
+      EmbedderIsolationInfo::CreateNone());
+  request->set_site_info_for_testing(non_default_site_info);
+
+  EXPECT_EQ(request->GetNetworkIsolationKeyForRendererAccessibleHttpCache(),
+            std::nullopt);
+
+  request->set_site_info_for_testing(original_site_info);
+  request->set_isolation_info_for_testing(original_isolation_info);
+}
+#endif  // ENABLE_DISK_CACHE_SQL_BACKEND
 
 }  // namespace content
