@@ -15,7 +15,6 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/single_thread_task_runner.h"
-#import "components/browser_sync/sync_to_signin_migration.h"
 #import "components/policy/core/common/management/platform_management_service.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
@@ -440,13 +439,6 @@ void AuthenticationService::SignOut(
   // bookmarks.
   ResetLastUsedBookmarkFolder(pref_service_);
 
-  const bool is_managed = HasPrimaryIdentityManaged();
-  const bool is_migrated_from_syncing =
-      browser_sync::WasPrimaryAccountMigratedFromSyncingToSignedIn(
-          identity_manager_, pref_service_);
-  const bool should_clear_data_for_signed_in_period =
-      ShouldClearDataForSignedInPeriodOnSignOut();
-
   auto* account_mutator = identity_manager_->GetPrimaryAccountMutator();
   // GetPrimaryAccountMutator() returns nullptr on ChromeOS only.
   DCHECK(account_mutator);
@@ -459,23 +451,11 @@ void AuthenticationService::SignOut(
   // Populate them again.
   ReloadCredentialsFromIdentities();
 
-  base::OnceClosure callback_closure =
-      completion ? base::BindOnce(completion) : base::DoNothing();
-
-  // TODO(crbug.com/407498240): Once all users are migrated to multiple
-  // profiles, the "clear browsing data" cases will be unused and can be cleaned
-  // up.
-  if (is_managed && is_migrated_from_syncing) {
-    // If `is_clear_data_feature_for_managed_users_enabled` is false, browsing
-    // data for managed account needs to be cleared only if sync has started at
-    // least once. This also includes the case where a previously-syncing user
-    // was migrated to signed-in.
-    delegate_->ClearBrowsingData(std::move(callback_closure));
-  } else if (should_clear_data_for_signed_in_period) {
-    delegate_->ClearBrowsingDataForSignedinPeriod(std::move(callback_closure));
-  } else if (completion) {
+  // TODO(crbug.com/407498240): Remove the `completion` param since SignOut() is
+  // always synchronous.
+  if (completion) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(callback_closure));
+        FROM_HERE, base::BindOnce(completion));
   }
 }
 

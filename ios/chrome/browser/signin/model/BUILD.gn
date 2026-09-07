@@ -142,7 +142,6 @@ source_set("authentication_service") {
     ":system_identity_manager",
     ":system_identity_util",
     "//base",
-    "//components/browser_sync",
     "//components/policy/core/common",
     "//components/pref_registry",
     "//components/prefs",
