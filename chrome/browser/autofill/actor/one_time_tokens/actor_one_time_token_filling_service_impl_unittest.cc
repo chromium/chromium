@@ -25,7 +25,6 @@
 #include "chrome/browser/ssl/chrome_security_state_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/actor/core/actor_switches.h"
 #include "components/actor/core/aggregated_journal.h"
 #include "components/actor/core/task_id.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
@@ -44,6 +43,7 @@
 #include "components/one_time_tokens/core/browser/one_time_token_retrieval_error.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription_manager.h"
+#include "components/one_time_tokens/core/common/one_time_token_switches.h"
 #include "components/security_state/core/security_state.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
@@ -311,12 +311,12 @@ class ActorOneTimeTokenFillingServiceImplTest
 };
 
 // Tests that `RetrieveOtp` returns the mock OTP immediately from the command
-// line switch when the switch is set.
+// line switch when `kMockOtpValue` is set.
 TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_MockOtpSwitchSet) {
   const std::string kMockOtp = "987654";
   base::test::ScopedCommandLine scoped_command_line;
   scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
-      ::actor::switches::kAttemptOtpFillingMockGmailOtpValue, kMockOtp);
+      one_time_tokens::switches::kMockOtpValue, kMockOtp);
 
   base::test::TestFuture<
       base::expected<std::string, OneTimeTokenRetrievalError>>

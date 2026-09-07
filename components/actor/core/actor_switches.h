@@ -11,7 +11,6 @@ extern const char kDisableActorSafetyChecks[];
 extern const char kAttemptFormFillingToolSkipsUI[];
 extern const char kAttemptOtpFillingBypassLoginCheck[];
 extern const char kEnableActorJournalVLog[];
-extern const char kAttemptOtpFillingMockGmailOtpValue[];
 extern const char kActorTracePath[];
 
 }  // namespace actor::switches

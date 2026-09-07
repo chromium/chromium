@@ -31,7 +31,6 @@
 #include "chrome/browser/ssl/chrome_security_state_util.h"
 #include "chrome/browser/ui/autofill/autofill_client_provider.h"
 #include "chrome/browser/ui/autofill/autofill_client_provider_factory.h"
-#include "components/actor/core/actor_switches.h"
 #include "components/actor/core/aggregated_journal.h"
 #include "components/actor/core/journal_details_builder.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
@@ -50,6 +49,7 @@
 #include "components/one_time_tokens/core/browser/one_time_token_log_sink.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service.h"
 #include "components/one_time_tokens/core/common/one_time_token_features.h"
+#include "components/one_time_tokens/core/common/one_time_token_switches.h"
 #include "components/security_state/core/security_state.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
@@ -271,7 +271,7 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
 
   std::string mock_otp =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          ::actor::switches::kAttemptOtpFillingMockGmailOtpValue);
+          one_time_tokens::switches::kMockOtpValue);
   if (!mock_otp.empty()) {
     RecordActorOneTimeTokenFillingServiceRetrieveOtp(kMockOtp);
     journal_->Log(url, task_id_,
