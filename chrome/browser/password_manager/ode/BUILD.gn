@@ -7,12 +7,12 @@ source_set("ode") {
 
   if (!is_android) {
     public = [
+      "chrome_passkey_on_device_encryption_state_tracker.h",
       "on_device_encryption_metrics_reporter_factory.h",
-      "passkey_on_device_encryption_state_tracker.h",
     ]
     sources = [
+      "chrome_passkey_on_device_encryption_state_tracker.cc",
       "on_device_encryption_metrics_reporter_factory.cc",
-      "passkey_on_device_encryption_state_tracker.cc",
     ]
     public_deps += [
       "//chrome/browser/profiles:profile",
@@ -29,7 +29,8 @@ source_set("ode") {
 source_set("unit_tests") {
   testonly = true
   if (!is_android) {
-    sources = [ "passkey_on_device_encryption_state_tracker_unittest.cc" ]
+    sources =
+        [ "chrome_passkey_on_device_encryption_state_tracker_unittest.cc" ]
     deps = [
       ":ode",
       "//base/test:test_support",

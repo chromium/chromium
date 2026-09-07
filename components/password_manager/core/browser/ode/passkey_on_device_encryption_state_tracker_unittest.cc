@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/ode/passkey_on_device_encryption_state_tracker.h"
+#include "components/password_manager/core/browser/ode/passkey_on_device_encryption_state_tracker.h"
 
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 
 #include "base/strings/strcat.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/webauthn/mock_enclave_manager.h"
+#include "components/password_manager/core/browser/ode/on_device_encryption_state_tracker.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/webauthn/core/browser/test_passkey_model.h"
@@ -23,9 +24,32 @@ namespace {
 
 using ::testing::Bool;
 using ::testing::Combine;
-using ::testing::NiceMock;
-using ::testing::Return;
 using ::testing::Values;
+
+class TestPasskeyOnDeviceEncryptionStateTracker
+    : public PasskeyOnDeviceEncryptionStateTracker {
+ public:
+  TestPasskeyOnDeviceEncryptionStateTracker(
+      syncer::SyncService* sync_service,
+      webauthn::PasskeyModel* passkey_model)
+      : PasskeyOnDeviceEncryptionStateTracker(sync_service, passkey_model) {
+    ComputeState();
+  }
+
+  void SetPlatformState(OnDeviceEncryptionState state) {
+    platform_state_ = state;
+    ComputeState();
+  }
+
+ protected:
+  OnDeviceEncryptionState GetPlatformState() const override {
+    return platform_state_;
+  }
+
+ private:
+  OnDeviceEncryptionState platform_state_ =
+      OnDeviceEncryptionState::kDeviceReady;
+};
 
 enum class AccountState {
   kNotSignedIn,
@@ -51,9 +75,8 @@ struct StateComputationTestCase {
   bool is_sync_engine_initialized;
   bool is_webauthn_credential_sync_enabled;
   bool is_passkey_model_ready;
-  bool is_enclave_loaded;
   bool is_passkey_model_empty;
-  bool is_enclave_ready;
+  OnDeviceEncryptionState platform_state;
   OnDeviceEncryptionState expected_state;
 };
 
@@ -63,9 +86,8 @@ class PasskeyOnDeviceEncryptionStateTrackerStateTest
                      bool /*is_sync_engine_initialized*/,
                      bool /*is_webauthn_credential_sync_enabled*/,
                      bool /*is_passkey_model_ready*/,
-                     bool /*is_enclave_loaded*/,
                      bool /*is_passkey_model_empty*/,
-                     bool /*is_enclave_ready*/,
+                     OnDeviceEncryptionState /*platform_state*/,
                      OnDeviceEncryptionState /*expected_state*/>> {
  public:
   StateComputationTestCase GetTestCase() const {
@@ -74,16 +96,34 @@ class PasskeyOnDeviceEncryptionStateTrackerStateTest
         .is_sync_engine_initialized = std::get<1>(GetParam()),
         .is_webauthn_credential_sync_enabled = std::get<2>(GetParam()),
         .is_passkey_model_ready = std::get<3>(GetParam()),
-        .is_enclave_loaded = std::get<4>(GetParam()),
-        .is_passkey_model_empty = std::get<5>(GetParam()),
-        .is_enclave_ready = std::get<6>(GetParam()),
-        .expected_state = std::get<7>(GetParam()),
+        .is_passkey_model_empty = std::get<4>(GetParam()),
+        .platform_state = std::get<5>(GetParam()),
+        .expected_state = std::get<6>(GetParam()),
     };
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
 };
+
+std::string StateToString(OnDeviceEncryptionState state) {
+  switch (state) {
+    case OnDeviceEncryptionState::kDeviceReady:
+      return "DeviceReady";
+    case OnDeviceEncryptionState::kDeviceNotReady:
+      return "DeviceNotReady";
+    case OnDeviceEncryptionState::kOnDeviceEncryptionStateNotAvailable:
+      return "NotAvailable";
+    case OnDeviceEncryptionState::kPasswordAndPasskeySyncDisabled:
+      return "SyncDisabled";
+    case OnDeviceEncryptionState::kOnDeviceEncryptionNotEnabled:
+      return "NotEnabled";
+    case OnDeviceEncryptionState::kProfileNotSignedIn:
+      return "ProfileNotSignedIn";
+    case OnDeviceEncryptionState::kProfileSignInPending:
+      return "ProfileSignInPending";
+  }
+}
 
 // Used for creating human-readable names for parameterized test cases.
 std::string ParamInfoToString(
@@ -97,9 +137,9 @@ std::string ParamInfoToString(
       std::get<2>(info.param) ? "WebauthnSyncEnabled_"
                               : "WebauthnSyncDisabled_",
       std::get<3>(info.param) ? "PasskeyModelReady_" : "PasskeyModelNotReady_",
-      std::get<4>(info.param) ? "EnclaveLoaded_" : "EnclaveNotLoaded_",
-      std::get<5>(info.param) ? "PasskeysEmpty_" : "PasskeysExist_",
-      std::get<6>(info.param) ? "EnclaveReady" : "EnclaveNotReady",
+      std::get<4>(info.param) ? "PasskeysEmpty_" : "PasskeysExist_",
+      "PlatformState_",
+      StateToString(std::get<5>(info.param)),
   });
 }
 
@@ -147,14 +187,9 @@ TEST_P(PasskeyOnDeviceEncryptionStateTrackerStateTest, ComputesCorrectState) {
         /*public_key_spki_der_out=*/nullptr);
   }
 
-  NiceMock<MockEnclaveManager> enclave_manager;
-  ON_CALL(enclave_manager, IsLoaded())
-      .WillByDefault(Return(test_case.is_enclave_loaded));
-  ON_CALL(enclave_manager, IsReady())
-      .WillByDefault(Return(test_case.is_enclave_ready));
-
-  PasskeyOnDeviceEncryptionStateTracker tracker(&sync_service, &enclave_manager,
-                                                &passkey_model);
+  TestPasskeyOnDeviceEncryptionStateTracker tracker(&sync_service,
+                                                    &passkey_model);
+  tracker.SetPlatformState(test_case.platform_state);
   EXPECT_EQ(tracker.GetEncryptionState(), test_case.expected_state);
 }
 
@@ -168,9 +203,10 @@ INSTANTIATE_TEST_SUITE_P(
         /*is_sync_engine_initialized=*/Values(false),
         /*is_webauthn_credential_sync_enabled=*/Bool(),
         /*is_passkey_model_ready=*/Bool(),
-        /*is_enclave_loaded=*/Bool(),
         /*is_passkey_model_empty=*/Bool(),
-        /*is_enclave_ready=*/Bool(),
+        /*platform_state=*/
+        Values(OnDeviceEncryptionState::kDeviceReady,
+               OnDeviceEncryptionState::kDeviceNotReady),
         /*expected_state=*/
         Values(OnDeviceEncryptionState::kProfileNotSignedIn)),
     &ParamInfoToString);
@@ -185,9 +221,10 @@ INSTANTIATE_TEST_SUITE_P(
         /*is_sync_engine_initialized=*/Values(false),
         /*is_webauthn_credential_sync_enabled=*/Bool(),
         /*is_passkey_model_ready=*/Bool(),
-        /*is_enclave_loaded=*/Bool(),
         /*is_passkey_model_empty=*/Bool(),
-        /*is_enclave_ready=*/Bool(),
+        /*platform_state=*/
+        Values(OnDeviceEncryptionState::kDeviceReady,
+               OnDeviceEncryptionState::kDeviceNotReady),
         /*expected_state=*/
         Values(OnDeviceEncryptionState::kProfileSignInPending)),
     &ParamInfoToString);
@@ -202,9 +239,10 @@ INSTANTIATE_TEST_SUITE_P(
         /*is_sync_engine_initialized=*/Values(false),
         /*is_webauthn_credential_sync_enabled=*/Bool(),
         /*is_passkey_model_ready=*/Bool(),
-        /*is_enclave_loaded=*/Bool(),
         /*is_passkey_model_empty=*/Bool(),
-        /*is_enclave_ready=*/Bool(),
+        /*platform_state=*/
+        Values(OnDeviceEncryptionState::kDeviceReady,
+               OnDeviceEncryptionState::kDeviceNotReady),
         /*expected_state=*/
         Values(OnDeviceEncryptionState::kOnDeviceEncryptionStateNotAvailable)),
     &ParamInfoToString);
@@ -218,9 +256,10 @@ INSTANTIATE_TEST_SUITE_P(
         /*is_sync_engine_initialized=*/Values(true),
         /*is_webauthn_credential_sync_enabled=*/Values(false),
         /*is_passkey_model_ready=*/Bool(),
-        /*is_enclave_loaded=*/Bool(),
         /*is_passkey_model_empty=*/Bool(),
-        /*is_enclave_ready=*/Bool(),
+        /*platform_state=*/
+        Values(OnDeviceEncryptionState::kDeviceReady,
+               OnDeviceEncryptionState::kDeviceNotReady),
         /*expected_state=*/
         Values(OnDeviceEncryptionState::kPasswordAndPasskeySyncDisabled)),
     &ParamInfoToString);
@@ -235,26 +274,10 @@ INSTANTIATE_TEST_SUITE_P(
         /*is_sync_engine_initialized=*/Values(true),
         /*is_webauthn_credential_sync_enabled=*/Values(true),
         /*is_passkey_model_ready=*/Values(false),
-        /*is_enclave_loaded=*/Bool(),
         /*is_passkey_model_empty=*/Bool(),
-        /*is_enclave_ready=*/Bool(),
-        /*expected_state=*/
-        Values(OnDeviceEncryptionState::kOnDeviceEncryptionStateNotAvailable)),
-    &ParamInfoToString);
-
-// When enclave manager is not loaded the on-device encryption state can't be
-// computed.
-INSTANTIATE_TEST_SUITE_P(
-    EnclaveManagerNotLoaded,
-    PasskeyOnDeviceEncryptionStateTrackerStateTest,
-    Combine(
-        /*account_state=*/Values(AccountState::kSignedIn),
-        /*is_sync_engine_initialized=*/Values(true),
-        /*is_webauthn_credential_sync_enabled=*/Values(true),
-        /*is_passkey_model_ready=*/Bool(),
-        /*is_enclave_loaded=*/Values(false),
-        /*is_passkey_model_empty=*/Bool(),
-        /*is_enclave_ready=*/Bool(),
+        /*platform_state=*/
+        Values(OnDeviceEncryptionState::kDeviceReady,
+               OnDeviceEncryptionState::kDeviceNotReady),
         /*expected_state=*/
         Values(OnDeviceEncryptionState::kOnDeviceEncryptionStateNotAvailable)),
     &ParamInfoToString);
@@ -269,15 +292,15 @@ INSTANTIATE_TEST_SUITE_P(
         /*is_sync_engine_initialized=*/Values(true),
         /*is_webauthn_credential_sync_enabled=*/Values(true),
         /*is_passkey_model_ready=*/Values(true),
-        /*is_enclave_loaded=*/Values(true),
         /*is_passkey_model_empty=*/Values(true),
-        /*is_enclave_ready=*/Bool(),
+        /*platform_state=*/
+        Values(OnDeviceEncryptionState::kDeviceReady,
+               OnDeviceEncryptionState::kDeviceNotReady),
         /*expected_state=*/
         Values(OnDeviceEncryptionState::kOnDeviceEncryptionNotEnabled)),
     &ParamInfoToString);
 
-// When passkeys exist and enclave is ready the on-device encryption is ready on
-// the device.
+// When passkeys exist, tracker returns the platform state.
 INSTANTIATE_TEST_SUITE_P(
     DeviceReady,
     PasskeyOnDeviceEncryptionStateTrackerStateTest,
@@ -286,15 +309,12 @@ INSTANTIATE_TEST_SUITE_P(
         /*is_sync_engine_initialized=*/Values(true),
         /*is_webauthn_credential_sync_enabled=*/Values(true),
         /*is_passkey_model_ready=*/Values(true),
-        /*is_enclave_loaded=*/Values(true),
         /*is_passkey_model_empty=*/Values(false),
-        /*is_enclave_ready=*/Values(true),
+        /*platform_state=*/Values(OnDeviceEncryptionState::kDeviceReady),
         /*expected_state=*/
         Values(OnDeviceEncryptionState::kDeviceReady)),
     &ParamInfoToString);
 
-// When passkeys exist but enclave is not ready the on-device encryption is not
-// ready on the device.
 INSTANTIATE_TEST_SUITE_P(
     DeviceNotReady,
     PasskeyOnDeviceEncryptionStateTrackerStateTest,
@@ -303,9 +323,8 @@ INSTANTIATE_TEST_SUITE_P(
         /*is_sync_engine_initialized=*/Values(true),
         /*is_webauthn_credential_sync_enabled=*/Values(true),
         /*is_passkey_model_ready=*/Values(true),
-        /*is_enclave_loaded=*/Values(true),
         /*is_passkey_model_empty=*/Values(false),
-        /*is_enclave_ready=*/Values(false),
+        /*platform_state=*/Values(OnDeviceEncryptionState::kDeviceNotReady),
         /*expected_state=*/
         Values(OnDeviceEncryptionState::kDeviceNotReady)),
     &ParamInfoToString);

@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/ode/passkey_on_device_encryption_state_tracker.h"
+#include "components/password_manager/core/browser/ode/passkey_on_device_encryption_state_tracker.h"
 
 #include <vector>
 
-#include "chrome/browser/webauthn/enclave_manager_interface.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -17,18 +16,13 @@ namespace password_manager {
 
 PasskeyOnDeviceEncryptionStateTracker::PasskeyOnDeviceEncryptionStateTracker(
     syncer::SyncService* sync_service,
-    EnclaveManagerInterface* enclave_manager,
     webauthn::PasskeyModel* passkey_model) {
   if (sync_service) {
     sync_service_observation_.Observe(sync_service);
   }
-  if (enclave_manager) {
-    enclave_manager_observation_.Observe(enclave_manager);
-  }
   if (passkey_model) {
     passkey_model_observation_.Observe(passkey_model);
   }
-  ComputeState();
 }
 
 PasskeyOnDeviceEncryptionStateTracker::
@@ -42,10 +36,6 @@ void PasskeyOnDeviceEncryptionStateTracker::OnStateChanged(
 void PasskeyOnDeviceEncryptionStateTracker::OnSyncShutdown(
     syncer::SyncService* sync) {
   sync_service_observation_.Reset();
-  ComputeState();
-}
-
-void PasskeyOnDeviceEncryptionStateTracker::OnStateUpdated() {
   ComputeState();
 }
 
@@ -98,8 +88,7 @@ void PasskeyOnDeviceEncryptionStateTracker::ComputeState() {
     return;
   }
 
-  if (!passkey_model() || !passkey_model()->IsReady() || !enclave_manager() ||
-      !enclave_manager()->IsLoaded()) {
+  if (!passkey_model() || !passkey_model()->IsReady()) {
     SetState(OnDeviceEncryptionState::kOnDeviceEncryptionStateNotAvailable);
     return;
   }
@@ -115,20 +104,11 @@ void PasskeyOnDeviceEncryptionStateTracker::ComputeState() {
     return;
   }
 
-  if (enclave_manager()->IsReady()) {
-    SetState(OnDeviceEncryptionState::kDeviceReady);
-  } else {
-    SetState(OnDeviceEncryptionState::kDeviceNotReady);
-  }
+  SetState(GetPlatformState());
 }
 
 syncer::SyncService* PasskeyOnDeviceEncryptionStateTracker::sync_service() {
   return sync_service_observation_.GetSource();
-}
-
-EnclaveManagerInterface*
-PasskeyOnDeviceEncryptionStateTracker::enclave_manager() {
-  return enclave_manager_observation_.GetSource();
 }
 
 webauthn::PasskeyModel* PasskeyOnDeviceEncryptionStateTracker::passkey_model() {

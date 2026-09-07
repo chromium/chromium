@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "chrome/browser/password_manager/ode/passkey_on_device_encryption_state_tracker.h"
+#include "chrome/browser/password_manager/ode/chrome_passkey_on_device_encryption_state_tracker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -57,7 +57,7 @@ OnDeviceEncryptionMetricsReporterFactory::BuildServiceInstanceForBrowserContext(
       EnclaveManagerFactory::GetForProfile(profile);
 
   auto passkey_tracker =
-      std::make_unique<PasskeyOnDeviceEncryptionStateTracker>(
+      std::make_unique<ChromePasskeyOnDeviceEncryptionStateTracker>(
           sync_service, enclave_manager, passkey_model);
   auto password_tracker =
       std::make_unique<PasswordTrustedVaultOnDeviceEncryptionStateTracker>(
