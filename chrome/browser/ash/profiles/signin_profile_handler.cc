@@ -6,10 +6,12 @@
 
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/barrier_closure.h"
 #include "base/check.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/ash/login/signin/oauth2_login_manager_factory.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
@@ -26,26 +28,41 @@
 namespace ash {
 namespace {
 
-// This array contains a subset of the explicitly allowlisted extensions that
+// This set contains a subset of the explicitly allowlisted extensions that
 // are defined in extensions/common/api/_behavior_features.json. The extension
 // is treated as risky if it has some UI elements which remain accessible
 // after the signin was completed.
-constexpr const char* kNonRiskyExtensionsIdsHashes[] = {
-    "E24F1786D842E91E74C27929B0B3715A4689A473",  // Gnubby component extension
-    "6F9E349A0561C78A0D3F41496FE521C5151C7F71",  // Gnubby app
-    "06BE211D5F014BAB34BC22D9DDA09C63A81D828E",  // Chrome OS XKB
-    "3F50C3A83839D9C76334BCE81CDEC06174F266AF",  // Virtual Keyboard
-    "2F47B526FA71F44816618C41EC55E5EE9543FDCC",  // Braille Keyboard
-    "86672C8D7A04E24EFB244BF96FE518C4C4809F73",  // Speech synthesis
-    "1CF709D51B2B96CF79D00447300BD3BFBE401D21",  // Mobile activation
-    "40FF1103292F40C34066E023B8BE8CAE18306EAE",  // Chromeos help
-    "3C654B3B6682CA194E75AD044CEDE927675DDEE8",  // Easy unlock
-    "75C7F4B720314B6CB1B5817CD86089DB95CD2461",  // ChromeVox
-    "4D725C894DA4CF1F4D96C60F0D83BD745EB530CA",  // Switch Access
-    "DDF36D85CB9C1646841F433F8ABAA2798F47D849",  // Select-to-speak
-    "D715AF563195BCD1B11CD5764B3B1CEAF8929D73",  // Enhanced Network TTS
-    "371AC6869D2138CE58123741E69F67469206909F",  // Accessibility Common
-};
+constexpr auto kNonRiskyExtensionsIdsHashes =
+    base::MakeFixedFlatSet<std::string_view>({
+        // Gnubby component extension (kmendfapggjehodndflmmgagdbamhnfd)
+        "FCE3552DB7971D9A2003B5BAE26D4B156A7308E04A997F1503C9BF54DF5A33DB",
+        // Gnubby app (beknehfpfkghjoafdifaflglpjkojoco)
+        "78578251B1309A5E256FD8CC60C538C958FAA1BC285486236A9D75A0994F0AF4",
+        // Chrome OS XKB (jkghodnilhceideoidjikpgommlajknk)
+        "61823797C4EEBFFADEA03397E8FB61F09092F10D3223A2BDC7428159C47F0199",
+        // Virtual Keyboard (mppnpdlheglhdfmldimlhpnegondlapf)
+        "94258E7037909EA26C3BB6F0183A0BD126469795D5BB70DF2E4F2D725FDBD4F3",
+        // Braille Keyboard (jddehjeebkoimngcbdkaahpobgicbffp)
+        "8BA42F8465689319BC18E81D3F0029ABEF8EE162147B8740AC206AB3AB140811",
+        // Speech synthesis (gjjabgpgjpampikjhjpfhneeoapjbjaf)
+        "E0369D3619CEABC15BFEA6E33F85637C26E1E13D5CE45B83E8A7E963008E556D",
+        // Mobile activation (iadeocfgjdjdmpenejdbfeaocpbikmab)
+        "1C1514FFE21EDD8FEADF0A5F0CABBCDD94C36A58CB085D8A17AE069BEFDB88FE",
+        // Chromeos help (honijodknafkokifofgiaalefdiedpko)
+        "7C852E22253B325BDEEEF1E00343D301F0620FCFC324919236A44C554F8AAC4B",
+        // Easy unlock (mkaemigholebcgchlkbankmihknojeak)
+        "1BAD9E99D2B8A183AD981DCDD68F297E54D4A743AAC395BCFAFE8A471BE328E9",
+        // ChromeVox (mndnfokpggljbaajbnioimlmbfngpief)
+        "5C436709A74404D3816118160F896544B352CF1696FB387B4FC37258AD75C4B2",
+        // Switch Access (pmehocpgjmkenlokgjfkaichfjdhpeol)
+        "73EBB60B47BC6569FC79E400EA5E693DD852C5A5B859FF7DD4E9B59C4D13812D",
+        // Select-to-speak (klbcgckkldhdhonijdbnhhaiedfkllef)
+        "3189CC596B1BA8F9987AA62F1F2C5E31BC06C2F27CD4A0A4719C8517C600D736",
+        // Enhanced Network TTS (jacnkoglebceckolkoapelihnglgaicd)
+        "24578E07F497551DE0F76DC1766B210989E710341981EB717CE77F34C05D617E",
+        // Accessibility Common (egfdjlfmgnehecnclamagfafdccgfndp)
+        "0631CFBB5FF0C5C3C62B6E82C8C0C86B391B031FE482106338E94A68E160CCAA",
+    });
 
 void WrapAsBrowsersCloseCallback(const base::RepeatingClosure& callback,
                                  const base::FilePath& path) {
@@ -136,16 +153,13 @@ void SigninProfileHandler::ClearSigninProfile(base::OnceClosure callback) {
   // unauthorized usage.
   // TODO(crbug.com/40116250): This also can be fixed by restricting URLs
   //                                  or browser windows from opening.
-  const std::set<std::string> allowed_ids_hashes(
-      std::begin(kNonRiskyExtensionsIdsHashes),
-      std::end(kNonRiskyExtensionsIdsHashes));
   auto* component_loader = extensions::ComponentLoader::Get(signin_profile);
-  const std::vector<std::string> loaded_extensions =
-      component_loader->GetRegisteredComponentExtensionsIds();
-  for (const auto& el : loaded_extensions) {
-    const std::string hex_hash = crx_file::id_util::HashedIdInHex(el);
-    if (!allowed_ids_hashes.count(hex_hash))
+  for (const auto& el :
+       component_loader->GetRegisteredComponentExtensionsIds()) {
+    if (!kNonRiskyExtensionsIdsHashes.contains(
+            crx_file::id_util::HashedIdInHexSha256(el))) {
       component_loader->Remove(el);
+    }
   }
 }
 
