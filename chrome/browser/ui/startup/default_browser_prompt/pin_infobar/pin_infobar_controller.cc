@@ -285,11 +285,12 @@ void PinInfoBarController::OnShouldOfferToPinResult(
   // Only offer to pin if:
   // * it's okay to pin to the taskbar
   // * this is a normal browser window
-  // * the current profile is not incognito or a guest
+  // * the current profile is not an incognito, isolated mode, or guest profile
   const auto* profile = browser_->GetProfile();
   if (!should_offer_to_pin ||
       browser_->GetType() != BrowserWindowInterface::TYPE_NORMAL ||
-      profile->IsIncognitoProfile() || profile->IsGuestSession()) {
+      profile->IsPrimaryOTRProfileWithRegularParent() ||
+      profile->IsGuestSession()) {
     std::move(done_callback).Run(false);
     return;
   }

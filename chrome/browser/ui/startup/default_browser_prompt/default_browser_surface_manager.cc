@@ -83,7 +83,7 @@ void DefaultBrowserSurfaceManager::CloseAll() {
 bool DefaultBrowserSurfaceManager::IsBrowserValidForShowing(
     BrowserWindowInterface* browser) {
   return browser->GetType() == BrowserWindowInterface::TYPE_NORMAL &&
-         !browser->GetProfile()->IsIncognitoProfile() &&
+         !browser->GetProfile()->IsPrimaryOTRProfileWithRegularParent() &&
          !browser->GetProfile()->IsGuestSession();
 }
 

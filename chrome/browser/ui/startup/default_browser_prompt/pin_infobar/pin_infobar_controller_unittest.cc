@@ -20,6 +20,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/infobars/content/content_infobar_manager.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
@@ -75,7 +76,6 @@ class PinInfoBarControllerTest : public testing::Test {
             std::make_unique<TabStripModel>(delegate_.get(), profile())),
         browser_window_interface_(
             std::make_unique<MockBrowserWindowInterface>()) {
-
     ON_CALL(*browser_window_interface_, GetTabStripModel())
         .WillByDefault(::testing::Return(tab_strip_model()));
     ON_CALL(*browser_window_interface_, GetProfile())
@@ -166,8 +166,21 @@ TEST_F(PinInfoBarControllerTest, DontShowIfBrowserNotNormal) {
 TEST_F(PinInfoBarControllerTest, DontShowIfIncognito) {
   ON_CALL(*browser_window_interface(), GetProfile())
       .WillByDefault(::testing::Return(
-          profile()->GetOffTheRecordProfile(Profile::OTRProfileID::PrimaryID(),
-                                            /*create_if_needed=*/true)));
+          profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
+  PinInfoBarController controller(browser_window_interface());
+  EXPECT_FALSE(OnShouldOfferToPinResultAndWait(controller,
+                                               /*should_offer_to_pin=*/true));
+  EXPECT_TRUE(infobar_manager()->infobars().empty());
+}
+
+// Don't show the infobar if the browser is in enterprise isolated mode.
+TEST_F(PinInfoBarControllerTest, DontShowIfEnterpriseIsolatedMode) {
+  Profile* otr_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  profile_metrics::SetBrowserProfileType(
+      otr_profile, profile_metrics::BrowserProfileType::kEnterpriseIsolated);
+  ON_CALL(*browser_window_interface(), GetProfile())
+      .WillByDefault(::testing::Return(otr_profile));
   PinInfoBarController controller(browser_window_interface());
   EXPECT_FALSE(OnShouldOfferToPinResultAndWait(controller,
                                                /*should_offer_to_pin=*/true));
