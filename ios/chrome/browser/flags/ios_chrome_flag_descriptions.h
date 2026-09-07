@@ -394,12 +394,6 @@ inline constexpr char kBuildExternalPrivacyContextDescription[] =
     "capability to be fetched (controlled by "
     "kEnforceCanSignInToChromeCapability flag).";
 
-inline constexpr char kCacheIdentityListInChromeName[] =
-    "Cache identity list in chrome.";
-inline constexpr char kCacheIdentityListInChromeDescription[] =
-    "Changes the implementation of the cache of the list of identities on "
-    "device.";
-
 inline constexpr char kChromeNextIaName[] = "ChromeNextIa";
 inline constexpr char kChromeNextIaDescription[] =
     "Enables the chrome_next_ia feature.";
