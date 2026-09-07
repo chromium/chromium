@@ -40,7 +40,10 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
 #include "chrome/browser/ui/views/profiles/profiles_pixel_test_utils.h"
+#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -48,6 +51,7 @@
 #include "components/policy/core/common/features.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -767,6 +771,44 @@ IN_PROC_BROWSER_TEST_F(DeviceSignalsDisclaimerStartupInteractiveTest,
   EXPECT_EQ(browser_collection->GetSize(), 2u);
   histogram_tester_.ExpectBucketCount(
       kEnterpriseSignalsDisclaimerModalLearnMoreClicked, true, 2);
+}
+
+class DeviceSignalsDisclaimerStartupPwaInteractiveTest
+    : public DeviceSignalsDisclaimerStartupInteractiveTest {
+ private:
+  web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
+};
+
+IN_PROC_BROWSER_TEST_F(DeviceSignalsDisclaimerStartupPwaInteractiveTest,
+                       PwaApp_NotBlocked) {
+  const GURL app_url("https://app.example.com/");
+  webapps::AppId app_id = web_app::test::InstallDummyWebApp(
+      browser()->GetProfile(), "Test PWA", app_url);
+
+  BrowserWindowInterface* app_browser =
+      web_app::LaunchWebAppBrowserAndWait(browser()->GetProfile(), app_id);
+  ASSERT_TRUE(app_browser);
+  EXPECT_EQ(app_browser->GetType(), BrowserWindowInterface::TYPE_APP);
+
+  // Activating the PWA app should not show the modal dialog on it.
+  SimulateBrowserFocus(app_browser);
+  EXPECT_FALSE(ShowsModalDialog(app_browser));
+  histogram_tester_.ExpectBucketCount(kEnterpriseSignalsDisclaimerModalShown,
+                                      true, 0);
+
+  // Activating the regular browser window should show the modal dialog.
+  SimulateBrowserFocus(browser());
+  views::Widget* widget = widget_waiter_->WaitIfNeededAndGet();
+  ASSERT_TRUE(widget);
+  EXPECT_TRUE(ShowsModalDialog(browser()));
+  EXPECT_FALSE(ShowsModalDialog(app_browser));
+  histogram_tester_.ExpectBucketCount(kEnterpriseSignalsDisclaimerModalShown,
+                                      true, 1);
+
+  // Focusing back to the PWA app should still not show the modal dialog on it.
+  SimulateBrowserFocus(app_browser);
+  EXPECT_FALSE(ShowsModalDialog(app_browser));
+  EXPECT_TRUE(ShowsModalDialog(browser()));
 }
 
 // Profile picker tests are located in

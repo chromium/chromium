@@ -361,10 +361,10 @@ bool ProfileManagementDisclaimerService::IsDeviceSignalsDisclaimerRequired(
     return false;
   }
 
-  // Browsers hosting the privacy article should not be blocked by the
-  // disclaimer. `browser` can be nullptr when this is called by the profile
+  // Only the standard browser windows should show the disclaimer.
+  // `browser` can be null when the disclaimer is shown within the profile
   // picker.
-  if (browser && browser == privacy_article_browser_.get()) {
+  if (browser && browser->GetType() != BrowserWindowInterface::TYPE_NORMAL) {
     return false;
   }
 
