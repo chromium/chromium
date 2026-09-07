@@ -833,16 +833,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="ProfileChooser.HasProfilesShown" enum="BooleanShown"
-    expires_after="2026-10-11">
-  <owner>droger@chromium.org</owner>
-  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
-  <summary>
-    Whether any profile was shown in the list when the profile chooser was
-    opened.
-  </summary>
-</histogram>
-
 <histogram name="ProfilePicker.AskOnStartup" enum="BooleanEnabled"
     expires_after="2024-02-25">
   <owner>msalama@chromium.org</owner>

@@ -217,8 +217,6 @@ void ProfileMenuView::BuildMenu() {
         l10n_util::GetStringUTF16(IDS_PROFILE_MENU_PROFILES_LIST_TITLE));
   }
   BuildOtherProfilesSection(available_profiles);
-  base::UmaHistogramBoolean("ProfileChooser.HasProfilesShown",
-                            !available_profiles.empty());
 
   // Users should not be able to manage profiles from WebApps.
   if (!is_web_app) {
