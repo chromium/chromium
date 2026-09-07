@@ -67,10 +67,12 @@ class ShillServiceClientImpl : public ShillServiceClient {
   ~ShillServiceClientImpl() override {
     for (auto& helper_pair : helpers_) {
       ShillClientHelper* helper = helper_pair.second;
-      bus_->RemoveObjectProxy(shill::kFlimflamServiceName,
-                              helper->object_proxy()->object_path(),
-                              base::DoNothing());
+      dbus::ObjectPath object_path = helper->object_proxy()->object_path();
+      // Delete `helper` before removing the `ObjectProxy` to prevent a dangling
+      // `raw_ptr` for `proxy_` in `ShillClientHelper`.
       delete helper;
+      bus_->RemoveObjectProxy(shill::kFlimflamServiceName, object_path,
+                              base::DoNothing());
     }
   }
 
@@ -374,10 +376,12 @@ class ShillServiceClientImpl : public ShillServiceClient {
                      << shill::kFlimflamServicePath;
       return;
     }
+    helpers_.erase(object_path.value());
+    // Delete `helper` before removing the `ObjectProxy` to prevent a dangling
+    // `raw_ptr` for `proxy_` in `ShillClientHelper`.
+    delete helper;
     bus_->RemoveObjectProxy(shill::kFlimflamServiceName, object_path,
                             base::DoNothing());
-    helpers_.erase(object_path.value());
-    delete helper;
   }
 
   static base::OnceCallback<void(base::DictValue result)>
