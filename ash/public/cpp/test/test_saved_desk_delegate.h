@@ -70,10 +70,6 @@ class ASH_PUBLIC_EXPORT TestSavedDeskDelegate : public SavedDeskDelegate {
   std::optional<gfx::ImageSkia> MaybeRetrieveIconForSpecialIdentifier(
       const std::string& identifier,
       const ui::ColorProvider* color_provider) const override;
-  void GetFaviconForUrl(
-      const std::string& page_url,
-      base::OnceCallback<void(const gfx::ImageSkia&)> callback,
-      base::CancelableTaskTracker* tracker) const override;
   void GetIconForAppId(
       const std::string& app_id,
       int desired_icon_size,

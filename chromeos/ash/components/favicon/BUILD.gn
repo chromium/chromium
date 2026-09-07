@@ -1,0 +1,30 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+component("favicon_service_provider") {
+  public = [ "favicon_service_provider.h" ]
+
+  sources = [ "favicon_service_provider.cc" ]
+
+  defines = [ "IS_FAVICON_SERVICE_PROVIDER_IMPL" ]
+
+  deps = [ "//base" ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  public = [ "fake_favicon_service_provider.h" ]
+
+  sources = [ "fake_favicon_service_provider.cc" ]
+
+  public_deps = [ ":favicon_service_provider" ]
+
+  deps = [
+    "//base",
+    "//components/account_id",
+  ]
+}

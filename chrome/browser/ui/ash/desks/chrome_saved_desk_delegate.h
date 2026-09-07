@@ -14,10 +14,6 @@ namespace aura {
 class Window;
 }  // namespace aura
 
-namespace base {
-class CancelableTaskTracker;
-}  // namespace base
-
 namespace desks_storage {
 class DeskModel;
 }  // namespace desks_storage
@@ -43,10 +39,6 @@ class ChromeSavedDeskDelegate : public ash::SavedDeskDelegate {
   std::optional<gfx::ImageSkia> MaybeRetrieveIconForSpecialIdentifier(
       const std::string& identifier,
       const ui::ColorProvider* color_provider) const override;
-  void GetFaviconForUrl(
-      const std::string& page_url,
-      base::OnceCallback<void(const gfx::ImageSkia&)> callback,
-      base::CancelableTaskTracker* tracker) const override;
   void GetIconForAppId(
       const std::string& app_id,
       int desired_icon_size,

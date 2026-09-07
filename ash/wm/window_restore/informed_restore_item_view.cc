@@ -4,7 +4,6 @@
 
 #include "ash/wm/window_restore/informed_restore_item_view.h"
 
-#include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -137,10 +136,9 @@ InformedRestoreItemView::InformedRestoreItemView(
             &InformedRestoreItemView::OnAllFaviconsLoaded,
             weak_ptr_factory_.GetWeakPtr()));
 
-  auto* delegate = Shell::Get()->saved_desk_delegate();
   for (int i = 0; i < static_cast<int>(favicons.size()); ++i) {
     const GURL& url = favicons[i];
-    delegate->GetFaviconForUrl(
+    GetFaviconForUrl(
         url.spec(),
         base::BindOnce(&InformedRestoreItemView::OnOneFaviconLoaded,
                        GetWeakPtr(), barrier, i),

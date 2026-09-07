@@ -97,6 +97,7 @@ include_rules = [
   "+chromeos/ash/components/cryptohome",
   "+chromeos/ash/components/editor_menu",
   "+chromeos/ash/components/emoji",
+  "+chromeos/ash/components/favicon",
   "+chromeos/ash/components/feature_usage",
   "+chromeos/ash/components/geolocation",
   "+chromeos/ash/components/human_presence",
@@ -183,6 +184,12 @@ specific_include_rules = {
   "shell\\.cc": [
     "+ash/host/ash_window_tree_host_init_params.h",
     "+chromeos/ash/components/fwupd",
+  ],
+  "window_restore_util\\.cc": [
+    # The active user's AccountId comes from SessionManager, per the migration
+    # away from the historical SessionController.
+    "+components/session_manager/core/session.h",
+    "+components/session_manager/core/session_manager.h",
   ],
   ".*test\\.cc": [
     # Allowed to access user_manager in test code to set up testing environment

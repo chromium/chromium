@@ -59,6 +59,7 @@ class FakeFwupdDownloadClient;
 class SavedDeskTestHelper;
 class TestKeyboardControllerObserver;
 class TestNewWindowDelegate;
+class FakeFaviconServiceProvider;
 class FakeSyncServiceProvider;
 class TestWallpaperControllerClient;
 class AshTestBase;
@@ -262,6 +263,7 @@ class AshTestHelper : public aura::test::AuraTestHelper {
       test_keyboard_controller_observer_;
   std::unique_ptr<AmbientAshTestHelper> ambient_ash_test_helper_;
   std::unique_ptr<TestWallpaperControllerClient> wallpaper_controller_client_;
+  std::unique_ptr<FakeFaviconServiceProvider> favicon_service_provider_;
   std::unique_ptr<FakeSyncServiceProvider> sync_service_provider_;
   std::unique_ptr<SavedDeskTestHelper> saved_desk_test_helper_;
   std::unique_ptr<FakeFwupdDownloadClient> fwupd_download_client_;

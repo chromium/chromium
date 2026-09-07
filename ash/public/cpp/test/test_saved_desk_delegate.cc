@@ -55,13 +55,6 @@ TestSavedDeskDelegate::MaybeRetrieveIconForSpecialIdentifier(
   return std::nullopt;
 }
 
-void TestSavedDeskDelegate::GetFaviconForUrl(
-    const std::string& page_url,
-    base::OnceCallback<void(const gfx::ImageSkia&)> callback,
-    base::CancelableTaskTracker* tracker) const {
-  std::move(callback).Run(gfx::ImageSkia());
-}
-
 void TestSavedDeskDelegate::GetIconForAppId(
     const std::string& app_id,
     int desired_icon_size,

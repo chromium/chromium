@@ -11,6 +11,7 @@
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/wm/window_restore/window_restore_util.h"
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -241,11 +242,10 @@ void SavedDeskRegularIconView::CreateChildViews(
     return;
   }
 
-  delegate->GetFaviconForUrl(
-      icon_identifier_.url_or_id,
-      base::BindOnce(&SavedDeskRegularIconView::OnIconLoaded,
-                     weak_ptr_factory_.GetWeakPtr()),
-      &cancelable_task_tracker_);
+  GetFaviconForUrl(icon_identifier_.url_or_id,
+                   base::BindOnce(&SavedDeskRegularIconView::OnIconLoaded,
+                                  weak_ptr_factory_.GetWeakPtr()),
+                   &cancelable_task_tracker_);
 }
 
 void SavedDeskRegularIconView::OnIconLoaded(const gfx::ImageSkia& icon) {

@@ -53,6 +53,7 @@
 #include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
 #include "chromeos/ash/components/dbus/rgbkbd/rgbkbd_client.h"
 #include "chromeos/ash/components/dbus/typecd/typecd_client.h"
+#include "chromeos/ash/components/favicon/fake_favicon_service_provider.h"
 #include "chromeos/ash/components/fwupd/fake_fwupd_download_client.h"
 #include "chromeos/ash/components/geolocation/cached_location_provider.h"
 #include "chromeos/ash/components/geolocation/live_location_provider.h"
@@ -237,6 +238,9 @@ void AshTestHelper::TearDown() {
   // while any SyncService a test registered with it is still alive.
   // TODO(crbug.com/332481586): Revisit teardown ordering.
   sync_service_provider_.reset();
+  // Uninstall the FaviconServiceProvider while any FaviconService a test
+  // registered with it is still alive.
+  favicon_service_provider_.reset();
 
   cros_hotspot_config_test_helper_.reset();
   scoped_bluetooth_config_test_helper_.reset();
@@ -423,6 +427,7 @@ void AshTestHelper::SetUp(InitParams init_params) {
   // SyncService (e.g. wallpaper sync) does not crash on the missing
   // process-wide provider. Tests can register a service per account via
   // sync_service_provider().
+  favicon_service_provider_ = std::make_unique<FakeFaviconServiceProvider>();
   sync_service_provider_ = std::make_unique<FakeSyncServiceProvider>();
 
   if (create_global_cras_audio_handler_) {

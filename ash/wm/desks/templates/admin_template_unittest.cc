@@ -42,12 +42,6 @@ class MockSavedDeskDelegate : public SavedDeskDelegate {
               (const std::string&, const ui::ColorProvider*),
               (const override));
   MOCK_METHOD(void,
-              GetFaviconForUrl,
-              (const std::string&,
-               base::OnceCallback<void(const gfx::ImageSkia&)>,
-               base::CancelableTaskTracker*),
-              (const override));
-  MOCK_METHOD(void,
               GetIconForAppId,
               (const std::string&,
                int,

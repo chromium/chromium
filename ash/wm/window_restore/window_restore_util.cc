@@ -15,22 +15,34 @@
 #include "ash/shell.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/window_state.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/favicon/favicon_service_provider.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/window_properties.h"
+#include "components/favicon/core/favicon_service.h"
+#include "components/favicon_base/favicon_types.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/image/icon_standardizer.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -54,6 +66,23 @@ gfx::Rect GetBoundsIgnoringTransforms(const aura::Window* window,
     client->ConvertPointToRootWindowIgnoringTransforms(window, &origin);
   }
   return gfx::Rect(origin, window->bounds().size());
+}
+
+// Converts the raw favicon bitmap `result` into a standardized icon image and
+// passes it to `callback`. Runs `callback` with an empty image if `result` is
+// invalid.
+void ImageResultToImageSkia(
+    base::OnceCallback<void(const gfx::ImageSkia&)> callback,
+    const favicon_base::FaviconRawBitmapResult& result) {
+  if (!result.is_valid()) {
+    std::move(callback).Run(gfx::ImageSkia());
+    return;
+  }
+
+  gfx::ImageSkia image =
+      gfx::Image::CreateFrom1xPNGBytes(result.bitmap_data).AsImageSkia();
+  image.EnsureRepsForSupportedScales();
+  std::move(callback).Run(gfx::CreateStandardAppIconImage(image));
 }
 
 }  // namespace
@@ -209,6 +238,34 @@ std::unique_ptr<app_restore::WindowInfo> BuildWindowInfo(
 
 bool IsBrowserAppId(const std::string& id) {
   return id == app_constants::kChromeAppId;
+}
+
+void GetFaviconForUrl(const std::string& page_url,
+                      base::OnceCallback<void(const gfx::ImageSkia&)> callback,
+                      base::CancelableTaskTracker* tracker) {
+  // TODO(crbug.com/553389413): Resolve the desk owner's account in the caller
+  // instead of assuming the active user. Once the caller passes a non-null
+  // FaviconService, this is a one-line GetRawFaviconForPageURL() call and can
+  // be inlined into the callers, dropping this helper.
+  const session_manager::Session* session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  if (!session) {
+    std::move(callback).Run(gfx::ImageSkia());
+    return;
+  }
+
+  favicon::FaviconService* favicon_service =
+      FaviconServiceProvider::Get().Find(session->account_id());
+  if (!favicon_service) {
+    std::move(callback).Run(gfx::ImageSkia());
+    return;
+  }
+
+  favicon_service->GetRawFaviconForPageURL(
+      GURL(page_url), {favicon_base::IconType::kFavicon},
+      /*desired_size_in_pixel=*/0,
+      /*fallback_to_host=*/false,
+      base::BindOnce(&ImageResultToImageSkia, std::move(callback)), tracker);
 }
 
 base::FilePath GetInformedRestoreImagePath() {

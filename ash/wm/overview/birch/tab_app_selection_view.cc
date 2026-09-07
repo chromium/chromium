@@ -16,6 +16,7 @@
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
 #include "ash/wm/overview/birch/birch_bar_controller.h"
+#include "ash/wm/window_restore/window_restore_util.h"
 #include "base/containers/flat_tree.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -223,9 +224,8 @@ class TabAppSelectionView::TabAppSelectionItemView
 
     switch (params.type) {
       case InitParams::Type::kTab: {
-        delegate->GetFaviconForUrl(params.identifier,
-                                   std::move(set_icon_image_callback),
-                                   &cancelable_favicon_task_tracker_);
+        GetFaviconForUrl(params.identifier, std::move(set_icon_image_callback),
+                         &cancelable_favicon_task_tracker_);
         return;
       }
       case InitParams::Type::kApp: {

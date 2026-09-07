@@ -7,6 +7,7 @@ assert(is_chromeos)
 group("keyed_service_provider") {
   public_deps = [
     ":desk_sync_service_provider_impl",
+    ":favicon_service_provider_impl",
     ":identity_manager_provider_impl",
     ":sync_service_provider_impl",
     ":template_url_service_provider_impl",
@@ -46,6 +47,26 @@ source_set("wifi_configuration_sync_service_provider_impl") {
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/sync_wifi:wifi_configuration_sync_service_provider",
     "//components/account_id",
+    "//content/public/browser",
+  ]
+
+  visibility = [ ":keyed_service_provider" ]
+}
+
+source_set("favicon_service_provider_impl") {
+  sources = [
+    "favicon_service_provider_impl.cc",
+    "favicon_service_provider_impl.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/favicon",
+    "//chrome/browser/profiles",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/favicon:favicon_service_provider",
+    "//components/account_id",
+    "//components/keyed_service/core",
     "//content/public/browser",
   ]
 

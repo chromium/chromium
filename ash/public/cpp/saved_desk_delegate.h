@@ -20,10 +20,6 @@ namespace aura {
 class Window;
 }
 
-namespace base {
-class CancelableTaskTracker;
-}
-
 namespace desks_storage {
 class AdminTemplateService;
 class DeskModel;
@@ -82,14 +78,6 @@ class ASH_PUBLIC_EXPORT SavedDeskDelegate {
   virtual std::optional<gfx::ImageSkia> MaybeRetrieveIconForSpecialIdentifier(
       const std::string& icon_identifier,
       const ui::ColorProvider* color_provider) const = 0;
-
-  // Fetches the favicon for `page_url` and returns it via the provided
-  // `callback`.
-  // `callback` may be called synchronously.
-  virtual void GetFaviconForUrl(
-      const std::string& page_url,
-      base::OnceCallback<void(const gfx::ImageSkia&)> callback,
-      base::CancelableTaskTracker* tracker) const = 0;
 
   // Fetches the icon for the app with `app_id` and returns it via the provided
   // `callback`. `callback` may be called synchronously.

@@ -20,7 +20,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/desks/admin_template_service_factory.h"
@@ -38,7 +37,6 @@
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_properties.h"
 #include "components/desks_storage/core/admin_template_service.h"
-#include "components/favicon/core/favicon_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent.h"
@@ -167,23 +165,6 @@ void ShowUnavailableAppToast(
       ash::ToastCatalogName::kAppNotAvailable,
       /*text=*/toast_string};
   ash::ToastManager::Get()->Show(std::move(toast_data));
-}
-
-// Creates a standard icon image via `result`, and then calls `callback` with
-// the standardized image.
-void ImageResultToImageSkia(
-    base::OnceCallback<void(const gfx::ImageSkia&)> callback,
-    const favicon_base::FaviconRawBitmapResult& result) {
-  TRACE_EVENT0("ui", "chrome_saved_desk_delegate::ImageResultToImageSkia");
-  if (!result.is_valid()) {
-    std::move(callback).Run(gfx::ImageSkia());
-    return;
-  }
-
-  auto image =
-      gfx::Image::CreateFrom1xPNGBytes(result.bitmap_data).AsImageSkia();
-  image.EnsureRepsForSupportedScales();
-  std::move(callback).Run(gfx::CreateStandardAppIconImage(image));
 }
 
 // Creates a callback for when a app icon image is retrieved which creates a
@@ -366,23 +347,6 @@ ChromeSavedDeskDelegate::MaybeRetrieveIconForSpecialIdentifier(
   }
 
   return std::nullopt;
-}
-
-void ChromeSavedDeskDelegate::GetFaviconForUrl(
-    const std::string& page_url,
-    base::OnceCallback<void(const gfx::ImageSkia&)> callback,
-    base::CancelableTaskTracker* tracker) const {
-  TRACE_EVENT0("ui", "ChromeSavedDeskDelegate::GetFaviconForUrl");
-
-  favicon::FaviconService* favicon_service =
-      FaviconServiceFactory::GetForProfile(
-          ProfileManager::GetActiveUserProfile(),
-          ServiceAccessType::EXPLICIT_ACCESS);
-
-  favicon_service->GetRawFaviconForPageURL(
-      GURL(page_url), {favicon_base::IconType::kFavicon}, 0,
-      /*fallback_to_host=*/false,
-      base::BindOnce(&ImageResultToImageSkia, std::move(callback)), tracker);
 }
 
 void ChromeSavedDeskDelegate::GetIconForAppId(
