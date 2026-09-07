@@ -124,7 +124,7 @@ views::BubbleDialogModelHost* MemorySaverBubbleView::ShowBubble(
 
   AddBubbleBodyText(&dialog_model_builder, IDS_MEMORY_SAVER_DIALOG_BODY);
 
-  if (!is_guest && !profile->IsIncognitoProfile()) {
+  if (!is_guest && !profile->IsPrimaryOTRProfileWithRegularParent()) {
     dialog_model_builder.SetSubtitle(
         base::UTF8ToUTF16(web_contents->GetURL().GetHost()));
     const bool is_site_excluded = performance_manager::user_tuning::prefs::

@@ -31,6 +31,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -259,6 +261,76 @@ IN_PROC_BROWSER_TEST_F(MemorySaverBubbleViewTest,
   EXPECT_EQ(cancel_button, nullptr);
 }
 #endif
+
+IN_PROC_BROWSER_TEST_F(MemorySaverBubbleViewTest,
+                       ShowDialogWithoutExcludeSiteButtonInIncognitoMode) {
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser,
+                                           GetURL("foo.com", "/title1.html")));
+
+  content::WebContents* const contents =
+      incognito_browser->GetTabStripModel()->GetActiveWebContents();
+  performance_manager::user_tuning::UserPerformanceTuningManager::
+      PreDiscardResourceUsage::CreateForWebContents(
+          contents, kMemorySavings,
+          ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
+
+  auto* manager = performance_manager::user_tuning::
+      UserPerformanceTuningManager::GetInstance();
+  manager->DiscardPageForTesting(contents);
+
+  ClickPageActionChip(incognito_browser);
+
+  // Exclude site button shouldn't be shown since incognito users can't exclude
+  // sites from being discarded
+  views::Button* const cancel_button = GetMatchingView<views::Button>(
+      MemorySaverBubbleView::kMemorySaverDialogCancelButton, incognito_browser);
+  EXPECT_EQ(cancel_button, nullptr);
+  views::Widget* widget = GetBubbleView(incognito_browser)->GetWidget();
+  EXPECT_EQ(widget->widget_delegate()->AsBubbleDialogDelegate()->GetSubtitle(),
+            std::u16string());
+}
+
+class MemorySaverBubbleViewIsolatedTest : public MemorySaverBubbleViewTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    MemorySaverBubbleViewTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(
+        enterprise_isolated_mode::switches::
+            kForceEnterpriseIsolatedModeReplacesIncognito);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(MemorySaverBubbleViewIsolatedTest,
+                       ShowDialogWithoutExcludeSiteButtonInIsolatedMode) {
+  BrowserWindowInterface* isolated_browser = CreateIncognitoBrowser();
+  EXPECT_TRUE(
+      isolated_browser->GetProfile()->IsEnterpriseIsolatedModeProfile());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(isolated_browser,
+                                           GetURL("foo.com", "/title1.html")));
+
+  content::WebContents* const contents =
+      isolated_browser->GetTabStripModel()->GetActiveWebContents();
+  performance_manager::user_tuning::UserPerformanceTuningManager::
+      PreDiscardResourceUsage::CreateForWebContents(
+          contents, kMemorySavings,
+          ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
+
+  auto* manager = performance_manager::user_tuning::
+      UserPerformanceTuningManager::GetInstance();
+  manager->DiscardPageForTesting(contents);
+
+  ClickPageActionChip(isolated_browser);
+
+  // Exclude site button shouldn't be shown since isolated users can't exclude
+  // sites from being discarded
+  views::Button* const cancel_button = GetMatchingView<views::Button>(
+      MemorySaverBubbleView::kMemorySaverDialogCancelButton, isolated_browser);
+  EXPECT_EQ(cancel_button, nullptr);
+  views::Widget* widget = GetBubbleView(isolated_browser)->GetWidget();
+  EXPECT_EQ(widget->widget_delegate()->AsBubbleDialogDelegate()->GetSubtitle(),
+            std::u16string());
+}
 
 IN_PROC_BROWSER_TEST_F(MemorySaverBubbleViewTest,
                        ShouldCollapseChipAfterNavigatingTabsWithDialogOpen) {
