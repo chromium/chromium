@@ -370,4 +370,28 @@ TEST(SessionBindingUtilsTest, SecFetchSiteForReferringOrigin) {
             "cross-site");
 }
 
+TEST(SessionBindingUtilsTest, CreateWellKnownUrl) {
+  // 1. Standard HTTPS origin without explicit port.
+  EXPECT_EQ(
+      CreateWellKnownUrl(url::Origin::Create(GURL("https://example.com"))),
+      GURL("https://example.com/.well-known/device-bound-sessions"));
+
+  // 2. HTTPS origin with custom port.
+  EXPECT_EQ(
+      CreateWellKnownUrl(url::Origin::Create(GURL("https://example.com:8443"))),
+      GURL("https://example.com:8443/.well-known/device-bound-sessions"));
+
+  // 3. Origin created from URL with path, query, fragment, and credentials.
+  // Verify that path is replaced, and query, ref, and credentials are
+  // completely stripped.
+  GURL complex_url(
+      "https://user:pass@example.com:9443/some/"
+      "path?query=1&evil=true#fragment");
+  EXPECT_EQ(CreateWellKnownUrl(url::Origin::Create(complex_url)),
+            GURL("https://example.com:9443/.well-known/device-bound-sessions"));
+
+  // 4. Opaque origin returns empty GURL.
+  EXPECT_TRUE(CreateWellKnownUrl(url::Origin()).is_empty());
+}
+
 }  // namespace net::device_bound_sessions

@@ -545,9 +545,8 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       return;
     }
 
-    GURL::Replacements replacements;
-    replacements.SetPathStr("/.well-known/device-bound-sessions");
-    GURL well_known_url = provider_url_.ReplaceComponents(replacements);
+    GURL well_known_url =
+        CreateWellKnownUrl(url::Origin::Create(provider_url_));
     // TODO(crbug.com/495096658): Assert that `IsForRefreshRequest()` is false
     // once the tests are fixed.
     url_fetcher_ = std::make_unique<URLFetcher>(
@@ -638,9 +637,8 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       return;
     }
 
-    GURL::Replacements replacements;
-    replacements.SetPathStr("/.well-known/device-bound-sessions");
-    GURL well_known_url = fetcher_endpoint_.ReplaceComponents(replacements);
+    GURL well_known_url =
+        CreateWellKnownUrl(url::Origin::Create(fetcher_endpoint_));
     url_fetcher_ = std::make_unique<URLFetcher>(
         context_, well_known_url, referring_origin_, net_log_source_,
         IsForRefreshRequest());
@@ -1019,11 +1017,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
         // rather the top-level site (which matches the origin when including
         // the site).
         final_registration_url.host() != session->origin().host()) {
-      GURL::Replacements replacements;
-      replacements.SetPathStr("/.well-known/device-bound-sessions");
-      replacements.SetHostStr(session->origin().host());
-      GURL well_known_url =
-          fetcher_endpoint_.ReplaceComponents(std::move(replacements));
+      GURL well_known_url = CreateWellKnownUrl(session->origin());
       url_fetcher_ = std::make_unique<URLFetcher>(
           context_, well_known_url, referring_origin_, net_log_source_,
           /*is_refresh=*/false);

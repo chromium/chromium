@@ -62,6 +62,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -113,6 +114,32 @@ constexpr char kBasicValidJson[] =
     "attributes": "Domain=a.test; Path=/; Secure; SameSite=None"
   }]
 })";
+
+std::string GetSubdomainValidJsonWithCustomPort(int port) {
+  constexpr char kSubdomainValidJson[] =
+      R"({
+  "session_identifier": "session_id",
+  "refresh_url": "/refresh",
+  "scope": {
+    "origin": "https://a.test:%v",
+    "include_site": true,
+    "scope_specification" : [
+      {
+        "type": "include",
+        "domain": "trusted.a.test",
+        "path": "/only_trusted_path"
+      }
+    ]
+  },
+  "credentials": [{
+    "type": "cookie",
+    "name": "auth_cookie",
+    "attributes": "Domain=a.test; Path=/; Secure; SameSite=None"
+  }]
+})";
+
+  return absl::StrFormat(kSubdomainValidJson, port);
+}
 
 constexpr char kSubdomainValidJsonIncludeSiteFalse[] =
     R"({
@@ -303,6 +330,13 @@ std::unique_ptr<test_server::HttpResponse> ReturnResponse(
   response->set_content_type("application/json");
   response->set_content(response_text);
   return response;
+}
+
+std::unique_ptr<test_server::HttpResponse> ReturnSubdomainResponse(
+    const test_server::EmbeddedTestServer* server,
+    const test_server::HttpRequest& request) {
+  return ReturnResponse(
+      HTTP_OK, GetSubdomainValidJsonWithCustomPort(server->port()), request);
 }
 
 std::unique_ptr<test_server::HttpResponse> ReturnChallengeResponse(
@@ -3070,8 +3104,8 @@ TEST_F(RegistrationTest, RegistrationBySubdomain_Success) {
                           R"json({
                             "registering_origins": [ "https://subdomain.a.test:$1" ]
                           })json")));
-  server_.RegisterRequestHandler(
-      base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
+  server_.RegisterRequestHandler(base::BindRepeating(
+      &ReturnSubdomainResponse, base::Unretained(&server_)));
   ASSERT_TRUE(server_.Start());
 
   GURL registration_url = server_.GetURL("subdomain.a.test", "/");
@@ -3100,8 +3134,8 @@ TEST_F(RegistrationTest, RegistrationBySubdomain_WellKnownUnavailable) {
   server_.RegisterRequestHandler(base::BindRepeating(
       &ReturnForHostAndPath, "a.test", "/.well-known/device-bound-sessions",
       base::BindRepeating(&ReturnResponse, HTTP_BAD_REQUEST, "")));
-  server_.RegisterRequestHandler(
-      base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
+  server_.RegisterRequestHandler(base::BindRepeating(
+      &ReturnSubdomainResponse, base::Unretained(&server_)));
   ASSERT_TRUE(server_.Start());
 
   GURL registration_url = server_.GetURL("subdomain.a.test", "/");
@@ -3132,8 +3166,8 @@ TEST_F(RegistrationTest, RegistrationBySubdomain_WellKnownMalformed) {
   server_.RegisterRequestHandler(base::BindRepeating(
       &ReturnForHostAndPath, "a.test", "/.well-known/device-bound-sessions",
       base::BindRepeating(&ReturnResponse, HTTP_OK, "invalid JSON")));
-  server_.RegisterRequestHandler(
-      base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
+  server_.RegisterRequestHandler(base::BindRepeating(
+      &ReturnSubdomainResponse, base::Unretained(&server_)));
   ASSERT_TRUE(server_.Start());
 
   GURL registration_url = server_.GetURL("subdomain.a.test", "/");
@@ -3165,8 +3199,8 @@ TEST_F(RegistrationTest, RegistrationBySubdomain_WellKnownMalformedEntry) {
       &ReturnForHostAndPath, "a.test", "/.well-known/device-bound-sessions",
       base::BindRepeating(&ReturnResponse, HTTP_OK,
                           "{\"registering_origins\": [ 12345 ]}")));
-  server_.RegisterRequestHandler(
-      base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
+  server_.RegisterRequestHandler(base::BindRepeating(
+      &ReturnSubdomainResponse, base::Unretained(&server_)));
   ASSERT_TRUE(server_.Start());
 
   GURL registration_url = server_.GetURL("subdomain.a.test", "/");
@@ -3200,8 +3234,8 @@ TEST_F(RegistrationTest, RegistrationBySubdomain_Unauthorized) {
                           R"json({
                             "registering_origins": [ "https://subdomain.a.test:$1" ]
                           })json")));
-  server_.RegisterRequestHandler(
-      base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
+  server_.RegisterRequestHandler(base::BindRepeating(
+      &ReturnSubdomainResponse, base::Unretained(&server_)));
   ASSERT_TRUE(server_.Start());
 
   GURL registration_url = server_.GetURL("not-allowed-subdomain.a.test", "/");
@@ -3268,8 +3302,8 @@ TEST_F(RegistrationTest, RegistrationBySubdomain_MultipleAllowed) {
                               "https://other-subdomain.a.test:$1"
                             ]
                           })json")));
-  server_.RegisterRequestHandler(
-      base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
+  server_.RegisterRequestHandler(base::BindRepeating(
+      &ReturnSubdomainResponse, base::Unretained(&server_)));
   ASSERT_TRUE(server_.Start());
 
   GURL registration_url = server_.GetURL("subdomain.a.test", "/");
@@ -3316,6 +3350,40 @@ TEST_F(RegistrationTest, RegistrationBySubdomain_MultipleAllowed) {
   }
 }
 
+TEST_F(RegistrationTest,
+       RegistrationBySubdomain_DoesNotInheritSubdomainQueryOrFragment) {
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+
+  server_.RegisterRequestHandler(base::BindRepeating(
+      &ReturnForHostAndPath, "a.test", "/.well-known/device-bound-sessions",
+      base::BindRepeating(&ReturnWellKnown,
+                          R"json({
+                            "registering_origins": [ "https://subdomain.a.test:$1" ]
+                          })json")));
+  server_.RegisterRequestHandler(base::BindRepeating(
+      &ReturnSubdomainResponse, base::Unretained(&server_)));
+  ASSERT_TRUE(server_.Start());
+
+  // Registration URL includes query parameters and fragment.
+  GURL registration_url = server_.GetURL(
+      "subdomain.a.test", "/reg?evil=ATTACKER_CONTROLLED#fragment");
+
+  TestRegistrationCallback callback;
+  auto param = GetBasicParam(registration_url);
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      RegistrationFetcher::CreateFetcher(
+          param, session_service(), unexportable_key_service(), context_.get(),
+          IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
+          /*net_log_source=*/std::nullopt,
+          /*original_request_initiator=*/std::nullopt,
+          unexportable_keys::BackgroundTaskPriority::kBestEffort);
+  fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
+                                    callback.callback());
+  callback.WaitForCall();
+  callback.outcome().SessionForTesting();
+}
+
 TEST_F(RegistrationTest, RegistrationRedirectToSubdomain) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   bool well_known_fetched = false;
@@ -3341,7 +3409,9 @@ TEST_F(RegistrationTest, RegistrationRedirectToSubdomain) {
         if (request.relative_url != "/dbsc") {
           return nullptr;
         }
-        return ReturnResponse(HTTP_OK, kBasicValidJson, request);
+        return ReturnResponse(
+            HTTP_OK, GetSubdomainValidJsonWithCustomPort(server_.port()),
+            request);
       }));
 
   // 3. Monitor well-known requests
@@ -3409,7 +3479,9 @@ TEST_F(RegistrationTest, FederatedWellKnownDiscoverySendsFetchMetadata) {
         if (request.relative_url != "/dbsc") {
           return nullptr;
         }
-        return ReturnResponse(HTTP_OK, kBasicValidJson, request);
+        return ReturnResponse(
+            HTTP_OK, GetSubdomainValidJsonWithCustomPort(server_.port()),
+            request);
       }));
 
   // 3. .well-known Interceptor: Capture the outbound GET metadata for the
@@ -3493,6 +3565,37 @@ TEST_F(RegistrationTest, FederatedSuccess) {
       /*authorization=*/std::nullopt);
   auto session_or_error =
       FetchWithFederatedKey(param, key, server_.GetURL("provider.a.test", "/"));
+  EXPECT_EQ(session_or_error.SessionForTesting().unexportable_key_id(), key);
+}
+
+TEST_F(RegistrationTest, Federated_DoesNotInheritQueryOrFragment) {
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnForHostAndPath, "provider.a.test",
+                          "/.well-known/device-bound-sessions",
+                          base::BindRepeating(&ReturnWellKnown,
+                                              R"json({
+                                                "relying_origins": [ "https://rp.a.test:$1" ]
+                                              })json")));
+  server_.RegisterRequestHandler(base::BindRepeating(
+      &ReturnForHostAndPath, "rp.a.test", "/.well-known/device-bound-sessions",
+      base::BindRepeating(&ReturnWellKnown,
+                          R"json({
+                            "provider_origin": "https://provider.a.test:$1"
+                          })json")));
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
+  ASSERT_TRUE(server_.Start());
+
+  UnexportableSigningKeyId key = CreateSigningKey();
+  auto param = RegistrationRequestParam::CreateForTesting(
+      server_.GetURL("rp.a.test", "/reg?rp_query=1#rp_frag"),
+      kSessionIdentifier, kChallenge,
+      /*authorization=*/std::nullopt);
+  GURL provider_url =
+      server_.GetURL("provider.a.test", "/path?provider_query=1#provider_frag");
+  auto session_or_error = FetchWithFederatedKey(param, key, provider_url);
   EXPECT_EQ(session_or_error.SessionForTesting().unexportable_key_id(), key);
 }
 

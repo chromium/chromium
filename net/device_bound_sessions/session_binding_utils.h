@@ -20,6 +20,10 @@
 
 class GURL;
 
+namespace url {
+class Origin;
+}
+
 namespace base {
 class Time;
 }
@@ -76,6 +80,10 @@ bool NET_EXPORT IsSecure(const GURL& url);
 NET_EXPORT std::string_view SecFetchSiteForReferringOrigin(
     const url::Origin& referring_origin,
     const GURL& target_url);
+
+// Returns the canonical .well-known/device-bound-sessions URL for `origin`.
+// Returns an empty GURL if `origin` is opaque.
+GURL NET_EXPORT CreateWellKnownUrl(const url::Origin& origin);
 
 // If `request` does not have a session usage listed for `session_key`, or if
 // that session usage is smaller than `new_usage`, then `new_usage` will be set

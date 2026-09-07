@@ -26,6 +26,7 @@
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/ecdsa.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace net::device_bound_sessions {
 
@@ -239,6 +240,15 @@ std::string_view SecFetchSiteForReferringOrigin(
       return "cross-site";
   }
   NOTREACHED();
+}
+
+constexpr char kWellKnownPath[] = "/.well-known/device-bound-sessions";
+
+GURL CreateWellKnownUrl(const url::Origin& origin) {
+  if (origin.opaque()) {
+    return GURL();
+  }
+  return origin.GetURL().Resolve(kWellKnownPath);
 }
 
 }  // namespace net::device_bound_sessions
