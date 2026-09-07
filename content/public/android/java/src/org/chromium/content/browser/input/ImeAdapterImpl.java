@@ -1026,6 +1026,16 @@ public class ImeAdapterImpl
 
     @Override
     public void onWindowFocusChanged(boolean gainFocus) {
+        if (DEBUG_LOGS) Log.i(TAG, "onWindowFocusChanged: gainFocus [%b]", gainFocus);
+
+        if (!gainFocus) resetAndHideKeyboard();
+        if (gainFocus
+                && isValid()
+                && ContentFeatureMap.isEnabled(
+                        ContentFeatureList.ANDROID_FORCE_TEXT_INPUT_STATE_UPDATE_UPON_FOCUS)) {
+            requestTextInputStateUpdate();
+        }
+
         if (mInputConnectionFactory != null) {
             mInputConnectionFactory.onWindowFocusChanged(gainFocus);
         }
