@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 #include "chrome/browser/ui/views/profiles/profiles_pixel_test_utils.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/test/browser_test.h"
@@ -161,6 +162,11 @@ std::vector<ProfilePickerSignInTestParam> GetTestParams() {
   };
 }
 
+std::string_view GetClickWelcomeAcceptButtonJsString() {
+  return "document.querySelector('welcome-app')"
+         ".shadowRoot.querySelector('#acceptButton').click()";
+}
+
 std::string_view GetClickSignInButtonJsString(bool is_first_run) {
   if (is_first_run) {
     return "document.querySelector('sign-in-promo-refresh')"
@@ -263,6 +269,16 @@ class ProfilePickerSigninToolbarUIPixelTest
                   browser()->GetProfile()->GetPath(), base::DoNothing())
             : ProfilePicker::Params::FromEntryPoint(GetParam().entry_point);
     ProfilePicker::Show(std::move(params));
+
+    if (is_first_run && switches::IsPreFirstRunDesktopRefreshEnabled()) {
+      profiles::testing::WaitForPickerUrl(
+          GURL(chrome::kChromeUIIntroURL)
+              .Resolve(chrome::kChromeUIIntroWelcomeSubPage));
+      CHECK(content::ExecJs(
+          ProfilePicker::GetWebViewForTesting()->GetWebContents(),
+          GetClickWelcomeAcceptButtonJsString()));
+    }
+
     profiles::testing::WaitForPickerUrl(GetInitialUrl(is_first_run));
 
     content::WebContents* web_contents =

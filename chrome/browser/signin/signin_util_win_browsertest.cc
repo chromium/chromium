@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
 #include "chrome/browser/ui/startup/first_run_service.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -38,6 +39,7 @@
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -46,12 +48,15 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/sync/base/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "ui/views/controls/webview/webview.h"
 
 class SigninUIError;
 
@@ -508,16 +513,30 @@ IN_PROC_BROWSER_TEST_F(SigninUtilWinNoStartingWindowBrowserTest,
 
   // Attempt to run the first browser through the startup flow; simulating
   // opening the first browser after GCPW was done processing the refresh token
-  // set in the registry. This call is synchronous.
+  // set in the registry.
   profiles::FindOrCreateNewWindowForProfile(
       profile, chrome::startup::IsProcessStartup::kYes,
       chrome::startup::IsFirstRun::kYes, /*always_create=*/true);
+
+  if (switches::IsPreFirstRunDesktopRefreshEnabled()) {
+    profiles::testing::WaitForPickerUrl(
+        GURL(chrome::kChromeUIIntroURL)
+            .Resolve(chrome::kChromeUIIntroWelcomeSubPage));
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
+    CHECK(
+        content::ExecJs(ProfilePicker::GetWebViewForTesting()->GetWebContents(),
+                        "document.querySelector('welcome-app')"
+                        ".shadowRoot.querySelector('#acceptButton').click()"));
+    browser_created_observer.Wait();
+    profiles::testing::WaitForPickerClosed();
+  }
+
   BrowserWindowInterface* const first_browser =
       ProfileBrowserCollection::GetForProfile(profile)->GetLastActiveBrowser();
   EXPECT_TRUE(first_browser);
 
   // FRE should be marked as completed because it was bypassed by the already
-  // signed in profile without the user seeing the FRE screens.
+  // signed in profile without the user seeing the rest of the FRE screens.
   EXPECT_FALSE(ProfilePicker::IsFirstRunOpen());
   EXPECT_TRUE(IsFirstRunFinished());
 
