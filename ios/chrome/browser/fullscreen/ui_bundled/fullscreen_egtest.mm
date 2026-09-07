@@ -296,6 +296,9 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
 
 // Tests hiding and showing of the header with a user scroll on a long page.
 - (void)testHideHeaderUserScrollLongPage {
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Failed to set up histogram tester.");
+
   _responses["/tallpage"] =
       base::StringPrintf("<p style='height:%dem'>a</p><p>b</p>", kPageHeightEM);
 
@@ -310,6 +313,33 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
   [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
       performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
   [ChromeEarlGreyUI waitForToolbarVisible:YES];
+
+  // User scrolling logs kUserControlled.
+  NSError* enterError = [MetricsAppInterface
+       expectCount:1
+         forBucket:static_cast<int>(
+                       FullscreenModeTransitionTrigger::kUserControlled)
+      forHistogram:@"IOS.Fullscreen.TransitionTrigger.Enter"];
+  GREYAssertNil(enterError, @"Histogram error: %@", enterError);
+
+  // Exit has kUserControlled and kForcedByCode from page
+  // load.
+  NSError* exitError0 = [MetricsAppInterface
+       expectCount:1
+         forBucket:static_cast<int>(
+                       FullscreenModeTransitionTrigger::kUserControlled)
+      forHistogram:@"IOS.Fullscreen.TransitionTrigger.Exit"];
+  GREYAssertNil(exitError0, @"Histogram error: %@", exitError0);
+
+  NSError* exitError1 = [MetricsAppInterface
+       expectCount:1
+         forBucket:static_cast<int>(
+                       FullscreenModeTransitionTrigger::kForcedByCode)
+      forHistogram:@"IOS.Fullscreen.TransitionTrigger.Exit"];
+  GREYAssertNil(exitError1, @"Histogram error: %@", exitError1);
+
+  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                @"Failed to release histogram tester.");
 }
 
 // Tests that reloading of a page shows the header even if it was not shown
