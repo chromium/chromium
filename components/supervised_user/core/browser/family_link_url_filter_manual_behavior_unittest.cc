@@ -12,6 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/with_feature_override.h"
+#include "build/build_config.h"
 #include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "components/supervised_user/core/common/features.h"
@@ -66,11 +67,14 @@ TEST_F(FamilyLinkUrlFilterManualBehaviorTest,
                   ->GetFilteringBehavior(GURL("http://example.com"))
                   .IsBlocked());
 
-  DisableParentalControls(*test_env().pref_service());
+#if !BUILDFLAG(IS_CHROMEOS)
+  // ChromeOS doesn't support signing out of supervised accounts.
+  test_env().DisableSupervisedAccount();
   EXPECT_FALSE(IsSubjectToParentalControls(*test_env().pref_service()));
   EXPECT_FALSE(under_test()
                    ->GetFilteringBehavior(GURL("http://example.com"))
                    .IsBlocked());
+#endif
 }
 
 // Tests that allowing all site navigation is applied to supervised users.
