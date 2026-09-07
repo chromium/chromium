@@ -692,10 +692,6 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
       "fedCmEmbedderInitiatedLoginEnabled",
       base::FeatureList::IsEnabled(features::kFedCmEmbedderInitiatedLogin));
 
-  source->AddBoolean("passwordChangeAvailable",
-                     PasswordChangeServiceFactory::GetForProfile(profile)
-                         ->UserIsActivePasswordChangeUser());
-
   const bool is_password_change_with_private_inference_login_check_enabled =
       base::FeatureList::IsEnabled(
           password_change::features::
@@ -703,6 +699,14 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
   source->AddBoolean(
       "isPasswordChangeWithPrivateInferenceLoginCheckEnabled",
       is_password_change_with_private_inference_login_check_enabled);
+
+  ChromePasswordChangeService* password_change_service =
+      PasswordChangeServiceFactory::GetForProfile(profile);
+  source->AddBoolean(
+      "passwordChangeAvailable",
+      is_password_change_with_private_inference_login_check_enabled ||
+          (password_change_service &&
+           password_change_service->UserIsActivePasswordChangeUser()));
 
   webui::AddLocalizedString(
       source, "automatedPasswordChangeDescription",
