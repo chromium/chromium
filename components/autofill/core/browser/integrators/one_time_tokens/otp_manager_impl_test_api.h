@@ -19,6 +19,11 @@ class OtpManagerImplTestApi {
     manager_->received_otps_ = std::move(otps);
   }
 
+  const one_time_tokens::ExpiringSubscription& gmail_otp_tickle_subscription()
+      const {
+    return manager_->gmail_otp_tickle_subscription_;
+  }
+
  private:
   raw_ref<OtpManagerImpl> manager_;
 };

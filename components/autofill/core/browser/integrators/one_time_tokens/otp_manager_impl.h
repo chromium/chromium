@@ -50,6 +50,17 @@ LogBuffer& operator<<(LogBuffer& buffer,
 // One instance per frame, owned by the BrowserAutofillManager.
 class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
  public:
+  // The duration for which `OtpManagerImpl` will wait for an incoming OTP
+  // coming from an SMS message.
+  static constexpr base::TimeDelta kSmsOtpSubscriptionDuration =
+      base::Minutes(1);
+
+  // The duration for which `OtpManagerImpl` will wait for a notification
+  // about an incoming OTP in the user's Gmail inbox. The actual OTP fetch
+  // will happen as part of a `gmail_otp_retriever_` call.
+  static constexpr base::TimeDelta kGmailOtpTickleSubscriptionDuration =
+      base::Minutes(5);
+
   friend class OtpManagerImplTestApi;
 
   OtpManagerImpl(BrowserAutofillManager& owner,
@@ -87,6 +98,9 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   // discovered in this process are reported to `OnOneTimeTokenReceived`.
   void GetRecentOtpsAndRenewSubscription();
 
+  // Called when an incoming OTP tickle push notification arrives.
+  void OnTickleReceived(one_time_tokens::OneTimeTokenSource source);
+
   // TODO(crbug.com/415273270): Update UI (dropdown or keyboard accessory) when
   // a new token is received.
   void OnOneTimeTokenReceived(
@@ -110,8 +124,9 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   raw_ptr<one_time_tokens::OneTimeTokenService> one_time_token_service_ =
       nullptr;
 
-  // Subscription to a `OneTimeTokenService`.
-  one_time_tokens::ExpiringSubscription subscription_;
+  // Subscriptions to a `OneTimeTokenService`.
+  one_time_tokens::ExpiringSubscription sms_otp_subscription_;
+  one_time_tokens::ExpiringSubscription gmail_otp_tickle_subscription_;
 
   // Subscription to log events of `one_time_token_service_`.
   base::CallbackListSubscription log_subscription_;
