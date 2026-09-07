@@ -5071,7 +5071,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="485480310608090163">Flere indstillinger og tilladelser</translation>
 <translation id="4857304314344645169">Se en detaljeret forklaring af et problem</translation>
 <translation id="4857506880242459832">Spørg Google om forrige side: <ph name="PAGE_TITLE" /></translation>
-<translation id="4857677595331912231">Din aktuelle fanes indhold og webadresse deles med Google for at give dig mere relevante svar. Du kan tilføje eller fjerne faner, mens du browser.</translation>
 <translation id="485806788160414322">Afspil eller sæt medie på pause</translation>
 <translation id="4858913220355269194">Laudrup</translation>
 <translation id="4860012864737017059">Fanen Seneste</translation>
@@ -8575,6 +8574,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7605163396341021431">Giv Android-apps kontrol over USB-enheder på denne Chromebook</translation>
 <translation id="7605594153474022051">Synkronisering fungerer ikke</translation>
 <translation id="7606560865764296217">Sæt animation på pause</translation>
+<translation id="7606639338662398635">Fanegrupper</translation>
 <translation id="7606802863538485839">Afspil effekter</translation>
 <translation id="7607002721634913082">Sat på pause</translation>
 <translation id="7608810328871051088">Android-præferencer</translation>

@@ -5066,7 +5066,6 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="485480310608090163">Lisää asetuksia ja käyttöoikeuksia</translation>
 <translation id="4857304314344645169">Katso tehtävän vaiheittaiset ohjeet</translation>
 <translation id="4857506880242459832">Kysy Googlelta edellisestä sivusta: <ph name="PAGE_TITLE" /></translation>
-<translation id="4857677595331912231">Nykyisen välilehden sisältö ja URL-osoite jaetaan Googlelle, jotta saat relevantimpia vastauksia. Voit lisätä tai poistaa välilehtiä selatessasi.</translation>
 <translation id="485806788160414322">Toista mediaa tai keskeytä se</translation>
 <translation id="4858913220355269194">Litti</translation>
 <translation id="4860012864737017059">Viimeisimmät-välilehti</translation>
@@ -8568,6 +8567,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7605163396341021431">Salli Android-sovellusten hallita USB-laitteita tällä Chromebookilla</translation>
 <translation id="7605594153474022051">Synkronointi ei toimi</translation>
 <translation id="7606560865764296217">Keskeytä animaatio</translation>
+<translation id="7606639338662398635">Välilehtiryhmät</translation>
 <translation id="7606802863538485839">Toista tehosteet</translation>
 <translation id="7607002721634913082">Keskeytetty</translation>
 <translation id="7608810328871051088">Android-asetukset</translation>

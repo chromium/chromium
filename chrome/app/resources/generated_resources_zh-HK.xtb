@@ -5066,7 +5066,6 @@
 <translation id="485480310608090163">更多設定和權限</translation>
 <translation id="4857304314344645169">查看任何題目的逐步說明</translation>
 <translation id="4857506880242459832">問 Google 有關上一個頁面嘅問題：<ph name="PAGE_TITLE" /></translation>
-<translation id="4857677595331912231">系統會與 Google 分享目前分頁的內容和網址，以提供更相關的答案。你可以在瀏覽時新增或移除分頁。</translation>
 <translation id="485806788160414322">播放或暫停媒體</translation>
 <translation id="4858913220355269194">飛球</translation>
 <translation id="4860012864737017059">最近開啟的分頁</translation>
@@ -6100,6 +6099,7 @@
 <translation id="5678955352098267522">讀取您在 <ph name="WEBSITE_1" /> 上的資料</translation>
 <translation id="5680050361008726776">要移除「<ph name="ESIM_PROFILE_NAME" />」嗎？</translation>
 <translation id="5681586175480958839">檔案已開啟</translation>
+<translation id="5682120590308014005">登入以輕鬆將「雲端硬碟」檔案加至「AI 模式」對話串。你也可在你的所有裝置上取得密碼和其他資料。</translation>
 <translation id="5684110242705861346">「<ph name="NAME" />」擴充程式是根據你機構的政策新增，目前正在控制此設定。<ph name="BEGIN_LINK" />查看詳情<ph name="END_LINK" /></translation>
 <translation id="5684181005476681636">Wi-Fi 詳情</translation>
 <translation id="5687340364605915800">網站會自行判斷是否回應此要求</translation>
@@ -8177,6 +8177,7 @@
 <translation id="7299588179200441056"><ph name="URL" /> - <ph name="FOLDER" /></translation>
 <translation id="730068416968462308">動畫</translation>
 <translation id="7301812050652048720">密鑰已刪除</translation>
+<translation id="7303246449496241344">驗證你的身分，即可輕鬆將「雲端硬碟」檔案加至「AI 模式」對話串。你也可在你的所有裝置上取得密碼和其他資料。</translation>
 <translation id="7303485269821975179">設定 <ph name="DEVICE_TYPE" /> 密碼</translation>
 <translation id="7303900363563182677">此網站被禁止查看複製到剪貼簿的文字和圖片</translation>
 <translation id="7304030187361489308">高</translation>
@@ -8563,6 +8564,7 @@
 <translation id="7605163396341021431">授權 Android 應用程式控制此 Chromebook 上的 USB 裝置</translation>
 <translation id="7605594153474022051">同步處理功能無法正常運作</translation>
 <translation id="7606560865764296217">停播動畫</translation>
+<translation id="7606639338662398635">分頁群組</translation>
 <translation id="7606802863538485839">播放特效</translation>
 <translation id="7607002721634913082">已暫停</translation>
 <translation id="7608810328871051088">Android 偏好設定</translation>

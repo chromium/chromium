@@ -5067,7 +5067,6 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="485480310608090163">További beállítások és engedélyek</translation>
 <translation id="4857304314344645169">Megtekintheti bármilyen probléma részletes magyarázatát</translation>
 <translation id="4857506880242459832">Kérdés feltevése a Google-nak az előző oldalról: <ph name="PAGE_TITLE" /></translation>
-<translation id="4857677595331912231">A rendszer megosztja a jelenlegi lap tartalmát és URL-jét a Google-lal, hogy Ön relevánsabb válaszokat kaphasson. Böngészés közben hozzáadhat és eltávolíthat lapokat.</translation>
 <translation id="485806788160414322">Médiatartalom lejátszása vagy szüneteltetése</translation>
 <translation id="4858913220355269194">Foci</translation>
 <translation id="4860012864737017059">Legutóbbi lap</translation>
@@ -8569,6 +8568,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="7605163396341021431">Az USB-eszközök feletti irányítás átadása az Android-alkalmazásoknak ezen a Chromebookon.</translation>
 <translation id="7605594153474022051">A szinkronizálás nem működik.</translation>
 <translation id="7606560865764296217">Animáció szüneteltetése</translation>
+<translation id="7606639338662398635">Lapcsoportok</translation>
 <translation id="7606802863538485839">Effektek lejátszása</translation>
 <translation id="7607002721634913082">Szünet</translation>
 <translation id="7608810328871051088">Android-beállítások</translation>

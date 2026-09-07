@@ -5056,7 +5056,6 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="485480310608090163">Više postavki i dopuštenja</translation>
 <translation id="4857304314344645169">Pogledajte detaljno objašnjenje svakog problema</translation>
 <translation id="4857506880242459832">Postavite pitanje Googleu o prethodnoj stranici: <ph name="PAGE_TITLE" /></translation>
-<translation id="4857677595331912231">Sadržaj i URL vaše trenutačne kartice dijele se s Googleom kako bi vam se pružili relevantniji odgovori. Dok pregledavate, možete dodavati ili uklanjati kartice.</translation>
 <translation id="485806788160414322">Reproduciranje ili pauziranje medija</translation>
 <translation id="4858913220355269194">Zvone</translation>
 <translation id="4860012864737017059">Nedavna kartica</translation>
@@ -8558,6 +8557,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7605163396341021431">Dopustite Android aplikacijama da upravljaju USB uređajima na ovom Chromebooku</translation>
 <translation id="7605594153474022051">Sinkronizacija ne radi</translation>
 <translation id="7606560865764296217">Pauziraj animaciju</translation>
+<translation id="7606639338662398635">Grupe kartica</translation>
 <translation id="7606802863538485839">Reproduciraj efekte</translation>
 <translation id="7607002721634913082">Pauzirano</translation>
 <translation id="7608810328871051088">Postavke Androida</translation>

@@ -9,6 +9,7 @@
 <translation id="1016495303386450659">已更新項目</translation>
 <translation id="1018804590490383958">掃瞄並自動填入</translation>
 <translation id="1019990162050689579">Gemini 應用程式活動</translation>
+<translation id="102645702181682900">已開始任務</translation>
 <translation id="102916930470544692">密鑰</translation>
 <translation id="1030376737535466765">開啟「密碼管理工具」</translation>
 <translation id="1035980983510608210">如果關閉所有分頁，系統亦會關閉固定分頁。</translation>
@@ -239,6 +240,7 @@
 <translation id="1709916727352927457">刪除密鑰</translation>
 <translation id="1715515772563243997">如果您信任 <ph name="SITE" />，可使用已儲存的密碼登入。</translation>
 <translation id="1718835860248848330">過去一小時</translation>
+<translation id="1726013039921383235">一律允許</translation>
 <translation id="1728549374069268714">貼上並前往</translation>
 <translation id="1732468323901456775">開啟「<ph name="MODULE_NAME" />」通知</translation>
 <translation id="1739364174357629566">更新已知的旅客編號</translation>
@@ -740,6 +742,7 @@
 <translation id="3409785640040772790">地圖</translation>
 <translation id="3416023309465857378">2023 年 10 月 25 日</translation>
 <translation id="3419787211763835342">協助改善加強版自動填入</translation>
+<translation id="3430407169377889553">使用 Gemini 時必須謹慎安全，並按情況加以控制。Gemini 在處理任務期間所執行的操作由你自行承擔責任。</translation>
 <translation id="3435738964857648380">安全性</translation>
 <translation id="3441673211568148613">確保瀏覽資料保密</translation>
 <translation id="3443810440409579745">已收到分頁。</translation>
@@ -927,6 +930,7 @@
 <translation id="4021447724486050609">更新瀏覽器</translation>
 <translation id="4021931095789478915">將 ${url} 新增至閱讀清單</translation>
 <translation id="4028871427853484857">儲存在帳戶中…</translation>
+<translation id="4034354558246368274">此次允許</translation>
 <translation id="4038354071007134711">此裝置上沒有可開啟該檔案的應用程式。</translation>
 <translation id="4042870976416480368">在網頁中搜尋</translation>
 <translation id="4045441967987592849">重開</translation>
@@ -1088,6 +1092,7 @@
 <translation id="4592672037257622855">{count,plural, =1{已將頁面新增至閱讀清單}other{已將 {count} 個頁面新增至閱讀清單}}</translation>
 <translation id="459644946100970322">要開啟價格變更提示嗎？</translation>
 <translation id="4597892826846980979">接收分頁通知</translation>
+<translation id="459792494991530234">輸入中</translation>
 <translation id="4601095002996233687">提供深入掃瞄功能，檢查是否有可疑的下載內容。</translation>
 <translation id="4606247758155004938">您的瀏覽器由機構管理。</translation>
 <translation id="4607887340472970274">價格追蹤</translation>
@@ -1153,6 +1158,7 @@
 <translation id="4792385443586519711">公司名稱</translation>
 <translation id="479628432297359449">要停止下載嗎？</translation>
 <translation id="4796496140132859135">分頁群組，收埋咗。</translation>
+<translation id="4800912004582762296">正在點擊</translation>
 <translation id="4802185666270672526">隱藏「切換至桌面版網站」</translation>
 <translation id="4802678077012980341">「密碼安全檢查」已完成！</translation>
 <translation id="4803185665210547709">由您的機構管理。
@@ -1625,6 +1631,7 @@
 <translation id="6259928806013786178">無法啟動閱讀模式</translation>
 <translation id="626335165106398104">Gemini 可配搭其他服務使用</translation>
 <translation id="6268773951964630964">搜尋已複製的圖片</translation>
+<translation id="6270944267518310103">等待中</translation>
 <translation id="6271462272606946663">隱藏「切換至流動網站」</translation>
 <translation id="6271824294945464304">即將分享密碼</translation>
 <translation id="628251768213143684">你隨時可管理儲存在 Google 帳戶中的內容</translation>
@@ -1658,6 +1665,7 @@
 <translation id="6350745006329795504">管理你的裝置</translation>
 <translation id="6351147166808964033">進入分頁切換工具</translation>
 <translation id="63519665078626091">如要使用「網絡檢查工具」，請透過連接線連線至電腦的 Safari，並從「開發」選單存取 iPad。您可透過電腦，在 Safari 設定的「進階」部分中啟用「開發」選單。</translation>
+<translation id="6354695695659930684">正在填入密碼</translation>
 <translation id="6355820183143562453">隱藏「價格追蹤」資訊卡</translation>
 <translation id="6355820205320395730">安全性弱的密碼很容易被猜到。請務必設定安全度高的密碼。<ph name="BEGIN_LINK" />查看更多安全提示。<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">登入即可存取密碼、書籤和其他資料。</translation>
@@ -2248,6 +2256,7 @@
 <translation id="8233237502828137700">關閉橫額宣傳</translation>
 <translation id="823339794112333264">開麥克風</translation>
 <translation id="8240217649914883113">加去我嘅日曆</translation>
+<translation id="824379025871762038">絕不允許</translation>
 <translation id="8250920743982581267">文件</translation>
 <translation id="8252980988000695656">「Google 智能鏡頭」已完成！</translation>
 <translation id="8258734532103758067">我已匯出資料</translation>

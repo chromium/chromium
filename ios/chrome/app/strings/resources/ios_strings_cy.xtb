@@ -9,6 +9,7 @@
 <translation id="1016495303386450659">Diweddarwyd yr eitem</translation>
 <translation id="1018804590490383958">Sganio ac awtolenwi</translation>
 <translation id="1019990162050689579">Gweithgarwch Ap Gemini</translation>
+<translation id="102645702181682900">Tasg wedi dechrau</translation>
 <translation id="102916930470544692">Cod pas</translation>
 <translation id="1030376737535466765">Agor Rheolwr Cyfrineiriau</translation>
 <translation id="1035980983510608210">Bydd cau pob tab yn cau tabiau sydd wedi'u pinio hefyd.</translation>
@@ -239,6 +240,7 @@
 <translation id="1709916727352927457">Dileu cod pas</translation>
 <translation id="1715515772563243997">Os ydych yn ymddiried yn <ph name="SITE" />, gallwch ddefnyddio cyfrinair a gadwyd i fewngofnodi.</translation>
 <translation id="1718835860248848330">Awr ddiwethaf</translation>
+<translation id="1726013039921383235">Caniatáu Bob Amser</translation>
 <translation id="1728549374069268714">Gludo a mynd</translation>
 <translation id="1732468323901456775">Troi hysbysiadau ymlaen ar gyfer <ph name="MODULE_NAME" /></translation>
 <translation id="1739364174357629566">Diweddaru'r Rhif Teithiwr Hysbys</translation>
@@ -740,6 +742,7 @@
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 Hyd 2023</translation>
 <translation id="3419787211763835342">Helpwch i wella awtolenwi gwell</translation>
+<translation id="3430407169377889553">Defnyddiwch Gemini yn ofalus a chymerwch reolaeth os oes angen. Rydych yn gyfrifol am weithredoedd Gemini yn ystod tasgau.</translation>
 <translation id="3435738964857648380">Diogelwch</translation>
 <translation id="3441673211568148613">Cadwch eich pori yn breifat</translation>
 <translation id="3443810440409579745">Cafodd y tab ei dderbyn.</translation>
@@ -927,6 +930,7 @@
 <translation id="4021447724486050609">Diweddarwch eich porwr</translation>
 <translation id="4021931095789478915">Ychwanegu ${url} at y rhestr ddarllen</translation>
 <translation id="4028871427853484857">Cadw yn y cyfrif…</translation>
+<translation id="4034354558246368274">Caniatáu'r Tro Hwn</translation>
 <translation id="4038354071007134711">Ni all unrhyw ap ar y ddyfais hon agor y ffeil.</translation>
 <translation id="4042870976416480368">Chwilio'r Dudalen</translation>
 <translation id="4045441967987592849">Ailagor</translation>
@@ -1088,6 +1092,7 @@
 <translation id="4592672037257622855">{count,plural, =1{Mae tudalen wedi'i hychwanegu at eich rhestr ddarllen}zero{Mae {count} tudalen wedi'u hychwanegu at eich rhestr ddarllen}two{Mae {count} dudalen wedi'u hychwanegu at eich rhestr ddarllen}few{Mae {count} tudalen wedi'u hychwanegu at eich rhestr ddarllen}many{Mae {count} tudalen wedi'u hychwanegu at eich rhestr ddarllen}other{Mae {count} tudalen wedi'u hychwanegu at eich rhestr ddarllen}}</translation>
 <translation id="459644946100970322">Troi hysbysiadau prisiau ymlaen?</translation>
 <translation id="4597892826846980979">Cael Hysbysiadau Tabiau</translation>
+<translation id="459792494991530234">Teipio</translation>
 <translation id="4601095002996233687">Sganiau manwl ar gyfer lawrlwythiadau amheus.</translation>
 <translation id="4606247758155004938">Rheolir eich porwr gan eich gweinyddwr.</translation>
 <translation id="4607887340472970274">Olrhain Prisiau</translation>
@@ -1153,6 +1158,7 @@
 <translation id="4792385443586519711">Enw'r cwmni</translation>
 <translation id="479628432297359449">Stopio lawrlwytho?</translation>
 <translation id="4796496140132859135">Grŵp tabiau. Wedi'i grebachu.</translation>
+<translation id="4800912004582762296">Clicio</translation>
 <translation id="4802185666270672526">Cuddio Gofyn am Wefan Bwrdd Gwaith</translation>
 <translation id="4802678077012980341">Gwiriad cyfrineiriau wedi'i gwblhau!</translation>
 <translation id="4803185665210547709">Rheolir gan eich sefydliad.
@@ -1625,6 +1631,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="6259928806013786178">Gwnaeth y modd darllen fethu</translation>
 <translation id="626335165106398104">Mae Gemini yn gweithio gyda gwasanaethau eraill</translation>
 <translation id="6268773951964630964">Chwilio am lun a gopïwyd</translation>
+<translation id="6270944267518310103">Wrthi'n aros</translation>
 <translation id="6271462272606946663">Cuddio Cais am Wefan Symudol</translation>
 <translation id="6271824294945464304">Yn rhannu cyfrinair</translation>
 <translation id="628251768213143684">Gallwch bob amser reoli'r hyn sydd wedi'i gadw yn eich Cyfrif Google</translation>
@@ -1658,6 +1665,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="6350745006329795504">Rheoli eich dyfeisiau</translation>
 <translation id="6351147166808964033">Rhowch newidydd tabiau</translation>
 <translation id="63519665078626091">I ddefnyddio'r Web Inspector, cysylltwch â Safari ar eich cyfrifiadur gan ddefnyddio cebl a chyrchwch eich iPad o'r ddewislen Datblygu. Gallwch alluogi'r ddewislen datblygu yn adran Uwch gosodiadau Safari ar eich cyfrifiadur.</translation>
+<translation id="6354695695659930684">Wrthi'n llenwi cyfrinair</translation>
 <translation id="6355820183143562453">Cuddio'r cerdyn olrhain prisiau</translation>
 <translation id="6355820205320395730">Mae'n hawdd dyfalu cyfrineiriau gwan. Gwnewch yn siŵr eich bod yn creu cyfrineiriau cryf. <ph name="BEGIN_LINK" />Gweld rhagor o awgrymiadau diogelwch.<ph name="END_LINK" /></translation>
 <translation id="6357455205205567365">Mewngofnodi i gael eich holl bethau megis cyfrineiriau, nodau tudalen a rhagor.</translation>
@@ -2250,6 +2258,7 @@ Gallwch ailgychwyn unrhyw bryd.</translation>
 <translation id="8233237502828137700">Cau'r hyrwyddiad baner</translation>
 <translation id="823339794112333264">Troi'r meicroffon ymlaen</translation>
 <translation id="8240217649914883113">Ychwanegu hwn at fy nghalendr</translation>
+<translation id="824379025871762038">Peidio â Chaniatáu Byth</translation>
 <translation id="8250920743982581267">Dogfennau</translation>
 <translation id="8252980988000695656">Google Lens wedi'i gwblhau!</translation>
 <translation id="8258734532103758067">Rwyf wedi allforio fy nata</translation>

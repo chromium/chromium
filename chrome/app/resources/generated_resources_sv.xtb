@@ -5070,7 +5070,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="485480310608090163">Fler inställningar och behörigheter</translation>
 <translation id="4857304314344645169">Få en stegvis förklaring av vilket problem som helst</translation>
 <translation id="4857506880242459832">Fråga Google om föregående sida: <ph name="PAGE_TITLE" /></translation>
-<translation id="4857677595331912231">Innehållet och webbadressen på din nuvarande flik delas med Google för att ge dig mer relevanta svar. Du kan lägga till eller ta bort flikar medan du surfar.</translation>
 <translation id="485806788160414322">Spela upp eller pausa media</translation>
 <translation id="4858913220355269194">Fotboll</translation>
 <translation id="4860012864737017059">Fliken Senaste</translation>
@@ -8572,6 +8571,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7605163396341021431">Ge Android-appar kontroll över USB-enheter på denna Chromebook</translation>
 <translation id="7605594153474022051">Det går inte att synkronisera</translation>
 <translation id="7606560865764296217">Pausa animation</translation>
+<translation id="7606639338662398635">Flikgrupper</translation>
 <translation id="7606802863538485839">Spela upp effekter</translation>
 <translation id="7607002721634913082">Pausad</translation>
 <translation id="7608810328871051088">Android-inställningar</translation>

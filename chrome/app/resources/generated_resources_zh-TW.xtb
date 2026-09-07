@@ -5049,7 +5049,6 @@
 <translation id="485480310608090163">更多設定和權限</translation>
 <translation id="4857304314344645169">查看任何問題的逐步說明</translation>
 <translation id="4857506880242459832">向 Google 詢問與上一個網頁相關的資訊：<ph name="PAGE_TITLE" /></translation>
-<translation id="4857677595331912231">系統會將目前分頁的內容和網址分享給 Google，以便提供更貼近需求的答案。瀏覽時可以新增或移除分頁。</translation>
 <translation id="485806788160414322">播放或暫停播放媒體</translation>
 <translation id="4858913220355269194">飛球</translation>
 <translation id="4860012864737017059">最近開啟的分頁</translation>
@@ -8546,6 +8545,7 @@
 <translation id="7605163396341021431">授權 Android 應用程式控制這台 Chromebook 上的 USB 裝置</translation>
 <translation id="7605594153474022051">同步處理功能無法正常運作</translation>
 <translation id="7606560865764296217">暫停播放動畫</translation>
+<translation id="7606639338662398635">分頁群組</translation>
 <translation id="7606802863538485839">播放特效</translation>
 <translation id="7607002721634913082">已暫停</translation>
 <translation id="7608810328871051088">Android 偏好設定</translation>

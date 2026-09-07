@@ -5070,7 +5070,6 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="485480310608090163">Rhagor o osodiadau a chaniatadau</translation>
 <translation id="4857304314344645169">Gweler esboniad cam wrth gam o unrhyw broblem</translation>
 <translation id="4857506880242459832">Gofyn i Google am y dudalen flaenorol: <ph name="PAGE_TITLE" /></translation>
-<translation id="4857677595331912231">Mae cynnwys a chyfeiriad gwe eich tab cyfredol yn cael eu rhannu â Google i roi atebion mwy perthnasol i chi. Gallwch ychwanegu neu dynnu tabiau wrth i chi bori.</translation>
 <translation id="485806788160414322">Chwarae neu oedi cyfryngau</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="4860012864737017059">Tab diweddar</translation>
@@ -6107,6 +6106,7 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="5678955352098267522">Darllen eich data ar <ph name="WEBSITE_1" /></translation>
 <translation id="5680050361008726776">Tynnu "<ph name="ESIM_PROFILE_NAME" />"?</translation>
 <translation id="5681586175480958839">Mae'r feil eisoes yn cael ei hagor</translation>
+<translation id="5682120590308014005">Mewngofnodwch i ychwanegu ffeiliau o Drive yn hawdd at eich trywyddau Dull AI. Byddwch hefyd yn cael eich cyfrineiriau a rhagor ar eich holl ddyfeisiau.</translation>
 <translation id="5684110242705861346">Ychwanegwyd yr estyniad "<ph name="NAME" />" gan bolisi eich sefydliad ac mae'n rheoli'r gosodiad hwn. <ph name="BEGIN_LINK" />Gweld y manylion<ph name="END_LINK" /></translation>
 <translation id="5684181005476681636">Manylion Wi-Fi</translation>
 <translation id="5687340364605915800">Mae gwefannau yn defnyddio eu disgresiwn wrth ymateb i'r cais hwn</translation>
@@ -8192,6 +8192,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7299588179200441056"><ph name="URL" /> - <ph name="FOLDER" /></translation>
 <translation id="730068416968462308">Animeiddiedig</translation>
 <translation id="7301812050652048720">Cod pas wedi'i ddileu</translation>
+<translation id="7303246449496241344">I ychwanegu ffeiliau o Drive yn hawdd at eich trywyddau Dull AI, cadarnhewch mai chi sydd yno. Byddwch hefyd yn cael eich cyfrineiriau a rhagor ar eich holl ddyfeisiau.</translation>
 <translation id="7303485269821975179">Gosod cyfrinair <ph name="DEVICE_TYPE" /></translation>
 <translation id="7303900363563182677">Mae'r wefan hon wedi'i rhwystro rhag gweld testun a lluniau sydd wedi'u copïo i'r clipfwrdd</translation>
 <translation id="7304030187361489308">Uchel</translation>
@@ -8579,6 +8580,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7605163396341021431">Rhoi rheolaeth i apiau Android dros ddyfeisiau USB ar y Chromebook hwn</translation>
 <translation id="7605594153474022051">Nid yw Cysoni yn gweithio</translation>
 <translation id="7606560865764296217">Seibio'r animeiddiad</translation>
+<translation id="7606639338662398635">Grwpiau Tabiau</translation>
 <translation id="7606802863538485839">Chwarae effeithiau</translation>
 <translation id="7607002721634913082">Wedi seibio</translation>
 <translation id="7608810328871051088">Dewisiadau Android</translation>

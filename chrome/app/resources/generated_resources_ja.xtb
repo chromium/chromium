@@ -5053,7 +5053,6 @@
 <translation id="485480310608090163">その他の設定と権限</translation>
 <translation id="4857304314344645169">問題がある場合は詳しい説明を確認できます</translation>
 <translation id="4857506880242459832">前のページについて Google に質問する: <ph name="PAGE_TITLE" /></translation>
-<translation id="4857677595331912231">より関連性の高い回答を提供するため、現在のタブのコンテンツと URL が Google と共有されます。閲覧中にタブを追加または削除できます。</translation>
 <translation id="485806788160414322">メディアを再生または一時停止する</translation>
 <translation id="4858913220355269194">フリッツ</translation>
 <translation id="4860012864737017059">最近使用したタブ</translation>
@@ -8552,6 +8551,7 @@
 <translation id="7605163396341021431">この Chromebook で Android アプリに USB デバイスの制御を許可します</translation>
 <translation id="7605594153474022051">同期が機能していません</translation>
 <translation id="7606560865764296217">アニメーションを一時停止</translation>
+<translation id="7606639338662398635">タブグループ</translation>
 <translation id="7606802863538485839">エフェクトを再生</translation>
 <translation id="7607002721634913082">一時停止中</translation>
 <translation id="7608810328871051088">Android 設定</translation>

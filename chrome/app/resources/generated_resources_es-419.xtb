@@ -5057,7 +5057,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="485480310608090163">Más opciones de configuración y permisos</translation>
 <translation id="4857304314344645169">Consulta una explicación paso a paso de cualquier problema</translation>
 <translation id="4857506880242459832">Preguntar a Google sobre la página anterior: <ph name="PAGE_TITLE" /></translation>
-<translation id="4857677595331912231">El contenido y la URL de la pestaña actual se comparten con Google para brindarte respuestas más pertinentes. Puedes agregar o quitar pestañas mientras navegas.</translation>
 <translation id="485806788160414322">Reproducir o pausar contenido multimedia</translation>
 <translation id="4858913220355269194">Balón</translation>
 <translation id="4860012864737017059">Pestaña reciente</translation>
@@ -8559,6 +8558,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7605163396341021431">Permitir que las apps para Android controlen dispositivos USB en esta Chromebook</translation>
 <translation id="7605594153474022051">La sincronización no funciona</translation>
 <translation id="7606560865764296217">Pausar animación</translation>
+<translation id="7606639338662398635">Grupos de pestañas</translation>
 <translation id="7606802863538485839">Reproducir efectos</translation>
 <translation id="7607002721634913082">Detenido</translation>
 <translation id="7608810328871051088">Preferencias de Android</translation>

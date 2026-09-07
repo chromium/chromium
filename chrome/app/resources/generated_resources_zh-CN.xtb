@@ -5053,7 +5053,6 @@
 <translation id="485480310608090163">更多设置和权限</translation>
 <translation id="4857304314344645169">查看任何题目的分步说明</translation>
 <translation id="4857506880242459832">向 Google 询问与上一个页面有关的问题：<ph name="PAGE_TITLE" /></translation>
-<translation id="4857677595331912231">系统会与 Google 分享当前标签页的内容和网址，以便为您提供更贴合情景的回答。您可以在浏览过程中随时添加或移除标签页。</translation>
 <translation id="485806788160414322">播放或暂停媒体</translation>
 <translation id="4858913220355269194">足球</translation>
 <translation id="4860012864737017059">“近期”标签页</translation>
@@ -8551,6 +8550,7 @@
 <translation id="7605163396341021431">允许 Android 应用在此 Chromebook 上控制 USB 设备</translation>
 <translation id="7605594153474022051">同步功能无法正常运行</translation>
 <translation id="7606560865764296217">暂停动画</translation>
+<translation id="7606639338662398635">标签页分组</translation>
 <translation id="7606802863538485839">播放特效</translation>
 <translation id="7607002721634913082">已暂停</translation>
 <translation id="7608810328871051088">Android 偏好设置</translation>

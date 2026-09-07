@@ -5069,7 +5069,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="485480310608090163">Več nastavitev in dovoljenj</translation>
 <translation id="4857304314344645169">Oglejte si podrobno razlago težav</translation>
 <translation id="4857506880242459832">Vprašajte Google o prejšnji strani: <ph name="PAGE_TITLE" /></translation>
-<translation id="4857677595331912231">Vsebina in URL trenutnega zavihka se zaradi zagotavljanja ustreznejših odgovorov delita z Googlom. Med brskanjem lahko dodate ali odstranite zavihke.</translation>
 <translation id="485806788160414322">Predvajanje ali začasna zaustavitev predstavnosti</translation>
 <translation id="4858913220355269194">Fritz</translation>
 <translation id="4860012864737017059">Nedavni zavihek</translation>
@@ -8578,6 +8577,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7605163396341021431">Aplikacijam za Android omogočite nadzor nad napravami USB v tem Chromebooku</translation>
 <translation id="7605594153474022051">Sync isn't working</translation>
 <translation id="7606560865764296217">Začasna zaustavitev animacije</translation>
+<translation id="7606639338662398635">Skupine zavihkov</translation>
 <translation id="7606802863538485839">Predvajaj učinke</translation>
 <translation id="7607002721634913082">Začasno ustavljeno</translation>
 <translation id="7608810328871051088">Nastavitve za Android</translation>

@@ -5069,7 +5069,6 @@
 <translation id="485480310608090163">تنظیمات و اجازه‌های بیشتر</translation>
 <translation id="4857304314344645169">توضیح گام‌به‌گام هر مشکلی را ببینید</translation>
 <translation id="4857506880242459832">‏پرسیدن از Google درباره صفحه قبلی: <ph name="PAGE_TITLE" /></translation>
-<translation id="4857677595331912231">‏محتوا و نشانی وب زبانه کنونی‌تان برای ارائه پاسخ‌های مربوط‌تر با Google هم‌رسانی می‌شود. می‌توانید درحین مرور، زبانه‌ها را اضافه کنید یا بردارید.</translation>
 <translation id="485806788160414322">پخش یا مکث رسانه</translation>
 <translation id="4858913220355269194">فوتبالی</translation>
 <translation id="4860012864737017059">زبانه اخیر</translation>
@@ -8573,6 +8572,7 @@
 <translation id="7605163396341021431">‏به برنامه‌های Android امکان داده می‌شود دستگاه‌های USB را در این Chromebook کنترل کنند</translation>
 <translation id="7605594153474022051">همگام‌سازی کار نمی‌کند</translation>
 <translation id="7606560865764296217">توقف موقت پویانمایی</translation>
+<translation id="7606639338662398635">گروه زبانه</translation>
 <translation id="7606802863538485839">پخش جلوه‌ها</translation>
 <translation id="7607002721634913082">متوقف</translation>
 <translation id="7608810328871051088">‏اولویت‌های Android</translation>
@@ -9581,7 +9581,7 @@
 <translation id="8366694425498033255">کلیدهای انتخاب</translation>
 <translation id="8370294614544004647">به‌خواب رفتن هنگام بسته شدن رایانه کیفی</translation>
 <translation id="8370419414641876532">روی «گذرواژه‌ها و تکمیل خودکار» کلیک کنید</translation>
-<translation id="8371695176452482769">اکنون صحبت کنید</translation>
+<translation id="8371695176452482769">صحبت کنید</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{صامت کردن سایت}one{صامت کردن سایت‌ها}other{صامت کردن سایت‌ها}}</translation>
 <translation id="8372441176515901959">بستن درخواست</translation>
 <translation id="8372678064309688510">نشانی شما ذخیره شد</translation>

@@ -5056,7 +5056,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="485480310608090163">Još podešavanja i dozvola</translation>
 <translation id="4857304314344645169">Pogledajte detaljno objašnjenje bilo kog problema</translation>
 <translation id="4857506880242459832">Upitaj Google o prethodnoj stranici: <ph name="PAGE_TITLE" /></translation>
-<translation id="4857677595331912231">Sadržaj i URL trenutne kartice dele se sa Google-om da biste dobijali relevantnije odgovore. Možete da dodajete ili uklanjate kartice dok pregledate.</translation>
 <translation id="485806788160414322">Pusti ili pauziraj medije</translation>
 <translation id="4858913220355269194">Fric</translation>
 <translation id="4860012864737017059">Kartica Nedavno</translation>
@@ -8563,6 +8562,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7605163396341021431">Omogućite Android aplikacijama da kontrolišu USB uređaje na ovom Chromebook-u</translation>
 <translation id="7605594153474022051">Sinhronizacija ne funkcioniše</translation>
 <translation id="7606560865764296217">Pauzirajte animaciju</translation>
+<translation id="7606639338662398635">Grupe kartica</translation>
 <translation id="7606802863538485839">Pusti efekte</translation>
 <translation id="7607002721634913082">Pauzirano</translation>
 <translation id="7608810328871051088">Android podešavanja</translation>

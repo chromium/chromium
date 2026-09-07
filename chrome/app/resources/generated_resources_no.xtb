@@ -5064,7 +5064,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="485480310608090163">Flere innstillinger og tillatelser</translation>
 <translation id="4857304314344645169">Se en trinnvis forklaring av alle problemer</translation>
 <translation id="4857506880242459832">Spør Google om den forrige siden: <ph name="PAGE_TITLE" /></translation>
-<translation id="4857677595331912231">Innholdet i og nettadressen til den aktive fanen deles med Google for å gi deg mer relevante svar. Du kan legge til eller fjerne faner mens du surfer.</translation>
 <translation id="485806788160414322">Spill av eller sett medieinnhold på pause</translation>
 <translation id="4858913220355269194">Drible</translation>
 <translation id="4860012864737017059">Nylig fane</translation>
@@ -8564,6 +8563,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7605163396341021431">Gi Android-apper kontroll over USB-enheter på denne Chromebooken</translation>
 <translation id="7605594153474022051">Synkronisering fungerer ikke</translation>
 <translation id="7606560865764296217">Sett animasjonen på pause</translation>
+<translation id="7606639338662398635">Fanegrupper</translation>
 <translation id="7606802863538485839">Spilleffekter</translation>
 <translation id="7607002721634913082">Satt på pause</translation>
 <translation id="7608810328871051088">Android-innstillinger</translation>

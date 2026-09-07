@@ -2616,7 +2616,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5414306071315087019">A opção Compre Agora, Pague Depois está disponível com o Google Pay</translation>
 <translation id="5414446060143308245">Revise antes de transferir os arquivos</translation>
 <translation id="5414511064953050917">Mover mesmo assim</translation>
-<translation id="5418700249417444482">Os URLs das páginas que você acessa são enviados ao Google Cloud ou a terceiros para análise e podem ficar visíveis para o administrador. Por exemplo, eles podem ser verificados para detectar sites perigosos ou filtrar sites com base em regras definidas pelo administrador.</translation>
 <translation id="5419311651396341287">O administrador pode ver:</translation>
 <translation id="5423269318075950257">Monitorar preço</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> quer enviar notificações</translation>
@@ -2637,7 +2636,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5447103258548475868">Salvar passaporte na Carteira do Google</translation>
 <translation id="5447235695608032700">Permitir que <ph name="SITE" /> use as informações salvas sobre você</translation>
 <translation id="5447973833955560753">Senha de recuperação</translation>
-<translation id="5451331376824595378">Quando ocorrências de segurança são sinalizadas pelo Chrome, dados relevantes sobre elas são enviados ao administrador. Isso pode incluir URLs de páginas visitadas no Chrome, URLs de páginas de onde você copiou dados, nomes de arquivos ou metadados, endereços IP, falhas do navegador ou da guia e o nome de usuário usado para fazer login no dispositivo, no Chrome e em apps baseados na Web.</translation>
 <translation id="5452270690849572955">Não foi possível encontrar a página deste <ph name="HOST_NAME" /></translation>
 <translation id="5452923259299906094">Pague com a carteira digital e o Pix</translation>
 <translation id="5455374756549232013">Carimbo de data/hora da política inválido</translation>
