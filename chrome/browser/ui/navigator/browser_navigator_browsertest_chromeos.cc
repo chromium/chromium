@@ -40,6 +40,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "ui/aura/window.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace {
 

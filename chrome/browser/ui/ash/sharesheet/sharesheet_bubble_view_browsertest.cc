@@ -28,7 +28,7 @@
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_bubble_view_delegate.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_target_button.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_util.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/components/sharesheet/constants.h"

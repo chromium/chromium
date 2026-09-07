@@ -45,6 +45,8 @@
 #include "extensions/browser/extension_util.h"
 #include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/window_open_disposition.h"
+#include "ui/display/types/display_constants.h"
 
 namespace {
 

@@ -1,7 +1,7 @@
 include_rules = [
   # //chrome/browser/ui/webui/signin/ash is conceptually part of "ash".
-  "+ash/system/session",
   "+ash/style",
+  "+ash/system/session",
 
   # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
   # details.
@@ -23,7 +23,6 @@ include_rules = [
   "+chrome/browser/signin",
   "+chrome/browser/ui/ash/account_manager",
   "+chrome/browser/ui/browser_commands.h",
-  "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h",
   "+chrome/browser/ui/webui/ash/edu_coexistence",

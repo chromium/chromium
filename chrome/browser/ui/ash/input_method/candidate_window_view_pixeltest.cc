@@ -8,7 +8,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ui/ash/input_method/candidate_view.h"
 #include "chrome/browser/ui/ash/input_method/candidate_window_view.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/common/content_switches.h"

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
-
 #include "content/public/test/browser_test.h"
 #include "url/gurl.h"
 

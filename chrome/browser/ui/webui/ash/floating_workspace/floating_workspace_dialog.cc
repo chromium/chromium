@@ -19,6 +19,7 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_controller.h"
 #include "ui/aura/window.h"
 #include "ui/base/ui_base_types.h"
 #include "url/gurl.h"

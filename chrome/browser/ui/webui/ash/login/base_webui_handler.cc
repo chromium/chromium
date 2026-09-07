@@ -12,6 +12,7 @@
 #include "base/values.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "components/login/localized_values_builder.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_ui.h"
 
 namespace ash {

@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/webui/ash/app_install/app_install_page_handler.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/webapps/common/constants.h"
+#include "content/public/browser/navigation_controller.h"
 #include "ui/aura/window.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/webui/web_ui_util.h"

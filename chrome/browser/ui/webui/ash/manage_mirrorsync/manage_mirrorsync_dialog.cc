@@ -7,6 +7,7 @@
 #include "ash/constants/webui_url_constants.h"
 #include "base/check_deref.h"
 #include "chrome/browser/ui/webui/ash/manage_mirrorsync/manage_mirrorsync_ui.h"
+#include "content/public/browser/navigation_controller.h"
 #include "ui/aura/window.h"
 #include "ui/base/ui_base_types.h"
 

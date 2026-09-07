@@ -117,9 +117,9 @@
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_item_controller.h"
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -211,6 +211,7 @@
 #include "ui/display/display.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/screen.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/types/event_type.h"
@@ -485,7 +486,8 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
                                       public apps::AppRegistryCache::Observer {
  protected:
   ChromeShelfControllerTestBase()
-      : skip_preinstalled_web_app_startup_(
+      : BrowserWithTestWindowTest(BrowserWindowInterface::TYPE_NORMAL),
+        skip_preinstalled_web_app_startup_(
             web_app::PreinstalledWebAppManager::SkipStartupForTesting()) {}
 
   void SetUp() override {

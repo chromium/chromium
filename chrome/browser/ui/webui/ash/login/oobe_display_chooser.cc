@@ -15,6 +15,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/events/devices/touchscreen_device.h"
 
 using content::BrowserThread;

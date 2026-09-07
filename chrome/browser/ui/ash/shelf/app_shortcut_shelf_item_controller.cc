@@ -41,6 +41,7 @@
 #include "extensions/browser/launch_util.h"
 #include "extensions/browser/process_manager.h"
 #include "ui/aura/window.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/events/event.h"
 
 using extensions::Extension;

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/ash/quick_answers/test/mock_quick_answers_client.h"
 
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+
 namespace quick_answers {
 
 MockQuickAnswersClient::MockQuickAnswersClient(

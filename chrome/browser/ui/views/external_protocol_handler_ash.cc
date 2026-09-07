@@ -17,6 +17,7 @@
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/aura/window.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
 using content::WebContents;

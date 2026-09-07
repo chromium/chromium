@@ -28,8 +28,8 @@ include_rules = [
 
 specific_include_rules = {
   '.*_(browser|unit)test\\.cc': [
-    "+chrome/browser/ui/browser.h",
     "+chrome/browser/ui/browser_window/public",
+    "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
     "+chrome/test",
   ],
 }

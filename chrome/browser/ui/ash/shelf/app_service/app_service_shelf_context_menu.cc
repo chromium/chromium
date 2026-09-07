@@ -49,6 +49,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/launch_util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/display/scoped_display_for_new_windows.h"
 #include "ui/gfx/vector_icon_types.h"
 

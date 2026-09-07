@@ -43,6 +43,7 @@
 #include "content/public/test/theme_change_waiter.h"
 #include "extensions/browser/extension_registry.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/display/types/display_constants.h"
 
 namespace {

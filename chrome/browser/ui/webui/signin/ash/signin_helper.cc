@@ -16,6 +16,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash {
 

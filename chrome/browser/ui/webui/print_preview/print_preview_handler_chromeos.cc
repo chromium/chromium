@@ -39,6 +39,7 @@
 #include "components/device_event_log/device_event_log.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "printing/buildflags/buildflags.h"  // USE_CUPS

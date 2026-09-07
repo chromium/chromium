@@ -21,6 +21,7 @@
 #include "extensions/browser/app_window/native_app_window.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/image/image.h"
 
 AppServiceAppWindowShelfItemController::AppServiceAppWindowShelfItemController(

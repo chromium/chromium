@@ -15,6 +15,7 @@
 #include "chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h"
 #include "components/app_restore/app_restore_utils.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "ui/base/window_open_disposition.h"
 
 ArcShelfSpinnerItemController::ArcShelfSpinnerItemController(
     const std::string& arc_app_id,

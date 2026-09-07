@@ -17,6 +17,7 @@
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/widget/widget.h"
 

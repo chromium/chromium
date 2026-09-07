@@ -27,6 +27,7 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/widget/widget.h"

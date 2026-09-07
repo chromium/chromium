@@ -36,7 +36,7 @@ include_rules = [
   "+chrome/browser/ui/ash/keyboard",
   "+chrome/browser/ui/ash/system",
   "+chrome/browser/ui/ash/wallpaper",
-  "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/browser/ui/chrome_pages.h",
   "+chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h",
   "+chrome/browser/ui/dialogs/browser_dialogs.h",

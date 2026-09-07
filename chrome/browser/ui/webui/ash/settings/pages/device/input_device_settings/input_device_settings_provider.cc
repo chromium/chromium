@@ -33,6 +33,7 @@
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/ash/mojom/meta_key.mojom-shared.h"
 #include "ui/views/widget/widget.h"

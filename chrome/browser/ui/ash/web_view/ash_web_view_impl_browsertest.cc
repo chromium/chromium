@@ -12,16 +12,19 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
@@ -345,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(AshWebViewImplBrowserTest, ShouldOpenNewWindow) {
   // Activate the web contents and wait for the browser tab to load.
   ASSERT_TRUE(browser());
   content::TestNavigationObserver navigation_observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetActiveTabInterface()->GetContents());
   navigation_observer.StartWatchingNewWebContents();
   content::WebContents* web_contents = web_view_impl->web_contents();
   web_contents->GetDelegate()->ActivateContents(web_contents);
@@ -353,7 +356,6 @@ IN_PROC_BROWSER_TEST_F(AshWebViewImplBrowserTest, ShouldOpenNewWindow) {
 
   // Verify that the browser was launched with the correct url as the active
   // tab.
-  EXPECT_EQ(
-      destination_url,
-      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
+  EXPECT_EQ(destination_url,
+            browser()->GetActiveTabInterface()->GetContents()->GetVisibleURL());
 }
