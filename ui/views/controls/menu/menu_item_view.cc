@@ -738,6 +738,9 @@ const MenuItemView::MenuItemDimensions& MenuItemView::GetDimensions() const {
 }
 
 int MenuItemView::GetContentStart() const {
+  if (GetBorder()) {
+    return GetInsets().left();
+  }
   const MenuConfig& config = MenuConfig::instance();
   const auto* const controller = GetMenuController();
   return GetItemHorizontalBorder() +
@@ -913,11 +916,13 @@ ProposedLayout MenuItemView::CalculateProposedLayout(
     }
 
     if (submenu_arrow_image_view_) {
-      const int x = layout.host_size.width() - GetItemHorizontalBorder() -
-                    (type_ == Type::kActionableSubMenu
-                         ? config.actionable_submenu_arrow_to_edge_padding
-                         : config.arrow_to_edge_padding) -
-                    config.arrow_size;
+      const int right_border =
+          GetBorder() ? GetInsets().right()
+                      : (GetItemHorizontalBorder() +
+                         (type_ == Type::kActionableSubMenu
+                              ? config.actionable_submenu_arrow_to_edge_padding
+                              : config.arrow_to_edge_padding));
+      const int x = layout.host_size.width() - right_border - config.arrow_size;
       const int y = (layout.host_size.height() - config.arrow_size) / 2;
       layout.child_layouts.emplace_back(
           submenu_arrow_image_view_.get(),
@@ -1240,8 +1245,10 @@ void MenuItemView::PaintBackground(gfx::Canvas* canvas,
                                    bool paint_as_selected) {
   if (menu_item_background_.has_value()) {
     MenuItemBackground background_info = menu_item_background_.value();
+    const int horizontal_margin =
+        background_info.horizontal_margin.value_or(GetItemHorizontalBorder());
     gfx::Rect bounds = GetLocalBounds();
-    bounds.Inset(gfx::Insets::VH(0, GetItemHorizontalBorder()));
+    bounds.Inset(gfx::Insets::VH(0, horizontal_margin));
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
     flags.setStyle(cc::PaintFlags::kFill_Style);
@@ -1293,7 +1300,10 @@ void MenuItemView::PaintBackground(gfx::Canvas* canvas,
     gfx::RectF highlight_bounds(GetLocalBounds());
     SkVector radii[4]{{0, 0}, {0, 0}, {0, 0}, {0, 0}};
     if (menu_item_background_.has_value()) {
-      highlight_bounds.Inset(gfx::InsetsF::VH(0, GetItemHorizontalBorder()));
+      const int horizontal_margin =
+          menu_item_background_->horizontal_margin.value_or(
+              GetItemHorizontalBorder());
+      highlight_bounds.Inset(gfx::InsetsF::VH(0, horizontal_margin));
       const SkScalar top_r = SkIntToScalar(menu_item_background_->top_radius);
       const SkScalar bot_r =
           SkIntToScalar(menu_item_background_->bottom_radius);
@@ -1314,7 +1324,10 @@ void MenuItemView::PaintBackground(gfx::Canvas* canvas,
   } else if (paint_as_selected) {
     gfx::Rect item_bounds = GetLocalBounds();
     if (menu_item_background_.has_value()) {
-      item_bounds.Inset(gfx::Insets::VH(0, GetItemHorizontalBorder()));
+      const int horizontal_margin =
+          menu_item_background_->horizontal_margin.value_or(
+              GetItemHorizontalBorder());
+      item_bounds.Inset(gfx::Insets::VH(0, horizontal_margin));
     }
     if (type_ == Type::kActionableSubMenu) {
       if (submenu_area_of_actionable_submenu_selected_) {
