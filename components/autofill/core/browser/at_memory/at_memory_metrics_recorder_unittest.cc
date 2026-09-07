@@ -393,6 +393,31 @@ TEST_F(AtMemoryMetricsRecorderTest, MarkFilled_Filled) {
                                       false, 1);
 }
 
+// Tests that `SuggestionFilled` is logged even if an in-flight query response
+// is received after a suggestion was accepted in the session.
+TEST_F(AtMemoryMetricsRecorderTest,
+       SuggestionFilled_QueryResponseReceivedAfterSuggestionAccepted) {
+  {
+    AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
+                                    GURL(), std::u16string(), FieldGlobalId(),
+                                    FormSignature(0), FieldSignature(0));
+    metrics.OnPopupShown(
+        AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
+        /*metadata=*/{});
+    metrics.OnQuerySubmitted(u"query 1");
+    SendResponse(metrics);
+    metrics.OnQuerySubmitted(u"query 2");
+
+    metrics.OnSuggestionAccepted(MemoryDataType::kAddressFull);
+    // An in-flight query response arrives after the suggestion was accepted.
+    SendResponse(metrics);
+    metrics.MarkFilled();
+  }
+
+  histogram_tester_.ExpectUniqueSample("Autofill.AtMemory.SuggestionFilled",
+                                       true, 1);
+}
+
 // Tests that query latency metric is logged for a single result category.
 TEST_F(AtMemoryMetricsRecorderTest, QueryLatency_CategorySingleType) {
   AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,

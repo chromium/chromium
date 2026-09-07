@@ -244,7 +244,7 @@ AtMemoryMetricsRecorder::~AtMemoryMetricsRecorder() {
   MaybeLogSuggestionAccepted();
   base::UmaHistogramBoolean("Autofill.AtMemory.SuggestionAcceptedInSession",
                             suggestion_accepted_in_session_);
-  if (suggestion_acceptance_.accepted_data_type.has_value()) {
+  if (suggestion_accepted_in_session_) {
     base::UmaHistogramBoolean("Autofill.AtMemory.SuggestionFilled",
                               suggestion_filled_in_session_);
     if (fetch_pii_.duration && fetch_pii_.source) {
