@@ -22,14 +22,18 @@
 #import "ios/chrome/browser/composebox/shared/ui/composebox_snackbar_presenter.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_picker_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/public/provider/chrome/browser/privacy_primitive/privacy_primitive_api.h"
 #import "ios/public/provider/chrome/browser/privacy_primitive/privacy_primitive_configuration.h"
+#import "net/base/apple/url_conversions.h"
 
 namespace {
 // The ConsentKit product ID for Chrome on iOS.
@@ -201,6 +205,11 @@ constexpr int kChromeIOSProductId = 71720513;
     config.productSurface =
         omnibox::kComposeboxDriveConsentProductSurface.Get();
 
+    __weak __typeof(self) weakSelf = self;
+    config.openURLCallback = ^(NSURL* URL) {
+      [weakSelf privacyPrimitiveOpenURLInNewTab:URL];
+    };
+
     self.privacyPrimitiveService =
         ios::provider::CreatePrivacyPrimitiveService(config);
     if (!self.privacyPrimitiveService) {
@@ -208,7 +217,6 @@ constexpr int kChromeIOSProductId = 71720513;
       return;
     }
 
-    __weak __typeof(self) weakSelf = self;
     [self.privacyPrimitiveService
         showFlowWithPresentingViewController:_baseViewController
                            completionHandler:^(BOOL success) {
@@ -222,6 +230,9 @@ constexpr int kChromeIOSProductId = 71720513;
 }
 
 - (void)privacyPrimitiveFlowCompletedWithSuccess:(BOOL)success {
+  if (!self.privacyPrimitiveService) {
+    return;
+  }
   self.privacyPrimitiveService = nil;
   if (!success || ![self canShowDriveFilePicker]) {
     [self.metricsRecorder
@@ -234,6 +245,51 @@ constexpr int kChromeIOSProductId = 71720513;
       contextual_search::kDriveConsentState,
       static_cast<int>(contextual_search::DriveConsentState::kConsent));
   [self showDriveFilePickerInternal];
+}
+
+- (void)privacyPrimitiveOpenURLInNewTab:(NSURL*)URL {
+  if (!_browser || !URL) {
+    return;
+  }
+  const GURL targetURL = net::GURLWithNSURL(URL);
+  if (!targetURL.is_valid() || !targetURL.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
+  self.privacyPrimitiveService = nil;
+  [self.metricsRecorder
+      recordPickerOutcome:MobileFuseboxPickerOutcome::kManualUserExit
+        forAttachmentType:MobileFuseboxPickerAttachmentType::kDrive];
+
+  // Dismiss any UI potentially presented by the privacy primitive flow before
+  // hiding the composebox and opening the URL in a new tab.
+  UIViewController* presentingVC = _baseViewController;
+  UIViewController* modalVC = presentingVC.presentedViewController;
+  if (!modalVC) {
+    [self dismissComposeboxAndOpenURLInNewTab:targetURL];
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  [modalVC
+      dismissViewControllerAnimated:YES
+                         completion:^{
+                           [weakSelf
+                               dismissComposeboxAndOpenURLInNewTab:targetURL];
+                         }];
+}
+
+- (void)dismissComposeboxAndOpenURLInNewTab:(const GURL&)URL {
+  if (!_browser || !URL.is_valid()) {
+    return;
+  }
+  id<BrowserCoordinatorCommands> browserCoordinatorHandler = HandlerForProtocol(
+      _browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+  [browserCoordinatorHandler hideComposebox];
+
+  OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(_browser->GetCommandDispatcher(), SceneCommands);
+  [sceneHandler openURLInNewTab:command];
 }
 
 - (void)showDriveFilePickerInternal {

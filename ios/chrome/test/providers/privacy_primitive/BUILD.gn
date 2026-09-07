@@ -4,7 +4,10 @@
 
 source_set("privacy_primitive") {
   testonly = true
-  sources = [ "test_privacy_primitive.mm" ]
+  sources = [
+    "test_privacy_primitive.h",
+    "test_privacy_primitive.mm",
+  ]
   deps = [
     "//base",
     "//ios/public/provider/chrome/browser/privacy_primitive:privacy_primitive_api",
