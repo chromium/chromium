@@ -1280,9 +1280,10 @@ void CacheStorageCache::QueryCacheDidReadMetadata(
                                   ? metadata->response().side_data_padding()
                                   : 0;
 
-  CHECK(!ShouldPadResourceSize(&metadata->response()) ||
-            (padding + side_data_padding),
-        base::NotFatalUntil::M158);
+  // TODO(crbug.com/558086469): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!ShouldPadResourceSize(&metadata->response()) ||
+         (padding + side_data_padding));
 
   query_cache_context->matches->push_back(QueryCacheResult(
       base::Time::FromInternalValue(entry_time), padding, side_data_padding));
