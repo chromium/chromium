@@ -225,8 +225,17 @@ public class SysUtils {
         SysUtilsJni.get().logPageFaultCountToTracing();
     }
 
+    /**
+     * @return Whether the device has support for large process counts.
+     */
+    public static boolean hasLargeProcessCountSupport() {
+        return SysUtilsJni.get().hasLargeProcessCountSupport();
+    }
+
     @NativeMethods
     interface Natives {
         void logPageFaultCountToTracing();
+
+        boolean hasLargeProcessCountSupport();
     }
 }

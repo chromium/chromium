@@ -9,10 +9,15 @@
 #include "base/android/jni_android.h"
 #include "base/process/process_metrics.h"
 #include "base/sys_utils_jni/SysUtils_jni.h"
+#include "base/system/sys_info.h"
 #include "base/trace_event/trace_event.h"
 
 namespace base {
 namespace android {
+
+static bool JNI_SysUtils_HasLargeProcessCountSupport(JNIEnv* env) {
+  return SysInfo::HasLargeProcessCountSupport();
+}
 
 // Logs the number of minor / major page faults to tracing (and also the time to
 // collect) the metrics. Does nothing if tracing is not enabled.

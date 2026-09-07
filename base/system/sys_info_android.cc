@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <sys/system_properties.h>
 
+#include "base/android/android_info.h"
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -176,6 +177,22 @@ std::string SysInfo::HardwareManufacturer() {
   char device_model_str[PROP_VALUE_MAX];
   __system_property_get("ro.product.manufacturer", device_model_str);
   return std::string(device_model_str);
+}
+
+// static
+bool SysInfo::HasLargeProcessCountSupport() {
+  // Safesetid is only guaranteed to be enabled for 6.18 kernel on Android 17
+  // and therefore the process limit can only be increased for devices with a
+  // new enough kernel that are also running Android 17.
+  //
+  // TODO(crbug.com/422903297): Expand coverage as noted in the bug, as it's
+  // stricter than it needs to be, on ARM64 in particular.
+  static const bool has_support = [] {
+    return android::android_info::sdk_int() >=
+               android::android_info::SDK_VERSION_CINNAMON_BUN &&
+           KernelVersionNumber::Current() >= KernelVersionNumber{6, 18, 0};
+  }();
+  return has_support;
 }
 
 // static
