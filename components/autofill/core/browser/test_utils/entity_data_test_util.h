@@ -55,8 +55,8 @@ struct DriversLicenseOptionsT {
   const char16_t* name = u"Knecht Ruprecht";
   const char16_t* region = u"California";
   const char16_t* number = u"12312345";
-  const char16_t* expiration_date = u"01/12/2019";
-  const char16_t* issue_date = u"01/01/2010";
+  const char16_t* expiration_date = u"2019-12-01";
+  const char16_t* issue_date = u"2010-01-01";
   std::string_view guid = "00000000-0000-4000-8000-100000000000";
   std::string_view nickname = "License";
   base::Time date_modified = kJune2017;
@@ -108,8 +108,8 @@ struct NationalIdCardOptionsT {
   const char16_t* name = u"Name";
   const char16_t* number = u"987654321";
   const char16_t* country = u"United States";
-  const char16_t* issue_date = u"01/12/2020";
-  const char16_t* expiry_date = u"01/12/2030";
+  const char16_t* issue_date = u"2020-12-01";
+  const char16_t* expiry_date = u"2030-12-01";
   std::string_view guid = "00000000-0000-4000-8000-300000000000";
   std::string_view nickname = "IdCard";
   std::string_view app_locale = "en-US";
@@ -130,7 +130,7 @@ template <typename = void>
 struct KnownTravelerNumberOptionsT {
   const char16_t* name = u"Name";
   const char16_t* number = u"987654321";
-  const char16_t* expiration_date = u"01/12/2030";
+  const char16_t* expiration_date = u"2030-12-01";
   std::string_view guid = "00000000-0000-4000-8000-400000000000";
   std::string_view nickname = "Known Traveler Number";
   std::string_view app_locale = "en-US";

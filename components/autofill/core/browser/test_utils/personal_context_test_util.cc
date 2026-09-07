@@ -50,7 +50,7 @@ personal_context::proto::Entity CreateDriversLicenseProto(
   }
   if (options.expiration_date) {
     data_util::Date date;
-    if (data_util::ParseDate(options.expiration_date, u"DD/MM/YYYY", date)) {
+    if (data_util::ParseDate(options.expiration_date, u"YYYY-MM-DD", date)) {
       dl->mutable_expiration_date()->set_year(date.year);
       dl->mutable_expiration_date()->set_month(date.month);
       dl->mutable_expiration_date()->set_day(date.day);
@@ -74,7 +74,7 @@ personal_context::proto::Entity CreateNationalIdProto(
   }
   if (options.expiry_date) {
     data_util::Date date;
-    if (data_util::ParseDate(options.expiry_date, u"DD/MM/YYYY", date)) {
+    if (data_util::ParseDate(options.expiry_date, u"YYYY-MM-DD", date)) {
       nid->mutable_expiration_date()->set_year(date.year);
       nid->mutable_expiration_date()->set_month(date.month);
       nid->mutable_expiration_date()->set_day(date.day);

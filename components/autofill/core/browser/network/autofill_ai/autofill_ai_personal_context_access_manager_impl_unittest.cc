@@ -2155,14 +2155,14 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
 
   personal_context::proto::ContextMemoryAmbientAutofillResponse spii_response;
   *spii_response.add_entities() = CreateDriversLicenseProto(
-      {.number = u"VALID", .expiration_date = u"01/06/2025"});
+      {.number = u"VALID", .expiration_date = u"2025-06-01"});
   *spii_response.add_entities() = CreateDriversLicenseProto(
-      {.number = u"EXPIRED", .expiration_date = u"31/05/2025"});
+      {.number = u"EXPIRED", .expiration_date = u"2025-05-31"});
   *spii_response.add_entities() = CreateDriversLicenseProto(
       {.number = u"NO_EXPIRATION_DATE", .expiration_date = nullptr});
   // Missing import constraint (number).
   *spii_response.add_entities() = CreateDriversLicenseProto(
-      {.number = nullptr, .expiration_date = u"01/06/2025"});
+      {.number = nullptr, .expiration_date = u"2025-06-01"});
 
   std::vector<EntityInstance> entities;
   EXPECT_CALL(mock_observer(),
@@ -2192,14 +2192,14 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
 
   personal_context::proto::ContextMemoryAmbientAutofillResponse spii_response;
   *spii_response.add_entities() =
-      CreateNationalIdProto({.number = u"VALID", .expiry_date = u"01/06/2025"});
+      CreateNationalIdProto({.number = u"VALID", .expiry_date = u"2025-06-01"});
   *spii_response.add_entities() = CreateNationalIdProto(
-      {.number = u"EXPIRED", .expiry_date = u"31/05/2025"});
+      {.number = u"EXPIRED", .expiry_date = u"2025-05-31"});
   *spii_response.add_entities() = CreateNationalIdProto(
       {.number = u"NO_EXPIRY_DATE", .expiry_date = nullptr});
   // Missing import constraint (number).
   *spii_response.add_entities() =
-      CreateNationalIdProto({.number = nullptr, .expiry_date = u"01/06/2025"});
+      CreateNationalIdProto({.number = nullptr, .expiry_date = u"2025-06-01"});
 
   std::vector<EntityInstance> entities;
   EXPECT_CALL(mock_observer(),
