@@ -24,7 +24,7 @@
 namespace ash {
 namespace {
 
-constexpr base::TimeDelta kWaitingForConnectableTimeout = base::Seconds(30);
+constexpr base::TimeDelta kWaitingForConnectableTimeout = base::Seconds(60);
 
 bool CanInitiateShillConnection(const NetworkState* network) {
   // The network must be part of a Shill profile (i.e., it cannot be a "stub"
