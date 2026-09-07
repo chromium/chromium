@@ -673,6 +673,15 @@ void EnrollmentScreenHandler::HandleCompleteLogin(const std::string& user,
       login::SigninPartitionManagerFactory::GetForBrowserContext(
           Profile::FromWebUI(web_ui()));
 
+  // The WebUI can send the HandleCompleteLogin message during teardown
+  // when the signin session has already been closed. This can happen
+  // when the browser is restarting (shutdown_), or when the user has
+  // navigated away from the enrollment screen (!IsOnEnrollmentScreen()).
+  if (!signin_partition_manager->IsInSigninSession()) {
+    CHECK(shutdown_ || !IsOnEnrollmentScreen());
+    return;
+  }
+
   // Validity check that partition did not change during enrollment flow.
   DCHECK_EQ(signin_partition_manager->GetCurrentStoragePartitionName(),
             signin_partition_name_);
