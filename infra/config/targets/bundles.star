@@ -5121,7 +5121,6 @@ targets.bundle(
         targets.bundle(
             targets = "ios_blink_tests",
             variants = [
-                "SIM_IPHONE_15_26_5",
                 "SIM_IPHONE_16_27_0",
             ],
         ),
@@ -5235,7 +5234,7 @@ targets.bundle(
                 "--test-launcher-filter-file=testing/buildbot/filters/ios.content_browsertests.filter",
             ],
             swarming = targets.swarming(
-                shards = 10,
+                shards = 15,
             ),
         ),
         "content_unittests": targets.mixin(
