@@ -5932,6 +5932,7 @@ test("unit_tests") {
       "../browser/android/ntp/new_tab_page_url_handler_unittest.cc",
       "../browser/android/omnibox/autocomplete_controller_android_unittest.cc",
       "../browser/android/omnibox/chrome_omnibox_navigation_observer_android_unittest.cc",
+      "../browser/android/omnibox/suggestions_omt_input_anchor_unittest.cc",
       "../browser/android/omnibox/tab_context_capture_request_unittest.cc",
       "../browser/android/oom_intervention/near_oom_reduction_message_delegate_unittest.cc",
       "../browser/android/oom_intervention/oom_intervention_decider_unittest.cc",

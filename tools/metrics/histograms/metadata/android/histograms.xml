@@ -4192,6 +4192,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Omnibox.OMTPrefetch.TouchDownDelay" units="ms"
+    expires_after="2027-01-01">
+  <owner>thesalsa@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Measures the delay from physical touch down (AMotionEvent_getEventTime) to
+    the execution of the native OnMotionEvent callback in
+    suggestions_omt_input_anchor.cc on the background input thread.
+
+    Emitted on every ACTION_DOWN motion event intercepted by the OMT overlay's
+    AInputReceiver on the background input thread.
+  </summary>
+</histogram>
+
+<histogram name="Android.Omnibox.OMTPrefetch.TouchTransferSuccess"
+    enum="BooleanSuccess" expires_after="2027-01-01">
+  <owner>thesalsa@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records whether transferring the active touch gesture focus from the OMT
+    overlay SurfaceControl to the main Chrome window via
+    WindowManager.transferTouchGesture() succeeded.
+
+    Emitted each time SuggestionsOmtInputAnchor.transferTouch() is invoked
+    following an intercepted touch-down event.
+  </summary>
+</histogram>
+
 <histogram name="Android.Omnibox.RefineActionUsage" enum="RefineActionUsage"
     expires_after="2027-10-01">
   <owner>ender@google.com</owner>

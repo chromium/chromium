@@ -157,6 +157,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/SuggestionListViewBinder.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/SuggestionProcessor.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/SuggestionsListAnimation.java",
+    "java/src/org/chromium/chrome/browser/omnibox/suggestions/SuggestionsOmtInputAnchor.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/UnsyncedSuggestionsListAnimation.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/UrlBarDelegate.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/action/CrossDeviceTabAction.java",
@@ -364,6 +365,7 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/omnibox/fusebox/SuggestedTabInfo.java",
     "java/src/org/chromium/chrome/browser/omnibox/geo/GeolocationHeader.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/AutocompleteController.java",
+    "java/src/org/chromium/chrome/browser/omnibox/suggestions/SuggestionsOmtInputAnchor.java",
   ]
 }
 
@@ -587,6 +589,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/SimpleSelectionControllerUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/SuggestionHorizontalDividerUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/SuggestionListViewBinderUnitTest.java",
+    "java/src/org/chromium/chrome/browser/omnibox/suggestions/SuggestionsOmtInputAnchorUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/UnsyncedSuggestionsListAnimationUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/action/CrossDeviceTabActionUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/action/OmniboxActionDelegateImplUnitTest.java",
