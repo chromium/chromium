@@ -249,11 +249,9 @@ class WTF_EXPORT StringImpl {
   void SetHash(wtf_size_t hash) const {
     // Multiple clients assume that StringHasher is the canonical string
     // hash function.
-    DCHECK_EQ(
-        hash,
-        (Is8Bit() ? StringHasher::ComputeHashAndMaskTop8Bits(
-                        reinterpret_cast<const char*>(Span8().data()), length_)
-                  : ComputeHashForWideString(Span16())));
+    DCHECK_EQ(hash,
+              (Is8Bit() ? StringHasher::ComputeHashAndMaskTop8Bits(Span8())
+                        : ComputeHashForWideString(Span16())));
     DCHECK(hash);  // Verify that 0 is a valid sentinel hash value.
     SetHashRaw(hash);
   }
@@ -655,8 +653,7 @@ class WTF_EXPORT StringImpl {
   void AssertHashIsCorrect() {
     DCHECK(HasHash());
     DCHECK_EQ(ExistingHash(),
-              StringHasher::ComputeHashAndMaskTop8Bits(
-                  reinterpret_cast<const char*>(Span8().data()), length()));
+              StringHasher::ComputeHashAndMaskTop8Bits(Span8()));
   }
 #endif
 

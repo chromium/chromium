@@ -4,7 +4,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MANIFEST_ICU_LOCALE_HASH_TRAITS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MANIFEST_ICU_LOCALE_HASH_TRAITS_H_
 
-#include <cstring>
+#include <string_view>
 
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
@@ -18,8 +18,8 @@ namespace blink {
 template <>
 struct HashTraits<icu::Locale> : GenericHashTraits<icu::Locale> {
   static unsigned GetHash(const icu::Locale& key) {
-    const char* name = key.getName();
-    return StringHasher::ComputeHashAndMaskTop8Bits(name, std::strlen(name));
+    return StringHasher::ComputeHashAndMaskTop8Bits(
+        base::as_byte_span(std::string_view(key.getName())));
   }
 
   // We use Root locale ("") as our empty value, as it is an invalid key.

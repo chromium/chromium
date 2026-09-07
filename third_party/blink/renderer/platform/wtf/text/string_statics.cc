@@ -99,13 +99,12 @@ bool NewlineThenWhitespaceStringsTable::IsNewlineThenWhitespaces(
 }
 
 WTF_EXPORT unsigned ComputeHashForWideString(base::span<const UChar> str) {
-  base::span<const char> bytes = base::as_chars(str);
+  base::span<const uint8_t> bytes = base::as_bytes(str);
   if (ContainsOnlyLatin1(str)) {
-    using Reader = ConvertTo8BitHashReader;
-    return StringHasher::ComputeHashAndMaskTop8Bits<Reader>(
-        bytes.data(), bytes.size() / Reader::kCompressionFactor);
+    return StringHasher::ComputeHashAndMaskTop8Bits<ConvertTo8BitHashReader>(
+        bytes);
   } else {
-    return StringHasher::ComputeHashAndMaskTop8Bits(bytes.data(), bytes.size());
+    return StringHasher::ComputeHashAndMaskTop8Bits(bytes);
   }
 }
 

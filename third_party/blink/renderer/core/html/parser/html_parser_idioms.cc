@@ -432,9 +432,12 @@ inline StringImpl* FindStringIfStatic(base::span<const CharType> characters) {
   if (characters.size() > StringImpl::HighestStaticStringLength()) {
     return nullptr;
   }
+  const auto bytes = base::as_bytes(characters);
   // ComputeHashAndMaskTop8Bits is the function StringImpl::Hash() uses.
-  unsigned hash = StringHasher::ComputeHashAndMaskTop8Bits(
-      reinterpret_cast<const char*>(characters.data()), characters.size());
+  // Note: The following code computes incorrect hash values for UChar
+  // strings, but this doesn't matter because static strings contain no 16-bit
+  // strings, and we have Equal() below.
+  unsigned hash = StringHasher::ComputeHashAndMaskTop8Bits(bytes);
   const StaticStringsTable& table = StringImpl::AllStaticStrings();
   DCHECK(!table.empty());
 

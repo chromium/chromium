@@ -22,6 +22,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_HASH_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_HASH_H_
 
+#include <string_view>
+
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -71,7 +73,8 @@ struct HashTraits<String> : SimpleClassHashTraits<String> {
   // implicit conversion operators both to String and one of the others,
   // which would cause ambiguous overloads.
   static unsigned GetHash(const char* key) {
-    return StringHasher::ComputeHashAndMaskTop8Bits(key, strlen(key));
+    return StringHasher::ComputeHashAndMaskTop8Bits(
+        base::as_byte_span(std::string_view(key)));
   }
   static unsigned GetHash(const LChar* key) {
     return GetHash(reinterpret_cast<const char*>(key));
