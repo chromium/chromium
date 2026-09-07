@@ -2476,6 +2476,26 @@
             ]
         }
     ],
+    "AutofillImproveClassificationForTwoWordLastNames": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillImproveClassificationForTwoWordLastNames"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillIntroduceGlobalEmptyValueRewriterRules": [
         {
             "platforms": [
