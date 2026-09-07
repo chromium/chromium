@@ -251,6 +251,10 @@ constexpr char kInvalidationPerSenderRegisteredForInvalidation[] =
 constexpr char kInvalidationPerSenderActiveRegistrationTokens[] =
     "invalidation.per_sender_active_registration_tokens";
 
+// Deprecated 09/2026.
+inline constexpr char kMigratedToQuickDeletePrefValues[] =
+    "browser.migrated_to_quick_delete_pref_values";
+
 // Renames a boolean pref within a PrefService.
 void RenameBooleanPref(std::string_view target_pref_name,
                        std::string_view source_pref_name,
@@ -1018,6 +1022,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       kInvalidationPerSenderRegisteredForInvalidation);
   registry->RegisterDictionaryPref(
       kInvalidationPerSenderActiveRegistrationTokens);
+
+  // Deprecated 09/2026.
+  registry->RegisterBooleanPref(kMigratedToQuickDeletePrefValues, false);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1058,9 +1065,6 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
 
   // Check MigrateDeprecatedAutofillPrefs() to see if this is safe to remove.
   autofill::prefs::MigrateDeprecatedAutofillPrefs(prefs);
-
-  // Added 09/2024.
-  browsing_data::prefs::MaybeMigrateToQuickDeletePrefValues(prefs);
 
   // Added 10/2025.
   prefs->ClearPref(kSessionStorageFormatPref);
@@ -1127,6 +1131,9 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
   // Added 09/2026.
   prefs->ClearPref(kInvalidationPerSenderRegisteredForInvalidation);
   prefs->ClearPref(kInvalidationPerSenderActiveRegistrationTokens);
+
+  // Deprecated 09/2026.
+  prefs->ClearPref(kMigratedToQuickDeletePrefValues);
 }
 
 void MigrateObsoleteUserDefault() {
