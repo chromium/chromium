@@ -1134,7 +1134,6 @@ deps = {
   'src/third_party/llvm-libclang': {
     'dep_type': 'gcs',
     'bucket': 'chromium-browser-clang',
-    'condition': 'not rust_force_head_revision',
     'objects': [
       {
         'object_name': 'Linux_x64/rust-libclang-c33d8f3b5a50b56466998e8c5ed8a077d2caed84-1-llvmorg-24-init-7283-g640ab6c4.tar.xz',
