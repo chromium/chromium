@@ -244,8 +244,16 @@ void ContentTranslateDriver::TranslatePage(int page_seq_no,
 }
 
 void ContentTranslateDriver::RevertTranslation(int page_seq_no) {
-  for (mojom::TranslateAgent* agent : GetTranslateAgents(page_seq_no)) {
-    agent->RevertTranslation();
+  std::map<int, PageAgents>::iterator it = translate_agents_.find(page_seq_no);
+  if (it == translate_agents_.end())
+    return;  // This page has navigated away.
+
+  if (it->second.main_agent.is_bound()) {
+    it->second.main_agent->RevertTranslation();
+  }
+
+  if (it->second.side_panel_agent.is_bound()) {
+    it->second.side_panel_agent->RevertTranslation();
   }
 }
 
@@ -336,6 +344,31 @@ void ContentTranslateDriver::InitiateTranslationIfReload(
 bool ContentTranslateDriver::IsPdfTranslation() {
   return GetContentsMimeType() == kPdfMimeType &&
          base::FeatureList::IsEnabled(translate::kEnableTranslatePdf);
+}
+
+void ContentTranslateDriver::MaybeTriggerPendingPdfTranslation() {
+  if (!IsPdfTranslation()) {
+    return;
+  }
+  std::optional<LanguageTag> pdf_source_lang =
+      translate_manager_->GetLanguageState()->pending_source_language();
+  std::optional<LanguageTag> pdf_target_lang =
+      translate_manager_->GetLanguageState()->pending_target_language();
+  if (!pdf_source_lang.has_value() || !pdf_target_lang.has_value()) {
+    return;
+  }
+
+  auto it = translate_agents_.find(active_page_seq_no_);
+  if (it == translate_agents_.end() ||
+      !it->second.side_panel_agent.is_bound()) {
+    return;
+  }
+
+  TranslatePage(active_page_seq_no_,
+                TranslateDownloadManager::GetInstance()->script()->data(),
+                pdf_source_lang->tag_string(), pdf_target_lang->tag_string());
+
+  translate_manager_->GetLanguageState()->ClearPendingTranslationLanguages();
 }
 
 // content::WebContentsObserver methods
@@ -462,17 +495,16 @@ void ContentTranslateDriver::RegisterPage(
     translate_manager_->InitiateTranslation(details.adopted_language);
   }
 
-    // Save the page language on the navigation entry so it can be synced.
-    // TODO(crbug.com/40779913): The mojo IPC coming from the renderer might
-    // race with a navigation, so the page that sent this message might already
-    // be in the pending delete state after being navigated away from.
-    // Rearchitect the renderer-browser Mojo connection to be able to explicitly
-    // determine the document/content::Page with which this language
-    // determination event is associated, thus avoiding the potential for corner
-    // cases where the detected language is attributed to the wrong page.
-    auto* const entry = web_contents()->GetController().GetLastCommittedEntry();
-    SetPageLanguageInNavigation(details.adopted_language, entry);
-
+  // Save the page language on the navigation entry so it can be synced.
+  // TODO(crbug.com/40779913): The mojo IPC coming from the renderer might
+  // race with a navigation, so the page that sent this message might already
+  // be in the pending delete state after being navigated away from.
+  // Rearchitect the renderer-browser Mojo connection to be able to explicitly
+  // determine the document/content::Page with which this language
+  // determination event is associated, thus avoiding the potential for corner
+  // cases where the detected language is attributed to the wrong page.
+  auto* const entry = web_contents()->GetController().GetLastCommittedEntry();
+  SetPageLanguageInNavigation(details.adopted_language, entry);
   for (LanguageDetectionObserver& observer : language_detection_observers()) {
     observer.OnLanguageDetermined(details);
   }

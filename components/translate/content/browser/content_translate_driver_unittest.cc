@@ -42,6 +42,8 @@
 
 namespace translate {
 
+using ::base::i18n::LanguageTag;
+
 class MockTranslateAgent : public translate::mojom::TranslateAgent {
  public:
   MockTranslateAgent() = default;
@@ -282,6 +284,7 @@ TEST_F(ContentTranslateDriverTest, DestroyWithMultipleObservers) {
 TEST_F(ContentTranslateDriverTest, RegisterPageMainAndSidePanel) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(translate::kEnableTranslatePdf);
+
   MockTranslateAgent main_agent;
   MockTranslateAgent side_panel_agent;
 
@@ -488,6 +491,7 @@ TEST_F(ContentTranslateDriverTest,
 TEST_F(ContentTranslateDriverTest, PageReloadPreservesSidePanelAgent) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(translate::kEnableTranslatePdf);
+
   MockTranslateAgent main_agent1;
   MockTranslateAgent side_panel_agent;
 
@@ -720,6 +724,73 @@ TEST_F(ContentTranslateDriverPdfTest, RegisterPdfPageUntranslatable) {
             translate::LanguageState::PdfTranslatabilityStatus::kUntranslatable);
   EXPECT_FALSE(
       translate_manager_->GetLanguageState()->page_level_translation_criteria_met());
+}
+
+TEST_F(ContentTranslateDriverTest, MaybeTriggerPendingPdfTranslationTest) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(translate::kEnableTranslatePdf);
+
+  // Mark the page as PDF
+  content::WebContentsTester::For(web_contents())
+      ->SetMainFrameMimeType("application/pdf");
+
+  // Create mock agents
+  MockTranslateAgent main_agent;
+  MockTranslateAgent side_panel_agent;
+
+  // 1. Register main page
+  translate::LanguageDetectionDetails main_details;
+  main_details.url = GURL("https://example.com");
+  main_details.adopted_language = "en";
+  main_details.is_model_reliable = true;
+  driver_->RegisterPage(main_agent.BindToNewPageRemote(), main_details, true);
+
+  // 2. Set pending translation languages on LanguageState
+  std::optional<LanguageTag> source_lang =
+      base::i18n::GetKnownLanguageTag("fr");
+  std::optional<LanguageTag> target_lang =
+      base::i18n::GetKnownLanguageTag("en");
+  translate_manager_->GetLanguageState()->SetPendingTranslationLanguages(
+      *source_lang, *target_lang);
+
+  // 3. Register the side panel page using the Reading Mode host.
+  translate::LanguageDetectionDetails side_panel_details;
+  side_panel_details.url =
+      GURL("chrome-untrusted://read-anything-side-panel.top-chrome/");
+  side_panel_details.adopted_language = "en";
+  side_panel_details.is_model_reliable = true;
+  driver_->RegisterPage(side_panel_agent.BindToNewPageRemote(),
+                        side_panel_details, true);
+
+  // Verify that translation is NOT triggered automatically upon side panel
+  // registration.
+  EXPECT_FALSE(side_panel_agent.called_translate_);
+  EXPECT_FALSE(main_agent.called_translate_);
+  EXPECT_TRUE(translate_manager_->GetLanguageState()
+                  ->pending_source_language()
+                  .has_value());
+  EXPECT_TRUE(translate_manager_->GetLanguageState()
+                  ->pending_target_language()
+                  .has_value());
+
+  // 4. Explicitly trigger pending PDF translation.
+  driver_->MaybeTriggerPendingPdfTranslation();
+
+  // Re-run loop to let Mojo and translation triggers complete.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return side_panel_agent.called_translate_; }));
+
+  // Verify that translation is triggered on the side panel agent.
+  EXPECT_TRUE(side_panel_agent.called_translate_);
+  EXPECT_FALSE(main_agent.called_translate_);
+
+  // Verify that pending translation languages are cleared after triggering.
+  EXPECT_FALSE(translate_manager_->GetLanguageState()
+                   ->pending_source_language()
+                   .has_value());
+  EXPECT_FALSE(translate_manager_->GetLanguageState()
+                   ->pending_target_language()
+                   .has_value());
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
 

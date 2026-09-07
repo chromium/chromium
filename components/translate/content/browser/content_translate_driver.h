@@ -126,6 +126,8 @@ class ContentTranslateDriver : public TranslateDriver,
       mojo::PendingRemote<translate::mojom::TranslateAgent> translate_agent,
       const translate::LanguageDetectionDetails& details,
       bool page_level_translation_criteria_met) override;
+  // Called to trigger translation for a PDF if it has a pending translation.
+  void MaybeTriggerPendingPdfTranslation();
 
  private:
   struct TranslationResult {
