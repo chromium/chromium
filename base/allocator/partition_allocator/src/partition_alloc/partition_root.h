@@ -574,17 +574,26 @@ class alignas(internal::kPartitionCachelineSize)
       SlotAddressAndSize slot_and_size);
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
+  // Since this is primarily used internally, it does not check for
+  // Checked Span's "smuggled requested size" (4 bytes), returning the
+  // _entire_ usable size of the slot. This is fine for
+  // 1. accounting purposes or
+  // 2. zapping (i.e. the allocation is dead and / or dangling), and
+  //    further Checked Spans pointing at this are bogus anyway.
+  //
+  // Prefer the override with `BucketSizeDetails` if one is available:
+  // this can avoid touching the `SlotSpanMetadata`, improving
+  // performance.
   PA_ALWAYS_INLINE size_t
   GetSlotUsableSize(const SlotSpanMetadata* slot_span) const;
-
-  // This function attempts to compute the slot_span's usable size without
-  // touching `slot_span`, but if it fails it will fall back on
-  // GetSlotUsableSize(slot_span).
   PA_ALWAYS_INLINE size_t
   GetSlotUsableSize(const internal::BucketSizeDetails& size_details,
                     SlotSpanMetadata* slot_span) const;
 
-  PA_NOINLINE static size_t GetUsableSize(const void* ptr);
+  // Note: this static method is the most friendly to external callers.
+  // It always defaults to checking for Checked Span's "smuggled
+  // requested size" (4 bytes) and subtracting if necessary.
+  PA_NOINLINE static size_t GetExternalUsableSize(const void* ptr);
 
   PA_ALWAYS_INLINE PageAccessibilityConfiguration
   GetPageAccessibility(bool request_tagging) const;

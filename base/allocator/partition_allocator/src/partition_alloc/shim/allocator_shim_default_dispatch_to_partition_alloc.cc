@@ -385,7 +385,8 @@ void* PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::
   // TODO(tasak): Need to compare the new alignment with the address' alignment.
   // If the two alignments are not the same, need to return nullptr with EINVAL.
   if (address) {
-    size_t usage = partition_alloc::PartitionRoot::GetUsableSize(address);
+    size_t usage =
+        partition_alloc::PartitionRoot::GetExternalUsableSize(address);
     size_t copy_size = usage > size ? size : usage;
     // SAFETY: `new_ptr` is a newly allocated buffer of at least `size` bytes.
     // `address` is an active allocation of at least `usage` bytes.
@@ -432,7 +433,8 @@ void* PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::
   // TODO(tasak): Need to compare the new alignment with the address' alignment.
   // If the two alignments are not the same, need to return nullptr with EINVAL.
   if (address) {
-    size_t usage = partition_alloc::PartitionRoot::GetUsableSize(address);
+    size_t usage =
+        partition_alloc::PartitionRoot::GetExternalUsableSize(address);
     size_t copy_size = usage > size ? size : usage;
     // SAFETY: `new_ptr` is a newly allocated buffer of at least `size` bytes.
     // `address` is an active allocation of at least `usage` bytes.
@@ -689,7 +691,8 @@ size_t PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::
 #endif  // PA_BUILDFLAG(IS_APPLE)
 
   // TODO(lizeb): Returns incorrect values for aligned allocations.
-  const size_t size = partition_alloc::PartitionRoot::GetUsableSize(address);
+  const size_t size =
+      partition_alloc::PartitionRoot::GetExternalUsableSize(address);
 #if PA_BUILDFLAG(IS_APPLE)
   // The object pointed to by `address` is allocated by the PartitionAlloc.
   // So, this function must not return zero so that the malloc zone dispatcher

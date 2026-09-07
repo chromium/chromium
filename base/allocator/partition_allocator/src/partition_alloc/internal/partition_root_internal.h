@@ -54,6 +54,10 @@
 #endif  // PA_BUILDFLAG(PA_COMPILER_MSVC)
 #endif  // PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
+#if PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
+#include <limits>
+#endif  // PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
+
 namespace partition_alloc {
 
 namespace internal {
@@ -76,6 +80,12 @@ struct BucketSizeDetails {
   uint16_t bucket_index;
   size_t slot_size;
 };
+
+#if PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
+using CheckedSpanSmuggledRequestedSize = uint32_t;
+static_assert(std::numeric_limits<CheckedSpanSmuggledRequestedSize>::max() >
+              BucketIndexLookup::kMaxBucketSize);
+#endif  // PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
 
 #if PA_BUILDFLAG(RECORD_ALLOC_INFO)
 extern AllocInfo g_allocs;
@@ -1406,9 +1416,8 @@ PA_ALWAYS_INLINE void* PartitionRoot::AllocInternalNoHooks(
 
     // `[[likely]]`: median hit rate in the thread cache is 95%, from metrics.
     if (slot_start.value()) [[likely]] {
-      // This follows the logic of SlotSpanMetadata::GetUsableSize for small
-      // buckets_, which is too expensive to call here.
-      // Keep it in sync!
+      // This follows the logic of SlotSpanMetadata::GetExternalUsableSize for
+      // small buckets_, which is too expensive to call here. Keep it in sync!
       usable_size = AdjustSizeForExtrasSubtract(slot_size);
 
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)

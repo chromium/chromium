@@ -31,6 +31,7 @@
 #include "partition_alloc/partition_oom.h"
 #include "partition_alloc/partition_page.h"
 #include "partition_alloc/reservation_offset_table.h"
+#include "partition_alloc/slot_address_and_size.h"
 #include "partition_alloc/slot_start.h"
 #include "partition_alloc/spinning_mutex.h"
 #include "partition_alloc/tagging.h"
@@ -1462,7 +1463,7 @@ bool PartitionRoot::TryReallocInPlaceForNormalBuckets(
 // malloc() et al., but it doesn't have to. crbug.com/1292646 shows an example
 // where this isn't the case. Note, an inner object pointer won't work for
 // direct map, unless it is within the first partition page.
-size_t PartitionRoot::GetUsableSize(const void* ptr) {
+size_t PartitionRoot::GetExternalUsableSize(const void* ptr) {
   // malloc_usable_size() is expected to handle NULL gracefully and return 0.
   if (!ptr) {
     return 0;
@@ -1471,7 +1472,29 @@ size_t PartitionRoot::GetUsableSize(const void* ptr) {
       internal::GetMetadataOffsetFromAddr(internal::ObjectInnerPtr2Addr(ptr));
   auto* slot_span = SlotSpanMetadata::FromObjectInnerPtr(ptr, offset);
   auto* root = FromSlotSpanMetadata(slot_span);
-  return root->GetSlotUsableSize(slot_span);
+  size_t usable = root->GetSlotUsableSize(slot_span);
+#if PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
+  if (root->brp_enabled()) [[likely]] {
+    const uintptr_t address = UntagPtr(ptr);
+    const auto reservation_info = internal::ReservationOffsetTable::Get(
+                                      internal::pool_handle::kBRPPoolHandle)
+                                      .GetAddressInfo(address);
+    const auto slot_address_and_size =
+        partition_alloc::SlotAddressAndSize::From(
+            address, internal::pool_handle::kBRPPoolHandle, reservation_info,
+            offset);
+    const internal::InSlotMetadata* in_slot_metadata =
+        internal::InSlotMetadata::From(slot_address_and_size);
+    if (in_slot_metadata->IsSmuggledSizeAvailable()) {
+      // By convention, we do not set the bit for spans that store their
+      // raw size; Checked Span instead acts
+      // directly on the raw size.
+      PA_DCHECK(!slot_span->CanStoreRawSize());
+      usable -= sizeof(internal::CheckedSpanSmuggledRequestedSize);
+    }
+  }
+#endif  // PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
+  return usable;
 }
 
 // Return the capacity of the underlying slot (adjusted for extras) that'd be

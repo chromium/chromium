@@ -3426,7 +3426,7 @@ TEST(SpanTest, CheckedSpanCrashes) {
   char* thirtyone_chars = storage->data();
 
   const size_t usable_bytes =
-      partition_alloc::PartitionRoot::GetUsableSize(thirtyone_chars);
+      partition_alloc::PartitionRoot::GetExternalUsableSize(thirtyone_chars);
 
   // Were this the same size, that would mean that the end of the
   // allocation already touches the end of the slot, and this test case
@@ -3481,7 +3481,7 @@ TEST(SpanTest, CheckedSpanAllowsSlack) {
   // bytes of slack space are available before overrunning the slot
   // boundary.
   const size_t usable_bytes =
-      partition_alloc::PartitionRoot::GetUsableSize(thirtyone_chars);
+      partition_alloc::PartitionRoot::GetExternalUsableSize(thirtyone_chars);
 
   // Were this the same size, that would mean that the end of the
   // allocation already touches the end of the slot, and this test case
@@ -3518,7 +3518,7 @@ TEST(SpanTest, UncheckedSpanNeverCrashes) {
   // bytes of slack space are available before overrunning the slot
   // boundary.
   const size_t usable_bytes =
-      partition_alloc::PartitionRoot::GetUsableSize(thirtyone_chars);
+      partition_alloc::PartitionRoot::GetExternalUsableSize(thirtyone_chars);
 
   // Were this the same size, that would mean that the end of the
   // allocation already touches the end of the slot, and this test case

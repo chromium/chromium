@@ -2327,7 +2327,7 @@ TEST_P(PartitionAllocTest, PartialPageFreelists) {
   slot_span = SlotSpan::FromSlotStart(SlotStart::Unchecked(ptr).Untag(),
                                       allocator.root());
   EXPECT_EQ(1u, slot_span->num_allocated_slots);
-  size_t very_small_actual_size = PartitionRoot::GetUsableSize(ptr);
+  size_t very_small_actual_size = PartitionRoot::GetExternalUsableSize(ptr);
   total_slots =
       (slot_span->bucket->num_system_pages_per_slot_span * SystemPageSize()) /
       (very_small_actual_size + ExtraAllocSize(allocator));
@@ -4719,14 +4719,14 @@ TEST_P(PartitionAllocWithFreeWithSizeAndAlignmentTest,
   allocator.root()->SetUseTighterAlignedAllocBoundForTesting(false);
   void* ptr_legacy = allocator.root()->AlignedAlloc(kReqAlignment, kSize);
   ASSERT_TRUE(ptr_legacy);
-  size_t slot_size_legacy = PartitionRoot::GetUsableSize(ptr_legacy);
+  size_t slot_size_legacy = PartitionRoot::GetExternalUsableSize(ptr_legacy);
   GetParam().free_func(allocator.root(), ptr_legacy, kSize, kReqAlignment);
 
   // 2. Tighter bound behavior (AlignUp)
   allocator.root()->SetUseTighterAlignedAllocBoundForTesting(true);
   void* ptr_tighter = allocator.root()->AlignedAlloc(kReqAlignment, kSize);
   ASSERT_TRUE(ptr_tighter);
-  size_t slot_size_tighter = PartitionRoot::GetUsableSize(ptr_tighter);
+  size_t slot_size_tighter = PartitionRoot::GetExternalUsableSize(ptr_tighter);
   GetParam().free_func(allocator.root(), ptr_tighter, kSize, kReqAlignment);
 
   // Tighter bound allocation capacity must be strictly smaller than legacy
@@ -4753,16 +4753,16 @@ TEST_P(PartitionAllocTest, OptimizedGetSlotNumber) {
   }
 }
 
-TEST_P(PartitionAllocTest, GetUsableSizeNull) {
-  EXPECT_EQ(0ULL, PartitionRoot::GetUsableSize(nullptr));
+TEST_P(PartitionAllocTest, GetExternalUsableSizeNull) {
+  EXPECT_EQ(0ULL, PartitionRoot::GetExternalUsableSize(nullptr));
 }
 
-TEST_P(PartitionAllocTest, GetUsableSize) {
+TEST_P(PartitionAllocTest, GetExternalUsableSize) {
   size_t delta = 31;
   for (size_t size = 1; size <= kMinDirectMappedDownsize; size += delta) {
     void* ptr = allocator.root()->Alloc(size);
     EXPECT_TRUE(ptr);
-    size_t usable_size = PartitionRoot::GetUsableSize(ptr);
+    size_t usable_size = PartitionRoot::GetExternalUsableSize(ptr);
     EXPECT_LE(size, usable_size);
     PA_UNSAFE_TODO(memset(ptr, 0xDE, usable_size));
     // Should not crash when free the ptr.
