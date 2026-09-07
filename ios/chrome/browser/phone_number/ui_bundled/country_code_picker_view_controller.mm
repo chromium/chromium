@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/phone_number/ui_bundled/country_code_picker_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/phone_number/ui_bundled/phone_number_actions_view_controller.h"
 #import "ios/chrome/browser/phone_number/ui_bundled/phone_number_constants.h"
@@ -201,11 +202,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
   UITableViewCell* cell = [tableView cellForRowAtIndexPath:indexPath];
   cell.accessoryType = UITableViewCellAccessoryCheckmark;
+
+  TableViewDetailIconItem* itemSelected =
+      base::apple::ObjCCastStrict<TableViewDetailIconItem>(
+          [self.tableViewModel itemAtIndexPath:indexPath]);
   _selectedIndexPath = indexPath;
-  _selectedCountry = cell.textLabel.text;
-  _selectedCountryCode = [cell.detailTextLabel.text
-      substringWithRange:NSMakeRange(1,
-                                     [cell.detailTextLabel.text length] - 1)];
+  _selectedCountry = itemSelected.text;
+  _selectedCountryCode = [itemSelected.detailText
+      substringWithRange:NSMakeRange(1, [itemSelected.detailText length] - 1)];
   _addButton.enabled = YES;
   _displayedPhoneNumber = [NSString
       stringWithFormat:@"+(%@) %@", _selectedCountryCode, _phoneNumber];

@@ -14,6 +14,16 @@
 #import "ios/testing/earl_grey/matchers.h"
 #import "testing/gtest/include/gtest/gtest.h"
 
+namespace {
+
+// Expected phone number label.
+NSString* const kAfghanistanPhoneNumber = @"+(93) 0666666666";
+
+// Country name.
+NSString* const kAfghanistanCountry = @"Afghanistan";
+
+}  // namespace
+
 @interface CountryCodePickerTestCase : ChromeTestCase
 @end
 
@@ -24,8 +34,9 @@
   [super tearDownHelper];
 }
 
-// Tests the adding of a country code to a given phoner number and that the
-// appropiate actions are displayed once the `Add` button is pressed.
+// Tests adding a country code to a given phone number and verifies that the
+// updated phone number and appropriate actions are displayed once the `Add`
+// button is pressed.
 - (void)testAddingCountryCodeToPhoneNumberAndAppropriateActions {
   [CountryCodePickerAppInterface presentCountryCodePicker];
 
@@ -36,7 +47,16 @@
   // Tap on the first country code to add as a prefix.
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabel(
-                                   @"Afghanistan")] performAction:grey_tap()];
+                                   kAfghanistanCountry)]
+      performAction:grey_tap()];
+
+  // Verify that the country code picker title updates with the selected
+  // country code prefix.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_allOf(
+                                              grey_text(
+                                                  kAfghanistanPhoneNumber),
+                                              grey_sufficientlyVisible(), nil)];
 
   // Tap on `Add` button.
   [[EarlGrey selectElementWithMatcher:
@@ -49,6 +69,14 @@
 
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
                       grey_accessibilityID(kPhoneNumberActionsViewIdentifier)];
+
+  // Verify that the phone number actions view displays the phone number with
+  // the selected country code in its title.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_allOf(
+                                              grey_text(
+                                                  kAfghanistanPhoneNumber),
+                                              grey_sufficientlyVisible(), nil)];
 
   // Check the different buttons.
   [[EarlGrey
