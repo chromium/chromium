@@ -66,6 +66,8 @@ NSString* const kSettingsAddLanguageCellId = @"kSettingsAddLanguageCellId";
 NSString* const kSettingsClearBrowsingDataCellId =
     @"kSettingsClearBrowsingDataCellId";
 NSString* const kSettingsHandoffCellId = @"kSettingsHandoffCellId";
+NSString* const kSettingsUniversalOptOutCellId =
+    @"kSettingsUniversalOptOutCellId";
 NSString* const kSettingsCookiesCellId = @"kSettingsCookiesCellId";
 NSString* const kSettingsDefaultSiteModeCellId =
     @"kSettingsDefaultSiteModeCellId";

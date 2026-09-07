@@ -9,6 +9,9 @@
 // controller.
 @protocol PrivacyNavigationCommands
 
+// Shows Universal Opt Out screen.
+- (void)showUniversalOptOut;
+
 // Shows Handoff screen.
 - (void)showHandoff;
 

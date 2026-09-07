@@ -28,6 +28,8 @@
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/service/sync_service.h"
+#import "components/universal_optout/features.h"
+#import "components/universal_optout/prefs.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_constants.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_util.h"
@@ -77,6 +79,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierSafeBrowsing,
   SectionIdentifierHTTPSOnlyMode,
   SectionIdentifierPasswordLeakCheck,
+  SectionIdentifierSiteRequests,
   SectionIdentifierWebServices,
   SectionIdentifierIncognitoAuth,
   SectionIdentifierIncognitoInterstitial,
@@ -98,12 +101,23 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeIncognitoInterstitial,
   ItemTypeIncognitoInterstitialDisabled,
   ItemTypeLockdownMode,
+  ItemTypeUniversalOptOut,
 };
 
 // Used to open the Sync and Google Services settings.
 // These links should not be dispatched.
 const char kGoogleServicesSettingsURL[] = "settings://open_google_services";
 const char kSyncSettingsURL[] = "settings://open_sync";
+
+bool ShouldShowUniversalOptOutSettings(PrefService* prefs) {
+  return (prefs->GetBoolean(universal_optout::prefs::kUniversalOptOutEnabled) ||
+          prefs->GetBoolean(
+              universal_optout::prefs::kUniversalOptOutEligible)) &&
+         base::FeatureList::IsEnabled(
+             universal_optout::features::kUniversalOptOut) &&
+         base::FeatureList::IsEnabled(
+             universal_optout::features::kUniversalOptOutSettings);
+}
 
 }  // namespace
 
@@ -131,6 +145,8 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   TableViewDetailIconItem* _incognitoLockItem;
   // Lockdown Mode item.
   TableViewDetailIconItem* _lockdownModeDetailItem;
+  // Universal Opt Out item.
+  TableViewDetailIconItem* _universalOptOutDetailItem;
 
   // Whether Settings have been dismissed.
   BOOL _settingsAreDismissed;
@@ -195,6 +211,11 @@ const char kSyncSettingsURL[] = "settings://open_sync";
     _prefObserverBridge.reset(new PrefObserverBridge(self));
     // Register to observe any changes on pref-backed values displayed by the
     // screen.
+    if (ShouldShowUniversalOptOutSettings(prefService)) {
+      _prefObserverBridge->ObserveChangesForPreference(
+          universal_optout::prefs::kUniversalOptOutEnabled,
+          &_prefChangeRegistrar);
+    }
     _prefObserverBridge->ObserveChangesForPreference(
         prefs::kIosHandoffToOtherDevices, &_prefChangeRegistrar);
     _prefObserverBridge->ObserveChangesForPreference(
@@ -318,6 +339,13 @@ const char kSyncSettingsURL[] = "settings://open_sync";
     [model addItem:self.passwordLeakCheckItem
         toSectionWithIdentifier:SectionIdentifierPasswordLeakCheck];
   }
+
+  if (ShouldShowUniversalOptOutSettings(_profile->GetPrefs())) {
+    [model addSectionWithIdentifier:SectionIdentifierSiteRequests];
+    [model addItem:[self universalOptOutDetailItem]
+        toSectionWithIdentifier:SectionIdentifierSiteRequests];
+  }
+
   [model addSectionWithIdentifier:SectionIdentifierWebServices];
   [model addSectionWithIdentifier:SectionIdentifierIncognitoAuth];
   [model addSectionWithIdentifier:SectionIdentifierIncognitoInterstitial];
@@ -459,6 +487,20 @@ const char kSyncSettingsURL[] = "settings://open_sync";
       accessibilityIdentifier:kSettingsHandoffCellId];
 
   return _handoffDetailItem;
+}
+
+- (TableViewItem*)universalOptOutDetailItem {
+  NSString* detailText = _profile->GetPrefs()->GetBoolean(
+                             universal_optout::prefs::kUniversalOptOutEnabled)
+                             ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
+                             : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+  _universalOptOutDetailItem =
+      [self detailItemWithType:ItemTypeUniversalOptOut
+                          titleId:IDS_IOS_OPTIONS_ENABLE_UNIVERSAL_OPT_OUT
+                       detailText:detailText
+          accessibilityIdentifier:kSettingsUniversalOptOutCellId];
+
+  return _universalOptOutDetailItem;
 }
 
 // Creates TableViewHeaderFooterItem instance to show a link to open the Sync
@@ -638,6 +680,9 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   [super tableView:tableView didSelectRowAtIndexPath:indexPath];
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
   switch (itemType) {
+    case ItemTypeUniversalOptOut:
+      [self.handler showUniversalOptOut];
+      break;
     case ItemTypeOtherDevicesHandoff:
       [self.handler showHandoff];
       break;
@@ -693,6 +738,15 @@ const char kSyncSettingsURL[] = "settings://open_sync";
             : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
     _lockdownModeDetailItem.detailText = detailText;
     [self reconfigureCellsForItems:@[ _lockdownModeDetailItem ]];
+    return;
+  }
+
+  if (preferenceName == universal_optout::prefs::kUniversalOptOutEnabled) {
+    NSString* detailText = _profile->GetPrefs()->GetBoolean(preferenceName)
+                               ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
+                               : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+    _universalOptOutDetailItem.detailText = detailText;
+    [self reconfigureCellsForItems:@[ _universalOptOutDetailItem ]];
     return;
   }
 }

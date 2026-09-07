@@ -19,6 +19,8 @@ source_set("ui") {
     "privacy_safe_browsing_view_controller_delegate.h",
     "privacy_table_view_controller.h",
     "privacy_table_view_controller.mm",
+    "universal_opt_out_table_view_controller.h",
+    "universal_opt_out_table_view_controller.mm",
   ]
   deps = [
     ":privacy_constants",
@@ -34,6 +36,7 @@ source_set("ui") {
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
     "//components/strings",
+    "//components/universal_optout",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/first_run/public:best_features_item",
@@ -128,6 +131,7 @@ source_set("unit_tests") {
     "privacy_safe_browsing_mediator_unittest.mm",
     "privacy_safe_browsing_view_controller_unittest.mm",
     "privacy_table_view_controller_unittest.mm",
+    "universal_opt_out_table_view_controller_unittest.mm",
   ]
   deps = [
     "//base/test:test_support",
@@ -146,9 +150,13 @@ source_set("unit_tests") {
     "//components/sync:test_support",
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
+    "//components/universal_optout",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/policy/model:policy_util",
+    "//ios/chrome/browser/settings/ui_bundled:constants",
+    "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/settings/ui_bundled/privacy:ui",
     "//ios/chrome/browser/settings/ui_bundled/utils",
     "//ios/chrome/browser/shared/model/application_context",
@@ -157,12 +165,14 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/table_view:test_support",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/table_view/content_configuration",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:test_support",
     "//ios/chrome/test:test_support",
@@ -171,6 +181,7 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/ocmock",
     "//ui/base",
+    "//url",
   ]
 }
 

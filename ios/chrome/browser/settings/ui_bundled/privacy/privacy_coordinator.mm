@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_navigation_commands.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_safe_browsing_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_table_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/privacy/universal_opt_out_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -136,6 +137,14 @@
 }
 
 #pragma mark - PrivacyNavigationCommands
+
+- (void)showUniversalOptOut {
+  UniversalOptOutTableViewController* viewController =
+      [[UniversalOptOutTableViewController alloc] initWithProfile:self.profile];
+  [self.viewController configureHandlersForRootViewController:viewController];
+  [self.baseNavigationController pushViewController:viewController
+                                           animated:YES];
+}
 
 - (void)showHandoff {
   HandoffTableViewController* viewController =

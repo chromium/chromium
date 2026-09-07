@@ -5479,6 +5479,12 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_OPTIONS_ENABLE_INCOGNITO_INTERSTITIAL" desc="Title for the option to enable the Incognito interstitial, which lets users open links from other apps in Incognito. [iOS only]">
         Ask to open links from other apps in Incognito
       </message>
+      <message name="IDS_IOS_OPTIONS_ENABLE_UNIVERSAL_OPT_OUT" desc="Title for the option to enable Universal Opt Out." translateable="false">
+        Send an opt-out request to sites regarding use of your data
+      </message>
+      <message name="IDS_IOS_OPTIONS_ENABLE_UNIVERSAL_OPT_OUT_DETAILS" desc="The detailed description of an option that allows Universal Opt Out." translateable="false">
+        The sites you visit, including Google, are responsible for determining how they respond to this request. Depending on the laws in your region, sites may respond by limiting the sale and sharing of your data or its use for personalized ads. BEGIN_LINKLearn moreEND_LINK
+      </message>
       <message name="IDS_IOS_OPTIONS_GENERAL_TAB_LABEL" desc="The title of the Basics section of the Settings page. [iOS only]" meaning="The title of the Basics section of the Settings page.">
         Basics
       </message>

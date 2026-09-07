@@ -27,8 +27,11 @@
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
+#import "components/universal_optout/features.h"
+#import "components/universal_optout/prefs.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
@@ -151,6 +154,23 @@ class PrivacyTableViewControllerTest
   bool SoftLockEnabled() { return std::get<1>(GetParam()); }
 
   bool PasswordLeakCheckMoveEnabled() { return std::get<2>(GetParam()); }
+
+  bool HasUniversalOptOutItem() {
+    TableViewModel* model = [controller() tableViewModel];
+    for (NSInteger section = 0; section < [model numberOfSections]; ++section) {
+      for (NSInteger item = 0; item < [model numberOfItemsInSection:section];
+           ++item) {
+        TableViewItem* table_item =
+            [model itemAtIndexPath:[NSIndexPath indexPathForItem:item
+                                                       inSection:section]];
+        if ([table_item.accessibilityIdentifier
+                isEqualToString:kSettingsUniversalOptOutCellId]) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
@@ -308,6 +328,60 @@ TEST_P(PrivacyTableViewControllerTest,
   prefService->Set(prefs::kIosHandoffToOtherDevices, base::Value(true));
   GetApplicationContext()->GetLocalState()->Set(
       prefs::kBrowserLockdownModeEnabled, base::Value(true));
+}
+
+// Tests that Universal Opt Out setting is visible only when eligible and
+// feature flags are enabled.
+TEST_P(PrivacyTableViewControllerTest, TestUniversalOptOutVisibility) {
+  // Hidden when features are enabled but user is ineligible.
+  profile_->GetPrefs()->SetBoolean(
+      universal_optout::prefs::kUniversalOptOutEligible, false);
+  profile_->GetPrefs()->SetBoolean(
+      universal_optout::prefs::kUniversalOptOutEnabled, false);
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/{universal_optout::features::kUniversalOptOut,
+                              universal_optout::features::
+                                  kUniversalOptOutSettings},
+        /*disabled_features=*/{});
+
+    CreateController();
+    CheckController();
+    EXPECT_FALSE(HasUniversalOptOutItem());
+  }
+
+  // Hidden when user is eligible but features are disabled.
+  ResetController();
+  profile_->GetPrefs()->SetBoolean(
+      universal_optout::prefs::kUniversalOptOutEligible, true);
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{
+            universal_optout::features::kUniversalOptOut,
+            universal_optout::features::kUniversalOptOutSettings});
+
+    CreateController();
+    CheckController();
+    EXPECT_FALSE(HasUniversalOptOutItem());
+  }
+
+  // Visible when user is eligible and features are enabled.
+  ResetController();
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/{universal_optout::features::kUniversalOptOut,
+                              universal_optout::features::
+                                  kUniversalOptOutSettings},
+        /*disabled_features=*/{});
+
+    CreateController();
+    CheckController();
+    EXPECT_TRUE(HasUniversalOptOutItem());
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
