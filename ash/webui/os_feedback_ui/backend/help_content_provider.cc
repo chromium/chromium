@@ -18,8 +18,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "content/public/browser/browser_context.h"
-#include "content/public/browser/storage_partition.h"
 #include "google_apis/google_api_keys.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -272,19 +270,10 @@ void PopulateSearchResponse(const std::string& app_locale,
 }
 
 HelpContentProvider::HelpContentProvider(
-    const std::string& app_locale,
-    const bool is_child_account,
-    content::BrowserContext* browser_context)
-    : app_locale_(app_locale),
-      is_child_account_(is_child_account),
-      url_loader_factory_(browser_context->GetDefaultStoragePartition()
-                              ->GetURLLoaderFactoryForBrowserProcess()) {}
-
-HelpContentProvider::HelpContentProvider(
-    const std::string& app_locale,
+    std::string app_locale,
     const bool is_child_account,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : app_locale_(app_locale),
+    : app_locale_(std::move(app_locale)),
       is_child_account_(is_child_account),
       url_loader_factory_(url_loader_factory) {}
 

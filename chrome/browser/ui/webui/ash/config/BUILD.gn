@@ -114,6 +114,7 @@ static_library("config") {
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/signin:identity_manager_provider",
     "//chromeos/ash/experiences/guest_os/borealis/motd",
+    "//components/application_locale_storage",
     "//components/cross_device/logging",
     "//ui/webui",
   ]

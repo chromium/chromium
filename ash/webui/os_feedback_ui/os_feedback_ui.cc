@@ -18,6 +18,8 @@
 #include "ash/webui/os_feedback_ui/url_constants.h"
 #include "base/containers/span.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -132,7 +134,8 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
 
 OSFeedbackUI::OSFeedbackUI(
     content::WebUI* web_ui,
-    std::unique_ptr<OsFeedbackDelegate> feedback_delegate)
+    std::unique_ptr<OsFeedbackDelegate> feedback_delegate,
+    std::string application_locale)
     : ui::MojoWebDialogUI(web_ui) {
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
@@ -164,9 +167,11 @@ OSFeedbackUI::OSFeedbackUI(
   webui_allowlist->RegisterAutoGrantedPermission(
       untrusted_origin, ContentSettingsType::JAVASCRIPT);
 
+  const bool is_child_account = feedback_delegate->IsChildAccount();
   help_content_provider_ = std::make_unique<feedback::HelpContentProvider>(
-      feedback_delegate->GetApplicationLocale(),
-      feedback_delegate->IsChildAccount(), browser_context);
+      std::move(application_locale), is_child_account,
+      browser_context->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess());
   feedback_service_provider_ =
       std::make_unique<feedback::FeedbackServiceProvider>(
           std::move(feedback_delegate));

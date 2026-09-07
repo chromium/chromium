@@ -47,7 +47,6 @@ class ChromeOsFeedbackDelegate : public OsFeedbackDelegate {
       scoped_refptr<extensions::FeedbackService> feedback_service);
 
   // OsFeedbackDelegate:
-  std::string GetApplicationLocale() override;
   std::optional<GURL> GetLastActivePageUrl() override;
   std::optional<std::string> GetSignedInUserEmail() const override;
   bool IsWifiDebugLogsAllowed() const override;

@@ -16,10 +16,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace content {
-class BrowserContext;
-}  // namespace content
-
 namespace network {
 class SharedURLLoaderFactory;
 class SimpleURLLoader;
@@ -73,11 +69,8 @@ void PopulateSearchResponse(
 // GetHelpContents.
 class HelpContentProvider : os_feedback_ui::mojom::HelpContentProvider {
  public:
-  HelpContentProvider(const std::string& app_locale,
-                      const bool is_child_account,
-                      content::BrowserContext* browser_context);
   HelpContentProvider(
-      const std::string& app_locale,
+      std::string app_locale,
       const bool is_child_account,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   HelpContentProvider(const HelpContentProvider&) = delete;

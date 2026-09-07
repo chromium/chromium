@@ -6,6 +6,7 @@
 #define ASH_WEBUI_OS_FEEDBACK_UI_OS_FEEDBACK_UI_H_
 
 #include <memory>
+#include <string>
 
 #include "ash/webui/common/chrome_os_webui_config.h"
 #include "ash/webui/os_feedback_ui/backend/feedback_service_provider.h"
@@ -37,7 +38,8 @@ class OSFeedbackUIConfig : public ChromeOSWebUIConfig<OSFeedbackUI> {
 class OSFeedbackUI : public ui::MojoWebDialogUI {
  public:
   OSFeedbackUI(content::WebUI* web_ui,
-               std::unique_ptr<OsFeedbackDelegate> feedback_delegate);
+               std::unique_ptr<OsFeedbackDelegate> feedback_delegate,
+               std::string application_locale);
   OSFeedbackUI(const OSFeedbackUI&) = delete;
   OSFeedbackUI& operator=(const OSFeedbackUI&) = delete;
   ~OSFeedbackUI() override;

@@ -26,9 +26,6 @@ class OsFeedbackDelegate {
   OsFeedbackDelegate() = default;
   virtual ~OsFeedbackDelegate() = default;
 
-  // Gets the application locale so that suggested help contents can display
-  // localized titles when available.
-  virtual std::string GetApplicationLocale() = 0;
   // Returns the last active page url before the feedback tool is opened if any.
   virtual std::optional<GURL> GetLastActivePageUrl() = 0;
   // Returns the normalized email address of the signed-in user associated with

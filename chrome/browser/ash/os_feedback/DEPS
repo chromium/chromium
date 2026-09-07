@@ -9,7 +9,6 @@ include_rules = [
   "+chrome/browser/android",
   "+chrome/browser/ash/multidevice_setup",
   "+chrome/browser/ash/system_web_apps",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/feedback",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/system_web_apps",

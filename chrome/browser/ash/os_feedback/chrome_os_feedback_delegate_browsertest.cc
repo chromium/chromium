@@ -33,7 +33,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/os_feedback/os_feedback_screenshot_manager.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
@@ -341,13 +340,6 @@ class ChromeOsFeedbackDelegateTest : public InProcessBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-// Test GetApplicationLocale returns a valid locale.
-IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, GetApplicationLocale) {
-  auto feedback_delegate =
-      ChromeOsFeedbackDelegate::CreateForTesting(browser()->GetProfile());
-  EXPECT_EQ(feedback_delegate.GetApplicationLocale(), "en-US");
-}
 
 // Test GetLastActivePageUrl returns last active page url if any.
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, GetLastActivePageUrl) {

@@ -140,6 +140,7 @@
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/signin/identity_manager_provider.h"
 #include "chromeos/ash/experiences/guest_os/borealis/motd/borealis_motd_ui.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/browser/webui_config_map.h"
 #include "ui/webui/webui_util.h"
@@ -315,6 +316,24 @@ std::unique_ptr<content::WebUIConfig> MakeBocaReceiverUntrustedUIConfig() {
       create_controller_func);
 }
 
+// `application_locale_storage` must not be null and must outlive the returned
+// config.
+std::unique_ptr<content::WebUIConfig> MakeOSFeedbackUIConfig(
+    const ApplicationLocaleStorage* application_locale_storage) {
+  CHECK(application_locale_storage);
+  CreateWebUIControllerFunc create_controller_func = base::BindRepeating(
+      [](const ApplicationLocaleStorage* application_locale_storage,
+         content::WebUI* web_ui,
+         const GURL& url) -> std::unique_ptr<content::WebUIController> {
+        auto delegate = std::make_unique<ChromeOsFeedbackDelegate>(web_ui);
+        return std::make_unique<OSFeedbackUI>(
+            web_ui, std::move(delegate), application_locale_storage->Get());
+      },
+      base::Unretained(application_locale_storage));
+
+  return std::make_unique<OSFeedbackUIConfig>(create_controller_func);
+}
+
 }  // namespace
 
 // static
@@ -402,9 +421,7 @@ void AshWebUIConfigManager::RegisterWebUIConfigs() {
   AddWebUIConfig(std::make_unique<office_fallback::OfficeFallbackUIConfig>());
   AddWebUIConfig(std::make_unique<OobeUIConfig>());
   AddWebUIConfig(std::make_unique<OSCreditsUI>());
-  AddWebUIConfig(
-      MakeComponentConfigWithDelegate<OSFeedbackUIConfig, OSFeedbackUI,
-                                      ChromeOsFeedbackDelegate>());
+  AddWebUIConfig(MakeOSFeedbackUIConfig(&application_locale_storage_.get()));
   AddWebUIConfig(std::make_unique<settings::OSSettingsUIConfig>());
   AddWebUIConfig(std::make_unique<ParentAccessUIConfig>());
   AddWebUIConfig(std::make_unique<PasswordChangeUIConfig>());
