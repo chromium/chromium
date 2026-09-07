@@ -128,6 +128,32 @@ class WindowLayerRecreatedCounter : public aura::WindowObserver {
       window_observation_{this};
 };
 
+// Deletes the observed window when it becomes visible.
+class DeleteOnShowObserver : public aura::WindowObserver {
+ public:
+  explicit DeleteOnShowObserver(aura::Window* window) {
+    window_observation_.Observe(window);
+  }
+  DeleteOnShowObserver(const DeleteOnShowObserver&) = delete;
+  DeleteOnShowObserver& operator=(const DeleteOnShowObserver&) = delete;
+  ~DeleteOnShowObserver() override = default;
+
+  // aura::WindowObserver:
+  void OnWindowVisibilityChanged(aura::Window* window, bool visible) override {
+    if (visible && window_observation_.IsObservingSource(window)) {
+      window_observation_.Reset();
+      delete window;
+    }
+  }
+  void OnWindowDestroying(aura::Window* window) override {
+    window_observation_.Reset();
+  }
+
+ private:
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      window_observation_{this};
+};
+
 }  // namespace
 
 class WindowFloatTest : public AshTestBase {
@@ -1827,6 +1853,26 @@ TEST_F(TabletWindowFloatTest, UntuckedWindowVisibility) {
   GestureTapOn(tuck_handle_widget->GetContentsView());
   ASSERT_TRUE(window->IsVisible());
   EXPECT_FALSE(float_controller->IsFloatedWindowTuckedForTablet(window.get()));
+}
+
+using TabletWindowFloatDeathTest = TabletWindowFloatTest;
+
+// Tests that attempting to destroy a floated window while it is being untucked
+// is blocked (and triggers a crash via ScopedDeleteBlocker).
+TEST_F(TabletWindowFloatDeathTest, DestroyWindowWhileUntucking) {
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  std::unique_ptr<aura::Window> window = CreateFloatedWindow();
+
+  // Fling to tuck the window in the bottom right. The window is hidden once
+  // the tuck animation ends.
+  auto* float_controller = Shell::Get()->float_controller();
+  FlingWindow(window.get(), /*left=*/false, /*up=*/false);
+  ASSERT_TRUE(float_controller->IsFloatedWindowTuckedForTablet(window.get()));
+  ASSERT_FALSE(window->IsVisible());
+
+  DeleteOnShowObserver observer(window.get());
+  EXPECT_DEATH_IF_SUPPORTED(
+      float_controller->MaybeUntuckFloatedWindowForTablet(window.get()), "");
 }
 
 // Tests that the expected window gets activation after tucking a floated

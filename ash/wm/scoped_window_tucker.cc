@@ -9,6 +9,7 @@
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_state.h"
 #include "base/metrics/user_metrics.h"
+#include "ui/aura/window.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/display/screen.h"
@@ -172,6 +173,7 @@ void ScopedWindowTucker::AnimateTuck() {
 }
 
 void ScopedWindowTucker::AnimateUntuck(base::OnceClosure callback) {
+  aura::Window::ScopedDeleteBlocker blocker(window_);
   wm::ScopedAnimationDisabler disable(window_);
   window_->Show();
 
