@@ -457,7 +457,8 @@ void AshWebUIConfigManager::RegisterUntrustedWebUIConfigs() {
   // All `WebUIConfig`s should be registered here, irrespective of whether their
   // `WebUI` is enabled or not. To conditionally enable/disable a WebUI,
   // developers should override `WebUIConfig::IsWebUIEnabled()`.
-  AddUntrustedWebUIConfig(std::make_unique<BocaUIConfig>());
+  AddUntrustedWebUIConfig(
+      std::make_unique<BocaUIConfig>(&application_locale_storage_.get()));
   AddUntrustedWebUIConfig(MakeBocaReceiverUntrustedUIConfig());
   AddUntrustedWebUIConfig(std::make_unique<CroshUIConfig>());
   AddUntrustedWebUIConfig(std::make_unique<TerminalUIConfig>());
