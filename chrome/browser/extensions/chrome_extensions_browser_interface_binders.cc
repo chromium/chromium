@@ -207,7 +207,9 @@ void PopulateChromeFrameBindersForExtension(
 // TODO(b/341493979): Deprecate after CfM LaCrOS migration is completed.
 #if BUILDFLAG(PLATFORM_CFM)
   if (chromeos::cfm::IsChromeboxForMeetingsHashedAppId(
-          extension->hashed_id().value())) {
+          extension->hashed_id().value_sha256()) ||
+      chromeos::cfm::IsChromeboxForMeetingsHashedAppId(
+          extension->hashed_id().value_sha1())) {
     binder_map->Add<ash::cfm::mojom::XuCamera>(
         [](content::RenderFrameHost* frame_host,
            mojo::PendingReceiver<ash::cfm::mojom::XuCamera> receiver) {
@@ -277,7 +279,9 @@ void PopulateChromeFrameBindersForExtension(
 
   // Only allow specific extensions to bind CfmServiceContext
   if (chromeos::cfm::IsChromeboxForMeetingsHashedAppId(
-          extension->hashed_id().value())) {
+          extension->hashed_id().value_sha256()) ||
+      chromeos::cfm::IsChromeboxForMeetingsHashedAppId(
+          extension->hashed_id().value_sha1())) {
     binder_map->Add<chromeos::cfm::mojom::CfmServiceContext>(
         &BindCfmServiceContext);
 
