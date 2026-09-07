@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/share_kit/model/test_share_kit_service.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
@@ -71,15 +72,15 @@ class FacePileMediatorTest : public PlatformTest {
             std::make_unique<FakeAuthenticationServiceDelegate>()));
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateTestSyncService));
-    profile_ = std::move(builder).Build();
-    browser_ = std::make_unique<TestBrowser>(profile_.get());
-    tab_group_service_ = std::make_unique<TabGroupService>(
-        profile_.get(), &tab_group_sync_service_);
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
+    browser_ = std::make_unique<TestBrowser>(profile_);
+    tab_group_service_ =
+        std::make_unique<TabGroupService>(profile_, &tab_group_sync_service_);
     share_kit_service_ = std::make_unique<TestShareKitService>(
         nullptr, nullptr, nullptr, tab_group_service_.get());
     data_sharing_service_ = std::make_unique<
         ::testing::NiceMock<data_sharing::MockDataSharingService>>();
-    identity_manager_ = IdentityManagerFactory::GetForProfile(profile_.get());
+    identity_manager_ = IdentityManagerFactory::GetForProfile(profile_);
 
     face_pile_config_ = [[FacePileConfiguration alloc] init];
     face_pile_config_.groupID = data_sharing::GroupId("test_group_id");
@@ -96,6 +97,19 @@ class FacePileMediatorTest : public PlatformTest {
     SignIn();
   }
 
+  void TearDown() override {
+    _mediator = nil;
+    fake_face_pile_consumer_ = nil;
+    face_pile_config_ = nil;
+    identity_manager_ = nullptr;
+    data_sharing_service_.reset();
+    share_kit_service_.reset();
+    tab_group_service_.reset();
+    browser_.reset();
+    profile_ = nullptr;
+    PlatformTest::TearDown();
+  }
+
   // Sign in with a fake identity.
   void SignIn() {
     FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
@@ -103,21 +117,22 @@ class FacePileMediatorTest : public PlatformTest {
         FakeSystemIdentityManager::FromSystemIdentityManager(
             GetApplicationContext()->GetSystemIdentityManager());
     system_identity_manager->AddIdentity(identity);
-    AuthenticationServiceFactory::GetForProfile(profile_.get())
-        ->SignIn(identity, signin_metrics::AccessPoint::kStartPage);
+    AuthenticationServiceFactory::GetForProfile(profile_)->SignIn(
+        identity, signin_metrics::AccessPoint::kStartPage);
   }
 
   // Sign out.
   void SignOut() {
-    AuthenticationServiceFactory::GetForProfile(profile_.get())
-        ->SignOut(signin_metrics::ProfileSignout::kTest, ^(){
-                  });
+    AuthenticationServiceFactory::GetForProfile(profile_)->SignOut(
+        signin_metrics::ProfileSignout::kTest, ^(){
+        });
   }
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestProfileManagerIOS profile_manager_;
+  raw_ptr<TestProfileIOS> profile_ = nullptr;
   std::unique_ptr<Browser> browser_;
-  std::unique_ptr<TestProfileIOS> profile_;
   ::testing::NiceMock<tab_groups::MockTabGroupSyncService>
       tab_group_sync_service_;
   std::unique_ptr<TabGroupService> tab_group_service_;

@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -42,8 +43,8 @@ class RootDriveFilePickerCoordinatorTest : public PlatformTest {
             std::make_unique<FakeAuthenticationServiceDelegate>()));
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateTestSyncService));
-    profile_ = std::move(builder).Build();
-    browser_ = std::make_unique<TestBrowser>(profile_.get());
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
+    browser_ = std::make_unique<TestBrowser>(profile_);
     handler_ = [[FakeDriveFilePickerHandler alloc] init];
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
     [dispatcher startDispatchingToTarget:handler_
@@ -79,7 +80,7 @@ class RootDriveFilePickerCoordinatorTest : public PlatformTest {
             GetApplicationContext()->GetSystemIdentityManager());
     system_identity_manager->AddIdentity(fake_identity);
     AuthenticationService* auth_service =
-        AuthenticationServiceFactory::GetForProfile(profile_.get());
+        AuthenticationServiceFactory::GetForProfile(profile_);
     auth_service->SignIn(fake_identity,
                          signin_metrics::AccessPoint::kStartPage);
   }
@@ -87,13 +88,19 @@ class RootDriveFilePickerCoordinatorTest : public PlatformTest {
   void TearDown() final {
     [coordinator_ stop];
     coordinator_ = nil;
+    handler_ = nil;
+    base_view_controller_ = nil;
+    fake_web_state_.reset();
+    browser_.reset();
+    profile_ = nullptr;
     PlatformTest::TearDown();
   }
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestProfileManagerIOS profile_manager_;
+  raw_ptr<TestProfileIOS> profile_ = nullptr;
   UIViewController* base_view_controller_;
-  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<web::FakeWebState> fake_web_state_;
   FakeDriveFilePickerHandler* handler_;
