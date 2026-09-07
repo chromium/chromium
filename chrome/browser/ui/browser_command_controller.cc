@@ -1902,16 +1902,17 @@ void BrowserCommandController::InitCommandState() {
       IDC_BOOKMARKS_MENU, (!guest_session && !profile()->IsSystemProfile()));
   command_updater_->UpdateCommandEnabled(IDC_SAVED_TAB_GROUPS_MENU, true);
   command_updater_->UpdateCommandEnabled(
-      IDC_RECENT_TABS_MENU, (!guest_session && !profile()->IsSystemProfile() &&
-                             !profile()->IsIncognitoProfile()));
+      IDC_RECENT_TABS_MENU,
+      (!guest_session && !profile()->IsSystemProfile() &&
+       !profile()->IsPrimaryOTRProfileWithRegularParent()));
   command_updater_->UpdateCommandEnabled(
       IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS,
       (!guest_session && !profile()->IsSystemProfile() &&
-       !profile()->IsIncognitoProfile()));
+       !profile()->IsPrimaryOTRProfileWithRegularParent()));
   command_updater_->UpdateCommandEnabled(
       IDC_RECENT_TABS_SEE_DEVICE_TABS,
       (!guest_session && !profile()->IsSystemProfile() &&
-       !profile()->IsIncognitoProfile()));
+       !profile()->IsPrimaryOTRProfileWithRegularParent()));
 #if !BUILDFLAG(IS_CHROMEOS)
   command_updater_->UpdateCommandEnabled(IDC_CUSTOMIZE_CHROME, true);
   command_updater_->UpdateCommandEnabled(IDC_CLOSE_PROFILE, true);
