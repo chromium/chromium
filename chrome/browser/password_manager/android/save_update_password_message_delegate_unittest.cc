@@ -2641,3 +2641,312 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   test_device_lock_bridge()->SimulateDeviceLockComplete(true);
   EXPECT_FALSE(is_password_saved());
 }
+
+// Tests that when trusted vault unlock resolves while the prompt message
+// dismissal is still in flight in Java, the delegate saves the password,
+// enqueues the confirmation message, and safely handles the subsequent message
+// dismissal callback without crashing or dereferencing null form manager.
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       VaultUnlockedWhilePromptDismissalInFlight) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kPasswordSaveInContextErrorResolution);
+
+  account_store_->ReturnErrorOnRequest(
+      password_manager::PasswordStoreBackendError(
+          password_manager::PasswordStoreBackendErrorType::
+              kKeyRetrievalRequired));
+
+  std::unique_ptr<MockPasswordFormManagerForUI> form_manager =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  MockPasswordFormManagerForUI* raw_form_manager = form_manager.get();
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
+                 /*update_password=*/false);
+  ASSERT_NE(nullptr, GetMessageWrapper());
+
+  EXPECT_CALL(*helper_bridge(),
+              StartTrustedVaultKeyRetrievalFlow(
+                  _,
+                  trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                      kPasswordSavePrompt,
+                  _));
+
+  // User clicks "Save", but simulate the Java message dismissal as in-flight
+  // (i.e. HandleActionClick runs, but DismissMessage has NOT completed yet).
+  GetMessageWrapper()->HandleActionClick(base::android::AttachCurrentThread());
+  EXPECT_NE(nullptr, GetMessageWrapper());
+
+  // While dismissal is in flight, trusted vault resolves.
+  account_store_->ReturnErrorOnRequest(std::nullopt);
+  base::RunLoop run_loop;
+  EXPECT_CALL(*raw_form_manager, Save()).WillOnce([&run_loop, this]() {
+    RecordPasswordSaved();
+    run_loop.Quit();
+  });
+  EXPECT_CALL(*message_dispatcher_bridge(), EnqueueMessage)
+      .WillOnce(Return(true));
+  base::HistogramTester histogram_tester;
+  account_store_->NotifyAboutError();
+  run_loop.Run();
+
+  EXPECT_TRUE(is_password_saved());
+
+  // Now simulate Java completing the delayed message dismissal callback.
+  // This should not crash when recording dismissal metrics.
+  DismissMessage(messages::DismissReason::PRIMARY_ACTION);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome",
+      password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome::
+          kSavedSuccessfully,
+      1);
+
+  ExpectConfirmationMessageDismissCall();
+  delegate()->DismissAllActiveUI();
+}
+
+// Tests that calling DismissAllActiveUI while waiting for trusted vault unlock
+// and while message dismissal is in flight does not trigger synchronous
+// assertion crashes, and cleanly resets state once dismissal finishes.
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       DismissAllActiveUIWhileWaitingForVaultAndDismissalInFlight) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kPasswordSaveInContextErrorResolution);
+
+  account_store_->ReturnErrorOnRequest(
+      password_manager::PasswordStoreBackendError(
+          password_manager::PasswordStoreBackendErrorType::
+              kKeyRetrievalRequired));
+
+  std::unique_ptr<MockPasswordFormManagerForUI> form_manager =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
+                 /*update_password=*/false);
+  ASSERT_NE(nullptr, GetMessageWrapper());
+
+  EXPECT_CALL(*helper_bridge(),
+              StartTrustedVaultKeyRetrievalFlow(
+                  _,
+                  trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                      kPasswordSavePrompt,
+                  _));
+
+  // User clicks "Save", keeping dismissal in flight.
+  GetMessageWrapper()->HandleActionClick(base::android::AttachCurrentThread());
+  EXPECT_NE(nullptr, GetMessageWrapper());
+
+  // Tab is closed/navigated -> DismissAllActiveUI is called.
+  ExpectDismissMessageCall();
+  delegate()->DismissAllActiveUI();
+  EXPECT_EQ(nullptr, GetMessageWrapper());
+
+  // If vault key resolves afterwards, it should not save since it was
+  // dismissed.
+  account_store_->ReturnErrorOnRequest(std::nullopt);
+  account_store_->NotifyAboutError();
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_FALSE(is_password_saved());
+}
+
+// Tests that when store error changes to an unrecoverable error (e.g. sign in
+// needed) while prompt message dismissal is in flight, state is cleaned up
+// without crashing when message dismissal finishes.
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       UnrecoverableErrorWhilePromptDismissalInFlight) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kPasswordSaveInContextErrorResolution);
+
+  account_store_->ReturnErrorOnRequest(
+      password_manager::PasswordStoreBackendError(
+          password_manager::PasswordStoreBackendErrorType::
+              kKeyRetrievalRequired));
+
+  std::unique_ptr<MockPasswordFormManagerForUI> form_manager =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
+                 /*update_password=*/false);
+  ASSERT_NE(nullptr, GetMessageWrapper());
+
+  EXPECT_CALL(*helper_bridge(),
+              StartTrustedVaultKeyRetrievalFlow(
+                  _,
+                  trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                      kPasswordSavePrompt,
+                  _));
+
+  // User clicks Save, message dismissal is in flight.
+  GetMessageWrapper()->HandleActionClick(base::android::AttachCurrentThread());
+  EXPECT_NE(nullptr, GetMessageWrapper());
+
+  base::HistogramTester histogram_tester;
+  // Error changes to unrecoverable state.
+  account_store_->SetError(password_manager::ActionableError::kSignInNeeded);
+  account_store_->NotifyAboutError();
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_FALSE(is_password_saved());
+
+  // Now message dismissal callback arrives.
+  DismissMessage(messages::DismissReason::PRIMARY_ACTION);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SaveWithTrustedVaultError.Outcome",
+      password_manager::metrics_util::SaveWithTrustedVaultErrorOutcome::
+          kNewStoreError,
+      1);
+}
+
+// Tests that in the normal flow where prompt message dismissal completes
+// before vault unlock, the delegate saves password, shows confirmation message,
+// and properly clears state when confirmation message is dismissed.
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       VaultUnlockedAfterPromptDismissed_CleanUpOnConfirmationDismissed) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kPasswordSaveInContextErrorResolution);
+
+  account_store_->ReturnErrorOnRequest(
+      password_manager::PasswordStoreBackendError(
+          password_manager::PasswordStoreBackendErrorType::
+              kKeyRetrievalRequired));
+
+  std::unique_ptr<MockPasswordFormManagerForUI> form_manager =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  MockPasswordFormManagerForUI* raw_form_manager = form_manager.get();
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
+                 /*update_password=*/false);
+  ASSERT_NE(nullptr, GetMessageWrapper());
+
+  EXPECT_CALL(*helper_bridge(),
+              StartTrustedVaultKeyRetrievalFlow(
+                  _,
+                  trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                      kPasswordSavePrompt,
+                  _));
+
+  // User clicks Save and prompt dismissal completes.
+  TriggerActionClick();
+  EXPECT_EQ(nullptr, GetMessageWrapper());
+  EXPECT_FALSE(is_password_saved());
+
+  // Vault key resolves.
+  account_store_->ReturnErrorOnRequest(std::nullopt);
+  base::RunLoop run_loop;
+  EXPECT_CALL(*raw_form_manager, Save()).WillOnce([&run_loop, this]() {
+    RecordPasswordSaved();
+    run_loop.Quit();
+  });
+  EXPECT_CALL(*message_dispatcher_bridge(), EnqueueMessage)
+      .WillOnce(Return(true));
+  account_store_->NotifyAboutError();
+  run_loop.Run();
+
+  EXPECT_TRUE(is_password_saved());
+
+  // Confirmation message is dismissed -> triggers state cleanup.
+  ExpectConfirmationMessageDismissCall();
+  delegate()->DismissAllActiveUI();
+}
+
+// Tests dismissing confirmation message via direct bridge callback.
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       ConfirmationMessageDismissedViaCallback) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kPasswordSaveInContextErrorResolution);
+
+  account_store_->ReturnErrorOnRequest(
+      password_manager::PasswordStoreBackendError(
+          password_manager::PasswordStoreBackendErrorType::
+              kKeyRetrievalRequired));
+
+  std::unique_ptr<MockPasswordFormManagerForUI> form_manager =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  MockPasswordFormManagerForUI* raw_form_manager = form_manager.get();
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
+                 /*update_password=*/false);
+
+  EXPECT_CALL(*helper_bridge(),
+              StartTrustedVaultKeyRetrievalFlow(
+                  _,
+                  trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                      kPasswordSavePrompt,
+                  _));
+  TriggerActionClick();
+
+  // Vault key resolves.
+  account_store_->ReturnErrorOnRequest(std::nullopt);
+  messages::MessageWrapper* confirmation_message = nullptr;
+  base::RunLoop run_loop;
+  EXPECT_CALL(*raw_form_manager, Save()).WillOnce([this]() {
+    RecordPasswordSaved();
+  });
+  EXPECT_CALL(*message_dispatcher_bridge(), EnqueueMessage)
+      .WillOnce([&confirmation_message, &run_loop](
+                    messages::MessageWrapper* message,
+                    content::WebContents* web_contents,
+                    messages::MessageScopeType scope_type,
+                    messages::MessagePriority priority) {
+        confirmation_message = message;
+        run_loop.Quit();
+        return true;
+      });
+  account_store_->NotifyAboutError();
+  run_loop.Run();
+
+  ASSERT_NE(nullptr, confirmation_message);
+
+  // User dismisses confirmation message (e.g. timer or gesture).
+  confirmation_message->HandleDismissCallback(
+      base::android::AttachCurrentThread(),
+      static_cast<int>(messages::DismissReason::TIMER));
+
+  // No active UI left.
+  delegate()->DismissAllActiveUI();
+}
+
+// Tests that enqueuing a new prompt while the previous prompt is waiting for
+// trusted vault unlock dismisses the previous flow safely.
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       SuccessivePromptWhilePreviousWaitingForVault) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kPasswordSaveInContextErrorResolution);
+
+  account_store_->ReturnErrorOnRequest(
+      password_manager::PasswordStoreBackendError(
+          password_manager::PasswordStoreBackendErrorType::
+              kKeyRetrievalRequired));
+
+  std::unique_ptr<MockPasswordFormManagerForUI> form_manager1 =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  EnqueueMessage(std::move(form_manager1), /*user_signed_in=*/true,
+                 /*update_password=*/false);
+
+  EXPECT_CALL(*helper_bridge(),
+              StartTrustedVaultKeyRetrievalFlow(
+                  _,
+                  trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                      kPasswordSavePrompt,
+                  _));
+  TriggerActionClick();
+
+  // Enqueue a second prompt.
+  std::unique_ptr<MockPasswordFormManagerForUI> form_manager2 =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  EnqueueMessage(std::move(form_manager2), /*user_signed_in=*/true,
+                 /*update_password=*/false);
+  ASSERT_NE(nullptr, GetMessageWrapper());
+
+  DismissMessage(messages::DismissReason::UNKNOWN);
+  EXPECT_FALSE(is_password_saved());
+}
