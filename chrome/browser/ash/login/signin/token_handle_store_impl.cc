@@ -18,6 +18,7 @@
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 // Enable VLOG level 1.
 // TODO(b/387248794): Remove after stabilizing, along with associated log

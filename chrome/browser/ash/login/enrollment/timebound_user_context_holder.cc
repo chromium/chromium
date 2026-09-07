@@ -9,6 +9,7 @@
 #include "chrome/browser/ash/login/screens/account_selection_screen.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/ash/login/account_selection_screen_handler.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash {
 

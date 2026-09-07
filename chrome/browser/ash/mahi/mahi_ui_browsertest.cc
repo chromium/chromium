@@ -23,7 +23,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/mahi/mahi_test_util.h"
 #include "chrome/browser/ash/mahi/mahi_ui_browser_test_base.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/views/mahi/mahi_menu_constants.h"
@@ -31,6 +30,8 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard_data.h"
@@ -196,14 +197,13 @@ IN_PROC_BROWSER_TEST_F(MahiUiBrowserTest, OnContextMenuClickedSettings) {
   WaitForSettingsToLoad();
 
   // Verify that the Settings page is opened in a new window.
-  const BrowserWindowInterface* const settings_browser =
+  BrowserWindowInterface* const settings_browser =
       chrome::SettingsWindowManager::GetInstance()->FindBrowserForProfile(
           browser()->GetProfile());
   ASSERT_TRUE(settings_browser);
   EXPECT_NE(browser(), settings_browser);
-  EXPECT_EQ(
-      GURL(chromeos::settings::GetOSSettingsUrl(std::string())),
-      settings_browser->GetTabStripModel()->GetActiveWebContents()->GetURL());
+  EXPECT_EQ(GURL(chromeos::settings::GetOSSettingsUrl(std::string())),
+            settings_browser->GetActiveTabInterface()->GetContents()->GetURL());
 }
 
 IN_PROC_BROWSER_TEST_F(MahiUiBrowserTest, OnContextMenuClickedSummary) {
@@ -386,14 +386,13 @@ IN_PROC_BROWSER_TEST_F(PendingConsentStatusMahiUiBrowserTest,
   WaitForSettingsToLoad();
 
   // Verify that the Settings page is opened in a new window.
-  const BrowserWindowInterface* const settings_browser =
+  BrowserWindowInterface* const settings_browser =
       chrome::SettingsWindowManager::GetInstance()->FindBrowserForProfile(
           browser()->GetProfile());
   ASSERT_TRUE(settings_browser);
   EXPECT_NE(browser(), settings_browser);
-  EXPECT_EQ(
-      GURL(chromeos::settings::GetOSSettingsUrl(std::string())),
-      settings_browser->GetTabStripModel()->GetActiveWebContents()->GetURL());
+  EXPECT_EQ(GURL(chromeos::settings::GetOSSettingsUrl(std::string())),
+            settings_browser->GetActiveTabInterface()->GetContents()->GetURL());
 }
 
 // MahiUiWithDisclaimerViewBrowserTest -----------------------------------------

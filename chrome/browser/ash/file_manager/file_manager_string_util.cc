@@ -40,6 +40,7 @@
 #include "components/variations/service/variations_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 
 namespace {

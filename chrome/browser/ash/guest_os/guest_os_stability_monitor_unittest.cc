@@ -29,6 +29,7 @@
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "components/component_updater/mock_component_updater_service.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"

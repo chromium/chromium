@@ -15,6 +15,5 @@ include_rules = [
   "+chrome/browser/net",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui/browser.h",
   "+chrome/test/base",
 ]

@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

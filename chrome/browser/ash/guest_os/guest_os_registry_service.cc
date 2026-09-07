@@ -54,6 +54,7 @@
 #include "extensions/browser/api/file_handlers/mime_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_scale_factor.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/gfx/image/image_skia_operations.h"
 
 using vm_tools::apps::App;

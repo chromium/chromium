@@ -25,16 +25,14 @@ include_rules = [
   "+chrome/browser/ash/net",
   "+chrome/browser/ash/notifications",
   "+chrome/browser/ash/policy/core",
-  "+chrome/browser/ash/policy/skyvault",
   "+chrome/browser/ash/policy/login",
+  "+chrome/browser/ash/policy/skyvault",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/settings",
   "+chrome/browser/ash/system",
   "+chrome/browser/ash/tpm",
   "+chrome/browser/extensions/policy_handlers.h",
   "+chrome/browser/extensions/updater",
-  "+chrome/browser/web_applications/policy/web_app_policy_manager.h",
-  "+chrome/browser/web_applications/web_app_utils.h",
   "+chrome/browser/media/webrtc",
   "+chrome/browser/policy",
   "+chrome/browser/prefs",
@@ -46,21 +44,23 @@ include_rules = [
   "+chrome/browser/upgrade_detector",
   "+chrome/browser/web_applications/isolated_web_apps",
   "+chrome/browser/web_applications/policy/app_service_web_app_policy.h",
+  "+chrome/browser/web_applications/policy/web_app_policy_manager.h",
+  "+chrome/browser/web_applications/web_app_utils.h",
 ]
 
 specific_include_rules = {
   "minimum_version_policy_handler_browsertest\\.cc": [
     "+chrome/browser/lifetime/termination_notification.h",
     "+ui/message_center/message_center.h",
-    "+ui/message_center/test/message_center_waiter.h"
+    "+ui/message_center/test/message_center_waiter.h",
   ],
 
   ".*test(_.*)?\\.(cc|h)": [
     "+chrome/browser/ash/arc/test",
     "+chrome/browser/browser_process.h",
     "+chrome/browser/browser_process_platform_part.h",
-    "+chrome/browser/ui/browser.h",
     "+chrome/browser/ui/browser_window/public",
+    "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
     "+chrome/browser/ui/tabs",
     "+chrome/test/base",
   ],

@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/enrollment/mock_enrollment_screen.h"
+
 #include "chrome/browser/ash/login/screens/error_screen.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash {
 

@@ -14,7 +14,6 @@
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
@@ -158,10 +157,7 @@ class PasswordChangeSuccessDetectionTest
   void SetUpOnMainThread() override {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
 
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    Profile* profile =
-        Profile::FromBrowserContext(web_contents->GetBrowserContext());
+    Profile* profile = browser()->GetProfile();
     profile->GetPrefs()->SetBoolean(prefs::kSamlInSessionPasswordChangeEnabled,
                                     true);
 

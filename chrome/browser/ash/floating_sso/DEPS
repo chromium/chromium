@@ -18,6 +18,5 @@ include_rules = [
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/browser/sync/data_type_store_service_factory.h",
-  "+chrome/browser/ui/browser.h",
   "+chrome/test/base",
 ]

@@ -37,6 +37,7 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 
 // TODO(b/228873153): Remove after figuring out the root cause of the bug

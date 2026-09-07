@@ -30,7 +30,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/login/webui_login_view.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/ash/login/consolidated_consent_screen_handler.h"
 #include "components/consent_auditor/fake_consent_auditor.h"
 #include "components/policy/proto/cloud_policy.pb.h"

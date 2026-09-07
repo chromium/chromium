@@ -13,6 +13,7 @@
 #include "chromeos/ash/services/ime/constants.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/url_request/redirect_info.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"

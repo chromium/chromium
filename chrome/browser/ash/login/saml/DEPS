@@ -31,7 +31,6 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/browser/signin",
   "+chrome/browser/ui/ash/login",
-  "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/webui/ash/in_session_password_change",
   "+chrome/browser/ui/webui/ash/lock_screen_reauth",
   "+chrome/browser/ui/webui/ash/login",

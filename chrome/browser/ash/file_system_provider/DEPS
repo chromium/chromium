@@ -7,8 +7,8 @@ include_rules = [
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/apps/app_service",
-  "+chrome/browser/ash/fileapi",
   "+chrome/browser/ash/file_manager",
+  "+chrome/browser/ash/fileapi",
   "+chrome/browser/ash/guest_os",
   "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/profiles",
@@ -18,7 +18,6 @@ include_rules = [
   "+chrome/browser/extensions/window_controller_list.h",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/multi_user",
-  "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/common/extensions",
 
   # Dependencies outside of //chrome:
@@ -28,7 +27,6 @@ include_rules = [
 
 specific_include_rules = {
   ".*test\\.*": [
-    "+chrome/browser/ui/browser.h",
     "+chrome/test/base",
   ],
 }

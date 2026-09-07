@@ -32,6 +32,7 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash {
 

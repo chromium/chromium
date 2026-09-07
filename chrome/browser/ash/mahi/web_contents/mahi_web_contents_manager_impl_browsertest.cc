@@ -20,7 +20,6 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/mahi/web_contents/test_support/fake_mahi_web_contents_manager.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/components/mahi/public/cpp/mahi_browser_util.h"

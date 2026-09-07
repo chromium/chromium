@@ -198,6 +198,7 @@
 #include "crypto/obsolete/sha1.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "rlz/buildflags/buildflags.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/cros_system_api/switches/chrome_switches.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/aura/window.h"

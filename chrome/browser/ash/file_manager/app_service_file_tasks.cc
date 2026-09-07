@@ -53,6 +53,7 @@
 #include "extensions/browser/extension_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "ui/display/types/display_constants.h"
 #include "url/gurl.h"
 
 namespace file_manager::file_tasks {

@@ -54,7 +54,6 @@
 #include "chrome/browser/ui/ash/login/mock_login_display_host.h"
 #include "chrome/browser/ui/ash/login/mock_signin_ui.h"
 #include "chrome/browser/ui/ash/login/signin_ui.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/locale_switch_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/terms_of_service_screen_handler.h"

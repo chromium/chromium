@@ -7,7 +7,6 @@
 #include "base/files/file_path.h"
 #include "base/strings/string_split.h"
 #include "base/system/sys_info.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/chrome_test_path_utils.h"

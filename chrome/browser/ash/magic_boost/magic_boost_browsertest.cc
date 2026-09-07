@@ -25,7 +25,6 @@
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_view.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_constants.h"
 #include "chrome/browser/ui/ash/magic_boost/magic_boost_opt_in_card.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/mahi/mahi_menu_constants.h"
 #include "chrome/browser/ui/views/mahi/mahi_menu_view.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_bubble_coordinator.h"
@@ -156,7 +155,7 @@ class MagicBoostBrowserTest
     // Finds the position of the input field. The js function returns a list of
     // [L, T, R, B] of the input view.
     auto result =
-        content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+        content::EvalJs(browser()->GetActiveTabInterface()->GetContents(),
                         "getTextfieldBound();");
     ASSERT_TRUE(result.is_ok());
     const base::ListValue& bounds_as_list = result.ExtractList();
@@ -167,8 +166,8 @@ class MagicBoostBrowserTest
     const double bottom = bounds_as_list[3].GetDouble();
 
     gfx::Point textfield_in_screen = browser()
-                                         ->tab_strip_model()
-                                         ->GetActiveWebContents()
+                                         ->GetActiveTabInterface()
+                                         ->GetContents()
                                          ->GetContainerBounds()
                                          .origin();
     textfield_in_screen.Offset(left, top);
