@@ -169,6 +169,14 @@ std::optional<base::ByteSize> Task::GetV8MemoryUsed() const {
   return std::nullopt;
 }
 
+std::optional<base::ByteSize> Task::GetCppGCMemoryAllocated() const {
+  return std::nullopt;
+}
+
+std::optional<base::ByteSize> Task::GetCppGCMemoryUsed() const {
+  return std::nullopt;
+}
+
 bool Task::ReportsWebCacheStats() const {
   return false;
 }

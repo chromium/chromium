@@ -92,6 +92,9 @@ class TaskManagerImpl : public TaskManagerInterface,
   bool GetV8Memory(TaskId task_id,
                    base::ByteSize* allocated,
                    base::ByteSize* used) const override;
+  bool GetCppGCMemory(TaskId task_id,
+                      base::ByteSize* allocated,
+                      base::ByteSize* used) const override;
   bool GetWebCacheStats(TaskId task_id,
                         blink::WebCacheResourceTypeStats* stats) const override;
   int GetKeepaliveCount(TaskId task_id) const override;

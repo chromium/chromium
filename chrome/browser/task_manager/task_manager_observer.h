@@ -54,6 +54,7 @@ enum RefreshType {
   REFRESH_TYPE_KEEPALIVE_COUNT = 1 << 14,
   REFRESH_TYPE_MEMORY_FOOTPRINT = 1 << 15,
   REFRESH_TYPE_HARD_FAULTS = 1 << 16,
+  REFRESH_TYPE_CPPGC_MEMORY = 1 << 17,
 };
 
 // Defines the interface for observers of the task manager.

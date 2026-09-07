@@ -157,6 +157,12 @@ bool TestTaskManager::GetV8Memory(TaskId task_id,
   return false;
 }
 
+bool TestTaskManager::GetCppGCMemory(TaskId task_id,
+                                     base::ByteSize* allocated,
+                                     base::ByteSize* used) const {
+  return false;
+}
+
 bool TestTaskManager::GetWebCacheStats(
     TaskId task_id,
     blink::WebCacheResourceTypeStats* stats) const {

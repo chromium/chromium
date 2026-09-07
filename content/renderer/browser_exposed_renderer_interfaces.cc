@@ -32,6 +32,8 @@
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "v8/include/cppgc/heap-statistics.h"
+#include "v8/include/v8-cppgc.h"
 #include "v8/include/v8-isolate.h"
 #include "v8/include/v8-statistics.h"
 
@@ -63,21 +65,35 @@ class ResourceUsageReporterImpl : public content::mojom::ResourceUsageReporter {
       base::WeakPtr<ResourceUsageReporterImpl> impl) {
     size_t total_bytes = 0;
     size_t used_bytes = 0;
+    size_t cppgc_allocated_bytes = 0;
+    size_t cppgc_used_bytes = 0;
     v8::Isolate* isolate = v8::Isolate::GetCurrent();
     if (isolate) {
       v8::HeapStatistics heap_stats;
       isolate->GetHeapStatistics(&heap_stats);
       total_bytes = heap_stats.total_heap_size();
       used_bytes = heap_stats.used_heap_size();
+      if (v8::CppHeap* cpp_heap = isolate->GetCppHeap()) {
+        cppgc::HeapStatistics cppgc_stats =
+            cpp_heap->CollectStatistics(cppgc::HeapStatistics::kBrief);
+        cppgc_allocated_bytes = cppgc_stats.committed_size_bytes;
+        cppgc_used_bytes = cppgc_stats.used_size_bytes;
+      }
     }
     master->PostTask(FROM_HERE,
                      base::BindOnce(&ResourceUsageReporterImpl::ReceiveStats,
-                                    impl, total_bytes, used_bytes));
+                                    impl, total_bytes, used_bytes,
+                                    cppgc_allocated_bytes, cppgc_used_bytes));
   }
 
-  void ReceiveStats(size_t total_bytes, size_t used_bytes) {
+  void ReceiveStats(size_t total_bytes,
+                    size_t used_bytes,
+                    size_t cppgc_allocated_bytes,
+                    size_t cppgc_used_bytes) {
     usage_data_->v8_bytes_allocated += total_bytes;
     usage_data_->v8_bytes_used += used_bytes;
+    usage_data_->cppgc_bytes_allocated += cppgc_allocated_bytes;
+    usage_data_->cppgc_bytes_used += cppgc_used_bytes;
     workers_to_go_--;
     if (!workers_to_go_)
       SendResults();
@@ -96,6 +112,7 @@ class ResourceUsageReporterImpl : public content::mojom::ResourceUsageReporter {
     weak_factory_.InvalidateWeakPtrs();
     usage_data_ = mojom::ResourceUsageData::New();
     usage_data_->reports_v8_stats = true;
+    usage_data_->reports_cppgc_stats = true;
     callback_ = std::move(callback);
 
     // Since it is not safe to call any Blink or V8 functions until Blink has
@@ -116,6 +133,12 @@ class ResourceUsageReporterImpl : public content::mojom::ResourceUsageReporter {
       isolate->GetHeapStatistics(&heap_stats);
       usage_data_->v8_bytes_allocated = heap_stats.total_heap_size();
       usage_data_->v8_bytes_used = heap_stats.used_heap_size();
+      if (v8::CppHeap* cpp_heap = isolate->GetCppHeap()) {
+        cppgc::HeapStatistics cppgc_stats =
+            cpp_heap->CollectStatistics(cppgc::HeapStatistics::kBrief);
+        usage_data_->cppgc_bytes_allocated = cppgc_stats.committed_size_bytes;
+        usage_data_->cppgc_bytes_used = cppgc_stats.used_size_bytes;
+      }
     }
     base::RepeatingClosure collect =
         base::BindRepeating(&ResourceUsageReporterImpl::CollectOnWorkerThread,

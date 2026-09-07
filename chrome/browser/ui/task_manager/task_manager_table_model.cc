@@ -66,6 +66,7 @@ bool IsSharedByGroup(int column_id) {
     case IDS_TASK_MANAGER_NET_COLUMN:
     case IDS_TASK_MANAGER_PROCESS_ID_COLUMN:
     case IDS_TASK_MANAGER_JAVASCRIPT_MEMORY_ALLOCATED_COLUMN:
+    case IDS_TASK_MANAGER_CPPGC_MEMORY_ALLOCATED_COLUMN:
     case IDS_TASK_MANAGER_VIDEO_MEMORY_COLUMN:
     case IDS_TASK_MANAGER_SQLITE_MEMORY_USED_COLUMN:
     case IDS_TASK_MANAGER_WEBCORE_IMAGE_CACHE_COLUMN:
@@ -492,6 +493,16 @@ std::u16string TaskManagerTableModel::GetText(size_t row, int column) const {
       return stringifier_->n_a_string();
     }
 
+    case IDS_TASK_MANAGER_CPPGC_MEMORY_ALLOCATED_COLUMN: {
+      base::ByteSize cppgc_allocated, cppgc_used;
+      if (observed_task_manager()->GetCppGCMemory(tasks_[row], &cppgc_allocated,
+                                                  &cppgc_used)) {
+        return stringifier_->FormatAllocatedAndUsedMemory(
+            base::ByteSize(cppgc_allocated), base::ByteSize(cppgc_used));
+      }
+      return stringifier_->n_a_string();
+    }
+
     case IDS_TASK_MANAGER_PROCESS_PRIORITY_COLUMN:
       return observed_task_manager()->IsTaskOnBackgroundedProcess(tasks_[row])
                  ? stringifier_->backgrounded_string()
@@ -634,6 +645,19 @@ int TaskManagerTableModel::CompareValues(size_t row1,
       bool row1_valid = observed_task_manager()->GetV8Memory(
           tasks_[row1], &allocated1, &used1);
       bool row2_valid = observed_task_manager()->GetV8Memory(
+          tasks_[row2], &allocated2, &used2);
+      if (!row1_valid || !row2_valid) {
+        return OrderUnavailableValue(row1_valid, row2_valid);
+      }
+
+      return ValueCompare(allocated1, allocated2);
+    }
+
+    case IDS_TASK_MANAGER_CPPGC_MEMORY_ALLOCATED_COLUMN: {
+      base::ByteSize allocated1, allocated2, used1, used2;
+      bool row1_valid = observed_task_manager()->GetCppGCMemory(
+          tasks_[row1], &allocated1, &used1);
+      bool row2_valid = observed_task_manager()->GetCppGCMemory(
           tasks_[row2], &allocated2, &used2);
       if (!row1_valid || !row2_valid) {
         return OrderUnavailableValue(row1_valid, row2_valid);
@@ -944,6 +968,10 @@ void TaskManagerTableModel::UpdateRefreshTypes(int column_id, bool visibility) {
 
     case IDS_TASK_MANAGER_JAVASCRIPT_MEMORY_ALLOCATED_COLUMN:
       type = REFRESH_TYPE_V8_MEMORY;
+      break;
+
+    case IDS_TASK_MANAGER_CPPGC_MEMORY_ALLOCATED_COLUMN:
+      type = REFRESH_TYPE_CPPGC_MEMORY;
       break;
 
     case IDS_TASK_MANAGER_PROCESS_PRIORITY_COLUMN:

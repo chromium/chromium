@@ -34,6 +34,11 @@ struct ResourceUsageData {
 
   // Blink cache information.
   ResourceTypeStats? web_cache_stats;
+
+  // CppGC memory information.
+  bool reports_cppgc_stats = false;
+  uint64 cppgc_bytes_allocated = 0;
+  uint64 cppgc_bytes_used = 0;
 };
 
 interface ResourceUsageReporter {

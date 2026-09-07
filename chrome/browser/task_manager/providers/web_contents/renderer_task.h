@@ -65,6 +65,8 @@ class RendererTask : public Task,
   SessionID GetTabId() const override;
   std::optional<base::ByteSize> GetV8MemoryAllocated() const override;
   std::optional<base::ByteSize> GetV8MemoryUsed() const override;
+  std::optional<base::ByteSize> GetCppGCMemoryAllocated() const override;
+  std::optional<base::ByteSize> GetCppGCMemoryUsed() const override;
   bool ReportsWebCacheStats() const override;
   blink::WebCacheResourceTypeStats GetWebCacheStats() const override;
 
@@ -131,6 +133,10 @@ class RendererTask : public Task,
   // The allocated and used V8 memory (in bytes).
   base::ByteSize v8_memory_allocated_;
   base::ByteSize v8_memory_used_;
+
+  // The allocated and used CppGC memory (in bytes).
+  base::ByteSize cppgc_memory_allocated_;
+  base::ByteSize cppgc_memory_used_;
 
   // The WebKit resource cache statistics for this renderer.
   blink::WebCacheResourceTypeStats webcache_stats_ = {};

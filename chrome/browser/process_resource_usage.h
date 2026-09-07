@@ -71,12 +71,15 @@ class ProcessResourceUsage {
   void Refresh(base::OnceClosure callback);
 
   // Get V8 memory usage information.
-  bool ReportsV8MemoryStats() const;
   size_t GetV8MemoryAllocated() const;
   size_t GetV8MemoryUsed() const;
 
   // Get Blink resource cache information.
   blink::WebCacheResourceTypeStats GetBlinkMemoryCacheStats() const;
+
+  // Get CppGC memory usage information.
+  size_t GetCppGCMemoryAllocated() const;
+  size_t GetCppGCMemoryUsed() const;
 
  private:
   // Mojo IPC callback.

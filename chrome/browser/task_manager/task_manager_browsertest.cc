@@ -699,6 +699,22 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, JSHeapMemory) {
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchTab("title1.html")));
 }
 
+// Checks that task manager counts renderer CppGC heap size.
+IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, CppGCMemory) {
+  ShowTaskManager();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestURL()));
+
+  model()->ToggleColumnVisibility(ColumnSpecifier::CPPGC_MEMORY);
+
+  // A loaded webpage should have non-zero CppGC memory allocated and used.
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerStatToExceed(
+      MatchTab("title1.html"), ColumnSpecifier::CPPGC_MEMORY, 0));
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerStatToExceed(
+      MatchTab("title1.html"), ColumnSpecifier::CPPGC_MEMORY_USED, 0));
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAnyTab()));
+  ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchTab("title1.html")));
+}
+
 #if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // This tests times out when MSan is enabled. See https://crbug.com/41417851.
 // Failing on Linux CFI. See https://crbug.com/41476833.

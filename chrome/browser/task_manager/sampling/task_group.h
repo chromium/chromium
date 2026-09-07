@@ -43,7 +43,7 @@ inline constexpr int kUnsupportedVMRefreshFlags =
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
     REFRESH_TYPE_FD_COUNT |
 #endif
-    REFRESH_TYPE_HARD_FAULTS;
+    REFRESH_TYPE_HARD_FAULTS | REFRESH_TYPE_CPPGC_MEMORY;
 
 class SharedSampler;
 

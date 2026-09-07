@@ -4936,6 +4936,9 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_TASK_MANAGER_JAVASCRIPT_MEMORY_ALLOCATED_COLUMN" desc="Task manager JavaScript memory allocated column.  Shows the amount of memory used by JavaScript within a process">
           JavaScript memory
         </message>
+        <message name="IDS_TASK_MANAGER_CPPGC_MEMORY_ALLOCATED_COLUMN" desc="Task manager CppGC memory allocated column.  Shows the amount of memory used by CppGC within a process">
+          CppGC memory
+        </message>
         <message name="IDS_TASK_MANAGER_KEEPALIVE_COUNT_COLUMN" desc="Task manager keepalive count column.  Specific to Chrome extension processes, and only to those which use 'lazy' event pages, this indicates how many activities are making use of the extension, and therefore causing it to be kept alive.">
           Keepalive count
         </message>
@@ -5009,6 +5012,9 @@ are declared in tools/grit/grit_args.gni.
         </message>
         <message name="IDS_TASK_MANAGER_JAVASCRIPT_MEMORY_ALLOCATED_COLUMN" desc="Task manager JavaScript memory allocated column.  Shows the amount of memory used by JavaScript within a process">
           JavaScript Memory
+        </message>
+        <message name="IDS_TASK_MANAGER_CPPGC_MEMORY_ALLOCATED_COLUMN" desc="Task manager CppGC memory allocated column.  Shows the amount of memory used by CppGC within a process">
+          CppGC Memory
         </message>
         <message name="IDS_TASK_MANAGER_KEEPALIVE_COUNT_COLUMN" desc="Task manager keepalive count column.  Specific to Chrome extension processes, and only to those which use 'lazy' event pages, this indicates how many activities are making use of the extension, and therefore causing it to be kept alive.">
           Keepalive Count

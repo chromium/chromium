@@ -199,6 +199,12 @@ class TaskManagerInterface {
                            base::ByteSize* allocated,
                            base::ByteSize* used) const = 0;
 
+  // Returns the allocated and used CppGC memory for the task with |task_id|.
+  // A return value of false means no valid value is currently available.
+  virtual bool GetCppGCMemory(TaskId task_id,
+                              base::ByteSize* allocated,
+                              base::ByteSize* used) const = 0;
+
   // Gets the Blink resource cache stats for the task with |task_id|.
   // A return value of false means that task does NOT report WebCache stats.
   virtual bool GetWebCacheStats(

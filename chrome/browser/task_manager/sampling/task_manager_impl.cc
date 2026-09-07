@@ -317,8 +317,31 @@ bool TaskManagerImpl::GetV8Memory(TaskId task_id,
   const Task* task = GetTaskByTaskId(task_id);
   const std::optional<base::ByteSize> allocated_memory =
       task->GetV8MemoryAllocated();
+  if (!allocated_memory.has_value()) {
+    return false;
+  }
   const std::optional<base::ByteSize> used_memory = task->GetV8MemoryUsed();
-  if (!allocated_memory.has_value() || !used_memory.has_value()) {
+  if (!used_memory.has_value()) {
+    return false;
+  }
+
+  *allocated = allocated_memory.value();
+  *used = used_memory.value();
+
+  return true;
+}
+
+bool TaskManagerImpl::GetCppGCMemory(TaskId task_id,
+                                     base::ByteSize* allocated,
+                                     base::ByteSize* used) const {
+  const Task* task = GetTaskByTaskId(task_id);
+  const std::optional<base::ByteSize> allocated_memory =
+      task->GetCppGCMemoryAllocated();
+  if (!allocated_memory.has_value()) {
+    return false;
+  }
+  const std::optional<base::ByteSize> used_memory = task->GetCppGCMemoryUsed();
+  if (!used_memory.has_value()) {
     return false;
   }
 

@@ -112,6 +112,10 @@ void TaskManagerTester::ToggleColumnVisibility(ColumnSpecifier column) {
     case ColumnSpecifier::SQLITE_MEMORY_USED:
       column_id = IDS_TASK_MANAGER_SQLITE_MEMORY_USED_COLUMN;
       break;
+    case ColumnSpecifier::CPPGC_MEMORY_USED:
+    case ColumnSpecifier::CPPGC_MEMORY:
+      column_id = IDS_TASK_MANAGER_CPPGC_MEMORY_ALLOCATED_COLUMN;
+      break;
     case ColumnSpecifier::V8_MEMORY_USED:
     case ColumnSpecifier::V8_MEMORY:
       column_id = IDS_TASK_MANAGER_JAVASCRIPT_MEMORY_ALLOCATED_COLUMN;
@@ -149,6 +153,17 @@ int64_t TaskManagerTester::GetColumnValue(ColumnSpecifier column, size_t row) {
       }
       return column == ColumnSpecifier::V8_MEMORY ? allocated.InBytes()
                                                   : used.InBytes();
+    }
+    case ColumnSpecifier::CPPGC_MEMORY:
+    case ColumnSpecifier::CPPGC_MEMORY_USED: {
+      base::ByteSize allocated;
+      base::ByteSize used;
+      bool success = task_manager()->GetCppGCMemory(task_id, &allocated, &used);
+      if (!success) {
+        return -1;
+      }
+      return column == ColumnSpecifier::CPPGC_MEMORY ? allocated.InBytes()
+                                                     : used.InBytes();
     }
     case ColumnSpecifier::SQLITE_MEMORY_USED: {
       std::optional<base::ByteSize> usage =

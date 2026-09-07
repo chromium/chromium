@@ -58,7 +58,8 @@ std::u16string GetRendererProfileName(
 }
 
 bool IsRendererResourceSamplingDisabled(int64_t flags) {
-  return (flags & (REFRESH_TYPE_V8_MEMORY | REFRESH_TYPE_WEBCACHE_STATS)) == 0;
+  return (flags & (REFRESH_TYPE_V8_MEMORY | REFRESH_TYPE_WEBCACHE_STATS |
+                   REFRESH_TYPE_CPPGC_MEMORY)) == 0;
 }
 
 }  // namespace
@@ -148,6 +149,10 @@ void RendererTask::Refresh(const base::TimeDelta& update_interval,
       base::ByteSize(renderer_resources_sampler_->GetV8MemoryAllocated());
   v8_memory_used_ =
       base::ByteSize(renderer_resources_sampler_->GetV8MemoryUsed());
+  cppgc_memory_allocated_ =
+      base::ByteSize(renderer_resources_sampler_->GetCppGCMemoryAllocated());
+  cppgc_memory_used_ =
+      base::ByteSize(renderer_resources_sampler_->GetCppGCMemoryUsed());
   webcache_stats_ = renderer_resources_sampler_->GetBlinkMemoryCacheStats();
 }
 
@@ -182,6 +187,14 @@ std::optional<base::ByteSize> RendererTask::GetV8MemoryAllocated() const {
 
 std::optional<base::ByteSize> RendererTask::GetV8MemoryUsed() const {
   return v8_memory_used_;
+}
+
+std::optional<base::ByteSize> RendererTask::GetCppGCMemoryAllocated() const {
+  return cppgc_memory_allocated_;
+}
+
+std::optional<base::ByteSize> RendererTask::GetCppGCMemoryUsed() const {
+  return cppgc_memory_used_;
 }
 
 bool RendererTask::ReportsWebCacheStats() const {

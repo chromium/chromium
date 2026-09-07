@@ -60,13 +60,6 @@ void ProcessResourceUsage::OnRefreshDone(
   RunPendingRefreshCallbacks();
 }
 
-bool ProcessResourceUsage::ReportsV8MemoryStats() const {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  if (stats_)
-    return stats_->reports_v8_stats;
-  return false;
-}
-
 size_t ProcessResourceUsage::GetV8MemoryAllocated() const {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (stats_ && stats_->reports_v8_stats)
@@ -87,4 +80,20 @@ ProcessResourceUsage::GetBlinkMemoryCacheStats() const {
   if (stats_ && stats_->web_cache_stats)
     return stats_->web_cache_stats->To<blink::WebCacheResourceTypeStats>();
   return {};
+}
+
+size_t ProcessResourceUsage::GetCppGCMemoryAllocated() const {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  if (stats_ && stats_->reports_cppgc_stats) {
+    return stats_->cppgc_bytes_allocated;
+  }
+  return 0;
+}
+
+size_t ProcessResourceUsage::GetCppGCMemoryUsed() const {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  if (stats_ && stats_->reports_cppgc_stats) {
+    return stats_->cppgc_bytes_used;
+  }
+  return 0;
 }

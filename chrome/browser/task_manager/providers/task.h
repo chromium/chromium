@@ -159,6 +159,11 @@ class Task {
   virtual std::optional<base::ByteSize> GetV8MemoryAllocated() const;
   virtual std::optional<base::ByteSize> GetV8MemoryUsed() const;
 
+  // Getting the allocated and used CppGC memory (in bytes). Not all tasks
+  // report CppGC memory, in this case a nullopt will be returned.
+  virtual std::optional<base::ByteSize> GetCppGCMemoryAllocated() const;
+  virtual std::optional<base::ByteSize> GetCppGCMemoryUsed() const;
+
   // Checking if the task reports Webkit resource cache statistics and getting
   // them if it does.
   virtual bool ReportsWebCacheStats() const;

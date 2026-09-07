@@ -119,6 +119,10 @@ class ResourceChangeObserver {
         return "V8 Memory Used";
       case ColumnSpecifier::SQLITE_MEMORY_USED:
         return "SQLite Memory Used";
+      case ColumnSpecifier::CPPGC_MEMORY:
+        return "CppGC Memory";
+      case ColumnSpecifier::CPPGC_MEMORY_USED:
+        return "CppGC Memory Used";
       case ColumnSpecifier::IDLE_WAKEUPS:
         return "Idle wake ups";
       case ColumnSpecifier::NETWORK_USE:
