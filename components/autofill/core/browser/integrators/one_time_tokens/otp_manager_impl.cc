@@ -127,7 +127,7 @@ void OtpManagerImpl::OnFieldTypesDetermined(
     return;
   }
 
-  const FormStructure* form = manager.FindCachedFormById(form_id);
+  const FormStructure* form = owner_->FindCachedFormById(form_id);
   if (!form) {
     return;
   }
@@ -148,8 +148,7 @@ void OtpManagerImpl::OnFieldTypesDetermined(
       << Br{} << "Form ID: " << form_id;
 
   if (OtpMetricsTracker* tracker = owner_->client().GetOtpMetricsTracker()) {
-    tracker->OnOtpFieldDetected(form_id, std::move(otp_field_ids),
-                                owner_->GetWeakPtr());
+    tracker->OnOtpFieldDetected(form_id, std::move(otp_field_ids), *owner_);
   }
 
   GetRecentOtpsAndRenewSubscription();

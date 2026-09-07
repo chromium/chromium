@@ -18,17 +18,27 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 
 namespace autofill {
 
 namespace {
+
+// Member function pointer to the latency setter method on the UKM builder
+// (e.g. SetLatency_FieldDetectionToTickleInMillis). The int64_t parameter is
+// the latency in milliseconds.
+using UkmLatencySetter = ukm::builders::Autofill_OneTimeTokens& (
+    ukm::builders::Autofill_OneTimeTokens::*)(int64_t);
 
 // Returns true if a correlated previous event was found and metrics were
 // recorded.
 bool TryRecordTickleMetrics(std::optional<base::TimeTicks>& previous_event_time,
                             std::optional<base::TimeTicks>& current_event_time,
                             std::string_view latency_histogram_name,
-                            one_time_tokens::TickleArrival arrival_type) {
+                            one_time_tokens::TickleArrival arrival_type,
+                            std::optional<ukm::SourceId> ukm_source_id,
+                            UkmLatencySetter ukm_setter) {
   base::TimeTicks now = base::TimeTicks::Now();
   if (previous_event_time.has_value()) {
     base::TimeDelta latency = now - *previous_event_time;
@@ -44,6 +54,12 @@ bool TryRecordTickleMetrics(std::optional<base::TimeTicks>& previous_event_time,
           50);
       base::UmaHistogramEnumeration(one_time_tokens::kTickleArrivalHistogram,
                                     arrival_type);
+      if (ukm_source_id.has_value() &&
+          *ukm_source_id != ukm::kInvalidSourceId) {
+        ukm::builders::Autofill_OneTimeTokens builder(*ukm_source_id);
+        (builder.*ukm_setter)(latency.InMilliseconds())
+            .Record(ukm::UkmRecorder::Get());
+      }
       return true;
     }
   }
@@ -66,10 +82,9 @@ OtpMetricsTracker::OtpMetricsTracker(
 
 OtpMetricsTracker::~OtpMetricsTracker() = default;
 
-void OtpMetricsTracker::OnOtpFieldDetected(
-    FormGlobalId form_id,
-    std::vector<FieldGlobalId> field_ids,
-    base::WeakPtr<AutofillManager> autofill_manager) {
+void OtpMetricsTracker::OnOtpFieldDetected(FormGlobalId form_id,
+                                           std::vector<FieldGlobalId> field_ids,
+                                           AutofillManager& autofill_manager) {
   if (!base::FeatureList::IsEnabled(features::kAutofillGmailOtp)) {
     return;
   }
@@ -78,15 +93,18 @@ void OtpMetricsTracker::OnOtpFieldDetected(
   if (last_handled_form_id_.has_value() && *last_handled_form_id_ == form_id) {
     return;
   }
+  ukm_source_id_ = autofill_manager.driver().GetPageUkmSourceId();
   tickle_timeout_timer_.Stop();
   form_id_ = form_id;
   field_ids_ = std::move(field_ids);
-  autofill_manager_ = std::move(autofill_manager);
+  autofill_manager_ = autofill_manager.GetWeakPtr();
 
   bool matched_existing_tickle = TryRecordTickleMetrics(
       tickle_time_, field_detection_time_,
       kTickleToFieldDetectionLatencyHistogram,
-      one_time_tokens::TickleArrival::kBeforeFieldDetection);
+      one_time_tokens::TickleArrival::kBeforeFieldDetection, ukm_source_id_,
+      &ukm::builders::Autofill_OneTimeTokens::
+          SetLatency_TickleToFieldDetectionInMillis);
 
   if (matched_existing_tickle) {
     // Tickle arrived before the form loaded (pre-arrival), so it arrived
@@ -112,7 +130,9 @@ void OtpMetricsTracker::OnTickleReceived(
   bool matched_existing_field = TryRecordTickleMetrics(
       field_detection_time_, tickle_time_,
       kFieldDetectionToTickleLatencyHistogram,
-      one_time_tokens::TickleArrival::kAfterFieldDetection);
+      one_time_tokens::TickleArrival::kAfterFieldDetection, ukm_source_id_,
+      &ukm::builders::Autofill_OneTimeTokens::
+          SetLatency_FieldDetectionToTickleInMillis);
 
   if (matched_existing_field) {
     if (form_outcome_timeout_timer_.IsRunning()) {
@@ -162,6 +182,7 @@ void OtpMetricsTracker::ResetPendingFormState() {
   form_id_.reset();
   field_ids_.clear();
   autofill_manager_.reset();
+  ukm_source_id_.reset();
 }
 
 bool OtpMetricsTracker::IsOtpFieldEmptyAndUnedited() const {

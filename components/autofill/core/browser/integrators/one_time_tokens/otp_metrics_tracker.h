@@ -16,6 +16,7 @@
 #include "components/one_time_tokens/core/browser/one_time_token_service.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service_constants.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace autofill {
 
@@ -50,7 +51,7 @@ class OtpMetricsTracker {
   // in `form_id` upon tickle arrival.
   void OnOtpFieldDetected(FormGlobalId form_id,
                           std::vector<FieldGlobalId> field_ids,
-                          base::WeakPtr<AutofillManager> autofill_manager);
+                          AutofillManager& autofill_manager);
 
 #if defined(UNIT_TEST)
   // Returns true if there is an active tickle subscription.
@@ -86,6 +87,12 @@ class OtpMetricsTracker {
   // Timestamp of the most recently detected OTP field. `std::nullopt` before
   // any OTP field is detected or once a session has completed/timed out.
   std::optional<base::TimeTicks> field_detection_time_;
+
+  // Main frame UKM source ID of the page where the most recent OTP field was
+  // detected. Caching this is necessary because a tickle may arrive after the
+  // user has navigated or submitted the form, at which point
+  // `autofill_manager_` is null.
+  std::optional<ukm::SourceId> ukm_source_id_;
 
   // Timestamp of the most recently received tickle.
   std::optional<base::TimeTicks> tickle_time_;
