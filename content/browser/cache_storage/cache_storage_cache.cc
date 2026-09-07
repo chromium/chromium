@@ -1771,8 +1771,9 @@ void CacheStorageCache::Put(blink::mojom::FetchAPIRequestPtr request,
                             blink::mojom::FetchAPIResponsePtr response,
                             int64_t trace_id,
                             ErrorCallback callback) {
-  CHECK(BACKEND_OPEN == backend_state_ || initializing_,
-        base::NotFatalUntil::M158);
+  // TODO(crbug.com/557615001): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(BACKEND_OPEN == backend_state_ || initializing_);
 
   auto put_context = cache_entry_handler_->CreatePutContext(
       std::move(request), std::move(response), trace_id);
