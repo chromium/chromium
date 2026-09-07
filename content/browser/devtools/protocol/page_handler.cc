@@ -524,7 +524,7 @@ PageHandler::PageHandler(
   video_consumer_ = std::make_unique<DevToolsVideoConsumer>(base::BindRepeating(
       &PageHandler::OnFrameFromVideoConsumer, weak_factory_.GetWeakPtr()));
   video_consumer_->SetFormat(kScreencastPixelFormat);
-  DCHECK(emulation_handler_);
+  CHECK(emulation_handler_, base::NotFatalUntil::M159);
 }
 
 PageHandler::~PageHandler() = default;
@@ -592,7 +592,7 @@ void PageHandler::RenderWidgetHostVisibilityChanged(
 }
 
 void PageHandler::RenderWidgetHostDestroyed(RenderWidgetHost* widget_host) {
-  DCHECK(observation_.IsObservingSource(widget_host));
+  CHECK(observation_.IsObservingSource(widget_host), base::NotFatalUntil::M159);
   observation_.Reset();
 }
 
@@ -620,7 +620,7 @@ void PageHandler::DidRunJavaScriptDialog(const GURL& url,
   if (!enabled_) {
     return;
   }
-  DCHECK(pending_dialog_.is_null());
+  CHECK(pending_dialog_.is_null(), base::NotFatalUntil::M159);
   pending_dialog_ = std::move(callback);
   std::string type = Page::DialogTypeEnum::Alert;
   if (dialog_type == JAVASCRIPT_DIALOG_TYPE_CONFIRM) {
@@ -642,7 +642,7 @@ void PageHandler::DidRunBeforeUnloadConfirm(
   if (!enabled_) {
     return;
   }
-  DCHECK(pending_dialog_.is_null());
+  CHECK(pending_dialog_.is_null(), base::NotFatalUntil::M159);
   pending_dialog_ = std::move(callback);
   frontend_->JavascriptDialogOpening(url.spec(), frame_id.ToString(),
                                      std::string(),
@@ -695,7 +695,8 @@ Response PageHandler::Disable() {
   if (!pending_dialog_.is_null()) {
     ResponseOrWebContents result = GetWebContentsForTopLevelActiveFrame();
     // Only a top level frame can have a dialog.
-    DCHECK(std::holds_alternative<WebContentsImpl*>(result));
+    CHECK(std::holds_alternative<WebContentsImpl*>(result),
+          base::NotFatalUntil::M159);
     WebContentsImpl* web_contents = std::get<WebContentsImpl*>(result);
     // Leave dialog hanging if there is a manager that can take care of it,
     // cancel and send ack otherwise.
@@ -1327,7 +1328,7 @@ void PageHandler::CaptureSnapshot(
     return;
   }
 
-  DCHECK(host_);
+  CHECK(host_, base::NotFatalUntil::M159);
   DevToolsMHTMLHelper::Capture(
       base::BindRepeating(&WebContents::FromFrameTreeNodeId,
                           host_->frame_tree_node()->frame_tree_node_id()),
@@ -2603,7 +2604,7 @@ CreateNotRestoredExplanation(
        not_restored_reasons) {
     if (not_restored_reason ==
         BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures) {
-      DCHECK(!blocklisted_features.empty());
+      CHECK(!blocklisted_features.empty(), base::NotFatalUntil::M159);
       for (blink::scheduler::WebSchedulerTrackedFeature feature :
            blocklisted_features) {
         // Details are not always present for blocklisted features, because the

@@ -65,7 +65,7 @@ void DevToolsMHTMLHelper::CreateTemporaryFile() {
 }
 
 void DevToolsMHTMLHelper::TemporaryFileCreatedOnIO() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
 
   // Setup a ShareableFileReference so the temporary file gets deleted
   // once it is no longer used.
@@ -89,7 +89,7 @@ void DevToolsMHTMLHelper::TemporaryFileCreatedOnIO() {
 }
 
 void DevToolsMHTMLHelper::TemporaryFileCreatedOnUI() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   WebContents* web_contents = web_contents_getter_.Run();
   if (!web_contents) {
     ReportFailure("No web contents");
@@ -101,7 +101,7 @@ void DevToolsMHTMLHelper::TemporaryFileCreatedOnUI() {
 }
 
 void DevToolsMHTMLHelper::MHTMLGeneratedOnUI(int64_t mhtml_file_size) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (mhtml_file_size <= 0 ||
       mhtml_file_size > std::numeric_limits<int>::max()) {
     ReportFailure("Failed to generate MHTML");

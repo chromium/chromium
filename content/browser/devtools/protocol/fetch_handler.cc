@@ -555,8 +555,8 @@ void FetchHandler::OnResponseBodyPipeTaken(
     Response response,
     mojo::ScopedDataPipeConsumerHandle pipe,
     const std::string& mime_type) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(response.IsSuccess(), pipe.is_valid());
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  CHECK_EQ(response.IsSuccess(), pipe.is_valid(), base::NotFatalUntil::M159);
   if (!response.IsSuccess()) {
     callback->sendFailure(std::move(response));
     return;

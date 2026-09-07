@@ -516,7 +516,7 @@ void BluetoothEmulationHandler::AddService(
                   Response::ServerError(error_message));
               return;
             }
-            DCHECK(IsValidServiceId(*identifier));
+            CHECK(IsValidServiceId(*identifier), base::NotFatalUntil::M159);
             std::move(callback)->sendSuccess(*identifier);
           },
           std::move(callback),
@@ -583,7 +583,8 @@ void BluetoothEmulationHandler::AddCharacteristic(
                   Response::ServerError(error_message));
               return;
             }
-            DCHECK(IsValidCharacteristicId(*identifier));
+            CHECK(IsValidCharacteristicId(*identifier),
+                  base::NotFatalUntil::M159);
             std::move(callback)->sendSuccess(*identifier);
           },
           std::move(callback),
@@ -649,7 +650,7 @@ void BluetoothEmulationHandler::AddDescriptor(
                   Response::ServerError(error_message));
               return;
             }
-            DCHECK(IsValidDescriptorId(*identifier));
+            CHECK(IsValidDescriptorId(*identifier), base::NotFatalUntil::M159);
             std::move(callback)->sendSuccess(*identifier);
           },
           std::move(callback),

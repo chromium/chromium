@@ -270,7 +270,7 @@ class SystemInfoHandlerGpuObserver : public content::GpuDataManagerObserver {
   void OnGpuProcessCrashed() override { UnregisterAndSendResponse(); }
 
   void ObserverWatchdogCallback() {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
     NOTREACHED() << "Gathering system GPU info took more than "
                  << (kGPUInfoWatchdogTimeoutMs / 1000) << " seconds.";
   }
@@ -338,7 +338,7 @@ std::unique_ptr<protocol::SystemInfo::ProcessInfo> MakeProcessInfo(
 
 void AddBrowserProcessInfo(
     protocol::Array<protocol::SystemInfo::ProcessInfo>* process_info) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   process_info->emplace_back(
       MakeProcessInfo(base::Process::Current(), "browser"));
@@ -346,7 +346,7 @@ void AddBrowserProcessInfo(
 
 void AddRendererProcessInfo(
     protocol::Array<protocol::SystemInfo::ProcessInfo>* process_info) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   for (RenderProcessHost::iterator it(RenderProcessHost::AllHostsIterator());
        !it.IsAtEnd(); it.Advance()) {
@@ -360,7 +360,7 @@ void AddRendererProcessInfo(
 
 void AddChildProcessInfo(
     protocol::Array<protocol::SystemInfo::ProcessInfo>* process_info) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   for (BrowserChildProcessHostIterator it; !it.Done(); ++it) {
     const ChildProcessData& process_data = it.GetData();

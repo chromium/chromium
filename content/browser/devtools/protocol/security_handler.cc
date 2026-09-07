@@ -43,12 +43,12 @@ void SecurityHandler::Wire(UberDispatcher* dispatcher) {
 }
 
 void SecurityHandler::AttachToRenderFrameHost() {
-  DCHECK(host_);
+  CHECK(host_, base::NotFatalUntil::M159);
   WebContents* web_contents = WebContents::FromRenderFrameHost(host_);
   WebContentsObserver::Observe(web_contents);
 
   // Send an initial DidChangeVisibleSecurityState event.
-  DCHECK(enabled_);
+  CHECK(enabled_, base::NotFatalUntil::M159);
   DidChangeVisibleSecurityState();
 }
 
@@ -178,7 +178,7 @@ Response SecurityHandler::SetIgnoreCertificateErrors(bool ignore) {
 }
 
 Response SecurityHandler::AssureTopLevelActiveFrame() {
-  DCHECK(host_);
+  CHECK(host_, base::NotFatalUntil::M159);
   constexpr char kCommandIsOnlyAvailableAtTopTarget[] =
       "Command can only be executed on top-level targets";
   if (host_->GetParentOrOuterDocument())

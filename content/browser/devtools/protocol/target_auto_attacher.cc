@@ -34,7 +34,7 @@ bool TargetAutoAttacher::wait_for_debugger_on_start() const {
 scoped_refptr<RenderFrameDevToolsAgentHost>
 TargetAutoAttacher::HandleNavigation(NavigationRequest* navigation_request,
                                      bool wait_for_debugger_on_start) {
-  DCHECK(auto_attach());
+  CHECK(auto_attach(), base::NotFatalUntil::M159);
   FrameTreeNode* frame_tree_node = navigation_request->frame_tree_node();
   RenderFrameHostImpl* new_host = navigation_request->GetRenderFrameHost();
 
@@ -91,7 +91,7 @@ void TargetAutoAttacher::UpdateWaitForDebuggerOnStart(
     Client* client,
     bool wait_for_debugger_on_start,
     base::OnceClosure callback) {
-  DCHECK(clients_.HasObserver(client));
+  CHECK(clients_.HasObserver(client), base::NotFatalUntil::M159);
   if (wait_for_debugger_on_start) {
     clients_requesting_wait_for_debugger_.insert(client);
   } else {
@@ -103,7 +103,8 @@ void TargetAutoAttacher::UpdateWaitForDebuggerOnStart(
 void TargetAutoAttacher::RemoveClient(Client* client) {
   clients_.RemoveObserver(client);
   clients_requesting_wait_for_debugger_.erase(client);
-  DCHECK(clients_requesting_wait_for_debugger_.empty() || !clients_.empty());
+  CHECK(clients_requesting_wait_for_debugger_.empty() || !clients_.empty(),
+        base::NotFatalUntil::M159);
   if (clients_.empty() || clients_requesting_wait_for_debugger_.empty()) {
     UpdateAutoAttach(base::DoNothing());
   }

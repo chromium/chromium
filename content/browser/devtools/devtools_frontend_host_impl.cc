@@ -59,7 +59,7 @@ std::string RedactURL(const GURL& url) {
 std::unique_ptr<DevToolsFrontendHost> DevToolsFrontendHost::Create(
     RenderFrameHost* frame_host,
     const HandleMessageCallback& handle_message_callback) {
-  DCHECK(!frame_host->GetParent());
+  CHECK(!frame_host->GetParent(), base::NotFatalUntil::M159);
   return std::make_unique<DevToolsFrontendHostImpl>(frame_host,
                                                     handle_message_callback);
 }
@@ -69,7 +69,7 @@ std::unique_ptr<DevToolsFrontendHostImpl>
 DevToolsFrontendHostImpl::CreateForTesting(
     RenderFrameHost* frame_host,
     const HandleMessageCallback& handle_message_callback) {
-  DCHECK(!frame_host->GetParent());
+  CHECK(!frame_host->GetParent(), base::NotFatalUntil::M159);
   return std::make_unique<DevToolsFrontendHostImpl>(frame_host,
                                                     handle_message_callback);
 }
@@ -78,7 +78,7 @@ DevToolsFrontendHostImpl::CreateForTesting(
 void DevToolsFrontendHost::SetupExtensionsAPI(
     RenderFrameHost* frame_host,
     const std::string& extension_api) {
-  DCHECK(frame_host->GetParent());
+  CHECK(frame_host->GetParent(), base::NotFatalUntil::M159);
   mojo::AssociatedRemote<blink::mojom::DevToolsFrontend> frontend;
   frame_host->GetRemoteAssociatedInterfaces()->GetInterface(&frontend);
   frontend->SetupDevToolsExtensionAPI(extension_api);

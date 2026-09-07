@@ -2024,8 +2024,8 @@ void InterceptionJob::StartLoadingResponseBody(
              response_metadata_->head->mime_type);
     return;
   }
-  DCHECK_EQ(State::kResponseReceived, state_);
-  DCHECK(!ShouldBypassForResponse());
+  CHECK_EQ(State::kResponseReceived, state_, base::NotFatalUntil::M159);
+  CHECK(!ShouldBypassForResponse(), base::NotFatalUntil::M159);
   body_reader_->StartReading(std::move(body));
 }
 
@@ -2055,7 +2055,8 @@ void InterceptionJob::OnComplete(
   // we're in the proper state. The completion is due upon client response.
   DCHECK(state_ == State::kResponseReceived || state_ == State::kResponseTaken)
       << "Unexpected state " << static_cast<int>(state_);
-  DCHECK_NE(ResolutionState::kNone, waiting_for_resolution_);
+  CHECK_NE(ResolutionState::kNone, waiting_for_resolution_,
+           base::NotFatalUntil::M159);
 
   response_metadata_->status = status;
 }
@@ -2179,9 +2180,10 @@ void InterceptionJob::OnTargetHeaderClientBeforeSendHeadersComplete(
 void InterceptionJob::OnAuthRequest(
     const net::AuthChallengeInfo& auth_info,
     DevToolsURLLoaderInterceptor::HandleAuthRequestCallback callback) {
-  DCHECK_EQ(kRequestSent, state_);
-  DCHECK(pending_auth_callback_.is_null());
-  DCHECK_EQ(ResolutionState::kNone, waiting_for_resolution_);
+  CHECK_EQ(kRequestSent, state_, base::NotFatalUntil::M159);
+  CHECK(pending_auth_callback_.is_null(), base::NotFatalUntil::M159);
+  CHECK_EQ(ResolutionState::kNone, waiting_for_resolution_,
+           base::NotFatalUntil::M159);
 
   if (!stages_.Has(InterceptionStage::kRequest) || !interceptor_ ||
       !interceptor_->handle_auth_) {

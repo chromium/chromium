@@ -1551,7 +1551,7 @@ void InputHandler::OnWidgetForDispatchDragEvent(
 }
 
 float InputHandler::ScaleFactor() {
-  DCHECK(web_contents_);
+  CHECK(web_contents_, base::NotFatalUntil::M159);
   // Browser zoom
   RenderWidgetHostImpl* widget_host_for_zoom_level =
       (host_ && host_->GetRenderWidgetHost())

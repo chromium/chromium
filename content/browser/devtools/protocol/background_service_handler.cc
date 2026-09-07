@@ -101,7 +101,7 @@ BackgroundServiceHandler::BackgroundServiceHandler()
       devtools_context_(nullptr) {}
 
 BackgroundServiceHandler::~BackgroundServiceHandler() {
-  DCHECK(enabled_services_.empty());
+  CHECK(enabled_services_.empty(), base::NotFatalUntil::M159);
 }
 
 void BackgroundServiceHandler::Wire(UberDispatcher* dispatcher) {
@@ -123,7 +123,7 @@ void BackgroundServiceHandler::SetRenderer(int process_host_id,
       static_cast<StoragePartitionImpl*>(process_host->GetStoragePartition());
 
   SetDevToolsContext(storage_partition->GetDevToolsBackgroundServicesContext());
-  DCHECK(devtools_context_);
+  CHECK(devtools_context_, base::NotFatalUntil::M159);
 }
 
 void BackgroundServiceHandler::SetDevToolsContext(
@@ -153,7 +153,7 @@ Response BackgroundServiceHandler::Disable() {
 void BackgroundServiceHandler::StartObserving(
     const std::string& service,
     std::unique_ptr<StartObservingCallback> callback) {
-  DCHECK(devtools_context_);
+  CHECK(devtools_context_, base::NotFatalUntil::M159);
 
   auto service_enum = ServiceNameToEnum(service);
   if (service_enum == devtools::proto::BackgroundService::UNKNOWN) {
@@ -172,7 +172,7 @@ void BackgroundServiceHandler::StartObserving(
 
   bool is_recording = devtools_context_->IsRecording(service_enum);
 
-  DCHECK(frontend_);
+  CHECK(frontend_, base::NotFatalUntil::M159);
   frontend_->RecordingStateChanged(is_recording, service);
 
   devtools_context_->GetLoggedBackgroundServiceEvents(
@@ -201,7 +201,7 @@ void BackgroundServiceHandler::DidGetLoggedEvents(
     devtools::proto::BackgroundService service,
     std::unique_ptr<StartObservingCallback> callback,
     std::vector<devtools::proto::BackgroundServiceEvent> events) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   // These events won't be duplicated in `OnEventReceived` since we are using
   // sequenced task runners.
@@ -213,7 +213,7 @@ void BackgroundServiceHandler::DidGetLoggedEvents(
 
 Response BackgroundServiceHandler::SetRecording(bool should_record,
                                                 const std::string& service) {
-  DCHECK(devtools_context_);
+  CHECK(devtools_context_, base::NotFatalUntil::M159);
 
   auto service_enum = ServiceNameToEnum(service);
   if (service_enum == devtools::proto::BackgroundService::UNKNOWN)
@@ -229,7 +229,7 @@ Response BackgroundServiceHandler::SetRecording(bool should_record,
 }
 
 Response BackgroundServiceHandler::ClearEvents(const std::string& service) {
-  DCHECK(devtools_context_);
+  CHECK(devtools_context_, base::NotFatalUntil::M159);
 
   auto service_enum = ServiceNameToEnum(service);
   if (service_enum == devtools::proto::BackgroundService::UNKNOWN)

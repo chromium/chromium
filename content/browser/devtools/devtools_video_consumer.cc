@@ -95,7 +95,8 @@ void DevToolsVideoConsumer::SetMinCapturePeriod(
 
 void DevToolsVideoConsumer::SetMinAndMaxFrameSize(gfx::Size min_frame_size,
                                                   gfx::Size max_frame_size) {
-  DCHECK(IsValidMinAndMaxFrameSize(min_frame_size, max_frame_size));
+  CHECK(IsValidMinAndMaxFrameSize(min_frame_size, max_frame_size),
+        base::NotFatalUntil::M159);
   min_frame_size_ = min_frame_size;
   max_frame_size_ = max_frame_size;
   if (capturer_) {
@@ -153,7 +154,7 @@ void DevToolsVideoConsumer::OnFrameCaptured(
   // the same type, with null check being equivalent to IsValid() check. Given
   // the above, we should never be able to receive a read only shmem region that
   // is not valid - mojo will enforce it for us.
-  DCHECK(shmem_region.IsValid());
+  CHECK(shmem_region.IsValid(), base::NotFatalUntil::M159);
 
   base::ReadOnlySharedMemoryMapping mapping = shmem_region.Map();
   if (!mapping.IsValid()) {

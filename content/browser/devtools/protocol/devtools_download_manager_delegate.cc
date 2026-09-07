@@ -28,7 +28,7 @@ const char kDevToolsDownloadManagerDelegateName[] =
 DevToolsDownloadManagerDelegate::DevToolsDownloadManagerDelegate(
     content::BrowserContext* browser_context) {
   download_manager_ = browser_context->GetDownloadManager();
-  DCHECK(download_manager_);
+  CHECK(download_manager_, base::NotFatalUntil::M159);
   original_download_delegate_ = download_manager_->GetDelegate();
   download_manager_->SetDelegate(this);
 }
@@ -38,7 +38,7 @@ DevToolsDownloadManagerDelegate::~DevToolsDownloadManagerDelegate() = default;
 // static
 DevToolsDownloadManagerDelegate*
 DevToolsDownloadManagerDelegate::GetOrCreateInstance(BrowserContext* context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (!DevToolsDownloadManagerDelegate::GetInstance(context)) {
     auto delegate_owned =
         base::WrapUnique(new DevToolsDownloadManagerDelegate(context));
@@ -59,7 +59,7 @@ DevToolsDownloadManagerDelegate::DownloadBehaviorOverrideHandle
 DevToolsDownloadManagerDelegate::SetDownloadBehavior(
     DownloadBehavior behavior,
     std::string download_path) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   download_behavior_ = behavior;
   download_path_ = std::move(download_path);
   const uint64_t override_id = ++last_download_behavior_override_id_;
@@ -70,7 +70,7 @@ DevToolsDownloadManagerDelegate::SetDownloadBehavior(
 
 void DevToolsDownloadManagerDelegate::ResetDownloadBehavior(
     uint64_t override_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (last_download_behavior_override_id_ != override_id) {
     return;
   }
@@ -89,7 +89,7 @@ void DevToolsDownloadManagerDelegate::Shutdown() {
 bool DevToolsDownloadManagerDelegate::DetermineDownloadTarget(
     download::DownloadItem* item,
     download::DownloadTargetCallback* callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M159);
 
   // Check if we should failback to delegate.
   if (original_download_delegate_ &&
@@ -179,7 +179,7 @@ void DevToolsDownloadManagerDelegate::OnDownloadPathGenerated(
     uint32_t download_id,
     download::DownloadTargetCallback callback,
     const base::FilePath& suggested_path) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M159);
   download::DownloadTargetInfo target_info;
   target_info.target_path = suggested_path;
   target_info.intermediate_path =

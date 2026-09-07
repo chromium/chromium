@@ -858,7 +858,7 @@ void BackForwardCacheNotUsed(
     const NavigationRequest* nav_request,
     const BackForwardCacheCanStoreDocumentResult* result,
     const BackForwardCacheCanStoreTreeResult* tree_result) {
-  DCHECK(nav_request);
+  CHECK(nav_request, base::NotFatalUntil::M159);
   FrameTreeNode* ftn = nav_request->frame_tree_node();
   DispatchToAgents(ftn, &protocol::PageHandler::BackForwardCacheNotUsed,
                    nav_request, result, tree_result);
@@ -1012,7 +1012,7 @@ bool IsPrerenderAllowed(FrameTree& frame_tree) {
 }
 
 void WillInitiatePrerender(FrameTree& frame_tree) {
-  DCHECK(frame_tree.is_prerendering());
+  CHECK(frame_tree.is_prerendering(), base::NotFatalUntil::M159);
   auto* wc = WebContentsImpl::FromFrameTreeNode(frame_tree.root());
   if (auto* host = WebContentsDevToolsAgentHost::GetFor(wc)) {
     host->WillInitiatePrerender(frame_tree.root());
@@ -1121,7 +1121,7 @@ void ReportBlockedByResponseIssue(
     FrameTreeNode* ftn,
     RenderFrameHostImpl* parent_frame,
     const network::URLLoaderCompletionStatus& status) {
-  DCHECK(status.blocked_by_response_reason);
+  CHECK(status.blocked_by_response_reason, base::NotFatalUntil::M159);
 
   auto issueDetails = protocol::Audits::InspectorIssueDetails::Create();
   auto request = protocol::Audits::AffectedRequest::Create()
@@ -1185,7 +1185,7 @@ void OnNavigationRequestFailed(
   // (crrev.com/c/2992411); if the prerender is cancelled (e.g. speculation rule
   // removed), the flow will fallback to a normal navigation, which is no longer
   // considered as a page activation.
-  DCHECK(!nav_request.IsPageActivation());
+  CHECK(!nav_request.IsPageActivation(), base::NotFatalUntil::M159);
 
   DispatchToAgents(ftn, &protocol::NetworkHandler::LoadingComplete, id,
                    protocol::Network::ResourceTypeEnum::Document, status);
@@ -1246,7 +1246,7 @@ void OnConnectionAllowlistEmbeddedEnforcementIssue(
 
 void OnNavigationEntryMarkedSkippable(const GURL& url,
                                       RenderFrameHostImpl* rfh) {
-  DCHECK(rfh);
+  CHECK(rfh, base::NotFatalUntil::M159);
 
   auto request =
       protocol::Audits::AffectedRequest::Create().SetUrl(url.spec()).Build();
@@ -1513,7 +1513,7 @@ void ThrottleServiceWorkerMainScriptFetch(
   ServiceWorkerDevToolsAgentHost* agent_host =
       ServiceWorkerDevToolsManager::GetInstance()
           ->GetDevToolsAgentHostForNewInstallingWorker(wrapper, version_id);
-  DCHECK(agent_host);
+  CHECK(agent_host, base::NotFatalUntil::M159);
 
   // TODO(crbug.com/40276949): We should probably also add the
   // possibility for Browser wide agents to throttle the request.
@@ -1532,7 +1532,7 @@ void ThrottleServiceWorkerMainScriptFetch(
   }
 
   FrameTreeNode* ftn = requesting_frame->frame_tree_node();
-  DCHECK(ftn);
+  CHECK(ftn, base::NotFatalUntil::M159);
 
   DevToolsAgentHostImpl* requesting_agent_host =
       RenderFrameDevToolsAgentHost::GetFor(ftn);
@@ -2127,13 +2127,14 @@ void WillStartDragging(FrameTreeNode* main_frame_tree_node,
                        const blink::mojom::DragDataPtr drag_data,
                        blink::DragOperationsMask drag_operations_mask,
                        bool* intercepted) {
-  DCHECK(main_frame_tree_node->frame_tree().root() == main_frame_tree_node);
+  CHECK(main_frame_tree_node->frame_tree().root() == main_frame_tree_node,
+        base::NotFatalUntil::M159);
   DispatchToAgents(main_frame_tree_node, &protocol::InputHandler::StartDragging,
                    drop_data, *drag_data, drag_operations_mask, intercepted);
 }
 
 void DragEnded(FrameTreeNode& node) {
-  DCHECK(node.frame_tree().root() == &node);
+  CHECK(node.frame_tree().root() == &node, base::NotFatalUntil::M159);
   DispatchToAgents(&node, &protocol::InputHandler::DragEnded);
 }
 
@@ -2522,8 +2523,8 @@ void OnServiceWorkerMainScriptFetchingFailed(
     const network::URLLoaderCompletionStatus& status,
     const network::mojom::URLResponseHead* response_head,
     const GURL& url) {
-  DCHECK(!error.empty());
-  DCHECK_NE(net::OK, status.error_code);
+  CHECK(!error.empty(), base::NotFatalUntil::M159);
+  CHECK_NE(net::OK, status.error_code, base::NotFatalUntil::M159);
 
   // If we have a requesting_frame_id, we should have a frame and a frame tree
   // node. However since the lifetime of these objects can be complex, we check
@@ -2558,7 +2559,7 @@ void OnServiceWorkerMainScriptFetchingFailed(
                                                        version_id);
 
   if (response_head) {
-    DCHECK(agent_host);
+    CHECK(agent_host, base::NotFatalUntil::M159);
     network::mojom::URLResponseHeadDevToolsInfoPtr head_info =
         network::ExtractDevToolsInfo(*response_head);
     auto worker_token = agent_host->devtools_worker_token().ToString();
@@ -2590,7 +2591,7 @@ namespace {
 void MaybeAssignResourceRequestId(DevToolsAgentHostImpl* host,
                                   const std::string& id,
                                   network::ResourceRequest& request) {
-  DCHECK(!request.devtools_request_id.has_value());
+  CHECK(!request.devtools_request_id.has_value(), base::NotFatalUntil::M159);
   for (auto* network_handler : protocol::NetworkHandler::ForAgentHost(host)) {
     if (network_handler->enabled()) {
       request.devtools_request_id = id;
@@ -2667,7 +2668,7 @@ void OnWorkerMainScriptLoadingFailed(
     FrameTreeNode* ftn,
     RenderFrameHostImpl* ancestor_rfh,
     const network::URLLoaderCompletionStatus& status) {
-  DCHECK(ftn);
+  CHECK(ftn, base::NotFatalUntil::M159);
 
   std::string id = worker_token.ToString();
 
@@ -2748,7 +2749,7 @@ void LogWorkletMessage(RenderFrameHostImpl& frame_host,
       break;
   }
 
-  DCHECK(!log_level_string.empty());
+  CHECK(!log_level_string.empty(), base::NotFatalUntil::M159);
 
   auto entry =
       protocol::Log::LogEntry::Create()

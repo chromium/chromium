@@ -1088,9 +1088,9 @@ blink::DeviceEmulationParams EmulationHandler::GetDeviceEmulationParams() {
 
 void EmulationHandler::SetDeviceEmulationParams(
     const blink::DeviceEmulationParams& params) {
-  DCHECK(host_);
+  CHECK(host_, base::NotFatalUntil::M159);
   // Device emulation only happens on the outermost main frame.
-  DCHECK(!host_->GetParentOrOuterDocument());
+  CHECK(!host_->GetParentOrOuterDocument(), base::NotFatalUntil::M159);
 
   bool enabled = params != blink::DeviceEmulationParams();
   bool enable_changed = enabled != device_emulation_enabled_;
@@ -1105,7 +1105,7 @@ void EmulationHandler::SetDeviceEmulationParams(
 }
 
 WebContentsImpl* EmulationHandler::GetWebContents() {
-  DCHECK(host_);  // Only call if |host_| is set.
+  CHECK(host_, base::NotFatalUntil::M159);  // Only call if |host_| is set.
   return static_cast<WebContentsImpl*>(WebContents::FromRenderFrameHost(host_));
 }
 
@@ -1115,7 +1115,7 @@ void EmulationHandler::UpdateTouchEventEmulationState() {
 
   // We only have a single TouchEmulator for all frames, so let the main frame's
   // EmulationHandler enable/disable it.
-  DCHECK(!host_->GetParentOrOuterDocument());
+  CHECK(!host_->GetParentOrOuterDocument(), base::NotFatalUntil::M159);
 
   if (touch_emulation_enabled_) {
     if (auto* touch_emulator = host_->GetRenderWidgetHost()->GetTouchEmulator(
@@ -1141,7 +1141,7 @@ void EmulationHandler::UpdateDeviceEmulationState(
     return;
 
   // Device emulation only happens on the outermost main frame.
-  DCHECK(!host_->GetParentOrOuterDocument());
+  CHECK(!host_->GetParentOrOuterDocument(), base::NotFatalUntil::M159);
 
   // TODO(eseckler): Once we change this to mojo, we should wait for an ack to
   // these messages from the renderer. The renderer should send the ack once the

@@ -90,7 +90,7 @@ DispatchResponse FedCmHandler::Disable() {
 }
 
 void FedCmHandler::DidShowDialog() {
-  DCHECK(frontend_);
+  CHECK(frontend_, base::NotFatalUntil::M159);
   if (!enabled_) {
     return;
   }

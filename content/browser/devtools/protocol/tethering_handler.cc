@@ -392,7 +392,7 @@ void TetheringHandler::Bind(
     return;
   }
 
-  DCHECK(impl_);
+  CHECK(impl_, base::NotFatalUntil::M159);
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&TetheringImpl::Bind, base::Unretained(impl_),
                                 port, std::move(callback)));
@@ -406,7 +406,7 @@ void TetheringHandler::Unbind(
     return;
   }
 
-  DCHECK(impl_);
+  CHECK(impl_, base::NotFatalUntil::M159);
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&TetheringImpl::Unbind, base::Unretained(impl_),
                                 port, std::move(callback)));

@@ -56,7 +56,8 @@ DispatchResponse VisualDebuggerHandler::StartStream() {
 void VisualDebuggerHandler::OnFrameResponse(base::Value json) {
   // This should be called via the 'BindPostTask' in 'StartStream' function
   // above and thus should be in the correct thread.
-  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI),
+        base::NotFatalUntil::M159);
   frontend_->FrameResponse(
       std::make_unique<base::DictValue>(std::move(json).TakeDict()));
 }

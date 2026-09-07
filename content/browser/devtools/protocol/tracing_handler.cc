@@ -322,8 +322,8 @@ class TracingHandler::PerfettoTracingSession {
   void EnableTracing(const perfetto::TraceConfig& perfetto_config,
                      base::OnceCallback<void(const std::string& /*error_msg*/)>
                          start_callback) {
-    DCHECK(!tracing_session_);
-    DCHECK(!tracing_active_);
+    CHECK(!tracing_session_, base::NotFatalUntil::M159);
+    CHECK(!tracing_active_, base::NotFatalUntil::M159);
 
     g_any_agent_tracing = true;
     tracing_active_ = true;
@@ -362,7 +362,8 @@ class TracingHandler::PerfettoTracingSession {
   void AdoptStartupTracingSession(
       const perfetto::TraceConfig& perfetto_config) {
     // Start a perfetto tracing session, which will claim startup tracing data.
-    DCHECK(!TracingController::GetInstance()->IsTracing());
+    CHECK(!TracingController::GetInstance()->IsTracing(),
+          base::NotFatalUntil::M159);
     waiting_for_startup_tracing_enabled_ = true;
     EnableTracing(
         perfetto_config,
@@ -381,7 +382,8 @@ class TracingHandler::PerfettoTracingSession {
     for (auto& data_source : *(config_without_filters.mutable_data_sources())) {
       data_source.clear_producer_name_filter();
     }
-    DCHECK(config_without_filters == last_perfetto_config_);
+    CHECK(config_without_filters == last_perfetto_config_,
+          base::NotFatalUntil::M159);
     last_perfetto_config_ = std::move(config_without_filters);
 #endif
 
@@ -390,7 +392,7 @@ class TracingHandler::PerfettoTracingSession {
 
   void DisableTracing(
       scoped_refptr<TracingController::TraceDataEndpoint> endpoint) {
-    DCHECK(endpoint);
+    CHECK(endpoint, base::NotFatalUntil::M159);
     if (waiting_for_startup_tracing_enabled_) {
       pending_disable_tracing_task_ =
           base::BindOnce(&PerfettoTracingSession::DisableTracing,
@@ -421,7 +423,7 @@ class TracingHandler::PerfettoTracingSession {
                                               float percent_full,
                                               size_t approximate_event_count)>
                           on_buffer_usage_callback) {
-    DCHECK(on_buffer_usage_callback);
+    CHECK(on_buffer_usage_callback, base::NotFatalUntil::M159);
     if (!tracing_session_) {
       std::move(on_buffer_usage_callback).Run(false, 0.0f, 0);
       return;
@@ -451,7 +453,7 @@ class TracingHandler::PerfettoTracingSession {
 
  private:
   void OnStartupTracingEnabled(const std::string& error_msg) {
-    DCHECK(error_msg.empty());
+    CHECK(error_msg.empty(), base::NotFatalUntil::M159);
     waiting_for_startup_tracing_enabled_ = false;
     if (pending_disable_tracing_task_)
       std::move(pending_disable_tracing_task_).Run();
@@ -478,7 +480,7 @@ class TracingHandler::PerfettoTracingSession {
   }
 
   void OnTracingSessionStopped() {
-    DCHECK(tracing_session_);
+    CHECK(tracing_session_, base::NotFatalUntil::M159);
 
     auto weak_ptr = weak_factory_.GetWeakPtr();
 
@@ -633,11 +635,11 @@ void TracingHandler::OnTraceComplete() {
   if (!trace_data_buffer_state_.data.empty())
     OnTraceDataCollected(std::make_unique<std::string>(""));
 
-  DCHECK(trace_data_buffer_state_.data.empty());
-  DCHECK_EQ(0u, trace_data_buffer_state_.pos);
-  DCHECK_EQ(0, trace_data_buffer_state_.open_braces);
-  DCHECK(!trace_data_buffer_state_.in_string);
-  DCHECK(!trace_data_buffer_state_.slashed);
+  CHECK(trace_data_buffer_state_.data.empty(), base::NotFatalUntil::M159);
+  CHECK_EQ(0u, trace_data_buffer_state_.pos, base::NotFatalUntil::M159);
+  CHECK_EQ(0, trace_data_buffer_state_.open_braces, base::NotFatalUntil::M159);
+  CHECK(!trace_data_buffer_state_.in_string, base::NotFatalUntil::M159);
+  CHECK(!trace_data_buffer_state_.slashed, base::NotFatalUntil::M159);
 
   bool data_loss = session_->HasDataLossOccurred();
   process_set_monitor_.reset();
@@ -669,7 +671,7 @@ std::string TracingHandler::UpdateTraceDataBuffer(
         break;
       case '}':
         if (!state.in_string && !state.slashed) {
-          DCHECK_GT(state.open_braces, 0);
+          CHECK_GT(state.open_braces, 0, base::NotFatalUntil::M159);
           state.open_braces--;
           if (state.open_braces == 0)
             end = state.data.size() + state.pos + 1;
@@ -1102,7 +1104,7 @@ void TracingHandler::OnFrameFromVideoConsumer(
                       std::make_unique<DevToolsTraceableScreenshot>(skbitmap));
 
   ++number_of_screenshots_from_video_consumer_;
-  DCHECK(video_consumer_);
+  CHECK(video_consumer_, base::NotFatalUntil::M159);
   if (number_of_screenshots_from_video_consumer_ >= screenshot_max_count_) {
     video_consumer_->StopCapture();
   }
@@ -1138,7 +1140,7 @@ void TracingHandler::UpdateBufferUsage() {
 
 void TracingHandler::StopTracing(
     const scoped_refptr<TracingController::TraceDataEndpoint>& endpoint) {
-  DCHECK(session_);
+  CHECK(session_, base::NotFatalUntil::M159);
   buffer_usage_poll_timer_.reset();
   process_set_monitor_.reset();
   if (endpoint) {
