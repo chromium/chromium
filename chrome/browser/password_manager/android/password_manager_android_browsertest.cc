@@ -53,8 +53,7 @@ constexpr char kClientId[] = "fake_client_id";
 
 class PasswordManagerAndroidBrowserTestBase : public AndroidBrowserTest {
  public:
-  PasswordManagerAndroidBrowserTestBase()
-      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+  PasswordManagerAndroidBrowserTestBase() {
     // Set a GMS Core version that is guaranteed to provide full UPM support.
     // This ensures that calls to the password store are derministically
     // routed to the android backend.
@@ -72,28 +71,25 @@ class PasswordManagerAndroidBrowserTestBase : public AndroidBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    // Map all out-going DNS lookups to the local server. This must be used in
-    // conjunction with switches::kIgnoreCertificateErrors to work.
+    AndroidBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
-
-    // Setup HTTPS server serving files from standard test directory.
-    static constexpr base::FilePath::CharType kDocRoot[] =
-        FILE_PATH_LITERAL("chrome/test/data");
-    https_server_.ServeFilesFromSourceDirectory(base::FilePath(kDocRoot));
-    ASSERT_TRUE(https_server_.Start());
+    ASSERT_TRUE(embedded_https_test_server().Start());
   }
 
   void NavigateToFile(const std::string& file_path) {
     PasswordsNavigationObserver observer(GetActiveWebContents());
-    EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
-                                       https_server_.GetURL(file_path)));
+    EXPECT_TRUE(
+        content::NavigateToURL(GetActiveWebContents(),
+                               embedded_https_test_server().GetURL(file_path)));
     ASSERT_TRUE(observer.Wait());
   }
 
-  const GURL& base_url() const { return https_server_.base_url(); }
+  const GURL& base_url() const {
+    return embedded_https_test_server().base_url();
+  }
 
   GURL GetURL(const std::string& file_path) const {
-    return https_server_.GetURL(file_path);
+    return embedded_https_test_server().GetURL(file_path);
   }
 
   void WaitForHistogram(const std::string& histogram_name,
@@ -138,7 +134,6 @@ class PasswordManagerAndroidBrowserTestBase : public AndroidBrowserTest {
 
  private:
   autofill::test::AutofillBrowserTestEnvironment environment_;
-  net::EmbeddedTestServer https_server_;
 };
 
 class PasswordManagerAndroidBrowserTest
