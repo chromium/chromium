@@ -99,9 +99,6 @@ class OtpFieldDetector : public AutofillManager::Observer {
       AutofillDriver::LifecycleState new_state) override;
 
  protected:
-  // Protected to ensure that only derived classes can be instantiated.
-  OtpFieldDetector();
-
   // Functions that add and remove `form_id` to/from `forms_with_otps_` and
   // notify the registered callbacks if the number of forms with OTP fields goes
   // from 0 to >1 or vice versa. `form_id` is always a form that contains at
