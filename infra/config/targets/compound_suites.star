@@ -52,7 +52,6 @@ targets.legacy_compound_suite(
     name = "legacy_gpu_all_linux_release_telemetry_tests",
     basic_suites = [
         "gpu_passthrough_telemetry_tests",
-        "gpu_webcodecs_telemetry_test",
         "gpu_webgl2_conformance_gl_passthrough_telemetry_tests",
         "gpu_webgl_conformance_gl_passthrough_telemetry_tests",
         "gpu_skia_renderer_vulkan_passthrough_telemetry_tests",
@@ -62,6 +61,7 @@ targets.legacy_compound_suite(
         # directly included.
         "legacy_info_collection_tests",
         "legacy_trace_test",
+        "legacy_webcodecs_tests",
         # TODO(crbug.com/541312843): Add `webrtc_tests` to make this actually
         # identical to gpu_all_linux_release_telemetry_tests.
     ],
@@ -91,7 +91,6 @@ targets.legacy_compound_suite(
     name = "gpu_v8_win_release_telemetry_tests",
     basic_suites = [
         "gpu_passthrough_telemetry_tests",
-        "gpu_webcodecs_telemetry_test",
         "gpu_webrtc_telemetry_test",
         "gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests",
         "gpu_webgl_conformance_d3d11_passthrough_telemetry_tests",
@@ -106,6 +105,7 @@ targets.legacy_compound_suite(
         "legacy_pixel_skia_gold_passthrough_graphite_test",
         "legacy_screenshot_sync_passthrough_graphite_tests",
         "legacy_trace_test",
+        "legacy_webcodecs_tests",
     ],
 )
 

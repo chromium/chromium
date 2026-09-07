@@ -4388,7 +4388,6 @@ targets.bundle(
     name = "gpu_fyi_chromeos_release_telemetry_tests",
     targets = [
         "gpu_webrtc_telemetry_test",
-        "gpu_webcodecs_telemetry_test",
 
         # Migrated individual tests below.
         # TODO(crbug.com/541312843): Remove this comment once all tests are
@@ -4401,6 +4400,7 @@ targets.bundle(
         "pixel_skia_gold_passthrough_test",
         "screenshot_sync_passthrough_tests",
         "trace_test",
+        "webcodecs_tests",
         "webgl2_conformance_gles_passthrough_tests",
         "webgl_conformance_gles_passthrough_tests",
     ],
@@ -4434,19 +4434,27 @@ targets.bundle(
         # TODO(jonross): remove this once Vulkan Swiftshader and Vulkan GL interop
         # paths are merged.
         "gpu_skia_renderer_vulkan_passthrough_telemetry_tests",
-        "gpu_webcodecs_telemetry_test",
         "gpu_webgl_conformance_gl_passthrough_telemetry_tests",
         "gpu_webgl2_conformance_gl_passthrough_telemetry_tests",
         "webrtc_tests",
+
+        # Migrated individual tests below.
+        # TODO(crbug.com/541312843): Remove this comment once all tests are
+        # directly included.
+        "webcodecs_tests",
     ],
 )
 
 targets.bundle(
     name = "gpu_fyi_linux_release_vulkan_telemetry_tests",
     targets = [
-        "gpu_webcodecs_telemetry_test",
         "gpu_webgl2_conformance_gl_passthrough_telemetry_tests",
         "gpu_skia_renderer_vulkan_passthrough_telemetry_tests",
+
+        # Migrated individual tests below.
+        # TODO(crbug.com/541312843): Remove this comment once all tests are
+        # directly included.
+        "webcodecs_tests",
     ],
 )
 
@@ -4590,7 +4598,6 @@ targets.bundle(
 targets.bundle(
     name = "gpu_fyi_win_release_telemetry_tests",
     targets = [
-        "gpu_webcodecs_telemetry_test",
         "gpu_webrtc_telemetry_test",
         "gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests",
         "gpu_webgl_conformance_vulkan_passthrough_telemetry_tests",
@@ -4602,6 +4609,7 @@ targets.bundle(
         "expected_color_pixel_passthrough_graphite_test",
         "pixel_skia_gold_passthrough_graphite_test",
         "screenshot_sync_passthrough_graphite_tests",
+        "webcodecs_tests",
     ],
 )
 
