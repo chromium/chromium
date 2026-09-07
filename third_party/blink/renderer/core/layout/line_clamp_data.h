@@ -19,6 +19,12 @@
 namespace blink {
 class LayoutObject;
 
+enum class LineClampFloatState {
+  kShow,
+  kHide,
+  kClip,
+};
+
 struct LineClampData {
   DISALLOW_NEW();
 
@@ -92,6 +98,18 @@ struct LineClampData {
 
   bool ShouldHideForPaint() const {
     return RuntimeEnabledFeatures::CSSLineClampEnabled() && IsPastClampPoint();
+  }
+
+  // Floats inside a line-clamp container can be hidden, or they can be clipped
+  // to the container's bottom-end content edge.
+  LineClampFloatState FloatState() const {
+    if (ShouldHideForPaint()) {
+      return LineClampFloatState::kHide;
+    }
+    if (RuntimeEnabledFeatures::CSSLineClampEnabled() && IsLineClampContext()) {
+      return LineClampFloatState::kClip;
+    }
+    return LineClampFloatState::kShow;
   }
 
   bool operator==(const LineClampData& other) const {

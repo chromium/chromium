@@ -73,7 +73,13 @@ ConstraintSpace CreateConstraintSpaceForFloat(
   SetOrthogonalFallbackInlineSizeIfNeeded(unpositioned_float.parent_style,
                                           unpositioned_float.node, &builder);
   builder.SetIsPaintedAtomically(true);
-  builder.SetIsHiddenForPaint(unpositioned_float.is_hidden_for_paint);
+
+  if (unpositioned_float.line_clamp_state == LineClampFloatState::kHide) {
+    builder.SetIsHiddenForPaint(true);
+  } else if (unpositioned_float.line_clamp_state ==
+             LineClampFloatState::kClip) {
+    builder.SetIsLineClampClippedFloat();
+  }
 
   if (origin_block_offset) {
     DCHECK(margins);

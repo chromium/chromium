@@ -463,6 +463,12 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
     return bit_field_.get<HasMovedChildrenFlag>();
   }
 
+  // Returns true if this is a float which must be clipped to the bottom-end
+  // content edge of its line-clamp container.
+  bool IsLineClampClippedFloat() const {
+    return bit_field_.get<IsLineClampClippedFloatFlag>();
+  }
+
 #if DCHECK_IS_ON()
   void CheckSameForSimplifiedLayout(const PhysicalBoxFragment&,
                                     bool check_no_fragmentation) const;
@@ -654,6 +660,8 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
       IsMonolithicFlag::DefineNextValue<bool, 1>;
   using HasMovedChildrenFlag =
       IsMonolithicOverflowPropagationDisabledFlag::DefineNextValue<bool, 1>;
+  using IsLineClampClippedFloatFlag =
+      HasMovedChildrenFlag::DefineNextValue<bool, 1>;
 
   bool IncludeBorderTop() const {
     return bit_field_.get<IncludeBorderTopFlag>();

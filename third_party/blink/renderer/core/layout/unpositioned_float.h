@@ -34,7 +34,7 @@ struct CORE_EXPORT UnpositionedFloat final {
                     const ComputedStyle& parent_style,
                     LayoutUnit fragmentainer_block_size,
                     LayoutUnit fragmentainer_block_offset,
-                    bool is_hidden_for_paint)
+                    LineClampFloatState line_clamp_state)
       : node(node),
         token(token),
         available_size(available_size),
@@ -44,7 +44,7 @@ struct CORE_EXPORT UnpositionedFloat final {
         parent_style(parent_style),
         fragmentainer_block_size(fragmentainer_block_size),
         fragmentainer_block_offset(fragmentainer_block_offset),
-        is_hidden_for_paint(is_hidden_for_paint) {}
+        line_clamp_state(line_clamp_state) {}
 
   BlockNode node;
   const BlockBreakToken* token = nullptr;
@@ -56,7 +56,7 @@ struct CORE_EXPORT UnpositionedFloat final {
   const ComputedStyle& parent_style;
   LayoutUnit fragmentainer_block_size;
   LayoutUnit fragmentainer_block_offset;
-  bool is_hidden_for_paint;
+  LineClampFloatState line_clamp_state;
 
   // layout_result and margins are used as a cache when measuring the
   // inline_size of a float in an inline context.

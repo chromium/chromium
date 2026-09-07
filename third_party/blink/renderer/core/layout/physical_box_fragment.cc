@@ -374,7 +374,9 @@ PhysicalBoxFragment::PhysicalBoxFragment(
                  IsMonolithicOverflowPropagationDisabledFlag::encode(
                      builder->GetConstraintSpace()
                          .IsMonolithicOverflowPropagationDisabled()) |
-                 HasMovedChildrenFlag::encode(builder->has_moved_children_)) {
+                 HasMovedChildrenFlag::encode(builder->has_moved_children_) |
+                 IsLineClampClippedFloatFlag::encode(
+                     builder->is_line_clamp_clipped_float_)) {
   DCHECK(layout_object_);
   DCHECK(layout_object_->IsBoxModelObject());
   DCHECK(!builder->break_token_ || builder->break_token_->IsBlockType());

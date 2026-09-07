@@ -172,6 +172,10 @@ class CORE_EXPORT ConstraintSpace final {
 
   bool IsHiddenForPaint() const { return bitfields_.is_hidden_for_paint; }
 
+  bool IsLineClampClippedFloat() const {
+    return bitfields_.is_line_clamp_clipped_float;
+  }
+
   // The available space size.
   // See: https://drafts.csswg.org/css-sizing/#available
   LogicalSize AvailableSize() const { return available_size_; }
@@ -1660,6 +1664,8 @@ class CORE_EXPORT ConstraintSpace final {
     unsigned is_initial_block_size_indefinite : 1 = false;
     unsigned is_table_cell_child : 1 = false;
     unsigned is_restricted_block_size_table_cell_child : 1 = false;
+
+    unsigned is_line_clamp_clipped_float : 1 = false;
   };
 
   explicit ConstraintSpace(WritingDirectionMode writing_direction)

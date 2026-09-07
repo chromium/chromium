@@ -3793,13 +3793,8 @@ void LineBreaker::HandleFloat(const InlineItem& item,
   }
 
   const LayoutUnit bfc_block_offset = line_opportunity_.bfc_block_offset;
-  // The BFC offset passed to `ShouldHideForPaint` should be the bottom offset
-  // of the line, which we don't know at this point. However, since block layout
-  // will relayout to fix the clamp BFC offset to the bottom of the last line
-  // before clamp, we now that if the line's BFC offset is equal or greater than
-  // the clamp BFC offset in the final relayout, the line will be hidden.
-  bool is_hidden_for_paint =
-      constraint_space_.GetLineClampData().ShouldHideForPaint();
+  LineClampFloatState line_clamp_state =
+      constraint_space_.GetLineClampData().FloatState();
 
   const BlockNode float_node(To<LayoutBox>(item.GetLayoutObject()));
   UnpositionedFloat unpositioned_float(
@@ -3810,7 +3805,7 @@ void LineBreaker::HandleFloat(const InlineItem& item,
       {constraint_space_.GetBfcOffset().line_offset, bfc_block_offset},
       constraint_space_, node_.Style(),
       constraint_space_.FragmentainerBlockSize(),
-      constraint_space_.FragmentainerOffset(), is_hidden_for_paint);
+      constraint_space_.FragmentainerOffset(), line_clamp_state);
 
   bool float_after_line =
       ShouldPushFloatAfterLine(&unpositioned_float, line_info);

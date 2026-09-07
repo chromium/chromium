@@ -652,6 +652,14 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
     EnsureRareData()->SetGridLayoutSubtree(grid_layout_subtree);
   }
 
+  void SetIsLineClampClippedFloat() {
+#if DCHECK_IS_ON()
+    DCHECK(!is_line_clamp_clipped_float_set_);
+    is_line_clamp_clipped_float_set_ = true;
+#endif
+    space_.bitfields_.is_line_clamp_clipped_float = true;
+  }
+
   // Creates a new constraint space.
   const ConstraintSpace ToConstraintSpace() {
 #if DCHECK_IS_ON()
@@ -729,6 +737,7 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
   bool is_table_row_data_set_ = false;
   bool is_table_section_data_set_ = false;
   bool is_grid_layout_subtree_set_ = false;
+  bool is_line_clamp_clipped_float_set_ = false;
 
   bool to_constraint_space_called_ = false;
 #endif

@@ -53,7 +53,8 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
                         space,
                         writing_direction,
                         previous_break_token),
-        is_inline_formatting_context_(node.IsInline()) {}
+        is_inline_formatting_context_(node.IsInline()),
+        is_line_clamp_clipped_float_(space.IsLineClampClippedFloat()) {}
 
   // Build a fragment for LayoutObject without LayoutInputNode. LayoutInline
   // has InlineItem but does not have corresponding LayoutInputNode.
@@ -66,7 +67,8 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
                         space,
                         writing_direction,
                         /*previous_break_token=*/nullptr),
-        is_inline_formatting_context_(true) {
+        is_inline_formatting_context_(true),
+        is_line_clamp_clipped_float_(space.IsLineClampClippedFloat()) {
     layout_object_ = layout_object;
   }
 
@@ -845,6 +847,7 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   bool is_truncated_by_fragmentation_line = false;
   bool use_last_baseline_for_inline_baseline_ = false;
   bool has_moved_children_ = false;
+  bool is_line_clamp_clipped_float_ = false;
 
   // Whether the `text-box-trim` is effective for block-start/end edges of a
   // node.

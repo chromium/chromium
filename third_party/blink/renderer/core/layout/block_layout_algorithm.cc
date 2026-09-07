@@ -1796,7 +1796,7 @@ void BlockLayoutAlgorithm::HandleFloat(
       child, child_break_token, ChildAvailableSize(),
       PercentageSizeForChild(child), origin_bfc_offset, constraint_space,
       Style(), FragmentainerCapacityForChildren(),
-      FragmentainerOffsetForChildren(), line_clamp_data_.ShouldHideForPaint());
+      FragmentainerOffsetForChildren(), line_clamp_data_.data.FloatState());
 
   if (!container_builder_.BfcBlockOffset()) {
     container_builder_.AddAdjoiningObjectTypes(

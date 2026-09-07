@@ -1785,13 +1785,8 @@ PositionedFloat InlineLayoutAlgorithm::PositionFloat(
   BfcOffset origin_bfc_offset = {space.GetBfcOffset().line_offset,
                                  origin_bfc_block_offset};
 
-  // The BFC offset passed to `ShouldHideForPaint` should be the bottom offset
-  // of the line, which we don't know at this point. However, since block layout
-  // will relayout to fix the clamp BFC offset to the bottom of the last line
-  // before clamp, we now that if the line's BFC offset is equal or greater than
-  // the clamp BFC offset in the final relayout, the line will be hidden.
-  bool is_hidden_for_paint =
-      GetConstraintSpace().GetLineClampData().ShouldHideForPaint();
+  LineClampFloatState line_clamp_state =
+      GetConstraintSpace().GetLineClampData().FloatState();
 
   BlockNode child(To<LayoutBox>(floating_object));
   UnpositionedFloat unpositioned_float(
@@ -1799,7 +1794,7 @@ PositionedFloat InlineLayoutAlgorithm::PositionFloat(
       child.IsReplaced() ? space.ReplacedChildPercentageResolutionSize()
                          : space.PercentageResolutionSize(),
       origin_bfc_offset, space, Style(), space.FragmentainerBlockSize(),
-      space.FragmentainerOffset(), is_hidden_for_paint);
+      space.FragmentainerOffset(), line_clamp_state);
 
   PositionedFloat positioned_float =
       ::blink::PositionFloat(&unpositioned_float, exclusion_space);
