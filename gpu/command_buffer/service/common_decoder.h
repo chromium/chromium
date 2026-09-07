@@ -96,8 +96,8 @@ class GPU_COMMAND_BUFFER_SERVICE_EXPORT CommonDecoder {
     void SetSize(size_t size);
 
     // Sets a part of the bucket.
-    // Returns false if offset or size is out of range.
-    bool SetData(const volatile void* src, size_t offset, size_t size);
+    // Returns false if `offset` or `src.size()` is out of range.
+    bool SetData(base::span<const volatile uint8_t> src, size_t offset);
 
     // Sets the bucket data from a string. Strings are passed NULL terminated to
     // distinguish between empty string and no string.

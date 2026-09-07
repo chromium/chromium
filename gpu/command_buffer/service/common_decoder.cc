@@ -69,12 +69,10 @@ void CommonDecoder::Bucket::SetSize(size_t size) {
   }
 }
 
-bool CommonDecoder::Bucket::SetData(
-    const volatile void* src, size_t offset, size_t size) {
-  if (OffsetSizeValid(offset, size)) {
-    auto src_span = UNSAFE_TODO(
-        base::span(static_cast<const volatile uint8_t*>(src), size));
-    data_.subspan(offset, size).copy_from(src_span);
+bool CommonDecoder::Bucket::SetData(base::span<const volatile uint8_t> src,
+                                    size_t offset) {
+  if (OffsetSizeValid(offset, src.size())) {
+    data_.subspan(offset, src.size()).copy_from(src);
     return true;
   }
   return false;
@@ -89,7 +87,8 @@ void CommonDecoder::Bucket::SetFromString(const char* str) {
     std::string_view str_view(str);
     size_t size = str_view.size() + 1;
     SetSize(size);
-    SetData(str_view.data(), 0, size);
+    SetData(base::as_byte_span(str_view), 0);
+    data_[str_view.size()] = 0;
   }
 }
 
@@ -319,16 +318,16 @@ error::Error CommonDecoder::HandleSetBucketData(uint32_t immediate_data_size,
   uint32_t bucket_id = args.bucket_id;
   uint32_t offset = args.offset;
   uint32_t size = args.size;
-  const void* data = GetSharedMemoryAs<const void*>(
+  std::optional<base::span<uint8_t>> data = GetSharedMemoryAsByteSpan(
       args.shared_memory_id, args.shared_memory_offset, size);
-  if (!data) {
+  if (!data.has_value()) {
     return error::kInvalidArguments;
   }
   Bucket* bucket = GetBucket(bucket_id);
   if (!bucket) {
     return error::kInvalidArguments;
   }
-  if (!bucket->SetData(data, offset, size)) {
+  if (!bucket->SetData(*data, offset)) {
     return error::kInvalidArguments;
   }
 
@@ -340,18 +339,20 @@ error::Error CommonDecoder::HandleSetBucketDataImmediate(
     const volatile void* cmd_data) {
   const volatile cmd::SetBucketDataImmediate& args =
       *static_cast<const volatile cmd::SetBucketDataImmediate*>(cmd_data);
-  const volatile void* data = GetImmediateDataAs<const volatile void*>(args);
   uint32_t bucket_id = args.bucket_id;
   uint32_t offset = args.offset;
   uint32_t size = args.size;
   if (size > immediate_data_size) {
     return error::kInvalidArguments;
   }
+  const volatile uint8_t* data =
+      GetImmediateDataAs<const volatile uint8_t*>(args);
+  auto data_span = UNSAFE_TODO(base::span<const volatile uint8_t>(data, size));
   Bucket* bucket = GetBucket(bucket_id);
   if (!bucket) {
     return error::kInvalidArguments;
   }
-  if (!bucket->SetData(data, offset, size)) {
+  if (!bucket->SetData(data_span, offset)) {
     return error::kInvalidArguments;
   }
   return error::kNoError;

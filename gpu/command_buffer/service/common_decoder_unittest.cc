@@ -66,14 +66,15 @@ TEST(CommonDecoderBucket, SetData) {
   static const char data[] = "testing";
 
   bucket.SetSize(10);
-  EXPECT_TRUE(bucket.SetData(data, 0, sizeof(data)));
+  EXPECT_TRUE(bucket.SetData(base::as_byte_span(data), 0));
   EXPECT_EQ(bucket.GetDataAsByteSpan(0, sizeof(data)),
             base::as_byte_span(data));
-  EXPECT_TRUE(bucket.SetData(data, 2, sizeof(data)));
+  EXPECT_TRUE(bucket.SetData(base::as_byte_span(data), 2));
   EXPECT_EQ(bucket.GetDataAsByteSpan(2, sizeof(data)),
             base::as_byte_span(data));
-  EXPECT_FALSE(bucket.SetData(data, 0, sizeof(data) * 2));
-  EXPECT_FALSE(bucket.SetData(data, 5, sizeof(data)));
+  constexpr std::array<uint8_t, 11> too_large = {};
+  EXPECT_FALSE(bucket.SetData(too_large, 0));
+  EXPECT_FALSE(bucket.SetData(base::as_byte_span(data), 5));
 }
 
 class TestCommonDecoder : public CommonDecoder {
@@ -471,19 +472,19 @@ TEST_F(CommonDecoderTest, GetAsStrings_Success) {
   size_t write_offset = 0;
 
   const GLint count = 2;
-  bucket.SetData(&count, write_offset, sizeof(count));
+  bucket.SetData(base::byte_span_from_ref(count), write_offset);
   write_offset += sizeof(count);
 
   const std::array<GLint, 2> sizes = {2, 3};
-  bucket.SetData(&sizes, write_offset, sizeof(sizes));
+  bucket.SetData(base::as_byte_span(sizes), write_offset);
   write_offset += sizeof(sizes);
 
   const std::array<char, 3> str0 = {'a', 'b', 0};
-  bucket.SetData(&str0, write_offset, sizeof(str0));
+  bucket.SetData(base::as_byte_span(str0), write_offset);
   write_offset += sizeof(str0);
 
   const std::array<char, 4> str1 = {'x', 'y', 'z', 0};
-  bucket.SetData(&str1, write_offset, sizeof(str1));
+  bucket.SetData(base::as_byte_span(str1), write_offset);
   write_offset += sizeof(str1);
 
   EXPECT_EQ(write_offset, kBucketSize);
@@ -508,13 +509,13 @@ TEST_F(CommonDecoderTest, GetAsStrings_StringsSizeNegative) {
   bucket.SetSize(14);
 
   GLint count = 2;
-  bucket.SetData(&count, 0, sizeof(count));
+  bucket.SetData(base::byte_span_from_ref(count), 0);
   GLint length0 = 1;
-  bucket.SetData(&length0, 4, sizeof(length0));
+  bucket.SetData(base::byte_span_from_ref(length0), 4);
   GLint length1 = -1;
-  bucket.SetData(&length1, 8, sizeof(length1));
+  bucket.SetData(base::byte_span_from_ref(length1), 8);
   std::array<uint8_t, 2> str = {'A', 0};
-  bucket.SetData(&str, 12, sizeof(str));
+  bucket.SetData(base::as_byte_span(str), 12);
 
   GLsizei count_out;
   std::vector<char*> strings_out;
@@ -533,16 +534,16 @@ TEST_F(CommonDecoderTest, GetAsStrings_MissingNulTerminator) {
   size_t write_offset = 0;
 
   const GLint count = 1;
-  bucket.SetData(&count, write_offset, sizeof(count));
+  bucket.SetData(base::byte_span_from_ref(count), write_offset);
   write_offset += sizeof(count);
 
   const GLint length0 = 2;
-  bucket.SetData(&length0, write_offset, sizeof(length0));
+  bucket.SetData(base::byte_span_from_ref(length0), write_offset);
   write_offset += sizeof(length0);
 
   // "abc" instead of "ab\0", so the NUL terminator is missing.
   const std::array<char, 3> str0 = {'a', 'b', 'c'};
-  bucket.SetData(&str0, write_offset, sizeof(str0));
+  bucket.SetData(base::as_byte_span(str0), write_offset);
 
   GLsizei count_out;
   std::vector<char*> strings_out;

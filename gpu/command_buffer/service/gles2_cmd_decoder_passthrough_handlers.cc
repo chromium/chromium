@@ -1451,7 +1451,7 @@ error::Error GLES2DecoderPassthroughImpl::HandleGetProgramInfoCHROMIUM(
   }
 
   bucket->SetSize(data.size());
-  bucket->SetData(data.data(), 0, data.size());
+  bucket->SetData(data, 0);
 
   return error::kNoError;
 }
@@ -1478,7 +1478,7 @@ error::Error GLES2DecoderPassthroughImpl::HandleGetUniformBlocksCHROMIUM(
   }
 
   bucket->SetSize(data.size());
-  bucket->SetData(data.data(), 0, data.size());
+  bucket->SetData(data, 0);
 
   return error::kNoError;
 }
@@ -1507,7 +1507,7 @@ GLES2DecoderPassthroughImpl::HandleGetTransformFeedbackVaryingsCHROMIUM(
   }
 
   bucket->SetSize(data.size());
-  bucket->SetData(data.data(), 0, data.size());
+  bucket->SetData(data, 0);
 
   return error::kNoError;
 }
@@ -1534,7 +1534,7 @@ error::Error GLES2DecoderPassthroughImpl::HandleGetUniformsES3CHROMIUM(
   }
 
   bucket->SetSize(data.size());
-  bucket->SetData(data.data(), 0, data.size());
+  bucket->SetData(data, 0);
 
   return error::kNoError;
 }
