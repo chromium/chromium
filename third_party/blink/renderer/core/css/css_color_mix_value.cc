@@ -11,7 +11,7 @@
 
 namespace blink::cssvalue {
 
-bool CSSColorMixValue::NormalizePercentages(
+void CSSColorMixValue::NormalizePercentages(
     const CSSPrimitiveValue* percentage1,
     const CSSPrimitiveValue* percentage2,
     double& mix_amount,
@@ -36,27 +36,18 @@ bool CSSColorMixValue::NormalizePercentages(
     p1 = 1.0 - p2;
   }
 
-  if (p1 == 0.0 && p2 == 0.0) {
-    return false;
+  const double percentage_sum = p1 + p2;
+  // Use a progress percentage of 0.5 when the combined percentage is zero.
+  // https://www.w3.org/TR/css-color-5/#color-mix-result
+  // https://github.com/w3c/csswg-drafts/issues/14013
+  if (percentage_sum == 0.0) {
+    mix_amount = 0.5;
+    alpha_multiplier = 0.0;
+    return;
   }
 
-  alpha_multiplier = 1.0;
-
-  double scale = p1 + p2;
-  if (scale != 0.0) {
-    p1 /= scale;
-    p2 /= scale;
-    if (scale <= 1.0) {
-      alpha_multiplier = scale;
-    }
-  }
-
-  mix_amount = p2;
-  if (p1 == 0.0) {
-    mix_amount = 1.0;
-  }
-
-  return true;
+  mix_amount = p2 / percentage_sum;
+  alpha_multiplier = percentage_sum <= 1.0 ? percentage_sum : 1.0;
 }
 
 bool CSSColorMixValue::Equals(const CSSColorMixValue& other) const {

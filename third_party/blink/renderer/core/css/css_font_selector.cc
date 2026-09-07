@@ -93,9 +93,10 @@ scoped_refptr<const FontPalette> ResolveInterpolableFontPalette(
                                      style_engine, family_name);
   scoped_refptr<const FontPalette> end_palette = ResolveInterpolableFontPalette(
       font_palette->GetEnd(), document, style_engine, family_name);
-
-  // If two endpoints of the interpolation are equal, we can simplify the tree
-  if (*start_palette.get() == *end_palette.get()) {
+  // Equal endpoints simplify to a single palette, unless the alpha
+  // multiplier must be preserved (e.g. a zero combined percentage).
+  if (*start_palette.get() == *end_palette.get() &&
+      font_palette->GetAlphaMultiplier() == 1.0) {
     return start_palette;
   }
 

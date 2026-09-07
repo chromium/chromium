@@ -11,8 +11,14 @@
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_relative_color_value.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/fonts/font_palette.h"
 
 namespace blink {
+
+class StyleBuilderConverterPageTest : public PageTestBase {};
 
 TEST(StyleBuilderConverterTest,
      ResolveColorValue_SimplifyColorMixSubexpression) {
@@ -45,6 +51,43 @@ TEST(StyleBuilderConverterTest,
       .length_resolver = CSSToLengthConversionData(/*element=*/nullptr),
       .text_link_colors = TextLinkColors()};
   EXPECT_EQ(ResolveColorValue(*color_mix_value, context), expected);
+}
+
+TEST(StyleBuilderConverterTest, ResolveColorValue_ZeroCombinedPercentage) {
+  const CSSIdentifierValue* red = CSSIdentifierValue::Create(CSSValueID::kRed);
+  const CSSIdentifierValue* blue =
+      CSSIdentifierValue::Create(CSSValueID::kBlue);
+  const CSSNumericLiteralValue* zero_percent = CSSNumericLiteralValue::Create(
+      0, CSSPrimitiveValue::UnitType::kPercentage);
+
+  const cssvalue::CSSColorMixValue* color_mix_value =
+      MakeGarbageCollected<cssvalue::CSSColorMixValue>(
+          red, blue, zero_percent, zero_percent, Color::ColorSpace::kSRGB,
+          Color::HueInterpolationMethod::kShorter);
+
+  const ResolveColorValueContext context{
+      .length_resolver = CSSToLengthConversionData(/*element=*/nullptr),
+      .text_link_colors = TextLinkColors()};
+  EXPECT_EQ(ResolveColorValue(*color_mix_value, context),
+            StyleColor(Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.5f,
+                                             0.0f, 0.5f, 0.0f)));
+}
+
+TEST_F(StyleBuilderConverterPageTest, PaletteMix_ZeroCombinedPercentage) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="target" style="font-palette:
+        palette-mix(in oklab, light 0%, dark 0%)"></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  ASSERT_TRUE(target);
+  const FontPalette* palette =
+      target->ComputedStyleRef().GetFontDescription().GetFontPalette();
+  ASSERT_TRUE(palette);
+  ASSERT_TRUE(palette->IsInterpolablePalette());
+  EXPECT_DOUBLE_EQ(0.5, palette->GetNormalizedPercentage());
+  EXPECT_DOUBLE_EQ(0.0, palette->GetAlphaMultiplier());
 }
 
 TEST(StyleBuilderConverterTest,

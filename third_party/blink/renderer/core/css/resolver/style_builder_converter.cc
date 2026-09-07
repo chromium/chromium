@@ -787,30 +787,28 @@ scoped_refptr<FontPalette> StyleBuilderConverterBase::ConvertPaletteMix(
 
     double alpha_multiplier;
     double normalized_percentage;
-    if (cssvalue::CSSColorMixValue::NormalizePercentages(
-            palette_mix_value->Percentage1(), palette_mix_value->Percentage2(),
-            normalized_percentage, alpha_multiplier, length_resolver)) {
-      double percentage1 = kMiddleStatePercentage;
-      double percentage2 = kMiddleStatePercentage;
-      if (palette_mix_value->Percentage1() &&
-          palette_mix_value->Percentage2()) {
-        percentage1 = palette_mix_value->Percentage1()->ComputePercentage(
-            length_resolver);
-        percentage2 = palette_mix_value->Percentage2()->ComputePercentage(
-            length_resolver);
-      } else if (palette_mix_value->Percentage1()) {
-        percentage1 = palette_mix_value->Percentage1()->ComputePercentage(
-            length_resolver);
-        percentage2 = kFinalStatePercentage - percentage1;
-      } else if (palette_mix_value->Percentage2()) {
-        percentage2 = palette_mix_value->Percentage2()->ComputePercentage(
-            length_resolver);
-        percentage1 = kFinalStatePercentage - percentage2;
-      }
-      return FontPalette::Mix(palette1, palette2, percentage1, percentage2,
-                              normalized_percentage, alpha_multiplier,
-                              color_space, hue_interpolation_method);
+    cssvalue::CSSColorMixValue::NormalizePercentages(
+        palette_mix_value->Percentage1(), palette_mix_value->Percentage2(),
+        normalized_percentage, alpha_multiplier, length_resolver);
+    double percentage1 = kMiddleStatePercentage;
+    double percentage2 = kMiddleStatePercentage;
+    if (palette_mix_value->Percentage1() && palette_mix_value->Percentage2()) {
+      percentage1 =
+          palette_mix_value->Percentage1()->ComputePercentage(length_resolver);
+      percentage2 =
+          palette_mix_value->Percentage2()->ComputePercentage(length_resolver);
+    } else if (palette_mix_value->Percentage1()) {
+      percentage1 =
+          palette_mix_value->Percentage1()->ComputePercentage(length_resolver);
+      percentage2 = kFinalStatePercentage - percentage1;
+    } else if (palette_mix_value->Percentage2()) {
+      percentage2 =
+          palette_mix_value->Percentage2()->ComputePercentage(length_resolver);
+      percentage1 = kFinalStatePercentage - percentage2;
     }
+    return FontPalette::Mix(palette1, palette2, percentage1, percentage2,
+                            normalized_percentage, alpha_multiplier,
+                            color_space, hue_interpolation_method);
   }
   return nullptr;
 }
@@ -2929,10 +2927,8 @@ StyleColor ResolveColorValueImpl(const CSSValue& value,
         ResolveColorValueImpl(color_mix_value->Color1(), context);
     const StyleColor style_color2 =
         ResolveColorValueImpl(color_mix_value->Color2(), context);
-    double alpha_multiplier = 0.0;
-    double mix_amount = 0.0;
-    // TODO(crbug.com/40238188): Not sure what is appropriate to return when
-    // both mix amounts are zero.
+    double alpha_multiplier;
+    double mix_amount;
     color_mix_value->NormalizePercentages(mix_amount, alpha_multiplier,
                                           context.length_resolver);
     const StyleColor::UnresolvedColorMix* unresolved_color_mix =

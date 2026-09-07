@@ -54,16 +54,16 @@ class CORE_EXPORT CSSColorMixValue : public CSSValue {
   }
 
   // https://www.w3.org/TR/css-color-5/#color-mix-percent-norm
-  static bool NormalizePercentages(const CSSPrimitiveValue* percentage1,
+  static void NormalizePercentages(const CSSPrimitiveValue* percentage1,
                                    const CSSPrimitiveValue* percentage2,
                                    double& mix_amount,
                                    double& alpha_multiplier,
                                    const CSSLengthResolver& length_resolver);
-  bool NormalizePercentages(double& mix_amount,
+  void NormalizePercentages(double& mix_amount,
                             double& alpha_multiplier,
                             const CSSLengthResolver& length_resolver) const {
-    return NormalizePercentages(Percentage1(), Percentage2(), mix_amount,
-                                alpha_multiplier, length_resolver);
+    NormalizePercentages(Percentage1(), Percentage2(), mix_amount,
+                         alpha_multiplier, length_resolver);
   }
 
   // https://drafts.csswg.org/css-color-5/#serial-color-mix

@@ -108,7 +108,9 @@ const CSSValue* ConvertFontPaletteToCSSValue(const FontPalette& palette) {
     case FontPalette::kInterpolablePalette: {
       const CSSValue* start = ConvertFontPaletteToCSSValue(*palette.GetStart());
       const CSSValue* end = ConvertFontPaletteToCSSValue(*palette.GetEnd());
-      if (*start == *end) {
+      // Equal endpoints simplify to a single palette, unless the alpha
+      // multiplier must be preserved (e.g. a zero combined percentage).
+      if (*start == *end && palette.GetAlphaMultiplier() == 1.0) {
         return start;
       }
       return MakeGarbageCollected<cssvalue::CSSPaletteMixValue>(

@@ -2292,14 +2292,6 @@ CSSValue* ConsumeColorMixFunction(
       return nullptr;
     }
 
-    // If both values are literally zero (and not calc()) reject at parse time
-    if (p1 && p2 && p1->IsNumericLiteralValue() &&
-        To<CSSNumericLiteralValue>(p1)->ComputePercentage() == 0.0f &&
-        p2->IsNumericLiteralValue() &&
-        To<CSSNumericLiteralValue>(p2)->ComputePercentage() == 0.0) {
-      return nullptr;
-    }
-
     if (!stream.AtEnd()) {
       return nullptr;
     }
@@ -6324,14 +6316,6 @@ CSSValue* ConsumePaletteMixFunction(CSSParserTokenStream& stream,
     if (!palette1 || !palette2) {
       return nullptr;
     }
-    // If both values are literally zero (and not calc()) reject at parse time.
-    if (percentage1 && percentage2 && percentage1->IsNumericLiteralValue() &&
-        To<CSSNumericLiteralValue>(percentage1)->ComputePercentage() == 0.0f &&
-        percentage2->IsNumericLiteralValue() &&
-        To<CSSNumericLiteralValue>(percentage2)->ComputePercentage() == 0.0) {
-      return nullptr;
-    }
-
     if (!stream.AtEnd()) {
       return nullptr;
     }
