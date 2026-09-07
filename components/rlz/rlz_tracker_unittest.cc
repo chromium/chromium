@@ -303,8 +303,7 @@ void RlzLibTest::InvokeDelayedInit() {
 }
 
 void RlzLibTest::ExpectEventRecorded(const char* event_name, bool expected) {
-  char cgi[rlz_lib::kMaxCgiLength];
-  GetProductEventsAsCgi(rlz_lib::CHROME, cgi, std::size(cgi));
+  std::string cgi = GetProductEventsAsCgi(rlz_lib::CHROME).value_or("");
   if (expected) {
     EXPECT_THAT(cgi, HasSubstr(event_name));
   } else {

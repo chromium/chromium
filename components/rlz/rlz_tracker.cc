@@ -71,41 +71,32 @@ void RecordProductEvents(bool first_run,
   if (!already_ran) {
     // Do the initial event recording if is the first run or if we have an
     // empty rlz which means we haven't got a chance to do it.
-    char omnibox_rlz[rlz_lib::kMaxRlzLength + 1];
-    if (!rlz_lib::GetAccessPointRlz(RLZTracker::ChromeOmnibox(), omnibox_rlz,
-                                    rlz_lib::kMaxRlzLength)) {
-      omnibox_rlz[0] = 0;
-    }
+    std::string omnibox_rlz =
+        rlz_lib::GetAccessPointRlz(RLZTracker::ChromeOmnibox()).value_or("");
 
     // Record if google is the initial search provider and/or home page.
-    if ((first_run || omnibox_rlz[0] == 0) && is_google_default_search) {
+    if ((first_run || omnibox_rlz.empty()) && is_google_default_search) {
       rlz_lib::RecordProductEvent(rlz_lib::CHROME,
                                   RLZTracker::ChromeOmnibox(),
                                   rlz_lib::SET_TO_GOOGLE);
     }
 
 #if !BUILDFLAG(IS_IOS)
-    char homepage_rlz[rlz_lib::kMaxRlzLength + 1];
-    if (!rlz_lib::GetAccessPointRlz(RLZTracker::ChromeHomePage(), homepage_rlz,
-                                    rlz_lib::kMaxRlzLength)) {
-      homepage_rlz[0] = 0;
-    }
+    std::string homepage_rlz =
+        rlz_lib::GetAccessPointRlz(RLZTracker::ChromeHomePage()).value_or("");
 
-    if ((first_run || homepage_rlz[0] == 0) &&
+    if ((first_run || homepage_rlz.empty()) &&
         (is_google_homepage || is_google_in_startpages)) {
       rlz_lib::RecordProductEvent(rlz_lib::CHROME,
                                   RLZTracker::ChromeHomePage(),
                                   rlz_lib::SET_TO_GOOGLE);
     }
 
-    char app_list_rlz[rlz_lib::kMaxRlzLength + 1];
-    if (!rlz_lib::GetAccessPointRlz(RLZTracker::ChromeAppList(), app_list_rlz,
-                                    rlz_lib::kMaxRlzLength)) {
-      app_list_rlz[0] = 0;
-    }
+    std::string app_list_rlz =
+        rlz_lib::GetAccessPointRlz(RLZTracker::ChromeAppList()).value_or("");
 
     // Record if google is the initial search provider and/or home page.
-    if ((first_run || app_list_rlz[0] == 0) && is_google_default_search) {
+    if ((first_run || app_list_rlz.empty()) && is_google_default_search) {
       rlz_lib::RecordProductEvent(rlz_lib::CHROME,
                                   RLZTracker::ChromeAppList(),
                                   rlz_lib::SET_TO_GOOGLE);
@@ -671,15 +662,17 @@ bool RLZTracker::GetAccessPointRlzImpl(rlz_lib::AccessPoint point,
   if (ScheduleGetAccessPointRlz(point))
     return false;
 
-  char str_rlz[rlz_lib::kMaxRlzLength + 1];
-  if (!rlz_lib::GetAccessPointRlz(point, str_rlz, rlz_lib::kMaxRlzLength))
+  std::optional<std::string> str_rlz = rlz_lib::GetAccessPointRlz(point);
+  if (!str_rlz) {
     return false;
+  }
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::u16string rlz_local(base::ASCIIToUTF16(str_rlz));
-  if (rlz)
+  std::u16string rlz_local(base::ASCIIToUTF16(*str_rlz));
+  if (rlz) {
     *rlz = rlz_local;
+  }
 
   base::AutoLock lock(cache_lock_);
   rlz_cache_[point] = rlz_local;

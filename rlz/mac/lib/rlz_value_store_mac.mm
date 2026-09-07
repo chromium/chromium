@@ -93,33 +93,15 @@ bool RlzValueStoreMac::WriteAccessPointRlz(AccessPoint access_point,
   return true;
 }
 
-bool RlzValueStoreMac::ReadAccessPointRlz(AccessPoint access_point,
-                                          char* rlz,
-                                          size_t rlz_size) {
-  // Reading a non-existent access point counts as success.
+std::string RlzValueStoreMac::ReadAccessPointRlz(AccessPoint access_point) {
   if (NSDictionary* d =
           ObjCCast<NSDictionary>(WorkingDict()[kAccessPointKey])) {
     NSString* val = ObjCCast<NSString>(d[GetNSAccessPointName(access_point)]);
-    if (!val) {
-      if (rlz_size > 0) {
-        rlz[0] = '\0';
-      }
-      return true;
+    if (val) {
+      return base::SysNSStringToUTF8(val);
     }
-
-    std::string s = base::SysNSStringToUTF8(val);
-    if (s.size() >= rlz_size) {
-      rlz[0] = 0;
-      ASSERT_STRING("GetAccessPointRlz: Insufficient buffer size");
-      return false;
-    }
-    UNSAFE_TODO(strncpy(rlz, s.c_str(), rlz_size));
-    return true;
   }
-  if (rlz_size > 0) {
-    rlz[0] = '\0';
-  }
-  return true;
+  return "";
 }
 
 bool RlzValueStoreMac::ClearAccessPointRlz(AccessPoint access_point) {

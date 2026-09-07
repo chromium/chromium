@@ -275,19 +275,12 @@ bool RlzValueStoreChromeOS::WriteAccessPointRlz(AccessPoint access_point,
   return true;
 }
 
-bool RlzValueStoreChromeOS::ReadAccessPointRlz(AccessPoint access_point,
-                                               char* rlz,
-                                               size_t rlz_size) {
+std::string RlzValueStoreChromeOS::ReadAccessPointRlz(
+    AccessPoint access_point) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const std::string* rlz_value = rlz_store_.FindStringByDottedPath(
       GetKeyName(kAccessPointKey, access_point));
-  if (rlz_value && rlz_value->size() < rlz_size) {
-    UNSAFE_TODO(strncpy(rlz, rlz_value->c_str(), rlz_size));
-    return true;
-  }
-  if (rlz_size > 0)
-    *rlz = '\0';
-  return rlz_value == nullptr;
+  return rlz_value ? *rlz_value : "";
 }
 
 bool RlzValueStoreChromeOS::ClearAccessPointRlz(AccessPoint access_point) {

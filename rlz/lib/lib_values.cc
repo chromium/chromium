@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 // Key and value names of the location of the RLZ shared state.
 
 #include "rlz/lib/lib_values.h"
+
+#include <string_view>
 
 #include "rlz/lib/assert.h"
 
@@ -60,7 +57,7 @@ const char* kFinancialPingResponseObjects[] = { "text/*", NULL };
 //
 //
 
-const char* GetAccessPointName(AccessPoint point) {
+std::string_view GetAccessPointName(AccessPoint point) {
   switch (point) {
   case NO_ACCESS_POINT:               return "";
   case IE_DEFAULT_SEARCH:             return "I7";
@@ -134,30 +131,28 @@ const char* GetAccessPointName(AccessPoint point) {
   }
 
   ASSERT_STRING("GetAccessPointName: Unknown Access Point");
-  return NULL;
+  return "";
 }
 
-
-bool GetAccessPointFromName(const char* name, AccessPoint* point) {
+bool GetAccessPointFromName(std::string_view name, AccessPoint* point) {
   if (!point) {
     ASSERT_STRING("GetAccessPointFromName: point is NULL");
     return false;
   }
   *point = NO_ACCESS_POINT;
-  if (!name)
-    return false;
 
-  for (int i = NO_ACCESS_POINT; i < LAST_ACCESS_POINT; i++)
-    if (strcmp(name, GetAccessPointName(static_cast<AccessPoint>(i))) == 0) {
+  for (int i = NO_ACCESS_POINT; i < LAST_ACCESS_POINT; i++) {
+    std::string_view ap_name = GetAccessPointName(static_cast<AccessPoint>(i));
+    if (name == ap_name) {
       *point = static_cast<AccessPoint>(i);
       return true;
     }
+  }
 
   return false;
 }
 
-
-const char* GetEventName(Event event) {
+std::string_view GetEventName(Event event) {
   switch (event) {
   case INVALID_EVENT:                    return "";
   case INSTALL:                          return "I";
@@ -173,29 +168,28 @@ const char* GetEventName(Event event) {
   }
 
   ASSERT_STRING("GetPointName: Unknown Event");
-  return NULL;
+  return "";
 }
 
-
-bool GetEventFromName(const char* name, Event* event) {
+bool GetEventFromName(std::string_view name, Event* event) {
   if (!event) {
     ASSERT_STRING("GetEventFromName: event is NULL");
     return false;
   }
   *event = INVALID_EVENT;
-  if (!name)
-    return false;
 
-  for (int i = INVALID_EVENT; i < LAST_EVENT; i++)
-    if (strcmp(name, GetEventName(static_cast<Event>(i))) == 0) {
+  for (int i = INVALID_EVENT; i < LAST_EVENT; i++) {
+    std::string_view ev_name = GetEventName(static_cast<Event>(i));
+    if (name == ev_name) {
       *event = static_cast<Event>(i);
       return true;
     }
+  }
 
   return false;
 }
 
-const char* GetProductName(Product product) {
+std::string_view GetProductName(Product product) {
   switch (product) {
   case IE_TOOLBAR:       return "T";
   case TOOLBAR_NOTIFIER: return "P";

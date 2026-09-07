@@ -14,9 +14,6 @@ TEST(LibValuesUnittest, GetAccessPointFromName) {
   rlz_lib::SetExpectedAssertion("");
 
   rlz_lib::AccessPoint point;
-  EXPECT_FALSE(rlz_lib::GetAccessPointFromName(NULL, &point));
-  EXPECT_EQ(rlz_lib::NO_ACCESS_POINT, point);
-
   EXPECT_TRUE(rlz_lib::GetAccessPointFromName("", &point));
   EXPECT_EQ(rlz_lib::NO_ACCESS_POINT, point);
 
@@ -34,8 +31,8 @@ TEST(LibValuesUnittest, GetAccessPointFromName) {
 
   for (int ap = rlz_lib::NO_ACCESS_POINT + 1;
        ap < rlz_lib::LAST_ACCESS_POINT; ++ap) {
-    EXPECT_TRUE(GetAccessPointName(static_cast<rlz_lib::AccessPoint>(ap)) !=
-                NULL);
+    EXPECT_FALSE(
+        GetAccessPointName(static_cast<rlz_lib::AccessPoint>(ap)).empty());
   }
 }
 
@@ -45,9 +42,6 @@ TEST(LibValuesUnittest, GetEventFromName) {
   rlz_lib::SetExpectedAssertion("");
 
   rlz_lib::Event event;
-  EXPECT_FALSE(rlz_lib::GetEventFromName(NULL, &event));
-  EXPECT_EQ(rlz_lib::INVALID_EVENT, event);
-
   EXPECT_TRUE(rlz_lib::GetEventFromName("", &event));
   EXPECT_EQ(rlz_lib::INVALID_EVENT, event);
 

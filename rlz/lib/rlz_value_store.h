@@ -49,9 +49,9 @@ class RlzValueStore {
   // Access point RLZs.
   virtual bool WriteAccessPointRlz(AccessPoint access_point,
                                    std::string_view new_rlz) = 0;
-  virtual bool ReadAccessPointRlz(AccessPoint access_point,
-                                  char* rlz,
-                                  size_t rlz_size) = 0;
+  // Reads the RLZ string for |access_point|. Returns an empty string if no RLZ
+  // value has been set.
+  virtual std::string ReadAccessPointRlz(AccessPoint access_point) = 0;
   virtual bool ClearAccessPointRlz(AccessPoint access_point) = 0;
   virtual bool UpdateExistingAccessPointRlz(std::string_view brand) = 0;
 

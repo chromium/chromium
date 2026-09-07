@@ -86,8 +86,8 @@ bool GetEventsRegKey(std::string_view event_type,
   AppendBrandToString(&key_location);
 
   if (product != NULL) {
-    const char* product_name = GetProductName(*product);
-    if (!product_name || product_name[0] == '\0') {
+    std::string_view product_name = GetProductName(*product);
+    if (product_name.empty()) {
       return false;
     }
 
@@ -204,8 +204,8 @@ bool RlzValueStoreRegistry::ClearPingTime(Product product) {
 
 bool RlzValueStoreRegistry::WriteAccessPointRlz(AccessPoint access_point,
                                                 std::string_view new_rlz) {
-  const char* access_point_name = GetAccessPointName(access_point);
-  if (!access_point_name) {
+  std::string_view access_point_name = GetAccessPointName(access_point);
+  if (access_point_name.empty()) {
     return false;
   }
 
@@ -220,20 +220,11 @@ bool RlzValueStoreRegistry::WriteAccessPointRlz(AccessPoint access_point,
   return true;
 }
 
-// TODO(crbug.com/351564777): Modernize ReadAccessPointRlz to return
-// std::optional<std::string> instead of writing to a raw buffer.
-bool RlzValueStoreRegistry::ReadAccessPointRlz(AccessPoint access_point,
-                                               char* rlz,
-                                               size_t rlz_size) {
-  if (!rlz || rlz_size == 0) {
-    return false;
-  }
-
-  rlz[0] = '\0';
-
-  const char* access_point_name = GetAccessPointName(access_point);
-  if (!access_point_name) {
-    return false;
+std::string RlzValueStoreRegistry::ReadAccessPointRlz(
+    AccessPoint access_point) {
+  std::string_view access_point_name = GetAccessPointName(access_point);
+  if (access_point_name.empty()) {
+    return "";
   }
 
   base::win::RegKey key;
@@ -241,19 +232,12 @@ bool RlzValueStoreRegistry::ReadAccessPointRlz(AccessPoint access_point,
   std::wstring access_point_namew = base::ASCIIToWide(access_point_name);
   std::optional<std::string> rlz_str =
       RegKeyReadValue(key, access_point_namew.c_str());
-  if (!rlz_str) {
-    return true;
-  }
-  if (rlz_str->size() >= rlz_size) {
-    return false;
-  }
-  base::strlcpy(rlz, rlz_str->c_str(), rlz_size);
-  return true;
+  return rlz_str.value_or("");
 }
 
 bool RlzValueStoreRegistry::ClearAccessPointRlz(AccessPoint access_point) {
-  const char* access_point_name = GetAccessPointName(access_point);
-  if (!access_point_name) {
+  std::string_view access_point_name = GetAccessPointName(access_point);
+  if (access_point_name.empty()) {
     return false;
   }
 

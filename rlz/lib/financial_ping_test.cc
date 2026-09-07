@@ -160,12 +160,11 @@ TEST_F(FinancialPingTest, FormRequest) {
   EXPECT_TRUE(rlz_lib::ClearAllProductEvents(rlz_lib::TOOLBAR_NOTIFIER));
 
   // Clear all RLZs.
-  char rlz[rlz_lib::kMaxRlzLength + 1];
   for (int ap = rlz_lib::NO_ACCESS_POINT + 1;
        ap < rlz_lib::LAST_ACCESS_POINT; ap++) {
-    rlz[0] = 0;
     rlz_lib::AccessPoint point = static_cast<rlz_lib::AccessPoint>(ap);
-    if (rlz_lib::GetAccessPointRlz(point, rlz, std::size(rlz)) && rlz[0]) {
+    if (std::optional<std::string> rlz = rlz_lib::GetAccessPointRlz(point);
+        rlz && !rlz->empty()) {
       rlz_lib::SetAccessPointRlz(point, "");
     }
   }
@@ -182,7 +181,7 @@ TEST_F(FinancialPingTest, FormRequest) {
       "Q1:QsbRlzValue" DCC_PARAM, brand);
   EXPECT_STREQ(expected_response.c_str(), request.c_str());
 
-  if (!GetAccessPointRlz(rlz_lib::IE_HOME_PAGE, rlz, std::size(rlz))) {
+  if (!GetAccessPointRlz(rlz_lib::IE_HOME_PAGE)) {
     points[2] = rlz_lib::IE_HOME_PAGE;
     EXPECT_TRUE(rlz_lib::FinancialPing::FormRequest(rlz_lib::TOOLBAR_NOTIFIER,
         points, "swg", brand, "MyId", "en-US", true, &request));

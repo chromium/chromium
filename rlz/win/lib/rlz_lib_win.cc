@@ -14,6 +14,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
 #include "base/win/registry.h"
 #include "rlz/lib/assert.h"
 #include "rlz/lib/machine_deal_win.h"
@@ -25,32 +26,13 @@ namespace rlz_lib {
 
 // OEM Deal confirmation storage functions.
 
-template<class T>
-class typed_buffer_ptr {
-  std::unique_ptr<char[]> buffer_;
-
- public:
-  typed_buffer_ptr() {
-  }
-
-  explicit typed_buffer_ptr(size_t size) : buffer_(new char[size]) {
-  }
-
-  void reset(size_t size) {
-    buffer_.reset(new char[size]);
-  }
-
-  operator T*() {
-    return reinterpret_cast<T*>(buffer_.get());
-  }
-};
-
 // Check if this SID has the desired access by scanning the ACEs in the DACL.
 // This function is part of the rlz_lib namespace so that it can be called from
 // unit tests.  Non-unit test code should not call this function.
 bool HasAccess(PSID sid, ACCESS_MASK access_mask, ACL* dacl) {
-  if (dacl == NULL)
+  if (dacl == nullptr) {
     return false;
+  }
 
   ACL_SIZE_INFORMATION info;
   if (!GetAclInformation(dacl, &info, sizeof(info), AclSizeInformation))
@@ -71,12 +53,14 @@ bool HasAccess(PSID sid, ACCESS_MASK access_mask, ACL* dacl) {
       MapGenericMask(&mask, &generic_mapping);
 
       if (ace->Header.AceType == ACCESS_ALLOWED_ACE_TYPE &&
-         (mask & access_mask) == access_mask && EqualSid(existing_sid, sid))
+          (mask & access_mask) == access_mask && EqualSid(existing_sid, sid)) {
         return true;
+      }
 
       if (ace->Header.AceType == ACCESS_DENIED_ACE_TYPE &&
-         (mask & access_mask) != 0 && EqualSid(existing_sid, sid))
+          (mask & access_mask) != 0 && EqualSid(existing_sid, sid)) {
         return false;
+      }
     }
   }
 
@@ -99,17 +83,20 @@ bool CreateMachineState() {
 
   // Create a SID that represents ALL USERS.
   DWORD users_sid_size = SECURITY_MAX_SID_SIZE;
-  typed_buffer_ptr<SID> users_sid(users_sid_size);
-  CreateWellKnownSid(WinBuiltinUsersSid, NULL, users_sid, &users_sid_size);
+  auto users_sid = base::HeapArray<uint8_t>::Uninit(users_sid_size);
+  CreateWellKnownSid(WinBuiltinUsersSid, nullptr,
+                     reinterpret_cast<SID*>(users_sid.data()), &users_sid_size);
 
   // Get the security descriptor for the registry key.
   DWORD original_sd_size = 0;
-  ::RegGetKeySecurity(hklm_key.Handle(), DACL_SECURITY_INFORMATION, NULL,
-      &original_sd_size);
-  typed_buffer_ptr<SECURITY_DESCRIPTOR> original_sd(original_sd_size);
+  ::RegGetKeySecurity(hklm_key.Handle(), DACL_SECURITY_INFORMATION, nullptr,
+                      &original_sd_size);
+  auto original_sd = base::HeapArray<uint8_t>::Uninit(original_sd_size);
 
-  LONG result = ::RegGetKeySecurity(hklm_key.Handle(),
-      DACL_SECURITY_INFORMATION, original_sd, &original_sd_size);
+  LONG result = ::RegGetKeySecurity(
+      hklm_key.Handle(), DACL_SECURITY_INFORMATION,
+      reinterpret_cast<SECURITY_DESCRIPTOR*>(original_sd.data()),
+      &original_sd_size);
   if (result != ERROR_SUCCESS) {
     ASSERT_STRING("rlz_lib::CreateMachineState: "
                   "Unable to create / open machine key.");
@@ -124,20 +111,25 @@ bool CreateMachineState() {
   DWORD sacl_size = 0;
   DWORD owner_size = 0;
   DWORD group_size = 0;
-  ::MakeAbsoluteSD(original_sd, NULL, &new_sd_size, NULL, &dacl_size,
-                        NULL, &sacl_size, NULL, &owner_size,
-                        NULL, &group_size);
+  ::MakeAbsoluteSD(reinterpret_cast<SECURITY_DESCRIPTOR*>(original_sd.data()),
+                   nullptr, &new_sd_size, nullptr, &dacl_size, nullptr,
+                   &sacl_size, nullptr, &owner_size, nullptr, &group_size);
 
-  typed_buffer_ptr<SECURITY_DESCRIPTOR> new_sd(new_sd_size);
+  auto new_sd = base::HeapArray<uint8_t>::Uninit(new_sd_size);
   // Make sure the DACL is big enough to add one more ACE.
-  typed_buffer_ptr<ACL> dacl(dacl_size + SECURITY_MAX_SID_SIZE);
-  typed_buffer_ptr<ACL> sacl(sacl_size);
-  typed_buffer_ptr<SID> owner(owner_size);
-  typed_buffer_ptr<SID> group(group_size);
+  auto dacl =
+      base::HeapArray<uint8_t>::Uninit(dacl_size + SECURITY_MAX_SID_SIZE);
+  auto sacl = base::HeapArray<uint8_t>::Uninit(sacl_size);
+  auto owner = base::HeapArray<uint8_t>::Uninit(owner_size);
+  auto group = base::HeapArray<uint8_t>::Uninit(group_size);
 
-  if (!::MakeAbsoluteSD(original_sd, new_sd, &new_sd_size, dacl, &dacl_size,
-                        sacl, &sacl_size, owner, &owner_size,
-                        group, &group_size)) {
+  if (!::MakeAbsoluteSD(
+          reinterpret_cast<SECURITY_DESCRIPTOR*>(original_sd.data()),
+          reinterpret_cast<SECURITY_DESCRIPTOR*>(new_sd.data()), &new_sd_size,
+          reinterpret_cast<ACL*>(dacl.data()), &dacl_size,
+          reinterpret_cast<ACL*>(sacl.data()), &sacl_size,
+          reinterpret_cast<SID*>(owner.data()), &owner_size,
+          reinterpret_cast<SID*>(group.data()), &group_size)) {
     ASSERT_STRING("rlz_lib::CreateMachineState: MakeAbsoluteSD failed");
     return false;
   }
@@ -145,7 +137,8 @@ bool CreateMachineState() {
   // If all users already have read/write access to the registry key, then
   // nothing to do.  Otherwise change the security descriptor of the key to
   // give everyone access.
-  if (HasAccess(users_sid, KEY_ALL_ACCESS, dacl)) {
+  if (HasAccess(reinterpret_cast<SID*>(users_sid.data()), KEY_ALL_ACCESS,
+                reinterpret_cast<ACL*>(dacl.data()))) {
     return false;
   }
 
@@ -162,14 +155,17 @@ bool CreateMachineState() {
       /*AccessMode=*/GRANT_ACCESS,
       /*Inheritance=*/SUB_CONTAINERS_AND_OBJECTS_INHERIT);
 
-  ACL* new_dacl = NULL;
-  result = SetEntriesInAcl(1, &ea, dacl, &new_dacl);
+  ACL* new_dacl = nullptr;
+  result =
+      SetEntriesInAcl(1, &ea, reinterpret_cast<ACL*>(dacl.data()), &new_dacl);
   if (result != ERROR_SUCCESS) {
     ASSERT_STRING("rlz_lib::CreateMachineState: SetEntriesInAcl failed");
     return false;
   }
 
-  BOOL ok = SetSecurityDescriptorDacl(new_sd, TRUE, new_dacl, FALSE);
+  BOOL ok = SetSecurityDescriptorDacl(
+      reinterpret_cast<SECURITY_DESCRIPTOR*>(new_sd.data()), TRUE, new_dacl,
+      FALSE);
   if (!ok) {
     ASSERT_STRING("rlz_lib::CreateMachineState: "
                   "SetSecurityDescriptorOwner failed");
@@ -177,9 +173,9 @@ bool CreateMachineState() {
     return false;
   }
 
-  result = ::RegSetKeySecurity(hklm_key.Handle(),
-                               DACL_SECURITY_INFORMATION,
-                               new_sd);
+  result = ::RegSetKeySecurity(
+      hklm_key.Handle(), DACL_SECURITY_INFORMATION,
+      reinterpret_cast<SECURITY_DESCRIPTOR*>(new_sd.data()));
   // Note that the new DACL cannot be freed until after the call to
   // RegSetKeySecurity().
   LocalFree(new_dacl);
@@ -190,7 +186,6 @@ bool CreateMachineState() {
                   "Unable to create / open machine key.");
     success = false;
   }
-
 
   return success;
 }

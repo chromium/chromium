@@ -44,9 +44,7 @@ class RlzValueStoreChromeOS : public RlzValueStore {
 
   bool WriteAccessPointRlz(AccessPoint access_point,
                            std::string_view new_rlz) override;
-  bool ReadAccessPointRlz(AccessPoint access_point,
-                          char* rlz,
-                          size_t rlz_size) override;
+  std::string ReadAccessPointRlz(AccessPoint access_point) override;
   bool ClearAccessPointRlz(AccessPoint access_point) override;
   bool UpdateExistingAccessPointRlz(std::string_view brand) override;
 

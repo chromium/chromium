@@ -61,7 +61,10 @@ void ReadRegistryTree(const base::win::RegKey& src, RegistryKeyData* data) {
       const uint8_t* value_bytes = reinterpret_cast<const uint8_t*>(i.Value());
       value.name.assign(i.Name());
       value.type = i.Type();
-      value.data.assign(value_bytes, UNSAFE_TODO(value_bytes + i.ValueSize()));
+      // SAFETY: `i.Value()` returns a pointer to a buffer of `i.ValueSize()`
+      // bytes from the Windows registry.
+      value.data.assign(value_bytes,
+                        UNSAFE_BUFFERS(value_bytes + i.ValueSize()));
     }
   }
 
