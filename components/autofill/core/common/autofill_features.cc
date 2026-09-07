@@ -858,6 +858,12 @@ BASE_FEATURE(kAutofillGreekRegexes, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAutofillIgnoreUnchangedFrameResizes,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, corrects missclassification of NAME_LAST as NAME_LAST_SECOND in
+// an absence of NAME_LAST_FIRST.
+// TODO(crbug.com/400995432): Clean-up when launched.
+BASE_FEATURE(kAutofillImproveClassificationForTwoWordLastNames,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, global rules are applied to rewrite empty string values like
 // "null" to an empty string. These rules are applied for all types during
 // address normalization.

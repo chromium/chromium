@@ -605,6 +605,8 @@ std::vector<std::pair<base::test::FeatureRef, bool>> GetWipFeatures(
       // TODO(crbug.com/320965828): Understand the changes to the expectations
       // caused by this feature.
       {features::kAutofillBetterLocalHeuristicPlaceholderSupport, false},
+      // NAME_LAST_SECOND missclassification fix
+      {features::kAutofillImproveClassificationForTwoWordLastNames, true},
   };
   bool should_disable_address_lines =
       (country == "BR" || country == "MX" || country == "IN");

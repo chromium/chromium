@@ -689,6 +689,38 @@ void ApplyRationalizationEngineRules(
                 },
             })
             .Build(),
+        // This rationalization rule is a client side fix that changes
+        // `FieldType` of a field from `LAST_NAME_SECOND` to `LAST_NAME` when
+        // `NAME_LAST_FIRST` was not detected.
+        // Additionally credit card related `FieldType`s mustn't be observed
+        // because sometimes `NAME_LAST_FIRST` is labeled as
+        // `CREDIT_CARD_NAME_LAST_FIRST`.
+        //
+        // NAME_LAST_FIRST and NAME_LAST_SECOND `FieldType`s should appear
+        // together because they represent the structure of a Hispanic/Latinx
+        // last name.
+        RationalizationRuleBuilder()
+            .SetRuleName("Correct LAST_NAME_SECOND classification to "
+                         "LAST_NAME when LAST_NAME_FIRST is absent.")
+            .SetEnvironmentCondition(
+                EnvironmentConditionBuilder()
+                    .SetFeature(
+                        &features::
+                            kAutofillImproveClassificationForTwoWordLastNames)
+                    .Build())
+            .SetTriggerField(FieldCondition{.possible_overall_types =
+                                                FieldTypeSet{NAME_LAST_SECOND}})
+            .SetFieldsWithConditionsDoNotExist({
+                FieldCondition{
+                    .location = FieldLocation::kAnywhere,
+                    .possible_overall_types = FieldTypeSet{NAME_LAST_FIRST}},
+                FieldCondition{.location = FieldLocation::kAnywhere,
+                               .possible_overall_types = FieldTypesOfGroup(
+                                   FieldTypeGroup::kCreditCard)},
+            })
+            .SetActions({SetTypeAction{.target = FieldLocation::kTriggerField,
+                                       .set_overall_type = NAME_LAST}})
+            .Build(),
     });
   };
   static const base::NoDestructor<decltype(create_rules())>
