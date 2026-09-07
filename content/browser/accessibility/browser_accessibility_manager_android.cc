@@ -614,8 +614,9 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
       break;
     }
     case ui::AXEventGenerator::Event::RANGE_VALUE_CHANGED:
-      CHECK(android_node->GetData().IsRangeValueSupported(),
-            base::NotFatalUntil::M159);
+      // TODO(crbug.com/557330338): CHECK-exclusion: Convert to a CHECK once we
+      // are confident it won't be triggered.
+      DCHECK(android_node->GetData().IsRangeValueSupported());
       if ((android_node->GetRole() == ax::mojom::Role::kSpinButton &&
            !android_node->IsTextField()) ||
           android_node->GetRole() == ax::mojom::Role::kMeter ||
