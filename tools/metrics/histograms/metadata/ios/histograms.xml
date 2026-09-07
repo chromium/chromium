@@ -5285,7 +5285,10 @@ chromium-metrics-reviews@google.com.
     expires_after="2027-03-31">
   <owner>gambard@chromium.org</owner>
   <owner>bling-meridian@google.com</owner>
-  <summary>The action taken by the user on the overflow menu.</summary>
+  <summary>
+    The action taken by the user on the overflow menu. Between M143 and M155,
+    some actions were wrongly reported. See enum description for the exact list.
+  </summary>
 </histogram>
 
 <histogram name="IOS.OverflowMenu.ActionTriggeredOnNTP"
@@ -5293,7 +5296,9 @@ chromium-metrics-reviews@google.com.
   <owner>gambard@chromium.org</owner>
   <owner>bling-meridian@google.com</owner>
   <summary>
-    The action taken by the user on the overflow menu when on NTP.
+    The action taken by the user on the overflow menu when on NTP. Between M143
+    and M155, some actions were wrongly reported. See enum description for the
+    exact list.
   </summary>
 </histogram>
 
@@ -5308,14 +5313,22 @@ chromium-metrics-reviews@google.com.
     enum="IOSOverflowMenuAction" expires_after="2027-01-31">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
-  <summary>The action added during an overflow menu customization.</summary>
+  <summary>
+    The action added during an overflow menu customization. Between M143 and
+    M155, some actions were wrongly reported. See enum description for the exact
+    list.
+  </summary>
 </histogram>
 
 <histogram name="IOS.OverflowMenu.Customization.ActionRemoved"
     enum="IOSOverflowMenuAction" expires_after="2027-01-31">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
-  <summary>The action removed during an overflow menu customization.</summary>
+  <summary>
+    The action removed during an overflow menu customization. Between M143 and
+    M155, some actions were wrongly reported. See enum description for the exact
+    list.
+  </summary>
 </histogram>
 
 <histogram name="IOS.OverflowMenu.Customization.ActionsCustomized"
@@ -5333,7 +5346,11 @@ chromium-metrics-reviews@google.com.
     enum="IOSOverflowMenuAction" expires_after="2027-01-31">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
-  <summary>The action in the first position after reordering the menu.</summary>
+  <summary>
+    The action in the first position after reordering the menu. Between M143 and
+    M155, some actions were wrongly reported. See enum description for the exact
+    list.
+  </summary>
 </histogram>
 
 <histogram
@@ -5342,7 +5359,9 @@ chromium-metrics-reviews@google.com.
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
-    The action in the fourth position after customizing the menu.
+    The action in the fourth position after customizing the menu. Between M143
+    and M155, some actions were wrongly reported. See enum description for the
+    exact list.
   </summary>
 </histogram>
 
@@ -5352,7 +5371,9 @@ chromium-metrics-reviews@google.com.
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
-    The action in the second position after customizing the menu.
+    The action in the second position after customizing the menu. Between M143
+    and M155, some actions were wrongly reported. See enum description for the
+    exact list.
   </summary>
 </histogram>
 
@@ -5361,7 +5382,9 @@ chromium-metrics-reviews@google.com.
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
-    The action in the third position after customizing the menu.
+    The action in the third position after customizing the menu. Between M143
+    and M155, some actions were wrongly reported. See enum description for the
+    exact list.
   </summary>
 </histogram>
 

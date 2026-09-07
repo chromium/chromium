@@ -80,9 +80,11 @@ TEST_F(OverflowMenuConstantsTest, DestinationConversion) {
 
 // Tests that all action types can be converted to a string and back.
 TEST_F(OverflowMenuConstantsTest, ActionTypeConversion) {
-  // Loop through all enum int values until one is not caught in the switch
-  // statement, signaling that all were handled.
-  for (int value = 0;; value++) {
+  // Loop through all enum int values until reaching the maximum enum value.
+  // Unused or deprecated values will not match any case and will be skipped.
+  for (int value = 0;
+       value <= static_cast<int>(overflow_menu::ActionType::DefaultBrowser);
+       value++) {
     overflow_menu::ActionType actionType =
         static_cast<overflow_menu::ActionType>(value);
     std::optional<overflow_menu::ActionType> finalExpectedActionType;
@@ -147,20 +149,12 @@ TEST_F(OverflowMenuConstantsTest, ActionTypeConversion) {
       case overflow_menu::ActionType::AskBWG:
         finalExpectedActionType = overflow_menu::ActionType::AskBWG;
         break;
-      case overflow_menu::ActionType::HideToolbarsDeprecated:
-        // This is deprecated, so skip it.
-        continue;
-      case overflow_menu::ActionType::TabGroupDeprecated:
-        // This is deprecated, so skip it.
-        continue;
       case overflow_menu::ActionType::ShareThisPage:
         finalExpectedActionType = overflow_menu::ActionType::ShareThisPage;
         break;
       case overflow_menu::ActionType::Identity:
         finalExpectedActionType = overflow_menu::ActionType::Identity;
         break;
-      case overflow_menu::ActionType::SigninDeprecated:
-        continue;
       case overflow_menu::ActionType::CustomizeHomePage:
         finalExpectedActionType = overflow_menu::ActionType::CustomizeHomePage;
         break;
@@ -169,10 +163,10 @@ TEST_F(OverflowMenuConstantsTest, ActionTypeConversion) {
         break;
     }
 
-    // If there's no finalExpectedActionType, then the loop has looped through
-    // all possible enum values.
+    // If there's no finalExpectedActionType, then this value is not a valid
+    // enum value (e.g. deprecated/skipped).
     if (!finalExpectedActionType) {
-      break;
+      continue;
     }
 
     // This will fail if the action type was skipped in ActionTypeForStringName.

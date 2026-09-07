@@ -242,14 +242,8 @@ std::string StringNameForActionType(ActionType action) {
       return "ReaderMode";
     case overflow_menu::ActionType::AskBWG:
       return "AskBWG";
-    case overflow_menu::ActionType::HideToolbarsDeprecated:
-      NOTREACHED();
-    case overflow_menu::ActionType::TabGroupDeprecated:
-      NOTREACHED();
     case overflow_menu::ActionType::ShareThisPage:
       return "ShareThisPage";
-    case overflow_menu::ActionType::SigninDeprecated:
-      NOTREACHED();
     case overflow_menu::ActionType::Identity:
       return "Identity";
     case overflow_menu::ActionType::CustomizeHomePage:

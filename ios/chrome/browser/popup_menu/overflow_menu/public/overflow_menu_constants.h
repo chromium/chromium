@@ -38,33 +38,34 @@ enum class Destination {
 // LINT.IfChange(actionType)
 enum class ActionType {
   Reload = 0,
-  NewTab,
-  NewIncognitoTab,
-  NewWindow,
-  Bookmark,
-  ReadingList,
-  ClearBrowsingData,
-  Translate,
-  ReaderMode,
-  DesktopSite,
-  FindInPage,
-  TextZoom,
-  ReportAnIssue,
-  Help,
-  ShareChrome,
-  EditActions,
-  LensOverlay,
-  AIPrototype,
-  SetTabReminder,
+  NewTab = 1,
+  NewIncognitoTab = 2,
+  NewWindow = 3,
+  // Follow = 4, Deprecated in M143.
+  Bookmark = 5,
+  ReadingList = 6,
+  ClearBrowsingData = 7,
+  Translate = 8,
+  DesktopSite = 9,
+  FindInPage = 10,
+  TextZoom = 11,
+  ReportAnIssue = 12,
+  Help = 13,
+  ShareChrome = 14,
+  EditActions = 15,
+  LensOverlay = 16,
+  AIPrototype = 17,
+  SetTabReminder = 18,
+  ReaderMode = 19,
   // TODO(crbug.com/416002705): Rename reference to BWG.
-  AskBWG,
-  HideToolbarsDeprecated,
-  TabGroupDeprecated,  // This enum is deprecated due to feature cleanup.
-  ShareThisPage,
-  SigninDeprecated,
-  Identity,
-  CustomizeHomePage,
-  DefaultBrowser,
+  AskBWG = 20,
+  // HideToolbars = 21, Deprecated in M154.
+  // TabGroup = 22, Deprecated in M150.
+  ShareThisPage = 23,
+  // Signin = 24, Deprecated in M152.
+  Identity = 25,
+  CustomizeHomePage = 26,
+  DefaultBrowser = 27,
 };
 // LINT.ThenChange(/ios/chrome/browser/popup_menu/overflow_menu/ui/overflow_menu_metrics.h:actionType)
 

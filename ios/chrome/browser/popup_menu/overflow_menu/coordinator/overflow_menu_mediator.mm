@@ -1840,14 +1840,8 @@ void GetPresetNTPBackgroundPreview(
       return self.readerModeAction;
     case overflow_menu::ActionType::AskBWG:
       return self.askBWGAction;
-    case overflow_menu::ActionType::HideToolbarsDeprecated:
-      NOTREACHED();
-    case overflow_menu::ActionType::TabGroupDeprecated:
-      NOTREACHED();
     case overflow_menu::ActionType::ShareThisPage:
       return self.shareAction;
-    case overflow_menu::ActionType::SigninDeprecated:
-      NOTREACHED();
     case overflow_menu::ActionType::Identity:
       return self.identityAction;
     case overflow_menu::ActionType::CustomizeHomePage:
@@ -2747,7 +2741,6 @@ void GetPresetNTPBackgroundPreview(
     case overflow_menu::ActionType::DefaultBrowser:
     case overflow_menu::ActionType::EditActions:
     case overflow_menu::ActionType::ShareThisPage:
-    case overflow_menu::ActionType::SigninDeprecated:
     case overflow_menu::ActionType::Identity:
     case overflow_menu::ActionType::CustomizeHomePage:
       NOTREACHED();
@@ -2775,10 +2768,6 @@ void GetPresetNTPBackgroundPreview(
       return [self toggleReaderModeAction];
     case overflow_menu::ActionType::AskBWG:
       return [self openAskBWGAction];
-    case overflow_menu::ActionType::HideToolbarsDeprecated:
-      NOTREACHED();
-    case overflow_menu::ActionType::TabGroupDeprecated:
-      NOTREACHED();
   }
 }
 

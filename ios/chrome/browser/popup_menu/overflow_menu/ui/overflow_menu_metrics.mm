@@ -86,14 +86,8 @@ IOSOverflowMenuAction HistogramActionFromActionType(
       return IOSOverflowMenuAction::kReaderMode;
     case overflow_menu::ActionType::AskBWG:
       return IOSOverflowMenuAction::kAskBWG;
-    case overflow_menu::ActionType::HideToolbarsDeprecated:
-      NOTREACHED();
-    case overflow_menu::ActionType::TabGroupDeprecated:
-      NOTREACHED();
     case overflow_menu::ActionType::ShareThisPage:
       return IOSOverflowMenuAction::kShareThisPage;
-    case overflow_menu::ActionType::SigninDeprecated:
-      NOTREACHED();
     case overflow_menu::ActionType::Identity:
       return IOSOverflowMenuAction::kIdentity;
     case overflow_menu::ActionType::CustomizeHomePage:

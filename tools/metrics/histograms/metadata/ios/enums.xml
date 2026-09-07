@@ -1432,6 +1432,22 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Microsoft Excel OpenXML"/>
 </enum>
 
+<!--
+  Represents actions triggered or customized in the iOS overflow menu.
+  Entries should not be renumbered and numeric values should never be reused.
+
+
+  Note: Prior to M155, values between 4 and 27 were recorded with discrepancies
+  due to a mismatch between ActionType (which lacked explicit values and skipped
+  Follow = 4, and had ReaderMode placed at 8 instead of 19) and this enum:
+  - Values 4..7 (Bookmark, ReadingList, ClearBrowsingData, Translate) were
+    recorded with an offset of -1.
+  - ReaderMode was recorded at 8 instead of 19.
+  - Values 20..27 (AskGemini, Identity, CustomizeHomePage, DefaultBrowser)
+    were shifted by -1 due to deprecated actions missing from ActionType.
+  From M155 onwards, ActionType is explicitly synchronized with these values.
+-->
+
 <!-- LINT.IfChange(IOSOverflowMenuAction) -->
 
 <enum name="IOSOverflowMenuAction">
