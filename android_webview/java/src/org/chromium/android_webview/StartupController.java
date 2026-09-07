@@ -90,6 +90,23 @@ public class StartupController {
     private @Nullable RuntimeException mStartupException;
     private @Nullable Error mStartupError;
 
+    private static @Nullable StartupController sInstance;
+
+    public static StartupController getInstance() {
+        if (sInstance == null) {
+            throw new IllegalStateException("StartupController is not initialized");
+        }
+        return sInstance;
+    }
+
+    public static StartupController initialize(Delegate delegate) {
+        if (sInstance != null) {
+            throw new IllegalStateException("StartupController is already initialized");
+        }
+        sInstance = new StartupController(delegate);
+        return sInstance;
+    }
+
     private @Nullable StartupTasksRunner mStartupTasksRunner;
 
     public StartupController(Delegate delegate) {

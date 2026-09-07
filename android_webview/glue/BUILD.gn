@@ -73,6 +73,7 @@ android_library("glue_java") {
     "java/src/com/android/webview/chromium/SharedWebViewContentsClientAdapter.java",
     "java/src/com/android/webview/chromium/SharedWebViewRendererClientAdapter.java",
     "java/src/com/android/webview/chromium/SpeculativeLoadingConfig.java",
+    "java/src/com/android/webview/chromium/StartupDelegateImpl.java",
     "java/src/com/android/webview/chromium/TracingControllerAdapter.java",
     "java/src/com/android/webview/chromium/WebBackForwardListChromium.java",
     "java/src/com/android/webview/chromium/WebContent.java",

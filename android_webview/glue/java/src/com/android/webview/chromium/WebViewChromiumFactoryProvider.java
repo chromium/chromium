@@ -61,6 +61,7 @@ import org.chromium.android_webview.CompatQuirks;
 import org.chromium.android_webview.DualTraceEvent;
 import org.chromium.android_webview.ManifestMetadataUtil;
 import org.chromium.android_webview.StartupCallSite;
+import org.chromium.android_webview.StartupController;
 import org.chromium.android_webview.WebViewChromiumRunQueue;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwSwitches;
@@ -146,6 +147,8 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     private static final String ASSET_PATH_WORKAROUND_HISTOGRAM_NAME =
             "Android.WebView.AssetPathWorkaroundUsed.FactoryInit";
 
+    private StartupDelegateImpl mStartupDelegate;
+
     @GuardedBy("mAwInit.getLazyInitLock()")
     private TracingController mTracingController;
 
@@ -153,7 +156,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     private static WebViewChromiumFactoryProvider sSingleton;
 
     /* package */ WebViewChromiumRunQueue getRunQueue() {
-        return mAwInit.getRunQueue();
+        return StartupController.getInstance().getRunQueue();
     }
 
     // We have a 4 second timeout to try to detect deadlocks to detect and aid in debugging
@@ -429,8 +432,17 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             mAwInit = createAwInit();
             mSharedStatics = new SharedStatics(mAwInit);
             mStaticsAdapter = new StaticsAdapter(mSharedStatics);
+
+            // TODO(crbug.com/544990736): Ideally StartupController should be initialized at the end
+            // of
+            // provider init once all early usages (e.g. runNonUiThreadCapableStartupTasks) are
+            // removed.
+            mStartupDelegate =
+                    new StartupDelegateImpl(webViewDelegate, mAwInit::initializeDefaultProfileOnUI);
+            StartupController startupController = StartupController.initialize(mStartupDelegate);
+
             if (Looper.myLooper() == Looper.getMainLooper()) {
-                mAwInit.setProviderInitOnMainLooperLocation(
+                startupController.setProviderInitOnMainLooperLocation(
                         new Throwable(
                                 "Location where WebViewChromiumFactoryProvider init was"
                                         + " started on the Android main looper"));
@@ -486,7 +498,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 packageId = webViewDelegate.getPackageId(ctx.getResources(), resourcePackage);
             }
 
-            mAwInit.setUpResourcesOnBackgroundThread(packageId, ctx);
+            mStartupDelegate.setUpResourcesOnBackgroundThread(packageId, ctx);
 
             AndroidXProcessGlobalConfig.extractConfigFromApp(application.getClassLoader());
 
@@ -581,7 +593,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                                                 .WEBVIEW_MOVE_WORK_TO_PROVIDER_INIT_THREAD_POOL)) {
                     PostTask.postTask(
                             TaskTraits.USER_VISIBLE,
-                            mAwInit.getStartupController()::runNonUiThreadCapableStartupTasks);
+                            startupController::runNonUiThreadCapableStartupTasks);
                 }
 
                 boolean enableSystemTracing =
@@ -673,7 +685,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                     && !WebViewCachedFlags.get()
                             .isCachedFeatureEnabled(
                                     AwFeatures.WEBVIEW_MOVE_WORK_TO_PROVIDER_INIT_THREAD_POOL)) {
-                mAwInit.getStartupController().runNonUiThreadCapableStartupTasks();
+                startupController.runNonUiThreadCapableStartupTasks();
             }
 
             FlagOverrideHelper helper =
@@ -717,6 +729,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             setSingleton(this);
         }
         mStartupTimings = new FactoryStartupTimings(startTime, webViewDelegate);
+        mStartupDelegate.setStartupTimings(mStartupTimings);
     }
 
     // The startup tasks are setup to run based on the following logic:
@@ -951,12 +964,6 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     @Override
     public PacProcessor createPacProcessor() {
         return GlueApiHelperForR.createPacProcessor();
-    }
-
-    void recordInitTraces() {
-        if (mStartupTimings != null) {
-            mStartupTimings.recordInitTraces();
-        }
     }
 
     private boolean shouldEnableContextExperiment() {
