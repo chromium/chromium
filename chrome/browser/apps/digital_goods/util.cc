@@ -38,7 +38,7 @@ std::string GetTwaPackageName(content::RenderFrameHost* render_frame_host) {
   if (!browser || !browser->GetProfile()) {
     return std::string();
   }
-  if (browser->GetProfile()->IsIncognitoProfile()) {
+  if (browser->GetProfile()->IsPrimaryOTRProfileWithRegularParent()) {
     return std::string();
   }
 
