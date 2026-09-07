@@ -256,7 +256,7 @@ a new file type that meets that condition, we’d like to hear about it.
 <a name="TOC-i-found-a-local-file-or-directory-that-may-be-security-sensitive-and-is-not-blocked-by-file-system-access-api-"></a>
 ### I found a local file or directory that may be security-sensitive and is not blocked by File System Access API - is this a security bug?
 
-The File System Access API maintains a [blocklist](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/file_system_access/chrome_file_system_access_permission_context.cc;l=266-346)
+The File System Access API maintains a [blocklist](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/file_system_access/chrome_file_system_access_permission_context.cc;l=368-493;drc=bbf74ad62c20afa8b0e51efbced167d0b91be8a1)
 of directories and files that may be sensitive, such as systems files, and if user
 chooses a file or a directory matching the list on a site using File System
 Access API, the access is blocked.
