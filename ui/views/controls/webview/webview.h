@@ -134,6 +134,8 @@ class WEBVIEW_EXPORT WebView : public View,
   // WebContents' size.
   void EnableSizingFromWebContents(const gfx::Size& min_size,
                                    const gfx::Size& max_size);
+  const gfx::Size& AutoResizeMinSize() const;
+  const gfx::Size& AutoResizeMaxSize() const;
 
   // A scoped object that disconnects the webview from the accessibility tree.
   // When destroyed, it restores the previous accessibility state.
@@ -250,9 +252,6 @@ class WEBVIEW_EXPORT WebView : public View,
   // ratio) is enabled or disabled.
   virtual void OnLetterboxingChanged() {}
   bool is_letterboxing() const { return is_letterboxing_; }
-
-  const gfx::Size& min_size() const { return min_size_; }
-  const gfx::Size& max_size() const { return max_size_; }
 
   // View:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;

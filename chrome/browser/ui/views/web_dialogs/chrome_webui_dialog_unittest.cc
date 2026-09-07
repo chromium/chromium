@@ -222,6 +222,37 @@ TEST_F(ChromeWebUIDialogTest, AutoResizeClampsToMaxSize) {
   EXPECT_EQ(delegate->web_view()->GetPreferredSize(), gfx::Size(300, 300));
 }
 
+TEST_F(ChromeWebUIDialogTest, AutoResizeCapsRendererMaxToWorkArea) {
+  WebDialogSpec spec;
+  spec.min_size = gfx::Size(kMinSize, kMinSize);
+  // Taller than the 800x600 test display.
+  spec.max_size = gfx::Size(615, 1000);
+
+  std::unique_ptr<views::Widget> widget = CreateDialogWidget(spec);
+  auto* delegate = static_cast<ChromeWebUIDialog*>(widget->widget_delegate());
+
+  delegate->ResizeDueToAutoResize(nullptr, gfx::Size(615, 900));
+
+  const gfx::Size renderer_max = delegate->web_view()->AutoResizeMaxSize();
+  EXPECT_LT(renderer_max.height(), 1000);
+  // The renderer is never allowed to lay out taller than what the widget can
+  // show, so nothing is clipped without a scrollbar.
+  EXPECT_EQ(delegate->web_view()->GetPreferredSize(), renderer_max);
+}
+
+TEST_F(ChromeWebUIDialogTest, AutoResizeKeepsSpecMaxWhenItFitsTheDisplay) {
+  WebDialogSpec spec;
+  spec.min_size = gfx::Size(kMinSize, kMinSize);
+  spec.max_size = gfx::Size(300, 300);
+
+  std::unique_ptr<views::Widget> widget = CreateDialogWidget(spec);
+  auto* delegate = static_cast<ChromeWebUIDialog*>(widget->widget_delegate());
+
+  delegate->ResizeDueToAutoResize(nullptr, gfx::Size(200, 200));
+
+  EXPECT_EQ(gfx::Size(300, 300), delegate->web_view()->AutoResizeMaxSize());
+}
+
 TEST_F(ChromeWebUIDialogTest, AutoResizeWithUnboundedMaxSizeIsContentDriven) {
   // Sizes stay well inside the 800x600 test display so the work-area clamp is
   // not what this measures.
