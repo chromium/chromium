@@ -167,8 +167,6 @@
   // then [self.mediator configureConsumer].
   self.mediator.consumer = self.recentTabsTableViewController;
   self.recentTabsTableViewController.imageDataSource = self.mediator;
-  [self.mediator initObservers];
-  [self.mediator configureConsumer];
 
   // Present RecentTabsNavigationController.
   self.recentTabsNavigationController = [[TableViewNavigationController alloc]
@@ -203,6 +201,7 @@
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
   [self.mediator disconnect];
+  self.mediator.consumer = nil;
   self.mediator = nil;
   _syncService = nullptr;
   _authenticationService = nullptr;

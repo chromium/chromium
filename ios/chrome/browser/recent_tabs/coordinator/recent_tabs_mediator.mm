@@ -104,6 +104,10 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
   std::unique_ptr<base::RetainingOneShotTimer> _timer;
   std::unique_ptr<AuthenticationServiceObserverBridge>
       _authServiceObserverBridge;
+  std::unique_ptr<
+      base::ScopedObservation<sessions::TabRestoreService,
+                              recent_tabs::ClosedTabsObserverBridge>>
+      _restoreServiceObserver;
 }
 
 // Return the user's current sign-in and chrome-sync state.
@@ -149,58 +153,45 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
         FROM_HERE, base::Milliseconds(100), base::BindRepeating(^{
           [weakSelf updateConsumerTabs];
         }));
+    _syncedSessionsObserver =
+        std::make_unique<synced_sessions::SyncedSessionsObserverBridge>(
+            self, self.sessionSyncService);
+    _identityManagerObserver =
+        std::make_unique<signin::IdentityManagerObserverBridge>(
+            self.identityManager, self);
+    _syncObserver = std::make_unique<SyncObserverBridge>(self, syncService);
+    _closedTabsObserver =
+        std::make_unique<recent_tabs::ClosedTabsObserverBridge>(self);
+    _restoreServiceObserver = std::make_unique<base::ScopedObservation<
+        sessions::TabRestoreService, recent_tabs::ClosedTabsObserverBridge>>(
+        _closedTabsObserver.get());
+    _restoreServiceObserver->Observe(restoreService);
   }
   return self;
 }
 
 #pragma mark - Public Interface
 
-- (void)initObservers {
-  if (!_syncedSessionsObserver) {
-    _syncedSessionsObserver =
-        std::make_unique<synced_sessions::SyncedSessionsObserverBridge>(
-            self, self.sessionSyncService);
-  }
-  if (!_identityManagerObserver) {
-    _identityManagerObserver =
-        std::make_unique<signin::IdentityManagerObserverBridge>(
-            self.identityManager, self);
-  }
-  if (!_syncObserver && self.syncService) {
-    _syncObserver =
-        std::make_unique<SyncObserverBridge>(self, self.syncService);
-  }
-  if (!_closedTabsObserver) {
-    _closedTabsObserver =
-        std::make_unique<recent_tabs::ClosedTabsObserverBridge>(self);
-    if (self.restoreService) {
-      self.restoreService->AddObserver(_closedTabsObserver.get());
-    }
-    [self.consumer setTabRestoreService:self.restoreService];
-  }
-}
-
 - (void)disconnect {
   _syncedSessionsObserver.reset();
   _identityManagerObserver.reset();
   _syncObserver.reset();
-
-  if (_closedTabsObserver) {
-    if (self.restoreService) {
-      self.restoreService->RemoveObserver(_closedTabsObserver.get());
-    }
-    _closedTabsObserver.reset();
-    _sessionSyncService = nullptr;
-    _identityManager = nullptr;
-    _restoreService = nullptr;
-    _authServiceObserverBridge.reset();
-    _faviconLoader = nullptr;
-    _syncService = nullptr;
-  }
+  _restoreServiceObserver.reset();
+  _closedTabsObserver.reset();
+  _sessionSyncService = nullptr;
+  _identityManager = nullptr;
+  _restoreService = nullptr;
+  _authServiceObserverBridge.reset();
+  _faviconLoader = nullptr;
+  _syncService = nullptr;
 }
 
-- (void)configureConsumer {
-  [self refreshSessionsView];
+- (void)setConsumer:(id<RecentTabsConsumer>)consumer {
+  _consumer = consumer;
+  if (consumer) {
+    [self.consumer setTabRestoreService:self.restoreService];
+    [self refreshSessionsView];
+  }
 }
 
 - (void)refreshSessionsView {

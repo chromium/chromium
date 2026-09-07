@@ -39,8 +39,8 @@ class TabRestoreService;
 @interface RecentTabsMediator
     : NSObject <ClosedTabsObserving, TableViewFaviconDataSource>
 
-// The consumer for this object. This can change during the lifetime of this
-// object and may be nil.
+// The consumer for this object. Must be set after initialization, and is then
+// configured with the current data.
 @property(nonatomic, strong) id<RecentTabsConsumer> consumer;
 
 - (instancetype)
@@ -55,15 +55,8 @@ class TabRestoreService;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Starts observing the he user's signed-in and chrome-sync states.
-- (void)initObservers;
-
 // Disconnects the mediator from all observers.
 - (void)disconnect;
-
-// Configures the consumer with current data. Intended to be called immediately
-// after initialization.
-- (void)configureConsumer;
 
 - (void)refreshSessionsView;
 
