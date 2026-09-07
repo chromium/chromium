@@ -7,6 +7,8 @@
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/content_setting_bubble_contents.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -101,25 +103,7 @@ class MockPermissionRequestManager
       : permissions::PermissionRequestManager(web_contents),
         quiet_ui_reason_(quiet_ui_reason),
         web_contents_(web_contents) {
-    requests_ = base::ToVector(
-        request_types,
-        [&](auto request_type)
-            -> std::unique_ptr<permissions::PermissionRequest> {
-          return std::make_unique<permissions::MockPermissionRequest>(
-              origin, request_type,
-              with_gesture
-                  ? permissions::PermissionRequestGestureType::GESTURE
-                  : permissions::PermissionRequestGestureType::NO_GESTURE);
-        });
-    raw_requests_ = base::ToVector(
-        requests_,
-        [](const auto& request)
-            -> raw_ptr<permissions::PermissionRequest, VectorExperimental> {
-          return request.get();
-        });
-
-    requests_[0]->set_requesting_frame_id(
-        web_contents->GetPrimaryMainFrame()->GetGlobalId());
+    SetRequests(origin, request_types, with_gesture);
 
     ON_CALL(*this, Dismiss).WillByDefault([]() { NOTREACHED(); });
     ON_CALL(*this, Deny).WillByDefault([]() { NOTREACHED(); });
@@ -132,19 +116,14 @@ class MockPermissionRequestManager
   }
 
  public:
-  ~MockPermissionRequestManager() override { requests_.clear(); }
+  ~MockPermissionRequestManager() override { ClearRequests(); }
   static MockPermissionRequestManager* CreateForWebContents(
       const GURL& origin,
       const std::vector<permissions::RequestType> request_types,
       bool with_gesture,
       WebContents* web_contents) {
-    web_contents->SetUserData(
-        UserDataKey(),
-        base::WrapUnique(static_cast<PermissionRequestManager*>(
-            new MockPermissionRequestManager(origin, request_types,
-                                             with_gesture, web_contents))));
-    return static_cast<MockPermissionRequestManager*>(
-        permissions::PermissionRequestManager::FromWebContents(web_contents));
+    return CreateForWebContents(origin, request_types, with_gesture,
+                                /*quiet_ui_reason=*/std::nullopt, web_contents);
   }
 
   static MockPermissionRequestManager* CreateForWebContents(
@@ -168,6 +147,7 @@ class MockPermissionRequestManager
   }
 
   GURL GetRequestingOrigin() const override {
+    CHECK(!raw_requests_.empty());
     return raw_requests_.front()->requesting_origin();
   }
 
@@ -183,8 +163,8 @@ class MockPermissionRequestManager
   MOCK_METHOD(void, FinalizeCurrentRequests, (), (override));
 
   void OpenHelpCenterLink(const ui::Event& event) override {}
-  void SetManageClicked() override { requests_.clear(); }
-  void SetLearnMoreClicked() override { requests_.clear(); }
+  void SetManageClicked() override { ClearRequests(); }
+  void SetLearnMoreClicked() override { ClearRequests(); }
   void SetHatsShownCallback(base::OnceCallback<void()> callback) override {}
 
   bool RecreateView() override { return false; }
@@ -218,7 +198,36 @@ class MockPermissionRequestManager
 
   void SetAlreadyDisplayed() { was_current_request_already_displayed_ = true; }
 
-  void ClearRequests() { requests_.clear(); }
+  void ClearRequests() {
+    raw_requests_.clear();
+    requests_.clear();
+  }
+
+  void SetRequests(const GURL& origin,
+                   const std::vector<permissions::RequestType>& request_types,
+                   bool with_gesture) {
+    raw_requests_.clear();
+    requests_ = base::ToVector(
+        request_types,
+        [&](auto request_type)
+            -> std::unique_ptr<permissions::PermissionRequest> {
+          return std::make_unique<permissions::MockPermissionRequest>(
+              origin, request_type,
+              with_gesture
+                  ? permissions::PermissionRequestGestureType::GESTURE
+                  : permissions::PermissionRequestGestureType::NO_GESTURE);
+        });
+    raw_requests_ = base::ToVector(
+        requests_,
+        [](const auto& request)
+            -> raw_ptr<permissions::PermissionRequest, VectorExperimental> {
+          return request.get();
+        });
+    if (!requests_.empty()) {
+      requests_[0]->set_requesting_frame_id(
+          web_contents_->GetPrimaryMainFrame()->GetGlobalId());
+    }
+  }
 
   void SetView(std::unique_ptr<permissions::PermissionPrompt> view) {
     view_ = std::move(view);
@@ -531,6 +540,111 @@ IN_PROC_BROWSER_TEST_F(PermissionChipBrowserTest, ClickOnQuietChipAbusiveTest) {
   ClickOnChip(chip_controller);
   EXPECT_FALSE(chip_controller->IsBubbleShowing());
   EXPECT_FALSE(delegate.IsRequestInProgress());
+}
+
+// Regression test for crbug.com/552024390:
+// When a prompt is delayed because confirmation is displaying, requests can be
+// cancelled or finalized while delay_prompt_timer_ is running. When the timer
+// fires, delegate->Requests() is empty. ChipController must safely abort
+// without constructing PermissionPromptChipModel or dereferencing requests[0].
+IN_PROC_BROWSER_TEST_F(PermissionChipBrowserTest,
+                       DelayTimerFiresAfterRequestsClearedDoesNotCrash) {
+  auto& delegate = *test::MockPermissionRequestManager::CreateForWebContents(
+      GURL("https://test.origin"), {permissions::RequestType::kGeolocation},
+      /*with_gesture=*/true, web_contents_);
+  PermissionPromptChip chip_prompt(web_contents_, &delegate);
+  ChipController* chip_controller =
+      chip_prompt.get_chip_controller_for_testing();
+
+  // User accepts the prompt, putting the chip into confirmation state.
+  chip_controller->OnRequestDecided(permissions::PermissionAction::GRANTED);
+  EXPECT_TRUE(chip_controller->is_confirmation_showing());
+  EXPECT_TRUE(chip_controller->is_collapse_timer_running_for_testing());
+
+  // A new request arrives while the confirmation chip is still showing.
+  delegate.SetRequests(GURL("https://test.origin"),
+                       {permissions::RequestType::kNotifications},
+                       /*with_gesture=*/false);
+
+  // Trigger ShowPermissionPrompt for the new request. Because confirmation is
+  // showing, this starts delay_prompt_timer_ instead of displaying immediately.
+  chip_controller->ShowPermissionPrompt(delegate.GetWeakPtr());
+  EXPECT_TRUE(chip_controller->is_delay_prompt_timer_running_for_testing());
+
+  // Simulate request cleanup or cancellation while the delay timer is active.
+  delegate.ClearRequests();
+
+  // Fire the collapse timer so ShouldWaitForConfirmationToComplete() is false,
+  // then fire the delay timer now that requests are empty.
+  chip_controller->fire_collapse_timer_for_testing();
+  chip_controller->fire_delay_prompt_timer_for_testing();
+
+  // Verify that no crash occurred and chip state remains clean.
+  EXPECT_EQ(chip_controller->permission_prompt_model(), nullptr);
+  EXPECT_FALSE(chip_controller->IsPermissionPromptChipVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionChipBrowserTest,
+                       PromptWithEmptyRequestsDoesNotCrash) {
+  auto& delegate = *test::MockPermissionRequestManager::CreateForWebContents(
+      GURL("https://test.origin"), {permissions::RequestType::kNotifications},
+      /*with_gesture=*/false, web_contents_);
+  PermissionPromptChip chip_prompt(web_contents_, &delegate);
+  ChipController* chip_controller =
+      chip_prompt.get_chip_controller_for_testing();
+
+  delegate.ClearRequests();
+  ASSERT_TRUE(delegate.Requests().empty());
+
+  chip_controller->InitializePermissionPrompt(delegate.GetWeakPtr());
+  EXPECT_EQ(chip_controller->permission_prompt_model(), nullptr);
+  EXPECT_FALSE(chip_controller->IsPermissionPromptChipVisible());
+
+  chip_controller->ShowPermissionPrompt(delegate.GetWeakPtr());
+  EXPECT_EQ(chip_controller->permission_prompt_model(), nullptr);
+  EXPECT_FALSE(chip_controller->IsPermissionPromptChipVisible());
+}
+
+// `delegate->Requests()` is non-empty when `ShowPermissionPrompt` begins,
+// but becomes empty inside `InitializePermissionPrompt` because
+// `ResetPermissionPromptChip()` sees user input in progress in the omnibox and
+// calls `delegate.Ignore()`.
+IN_PROC_BROWSER_TEST_F(
+    PermissionChipBrowserTest,
+    ShowPermissionPromptWhileOmniboxInputInProgressDoesNotCrash) {
+  auto& delegate = *test::MockPermissionRequestManager::CreateForWebContents(
+      GURL("https://test.origin"), {permissions::RequestType::kNotifications},
+      /*with_gesture=*/false, web_contents_);
+  PermissionPromptChip chip_prompt(web_contents_, &delegate);
+  ChipController* chip_controller =
+      chip_prompt.get_chip_controller_for_testing();
+
+  // Reset the chip first so we can set omnibox input in progress without
+  // LocationBarView::UpdateChipVisibility() immediately calling Ignore().
+  chip_controller->ResetPermissionPromptChip();
+
+  browser_view()
+      ->GetLocationBarView()
+      ->GetOmniboxController()
+      ->edit_model()
+      ->SetInputInProgress(true);
+
+  // Initialize the prompt model while omnibox input is in progress.
+  chip_controller->InitializePermissionPrompt(delegate.GetWeakPtr());
+  ASSERT_NE(chip_controller->permission_prompt_model(), nullptr);
+  ASSERT_FALSE(delegate.Requests().empty());
+
+  // Inside ShowPermissionPrompt() -> InitializePermissionPrompt(),
+  // ResetPermissionPromptChip() sees user input in progress in the omnibox and
+  // calls Ignore(), synchronously clearing the active permission requests.
+  EXPECT_CALL(delegate, Ignore(_)).WillOnce([&delegate]() {
+    delegate.ClearRequests();
+  });
+
+  chip_controller->ShowPermissionPrompt(delegate.GetWeakPtr());
+  EXPECT_TRUE(delegate.Requests().empty());
+  EXPECT_EQ(chip_controller->permission_prompt_model(), nullptr);
+  EXPECT_FALSE(chip_controller->IsPermissionPromptChipVisible());
 }
 
 class PermissionPromiseLifetimeModulationTest

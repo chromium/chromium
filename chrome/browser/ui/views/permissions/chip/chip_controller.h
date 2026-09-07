@@ -103,7 +103,7 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   // manager and observes the prompt bubble.
   void InitializePermissionPrompt(
       base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate,
-      base::OnceCallback<void()> = base::DoNothing());
+      base::OnceCallback<void()> callback = base::DoNothing());
 
   // Displays a permission chip. Call ShowPermissionPrompt() instead to show
   // both a chip and a prompt.
@@ -167,6 +167,16 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   void fire_dismiss_timer_for_testing() {
     CHECK_IS_TEST();
     dismiss_timer_.FireNow();
+  }
+
+  bool is_delay_prompt_timer_running_for_testing() const {
+    CHECK_IS_TEST();
+    return delay_prompt_timer_.IsRunning();
+  }
+
+  void fire_delay_prompt_timer_for_testing() {
+    CHECK_IS_TEST();
+    delay_prompt_timer_.FireNow();
   }
 
   views::View* get_prompt_bubble_view_for_testing() {

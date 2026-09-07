@@ -269,7 +269,7 @@ void ChipController::InitializePermissionPrompt(
 
   ResetPermissionPromptChip();
 
-  if (!delegate) {
+  if (!delegate || delegate->Requests().empty()) {
     return;
   }
 
@@ -318,11 +318,19 @@ void ChipController::ShowPermissionUi(
     return;
   }
 
-  if (!delegate) {
+  if (!delegate || delegate->Requests().empty()) {
+    ResetPermissionRequestChip();
     return;
   }
 
   InitializePermissionPrompt(delegate);
+
+  // `InitializePermissionPrompt` calls `ResetPermissionPromptChip()`, which can
+  // synchronously clear `delegate->Requests()` (e.g. via `Ignore()` when user
+  // input is in progress in the omnibox) and abort model creation.
+  if (!permission_prompt_model_) {
+    return;
+  }
 
   // HaTS surveys may be triggered while a quiet chip is displayed. If that
   // happens, the quiet chip should not collapse anymore, because otherwise a

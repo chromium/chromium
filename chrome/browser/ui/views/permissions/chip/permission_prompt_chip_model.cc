@@ -80,7 +80,6 @@ std::u16string GetQuietPermissionMessage(
 
 std::u16string GetLoudPermissionMessage(
     permissions::PermissionPrompt::Delegate* delegate) {
-
   const auto& requests = delegate->Requests();
   if (IsMicAndCameraRequest(requests)) {
     return l10n_util::GetStringUTF16(
@@ -108,14 +107,20 @@ bool ShouldPermissionBubbleExpand(
   return true;
 }
 
+base::WeakPtr<permissions::PermissionPrompt::Delegate> CheckDelegate(
+    base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate) {
+  CHECK(delegate);
+  CHECK(!delegate->Requests().empty());
+  return delegate;
+}
+
 }  // namespace
 
 PermissionPromptChipModel::PermissionPromptChipModel(
     base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate)
-    : delegate_(delegate),
+    : delegate_(CheckDelegate(delegate)),
       allowed_icon_(GetPermissionIconId(delegate.get())),
       blocked_icon_(GetBlockedPermissionIconId(delegate.get())) {
-
   if (delegate_->ShouldCurrentRequestUseQuietUI()) {
     prompt_style_ = PermissionPromptStyle::kQuietChip;
     should_bubble_start_open_ = false;
@@ -160,6 +165,7 @@ bool PermissionPromptChipModel::IsExpandAnimationAllowed() {
 
 void PermissionPromptChipModel::UpdateWithUserDecision(
     permissions::PermissionAction user_decision) {
+  CheckDelegate(delegate_);
   permissions::PermissionRequest::ChipTextType chip_text_type;
   permissions::PermissionRequest::ChipTextType accessibility_text_type;
   user_decision_ = user_decision;
