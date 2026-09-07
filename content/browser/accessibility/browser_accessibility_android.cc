@@ -2018,8 +2018,9 @@ int BrowserAccessibilityAndroid::GetTextChangeFromIndex() const {
     // If the text change is due to a IME text commit.
     if (committed_text_length > 0) {
       // Cursor should move to the end of committed text.
-      CHECK_GE(GetSelectionStart() - committed_text_length, 0,
-               base::NotFatalUntil::M159);
+      // TODO(crbug.com/557456841): CHECK-exclusion: Convert to a CHECK once we
+      // are confident it won't be triggered.
+      DCHECK_GE(GetSelectionStart() - committed_text_length, 0);
       // This is current_cursor_location - len(X).
       return GetSelectionStart() - committed_text_length;
     }
