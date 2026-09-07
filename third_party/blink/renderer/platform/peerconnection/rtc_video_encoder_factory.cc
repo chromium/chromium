@@ -200,7 +200,7 @@ std::optional<webrtc::SdpVideoFormat> VEAToWebRTCFormat(
   }
 
   return std::nullopt;
-}  // namespace
+}
 
 struct SupportedFormats {
   bool unknown = true;
@@ -291,6 +291,19 @@ void AddH264ConstrainedBaselineProfileToSupportedFormats(
   }
 }
 
+#if BUILDFLAG(IS_APPLE) && BUILDFLAG(RTC_USE_H265)
+bool NoRealtimeH265EncodingOnMac(
+    const media::VideoEncodeAccelerator::SupportedProfile& profile) {
+  // See https://crbug.com/555794214.
+  // Old Mac devices do not support realtime encoding due to very high latency.
+  // Coincidentally these also do not support SVC encoding.
+  // Therefore we use SVC support as a proxy for bad encoders.
+
+  // Should support at least L1T1 and L1T2 to have realtime support.
+  return profile.scalability_modes.size() <= 1;
+}
+#endif
+
 SupportedFormats GetSupportedFormatsInternal(
     media::GpuVideoAcceleratorFactories* gpu_factories,
     const std::vector<media::VideoCodecProfile>& disabled_profiles) {
@@ -350,6 +363,19 @@ SupportedFormats GetSupportedFormatsInternal(
       // Supported H.265 formats must be added to the end of supported codecs.
 #if BUILDFLAG(RTC_USE_H265)
       if (format->name == webrtc::kH265CodecName) {
+#if BUILDFLAG(IS_APPLE)
+        // See https://crbug.com/555794214
+        // Some older MacOS devices don't support realtime H265 encoding
+        // resulting in unaccaptable encode latency.
+
+        if (NoRealtimeH265EncodingOnMac(profile)) {
+          LOG(WARNING)
+              << "Skipping H265 hardware encoder because it's known to have "
+                 "high encode latency.";
+          continue;
+        }
+#endif
+
         // Avoid having duplicated formats reported via GetSupportedFormats().
         // Also ensure only the highest level format is reported for the same
         // H.265 profile.
