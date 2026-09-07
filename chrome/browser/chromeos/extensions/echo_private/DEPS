@@ -24,7 +24,7 @@ include_rules = [
 specific_include_rules = {
   "echo_private_apitest\\.cc": [
     "+chrome/browser/extensions/extension_apitest.h",
-    "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
     "+chrome/browser/ui/tabs/tab_strip_model.h",
     "+chrome/test/base/mixin_based_in_process_browser_test.h",
   ]

@@ -19,6 +19,7 @@
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
+#include "content/public/browser/navigation_entry.h"
 
 namespace ash {
 

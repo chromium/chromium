@@ -39,6 +39,8 @@
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "ui/aura/window.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace {
 std::string GetRegistrationCode(std::string_view type) {

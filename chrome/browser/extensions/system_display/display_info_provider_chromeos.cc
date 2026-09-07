@@ -20,6 +20,7 @@
 #include "ui/display/display_layout.h"
 #include "ui/display/manager/touch_device_manager.h"
 #include "ui/display/screen.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 

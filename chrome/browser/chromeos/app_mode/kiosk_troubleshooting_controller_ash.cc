@@ -12,6 +12,7 @@
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/shell.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace ash {
 

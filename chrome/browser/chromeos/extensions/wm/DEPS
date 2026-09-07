@@ -18,7 +18,7 @@ include_rules = [
   "+chrome/browser/extensions/extension_service_test_with_install.h",
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/ash/desks",
-  "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/common",
   "+chrome/test",
 ]

@@ -15,7 +15,7 @@ specific_include_rules = {
   # this list.
   "gemini_app_tab_helper_unittest\\.cc": [
     "+chrome/browser/profiles/profile.h",
-    "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
     "+chrome/browser/ui/tabs/tab_activity_simulator.h",
     "+chrome/test",
   ],

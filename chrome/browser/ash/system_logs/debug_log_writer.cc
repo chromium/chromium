@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/system_logs/debug_log_writer.h"
 
 #include <stdint.h>
+
 #include <utility>
 
 #include "base/command_line.h"
@@ -18,6 +19,7 @@
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/common/logging_chrome.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "content/public/browser/browser_task_traits.h"

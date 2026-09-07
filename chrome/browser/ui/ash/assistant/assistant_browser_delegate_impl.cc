@@ -36,6 +36,7 @@
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace {
 

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/chromeos/extensions/wm/wm_desks_private_feature_ash.h"
+
 #include <string>
 
 #include "ash/public/cpp/desk_template.h"
@@ -11,8 +13,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "base/value_iterators.h"
-#include "chrome/browser/chromeos/extensions/wm/wm_desks_private_feature_ash.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
+#include "components/sessions/core/session_id.h"
 
 namespace extensions {
 

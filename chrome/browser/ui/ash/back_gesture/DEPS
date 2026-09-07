@@ -1,7 +1,7 @@
 specific_include_rules = {
   ".*test\\.cc": [
-    "+chrome/browser/ui/browser.h",
     "+chrome/browser/ui/browser_window.h",
+    "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
     "+chrome/browser/ui/tabs/tab_strip_model.h",
     "+chrome/test",
   ],

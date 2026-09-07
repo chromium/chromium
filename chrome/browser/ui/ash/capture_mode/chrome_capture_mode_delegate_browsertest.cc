@@ -20,7 +20,6 @@
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/screen_ai/public/test/fake_optical_character_recognizer.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"

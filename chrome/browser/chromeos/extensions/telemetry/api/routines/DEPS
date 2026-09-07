@@ -19,3 +19,9 @@ include_rules = [
   "+chrome/common",
   "+chrome/test",
 ]
+
+specific_include_rules = {
+  "diagnostic_routine_manager_unittest\\.cc": [
+    "+chrome/browser/ui/tabs/tab_strip_model.h",
+  ],
+}

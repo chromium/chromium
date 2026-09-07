@@ -22,6 +22,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_discardable_memory_allocator.h"
 #include "base/threading/thread_checker_impl.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"

@@ -36,6 +36,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/test/extension_background_page_waiter.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 

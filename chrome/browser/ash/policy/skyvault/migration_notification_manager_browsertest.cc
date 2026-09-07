@@ -16,15 +16,16 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/skyvault/local_files_migration_constants.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_dialog.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/user_manager/user.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -218,17 +219,15 @@ IN_PROC_BROWSER_TEST_P(MigrationNotificationManagerParamTest,
   EXPECT_TRUE(GetNotification());
 
   const GURL error_log_url = net::FilePathToFileURL(error_log_path);
-  EXPECT_NE(
-      error_log_url,
-      browser()->tab_strip_model()->GetActiveWebContents()->GetURL().spec());
+  EXPECT_NE(error_log_url,
+            browser()->GetActiveTabInterface()->GetContents()->GetURL().spec());
 
   message_center::MessageCenter::Get()->ClickOnNotificationButton(
       notification_id(), /*button_index=*/0);
 
   EXPECT_FALSE(GetNotification());
-  EXPECT_EQ(
-      error_log_url,
-      browser()->tab_strip_model()->GetActiveWebContents()->GetURL().spec());
+  EXPECT_EQ(error_log_url,
+            browser()->GetActiveTabInterface()->GetContents()->GetURL().spec());
 }
 
 // Tests that a policy configuration error notification is shown, and closed

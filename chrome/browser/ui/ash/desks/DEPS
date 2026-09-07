@@ -22,9 +22,9 @@ include_rules = [
   "+chrome/browser/ui/ash/multi_user",
   "+chrome/browser/ui/ash/shelf",
   "+chrome/browser/ui/ash/system_web_apps",
+  "+chrome/browser/ui/browser_window/public/browser_collection_observer.h",
   "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h",
-  "+chrome/browser/ui/browser_window/public/browser_collection_observer.h",
   "+chrome/browser/ui/browser_window/public/create_browser_window.h",
   "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
   "+chrome/browser/ui/web_applications/test",
@@ -37,9 +37,12 @@ specific_include_rules = {
   "chrome_saved_desk_delegate_unittest\\.cc": [
     "+chrome/browser/ash/browser_delegate/browser_controller_impl.h",
   ],
+  "desks_client_browsertest\\.cc": [
+    "+chrome/browser/ui/tabs/tab_strip_model.h",
+  ],
   ".*_browsertest\\.cc": [
-    "+chrome/browser/ui/browser.h",
     "+chrome/browser/ui/browser_tabstrip.h",
     "+chrome/browser/ui/browser_window.h",
+    "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   ],
 }

@@ -14,6 +14,7 @@
 #include "ash/wallpaper/wallpaper_controller_test_api.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "base/files/file_util.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
 #include "chrome/browser/browser_process.h"

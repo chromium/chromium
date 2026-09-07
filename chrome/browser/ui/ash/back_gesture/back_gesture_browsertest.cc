@@ -5,7 +5,6 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/path_service.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"

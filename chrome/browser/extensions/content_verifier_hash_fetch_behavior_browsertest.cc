@@ -8,6 +8,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/chrome_content_verifier_delegate.h"

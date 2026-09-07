@@ -13,8 +13,8 @@ include_rules = [
   "+chrome/browser/extensions/extension_browsertest.h",
   "+chrome/browser/profiles/profile_manager.h",
   "+chrome/browser/ui/ash/system_web_apps",
-  "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/browser_window.h",
+  "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/browser/web_applications/test",
   "+chrome/test/base",
 ]
@@ -24,6 +24,6 @@ specific_include_rules = {
   # Apps tests while the Chrome Apps deprecation is finalised.
   # TODO(crbug.com/379262505) - Remove this.
   "app_list_with_recent_apps_browsertest\\.cc": [
-    "+chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
+    "+chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h",
   ],
 }

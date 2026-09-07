@@ -10,6 +10,7 @@
 #include "base/strings/stringprintf.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/touch_device_manager.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/events/devices/device_data_manager.h"
 
 namespace system_logs {

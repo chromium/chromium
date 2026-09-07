@@ -30,7 +30,7 @@ include_rules = [
 specific_include_rules = {
   ".*test\\.cc": [
     "+chrome/browser/browser_process.h",
-    "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
     "+chrome/browser/ui/browser_window/public/create_browser_window.h",
     "+chrome/browser/ui/views/frame",
     "+chrome/test/base",

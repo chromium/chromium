@@ -43,6 +43,7 @@
 #include "third_party/zlib/google/compression_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/template_expressions.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/webui/webui_allowlist.h"
 
 namespace {

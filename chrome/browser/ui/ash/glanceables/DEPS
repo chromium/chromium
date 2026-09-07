@@ -16,6 +16,11 @@ include_rules = [
   "+chrome/browser/prefs",
   "+chrome/browser/profiles",
   "+chrome/browser/signin",
-  "+chrome/browser/ui/browser.h",
   "+chrome/test",
 ]
+
+specific_include_rules = {
+  ".*browsertest\\.cc": [
+    "+chrome/browser/ui/tabs/tab_strip_model.h",
+  ],
+}

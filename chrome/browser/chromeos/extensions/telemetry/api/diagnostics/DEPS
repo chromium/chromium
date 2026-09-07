@@ -13,7 +13,14 @@ include_rules = [
   # this list.
   "+chrome/browser/chromeos/extensions/telemetry/api/common",
   "+chrome/browser/chromeos/extensions/telemetry/api/routines",
-  "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/common",
   "+chrome/test",
 ]
+
+specific_include_rules = {
+  "diagnostics_api_v2_browsertest\\.cc": [
+    "+chrome/browser/ui/tabs/tab_enums.h",
+    "+chrome/browser/ui/tabs/tab_strip_model.h",
+  ],
+}
