@@ -13,6 +13,7 @@
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
+#import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -83,7 +84,10 @@
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/security_alert_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
@@ -149,6 +153,25 @@ AutofillSettingsPage SuggestionToAutofillSettingsPage(
     }
     default:
       NOTREACHED();
+  }
+}
+
+// Returns the EntitySuppressionManager for `profile`, or nullptr if
+// unavailable.
+autofill::EntitySuppressionManager* GetEntitySuppressionManager(
+    ProfileIOS* profile) {
+  return profile ? IOSAutofillEntitySuppressionManagerFactory::GetForProfile(
+                       profile)
+                 : nullptr;
+}
+
+// Unsuppresses `entity` for `profile`.
+void UnsuppressEntity(base::WeakPtr<ProfileIOS> profile,
+                      const autofill::EntityInstance& entity) {
+  autofill::EntitySuppressionManager* suppressionManager =
+      GetEntitySuppressionManager(profile.get());
+  if (suppressionManager) {
+    suppressionManager->UnsuppressEntity(entity);
   }
 }
 
@@ -947,7 +970,9 @@ AutofillSettingsPage SuggestionToAutofillSettingsPage(
 
 // Suppresses the entity for `suggestion` and refreshes keyboard suggestions.
 - (void)suppressEntityForSuggestion:(FormSuggestion*)suggestion {
-  if (!self.profile) {
+  autofill::EntitySuppressionManager* suppressionManager =
+      GetEntitySuppressionManager(self.profile);
+  if (!suppressionManager) {
     return;
   }
   base::optional_ref<const autofill::EntityInstance> entity =
@@ -955,14 +980,43 @@ AutofillSettingsPage SuggestionToAutofillSettingsPage(
   if (!entity.has_value()) {
     return;
   }
-  autofill::EntitySuppressionManager* suppressionManager =
-      IOSAutofillEntitySuppressionManagerFactory::GetForProfile(self.profile);
-  if (!suppressionManager) {
+  suppressionManager->SuppressEntity(*entity);
+  [self resetSuggestions];
+  [self showUndoSnackbarForEntity:*entity];
+}
+
+// Shows a snackbar allowing the user to undo removing `entity`.
+- (void)showUndoSnackbarForEntity:(const autofill::EntityInstance&)entity {
+  id<SnackbarCommands> snackbarHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SnackbarCommands);
+  if (!snackbarHandler) {
     return;
   }
-  suppressionManager->SuppressEntity(*entity);
+
+  SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
+  action.title = l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_REMOVE_UNDO_ACTION);
+  __weak __typeof(self) weakSelf = self;
+  base::WeakPtr<ProfileIOS> weakProfile =
+      self.profile ? self.profile->AsWeakPtr() : nullptr;
+  autofill::EntityInstance capturedEntity = entity;
+  action.handler = ^{
+    UnsuppressEntity(weakProfile, capturedEntity);
+    [weakSelf resetSuggestions];
+  };
+
+  SnackbarMessage* message = [[SnackbarMessage alloc]
+      initWithTitle:l10n_util::GetNSString(
+                        IDS_IOS_AUTOFILL_AI_REMOVE_SNACKBAR_TITLE)];
+  message.subtitle =
+      l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_REMOVE_SNACKBAR_SUBTITLE);
+  message.action = action;
+
+  [snackbarHandler showSnackbarMessage:message];
+}
+
+// Resets suggestions in the form input accessory mediator.
+- (void)resetSuggestions {
   [_formInputAccessoryMediator resetSuggestions];
-  // TODO(crbug.com/551864564): Trigger undo snackbar.
 }
 
 // Shows confirmation dialog before opening Other passwords.

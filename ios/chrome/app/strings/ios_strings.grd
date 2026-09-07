@@ -733,6 +733,18 @@
         <!-- TODO(crbug.com/551864564): Make string translateable once finalized. -->
         Remove from Chrome?
       </message>
+      <message name="IDS_IOS_AUTOFILL_AI_REMOVE_SNACKBAR_SUBTITLE" desc="Subtitle of the snackbar shown after removing an Autofill AI suggestion. [iOS only]" translateable="false">
+        <!-- TODO(crbug.com/551864564): Make string translateable once finalized. -->
+        Your original source won't be deleted.
+      </message>
+      <message name="IDS_IOS_AUTOFILL_AI_REMOVE_SNACKBAR_TITLE" desc="Title of the snackbar shown after removing an Autofill AI suggestion. [iOS only]" translateable="false">
+        <!-- TODO(crbug.com/551864564): Make string translateable once finalized. -->
+        Suggestion removed
+      </message>
+      <message name="IDS_IOS_AUTOFILL_AI_REMOVE_UNDO_ACTION" desc="Button text on the snackbar to undo removing an Autofill AI suggestion. [iOS only]" translateable="false">
+        <!-- TODO(crbug.com/551864564): Make string translateable once finalized. -->
+        Undo
+      </message>
       <message name="IDS_IOS_AUTOFILL_AI_SAVED_LOCALLY_FOOTER" desc="The notice text displayed in the footer when the Autofill AI entity (ex. Passport, Vehicle info etc.) is saved locally. [iOS only]">
           Your info is saved to your device
       </message>
