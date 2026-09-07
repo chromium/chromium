@@ -433,9 +433,11 @@ public class MediaDrmBridge {
                         cryptoScheme, containerMimeType, securityLevel);
             }
             return MediaDrm.isCryptoSchemeSupported(cryptoScheme, containerMimeType);
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | UnsupportedOperationException e) {
             // A few devices have broken DRM HAL configs and throw an exception here regardless of
             // the arguments; just assume this means the scheme is not supported.
+            // In addition, MediaDrm.isCryptoSchemeSupported throws UnsupportedOperationException if
+            // the DRM HAL cannot handle the requested security level.
             Log.e(TAG, "Exception in isCryptoSchemeSupported", e);
             return false;
         }
