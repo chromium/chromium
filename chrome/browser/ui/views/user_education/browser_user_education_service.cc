@@ -2632,7 +2632,7 @@ void MaybeRegisterChromeTutorials(
             // Bubble step - Send to your devices menu item
             BubbleStep(kTabSendTabToSelfMenuItem)
                 .SetBubbleBodyText(IDS_TUTORIAL_SEND_TAB_TO_SELF_STEP_2_BODY)
-                .SetBubbleArrow(HelpBubbleArrow::kRightCenter)
+                .SetBubbleArrow(HelpBubbleArrow::kBottomLeft)
                 .InAnyContext()
                 .AbortIfVisibilityLost(false),
 
