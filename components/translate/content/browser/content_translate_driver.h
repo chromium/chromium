@@ -8,8 +8,10 @@
 #include <map>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -126,6 +128,14 @@ class ContentTranslateDriver : public TranslateDriver,
       bool page_level_translation_criteria_met) override;
 
  private:
+  struct TranslationResult {
+    bool cancelled;
+    base::i18n::LanguageTag source_lang;
+    base::i18n::LanguageTag translated_lang;
+    TranslateErrors error_type;
+  };
+
+  void OnAllPagesTranslated(const std::vector<TranslationResult>& results);
 
   void OnPageAway(int page_seq_no);
   void OnSidePanelAway(int page_seq_no);
@@ -142,7 +152,11 @@ class ContentTranslateDriver : public TranslateDriver,
   void InitiateTranslationIfReload(
       content::NavigationHandle* navigation_handle);
 
-  mojom::TranslateAgent* GetTranslateAgent(int page_seq_no);
+  // Returns the relevant TranslateAgents for the given page sequence number.
+  // For PDF translations, only the side panel agent will be returned. For
+  // html translations with reading mode open, both main and side panel agents
+  // will be returned.
+  std::vector<mojom::TranslateAgent*> GetTranslateAgents(int page_seq_no);
 
   raw_ptr<TranslateManager> translate_manager_ = nullptr;
 

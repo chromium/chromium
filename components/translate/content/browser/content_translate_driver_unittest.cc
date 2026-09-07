@@ -6,6 +6,10 @@
 
 #include <memory>
 
+#include "base/run_loop.h"
+#include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/language_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -276,6 +280,8 @@ TEST_F(ContentTranslateDriverTest, DestroyWithMultipleObservers) {
 
 // Test page registration with both main page and side panel agents.
 TEST_F(ContentTranslateDriverTest, RegisterPageMainAndSidePanel) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(translate::kEnableTranslatePdf);
   MockTranslateAgent main_agent;
   MockTranslateAgent side_panel_agent;
 
@@ -292,8 +298,8 @@ TEST_F(ContentTranslateDriverTest, RegisterPageMainAndSidePanel) {
   // When mimetype is NOT PDF, translating should go to main agent.
   content::WebContentsTester::For(web_contents())->SetMainFrameMimeType("text/html");
   driver_->TranslatePage(kActiveSeqNo, "script", "en", "fr");
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(main_agent.called_translate_);
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return main_agent.called_translate_; }));
   EXPECT_FALSE(side_panel_agent.called_translate_);
 
   // Reset flag
@@ -309,25 +315,41 @@ TEST_F(ContentTranslateDriverTest, RegisterPageMainAndSidePanel) {
   driver_->RegisterPage(side_panel_agent.BindToNewPageRemote(), side_panel_details,
                         true);
 
-  // Mimetype is STILL NOT PDF, translating should still go to main agent.
+  // When mimetype is NOT PDF and side panel is open, translating goes to
+  // main_agent and side_panel_agent.
+  EXPECT_CALL(*mock_translate_client_, IsReadingModeOpen())
+      .WillRepeatedly(::testing::Return(true));
+  content::WebContentsTester::For(web_contents())
+      ->SetMainFrameMimeType("text/html");
   driver_->TranslatePage(kActiveSeqNo, "script", "en", "fr");
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(main_agent.called_translate_);
-  EXPECT_FALSE(side_panel_agent.called_translate_);
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return main_agent.called_translate_; }));
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return side_panel_agent.called_translate_; }));
 
-  // Reset flag
+  // Reset flags
   main_agent.called_translate_ = false;
+  side_panel_agent.called_translate_ = false;
 
-  // Change mimetype to PDF, translating should now go to side panel agent.
+  // When mimetype IS PDF, main_agent is excluded and only side_panel_agent
+  // receives translation.
   content::WebContentsTester::For(web_contents())->SetMainFrameMimeType("application/pdf");
   driver_->TranslatePage(kActiveSeqNo, "script", "en", "fr");
-  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return side_panel_agent.called_translate_; }));
   EXPECT_FALSE(main_agent.called_translate_);
-  EXPECT_TRUE(side_panel_agent.called_translate_);
 }
 
-// Test that disconnecting the side panel agent does not delete the main page agent.
+// Test that disconnecting the side panel agent does not delete the main page
+// agent. Test that disconnecting the side panel agent does not delete the main
+// page agent.
 TEST_F(ContentTranslateDriverTest, SidePanelDisconnectDoesNotEraseMainAgent) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(translate::kEnableTranslatePdf);
+
+  EXPECT_CALL(*mock_translate_client_, IsReadingModeOpen())
+      .WillRepeatedly(::testing::Return(true));
+
   MockTranslateAgent main_agent;
   MockTranslateAgent side_panel_agent;
 
@@ -346,52 +368,126 @@ TEST_F(ContentTranslateDriverTest, SidePanelDisconnectDoesNotEraseMainAgent) {
       GURL("chrome-untrusted://read-anything-side-panel.top-chrome/");
   side_panel_details.adopted_language = "en";
   side_panel_details.is_model_reliable = true;
-  driver_->RegisterPage(side_panel_agent.BindToNewPageRemote(), side_panel_details,
-                        true);
+  driver_->RegisterPage(side_panel_agent.BindToNewPageRemote(),
+                        side_panel_details, true);
 
   // Both should be registered and receptive.
-  content::WebContentsTester::For(web_contents())->SetMainFrameMimeType("text/html");
+  content::WebContentsTester::For(web_contents())
+      ->SetMainFrameMimeType("text/html");
   driver_->TranslatePage(kActiveSeqNo, "script", "en", "fr");
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(main_agent.called_translate_);
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return main_agent.called_translate_; }));
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return side_panel_agent.called_translate_; }));
   main_agent.called_translate_ = false;
-
-  content::WebContentsTester::For(web_contents())->SetMainFrameMimeType("application/pdf");
-  driver_->TranslatePage(kActiveSeqNo, "script", "en", "fr");
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(side_panel_agent.called_translate_);
   side_panel_agent.called_translate_ = false;
 
   // 3. Trigger disconnect on side panel agent
   side_panel_agent.Disconnect();
-  base::RunLoop().RunUntilIdle();
 
-  // Side panel should not receive translation anymore
-  content::WebContentsTester::For(web_contents())->SetMainFrameMimeType("application/pdf");
+  // (Optional) In PDF mode, only the side panel agent would translate.
+  // Verify it does not receive translation using TestFuture as a FIFO queue
+  // flush.
+  content::WebContentsTester::For(web_contents())
+      ->SetMainFrameMimeType("application/pdf");
   driver_->TranslatePage(kActiveSeqNo, "script", "en", "fr");
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(side_panel_agent.called_translate_);
+  {
+    base::test::TestFuture<void> flush_future;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, flush_future.GetCallback());
+    EXPECT_TRUE(flush_future.Wait());
+    EXPECT_FALSE(side_panel_agent.called_translate_);
+  }
 
   // But the main agent should still receive translation (it was not deleted)!
-  content::WebContentsTester::For(web_contents())->SetMainFrameMimeType("text/html");
+  // Reading Mode is still open, so this call would reach side_panel_agent too
+  // if it were alive.
+  content::WebContentsTester::For(web_contents())
+      ->SetMainFrameMimeType("text/html");
   driver_->TranslatePage(kActiveSeqNo, "script", "en", "fr");
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(main_agent.called_translate_);
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return main_agent.called_translate_; }));
+  EXPECT_FALSE(side_panel_agent.called_translate_);
   main_agent.called_translate_ = false;
 
   // 4. Trigger disconnect on main agent
   main_agent.Disconnect();
-  base::RunLoop().RunUntilIdle();
 
-  // Now both are gone, so translating to main agent should not work either.
+  // Now both are gone, so translating should not reach main_agent either.
   driver_->TranslatePage(kActiveSeqNo, "script", "en", "fr");
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(main_agent.called_translate_);
+  {
+    base::test::TestFuture<void> flush_future;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, flush_future.GetCallback());
+    EXPECT_TRUE(flush_future.Wait());
+    EXPECT_FALSE(main_agent.called_translate_);
+  }
+}
+
+// Test that multiple agents translating in parallel only trigger a single
+// OnPageTranslated notification t
+TEST_F(ContentTranslateDriverTest,
+       MultipleAgentsTranslateCoordinatesResponses) {
+  EXPECT_CALL(*mock_translate_client_, IsReadingModeOpen())
+      .WillRepeatedly(::testing::Return(true));
+
+  MockTranslateAgent main_agent;
+  MockTranslateAgent side_panel_agent;
+
+  class CountingTranslationObserver
+      : public ContentTranslateDriver::TranslationObserver {
+   public:
+    void OnPageTranslated(std::string_view source_lang,
+                          std::string_view translated_lang,
+                          translate::TranslateErrors error_type) override {
+      page_translated_count_++;
+      last_error_ = error_type;
+    }
+    int page_translated_count_ = 0;
+    translate::TranslateErrors last_error_ = translate::TranslateErrors::NONE;
+  } observer;
+
+  driver_->AddTranslationObserver(&observer);
+
+  // 1. Register main page
+  translate::LanguageDetectionDetails main_details;
+  main_details.url = GURL("https://example.com");
+  main_details.adopted_language = "en";
+  main_details.is_model_reliable = true;
+  driver_->RegisterPage(main_agent.BindToNewPageRemote(), main_details, true);
+
+  constexpr int kActiveSeqNo = 1;
+
+  // 2. Register side panel agent
+  translate::LanguageDetectionDetails side_panel_details;
+  side_panel_details.url =
+      GURL("chrome-untrusted://read-anything-side-panel.top-chrome/");
+  side_panel_details.adopted_language = "en";
+  driver_->RegisterPage(side_panel_agent.BindToNewPageRemote(),
+                        side_panel_details, true);
+
+  // 3. Trigger translation with both agents bound and active.
+  content::WebContentsTester::For(web_contents())
+      ->SetMainFrameMimeType("text/html");
+  driver_->TranslatePage(kActiveSeqNo, "script", "en", "fr");
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return main_agent.called_translate_; }));
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return side_panel_agent.called_translate_; }));
+
+  // Despite two agents executing, OnPageTranslated should be called only
+  // ONCE.
+  EXPECT_EQ(observer.page_translated_count_, 1);
+  EXPECT_EQ(observer.last_error_, translate::TranslateErrors::NONE);
+
+  driver_->RemoveTranslationObserver(&observer);
 }
 
 // Test that reloading a page preserves the side panel agent and updates its
 // sequence number mapping cleanly.
 TEST_F(ContentTranslateDriverTest, PageReloadPreservesSidePanelAgent) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(translate::kEnableTranslatePdf);
   MockTranslateAgent main_agent1;
   MockTranslateAgent side_panel_agent;
 
@@ -417,8 +513,8 @@ TEST_F(ContentTranslateDriverTest, PageReloadPreservesSidePanelAgent) {
   // Both agents are registered under sequence number 1.
   content::WebContentsTester::For(web_contents())->SetMainFrameMimeType("application/pdf");
   driver_->TranslatePage(kSeqNo1, "script", "en", "fr");
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(side_panel_agent.called_translate_);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return side_panel_agent.called_translate_; }));
   side_panel_agent.called_translate_ = false;
 
   // 3. Navigate/Reload to same or new URL. This changes the MainFrame PageUkmSourceId.
@@ -439,8 +535,8 @@ TEST_F(ContentTranslateDriverTest, PageReloadPreservesSidePanelAgent) {
   // correctly invoke the moved/preserved side panel agent.
   content::WebContentsTester::For(web_contents())->SetMainFrameMimeType("application/pdf");
   driver_->TranslatePage(kSeqNo2, "script", "en", "fr");
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(side_panel_agent.called_translate_);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return side_panel_agent.called_translate_; }));
 }
 
 // Verifies that RegisterPage returns early and safely when web_contents() is null.

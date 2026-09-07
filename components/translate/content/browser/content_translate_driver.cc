@@ -13,10 +13,13 @@
 #include <string>
 #include <utility>
 
+#include "base/barrier_callback.h"
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/i18n/tag_converters.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
@@ -25,6 +28,7 @@
 #include "components/google/core/common/google_util.h"
 #include "components/language/core/browser/url_language_histogram.h"
 #include "components/translate/content/browser/content_record_page_language.h"
+#include "components/translate/core/browser/translate_client.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/browser/translate_metrics_logger.h"
@@ -42,12 +46,17 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
 #include "content/public/common/url_constants.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
 
 namespace translate {
+
+using ::base::i18n::GetKnownLanguageTag;
+using ::base::i18n::GetLanguageTagFromString;
+using ::base::i18n::LanguageTag;
 
 namespace {
 
@@ -169,46 +178,74 @@ void ContentTranslateDriver::OnIsPageTranslatedChanged() {
     observer.OnIsPageTranslatedChanged(web_contents());
 }
 
-mojom::TranslateAgent* ContentTranslateDriver::GetTranslateAgent(
+std::vector<mojom::TranslateAgent*> ContentTranslateDriver::GetTranslateAgents(
     int page_seq_no) {
-  std::map<int, PageAgents>::iterator it = translate_agents_.find(page_seq_no);
+  std::vector<mojom::TranslateAgent*> agents;
+  std::map<int, PageAgents>::const_iterator it =
+      translate_agents_.find(page_seq_no);
   if (it == translate_agents_.end()) {
-    return nullptr;  // This page has navigated away.
+    return agents;  // This page has navigated away.
   }
 
-  return it->second.side_panel_agent.is_bound() &&
-                 GetContentsMimeType() == "application/pdf"
-             ? it->second.side_panel_agent.get()
-             : it->second.main_agent.get();
+  if (!(GetContentsMimeType() == kPdfMimeType) &&
+      it->second.main_agent.is_bound()) {
+    agents.push_back(it->second.main_agent.get());
+  }
+  if (it->second.side_panel_agent.is_bound() &&
+      (IsPdfTranslation() ||
+       (translate_manager_ && translate_manager_->translate_client() &&
+        translate_manager_->translate_client()->IsReadingModeOpen()))) {
+    agents.push_back(it->second.side_panel_agent.get());
+  }
+  return agents;
 }
 
 void ContentTranslateDriver::TranslatePage(int page_seq_no,
                                            std::string_view translate_script,
                                            std::string_view source_lang,
                                            std::string_view target_lang) {
-  mojom::TranslateAgent* agent = GetTranslateAgent(page_seq_no);
-  if (!agent) {
+  std::vector<mojom::TranslateAgent*> agents = GetTranslateAgents(page_seq_no);
+  if (agents.empty()) {
     return;
   }
 
-  agent->TranslateFrame(
-      std::string(translate_script), std::string(source_lang),
-      std::string(target_lang),
-      base::BindOnce(&ContentTranslateDriver::OnPageTranslated,
-                     base::Unretained(this)));
+  // Use a BarrierCallback to aggregate results from all agents and call
+  // OnAllPagesTranslated once all agents have finished translating.
+  auto barrier_callback = base::BarrierCallback<TranslationResult>(
+      agents.size(),
+      base::BindOnce(&ContentTranslateDriver::OnAllPagesTranslated,
+                     weak_pointer_factory_.GetWeakPtr()));
+
+  for (mojom::TranslateAgent* agent : agents) {
+    // Create a callback for each agent from the barrier callback.
+    auto single_agent_callback = base::BindOnce(
+        [](base::RepeatingCallback<void(TranslationResult)> barrier,
+           bool cancelled, const std::string& source_lang,
+           const std::string& translated_lang, TranslateErrors error_type) {
+          barrier.Run(
+              TranslationResult{cancelled,
+                                GetLanguageTagFromString(source_lang)
+                                    .value_or(GetKnownLanguageTag("und")),
+                                GetLanguageTagFromString(translated_lang)
+                                    .value_or(GetKnownLanguageTag("und")),
+                                error_type});
+        },
+        barrier_callback);
+
+    // TODO(b/527985575): Migrate TranslateFrame to use LanguageTag.
+    agent->TranslateFrame(
+        std::string(translate_script), std::string(source_lang),
+        std::string(target_lang),
+        mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+            std::move(single_agent_callback),
+            /*cancelled=*/true, std::string(source_lang),
+            std::string(target_lang), TranslateErrors::TRANSLATION_ERROR));
+  }
 }
 
 void ContentTranslateDriver::RevertTranslation(int page_seq_no) {
-  std::map<int, PageAgents>::iterator it = translate_agents_.find(page_seq_no);
-  if (it == translate_agents_.end())
-    return;  // This page has navigated away.
-
-  if (it->second.main_agent.is_bound()) {
-    it->second.main_agent->RevertTranslation();
-  }
-
-  if (it->second.side_panel_agent.is_bound()) {
-    it->second.side_panel_agent->RevertTranslation();
+  for (mojom::TranslateAgent* agent : GetTranslateAgents(page_seq_no)) {
+    agent->RevertTranslation();
   }
 }
 
@@ -450,6 +487,39 @@ void ContentTranslateDriver::RegisterPage(
       ->LogDetectionReliabilityScore(details.model_reliability_score);
   translate_manager_->GetActiveTranslateMetricsLogger()->LogWasContentEmpty(
       details.contents.length() > 0);
+}
+
+void ContentTranslateDriver::OnAllPagesTranslated(
+    const std::vector<TranslationResult>& results) {
+  if (results.empty()) {
+    return;
+  }
+
+  bool any_cancelled = false;
+  TranslateErrors first_error = TranslateErrors::NONE;
+  LanguageTag source_lang = results.front().source_lang;
+  LanguageTag translated_lang = results.front().translated_lang;
+
+  for (const TranslationResult& result : results) {
+    if (result.cancelled) {
+      any_cancelled = true;
+    }
+    if (result.error_type != TranslateErrors::NONE &&
+        first_error == TranslateErrors::NONE) {
+      first_error = result.error_type;
+    }
+    if (source_lang == GetKnownLanguageTag("und")) {
+      source_lang = result.source_lang;
+    }
+    if (translated_lang == GetKnownLanguageTag("und")) {
+      translated_lang = result.translated_lang;
+    }
+  }
+
+  OnPageTranslated(
+      any_cancelled, std::string(source_lang.tag_string()),
+      std::string(translated_lang.tag_string()),
+      first_error);
 }
 void ContentTranslateDriver::OnPageTranslated(
     bool cancelled,
