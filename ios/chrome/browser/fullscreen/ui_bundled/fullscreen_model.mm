@@ -521,9 +521,11 @@ void FullscreenModel::SetProgress(CGFloat progress) {
   }
 
   if (progress == 0.0 && progress_ > 0.0) {
-    base::UmaHistogramEnumeration(
-        kEnterFullscreenModeTransitionTriggerHistogram,
-        FullscreenModeTransitionTrigger::kUserControlled);
+    if (!IsForceFullscreenMode()) {
+      base::UmaHistogramEnumeration(
+          kEnterFullscreenModeTransitionTriggerHistogram,
+          FullscreenModeTransitionTrigger::kUserControlled);
+    }
     time_entered_fullscreen_ = base::TimeTicks::Now();
     if (time_exited_fullscreen_.has_value()) {
       base::UmaHistogramLongTimes(
@@ -531,9 +533,11 @@ void FullscreenModel::SetProgress(CGFloat progress) {
           base::TimeTicks::Now() - time_exited_fullscreen_.value());
     }
   } else if (progress == 1.0 && progress_ < 1.0) {
-    base::UmaHistogramEnumeration(
-        kExitFullscreenModeTransitionTriggerHistogram,
-        FullscreenModeTransitionTrigger::kUserControlled);
+    if (!IsForceFullscreenMode()) {
+      base::UmaHistogramEnumeration(
+          kExitFullscreenModeTransitionTriggerHistogram,
+          FullscreenModeTransitionTrigger::kUserControlled);
+    }
     time_exited_fullscreen_ = base::TimeTicks::Now();
     if (time_entered_fullscreen_.has_value()) {
       base::UmaHistogramLongTimes(

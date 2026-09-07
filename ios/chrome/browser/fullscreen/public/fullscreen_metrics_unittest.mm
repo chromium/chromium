@@ -327,6 +327,23 @@ TEST_F(FullscreenMetricsTest, RecordsExitBottomReached) {
 
 // Tests that LegacyFullscreenMediator records kForcedByUser when exiting
 // fullscreen.
+TEST_F(FullscreenMetricsTest, RecordsEnterForcedByUser) {
+  model()->ResetForNavigation();
+  model()->SetScrollViewHeight(200.0);
+  model()->SetContentHeight(1000.0);
+
+  base::HistogramTester histogram_tester;
+  // Simulate user tap on "Hide Toolbar".
+  mediator_->ForceEnterFullscreen(
+      true, FullscreenModeTransitionTrigger::kForcedByUser);
+
+  ASSERT_EQ(model()->progress(), 0.0);
+
+  histogram_tester.ExpectUniqueSample(
+      kEnterFullscreenModeTransitionTriggerHistogram,
+      FullscreenModeTransitionTrigger::kForcedByUser, 1);
+}
+
 TEST_F(FullscreenMetricsTest, RecordsExitForcedByUser) {
   model()->ResetForNavigation();
   model()->SetScrollViewHeight(200.0);

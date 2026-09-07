@@ -100,7 +100,8 @@ class LegacyFullscreenMediator : public FullscreenModelObserver {
   FullscreenAnimatorStyle AnimatorStyleFromScrollDirection(
       FullscreenModelScrollDirection direction);
 
-  // Records fullscreen exit entrypoints in a histogram.
+  // Records fullscreen enter and exit transition triggers in histograms.
+  void RecordFullscreenEnterMode();
   void RecordFullscreenExitMode();
 
   // Returns whether the mediator has been disconnected from its

@@ -103,6 +103,7 @@ void LegacyFullscreenMediator::ForceEnterFullscreen(
   // - Fullscreen should not resize the toolbar it's above the keyboard.
   model_->IncrementDisabledCounter();
   model_->ForceEnterFullscreen();
+  RecordFullscreenEnterMode();
 }
 
 void LegacyFullscreenMediator::ForceExitFullscreen(
@@ -113,6 +114,7 @@ void LegacyFullscreenMediator::ForceExitFullscreen(
   model_->SetInsetsUpdateEnabled(true);
   model_->DecrementDisabledCounter();
   ExitFullscreenWithoutAnimation();
+  RecordFullscreenExitMode();
 }
 
 void LegacyFullscreenMediator::ExitFullscreenWithoutAnimation() {
@@ -334,12 +336,10 @@ void LegacyFullscreenMediator::AnimateWithStyle(FullscreenAnimatorStyle style) {
 
     // Histogram for entering or exiting Fullscreen mode based on
     // FullscreenModeTransitionTrigger value.
-    if (model_->progress() == 0) {
-      base::UmaHistogramEnumeration(
-          kEnterFullscreenModeTransitionTriggerHistogram,
-          FullscreenModeTransitionTrigger::kUserInitiatedFinishedByCode);
-    } else if (model_->progress() == 1) {
-      RecordFullscreenExitMode();
+    if (mediator->model_->progress() == 0) {
+      mediator->RecordFullscreenEnterMode();
+    } else if (mediator->model_->progress() == 1) {
+      mediator->RecordFullscreenExitMode();
     }
     for (auto& observer : mediator->observers_) {
       observer.FullscreenDidAnimate(mediator->controller_, style);
@@ -410,8 +410,17 @@ LegacyFullscreenMediator::AnimatorStyleFromScrollDirection(
   }
 }
 
+void LegacyFullscreenMediator::RecordFullscreenEnterMode() {
+  FullscreenModeTransitionTrigger trigger = fullscreen_enter_trigger_.value_or(
+      FullscreenModeTransitionTrigger::kUserInitiatedFinishedByCode);
+  base::UmaHistogramEnumeration(kEnterFullscreenModeTransitionTriggerHistogram,
+                                trigger);
+  fullscreen_enter_trigger_ = std::nullopt;
+}
+
 void LegacyFullscreenMediator::RecordFullscreenExitMode() {
   CHECK(fullscreen_exit_trigger_.has_value());
   base::UmaHistogramEnumeration(kExitFullscreenModeTransitionTriggerHistogram,
                                 fullscreen_exit_trigger_.value());
+  fullscreen_exit_trigger_ = std::nullopt;
 }
