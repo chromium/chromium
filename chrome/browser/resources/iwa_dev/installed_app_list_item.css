@@ -56,20 +56,27 @@
 
 #split-button cr-button {
   --cr-button-border: none;
-  border-radius: 0;
   height: 100%;
 }
 
 #split-button #update-btn {
+  border-end-end-radius: 0;
+  border-end-start-radius: 100px;
+  border-start-end-radius: 0;
+  border-start-start-radius: 100px;
   padding-inline-end: 12px;
   padding-inline-start: 16px;
 }
 
 #split-button #update-options-btn {
+  border-end-end-radius: 100px;
+  border-end-start-radius: 0;
   border-inline-start: 1px solid var(--cr-fallback-color-tonal-outline);
+  border-start-end-radius: 100px;
+  border-start-start-radius: 0;
   min-width: 0;
-  padding-inline-start: 4px;
   padding-inline-end: 8px;
+  padding-inline-start: 4px;
   width: 36px;
 }
 
