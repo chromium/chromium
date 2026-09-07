@@ -467,21 +467,12 @@ scoped_refptr<StringImpl> StringImpl::FoldCase() {
     scoped_refptr<StringImpl> new_impl =
         StringImpl::CreateUninitialized(source16.size(), data16);
 
-    bool error;
-    const int32_t real_length = unicode::FoldCase(
-        data16.data(), static_cast<int32_t>(data16.size()), source16.data(),
-        static_cast<int32_t>(source16.size()), &error);
-    if (!error && real_length == static_cast<int32_t>(data16.size())) {
-      return new_impl;
+    std::optional<size_t> real_length = unicode::FoldCase(source16, data16);
+    if (real_length && *real_length != data16.size()) {
+      new_impl = StringImpl::CreateUninitialized(*real_length, data16);
+      real_length = unicode::FoldCase(source16, data16);
     }
-    new_impl = StringImpl::CreateUninitialized(real_length, data16);
-    unicode::FoldCase(data16.data(), static_cast<int32_t>(data16.size()),
-                      source16.data(), static_cast<int32_t>(source16.size()),
-                      &error);
-    if (error) {
-      return original_string;
-    }
-    return new_impl;
+    return real_length ? new_impl : original_string;
   };
 
   const bool is_ascii = ContainsOnlyAsciiOrEmpty();
