@@ -31,6 +31,8 @@ class BrowserDelegate;
 
 // Class to enable quick tab switching via horizontal X finger swipes (see
 // kFingerCount definition).
+// TabScrubber is a singleton that depends on ash::Shell (must be created after
+// ash::Shell).
 class TabScrubber : public ui::EventHandler,
                     public BrowserController::Observer,
                     public TabStripObserver {
@@ -39,10 +41,12 @@ class TabScrubber : public ui::EventHandler,
 
   enum Direction { LEFT, RIGHT };
 
+  TabScrubber();
   TabScrubber(const TabScrubber&) = delete;
   TabScrubber& operator=(const TabScrubber&) = delete;
+  ~TabScrubber() override;
 
-  // Returns a the single instance of a TabScrubber.
+  // Returns the single instance of a TabScrubber, or nullptr.
   static TabScrubber* GetInstance();
 
   // Returns the starting position (in tabstrip coordinates) of a swipe starting
@@ -63,9 +67,6 @@ class TabScrubber : public ui::EventHandler,
 
  private:
   friend class TabScrubberTest;
-
-  TabScrubber();
-  ~TabScrubber() override;
 
   // ui::EventHandler overrides:
   void OnScrollEvent(ui::ScrollEvent* event) override;
@@ -95,10 +96,7 @@ class TabScrubber : public ui::EventHandler,
 
   bool GetEnabledForTesting() const { return enabled_; }
 
-  // TODO(crbug.com/496467424): remove when the TabScrubber is no
-  // longer outliving the BrowserController it observes.
-  base::ScopedObservation<BrowserController,
-                          BrowserController::Observer>::LeakedDanglingUntriaged
+  base::ScopedObservation<BrowserController, BrowserController::Observer>
       browser_controller_observation_{this};
 
   // Are we currently scrubbing?.

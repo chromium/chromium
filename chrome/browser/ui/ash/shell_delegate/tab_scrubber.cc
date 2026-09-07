@@ -9,6 +9,8 @@
 #include <algorithm>
 
 #include "ash/shell.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -35,6 +37,8 @@ namespace ash {
 
 namespace {
 
+TabScrubber* g_tab_scrubber = nullptr;
+
 BrowserDelegate* GetActiveBrowser() {
   BrowserDelegate* browser =
       BrowserController::GetInstance()->GetLastUsedBrowser();
@@ -57,11 +61,7 @@ views::Widget* GetWidget(BrowserDelegate* browser) {
 
 // static
 TabScrubber* TabScrubber::GetInstance() {
-  static TabScrubber* instance = nullptr;
-  if (!instance) {
-    instance = new TabScrubber();
-  }
-  return instance;
+  return g_tab_scrubber;
 }
 
 // static
@@ -126,11 +126,17 @@ void TabScrubber::SynthesizedScrollEvent(float x_offset,
 }
 
 TabScrubber::TabScrubber() {
+  CHECK(!g_tab_scrubber);
+  g_tab_scrubber = this;
   ash::Shell::Get()->AddPreTargetHandler(this);
   browser_controller_observation_.Observe(BrowserController::GetInstance());
 }
 
-TabScrubber::~TabScrubber() = default;
+TabScrubber::~TabScrubber() {
+  CHECK_EQ(g_tab_scrubber, this);
+  g_tab_scrubber = nullptr;
+  ash::Shell::Get()->RemovePreTargetHandler(this);
+}
 
 void TabScrubber::OnScrollEvent(ui::ScrollEvent* event) {
   if (!enabled_) {

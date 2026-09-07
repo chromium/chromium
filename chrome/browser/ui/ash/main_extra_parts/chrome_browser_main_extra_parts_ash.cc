@@ -540,7 +540,7 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
       ->SetPeripheralsAppDelegate(peripherals_app_delegate_.get());
 
   // Initialize TabScrubber after the Ash Shell has been initialized.
-  ash::TabScrubber::GetInstance();
+  tab_scrubber_ = std::make_unique<ash::TabScrubber>();
 }
 
 void ChromeBrowserMainExtraPartsAsh::PostBrowserStart() {
@@ -625,6 +625,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   login_screen_client_.reset();
   management_disclosure_client_.reset();
   graduation_manager_.reset();
+  tab_scrubber_.reset();
 
   ash::privacy_hub_util::SetAppAccessNotifier(nullptr);
   app_access_notifier_.reset();

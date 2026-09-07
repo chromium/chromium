@@ -25,6 +25,7 @@ class NetworkPortalNotificationController;
 class NetworkPortalSigninController;
 class OobeDialogUtil;
 class PeripheralsAppDelegateImpl;
+class TabScrubber;
 class VideoConferenceManagerAsh;
 class VideoConferenceTrayController;
 
@@ -207,6 +208,7 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   std::unique_ptr<ash::OobeDialogUtil> oobe_dialog_util_;
   std::unique_ptr<chromeos::ReadWriteCardsManager> read_write_cards_manager_;
   std::unique_ptr<ash::graduation::GraduationManager> graduation_manager_;
+  std::unique_ptr<ash::TabScrubber> tab_scrubber_;
 
   // Initialized in PostBrowserStart in all configs:
   std::unique_ptr<MobileDataNotifications> mobile_data_notifications_;
