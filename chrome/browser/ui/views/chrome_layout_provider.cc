@@ -88,16 +88,14 @@ gfx::Insets ChromeLayoutProvider::GetInsetsMetric(int metric) const {
       return gfx::Insets::TLBR(4, 20, 20, 20);
     case INSETS_PAGE_INFO_FOOTER_BUTTON:
       return gfx::Insets::VH(12, 20);
-    case INSETS_ACTION_APP_MENU_POPUP: {
-      if (base::FeatureList::IsEnabled(features::kChroMenuSearch)) {
-        return gfx::Insets::TLBR(4, 16, 16, 16);
-      }
-      return gfx::Insets::VH(16, 16);
-    }
+    case INSETS_ACTION_APP_MENU_POPUP:
+      return gfx::Insets::VH(4, 16);
     case INSETS_ACTION_APP_MENU_ITEM:
       return gfx::Insets::TLBR(0, 16, 0, 12);
     case INSETS_ACTION_APP_MENU_FOOTER:
-      return gfx::Insets::TLBR(8, 12, 8, 12);
+      return gfx::Insets::VH(0, 0);
+    case INSETS_ACTION_APP_MENU_FOOTER_MARGIN:
+      return gfx::Insets::TLBR(8, 0, 0, 0);
     case INSETS_ACTION_APP_MENU_FOOTER_BUTTON:
       return gfx::Insets::VH(4, 8);
     case INSETS_PROFILE_SIGNIN_STATUS_CHIP:
@@ -105,9 +103,11 @@ gfx::Insets ChromeLayoutProvider::GetInsetsMetric(int metric) const {
       // with other items.
       return gfx::Insets::VH(0, 12);
     case INSETS_ACTION_APP_MENU_BLOCK_ROW:
-      return gfx::Insets::VH(4, 4);
+      return gfx::Insets::TLBR(0, 0, 8, 0);
     case INSETS_ACTION_APP_MENU_BLOCK_ENTRY_BUTTON:
       return gfx::Insets::VH(8, 0);
+    case INSETS_ACTION_APP_MENU_SEARCH_BAR_MARGIN:
+      return gfx::Insets::TLBR(0, 0, 16, 0);
     default:
       return LayoutProvider::GetInsetsMetric(metric);
   }
@@ -267,8 +267,6 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
     case DISTANCE_INFOBAR_BUTTON_HORIZONTAL_PADDING:
       return 12;
     // Block-style Action App Menu layout constants.
-    case DISTANCE_ACTION_APP_MENU_MINIMUM_WIDTH:
-      return 440;
     case DISTANCE_ACTION_APP_MENU_CONTAINER_CORNER_RADIUS:
       return 8;
     case DISTANCE_ACTION_APP_MENU_ITEM_FIRST_TOP_PADDING:
@@ -281,6 +279,8 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 16;
     case DISTANCE_ACTION_APP_MENU_FULL_ITEM_HEIGHT:
       return 32;
+    case DISTANCE_ACTION_APP_MENU_EXPANDED_ITEM_HEIGHT:
+      return 48;
     case DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_WIDTH:
       return 105;
     case DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_HEIGHT:

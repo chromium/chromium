@@ -59,6 +59,7 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
@@ -121,9 +122,55 @@ TEST_F(ActionAppMenuTest, PopulatesSectionCardsWithStyling) {
   views::MenuItemView* print_item = root->GetMenuItemByID(kActionPrint);
   ASSERT_TRUE(print_item);
 
+  views::MenuItemView* downloads_item =
+      root->GetMenuItemByID(kActionShowDownloads);
+  ASSERT_TRUE(downloads_item);
+
+  views::MenuItemView* clear_browsing_item =
+      root->GetMenuItemByID(kActionClearBrowsingData);
+  ASSERT_TRUE(clear_browsing_item);
+
+  views::MenuItemView* zoom_item = root->GetMenuItemByID(kActionZoomSubmenu);
+  ASSERT_TRUE(zoom_item);
+
   // Check if the styling is applied to the menu items.
-  EXPECT_TRUE(password_item->GetMenuItemBackground().has_value());
-  EXPECT_TRUE(print_item->GetMenuItemBackground().has_value());
+  ASSERT_TRUE(password_item->GetMenuItemBackground().has_value());
+  ASSERT_TRUE(print_item->GetMenuItemBackground().has_value());
+  ASSERT_TRUE(downloads_item->GetMenuItemBackground().has_value());
+  ASSERT_TRUE(clear_browsing_item->GetMenuItemBackground().has_value());
+  ASSERT_TRUE(zoom_item->GetMenuItemBackground().has_value());
+
+  // Check horizontal margins on card backgrounds are explicitly 0.
+  EXPECT_EQ(password_item->GetMenuItemBackground()->horizontal_margin, 0);
+  EXPECT_EQ(print_item->GetMenuItemBackground()->horizontal_margin, 0);
+  EXPECT_EQ(downloads_item->GetMenuItemBackground()->horizontal_margin, 0);
+  EXPECT_EQ(clear_browsing_item->GetMenuItemBackground()->horizontal_margin, 0);
+  EXPECT_EQ(zoom_item->GetMenuItemBackground()->horizontal_margin, 0);
+
+  // Check corner radiuses for section cards (first item has top radius, last
+  // has bottom radius, middle items have neither).
+  EXPECT_EQ(password_item->GetMenuItemBackground()->top_radius, 8);
+  EXPECT_EQ(password_item->GetMenuItemBackground()->bottom_radius, 0);
+  EXPECT_EQ(downloads_item->GetMenuItemBackground()->top_radius, 0);
+  EXPECT_EQ(downloads_item->GetMenuItemBackground()->bottom_radius, 0);
+  EXPECT_EQ(clear_browsing_item->GetMenuItemBackground()->top_radius, 0);
+  EXPECT_EQ(clear_browsing_item->GetMenuItemBackground()->bottom_radius, 8);
+
+  // Check vertical padding:
+  // Standard items (32dp row height): (32 - 16) / 2 = 8dp.
+  EXPECT_EQ(password_item->GetTopMargin(), 8);
+  EXPECT_EQ(print_item->GetTopMargin(), 8);
+  EXPECT_EQ(downloads_item->GetTopMargin(), 8);
+  EXPECT_EQ(clear_browsing_item->GetTopMargin(), 8);
+
+  // Expanded items (Zoom item, 48dp row height): (48 - 16) / 2 = 16dp.
+  EXPECT_EQ(zoom_item->GetTopMargin(), 16);
+
+  // Check hover selection color matching subtle state.
+  EXPECT_EQ(password_item->GetSelectedColorId(),
+            ui::kColorSysStateHoverOnSubtle);
+  EXPECT_EQ(print_item->GetSelectedColorId(), ui::kColorSysStateHoverOnSubtle);
+  EXPECT_EQ(zoom_item->GetSelectedColorId(), ui::kColorSysStateHoverOnSubtle);
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
@@ -704,7 +751,9 @@ TEST_F(ActionAppMenuTest, SearchBarDisabledByDefault) {
   views::MenuItemView* root = menu.root_menu_item_for_testing();
   ASSERT_TRUE(root);
   ASSERT_TRUE(root->HasSubmenu());
-  EXPECT_EQ(root->GetSubmenu()->GetInsets().top(), 16);
+  EXPECT_EQ(root->GetSubmenu()->GetInsets(),
+            ChromeLayoutProvider::Get()->GetInsetsMetric(
+                INSETS_ACTION_APP_MENU_POPUP));
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
@@ -727,14 +776,26 @@ TEST_F(ActionAppMenuTest, SearchBarEnabledWithFeatureFlag) {
   ASSERT_TRUE(root);
   ASSERT_TRUE(root->HasSubmenu());
 
-  // Check padding: 4px on top, 16px left and right on submenu.
-  gfx::Insets insets = root->GetSubmenu()->GetInsets();
-  EXPECT_EQ(insets.top(), 4);
-  EXPECT_EQ(insets.left(), 16);
-  EXPECT_EQ(insets.right(), 16);
+  const auto* provider = ChromeLayoutProvider::Get();
+
+  // Check padding on submenu matches popup insets metric.
+  EXPECT_EQ(root->GetSubmenu()->GetInsets(),
+            provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_POPUP));
+  EXPECT_EQ(root->GetSubmenu()->GetInsets(), gfx::Insets::VH(4, 16));
 
   // Search bar is hosted inside the first MenuItemView of submenu.
-  EXPECT_EQ(root->GetSubmenu()->GetMenuItemAt(0)->children()[0], search_bar);
+  views::MenuItemView* search_item = root->GetSubmenu()->GetMenuItemAt(0);
+  ASSERT_NE(search_item, nullptr);
+  ASSERT_EQ(search_item->children().size(), 1u);
+  EXPECT_EQ(search_item->children()[0], search_bar);
+  EXPECT_EQ(search_item->GetTopMargin(), 0);
+
+  const gfx::Insets* search_bar_margins =
+      search_bar->GetProperty(views::kMarginsKey);
+  ASSERT_TRUE(search_bar_margins);
+  EXPECT_EQ(*search_bar_margins, provider->GetInsetsMetric(
+                                     INSETS_ACTION_APP_MENU_SEARCH_BAR_MARGIN));
+  EXPECT_EQ(*search_bar_margins, gfx::Insets::TLBR(0, 0, 16, 0));
 
   // Check initial empty state.
   views::ImageView* icon = search_bar->search_icon_for_testing();
@@ -751,7 +812,6 @@ TEST_F(ActionAppMenuTest, SearchBarEnabledWithFeatureFlag) {
 
   // Verify empty border with insets and background is transparent.
   ASSERT_NE(search_bar->GetBorder(), nullptr);
-  const auto* provider = ChromeLayoutProvider::Get();
   int icon_size =
       provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_ICON_SIZE);
   int icon_padding = 12;
@@ -766,7 +826,16 @@ TEST_F(ActionAppMenuTest, SearchBarEnabledWithFeatureFlag) {
   EXPECT_EQ(views::InkDrop::Get(search_bar)->GetMode(),
             views::InkDropHost::InkDropMode::ON);
 
-  // Mouse press should focus the textfield and enable the cursor.
+  // The search bar is active and focused initially when added to the menu.
+  EXPECT_TRUE(search_bar->is_active_for_testing());
+  EXPECT_TRUE(search_bar->GetCursorEnabled());
+
+  // Pressing Down arrow deactivates search bar focus for menu navigation.
+  ui::KeyEvent down_key(ui::EventType::kKeyPressed, ui::VKEY_DOWN, ui::EF_NONE);
+  search_bar->HandleKeyEvent(&down_key);
+  EXPECT_FALSE(search_bar->is_active_for_testing());
+
+  // Mouse press re-focuses the textfield and enables the cursor.
   EXPECT_TRUE(search_bar->OnMousePressed(ui::MouseEvent(
       ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
       base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON)));
@@ -792,6 +861,185 @@ TEST_F(ActionAppMenuTest, SearchBarEnabledWithFeatureFlag) {
   search_bar->HandleKeyEvent(&backspace_event);
   EXPECT_EQ(search_bar->GetText(), u"");
   EXPECT_TRUE(icon->GetVisible());
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
+TEST_F(ActionAppMenuTest, PopupAndComponentLayoutInsets) {
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller());
+  EXPECT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+  views::SubmenuView* submenu = root->GetSubmenu();
+  ASSERT_TRUE(submenu);
+
+  const auto* provider = ChromeLayoutProvider::Get();
+
+  // Outer popup insets.
+  EXPECT_EQ(submenu->GetInsets(),
+            provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_POPUP));
+  EXPECT_EQ(submenu->GetInsets(), gfx::Insets::VH(4, 16));
+
+  // The block section item has 0 vertical margin, and the block view has 0
+  // horizontal insets.
+  views::MenuItemView* block_item = submenu->GetMenuItemAt(0);
+  ASSERT_NE(block_item, nullptr);
+  EXPECT_EQ(block_item->GetTopMargin(), 0);
+  ASSERT_EQ(block_item->children().size(), 1u);
+  auto* block_view =
+      views::AsViewClass<ActionAppMenuBlockView>(block_item->children()[0]);
+  ASSERT_TRUE(block_view);
+  EXPECT_EQ(block_view->GetInsideBorderInsets(),
+            provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_BLOCK_ROW));
+  EXPECT_EQ(block_view->GetInsideBorderInsets(), gfx::Insets::TLBR(0, 0, 8, 0));
+
+  // The footer item has 0 vertical margin, and the footer view has 0 horizontal
+  // insets.
+  views::MenuItemView* footer_item =
+      submenu->GetMenuItemAt(submenu->GetMenuItems().size() - 1);
+  ASSERT_NE(footer_item, nullptr);
+  EXPECT_EQ(footer_item->GetTopMargin(), 0);
+  ASSERT_EQ(footer_item->children().size(), 1u);
+  auto* footer_view =
+      views::AsViewClass<ActionAppMenuFooterView>(footer_item->children()[0]);
+  ASSERT_TRUE(footer_view);
+  EXPECT_EQ(footer_view->GetInsets(),
+            provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_FOOTER));
+  EXPECT_EQ(footer_view->GetInsets(), gfx::Insets::VH(0, 0));
+  const gfx::Insets* footer_margins =
+      footer_view->GetProperty(views::kMarginsKey);
+  ASSERT_TRUE(footer_margins);
+  EXPECT_EQ(*footer_margins,
+            provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_FOOTER_MARGIN));
+  EXPECT_EQ(*footer_margins, gfx::Insets::TLBR(8, 0, 0, 0));
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
+TEST_F(ActionAppMenuTest, SectionHeaderAndMenuItemBorderLayout) {
+  FaviconServiceFactory::GetInstance()->SetTestingFactory(
+      profile_.get(), base::BindRepeating([](content::BrowserContext* context)
+                                              -> std::unique_ptr<KeyedService> {
+        return std::make_unique<
+            testing::NiceMock<favicon::MockFaviconService>>();
+      }));
+
+  auto* sync_service = static_cast<tab_groups::FakeTabGroupSyncService*>(
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile_.get()));
+  ASSERT_TRUE(sync_service);
+
+  base::Uuid group_guid = base::Uuid::GenerateRandomV4();
+  tab_groups::SavedTabGroupTab tab(GURL("https://example.com/1"), u"Test Tab 1",
+                                   group_guid,
+                                   /*position=*/0);
+  tab_groups::SavedTabGroup group(u"My Test Tab Group",
+                                  tab_groups::TabGroupColorId::kBlue, {tab},
+                                  /*position=*/std::nullopt, group_guid);
+  sync_service->AddGroup(std::move(group));
+
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  menu.RunMenu(button_->button_controller());
+  EXPECT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+  views::SubmenuView* submenu = root->GetSubmenu();
+  ASSERT_TRUE(submenu);
+
+  const auto* provider = ChromeLayoutProvider::Get();
+
+  // 1. Root menu item border and content start.
+  ASSERT_TRUE(root->GetBorder());
+  EXPECT_EQ(root->GetInsets(),
+            provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_ITEM));
+  EXPECT_EQ(root->GetInsets(), gfx::Insets::TLBR(0, 16, 0, 12));
+  EXPECT_EQ(root->GetContentStart(), 16);
+
+  // 2. Regular card menu items border and content start.
+  views::MenuItemView* password_item =
+      root->GetMenuItemByID(kActionPasswordsAndAutofillSubmenu);
+  ASSERT_TRUE(password_item);
+  ASSERT_TRUE(password_item->GetBorder());
+  EXPECT_EQ(password_item->GetInsets(),
+            provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_ITEM));
+  EXPECT_EQ(password_item->GetContentStart(), 16);
+
+  views::MenuItemView* downloads_item =
+      root->GetMenuItemByID(kActionShowDownloads);
+  ASSERT_TRUE(downloads_item);
+  ASSERT_TRUE(downloads_item->GetBorder());
+  EXPECT_EQ(downloads_item->GetInsets(),
+            provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_ITEM));
+  EXPECT_EQ(downloads_item->GetContentStart(), 16);
+
+  // 3. Section headers directly under root.
+  std::vector<views::MenuItemView*> root_titles;
+  for (views::MenuItemView* item : submenu->GetMenuItems()) {
+    if (item->GetType() == views::MenuItemView::Type::kTitle) {
+      root_titles.push_back(item);
+    }
+  }
+  ASSERT_GE(root_titles.size(), 2u);
+
+  // First section header ("Your Chrome"):
+  // - Starts flush with the card (0dp insets, content start 0)
+  // - Standard top margin (8dp).
+  EXPECT_EQ(root_titles[0]->GetParentMenuItem(), root);
+  ASSERT_TRUE(root_titles[0]->GetBorder());
+  EXPECT_EQ(root_titles[0]->GetInsets(), gfx::Insets());
+  EXPECT_EQ(root_titles[0]->GetContentStart(), 0);
+  EXPECT_EQ(root_titles[0]->GetTopMargin(), 8);
+
+  // Second section header ("Tools and Actions"):
+  // - Starts flush with the card (0dp insets, content start 0)
+  // - Doubled top margin (16dp).
+  EXPECT_EQ(root_titles[1]->GetParentMenuItem(), root);
+  ASSERT_TRUE(root_titles[1]->GetBorder());
+  EXPECT_EQ(root_titles[1]->GetInsets(), gfx::Insets());
+  EXPECT_EQ(root_titles[1]->GetContentStart(), 0);
+  EXPECT_EQ(root_titles[1]->GetTopMargin(), 16);
+
+  // 4. Section headers in submenus (not under root).
+  views::MenuItemView* tab_groups_item =
+      root->GetMenuItemByID(kActionSavedTabGroupsSubmenu);
+  ASSERT_TRUE(tab_groups_item);
+  views::SubmenuView* tab_groups_submenu = tab_groups_item->GetSubmenu();
+  ASSERT_TRUE(tab_groups_submenu);
+
+  views::MenuItemView* group_item = nullptr;
+  for (views::MenuItemView* item : tab_groups_submenu->GetMenuItems()) {
+    if (item->title() == u"My Test Tab Group") {
+      group_item = item;
+      break;
+    }
+  }
+  ASSERT_NE(group_item, nullptr);
+  views::SubmenuView* group_submenu = group_item->GetSubmenu();
+  ASSERT_TRUE(group_submenu);
+
+  views::MenuItemView* submenu_section_header = nullptr;
+  for (views::MenuItemView* item : group_submenu->GetMenuItems()) {
+    if (item->GetType() == views::MenuItemView::Type::kTitle) {
+      submenu_section_header = item;
+      break;
+    }
+  }
+  ASSERT_NE(submenu_section_header, nullptr);
+  EXPECT_NE(submenu_section_header->GetParentMenuItem(), root);
+  EXPECT_EQ(submenu_section_header->GetParentMenuItem(), group_item);
+  // Submenu headers do NOT receive the empty border or doubled top margin.
+  EXPECT_EQ(submenu_section_header->GetBorder(), nullptr);
+  EXPECT_NE(submenu_section_header->GetContentStart(), 0);
+  EXPECT_EQ(submenu_section_header->GetTopMargin(), 8);
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();

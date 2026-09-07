@@ -73,17 +73,19 @@ class ActionAppMenu : public views::MenuDelegate {
   // action app menu or have a sub-menu.
   void ConfigureMenuItem(views::MenuItemView* menu_item,
                          actions::BaseAction* child_base,
-                         bool is_first_item,
-                         bool is_last_item);
+                         bool round_top_corners,
+                         bool round_bottom_corners);
 
   void PopulateSearchBar(views::MenuItemView* view_parent,
                          actions::ActionItem* search_action_item);
-
   void PopulateFooter(views::MenuItemView* view_parent,
                       actions::ActionItem* footer_action_item);
-
-  void PopulateBlockMenuItem(views::MenuItemView* view_parent,
-                             actions::ActionItem* block_action_item);
+  void PopulateBlockSection(views::MenuItemView* view_parent,
+                            actions::ActionItem* block_action_item);
+  void PopulateCustomRow(views::MenuItemView* view_parent,
+                         actions::BaseAction* custom_action_item);
+  void PopulateDivider(views::MenuItemView* view_parent,
+                       actions::ActionItem* divider_action_item);
 
   // The browser window interface associated with this menu.
   raw_ptr<BrowserWindowInterface> browser_window_interface_;
@@ -105,6 +107,8 @@ class ActionAppMenu : public views::MenuDelegate {
 
   // The search bar view in the menu, if kChroMenuSearch is enabled.
   raw_ptr<ActionAppMenuSearchBarView> search_bar_ = nullptr;
+
+  size_t section_header_count_ = 0;
 
   // Manages the ActionItem hierarchy and dynamic submenus.
   std::unique_ptr<ActionAppMenuManager> menu_manager_;
