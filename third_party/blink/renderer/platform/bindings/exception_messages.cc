@@ -109,7 +109,7 @@ String ExceptionMessages::FailedToConvertJSValue(const char* type) {
 
 String ExceptionMessages::FailedToConstruct(const char* type,
                                             const String& detail) {
-  String type_string = String(type);
+  StringView type_string = type;
   if (type_string.empty()) {
     return detail;
   }
