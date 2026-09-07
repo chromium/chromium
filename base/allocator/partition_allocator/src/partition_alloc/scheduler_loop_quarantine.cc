@@ -251,9 +251,10 @@ void SchedulerLoopQuarantineBranch<thread_bound, quarantine_target>::Configure(
   // but value here is only for comparison and should be safe.
   largest_bucket_index_ =
       BucketIndexLookup::GetIndexForDenserBuckets(config.max_quarantine_size);
+  // Ensure that we haven't selected the Sentinel Bucket Index.
   PA_CHECK(largest_bucket_index_ < BucketIndexLookup::kNumBuckets);
-  PA_UNSAFE_TODO(PA_CHECK(&allocator_root_->buckets_[largest_bucket_index_] <=
-                          &allocator_root_->sentinel_bucket_));
+  static_assert(BucketIndexLookup::kNumBuckets <=
+                PartitionRoot::kSentinelBucketIndex);
 }
 
 template <bool thread_bound, QuarantineTarget quarantine_target>

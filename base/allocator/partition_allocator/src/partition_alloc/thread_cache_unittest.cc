@@ -1307,8 +1307,7 @@ TEST_P(PartitionAllocThreadCacheTest, Bookkeeping) {
   void* ptr =
       root()->Alloc(root()->AdjustSizeForExtrasSubtract(kMediumSize), "");
 
-  auto* medium_bucket =
-      PA_UNSAFE_TODO(root()->buckets_ + SizeToIndex(kMediumSize));
+  auto* medium_bucket = &root()->buckets_[SizeToIndex(kMediumSize)];
   size_t medium_alloc_size = medium_bucket->slot_size;
   expected_allocated_size += medium_alloc_size;
   expected_committed_size += kUseLazyCommit

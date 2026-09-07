@@ -33,6 +33,7 @@
 #include "partition_alloc/partition_address_space.h"
 #include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/containers/span.h"
 #include "partition_alloc/partition_alloc_base/cpu.h"
 #include "partition_alloc/partition_alloc_base/logging.h"
 #include "partition_alloc/partition_alloc_base/numerics/checked_math.h"
@@ -1892,9 +1893,10 @@ TEST_P(PartitionAllocTest, GetSlotStartMultiplePages) {
   // (2) The bucket is large enough that our requested size (see below) will be
   // non-zero.
   size_t real_size = 0;
-  for (const auto& bucket : root->buckets_) {
-    if ((PA_UNSAFE_TODO(root->buckets_ + SizeToIndex(bucket.slot_size)))
-            ->slot_size != bucket.slot_size) {
+  for (const auto& bucket :
+       base::span(root->buckets_).first<BucketIndexLookup::kNumBuckets>()) {
+    if (root->buckets_[SizeToIndex(bucket.slot_size)].slot_size !=
+        bucket.slot_size) {
       continue;
     }
     if (bucket.slot_size <= ExtraAllocSize(allocator)) {
@@ -1914,8 +1916,7 @@ TEST_P(PartitionAllocTest, GetSlotStartMultiplePages) {
   // Double check we don't end up with 0 or negative size.
   EXPECT_GT(requested_size, 0u);
   EXPECT_LE(requested_size, real_size);
-  const auto* bucket =
-      PA_UNSAFE_TODO(allocator.root()->buckets_ + SizeToIndex(real_size));
+  const auto* bucket = &allocator.root()->buckets_[SizeToIndex(real_size)];
   EXPECT_EQ(bucket->slot_size, real_size);
   // Make sure the test is testing multiple partition pages case.
   EXPECT_GT(bucket->num_system_pages_per_slot_span,
@@ -2432,7 +2433,7 @@ TEST_P(PartitionAllocTest, PartialPages) {
   constexpr size_t kMaxSize = 4000u;
   while (size < kMaxSize) {
     bucket_index = SizeToIndex(size + ExtraAllocSize(allocator));
-    bucket = PA_UNSAFE_TODO(&allocator.root()->buckets_[bucket_index]);
+    bucket = &allocator.root()->buckets_[bucket_index];
     if (bucket->num_system_pages_per_slot_span %
         NumSystemPagesPerPartitionPage()) {
       break;
@@ -2566,8 +2567,7 @@ TEST_P(PartitionAllocTest, FreeCache) {
 
   size_t big_size = 1000 - ExtraAllocSize(allocator);
   size_t bucket_index = SizeToIndex(big_size + ExtraAllocSize(allocator));
-  PartitionBucket* bucket =
-      PA_UNSAFE_TODO(&allocator.root()->buckets_[bucket_index]);
+  PartitionBucket* bucket = &allocator.root()->buckets_[bucket_index];
 
   void* ptr = allocator.root()->Alloc(big_size, type_name);
   EXPECT_TRUE(ptr);
@@ -6585,7 +6585,10 @@ TEST_P(PartitionAllocTest, OpenCL) {
         // PA_BUILDFLAG(IS_MAC)
 
 TEST_P(PartitionAllocTest, SmallSlotSpanWaste) {
-  for (PartitionRoot::Bucket& bucket : allocator.root()->buckets_) {
+  for (PartitionRoot::Bucket& bucket :
+       base::span(allocator.root()->buckets_)
+           // exclude the sentinel bucket
+           .first<BucketIndexLookup::kNumBuckets>()) {
     const size_t slot_size = bucket.slot_size;
 
     size_t small_system_page_count =

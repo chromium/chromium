@@ -272,8 +272,11 @@ class alignas(internal::kPartitionCachelineSize)
   alignas(internal::kPartitionCachelineSize) internal::Lock lock_;
 
   // Add last bucket as sentinel.
-  Bucket buckets_[BucketIndexLookup::kNumBuckets] = {};
-  Bucket sentinel_bucket_{};
+  std::array<Bucket, BucketIndexLookup::kNumBuckets + 1> buckets_ = {};
+  static constexpr size_t kSentinelBucketIndex = BucketIndexLookup::kNumBuckets;
+  PA_ALWAYS_INLINE const Bucket& SentinelBucket() const {
+    return buckets_[PartitionRoot::kSentinelBucketIndex];
+  }
 
   // All fields below this comment are not accessed on the fast path.
   bool initialized_ = false;
@@ -822,18 +825,6 @@ class alignas(internal::kPartitionCachelineSize)
   template <FreeFlags flags>
   PA_ALWAYS_INLINE static bool FreeProlog(void* object,
                                           const PartitionRoot* root);
-
-  // |buckets_| has `BucketIndexLookup::kNumBuckets` elements, but we
-  // sometimes access it at index `BucketIndexLookup::kNumBuckets`, which is
-  // occupied by the sentinel bucket. The correct layout is enforced by a
-  // static_assert() in partition_root.cc, so this is fine. However, UBSAN is
-  // correctly pointing out that there is an out-of-bounds access, so disable it
-  // for these accesses.
-  //
-  // See crbug.com/1150772 for an instance of Clusterfuzz / UBSAN detecting
-  // this.
-  PA_NO_SANITIZE("undefined")
-  PA_ALWAYS_INLINE const Bucket& bucket_at(size_t i) const;
 
   // Returns whether a |bucket| from |this| root is direct-mapped. This function
   // does not touch |bucket|, contrary to  PartitionBucket::is_direct_mapped().

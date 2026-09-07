@@ -1302,7 +1302,7 @@ uintptr_t PartitionBucket::SlowPathAlloc(PartitionRoot* root,
   // decommitted lists which affects the subsequent conditional.
   if (is_direct_mapped()) [[unlikely]] {
     PA_DCHECK(raw_size > BucketIndexLookup::kMaxBucketSize);
-    PA_DCHECK(this == &root->sentinel_bucket_);
+    PA_DCHECK(this == &root->SentinelBucket());
     PA_DCHECK(active_slot_spans_head ==
               SlotSpanMetadata::get_sentinel_slot_span());
 
@@ -1419,7 +1419,7 @@ uintptr_t PartitionBucket::SlowPathAlloc(PartitionRoot* root,
   }
   *slot_span = new_slot_span;
 
-  PA_DCHECK(new_bucket != &root->sentinel_bucket_);
+  PA_DCHECK(new_bucket != &root->SentinelBucket());
   new_bucket->active_slot_spans_head = new_slot_span;
   if (new_slot_span->CanStoreRawSize()) {
     new_slot_span->SetRawSize(raw_size);

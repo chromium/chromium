@@ -269,18 +269,12 @@ size_t PartitionRoot::MetadataOffset() const {
 }
 #endif  // PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
 
-PA_NO_SANITIZE("undefined")
-PA_ALWAYS_INLINE const PartitionRoot::Bucket& PartitionRoot::bucket_at(
-    size_t i) const {
-  PA_DCHECK(i <= BucketIndexLookup::kNumBuckets);
-  return PA_UNSAFE_TODO(buckets_[i]);
-}
 PA_ALWAYS_INLINE bool PartitionRoot::IsDirectMappedBucket(
     const PartitionRoot::Bucket* bucket) const {
   // All regular allocations are associated with a bucket in the |buckets_|
   // array. A range check is then sufficient to identify direct-mapped
   // allocations.
-  bool ret = !(bucket >= this->buckets_ && bucket <= &this->sentinel_bucket_);
+  bool ret = !(bucket >= this->buckets_.data() && bucket <= &SentinelBucket());
   PA_DCHECK(ret == bucket->is_direct_mapped());
   return ret;
 }
@@ -387,10 +381,10 @@ PartitionRoot::AllocFromBucket(Bucket* bucket,
     }
     PA_DCHECK(slot_span == SlotSpanMetadata::FromSlotStart(slot_start, this));
     PA_CHECK(DeducedRootIsValid(slot_span));
-    // For direct mapped allocations, |bucket| is the sentinel.
+    // For direct mapped allocations
     PA_DCHECK((slot_span->bucket == bucket) ||
               (slot_span->bucket->is_direct_mapped() &&
-               (bucket == &sentinel_bucket_)));
+               (bucket == &SentinelBucket())));
 
     *usable_size = GetSlotUsableSize(slot_span);
   }
@@ -1235,7 +1229,8 @@ PartitionRoot::SizeToBucketIndex(size_t size,
 PA_ALWAYS_INLINE internal::BucketSizeDetails
 PartitionRoot::SlotSpanToBucketSizeDetails(SlotSpanMetadata* slot_span) const {
   return internal::BucketSizeDetails{
-      .bucket_index = static_cast<uint16_t>(slot_span->bucket - this->buckets_),
+      .bucket_index =
+          static_cast<uint16_t>(slot_span->bucket - this->buckets_.data()),
       .slot_size = slot_span->bucket->slot_size,
   };
 }
@@ -1251,7 +1246,7 @@ PartitionRoot::SizeToBucketSizeDetails(size_t requested_size,
         SizeToBucketIndex(raw_size, this->GetBucketDistribution());
     auto slot_size = BucketIndexLookup::GetBucketSize(bucket_index);
     PA_CHECK(bucket_index ==
-             static_cast<uint16_t>(slot_span->bucket - this->buckets_));
+             static_cast<uint16_t>(slot_span->bucket - this->buckets_.data()));
     PA_CHECK(slot_size == slot_span->bucket->slot_size);
     return internal::BucketSizeDetails{
         .bucket_index = bucket_index,
@@ -1426,7 +1421,7 @@ PA_ALWAYS_INLINE void* PartitionRoot::AllocInternalNoHooks(
       SlotSpanMetadata* slot_span =
           SlotSpanMetadata::FromSlotStart(slot_start, this);
       PA_DCHECK(DeducedRootIsValid(slot_span));
-      PA_DCHECK(slot_span->bucket == &bucket_at(bucket_index));
+      PA_DCHECK(slot_span->bucket == &buckets_[bucket_index]);
       PA_DCHECK(slot_span->bucket->slot_size == slot_size);
       PA_DCHECK(usable_size == GetSlotUsableSize(slot_span));
       // All large allocations must go through the RawAlloc path to correctly
@@ -1435,15 +1430,14 @@ PA_ALWAYS_INLINE void* PartitionRoot::AllocInternalNoHooks(
       PA_DCHECK(!slot_span->bucket->is_direct_mapped());
 #endif
     } else {
-      slot_start =
-          RawAlloc<flags>(PA_UNSAFE_TODO(buckets_ + bucket_index), raw_size,
-                          slot_span_alignment, &usable_size, &slot_size,
-                          &is_already_zeroed, &stored_raw_size);
+      slot_start = RawAlloc<flags>(
+          &buckets_[bucket_index], raw_size, slot_span_alignment, &usable_size,
+          &slot_size, &is_already_zeroed, &stored_raw_size);
     }
   } else {
-    slot_start = RawAlloc<flags>(
-        PA_UNSAFE_TODO(buckets_ + bucket_index), raw_size, slot_span_alignment,
-        &usable_size, &slot_size, &is_already_zeroed, &stored_raw_size);
+    slot_start = RawAlloc<flags>(&buckets_[bucket_index], raw_size,
+                                 slot_span_alignment, &usable_size, &slot_size,
+                                 &is_already_zeroed, &stored_raw_size);
   }
 
   if (!slot_start.value()) [[unlikely]] {

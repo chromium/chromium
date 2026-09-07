@@ -1118,8 +1118,8 @@ void PartitionRoot::Init(PartitionOptions opts) {
 
     // We mark the sentinel slot span as free to make sure it is skipped by our
     // logic to find a new active slot span.
-    PA_UNSAFE_TODO(memset(&sentinel_bucket_, 0, sizeof(sentinel_bucket_)));
-    sentinel_bucket_.active_slot_spans_head =
+    buckets_[kSentinelBucketIndex] = {};
+    buckets_[kSentinelBucketIndex].active_slot_spans_head =
         internal::SlotSpanMetadata::get_sentinel_slot_span_non_const();
 
     // This is a "magic" value so we can test if a root pointer is valid.
@@ -1129,7 +1129,7 @@ void PartitionRoot::Init(PartitionOptions opts) {
     for (size_t bucket_index = 0; bucket_index < BucketIndexLookup::kNumBuckets;
          ++bucket_index) {
       const size_t slot_size = BucketIndexLookup::GetBucketSize(bucket_index);
-      PA_UNSAFE_TODO(buckets_[bucket_index]).Init(slot_size);
+      buckets_[bucket_index].Init(slot_size);
     }
 
 #if !PA_CONFIG(THREAD_CACHE_SUPPORTED)
@@ -1508,7 +1508,7 @@ size_t PartitionRoot::AllocationCapacityFromRequestedSize(size_t size) const {
 #else
   PA_DCHECK(PartitionRoot::initialized_);
   size = AdjustSizeForExtrasAdd(size);
-  auto& bucket = bucket_at(SizeToBucketIndex(size, GetBucketDistribution()));
+  auto& bucket = buckets_[SizeToBucketIndex(size, GetBucketDistribution())];
   PA_DCHECK(!bucket.slot_size || bucket.slot_size >= size);
   PA_DCHECK(!(bucket.slot_size % internal::kAlignment));
 
@@ -1701,7 +1701,7 @@ void PartitionRoot::DumpStats(const char* partition_name,
 
     size_t direct_mapped_allocations_total_size = 0;
     for (size_t i = 0; i < BucketIndexLookup::kNumBuckets; ++i) {
-      const Bucket* bucket = &bucket_at(i);
+      const Bucket* bucket = &buckets_[i];
       // Don't report the pseudo buckets_ that the generic allocator sets up in
       // order to preserve a fast size->bucket map (see
       // PartitionRoot::Init() for details).
@@ -2159,11 +2159,6 @@ PA_NOINLINE void PartitionRoot::FreeInUnknownRoot(
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Winvalid-offsetof"
 #endif
-static_assert(offsetof(PartitionRoot, sentinel_bucket_) ==
-                  offsetof(PartitionRoot, buckets_) +
-                      BucketIndexLookup::kNumBuckets *
-                          sizeof(PartitionRoot::Bucket),
-              "sentinel_bucket_ must be just after the regular buckets_.");
 
 static_assert(
     offsetof(PartitionRoot, lock_) >= internal::kPartitionCachelineSize,
