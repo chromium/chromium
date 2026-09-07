@@ -1804,12 +1804,13 @@ void NewSplitTab(BrowserWindowInterface* browser,
                  split_tabs::SplitTabCreatedSource source) {
   TabStripModel* const tab_strip_model = browser->GetTabStripModel();
   const int active_index = tab_strip_model->active_index();
-  // In Incognito mode, we can't show the regular Split View NTP so default to
-  // the regular NTP which renders special content when in Incognito.
-  const GURL new_tab_url = !browser->GetProfile()->IsIncognitoProfile() &&
-                                   tab_strip_model->count() > 1
-                               ? GURL(chrome::kChromeUISplitViewNewTabPageURL)
-                               : chrome::ChromeUINewTabURLAsGURL();
+  // In Incognito or Enterprise Isolated modes, we can't show the regular Split
+  // View NTP so default to the regular NTP which renders special content.
+  const GURL new_tab_url =
+      !browser->GetProfile()->IsPrimaryOTRProfileWithRegularParent() &&
+              tab_strip_model->count() > 1
+          ? GURL(chrome::kChromeUISplitViewNewTabPageURL)
+          : chrome::ChromeUINewTabURLAsGURL();
   tab_strip_model->delegate()->AddTabAt(
       new_tab_url, active_index + 1, true,
       tab_strip_model->GetTabGroupForTab(active_index),

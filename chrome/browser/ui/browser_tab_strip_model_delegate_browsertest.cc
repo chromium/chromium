@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include "chrome/browser/ui/browser_tab_strip_model_delegate.h"
 
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -13,6 +14,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "content/public/test/browser_test.h"
@@ -370,6 +372,39 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateTest,
             group_id);
   ASSERT_EQ(browser()->GetTabStripModel()->GetTabGroupForTab(1).value(),
             group_id);
+}
+
+class IsolatedBrowserTabStripModelDelegateTest
+    : public BrowserTabStripModelDelegateTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    BrowserTabStripModelDelegateTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(
+        enterprise_isolated_mode::switches::
+            kForceEnterpriseIsolatedModeReplacesIncognito);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(IsolatedBrowserTabStripModelDelegateTest,
+                       NewSplitTabFromIsolatedMode) {
+  BrowserWindowInterface* isolated_browser =
+      CreateIncognitoBrowser(browser()->GetProfile());
+  ASSERT_TRUE(isolated_browser);
+  EXPECT_TRUE(
+      isolated_browser->GetProfile()->IsEnterpriseIsolatedModeProfile());
+
+  std::unique_ptr<TabStripModelDelegate> delegate =
+      std::make_unique<BrowserTabStripModelDelegate>(isolated_browser);
+
+  GURL url1("chrome://about");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(isolated_browser, url1));
+
+  delegate->NewSplitTab({}, split_tabs::SplitTabLayout::kSideBySide,
+                        split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  ASSERT_EQ(isolated_browser->GetTabStripModel()->count(), 2);
+  ASSERT_EQ(isolated_browser->GetTabStripModel()->GetWebContentsAt(1)->GetURL(),
+            chrome::ChromeUINewTabURLAsGURL());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateTest,
