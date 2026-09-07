@@ -15,6 +15,9 @@ extern const char kOneTimeTokenServiceBaseUrl[];
 COMPONENT_EXPORT(ONE_TIME_TOKENS)
 extern const char kDefaultOneTimeTokenServiceBaseUrl[];
 
+COMPONENT_EXPORT(ONE_TIME_TOKENS)
+extern const char kMockOtpValue[];
+
 }  // namespace one_time_tokens::switches
 
 #endif  // COMPONENTS_ONE_TIME_TOKENS_CORE_COMMON_ONE_TIME_TOKEN_SWITCHES_H_

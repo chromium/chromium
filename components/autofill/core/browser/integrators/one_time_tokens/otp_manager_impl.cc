@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
@@ -40,6 +41,7 @@
 #include "components/one_time_tokens/core/browser/one_time_token_service.h"
 #include "components/one_time_tokens/core/browser/one_time_token_type.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription.h"
+#include "components/one_time_tokens/core/common/one_time_token_switches.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 
 using one_time_tokens::ExpiringSubscriptionHandle;
@@ -53,6 +55,11 @@ namespace autofill {
 
 namespace {
 constexpr base::TimeDelta kSubscriptionDuration = base::Minutes(1);
+
+std::string GetMockOtpValue() {
+  return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+      one_time_tokens::switches::kMockOtpValue);
+}
 }  // namespace
 
 OtpManagerImpl::OtpManagerImpl(BrowserAutofillManager& owner,
@@ -77,6 +84,15 @@ void OtpManagerImpl::GetOtpSuggestions(
     return;
   }
 
+  std::string mock_otp = GetMockOtpValue();
+  if (!mock_otp.empty()) {
+    LOG_AF(owner_->client().GetCurrentLogManager())
+        << LoggingScope::kOneTimeTokens
+        << "Using mock OTP value from command line switch.";
+    std::move(callback).Run({std::move(mock_otp)});
+    return;
+  }
+
   // TODO(crbug.com/415273270) This is just a hack to prepopulate the OTPs in
   // case no real backend is triggered. The feature definition should migrate to
   // autofill.
@@ -97,7 +113,7 @@ void OtpManagerImpl::GetOtpSuggestions(
 }
 
 void OtpManagerImpl::GetRecentOtpsAndRenewSubscription() {
-  if (!one_time_token_services_) {
+  if (!one_time_token_services_ || !GetMockOtpValue().empty()) {
     return;
   }
 

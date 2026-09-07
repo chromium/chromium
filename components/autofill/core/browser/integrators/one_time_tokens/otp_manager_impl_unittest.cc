@@ -6,6 +6,7 @@
 
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -28,6 +29,7 @@
 #include "components/one_time_tokens/core/browser/one_time_token_service_impl.h"
 #include "components/one_time_tokens/core/browser/sms_otp_backend.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription_manager.h"
+#include "components/one_time_tokens/core/common/one_time_token_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -951,6 +953,59 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestionsUnfocusableOtpFieldReturnsEmpty) {
       /*field_origin=*/std::nullopt, /*main_frame_origin=*/std::nullopt,
       /*is_focusable=*/false);
   ASSERT_TRUE(form);
+
+  base::test::TestFuture<const std::vector<std::string>> future;
+  otp_manager.GetOtpSuggestions(*form, test_field_.origin(),
+                                future.GetCallback());
+
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_TRUE(future.Get().empty());
+}
+
+// Tests that `GetOtpSuggestions` immediately returns the mock OTP value
+// when `kMockOtpValue` is specified on the command line, short-circuiting
+// backend retrieval and PhishGuard checks.
+TEST_F(OtpManagerImplTest, GetOtpSuggestions_ReturnsMockOtpWhenSwitchIsSet) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      one_time_tokens::switches::kMockOtpValue, "987654");
+
+  // When mock OTP is set, no SMS backend retrieval should occur.
+  EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp).Times(0);
+
+  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
+
+  const FormStructure* form = AddFormWithOtpField();
+  ASSERT_TRUE(form);
+
+  // When GetOtpSuggestions is called, the mock OTP switch takes precedence and
+  // is returned immediately without triggering PhishGuard checks.
+  EXPECT_CALL(otp_phish_guard_delegate(), StartOtpPhishGuardCheck).Times(0);
+
+  base::test::TestFuture<const std::vector<std::string>> future;
+  otp_manager.GetOtpSuggestions(*form, test_field_.origin(),
+                                future.GetCallback());
+
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_THAT(future.Get(), testing::ElementsAre("987654"));
+}
+
+// Tests that `GetOtpSuggestions` returns empty suggestions when the form is not
+// an OTP form, even if `kMockOtpValue` is specified.
+TEST_F(OtpManagerImplTest, GetOtpSuggestions_MockOtpIgnoredForNonOtpForm) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      one_time_tokens::switches::kMockOtpValue, "987654");
+
+  OtpManagerImpl otp_manager(autofill_manager(), &one_time_token_service_);
+
+  EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp).Times(0);
+  EXPECT_CALL(otp_phish_guard_delegate(), StartOtpPhishGuardCheck).Times(0);
+
+  FormData form_data;
+  form_data.set_fields({autofill::test::CreateTestFormField(
+      "Username", "username", "john_doe", FormControlType::kInputText)});
+  auto form = std::make_unique<FormStructure>(form_data);
 
   base::test::TestFuture<const std::vector<std::string>> future;
   otp_manager.GetOtpSuggestions(*form, test_field_.origin(),

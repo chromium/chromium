@@ -11,4 +11,6 @@ const char kOneTimeTokenServiceBaseUrl[] = "one-time-token-service-base-url";
 const char kDefaultOneTimeTokenServiceBaseUrl[] =
     "https://onetimetoken.pa.googleapis.com";
 
+const char kMockOtpValue[] = "mock-otp-value";
+
 }  // namespace one_time_tokens::switches
