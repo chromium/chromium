@@ -32,7 +32,6 @@
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/platform/geometry/geometry_hash_traits.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
-#include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/hash_counted_set.h"
@@ -125,12 +124,6 @@ class CORE_EXPORT CSSImageGeneratorValue : public CSSValue {
 
   // Cached image instances.
   mutable GeneratedImageCache cached_images_;
-
-  // TODO(Oilpan): when/if we can make the layoutObject point directly to the
-  // CSSImageGenerator value using a member we don't need to have this hack
-  // where we keep a persistent to the instance as long as there are clients in
-  // the ClientSizeCountMap.
-  SelfKeepAlive<CSSImageGeneratorValue> keep_alive_{{}};
 };
 
 template <>

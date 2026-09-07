@@ -78,11 +78,6 @@ CSSImageGeneratorValue::~CSSImageGeneratorValue() = default;
 
 void CSSImageGeneratorValue::AddClient(const ImageResourceObserver* client) {
   DCHECK(client);
-  if (clients_.empty()) {
-    DCHECK(!keep_alive_);
-    keep_alive_ = this;
-  }
-
   SizeAndCount& size_count =
       clients_.insert(client, SizeAndCount()).stored_value->value;
   size_count.count++;
@@ -102,11 +97,6 @@ void CSSImageGeneratorValue::RemoveClient(const ImageResourceObserver* client) {
   if (!--size_count.count) {
     clients_.erase(client);
   }
-
-  if (clients_.empty()) {
-    DCHECK(keep_alive_);
-    keep_alive_.Clear();
-  }
 }
 
 void CSSImageGeneratorValue::TraceAfterDispatch(blink::Visitor* visitor) const {
@@ -118,7 +108,6 @@ Image* CSSImageGeneratorValue::GetImage(const ImageResourceObserver* client,
                                         const gfx::SizeF& size) const {
   ClientSizeCountMap::iterator it = clients_.find(client);
   if (it != clients_.end()) {
-    DCHECK(keep_alive_);
     SizeAndCount& size_count = it->value;
     if (size_count.size != size) {
       if (!size_count.size.IsEmpty()) {
