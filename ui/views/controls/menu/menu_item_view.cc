@@ -109,6 +109,17 @@ std::u16string GetBadgeString(ui::NewBadgeType new_badge_type) {
       return l10n_util::GetStringUTF16(IDS_PREVIEW_BADGE);
   }
 }
+
+void NotifyControllerOfDestructionRecursively(MenuItemView* item,
+                                              MenuController* controller) {
+  controller->OnMenuItemDestroying(item);
+  if (item->HasSubmenu()) {
+    for (auto* child : item->GetSubmenu()->GetMenuItems()) {
+      NotifyControllerOfDestructionRecursively(child, controller);
+    }
+  }
+}
+
 }  // namespace
 
 // MenuItemView ---------------------------------------------------------------
@@ -120,8 +131,13 @@ MenuItemView::MenuItemView(MenuDelegate* delegate)
                    delegate) {}
 
 MenuItemView::~MenuItemView() {
-  if (GetMenuController()) {
-    GetMenuController()->OnMenuItemDestroying(this);
+  if (controller_) {
+    NotifyControllerOfDestructionRecursively(this, controller_.get());
+  }
+  if (submenu_) {
+    for (auto* item : submenu_->GetMenuItems()) {
+      item->parent_menu_item_ = nullptr;
+    }
   }
   for (views::View* item : removed_items_) {
     delete item;

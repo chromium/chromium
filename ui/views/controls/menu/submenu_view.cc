@@ -509,7 +509,10 @@ void SubmenuView::ShowAt(const MenuHost::InitParams& init_params) {
   if (host_) {
     host_->SetMenuHostBounds(init_params.bounds);
     host_->ShowMenuHost(init_params.do_capture);
-    if (!weak_this) {
+    // Showing the menu host can synchronously trigger teardown (e.g. via focus
+    // change). SubmenuView may outlive MenuHost, in which case we should just
+    // early exit.
+    if (!weak_this || !host_) {
       return;
     }
   } else {
@@ -523,7 +526,10 @@ void SubmenuView::ShowAt(const MenuHost::InitParams& init_params) {
     MenuHost::InitParams new_init_params = init_params;
     new_init_params.contents_view = detached_scroll_view_container_.release();
     host_->InitMenuHost(new_init_params);
-    if (!weak_this) {
+    // Showing the menu host can synchronously trigger teardown (e.g. via focus
+    // change). SubmenuView may outlive MenuHost, in which case we should just
+    // early exit.
+    if (!weak_this || !host_) {
       return;
     }
   }

@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
 #include "ui/native_theme/native_theme.h"
@@ -79,23 +80,22 @@ bool MenuRunnerImpl::IsRunning() const {
 }
 
 void MenuRunnerImpl::Release() {
+  // Swap in a different delegate. That way we know the original MenuDelegate
+  // won't be notified later on (when it's likely already been deleted).
+  if (!empty_delegate_) {
+    empty_delegate_ = std::make_unique<MenuDelegate>();
+    menu_->set_delegate(empty_delegate_.get());
+    for (MenuItemView* sibling_menu : sibling_menus_) {
+      sibling_menu->set_delegate(empty_delegate_.get());
+    }
+  }
+
   if (running_) {
     if (delete_after_run_) {
       return;  // We already canceled.
     }
 
-    // The menu is running a nested run loop, we can't delete it now
-    // otherwise the stack would be in a really bad state (many frames would
-    // have deleted objects on them). Instead cancel the menu, when it returns
-    // Holder will delete itself.
     delete_after_run_ = true;
-
-    // Swap in a different delegate. That way we know the original MenuDelegate
-    // won't be notified later on (when it's likely already been deleted).
-    if (!empty_delegate_.get()) {
-      empty_delegate_ = std::make_unique<MenuDelegate>();
-    }
-    menu_->set_delegate(empty_delegate_.get());
 
     // Verify that the MenuController is still active. It may have been
     // destroyed out of order.
@@ -106,6 +106,13 @@ void MenuRunnerImpl::Release() {
       controller_->Cancel(MenuController::ExitType::kDestroyed);
       return;
     }
+  }
+
+  bool is_stack_active = controller_ && controller_->IsStackActive();
+  if (is_stack_active) {
+    // Transfer ownership to controller.
+    controller_->DeferMenuRunnerDestruction(base::WrapUnique(this));
+    return;
   }
 
   delete this;
@@ -230,22 +237,33 @@ void MenuRunnerImpl::OnMenuClosed(NotifyType type,
   }
 
   menu_->set_controller(nullptr);
+  for (MenuItemView* sibling_menu : sibling_menus_) {
+    sibling_menu->set_controller(nullptr);
+  }
 
   if (owns_controller_ && controller_) {
     // We created the controller and need to delete it.
-    delete controller_.get();
+    controller_->Destroy();
     owns_controller_ = false;
   }
-  controller_ = nullptr;
   // Make sure all the windows we created to show the menus have been
   // destroyed.
   menu_->DestroyAllMenuHosts();
+
   if (delete_after_run_) {
     FireFocusAfterMenuClose(parent_widget);
-    delete this;
+
+    bool is_stack_active = controller_ && controller_->IsStackActive();
+    if (is_stack_active) {
+      // Transfer ownership to controller.
+      controller_->DeferMenuRunnerDestruction(base::WrapUnique(this));
+    } else {
+      delete this;
+    }
     return;
   }
   running_ = false;
+  controller_ = nullptr;
   if (menu_->GetDelegate()) {
     // Executing the command may also delete this.
     base::WeakPtr<MenuRunnerImpl> ref(weak_factory_.GetWeakPtr());
