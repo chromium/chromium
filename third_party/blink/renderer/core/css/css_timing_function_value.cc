@@ -67,7 +67,7 @@ bool CSSCubicBezierTimingFunctionValue::Equals(
 }
 
 String CSSStepsTimingFunctionValue::CustomCSSText() const {
-  String step_position_string;
+  StringView step_position_string;
   switch (step_position_) {
     case StepsTimingFunction::StepPosition::START:
       step_position_string = "start";
