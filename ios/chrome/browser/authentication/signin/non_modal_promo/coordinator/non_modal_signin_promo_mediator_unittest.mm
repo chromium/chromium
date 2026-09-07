@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/non_modal_signin_promo_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -124,16 +125,15 @@ class NonModalSignInPromoMediatorTest : public PlatformTest {
     builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
         base::BindRepeating(&BuildFeatureEngagementMockTracker));
-    profile_ = std::move(builder).Build();
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     authentication_service_ =
-        AuthenticationServiceFactory::GetForProfile(profile_.get());
+        AuthenticationServiceFactory::GetForProfile(profile_);
 
-    auto* identity_manager =
-        IdentityManagerFactory::GetForProfile(profile_.get());
+    auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
 
     // Get the mock tracker from the profile
     mock_tracker_ = static_cast<feature_engagement::test::MockTracker*>(
-        feature_engagement::TrackerFactory::GetForProfile(profile_.get()));
+        feature_engagement::TrackerFactory::GetForProfile(profile_));
 
     // Create fake delegate and command handler
     fake_delegate_ = [[FakeNonModalSignInPromoMediatorDelegate alloc] init];
@@ -153,6 +153,9 @@ class NonModalSignInPromoMediatorTest : public PlatformTest {
     // Disconnect mediator to clean up the resources
     [mediator_ disconnect];
     mediator_ = nil;
+    mock_tracker_ = nullptr;
+    authentication_service_ = nullptr;
+    profile_ = nullptr;
 
     PlatformTest::TearDown();
   }
@@ -179,8 +182,8 @@ class NonModalSignInPromoMediatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-
-  std::unique_ptr<TestProfileIOS> profile_;
+  TestProfileManagerIOS profile_manager_;
+  raw_ptr<TestProfileIOS> profile_ = nullptr;
   FakeSystemIdentity* identity_ = nullptr;
   raw_ptr<AuthenticationService> authentication_service_ = nullptr;
   raw_ptr<feature_engagement::test::MockTracker> mock_tracker_;

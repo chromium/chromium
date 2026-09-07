@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/signin/model/account_reconcilor_factory.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -62,15 +63,17 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
             std::make_unique<FakeAuthenticationServiceDelegate>()));
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateTestSyncService));
-    profile_ = std::move(builder).Build();
-    ASSERT_EQ(ChromeAccountManagerServiceFactory::GetForProfile(profile_.get())
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
+    ASSERT_EQ(ChromeAccountManagerServiceFactory::GetForProfile(profile_)
                   ->GetDefaultIdentity(),
               kDefaultIdentity);
   }
 
   void TearDown() override {
+    mediator_ = nil;
     EXPECT_OCMOCK_VERIFY((id)mediator_delegate_mock_);
     EXPECT_OCMOCK_VERIFY((id)authentication_flow_mock_);
+    profile_ = nullptr;
     PlatformTest::TearDown();
   }
 
@@ -86,13 +89,13 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
   ConsistencyPromoSigninMediator* BuildConsistencyPromoSigninMediator(
       signin_metrics::AccessPoint access_point) {
     ChromeAccountManagerService* chrome_account_manager_service =
-        ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
+        ChromeAccountManagerServiceFactory::GetForProfile(profile_);
     AuthenticationService* auth_service =
-        AuthenticationServiceFactory::GetForProfile(profile_.get());
+        AuthenticationServiceFactory::GetForProfile(profile_);
     signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(profile_.get());
+        IdentityManagerFactory::GetForProfile(profile_);
     AccountReconcilor* account_reconcilor =
-        ios::AccountReconcilorFactory::GetForProfile(profile_.get());
+        ios::AccountReconcilorFactory::GetForProfile(profile_);
     mediator_ = [[ConsistencyPromoSigninMediator alloc]
         initWithAccountManagerService:chrome_account_manager_service
                 authenticationService:auth_service
@@ -114,7 +117,7 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
         consistencyPromoSigninMediatorSigninStarted:[OCMArg any]]);
     OCMExpect([authentication_flow_mock_ identity]).andReturn(identity);
     AuthenticationService* auth_service =
-        AuthenticationServiceFactory::GetForProfile(profile_.get());
+        AuthenticationServiceFactory::GetForProfile(profile_);
     auto startSignInCallback = ^(NSInvocation* invocation) {
       if (success) {
         auth_service->SignIn(identity, access_point);
@@ -170,7 +173,8 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestProfileIOS> profile_;
+  TestProfileManagerIOS profile_manager_;
+  raw_ptr<TestProfileIOS> profile_;
 };
 
 // Tests start and cancel by user.

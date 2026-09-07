@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
@@ -44,13 +45,13 @@ class FullscreenSigninPromoSceneAgentTest : public PlatformTest {
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateTestSyncService));
 
-    profile_ = std::move(builder).Build();
-    scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
+    scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_];
     scene_state_.scene = static_cast<UIWindowScene*>(
         [[[UIApplication sharedApplication] connectedScenes] anyObject]);
     authentication_service_ =
-        AuthenticationServiceFactory::GetForProfile(profile_.get());
-    identity_manager_ = IdentityManagerFactory::GetForProfile(profile_.get());
+        AuthenticationServiceFactory::GetForProfile(profile_);
+    identity_manager_ = IdentityManagerFactory::GetForProfile(profile_);
     promos_manager_ = std::make_unique<MockPromosManager>();
     agent_ = [[FullscreenSigninPromoSceneAgent alloc]
         initWithPromosManager:promos_manager_.get()
@@ -63,11 +64,11 @@ class FullscreenSigninPromoSceneAgentTest : public PlatformTest {
 
     profile_state_ = [[ProfileState alloc] initWithAppState:nil];
     SetProfileStateInitStage(profile_state_, ProfileInitStage::kFinal);
-    profile_state_.profile = profile_.get();
+    profile_state_.profile = profile_;
     scene_state_.profileState = profile_state_;
 
     account_manager_service_ =
-        ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
+        ChromeAccountManagerServiceFactory::GetForProfile(profile_);
 
     scene_state_.UIEnabled = YES;
   }
@@ -82,15 +83,23 @@ class FullscreenSigninPromoSceneAgentTest : public PlatformTest {
       [standardDefaults synchronize];
       scene_state_.UIEnabled = NO;
       [scene_state_ shutdown];
+      agent_ = nil;
       scene_state_ = nil;
       profile_state_ = nil;
+      authentication_service_ = nullptr;
+      identity_manager_ = nullptr;
+      account_manager_service_ = nullptr;
+      promos_manager_.reset();
+      profile_ = nullptr;
     }
+    PlatformTest::TearDown();
   }
 
  protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestProfileIOS> profile_;
+  TestProfileManagerIOS profile_manager_;
+  raw_ptr<TestProfileIOS> profile_ = nullptr;
   std::unique_ptr<MockPromosManager> promos_manager_;
   syncer::TestSyncService sync_service_;
   raw_ptr<signin::IdentityManager> identity_manager_;
