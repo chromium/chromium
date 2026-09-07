@@ -19,13 +19,14 @@
 #include "ash/webui/network_ui/network_diagnostics_resource_provider.h"
 #include "ash/webui/network_ui/network_health_resource_provider.h"
 #include "ash/webui/network_ui/traffic_counters_resource_provider.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/net/network_health/network_health_manager.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
@@ -55,6 +56,7 @@
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -227,7 +229,9 @@ namespace network_ui {
 
 class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
  public:
-  NetworkConfigMessageHandler() = default;
+  // `local_state` must be non-null and must outlive `this`.
+  explicit NetworkConfigMessageHandler(PrefService* local_state)
+      : local_state_(CHECK_DEREF(local_state)) {}
 
   NetworkConfigMessageHandler(const NetworkConfigMessageHandler&) = delete;
   NetworkConfigMessageHandler& operator=(const NetworkConfigMessageHandler&) =
@@ -516,20 +520,19 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
     }
 
     NET_LOG(EVENT) << "Executing reset ApnMigrator";
-    PrefService* local_state = g_browser_process->local_state();
 
     // Clear set of migrated ICCIDs.
-    local_state->ClearPref(prefs::kApnMigratedIccids);
+    local_state_->ClearPref(prefs::kApnMigratedIccids);
 
     // Clear all revamp APN lists in all network.
     const std::string network_metadata_pref = "network_metadata";
     base::DictValue device_dict =
-        local_state->GetDict(network_metadata_pref).Clone();
+        local_state_->GetDict(network_metadata_pref).Clone();
     for (auto const [guid, val] : device_dict) {
       base::DictValue* network_dict = device_dict.FindDict(guid.c_str());
       network_dict->Remove("custom_apn_list_v2");
     }
-    local_state->SetDict(network_metadata_pref, std::move(device_dict));
+    local_state_->SetDict(network_metadata_pref, std::move(device_dict));
   }
 
   void OnEuiccReset(bool success) {
@@ -610,6 +613,7 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
     InternetConfigDialog::ShowDialogForNetworkType(onc_type);
   }
 
+  const raw_ref<PrefService> local_state_;
   base::WeakPtrFactory<NetworkConfigMessageHandler> weak_ptr_factory_{this};
 };
 
@@ -869,6 +873,18 @@ class WifiDirectMessageHandler : public content::WebUIMessageHandler {
 
 }  // namespace network_ui
 
+NetworkUIConfig::NetworkUIConfig(PrefService* local_state)
+    : WebUIConfig(content::kChromeUIScheme, ash::kChromeUINetworkHost),
+      local_state_(CHECK_DEREF(local_state)) {}
+
+NetworkUIConfig::~NetworkUIConfig() = default;
+
+std::unique_ptr<content::WebUIController>
+NetworkUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                       const GURL& url) {
+  return std::make_unique<NetworkUI>(&local_state_.get(), web_ui);
+}
+
 // static
 base::DictValue NetworkUI::GetLocalizedStrings() {
   return base::DictValue()
@@ -1069,14 +1085,15 @@ base::DictValue NetworkUI::GetLocalizedStrings() {
 
 // static
 std::unique_ptr<content::WebUIMessageHandler>
-NetworkUI::CreateNetworkConfigMessageHandlerForTesting() {
-  return std::make_unique<network_ui::NetworkConfigMessageHandler>();
+NetworkUI::CreateNetworkConfigMessageHandlerForTesting(
+    PrefService* local_state) {
+  return std::make_unique<network_ui::NetworkConfigMessageHandler>(local_state);
 }
 
-NetworkUI::NetworkUI(content::WebUI* web_ui)
+NetworkUI::NetworkUI(PrefService* local_state, content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
   web_ui->AddMessageHandler(
-      std::make_unique<network_ui::NetworkConfigMessageHandler>());
+      std::make_unique<network_ui::NetworkConfigMessageHandler>(local_state));
   web_ui->AddMessageHandler(std::make_unique<OncImportMessageHandler>());
   web_ui->AddMessageHandler(std::make_unique<NetworkLogsMessageHandler>());
   web_ui->AddMessageHandler(

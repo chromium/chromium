@@ -85,7 +85,7 @@ class NetworkConfigMessageHandlerTest : public testing::Test {
 
     web_ui_ = std::make_unique<content::TestWebUI>();
     web_ui_->AddMessageHandler(
-        NetworkUI::CreateNetworkConfigMessageHandlerForTesting());
+        NetworkUI::CreateNetworkConfigMessageHandlerForTesting(local_state));
   }
 
   void TearDown() override {

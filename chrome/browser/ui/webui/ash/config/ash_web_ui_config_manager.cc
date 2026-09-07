@@ -421,7 +421,7 @@ void AshWebUIConfigManager::RegisterWebUIConfigs() {
       std::make_unique<multidevice_setup::MultiDeviceSetupDialogUIConfig>());
   AddWebUIConfig(std::make_unique<NearbyInternalsUIConfig>());
   AddWebUIConfig(std::make_unique<nearby_share::NearbyShareDialogUIConfig>());
-  AddWebUIConfig(std::make_unique<NetworkUIConfig>());
+  AddWebUIConfig(std::make_unique<NetworkUIConfig>(&local_state_.get()));
   AddWebUIConfig(std::make_unique<NotificationTesterUIConfig>());
   AddWebUIConfig(std::make_unique<office_fallback::OfficeFallbackUIConfig>());
   AddWebUIConfig(std::make_unique<OobeUIConfig>());

@@ -13,7 +13,6 @@ include_rules = [
   "+chrome/browser/ash/file_manager",
   "+chrome/browser/ash/net/network_health",
   "+chrome/browser/ash/system_logs",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/download",
   "+chrome/browser/extensions/tab_helper.h",
   "+chrome/browser/feedback",
