@@ -42,7 +42,6 @@
 #include "components/one_time_tokens/core/browser/one_time_token_type.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription.h"
 #include "components/one_time_tokens/core/common/one_time_token_switches.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 
 using one_time_tokens::ExpiringSubscriptionHandle;
 using one_time_tokens::OneTimeToken;
@@ -93,14 +92,6 @@ void OtpManagerImpl::GetOtpSuggestions(
     return;
   }
 
-  // TODO(crbug.com/415273270) This is just a hack to prepopulate the OTPs in
-  // case no real backend is triggered. The feature definition should migrate to
-  // autofill.
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kDebugUiForOtps)) {
-    std::move(callback).Run({"Identified OTP field."});
-    return;
-  }
 
   // TODO(crbug.com/415273270): Do not fill OTP suggestions into opaque origin
   // iframes.

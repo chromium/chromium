@@ -87,10 +87,6 @@ BASE_DECLARE_FEATURE(kClearUndecryptablePasswordsOnSync);
 BASE_DECLARE_FEATURE(kCredentialManagementUnifiedUi);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-// Enables debug data popups on OTP fields for manual testing of
-// one-time-passwords. Only for OTP detection testing, not intended to be
-// launched.
-BASE_DECLARE_FEATURE(kDebugUiForOtps);
 
 // When enabled, automated password change won't be offered when the form
 // contains new password field.
