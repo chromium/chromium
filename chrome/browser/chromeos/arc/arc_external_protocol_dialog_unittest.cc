@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_mojo_delegate.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_package.h"

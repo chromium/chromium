@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/app_ui_observer.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/event_router.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -208,8 +209,8 @@ TEST_F(TelemetryExtensionEventManagerTest,
 
   OpenAppUiUrlAndSetCertificateWithStatus(GURL(kPwaUrl1),
                                           /*cert_status=*/net::OK);
-  auto new_browser =
-      CreateBrowser(GetProfile(), Browser::Type::TYPE_NORMAL, false);
+  auto new_browser = CreateBrowser(
+      GetProfile(), BrowserWindowInterface::Type::TYPE_NORMAL, false);
   ActivateBrowser(new_browser.get());
 
   EXPECT_EQ(
@@ -257,8 +258,8 @@ TEST_F(TelemetryExtensionEventManagerTest,
 
   OpenAppUiUrlAndSetCertificateWithStatus(GURL(kPwaUrl1),
                                           /*cert_status=*/net::OK);
-  auto new_browser =
-      CreateBrowser(GetProfile(), Browser::Type::TYPE_NORMAL, false);
+  auto new_browser = CreateBrowser(
+      GetProfile(), BrowserWindowInterface::Type::TYPE_NORMAL, false);
   ActivateBrowser(new_browser.get());
 
   EXPECT_EQ(EventManager::kAppUiNotFocused,

@@ -15,6 +15,7 @@ include_rules = [
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/navigator/browser_navigator.h",
   "+chrome/browser/ui/tabs/tab_enums.h",
+  "+chrome/browser/ui/tabs/tab_strip_model.h",
   "+chrome/common",
   "+chrome/test",
 ]

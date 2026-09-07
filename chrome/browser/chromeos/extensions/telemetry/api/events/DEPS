@@ -14,6 +14,7 @@ include_rules = [
   "+chrome/browser/chromeos/extensions/telemetry/api/common",
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h",
   "+chrome/browser/ui/navigator/browser_navigator.h",
   "+chrome/browser/ui/navigator/browser_navigator_params.h",
