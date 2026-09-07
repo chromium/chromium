@@ -37,6 +37,8 @@
 #include "net/http/http_response_headers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/url_request/redirect_info.h"
+#include "services/network/public/mojom/early_hints.mojom.h"
+#include "services/network/public/mojom/link_header.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "storage/browser/blob/blob_url_registry.h"
@@ -308,6 +310,93 @@ class RedirectingBlob : public blink::mojom::Blob {
   mojo::Remote<network::mojom::URLLoaderClient> client_;
 };
 
+// A blink::mojom::Blob implementation that, when Load() is called, sends
+// Early Hints before sending the response body.
+class EarlyHintsBlob : public blink::mojom::Blob {
+ public:
+  explicit EarlyHintsBlob(const GURL& preload_target)
+      : preload_target_(preload_target) {}
+
+  mojo::PendingRemote<blink::mojom::Blob> BindNewPipeAndPassRemote() {
+    mojo::PendingRemote<blink::mojom::Blob> remote;
+    receivers_.Add(this, remote.InitWithNewPipeAndPassReceiver());
+    return remote;
+  }
+
+  // blink::mojom::Blob:
+  void Clone(mojo::PendingReceiver<blink::mojom::Blob> receiver) override {
+    receivers_.Add(this, std::move(receiver));
+  }
+  void AsDataPipeGetter(
+      mojo::PendingReceiver<network::mojom::DataPipeGetter>) override {
+    NOTREACHED();
+  }
+  void ReadAll(mojo::ScopedDataPipeProducerHandle,
+               mojo::PendingRemote<blink::mojom::BlobReaderClient>) override {
+    NOTREACHED();
+  }
+  void ReadRange(uint64_t,
+                 uint64_t,
+                 mojo::ScopedDataPipeProducerHandle,
+                 mojo::PendingRemote<blink::mojom::BlobReaderClient>) override {
+    NOTREACHED();
+  }
+  void Load(
+      mojo::PendingReceiver<network::mojom::URLLoader> loader,
+      const std::string& method,
+      const net::HttpRequestHeaders&,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client) override {
+    loader_receiver_ = std::move(loader);
+    client_.reset();
+    client_.Bind(std::move(client));
+
+    auto hints = network::mojom::EarlyHints::New();
+    hints->referrer_policy = network::mojom::ReferrerPolicy::kNever;
+    hints->ip_address_space = network::mojom::IPAddressSpace::kLoopback;
+    hints->headers = network::mojom::ParsedHeaders::New();
+    auto link = network::mojom::LinkHeader::New();
+    link->href = preload_target_;
+    link->rel = network::mojom::LinkRelAttribute::kPreload;
+    link->as = network::mojom::LinkAsAttribute::kScript;
+    hints->headers->link_headers.push_back(std::move(link));
+    client_->OnReceiveEarlyHints(std::move(hints));
+
+    std::string body = "<html><body>sample_blob_content</body></html>";
+    mojo::ScopedDataPipeProducerHandle producer_handle;
+    mojo::ScopedDataPipeConsumerHandle consumer_handle;
+    CHECK_EQ(MOJO_RESULT_OK,
+             mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle));
+    size_t actually_written_bytes = 0;
+    CHECK_EQ(MOJO_RESULT_OK,
+             producer_handle->WriteData(base::as_byte_span(body),
+                                        MOJO_WRITE_DATA_FLAG_NONE,
+                                        actually_written_bytes));
+    CHECK_EQ(actually_written_bytes, body.size());
+
+    auto head = network::mojom::URLResponseHead::New();
+    head->headers = net::HttpResponseHeaders::TryToCreate(
+        "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n");
+    head->mime_type = "text/html";
+    client_->OnReceiveResponse(std::move(head), std::move(consumer_handle),
+                               std::nullopt);
+    client_->OnComplete(network::URLLoaderCompletionStatus(net::OK));
+  }
+  void ReadSideData(ReadSideDataCallback) override { NOTREACHED(); }
+  void CaptureSnapshot(CaptureSnapshotCallback callback) override {
+    std::move(callback).Run(0, std::nullopt);
+  }
+  void GetInternalUUID(GetInternalUUIDCallback callback) override {
+    std::move(callback).Run("");
+  }
+
+ private:
+  const GURL preload_target_;
+  mojo::ReceiverSet<blink::mojom::Blob> receivers_;
+  // Retain the receiver so the endpoint does not signal disconnect.
+  mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver_;
+  mojo::Remote<network::mojom::URLLoaderClient> client_;
+};
+
 }  // namespace
 
 // A blob never serves a redirect, so a navigation to a blob URL whose
@@ -340,6 +429,36 @@ IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest,
   EXPECT_TRUE(observer.is_error());
   EXPECT_EQ(net::ERR_UNSAFE_REDIRECT, observer.net_error_code());
   EXPECT_NE(redirect_target, shell()->web_contents()->GetLastCommittedURL());
+}
+
+// A blob URL navigation should ignore Early Hints.
+IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest,
+                       NavigationToBlobUrlIgnoresEarlyHints) {
+  GURL url = embedded_test_server()->GetURL("a.test", "/title1.html");
+  url::Origin origin = url::Origin::Create(url);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame());
+
+  const GURL preload_target =
+      embedded_test_server()->GetURL("a.test", "/title2.html");
+  EarlyHintsBlob blob(preload_target);
+
+  const GURL blob_url("blob:" + origin.Serialize() +
+                      "/33221100-0000-0000-0000-000000000001");
+  static_cast<StoragePartitionImpl*>(rfh->GetStoragePartition())
+      ->GetBlobUrlRegistry()
+      ->AddUrlMapping(blob_url, blob.BindNewPipeAndPassRemote(),
+                      blink::StorageKey::CreateFirstParty(origin), origin,
+                      rfh->GetProcess()->GetDeprecatedID());
+
+  EXPECT_TRUE(NavigateToURL(shell(), blob_url));
+  RenderFrameHostImpl* new_rfh = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame());
+  EXPECT_EQ(new_rfh->early_hints_manager(), nullptr);
+  EXPECT_EQ("sample_blob_content",
+            EvalJs(shell()->web_contents(), "document.body.innerText"));
 }
 
 IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest,

@@ -216,6 +216,10 @@ void WorkerScriptLoader::SetPriority(net::RequestPriority priority,
 void WorkerScriptLoader::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // Early Hints are only supported for HTTP/HTTPS requests.
+  if (!resource_request_.url.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
   client_->OnReceiveEarlyHints(std::move(early_hints));
 }
 

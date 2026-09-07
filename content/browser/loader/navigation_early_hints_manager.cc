@@ -404,6 +404,11 @@ NavigationEarlyHintsManager::~NavigationEarlyHintsManager() = default;
 void NavigationEarlyHintsManager::HandleEarlyHints(
     network::mojom::EarlyHintsPtr early_hints,
     const network::ResourceRequest& request_for_navigation) {
+  // Only handle Early Hints for HTTP/HTTPS navigations.
+  if (!request_for_navigation.url.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
+
   // Ignore the second and subsequent responses to avoid situations where
   // policies such as CSP and connection allowlist are inconsistent among the
   // first and following responses. This behavior is specified by the step 19.5

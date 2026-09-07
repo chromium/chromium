@@ -272,6 +272,23 @@ TEST_F(NavigationEarlyHintsManagerTest, PreloadSchemeIsUnsupported) {
   EXPECT_FALSE(early_hints_manager().HasInflightPreloads());
 }
 
+TEST_F(NavigationEarlyHintsManagerTest, NonHttpNavigationUrlIgnored) {
+  for (const char* url_str :
+       {"blob:https://a.test/1234", "filesystem:https://a.test/temporary/1234",
+        "data:text/html,sample_data", "file:///test/path", "about:blank"}) {
+    network::ResourceRequest request;
+    request.is_outermost_main_frame = true;
+    request.url = GURL(url_str);
+
+    early_hints_manager().HandleEarlyHints(CreateEarlyHintWithPreload(),
+                                           request);
+
+    EXPECT_FALSE(early_hints_manager().WasResourceHintsReceived());
+    EXPECT_FALSE(early_hints_manager().HasInflightPreloads());
+    EXPECT_TRUE(fake_network_context().preconnect_requests().empty());
+  }
+}
+
 TEST_F(NavigationEarlyHintsManagerTest, SinglePreconnect) {
   auto preconnect_url = GURL("https://b.test");
   auto link_header = network::mojom::LinkHeader::New(

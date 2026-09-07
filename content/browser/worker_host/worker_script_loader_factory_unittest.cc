@@ -21,6 +21,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/test/test_url_loader_client.h"
@@ -288,6 +289,41 @@ TEST_F(WorkerScriptLoaderFactoryTest, ResponseFromBlobUrl) {
       network::URLLoaderCompletionStatus(net::OK));
   factory->GetScriptLoader()->OnFetcherCallbackCalled();
   client.RunUntilComplete();
+  EXPECT_EQ(net::OK, client.completion_status().error_code);
+}
+
+// Tests that Early Hints received while loading a blob: URL are ignored.
+TEST_F(WorkerScriptLoaderFactoryTest, EarlyHintsFromBlobUrl) {
+  GURL url("blob:https://www.example.com/49146318-7a89-4041-9bcc-36e6b6eeef86");
+
+  // Defer the mock network load so we can inject an early hint on the in-flight
+  // load.
+  network_loader_factory_instance_->DeferHandleRequest();
+
+  // Create the factory.
+  auto factory = std::make_unique<WorkerScriptLoaderFactory>(
+      kProcessId, DedicatedOrSharedWorkerToken(),
+      net::IsolationInfo::CreateForInternalRequest(url::Origin::Create(url)),
+      service_worker_handle_.get(), browser_context_getter_,
+      network_loader_factory_);
+
+  // Start loading the script.
+  network::TestURLLoaderClient client;
+  mojo::PendingRemote<network::mojom::URLLoader> loader =
+      CreateTestLoaderAndStart(url, factory.get(), &client);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return factory->GetScriptLoader() != nullptr; }));
+
+  auto hints = network::mojom::EarlyHints::New();
+  hints->headers = network::mojom::ParsedHeaders::New();
+  hints->ip_address_space = network::mojom::IPAddressSpace::kLoopback;
+  factory->GetScriptLoader()->OnReceiveEarlyHints(std::move(hints));
+  factory->GetScriptLoader()->OnComplete(
+      network::URLLoaderCompletionStatus(net::OK));
+  factory->GetScriptLoader()->OnFetcherCallbackCalled();
+  client.RunUntilComplete();
+
+  EXPECT_FALSE(client.has_received_early_hints());
   EXPECT_EQ(net::OK, client.completion_status().error_code);
 }
 

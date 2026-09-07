@@ -1375,6 +1375,12 @@ NavigationURLLoaderImpl::GetResourceRequestForTesting() const {
 
 void NavigationURLLoaderImpl::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {
+  // Early Hints is an HTTP protocol feature. Ignore Early Hints for
+  // non-HTTP/HTTPS URLs before inspecting renderer-influenced fields.
+  if (!url_.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
+
   // Early Hints should not come after actual response.
   DCHECK(!received_response_);
   DCHECK_NE(early_hints->ip_address_space,

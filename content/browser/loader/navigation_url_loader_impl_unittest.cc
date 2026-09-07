@@ -56,7 +56,9 @@
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
+#include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "services/network/public/mojom/link_header.mojom.h"
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
 #include "services/network/test/url_loader_context_for_tests.h"
 #include "services/network/url_loader.h"
@@ -1785,6 +1787,33 @@ TEST_F(NavigationURLLoaderImplTest, StorageAccessApiStatus_None_CrossOrigin) {
 
   EXPECT_EQ(loader->GetResourceRequestForTesting().storage_access_api_status,
             net::StorageAccessApiStatus::kNone);
+}
+
+TEST_F(NavigationURLLoaderImplTest, EarlyHintsIgnoredForNonHttpSchemes) {
+  TestNavigationURLLoaderDelegate delegate;
+  for (const char* url_str :
+       {"blob:https://example.com/00000000-0000-0000-0000-000000000000",
+        "filesystem:https://example.com/temporary/test",
+        "data:text/html,sample_data", "file:///test/path", "about:blank"}) {
+    auto loader =
+        CreateTestLoader(GURL(url_str), std::string(), "GET", &delegate);
+
+    auto link_header = network::mojom::LinkHeader::New(
+        GURL("https://example.com/script.js"),
+        network::mojom::LinkRelAttribute::kPreload,
+        network::mojom::LinkAsAttribute::kScript,
+        network::mojom::CrossOriginAttribute::kUnspecified,
+        network::mojom::FetchPriorityAttribute::kAuto,
+        /*mime_type=*/std::nullopt);
+    auto hints = network::mojom::EarlyHints::New();
+    hints->headers = network::mojom::ParsedHeaders::New();
+    hints->headers->link_headers.push_back(std::move(link_header));
+    hints->ip_address_space = network::mojom::IPAddressSpace::kLoopback;
+
+    static_cast<network::mojom::URLLoaderClient*>(loader.get())
+        ->OnReceiveEarlyHints(std::move(hints));
+    EXPECT_FALSE(loader->HasEarlyHintsManagerForTesting());
+  }
 }
 
 }  // namespace content

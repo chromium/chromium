@@ -370,6 +370,8 @@ URLLoaderFactoryParamsHelper::CreateForEarlyHintsPreload(
         shared_dictionary_observer,
     mojo::PendingRemote<network::mojom::DeviceBoundSessionAccessObserver>
         device_bound_session_observer) {
+  CHECK(navigation_request.GetURL().SchemeIsHTTPOrHTTPS());
+
   // TODO(crbug.com/40188470): Consider not using the speculative
   // RenderFrameHostImpl to create URLLoaderNetworkServiceObserver.
   // In general we should avoid using speculative RenderFrameHostImpl

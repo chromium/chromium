@@ -124,6 +124,7 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
 
   void TriggerTimeoutForTesting();
   const network::ResourceRequest& GetResourceRequestForTesting() const;
+  bool HasEarlyHintsManagerForTesting() const { return !!early_hints_manager_; }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(NavigationURLLoaderImplTest,
