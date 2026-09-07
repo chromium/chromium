@@ -100,6 +100,10 @@ const ClipPaintPropertyNodeOrAlias& FragmentData::PreClip() const {
       DCHECK(css_clip->Parent());
       return *css_clip->Parent();
     }
+    if (const auto* line_clamp_float_clip = properties->LineClampFloatClip()) {
+      DCHECK(line_clamp_float_clip->Parent());
+      return *line_clamp_float_clip->Parent();
+    }
     if (const auto* clip = properties->PixelMovingFilterClipExpander()) {
       DCHECK(clip->Parent());
       return *clip->Parent();

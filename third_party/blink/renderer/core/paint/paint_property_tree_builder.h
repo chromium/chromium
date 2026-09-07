@@ -24,6 +24,18 @@ class PaintLayer;
 class PhysicalBoxFragment;
 class VisualViewport;
 
+struct LineClampFloatClipState {
+  STACK_ALLOCATED();
+
+ public:
+  LineClampFloatClipState(const TransformPaintPropertyNodeOrAlias& transform,
+                          PhysicalRect rect)
+      : transform(&transform), rect(rect) {}
+
+  const TransformPaintPropertyNodeOrAlias* transform;
+  PhysicalRect rect;
+};
+
 // The context for PaintPropertyTreeBuilder.
 // It's responsible for bookkeeping tree state in other order, for example, the
 // most recent position container seen.
@@ -191,6 +203,8 @@ struct PaintPropertyTreeBuilderFragmentContext {
     // that are baked in PaintOffsetTranslations since we entered the
     // fragmentainer.
     PhysicalOffset paint_offset_for_oof_in_fragmentainer;
+
+    std::optional<LineClampFloatClipState> line_clamp_float_clip_state;
   };
 
   ContainingBlockContext current;

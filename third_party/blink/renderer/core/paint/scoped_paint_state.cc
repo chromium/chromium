@@ -113,6 +113,11 @@ void ScopedPaintState::AdjustForPaintProperties(const LayoutObject& object) {
     needs_new_chunk_properties = true;
   }
 
+  if (const auto* line_clamp_float_clip = properties->LineClampFloatClip()) {
+    new_chunk_properties.SetClip(*line_clamp_float_clip);
+    needs_new_chunk_properties = true;
+  }
+
   if (needs_new_chunk_properties) {
     chunk_properties_.emplace(
         input_paint_info_.context.GetPaintController(), new_chunk_properties,

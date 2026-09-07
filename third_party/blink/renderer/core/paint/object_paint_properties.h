@@ -170,8 +170,9 @@ class CORE_EXPORT ObjectPaintProperties
     kOverflowClip = 36,
     kCssClipFixedPosition = 37,
     kInnerBorderShapeClip = 38,
-    kLastClip = kInnerBorderShapeClip,
-    kClipAlias = 39,
+    kLineClampFloatClip = 39,
+    kLastClip = kLineClampFloatClip,
+    kClipAlias = 40,
 
     // Should be updated whenever a higher value NodeType is added.
     kNumFields = kClipAlias + 1,
@@ -409,6 +410,9 @@ class CORE_EXPORT ObjectPaintProperties
   //     +-[ OverflowControlsClip ]
   //     |   Clip created by overflow clip to clip overflow controls
   //     |   (scrollbars, resizer, scroll corner) that would overflow the box.
+  //     +-[ LineClampFloatClip ]
+  //       | Clip created for float elements inside a line-clamp container, so
+  //      /  they don't extend past the container's block-end content edge.
   //     +-[ BackgroundClip ]
   //     |   Clip created for CompositeBackgroundAttachmentFixed background
   //     |   according to CSS background-clip.
@@ -437,6 +441,7 @@ class CORE_EXPORT ObjectPaintProperties
   ADD_CLIP(MaskClip, NodeId::kMaskClip)
   ADD_CLIP(CssClip, NodeId::kCssClip)
   ADD_CLIP(OverflowControlsClip, NodeId::kOverflowControlsClip)
+  ADD_CLIP(LineClampFloatClip, NodeId::kLineClampFloatClip)
   ADD_CLIP(BackgroundClip, NodeId::kBackgroundClip)
   ADD_CLIP(PixelMovingFilterClipExpander,
            NodeId::kPixelMovingFilterClipExpander)

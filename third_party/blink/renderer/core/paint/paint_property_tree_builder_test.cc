@@ -8264,4 +8264,56 @@ TEST_P(PaintPropertyTreeBuilderTest, ElementCanvasTransformPropertyTree) {
   EXPECT_EQ(canvas_transform, properties->Translate()->Parent());
 }
 
+TEST_P(PaintPropertyTreeBuilderTest, LineClampFloatClipping) {
+  ScopedCSSLineClampForTest feature_(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body {
+        margin: 0;
+      }
+      #clamp {
+        line-height: 12px;
+        line-clamp: 3;
+        padding: 5px;
+      }
+      #float {
+        float: left;
+        height: 500px;
+        width: 50px;
+      }
+    </style>
+    <div id="clamp">
+      <div id="float"></div>
+      Line 1 <br>
+      Line 2 <br>
+      Line 3 <br>
+      Line 4
+    </div>
+  )HTML");
+
+  const auto& float_frag =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("float"))
+          ->FirstFragment();
+
+  const auto* float_clip = float_frag.PaintProperties()->LineClampFloatClip();
+  EXPECT_TRUE(float_clip);
+
+  EXPECT_EQ(float_clip, &float_frag.LocalBorderBoxProperties().Clip());
+  EXPECT_FALSE(float_clip->ClipPath());
+
+  const auto& paint_clip_rect = float_clip->PaintClipRect();
+  EXPECT_FALSE(paint_clip_rect.IsRounded());
+  EXPECT_EQ(paint_clip_rect.Rect().x(), InfiniteIntRect().x());
+  EXPECT_EQ(paint_clip_rect.Rect().y(), InfiniteIntRect().y());
+  EXPECT_EQ(paint_clip_rect.Rect().width(), InfiniteIntRect().width());
+  EXPECT_EQ(paint_clip_rect.Rect().bottom(), 12 * 3 + 5);
+
+  const auto& layout_clip_rect = float_clip->LayoutClipRect();
+  EXPECT_FALSE(layout_clip_rect.HasRadius());
+  EXPECT_EQ(paint_clip_rect.Rect(), layout_clip_rect.Rect());
+
+  EXPECT_EQ(float_clip->PreciseLayoutClipRect(), layout_clip_rect);
+}
+
 }  // namespace blink
