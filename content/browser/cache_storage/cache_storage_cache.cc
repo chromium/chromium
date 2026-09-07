@@ -2386,9 +2386,10 @@ void CacheStorageCache::DeleteDidQueryCache(
   for (auto& result : *query_cache_results) {
     disk_cache::ScopedEntryPtr entry = std::move(result.entry);
     if (ShouldPadResourceSize(*result.response)) {
-      CHECK(!ShouldPadResourceSize(*result.response) ||
-                (result.padding + result.side_data_padding),
-            base::NotFatalUntil::M158);
+      // TODO(crbug.com/558119972): CHECK-exclusion: Convert to a CHECK once we
+      // are confident it won't be triggered.
+      DCHECK(!ShouldPadResourceSize(*result.response) ||
+             (result.padding + result.side_data_padding));
       cache_padding_ -= (result.padding + result.side_data_padding);
     }
     entry->Doom();
