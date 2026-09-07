@@ -503,7 +503,6 @@ test("components_unittests") {
       "//components/history_embeddings/core:unit_tests",
       "//components/infobars/content:unit_tests",
       "//components/input:unit_tests",
-      "//components/invalidation:legacy_topics_cleanup_unit_tests",
       "//components/invalidation:unit_tests",
       "//components/javascript_dialogs:unit_tests",
       "//components/js_injection/common:unit_tests",

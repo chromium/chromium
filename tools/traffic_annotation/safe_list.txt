@@ -193,7 +193,6 @@ missing_new_fields,components/download/internal/common/parallel_download_job.cc
 missing_new_fields,components/favicon/core/history_ui_favicon_request_handler_impl.cc
 missing_new_fields,components/feed/core/v2/feed_network_impl.cc
 missing_new_fields,components/feed/core/v2/image_fetcher.cc
-missing_new_fields,components/invalidation/impl/per_user_topic_subscription_request.cc
 missing_new_fields,components/media_router/common/providers/cast/channel/cast_socket.cc
 missing_new_fields,components/mirroring/service/udp_socket_client.cc
 missing_new_fields,components/network_time/network_time_tracker.cc

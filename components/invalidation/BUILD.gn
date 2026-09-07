@@ -30,15 +30,8 @@ static_library("invalidation") {
 
 static_library("legacy_topics_cleanup") {
   sources = [
-    "impl/channels_states.h",
-    "impl/per_user_topic_subscription_manager.cc",
-    "impl/per_user_topic_subscription_manager.h",
-    "impl/per_user_topic_subscription_request.cc",
-    "impl/per_user_topic_subscription_request.h",
     "impl/profile_identity_provider.cc",
     "impl/profile_identity_provider.h",
-    "impl/status.cc",
-    "impl/status.h",
     "public/identity_provider.cc",
     "public/identity_provider.h",
     "public/invalidation_util.cc",
@@ -87,30 +80,6 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//google_apis:test_support",
     "//google_apis/gcm",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-}
-
-source_set("legacy_topics_cleanup_unit_tests") {
-  testonly = true
-  sources = [
-    "impl/per_user_topic_subscription_manager_unittest.cc",
-    "impl/per_user_topic_subscription_request_unittest.cc",
-  ]
-  deps = [
-    ":legacy_topics_cleanup",
-    "//base",
-    "//base/test:test_support",
-    "//components/prefs",
-    "//components/prefs:test_support",
-    "//components/signin/public/identity_manager:test_support",
-    "//google_apis:test_support",
-    "//google_apis/gcm",
-    "//net",
-    "//net:test_support",
-    "//services/data_decoder/public/cpp:test_support",
-    "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
