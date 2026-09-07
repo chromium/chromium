@@ -123,6 +123,8 @@ NSString* AccessibilityIdentifierForMenuItemType(ComposeboxMenuItemType type) {
       return kComposeboxGalleryActionAccessibilityIdentifier;
     case ComposeboxMenuItemType::kAttachmentFiles:
       return kComposeboxAttachFileActionAccessibilityIdentifier;
+    case ComposeboxMenuItemType::kAttachmentDrive:
+      return kComposeboxAttachDriveActionAccessibilityIdentifier;
     default:
       return nil;
   }

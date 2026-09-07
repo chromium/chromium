@@ -46,6 +46,8 @@ NSString* const kComposeboxAttachCurrentTabActionAccessibilityIdentifier =
     @"kComposeboxAttachCurrentTabActionAccessibilityIdentifier";
 NSString* const kComposeboxSelectTabsActionAccessibilityIdentifier =
     @"kComposeboxSelectTabsActionAccessibilityIdentifier";
+NSString* const kComposeboxAttachDriveActionAccessibilityIdentifier =
+    @"kComposeboxAttachDriveActionAccessibilityIdentifier";
 NSString* const kComposeboxCarouselAccessibilityIdentifier =
     @"kComposeboxCarouselAccessibilityIdentifier";
 NSString* const kComposeboxCarouselItemAccessibilityIdentifier =

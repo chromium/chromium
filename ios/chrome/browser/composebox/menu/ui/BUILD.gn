@@ -52,3 +52,17 @@ source_set("ui") {
     "//url",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "composebox_menu_view_controller_unittest.mm" ]
+  deps = [
+    ":ui",
+    "//base/test:test_support",
+    "//components/omnibox/common",
+    "//ios/chrome/browser/composebox/public:attachment_options",
+    "//ios/chrome/browser/composebox/shared/ui:ui_constants",
+    "//ios/chrome/browser/composebox/ui:state",
+    "//testing/gtest",
+  ]
+}

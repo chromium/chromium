@@ -55,6 +55,8 @@ extern NSString* const kComposeboxCameraActionAccessibilityIdentifier;
 extern NSString* const kComposeboxAttachCurrentTabActionAccessibilityIdentifier;
 // Accessibility identifier for the Select Tabs button in the plus menu.
 extern NSString* const kComposeboxSelectTabsActionAccessibilityIdentifier;
+// Accessibility identifier for the Attach Drive button in the plus menu.
+extern NSString* const kComposeboxAttachDriveActionAccessibilityIdentifier;
 
 // Accessibility identifier for the carousel in the composebox.
 extern NSString* const kComposeboxCarouselAccessibilityIdentifier;
