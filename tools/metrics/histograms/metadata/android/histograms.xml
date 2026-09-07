@@ -5244,7 +5244,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.PasswordEcho.SettingReadTime.{SettingType}"
-    units="microseconds" expires_after="2026-09-30">
+    units="microseconds" expires_after="2027-03-01">
   <owner>shahinmd@google.com</owner>
   <owner>ashleynewson@chromium.org</owner>
   <summary>
@@ -5266,7 +5266,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.PasswordEcho.SettingStateInitializationTime"
-    units="microseconds" expires_after="2026-09-30">
+    units="microseconds" expires_after="2027-03-01">
   <owner>shahinmd@google.com</owner>
   <owner>ashleynewson@chromium.org</owner>
   <summary>
