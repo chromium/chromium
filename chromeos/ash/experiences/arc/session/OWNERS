@@ -4,6 +4,6 @@ khmel@chromium.org
 lgcheng@google.com
 niwa@chromium.org
 # backup reviewers
-hashimoto@chromium.org
-hidehiko@chromium.org
-jhorwich@chromium.org
+hashimoto@chromium.org #{LAST_RESORT_SUGGESTION}
+hidehiko@chromium.org #{LAST_RESORT_SUGGESTION}
+jhorwich@chromium.org #{LAST_RESORT_SUGGESTION}
