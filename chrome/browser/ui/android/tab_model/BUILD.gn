@@ -58,6 +58,7 @@ source_set("impl") {
     "//chrome/browser/android:tabs_public",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/glic",
+    "//chrome/browser/performance_manager",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sessions",
     "//chrome/browser/sync",
@@ -119,6 +120,8 @@ source_set("browser_tests") {
   deps = [
     ":test_support",
     "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/flags:flags_android",
+    "//chrome/browser/performance_manager",
     "//chrome/test:test_support",
     "//content/public/browser",
   ]

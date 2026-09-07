@@ -9,8 +9,11 @@
 #include <set>
 #include <vector>
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/performance_manager/public/background_tab_loading_policy.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/tab_list/tab_list_interface_observer.h"
@@ -20,10 +23,13 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/restore_type.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -391,6 +397,93 @@ IN_PROC_BROWSER_TEST_F(TabModelJniBridgeTest,
   // Muting sub.example.com clears the specific exception back to default.
   SetMuteSetting({tab_android}, /*mute=*/true);
   EXPECT_EQ(CONTENT_SETTING_BLOCK, GetSoundSetting(subdomain_url));
+}
+
+class TabModelJniBridgeBackgroundTabLoadingTest : public TabModelJniBridgeTest {
+ public:
+  TabModelJniBridgeBackgroundTabLoadingTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {chrome::android::kDesktopAndroidBackgroundTabLoading,
+         chrome::android::kLoadAllTabsAtStartup},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(TabModelJniBridgeBackgroundTabLoadingTest,
+                       BroadcastSessionRestoreCompleteLoadsBackgroundTabs) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url1 = embedded_test_server()->GetURL("/title1.html");
+  const GURL url2 = embedded_test_server()->GetURL("/title2.html");
+
+  // Tab 0 is active.
+  tabs::TabInterface* tab1 =
+      NavigateTab(GetTabListInterface()->GetTab(0), url1);
+  ASSERT_TRUE(tab1);
+
+  // Tab 1 is opened in background with restored navigation entry.
+  tabs::TabInterface* tab2 =
+      GetTabListInterface()->OpenTab(GURL(), /*index=*/1, /*foreground=*/false);
+  ASSERT_TRUE(tab2);
+
+  std::vector<std::unique_ptr<content::NavigationEntry>> entries;
+  entries.push_back(content::NavigationEntry::Create());
+  entries.back()->SetURL(url2);
+  tab2->GetContents()->GetController().Restore(
+      0, content::RestoreType::kRestored, &entries);
+  ASSERT_TRUE(tab2->GetContents()->GetController().NeedsReload());
+  ASSERT_EQ(tab2->GetContents()->GetLastCommittedURL(), url2);
+
+  content::TestNavigationObserver observer(tab2->GetContents());
+  bridge()->BroadcastSessionRestoreComplete(/*env=*/nullptr);
+  observer.WaitForNavigationFinished();
+
+  EXPECT_FALSE(tab2->GetContents()->GetController().NeedsReload());
+  EXPECT_TRUE(observer.last_navigation_succeeded());
+}
+
+class TabModelJniBridgeDisabledBackgroundTabLoadingTest
+    : public TabModelJniBridgeTest {
+ public:
+  TabModelJniBridgeDisabledBackgroundTabLoadingTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        chrome::android::kDesktopAndroidBackgroundTabLoading);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(TabModelJniBridgeDisabledBackgroundTabLoadingTest,
+                       BroadcastSessionRestoreCompleteDoesNotLoadWhenDisabled) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url1 = embedded_test_server()->GetURL("/title1.html");
+  const GURL url2 = embedded_test_server()->GetURL("/title2.html");
+
+  // Tab 0 is active.
+  tabs::TabInterface* tab1 =
+      NavigateTab(GetTabListInterface()->GetTab(0), url1);
+  ASSERT_TRUE(tab1);
+
+  // Tab 1 is in background.
+  tabs::TabInterface* tab2 =
+      GetTabListInterface()->OpenTab(GURL(), /*index=*/1, /*foreground=*/false);
+  ASSERT_TRUE(tab2);
+
+  std::vector<std::unique_ptr<content::NavigationEntry>> entries;
+  entries.push_back(content::NavigationEntry::Create());
+  entries.back()->SetURL(url2);
+  tab2->GetContents()->GetController().Restore(
+      0, content::RestoreType::kRestored, &entries);
+  ASSERT_TRUE(tab2->GetContents()->GetController().NeedsReload());
+
+  EXPECT_FALSE(performance_manager::policies::CanScheduleLoadForRestoredTabs());
+  bridge()->BroadcastSessionRestoreComplete(/*env=*/nullptr);
+
+  // Should still need reload because background loading policy was not active.
+  EXPECT_TRUE(tab2->GetContents()->GetController().NeedsReload());
 }
 
 }  // namespace
