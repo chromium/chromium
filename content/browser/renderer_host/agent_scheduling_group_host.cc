@@ -257,7 +257,9 @@ ChannelProxy* AgentSchedulingGroupHost::GetChannel() {
 
 void AgentSchedulingGroupHost::AddRoute(int32_t routing_id,
                                         Listener* listener) {
-  CHECK_EQ(state_, LifecycleState::kBound, base::NotFatalUntil::M153);
+  // TODO(crbug.com/557077751): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_EQ(state_, LifecycleState::kBound);
   CHECK(!listener_map_.Lookup(routing_id), base::NotFatalUntil::M153);
   listener_map_.AddWithID(listener, routing_id);
   process_->AddRoute(routing_id, listener);
