@@ -376,12 +376,15 @@ float Affordance::GetAffordanceProgress() const {
 }
 
 void Affordance::OnPaintLayer(const ui::PaintContext& context) {
-  CHECK(drag_progress_ >= 1.f || state_ != State::COMPLETING,
-        base::NotFatalUntil::M158);
-  CHECK(abort_progress_ == 0.f || state_ == State::ABORTING,
-        base::NotFatalUntil::M158);
-  CHECK(complete_progress_ == 0.f || state_ == State::COMPLETING,
-        base::NotFatalUntil::M158);
+  // TODO(crbug.com/556764901): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(drag_progress_ >= 1.f || state_ != State::COMPLETING);
+  // TODO(crbug.com/556764901): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(abort_progress_ == 0.f || state_ == State::ABORTING);
+  // TODO(crbug.com/556764901): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(complete_progress_ == 0.f || state_ == State::COMPLETING);
 
   ui::PaintRecorder recorder(context, painted_layer_.size());
   gfx::Canvas* canvas = recorder.canvas();
