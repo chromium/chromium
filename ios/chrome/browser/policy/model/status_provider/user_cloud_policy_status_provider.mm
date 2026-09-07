@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/policy/model/status_provider/user_cloud_policy_status_provider.h"
 
+#import <optional>
 #import <string>
+#import <string_view>
 #import <vector>
 
 #import "base/containers/flat_set.h"
@@ -12,12 +14,15 @@
 #import "base/values.h"
 #import "components/policy/core/common/cloud/affiliation.h"
 #import "components/policy/proto/device_management_backend.pb.h"
+#import "components/policy/resources/webui/mojom/policy.mojom.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/enterprise/identifiers/profile_id_service_factory_ios.h"
 
 namespace {
+
+constexpr std::string_view kUserPolicyDescription = "statusUser";
 
 // Extracts the domain name from the username. Only works with the
 // username@domain format, returns std::nullopt otherwise.
@@ -39,6 +44,16 @@ void SetDomainExtractedFromUsername(base::DictValue* status_dict) {
   }
   if (const auto domain = ExtractDomainName(*username)) {
     status_dict->Set(policy::kDomainKey, *domain);
+  }
+}
+
+// Sets the domain based on the username in `status` if present and valid.
+void SetDomainExtractedFromUsername(policy::mojom::StatusPtr& status) {
+  if (!status->username.has_value() || status->username->empty()) {
+    return;
+  }
+  if (const auto domain = ExtractDomainName(*status->username)) {
+    status->domain = *domain;
   }
 }
 
@@ -90,8 +105,29 @@ base::DictValue UserCloudPolicyStatusProvider::GetStatus() {
     dict.Set("profileId", *profile_id);
   }
   dict.Set(policy::kFlexOrgWarningKey, show_flex_org_warning);
-  dict.Set(policy::kPolicyDescriptionKey, "statusUser");
+  dict.Set(policy::kPolicyDescriptionKey, kUserPolicyDescription);
   return dict;
+}
+
+policy::mojom::StatusPtr UserCloudPolicyStatusProvider::GetStatusMojo() {
+  AccountInfo account_info = identity_manager_->FindExtendedAccountInfo(
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
+  const bool show_flex_org_warning = account_info.IsMemberOfFlexOrg();
+
+  if (!user_level_policy_core_->store()->is_managed() &&
+      !show_flex_org_warning) {
+    return nullptr;
+  }
+
+  auto status = policy::mojom::Status::New();
+  policy::PolicyStatusProvider::PopulateStatusFromCore(
+      user_level_policy_core_, /*is_extension_install_policy=*/false, status);
+  SetDomainExtractedFromUsername(status);
+  status->is_affiliated = IsAffiliated();
+  status->profile_id = delegate_->GetProfileId();
+  status->flex_org_warning = show_flex_org_warning;
+  status->policy_description_key = kUserPolicyDescription;
+  return status;
 }
 
 UserCloudPolicyStatusProvider::~UserCloudPolicyStatusProvider() {}

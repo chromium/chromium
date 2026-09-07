@@ -7,7 +7,9 @@
 #import "base/containers/flat_set.h"
 #import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/task/single_thread_task_runner.h"
+#import "base/test/run_until.h"
 #import "base/test/task_environment.h"
 #import "components/policy/core/browser/webui/policy_status_provider.h"
 #import "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -18,6 +20,7 @@
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/policy/core/common/policy_types.h"
 #import "components/policy/proto/device_management_backend.pb.h"
+#import "components/policy/resources/webui/mojom/policy.mojom.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/signin/public/base/consent_level.h"
@@ -269,6 +272,154 @@ TEST_F(UserCloudPolicyStatusProviderTest, GetStatus_FlexWarning) {
       returned_status.FindBool(policy::kFlexOrgWarningKey);
   ASSERT_TRUE(flex_warning_value);
   EXPECT_TRUE(*flex_warning_value);
+}
+
+// Test getting the Mojo status of a managed account when all the information is
+// available.
+TEST_F(UserCloudPolicyStatusProviderTest, GetStatusMojo_Full) {
+  static constexpr char kSharedAffiliationId[] = "kSharedAffiliationId";
+
+  {
+    // Set policy data in user level store.
+    auto policy_data = std::make_unique<enterprise_management::PolicyData>();
+    policy_data->set_state(enterprise_management::PolicyData::ACTIVE);
+    policy_data->set_device_id(kTestClientId);
+    policy_data->set_username(kTestUsername);
+    policy_data->set_annotated_asset_id(kAnnotatedAssetId);
+    policy_data->set_annotated_location(kAnnotatedLocation);
+    policy_data->set_directory_api_id(kTestDirectoryApiId);
+    policy_data->set_gaia_id(kTestGaiaId);
+    policy_data->set_timestamp(
+        base::Time::Now().InMillisecondsSinceUnixEpoch());
+    policy_data->add_user_affiliation_ids(kSharedAffiliationId);
+    user_store()->set_policy_data_for_testing(std::move(policy_data));
+  }
+
+  ON_CALL(*this, GetDeviceAffiliationIds).WillByDefault([]() {
+    base::flat_set<std::string> affiliation_ids;
+    affiliation_ids.insert(kSharedAffiliationId);
+    return affiliation_ids;
+  });
+
+  static constexpr char kProfileId[] = "test-profile-id";
+  ON_CALL(*this, GetProfileId).WillByDefault([]() { return kProfileId; });
+
+  // Set clients as managed.
+  user_client()->SetStatus(policy::DM_STATUS_SUCCESS);
+  user_client()->SetDMToken("test-dm-token");
+
+  StartRefreshScheduler();
+
+  // Update last refresh timestamp in scheduler.
+  user_core()->refresh_scheduler()->RefreshSoon(
+      policy::PolicyFetchReason::kTest);
+  ASSERT_TRUE(base::test::RunUntil([this]() {
+    return !user_core()->refresh_scheduler()->last_refresh().is_null();
+  }));
+
+  constexpr base::TimeDelta time_since_last_success_fetch = base::Hours(1);
+  const std::string time_since_last_success_fetch_formatted =
+      base::UTF16ToUTF8(ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_ELAPSED,
+                                               ui::TimeFormat::LENGTH_SHORT,
+                                               time_since_last_success_fetch));
+
+  // Advance time to emulate 1 hour between last refresh and now.
+  task_environment_.FastForwardBy(time_since_last_success_fetch);
+
+  policy::mojom::StatusPtr returned_status = status_provider_->GetStatusMojo();
+  ASSERT_TRUE(returned_status);
+
+  EXPECT_EQ(returned_status->client_id, kTestClientId);
+  EXPECT_EQ(returned_status->directory_api_id, kTestDirectoryApiId);
+  ASSERT_TRUE(returned_status->username.has_value());
+  EXPECT_EQ(*returned_status->username, kTestUsername);
+  ASSERT_TRUE(returned_status->asset_id.has_value());
+  EXPECT_EQ(*returned_status->asset_id, kAnnotatedAssetId);
+  ASSERT_TRUE(returned_status->location.has_value());
+  EXPECT_EQ(*returned_status->location, kAnnotatedLocation);
+  ASSERT_TRUE(returned_status->gaia_id.has_value());
+  EXPECT_EQ(*returned_status->gaia_id, kTestGaiaId);
+  EXPECT_FALSE(returned_status->error);
+  EXPECT_FALSE(returned_status->policies_push_available);
+  EXPECT_EQ(
+      returned_status->status,
+      base::UTF16ToUTF8(l10n_util::GetStringUTF16(IDS_POLICY_STORE_STATUS_OK)));
+  ASSERT_TRUE(returned_status->refresh_interval.has_value());
+  EXPECT_EQ(*returned_status->refresh_interval, "1 day");
+  ASSERT_TRUE(returned_status->time_since_last_refresh.has_value());
+  EXPECT_EQ(*returned_status->time_since_last_refresh,
+            time_since_last_success_fetch_formatted);
+  ASSERT_TRUE(returned_status->time_since_last_fetch_attempt.has_value());
+  EXPECT_EQ(*returned_status->time_since_last_fetch_attempt,
+            time_since_last_success_fetch_formatted);
+  EXPECT_EQ(returned_status->domain, kTestDomain);
+  ASSERT_TRUE(returned_status->is_affiliated.has_value());
+  EXPECT_TRUE(*returned_status->is_affiliated);
+  ASSERT_TRUE(returned_status->profile_id.has_value());
+  EXPECT_EQ(*returned_status->profile_id, kProfileId);
+  EXPECT_FALSE(returned_status->flex_org_warning);
+  EXPECT_EQ(returned_status->policy_description_key, "statusUser");
+}
+
+// Test skipping the domain in Mojo status when there is no username.
+TEST_F(UserCloudPolicyStatusProviderTest, GetStatusMojo_NoDomainIfNoUsername) {
+  // Set user policy data with no username in it, enough to not return an empty
+  // status payload and process the policy data.
+  SetMinimalViableUserPolicyData();
+
+  policy::mojom::StatusPtr returned_status = status_provider_->GetStatusMojo();
+  ASSERT_TRUE(returned_status);
+  EXPECT_TRUE(returned_status->domain.empty());
+  EXPECT_EQ(returned_status->policy_description_key, "statusUser");
+}
+
+// Test that the returned Mojo status is null when there is no active policy
+// data and no flex account.
+TEST_F(UserCloudPolicyStatusProviderTest, GetStatusMojo_NotManaged) {
+  policy::mojom::StatusPtr returned_status = status_provider_->GetStatusMojo();
+  EXPECT_FALSE(returned_status);
+}
+
+// Test that the affiliation status in Mojo status is false when the affiliation
+// IDs don't match.
+TEST_F(UserCloudPolicyStatusProviderTest,
+       GetStatusMojo_AffiliationIds_NoMatch) {
+  static constexpr char kAffiliationId1[] = "kAffiliationId1";
+  static constexpr char kAffiliationId2[] = "kAffiliationId2";
+
+  {
+    // Set user affiliations ids in user level store.
+    auto policy_data = std::make_unique<enterprise_management::PolicyData>();
+    policy_data->set_state(enterprise_management::PolicyData::ACTIVE);
+    policy_data->add_user_affiliation_ids(kAffiliationId1);
+    user_store()->set_policy_data_for_testing(std::move(policy_data));
+  }
+
+  ON_CALL(*this, GetDeviceAffiliationIds).WillByDefault([]() {
+    base::flat_set<std::string> affiliation_ids;
+    affiliation_ids.insert(kAffiliationId2);
+    return affiliation_ids;
+  });
+
+  // Set clients as managed.
+  user_client()->SetStatus(policy::DM_STATUS_SUCCESS);
+  user_client()->SetDMToken("test-dm-token");
+
+  policy::mojom::StatusPtr returned_status = status_provider_->GetStatusMojo();
+  ASSERT_TRUE(returned_status);
+  ASSERT_TRUE(returned_status->is_affiliated.has_value());
+  EXPECT_FALSE(*returned_status->is_affiliated);
+}
+
+// Test that the flex warning is set to true in Mojo status when the account is
+// a flex account, even when there is no active policy data.
+TEST_F(UserCloudPolicyStatusProviderTest, GetStatusMojo_FlexWarning) {
+  SetPrimaryAccountAsFlex();
+
+  policy::mojom::StatusPtr returned_status = status_provider_->GetStatusMojo();
+  ASSERT_TRUE(returned_status);
+  EXPECT_TRUE(returned_status->flex_org_warning);
+  EXPECT_EQ(returned_status->policy_description_key, "statusUser");
 }
 
 // Test that OnStoreLoaded observed from store triggers OnPolicyStatusChanged.

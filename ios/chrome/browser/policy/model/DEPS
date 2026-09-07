@@ -5,6 +5,8 @@ include_rules = [
   "+components/contextual_search/search_content_sharing_policy_handler.h",
   "+components/device_signals/core/common",
   "+components/lens",
+  "+components/policy/resources/webui/mojom/policy.mojom-forward.h",
+  "+components/policy/resources/webui/mojom/policy.mojom.h",
   "+components/themes",
   "+ios/chrome/browser/enterprise/client_certificates",
   "+ios/chrome/browser/enterprise/groups/model",

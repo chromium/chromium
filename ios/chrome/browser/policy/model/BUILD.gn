@@ -134,7 +134,10 @@ source_set("model") {
     "//url",
   ]
 
-  public_deps = [ "//components/policy/core/browser" ]
+  public_deps = [
+    "//components/policy/core/browser",
+    "//components/policy/resources/webui/mojom:mojo_bindings",
+  ]
 }
 
 source_set("cloud_profile_reporting") {
@@ -304,6 +307,7 @@ source_set("unit_tests") {
     "//components/policy/core/browser:test_support",
     "//components/policy/core/common",
     "//components/policy/proto",
+    "//components/policy/resources/webui/mojom:mojo_bindings",
     "//components/pref_registry",
     "//components/prefs",
     "//components/prefs:test_support",

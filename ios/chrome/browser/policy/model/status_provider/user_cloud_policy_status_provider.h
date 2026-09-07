@@ -16,6 +16,7 @@
 #import "components/policy/core/common/cloud/cloud_policy_client.h"
 #import "components/policy/core/common/cloud/cloud_policy_core.h"
 #import "components/policy/core/common/cloud/cloud_policy_store.h"
+#import "components/policy/resources/webui/mojom/policy.mojom-forward.h"
 
 namespace signin {
 class IdentityManager;
@@ -52,6 +53,7 @@ class UserCloudPolicyStatusProvider
 
   // PolicyStatusProvider implementation.
   base::DictValue GetStatus() override;
+  policy::mojom::StatusPtr GetStatusMojo() override;
 
   // policy::CloudPolicyStore::Observer implementation.
   void OnStoreLoaded(policy::CloudPolicyStore* store) override;
