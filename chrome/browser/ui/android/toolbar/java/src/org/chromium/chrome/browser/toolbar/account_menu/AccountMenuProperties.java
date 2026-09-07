@@ -25,10 +25,11 @@ public class AccountMenuProperties {
     private AccountMenuProperties() {}
 
     /** Item types supported by the Account Menu RecyclerView. */
-    @IntDef({ItemType.MENU_ITEM})
+    @IntDef({ItemType.MENU_ITEM, ItemType.DIVIDER})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ItemType {
         int MENU_ITEM = 0;
+        int DIVIDER = 1;
     }
 
     /** Properties for menu items in the Account Menu. */

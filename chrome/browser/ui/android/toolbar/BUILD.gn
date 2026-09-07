@@ -422,6 +422,7 @@ android_resources("java_resources") {
     "java/res/drawable/toolbar_position_state_animation.xml",
     "java/res/drawable/toolbar_position_top_to_bottom.xml",
     "java/res/layout/account_menu.xml",
+    "java/res/layout/account_menu_divider.xml",
     "java/res/layout/account_menu_item.xml",
     "java/res/layout/adaptive_toolbar_header_preference.xml",
     "java/res/layout/address_bar_header_preference.xml",

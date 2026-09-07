@@ -397,7 +397,8 @@ final class SigninButtonMediator
         if (DeviceInfo.isDesktop()
                 && SigninFeatureMap.isEnabled(SigninFeatures.SIGNIN_BUTTON_PROFILE_MENU)) {
             if (mAccountMenuCoordinator == null) {
-                mAccountMenuCoordinator = new AccountMenuCoordinator(mContext);
+                mAccountMenuCoordinator =
+                        new AccountMenuCoordinator(mContext, mWindowAndroid, mProfileSupplier);
             }
             mAccountMenuCoordinator.show(view);
             return;

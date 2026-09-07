@@ -60,7 +60,8 @@ public abstract class MultiInstanceManager {
         NewWindowAppSource.ANDROID_S_UPDATE,
         NewWindowAppSource.CRASH_RECOVERY,
         NewWindowAppSource.RELAUNCH,
-        NewWindowAppSource.SETTINGS
+        NewWindowAppSource.SETTINGS,
+        NewWindowAppSource.ACCOUNT_MENU
     })
     public @interface NewWindowAppSource {
         int UNKNOWN = 0;
@@ -78,7 +79,8 @@ public abstract class MultiInstanceManager {
         int CRASH_RECOVERY = 12;
         int RELAUNCH = 13;
         int SETTINGS = 14;
-        int NUM_ENTRIES = 15;
+        int ACCOUNT_MENU = 15;
+        int NUM_ENTRIES = 16;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml)

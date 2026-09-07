@@ -1721,6 +1721,7 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Crash recovery"/>
   <int value="13" label="Relaunch"/>
   <int value="14" label="Settings"/>
+  <int value="15" label="Account menu"/>
 </enum>
 
 <enum name="NTPImpressionType">

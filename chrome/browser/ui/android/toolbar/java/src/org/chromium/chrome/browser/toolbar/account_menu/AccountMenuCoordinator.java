@@ -16,14 +16,18 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.toolbar.MenuBuilderHelper;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.account_menu.AccountMenuProperties.ItemType;
 import org.chromium.ui.UiUtils;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.widget.AnchoredPopupWindow;
+
+import java.util.function.Supplier;
 
 /** Coordinator for the Account Menu toolbar popup on desktop Android. */
 @NullMarked
@@ -39,7 +43,10 @@ public class AccountMenuCoordinator {
     private @Nullable AnchoredPopupWindow mPopupWindow;
     private long mLastDismissTimeMs;
 
-    public AccountMenuCoordinator(Context context) {
+    public AccountMenuCoordinator(
+            Context context,
+            WindowAndroid windowAndroid,
+            Supplier<@Nullable Profile> profileSupplier) {
         mContext = context;
         mContentView = LayoutInflater.from(context).inflate(R.layout.account_menu, null);
 
@@ -52,9 +59,15 @@ public class AccountMenuCoordinator {
                 ItemType.MENU_ITEM,
                 new LayoutViewBuilder<>(R.layout.account_menu_item),
                 AccountMenuViewBinder::bind);
+        mAdapter.registerType(
+                ItemType.DIVIDER,
+                new LayoutViewBuilder<>(R.layout.account_menu_divider),
+                (model, view, key) -> {});
         recyclerView.setAdapter(mAdapter);
 
-        mMediator = new AccountMenuMediator(context, modelList, this::dismiss);
+        mMediator =
+                new AccountMenuMediator(
+                        context, modelList, windowAndroid, profileSupplier, this::dismiss);
     }
 
     /** Shows the account menu popup anchored to the provided signin button view. */
