@@ -9,7 +9,6 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
-#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -18,6 +17,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_underlying_sink.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_sender.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_sender_encoded_source_event.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -75,8 +75,8 @@ void SetVideoFrameInjector(
       MakeUnwrappingCrossThreadHandle(resolver_handle).GetOnCreationThread();
   if (!rtp_sender) {
     if (resolver) {
-      resolver->Reject(
-          DOMException::Create("Sender destroyed", "InvalidStateError"));
+      resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
+                                       "Sender destroyed");
     }
     return;
   }
@@ -86,8 +86,8 @@ void SetVideoFrameInjector(
                                                   std::move(bitrate_callback));
   if (!injector) {
     if (resolver) {
-      resolver->Reject(
-          DOMException::Create("Failed to create injector", "OperationError"));
+      resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
+                                       "Failed to create injector");
     }
     return;
   }
