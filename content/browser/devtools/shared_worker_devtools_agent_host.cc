@@ -139,8 +139,8 @@ void SharedWorkerDevToolsAgentHost::WorkerReadyForInspection(
     mojo::PendingRemote<blink::mojom::DevToolsAgent> agent_remote,
     mojo::PendingReceiver<blink::mojom::DevToolsAgentHost>
         agent_host_receiver) {
-  DCHECK_EQ(WORKER_NOT_READY, state_);
-  DCHECK(worker_host_);
+  CHECK_EQ(WORKER_NOT_READY, state_, base::NotFatalUntil::M159);
+  CHECK(worker_host_, base::NotFatalUntil::M159);
   state_ = WORKER_READY;
   pending_agent_remote_ = std::move(agent_remote);
   pending_agent_host_receiver_ = std::move(agent_host_receiver);
@@ -153,15 +153,15 @@ void SharedWorkerDevToolsAgentHost::WorkerReadyForInspection(
 
 void SharedWorkerDevToolsAgentHost::WorkerRestarted(
     SharedWorkerHost* worker_host) {
-  DCHECK_EQ(WORKER_TERMINATED, state_);
-  DCHECK(!worker_host_);
+  CHECK_EQ(WORKER_TERMINATED, state_, base::NotFatalUntil::M159);
+  CHECK(!worker_host_, base::NotFatalUntil::M159);
   state_ = WORKER_NOT_READY;
   worker_host_ = worker_host;
 }
 
 void SharedWorkerDevToolsAgentHost::WorkerDestroyed() {
-  DCHECK_NE(WORKER_TERMINATED, state_);
-  DCHECK(worker_host_);
+  CHECK_NE(WORKER_TERMINATED, state_, base::NotFatalUntil::M159);
+  CHECK(worker_host_, base::NotFatalUntil::M159);
   state_ = WORKER_TERMINATED;
   for (auto* inspector : protocol::InspectorHandler::ForAgentHost(this))
     inspector->TargetCrashed();
@@ -195,7 +195,7 @@ void SharedWorkerDevToolsAgentHost::UpdateRendererChannel(bool force) {
 
 DevToolsAgentHostImpl::NetworkLoaderFactoryParamsAndInfo
 SharedWorkerDevToolsAgentHost::CreateNetworkFactoryParamsForDevTools() {
-  DCHECK(worker_host_);
+  CHECK(worker_host_, base::NotFatalUntil::M159);
   return {GetStorageKey().origin(),
           instance_.DoesRequireCrossSiteRequestForCookies()
               ? net::SiteForCookies()
@@ -204,7 +204,7 @@ SharedWorkerDevToolsAgentHost::CreateNetworkFactoryParamsForDevTools() {
 }
 
 RenderProcessHost* SharedWorkerDevToolsAgentHost::GetProcessHost() {
-  DCHECK(worker_host_);
+  CHECK(worker_host_, base::NotFatalUntil::M159);
   return worker_host_->GetProcessHost();
 }
 

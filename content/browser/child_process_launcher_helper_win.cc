@@ -45,12 +45,13 @@ namespace content {
 namespace internal {
 
 void ChildProcessLauncherHelper::BeforeLaunchOnClientThread() {
-  DCHECK(client_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(client_task_runner_->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M159);
 }
 
 std::optional<mojo::NamedPlatformChannel>
 ChildProcessLauncherHelper::CreateNamedPlatformChannelOnLauncherThread() {
-  DCHECK(CurrentlyOnProcessLauncherTaskRunner());
+  CHECK(CurrentlyOnProcessLauncherTaskRunner(), base::NotFatalUntil::M159);
 
   if (!delegate_->ShouldLaunchElevated())
     return std::nullopt;
@@ -128,8 +129,9 @@ bool ChildProcessLauncherHelper::IsUsingLaunchOptions() {
 bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
     FileMappedForLaunch& files_to_register,
     base::LaunchOptions* options) {
-  DCHECK(CurrentlyOnProcessLauncherTaskRunner());
-  DCHECK_EQ(options->elevated, delegate_->ShouldLaunchElevated());
+  CHECK(CurrentlyOnProcessLauncherTaskRunner(), base::NotFatalUntil::M159);
+  CHECK_EQ(options->elevated, delegate_->ShouldLaunchElevated(),
+           base::NotFatalUntil::M159);
   if (!options->elevated) {
     mojo_channel_->PrepareToPassRemoteEndpoint(&options->handles_to_inherit,
                                                command_line());
@@ -143,10 +145,10 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
     std::unique_ptr<FileMappedForLaunch> files_to_register,
     bool* is_synchronous_launch,
     int* launch_result) {
-  DCHECK(CurrentlyOnProcessLauncherTaskRunner());
+  CHECK(CurrentlyOnProcessLauncherTaskRunner(), base::NotFatalUntil::M159);
   *is_synchronous_launch = true;
   if (delegate_->ShouldLaunchElevated()) {
-    DCHECK(options->elevated);
+    CHECK(options->elevated, base::NotFatalUntil::M159);
     // When establishing a Mojo connection, the pipe path has already been added
     // to the command line.
     base::LaunchOptions win_options;
@@ -178,7 +180,7 @@ void ChildProcessLauncherHelper::FinishStartSandboxedProcessOnLauncherThread(
     base::Process process,
     DWORD last_error,
     int launch_result) {
-  DCHECK(CurrentlyOnProcessLauncherTaskRunner());
+  CHECK(CurrentlyOnProcessLauncherTaskRunner(), base::NotFatalUntil::M159);
   ChildProcessLauncherHelper::Process process_wrapper;
   process_wrapper.process = std::move(process);
   PostLaunchOnLauncherThread(std::move(process_wrapper), last_error,
@@ -188,7 +190,7 @@ void ChildProcessLauncherHelper::FinishStartSandboxedProcessOnLauncherThread(
 void ChildProcessLauncherHelper::AfterLaunchOnLauncherThread(
     const ChildProcessLauncherHelper::Process& process,
     const base::LaunchOptions* options) {
-  DCHECK(CurrentlyOnProcessLauncherTaskRunner());
+  CHECK(CurrentlyOnProcessLauncherTaskRunner(), base::NotFatalUntil::M159);
 }
 
 ChildProcessTerminationInfo ChildProcessLauncherHelper::GetTerminationInfo(
@@ -208,7 +210,7 @@ bool ChildProcessLauncherHelper::TerminateProcess(const base::Process& process,
 
 void ChildProcessLauncherHelper::ForceNormalProcessTerminationSync(
     ChildProcessLauncherHelper::Process process) {
-  DCHECK(CurrentlyOnProcessLauncherTaskRunner());
+  CHECK(CurrentlyOnProcessLauncherTaskRunner(), base::NotFatalUntil::M159);
   // Client has gone away, so just kill the process.  Using exit code 0 means
   // that UMA won't treat this as a crash.
   process.process.Terminate(RESULT_CODE_NORMAL_EXIT, false);
@@ -217,7 +219,7 @@ void ChildProcessLauncherHelper::ForceNormalProcessTerminationSync(
 void ChildProcessLauncherHelper::SetProcessPriorityOnLauncherThread(
     base::Process process,
     base::Process::Priority priority) {
-  DCHECK(CurrentlyOnProcessLauncherTaskRunner());
+  CHECK(CurrentlyOnProcessLauncherTaskRunner(), base::NotFatalUntil::M159);
   if (process.CanSetPriority()) {
     process.SetPriority(priority);
   }

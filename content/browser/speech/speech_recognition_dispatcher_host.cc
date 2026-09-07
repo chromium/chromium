@@ -121,7 +121,7 @@ SpeechRecognitionDispatcherHost::AsWeakPtr() {
 
 void SpeechRecognitionDispatcherHost::Start(
     media::mojom::StartSpeechRecognitionRequestParamsPtr params) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
 
   if (params->audio_forwarder.is_valid()) {
 #if BUILDFLAG(IS_ANDROID)
@@ -155,7 +155,7 @@ void SpeechRecognitionDispatcherHost::StartRequestOnUI(
         speech_recognition_dispatcher_host,
     GlobalRenderFrameHostId global_id,
     media::mojom::StartSpeechRecognitionRequestParamsPtr params) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   GlobalRenderFrameHostId embedder_global_id;
 
   RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(global_id);
@@ -215,8 +215,8 @@ void SpeechRecognitionDispatcherHost::StartRequestOnUI(
     }
 
     embedder_global_id = embedder_frame->GetGlobalId();
-    DCHECK(embedder_global_id.child_id);
-    DCHECK(embedder_global_id);
+    CHECK(embedder_global_id.child_id, base::NotFatalUntil::M159);
+    CHECK(embedder_global_id, base::NotFatalUntil::M159);
   }
 
   content::BrowserContext* browser_context = web_contents->GetBrowserContext();
@@ -280,7 +280,7 @@ void SpeechRecognitionDispatcherHost::StartSessionOnIO(
     const std::string& language,
     bool can_render_frame_use_on_device,
     bool on_device_available) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
 
   SpeechRecognitionSessionContext context;
   context.security_origin = origin;
@@ -337,7 +337,8 @@ void SpeechRecognitionDispatcherHost::StartSessionOnIO(
                   params->sample_rate)
             : std::nullopt,
         can_render_frame_use_on_device);
-    DCHECK_NE(session_id, SpeechRecognitionManager::kSessionIDInvalid);
+    CHECK_NE(session_id, SpeechRecognitionManager::kSessionIDInvalid,
+             base::NotFatalUntil::M159);
     session->SetSessionId(session_id);
     mojo::MakeSelfOwnedReceiver(std::move(session),
                                 std::move(params->session_receiver));

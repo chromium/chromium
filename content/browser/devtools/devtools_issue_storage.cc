@@ -24,7 +24,8 @@ PAGE_USER_DATA_KEY_IMPL(DevToolsIssueStorage);
 DevToolsIssueStorage::DevToolsIssueStorage(Page& page)
     : PageUserData<DevToolsIssueStorage>(page) {
   // DevToolsIssueStorage is only created for outermost pages.
-  DCHECK(!page.GetMainDocument().GetParentOrOuterDocument());
+  CHECK(!page.GetMainDocument().GetParentOrOuterDocument(),
+        base::NotFatalUntil::M159);
 }
 
 DevToolsIssueStorage::~DevToolsIssueStorage() {
@@ -40,7 +41,7 @@ const protocol::Audits::InspectorIssue& DevToolsIssueStorage::AddInspectorIssue(
     std::unique_ptr<protocol::Audits::InspectorIssue> issue) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
 
-  DCHECK_LE(issues_.size(), kMaxIssueCount);
+  CHECK_LE(issues_.size(), kMaxIssueCount, base::NotFatalUntil::M159);
   if (issues_.size() == kMaxIssueCount) {
     issues_.pop_front();
   }
@@ -60,10 +61,12 @@ DevToolsIssueStorage::FindIssuesForAgentOf(
       static_cast<RenderFrameHostImpl*>(&page().GetMainDocument());
   DevToolsAgentHostImpl* agent_host =
       RenderFrameDevToolsAgentHost::GetFor(render_frame_host_impl);
-  DCHECK_EQ(&render_frame_host->GetOutermostMainFrame()->GetPage(), &page());
-  DCHECK(RenderFrameDevToolsAgentHost::ShouldCreateDevToolsForHost(
-      render_frame_host_impl));
-  DCHECK(agent_host);
+  CHECK_EQ(&render_frame_host->GetOutermostMainFrame()->GetPage(), &page(),
+           base::NotFatalUntil::M159);
+  CHECK(RenderFrameDevToolsAgentHost::ShouldCreateDevToolsForHost(
+            render_frame_host_impl),
+        base::NotFatalUntil::M159);
+  CHECK(agent_host, base::NotFatalUntil::M159);
   bool is_main_agent = render_frame_host_impl == main_rfh;
 
   std::vector<const protocol::Audits::InspectorIssue*> issues;

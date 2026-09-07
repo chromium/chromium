@@ -95,12 +95,12 @@ bool WebExposedIsolationInfo::operator<(
 
   // Within Isolated and Isolated Application, compare origins:
   if (is_isolated()) {
-    DCHECK(b.is_isolated());
+    CHECK(b.is_isolated(), base::NotFatalUntil::M159);
     return origin_.value() < b.origin();
   }
 
   // Nonisolated == Nonisolated.
-  DCHECK(!is_isolated() && !b.is_isolated());
+  CHECK(!is_isolated() && !b.is_isolated(), base::NotFatalUntil::M159);
   return false;
 }
 

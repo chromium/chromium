@@ -84,7 +84,7 @@ CookieChangeSubscription::DeserializeVector(
 std::string CookieChangeSubscription::SerializeVector(
     const std::vector<std::unique_ptr<CookieChangeSubscription>>&
         subscriptions) {
-  DCHECK(!subscriptions.empty());
+  CHECK(!subscriptions.empty(), base::NotFatalUntil::M159);
   proto::CookieChangeSubscriptionsProto subscriptions_proto;
   for (const auto& subscription : subscriptions)
     subscription->Serialize(subscriptions_proto.add_subscriptions());

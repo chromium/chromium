@@ -126,7 +126,7 @@ void DevToolsRendererChannel::SetReportChildTargets(
     ChildTargetCreatedCallback report_callback,
     bool wait_for_debugger,
     base::OnceClosure completion_callback) {
-  DCHECK(report_callback || !wait_for_debugger);
+  CHECK(report_callback || !wait_for_debugger, base::NotFatalUntil::M159);
   ReportChildTargetsCallback();
   set_report_completion_callback_ = std::move(completion_callback);
 

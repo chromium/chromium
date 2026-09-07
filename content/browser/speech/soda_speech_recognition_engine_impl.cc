@@ -230,7 +230,7 @@ void SodaSpeechRecognitionEngineImpl::OnRecognizerDisconnected() {
 
 void SodaSpeechRecognitionEngineImpl::SendAudioToSpeechRecognitionService(
     media::mojom::AudioDataS16Ptr audio_data) {
-  DCHECK(audio_data);
+  CHECK(audio_data, base::NotFatalUntil::M159);
   if (speech_recognition_recognizer_.is_bound()) {
     speech_recognition_recognizer_->SendAudioToSpeechRecognitionService(
         std::move(audio_data), std::nullopt);

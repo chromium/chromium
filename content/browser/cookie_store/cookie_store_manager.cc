@@ -52,7 +52,7 @@ void OnFindRegistrationById(
         std::vector<blink::mojom::CookieChangeSubscriptionPtr>(), false);
     return;
   }
-  DCHECK(registration);
+  CHECK(registration, base::NotFatalUntil::M159);
   if (registration->key() != storage_key) {
     std::move(bad_message_callback).Run("Invalid service worker");
     std::move(callback).Run(
@@ -135,7 +135,7 @@ void CookieStoreManager::ProcessOnDiskSubscriptions(
     return;
   }
 
-  DCHECK(subscriptions_by_registration_.empty());
+  CHECK(subscriptions_by_registration_.empty(), base::NotFatalUntil::M159);
   subscriptions_by_registration_.reserve(user_data.size());
   bool load_success = true;
   for (const auto& pair : user_data) {
@@ -151,8 +151,8 @@ void CookieStoreManager::ProcessOnDiskSubscriptions(
     }
 
     ActivateSubscriptions(subscriptions);
-    DCHECK(
-        !subscriptions_by_registration_.count(service_worker_registration_id));
+    CHECK(!subscriptions_by_registration_.count(service_worker_registration_id),
+          base::NotFatalUntil::M159);
     subscriptions_by_registration_.emplace(
         std::move(service_worker_registration_id), std::move(subscriptions));
   }
@@ -164,7 +164,7 @@ void CookieStoreManager::DidLoadAllSubscriptions(
     bool succeeded,
     base::OnceCallback<void(bool)> load_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(done_loading_subscriptions_);
+  CHECK(done_loading_subscriptions_, base::NotFatalUntil::M159);
   succeeded_loading_subscriptions_ = succeeded;
 
   for (auto& callback : subscriptions_loaded_callbacks_)
@@ -362,7 +362,8 @@ void CookieStoreManager::RemoveSubscriptions(
       // The subscription is not marked for deletion.
       live_subscriptions.push_back(std::move(subscription));
     } else {
-      DCHECK(**target_subscription_it == *subscription);
+      CHECK(**target_subscription_it == *subscription,
+            base::NotFatalUntil::M159);
       removed_subscriptions.push_back(std::move(subscription));
     }
   }
@@ -632,7 +633,7 @@ void CookieStoreManager::OnCookieChange(const net::CookieChangeInfo& change) {
               if (find_status != blink::ServiceWorkerStatusCode::kOk)
                 return;
 
-              DCHECK(registration);
+              CHECK(registration, base::NotFatalUntil::M159);
               if (!manager)
                 return;
 
@@ -683,10 +684,10 @@ void CookieStoreManager::OnCookieChange(const net::CookieChangeInfo& change) {
 void CookieStoreManager::BindReceiverForFrame(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::CookieStore> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(render_frame_host);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  CHECK(render_frame_host, base::NotFatalUntil::M159);
   RenderProcessHost* render_process_host = render_frame_host->GetProcess();
-  DCHECK(render_process_host);
+  CHECK(render_process_host, base::NotFatalUntil::M159);
 
   StoragePartitionImpl* storage_partition = static_cast<StoragePartitionImpl*>(
       render_process_host->GetStoragePartition());
@@ -701,7 +702,7 @@ void CookieStoreManager::BindReceiverForFrame(
 void CookieStoreManager::BindReceiverForWorker(
     const ServiceWorkerVersionBaseInfo& info,
     mojo::PendingReceiver<blink::mojom::CookieStore> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   RenderProcessHost* render_process_host =
       RenderProcessHost::FromID(info.process_id);
   if (render_process_host == nullptr)

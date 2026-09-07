@@ -23,7 +23,7 @@ PluginService* PluginService::GetInstance() {
 }
 
 void PluginService::PurgePluginListCache(BrowserContext* browser_context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   for (RenderProcessHost::iterator it = RenderProcessHost::AllHostsIterator();
        !it.IsAtEnd(); it.Advance()) {
@@ -43,7 +43,7 @@ PluginServiceImpl::PluginServiceImpl() = default;
 PluginServiceImpl::~PluginServiceImpl() = default;
 
 void PluginServiceImpl::Init() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   RegisterPlugins();
 }
@@ -53,7 +53,7 @@ void PluginServiceImpl::GetPluginInfoArray(
     const std::string& mime_type,
     std::vector<WebPluginInfo>* plugins,
     std::vector<std::string>* actual_mime_types) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   PluginList::Singleton()->GetPluginInfoArray(url, mime_type, plugins,
                                               actual_mime_types);
@@ -62,7 +62,7 @@ void PluginServiceImpl::GetPluginInfoArray(
 bool PluginServiceImpl::HasPlugin(content::BrowserContext* browser_context,
                                   const GURL& url,
                                   const std::string& mime_type) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   std::vector<WebPluginInfo> plugins;
   GetPluginInfoArray(url, mime_type, &plugins, /*actual_mime_types=*/nullptr);
 
@@ -76,7 +76,7 @@ bool PluginServiceImpl::HasPlugin(content::BrowserContext* browser_context,
 
 std::optional<WebPluginInfo> PluginServiceImpl::GetPluginInfoByPathForTesting(
     const base::FilePath& plugin_path) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   for (const WebPluginInfo& plugin :
        PluginList::Singleton()->GetPluginsForTesting()) {
@@ -89,12 +89,12 @@ std::optional<WebPluginInfo> PluginServiceImpl::GetPluginInfoByPathForTesting(
 }
 
 const std::vector<WebPluginInfo>& PluginServiceImpl::GetPlugins() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   return PluginList::Singleton()->GetPlugins();
 }
 
 void PluginServiceImpl::RegisterPlugins() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   GetContentClient()->AddPlugins(&plugins_);
   for (const auto& plugin : plugins_) {
@@ -103,27 +103,27 @@ void PluginServiceImpl::RegisterPlugins() {
 }
 
 void PluginServiceImpl::SetFilter(PluginServiceFilter* filter) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   filter_ = filter;
 }
 
 PluginServiceFilter* PluginServiceImpl::GetFilter() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   return filter_;
 }
 
 void PluginServiceImpl::RegisterInternalPlugin(const WebPluginInfo& info) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   PluginList::Singleton()->RegisterInternalPlugin(info);
 }
 
 void PluginServiceImpl::UnregisterInternalPlugin(const base::FilePath& path) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   PluginList::Singleton()->UnregisterInternalPlugin(path);
 }
 
 std::vector<WebPluginInfo> PluginServiceImpl::GetInternalPluginsForTesting() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   return PluginList::Singleton()->GetInternalPluginsForTesting();
 }
 

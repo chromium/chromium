@@ -257,7 +257,7 @@ void TtsControllerImpl::Pause() {
       !current_utterance_->GetEngineId().empty() && !spoken_by_remote_engine) {
     engine_delegate_->Pause(current_utterance_.get());
   } else if (current_utterance_) {
-    DCHECK(TtsPlatformReady());
+    CHECK(TtsPlatformReady(), base::NotFatalUntil::M159);
     GetTtsPlatform()->ClearError();
     GetTtsPlatform()->Pause();
   }
@@ -276,7 +276,7 @@ void TtsControllerImpl::Resume() {
       !current_utterance_->GetEngineId().empty() && !spoken_by_remote_engine) {
     engine_delegate_->Resume(current_utterance_.get());
   } else if (current_utterance_) {
-    DCHECK(TtsPlatformReady());
+    CHECK(TtsPlatformReady(), base::NotFatalUntil::M159);
     GetTtsPlatform()->ClearError();
     GetTtsPlatform()->Resume();
   } else {
@@ -397,7 +397,7 @@ void TtsControllerImpl::GetVoices(BrowserContext* browser_context,
   // if necessary.
   TtsPlatform* tts_platform = GetTtsPlatform();
 
-  DCHECK(tts_platform);
+  CHECK(tts_platform, base::NotFatalUntil::M159);
   // Ensure we have all built-in voices loaded. This is a no-op if already
   // loaded.
   tts_platform->LoadBuiltInTtsEngine(browser_context);
@@ -490,7 +490,7 @@ void TtsControllerImpl::RemoveUtteranceEventDelegate(
     if (engine_delegate_ && !current_utterance_->GetEngineId().empty()) {
       engine_delegate_->Stop(current_utterance_.get());
     } else {
-      DCHECK(TtsPlatformReady());
+      CHECK(TtsPlatformReady(), base::NotFatalUntil::M159);
       GetTtsPlatform()->ClearError();
       GetTtsPlatform()->StopSpeaking();
     }
@@ -558,7 +558,7 @@ int TtsControllerImpl::QueueSize() {
 TtsPlatform* TtsControllerImpl::GetTtsPlatform() {
   if (!tts_platform_)
     tts_platform_ = TtsPlatform::GetInstance();
-  DCHECK(tts_platform_);
+  CHECK(tts_platform_, base::NotFatalUntil::M159);
   return tts_platform_;
 }
 
@@ -614,7 +614,7 @@ void TtsControllerImpl::SpeakNow(std::unique_ptr<TtsUtterance> utterance) {
 
   if (!voice.native) {
 #if !BUILDFLAG(IS_ANDROID)
-    DCHECK(!voice.engine_id.empty());
+    CHECK(!voice.engine_id.empty(), base::NotFatalUntil::M159);
     SetCurrentUtterance(std::move(utterance));
     current_utterance_->SetEngineId(voice.engine_id);
     if (engine_delegate_) {
@@ -708,7 +708,7 @@ void TtsControllerImpl::SpeakNextUtterance() {
     std::unique_ptr<TtsUtterance> utterance =
         std::move(utterance_list_.front());
     utterance_list_.pop_front();
-    DCHECK(previous_utterance != utterance.get());
+    CHECK(previous_utterance != utterance.get(), base::NotFatalUntil::M159);
 
     if (ShouldSpeakUtterance(utterance.get()))
       SpeakNow(std::move(utterance));
@@ -788,7 +788,7 @@ void TtsControllerImpl::StripSSMLHelper(
 
 void TtsControllerImpl::PopulateParsedText(std::string* parsed_text,
                                            const base::Value* element) {
-  DCHECK(parsed_text);
+  CHECK(parsed_text, base::NotFatalUntil::M159);
   if (!element || !element->is_dict()) {
     return;
   }
@@ -944,7 +944,7 @@ void TtsControllerImpl::SetCurrentUtterance(
 
 void TtsControllerImpl::StopCurrentUtteranceAndRemoveUtterancesMatching(
     WebContents* wc) {
-  DCHECK(wc);
+  CHECK(wc, base::NotFatalUntil::M159);
   // Removes any utterances that match the WebContents from the current
   // utterance (which our inherited WebContentsObserver starts observing every
   // time the utterance changes).
