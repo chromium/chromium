@@ -113,9 +113,10 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
       << "Unsupported process type: " << process_type;
 
   // Non-sandboxed utility or renderer process are currently not supported.
-  CHECK(process_type == switches::kGpuProcess ||
-            !command_line()->HasSwitch(sandbox::policy::switches::kNoSandbox),
-        base::NotFatalUntil::M159);
+  // TODO(crbug.com/557893668): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(process_type == switches::kGpuProcess ||
+         !command_line()->HasSwitch(sandbox::policy::switches::kNoSandbox));
 
   // The child processes can't correctly retrieve host package information so we
   // rather feed this information through the command line.
