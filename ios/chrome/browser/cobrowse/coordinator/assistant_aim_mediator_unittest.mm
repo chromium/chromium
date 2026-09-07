@@ -57,6 +57,10 @@
 #import "ui/base/page_transition_types.h"
 #import "url/gurl.h"
 
+@interface AssistantAIMMediator (Testing)
+- (void)didGetSelectedThreadURL:(GURL)url;
+@end
+
 class AssistantAIMMediatorTest : public PlatformTest {
  protected:
   AssistantAIMMediatorTest()
@@ -732,4 +736,39 @@ TEST_F(AssistantAIMMediatorTest, DoesNotUpdateContextOnNonAimNavigation) {
   CobrowseContext* cobrowse_context = agent->GetCobrowseContext();
   EXPECT_TRUE(cobrowse_context);
   EXPECT_TRUE([cobrowse_context.searchQuery isEqualToString:@"initial_query"]);
+}
+
+// Tests that loading a selected history thread updates the context URL and
+// loads it without animating the container detent.
+TEST_F(AssistantAIMMediatorTest, DidGetSelectedThreadURLDoesNotAnimateDetent) {
+  GURL thread_url("https://www.google.com/search?q=history_query&udm=50");
+
+  [[mock_container_handler_ reject]
+      animateAssistantContainerToDetent:AssistantContainerDetent::kMedium
+                               duration:kSheetDetentAnimationDuration
+                                  curve:UIViewAnimationCurveEaseInOut];
+  [[mock_container_handler_ reject]
+      animateAssistantContainerToDetent:AssistantContainerDetent::kMinimized
+                               duration:kSheetDetentAnimationDuration
+                                  curve:UIViewAnimationCurveEaseInOut];
+  [[mock_container_handler_ reject]
+      animateAssistantContainerToDetent:AssistantContainerDetent::kLarge
+                               duration:kSheetDetentAnimationDuration
+                                  curve:UIViewAnimationCurveEaseInOut];
+
+  [mediator_ didGetSelectedThreadURL:thread_url];
+
+  CobrowseBrowserAgent* agent =
+      CobrowseBrowserAgent::FromBrowser(browser_.get());
+  CobrowseContext* cobrowse_context = agent->GetCobrowseContext();
+  ASSERT_TRUE(cobrowse_context);
+  web::FakeNavigationManager* navigation_manager =
+      static_cast<web::FakeNavigationManager*>(
+          fake_web_state_->GetNavigationManager());
+  ASSERT_TRUE(navigation_manager->LoadURLWithParamsWasCalled());
+  EXPECT_EQ(navigation_manager->GetLastLoadURLWithParams()->url,
+            GURL("https://www.google.com/"
+                 "search?q=history_query&udm=50&sourceid=chrome-mobile&gsas=4&"
+                 "csuir=1&cs=0"));
+  [mock_container_handler_ verify];
 }

@@ -32,7 +32,6 @@
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_url_utils.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
@@ -293,16 +292,6 @@
   if (!_context || !_context.url.is_valid()) {
     return;
   }
-  AssistantContainerDetent detent;
-  if (IsAssistantAimMinimizedStateEnabled()) {
-    detent = AssistantContainerDetent::kMinimized;
-  } else {
-    detent = AssistantContainerDetent::kMedium;
-  }
-  [_containerHandler
-      animateAssistantContainerToDetent:detent
-                               duration:kSheetDetentAnimationDuration
-                                  curve:UIViewAnimationCurveEaseInOut];
   GURL baseContextURL = _context.url;
   GURL urlWithTheme = net::AppendOrReplaceQueryParameter(
       baseContextURL, "cs", _isDarkMode ? "1" : "0");
