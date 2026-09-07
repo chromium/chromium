@@ -858,21 +858,6 @@
             ]
         }
     ],
-    "AndroidSaveCardNonBlockingDialog": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AndroidSaveCardNonBlockingDialog"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidSpareRendererCreation_V3": [
         {
             "platforms": [
