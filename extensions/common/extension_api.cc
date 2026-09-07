@@ -43,10 +43,9 @@ base::DictValue LoadSchemaDictionary(const std::string& name,
 
   // Tracking down http://crbug.com/40183984
   char buf[128];
-  UNSAFE_TODO(base::SpanPrintf(
-      buf, "%s: (%d) '%s'", name.c_str(),
-      result.has_value() ? static_cast<int>(result->type()) : -1,
-      !result.has_value() ? result.error().message.c_str() : ""));
+  base::SpanPrintf(buf, "%s: (%d) '%s'", name.c_str(),
+                   result.has_value() ? static_cast<int>(result->type()) : -1,
+                   !result.has_value() ? result.error().message.c_str() : "");
 
   CHECK(result.has_value())
       << result.error().message << " for schema " << schema;
