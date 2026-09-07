@@ -19319,6 +19319,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "ColorIdCssStyleSheetOptimization",
                         "ThemeChangeOptimization"
                     ]
                 }
