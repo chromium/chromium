@@ -3202,7 +3202,6 @@
       default_value: "StyleIntrinsicLength()",
       type_name: "StyleIntrinsicLength",
       converter: "ConvertIntrinsicDimension",
-      valid_for_permission_element: true,
       invalidate: ["layout", "scroll-anchor"],
       affected_by_zoom: true,
     },
@@ -3218,7 +3217,6 @@
       default_value: "StyleIntrinsicLength()",
       type_name: "StyleIntrinsicLength",
       converter: "ConvertIntrinsicDimension",
-      valid_for_permission_element: true,
       invalidate: ["layout", "scroll-anchor"],
       affected_by_zoom: true,
     },
@@ -3234,7 +3232,6 @@
       keywords: ["none"],
       typedom_types: ["Keyword"],
       typedom_custom_ident: true,
-      valid_for_permission_element: true,
       is_animation_affecting: true,
     },
     {
@@ -3248,7 +3245,6 @@
       type_name: "unsigned",
       converter: "ConvertFlags<EContainerType, CSSValueID::kNormal>",
       typedom_types: ["Keyword"],
-      valid_for_permission_element: true,
       invalidate: ["layout"],
       is_animation_affecting: true,
     },
@@ -9479,7 +9475,6 @@
         resolver: "inline",
       },
       typedom_types: ["Keyword", "Length"],
-      valid_for_permission_element: true,
       keywords: ["none"],
     },
     {
@@ -9490,7 +9485,6 @@
         resolver: "block",
       },
       typedom_types: ["Keyword", "Length"],
-      valid_for_permission_element: true,
       keywords: ["none"],
     },
     {
@@ -9500,7 +9494,6 @@
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       computable: true,
-      valid_for_permission_element: true,
     },
     {
       name: "container",

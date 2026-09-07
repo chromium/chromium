@@ -846,6 +846,42 @@ TEST_F(HTMLCapabilityElementBaseSimTest, InitializeGrantedText) {
   }
 }
 
+TEST_F(HTMLCapabilityElementBaseSimTest,
+       ContainIntrinsicSizeDoesNotAffectWidthBounds) {
+  SimRequest resource("https://example.test", "text/html");
+  LoadURL("https://example.test");
+  resource.Complete(R"(
+    <body>
+    </body>
+  )");
+  constexpr char kBaseStyle[] =
+      "border: none; color: black; background-color: white;";
+  auto* control = CreatePermissionElement(GetDocument(), "geolocation");
+  control->setAttribute(html_names::kStyleAttr, AtomicString(kBaseStyle));
+  auto* element = CreatePermissionElement(GetDocument(), "geolocation");
+  element->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString(String(kBaseStyle) +
+                   "container-type: size; contain-intrinsic-size: 700px 100px;"
+                   "min-width: 700px;"));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  const ComputedStyle* style = element->GetComputedStyle();
+  ASSERT_TRUE(style);
+  EXPECT_FALSE(style->IsContainerForSizeContainerQueries());
+  EXPECT_TRUE(style->ContainIntrinsicWidth().IsNoOp());
+  EXPECT_TRUE(style->ContainIntrinsicHeight().IsNoOp());
+
+  DOMRect* control_rect = control->GetBoundingClientRect();
+  DOMRect* element_rect = element->GetBoundingClientRect();
+  EXPECT_GT(control_rect->width(), 0);
+  // Without a distinct border the element's width is bounded by 3x the
+  // intrinsic content width, which `contain-intrinsic-width` should not be
+  // able to override.
+  EXPECT_LE(element_rect->width(), 3 * control_rect->width());
+}
+
 TEST_F(HTMLCapabilityElementBaseSimTest, BlockedByPermissionsPolicy) {
   GetDocument().GetSettings()->SetDefaultFontSize(12);
   SimRequest main_resource("https://example.test", "text/html");
