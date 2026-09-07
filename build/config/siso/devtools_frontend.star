@@ -26,10 +26,6 @@ def __filegroups(ctx):
 
 def __step_config(ctx, step_config):
     step_config["input_deps"].update({
-        "third_party/devtools-frontend/src/scripts/build/typescript/ts_library.py": [
-            "third_party/devtools-frontend/src/node_modules/typescript:typescript",
-            "third_party/devtools-frontend/src/node_modules:node_modules",
-        ],
         "third_party/devtools-frontend/src/scripts/build/esbuild.js": [
             "third_party/devtools-frontend/src/node_modules:node_modules",
         ],
@@ -42,15 +38,6 @@ def __step_config(ctx, step_config):
         # TODO(http://b/547522497): Enable remote execution once all DevTools modules
         # are migrated to split compilation. Legacy ts_library fails in strict remote
         # mode because transitive .d.ts inputs are not declared in GN.
-        {
-            "name": "devtools-frontend/typescript/ts_library",
-            "command_prefix": platform.python_bin + " ../../third_party/devtools-frontend/src/scripts/build/typescript/ts_library.py",
-            "remote": False,
-            "output_local": True,
-            "timeout": "2m",
-            "platform_ref": "large",
-            "remote_command": platform.remote_python_bin,
-        },
         {
             "name": "devtools-frontend/esbuild",
             "command_prefix": platform.python_bin + " ../../third_party/node/node.py ../../third_party/devtools-frontend/src/scripts/build/esbuild.js",
