@@ -62,7 +62,7 @@ static constexpr std::underlying_type_t<v8::CppHeapPointerTag>
     kLastGeneratedScriptWrappableTag = 2000;
 // LINT.ThenChange(gin/public/wrappable_pointer_tags.h)
 
-enum class ScriptWrappableArrayTag : std::underlying_type_t<
+enum class CppHeapPointerTag : std::underlying_type_t<
     v8::CppHeapPointerTag> {
   kFirst = kLastGeneratedScriptWrappableTag,
   kDOMArrayBufferTag,
@@ -85,6 +85,7 @@ enum class ScriptWrappableArrayTag : std::underlying_type_t<
   kDOMSharedArrayBufferTag,
   kFrozenArrayTag,
   kScriptFunctionHolderTag,
+  kScriptStateTag,
   // Start of ObservableArrayExoticObject subclasses
   kObservableArrayExoticObjectTag,
   kV8ObservableArrayCSSStyleSheetTag,
@@ -98,7 +99,7 @@ enum class ScriptWrappableArrayTag : std::underlying_type_t<
 // accordingly. Ideally this upper bound would be generated automatically, but
 // that may be difficult.
 static constexpr v8::CppHeapPointerTag kLastScriptWrappableTag =
-    static_cast<v8::CppHeapPointerTag>(ScriptWrappableArrayTag::kLastTag);
+    static_cast<v8::CppHeapPointerTag>(CppHeapPointerTag::kLastTag);
 
 static_assert(static_cast<uint16_t>(kLastScriptWrappableTag) <
                   static_cast<uint16_t>(gin::kFirstPointerTag),

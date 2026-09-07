@@ -60,9 +60,9 @@ v8::Local<v8::Value> DOMTypedArray<T, V8TypedArray, clamped>::Wrap(
           #Type "Array",                                                       \
           nullptr,                                                             \
           static_cast<v8::CppHeapPointerTag>(                                  \
-              ScriptWrappableArrayTag::kDOM##Type##ArrayTag),                  \
+              CppHeapPointerTag::kDOM##Type##ArrayTag),                        \
           static_cast<v8::CppHeapPointerTag>(                                  \
-              ScriptWrappableArrayTag::kDOM##Type##ArrayTag),                  \
+              CppHeapPointerTag::kDOM##Type##ArrayTag),                        \
           WrapperTypeInfo::kWrapperTypeObjectPrototype,                        \
           WrapperTypeInfo::kObjectClassId,                                     \
           WrapperTypeInfo::kIdlOtherType,                                      \

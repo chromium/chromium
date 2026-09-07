@@ -32,9 +32,9 @@ const WrapperTypeInfo DOMArrayBuffer::wrapper_type_info_body_{
     "ArrayBuffer",
     nullptr,
     static_cast<v8::CppHeapPointerTag>(
-        ScriptWrappableArrayTag::kDOMArrayBufferTag),
+        CppHeapPointerTag::kDOMArrayBufferTag),
     static_cast<v8::CppHeapPointerTag>(
-        ScriptWrappableArrayTag::kDOMArrayBufferTag),
+        CppHeapPointerTag::kDOMArrayBufferTag),
     WrapperTypeInfo::kWrapperTypeObjectPrototype,
     WrapperTypeInfo::kObjectClassId,
     WrapperTypeInfo::kIdlOtherType,

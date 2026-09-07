@@ -10,9 +10,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "gin/public/context_holder.h"
 #include "gin/public/gin_embedders.h"
-#include "gin/public/wrappable_pointer_tags.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/platform/bindings/scoped_persistent.h"
+#include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
@@ -273,7 +273,8 @@ class PLATFORM_EXPORT ScriptState : public GarbageCollected<ScriptState> {
       static_cast<int>(gin::kEmbedderBlink);
 
   static constexpr v8::CppHeapPointerTag kTypeTag =
-      static_cast<v8::CppHeapPointerTag>(gin::kScriptState);
+      static_cast<v8::CppHeapPointerTag>(
+          CppHeapPointerTag::kScriptStateTag);
 
   // For accessing information about the last script compilation via
   // internals.idl.

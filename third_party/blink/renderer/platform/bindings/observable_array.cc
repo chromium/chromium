@@ -27,9 +27,9 @@ const WrapperTypeInfo kWrapperTypeInfoBody{
     "ObservableArrayExoticObject",
     /*parent_class=*/nullptr,
     static_cast<v8::CppHeapPointerTag>(
-        ScriptWrappableArrayTag::kObservableArrayExoticObjectTag),
+        CppHeapPointerTag::kObservableArrayExoticObjectTag),
     static_cast<v8::CppHeapPointerTag>(
-        ScriptWrappableArrayTag::kV8ObservableArraySpeechRecognitionPhraseTag),
+        CppHeapPointerTag::kV8ObservableArraySpeechRecognitionPhraseTag),
     WrapperTypeInfo::kWrapperTypeNoPrototype,
     // v8::Proxy (without an internal field) is used as a (pseudo) wrapper.
     WrapperTypeInfo::kNoInternalFieldClassId,
