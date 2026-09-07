@@ -266,7 +266,9 @@ void ScreenOrientationProvider::DidToggleFullscreenModeForTab(
   if (!delegate_->FullScreenRequired(web_contents()))
     return;
 
-  CHECK(!entered_fullscreen, base::NotFatalUntil::M159);
+  // TODO(crbug.com/557428107): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!entered_fullscreen);
   UnlockOrientation();
 }
 
