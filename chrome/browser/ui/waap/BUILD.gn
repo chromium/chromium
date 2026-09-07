@@ -99,6 +99,7 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [ "initial_webui_browsertest.cc" ]
   deps = [
+    ":manager",
     ":waap",
     ":waap_utils",
     ":window_metrics_manager",
@@ -108,6 +109,7 @@ source_set("browser_tests") {
     "//chrome/browser/prefs",
     "//chrome/browser/prefs:util",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_test_util",
     "//chrome/browser/ui",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/browser_window:create_browser_window",
