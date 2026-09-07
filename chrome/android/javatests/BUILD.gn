@@ -42,6 +42,7 @@ android_library("chrome_test_java_helper") {
     "src/org/chromium/chrome/browser/permissions/PermissionTestRule.java",
     "src/org/chromium/chrome/browser/permissions/RuntimePermissionTestUtils.java",
     "src/org/chromium/chrome/browser/search_engines/DefaultSearchEngineDialogHelperUtils.java",
+    "src/org/chromium/chrome/browser/settings/SearchIndexValidator.java",
     "src/org/chromium/chrome/browser/settings/SettingsSearchTestUtils.java",
     "src/org/chromium/chrome/browser/site_settings/SiteSettingsTestHelper.java",
     "src/org/chromium/chrome/browser/site_settings/SiteSettingsTestUtils.java",

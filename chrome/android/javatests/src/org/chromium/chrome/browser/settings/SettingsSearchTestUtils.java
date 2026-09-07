@@ -21,13 +21,16 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import android.view.View;
 
 import androidx.annotation.StringRes;
+import androidx.preference.PreferenceFragmentCompat;
 
 import org.hamcrest.Matcher;
 
 import org.chromium.chrome.R;
 import org.chromium.ui.test.util.ViewUtils;
 
-/** Utility methods and custom matchers for Settings UI tests. */
+import java.util.Set;
+
+/** Utility methods and custom matchers for Settings UI tests and search index parity tests. */
 public class SettingsSearchTestUtils {
 
     private SettingsSearchTestUtils() {}
@@ -92,5 +95,37 @@ public class SettingsSearchTestUtils {
                 .check(
                         ViewUtils.isEventuallyVisible(
                                 withText(R.string.search_in_settings_no_match)));
+    }
+
+    /**
+     * Asserts that visible preferences in {@code fragment} match the search index, and that every
+     * searchable entry in the index for this fragment is currently visible on the screen.
+     *
+     * <p>This verifies bidirectional consistency:
+     *
+     * <ol>
+     *   <li>Forward: Every visible preference on the screen must exist in the search index, be
+     *       marked searchable, and have a matching title.
+     *   <li>Reverse: Every entry in the search index for this fragment marked searchable must
+     *       correspond to a visible preference on the screen (no phantom search results).
+     * </ol>
+     *
+     * @param fragment The settings fragment currently displayed.
+     * @param allowlistedKeys Set of preference keys to ignore (e.g. promo banners or non-searchable
+     *     placeholders).
+     */
+    public static void assertPreferenceScreenMatchesIndex(
+            PreferenceFragmentCompat fragment, Set<String> allowlistedKeys) {
+        SearchIndexValidator.assertPreferenceScreenMatchesIndex(fragment, allowlistedKeys);
+    }
+
+    /**
+     * Same as {@link #assertPreferenceScreenMatchesIndex(PreferenceFragmentCompat, Set)}, with no
+     * allowlisted keys.
+     *
+     * @param fragment The settings fragment currently displayed.
+     */
+    public static void assertPreferenceScreenMatchesIndex(PreferenceFragmentCompat fragment) {
+        SearchIndexValidator.assertPreferenceScreenMatchesIndex(fragment);
     }
 }
