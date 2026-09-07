@@ -63,11 +63,11 @@ std::string GetMockOtpValue() {
 
 OtpManagerImpl::OtpManagerImpl(BrowserAutofillManager& owner,
                                OneTimeTokenService* one_time_token_service)
-    : owner_(owner), one_time_token_services_(one_time_token_service) {
+    : owner_(owner), one_time_token_service_(one_time_token_service) {
   autofill_manager_observation_.Observe(&owner);
-  if (one_time_token_services_ && one_time_token_services_->log_sink()) {
+  if (one_time_token_service_ && one_time_token_service_->log_sink()) {
     log_subscription_ =
-        one_time_token_services_->log_sink()->AddLogHandler(base::BindRepeating(
+        one_time_token_service_->log_sink()->AddLogHandler(base::BindRepeating(
             &OtpManagerImpl::OnLogMessage, weak_ptr_factory_.GetWeakPtr()));
   }
 }
@@ -104,11 +104,11 @@ void OtpManagerImpl::GetOtpSuggestions(
 }
 
 void OtpManagerImpl::GetRecentOtpsAndRenewSubscription() {
-  if (!one_time_token_services_ || !GetMockOtpValue().empty()) {
+  if (!one_time_token_service_ || !GetMockOtpValue().empty()) {
     return;
   }
 
-  one_time_token_services_->GetRecentOneTimeTokens(base::BindRepeating(
+  one_time_token_service_->GetRecentOneTimeTokens(base::BindRepeating(
       &OtpManagerImpl::OnOneTimeTokenReceived, weak_ptr_factory_.GetWeakPtr()));
 
   if (subscription_.IsAlive()) {
@@ -116,7 +116,7 @@ void OtpManagerImpl::GetRecentOtpsAndRenewSubscription() {
     return;
   }
 
-  subscription_ = one_time_token_services_->Subscribe(
+  subscription_ = one_time_token_service_->Subscribe(
       OneTimeTokenSource::kOnDeviceSms,
       base::Time::Now() + kSubscriptionDuration,
       base::BindRepeating(&OtpManagerImpl::OnOneTimeTokenReceived,
@@ -130,7 +130,7 @@ void OtpManagerImpl::OnFieldTypesDetermined(
     AutofillManager::Observer::FieldTypeSource source,
     bool small_forms_were_parsed) {
   // On non-android platforms and in tests the backend may be not initialized.
-  if (!one_time_token_services_) {
+  if (!one_time_token_service_) {
     return;
   }
 

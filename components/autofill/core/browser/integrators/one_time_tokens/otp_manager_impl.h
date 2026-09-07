@@ -107,13 +107,13 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   raw_ref<BrowserAutofillManager> owner_;
 
   // May be nullptr on platforms that don't support SMS OTP fetching.
-  raw_ptr<one_time_tokens::OneTimeTokenService> one_time_token_services_ =
+  raw_ptr<one_time_tokens::OneTimeTokenService> one_time_token_service_ =
       nullptr;
 
-  // Subscription to a `OneTimetokenService`.
+  // Subscription to a `OneTimeTokenService`.
   one_time_tokens::ExpiringSubscription subscription_;
 
-  // Subscription to log events of `one_time_token_services_`.
+  // Subscription to log events of `one_time_token_service_`.
   base::CallbackListSubscription log_subscription_;
 
   // Only the last call from the UI to generate suggestions is retained as such
