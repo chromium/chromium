@@ -1696,7 +1696,7 @@ FetchLaterResult* FetchLaterManager::FetchLater(
 
   // 10. If request’s body is not null, and request's body length is null, then
   // throw a TypeError.
-  if (request->Buffer() && request->BufferByteLength() == 0) {
+  if (request->Buffer() && request->Buffer()->IsMadeFromReadableStream()) {
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kFetchLaterErrorUnknownBodyLength);
     exception_state.ThrowTypeError(

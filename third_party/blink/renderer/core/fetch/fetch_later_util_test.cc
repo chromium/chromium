@@ -1414,6 +1414,20 @@ TEST_F(CalculatePostRequestSizeTest, WithdHeaders) {
             GetUrlSize(url) + GetHeadersSize(headers) + body.length());
 }
 
+TEST_F(CalculatePostRequestSizeTest, WithEmptyBody) {
+  V8TestingScope scope;
+  const auto url = RequestURL();
+  const HeadersType headers = {
+      {"key-1", "value 1"},
+      {"key-2", "value 2"},
+  };
+  const String body = "";
+  auto* request = CreateFetchRequestDataForPost(scope, url, headers, body);
+
+  EXPECT_EQ(FetchLaterUtil::CalculateRequestSize(*request),
+            GetUrlSize(url) + GetHeadersSize(headers));
+}
+
 TEST_F(CalculatePostRequestSizeTest, WithFragmentURLAndHeaders) {
   V8TestingScope scope;
   const auto url = RequestURLWithFragment();

@@ -2525,13 +2525,6 @@ crbug.com/503882535 virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_
 crbug.com/503882535 virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/reduce_log_sum_exp.https.any.html?npu [ Failure ]
 crbug.com/503882535 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/reduce_log_sum_exp.https.any.html?gpu [ Failure ]
 
-# UUIDs in `*-expected.txt`
-crbug.com/507904104 external/wpt/fetch/fetch-later/quota/cross-origin-iframe/empty-payload.https.window.html [ Failure ]
-crbug.com/507904104 external/wpt/fetch/fetch-later/quota/same-origin-iframe/empty-payload.https.window.html [ Failure ]
-crbug.com/507904104 virtual/produce-compile-hints/external/wpt/fetch/fetch-later/quota/cross-origin-iframe/empty-payload.https.window.html [ Failure ]
-crbug.com/507904104 virtual/produce-compile-hints/external/wpt/fetch/fetch-later/quota/same-origin-iframe/empty-payload.https.window.html [ Failure ]
-
-
 crbug.com/515750299 external/wpt/css/css-inline/alignment-baseline/alignment-baseline-horizontal-002.html?class=alphabetic [ Failure ]
 crbug.com/515750299 external/wpt/css/css-inline/alignment-baseline/alignment-baseline-horizontal-002.html?class=baseline [ Failure ]
 crbug.com/515750299 external/wpt/css/css-inline/alignment-baseline/alignment-baseline-horizontal-002.html?class=central [ Failure ]

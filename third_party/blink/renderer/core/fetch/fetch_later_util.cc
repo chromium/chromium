@@ -341,7 +341,7 @@ uint64_t FetchLaterUtil::GetAvailableDeferredFetchQuota(Frame* frame,
 }
 
 uint64_t FetchLaterUtil::CalculateRequestSize(const FetchRequestData& request) {
-  CHECK(!request.Buffer() || request.BufferByteLength() != 0);
+  CHECK(!request.Buffer() || !request.Buffer()->IsMadeFromReadableStream());
 
   // 1. Let totalRequestLength be the length of request’s URL, serialized
   // with exclude fragment set to true.
