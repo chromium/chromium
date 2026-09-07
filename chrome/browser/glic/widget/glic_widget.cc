@@ -43,8 +43,6 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "chrome/installer/util/install_util.h"
-#include "chrome/installer/util/shell_util.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/win/hwnd_metrics.h"
@@ -430,11 +428,7 @@ std::unique_ptr<GlicWidget> GlicWidget::Create(views::WidgetDelegate* delegate,
   }
 #endif  // BUILDFLAG(IS_OZONE)
 #if BUILDFLAG(IS_WIN)
-  // If floaty won't be always on top, it should appear in the taskbar and
-  // alt tab list.
-  if (!base::FeatureList::IsEnabled(features::kGlicZOrderChanges)) {
-    params.dont_show_in_taskbar = true;
-  }
+  params.dont_show_in_taskbar = true;
 #endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_MAC)
   params.animation_enabled = true;
@@ -468,10 +462,6 @@ std::unique_ptr<GlicWidget> GlicWidget::Create(views::WidgetDelegate* delegate,
   HWND hwnd = widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget();
   if (hwnd != nullptr) {
     ui::win::PreventWindowFromPinning(hwnd);
-    if (base::FeatureList::IsEnabled(features::kGlicZOrderChanges)) {
-      ui::win::SetAppIdForWindow(
-          ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall()), hwnd);
-    }
   }
 #endif  // BUILDFLAG(IS_WIN)
   return widget;
