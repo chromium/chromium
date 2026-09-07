@@ -170,10 +170,12 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
   // This information is injected through the client because the Android device
   // authenticator is tied to UI. As a result, the data manager has no
   // cross-platform way to derive this information.
-  if (EntityDataManager* edm =
-          base::FeatureList::IsEnabled(features::kAutofillAiWalletPrivatePasses)
-              ? GetEntityDataManager()
-              : nullptr) {
+  if (EntityDataManager* edm = base::FeatureList::IsEnabled(
+                                   features::kAutofillAiWalletPrivatePasses) ||
+                                       base::FeatureList::IsEnabled(
+                                           features::kAutofillAmbientAutofill)
+                                   ? GetEntityDataManager()
+                                   : nullptr) {
     edm->SetReauthAvailability(SupportsDeviceReauth());
   }
 

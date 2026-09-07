@@ -1329,10 +1329,12 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
   // This information is injected through the client because the device
   // authenticator is tied to UI, even though the availability of device re-auth
   // is independent of it.
-  if (EntityDataManager* edm =
-          base::FeatureList::IsEnabled(features::kAutofillAiWalletPrivatePasses)
-              ? GetEntityDataManager()
-              : nullptr) {
+  if (EntityDataManager* edm = base::FeatureList::IsEnabled(
+                                   features::kAutofillAiWalletPrivatePasses) ||
+                                       base::FeatureList::IsEnabled(
+                                           features::kAutofillAmbientAutofill)
+                                   ? GetEntityDataManager()
+                                   : nullptr) {
     edm->SetReauthAvailability(SupportsDeviceReauth());
   }
 }
