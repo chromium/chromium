@@ -73,8 +73,7 @@ const char kGreenPDFPath[] = "/green.pdf";
 // Enter and leave the tab grid. Swipe back and forth repeatedly between
 // the two tabs in the toolbar. The regressiom is a crash anywhere in this
 // process.
-// TODO(crbug.com/447146436): Re-enable when fixed.
-- (void)DISABLED_testSwitchBetweenPDFs {
+- (void)testSwitchBetweenPDFs {
   // Compact width only.
   if (![ChromeEarlGrey isCompactWidth]) {
     EARL_GREY_TEST_DISABLED(@"Disabled on iPad -- depends on swiping in the "
