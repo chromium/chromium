@@ -20,7 +20,6 @@ include_rules = [
   "+chrome/browser/ash/lobster",
   "+chrome/browser/ash/login/session",
   "+chrome/browser/bookmarks",
-  "+chrome/browser/favicon",
   "+chrome/browser/history",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/thumbnail_loader",

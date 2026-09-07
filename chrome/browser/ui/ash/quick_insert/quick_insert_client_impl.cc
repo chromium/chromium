@@ -44,7 +44,6 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/ash/lobster/lobster_service_provider.h"
-#include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/quick_insert/quick_insert_file_suggester.h"
@@ -55,6 +54,7 @@
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_context.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/preset_text_query.h"
+#include "chromeos/ash/components/favicon/favicon_service_provider.h"
 #include "chromeos/ash/components/search_engines/template_url_service_provider.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/user.h"
@@ -519,8 +519,8 @@ history::HistoryService* QuickInsertClientImpl::GetHistoryService() {
 }
 
 favicon::FaviconService* QuickInsertClientImpl::GetFaviconService() {
-  return FaviconServiceFactory::GetForProfile(
-      profile_, ServiceAccessType::EXPLICIT_ACCESS);
+  return ash::FaviconServiceProvider::Get().Find(CHECK_DEREF(
+      ash::AnnotatedAccountId::Get(profile_->GetOriginalProfile())));
 }
 
 void QuickInsertClientImpl::SetProfileByUser(const user_manager::User* user) {
