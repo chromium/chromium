@@ -11,6 +11,7 @@
 #include "ash/public/cpp/holding_space/mock_holding_space_client.h"
 #include "ash/system/diagnostics/diagnostics_browser_delegate.h"
 #include "ash/system/diagnostics/diagnostics_log_controller.h"
+#include "ash/system/diagnostics/keyboard_input_log.h"
 #include "ash/system/diagnostics/log_test_helpers.h"
 #include "ash/system/diagnostics/networking_log.h"
 #include "ash/system/diagnostics/routine_log.h"
@@ -167,6 +168,12 @@ class SessionLogHandlerTest : public NoSessionAshTestBase {
     NoSessionAshTestBase::SetUp();
     DiagnosticsLogController::Initialize(
         std::make_unique<FakeDiagnosticsBrowserDelegate>());
+    DiagnosticsLogController::Get()->SetRoutineLogForTesting(
+        std::make_unique<RoutineLog>(temp_dir_.GetPath()));
+    DiagnosticsLogController::Get()->SetNetworkingLogForTesting(
+        std::make_unique<NetworkingLog>(temp_dir_.GetPath()));
+    DiagnosticsLogController::Get()->SetKeyboardInputLogForTesting(
+        std::make_unique<KeyboardInputLog>(temp_dir_.GetPath()));
     session_log_handler_ = std::make_unique<diagnostics::SessionLogHandler>(
         base::BindRepeating(
             [](content::WebContents*) -> std::unique_ptr<ui::SelectFilePolicy> {
