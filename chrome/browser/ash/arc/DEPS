@@ -35,7 +35,6 @@ include_rules = [
   "+chrome/browser/speech",
   "+chrome/browser/tab_contents",
   "+chrome/browser/ui/ash",
-  "+chrome/browser/ui/chrome_pages.h",
   "+chrome/browser/ui/select_file_policy/chrome_select_file_policy.h",
   "+chrome/browser/ui/simple_message_box.h",
   "+chrome/browser/ui/tabs",

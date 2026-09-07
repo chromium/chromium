@@ -27,7 +27,6 @@ include_rules = [
   "+chrome/browser/ui/aura/accessibility",
   "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h",
-  "+chrome/browser/ui/chrome_pages.h",
   "+chrome/browser/ui/singleton_tabs.h",
   "+chrome/browser/ui/tabs",
   "+chrome/browser/ui/view_ids.h",

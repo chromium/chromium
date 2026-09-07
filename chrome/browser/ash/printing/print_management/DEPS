@@ -22,7 +22,6 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/system_web_apps",
   "+chrome/browser/ui/browser_window/public",
-  "+chrome/browser/ui/chrome_pages.h",
   "+chrome/browser/web_applications/test",
   "+chrome/test/base",
 ]
