@@ -51,6 +51,11 @@ BASE_DECLARE_FEATURE(kLazyInitializeSpellcheckCharAttribute);
 // a background worker thread rather than blocking the main thread.
 BASE_DECLARE_FEATURE(kAsyncSpellcheckCustomDictionaryInit);
 
+// When enabled, spellcheck initialization is completely pull-based (on-demand)
+// across all platforms: the browser process does not push dictionaries to new
+// renderer processes at startup, and renderers request them lazily when needed.
+BASE_DECLARE_FEATURE(kOnDemandSpellcheckInitialization);
+
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)
 
 }  // namespace spellcheck

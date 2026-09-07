@@ -30,6 +30,7 @@
 #include "components/keyed_service/core/keyed_service_base_factory.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/spellcheck/common/spellcheck_features.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/universal_optout/features.h"
 #include "content/public/common/content_features.h"
@@ -901,12 +902,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "SiteDataCacheFacadeFactory",
     "SiteEngagementService",
     "SocketManager",
-#if !BUILDFLAG(IS_CHROMEOS)
-    // TODO(crbug.com/374351946): Desktop chrome create this via
-    // ShoppingService->SyncService->Spellchecker. Investigate if this is
-    // expected on desktop chrome.
-    "SpellcheckService",
-#endif
     "StorageFrontend",
     "StorageNotificationService",
     "SystemInfoAPI",
@@ -1028,6 +1023,15 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
           universal_optout::features::kUniversalOptOut)) {
     guest_active_services.insert("UniversalOptOutService");
   }
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (!base::FeatureList::IsEnabled(
+          spellcheck::kOnDemandSpellcheckInitialization)) {
+    // TODO(crbug.com/374351946): Desktop chrome create this via
+    // ShoppingService->SyncService->Spellchecker. Investigate if this is
+    // expected on desktop chrome.
+    guest_active_services.insert("SpellcheckService");
+  }
+#endif
 #if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(user_manager::UserManager::Get()->IsLoggedInAsGuest());
   // ChromeOS Guest mode starts with the guest otr profile.

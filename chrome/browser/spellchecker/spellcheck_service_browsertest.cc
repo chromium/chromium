@@ -69,8 +69,10 @@ class SpellcheckServiceBrowserTest : public InProcessBrowserTest,
                                      public spellcheck::mojom::SpellChecker {
  public:
 #if BUILDFLAG(IS_WIN)
-  explicit SpellcheckServiceBrowserTest(
-      bool use_browser_spell_checker = false) {
+  explicit SpellcheckServiceBrowserTest(bool use_browser_spell_checker = false,
+                                        bool enable_on_demand = false) {
+    feature_list_.InitWithFeatureState(
+        spellcheck::kOnDemandSpellcheckInitialization, enable_on_demand);
     if (!use_browser_spell_checker) {
       // Tests were designed assuming Hunspell dictionary used and many fail
       // when Windows spellcheck is enabled.
@@ -78,7 +80,10 @@ class SpellcheckServiceBrowserTest : public InProcessBrowserTest,
     }
   }
 #else
-  SpellcheckServiceBrowserTest() = default;
+  explicit SpellcheckServiceBrowserTest(bool enable_on_demand = false) {
+    feature_list_.InitWithFeatureState(
+        spellcheck::kOnDemandSpellcheckInitialization, enable_on_demand);
+  }
 #endif
 
   SpellcheckServiceBrowserTest(const SpellcheckServiceBrowserTest&) = delete;
@@ -255,9 +260,7 @@ class SpellcheckServiceBrowserTest : public InProcessBrowserTest,
   // Quits the RunLoop on Mojo request flow completion.
   base::OnceClosure quit_;
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   base::test::ScopedFeatureList feature_list_;
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 
  private:
 #if BUILDFLAG(IS_WIN)
@@ -283,7 +286,7 @@ class SpellcheckServiceBrowserTest : public InProcessBrowserTest,
 
 class SpellcheckServiceHostBrowserTest : public SpellcheckServiceBrowserTest {
  public:
-  SpellcheckServiceHostBrowserTest() = default;
+  using SpellcheckServiceBrowserTest::SpellcheckServiceBrowserTest;
 
   SpellcheckServiceHostBrowserTest(const SpellcheckServiceHostBrowserTest&) =
       delete;
@@ -528,6 +531,42 @@ IN_PROC_BROWSER_TEST_F(SpellcheckServiceHostBrowserTest, CallSpellingService) {
   CallSpellingService();
 }
 #endif  // BUILDFLAG(USE_RENDERER_SPELLCHECKER)
+
+// Dedicated test fixture for testing on-demand (pull-based) spellcheck
+// initialization.
+class OnDemandSpellcheckServiceHostBrowserTest
+    : public SpellcheckServiceHostBrowserTest {
+ public:
+#if BUILDFLAG(IS_WIN)
+  OnDemandSpellcheckServiceHostBrowserTest()
+      : SpellcheckServiceHostBrowserTest(/*use_browser_spell_checker=*/false,
+                                         /*enable_on_demand=*/true) {}
+#else
+  OnDemandSpellcheckServiceHostBrowserTest()
+      : SpellcheckServiceHostBrowserTest(/*enable_on_demand=*/true) {}
+#endif
+};
+
+// When on-demand initialization is enabled, dictionaries are pulled on demand
+// via RequestDictionary rather than being pushed unconditionally at startup.
+IN_PROC_BROWSER_TEST_F(OnDemandSpellcheckServiceHostBrowserTest,
+                       RequestDictionary) {
+  InitSpellcheck(true, "", "en-US");
+  RequestDictionary();
+  EXPECT_TRUE(GetEnableSpellcheckState());
+}
+
+// Verify that custom dictionary updates continue to be received after on-demand
+// initialization.
+IN_PROC_BROWSER_TEST_F(OnDemandSpellcheckServiceHostBrowserTest,
+                       CustomDictionaryChanged) {
+  InitSpellcheck(true, "", "en-US");
+  RequestDictionary();
+  EXPECT_TRUE(GetEnableSpellcheckState());
+
+  ChangeCustomDictionary();
+  EXPECT_TRUE(GetCustomDictionaryChangedState());
+}
 
 // Tests that we can delete a corrupted BDICT file used by hunspell. We do not
 // run this test on Mac because Mac does not use hunspell by default.

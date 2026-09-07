@@ -654,6 +654,15 @@ bool SpellcheckService::IsSpellcheckEnabled() const {
 
 void SpellcheckService::OnRenderProcessHostCreated(
     content::RenderProcessHost* host) {
+  if (base::FeatureList::IsEnabled(
+          spellcheck::kOnDemandSpellcheckInitialization)) {
+    // When on-demand initialization is enabled, avoid pushing the initial
+    // SpellChecker::Initialize IPC to every newly created renderer.
+    // Dictionaries will be requested on demand via RequestDictionary when
+    // needed.
+    return;
+  }
+
   InitForRenderer(host);
 }
 

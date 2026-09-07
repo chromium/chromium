@@ -60,6 +60,9 @@ BASE_FEATURE(kLazyInitializeSpellcheckCharAttribute,
 BASE_FEATURE(kAsyncSpellcheckCustomDictionaryInit,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kOnDemandSpellcheckInitialization,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)
 
 }  // namespace spellcheck

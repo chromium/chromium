@@ -79,13 +79,12 @@ class SpellCheck : public spellcheck::mojom::SpellChecker {
 
   void AddSpellcheckLanguage(base::File file, const std::string& language);
 
-  // If there are no dictionary files, then this requests them from the browser
-  // and does not block. In this case it returns true.
-  // If there are dictionary files, but their Hunspell has not been loaded, then
-  // this loads their Hunspell.
-  // If each dictionary file's Hunspell is already loaded, this does nothing. In
-  // both the latter cases it returns false, meaning that it is OK to continue
-  // spellchecking.
+  // Requests dictionaries from the browser if they have not been requested yet
+  // and `kOnDemandSpellcheckInitialization` is enabled.
+  // Returns true if spellcheck initialization is still pending (i.e. dictionary
+  // files are being loaded or requested asynchronously from the browser).
+  // Returns false if initialization is complete (or no languages are enabled),
+  // meaning that it is OK to continue with spellchecking.
   bool InitializeIfNeeded();
 
   // SpellCheck a word.
@@ -227,6 +226,16 @@ class SpellCheck : public spellcheck::mojom::SpellChecker {
    std::unique_ptr<SpellcheckRequest> pending_request_param_;
 #endif
 
+  enum class DictionaryState {
+    kNotRequested,
+    kRequested,
+    kInitialized,
+  };
+
+  // Requests dictionaries from the browser if they haven't been requested yet
+  // and `kOnDemandSpellcheckInitialization` is enabled.
+  void RequestDictionaryIfNeeded();
+
   // Receivers for SpellChecker clients.
   mojo::ReceiverSet<spellcheck::mojom::SpellChecker> receivers_;
 
@@ -241,6 +250,10 @@ class SpellCheck : public spellcheck::mojom::SpellChecker {
 
   // Remember state for spellchecking.
   bool spellcheck_enabled_;
+
+  // Lifecycle state for requesting and receiving dictionaries from the
+  // browser.
+  DictionaryState dictionary_state_ = DictionaryState::kNotRequested;
 
   // Observers of update dictionary events.
   base::ObserverList<DictionaryUpdateObserver>::Unchecked

@@ -35,6 +35,8 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_visitor.h"
 #include "content/public/renderer/render_thread.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/service_manager/public/cpp/local_interface_provider.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -199,6 +201,7 @@ void SpellCheck::Initialize(
     bool enable) {
   base::ScopedUmaHistogramTimer timer("SpellCheck.Renderer.InitializeTime");
   languages_.clear();
+  dictionary_state_ = DictionaryState::kInitialized;
 
   for (const auto& dictionary : dictionaries)
     AddSpellcheckLanguage(std::move(dictionary->file), dictionary->language);
@@ -494,9 +497,28 @@ void SpellCheck::RequestTextChecking(
 }
 #endif
 
+void SpellCheck::RequestDictionaryIfNeeded() {
+  if (!base::FeatureList::IsEnabled(
+          spellcheck::kOnDemandSpellcheckInitialization)) {
+    return;
+  }
+
+  if (dictionary_state_ > DictionaryState::kNotRequested) {
+    return;
+  }
+
+  mojo::Remote<spellcheck::mojom::SpellCheckInitializationHost> host;
+  embedder_provider_->GetInterface(host.BindNewPipeAndPassReceiver());
+  host->RequestDictionary();
+  dictionary_state_ = DictionaryState::kRequested;
+}
+
 bool SpellCheck::InitializeIfNeeded() {
-  if (languages_.empty())
-    return true;
+  RequestDictionaryIfNeeded();
+
+  if (languages_.empty()) {
+    return dictionary_state_ != DictionaryState::kInitialized;
+  }
 
   bool initialize_if_needed = false;
   for (auto& language : languages_)

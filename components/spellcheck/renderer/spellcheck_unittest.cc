@@ -30,6 +30,7 @@
 #include "components/spellcheck/renderer/hunspell_engine.h"
 #include "components/spellcheck/renderer/spellcheck_language.h"
 #include "components/spellcheck/renderer/spellcheck_provider_test.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_text_checking_completion.h"
 #include "third_party/blink/public/web/web_text_checking_result.h"
@@ -1705,3 +1706,127 @@ TEST_P(SpellCheckTest, FillSuggestions_ThreeLanguages) {
 }
 
 INSTANTIATE_TEST_SUITE_P(All, SpellCheckTest, testing::Bool());
+
+namespace {
+
+class FakeInitializationHostProvider
+    : public service_manager::LocalInterfaceProvider,
+      public spellcheck::mojom::SpellCheckInitializationHost {
+ public:
+  FakeInitializationHostProvider() = default;
+  ~FakeInitializationHostProvider() override = default;
+
+  void GetInterface(const std::string& name,
+                    mojo::ScopedMessagePipeHandle request_handle) override {
+    if (name == spellcheck::mojom::SpellCheckInitializationHost::Name_) {
+      if (receiver_.is_bound()) {
+        receiver_.reset();
+      }
+      receiver_.Bind(mojo::PendingReceiver<
+                     spellcheck::mojom::SpellCheckInitializationHost>(
+          std::move(request_handle)));
+    }
+  }
+
+  void RequestDictionary() override {
+    request_dictionary_called_ = true;
+    ++request_dictionary_count_;
+    if (quit_closure_) {
+      std::move(quit_closure_).Run();
+    }
+  }
+
+  void WaitForRequestDictionary() {
+    if (request_dictionary_called_) {
+      return;
+    }
+    base::RunLoop run_loop;
+    quit_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+  bool request_dictionary_called() const { return request_dictionary_called_; }
+  int request_dictionary_count() const { return request_dictionary_count_; }
+
+ private:
+  mojo::Receiver<spellcheck::mojom::SpellCheckInitializationHost> receiver_{
+      this};
+  bool request_dictionary_called_ = false;
+  int request_dictionary_count_ = 0;
+  base::OnceClosure quit_closure_;
+};
+
+}  // namespace
+
+TEST(SpellCheckOnDemandTest, InitializeIfNeededRequestsDictionaryWhenEmpty) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      spellcheck::kOnDemandSpellcheckInitialization);
+
+  base::test::TaskEnvironment task_environment;
+  FakeInitializationHostProvider provider;
+  SpellCheck spell_check(&provider);
+
+  EXPECT_FALSE(provider.request_dictionary_called());
+
+  // Calling InitializeIfNeeded when no languages have been set should request
+  // dictionary from the browser when feature is enabled.
+  EXPECT_TRUE(spell_check.InitializeIfNeeded());
+  provider.WaitForRequestDictionary();
+  EXPECT_TRUE(provider.request_dictionary_called());
+  EXPECT_EQ(1, provider.request_dictionary_count());
+}
+
+TEST(SpellCheckOnDemandTest,
+     InitializeIfNeededDoesNotRequestDictionaryWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      spellcheck::kOnDemandSpellcheckInitialization);
+
+  base::test::TaskEnvironment task_environment;
+  FakeInitializationHostProvider provider;
+  SpellCheck spell_check(&provider);
+
+  EXPECT_FALSE(provider.request_dictionary_called());
+
+  // When feature is disabled, calling InitializeIfNeeded should not send IPC.
+  EXPECT_TRUE(spell_check.InitializeIfNeeded());
+  EXPECT_FALSE(provider.request_dictionary_called());
+  EXPECT_EQ(0, provider.request_dictionary_count());
+}
+
+TEST(SpellCheckOnDemandTest,
+     InitializeWithEmptyDictionariesMarksInitializedAndReturnsFalse) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      spellcheck::kOnDemandSpellcheckInitialization);
+
+  base::test::TaskEnvironment task_environment;
+  FakeInitializationHostProvider provider;
+  SpellCheck spell_check(&provider);
+
+  // Calling Initialize with empty dictionaries simulates the browser responding
+  // with no dictionaries (e.g. spellchecking disabled or no languages enabled).
+  spell_check.Initialize(
+      std::vector<spellcheck::mojom::SpellCheckBDictLanguagePtr>(), {}, false);
+
+  // InitializeIfNeeded should return false because initialization is complete.
+  EXPECT_FALSE(spell_check.InitializeIfNeeded());
+  EXPECT_EQ(0, provider.request_dictionary_count());
+}
+
+TEST(SpellCheckOnDemandTest, InitializeIfNeededOnlyRequestsDictionaryOnce) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      spellcheck::kOnDemandSpellcheckInitialization);
+
+  base::test::TaskEnvironment task_environment;
+  FakeInitializationHostProvider provider;
+  SpellCheck spell_check(&provider);
+
+  EXPECT_TRUE(spell_check.InitializeIfNeeded());
+  EXPECT_TRUE(spell_check.InitializeIfNeeded());
+  EXPECT_TRUE(spell_check.InitializeIfNeeded());
+  provider.WaitForRequestDictionary();
+  EXPECT_EQ(1, provider.request_dictionary_count());
+}

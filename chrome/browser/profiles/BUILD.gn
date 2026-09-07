@@ -1247,6 +1247,7 @@ if (!is_android) {
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
       "//components/commerce/core:feature_list",
+      "//components/spellcheck/common",
       "//components/universal_optout:features",
       "//components/user_manager",
       "//content/test:test_support",
