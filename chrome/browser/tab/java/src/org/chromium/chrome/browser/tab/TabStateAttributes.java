@@ -261,6 +261,26 @@ public class TabStateAttributes {
         updateIsDirty(DirtinessState.CLEAN);
     }
 
+    /**
+     * Marks all registered {@link TabStateAttributes} on the tab as dirty to trigger storage
+     * persistence.
+     *
+     * @param tab The tab to mark dirty.
+     */
+    public static void setDirty(@Nullable Tab tab) {
+        if (tab == null || tab.isDestroyed() || tab.getUserDataHost() == null) {
+            return;
+        }
+        TabStateAttributesRegistry registry =
+                tab.getUserDataHost().getUserData(TabStateAttributesRegistry.class);
+        if (registry == null) {
+            return;
+        }
+        for (TabStateAttributes attr : registry.getAllAttributes()) {
+            attr.updateIsDirty(DirtinessState.DIRTY);
+        }
+    }
+
     public void destroy() {
         if (mWebContents != null) {
             cleanupWebContents(mWebContents);
@@ -333,7 +353,8 @@ public class TabStateAttributes {
     }
 
     private static boolean isNtpWithoutNavigationState(Tab tab) {
-        return UrlUtilities.isNtpUrl(tab.getUrl()) && !tab.canGoBack() && !tab.canGoForward();
+        GURL url = tab.getUrl();
+        return url != null && UrlUtilities.isNtpUrl(url) && !tab.canGoBack() && !tab.canGoForward();
     }
 
     /**

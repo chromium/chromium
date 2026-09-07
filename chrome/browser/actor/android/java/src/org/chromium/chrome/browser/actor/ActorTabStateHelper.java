@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabIdManager;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
+import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
@@ -341,5 +342,26 @@ public class ActorTabStateHelper {
                                 observer.destroy();
                             });
                 });
+    }
+
+    /**
+     * Marks all tabs in the completed task's background session as dirty so they are asynchronously
+     * saved to disk by BackgroundTabPool.
+     *
+     * @param sessions The list of active background sessions.
+     * @param taskId The ID of the completed task.
+     */
+    public static void persistTabsForCompletedTask(List<BackgroundSession> sessions, int taskId) {
+        ThreadUtils.assertOnUiThread();
+        BackgroundSession session = BackgroundSession.getSessionForTask(sessions, taskId);
+        if (session == null) {
+            return;
+        }
+
+        for (Tab tab : session.getTabs()) {
+            if (tab != null) {
+                TabStateAttributes.setDirty(tab);
+            }
+        }
     }
 }

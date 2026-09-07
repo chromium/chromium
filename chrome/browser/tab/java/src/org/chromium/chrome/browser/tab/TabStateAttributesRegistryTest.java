@@ -74,4 +74,16 @@ public class TabStateAttributesRegistryTest {
         assertEquals(DirtinessState.DIRTY, attrs1.getDirtinessState());
         assertEquals(DirtinessState.UNTIDY, attrs2.getDirtinessState());
     }
+
+    @Test
+    public void testGetAllAttributes() {
+        TabStateAttributesRegistry.createAttributesForTab(
+                mTab, FakeKey1.class, TabCreationState.FROZEN_ON_RESTORE);
+        TabStateAttributesRegistry.createAttributesForTab(
+                mTab, FakeKey2.class, TabCreationState.FROZEN_ON_RESTORE);
+
+        TabStateAttributesRegistry registry =
+                mTab.getUserDataHost().getUserData(TabStateAttributesRegistry.class);
+        assertEquals(2, registry.getAllAttributes().size());
+    }
 }

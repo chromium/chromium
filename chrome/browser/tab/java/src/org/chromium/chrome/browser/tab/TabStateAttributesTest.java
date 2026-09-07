@@ -680,6 +680,30 @@ public class TabStateAttributesTest {
         verify(mAttributesObserver2).onTabStateDirtinessChanged(any(), eq(DirtinessState.DIRTY));
     }
 
+    @Test
+    public void testSetDirty() {
+        TabStateAttributesRegistry.createAttributesForTab(
+                mTab, TabStateAttributes.StoreKey.class, TabCreationState.FROZEN_ON_RESTORE);
+        assertEquals(DirtinessState.CLEAN, getAttributes().getDirtinessState());
+
+        TabStateAttributes.setDirty(mTab);
+        assertEquals(DirtinessState.DIRTY, getAttributes().getDirtinessState());
+
+        // Null and destroyed tabs should not throw exception
+        TabStateAttributes.setDirty(null);
+        mTab.destroy();
+        TabStateAttributes.setDirty(mTab);
+    }
+
+    @Test
+    public void testUpdateIsDirty_nullTabUrl() {
+        TabStateAttributesRegistry.createAttributesForTab(
+                mTab, TabStateAttributes.StoreKey.class, TabCreationState.FROZEN_ON_RESTORE);
+        mTab.setUrl(null);
+        getAttributes().updateIsDirty(DirtinessState.DIRTY);
+        assertEquals(DirtinessState.DIRTY, getAttributes().getDirtinessState());
+    }
+
     private TabStateAttributes getAttributes() {
         return TabStateAttributesRegistry.getAttributesFor(mTab, TabStateAttributes.StoreKey.class);
     }

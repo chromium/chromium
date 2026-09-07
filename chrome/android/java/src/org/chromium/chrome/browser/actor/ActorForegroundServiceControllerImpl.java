@@ -255,6 +255,8 @@ public class ActorForegroundServiceControllerImpl implements ActorForegroundServ
     public void onTaskCompleted(int taskId) {
         ThreadUtils.assertOnUiThread();
         if (mBackgroundActuationManager != null) {
+            ActorTabStateHelper.persistTabsForCompletedTask(
+                    mBackgroundActuationManager.getBackgroundSessions(), taskId);
             mBackgroundActuationManager.onTaskCompleted(taskId);
         }
     }
