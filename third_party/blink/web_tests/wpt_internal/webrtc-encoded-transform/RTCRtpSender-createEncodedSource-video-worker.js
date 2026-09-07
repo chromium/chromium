@@ -76,7 +76,7 @@ self.onrtcsenderencodedsource = async (event) => {
     }
   }
 
-  senderInterval = setInterval(sendFrame, 500);
+  senderInterval = setInterval(sendFrame, 100);
 };
 
 self.onrtctransform = async (event) => {
@@ -109,10 +109,10 @@ self.onrtctransform = async (event) => {
       receivedBytes: Array.from(receivedBytes),
       sentBytes: Array.from(vp8_FrameData),
       contributingSources: metadata.contributingSources,
-      // Use a 3ms tolerance to account for differences due to possible changes
+      // Use a 20ms tolerance to account for differences due to possible changes
       // during transmission
       correctCaptureTime: metadata.captureTime !== undefined &&
-          Math.abs(time - metadata.captureTime) <= 3,
+          Math.abs(time - metadata.captureTime) <= 20,
     });
   } catch (e) {
     self.postMessage({error: 'Receiver error: ' + e.message});
