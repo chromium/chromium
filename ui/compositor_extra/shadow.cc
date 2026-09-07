@@ -210,8 +210,14 @@ void Shadow::RecreateShadowLayer() {
 }
 
 void Shadow::UpdateShadowAppearance() {
-  if (content_bounds_.IsEmpty())
+  // It is necessary to reset the layer bounds when content bounds are empty
+  // before returning; otherwise, if the content was previously non-empty, the
+  // shadow layers will retain their previous dimensions and remain visible as
+  // a stale, orphaned shadow.
+  if (content_bounds_.IsEmpty()) {
+    ClearLayerBounds();
     return;
+  }
 
   const int smaller_dimension =
       std::min(content_bounds_.width(), content_bounds_.height());
@@ -317,6 +323,15 @@ void Shadow::UpdateShadowAppearance() {
   shadow_layer()->UpdateNinePatchLayerBorder(
       gfx::Rect(aperture_insets.left(), aperture_insets.top(),
                 aperture_insets.width(), aperture_insets.height()));
+}
+
+void Shadow::ClearLayerBounds() {
+  layer()->SetBounds(gfx::Rect());
+  shadow_layer()->SetBounds(gfx::Rect());
+  if (fading_layer()) {
+    fading_layer()->SetBounds(gfx::Rect());
+  }
+  last_layer_bounds_ = gfx::Rect();
 }
 
 }  // namespace ui

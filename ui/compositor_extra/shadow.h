@@ -135,6 +135,9 @@ class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
   // |content_bounds_|, shadow style, and colors.
   void UpdateShadowAppearance();
 
+  // Clears the bounds of all shadow layers to empty.
+  void ClearLayerBounds();
+
   // The goal elevation, set when the transition animation starts. The elevation
   // dictates the shadow's display characteristics and is proportional to the
   // size of the blur and its offset. This may not match reality if the window
