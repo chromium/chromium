@@ -15,6 +15,10 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/test_future.h"
+#include "net/base/ip_endpoint.h"
+#include "net/base/net_errors.h"
+#include "net/base/transport_info.h"
 #include "net/http/http_basic_state.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_stream_parser.h"
@@ -24,6 +28,7 @@
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_test_util.h"
 #include "net/websockets/websocket_event_interface.h"
+#include "net/websockets/websocket_handshake_response_info.h"
 #include "net/websockets/websocket_handshake_stream_create_helper.h"
 #include "net/websockets/websocket_stream.h"
 
@@ -268,6 +273,102 @@ class TestWebSocketHandshakeStreamCreateHelper
  private:
   DummyConnectDelegate connect_delegate_;
   TestWebSocketStreamRequestAPI request_;
+};
+
+// An implementation of WebSocketEventInterface that waits for and records the
+// results of the connect.
+class ConnectTestingEventInterface : public WebSocketEventInterface {
+ public:
+  ConnectTestingEventInterface();
+
+  ConnectTestingEventInterface(const ConnectTestingEventInterface&) = delete;
+  ConnectTestingEventInterface& operator=(const ConnectTestingEventInterface&) =
+      delete;
+
+  ~ConnectTestingEventInterface() override;
+
+  void WaitForResponse() { on_response_future_.Get(); }
+
+  bool failed() const { return failed_; }
+
+  const std::unique_ptr<WebSocketHandshakeResponseInfo>& response() const {
+    return response_;
+  }
+
+  // Only set if the handshake failed, otherwise empty.
+  std::string failure_message() const;
+  int net_error() const { return net_error_; }
+  std::optional<int> response_code() const { return response_code_; }
+
+  std::string selected_subprotocol() const;
+
+  std::string extensions() const;
+
+  // Implementation of WebSocketEventInterface.
+  void OnCreateURLRequest(URLRequest* request) override;
+
+  int OnURLRequestConnected(URLRequest* request,
+                            const TransportInfo& info,
+                            CompletionOnceCallback callback) override;
+
+  void OnAddChannelResponse(
+      std::unique_ptr<WebSocketHandshakeResponseInfo> response,
+      const std::string& selected_subprotocol,
+      const std::string& extensions) override;
+
+  void OnDataFrame(bool fin,
+                   WebSocketMessageType type,
+                   base::span<const char> payload) override;
+
+  bool HasPendingDataFrames() override;
+
+  void OnSendDataFrameDone() override;
+
+  void OnClosingHandshake() override;
+
+  void OnDropChannel(bool was_clean,
+                     uint16_t code,
+                     const std::string& reason) override;
+
+  void OnFailChannel(const std::string& message,
+                     int net_error,
+                     std::optional<int> response_code) override;
+
+  void OnStartOpeningHandshake(
+      std::unique_ptr<WebSocketHandshakeRequestInfo> request) override;
+
+  void OnSSLCertificateError(
+      std::unique_ptr<SSLErrorCallbacks> ssl_error_callbacks,
+      const GURL& url,
+      int net_error,
+      const SSLInfo& ssl_info,
+      bool fatal) override;
+
+  int OnAuthRequired(const AuthChallengeInfo& auth_info,
+                     scoped_refptr<HttpResponseHeaders> response_headers,
+                     const IPEndPoint& remote_endpoint,
+                     base::OnceCallback<void(const AuthCredentials*)> callback,
+                     std::optional<AuthCredentials>* credentials) override;
+
+  std::string GetDataFramePayload();
+
+  void WaitForDropChannel() { drop_channel_future_.Get(); }
+
+ private:
+  void SetReceivedMessageFuture(std::string received_message);
+
+  // failed_ is true if the handshake failed (i.e., OnFailChannel was called).
+  bool failed_ = false;
+  std::unique_ptr<WebSocketHandshakeResponseInfo> response_;
+  std::string selected_subprotocol_;
+  std::string extensions_;
+  std::string failure_message_;
+  int net_error_ = OK;
+  std::optional<int> response_code_;
+
+  base::test::TestFuture<std::string> received_message_future_;
+  base::test::TestFuture<void> drop_channel_future_;
+  base::test::TestFuture<void> on_response_future_;
 };
 
 }  // namespace net

@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/timer/timer.h"
+#include "net/base/network_handle.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/log/net_log_with_source.h"
@@ -129,7 +130,7 @@ void WebSocketStreamCreateTestBase::CreateAndConnectStream(
       WebSocketPriorityHint::kDefault, TRAFFIC_ANNOTATION_FOR_TESTS,
       std::move(connect_delegate),
       timer ? std::move(timer) : std::make_unique<base::OneShotTimer>(),
-      std::move(api_delegate));
+      std::move(api_delegate), handles::kInvalidNetworkHandle);
 }
 
 std::vector<HeaderKeyValuePair>

@@ -144,7 +144,8 @@ class WebSocketStreamRequestImpl : public WebSocketStreamRequestAPI {
       WebSocketPriorityHint priority_hint,
       NetworkTrafficAnnotationTag traffic_annotation,
       std::unique_ptr<WebSocketStream::ConnectDelegate> connect_delegate,
-      std::unique_ptr<WebSocketStreamRequestAPI> api_delegate)
+      std::unique_ptr<WebSocketStreamRequestAPI> api_delegate,
+      handles::NetworkHandle target_network)
       : delegate_(this),
         connect_delegate_(std::move(connect_delegate)),
         url_request_(context->CreateRequest(
@@ -152,9 +153,7 @@ class WebSocketStreamRequestImpl : public WebSocketStreamRequestAPI {
             WebSocketPriorityHintToRequestPriority(priority_hint),
             &delegate_,
             traffic_annotation,
-            // TODO(crbug.com/527777927): Support targeting a specific network
-            // for WebSockets.
-            net::handles::kInvalidNetworkHandle,
+            target_network,
             /*is_for_websockets=*/true)),
         api_delegate_(std::move(api_delegate)) {
     DCHECK_EQ(IsolationInfo::RequestType::kOther,
@@ -562,11 +561,13 @@ std::unique_ptr<WebSocketStreamRequest> WebSocketStream::CreateAndConnectStream(
     const NetLogWithSource& net_log,
     WebSocketPriorityHint priority_hint,
     NetworkTrafficAnnotationTag traffic_annotation,
-    std::unique_ptr<ConnectDelegate> connect_delegate) {
+    std::unique_ptr<ConnectDelegate> connect_delegate,
+    handles::NetworkHandle target_network) {
   auto request = std::make_unique<WebSocketStreamRequestImpl>(
       socket_url, requested_subprotocols, url_request_context, origin,
       storage_access_api_status, isolation_info, additional_headers,
-      priority_hint, traffic_annotation, std::move(connect_delegate), nullptr);
+      priority_hint, traffic_annotation, std::move(connect_delegate), nullptr,
+      target_network);
   request->Start(std::make_unique<base::OneShotTimer>());
   return std::move(request);
 }
@@ -585,12 +586,13 @@ WebSocketStream::CreateAndConnectStreamForTesting(
     NetworkTrafficAnnotationTag traffic_annotation,
     std::unique_ptr<WebSocketStream::ConnectDelegate> connect_delegate,
     std::unique_ptr<base::OneShotTimer> timer,
-    std::unique_ptr<WebSocketStreamRequestAPI> api_delegate) {
+    std::unique_ptr<WebSocketStreamRequestAPI> api_delegate,
+    handles::NetworkHandle target_network) {
   auto request = std::make_unique<WebSocketStreamRequestImpl>(
       socket_url, requested_subprotocols, url_request_context, origin,
       storage_access_api_status, isolation_info, additional_headers,
       priority_hint, traffic_annotation, std::move(connect_delegate),
-      std::move(api_delegate));
+      std::move(api_delegate), target_network);
   request->Start(std::move(timer));
   return std::move(request);
 }

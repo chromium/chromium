@@ -36,6 +36,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/isolation_info.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_handle.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/http/http_request_headers.h"
@@ -773,7 +774,8 @@ struct WebSocketStreamCreationCallbackArgumentSaver {
       const NetLogWithSource& net_log,
       WebSocketPriorityHint new_priority_hint,
       NetworkTrafficAnnotationTag traffic_annotation,
-      std::unique_ptr<WebSocketStream::ConnectDelegate> new_connect_delegate) {
+      std::unique_ptr<WebSocketStream::ConnectDelegate> new_connect_delegate,
+      handles::NetworkHandle new_target_network) {
     socket_url = new_socket_url;
     origin = new_origin;
     storage_access_api_status = new_storage_access_api_status;
@@ -781,6 +783,7 @@ struct WebSocketStreamCreationCallbackArgumentSaver {
     url_request_context = new_url_request_context;
     connect_delegate = std::move(new_connect_delegate);
     priority_hint = new_priority_hint;
+    target_network = new_target_network;
     return std::make_unique<MockWebSocketStreamRequest>();
   }
 
@@ -791,6 +794,7 @@ struct WebSocketStreamCreationCallbackArgumentSaver {
   raw_ptr<URLRequestContext> url_request_context;
   std::unique_ptr<WebSocketStream::ConnectDelegate> connect_delegate;
   WebSocketPriorityHint priority_hint = WebSocketPriorityHint::kDefault;
+  handles::NetworkHandle target_network = handles::kInvalidNetworkHandle;
 };
 
 std::vector<char> AsVector(std::string_view s) {
@@ -835,7 +839,8 @@ class WebSocketChannelTest : public TestWithTaskEnvironment {
         connect_data_.isolation_info, HttpRequestHeaders(),
         WebSocketPriorityHint::kDefault, TRAFFIC_ANNOTATION_FOR_TESTS,
         base::BindOnce(&WebSocketStreamCreationCallbackArgumentSaver::Create,
-                       base::Unretained(&connect_data_.argument_saver)));
+                       base::Unretained(&connect_data_.argument_saver)),
+        connect_data_.target_network);
   }
 
   // Same as CreateChannelAndConnect(), but calls the on_success callback as
@@ -889,6 +894,8 @@ class WebSocketChannelTest : public TestWithTaskEnvironment {
         StorageAccessApiStatus::kNone;
     // IsolationInfo created from the origin.
     net::IsolationInfo isolation_info;
+    // Target network to connect through.
+    handles::NetworkHandle target_network = handles::kInvalidNetworkHandle;
 
     WebSocketStreamCreationCallbackArgumentSaver argument_saver;
   };
@@ -1006,12 +1013,14 @@ class WebSocketChannelReceiveUtf8Test : public WebSocketChannelStreamTest {
 // Simple test that everything that should be passed to the stream creation
 // callback is passed to the argument saver.
 TEST_F(WebSocketChannelTest, EverythingIsPassedToTheCreatorFunction) {
+  constexpr handles::NetworkHandle kTargetNetwork = 1;
   connect_data_.socket_url = GURL("ws://example.com/test");
   connect_data_.origin = url::Origin::Create(GURL("http://example.com"));
   connect_data_.isolation_info = net::IsolationInfo::Create(
       IsolationInfo::RequestType::kOther, connect_data_.origin,
       connect_data_.origin, SiteForCookies::FromOrigin(connect_data_.origin));
   connect_data_.requested_subprotocols.push_back("Sinbad");
+  connect_data_.target_network = kTargetNetwork;
 
   CreateChannelAndConnect();
 
@@ -1027,6 +1036,7 @@ TEST_F(WebSocketChannelTest, EverythingIsPassedToTheCreatorFunction) {
             actual.storage_access_api_status);
   EXPECT_TRUE(
       connect_data_.isolation_info.IsEqualForTesting(actual.isolation_info));
+  EXPECT_EQ(connect_data_.target_network, actual.target_network);
 }
 
 TEST_F(WebSocketChannelEventInterfaceTest, ConnectSuccessReported) {

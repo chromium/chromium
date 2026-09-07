@@ -12,25 +12,30 @@
 
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
+#include "net/base/auth.h"
 #include "net/base/net_errors.h"
+#include "net/base/transport_info.h"
 #include "net/http/http_network_session.h"
+#include "net/http/http_response_headers.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
 #include "net/socket/socket_test_util.h"
+#include "net/ssl/ssl_info.h"
 #include "net/third_party/quiche/src/quiche/http2/core/spdy_protocol.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/websockets/websocket_basic_handshake_stream.h"
+#include "net/websockets/websocket_handshake_request_info.h"
 #include "url/origin.h"
 
 namespace net {
-class AuthChallengeInfo;
-class AuthCredentials;
-class HttpResponseHeaders;
 class WebSocketHttp2HandshakeStream;
 class WebSocketHttp3HandshakeStream;
 
@@ -309,4 +314,116 @@ void TestWebSocketStreamRequestAPI::OnHttp2HandshakeStreamCreated(
 
 void TestWebSocketStreamRequestAPI::OnHttp3HandshakeStreamCreated(
     WebSocketHttp3HandshakeStream* handshake_stream) {}
+
+ConnectTestingEventInterface::ConnectTestingEventInterface() = default;
+ConnectTestingEventInterface::~ConnectTestingEventInterface() = default;
+
+std::string ConnectTestingEventInterface::failure_message() const {
+  return failure_message_;
+}
+
+std::string ConnectTestingEventInterface::selected_subprotocol() const {
+  return selected_subprotocol_;
+}
+
+std::string ConnectTestingEventInterface::extensions() const {
+  return extensions_;
+}
+
+void ConnectTestingEventInterface::OnCreateURLRequest(URLRequest* request) {}
+
+int ConnectTestingEventInterface::OnURLRequestConnected(
+    net::URLRequest* request,
+    const net::TransportInfo& info,
+    net::CompletionOnceCallback callback) {
+  return OK;
+}
+
+void ConnectTestingEventInterface::OnAddChannelResponse(
+    std::unique_ptr<WebSocketHandshakeResponseInfo> response,
+    const std::string& selected_subprotocol,
+    const std::string& extensions) {
+  response_ = std::move(response);
+  selected_subprotocol_ = selected_subprotocol;
+  extensions_ = extensions;
+  on_response_future_.SetValue();
+}
+
+void ConnectTestingEventInterface::OnDataFrame(bool fin,
+                                               WebSocketMessageType type,
+                                               base::span<const char> payload) {
+  DVLOG(3) << "Received WebSocket data frame with message: "
+           << base::as_string_view(payload);
+  SetReceivedMessageFuture(std::string(base::as_string_view(payload)));
+}
+
+bool ConnectTestingEventInterface::HasPendingDataFrames() {
+  return false;
+}
+
+void ConnectTestingEventInterface::OnSendDataFrameDone() {}
+
+void ConnectTestingEventInterface::OnClosingHandshake() {
+  DVLOG(3) << "OnClosingHandshake() invoked.";
+}
+
+void ConnectTestingEventInterface::OnDropChannel(bool was_clean,
+                                                 uint16_t code,
+                                                 const std::string& reason) {
+  DVLOG(3) << "OnDropChannel() invoked, was_clean: " << was_clean
+           << ", code: " << code << ", reason: " << reason;
+  if (was_clean) {
+    drop_channel_future_.SetValue();
+  } else {
+    DVLOG(1) << "OnDropChannel() did not receive a clean close.";
+    NOTREACHED();
+  }
+}
+
+void ConnectTestingEventInterface::OnFailChannel(
+    const std::string& message,
+    int net_error,
+    std::optional<int> response_code) {
+  DVLOG(3) << "OnFailChannel invoked with message: " << message;
+  failed_ = true;
+  failure_message_ = message;
+  net_error_ = net_error;
+  response_code_ = response_code;
+  on_response_future_.SetValue();
+}
+
+void ConnectTestingEventInterface::OnStartOpeningHandshake(
+    std::unique_ptr<WebSocketHandshakeRequestInfo> request) {}
+
+void ConnectTestingEventInterface::OnSSLCertificateError(
+    std::unique_ptr<SSLErrorCallbacks> ssl_error_callbacks,
+    const GURL& url,
+    int net_error,
+    const SSLInfo& ssl_info,
+    bool fatal) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&SSLErrorCallbacks::CancelSSLRequest,
+                                base::Owned(ssl_error_callbacks.release()),
+                                ERR_SSL_PROTOCOL_ERROR, /*ssl_info=*/nullptr));
+}
+
+int ConnectTestingEventInterface::OnAuthRequired(
+    const AuthChallengeInfo& auth_info,
+    scoped_refptr<HttpResponseHeaders> response_headers,
+    const IPEndPoint& remote_endpoint,
+    base::OnceCallback<void(const AuthCredentials*)> callback,
+    std::optional<AuthCredentials>* credentials) {
+  *credentials = std::nullopt;
+  return OK;
+}
+
+void ConnectTestingEventInterface::SetReceivedMessageFuture(
+    std::string received_message) {
+  received_message_future_.SetValue(received_message);
+}
+
+std::string ConnectTestingEventInterface::GetDataFramePayload() {
+  return received_message_future_.Get();
+}
+
 }  // namespace net

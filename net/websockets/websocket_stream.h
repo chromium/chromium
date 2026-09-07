@@ -16,6 +16,7 @@
 #include "net/base/completion_once_callback.h"
 #include "net/base/isolation_info.h"
 #include "net/base/net_export.h"
+#include "net/base/network_handle.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/log/net_log_with_source.h"
 #include "net/storage_access_api/status.h"
@@ -176,7 +177,8 @@ class NET_EXPORT_PRIVATE WebSocketStream {
       const NetLogWithSource& net_log,
       WebSocketPriorityHint priority_hint,
       NetworkTrafficAnnotationTag traffic_annotation,
-      std::unique_ptr<ConnectDelegate> connect_delegate);
+      std::unique_ptr<ConnectDelegate> connect_delegate,
+      handles::NetworkHandle target_network);
 
   // Alternate version of CreateAndConnectStream() for testing use only. It
   // takes |timer| as the handshake timeout timer, and for methods on
@@ -196,7 +198,8 @@ class NET_EXPORT_PRIVATE WebSocketStream {
       NetworkTrafficAnnotationTag traffic_annotation,
       std::unique_ptr<ConnectDelegate> connect_delegate,
       std::unique_ptr<base::OneShotTimer> timer,
-      std::unique_ptr<WebSocketStreamRequestAPI> api_delegate);
+      std::unique_ptr<WebSocketStreamRequestAPI> api_delegate,
+      handles::NetworkHandle target_network);
 
   WebSocketStream(const WebSocketStream&) = delete;
   WebSocketStream& operator=(const WebSocketStream&) = delete;

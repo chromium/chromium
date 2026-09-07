@@ -30,6 +30,7 @@
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_handle.h"
 #include "net/cookies/static_cookie_policy.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
@@ -791,7 +792,9 @@ void WebSocket::AddChannel(
       (options_ & mojom::kWebSocketOptionMaximumPriority)
           ? net::WebSocketPriorityHint::kMaximum
           : net::WebSocketPriorityHint::kDefault,
-      traffic_annotation_);
+      traffic_annotation_,
+      // TODO(crbug.com/527777927): Support targeting a network in WebSockets.
+      net::handles::kInvalidNetworkHandle);
 }
 
 void WebSocket::OnWritable(MojoResult result,

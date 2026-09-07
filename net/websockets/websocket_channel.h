@@ -23,6 +23,7 @@
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "net/base/net_export.h"
+#include "net/base/network_handle.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_with_source.h"
 #include "net/storage_access_api/status.h"
@@ -72,7 +73,8 @@ class NET_EXPORT WebSocketChannel {
       const NetLogWithSource&,
       WebSocketPriorityHint,
       NetworkTrafficAnnotationTag,
-      std::unique_ptr<WebSocketStream::ConnectDelegate>)>
+      std::unique_ptr<WebSocketStream::ConnectDelegate>,
+      handles::NetworkHandle)>
       WebSocketStreamRequestCreationCallback;
 
   // Methods which return a value of type ChannelState may delete |this|. If the
@@ -100,7 +102,8 @@ class NET_EXPORT WebSocketChannel {
       const IsolationInfo& isolation_info,
       const HttpRequestHeaders& additional_headers,
       WebSocketPriorityHint priority_hint,
-      NetworkTrafficAnnotationTag traffic_annotation);
+      NetworkTrafficAnnotationTag traffic_annotation,
+      handles::NetworkHandle target_network);
 
   // Sends a data frame to the remote side. |fin| indicates the last frame in a
   // message, equivalent to "FIN" as specified in section 5.2 of RFC6455.
@@ -144,7 +147,8 @@ class NET_EXPORT WebSocketChannel {
       const HttpRequestHeaders& additional_headers,
       WebSocketPriorityHint priority_hint,
       NetworkTrafficAnnotationTag traffic_annotation,
-      WebSocketStreamRequestCreationCallback callback);
+      WebSocketStreamRequestCreationCallback callback,
+      handles::NetworkHandle target_network);
 
   // The default timeout for the closing handshake is a sensible value (see
   // kClosingHandshakeTimeoutSeconds in websocket_channel.cc). However, we can
@@ -219,7 +223,8 @@ class NET_EXPORT WebSocketChannel {
       const HttpRequestHeaders& additional_headers,
       WebSocketPriorityHint priority_hint,
       NetworkTrafficAnnotationTag traffic_annotation,
-      WebSocketStreamRequestCreationCallback callback);
+      WebSocketStreamRequestCreationCallback callback,
+      handles::NetworkHandle target_network);
 
   // Called when a URLRequest is created for handshaking.
   void OnCreateURLRequest(URLRequest* request);

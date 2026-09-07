@@ -310,11 +310,12 @@ void WebSocketChannel::SendAddChannelRequest(
     const IsolationInfo& isolation_info,
     const HttpRequestHeaders& additional_headers,
     WebSocketPriorityHint priority_hint,
-    NetworkTrafficAnnotationTag traffic_annotation) {
+    NetworkTrafficAnnotationTag traffic_annotation,
+    handles::NetworkHandle target_network) {
   SendAddChannelRequestWithSuppliedCallback(
       socket_url, requested_subprotocols, origin, storage_access_api_status,
       isolation_info, additional_headers, priority_hint, traffic_annotation,
-      base::BindOnce(&WebSocketStream::CreateAndConnectStream));
+      base::BindOnce(&WebSocketStream::CreateAndConnectStream), target_network);
 }
 
 void WebSocketChannel::SetState(State new_state) {
@@ -449,11 +450,12 @@ void WebSocketChannel::SendAddChannelRequestForTesting(
     const HttpRequestHeaders& additional_headers,
     WebSocketPriorityHint priority_hint,
     NetworkTrafficAnnotationTag traffic_annotation,
-    WebSocketStreamRequestCreationCallback callback) {
+    WebSocketStreamRequestCreationCallback callback,
+    handles::NetworkHandle target_network) {
   SendAddChannelRequestWithSuppliedCallback(
       socket_url, requested_subprotocols, origin, storage_access_api_status,
       isolation_info, additional_headers, priority_hint, traffic_annotation,
-      std::move(callback));
+      std::move(callback), target_network);
 }
 
 void WebSocketChannel::SetClosingHandshakeTimeoutForTesting(
@@ -475,7 +477,8 @@ void WebSocketChannel::SendAddChannelRequestWithSuppliedCallback(
     const HttpRequestHeaders& additional_headers,
     WebSocketPriorityHint priority_hint,
     NetworkTrafficAnnotationTag traffic_annotation,
-    WebSocketStreamRequestCreationCallback callback) {
+    WebSocketStreamRequestCreationCallback callback,
+    handles::NetworkHandle target_network) {
   DCHECK_EQ(FRESHLY_CONSTRUCTED, state_);
   CHECK(socket_url.SchemeIsWSOrWSS());
 
@@ -485,7 +488,7 @@ void WebSocketChannel::SendAddChannelRequestWithSuppliedCallback(
       socket_url_, requested_subprotocols, origin, storage_access_api_status,
       isolation_info, additional_headers, url_request_context_.get(),
       NetLogWithSource(), priority_hint, traffic_annotation,
-      std::move(connect_delegate));
+      std::move(connect_delegate), target_network);
   SetState(CONNECTING);
 }
 
