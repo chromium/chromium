@@ -27,6 +27,8 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.app.tabmodel.TabCacheManager;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileResolver;
 import org.chromium.chrome.browser.profiles.ProfileResolverJni;
@@ -44,10 +46,10 @@ public class BackgroundTabPoolManagerTest {
     private static final @TabId int TAB_ID_1 = 101;
     private static final @TabId int PLACEHOLDER_ID = 999;
 
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    public final @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private ProfileResolver.Natives mProfileResolverNatives;
-    @Mock private Profile mProfile;
+    private @Mock ProfileResolver.Natives mProfileResolverNatives;
+    private @Mock Profile mProfile;
 
     @Before
     public void setUp() {
@@ -72,10 +74,56 @@ public class BackgroundTabPoolManagerTest {
         assertNotNull(pool1);
         assertEquals(1, BackgroundTabPoolManager.getLeaseCountForTesting(mProfile));
         assertSame(pool1, BackgroundTabPoolManager.getPoolForTesting(mProfile));
+        assertEquals(
+                "mock_token",
+                ChromeSharedPreferences.getInstance()
+                        .readString(
+                                ChromePreferenceKeys.BACKGROUND_TAB_POOL_LAST_PROFILE_TOKEN, null));
 
         BackgroundTabPool pool2 = BackgroundTabPoolManager.acquire(mProfile);
         assertSame(pool1, pool2);
         assertEquals(2, BackgroundTabPoolManager.getLeaseCountForTesting(mProfile));
+    }
+
+    @Test
+    public void testAcquireWithProfileTokenDirectly() {
+        BackgroundTabPool pool = BackgroundTabPoolManager.acquire("custom_token");
+        assertNotNull(pool);
+        assertEquals("custom_token", pool.getProfileToken());
+
+        BackgroundTabPool poolAgain = BackgroundTabPoolManager.acquire("custom_token");
+        assertSame(pool, poolAgain);
+        BackgroundTabPoolManager.release(pool);
+        BackgroundTabPoolManager.release(poolAgain);
+    }
+
+    @Test
+    public void testRestorePoolIfTokenExists() {
+        assertNull(BackgroundTabPoolManager.restorePoolIfTokenExists());
+
+        ChromeSharedPreferences.getInstance()
+                .writeString(
+                        ChromePreferenceKeys.BACKGROUND_TAB_POOL_LAST_PROFILE_TOKEN,
+                        "persisted_token");
+
+        BackgroundTabPool restored = BackgroundTabPoolManager.restorePoolIfTokenExists();
+        assertNotNull(restored);
+        assertEquals("persisted_token", restored.getProfileToken());
+
+        BackgroundTabPoolManager.release(restored);
+    }
+
+    @Test
+    public void testClearLastUsedProfileToken() {
+        ChromeSharedPreferences.getInstance()
+                .writeString(
+                        ChromePreferenceKeys.BACKGROUND_TAB_POOL_LAST_PROFILE_TOKEN,
+                        "persisted_token");
+        BackgroundTabPoolManager.clearLastUsedProfileToken();
+        assertNull(
+                ChromeSharedPreferences.getInstance()
+                        .readString(
+                                ChromePreferenceKeys.BACKGROUND_TAB_POOL_LAST_PROFILE_TOKEN, null));
     }
 
     @Test
@@ -102,6 +150,42 @@ public class BackgroundTabPoolManagerTest {
         assertEquals(0, BackgroundTabPoolManager.getLeaseCountForTesting(mProfile));
         assertNotNull(BackgroundTabPoolManager.getPoolForTesting(mProfile));
         assertSame(pool, BackgroundTabPoolManager.getPoolForTesting(mProfile));
+    }
+
+    @Test
+    public void testReleaseDoesNotDestroyOrClearTokenWhenColdTabsExist() {
+        BackgroundTabPool pool1 = new BackgroundTabPool("mock_token", () -> {});
+        Tab tab = createMockTab(TAB_ID_1);
+        TabState tabState = createMockTabState();
+        TabStateExtractor.setTabStateForTesting(TAB_ID_1, tabState);
+
+        pool1.addLiveTab(new LiveBackgroundTab(tab, PLACEHOLDER_ID, /* taskId= */ null));
+        // Destroy the pool directly so tab state remains persisted in cache
+        pool1.destroy();
+
+        // Acquire new pool for same profile - it has cold tabs in cache
+        BackgroundTabPool pool2 = BackgroundTabPoolManager.acquire(mProfile);
+        assertFalse(pool2.isEmpty());
+        assertFalse(pool2.getAllTabIds().isEmpty());
+
+        BackgroundTabPoolManager.release(pool2);
+        // Lease count is 0, but cached tabs exist, so pool is retained and token is not cleared
+        assertEquals(0, BackgroundTabPoolManager.getLeaseCountForTesting(mProfile));
+        assertNotNull(BackgroundTabPoolManager.getPoolForTesting(mProfile));
+        assertEquals(
+                "mock_token",
+                ChromeSharedPreferences.getInstance()
+                        .readString(
+                                ChromePreferenceKeys.BACKGROUND_TAB_POOL_LAST_PROFILE_TOKEN, null));
+
+        // When cache is cleared, pool is emptied and destroyed, and token is cleared
+        pool2.clearAll();
+        ShadowLooper.idleMainLooper();
+        assertNull(BackgroundTabPoolManager.getPoolForTesting(mProfile));
+        assertNull(
+                ChromeSharedPreferences.getInstance()
+                        .readString(
+                                ChromePreferenceKeys.BACKGROUND_TAB_POOL_LAST_PROFILE_TOKEN, null));
     }
 
     @Test
