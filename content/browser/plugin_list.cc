@@ -137,7 +137,9 @@ void PluginList::GetPluginInfoArray(
     std::vector<WebPluginInfo>* info,
     std::vector<std::string>* actual_mime_types) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
-  CHECK(mime_type == base::ToLowerASCII(mime_type), base::NotFatalUntil::M159);
+  // TODO(crbug.com/557535452): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(mime_type == base::ToLowerASCII(mime_type));
   CHECK(info, base::NotFatalUntil::M159);
 
   info->clear();
