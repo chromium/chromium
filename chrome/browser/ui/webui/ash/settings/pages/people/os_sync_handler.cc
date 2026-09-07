@@ -8,13 +8,15 @@
 #include "ash/constants/chrome_webui_url_constants.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "base/auto_reset.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/webui/ash/settings/pref_names.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chromeos/ash/components/signin/identity_manager_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/features.h"
@@ -111,9 +113,15 @@ void OSSyncHandler::HandleDidNavigateAwayFromOsSyncPage(
 
 void OSSyncHandler::HandleOpenBrowserSyncSettings(const base::ListValue& args) {
   const GURL settings_url(ash::chrome_urls::kChromeUISettingsURL);
+  // Guest sessions substitute their off-the-record profile for `profile_`,
+  // but the AccountId is only ever annotated on the original profile --
+  // unwrap to it before looking up the annotation.
+  signin::IdentityManager* identity_manager =
+      ash::IdentityManagerProvider::Get().Find(CHECK_DEREF(
+          ash::AnnotatedAccountId::Get(profile_->GetOriginalProfile())));
   ash::NewWindowDelegate::GetInstance()->OpenUrl(
-      IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount(
-          signin::ConsentLevel::kSync) ||
+      (identity_manager &&
+       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) ||
               !syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
           ? settings_url.Resolve(ash::chrome_urls::kSyncSetupSubPage)
           : settings_url.Resolve(ash::chrome_urls::kAccountSubPage),

@@ -19,7 +19,10 @@
 #include "chrome/browser/ui/webui/ash/settings/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/test_chrome_web_ui_controller_factory.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chromeos/ash/components/signin/fake_identity_manager_provider.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
@@ -128,8 +131,21 @@ class OsSyncHandlerTest : public ChromeRenderViewHostTestHarness {
     // Sign in the user.
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
-    identity_test_env_adaptor_->identity_test_env()->SetPrimaryAccount(
-        "test@gmail.com", primary_account_consent_level_);
+    CoreAccountInfo account_info =
+        identity_test_env_adaptor_->identity_test_env()->SetPrimaryAccount(
+            "test@gmail.com", primary_account_consent_level_);
+
+    // OnProfileCreationStarted() doesn't run in this test, so nothing else
+    // annotates `profile()` with its AccountId, nor registers an
+    // ash::IdentityManagerProvider; do both here.
+    const AccountId account_id =
+        AccountId::FromUserEmailGaiaId(account_info.email, account_info.gaia);
+    ash::AnnotatedAccountId::Set(profile(), account_id);
+    identity_manager_provider_ =
+        std::make_unique<ash::FakeIdentityManagerProvider>();
+    identity_manager_provider_->SetIdentityManagerForAccount(
+        account_id,
+        identity_test_env_adaptor_->identity_test_env()->identity_manager());
 
     sync_service_ = static_cast<syncer::TestSyncService*>(
         SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
@@ -145,6 +161,7 @@ class OsSyncHandlerTest : public ChromeRenderViewHostTestHarness {
   }
 
   void TearDown() override {
+    identity_manager_provider_.reset();
     web_ui_.reset();
     identity_test_env_adaptor_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
@@ -187,6 +204,7 @@ class OsSyncHandlerTest : public ChromeRenderViewHostTestHarness {
   raw_ptr<syncer::SyncUserSettings, DanglingUntriaged> user_settings_ = nullptr;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
+  std::unique_ptr<ash::FakeIdentityManagerProvider> identity_manager_provider_;
   std::unique_ptr<TestWebUI> web_ui_;
   TestWebUIProvider test_web_ui_provider_;
   std::unique_ptr<TestChromeWebUIControllerFactory> test_web_ui_factory_;
