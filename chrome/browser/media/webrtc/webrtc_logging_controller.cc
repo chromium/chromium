@@ -805,7 +805,7 @@ bool WebRtcLoggingController::IsWebRtcTextLogAllowed(
 
   const Profile* profile = Profile::FromBrowserContext(browser_context);
   DCHECK(profile);
-  if (profile->IsIncognitoProfile()) {
+  if (profile->IsPrimaryOTRProfileWithRegularParent()) {
     return false;
   }
   const PrefService* prefs = profile->GetPrefs();
