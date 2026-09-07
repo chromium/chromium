@@ -9563,10 +9563,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"pwa-restore-backend", flag_descriptions::kPwaRestoreBackendName,
-     flag_descriptions::kPwaRestoreBackendDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(syncer::kWebApkBackupAndRestoreBackend)},
-
     {"pwa-restore-ui", flag_descriptions::kPwaRestoreUiName,
      flag_descriptions::kPwaRestoreUiDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kPwaRestoreUi)},

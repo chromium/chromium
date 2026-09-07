@@ -34,9 +34,6 @@ class ThemeSpecifics;
 class ThemeAndroidSpecifics;
 }  // namespace sync_pb
 
-namespace webapk {
-class WebApkSyncService;
-}  // namespace webapk
 
 #if BUILDFLAG(IS_ANDROID)
 class NtpAndroidCustomBackgroundService;
@@ -135,7 +132,6 @@ class ChromeSyncControllerBuilder {
 #if BUILDFLAG(IS_ANDROID)
   void SetNtpAndroidCustomBackgroundService(
       NtpAndroidCustomBackgroundService* ntp_android_custom_background_service);
-  void SetWebApkSyncService(webapk::WebApkSyncService* web_apk_sync_service);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -217,7 +213,6 @@ class ChromeSyncControllerBuilder {
 #if BUILDFLAG(IS_ANDROID)
   SafeOptional<raw_ptr<NtpAndroidCustomBackgroundService>>
       ntp_android_custom_background_service_;
-  SafeOptional<raw_ptr<webapk::WebApkSyncService>> web_apk_sync_service_;
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)

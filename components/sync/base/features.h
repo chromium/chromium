@@ -176,11 +176,6 @@ inline constexpr base::FeatureParam<double>
         "SyncIncreaseNudgeDelayForSingleClientFactor", 2.0};
 
 #if BUILDFLAG(IS_ANDROID)
-// If enabled, WebAPK data will be synced for Backup&Restore purposes.
-BASE_DECLARE_FEATURE(kWebApkBackupAndRestoreBackend);
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
 // Flag to test different alternatives for the passwords sync error message
 // content.
 BASE_DECLARE_FEATURE(kSyncEnablePasswordsSyncErrorMessageAlternative);

@@ -316,7 +316,6 @@
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/site_token_provider/features.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
-#include "components/sync/base/features.h"
 #include "content/public/common/buildflags.h"
 #include "crypto/crypto_buildflags.h"
 #include "extensions/buildflags/buildflags.h"
@@ -346,7 +345,6 @@
 #include "chrome/browser/android/tab_state_storage_service_factory.h"
 #include "chrome/browser/android/thin_webview/chrome_thin_webview_initializer.h"
 #include "chrome/browser/android/webapk/webapk_install_service_factory.h"
-#include "chrome/browser/android/webapk/webapk_sync_service_factory.h"
 #include "chrome/browser/autofill/android/android_sms_otp_backend_factory.h"
 #include "chrome/browser/auxiliary_search/auxiliary_search_donation_service_factory.h"
 #include "chrome/browser/auxiliary_search/auxiliary_search_provider.h"
@@ -1609,9 +1607,6 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
 #if BUILDFLAG(IS_ANDROID)
   WebApkInstallServiceFactory::GetInstance();
-  if (base::FeatureList::IsEnabled(syncer::kWebApkBackupAndRestoreBackend)) {
-    webapk::WebApkSyncServiceFactory::GetInstance();
-  }
 #endif
 
   WebDataServiceFactory::GetInstance();

@@ -8,13 +8,7 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/feature_list.h"
-#include "chrome/browser/android/webapk/webapk_sync_service.h"
-#include "chrome/browser/android/webapk/webapk_sync_service_factory.h"
-#include "chrome/browser/flags/android/chrome_feature_list.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "components/sync/base/features.h"
+#include "base/notreached.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/webapps/browser/android/pwa_restore_bottom_sheet_mediator_jni_headers/PwaRestoreBottomSheetMediator_jni.h"
@@ -27,17 +21,8 @@ namespace webapk {
 static int64_t JNI_PwaRestoreBottomSheetMediator_Initialize(
     JNIEnv* env,
     const JavaRef<jobject>& java_ref) {
-  Profile* profile = ProfileManager::GetLastUsedProfile();
-  if (profile == nullptr) {
-    return 0;
-  }
-
-  WebApkRestoreManager* restore_manager =
-      WebApkSyncServiceFactory::GetForProfile(profile)
-          ->GetWebApkRestoreManager();
-
-  return reinterpret_cast<intptr_t>(
-      new PwaRestoreBottomSheetMediator(java_ref, restore_manager));
+  // TODO(crbug.com/400662034): Delete this.
+  NOTREACHED();
 }
 
 PwaRestoreBottomSheetMediator::PwaRestoreBottomSheetMediator(

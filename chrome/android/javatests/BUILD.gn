@@ -1653,7 +1653,6 @@ android_library("chrome_test_java_org.chromium.chrome.browser.webapps") {
     "src/org/chromium/chrome/browser/webapps/AddToHomescreenCurrentPageVerifierTest.java",
     "src/org/chromium/chrome/browser/webapps/AddToHomescreenInstallTest.java",
     "src/org/chromium/chrome/browser/webapps/PwaInstallBottomSheetIntegrationTest.java",
-    "src/org/chromium/chrome/browser/webapps/PwaRestoreBottomSheetIntegrationTest.java",
     "src/org/chromium/chrome/browser/webapps/PwaUniversalInstallBottomSheetIntegrationTest.java",
     "src/org/chromium/chrome/browser/webapps/WebApkActivityTest.java",
     "src/org/chromium/chrome/browser/webapps/WebApkCurrentPageVerifierTest.java",

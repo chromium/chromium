@@ -1454,11 +1454,7 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
     allowed_types.Put(syncer::SEARCH_ENGINES);
   }
 
-#if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(syncer::kWebApkBackupAndRestoreBackend)) {
-    allowed_types.Put(syncer::WEB_APKS);
-  }
-#else   // BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(syncer::kSeparateLocalAndAccountThemes)) {
     allowed_types.Put(syncer::THEMES);
   }
@@ -1467,7 +1463,7 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
   allowed_types.Put(syncer::INCOMING_PASSWORD_SHARING_INVITATION);
   allowed_types.Put(syncer::OUTGOING_PASSWORD_SHARING_INVITATION);
   allowed_types.Put(syncer::WEBAUTHN_CREDENTIAL);
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(

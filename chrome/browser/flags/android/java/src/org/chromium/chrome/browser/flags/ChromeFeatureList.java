@@ -881,7 +881,6 @@ public abstract class ChromeFeatureList {
             "VirtualKeyboardResizesContentTransientOvershootFix";
     public static final String VIRTUAL_KEYBOARD_TRANSIENT_INNER_HEIGHT_FIX =
             "VirtualKeyboardTransientInnerHeightFix";
-    public static final String WEB_APK_BACKUP_AND_RESTORE_BACKEND = "WebApkBackupAndRestoreBackend";
     public static final String WEB_APK_INSTALL_FAILURE_NOTIFICATION =
             "WebApkInstallFailureNotification";
     public static final String WEB_APK_MIN_SHELL_APK_VERSION = "WebApkMinShellVersion";

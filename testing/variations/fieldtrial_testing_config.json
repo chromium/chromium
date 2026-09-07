@@ -20907,31 +20907,6 @@
             ]
         }
     ],
-    "WebApkBackupAndRestore": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PwaRestoreUi",
-                        "WebApkBackupAndRestoreBackend"
-                    ]
-                },
-                {
-                    "name": "BackendOnly",
-                    "enable_features": [
-                        "WebApkBackupAndRestoreBackend"
-                    ],
-                    "disable_features": [
-                        "PwaRestoreUi"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebApkShellUpdate": [
         {
             "platforms": [

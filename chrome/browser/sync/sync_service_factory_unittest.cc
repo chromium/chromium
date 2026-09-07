@@ -224,11 +224,6 @@ class SyncServiceFactoryTest : public testing::Test {
         datatypes.Put(syncer::SHARED_COMMENT);
       }
     }
-#if BUILDFLAG(IS_ANDROID)
-    if (base::FeatureList::IsEnabled(syncer::kWebApkBackupAndRestoreBackend)) {
-      datatypes.Put(syncer::WEB_APKS);
-    }
-#endif  // BUILDFLAG(IS_ANDROID)
 
     datatypes.Put(syncer::AUTOFILL_VALUABLE);
 

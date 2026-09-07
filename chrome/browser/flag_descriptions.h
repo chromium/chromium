@@ -2977,12 +2977,6 @@ inline constexpr char kCrasProcessorWavDumpDescription[] =
     "Make CrasProcessor produce WAVE file dumps for the audio processing "
     "pipeline";
 
-inline constexpr char kPwaRestoreBackendName[] =
-    "Enable the PWA Restore Backend";
-inline constexpr char kPwaRestoreBackendDescription[] =
-    "When enabled, PWA data will be sync to the backend, to support the PWA "
-    "Restore UI.";
-
 inline constexpr char kPwaRestoreUiName[] = "Enable the PWA Restore UI";
 inline constexpr char kPwaRestoreUiDescription[] =
     "When enabled, the PWA Restore UI can be shown";

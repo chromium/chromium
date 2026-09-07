@@ -111,17 +111,13 @@ source_set("sync_integration_tests_impl") {
   }
 
   if (is_android) {
-    sources += [
-      "//chrome/test/android/browsertests_apk/android_browsertests_jni_onload.cc",
-      "single_client_web_apks_sync_test.cc",
-    ]
+    sources += [ "//chrome/test/android/browsertests_apk/android_browsertests_jni_onload.cc" ]
 
     # Defined here so it's shared between android_sync_integration_tests
     # (upstream) and android_live_sync_integration_tests (downstream).
     deps += [
       "//chrome:chrome_android_core",
       "//chrome/browser/android",
-      "//chrome/browser/android/webapk:webapk_sources",
       "//chrome/browser/ui:ui_features",
       "//chrome/test:test_support_ui_android",
       "//chrome/test/base:chrome_test_launcher",
@@ -540,14 +536,11 @@ source_set("sync_integration_test_support") {
       "live_sync_signin_delegate_android.h",
       "sync_test_utils_android.cc",
       "sync_test_utils_android.h",
-      "webapks_helper.cc",
-      "webapks_helper.h",
     ]
 
     deps += [
       "//chrome/browser/android",
       "//chrome/browser/android:tabs_public",
-      "//chrome/browser/android/webapk:webapk_sources",
       "//chrome/browser/password_manager/android:utils",
       "//chrome/browser/ui/android/tab_model",
       "//chrome/test:sync_integration_test_support_jni_headers",
