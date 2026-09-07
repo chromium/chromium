@@ -1019,6 +1019,7 @@ source_set("unit_tests") {
     "//components/variations/net",
     "//components/vector_icons",
     "//extensions/buildflags",
+    "//net/traffic_annotation:test_support",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network:test_support",
     "//sql",
