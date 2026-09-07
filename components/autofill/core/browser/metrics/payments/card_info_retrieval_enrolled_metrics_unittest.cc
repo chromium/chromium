@@ -34,8 +34,7 @@ class CardInfoRetrievalEnrolledMetricsTest : public AutofillMetricsBaseTest,
     card_.set_guid(kCardGuid);
     test_paydm().AddServerCreditCard(card_);
 
-    // Set up the form data. Reset form action to skip the IsFormMixedContent
-    // check.
+    // Set up the form data.
     form_ = GetAndAddSeenForm(
         {.description_for_logging = "CardInfoRetrievalEnrolled",
          .fields = {{.role = CREDIT_CARD_NAME_FULL},

@@ -27,6 +27,7 @@ static_library("actor") {
     "//components/autofill/content/browser",
     "//components/one_time_tokens/core/browser",
     "//components/one_time_tokens/core/common:features",
+    "//components/security_interstitials/core:insecure_form_util",
     "//components/security_state/content",
     "//components/tabs:public",
     "//url",

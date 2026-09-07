@@ -41,8 +41,7 @@ class VirtualCardStandaloneCvcMetricsTest : public AutofillMetricsBaseTest,
     // Set four_digit_combinations_in_dom_ to simulate the list of last four
     // digits detected from the origin webpage.
     test_api(autofill_manager()).SetFourDigitCombinationsInDOM({"1234"});
-    // Set up the form data. Reset form action to skip the IsFormMixedContent
-    // check.
+    // Set up the form data.
     form_ = GetAndAddSeenForm(
         {.description_for_logging = "StandaloneCvc",
          .fields = {{.role = CREDIT_CARD_STANDALONE_VERIFICATION_CODE}},

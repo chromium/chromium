@@ -39,17 +39,17 @@
 #include "components/autofill/core/browser/actor/actor_filling_observer.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
-#include "components/autofill/core/browser/autofill_util.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_suggestion.h"
-#include "components/autofill/core/common/form_data.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_log_sink.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service.h"
 #include "components/one_time_tokens/core/common/one_time_token_features.h"
 #include "components/one_time_tokens/core/common/one_time_token_switches.h"
+#include "components/security_interstitials/core/insecure_form_util.h"
 #include "components/security_state/core/security_state.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
@@ -152,6 +152,15 @@ ActorOneTimeTokenFillingServiceRetrieveOtp MapError(
     case OneTimeTokenRetrievalError::kSubscriptionExpired:
       return kRetrievalTimeout;
   }
+}
+
+// Checks whether a given form is considered mixed content. A form is mixed
+// content if it is displayed on a secure context, but submits to an insecure
+// one.
+bool IsFormMixedContent(const AutofillClient& client,
+                        const FormStructure& form) {
+  return client.IsContextSecure() && form.target_url().is_valid() &&
+         security_interstitials::IsInsecureFormAction(form.target_url());
 }
 
 }  // namespace
@@ -591,8 +600,7 @@ ActorOneTimeTokenFillingServiceImpl::ValidateFormFillingContext(
 
   // Ensure `form_structure` does not submit to an insecure mixed content
   // action.
-  if (autofill::IsFormMixedContent(autofill_manager.client(),
-                                   form_structure->ToFormData())) {
+  if (IsFormMixedContent(autofill_manager.client(), *form_structure)) {
     return FormFillingContextStatus::kInsecureContext;
   }
 

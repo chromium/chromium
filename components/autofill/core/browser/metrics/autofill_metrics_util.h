@@ -169,6 +169,12 @@ uint64_t FormGlobalIdToHash64Bit(const FormGlobalId& form_global_id);
 // |frame_token| and |renderer_id|.
 uint64_t FieldGlobalIdToHash64Bit(const FieldGlobalId& field_global_id);
 
+// Returns true if `form` is considered "perfectly filled".
+//
+// A form is perfectly filled if the user did not have to manually type into any
+// field that Autofill didn't assist with.
+bool IsFormStructurePerfectlyFilled(const FormStructure& form);
+
 }  // namespace autofill::autofill_metrics
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_AUTOFILL_METRICS_UTIL_H_

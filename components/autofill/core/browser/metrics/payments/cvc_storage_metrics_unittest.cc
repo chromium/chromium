@@ -46,8 +46,7 @@ class CvcStorageMetricsTest
     SetUpHelper();
     form_type_ = std::get<0>(GetParam());
 
-    // Set up the form data. Reset form action to skip the IsFormMixedContent
-    // check.
+    // Set up the form data.
     form_ = GetAndAddSeenForm({.description_for_logging = "CvcStorage",
                                .fields = GetTestFormDataFields(),
                                .action = ""});

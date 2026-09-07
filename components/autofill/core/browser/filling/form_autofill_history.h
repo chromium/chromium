@@ -25,6 +25,10 @@ class AutofillField;
 
 enum class FieldModifier;
 
+// Returns whether a filling action for `filling_product` should be included in
+// the form autofill history, in order to support Undo operations later.
+bool ShouldRecordFillingHistory(FillingProduct filling_product);
+
 // Holds history of Autofill filling operations so that they can be undone
 // later. The class is used to add, remove and access filling operations, which
 // are maps from fields to their corresponding value and state before filling.

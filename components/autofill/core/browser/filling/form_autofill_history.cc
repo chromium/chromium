@@ -22,6 +22,29 @@
 
 namespace autofill {
 
+bool ShouldRecordFillingHistory(FillingProduct filling_product) {
+  switch (filling_product) {
+    case FillingProduct::kAddress:
+    case FillingProduct::kAutofillAi:
+    case FillingProduct::kCreditCard:
+    case FillingProduct::kLoyaltyCard:
+    case FillingProduct::kOneTimePassword:
+      return true;
+    case FillingProduct::kNone:
+    case FillingProduct::kMerchantPromoCode:
+    case FillingProduct::kIban:
+    case FillingProduct::kAutocomplete:
+    case FillingProduct::kPasskey:
+    case FillingProduct::kPassword:
+    case FillingProduct::kCompose:
+    case FillingProduct::kIdentityCredential:
+    case FillingProduct::kDataList:
+    case FillingProduct::kAtMemory:
+      return false;
+  }
+  NOTREACHED();
+}
+
 FormAutofillHistory::FieldFillingEntry::FieldFillingEntry(
     std::u16string field_value,
     bool field_is_autofilled_according_to_renderer,

@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <limits>
 #include <optional>
 
@@ -327,6 +328,14 @@ uint64_t FieldGlobalIdToHash64Bit(const FieldGlobalId& field_global_id) {
   return StrToHash64Bit(
       base::NumberToString(field_global_id.renderer_id.value()) +
       field_global_id.frame_token.ToString());
+}
+
+bool IsFormStructurePerfectlyFilled(const FormStructure& form) {
+  return std::ranges::none_of(
+      form.fields(), [](const std::unique_ptr<AutofillField>& field) {
+        return field->all_modifiers().contains(FieldModifier::kUser) &&
+               field->last_modifier() != FieldModifier::kAutofill;
+      });
 }
 
 }  // namespace autofill::autofill_metrics

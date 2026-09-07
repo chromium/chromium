@@ -53,15 +53,13 @@ class CardMetadataFormEventMetricsTest
 
   void SetUp() override {
     SetUpHelper();
-    // Set up the form data. Reset form action to skip the IsFormMixedContent
-    // check.
+    // Set up the form data.
     form_ =
         GetAndAddSeenForm({.description_for_logging = "CardMetadata",
                            .fields = {{.role = CREDIT_CARD_NAME_FULL},
                                       {.role = CREDIT_CARD_NUMBER},
                                       {.role = CREDIT_CARD_EXP_MONTH},
-                                      {.role = CREDIT_CARD_EXP_2_DIGIT_YEAR}},
-                           .action = ""});
+                                      {.role = CREDIT_CARD_EXP_2_DIGIT_YEAR}}});
 
     // Add a Mastercard masked server card.
     card_ = test::WithCvc(test::GetMaskedServerCard());
@@ -488,15 +486,13 @@ class CardMetadataLatencyMetricsTest
 
   void SetUp() override {
     SetUpHelper();
-    // Set up the form data. Reset form action to skip the IsFormMixedContent
-    // check.
+    // Set up the form data.
     form_ =
         GetAndAddSeenForm({.description_for_logging = "CardMetadata",
                            .fields = {{.role = CREDIT_CARD_NAME_FULL},
                                       {.role = CREDIT_CARD_NUMBER},
                                       {.role = CREDIT_CARD_EXP_MONTH},
-                                      {.role = CREDIT_CARD_EXP_2_DIGIT_YEAR}},
-                           .action = ""});
+                                      {.role = CREDIT_CARD_EXP_2_DIGIT_YEAR}}});
 
     CreditCard masked_server_card = test::GetMaskedServerCard();
     masked_server_card.SetNetworkForMaskedCard(kMasterCard);
@@ -680,16 +676,14 @@ class CardBenefitFormEventMetricsTest
 
   void SetUp() override {
     SetUpHelper();
-    // Set up the form data. Reset form action to skip the IsFormMixedContent
-    // check.
-    form_ =
-        GetAndAddSeenForm({.description_for_logging = "CardBenefit",
-                           .fields = {{.role = CREDIT_CARD_NAME_FULL},
-                                      {.role = CREDIT_CARD_NUMBER},
-                                      {.role = CREDIT_CARD_EXP_MONTH},
-                                      {.role = CREDIT_CARD_EXP_2_DIGIT_YEAR},
-                                      {.role = CREDIT_CARD_VERIFICATION_CODE}},
-                           .action = ""});
+    // Set up the form data.
+    form_ = GetAndAddSeenForm(
+        {.description_for_logging = "CardBenefit",
+         .fields = {{.role = CREDIT_CARD_NAME_FULL},
+                    {.role = CREDIT_CARD_NUMBER},
+                    {.role = CREDIT_CARD_EXP_MONTH},
+                    {.role = CREDIT_CARD_EXP_2_DIGIT_YEAR},
+                    {.role = CREDIT_CARD_VERIFICATION_CODE}}});
     credit_card_number_field_index_ = 1;
     cvc_field_index_ = 4;
 
@@ -1742,15 +1736,13 @@ class CardBenefitFormEventMetricsInvalidBenefitSourceTest
 
   void SetUp() override {
     SetUpHelper();
-    // Set up the form data. Reset form action to skip the IsFormMixedContent
-    // check.
+    // Set up the form data.
     form_ =
         GetAndAddSeenForm({.description_for_logging = "CardBenefit",
                            .fields = {{.role = CREDIT_CARD_NAME_FULL},
                                       {.role = CREDIT_CARD_NUMBER},
                                       {.role = CREDIT_CARD_EXP_MONTH},
-                                      {.role = CREDIT_CARD_EXP_2_DIGIT_YEAR}},
-                           .action = ""});
+                                      {.role = CREDIT_CARD_EXP_2_DIGIT_YEAR}}});
     credit_card_number_field_index_ = 1;
 
     scoped_feature_list_.InitAndEnableFeature(
