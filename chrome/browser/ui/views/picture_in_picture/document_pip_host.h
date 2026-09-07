@@ -224,6 +224,7 @@ class DocumentPipHost : public content::WebContentsUserData<DocumentPipHost>,
   void NotifyPositionRequiresUpdate() override;
 
   // views::WidgetObserver:
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override;
   void OnWidgetDestroying(views::Widget* widget) override;
@@ -261,6 +262,9 @@ class DocumentPipHost : public content::WebContentsUserData<DocumentPipHost>,
   // Callback for Widget::MakeCloseSynchronous(). Invoked when external code
   // (e.g. DialogDelegate, OS close button) requests the widget to close.
   void OnWidgetCloseRequested(views::Widget::ClosedReason reason);
+
+  // Gives keyboard focus to the child WebContents hosted by the PiP widget.
+  void FocusChildWebContents();
 
   // Test-only hooks for the child-dialog resize path, reached by the friended
   // tests above. Private (not a public API); defined in the .cc where
@@ -300,6 +304,7 @@ class DocumentPipHost : public content::WebContentsUserData<DocumentPipHost>,
   // SetForcedTucking() call.
   std::unique_ptr<PictureInPictureTucker> tucker_;
   bool is_tucking_forced_ = false;
+  bool restore_focus_on_activation_ = false;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};

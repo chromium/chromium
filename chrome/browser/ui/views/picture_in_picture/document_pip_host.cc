@@ -201,6 +201,7 @@ void DocumentPipHost::CreateAndShowPipWindow(
   // is initialized because the dialog manager anchors to it.
   CreateChildWebContentsHelpers(GetChildWebContents());
 
+  restore_focus_on_activation_ = true;
   widget_->Show();
 }
 
@@ -764,13 +765,7 @@ void DocumentPipHost::SetWebContentsBlocked(content::WebContents* web_contents,
                                             bool blocked) {
   DCHECK_EQ(GetChildWebContents(), web_contents);
   if (!blocked && widget_ && widget_->IsActive()) {
-    if (widget_delegate_) {
-      if (auto* contents_view =
-              widget_delegate_->GetDocumentPipContentsView()) {
-        contents_view->RequestFocus();
-      }
-    }
-    web_contents->Focus();
+    FocusChildWebContents();
   }
 }
 
@@ -837,6 +832,20 @@ void DocumentPipHost::RemoveObserver(
 // views::WidgetObserver & views::ViewObserver
 // =============================================================================
 
+void DocumentPipHost::OnWidgetActivationChanged(views::Widget* widget,
+                                                bool active) {
+  if (!active || !restore_focus_on_activation_) {
+    return;
+  }
+
+  restore_focus_on_activation_ = false;
+  auto* manager = web_modal::WebContentsModalDialogManager::FromWebContents(
+      GetChildWebContents());
+  if (!manager || !manager->IsDialogActive()) {
+    FocusChildWebContents();
+  }
+}
+
 void DocumentPipHost::OnWidgetBoundsChanged(views::Widget* widget,
                                             const gfx::Rect& new_bounds) {
   NotifyPositionRequiresUpdate();
@@ -852,6 +861,19 @@ void DocumentPipHost::OnViewBoundsChanged(views::View* observed_view) {
 
 void DocumentPipHost::OnViewIsDeleting(views::View* observed_view) {
   contents_view_observation_.Reset();
+}
+
+void DocumentPipHost::FocusChildWebContents() {
+  if (!widget_delegate_) {
+    return;
+  }
+
+  if (auto* contents_view = widget_delegate_->GetDocumentPipContentsView()) {
+    contents_view->RequestFocus();
+  }
+  if (auto* child_web_contents = GetChildWebContents()) {
+    child_web_contents->Focus();
+  }
 }
 
 void DocumentPipHost::NotifyPositionRequiresUpdate() {

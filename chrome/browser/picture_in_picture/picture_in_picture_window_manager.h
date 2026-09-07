@@ -211,11 +211,13 @@ class PictureInPictureWindowManager {
   // `kDocumentPipStandaloneWindow` feature is enabled. Takes ownership of the
   // child WebContents (handing it to the host's widget) and registers the
   // content-layer controller so the renderer stays in sync. The manager keeps a
-  // `WeakPtr` to the host so it can close the window later.
+  // `WeakPtr` to the host so it can close the window later. `focus_contents`
+  // matches the Browser-backed user-gesture focus behavior.
   void EnterStandaloneDocumentPictureInPicture(
       content::WebContents* parent_web_contents,
       std::unique_ptr<content::WebContents> child_web_contents,
-      blink::mojom::PictureInPictureWindowOptions pip_options);
+      blink::mojom::PictureInPictureWindowOptions pip_options,
+      bool focus_contents);
 
   std::unique_ptr<AutoPipSettingOverlayView> GetOverlayView(
       views::View* anchor_view,

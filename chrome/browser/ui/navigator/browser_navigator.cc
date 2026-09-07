@@ -730,10 +730,14 @@ base::WeakPtr<content::NavigationHandle> NavigateImpl(
       std::optional<blink::mojom::PictureInPictureWindowOptions> pip_options =
           contents_to_navigate_or_insert->GetPictureInPictureOptions();
       if (pip_options.has_value()) {
+        const bool focus_contents =
+            params->window_action ==
+                NavigateParams::WindowAction::kShowWindow &&
+            params->user_gesture;
         PictureInPictureWindowManager::GetInstance()
             ->EnterStandaloneDocumentPictureInPicture(
                 params->source_contents, std::move(params->contents_to_insert),
-                std::move(*pip_options));
+                std::move(*pip_options), focus_contents);
       }
       // If the WebContents doesn't have valid PiP options, don't enter PiP
       // mode and don't create a browser window.

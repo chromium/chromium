@@ -42,6 +42,7 @@
 #include "media/base/media_switches.h"
 #include "net/base/url_util.h"
 #include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -701,7 +702,8 @@ void PictureInPictureWindowManager::DocumentWebContentsDestroyed() {
 void PictureInPictureWindowManager::EnterStandaloneDocumentPictureInPicture(
     content::WebContents* parent_web_contents,
     std::unique_ptr<content::WebContents> child_web_contents,
-    blink::mojom::PictureInPictureWindowOptions pip_options) {
+    blink::mojom::PictureInPictureWindowOptions pip_options,
+    bool focus_contents) {
   CHECK(child_web_contents);
 
   // Reuse the shared document picture-in-picture setup: it closes any existing
@@ -737,6 +739,12 @@ void PictureInPictureWindowManager::EnterStandaloneDocumentPictureInPicture(
   auto* host = DocumentPipHost::FromWebContents(parent_web_contents);
   host->CreateAndShowPipWindow(std::move(child_web_contents),
                                std::move(pip_options), initial_bounds);
+  // Match ScopedBrowserShower's user-gesture behavior for Browser-backed
+  // Document PiP windows instead of relying solely on native activation.
+  if (focus_contents) {
+    host->GetChildWebContents()->Focus();
+    host->GetWidget()->Activate();
+  }
   document_pip_host_ = host->GetWeakPtr();
 }
 
