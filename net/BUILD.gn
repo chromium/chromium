@@ -912,6 +912,8 @@ component("net") {
     "quic/quic_http_stream.h",
     "quic/quic_http_utils.cc",
     "quic/quic_http_utils.h",
+    "quic/quic_migration_attempt_context.cc",
+    "quic/quic_migration_attempt_context.h",
     "quic/quic_network_connectivity_tracker.cc",
     "quic/quic_network_connectivity_tracker.h",
     "quic/quic_proxy_client_socket.cc",
