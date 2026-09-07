@@ -1986,9 +1986,10 @@ void CacheStorageCache::PutDidWriteHeaders(
     return;
   }
 
-  CHECK(!ShouldPadResourceSize(*put_context->response) ||
-            (padding + side_data_padding),
-        base::NotFatalUntil::M158);
+  // TODO(crbug.com/558086387): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!ShouldPadResourceSize(*put_context->response) ||
+         (padding + side_data_padding));
   cache_padding_ += padding + side_data_padding;
 
   PutWriteBlobToCache(std::move(put_context), INDEX_RESPONSE_BODY);
