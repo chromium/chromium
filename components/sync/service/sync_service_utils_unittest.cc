@@ -4,6 +4,8 @@
 
 #include "components/sync/service/sync_service_utils.h"
 
+#include "base/test/metrics/histogram_tester.h"
+#include "build/build_config.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/test/test_sync_service.h"
@@ -233,5 +235,31 @@ TEST(SyncServiceUtilsTest, LocalSyncPreferredDataTypes) {
   EXPECT_TRUE(service.GetPreferredDataTypes().Has(BOOKMARKS));
   EXPECT_FALSE(service.GetPreferredDataTypes().Has(HISTORY));
 }
+
+#if BUILDFLAG(IS_IOS)
+TEST(SyncServiceUtilsTest, MaybeRecordIdentityErrorShown) {
+  base::HistogramTester histogram_tester;
+  MaybeRecordIdentityErrorShown(
+      IdentityErrorDisplaySurface::kAccountMenu,
+      SyncService::UserActionableError::kDeviceManagementError);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.IdentityErrorDisplayed.DeviceManagementError",
+      IdentityErrorDisplaySurface::kAccountMenu, 1);
+
+  MaybeRecordIdentityErrorShown(
+      IdentityErrorDisplaySurface::kSyncSettings,
+      SyncService::UserActionableError::kDeviceManagementError);
+  histogram_tester.ExpectBucketCount(
+      "Signin.IdentityErrorDisplayed.DeviceManagementError",
+      IdentityErrorDisplaySurface::kSyncSettings, 1);
+
+  // Non-MDM errors should not be recorded by this histogram.
+  MaybeRecordIdentityErrorShown(
+      IdentityErrorDisplaySurface::kAccountMenu,
+      SyncService::UserActionableError::kSignInNeedsUpdate);
+  histogram_tester.ExpectTotalCount(
+      "Signin.IdentityErrorDisplayed.DeviceManagementError", 2);
+}
+#endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace syncer

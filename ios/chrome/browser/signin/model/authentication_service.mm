@@ -643,6 +643,10 @@ bool AuthenticationService::HandleMDMError(id<SystemIdentity> identity,
           identity, ActiveIdentities(), error,
           base::BindOnce(&AuthenticationService::MDMErrorHandled,
                          weak_pointer_factory_.GetWeakPtr(), identity))) {
+    // TODO(crbug.com/555673645): Remove this histogram once
+    // kHandleMdmErrorsForDasherAccounts is launched.
+    base::UmaHistogramBoolean("Signin.IOSAutomaticMDMNotificationTriggered",
+                              true);
     const CoreAccountId account_id = CoreAccountId::FromGaiaId(identity.gaiaId);
     DUMP_WILL_BE_CHECK(!account_id.empty())
         << "Unexpected identity with empty account id: [gaiaID = "

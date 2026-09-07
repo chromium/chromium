@@ -5,6 +5,7 @@
 #include "components/sync/service/sync_service_utils.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "build/build_config.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -120,5 +121,15 @@ bool ShouldOfferTrustedVaultOptIn(const SyncService* service) {
       return !service->GetUserSettings()->IsPassphraseRequired();
   }
 }
+
+#if BUILDFLAG(IS_IOS)
+void MaybeRecordIdentityErrorShown(IdentityErrorDisplaySurface surface,
+                                   SyncService::UserActionableError error) {
+  if (error == SyncService::UserActionableError::kDeviceManagementError) {
+    base::UmaHistogramEnumeration(
+        "Signin.IdentityErrorDisplayed.DeviceManagementError", surface);
+  }
+}
+#endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace syncer

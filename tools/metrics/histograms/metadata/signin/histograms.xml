@@ -2472,6 +2472,17 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.IdentityErrorDisplayed.DeviceManagementError"
+    enum="IdentityErrorDisplaySurface" expires_after="2027-04-01">
+  <owner>wendlassida@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <summary>
+    Records the UI surface where a device management (MDM) error is displayed to
+    the user. Recorded whenever a device management error is presented to the
+    user in the account menu error card or in the sync settings page.
+  </summary>
+</histogram>
+
 <histogram name="Signin.IdentitySnackbarHadUserName" enum="BooleanAvailable"
     expires_after="2025-10-01">
   <owner>arthurmilchior@chromium.org</owner>
@@ -2787,6 +2798,19 @@ prefs when the profile is loaded.  -->
     Records the outcome of profile initialzation done by AuthenticationService,
     which happens whenever a profile is loaded (i.e. on browser startup, plus
     whenever the user switches accounts/profiles).
+  </summary>
+</histogram>
+
+<histogram name="Signin.IOSAutomaticMDMNotificationTriggered" enum="Boolean"
+    expires_after="2027-04-01">
+<!-- TODO(crbug.com/555673645): Remove this histogram once
+  kHandleMdmErrorsForDasherAccounts is launched. -->
+
+  <owner>wendlassida@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <summary>
+    Recorded when an automatic legacy MDM error notification dialog is triggered
+    on token refresh failure on iOS.
   </summary>
 </histogram>
 

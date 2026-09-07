@@ -17,6 +17,7 @@
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/subscription_eligibility/objc/subscription_eligibility_observer_bridge.h"
 #import "components/subscription_eligibility/subscription_eligibility_service.h"
+#import "components/sync/service/sync_service_utils.h"
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_mediator_delegate.h"
 #import "ios/chrome/browser/authentication/account_menu/public/account_menu_constants.h"
@@ -160,6 +161,10 @@
     _syncObserver = std::make_unique<SyncObserverBridge>(self, _syncService);
     [self updateIdentitiesIfAllowed];
     _error = GetAccountErrorUIInfo(_syncService);
+    if (_error) {
+      syncer::MaybeRecordIdentityErrorShown(
+          syncer::IdentityErrorDisplaySurface::kAccountMenu, _error.errorType);
+    }
   }
   return self;
 }
@@ -312,6 +317,10 @@
     return;
   }
   _error = newError;
+  if (_error) {
+    syncer::MaybeRecordIdentityErrorShown(
+        syncer::IdentityErrorDisplaySurface::kAccountMenu, _error.errorType);
+  }
   [self.consumer updateErrorSection:_error];
   if (_subscriptionEligibilityService->GetAiSubscriptionTier() > 0 &&
       IsAiSubscriptionAvatarRingIOSEnabled()) {

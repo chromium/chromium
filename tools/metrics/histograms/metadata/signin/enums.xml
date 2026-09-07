@@ -646,6 +646,15 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Don't show, feature flag is disabled"/>
 </enum>
 
+<!-- LINT.IfChange(IdentityErrorDisplaySurface) -->
+
+<enum name="IdentityErrorDisplaySurface">
+  <int value="0" label="Displayed in the account menu error card"/>
+  <int value="1" label="Displayed in sync settings"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/sync/service/sync_service_utils.h:IdentityErrorDisplaySurface) -->
+
 <!-- LINT.IfChange(IOSAccountMenuAccessPoint) -->
 
 <enum name="IOSAccountMenuAccessPoint">

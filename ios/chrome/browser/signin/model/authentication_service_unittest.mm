@@ -531,6 +531,7 @@ TEST_F(AuthenticationServiceTest, MDMErrorsDontSeedEmptyAccountIds) {
 // Tests that potential MDM notifications are correctly handled and dispatched
 // to MDM service when necessary.
 TEST_F(AuthenticationServiceTest, HandleMDMNotification) {
+  base::HistogramTester histogram_tester;
   authentication_service()->SignIn(identity(0),
                                    signin_metrics::AccessPoint::kStartPage);
   VerifyLastSigninTimestamp();
@@ -550,11 +551,15 @@ TEST_F(AuthenticationServiceTest, HandleMDMNotification) {
   FireAccessTokenRefreshFailed(identity(0), mdm_error1);
   fake_system_identity_manager()->WaitForServiceCallbacksToComplete();
   EXPECT_EQ(invocation_counter1, 1u);
+  histogram_tester.ExpectBucketCount(
+      "Signin.IOSAutomaticMDMNotificationTriggered", true, 1);
 
   // Same notification won't show the MDM dialog the second time.
   FireAccessTokenRefreshFailed(identity(0), mdm_error1);
   fake_system_identity_manager()->WaitForServiceCallbacksToComplete();
   EXPECT_EQ(invocation_counter1, 1u);
+  histogram_tester.ExpectBucketCount(
+      "Signin.IOSAutomaticMDMNotificationTriggered", true, 1);
 
   uint32_t invocation_counter2 = 0;
   id<RefreshAccessTokenError> mdm_error2 =
@@ -566,6 +571,8 @@ TEST_F(AuthenticationServiceTest, HandleMDMNotification) {
   fake_system_identity_manager()->WaitForServiceCallbacksToComplete();
   EXPECT_EQ(invocation_counter1, 1u);
   EXPECT_EQ(invocation_counter2, 1u);
+  histogram_tester.ExpectBucketCount(
+      "Signin.IOSAutomaticMDMNotificationTriggered", true, 2);
 }
 
 // Tests that MDM notification is suppressed for scope limited errors.
@@ -594,6 +601,8 @@ TEST_F(AuthenticationServiceTest, HandleMDMNotificationSuppressed) {
   EXPECT_EQ(invocation_counter, 0u);
   histogram_tester.ExpectBucketCount("Signin.ScopeLimitedErrorSuppressed", true,
                                      1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.IOSAutomaticMDMNotificationTriggered", 0);
 }
 
 // Tests that MDM blocked notifications are correctly signing out the user if
