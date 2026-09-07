@@ -1129,6 +1129,28 @@ TEST_F(RTCEncodedVideoFrameTest, ConstructorFutureCaptureTimeFails) {
   EXPECT_EQ(new_frame, nullptr);
 }
 
+TEST_F(RTCEncodedVideoFrameTest, ConstructorEmptyTypeFails) {
+  V8TestingScope v8_scope;
+
+  DOMArrayBuffer* buffer =
+      DOMArrayBuffer::Create(/*num_elements=*/5, /*element_byte_size=*/1);
+
+  auto* init = RTCEncodedVideoFrameInit::Create();
+  init->setType(
+      V8RTCEncodedVideoFrameType(V8RTCEncodedVideoFrameType::Enum::kEmpty));
+  init->setPayloadType(96);
+  init->setRtpTimestampWithoutOffset(101010u);
+  init->setData(buffer);
+  init->setMimeType("video/VP8");
+
+  DummyExceptionStateForTesting exception_state;
+  RTCEncodedVideoFrame* new_frame = RTCEncodedVideoFrame::Create(
+      v8_scope.GetExecutionContext(), init, exception_state);
+
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(new_frame, nullptr);
+}
+
 TEST_F(RTCEncodedVideoFrameTest, StringToVideoCodecType) {
   // VP8
   EXPECT_EQ(RTCEncodedVideoFrame::StringToVideoCodecType("VP8"),

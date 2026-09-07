@@ -181,7 +181,8 @@ RTCEncodedVideoFrame* RTCEncodedVideoFrame::Create(
              V8RTCEncodedVideoFrameType::Enum::kDelta) {
     frame_type = webrtc::VideoFrameType::kVideoFrameDelta;
   } else {
-    NOTREACHED();
+    exception_state.ThrowTypeError("Invalid frame type");
+    return nullptr;
   }
 
   uint8_t payload_type = init->payloadType();
