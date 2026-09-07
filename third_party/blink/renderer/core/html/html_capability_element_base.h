@@ -150,6 +150,7 @@ class CORE_EXPORT HTMLCapabilityElementBase
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner();
 
   // LocalFrameView::LifecycleNotificationObserver
+  void DidFinishLayout() override;
   void DidFinishLifecycleUpdate(const LocalFrameView&) override;
 
   bool HasPendingPermissionRequest() const {
@@ -246,6 +247,8 @@ class CORE_EXPORT HTMLCapabilityElementBase
                            InvalidatePEPCAfterMoveContainer);
   FRIEND_TEST_ALL_PREFIXES(HTMLCapabilityElementBaseLayoutChangeTest,
                            InvalidatePEPCAfterTransformContainer);
+  FRIEND_TEST_ALL_PREFIXES(HTMLCapabilityElementBaseLayoutChangeTest,
+                           InvalidatePEPCAfterContainerLayoutMoveBeforePaint);
   FRIEND_TEST_ALL_PREFIXES(HTMLCapabilityElementBaseLayoutChangeTest,
                            InvalidatePEPCLayoutInAnimationFrameCallback);
   FRIEND_TEST_ALL_PREFIXES(HTMLCapabilityElementBaseDispatchValidationEventTest,
@@ -500,6 +503,10 @@ class CORE_EXPORT HTMLCapabilityElementBase
 
   // Computes the intersection rect of the element with the viewport.
   gfx::Rect ComputeIntersectionRectWithViewport(const Page* page);
+
+  // Recomputes the intersection rect with the viewport and temporarily
+  // disables clicking if it has changed since the previous check.
+  void RefreshCachedIntersectionWithViewport();
 
   // When the element is first attached to layout and rendered on the page,
   // there would be events causing an extra unresponsive delay that we don't

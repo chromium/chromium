@@ -951,14 +951,7 @@ void HTMLCapabilityElementBase::DidRecalcStyle(const StyleRecalcChange change) {
   }
   EnableClickingAfterDelay(DisableReason::kInvalidStyle,
                            kDefaultDisableTimeout);
-  gfx::Rect intersection_rect =
-      ComputeIntersectionRectWithViewport(GetDocument().GetPage());
-  if (intersection_rect_.has_value() &&
-      intersection_rect_.value() != intersection_rect) {
-    DisableClickingTemporarily(DisableReason::kIntersectionWithViewportChanged,
-                               kDefaultDisableTimeout);
-  }
-  intersection_rect_ = intersection_rect;
+  RefreshCachedIntersectionWithViewport();
 }
 
 void HTMLCapabilityElementBase::HandleActivation(Event& event,
@@ -1588,21 +1581,19 @@ LengthSize HTMLCapabilityElementBase::AdjustedPercentBoundedRadius(
   return adjusted_length_size;
 }
 
+void HTMLCapabilityElementBase::DidFinishLayout() {
+  // Runs after the layout phase of every lifecycle update beyond LayoutClean,
+  // including those that only target PrePaintClean (e.g. for input hit-testing)
+  // where DidFinishLifecycleUpdate is not dispatched.
+  RefreshCachedIntersectionWithViewport();
+}
+
 void HTMLCapabilityElementBase::DidFinishLifecycleUpdate(
     const LocalFrameView& local_frame_view) {
-  // This code monitors the stability of the HTMLCapabilityElementBase and
-  // temporarily disables the element if it detects an unstable state.
-  // "Unstable state" in this context occurs when the intersection rectangle
-  // between the viewport and the element's layout box changes, indicating that
-  // the element has been moved or resized.
-  gfx::Rect intersection_rect = ComputeIntersectionRectWithViewport(
-      local_frame_view.GetFrame().GetPage());
-  if (intersection_rect_.has_value() &&
-      intersection_rect_.value() != intersection_rect) {
-    DisableClickingTemporarily(DisableReason::kIntersectionWithViewportChanged,
-                               kDefaultDisableTimeout);
-  }
-  intersection_rect_ = intersection_rect;
+  // Re-check after all lifecycle phases have completed, since the intersection
+  // rect may also depend on state that changes after layout (e.g. scroll
+  // offsets adjusted during pre-paint).
+  RefreshCachedIntersectionWithViewport();
 
   if (IsRendered()) {
     MaybeRegisterPageEmbeddedPermissionControl();
@@ -1631,6 +1622,22 @@ gfx::Rect HTMLCapabilityElementBase::ComputeIntersectionRectWithViewport(
   // mutate `rect` to visible rect in the root frame's coordinate space.
   layout_object->MapToVisualRectInAncestorSpace(/*ancestor*/ nullptr, rect);
   return IntersectRects(viewport_in_root_frame, ToEnclosingRect(rect));
+}
+
+void HTMLCapabilityElementBase::RefreshCachedIntersectionWithViewport() {
+  // This code monitors the stability of the HTMLCapabilityElementBase and
+  // temporarily disables the element if it detects an unstable state.
+  // "Unstable state" in this context occurs when the intersection rectangle
+  // between the viewport and the element's layout box changes, indicating that
+  // the element has been moved or resized.
+  gfx::Rect intersection_rect =
+      ComputeIntersectionRectWithViewport(GetDocument().GetPage());
+  if (intersection_rect_.has_value() &&
+      intersection_rect_.value() != intersection_rect) {
+    DisableClickingTemporarily(DisableReason::kIntersectionWithViewportChanged,
+                               kDefaultDisableTimeout);
+  }
+  intersection_rect_ = intersection_rect;
 }
 
 std::optional<base::TimeDelta>

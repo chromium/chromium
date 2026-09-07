@@ -2349,6 +2349,34 @@ TEST_F(HTMLCapabilityElementBaseLayoutChangeTest,
 }
 
 TEST_F(HTMLCapabilityElementBaseLayoutChangeTest,
+       InvalidatePEPCAfterContainerLayoutMoveBeforePaint) {
+  SimRequest main_resource("https://example.test/", "text/html");
+  LoadURL("https://example.test/");
+  main_resource.Complete(R"HTML(
+    <div id='container' style='position: absolute; top: 0px; left: 0px;'>
+      <usermedia id='camera' type='camera'></usermedia>
+    </div>
+    )HTML");
+  Compositor().BeginFrame();
+  auto* permission_element =
+      CheckAndQueryPermissionElement(AtomicString("usermedia"));
+  // Moving the positioned container repositions the element via layout only,
+  // without recomputing the element's own style. The move must still be
+  // detected when the lifecycle is advanced only to pre-paint, which is what
+  // input hit-testing does.
+  auto* div =
+      To<HTMLDivElement>(GetDocument().QuerySelector(AtomicString("div")));
+  div->SetInlineStyleProperty(CSSPropertyID::kTop, "100px");
+  div->SetInlineStyleProperty(CSSPropertyID::kLeft, "100px");
+  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
+      DocumentUpdateReason::kTest);
+  EXPECT_FALSE(permission_element->IsClickingEnabled());
+  DeferredChecker checker(permission_element);
+  checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
+                                         /*expected_enabled*/ true);
+}
+
+TEST_F(HTMLCapabilityElementBaseLayoutChangeTest,
        InvalidatePEPCLayoutInAnimationFrameCallback) {
   SimRequest main_resource("https://example.test/", "text/html");
   LoadURL("https://example.test/");
