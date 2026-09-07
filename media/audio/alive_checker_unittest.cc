@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/audio/alive_checker.h"
+
 #include <memory>
 #include <utility>
 
@@ -10,9 +12,9 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
+#include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
-#include "media/audio/alive_checker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -107,15 +109,16 @@ class AliveCheckerTest : public testing::Test {
   }
 
   void StartAliveChecker() {
+    base::WaitableEvent done(base::WaitableEvent::ResetPolicy::MANUAL,
+                             base::WaitableEvent::InitialState::NOT_SIGNALED);
     alive_checker_thread_.task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(&AliveChecker::Start,
-                                  base::Unretained(alive_checker_.get())));
-  }
-
-  void StopAliveChecker() {
-    alive_checker_thread_.task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(&AliveChecker::Stop,
-                                  base::Unretained(alive_checker_.get())));
+        FROM_HERE, base::BindOnce(
+                       [](AliveChecker* checker, base::WaitableEvent* done) {
+                         checker->Start();
+                         done->Signal();
+                       },
+                       base::Unretained(alive_checker_.get()), &done));
+    done.Wait();
   }
 
   // Notifies |alive_checker_| that we're alive, and if
@@ -195,7 +198,8 @@ class AliveCheckerTest : public testing::Test {
           base::BindRepeating(&AliveCheckerTest::OnDetectedDead,
                               base::Unretained(this)),
           base::Milliseconds(kCheckIntervalMs), base::Milliseconds(kTimeoutMs),
-          stop_at_first_alive_notification, false);
+          stop_at_first_alive_notification,
+          /*pause_check_during_suspend=*/false);
     }
 
     done->Signal();
@@ -220,9 +224,10 @@ class AliveCheckerTest : public testing::Test {
 };
 
 // Start the checker, don't send alive notifications, and run until it detects
-// dead. Verify that it only detects once. Repeat once.
-TEST_F(AliveCheckerTest, NoAliveNotificationsDetectTwice) {
-  CreateAliveChecker(false, false);
+// dead. Verify that it only detects once.
+TEST_F(AliveCheckerTest, NoAliveNotificationsDetectOnce) {
+  CreateAliveChecker(/*stop_at_first_alive_notification=*/false,
+                     /*pause_check_during_suspend=*/false);
 
   StartAliveChecker();
   EXPECT_FALSE(GetDetectedDead());
@@ -237,19 +242,13 @@ TEST_F(AliveCheckerTest, NoAliveNotificationsDetectTwice) {
   EXPECT_FALSE(WaitUntilDetectedDeadWithTimeout(
       base::Milliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
   EXPECT_TRUE(GetDetectedDead());
-
-  // Start again, the detect state should be reset.
-  StartAliveChecker();
-  EXPECT_FALSE(GetDetectedDead());
-
-  WaitUntilDetectedDead();
-  EXPECT_TRUE(GetDetectedDead());
 }
 
 // Setup the checker to stop at first alive notification. Start it and notify
 // that the client is alive once. Verify that we get no dead detection.
 TEST_F(AliveCheckerTest, StopAtFirstAliveNotification_DoNotify) {
-  CreateAliveChecker(true, false);
+  CreateAliveChecker(/*stop_at_first_alive_notification=*/true,
+                     /*pause_check_during_suspend=*/false);
 
   StartAliveChecker();
   alive_checker_->NotifyAlive();
@@ -264,7 +263,8 @@ TEST_F(AliveCheckerTest, StopAtFirstAliveNotification_DoNotify) {
 // Setup the checker to stop at first alive notification. Start it and run until
 // it detects dead.
 TEST_F(AliveCheckerTest, StopAtFirstAliveNotification_DontNotify) {
-  CreateAliveChecker(true, false);
+  CreateAliveChecker(/*stop_at_first_alive_notification=*/true,
+                     /*pause_check_during_suspend=*/false);
   StartAliveChecker();
   WaitUntilDetectedDead();
   EXPECT_TRUE(GetDetectedDead());
@@ -275,7 +275,8 @@ TEST_F(AliveCheckerTest, StopAtFirstAliveNotification_DontNotify) {
 // and and verify that it doesn't detect dead. Resume and run until it detects
 // dead.
 TEST_F(AliveCheckerTest, SuspendResume_StartBetweenSuspendAndResume) {
-  CreateAliveChecker(false, true);
+  CreateAliveChecker(/*stop_at_first_alive_notification=*/false,
+                     /*pause_check_during_suspend=*/true);
   ASSERT_TRUE(mock_power_observer_helper_);
 
   alive_checker_thread_.task_runner()->PostTask(
@@ -303,7 +304,8 @@ TEST_F(AliveCheckerTest, SuspendResume_StartBetweenSuspendAndResume) {
 // doesn't detect dead. Suspend and verify that it doesn't detect dead. Resume
 // and and verify that it doesn't detect dead.
 TEST_F(AliveCheckerTest, SuspendResumeWithAutoStop_NotifyBeforeSuspend) {
-  CreateAliveChecker(true, true);
+  CreateAliveChecker(/*stop_at_first_alive_notification=*/true,
+                     /*pause_check_during_suspend=*/true);
   ASSERT_TRUE(mock_power_observer_helper_);
 
   StartAliveChecker();
@@ -330,43 +332,6 @@ TEST_F(AliveCheckerTest, SuspendResumeWithAutoStop_NotifyBeforeSuspend) {
   EXPECT_FALSE(WaitUntilDetectedDeadWithTimeout(
       base::Milliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
   EXPECT_FALSE(GetDetectedDead());
-}
-
-// Setup the checker to stop at first alive notification and pause checking when
-// suspended. Start the checker, send one alive notifications, and verify it
-// doesn't detect dead. Start it again, suspend and verify that it doesn't
-// detect dead. Resume and run until detected dead.
-TEST_F(AliveCheckerTest,
-       SuspendResumeWithAutoStop_NotifyBeforeSuspendAndRestart) {
-  CreateAliveChecker(true, true);
-  ASSERT_TRUE(mock_power_observer_helper_);
-
-  StartAliveChecker();
-  alive_checker_->NotifyAlive();
-
-  // It can take up to the timeout + the check interval until detection. Add a
-  // margin to this.
-  EXPECT_FALSE(WaitUntilDetectedDeadWithTimeout(
-      base::Milliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
-  EXPECT_FALSE(GetDetectedDead());
-
-  StartAliveChecker();
-  EXPECT_FALSE(GetDetectedDead());
-
-  alive_checker_thread_.task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&MockPowerObserverHelper::Suspend,
-                                base::Unretained(mock_power_observer_helper_)));
-
-  EXPECT_FALSE(WaitUntilDetectedDeadWithTimeout(
-      base::Milliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
-  EXPECT_FALSE(GetDetectedDead());
-
-  alive_checker_thread_.task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&MockPowerObserverHelper::Resume,
-                                base::Unretained(mock_power_observer_helper_)));
-
-  WaitUntilDetectedDead();
-  EXPECT_TRUE(GetDetectedDead());
 }
 
 // Setup the checker to stop at first alive notification and pause checking when
@@ -374,7 +339,8 @@ TEST_F(AliveCheckerTest,
 // verify it doesn't detected dead. Resume and verify it doesn't detected dead.
 TEST_F(AliveCheckerTest,
        SuspendResumeWithAutoStop_NotifyBetweenSuspendAndResume) {
-  CreateAliveChecker(true, true);
+  CreateAliveChecker(/*stop_at_first_alive_notification=*/true,
+                     /*pause_check_during_suspend=*/true);
   ASSERT_TRUE(mock_power_observer_helper_);
 
   StartAliveChecker();
@@ -404,7 +370,8 @@ TEST_F(AliveCheckerTest,
 // suspended. Start the checker, suspend, resume, send one alive notification
 // and verify it doesn't detected dead.
 TEST_F(AliveCheckerTest, SuspendResumeWithAutoStop_NotifyAfterResume) {
-  CreateAliveChecker(true, true);
+  CreateAliveChecker(/*stop_at_first_alive_notification=*/true,
+                     /*pause_check_during_suspend=*/true);
   ASSERT_TRUE(mock_power_observer_helper_);
 
   StartAliveChecker();
@@ -430,7 +397,8 @@ TEST_F(AliveCheckerTest, SuspendResumeWithAutoStop_NotifyAfterResume) {
 // suspended. Start the checker suspend, and and verify it doesn't detected
 // dead. Resume and run until it detects dead.
 TEST_F(AliveCheckerTest, SuspendResumeWithAutoStop_DontNotify) {
-  CreateAliveChecker(true, true);
+  CreateAliveChecker(/*stop_at_first_alive_notification=*/true,
+                     /*pause_check_during_suspend=*/true);
   ASSERT_TRUE(mock_power_observer_helper_);
 
   StartAliveChecker();
@@ -449,6 +417,74 @@ TEST_F(AliveCheckerTest, SuspendResumeWithAutoStop_DontNotify) {
       FROM_HERE, base::BindOnce(&MockPowerObserverHelper::Resume,
                                 base::Unretained(mock_power_observer_helper_)));
 
+  WaitUntilDetectedDead();
+  EXPECT_TRUE(GetDetectedDead());
+}
+
+TEST_F(AliveCheckerTest, ContinuousNotifications_StayAliveThenDetectDead) {
+  CreateAliveChecker(/*stop_at_first_alive_notification=*/false,
+                     /*pause_check_during_suspend=*/false);
+
+  StartAliveChecker();
+  EXPECT_FALSE(GetDetectedDead());
+
+  // Timeout is kTimeoutMs (50ms). Notify every 15ms for 6 times (75ms total),
+  // which exceeds the 50ms timeout.
+  NotifyAliveMultipleTimes(/*remaining_notifications=*/6,
+                           base::Milliseconds(15));
+
+  // Wait for 75ms; dead detection should not fire during active notifications.
+  EXPECT_FALSE(WaitUntilDetectedDeadWithTimeout(base::Milliseconds(75)));
+  EXPECT_FALSE(GetDetectedDead());
+
+  // Now stop notifying and wait for dead detection to occur.
+  WaitUntilDetectedDead();
+  EXPECT_TRUE(GetDetectedDead());
+}
+
+TEST_F(AliveCheckerTest,
+       NotifyAliveWhileTaskRunnerBlockedPreventsDeadDetection) {
+  CreateAliveChecker(/*stop_at_first_alive_notification=*/false,
+                     /*pause_check_during_suspend=*/false);
+
+  StartAliveChecker();
+  EXPECT_FALSE(GetDetectedDead());
+
+  base::WaitableEvent thread_blocked(
+      base::WaitableEvent::ResetPolicy::MANUAL,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
+  base::WaitableEvent unblock_thread(
+      base::WaitableEvent::ResetPolicy::MANUAL,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
+
+  // Block the task runner deterministically.
+  alive_checker_thread_.task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](base::WaitableEvent* thread_blocked,
+                        base::WaitableEvent* unblock_thread) {
+                       thread_blocked->Signal();
+                       unblock_thread->Wait();
+                     },
+                     &thread_blocked, &unblock_thread));
+
+  // Wait until the task runner is actively blocked.
+  thread_blocked.Wait();
+
+  // Sleep 60ms (exceeding 50ms timeout) while thread remains blocked.
+  base::PlatformThread::Sleep(base::Milliseconds(60));
+
+  // Call NotifyAlive() while thread is blocked. Updates atomics synchronously.
+  alive_checker_->NotifyAlive();
+
+  // Unblock the worker thread.
+  unblock_thread.Signal();
+
+  // Overdue check runs immediately. Since NotifyAlive() was called <50ms ago,
+  // dead detection must not trigger.
+  EXPECT_FALSE(WaitUntilDetectedDeadWithTimeout(base::Milliseconds(15)));
+  EXPECT_FALSE(GetDetectedDead());
+
+  // Wait for timeout to expire without further notifications.
   WaitUntilDetectedDead();
   EXPECT_TRUE(GetDetectedDead());
 }

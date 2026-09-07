@@ -12,7 +12,7 @@
 
 namespace media {
 
-AliveChecker::AliveChecker(base::RepeatingClosure dead_callback,
+AliveChecker::AliveChecker(base::OnceClosure dead_callback,
                            base::TimeDelta check_interval,
                            base::TimeDelta timeout,
                            bool stop_at_first_alive_notification,
@@ -25,7 +25,7 @@ AliveChecker::AliveChecker(base::RepeatingClosure dead_callback,
                    PowerObserverHelperFactoryCallback()) {}
 
 AliveChecker::AliveChecker(
-    base::RepeatingClosure dead_callback,
+    base::OnceClosure dead_callback,
     base::TimeDelta check_interval,
     base::TimeDelta timeout,
     bool stop_at_first_alive_notification,
@@ -34,12 +34,12 @@ AliveChecker::AliveChecker(
                    check_interval,
                    timeout,
                    stop_at_first_alive_notification,
-                   true,
+                   /*pause_check_during_suspend=*/true,
                    std::move(power_observer_helper_factory_callback)) {}
 
 // The private constructor called by the above public constructors.
 AliveChecker::AliveChecker(
-    base::RepeatingClosure dead_callback,
+    base::OnceClosure dead_callback,
     base::TimeDelta check_interval,
     base::TimeDelta timeout,
     bool stop_at_first_alive_notification,
@@ -56,27 +56,25 @@ AliveChecker::AliveChecker(
 
   if (pause_check_during_suspend) {
     // When suspending, we don't need to take any action. When resuming, we
-    // reset |last_alive_notification_time_| to avoid false alarms.
-    // Unretained is safe since the PowerObserverHelper runs the callback on
-    // the task runner the AliveChecker (and consequently the
+    // reset `last_alive_notification_time_` to current time to avoid false
+    // alarms. Unretained is safe since the PowerObserverHelper runs the
+    // callback on the task runner the AliveChecker (and consequently the
     // PowerObserverHelper) is destroyed on.
     if (power_observer_helper_factory_callback.is_null()) {
       power_observer_ = std::make_unique<PowerObserverHelper>(
           task_runner_, base::DoNothing(),
-          base::BindRepeating(
-              &AliveChecker::SetLastAliveNotificationTimeToNowOnTaskRunner,
-              base::Unretained(this)));
+          base::BindRepeating(&AliveChecker::SetLastAliveNotificationTimeToNow,
+                              base::Unretained(this)));
     } else {
       power_observer_ =
           std::move(power_observer_helper_factory_callback)
               .Run(task_runner_, base::DoNothing(),
                    base::BindRepeating(
-                       &AliveChecker::
-                           SetLastAliveNotificationTimeToNowOnTaskRunner,
+                       &AliveChecker::SetLastAliveNotificationTimeToNow,
                        base::Unretained(this)));
     }
   } else {
-    // If |pause_check_during_suspend| is false, we expect an empty factory
+    // If `pause_check_during_suspend` is false, we expect an empty factory
     // callback.
     DCHECK(power_observer_helper_factory_callback.is_null());
   }
@@ -88,20 +86,13 @@ AliveChecker::~AliveChecker() {
 
 void AliveChecker::Start() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(!check_alive_timer_);
 
-  SetLastAliveNotificationTimeToNowOnTaskRunner();
-  detected_dead_ = false;
-
-  DCHECK(!check_alive_timer_);
+  SetLastAliveNotificationTimeToNow();
   check_alive_timer_ = std::make_unique<base::RepeatingTimer>();
   check_alive_timer_->Start(FROM_HERE, check_interval_, this,
                             &AliveChecker::CheckIfAlive);
   DCHECK(check_alive_timer_->IsRunning());
-}
-
-void AliveChecker::Stop() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  check_alive_timer_.reset();
 }
 
 bool AliveChecker::DetectedDead() {
@@ -110,18 +101,14 @@ bool AliveChecker::DetectedDead() {
 }
 
 void AliveChecker::NotifyAlive() {
-  if (!task_runner_->RunsTasksInCurrentSequence()) {
-    // We don't need high precision for setting |last_alive_notification_time_|
-    // so we don't have to care about the delay added with posting the task.
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&AliveChecker::NotifyAlive, weak_factory_.GetWeakPtr()));
-    return;
+  SetLastAliveNotificationTimeToNow();
+  // `notified_alive_` is only needed when `stop_at_first_alive_notification_`
+  // is true. Otherwise, liveness is tracked via
+  // `last_alive_notification_time_`; skipping this write avoids unnecessary
+  // atomic stores on real-time audio threads.
+  if (stop_at_first_alive_notification_) {
+    notified_alive_.store(true, std::memory_order_relaxed);
   }
-
-  SetLastAliveNotificationTimeToNowOnTaskRunner();
-  if (stop_at_first_alive_notification_)
-    Stop();
 }
 
 void AliveChecker::CheckIfAlive() {
@@ -137,16 +124,25 @@ void AliveChecker::CheckIfAlive() {
   if (power_observer_ && power_observer_->IsSuspending())
     return;
 
-  if (base::TimeTicks::Now() - last_alive_notification_time_ > timeout_) {
-    Stop();
+  // Stop checking if configured to stop at the first alive notification.
+  if (stop_at_first_alive_notification_ &&
+      notified_alive_.load(std::memory_order_relaxed)) {
+    check_alive_timer_.reset();
+    return;
+  }
+
+  const base::TimeTicks now = base::TimeTicks::Now();
+  if (now - last_alive_notification_time_.load(std::memory_order_relaxed) >
+      timeout_) {
+    check_alive_timer_.reset();
     detected_dead_ = true;
-    dead_callback_.Run();
+    std::move(dead_callback_).Run();
   }
 }
 
-void AliveChecker::SetLastAliveNotificationTimeToNowOnTaskRunner() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  last_alive_notification_time_ = base::TimeTicks::Now();
+void AliveChecker::SetLastAliveNotificationTimeToNow() {
+  last_alive_notification_time_.store(base::TimeTicks::Now(),
+                                      std::memory_order_relaxed);
 }
 
 }  // namespace media
