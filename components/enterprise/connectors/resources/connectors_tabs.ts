@@ -12,9 +12,8 @@ import {DeviceTrustConnectorElement} from './device_trust_connector.js';
 // </if>
 import {ManagedClientCertificateElement} from './managed_client_certificate.js';
 import {ProvisioningDomainConfigElement} from './provisioning_domain_config.js';
-// <if expr="not is_ios">
 import {SignalsReportingElement} from './signals_reporting.js';
-// </if>
+
 
 interface ConnectorTab {
   // Title used as the tab button's text.
@@ -46,13 +45,11 @@ const connectorTabs: ConnectorTab[] = [
     directive: ManagedClientCertificateElement.is,
     isEnabled: true,
   },
-  // <if expr="not is_ios">
   {
     title: 'Signals Reporting',
     directive: SignalsReportingElement.is,
     isEnabled: true,
   },
-  // </if>
   {
     title: 'Provisioning Domain Config',
     directive: ProvisioningDomainConfigElement.is,

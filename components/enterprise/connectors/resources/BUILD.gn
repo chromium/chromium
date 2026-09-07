@@ -14,11 +14,8 @@ build_webui("build") {
     "connectors_tabs.ts",
     "managed_client_certificate.ts",
     "provisioning_domain_config.ts",
+    "signals_reporting.ts",
   ]
-
-  if (!is_ios) {
-    web_component_files += [ "signals_reporting.ts" ]
-  }
 
   if (!is_android) {
     web_component_files += [ "device_trust_connector.ts" ]
