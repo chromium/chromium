@@ -70,6 +70,7 @@ class AshWebUIConfigManagerTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   AshWebUIConfigManager ash_webui_config_manager_{
+      TestingBrowserProcess::GetGlobal()->local_state(),
       TestingBrowserProcess::GetGlobal()
           ->GetFeatures()
           ->application_locale_storage()};

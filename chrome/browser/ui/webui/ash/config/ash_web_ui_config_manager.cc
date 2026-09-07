@@ -252,16 +252,19 @@ std::unique_ptr<content::WebUIConfig> MakeEcheAppUIConfig() {
   return std::make_unique<eche_app::EcheAppUIConfig>(create_controller_func);
 }
 
-std::unique_ptr<content::WebUIConfig> MakeHelpAppUIConfig() {
+// `local_state` must be non-null and must outlive the returned config.
+std::unique_ptr<content::WebUIConfig> MakeHelpAppUIConfig(
+    PrefService* local_state) {
   CreateWebUIControllerFunc create_controller_func = base::BindRepeating(
-      [](content::WebUI* web_ui,
+      [](PrefService* local_state, content::WebUI* web_ui,
          const GURL& url) -> std::unique_ptr<content::WebUIController> {
         Profile* profile = Profile::FromWebUI(web_ui);
 
         auto delegate = std::make_unique<ChromeHelpAppUIDelegate>(web_ui);
-        return std::make_unique<ash::HelpAppUI>(web_ui, std::move(delegate),
-                                                profile->GetPrefs());
-      });
+        return std::make_unique<ash::HelpAppUI>(
+            web_ui, std::move(delegate), local_state, profile->GetPrefs());
+      },
+      base::Unretained(local_state));
 
   return std::make_unique<HelpAppUIConfig>(create_controller_func);
 }
@@ -342,8 +345,10 @@ AshWebUIConfigManager* AshWebUIConfigManager::GetInstance() {
 }
 
 AshWebUIConfigManager::AshWebUIConfigManager(
+    PrefService* local_state,
     const ApplicationLocaleStorage* application_locale_storage)
-    : application_locale_storage_(CHECK_DEREF(application_locale_storage)) {
+    : local_state_(CHECK_DEREF(local_state)),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)) {
   CHECK_EQ(g_instance, nullptr);
   g_instance = this;
 }
@@ -399,7 +404,7 @@ void AshWebUIConfigManager::RegisterWebUIConfigs() {
   AddWebUIConfig(std::make_unique<FocusModeUIConfig>());
   AddWebUIConfig(std::make_unique<graduation::GraduationUIConfig>());
   AddWebUIConfig(std::make_unique<HealthdInternalsUIConfig>());
-  AddWebUIConfig(MakeHelpAppUIConfig());
+  AddWebUIConfig(MakeHelpAppUIConfig(&local_state_.get()));
   AddWebUIConfig(std::make_unique<InternetConfigDialogUIConfig>());
   AddWebUIConfig(std::make_unique<InternetDetailDialogUIConfig>());
   AddWebUIConfig(std::make_unique<KerberosInBrowserUIConfig>());

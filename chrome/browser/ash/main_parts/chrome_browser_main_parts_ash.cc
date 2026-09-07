@@ -1234,6 +1234,7 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
 #endif
 
   ash_web_ui_config_manager_ = std::make_unique<AshWebUIConfigManager>(
+      g_browser_process->local_state(),
       g_browser_process->GetFeatures()->application_locale_storage());
 }
 

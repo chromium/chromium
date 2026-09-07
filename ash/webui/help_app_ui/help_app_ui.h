@@ -38,8 +38,10 @@ class HelpAppUIConfig : public SystemWebAppUIConfig<HelpAppUI> {
 class HelpAppUI : public ui::MojoWebUIController,
                   public help_app::mojom::PageHandlerFactory {
  public:
+  // `local_state` and `pref_service` must be non-null and must outlive `this`.
   HelpAppUI(content::WebUI* web_ui,
             std::unique_ptr<HelpAppUIDelegate> delegate,
+            PrefService* local_state,
             PrefService* pref_service);
   ~HelpAppUI() override;
 
@@ -70,9 +72,8 @@ class HelpAppUI : public ui::MojoWebUIController,
       this};
   std::unique_ptr<HelpAppUIDelegate> delegate_;
 
-  // Safe because PrefService is owned by the profile, which indirectly owns
-  // this class.
-  raw_ref<PrefService> pref_service_;
+  const raw_ref<PrefService> local_state_;
+  const raw_ref<PrefService> pref_service_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

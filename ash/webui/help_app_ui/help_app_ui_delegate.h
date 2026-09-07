@@ -11,7 +11,6 @@
 #include "ash/webui/help_app_ui/help_app_ui.mojom.h"
 
 class GURL;
-class PrefService;
 
 namespace ash {
 
@@ -35,9 +34,6 @@ class HelpAppUIDelegate {
   // Triggers the call-to-action associated with the given action type id.
   virtual void TriggerWelcomeTipCallToAction(
       help_app::mojom::ActionTypeId action_type_id) = 0;
-
-  // Gets locally stored users preferences and state.
-  virtual PrefService* GetLocalState() = 0;
 
   // Launches the MS365 setup flow (or shows the final screen of the flow if it
   // was already completed).

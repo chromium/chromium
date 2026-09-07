@@ -13,6 +13,7 @@
 #include "url/gurl.h"
 
 class ApplicationLocaleStorage;
+class PrefService;
 
 namespace content {
 class WebUIConfig;
@@ -30,8 +31,10 @@ class AshWebUIConfigManager {
   // Returns the singleton instance pointer or nullptr (e.g., in unit tests).
   static AshWebUIConfigManager* GetInstance();
 
-  // `application_locale_storage` must not be null and must outlive `this`.
-  explicit AshWebUIConfigManager(
+  // `local_state` and `application_locale_storage` must not be null and must
+  // outlive `this`.
+  AshWebUIConfigManager(
+      PrefService* local_state,
       const ApplicationLocaleStorage* application_locale_storage);
   AshWebUIConfigManager(const AshWebUIConfigManager&) = delete;
   AshWebUIConfigManager& operator=(const AshWebUIConfigManager&) = delete;
@@ -56,6 +59,7 @@ class AshWebUIConfigManager {
   // reverse order.
   void Unregister();
 
+  const raw_ref<PrefService> local_state_;
   const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
 
   std::vector<GURL> registered_urls_to_unregister_;

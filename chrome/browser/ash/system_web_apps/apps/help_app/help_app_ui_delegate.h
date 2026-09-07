@@ -35,7 +35,6 @@ class ChromeHelpAppUIDelegate : public HelpAppUIDelegate {
   void ShowParentalControls() override;
   void TriggerWelcomeTipCallToAction(
       help_app::mojom::ActionTypeId action_type_id) override;
-  PrefService* GetLocalState() override;
   void LaunchMicrosoft365Setup() override;
   void MaybeShowReleaseNotesNotification() override;
   void GetDeviceInfo(ash::help_app::mojom::PageHandler::GetDeviceInfoCallback

@@ -49,9 +49,11 @@ content::WebUIDataSource* CreateAndAddHostDataSource(
 
 HelpAppUI::HelpAppUI(content::WebUI* web_ui,
                      std::unique_ptr<HelpAppUIDelegate> delegate,
+                     PrefService* local_state,
                      PrefService* pref_service)
     : MojoWebUIController(web_ui),
       delegate_(std::move(delegate)),
+      local_state_(CHECK_DEREF(local_state)),
       pref_service_(CHECK_DEREF(pref_service)) {
   content::BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();
@@ -118,7 +120,7 @@ void HelpAppUI::BindInterface(
     mojo::PendingReceiver<local_search_service::mojom::Index> index_receiver) {
   auto* const factory = local_search_service::LocalSearchServiceProxyFactory::
       GetForBrowserContext(web_ui()->GetWebContents()->GetBrowserContext());
-  factory->SetLocalState(delegate_->GetLocalState());
+  factory->SetLocalState(&local_state_.get());
   factory->GetIndex(local_search_service::IndexId::kHelpApp,
                     local_search_service::Backend::kInvertedIndex,
                     std::move(index_receiver));
