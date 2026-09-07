@@ -13,7 +13,16 @@
 #include "components/url_matcher/url_matcher.h"
 #include "url/gurl.h"
 
+class PrefRegistrySimple;
+
 namespace android_webview {
+
+namespace prefs {
+// This pref contains a list of authentication urls, for which when webview is
+// navigated to any of these urls, browse intent will be sent.
+inline constexpr char kEnterpriseAuthAppLinkPolicy[] =
+    "enterprise_auth_app_link_policy";
+}  // namespace prefs
 
 class EnterpriseAuthenticationAppLinkManager {
  public:
@@ -24,6 +33,8 @@ class EnterpriseAuthenticationAppLinkManager {
   EnterpriseAuthenticationAppLinkManager& operator=(
       const EnterpriseAuthenticationAppLinkManager&) = delete;
   ~EnterpriseAuthenticationAppLinkManager();
+
+  static void RegisterPrefs(PrefRegistrySimple* registry);
 
   bool IsEnterpriseAuthenticationUrl(const GURL& url);
 

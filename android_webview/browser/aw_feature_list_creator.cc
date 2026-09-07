@@ -13,6 +13,7 @@
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_browser_context_store.h"
 #include "android_webview/browser/aw_browser_process.h"
+#include "android_webview/browser/aw_enterprise_authentication_app_link_manager.h"
 #include "android_webview/browser/aw_metrics_service_client_delegate.h"
 #include "android_webview/browser/metrics/android_metrics_provider.h"
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
@@ -192,8 +193,7 @@ std::unique_ptr<PrefService> AwFeatureListCreator::CreatePrefService() {
 
   embedder_support::OriginTrialPrefs::RegisterPrefs(pref_registry.get());
   AwBrowserProcess::RegisterNetworkContextLocalStatePrefs(pref_registry.get());
-  AwBrowserProcess::RegisterEnterpriseAuthenticationAppLinkPolicyPref(
-      pref_registry.get());
+  EnterpriseAuthenticationAppLinkManager::RegisterPrefs(pref_registry.get());
   AwBrowserProcess::RegisterAppCacheQuotaLocalStatePref(pref_registry.get());
   AwTracingDelegate::RegisterPrefs(pref_registry.get());
   AwBrowserContextStore::RegisterPrefs(pref_registry.get());

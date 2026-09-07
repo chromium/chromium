@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "android_webview/browser/aw_browser_process.h"
+#include "android_webview/browser/aw_enterprise_authentication_app_link_manager.h"
 #include "android_webview/browser/enterprise_authentication_app_link_policy_handler.h"
 #include "base/functional/bind.h"
 #include "components/policy/core/browser/configuration_policy_handler_list.h"

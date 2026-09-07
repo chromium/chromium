@@ -40,7 +40,6 @@ namespace prefs {
 // Used for Kerberos authentication.
 extern const char kAuthAndroidNegotiateAccountType[];
 extern const char kAuthServerAllowlist[];
-extern const char kEnterpriseAuthAppLinkPolicy[];
 extern const char kLastKnownAppCacheQuota[];
 
 }  // namespace prefs
@@ -98,8 +97,6 @@ class AwBrowserProcess : public WebViewAppStateObserver {
   os_crypt_async::OSCryptAsync* GetOSCryptAsync() const;
 
   static void RegisterNetworkContextLocalStatePrefs(
-      PrefRegistrySimple* pref_registry);
-  static void RegisterEnterpriseAuthenticationAppLinkPolicyPref(
       PrefRegistrySimple* pref_registry);
   static void RegisterAppCacheQuotaLocalStatePref(
       PrefRegistrySimple* pref_registry);

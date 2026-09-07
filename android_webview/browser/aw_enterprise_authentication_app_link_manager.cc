@@ -4,12 +4,15 @@
 
 #include "android_webview/browser/aw_enterprise_authentication_app_link_manager.h"
 
+#include "components/prefs/pref_registry_simple.h"
 #include "components/url_matcher/url_util.h"
 
 namespace android_webview {
 
-namespace prefs {
-extern const char kEnterpriseAuthAppLinkPolicy[];
+// static
+void EnterpriseAuthenticationAppLinkManager::RegisterPrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterListPref(prefs::kEnterpriseAuthAppLinkPolicy);
 }
 
 EnterpriseAuthenticationAppLinkManager::EnterpriseAuthenticationAppLinkManager(

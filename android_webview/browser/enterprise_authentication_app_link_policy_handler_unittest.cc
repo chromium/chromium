@@ -4,6 +4,7 @@
 
 #include "android_webview/browser/enterprise_authentication_app_link_policy_handler.h"
 
+#include "android_webview/browser/aw_enterprise_authentication_app_link_manager.h"
 #include "base/json/json_reader.h"
 #include "components/policy/core/browser/configuration_policy_pref_store.h"
 #include "components/policy/core/browser/configuration_policy_pref_store_test.h"
