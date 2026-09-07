@@ -73,6 +73,18 @@ TEST(FormPredictionsTest, ConvertToFormPredictions) {
         PASSWORD,
         CREDIT_CARD_VERIFICATION_CODE,
         {CREDIT_CARD_VERIFICATION_CODE}},
+       // standalone cvc in |additional_types| takes precedence.
+       {"standalone_cvc",
+        FormControlType::kInputPassword,
+        PASSWORD,
+        CREDIT_CARD_STANDALONE_VERIFICATION_CODE,
+        {CREDIT_CARD_STANDALONE_VERIFICATION_CODE}},
+       // iban in |additional_types| takes precedence.
+       {"iban",
+        FormControlType::kInputPassword,
+        PASSWORD,
+        IBAN_VALUE,
+        {IBAN_VALUE}},
        // `CREDIT_CARD_NUMBER` takes precedence over any credential related
        // types.
        {"cc-number",
@@ -211,6 +223,9 @@ TEST(FormPredictionsTest, DeriveFromFieldType) {
        CredentialFieldType::kConfirmationPassword},
       {"Credit card number", CREDIT_CARD_NUMBER,
        CredentialFieldType::kNonCredential},
+      {"Standalone CVC", CREDIT_CARD_STANDALONE_VERIFICATION_CODE,
+       CredentialFieldType::kNonCredential},
+      {"IBAN", IBAN_VALUE, CredentialFieldType::kNonCredential},
       {"Not password", NOT_PASSWORD, CredentialFieldType::kNonCredential},
       {"Not username", NOT_USERNAME, CredentialFieldType::kNonCredential},
       {"OTP", ONE_TIME_CODE, CredentialFieldType::kNonCredential},
@@ -223,6 +238,13 @@ TEST(FormPredictionsTest, DeriveFromFieldType) {
     EXPECT_EQ(test_case.expected_result,
               DeriveFromFieldType(test_case.server_type));
   }
+}
+
+TEST(FormPredictionsTest, DeriveFromFieldType_StandaloneCvcAndIbanSiblings) {
+  EXPECT_EQ(CredentialFieldType::kNonCredential,
+            DeriveFromFieldType(CREDIT_CARD_STANDALONE_VERIFICATION_CODE));
+  EXPECT_EQ(CredentialFieldType::kNonCredential,
+            DeriveFromFieldType(IBAN_VALUE));
 }
 
 // Tests that if |AutofillServerPrediction| has an override flag, it

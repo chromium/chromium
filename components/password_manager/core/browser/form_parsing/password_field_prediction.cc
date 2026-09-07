@@ -21,6 +21,7 @@ using autofill::CalculateFormSignature;
 using autofill::FieldGlobalId;
 using autofill::FieldSignature;
 using autofill::FieldType;
+using autofill::FieldTypeGroup;
 using autofill::FormData;
 using autofill::ToSafeFieldType;
 
@@ -28,15 +29,24 @@ namespace password_manager {
 
 namespace {
 
+// Returns true if `type` belongs to a payment-related group (credit cards,
+// standalone CVC, or IBAN).
+bool IsPaymentRelated(FieldType type) {
+  FieldTypeGroup group = GroupTypeOfFieldType(type);
+  return group == FieldTypeGroup::kCreditCard ||
+         group == FieldTypeGroup::kStandaloneCvcField ||
+         group == FieldTypeGroup::kIban;
+}
+
 FieldType GetServerType(const AutofillServerPrediction& prediction) {
   // The main server predictions is in `field.server_type()` but the server can
   // send additional predictions in `field.server_predictions()`. This function
   // chooses the relevant one for Password Manager predictions.
 
-  // 1. If there is credit card related prediction, return the prediction.
+  // 1. If there is a payment related prediction, return the prediction.
   for (const auto& server_predictions : prediction.server_predictions) {
     FieldType type = static_cast<FieldType>(server_predictions.type());
-    if (GroupTypeOfFieldType(type) == autofill::FieldTypeGroup::kCreditCard) {
+    if (IsPaymentRelated(type)) {
       return type;
     }
   }
@@ -55,7 +65,7 @@ FieldType GetServerType(const AutofillServerPrediction& prediction) {
 }  // namespace
 
 CredentialFieldType DeriveFromFieldType(FieldType type) {
-  if (GroupTypeOfFieldType(type) == autofill::FieldTypeGroup::kCreditCard) {
+  if (IsPaymentRelated(type)) {
     return CredentialFieldType::kNonCredential;
   }
 

@@ -1945,6 +1945,24 @@ TEST_F(FormParserTest, IgnoreCvcFields) {
       },
       {
           .description_for_logging =
+              "Server hints: CREDIT_CARD_STANDALONE_VERIFICATION_CODE.",
+          .fields =
+              {
+                  {.role = ElementRole::USERNAME,
+                   .form_control_type = FormControlType::kInputText},
+                  {.form_control_type = FormControlType::kInputPassword,
+                   .server_predicted_type =
+                       autofill::CREDIT_CARD_STANDALONE_VERIFICATION_CODE,
+                   .manual_generation_enabled = false},
+                  {.role = ElementRole::CURRENT_PASSWORD,
+                   .form_control_type = FormControlType::kInputPassword},
+              },
+          // The result should be trusted for more than just fallback, because
+          // the chosen password was not a suspected CVC.
+          .fallback_only = false,
+      },
+      {
+          .description_for_logging =
               "Server hints: CREDIT_CARD_VERIFICATION_CODE on only password.",
           .fields =
               {
@@ -1952,6 +1970,19 @@ TEST_F(FormParserTest, IgnoreCvcFields) {
                   {.form_control_type = FormControlType::kInputPassword,
                    .server_predicted_type =
                        autofill::CREDIT_CARD_VERIFICATION_CODE,
+                   .manual_generation_enabled = false},
+              },
+      },
+      {
+          .description_for_logging =
+              "Server hints: CREDIT_CARD_STANDALONE_VERIFICATION_CODE on only "
+              "password.",
+          .fields =
+              {
+                  {.form_control_type = FormControlType::kInputText},
+                  {.form_control_type = FormControlType::kInputPassword,
+                   .server_predicted_type =
+                       autofill::CREDIT_CARD_STANDALONE_VERIFICATION_CODE,
                    .manual_generation_enabled = false},
               },
       },
@@ -1983,6 +2014,37 @@ TEST_F(FormParserTest, IgnoreCvcFields) {
                    .form_control_type = FormControlType::kInputPassword},
               },
           .fallback_only = true,
+      },
+  });
+}
+
+// The parser should avoid identifying IBAN fields as passwords.
+TEST_F(FormParserTest, IgnoreIbanFields) {
+  CheckTestData({
+      {
+          .description_for_logging = "Server hints: IBAN_VALUE.",
+          .fields =
+              {
+                  {.role = ElementRole::USERNAME,
+                   .form_control_type = FormControlType::kInputText},
+                  {.form_control_type = FormControlType::kInputPassword,
+                   .server_predicted_type = autofill::IBAN_VALUE,
+                   .manual_generation_enabled = false},
+                  {.role = ElementRole::CURRENT_PASSWORD,
+                   .form_control_type = FormControlType::kInputPassword},
+              },
+          .fallback_only = false,
+      },
+      {
+          .description_for_logging =
+              "Server hints: IBAN_VALUE on only password.",
+          .fields =
+              {
+                  {.form_control_type = FormControlType::kInputText},
+                  {.form_control_type = FormControlType::kInputPassword,
+                   .server_predicted_type = autofill::IBAN_VALUE,
+                   .manual_generation_enabled = false},
+              },
       },
   });
 }
