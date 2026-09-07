@@ -147,13 +147,13 @@ class MockDriveFilePickerImageFetcher : public DriveFilePickerImageFetcher {
 }
 - (void)setDriveFilePickerSelectedIdentity:(id<SystemIdentity>)identity {
 }
-- (void)showDriveFilePickerWithComposeboxDelegate:
-            (id<ComposeboxPickerPresenterDelegate>)delegate
-                               baseViewController:
-                                   (UIViewController*)baseViewController
-                               maxAttachmentCount:(NSUInteger)maxAttachmentCount
-                                snackbarPresenter:(ComposeboxSnackbarPresenter*)
-                                                      snackbarPresenter {
+- (void)
+    showDriveFilePickerWithResponseHandler:
+        (id<DriveFilePickerResponseCommands>)responseHandler
+                        baseViewController:(UIViewController*)baseViewController
+                        maxAttachmentCount:(NSUInteger)maxAttachmentCount
+                         snackbarPresenter:
+                             (ComposeboxSnackbarPresenter*)snackbarPresenter {
 }
 @end
 

@@ -40,7 +40,8 @@ namespace {
 constexpr int kChromeIOSProductId = 71720513;
 }  // namespace
 
-@interface ComposeboxPickerPresenter () <PHPickerViewControllerDelegate,
+@interface ComposeboxPickerPresenter () <DriveFilePickerResponseCommands,
+                                         PHPickerViewControllerDelegate,
                                          UIDocumentPickerDelegate,
                                          UIImagePickerControllerDelegate,
                                          UINavigationControllerDelegate>
@@ -302,10 +303,20 @@ constexpr int kChromeIOSProductId = 71720513;
   id<DriveFilePickerCommands> driveFilePickerCommands = HandlerForProtocol(
       _browser->GetCommandDispatcher(), DriveFilePickerCommands);
   [driveFilePickerCommands
-      showDriveFilePickerWithComposeboxDelegate:self.delegate
-                             baseViewController:_baseViewController
-                             maxAttachmentCount:maxDriveAttachmentCount
-                              snackbarPresenter:_snackbarPresenter];
+      showDriveFilePickerWithResponseHandler:self
+                          baseViewController:_baseViewController
+                          maxAttachmentCount:maxDriveAttachmentCount
+                           snackbarPresenter:_snackbarPresenter];
+}
+
+#pragma mark - DriveFilePickerResponseCommands
+
+- (void)driveFilePickerDidPickItems:
+    (NSArray<ComposeboxPickerDriveResult*>*)items {
+  [self.delegate composeboxPickerPresenter:self didPickDriveItems:items];
+}
+
+- (void)driveFilePickerDidCancel {
 }
 
 #pragma mark - UIImagePickerControllerDelegate

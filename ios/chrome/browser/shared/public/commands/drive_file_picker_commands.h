@@ -7,9 +7,22 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol SystemIdentity;
-@protocol ComposeboxPickerPresenterDelegate;
+@class ComposeboxPickerDriveResult;
 @class ComposeboxSnackbarPresenter;
+@protocol SystemIdentity;
+
+// Commands protocol to receive Drive file picker results or cancellation.
+@protocol DriveFilePickerResponseCommands <NSObject>
+
+// Called when Drive items are selected and confirmed in the picker.
+- (void)driveFilePickerDidPickItems:
+    (NSArray<ComposeboxPickerDriveResult*>*)items;
+
+// Called when the Drive file picker is dismissed or cancelled without selecting
+// items.
+- (void)driveFilePickerDidCancel;
+
+@end
 
 namespace web {
 class WebState;
@@ -30,13 +43,13 @@ class WebState;
 - (void)setDriveFilePickerSelectedIdentity:(id<SystemIdentity>)selectedIdentity;
 
 // Shows the Drive file picker for the Composebox context.
-- (void)showDriveFilePickerWithComposeboxDelegate:
-            (id<ComposeboxPickerPresenterDelegate>)delegate
-                               baseViewController:
-                                   (UIViewController*)baseViewController
-                               maxAttachmentCount:(NSUInteger)maxAttachmentCount
-                                snackbarPresenter:(ComposeboxSnackbarPresenter*)
-                                                      snackbarPresenter;
+- (void)
+    showDriveFilePickerWithResponseHandler:
+        (id<DriveFilePickerResponseCommands>)responseHandler
+                        baseViewController:(UIViewController*)baseViewController
+                        maxAttachmentCount:(NSUInteger)maxAttachmentCount
+                         snackbarPresenter:
+                             (ComposeboxSnackbarPresenter*)snackbarPresenter;
 
 @end
 

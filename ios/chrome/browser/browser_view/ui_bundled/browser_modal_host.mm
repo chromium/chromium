@@ -1428,13 +1428,13 @@ const char kContextPanelDismissedHistogram[] =
   [_driveFilePickerCoordinator setSelectedIdentity:selectedIdentity];
 }
 
-- (void)showDriveFilePickerWithComposeboxDelegate:
-            (id<ComposeboxPickerPresenterDelegate>)delegate
-                               baseViewController:
-                                   (UIViewController*)baseViewController
-                               maxAttachmentCount:(NSUInteger)maxAttachmentCount
-                                snackbarPresenter:(ComposeboxSnackbarPresenter*)
-                                                      snackbarPresenter {
+- (void)
+    showDriveFilePickerWithResponseHandler:
+        (id<DriveFilePickerResponseCommands>)responseHandler
+                        baseViewController:(UIViewController*)baseViewController
+                        maxAttachmentCount:(NSUInteger)maxAttachmentCount
+                         snackbarPresenter:
+                             (ComposeboxSnackbarPresenter*)snackbarPresenter {
   // In the context of the compose box the user should not have been offered to
   // use the drive if they are not signed-in.
   CHECK(AuthenticationServiceFactory::GetForProfile(_browser->GetProfile())
@@ -1455,7 +1455,7 @@ const char kContextPanelDismissedHistogram[] =
                          browser:_browser
                         webState:activeWebState
                    forComposebox:YES];
-  _driveFilePickerCoordinator.composeboxDelegate = delegate;
+  _driveFilePickerCoordinator.responseHandler = responseHandler;
   _driveFilePickerCoordinator.maxAttachmentCount = maxAttachmentCount;
   _driveFilePickerCoordinator.snackbarPresenter = snackbarPresenter;
   [_driveFilePickerCoordinator start];

@@ -7,9 +7,9 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-@protocol SystemIdentity;
-@protocol ComposeboxPickerPresenterDelegate;
 @class ComposeboxSnackbarPresenter;
+@protocol DriveFilePickerResponseCommands;
+@protocol SystemIdentity;
 namespace web {
 class WebState;
 }
@@ -17,9 +17,8 @@ class WebState;
 // Coordinator of the Drive file picker.
 @interface RootDriveFilePickerCoordinator : ChromeCoordinator
 
-// Delegate to forward Composebox picker results to.
-@property(nonatomic, weak) id<ComposeboxPickerPresenterDelegate>
-    composeboxDelegate;
+// Commands handler to forward Drive file picker results or cancellation to.
+@property(nonatomic, weak) id<DriveFilePickerResponseCommands> responseHandler;
 
 // Maximum number of attachments allowed when presented for composebox.
 @property(nonatomic, assign) NSUInteger maxAttachmentCount;

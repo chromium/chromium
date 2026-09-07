@@ -110,6 +110,8 @@ void ConfirmChangeProfileWithCompletion(
   UITapGestureRecognizer* _tapToDismissGestureRecognizer;
   // Whether the coordinator is launched from/for the Composebox.
   BOOL _forComposebox;
+  // Whether items have been picked and submitted.
+  BOOL _itemsPicked;
   // Alert controller used to confirm profile switching.
   UIAlertController* _alertController;
 }
@@ -180,6 +182,10 @@ void ConfirmChangeProfileWithCompletion(
 }
 
 - (void)stop {
+  if (!_itemsPicked && self.responseHandler) {
+    [self.responseHandler driveFilePickerDidCancel];
+    self.responseHandler = nil;
+  }
   [self stopAddAccountCoordinator];
   [_alertController dismissViewControllerAnimated:NO completion:nil];
   _alertController = nil;
@@ -297,7 +303,8 @@ void ConfirmChangeProfileWithCompletion(
 - (void)mediator:(DriveFilePickerMediator*)mediator
     didPickDriveItems:(const std::vector<DriveItem>&)driveItems {
   CHECK(_forComposebox);
-  CHECK(self.composeboxDelegate);
+  CHECK(self.responseHandler);
+  _itemsPicked = YES;
 
   NSMutableArray<ComposeboxPickerDriveResult*>* results =
       [NSMutableArray array];
@@ -312,11 +319,7 @@ void ConfirmChangeProfileWithCompletion(
     result.icon = fetchedIcon ?: item.GetPlaceholderImage();
     [results addObject:result];
   }
-  // Pass nil for the presenter because this coordinator manages its own
-  // asynchronous dismissal, and the presenter reference is unused by the
-  // delegate.
-  [self.composeboxDelegate composeboxPickerPresenter:nil
-                                   didPickDriveItems:results];
+  [self.responseHandler driveFilePickerDidPickItems:results];
 
   [self stopAnimated];
 }

@@ -124,3 +124,47 @@ TEST_F(RootDriveFilePickerCoordinatorTest, IdentityChange) {
                                      1);
   histogram_tester.ExpectTotalCount("IOS.FilePicker.Drive.AccountSelection", 1);
 }
+
+@interface FakeDriveFilePickerResponseCommands
+    : NSObject <DriveFilePickerResponseCommands>
+
+@property(nonatomic, assign) BOOL didPickItemsCalled;
+@property(nonatomic, assign) BOOL didCancelCalled;
+@property(nonatomic, copy) NSArray<ComposeboxPickerDriveResult*>* pickedItems;
+
+@end
+
+@implementation FakeDriveFilePickerResponseCommands
+
+- (void)driveFilePickerDidPickItems:
+    (NSArray<ComposeboxPickerDriveResult*>*)items {
+  self.didPickItemsCalled = YES;
+  self.pickedItems = items;
+}
+
+- (void)driveFilePickerDidCancel {
+  self.didCancelCalled = YES;
+}
+
+@end
+
+// Tests that stopping the coordinator for composebox before picking items calls
+// driveFilePickerDidCancel on the response handler.
+TEST_F(RootDriveFilePickerCoordinatorTest, StopForComposeboxCallsDidCancel) {
+  SignIn();
+  RootDriveFilePickerCoordinator* composebox_coordinator =
+      [[RootDriveFilePickerCoordinator alloc]
+          initWithBaseViewController:base_view_controller_
+                             browser:browser_.get()
+                            webState:fake_web_state_.get()
+                       forComposebox:YES];
+  FakeDriveFilePickerResponseCommands* response_handler =
+      [[FakeDriveFilePickerResponseCommands alloc] init];
+  composebox_coordinator.responseHandler = response_handler;
+
+  [composebox_coordinator start];
+  EXPECT_FALSE(response_handler.didCancelCalled);
+
+  [composebox_coordinator stop];
+  EXPECT_TRUE(response_handler.didCancelCalled);
+}

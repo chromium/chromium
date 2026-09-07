@@ -72,6 +72,7 @@
     : NSObject <DriveFilePickerCommands>
 
 @property(nonatomic, assign) BOOL drivePickerShown;
+@property(nonatomic, weak) id<DriveFilePickerResponseCommands> responseHandler;
 @property(nonatomic, assign) NSUInteger maxAttachmentCount;
 @property(nonatomic, weak) ComposeboxSnackbarPresenter* snackbarPresenter;
 
@@ -89,14 +90,15 @@
     (id<SystemIdentity>)selectedIdentity {
 }
 
-- (void)showDriveFilePickerWithComposeboxDelegate:
-            (id<ComposeboxPickerPresenterDelegate>)composeboxDelegate
-                               baseViewController:
-                                   (UIViewController*)baseViewController
-                               maxAttachmentCount:(NSUInteger)maxAttachmentCount
-                                snackbarPresenter:(ComposeboxSnackbarPresenter*)
-                                                      snackbarPresenter {
+- (void)
+    showDriveFilePickerWithResponseHandler:
+        (id<DriveFilePickerResponseCommands>)responseHandler
+                        baseViewController:(UIViewController*)baseViewController
+                        maxAttachmentCount:(NSUInteger)maxAttachmentCount
+                         snackbarPresenter:
+                             (ComposeboxSnackbarPresenter*)snackbarPresenter {
   self.drivePickerShown = YES;
+  self.responseHandler = responseHandler;
   self.maxAttachmentCount = maxAttachmentCount;
   self.snackbarPresenter = snackbarPresenter;
 }
