@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/web_state_list_builder_from_description.h"
@@ -125,8 +126,9 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
         IOSChromeFaviconLoaderFactory::GetInstance(),
         base::BindRepeating(&BuildTestFaviconLoader));
 
-    profile_ = std::move(test_profile_builder).Build();
-    browser_ = std::make_unique<TestBrowser>(profile_.get());
+    profile_ =
+        profile_manager_.AddProfileWithBuilder(std::move(test_profile_builder));
+    browser_ = std::make_unique<TestBrowser>(profile_);
 
     web_state_list_ = browser_->GetWebStateList();
     web_state_list_->InsertWebState(std::make_unique<web::FakeWebState>());
@@ -142,7 +144,7 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
         tab_groups::test::CreateTestSavedTabGroup();
     saved_group.SetLocalGroupId(tab_group_->tab_group_id());
     tab_group_sync_service_ =
-        tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile_.get());
+        tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile_);
 
     tab_group_sync_service_->AddGroup(saved_group);
 
@@ -153,11 +155,11 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
     signin_coordinator_mock_ = OCMStrictClassMock([SigninCoordinator class]);
     signin_coordinator_class_mock_ =
         OCMStrictClassMock([SigninCoordinator class]);
-    share_kit_service_ = ShareKitServiceFactory::GetForProfile(profile_.get());
+    share_kit_service_ = ShareKitServiceFactory::GetForProfile(profile_);
     base_view_controller_ = [[FakeUIViewController alloc] init];
 
     mock_collaboration_service_ = static_cast<MockCollaborationService*>(
-        CollaborationServiceFactory::GetForProfile(profile_.get()));
+        CollaborationServiceFactory::GetForProfile(profile_));
 
     collaboration_status_.sync_status = SyncStatus::kSyncWithoutTabGroup;
   }
@@ -166,7 +168,7 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
   void InitDelegate(FlowType flow_type) {
     delegate_ = std::make_unique<IOSCollaborationControllerDelegate>(
         browser_.get(), CreateControllerDelegateParamsFromProfile(
-                            profile_.get(), base_view_controller_, flow_type));
+                            profile_, base_view_controller_, flow_type));
   }
 
   // Sign in in the authentication service with a fake identity.
@@ -216,6 +218,18 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
     EXPECT_OCMOCK_VERIFY(mock_scene_handler_);
     EXPECT_OCMOCK_VERIFY((id)signin_coordinator_mock_);
     EXPECT_OCMOCK_VERIFY(signin_coordinator_class_mock_);
+    tab_group_ = nullptr;
+    web_state_list_ = nullptr;
+    delegate_.reset();
+    browser_.reset();
+    base_view_controller_ = nil;
+    mock_scene_handler_ = nil;
+    signin_coordinator_mock_ = nil;
+    signin_coordinator_class_mock_ = nil;
+    tab_group_sync_service_ = nullptr;
+    mock_collaboration_service_ = nullptr;
+    share_kit_service_ = nullptr;
+    profile_ = nullptr;
     PlatformTest::TearDown();
   }
 
@@ -241,21 +255,20 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestProfileManagerIOS profile_manager_;
+  raw_ptr<TestProfileIOS> profile_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<tab_groups::TabGroupSyncService, DanglingUntriaged>
-      tab_group_sync_service_;
-  raw_ptr<MockCollaborationService, DanglingUntriaged>
-      mock_collaboration_service_;
+  raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service_ = nullptr;
+  raw_ptr<MockCollaborationService> mock_collaboration_service_ = nullptr;
   std::unique_ptr<IOSCollaborationControllerDelegate> delegate_;
-  raw_ptr<WebStateList, DanglingUntriaged> web_state_list_;
   id signin_coordinator_class_mock_;
   SigninCoordinator* signin_coordinator_mock_;
   id mock_scene_handler_;
   std::unique_ptr<Browser> browser_;
-  std::unique_ptr<TestProfileIOS> profile_;
+  raw_ptr<WebStateList> web_state_list_ = nullptr;
   UIViewController* base_view_controller_;
-  raw_ptr<const TabGroup, DanglingUntriaged> tab_group_;
-  raw_ptr<ShareKitService> share_kit_service_;
+  raw_ptr<const TabGroup> tab_group_ = nullptr;
+  raw_ptr<ShareKitService> share_kit_service_ = nullptr;
   ServiceStatus collaboration_status_;
 };
 
@@ -285,7 +298,8 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowShareDialogInvalid) {
   tab_groups::TabGroupId tab_group_id = tab_group_->tab_group_id();
 
   // Delete the tabGroup.
-  web_state_list_->DeleteGroup(tab_group_);
+  const TabGroup* group_to_delete = std::exchange(tab_group_, nullptr).get();
+  web_state_list_->DeleteGroup(group_to_delete);
 
   base::MockCallback<
       CollaborationControllerDelegate::ResultWithGroupTokenCallback>

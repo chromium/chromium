@@ -13,6 +13,7 @@
 #import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -41,13 +42,20 @@ class IdleTimeoutPolicyUtilsTest : public PlatformTest {
             std::make_unique<FakeAuthenticationServiceDelegate>()));
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateTestSyncService));
-    profile_ = std::move(builder).Build();
-    pref_service_ = profile_.get()->GetPrefs();
-    identity_manager_ = IdentityManagerFactory::GetForProfile(profile_.get());
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
+    pref_service_ = profile_->GetPrefs();
+    identity_manager_ = IdentityManagerFactory::GetForProfile(profile_);
     authentication_service_ =
-        AuthenticationServiceFactory::GetForProfile(profile_.get());
+        AuthenticationServiceFactory::GetForProfile(profile_);
   }
 
+  void TearDown() override {
+    pref_service_ = nullptr;
+    identity_manager_ = nullptr;
+    authentication_service_ = nullptr;
+    profile_ = nullptr;
+    PlatformTest::TearDown();
+  }
 
   void SetIdleTimeoutActions(std::vector<ActionType> action_types) {
     base::ListValue actions;
@@ -70,11 +78,12 @@ class IdleTimeoutPolicyUtilsTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestProfileIOS> profile_;
-  raw_ptr<PrefService> pref_service_;
-  raw_ptr<signin::IdentityManager> identity_manager_;
-  raw_ptr<AuthenticationService> authentication_service_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestProfileManagerIOS profile_manager_;
+  raw_ptr<TestProfileIOS> profile_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
+  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
+  raw_ptr<AuthenticationService> authentication_service_ = nullptr;
 };
 
 TEST_F(IdleTimeoutPolicyUtilsTest, ActionsToActionSet_AllTypes_UserSignedIn) {
