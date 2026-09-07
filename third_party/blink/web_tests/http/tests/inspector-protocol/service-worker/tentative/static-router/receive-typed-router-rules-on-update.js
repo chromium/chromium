@@ -15,7 +15,7 @@
 
   const versionsPromise = waitForServiceWorkerInstallation();
   await dp.ServiceWorker.enable();
-  await page.navigate('resources/service-worker-with-static-router.html');
+  await page.navigate('resources/service-worker-with-typed-static-router.html');
 
   const versions = await versionsPromise;
 
@@ -23,7 +23,8 @@
   testRunner.log(versions[0].typedRouterRules);
 
   // Log the individual rule IDs to verify ID assignment and ordering.
-  testRunner.log(versions[0].typedRouterRules[0].id);
-  testRunner.log(versions[0].typedRouterRules[1].id);
+  for (const rule of versions[0].typedRouterRules) {
+    testRunner.log(rule.id);
+  }
   testRunner.completeTest();
 });

@@ -11,7 +11,61 @@ Tests receiving static router rules from the service worker.
     }
     [1] : {
         condition : {
+            urlPattern : https://example.com/test/*
+        }
+        id : <number>
+        source : {
+            type : fetchEvent
+        }
+    }
+    [2] : {
+        condition : {
+            urlPattern : https://example.com
+        }
+        id : <number>
+        source : {
+            type : fetchEvent
+        }
+    }
+    [3] : {
+        condition : {
+            urlPattern : https://example.com/test?query=test#test_hash
+        }
+        id : <number>
+        source : {
+            type : fetchEvent
+        }
+    }
+    [4] : {
+        condition : {
+            urlPattern : https://example.com/test/*\?query=test
+        }
+        id : <number>
+        source : {
+            type : fetchEvent
+        }
+    }
+    [5] : {
+        condition : {
+            urlPattern : {"hostname":"example.com","pathname":"/test/*","port":"","protocol":"https","username":"user"}
+        }
+        id : <number>
+        source : {
+            type : fetchEvent
+        }
+    }
+    [6] : {
+        condition : {
             urlPattern : {"hostname":"127.0.0.1","pathname":"/**/*.txt","port":"8000","protocol":"http"}
+        }
+        id : <number>
+        source : {
+            type : fetchEvent
+        }
+    }
+    [7] : {
+        condition : {
+            urlPattern : {"hash":"*","hostname":"*","password":"*","pathname":"*","port":"*","protocol":"*","search":"*","username":"*"}
         }
         id : <number>
         source : {
@@ -21,4 +75,10 @@ Tests receiving static router rules from the service worker.
 ]
 1
 2
+3
+4
+5
+6
+7
+8
 
