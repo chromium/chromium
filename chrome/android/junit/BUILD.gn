@@ -538,6 +538,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/autofill/settings/AutofillLocalCardEditorTest.java",
       "src/org/chromium/chrome/browser/autofill/settings/AutofillLocalIbanEditorTest.java",
       "src/org/chromium/chrome/browser/autofill/settings/AutofillPaymentMethodsFragmentBuyNowPayLaterTest.java",
+      "src/org/chromium/chrome/browser/autofill/settings/AutofillProfileEditorPreferenceTest.java",
       "src/org/chromium/chrome/browser/autofill/settings/AutofillServerCardEditorTest.java",
       "src/org/chromium/chrome/browser/autofill/settings/AutofillVirtualCardEnrollmentDialogTest.java",
       "src/org/chromium/chrome/browser/autofill/settings/AutofillVirtualCardUnenrollmentDialogTest.java",

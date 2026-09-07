@@ -524,7 +524,7 @@ public class AutofillAiDelegate {
             screen.addPreference(category);
 
             for (EntityInstanceWithLabels entity : entities) {
-                Preference pref = new Preference(getStyledContext());
+                Preference pref = new ChromeBasePreference(getStyledContext());
                 pref.setTitle(entity.getEntityInstanceLabel());
                 pref.setSummary(entity.getEntityInstanceSubLabel());
                 pref.setKey(entity.getGuid());
@@ -572,7 +572,7 @@ public class AutofillAiDelegate {
             EntityDataManager entityDataManager, EntityType entityType) {
         boolean buttonEnabled = isAddButtonEnabled(entityDataManager, entityType);
 
-        Preference pref = new Preference(getStyledContext());
+        Preference pref = new ChromeBasePreference(getStyledContext());
         Drawable plusIcon =
                 ApiCompatibilityUtils.getDrawable(mFragment.getResources(), R.drawable.plus);
         plusIcon.mutate();

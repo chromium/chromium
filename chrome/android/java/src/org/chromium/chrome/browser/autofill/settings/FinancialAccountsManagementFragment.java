@@ -39,6 +39,7 @@ import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.payments.AccountType;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.autofill.payments.Ewallet;
+import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
@@ -197,7 +198,7 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
     }
 
     private Preference getPreferenceForBankAccount(BankAccount bankAccount) {
-        Preference bankAccountPref = new Preference(getStyledContext());
+        Preference bankAccountPref = new ChromeBasePreference(getStyledContext());
 
         bankAccountPref.setTitle(bankAccount.getBankName());
         bankAccountPref.setKey(
@@ -224,7 +225,7 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
     }
 
     private Preference getEwalletRowItem(Ewallet eWallet) {
-        Preference eWalletPref = new Preference(getStyledContext());
+        Preference eWalletPref = new ChromeBasePreference(getStyledContext());
 
         eWalletPref.setTitle(eWallet.getEwalletName());
         eWalletPref.setKey(

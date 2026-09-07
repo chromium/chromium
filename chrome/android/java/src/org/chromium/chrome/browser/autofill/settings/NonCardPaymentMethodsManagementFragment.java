@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.payments.Ewallet;
+import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
@@ -159,7 +160,7 @@ public class NonCardPaymentMethodsManagementFragment extends ChromeBaseSettingsF
     }
 
     private Preference getEwalletRowItem(Ewallet ewallet) {
-        Preference ewalletPref = new Preference(getStyledContext());
+        Preference ewalletPref = new ChromeBasePreference(getStyledContext());
         ewalletPref.setTitle(ewallet.getEwalletName());
         ewalletPref.setKey(
                 String.format(PREFERENCE_KEY_EWALLET_ACCOUNT, ewallet.getInstrumentId()));

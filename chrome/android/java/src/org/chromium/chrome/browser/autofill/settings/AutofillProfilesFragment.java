@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.FieldType;
 import org.chromium.components.autofill.RecordType;
+import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
@@ -354,14 +355,14 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
 
             List<String> emails = personalDataManager.getEmailVerificationAddresses();
             if (emails == null || emails.isEmpty()) {
-                Preference emptyPref = new Preference(getStyledContext());
+                Preference emptyPref = new ChromeBasePreference(getStyledContext());
                 emptyPref.setKey(PREF_EMAIL_VERIFICATION_EMPTY);
                 emptyPref.setTitle(R.string.autofill_settings_email_verification_empty_label);
                 emptyPref.setSelectable(false);
                 category.addPreference(emptyPref);
             } else {
                 for (String email : emails) {
-                    Preference emailPref = new Preference(getStyledContext());
+                    Preference emailPref = new ChromeBasePreference(getStyledContext());
                     emailPref.setKey(email);
                     emailPref.setTitle(email);
                     String issuer = personalDataManager.getEmailVerificationIssuer(email);
