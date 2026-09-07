@@ -86,11 +86,6 @@ external/wpt/css/css-overflow/scrollable-overflow-input-001.html
 external/wpt/css/css-overflow/scrollable-overflow-input-002.html
 external/wpt/css/css-overflow/scrollbar-gutter-*
 external/wpt/css/css-overscroll-behavior/overscroll-behavior-root.html
-external/wpt/css/css-paint-api/parse-input-arguments-018.https.html
-external/wpt/css/css-position/hypothetical-box-scroll-parent.html
-external/wpt/css/css-position/position-absolute-iframe-print-001.sub.html
-external/wpt/css/css-position/position-absolute-iframe-print-002.sub.html
-external/wpt/css/css-position/position-fixed-scroll-overlap.html
 external/wpt/css/css-pseudo/active-selection-014.html
 external/wpt/css/css-pseudo/first-letter-001.html
 external/wpt/css/css-pseudo/highlight-cascade/highlight-cascade-008.html
@@ -627,8 +622,6 @@ virtual/fenced-frame-mparch/external/wpt/fenced-frame/key-scrolling.https.html
 virtual/fenced-frame-mparch/external/wpt/fenced-frame/notification.https.html
 virtual/fenced-frame-mparch/external/wpt/fenced-frame/permission-api-denied.https.html
 virtual/fenced-frame-mparch/external/wpt/fenced-frame/resize-lock*
-virtual/fractional-scroll-offsets/external/wpt/css/css-position/sticky/position-sticky-inline.html
-virtual/fractional-scroll-offsets/external/wpt/css/css-position/sticky/position-sticky-large-top*
 virtual/gpu-rasterization/external/wpt/css/css-images/object-fit-*
 virtual/gpu-rasterization/external/wpt/css/css-images/object-view-box-fit-*
 virtual/main-thread-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-animation-custom-timing-function.html
