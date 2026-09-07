@@ -13,9 +13,7 @@
 @class AlertCoordinator;
 class AuthenticationService;
 class Browser;
-class GaiaId;
 class PrefService;
-class ProfileIOS;
 
 namespace signin {
 class IdentityManager;
@@ -95,14 +93,6 @@ SignedInUserState GetSignedInUserState(
     AuthenticationService* authentication_service,
     signin::IdentityManager* identity_manager,
     PrefService* profile_pref_service);
-
-// Returns `true` if the dialog from
-// `GetLeavingPrimaryAccountConfirmationDialog()` needs to be shown, even if
-// there is no unsynced data.
-bool ForceLeavingPrimaryAccountConfirmationDialog(
-    SignedInUserState signed_in_user_state,
-    ProfileIOS* profile,
-    const GaiaId& gaia_id_to_sign_in);
 
 // Returns a dialog for the user to confirm to sign out, switch account.
 // `anchorView` and `anchorRect` is the position that triggered sign-in.

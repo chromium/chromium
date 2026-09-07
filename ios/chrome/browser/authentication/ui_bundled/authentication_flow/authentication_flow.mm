@@ -588,6 +588,10 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 
 - (void)showLeavingPrimaryAccountConfirmationIfNeededStep {
   CHECK(_unsyncedDataTypes.has_value());
+  if (_unsyncedDataTypes.value().empty()) {
+    [self continueFlow];
+    return;
+  }
   ProfileIOS* profile = [self profile];
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForProfile(profile);
@@ -596,12 +600,6 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   PrefService* profilePrefService = profile->GetPrefs();
   SignedInUserState signedInUserState = GetSignedInUserState(
       authenticationService, identityManager, profilePrefService);
-  if (!ForceLeavingPrimaryAccountConfirmationDialog(signedInUserState, profile,
-                                                    _identityToSignIn.gaiaId) &&
-      _unsyncedDataTypes.value().empty()) {
-    [self continueFlow];
-    return;
-  }
   [_performer
       showLeavingPrimaryAccountConfirmationWithBaseViewController:
           _presentingViewController

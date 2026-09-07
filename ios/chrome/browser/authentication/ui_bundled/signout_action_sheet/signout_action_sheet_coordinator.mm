@@ -142,8 +142,6 @@ SnackbarMessage* CreateSignoutSnackbarMessage(
   BOOL _forceSnackbarOverToolbar;
   // Show undo button on the sign-out snackbar.
   BOOL _showUndoButton;
-  // Signin and syncing state.
-  SignedInUserState _signedInUserState;
   // Wrapper around the completion callback.
   SignoutActionSheetCompletionWrapper* _completionWrapper;
 }
@@ -186,16 +184,7 @@ SnackbarMessage* CreateSignoutSnackbarMessage(
 
 - (void)start {
   DCHECK(self.authenticationService->HasPrimaryIdentity());
-  PrefService* profilePrefService = self.profile->GetPrefs();
-  _signedInUserState = GetSignedInUserState(
-      self.authenticationService, self.identityManager, profilePrefService);
-  if (ForceLeavingPrimaryAccountConfirmationDialog(_signedInUserState,
-                                                   self.profile,
-                                                   /*gaia_id_to_sign_in=*/{})) {
-    [self startActionSheetCoordinatorForSignout];
-  } else {
-    [self checkForUnsyncedDataAndSignOut];
-  }
+  [self checkForUnsyncedDataAndSignOut];
 }
 
 - (void)stop {
@@ -315,9 +304,12 @@ SnackbarMessage* CreateSignoutSnackbarMessage(
 
 // Starts the signout action sheet for the current user state.
 - (void)startActionSheetCoordinatorForSignout {
+  PrefService* profilePrefService = self.profile->GetPrefs();
+  SignedInUserState signedInUserState = GetSignedInUserState(
+      self.authenticationService, self.identityManager, profilePrefService);
   __weak __typeof(self) weakSelf = self;
   self.actionSheetCoordinator = GetLeavingPrimaryAccountConfirmationDialog(
-      self.baseViewController, self.browser, _view, _rect, _signedInUserState,
+      self.baseViewController, self.browser, _view, _rect, signedInUserState,
       /*account_profile_switch=*/false, ^(BOOL continueFlow) {
         [weakSelf signoutConfirmationWithContinue:continueFlow];
       });
