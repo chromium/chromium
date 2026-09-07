@@ -9,10 +9,6 @@
 
 #include "extensions/browser/extension_function.h"
 
-namespace base {
-class Value;
-}
-
 namespace extensions {
 
 class ChromeosInfoPrivateGetFunction : public ExtensionFunction {
@@ -26,9 +22,6 @@ class ChromeosInfoPrivateGetFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  // Returns a newly allocate value, or null.
-  std::unique_ptr<base::Value> GetValue(const std::string& property_name);
-
   DECLARE_EXTENSION_FUNCTION("chromeosInfoPrivate.get", CHROMEOSINFOPRIVATE_GET)
 };
 

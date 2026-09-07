@@ -26,14 +26,13 @@
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/login/startup_utils.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -268,15 +267,11 @@ bool IsEnterpriseKiosk() {
     return false;
   }
 
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  return connector->IsDeviceEnterpriseManaged();
+  return ash::InstallAttributes::Get()->IsEnterpriseManaged();
 }
 
-std::string GetClientId() {
-  return IsEnterpriseKiosk()
-             ? g_browser_process->metrics_service()->GetClientId()
-             : std::string();
+std::string GetClientId(const metrics::MetricsService& metrics_service) {
+  return IsEnterpriseKiosk() ? metrics_service.GetClientId() : std::string();
 }
 
 std::optional<std::string_view> GetBoolPrefNameForApiProperty(
@@ -285,9 +280,10 @@ std::optional<std::string_view> GetBoolPrefNameForApiProperty(
   return it != kPreferencesMap.end() ? std::optional(it->second) : std::nullopt;
 }
 
-std::unique_ptr<base::Value> GetValue(const std::string& property_name) {
-  PrefService& local_state = CHECK_DEREF(g_browser_process->local_state());
-
+std::unique_ptr<base::Value> GetValue(
+    const PrefService& local_state,
+    const metrics::MetricsService& metrics_service,
+    const std::string& property_name) {
   if (property_name == kPropertyHWID) {
     ash::system::StatisticsProvider* provider =
         ash::system::StatisticsProvider::GetInstance();
@@ -387,9 +383,7 @@ std::unique_ptr<base::Value> GetValue(const std::string& property_name) {
   }
 
   if (property_name == kPropertyManagedDeviceStatus) {
-    policy::BrowserPolicyConnectorAsh* connector =
-        g_browser_process->platform_part()->browser_policy_connector_ash();
-    if (connector->IsDeviceEnterpriseManaged()) {
+    if (ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
       return std::make_unique<base::Value>(kManagedDeviceStatusManaged);
     }
     return std::make_unique<base::Value>(kManagedDeviceStatusNotManaged);
@@ -425,7 +419,7 @@ std::unique_ptr<base::Value> GetValue(const std::string& property_name) {
   }
 
   if (property_name == kPropertyClientId) {
-    return std::make_unique<base::Value>(GetClientId());
+    return std::make_unique<base::Value>(GetClientId(metrics_service));
   }
 
   if (property_name == kPropertyTimezone) {
@@ -457,10 +451,13 @@ std::unique_ptr<base::Value> GetValue(const std::string& property_name) {
 }
 
 base::Value GetSystemProperties(
+    const PrefService& local_state,
+    const metrics::MetricsService& metrics_service,
     const std::vector<std::string>& property_names) {
   base::DictValue result;
   for (const std::string& property_name : property_names) {
-    std::unique_ptr<base::Value> value = GetValue(property_name);
+    std::unique_ptr<base::Value> value =
+        GetValue(local_state, metrics_service, property_name);
     if (value) {
       result.Set(property_name,
                  base::Value::FromUniquePtrValue(std::move(value)));
@@ -469,7 +466,7 @@ base::Value GetSystemProperties(
   return base::Value(std::move(result));
 }
 
-void SetTimezone(const std::string& value) {
+void SetTimezone(const PrefService& local_state, const std::string& value) {
   if (ash::switches::IsPerUserTimezoneEnabled()) {
     ProfileManager::GetPrimaryUserProfile()->GetPrefs()->SetString(
         ash::prefs::kUserTimezone, value);
@@ -478,8 +475,7 @@ void SetTimezone(const std::string& value) {
         ash::ProfileHelper::Get()->GetUserByProfile(
             ProfileManager::GetPrimaryUserProfile());
     if (user) {
-      ash::system::SetSystemTimezone(
-          CHECK_DEREF(g_browser_process->local_state()), user, value);
+      ash::system::SetSystemTimezone(local_state, user, value);
     }
   }
 }
@@ -514,7 +510,10 @@ ExtensionFunction::ResponseAction ChromeosInfoPrivateGetFunction::Run() {
     property_names.push_back(std::move(property_name));
   }
 
-  base::Value result = GetSystemProperties(std::move(property_names));
+  base::Value result =
+      GetSystemProperties(CHECK_DEREF(g_browser_process->local_state()),
+                          CHECK_DEREF(g_browser_process->metrics_service()),
+                          std::move(property_names));
   return RespondNow(WithArguments(std::move(result)));
 }
 
@@ -531,7 +530,7 @@ ExtensionFunction::ResponseAction ChromeosInfoPrivateSetFunction::Run() {
     EXTENSION_FUNCTION_VALIDATE(args().size() >= 2);
     EXTENSION_FUNCTION_VALIDATE(args()[1].is_string());
     const std::string& param_value = args()[1].GetString();
-    SetTimezone(param_value);
+    SetTimezone(CHECK_DEREF(g_browser_process->local_state()), param_value);
     return RespondNow(NoArguments());
   }
 
