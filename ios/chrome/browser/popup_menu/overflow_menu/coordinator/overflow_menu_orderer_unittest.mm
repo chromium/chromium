@@ -15,12 +15,13 @@
 #import "ios/chrome/browser/popup_menu/overflow_menu/ui/ui_swift.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
 namespace {
+
+NSString* const kSettingsSymbol = @"gearshape";
 
 // The number of destinations immediately visible in the carousel when the
 // overflow menu is opened.

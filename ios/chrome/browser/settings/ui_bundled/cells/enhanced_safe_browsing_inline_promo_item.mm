@@ -26,6 +26,9 @@ constexpr CGFloat kCloseButtonVerticalOffset = 16;
 // Height and width of the shield image.
 constexpr CGFloat kShieldImageSize = 36;
 
+// Size of the shield symbol.
+constexpr CGFloat kShieldSymbolSize = 17;
+
 // The top padding for the inline promo.
 constexpr CGFloat kInlinePromoVerticalPadding = 24;
 
@@ -60,12 +63,12 @@ UIButton* CreateCloseButton() {
 // Creates a UIImageView containing either branded or unbranded shield image.
 UIImageView* CreateShieldImage() {
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-  NSString* shieldSymbol = kGoogleShieldSymbol;
+  Symbol shieldSymbol = SymbolGoogleShield;
 #else
-  NSString* shieldSymbol = kShieldSymbol;
+  Symbol shieldSymbol = SymbolShield;
 #endif
 
-  UIImage* image = [UIImage imageNamed:shieldSymbol];
+  UIImage* image = SymbolWithPointSize(shieldSymbol, kShieldSymbolSize);
 
   return [[UIImageView alloc] initWithImage:image];
 }

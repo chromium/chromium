@@ -103,8 +103,6 @@ SymbolInfo InfoForSymbol(Symbol symbol) {
       return {@"ellipsis_square_fill", SymbolType::kCustom};
     case SymbolEnterprise:
       return {@"enterprise", SymbolType::kCustom};
-    case SymbolEnterpriseSigninBanner:
-      return {@"enterprise_signin_banner", SymbolType::kCustom};
     case SymbolFamilylink:
       return {@"familylink", SymbolType::kCustom};
     case SymbolIncognito:

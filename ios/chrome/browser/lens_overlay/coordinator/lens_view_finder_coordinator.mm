@@ -399,13 +399,13 @@ LensViewFinderTransition TransitionFromPresentationStyle(
     shortcutTitle = l10n_util::GetNSStringWithFixup(
         IDS_IOS_APPLICATION_SHORTCUT_LENS_TITLE);
     shortcutIcon =
-        [UIApplicationShortcutIcon iconWithTemplateImageName:kCameraLensSymbol];
+        [UIApplicationShortcutIcon iconWithTemplateImageName:@"camera_lens"];
   } else {
     shortcutType = kShortcutQRScanner;
     shortcutTitle = l10n_util::GetNSStringWithFixup(
         IDS_IOS_APPLICATION_SHORTCUT_QR_SCANNER_TITLE);
     shortcutIcon =
-        [UIApplicationShortcutIcon iconWithSystemImageName:kQRCodeSymbol];
+        [UIApplicationShortcutIcon iconWithSystemImageName:@"qrcode"];
   }
   UIApplicationShortcutItem* item =
       [[UIApplicationShortcutItem alloc] initWithType:shortcutType

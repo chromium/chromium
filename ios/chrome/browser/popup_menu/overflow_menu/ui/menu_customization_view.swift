@@ -159,7 +159,7 @@ struct MenuCustomizationView: View {
         Button {
           eventHandler?.cancelWasTapped()
         } label: {
-          CompatGlassButtonContentView(imageName: kXMarkSymbol) {
+          CompatGlassButtonContentView(imageName: "xmark") {
             Text(
               L10nUtils.stringWithFixup(
                 messageId: IDS_IOS_OVERFLOW_MENU_CUSTOMIZE_MENU_CANCEL)
@@ -188,7 +188,7 @@ struct MenuCustomizationView: View {
         Button {
           eventHandler?.doneWasTapped()
         } label: {
-          CompatGlassButtonContentView(imageName: kCheckmarkSymbol) {
+          CompatGlassButtonContentView(imageName: "checkmark") {
             Text(
               L10nUtils.stringWithFixup(
                 messageId: IDS_IOS_OVERFLOW_MENU_CUSTOMIZE_MENU_DONE)

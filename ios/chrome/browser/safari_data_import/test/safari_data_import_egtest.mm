@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/safari_data_import/test/safari_data_import_earl_grey_ui.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -29,6 +28,9 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
+
+NSString* const kShowActionSymbol = @"eye";
+NSString* const kHideActionSymbol = @"eye.slash";
 
 using ::chrome_test_util::ButtonStackSecondaryButton;
 using ::chrome_test_util::NavigationBarDoneButton;

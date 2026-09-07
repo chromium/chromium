@@ -72,7 +72,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       self.managedProfileCreationDataSource.mode;
 
   // Set banner.
-  self.bannerName = kEnterpriseSigninBannerSymbol;
+  self.bannerName = @"enterprise_signin_banner";
 
   self.titleText =
       l10n_util::GetNSString(IDS_IOS_ENTERPRISE_PROFILE_CREATION_TITLE);

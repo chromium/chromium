@@ -9,7 +9,6 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbol_configurations.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbol_info.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbol_names.h"
 
 namespace {
 

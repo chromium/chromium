@@ -4,11 +4,12 @@
 
 #import "ios/chrome/browser/popup_menu/overflow_menu/public/overflow_menu_constants.h"
 #import "ios/chrome/browser/popup_menu/overflow_menu/ui/ui_swift.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
 namespace {
+
+NSString* const kSettingsSymbol = @"gearshape";
 
 OverflowMenuDestination* CreateOverflowMenuDestination(
     overflow_menu::Destination destination) {
