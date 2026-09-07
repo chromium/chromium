@@ -579,7 +579,8 @@ Response BrowserHandler::DoSetDownloadBehavior(
     std::optional<std::string> download_path) {
   if (!allow_set_download_behavior_)
     return Response::ServerError("Not allowed");
-  if (behavior == Browser::SetDownloadBehavior::BehaviorEnum::Allow &&
+  if ((behavior == Browser::SetDownloadBehavior::BehaviorEnum::Allow ||
+       behavior == Browser::SetDownloadBehavior::BehaviorEnum::AllowAndName) &&
       !download_path.has_value()) {
     return Response::InvalidParams("downloadPath not provided");
   }

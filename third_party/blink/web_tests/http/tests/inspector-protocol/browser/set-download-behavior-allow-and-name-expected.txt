@@ -1,0 +1,10 @@
+Tests Browser.setDownloadBehavior downloadPath validation.
+allow without downloadPath error code: -32602
+allow without downloadPath error message: downloadPath not provided
+allowAndName without downloadPath error code: -32602
+allowAndName without downloadPath error message: downloadPath not provided
+PASS: allow with downloadPath is accepted
+PASS: allowAndName with downloadPath is accepted
+PASS: deny without downloadPath is accepted
+PASS: default without downloadPath is accepted
+
