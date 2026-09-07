@@ -350,8 +350,6 @@ BASE_FEATURE(kEnableTraitCollectionRegistration,
 BASE_FEATURE(kAuthenticationFlowReauthFirstKillswitch,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOmahaResyncTimerOnForeground, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kIOSReactivationNotifications, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kIOSReactivationNotificationsTriggerTimeParam[] =

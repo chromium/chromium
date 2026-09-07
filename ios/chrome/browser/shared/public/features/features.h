@@ -339,9 +339,6 @@ bool IsBlueDotOnToolsMenuButtoneEnabled();
 // Killswitch for the reauth-first step in AuthenticationFlowInProfile.
 BASE_DECLARE_FEATURE(kAuthenticationFlowReauthFirstKillswitch);
 
-// Feature to control resyncing the omaha ping timer on foregrounding.
-BASE_DECLARE_FEATURE(kOmahaResyncTimerOnForeground);
-
 // Feature flag to enable Reactivation Notifications.
 BASE_DECLARE_FEATURE(kIOSReactivationNotifications);
 

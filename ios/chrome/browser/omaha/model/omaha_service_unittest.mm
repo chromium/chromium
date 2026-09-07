@@ -14,7 +14,6 @@
 #import "base/strings/stringprintf.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/test/ios/wait_util.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "base/time/time_override.h"
 #import "components/metrics/metrics_pref_names.h"
@@ -852,9 +851,6 @@ TEST_F(OmahaServiceTest, InstallRetryTest) {
 }
 
 TEST_F(OmahaServiceTest, ResyncTimerAfterSystemSuspend) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kOmahaResyncTimerOnForeground);
-
   OmahaService service(true);
   service.StartInternal();
   service.InitializeURLLoaderFactory(test_shared_url_loader_factory_);

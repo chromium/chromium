@@ -547,8 +547,7 @@ void OmahaService::SendOrScheduleNextPing() {
         base::BindOnce(&OmahaService::SendPing, base::Unretained(this)));
     // Once the timer is started, register for
     // applicationWillEnterForeground notifications.
-    if (!foreground_notification_registration_handle_ &&
-        base::FeatureList::IsEnabled(kOmahaResyncTimerOnForeground)) {
+    if (!foreground_notification_registration_handle_) {
       foreground_notification_registration_handle_ =
           [[NSNotificationCenter defaultCenter]
               addObserverForName:@"UIApplicationWillEnterForegroundNotification"
@@ -569,8 +568,6 @@ void OmahaService::SendOrScheduleNextPing() {
 // the expected deadline.
 void OmahaService::ResyncTimerIfNeeded() {
   DCHECK_CURRENTLY_ON(web::WebThread::IO);
-  CHECK(base::FeatureList::IsEnabled(kOmahaResyncTimerOnForeground));
-
   // If the timer isn't already running, nothing needs to be done.
   if (!timer_.IsRunning()) {
     return;
