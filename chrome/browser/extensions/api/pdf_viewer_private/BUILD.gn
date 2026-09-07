@@ -57,3 +57,43 @@ source_set("browser_tests") {
     "//content/test:test_support",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "pdf_viewer_private_api_unittest.cc" ]
+
+  deps = [
+    ":pdf_viewer_private",
+    "//base",
+    "//chrome/browser/extensions",
+    "//chrome/browser/pdf",
+    "//chrome/browser/pdf:unit_tests",
+    "//chrome/test:test_support",
+    "//components/pdf/common:constants",
+    "//content/test:test_support",
+    "//extensions/browser",
+    "//extensions/browser/mime_handler",
+    "//extensions/browser/mime_handler:stream_container",
+    "//extensions/browser/mime_handler:test_helpers",
+    "//pdf:content_restriction",
+    "//pdf:features",
+    "//services/network/public/mojom:url_loader_base",
+    "//url",
+  ]
+
+  if (enable_pdf_save_to_drive) {
+    deps += [
+      "//chrome/browser/save_to_drive",
+      "//chrome/browser/save_to_drive:unit_tests",
+      "//chrome/browser/ui/hats",
+      "//chrome/browser/ui/hats:test_support",
+      "//chrome/browser/ui/save_to_drive",
+      "//chrome/browser/ui/views/save_to_drive:unit_tests",
+      "//chrome/common/extensions/api",
+      "//extensions/browser:test_support",
+    ]
+    allow_circular_includes_from =
+        [ "//chrome/browser/ui/views/save_to_drive:unit_tests" ]
+  }
+}

@@ -21,6 +21,20 @@ source_set("locale") {
   ]
 }
 
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "locale_template_url_loader_unittest.cc" ]
+  deps = [
+    ":locale",
+    "//base",
+    "//chrome/browser/search_engines:test_support",
+    "//components/search_engines",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
 source_set("locale_manager") {
   public = [ "locale_manager.h" ]
 

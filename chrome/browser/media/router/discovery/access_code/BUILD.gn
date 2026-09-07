@@ -81,4 +81,20 @@ if (!is_android) {
     ]
     configs += [ "//build/config/compiler:wexit_time_destructors" ]
   }
+
+  source_set("interactive_ui_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "access_code_cast_sink_service_browsertest.cc" ]
+    deps = [
+      ":access_code_cast_feature",
+      ":access_code_sink_service",
+      "//base/test:test_support",
+      "//chrome/browser/media/router:test_support",
+      "//chrome/test/media_router/access_code_cast:access_code_cast_integration_base",
+      "//components/sessions",
+      "//content/public/browser",
+      "//testing/gtest",
+    ]
+  }
 }

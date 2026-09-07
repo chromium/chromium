@@ -45,6 +45,23 @@ if (enable_cardboard) {
   }
 }
 
+if (enable_arcore) {
+  source_set("android_browsertests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "webxr_policy_browsertest.cc" ]
+    deps = [
+      "//base",
+      "//chrome/browser/profiles:profile",
+      "//chrome/common:non_code_constants",
+      "//chrome/test:test_support",
+      "//components/prefs",
+      "//content/public/browser",
+      "//content/test:test_support",
+    ]
+  }
+}
+
 test("vr_android_unittests") {
   sources = [
     "arcore_device/arcore_device_unittest.cc",

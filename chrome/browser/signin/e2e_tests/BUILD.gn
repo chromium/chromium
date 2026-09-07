@@ -51,4 +51,49 @@ if (!is_android) {
       "//ui/views:test_support",
     ]
   }
+
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "live_sign_in_test.cc" ]
+    deps = [
+      ":test_support",
+      "//chrome/browser/browsing_data:constants",
+      "//chrome/browser/signin",
+      "//chrome/browser/sync:factories",
+      "//chrome/browser/ui/profiles",
+      "//chrome/browser/ui/profiles:test_support",
+      "//chrome/browser/ui/webui/signin:login_ui_service",
+      "//chrome/browser/ui/webui/signin:signin_utils",
+      "//chrome/browser/ui/webui/signin:test_support_ui",
+      "//chrome/common",
+      "//chrome/test:test_support",
+      "//chrome/test/interaction",
+      "//components/signin/public/base",
+      "//components/sync/base",
+      "//components/sync/service",
+      "//components/unexportable_keys",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//google_apis",
+      "//mojo/public/cpp/bindings",
+      "//net:test_support",
+      "//services/network/public/cpp",
+      "//services/network/public/mojom",
+      "//skia",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//ui/base",
+      "//ui/gfx",
+      "//url",
+    ]
+
+    if (enable_dice_support) {
+      deps += [
+        "//chrome/browser/ui/views/profiles:dice_web_signin_interception_bubble_view",
+        "//chrome/browser/ui/views/profiles:profile_picker_view_test_utils",
+        "//chrome/browser/ui/webui/signin:signin_impl",
+      ]
+    }
+  }
 }

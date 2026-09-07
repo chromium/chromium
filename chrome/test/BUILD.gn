@@ -1135,17 +1135,14 @@ if (is_android) {
     }
 
     sources = [
-      "../browser/android/cookies/cookies_fetcher_restore_util_browsertest.cc",
       "../browser/android/customtabs/custom_tabs_browsertest.cc",
       "../browser/android/customtabs/tab_interaction_recorder_browsertest.cc",
       "../browser/android/historical_tab_saver_browsertest.cc",
       "../browser/android/persisted_tab_data/persisted_tab_data_android_browsertest.cc",
       "../browser/android/persisted_tab_data/sensitivity_persisted_tab_data_android_browsertest.cc",
       "../browser/android/webview_renderer_extension_browsertest.cc",
-      "../browser/background_fetch/background_fetch_browsertest_android.cc",
       "../browser/multi_network_browser_test.cc",
       "../browser/renderer_host/javascript_optimizer_feature_browsertest.cc",
-      "../browser/safe_browsing/android/suspicious_site_browsertest.cc",
       "../renderer/accessibility/read_anything/read_anything_test_utils.cc",
       "../renderer/accessibility/read_anything/read_anything_test_utils.h",
       "../renderer/autofill/fake_mojo_password_manager_driver.cc",
@@ -1179,12 +1176,14 @@ if (is_android) {
       "//chrome/browser/accessibility/accessibility_prefs:browser_tests",
       "//chrome/browser/actor:browser_tests",
       "//chrome/browser/android",
+      "//chrome/browser/android/cookies:android_browsertests",
       "//chrome/browser/android/persisted_tab_data/test:test_support",
       "//chrome/browser/android/webapk:android_browsertests",
       "//chrome/browser/autofill",
       "//chrome/browser/autofill:browser_tests",
       "//chrome/browser/auxiliary_search:browser_tests",
       "//chrome/browser/background_fetch",
+      "//chrome/browser/background_fetch:android_browsertests",
       "//chrome/browser/banners:android_browsertests",
       "//chrome/browser/browsing_data:constants",
       "//chrome/browser/content_settings:content_settings_factory",
@@ -1231,6 +1230,7 @@ if (is_android) {
       "//chrome/browser/profiles",
       "//chrome/browser/profiles:android_browsertests",
       "//chrome/browser/safe_browsing:test_support",
+      "//chrome/browser/safe_browsing/android:android_browsertests",
       "//chrome/browser/safe_browsing/android:test_support_java",
       "//chrome/browser/search_engines",
       "//chrome/browser/segmentation_platform:test_utils",
@@ -1460,7 +1460,7 @@ if (is_android) {
       # enabled, since we won't be able to distinguish whether the test cases
       # are failing due to absence of AR, or due to an issue with propagating
       # the enterprise policy setting.
-      sources += [ "../browser/android/vr/webxr_policy_browsertest.cc" ]
+      deps += [ "//chrome/browser/android/vr:android_browsertests" ]
     }
 
     if (enable_openxr) {
@@ -1977,6 +1977,7 @@ if (!is_android) {
       "//chrome/browser/sharing/glic_experimental_triggering:browser_tests",
       "//chrome/browser/sharing/shared_clipboard",
       "//chrome/browser/signin:browser_tests",
+      "//chrome/browser/signin/e2e_tests:browser_tests",
       "//chrome/browser/signin/e2e_tests:test_support",
       "//chrome/browser/site_isolation:browser_tests",
       "//chrome/browser/site_protection",
@@ -2811,7 +2812,6 @@ if (!is_android) {
       "../browser/os_crypt/os_crypt_async_browsertest.cc",
       "../browser/renderer_host/javascript_optimizer_feature_browsertest.cc",
       "../browser/safe_browsing/download_protection/download_protection_service_browsertest.cc",
-      "../browser/signin/e2e_tests/live_sign_in_test.cc",
       "../browser/ui/views/autofill/payments/offer_notification_icon_view_browsertest.cc",
       "../browser/ui/views/bluetooth_device_credentials_view_browsertest.cc",
       "../browser/ui/views/bluetooth_device_pair_confirm_view_browsertest.cc",
@@ -5926,7 +5926,6 @@ test("unit_tests") {
       "../browser/android/customtabs/tab_interaction_recorder_android_unittest.cc",
       "../browser/android/framebust_intervention/framebust_blocked_delegate_android_unittest.cc",
       "../browser/android/history/history_deletion_bridge_unittest.cc",
-      "../browser/android/locale/locale_template_url_loader_unittest.cc",
       "../browser/android/metrics/android_atoms_logger_unittest.cc",
       "../browser/android/metrics/android_session_durations_service_unittest.cc",
       "../browser/android/ntp/new_tab_page_url_handler_unittest.cc",
@@ -5962,6 +5961,7 @@ test("unit_tests") {
       "//chrome/browser/android/extensions:unit_tests",
       "//chrome/browser/android/httpclient:unittests",
       "//chrome/browser/android/locale",
+      "//chrome/browser/android/locale:unit_tests",
       "//chrome/browser/android/webapk:unit_tests",
       "//chrome/browser/auxiliary_search:unit_tests",
       "//chrome/browser/auxiliary_search/proto",
@@ -7304,32 +7304,18 @@ test("unit_tests") {
   }
 
   if (enable_pdf) {
-    sources += [
-      "../browser/extensions/api/pdf_viewer_private/pdf_viewer_private_api_unittest.cc",
-      "../common/pdf_util_unittest.cc",
-    ]
+    sources += [ "../common/pdf_util_unittest.cc" ]
     deps += [
       "//base",
-      "//chrome/browser/extensions/api/pdf_viewer_private",
+      "//chrome/browser/extensions/api/pdf_viewer_private:unit_tests",
       "//chrome/browser/pdf",
       "//chrome/browser/pdf:unit_tests",
-      "//extensions/browser",
       "//net",
       "//pdf:content_restriction",
       "//pdf:features",
       "//services/network/public/mojom:url_loader_base",
       "//url",
     ]
-    if (enable_pdf_save_to_drive) {
-      deps += [
-        "//chrome/browser/save_to_drive",
-        "//chrome/browser/save_to_drive:unit_tests",
-        "//chrome/browser/ui/save_to_drive",
-        "//chrome/browser/ui/views/save_to_drive:unit_tests",
-      ]
-      allow_circular_includes_from +=
-          [ "//chrome/browser/ui/views/save_to_drive:unit_tests" ]
-    }
   }
 
   if (enable_printing) {
@@ -9209,9 +9195,8 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/indigo:interactive_ui_tests",
     ]
 
-    sources += [ "../browser/media/router/discovery/access_code/access_code_cast_sink_service_browsertest.cc" ]
-
     deps += [
+      "//chrome/browser/media/router/discovery/access_code:interactive_ui_tests",
       "//components/on_device_translation:public",
       "//components/soda",
     ]

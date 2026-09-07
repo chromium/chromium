@@ -27,6 +27,27 @@ generate_jni("jni_headers") {
       [ "java/src/org/chromium/chrome/browser/cookies/CookiesFetcher.java" ]
 }
 
+if (is_android) {
+  source_set("android_browsertests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "cookies_fetcher_restore_util_browsertest.cc" ]
+    deps = [
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/android",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/tab",
+      "//chrome/test:test_support",
+      "//content/test:test_support",
+      "//net",
+      "//net:test_support",
+      "//services/network/public/mojom",
+      "//testing/gtest",
+    ]
+  }
+}
+
 robolectric_library("junit") {
   sources =
       [ "java/src/org/chromium/chrome/browser/cookies/CookiesFetcherTest.java" ]
