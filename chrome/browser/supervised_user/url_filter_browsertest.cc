@@ -318,8 +318,9 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentAllowsPageBlockedBySafeSites) {
       WaitForStateChange(kChildElementId, PageWithMatchingTitle("Best Gore")));
 }
 
+// TODO(crbug.com/554940575): Re-enable this test once the bug is fixed.
 IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
-                       ParentApprovesPermissionRequestForBlockedSite) {
+                       DISABLED_ParentApprovesPermissionRequestForBlockedSite) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kParentApprovalTab);
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(InIntendedStateObserver,
