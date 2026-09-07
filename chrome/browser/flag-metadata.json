@@ -838,7 +838,7 @@
   {
     "name": "assistant-aim-minimized-state",
     "owners": [ "alionadangla@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 154
+    "expiry_milestone": 163
   },
   {
     "name": "assistant-container",
