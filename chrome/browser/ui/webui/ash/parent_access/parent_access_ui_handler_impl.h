@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_state_tracker.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
@@ -27,6 +28,7 @@ struct AccessTokenInfo;
 class IdentityManager;
 }  // namespace signin
 
+class ApplicationLocaleStorage;
 class GoogleServiceAuthError;
 
 namespace ash {
@@ -34,14 +36,17 @@ namespace ash {
 class ParentAccessUiHandlerImpl
     : public parent_access_ui::mojom::ParentAccessUiHandler {
  public:
-  // When |delegate| parameter is null, any internal methods that rely
+  // `application_locale_storage` and `identity_manager` must not be null and
+  // must outlive `this`.
+  // When `delegate` parameter is null, any internal methods that rely
   // on the delegate will log an error and return empty data to the
-  // caller.  This can occur in certain browser tests in which no dialog
+  // caller. This can occur in certain browser tests in which no dialog
   // that implements the delegate is created.
   ParentAccessUiHandlerImpl(
+      const ApplicationLocaleStorage* application_locale_storage,
+      signin::IdentityManager* identity_manager,
       mojo::PendingReceiver<parent_access_ui::mojom::ParentAccessUiHandler>
           receiver,
-      signin::IdentityManager* identity_manager,
       ParentAccessUiHandlerDelegate* delegate);
   ParentAccessUiHandlerImpl(const ParentAccessUiHandlerImpl&) = delete;
   ParentAccessUiHandlerImpl& operator=(const ParentAccessUiHandlerImpl&) =
@@ -74,6 +79,8 @@ class ParentAccessUiHandlerImpl
 
   void RecordParentAccessWidgetError(
       supervised_user::ParentAccessWidgetError error);
+
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
 
   // Used to fetch OAuth2 access tokens.
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;

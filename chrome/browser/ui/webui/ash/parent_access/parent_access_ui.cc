@@ -25,6 +25,7 @@
 #include "chrome/grit/supervision_resources_map.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/signin/identity_manager_provider.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -34,11 +35,28 @@
 
 namespace ash {
 
+ParentAccessUIConfig::ParentAccessUIConfig(
+    const ApplicationLocaleStorage* application_locale_storage)
+    : WebUIConfig(content::kChromeUIScheme, ash::kChromeUIParentAccessHost),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)) {}
+
+ParentAccessUIConfig::~ParentAccessUIConfig() = default;
+
+std::unique_ptr<content::WebUIController>
+ParentAccessUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                            const GURL& url) {
+  return std::make_unique<ParentAccessUI>(web_ui,
+                                          &application_locale_storage_.get());
+}
+
 // static
 signin::IdentityManager* ParentAccessUI::test_identity_manager_ = nullptr;
 
-ParentAccessUI::ParentAccessUI(content::WebUI* web_ui)
-    : ui::MojoWebDialogUI(web_ui) {
+ParentAccessUI::ParentAccessUI(
+    content::WebUI* web_ui,
+    const ApplicationLocaleStorage* application_locale_storage)
+    : ui::MojoWebDialogUI(web_ui),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)) {
   // Set up the basic page framework.
   SetUpResources();
 }
@@ -62,7 +80,8 @@ void ParentAccessUI::BindInterface(
   // The dialog instance could be null if the webui's url is entered in the
   // browser address bar.  The handler should handle that scenario.
   mojo_api_handler_ = std::make_unique<ParentAccessUiHandlerImpl>(
-      std::move(receiver), identity_manager, ParentAccessDialog::GetInstance());
+      &application_locale_storage_.get(), identity_manager, std::move(receiver),
+      ParentAccessDialog::GetInstance());
 }
 
 parent_access_ui::mojom::ParentAccessUiHandler*

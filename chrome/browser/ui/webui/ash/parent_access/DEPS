@@ -13,7 +13,6 @@ include_rules = [
   # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/ash/login/test",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/browser_window/public",
   "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
@@ -28,5 +27,8 @@ specific_include_rules = {
   ],
   "parent_access_browsertest_base\\.cc": [
     "+chrome/browser/signin",
+  ],
+  "parent_access_ui_handler_impl_unittest\\.cc": [
+    "+chrome/browser/global_features.h",
   ],
 }

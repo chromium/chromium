@@ -9,16 +9,17 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_metrics_utils.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/google/core/common/google_util.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
@@ -72,11 +73,13 @@ void ParentAccessUiHandlerImpl::RecordParentAccessWidgetError(
 }
 
 ParentAccessUiHandlerImpl::ParentAccessUiHandlerImpl(
+    const ApplicationLocaleStorage* application_locale_storage,
+    signin::IdentityManager* identity_manager,
     mojo::PendingReceiver<parent_access_ui::mojom::ParentAccessUiHandler>
         receiver,
-    signin::IdentityManager* identity_manager,
     ParentAccessUiHandlerDelegate* delegate)
-    : identity_manager_(identity_manager),
+    : application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      identity_manager_(identity_manager),
       delegate_(delegate),
       receiver_(this, std::move(receiver)),
       params_(delegate_ ? delegate_->CloneParentAccessParams() : nullptr) {
@@ -208,7 +211,7 @@ void ParentAccessUiHandlerImpl::GetParentAccessUrl(
 
   std::string platform_version = base::SysInfo::OperatingSystemVersion();
   std::string language_code =
-      google_util::GetGoogleLocale(g_browser_process->GetApplicationLocale());
+      google_util::GetGoogleLocale(application_locale_storage_->Get());
 
   std::string url;
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();

@@ -19,11 +19,14 @@
 #include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_metrics_utils.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui_handler_delegate.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/google/core/common/google_util.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -92,6 +95,12 @@ class ParentAccessUiHandlerImplBaseTest : public testing::Test {
   void TearDown() override { parent_access_ui_handler_.reset(); }
 
  protected:
+  const ApplicationLocaleStorage* application_locale_storage() const {
+    return TestingBrowserProcess::GetGlobal()
+        ->GetFeatures()
+        ->application_locale_storage();
+  }
+
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
   mojo::Remote<parent_access_ui::mojom::ParentAccessUiHandler>
@@ -108,8 +117,9 @@ class ParentAccessUiHandlerImplTestParameterized
   ParentAccessUiHandlerImplTestParameterized() {
     delegate_.set_flow_type(GetTestedFlowType());
     parent_access_ui_handler_ = std::make_unique<ParentAccessUiHandlerImpl>(
+        application_locale_storage(), identity_test_env_->identity_manager(),
         parent_access_ui_handler_remote_.BindNewPipeAndPassReceiver(),
-        identity_test_env_->identity_manager(), &delegate_);
+        &delegate_);
   }
 
   ParentAccessStateTracker::FlowResult GetInitialStateForFlow() const {
@@ -553,8 +563,8 @@ TEST_P(ParentAccessUiHandlerImplTestParameterized,
   mojo::Remote<parent_access_ui::mojom::ParentAccessUiHandler> remote;
   auto parent_access_ui_handler_no_delegate =
       std::make_unique<ParentAccessUiHandlerImpl>(
-          remote.BindNewPipeAndPassReceiver(),
-          identity_test_env_->identity_manager(), nullptr);
+          application_locale_storage(), identity_test_env_->identity_manager(),
+          remote.BindNewPipeAndPassReceiver(), nullptr);
 
   // Send a result status.
   base::RunLoop run_loop;
@@ -632,8 +642,9 @@ class ExtensionApprovalsDisabledTest
                                 FlowType::kExtensionAccess);
     delegate_.set_is_disabled(true);
     parent_access_ui_handler_ = std::make_unique<ParentAccessUiHandlerImpl>(
+        application_locale_storage(), identity_test_env_->identity_manager(),
         parent_access_ui_handler_remote_.BindNewPipeAndPassReceiver(),
-        identity_test_env_->identity_manager(), &delegate_);
+        &delegate_);
   }
 };
 
