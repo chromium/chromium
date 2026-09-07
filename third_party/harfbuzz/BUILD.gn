@@ -9,6 +9,7 @@ import("//third_party/harfbuzz/harfbuzz.gni")
 
 if (use_system_harfbuzz) {
   import("//build/config/linux/pkg_config.gni")
+
   pkg_config("harfbuzz_from_pkgconfig") {
     visibility = [
       "//third_party/freetype",
@@ -306,6 +307,7 @@ if (use_system_harfbuzz) {
       "src/src/hb-ot-vorg-table.hh",
       "src/src/hb-priority-queue.hh",
       "src/src/hb-repacker.hh",
+      "src/src/hb-result.hh",
       "src/src/hb-sanitize.hh",
       "src/src/hb-script-list.h",
       "src/src/hb-serialize.hh",
@@ -353,6 +355,7 @@ if (use_system_harfbuzz) {
       "src/src/hb-unicode.cc",
       "src/src/hb-unicode.hh",
       "src/src/hb-utf.hh",
+      "src/src/hb-vector.h",
       "src/src/hb-vector.hh",
       "src/src/hb.hh",
     ]
