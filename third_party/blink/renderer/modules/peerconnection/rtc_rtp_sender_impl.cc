@@ -317,6 +317,17 @@ class RTCRtpSenderImpl::RTCRtpSenderInternal
                             WrapRefCounted(this), stream_ids));
   }
 
+  scoped_refptr<webrtc::EncodedVideoFrameInjectorInterface>
+  CreateEncodedVideoFrameInjector(
+      webrtc::KeyFrameCallback keyframe_callback,
+      webrtc::BitrateInfoCallback bitrate_callback) {
+    DCHECK(main_task_runner_->BelongsToCurrentThread());
+    auto webrtc_injector = webrtc_sender_->CreateEncodedVideoFrameInjector(
+        std::move(keyframe_callback), std::move(bitrate_callback));
+    return scoped_refptr<webrtc::EncodedVideoFrameInjectorInterface>(
+        webrtc_injector.get());
+  }
+
   RTCEncodedAudioStreamTransformer* GetEncodedAudioStreamTransformer() const {
     return encoded_audio_transformer_.get();
   }
@@ -542,6 +553,14 @@ RTCRtpSenderImpl::GetEncodedAudioStreamTransformer() const {
 RTCEncodedVideoStreamTransformer*
 RTCRtpSenderImpl::GetEncodedVideoStreamTransformer() const {
   return internal_->GetEncodedVideoStreamTransformer();
+}
+
+scoped_refptr<webrtc::EncodedVideoFrameInjectorInterface>
+RTCRtpSenderImpl::CreateEncodedVideoFrameInjector(
+    webrtc::KeyFrameCallback keyframe_callback,
+    webrtc::BitrateInfoCallback bitrate_callback) {
+  return internal_->CreateEncodedVideoFrameInjector(
+      std::move(keyframe_callback), std::move(bitrate_callback));
 }
 
 }  // namespace blink

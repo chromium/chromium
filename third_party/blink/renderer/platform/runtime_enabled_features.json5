@@ -5262,6 +5262,10 @@
       status: "stable",
     },
     {
+      name: "RTCEncodedSource",
+      status: "experimental",
+    },
+    {
       name: "RTCEncodedVideoFrameAdditionalMetadata",
       status: "experimental",
     },

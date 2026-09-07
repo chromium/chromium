@@ -21,4 +21,6 @@ interface RTCRtpSender {
      RaisesException] RTCInsertableStreams createEncodedStreams();
     [RuntimeEnabled=RTCRtpScriptTransform, RaisesException=Setter]
     attribute RTCRtpScriptTransform? transform;
+
+    [RuntimeEnabled=RTCEncodedSource, CallWith=ScriptState, RaisesException] Promise<undefined> createEncodedSource(Worker worker, optional any options, optional sequence<object> transfer);
 };

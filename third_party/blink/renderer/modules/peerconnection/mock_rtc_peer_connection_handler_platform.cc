@@ -117,6 +117,13 @@ class DummyRTCRtpSenderPlatform : public RTCRtpSenderPlatform {
     return video_transformer_.get();
   }
 
+  scoped_refptr<webrtc::EncodedVideoFrameInjectorInterface>
+  CreateEncodedVideoFrameInjector(
+      webrtc::KeyFrameCallback keyframe_callback,
+      webrtc::BitrateInfoCallback bitrate_callback) override {
+    return nullptr;
+  }
+
  private:
   scoped_refptr<DummyRtpSenderInternal> internal_;
   std::unique_ptr<RTCEncodedAudioStreamTransformer> audio_transformer_;

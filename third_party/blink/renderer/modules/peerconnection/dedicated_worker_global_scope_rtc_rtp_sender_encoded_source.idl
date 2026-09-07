@@ -1,0 +1,4 @@
+[ImplementedAs=DedicatedWorkerGlobalScopeRTCRtpSenderEncodedSource, RuntimeEnabled=RTCEncodedSource]
+partial interface DedicatedWorkerGlobalScope {
+    attribute EventHandler onrtcsenderencodedsource;
+};

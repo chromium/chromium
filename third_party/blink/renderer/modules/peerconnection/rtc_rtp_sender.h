@@ -10,14 +10,19 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_encoding_parameters.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_send_parameters.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_set_parameter_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/workers/dedicated_worker.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_script_transform.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_sender_encoded_source.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_sender_encoded_source_event.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
@@ -25,6 +30,7 @@
 #include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_video_stream_transformer.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_sender_platform.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/webrtc/api/encoded_video_frame_injector_interface.h"
 #include "third_party/webrtc/api/rtp_transceiver_interface.h"
 
 namespace blink {
@@ -97,6 +103,25 @@ class MODULES_EXPORT RTCRtpSender final
   ScriptPromise<RTCStatsReport> getStats(ScriptState*);
   void setStreams(HeapVector<Member<MediaStream>> streams, ExceptionState&);
   RTCInsertableStreams* createEncodedStreams(ScriptState*, ExceptionState&);
+
+  ScriptPromise<IDLUndefined> createEncodedSource(
+      ScriptState* state,
+      DedicatedWorker* worker,
+      ExceptionState& exception_state);
+  ScriptPromise<IDLUndefined> createEncodedSource(
+      ScriptState* state,
+      DedicatedWorker* worker,
+      const ScriptValue& options,
+      ExceptionState& exception_state);
+  ScriptPromise<IDLUndefined> createEncodedSource(
+      ScriptState* state,
+      DedicatedWorker* worker,
+      const ScriptValue& options,
+      const HeapVector<ScriptObject>& transfer,
+      ExceptionState& exception_state);
+  scoped_refptr<webrtc::EncodedVideoFrameInjectorInterface>
+  CreateEncodedVideoFrameInjector(webrtc::KeyFrameCallback keyframe_callback,
+                                  webrtc::BitrateInfoCallback bitrate_callback);
 
   RTCRtpScriptTransform* transform() { return transform_; }
   void setTransform(RTCRtpScriptTransform*, ExceptionState& exception_state);

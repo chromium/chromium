@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_set_parameter_options.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_rtc_peer_connection_handler_platform.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_sender_encoded_source.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_audio_stream_transformer.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_video_stream_transformer.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_sender_platform.h"
@@ -83,6 +84,13 @@ class FakeRTCRtpSenderPlatform : public RTCRtpSenderPlatform {
   RTCEncodedVideoStreamTransformer* GetEncodedVideoStreamTransformer()
       const override {
     return video_transformer_.get();
+  }
+
+  scoped_refptr<webrtc::EncodedVideoFrameInjectorInterface>
+  CreateEncodedVideoFrameInjector(
+      webrtc::KeyFrameCallback keyframe_callback,
+      webrtc::BitrateInfoCallback bitrate_callback) override {
+    return nullptr;
   }
 
   bool set_parameters_called_ = false;
@@ -337,6 +345,64 @@ TEST_F(RTCRtpSenderTest, SetParametersFailsOnNativeRejection) {
       V8DOMException::ToWrappable(scope.GetIsolate(), tester.Value().V8Value());
   ASSERT_TRUE(exception);
   EXPECT_EQ(exception->name(), "OperationError");
+}
+
+class RTCRtpSenderEncodedSourceTest : public RTCRtpSenderTest {};
+
+TEST_F(RTCRtpSenderEncodedSourceTest,
+       CreateVideoEncodedSourceSenderDestroyedRejects) {
+  V8TestingScope scope;
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      scope.GetScriptState());
+  auto promise = resolver->Promise();
+
+  RTCRtpSenderEncodedSource::CreateVideoEncodedSource(
+      CrossThreadWeakHandle<RTCRtpSender>(nullptr),
+      scope.GetExecutionContext()->GetTaskRunner(
+          TaskType::kInternalMediaRealTime),
+      MakeCrossThreadHandle(resolver), scope.GetScriptState(),
+      CustomEventMessage());
+
+  ScriptPromiseTester tester(scope.GetScriptState(), promise);
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsRejected());
+
+  DOMException* exception =
+      V8DOMException::ToWrappable(scope.GetIsolate(), tester.Value().V8Value());
+  ASSERT_TRUE(exception);
+  EXPECT_EQ(exception->name(), "InvalidStateError");
+  EXPECT_EQ(exception->message(), "Sender destroyed");
+}
+
+TEST_F(RTCRtpSenderEncodedSourceTest,
+       CreateVideoEncodedSourceFailedToCreateInjectorRejects) {
+  V8TestingScope scope;
+  RTCPeerConnection* pc = CreatePC(scope);
+  ASSERT_TRUE(pc);
+
+  auto platform = std::make_unique<FakeRTCRtpSenderPlatform>();
+  auto* sender = CreateSender(pc, std::move(platform));
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      scope.GetScriptState());
+  auto promise = resolver->Promise();
+
+  RTCRtpSenderEncodedSource::CreateVideoEncodedSource(
+      MakeCrossThreadWeakHandle(sender),
+      scope.GetExecutionContext()->GetTaskRunner(
+          TaskType::kInternalMediaRealTime),
+      MakeCrossThreadHandle(resolver), scope.GetScriptState(),
+      CustomEventMessage());
+
+  ScriptPromiseTester tester(scope.GetScriptState(), promise);
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsRejected());
+
+  DOMException* exception =
+      V8DOMException::ToWrappable(scope.GetIsolate(), tester.Value().V8Value());
+  ASSERT_TRUE(exception);
+  EXPECT_EQ(exception->name(), "OperationError");
+  EXPECT_EQ(exception->message(), "Failed to create injector");
 }
 
 }  // namespace blink

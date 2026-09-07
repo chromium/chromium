@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="timeout" content="long">
+<title>RTCRtpSender.createEncodedSource video frame transmission</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+'use strict';
+
+async function createConnectedPeerConnections(t) {
+  const caller = new RTCPeerConnection();
+  const callee = new RTCPeerConnection();
+  t.add_cleanup(() => {
+    caller.close();
+    callee.close();
+  });
+
+  caller.onicecandidate = e => {
+    if (e.candidate) callee.addIceCandidate(e.candidate);
+  };
+  callee.onicecandidate = e => {
+    if (e.candidate) caller.addIceCandidate(e.candidate);
+  };
+
+  return { caller, callee };
+}
+
+const kAbsCaptureTimeUri = 'http://www.webrtc.org/experiments/rtp-hdrext/abs-capture-time';
+
+function enableAbsCaptureTime(pc) {
+  for (const transceiver of pc.getTransceivers()) {
+    if ('getHeaderExtensionsToNegotiate' in transceiver) {
+      const extensions = transceiver.getHeaderExtensionsToNegotiate();
+      for (const ext of extensions) {
+        if (ext.uri === kAbsCaptureTimeUri) {
+          ext.direction = 'sendrecv';
+        }
+      }
+      transceiver.setHeaderExtensionsToNegotiate(extensions);
+    }
+  }
+}
+
+async function exchangeOfferAnswer(caller, callee) {
+  enableAbsCaptureTime(caller);
+
+  const offer = await caller.createOffer();
+  await caller.setLocalDescription(offer);
+  await callee.setRemoteDescription(offer);
+
+  enableAbsCaptureTime(callee);
+
+  const answer = await callee.createAnswer();
+  await callee.setLocalDescription(answer);
+  await caller.setRemoteDescription(answer);
+}
+
+promise_test(async t => {
+  const worker = new Worker('RTCRtpSender-createEncodedSource-video-worker.js');
+  t.add_cleanup(() => worker.terminate());
+
+  const { caller, callee } = await createConnectedPeerConnections(t);
+
+  const senderTransceiver = caller.addTransceiver('video', { direction: 'sendonly' });
+  const vp8Codecs = RTCRtpSender.getCapabilities('video').codecs.filter(
+      c => c.mimeType === 'video/VP8');
+  assert_greater_than(vp8Codecs.length, 0, 'video/VP8 codec must be supported');
+  senderTransceiver.setCodecPreferences(vp8Codecs);
+
+  const sender = senderTransceiver.sender;
+
+  callee.ontrack = e => {
+    e.receiver.transform = new RTCRtpScriptTransform(worker, { name: 'receiver' });
+  };
+
+  await sender.createEncodedSource(worker);
+  await exchangeOfferAnswer(caller, callee);
+
+  const frameInfo = await new Promise((resolve, reject) => {
+    worker.onmessage = event => {
+      if (event.data && event.data.error) {
+        reject(new Error(event.data.error));
+      } else {
+        resolve(event.data);
+      }
+    };
+  });
+
+  // TODO(crbug.com/532190488): evaluate contributingSources once the webrtc implementation supports it
+  assert_equals(frameInfo.type, 'key');
+  assert_equals(frameInfo.width, 640);
+  assert_equals(frameInfo.height, 480);
+  assert_equals(frameInfo.payloadType, 96);
+  assert_greater_than(frameInfo.dataLength, 0, 'Frame data length must be greater than 0');
+  assert_equals(frameInfo.dataLength, frameInfo.expectedDataLength, 'Frame data length must equal expectedDataLength');
+  assert_true(
+      frameInfo.dataMatches,
+      'Frame payload bytes must match the transmitted bytes. Got: ' +
+          JSON.stringify(frameInfo.receivedBytes) + ', expected: ' +
+          JSON.stringify(frameInfo.sentBytes));
+  assert_true(frameInfo.correctCaptureTime);
+}, 'Transmitting an allocated RTCEncodedVideoFrame using RTCRtpSender.createEncodedSource and inspecting with RTCRtpScriptTransformer');
+</script>
+</body>
+</html>

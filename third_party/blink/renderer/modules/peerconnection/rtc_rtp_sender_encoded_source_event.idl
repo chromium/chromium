@@ -1,0 +1,4 @@
+[Exposed=DedicatedWorker, RuntimeEnabled=RTCEncodedSource]
+interface RTCRtpSenderEncodedSourceEvent : Event {
+  readonly attribute RTCRtpSenderEncodedSource encodedSource;
+};

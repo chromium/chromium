@@ -1,0 +1,11 @@
+[Exposed=DedicatedWorker, RuntimeEnabled=RTCEncodedSource]
+interface RTCRtpSenderEncodedSource : EventTarget {
+  // Accepts RTCRtpEncoded{Video|Audio}Frame, rejects on incorrect frames
+  readonly attribute WritableStream writable;
+
+  attribute EventHandler onkeyframerequest;
+  attribute EventHandler onbitrateinfochange;
+
+  readonly attribute long allocatedBitrate;  // bits per second
+  readonly attribute long availableOutgoingBitrate;
+};

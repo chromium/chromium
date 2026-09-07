@@ -9,12 +9,14 @@
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_video_stream_transformer.h"
+#include "third_party/webrtc/api/encoded_video_frame_injector_interface.h"
 #include "third_party/webrtc/api/frame_transformer_interface.h"
 
 namespace blink {
 
 class ExceptionState;
 class RTCEncodedVideoStreamTransformer;
+class RTCRtpSenderEncodedSource;
 
 class MODULES_EXPORT RTCEncodedVideoUnderlyingSink final
     : public UnderlyingSinkBase {
@@ -30,6 +32,12 @@ class MODULES_EXPORT RTCEncodedVideoUnderlyingSink final
       bool detach_frame_data_on_write,
       bool enable_frame_restrictions,
       base::UnguessableToken owner_id);
+
+  RTCEncodedVideoUnderlyingSink(
+      ScriptState* script_state,
+      scoped_refptr<webrtc::EncodedVideoFrameInjectorInterface> frame_injector,
+      RTCRtpSenderEncodedSource* parent_source,
+      bool detach_frame_data_on_write);
 
   // UnderlyingSinkBase
   ScriptPromise<IDLUndefined> start(ScriptState*,
@@ -49,6 +57,8 @@ class MODULES_EXPORT RTCEncodedVideoUnderlyingSink final
  private:
   scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>
       transformer_broker_;
+  scoped_refptr<webrtc::EncodedVideoFrameInjectorInterface> frame_injector_;
+  Member<RTCRtpSenderEncodedSource> encoded_source_;
   const bool detach_frame_data_on_write_;
   const bool enable_frame_restrictions_;
   base::UnguessableToken owner_id_;

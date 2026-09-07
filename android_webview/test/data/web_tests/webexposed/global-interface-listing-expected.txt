@@ -7887,6 +7887,7 @@ interface RTCRtpSender
     getter transform
     getter transport
     method constructor
+    method createEncodedSource
     method createEncodedStreams
     method getParameters
     method getStats

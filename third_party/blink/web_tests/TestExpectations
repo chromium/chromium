@@ -7460,6 +7460,7 @@ crbug.com/356930166 [ Mac15-arm64 ] external/wpt/webcodecs/videoFrame-metadata-r
 crbug.com/356930166 [ Mac ] external/wpt/webrtc/RTCPeerConnection-remote-track-mute.https.html [ Skip Timeout ]
 crbug.com/356930166 [ Mac ] fast/peerconnection/RTCPeerConnection-without-rtcpmux.html [ Skip Timeout ]
 crbug.com/356930166 [ Mac ] external/wpt/webrtc/RTCSctpTransport-maxMessageSize.html [ Skip Timeout ]
+crbug.com/356930166 [ Mac ] wpt_internal/webrtc-encoded-transform/RTCRtpSender-createEncodedSource-video.https.html [ Skip Timeout ]
 
 # Mac15/arm64 - Other timeouts
 [ Mac15 ] external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]

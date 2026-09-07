@@ -8,6 +8,10 @@ import("//third_party/blink/renderer/config.gni")
 # Statically-defined (not build-time-generated) IDL files in 'modules' component
 # for production.
 static_idl_files_in_modules = [
+  "//third_party/blink/renderer/modules/peerconnection/dedicated_worker_global_scope_rtc_rtp_sender_encoded_source.idl",
+  "//third_party/blink/renderer/modules/peerconnection/rtc_rtp_sender_encoded_source_event.idl",
+  "//third_party/blink/renderer/modules/peerconnection/rtc_rtp_sender_encoded_source.idl",
+
   "//third_party/blink/renderer/modules/ad_auction/ad_auction_data_config.idl",
   "//third_party/blink/renderer/modules/ad_auction/ad_request_config.idl",
   "//third_party/blink/renderer/modules/ad_auction/ads.idl",
