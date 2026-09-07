@@ -8747,6 +8747,16 @@ void RenderFrameHostImpl::SetStorageAccessApiStatus(
   NOTREACHED();
 }
 
+net::StorageAccessApiStatus RenderFrameHostImpl::GetStorageAccessApiStatus() {
+  if (IsStorageAccessRestricted() || !IsFullCookieAccessAllowed()) {
+    return net::StorageAccessApiStatus::kNone;
+  }
+  return GetCookieSettingOverrides().Has(
+             net::CookieSettingOverride::kStorageAccessGrantEligible)
+             ? net::StorageAccessApiStatus::kAccessViaAPI
+             : net::StorageAccessApiStatus::kNone;
+}
+
 std::unique_ptr<download::DownloadUrlParameters>
 RenderFrameHostImpl::CreateDownloadUrlParameters(
     const GURL& url,
@@ -15185,10 +15195,7 @@ void RenderFrameHostImpl::CreateWebSocketConnector(
     return;
   }
   net::StorageAccessApiStatus storage_access_api_status =
-      GetCookieSettingOverrides().Has(
-          net::CookieSettingOverride::kStorageAccessGrantEligible)
-          ? net::StorageAccessApiStatus::kAccessViaAPI
-          : net::StorageAccessApiStatus::kNone;
+      GetStorageAccessApiStatus();
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<WebSocketConnectorImpl>(
           GlobalRenderFrameHostId(GetProcess()->GetID(), routing_id_),

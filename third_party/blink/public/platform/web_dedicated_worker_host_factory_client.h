@@ -7,7 +7,6 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/unguessable_token.h"
-#include "net/storage_access_api/status.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -47,8 +46,8 @@ class WebDedicatedWorkerHostFactoryClient {
       const blink::WebURL& script_url,
       network::mojom::CredentialsMode credentials_mode,
       const blink::WebFetchClientSettingsObject& fetch_client_settings_object,
-      CrossVariantMojoRemote<mojom::BlobURLTokenInterfaceBase> blob_url_token,
-      net::StorageAccessApiStatus storage_access_api_status) = 0;
+      CrossVariantMojoRemote<mojom::BlobURLTokenInterfaceBase>
+          blob_url_token) = 0;
 
   // Clones the given WebWorkerFetchContext for nested workers.
   virtual scoped_refptr<WebWorkerFetchContext> CloneWorkerFetchContext(

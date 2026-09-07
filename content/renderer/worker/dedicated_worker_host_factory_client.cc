@@ -14,7 +14,6 @@
 #include "content/renderer/service_worker/service_worker_provider_context.h"
 #include "content/renderer/worker/fetch_client_settings_object_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "net/storage_access_api/status.h"
 #include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/tokens/tokens_mojom_traits.h"
@@ -49,13 +48,11 @@ void DedicatedWorkerHostFactoryClient::CreateWorkerHost(
     network::mojom::CredentialsMode credentials_mode,
     const blink::WebFetchClientSettingsObject& fetch_client_settings_object,
     blink::CrossVariantMojoRemote<blink::mojom::BlobURLTokenInterfaceBase>
-        blob_url_token,
-    net::StorageAccessApiStatus storage_access_api_status) {
+        blob_url_token) {
   factory_->CreateWorkerHostAndStartScriptLoad(
       dedicated_worker_token, script_url, credentials_mode,
       FetchClientSettingsObjectFromWebToMojom(fetch_client_settings_object),
-      std::move(blob_url_token), receiver_.BindNewPipeAndPassRemote(),
-      storage_access_api_status);
+      std::move(blob_url_token), receiver_.BindNewPipeAndPassRemote());
 }
 
 scoped_refptr<blink::WebWorkerFetchContext>

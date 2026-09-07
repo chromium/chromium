@@ -2050,7 +2050,19 @@ IN_PROC_BROWSER_TEST_F(
   NavigateFrameTo(
       GetURL(kHostB, "/workers/fetch_from_worker.html?start_worker_manually"));
   ASSERT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+
+  // Start a worker before storage access is granted to the frame.
+  EXPECT_TRUE(content::ExecJs(GetFrame(), "start_worker()"));
+  EXPECT_EQ(
+      content::EvalJs(GetFrame(), "fetch_from_worker('/echoheader?cookie');"),
+      "None");
+
   ASSERT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+
+  // The worker created before the grant still does not have storage access.
+  EXPECT_EQ(
+      content::EvalJs(GetFrame(), "fetch_from_worker('/echoheader?cookie');"),
+      "None");
 
   // When the worker's parent document has storage access at the time the worker
   // is created, the worker should inherit that access and be able to use it.

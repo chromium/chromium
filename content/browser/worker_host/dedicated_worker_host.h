@@ -138,6 +138,9 @@ class CONTENT_EXPORT DedicatedWorkerHost final
   const blink::StorageKey& GetWorkerStorageKey() const {
     return worker_storage_key_;
   }
+  net::StorageAccessApiStatus storage_access_api_status() const {
+    return storage_access_api_status_;
+  }
   GlobalRenderFrameHostId GetAncestorRenderFrameHostId() const;
   // Returns the ancestor RenderFrameHost if it still hosts the document that
   // created this worker, or nullptr otherwise.

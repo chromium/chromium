@@ -3344,6 +3344,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // status.
   CachedPermissionMap GetCachedPermissionStatuses();
 
+  // Returns the Storage Access API status for this instance.
+  net::StorageAccessApiStatus GetStorageAccessApiStatus();
+
   // Allows tests to disable the unload event timer to simulate bugs that
   // happen before it fires (to avoid flakiness).
   void DisableUnloadTimerForTesting();
