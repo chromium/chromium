@@ -8802,13 +8802,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram name="Autofill.ServerQueryResponse" enum="AutofillQueryResult"
-    expires_after="2027-02-14">
-  <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>The usefulness of Autofill server information.</summary>
-</histogram>
-
 <histogram name="Autofill.ServerResponseHasDataForForm"
     enum="BooleanHadPredictions" expires_after="2027-02-14">
   <owner>battre@chromium.org</owner>

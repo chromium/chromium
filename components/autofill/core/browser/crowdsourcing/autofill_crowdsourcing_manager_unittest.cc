@@ -312,8 +312,6 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
       base::BindOnce(
           &AutofillCrowdsourcingManagerTest::OnLoadedServerPredictions,
           GetWeakPtr())));
-  histogram.ExpectUniqueSample("Autofill.ServerQueryResponse",
-                               AutofillMetrics::QUERY_SENT, 1);
   histogram.ExpectUniqueSample(AutofillCrowdsourcingManager::kUmaMethod,
                                METHOD_GET, 1);
 
@@ -409,8 +407,6 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
           &AutofillCrowdsourcingManagerTest::OnLoadedServerPredictions,
           GetWeakPtr())));
   request = url_loader_factory().GetPendingRequest(4);
-  histogram.ExpectUniqueSample("Autofill.ServerQueryResponse",
-                               AutofillMetrics::QUERY_SENT, 2);
   histogram.ExpectUniqueSample(AutofillCrowdsourcingManager::kUmaMethod,
                                METHOD_GET, 2);
   url_loader_factory().SimulateResponseWithoutRemovingFromPendingList(
@@ -426,8 +422,6 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAndUploadTest) {
       base::BindOnce(
           &AutofillCrowdsourcingManagerTest::OnLoadedServerPredictions,
           GetWeakPtr())));
-  histogram.ExpectBucketCount("Autofill.ServerQueryResponse",
-                              AutofillMetrics::QUERY_SENT, 3);
   histogram.ExpectBucketCount(AutofillCrowdsourcingManager::kUmaMethod,
                               METHOD_GET, 3);
   request = url_loader_factory().GetPendingRequest(5);
@@ -466,8 +460,6 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAPITest) {
           GetWeakPtr())));
 
   // Verify if histograms are right.
-  histogram.ExpectUniqueSample("Autofill.ServerQueryResponse",
-                               AutofillMetrics::QUERY_SENT, 1);
   histogram.ExpectUniqueSample(AutofillCrowdsourcingManager::kUmaMethod,
                                METHOD_GET, 1);
   {
@@ -550,10 +542,6 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryAPITestWhenTooLongUrl) {
           &AutofillCrowdsourcingManagerTest::OnLoadedServerPredictions,
           GetWeakPtr())));
 
-  // Verify request.
-  // Verify if histograms are right.
-  histogram.ExpectUniqueSample("Autofill.ServerQueryResponse",
-                               AutofillMetrics::QUERY_SENT, 1);
   // Verify that the logged method is POST.
   histogram.ExpectUniqueSample(AutofillCrowdsourcingManager::kUmaMethod,
                                METHOD_POST, 1);
@@ -682,9 +670,6 @@ TEST_F(AutofillCrowdsourcingManagerTest, BackoffLogic_Query) {
   // Request with id 0.
   base::HistogramTester histogram;
   EXPECT_TRUE(StartQueryRequest(forms));
-  histogram.ExpectUniqueSample("Autofill.ServerQueryResponse",
-                               AutofillMetrics::QUERY_SENT, 1);
-
   auto* request = url_loader_factory().GetPendingRequest(0);
 
   url_loader_factory().SimulateResponseWithoutRemovingFromPendingList(
@@ -782,8 +767,6 @@ TEST_F(AutofillCrowdsourcingManagerTest, RetryLimit_Query) {
   // Request with id 0.
   base::HistogramTester histogram;
   EXPECT_TRUE(StartQueryRequest(forms));
-  histogram.ExpectUniqueSample("Autofill.ServerQueryResponse",
-                               AutofillMetrics::QUERY_SENT, 1);
 
   constexpr auto kTimeDeltaMargin = base::Milliseconds(100);
   const int max_attempts = crowdsourcing_manager().GetMaxServerAttempts();
@@ -945,8 +928,6 @@ TEST_F(AutofillCrowdsourcingManagerTest, CacheQueryTest) {
   base::HistogramTester histogram;
   // Request with id 0.
   EXPECT_TRUE(StartQueryRequest(forms0));
-  histogram.ExpectUniqueSample("Autofill.ServerQueryResponse",
-                               AutofillMetrics::QUERY_SENT, 1);
 
   // No responses yet
   EXPECT_THAT(responses(), IsEmpty());
@@ -961,8 +942,6 @@ TEST_F(AutofillCrowdsourcingManagerTest, CacheQueryTest) {
 
   // No actual request - should be a cache hit.
   EXPECT_TRUE(StartQueryRequest(forms0));
-  histogram.ExpectUniqueSample("Autofill.ServerQueryResponse",
-                               AutofillMetrics::QUERY_SENT, 2);
   // Data is available immediately from cache - no over-the-wire trip.
   ASSERT_THAT(responses(), SizeIs(1));
   EXPECT_EQ(response_contents[0], responses().front().response);
@@ -970,8 +949,6 @@ TEST_F(AutofillCrowdsourcingManagerTest, CacheQueryTest) {
 
   // Request with id 1.
   EXPECT_TRUE(StartQueryRequest(forms1));
-  histogram.ExpectUniqueSample("Autofill.ServerQueryResponse",
-                               AutofillMetrics::QUERY_SENT, 3);
   // No responses yet
   EXPECT_THAT(responses(), IsEmpty());
 
@@ -985,8 +962,6 @@ TEST_F(AutofillCrowdsourcingManagerTest, CacheQueryTest) {
 
   // Request with id 2.
   EXPECT_TRUE(StartQueryRequest(forms2));
-  histogram.ExpectUniqueSample("Autofill.ServerQueryResponse",
-                               AutofillMetrics::QUERY_SENT, 4);
 
   request = url_loader_factory().GetPendingRequest(2);
   url_loader_factory().SimulateResponseWithoutRemovingFromPendingList(
@@ -998,12 +973,8 @@ TEST_F(AutofillCrowdsourcingManagerTest, CacheQueryTest) {
 
   // No actual requests - should be a cache hit.
   EXPECT_TRUE(StartQueryRequest(forms1));
-  histogram.ExpectUniqueSample("Autofill.ServerQueryResponse",
-                               AutofillMetrics::QUERY_SENT, 5);
 
   EXPECT_TRUE(StartQueryRequest(forms2));
-  histogram.ExpectUniqueSample("Autofill.ServerQueryResponse",
-                               AutofillMetrics::QUERY_SENT, 6);
 
   ASSERT_THAT(responses(), SizeIs(2));
   EXPECT_EQ(response_contents[1], responses().front().response);
@@ -1013,8 +984,6 @@ TEST_F(AutofillCrowdsourcingManagerTest, CacheQueryTest) {
   // The first structure should have expired.
   // Request with id 3.
   EXPECT_TRUE(StartQueryRequest(forms0));
-  histogram.ExpectUniqueSample("Autofill.ServerQueryResponse",
-                               AutofillMetrics::QUERY_SENT, 7);
   // No responses yet
   EXPECT_THAT(responses(), IsEmpty());
 
@@ -1299,8 +1268,6 @@ TEST_P(AutofillQueryTest, CacheableResponse) {
     ResetCallCount();
     ASSERT_TRUE(SendQueryRequest(forms));
     EXPECT_EQ(call_count(), 1);
-    histogram.ExpectBucketCount("Autofill.ServerQueryResponse",
-                                AutofillMetrics::QUERY_SENT, 1);
     histogram.ExpectBucketCount(AutofillCrowdsourcingManager::kUmaMethod,
                                 METHOD_GET, 1);
     histogram.ExpectBucketCount(AutofillCrowdsourcingManager::kUmaWasInCache,
@@ -1315,8 +1282,6 @@ TEST_P(AutofillQueryTest, CacheableResponse) {
     ResetCallCount();
     ASSERT_TRUE(SendQueryRequest(forms));
     EXPECT_EQ(call_count(), 0);
-    histogram.ExpectBucketCount("Autofill.ServerQueryResponse",
-                                AutofillMetrics::QUERY_SENT, 1);
     histogram.ExpectBucketCount(AutofillCrowdsourcingManager::kUmaMethod,
                                 METHOD_GET, 1);
     histogram.ExpectBucketCount(AutofillCrowdsourcingManager::kUmaWasInCache,
@@ -1335,8 +1300,6 @@ TEST_P(AutofillQueryTest, SendsExperiment) {
     ResetCallCount();
     ASSERT_TRUE(SendQueryRequest(forms));
     EXPECT_EQ(call_count(), 1);
-    histogram.ExpectBucketCount("Autofill.ServerQueryResponse",
-                                AutofillMetrics::QUERY_SENT, 1);
     histogram.ExpectBucketCount(AutofillCrowdsourcingManager::kUmaMethod,
                                 METHOD_GET, 1);
     histogram.ExpectBucketCount(AutofillCrowdsourcingManager::kUmaWasInCache,
@@ -1360,8 +1323,6 @@ TEST_P(AutofillQueryTest, SendsExperiment) {
     payloads().clear();
     ASSERT_TRUE(SendQueryRequest(forms));
     EXPECT_EQ(call_count(), 1);
-    histogram.ExpectBucketCount("Autofill.ServerQueryResponse",
-                                AutofillMetrics::QUERY_SENT, 1);
     histogram.ExpectBucketCount(AutofillCrowdsourcingManager::kUmaMethod,
                                 METHOD_GET, 1);
     histogram.ExpectBucketCount(AutofillCrowdsourcingManager::kUmaWasInCache,
@@ -1382,8 +1343,6 @@ TEST_P(AutofillQueryTest, SendsExperiment) {
     ResetCallCount();
     ASSERT_TRUE(SendQueryRequest(forms));
     EXPECT_EQ(call_count(), 0);
-    histogram.ExpectBucketCount("Autofill.ServerQueryResponse",
-                                AutofillMetrics::QUERY_SENT, 1);
     histogram.ExpectBucketCount(AutofillCrowdsourcingManager::kUmaMethod,
                                 METHOD_GET, 1);
     histogram.ExpectBucketCount(AutofillCrowdsourcingManager::kUmaWasInCache,
@@ -1404,8 +1363,6 @@ TEST_P(AutofillQueryTest, ExpiredCacheInResponse) {
     ResetCallCount();
     ASSERT_TRUE(SendQueryRequest(forms));
     EXPECT_EQ(call_count(), 1);
-    histogram.ExpectBucketCount("Autofill.ServerQueryResponse",
-                                AutofillMetrics::QUERY_SENT, 1);
     histogram.ExpectBucketCount(AutofillCrowdsourcingManager::kUmaMethod,
                                 METHOD_GET, 1);
     histogram.ExpectBucketCount(AutofillCrowdsourcingManager::kUmaWasInCache,
@@ -1426,8 +1383,6 @@ TEST_P(AutofillQueryTest, ExpiredCacheInResponse) {
     ResetCallCount();
     ASSERT_TRUE(SendQueryRequest(forms));
     EXPECT_EQ(call_count(), 1);
-    histogram.ExpectBucketCount("Autofill.ServerQueryResponse",
-                                AutofillMetrics::QUERY_SENT, 1);
     histogram.ExpectBucketCount(AutofillCrowdsourcingManager::kUmaMethod,
                                 METHOD_GET, 1);
     histogram.ExpectBucketCount(AutofillCrowdsourcingManager::kUmaWasInCache,

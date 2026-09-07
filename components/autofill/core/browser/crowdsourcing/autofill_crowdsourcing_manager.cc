@@ -764,8 +764,6 @@ bool AutofillCrowdsourcingManager::StartQueryRequest(
     return false;
   }
 
-  AutofillMetrics::LogServerQueryMetric(AutofillMetrics::QUERY_SENT);
-
   std::string query_data;
   if (CheckCacheForQueryRequest(queried_form_signatures, &query_data)) {
     LOG_AF(client_->GetCurrentLogManager())

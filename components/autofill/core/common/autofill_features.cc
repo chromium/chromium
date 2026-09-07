@@ -997,12 +997,6 @@ BASE_FEATURE(kAutofillRestrictOtpToSameTldPlusOne,
 BASE_FEATURE(kAutofillServerExperimentalSignatures,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// TODO(crbug.com/470949499) - Clean-up after feature lands at 100% Stable.
-// Enables querying the server for predictions before the form has been parsed
-// locally.
-BASE_FEATURE(kAutofillServerQueryPredictionsEarly,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables uploading of more data to the Autofill server to use for computing
 // signatures: go/autofill-signatures-more-data.
 BASE_FEATURE(kAutofillServerUploadMoreData, base::FEATURE_ENABLED_BY_DEFAULT);

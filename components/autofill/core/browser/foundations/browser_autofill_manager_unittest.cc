@@ -4074,13 +4074,6 @@ TEST_F(BrowserAutofillManagerTest, OnLoadedServerPredictionsFromApi) {
       .OnLoadedServerPredictions(base::Base64Encode(response_string),
                                  signatures, {form, form2});
 
-  // Verify whether the relevant histograms were updated.
-  histogram_tester.ExpectBucketCount("Autofill.ServerQueryResponse",
-                                     AutofillMetrics::QUERY_RESPONSE_RECEIVED,
-                                     1);
-  histogram_tester.ExpectBucketCount("Autofill.ServerQueryResponse",
-                                     AutofillMetrics::QUERY_RESPONSE_PARSED, 1);
-
   // We expect the server suggestions to have been applied to the first field of
   // the first form.
   EXPECT_THAT(form_structure->field(0)->Type().GetTypes(),
@@ -4146,12 +4139,6 @@ TEST_F(BrowserAutofillManagerTest, DetermineHeuristicsWithOverallPrediction) {
       .OnLoadedServerPredictions(base::Base64Encode(response_string),
                                  test::GetEncodedSignatures(*form_structure),
                                  {form});
-  // Verify that FormStructure::ParseQueryResponse was called (here and below).
-  histogram_tester.ExpectBucketCount("Autofill.ServerQueryResponse",
-                                     AutofillMetrics::QUERY_RESPONSE_RECEIVED,
-                                     1);
-  histogram_tester.ExpectBucketCount("Autofill.ServerQueryResponse",
-                                     AutofillMetrics::QUERY_RESPONSE_PARSED, 1);
 
   // Since the card holder name appears as the first name + last name (rather
   // than the full name), and since they appears as the first fields of the

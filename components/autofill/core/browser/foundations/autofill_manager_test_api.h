@@ -58,7 +58,7 @@ class AutofillManagerTestApi {
   }
 
   void OnFormsParsed(const std::vector<FormData>& forms) {
-    manager_->OnFormsParsed(forms, base::TimeTicks());
+    manager_->OnFormsParsed(forms);
   }
 
   void QueryServerPredictions(const std::vector<FormData>& forms) {

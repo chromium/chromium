@@ -1214,9 +1214,6 @@ std::vector<ServerPredictions> ParseServerPredictionsFromQueryResponse(
     const std::vector<FormSignature>& queried_form_signatures,
     LogManager* log_manager,
     bool ignore_small_forms) {
-  AutofillMetrics::LogServerQueryMetric(
-      AutofillMetrics::QUERY_RESPONSE_RECEIVED);
-
   std::string decoded_payload;
   if (!base::Base64Decode(payload, &decoded_payload)) {
     DVLOG(1) << "Could not decode payload from base64 to bytes";
@@ -1232,7 +1229,6 @@ std::vector<ServerPredictions> ParseServerPredictionsFromQueryResponse(
   DVLOG(1) << "Autofill query response from API was successfully parsed: "
            << response;
 
-  AutofillMetrics::LogServerQueryMetric(AutofillMetrics::QUERY_RESPONSE_PARSED);
   LOG_AF(log_manager) << LoggingScope::kParsing
                       << LogMessage::kProcessingServerData;
 

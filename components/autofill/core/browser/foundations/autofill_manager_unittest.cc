@@ -1135,9 +1135,6 @@ TEST_F(AutofillManagerTest, GetHeuristicPredictionForForm) {
 // OnLoadedServerPredictions() adds a new form structure to the cache.
 TEST_F(AutofillManagerTest,
        EarlyServerPredictions_QueryServerPredictions_StartQueryRequestCalled) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillServerQueryPredictionsEarly};
-
   std::vector<FormData> forms = CreateTestForms(1);
   std::vector<FormSignature> form_signatures = {
       CalculateFormSignature(forms[0])};
@@ -1166,9 +1163,6 @@ TEST_F(AutofillManagerTest,
 // same form ID but different form signature and lower version.
 TEST_F(AutofillManagerTest,
        EarlyServerPredictions_QueryServerPredictions_UpdatesExistingFormId) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillServerQueryPredictionsEarly};
-
   // Create a form and add it to the form cache via OnFormsSeen().
   EXPECT_CALL(autofill_manager(), ShouldParseForms).WillOnce(Return(true));
   TestAutofillManagerWaiter waiter(autofill_manager());
@@ -1219,9 +1213,6 @@ TEST_F(AutofillManagerTest,
 TEST_F(
     AutofillManagerTest,
     EarlyServerPredictions_QueryServerPredictions_UpdatesExistingFormIdWithSameSignature) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillServerQueryPredictionsEarly};
-
   // Create a form and add it to the form cache via OnFormsSeen().
   EXPECT_CALL(autofill_manager(), ShouldParseForms).WillOnce(Return(true));
   TestAutofillManagerWaiter waiter(autofill_manager());
@@ -1278,9 +1269,6 @@ TEST_F(
 TEST_F(
     AutofillManagerTest,
     EarlyServerPredictions_QueryServerPredictions_DoesNotOverridesExistingFormIdWithHigherVersion) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillServerQueryPredictionsEarly};
-
   // Create a form and add it to the form cache via OnFormsSeen().
   EXPECT_CALL(autofill_manager(), ShouldParseForms).WillOnce(Return(true));
   TestAutofillManagerWaiter waiter(autofill_manager());
@@ -1328,9 +1316,6 @@ TEST_F(
 // their signature is not part of the query response.
 TEST_F(AutofillManagerTest,
        EarlyServerPredictions_QueryServerPredictions_MissingSignature) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillServerQueryPredictionsEarly};
-
   std::vector<FormData> forms = {
       test::CreateTestAddressFormData(/*unique_id=*/"0"),
       test::CreateTestAddressFormData(/*unique_id=*/"1")};
@@ -1360,9 +1345,6 @@ TEST_F(AutofillManagerTest,
 TEST_F(
     AutofillManagerTest,
     EarlyServerPredictions_OnLoadedServerPredictions_QueryServerPredictions_RespectsCacheSize) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillServerQueryPredictionsEarly};
-
   std::vector<FormData> forms;
   for (size_t i = 0; i < kAutofillManagerMaxFormCacheSize + 1; ++i) {
     forms.push_back(test::CreateTestAddressFormData(

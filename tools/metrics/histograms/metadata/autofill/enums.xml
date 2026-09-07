@@ -4111,15 +4111,6 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="POST"/>
 </enum>
 
-<enum name="AutofillQueryResult">
-  <int value="0" label="Sent"/>
-  <int value="1" label="Received"/>
-  <int value="2" label="Parsed"/>
-  <int value="3" label="Response matches local"/>
-  <int value="4" label="Response improves local (nonempty)"/>
-  <int value="5" label="Response improves local (empty)"/>
-</enum>
-
 <enum name="AutofillRationalizationQualityMetric">
   <int value="0" label="Good Rationalization"/>
   <int value="1" label="Ok Rationalization"/>

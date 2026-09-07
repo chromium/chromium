@@ -675,13 +675,6 @@ void AutofillMetrics::LogEditedAutofilledFieldAtSubmission(
 }
 
 // static
-void AutofillMetrics::LogServerQueryMetric(ServerQueryMetric metric) {
-  DCHECK_LT(metric, NUM_SERVER_QUERY_METRICS);
-  UMA_HISTOGRAM_ENUMERATION("Autofill.ServerQueryResponse", metric,
-                            NUM_SERVER_QUERY_METRICS);
-}
-
-// static
 void AutofillMetrics::LogFormFillDurationFromLoadWithAutofill(
     base::TimeDelta duration) {
   LogFormFillDuration("Autofill.FillDuration.FromLoad.WithAutofill", duration);

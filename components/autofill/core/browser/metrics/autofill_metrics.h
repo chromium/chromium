@@ -216,29 +216,6 @@ class AutofillMetrics {
     kMaxValue = kDismissedByUserAcceptanceNoServerRequestNeeded,
   };
 
-  // Each of these is logged at most once per query to the server, which in turn
-  // occurs at most once per page load.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum ServerQueryMetric {
-    QUERY_SENT = 0,               // Sent a query to the server.
-    QUERY_RESPONSE_RECEIVED = 1,  // Received a response.
-    QUERY_RESPONSE_PARSED = 2,    // Successfully parsed the server response.
-
-    // The response was parseable, but provided no improvements relative to our
-    // heuristics.
-    QUERY_RESPONSE_MATCHED_LOCAL_HEURISTICS = 3,
-
-    // Our heuristics detected at least one auto-fillable field, and the server
-    // response overrode the type of at least one field.
-    QUERY_RESPONSE_OVERRODE_LOCAL_HEURISTICS = 4,
-
-    // Our heuristics did not detect any auto-fillable fields, but the server
-    // response did detect at least one.
-    QUERY_RESPONSE_WITH_NO_LOCAL_HEURISTICS = 5,
-    NUM_SERVER_QUERY_METRICS,
-  };
-
   // Logs usage of "Scan card" control item.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -650,8 +627,6 @@ class AutofillMetrics {
                                          bool completed);
   static void LogScanCreditCardScreenType(ScanCreditCardScreenType screen_type);
   static void LogScanCreditCardCompletedNewUser(bool is_new_user);
-
-  static void LogServerQueryMetric(ServerQueryMetric metric);
 
   // Logs |event| to the unmask prompt events histogram.
   static void LogUnmaskPromptEvent(UnmaskPromptEvent event,

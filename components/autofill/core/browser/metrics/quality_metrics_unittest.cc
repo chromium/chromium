@@ -917,12 +917,6 @@ TEST_F(QualityMetricsTest, BasedOnAutocomplete) {
           response_string, test::GetEncodedSignatures(*form_structure_ptr),
           {form});
 
-  // Verify that the server response was parsed (here and below).
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples("Autofill.ServerQueryResponse"),
-      BucketsInclude(Bucket(AutofillMetrics::QUERY_RESPONSE_RECEIVED, 1),
-                     Bucket(AutofillMetrics::QUERY_RESPONSE_PARSED, 1)));
-
   // Autocomplete-derived types are eventually what's inferred.
   EXPECT_THAT(form_structure_ptr->field(0)->Type().GetTypes(),
               ElementsAre(NAME_LAST));
