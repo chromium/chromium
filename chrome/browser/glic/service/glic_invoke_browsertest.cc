@@ -1531,15 +1531,9 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeActuationBrowserTest,
   EXPECT_TRUE(success_future.Wait());
 }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_InvokeDoesNotFailOnTabClosedAfterActuationStarts \
-  DISABLED_InvokeDoesNotFailOnTabClosedAfterActuationStarts
-#else
-#define MAYBE_InvokeDoesNotFailOnTabClosedAfterActuationStarts \
-  InvokeDoesNotFailOnTabClosedAfterActuationStarts
-#endif
+// TODO(b/477918640): Tests habe been failing consistently on ChromeOS, Linux and Android.
 IN_PROC_BROWSER_TEST_F(GlicInvokeActuationBrowserTest,
-                       MAYBE_InvokeDoesNotFailOnTabClosedAfterActuationStarts) {
+                       DISABLED_InvokeDoesNotFailOnTabClosedAfterActuationStarts) {
   // Add a new tab so we don't close the browser when we close the active tab.
   tabs::TabInterface* tab2 = CreateAndActivateTab(GURL("about:blank"));
 
