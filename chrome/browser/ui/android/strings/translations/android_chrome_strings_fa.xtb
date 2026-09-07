@@ -163,7 +163,7 @@
 <translation id="1598163867407640634">استفاده از <ph name="SITE_ETLD_PLUS_ONE" /> با <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598770407402123677">‫<ph name="TAB_TITLE" />، زبانه ضبط سنجاق‌شده</translation>
 <translation id="1600756129506222718">‫<ph name="TAB_TITLE" />، زبانه هم‌رسانی</translation>
-<translation id="1601378265092360672">داده‌های مرور شامل سابقه مرور، کوکی‌ها و دیگر داده‌های سایت، تصاویر و فایل‌های ذخیره‌شده در حافظه نهان، و زبانه های باز است</translation>
+<translation id="1601378265092360672">داده‌های مرور شامل سابقه مرور، کوکی‌ها و سایر داده‌های سایت، تصاویر و فایل‌های ذخیره‌شده در حافظه نهان، و زبانه‌های باز است</translation>
 <translation id="160275202205869636">‏وقتی روشن باشد، از داده‌های «حساب Google» شما استفاده می‌شود و داده‌ها در آن ذخیره می‌شود. وقتی خاموش باشد، داده‌ها فقط در این دستگاه ذخیره می‌شود.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{حذف ۱ مورد انتخاب‌شده}one{حذف # مورد انتخاب‌شده}other{حذف # مورد انتخاب‌شده}}</translation>
 <translation id="1639239467298939599">در حال بارگیری</translation>
@@ -846,7 +846,7 @@
 <translation id="4358630185957185589">‏باز کردن برنامه «لنز Google»</translation>
 <translation id="435863252455918214">‏مدیریت افزونه‌ها در منو اصلی Chrome</translation>
 <translation id="4359809482106103048">ایمنی در یک نگاه</translation>
-<translation id="4374192654218566997">‏‫\n\nهمچنین می‌توانید این داده‌ها را از این دستگاه بردارید:</translation>
+<translation id="4374192654218566997">‏\n\nهمچنین می‌توانید این داده‌ها را از این دستگاه بردارید:</translation>
 <translation id="4378154925671717803">تلفن</translation>
 <translation id="4380055775103003110">اگر این مشکل باز هم اتفاق افتاد، می‌توانید روش‌های دیگر را برای ادامه دادن در <ph name="SITE_ETLD_PLUS_ONE" /> امتحان کنید.</translation>
 <translation id="4384468725000734951">‏استفاده از Sogou برای جستجو</translation>
