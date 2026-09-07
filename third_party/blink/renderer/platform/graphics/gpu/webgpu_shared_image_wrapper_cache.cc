@@ -218,15 +218,6 @@ void WebGpuSharedImageWrapperLease::WriteToBackingSharedImage(
     return;
   }
 
-  // NOTE: Invoking BeginRasterAccess() ensures that this invocation of
-  // EndAccess() will generate a new sync token.
-  auto access = shared_image_wrapper_->shared_image_->BeginRasterAccess(
-      RasterInterface(), shared_image_wrapper_->sync_token_,
-      /*readonly=*/false);
-  auto sync_token = gpu::RasterScopedAccess::EndAccess(std::move(access));
-  shared_image_wrapper_->sync_token_ = sync_token;
-  shared_image_wrapper_->shared_image_->UpdateDestructionSyncToken(sync_token);
-
   gpu::SyncToken external_write_sync_token = overwrite_callback(
       shared_image_wrapper_->shared_image_, shared_image_wrapper_->sync_token_);
 
@@ -234,20 +225,7 @@ void WebGpuSharedImageWrapperLease::WriteToBackingSharedImage(
     return;
   }
 
-  // Ensure that any subsequent internal accesses wait for the external write to
-  // complete.
   shared_image_wrapper_->WaitSyncToken(external_write_sync_token);
-
-  // Additionally ensure that the next external read waits for the external
-  // write to complete by ensuring that a new sync token is generated on the
-  // internal interface. This new sync token will be chained after
-  // `external_write_sync_token` thanks to the wait above.
-  access = shared_image_wrapper_->shared_image_->BeginRasterAccess(
-      RasterInterface(), shared_image_wrapper_->sync_token_,
-      /*readonly=*/true);
-  sync_token = gpu::RasterScopedAccess::EndAccess(std::move(access));
-  shared_image_wrapper_->sync_token_ = sync_token;
-  shared_image_wrapper_->shared_image_->UpdateDestructionSyncToken(sync_token);
 }
 
 bool WebGpuSharedImageWrapperLease::CopyToBackingSharedImage(
@@ -412,14 +390,9 @@ WebGpuSharedImageWrapperCache::LeaseWebGpuSharedImageWrapper(
     //   external_image_utils.cc passes wgpu::TextureUsage::CopyDst when
     //   creating the WebGPUMailboxTexture wrapper, triggering a non-readonly
     //   check in WebGPUTextureScopedAccess.
-    // - RASTER_READ is currently required because WriteToBackingSharedImage()
-    //   issues a readonly BeginRasterAccess() call to generate a sync token
-    //   after external writes, triggering a read usage check in
-    //   RasterScopedAccess.
     gpu::SharedImageUsageSet shared_image_usage_flags =
         gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
         gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE |
-        gpu::SHARED_IMAGE_USAGE_RASTER_READ |
         gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
 
     auto shared_image = sii->CreateSharedImage(
