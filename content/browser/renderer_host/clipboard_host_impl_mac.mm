@@ -24,8 +24,7 @@ static constexpr size_t kMaxFindPboardStringLength = 4096;
 }  // namespace
 
 void ClipboardHostImpl::WriteStringToFindPboard(const std::u16string& text) {
-  if (render_frame_host().IsInactiveAndDisallowActivation(
-          DisallowActivationReasonId::kClipboard)) {
+  if (!IsWriteAllowed()) {
     return;
   }
   if (text.length() <= kMaxFindPboardStringLength) {

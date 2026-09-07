@@ -20,6 +20,7 @@
 #include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/document_service.h"
+#include "content/public/common/child_process_id.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom.h"
@@ -34,7 +35,9 @@ class ScopedClipboardWriter;
 
 namespace content {
 
+class BrowserContext;
 class ClipboardHostImplTest;
+class StoragePartitionImpl;
 
 class CONTENT_EXPORT ClipboardHostImpl
     : public DocumentService<blink::mojom::ClipboardHost>,
@@ -163,10 +166,11 @@ class CONTENT_EXPORT ClipboardHostImpl
 
   absl::uint128 GetSequenceNumberImpl(ui::ClipboardBuffer clipboard_buffer);
 
-  // Checks if the renderer allows pasting.  This check is skipped if called
-  // soon after a successful content allowed request.
-  bool IsRendererPasteAllowed(ui::ClipboardBuffer clipboard_buffer,
-                              RenderFrameHost& render_frame_host);
+  // False when the bound document is in a state that disallows activation.
+  bool IsContextActive();
+
+  bool IsPasteAllowed(ui::ClipboardBuffer clipboard_buffer);
+  bool IsWriteAllowed();
 
   // Helper to be used when checking if data is allowed to be copied.
   //
@@ -303,9 +307,17 @@ class CONTENT_EXPORT ClipboardHostImpl
   // Resets `clipboard_writer_` to write its data to the clipboard, and
   // reinitialize it in preparation for the next write.
   void ResetClipboardWriter();
+  void AddSourceDataToClipboardWriter();
 
   // Stops observing clipboard changes and resets the listener.
   void StopObservingClipboard();
+
+  StoragePartitionImpl* GetStoragePartition();
+  ChildProcessId GetChildProcessId();
+  std::optional<blink::StorageKey> GetStorageKey();
+  BrowserContext* GetBrowserContext();
+  std::optional<ui::DataTransferEndpoint> CreateDataEndpoint();
+  ClipboardEndpoint CreateClipboardEndpoint();
 
   std::unique_ptr<ui::ScopedClipboardWriter> clipboard_writer_;
 
