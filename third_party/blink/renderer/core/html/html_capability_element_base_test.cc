@@ -798,6 +798,21 @@ class HTMLCapabilityElementBaseSimTest : public SimTest {
     return permission_element;
   }
 
+  HTMLCapabilityElementBase* CreatePrefixedPermissionElement(
+      Document& document,
+      const char* local_name,
+      const char* prefix = "x") {
+    auto* permission_element =
+        To<HTMLCapabilityElementBase>(document.createElementNS(
+            html_names::xhtmlNamespaceURI,
+            AtomicString(String(prefix) + ":" + local_name),
+            ASSERT_NO_EXCEPTION));
+    document.body()->AppendChild(permission_element);
+    document.UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+    GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+    return permission_element;
+  }
+
   PermissionElementTestPermissionService* permission_service() {
     return &permission_service_;
   }
@@ -1513,6 +1528,186 @@ TEST_F(HTMLInstallElementSimTest, InstallNotAllowedInSandboxedMainDocument) {
   EXPECT_EQ(install_element->invalidReason(), "illegal_sandbox");
 
   permission_service()->set_pepc_registered_callback(base::NullCallback());
+}
+
+TEST_F(HTMLInstallElementSimTest,
+       PrefixedInstallNotAllowedInSameOriginSubframe) {
+  SimRequest main_resource("https://example.test", "text/html");
+  LoadURL("https://example.test");
+  SimRequest iframe_resource("https://example.test/foo.html", "text/html");
+  main_resource.Complete(R"(
+    <body>
+      <iframe src='https://example.test/foo.html'
+        allow="web-app-installation *">
+      </iframe>
+    </body>
+  )");
+  iframe_resource.Finish();
+
+  auto* child_frame = To<WebLocalFrameImpl>(MainFrame().FirstChild());
+  auto* child_doc = child_frame->GetFrame()->GetDocument();
+
+  auto* install_element =
+      CreatePrefixedPermissionElement(*child_doc, "install");
+  // PEPC registration should NOT be called for prefixed <install> in subframes.
+  permission_service()->set_pepc_registered_callback(
+      BindOnce(&NotReachedForPEPCRegistered));
+
+  // The element should NOT be valid, with reason "illegal_subframe".
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return !install_element->isValid(); }));
+  EXPECT_EQ(install_element->invalidReason(), "illegal_subframe");
+
+  permission_service()->set_pepc_registered_callback(base::NullCallback());
+}
+
+TEST_F(HTMLInstallElementSimTest,
+       PrefixedInstallNotAllowedInCrossOriginSubframe) {
+  SimRequest::Params params;
+  params.response_http_headers = {
+      {"content-security-policy",
+       "frame-ancestors 'self' https://example.test"}};
+  SimRequest main_resource("https://example.test", "text/html");
+  LoadURL("https://example.test");
+  SimRequest iframe_resource("https://cross-example.test/foo.html", "text/html",
+                             params);
+  main_resource.Complete(R"(
+    <body>
+      <iframe src='https://cross-example.test/foo.html'
+        allow="web-app-installation *">
+      </iframe>
+    </body>
+  )");
+  iframe_resource.Finish();
+
+  auto* child_frame = To<WebLocalFrameImpl>(MainFrame().FirstChild());
+  auto* child_doc = child_frame->GetFrame()->GetDocument();
+
+  auto* install_element =
+      CreatePrefixedPermissionElement(*child_doc, "install");
+  // PEPC registration should NOT be called for prefixed <install> in subframes.
+  permission_service()->set_pepc_registered_callback(
+      BindOnce(&NotReachedForPEPCRegistered));
+
+  // The element should NOT be valid, with reason "illegal_subframe".
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return !install_element->isValid(); }));
+  EXPECT_EQ(install_element->invalidReason(), "illegal_subframe");
+
+  permission_service()->set_pepc_registered_callback(base::NullCallback());
+}
+
+TEST_F(HTMLInstallElementSimTest, PrefixedInstallNotAllowedInSandboxedIframe) {
+  SimRequest main_resource("https://example.test", "text/html");
+  LoadURL("https://example.test");
+  SimRequest iframe_resource("https://example.test/foo.html", "text/html");
+  main_resource.Complete(R"(
+    <body>
+      <iframe src='https://example.test/foo.html'
+        sandbox="allow-scripts allow-same-origin"
+        allow="web-app-installation *">
+      </iframe>
+    </body>
+  )");
+  iframe_resource.Finish();
+
+  auto* child_frame = To<WebLocalFrameImpl>(MainFrame().FirstChild());
+  auto* child_doc = child_frame->GetFrame()->GetDocument();
+
+  auto* install_element =
+      CreatePrefixedPermissionElement(*child_doc, "install");
+  // PEPC registration should NOT be called for prefixed <install> in sandboxed
+  // iframes.
+  permission_service()->set_pepc_registered_callback(
+      BindOnce(&NotReachedForPEPCRegistered));
+
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return !install_element->isValid(); }));
+  EXPECT_EQ(install_element->invalidReason(), "illegal_sandbox");
+
+  permission_service()->set_pepc_registered_callback(base::NullCallback());
+}
+
+TEST_F(HTMLInstallElementSimTest,
+       PrefixedInstallNotAllowedInSandboxedMainDocument) {
+  SimRequest::Params params;
+  params.response_http_headers = {
+      {"content-security-policy", "sandbox allow-same-origin allow-scripts"}};
+  SimRequest main_resource("https://example.test", "text/html", params);
+  LoadURL("https://example.test");
+  main_resource.Complete(R"(
+    <body>
+    </body>
+  )");
+
+  auto* install_element =
+      CreatePrefixedPermissionElement(GetDocument(), "install");
+  // PEPC registration should NOT be called for prefixed <install> in sandboxed
+  // documents.
+  permission_service()->set_pepc_registered_callback(
+      BindOnce(&NotReachedForPEPCRegistered));
+
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return !install_element->isValid(); }));
+  EXPECT_EQ(install_element->invalidReason(), "illegal_sandbox");
+
+  permission_service()->set_pepc_registered_callback(base::NullCallback());
+}
+
+TEST_F(HTMLInstallElementSimTest, PrefixedInstallAllowedInMainDocument) {
+  SimRequest main_resource("https://example.test", "text/html");
+  LoadURL("https://example.test");
+  main_resource.Complete(R"(
+    <body>
+    </body>
+  )");
+
+  auto* install_element =
+      CreatePrefixedPermissionElement(GetDocument(), "install");
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return install_element->isValid(); }));
+  EXPECT_TRUE(install_element->invalidReason().empty());
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kHTMLInstallElement));
+}
+
+TEST_F(HTMLCapabilityElementBaseSimTest,
+       PrefixedCapabilityElementsUseCounters) {
+  SimRequest main_resource("https://example.test", "text/html");
+  LoadURL("https://example.test");
+  main_resource.Complete(R"(
+    <body>
+    </body>
+  )");
+
+  struct TestCase {
+    const char* tag;
+    WebFeature feature;
+  };
+  const TestCase kTestCases[] = {
+      {"geolocation", WebFeature::kHTMLGeolocationElement},
+      {"camera", WebFeature::kHTMLCameraElement},
+      {"microphone", WebFeature::kHTMLMicrophoneElement},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    auto* element =
+        CreatePrefixedPermissionElement(GetDocument(), test_case.tag);
+    EXPECT_TRUE(base::test::RunUntil([&]() { return element->isValid(); }));
+    EXPECT_TRUE(element->invalidReason().empty());
+    EXPECT_TRUE(GetDocument().IsUseCounted(test_case.feature));
+  }
+
+  // Also test usermedia element with type attribute.
+  auto* usermedia_element =
+      CreatePrefixedPermissionElement(GetDocument(), "usermedia");
+  usermedia_element->setAttribute(html_names::kTypeAttr,
+                                  AtomicString("camera"));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return usermedia_element->isValid(); }));
+  EXPECT_TRUE(usermedia_element->invalidReason().empty());
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kHTMLUserMediaElement));
 }
 
 TEST_F(HTMLCapabilityElementBaseSimTest, BlockedByMissingFrameAncestorsCSP) {

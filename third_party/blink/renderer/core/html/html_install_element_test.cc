@@ -558,4 +558,29 @@ TEST_F(HTMLInstallElementTestBase, InvalidManifestUrlReturnsInvalidData) {
   EXPECT_EQ(kResultInvalidData, event->result().AsString());
 }
 
+TEST_F(HTMLInstallElementTestBase, PrefixedElementRegistration) {
+  auto* element = To<HTMLInstallElement>(GetDocument().createElementNS(
+      html_names::xhtmlNamespaceURI, AtomicString("x:install"),
+      ASSERT_NO_EXCEPTION));
+  WaitForElementRegistration(element);
+  EXPECT_TRUE(element->isValid());
+}
+
+TEST_F(HTMLInstallElementTestBase, PrefixedElementActivationSuccess) {
+  auto* element = To<HTMLInstallElement>(GetDocument().createElementNS(
+      html_names::xhtmlNamespaceURI, AtomicString("x:install"),
+      ASSERT_NO_EXCEPTION));
+  WaitForElementRegistration(element);
+
+  element->DispatchEvent(*Event::Create(event_type_names::kDOMActivate));
+  web_install_service_.WaitForCall();
+  web_install_service_.RespondManifestWithSuccess();
+
+  InstallResultEvent* event = WaitForInstallResultEvent(element);
+  EXPECT_NE(event, nullptr);
+  if (event) {
+    EXPECT_EQ(kResultSuccess, event->result().AsString());
+  }
+}
+
 }  // namespace blink

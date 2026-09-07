@@ -628,7 +628,7 @@ bool HTMLCapabilityElementBase::MaybeRegisterPageEmbeddedPermissionControl() {
   // disallow in sandboxed documents. If we
   // continue to block it in all subframes, we should likely create a new issue
   // type.
-  if (TagQName() == html_names::kInstallTag &&
+  if (HasTagName(html_names::kInstallTag) &&
       GetExecutionContext()->GetSandboxFlags() !=
           network::mojom::blink::WebSandboxFlags::kNone) {
     return false;
@@ -637,7 +637,7 @@ bool HTMLCapabilityElementBase::MaybeRegisterPageEmbeddedPermissionControl() {
   // TODO(crbug.com/490139152): Evaluate <install> support in subframes. If we
   // continue to block it in all subframes, we should likely create a new issue
   // type.
-  if (TagQName() == html_names::kInstallTag && !frame->IsMainFrame()) {
+  if (HasTagName(html_names::kInstallTag) && !frame->IsMainFrame()) {
     return false;
   }
 
@@ -1183,7 +1183,7 @@ bool HTMLCapabilityElementBase::IsClickingEnabled() {
   // contexts. For now, check this before `is_registered_in_browser_process_`
   // so we don't fall through to SecurityChecksFailed, which DevTools
   // maps to a misleading "quota exceeded" message.
-  if (TagQName() == html_names::kInstallTag &&
+  if (HasTagName(html_names::kInstallTag) &&
       GetExecutionContext()->GetSandboxFlags() !=
           network::mojom::blink::WebSandboxFlags::kNone) {
     RecordPermissionElementUserInteractionDeniedReason(
@@ -1196,7 +1196,7 @@ bool HTMLCapabilityElementBase::IsClickingEnabled() {
     // For now, check this before `is_registered_in_browser_process_`
     // so we don't fall through to SecurityChecksFailed, which DevTools
     // maps to a misleading "quota exceeded" message.
-    if (TagQName() == html_names::kInstallTag && !frame->IsMainFrame()) {
+    if (HasTagName(html_names::kInstallTag) && !frame->IsMainFrame()) {
       RecordPermissionElementUserInteractionDeniedReason(
           TagQName(),
           UserInteractionDeniedReason::kFailedOrHasNotBeenRegistered);
@@ -1304,14 +1304,14 @@ HTMLCapabilityElementBase::GetClickingEnabledState() const {
 
     // TODO(crbug.com/493534965): Evaluate <install> support in sandboxed
     // contexts.
-    if (TagQName() == html_names::kInstallTag &&
+    if (HasTagName(html_names::kInstallTag) &&
         GetExecutionContext()->GetSandboxFlags() !=
             network::mojom::blink::WebSandboxFlags::kNone) {
       return {false, AtomicString("illegal_sandbox")};
     }
 
     // TODO(crbug.com/490139152): Evaluate <install> support in subframes.
-    if (TagQName() == html_names::kInstallTag && !frame->IsMainFrame()) {
+    if (HasTagName(html_names::kInstallTag) && !frame->IsMainFrame()) {
       return {false, AtomicString("illegal_subframe")};
     }
   }

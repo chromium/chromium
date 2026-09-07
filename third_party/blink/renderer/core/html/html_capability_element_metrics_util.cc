@@ -25,15 +25,15 @@ constexpr char kUserInteractionHistogramPattern[] =
     CAPABILITY_ELEMENT_BASE_HISTOGRAM_PATTERN ".UserInteraction";
 
 const char* GetCapabilityNameForHistogram(const QualifiedName& tag_name) {
-  if (tag_name == html_names::kGeolocationTag) {
+  if (tag_name.Matches(html_names::kGeolocationTag)) {
     return "Geolocation";
-  } else if (tag_name == html_names::kInstallTag) {
+  } else if (tag_name.Matches(html_names::kInstallTag)) {
     return "Install";
-  } else if (tag_name == html_names::kUsermediaTag) {
+  } else if (tag_name.Matches(html_names::kUsermediaTag)) {
     return "UserMedia";
-  } else if (tag_name == html_names::kCameraTag) {
+  } else if (tag_name.Matches(html_names::kCameraTag)) {
     return "Camera";
-  } else if (tag_name == html_names::kMicrophoneTag) {
+  } else if (tag_name.Matches(html_names::kMicrophoneTag)) {
     return "Microphone";
   } else {
     NOTREACHED();
@@ -43,15 +43,15 @@ const char* GetCapabilityNameForHistogram(const QualifiedName& tag_name) {
 
 void RecordPermissionElementUseCounter(Document& document,
                                        const QualifiedName& tag_name) {
-  if (tag_name == html_names::kGeolocationTag) {
+  if (tag_name.Matches(html_names::kGeolocationTag)) {
     UseCounter::Count(document, WebFeature::kHTMLGeolocationElement);
-  } else if (tag_name == html_names::kInstallTag) {
+  } else if (tag_name.Matches(html_names::kInstallTag)) {
     UseCounter::Count(document, WebFeature::kHTMLInstallElement);
-  } else if (tag_name == html_names::kUsermediaTag) {
+  } else if (tag_name.Matches(html_names::kUsermediaTag)) {
     UseCounter::Count(document, WebFeature::kHTMLUserMediaElement);
-  } else if (tag_name == html_names::kCameraTag) {
+  } else if (tag_name.Matches(html_names::kCameraTag)) {
     UseCounter::Count(document, WebFeature::kHTMLCameraElement);
-  } else if (tag_name == html_names::kMicrophoneTag) {
+  } else if (tag_name.Matches(html_names::kMicrophoneTag)) {
     UseCounter::Count(document, WebFeature::kHTMLMicrophoneElement);
   } else {
     NOTREACHED();
