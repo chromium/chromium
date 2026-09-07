@@ -18,19 +18,27 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
  */
 @NullMarked
 public class LiveBackgroundTab implements BackgroundPoolTab {
+    private final BackgroundTabPool mPool;
     private final Tab mTab;
     private final @TabId int mPlaceholderTabId;
     private final @Nullable Integer mTaskId;
+    private boolean mAttached;
 
     /**
      * Constructs a {@link LiveBackgroundTab}.
      *
+     * @param pool The {@link BackgroundTabPool} that owns this tab.
      * @param tab The live in-memory {@link Tab} instance.
      * @param placeholderTabId The placeholder tab ID associated with this background tab.
      * @param taskId The task ID associated with the background session, or null if none.
      */
-    public LiveBackgroundTab(Tab tab, @TabId int placeholderTabId, @Nullable Integer taskId) {
+    public LiveBackgroundTab(
+            BackgroundTabPool pool,
+            Tab tab,
+            @TabId int placeholderTabId,
+            @Nullable Integer taskId) {
         assert !tab.hasParentCollection() : "LiveBackgroundTab must not have a parent collection.";
+        mPool = pool;
         mTab = tab;
         mPlaceholderTabId = placeholderTabId;
         mTaskId = taskId;
@@ -43,6 +51,9 @@ public class LiveBackgroundTab implements BackgroundPoolTab {
 
     @Override
     public Tab attachTabImpl(TabModel tabModel, int index) {
+        assert !mAttached : "LiveBackgroundTab has already been attached or destroyed.";
+        mAttached = true;
+        mPool.removeTab(mTab.getId());
         tabModel.addTab(
                 mTab, index, TabLaunchType.FROM_RESTORE, TabCreationState.LIVE_IN_BACKGROUND);
         return mTab;
