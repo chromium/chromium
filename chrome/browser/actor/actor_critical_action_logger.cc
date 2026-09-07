@@ -4,7 +4,6 @@
 
 #include "chrome/browser/actor/actor_critical_action_logger.h"
 
-#include <algorithm>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -16,8 +15,6 @@
 #include "base/feature_list.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
-#include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/tools/attempt_form_filling_tool_request.h"
@@ -171,19 +168,18 @@ void ActorCriticalActionLogger::LogEntry(
     const GURL& url,
     std::string metadata,
     int64_t navigation_id) {
-  critical_actions::CriticalActionEntry entry;
-  entry.critical_action_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
-  entry.timestamp = base::Time::Now();
-  entry.action_source = critical_actions::ActionSource::kActor;
-  entry.action_type = action_type;
-  entry.conversation_id = std::move(conversation_id);
-  entry.actor_task_id = actor_task_id.is_null()
-                            ? ""
-                            : base::NumberToString(actor_task_id.value());
-  entry.url = url;
-  entry.metadata = std::move(metadata);
-
-  service.AddCriticalActionWithNavigationId(entry, navigation_id);
+  service.AddCriticalActionWithNavigationId(
+      critical_actions::CriticalActionEntry::Builder()
+          .SetActionType(action_type)
+          .SetActionSource(critical_actions::ActionSource::kActor)
+          .SetUrl(url)
+          .SetConversationId(std::move(conversation_id))
+          .SetActorTaskId(actor_task_id.is_null()
+                              ? ""
+                              : base::NumberToString(actor_task_id.value()))
+          .SetMetadata(std::move(metadata))
+          .Build(),
+      navigation_id);
 }
 
 }  // namespace actor
