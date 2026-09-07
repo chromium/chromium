@@ -2,10 +2,25 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ios/web/public/js_messaging/optimize_ts.gni")
+
+optimize_ts("device_trust_api_ts") {
+  visibility = [ ":model" ]
+  sources = [ "resources/device_trust.ts" ]
+  deps = [
+    "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
+}
+
 source_set("model") {
   sources = [
+    "device_trust_challenge_tab_helper.h",
+    "device_trust_challenge_tab_helper.mm",
     "device_trust_connector_service_factory_ios.h",
     "device_trust_connector_service_factory_ios.mm",
+    "device_trust_java_script_feature.h",
+    "device_trust_java_script_feature.mm",
     "device_trust_key_manager_ios.h",
     "device_trust_key_manager_ios.mm",
     "device_trust_service_factory_ios.h",
@@ -13,7 +28,9 @@ source_set("model") {
   ]
 
   deps = [
+    ":device_trust_api_ts",
     "//base",
+    "//components/device_signals/core/browser",
     "//components/enterprise",
     "//components/enterprise/device_trust",
     "//components/enterprise/device_trust/core",
@@ -30,22 +47,6 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
-  ]
-}
-
-source_set("tab_helper") {
-  sources = [
-    "device_trust_challenge_tab_helper.h",
-    "device_trust_challenge_tab_helper.mm",
-  ]
-
-  deps = [
-    "//base",
-    "//components/device_signals/core/browser",
-    "//components/enterprise/device_trust",
-    "//ios/chrome/browser/device_trust",
-    "//ios/chrome/browser/shared/model/profile",
-    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/web/common:features",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
@@ -58,13 +59,15 @@ source_set("unit_tests") {
   sources = [
     "device_trust_challenge_tab_helper_unittest.mm",
     "device_trust_connector_service_factory_ios_unittest.mm",
+    "device_trust_java_script_feature_unittest.mm",
+    "device_trust_js_unittest.mm",
     "device_trust_key_manager_ios_unittest.mm",
     "device_trust_service_factory_ios_unittest.mm",
   ]
 
   deps = [
     ":model",
-    ":tab_helper",
+    "//base",
     "//base/test:test_support",
     "//components/device_signals/core/browser:test_support",
     "//components/enterprise/device_trust",
@@ -73,14 +76,15 @@ source_set("unit_tests") {
     "//components/keyed_service/core",
     "//components/policy/core/common",
     "//components/sync_preferences:test_support",
-    "//ios/chrome/browser/device_trust",
     "//ios/chrome/browser/enterprise/signals/model",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/test:ios_chrome_test_with_web_state",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
+    "//ios/web/public/test:javascript_test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
     "//url",

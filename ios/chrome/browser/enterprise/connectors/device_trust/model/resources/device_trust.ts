@@ -2,22 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {
-  CrWebApi,
-  gCrWeb,
-} from '//ios/web/public/js_messaging/resources/gcrweb.js';
-
-import {
-  sendWebKitMessageWithReply,
-  trim,
-} from '//ios/web/public/js_messaging/resources/utils.js';
+import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {sendWebKitMessageWithReply, trim} from '//ios/web/public/js_messaging/resources/utils.js';
 
 const MESSAGE_HANDLER_NAME = 'DeviceTrustMessageHandler';
 const REQUEST_TIMEOUT_MS = 30000;
 
 // LINT.IfChange(MaxChallengeRequestLength)
 const MAX_CHALLENGE_REQUEST_LENGTH = 1024;
-// LINT.ThenChange(//ios/chrome/browser/device_trust/device_trust_java_script_feature.mm:MaxChallengeRequestLength)
+// LINT.ThenChange(//ios/chrome/browser/enterprise/connectors/device_trust/model/device_trust_java_script_feature.mm:MaxChallengeRequestLength)
 const MAX_CONCURRENT_REQUESTS = 3;
 
 let pendingRequestCount = 0;

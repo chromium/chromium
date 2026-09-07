@@ -6,7 +6,7 @@
 
 #import "base/check_deref.h"
 #import "base/notimplemented.h"
-#import "ios/chrome/browser/device_trust/device_trust_java_script_feature.h"
+#import "ios/chrome/browser/enterprise/connectors/device_trust/model/device_trust_java_script_feature.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"

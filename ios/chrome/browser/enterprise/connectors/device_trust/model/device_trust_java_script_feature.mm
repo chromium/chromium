@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/device_trust/device_trust_java_script_feature.h"
+#import "ios/chrome/browser/enterprise/connectors/device_trust/model/device_trust_java_script_feature.h"
 
 #import <utility>
 
@@ -16,7 +16,7 @@ constexpr char kScriptHandlerName[] = "DeviceTrustMessageHandler";
 constexpr char kDeviceTrustAPIName[] = "device_trust";
 // LINT.IfChange(MaxChallengeRequestLength)
 constexpr size_t kMaxChallengeRequestLength = 1024;
-// LINT.ThenChange(//ios/chrome/browser/device_trust/device_trust.ts:MaxChallengeRequestLength)
+// LINT.ThenChange(//ios/chrome/browser/enterprise/connectors/device_trust/model/resources/device_trust.ts:MaxChallengeRequestLength)
 }  // namespace
 
 DeviceTrustJavaScriptFeature* DeviceTrustJavaScriptFeature::GetInstance() {

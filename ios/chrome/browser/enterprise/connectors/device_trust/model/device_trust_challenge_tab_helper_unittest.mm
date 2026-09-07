@@ -8,7 +8,7 @@
 #import <utility>
 
 #import "base/memory/raw_ptr.h"
-#import "ios/chrome/browser/device_trust/device_trust_java_script_feature.h"
+#import "ios/chrome/browser/enterprise/connectors/device_trust/model/device_trust_java_script_feature.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/js_messaging/content_world.h"
