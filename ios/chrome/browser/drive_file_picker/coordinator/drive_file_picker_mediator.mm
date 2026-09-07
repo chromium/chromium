@@ -1033,11 +1033,9 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
 
   // If there is a timer programmed to fetch items, cancel it.
   _timerBeforeFetch.Stop();
+  _timerAfterFetchBeforeClearItems.Stop();
   // Cancel any pending fetch query.
-  if (_driveList->IsExecutingQuery()) {
-    _timerAfterFetchBeforeClearItems.Stop();
-    _driveList->CancelCurrentQuery();
-  }
+  _driveList->CancelCurrentQuery();
 
   if (!_collection->IsRoot() || _shouldShowSearchItems) {
     const base::TimeDelta delay =
@@ -1131,6 +1129,12 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
                        animated:(BOOL)animated {
   // Cancel clearing items if fetching completed.
   _timerAfterFetchBeforeClearItems.Stop();
+
+  // If the response is delivered when displaying the root collection outside
+  // of search, ignore the result as root items are static collections.
+  if (_collection->IsRoot() && !_shouldShowSearchItems) {
+    return;
+  }
 
   const BOOL append = _nextPageToken != nil;
   if (result.error) {
