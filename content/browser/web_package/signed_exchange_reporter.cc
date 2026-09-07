@@ -193,18 +193,18 @@ void SignedExchangeReporter::set_cert_server_ip_address(
 }
 
 void SignedExchangeReporter::set_inner_url(const GURL& inner_url) {
-  DCHECK(report_);
+  CHECK(report_, base::NotFatalUntil::M159);
   report_->inner_url = inner_url;
 }
 
 void SignedExchangeReporter::set_cert_url(const GURL& cert_url) {
-  DCHECK(report_);
+  CHECK(report_, base::NotFatalUntil::M159);
   report_->cert_url = cert_url;
 }
 
 void SignedExchangeReporter::ReportLoadResultAndFinish(
     SignedExchangeLoadResult result) {
-  DCHECK(report_);
+  CHECK(report_, base::NotFatalUntil::M159);
 
   const char* result_string = GetResultTypeString(result);
   report_->success = result == SignedExchangeLoadResult::kSuccess;
@@ -227,7 +227,7 @@ void SignedExchangeReporter::ReportLoadResultAndFinish(
 }
 
 void SignedExchangeReporter::ReportHeaderIntegrityMismatch() {
-  DCHECK(report_);
+  CHECK(report_, base::NotFatalUntil::M159);
   report_->success = false;
   report_->type = kSXGHeaderIntegrityMismatch;
   report_->elapsed_time = base::TimeDelta();

@@ -85,18 +85,18 @@ void BackgroundSyncProxy::SendRegisteredPeriodicSyncOrigins(
     return;
 
   auto* controller = browser_context()->GetBackgroundSyncController();
-  DCHECK(controller);
+  CHECK(controller, base::NotFatalUntil::M159);
 
   controller->NoteRegisteredPeriodicSyncOrigins(std::move(registered_origins));
 }
 
 void BackgroundSyncProxy::AddToTrackedOrigins(url::Origin origin) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (!browser_context())
     return;
 
   auto* controller = browser_context()->GetBackgroundSyncController();
-  DCHECK(controller);
+  CHECK(controller, base::NotFatalUntil::M159);
 
   controller->AddToTrackedOrigins(origin);
 }
@@ -107,7 +107,7 @@ void BackgroundSyncProxy::RemoveFromTrackedOrigins(url::Origin origin) {
     return;
 
   auto* controller = browser_context()->GetBackgroundSyncController();
-  DCHECK(controller);
+  CHECK(controller, base::NotFatalUntil::M159);
 
   controller->RemoveFromTrackedOrigins(origin);
 }

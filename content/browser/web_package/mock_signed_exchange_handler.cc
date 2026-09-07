@@ -49,7 +49,7 @@ class PrefixStrippingSourceStream : public net::SourceStream {
         remaining_prefix_to_strip_(prefix_to_strip),
         wrapped_stream_(std::move(stream_to_wrap)),
         weak_factory_(this) {
-    DCHECK(wrapped_stream_);
+    CHECK(wrapped_stream_, base::NotFatalUntil::M159);
   }
 
   ~PrefixStrippingSourceStream() override = default;
@@ -57,9 +57,9 @@ class PrefixStrippingSourceStream : public net::SourceStream {
   int Read(net::IOBuffer* dest_buffer,
            int buffer_size,
            net::CompletionOnceCallback callback) override {
-    DCHECK(dest_buffer);
-    DCHECK_GT(buffer_size, 0);
-    DCHECK(callback);
+    CHECK(dest_buffer, base::NotFatalUntil::M159);
+    CHECK_GT(buffer_size, 0, base::NotFatalUntil::M159);
+    CHECK(callback, base::NotFatalUntil::M159);
 
     // `callback` might sometimes need to survive more than 1 wrapped `Read`.
     // To make this easier to handle, `callback` is put into a ref-counted
@@ -97,7 +97,7 @@ class PrefixStrippingSourceStream : public net::SourceStream {
   };
 
   int Read(const scoped_refptr<PendingRead>& pending_read) {
-    DCHECK(pending_read);
+    CHECK(pending_read, base::NotFatalUntil::M159);
 
     if (remaining_prefix_to_strip_.empty()) {
       return wrapped_stream_->Read(pending_read->dest_buffer.get(),
@@ -116,8 +116,9 @@ class PrefixStrippingSourceStream : public net::SourceStream {
 
   void OnWrappedReadCompleted(const scoped_refptr<PendingRead>& pending_read,
                               int number_of_bytes_read) {
-    DCHECK(pending_read);
-    DCHECK_NE(number_of_bytes_read, net::ERR_IO_PENDING);
+    CHECK(pending_read, base::NotFatalUntil::M159);
+    CHECK_NE(number_of_bytes_read, net::ERR_IO_PENDING,
+             base::NotFatalUntil::M159);
 
     int number_of_post_prefix_bytes_read =
         ConsumeWrappedRead(pending_read, number_of_bytes_read);
@@ -134,7 +135,7 @@ class PrefixStrippingSourceStream : public net::SourceStream {
   //    returns a non-negative integer after post-prefix bytes are available.
   int ConsumeWrappedRead(const scoped_refptr<PendingRead>& pending_read,
                          int number_of_bytes_read) {
-    DCHECK(pending_read);
+    CHECK(pending_read, base::NotFatalUntil::M159);
 
     // Propagate errors (and ERR_IO_PENDING indicator of async results).
     // Only consider successful reads below.

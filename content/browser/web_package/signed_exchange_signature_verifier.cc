@@ -251,7 +251,7 @@ SignedExchangeSignatureVerifier::Result SignedExchangeSignatureVerifier::Verify(
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"),
                "SignedExchangeSignatureVerifier::Verify");
   scoped_refptr<net::X509Certificate> certificate = cert_chain->cert();
-  DCHECK(certificate);
+  CHECK(certificate, base::NotFatalUntil::M159);
   const auto validity_period_result = VerifyValidityPeriod(envelope);
   if (validity_period_result != Result::kSuccess) {
     signed_exchange_utils::ReportErrorAndTraceEvent(
@@ -276,7 +276,8 @@ SignedExchangeSignatureVerifier::Result SignedExchangeSignatureVerifier::Verify(
     return timestamp_result;
   }
   // Currently we don't support ed25519key. So |cert_sha256| must be set.
-  DCHECK(envelope.signature().cert_sha256.has_value());
+  CHECK(envelope.signature().cert_sha256.has_value(),
+        base::NotFatalUntil::M159);
 
   // The main-certificate is the first certificate in certificate-chain.
   if (*envelope.signature().cert_sha256 !=

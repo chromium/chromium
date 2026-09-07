@@ -151,7 +151,7 @@ SignedExchangeCertFetcher::~SignedExchangeCertFetcher() = default;
 
 void SignedExchangeCertFetcher::Start() {
   if (devtools_proxy_) {
-    DCHECK(cert_request_id_);
+    CHECK(cert_request_id_, base::NotFatalUntil::M159);
     devtools_proxy_->CertificateRequestSent(*cert_request_id_,
                                             *resource_request_);
   }
@@ -176,7 +176,7 @@ void SignedExchangeCertFetcher::Abort() {
                "SignedExchangeCertFetcher::Abort");
   MaybeNotifyCompletionToDevtools(
       network::URLLoaderCompletionStatus(net::ERR_ABORTED));
-  DCHECK(callback_);
+  CHECK(callback_, base::NotFatalUntil::M159);
   url_loader_ = nullptr;
   body_.reset();
   handle_watcher_ = nullptr;
@@ -206,14 +206,14 @@ void SignedExchangeCertFetcher::OnHandleReady(MojoResult result) {
   } else if (rv == MOJO_RESULT_FAILED_PRECONDITION) {
     OnDataComplete();
   } else {
-    DCHECK_EQ(MOJO_RESULT_SHOULD_WAIT, rv);
+    CHECK_EQ(MOJO_RESULT_SHOULD_WAIT, rv, base::NotFatalUntil::M159);
   }
 }
 
 void SignedExchangeCertFetcher::OnDataComplete() {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"),
                "SignedExchangeCertFetcher::OnDataComplete");
-  DCHECK(callback_);
+  CHECK(callback_, base::NotFatalUntil::M159);
   url_loader_ = nullptr;
   body_.reset();
   handle_watcher_ = nullptr;
@@ -248,7 +248,7 @@ void SignedExchangeCertFetcher::OnReceiveResponse(
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"),
                "SignedExchangeCertFetcher::OnReceiveResponse");
   if (devtools_proxy_) {
-    DCHECK(cert_request_id_);
+    CHECK(cert_request_id_, base::NotFatalUntil::M159);
     devtools_proxy_->CertificateResponseReceived(*cert_request_id_,
                                                  resource_request_->url, *head);
   }
@@ -357,7 +357,7 @@ void SignedExchangeCertFetcher::MaybeNotifyCompletionToDevtools(
     const network::URLLoaderCompletionStatus& status) {
   if (!devtools_proxy_ || has_notified_completion_to_devtools_)
     return;
-  DCHECK(cert_request_id_);
+  CHECK(cert_request_id_, base::NotFatalUntil::M159);
   devtools_proxy_->CertificateRequestCompleted(*cert_request_id_, status);
   has_notified_completion_to_devtools_ = true;
 }

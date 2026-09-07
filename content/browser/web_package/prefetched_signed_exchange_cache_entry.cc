@@ -56,14 +56,14 @@ void PrefetchedSignedExchangeCacheEntry::SetCertServerIPAddress(
 
 std::unique_ptr<const PrefetchedSignedExchangeCacheEntry>
 PrefetchedSignedExchangeCacheEntry::Clone() const {
-  DCHECK(outer_url().is_valid());
-  DCHECK(outer_response());
-  DCHECK(header_integrity());
-  DCHECK(inner_url().is_valid());
-  DCHECK(inner_response());
-  DCHECK(completion_status());
-  DCHECK(blob_data_handle());
-  DCHECK(!signature_expire_time().is_null());
+  CHECK(outer_url().is_valid(), base::NotFatalUntil::M159);
+  CHECK(outer_response(), base::NotFatalUntil::M159);
+  CHECK(header_integrity(), base::NotFatalUntil::M159);
+  CHECK(inner_url().is_valid(), base::NotFatalUntil::M159);
+  CHECK(inner_response(), base::NotFatalUntil::M159);
+  CHECK(completion_status(), base::NotFatalUntil::M159);
+  CHECK(blob_data_handle(), base::NotFatalUntil::M159);
+  CHECK(!signature_expire_time().is_null(), base::NotFatalUntil::M159);
 
   std::unique_ptr<PrefetchedSignedExchangeCacheEntry> clone =
       std::make_unique<PrefetchedSignedExchangeCacheEntry>();

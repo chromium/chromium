@@ -58,8 +58,9 @@ void SignedExchangeRequestHandler::MaybeCreateLoader(
   }
 
   if (signed_exchange_loader_->fallback_url()) {
-    DCHECK(tentative_resource_request.url.EqualsIgnoringRef(
-        *signed_exchange_loader_->fallback_url()));
+    CHECK(tentative_resource_request.url.EqualsIgnoringRef(
+              *signed_exchange_loader_->fallback_url()),
+          base::NotFatalUntil::M159);
     signed_exchange_loader_ = nullptr;
     // Skip subsequent interceptors and fallback to the network.
     std::move(callback).Run(NavigationLoaderInterceptor::Result(
@@ -67,8 +68,9 @@ void SignedExchangeRequestHandler::MaybeCreateLoader(
     return;
   }
 
-  DCHECK(tentative_resource_request.url.EqualsIgnoringRef(
-      *signed_exchange_loader_->inner_request_url()));
+  CHECK(tentative_resource_request.url.EqualsIgnoringRef(
+            *signed_exchange_loader_->inner_request_url()),
+        base::NotFatalUntil::M159);
   std::move(callback).Run(NavigationLoaderInterceptor::Result(
       base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
           base::BindOnce(&SignedExchangeRequestHandler::StartResponse,
@@ -84,7 +86,7 @@ bool SignedExchangeRequestHandler::MaybeCreateLoaderForResponse(
     mojo::PendingReceiver<network::mojom::URLLoaderClient>* client_receiver,
     blink::ThrottlingURLLoader* url_loader,
     bool* skip_other_interceptors) {
-  DCHECK(!signed_exchange_loader_);
+  CHECK(!signed_exchange_loader_, base::NotFatalUntil::M159);
 
   // Navigation ResourceRequests always have non-empty trusted_params.
   CHECK(request.trusted_params);

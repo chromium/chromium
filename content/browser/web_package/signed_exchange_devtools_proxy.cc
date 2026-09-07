@@ -29,17 +29,17 @@ SignedExchangeDevToolsProxy::SignedExchangeDevToolsProxy(
       frame_tree_node_id_(frame_tree_node_id),
       devtools_navigation_token_(devtools_navigation_token),
       devtools_enabled_(report_raw_headers) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 }
 
 SignedExchangeDevToolsProxy::~SignedExchangeDevToolsProxy() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 }
 
 void SignedExchangeDevToolsProxy::ReportError(
     const std::string& message,
     std::optional<SignedExchangeError::FieldIndexPair> error_field) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   errors_.push_back(SignedExchangeError(message, std::move(error_field)));
 
   FrameTreeNode* frame_tree_node =
@@ -110,7 +110,7 @@ void SignedExchangeDevToolsProxy::OnSignedExchangeReceived(
     const std::optional<SignedExchangeEnvelope>& envelope,
     const scoped_refptr<net::X509Certificate>& certificate,
     const std::optional<net::SSLInfo>& ssl_info) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (!devtools_enabled_)
     return;
 

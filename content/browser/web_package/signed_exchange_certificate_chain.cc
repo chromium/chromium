@@ -176,7 +176,7 @@ SignedExchangeCertificateChain::SignedExchangeCertificateChain(
     const std::string& ocsp,
     const std::string& sct)
     : cert_(cert), ocsp_(ocsp), sct_(sct) {
-  DCHECK(cert);
+  CHECK(cert, base::NotFatalUntil::M159);
 }
 
 SignedExchangeCertificateChain::~SignedExchangeCertificateChain() = default;

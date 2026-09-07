@@ -52,8 +52,8 @@ SignedExchangeCertFetcherFactoryImpl::CreateFetcherAndStart(
     bool force_fetch,
     SignedExchangeCertFetcher::CertificateCallback callback,
     SignedExchangeDevToolsProxy* devtools_proxy) {
-  DCHECK(url_loader_factory_);
-  DCHECK(url_loader_throttles_getter_);
+  CHECK(url_loader_factory_, base::NotFatalUntil::M159);
+  CHECK(url_loader_throttles_getter_, base::NotFatalUntil::M159);
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles =
       std::move(url_loader_throttles_getter_).Run();
   return SignedExchangeCertFetcher::CreateAndStart(

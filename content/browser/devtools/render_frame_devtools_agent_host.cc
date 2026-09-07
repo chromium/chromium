@@ -135,7 +135,7 @@ bool IsPrerenderPrimaryMainFramePlaceholder(WebContentsImpl* web_contents,
 
 bool MaybeInitializePrerenderPrimaryMainFrame(RenderFrameHostImpl* frame_host,
                                               bool* did_try_to_initialize) {
-  DCHECK(did_try_to_initialize);
+  CHECK(did_try_to_initialize, base::NotFatalUntil::M159);
   *did_try_to_initialize = false;
 
   if (!frame_host || frame_host->IsRenderFrameLive()) {
@@ -169,7 +169,7 @@ bool MaybeInitializePrerenderPrimaryMainFrame(RenderFrameHostImpl* frame_host,
 FrameTreeNode* GetFrameTreeNodeAncestor(FrameTreeNode* frame_tree_node) {
   while (frame_tree_node && !ShouldCreateDevToolsForNode(frame_tree_node))
     frame_tree_node = FrameTreeNode::From(frame_tree_node->parent());
-  DCHECK(frame_tree_node);
+  CHECK(frame_tree_node, base::NotFatalUntil::M159);
   return frame_tree_node;
 }
 
@@ -226,7 +226,7 @@ scoped_refptr<DevToolsAgentHost> RenderFrameDevToolsAgentHost::GetOrCreateFor(
 // static
 bool RenderFrameDevToolsAgentHost::ShouldCreateDevToolsForHost(
     RenderFrameHostImpl* rfh) {
-  DCHECK(rfh);
+  CHECK(rfh, base::NotFatalUntil::M159);
   return rfh->is_local_root();
 }
 
@@ -240,7 +240,7 @@ RenderFrameDevToolsAgentHost::CreateForLocalRootOrEmbeddedPageNavigation(
   // navigation handle is used. When this method is invoked it's already known
   // that the navigation will commit to the new frame host.
   FrameTreeNode* frame_tree_node = request->frame_tree_node();
-  DCHECK(!FindAgentHost(frame_tree_node));
+  CHECK(!FindAgentHost(frame_tree_node), base::NotFatalUntil::M159);
   return new RenderFrameDevToolsAgentHost(frame_tree_node,
                                           request->GetRenderFrameHost());
 }
@@ -365,8 +365,8 @@ void RenderFrameDevToolsAgentHost::SetFrameTreeNode(
     GetAgentHostInstances().erase(frame_tree_node_);
   frame_tree_node_ = frame_tree_node;
   if (frame_tree_node_) {
-    DCHECK(web_contents() ==
-           WebContentsImpl::FromFrameTreeNode(frame_tree_node));
+    CHECK(web_contents() == WebContentsImpl::FromFrameTreeNode(frame_tree_node),
+          base::NotFatalUntil::M159);
     // TODO(dgozman): with ConnectWebContents/DisconnectWebContents,
     // we may get two agent hosts for the same FrameTreeNode.
     // That is definitely a bug, and we should fix that, and DCHECK
@@ -720,8 +720,9 @@ void RenderFrameDevToolsAgentHost::ChangeFrameHostAndObservedProcess(
     frame_host_->GetProcess()->RemoveObserver(this);
   frame_host_ = frame_host;
   if (frame_host_) {
-    DCHECK(WebContentsImpl::FromRenderFrameHostImpl(frame_host_) ==
-           web_contents());
+    CHECK(
+        WebContentsImpl::FromRenderFrameHostImpl(frame_host_) == web_contents(),
+        base::NotFatalUntil::M159);
     frame_host_->GetProcess()->AddObserver(this);
     ProcessHostChanged();
   }
@@ -813,7 +814,7 @@ void RenderFrameDevToolsAgentHost::DisconnectWebContents() {
 void RenderFrameDevToolsAgentHost::ConnectWebContents(WebContents* wc) {
   RenderFrameHostImpl* host =
       static_cast<RenderFrameHostImpl*>(wc->GetPrimaryMainFrame());
-  DCHECK(host);
+  CHECK(host, base::NotFatalUntil::M159);
   WebContentsObserver::Observe(wc);
   SetFrameTreeNode(host->frame_tree_node());
   UpdateFrameHost(host);

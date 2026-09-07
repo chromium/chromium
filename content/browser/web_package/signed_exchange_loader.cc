@@ -89,8 +89,8 @@ SignedExchangeLoader::SignedExchangeLoader(
       reporter_(std::move(reporter)),
       url_loader_options_(url_loader_options),
       should_redirect_on_failure_(should_redirect_on_failure) {
-  DCHECK(outer_request_.url.is_valid());
-  DCHECK(outer_response_body);
+  CHECK(outer_request_.url.is_valid(), base::NotFatalUntil::M159);
+  CHECK(outer_response_body, base::NotFatalUntil::M159);
   if (!outer_response_head_->client_side_content_decoding_types.empty()) {
     // If content decoding is required, perform the decoding in the network
     // service.
@@ -216,7 +216,7 @@ void SignedExchangeLoader::OnTransferSizeUpdated(int32_t transfer_size_diff) {
 
 void SignedExchangeLoader::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
-  DCHECK(!outer_response_length_info_);
+  CHECK(!outer_response_length_info_, base::NotFatalUntil::M159);
   outer_response_length_info_ = OuterResponseLengthInfo();
   outer_response_length_info_->encoded_data_length = status.encoded_data_length;
   outer_response_length_info_->decoded_body_length = status.decoded_body_length;
@@ -236,13 +236,13 @@ void SignedExchangeLoader::SetPriority(net::RequestPriority priority,
 
 void SignedExchangeLoader::ConnectToClient(
     mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
-  DCHECK(pending_client_receiver_.is_valid());
+  CHECK(pending_client_receiver_.is_valid(), base::NotFatalUntil::M159);
   mojo::FusePipes(std::move(pending_client_receiver_), std::move(client));
 }
 
 std::unique_ptr<PrefetchedSignedExchangeCacheEntry>
 SignedExchangeLoader::TakePrefetchedSignedExchangeCacheEntry() {
-  DCHECK(cache_entry_);
+  CHECK(cache_entry_, base::NotFatalUntil::M159);
   return std::move(cache_entry_);
 }
 
@@ -253,7 +253,8 @@ void SignedExchangeLoader::OnHTTPExchangeFound(
     network::mojom::URLResponseHeadPtr resource_response,
     std::unique_ptr<net::SourceStream> payload_stream) {
   if (error) {
-    DCHECK_NE(result, SignedExchangeLoadResult::kSuccess);
+    CHECK_NE(result, SignedExchangeLoadResult::kSuccess,
+             base::NotFatalUntil::M159);
     ReportLoadResult(result);
 
     if (error != net::ERR_INVALID_SIGNED_EXCHANGE ||
@@ -265,7 +266,7 @@ void SignedExchangeLoader::OnHTTPExchangeFound(
     }
 
     // Make a fallback redirect to |request_url|.
-    DCHECK(!fallback_url_);
+    CHECK(!fallback_url_, base::NotFatalUntil::M159);
     fallback_url_ = request_url;
     forwarding_client_->OnReceiveRedirect(
         signed_exchange_utils::CreateRedirectInfo(
@@ -276,7 +277,8 @@ void SignedExchangeLoader::OnHTTPExchangeFound(
     forwarding_client_.reset();
     return;
   }
-  DCHECK_EQ(result, SignedExchangeLoadResult::kSuccess);
+  CHECK_EQ(result, SignedExchangeLoadResult::kSuccess,
+           base::NotFatalUntil::M159);
   inner_request_url_ = request_url;
 
   if (cache_entry_) {
@@ -288,7 +290,7 @@ void SignedExchangeLoader::OnHTTPExchangeFound(
     const bool get_info_result =
         signed_exchange_handler_->GetSignedExchangeInfoForPrefetchCache(
             *cache_entry_);
-    DCHECK(get_info_result);
+    CHECK(get_info_result, base::NotFatalUntil::M159);
   }
 
   forwarding_client_->OnReceiveRedirect(
@@ -346,7 +348,7 @@ void SignedExchangeLoader::OnHTTPExchangeFound(
 }
 
 void SignedExchangeLoader::FinishReadingBody(int result) {
-  DCHECK(!decoded_body_read_result_);
+  CHECK(!decoded_body_read_result_, base::NotFatalUntil::M159);
   decoded_body_read_result_ = result;
   NotifyClientOnCompleteIfReady();
 }
@@ -372,9 +374,10 @@ void SignedExchangeLoader::NotifyClientOnCompleteIfReady() {
   status.decoded_body_length = body_data_pipe_adapter_->TransferredBytes();
 
   if (ssl_info_) {
-    DCHECK((url_loader_options_ &
-            network::mojom::kURLLoadOptionSendSSLInfoForCertificateError) &&
-           net::IsCertStatusError(ssl_info_->cert_status));
+    CHECK((url_loader_options_ &
+           network::mojom::kURLLoadOptionSendSSLInfoForCertificateError) &&
+              net::IsCertStatusError(ssl_info_->cert_status),
+          base::NotFatalUntil::M159);
     status.ssl_info = *ssl_info_;
   }
 

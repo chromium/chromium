@@ -261,9 +261,10 @@ void SignedExchangeHandler::SetupBuffers(size_t size) {
 }
 
 void SignedExchangeHandler::DoHeaderLoop() {
-  DCHECK(state_ == State::kReadingPrologueBeforeFallbackUrl ||
-         state_ == State::kReadingPrologueFallbackUrlAndAfter ||
-         state_ == State::kReadingHeaders);
+  CHECK(state_ == State::kReadingPrologueBeforeFallbackUrl ||
+            state_ == State::kReadingPrologueFallbackUrlAndAfter ||
+            state_ == State::kReadingHeaders,
+        base::NotFatalUntil::M159);
   int rv =
       source_->Read(header_read_buf_.get(), header_read_buf_->BytesRemaining(),
                     base::BindOnce(&SignedExchangeHandler::DidReadHeader,
@@ -274,9 +275,10 @@ void SignedExchangeHandler::DoHeaderLoop() {
 
 void SignedExchangeHandler::DidReadHeader(bool completed_syncly,
                                           int read_result) {
-  DCHECK(state_ == State::kReadingPrologueBeforeFallbackUrl ||
-         state_ == State::kReadingPrologueFallbackUrlAndAfter ||
-         state_ == State::kReadingHeaders);
+  CHECK(state_ == State::kReadingPrologueBeforeFallbackUrl ||
+            state_ == State::kReadingPrologueFallbackUrlAndAfter ||
+            state_ == State::kReadingHeaders,
+        base::NotFatalUntil::M159);
 
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"),
                "SignedExchangeHandler::DidReadHeader");
@@ -330,9 +332,10 @@ void SignedExchangeHandler::DidReadHeader(bool completed_syncly,
     return;
 
   // Trigger the next read.
-  DCHECK(state_ == State::kReadingPrologueBeforeFallbackUrl ||
-         state_ == State::kReadingPrologueFallbackUrlAndAfter ||
-         state_ == State::kReadingHeaders);
+  CHECK(state_ == State::kReadingPrologueBeforeFallbackUrl ||
+            state_ == State::kReadingPrologueFallbackUrlAndAfter ||
+            state_ == State::kReadingHeaders,
+        base::NotFatalUntil::M159);
   if (completed_syncly) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&SignedExchangeHandler::DoHeaderLoop,
@@ -344,7 +347,8 @@ void SignedExchangeHandler::DidReadHeader(bool completed_syncly,
 
 SignedExchangeLoadResult
 SignedExchangeHandler::ParsePrologueBeforeFallbackUrl() {
-  DCHECK_EQ(state_, State::kReadingPrologueBeforeFallbackUrl);
+  CHECK_EQ(state_, State::kReadingPrologueBeforeFallbackUrl,
+           base::NotFatalUntil::M159);
 
   prologue_before_fallback_url_ =
       signed_exchange_prologue::BeforeFallbackUrl::Parse(
@@ -365,7 +369,8 @@ SignedExchangeHandler::ParsePrologueBeforeFallbackUrl() {
 
 SignedExchangeLoadResult
 SignedExchangeHandler::ParsePrologueFallbackUrlAndAfter() {
-  DCHECK_EQ(state_, State::kReadingPrologueFallbackUrlAndAfter);
+  CHECK_EQ(state_, State::kReadingPrologueFallbackUrlAndAfter,
+           base::NotFatalUntil::M159);
 
   prologue_fallback_url_and_after_ =
       signed_exchange_prologue::FallbackUrlAndAfter::Parse(
@@ -404,9 +409,9 @@ SignedExchangeLoadResult
 SignedExchangeHandler::ParseHeadersAndFetchCertificate() {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"),
                "SignedExchangeHandler::ParseHeadersAndFetchCertificate");
-  DCHECK_EQ(state_, State::kReadingHeaders);
+  CHECK_EQ(state_, State::kReadingHeaders, base::NotFatalUntil::M159);
 
-  DCHECK(version_.has_value());
+  CHECK(version_.has_value(), base::NotFatalUntil::M159);
 
   base::span<const uint8_t> data = header_buf_->span();
   std::string_view signature_header_field = base::as_string_view(data.first(
@@ -433,9 +438,9 @@ SignedExchangeHandler::ParseHeadersAndFetchCertificate() {
   const GURL cert_url = envelope_->signature().cert_url;
   // TODO(crbug.com/40565993): When we will support ed25519Key, |cert_url|
   // may be empty.
-  DCHECK(cert_url.is_valid());
+  CHECK(cert_url.is_valid(), base::NotFatalUntil::M159);
 
-  DCHECK(cert_fetcher_factory_);
+  CHECK(cert_fetcher_factory_, base::NotFatalUntil::M159);
 
   const bool force_fetch = load_flags_ & net::LOAD_BYPASS_CACHE;
 
@@ -453,7 +458,7 @@ SignedExchangeHandler::ParseHeadersAndFetchCertificate() {
 
 void SignedExchangeHandler::RunErrorCallback(SignedExchangeLoadResult result,
                                              net::Error error) {
-  DCHECK_NE(state_, State::kHeadersCallbackCalled);
+  CHECK_NE(state_, State::kHeadersCallbackCalled, base::NotFatalUntil::M159);
   if (devtools_proxy_) {
     devtools_proxy_->OnSignedExchangeReceived(
         envelope_,
@@ -472,7 +477,7 @@ void SignedExchangeHandler::OnCertReceived(
     net::IPAddress cert_server_ip_address) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"),
                "SignedExchangeHandler::OnCertReceived");
-  DCHECK_EQ(state_, State::kFetchingCertificate);
+  CHECK_EQ(state_, State::kFetchingCertificate, base::NotFatalUntil::M159);
 
   base::TimeDelta cert_fetch_duration =
       base::TimeTicks::Now() - cert_fetch_start_time_;
@@ -496,7 +501,7 @@ void SignedExchangeHandler::OnCertReceived(
       "SignedExchange.Time.CertificateFetch.Success", cert_fetch_duration);
   unverified_cert_chain_ = std::move(cert_chain);
 
-  DCHECK(version_.has_value());
+  CHECK(version_.has_value(), base::NotFatalUntil::M159);
   const SignedExchangeSignatureVerifier::Result verify_result =
       SignedExchangeSignatureVerifier::Verify(
           *version_, *envelope_, unverified_cert_chain_.get(),

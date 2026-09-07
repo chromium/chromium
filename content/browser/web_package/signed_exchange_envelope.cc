@@ -27,7 +27,7 @@ namespace content {
 namespace {
 
 bool IsUncachedHeader(std::string_view name) {
-  DCHECK_EQ(name, base::ToLowerASCII(name));
+  CHECK_EQ(name, base::ToLowerASCII(name), base::NotFatalUntil::M159);
 
   constexpr auto kUncachedHeaders = base::MakeFixedFlatSet<std::string_view>({
       // "Hop-by-hop header fields listed in the Connection header field

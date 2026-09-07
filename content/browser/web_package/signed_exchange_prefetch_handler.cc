@@ -65,7 +65,7 @@ SignedExchangePrefetchHandler::~SignedExchangePrefetchHandler() = default;
 mojo::PendingReceiver<network::mojom::URLLoaderClient>
 SignedExchangePrefetchHandler::FollowRedirect(
     mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver) {
-  DCHECK(signed_exchange_loader_);
+  CHECK(signed_exchange_loader_, base::NotFatalUntil::M159);
   mojo::PendingRemote<network::mojom::URLLoaderClient> client;
   auto pending_receiver = client.InitWithNewPipeAndPassReceiver();
   signed_exchange_loader_->ConnectToClient(std::move(client));
@@ -76,7 +76,7 @@ SignedExchangePrefetchHandler::FollowRedirect(
 
 std::unique_ptr<PrefetchedSignedExchangeCacheEntry>
 SignedExchangePrefetchHandler::TakePrefetchedSignedExchangeCacheEntry() {
-  DCHECK(signed_exchange_loader_);
+  CHECK(signed_exchange_loader_, base::NotFatalUntil::M159);
   return signed_exchange_loader_->TakePrefetchedSignedExchangeCacheEntry();
 }
 
@@ -116,7 +116,7 @@ void SignedExchangePrefetchHandler::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
   // We only reach here on error, since successful completion of the
   // outer sxg load should trigger redirect and land on ::OnReceiveRedirect.
-  DCHECK_NE(net::OK, status.error_code);
+  CHECK_NE(net::OK, status.error_code, base::NotFatalUntil::M159);
 
   forwarding_client_->OnComplete(status);
 }

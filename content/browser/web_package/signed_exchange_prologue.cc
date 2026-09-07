@@ -37,12 +37,12 @@ const size_t BeforeFallbackUrl::kEncodedSizeInBytes =
     sizeof(kSignedExchangeMagic) + kFallbackUrlLengthFieldSizeInBytes;
 
 size_t Parse2BytesEncodedLength(base::span<const uint8_t> input) {
-  DCHECK_EQ(input.size(), 2u);
+  CHECK_EQ(input.size(), 2u, base::NotFatalUntil::M159);
   return static_cast<size_t>(input[0]) << 8 | static_cast<size_t>(input[1]);
 }
 
 size_t Parse3BytesEncodedLength(base::span<const uint8_t> input) {
-  DCHECK_EQ(input.size(), 3u);
+  CHECK_EQ(input.size(), 3u, base::NotFatalUntil::M159);
   return static_cast<size_t>(input[0]) << 16 |
          static_cast<size_t>(input[1]) << 8 | static_cast<size_t>(input[2]);
 }
@@ -170,17 +170,17 @@ FallbackUrlAndAfter FallbackUrlAndAfter::Parse(
 }
 
 size_t FallbackUrlAndAfter::signature_header_field_length() const {
-  DCHECK(is_valid());
+  CHECK(is_valid(), base::NotFatalUntil::M159);
   return signature_header_field_length_;
 }
 
 size_t FallbackUrlAndAfter::cbor_header_length() const {
-  DCHECK(is_valid());
+  CHECK(is_valid(), base::NotFatalUntil::M159);
   return cbor_header_length_;
 }
 
 size_t FallbackUrlAndAfter::ComputeFollowingSectionsLength() const {
-  DCHECK(is_valid());
+  CHECK(is_valid(), base::NotFatalUntil::M159);
   return signature_header_field_length_ + cbor_header_length_;
 }
 

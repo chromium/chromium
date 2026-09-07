@@ -230,7 +230,7 @@ void FrameAutoAttacher::ReattachServiceWorkers() {
 }
 
 void FrameAutoAttacher::UpdateFrames() {
-  DCHECK(auto_attach());
+  CHECK(auto_attach(), base::NotFatalUntil::M159);
 
   Hosts new_hosts;
   if (render_frame_host_) {

@@ -149,10 +149,11 @@ class PrefetchedNavigationLoaderInterceptor
       return;
     }
     if (tentative_resource_request.url == exchange_->inner_url()) {
-      DCHECK_EQ(State::kOuterRequestRequested, state_);
+      CHECK_EQ(State::kOuterRequestRequested, state_,
+               base::NotFatalUntil::M159);
       if (signed_exchange_utils::IsCookielessOnlyExchange(
               *exchange_->inner_response()->headers)) {
-        DCHECK(cookie_manager_);
+        CHECK(cookie_manager_, base::NotFatalUntil::M159);
         state_ = State::kCheckingCookies;
         CheckAbsenceOfCookies(tentative_resource_request, std::move(callback));
         return;
@@ -198,7 +199,7 @@ class PrefetchedNavigationLoaderInterceptor
 
   void OnGetCookies(LoaderCallback callback,
                     const std::vector<net::CookieWithAccessResult>& results) {
-    DCHECK_EQ(State::kCheckingCookies, state_);
+    CHECK_EQ(State::kCheckingCookies, state_, base::NotFatalUntil::M159);
     if (!results.empty()) {
       signed_exchange_utils::RecordLoadResultHistogram(
           SignedExchangeLoadResult::kHadCookieForCookielessOnlySXG);
@@ -382,17 +383,18 @@ PrefetchedSignedExchangeCache::~PrefetchedSignedExchangeCache() = default;
 
 void PrefetchedSignedExchangeCache::Store(
     std::unique_ptr<const PrefetchedSignedExchangeCacheEntry> cached_exchange) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (exchanges_.size() > kMaxEntrySize)
     return;
-  DCHECK(cached_exchange->outer_url().is_valid());
-  DCHECK(cached_exchange->outer_response());
-  DCHECK(cached_exchange->header_integrity());
-  DCHECK(cached_exchange->inner_url().is_valid());
-  DCHECK(cached_exchange->inner_response());
-  DCHECK(cached_exchange->completion_status());
-  DCHECK(cached_exchange->blob_data_handle());
-  DCHECK(!cached_exchange->signature_expire_time().is_null());
+  CHECK(cached_exchange->outer_url().is_valid(), base::NotFatalUntil::M159);
+  CHECK(cached_exchange->outer_response(), base::NotFatalUntil::M159);
+  CHECK(cached_exchange->header_integrity(), base::NotFatalUntil::M159);
+  CHECK(cached_exchange->inner_url().is_valid(), base::NotFatalUntil::M159);
+  CHECK(cached_exchange->inner_response(), base::NotFatalUntil::M159);
+  CHECK(cached_exchange->completion_status(), base::NotFatalUntil::M159);
+  CHECK(cached_exchange->blob_data_handle(), base::NotFatalUntil::M159);
+  CHECK(!cached_exchange->signature_expire_time().is_null(),
+        base::NotFatalUntil::M159);
 
   if (!CanStoreEntry(*cached_exchange))
     return;
@@ -411,7 +413,7 @@ PrefetchedSignedExchangeCache::MaybeCreateInterceptor(
     const GURL& outer_url,
     FrameTreeNodeId frame_tree_node_id,
     const net::IsolationInfo& isolation_info) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   const auto it = exchanges_.find(outer_url);
   if (it == exchanges_.end())
     return nullptr;
@@ -464,12 +466,12 @@ PrefetchedSignedExchangeCache::MaybeCreateInterceptor(
 
 const PrefetchedSignedExchangeCache::EntryMap&
 PrefetchedSignedExchangeCache::GetExchanges() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   return exchanges_;
 }
 
 void PrefetchedSignedExchangeCache::RecordHistograms() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   if (exchanges_.empty())
     return;
   UMA_HISTOGRAM_COUNTS_100("PrefetchedSignedExchangeCache.Count",
@@ -482,7 +484,7 @@ PrefetchedSignedExchangeCache::GetInfoListForNavigation(
     const base::Time& verification_time,
     FrameTreeNodeId frame_tree_node_id,
     const net::NetworkAnonymizationKey& network_anonymization_key) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   const url::Origin outer_url_origin =
       url::Origin::Create(main_exchange.outer_url());

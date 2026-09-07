@@ -63,7 +63,7 @@ SignedExchangeInnerResponseURLLoader::SignedExchangeInnerResponseURLLoader(
       completion_status_(completion_status),
       client_(std::move(client)),
       orb_state_(std::move(orb_state)) {
-  DCHECK(response_->headers);
+  CHECK(response_->headers, base::NotFatalUntil::M159);
 
   // The `request.request_initiator` is assumed to be present and trustworthy
   // - it comes either from:
@@ -72,7 +72,7 @@ SignedExchangeInnerResponseURLLoader::SignedExchangeInnerResponseURLLoader(
   // or
   // 2. SubresourceSignedExchangeURLLoaderFactory::CreateLoaderAndStart which
   //    validates the untrustworthy IPC payload as its very first action.
-  DCHECK(request.request_initiator);
+  CHECK(request.request_initiator, base::NotFatalUntil::M159);
 
   // Keep the SSLInfo only when the request is for main frame main resource,
   // or devtools_request_id is set. Users can inspect the certificate for the
@@ -120,7 +120,7 @@ std::optional<std::string>
 SignedExchangeInnerResponseURLLoader::GetHeaderString(
     const network::mojom::URLResponseHead& response,
     const std::string& header_name) {
-  DCHECK(response.headers);
+  CHECK(response.headers, base::NotFatalUntil::M159);
   return response.headers->GetNormalizedHeader(header_name);
 }
 

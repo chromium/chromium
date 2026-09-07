@@ -236,7 +236,7 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // SiteInstance. May be empty if this SiteInstance does not have a
   // |site_info_|.
   const GURL& original_url() {
-    DCHECK(!IsDefaultSiteInstance());
+    CHECK(!IsDefaultSiteInstance(), base::NotFatalUntil::M159);
     return original_url_;
   }
 
