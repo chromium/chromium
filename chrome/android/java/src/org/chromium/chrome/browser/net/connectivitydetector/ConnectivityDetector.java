@@ -397,10 +397,7 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
             protected Integer doInBackground() {
                 HttpURLConnection urlConnection = null;
                 try {
-                    RecordHistogram.recordCount1MHistogram(
-                            "ConnectivityDetector.SentHttpProbe." + mClientName, 1);
                     Log.i(TAG, "Sending HTTP Probe now to url:" + urlString);
-
                     URL url = new URL(urlString);
                     urlConnection =
                             (HttpURLConnection)

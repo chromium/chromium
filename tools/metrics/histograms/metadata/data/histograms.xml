@@ -53,21 +53,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="ConnectivityDetector.SentHttpProbe.{Client}" units="count"
-    expires_after="2023-04-20">
-  <owner>curranmax@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
-  <owner>jianli@chromium.org</owner>
-  <owner>src/chrome/browser/data_saver/OWNERS</owner>
-  <summary>
-    Count of times when a HTTP Probe was made by connectivity detector.
-  </summary>
-  <token key="Client">
-    <variant name="OfflineDetector"/>
-    <variant name="OfflineIndicatorController"/>
-  </token>
-</histogram>
-
 <histogram name="DataUse.AppTabState{DataUse_AppTabState_Dimensions}"
     units="bytes" expires_after="2023-05-07">
   <owner>spelchat@chromium.org</owner>
