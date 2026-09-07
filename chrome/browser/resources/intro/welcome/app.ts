@@ -4,15 +4,13 @@
 
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import '/strings.m.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -69,11 +67,11 @@ export class WelcomeAppElement extends WelcomeAppElementBase {
     ColorChangeUpdater.forDocument().start();
   }
 
-  private getToast_(): CrToastElement | null {
-    return this.shadowRoot.querySelector<CrToastElement>('#toast');
+  private getDialog_(): HTMLDialogElement | null {
+    return this.shadowRoot.querySelector<HTMLDialogElement>('#dialog');
   }
 
-  protected getToastActionButtonLabel_(): string {
+  protected getDialogActionButtonLabel_(): string {
     return this.isMetricsEnabled_ ?
         this.i18n('welcomeMetricsPopupTurnOffButtonLabel') :
         this.i18n('welcomeMetricsPopupTurnOnButtonLabel');
@@ -95,29 +93,28 @@ export class WelcomeAppElement extends WelcomeAppElementBase {
 
   protected onAcceptButtonClick_() {
     this.anyButtonClicked_ = true;
-    this.getToast_()?.hide();
     this.browserProxy_.handler.continue(
         this.isMetricsEnabled_, this.setDefaultBrowser_);
   }
 
   protected onManageLinkClicked_(e: CustomEvent<{event: Event}>) {
     e.detail.event.preventDefault();
-    const toast = this.getToast_();
-    assert(toast);
-    toast.show();
+    const dialog = this.getDialog_();
+    assert(dialog);
+    dialog.showModal();
   }
 
-  protected onToastCloseButtonClick_() {
-    const toast = this.getToast_();
-    assert(toast);
-    toast.hide();
+  protected onDialogCloseButtonClick_() {
+    const dialog = this.getDialog_();
+    assert(dialog);
+    dialog.close();
   }
 
-  protected onToastActionButtonClick_() {
+  protected onDialogActionButtonClick_() {
     this.isMetricsEnabled_ = !this.isMetricsEnabled_;
-    const toast = this.getToast_();
-    assert(toast);
-    toast.hide();
+    const dialog = this.getDialog_();
+    assert(dialog);
+    dialog.close();
   }
 }
 
