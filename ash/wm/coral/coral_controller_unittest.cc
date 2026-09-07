@@ -12,6 +12,7 @@
 #include "ash/birch/birch_model.h"
 #include "ash/birch/test_birch_client.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/test/test_saved_desk_delegate.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
@@ -38,8 +39,10 @@
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/snap_group/snap_group_test_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
+#include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/app_constants/constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -53,9 +56,9 @@ namespace ash {
 
 using chromeos::AppType;
 
-class CoralControllerTest : public AshTestBase {
+class CoralControllerTestBase : public AshTestBase {
  public:
-  CoralControllerTest() = default;
+  CoralControllerTestBase() = default;
 
   void ClickFirstCoralButton() {
     CoralChipButton* coral_button = GetFirstCoralButton();
@@ -94,9 +97,27 @@ class CoralControllerTest : public AshTestBase {
   base::test::ScopedFeatureList feature_list_{features::kCoralFeature};
 };
 
+// Parameterized by a bool representing whether `BirchRanker::IsMorning()` is
+// faked to return true (morning) or false (evening).
+class CoralControllerTest
+    : public CoralControllerTestBase,
+      public testing::WithParamInterface<bool /*is_morning*/> {
+ public:
+  CoralControllerTest() = default;
+
+  void SetUp() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        GetParam() ? switches::kBirchIsMorning : switches::kBirchIsEvening);
+    CoralControllerTestBase::SetUp();
+  }
+
+ private:
+  base::test::ScopedCommandLine scoped_command_line_;
+};
+
 // Tests that clicking the in session coral button opens and activates a new
 // desk.
-TEST_F(CoralControllerTest, OpenNewDesk) {
+TEST_P(CoralControllerTest, OpenNewDesk) {
   // Click the coral button and verify we have created and activated the new
   // desk.
   Shell::Get()->overview_controller()->StartOverview(
@@ -109,7 +130,7 @@ TEST_F(CoralControllerTest, OpenNewDesk) {
 
 // Tests that clicking the coral chip and then it's addon view will not crash.
 // Regression test for crbug.com/376549527.
-TEST_F(CoralControllerTest, ClickChipWithMaxDesks) {
+TEST_P(CoralControllerTest, ClickChipWithMaxDesks) {
   // Add desks until no longer possible.
   while (DesksController::Get()->CanCreateDesks()) {
     NewDesk();
@@ -128,7 +149,7 @@ TEST_F(CoralControllerTest, ClickChipWithMaxDesks) {
 
 // Tests that there is no crash if we get a async title update after exiting
 // overview. Regression test for http://crbug.com/378894754.
-TEST_F(CoralControllerTest, NoCrashOnTitleUpdate) {
+TEST_P(CoralControllerTest, NoCrashOnTitleUpdate) {
   auto* overview_controller = Shell::Get()->overview_controller();
   overview_controller->StartOverview(OverviewStartAction::kTests);
   overview_controller->EndOverview(OverviewEndAction::kTests);
@@ -140,7 +161,7 @@ TEST_F(CoralControllerTest, NoCrashOnTitleUpdate) {
 
 // Tests that a window that launches onto a coral desk maintains its visible on
 // all desks property.
-TEST_F(CoralControllerTest, VisibleOnAllDesks) {
+TEST_P(CoralControllerTest, VisibleOnAllDesks) {
   auto app_window = CreateWindowWithAppType(AppType::SYSTEM_APP);
   // This is the property of one of the apps in the group
   // `CreateDefaultTestGroup()`, which is used in the test setup harness.
@@ -166,7 +187,7 @@ TEST_F(CoralControllerTest, VisibleOnAllDesks) {
 
 // Tests that when we have a snap group with one window in the coral group, only
 // the window in the coral group gets moved to the new coral desk.
-TEST_F(CoralControllerTest, SnapGroupOneWindowInCoralGroup) {
+TEST_P(CoralControllerTest, SnapGroupOneWindowInCoralGroup) {
   auto app_window_in_group = CreateWindowWithAppType(AppType::SYSTEM_APP);
   // This is the property of one of the apps in the group
   // `CreateDefaultTestGroup()`, which is used in the test setup harness.
@@ -197,7 +218,7 @@ TEST_F(CoralControllerTest, SnapGroupOneWindowInCoralGroup) {
 
 // Tests that when we have a snap group with both windows in the coral group,
 // both windows move to the coral desk, and the snap group is maintained.
-TEST_F(CoralControllerTest, SnapGroupTwoWindowsInCoralGroup) {
+TEST_P(CoralControllerTest, SnapGroupTwoWindowsInCoralGroup) {
   // These are the properties of two of the apps in the group
   // `CreateDefaultTestGroup()`, which is used in the test setup harness.
   auto window1 = CreateWindowWithAppType(AppType::SYSTEM_APP);
@@ -227,7 +248,7 @@ TEST_F(CoralControllerTest, SnapGroupTwoWindowsInCoralGroup) {
 
 // Tests that clicking on a in-session chip will stay in Overview and remove the
 // chip.
-TEST_F(CoralControllerTest, RemoveInSessionChipAfterClicking) {
+TEST_P(CoralControllerTest, RemoveInSessionChipAfterClicking) {
   Shell::Get()->overview_controller()->StartOverview(
       OverviewStartAction::kTests);
 
@@ -255,7 +276,7 @@ TEST_F(CoralControllerTest, RemoveInSessionChipAfterClicking) {
 // Tests that visible on all desk window overview items are parented to the
 // active desk container once a coral group is launched. Regression test for
 // crbug.com/383892354.
-TEST_F(CoralControllerTest, VisibleOnAllDeskWindows) {
+TEST_P(CoralControllerTest, VisibleOnAllDeskWindows) {
   // Create two apps with the same app id's as the test coral group. Set one to
   // be visible on all desks.
   auto window1 = CreateWindowWithAppType(AppType::SYSTEM_APP);
@@ -287,7 +308,7 @@ TEST_F(CoralControllerTest, VisibleOnAllDeskWindows) {
 }
 
 // Tests that there is no crash when removing a coral chip by user.
-TEST_F(CoralControllerTest, NoCrashOnRemovingChipByUser) {
+TEST_P(CoralControllerTest, NoCrashOnRemovingChipByUser) {
   Shell::Get()->overview_controller()->StartOverview(
       OverviewStartAction::kTests);
 
@@ -298,7 +319,7 @@ TEST_F(CoralControllerTest, NoCrashOnRemovingChipByUser) {
 
 // Tests that the grouping request contains the initial tab and app entities
 // restored on the desk.
-TEST_F(CoralControllerTest, RestoreSuppressionContext) {
+TEST_P(CoralControllerTest, RestoreSuppressionContext) {
   std::vector<coral::mojom::GroupPtr> test_groups;
   test_groups.push_back(
       CreateTestGroup({{"Google", GURL("https://google.com/")},
@@ -329,7 +350,7 @@ TEST_F(CoralControllerTest, RestoreSuppressionContext) {
 
 // Tests that the grouping request contains the initial tab and app entities
 // used to create the desk.
-TEST_F(CoralControllerTest, InSessionSuppressionContext) {
+TEST_P(CoralControllerTest, InSessionSuppressionContext) {
   std::vector<coral::mojom::GroupPtr> test_groups;
   test_groups.push_back(
       CreateTestGroup({{"Google", GURL("https://google.com/")},
@@ -359,7 +380,14 @@ TEST_F(CoralControllerTest, InSessionSuppressionContext) {
             GURL("https://youtube.com/"));
 }
 
-class CoralSavedGroupTest : public CoralControllerTest {
+INSTANTIATE_TEST_SUITE_P(All,
+                         CoralControllerTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Morning" : "Evening";
+                         });
+
+class CoralSavedGroupTest : public CoralControllerTestBase {
  public:
   desks_storage::DeskModel* desk_model() {
     return ash_test_helper()->saved_desk_test_helper()->desk_model();
@@ -396,7 +424,7 @@ class CoralSavedGroupTest : public CoralControllerTest {
   }
 
   void SetUp() override {
-    CoralControllerTest::SetUp();
+    CoralControllerTestBase::SetUp();
     ash_test_helper()->saved_desk_test_helper()->WaitForDeskModels();
   }
 };
