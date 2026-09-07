@@ -35,9 +35,7 @@ if (target_os == "ios") {
   build_gn_logs += [ "" ]
   build_gn_logs += [ "### mac_sdk.gni ###" ] + mac_sdk_logs
   build_gn_logs += [ "" ]
-}
-
-if (target_os == "mac") {
+} else if (target_os == "mac" || host_os == "mac") {
   import("//build/config/mac/mac_sdk.gni")
   build_gn_logs += [ "### mac_sdk.gni ###" ] + mac_sdk_logs
   build_gn_logs += [ "" ]
