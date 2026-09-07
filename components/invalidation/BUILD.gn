@@ -34,8 +34,6 @@ static_library("legacy_topics_cleanup") {
     "impl/profile_identity_provider.h",
     "public/identity_provider.cc",
     "public/identity_provider.h",
-    "public/invalidation_util.cc",
-    "public/invalidation_util.h",
   ]
 
   deps = [
