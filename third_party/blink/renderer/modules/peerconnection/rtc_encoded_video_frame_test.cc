@@ -964,6 +964,8 @@ TEST_F(RTCEncodedVideoFrameTest, ConstructorFromInitDictionary) {
   init->setContributingSources({11u, 22u});
   init->setMimeType("video/VP8");
   init->setTimestamp(9876);
+  init->setWidth(1280);
+  init->setHeight(720);
 
   DummyExceptionStateForTesting exception_state;
   RTCEncodedVideoFrame* new_frame = RTCEncodedVideoFrame::Create(
@@ -993,6 +995,12 @@ TEST_F(RTCEncodedVideoFrameTest, ConstructorFromInitDictionary) {
   EXPECT_TRUE(metadata->hasTimestamp());
   EXPECT_EQ(metadata->timestamp(), 9876);
 
+  EXPECT_TRUE(metadata->hasWidth());
+  EXPECT_EQ(metadata->width(), 1280);
+
+  EXPECT_TRUE(metadata->hasHeight());
+  EXPECT_EQ(metadata->height(), 720);
+
   EXPECT_TRUE(metadata->hasContributingSources());
   EXPECT_THAT(metadata->contributingSources(), testing::ElementsAre(11u, 22u));
 
@@ -1013,6 +1021,8 @@ TEST_F(RTCEncodedVideoFrameTest,
   init->setRtpTimestampWithoutOffset(101010u);
   init->setData(buffer);
   init->setMimeType("video/VP8");
+  init->setWidth(640);
+  init->setHeight(480);
 
   DummyExceptionStateForTesting exception_state;
   RTCEncodedVideoFrame* new_frame = RTCEncodedVideoFrame::Create(
@@ -1038,9 +1048,60 @@ TEST_F(RTCEncodedVideoFrameTest,
   EXPECT_TRUE(metadata->hasMimeType());
   EXPECT_EQ(metadata->mimeType(), "video/VP8");
   EXPECT_FALSE(metadata->hasTimestamp());
+  EXPECT_TRUE(metadata->hasWidth());
+  EXPECT_EQ(metadata->width(), 640);
+  EXPECT_TRUE(metadata->hasHeight());
+  EXPECT_EQ(metadata->height(), 480);
   EXPECT_TRUE(metadata->hasContributingSources());
   EXPECT_TRUE(metadata->contributingSources().empty());
   EXPECT_FALSE(metadata->hasCaptureTime());
+}
+
+TEST_F(RTCEncodedVideoFrameTest, ConstructorInvalidDimensionsFail) {
+  V8TestingScope v8_scope;
+
+  DOMArrayBuffer* buffer =
+      DOMArrayBuffer::Create(/*num_elements=*/5, /*element_byte_size=*/1);
+
+  // 1. width == 0 fails
+  {
+    auto* init = RTCEncodedVideoFrameInit::Create();
+    init->setType(
+        V8RTCEncodedVideoFrameType(V8RTCEncodedVideoFrameType::Enum::kKey));
+    init->setPayloadType(96);
+    init->setRtpTimestampWithoutOffset(101010u);
+    init->setData(buffer);
+    init->setMimeType("video/VP8");
+    init->setWidth(0);
+    init->setHeight(480);
+
+    DummyExceptionStateForTesting exception_state;
+    RTCEncodedVideoFrame* new_frame = RTCEncodedVideoFrame::Create(
+        v8_scope.GetExecutionContext(), init, exception_state);
+
+    EXPECT_TRUE(exception_state.HadException());
+    EXPECT_EQ(new_frame, nullptr);
+  }
+
+  // 2. height == 0 fails
+  {
+    auto* init = RTCEncodedVideoFrameInit::Create();
+    init->setType(
+        V8RTCEncodedVideoFrameType(V8RTCEncodedVideoFrameType::Enum::kKey));
+    init->setPayloadType(96);
+    init->setRtpTimestampWithoutOffset(101010u);
+    init->setData(buffer);
+    init->setMimeType("video/VP8");
+    init->setWidth(640);
+    init->setHeight(0);
+
+    DummyExceptionStateForTesting exception_state;
+    RTCEncodedVideoFrame* new_frame = RTCEncodedVideoFrame::Create(
+        v8_scope.GetExecutionContext(), init, exception_state);
+
+    EXPECT_TRUE(exception_state.HadException());
+    EXPECT_EQ(new_frame, nullptr);
+  }
 }
 
 TEST_F(RTCEncodedVideoFrameTest, StringToVideoCodecType) {

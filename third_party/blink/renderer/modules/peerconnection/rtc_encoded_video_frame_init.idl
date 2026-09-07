@@ -9,8 +9,10 @@ dictionary RTCEncodedVideoFrameInit {
     required octet payloadType;
     required unsigned long rtpTimestampWithoutOffset;
     required ArrayBuffer data;
+    required DOMString mimeType;
+    required unsigned short width;
+    required unsigned short height;
     [RuntimeEnabled=RTCEncodedFrameTimestamps] DOMHighResTimeStamp captureTime;
     sequence<unsigned long> contributingSources = [];
-    required DOMString mimeType;
     long long timestamp;    // microseconds
 };

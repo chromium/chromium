@@ -204,11 +204,22 @@ RTCEncodedVideoFrame* RTCEncodedVideoFrame::Create(
     presentation_timestamp = webrtc::Timestamp::Micros(init->timestamp());
   }
 
+  uint16_t width = init->width();
+  if (width == 0) {
+    exception_state.ThrowRangeError("width must be greater than 0.");
+    return nullptr;
+  }
+  uint16_t height = init->height();
+  if (height == 0) {
+    exception_state.ThrowRangeError("height must be greater than 0.");
+    return nullptr;
+  }
+
   return MakeGarbageCollected<RTCEncodedVideoFrame>(
       webrtc::CreateOutgoingVideoFrame(
           frame_type, payload_type, rtp_timestamp_without_offset, buffer_span,
           absolute_capture_timestamp_ms, csrcs, codec_type,
-          presentation_timestamp));
+          presentation_timestamp, width, height));
 }
 
 RTCEncodedVideoFrame::RTCEncodedVideoFrame(
