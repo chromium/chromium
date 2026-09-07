@@ -26,8 +26,9 @@ ServiceWorkerObjectHost::ServiceWorkerObjectHost(
       version_(std::move(version)) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   CHECK(context_ && container_host_ && version_, base::NotFatalUntil::M159);
-  CHECK(context_->GetLiveRegistration(version_->registration_id()),
-        base::NotFatalUntil::M159);
+  // TODO(crbug.com/557927818): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(context_->GetLiveRegistration(version_->registration_id()));
   version_->AddObserver(this);
   receivers_.set_disconnect_handler(base::BindRepeating(
       &ServiceWorkerObjectHost::OnConnectionError, base::Unretained(this)));
