@@ -274,7 +274,7 @@ class AccountTrackerTest : public testing::Test {
 #endif
 
   CoreAccountInfo AddAccountWithToken(const std::string& email) {
-    return identity_test_env_.MakeAccountAvailable(email);
+    return identity_test_env_.MakeAccountAvailable(email).GetCoreAccountInfo();
   }
 
   void NotifyTokenAvailable(const CoreAccountId& account_id) {

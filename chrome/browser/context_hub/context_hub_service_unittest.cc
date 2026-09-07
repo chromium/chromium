@@ -2359,7 +2359,7 @@ TEST_F(ContextHubServiceTest, AutoTodos_TriggersWhenPrimaryAccountSignedIn) {
 TEST_F(ContextHubServiceTest, AutoTodos_TriggersWhenRefreshTokensLoaded) {
   AccountInfo account_info =
       identity_test_environment_.MakeAccountAvailable("test@example.com");
-  identity_test_environment_.SetPrimaryAccount(account_info.email,
+  identity_test_environment_.SetPrimaryAccount(account_info.GetEmail(),
                                                signin::ConsentLevel::kSignin);
   identity_test_environment_.ResetToAccountsNotYetLoadedFromDiskState();
 

@@ -307,9 +307,10 @@ class SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos
         access_point_, signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
         account_id, TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
         /*is_sync_promo=*/true, /*user_already_signed_in=*/false);
-    EnableSync(
-        GetIdentityManager()->FindExtendedAccountInfoByAccountId(account_id),
-        /*is_default_promo_account=*/true);
+    EnableSync(GetIdentityManager()
+                   ->FindExtendedAccountInfoByAccountId(account_id)
+                   .GetCoreAccountInfo(),
+               /*is_default_promo_account=*/true);
 
     // Verify that the primary account has been set.
     EXPECT_TRUE(
@@ -349,9 +350,10 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
                      expected_promo_action, account_id,
                      TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
                      /*is_sync_promo=*/false, /*user_already_signed_in=*/true);
-    EnableSync(
-        GetIdentityManager()->FindExtendedAccountInfoByAccountId(account_id),
-        is_default_promo_account);
+    EnableSync(GetIdentityManager()
+                   ->FindExtendedAccountInfoByAccountId(account_id)
+                   .GetCoreAccountInfo(),
+               is_default_promo_account);
 
     ExpectNoSigninStartedHistograms(histogram_tester);
     EXPECT_EQ(1, user_action_tester.GetActionCount(
@@ -394,9 +396,10 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
         ShowReauthUI(browser()->GetProfile(), kMainEmail,
                      /*enable_sync=*/true, access_point_, promo_action));
 
-    EnableSync(
-        GetIdentityManager()->FindExtendedAccountInfoByAccountId(account_id),
-        is_default_promo_account);
+    EnableSync(GetIdentityManager()
+                   ->FindExtendedAccountInfoByAccountId(account_id)
+                   .GetCoreAccountInfo(),
+               is_default_promo_account);
 
     ExpectOneSigninStartedHistograms(histogram_tester, promo_action);
     EXPECT_EQ(1, user_action_tester.GetActionCount(
@@ -507,7 +510,9 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, SignInWithAlreadySignedInAccount) {
       account_id, signin::ConsentLevel::kSignin,
       signin_metrics::AccessPoint::kStartPage);
 
-  SignIn(GetIdentityManager()->FindExtendedAccountInfoByAccountId(account_id));
+  SignIn(GetIdentityManager()
+             ->FindExtendedAccountInfoByAccountId(account_id)
+             .GetCoreAccountInfo());
 
   // Verify that the primary account is still set.
   EXPECT_TRUE(
@@ -545,7 +550,9 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, SignInWithAccountThatNeedsReauth) {
       ShowReauthUI(browser()->GetProfile(), kMainEmail, /*enable_sync=*/false,
                    access_point_,
                    signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT));
-  SignIn(GetIdentityManager()->FindExtendedAccountInfoByAccountId(account_id));
+  SignIn(GetIdentityManager()
+             ->FindExtendedAccountInfoByAccountId(account_id)
+             .GetCoreAccountInfo());
 
   // Verify that the active tab has the correct DICE sign-in URL.
   TabStripModel* tab_strip = browser()->GetTabStripModel();
@@ -827,9 +834,10 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
       signin_metrics::AccessPoint::kBookmarkBubble, expected_promo_action,
       account_id, TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT_ON_WEB_ONLY,
       /*is_sync_promo=*/false, /*user_already_signed_in=*/false);
-  EnableSync(
-      GetIdentityManager()->FindExtendedAccountInfoByAccountId(account_id),
-      is_default_promo_account);
+  EnableSync(GetIdentityManager()
+                 ->FindExtendedAccountInfoByAccountId(account_id)
+                 .GetCoreAccountInfo(),
+             is_default_promo_account);
 
   if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     histogram_tester.ExpectBucketCount(
@@ -868,7 +876,9 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, SignInWithExistingWebOnlyAccount) {
   EXPECT_FALSE(
       GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
-  SignIn(GetIdentityManager()->FindExtendedAccountInfoByAccountId(account_id));
+  SignIn(GetIdentityManager()
+             ->FindExtendedAccountInfoByAccountId(account_id)
+             .GetCoreAccountInfo());
 
   // Verify that the primary account has been set.
   EXPECT_TRUE(

@@ -457,7 +457,8 @@ class AvatarToolbarButtonInterfaceBaseBrowserTest {
 
     signin::UpdateAccountInfoForAccount(GetIdentityManager(), account_info);
 
-    GetTestSyncService()->SetSignedIn(consent_level, account_info);
+    GetTestSyncService()->SetSignedIn(consent_level,
+                                      account_info.GetCoreAccountInfo());
     SetHistoryAndTabsSyncingPreference(/*enable_sync=*/false);
 
     return account_info;

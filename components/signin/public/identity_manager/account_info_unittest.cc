@@ -4,6 +4,8 @@
 
 #include "components/signin/public/identity_manager/account_info.h"
 
+#include <sstream>
+
 #include "base/test/scoped_feature_list.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -60,11 +62,25 @@ TEST_F(AccountInfoTest, GetCoreAccountInfo) {
           .SetIsUnderAdvancedProtection(true)
           .Build();
 
-  const CoreAccountInfo& core_info = info;
+  const CoreAccountInfo& core_info = info.GetCoreAccountInfo();
   EXPECT_EQ(core_info.account_id, CoreAccountId::FromGaiaId(GaiaId("test_id")));
   EXPECT_EQ(core_info.gaia, GaiaId("test_id"));
   EXPECT_EQ(core_info.email, "test@example.com");
   EXPECT_TRUE(core_info.is_under_advanced_protection);
+}
+
+TEST_F(AccountInfoTest, StreamOutput) {
+  AccountInfo info =
+      AccountInfo::Builder(GaiaId("test_id"), "test@example.com")
+          .SetAccountId(CoreAccountId::FromGaiaId(GaiaId("test_id")))
+          .SetIsUnderAdvancedProtection(true)
+          .Build();
+
+  std::ostringstream os;
+  os << info;
+  EXPECT_EQ(os.str(),
+            "account_id: test_id, gaia: test_id, email: test@example.com, "
+            "adv_prot: true");
 }
 
 TEST_F(AccountInfoTest, DefaultIsInvalid) {

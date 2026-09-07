@@ -86,7 +86,7 @@ class SyncHandlerTest : public ChromeRenderViewHostTestHarness {
             IsInitialSyncFeatureSetupComplete())
         .WillByDefault(Return(true));
     ON_CALL(*sync_service(), GetAccountInfo)
-        .WillByDefault(Return(account_info));
+        .WillByDefault(Return(account_info.GetCoreAccountInfo()));
     return account_info;
   }
 

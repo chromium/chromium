@@ -61,7 +61,8 @@ CreateChromeSyncTrustedVaultClient(Profile* profile) {
                                          -> CoreAccountInfo {
                                        return identity_manager
                                            ->FindExtendedAccountInfoByGaiaId(
-                                               gaia_id);
+                                               gaia_id)
+                                           .GetCoreAccountInfo();
                                      },
                                      IdentityManagerFactory::GetForProfile(
                                          profile)));

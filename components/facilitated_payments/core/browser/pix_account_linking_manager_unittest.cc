@@ -56,8 +56,10 @@ class PixAccountLinkingManagerTest : public testing::Test {
     payments_data_manager_->SetPaymentsCustomerData(
         std::make_unique<autofill::PaymentsCustomerData>("123456"));
     CoreAccountInfo account_info =
-        identity_test_env_.MakePrimaryAccountAvailable(
-            "somebody@example.test", signin::ConsentLevel::kSignin);
+        identity_test_env_
+            .MakePrimaryAccountAvailable("somebody@example.test",
+                                         signin::ConsentLevel::kSignin)
+            .GetCoreAccountInfo();
     payments_data_manager_->SetAccountInfoForPayments(account_info);
     ON_CALL(client_, GetCoreAccountInfo)
         .WillByDefault(testing::Return(account_info));

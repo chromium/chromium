@@ -78,7 +78,7 @@ TEST_F(AboutSigninInternalsTest,
            version_info::Channel::STABLE,
        }) {
     EXPECT_FALSE(about_signin_internals_->CanOverrideAccountCapability(
-        account_info.account_id, kCanOverrideAccountInfoCapabilityName,
+        account_info.GetAccountId(), kCanOverrideAccountInfoCapabilityName,
         channel));
   }
 }
@@ -94,7 +94,7 @@ TEST_F(AboutSigninInternalsTest,
            version_info::Channel::DEV,
        }) {
     EXPECT_TRUE(about_signin_internals_->CanOverrideAccountCapability(
-        account_info.account_id, kCanFetchFamilyMemberInfoCapabilityName,
+        account_info.GetAccountId(), kCanFetchFamilyMemberInfoCapabilityName,
         channel));
   }
 }
@@ -110,7 +110,7 @@ TEST_F(AboutSigninInternalsTest,
        }) {
     // False by default (capability not enabled on account).
     EXPECT_FALSE(about_signin_internals_->CanOverrideAccountCapability(
-        account_info.account_id, kCanFetchFamilyMemberInfoCapabilityName,
+        account_info.GetAccountId(), kCanFetchFamilyMemberInfoCapabilityName,
         channel));
 
     // When capability is enabled, returns true.
@@ -119,7 +119,7 @@ TEST_F(AboutSigninInternalsTest,
     identity_test_env_.UpdateAccountInfoForAccount(account_info);
 
     EXPECT_TRUE(about_signin_internals_->CanOverrideAccountCapability(
-        account_info.account_id, kCanFetchFamilyMemberInfoCapabilityName,
+        account_info.GetAccountId(), kCanFetchFamilyMemberInfoCapabilityName,
         channel));
 
     // When capability is disabled, returns false.
@@ -127,7 +127,7 @@ TEST_F(AboutSigninInternalsTest,
     identity_test_env_.UpdateAccountInfoForAccount(account_info);
 
     EXPECT_FALSE(about_signin_internals_->CanOverrideAccountCapability(
-        account_info.account_id, kCanFetchFamilyMemberInfoCapabilityName,
+        account_info.GetAccountId(), kCanFetchFamilyMemberInfoCapabilityName,
         channel));
   }
 }

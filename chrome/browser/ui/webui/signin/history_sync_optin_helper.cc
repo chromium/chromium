@@ -527,11 +527,11 @@ HistorySyncOptinHelper::HistorySyncOptinHelper(
     Delegate* delegate,
     signin_metrics::AccessPoint access_point)
     : profile_(profile),
-      account_info_(account_info),
+      account_info_(account_info.GetCoreAccountInfo()),
       delegate_(delegate),
       account_state_fetcher_(std::make_unique<AccountStateFetcher>(
           identity_manager,
-          account_info,
+          account_info.GetCoreAccountInfo(),
           /*get_account_state_callback=*/
           base::BindRepeating(&HistorySyncOptinHelper::AccountIsManaged,
                               base::Unretained(this)),
@@ -869,7 +869,7 @@ void HistorySyncOptinHelperInProfilePicker::
       IdentityManagerFactory::GetForProfile(profile())->FindExtendedAccountInfo(
           account_info());
   policy_helper_ = std::make_unique<HistorySyncOptinPolicyHelper>(
-      profile(), extended_account_info,
+      profile(), extended_account_info.GetCoreAccountInfo(),
       /*on_register_for_policies_callback=*/
       base::BindOnce(&HistorySyncOptinHelperInProfilePicker::
                          MaybeShowAccountManagementScreen,

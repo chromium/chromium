@@ -30,8 +30,9 @@ namespace {
 
 std::pair<AccountInfo, std::vector<syncer::LocalDataDescription>>
 GetSampleData() {
-  AccountInfo account_info;
-  account_info.email = "sample@gmail.com";
+  AccountInfo account_info =
+      AccountInfo::Builder(GaiaId("sample_gaia_id"), "sample@gmail.com")
+          .Build();
   std::vector<syncer::LocalDataDescription> descritpions;
 
   for (syncer::DataType type : {syncer::PASSWORDS, syncer::CONTACT_INFO}) {

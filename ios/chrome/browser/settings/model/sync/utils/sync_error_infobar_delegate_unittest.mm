@@ -325,7 +325,7 @@ TEST_F(SyncErrorInfobarDelegateTest, InfobarAutoDismissAfterSignOut) {
   AccountInfo account_info =
       AccountInfo::Builder(GaiaId("gaia"), "person@example.org").Build();
   signin::PrimaryAccountChangeEvent::State previous_state(
-      account_info, signin::ConsentLevel::kSignin);
+      account_info.GetCoreAccountInfo(), signin::ConsentLevel::kSignin);
   signin::PrimaryAccountChangeEvent::State current_state;
   signin::PrimaryAccountChangeEvent event_details(
       previous_state, current_state, signin_metrics::ProfileSignout::kTest);

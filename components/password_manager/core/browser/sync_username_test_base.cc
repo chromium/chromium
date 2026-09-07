@@ -65,7 +65,8 @@ void SyncUsernameTestBase::FakeSigninAs(const std::string& email,
     CHECK_EQ(sync_service_.GetAccountInfo().email, email);
   } else {
     CoreAccountInfo account =
-        identity_test_env_.MakePrimaryAccountAvailable(email, consent_level);
+        identity_test_env_.MakePrimaryAccountAvailable(email, consent_level)
+            .GetCoreAccountInfo();
     sync_service_.SetSignedIn(consent_level, account);
   }
 }

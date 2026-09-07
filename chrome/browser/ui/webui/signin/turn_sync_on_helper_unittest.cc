@@ -500,8 +500,8 @@ class TurnSyncOnHelperTest : public testing::Test {
     user_policy_signin_service_->set_account(account_id_, kEnterpriseEmail);
 
     // Update the account info to have a consistent hosted domain field.
-    AccountInfo account_info =
-        identity_manager()->FindExtendedAccountInfo(created_account_info);
+    AccountInfo account_info = identity_manager()->FindExtendedAccountInfo(
+        created_account_info.GetCoreAccountInfo());
     EXPECT_FALSE(account_info.IsEmpty());
     account_info = AccountInfo::Builder(account_info)
                        .SetHostedDomain(kEnterpriseHostedDomain)

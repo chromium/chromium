@@ -240,7 +240,8 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoDelegateTest,
   // 3. Now successfully reauthenticate.
   // We need to simulate the reauth event with the correct access point.
   AccountInfo extended_info =
-      AccountInfo::Builder(identity_manager()->FindExtendedAccountInfo(info))
+      AccountInfo::Builder(identity_manager()->FindExtendedAccountInfo(
+                               info.GetCoreAccountInfo()))
           .SetLastAuthenticationAccessPoint(
               signin_metrics::AccessPoint::kSendTabToSelfPromo)
           .Build();

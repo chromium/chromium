@@ -93,7 +93,7 @@ TEST_F(SigninReauthCoordinatorTest, ReauthCompletedSuccessfully) {
       [[SigninReauthCoordinator alloc]
           initWithBaseViewController:GetAnyKeyWindow().rootViewController
                              browser:browser_.get()
-                             account:account
+                             account:account.GetCoreAccountInfo()
                    signinAccessPoint:signin_metrics::AccessPoint::kWebSignin];
   __weak SigninReauthCoordinator* weak_reauth_coordinator = reauth_coordinator;
   reauth_coordinator.delegate = mock_delegate_;
@@ -134,7 +134,7 @@ TEST_F(SigninReauthCoordinatorTest, ReauthCancelledByUser) {
       [[SigninReauthCoordinator alloc]
           initWithBaseViewController:GetAnyKeyWindow().rootViewController
                              browser:browser_.get()
-                             account:account
+                             account:account.GetCoreAccountInfo()
                    signinAccessPoint:signin_metrics::AccessPoint::kWebSignin];
   __weak SigninReauthCoordinator* weak_reauth_coordinator = reauth_coordinator;
   reauth_coordinator.delegate = mock_delegate_;
@@ -178,7 +178,7 @@ TEST_F(SigninReauthCoordinatorTest, ReauthInterrupted) {
       [[SigninReauthCoordinator alloc]
           initWithBaseViewController:GetAnyKeyWindow().rootViewController
                              browser:browser_.get()
-                             account:account
+                             account:account.GetCoreAccountInfo()
                    signinAccessPoint:signin_metrics::AccessPoint::kWebSignin];
   __weak SigninReauthCoordinator* weak_reauth_coordinator = reauth_coordinator;
   reauth_coordinator.delegate = mock_delegate_;
@@ -218,7 +218,7 @@ TEST_F(SigninReauthCoordinatorTest, ReauthCompletedSuccessfullyInExplicitFlow) {
       [[SigninReauthCoordinator alloc]
           initWithBaseViewController:GetAnyKeyWindow().rootViewController
                              browser:browser_.get()
-                             account:account
+                             account:account.GetCoreAccountInfo()
                    reauthAccessPoint:signin_metrics::ReauthAccessPoint::
                                          kAccountMenu];
   __weak SigninReauthCoordinator* weak_reauth_coordinator = reauth_coordinator;

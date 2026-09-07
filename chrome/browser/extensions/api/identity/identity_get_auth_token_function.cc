@@ -369,7 +369,8 @@ void IdentityGetAuthTokenFunction::GetAuthTokenForAccount(
   if (!selected_gaia_id_.empty()) {
     // TODO(msalama): Check has access to accounts.
     selected_account = IdentityManagerFactory::GetForProfile(GetProfile())
-                           ->FindExtendedAccountInfoByGaiaId(selected_gaia_id_);
+                           ->FindExtendedAccountInfoByGaiaId(selected_gaia_id_)
+                           .GetCoreAccountInfo();
   } else {
     selected_account = GetSigninPrimaryAccount(GetProfile());
   }
@@ -891,7 +892,7 @@ void IdentityGetAuthTokenFunction::OnGaiaRemoteConsentFlowApproved(
   // It's important to update the cache before calling CompleteMintTokenFlow()
   // as this call may start a new request synchronously and query the cache.
   ExtensionTokenKey new_token_key(token_key_);
-  new_token_key.account_info = account;
+  new_token_key.account_info = account.GetCoreAccountInfo();
   id_api->token_cache()->SetToken(
       new_token_key,
       IdentityTokenCacheValue::CreateRemoteConsentApproved(consent_result));

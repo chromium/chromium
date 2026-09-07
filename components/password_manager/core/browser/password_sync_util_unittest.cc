@@ -106,7 +106,7 @@ TEST_F(PasswordSyncUtilTest, SyncEnabledButNotForPasswords) {
 }
 
 TEST_F(PasswordSyncUtilTest, SyncEnabled) {
-  AccountInfo active_info;
+  CoreAccountInfo active_info;
   active_info.email = "test@email.com";
   test_sync_service()->SetSignedIn(signin::ConsentLevel::kSync, active_info);
   EXPECT_TRUE(IsSyncFeatureEnabledIncludingPasswords(test_sync_service()));
@@ -134,7 +134,7 @@ TEST_F(PasswordSyncUtilTest, SyncPaused) {
 }
 
 TEST_F(PasswordSyncUtilTest, SyncEnabledWithCustomPassphrase) {
-  AccountInfo active_info;
+  CoreAccountInfo active_info;
   active_info.email = "test@email.com";
   test_sync_service()->SetSignedIn(signin::ConsentLevel::kSync, active_info);
   test_sync_service()->SetIsUsingExplicitPassphrase(true);
@@ -149,7 +149,7 @@ TEST_F(PasswordSyncUtilTest, SyncEnabledWithCustomPassphrase) {
 }
 
 TEST_F(PasswordSyncUtilTest, SignedInWithPasswordsEnabled) {
-  AccountInfo active_info;
+  CoreAccountInfo active_info;
   active_info.email = "test@email.com";
   test_sync_service()->SetSignedIn(signin::ConsentLevel::kSignin, active_info);
   EXPECT_FALSE(IsSyncFeatureEnabledIncludingPasswords(test_sync_service()));
@@ -176,7 +176,7 @@ TEST_F(PasswordSyncUtilTest, SignedInWithPasswordsDisabled) {
 }
 
 TEST_F(PasswordSyncUtilTest, SignedInWithCustomPassphrase) {
-  AccountInfo active_info;
+  CoreAccountInfo active_info;
   active_info.email = "test@email.com";
   test_sync_service()->SetSignedIn(signin::ConsentLevel::kSignin, active_info);
   test_sync_service()->SetIsUsingExplicitPassphrase(true);

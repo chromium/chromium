@@ -61,7 +61,7 @@ class BnplTosControllerImplTest : public Test {
     static_cast<TestPaymentsDataManager&>(
         test_autofill_client_->GetPaymentsAutofillClient()
             ->GetPaymentsDataManager())
-        .SetAccountInfoForPayments(account_info_);
+        .SetAccountInfoForPayments(account_info_.GetCoreAccountInfo());
 
     // Set `issuer_` to be unlinked by default.
     issuer_ = BnplIssuer(/*instrument_id=*/std::nullopt,

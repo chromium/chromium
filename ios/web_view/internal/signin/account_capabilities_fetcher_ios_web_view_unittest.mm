@@ -50,7 +50,8 @@ TEST_F(AccountCapabilitiesFetcherIOSWebViewTest, CheckCapabilityFetchDisabled) {
 
   base::RunLoop run_loop;
   ios_web_view::AccountCapabilitiesFetcherIOSWebView fetcher(
-      account_info, AccountCapabilitiesFetcher::FetchPriority::kForeground,
+      account_info.GetCoreAccountInfo(),
+      AccountCapabilitiesFetcher::FetchPriority::kForeground,
       base::BindRepeating(&CheckCapabilityFetchUnexpected),
       base::BindOnce([](base::RunLoop* run_loop,
                         const CoreAccountId&) { run_loop->Quit(); },

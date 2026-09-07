@@ -212,7 +212,7 @@ GCMAccountTrackerTest::~GCMAccountTrackerTest() {
 }
 
 CoreAccountInfo GCMAccountTrackerTest::AddAccount(const std::string& email) {
-  return identity_test_env_.MakeAccountAvailable(email);
+  return identity_test_env_.MakeAccountAvailable(email).GetCoreAccountInfo();
 }
 
 CoreAccountInfo GCMAccountTrackerTest::SetPrimaryAccount(
@@ -226,8 +226,9 @@ CoreAccountInfo GCMAccountTrackerTest::SetPrimaryAccount(
   // expected.
   // TODO(crbug.com/40067875): Delete account-tracking code, latest when
   // ConsentLevel::kSync is cleaned up from the codebase.
-  return identity_test_env_.MakePrimaryAccountAvailable(
-      email, signin::ConsentLevel::kSync);
+  return identity_test_env_
+      .MakePrimaryAccountAvailable(email, signin::ConsentLevel::kSync)
+      .GetCoreAccountInfo();
 }
 
 void GCMAccountTrackerTest::ClearPrimaryAccount() {

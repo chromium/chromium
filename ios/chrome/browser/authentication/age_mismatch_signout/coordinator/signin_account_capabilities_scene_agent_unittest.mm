@@ -154,7 +154,8 @@ class SigninAccountCapabilitiesSceneAgentTest : public PlatformTest {
 
     base::RunLoop run_loop;
     ios::AccountCapabilitiesFetcherIOS fetcher(
-        account, AccountCapabilitiesFetcher::FetchPriority::kForeground,
+        account.GetCoreAccountInfo(),
+        AccountCapabilitiesFetcher::FetchPriority::kForeground,
         account_manager_service,
         base::BindRepeating(^(const CoreAccountId& account_id,
                               const AccountCapabilities& capabilities) {

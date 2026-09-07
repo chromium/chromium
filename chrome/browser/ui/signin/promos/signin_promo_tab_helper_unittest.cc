@@ -161,7 +161,8 @@ TEST_F(SigninPromoTabHelperTest,
 
   // Simulate reauth but completed with a DIFFERENT access point (e.g.
   // PasswordBubble).
-  AccountInfo extended_info = identity_manager()->FindExtendedAccountInfo(info);
+  AccountInfo extended_info =
+      identity_manager()->FindExtendedAccountInfo(info.GetCoreAccountInfo());
   extended_info = AccountInfo::Builder(extended_info)
                       .SetLastAuthenticationAccessPoint(
                           signin_metrics::AccessPoint::kPasswordBubble)

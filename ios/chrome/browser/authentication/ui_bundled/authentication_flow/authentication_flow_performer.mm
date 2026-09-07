@@ -175,7 +175,8 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
       IdentityManagerFactory::GetForProfile(
           browser->GetProfile()->GetOriginalProfile());
   CoreAccountInfo accountInfo =
-      identityManager->FindExtendedAccountInfoByGaiaId(identity.gaiaId);
+      identityManager->FindExtendedAccountInfoByGaiaId(identity.gaiaId)
+          .GetCoreAccountInfo();
   if (accountInfo.IsEmpty()) {
     accountInfo.gaia = identity.gaiaId;
     accountInfo.email = base::SysNSStringToUTF8(identity.userEmail);

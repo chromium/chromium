@@ -213,8 +213,8 @@ TEST_F(PrimaryAccountManagerTest, SignOut) {
     EXPECT_FALSE(last_signout_time.has_value());
   }
 #endif
-  manager_->SetPrimaryAccountInfo(account_info, ConsentLevel::kSync,
-                                  AccessPoint::kStartPage);
+  manager_->SetPrimaryAccountInfo(account_info.GetCoreAccountInfo(),
+                                  ConsentLevel::kSync, AccessPoint::kStartPage);
   CheckSigninMetrics({.sign_in = AccessPoint::kStartPage,
                       .sync_opt_in = AccessPoint::kStartPage});
 
@@ -258,8 +258,8 @@ TEST_F(PrimaryAccountManagerTest, SignOutRevoke) {
   token_service_->UpdateCredentials(main_account_id, "token");
   token_service_->UpdateCredentials(other_account_id, "token");
   manager_->SetPrimaryAccountInfo(
-      account_tracker()->GetAccountInfo(main_account_id), ConsentLevel::kSync,
-      AccessPoint::kStartPage);
+      account_tracker()->GetAccountInfo(main_account_id).GetCoreAccountInfo(),
+      ConsentLevel::kSync, AccessPoint::kStartPage);
   CheckSigninMetrics({.sign_in = AccessPoint::kStartPage,
                       .sync_opt_in = AccessPoint::kStartPage});
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
@@ -288,8 +288,8 @@ TEST_F(PrimaryAccountManagerTest, SignOutWhileProhibited) {
   CoreAccountId main_account_id =
       AddToAccountTracker(GaiaId("gaia_id"), "user@gmail.com");
   manager_->SetPrimaryAccountInfo(
-      account_tracker()->GetAccountInfo(main_account_id), ConsentLevel::kSync,
-      AccessPoint::kStartPage);
+      account_tracker()->GetAccountInfo(main_account_id).GetCoreAccountInfo(),
+      ConsentLevel::kSync, AccessPoint::kStartPage);
   CheckSigninMetrics({.sign_in = AccessPoint::kStartPage,
                       .sync_opt_in = AccessPoint::kStartPage});
 
@@ -321,7 +321,8 @@ TEST_F(PrimaryAccountManagerTest, UnconsentedSignOutWhileProhibited) {
 
   CoreAccountId account_id =
       AddToAccountTracker(GaiaId("gaia_id"), "user@gmail.com");
-  CoreAccountInfo account_info = account_tracker()->GetAccountInfo(account_id);
+  CoreAccountInfo account_info =
+      account_tracker()->GetAccountInfo(account_id).GetCoreAccountInfo();
   manager_->SetPrimaryAccountInfo(account_info, ConsentLevel::kSignin,
                                   AccessPoint::kStartPage);
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSignin));
@@ -353,8 +354,8 @@ TEST_F(PrimaryAccountManagerTest, RevokeSyncConsentAllowedSignoutProhibited) {
   CoreAccountId main_account_id =
       AddToAccountTracker(GaiaId("gaia_id"), "user@gmail.com");
   manager_->SetPrimaryAccountInfo(
-      account_tracker()->GetAccountInfo(main_account_id), ConsentLevel::kSync,
-      AccessPoint::kStartPage);
+      account_tracker()->GetAccountInfo(main_account_id).GetCoreAccountInfo(),
+      ConsentLevel::kSync, AccessPoint::kStartPage);
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   CheckSigninMetrics({.sign_in = AccessPoint::kStartPage,
                       .sync_opt_in = AccessPoint::kStartPage});
@@ -389,7 +390,8 @@ TEST_F(PrimaryAccountManagerTest, NoopSignOutDoesNotNotifyObservers) {
 
   CoreAccountId account_id =
       AddToAccountTracker(GaiaId("gaia_id"), "user@gmail.com");
-  CoreAccountInfo account_info = account_tracker()->GetAccountInfo(account_id);
+  CoreAccountInfo account_info =
+      account_tracker()->GetAccountInfo(account_id).GetCoreAccountInfo();
   manager_->SetPrimaryAccountInfo(account_info, ConsentLevel::kSignin,
                                   AccessPoint::kStartPage);
   EXPECT_EQ(1, num_unconsented_account_changed_);
@@ -415,9 +417,9 @@ TEST_F(PrimaryAccountManagerTest, SignIn) {
   CoreAccountId account_id =
       AddToAccountTracker(GaiaId("gaia_id"), "user@gmail.com");
   base::RunLoop loop;
-  manager_->SetPrimaryAccountInfo(account_tracker()->GetAccountInfo(account_id),
-                                  ConsentLevel::kSync, AccessPoint::kSettings,
-                                  loop.QuitClosure());
+  manager_->SetPrimaryAccountInfo(
+      account_tracker()->GetAccountInfo(account_id).GetCoreAccountInfo(),
+      ConsentLevel::kSync, AccessPoint::kSettings, loop.QuitClosure());
 
   EXPECT_EQ(1, num_successful_signins_);
   EXPECT_EQ(1, num_unconsented_account_changed_);
@@ -447,8 +449,9 @@ TEST_F(PrimaryAccountManagerTest,
 
   CoreAccountId account_id =
       AddToAccountTracker(GaiaId("gaia_id"), "user@gmail.com");
-  manager_->SetPrimaryAccountInfo(account_tracker()->GetAccountInfo(account_id),
-                                  ConsentLevel::kSync, AccessPoint::kSettings);
+  manager_->SetPrimaryAccountInfo(
+      account_tracker()->GetAccountInfo(account_id).GetCoreAccountInfo(),
+      ConsentLevel::kSync, AccessPoint::kSettings);
   EXPECT_EQ(1, num_successful_signins_);
   EXPECT_EQ(1, num_unconsented_account_changed_);
   EXPECT_EQ("user@gmail.com",
@@ -457,8 +460,9 @@ TEST_F(PrimaryAccountManagerTest,
   CheckSigninMetrics({.sign_in = AccessPoint::kSettings,
                       .sync_opt_in = AccessPoint::kSettings});
 
-  manager_->SetPrimaryAccountInfo(account_tracker()->GetAccountInfo(account_id),
-                                  ConsentLevel::kSync, AccessPoint::kWebSignin);
+  manager_->SetPrimaryAccountInfo(
+      account_tracker()->GetAccountInfo(account_id).GetCoreAccountInfo(),
+      ConsentLevel::kSync, AccessPoint::kWebSignin);
   EXPECT_EQ(1, num_successful_signins_);
   EXPECT_EQ(1, num_unconsented_account_changed_);
   EXPECT_EQ("user@gmail.com",
@@ -582,7 +586,8 @@ TEST_F(PrimaryAccountManagerTest, SetPrimaryAccountInfoWithSigninConsent) {
   // Set the primary account with sign-in consent.
   CoreAccountId account_id =
       AddToAccountTracker(GaiaId("gaia_id"), "user@gmail.com");
-  CoreAccountInfo account_info = account_tracker()->GetAccountInfo(account_id);
+  CoreAccountInfo account_info =
+      account_tracker()->GetAccountInfo(account_id).GetCoreAccountInfo();
 
   base::RunLoop loop;
   manager_->SetPrimaryAccountInfo(account_info, ConsentLevel::kSignin,
@@ -649,7 +654,8 @@ TEST_F(PrimaryAccountManagerTest, SetPrimaryAccountInfoWithSyncConsent) {
   // Set the primary account with sync consent.
   CoreAccountId account_id =
       AddToAccountTracker(GaiaId("gaia_id"), "user@gmail.com");
-  CoreAccountInfo account_info = account_tracker()->GetAccountInfo(account_id);
+  CoreAccountInfo account_info =
+      account_tracker()->GetAccountInfo(account_id).GetCoreAccountInfo();
 
   base::RunLoop loop;
   manager_->SetPrimaryAccountInfo(account_info, ConsentLevel::kSync,
@@ -707,8 +713,9 @@ TEST_F(PrimaryAccountManagerTest, RevokeSyncConsent) {
   CreatePrimaryAccountManager();
   CoreAccountId account_id =
       AddToAccountTracker(GaiaId("gaia_id"), "user@gmail.com");
-  manager_->SetPrimaryAccountInfo(account_tracker()->GetAccountInfo(account_id),
-                                  ConsentLevel::kSync, AccessPoint::kStartPage);
+  manager_->SetPrimaryAccountInfo(
+      account_tracker()->GetAccountInfo(account_id).GetCoreAccountInfo(),
+      ConsentLevel::kSync, AccessPoint::kStartPage);
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
 
   manager_->RevokeSyncConsent(signin_metrics::ProfileSignout::kTest);
@@ -724,8 +731,9 @@ TEST_F(PrimaryAccountManagerTest, ClearPrimaryAccount) {
   CreatePrimaryAccountManager();
   CoreAccountId account_id =
       AddToAccountTracker(GaiaId("gaia_id"), "user@gmail.com");
-  manager_->SetPrimaryAccountInfo(account_tracker()->GetAccountInfo(account_id),
-                                  ConsentLevel::kSync, AccessPoint::kStartPage);
+  manager_->SetPrimaryAccountInfo(
+      account_tracker()->GetAccountInfo(account_id).GetCoreAccountInfo(),
+      ConsentLevel::kSync, AccessPoint::kStartPage);
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
 
   manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest);
@@ -749,7 +757,8 @@ TEST_F(PrimaryAccountManagerTest, RestoreSyncAccountInfo) {
   CreatePrimaryAccountManager();
 
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
-  CoreAccountInfo account_info = account_tracker()->GetAccountInfo(account_id);
+  CoreAccountInfo account_info =
+      account_tracker()->GetAccountInfo(account_id).GetCoreAccountInfo();
   ASSERT_FALSE(account_info.IsEmpty());
   EXPECT_EQ(account_id, account_info.account_id);
   EXPECT_EQ(GaiaId("gaia_id"), account_info.gaia);
@@ -820,7 +829,7 @@ TEST_F(PrimaryAccountManagerTest, ExplicitSigninPref) {
 
   // Simulate an explicit signin through the Chrome Signin Intercept bubble.
   manager_->SetPrimaryAccountInfo(
-      account_tracker()->GetAccountInfo(account_id),
+      account_tracker()->GetAccountInfo(account_id).GetCoreAccountInfo(),
       signin::ConsentLevel::kSignin,
       signin_metrics::AccessPoint::kChromeSigninInterceptBubble);
 
@@ -846,9 +855,9 @@ TEST_F(PrimaryAccountManagerTest, ImplicitSigninDoesNotSetExplicitSigninPref) {
   ASSERT_FALSE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
 
   // Simulate an implicit signin through a web signin event.
-  manager_->SetPrimaryAccountInfo(account_tracker()->GetAccountInfo(account_id),
-                                  signin::ConsentLevel::kSignin,
-                                  signin_metrics::AccessPoint::kWebSignin);
+  manager_->SetPrimaryAccountInfo(
+      account_tracker()->GetAccountInfo(account_id).GetCoreAccountInfo(),
+      signin::ConsentLevel::kSignin, signin_metrics::AccessPoint::kWebSignin);
 
   EXPECT_FALSE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
 }
@@ -866,7 +875,7 @@ TEST_F(PrimaryAccountManagerTest, ExplicitSigninFollowedByWebSignin) {
 
   // Simulate an explicit signin through the Chrome Signin Intercept bubble.
   manager_->SetPrimaryAccountInfo(
-      account_tracker()->GetAccountInfo(account_id),
+      account_tracker()->GetAccountInfo(account_id).GetCoreAccountInfo(),
       signin::ConsentLevel::kSignin,
       signin_metrics::AccessPoint::kChromeSigninInterceptBubble);
 
@@ -883,7 +892,7 @@ TEST_F(PrimaryAccountManagerTest, ExplicitSigninFollowedByWebSignin) {
   // Simulating an sign in from a web signin access point without prior sign
   // out.
   manager_->SetPrimaryAccountInfo(
-      account_tracker()->GetAccountInfo(account_id2),
+      account_tracker()->GetAccountInfo(account_id2).GetCoreAccountInfo(),
       signin::ConsentLevel::kSignin, signin_metrics::AccessPoint::kWebSignin);
 
   // The explicit sign in pref should be reset.
@@ -901,13 +910,13 @@ TEST_F(PrimaryAccountManagerTest, AccountStoragePrefFeatureDisabled) {
   CoreAccountId account_id =
       AddToAccountTracker(GaiaId("account_id"), "user@gmail.com");
   manager_->SetPrimaryAccountInfo(
-      account_tracker()->GetAccountInfo(account_id),
+      account_tracker()->GetAccountInfo(account_id).GetCoreAccountInfo(),
       signin::ConsentLevel::kSignin,
       signin_metrics::AccessPoint::kAvatarBubbleSignIn);
   EXPECT_FALSE(prefs()->GetBoolean(
       prefs::kPrefsThemesSearchEnginesAccountStorageEnabled));
   manager_->SetPrimaryAccountInfo(
-      account_tracker()->GetAccountInfo(account_id),
+      account_tracker()->GetAccountInfo(account_id).GetCoreAccountInfo(),
       signin::ConsentLevel::kSync,
       signin_metrics::AccessPoint::kAvatarBubbleSignIn);
   EXPECT_FALSE(prefs()->GetBoolean(
@@ -923,7 +932,7 @@ TEST_F(PrimaryAccountManagerTest, AccountStoragePrefExistingSyncUser) {
     CoreAccountId account_id =
         AddToAccountTracker(GaiaId("account_id"), "user@gmail.com");
     manager_->SetPrimaryAccountInfo(
-        account_tracker()->GetAccountInfo(account_id),
+        account_tracker()->GetAccountInfo(account_id).GetCoreAccountInfo(),
         signin::ConsentLevel::kSync,
         signin_metrics::AccessPoint::kAvatarBubbleSignIn);
     ASSERT_FALSE(prefs()->GetBoolean(
@@ -966,7 +975,7 @@ TEST_F(PrimaryAccountManagerTest, AccountStoragePrefNewUser) {
       AddToAccountTracker(GaiaId("account_id"), "user@gmail.com");
   // Signing in sets the pref.
   manager_->SetPrimaryAccountInfo(
-      account_tracker()->GetAccountInfo(account_id),
+      account_tracker()->GetAccountInfo(account_id).GetCoreAccountInfo(),
       signin::ConsentLevel::kSignin,
       signin_metrics::AccessPoint::kAvatarBubbleSignIn);
   EXPECT_TRUE(prefs()->GetBoolean(
@@ -1000,7 +1009,7 @@ TEST_F(PrimaryAccountManagerTest,
 
     // Simulate an explicit signin through the bookmark bubble.
     manager_->SetPrimaryAccountInfo(
-        account_tracker()->GetAccountInfo(account_id),
+        account_tracker()->GetAccountInfo(account_id).GetCoreAccountInfo(),
         signin::ConsentLevel::kSignin,
         signin_metrics::AccessPoint::kBookmarkBubble);
 
@@ -1040,9 +1049,9 @@ TEST_F(PrimaryAccountManagerTest,
   CoreAccountId account_id = AddToAccountTracker(gaia_id, "user@gmail.com");
 
   // Simulate an implicit signin.
-  manager_->SetPrimaryAccountInfo(account_tracker()->GetAccountInfo(account_id),
-                                  signin::ConsentLevel::kSignin,
-                                  signin_metrics::AccessPoint::kWebSignin);
+  manager_->SetPrimaryAccountInfo(
+      account_tracker()->GetAccountInfo(account_id).GetCoreAccountInfo(),
+      signin::ConsentLevel::kSignin, signin_metrics::AccessPoint::kWebSignin);
 
   // The explicit signin pref should be cleared.
   EXPECT_FALSE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
@@ -1064,8 +1073,10 @@ TEST_F(PrimaryAccountManagerTest, PerProfileMetrics) {
   metrics::ProfileMetricsContext context1(1);
   CreatePrimaryAccountManager(context1);
 
-  CoreAccountInfo account_info = account_tracker()->GetAccountInfo(
-      AddToAccountTracker(GaiaId("gaia_id"), "user@gmail.com"));
+  CoreAccountInfo account_info = account_tracker()
+                                     ->GetAccountInfo(AddToAccountTracker(
+                                         GaiaId("gaia_id"), "user@gmail.com"))
+                                     .GetCoreAccountInfo();
   manager_->SetPrimaryAccountInfo(account_info, ConsentLevel::kSignin,
                                   AccessPoint::kStartPage);
 
@@ -1088,8 +1099,11 @@ TEST_F(PrimaryAccountManagerTest, PerProfileMetrics) {
   metrics::ProfileMetricsContext context2(2);
   CreatePrimaryAccountManager(context2);
 
-  CoreAccountInfo account_info2 = account_tracker()->GetAccountInfo(
-      AddToAccountTracker(GaiaId("gaia_id2"), "user2@gmail.com"));
+  CoreAccountInfo account_info2 =
+      account_tracker()
+          ->GetAccountInfo(
+              AddToAccountTracker(GaiaId("gaia_id2"), "user2@gmail.com"))
+          .GetCoreAccountInfo();
   manager_->SetPrimaryAccountInfo(account_info2, ConsentLevel::kSignin,
                                   AccessPoint::kStartPage);
 
@@ -1120,8 +1134,10 @@ TEST_F(PrimaryAccountManagerTest, PerProfileMetricsSync) {
   metrics::ProfileMetricsContext context1(1);
   CreatePrimaryAccountManager(context1);
 
-  CoreAccountInfo account_info = account_tracker()->GetAccountInfo(
-      AddToAccountTracker(GaiaId("gaia_id"), "user@gmail.com"));
+  CoreAccountInfo account_info = account_tracker()
+                                     ->GetAccountInfo(AddToAccountTracker(
+                                         GaiaId("gaia_id"), "user@gmail.com"))
+                                     .GetCoreAccountInfo();
   manager_->SetPrimaryAccountInfo(account_info, ConsentLevel::kSync,
                                   AccessPoint::kStartPage);
 
@@ -1144,8 +1160,11 @@ TEST_F(PrimaryAccountManagerTest, PerProfileMetricsSync) {
   metrics::ProfileMetricsContext context2(2);
   CreatePrimaryAccountManager(context2);
 
-  CoreAccountInfo account_info2 = account_tracker()->GetAccountInfo(
-      AddToAccountTracker(GaiaId("gaia_id2"), "user2@gmail.com"));
+  CoreAccountInfo account_info2 =
+      account_tracker()
+          ->GetAccountInfo(
+              AddToAccountTracker(GaiaId("gaia_id2"), "user2@gmail.com"))
+          .GetCoreAccountInfo();
   manager_->SetPrimaryAccountInfo(account_info2, ConsentLevel::kSync,
                                   AccessPoint::kStartPage);
 
@@ -1208,7 +1227,7 @@ TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
   // Simulate an explicit signin through the extension install bubble.
   // This should count as an extension explicit sign in.
   manager_->SetPrimaryAccountInfo(
-      account_tracker()->GetAccountInfo(account_id),
+      account_tracker()->GetAccountInfo(account_id).GetCoreAccountInfo(),
       signin::ConsentLevel::kSignin,
       signin_metrics::AccessPoint::kExtensionInstallBubble);
 
@@ -1234,7 +1253,7 @@ TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
       AddToAccountTracker(other_gaia_id, "user2@gmail.com");
 
   manager_->SetPrimaryAccountInfo(
-      account_tracker()->GetAccountInfo(other_account_id),
+      account_tracker()->GetAccountInfo(other_account_id).GetCoreAccountInfo(),
       signin::ConsentLevel::kSignin,
       signin_metrics::AccessPoint::kChromeSigninInterceptBubble);
 
@@ -1252,7 +1271,7 @@ TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
   // Sign out, then sign in again through the extensions install bubble.
   manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest);
   manager_->SetPrimaryAccountInfo(
-      account_tracker()->GetAccountInfo(account_id),
+      account_tracker()->GetAccountInfo(account_id).GetCoreAccountInfo(),
       signin::ConsentLevel::kSignin,
       signin_metrics::AccessPoint::kExtensionInstallBubble);
 
@@ -1282,9 +1301,10 @@ TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
       SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
 
   // Simulate an explicit signin through the bookmark bubble.
-  manager_->SetPrimaryAccountInfo(account_tracker()->GetAccountInfo(account_id),
-                                  signin::ConsentLevel::kSignin,
-                                  signin_metrics::AccessPoint::kBookmarkBubble);
+  manager_->SetPrimaryAccountInfo(
+      account_tracker()->GetAccountInfo(account_id).GetCoreAccountInfo(),
+      signin::ConsentLevel::kSignin,
+      signin_metrics::AccessPoint::kBookmarkBubble);
 
   EXPECT_TRUE(SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
 
@@ -1297,7 +1317,7 @@ TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
       AddToAccountTracker(other_gaia_id, "user2@gmail.com");
 
   manager_->SetPrimaryAccountInfo(
-      account_tracker()->GetAccountInfo(other_account_id),
+      account_tracker()->GetAccountInfo(other_account_id).GetCoreAccountInfo(),
       signin::ConsentLevel::kSignin,
       signin_metrics::AccessPoint::kChromeSigninInterceptBubble);
 
@@ -1318,7 +1338,7 @@ TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
       SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
 
   manager_->SetPrimaryAccountInfo(
-      account_tracker()->GetAccountInfo(account_id),
+      account_tracker()->GetAccountInfo(account_id).GetCoreAccountInfo(),
       signin::ConsentLevel::kSignin,
       signin_metrics::AccessPoint::kChromeSigninInterceptBubble);
 
@@ -1327,7 +1347,7 @@ TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
   // Turn on sync. This should disable account storage for
   // bookmarks again.
   manager_->SetPrimaryAccountInfo(
-      account_tracker()->GetAccountInfo(account_id),
+      account_tracker()->GetAccountInfo(account_id).GetCoreAccountInfo(),
       signin::ConsentLevel::kSync,
       signin_metrics::AccessPoint::kChromeSigninInterceptBubble);
 

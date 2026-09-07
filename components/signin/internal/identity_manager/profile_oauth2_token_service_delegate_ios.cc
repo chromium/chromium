@@ -168,9 +168,11 @@ void ProfileOAuth2TokenServiceIOSDelegate::LoadCredentialsInternal(
   } else {
     // Account must have been seeded before (when the primary account was set).
     DCHECK(!account_tracker_service_->GetAccountInfo(primary_account_id)
-                .gaia.empty());
+                .GetGaiaId()
+                .empty());
     DCHECK(!account_tracker_service_->GetAccountInfo(primary_account_id)
-                .email.empty());
+                .GetEmail()
+                .empty());
 
     // For whatever reason, we failed to load the device account for the primary
     // account. There must always be an account for the primary account
@@ -383,8 +385,11 @@ void ProfileOAuth2TokenServiceIOSDelegate::AddOrUpdateAccount(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Account must have been seeded before attempting to add it.
-  DCHECK(!account_tracker_service_->GetAccountInfo(account_id).gaia.empty());
-  DCHECK(!account_tracker_service_->GetAccountInfo(account_id).email.empty());
+  DCHECK(!account_tracker_service_->GetAccountInfo(account_id)
+              .GetGaiaId()
+              .empty());
+  DCHECK(
+      !account_tracker_service_->GetAccountInfo(account_id).GetEmail().empty());
 
   if (accounts_.contains(account_id) && GetAuthError(account_id) == error) {
     // No need to update the account if it is already a known account and if

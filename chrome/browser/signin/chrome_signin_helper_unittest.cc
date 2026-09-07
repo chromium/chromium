@@ -532,7 +532,7 @@ TEST_F(ChromeSigninHelperTest, WaitForCookiesAndRedirectWhenAccountAvailable) {
       identity_test_env()
           ->MakePrimaryAccountAvailable("test@gmail.com",
                                         signin::ConsentLevel::kSignin)
-          .account_id;
+          .GetAccountId();
 
   std::unique_ptr<content::WebContents> web_contents(CreateTestWebContents());
   TestTabModel tab_model(profile());
@@ -574,7 +574,7 @@ TEST_F(ChromeSigninHelperTest,
       identity_test_env()
           ->MakePrimaryAccountAvailable("test@gmail.com",
                                         signin::ConsentLevel::kSignin)
-          .account_id;
+          .GetAccountId();
 
   std::unique_ptr<content::WebContents> web_contents(CreateTestWebContents());
   TestTabModel tab_model(profile());
@@ -689,7 +689,7 @@ TEST_F(ChromeSigninHelperTest, StartReauthFlowWhenInPersistentErrorState) {
       identity_test_env()
           ->MakePrimaryAccountAvailable("test@gmail.com",
                                         signin::ConsentLevel::kSignin)
-          .account_id;
+          .GetAccountId();
   identity_test_env()->SetInvalidRefreshTokenForAccount(account_id);
 
   std::unique_ptr<content::WebContents> web_contents(CreateTestWebContents());

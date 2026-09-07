@@ -143,7 +143,7 @@
 
 - (void)extendedAccountInfoDidUpdate:(const AccountInfo&)info {
   id<SystemIdentity> identity =
-      _accountManagerService->GetIdentityOnDeviceWithGaiaID(info.gaia);
+      _accountManagerService->GetIdentityOnDeviceWithGaiaID(info.GetGaiaId());
   if ([identity isEqual:_authenticationService->GetPrimaryIdentity()]) {
     [self updateAvatarImageWithIdentity:identity];
   }

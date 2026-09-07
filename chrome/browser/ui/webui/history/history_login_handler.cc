@@ -94,8 +94,9 @@ void HistoryLoginHandler::HandleTurnOnSyncFlow(
 #if !BUILDFLAG(IS_CHROMEOS)
   if (account_info.IsEmpty()) {
     account_info = signin_ui_util::GetSingleAccountForPromos(
-        identity_manager,
-        AccountPreviewDataServiceFactory::GetForProfile(profile));
+                       identity_manager,
+                       AccountPreviewDataServiceFactory::GetForProfile(profile))
+                       .GetCoreAccountInfo();
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
   signin_ui_util::EnableSyncFromSingleAccountPromo(

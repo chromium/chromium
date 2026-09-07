@@ -276,7 +276,8 @@ void BatchUploadDialogView::OnErrorStateOfRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info,
     const GoogleServiceAuthError& error,
     signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
-  if (account_info == primary_account_info_ && error.IsPersistentError()) {
+  if (account_info == primary_account_info_.GetCoreAccountInfo() &&
+      error.IsPersistentError()) {
     CloseWithReason(BatchUploadDialogCloseReason::kSiginPending);
   }
 }

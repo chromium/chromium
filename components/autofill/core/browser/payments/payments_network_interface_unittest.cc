@@ -1092,7 +1092,7 @@ TEST_F(PaymentsNetworkInterfaceTest, GetUploadAccountFromSyncTest) {
   const AccountInfo& secondary_account_info =
       identity_test_env_.MakeAccountAvailable("secondary@gmail.com");
   test_personal_data_.test_payments_data_manager().SetAccountInfoForPayments(
-      secondary_account_info);
+      secondary_account_info.GetCoreAccountInfo());
 
   StartUploading();
 

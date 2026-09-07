@@ -136,7 +136,7 @@ std::vector<AccountInfo> GetOrderedAccountsForDisplay(
       continue;
     }
     AccountInfo extended_info =
-        identity_manager->FindExtendedAccountInfo(account);
+        identity_manager->FindExtendedAccountInfo(account.GetCoreAccountInfo());
     // Some device accounts may not be in Chrome.
     const AccountInfo& account_to_use =
         extended_info.IsEmpty() ? account : extended_info;

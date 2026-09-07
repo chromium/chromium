@@ -71,7 +71,8 @@ TEST_F(OAuthTokenFetcherTest, FailedOAuthTokenFetch) {
 
   oauth_token_fetcher.FetchToken(fetch_future.GetCallback());
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      account_info_.account_id, GoogleServiceAuthError::FromServiceError(""));
+      account_info_.GetAccountId(),
+      GoogleServiceAuthError::FromServiceError(""));
 
   auto token_data = fetch_future.Get();
   EXPECT_FALSE(token_data.has_value());
@@ -123,7 +124,7 @@ TEST_F(OAuthTokenFetcherTest, RetryOnRetriableError) {
   oauth_token_fetcher.FetchToken(fetch_future.GetCallback());
   // Failure.
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      account_info_.account_id,
+      account_info_.GetAccountId(),
       GoogleServiceAuthError::FromServiceUnavailable(""));
   // First retry success.
   task_environment_.FastForwardBy(kRetryInitialBackoff);
@@ -142,13 +143,13 @@ TEST_F(OAuthTokenFetcherTest, RespondOnLastSuccessfulRetry) {
   oauth_token_fetcher.FetchToken(fetch_future.GetCallback());
   // Failure.
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      account_info_.account_id,
+      account_info_.GetAccountId(),
       GoogleServiceAuthError::FromServiceUnavailable(""));
   task_environment_.FastForwardBy(kRetryInitialBackoff);
   // First retry failure.
   task_environment_.FastForwardBy(kRetryInitialBackoff);
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      account_info_.account_id,
+      account_info_.GetAccountId(),
       GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED));
   // Second retry success.
   task_environment_.FastForwardBy(kRetryInitialBackoff * 2);
@@ -167,17 +168,17 @@ TEST_F(OAuthTokenFetcherTest, RespondAfterMaxRetries) {
   oauth_token_fetcher.FetchToken(fetch_future.GetCallback());
   // Failure.
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      account_info_.account_id,
+      account_info_.GetAccountId(),
       GoogleServiceAuthError::FromServiceUnavailable(""));
   // First retry failure.
   task_environment_.FastForwardBy(kRetryInitialBackoff);
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      account_info_.account_id,
+      account_info_.GetAccountId(),
       GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED));
   // Second retry failure.
   task_environment_.FastForwardBy(kRetryInitialBackoff * 2);
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      account_info_.account_id,
+      account_info_.GetAccountId(),
       GoogleServiceAuthError::FromServiceUnavailable(""));
 
   EXPECT_FALSE(fetch_future.Get().has_value());

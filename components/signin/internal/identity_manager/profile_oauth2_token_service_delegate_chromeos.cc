@@ -203,7 +203,7 @@ ProfileOAuth2TokenServiceDelegateChromeOS::CreateAccessTokenFetcher(
   return account_manager_facade_->CreateAccessTokenFetcher(
       account_manager::AccountKey::FromGaiaId(
           account_tracker_service_->GetAccountInfo(account_id)
-              .gaia) /* account_key */,
+              .GetGaiaId()) /* account_key */,
       consumer);
 }
 

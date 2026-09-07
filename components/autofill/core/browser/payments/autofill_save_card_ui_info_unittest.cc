@@ -625,7 +625,7 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
   EXPECT_EQ(ui_info.description_text,
             l10n_util::GetStringFUTF16(
                 IDS_AUTOFILL_SAVE_CVC_TO_WALLET_PROMPT_EXPLANATION_UPLOAD_IOS,
-                base::UTF8ToUTF16(AccountInfo().email)));
+                base::UTF8ToUTF16(AccountInfo().GetEmail())));
   EXPECT_EQ(ui_info.confirm_text,
             l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT));
 }
@@ -647,7 +647,7 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
   EXPECT_EQ(ui_info.description_text,
             l10n_util::GetStringFUTF16(
                 IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_UPLOAD_IOS,
-                base::UTF8ToUTF16(AccountInfo().email)));
+                base::UTF8ToUTF16(AccountInfo().GetEmail())));
   EXPECT_EQ(ui_info.confirm_text,
             l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT));
 }

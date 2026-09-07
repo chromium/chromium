@@ -146,7 +146,8 @@ TEST_F(BrowserSigninDetectorServiceTest, AccountWithNoExtendedAccountInfo) {
 
   // Makes sure there are no domain available for the created account.
   base::MockCallback<base::OnceClosure> outcome_determined;
-  signin::AccountManagedStatusFinder finder(identity_manager(), account_info,
+  signin::AccountManagedStatusFinder finder(identity_manager(),
+                                            account_info.GetCoreAccountInfo(),
                                             outcome_determined.Get());
   EXPECT_EQ(finder.GetOutcome(),
             signin::AccountManagedStatusFinder::Outcome::kPending);
@@ -165,8 +166,8 @@ TEST_F(BrowserSigninDetectorServiceTest, NonEnterpriseAccount) {
 
   // Makes sure we have a non-enterprise account created based on the test
   // account provided.
-  signin::AccountManagedStatusFinder finder(identity_manager(), account_info,
-                                            base::DoNothing());
+  signin::AccountManagedStatusFinder finder(
+      identity_manager(), account_info.GetCoreAccountInfo(), base::DoNothing());
   EXPECT_EQ(finder.GetOutcome(),
             signin::AccountManagedStatusFinder::Outcome::kConsumerNotWellKnown);
 
@@ -184,8 +185,8 @@ TEST_F(BrowserSigninDetectorServiceTest, EnterpriseAccount) {
 
   // Makes sure we have an enterprise account created based on the test account
   // provided.
-  signin::AccountManagedStatusFinder finder(identity_manager(), account_info,
-                                            base::DoNothing());
+  signin::AccountManagedStatusFinder finder(
+      identity_manager(), account_info.GetCoreAccountInfo(), base::DoNothing());
   EXPECT_EQ(finder.GetOutcome(),
             signin::AccountManagedStatusFinder::Outcome::kEnterprise);
 
@@ -210,8 +211,8 @@ TEST_F(BrowserSigninDetectorServiceTest,
 
   // Makes sure we have an enterprise account created based on the test account
   // provided.
-  signin::AccountManagedStatusFinder finder(identity_manager(), account_info,
-                                            base::DoNothing());
+  signin::AccountManagedStatusFinder finder(
+      identity_manager(), account_info.GetCoreAccountInfo(), base::DoNothing());
   EXPECT_EQ(
       finder.GetOutcome(),
       signin::AccountManagedStatusFinder::Outcome::kEnterpriseGoogleDotCom);

@@ -115,20 +115,24 @@ AccountInfo& AccountInfo::operator=(const AccountInfo& other) = default;
 
 AccountInfo& AccountInfo::operator=(AccountInfo&& other) noexcept = default;
 
+const CoreAccountInfo& AccountInfo::GetCoreAccountInfo() const {
+  return core_account_info_;
+}
+
 const CoreAccountId& AccountInfo::GetAccountId() const {
-  return account_id;
+  return core_account_info_.account_id;
 }
 
 const GaiaId& AccountInfo::GetGaiaId() const {
-  return gaia;
+  return core_account_info_.gaia;
 }
 
 std::string_view AccountInfo::GetEmail() const {
-  return email;
+  return core_account_info_.email;
 }
 
 bool AccountInfo::IsUnderAdvancedProtection() const {
-  return is_under_advanced_protection;
+  return core_account_info_.is_under_advanced_protection;
 }
 
 std::optional<std::string_view> AccountInfo::GetFullName() const {
@@ -203,26 +207,29 @@ std::optional<std::string_view> AccountInfo::GetLocale() const {
 }
 
 bool AccountInfo::IsEmpty() const {
-  return CoreAccountInfo::IsEmpty() && hosted_domain_.empty() &&
+  return core_account_info_.IsEmpty() && hosted_domain_.empty() &&
          full_name_.empty() && given_name_.empty() && locale_.empty() &&
          picture_url_.empty();
 }
 
 bool AccountInfo::IsValid() const {
-  return !account_id.empty() && !email.empty() && !gaia.empty() &&
-         !hosted_domain_.empty() && !full_name_.empty() &&
-         !given_name_.empty() && !picture_url_.empty();
+  return !core_account_info_.account_id.empty() &&
+         !core_account_info_.email.empty() &&
+         !core_account_info_.gaia.empty() && !hosted_domain_.empty() &&
+         !full_name_.empty() && !given_name_.empty() && !picture_url_.empty();
 }
 
 bool AccountInfo::UpdateWith(const AccountInfo& other) {
-  if (account_id != other.account_id) {
+  if (core_account_info_.account_id != other.core_account_info_.account_id) {
     // Only updates with a compatible AccountInfo.
     return false;
   }
 
   bool modified = false;
-  modified |= UpdateField(&gaia, other.gaia);
-  modified |= UpdateField(&email, other.email, nullptr);
+  modified |=
+      UpdateField(&core_account_info_.gaia, other.core_account_info_.gaia);
+  modified |= UpdateField(&core_account_info_.email,
+                          other.core_account_info_.email, nullptr);
   modified |= UpdateField(&full_name_, other.full_name_, nullptr);
   modified |= UpdateField(&given_name_, other.given_name_, nullptr);
   modified |=
@@ -235,8 +242,9 @@ bool AccountInfo::UpdateWith(const AccountInfo& other) {
   modified |= UpdateField(&access_point_, other.access_point_,
                           std::optional<signin_metrics::AccessPoint>());
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-  modified |= UpdateField(&is_under_advanced_protection,
-                          other.is_under_advanced_protection);
+  modified |=
+      UpdateField(&core_account_info_.is_under_advanced_protection,
+                  other.core_account_info_.is_under_advanced_protection);
   modified |= capabilities_.UpdateWith(other.capabilities_);
 
   return modified;
@@ -280,8 +288,8 @@ bool AccountInfo::CanHaveEmailAddressDisplayed() const {
 AccountInfo::Builder::Builder(const GaiaId& gaia_id, std::string_view email) {
   CHECK(!gaia_id.empty());
   CHECK(!email.empty());
-  account_info_.gaia = gaia_id;
-  account_info_.email = std::string(email);
+  account_info_.core_account_info_.gaia = gaia_id;
+  account_info_.core_account_info_.email = std::string(email);
 }
 
 AccountInfo::Builder::Builder(const CoreAccountInfo& core_account_info) {
@@ -294,11 +302,7 @@ AccountInfo::Builder::Builder(const CoreAccountInfo& core_account_info) {
   CHECK(!core_account_info.IsEmpty());
   CHECK(!base::FeatureList::IsEnabled(switches::kGaiaAccountIdEnforcement) ||
         !core_account_info.gaia.empty());
-  account_info_.account_id = core_account_info.account_id;
-  account_info_.gaia = core_account_info.gaia;
-  account_info_.email = core_account_info.email;
-  account_info_.is_under_advanced_protection =
-      core_account_info.is_under_advanced_protection;
+  account_info_.core_account_info_ = core_account_info;
 }
 
 AccountInfo::Builder::Builder(const AccountInfo& account_info)
@@ -316,28 +320,30 @@ AccountInfo::Builder::~Builder() = default;
 
 AccountInfo AccountInfo::Builder::Build() {
   if (base::FeatureList::IsEnabled(switches::kGaiaAccountIdEnforcement)) {
-    CHECK(!account_info_.gaia.empty());
-    account_info_.account_id = CoreAccountId::FromGaiaId(account_info_.gaia);
+    CHECK(!account_info_.core_account_info_.gaia.empty());
+    account_info_.core_account_info_.account_id =
+        CoreAccountId::FromGaiaId(account_info_.core_account_info_.gaia);
   }
   return std::move(account_info_);
 }
 
 AccountInfo::Builder& AccountInfo::Builder::SetEmail(std::string_view email) {
   CHECK(!email.empty());
-  account_info_.email = std::string(email);
+  account_info_.core_account_info_.email = std::string(email);
   return *this;
 }
 
 AccountInfo::Builder& AccountInfo::Builder::SetAccountId(
     const CoreAccountId& account_id) {
   CHECK(!account_id.empty());
-  account_info_.account_id = account_id;
+  account_info_.core_account_info_.account_id = account_id;
   return *this;
 }
 
 AccountInfo::Builder& AccountInfo::Builder::SetIsUnderAdvancedProtection(
     bool is_under_advanced_protection) {
-  account_info_.is_under_advanced_protection = is_under_advanced_protection;
+  account_info_.core_account_info_.is_under_advanced_protection =
+      is_under_advanced_protection;
   return *this;
 }
 
@@ -428,8 +434,8 @@ AccountInfo::Builder AccountInfo::Builder::CreateWithPossiblyEmptyGaiaId(
          "kGaiaAccountIdEnforcement is enabled";
   CHECK(!email.empty());
   AccountInfo::Builder builder;
-  builder.account_info_.gaia = gaia_id;
-  builder.account_info_.email = email;
+  builder.account_info_.core_account_info_.gaia = gaia_id;
+  builder.account_info_.core_account_info_.email = email;
   return builder;
 }
 
@@ -443,8 +449,8 @@ AccountInfo::Builder::CreateWithPossiblyEmptyGaiaIdAndEmail(
       << "Creating AccountInfo with empty GaiaId is not allowed when "
          "kGaiaAccountIdEnforcement is enabled";
   AccountInfo::Builder builder;
-  builder.account_info_.gaia = gaia_id;
-  builder.account_info_.email = email;
+  builder.account_info_.core_account_info_.gaia = gaia_id;
+  builder.account_info_.core_account_info_.email = email;
   return builder;
 }
 
@@ -458,6 +464,11 @@ std::ostream& operator<<(std::ostream& os, const CoreAccountInfo& account) {
   os << "account_id: " << account.account_id << ", gaia: " << account.gaia
      << ", email: " << account.email << ", adv_prot: " << std::boolalpha
      << account.is_under_advanced_protection;
+  return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const AccountInfo& account) {
+  os << account.GetCoreAccountInfo();
   return os;
 }
 

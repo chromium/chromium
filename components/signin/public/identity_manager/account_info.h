@@ -60,7 +60,7 @@ struct CoreAccountInfo {
 // Stores all the information known about an account. Part of the information
 // may only become available asynchronously, which is indicated by optional
 // return values.
-struct AccountInfo : public CoreAccountInfo {
+struct AccountInfo {
   class Builder;
 
   AccountInfo();
@@ -71,6 +71,9 @@ struct AccountInfo : public CoreAccountInfo {
 
   AccountInfo& operator=(const AccountInfo& other);
   AccountInfo& operator=(AccountInfo&& other) noexcept;
+
+  // Returns basic information about the account that is always known.
+  const CoreAccountInfo& GetCoreAccountInfo() const LIFETIME_BOUND;
 
   // Returns an account ID.
   //
@@ -217,6 +220,8 @@ struct AccountInfo : public CoreAccountInfo {
   friend class Builder;
   friend class AccountCapabilitiesTestMutator;
 
+  CoreAccountInfo core_account_info_;
+
   // Mandatory fields for `IsValid()` to return true:
   std::string full_name_;
   std::string given_name_;
@@ -336,13 +341,14 @@ class AccountInfo::Builder {
 
 bool operator==(const CoreAccountInfo& l, const CoreAccountInfo& r);
 std::ostream& operator<<(std::ostream& os, const CoreAccountInfo& account);
+std::ostream& operator<<(std::ostream& os, const AccountInfo& account);
 
 // Comparing `AccountInfo`s is likely a mistake. You should compare either
 // `CoreAccountId` or `CoreAccountInfo` instead:
 //
 //   AccountInfo l, r;
 //   // if (l == r) {
-//   if (l.account_id == r.account_id) {}
+//   if (l.GetAccountId() == r.GetAccountId()) {}
 //
 bool operator==(const AccountInfo& l, const AccountInfo& r) = delete;
 bool operator!=(const AccountInfo& l, const AccountInfo& r) = delete;

@@ -723,7 +723,7 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
 }
 
 - (void)extendedAccountInfoDidUpdate:(const AccountInfo&)info {
-  if (info.gaia != _signedInIdentity.gaiaId) {
+  if (info.GetGaiaId() != _signedInIdentity.gaiaId) {
     return;
   }
   [self updateAccountImage];

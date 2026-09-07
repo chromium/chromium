@@ -144,8 +144,9 @@ class StandaloneTrustedVaultClientTest : public testing::Test {
   }
 
   CoreAccountInfo MakeAccountAvailable(const std::string& email) {
-    return identity_test_env_.MakePrimaryAccountAvailable(
-        email, signin::ConsentLevel::kSignin);
+    return identity_test_env_
+        .MakePrimaryAccountAvailable(email, signin::ConsentLevel::kSignin)
+        .GetCoreAccountInfo();
   }
 
   void WaitForIdle(StandaloneTrustedVaultClient* client) {

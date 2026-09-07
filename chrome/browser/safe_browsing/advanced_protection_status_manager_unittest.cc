@@ -73,7 +73,9 @@ TEST_F(AdvancedProtectionStatusManagerTest, TracksUnconsentedPrimaryAccount) {
   // Sign in, but don't set this as the primary account.
   AccountInfo account_info = identity_test_env.MakePrimaryAccountAvailable(
       "test@test.com", signin::ConsentLevel::kSignin);
-  account_info.is_under_advanced_protection = true;
+  account_info = AccountInfo::Builder(account_info)
+                     .SetIsUnderAdvancedProtection(true)
+                     .Build();
   identity_test_env.UpdateAccountInfoForAccount(account_info);
   auto manager =
       BuildManager(&pref_service_, identity_test_env.identity_manager());

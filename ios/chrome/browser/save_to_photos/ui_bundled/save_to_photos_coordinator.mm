@@ -393,7 +393,7 @@ void ConfirmChangeProfileWithCompletion(SaveToPhotosCoordinator* coordinator,
 - (void)showReauthForIdentity:(id<SystemIdentity>)identity {
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(self.profile);
-  CoreAccountInfo account =
+  AccountInfo account =
       identityManager->FindExtendedAccountInfoByGaiaId(identity.gaiaId);
   if (account.IsEmpty()) {
     // In case the account has been removed asynchronously.
@@ -403,7 +403,7 @@ void ConfirmChangeProfileWithCompletion(SaveToPhotosCoordinator* coordinator,
   _reauthCoordinator = [[SigninReauthCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
-                         account:account
+                         account:account.GetCoreAccountInfo()
                reauthAccessPoint:signin_metrics::ReauthAccessPoint::
                                      kAccountSettings];
   _reauthCoordinator.delegate = self;

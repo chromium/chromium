@@ -140,7 +140,7 @@ class GaiaRemoteConsentFlowParamBrowserTest : public InProcessBrowserTest,
         identity_manager->FindExtendedAccountInfoByAccountId(
             account_info.account_id);
     DCHECK(!primary_account_info.IsEmpty());
-    return primary_account_info;
+    return primary_account_info.GetCoreAccountInfo();
   }
 
   void CreateGaiaRemoteConsentFlow(

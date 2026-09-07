@@ -338,11 +338,11 @@ class CookieBrowsingDataCounterUtilsTest : public BrowsingDataCounterUtilsTest {
       signin::IdentityTestEnvironment* identity_test_env,
       syncer::TestSyncService* test_sync_service,
       PrefService* prefs) {
-    CoreAccountInfo account_info =
-        identity_test_env->MakePrimaryAccountAvailable("user@gmail.com",
-                                                       consent_level);
-    test_sync_service->SetSignedIn(consent_level, account_info);
-    return account_info;
+    AccountInfo account_info = identity_test_env->MakePrimaryAccountAvailable(
+        "user@gmail.com", consent_level);
+    test_sync_service->SetSignedIn(consent_level,
+                                   account_info.GetCoreAccountInfo());
+    return account_info.GetCoreAccountInfo();
   }
 
   void SetSigninPendingState(signin::IdentityTestEnvironment* identity_test_env,

@@ -107,7 +107,7 @@ AccountInfo SignInWithAccount(
       {.primary_account_consent_level = consent_level, .set_cookie = true});
 
   identity_test_env.UpdateAccountInfoForAccount(FillAccountInfo(
-      base_account_info, management_status,
+      base_account_info.GetCoreAccountInfo(), management_status,
       can_show_history_sync_opt_ins_without_minor_mode_restrictions));
 
   // Set account image

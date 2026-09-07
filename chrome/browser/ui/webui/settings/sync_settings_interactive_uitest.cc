@@ -243,8 +243,9 @@ IN_PROC_BROWSER_TEST_F(SyncSettingsInteractiveTest,
       StopObservingState(kTabCountState),
       InstrumentTab(kDiceSignInTabId, 1, browser()), Do([&]() {
         // Simulate adding the account from the web.
-        CoreAccountInfo account_info =
-            identity_test_env()->MakeAccountAvailable(kTestEmail);
+        CoreAccountInfo account_info = identity_test_env()
+                                           ->MakeAccountAvailable(kTestEmail)
+                                           .GetCoreAccountInfo();
         content::WebContents* signin_tab =
             signin_ui_util::GetSignInTabWithAccessPoint(
                 browser(), signin_metrics::AccessPoint::kSettings);

@@ -916,8 +916,10 @@ class ProfileMenuViewSyncErrorButtonTest : public ProfileMenuViewTestBase,
     // Add an account.
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(browser()->GetProfile());
-    account_info_ = signin::MakePrimaryAccountAvailable(
-        identity_manager, kTestEmail, signin::ConsentLevel::kSync);
+    account_info_ =
+        signin::MakePrimaryAccountAvailable(identity_manager, kTestEmail,
+                                            signin::ConsentLevel::kSync)
+            .GetCoreAccountInfo();
     signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager);
     ASSERT_TRUE(
         identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
@@ -985,8 +987,10 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewSyncServiceUnavailableTest,
   // Add an account with sync consent.
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(browser()->GetProfile());
-  CoreAccountInfo account_info = signin::MakePrimaryAccountAvailable(
-      identity_manager, kTestEmail, signin::ConsentLevel::kSync);
+  CoreAccountInfo account_info =
+      signin::MakePrimaryAccountAvailable(identity_manager, kTestEmail,
+                                          signin::ConsentLevel::kSync)
+          .GetCoreAccountInfo();
 
   // Set an invalid refresh token to trigger the kSyncPaused state.
   signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager);
@@ -1015,9 +1019,12 @@ class ProfileMenuViewWebOnlyTest : public ProfileMenuViewTestBase,
     // Add an account, not signed in.
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(browser()->GetProfile());
-    account_info_ = identity_test_env()->MakeAccountAvailable(
-        kTestEmail,
-        {.primary_account_consent_level = std::nullopt, .set_cookie = true});
+    account_info_ =
+        identity_test_env()
+            ->MakeAccountAvailable(
+                kTestEmail, {.primary_account_consent_level = std::nullopt,
+                             .set_cookie = true})
+            .GetCoreAccountInfo();
 
     ASSERT_FALSE(
         identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
@@ -1195,8 +1202,10 @@ class ProfileMenuViewSigninPendingTest : public ProfileMenuViewTestBase,
     Profile* profile = browser()->GetProfile();
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile);
-    account_info_ = signin::MakePrimaryAccountAvailable(
-        identity_manager, kTestEmail, signin::ConsentLevel::kSignin);
+    account_info_ =
+        signin::MakePrimaryAccountAvailable(identity_manager, kTestEmail,
+                                            signin::ConsentLevel::kSignin)
+            .GetCoreAccountInfo();
     signin::UpdatePersistentErrorOfRefreshTokenForAccount(
         identity_manager, account_info_.account_id,
         GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
@@ -1307,14 +1316,16 @@ class ProfileMenuClickTest : public InProcessBrowserTest,
   AccountInfo EnableSync() {
     AccountInfo account_info = signin::MakePrimaryAccountAvailable(
         identity_manager(), kTestEmail, signin::ConsentLevel::kSync);
-    sync_service()->SetSignedIn(signin::ConsentLevel::kSync, account_info);
+    sync_service()->SetSignedIn(signin::ConsentLevel::kSync,
+                                account_info.GetCoreAccountInfo());
     return account_info;
   }
 
   AccountInfo Signin() {
     AccountInfo account_info = signin::MakePrimaryAccountAvailable(
         identity_manager(), kTestEmail, signin::ConsentLevel::kSignin);
-    sync_service()->SetSignedIn(signin::ConsentLevel::kSignin, account_info);
+    sync_service()->SetSignedIn(signin::ConsentLevel::kSignin,
+                                account_info.GetCoreAccountInfo());
     return account_info;
   }
 
@@ -3098,10 +3109,12 @@ class ProfileMenuSigninAccessPointTest : public SigninBrowserTestBase {
     // Add a signed in account.
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(browser()->GetProfile());
-    account_info_ = identity_test_env()->MakeAccountAvailable(
-        kTestEmail,
-        {.primary_account_consent_level = signin::ConsentLevel::kSignin,
-         .set_cookie = true});
+    account_info_ = identity_test_env()
+                        ->MakeAccountAvailable(
+                            kTestEmail, {.primary_account_consent_level =
+                                             signin::ConsentLevel::kSignin,
+                                         .set_cookie = true})
+                        .GetCoreAccountInfo();
     ASSERT_TRUE(
         identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
     ASSERT_EQ(identity_manager->GetAccountsWithRefreshTokens().size(), 1u);

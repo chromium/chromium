@@ -92,8 +92,11 @@ class HistorySignInStateWatcherSyncToSigninTest
 
 // Sync is disabled by policy, should be reflected in the sign-in state.
 TEST_F(HistorySignInStateWatcherSyncToSigninTest, SyncDisabledByPolicy) {
-  CoreAccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
-      "test@example.com", signin::ConsentLevel::kSignin);
+  CoreAccountInfo account_info =
+      identity_test_env_
+          .MakePrimaryAccountAvailable("test@example.com",
+                                       signin::ConsentLevel::kSignin)
+          .GetCoreAccountInfo();
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_info);
   sync_service_.SetAllowedByEnterprisePolicy(false);
   HistoryIdentityStateWatcher watcher(identity_test_env_.identity_manager(),
@@ -149,8 +152,10 @@ TEST_F(HistorySignInStateWatcherSyncToSigninTest,
   ASSERT_EQ(HistoryIdentityState::SignIn::kSignedOut,
             watcher.GetHistoryIdentityState().sign_in);
   const CoreAccountInfo account_info =
-      identity_test_env_.MakePrimaryAccountAvailable(
-          "test@example.com", signin::ConsentLevel::kSignin);
+      identity_test_env_
+          .MakePrimaryAccountAvailable("test@example.com",
+                                       signin::ConsentLevel::kSignin)
+          .GetCoreAccountInfo();
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_info);
   sync_service_.GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kHistory, false);
@@ -170,8 +175,10 @@ TEST_F(HistorySignInStateWatcherSyncToSigninTest,
 TEST_F(HistorySignInStateWatcherSyncToSigninTest,
        SyncingWithoutTabsSyncIsSyncDisabled) {
   const CoreAccountInfo account_info =
-      identity_test_env_.MakePrimaryAccountAvailable(
-          "test@example.com", signin::ConsentLevel::kSync);
+      identity_test_env_
+          .MakePrimaryAccountAvailable("test@example.com",
+                                       signin::ConsentLevel::kSync)
+          .GetCoreAccountInfo();
   sync_service_.SetSignedIn(signin::ConsentLevel::kSync, account_info);
   sync_service_.GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kTabs, false);
@@ -190,8 +197,10 @@ TEST_F(HistorySignInStateWatcherSyncToSigninTest,
 TEST_F(HistorySignInStateWatcherSyncToSigninTest,
        DoesNotNotifyOnEnablingHistorySync) {
   const CoreAccountInfo account_info =
-      identity_test_env_.MakePrimaryAccountAvailable(
-          "test@example.com", signin::ConsentLevel::kSignin);
+      identity_test_env_
+          .MakePrimaryAccountAvailable("test@example.com",
+                                       signin::ConsentLevel::kSignin)
+          .GetCoreAccountInfo();
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_info);
   sync_service_.GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kHistory, false);
@@ -220,8 +229,10 @@ TEST_F(HistorySignInStateWatcherSyncToSigninTest,
 // Opting in to tabs should change the state and trigger a notification.
 TEST_F(HistorySignInStateWatcherSyncToSigninTest, NotifiesOnEnablingTabsSync) {
   const CoreAccountInfo account_info =
-      identity_test_env_.MakePrimaryAccountAvailable(
-          "test@example.com", signin::ConsentLevel::kSignin);
+      identity_test_env_
+          .MakePrimaryAccountAvailable("test@example.com",
+                                       signin::ConsentLevel::kSignin)
+          .GetCoreAccountInfo();
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_info);
   sync_service_.GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kHistory, true);
@@ -255,8 +266,10 @@ TEST_F(HistorySignInStateWatcherSyncToSigninTest, NotifiesOnEnablingTabsSync) {
 TEST_F(HistorySignInStateWatcherSyncToSigninTest,
        SignInPendingCanOptInToTabsSync) {
   const CoreAccountInfo account_info =
-      identity_test_env_.MakePrimaryAccountAvailable(
-          "test@example.com", signin::ConsentLevel::kSignin);
+      identity_test_env_
+          .MakePrimaryAccountAvailable("test@example.com",
+                                       signin::ConsentLevel::kSignin)
+          .GetCoreAccountInfo();
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_info);
   sync_service_.GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kHistory, true);
@@ -288,8 +301,10 @@ TEST_F(HistorySignInStateWatcherSyncToSigninTest,
 // notification.
 TEST_F(HistorySignInStateWatcherSyncToSigninTest, NotifiesOnSignOut) {
   const CoreAccountInfo account_info =
-      identity_test_env_.MakePrimaryAccountAvailable(
-          "test@example.com", signin::ConsentLevel::kSignin);
+      identity_test_env_
+          .MakePrimaryAccountAvailable("test@example.com",
+                                       signin::ConsentLevel::kSignin)
+          .GetCoreAccountInfo();
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_info);
   sync_service_.GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kHistory, true);
@@ -319,8 +334,11 @@ TEST_F(HistorySignInStateWatcherSyncToSigninTest, NotifiesOnSignOut) {
 // Disabling tabs sync should turn off tab_sync state, but also disable
 // history_sync state.
 TEST_F(HistorySignInStateWatcherSyncToSigninTest, DisablingTabsSync) {
-  CoreAccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
-      "test@example.com", signin::ConsentLevel::kSignin);
+  CoreAccountInfo account_info =
+      identity_test_env_
+          .MakePrimaryAccountAvailable("test@example.com",
+                                       signin::ConsentLevel::kSignin)
+          .GetCoreAccountInfo();
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_info);
   HistoryIdentityStateWatcher watcher(identity_test_env_.identity_manager(),
                                       &sync_service_, base::DoNothing());
@@ -352,8 +370,11 @@ class HistorySyncStateWhenTypeDisabledByUserTest
 // should result in a History sync disabled state.
 TEST_P(HistorySyncStateWhenTypeDisabledByUserTest,
        DisablingHistoryRelatedTypeDisablesHistorySync) {
-  CoreAccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
-      "test@example.com", signin::ConsentLevel::kSignin);
+  CoreAccountInfo account_info =
+      identity_test_env_
+          .MakePrimaryAccountAvailable("test@example.com",
+                                       signin::ConsentLevel::kSignin)
+          .GetCoreAccountInfo();
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_info);
   HistoryIdentityStateWatcher watcher(identity_test_env_.identity_manager(),
                                       &sync_service_, base::DoNothing());
@@ -399,8 +420,10 @@ INSTANTIATE_TEST_SUITE_P(
 // History sync is disabled by policy, should be reflected in the state.
 TEST_F(HistorySignInStateWatcherSyncToSigninTest, HistorySyncDisabledByPolicy) {
   const CoreAccountInfo account_info =
-      identity_test_env_.MakePrimaryAccountAvailable(
-          "test@example.com", signin::ConsentLevel::kSignin);
+      identity_test_env_
+          .MakePrimaryAccountAvailable("test@example.com",
+                                       signin::ConsentLevel::kSignin)
+          .GetCoreAccountInfo();
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_info);
   sync_service_.GetUserSettings()->SetTypeIsManagedByPolicy(
       syncer::UserSelectableType::kHistory, true);
@@ -418,8 +441,10 @@ TEST_F(HistorySignInStateWatcherSyncToSigninTest, HistorySyncDisabledByPolicy) {
 TEST_F(HistorySignInStateWatcherSyncToSigninTest,
        NotifiesOnEnablingHistorySync) {
   const CoreAccountInfo account_info =
-      identity_test_env_.MakePrimaryAccountAvailable(
-          "test@example.com", signin::ConsentLevel::kSignin);
+      identity_test_env_
+          .MakePrimaryAccountAvailable("test@example.com",
+                                       signin::ConsentLevel::kSignin)
+          .GetCoreAccountInfo();
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_info);
   sync_service_.GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kHistory, false);
@@ -458,8 +483,11 @@ class HistorySignInStateWatcherWithoutSyncToSigninTest
 // Enabling Sync should change the state and trigger a notification.
 TEST_F(HistorySignInStateWatcherWithoutSyncToSigninTest,
        NotifiesOnEnablingSync) {
-  CoreAccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
-      "test@example.com", signin::ConsentLevel::kSignin);
+  CoreAccountInfo account_info =
+      identity_test_env_
+          .MakePrimaryAccountAvailable("test@example.com",
+                                       signin::ConsentLevel::kSignin)
+          .GetCoreAccountInfo();
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_info);
   base::test::TestFuture<void> callback;
   HistoryIdentityStateWatcher watcher(identity_test_env_.identity_manager(),
@@ -471,8 +499,10 @@ TEST_F(HistorySignInStateWatcherWithoutSyncToSigninTest,
       .history_sync = HistoryIdentityState::SyncState::kTurnedOff};
   ASSERT_EQ(initial_expected_state, watcher.GetHistoryIdentityState());
 
-  account_info = identity_test_env_.MakePrimaryAccountAvailable(
-      "test@example.com", signin::ConsentLevel::kSync);
+  account_info = identity_test_env_
+                     .MakePrimaryAccountAvailable("test@example.com",
+                                                  signin::ConsentLevel::kSync)
+                     .GetCoreAccountInfo();
   sync_service_.SetSignedIn(signin::ConsentLevel::kSync, account_info);
   ASSERT_TRUE(callback.Wait());
 

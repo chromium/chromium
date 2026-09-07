@@ -235,7 +235,7 @@ class SearchAiModePromoTabHelperInteractiveUiTestBase
           process_dice_header_delegate_impl =
               ProcessDiceHeaderDelegateImpl::Create(signin_contents);
       process_dice_header_delegate_impl->CompleteChromeSignInAfterGaiaSignin(
-          account_info);
+          account_info.GetCoreAccountInfo());
       // Refresh token, otherwise the contextual_task_ui_service will not
       // intercept the post-signin navigation.
       identity_test_env()->SetRefreshTokenForPrimaryAccount();

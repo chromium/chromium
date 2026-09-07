@@ -172,7 +172,7 @@ TEST_F(AccountPreviewDataServiceTest, FetchesForPrimaryAccount) {
   base::RunLoop run_loop;
   service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
   // Simulating OnRefreshTokenUpdatedForAccount for primary account
-  service_->OnRefreshTokenUpdatedForAccount(primary_info);
+  service_->OnRefreshTokenUpdatedForAccount(primary_info.GetCoreAccountInfo());
   run_loop.Run();
 
   // It should trigger fetcher and save to memory cache with correct data
@@ -204,7 +204,7 @@ TEST_F(AccountPreviewDataServiceTest, RemovesCachedData) {
 
   base::RunLoop run_loop;
   service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
-  service_->OnRefreshTokenUpdatedForAccount(account_info);
+  service_->OnRefreshTokenUpdatedForAccount(account_info.GetCoreAccountInfo());
   run_loop.Run();
   ASSERT_TRUE(
       service_->GetAccountPreviewData(account_info.GetGaiaId()).has_value());
@@ -472,7 +472,8 @@ TEST_F(AccountPreviewDataServiceTest,
       identity_test_env_.MakeAccountAvailable("account2@gmail.com");
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   identity_test_env_.SetCookieAccounts(
-      {{account1.email, account1.gaia}, {account2.email, account2.gaia}});
+      {{std::string(account1.GetEmail()), account1.GetGaiaId()},
+       {std::string(account2.GetEmail()), account2.GetGaiaId()}});
 #endif
 
   all_data_available_loop.Run();
@@ -481,7 +482,7 @@ TEST_F(AccountPreviewDataServiceTest,
   // should be preferred even though account1 was added first.
   EXPECT_THAT(service_->GetPreferredAccountForPromo(),
               testing::Optional(testing::Field(
-                  &AccountPreviewPreference::gaia_id, account2.gaia)));
+                  &AccountPreviewPreference::gaia_id, account2.GetGaiaId())));
 }
 #endif
 
@@ -640,7 +641,7 @@ TEST_F(AccountPreviewDataServiceTest,
   base::RunLoop run_loop;
   service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
   // Trigger fetch and wait for completion.
-  service_->OnRefreshTokenUpdatedForAccount(primary_info);
+  service_->OnRefreshTokenUpdatedForAccount(primary_info.GetCoreAccountInfo());
   run_loop.Run();
 
   ASSERT_TRUE(
@@ -663,7 +664,7 @@ TEST_F(AccountPreviewDataServiceTest, QueuesFetchWhenOffline) {
       identity_test_env_.MakeAccountAvailable("user@gmail.com");
 
   // Trigger fetch while offline.
-  service_->OnRefreshTokenUpdatedForAccount(account_info);
+  service_->OnRefreshTokenUpdatedForAccount(account_info.GetCoreAccountInfo());
 
   // Assert: No active fetcher was started.
   EXPECT_FALSE(service_->HasActiveFetcherForTesting(account_info.GetGaiaId()));
@@ -699,7 +700,7 @@ TEST_F(AccountPreviewDataServiceTest,
 
   AccountInfo account_info =
       identity_test_env_.MakeAccountAvailable("user@gmail.com");
-  service_->OnRefreshTokenUpdatedForAccount(account_info);
+  service_->OnRefreshTokenUpdatedForAccount(account_info.GetCoreAccountInfo());
 
   EXPECT_FALSE(service_->HasActiveFetcherForTesting(account_info.GetGaiaId()));
 
@@ -853,16 +854,17 @@ TEST_F(AccountPreviewDataServiceTest,
   MockSuccessfulFetch(&test_url_loader_factory_);
   base::RunLoop run_loop;
   service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
-  service_->OnRefreshTokenUpdatedForAccount(account1);
+  service_->OnRefreshTokenUpdatedForAccount(account1.GetCoreAccountInfo());
   run_loop.Run();
-  ASSERT_TRUE(service_->GetAccountPreviewData(account1.gaia).has_value());
+  ASSERT_TRUE(
+      service_->GetAccountPreviewData(account1.GetGaiaId()).has_value());
   EXPECT_EQ(1u,
             prefs_.GetList(prefs::kAccountPreviewDataLastFetchAccounts).size());
 
   // 2. Account 2 is added, triggering an in-flight fetch.
   AccountInfo account2 =
       identity_test_env_.MakeAccountAvailable("account2@gmail.com");
-  ASSERT_TRUE(service_->HasActiveFetcherForTesting(account2.gaia));
+  ASSERT_TRUE(service_->HasActiveFetcherForTesting(account2.GetGaiaId()));
 
   base::RunLoop all_data_run_loop;
   service_->SetAllDataAvailableCallbackForTesting(
@@ -874,21 +876,22 @@ TEST_F(AccountPreviewDataServiceTest,
   // (account1), and only afterwards fires OnRefreshTokenRemovedForAccount for
   // account2.
   identity_test_env_.identity_manager()->RemoveObserver(service_.get());
-  identity_test_env_.RemoveRefreshTokenForAccount(account2.account_id);
+  identity_test_env_.RemoveRefreshTokenForAccount(account2.GetAccountId());
   identity_test_env_.identity_manager()->AddObserver(service_.get());
 
   // Step 3a: Surviving account notification arrives first. Current accounts
   // [account1] matches prefs [account1], hitting the unchanged accounts check.
-  service_->OnRefreshTokenUpdatedForAccount(account1);
+  service_->OnRefreshTokenUpdatedForAccount(account1.GetCoreAccountInfo());
 
   // Step 3b: Removed account notification arrives.
-  service_->OnRefreshTokenRemovedForAccount(account2.account_id);
+  service_->OnRefreshTokenRemovedForAccount(account2.GetAccountId());
 
   // The barrier completion should trigger all_data_available_callback.
   all_data_run_loop.Run();
 
-  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account2.gaia));
-  EXPECT_FALSE(service_->GetAccountPreviewData(account2.gaia).has_value());
+  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account2.GetGaiaId()));
+  EXPECT_FALSE(
+      service_->GetAccountPreviewData(account2.GetGaiaId()).has_value());
   EXPECT_EQ(1u,
             prefs_.GetList(prefs::kAccountPreviewDataLastFetchAccounts).size());
 }
@@ -905,7 +908,7 @@ TEST_F(AccountPreviewDataServiceTest, RegularFetchOfAllAccountsResetsTimer) {
 
   base::RunLoop run_loop;
   service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
-  service_->OnRefreshTokenUpdatedForAccount(account_info);
+  service_->OnRefreshTokenUpdatedForAccount(account_info.GetCoreAccountInfo());
   run_loop.Run();
 
   // Verify that the last update pref has been updated to the current time
@@ -926,7 +929,7 @@ TEST_F(AccountPreviewDataServiceTest,
   {
     base::RunLoop run_loop;
     service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
-    service_->OnRefreshTokenUpdatedForAccount(account1);
+    service_->OnRefreshTokenUpdatedForAccount(account1.GetCoreAccountInfo());
     run_loop.Run();
   }
 
@@ -942,7 +945,7 @@ TEST_F(AccountPreviewDataServiceTest,
   {
     base::RunLoop run_loop;
     service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
-    service_->OnRefreshTokenUpdatedForAccount(account2);
+    service_->OnRefreshTokenUpdatedForAccount(account2.GetCoreAccountInfo());
     run_loop.Run();
   }
 
@@ -1054,7 +1057,7 @@ TEST_F(AccountPreviewDataServiceTest,
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
           GoogleServiceAuthError::InvalidGaiaCredentialsReason::
               CREDENTIALS_REJECTED_BY_SERVER));
-  service_->OnRefreshTokenUpdatedForAccount(account2);
+  service_->OnRefreshTokenUpdatedForAccount(account2.GetCoreAccountInfo());
 
   EXPECT_THAT(service_->GetPreferredAccountForPromo(),
               testing::Optional(testing::Field(
@@ -1090,7 +1093,7 @@ TEST_F(AccountPreviewDataServiceTest,
 
   base::RunLoop run_loop;
   service_->SetAllDataAvailableCallbackForTesting(run_loop.QuitClosure());
-  service_->OnRefreshTokenUpdatedForAccount(account);
+  service_->OnRefreshTokenUpdatedForAccount(account.GetCoreAccountInfo());
   run_loop.Run();
 
   // Verify that the preferred account in prefs was NOT overwritten or
@@ -1113,7 +1116,8 @@ TEST_F(AccountPreviewDataServiceTest,
   AccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
       "user@gmail.com", ConsentLevel::kSignin);
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  identity_test_env_.SetCookieAccounts({{account.email, account.gaia}});
+  identity_test_env_.SetCookieAccounts(
+      {{std::string(account.GetEmail()), account.GetGaiaId()}});
 #endif
   run_loop.Run();
 
@@ -1152,7 +1156,8 @@ TEST_F(AccountPreviewDataServiceTest,
   identity_test_env_.UpdateAccountInfoForAccount(
       AccountInfo::Builder(account).SetHostedDomain("managed.com").Build());
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  identity_test_env_.SetCookieAccounts({{account.email, account.gaia}});
+  identity_test_env_.SetCookieAccounts(
+      {{std::string(account.GetEmail()), account.GetGaiaId()}});
 #endif
   run_loop.Run();
 
@@ -1497,7 +1502,7 @@ TEST_F(AccountPreviewDataServiceTest, AccountsNotMutatedSkipsFetch) {
   service_->SetAllDataAvailableCallbackForTesting(run_loop.QuitClosure());
 
   // No timer fires, so we manually simulate an update.
-  service_->OnRefreshTokenUpdatedForAccount(account1);
+  service_->OnRefreshTokenUpdatedForAccount(account1.GetCoreAccountInfo());
   run_loop.Run();
 
   histograms.ExpectUniqueSample(
@@ -1535,7 +1540,7 @@ TEST_F(AccountPreviewDataServiceTest,
   base::RunLoop run_loop;
   service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
 
-  service_->OnRefreshTokenUpdatedForAccount(account1);
+  service_->OnRefreshTokenUpdatedForAccount(account1.GetCoreAccountInfo());
   run_loop.Run();
 
   EXPECT_TRUE(
@@ -1571,7 +1576,7 @@ TEST_F(AccountPreviewDataServiceTest, AccountsMutatedRemovalTriggersFetch) {
   base::RunLoop run_loop;
   service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
 
-  service_->OnRefreshTokenUpdatedForAccount(account1);
+  service_->OnRefreshTokenUpdatedForAccount(account1.GetCoreAccountInfo());
   run_loop.Run();
 
   EXPECT_TRUE(
@@ -1589,7 +1594,7 @@ TEST_F(AccountPreviewDataServiceTest,
   MockSuccessfulFetch(&test_url_loader_factory_);
   base::RunLoop run_loop;
   service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
-  service_->OnRefreshTokenUpdatedForAccount(account1);
+  service_->OnRefreshTokenUpdatedForAccount(account1.GetCoreAccountInfo());
   run_loop.Run();
 
   EXPECT_EQ(1u,
@@ -2394,9 +2399,10 @@ TEST_F(AccountPreviewDataServiceTest, RateLimitOn429SingleFetch) {
   // Subsequent single request immediately returns nullopt without initiating
   // network fetch.
   base::test::TestFuture<std::optional<AccountPreviewPreference>> future;
-  service_->GetPreviewPreferenceForAccount(account.gaia, future.GetCallback());
+  service_->GetPreviewPreferenceForAccount(account.GetGaiaId(),
+                                           future.GetCallback());
   EXPECT_EQ(std::nullopt, future.Get());
-  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account.gaia));
+  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account.GetGaiaId()));
   histograms.ExpectBucketCount("Signin.AccountPreview.SingleRequestRateLimited",
                                true, 1);
 
@@ -2411,10 +2417,11 @@ TEST_F(AccountPreviewDataServiceTest, RateLimitOn429SingleFetch) {
 
   // Now a new fetch can proceed.
   base::test::TestFuture<std::optional<AccountPreviewPreference>> future2;
-  service_->GetPreviewPreferenceForAccount(account.gaia, future2.GetCallback());
+  service_->GetPreviewPreferenceForAccount(account.GetGaiaId(),
+                                           future2.GetCallback());
   auto pref = future2.Get();
   ASSERT_TRUE(pref.has_value());
-  EXPECT_EQ(account.gaia, pref->gaia_id);
+  EXPECT_EQ(account.GetGaiaId(), pref->gaia_id);
   histograms.ExpectBucketCount("Signin.AccountPreviewData.FetchHit429", false,
                                1);
 }
@@ -2435,7 +2442,7 @@ TEST_F(AccountPreviewDataServiceTest, RateLimitOn429BatchFetch) {
   // fetchers and records TriggerCauseRateLimited histogram.
   AccountInfo account2 =
       identity_test_env_.MakeAccountAvailable("account2@gmail.com");
-  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account2.gaia));
+  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account2.GetGaiaId()));
   histograms.ExpectBucketCount(
       "Signin.AccountPreview.TriggerCauseRateLimited",
       AccountPreviewDataServiceImpl::FetchTriggerCause::kRefreshTokenUpdated,
@@ -2500,14 +2507,15 @@ TEST_F(AccountPreviewDataServiceTest, RateLimitOn429PeriodicRefresh) {
   AccountInfo account =
       identity_test_env_.MakeAccountAvailable("account@gmail.com");
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  identity_test_env_.SetCookieAccounts({{account.email, account.gaia}});
+  identity_test_env_.SetCookieAccounts(
+      {{std::string(account.GetEmail()), account.GetGaiaId()}});
 #endif
   run_loop.Run();
 
-  ASSERT_TRUE(service_->GetAccountPreviewData(account.gaia).has_value());
+  ASSERT_TRUE(service_->GetAccountPreviewData(account.GetGaiaId()).has_value());
   auto preferred_account = service_->GetPreferredAccountForPromo();
   ASSERT_TRUE(preferred_account.has_value());
-  EXPECT_EQ(account.gaia, preferred_account->gaia_id);
+  EXPECT_EQ(account.GetGaiaId(), preferred_account->gaia_id);
 
   // Fast forward by 12 hours.
   task_environment_.FastForwardBy(base::Hours(12));
@@ -2527,7 +2535,8 @@ TEST_F(AccountPreviewDataServiceTest, RateLimitOn429PeriodicRefresh) {
       AccountPreviewDataServiceImpl::FetchTriggerCause::kPeriodicRefresh, 1);
 
   // Cached data is cleared on periodic refresh.
-  EXPECT_FALSE(service_->GetAccountPreviewData(account.gaia).has_value());
+  EXPECT_FALSE(
+      service_->GetAccountPreviewData(account.GetGaiaId()).has_value());
   EXPECT_FALSE(service_->GetPreferredAccountForPromo().has_value());
 }
 

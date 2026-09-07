@@ -67,13 +67,14 @@ void BubbleSignInPromoDelegate::OnSignIn(const AccountInfo& account) {
   CHECK(profile);
 
   if (!signin::IsSignInPromo(access_point_)) {
-    signin_ui_util::EnableSyncFromSingleAccountPromo(profile, account,
-                                                     access_point_);
+    signin_ui_util::EnableSyncFromSingleAccountPromo(
+        profile, account.GetCoreAccountInfo(), access_point_);
     return;
   }
 
   base::UmaHistogramEnumeration("Signin.SignInPromo.Accepted", access_point_);
-  signin_ui_util::SignInFromSingleAccountPromo(profile, account, access_point_);
+  signin_ui_util::SignInFromSingleAccountPromo(
+      profile, account.GetCoreAccountInfo(), access_point_);
   OnSignInPromoAccepted(profile);
 }
 

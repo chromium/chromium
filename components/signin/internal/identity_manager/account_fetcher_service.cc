@@ -260,7 +260,7 @@ void AccountFetcherService::RefreshAccountInfo(const CoreAccountId& account_id,
 
   if (!only_fetch_if_invalid ||
       !info.GetAccountCapabilities().AreAllCapabilitiesKnown()) {
-    StartFetchingAccountCapabilities(info);
+    StartFetchingAccountCapabilities(info.GetCoreAccountInfo());
   }
 
   // |only_fetch_if_invalid| is false when the service is due for a timed

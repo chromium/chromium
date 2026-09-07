@@ -851,7 +851,7 @@ class FirstRunInteractiveUiBaseTest
       auto process_dice_header_delegate_impl =
           ProcessDiceHeaderDelegateImpl::Create(web_contents());
       process_dice_header_delegate_impl->CompleteChromeSignInAfterGaiaSignin(
-          account_info);
+          account_info.GetCoreAccountInfo());
     }
   }
 

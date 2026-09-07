@@ -221,9 +221,9 @@ void SetSigninProfileProperties(Profile* profile,
     case ProfileStatus::kSignedInManaged: {
       account_info = signin::MakePrimaryAccountAvailable(
           identity_manager, kManagedEmail, signin::ConsentLevel::kSignin);
-      account_info =
-          FillAccountInfo(account_info, AccountManagementStatus::kManaged,
-                          signin::Tribool::kUnknown);
+      account_info = FillAccountInfo(account_info.GetCoreAccountInfo(),
+                                     AccountManagementStatus::kManaged,
+                                     signin::Tribool::kUnknown);
       signin::UpdateAccountInfoForAccount(identity_manager, account_info);
       break;
     }
@@ -247,9 +247,9 @@ void SetSigninProfileProperties(Profile* profile,
     case ProfileStatus::kSignedInManagedGradientRing: {
       account_info = signin::MakePrimaryAccountAvailable(
           identity_manager, kOtherManagedEmail, signin::ConsentLevel::kSignin);
-      account_info =
-          FillAccountInfo(account_info, AccountManagementStatus::kManaged,
-                          signin::Tribool::kUnknown);
+      account_info = FillAccountInfo(account_info.GetCoreAccountInfo(),
+                                     AccountManagementStatus::kManaged,
+                                     signin::Tribool::kUnknown);
       signin::UpdateAccountInfoForAccount(identity_manager, account_info);
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()

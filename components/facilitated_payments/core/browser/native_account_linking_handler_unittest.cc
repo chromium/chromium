@@ -133,8 +133,10 @@ class NativeAccountLinkingHandlerTest : public testing::Test {
     payments_data_manager_.SetPaymentsCustomerData(
         std::make_unique<autofill::PaymentsCustomerData>("123456"));
     payments_data_manager_.SetAccountInfoForPayments(
-        identity_test_env_.MakePrimaryAccountAvailable(
-            "test@example.com", signin::ConsentLevel::kSignin));
+        identity_test_env_
+            .MakePrimaryAccountAvailable("test@example.com",
+                                         signin::ConsentLevel::kSignin)
+            .GetCoreAccountInfo());
     ON_CALL(client_, GetCoreAccountInfo)
         .WillByDefault(
             Return(payments_data_manager_.GetAccountInfoForPaymentsServer()));

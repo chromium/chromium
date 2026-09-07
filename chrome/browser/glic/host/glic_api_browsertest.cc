@@ -3134,7 +3134,7 @@ void UpdatePrimaryAccountToBeManaged(Profile* profile) {
       identity_manager->FindExtendedAccountInfo(core_account_info);
   account_info =
       AccountInfo::Builder(account_info)
-          .SetHostedDomain(gaia::ExtractDomainName(account_info.email))
+          .SetHostedDomain(gaia::ExtractDomainName(account_info.GetEmail()))
           .Build();
   signin::UpdateAccountInfoForAccount(identity_manager, account_info);
 }
@@ -4315,8 +4315,9 @@ class GlicApiTestWithGeminiActOnWebPolicy : public GlicApiTest {
     mutator.set_can_use_model_execution_features(true);
     identity_test_env_->UpdateAccountInfoForAccount(account_info);
     identity_test_env_->SimulateSuccessfulFetchOfAccountInfo(
-        account_info.account_id, account_info.email, account_info.gaia,
-        "bar.com", "Full Name", "Given Name", "Locale", "Picture URL");
+        account_info.GetAccountId(), account_info.GetEmail(),
+        account_info.GetGaiaId(), "bar.com", "Full Name", "Given Name",
+        "Locale", "Picture URL");
 
     GetProfile()->GetPrefs()->SetInteger(
         subscription_eligibility::prefs::kAiSubscriptionTier, 1);

@@ -137,7 +137,7 @@ void ConfigureEnvironmentForListFamilyMembersService(
   // Prepare the response.
   kidsmanagement::ListMembersResponse response;
   auto* member = response.add_members();
-  member->set_user_id(account.gaia.ToString());
+  member->set_user_id(account.GetGaiaId().ToString());
   member->set_role(role);
 
   test_url_loader_factory.AddResponse(kListFamilyMembersUrl,

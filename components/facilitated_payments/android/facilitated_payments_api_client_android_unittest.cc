@@ -96,7 +96,8 @@ TEST_F(FacilitatedPaymentsApiClientAndroidTest,
   secure_payload.secure_data.emplace_back(2, "value_2");
 
   apiClient.InvokePurchaseAction(
-      identity_test_environment.MakeAccountAvailable("test@example.test"),
+      identity_test_environment.MakeAccountAvailable("test@example.test")
+          .GetCoreAccountInfo(),
       secure_payload,
       base::BindOnce(&CaptureResultEnum, &was_callback_invoked,
                      &purchase_action_result));
@@ -115,7 +116,8 @@ TEST_F(FacilitatedPaymentsApiClientAndroidTest,
   std::vector<uint8_t> action_token = {'A', 'c', 't', 'i', 'o', 'n'};
 
   apiClient.InvokeInstrumentManager(
-      identity_test_environment.MakeAccountAvailable("test@example.test"),
+      identity_test_environment.MakeAccountAvailable("test@example.test")
+          .GetCoreAccountInfo(),
       action_token,
       base::BindOnce(&CaptureLinkingResult, &was_callback_invoked,
                      &invoke_instrument_manager_result));

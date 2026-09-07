@@ -3229,7 +3229,7 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
 
 - (void)extendedAccountInfoDidUpdate:(const AccountInfo&)info {
   id<SystemIdentity> identity =
-      _accountManagerService->GetIdentityOnDeviceWithGaiaID(info.gaia);
+      _accountManagerService->GetIdentityOnDeviceWithGaiaID(info.GetGaiaId());
   if ([_identity isEqual:identity]) {
     [self reloadAccountCell];
   }

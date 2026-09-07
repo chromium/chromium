@@ -61,9 +61,9 @@ TEST_F(AccountStateFetcherTest, RunsCallbackWhenAccountInfoAlreadyKnown) {
   set_account_info_state(signin::Tribool::kTrue);
   base::test::TestFuture<signin::Tribool> info_fetched_callback;
 
-  AccountStateFetcher fetcher(identity_test_env_.identity_manager(),
-                             test_account_, get_account_state_callback(),
-                             info_fetched_callback.GetCallback());
+  AccountStateFetcher fetcher(
+      identity_test_env_.identity_manager(), test_account_.GetCoreAccountInfo(),
+      get_account_state_callback(), info_fetched_callback.GetCallback());
   fetcher.FetchAccountInfo();
   EXPECT_TRUE(info_fetched_callback.Wait());
   EXPECT_EQ(signin::Tribool::kTrue,
@@ -73,9 +73,9 @@ TEST_F(AccountStateFetcherTest, RunsCallbackWhenAccountInfoAlreadyKnown) {
 // Tests that the fetcher waits for an account info update.
 TEST_F(AccountStateFetcherTest, RunsCallbackWhenAccountInfoBecomesAvailable) {
   base::test::TestFuture<signin::Tribool> info_fetched_callback;
-  AccountStateFetcher fetcher(identity_test_env_.identity_manager(),
-                             test_account_, get_account_state_callback(),
-                             info_fetched_callback.GetCallback());
+  AccountStateFetcher fetcher(
+      identity_test_env_.identity_manager(), test_account_.GetCoreAccountInfo(),
+      get_account_state_callback(), info_fetched_callback.GetCallback());
   // Start the fetching. No callback is executed because the
   // account info's value is unknown.
   fetcher.FetchAccountInfo();
@@ -91,9 +91,9 @@ TEST_F(AccountStateFetcherTest, RunsCallbackWhenAccountInfoBecomesAvailable) {
 // Tests that the fetcher correctly handles a timeout.
 TEST_F(AccountStateFetcherTest, RunsCallbackOnTimeout) {
   base::test::TestFuture<signin::Tribool> info_fetched_callback;
-  AccountStateFetcher fetcher(identity_test_env_.identity_manager(),
-                             test_account_, get_account_state_callback(),
-                             info_fetched_callback.GetCallback());
+  AccountStateFetcher fetcher(
+      identity_test_env_.identity_manager(), test_account_.GetCoreAccountInfo(),
+      get_account_state_callback(), info_fetched_callback.GetCallback());
   // Start the fetching. No callback is executed because the
   // account info's value is unknown.
   fetcher.FetchAccountInfo();
@@ -112,8 +112,9 @@ TEST_F(AccountStateFetcherTest, IgnoresUpdateForOtherAccount) {
           [&](signin::Tribool) { is_cb_executed = true; });
   std::unique_ptr<AccountStateFetcher> fetcher(
       std::make_unique<AccountStateFetcher>(
-          identity_test_env_.identity_manager(), test_account_,
-          get_account_state_callback(), std::move(callback)));
+          identity_test_env_.identity_manager(),
+          test_account_.GetCoreAccountInfo(), get_account_state_callback(),
+          std::move(callback)));
 
   fetcher->FetchAccountInfo();
 

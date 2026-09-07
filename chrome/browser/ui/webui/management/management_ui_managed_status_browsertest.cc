@@ -239,7 +239,8 @@ class ManagementUIManagedStatusTest
                          .AsPrimary(signin::ConsentLevel::kSignin)
                          .WithRefreshToken(kTestRefreshToken)
                          .Build(kTestEmail))
-                     .account_id.empty());
+                     .GetAccountId()
+                     .empty());
   }
 
   void SetupFakeGaiaResponses() {

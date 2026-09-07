@@ -299,7 +299,8 @@ IN_PROC_BROWSER_TEST_P(TurnSyncOnHelperBrowserTestWithParam,
         // Second account removed, first account is still primary.
         EXPECT_THAT(
             identity_manager()->GetAccountsWithRefreshTokens(),
-            UnorderedElementsAre(primary_account_info, third_account_info));
+            UnorderedElementsAre(primary_account_info.GetCoreAccountInfo(),
+                                 third_account_info.GetCoreAccountInfo()));
         EXPECT_EQ(signin::ConsentLevel::kSignin,
                   signin::GetPrimaryAccountConsentLevel(identity_manager()));
         EXPECT_EQ(first_account_id, identity_manager()->GetPrimaryAccountId(
@@ -321,8 +322,9 @@ IN_PROC_BROWSER_TEST_P(TurnSyncOnHelperBrowserTestWithParam,
         // First account is still primary, second account was not removed.
         EXPECT_THAT(
             identity_manager()->GetAccountsWithRefreshTokens(),
-            UnorderedElementsAre(primary_account_info, second_account_info,
-                                 third_account_info));
+            UnorderedElementsAre(primary_account_info.GetCoreAccountInfo(),
+                                 second_account_info.GetCoreAccountInfo(),
+                                 third_account_info.GetCoreAccountInfo()));
         EXPECT_EQ(signin::ConsentLevel::kSignin,
                   signin::GetPrimaryAccountConsentLevel(identity_manager()));
         EXPECT_EQ(first_account_id, identity_manager()->GetPrimaryAccountId(
@@ -470,7 +472,7 @@ IN_PROC_BROWSER_TEST_F(TurnSyncOnHelperBrowserTest,
 
   // Check expectations.
   EXPECT_THAT(identity_manager()->GetAccountsWithRefreshTokens(),
-              UnorderedElementsAre(first_account_info));
+              UnorderedElementsAre(first_account_info.GetCoreAccountInfo()));
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 }
@@ -528,8 +530,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // First account is still primary, second account was not removed.
   EXPECT_THAT(identity_manager()->GetAccountsWithRefreshTokens(),
-              UnorderedElementsAre(primary_account_info, second_account_info,
-                                   third_account_info));
+              UnorderedElementsAre(primary_account_info.GetCoreAccountInfo(),
+                                   second_account_info.GetCoreAccountInfo(),
+                                   third_account_info.GetCoreAccountInfo()));
   EXPECT_EQ(signin::ConsentLevel::kSignin,
             signin::GetPrimaryAccountConsentLevel(identity_manager()));
   EXPECT_EQ(first_account_id, identity_manager()->GetPrimaryAccountId(
@@ -588,7 +591,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // First account is still primary, second account was removed.
   EXPECT_THAT(identity_manager()->GetAccountsWithRefreshTokens(),
-              UnorderedElementsAre(primary_account_info));
+              UnorderedElementsAre(primary_account_info.GetCoreAccountInfo()));
   EXPECT_EQ(signin::ConsentLevel::kSignin,
             signin::GetPrimaryAccountConsentLevel(identity_manager()));
   EXPECT_EQ(first_account_id, identity_manager()->GetPrimaryAccountId(

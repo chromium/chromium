@@ -1684,8 +1684,9 @@ void DiceWebSigninInterceptor::OnEnterpriseProfileCreationResult(
   } else {
     DCHECK_EQ(SigninInterceptionResult::kDeclined, create)
         << "The user can only accept or decline";
-    if (account_info == identity_manager_->GetPrimaryAccountInfo(
-                            signin::ConsentLevel::kSignin)) {
+    if (account_info.GetCoreAccountInfo() ==
+        identity_manager_->GetPrimaryAccountInfo(
+            signin::ConsentLevel::kSignin)) {
       auto* primary_account_mutator =
           IdentityManagerFactory::GetForProfile(profile_)
               ->GetPrimaryAccountMutator();

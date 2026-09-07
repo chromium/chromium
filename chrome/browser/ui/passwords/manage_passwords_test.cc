@@ -276,7 +276,7 @@ void ManagePasswordsTest::ConfigurePasswordSync(
                                : signin::ConsentLevel::kSignin;
       AccountInfo info = signin::MakePrimaryAccountAvailable(
           identity_manager, "test@email.com", consent_level);
-      sync_service->SetSignedIn(consent_level, info);
+      sync_service->SetSignedIn(consent_level, info.GetCoreAccountInfo());
       break;
     }
   }

@@ -769,11 +769,13 @@ class ProfilePickerCreationFlowBrowserTest
     // Add an account - simulate a successful Gaia sign-in.
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile_being_created);
-    CoreAccountInfo core_account_info = signin::MakeAccountAvailable(
-        identity_manager,
-        signin::AccountAvailabilityOptionsBuilder(test_url_loader_factory())
-            .WithAccessPoint(signin_metrics::AccessPoint::kUserManager)
-            .Build(email));
+    CoreAccountInfo core_account_info =
+        signin::MakeAccountAvailable(
+            identity_manager,
+            signin::AccountAvailabilityOptionsBuilder(test_url_loader_factory())
+                .WithAccessPoint(signin_metrics::AccessPoint::kUserManager)
+                .Build(email))
+            .GetCoreAccountInfo();
     EXPECT_TRUE(identity_manager->HasAccountWithRefreshToken(
         core_account_info.account_id));
 
@@ -2391,7 +2393,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
   // Simulate the Dice "ENABLE_SYNC" header parameter, resulting in sync
   // confirmation screen getting displayed.
-  SimulateEnableSyncDiceHeader(web_contents(), account_info);
+  SimulateEnableSyncDiceHeader(web_contents(),
+                               account_info.GetCoreAccountInfo());
   GURL target_url = syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
                         ? GetHistorySyncOptinURL()
                         : GetSyncConfirmationURL();
@@ -2466,7 +2469,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
   // Simulate the Dice "ENABLE_SYNC" header parameter, resulting in sync
   // confirmation screen getting displayed.
-  SimulateEnableSyncDiceHeader(web_contents(), account_info);
+  SimulateEnableSyncDiceHeader(web_contents(),
+                               account_info.GetCoreAccountInfo());
   GURL target_url = syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
                         ? GetHistorySyncOptinURL()
                         : GetSyncConfirmationURL();
@@ -2491,8 +2495,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   base::RunLoop().RunUntilIdle();
 
   // Add full account info.
-  AccountInfo full_account_info =
-      FillAccountInfo(account_info, "Joe", kNoHostedDomainFound);
+  AccountInfo full_account_info = FillAccountInfo(
+      account_info.GetCoreAccountInfo(), "Joe", kNoHostedDomainFound);
   signin::UpdateAccountInfoForAccount(identity_manager, full_account_info);
 
   // Check expectations when the profile creation flow is closes.
@@ -3528,7 +3532,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
 
   signin::UpdateAccountInfoForAccount(
       identity_manager,
-      /*account_info=*/FillAccountInfo(account_info, "Joe", "acme.com"));
+      /*account_info=*/FillAccountInfo(account_info.GetCoreAccountInfo(), "Joe",
+                                       "acme.com"));
   identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
       account_info.GetAccountId(), signin::ConsentLevel::kSignin,
       signin_metrics::AccessPoint::kUserManager);

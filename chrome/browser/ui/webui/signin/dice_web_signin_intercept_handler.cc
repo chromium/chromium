@@ -237,13 +237,14 @@ void DiceWebSigninInterceptHandler::UpdateExtendedAccountsInfo() {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
 
-  AccountInfo updated_info =
-      identity_manager->FindExtendedAccountInfo(intercepted_account());
+  AccountInfo updated_info = identity_manager->FindExtendedAccountInfo(
+      intercepted_account().GetCoreAccountInfo());
   if (!updated_info.IsEmpty()) {
     bubble_parameters_.intercepted_account = updated_info;
   }
 
-  updated_info = identity_manager->FindExtendedAccountInfo(primary_account());
+  updated_info = identity_manager->FindExtendedAccountInfo(
+      primary_account().GetCoreAccountInfo());
   if (!updated_info.IsEmpty()) {
     bubble_parameters_.primary_account = updated_info;
   }

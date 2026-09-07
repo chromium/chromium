@@ -142,7 +142,8 @@ DialogText GetPromptDialogTextFromStatus(
 void ShowSignInAndSyncUi(Profile* profile,
                          signin_metrics::AccessPoint access_point) {
   signin_ui_util::EnableSyncFromSingleAccountPromo(
-      profile, GetAccountInfoFromProfile(profile), access_point);
+      profile, GetAccountInfoFromProfile(profile).GetCoreAccountInfo(),
+      access_point);
 }
 
 signin_metrics::AccessPoint GetAccessPointForFlowType(

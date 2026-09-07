@@ -54,7 +54,7 @@ void AccountStateFetcher::OnExtendedAccountInfoUpdated(
   if (account_info.GetAccountId() != core_account_info_.account_id) {
     return;
   }
-  GetOrWaitForAccountInfo(account_info);
+  GetOrWaitForAccountInfo(account_info.GetCoreAccountInfo());
 }
 
 void AccountStateFetcher::OnIdentityManagerShutdown(

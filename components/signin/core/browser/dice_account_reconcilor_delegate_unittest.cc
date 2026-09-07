@@ -104,8 +104,10 @@ TEST_F(DiceAccountReconcilorDelegateTest,
   // Verify the test setup.
   EXPECT_THAT(identity_manager()->GetAccountsWithRefreshTokens(),
               ::testing::UnorderedElementsAre(
-                  valid_account, account_with_invalid_refresh_token,
-                  no_cookie_account, invalid_cookie_account));
+                  valid_account.GetCoreAccountInfo(),
+                  account_with_invalid_refresh_token.GetCoreAccountInfo(),
+                  no_cookie_account.GetCoreAccountInfo(),
+                  invalid_cookie_account.GetCoreAccountInfo()));
   ASSERT_TRUE(delegate().IsCookieBasedConsistencyMode());
 
   const std::vector<gaia::ListedAccount> gaia_signed_in_accounts{
@@ -117,7 +119,8 @@ TEST_F(DiceAccountReconcilorDelegateTest,
   std::vector<CoreAccountInfo> chrome_accounts =
       identity_manager()->GetAccountsWithRefreshTokens();
   ASSERT_EQ(chrome_accounts.size(), 1u);
-  EXPECT_THAT(chrome_accounts[0], ::testing::Eq(valid_account));
+  EXPECT_THAT(chrome_accounts[0],
+              ::testing::Eq(valid_account.GetCoreAccountInfo()));
 }
 
 TEST_F(DiceAccountReconcilorDelegateTest, RevokeSecondaryTokensForReconcile) {
@@ -146,7 +149,8 @@ TEST_F(DiceAccountReconcilorDelegateTest, RevokeSecondaryTokensForReconcile) {
   delegate().RevokeSecondaryTokensForReconcileIfNeeded(gaia_signed_in_accounts);
   EXPECT_THAT(
       identity_manager()->GetAccountsWithRefreshTokens(),
-      ::testing::UnorderedElementsAre(valid_account, no_cookie_account));
+      ::testing::UnorderedElementsAre(valid_account.GetCoreAccountInfo(),
+                                      no_cookie_account.GetCoreAccountInfo()));
 }
 
 }  // namespace

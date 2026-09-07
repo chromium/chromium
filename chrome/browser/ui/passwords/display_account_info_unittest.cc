@@ -32,7 +32,8 @@ class DisplayAccountInfoTest : public testing::Test {
     account_info =
         AccountInfo::Builder(account_info).SetFullName(kTestFullName).Build();
     identity_test_environment_.UpdateAccountInfoForAccount(account_info);
-    sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account_info);
+    sync_service_.SetSignedIn(signin::ConsentLevel::kSignin,
+                              account_info.GetCoreAccountInfo());
   }
 
   // Must only be called when there is a signed-in account.

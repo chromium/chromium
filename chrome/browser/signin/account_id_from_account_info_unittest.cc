@@ -11,7 +11,7 @@
 // AccountId.
 TEST(AccountIdFromAccountInfoTest,
      AccountIdFromAccountInfo_CanonicalizesRawEmail) {
-  AccountInfo info;
+  CoreAccountInfo info;
   info.email = "test.email@gmail.com";
   info.gaia = GaiaId("test_id");
 

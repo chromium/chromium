@@ -989,13 +989,15 @@ void BrowserCommandController::HandleCommandWithDisposition(
     case IDC_TURN_ON_SYNC:
       signin_ui_util::EnableSyncFromSingleAccountPromo(
           browser_->GetProfile(),
-          GetAccountInfoFromProfile(browser_->GetProfile()),
+          GetAccountInfoFromProfile(browser_->GetProfile())
+              .GetCoreAccountInfo(),
           signin_metrics::AccessPoint::kMenu);
       break;
     case IDC_SHOW_SIGNIN:
       signin_ui_util::SignInFromSingleAccountPromo(
           browser_->GetProfile(),
-          GetAccountInfoFromProfile(browser_->GetProfile()),
+          GetAccountInfoFromProfile(browser_->GetProfile())
+              .GetCoreAccountInfo(),
           signin_metrics::AccessPoint::kMenu);
       break;
     case IDC_SHOW_SIGNIN_WHEN_PAUSED:

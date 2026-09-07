@@ -174,9 +174,10 @@ FakeProfileOAuth2TokenServiceDelegate::GetAccountsOnDevice() const {
   // separate from accounts-for-profile.
   std::vector<AccountInfo> accounts;
   for (const auto& account_id : account_ids_) {
-    accounts.emplace_back();
-    accounts.back().account_id = account_id;
-    accounts.back().gaia = GaiaId(account_id.ToString());
+    CoreAccountInfo core_account_info;
+    core_account_info.account_id = account_id;
+    core_account_info.gaia = GaiaId(account_id.ToString());
+    accounts.push_back(AccountInfo::Builder(core_account_info).Build());
   }
   return accounts;
 }

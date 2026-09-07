@@ -47,8 +47,8 @@ namespace {
 MATCHER(CoreAccountInfoEq,
         /* std::tuple<const AccountInfo&, const AccountInfo&> arg, */
         "") {
-  return static_cast<const CoreAccountInfo&>(std::get<0>(arg)) ==
-         static_cast<const CoreAccountInfo&>(std::get<1>(arg));
+  return std::get<0>(arg).GetCoreAccountInfo() ==
+         std::get<1>(arg).GetCoreAccountInfo();
 }
 }  // namespace
 
@@ -118,7 +118,7 @@ class OAuth2TokenServiceDelegateAndroidTest : public testing::Test {
         /*should_remove_stale_accounts=*/false);
     std::vector<CoreAccountId> account_ids;
     for (const auto& account : accounts) {
-      account_ids.push_back(account.account_id);
+      account_ids.push_back(account.GetAccountId());
     }
     delegate_->SetAccounts(account_ids);
   }

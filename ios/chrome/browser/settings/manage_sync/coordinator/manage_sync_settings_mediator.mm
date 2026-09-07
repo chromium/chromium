@@ -1054,7 +1054,8 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 
 - (void)extendedAccountInfoDidUpdate:(const AccountInfo&)info {
   id<SystemIdentity> identity =
-      _chromeAccountManagerService->GetIdentityOnDeviceWithGaiaID(info.gaia);
+      _chromeAccountManagerService->GetIdentityOnDeviceWithGaiaID(
+          info.GetGaiaId());
   if ([_signedInIdentity isEqual:identity]) {
     [self updatePrimaryAccountDetails];
     // Update the model without notifying the consumer, then reload atomically.

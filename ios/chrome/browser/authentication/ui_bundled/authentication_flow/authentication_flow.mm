@@ -715,7 +715,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   std::vector<AccountInfo> accountsOnDevice =
       identityManager->GetAccountsOnDevice();
   BOOL isValidIdentityOnDevice = std::ranges::contains(
-      accountsOnDevice, _identityToSignIn.gaiaId, &AccountInfo::gaia);
+      accountsOnDevice, _identityToSignIn.gaiaId, &AccountInfo::GetGaiaId);
   std::vector<CoreAccountInfo> accountsInProfile =
       identityManager->GetAccountsWithRefreshTokens();
   BOOL isValidIdentityInCurrentProfile = std::ranges::contains(

@@ -58,7 +58,8 @@ void BtmBrowserSigninDetector::Shutdown() {
 // its core infos are non empty and the |hosted_domain| info is provided.
 bool IsInfoRelevant(const AccountInfo& info) {
   // Note: extended infos such as |hosted_domain| are filled asynchronously.
-  return !info.CoreAccountInfo::IsEmpty() && info.GetHostedDomain().has_value();
+  return !info.GetCoreAccountInfo().IsEmpty() &&
+         info.GetHostedDomain().has_value();
 }
 
 void BtmBrowserSigninDetector::RecordUserActivationsIfRelevant(

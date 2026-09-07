@@ -64,9 +64,9 @@ using testing::IsEmpty;
 constexpr GaiaId::Literal kFakeGaiaId("fake_gaia_id");
 
 #if !BUILDFLAG(IS_ANDROID)
-const AccountInfo& FakeAccount() {
-  static const base::NoDestructor<AccountInfo> account([]() {
-    AccountInfo account;
+const CoreAccountInfo& FakeAccount() {
+  static const base::NoDestructor<CoreAccountInfo> account([]() {
+    CoreAccountInfo account;
     account.gaia = kFakeGaiaId;
     return account;
   }());
@@ -220,7 +220,7 @@ void ExecJsAddTrustedSyncEncryptionRecoveryMethod(
 std::vector<std::vector<uint8_t>> FetchTrustedVaultKeysForProfile(
     Profile* profile,
     trusted_vault::SecurityDomainId security_domain,
-    const AccountInfo& account_info) {
+    const CoreAccountInfo& account_info) {
   // Waits until the sync trusted vault keys have been received and stored.
   base::RunLoop loop;
   std::vector<std::vector<uint8_t>> actual_keys;
@@ -240,7 +240,7 @@ std::vector<std::vector<uint8_t>> FetchTrustedVaultKeysForProfile(
 int FetchLastTrustedVaultKeyVersionForProfile(
     Profile* profile,
     trusted_vault::SecurityDomainId security_domain,
-    const AccountInfo& account_info) {
+    const CoreAccountInfo& account_info) {
   base::RunLoop loop;
   int actual_last_key_version = -1;
 

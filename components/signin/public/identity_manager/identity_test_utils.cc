@@ -263,7 +263,8 @@ CoreAccountInfo SetPrimaryAccount(IdentityManager* identity_manager,
                               AccountAvailabilityOptionsBuilder()
                                   .AsPrimary(consent_level)
                                   .WithoutRefreshToken()
-                                  .Build(email));
+                                  .Build(email))
+      .GetCoreAccountInfo();
 }
 
 void SetAutomaticIssueOfAccessTokens(IdentityManager* identity_manager,
@@ -312,7 +313,8 @@ AccountInfo MakePrimaryAccountAvailable(IdentityManager* identity_manager,
   CoreAccountInfo account_info =
       MakeAccountAvailable(identity_manager, AccountAvailabilityOptionsBuilder()
                                                  .AsPrimary(consent_level)
-                                                 .Build(email));
+                                                 .Build(email))
+          .GetCoreAccountInfo();
   AccountInfo primary_account_info =
       identity_manager->FindExtendedAccountInfo(account_info);
   // Ensure that extended information for the account is available after setting
@@ -436,8 +438,8 @@ AccountInfo MakeAccountAvailable(IdentityManager* identity_manager,
     auto consent_level = options.consent_level.value();
     PrimaryAccountManager* primary_account_manager =
         identity_manager->GetPrimaryAccountManager();
-    primary_account_manager->SetPrimaryAccountInfo(account_info, consent_level,
-                                                   options.access_point);
+    primary_account_manager->SetPrimaryAccountInfo(
+        account_info.GetCoreAccountInfo(), consent_level, options.access_point);
     CHECK_EQ(account_info.GetGaiaId(),
              identity_manager->GetPrimaryAccountInfo(consent_level).gaia);
   }

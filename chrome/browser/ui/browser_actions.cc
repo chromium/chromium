@@ -3971,16 +3971,13 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                 Profile* profile = bwi->GetProfile();
                 signin::IdentityManager* identity_manager =
                     IdentityManagerFactory::GetForProfileIfExists(profile);
-                AccountInfo account_info;
+                CoreAccountInfo account;
                 if (identity_manager) {
-                  CoreAccountInfo account =
-                      identity_manager->GetPrimaryAccountInfo(
-                          signin::ConsentLevel::kSignin);
-                  account_info =
-                      identity_manager->FindExtendedAccountInfo(account);
+                  account = identity_manager->GetPrimaryAccountInfo(
+                      signin::ConsentLevel::kSignin);
                 }
                 signin_ui_util::EnableSyncFromSingleAccountPromo(
-                    profile, account_info, signin_metrics::AccessPoint::kMenu);
+                    profile, account, signin_metrics::AccessPoint::kMenu);
               },
               bwi))
           .SetActionId(kActionTurnOnSync)
@@ -3994,16 +3991,13 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                 Profile* profile = bwi->GetProfile();
                 signin::IdentityManager* identity_manager =
                     IdentityManagerFactory::GetForProfileIfExists(profile);
-                AccountInfo account_info;
+                CoreAccountInfo account;
                 if (identity_manager) {
-                  CoreAccountInfo account =
-                      identity_manager->GetPrimaryAccountInfo(
-                          signin::ConsentLevel::kSignin);
-                  account_info =
-                      identity_manager->FindExtendedAccountInfo(account);
+                  account = identity_manager->GetPrimaryAccountInfo(
+                      signin::ConsentLevel::kSignin);
                 }
                 signin_ui_util::SignInFromSingleAccountPromo(
-                    profile, account_info, signin_metrics::AccessPoint::kMenu);
+                    profile, account, signin_metrics::AccessPoint::kMenu);
               },
               bwi))
           .SetActionId(kActionShowSignin)

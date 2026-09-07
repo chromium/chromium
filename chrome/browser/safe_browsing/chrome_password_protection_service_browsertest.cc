@@ -195,8 +195,10 @@ class ChromePasswordProtectionServiceBrowserTest : public InProcessBrowserTest {
     // Ensure that the stub user is signed in.
 
     CoreAccountInfo account_info =
-        identity_test_env()->MakePrimaryAccountAvailable(
-            user_manager::kStubUserEmail, signin::ConsentLevel::kSignin);
+        identity_test_env()
+            ->MakePrimaryAccountAvailable(user_manager::kStubUserEmail,
+                                          signin::ConsentLevel::kSignin)
+            .GetCoreAccountInfo();
 
     ASSERT_EQ(account_info.email, user_manager::kStubUserEmail);
 

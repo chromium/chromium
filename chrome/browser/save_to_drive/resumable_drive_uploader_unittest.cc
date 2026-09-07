@@ -71,10 +71,9 @@ constexpr std::string_view kInternalServerErrorResponse =
     "HTTP/1.1 500 Internal Server Error\nContent-Type: application/json\n\n";
 
 AccountInfo CreateAccountInfo() {
-  AccountInfo account_info;
-  account_info.email = "test@example.com";
-  account_info.account_id = CoreAccountId::FromGaiaId(GaiaId("12345"));
-  return account_info;
+  return AccountInfo::Builder(GaiaId("12345"), "test@example.com")
+      .SetAccountId(CoreAccountId::FromGaiaId(GaiaId("12345")))
+      .Build();
 }
 
 class MockContentReader : public ContentReader {

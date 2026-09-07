@@ -406,7 +406,8 @@ class IdentityManagerTest : public testing::Test {
       CoreAccountId account_id =
           account_tracker_service->SeedAccountInfo(kTestGaiaId, kTestEmail);
       primary_account_manager->SetPrimaryAccountInfo(
-          account_tracker_service->GetAccountInfo(account_id),
+          account_tracker_service->GetAccountInfo(account_id)
+              .GetCoreAccountInfo(),
           ConsentLevel::kSync, signin_metrics::AccessPoint::kStartPage);
     }
 

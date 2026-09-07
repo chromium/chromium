@@ -422,7 +422,8 @@ TEST_P(HistorySyncOptinServiceTest,
         AccountInfo updated_info =
             new_profile_adaptor.identity_test_env()
                 ->identity_manager()
-                ->FindExtendedAccountInfo(original_managed_account_info);
+                ->FindExtendedAccountInfo(
+                    original_managed_account_info.GetCoreAccountInfo());
         updated_info = AccountInfo::Builder(updated_info)
                            .SetFullName("updated name")
                            .Build();

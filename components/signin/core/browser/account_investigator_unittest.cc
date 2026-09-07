@@ -64,7 +64,7 @@ class AccountInvestigatorTest : public testing::Test {
                                              signed_out_accounts);
   }
   AccountRelation Relation(
-      const AccountInfo& account_info,
+      const CoreAccountInfo& account_info,
       const std::vector<ListedAccount>& signed_in_accounts,
       const std::vector<ListedAccount>& signed_out_accounts) {
     return AccountInvestigator::DiscernRelation(
@@ -164,8 +164,8 @@ ListedAccount SignedOutAccount(const CoreAccountId& account_id) {
   return account;
 }
 
-AccountInfo ToAccountInfo(ListedAccount account) {
-  AccountInfo account_info;
+CoreAccountInfo ToAccountInfo(ListedAccount account) {
+  CoreAccountInfo account_info;
   account_info.account_id = account.id;
   account_info.gaia = account.gaia_id;
   account_info.email = account.email;

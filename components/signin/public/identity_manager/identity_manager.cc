@@ -229,7 +229,8 @@ std::vector<CoreAccountInfo> IdentityManager::GetAccountsWithRefreshTokens()
   accounts.reserve(account_ids_with_tokens.size());
 
   for (const CoreAccountId& account_id : account_ids_with_tokens) {
-    accounts.push_back(GetAccountInfoForAccountWithRefreshToken(account_id));
+    accounts.push_back(GetAccountInfoForAccountWithRefreshToken(account_id)
+                           .GetCoreAccountInfo());
   }
 
   return accounts;
@@ -661,7 +662,7 @@ void IdentityManager::OnPrimaryAccountChanged(
 
 void IdentityManager::OnRefreshTokenAvailable(const CoreAccountId& account_id) {
   CoreAccountInfo account_info =
-      GetAccountInfoForAccountWithRefreshToken(account_id);
+      GetAccountInfoForAccountWithRefreshToken(account_id).GetCoreAccountInfo();
 
   for (auto& observer : observer_list_) {
     observer.OnRefreshTokenUpdatedForAccount(account_info);
@@ -713,7 +714,7 @@ void IdentityManager::OnAuthErrorChanged(
     const GoogleServiceAuthError& auth_error,
     signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
   CoreAccountInfo account_info =
-      GetAccountInfoForAccountWithRefreshToken(account_id);
+      GetAccountInfoForAccountWithRefreshToken(account_id).GetCoreAccountInfo();
 
   for (auto& observer : observer_list_) {
     observer.OnErrorStateOfRefreshTokenUpdatedForAccount(

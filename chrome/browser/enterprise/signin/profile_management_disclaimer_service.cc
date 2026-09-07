@@ -325,7 +325,8 @@ void ProfileManagementDisclaimerService::
   // Create a new tracker for the account, if it doesn't exist yet or if it had
   // a cached failure. This will also reset any cached failure.
   policy_fetch_tracker_by_account_id_[account_id] =
-      TurnSyncOnHelperPolicyFetchTracker::CreateInstance(&profile_.get(), info);
+      TurnSyncOnHelperPolicyFetchTracker::CreateInstance(
+          &profile_.get(), info.GetCoreAccountInfo());
 
   policy_fetch_tracker_by_account_id_[account_id]->RegisterForPolicy(
       base::BindOnce(&ProfileManagementDisclaimerService::OnRegisteredForPolicy,

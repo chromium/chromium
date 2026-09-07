@@ -300,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(
   AccountInfo account_info = signin::MakePrimaryAccountAvailable(
       identity_manager, "test@gmail.com", signin::ConsentLevel::kSignin);
   signin::UpdatePersistentErrorOfRefreshTokenForAccount(
-      identity_manager, account_info.account_id,
+      identity_manager, account_info.GetAccountId(),
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
           GoogleServiceAuthError::InvalidGaiaCredentialsReason::
               CREDENTIALS_REJECTED_BY_SERVER));

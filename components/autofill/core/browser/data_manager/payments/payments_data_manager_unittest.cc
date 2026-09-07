@@ -1732,7 +1732,8 @@ TEST_F(PaymentsDataManagerTest, KeepExistingLocalDataOnSignIn) {
   // Sign in.
   AccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
       "test@gmail.com", signin::ConsentLevel::kSync);
-  sync_service_.SetSignedIn(signin::ConsentLevel::kSync, account);
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSync,
+                            account.GetCoreAccountInfo());
   EXPECT_TRUE(
       sync_service_.IsSyncFeatureEnabled() &&
       sync_service_.GetActiveDataTypes().Has(syncer::AUTOFILL_WALLET_DATA));
@@ -3709,7 +3710,8 @@ TEST_F(PaymentsDataManagerSyncTransportModeTest,
 #else
   AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
       "syncuser@example.com", signin::ConsentLevel::kSync);
-  sync_service_.SetSignedIn(signin::ConsentLevel::kSync, account_info);
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSync,
+                            account_info.GetCoreAccountInfo());
 #endif
 
   // Check that the sync state is |SignedInAndSyncFeature| if the sync feature

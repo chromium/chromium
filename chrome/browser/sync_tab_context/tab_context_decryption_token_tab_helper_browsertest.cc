@@ -139,7 +139,7 @@ class TabContextDecryptionTokenTabHelperBrowserTest
         IdentityManagerFactory::GetForProfile(GetProfile());
     const AccountInfo account_info = signin::MakePrimaryAccountAvailable(
         identity_manager, "user@gmail.com", signin::ConsentLevel::kSignin);
-    primary_gaia_id_ = account_info.gaia.ToString();
+    primary_gaia_id_ = account_info.GetGaiaId().ToString();
   }
 
  protected:

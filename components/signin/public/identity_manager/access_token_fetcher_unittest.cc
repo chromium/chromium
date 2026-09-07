@@ -101,7 +101,9 @@ class AccessTokenFetcherTest
 
   CoreAccountInfo AddAccount(const GaiaId& gaia_id, const std::string& email) {
     account_tracker()->SeedAccountInfo(gaia_id, email);
-    return account_tracker()->FindAccountInfoByGaiaId(gaia_id);
+    return account_tracker()
+        ->FindAccountInfoByGaiaId(gaia_id)
+        .GetCoreAccountInfo();
   }
 
   // Verifies that the consumer_id has the appropriate consent level for the

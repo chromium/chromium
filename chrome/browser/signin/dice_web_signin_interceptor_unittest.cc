@@ -500,11 +500,12 @@ TEST_F(DiceWebSigninInterceptorTest, ShouldShowEnterpriseBubble) {
             primary_account_info.GetAccountId());
 
   // The primary account does not have full account info (empty domain).
-  ASSERT_EQ(identity_test_env()
-                ->identity_manager()
-                ->FindExtendedAccountInfo(primary_account_info)
-                .GetHostedDomain(),
-            std::nullopt);
+  ASSERT_EQ(
+      identity_test_env()
+          ->identity_manager()
+          ->FindExtendedAccountInfo(primary_account_info.GetCoreAccountInfo())
+          .GetHostedDomain(),
+      std::nullopt);
   EXPECT_FALSE(interceptor()->ShouldShowEnterpriseBubble(account_info));
   account_info =
       AccountInfo::Builder(account_info).SetHostedDomain("example.com").Build();

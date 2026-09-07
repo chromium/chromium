@@ -216,7 +216,7 @@ ProfileOAuth2TokenServiceDelegateAndroid::CreateAccessTokenFetcher(
       << " account= " << account_id;
   ValidateAccountId(account_id);
   CoreAccountInfo account_info =
-      account_tracker_service_->GetAccountInfo(account_id);
+      account_tracker_service_->GetAccountInfo(account_id).GetCoreAccountInfo();
   DCHECK(!account_info.IsEmpty())
       << "Cannot find account info for account id " << account_id;
   return std::make_unique<AndroidAccessTokenFetcher>(this, consumer,
@@ -262,7 +262,7 @@ void ProfileOAuth2TokenServiceDelegateAndroid::
       /*should_remove_stale_accounts=*/false);
   std::vector<CoreAccountId> account_ids;
   for (const auto& account : accounts) {
-    CoreAccountId id(account.account_id);
+    CoreAccountId id(account.GetAccountId());
     if (!id.empty()) {
       account_ids.push_back(std::move(id));
     }

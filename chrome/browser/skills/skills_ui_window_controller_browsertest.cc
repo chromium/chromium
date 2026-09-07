@@ -492,7 +492,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
       IdentityManagerFactory::GetForProfile(browser()->GetProfile());
   ASSERT_TRUE(identity_manager);
 
-  CoreAccountInfo account_info = signin::MakePrimaryAccountAvailable(
+  AccountInfo account_info = signin::MakePrimaryAccountAvailable(
       identity_manager, "test@example.com", signin::ConsentLevel::kSignin);
 
   // 1. Open chrome://skills page in the active tab.
@@ -514,7 +514,7 @@ IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
   // OnErrorStateOfRefreshTokenUpdatedForAccount.
   content::TestNavigationObserver reload_observer(web_contents);
   signin::SetInvalidRefreshTokenForAccount(identity_manager,
-                                           account_info.account_id);
+                                           account_info.GetAccountId());
   reload_observer.Wait();
   EXPECT_FALSE(tab_controller()->IsShowing());
   EXPECT_TRUE(reload_observer.last_navigation_succeeded());

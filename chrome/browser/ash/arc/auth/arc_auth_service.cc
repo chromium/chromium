@@ -578,7 +578,7 @@ void ArcAuthService::OnAccountAvailableInArc(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(ash::IsAccountManagerAvailable(profile_));
 
-  CoreAccountInfo account_info =
+  AccountInfo account_info =
       identity_manager_->FindExtendedAccountInfoByEmailAddress(
           account.raw_email);
   // If account doesn't have a refresh token, `account_info` will be empty. In
@@ -590,7 +590,7 @@ void ArcAuthService::OnAccountAvailableInArc(
             << account.raw_email;
     return;
   }
-  UpsertAccountToArc(account_info);
+  UpsertAccountToArc(account_info.GetCoreAccountInfo());
 }
 
 void ArcAuthService::OnAccountUnavailableInArc(

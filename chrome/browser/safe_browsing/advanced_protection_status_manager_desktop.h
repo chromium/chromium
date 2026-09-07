@@ -127,7 +127,7 @@ class AdvancedProtectionStatusManagerDesktop
   // Sets |last_refresh_| to now and persists it.
   void UpdateLastRefreshTime();
 
-  bool IsUnconsentedPrimaryAccount(const CoreAccountInfo& account_info);
+  bool IsUnconsentedPrimaryAccount(const CoreAccountId& account_id);
 
   // Decodes |id_token| to get advanced protection status.
   void OnGetIDToken(const CoreAccountId& account_id,

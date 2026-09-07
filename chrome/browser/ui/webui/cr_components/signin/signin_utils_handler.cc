@@ -122,7 +122,8 @@ void SigninUtilsHandler::SigninWithAccount(
   const AccountInfo maybe_account =
       identity_manager->FindExtendedAccountInfoByEmailAddress(email);
   signin_ui_util::EnableSyncFromMultiAccountPromo(
-      profile_, maybe_account, signin_access_point, is_default_promo_account);
+      profile_, maybe_account.GetCoreAccountInfo(), signin_access_point,
+      is_default_promo_account);
 }
 
 void SigninUtilsHandler::RecordSigninPendingOffered() {

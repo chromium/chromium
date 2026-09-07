@@ -340,8 +340,8 @@ void TurnSyncOnHelper::TurnSyncOnWithProfileMode(ProfileMode profile_mode) {
       // policy for this user now, before any signed in services are
       // initialized.
       policy_fetch_tracker_ =
-          TurnSyncOnHelperPolicyFetchTracker::CreateInstance(profile_,
-                                                             account_info_);
+          TurnSyncOnHelperPolicyFetchTracker::CreateInstance(
+              profile_, account_info_.GetCoreAccountInfo());
       policy_fetch_tracker_->RegisterForPolicy(base::BindOnce(
           &TurnSyncOnHelper::OnRegisteredForPolicy, base::Unretained(this)),
           /*is_registration_for_management_consistency_check=*/false);
@@ -489,7 +489,7 @@ void TurnSyncOnHelper::SigninAndShowSyncConfirmationUI() {
     // http://crbug.com/41370767
     sync_startup_state_observer_ = SyncServiceStartupStateObserver::
         MaybeCreateSyncServiceStateObserverForAccountWithClouldPolicies(
-            sync_service, profile_, account_info_,
+            sync_service, profile_, account_info_.GetCoreAccountInfo(),
             // Note that `startup_delay` is not taken into account, as
             // this call will produce a legacy observer implementation which
             // does not uses this argument.

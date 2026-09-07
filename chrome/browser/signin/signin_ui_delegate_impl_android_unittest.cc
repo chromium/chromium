@@ -116,7 +116,7 @@ TEST_F(SigninUiDelegateImplAndroidTest, ShowSigninUI) {
   CoreAccountId account_id = identity_test_env()
                                  ->MakePrimaryAccountAvailable(
                                      kTestEmail, signin::ConsentLevel::kSignin)
-                                 .account_id;
+                                 .GetAccountId();
 
   NavigateAndCommit(GetTestUrl());
   TestTabModel tab_model(profile());
@@ -170,7 +170,7 @@ TEST_F(SigninUiDelegateImplAndroidTest, ShowReauthUI) {
   CoreAccountId account_id = identity_test_env()
                                  ->MakePrimaryAccountAvailable(
                                      kTestEmail, signin::ConsentLevel::kSignin)
-                                 .account_id;
+                                 .GetAccountId();
   identity_test_env()->SetInvalidRefreshTokenForAccount(account_id);
 
   NavigateAndCommit(GetTestUrl());

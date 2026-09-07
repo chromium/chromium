@@ -384,9 +384,10 @@ TEST_F(EntryPointEligibilityManagerTest, IsPinningEligible_True) {
       identity_test_env_adaptor_->identity_test_env()->MakeAccountAvailable(
           "test@example.com");
   identity_test_env_adaptor_->identity_test_env()->SetCookieAccounts(
-      {{.email = account_info.email, .gaia_id = account_info.gaia}});
+      {{.email = std::string(account_info.GetEmail()),
+        .gaia_id = account_info.GetGaiaId()}});
   identity_test_env_adaptor_->identity_test_env()->SetPrimaryAccount(
-      account_info.email, signin::ConsentLevel::kSignin);
+      account_info.GetEmail(), signin::ConsentLevel::kSignin);
 
   EXPECT_CALL(*mock_ui_service_, IsSignedInToBrowserWithValidCredentials())
       .WillRepeatedly(Return(true));
@@ -482,9 +483,10 @@ TEST_F(EntryPointEligibilityManagerTest,
       identity_test_env_adaptor_->identity_test_env()->MakeAccountAvailable(
           "test@example.com");
   identity_test_env_adaptor_->identity_test_env()->SetCookieAccounts(
-      {{.email = account_info.email, .gaia_id = account_info.gaia}});
+      {{.email = std::string(account_info.GetEmail()),
+        .gaia_id = account_info.GetGaiaId()}});
   identity_test_env_adaptor_->identity_test_env()->SetPrimaryAccount(
-      account_info.email, signin::ConsentLevel::kSignin);
+      account_info.GetEmail(), signin::ConsentLevel::kSignin);
 
   EXPECT_CALL(*mock_ui_service_, IsSignedInToBrowserWithValidCredentials())
       .WillRepeatedly(Return(true));

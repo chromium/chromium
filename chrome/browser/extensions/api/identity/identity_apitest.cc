@@ -2239,7 +2239,7 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
   // Pre-populate the cache with a token.
   IdentityTokenCacheValue token =
       CreateToken(kAccessToken, base::Seconds(3600));
-  SetCachedTokenForAccount(account_info, token);
+  SetCachedTokenForAccount(account_info.GetCoreAccountInfo(), token);
 
   std::string access_token;
   std::set<std::string> granted_scopes;
@@ -2605,7 +2605,9 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
                        MultiSecondaryUserManuallyIssueToken) {
   SignIn("primary@example.com");
   CoreAccountInfo secondary_account =
-      identity_test_env()->MakeAccountAvailable("secondary@example.com");
+      identity_test_env()
+          ->MakeAccountAvailable("secondary@example.com")
+          .GetCoreAccountInfo();
 
   scoped_refptr<FakeGetAuthTokenFunction> func(new FakeGetAuthTokenFunction());
   scoped_refptr<const Extension> extension(CreateExtension(CLIENT_ID | SCOPES));
@@ -2808,7 +2810,7 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
     EXPECT_EQ(func->GetExtensionTokenKeyForTest()->scopes, granted_scopes);
 
     EXPECT_EQ(IdentityTokenCacheValue::CACHE_STATUS_TOKEN,
-              GetCachedToken(secondary_account).status());
+              GetCachedToken(secondary_account.GetCoreAccountInfo()).status());
     EXPECT_EQ(secondary_account.GetGaiaId(),
               id_api()->GetGaiaIdForExtension(extension->id()));
     EXPECT_THAT(func->login_access_tokens(),

@@ -78,9 +78,11 @@ class ManagedUserProfileNoticeHandlerTestBase : public testing::Test {
     web_ui_->set_web_contents(
         web_contents_factory_.CreateWebContents(profile_));
 
-    account_info_.email = user_manager::kStubUserEmail;
-    account_info_.gaia = GaiaId(user_manager::kStubUserId);
-    account_info_.account_id = CoreAccountId::FromGaiaId(account_info_.gaia);
+    account_info_ = AccountInfo::Builder(GaiaId(user_manager::kStubUserId),
+                                         user_manager::kStubUserEmail)
+                        .SetAccountId(CoreAccountId::FromGaiaId(
+                            GaiaId(user_manager::kStubUserId)))
+                        .Build();
   }
 
   void InitializeHandler(
@@ -709,8 +711,10 @@ TEST_F(ManagedUserProfileNoticeHandlerTestBase,
   EXPECT_CALL(mock_process_user_choice_callback, Run(_)).Times(0);
   EXPECT_CALL(mock_done_callback, Run()).Times(0);
 
-  AccountInfo other_info;
-  other_info.account_id = CoreAccountId::FromGaiaId(GaiaId("other"));
+  AccountInfo other_info =
+      AccountInfo::Builder(GaiaId("other"), "other@example.com")
+          .SetAccountId(CoreAccountId::FromGaiaId(GaiaId("other")))
+          .Build();
   handler()->OnExtendedAccountInfoRemoved(other_info);
 
   testing::Mock::VerifyAndClearExpectations(&mock_process_user_choice_callback);

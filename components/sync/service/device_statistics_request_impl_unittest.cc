@@ -28,7 +28,8 @@ class DeviceStatisticsRequestImplTest : public testing::Test {
       : shared_url_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {
-    account_info_ = identity_test_env_.MakeAccountAvailable(kTestEmail);
+    account_info_ = identity_test_env_.MakeAccountAvailable(kTestEmail)
+                        .GetCoreAccountInfo();
   }
 
  protected:

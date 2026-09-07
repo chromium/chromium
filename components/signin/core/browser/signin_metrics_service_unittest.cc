@@ -121,8 +121,9 @@ class SigninMetricsServiceTest : public ::testing::Test {
   }
 
   void TriggerErrorStateInSecondaryAccount(AccountInfo account) {
-    ASSERT_NE(account, identity_manager()->GetPrimaryAccountInfo(
-                           signin::ConsentLevel::kSignin));
+    ASSERT_NE(account.GetCoreAccountInfo(),
+              identity_manager()->GetPrimaryAccountInfo(
+                  signin::ConsentLevel::kSignin));
 
     identity_test_environment_.SetInvalidRefreshTokenForAccount(
         account.GetAccountId());

@@ -702,7 +702,7 @@ IN_PROC_BROWSER_TEST_F(OAuth2Test, VerifyInAdvancedProtectionAfterOnlineAuth) {
       IdentityManagerFactory::GetInstance()->GetForProfile(GetProfile());
   EXPECT_TRUE(
       identity_manager->FindExtendedAccountInfoByEmailAddress(kTestEmail)
-          .is_under_advanced_protection);
+          .IsUnderAdvancedProtection());
 }
 
 IN_PROC_BROWSER_TEST_F(OAuth2Test,
@@ -715,7 +715,7 @@ IN_PROC_BROWSER_TEST_F(OAuth2Test,
       IdentityManagerFactory::GetInstance()->GetForProfile(GetProfile());
   EXPECT_FALSE(
       identity_manager->FindExtendedAccountInfoByEmailAddress(kTestEmail)
-          .is_under_advanced_protection);
+          .IsUnderAdvancedProtection());
 }
 
 // FakeGoogle serves content of http://www.google.com/hello_google page for

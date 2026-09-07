@@ -281,13 +281,13 @@ class FamilyInfoFeedbackSourceTest
 
 // Tests that the family role for a user in a Family Group is recorded.
 TEST_P(FamilyInfoFeedbackSourceTest, GetFamilyMembersSignedIn) {
-  CoreAccountInfo primary_account =
+  AccountInfo primary_account =
       identity_test_env()->MakePrimaryAccountAvailable(
           kTestEmail, signin::ConsentLevel::kSignin);
 
   kidsmanagement::FamilyRole role = GetParam();
   kidsmanagement::ListMembersResponse members =
-      CreateFamilyWithOneMember(primary_account.gaia, role);
+      CreateFamilyWithOneMember(primary_account.GetGaiaId(), role);
 
   if (is_child()) {
     // Set some filtering behavior for the user, as ListFamilyMembers
@@ -321,7 +321,7 @@ TEST_P(FamilyInfoFeedbackSourceTest, GetFamilyMembersSignedIn) {
 
 // Tests that a user that is not in a Family group is not processed.
 TEST_F(FamilyInfoFeedbackSourceTest, GetFamilyMembersSignedInNoFamily) {
-  CoreAccountInfo primary_account =
+  AccountInfo primary_account =
       identity_test_env()->MakePrimaryAccountAvailable(
           kTestEmail, signin::ConsentLevel::kSignin);
 
@@ -336,7 +336,7 @@ TEST_F(FamilyInfoFeedbackSourceTest, GetFamilyMembersSignedInNoFamily) {
 // Tests that a signed-in user that fails its request to the server is not
 // processed.
 TEST_F(FamilyInfoFeedbackSourceTest, GetFamilyMembersOnFailure) {
-  CoreAccountInfo primary_account =
+  AccountInfo primary_account =
       identity_test_env()->MakePrimaryAccountAvailable(
           kTestEmail, signin::ConsentLevel::kSignin);
 

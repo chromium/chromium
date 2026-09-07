@@ -328,7 +328,7 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginPrototypeTest,
           .Build(email_1));
   ASSERT_EQ(
       identity_manager().GetPrimaryAccountInfo(signin::ConsentLevel::kSignin),
-      account_info_1);
+      account_info_1.GetCoreAccountInfo());
   ASSERT_TRUE(identity_manager().HasAccountWithBoundRefreshToken(
       account_info_1.GetAccountId()));
 
@@ -605,7 +605,7 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPrototypeNewSessionTest,
           .Build(email));
   ASSERT_EQ(
       identity_manager().GetPrimaryAccountInfo(signin::ConsentLevel::kSignin),
-      account_info);
+      account_info.GetCoreAccountInfo());
   ASSERT_TRUE(identity_manager().HasAccountWithBoundRefreshToken(
       account_info.GetAccountId()));
 
@@ -853,7 +853,7 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPersistentErrorTest,
           .Build(email_1));
   ASSERT_EQ(
       identity_manager().GetPrimaryAccountInfo(signin::ConsentLevel::kSignin),
-      account_info_1);
+      account_info_1.GetCoreAccountInfo());
   ASSERT_TRUE(identity_manager().HasAccountWithBoundRefreshToken(
       account_info_1.GetAccountId()));
 
@@ -937,7 +937,7 @@ IN_PROC_BROWSER_TEST_P(BoundSessionOAuthMultiloginPersistentErrorTest,
           .Build(email_1));
   ASSERT_EQ(
       identity_manager().GetPrimaryAccountInfo(signin::ConsentLevel::kSignin),
-      account_info_1);
+      account_info_1.GetCoreAccountInfo());
   ASSERT_TRUE(identity_manager().HasAccountWithBoundRefreshToken(
       account_info_1.GetAccountId()));
 
@@ -1259,7 +1259,7 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginStandardTest,
           .Build(email_1));
   ASSERT_EQ(
       identity_manager().GetPrimaryAccountInfo(signin::ConsentLevel::kSignin),
-      account_info_1);
+      account_info_1.GetCoreAccountInfo());
   ASSERT_TRUE(identity_manager().HasAccountWithBoundRefreshToken(
       account_info_1.GetAccountId()));
 

@@ -127,7 +127,7 @@ void ReadingListBrowserAgent::BulkAddURLsToReadingListWithViewSnackbar(
             l10n_util::GetStringUTF16(
                 IDS_IOS_READING_LIST_SNACKBAR_MESSAGE_FOR_ACCOUNT_WITH_COUNT),
             "count", successfully_added_reading_list_items, "email",
-            GetAccountInfoFromLastAddedURL(last_valid_url).email));
+            GetAccountInfoFromLastAddedURL(last_valid_url).GetEmail()));
 
   } else {
     result = base::SysUTF16ToNSString(

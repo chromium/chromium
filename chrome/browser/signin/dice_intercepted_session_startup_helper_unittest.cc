@@ -147,7 +147,7 @@ TEST_F(DiceInterceptedSessionStartupHelperTest,
   base::test::TestFuture<void> future;
 
   auto helper = std::make_unique<DiceInterceptedSessionStartupHelper>(
-      profile(), /*is_new_profile=*/true, initiator_info.account_id,
+      profile(), /*is_new_profile=*/true, initiator_info.GetAccountId(),
       /*tab_to_move=*/nullptr);
 
   helper->Startup(future.GetCallback());
@@ -159,7 +159,8 @@ TEST_F(DiceInterceptedSessionStartupHelperTest,
           net::HttpRequestHeaders::kAuthorization);
   ASSERT_TRUE(auth_header.has_value());
   EXPECT_THAT(*auth_header, testing::StartsWith("MultiBearer "));
-  EXPECT_THAT(*auth_header, testing::HasSubstr(initiator_info.gaia.ToString()));
+  EXPECT_THAT(*auth_header,
+              testing::HasSubstr(initiator_info.GetGaiaId().ToString()));
   EXPECT_THAT(*auth_header, testing::Not(testing::HasSubstr(",")));
 }
 
@@ -175,7 +176,7 @@ TEST_F(DiceInterceptedSessionStartupHelperTest,
   base::test::TestFuture<void> future;
 
   auto helper = std::make_unique<DiceInterceptedSessionStartupHelper>(
-      profile(), /*is_new_profile=*/true, initiator_info.account_id,
+      profile(), /*is_new_profile=*/true, initiator_info.GetAccountId(),
       /*tab_to_move=*/nullptr);
 
   helper->Startup(future.GetCallback());
@@ -189,11 +190,11 @@ TEST_F(DiceInterceptedSessionStartupHelperTest,
 
   // Verify all 3 accounts are present in the multilogin request.
   EXPECT_THAT(*auth_header,
-              testing::HasSubstr(initiator_info.gaia.ToString()));
+              testing::HasSubstr(initiator_info.GetGaiaId().ToString()));
   EXPECT_THAT(*auth_header,
-              testing::HasSubstr(secondary_info1.gaia.ToString()));
+              testing::HasSubstr(secondary_info1.GetGaiaId().ToString()));
   EXPECT_THAT(*auth_header,
-              testing::HasSubstr(secondary_info2.gaia.ToString()));
+              testing::HasSubstr(secondary_info2.GetGaiaId().ToString()));
 
   // Verify that the initiator account is listed first.
   std::string_view accounts_str = *auth_header;
@@ -203,7 +204,7 @@ TEST_F(DiceInterceptedSessionStartupHelperTest,
   ASSERT_NE(first_comma, std::string_view::npos);
   std::string_view first_account = accounts_str.substr(0, first_comma);
   EXPECT_THAT(first_account,
-              testing::HasSubstr(initiator_info.gaia.ToString()));
+              testing::HasSubstr(initiator_info.GetGaiaId().ToString()));
 }
 
 TEST_F(DiceInterceptedSessionStartupHelperTest,
@@ -216,15 +217,15 @@ TEST_F(DiceInterceptedSessionStartupHelperTest,
   base::test::TestFuture<void> future;
 
   auto helper = std::make_unique<DiceInterceptedSessionStartupHelper>(
-      profile(), /*is_new_profile=*/false, initiator_info.account_id,
+      profile(), /*is_new_profile=*/false, initiator_info.GetAccountId(),
       /*tab_to_move=*/nullptr);
 
   helper->Startup(future.GetCallback());
 
   // For existing profile, cookie updates are monitored.
   identity_test_env()->SetCookieAccounts(
-      {{initiator_info.email, initiator_info.gaia},
-       {secondary_info.email, secondary_info.gaia}});
+      {{std::string(initiator_info.GetEmail()), initiator_info.GetGaiaId()},
+       {std::string(secondary_info.GetEmail()), secondary_info.GetGaiaId()}});
 
   EXPECT_TRUE(future.Wait());
 

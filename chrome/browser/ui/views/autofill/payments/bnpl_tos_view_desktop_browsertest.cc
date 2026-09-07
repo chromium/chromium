@@ -48,7 +48,8 @@ class BnplTosViewDesktopBrowserTest : public DialogBrowserTest {
         .SetAccountInfoForPayments(
             test_autofill_client_->identity_test_environment()
                 .MakePrimaryAccountAvailable("somebody@example.test",
-                                             signin::ConsentLevel::kSignin));
+                                             signin::ConsentLevel::kSignin)
+                .GetCoreAccountInfo());
     controller_ =
         std::make_unique<BnplTosControllerImpl>(test_autofill_client_.get());
     controller_->Show(

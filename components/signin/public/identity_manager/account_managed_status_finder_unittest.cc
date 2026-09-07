@@ -93,7 +93,8 @@ TEST_F(AccountManagedStatusFinderTest, GmailAccountDeterminedImmediately) {
 
   // Simple case: An @gmail.com account should be immediately determined as
   // non-enterprise.
-  AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
+  AccountManagedStatusFinder finder(identity_env_.identity_manager(),
+                                    account.GetCoreAccountInfo(),
                                     base::DoNothing());
   EXPECT_EQ(finder.GetOutcome(),
             AccountManagedStatusFinder::Outcome::kConsumerGmail);
@@ -105,7 +106,8 @@ TEST_F(AccountManagedStatusFinderTest, GooglemailAccountDeterminedImmediately) {
 
   // Simple case: An @googlemail.com account should be immediately determined as
   // non-enterprise.
-  AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
+  AccountManagedStatusFinder finder(identity_env_.identity_manager(),
+                                    account.GetCoreAccountInfo(),
                                     base::DoNothing());
   EXPECT_EQ(finder.GetOutcome(),
             AccountManagedStatusFinder::Outcome::kConsumerGmail);
@@ -118,7 +120,8 @@ TEST_F(AccountManagedStatusFinderTest,
 
   // An account from a well-known consumer domain should be immediately
   // determined as non-enterprise.
-  AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
+  AccountManagedStatusFinder finder(identity_env_.identity_manager(),
+                                    account.GetCoreAccountInfo(),
                                     base::DoNothing());
   EXPECT_EQ(finder.GetOutcome(),
             AccountManagedStatusFinder::Outcome::kConsumerWellKnown);
@@ -130,7 +133,8 @@ TEST_F(AccountManagedStatusFinderTest,
       identity_env_.MakeAccountAvailable("account@google.com");
 
   // Special case: An @google.com account should be immediately identified.
-  AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
+  AccountManagedStatusFinder finder(identity_env_.identity_manager(),
+                                    account.GetCoreAccountInfo(),
                                     base::DoNothing());
   EXPECT_EQ(finder.GetOutcome(),
             AccountManagedStatusFinder::Outcome::kEnterpriseGoogleDotCom);
@@ -149,7 +153,8 @@ TEST_F(AccountManagedStatusFinderTest, EnterpriseAccountDeterminedImmediately) {
 
   // The AccountManagedStatusFinder should be able to immediately identify the
   // enterprise account based on the account info.
-  AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
+  AccountManagedStatusFinder finder(identity_env_.identity_manager(),
+                                    account.GetCoreAccountInfo(),
                                     base::DoNothing());
   EXPECT_EQ(finder.GetOutcome(),
             AccountManagedStatusFinder::Outcome::kEnterprise);
@@ -169,7 +174,8 @@ TEST_F(AccountManagedStatusFinderTest,
 
   // The AccountManagedStatusFinder should be able to immediately identify the
   // non-enterprise account based on the account info.
-  AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
+  AccountManagedStatusFinder finder(identity_env_.identity_manager(),
+                                    account.GetCoreAccountInfo(),
                                     base::DoNothing());
   EXPECT_EQ(finder.GetOutcome(),
             AccountManagedStatusFinder::Outcome::kConsumerNotWellKnown);
@@ -184,7 +190,8 @@ TEST_F(AccountManagedStatusFinderTest,
   // account can not be identified immediately - it's only a potential
   // enterprise account for now, so the outcome is still pending.
   base::MockCallback<base::OnceClosure> outcome_determined;
-  AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
+  AccountManagedStatusFinder finder(identity_env_.identity_manager(),
+                                    account.GetCoreAccountInfo(),
                                     outcome_determined.Get());
   EXPECT_EQ(finder.GetOutcome(), AccountManagedStatusFinder::Outcome::kPending);
 
@@ -208,7 +215,8 @@ TEST_F(AccountManagedStatusFinderTest,
   // An account from an unknown domain can not be identified immediately, so the
   // outcome is pending.
   base::MockCallback<base::OnceClosure> outcome_determined;
-  AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
+  AccountManagedStatusFinder finder(identity_env_.identity_manager(),
+                                    account.GetCoreAccountInfo(),
                                     outcome_determined.Get());
   EXPECT_EQ(finder.GetOutcome(), AccountManagedStatusFinder::Outcome::kPending);
 
@@ -231,7 +239,8 @@ TEST_F(AccountManagedStatusFinderTest, KeepsWaitingOnPartialAccountInfoUpdate) {
   // An account from an unknown domain can not be identified immediately, so the
   // outcome is pending.
   base::MockCallback<base::OnceClosure> outcome_determined;
-  AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
+  AccountManagedStatusFinder finder(identity_env_.identity_manager(),
+                                    account.GetCoreAccountInfo(),
                                     outcome_determined.Get());
   ASSERT_EQ(finder.GetOutcome(), AccountManagedStatusFinder::Outcome::kPending);
 
@@ -266,7 +275,8 @@ TEST_F(AccountManagedStatusFinderTest,
   // An account from an unknown domain can not be identified immediately, so the
   // outcome is pending.
   base::MockCallback<base::OnceClosure> outcome_determined;
-  AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
+  AccountManagedStatusFinder finder(identity_env_.identity_manager(),
+                                    account.GetCoreAccountInfo(),
                                     outcome_determined.Get());
   ASSERT_EQ(finder.GetOutcome(), AccountManagedStatusFinder::Outcome::kPending);
 
@@ -307,7 +317,8 @@ TEST_F(AccountManagedStatusFinderTest,
 
   // Outcome is pending until tokens are loaded.
   base::MockCallback<base::OnceClosure> outcome_determined;
-  AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
+  AccountManagedStatusFinder finder(identity_env_.identity_manager(),
+                                    account.GetCoreAccountInfo(),
                                     outcome_determined.Get());
   ASSERT_EQ(finder.GetOutcome(), AccountManagedStatusFinder::Outcome::kPending);
 
@@ -335,7 +346,8 @@ TEST_F(AccountManagedStatusFinderTest, ErrorOnNonExistentAccount) {
 
   // The AccountManagedStatusFinder should detect this and immediately report an
   // error.
-  AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
+  AccountManagedStatusFinder finder(identity_env_.identity_manager(),
+                                    account.GetCoreAccountInfo(),
                                     base::DoNothing());
   EXPECT_EQ(finder.GetOutcome(), AccountManagedStatusFinder::Outcome::kError);
 }
@@ -347,7 +359,8 @@ TEST_F(AccountManagedStatusFinderTest, ErrorOnAccountRemoved) {
   // The account exists at the time the AccountManagedStatusFinder is created,
   // but its status is not known yet.
   base::MockCallback<base::OnceClosure> outcome_determined;
-  AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
+  AccountManagedStatusFinder finder(identity_env_.identity_manager(),
+                                    account.GetCoreAccountInfo(),
                                     outcome_determined.Get());
   ASSERT_EQ(finder.GetOutcome(), AccountManagedStatusFinder::Outcome::kPending);
 
@@ -367,7 +380,8 @@ TEST_F(AccountManagedStatusFinderTest,
 
   // Outcome is pending until tokens are loaded.
   base::MockCallback<base::OnceClosure> outcome_determined;
-  AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
+  AccountManagedStatusFinder finder(identity_env_.identity_manager(),
+                                    account.GetCoreAccountInfo(),
                                     outcome_determined.Get());
   EXPECT_EQ(finder.GetOutcome(), AccountManagedStatusFinder::Outcome::kPending);
 
@@ -389,7 +403,8 @@ TEST_F(
 
   // Outcome is pending until tokens are loaded.
   base::MockCallback<base::OnceClosure> outcome_determined;
-  AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
+  AccountManagedStatusFinder finder(identity_env_.identity_manager(),
+                                    account.GetCoreAccountInfo(),
                                     outcome_determined.Get());
   EXPECT_EQ(finder.GetOutcome(), AccountManagedStatusFinder::Outcome::kPending);
 
@@ -411,7 +426,8 @@ TEST_F(AccountManagedStatusFinderTest,
 
   // Outcome is pending until tokens are loaded.
   base::MockCallback<base::OnceClosure> outcome_determined;
-  AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
+  AccountManagedStatusFinder finder(identity_env_.identity_manager(),
+                                    account.GetCoreAccountInfo(),
                                     outcome_determined.Get());
   EXPECT_EQ(finder.GetOutcome(), AccountManagedStatusFinder::Outcome::kPending);
 
@@ -431,7 +447,8 @@ TEST_F(AccountManagedStatusFinderTest,
 
   // Outcome is pending until tokens are loaded.
   base::MockCallback<base::OnceClosure> outcome_determined;
-  AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
+  AccountManagedStatusFinder finder(identity_env_.identity_manager(),
+                                    account.GetCoreAccountInfo(),
                                     outcome_determined.Get());
   EXPECT_EQ(finder.GetOutcome(), AccountManagedStatusFinder::Outcome::kPending);
 
@@ -462,7 +479,8 @@ TEST_F(AccountManagedStatusFinderTest, TimeoutTriggered) {
   // account info fetch.
   base::MockCallback<base::OnceClosure> outcome_determined;
   base::TimeDelta timeout(base::Seconds(30));
-  AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
+  AccountManagedStatusFinder finder(identity_env_.identity_manager(),
+                                    account.GetCoreAccountInfo(),
                                     outcome_determined.Get(), timeout);
   EXPECT_EQ(finder.GetOutcome(), AccountManagedStatusFinder::Outcome::kPending);
 
@@ -479,7 +497,8 @@ TEST_F(AccountManagedStatusFinderTest,
 
   base::MockCallback<base::OnceClosure> outcome_determined;
   base::TimeDelta timeout(base::Seconds(30));
-  AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
+  AccountManagedStatusFinder finder(identity_env_.identity_manager(),
+                                    account.GetCoreAccountInfo(),
                                     outcome_determined.Get(), timeout);
   EXPECT_EQ(finder.GetOutcome(),
             AccountManagedStatusFinder::Outcome::kConsumerGmail);
@@ -501,7 +520,8 @@ TEST_F(AccountManagedStatusFinderTest,
   // outcome is pending.
   base::MockCallback<base::OnceClosure> outcome_determined;
   base::TimeDelta timeout(base::Seconds(30));
-  AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
+  AccountManagedStatusFinder finder(identity_env_.identity_manager(),
+                                    account.GetCoreAccountInfo(),
                                     outcome_determined.Get(), timeout);
   EXPECT_EQ(finder.GetOutcome(), AccountManagedStatusFinder::Outcome::kPending);
 
@@ -535,7 +555,8 @@ TEST_F(AccountManagedStatusFinderTest,
   // determined, so the callback should never be called.
   EXPECT_CALL(outcome_determined, Run).Times(0);
   {
-    AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
+    AccountManagedStatusFinder finder(identity_env_.identity_manager(),
+                                      account.GetCoreAccountInfo(),
                                       outcome_determined.Get(), timeout);
     EXPECT_EQ(finder.GetOutcome(),
               AccountManagedStatusFinder::Outcome::kPending);
@@ -560,7 +581,8 @@ TEST_F(AccountManagedStatusFinderTest,
 
   // The AccountManagedStatusFinder should be able to immediately identify the
   // enterprise account based on the hosted_domain in the account info.
-  AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
+  AccountManagedStatusFinder finder(identity_env_.identity_manager(),
+                                    account.GetCoreAccountInfo(),
                                     base::DoNothing());
   EXPECT_EQ(finder.GetOutcome(),
             AccountManagedStatusFinder::Outcome::kEnterprise);
@@ -575,7 +597,8 @@ TEST_F(AccountManagedStatusFinderTest,
   // account can not be identified immediately - it's only a potential
   // enterprise account for now, so the outcome is still pending.
   base::MockCallback<base::OnceClosure> outcome_determined;
-  AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
+  AccountManagedStatusFinder finder(identity_env_.identity_manager(),
+                                    account.GetCoreAccountInfo(),
                                     outcome_determined.Get());
   EXPECT_EQ(finder.GetOutcome(), AccountManagedStatusFinder::Outcome::kPending);
 
@@ -604,7 +627,8 @@ TEST_F(AccountManagedStatusFinderTest, ImmediateOutcomeAuthError) {
   // Need to specify the timeout, otherwise `AccountManagedStatusFinder` ignores
   // auth errors.
   base::TimeDelta timeout(base::Seconds(30));
-  AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
+  AccountManagedStatusFinder finder(identity_env_.identity_manager(),
+                                    account.GetCoreAccountInfo(),
                                     outcome_determined.Get(), timeout);
 
   // Since the account has a persistent auth error, the outcome should be
@@ -621,7 +645,8 @@ TEST_F(AccountManagedStatusFinderTest, DelayedOutcomeAuthError) {
   // Need to specify the timeout, otherwise `AccountManagedStatusFinder` ignores
   // auth errors.
   base::TimeDelta timeout(base::Seconds(30));
-  AccountManagedStatusFinder finder(identity_env_.identity_manager(), account,
+  AccountManagedStatusFinder finder(identity_env_.identity_manager(),
+                                    account.GetCoreAccountInfo(),
                                     outcome_determined.Get(), timeout);
 
   EXPECT_EQ(finder.GetOutcome(), AccountManagedStatusFinder::Outcome::kPending);

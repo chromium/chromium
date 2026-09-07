@@ -193,7 +193,7 @@ void SignOutDoneForSceneState(id<SystemIdentity> identity,
   }
   CoreAccountInfo primaryAccountInfo =
       identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  if (info.gaia == primaryAccountInfo.gaia) {
+  if (info.GetGaiaId() == primaryAccountInfo.gaia) {
     [self checkPrimaryAccountCanSignInToChromeCapability];
   }
 }

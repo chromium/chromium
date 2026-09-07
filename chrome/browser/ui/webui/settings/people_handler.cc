@@ -707,7 +707,8 @@ void PeopleHandler::HandleStartSyncingWithEmail(const base::ListValue& args) {
       IdentityManagerFactory::GetForProfile(profile_)
           ->FindExtendedAccountInfoByEmailAddress(email.GetString());
   signin_ui_util::EnableSyncFromMultiAccountPromo(
-      profile_, maybe_account, signin_metrics::AccessPoint::kSettings,
+      profile_, maybe_account.GetCoreAccountInfo(),
+      signin_metrics::AccessPoint::kSettings,
       is_default_promo_account.GetBool());
 #else
   NOTIMPLEMENTED();

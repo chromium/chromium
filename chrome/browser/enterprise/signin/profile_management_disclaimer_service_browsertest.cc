@@ -315,10 +315,11 @@ IN_PROC_BROWSER_TEST_P(
 
   ASSERT_TRUE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-  ASSERT_EQ(identity_manager()
-                ->FindExtendedAccountInfo(primary_account_info)
-                .IsManaged(),
-            signin::TriboolFromBool(GetParam().is_managed));
+  ASSERT_EQ(
+      identity_manager()
+          ->FindExtendedAccountInfo(primary_account_info.GetCoreAccountInfo())
+          .IsManaged(),
+      signin::TriboolFromBool(GetParam().is_managed));
   ASSERT_FALSE(enterprise_util::UserAcceptedAccountManagement(GetProfile()));
 
   // Create a new browser to trigger the profile management disclaimer.
@@ -505,10 +506,11 @@ IN_PROC_BROWSER_TEST_P(ProfileManagementDisclaimerServiceSigninBrowserTest,
       GetParam().is_managed ? "example.com" : std::string());
   ASSERT_TRUE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-  ASSERT_EQ(identity_manager()
-                ->FindExtendedAccountInfo(primary_account_info)
-                .IsManaged(),
-            signin::TriboolFromBool(GetParam().is_managed));
+  ASSERT_EQ(
+      identity_manager()
+          ->FindExtendedAccountInfo(primary_account_info.GetCoreAccountInfo())
+          .IsManaged(),
+      signin::TriboolFromBool(GetParam().is_managed));
   ASSERT_FALSE(enterprise_util::UserAcceptedAccountManagement(GetProfile()));
 
   Profile* new_profile = nullptr;
@@ -744,10 +746,11 @@ IN_PROC_BROWSER_TEST_F(ProfileManagementDisclaimerServiceBrowserTest,
 
   ASSERT_TRUE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-  ASSERT_EQ(identity_manager()
-                ->FindExtendedAccountInfo(primary_account_info)
-                .IsManaged(),
-            signin::TriboolFromBool(true));
+  ASSERT_EQ(
+      identity_manager()
+          ->FindExtendedAccountInfo(primary_account_info.GetCoreAccountInfo())
+          .IsManaged(),
+      signin::TriboolFromBool(true));
   ASSERT_TRUE(enterprise_util::UserAcceptedAccountManagement(GetProfile()));
   // There should be no failure info in the pref since the registration
   // succeeded because the result was cached.
@@ -849,10 +852,11 @@ IN_PROC_BROWSER_TEST_F(ProfileManagementDisclaimerServiceBrowserTest,
 
   ASSERT_TRUE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-  ASSERT_EQ(identity_manager()
-                ->FindExtendedAccountInfo(primary_account_info)
-                .IsManaged(),
-            signin::TriboolFromBool(true));
+  ASSERT_EQ(
+      identity_manager()
+          ->FindExtendedAccountInfo(primary_account_info.GetCoreAccountInfo())
+          .IsManaged(),
+      signin::TriboolFromBool(true));
   ASSERT_TRUE(enterprise_util::UserAcceptedAccountManagement(GetProfile()));
   // There should be no failure info in the pref since the registration
   // succeeded because the result was cached.

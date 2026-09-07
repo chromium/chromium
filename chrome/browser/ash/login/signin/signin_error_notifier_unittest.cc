@@ -128,7 +128,7 @@ TEST_F(SigninErrorNotifierTest, NoNotification) {
 // is unnecessary.
 TEST_F(SigninErrorNotifierTest, NoNotificationAfterAddSupervisionEnabled) {
   CoreAccountId account_id =
-      identity_test_env()->MakeAccountAvailable(kTestEmail).account_id;
+      identity_test_env()->MakeAccountAvailable(kTestEmail).GetAccountId();
   identity_test_env()->SetPrimaryAccount(kTestEmail,
                                          signin::ConsentLevel::kSync);
 
@@ -152,7 +152,7 @@ TEST_F(SigninErrorNotifierTest, ErrorResetForPrimaryAccount) {
   CoreAccountId account_id =
       identity_test_env()
           ->MakePrimaryAccountAvailable(kTestEmail, signin::ConsentLevel::kSync)
-          .account_id;
+          .GetAccountId();
   SetAuthError(
       account_id,
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
@@ -169,7 +169,7 @@ TEST_F(SigninErrorNotifierTest, ErrorShownForUnconsentedPrimaryAccount) {
   CoreAccountId account_id = identity_test_env()
                                  ->MakePrimaryAccountAvailable(
                                      kTestEmail, signin::ConsentLevel::kSignin)
-                                 .account_id;
+                                 .GetAccountId();
   SetAuthError(
       account_id,
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
@@ -184,7 +184,7 @@ TEST_F(SigninErrorNotifierTest, ErrorResetForSecondaryAccount) {
   EXPECT_FALSE(GetSecondaryAccountErrorNotification());
 
   CoreAccountId account_id =
-      identity_test_env()->MakeAccountAvailable(kTestEmail).account_id;
+      identity_test_env()->MakeAccountAvailable(kTestEmail).GetAccountId();
   SetAuthError(
       account_id,
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
@@ -201,7 +201,7 @@ TEST_F(SigninErrorNotifierTest, ErrorTransitionForPrimaryAccount) {
   CoreAccountId account_id =
       identity_test_env()
           ->MakePrimaryAccountAvailable(kTestEmail, signin::ConsentLevel::kSync)
-          .account_id;
+          .GetAccountId();
   SetAuthError(
       account_id,
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
@@ -250,7 +250,7 @@ TEST_F(SigninErrorNotifierTest, AuthStatusEnumerateAllErrors) {
   CoreAccountId account_id =
       identity_test_env()
           ->MakePrimaryAccountAvailable(kTestEmail, signin::ConsentLevel::kSync)
-          .account_id;
+          .GetAccountId();
 
   for (size_t i = 0; i < std::size(errors); ++i) {
     const auto& error = errors[i];
@@ -277,9 +277,11 @@ TEST_F(SigninErrorNotifierTest, ChildSecondaryAccountMigrationTest) {
   CoreAccountId primary_account =
       identity_test_env()
           ->MakePrimaryAccountAvailable(kTestEmail, signin::ConsentLevel::kSync)
-          .account_id;
+          .GetAccountId();
   CoreAccountId secondary_account =
-      identity_test_env()->MakeAccountAvailable(kTestSecondaryEmail).account_id;
+      identity_test_env()
+          ->MakeAccountAvailable(kTestSecondaryEmail)
+          .GetAccountId();
 
   // Mark the profile as a child user.
   GetProfile()->SetIsSupervisedProfile();
@@ -323,7 +325,7 @@ TEST_F(SigninErrorNotifierTest, TokenHandleTest) {
   const GaiaId gaia_id =
       identity_test_env()
           ->MakePrimaryAccountAvailable(kTestEmail, signin::ConsentLevel::kSync)
-          .gaia;
+          .GetGaiaId();
   const AccountId account_id = AccountId::FromUserEmailGaiaId(
       /*user_email=*/kTestEmail, gaia_id);
   token_handle_store_->StoreTokenHandle(account_id, kTokenHandle);
@@ -346,7 +348,9 @@ TEST_F(SigninErrorNotifierTest,
        TokenHandleErrorsDoNotDisplaySecondaryAccountErrors) {
   // Setup Secondary Account Error.
   CoreAccountId secondary_account =
-      identity_test_env()->MakeAccountAvailable(kTestSecondaryEmail).account_id;
+      identity_test_env()
+          ->MakeAccountAvailable(kTestSecondaryEmail)
+          .GetAccountId();
   SetAuthError(
       secondary_account,
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
@@ -356,7 +360,7 @@ TEST_F(SigninErrorNotifierTest,
   const GaiaId gaia_id =
       identity_test_env()
           ->MakePrimaryAccountAvailable(kTestEmail, signin::ConsentLevel::kSync)
-          .gaia;
+          .GetGaiaId();
   const AccountId account_id = AccountId::FromUserEmailGaiaId(
       /*user_email=*/kTestEmail, gaia_id);
   token_handle_store_->StoreTokenHandle(account_id, kTokenHandle);

@@ -1561,10 +1561,10 @@ TEST_P(PasswordProtectionServiceBaseTest, VerifyShouldShowModalWarning) {
       .WillRepeatedly(Return(PHISHING_REUSE));
   EXPECT_CALL(*password_protection_service_, IsPrimaryAccountSignedIn())
       .WillRepeatedly(Return(true));
-  AccountInfo account_info;
-  account_info.account_id = CoreAccountId::FromGaiaId(GaiaId("gaia"));
-  account_info.email = "email";
-  account_info.gaia = GaiaId("gaia");
+  AccountInfo account_info =
+      AccountInfo::Builder(GaiaId("gaia"), "email")
+          .SetAccountId(CoreAccountId::FromGaiaId(GaiaId("gaia")))
+          .Build();
   EXPECT_CALL(*password_protection_service_, GetAccountInfoForUsername(_))
       .WillRepeatedly(Return(account_info));
 
@@ -1711,10 +1711,10 @@ TEST_P(PasswordProtectionServiceBaseTest,
        VerifyIsSupportedPasswordTypeForPinging) {
   EXPECT_CALL(*password_protection_service_, IsPrimaryAccountSignedIn())
       .WillRepeatedly(Return(true));
-  AccountInfo account_info;
-  account_info.account_id = CoreAccountId::FromGaiaId(GaiaId("gaia"));
-  account_info.email = "email";
-  account_info.gaia = GaiaId("gaia");
+  AccountInfo account_info =
+      AccountInfo::Builder(GaiaId("gaia"), "email")
+          .SetAccountId(CoreAccountId::FromGaiaId(GaiaId("gaia")))
+          .Build();
   EXPECT_CALL(*password_protection_service_, GetAccountInfoForUsername(_))
       .WillRepeatedly(Return(account_info));
 

@@ -46,13 +46,13 @@ class ProfileNameResolverTest : public testing::Test {
 };
 
 TEST_F(ProfileNameResolverTest, RunWithProfileName) {
-  CoreAccountInfo core_account_info =
+  AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable(kTestEmail);
   base::test::TestFuture<std::u16string> profile_name_future;
   base::test::TestFuture<std::u16string> profile_name_future_2;
 
   ProfileNameResolver resolver{identity_test_env()->identity_manager(),
-                               core_account_info};
+                               account_info.GetCoreAccountInfo()};
 
   // `RunWithProfileName` should not run the callback as no profile name is
   // available.
@@ -63,7 +63,7 @@ TEST_F(ProfileNameResolverTest, RunWithProfileName) {
   // Simulate the account info being updated, should result in the callback
   // getting called.
   resolver.OnExtendedAccountInfoUpdated(
-      FillAccountInfo(core_account_info, kTestGivenName));
+      FillAccountInfo(account_info.GetCoreAccountInfo(), kTestGivenName));
   EXPECT_EQ(base::ASCIIToUTF16(kTestGivenName), profile_name_future.Get());
 
   // Calling `RunWithProfileName` again should make it get called right away,
@@ -74,14 +74,14 @@ TEST_F(ProfileNameResolverTest, RunWithProfileName) {
 }
 
 TEST_F(ProfileNameResolverTest, RunWithProfileName_InfoAvailable) {
-  CoreAccountInfo core_account_info =
+  AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable(kTestEmail);
   identity_test_env()->UpdateAccountInfoForAccount(
-      FillAccountInfo(core_account_info, kTestGivenName));
+      FillAccountInfo(account_info.GetCoreAccountInfo(), kTestGivenName));
   base::test::TestFuture<std::u16string> profile_name_future;
 
   ProfileNameResolver resolver{identity_test_env()->identity_manager(),
-                               core_account_info};
+                               account_info.GetCoreAccountInfo()};
 
   // The information is available, the callback should run right away.
   resolver.RunWithProfileName(profile_name_future.GetCallback());

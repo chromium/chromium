@@ -468,7 +468,7 @@ bool ChromePasswordProtectionService::IsPrimaryAccountSyncingHistory() const {
 }
 
 bool ChromePasswordProtectionService::IsPrimaryAccountSignedIn() const {
-  return !GetAccountInfo().account_id.empty() &&
+  return !GetAccountInfo().GetAccountId().empty() &&
          GetAccountInfo().GetHostedDomain().has_value();
 }
 

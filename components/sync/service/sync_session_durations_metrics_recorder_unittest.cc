@@ -44,7 +44,7 @@ class SyncSessionDurationsMetricsRecorderTest : public testing::Test {
   void SignIn(signin::ConsentLevel consent_level) {
     AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
         "foo@gmail.com", consent_level);
-    sync_service_.SetSignedIn(consent_level, account_info);
+    sync_service_.SetSignedIn(consent_level, account_info.GetCoreAccountInfo());
     sync_service_.FireStateChanged();
   }
 

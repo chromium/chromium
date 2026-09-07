@@ -57,13 +57,13 @@ class AccountCapabilitiesFetcherIOSTest : public PlatformTest {
         FakeSystemIdentityManager::FromSystemIdentityManager(
             GetApplicationContext()->GetSystemIdentityManager());
 
-    CoreAccountInfo account_info =
+    AccountInfo account_info =
         identity_test_environment_.MakeAccountAvailable(kTestEmail);
 
     // Register a fake identity and set the expected capabilities.
     id<SystemIdentity> identity = [FakeSystemIdentity
-        identityWithEmail:base::SysUTF8ToNSString(account_info.email)
-                   gaiaID:account_info.gaia];
+        identityWithEmail:base::SysUTF8ToNSString(account_info.GetEmail())
+                   gaiaID:account_info.GetGaiaId()];
     system_identity_manager->AddIdentity(identity);
 
     if (capability_fetched.has_value() &&
@@ -79,7 +79,8 @@ class AccountCapabilitiesFetcherIOSTest : public PlatformTest {
     // Check that the capabilities are correctly converted.
     base::RunLoop run_loop;
     ios::AccountCapabilitiesFetcherIOS fetcher(
-        account_info, AccountCapabilitiesFetcher::FetchPriority::kForeground,
+        account_info.GetCoreAccountInfo(),
+        AccountCapabilitiesFetcher::FetchPriority::kForeground,
         account_manager_service_,
         base::BindRepeating(&CheckCapability, capability_expected),
         base::BindOnce([](base::RunLoop* run_loop,

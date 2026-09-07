@@ -52,7 +52,8 @@ void MakePrimaryAccountAvailable(
 #if !BUILDFLAG(IS_CHROMEOS)
   identity_test_env.ClearPrimaryAccount();
   account_info =
-      identity_test_env.MakePrimaryAccountAvailable(email, consent_level);
+      identity_test_env.MakePrimaryAccountAvailable(email, consent_level)
+          .GetCoreAccountInfo();
 #else
   // In ChromeOS-Ash, clearing/resetting the primary account is not supported.
   // So if an account already exists, reuse it (and make sure it matches).
@@ -62,7 +63,8 @@ void MakePrimaryAccountAvailable(
     ASSERT_EQ(account_info.email, email);
   } else {
     account_info =
-        identity_test_env.MakePrimaryAccountAvailable(email, consent_level);
+        identity_test_env.MakePrimaryAccountAvailable(email, consent_level)
+            .GetCoreAccountInfo();
   }
 #endif
   sync_service.SetSignedIn(use_sync_transport_mode

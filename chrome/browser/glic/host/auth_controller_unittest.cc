@@ -427,7 +427,7 @@ TEST_F(
   signin::ClearPrimaryAccount(identity_test_env_->identity_manager());
   AccountInfo account_info2 =
       identity_test_env_->MakeAccountAvailable("user2@gmail.com");
-  identity_test_env_->SetPrimaryAccount(account_info2.email,
+  identity_test_env_->SetPrimaryAccount(account_info2.GetEmail(),
                                         signin::ConsentLevel::kSignin);
   task_environment_.FastForwardBy(base::Seconds(10));
   EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 0);

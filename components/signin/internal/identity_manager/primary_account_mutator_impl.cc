@@ -82,7 +82,7 @@ PrimaryAccountMutatorImpl::SetPrimaryAccount(
               syncer::kReplaceSyncPromosWithSignInPromos)) {
         if (primary_account_manager_->HasPrimaryAccount(
                 ConsentLevel::kSignin)) {
-          CHECK_EQ(account_info,
+          CHECK_EQ(account_info.GetCoreAccountInfo(),
                    primary_account_manager_->GetPrimaryAccountInfo(
                        ConsentLevel::kSignin));
         }
@@ -107,7 +107,7 @@ PrimaryAccountMutatorImpl::SetPrimaryAccount(
   }
 
   primary_account_manager_->SetPrimaryAccountInfo(
-      account_info, consent_level, access_point,
+      account_info.GetCoreAccountInfo(), consent_level, access_point,
       std::move(prefs_committed_callback));
   return PrimaryAccountError::kNoError;
 }

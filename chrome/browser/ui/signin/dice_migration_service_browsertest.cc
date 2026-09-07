@@ -109,9 +109,9 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
       GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   // The user is signed in to the web only.
   signin::WaitForRefreshTokensLoaded(GetIdentityManager());
-  EXPECT_THAT(
-      GetIdentityManager()->GetAccountsWithRefreshTokens(),
-      testing::ElementsAre(testing::Field(&AccountInfo::email, kTestEmail)));
+  EXPECT_THAT(GetIdentityManager()->GetAccountsWithRefreshTokens(),
+              testing::ElementsAre(
+                  testing::Field(&CoreAccountInfo::email, kTestEmail)));
 
   histogram_tester_.ExpectUniqueSample(kForceMigratedHistogram, true, 1);
   histogram_tester_.ExpectUniqueSample(
@@ -187,8 +187,8 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
   // The user is signed in to the web only.
   signin::WaitForRefreshTokensLoaded(GetIdentityManager());
   EXPECT_THAT(GetIdentityManager()->GetAccountsWithRefreshTokens(),
-              testing::ElementsAre(
-                  testing::Field(&AccountInfo::email, kEnterpriseTestEmail)));
+              testing::ElementsAre(testing::Field(&CoreAccountInfo::email,
+                                                  kEnterpriseTestEmail)));
 
   histogram_tester_.ExpectUniqueSample(kForceMigratedHistogram, true, 1);
   histogram_tester_.ExpectUniqueSample(kForcedMigrationAccountManagedHistogram,
@@ -228,8 +228,8 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
   // The user is signed in to the web.
   signin::WaitForRefreshTokensLoaded(GetIdentityManager());
   EXPECT_THAT(GetIdentityManager()->GetAccountsWithRefreshTokens(),
-              testing::ElementsAre(
-                  testing::Field(&AccountInfo::email, kEnterpriseTestEmail)));
+              testing::ElementsAre(testing::Field(&CoreAccountInfo::email,
+                                                  kEnterpriseTestEmail)));
 
   histogram_tester_.ExpectUniqueSample(kForceMigratedHistogram, true, 1);
   histogram_tester_.ExpectUniqueSample(kForcedMigrationAccountManagedHistogram,

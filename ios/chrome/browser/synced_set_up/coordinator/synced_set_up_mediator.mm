@@ -416,7 +416,7 @@ void LogSnackbarInteraction(SyncedSetUpState state,
 // Called when the extended account info (i.e., name and avatar) is
 // updated/fetched.
 - (void)extendedAccountInfoDidUpdate:(const AccountInfo&)info {
-  if (!_primaryIdentity || _primaryIdentity.gaiaId != info.gaia) {
+  if (!_primaryIdentity || _primaryIdentity.gaiaId != info.GetGaiaId()) {
     return;
   }
 

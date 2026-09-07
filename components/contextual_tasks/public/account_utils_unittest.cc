@@ -339,7 +339,7 @@ TEST_F(AccountUtilsTest,
   AccountInfo account = identity_test_environment_.MakePrimaryAccountAvailable(
       "primary@example.com", signin::ConsentLevel::kSignin);
   identity_test_environment_.UpdatePersistentErrorOfRefreshTokenForAccount(
-      account.account_id,
+      account.GetAccountId(),
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
           GoogleServiceAuthError::InvalidGaiaCredentialsReason::
               CREDENTIALS_REJECTED_BY_SERVER));

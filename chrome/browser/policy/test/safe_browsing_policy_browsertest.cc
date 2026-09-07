@@ -296,9 +296,8 @@ class MockPasswordProtectionService
   MOCK_CONST_METHOD0(IsPrimaryAccountGmail, bool());
 
   AccountInfo GetAccountInfo() const override {
-    AccountInfo info;
-    info.email = "user@mycompany.com";
-    return info;
+    return AccountInfo::Builder(GaiaId("test_gaia_id"), "user@mycompany.com")
+        .Build();
   }
 };
 

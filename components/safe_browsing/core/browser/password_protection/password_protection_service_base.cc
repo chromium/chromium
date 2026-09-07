@@ -351,7 +351,7 @@ PasswordProtectionServiceBase::GetPasswordProtectionReusedPasswordAccountType(
     }
     case PasswordType::OTHER_GAIA_PASSWORD: {
       AccountInfo account_info = GetAccountInfoForUsername(username);
-      if (account_info.account_id.empty() ||
+      if (account_info.GetAccountId().empty() ||
           !account_info.GetHostedDomain().has_value()) {
         reused_password_account_type.set_account_type(
             ReusedPasswordAccountType::UNKNOWN);

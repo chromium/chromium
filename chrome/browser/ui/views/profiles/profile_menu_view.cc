@@ -798,7 +798,8 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
         break;
       }
       // "Continue as" signin button.
-      account_info_for_signin_action = account_info_for_promos;
+      account_info_for_signin_action =
+          account_info_for_promos.GetCoreAccountInfo();
       if (account_preview_data_service) {
         if (std::optional<
                 signin::AccountPreviewDataService::AccountPreviewPreference>

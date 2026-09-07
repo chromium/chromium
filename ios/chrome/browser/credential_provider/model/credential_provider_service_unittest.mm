@@ -369,7 +369,8 @@ TEST_F(CredentialProviderServiceTest, AccountChange) {
 
   // Set managed account as the primary one.
   CoreAccountInfo core_account =
-      identity_test_environment_.MakeAccountAvailable(kEmailFoo);
+      identity_test_environment_.MakeAccountAvailable(kEmailFoo)
+          .GetCoreAccountInfo();
   AccountInfo account = AccountInfo::Builder(core_account)
                             .SetHostedDomain(kManagedDomain)
                             .Build();

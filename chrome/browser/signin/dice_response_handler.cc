@@ -423,8 +423,9 @@ void DiceResponseHandler::DiceSigninSession::OnTokenExchangeSuccess(
 
     if (fetcher->should_enable_sync()) {
       delegate_->CompleteChromeSignInAfterGaiaSignin(
-          handler_->identity_manager_->FindExtendedAccountInfoByAccountId(
-              account_id));
+          handler_->identity_manager_
+              ->FindExtendedAccountInfoByAccountId(account_id)
+              .GetCoreAccountInfo());
     }
 
     if (GetFetchMode() == FetchMode::kInitiatorFirst) {
@@ -656,7 +657,8 @@ void DiceResponseHandler::ProcessEnableSyncHeader(
   if (account_info.IsEmpty()) {
     return;
   }
-  delegate->CompleteChromeSignInAfterGaiaSignin(account_info);
+  delegate->CompleteChromeSignInAfterGaiaSignin(
+      account_info.GetCoreAccountInfo());
 }
 
 void DiceResponseHandler::ProcessDiceSignoutHeader(

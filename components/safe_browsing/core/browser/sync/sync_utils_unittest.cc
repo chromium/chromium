@@ -37,7 +37,8 @@ TEST_F(SyncUtilsTest, AreSigninAndSyncSetUpForSafeBrowsingTokenFetches) {
   // Sign in a user.
   AccountInfo account_info = identity_test_env->MakePrimaryAccountAvailable(
       "foo@gmail.com", signin::ConsentLevel::kSignin);
-  sync_service.SetSignedIn(signin::ConsentLevel::kSignin, account_info);
+  sync_service.SetSignedIn(signin::ConsentLevel::kSignin,
+                           account_info.GetCoreAccountInfo());
   EXPECT_TRUE(SyncUtils::AreSigninAndSyncSetUpForSafeBrowsingTokenFetches(
       &sync_service, identity_manager,
       /* user_has_enabled_enhanced_protection=*/true));
