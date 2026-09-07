@@ -34,7 +34,9 @@
 #include "base/test/simple_test_clock.h"
 #include "base/unguessable_token.h"
 #include "chromeos/ash/components/geolocation/system_location_provider.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -152,6 +154,11 @@ class BirchModelTest : public AshTestBase {
 
   void SetUp() override {
     AshTestBase::SetUp();
+    // Make Coral's GenAI age check resolve to available so birch data fetches
+    // do not crash on the missing provider.
+    coral_gen_ai_availability_ = std::make_unique<ScopedCoralGenAIAvailability>(
+        AccountId::FromUserEmailGaiaId("coral-test@gmail.com",
+                                       GaiaId("coral-test-gaia-id")));
     // Inject no-op, stub weather provider to prevent real implementation from
     // returning empty weather info.
     stub_birch_client_.InstallStubWeatherDataProvider();
@@ -170,6 +177,10 @@ class BirchModelTest : public AshTestBase {
 
   void TearDown() override {
     Shell::Get()->birch_model()->SetClientAndInit(nullptr);
+    // Do not reset `coral_gen_ai_availability_` here: it installs the
+    // UserManager that AshTestHelper's SessionManager observes, and that
+    // SessionManager is destroyed by AshTestBase::TearDown(), so the helper
+    // must outlive it. It tears down with the fixture instead.
     AshTestBase::TearDown();
   }
 
@@ -194,6 +205,7 @@ class BirchModelTest : public AshTestBase {
   base::test::ScopedFeatureList feature_list_;
   StubBirchClient stub_birch_client_;
   base::SimpleTestClock test_clock_;
+  std::unique_ptr<ScopedCoralGenAIAvailability> coral_gen_ai_availability_;
 };
 
 // Test that requesting data and adding all fresh items to the model will run

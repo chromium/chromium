@@ -12,10 +12,66 @@
 #include "ash/wm/overview/birch/tab_app_selection_view.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid_test_api.h"
+#include "chromeos/ash/components/signin/fake_identity_manager_provider.h"
+#include "components/account_id/account_id.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/user_manager/test_helper.h"
+#include "components/user_manager/user_manager.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/view_utils.h"
 
 namespace ash {
+
+class ScopedCoralGenAIAvailability::Impl {
+ public:
+  explicit Impl(const AccountId& account_id)
+      : identity_test_env_(std::make_unique<signin::IdentityTestEnvironment>()),
+        provider_(std::make_unique<FakeIdentityManagerProvider>()) {
+    // Sign `account_id` in as the primary user, so
+    // BirchCoralProvider::CheckGenAIAgeAvailability() resolves the active
+    // account to it. The UserManager and SessionManager are installed by
+    // AshTestHelper.
+    auto* const session_manager = session_manager::SessionManager::Get();
+    // The signed-in account is the primary user; there must be no session yet.
+    CHECK(session_manager->sessions().empty());
+    CHECK(user_manager::TestHelper(user_manager::UserManager::Get())
+              .AddRegularUser(account_id));
+    session_manager->CreateSession(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id),
+        /*new_user=*/false, /*has_active_session=*/false);
+    session_manager->SessionStarted();
+
+    // Make `account_id`'s IdentityManager report the ChromeOS GenAI capability,
+    // and register it so CheckGenAIAgeAvailability() resolves to "available".
+    // MakePrimaryAccountAvailable blocks until refresh tokens are loaded, so
+    // the age check completes synchronously.
+    AccountInfo account = identity_test_env_->MakePrimaryAccountAvailable(
+        account_id.GetUserEmail(), signin::ConsentLevel::kSignin);
+    AccountCapabilitiesTestMutator mutator(&account);
+    mutator.set_can_use_chromeos_generative_ai(true);
+    identity_test_env_->UpdateAccountInfoForAccount(account);
+    provider_->SetIdentityManagerForAccount(
+        account_id, identity_test_env_->identity_manager());
+  }
+
+  Impl(const Impl&) = delete;
+  Impl& operator=(const Impl&) = delete;
+  ~Impl() = default;
+
+ private:
+  std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
+  std::unique_ptr<FakeIdentityManagerProvider> provider_;
+};
+
+ScopedCoralGenAIAvailability::ScopedCoralGenAIAvailability(
+    const AccountId& account_id)
+    : impl_(std::make_unique<Impl>(account_id)) {}
+
+ScopedCoralGenAIAvailability::~ScopedCoralGenAIAvailability() = default;
 
 TestEntity::TestEntity(const std::string& title,
                        const std::variant<GURL, std::string>& id)

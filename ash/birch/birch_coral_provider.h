@@ -17,8 +17,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
+#include "base/timer/timer.h"
 #include "base/token.h"
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "ui/aura/window_observer.h"
 
 class PrefRegistrySimple;
@@ -33,7 +36,8 @@ class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
                                       public coral::mojom::TitleObserver,
                                       public SessionObserver,
                                       public aura::WindowObserver,
-                                      public OverviewObserver {
+                                      public OverviewObserver,
+                                      public signin::IdentityManager::Observer {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -177,8 +181,17 @@ class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
   // Resets raw pointers and window observations when exiting Overview mode.
   void Reset();
 
-  // GenAI age availability inquiry callback.
+  // GenAI age availability inquiry. Resolves the active user's IdentityManager
+  // via ash::IdentityManagerProvider and checks the account capability,
+  // waiting (with a timeout) for refresh tokens if needed.
+  void CheckGenAIAgeAvailability();
   void OnGenAIAgeAvailabilityReceived(bool allow);
+  void HandleGenAIAgeInquiryTimeout();
+
+  // signin::IdentityManager::Observer:
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
+  void OnRefreshTokensLoaded() override;
 
   // The request sent to the coral backend.
   CoralRequest request_;
@@ -216,6 +229,14 @@ class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
 
   base::ScopedObservation<OverviewController, OverviewObserver>
       overview_observation_{this};
+
+  // Timeout for the async GenAI age availability inquiry (waiting for refresh
+  // tokens to load).
+  base::OneShotTimer gen_ai_age_inquiry_timeout_;
+
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 
   // The source desk of the in-session groups. It will be set to the current
   // active desk once in-session groups are generated. It will be reset when the

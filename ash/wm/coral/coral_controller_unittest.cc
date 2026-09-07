@@ -44,7 +44,9 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
@@ -69,6 +71,12 @@ class CoralControllerTestBase : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
+    // Make Coral's GenAI age check resolve to available so the coral data
+    // fetch on entering overview does not crash on the missing provider.
+    coral_gen_ai_availability_ = std::make_unique<ScopedCoralGenAIAvailability>(
+        AccountId::FromUserEmailGaiaId("coral-test@gmail.com",
+                                       GaiaId("coral-test-gaia-id")));
+
     // Create test birch client.
     auto* birch_model = Shell::Get()->birch_model();
     birch_client_ = std::make_unique<TestBirchClient>(birch_model);
@@ -88,11 +96,16 @@ class CoralControllerTestBase : public AshTestBase {
   void TearDown() override {
     Shell::Get()->birch_model()->SetClientAndInit(nullptr);
     birch_client_.reset();
+    // Do not reset `coral_gen_ai_availability_` here: it installs the
+    // UserManager that AshTestHelper's SessionManager observes, and that
+    // SessionManager is destroyed by AshTestBase::TearDown(), so the helper
+    // must outlive it. It tears down with the fixture instead.
     AshTestBase::TearDown();
   }
 
  private:
   std::unique_ptr<TestBirchClient> birch_client_;
+  std::unique_ptr<ScopedCoralGenAIAvailability> coral_gen_ai_availability_;
 
   base::test::ScopedFeatureList feature_list_{features::kCoralFeature};
 };

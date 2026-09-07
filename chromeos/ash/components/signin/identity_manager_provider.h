@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_SIGNIN_IDENTITY_MANAGER_PROVIDER_H_
 #define CHROMEOS_ASH_COMPONENTS_SIGNIN_IDENTITY_MANAGER_PROVIDER_H_
 
+#include "base/component_export.h"
+
 class AccountId;
 
 namespace signin {
@@ -13,7 +15,7 @@ class IdentityManager;
 
 namespace ash {
 
-class IdentityManagerProvider {
+class COMPONENT_EXPORT(IDENTITY_MANAGER_PROVIDER) IdentityManagerProvider {
  public:
   IdentityManagerProvider();
   IdentityManagerProvider(const IdentityManagerProvider&) = delete;

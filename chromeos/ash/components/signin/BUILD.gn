@@ -4,12 +4,26 @@
 
 assert(is_chromeos)
 
-static_library("identity_manager_provider") {
+component("identity_manager_provider") {
   public = [ "identity_manager_provider.h" ]
   sources = [ "identity_manager_provider.cc" ]
+
+  defines = [ "IS_IDENTITY_MANAGER_PROVIDER_IMPL" ]
 
   deps = [
     "//base",
     "//components/signin/public/identity_manager",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  public = [ "fake_identity_manager_provider.h" ]
+  sources = [ "fake_identity_manager_provider.cc" ]
+
+  public_deps = [ ":identity_manager_provider" ]
+  deps = [
+    "//base",
+    "//components/account_id",
   ]
 }

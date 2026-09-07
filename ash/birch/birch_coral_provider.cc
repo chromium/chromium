@@ -17,6 +17,7 @@
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/coral_delegate.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
+#include "ash/public/cpp/session/session_types.h"
 #include "ash/public/cpp/tab_cluster/tab_cluster_ui_controller.h"
 #include "ash/public/cpp/tab_cluster/tab_cluster_ui_item.h"
 #include "ash/public/cpp/window_properties.h"
@@ -35,12 +36,21 @@
 #include "ash/wm/window_restore/informed_restore_controller.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
+#include "chromeos/ash/components/signin/identity_manager_provider.h"
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/account_capabilities.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/wm/core/window_util.h"
@@ -69,6 +79,10 @@ struct hash<coral::mojom::EntityPtr> {
 
 namespace ash {
 namespace {
+
+// How long to wait for refresh tokens to load before treating the GenAI age
+// availability inquiry as failed.
+constexpr base::TimeDelta kGenAIInquiryTimeout = base::Seconds(10);
 
 constexpr size_t kMaxClusterCount = 2;
 // Persist post-login clusters for 15 minutes.
@@ -609,9 +623,7 @@ bool BirchCoralProvider::GetGenAIAvailability() {
   // If age availability is not checked and the checking result will be returned
   // asynchronously, use the pref value.
   if (!is_gen_ai_age_availability_checked_) {
-    coral_delegate->CheckGenAIAgeAvailability(
-        base::BindOnce(&BirchCoralProvider::OnGenAIAgeAvailabilityReceived,
-                       weak_ptr_factory_.GetWeakPtr()));
+    CheckGenAIAgeAvailability();
   }
 
   return (*is_gen_ai_location_allow_) &&
@@ -974,6 +986,73 @@ void BirchCoralProvider::Reset() {
   }
   in_session_source_desk_ = nullptr;
   windows_observation_.RemoveAllObservations();
+}
+
+void BirchCoralProvider::CheckGenAIAgeAvailability() {
+  // Skip if an inquiry is already pending.
+  if (identity_manager_observation_.IsObserving()) {
+    return;
+  }
+  // TODO(b/542786399): Take the account from the caller instead of reading the
+  // active session here; see the note on SessionManager::GetActiveSession().
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  if (!active_session) {
+    OnGenAIAgeAvailabilityReceived(false);
+    return;
+  }
+  signin::IdentityManager* identity_manager =
+      IdentityManagerProvider::Get().Find(active_session->account_id());
+  if (!identity_manager) {
+    OnGenAIAgeAvailabilityReceived(false);
+    return;
+  }
+  const auto account_id =
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  if (account_id.empty()) {
+    OnGenAIAgeAvailabilityReceived(false);
+    return;
+  }
+
+  // If the tokens are not ready, wait until they are loaded.
+  if (!identity_manager->AreRefreshTokensLoaded()) {
+    identity_manager_observation_.Observe(identity_manager);
+    gen_ai_age_inquiry_timeout_.Start(
+        FROM_HERE, kGenAIInquiryTimeout,
+        base::BindOnce(&BirchCoralProvider::HandleGenAIAgeInquiryTimeout,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
+  if (!identity_manager->HasAccountWithRefreshToken(account_id)) {
+    OnGenAIAgeAvailabilityReceived(false);
+    return;
+  }
+  const AccountInfo extended_account_info =
+      identity_manager->FindExtendedAccountInfoByAccountId(account_id);
+  OnGenAIAgeAvailabilityReceived(extended_account_info.GetAccountCapabilities()
+                                     .can_use_chromeos_generative_ai() ==
+                                 signin::Tribool::kTrue);
+}
+
+void BirchCoralProvider::OnIdentityManagerShutdown(
+    signin::IdentityManager* identity_manager) {
+  gen_ai_age_inquiry_timeout_.Stop();
+  identity_manager_observation_.Reset();
+}
+
+void BirchCoralProvider::OnRefreshTokensLoaded() {
+  if (identity_manager_observation_.IsObserving()) {
+    gen_ai_age_inquiry_timeout_.Stop();
+    identity_manager_observation_.Reset();
+    // Re-run now that the refresh tokens are loaded.
+    CheckGenAIAgeAvailability();
+  }
+}
+
+void BirchCoralProvider::HandleGenAIAgeInquiryTimeout() {
+  identity_manager_observation_.Reset();
+  OnGenAIAgeAvailabilityReceived(false);
 }
 
 void BirchCoralProvider::OnGenAIAgeAvailabilityReceived(bool allow) {

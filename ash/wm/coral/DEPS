@@ -1,0 +1,10 @@
+specific_include_rules = {
+  "coral_test_util\\.(cc|h)": [
+    "+chromeos/ash/components/signin",
+    "+components/account_id",
+    "+components/prefs",
+    "+components/session_manager",
+    "+components/signin",
+    "+components/user_manager",
+  ],
+}

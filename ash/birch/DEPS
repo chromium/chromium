@@ -1,4 +1,8 @@
 include_rules = [
   "+chromeos/ash/components/geolocation",
   "+chromeos/ash/components/settings",
+  "+chromeos/ash/components/signin",
+  "+components/session_manager/core/session.h",
+  "+components/session_manager/core/session_manager.h",
+  "+components/signin",
 ]

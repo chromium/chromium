@@ -5,12 +5,15 @@
 #ifndef ASH_WM_CORAL_CORAL_TEST_UTIL_H_
 #define ASH_WM_CORAL_CORAL_TEST_UTIL_H_
 
+#include <memory>
 #include <string>
 #include <variant>
 #include <vector>
 
 #include "ash/birch/coral_constants.h"
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
+
+class AccountId;
 
 namespace ui::test {
 class EventGenerator;
@@ -19,6 +22,26 @@ class EventGenerator;
 namespace ash {
 class CoralChipButton;
 class TabAppSelectionHost;
+
+// Installs a process-wide IdentityManagerProvider test double whose primary
+// account reports the ChromeOS GenAI capability. This makes Coral's GenAI age
+// check resolve to "available" in tests, matching the behavior of the previous
+// TestCoralDelegate stub. Construct one in a test's SetUp() before entering
+// overview so the coral data fetch does not crash on the missing provider.
+class ScopedCoralGenAIAvailability {
+ public:
+  explicit ScopedCoralGenAIAvailability(const AccountId& account_id);
+  ScopedCoralGenAIAvailability(const ScopedCoralGenAIAvailability&) = delete;
+  ScopedCoralGenAIAvailability& operator=(const ScopedCoralGenAIAvailability&) =
+      delete;
+  ~ScopedCoralGenAIAvailability();
+
+ private:
+  // Holds the IdentityManager/UserManager/SessionManager test doubles. Hidden
+  // in the .cc so this public header does not pull in those dependencies.
+  class Impl;
+  std::unique_ptr<Impl> impl_;
+};
 
 // Test struct that holds a string and a GURL or additional string. Simplifies
 // test code by allowing callsites to use initializer lists.
