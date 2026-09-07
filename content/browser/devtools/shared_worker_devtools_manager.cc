@@ -14,7 +14,7 @@ namespace content {
 
 // static
 SharedWorkerDevToolsManager* SharedWorkerDevToolsManager::GetInstance() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   return base::Singleton<SharedWorkerDevToolsManager>::get();
 }
 
@@ -28,8 +28,8 @@ void SharedWorkerDevToolsManager::WorkerCreated(
     SharedWorkerHost* worker_host,
     bool* pause_on_start,
     base::UnguessableToken* devtools_worker_token) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!live_hosts_.contains(worker_host));
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  CHECK(!live_hosts_.contains(worker_host), base::NotFatalUntil::M159);
 
   auto it = std::ranges::find_if(
       terminated_hosts_,
@@ -65,14 +65,14 @@ void SharedWorkerDevToolsManager::WorkerReadyForInspection(
     mojo::PendingRemote<blink::mojom::DevToolsAgent> agent_remote,
     mojo::PendingReceiver<blink::mojom::DevToolsAgentHost>
         agent_host_receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   live_hosts_[worker_host]->WorkerReadyForInspection(
       std::move(agent_remote), std::move(agent_host_receiver));
 }
 
 void SharedWorkerDevToolsManager::WorkerDestroyed(
     SharedWorkerHost* worker_host) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   scoped_refptr<SharedWorkerDevToolsAgentHost> agent_host =
       live_hosts_[worker_host];
   live_hosts_.erase(worker_host);
@@ -85,7 +85,7 @@ void SharedWorkerDevToolsManager::WorkerDestroyed(
 
 void SharedWorkerDevToolsManager::AgentHostDestroyed(
     SharedWorkerDevToolsAgentHost* agent_host) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   auto it = terminated_hosts_.find(agent_host);
   // Might be missing during shutdown due to different
   // destruction order of this manager, shared workers

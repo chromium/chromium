@@ -46,7 +46,7 @@ DevToolsIOContext::~DevToolsIOContext() = default;
 void DevToolsIOContext::RegisterStream(scoped_refptr<Stream> stream,
                                        const std::string& id) {
   bool inserted = streams_.emplace(id, std::move(stream)).second;
-  DCHECK(inserted);
+  CHECK(inserted, base::NotFatalUntil::M159);
 }
 
 scoped_refptr<DevToolsIOContext::Stream> DevToolsIOContext::GetByHandle(

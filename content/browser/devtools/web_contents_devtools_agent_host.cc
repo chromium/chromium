@@ -200,7 +200,7 @@ void WebContentsDevToolsAgentHost::InnerAttach(WebContents* wc) {
 }
 
 void WebContentsDevToolsAgentHost::InnerDetach() {
-  DCHECK_EQ(this, FindAgentHost(web_contents()));
+  CHECK_EQ(this, FindAgentHost(web_contents()), base::NotFatalUntil::M159);
   auto_attacher_->SetWebContents(nullptr);
   GetAgentHostInstances().erase(web_contents());
   Observe(nullptr);
@@ -230,7 +230,7 @@ void WebContentsDevToolsAgentHost::InspectElement(RenderFrameHost* frame_host,
 }
 
 WebContentsDevToolsAgentHost::~WebContentsDevToolsAgentHost() {
-  DCHECK(!web_contents());
+  CHECK(!web_contents(), base::NotFatalUntil::M159);
 }
 
 void WebContentsDevToolsAgentHost::DisconnectWebContents() {
@@ -427,7 +427,7 @@ bool WebContentsDevToolsAgentHost::AttachSession(DevToolsSession* session) {
 }
 
 protocol::TargetAutoAttacher* WebContentsDevToolsAgentHost::auto_attacher() {
-  DCHECK(auto_attacher_);
+  CHECK(auto_attacher_, base::NotFatalUntil::M159);
   return auto_attacher_.get();
 }
 

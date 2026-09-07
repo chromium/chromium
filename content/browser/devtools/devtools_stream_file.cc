@@ -42,11 +42,11 @@ DevToolsStreamFile::DevToolsStreamFile(DevToolsIOContext* context, bool binary)
       task_runner_(impl_task_runner()) {}
 
 DevToolsStreamFile::~DevToolsStreamFile() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M159);
 }
 
 bool DevToolsStreamFile::InitOnFileSequenceIfNeeded() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M159);
   if (had_errors_)
     return false;
   if (file_.IsValid())
@@ -110,8 +110,8 @@ DevToolsIOContext::Stream::Status DevToolsStreamFile::InnerReadOnFileSequence(
     off_t position,
     size_t max_size,
     std::string& buffer) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(file_.IsValid());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M159);
+  CHECK(file_.IsValid(), base::NotFatalUntil::M159);
 
   if (position < 0) {
     position = last_read_pos_;

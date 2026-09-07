@@ -29,7 +29,7 @@ WorkerOrWorkletDevToolsAgentHost::WorkerOrWorkletDevToolsAgentHost(
       url_(url),
       name_(name),
       destroyed_callback_(std::move(destroyed_callback)) {
-  DCHECK(!devtools_worker_token.is_empty());
+  CHECK(!devtools_worker_token.is_empty(), base::NotFatalUntil::M159);
   if (auto* rph = RenderProcessHost::FromID(process_id)) {
     process_observation_.Observe(rph);
   }
@@ -47,8 +47,8 @@ void WorkerOrWorkletDevToolsAgentHost::SetRenderer(
     int process_id,
     mojo::PendingRemote<blink::mojom::DevToolsAgent> agent_remote,
     mojo::PendingReceiver<blink::mojom::DevToolsAgentHost> host_receiver) {
-  DCHECK(agent_remote);
-  DCHECK(host_receiver);
+  CHECK(agent_remote, base::NotFatalUntil::M159);
+  CHECK(host_receiver, base::NotFatalUntil::M159);
 
   base::OnceClosure connection_error = (base::BindOnce(
       &WorkerOrWorkletDevToolsAgentHost::Disconnected, base::Unretained(this)));

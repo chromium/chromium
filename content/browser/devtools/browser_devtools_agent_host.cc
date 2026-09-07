@@ -100,8 +100,9 @@ class BrowserDevToolsAgentHost::BrowserAutoAttacher final
   }
 
   void ReattachServiceWorkers() {
-    DCHECK(auto_attach());
-    DCHECK(service_worker_devtools_manager_observation_.IsObserving());
+    CHECK(auto_attach(), base::NotFatalUntil::M159);
+    CHECK(service_worker_devtools_manager_observation_.IsObserving(),
+          base::NotFatalUntil::M159);
     ServiceWorkerDevToolsAgentHost::List agent_hosts;
     ServiceWorkerDevToolsManager::GetInstance()->AddAllAgentHosts(&agent_hosts);
     Hosts new_hosts(agent_hosts.begin(), agent_hosts.end());
@@ -110,8 +111,9 @@ class BrowserDevToolsAgentHost::BrowserAutoAttacher final
   }
 
   void ReattachSharedWorkers() {
-    DCHECK(auto_attach());
-    DCHECK(shared_worker_devtools_manager_observation_.IsObserving());
+    CHECK(auto_attach(), base::NotFatalUntil::M159);
+    CHECK(shared_worker_devtools_manager_observation_.IsObserving(),
+          base::NotFatalUntil::M159);
     SharedWorkerDevToolsAgentHost::List agent_hosts;
     SharedWorkerDevToolsManager::GetInstance()->AddAllAgentHosts(&agent_hosts);
     Hosts new_hosts(agent_hosts.begin(), agent_hosts.end());
@@ -156,7 +158,7 @@ class BrowserDevToolsAgentHost::BrowserAutoAttacher final
 
   // DevToolsAgentHostObserver overrides.
   void DevToolsAgentHostCreated(DevToolsAgentHost* host) override {
-    DCHECK(auto_attach());
+    CHECK(auto_attach(), base::NotFatalUntil::M159);
     // In the top level target handler, auto-attach to pages as soon as they
     // are created, otherwise if they don't incur any network activity we'll
     // never get a chance to throttle them (and auto-attach there).

@@ -23,7 +23,7 @@ namespace content {
 
 // static
 ServiceWorkerDevToolsManager* ServiceWorkerDevToolsManager::GetInstance() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   static base::NoDestructor<ServiceWorkerDevToolsManager> instance;
   return &*instance;
 }
@@ -81,7 +81,7 @@ void ServiceWorkerDevToolsManager::WorkerMainScriptFetchingStarting(
     const GURL& scope,
     const GlobalRenderFrameHostId& requesting_frame_id,
     scoped_refptr<DevToolsThrottleHandle> throttle_handle) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
   // Verify that we are not getting a similar host that's already in a stopped
   // state. This should never happen, we are installing a new SW, we cannot
@@ -89,7 +89,7 @@ void ServiceWorkerDevToolsManager::WorkerMainScriptFetchingStarting(
   ServiceWorkerContextWrapper* context_wrapper_ptr = context_wrapper.get();
   scoped_refptr<ServiceWorkerDevToolsAgentHost> agent_host =
       TakeStoppedHost(context_wrapper_ptr, version_id);
-  DCHECK(!agent_host);
+  CHECK(!agent_host, base::NotFatalUntil::M159);
 
   scoped_refptr<ServiceWorkerDevToolsAgentHost> host =
       base::MakeRefCounted<ServiceWorkerDevToolsAgentHost>(
@@ -124,7 +124,7 @@ void ServiceWorkerDevToolsManager::WorkerMainScriptFetchingStarting(
 void ServiceWorkerDevToolsManager::WorkerMainScriptFetchingFailed(
     scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
     int64_t version_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   scoped_refptr<ServiceWorkerDevToolsAgentHost> host =
       TakeNewInstallingHost(context_wrapper.get(), version_id);
 
@@ -156,9 +156,9 @@ void ServiceWorkerDevToolsManager::WorkerStarting(
         dip_reporter,
     base::UnguessableToken* devtools_worker_token,
     bool* pause_on_start) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   const WorkerId worker_id(worker_process_id, worker_route_id);
-  DCHECK(!live_hosts_.contains(worker_id));
+  CHECK(!live_hosts_.contains(worker_id), base::NotFatalUntil::M159);
 
   scoped_refptr<ServiceWorkerDevToolsAgentHost> agent_host =
       TakeStoppedHost(context_wrapper.get(), version_id);
@@ -208,7 +208,7 @@ void ServiceWorkerDevToolsManager::WorkerReadyForInspection(
     int worker_route_id,
     mojo::PendingRemote<blink::mojom::DevToolsAgent> agent_remote,
     mojo::PendingReceiver<blink::mojom::DevToolsAgentHost> host_receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   const WorkerId worker_id(worker_process_id, worker_route_id);
   auto it = live_hosts_.find(worker_id);
   if (it == live_hosts_.end())
@@ -224,7 +224,7 @@ void ServiceWorkerDevToolsManager::WorkerReadyForInspection(
 void ServiceWorkerDevToolsManager::WorkerVersionInstalled(
     ChildProcessId worker_process_id,
     int worker_route_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   const WorkerId worker_id(worker_process_id, worker_route_id);
   auto it = live_hosts_.find(worker_id);
   if (it == live_hosts_.end())
@@ -237,7 +237,7 @@ void ServiceWorkerDevToolsManager::WorkerVersionDoomed(
     int worker_route_id,
     scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
     int64_t version_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   const WorkerId worker_id(worker_process_id, worker_route_id);
   auto it = live_hosts_.find(worker_id);
   if (it != live_hosts_.end()) {
@@ -258,7 +258,7 @@ void ServiceWorkerDevToolsManager::WorkerVersionDoomed(
 void ServiceWorkerDevToolsManager::WorkerStopped(
     ChildProcessId worker_process_id,
     int worker_route_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   const WorkerId worker_id(worker_process_id, worker_route_id);
   auto it = live_hosts_.find(worker_id);
   if (it == live_hosts_.end())
@@ -277,7 +277,7 @@ void ServiceWorkerDevToolsManager::WorkerStopped(
 
 void ServiceWorkerDevToolsManager::AgentHostDestroyed(
     ServiceWorkerDevToolsAgentHost* agent_host) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   // Might be missing during shutdown due to different
   // destruction order of this manager, service workers
   // and their agent hosts.

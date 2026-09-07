@@ -41,7 +41,7 @@ DevToolsStreamPipe::DevToolsStreamPipe(DevToolsIOContext* context,
       MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
       base::BindRepeating(&DevToolsStreamPipe::OnPipeSignalled,
                           base::Unretained(this)));
-  DCHECK_EQ(MOJO_RESULT_OK, res);
+  CHECK_EQ(MOJO_RESULT_OK, res, base::NotFatalUntil::M159);
 }
 
 DevToolsStreamPipe::~DevToolsStreamPipe() = default;
@@ -53,9 +53,9 @@ bool DevToolsStreamPipe::SupportsSeek() const {
 void DevToolsStreamPipe::Read(off_t position,
                               size_t max_size,
                               ReadCallback callback) {
-  DCHECK(position == -1);
+  CHECK(position == -1, base::NotFatalUntil::M159);
   if (last_status_ != StatusSuccess) {
-    DCHECK(read_requests_.empty());
+    CHECK(read_requests_.empty(), base::NotFatalUntil::M159);
     std::move(callback).Run(std::make_unique<std::string>(), false,
                             last_status_);
     return;
@@ -68,8 +68,8 @@ void DevToolsStreamPipe::Read(off_t position,
 void DevToolsStreamPipe::OnPipeSignalled(
     MojoResult result,
     const mojo::HandleSignalsState& state) {
-  DCHECK_EQ(StatusSuccess, last_status_);
-  DCHECK(!read_requests_.empty());
+  CHECK_EQ(StatusSuccess, last_status_, base::NotFatalUntil::M159);
+  CHECK(!read_requests_.empty(), base::NotFatalUntil::M159);
 
   if (result != MOJO_RESULT_OK) {
     DispatchEOFOrError(state.peer_closed());
@@ -79,11 +79,11 @@ void DevToolsStreamPipe::OnPipeSignalled(
     base::span<const uint8_t> pipe_bytes;
     MojoResult res = pipe_->BeginReadData(MOJO_READ_DATA_FLAG_NONE, pipe_bytes);
     if (res == MOJO_RESULT_FAILED_PRECONDITION) {
-      DCHECK(state.peer_closed());
+      CHECK(state.peer_closed(), base::NotFatalUntil::M159);
       DispatchEOFOrError(state.peer_closed());
       return;
     }
-    DCHECK_EQ(MOJO_RESULT_OK, res);
+    CHECK_EQ(MOJO_RESULT_OK, res, base::NotFatalUntil::M159);
     auto& request = read_requests_.front();
     const size_t bytes_to_read =
         std::min(pipe_bytes.size(), size_t{request.max_size} - buffer_.size());
@@ -96,7 +96,7 @@ void DevToolsStreamPipe::OnPipeSignalled(
       buffer_.reserve(request.max_size);
     buffer_.append(base::as_string_view(pipe_bytes.first(bytes_to_read)));
     pipe_->EndReadData(bytes_to_read);
-    DCHECK_LE(buffer_.size(), request.max_size);
+    CHECK_LE(buffer_.size(), request.max_size, base::NotFatalUntil::M159);
     if (buffer_.size() < request.max_size && fulfill_entire_request)
       break;
     DispatchResponse();
