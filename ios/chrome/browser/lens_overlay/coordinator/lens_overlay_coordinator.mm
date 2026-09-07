@@ -1716,7 +1716,8 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   } else {
     _resultsPagePresenter = [[LensOverlayResultsPagePresenter alloc]
         initWithBaseViewController:_containerViewController
-          resultPageViewController:_resultViewController];
+          resultPageViewController:_resultViewController
+                             isLVF:lens::IsLVFEntrypoint(_entrypoint)];
   }
 
   _resultsPagePresenter.delegate = self;

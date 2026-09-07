@@ -87,6 +87,9 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
 
   // Stores the height of the presented results page.
   CGFloat _presentedResultsPageHeight;
+
+  // Whether the presenter is showing results for Lens Viewfinder (LVF).
+  BOOL _isLVF;
 }
 
 @synthesize delegate = _delegate;
@@ -95,11 +98,22 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
                     (LensOverlayContainerViewController*)baseViewController
                   resultPageViewController:
                       (LensResultPageViewController*)resultViewController {
+  return [self initWithBaseViewController:baseViewController
+                 resultPageViewController:resultViewController
+                                    isLVF:NO];
+}
+
+- (instancetype)initWithBaseViewController:
+                    (LensOverlayContainerViewController*)baseViewController
+                  resultPageViewController:
+                      (LensResultPageViewController*)resultViewController
+                                     isLVF:(BOOL)isLVF {
   self = [super init];
   if (self) {
     _baseViewController = baseViewController;
     _baseViewController.bottomSheet.sheetDelegate = self;
     _resultViewController = resultViewController;
+    _isLVF = isLVF;
     _presentationNavigationController = [[UINavigationController alloc]
         initWithRootViewController:resultViewController];
     _presentationNavigationController.toolbarHidden = YES;
@@ -201,7 +215,7 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
   };
 
   BOOL presentInSidePanel =
-      lens::ResultPagePresentationFor(_baseViewController) ==
+      lens::ResultPagePresentationFor(_baseViewController, _isLVF) ==
       lens::ResultPagePresentationType::kSidePanel;
   if (presentInSidePanel) {
     [self presentSidePanelAnimated:animated completion:presentationComplete];
@@ -290,7 +304,7 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
 
   BOOL isAlreadySidePanel = _baseViewController.sidePanelPresented;
   BOOL presentInSidePanel =
-      lens::ResultPagePresentationFor(_baseViewController) ==
+      lens::ResultPagePresentationFor(_baseViewController, _isLVF) ==
       lens::ResultPagePresentationType::kSidePanel;
   // Refrain from rebuilding the presentation there was no change in the
   // presentation type.
@@ -481,7 +495,7 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
   _presentationNavigationController.view.backgroundColor =
       [UIColor colorNamed:kPrimaryBackgroundColor];
   BOOL presentedInBottomSheet =
-      lens::ResultPagePresentationFor(_baseViewController) ==
+      lens::ResultPagePresentationFor(_baseViewController, _isLVF) ==
       lens::ResultPagePresentationType::kEdgeAttachedBottomSheet;
   [_resultViewController setOmniboxEnabled:YES];
   [_resultViewController setBottomSheetGrabberVisible:presentedInBottomSheet];

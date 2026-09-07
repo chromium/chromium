@@ -95,6 +95,7 @@ source_set("presentation_type") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/common/ui/util",
     "//ui/base",
   ]
@@ -182,6 +183,7 @@ source_set("unit_tests") {
   sources = [
     "lens_overlay_detents_manager_unittest.mm",
     "lens_overlay_navigation_manager_unittest.mm",
+    "lens_overlay_presentation_type_unittest.mm",
     "lens_overlay_tab_helper_unittest.mm",
   ]
   deps = [

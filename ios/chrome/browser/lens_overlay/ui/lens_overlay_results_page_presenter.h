@@ -22,6 +22,13 @@
                   resultPageViewController:
                       (LensResultPageViewController*)resultViewController;
 
+// Creates a new instance of the presenter with LVF entrypoint state.
+- (instancetype)initWithBaseViewController:
+                    (LensOverlayContainerViewController*)baseViewController
+                  resultPageViewController:
+                      (LensResultPageViewController*)resultViewController
+                                     isLVF:(BOOL)isLVF;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_LENS_OVERLAY_UI_LENS_OVERLAY_RESULTS_PAGE_PRESENTER_H_

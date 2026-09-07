@@ -493,6 +493,17 @@ const FeatureEntry::FeatureVariation kLensTranslateToggleModeVariations[] = {
     {"(LVF)", kLensTranslateToggleModeLVF, nullptr},
     {"(Always)", kLensTranslateToggleModeAlways, nullptr}};
 
+const FeatureEntry::FeatureParam kEnableLensOnIPadSidePanel[] = {
+    {kEnableLensOnIPadPresentationStyleParam,
+     kEnableLensOnIPadPresentationStyleSidePanel}};
+const FeatureEntry::FeatureParam kEnableLensOnIPadBottomSheet[] = {
+    {kEnableLensOnIPadPresentationStyleParam,
+     kEnableLensOnIPadPresentationStyleBottomSheet}};
+
+const FeatureEntry::FeatureVariation kEnableLensOnIPadVariations[] = {
+    {"(Side Panel)", kEnableLensOnIPadSidePanel, nullptr},
+    {"(Bottom Sheet)", kEnableLensOnIPadBottomSheet, nullptr}};
+
 const FeatureEntry::FeatureParam
     kMlUrlPiecewiseMappedSearchBlendingAdjustedBy0[] = {
         {"MlUrlPiecewiseMappedSearchBlending", "true"},
@@ -1592,7 +1603,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      FEATURE_VALUE_TYPE(kDisableLensCamera)},
     {"enable-lens-on-ipad", flag_descriptions::kEnableLensOnIPadName,
      flag_descriptions::kEnableLensOnIPadDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kEnableLensOnIPad)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kEnableLensOnIPad,
+                                    kEnableLensOnIPadVariations,
+                                    "EnableLensOnIPad")},
     {"autofill-enable-prefetching-risk-data-for-retrieval",
      flag_descriptions::kAutofillEnablePrefetchingRiskDataForRetrievalName,
      flag_descriptions::
