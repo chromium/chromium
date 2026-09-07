@@ -106,7 +106,7 @@ public class SettingsPageFragmentDelegateImpl
             BottomSheetController bottomSheetController,
             ModalDialogManager modalDialogManager,
             Tab tab) {
-        assert ChromeFeatureList.sSettingsInTab.isEnabled()
+        assert SettingsInTab.isEnabled()
                 : "SettingsInTab feature must be enabled to use this class.";
         mActivity = activity;
         mProfile = profile;

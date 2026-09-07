@@ -1361,9 +1361,11 @@ public abstract class ChromeFeatureList {
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
     // Do not use this flag directly. Use SettingsInTab.isEnabled(), which takes into account both
-    // the feature flag and device form factor.
+    // the feature flag and device form factor. defaultValueInTests is true to match the value in
+    // fieldtrial_testing_config.json.
     public static final CachedFlag sSettingsInTab =
-            newCachedFlag(SETTINGS_IN_TAB, /* defaultValue= */ true);
+            newCachedFlag(
+                    SETTINGS_IN_TAB, /* defaultValue= */ false, /* defaultValueInTests= */ true);
     public static final CachedFlag sSettingsInTabDesktop =
             newCachedFlag(SETTINGS_IN_TAB_DESKTOP, /* defaultValue= */ true);
     public static final CachedFlag sSettingsInTabUrlNav =
