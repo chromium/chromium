@@ -34,11 +34,6 @@ const char ProfileInfoHandler::kProfileStatsCountReadyEventName[] =
     "profile-stats-count-ready";
 
 ProfileInfoHandler::ProfileInfoHandler(Profile* profile) : profile_(profile) {
-#if BUILDFLAG(IS_CHROMEOS)
-  // Set up the chrome://userimage/ source.
-  content::URLDataSource::Add(profile,
-                              std::make_unique<ash::UserImageSource>());
-#endif
 }
 
 ProfileInfoHandler::~ProfileInfoHandler() = default;

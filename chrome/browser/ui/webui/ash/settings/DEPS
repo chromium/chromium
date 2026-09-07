@@ -89,6 +89,7 @@ specific_include_rules = {
     '+content/public/browser/tts_controller.h',
   ],
   'os_settings_ui\\.cc': [
+    '+chrome/browser/ui/webui/ash/user_image/user_image_source.h',
     '+chrome/browser/ui/webui/theme_source.h',
   ],
 }
