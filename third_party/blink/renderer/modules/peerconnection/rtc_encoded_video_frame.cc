@@ -189,9 +189,17 @@ RTCEncodedVideoFrame* RTCEncodedVideoFrame::Create(
 
   std::optional<int64_t> absolute_capture_timestamp_ms;
   if (init->hasCaptureTime()) {
-    base::TimeDelta capture_time = RTCEncodedFrameTimestampToCaptureTime(
-        context, init->captureTime(), CaptureTimeInfo::ClockType::kTimeTicks);
-    absolute_capture_timestamp_ms = capture_time.InMilliseconds();
+    DOMHighResTimeStamp dom_capture_time = init->captureTime();
+    DOMHighResTimeStamp dom_now =
+        RTCTimeStampFromTimeTicks(context, base::TimeTicks::Now());
+    if (dom_capture_time > dom_now) {
+      exception_state.ThrowRangeError("captureTime cannot be in the future.");
+      return nullptr;
+    }
+    base::TimeDelta absolute_capture_timestamp =
+        RTCEncodedFrameTimestampToCaptureTime(
+            context, dom_capture_time, CaptureTimeInfo::ClockType::kTimeTicks);
+    absolute_capture_timestamp_ms = absolute_capture_timestamp.InMilliseconds();
   }
 
   std::vector<uint32_t> csrcs(init->contributingSources().begin(),

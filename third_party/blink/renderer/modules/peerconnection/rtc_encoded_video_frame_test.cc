@@ -959,7 +959,7 @@ TEST_F(RTCEncodedVideoFrameTest, ConstructorFromInitDictionary) {
   init->setRtpTimestampWithoutOffset(123456u);
   init->setData(buffer);
 
-  double capture_time_ms = GetTimeOriginNtp(v8_scope) + 5000.0;
+  double capture_time_ms = 0.0;
   init->setCaptureTime(capture_time_ms);
   init->setContributingSources({11u, 22u});
   init->setMimeType("video/VP8");
@@ -1004,6 +1004,7 @@ TEST_F(RTCEncodedVideoFrameTest, ConstructorFromInitDictionary) {
   EXPECT_TRUE(metadata->hasContributingSources());
   EXPECT_THAT(metadata->contributingSources(), testing::ElementsAre(11u, 22u));
 
+  // Only exposed on the receiving side.
   EXPECT_FALSE(metadata->hasCaptureTime());
 }
 
@@ -1102,6 +1103,30 @@ TEST_F(RTCEncodedVideoFrameTest, ConstructorInvalidDimensionsFail) {
     EXPECT_TRUE(exception_state.HadException());
     EXPECT_EQ(new_frame, nullptr);
   }
+}
+
+TEST_F(RTCEncodedVideoFrameTest, ConstructorFutureCaptureTimeFails) {
+  V8TestingScope v8_scope;
+
+  DOMArrayBuffer* buffer =
+      DOMArrayBuffer::Create(/*num_elements=*/5, /*element_byte_size=*/1);
+
+  auto* init = RTCEncodedVideoFrameInit::Create();
+  init->setType(
+      V8RTCEncodedVideoFrameType(V8RTCEncodedVideoFrameType::Enum::kKey));
+  init->setPayloadType(96);
+  init->setRtpTimestampWithoutOffset(101010u);
+  init->setData(buffer);
+  init->setMimeType("video/VP8");
+  init->setCaptureTime(
+      DOMWindowPerformance::performance(v8_scope.GetWindow())->now() + 10000.0);
+
+  DummyExceptionStateForTesting exception_state;
+  RTCEncodedVideoFrame* new_frame = RTCEncodedVideoFrame::Create(
+      v8_scope.GetExecutionContext(), init, exception_state);
+
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(new_frame, nullptr);
 }
 
 TEST_F(RTCEncodedVideoFrameTest, StringToVideoCodecType) {
