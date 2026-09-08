@@ -45,3 +45,7 @@
 
 # TODO(crbug.com/417784653): Re-enable once the bug is fixed.
 -PlatformAppBrowserTest.TouchpadPinchSyntheticWheelEvents
+
+# TODO(crbug.com/40799125): Flaky.
+-SoftNavigationBrowserTest.SoftNavigation
+-SoftNavigationBrowserTestWithSoftNavigationHeuristicsFlag.SoftNavigation
