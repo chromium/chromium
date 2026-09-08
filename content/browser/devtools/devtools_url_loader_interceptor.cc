@@ -32,6 +32,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/child_process_id_util.h"
 #include "content/public/common/content_client.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -806,7 +807,34 @@ void DevToolsURLLoaderFactoryProxy::CreateLoaderAndStart(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DevToolsURLLoaderInterceptor* interceptor = interceptor_.get();
-  if (!interceptor_ || request.url.SchemeIs(url::kDataScheme)) {
+  if (!interceptor) {
+    target_factory_->CreateLoaderAndStart(std::move(loader), request_id,
+                                          options, request, std::move(client),
+                                          traffic_annotation);
+    return;
+  }
+
+  // Each active request for a given process must have a unique request_id
+  // so that network service callbacks (e.g. OnLoaderCreated) can unambiguously
+  // route back to the matching InterceptionJob, and to prevent compromised
+  // renderers from colliding with and hijacking active requests (b/497350668).
+  GlobalRequestID global_req_id(ToOriginatingProcessIdUnsafe(process_id_),
+                                request_id);
+  if (interceptor->FindJobByGlobalId(global_req_id)) {
+    if (process_id_ > 0) {
+      mojo::ReportBadMessage("DevTools: Duplicate request ID");
+      return;
+    }
+    // Browser-initiated requests (e.g. navigations) may share process ID 0.
+    // If a collision occurs, skip interception and forward directly to the
+    // target factory to avoid crashing the browser (crbug.com/40276949).
+    target_factory_->CreateLoaderAndStart(std::move(loader), request_id,
+                                          options, request, std::move(client),
+                                          traffic_annotation);
+    return;
+  }
+
+  if (request.url.SchemeIs(url::kDataScheme)) {
     target_factory_->CreateLoaderAndStart(std::move(loader), request_id,
                                           options, request, std::move(client),
                                           traffic_annotation);
@@ -836,7 +864,9 @@ void DevToolsURLLoaderFactoryProxy::OnLoaderCreated(
     mojo::PendingReceiver<network::mojom::TrustedHeaderClient> receiver) {
   DevToolsURLLoaderInterceptor* interceptor = interceptor_.get();
   if (interceptor) {
-    if (InterceptionJob* job = interceptor->FindJobByRequestId(request_id)) {
+    GlobalRequestID global_req_id(ToOriginatingProcessIdUnsafe(process_id_),
+                                  request_id);
+    if (InterceptionJob* job = interceptor->FindJobByGlobalId(global_req_id)) {
       // An InterceptionJob exists for this request, so establish the
       // per-request proxy chain. A new pipe is created for the downstream
       // client (if any). The job's receiver and the new target remote are then
@@ -924,6 +954,7 @@ DevToolsURLLoaderInterceptor::DevToolsURLLoaderInterceptor(
       weak_factory_(this) {}
 
 DevToolsURLLoaderInterceptor::~DevToolsURLLoaderInterceptor() {
+  jobs_by_global_req_id_.clear();
   auto jobs = std::move(jobs_);
   for (auto const& entry : jobs) {
     entry.second->Detach();
@@ -1082,7 +1113,7 @@ bool InterceptionJob::StartJobAndMaybeNotify() {
 
   current_id_ =
       base::StringPrintf("interception-job-%d.%d", id_seq_, redirect_count_);
-  interceptor_->AddJob(create_loader_params_->request_id, current_id_, this);
+  interceptor_->AddJob(global_req_id_, current_id_, this);
 
   const network::ResourceRequest& request = create_loader_params_->request;
   stages_ = interceptor_->GetInterceptionStages(
@@ -1846,7 +1877,7 @@ void InterceptionJob::CompleteRequest(
 
 void InterceptionJob::Shutdown() {
   if (interceptor_)
-    interceptor_->RemoveJob(create_loader_params_->request_id, current_id_);
+    interceptor_->RemoveJob(global_req_id_, current_id_);
   delete this;
 }
 
@@ -1906,7 +1937,7 @@ void InterceptionJob::FollowRedirect(
     redirected_request_id_ = current_id_;
     // Pretend that each redirect hop is a new request -- this is for
     // compatibilty with URLRequestJob-based interception implementation.
-    interceptor_->RemoveJob(create_loader_params_->request_id, current_id_);
+    interceptor_->RemoveJob(global_req_id_, current_id_);
     redirect_count_++;
     if (StartJobAndMaybeNotify())
       return;
