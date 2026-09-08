@@ -8,6 +8,7 @@
 #include <array>
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/functional/function_ref.h"
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
@@ -39,6 +40,8 @@ class PaintTimingClient;
 class PaintTimingDetector;
 class TextElementTiming;
 class TextRecord;
+
+CORE_EXPORT BASE_DECLARE_FEATURE(kPaintTimingWaitForPresentationFrameIndex);
 
 // PaintTiming is responsible for tracking paint-related timings for a given
 // document.
@@ -251,10 +254,14 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
       : public GarbageCollected<PresentationCallbackData> {
     PresentationCallbackData(
         uint32_t id,
+        const PendingPaintTimingRecord&,
+        AnimationFrameTimingInfo*,
         HeapVector<Member<TextRecord>> text_records,
         HeapVector<Member<ImageRecord>> image_records,
         HeapVector<Member<ElementTimingInfo>> image_element_timings,
         HeapVector<Member<ImageRecord>> animated_images);
+
+    bool HasPaintTimingInfo() const { return paint_timing_info.has_value(); }
 
     bool ShouldNotifyClientsOnFramePresented() const {
       return !text_records.empty() || !image_records.empty() ||
@@ -263,11 +270,28 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
 
     void Trace(Visitor*) const;
 
+    // Values set at paint time.
+    //
+    // Note: `paint_timing_record` and `animation_frame_timing_info` are ignored
+    // unless `kPaintTimingWaitForPresentationFrameIndex` is enabled.
     const uint32_t id;
+    const PendingPaintTimingRecord paint_timing_record;
+    const Member<AnimationFrameTimingInfo> animation_frame_timing_info;
     const HeapVector<Member<TextRecord>> text_records;
     const HeapVector<Member<ImageRecord>> image_records;
     const HeapVector<Member<ElementTimingInfo>> image_element_timings;
     const HeapVector<Member<ImageRecord>> animated_images;
+
+    // Values set at presentation time.
+    base::TimeTicks raw_presentation_timestamp;
+    std::optional<DOMPaintTimingInfo> paint_timing_info;
+
+    // The presentation timestamp of the first arriving presentation feedback
+    // with id greater or equal to `id`. This is only used when
+    // kPaintTimingWaitForPresentationFrameIndex is enabled, and it represents
+    // the presentation timestamp that would be used without the feature
+    // enabled.
+    base::TimeTicks legacy_presentation_time;
   };
 
   LocalFrame* GetFrame() const;
@@ -311,15 +335,44 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
 
   // Flushes pending paint timing entries, e.g. LCP and ICP entries, element
   // timings, LoAF entries, etc., after the frame has been presented. If
-  // coarsening is required, than this runs after waiting for the coarsened time
+  // coarsening is required, then this runs after waiting for the coarsened time
   // to been reached. Corresponds to step 10 of
   // https://w3c.github.io/paint-timing/#mark-paint-timing.
-  void FlushPaintTimingsOnFramePresented(
+  //
+  // TODO(crbug.com/549911078: When kPaintTimingWaitForPresentationFrameIndex is
+  // disabled, this callback runs at presentation time instead of
+  // `SetPresentationTimeAndMaybeFlushPaintTimingsOnFramePresented()` and
+  // `FlushPaintTimingsOnFramePresented()`. Remove this variant when that
+  // feature is fully launched.
+  void FlushPaintTimingsOnFramePresentedCallback(
       uint32_t id,
       const PendingPaintTimingRecord&,
       AnimationFrameTimingInfo*,
       const base::TimeTicks& raw_presentation_timestamp,
       const DOMPaintTimingInfo&);
+
+  // Sets the paint timing info for the `PresentationCallbackData` associated
+  // with `id` and flushes any `PresentationCallbackData` whose paint timing
+  // info is set, in frame index order.
+  //
+  // Note: this is only used when kPaintTimingWaitForPresentationFrameIndex is
+  // enabled. When disabled, `FlushPaintTimingsOnFramePresentedCallback()` is
+  // the entry point for processing presentation feedback.
+  void SetPresentationTimeAndMaybeFlushPaintTimingsOnFramePresented(
+      uint32_t id,
+      const base::TimeTicks& raw_presentation_timestamp,
+      const DOMPaintTimingInfo&);
+
+  // Flushes pending paint timing entries for a single frame, e.g. LCP and ICP
+  // entries, element timings, LoAF entries, etc., after the frame has been
+  // presented. If coarsening is required, then this runs after waiting for the
+  // coarsened time to been reached. Corresponds to step 10 of
+  // https://w3c.github.io/paint-timing/#mark-paint-timing.
+  //
+  // Note: this is only used when kPaintTimingWaitForPresentationFrameIndex is
+  // enabled. When disabled, `FlushPaintTimingsOnFramePresentedCallback()` is
+  // the entry point for processing presentation feedback.
+  void FlushPaintTimingsOnFramePresented(PresentationCallbackData&);
 
   void OnInputOrScroll();
 

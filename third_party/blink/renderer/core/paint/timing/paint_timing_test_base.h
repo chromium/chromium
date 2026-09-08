@@ -179,12 +179,21 @@ class PaintTimingTestBase : public RenderingTest {
 
   void SimulatePresentationTime() {
     AdvanceClock(kQuantumOfTime);
-    mock_callback_manager_->InvokeCallbacksForOneAnimationFrame(NowTicks());
+    mock_callback_manager_->OnAnimationFramePresented(NowTicks());
+    mock_callback_manager_->InvokeCallbacksForNextAnimationFrame();
   }
 
   void SimulateRenderingAndPresentationTime() {
     SimulateRendering();
     SimulatePresentationTime();
+  }
+
+  // Returns the `MockPaintTimingCallbackManager` controlling presentation
+  // callbacks. Tests should not typically need this and should instead use
+  // `SimulateRendering` and `SimulatePresentationTime()`, but this can be used
+  // for advanced cases, e.g. simulating out-of-order presentation feedback.
+  MockPaintTimingCallbackManager* GetMockPaintTimingCallbackManager() {
+    return mock_callback_manager_.Get();
   }
 
   void SimulatePassOfTime() { AdvanceClock(kQuantumOfTime); }

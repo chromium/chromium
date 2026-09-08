@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/paint/timing/mock_paint_timing_callback_manager.h"
 
 #include "base/check.h"
+#include "base/notreached.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -16,37 +17,51 @@ MockPaintTimingCallbackManager::MockPaintTimingCallbackManager() = default;
 
 void MockPaintTimingCallbackManager::RegisterCallback(
     PaintTiming::ReportTimeCallback callback) {
-  callbacks_.push_back(std::move(callback));
+  current_frame_data_.callbacks.push_back(std::move(callback));
 }
 
 void MockPaintTimingCallbackManager::OnAnimationFrameComplete() {
-  // Insert a fence to mark the end of the current frame.
-  callbacks_.push_back(BindOnce(
-      [](MockPaintTimingCallbackManager* self,
-         const viz::FrameTimingDetails& frame_timing_details) {
-        self->is_fence_set_ = true;
-      },
-      WrapWeakPersistent(this)));
+  pending_frame_data_.push_back(std::move(current_frame_data_));
+  current_frame_data_ = FrameData();
 }
 
-void MockPaintTimingCallbackManager::InvokeCallbacksForOneAnimationFrame(
+void MockPaintTimingCallbackManager::OnAnimationFramePresented(
     base::TimeTicks presentation_time) {
-  while (!callbacks_.empty() && !is_fence_set_) {
-    InvokeCallback(presentation_time);
+  for (auto& data : pending_frame_data_) {
+    if (data.presentation_time.is_null()) {
+      data.presentation_time = presentation_time;
+      return;
+    }
   }
-  is_fence_set_ = false;
+  NOTREACHED();
 }
 
-void MockPaintTimingCallbackManager::InvokeCallback(
-    base::TimeTicks presentation_time) {
+void MockPaintTimingCallbackManager::InvokeCallbacksForNextAnimationFrame() {
+  CHECK(!pending_frame_data_.empty());
+  FrameData data = pending_frame_data_.TakeFirst();
+  InvokeCallbacksForFrameData(data);
+}
+
+void MockPaintTimingCallbackManager::InvokeCallbacksForLastAnimationFrame() {
+  CHECK(!pending_frame_data_.empty());
+  FrameData data = pending_frame_data_.TakeLast();
+  InvokeCallbacksForFrameData(data);
+}
+
+void MockPaintTimingCallbackManager::InvokeCallbacksForFrameData(
+    FrameData& data) {
+  CHECK(!data.presentation_time.is_null())
+      << "OnAnimationFramePresented() must be called before invoking callbacks";
   viz::FrameTimingDetails details;
-  details.presentation_feedback.timestamp = presentation_time;
-  CHECK(!callbacks_.empty());
-  std::move(callbacks_.TakeFirst()).Run(details);
+  details.presentation_feedback.timestamp = data.presentation_time;
+  for (auto& callback : data.callbacks) {
+    std::move(callback).Run(details);
+  }
 }
 
 void MockPaintTimingCallbackManager::Shutdown() {
-  callbacks_.clear();
+  pending_frame_data_.clear();
+  current_frame_data_ = FrameData();
 }
 
 }  // namespace blink

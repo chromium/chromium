@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -19,6 +21,7 @@
 
 using testing::_;
 using testing::A;
+using testing::AllOf;
 using testing::ElementsAre;
 using testing::Eq;
 using testing::InSequence;
@@ -33,6 +36,10 @@ namespace {
 
 MATCHER_P(ForNode, node, "") {
   return arg && arg->GetNode() == node;
+}
+
+MATCHER_P(WithPresentationTime, timestamp, "") {
+  return arg && arg->PaintTime() == timestamp;
 }
 
 class MockPaintTimingClient : public GarbageCollected<MockPaintTimingClient>,
@@ -88,12 +95,7 @@ class PaintTimingTest : public PaintTimingTestBase {
   }
 
   void TearDown() override {
-    // Clear any remaining expectations.
-    VerifyAndClearExpectations();
-    // Unregister the client so we don't get notifications after this, e.g. for
-    // images being removed.
-    GetPaintTiming().RemoveClient(mock_paint_timing_client_.Get());
-
+    DetachMockClient();
     PaintTimingTestBase::TearDown();
   }
 
@@ -102,6 +104,20 @@ class PaintTimingTest : public PaintTimingTestBase {
 
   void VerifyAndClearExpectations() {
     Mock::VerifyAndClearExpectations(mock_paint_timing_client_.Get());
+  }
+
+  void DetachMockClient() {
+    if (!mock_paint_timing_client_) {
+      return;
+    }
+
+    // Clear any remaining expectations.
+    VerifyAndClearExpectations();
+    // Unregister the client so we don't get notifications after this, e.g. for
+    // images being removed.
+    GetPaintTiming().RemoveClient(mock_paint_timing_client_.Get());
+
+    mock_paint_timing_client_.Clear();
   }
 
  private:
@@ -500,6 +516,271 @@ TEST_F(PaintTimingTest, ProgrammaticScroll) {
   SimulateScroll(mojom::blink::ScrollType::kProgrammatic);
   VerifyAndClearExpectations();
   EXPECT_NE(GetPaintTiming().GetLargestContentfulPaintManager(), nullptr);
+}
+
+class PaintTimingOutOfOrderPresentationTimeTest
+    : public PaintTimingTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  PaintTimingOutOfOrderPresentationTimeTest() {
+    if (IsWaitForPresentationFrameIndexEnabled()) {
+      feature_list_.InitWithFeatures(
+          {kPaintTimingWaitForPresentationFrameIndex}, {});
+    } else {
+      feature_list_.InitWithFeatures(
+          {}, {kPaintTimingWaitForPresentationFrameIndex});
+    }
+  }
+
+  void SetPresentationTime() {
+    AdvanceClock(base::Milliseconds(100));
+    GetMockPaintTimingCallbackManager()->OnAnimationFramePresented(
+        base::TimeTicks::Now());
+  }
+
+  void InvokeLastPresentationCallback() {
+    GetMockPaintTimingCallbackManager()->InvokeCallbacksForLastAnimationFrame();
+  }
+
+  bool IsWaitForPresentationFrameIndexEnabled() const { return GetParam(); }
+
+  Element* AppendDivElementToBody(String content) {
+    Element* div = GetDocument().CreateRawElement(html_names::kDivTag);
+    Text* text = GetDocument().createTextNode(content);
+    div->AppendChild(text);
+    GetDocument().body()->AppendChild(div);
+    return div;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+namespace {
+
+constexpr char kPresentationCallbackIdDeltaMetricName[] =
+    "Renderer.PaintTiming.PresentationCallbackIdDelta";
+
+constexpr char kPresentationTimeDeltaMetricName[] =
+    "Renderer.PaintTiming.PresentationTimeDelta";
+
+}  // namespace
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PaintTimingOutOfOrderPresentationTimeTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param
+                                      ? "WaitForPresentationFrameIndexEnabled"
+                                      : "WaitForPresentationFrameIndexDisabled";
+                         });
+
+TEST_P(PaintTimingOutOfOrderPresentationTimeTest, CallbackOrder) {
+  SetMainFrameBodyContent(R"HTML(
+    <div id="target1">Text</div>
+  )HTML");
+  // Frame 1: render the initial text.
+  Element* div1 = GetElementById("target1");
+  {
+    InSequence s;
+    EXPECT_CALL(Client(),
+                OnElementLastContentfulPaint(
+                    ForNode(div1), /*was_previously_reported=*/false));
+    EXPECT_CALL(Client(), OnPaintFinished());
+    SimulateRendering();
+    VerifyAndClearExpectations();
+  }
+
+  // Frame 2: Append and render more text.
+  Element* div2 = AppendDivElementToBody("Text Text");
+  {
+    InSequence s;
+    EXPECT_CALL(Client(),
+                OnElementLastContentfulPaint(
+                    ForNode(div2), /*was_previously_reported=*/false));
+    EXPECT_CALL(Client(), OnPaintFinished());
+    SimulateRendering();
+    VerifyAndClearExpectations();
+  }
+
+  // Frame 3: Append and render more text.
+  Element* div3 = AppendDivElementToBody("Text Text Text");
+  {
+    InSequence s;
+    EXPECT_CALL(Client(),
+                OnElementLastContentfulPaint(
+                    ForNode(div3), /*was_previously_reported=*/false));
+    EXPECT_CALL(Client(), OnPaintFinished());
+    SimulateRendering();
+    VerifyAndClearExpectations();
+  }
+
+  // Set presentation time for frame 1.
+  SetPresentationTime();
+  base::TimeTicks timestamp1 = base::TimeTicks::Now();
+
+  // Set presentation time for frame 2.
+  SetPresentationTime();
+  base::TimeTicks timestamp2 = base::TimeTicks::Now();
+  EXPECT_NE(timestamp1, timestamp2);
+
+  // Set presentation time for frame 3.
+  SetPresentationTime();
+  base::TimeTicks timestamp3 = base::TimeTicks::Now();
+  EXPECT_NE(timestamp2, timestamp3);
+
+  // Without kPaintTimingWaitForPresentationFrameIndex enabled, all of the
+  // timestamps should match `timestamp3`. Overwrite them here to make the
+  // expectations below more readable.
+  if (!IsWaitForPresentationFrameIndexEnabled()) {
+    timestamp1 = timestamp3;
+    timestamp2 = timestamp3;
+  }
+
+  // Invoke callbacks in reverse order.
+  InSequence s;
+
+  EXPECT_CALL(
+      Client(),
+      OnFramePresented(
+          IsEmpty(),
+          ElementsAre(AllOf(ForNode(div1), WithPresentationTime(timestamp1))),
+          IsEmpty(), _));
+  EXPECT_CALL(
+      Client(),
+      OnFramePresented(
+          IsEmpty(),
+          ElementsAre(AllOf(ForNode(div2), WithPresentationTime(timestamp2))),
+          IsEmpty(), _));
+  EXPECT_CALL(
+      Client(),
+      OnFramePresented(
+          IsEmpty(),
+          ElementsAre(AllOf(ForNode(div3), WithPresentationTime(timestamp3))),
+          IsEmpty(), _));
+  InvokeLastPresentationCallback();
+  InvokeLastPresentationCallback();
+  InvokeLastPresentationCallback();
+  VerifyAndClearExpectations();
+}
+
+TEST_P(PaintTimingOutOfOrderPresentationTimeTest, TestInOrderHistogram) {
+  // Histograms are only logged with the feature enabled.
+  if (!IsWaitForPresentationFrameIndexEnabled()) {
+    return;
+  }
+  DetachMockClient();
+  base::HistogramTester histogram_tester;
+
+  SetMainFrameBodyContent(R"HTML(
+    <div id="target1">Text</div>
+  )HTML");
+  // Frame 1: render the initial text.
+  SimulateRendering();
+
+  // Frame 2: Append and render more text.
+  AppendDivElementToBody("Text Text");
+  SimulateRendering();
+
+  // Frame 3: Append and render more text.
+  AppendDivElementToBody("Text Text Text");
+  SimulateRendering();
+
+  histogram_tester.ExpectTotalCount(kPresentationCallbackIdDeltaMetricName, 0);
+  histogram_tester.ExpectTotalCount(kPresentationTimeDeltaMetricName, 0);
+
+  SimulatePresentationTime();
+  histogram_tester.ExpectTotalCount(kPresentationCallbackIdDeltaMetricName, 1);
+  histogram_tester.ExpectBucketCount(kPresentationCallbackIdDeltaMetricName, 0,
+                                     1);
+  histogram_tester.ExpectTotalCount(kPresentationTimeDeltaMetricName, 1);
+  histogram_tester.ExpectTimeBucketCount(kPresentationTimeDeltaMetricName,
+                                         base::TimeDelta(), 1);
+
+  SimulatePresentationTime();
+  histogram_tester.ExpectTotalCount(kPresentationCallbackIdDeltaMetricName, 2);
+  histogram_tester.ExpectBucketCount(kPresentationCallbackIdDeltaMetricName, 0,
+                                     2);
+  histogram_tester.ExpectTotalCount(kPresentationTimeDeltaMetricName, 2);
+  histogram_tester.ExpectTimeBucketCount(kPresentationTimeDeltaMetricName,
+                                         base::TimeDelta(), 2);
+
+  SimulatePresentationTime();
+  histogram_tester.ExpectTotalCount(kPresentationCallbackIdDeltaMetricName, 3);
+  histogram_tester.ExpectBucketCount(kPresentationCallbackIdDeltaMetricName, 0,
+                                     3);
+  histogram_tester.ExpectTotalCount(kPresentationTimeDeltaMetricName, 3);
+  histogram_tester.ExpectTimeBucketCount(kPresentationTimeDeltaMetricName,
+                                         base::TimeDelta(), 3);
+}
+
+TEST_P(PaintTimingOutOfOrderPresentationTimeTest, TestOutOfOrderHistogram) {
+  // Histograms are only logged with the feature enabled.
+  if (!IsWaitForPresentationFrameIndexEnabled()) {
+    return;
+  }
+  DetachMockClient();
+  base::HistogramTester histogram_tester;
+
+  SetMainFrameBodyContent(R"HTML(
+    <div id="target1">Text</div>
+  )HTML");
+  // Frame 1: render the initial text.
+  SimulateRendering();
+
+  // Frame 2: Append and render more text.
+  AppendDivElementToBody("Text Text");
+  SimulateRendering();
+
+  // Frame 3: Append and render more text.
+  AppendDivElementToBody("Text Text Text");
+  SimulateRendering();
+
+  histogram_tester.ExpectTotalCount(kPresentationCallbackIdDeltaMetricName, 0);
+  histogram_tester.ExpectTotalCount(kPresentationTimeDeltaMetricName, 0);
+
+  // Set the presentation time for all three frames. The time delta metric isn't
+  // log until the callback data is processed.
+  SetPresentationTime();
+  base::TimeTicks presentation_time1 = base::TimeTicks::Now();
+
+  SetPresentationTime();
+  base::TimeTicks presentation_time2 = base::TimeTicks::Now();
+
+  SetPresentationTime();
+  base::TimeTicks presentation_time3 = base::TimeTicks::Now();
+
+  // Execute the presentation callbacks in reverse order. There should be one
+  // entry for each of three buckets: 0 (underflow), 1, and 2.
+  InvokeLastPresentationCallback();
+  histogram_tester.ExpectTotalCount(kPresentationCallbackIdDeltaMetricName, 1);
+  histogram_tester.ExpectBucketCount(kPresentationCallbackIdDeltaMetricName, 2,
+                                     1);
+  histogram_tester.ExpectTotalCount(kPresentationTimeDeltaMetricName, 0);
+
+  InvokeLastPresentationCallback();
+  histogram_tester.ExpectTotalCount(kPresentationCallbackIdDeltaMetricName, 2);
+  histogram_tester.ExpectBucketCount(kPresentationCallbackIdDeltaMetricName, 1,
+                                     1);
+  histogram_tester.ExpectTotalCount(kPresentationTimeDeltaMetricName, 0);
+
+  InvokeLastPresentationCallback();
+  histogram_tester.ExpectTotalCount(kPresentationCallbackIdDeltaMetricName, 3);
+  histogram_tester.ExpectBucketCount(kPresentationCallbackIdDeltaMetricName, 0,
+                                     1);
+  histogram_tester.ExpectTotalCount(kPresentationTimeDeltaMetricName, 3);
+
+  // Frame 3:
+  histogram_tester.ExpectTimeBucketCount(kPresentationTimeDeltaMetricName,
+                                         base::TimeDelta(), 1);
+  // Frame 2:
+  histogram_tester.ExpectTimeBucketCount(
+      kPresentationTimeDeltaMetricName, presentation_time3 - presentation_time2,
+      1);
+  // Frame 1:
+  histogram_tester.ExpectTimeBucketCount(
+      kPresentationTimeDeltaMetricName, presentation_time3 - presentation_time1,
+      1);
 }
 
 }  // namespace blink

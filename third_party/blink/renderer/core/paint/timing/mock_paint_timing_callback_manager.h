@@ -13,7 +13,8 @@
 namespace blink {
 
 // `MockPaintTimingCallbackManager` is used to mock presentation time callbacks
-// int unit tests.
+// in unit tests. It separates paint, setting presentation time, and running
+// presentation callbacks to enable tests to control when these steps happen.
 class MockPaintTimingCallbackManager final
     : public GarbageCollected<MockPaintTimingCallbackManager>,
       public PaintTiming::CallbackManager {
@@ -26,21 +27,40 @@ class MockPaintTimingCallbackManager final
   // `PaintTimingMixin` implementation:
   void Trace(Visitor* visitor) const override {}
 
-  // Inserts a frame boundary used to differentiate pending callbacks. See
-  // `InvokeCallbacksForOneAnimationFrame()`.
+  // Inserts a frame boundary used to differentiate pending callbacks.
   void OnAnimationFrameComplete();
 
-  // Invokes presentation time callbacks for one frame based on frame boundaries
-  // set by `OnFrameComplete()`.
-  void InvokeCallbacksForOneAnimationFrame(base::TimeTicks presentation_time);
+  // Sets the presentation time for the next unpresented frame, but does not run
+  // callbacks.
+  void OnAnimationFramePresented(base::TimeTicks presentation_time);
+
+  // Invokes presentation time callbacks for the next frame based on frame
+  // boundaries set by `OnAnimationFrameComplete()` and the presentation time
+  // set in `OnAnimationFramePresented()`.
+  void InvokeCallbacksForNextAnimationFrame();
+
+  // Invokes presentation time callbacks for the last frame based on frame
+  // boundaries set by `OnAnimationFrameComplete()` and the presentation time
+  // set in `OnAnimationFramePresented()`. This can be used to test out-of-order
+  // presentation feedback.
+  void InvokeCallbacksForLastAnimationFrame();
 
   void Shutdown();
 
  private:
-  void InvokeCallback(base::TimeTicks presentation_time);
+  struct FrameData {
+    Vector<PaintTiming::ReportTimeCallback> callbacks;
+    base::TimeTicks presentation_time;
+  };
 
-  Deque<PaintTiming::ReportTimeCallback> callbacks_;
-  bool is_fence_set_ = false;
+  void InvokeCallbacksForFrameData(FrameData&);
+
+  // `FrameData` for the current animation frame. New callbacks are added here.
+  FrameData current_frame_data_;
+
+  // `FrameData` for frames that have been completed and are either pending
+  // presentation time (`OnFramePresented`) or pending execution.
+  Deque<FrameData> pending_frame_data_;
 };
 
 }  // namespace blink
