@@ -5,7 +5,6 @@
 #import "base/functional/bind.h"
 #import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/test/ios/wait_util.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
@@ -1102,18 +1101,12 @@ void TapSendTabToSelfInActivitySheet() {
   OpenTabGridAndWaitTillVisible();
 
   // Verify that the label is now gone.
-  ConditionBlock condition = ^{
-    NSError* error = nil;
-    [[EarlGrey
-        selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(labelText),
-                                            grey_sufficientlyVisible(), nil)]
-        assertWithMatcher:grey_notNil()
-                    error:&error];
-    return (error != nil);
-  };
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
-                 base::test::ios::kWaitForActionTimeout, condition),
-             @"Timeout waiting for Send Tab To Self label to disappear");
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:grey_allOf(
+                                                 grey_accessibilityLabel(
+                                                     labelText),
+                                                 grey_sufficientlyVisible(),
+                                                 nil)];
 }
 
 // Tests that when a shared tab is auto-opened, the activation tracking survives
