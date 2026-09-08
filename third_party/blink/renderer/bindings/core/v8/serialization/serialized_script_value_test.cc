@@ -6,6 +6,7 @@
 
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value_factory.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -22,6 +23,40 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
 namespace blink {
+
+TEST(SerializedScriptValueTest, OriginCheckRequirement) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  using OriginCheckRequirement = SerializedScriptValue::OriginCheckRequirement;
+
+  scoped_refptr<SerializedScriptValue> value =
+      SerializedScriptValue::NullValue();
+  EXPECT_EQ(value->GetOriginCheckRequirement(), OriginCheckRequirement::kNone);
+  EXPECT_FALSE(value->IsOriginCheckRequired());
+
+  static constexpr uint8_t kEmptyWasmModuleBytes[] = {0x00, 0x61, 0x73, 0x6d,
+                                                      0x01, 0x00, 0x00, 0x00};
+  v8::Local<v8::WasmModuleObject> module =
+      v8::WasmModuleObject::Compile(scope.GetIsolate(), kEmptyWasmModuleBytes)
+          .ToLocalChecked();
+  value->WasmModules().push_back(module->GetCompiledModule());
+  EXPECT_EQ(value->GetOriginCheckRequirement(),
+            OriginCheckRequirement::kAllowRelatedAudioWorklet);
+  EXPECT_TRUE(value->IsOriginCheckRequired());
+
+  value = SerializedScriptValue::NullValue();
+  mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken> token;
+  token.InitWithNewPipeAndPassReceiver().reset();
+  value->FileSystemAccessTokens().push_back(std::move(token));
+  EXPECT_EQ(value->GetOriginCheckRequirement(),
+            OriginCheckRequirement::kStrict);
+  EXPECT_TRUE(value->IsOriginCheckRequired());
+
+  value->WasmModules().push_back(module->GetCompiledModule());
+  EXPECT_EQ(value->GetOriginCheckRequirement(),
+            OriginCheckRequirement::kStrict);
+  EXPECT_TRUE(value->IsOriginCheckRequired());
+}
 
 TEST(SerializedScriptValueTest, WireFormatRoundTrip) {
   test::TaskEnvironment task_environment;
