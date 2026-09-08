@@ -58,7 +58,8 @@ class PEPCInitiatedPermissionRequestTest
     scoped_feature_list_.InitWithFeatures(
         /* enabled_features */ {blink::features::kUserMediaElement,
                                 blink::features::kUserMediaElementLegacy,
-                                blink::features::kGeolocationElement},
+                                blink::features::kGeolocationElement,
+                                blink::features::kBypassPepcSecurityForTesting},
         /* disabled_features */ {});
   }
   PEPCInitiatedPermissionRequestTest(

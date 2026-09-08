@@ -247,6 +247,73 @@ TEST_F(EmbeddedPermissionControlCheckerTest,
   pending_client_2->ExpectEmbeddedPermissionControlRegistered();
 }
 
+TEST_F(EmbeddedPermissionControlCheckerTest, HasPageEmbeddedPermission) {
+  auto* checker = EmbeddedPermissionControlChecker::GetOrCreateForPage(
+      web_contents()->GetPrimaryPage());
+  ASSERT_TRUE(checker);
+
+  EXPECT_FALSE(checker->HasPageEmbeddedPermission(
+      EmbeddedPermissionControlChecker::Source::kUserMediaElement,
+      {PermissionName::AUDIO_CAPTURE}));
+
+  auto client = CreateEmbeddedPermissionControlClient(
+      {PermissionName::AUDIO_CAPTURE}, CapabilityElementSource::kUserMedia);
+  client->ExpectEmbeddedPermissionControlRegistered();
+
+  EXPECT_TRUE(checker->HasPageEmbeddedPermission(
+      EmbeddedPermissionControlChecker::Source::kUserMediaElement,
+      {PermissionName::AUDIO_CAPTURE}));
+  EXPECT_FALSE(checker->HasPageEmbeddedPermission(
+      EmbeddedPermissionControlChecker::Source::kUserMediaElement,
+      {PermissionName::VIDEO_CAPTURE}));
+  EXPECT_FALSE(checker->HasPageEmbeddedPermission(
+      EmbeddedPermissionControlChecker::Source::kGeolocationElement,
+      {PermissionName::AUDIO_CAPTURE}));
+
+  auto client_2 = CreateEmbeddedPermissionControlClient(
+      {PermissionName::AUDIO_CAPTURE}, CapabilityElementSource::kUserMedia);
+  client_2->ExpectEmbeddedPermissionControlRegistered();
+
+  EXPECT_TRUE(checker->HasPageEmbeddedPermission(
+      EmbeddedPermissionControlChecker::Source::kUserMediaElement,
+      {PermissionName::AUDIO_CAPTURE}));
+
+  client.reset();
+  base::RunLoop().RunUntilIdle();
+
+  // Still true because client_2 is registered.
+  EXPECT_TRUE(checker->HasPageEmbeddedPermission(
+      EmbeddedPermissionControlChecker::Source::kUserMediaElement,
+      {PermissionName::AUDIO_CAPTURE}));
+
+  client_2.reset();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(checker->HasPageEmbeddedPermission(
+      EmbeddedPermissionControlChecker::Source::kUserMediaElement,
+      {PermissionName::AUDIO_CAPTURE}));
+
+  // Test combined permissions.
+  auto combined_client = CreateEmbeddedPermissionControlClient(
+      {PermissionName::AUDIO_CAPTURE, PermissionName::VIDEO_CAPTURE},
+      CapabilityElementSource::kUserMedia);
+  combined_client->ExpectEmbeddedPermissionControlRegistered();
+
+  EXPECT_TRUE(checker->HasPageEmbeddedPermission(
+      EmbeddedPermissionControlChecker::Source::kUserMediaElement,
+      {PermissionName::AUDIO_CAPTURE, PermissionName::VIDEO_CAPTURE}));
+  EXPECT_FALSE(checker->HasPageEmbeddedPermission(
+      EmbeddedPermissionControlChecker::Source::kUserMediaElement,
+      {PermissionName::AUDIO_CAPTURE}));
+
+  combined_client.reset();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(checker->HasPageEmbeddedPermission(
+      EmbeddedPermissionControlChecker::Source::kUserMediaElement,
+      {PermissionName::AUDIO_CAPTURE, PermissionName::VIDEO_CAPTURE}));
+}
+
 class GeolocationEmbeddedPermissionControlCheckerTest
     : public EmbeddedPermissionControlCheckerTest {
  public:

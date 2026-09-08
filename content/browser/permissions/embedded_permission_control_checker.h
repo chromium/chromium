@@ -63,6 +63,12 @@ class CONTENT_EXPORT EmbeddedPermissionControlChecker
           pending_client,
       RegisterPageEmbeddedPermissionCallback callback);
 
+  // Checks if the page currently has an allowed embedded permission control
+  // registered for the given source and permissions.
+  bool HasPageEmbeddedPermission(
+      Source source,
+      const std::set<blink::mojom::PermissionName>& permissions) const;
+
  private:
   friend class content::PageUserData<EmbeddedPermissionControlChecker>;
 

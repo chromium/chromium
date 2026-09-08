@@ -67,6 +67,21 @@ void EmbeddedPermissionControlChecker::CheckPageEmbeddedPermission(
   }
 }
 
+bool EmbeddedPermissionControlChecker::HasPageEmbeddedPermission(
+    Source source,
+    const std::set<PermissionName>& permissions) const {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kBypassPepcSecurityForTesting)) {
+    return true;
+  }
+  ClientKey key(source, permissions);
+  auto client_map_it = client_map_.find(key);
+  if (client_map_it == client_map_.end() || client_map_it->second.empty()) {
+    return false;
+  }
+  return true;
+}
+
 PAGE_USER_DATA_KEY_IMPL(EmbeddedPermissionControlChecker);
 
 void EmbeddedPermissionControlChecker::OnClientDisconnect(
@@ -85,6 +100,11 @@ void EmbeddedPermissionControlChecker::OnClientDisconnect(
       base::Erase(queue, client);
       break;
     }
+  }
+
+  if (queue.empty()) {
+    client_map_.erase(client_map_it);
+    return;
   }
 
   for (auto it = queue.begin();

@@ -29,9 +29,10 @@ struct CONTENT_EXPORT PermissionRequestDescription {
       bool user_gesture = false,
       const GURL& requesting_origin = GURL());
 
-  explicit PermissionRequestDescription(
+  PermissionRequestDescription(
       std::vector<blink::mojom::PermissionDescriptorPtr> permissions,
-      blink::mojom::EmbeddedPermissionRequestDescriptorPtr descriptor);
+      blink::mojom::EmbeddedPermissionRequestDescriptorPtr descriptor,
+      bool user_gesture);
 
   PermissionRequestDescription& operator=(const PermissionRequestDescription&) =
       delete;

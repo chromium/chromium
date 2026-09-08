@@ -24,9 +24,10 @@ PermissionRequestDescription::PermissionRequestDescription(
 
 PermissionRequestDescription::PermissionRequestDescription(
     std::vector<blink::mojom::PermissionDescriptorPtr> permissions,
-    blink::mojom::EmbeddedPermissionRequestDescriptorPtr descriptor)
+    blink::mojom::EmbeddedPermissionRequestDescriptorPtr descriptor,
+    bool user_gesture)
     : permissions(std::move(permissions)),
-      user_gesture(true),
+      user_gesture(user_gesture),
       embedded_permission_request_descriptor(std::move(descriptor)) {
   CHECK(embedded_permission_request_descriptor);
 }

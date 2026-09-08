@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <ranges>
 #include <set>
 #include <utility>
@@ -184,6 +185,57 @@ bool CheckPageEmbeddedPermissionTypes(
   return true;
 }
 
+const base::Feature& GetRequiredFeatureForPageEmbeddedPermission(
+    const blink::mojom::EmbeddedPermissionRequestDescriptorPtr& descriptor) {
+  switch (descriptor->detail->which()) {
+    case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
+        kGeolocation:
+      return blink::features::kGeolocationElement;
+    case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
+        kInstall:
+      return blink::features::kInstallElement;
+    case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
+        kUserMedia:
+      return blink::features::kUserMediaElement;
+  }
+}
+
+EmbeddedPermissionControlChecker::Source GetCheckerSourceForDescriptor(
+    const blink::mojom::EmbeddedPermissionRequestDescriptorPtr& descriptor) {
+  switch (descriptor->detail->which()) {
+    case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
+        kGeolocation:
+      return EmbeddedPermissionControlChecker::Source::kGeolocationElement;
+    case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
+        kInstall:
+      return EmbeddedPermissionControlChecker::Source::kInstallElement;
+    case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
+        kUserMedia:
+      return EmbeddedPermissionControlChecker::Source::kUserMediaElement;
+  }
+}
+
+std::optional<std::set<PermissionName>> GetValidEmbeddedPermissionNames(
+    const std::vector<PermissionDescriptorPtr>& permissions,
+    const blink::mojom::EmbeddedPermissionRequestDescriptorPtr& descriptor) {
+  if (!CheckPageEmbeddedPermissionTypes(permissions, descriptor)) {
+    return std::nullopt;
+  }
+  std::set<PermissionName> permission_names;
+  for (const auto& permission : permissions) {
+    if (!ValidatePermissionDescriptor(permission)) {
+      return std::nullopt;
+    }
+    // Check for duplicates, and ensure we're only handling permission types
+    // which can be accessed through embedded controls:
+    if (PermissionUtil::IsEmbeddablePermission(permission) &&
+        !permission_names.insert(permission->name).second) {
+      return std::nullopt;
+    }
+  }
+  return permission_names;
+}
+
 }  // anonymous namespace
 
 class PermissionServiceImpl::PendingRequest {
@@ -222,37 +274,22 @@ void PermissionServiceImpl::RegisterPageEmbeddedPermissionControl(
     std::vector<PermissionDescriptorPtr> permissions,
     blink::mojom::EmbeddedPermissionRequestDescriptorPtr descriptor,
     mojo::PendingRemote<EmbeddedPermissionControlClient> observer) {
-  switch (descriptor->detail->which()) {
-    case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
-        kGeolocation:
-      if (!base::FeatureList::IsEnabled(blink::features::kGeolocationElement)) {
-        bad_message::ReceivedBadMessage(
-            context_->render_frame_host()->GetProcess(),
-            bad_message::PSI_REGISTER_PERMISSION_ELEMENT_WITHOUT_FEATURE);
-        return;
-      }
-      break;
-    case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
-        kInstall:
-      if (!base::FeatureList::IsEnabled(blink::features::kInstallElement)) {
-        bad_message::ReceivedBadMessage(
-            context_->render_frame_host()->GetProcess(),
-            bad_message::PSI_REGISTER_PERMISSION_ELEMENT_WITHOUT_FEATURE);
-        return;
-      }
-      break;
-    case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
-        kUserMedia:
-      if (!base::FeatureList::IsEnabled(blink::features::kUserMediaElement)) {
-        bad_message::ReceivedBadMessage(
-            context_->render_frame_host()->GetProcess(),
-            bad_message::PSI_REGISTER_PERMISSION_ELEMENT_WITHOUT_FEATURE);
-        return;
-      }
-      break;
+  if (!context_->render_frame_host()) {
+    return;
   }
 
-  if (!CheckPageEmbeddedPermissionTypes(permissions, descriptor)) {
+  const base::Feature& required_feature =
+      GetRequiredFeatureForPageEmbeddedPermission(descriptor);
+  if (!base::FeatureList::IsEnabled(required_feature)) {
+    bad_message::ReceivedBadMessage(
+        context_->render_frame_host()->GetProcess(),
+        bad_message::PSI_REGISTER_PERMISSION_ELEMENT_WITHOUT_FEATURE);
+    return;
+  }
+
+  std::optional<std::set<PermissionName>> permission_names =
+      GetValidEmbeddedPermissionNames(permissions, descriptor);
+  if (!permission_names) {
     ReceivedBadMessage();
     return;
   }
@@ -262,39 +299,10 @@ void PermissionServiceImpl::RegisterPageEmbeddedPermissionControl(
   CHECK(web_contents);
   auto* checker = EmbeddedPermissionControlChecker::GetOrCreateForPage(
       web_contents->GetPrimaryPage());
-  std::set<PermissionName> permission_names;
-  for (const auto& permission : permissions) {
-    if (!ValidatePermissionDescriptor(permission)) {
-      ReceivedBadMessage();
-      return;
-    }
-    // Check for duplicates, and ensure we're only handling permission types
-    // which can be accessed through embedded controls:
-    if (PermissionUtil::IsEmbeddablePermission(permission) &&
-        !permission_names.insert(permission->name).second) {
-      ReceivedBadMessage();
-      return;
-    }
-  }
 
-  EmbeddedPermissionControlChecker::Source source =
-      EmbeddedPermissionControlChecker::Source::kUserMediaElement;
-  switch (descriptor->detail->which()) {
-    case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
-        kGeolocation:
-      source = EmbeddedPermissionControlChecker::Source::kGeolocationElement;
-      break;
-    case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
-        kInstall:
-      source = EmbeddedPermissionControlChecker::Source::kInstallElement;
-      break;
-    case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
-        kUserMedia:
-      source = EmbeddedPermissionControlChecker::Source::kUserMediaElement;
-      break;
-  }
   checker->CheckPageEmbeddedPermission(
-      source, std::move(permission_names), std::move(observer),
+      GetCheckerSourceForDescriptor(descriptor), std::move(*permission_names),
+      std::move(observer),
       base::BindOnce(
           &PermissionServiceImpl::OnPageEmbeddedPermissionControlRegistered,
           weak_factory_.GetWeakPtr(), std::move(permissions)));
@@ -328,34 +336,14 @@ void PermissionServiceImpl::RequestPageEmbeddedPermission(
     std::vector<PermissionDescriptorPtr> permissions,
     EmbeddedPermissionRequestDescriptorPtr descriptor,
     RequestPageEmbeddedPermissionCallback callback) {
-  if (permissions.empty()) {
-    ReceivedBadMessage();
+  if (!context_->render_frame_host()) {
     std::move(callback).Run(EmbeddedPermissionControlResult::kNotSupported);
     return;
   }
 
-  if (!std::ranges::all_of(permissions, &ValidatePermissionDescriptor)) {
-    ReceivedBadMessage();
-    std::move(callback).Run(EmbeddedPermissionControlResult::kNotSupported);
-    return;
-  }
-  const base::Feature* required_feature = nullptr;
-  switch (descriptor->detail->which()) {
-    case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
-        kGeolocation:
-      required_feature = &blink::features::kGeolocationElement;
-      break;
-    case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
-        kInstall:
-      required_feature = &blink::features::kInstallElement;
-      break;
-    case blink::mojom::EmbeddedPermissionControlDescriptorExtension::Tag::
-        kUserMedia:
-      required_feature = &blink::features::kUserMediaElement;
-      break;
-  }
-
-  if (!base::FeatureList::IsEnabled(*required_feature)) {
+  const base::Feature& required_feature =
+      GetRequiredFeatureForPageEmbeddedPermission(descriptor);
+  if (!base::FeatureList::IsEnabled(required_feature)) {
     bad_message::ReceivedBadMessage(
         context_->render_frame_host()->GetProcess(),
         bad_message::PSI_REQUEST_EMBEDDED_PERMISSION_WITHOUT_FEATURE);
@@ -363,14 +351,43 @@ void PermissionServiceImpl::RequestPageEmbeddedPermission(
     return;
   }
 
-  if (auto* browser_context = context_->GetBrowserContext()) {
-    if (HasDuplicatesOrInvalidPermissions(permissions) ||
-        !CheckPageEmbeddedPermissionTypes(permissions, descriptor)) {
-      ReceivedBadMessage();
+  std::optional<std::set<PermissionName>> permission_names =
+      GetValidEmbeddedPermissionNames(permissions, descriptor);
+  if (!permission_names) {
+    ReceivedBadMessage();
+    std::move(callback).Run(EmbeddedPermissionControlResult::kNotSupported);
+    return;
+  }
+
+  bool has_user_activation =
+      context_->render_frame_host()->HasTransientUserActivation() ||
+      base::FeatureList::IsEnabled(
+          blink::features::kBypassPepcSecurityForTesting);
+  if (!has_user_activation) {
+    std::move(callback).Run(EmbeddedPermissionControlResult::kNotSupported);
+    return;
+  }
+
+  WebContents* web_contents =
+      WebContents::FromRenderFrameHost(context_->render_frame_host());
+  if (!web_contents) {
+    std::move(callback).Run(EmbeddedPermissionControlResult::kNotSupported);
+    return;
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kBypassPepcSecurityForTesting)) {
+    auto* checker = EmbeddedPermissionControlChecker::GetForPage(
+        web_contents->GetPrimaryPage());
+    if (!checker ||
+        !checker->HasPageEmbeddedPermission(
+            GetCheckerSourceForDescriptor(descriptor), *permission_names)) {
       std::move(callback).Run(EmbeddedPermissionControlResult::kNotSupported);
       return;
     }
+  }
 
+  if (auto* browser_context = context_->GetBrowserContext()) {
     std::vector<PermissionStatus> initial_statuses;
     initial_statuses.reserve(permissions.size());
     for (const auto& permission : permissions) {
@@ -380,8 +397,8 @@ void PermissionServiceImpl::RequestPageEmbeddedPermission(
 
     RequestPermissionsInternal(
         browser_context,
-        PermissionRequestDescription(std::move(permissions),
-                                     std::move(descriptor)),
+        PermissionRequestDescription(
+            std::move(permissions), std::move(descriptor), has_user_activation),
         base::BindOnce(&EmbeddedPermissionRequestCallbackWrapper,
                        initial_statuses, std::move(callback)));
   } else {
