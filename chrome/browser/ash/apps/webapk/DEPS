@@ -1,6 +1,5 @@
 include_rules = [
   "-chrome",
-  "+chrome/browser/ash/apps/webapk",
 
   "+chrome/browser/apps/app_service",
   "+chrome/browser/ash/app_list/arc",

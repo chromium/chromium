@@ -3,10 +3,6 @@ include_rules = [
   # details.
   "-chrome",
 
-  # This directory is in //chrome, which violates the rule above. Allow this
-  # directory to #include its own files.
-  "+chrome/browser/ash/app_mode/arcvm_app",
-
   # Existing dependencies within //chrome. There is an active effort to
   # refactor //chrome/browser/ash to break these dependencies; see crbug.com/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
@@ -23,8 +19,6 @@ include_rules = [
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/profiles/profile_keyed_service_factory.h",
   "+chrome/browser/ui/ash/multi_user",
-  "+chrome/test",
-  "+chromeos/ash/components/settings",
 ]
 
 specific_include_rules = {

@@ -1,6 +1,4 @@
 include_rules = [
-  "+chromeos/ash/components/scheduler_config",
-
   # Existing dependencies within //chrome. There is an active effort to
   # refactor //chrome/browser/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
@@ -26,9 +24,6 @@ include_rules = [
   "+chrome/browser/sessions",
   "+chrome/browser/signin",
   "+chrome/browser/ui/ash",
-  "+chrome/browser/ui/ash/desks",
-  "+chrome/browser/ui/ash/shelf",
-  "+chrome/browser/ui/ash/system_web_apps",
   "+chrome/browser/ui/startup",
   "+chrome/browser/ui/webui/ash/settings",
   "+chrome/browser/web_applications/web_app_install_info.h",

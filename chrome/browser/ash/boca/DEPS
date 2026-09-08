@@ -7,7 +7,6 @@ include_rules = [
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/app/chrome_command_ids.h",
-  "+chrome/browser/apps/app_service/launch_result_type.h",
   "+chrome/browser/ash/system_web_apps/system_web_app_manager.h",
   "+chrome/browser/extensions/extension_service.h",
   "+chrome/browser/extensions/test_extension_environment.h",
@@ -17,7 +16,6 @@ include_rules = [
   "+chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h",
   "+chrome/browser/login_detection/login_detection_util.h",
   "+chrome/browser/platform_util.h",
-  "+chrome/browser/profiles/incognito_helpers.h",
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/profiles/profile_keyed_service_factory.h",
   "+chrome/browser/profiles/profile_manager.h",
@@ -34,7 +32,6 @@ include_rules = [
   "+chrome/test/base/in_process_browser_test.h",
   "+chrome/test/base/testing_profile.h",
   "+chrome/browser/ash/settings/device_settings_service.h",
-  "+components/sessions",
   # Files needed by babelorca/
   "+chrome/browser/ash/accessibility/live_caption/system_live_caption_service.h",
   # Files needed by spotlight/

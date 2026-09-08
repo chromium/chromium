@@ -3,10 +3,6 @@ include_rules = [
   # details.
   "-chrome",
 
-  # This directory is in //chrome, which violates the rule above. Allow this
-  # directory to #include its own files.
-  "+chrome/browser/ash/arc/notification",
-
   # Existing dependencies within //chrome. There is an active effort to
   # refactor //chrome/browser/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
@@ -19,13 +15,10 @@ include_rules = [
   "+chrome/browser/ash/arc",
   "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/policy/core",
-  "+chrome/browser/policy",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui/ash/arc",
   "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/ash/multi_user",
   "+chrome/test/base",
-  "+ui/message_center/message_center.h",
 ]
 
 specific_include_rules = {
