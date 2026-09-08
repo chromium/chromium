@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/scheduler/scheduled_action.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/scheduling_policy.h"
@@ -147,13 +148,20 @@ class DOMTimerCoordinator : public GarbageCollected<DOMTimerCoordinator>,
   int timer_nesting_level_ = 0;
 };
 
-bool IsAllowed(ExecutionContext& context, bool is_eval, const String& source) {
+// `context` is the global that setTimeout() or setInterval() is being called
+// on, which might differ from the `ExecutionContext` associated with
+// `script_state`.
+bool IsAllowed(ScriptState* script_state,
+               ExecutionContext& context,
+               bool is_eval,
+               const String& source) {
   if (context.IsContextDestroyed()) {
     return false;
   }
-  if (is_eval && !context.GetContentSecurityPolicy()->AllowEval(
-                     ReportingDisposition::kReport,
-                     ContentSecurityPolicy::kWillNotThrowException, source)) {
+  if (is_eval &&
+      !context.GetContentSecurityPolicyForWorld(&script_state->World())
+           ->AllowEval(ReportingDisposition::kReport,
+                       ContentSecurityPolicy::kWillNotThrowException, source)) {
     return false;
   }
   if (auto* window = DynamicTo<LocalDOMWindow>(context);
@@ -172,7 +180,7 @@ int DOMTimer::setTimeout(ScriptState* script_state,
                          V8Function* handler,
                          int timeout,
                          const HeapVector<ScriptValue>& arguments) {
-  if (!IsAllowed(context, false, g_empty_string)) {
+  if (!IsAllowed(script_state, context, false, g_empty_string)) {
     return 0;
   }
   auto* action = MakeGarbageCollected<ScheduledAction>(script_state, context,
@@ -205,7 +213,7 @@ int DOMTimer::setTimeout(ScriptState* script_state,
     return 0;
   }
 
-  if (!IsAllowed(context, true, handler)) {
+  if (!IsAllowed(script_state, context, true, handler)) {
     return 0;
   }
   // Don't allow setting timeouts to run empty functions.  Was historically a
@@ -226,7 +234,7 @@ int DOMTimer::setInterval(ScriptState* script_state,
                           V8Function* handler,
                           int timeout,
                           const HeapVector<ScriptValue>& arguments) {
-  if (!IsAllowed(context, false, g_empty_string)) {
+  if (!IsAllowed(script_state, context, false, g_empty_string)) {
     return 0;
   }
   auto* action = MakeGarbageCollected<ScheduledAction>(script_state, context,
@@ -254,7 +262,7 @@ int DOMTimer::setInterval(ScriptState* script_state,
     return 0;
   }
 
-  if (!IsAllowed(context, true, handler)) {
+  if (!IsAllowed(script_state, context, true, handler)) {
     return 0;
   }
   // Don't allow setting timeouts to run empty functions.  Was historically a
