@@ -6962,9 +6962,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxAimImageDownscalingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxAimImageDownscaling)},
 
-    {"android-desktop-aim-gate", flag_descriptions::kAndroidDesktopAimGateName,
-     flag_descriptions::kAndroidDesktopAimGateDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(omnibox::kAndroidDesktopAimGate)},
 
     {"omnibox-disable-tabs-for-canvas",
      flag_descriptions::kOmniboxDisableTabsForCanvasName,

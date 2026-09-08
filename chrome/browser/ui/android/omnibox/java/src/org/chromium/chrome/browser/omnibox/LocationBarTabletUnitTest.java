@@ -254,10 +254,7 @@ public class LocationBarTabletUnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT,
-        OmniboxFeatureList.ANDROID_DESKTOP_AIM_GATE
-    })
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     @Config(qualifiers = "w800dp-xhdpi")
     public void testFuseboxStateChange_clampsToContainerWidth() {
         int containerWidthDp = 400;

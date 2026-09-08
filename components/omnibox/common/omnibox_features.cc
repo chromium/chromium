@@ -196,8 +196,6 @@ BASE_FEATURE(kHideAimEntrypointForUrlSuggestions, ENABLED);
 // When enabled, the multimodal input button is shown in the Omnibox.
 BASE_FEATURE(kOmniboxMultimodalInput, ENABLED);
 
-// An additional gate to the behavior of OmniboxMultimodalInput on desktop.
-BASE_FEATURE(kAndroidDesktopAimGate, ENABLED);
 
 // Disables tab attachments for Canvas requests and disables Canvas if tabs are
 // attached.
@@ -597,7 +595,6 @@ static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kInlineLocationSignaling,
       &kOmniboxSiteSearch,
       &kOmniboxMultimodalInput,
-      &kAndroidDesktopAimGate,
       &kServeJavaCachedZeroSuggest,
       &kAIMSuppressVerbatimMatch,
       &kResetSuggestionsScroll,

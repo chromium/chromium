@@ -552,9 +552,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
      * search, or the search widget) use the TOOLBAR layout mode to match mobile layouts.
      */
     private @FuseboxLayoutMode int getFuseboxLayoutMode() {
-        return !mIsForcedPhoneStyleOmnibox
-                        && OmniboxCapabilities.isDesktopPlatform()
-                        && OmniboxFeatures.sAndroidDesktopAimGate.isEnabled()
+        return !mIsForcedPhoneStyleOmnibox && OmniboxCapabilities.isDesktopPlatform()
                 ? FuseboxLayoutMode.SUGGESTIONS_POPOVER
                 : FuseboxLayoutMode.TOOLBAR;
     }

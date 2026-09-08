@@ -460,7 +460,6 @@ public class FuseboxCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.ANDROID_DESKTOP_AIM_GATE)
     public void testGetFuseboxLayoutMode_normalStyleOnDesktop() {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
 
@@ -473,7 +472,6 @@ public class FuseboxCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(OmniboxFeatureList.ANDROID_DESKTOP_AIM_GATE)
     public void testGetFuseboxLayoutMode_forcedPhoneStyleOnDesktop() {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
 

@@ -3613,10 +3613,6 @@ inline constexpr char kOmniboxMultimodalInputName[] =
 inline constexpr char kOmniboxMultimodalInputDescription[] =
     "When enabled, the multimodal input toolbar is shown in the Omnibox.";
 
-inline constexpr char kAndroidDesktopAimGateName[] = "Android Desktop AIM Gate";
-inline constexpr char kAndroidDesktopAimGateDescription[] =
-    "Gates the behavior of Omnibox Multimodal Input on android desktop "
-    "devices.";
 
 inline constexpr char kOmniboxDisableTabsForCanvasName[] =
     "Omnibox Disable Tabs For Canvas";

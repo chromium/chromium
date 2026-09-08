@@ -199,9 +199,6 @@ public class OmniboxFeatures {
     public static final BooleanCachedFeatureParam sFocusFuseboxFromNtpPlusButton =
             newBooleanParam(sOmniboxMultimodalInput, "focus_fusebox_from_ntp_plus_button", false);
 
-    public static final CachedFlag sAndroidDesktopAimGate =
-            newFlag(OmniboxFeatureList.ANDROID_DESKTOP_AIM_GATE, FeatureState.ENABLED_IN_PROD);
-
     public static final CachedFlag sAIMSuppressVerbatimMatch =
             newFlag(OmniboxFeatureList.AIM_SUPPRESS_VERBATIM_MATCH, FeatureState.ENABLED_IN_PROD);
 
@@ -412,20 +409,12 @@ public class OmniboxFeatures {
     }
 
     /**
-     * Explicitly disable fusebox for desktop for release users, but not for tests or for local
-     * development. Fusebox feature checks should go through this instead of the feature directly.
-     * This should be removed in a milestone or two, before fusebox launch for desktop.
-     *
-     * <p>Checks whether the fusebox is enabled for the current combination of context, device and
-     * flag state, disabling the fusebox on unsupported device and experience configurations.
+     * Checks whether the fusebox is enabled for the current combination of context, device and flag
+     * state, disabling the fusebox on unsupported device and experience configurations.
      */
     public static boolean isMultimodalInputEnabled(Context context) {
         if (!OmniboxCapabilities.isFuseboxSupportedDeviceType()) {
             return false;
-        }
-        if (OmniboxCapabilities.isDesktopPlatform()
-                || OmniboxCapabilities.hasDesktopExperience(context)) {
-            return sAndroidDesktopAimGate.isEnabled() && sOmniboxMultimodalInput.isEnabled();
         }
         return sOmniboxMultimodalInput.isEnabled();
     }

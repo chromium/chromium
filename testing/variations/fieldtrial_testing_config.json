@@ -631,21 +631,6 @@
             ]
         }
     ],
-    "AndroidDesktopAimGate": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AndroidDesktopAimGate"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidDesktopUAPlatform": [
         {
             "platforms": [
