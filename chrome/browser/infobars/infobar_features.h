@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_INFOBARS_INFOBAR_FEATURES_H_
 #define CHROME_BROWSER_INFOBARS_INFOBAR_FEATURES_H_
 
+#include "base/feature.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "components/infobars/core/infobar_delegate.h"
@@ -25,6 +26,7 @@ BASE_DECLARE_FEATURE_PARAM(bool, kMigratedDevToolsConfirm);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedDevToolsSharedProcess);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedGoogleApiKeys);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedInstallerDownloader);
+BASE_DECLARE_FEATURE_PARAM(bool, kMigratedKeystonePromotion);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedKnownInterceptionDisclosure);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedLinkCapturing);
 BASE_DECLARE_FEATURE_PARAM(bool, kMigratedPageInfo);

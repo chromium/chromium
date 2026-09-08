@@ -9,13 +9,10 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/updater/updater.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -23,33 +20,8 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
-
-namespace {
-
-void ShowUpdaterPromotionInfoBarOnUISequence() {
-  // If the user clicked the "don't ask again" button at some point in the
-  // past, or if the "don't ask about the default browser" command-line switch
-  // is present, bail out.  That command-line switch is recycled here because
-  // it's likely that the set of users that don't want to be nagged about the
-  // default browser also don't want to be nagged about the update check.
-  // (Automated testers, I'm thinking of you...)
-  BrowserWindowInterface* browser =
-      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
-  if (!browser || !browser->GetProfile() ||
-      !browser->GetProfile()->GetPrefs()->GetBoolean(
-          prefs::kShowUpdatePromotionInfoBar) ||
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kNoDefaultBrowserCheck)) {
-    return;
-  }
-  KeystonePromotionInfoBarDelegate::Create(
-      browser->GetTabStripModel()->GetActiveWebContents());
-}
-
-}  // namespace
 
 // KeystonePromotionInfoBarDelegate -------------------------------------------
 
@@ -113,9 +85,4 @@ bool KeystonePromotionInfoBarDelegate::Accept() {
 bool KeystonePromotionInfoBarDelegate::Cancel() {
   prefs_->SetBoolean(prefs::kShowUpdatePromotionInfoBar, false);
   return true;
-}
-
-void ShowUpdaterPromotionInfoBar() {
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&ShowUpdaterPromotionInfoBarOnUISequence));
 }

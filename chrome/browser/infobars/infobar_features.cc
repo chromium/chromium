@@ -4,6 +4,9 @@
 
 #include "chrome/browser/infobars/infobar_features.h"
 
+#include "base/metrics/field_trial_params.h"
+#include "components/infobars/core/infobar_delegate.h"
+
 namespace infobars {
 
 BASE_FEATURE(kCentralizedInfoBarFramework, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -50,6 +53,11 @@ BASE_FEATURE_PARAM(bool,
 
 BASE_FEATURE_PARAM(bool,
                    kMigratedInstallerDownloader,
+                   &kCentralizedInfoBarFramework,
+                   false);
+
+BASE_FEATURE_PARAM(bool,
+                   kMigratedKeystonePromotion,
                    &kCentralizedInfoBarFramework,
                    false);
 
@@ -138,6 +146,8 @@ const base::FeatureParam<bool>* GetInfoBarMigrationParam(
       return &kMigratedGoogleApiKeys;
     case InfoBarDelegate::INSTALLER_DOWNLOADER_INFOBAR_DELEGATE:
       return &kMigratedInstallerDownloader;
+    case InfoBarDelegate::KEYSTONE_PROMOTION_INFOBAR_DELEGATE_MAC:
+      return &kMigratedKeystonePromotion;
     case InfoBarDelegate::KNOWN_INTERCEPTION_DISCLOSURE_INFOBAR_DELEGATE:
       return &kMigratedKnownInterceptionDisclosure;
     case InfoBarDelegate::ENABLE_LINK_CAPTURING_INFOBAR_DELEGATE:
