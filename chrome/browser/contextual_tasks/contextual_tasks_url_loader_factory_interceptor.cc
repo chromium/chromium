@@ -313,6 +313,16 @@ class ContextualTasksProxyingURLLoaderFactory
       return;
     }
 
+    // Only attach the Authorization header if the request was initiated by an
+    // allowed origin, or is a browser-initiated navigation (no initiator).
+    if (modified_request.request_initiator.has_value() &&
+        !ShouldAddAuthHeader(modified_request.request_initiator->GetURL())) {
+      target_factory_->CreateLoaderAndStart(
+          std::move(loader), request_id, options, modified_request,
+          std::move(client), traffic_annotation);
+      return;
+    }
+
     OMNIBOX_LOG("nav_trace") << "ContextualTasks navigation trace: CreateLoaderAndStart "
                "asking ContextualTasksUiService for AccessToken";
     ui_service_->GetAccessToken(
