@@ -328,7 +328,7 @@ TEST_F(X11WindowOzoneTest, StartupIdProperty) {
   ASSERT_TRUE(GetRawBytesOfProperty(xid, x11::GetAtom("_NET_STARTUP_ID"),
                                     &data, &type));
 
-  EXPECT_EQ(type, x11::Atom::STRING);
+  EXPECT_EQ(type, x11::GetAtom("UTF8_STRING"));
   std::string value(reinterpret_cast<const char*>(data->data()), data->size());
   EXPECT_EQ(value, kStartupId);
 }
@@ -363,7 +363,7 @@ TEST_F(X11WindowOzoneTest, StartupIdPropertyFromInitProperties) {
   ASSERT_TRUE(GetRawBytesOfProperty(xid, x11::GetAtom("_NET_STARTUP_ID"),
                                     &data, &type));
 
-  EXPECT_EQ(type, x11::Atom::STRING);
+  EXPECT_EQ(type, x11::GetAtom("UTF8_STRING"));
   std::string value(reinterpret_cast<const char*>(data->data()), data->size());
   EXPECT_EQ(value, kStartupId);
 }
