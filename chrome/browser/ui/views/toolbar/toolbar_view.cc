@@ -213,7 +213,6 @@ constexpr int kBrowserAppMenuRefreshExpandedMargin = 5;
 constexpr int kBrowserAppMenuRefreshCollapsedMargin = 2;
 constexpr int kLargeSpaceBetweenButtons = 6;
 constexpr int kInsideBorderAroundGlicButtons = 2;
-constexpr int kOutsideBorderAroundGlicButtons = 11;
 constexpr int kGlicButtonMargin = 5;
 
 // Returns whether `point` should be treated as part of the caption area in
@@ -1002,36 +1001,11 @@ void ToolbarView::FinalizeHideGlicActorTaskIcon() {
 
 void ToolbarView::UpdateGlicActorButtonContainerBorders() {
   CHECK(glic_button_);
-  gfx::Insets glic_border;
 
-  // Ensure buttons look vertically centered by making the top and bottom insets
-  // match.
-  gfx::Insets border_insets = gfx::Insets();
-  int min_vertical_inset =
-      std::min(border_insets.top(), border_insets.bottom());
-  border_insets.set_top_bottom(min_vertical_inset, min_vertical_inset);
-
-  // GlicActorTaskIcon will only ever be shown alongside the GlicButton.
-  if (glic_actor_task_icon_ && glic_actor_task_icon_->IsDrawn()) {
-    gfx::Insets task_icon_border;
-    const gfx::Insets right_icon_border =
-        gfx::Insets().set_left_right(0, kOutsideBorderAroundGlicButtons);
-    const gfx::Insets left_icon_border = gfx::Insets().set_left_right(
-        kOutsideBorderAroundGlicButtons, kInsideBorderAroundGlicButtons);
-    task_icon_border = right_icon_border + border_insets;
-    glic_border = left_icon_border + border_insets;
-    glic_actor_task_icon_->SetBorder(
-        views::CreateEmptyBorder(task_icon_border));
-    // Force a background repaint to account for the new border insets.
+  // Force a background repaint.
+  if (glic_actor_task_icon_) {
     glic_actor_task_icon_->RefreshBackground();
-  } else {
-    // Reset GlicButton border if Task Icon is hidden.
-    glic_border = gfx::Insets().set_left_right(border_insets.top(),
-                                               border_insets.bottom()) +
-                  border_insets;
   }
-  glic_button_->SetBorder(views::CreateEmptyBorder(glic_border));
-  // Force a background repaint to account for the new border insets.
   glic_button_->RefreshBackground();
 }
 
