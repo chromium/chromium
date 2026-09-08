@@ -22,7 +22,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
-std::optional<ContentSettingsType> ContentSettingsTypeForPermission(
+ContentSettingsType ContentSettingsTypeForPermission(
     web::Permission permission) {
   switch (permission) {
     // TODO(crbug.com/552561353): Add support for geolocation permissions.
@@ -73,13 +73,8 @@ void CommitPermissionDecisionToHostContentSettingsMap(
   for (NSNumber* permission_number in permissions) {
     web::Permission permission =
         static_cast<web::Permission>(permission_number.unsignedIntegerValue);
-    std::optional<ContentSettingsType> type =
-        ContentSettingsTypeForPermission(permission);
-    if (!type) {
-      continue;
-    }
-
-    settings_map->SetContentSettingDefaultScope(url, url, *type,
+    ContentSettingsType type = ContentSettingsTypeForPermission(permission);
+    settings_map->SetContentSettingDefaultScope(url, url, type,
                                                 content_setting);
   }
 }

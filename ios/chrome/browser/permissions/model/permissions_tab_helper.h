@@ -7,8 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import <optional>
-
 #import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
 #import "base/timer/timer.h"
@@ -26,9 +24,8 @@ namespace base {
 class OneShotTimer;
 }  // namespace base
 
-// Returns the corresponding ContentSettingsType for `permission`, or
-// std::nullopt if the permission is not mapped to a content settings type.
-std::optional<ContentSettingsType> ContentSettingsTypeForPermission(
+// Returns the corresponding ContentSettingsType for `permission`.
+ContentSettingsType ContentSettingsTypeForPermission(
     web::Permission permission);
 
 // Tab helper that observes changes to web permissions and creates/replaces the
