@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/pwc/privileged_web_contents.h"
 #include "chrome/browser/pwc/pwc_component_policy.h"
@@ -14,11 +15,14 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "content/public/browser/media_stream_request.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/drop_data.h"
 #include "content/public/test/test_renderer_host.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -223,6 +227,145 @@ TEST_F(GlicViewTest, SetWebContents_NoWebview_DoesNotClearIfOverwritten) {
   EXPECT_EQ(pwc->embedder_delegate(), &other_delegate);
 
   pwc->SetEmbedderDelegate(nullptr);
+}
+
+TEST_F(GlicViewTest, CheckMediaAccessPermission_RoutesToDispatcher) {
+  content::RenderViewHostTestEnabler rvh_test_enabler;
+  auto glic_view =
+      std::make_unique<GlicView>(profile(), gfx::Size(800, 600), nullptr);
+
+  auto web_contents = content::WebContents::Create(
+      content::WebContents::CreateParams(profile()));
+  glic_view->SetWebContents(web_contents.get());
+
+  EXPECT_FALSE(web_contents->GetDelegate()->CheckMediaAccessPermission(
+      web_contents->GetPrimaryMainFrame(),
+      url::Origin::Create(GURL("https://example.com")),
+      blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE));
+}
+
+TEST_F(GlicViewTest, CheckMediaAccessPermission_NoWebview_ForwardsFromPwc) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kGlicNoWebview, pwc::mojom::features::kPrivilegedWebContents},
+      {});
+
+  content::RenderViewHostTestEnabler rvh_test_enabler;
+  auto glic_view =
+      std::make_unique<GlicView>(profile(), gfx::Size(800, 600), nullptr);
+
+  auto policy_delegate = std::make_unique<pwc::FixedPwcPolicyDelegate>(
+      std::vector<url::Origin>{
+          url::Origin::Create(GURL("https://pwc-test.example.com"))},
+      std::vector<url::Origin>{
+          url::Origin::Create(GURL("https://pwc-test.example.com"))});
+  std::unique_ptr<pwc::PrivilegedWebContents> pwc =
+      pwc::PrivilegedWebContents::Create(pwc::PrivilegedComponent::kGlic,
+                                         profile(), std::move(policy_delegate));
+  ASSERT_TRUE(pwc);
+
+  glic_view->SetWebContents(pwc->web_contents());
+  ASSERT_EQ(pwc->embedder_delegate(), glic_view.get());
+
+  EXPECT_FALSE(pwc->web_contents()->GetDelegate()->CheckMediaAccessPermission(
+      pwc->web_contents()->GetPrimaryMainFrame(),
+      url::Origin::Create(GURL("https://pwc-test.example.com")),
+      blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE));
+}
+
+content::MediaResponseCallback BindResultToFuture(
+    base::test::TestFuture<blink::mojom::MediaStreamRequestResult>& future) {
+  return base::BindOnce(
+      [](base::OnceCallback<void(blink::mojom::MediaStreamRequestResult)> cb,
+         const blink::mojom::StreamDevicesSet& stream_devices_set,
+         blink::mojom::MediaStreamRequestResult result,
+         std::unique_ptr<content::MediaStreamUI> ui) {
+        std::move(cb).Run(result);
+      },
+      future.GetCallback());
+}
+
+TEST_F(GlicViewTest, RequestMediaAccessPermission_RoutesToDispatcher) {
+  content::RenderViewHostTestEnabler rvh_test_enabler;
+  auto glic_view =
+      std::make_unique<GlicView>(profile(), gfx::Size(800, 600), nullptr);
+
+  auto web_contents = content::WebContents::Create(
+      content::WebContents::CreateParams(profile()));
+  glic_view->SetWebContents(web_contents.get());
+
+  content::MediaStreamRequest request(
+      /*render_process_id=*/web_contents->GetPrimaryMainFrame()
+          ->GetProcess()
+          ->GetDeprecatedID(),
+      /*render_frame_id=*/web_contents->GetPrimaryMainFrame()->GetRoutingID(),
+      /*page_request_id=*/0,
+      /*security_origin=*/url::Origin::Create(GURL("https://example.com")),
+      /*user_gesture=*/false,
+      /*request_type=*/blink::MEDIA_DEVICE_ACCESS,
+      /*requested_audio_device_ids=*/{},
+      /*requested_video_device_ids=*/{},
+      /*audio_type=*/blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
+      /*video_type=*/blink::mojom::MediaStreamType::NO_SERVICE,
+      /*disable_local_echo=*/false,
+      /*request_pan_tilt_zoom_permission=*/false,
+      /*captured_surface_control_active=*/false);
+
+  base::test::TestFuture<blink::mojom::MediaStreamRequestResult> future;
+  web_contents->GetDelegate()->RequestMediaAccessPermission(
+      web_contents.get(), request, BindResultToFuture(future));
+  EXPECT_EQ(future.Get(),
+            blink::mojom::MediaStreamRequestResult::INVALID_SECURITY_ORIGIN);
+}
+
+TEST_F(GlicViewTest, RequestMediaAccessPermission_NoWebview_ForwardsFromPwc) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kGlicNoWebview, pwc::mojom::features::kPrivilegedWebContents},
+      {});
+
+  content::RenderViewHostTestEnabler rvh_test_enabler;
+  auto glic_view =
+      std::make_unique<GlicView>(profile(), gfx::Size(800, 600), nullptr);
+
+  auto policy_delegate = std::make_unique<pwc::FixedPwcPolicyDelegate>(
+      std::vector<url::Origin>{
+          url::Origin::Create(GURL("https://pwc-test.example.com"))},
+      std::vector<url::Origin>{
+          url::Origin::Create(GURL("https://pwc-test.example.com"))});
+  std::unique_ptr<pwc::PrivilegedWebContents> pwc =
+      pwc::PrivilegedWebContents::Create(pwc::PrivilegedComponent::kGlic,
+                                         profile(), std::move(policy_delegate));
+  ASSERT_TRUE(pwc);
+
+  glic_view->SetWebContents(pwc->web_contents());
+  ASSERT_EQ(pwc->embedder_delegate(), glic_view.get());
+
+  content::MediaStreamRequest request(
+      /*render_process_id=*/pwc->web_contents()
+          ->GetPrimaryMainFrame()
+          ->GetProcess()
+          ->GetDeprecatedID(),
+      /*render_frame_id=*/
+      pwc->web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
+      /*page_request_id=*/0,
+      /*security_origin=*/
+      url::Origin::Create(GURL("https://pwc-test.example.com")),
+      /*user_gesture=*/false,
+      /*request_type=*/blink::MEDIA_DEVICE_ACCESS,
+      /*requested_audio_device_ids=*/{},
+      /*requested_video_device_ids=*/{},
+      /*audio_type=*/blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
+      /*video_type=*/blink::mojom::MediaStreamType::NO_SERVICE,
+      /*disable_local_echo=*/false,
+      /*request_pan_tilt_zoom_permission=*/false,
+      /*captured_surface_control_active=*/false);
+
+  base::test::TestFuture<blink::mojom::MediaStreamRequestResult> future;
+  pwc->web_contents()->GetDelegate()->RequestMediaAccessPermission(
+      pwc->web_contents(), request, BindResultToFuture(future));
+  EXPECT_EQ(future.Get(),
+            blink::mojom::MediaStreamRequestResult::INVALID_SECURITY_ORIGIN);
 }
 
 }  // namespace glic

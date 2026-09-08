@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/pwc/pwc_api_binder.h"
 #include "chrome/browser/pwc/pwc_features.mojom-features.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
@@ -18,13 +19,30 @@
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/base/window_open_disposition.h"
+#include "url/origin.h"
 
 namespace pwc {
 
 namespace {
+
+void PostMediaAccessRejection(content::MediaResponseCallback callback) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](content::MediaResponseCallback cb) {
+            std::move(cb).Run(
+                blink::mojom::StreamDevicesSet(),
+                blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED,
+                /*ui=*/nullptr);
+          },
+          std::move(callback)));
+}
 
 // Marks a WebContents as owned by a PrivilegedWebContents and links back to
 // its owner. Attached for the whole lifetime of the WebContents; the owner
@@ -113,6 +131,20 @@ bool PrivilegedWebContents::EmbedderDelegate::HandleKeyboardEvent(
 void PrivilegedWebContents::EmbedderDelegate::ContentsZoomChange(bool zoom_in) {
 }
 
+void PrivilegedWebContents::EmbedderDelegate::RequestMediaAccessPermission(
+    content::WebContents* web_contents,
+    const content::MediaStreamRequest& request,
+    content::MediaResponseCallback callback) {
+  PostMediaAccessRejection(std::move(callback));
+}
+
+bool PrivilegedWebContents::EmbedderDelegate::CheckMediaAccessPermission(
+    content::RenderFrameHost* render_frame_host,
+    const url::Origin& security_origin,
+    blink::mojom::MediaStreamType type) {
+  return false;
+}
+
 content::PreloadingEligibility PrivilegedWebContents::IsPrerender2Supported(
     content::WebContents& web_contents,
     content::PreloadingTriggerType trigger_type) {
@@ -149,6 +181,57 @@ void PrivilegedWebContents::ContentsZoomChange(bool zoom_in) {
   if (embedder_delegate_) {
     embedder_delegate_->ContentsZoomChange(zoom_in);
   }
+}
+
+void PrivilegedWebContents::RequestMediaAccessPermission(
+    content::WebContents* web_contents,
+    const content::MediaStreamRequest& request,
+    content::MediaResponseCallback callback) {
+  if (!IsPrimaryMainFrame(request.render_process_id, request.render_frame_id)) {
+    PostMediaAccessRejection(std::move(callback));
+    return;
+  }
+
+  if (!embedder_delegate_) {
+    PostMediaAccessRejection(std::move(callback));
+    return;
+  }
+
+  // Wrap the callback to ensure it is always invoked even if an embedder
+  // delegate drops it, preventing renderer-side IPC hangs.
+  auto safe_callback = mojo::WrapCallbackWithDefaultInvokeCallbackIfNotRun(
+      std::move(callback), base::BindOnce(&PostMediaAccessRejection));
+  embedder_delegate_->RequestMediaAccessPermission(web_contents, request,
+                                                   std::move(safe_callback));
+}
+
+bool PrivilegedWebContents::CheckMediaAccessPermission(
+    content::RenderFrameHost* render_frame_host,
+    const url::Origin& security_origin,
+    blink::mojom::MediaStreamType type) {
+  // PrivilegedWebContents only permits media access on the primary main frame
+  // belonging to this WebContents.
+  if (!IsPrimaryMainFrame(render_frame_host)) {
+    return false;
+  }
+  if (embedder_delegate_) {
+    return embedder_delegate_->CheckMediaAccessPermission(
+        render_frame_host, security_origin, type);
+  }
+  return false;
+}
+
+bool PrivilegedWebContents::IsPrimaryMainFrame(
+    content::RenderFrameHost* render_frame_host) const {
+  return render_frame_host && render_frame_host->IsInPrimaryMainFrame() &&
+         content::WebContents::FromRenderFrameHost(render_frame_host) ==
+             web_contents_.get();
+}
+
+bool PrivilegedWebContents::IsPrimaryMainFrame(int render_process_id,
+                                               int render_frame_id) const {
+  return IsPrimaryMainFrame(
+      content::RenderFrameHost::FromID(render_process_id, render_frame_id));
 }
 
 void PrivilegedWebContents::DidFinishNavigation(

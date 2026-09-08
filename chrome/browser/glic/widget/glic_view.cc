@@ -71,6 +71,14 @@ void GlicView::RequestMediaAccessPermission(
       web_contents, request, std::move(callback), nullptr);
 }
 
+bool GlicView::CheckMediaAccessPermission(
+    content::RenderFrameHost* render_frame_host,
+    const url::Origin& security_origin,
+    blink::mojom::MediaStreamType type) {
+  return MediaCaptureDevicesDispatcher::GetInstance()
+      ->CheckMediaAccessPermission(render_frame_host, security_origin, type);
+}
+
 void GlicView::RunFileChooser(
     content::RenderFrameHost* render_frame_host,
     scoped_refptr<content::FileSelectListener> listener,

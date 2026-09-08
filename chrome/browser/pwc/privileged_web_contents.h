@@ -13,17 +13,23 @@
 #include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace content {
 class BrowserContext;
 class NavigationHandle;
+class RenderFrameHost;
 class WebContents;
 }  // namespace content
 
 namespace input {
 struct NativeWebKeyboardEvent;
 }  // namespace input
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace pwc {
 
@@ -85,8 +91,9 @@ class PrivilegedWebContents : public content::WebContentsDelegate,
     return unowned_user_data_host_;
   }
 
-  // Optional embedder delegate for forwarding non-security WebContentsDelegate
-  // callbacks (e.g. keyboard events and zoom changes) to UI embedders.
+  // Optional embedder delegate for forwarding embedder-specific
+  // WebContentsDelegate callbacks (e.g. keyboard events, zoom changes, and
+  // media access permissions) to UI embedders.
   // The registered delegate must either outlive `PrivilegedWebContents` or call
   // `SetEmbedderDelegate(nullptr)` prior to its destruction.
   class EmbedderDelegate {
@@ -96,6 +103,14 @@ class PrivilegedWebContents : public content::WebContentsDelegate,
         content::WebContents* source,
         const input::NativeWebKeyboardEvent& event);
     virtual void ContentsZoomChange(bool zoom_in);
+    virtual void RequestMediaAccessPermission(
+        content::WebContents* web_contents,
+        const content::MediaStreamRequest& request,
+        content::MediaResponseCallback callback);
+    virtual bool CheckMediaAccessPermission(
+        content::RenderFrameHost* render_frame_host,
+        const url::Origin& security_origin,
+        blink::mojom::MediaStreamType type);
   };
 
   void SetEmbedderDelegate(EmbedderDelegate* delegate) {
@@ -126,6 +141,13 @@ class PrivilegedWebContents : public content::WebContentsDelegate,
   bool HandleKeyboardEvent(content::WebContents* source,
                            const input::NativeWebKeyboardEvent& event) override;
   void ContentsZoomChange(bool zoom_in) override;
+  void RequestMediaAccessPermission(
+      content::WebContents* web_contents,
+      const content::MediaStreamRequest& request,
+      content::MediaResponseCallback callback) override;
+  bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
+                                  const url::Origin& security_origin,
+                                  blink::mojom::MediaStreamType type) override;
 
   // content::WebContentsObserver:
   // Disables the back-forward cache for every committed document, so a
@@ -138,6 +160,9 @@ class PrivilegedWebContents : public content::WebContentsDelegate,
   PrivilegedWebContents(PrivilegedComponent component,
                         content::BrowserContext* browser_context,
                         std::unique_ptr<PwcPolicyDelegate> policy_delegate);
+
+  bool IsPrimaryMainFrame(content::RenderFrameHost* render_frame_host) const;
+  bool IsPrimaryMainFrame(int render_process_id, int render_frame_id) const;
 
   const PwcComponentPolicy policy_;
   std::unique_ptr<content::WebContents> web_contents_;

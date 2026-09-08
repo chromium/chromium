@@ -36,6 +36,7 @@ source_set("pwc") {
     "//base",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
+    "//third_party/blink/public/mojom:mojom_platform_headers",
     "//ui/base/unowned_user_data",
     "//url",
   ]
