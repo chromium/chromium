@@ -4,11 +4,6 @@
 
 #include "components/assist_ranker/ranker_example_util.h"
 
-#include "base/format_macros.h"
-#include "base/logging.h"
-#include "base/metrics/metrics_hashes.h"
-#include "base/strings/stringprintf.h"
-
 namespace assist_ranker {
 
 bool SafeGetFeature(const std::string& key,
@@ -44,40 +39,6 @@ bool GetFeatureValueAsFloat(const std::string& key,
       return false;
   }
   return true;
-}
-
-bool GetOneHotValue(const std::string& key,
-                    const RankerExample& example,
-                    std::string* value) {
-  Feature feature;
-  if (!SafeGetFeature(key, example, &feature)) {
-    return false;
-  }
-  if (feature.feature_type_case() != Feature::kStringValue) {
-    DVLOG(1) << "Feature " << key
-             << " exists, but is not the right type (Expected: "
-             << Feature::kStringValue
-             << " vs. Actual: " << feature.feature_type_case() << ")";
-    return false;
-  }
-  *value = feature.string_value();
-  return true;
-}
-
-// Converts string to a hex hash string.
-std::string HashFeatureName(const std::string& feature_name) {
-  uint64_t feature_key = base::HashMetricName(feature_name);
-  return base::StringPrintf("%016" PRIx64, feature_key);
-}
-
-RankerExample HashExampleFeatureNames(const RankerExample& example) {
-  RankerExample hashed_example;
-  auto& output_features = *hashed_example.mutable_features();
-  for (const auto& feature : example.features()) {
-    output_features[HashFeatureName(feature.first)] = feature.second;
-  }
-  *hashed_example.mutable_target() = example.target();
-  return hashed_example;
 }
 
 }  // namespace assist_ranker

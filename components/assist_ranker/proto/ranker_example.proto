@@ -37,17 +37,10 @@ message Feature {
 }
 
 // RankerExample protos contain a set of features to be used as input for
-// AssistRanker inference, and optionally a target for training.
+// AssistRanker inference.
 message RankerExample {
-  // Input features for the ranker model. This is the only field that is
-  // required for inference.
+  // Input features for the ranker model.
   map<string, Feature> features = 1;
-  // This field represents the ground truth that the ranker is
-  // expected to predict, and is typically derived from user feedback. It is
-  // used for training only and is not required for inference.
-  // NOTE: this field will not be logged. If you want to log an outcome, add it
-  // to the features field before calling LogExample.
-  // TODO(chrome-ranker-team) Add a metadata field to log metrics that are not
-  // used as model input.
-  optional Feature target = 2;
+
+  reserved 2;
 }

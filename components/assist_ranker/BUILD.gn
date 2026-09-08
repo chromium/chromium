@@ -4,24 +4,8 @@
 
 static_library("assist_ranker") {
   sources = [
-    "assist_ranker_service.h",
-    "assist_ranker_service_impl.cc",
-    "assist_ranker_service_impl.h",
-    "base_predictor.cc",
-    "base_predictor.h",
-    "binary_classifier_predictor.cc",
-    "binary_classifier_predictor.h",
-    "classifier_predictor.cc",
-    "classifier_predictor.h",
     "example_preprocessing.cc",
     "example_preprocessing.h",
-    "generic_logistic_regression_inference.cc",
-    "generic_logistic_regression_inference.h",
-    "nn_classifier.cc",
-    "nn_classifier.h",
-    "predictor_config.h",
-    "quantized_nn_classifier.cc",
-    "quantized_nn_classifier.h",
     "ranker_example_util.cc",
     "ranker_example_util.h",
     "ranker_model.cc",
@@ -36,34 +20,18 @@ static_library("assist_ranker") {
   deps = [
     "//base",
     "//components/assist_ranker/proto",
-    "//components/keyed_service/core",
     "//net",
-    "//services/network:network_service",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//url",
   ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "base_predictor_unittest.cc",
-    "binary_classifier_predictor_unittest.cc",
-    "classifier_predictor_unittest.cc",
     "example_preprocessing_unittest.cc",
-    "fake_ranker_model_loader.cc",
-    "fake_ranker_model_loader.h",
-    "generic_logistic_regression_inference_unittest.cc",
-    "nn_classifier_test_util.cc",
-    "nn_classifier_test_util.h",
-    "nn_classifier_unittest.cc",
-    "quantized_nn_classifier_unittest.cc",
     "ranker_example_util_unittest.cc",
     "ranker_model_loader_impl_unittest.cc",
     "ranker_model_unittest.cc",
@@ -72,14 +40,10 @@ source_set("unit_tests") {
   deps = [
     ":assist_ranker",
     "//base",
+    "//base/test:test_support",
     "//components/assist_ranker/proto",
-    "//net:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",
     "//testing/gtest",
   ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

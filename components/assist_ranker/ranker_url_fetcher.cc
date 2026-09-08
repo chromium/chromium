@@ -9,9 +9,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/memory/ref_counted.h"
-#include "net/base/load_flags.h"
-#include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -26,8 +23,7 @@ const int kMaxRetry = 16;
 
 }  // namespace
 
-RankerURLFetcher::RankerURLFetcher()
-    : state_(IDLE), retry_count_(0), max_retry_on_5xx_(0) {}
+RankerURLFetcher::RankerURLFetcher() = default;
 
 RankerURLFetcher::~RankerURLFetcher() = default;
 
@@ -83,10 +79,6 @@ bool RankerURLFetcher::Request(
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);
-  if (max_retry_on_5xx_ > 0) {
-    simple_url_loader_->SetRetryOptions(max_retry_on_5xx_,
-                                        network::SimpleURLLoader::RETRY_ON_5XX);
-  }
   simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory,
       base::BindOnce(&RankerURLFetcher::OnSimpleLoaderComplete,

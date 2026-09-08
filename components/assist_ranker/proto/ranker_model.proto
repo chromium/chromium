@@ -8,21 +8,14 @@ syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
 
-import "nn_classifier.proto";
 import "translate_ranker_model.proto";
-import "generic_logistic_regression_model.proto";
 
 package assist_ranker;
 
 // Metadata for a ranker model instance. This data describes how the ranker
 // model should be interpreted/used.
 message RankerModelMetadata {
-  // An identifier denoting the type or purpose of this model. E.g. "Translate".
-  optional string name = 1;
-
-  // An identifier denoting the specific instance of this model. For example:
-  // "Experiment B"
-  optional string label = 2;
+  reserved 1, 2, 6, 7;
 
   // An identifier, typically a URL, denoting the source from which this model
   // was obtained. The model referenced with a given source is presumed to be
@@ -40,13 +33,6 @@ message RankerModelMetadata {
   // instance of the model never expires. A new download can be triggered by
   // changing the configured source URL for the model loader.
   optional int64 cache_duration_sec = 5;
-
-  // The version of the model. E.g. 20171027.
-  optional uint32 model_version = 6;
-
-  // If true, feature names are hex hashes of the original feature names, and
-  // hashing must be applied on feature names at prediction time.
-  optional bool input_features_names_are_hex_hashes = 7;
 }
 
 // Defines an envelope/wrapper for general models.
@@ -54,9 +40,9 @@ message RankerModelProto {
   // Metadata.
   optional RankerModelMetadata metadata = 1;
 
+  reserved 3, 4;
+
   oneof model {
     TranslateRankerModel translate = 2;
-    GenericLogisticRegressionModel logistic_regression = 3;
-    NNClassifierModel nn_classifier = 4;
   }
 }

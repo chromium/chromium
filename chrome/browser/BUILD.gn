@@ -1115,7 +1115,6 @@ source_set("core") {
     "//components/actor/core",
     "//components/actor/public/mojom:mojo_bindings",
     "//components/application_locale_storage",
-    "//components/assist_ranker",
     "//components/blocked_content",
     "//components/breadcrumbs/core",
     "//components/breadcrumbs/core:status",
@@ -2351,8 +2350,6 @@ source_set("browser") {
     # c/b/profiles/profile_manager.h gets modularized.
     "//chrome/browser/actor",
     "//chrome/browser/actor:impl",
-    "//chrome/browser/assist_ranker",
-    "//chrome/browser/assist_ranker:impl",
     "//chrome/browser/language_detection",
     "//chrome/browser/language_detection:impl",
     "//chrome/browser/loader",

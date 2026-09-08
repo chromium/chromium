@@ -27,23 +27,12 @@ class RankerURLFetcher {
   // Callback type for Request().
   typedef base::OnceCallback<void(bool, const std::string&)> Callback;
 
-  // Represents internal state if the fetch is completed successfully.
-  enum State {
-    IDLE,        // No fetch request was issued.
-    REQUESTING,  // A fetch request was issued, but not finished yet.
-    COMPLETED,   // The last fetch request was finished successfully.
-    FAILED,      // The last fetch request was finished with a failure.
-  };
-
   RankerURLFetcher();
 
   RankerURLFetcher(const RankerURLFetcher&) = delete;
   RankerURLFetcher& operator=(const RankerURLFetcher&) = delete;
 
   ~RankerURLFetcher();
-
-  int max_retry_on_5xx() { return max_retry_on_5xx_; }
-  void set_max_retry_on_5xx(int count) { max_retry_on_5xx_ = count; }
 
   // Requests to |url|. |callback| will be invoked when the function returns
   // true, and the request is finished asynchronously.
@@ -53,17 +42,22 @@ class RankerURLFetcher {
                Callback callback,
                network::mojom::URLLoaderFactory* url_loader_factory);
 
-  // Gets internal state.
-  State state() { return state_; }
-
  private:
+  // Represents internal state if the fetch is completed successfully.
+  enum State {
+    IDLE,        // No fetch request was issued.
+    REQUESTING,  // A fetch request was issued, but not finished yet.
+    COMPLETED,   // The last fetch request was finished successfully.
+    FAILED,      // The last fetch request was finished with a failure.
+  };
+
   void OnSimpleLoaderComplete(std::optional<std::string> response_body);
 
   // URL to send the request.
   GURL url_;
 
   // Internal state.
-  enum State state_;
+  State state_ = IDLE;
 
   // SimpleURLLoader instance.
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
@@ -73,10 +67,7 @@ class RankerURLFetcher {
   Callback callback_;
 
   // Counts how many times did it try to fetch the language list.
-  int retry_count_;
-
-  // Max number how many times to retry on the server error
-  int max_retry_on_5xx_;
+  int retry_count_ = 0;
 };
 
 }  // namespace assist_ranker

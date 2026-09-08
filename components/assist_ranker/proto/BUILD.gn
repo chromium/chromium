@@ -7,9 +7,6 @@ import("//third_party/protobuf/proto_library.gni")
 proto_library("proto") {
   sources = [
     "example_preprocessor.proto",
-    "generic_logistic_regression_model.proto",
-    "nn_classifier.proto",
-    "quantized_nn_classifier.proto",
     "ranker_example.proto",
     "ranker_model.proto",
     "translate_ranker_model.proto",
