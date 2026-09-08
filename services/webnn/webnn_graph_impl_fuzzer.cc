@@ -3191,7 +3191,7 @@ void WebNNGraphImplFuzzerBase::SetUp() {
       for (const auto backend_name : GetGlobalFuzzEnvironment()
                                          .GetWebNNTestEnvironment()
                                          .GetContextBackendNames()) {
-        LOG(INFO) << "[WebNN Fuzzer] Created WebNN context with backend: "
+        LOG(ERROR) << "[WebNN Fuzzer] Created WebNN context with backend: "
                   << backend_name;
       }
     }
