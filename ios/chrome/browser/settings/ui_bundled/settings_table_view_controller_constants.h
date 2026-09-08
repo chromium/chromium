@@ -48,6 +48,7 @@ typedef NS_ENUM(NSInteger, SettingsItemType) {
   SettingsItemTypeLanguageSettings,
   SettingsItemTypeContentSettings,
   SettingsItemTypeSitePermissions,
+  SettingsItemTypeSiteSettings,
   SettingsItemTypeDownloadsSettings,
   SettingsItemTypeSafariDataImport,
   SettingsItemTypeBandwidth,

@@ -169,6 +169,8 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/settings/manage_sync/coordinator",
     "//ios/chrome/browser/settings/model/sync/utils",
     "//ios/chrome/browser/settings/model/sync/utils:identity_error_util",
+    "//ios/chrome/browser/settings/site_settings/coordinator",
+    "//ios/chrome/browser/settings/site_settings/public",
     "//ios/chrome/browser/settings/ui_bundled/address_bar_preference",
     "//ios/chrome/browser/settings/ui_bundled/autofill",
     "//ios/chrome/browser/settings/ui_bundled/bandwidth",

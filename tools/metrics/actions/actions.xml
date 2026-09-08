@@ -32498,6 +32498,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.SiteSettings">
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
+  <description>
+    Reported when user navigates to the Site Settings page. iOS only.
+  </description>
+</action>
+
 <action name="Settings.SuggestionsFromGemini">
   <owner>alimariam@google.com</owner>
   <owner>bling-transactions@google.com</owner>

@@ -646,8 +646,8 @@ TEST_F(SettingsTableViewControllerTest, HasDownloadsMenuItem) {
 }
 
 // Verifies that if kDomainLevelSitePermissions is enabled, then there is a
-// Site Permissions Settings item in the Info section.
-TEST_F(SettingsTableViewControllerTest, HasSitePermissionsMenuItem) {
+// Site Settings item in the Info section.
+TEST_F(SettingsTableViewControllerTest, HasSiteSettingsMenuItem) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(kDomainLevelSitePermissions);
 
@@ -655,7 +655,7 @@ TEST_F(SettingsTableViewControllerTest, HasSitePermissionsMenuItem) {
   CheckController();
 
   EXPECT_TRUE([controller().tableViewModel
-      hasItemForItemType:SettingsItemTypeSitePermissions
+      hasItemForItemType:SettingsItemTypeSiteSettings
        sectionIdentifier:SettingsSectionIdentifierInfo]);
 }
 

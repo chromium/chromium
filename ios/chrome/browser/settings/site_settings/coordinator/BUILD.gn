@@ -1,0 +1,38 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "site_settings_coordinator.h",
+    "site_settings_coordinator.mm",
+    "site_settings_coordinator_delegate.h",
+    "site_settings_mediator.h",
+    "site_settings_mediator.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/common",
+    "//ios/chrome/browser/content_settings/model",
+    "//ios/chrome/browser/settings/site_settings/ui",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/profile",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "site_settings_mediator_unittest.mm" ]
+  deps = [
+    ":coordinator",
+    "//base",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/common",
+    "//ios/chrome/browser/content_settings/model",
+    "//ios/chrome/browser/settings/site_settings/ui",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
+}
