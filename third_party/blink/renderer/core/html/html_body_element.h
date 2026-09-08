@@ -62,6 +62,9 @@ class CORE_EXPORT HTMLBodyElement final : public HTMLElement,
       const QualifiedName&,
       const AtomicString&,
       HeapVector<CSSPropertyValue, 8>&) override;
+  void AddHTMLMarginToStyle(HeapVector<CSSPropertyValue, 8>&,
+                            CSSPropertyID,
+                            const AtomicString& value);
 
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;

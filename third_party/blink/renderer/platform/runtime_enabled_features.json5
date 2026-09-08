@@ -3500,6 +3500,13 @@
       name: "HTMLAreaHreflangType",
       status: "test",
     },
+    {
+      // Kill switch for parsing <body>, <frame> and <iframe> margin attributes
+      // as pixel lengths per the HTML rendering rules.
+      // https://crbug.com/554920796
+      name: "HTMLBodyMarginPixelLength",
+      status: "stable",
+    },
     // Additional default command/commandfor actions that aren't part of v1 of
     // commands. When this flag is disabled only v1 actions (popover and dialog
     // defaults) will work.

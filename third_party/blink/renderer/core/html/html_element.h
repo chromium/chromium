@@ -438,6 +438,10 @@ class CORE_EXPORT HTMLElement : public Element {
                             const String& value,
                             AllowPercentage = kAllowPercentageValues,
                             AllowZero = kAllowZeroValues);
+  // https://html.spec.whatwg.org/multipage/rendering.html#maps-to-the-pixel-length-property
+  void AddHTMLPixelLengthToStyle(HeapVector<CSSPropertyValue, 8>&,
+                                 CSSPropertyID,
+                                 const String& value);
   void AddHTMLColorToStyle(HeapVector<CSSPropertyValue, 8>&,
                            CSSPropertyID,
                            const String& color);

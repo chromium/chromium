@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -60,6 +61,17 @@ bool HTMLBodyElement::IsPresentationAttribute(const QualifiedName& name) const {
   return HTMLElement::IsPresentationAttribute(name);
 }
 
+void HTMLBodyElement::AddHTMLMarginToStyle(
+    HeapVector<CSSPropertyValue, 8>& style,
+    CSSPropertyID property_id,
+    const AtomicString& value) {
+  if (RuntimeEnabledFeatures::HTMLBodyMarginPixelLengthEnabled()) {
+    AddHTMLPixelLengthToStyle(style, property_id, value);
+  } else {
+    AddHTMLLengthToStyle(style, property_id, value);
+  }
+}
+
 void HTMLBodyElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
@@ -68,12 +80,12 @@ void HTMLBodyElement::CollectStyleForPresentationAttribute(
     AddHTMLBackgroundImageToStyle(style, value, localName());
   } else if (name == html_names::kMarginwidthAttr ||
              name == html_names::kLeftmarginAttr) {
-    AddHTMLLengthToStyle(style, CSSPropertyID::kMarginRight, value);
-    AddHTMLLengthToStyle(style, CSSPropertyID::kMarginLeft, value);
+    AddHTMLMarginToStyle(style, CSSPropertyID::kMarginRight, value);
+    AddHTMLMarginToStyle(style, CSSPropertyID::kMarginLeft, value);
   } else if (name == html_names::kMarginheightAttr ||
              name == html_names::kTopmarginAttr) {
-    AddHTMLLengthToStyle(style, CSSPropertyID::kMarginBottom, value);
-    AddHTMLLengthToStyle(style, CSSPropertyID::kMarginTop, value);
+    AddHTMLMarginToStyle(style, CSSPropertyID::kMarginBottom, value);
+    AddHTMLMarginToStyle(style, CSSPropertyID::kMarginTop, value);
   } else if (name == html_names::kBgcolorAttr) {
     AddHTMLColorToStyle(style, CSSPropertyID::kBackgroundColor, value);
   } else if (name == html_names::kTextAttr) {

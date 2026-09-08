@@ -23,6 +23,7 @@
 
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
@@ -47,10 +48,26 @@
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 
 namespace blink {
+
+namespace {
+
+int ParseMarginAttribute(const AtomicString& value) {
+  if (!RuntimeEnabledFeatures::HTMLBodyMarginPixelLengthEnabled()) {
+    return StringToIntLoose(value).value_or(0);
+  }
+  unsigned parsed_value;
+  if (!ParseHTMLNonNegativeInteger(value, parsed_value)) {
+    return -1;
+  }
+  return base::saturated_cast<int>(parsed_value);
+}
+
+}  // namespace
 
 HTMLFrameElementBase::HTMLFrameElementBase(const QualifiedName& tag_name,
                                            Document& document)
@@ -122,9 +139,9 @@ void HTMLFrameElementBase::ParseAttribute(
   } else if (name == html_names::kNameAttr) {
     frame_name_ = value;
   } else if (name == html_names::kMarginwidthAttr) {
-    SetMarginWidth(StringToIntLoose(value).value_or(0));
+    SetMarginWidth(ParseMarginAttribute(value));
   } else if (name == html_names::kMarginheightAttr) {
-    SetMarginHeight(StringToIntLoose(value).value_or(0));
+    SetMarginHeight(ParseMarginAttribute(value));
   } else if (name == html_names::kScrollingAttr) {
     // https://html.spec.whatwg.org/multipage/rendering.html#the-page:
     // If [the scrolling] attribute's value is an ASCII

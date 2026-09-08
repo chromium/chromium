@@ -4029,6 +4029,18 @@ void HTMLElement::AddHTMLLengthToStyle(HeapVector<CSSPropertyValue, 8>& style,
                                           unit);
 }
 
+void HTMLElement::AddHTMLPixelLengthToStyle(
+    HeapVector<CSSPropertyValue, 8>& style,
+    CSSPropertyID property_id,
+    const String& value) {
+  unsigned parsed_value;
+  if (!ParseHTMLNonNegativeInteger(value, parsed_value)) {
+    return;
+  }
+  AddPropertyToPresentationAttributeStyle(style, property_id, parsed_value,
+                                          CSSPrimitiveValue::UnitType::kPixels);
+}
+
 static Color ParseColorStringWithCrazyLegacyRules(const String& color_string) {
   // Per spec, only look at the first 128 digits of the string.
   const size_t kMaxColorLength = 128;
