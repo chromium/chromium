@@ -1331,7 +1331,6 @@ test("skia_unittests") {
   sources = [
     "ext/codec_utils_unittest.cc",
     "ext/convolver_unittest.cc",
-    "ext/font_utils_unittest.cc",
     "ext/geometry_unittest.cc",
     "ext/image_operations_unittest.cc",
     "ext/platform_canvas_unittest.cc",
@@ -1345,10 +1344,7 @@ test("skia_unittests") {
     sources += [ "ext/skia_utils_ios_unittest.mm" ]
   }
   if (is_mac) {
-    sources += [
-      "ext/font_utils_mac_unittest.mm",
-      "ext/skia_utils_mac_unittest.mm",
-    ]
+    sources += [ "ext/skia_utils_mac_unittest.mm" ]
   }
 
   if (!is_win) {
@@ -1370,7 +1366,6 @@ test("skia_unittests") {
     "//ui/gfx/geometry",
   ]
 
-  data = [ "//third_party/test_fonts/test_fonts/Ahem.ttf" ]
   data_deps = [ "//testing/buildbot/filters:skia_unittests_filters" ]
 
   if (!is_ios) {
