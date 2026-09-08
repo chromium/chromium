@@ -29,6 +29,8 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import dataclasses
+import fnmatch
 import json
 import os
 import re
@@ -48,16 +50,16 @@ STATE_FILE = "out.json"
 #
 # See infra/config/generated/builders/gn_args_locations.json for reference.
 BUILDERS = [
-  # Linux builders
+  # Linux builders.
   ('tryserver.chromium.linux', 'linux-rel'),
   ('tryserver.chromium.linux', 'linux_chromium_tsan_rel_ng'),
   ('chromium.linux', 'Linux Builder (dbg)'),
   ('chromium.memory', 'Linux ASan LSan Builder'),
-  # Chromeos builders
+  # ChromeOS builders.
   ('chromium.chromiumos', 'linux-cfm-rel'),
   ('chromium.chromiumos', 'linux-chromeos-rel'),
   ('tryserver.chromium.chromiumos', 'chromeos-libfuzzer-asan-rel'),
-  # Android builders
+  # Android builders.
   ('chromium.android', 'android-x86-rel'),
   ('chromium', 'android-arm64-archive-rel'),
   ('chromium.android', 'android-14-x64-rel'),
@@ -65,16 +67,16 @@ BUILDERS = [
   ('chromium.fuzz', 'android-arm64-libfuzzer-hwasan'),
   ('tryserver.chromium.android', 'android-cronet-arm-dbg'),
   ('tryserver.chromium.android', 'android-webview-13-x64-dbg'),
-  # Fuchsia
+  # Fuchsia.
   ('chromium.fuchsia', 'Deterministic Fuchsia (dbg)'),
-  # Mac
+  # Mac.
   ('chromium.mac', 'mac-arm64-dbg'),
   ('chromium.mac', 'mac-arm64-rel'),
   ('tryserver.chromium.mac', 'mac-rel'),
   ('tryserver.chromium.mac', 'mac-rel'),
-  # Dawn
+  # Dawn.
   ('tryserver.chromium.dawn', 'dawn-win11-arm64-deps-rel'),
-  # Windows builders
+  # Windows builders.
   ('chromium.win', 'linux-win-cross-rel'),
   ('chromium.memory', 'win-asan'),
   ('chromium.win', 'Win Builder'),
@@ -85,126 +87,168 @@ BUILDERS = [
   ('tryserver.chromium.win', 'win-libfuzzer-asan-rel'),
   ('tryserver.chromium.win', 'win-rel'),
   ('tryserver.chromium.win', 'win_optional_gpu_tests_rel'),
-  # Fuchsia cast
+  # Fuchsia cast.
   ('chromium.fuchsia', 'fuchsia-x64-cast-receiver-rel'),
-  # Android cast
+  # Android cast.
   ('chromium.android', "android-cast-arm-dbg"),
 ]
 
-EXCLUDED_DIRECTORIES = [
-  # Non production code:
-  "agents/",
-  "tools/",
-  "build/",
-  # UNSAFE_TODO in template.
-  #
-  # C++ templates can explode into many instantiations, making it impractical
-  # to verify all of them. This script only build the file that contains the
-  # UNSAFE_TODO, so template instantiations in other files are not verified.
-  # Thus, we exclude files known to have UNSAFE_TODO in templates.
-  "base/strings/string_tokenizer.h",
-  "chrome/browser/media/router/discovery/discovery_network_list_posix.cc",
-  "components/zucchini/io_utils.h",
-  "components/zucchini/patch_utils.h",
-  "components/zucchini/rel32_utils.h",
-  "device/fido/cbor_extract.h",
-  "gpu/command_buffer/common/cmd_buffer_common.h",
-  "gpu/command_buffer/common/gles2_cmd_utils.h",
-  "mojo/core/broker_messages.h",
-  "mojo/public/cpp/bindings/lib/array_internal.h",
-  "mojo/public/cpp/bindings/lib/array_serialization.h",
-  "third_party/blink/renderer/core/css/parser/css_tokenizer_input_stream.h",
-  "third_party/blink/renderer/platform/fonts/opentype/open_type_types.h",
-  "ui/gfx/x/property_cache.h",
-  # UNSAFE_TODO wrapping specific macros.
-  #
-  # Those macros expands sometimes into code that triggers
-  # -WUnsafe-buffer-usage or not, depending on the platform. These variations
-  # are not supported by the script, so we exclude them.
-  "chrome/browser/media/router/discovery/discovery_network_list_posix.cc",
-  "net/base/network_interfaces_posix.cc",
-  "net/dns/address_info.cc",
-  "net/dns/loopback_only.cc",
-  "media/gpu/test/video_test_helpers.cc",
-  "net/cert/ct_objects_extractor.cc",
-  "sandbox/linux/syscall_broker/broker_simple_message.cc",
+
+@dataclasses.dataclass(frozen=True)
+class Exclusion:
+  """Group of file/directory exclusions with an associated reason."""
+
+  reason: str
+  files: list[str]
+
+
+@dataclasses.dataclass(frozen=True)
+class ExcludedFunction:
+  """Group of excluded functions/macros with an associated reason."""
+
+  reason: str
+  strings: list[str]
+
+
+# A list of exclusions with documented reasons.
+EXCLUSIONS: list[Exclusion] = [
+  Exclusion(
+    reason="Non-production code (agents, tools, build)",
+    files=[
+      "agents/",
+      "tools/",
+      "build/",
+    ],
+  ),
+  Exclusion(
+    reason="Templates instantiated externally cannot be verified locally",
+    files=[
+      "base/strings/string_tokenizer.h",
+      "chrome/browser/media/router/discovery/discovery_network_list_posix.cc",
+      "components/zucchini/io_utils.h",
+      "components/zucchini/patch_utils.h",
+      "components/zucchini/rel32_utils.h",
+      "device/fido/cbor_extract.h",
+      "gpu/command_buffer/common/cmd_buffer_common.h",
+      "gpu/command_buffer/common/gles2_cmd_utils.h",
+      "mojo/core/broker_messages.h",
+      "mojo/public/cpp/bindings/lib/array_internal.h",
+      "mojo/public/cpp/bindings/lib/array_serialization.h",
+      "third_party/blink/renderer/core/css/parser/css_tokenizer_input_stream.h",
+      "third_party/blink/renderer/platform/fonts/opentype/open_type_types.h",
+      "ui/gfx/x/property_cache.h",
+      "ui/ozone/platform/drm/common/drm_util.h",
+    ],
+  ),
 ]
 
-# List of functions that are considered unsafe and should not be unwrapped.
-# There is not need to check the content of UNSAFE_TODO for these functions,
-# as they are always unsafe. This is used to mark them as LIBC in the state
-# file, which means they cannot be removed.
-# This list is based on the Clang source code.
-UNSAFE_LIBC_FUNCTIONS = {
-  "atof",
-  "atoi",
-  "atol",
-  "atoll",
-  "bcopy",
-  "bsearch",
-  "bzero",
-  "fgets",
-  "fgetws",
-  "fputs",
-  "fputws",
-  "fread",
-  "fwrite",
-  "gets",
-  "memccpy",
-  "memchr",
-  "memcmp",
-  "memcpy",
-  "memmove",
-  "mempcpy",
-  "memset",
-  "puts",
-  "qsort",
-  "strcasecmp",
-  "strcat",
-  "strchr",
-  "strcmp",
-  "strcoll",
-  "strcpy",
-  "strcspn",
-  "strdup",
-  "strerror_r",
-  "strerror_s",
-  "stricmp",
-  "strlcat",
-  "strlcpy",
-  "strlen",
-  "strncat",
-  "strncmp",
-  "strncpy",
-  "strndup",
-  "strnlen",
-  "strpbrk",
-  "strrchr",
-  "strspn",
-  "strstr",
-  "strtod",
-  "strtof",
-  "strtoimax",
-  "strtok",
-  "strtol",
-  "strtold",
-  "strtoll",
-  "strtoul",
-  "strtoull",
-  "strtoumax",
-  "strxfrm",
-  "wmemchr",
-  "wmemcmp",
-  "wmemcpy",
-  "wmemmove",
-  "wmemset",
+EXCLUDED_FUNCTION: list[ExcludedFunction] = [
+  ExcludedFunction(
+    reason=(
+      "POSIX CMSG macros expand to raw pointer arithmetic on Bionic and Darwin"
+      " libc"
+    ),
+    strings=[
+      "CMSG_DATA",
+      "CMSG_FIRSTHDR",
+      "CMSG_NXTHDR",
+    ],
+  ),
+  ExcludedFunction(
+    reason="POSIX IPv6 macros expand to raw pointer arithmetic on some SDKs",
+    strings=[
+      "IN6_IS_ADDR_LINKLOCAL",
+      "IN6_IS_ADDR_LOOPBACK",
+      "IN6_IS_ADDR_MC_GLOBAL",
+      "IN6_IS_ADDR_MC_LINKLOCAL",
+      "IN6_IS_ADDR_MC_NODELOCAL",
+      "IN6_IS_ADDR_MC_ORGLOCAL",
+      "IN6_IS_ADDR_MC_SITELOCAL",
+      "IN6_IS_ADDR_MULTICAST",
+      "IN6_IS_ADDR_SITELOCAL",
+      "IN6_IS_ADDR_UNSPECIFIED",
+      "IN6_IS_ADDR_V4COMPAT",
+      "IN6_IS_ADDR_V4MAPPED",
+    ],
+  ),
+  ExcludedFunction(
+    reason="Standard C library functions inherently unsafe with buffers",
+    strings=[
+      "atof",
+      "atoi",
+      "atol",
+      "atoll",
+      "bcopy",
+      "bsearch",
+      "bzero",
+      "fgets",
+      "fgetws",
+      "fputs",
+      "fputws",
+      "fread",
+      "fwrite",
+      "gets",
+      "memccpy",
+      "memchr",
+      "memcmp",
+      "memcpy",
+      "memmove",
+      "mempcpy",
+      "memset",
+      "puts",
+      "qsort",
+      "strcasecmp",
+      "strcat",
+      "strchr",
+      "strcmp",
+      "strcoll",
+      "strcpy",
+      "strcspn",
+      "strdup",
+      "strerror_r",
+      "strerror_s",
+      "stricmp",
+      "strlcat",
+      "strlcpy",
+      "strlen",
+      "strncat",
+      "strncmp",
+      "strncpy",
+      "strndup",
+      "strnlen",
+      "strpbrk",
+      "strrchr",
+      "strspn",
+      "strstr",
+      "strtod",
+      "strtof",
+      "strtoimax",
+      "strtok",
+      "strtol",
+      "strtold",
+      "strtoll",
+      "strtoul",
+      "strtoull",
+      "strtoumax",
+      "strxfrm",
+      "wmemchr",
+      "wmemcmp",
+      "wmemcpy",
+      "wmemmove",
+      "wmemset",
+    ],
+  ),
+]
+
+ALL_EXCLUDED_FUNCTIONS = {
+  s for group in EXCLUDED_FUNCTION for s in group.strings
 }
 
 # Regex to match: optional scope (:: or std::), one of the functions, followed
 # by word boundary. Used to check the content inside UNSAFE_TODO(...).
-LIBC_REGEX = re.compile(
+EXCLUDED_FUNCTION_REGEX = re.compile(
   r'^\s*(?:(?:std)?::)?(?:'
-  + '|'.join(re.escape(f) for f in UNSAFE_LIBC_FUNCTIONS)
+  + '|'.join(re.escape(f) for f in ALL_EXCLUDED_FUNCTIONS)
   + r')\b'
 )
 
@@ -253,21 +297,27 @@ def run_command(
     return subprocess.CompletedProcess(cmd, 1, "", str(e))
 
 
+ALL_EXCLUDED_FILES = [f for group in EXCLUSIONS for f in group.files]
+
+
 def is_excluded(path: str) -> bool:
   """Checks if a path should be ignored based on project rules."""
-
-  # 1. Only modify C++ files
-  valid_extensions = ('.cc', '.h', '.cpp', '.mm', '.hh')
-  if not path.endswith(valid_extensions):
+  # 1. Only modify C++ files.
+  if not path.endswith(('.cc', '.h', '.cpp', '.mm', '.hh')):
     return True
 
-  # 2. Specific directory exclusions
-  if path.startswith(tuple(EXCLUDED_DIRECTORIES)):
+  # 2. Third-party logic: Exclude all third_party EXCEPT third_party/blink.
+  if path.startswith("third_party/") and not path.startswith(
+    "third_party/blink/"
+  ):
     return True
 
-  # 3. Third party logic: Exclude all third_party EXCEPT third_party/blink
-  if path.startswith("third_party/"):
-    if not path.startswith("third_party/blink/"):
+  # 3. Check against exclusion patterns.
+  for pattern in ALL_EXCLUDED_FILES:
+    if pattern.endswith("/"):
+      if path.startswith(pattern):
+        return True
+    elif path == pattern or fnmatch.fnmatch(path, pattern):
       return True
 
   return False
@@ -281,7 +331,7 @@ class StateManager:
 
   def __init__(self, filepath: str):
     self.filepath = filepath
-    # Structure: { file_key: { builder_name: status } }
+    # Structure: { file_key: { builder_name: status } }.
     self.data: dict[str, dict[str, str]] = {}
     self.load()
 
@@ -300,7 +350,7 @@ class StateManager:
   def get_builder_status(self, key: str, builder: str) -> str | None:
     """Returns the status of a specific builder for the given key."""
     entry = self.data.get(key, {})
-    # Handle legacy format where value was a string
+    # Handle legacy format where value was a string.
     if isinstance(entry, str):
       return None
     return entry.get(builder)
@@ -316,18 +366,18 @@ class StateManager:
   def is_resolved(self, key: str) -> bool:
     """
     Returns True if the UNSAFE_TODO has a definitive result
-    (SUCCESS or FAIL) from *any* builder, or is marked as LIBC.
+    (SUCCESS or FAIL) from *any* builder, or is marked as EXCLUDED.
     """
     if key not in self.data:
       return False
 
     entry = self.data[key]
     if isinstance(entry, str):
-      # Legacy format support
-      return entry in ["SUCCESS", "FAIL", "LIBC"]
+      # Legacy format support.
+      return entry in ["SUCCESS", "FAIL", "EXCLUDED"]
 
     vals = entry.values()
-    return "SUCCESS" in vals or "FAIL" in vals or "LIBC" in vals
+    return "SUCCESS" in vals or "FAIL" in vals or "EXCLUDED" in vals
 
 
 class SourceLocation:
@@ -339,7 +389,7 @@ class SourceLocation:
     self.col = col
     self.original_content = content
 
-    # Unique key for state tracking: "path/to/file.cc:10:5"
+    # Unique key for state tracking: "path/to/file.cc:10:5".
     self.key = f"{filepath}:{line}:{col}"
 
   def __repr__(self):
@@ -383,7 +433,7 @@ class BuildEnvironment:
         )
         raise RuntimeError("MB gen failed")
 
-    # Always regenerate compile_commands.json to ensure it's fresh
+    # Always regenerate compile_commands.json to ensure it's fresh.
     log("GN", f"Generating compile_commands.json for {self.config}...")
     res = run_command(
       ["gn", "gen", self.build_dir, "--export-compile-commands"]
@@ -424,18 +474,13 @@ class BuildEnvironment:
     except (IOError, json.JSONDecodeError) as e:
       log("WARN", f"Failed to load compile_commands.json: {e}")
 
-  def has_file(self, filepath: str) -> bool:
-    """Checks if the file exists in the compile database."""
-    abs_path = os.path.abspath(filepath)
-    return abs_path in self.compile_db
-
   def find_compilable_source(self, filepath: str) -> str | None:
     """Returns a file that can be compiled for the given filepath."""
     abs_path = os.path.abspath(filepath)
     if abs_path in self.compile_db:
       return filepath
 
-    # Header fallback (Source/Header proxy)
+    # Header fallback (Source/Header proxy).
     if filepath.endswith(('.h', '.hh', '.hpp')):
       base = os.path.splitext(filepath)[0]
       for ext in ['.cc', '.cpp', '.mm']:
@@ -535,24 +580,24 @@ class CodeModifier:
     Note: Relying on parenthesis matching is "good" enough here, most of the
     time. Failures will simply skip the removal.
     """
-    # Find the line start offset
+    # Find the line start offset.
     lines = content.splitlines(keepends=True)
     offset = 0
     for i in range(line - 1):
       offset += len(lines[i])
     offset += col - 1
 
-    # Verify we are at UNSAFE_TODO
+    # Verify we are at UNSAFE_TODO.
     if not content[offset:].startswith("UNSAFE_TODO"):
       log("WARN", f"Offset mismatch at {line}:{col}. Skipping...")
       return content
 
-    # Find opening paren
+    # Find opening paren.
     open_paren = content.find("(", offset)
     if open_paren == -1:
       return content
 
-    # Find matching closing paren
+    # Find matching closing paren.
     balance = 1
     close_paren = -1
     for i in range(open_paren + 1, len(content)):
@@ -568,10 +613,10 @@ class CodeModifier:
     if close_paren == -1:
       return content
 
-    # Extract inner content
+    # Extract inner content.
     inner = content[open_paren + 1 : close_paren]
 
-    # Reconstruct
+    # Reconstruct.
     new_content = content[:offset] + inner + content[close_paren + 1 :]
     return new_content
 
@@ -593,13 +638,13 @@ class CodeModifier:
       log("ERR", f"Failed to modify {loc}: {e}")
 
   @staticmethod
-  def is_libc_call(loc: SourceLocation) -> bool:
-    """Checks if the UNSAFE_TODO wraps a known unsafe libc function."""
+  def is_excluded_call(loc: SourceLocation) -> bool:
+    """Checks if the UNSAFE_TODO wraps a known excluded function/macro."""
     try:
       with open(loc.filepath, 'r') as f:
         content = f.read()
 
-      # Find start offset based on line/col
+      # Find start offset based on line/col.
       lines = content.splitlines(keepends=True)
       offset = 0
       for i in range(loc.line - 1):
@@ -628,7 +673,7 @@ class CodeModifier:
         return False
 
       inner = content[open_paren + 1 : close_paren].strip()
-      return bool(LIBC_REGEX.match(inner))
+      return bool(EXCLUDED_FUNCTION_REGEX.match(inner))
     except Exception:
       return False
 
@@ -674,21 +719,24 @@ def analyze_todos(args):
 
   log("INFO", f"Found {len(todos)} UNSAFE_TODO candidates.")
 
-  # Pre-scan for LIBC functions
-  log("INFO", "Checking for known LIBC functions...")
-  libc_count = 0
+  # Pre-scan for excluded functions.
+  log("INFO", "Checking for excluded functions...")
+  excluded_count = 0
   for todo in todos:
     if state.is_resolved(todo.key):
       continue
 
-    if CodeModifier.is_libc_call(todo):
-      state.set_status(todo.key, "scanner", "LIBC")
-      libc_count += 1
+    if CodeModifier.is_excluded_call(todo):
+      state.set_status(todo.key, "scanner", "EXCLUDED")
+      excluded_count += 1
 
-  if libc_count > 0:
-    log("INFO", f"Marked {libc_count} UNSAFE_TODOs as LIBC (non-removable).")
+  if excluded_count > 0:
+    log(
+      "INFO",
+      f"Marked {excluded_count} UNSAFE_TODOs as EXCLUDED (non-removable).",
+    )
 
-  # Group TODOs by file
+  # Group TODOs by file.
   todos_by_file = defaultdict(list)
   for todo in todos:
     if not state.is_resolved(todo.key):
@@ -696,8 +744,26 @@ def analyze_todos(args):
 
   log("INFO", f"{len(todos_by_file)} files remain unresolved.")
 
-  # Initialize builders
-  builders = [BuildEnvironment(g, c) for g, c in BUILDERS]
+  # Initialize builders.
+  all_builders = [BuildEnvironment(g, c) for g, c in BUILDERS]
+  if args.builders:
+    selected_configs = set()
+    for item in args.builders:
+      for name in item.split(","):
+        name = name.strip()
+        if name:
+          selected_configs.add(name)
+
+    builders = [b for b in all_builders if b.config in selected_configs]
+    if not builders:
+      known = ", ".join(sorted(set(b.config for b in all_builders)))
+      log(
+        "ERR",
+        f"No matching builders for {args.builders}. Known builders: {known}",
+      )
+      return
+  else:
+    builders = all_builders
 
   for builder in builders:
     try:
@@ -715,12 +781,12 @@ def analyze_todos(args):
     for filepath in filenames:
       file_todos = todos_by_file[filepath]
 
-      # 1. Check if the file is already resolved
+      # 1. Check if the file is already resolved.
       unresolved_todos = [t for t in file_todos if not state.is_resolved(t.key)]
       if not unresolved_todos:
         continue
 
-      # 2. Check if this builder has already run for these TODOs
+      # 2. Check if this builder has already run for these TODOs.
       todos_to_check = [
         t
         for t in unresolved_todos
@@ -751,7 +817,7 @@ def analyze_todos(args):
           # 1. First, check if removing the wrapper compile.
           # 2. Second, check if the line is active under this builder.
 
-          # 1. Remove wrapper
+          # 1. Remove wrapper.
           CodeModifier.remove_wrapper(todo)
           safety_pass = builder.compile_file(filepath)
           CodeModifier.revert_file(filepath)
@@ -794,18 +860,23 @@ def apply_fixes(args):
     log("WARN", "No state file found or file empty. Run analysis first.")
     return
 
-  # Group by file to minimize IO and handle multiple edits per file
+  # Group by file to minimize IO and handle multiple edits per file.
   files_to_edit = {}
 
-  # Iterate over all keys in state
+  # Iterate over all keys in state.
   for key, builder_status_map in state.data.items():
-    # Check for legacy format
+    # Check for legacy format.
     if not isinstance(builder_status_map, dict):
       status = builder_status_map
       is_success = status == "SUCCESS"
     else:
-      # Check if ANY builder succeeded
-      is_success = "SUCCESS" in builder_status_map.values()
+      # Safe to remove ONLY if at least one builder succeeded and NONE failed.
+      statuses = set(builder_status_map.values())
+      is_success = (
+        "SUCCESS" in statuses
+        and "FAIL" not in statuses
+        and "EXCLUDED" not in statuses
+      )
 
     if not is_success:
       continue
@@ -814,6 +885,9 @@ def apply_fixes(args):
     fpath = parts[0]
     line = int(parts[1])
     col = int(parts[2])
+
+    if is_excluded(fpath):
+      continue
 
     if fpath not in files_to_edit:
       files_to_edit[fpath] = []
@@ -825,7 +899,7 @@ def apply_fixes(args):
     log("EDIT", f"Updating {fpath} ({len(locs)} fixes)...")
     CodeModifier.remove_wrappers(locs)
 
-  # Run git cl format on modified files
+  # Run git cl format on modified files.
   if files_to_edit:
     log("FMT", "Running git cl format...")
     run_command(["git", "cl", "format"] + list(files_to_edit.keys()))
@@ -835,6 +909,11 @@ def main():
   parser = argparse.ArgumentParser(description="Cleanup UNSAFE_TODO macros")
   parser.add_argument(
     "--apply", action="store_true", help="Apply fixes based on out.json"
+  )
+  parser.add_argument(
+    "--builders",
+    nargs="*",
+    help="Filter builders to run by config name (e.g. linux-rel)",
   )
   args = parser.parse_args()
 

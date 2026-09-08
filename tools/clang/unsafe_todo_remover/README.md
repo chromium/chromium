@@ -19,14 +19,17 @@ artifacts.
 
 ## **Usage**
 
-```
+```bash
 # 1. Run analysis:
 # Start the verification process. Progress is saved to `out.json` and can be
-# resumed at any time
+# resumed at any time.
 ./unsafe_todo_remover.py
+
+# Optional: Run on specific builder(s) instead of all configurations.
+./unsafe_todo_remover.py --builders linux-rel
 
 # 2. Apply fixes:
 # Once the analysis finds safe-to-remove wrappers, apply the changes to the
-# source code
+# source code.
 ./unsafe_todo_remover.py --apply
 ```
