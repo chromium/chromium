@@ -68,23 +68,6 @@ constexpr apps::InstanceState kInactiveInstanceState =
     static_cast<apps::InstanceState>(apps::InstanceState::kStarted |
                                      apps::InstanceState::kRunning);
 
-// FakeSyncService is needed to simulate active app sync. Without it,
-// ShouldRecordAppKM returns false because it thinks the user has not enabled
-// app sync, and no UKM events will be recorded, causing entries.size() to be 0.
-class FakeSyncService : public syncer::TestSyncService {
- public:
-  syncer::DataTypeSet GetPreferredDataTypes() const override {
-    syncer::DataTypeSet types;
-    types.Put(syncer::DataType::APPS);
-    return types;
-  }
-  syncer::DataTypeSet GetActiveDataTypes() const override {
-    syncer::DataTypeSet types;
-    types.Put(syncer::DataType::APPS);
-    return types;
-  }
-};
-
 }  // namespace
 
 class AppPlatformInputMetricsTest : public InProcessBrowserTest {
@@ -102,7 +85,7 @@ class AppPlatformInputMetricsTest : public InProcessBrowserTest {
     SyncServiceFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating([](content::BrowserContext* context)
                                          -> std::unique_ptr<KeyedService> {
-          auto sync_service = std::make_unique<FakeSyncService>();
+          auto sync_service = std::make_unique<syncer::TestSyncService>();
           sync_service->SetSignedIn(signin::ConsentLevel::kSync);
           return sync_service;
         }));
@@ -901,8 +884,8 @@ class AppPlatformMetricsServiceBrowserTest
   void ResetAppPlatformMetricsService() { StartMetricsService(); }
 
   base::HistogramTester& histogram_tester() { return *histogram_tester_; }
-  FakeSyncService* sync_service() {
-    return static_cast<FakeSyncService*>(
+  syncer::TestSyncService* sync_service() {
+    return static_cast<syncer::TestSyncService*>(
         SyncServiceFactory::GetForProfile(profile()));
   }
 
