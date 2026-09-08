@@ -7,7 +7,6 @@
 #include <optional>
 
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -28,16 +27,11 @@
 namespace autofill {
 
 using ::autofill::test::MakeFormGlobalId;
-using ::base::Bucket;
-using ::testing::ElementsAre;
 using ::testing::InSequence;
 using ::testing::IsEmpty;
 using ::testing::MockFunction;
 
 namespace {
-
-constexpr char kOtpPresentInMainTabHistogram[] =
-    "PasswordManager.OtpPresentInMainTab";
 
 class TestOtpFieldDetector : public OtpFieldDetector {
  public:
@@ -119,30 +113,24 @@ TEST_F(OtpFieldDetectorTest, TestCallbacks) {
   EXPECT_EQ(submitted_call_counter, 1);
 }
 
-// Verifies the the correct answers and UMA logging of IsOtpFieldPresent.
+// Verifies the correct answers of `IsOtpFieldPresent`.
 TEST_F(OtpFieldDetectorTest, IsOtpFieldPresent) {
-  base::HistogramTester histogram_tester;
   TestOtpFieldDetector detector;
   FormGlobalId form = MakeFormGlobalId();
 
   // 0 OTP fields are present.
 
   EXPECT_FALSE(detector.IsOtpFieldPresent());
-  histogram_tester.ExpectUniqueSample(kOtpPresentInMainTabHistogram, false, 1);
 
   detector.AddFormAndNotifyIfNecessary(form);
   // Now 1 OTP field is present.
 
   EXPECT_TRUE(detector.IsOtpFieldPresent());
-  histogram_tester.ExpectBucketCount(kOtpPresentInMainTabHistogram, true, 1);
-  histogram_tester.ExpectTotalCount(kOtpPresentInMainTabHistogram, 2);
 
   detector.RemoveFormAndNotifyIfNecessary(form);
   // Now 0 OTP fields are present.
 
   EXPECT_FALSE(detector.IsOtpFieldPresent());
-  histogram_tester.ExpectBucketCount(kOtpPresentInMainTabHistogram, false, 2);
-  histogram_tester.ExpectTotalCount(kOtpPresentInMainTabHistogram, 3);
 }
 
 // Tests that the AutofillManager::Observer notifications work as expected.
@@ -234,25 +222,18 @@ class OtpFieldDetectorAutofillManagerObserverTest
       autofill_manager_observation_{&otp_field_detector_};
 };
 
-// Verify that IsOtpFieldPresent works as expected.
+// Verify that `IsOtpFieldPresent` works as expected.
 TEST_P(OtpFieldDetectorAutofillManagerObserverTest, IsOtpFieldPresent) {
-  base::HistogramTester histogram_tester;
   EXPECT_FALSE(otp_field_detector().IsOtpFieldPresent());
-  EXPECT_THAT(histogram_tester.GetAllSamples(kOtpPresentInMainTabHistogram),
-              ElementsAre(Bucket(0, 1)));  // false == 0
 
   FormData form = CreateSimpleOtp();
   AddOtpToThePage(form);
 
   EXPECT_TRUE(otp_field_detector().IsOtpFieldPresent());
-  EXPECT_THAT(histogram_tester.GetAllSamples(kOtpPresentInMainTabHistogram),
-              ElementsAre(Bucket(0, 1), Bucket(1, 1)));  // true == 1
 
   RemoveOtpFromThePage(form);
 
   EXPECT_FALSE(otp_field_detector().IsOtpFieldPresent());
-  EXPECT_THAT(histogram_tester.GetAllSamples(kOtpPresentInMainTabHistogram),
-              ElementsAre(Bucket(0, 2), Bucket(1, 1)));
 }
 
 // Verify that the OtpFieldsDetectedCallback is triggered when an OTP form is

@@ -152,13 +152,6 @@ PasswordChangeDelegate::State ToDelegateState(
 
 }  // namespace
 
-char PasswordChangeDelegateImpl::kFinalPasswordChangeStatusHistogram[] =
-    "PasswordManager.FinalPasswordChangeStatus";
-char PasswordChangeDelegateImpl::kCoarseFinalPasswordChangeStatusHistogram[] =
-    "PasswordManager.CoarseFinalPasswordChangeStatus";
-char PasswordChangeDelegateImpl::kPasswordChangeTimeOverallHistogram[] =
-    "PasswordManager.PasswordChangeTimeOverall2";
-
 PasswordChangeDelegateImpl::PasswordChangeDelegateImpl(
     GURL change_password_url,
     password_manager::PasswordForm credentials,
@@ -205,7 +198,12 @@ PasswordChangeDelegateImpl::PasswordChangeDelegateImpl(
       autofill::ContentAutofillClient::FromWebContents(originator_);
   autofill::OtpFieldDetector* otp_field_detector =
       autofill_client->GetOtpFieldDetector();
-  if (!otp_field_detector->IsOtpFieldPresent()) {
+  const bool is_otp_present = otp_field_detector->IsOtpFieldPresent();
+  // TODO(crbug.com/462387469): The "InMainTab" suffix is legacy (see also
+  // crbug.com/415273270); OtpFieldDetector also considers OTP fields in
+  // iframes.
+  base::UmaHistogramBoolean(kOtpPresentInMainTabHistogram, is_otp_present);
+  if (!is_otp_present) {
     // Proceed with password change immediately if there is no OTP on a page.
     OnOtpNotFound();
     return;

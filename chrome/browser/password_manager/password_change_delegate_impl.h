@@ -42,9 +42,14 @@ class Profile;
 class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
                                    public PasswordChangeActuator::Observer {
  public:
-  static char kFinalPasswordChangeStatusHistogram[];
-  static char kCoarseFinalPasswordChangeStatusHistogram[];
-  static char kPasswordChangeTimeOverallHistogram[];
+  static constexpr char kFinalPasswordChangeStatusHistogram[] =
+      "PasswordManager.FinalPasswordChangeStatus";
+  static constexpr char kCoarseFinalPasswordChangeStatusHistogram[] =
+      "PasswordManager.CoarseFinalPasswordChangeStatus";
+  static constexpr char kPasswordChangeTimeOverallHistogram[] =
+      "PasswordManager.PasswordChangeTimeOverall2";
+  static constexpr char kOtpPresentInMainTabHistogram[] =
+      "PasswordManager.OtpPresentInMainTab";
 
   PasswordChangeDelegateImpl(GURL change_password_url,
                              password_manager::PasswordForm credentials,

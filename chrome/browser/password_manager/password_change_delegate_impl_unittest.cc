@@ -141,6 +141,29 @@ const ukm::mojom::UkmEntry* GetUkmEntry(
   return ukm_entries[0];
 }
 
+class CustomTestOtpFieldDetector : public autofill::OtpFieldDetector {
+ public:
+  using OtpFieldDetector::AddFormAndNotifyIfNecessary;
+  using OtpFieldDetector::OtpFieldDetector;
+  using OtpFieldDetector::RemoveFormAndNotifyIfNecessary;
+};
+
+class CustomTestContentAutofillClient
+    : public autofill::TestContentAutofillClient {
+ public:
+  explicit CustomTestContentAutofillClient(content::WebContents* web_contents)
+      : autofill::TestContentAutofillClient(web_contents),
+        otp_field_detector_(this) {}
+  ~CustomTestContentAutofillClient() override = default;
+
+  CustomTestOtpFieldDetector* GetOtpFieldDetector() override {
+    return &otp_field_detector_;
+  }
+
+ private:
+  CustomTestOtpFieldDetector otp_field_detector_;
+};
+
 }  // namespace
 
 class PasswordChangeDelegateImplTest : public ChromeRenderViewHostTestHarness {
@@ -256,6 +279,10 @@ class PasswordChangeDelegateImplTest : public ChromeRenderViewHostTestHarness {
     }
   }
 
+  CustomTestContentAutofillClient* autofill_client() {
+    return autofill_client_injector_[web_contents()];
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   raw_ptr<MockOptimizationGuideKeyedService>
@@ -268,7 +295,7 @@ class PasswordChangeDelegateImplTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<views::LayoutProvider> layout_provider_;
 
   autofill::test::AutofillUnitTestEnvironment autofill_environment_;
-  autofill::TestAutofillClientInjector<autofill::TestContentAutofillClient>
+  autofill::TestAutofillClientInjector<CustomTestContentAutofillClient>
       autofill_client_injector_;
 };
 
@@ -769,4 +796,31 @@ TEST_F(PasswordChangeDelegateImplTest, LoginPasswordFormIsLogged) {
           .password_change_submission()
           .quality();
   EXPECT_TRUE(quality.has_login_form_data());
+}
+
+TEST_F(PasswordChangeDelegateImplTest,
+       RecordsOtpPresentInMainTabHistogram_NoOtpPresent) {
+  base::HistogramTester histogram_tester;
+  CreateDelegate();
+  histogram_tester.ExpectUniqueSample(
+      PasswordChangeDelegateImpl::kOtpPresentInMainTabHistogram, false, 1);
+}
+
+TEST_F(PasswordChangeDelegateImplTest,
+       RecordsOtpPresentInMainTabHistogram_OtpPresent) {
+  base::HistogramTester histogram_tester;
+  const autofill::FormGlobalId form_id = autofill::test::MakeFormGlobalId();
+  autofill_client()->GetOtpFieldDetector()->AddFormAndNotifyIfNecessary(
+      form_id);
+
+  CreateDelegate();
+  histogram_tester.ExpectUniqueSample(
+      PasswordChangeDelegateImpl::kOtpPresentInMainTabHistogram, true, 1);
+  EXPECT_EQ(delegate()->GetCurrentState(),
+            PasswordChangeDelegate::State::kNoState);
+
+  autofill_client()->GetOtpFieldDetector()->RemoveFormAndNotifyIfNecessary(
+      form_id);
+  EXPECT_EQ(delegate()->GetCurrentState(),
+            PasswordChangeDelegate::State::kWaitingForAgreement);
 }
