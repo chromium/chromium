@@ -727,6 +727,15 @@ ci.thin_tester(
             "webdriver_wpt_tests": targets.mixin(
                 ci_only = True,
             ),
+            "webdriver_bidi_e2e_tests": targets.mixin(
+                experiment_percentage = 10,
+                swarming = targets.swarming(
+                    shards = 8,
+                ),
+            ),
+            "webdriver_bidi_unittests": targets.mixin(
+                experiment_percentage = 10,
+            ),
         },
     ),
     console_view_entry = consoles.console_view_entry(
