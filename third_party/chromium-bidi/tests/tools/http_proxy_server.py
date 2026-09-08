@@ -29,8 +29,10 @@ class HttpProxyServer:
 
         repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
         node_path = os.path.join(repo_root, "tools", "node.py")
+        proxy_script = os.path.join(repo_root, "tools", "http-proxy.mjs")
         self._process = Popen(
-            [sys.executable, node_path, "tools/http-proxy.mjs"],
+            [sys.executable, node_path, proxy_script],
+            cwd=repo_root,
             stdout=PIPE,
             shell=False,
         )

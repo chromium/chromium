@@ -16,10 +16,11 @@
  */
 
 /**
- * @fileoverview `node http-proxy.mjs` starts a new HTTP server on
- * localhost:{FREE_PORT}. Upon the start the server prints its URL to stdout.
- * After that it will print a URL per line for each of the requests it proxied.
- * It does not forward requests, and always provides a predefined response.
+ * @fileoverview `node http-proxy.mjs [host]` starts a mock HTTP proxy server on
+ * {host}:{FREE_PORT} (defaulting to localhost). Upon startup, it prints
+ * `Listening on {host}:{port}` to stdout. For each incoming request, it logs
+ * the requested URL to stdout and returns a predefined 200 OK HTML response
+ * without forwarding the request.
  */
 
 import http from 'node:http';
@@ -31,22 +32,10 @@ function log(...args) {
 const proxyServer = http
   .createServer((originalRequest, originalResponse) => {
     log(originalRequest.url);
-    const proxyRequest = http.request(
-      originalRequest.url,
-      {
-        method: originalRequest.method,
-        headers: originalRequest.headers,
-      },
-      (proxyResponse) => {
-        originalResponse.writeHead(
-          proxyResponse.statusCode,
-          proxyResponse.headers,
-        );
-        proxyResponse.pipe(originalResponse, {end: true});
-      },
-    );
-
-    originalRequest.pipe(proxyRequest, {end: true});
+    originalResponse.writeHead(200, {
+      'Content-Type': 'text/html; charset=UTF-8',
+    });
+    originalResponse.end('<html><body>Proxied response</body></html>');
   })
   .listen(() => {
     log(

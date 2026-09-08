@@ -33,7 +33,14 @@ def main():
     chromium_node_py = os.path.join(chromium_src, "third_party", "node", "node.py")
 
     if os.path.exists(chromium_node_py):
-        execute([sys.executable, chromium_node_py] + sys.argv[1:])
+        # Import chromium's node.py as a module.
+        sys.path.insert(0, os.path.dirname(chromium_node_py))
+        import node
+
+        # Get the path to the hermetic Node binary for the current platform.
+        node_bin = node.GetBinaryPath()
+        # Execute the binary directly so stdout/stderr stream in real time.
+        execute([node_bin] + sys.argv[1:])
     else:
         node_bin = shutil.which("node")
         if node_bin:
