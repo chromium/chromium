@@ -29,6 +29,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.AconfigFlaggedApiDelegate;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -195,11 +196,11 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
             // It's guaranteed that savedInstanceState is not null if we are coming from activity
             // recreation.
             assert savedInstanceState != null;
-            return savedInstanceState.getParcelable(WEB_CONTENTS_KEY);
+            return IntentUtils.safeGetParcelable(savedInstanceState, WEB_CONTENTS_KEY);
         }
 
         intent.setExtrasClassLoader(WebContents.class.getClassLoader());
-        return intent.getParcelableExtra(WEB_CONTENTS_KEY);
+        return IntentUtils.safeGetParcelableExtra(intent, WEB_CONTENTS_KEY);
     }
 
     private @Nullable Bundle getWindowOptionsBundleFromInstanceStateOrIntent(

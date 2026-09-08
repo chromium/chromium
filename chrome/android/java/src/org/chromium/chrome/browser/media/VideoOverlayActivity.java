@@ -11,6 +11,7 @@ import android.content.Intent;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.IntentUtils;
 import org.chromium.base.UnguessableToken;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -118,7 +119,7 @@ public abstract class VideoOverlayActivity extends AsyncInitializationActivity {
         super.onPreCreate();
 
         final Intent intent = getIntent();
-        UnguessableToken token = intent.getParcelableExtra(NATIVE_TOKEN_KEY);
+        UnguessableToken token = IntentUtils.safeGetParcelableExtra(intent, NATIVE_TOKEN_KEY);
         if (token == null) {
             finishOverlay(/* closeByNative= */ false);
             return;
@@ -126,7 +127,9 @@ public abstract class VideoOverlayActivity extends AsyncInitializationActivity {
 
         mNativeToken = assumeNonNull(token);
         intent.setExtrasClassLoader(WebContents.class.getClassLoader());
-        mInitiatorTab = TabUtils.fromWebContents(intent.getParcelableExtra(WEB_CONTENTS_KEY));
+        mInitiatorTab =
+                TabUtils.fromWebContents(
+                        IntentUtils.safeGetParcelableExtra(intent, WEB_CONTENTS_KEY));
         if (mInitiatorTab != null) {
             mTabObserver = new InitiatorTabObserver();
             mInitiatorTab.addObserver(mTabObserver);

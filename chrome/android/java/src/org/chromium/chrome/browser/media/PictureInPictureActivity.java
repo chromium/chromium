@@ -521,7 +521,8 @@ public class PictureInPictureActivity extends VideoOverlayActivity {
             if (!IntentUtils.isTrustedIntentFromSelf(intent)) return;
 
             // Make sure that this intent is for our instance.
-            UnguessableToken nativeToken = intent.getParcelableExtra(NATIVE_TOKEN_KEY);
+            UnguessableToken nativeToken =
+                    IntentUtils.safeGetParcelableExtra(intent, NATIVE_TOKEN_KEY);
             if (nativeToken == null
                     || !nativeToken.equals(getNativeToken())
                     || !isNativeHandleInitialized()) {
