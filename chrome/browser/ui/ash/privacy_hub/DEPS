@@ -9,5 +9,4 @@ include_rules = [
   "+chrome/browser/content_settings",
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/views/permissions",
-  "+chrome/test",
 ]
