@@ -1930,7 +1930,7 @@ public class ToolbarManager
 
         mProgressBarSideUiObserver =
                 new ViewMarginAdjusterForSideUi(
-                        mProgressBarContainer, /* forToolbarElement= */ true);
+                        mProgressBarContainer, /* forToolbarElement= */ false);
         mProgressBarSideUiObserver.onSideUiSpecsChanged(currentSideUiSpecs);
         mSideUiStateProvider.addObserver(mProgressBarSideUiObserver);
     }
