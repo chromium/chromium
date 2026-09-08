@@ -1313,21 +1313,37 @@ public class KeyboardAccessoryControllerTest {
         mCoordinator.setSelectedSuggestion(0);
         assertThat(mModel.get(SELECTED_SUGGESTION_INDEX), is(0));
         assertThat(mCoordinator.getSelectedSuggestionForTesting(), is(0));
+        assertTrue(getAutofillItemAt(0).isSelected());
+        assertFalse(getAutofillItemAt(1).isSelected());
+        assertFalse(getAutofillItemAt(2).isSelected());
+        assertFalse(getAutofillItemAt(3).isSelected());
 
         // Select second suggestion (inside group).
         mCoordinator.setSelectedSuggestion(1);
         assertThat(mModel.get(SELECTED_SUGGESTION_INDEX), is(1));
         assertThat(mCoordinator.getSelectedSuggestionForTesting(), is(1));
+        assertFalse(getAutofillItemAt(0).isSelected());
+        assertTrue(getAutofillItemAt(1).isSelected());
+        assertFalse(getAutofillItemAt(2).isSelected());
+        assertFalse(getAutofillItemAt(3).isSelected());
 
         // Select fourth suggestion (outside group).
         mCoordinator.setSelectedSuggestion(3);
         assertThat(mModel.get(SELECTED_SUGGESTION_INDEX), is(3));
         assertThat(mCoordinator.getSelectedSuggestionForTesting(), is(3));
+        assertFalse(getAutofillItemAt(0).isSelected());
+        assertFalse(getAutofillItemAt(1).isSelected());
+        assertFalse(getAutofillItemAt(2).isSelected());
+        assertTrue(getAutofillItemAt(3).isSelected());
 
         // Clear suggestion selection.
         mCoordinator.setSelectedSuggestion(null);
         assertThat(mModel.get(SELECTED_SUGGESTION_INDEX), nullValue());
         assertThat(mCoordinator.getSelectedSuggestionForTesting(), nullValue());
+        assertFalse(getAutofillItemAt(0).isSelected());
+        assertFalse(getAutofillItemAt(1).isSelected());
+        assertFalse(getAutofillItemAt(2).isSelected());
+        assertFalse(getAutofillItemAt(3).isSelected());
     }
 
     @Test
@@ -1359,18 +1375,54 @@ public class KeyboardAccessoryControllerTest {
         // Select Address1 using its ground-truth index (1 in original suggestions list).
         mCoordinator.setSelectedSuggestion(1);
         assertThat(mModel.get(SELECTED_SUGGESTION_INDEX), is(1));
+        assertTrue(getAutofillItemAt(0).isSelected());
+        assertFalse(getAutofillItemAt(1).isSelected());
 
         // Select Address2 using its ground-truth index (2 in original suggestions list).
         mCoordinator.setSelectedSuggestion(2);
         assertThat(mModel.get(SELECTED_SUGGESTION_INDEX), is(2));
+        assertFalse(getAutofillItemAt(0).isSelected());
+        assertTrue(getAutofillItemAt(1).isSelected());
 
         // Selecting a non-visible index (e.g. 0, 3, or 4) updates the model.
         mCoordinator.setSelectedSuggestion(4);
         assertThat(mModel.get(SELECTED_SUGGESTION_INDEX), is(4));
+        assertFalse(getAutofillItemAt(0).isSelected());
+        assertFalse(getAutofillItemAt(1).isSelected());
 
         // Clear suggestion selection.
         mCoordinator.setSelectedSuggestion(null);
         assertThat(mModel.get(SELECTED_SUGGESTION_INDEX), nullValue());
+        assertFalse(getAutofillItemAt(0).isSelected());
+        assertFalse(getAutofillItemAt(1).isSelected());
+    }
+
+    @Test
+    public void testSetSuggestionsResetsSelection() {
+        AutofillSuggestion suggestion1 =
+                new AutofillSuggestion.Builder()
+                        .setLabel("Suggestion 1")
+                        .setSubLabel("")
+                        .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
+                        .setOriginalIndex(0)
+                        .build();
+        mCoordinator.setSuggestions(List.of(suggestion1), mMockAutofillDelegate);
+
+        mCoordinator.setSelectedSuggestion(0);
+        assertTrue(getAutofillItemAt(0).isSelected());
+        assertThat(mModel.get(SELECTED_SUGGESTION_INDEX), is(0));
+
+        AutofillSuggestion suggestion2 =
+                new AutofillSuggestion.Builder()
+                        .setLabel("Suggestion 2")
+                        .setSubLabel("")
+                        .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
+                        .setOriginalIndex(0)
+                        .build();
+        mCoordinator.setSuggestions(List.of(suggestion2), mMockAutofillDelegate);
+
+        assertThat(mModel.get(SELECTED_SUGGESTION_INDEX), nullValue());
+        assertFalse(getAutofillItemAt(0).isSelected());
     }
 
     @Test

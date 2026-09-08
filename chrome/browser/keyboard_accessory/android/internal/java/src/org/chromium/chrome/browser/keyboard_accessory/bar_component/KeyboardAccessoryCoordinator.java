@@ -55,7 +55,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.RecyclerViewAdapter;
 
 import java.util.List;
-import java.util.function.Supplier;
 
 /**
  * Creates and owns all elements which are part of the keyboard accessory component. It's part of
@@ -549,9 +548,9 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
      *
      * <p>This is an absolute visual selection setter used to synchronize the UI with an external
      * selection state (e.g., when hover or selection is driven externally by pointer/mouse, or
-     * cleared with {@code null}). It updates the visual hover/selected state of the matching
-     * accessory bar item without notifying the {@link AutofillDelegate}, preventing duplicate or
-     * cyclical callbacks back to the backend.
+     * cleared with {@code null}). It updates the visual selection state of the matching accessory
+     * bar item without notifying the {@link AutofillDelegate}, preventing duplicate or cyclical
+     * callbacks back to the backend.
      *
      * @param suggestionIndex The original index of the suggestion in the backend list, or {@code
      *     null} to clear the selection.

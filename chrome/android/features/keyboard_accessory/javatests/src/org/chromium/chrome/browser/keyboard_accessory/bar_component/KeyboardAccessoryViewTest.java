@@ -37,6 +37,7 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.DISABLE_ANIMATIONS_FOR_TESTING;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.HAS_STICKY_LAST_ITEM;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.OBFUSCATED_CHILD_AT_CALLBACK;
+import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SELECTED_SUGGESTION_INDEX;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHEET_OPENER_ITEM;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHOW_SWIPING_IPH;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.VISIBLE;
@@ -1273,6 +1274,59 @@ public class KeyboardAccessoryViewTest {
         CriteriaHelper.pollUiThread(() -> view.getTranslationX() == expectedMargin);
     }
 
+    @Test
+    @MediumTest
+    public void testSelectedSuggestionIndexTogglesHoverOnChildViews() throws InterruptedException {
+        AutofillBarItem firstItem = createAutofillBarItem("First", /* originalIndex= */ 0, null);
+        AutofillBarItem secondItem = createAutofillBarItem("Second", /* originalIndex= */ 1, null);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(VISIBLE, true);
+                    mModel.get(BAR_ITEMS)
+                            .set(
+                                    new BarItem[] {
+                                        firstItem,
+                                        secondItem,
+                                        createSheetOpener(/* atMemoryEnabled= */ true)
+                                    });
+                });
+        KeyboardAccessoryView view = mKeyboardAccessoryView.take();
+
+        CriteriaHelper.pollUiThread(() -> view.mBarItemsView.getChildCount() >= 2);
+
+        ChipView firstChip =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> (ChipView) view.mBarItemsView.getChildAt(0));
+        ChipView secondChip =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> (ChipView) view.mBarItemsView.getChildAt(1));
+
+        CriteriaHelper.pollUiThread(() -> !firstChip.isHovered() && !secondChip.isHovered());
+
+        ThreadUtils.runOnUiThreadBlocking(() -> setModelSelectedSuggestion(0));
+        CriteriaHelper.pollUiThread(() -> firstChip.isHovered() && !secondChip.isHovered());
+
+        ThreadUtils.runOnUiThreadBlocking(() -> setModelSelectedSuggestion(1));
+        CriteriaHelper.pollUiThread(() -> !firstChip.isHovered() && secondChip.isHovered());
+
+        ThreadUtils.runOnUiThreadBlocking(() -> setModelSelectedSuggestion(null));
+        CriteriaHelper.pollUiThread(() -> !firstChip.isHovered() && !secondChip.isHovered());
+    }
+
+    /**
+     * Simulates the mediator by updating the selection state on each {@link BarItem} and setting
+     * {@link KeyboardAccessoryProperties#SELECTED_SUGGESTION_INDEX} on the model.
+     *
+     * @param selectedIndex The ground-truth index of the selected suggestion, or null to clear.
+     */
+    private void setModelSelectedSuggestion(@Nullable Integer selectedIndex) {
+        for (BarItem barItem : mModel.get(BAR_ITEMS)) {
+            barItem.setSelectedSuggestion(selectedIndex);
+        }
+        mModel.set(SELECTED_SUGGESTION_INDEX, selectedIndex);
+    }
+
     /**
      * Sets up the accessory, adds two buttons, and waits for them to be laid out.
      *
@@ -1382,6 +1436,11 @@ public class KeyboardAccessoryViewTest {
     }
 
     private AutofillBarItem createAutofillBarItem(String label, Callback<Action> chipCallback) {
+        return createAutofillBarItem(label, /* originalIndex= */ 0, chipCallback);
+    }
+
+    private AutofillBarItem createAutofillBarItem(
+            String label, int originalIndex, Callback<Action> chipCallback) {
         return new AutofillBarItem(
                 new AutofillSuggestion.Builder()
                         .setLabel(label)
@@ -1389,6 +1448,7 @@ public class KeyboardAccessoryViewTest {
                         .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
                         .setFeatureForIph("")
                         .setApplyDeactivatedStyle(false)
+                        .setOriginalIndex(originalIndex)
                         .build(),
                 new Action(AUTOFILL_SUGGESTION, chipCallback),
                 mProfile);

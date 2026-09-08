@@ -155,7 +155,7 @@ class KeyboardAccessoryMediator
     void setSuggestions(List<AutofillSuggestion> suggestions, AutofillDelegate delegate) {
         // TODO(crbug.com/542535472): Identify and restore the selected element across suggestion
         // updates to avoid losing selection on async loads.
-        mModel.set(SELECTED_SUGGESTION_INDEX, null);
+        setSelectedSuggestion(null);
         List<BarItem> retainedItems = collectItemsToRetain(AccessoryAction.AUTOFILL_SUGGESTION);
         retainedItems.addAll(toBarItems(suggestions, delegate));
         setBarContents(retainedItems);
@@ -171,10 +171,10 @@ class KeyboardAccessoryMediator
     }
 
     /**
-     * Updates the visual selection/hover state of the suggestion chips in the accessory bar to
-     * match the given {@code suggestionIndex} (which refers to the original index in the backend
-     * suggestions list). If no item matches (or if {@code suggestionIndex} is {@code null}), all
-     * suggestion items are unselected.
+     * Updates the visual selection state of the suggestion chips in the accessory bar to match the
+     * given {@code suggestionIndex} (which refers to the original index in the backend suggestions
+     * list). If no item matches (or if {@code suggestionIndex} is {@code null}), all suggestion
+     * items are unselected.
      *
      * <p>This method is a pure UI synchronizer for absolute selection (e.g., when hover or
      * selection is driven externally by mouse/touch or when clearing preview). It deliberately does
@@ -187,6 +187,9 @@ class KeyboardAccessoryMediator
     void setSelectedSuggestion(@Nullable Integer suggestionIndex) {
         assert suggestionIndex == null || suggestionIndex >= 0
                 : "Suggestion index must be null or non-negative: " + suggestionIndex;
+        for (BarItem barItem : mModel.get(BAR_ITEMS)) {
+            barItem.setSelectedSuggestion(suggestionIndex);
+        }
         mModel.set(SELECTED_SUGGESTION_INDEX, suggestionIndex);
     }
 
