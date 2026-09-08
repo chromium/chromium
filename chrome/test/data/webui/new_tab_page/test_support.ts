@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {BackgroundImage, Theme} from 'chrome://new-tab-page/new_tab_page.js';
+import type {BackgroundImage, FuseboxAction, Theme} from 'chrome://new-tab-page/new_tab_page.js';
 import {NtpBackgroundImageSource} from 'chrome://new-tab-page/new_tab_page.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -94,6 +94,20 @@ export function createTheme({
     mostVisited: mostVisited,
     textColor: {value: 0xff0000ff},
     isCustomBackground: true,
+  };
+}
+
+export function createFuseboxAction(overrides: Partial<FuseboxAction> = {}):
+    FuseboxAction {
+  return {
+    preselectedTool: null,
+    preferredInventory: null,
+    preselectedModel: null,
+    queryActionOverride: null,
+    preselectedInputSource: null,
+    searchboxOverride: null,
+    searchboxTutorial: null,
+    ...overrides,
   };
 }
 

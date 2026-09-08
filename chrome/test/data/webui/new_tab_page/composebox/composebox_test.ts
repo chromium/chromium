@@ -20,7 +20,7 @@ import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {ADD_FILE_CONTEXT_FN, createComposeboxElement, getSubmitContainer, getSubmitIcon, MockInputState, setupComposeboxTest} from './test_support.js';
+import {ADD_FILE_CONTEXT_FN, createComposeboxElement, createFuseboxAction, getSubmitContainer, getSubmitIcon, MockInputState, setupComposeboxTest} from './test_support.js';
 
 suite(`NewTabPageComposeboxTest`, () => {
   const testProxy = setupComposeboxTest();
@@ -996,15 +996,12 @@ suite(`NewTabPageComposeboxTest`, () => {
     await composebox.handleFuseboxAction({
       suggestion: 'paste suggestion',
       files: [],
-      fuseboxAction: {
+      fuseboxAction: createFuseboxAction({
         preselectedTool: ToolMode.kDeepSearch,
         preferredInventory: SuggestInventory.kBrainstorm,
         preselectedModel: ModelMode.kGeminiPro,
         queryActionOverride: QueryActionOverride.kPaste,
-        preselectedInputSource: null,
-        searchboxOverride: null,
-        searchboxTutorial: null,
-      },
+      }),
     });
     await microtasksFinished();
     await composebox.updateComplete;
@@ -1025,15 +1022,9 @@ suite(`NewTabPageComposeboxTest`, () => {
     await composebox.handleFuseboxAction({
       suggestion: 'second suggestion',
       files: [],
-      fuseboxAction: {
-        preselectedTool: null,
-        preferredInventory: null,
-        preselectedModel: null,
+      fuseboxAction: createFuseboxAction({
         queryActionOverride: QueryActionOverride.kPaste,
-        preselectedInputSource: null,
-        searchboxOverride: null,
-        searchboxTutorial: null,
-      },
+      }),
     });
     await microtasksFinished();
     await composebox.updateComplete;
@@ -1068,15 +1059,9 @@ suite(`NewTabPageComposeboxTest`, () => {
         await composebox.handleFuseboxAction({
           suggestion: '',
           files: [],
-          fuseboxAction: {
-            preselectedTool: null,
-            preferredInventory: null,
-            preselectedModel: null,
-            queryActionOverride: null,
+          fuseboxAction: createFuseboxAction({
             preselectedInputSource: InputSource.kInputSourceGallery,
-            searchboxOverride: null,
-            searchboxTutorial: null,
-          },
+          }),
         });
         await microtasksFinished();
 
@@ -1102,15 +1087,9 @@ suite(`NewTabPageComposeboxTest`, () => {
         await composebox.handleFuseboxAction({
           suggestion: '',
           files: [],
-          fuseboxAction: {
-            preselectedTool: null,
-            preferredInventory: null,
-            preselectedModel: null,
-            queryActionOverride: null,
+          fuseboxAction: createFuseboxAction({
             preselectedInputSource: InputSource.kInputSourceFilePicker,
-            searchboxOverride: null,
-            searchboxTutorial: null,
-          },
+          }),
         });
         await microtasksFinished();
 
@@ -1142,15 +1121,9 @@ suite(`NewTabPageComposeboxTest`, () => {
         await composebox.handleFuseboxAction({
           suggestion: '',
           files: [],
-          fuseboxAction: {
-            preselectedTool: null,
-            preferredInventory: null,
-            preselectedModel: null,
-            queryActionOverride: null,
+          fuseboxAction: createFuseboxAction({
             preselectedInputSource: InputSource.kInputSourceTabPicker,
-            searchboxOverride: null,
-            searchboxTutorial: null,
-          },
+          }),
         });
         await microtasksFinished();
 
@@ -1172,15 +1145,9 @@ suite(`NewTabPageComposeboxTest`, () => {
         await composebox.handleFuseboxAction({
           suggestion: '',
           files: [],
-          fuseboxAction: {
-            preselectedTool: null,
-            preferredInventory: null,
-            preselectedModel: null,
-            queryActionOverride: null,
+          fuseboxAction: createFuseboxAction({
             preselectedInputSource: InputSource.kInputSourceVoice,
-            searchboxOverride: null,
-            searchboxTutorial: null,
-          },
+          }),
         });
         await microtasksFinished();
 
@@ -1200,15 +1167,9 @@ suite(`NewTabPageComposeboxTest`, () => {
         await composebox.handleFuseboxAction({
           suggestion: 'chip hint',
           files: [],
-          fuseboxAction: {
-            preselectedTool: null,
-            preferredInventory: null,
-            preselectedModel: null,
+          fuseboxAction: createFuseboxAction({
             queryActionOverride: QueryActionOverride.kHint,
-            preselectedInputSource: null,
-            searchboxOverride: null,
-            searchboxTutorial: null,
-          },
+          }),
         });
         await composebox.updateComplete;
         await composebox.getInputElement().updateComplete;
@@ -1242,15 +1203,10 @@ suite(`NewTabPageComposeboxTest`, () => {
                 document.body.appendChild(composebox);
                 await microtasksFinished();
 
-                const action = {
+                const action = createFuseboxAction({
                   preselectedTool: ToolMode.kUnspecified,
-                  preferredInventory: null,
-                  preselectedModel: null,
-                  queryActionOverride: null,
-                  preselectedInputSource: null,
-                  searchboxOverride: null,
                   searchboxTutorial,
-                };
+                });
 
                 const expectedState =
                     searchboxTutorial === SearchboxTutorial.kGlowPlusButton &&
