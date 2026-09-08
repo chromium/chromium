@@ -15,7 +15,9 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -86,6 +88,7 @@ import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
@@ -127,6 +130,8 @@ public class CompositorViewHolderUnitTest {
 
     private static final int SIDE_UI_START_WIDTH = 60;
     private static final int SIDE_UI_END_WIDTH = 70;
+    private static final SideUiSpecs EMPTY_SIDE_UI_SPECS =
+            new SideUiSpecs(/* leftContainerWidth= */ 0, /* rightContainerWidth= */ 0);
 
     private static final long TOUCH_TIME = 0;
     private static final MotionEvent MOTION_EVENT_DOWN =
@@ -304,6 +309,9 @@ public class CompositorViewHolderUnitTest {
         mCompositorViewHolder.onFinishNativeInitialization(
                 mTabModelSelector, null, ObservableSuppliers.alwaysZero());
         mCompositorViewHolder.setSideUiStateProviderSupplier(mSideUiStateProviderSupplier);
+        when(mSideUiStateProvider.getCurrentSideUiSpecs()).thenReturn(EMPTY_SIDE_UI_SPECS);
+        when(mSideUiStateProvider.getExpectedSideUiSpecsForTab(any()))
+                .thenReturn(EMPTY_SIDE_UI_SPECS);
         when(mCompositorViewHolder.getCurrentTab()).thenReturn(mTab);
         when(mCompositorViewHolder.getRootWindowInsets())
                 .thenReturn(VISIBLE_SYSTEM_BARS_WINDOW_INSETS.toWindowInsets());
@@ -1451,10 +1459,6 @@ public class CompositorViewHolderUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
     public void testSetSideUiStateProviderSupplier() {
-        SideUiSpecs emptySideUiSpecs =
-                new SideUiSpecs(/* leftContainerWidth= */ 0, /* rightContainerWidth= */ 0);
-
-        when(mSideUiStateProvider.getCurrentSideUiSpecs()).thenReturn(emptySideUiSpecs);
         mSideUiStateProviderSupplier.set(mSideUiStateProvider);
         runCurrentTasks();
 
@@ -1477,7 +1481,8 @@ public class CompositorViewHolderUnitTest {
         int startContainerWidth = 100;
         int endContainerWidth = 200;
         SideUiSpecs currentSideUiSpecs = new SideUiSpecs(startContainerWidth, endContainerWidth);
-        when(mSideUiStateProvider.getCurrentSideUiSpecs()).thenReturn(currentSideUiSpecs);
+        when(mSideUiStateProvider.getExpectedSideUiSpecsForTab(mTab))
+                .thenReturn(currentSideUiSpecs);
 
         // Act: Make SideUiStateProvider available.
         //
@@ -1511,7 +1516,8 @@ public class CompositorViewHolderUnitTest {
         int startContainerWidth = 100;
         int endContainerWidth = 200;
         SideUiSpecs currentSideUiSpecs = new SideUiSpecs(startContainerWidth, endContainerWidth);
-        when(mSideUiStateProvider.getCurrentSideUiSpecs()).thenReturn(currentSideUiSpecs);
+        when(mSideUiStateProvider.getExpectedSideUiSpecsForTab(mTab))
+                .thenReturn(currentSideUiSpecs);
 
         // Make SideUiStateProvider available.
         mSideUiStateProviderSupplier.set(mSideUiStateProvider);
@@ -1546,6 +1552,8 @@ public class CompositorViewHolderUnitTest {
         int rightContainerWidth = 150;
         SideUiSpecs currentSideUiSpecs = new SideUiSpecs(leftContainerWidth, rightContainerWidth);
         when(mSideUiStateProvider.getCurrentSideUiSpecs()).thenReturn(currentSideUiSpecs);
+        when(mSideUiStateProvider.getExpectedSideUiSpecsForTab(mTab))
+                .thenReturn(currentSideUiSpecs);
 
         // Act: Make SideUiStateProvider available.
         //
@@ -1592,6 +1600,8 @@ public class CompositorViewHolderUnitTest {
         // Arbitrary Side UI width.
         SideUiSpecs currentSideUiSpecs = new SideUiSpecs(SIDE_UI_START_WIDTH, SIDE_UI_END_WIDTH);
         when(mSideUiStateProvider.getCurrentSideUiSpecs()).thenReturn(currentSideUiSpecs);
+        when(mSideUiStateProvider.getExpectedSideUiSpecsForTab(mTab))
+                .thenReturn(currentSideUiSpecs);
         mSideUiStateProviderSupplier.set(mSideUiStateProvider);
         runCurrentTasks();
         mCompositorViewHolder.onSideUiSpecsChanged(currentSideUiSpecs);
@@ -1601,6 +1611,86 @@ public class CompositorViewHolderUnitTest {
         assertEquals(
                 "Unexpected start margin.", expectedStartMargin, layoutParams.getMarginStart());
         assertEquals("Unexpected end margin.", expectedEndMargin, layoutParams.getMarginEnd());
+    }
+
+    @Test
+    public void testOnContentChanged_customViewMarginsUpdatedUsingExpectedSpecs() {
+        // Setup custom view.
+        View customView = new View(mContext);
+        when(mTab.isShowingCustomView()).thenReturn(true);
+        when(mTab.getView()).thenReturn(customView);
+
+        reset(mWebContents);
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
+        mCompositorViewHolder.onNativeLibraryReady(
+                mWindowAndroid, /* tabContentManager= */ null, mPrefService);
+
+        // Make SideUiStateProvider available with expected specs.
+        SideUiSpecs expectedSideUiSpecs = new SideUiSpecs(SIDE_UI_START_WIDTH, SIDE_UI_END_WIDTH);
+        when(mSideUiStateProvider.getExpectedSideUiSpecsForTab(mTab))
+                .thenReturn(expectedSideUiSpecs);
+        mSideUiStateProviderSupplier.set(mSideUiStateProvider);
+        runCurrentTasks();
+
+        // Trigger onContentChanged while provider is available.
+        mCompositorViewHolder.onContentChanged();
+
+        // Verify that getExpectedSideUiSpecsForTab was called for mTab and margins are updated.
+        verify(mSideUiStateProvider, atLeastOnce()).getExpectedSideUiSpecsForTab(mTab);
+        MarginLayoutParams layoutParams = (MarginLayoutParams) mTab.getView().getLayoutParams();
+        assertEquals(
+                "Unexpected start margin.", SIDE_UI_START_WIDTH, layoutParams.getMarginStart());
+        assertEquals("Unexpected end margin.", SIDE_UI_END_WIDTH, layoutParams.getMarginEnd());
+    }
+
+    @Test
+    public void testSetSideUiStateProviderSupplier_nullTab_doesNotQueryExpectedSpecs() {
+        reset(mWebContents);
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
+        mCompositorViewHolder.onNativeLibraryReady(
+                mWindowAndroid, /* tabContentManager= */ null, mPrefService);
+
+        // Set current tab to null.
+        mTabModelSelector
+                .getModel(false)
+                .setIndex(TabModel.INVALID_TAB_INDEX, TabSelectionType.FROM_USER);
+        doReturn(null).when(mCompositorViewHolder).getCurrentTab();
+
+        clearInvocations(mSideUiStateProvider);
+
+        // Make SideUiStateProvider available.
+        mSideUiStateProviderSupplier.set(mSideUiStateProvider);
+        runCurrentTasks();
+
+        // Verify getExpectedSideUiSpecsForTab was never called.
+        verify(mSideUiStateProvider, never()).getExpectedSideUiSpecsForTab(any());
+    }
+
+    @Test
+    public void testOnContentChanged_nullTab_doesNotQueryExpectedSpecs() {
+        reset(mWebContents);
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
+        mCompositorViewHolder.onNativeLibraryReady(
+                mWindowAndroid, /* tabContentManager= */ null, mPrefService);
+
+        // Make SideUiStateProvider available.
+        mSideUiStateProviderSupplier.set(mSideUiStateProvider);
+        runCurrentTasks();
+
+        // Set current tab to null.
+        mTabModelSelector
+                .getModel(false)
+                .setIndex(TabModel.INVALID_TAB_INDEX, TabSelectionType.FROM_USER);
+        doReturn(null).when(mCompositorViewHolder).getCurrentTab();
+
+        // Clear invocations from initial provider availability.
+        clearInvocations(mSideUiStateProvider);
+
+        // Trigger onContentChanged with null tab.
+        mCompositorViewHolder.onContentChanged();
+
+        // Verify getExpectedSideUiSpecsForTab was never called.
+        verify(mSideUiStateProvider, never()).getExpectedSideUiSpecsForTab(any());
     }
 
     @Test
