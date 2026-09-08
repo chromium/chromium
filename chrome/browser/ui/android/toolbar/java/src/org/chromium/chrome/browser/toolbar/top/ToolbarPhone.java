@@ -52,7 +52,6 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.MathUtils;
@@ -105,7 +104,6 @@ import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.IncognitoColors;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.Tracker;
@@ -362,15 +360,11 @@ public class ToolbarPhone extends ToolbarLayout
                 OmniboxResourceProvider.getLocationBarBackgroundOnFocusHeightIncrease(context);
         mToolbarBackgroundColorForNtp =
                 ChromeSemanticColorUtils.getHomeSurfaceBackgroundColor(getContext());
-        float locationBarBackgroundColorAlphaForNtp =
-                ResourcesCompat.getFloat(
-                        getResources(), R.dimen.home_surface_search_box_background_alpha);
         mLocationBarBackgroundColorForNtp =
-                NewTabPageUtils.isNtpAuroraEnabled()
+                mIsAuroraEnabled
                         ? getNtpAuroraLocationBarBackgroundColor(context)
-                        : ColorUtils.setAlphaComponentWithFloat(
-                                SemanticColorUtils.getDefaultIconColorAccent1(context),
-                                locationBarBackgroundColorAlphaForNtp);
+                        : getContext().getColor(R.color.home_surface_search_box_background_color);
+        ;
         mDisableLocationBarRelayout = ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled();
     }
 
@@ -569,10 +563,8 @@ public class ToolbarPhone extends ToolbarLayout
 
     // Update location bar background to match NTP fakebox.
     private void updateToNtpBackground() {
-        mLocationBarBackground.setBackgroundColor(
-                NewTabPageUtils.isNtpAuroraEnabled()
-                        ? getNtpAuroraLocationBarBackgroundColor(getContext())
-                        : getContext().getColor(R.color.color_primary_with_alpha_15));
+        mLocationBarBackground.setBackgroundColor(mLocationBarBackgroundColorForNtp);
+        mCurrentLocationBarColor = mLocationBarBackgroundColorForNtp;
         mLocationBarBackground.setCornerRadius(
                 getResources()
                         .getDimensionPixelSize(R.dimen.home_surface_search_box_background_radius));
