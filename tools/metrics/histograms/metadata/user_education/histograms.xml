@@ -267,6 +267,8 @@ chromium-metrics-reviews@google.com.
     <variant name="Lens" summary="Lens"/>
     <variant name="Password" summary="Password"/>
     <variant name="Payment" summary="Payment"/>
+    <variant name="PriceTracking" summary="Price Tracking"/>
+    <variant name="TabGroups" summary="Tab Groups"/>
   </token>
 </histogram>
 
@@ -284,6 +286,8 @@ chromium-metrics-reviews@google.com.
     <variant name="Lens" summary="Lens"/>
     <variant name="Password" summary="Password"/>
     <variant name="Payment" summary="Payment"/>
+    <variant name="PriceTracking" summary="Price Tracking"/>
+    <variant name="TabGroups" summary="Tab Groups"/>
   </token>
   <token key="BubbleType">
     <variant name="QRCode" summary="QR Code Bubble"/>
