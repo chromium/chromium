@@ -7185,6 +7185,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "auto_session_end_delay": "300ms"
+                    },
                     "enable_features": [
                         "Dictation"
                     ]
