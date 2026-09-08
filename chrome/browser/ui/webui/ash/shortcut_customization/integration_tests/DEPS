@@ -1,7 +1,6 @@
 include_rules = [
   '+ash/accelerators/accelerator_lookup.h',
   '+ash/ash_element_identifiers.h',
-  '+ash/public/cpp/accelerator_actions.h',
   '+ash/shell.h',
   '+device/udev_linux/fake_udev_loader.h',
 

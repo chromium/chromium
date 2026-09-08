@@ -3,10 +3,6 @@ include_rules = [
   # details.
   "-chrome",
 
-  # This directory is in //chrome, which violates the rule above. Allow this
-  # directory to #include its own files.
-  "+chrome/browser/ui/webui/ash/settings/pages/search",
-
   # Existing dependencies within //chrome. There is an active effort to
   # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
@@ -15,7 +11,6 @@ include_rules = [
   "+chrome/browser/ash/lobster/lobster_service.h",
   "+chrome/browser/ash/lobster/lobster_service_provider.h",
   "+chrome/browser/ash/lobster/mock_lobster_system_state_provider.h",
-  "+chrome/browser/ash/login/users/fake_chrome_user_manager.h",
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/search_engines",
   "+chrome/browser/ui/webui/ash/settings/pages",
