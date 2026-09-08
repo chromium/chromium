@@ -40,6 +40,7 @@ struct InputDevice;
 struct KeyboardDevice;
 struct TouchscreenDevice;
 
+class ExtIdleNotifier;
 class GtkPrimarySelectionDeviceManager;
 class OrgKdeKwinAppmenuManager;
 class OrgKdeKwinIdle;
@@ -188,6 +189,8 @@ class WaylandConnection {
     return data_device_manager_.get();
   }
 
+  ExtIdleNotifier* ext_idle_notifier() { return ext_idle_notifier_.get(); }
+
   GtkPrimarySelectionDeviceManager* gtk_primary_selection_device_manager()
       const {
     return gtk_primary_selection_device_manager_.get();
@@ -313,6 +316,7 @@ class WaylandConnection {
   // makes it possible to avoid exposing setters for all those global objects:
   // these setters would only be needed by the globals but would be visible to
   // everyone.
+  friend class ExtIdleNotifier;
   friend class FractionalScaleManager;
   friend class GtkPrimarySelectionDeviceManager;
   friend class OrgKdeKwinAppmenuManager;
@@ -457,6 +461,7 @@ class WaylandConnection {
   std::unique_ptr<XdgActivation> xdg_activation_;
   std::unique_ptr<XdgForeignWrapper> xdg_foreign_;
   std::unique_ptr<ZwpIdleInhibitManager> zwp_idle_inhibit_manager_;
+  std::unique_ptr<ExtIdleNotifier> ext_idle_notifier_;
   std::unique_ptr<OverlayPrioritizer> overlay_prioritizer_;
   std::unique_ptr<SinglePixelBuffer> single_pixel_buffer_;
 

@@ -48,6 +48,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_data_drag_controller.h"
 #include "ui/ozone/platform/wayland/host/wayland_drm.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
+#include "ui/ozone/platform/wayland/host/wayland_idle_notify.h"
 #include "ui/ozone/platform/wayland/host/wayland_input_method_context.h"
 #include "ui/ozone/platform/wayland/host/wayland_keyboard.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
@@ -150,6 +151,8 @@ WaylandConnection::~WaylandConnection() {
 bool WaylandConnection::Initialize(bool use_threaded_polling) {
   // Register factories for classes that implement wl::GlobalObjectRegistrar<T>.
   // Keep alphabetical order for convenience.
+  RegisterGlobalObjectFactory(ExtIdleNotifier::kInterfaceName,
+                              &ExtIdleNotifier::Instantiate);
   RegisterGlobalObjectFactory(FractionalScaleManager::kInterfaceName,
                               &FractionalScaleManager::Instantiate);
   RegisterGlobalObjectFactory(GtkPrimarySelectionDeviceManager::kInterfaceName,

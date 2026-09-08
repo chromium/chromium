@@ -36,6 +36,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor_position.h"
+#include "ui/ozone/platform/wayland/host/wayland_idle_notify.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
@@ -480,6 +481,13 @@ bool WaylandScreen::IsScreenSaverActive() const {
 }
 
 base::TimeDelta WaylandScreen::CalculateIdleTime() const {
+  // Try the ext_idle_notifier Wayland protocol.
+  if (const auto* wayland_idle = connection_->ext_idle_notifier()) {
+    const auto idle_time = wayland_idle->GetIdleTime();
+    if (idle_time)
+      return *idle_time;
+  }
+
   // Try the org_kde_kwin_idle Wayland protocol extension (KWin).
   if (const auto* kde_idle = connection_->org_kde_kwin_idle()) {
     const auto idle_time = kde_idle->GetIdleTime();

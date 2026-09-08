@@ -9,6 +9,7 @@
 #include <color-management-v1-client-protocol.h>
 #include <content-type-v1-client-protocol.h>
 #include <cursor-shape-v1-client-protocol.h>
+#include <ext-idle-notify-v1-client-protocol.h>
 #include <extended-drag-unstable-v1-client-protocol.h>
 #include <fractional-scale-v1-client-protocol.h>
 #include <gtk-primary-selection-client-protocol.h>
@@ -149,6 +150,8 @@ void (*ObjectTraits<wl_proxy>::deleter)(void*) = &wl_proxy_wrapper_destroy;
   IMPLEMENT_WAYLAND_OBJECT_TRAITS_WITH_DELETER(TYPE, TYPE##_destroy)
 
 // For convenience, keep aphabetical order in this list.
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(ext_idle_notifier_v1)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(ext_idle_notification_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(gtk_primary_selection_device)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(gtk_primary_selection_device_manager)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(gtk_primary_selection_offer)

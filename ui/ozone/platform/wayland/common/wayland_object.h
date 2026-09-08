@@ -103,6 +103,8 @@ bool CanBind(const std::string& interface,
   }  // namespace wl
 
 // For convenience, keep aphabetical order in this list.
+DECLARE_WAYLAND_OBJECT_TRAITS(ext_idle_notifier_v1)
+DECLARE_WAYLAND_OBJECT_TRAITS(ext_idle_notification_v1)
 DECLARE_WAYLAND_OBJECT_TRAITS(gtk_primary_selection_device)
 DECLARE_WAYLAND_OBJECT_TRAITS(gtk_primary_selection_device_manager)
 DECLARE_WAYLAND_OBJECT_TRAITS(gtk_primary_selection_offer)
