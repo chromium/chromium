@@ -6,7 +6,6 @@ include_rules = [
   # Files residing in certain directories (e.g., //chrome/browser) are listed
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
-  "+chrome/app/vector_icons",
   "+chrome/browser/apps/app_service",
   "+chrome/browser/ash/app_list",
   "+chrome/browser/ash/arc/session",
@@ -20,7 +19,6 @@ include_rules = [
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/smb_client",
   "+chrome/browser/browser_process.h",
-  "+chrome/browser/extensions/api/terminal",
   "+chrome/browser/global_features.h",
   "+chrome/browser/icon_transcoder",
   "+chrome/browser/profiles",
