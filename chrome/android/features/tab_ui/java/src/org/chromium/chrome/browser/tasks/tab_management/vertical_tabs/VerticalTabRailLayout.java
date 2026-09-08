@@ -18,6 +18,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import androidx.annotation.Px;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.TooltipCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
@@ -54,6 +55,7 @@ public class VerticalTabRailLayout extends ConstraintLayout {
     private VerticalTabListRecyclerView mRecyclerView;
     private TabListRecyclerView mPinnedTabsRecyclerView;
     private View mSpacerView;
+    private View mPinnedTabsSeparatorView;
     private LinearLayout mHeaderContainer;
     private LinearLayout mFooterContainer;
     private ImageButton mCollapseButton;
@@ -83,6 +85,9 @@ public class VerticalTabRailLayout extends ConstraintLayout {
 
         mPinnedTabsRecyclerView = findViewById(R.id.pinned_tabs_recycler_view);
         assert mPinnedTabsRecyclerView != null;
+
+        mPinnedTabsSeparatorView = findViewById(R.id.pinned_tabs_separator);
+        assert mPinnedTabsSeparatorView != null;
 
         mSpacerView = findViewById(R.id.desktop_window_spacer);
         assert mSpacerView != null;
@@ -159,6 +164,11 @@ public class VerticalTabRailLayout extends ConstraintLayout {
         return mPinnedTabsRecyclerView;
     }
 
+    @VisibleForTesting
+    View getPinnedTabsSeparatorView() {
+        return mPinnedTabsSeparatorView;
+    }
+
     /** Returns the header container view. */
     public LinearLayout getHeaderContainer() {
         return mHeaderContainer;
@@ -172,6 +182,32 @@ public class VerticalTabRailLayout extends ConstraintLayout {
     /** Returns the incognito tab switcher button view in the footer. */
     public ImageButton getIncognitoButton() {
         return mIncognitoButton;
+    }
+
+    /** Sets the visibility of the separator between pinned tabs and regular tabs. */
+    public void setPinnedTabsSeparatorVisible(boolean visible) {
+        if (mPinnedTabsSeparatorView != null) {
+            mPinnedTabsSeparatorView.setVisibility(visible ? View.VISIBLE : View.GONE);
+        }
+
+        if (mRecyclerView != null) {
+            ViewGroup.MarginLayoutParams lp =
+                    (ViewGroup.MarginLayoutParams) mRecyclerView.getLayoutParams();
+
+            // Keep everything in the constraint layout exactly as is if the separator is not
+            // visible.
+            int targetMargin =
+                    visible
+                            ? getContext()
+                                    .getResources()
+                                    .getDimensionPixelSize(
+                                            R.dimen.vertical_tabs_pinned_separator_margin_vertical)
+                            : 0;
+            if (lp.topMargin != targetMargin) {
+                lp.topMargin = targetMargin;
+                mRecyclerView.setLayoutParams(lp);
+            }
+        }
     }
 
     /** Sets the visibility of the desktop window top spacer. */

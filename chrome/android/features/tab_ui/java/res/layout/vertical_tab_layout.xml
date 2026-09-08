@@ -78,6 +78,17 @@ found in the LICENSE file.
         android:scrollbarThumbVertical="@drawable/vertical_tabs_scrollbar_thumb"
         android:scrollbarSize="@dimen/vertical_tabs_scrollbar_width" />
 
+    <!-- Separator between pinned tabs and regular tabs -->
+    <View
+        android:id="@+id/pinned_tabs_separator"
+        android:layout_width="@dimen/vertical_tabs_pinned_separator_width"
+        android:layout_height="@dimen/vertical_tabs_pinned_separator_height"
+        android:background="@drawable/vertical_tabs_pinned_separator"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/pinned_tabs_recycler_view"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <!-- Tab List Recycler View -->
     <org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListRecyclerView
         android:id="@+id/tab_list_recycler_view"

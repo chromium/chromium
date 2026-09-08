@@ -126,6 +126,7 @@ public class VerticalTabRailLayoutUnitTest {
     public void testChildViewInflation() {
         assertNotNull(mRailLayout.getRecyclerView());
         assertNotNull(mRailLayout.getPinnedTabsRecyclerView());
+        assertNotNull(mRailLayout.getPinnedTabsSeparatorView());
         assertNotNull(mRailLayout.getHeaderContainer());
         assertNotNull(mRailLayout.getFooterContainer());
         assertNotNull(mRailLayout.getIncognitoButton());
@@ -781,6 +782,70 @@ public class VerticalTabRailLayoutUnitTest {
 
         // Verify app:layout_constrainedHeight="true"
         assertTrue("layout_constrainedHeight must be true", clp.constrainedHeight);
+    }
+
+    @Test
+    @SmallTest
+    public void testPinnedTabsSeparatorViewInflation() {
+        View separator = mRailLayout.getPinnedTabsSeparatorView();
+        assertNotNull(separator);
+        assertEquals(View.GONE, separator.getVisibility());
+
+        // Verify XML attributes (width, height, background drawable).
+        int expectedWidth =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tabs_pinned_separator_width);
+        int expectedHeight =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tabs_pinned_separator_height);
+        ViewGroup.LayoutParams lp = separator.getLayoutParams();
+        assertEquals(expectedWidth, lp.width);
+        assertEquals(expectedHeight, lp.height);
+        assertNotNull(separator.getBackground());
+    }
+
+    @Test
+    @SmallTest
+    public void testSetPinnedTabsSeparatorVisible_True() {
+        View separator = mRailLayout.getPinnedTabsSeparatorView();
+        assertNotNull(separator);
+
+        mRailLayout.setPinnedTabsSeparatorVisible(true);
+
+        assertEquals(View.VISIBLE, separator.getVisibility());
+
+        // Verify top margin was dynamically applied to regular tabs RecyclerView.
+        int expectedMargin =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.vertical_tabs_pinned_separator_margin_vertical);
+        ViewGroup.MarginLayoutParams lp =
+                (ViewGroup.MarginLayoutParams) mRailLayout.getRecyclerView().getLayoutParams();
+        assertEquals(expectedMargin, lp.topMargin);
+    }
+
+    @Test
+    @SmallTest
+    public void testSetPinnedTabsSeparatorVisible_False() {
+        View separator = mRailLayout.getPinnedTabsSeparatorView();
+        assertNotNull(separator);
+
+        // Turn on first so margin is non-zero.
+        mRailLayout.setPinnedTabsSeparatorVisible(true);
+        assertEquals(View.VISIBLE, separator.getVisibility());
+
+        // Toggle back off.
+        mRailLayout.setPinnedTabsSeparatorVisible(false);
+
+        assertEquals(View.GONE, separator.getVisibility());
+
+        // Verify top margin is reset back to 0.
+        ViewGroup.MarginLayoutParams lp =
+                (ViewGroup.MarginLayoutParams) mRailLayout.getRecyclerView().getLayoutParams();
+        assertEquals(0, lp.topMargin);
     }
 
     private void measureAndLayout(View view, int width, int height) {

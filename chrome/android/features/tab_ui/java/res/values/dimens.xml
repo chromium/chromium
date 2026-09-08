@@ -248,6 +248,10 @@ found in the LICENSE file.
     <dimen name="vertical_tab_pinned_item_margin_bottom">4dp</dimen>
     <dimen name="vertical_tab_pinned_tabs_padding_top">8dp</dimen>
     <dimen name="vertical_tab_pinned_tabs_padding_bottom">4dp</dimen>
+    <dimen name="vertical_tabs_pinned_separator_width">24dp</dimen>
+    <dimen name="vertical_tabs_pinned_separator_height">2dp</dimen>
+    <dimen name="vertical_tabs_pinned_separator_radius">2dp</dimen>
+    <dimen name="vertical_tabs_pinned_separator_margin_vertical">8dp</dimen>
 
     <!-- Dimens for Vertical Tabs New Tab button.-->
     <dimen name="vertical_tabs_footer_button_height">32dp</dimen>

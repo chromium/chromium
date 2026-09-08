@@ -825,6 +825,7 @@ public class VerticalTabListCoordinator {
                                 && tab.getId() == mTabModelSelector.getCurrentTabId()) {
                             mRecyclerView.post(() -> scrollActiveTabIntoView());
                         }
+                        updatePinnedTabsSeparatorVisibility();
                     }
 
                     @Override
@@ -834,16 +835,19 @@ public class VerticalTabListCoordinator {
                             @TabCreationState int creationState,
                             boolean markedForSelection) {
                         updateIncognitoButtonVisibility();
+                        updatePinnedTabsSeparatorVisibility();
                     }
 
                     @Override
                     public void tabRemoved(Tab tab) {
                         updateIncognitoButtonVisibility();
+                        updatePinnedTabsSeparatorVisibility();
                     }
 
                     @Override
                     public void didRemoveTabForClosure(Tab tab) {
                         updateIncognitoButtonVisibility();
+                        updatePinnedTabsSeparatorVisibility();
                     }
 
                     @Override
@@ -1017,6 +1021,7 @@ public class VerticalTabListCoordinator {
         }
         mContainerModel.set(VerticalTabListProperties.COLLAPSE_STATE, railCollapseState);
         updatePinnedLayoutSpanCount();
+        updatePinnedTabsSeparatorVisibility();
         mCollapseController.setRailCollapseStateSupplierValue(railCollapseState);
     }
 
@@ -1202,6 +1207,7 @@ public class VerticalTabListCoordinator {
                 !IncognitoUtils.shouldOpenIncognitoAsWindow() && tabModel.isIncognitoBranded();
         mContainerModel.set(VerticalTabListProperties.IS_INCOGNITO, isIncognito);
         updateIncognitoButtonVisibility();
+        updatePinnedTabsSeparatorVisibility();
     }
 
     private void handleNewTabButtonClick() {
@@ -1247,6 +1253,7 @@ public class VerticalTabListCoordinator {
             mPinnedTabsRecyclerView.setVisibility(View.VISIBLE);
         }
         updatePinnedLayoutSpanCount();
+        updatePinnedTabsSeparatorVisibility();
     }
 
     private void setupItemTouchHelper(
@@ -2423,6 +2430,23 @@ public class VerticalTabListCoordinator {
         boolean isRtl = LocalizationUtils.isLayoutRtl();
         outRect.left = isRtl ? right : left;
         outRect.right = isRtl ? left : right;
+    }
+
+    // Only show the separator if 1. The rail is collapsed, 2. The rail contains pinned tabs, and 3.
+    // The rail contains regular tabs (a tab group cannot exist without at least one regular tab).
+    private void updatePinnedTabsSeparatorVisibility() {
+        boolean isCollapsed =
+                mContainerModel != null
+                        && mContainerModel.get(VerticalTabListProperties.COLLAPSE_STATE)
+                                == RailCollapseState.COLLAPSED;
+
+        TabModel model = mTabModelSelector.getCurrentModel();
+        int pinnedCount = model != null ? model.getPinnedTabsCount() : 0;
+        int totalCount = model != null ? model.getCount() : 0;
+        int regularCount = totalCount - pinnedCount;
+        boolean shouldShow = isCollapsed && pinnedCount > 0 && regularCount > 0;
+
+        mContainerView.setPinnedTabsSeparatorVisible(shouldShow);
     }
 
     @Nullable TabStripContextMenuCoordinator getTabStripContextMenuCoordinatorForTesting() {
