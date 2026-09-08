@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/collected_cookies_infobar_delegate.h"
 #include "chrome/browser/ui/omnibox/alternate_nav_infobar_delegate.h"
 #include "chrome/browser/ui/page_info/page_info_infobar_delegate.h"
+#include "chrome/browser/ui/startup/bad_flags_prompt.h"
 #include "chrome/browser/ui/startup/google_api_keys_infobar_delegate.h"
 #include "chrome/browser/ui/startup/obsolete_system_infobar_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -57,6 +58,7 @@
 #include "content/public/common/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "sandbox/policy/switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -124,6 +126,7 @@ struct TriggerRequirements {
 TriggerRequirements RequirementsFor(InfoBarType type) {
   switch (type) {
     case InfoBarType::kAlternateNav:
+    case InfoBarType::kBadFlags:
     case InfoBarType::kCollectedCookies:
     case InfoBarType::kDevTools:
     case InfoBarType::kDevToolsSharedProcess:
@@ -195,6 +198,9 @@ void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
               "The Alternate Nav infobar is shown when a user searches for a "
               "term they may have meant to navigate to.");
   }
+  add_entry(InfoBarType::kBadFlags, "Bad Flags",
+            "The Bad Flags infobar warns users that they are running Chrome "
+            "with an unsupported command-line flag.");
 #if BUILDFLAG(CHROME_FOR_TESTING)
   add_entry(InfoBarType::kChromeForTesting, "Chrome for Testing",
             "The Chrome for Testing infobar warns users that this version is "
@@ -341,6 +347,11 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
 
       AlternateNavInfoBarDelegate::CreateForOmniboxNavigation(
           web_contents, u"test", match, GURL("https://youtube.com/"));
+      return true;
+    }
+    case InfoBarType::kBadFlags: {
+      ShowBadFlagsInfoBar(web_contents, IDS_BAD_FLAGS_WARNING_MESSAGE,
+                          sandbox::policy::switches::kNoSandbox);
       return true;
     }
 #if BUILDFLAG(CHROME_FOR_TESTING)

@@ -73,6 +73,7 @@ source_set("impl") {
     "//components/infobars/content",
     "//components/infobars/core",
     "//content/public/browser",
+    "//sandbox/policy",
   ]
 
   if (is_win && is_chrome_branded) {
