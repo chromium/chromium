@@ -8,8 +8,7 @@ import type {SegmentedButtonElement} from './segmented_button.js';
 
 export function getHtml(this: SegmentedButtonElement) {
   return html`
-<cr-radio-group
-    .selected="${this.selected}"
+<cr-radio-group .selected="${this.selected}"
     @selected-changed="${this.onSelectedChanged_}"
     selectable-elements="segmented-button-option"
     aria-label="${this.groupAriaLabel}">

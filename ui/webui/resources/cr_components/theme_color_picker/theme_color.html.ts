@@ -10,13 +10,10 @@ export function getHtml(this: ThemeColorElement) {
   return html`
 <cr-theme-color-check-mark-wrapper .checked="${this.checked}">
   <svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"
-      xmlns:xlink="http://www.w3.org/1999/xlink">
-    <rect id="foreground" x="0" y="0" width="50" height="50">
-    </rect>
-    <rect id="background" x="0" y="25" width="50" height="25">
-    </rect>
-    <rect id="base" x="25" y="25" width="25" height="25">
-    </rect>
+      xlink="http://www.w3.org/1999/xlink">
+    <rect id="foreground" x="0" y="0" width="50" height="50"></rect>
+    <rect id="background" x="0" y="25" width="50" height="25"></rect>
+    <rect id="base" x="25" y="25" width="25" height="25"></rect>
   </svg>
   <slot></slot>
 </cr-theme-color-check-mark-wrapper>`;

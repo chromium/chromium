@@ -9,9 +9,8 @@ import type {CrIconsetElement} from './cr_iconset.js';
 export function getHtml(this: CrIconsetElement) {
   return html`
 <svg id="baseSvg" xmlns="http://www.w3.org/2000/svg"
-     viewBox="0 0 ${this.size} ${this.size}"
-     preserveAspectRatio="xMidYMid meet" focusable="false">
- </svg>
-<slot></slot>
-`;
+    viewBox="0 0 ${this.size} ${this.size}" preserveAspectRatio="xMidYMid meet"
+    focusable="false">
+</svg>
+<slot></slot>`;
 }

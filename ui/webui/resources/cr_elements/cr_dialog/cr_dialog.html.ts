@@ -14,7 +14,7 @@ export function getHtml(this: CrDialogElement) {
     aria-labelledby="title"
     aria-description="${this.ariaDescriptionText || nothing}"
     closedby="${this.noCancel ? 'none' : nothing}">
-<!-- This wrapper is necessary, such that the "pulse" animation is not
+  <!-- This wrapper is necessary, such that the "pulse" animation is not
     erroneously played when the user clicks on the outer-most scrollbar. -->
   <div id="content-wrapper" part="wrapper">
     <div class="top-container">
@@ -24,11 +24,10 @@ export function getHtml(this: CrDialogElement) {
       ${this.showCloseButton ? html`
         <cr-icon-button id="close" class="icon-clear"
             aria-label="${this.closeText || nothing}"
-            title="${this.closeText || nothing}"
-            @click="${this.onCloseClick_}"
+            title="${this.closeText || nothing}" @click="${this.onCloseClick_}"
             @keypress="${this.onCloseKeypress_}">
         </cr-icon-button>
-       ` : ''}
+      ` : ''}
     </div>
     <slot name="header"></slot>
     <div class="body-container cr-scrollable" id="container"

@@ -15,35 +15,37 @@ export function getHtml(this: MostVisitedElement) {
             --row-count: ${this.rowCount_};">
   ${this.tiles_.map((item, index) => html`
     <div class="tile" ?query-tile="${item.isQueryTile}"
-      ?hidden="${this.isHidden_(index)}"
-      title="${item.title}" @dragstart="${this.onDragstart_}"
-      @touchstart="${this.onTouchstart_}" @click="${this.onTileClick_}"
-      @mouseenter="${this.onTileMouseenter_}"
-      @mouseleave="${this.onTileMouseleave_}"
-      @mousedown="${this.onTileMousedown_}" @keydown="${this.onTileKeydown_}"
-      draggable="${!this.nonEditable}" data-index="${index}">
-      <a href="${item.url}" aria-label="${item.title}"
-          draggable="false">
-      </a>
+        ?hidden="${this.isHidden_(index)}" title="${item.title}"
+        @dragstart="${this.onDragstart_}" @touchstart="${this.onTouchstart_}"
+        @click="${this.onTileClick_}" @mouseenter="${this.onTileMouseenter_}"
+        @mouseleave="${this.onTileMouseleave_}"
+        @mousedown="${this.onTileMousedown_}" @keydown="${this.onTileKeydown_}"
+        draggable="${!this.nonEditable}" data-index="${index}">
+      <a href="${item.url}" aria-label="${item.title}" draggable="false"></a>
       <cr-icon-button id="actionMenuButton" class="icon-more-vert"
           title="${this.getMoreActionText_(item.title)}"
-          @click="${this.onTileActionButtonClick_}" tabindex="0"
-          ?hidden="${this.nonEditable || (!this.customLinksEnabled_ &&
-            !this.isFromEnterpriseShortcut_(item.source))}"
-          data-index="${index}"></cr-icon-button>
+          @click="${this.onTileActionButtonClick_}" tabindex="0" ?hidden="${
+              this.nonEditable ||
+                  (!this.customLinksEnabled_ &&
+                   !this.isFromEnterpriseShortcut_(item.source))}"
+          data-index="${index}">
+      </cr-icon-button>
       <cr-icon-button id="removeButton" class="icon-clear"
           title="${this.getRemoveButtonText_(item.title)}"
-          @click="${this.onTileRemoveButtonClick_}" tabindex="0"
-          ?hidden="${this.nonEditable || (this.customLinksEnabled_ ||
-            this.isFromEnterpriseShortcut_(item.source))}"
-          data-index="${index}"></cr-icon-button>
+          @click="${this.onTileRemoveButtonClick_}" tabindex="0" ?hidden="${
+              this.nonEditable ||
+                  (this.customLinksEnabled_ ||
+                   this.isFromEnterpriseShortcut_(item.source))}"
+          data-index="${index}">
+      </cr-icon-button>
       <div class="tile-icon">
         <img src="${this.getFaviconUrl_(item.url)}" draggable="false"
-            ?hidden="${item.isQueryTile}" alt=""></img>
+            ?hidden="${item.isQueryTile}" alt="">
         <div class="query-tile-icon" draggable="false"
-            ?hidden="${!item.isQueryTile}"></div>
+            ?hidden="${!item.isQueryTile}">
+        </div>
         <div class="managed-tile-icon"
-          ?hidden="${!this.isFromEnterpriseShortcut_(item.source)}">
+            ?hidden="${!this.isFromEnterpriseShortcut_(item.source)}">
           <cr-policy-indicator indicator-type="userPolicy">
           </cr-policy-indicator>
         </div>
@@ -68,8 +70,8 @@ export function getHtml(this: MostVisitedElement) {
   <div>
     <cr-button id="showMore" tabindex="0" @click="${this.onShowMoreClick_}"
         ?hidden="${!this.showShowMore_}" @keydown="${this.onShowMoreKeydown_}"
-        aria-label="${this.i18n('showMore')}"
-        title="${this.i18n('showMore')}" noink>
+        aria-label="${this.i18n('showMore')}" title="${this.i18n('showMore')}"
+        noink>
       <div class="tile-icon tile-icon-container">
         <div id="showMoreIcon" draggable="false"></div>
       </div>
@@ -79,8 +81,8 @@ export function getHtml(this: MostVisitedElement) {
     </cr-button>
     <cr-button id="showLess" tabindex="0" @click="${this.onShowLessClick_}"
         ?hidden="${!this.showShowLess_}" @keydown="${this.onShowLessKeydown_}"
-        aria-label="${this.i18n('showLess')}"
-        title="${this.i18n('showLess')}" noink>
+        aria-label="${this.i18n('showLess')}" title="${this.i18n('showLess')}"
+        noink>
       <div class="tile-icon tile-icon-container">
         <div id="showLessIcon" draggable="false"></div>
       </div>
@@ -99,11 +101,11 @@ export function getHtml(this: MostVisitedElement) {
           <span class="secondary">
             ${this.i18n('enterpriseShortcutSubtitle')}
           </span>
-        </div>` : ''}
+        </div>
+      ` : ''}
       <cr-input id="dialogInputName" label="${this.i18n('nameField')}"
           .value="${this.dialogTileTitle_}"
-          ?readonly="${this.dialogIsReadonly_}"
-          spellcheck="false" autofocus
+          ?readonly="${this.dialogIsReadonly_}" spellcheck="false" autofocus
           @value-changed="${this.onDialogTileNameValueChanged_}">
       </cr-input>
       <cr-input id="dialogInputUrl" label="${this.i18n('urlField')}"
@@ -111,9 +113,9 @@ export function getHtml(this: MostVisitedElement) {
           ?invalid="${this.dialogTileUrlInvalid_}"
           .errorMessage="${this.dialogTileUrlError_}" spellcheck="false"
           type="url" @blur="${this.onDialogTileUrlBlur_}"
-          @value-changed="${this.onDialogTileUrlValueChanged_}"
-          ?readonly="${this.dialogIsReadonly_ ||
-            this.isFromEnterpriseShortcut_(this.dialogSource_)}">
+          @value-changed="${this.onDialogTileUrlValueChanged_}" ?readonly="${
+              this.dialogIsReadonly_ ||
+                  this.isFromEnterpriseShortcut_(this.dialogSource_)}">
       </cr-input>
     </div>
     <div slot="button-container">
@@ -144,8 +146,7 @@ export function getHtml(this: MostVisitedElement) {
       @click="${this.onUndoClick_}">
     ${this.i18n('undo')}
   </cr-button>
-  <cr-button id="restore"
-      aria-label="${this.getRestoreButtonText_()}"
+  <cr-button id="restore" aria-label="${this.getRestoreButtonText_()}"
       @click="${this.onRestoreDefaultsClick_}">
     ${this.getRestoreButtonText_()}
   </cr-button>

@@ -8,8 +8,8 @@ import type {CrTooltipElement} from './cr_tooltip.js';
 
 export function getHtml(this: CrTooltipElement) {
   return html`
-    <div id="tooltip" hidden part="tooltip">
-      <slot></slot>
-    </div>
-    <div id="tooltipOffsetFiller"></div>`;
+<div id="tooltip" hidden part="tooltip">
+  <slot></slot>
+</div>
+<div id="tooltipOffsetFiller"></div>`;
 }

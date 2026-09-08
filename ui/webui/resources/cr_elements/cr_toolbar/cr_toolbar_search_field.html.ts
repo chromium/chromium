@@ -13,37 +13,35 @@ export function getHtml(this: CrToolbarSearchFieldElement) {
 <div id="stateBackground"></div>
 <div id="content">
   ${this.shouldShowSpinner_() ? html`
-    <div class="spinner"></div>` : ''}
-    <cr-icon-button id="icon" iron-icon="${this.iconOverride || 'cr:search'}"
-        title="${this.label}" tabindex="${this.getIconTabIndex_()}"
-        aria-hidden="${this.getIconAriaHidden_()}" suppress-rtl-flip
-        @click="${this.onSearchIconClick_}" ?disabled="${this.disabled}">
+    <div class="spinner"></div>
+  ` : ''}
+  <cr-icon-button id="icon" iron-icon="${this.iconOverride || 'cr:search'}"
+      title="${this.label}" tabindex="${this.getIconTabIndex_()}"
+      aria-hidden="${this.getIconAriaHidden_()}" suppress-rtl-flip
+      @click="${this.onSearchIconClick_}" ?disabled="${this.disabled}">
   </cr-icon-button>
   <div id="searchTerm">
     <label id="prompt" for="searchInput" aria-hidden="true">
       ${this.label}
     </label>
-    <input id="searchInput"
-        aria-labelledby="prompt"
-        aria-description="${this.inputAriaDescription}"
-        autocapitalize="off"
-        autocomplete="off"
-        type="search"
+    <input id="searchInput" aria-labelledby="prompt"
+        aria-description="${this.inputAriaDescription}" autocapitalize="off"
+        autocomplete="off" type="search"
         @beforeinput="${this.onSearchTermNativeBeforeinput}"
         @input="${this.onSearchTermNativeInput}"
         @search="${this.onSearchTermSearch}"
-        @keydown="${this.onSearchTermKeydown_}"
-        @focus="${this.onInputFocus_}"
-        @blur="${this.onInputBlur_}"
-        ?autofocus="${this.autofocus}"
-        spellcheck="false"
-        ?disabled="${this.disabled}">
+        @keydown="${this.onSearchTermKeydown_}" @focus="${this.onInputFocus_}"
+        @blur="${this.onInputBlur_}" ?autofocus="${this.autofocus}"
+        spellcheck="false" ?disabled="${this.disabled}">
   </div>
   ${this.hasSearchText ? html`
     <cr-icon-button id="clearSearch" iron-icon="cr:cancel-filled"
         title="${this.clearLabel}" @click="${this.onClearSearchClick_}"
-        ?disabled="${this.disabled}"></cr-icon-button>` :
-    html`<slot name="suffixElement"></slot>`}
+        ?disabled="${this.disabled}">
+    </cr-icon-button>
+  ` : html`
+    <slot name="suffixElement"></slot>
+  `}
 </div>`;
   // clang-format on
 }

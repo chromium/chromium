@@ -22,7 +22,7 @@ export function getHtml(this: FilterChipsElement) {
   </option>
 </select>
 
-<hr ?hidden="${!this.enableShowResultsByGroupOption}"></hr>
+<hr ?hidden="${!this.enableShowResultsByGroupOption}">
 
 <div id="suggestions">
   ${this.suggestions_.map((item, index) => html`

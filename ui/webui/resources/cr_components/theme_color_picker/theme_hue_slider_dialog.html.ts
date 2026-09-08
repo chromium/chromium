@@ -15,18 +15,17 @@ export function getHtml(this: ThemeHueSliderDialogElement) {
       <h2 id="title">${this.i18n('hueSliderTitle')}</h2>
       <slot name="headerSuffix"></slot>
       <cr-icon-button id="close" class="icon-clear"
-          aria-label="${this.i18n('close')}"
-          title="${this.i18n('close')}"
+          aria-label="${this.i18n('close')}" title="${this.i18n('close')}"
           @click="${this.onHideClick_}">
       </cr-icon-button>
     </div>
     <cr-slider id="slider" .min="${this.minHue_}" .max="${this.maxHue_}"
         .value="${this.selectedHue}"
         @cr-slider-value-changed="${this.onCrSliderValueChanged_}"
-        @pointerup="${this.onSliderPointerup_}"
-        @keyup="${this.onSliderKeyup_}"
+        @pointerup="${this.onSliderPointerup_}" @keyup="${this.onSliderKeyup_}"
         .style="--hue-gradient_: ${this.hueGradient_}; --knob-hue_: ${this.knobHue_}"
-        aria-label="${this.i18n('hueSliderAriaLabel', this.minHue_, this.maxHue_)}">
+        aria-label="${
+            this.i18n('hueSliderAriaLabel', this.minHue_, this.maxHue_)}">
     </cr-slider>
   </div>
 </dialog>`;

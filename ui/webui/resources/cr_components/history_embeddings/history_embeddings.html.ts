@@ -13,9 +13,11 @@ ${!this.enableAnswers_ ? html`
   <div id="cardWithoutAnswers" class="card">
     <h2 class="heading results-heading">
       <cr-icon
-          icon="${this.webuiRoundedIconsEnabled_
-              ? 'history-embeddings:astrophotography-mode'
-              : 'history-embeddings:heading-old'}"></cr-icon>
+          icon="${
+              this.webuiRoundedIconsEnabled_ ?
+                  'history-embeddings:astrophotography-mode' :
+                  'history-embeddings:heading-old'}">
+      </cr-icon>
       ${this.getHeadingText_()}
     </h2>
 
@@ -25,8 +27,12 @@ ${!this.enableAnswers_ ? html`
           <svg width="482" height="40">
             <clipPath>
               <rect width="40" height="40" rx="8" ry="8"></rect>
-              <rect x="55" y="4" width="calc(100% - 55px)" height="14" rx="4" ry="4"></rect>
-              <rect x="55" y="24" width="calc(78% - 55px)" height="14" rx="4" ry="4"></rect>
+              <rect x="55" y="4" width="calc(100% - 55px)" height="14" rx="4"
+                  ry="4">
+              </rect>
+              <rect x="55" y="24" width="calc(78% - 55px)" height="14" rx="4"
+                  ry="4">
+              </rect>
             </clipPath>
           </svg>
         </cr-loading-gradient>
@@ -38,10 +44,9 @@ ${!this.enableAnswers_ ? html`
             <cr-url-list-item url="${item.url}" title="${item.title}"
                 description="${item.urlForDisplay}"
                 @click="${this.onResultClick_}"
-                @auxclick="${this.onResultAuxclick_}"
-                data-index="${index}"
-                @contextmenu="${this.onResultContextmenu_}"
-                as-anchor as-anchor-target="_blank" always-show-suffix>
+                @auxclick="${this.onResultAuxclick_}" data-index="${index}"
+                @contextmenu="${this.onResultContextmenu_}" as-anchor
+                as-anchor-target="_blank" always-show-suffix>
               <span class="time" slot="suffix">${this.getDateTime_(item)}</span>
               <cr-icon-button slot="suffix" iron-icon="cr:more-vert"
                   data-index="${index}" @click="${this.onMoreActionsClick_}"
@@ -60,9 +65,9 @@ ${!this.enableAnswers_ ? html`
 
         <div class="footer">
           <div>${this.i18n('historyEmbeddingsFooter')}</div>
-          <cr-feedback-buttons
-              selected-option="${this.feedbackState_}"
-              @selected-option-changed="${this.onFeedbackSelectedOptionChanged_}">
+          <cr-feedback-buttons selected-option="${this.feedbackState_}"
+              @selected-option-changed="${
+                  this.onFeedbackSelectedOptionChanged_}">
           </cr-feedback-buttons>
         </div>
       </div>
@@ -78,7 +83,8 @@ ${this.enableAnswers_ ? html`
         ${this.loadingAnswer_ ? html`
           <div class="loading loading-answer">
             <cr-loading-gradient>
-              <svg width="100%" height="72" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg width="100%" height="72" fill="none"
+                  xmlns="http://www.w3.org/2000/svg">
                 <clipPath>
                   <rect width="100%" height="12" rx="4"></rect>
                   <rect y="20" width="85%" height="12" rx="4"></rect>
@@ -95,16 +101,16 @@ ${this.enableAnswers_ ? html`
         `}
         ${this.answerSource_ ? html`
           <div class="answer-source">
-            <a class="answer-link"
-                href="${this.getAnswerSourceUrl_()}" target="_blank"
-                @click="${this.onAnswerLinkClick_}"
+            <a class="answer-link" href="${this.getAnswerSourceUrl_()}"
+                target="_blank" @click="${this.onAnswerLinkClick_}"
                 @auxclick="${this.onAnswerLinkAuxclick_}"
                 @contextmenu="${this.onAnswerLinkContextmenu_}">
               <div class="favicon"
-                  .style="background-image: ${this.getFavicon_(this.answerSource_)}"></div>
+                  .style="background-image: ${this.getFavicon_(this.answerSource_)}">
+              </div>
               <div class="result-url">${this.answerSource_.urlForDisplay}</div>
             </a>
-            &bull;
+            •
             <div class="time">${this.getAnswerDateTime_()}</div>
           </div>
         ` : ''}
@@ -118,8 +124,12 @@ ${this.enableAnswers_ ? html`
           <svg width="100%" height="40">
             <clipPath>
               <rect width="40" height="40" rx="8" ry="8"></rect>
-              <rect x="55" y="4" width="calc(100% - 55px)" height="14" rx="4" ry="4"></rect>
-              <rect x="55" y="24" width="calc(78% - 55px)" height="14" rx="4" ry="4"></rect>
+              <rect x="55" y="4" width="calc(100% - 55px)" height="14" rx="4"
+                  ry="4">
+              </rect>
+              <rect x="55" y="24" width="calc(78% - 55px)" height="14" rx="4"
+                  ry="4">
+              </rect>
             </clipPath>
           </svg>
         </cr-loading-gradient>
@@ -129,21 +139,24 @@ ${this.enableAnswers_ ? html`
         ${this.searchResult_?.items.map((item, index) => html`
           ${this.enableImages_ ? html`
             <a class="result-item" href="${item.url}" target="_blank"
-                @click="${this.onResultClick_}" @auxclick="${this.onResultAuxclick_}"
-                data-index="${index}" @contextmenu="${this.onResultContextmenu_}">
+                @click="${this.onResultClick_}"
+                @auxclick="${this.onResultAuxclick_}" data-index="${index}"
+                @contextmenu="${this.onResultContextmenu_}">
               <div class="result-image">
                 <cr-history-embeddings-result-image
                     ?in-side-panel="${this.inSidePanel}"
                     .searchResult="${item}">
                 </cr-history-embeddings-result-image>
                 <div class="favicon"
-                    .style="background-image: ${this.getFavicon_(item)}"></div>
+                    .style="background-image: ${this.getFavicon_(item)}">
+                </div>
               </div>
               <div class="result-metadata">
                 <div class="result-title">${item.title}</div>
                 <div class="result-url-and-favicon">
                   <div class="favicon"
-                      .style="background-image: ${this.getFavicon_(item)}"></div>
+                      .style="background-image: ${this.getFavicon_(item)}">
+                  </div>
                   <div class="result-url">${item.urlForDisplay}</div>
                 </div>
               </div>
@@ -157,10 +170,11 @@ ${this.enableAnswers_ ? html`
           ` : html`
             <cr-url-list-item url="${item.url}" title="${item.title}"
                 description="${item.urlForDisplay}"
-                @click="${this.onResultClick_}" @auxclick="${this.onResultAuxclick_}"
+                @click="${this.onResultClick_}"
+                @auxclick="${this.onResultAuxclick_}"
                 @contextmenu="${this.onResultContextmenu_}"
-                data-index="${index}"
-                as-anchor as-anchor-target="_blank" always-show-suffix>
+                data-index="${index}" as-anchor as-anchor-target="_blank"
+                always-show-suffix>
               <span class="time" slot="suffix">${this.getDateTime_(item)}</span>
               <cr-icon-button slot="suffix" iron-icon="cr:more-vert"
                   data-index="${index}" @click="${this.onMoreActionsClick_}"
@@ -181,26 +195,27 @@ ${this.enableAnswers_ ? html`
   </div>
   <div class="footer">
     <div>${this.i18n('historyEmbeddingsFooter')}</div>
-    <cr-feedback-buttons
-        selected-option="${this.feedbackState_}"
+    <cr-feedback-buttons selected-option="${this.feedbackState_}"
         @selected-option-changed="${this.onFeedbackSelectedOptionChanged_}">
     </cr-feedback-buttons>
   </div>
 ` : ''}
 
-<cr-lazy-render-lit id="sharedMenu" .template="${() => html`
-  <cr-action-menu role-description="${this.i18n('actionMenuDescription')}">
-    ${this.showMoreFromSiteMenuOption ? html`
-      <button id="moreFromSiteOption" class="dropdown-item"
-          @click="${this.onMoreFromSiteClick_}">
-        ${this.i18n('moreFromSite')}
-      </button>
-    ` : ''}
-    <button id="removeFromHistoryOption"
-        class="dropdown-item" @click="${this.onRemoveFromHistoryClick_}">
-      ${this.i18n('removeFromHistory')}
-    </button>
-  </cr-action-menu>`}">
+<cr-lazy-render-lit id="sharedMenu"
+    .template="${() => html`
+      <cr-action-menu role-description="${this.i18n('actionMenuDescription')}">
+        ${this.showMoreFromSiteMenuOption ? html`
+          <button id="moreFromSiteOption" class="dropdown-item"
+              @click="${this.onMoreFromSiteClick_}">
+            ${this.i18n('moreFromSite')}
+          </button>
+        ` : ''}
+        <button id="removeFromHistoryOption" class="dropdown-item"
+            @click="${this.onRemoveFromHistoryClick_}">
+          ${this.i18n('removeFromHistory')}
+        </button>
+      </cr-action-menu>
+    `}">
 </cr-lazy-render-lit>
 <!--_html_template_end_-->`;
   // clang-format on

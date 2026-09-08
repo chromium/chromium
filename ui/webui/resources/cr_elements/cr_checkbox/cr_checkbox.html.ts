@@ -16,10 +16,11 @@ export function getHtml(this: CrCheckboxElement) {
     aria-labelledby="${this.ariaLabelOverride ? nothing : 'labelContainer'}"
     aria-describedby="ariaDescription">
   <!-- Inline SVG paints faster than loading it from a separate file. -->
-  <svg id="checkmark" width="12" height="12" viewBox="0 0 12 12"
-      fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg id="checkmark" width="12" height="12" viewBox="0 0 12 12" fill="none"
+      xmlns="http://www.w3.org/2000/svg">
     <path fill-rule="evenodd" clip-rule="evenodd"
         d="m10.192 2.121-6.01 6.01-2.121-2.12L1 7.07l2.121 2.121.707.707.354.354 7.071-7.071-1.06-1.06Z">
+    </path>
   </svg>
   <div id="hover-layer"></div>
 </div>

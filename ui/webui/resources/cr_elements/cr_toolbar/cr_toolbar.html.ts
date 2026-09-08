@@ -12,11 +12,11 @@ export function getHtml(this: CrToolbarElement) {
 <div id="leftContent">
   <div id="leftSpacer">
     ${this.showMenu ? html`
-      <cr-icon-button id="menuButton" class="no-overlap"
-          iron-icon="cr20:menu" @click="${this.onMenuClick_}"
-          aria-label="${this.menuLabel || nothing}"
-          title="${this.menuLabel}">
-      </cr-icon-button>` : ''}
+      <cr-icon-button id="menuButton" class="no-overlap" iron-icon="cr20:menu"
+          @click="${this.onMenuClick_}"
+          aria-label="${this.menuLabel || nothing}" title="${this.menuLabel}">
+      </cr-icon-button>
+    ` : ''}
     <slot name="product-logo">
       <picture>
         <source media="(prefers-color-scheme: dark)"

@@ -9,10 +9,12 @@ import type {CrToolbarSelectionOverlayElement} from './cr_toolbar_selection_over
 export function getHtml(this: CrToolbarSelectionOverlayElement) {
   return html`
 <div id="overlay-content">
-  <cr-icon-button part="clearIcon"
-      title="${this.cancelLabel}" iron-icon="cr:close"
-      @click="${this.onClearSelectionClick_}"></cr-icon-button>
+  <cr-icon-button part="clearIcon" title="${this.cancelLabel}"
+      iron-icon="cr:close" @click="${this.onClearSelectionClick_}">
+  </cr-icon-button>
   <div id="number-selected">${this.selectionLabel}</div>
-  <div id="slot"><slot></slot></div>
+  <div id="slot">
+    <slot></slot>
+  </div>
 </div>`;
 }

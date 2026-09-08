@@ -19,9 +19,8 @@ export function getHtml(this: CrInputElement) {
       <div id="inner-input-content">
         <slot name="inline-prefix"></slot>
         <input id="input" ?disabled="${this.disabled}"
-            ?autofocus="${this.autofocus}"
-            .value="${this.internalValue_}" tabindex="${this.inputTabindex}"
-            .type="${this.type}"
+            ?autofocus="${this.autofocus}" .value="${this.internalValue_}"
+            tabindex="${this.inputTabindex}" .type="${this.type}"
             ?readonly="${this.readonly}" maxlength="${this.maxlength}"
             pattern="${this.pattern || nothing}" ?required="${this.required}"
             minlength="${this.minlength}" inputmode="${this.inputmode}"
@@ -31,11 +30,9 @@ export function getHtml(this: CrInputElement) {
             aria-label="${this.getAriaLabel_()}"
             aria-invalid="${this.getAriaInvalid_()}"
             .max="${this.max || nothing}" .min="${this.min || nothing}"
-            @focus="${this.onInputFocus_}"
-            @blur="${this.onInputBlur_}" @change="${this.onInputChange_}"
-            @input="${this.onInput_}"
-            part="input"
-            autocomplete="off">
+            @focus="${this.onInputFocus_}" @blur="${this.onInputBlur_}"
+            @change="${this.onInputChange_}" @input="${this.onInput_}"
+            part="input" autocomplete="off">
         <slot name="inline-suffix"></slot>
       </div>
     </div>

@@ -8,7 +8,7 @@ import type {CrProgressElement} from './cr_progress.js';
 
 export function getHtml(this: CrProgressElement) {
   return html`
-    <div id="progressContainer">
-      <div id="primaryProgress"></div>
-    </div>`;
+<div id="progressContainer">
+  <div id="primaryProgress"></div>
+</div>`;
 }

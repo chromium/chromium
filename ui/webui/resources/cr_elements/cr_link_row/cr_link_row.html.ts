@@ -9,9 +9,10 @@ import type {CrLinkRowElement} from './cr_link_row.js';
 export function getHtml(this: CrLinkRowElement) {
   // clang-format off
   return html`
-    ${this.startIcon ? html`
-<cr-icon id="startIcon" .icon="${this.startIcon}" aria-hidden="true"></cr-icon>
-    `: ''}
+${this.startIcon ? html`
+  <cr-icon id="startIcon" .icon="${this.startIcon}" aria-hidden="true">
+  </cr-icon>
+` : ''}
 <div id="labelWrapper" ?hidden="${this.shouldHideLabelWrapper_()}">
   <div id="label" aria-hidden="${!this.ariaShowLabel}">
     ${this.label}
@@ -27,10 +28,10 @@ export function getHtml(this: CrLinkRowElement) {
 <div id="buttonAriaDescription" aria-hidden="true">
   ${this.getButtonAriaDescription_()}
 </div>
-<cr-icon-button id="icon" iron-icon="${this.getIcon_()}" role="link"
-    part="icon" aria-roledescription="${this.roleDescription || nothing}"
-    aria-describedby="buttonAriaDescription"
-    aria-labelledby="label subLabel" ?disabled="${this.disabled}">
+<cr-icon-button id="icon" iron-icon="${this.getIcon_()}" role="link" part="icon"
+    aria-roledescription="${this.roleDescription || nothing}"
+    aria-describedby="buttonAriaDescription" aria-labelledby="label subLabel"
+    ?disabled="${this.disabled}">
 </cr-icon-button>`;
   // clang-format on
 }

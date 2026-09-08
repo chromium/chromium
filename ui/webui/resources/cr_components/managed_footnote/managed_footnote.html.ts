@@ -7,10 +7,9 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ManagedFootnoteElement} from './managed_footnote.js';
 
 export function getHtml(this: ManagedFootnoteElement) {
-  return html`${
-      this.isManaged_ ? html`
+  return html`
+${this.isManaged_ ? html`
   <cr-icon .icon="${this.managedByIcon_}"></cr-icon>
   <div id="content" .innerHTML="${this.getManagementString_()}"></div>
-` :
-                        ''}`;
+` : ''}`;
 }

@@ -9,13 +9,14 @@ import type {HelpBubbleElement} from './help_bubble.js';
 export function getHtml(this: HelpBubbleElement) {
   // clang-format off
   return html`
-<link rel="stylesheet" href="chrome://theme/colors.css?sets=ui,chrome&shadow_host=true">
+<link rel="stylesheet"
+    href="chrome://theme/colors.css?sets=ui,chrome&shadow_host=true">
 <div class="help-bubble" role="alertdialog" aria-modal="true"
     aria-labelledby="title" aria-describedby="body" aria-live="assertive"
     @keydown="${this.onKeydown_}" @click="${this.onHelpBubbleClick_}">
   <div id="topContainer">
-    <div id="bodyIcon" ?hidden="${!this.shouldShowBodyIcon_()}"
-        role="image" aria-label="${this.bodyIconAltText}">
+    <div id="bodyIcon" ?hidden="${!this.shouldShowBodyIcon_()}" role="image"
+        aria-label="${this.bodyIconAltText}">
       <cr-icon icon="iph:${this.bodyIconName}"></cr-icon>
     </div>
     <div id="progress" ?hidden="${!this.progress}" role="progressbar"
@@ -23,7 +24,8 @@ export function getHtml(this: HelpBubbleElement) {
         aria-valuemin="1"
         aria-valuemax="${this.progress ? this.progress.total : nothing}">
       ${this.progressData_.map((_item, index) => html`
-        <div class="${this.getProgressClass_(index)}"></div>`)}
+        <div class="${this.getProgressClass_(index)}"></div>
+      `)}
     </div>
     <h1 id="title" ?hidden="${!this.shouldShowTitleInTopContainer_()}">
       ${this.titleText}
@@ -38,8 +40,7 @@ export function getHtml(this: HelpBubbleElement) {
     </cr-icon-button>
   </div>
   <div id="main" ?hidden="${!this.shouldShowBodyInMain_()}">
-    <div id="middleRowSpacer" ?hidden="${!this.shouldShowBodyIcon_()}">
-    </div>
+    <div id="middleRowSpacer" ?hidden="${!this.shouldShowBodyIcon_()}"></div>
     <p id="mainBody">${this.bodyText}</p>
   </div>
   <div id="buttons" ?hidden="${!this.buttons.length}">
@@ -47,8 +48,9 @@ export function getHtml(this: HelpBubbleElement) {
       <cr-button id="${this.getButtonId_(item)}"
           tabindex="${this.getButtonTabIndex_(item)}"
           class="${this.getButtonClass_(item.isDefault)}"
-          @click="${this.onButtonClick_}"
-          role="button" aria-label="${item.text}">${item.text}</cr-button>`)}
+          @click="${this.onButtonClick_}" role="button"
+          aria-label="${item.text}">${item.text}</cr-button>
+    `)}
   </div>
   <div id="arrow" class="${this.getArrowClass_()}">
     <div id="inner-arrow"></div>

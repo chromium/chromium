@@ -12,7 +12,9 @@ export function getHtml(this: CrButtonElement) {
 <slot id="prefixIcon" name="prefix-icon"
     @slotchange="${this.onPrefixIconSlotchange_}">
 </slot>
-<span id="content"><slot></slot></span>
+<span id="content">
+  <slot></slot>
+</span>
 <slot id="suffixIcon" name="suffix-icon"
     @slotchange="${this.onSuffixIconSlotchange_}">
 </slot>

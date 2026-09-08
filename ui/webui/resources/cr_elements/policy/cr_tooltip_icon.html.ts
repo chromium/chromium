@@ -11,8 +11,7 @@ export function getHtml(this: CrTooltipIconElement) {
 <cr-icon id="indicator" tabindex="0" aria-label="${this.iconAriaLabel}"
     aria-describedby="tooltip" icon="${this.iconClass}" role="img">
 </cr-icon>
-<cr-tooltip id="tooltip"
-    for="indicator" position="${this.tooltipPosition}"
+<cr-tooltip id="tooltip" for="indicator" position="${this.tooltipPosition}"
     fit-to-visible-bounds part="tooltip">
   <slot name="tooltip-text">${this.tooltipText}</slot>
 </cr-tooltip>`;

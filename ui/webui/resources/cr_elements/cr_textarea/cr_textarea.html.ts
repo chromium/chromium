@@ -15,12 +15,12 @@ export function getHtml(this: CrTextareaElement) {
 <div id="input-container">
   <div id="hover-layer"></div>
   <textarea id="input" ?autofocus="${this.autofocus}" .rows="${this.rows}"
-     .value="${this.internalValue_}" aria-label="${this.label}"
-     @input="${this.onInput_}" @focus="${this.onFocus_}"
-     @blur="${this.onBlur_}" @change="${this.onInputChange_}"
-     ?disabled="${this.disabled}" maxlength="${this.maxlength}"
-     ?readonly="${this.readonly}" ?required="${this.required}"
-     placeholder="${this.placeholder || nothing}">
+      .value="${this.internalValue_}" aria-label="${this.label}"
+      @input="${this.onInput_}" @focus="${this.onFocus_}"
+      @blur="${this.onBlur_}" @change="${this.onInputChange_}"
+      ?disabled="${this.disabled}" maxlength="${this.maxlength}"
+      ?readonly="${this.readonly}" ?required="${this.required}"
+      placeholder="${this.placeholder || nothing}">
   </textarea>
   <div id="underline-base"></div>
   <div id="underline"></div>
