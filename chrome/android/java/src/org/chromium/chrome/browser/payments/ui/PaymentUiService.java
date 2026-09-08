@@ -552,7 +552,7 @@ public class PaymentUiService
                 new SectionInformation(
                         PaymentRequestUi.DataType.PAYMENT_METHODS,
                         /* selection= */ 0,
-                        new ArrayList<>(Arrays.asList(selectedApp)));
+                        new ArrayList<>(Collections.singletonList(selectedApp)));
         assumeNonNull(mPaymentRequestUi)
                 .updateSection(PaymentRequestUi.DataType.PAYMENT_METHODS, mPaymentMethodsSection);
 

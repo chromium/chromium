@@ -135,7 +135,7 @@ public class InstalledWebappBroadcastReceiverTest {
         int id = 23;
         String appName = "App Name";
         GURL url = new GURL("https://www.example.com");
-        Set<GURL> urls = new HashSet<>(Arrays.asList(url));
+        Set<GURL> urls = Collections.singleton(url);
 
         addToRegister(id, appName, urls);
 
@@ -203,7 +203,7 @@ public class InstalledWebappBroadcastReceiverTest {
     public void onDataClear() {
         int id = 23;
         String appName = "App Name";
-        Set<GURL> urls = new HashSet<>(Arrays.asList(new GURL("https://www.example.com")));
+        Set<GURL> urls = Collections.singleton(new GURL("https://www.example.com"));
 
         addToRegister(id, appName, urls);
 
@@ -238,7 +238,7 @@ public class InstalledWebappBroadcastReceiverTest {
         int id = 23;
         String appName = "App Name";
         String scope = "https://www.example.com/scope";
-        Set<GURL> urls = new HashSet<>(Arrays.asList(new GURL(scope)));
+        Set<GURL> urls = Collections.singleton(new GURL(scope));
 
         addToRegister(id, appName, urls);
 

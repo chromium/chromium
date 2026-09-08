@@ -11,7 +11,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.usage_stats.WebsiteEventProtos.Timestamp;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -73,7 +73,7 @@ public class EventTracker {
         mRootPromise.then(
                 (result) -> {
                     List<WebsiteEventProtos.WebsiteEvent> eventsList =
-                            Arrays.asList(getProtoEvent(event));
+                            Collections.singletonList(getProtoEvent(event));
                     mBridge.addEvents(
                             eventsList,
                             (didSucceed) -> {
