@@ -387,7 +387,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prefetch.PrefetchContainer.PrefetchStartedToDomainLookupStarted2.{TriggerTypeAndEagerness}"
-    units="ms" expires_after="2026-11-12">
+    units="ms" expires_after="2027-03-07">
   <owner>yoichio@chromium.org</owner>
   <owner>taiyo@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>

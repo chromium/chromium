@@ -4279,7 +4279,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.SecurityReport.User.Trigger"
-    enum="SecurityReportTrigger" expires_after="2027-01-02">
+    enum="SecurityReportTrigger" expires_after="2027-03-07">
   <owner>xzonghan@chromium.org</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>The source trigger of security signals-only reports</summary>
@@ -4985,7 +4985,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.UserPolicyChromeOS.ChildUser.OAuthTokenError"
-    enum="GoogleServiceAuthError" expires_after="2027-01-03">
+    enum="GoogleServiceAuthError" expires_after="2027-03-07">
   <owner>longbowei@google.com</owner>
   <owner>zhangwenyu@google.com</owner>
   <owner>michaelpg@chromium.org</owner>

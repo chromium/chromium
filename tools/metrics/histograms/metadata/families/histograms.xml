@@ -1195,7 +1195,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="{RequestType}.Status" enum="SupervisedUserProtoFetcherStatus"
-    expires_after="2027-01-03">
+    expires_after="2027-03-07">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>The status of the fetch in calls to {RequestType}.</summary>

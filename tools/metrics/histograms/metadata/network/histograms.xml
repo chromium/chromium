@@ -4906,7 +4906,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.{Technology}.DHCPv4ProvisionDurationMillis"
-    units="ms" expires_after="2026-12-31">
+    units="ms" expires_after="2027-03-07">
   <owner>jiejiang@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>

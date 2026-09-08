@@ -4365,7 +4365,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.EditedAutofilledFieldAtSubmission2.Aggregate"
-    enum="AutofilledFieldUserEditingStatus" expires_after="2027-01-03">
+    enum="AutofilledFieldUserEditingStatus" expires_after="2027-03-07">
   <owner>koerber@google.com</owner>
   <owner>battre@google.com</owner>
   <summary>
@@ -4378,7 +4378,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram name="Autofill.EditedAutofilledFieldAtSubmission2.ByFieldType"
     enum="AutofilledFieldUserEditingStatusByFieldType"
-    expires_after="2027-01-03">
+    expires_after="2027-03-07">
   <owner>koerber@google.com</owner>
   <owner>battre@google.com</owner>
   <summary>

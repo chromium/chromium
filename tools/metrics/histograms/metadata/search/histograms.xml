@@ -605,7 +605,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
 </histogram>
 
 <histogram name="Search.ChoiceScreenProfileInitConditions{Context}{Profile}"
-    enum="SearchEngineChoiceScreenConditions" expires_after="2027-01-03">
+    enum="SearchEngineChoiceScreenConditions" expires_after="2027-03-07">
   <owner>dgn@chromium.org</owner>
   <owner>ljjlee@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>

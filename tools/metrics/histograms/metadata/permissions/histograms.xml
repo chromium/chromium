@@ -1152,7 +1152,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Permissions.PredictionService.{PermissionType}.PostPromptSessionDuration10m"
-    units="ms" expires_after="2027-01-03">
+    units="ms" expires_after="2027-03-07">
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -1207,7 +1207,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Permissions.PredictionService.{PermissionType}.PostPromptSessionDuration5m"
-    units="ms" expires_after="2027-01-03">
+    units="ms" expires_after="2027-03-07">
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -1221,7 +1221,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Permissions.PredictionService.{PermissionType}.PrePromptSessionDuration1h"
-    units="ms" expires_after="2027-01-03">
+    units="ms" expires_after="2027-03-07">
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>

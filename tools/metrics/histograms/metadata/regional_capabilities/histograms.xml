@@ -163,7 +163,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(RegionalCapabilities.FunnelStage.Eligibility) -->
 
 <histogram name="RegionalCapabilities.FunnelStage.Eligibility{Profile}"
-    enum="SearchEngineChoiceScreenConditions" expires_after="2027-01-03">
+    enum="SearchEngineChoiceScreenConditions" expires_after="2027-03-07">
   <owner>dgn@chromium.org</owner>
   <owner>ljjlee@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
@@ -216,7 +216,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(RegionalCapabilities.FunnelStage.Triggering) -->
 
 <histogram name="RegionalCapabilities.FunnelStage.Triggering{Profile}"
-    enum="SearchEngineChoiceScreenConditions" expires_after="2027-01-03">
+    enum="SearchEngineChoiceScreenConditions" expires_after="2027-03-07">
   <owner>dgn@chromium.org</owner>
   <owner>ljjlee@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>

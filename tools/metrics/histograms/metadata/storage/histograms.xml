@@ -290,7 +290,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="IndexedDB.BackendDuration.{Operation}.{IndexedDBBackingStoreType}"
-    units="ms" expires_after="2027-01-03">
+    units="ms" expires_after="2027-03-07">
   <owner>leimy@chromium.org</owner>
   <owner>evanstade@microsoft.com</owner>
   <owner>abhishek.shanthkumar@microsoft.com</owner>
@@ -352,7 +352,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="IndexedDB.BackingStore.{Operation}.{IndexedDBBackingStoreType}"
-    enum="IndexedDbStatusType" expires_after="2027-01-03">
+    enum="IndexedDbStatusType" expires_after="2027-03-07">
   <owner>leimy@chromium.org</owner>
   <owner>evanstade@microsoft.com</owner>
   <owner>abhishek.shanthkumar@microsoft.com</owner>
