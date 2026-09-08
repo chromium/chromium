@@ -905,7 +905,6 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
     const GridSpan& lane_span = item.Span(grid_axis_direction);
 
     const bool is_first_item_in_lane = grid_lane_idx != previous_grid_lane_idx;
-    previous_grid_lane_idx = grid_lane_idx;
 
     // The iterator skips non-start spanner wrappers, so the last item it
     // returns may appear before the physical end of `item_data`.
@@ -1015,13 +1014,13 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
 
       if (fragmentainer_space != kIndefiniteSize &&
           row_block_offset >= fragmentainer_space) {
-        // If the previous row completed, process this row and let row-break
-        // handling decide whether to break before it. Only stop here when an
-        // unfinished previous row already provides continuation state for the
-        // next fragment.
+        // If the previously processed row has a continuation, it will provide
+        // the break token needed to resume this row in the next fragmentainer.
         GridLaneData* previous_lane =
-            grid_lane_idx > 0 ? grid_lanes[grid_lane_idx - 1].Get() : nullptr;
-        if (previous_lane && !previous_lane->has_seen_all_children) {
+            previous_grid_lane_idx != kNotFound
+                ? grid_lanes[previous_grid_lane_idx].Get()
+                : nullptr;
+        if (previous_lane && previous_lane->has_unfinished_items) {
           break;
         }
       }
@@ -1054,8 +1053,8 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
       MarkBreakInsideInSpannedLanes(lane_span,
                                     has_inflow_child_break_inside_lane);
     } else {
-      // TODO(almaher): Determine how a break inside a row spanner affects the
-      // remaining rows when row fragmentation and expansion are implemented.
+      // A row spanner is owned by its first lane. Later lanes can still start
+      // independent items while the spanner resumes in another fragmentainer.
       has_inflow_child_break_inside_lane[grid_lane_idx] = true;
     }
 
@@ -1068,6 +1067,7 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
     }
 
     container_builder_.AddResult(*layout_result, offset);
+    previous_grid_lane_idx = grid_lane_idx;
 
     // TODO(almaher): Break after tracking for columns needed similar to flex.
 
@@ -1081,7 +1081,7 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
     if (is_last_item_in_lane ||
         (!is_columns && !item_iterator.HasNextItemInLane(grid_lane_idx))) {
       if (!has_inflow_child_break_inside_lane[grid_lane_idx]) {
-        lane_data->has_seen_all_children = true;
+        lane_data->has_unfinished_items = false;
       }
 
       // TODO(almaher): Additional tracking needed for offset adjustments and

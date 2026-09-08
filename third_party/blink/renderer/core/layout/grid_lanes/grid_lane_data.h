@@ -101,10 +101,10 @@ struct GridLaneData : public GarbageCollected<GridLaneData> {
 
   void Trace(Visitor* visitor) const { visitor->Trace(item_data); }
 
-  // Whether every item that starts in this lane has finished layout. A spanner
-  // is owned by the first lane it occupies, so it only impacts this state in
-  // that lane.
-  bool has_seen_all_children = false;
+  // Whether any item that starts in this lane still needs to finish layout.
+  // Non-start spanner entries are owned by their start lane and do not affect
+  // this state.
+  bool has_unfinished_items = false;
   HeapVector<Member<GridLanesItemData>> item_data;
 };
 

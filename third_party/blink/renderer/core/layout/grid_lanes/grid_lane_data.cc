@@ -53,6 +53,12 @@ void AddItemToGridLanesData(
       lane_data = MakeGarbageCollected<GridLaneData>();
     }
 
+    // Spanner layout happens in the first lane it occupies. If a lane only has
+    // non-start entries for a spanner, it effectively has no unfinished items.
+    if (item_data->is_item_start) {
+      lane_data->has_unfinished_items = true;
+    }
+
     // An empty vector means the item used its normal placement, so its entry is
     // appended directly to each lane.
     if (item_indices_below_opening.empty()) {

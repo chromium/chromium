@@ -135,7 +135,7 @@ GridLanesItemData* GridLanesItemIterator::FindNextItem(
     const BlockBreakToken* item_break_token) {
   while (grid_lane_idx_ < grid_lanes_.size()) {
     GridLaneData* lane_data = grid_lanes_[grid_lane_idx_];
-    if (lane_data && (!lane_data->has_seen_all_children || item_break_token)) {
+    if (lane_data && (lane_data->has_unfinished_items || item_break_token)) {
       // TODO(almaher): Support fragmented items that were densely packed above
       // a spanner.
       while (grid_lanes_item_idx_ < lane_data->item_data.size()) {

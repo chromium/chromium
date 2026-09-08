@@ -29,8 +29,6 @@ class BlockBreakToken;
 //
 // This class does not handle modifications to its arguments after it has been
 // constructed.
-//
-// TODO(almaher): Handle spanners for row containers.
 class CORE_EXPORT GridLanesItemIterator {
   STACK_ALLOCATED();
 
