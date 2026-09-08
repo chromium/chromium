@@ -76,7 +76,8 @@ void PrintViewManagerBasic::SetupScriptedPrintAndroid(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   content::RenderFrameHost& rfh = CurrentTargetFrame();
   DCHECK(rfh.IsRenderFrameLive());
-  if (!rfh.IsActive()) {
+  if (!rfh.IsActive() || !web_contents() ||
+      !web_contents()->GetTopLevelNativeWindow()) {
     std::move(callback).Run();
     return;
   }

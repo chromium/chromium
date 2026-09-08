@@ -405,9 +405,13 @@ void PrinterQuery::GetSettingsWithUI(uint32_t document_page_count,
   content::WebContents* web_contents = GetWebContents();
 
 #if BUILDFLAG(IS_ANDROID)
+  if (!web_contents || !web_contents->GetTopLevelNativeWindow()) {
+    InvokeSettingsCallback(std::move(callback), mojom::ResultCode::kCanceled);
+    return;
+  }
+
   if (is_scripted) {
-    TabAndroid* tab =
-        web_contents ? TabAndroid::FromWebContents(web_contents) : nullptr;
+    TabAndroid* tab = TabAndroid::FromWebContents(web_contents);
 
     // Regardless of whether the following call fails or not, the javascript
     // call will return since startPendingPrint will make it return immediately
@@ -428,7 +432,7 @@ void PrinterQuery::GetSettingsWithUI(uint32_t document_page_count,
 
   // Running a dialog causes an exit to webpage-initiated fullscreen.
   // http://crbug.com/41322524
-  if (web_contents && web_contents->IsFullscreen()) {
+  if (web_contents->IsFullscreen()) {
     web_contents->ExitFullscreen(true);
   }
 

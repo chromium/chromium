@@ -74,6 +74,9 @@ std::unique_ptr<PrintingContext> PrintingContext::CreateImpl(
 
 void PrintingContextAndroid::PdfWritingDone(int page_count,
                                             ui::WindowAndroid* window) {
+  if (!window) {
+    return;
+  }
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_PrintingContext_pdfWritingDone(env, page_count, window->GetJavaObject());
 }
@@ -84,6 +87,9 @@ void PrintingContextAndroid::SetPendingPrint(
     const ScopedJavaLocalRef<jobject>& printable,
     int render_process_id,
     int render_frame_id) {
+  if (!window) {
+    return;
+  }
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_PrintingContext_setPendingPrint(env, window->GetJavaObject(), printable,
                                        render_process_id, render_frame_id);
@@ -107,10 +113,14 @@ void PrintingContextAndroid::AskUserForSettings(
 
   JNIEnv* env = base::android::AttachCurrentThread();
   if (j_printing_context_.is_null()) {
+    auto* parent_view =
+        static_cast<ui::ViewAndroid*>(delegate_->GetParentView());
     ui::WindowAndroid* window =
-        static_cast<ui::ViewAndroid*>(delegate_->GetParentView())
-            ->GetWindowAndroid();
-    CHECK(window);
+        parent_view ? parent_view->GetWindowAndroid() : nullptr;
+    if (!window) {
+      std::move(callback_).Run(mojom::ResultCode::kCanceled);
+      return;
+    }
     j_printing_context_.Reset(Java_PrintingContext_create(
         env, reinterpret_cast<intptr_t>(this), window->GetJavaObject()));
   }
