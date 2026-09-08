@@ -454,7 +454,7 @@ void SelectFileDialogBridge::Show(
   // The sheet parent will be activated by AppKit on sheet close, which may
   // cause auto-dismissal of the owning window (e.g. extension popup).
   // Therefore, prevent the sheet parent from becoming key.
-  if (sheet_parent != owning_window_) {
+  if (sheet_parent && sheet_parent != owning_window_) {
     if (NativeWidgetMacNSWindow* sheet_parent_widget_window =
             base::apple::ObjCCast<NativeWidgetMacNSWindow>(sheet_parent)) {
       scoped_prevent_key_window_ =
@@ -462,10 +462,26 @@ void SelectFileDialogBridge::Show(
     }
   }
 
-  [panel_ beginSheetModalForWindow:sheet_parent
-                 completionHandler:^(NSInteger result) {
-                   ended_callback.Run(result != NSModalResponseOK);
-                 }];
+  const bool can_host_sheet =
+      sheet_parent && (sheet_parent.styleMask & NSWindowStyleMaskTitled) &&
+      sheet_parent.level == NSNormalWindowLevel;
+
+  if (can_host_sheet) {
+    [panel_ beginSheetModalForWindow:sheet_parent
+                   completionHandler:^(NSInteger result) {
+                     ended_callback.Run(result != NSModalResponseOK);
+                   }];
+  } else {
+    if (owning_window_) {
+      panel_.level = std::max(owning_window_.level + 1,
+                              static_cast<NSInteger>(NSModalPanelWindowLevel));
+    } else {
+      panel_.level = NSModalPanelWindowLevel;
+    }
+    [panel_ beginWithCompletionHandler:^(NSInteger result) {
+      ended_callback.Run(result != NSModalResponseOK);
+    }];
+  }
 }
 
 void SelectFileDialogBridge::SetAccessoryView(
