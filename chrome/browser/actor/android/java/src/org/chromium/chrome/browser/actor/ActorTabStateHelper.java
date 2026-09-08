@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabIdManager;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
@@ -133,10 +134,29 @@ public class ActorTabStateHelper {
     }
 
     /**
+     * Prepares a live background tab for foreground display by stopping offscreen rendering and
+     * updating its window and delegate factory attachments.
+     *
+     * @param tab The {@link Tab} to prepare.
+     * @param window The target foreground {@link WindowAndroid}.
+     * @param tabDelegateFactory The delegate factory for the target window.
+     */
+    public static void stopOffscreenAndAttachToWindow(
+            Tab tab,
+            @Nullable WindowAndroid window,
+            @Nullable TabDelegateFactory tabDelegateFactory) {
+        ThreadUtils.assertOnUiThread();
+        OffscreenRenderingManager.getInstance().stopOffscreenRendering(tab);
+        if (window != null && tabDelegateFactory != null) {
+            tab.updateAttachment(window, tabDelegateFactory);
+        }
+    }
+
+    /**
      * Symmetrically transfers the grouping and pinning properties from a source tab to a
      * destination tab within the TabModel.
      */
-    private static void transferGroupAndPinState(
+    public static void transferGroupAndPinState(
             Tab sourceTab, Tab destinationTab, TabModel model, int sourceIndex) {
         ThreadUtils.assertOnUiThread();
 
@@ -202,7 +222,19 @@ public class ActorTabStateHelper {
                                 || tabWindowId == activeWindowId);
 
                 if (windowMatches) {
-                    restoreSessionTabToForeground(tabData, model, window, tabDelegateFactory);
+                    Tab originalTab = tabData.getTab();
+                    if (originalTab != null) {
+                        Integer placeholderTabId = tabData.getPlaceholderTabId();
+                        int placeholderId =
+                                placeholderTabId != null ? placeholderTabId : Tab.INVALID_TAB_ID;
+                        restoreSessionTabToForeground(
+                                originalTab,
+                                placeholderId,
+                                tabData.getOriginalTabIndex(),
+                                model,
+                                window,
+                                tabDelegateFactory);
+                    }
                     // Remove directly using iterator since we are safely iterating.
                     iterator.remove();
                 }
@@ -216,23 +248,25 @@ public class ActorTabStateHelper {
         return sessionsToRemove;
     }
 
-    // TODO(crbug.com/548056570): Refactor this method as part of the unified restoration flow.
-    private static void restoreSessionTabToForeground(
-            BackgroundSession.BackgroundTabData tabData,
+    /**
+     * Restores a background session tab to the foreground {@link TabModel}, stopping offscreen
+     * rendering, updating window attachment, transferring grouping and pinning properties, and
+     * destroying any existing placeholder tab.
+     */
+    public static void restoreSessionTabToForeground(
+            Tab originalTab,
+            @TabId int placeholderTabId,
+            int originalTabIndex,
             TabModel model,
             WindowAndroid window,
             TabDelegateFactory tabDelegateFactory) {
-        Tab originalTab = tabData.getTab();
-        if (originalTab == null) return;
-
-        OffscreenRenderingManager.getInstance().stopOffscreenRendering(originalTab);
-        originalTab.updateAttachment(window, tabDelegateFactory);
+        stopOffscreenAndAttachToWindow(originalTab, window, tabDelegateFactory);
 
         if (model.indexOf(originalTab) == TabModel.INVALID_TAB_INDEX) {
-            Integer placeholderTabId = tabData.getPlaceholderTabId();
-            int targetRemoveId = placeholderTabId != null ? placeholderTabId : originalTab.getId();
-
-            Tab placeholderTab = model.getTabById(targetRemoveId);
+            Tab placeholderTab =
+                    placeholderTabId != Tab.INVALID_TAB_ID
+                            ? model.getTabById(placeholderTabId)
+                            : null;
 
             int targetIndex;
             boolean wasActive = false;
@@ -242,11 +276,10 @@ public class ActorTabStateHelper {
                 assert targetIndex != TabModel.INVALID_TAB_INDEX;
                 wasActive = TabModelUtils.getCurrentTab(model) == placeholderTab;
             } else {
-                int originalIndex = tabData.getOriginalTabIndex();
                 int modelCount = model.getCount();
                 targetIndex =
-                        originalIndex != TabModel.INVALID_TAB_INDEX
-                                ? Math.min(originalIndex, modelCount)
+                        originalTabIndex != TabModel.INVALID_TAB_INDEX
+                                ? Math.min(originalTabIndex, modelCount)
                                 : modelCount;
             }
 
@@ -259,7 +292,9 @@ public class ActorTabStateHelper {
             if (placeholderTab != null) {
                 transferGroupAndPinState(placeholderTab, originalTab, model, targetIndex);
                 model.getTabRemover().removeTab(placeholderTab, /* allowDialog= */ false);
-                placeholderTab.destroy();
+                if (!placeholderTab.isDestroyed()) {
+                    placeholderTab.destroy();
+                }
 
                 if (wasActive) {
                     TabModelUtils.setIndex(model, model.indexOf(originalTab));

@@ -109,18 +109,20 @@ public class BackgroundTabPool
      */
     public void addLiveTab(LiveBackgroundTab liveTab) {
         checkNotDestroyed();
-        assert !mPlaceholderToTabId.containsKey(liveTab.getPlaceholderTabId())
-                : "Placeholder already associated: " + liveTab.getPlaceholderTabId();
+        @TabId int placeholderTabId = liveTab.getPlaceholderTabId();
+        assert placeholderTabId == Tab.INVALID_TAB_ID
+                        || !mPlaceholderToTabId.containsKey(placeholderTabId)
+                : "Placeholder already associated: " + placeholderTabId;
         Tab tab = liveTab.getTab();
         @TabId int tabId = tab.getId();
-        @TabId int placeholderTabId = liveTab.getPlaceholderTabId();
 
         // Clean up any existing observer and entry before inserting.
         removeTabObserver(tab);
         mLiveEntries.put(tabId, liveTab);
-        mPlaceholderToTabId.put(placeholderTabId, tabId);
-
-        mAssociationStore.storePlaceholderTabId(tabId, placeholderTabId);
+        if (placeholderTabId != Tab.INVALID_TAB_ID) {
+            mPlaceholderToTabId.put(placeholderTabId, tabId);
+            mAssociationStore.storePlaceholderTabId(tabId, placeholderTabId);
+        }
 
         TabStateAttributes attributes = getTabStateAttributes(tab);
         if (attributes != null) {
@@ -209,21 +211,39 @@ public class BackgroundTabPool
     }
 
     /**
-     * Removes a tab from live in-memory entries, placeholder mappings, and clears cached state.
+     * Removes a tab by its associated placeholder tab ID from live entries, placeholder mappings,
+     * and cached state.
      *
      * @param placeholderTabId The placeholder ID of the tab to remove.
      */
+    // TODO(b/542694245): Refactor callers to use removeTabById directly and remove this method.
     public void removeTab(@TabId int placeholderTabId) {
         checkNotDestroyed();
-        Integer tabId = mPlaceholderToTabId.remove(placeholderTabId);
+        Integer tabId = mPlaceholderToTabId.get(placeholderTabId);
         if (tabId != null) {
-            LiveBackgroundTab tab = mLiveEntries.remove(tabId);
-            if (tab != null) {
-                removeTabObserver(tab.getTab());
-            }
-            mTabCache.clear(getCacheKey(tabId));
+            removeTabById(tabId);
+        }
+    }
+
+    /**
+     * Removes a tab by its unique tab ID completely from live in-memory entries, placeholder
+     * mappings, association storage, and the persistent TabCache.
+     *
+     * @param tabId The tab ID to remove.
+     */
+    public void removeTabById(@TabId int tabId) {
+        checkNotDestroyed();
+        LiveBackgroundTab tab = mLiveEntries.remove(tabId);
+        if (tab != null) {
+            removeTabObserver(tab.getTab());
+        }
+        @TabId int placeholderTabId = mAssociationStore.getPlaceholderTabId(tabId);
+        if (placeholderTabId != Tab.INVALID_TAB_ID) {
+            mPlaceholderToTabId.remove(placeholderTabId);
             mAssociationStore.deletePlaceholderTabId(tabId);
         }
+        mPlaceholderToTabId.values().remove(tabId);
+        mTabCache.clear(getCacheKey(tabId));
         notifyIfEmptied();
     }
 
