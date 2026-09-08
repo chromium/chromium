@@ -18,14 +18,10 @@ class MockOnDeviceEncryptionStateTrackerObserver
 
   MOCK_METHOD(void,
               OnDeviceEncryptionStateChanged,
-              (OnDeviceEncryptionStateTracker * tracker,
-               OnDeviceEncryptionState previous_state,
+              (OnDeviceEncryptionState previous_state,
                OnDeviceEncryptionState new_state),
               (override));
-  MOCK_METHOD(void,
-              OnDeviceEncryptionStateTrackerShuttingDown,
-              (OnDeviceEncryptionStateTracker * tracker),
-              (override));
+  MOCK_METHOD(void, OnDeviceEncryptionStateTrackerShuttingDown, (), (override));
 };
 
 }  // namespace password_manager

@@ -13,7 +13,7 @@ OnDeviceEncryptionStateTracker::OnDeviceEncryptionStateTracker() = default;
 OnDeviceEncryptionStateTracker::~OnDeviceEncryptionStateTracker() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (Observer& observer : observer_list_) {
-    observer.OnDeviceEncryptionStateTrackerShuttingDown(this);
+    observer.OnDeviceEncryptionStateTrackerShuttingDown();
   }
 }
 
@@ -41,7 +41,7 @@ void OnDeviceEncryptionStateTracker::SetState(
   }
   OnDeviceEncryptionState previous_state = std::exchange(state_, new_state);
   for (Observer& observer : observer_list_) {
-    observer.OnDeviceEncryptionStateChanged(this, previous_state, state_);
+    observer.OnDeviceEncryptionStateChanged(previous_state, state_);
   }
 }
 

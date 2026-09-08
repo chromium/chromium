@@ -4,6 +4,8 @@
 
 source_set("ode") {
   sources = [
+    "on_device_encryption_data_type_specific_metrics_reporter.cc",
+    "on_device_encryption_data_type_specific_metrics_reporter.h",
     "on_device_encryption_metrics_reporter.cc",
     "on_device_encryption_metrics_reporter.h",
     "on_device_encryption_state_tracker.cc",
@@ -34,6 +36,7 @@ source_set("unit_tests") {
   sources = [
     "mock_on_device_encryption_state_tracker_observer.cc",
     "mock_on_device_encryption_state_tracker_observer.h",
+    "on_device_encryption_data_type_specific_metrics_reporter_unittest.cc",
     "on_device_encryption_metrics_reporter_unittest.cc",
     "on_device_encryption_state_tracker_unittest.cc",
     "password_trusted_vault_on_device_encryption_state_tracker_unittest.cc",

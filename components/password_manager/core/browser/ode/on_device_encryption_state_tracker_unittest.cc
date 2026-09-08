@@ -28,7 +28,6 @@ TEST(OnDeviceEncryptionStateTrackerTest, NotifiesObserverOnStateChange) {
   // Transition from kOnDeviceEncryptionStateNotAvailable to kDeviceReady.
   EXPECT_CALL(observer,
               OnDeviceEncryptionStateChanged(
-                  &tracker,
                   OnDeviceEncryptionState::kOnDeviceEncryptionStateNotAvailable,
                   OnDeviceEncryptionState::kDeviceReady));
   tracker.SetStateForTesting(OnDeviceEncryptionState::kDeviceReady);
@@ -37,7 +36,7 @@ TEST(OnDeviceEncryptionStateTrackerTest, NotifiesObserverOnStateChange) {
 
   // Transition from kDeviceReady to kDeviceNotReady.
   EXPECT_CALL(observer, OnDeviceEncryptionStateChanged(
-                            &tracker, OnDeviceEncryptionState::kDeviceReady,
+                            OnDeviceEncryptionState::kDeviceReady,
                             OnDeviceEncryptionState::kDeviceNotReady));
   tracker.SetStateForTesting(OnDeviceEncryptionState::kDeviceNotReady);
   EXPECT_EQ(tracker.GetEncryptionState(),
@@ -59,7 +58,6 @@ TEST(OnDeviceEncryptionStateTrackerTest, DoesNotNotifyOnDuplicateState) {
 
   EXPECT_CALL(observer,
               OnDeviceEncryptionStateChanged(
-                  &tracker,
                   OnDeviceEncryptionState::kOnDeviceEncryptionStateNotAvailable,
                   OnDeviceEncryptionState::kDeviceReady))
       .Times(1);
@@ -86,7 +84,7 @@ TEST(OnDeviceEncryptionStateTrackerTest, NotifiesShuttingDownOnDestruction) {
     OnDeviceEncryptionStateTracker tracker;
     tracker.AddObserver(&observer);
 
-    EXPECT_CALL(observer, OnDeviceEncryptionStateTrackerShuttingDown(&tracker));
+    EXPECT_CALL(observer, OnDeviceEncryptionStateTrackerShuttingDown());
   }
 }
 
@@ -99,14 +97,12 @@ TEST(OnDeviceEncryptionStateTrackerTest,
     tracker.AddObserver(&observer1);
     tracker.AddObserver(&observer2);
 
-    EXPECT_CALL(observer1, OnDeviceEncryptionStateTrackerShuttingDown(&tracker))
-        .WillOnce([&tracker, &observer1](OnDeviceEncryptionStateTracker*) {
-          tracker.RemoveObserver(&observer1);
-        });
-    EXPECT_CALL(observer2, OnDeviceEncryptionStateTrackerShuttingDown(&tracker))
-        .WillOnce([&tracker, &observer2](OnDeviceEncryptionStateTracker*) {
-          tracker.RemoveObserver(&observer2);
-        });
+    EXPECT_CALL(observer1, OnDeviceEncryptionStateTrackerShuttingDown())
+        .WillOnce(
+            [&tracker, &observer1]() { tracker.RemoveObserver(&observer1); });
+    EXPECT_CALL(observer2, OnDeviceEncryptionStateTrackerShuttingDown())
+        .WillOnce(
+            [&tracker, &observer2]() { tracker.RemoveObserver(&observer2); });
   }
 }
 

@@ -44,14 +44,12 @@ class OnDeviceEncryptionStateTracker {
    public:
     // Notifies the observer when the encryption state changes.
     virtual void OnDeviceEncryptionStateChanged(
-        OnDeviceEncryptionStateTracker* tracker,
         OnDeviceEncryptionState previous_state,
         OnDeviceEncryptionState new_state) = 0;
     // Notifies the observer that the state tracker is shutting down. Observers
-    // outliving the tracker should override this method to call
-    // `tracker->RemoveObserver(this)` or clear their raw/unretained pointers.
-    virtual void OnDeviceEncryptionStateTrackerShuttingDown(
-        OnDeviceEncryptionStateTracker* tracker) = 0;
+    // outliving the tracker should override this method to clear their
+    // raw/unretained pointers or reset observations.
+    virtual void OnDeviceEncryptionStateTrackerShuttingDown() = 0;
   };
 
   OnDeviceEncryptionStateTracker();
