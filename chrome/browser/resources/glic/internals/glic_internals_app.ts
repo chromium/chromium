@@ -6,6 +6,7 @@ import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import '//resources/cr_elements/cr_tabs/cr_tabs.js';
 
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {ActuationTarget, FeatureMode, FormFactor, FreOverride, InvocationSource, Platform} from '../glic_enums.mojom-webui.js';
@@ -64,8 +65,12 @@ export class GlicInternalsAppElement extends CrLitElement {
       availableTabs_: {type: Array},
       tabNames_: {type: Array},
       featureModeEnumValues_: {type: Array},
+      copyButtonText_: {type: String},
     };
   }
+
+  protected accessor copyButtonText_: string = 'Copy Diagnostics';
+  private copyResetTimeoutId_: number|null = null;
 
   protected accessor data_: InternalsDataPayload|undefined;
   protected accessor invokePrompt_: string = '';
@@ -324,6 +329,145 @@ export class GlicInternalsAppElement extends CrLitElement {
   protected onRefreshClick_() {
     this.fetchInternalsData_();
     this.refreshOpenTabs_();
+  }
+
+  protected getChromeVersion_(): string {
+    if (loadTimeData.isInitialized()) {
+      try {
+        const browserVersion = loadTimeData.getString('browserVersion');
+        if (browserVersion) {
+          return browserVersion;
+        }
+      } catch {
+        // Fall back below if key is not found.
+      }
+      try {
+        const version = loadTimeData.getString('version');
+        if (version) {
+          const modifier = loadTimeData.getString('version_modifier');
+          const arch = loadTimeData.getString('version_processor_variation');
+          return [version, modifier, arch].filter(Boolean).join(' ');
+        }
+      } catch {
+        // Fall back below.
+      }
+    }
+    const match = navigator.userAgent.match(/Chrome\/([0-9.]+)/);
+    return match?.[1] ?? 'Unknown';
+  }
+
+  protected getDiagnosticsMarkdown_(): string {
+    if (!this.data_) {
+      return '# Glic Internals Diagnostics\n\nNo diagnostics data available.';
+    }
+
+    const lines: string[] = [];
+    const overall = this.computeOverallStatus_();
+
+    lines.push('# Glic Internals Diagnostics');
+    lines.push('');
+    lines.push(`- **Timestamp:** ${new Date().toISOString()}`);
+    lines.push(`- **Chrome Version:** ${this.getChromeVersion_()}`);
+    if (loadTimeData.isInitialized()) {
+      try {
+        const revision = loadTimeData.getString('cl');
+        if (revision) {
+          lines.push(`- **Revision:** ${revision}`);
+        }
+      } catch {
+        // Ignore if key is not present.
+      }
+    }
+    lines.push(`- **Overall Status:** ${
+        overall.enabled ? 'Eligible & Enabled' : 'Blocked / Ineligible'}`);
+    if (!overall.enabled && overall.reason) {
+      lines.push(`- **Blocking Reason:** ${overall.reason}`);
+    }
+    if (this.data_.debugInfo) {
+      lines.push(`- **Platform:** ${
+          this.getPlatformString_(this.data_.debugInfo.platform)}`);
+      lines.push(`- **Form Factor:** ${
+          this.getFormFactorString_(this.data_.debugInfo.formFactor)}`);
+    }
+    lines.push(`- **User Agent:** ${navigator.userAgent}`);
+    lines.push('');
+
+    const generalContents = this.shadowRoot?.querySelector('#general-contents');
+    if (generalContents) {
+      const cards = generalContents.querySelectorAll('.card');
+      for (const card of cards) {
+        const headerEl = card.querySelector('.card-header');
+        const headerText = headerEl?.textContent?.trim();
+        const table = card.querySelector('table');
+        if (!table) {
+          continue;
+        }
+        const tableMd = this.tableToMarkdown_(table);
+        if (!tableMd) {
+          continue;
+        }
+        if (headerText) {
+          lines.push(`## ${headerText}`);
+          lines.push('');
+        }
+        lines.push(tableMd);
+        lines.push('');
+      }
+    }
+
+    return lines.join('\n');
+  }
+
+  private cleanTableCellText_(text: string): string {
+    return text.replace(/\s+/g, ' ').replace(/\|/g, '\\|').trim();
+  }
+
+  private tableToMarkdown_(table: HTMLTableElement): string {
+    const headerCells = Array.from(table.querySelectorAll('thead th'));
+    if (headerCells.length === 0) {
+      return '';
+    }
+
+    const headers =
+        headerCells.map(th => this.cleanTableCellText_(th.textContent ?? ''));
+    const lines: string[] = [
+      `| ${headers.join(' | ')} |`,
+      `| ${headers.map(() => ':---').join(' | ')} |`,
+    ];
+
+    const rowElements = Array.from(table.querySelectorAll('tbody tr'));
+    for (const row of rowElements) {
+      const cells =
+          Array.from(row.querySelectorAll('td'))
+              .map(td => this.cleanTableCellText_(td.textContent ?? ''));
+      if (cells.length === 0) {
+        continue;
+      }
+      while (cells.length < headers.length) {
+        cells.push('');
+      }
+      lines.push(`| ${cells.join(' | ')} |`);
+    }
+
+    return lines.join('\n');
+  }
+
+  protected async onCopyDiagnosticsClick_() {
+    await this.updateComplete;
+    const text = this.getDiagnosticsMarkdown_();
+    try {
+      await navigator.clipboard.writeText(text);
+      if (this.copyResetTimeoutId_ !== null) {
+        window.clearTimeout(this.copyResetTimeoutId_);
+      }
+      this.copyButtonText_ = 'Copied!';
+      this.copyResetTimeoutId_ = window.setTimeout(() => {
+        this.copyButtonText_ = 'Copy Diagnostics';
+        this.copyResetTimeoutId_ = null;
+      }, 2000);
+    } catch (err) {
+      console.error('Failed to copy diagnostics to clipboard:', err);
+    }
   }
 
   protected isExperimentalOptInConsentMet_(): boolean {

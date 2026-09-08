@@ -8,6 +8,8 @@
 
 #include "chrome/browser/glic/host/glic_internals_page_handler.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/version/version_ui.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/glic_resources.h"
 #include "chrome/grit/glic_resources_map.h"
@@ -23,6 +25,10 @@ GlicInternalsUI::GlicInternalsUI(content::WebUI* web_ui)
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIGlicHost);
+
+  VersionUI::AddVersionDetailStrings(source);
+  source->AddString("browserVersion",
+                    chrome::GetVersionString(chrome::WithExtendedStable(true)));
 
   webui::SetupWebUIDataSource(source, kGlicResources,
                               IDR_GLIC_INTERNALS_GLIC_INTERNALS_HTML);

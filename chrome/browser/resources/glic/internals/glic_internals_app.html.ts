@@ -18,6 +18,9 @@ export function getHtml(this: GlicInternalsAppElement) {
           @selected-changed="${this.onSelectedTabIndexSelectedChanged_}">
       </cr-tabs>
       <div class="action-bar">
+        <cr-button id="copyDiagnosticsButton" class="action-button" @click="${this.onCopyDiagnosticsClick_}">
+          ${this.copyButtonText_}
+        </cr-button>
         <cr-button id="refreshButton" class="tonal-button" @click="${this.onRefreshClick_}">
           Refresh
         </cr-button>
