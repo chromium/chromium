@@ -15,6 +15,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/i18n/rtl.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -26,6 +27,7 @@
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/scoped_hdc.h"
 #include "base/win/scoped_select_object.h"
+#include "remoting/base/email_utils.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/host_window.h"
 #include "remoting/host/input_monitor/local_input_monitor.h"
@@ -38,10 +40,6 @@ namespace remoting {
 namespace {
 
 constexpr int DISCONNECT_HOTKEY_ID = 1000;
-
-// Maximum length of "Your desktop is shared with ..." message in UTF-16
-// characters.
-constexpr size_t kMaxSharingWithTextLength = 100;
 
 constexpr wchar_t kShellTrayWindowName[] = L"Shell_TrayWnd";
 constexpr int kWindowBorderRadius = 14;
@@ -144,8 +142,8 @@ class DisconnectWindowWin : public HostWindow {
   // Used to watch for local input which will trigger the dialog to be reshown.
   std::unique_ptr<LocalInputMonitor> local_input_monitor_;
 
-  // Specifies the remote user name.
-  std::string username_;
+  // Specifies the remote user's email address.
+  std::string email_;
 
   bool was_auto_hidden_ = false;
   base::OneShotTimer auto_hide_timer_;
@@ -212,7 +210,7 @@ void DisconnectWindowWin::Start(
   client_session_control_ = client_session_control;
 
   std::string client_jid = client_session_control_->client_jid();
-  username_ = client_jid.substr(0, client_jid.find('/'));
+  email_ = client_jid.substr(0, client_jid.find('/'));
   if (!BeginDialog()) {
     EndDialog();
     return;
@@ -605,12 +603,15 @@ bool DisconnectWindowWin::SetStrings() {
     return false;
   }
 
-  // Format and truncate "Your desktop is shared with ..." message.
+  // Format "Your desktop is shared with ..." message.
+  std::u16string email = base::UTF8ToUTF16(email_);
+  email = base::CollapseWhitespace(email,
+                                   /*trim_sequences_with_line_breaks=*/true);
+  email = ElideEmail(email);
+  base::i18n::SanitizeUserSuppliedString(&email);
+
   message_text = base::AsWString(base::ReplaceStringPlaceholders(
-      base::AsString16(message_text), base::UTF8ToUTF16(username_), nullptr));
-  if (message_text.length() > kMaxSharingWithTextLength) {
-    message_text.erase(kMaxSharingWithTextLength);
-  }
+      base::AsString16(message_text), email, nullptr));
 
   if (!SetWindowText(hwnd_message, message_text.c_str())) {
     return false;
