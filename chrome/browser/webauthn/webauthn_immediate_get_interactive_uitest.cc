@@ -33,6 +33,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/views_switches.h"
 #include "ui/views/window/dialog_client_view.h"
 
 // These tests are disabled under MSAN. The enclave subprocess is written in
@@ -72,6 +73,12 @@ class WebAuthnImmediateGetTest : public Fixture {
   WebAuthnImmediateGetTest() = default;
 
   ~WebAuthnImmediateGetTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    Fixture::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(
+        views::switches::kDisableInputEventActivationProtectionForTesting);
+  }
 
  protected:
   GURL GetHttpsURL(const std::string& hostname = kHostname,

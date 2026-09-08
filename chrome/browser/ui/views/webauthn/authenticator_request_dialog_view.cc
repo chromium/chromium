@@ -41,6 +41,7 @@
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/view.h"
+#include "ui/views/window/dialog_client_view.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace {
@@ -91,6 +92,7 @@ void AuthenticatorRequestDialogView::ReplaceCurrentSheetWith(
     std::unique_ptr<AuthenticatorRequestSheetView> new_sheet) {
   DCHECK(new_sheet);
 
+  const bool is_sheet_transition = (sheet_ != nullptr);
   if (sheet_) {
     auto* old_sheet = sheet_.get();
     // RemoveChildViewT() will delete the old sheet, so we set `sheet_` to
@@ -104,6 +106,13 @@ void AuthenticatorRequestDialogView::ReplaceCurrentSheetWith(
   AddChildView(std::move(new_sheet));
 
   UpdateUIForCurrentSheet();
+
+  // Re-arm input protection on sheet transitions to prevent rapid clicks or
+  // keystrokes intended for the previous sheet from inadvertently activating
+  // controls on the new sheet.
+  if (is_sheet_transition && GetDialogClientView()) {
+    GetDialogClientView()->TriggerInputProtection(/*force_early=*/true);
+  }
 }
 
 void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
@@ -362,6 +371,11 @@ views::View* AuthenticatorRequestDialogView::GetInitiallyFocusedView() {
 std::u16string AuthenticatorRequestDialogView::GetWindowTitle() const {
   // During widget creation, there is no sheet yet. The title will be set later.
   return sheet_ ? sheet_->model()->GetStepTitle() : std::u16string();
+}
+
+bool AuthenticatorRequestDialogView::
+    ShouldAllowKeyEventsDuringInputProtection() const {
+  return false;
 }
 
 void AuthenticatorRequestDialogView::OnVisibilityChanged(

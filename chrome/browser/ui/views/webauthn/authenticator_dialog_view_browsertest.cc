@@ -24,7 +24,11 @@
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/event.h"
+#include "ui/events/event_utils.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/metrics.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/window/dialog_client_view.h"
 
@@ -41,6 +45,8 @@ class TestSheetModel : public AuthenticatorRequestSheetModel {
 
   // Getters for data on step specific content:
   std::u16string GetStepSpecificLabelText() { return u"Test Label"; }
+
+  int accept_count() const { return accept_count_; }
 
  private:
   // AuthenticatorRequestSheetModel:
@@ -67,8 +73,11 @@ class TestSheetModel : public AuthenticatorRequestSheetModel {
   }
 
   void OnBack() override {}
-  void OnAccept() override {}
+  void OnAccept() override { accept_count_++; }
   void OnCancel() override {}
+
+ private:
+  int accept_count_ = 0;
 };
 
 class TestSheetView : public AuthenticatorRequestSheetView {
@@ -255,4 +264,65 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorDialogViewTest,
   dialog_client_view->ResetViewShownTimeStampForTesting();
   views::test::ButtonTestApi(top_row_button).NotifyClick(click_event);
   EXPECT_EQ(mechanism_callback_count_, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogViewTest, KeyEventInputProtection) {
+  content::WebContents* const web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  CHECK(web_contents);
+
+  auto dialog_model =
+      base::MakeRefCounted<AuthenticatorRequestDialogModel>(nullptr);
+  dialog_model->relying_party_id = "example.com";
+  dialog_model->SetStep(AuthenticatorRequestDialogModel::Step::kTimedOut);
+
+  auto view_controller =
+      std::make_unique<AuthenticatorRequestDialogViewControllerViews>(
+          web_contents, dialog_model.get());
+
+  auto sheet_model = std::make_unique<TestSheetModel>();
+  auto* model_ptr = sheet_model.get();
+  test::AuthenticatorRequestDialogViewTestApi::SetSheetTo(
+      view_controller.get(),
+      std::make_unique<TestSheetView>(std::move(sheet_model)));
+
+  auto* sheet = test::AuthenticatorRequestDialogViewTestApi::GetSheet(
+      view_controller.get());
+  ASSERT_TRUE(sheet);
+  auto* dialog_delegate =
+      sheet->GetWidget()->widget_delegate()->AsDialogDelegate();
+  ASSERT_TRUE(dialog_delegate);
+  views::MdTextButton* ok_button = dialog_delegate->GetOkButton();
+  ASSERT_TRUE(ok_button);
+
+  EXPECT_FALSE(dialog_delegate->ShouldAllowKeyEventsDuringInputProtection());
+
+  // Key event immediately upon dialog shown should be ignored.
+  ui::KeyEvent enter(ui::EventType::kKeyPressed, ui::VKEY_RETURN, ui::EF_NONE,
+                     ui::EventTimeForNow());
+  views::test::ButtonTestApi(ok_button).NotifyClick(enter);
+  EXPECT_EQ(model_ptr->accept_count(), 0);
+
+  // Fast-forward input protection for the first sheet.
+  dialog_delegate->GetDialogClientView()
+      ->ResetViewShownTimeStampForTesting();
+
+  // Replace with a second sheet; input protection should be re-armed.
+  auto sheet_model2 = std::make_unique<TestSheetModel>();
+  auto* model_ptr2 = sheet_model2.get();
+  test::AuthenticatorRequestDialogViewTestApi::SetSheetTo(
+      view_controller.get(),
+      std::make_unique<TestSheetView>(std::move(sheet_model2)));
+
+  ok_button = dialog_delegate->GetOkButton();
+  ASSERT_TRUE(ok_button);
+  views::test::ButtonTestApi(ok_button).NotifyClick(enter);
+  EXPECT_EQ(model_ptr2->accept_count(), 0);
+
+  // After the protection interval, key events should be accepted.
+  ui::KeyEvent enter_delayed(
+      ui::EventType::kKeyPressed, ui::VKEY_RETURN, ui::EF_NONE,
+      ui::EventTimeForNow() + views::GetDoubleClickInterval());
+  views::test::ButtonTestApi(ok_button).NotifyClick(enter_delayed);
+  EXPECT_EQ(model_ptr2->accept_count(), 1);
 }

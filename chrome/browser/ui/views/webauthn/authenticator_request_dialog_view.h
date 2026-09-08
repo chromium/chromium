@@ -84,6 +84,7 @@ class AuthenticatorRequestDialogView
   bool IsDialogButtonEnabled(ui::mojom::DialogButton button) const override;
   View* GetInitiallyFocusedView() override;
   std::u16string GetWindowTitle() const override;
+  bool ShouldAllowKeyEventsDuringInputProtection() const override;
 
   // content::WebContentsObserver:
   void OnVisibilityChanged(content::Visibility visibility) override;
