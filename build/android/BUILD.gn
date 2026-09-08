@@ -235,6 +235,9 @@ group("test_runner_device_support") {
     if (use_full_mte) {
       data_deps += [ "//tools/android/mte:mte_device_setup" ]
     }
+    if (checkout_fuchsia) {
+      data_deps += [ "//build/fuchsia/starview:run_cuttlefish" ]
+    }
   }
 
   # Proguard is needed only when using apks (rather than native executables).

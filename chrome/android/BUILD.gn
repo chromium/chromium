@@ -4,7 +4,6 @@
 
 import("//build/config/android/config.gni")
 import("//build/config/cronet/config.gni")
-import("//build/config/gclient_args.gni")
 import("//build/toolchain/gcc_toolchain.gni")
 
 import("//chrome/android/chrome_common_shared_library.gni")
@@ -2596,10 +2595,6 @@ if (_is_default_toolchain) {
     apk_under_test = ":chrome_public_apk"
     android_test_apk = ":chrome_smoke_test_apk"
     additional_apks = [ "//net/android:net_test_support_apk" ]
-    if (checkout_fuchsia) {
-      data_deps = [ "//build/fuchsia/starview:run_cuttlefish" ]
-    }
-
     if (!is_java_debug) {
       proguard_mapping_path = "$root_build_dir/apks/ChromePublic.apk.mapping"
     }
