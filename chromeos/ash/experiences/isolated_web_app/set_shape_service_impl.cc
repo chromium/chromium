@@ -28,6 +28,7 @@
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "third_party/blink/public/mojom/set_shape/set_shape.mojom.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
 #include "url/origin.h"
@@ -120,6 +121,7 @@ SetShapeServiceImpl::SetShapeServiceImpl(
     : content::DocumentUserData<SetShapeServiceImpl>(render_frame_host) {}
 
 SetShapeServiceImpl::~SetShapeServiceImpl() {
+  ResetShapeAndWidgetObservation();
   UnsubscribeFromWindowManagementPermissionChanges();
 }
 
@@ -198,17 +200,48 @@ void SetShapeServiceImpl::SetShape(const std::vector<gfx::Rect>& rects,
   SetShapeAndEventTargeter(*widget, rects);
 
   if (rects.empty()) {
+    widget_observation_.Reset();
     UnsubscribeFromWindowManagementPermissionChanges();
   } else {
+    if (!widget_observation_.IsObserving()) {
+      widget_observation_.Observe(widget);
+    }
     SubscribeToWindowManagementPermissionChanges();
   }
 
   std::move(callback).Run(blink::mojom::SetShapeResult::kSuccess);
 }
 
-void SetShapeServiceImpl::ResetShape() {
+void SetShapeServiceImpl::OnWidgetBoundsChanged(views::Widget* widget,
+                                                const gfx::Rect& new_bounds) {
+  if (!widget || !widget->GetNativeWindow() ||
+      !widget->GetNativeWindow()->layer()) {
+    return;
+  }
+  const std::vector<gfx::Rect>* shape =
+      widget->GetNativeWindow()->layer()->alpha_shape();
+  if (!shape) {
+    return;
+  }
+
+  const gfx::Rect window_bounds = WindowBoundsWithTolerance(new_bounds.size());
+  if (std::ranges::none_of(*shape, [&](const gfx::Rect& rect) {
+        return IsAtLeastMinimumSizeInBounds(rect, window_bounds);
+      })) {
+    ResetShapeAndWidgetObservation();
+    UnsubscribeFromWindowManagementPermissionChanges();
+  }
+}
+
+void SetShapeServiceImpl::OnWidgetDestroying(views::Widget* widget) {
+  widget_observation_.Reset();
+  UnsubscribeFromWindowManagementPermissionChanges();
+}
+
+void SetShapeServiceImpl::ResetShapeAndWidgetObservation() {
+  widget_observation_.Reset();
   views::Widget* widget = GetWidget();
-  if (widget) {
+  if (widget && !widget->is_destroying()) {
     SetShapeAndEventTargeter(*widget, {});
   }
 }
@@ -216,7 +249,7 @@ void SetShapeServiceImpl::ResetShape() {
 void SetShapeServiceImpl::OnWindowManagementPermissionChanged(
     content::PermissionResult result) {
   if (result.status != blink::mojom::PermissionStatus::GRANTED) {
-    ResetShape();
+    ResetShapeAndWidgetObservation();
     UnsubscribeFromWindowManagementPermissionChanges();
   }
 }

@@ -26,6 +26,7 @@ component("isolated_web_app") {
     "//mojo/public/cpp/bindings",
     "//third_party/blink/public/mojom:mojom_platform",
     "//ui/aura",
+    "//ui/compositor",
     "//ui/gfx/geometry",
     "//ui/views",
   ]

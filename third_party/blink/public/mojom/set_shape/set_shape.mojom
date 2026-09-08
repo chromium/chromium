@@ -20,6 +20,10 @@ interface SetShapeService {
   // If `rects` is not empty and no rectangle has the minimum size of
   // `kMinimumIwaSetShapeSize`, does nothing and reports a bad message.
   //
+  // After a custom shape has been set, if the window is resized such that the
+  // shape no longer complies with the minimum size requirement within the new
+  // window bounds, the shape is automatically reset back to normal.
+  //
   // Returns a `SetShapeResult` indicating the result of the operation.
   SetShape(array<gfx.mojom.Rect> rects) => (SetShapeResult result);
 };
