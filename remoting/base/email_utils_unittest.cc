@@ -140,4 +140,27 @@ TEST(EmailUtilsTest, SmallMaxLength) {
   EXPECT_LE(ElideEmail(kSmallMaxLengthNonEmail, 2).length(), 2u);
 }
 
+TEST(EmailUtilsTest, FormatEmailForDisplayCollapsesWhitespaceAndElides) {
+  constexpr std::string_view kUntrimmedLongEmail =
+      "  \t\n  remote.assistance.collaborator.user@example.com  \n ";
+  std::u16string formatted = FormatEmailForDisplay(kUntrimmedLongEmail, 36);
+  EXPECT_LE(formatted.length(), 36u);
+  EXPECT_THAT(base::UTF16ToUTF8(formatted),
+              testing::StartsWith("remote.assistance"));
+  EXPECT_THAT(base::UTF16ToUTF8(formatted), testing::EndsWith("@example.com"));
+}
+
+TEST(EmailUtilsTest, FormatEmailForDisplayUTF16Overload) {
+  constexpr std::u16string_view kUntrimmedEmail =
+      u"  \t\n  user@example.com  \n ";
+  std::u16string formatted = FormatEmailForDisplay(kUntrimmedEmail);
+  EXPECT_EQ(formatted, u"user@example.com");
+}
+
+TEST(EmailUtilsTest, FormatEmailForDisplaySanitizesDirectionalFormatting) {
+  std::string malicious_email = "user\u202Eattack@example.com";
+  std::u16string formatted = FormatEmailForDisplay(malicious_email);
+  EXPECT_FALSE(formatted.empty());
+}
+
 }  // namespace remoting

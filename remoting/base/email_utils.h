@@ -29,6 +29,21 @@ inline constexpr size_t kDefaultMaxEmailLength = 36;
 std::u16string ElideEmail(std::u16string_view email,
                           size_t max_length = kDefaultMaxEmailLength);
 
+// Formats an email address for safe display in UI surfaces:
+// 1. Converts the email address to UTF-16 (if passed as UTF-8).
+// 2. Collapses whitespace and trims leading/trailing whitespace and line
+// breaks.
+// 3. Elides the email to fit within |max_length| characters via ElideEmail().
+// 4. Sanitizes bidirectional / directional formatting characters for the
+//    current locale via base::i18n::SanitizeUserSuppliedString().
+std::u16string FormatEmailForDisplay(
+    std::string_view email,
+    size_t max_length = kDefaultMaxEmailLength);
+
+std::u16string FormatEmailForDisplay(
+    std::u16string_view email,
+    size_t max_length = kDefaultMaxEmailLength);
+
 }  // namespace remoting
 
 #endif  // REMOTING_BASE_EMAIL_UTILS_H_

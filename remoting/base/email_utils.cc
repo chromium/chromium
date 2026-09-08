@@ -9,7 +9,10 @@
 #include <string_view>
 
 #include "base/i18n/char_iterator.h"
+#include "base/i18n/rtl.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 
 namespace remoting {
 
@@ -135,6 +138,20 @@ std::u16string ElideEmail(std::u16string_view email, size_t max_length) {
   std::u16string elided_domain = MiddleElide(domain, domain_budget, 1, 3);
 
   return base::StrCat({elided_username, u"@", elided_domain});
+}
+
+std::u16string FormatEmailForDisplay(std::u16string_view email,
+                                     size_t max_length) {
+  std::u16string result =
+      base::CollapseWhitespace(email, /*trim_sequences_with_line_breaks=*/true);
+  result = ElideEmail(result, max_length);
+  base::i18n::SanitizeUserSuppliedString(&result);
+  return result;
+}
+
+std::u16string FormatEmailForDisplay(std::string_view email,
+                                     size_t max_length) {
+  return FormatEmailForDisplay(base::UTF8ToUTF16(email), max_length);
 }
 
 }  // namespace remoting

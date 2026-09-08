@@ -15,7 +15,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
-#include "base/i18n/rtl.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -604,14 +603,8 @@ bool DisconnectWindowWin::SetStrings() {
   }
 
   // Format "Your desktop is shared with ..." message.
-  std::u16string email = base::UTF8ToUTF16(email_);
-  email = base::CollapseWhitespace(email,
-                                   /*trim_sequences_with_line_breaks=*/true);
-  email = ElideEmail(email);
-  base::i18n::SanitizeUserSuppliedString(&email);
-
   message_text = base::AsWString(base::ReplaceStringPlaceholders(
-      base::AsString16(message_text), email, nullptr));
+      base::AsString16(message_text), FormatEmailForDisplay(email_), nullptr));
 
   if (!SetWindowText(hwnd_message, message_text.c_str())) {
     return false;

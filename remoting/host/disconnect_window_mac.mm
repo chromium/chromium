@@ -145,12 +145,7 @@ std::unique_ptr<HostWindow> HostWindow::CreateDisconnectWindow() {
   self = [super initWithWindow:window];
   if (self) {
     _disconnect_callback = std::move(disconnect_callback);
-    std::u16string email_u16 = base::UTF8ToUTF16(email);
-    email_u16 = base::CollapseWhitespace(
-        email_u16, /*trim_sequences_with_line_breaks=*/true);
-    email_u16 = remoting::ElideEmail(email_u16);
-    base::i18n::SanitizeUserSuppliedString(&email_u16);
-    _email = std::move(email_u16);
+    _email = remoting::FormatEmailForDisplay(email);
     [NSNotificationCenter.defaultCenter
         addObserver:self
            selector:@selector(onScreenParametersChanged:)
