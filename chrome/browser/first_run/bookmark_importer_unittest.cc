@@ -11,7 +11,6 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
-#include "base/test/test_timeouts.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -80,8 +79,9 @@ class BookmarkDictImporterTest : public testing::Test {
 
   TestingProfile* profile() { return profile_.get(); }
 
- private:
   content::BrowserTaskEnvironment task_environment_;
+
+ private:
   std::unique_ptr<TestingProfile> profile_;
 };
 
@@ -263,14 +263,20 @@ TEST_F(BookmarkDictImporterTest, FailsIfProfileIsDestroyed) {
   bookmark_model->AddObserver(&observer);
 
   StartBookmarkImportFromDict(profile(), std::move(bookmarks_dict));
-  base::RunLoop run_loop;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), TestTimeouts::action_timeout());
-  run_loop.Run();
+  bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
+
+  // Since StartBookmarkImportFromDict wraps the import in
+  // base::BindPostTaskToCurrentDefault(), any scheduled import would be posted
+  // to the current sequence after the model loads. Ensure those posted tasks
+  // have all had a chance to run.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, task_environment_.QuitClosure());
+  task_environment_.RunUntilQuit();
 
   bookmark_model->RemoveObserver(&observer);
 
   EXPECT_FALSE(did_import);
+  EXPECT_EQ(0u, bookmark_model->bookmark_bar_node()->children().size());
 }
 #endif  // !BUILLDFLAG(IS_CHROMEOS)
 
