@@ -592,6 +592,31 @@ TEST_F(SelectionControllerTest, AdjustSelectionByUserSelectWithComment) {
             PositionInFlatTree::LastPositionInNode(*two->firstChild()));
 }
 
+// http://crbug.com/553831659
+TEST_F(SelectionControllerTest,
+       AdjustSelectionByUserSelectWithNonEditableWidget) {
+  SetBodyContent(R"HTML(
+    <div contenteditable><p>
+      <span id="one">Triple click this line, which has an</span>
+      <span contenteditable="false"><span
+          style="user-select:none">EMBED</span></span>
+      <span id="two">inline widget inside it</span></p></div>)HTML");
+
+  Node* const one =
+      GetDocument().getElementById(AtomicString("one"))->firstChild();
+  const SelectionInFlatTree& selection =
+      ExpandWithGranularity(SelectionInFlatTree::Builder()
+                                .Collapse(PositionInFlatTree(one, 0))
+                                .Build(),
+                            TextGranularity::kParagraph);
+  const SelectionInFlatTree adjusted_selection =
+      AdjustSelectionByUserSelect(one, selection);
+
+  EXPECT_EQ(adjusted_selection.Anchor(), selection.Anchor());
+  EXPECT_EQ(adjusted_selection.Focus(), selection.Focus());
+  EXPECT_TRUE(CreateVisibleSelection(adjusted_selection).IsRange());
+}
+
 // https://crbug.com/399412221
 #if BUILDFLAG(IS_OZONE)
 #define MAYBE_MiddleClickPasteToggle MiddleClickPasteToggle

@@ -230,7 +230,15 @@ SelectionInFlatTree AdjustSelectionByUserSelect(
 
     if (!ShouldIgnoreNodeForCheckSelectable(enclosing_block, iter.GetNode()) &&
         IsNonSelectable(iter.GetNode())) {
-      new_start_pos = current_pos;
+      // A position inside content which is both non-selectable and
+      // non-editable has no canonical position, so clamping to it collapses
+      // the whole selection. Keeping the wider boundary is safe: readers of
+      // the range skip non-selectable content. See crbug.com/553831659.
+      const bool can_clamp_to_current_pos =
+          !RuntimeEnabledFeatures::
+              AvoidNonSelectableSelectionBoundaryEnabled() ||
+          CreateVisiblePosition(current_pos).IsNotNull();
+      new_start_pos = can_clamp_to_current_pos ? current_pos : anchor;
       break;
     }
   }
@@ -249,7 +257,11 @@ SelectionInFlatTree AdjustSelectionByUserSelect(
 
     if (!ShouldIgnoreNodeForCheckSelectable(enclosing_block, iter.GetNode()) &&
         IsNonSelectable(iter.GetNode())) {
-      new_end_pos = current_pos;
+      const bool can_clamp_to_current_pos =
+          !RuntimeEnabledFeatures::
+              AvoidNonSelectableSelectionBoundaryEnabled() ||
+          CreateVisiblePosition(current_pos).IsNotNull();
+      new_end_pos = can_clamp_to_current_pos ? current_pos : focus;
       break;
     }
   }
