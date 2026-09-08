@@ -173,6 +173,11 @@ void DistillerImpl::OnPageDistillationFinished(
     }
   }
 
+  if (distiller_result->has_text_content()) {
+    page_data->distilled_page_proto->data.set_text_content(
+        distiller_result->text_content());
+  }
+
   if (distiller_result->has_debug_info() &&
       distiller_result->debug_info().has_log()) {
     page_data->distilled_page_proto->data.mutable_debug_info()->set_log(

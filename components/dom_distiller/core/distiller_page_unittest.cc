@@ -168,10 +168,12 @@ TEST_F(DistillerPageTest, RecordsNullResultMetric) {
 void AssertCorrectDomDistillerResult(proto::DomDistillerResult& result,
                                      const std::string& title,
                                      const std::string& content,
+                                     const std::string& text_content,
                                      const std::string& dir,
                                      const int word_count) {
   ASSERT_EQ(title, result.title());
   ASSERT_EQ(content, result.distilled_content().html());
+  ASSERT_EQ(text_content, result.text_content());
   ASSERT_EQ(dir, result.text_direction());
   ASSERT_EQ(word_count, result.statistics_info().word_count());
 }
@@ -193,15 +195,15 @@ TEST_F(DistillerPageTest, ReadabilityObjectIsExtracted) {
   base::RunLoop run_loop;
   DistillerPage::DistillerPageCallback cb =
       base::BindOnce(
-          [](std::string title, std::string content, std::string dir,
-             int word_count,
+          [](std::string title, std::string content, std::string text_content,
+             std::string dir, int word_count,
              std::unique_ptr<proto::DomDistillerResult> distilled_page,
              DistillationParseResult result) {
             EXPECT_EQ(DistillationParseResult::kSuccess, result);
             AssertCorrectDomDistillerResult(*distilled_page.get(), title,
-                                            content, dir, 10);
+                                            content, text_content, dir, 10);
           },
-          title, content, dir, 10)
+          title, content, text_content, dir, 10)
           .Then(run_loop.QuitClosure());
   distiller_page.DistillPage(GURL("http://example.com/success"),
                              DistillerOptions(), std::move(cb));
@@ -227,15 +229,15 @@ TEST_F(DistillerPageTest,
   base::RunLoop run_loop;
   DistillerPage::DistillerPageCallback cb =
       base::BindOnce(
-          [](std::string title, std::string content, std::string dir,
-             int word_count,
+          [](std::string title, std::string content, std::string text_content,
+             std::string dir, int word_count,
              std::unique_ptr<proto::DomDistillerResult> distilled_page,
              DistillationParseResult result) {
             EXPECT_EQ(DistillationParseResult::kSuccess, result);
             AssertCorrectDomDistillerResult(*distilled_page.get(), title,
-                                            content, dir, 10);
+                                            content, text_content, dir, 10);
           },
-          title, content, dir, 10)
+          title, content, text_content, dir, 10)
           .Then(run_loop.QuitClosure());
   distiller_page.DistillPage(GURL("http://example.com/success"),
                              DistillerOptions(), std::move(cb));

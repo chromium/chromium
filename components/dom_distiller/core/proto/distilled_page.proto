@@ -57,4 +57,7 @@ message DistilledPageProto {
 
   // Removed obsolete field.
   reserved 9;
+
+  // The clean text content with all HTML tags stripped.
+  optional string text_content = 10;
 }

@@ -129,6 +129,7 @@ bool ReadabilityDistillerResultToDomDistillerResult(
   }
 
   if (auto* text_content = dict_value->FindString("textContent")) {
+    result->set_text_content(*text_content);
     auto* statistics_info = new proto::StatisticsInfo();
     statistics_info->set_word_count(CountWords(*text_content));
     result->set_allocated_statistics_info(statistics_info);
