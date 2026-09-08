@@ -1939,7 +1939,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2498539833203011245">Minimaliseren</translation>
 <translation id="2498765460639677199">Heel groot</translation>
 <translation id="2500471369733289700">Geblokkeerd ter bescherming van je privacy</translation>
-<translation id="2500915336169200382">Vraag het Gemini over <ph name="SELECTION" /></translation>
+<translation id="2500915336169200382">Vraag Gemini naar '<ph name="SELECTION" />'</translation>
 <translation id="2501173422421700905">Certificaat gepauzeerd</translation>
 <translation id="2501797496290880632">Typ een sneltoets</translation>
 <translation id="2501920221385095727">Plaktoetsen</translation>
@@ -2545,7 +2545,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2960942820860729477">Vernieuwingssnelheid</translation>
 <translation id="2960950037335552881">Scan deze code met je telefoon om onder andere je bookmarks en wachtwoorden onderweg te gebruiken</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (door extensie geleverd)</translation>
-<translation id="2961695502793809356">Klik om verder te gaan en houd ingedrukt om de geschiedenis te zien</translation>
+<translation id="2961695502793809356">Klik om verder te gaan en houd ingedrukt om de geschiedenis te bekijken</translation>
 <translation id="29618148602069201">Onderwerp</translation>
 <translation id="2963151496262057773">De volgende plug-in reageert niet meer: <ph name="PLUGIN_NAME" />Wil je deze beëindigen?</translation>
 <translation id="2964193600955408481">Wifi uitzetten</translation>
@@ -4959,7 +4959,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4808525520374557629">Krijg meldingen met suggesties om gevonden prestatieproblemen op te lossen. <ph name="BEGIN_LINK" />Meer informatie over meldingen over prestatieproblemen<ph name="END_LINK" /></translation>
 <translation id="4808667324955055115">Pop-ups geblokkeerd:</translation>
 <translation id="4809447465126035330">Verwijderen</translation>
-<translation id="480990236307250886">Open de homepage</translation>
+<translation id="480990236307250886">De homepage openen</translation>
 <translation id="4811212958317149293">Automatische scan van toetsenbord voor Toegang via schakelaar</translation>
 <translation id="4811503964269049987">Geselecteerd tabblad toevoegen aan groep</translation>
 <translation id="4812073856515324252">Kies waar je je toegangssleutel voor <ph name="APP_NAME" /> wilt opslaan</translation>
@@ -5685,7 +5685,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5375517140689139594">Leesmodus (<ph name="READING_MODE_SHORTCUT" />)</translation>
 <translation id="5375577102295339548">Sites kunnen verifiëren dat je geen bot bent</translation>
 <translation id="5376094717770783089">Vraagt om toegang</translation>
-<translation id="5376169624176189338">Klik om terug te gaan en houd ingedrukt om de geschiedenis te zien</translation>
+<translation id="5376169624176189338">Klik om terug te gaan en houd ingedrukt om de geschiedenis te bekijken</translation>
 <translation id="5376931455988532197">Bestand is te groot</translation>
 <translation id="5377367976106153749">Cameratoegang aanzetten?</translation>
 <translation id="5379140238605961210">Microfoontoegang blijven blokkeren</translation>
