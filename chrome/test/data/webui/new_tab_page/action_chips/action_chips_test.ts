@@ -128,7 +128,6 @@ suite('NewTabPageActionChipsTest', () => {
               queryActionOverride: null,
               preselectedInputSource: null,
               searchboxOverride: null,
-              searchboxTutorial: null,
               ...chip.suggestTemplateInfo.fuseboxAction,
             } :
                                                                     null,
@@ -464,7 +463,6 @@ suite('NewTabPageActionChipsTest', () => {
           queryActionOverride: null,
           preselectedInputSource: null,
           searchboxOverride: null,
-          searchboxTutorial: null,
           ...fuseboxAction,
         } :
                                                       null;

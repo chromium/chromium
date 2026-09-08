@@ -31,7 +31,6 @@ import {GlowAnimationState} from '//resources/cr_components/search/constants.js'
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
-import {SearchboxTutorial} from '//resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
 import type {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
@@ -200,9 +199,9 @@ export class NtpComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   override async handleFuseboxAction(request: ComposeboxFuseboxActionRequest) {
+    // TODO(crbug.com/548681676): Wire to TutorialId once server proto rolls.
     if (this.energyEffectAnimationEnabled &&
-        request.fuseboxAction?.searchboxTutorial ===
-            SearchboxTutorial.kGlowPlusButton) {
+        getLoadTimeBoolean('scaledActionChipsInTestMode', false)) {
       this.glifAnimationState = GlifAnimationState.INELIGIBLE;
       requestAnimationFrame(() => {
         this.glifAnimationState = GlifAnimationState.STARTED;

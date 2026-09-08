@@ -3087,7 +3087,6 @@ suite('NewTabPageAppTest', () => {
                 queryActionOverride: null,
                 preselectedInputSource: null,
                 searchboxOverride: null,
-                searchboxTutorial: null,
               },
             },
             tab: fakeTab,
@@ -3105,7 +3104,6 @@ suite('NewTabPageAppTest', () => {
                 queryActionOverride: null,
                 preselectedInputSource: null,
                 searchboxOverride: null,
-                searchboxTutorial: null,
               },
             },
             tab: null,
@@ -3123,7 +3121,6 @@ suite('NewTabPageAppTest', () => {
                 queryActionOverride: null,
                 preselectedInputSource: null,
                 searchboxOverride: null,
-                searchboxTutorial: null,
               },
             },
             tab: null,
@@ -3197,7 +3194,6 @@ suite('NewTabPageAppTest', () => {
               queryActionOverride: QueryActionOverride.kPaste,
               preselectedInputSource: InputSource.kInputSourceGallery,
               searchboxOverride: SearchboxOverride.kComposebox,
-              searchboxTutorial: null,
             };
             const firstRequest: ActionChipClickDetail = {
               suggestion: 'paste suggestion',
@@ -3256,7 +3252,6 @@ suite('NewTabPageAppTest', () => {
                 queryActionOverride: QueryActionOverride.kPaste,
                 preselectedInputSource: null,
                 searchboxOverride: SearchboxOverride.kComposebox,
-                searchboxTutorial: null,
               },
             };
             actionChips.dispatchEvent(new CustomEvent('action-chip-click', {
@@ -3289,7 +3284,6 @@ suite('NewTabPageAppTest', () => {
             queryActionOverride: QueryActionOverride.kPaste,
             preselectedInputSource: null,
             searchboxOverride: SearchboxOverride.kComposebox,
-            searchboxTutorial: null,
           },
         },
       }));
@@ -3313,7 +3307,6 @@ suite('NewTabPageAppTest', () => {
             queryActionOverride: QueryActionOverride.kHint,
             preselectedInputSource: null,
             searchboxOverride: SearchboxOverride.kComposebox,
-            searchboxTutorial: null,
           },
         },
       }));
@@ -3365,7 +3358,6 @@ suite('NewTabPageAppTest', () => {
                 queryActionOverride: QueryActionOverride.kHint,
                 preselectedInputSource: null,
                 searchboxOverride: SearchboxOverride.kComposebox,
-                searchboxTutorial: null,
               },
             },
           }));
@@ -3399,7 +3391,6 @@ suite('NewTabPageAppTest', () => {
         queryActionOverride: null,
         preselectedInputSource: InputSource.kInputSourceTabPicker,
         searchboxOverride: SearchboxOverride.kRealbox,
-        searchboxTutorial: null,
       };
 
       actionChips.dispatchEvent(new CustomEvent('action-chip-click', {
@@ -3533,7 +3524,6 @@ suite('NewTabPageAppTest', () => {
                 queryActionOverride: null,
                 preselectedInputSource: null,
                 searchboxOverride: null,
-                searchboxTutorial: null,
               },
             },
             tab: null,
@@ -3582,7 +3572,6 @@ suite('NewTabPageAppTest', () => {
               queryActionOverride: QueryActionOverride.kHint,
               preselectedInputSource: null,
               searchboxOverride: SearchboxOverride.kComposebox,
-              searchboxTutorial: null,
             };
 
             // Act.
@@ -3641,7 +3630,6 @@ suite('NewTabPageAppTest', () => {
               queryActionOverride: null,
               preselectedInputSource: null,
               searchboxOverride: SearchboxOverride.kComposebox,
-              searchboxTutorial: null,
             },
           },
           {
@@ -3653,7 +3641,6 @@ suite('NewTabPageAppTest', () => {
               queryActionOverride: QueryActionOverride.kPaste,
               preselectedInputSource: null,
               searchboxOverride: null,
-              searchboxTutorial: null,
             },
           },
         ];
@@ -3734,7 +3721,6 @@ suite('NewTabPageAppTest', () => {
               queryActionOverride: QueryActionOverride.kPaste,
               preselectedInputSource: null,
               searchboxOverride: SearchboxOverride.kUnspecified,
-              searchboxTutorial: null,
             },
           },
         }));
@@ -3786,7 +3772,6 @@ suite('NewTabPageAppTest', () => {
                   queryActionOverride: QueryActionOverride.kPaste,
                   preselectedInputSource: null,
                   searchboxOverride: SearchboxOverride.kComposebox,
-                  searchboxTutorial: null,
                 },
               },
             }));
