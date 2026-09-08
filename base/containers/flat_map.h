@@ -260,17 +260,23 @@ class flat_map : public ::base::internal::
 
   template <class K = Key, class... Args>
     requires(!std::convertible_to<K, const_iterator>)
-  std::pair<iterator, bool> try_emplace(const KeyT<K>& key, Args&&... args);
+  constexpr std::pair<iterator, bool> try_emplace(const KeyT<K>& key,
+                                                  Args&&... args);
   template <class K = Key, class... Args>
     requires(std::same_as<K, std::remove_cvref_t<K>> &&
              !std::convertible_to<K, const_iterator>)
-  std::pair<iterator, bool> try_emplace(KeyT<K>&& key, Args&&... args);
+  constexpr std::pair<iterator, bool> try_emplace(KeyT<K>&& key,
+                                                  Args&&... args);
 
   template <class K = Key, class... Args>
-  iterator try_emplace(const_iterator hint, const KeyT<K>& key, Args&&... args);
+  constexpr iterator try_emplace(const_iterator hint,
+                                 const KeyT<K>& key,
+                                 Args&&... args);
   template <class K = Key, class... Args>
     requires(std::same_as<K, std::remove_cvref_t<K>>)
-  iterator try_emplace(const_iterator hint, KeyT<K>&& key, Args&&... args);
+  constexpr iterator try_emplace(const_iterator hint,
+                                 KeyT<K>&& key,
+                                 Args&&... args);
 
   // --------------------------------------------------------------------------
   // General operations.
@@ -389,9 +395,9 @@ template <class K, class... Args>
   requires(!std::convertible_to<
            K,
            typename flat_map<Key, Mapped, Compare, Container>::const_iterator>)
-auto flat_map<Key, Mapped, Compare, Container>::try_emplace(const KeyT<K>& key,
-                                                            Args&&... args)
-    -> std::pair<iterator, bool> {
+constexpr auto flat_map<Key, Mapped, Compare, Container>::try_emplace(
+    const KeyT<K>& key,
+    Args&&... args) -> std::pair<iterator, bool> {
   return tree::emplace_key_args(
       key, std::piecewise_construct, std::forward_as_tuple(key),
       std::forward_as_tuple(std::forward<Args>(args)...));
@@ -404,9 +410,9 @@ template <class K, class... Args>
       !std::convertible_to<
           K,
           typename flat_map<Key, Mapped, Compare, Container>::const_iterator>)
-auto flat_map<Key, Mapped, Compare, Container>::try_emplace(KeyT<K>&& key,
-                                                            Args&&... args)
-    -> std::pair<iterator, bool> {
+constexpr auto flat_map<Key, Mapped, Compare, Container>::try_emplace(
+    KeyT<K>&& key,
+    Args&&... args) -> std::pair<iterator, bool> {
   return tree::emplace_key_args(
       key, std::piecewise_construct, std::forward_as_tuple(std::move(key)),
       std::forward_as_tuple(std::forward<Args>(args)...));
@@ -414,10 +420,10 @@ auto flat_map<Key, Mapped, Compare, Container>::try_emplace(KeyT<K>&& key,
 
 template <class Key, class Mapped, class Compare, class Container>
 template <class K, class... Args>
-auto flat_map<Key, Mapped, Compare, Container>::try_emplace(const_iterator hint,
-                                                            const KeyT<K>& key,
-                                                            Args&&... args)
-    -> iterator {
+constexpr auto flat_map<Key, Mapped, Compare, Container>::try_emplace(
+    const_iterator hint,
+    const KeyT<K>& key,
+    Args&&... args) -> iterator {
   return tree::emplace_hint_key_args(
              hint, key, std::piecewise_construct, std::forward_as_tuple(key),
              std::forward_as_tuple(std::forward<Args>(args)...))
@@ -427,10 +433,10 @@ auto flat_map<Key, Mapped, Compare, Container>::try_emplace(const_iterator hint,
 template <class Key, class Mapped, class Compare, class Container>
 template <class K, class... Args>
   requires(std::same_as<K, std::remove_cvref_t<K>>)
-auto flat_map<Key, Mapped, Compare, Container>::try_emplace(const_iterator hint,
-                                                            KeyT<K>&& key,
-                                                            Args&&... args)
-    -> iterator {
+constexpr auto flat_map<Key, Mapped, Compare, Container>::try_emplace(
+    const_iterator hint,
+    KeyT<K>&& key,
+    Args&&... args) -> iterator {
   return tree::emplace_hint_key_args(
              hint, key, std::piecewise_construct,
              std::forward_as_tuple(std::move(key)),

@@ -597,4 +597,19 @@ TEST(FlatMap, Constexpr) {
   EXPECT_EQ(kMap.size(), 3u);
 }
 
+TEST(FlatMap, ConstexprTryEmplace) {
+  static_assert([] {
+    flat_map<int, int> map;
+    auto try_emplace_result = map.try_emplace(2, 2);
+    return try_emplace_result.second && map.find(2)->second == 2;
+  }() == true);
+
+  static_assert([] {
+    flat_map<int, int> map;
+    map[2] = 3;
+    auto try_emplace_result = map.try_emplace(2, 2);
+    return try_emplace_result.second && map.find(2)->second == 3;
+  }() == false);
+}
+
 }  // namespace base

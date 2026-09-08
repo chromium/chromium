@@ -1747,4 +1747,30 @@ TEST(FlatTree, ConstexprIteratorsAndLifetime) {
   }() == 6);
 }
 
+TEST(FlatTree, ConstexprEmplace) {
+  constexpr auto test_constexpr_emplace = [] {
+    flat_tree<int, std::identity, std::less<>, std::vector<int>> tree(
+        sorted_unique, std::vector<int>({1, 2, 3, 5}));
+
+    // Emplace a new element in the middle of the tree.
+    auto [it, inserted] = tree.emplace(4);
+    return inserted && it != tree.end();
+  };
+
+  static_assert(test_constexpr_emplace());
+}
+
+TEST(FlatTree, ConstexprEmplaceDuplicate) {
+  constexpr auto test_constexpr_emplace_duplicate = [] {
+    flat_tree<int, std::identity, std::less<>, std::vector<int>> tree(
+        sorted_unique, std::vector<int>({1, 2, 3, 5}));
+
+    auto [it, inserted] = tree.emplace(2);
+    // No insertion is performed and `it` should point to element '2'.
+    return !inserted && it != tree.end() && *it == 2;
+  };
+
+  static_assert(test_constexpr_emplace_duplicate());
+}
+
 }  // namespace base::internal
