@@ -7,17 +7,35 @@
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+#include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
+
+namespace {
+bool IsCrossOriginIsolated(ScriptState* script_state) {
+  if (!script_state) {
+    return false;
+  }
+  if (ExecutionContext* execution_context =
+          ExecutionContext::From(script_state)) {
+    return execution_context->CrossOriginIsolatedCapability();
+  }
+  return false;
+}
+}  // namespace
 
 AudioPlaybackStats::AudioPlaybackStats(AudioContext* context)
     : context_(context) {}
 
 double AudioPlaybackStats::underrunDuration(ScriptState* script_state) {
   MaybeUpdateStats(script_state);
-  return stats_.glitch_frames_duration().InSecondsF();
+  return ConvertDOMHighResTimeStampToSeconds(
+      Performance::ClampTimeResolution(stats_.glitch_frames_duration(),
+                                       IsCrossOriginIsolated(script_state)));
 }
 
 uint32_t AudioPlaybackStats::underrunEvents(ScriptState* script_state) {
@@ -27,23 +45,31 @@ uint32_t AudioPlaybackStats::underrunEvents(ScriptState* script_state) {
 
 double AudioPlaybackStats::totalDuration(ScriptState* script_state) {
   MaybeUpdateStats(script_state);
-  return (stats_.glitch_frames_duration() + stats_.observed_frames_duration())
-      .InSecondsF();
+  return ConvertDOMHighResTimeStampToSeconds(
+      Performance::ClampTimeResolution(
+          stats_.glitch_frames_duration() + stats_.observed_frames_duration(),
+          IsCrossOriginIsolated(script_state)));
 }
 
 double AudioPlaybackStats::averageLatency(ScriptState* script_state) {
   MaybeUpdateStats(script_state);
-  return stats_.average_latency().InSecondsF();
+  return ConvertDOMHighResTimeStampToSeconds(
+      Performance::ClampTimeResolution(stats_.average_latency(),
+                                       IsCrossOriginIsolated(script_state)));
 }
 
 double AudioPlaybackStats::minimumLatency(ScriptState* script_state) {
   MaybeUpdateStats(script_state);
-  return stats_.min_latency().InSecondsF();
+  return ConvertDOMHighResTimeStampToSeconds(
+      Performance::ClampTimeResolution(stats_.min_latency(),
+                                       IsCrossOriginIsolated(script_state)));
 }
 
 double AudioPlaybackStats::maximumLatency(ScriptState* script_state) {
   MaybeUpdateStats(script_state);
-  return stats_.max_latency().InSecondsF();
+  return ConvertDOMHighResTimeStampToSeconds(
+      Performance::ClampTimeResolution(stats_.max_latency(),
+                                       IsCrossOriginIsolated(script_state)));
 }
 
 void AudioPlaybackStats::resetLatency(ScriptState* script_state) {

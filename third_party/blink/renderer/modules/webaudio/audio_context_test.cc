@@ -35,11 +35,13 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_audiocontextrendersizecategory_unsignedlong.h"
 #include "third_party/blink/renderer/core/core_initializer.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/modules/mediastream/sub_capture_target.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h"
@@ -982,28 +984,44 @@ class AudioContextStatsTest : public AudioContextTest, public base::TickClock {
                            base::TimeDelta min_delay,
                            base::TimeDelta max_delay,
                            int source_line) {
+    ExecutionContext* execution_context = ExecutionContext::From(script_state);
+    bool cross_origin_isolated =
+        execution_context ? execution_context->CrossOriginIsolatedCapability()
+                          : false;
+
     EXPECT_EQ(playback_stats->underrunEvents(script_state),
               total_glitches.count)
         << " LINE " << source_line;
-    EXPECT_FLOAT_EQ(playback_stats->underrunDuration(script_state),
-                    total_glitches.duration.InSecondsF())
+    EXPECT_FLOAT_EQ(
+        playback_stats->underrunDuration(script_state),
+        ConvertDOMHighResTimeStampToSeconds(Performance::ClampTimeResolution(
+            total_glitches.duration, cross_origin_isolated)))
         << " LINE " << source_line;
-    EXPECT_FLOAT_EQ(playback_stats->averageLatency(script_state),
-                    average_delay.InSecondsF())
+    EXPECT_FLOAT_EQ(
+        playback_stats->averageLatency(script_state),
+        ConvertDOMHighResTimeStampToSeconds(Performance::ClampTimeResolution(
+            average_delay, cross_origin_isolated)))
         << " LINE " << source_line;
-    EXPECT_FLOAT_EQ(playback_stats->minimumLatency(script_state),
-                    min_delay.InSecondsF())
+    EXPECT_FLOAT_EQ(
+        playback_stats->minimumLatency(script_state),
+        ConvertDOMHighResTimeStampToSeconds(Performance::ClampTimeResolution(
+            min_delay, cross_origin_isolated)))
         << " LINE " << source_line;
-    EXPECT_FLOAT_EQ(playback_stats->maximumLatency(script_state),
-                    max_delay.InSecondsF())
+    EXPECT_FLOAT_EQ(
+        playback_stats->maximumLatency(script_state),
+        ConvertDOMHighResTimeStampToSeconds(Performance::ClampTimeResolution(
+            max_delay, cross_origin_isolated)))
         << " LINE " << source_line;
-    EXPECT_NEAR(
-        playback_stats->totalDuration(script_state),
-        (media::AudioTimestampHelper::FramesToTime(
-             total_processed_frames, platform()->AudioHardwareSampleRate()) +
-         total_glitches.duration)
-            .InSecondsF(),
-        0.00001)
+
+    base::TimeDelta expected_total_duration =
+        media::AudioTimestampHelper::FramesToTime(
+            total_processed_frames, platform()->AudioHardwareSampleRate()) +
+        total_glitches.duration;
+    double coarsened_expected = ConvertDOMHighResTimeStampToSeconds(
+        Performance::ClampTimeResolution(expected_total_duration,
+                                         cross_origin_isolated));
+    EXPECT_NEAR(playback_stats->totalDuration(script_state),
+                coarsened_expected, 0.00011)
         << " LINE " << source_line;
   }
 
@@ -1350,7 +1368,6 @@ TEST_F(AudioContextStatsTest, PlaybackStatsVisibilityDataDiscard) {
 
   AudioPlaybackStats* playback_stats = audio_context->playbackStats();
   int glitches_before = playback_stats->underrunEvents(script_state);
-  double duration_before = playback_stats->totalDuration(script_state);
 
   // 2. Hide the page.
   GetPage().SetVisibilityState(mojom::blink::PageVisibilityState::kHidden,
@@ -1376,17 +1393,22 @@ TEST_F(AudioContextStatsTest, PlaybackStatsVisibilityDataDiscard) {
   // the hidden period.
   int glitches_after = playback_stats->underrunEvents(script_state);
   EXPECT_EQ(glitches_before, glitches_after);
-  double duration_after =
-      duration_before + media::AudioTimestampHelper::FramesToTime(
-                            1000, audio_context->sampleRate())
-                            .InSecondsF();
-  // We use EXPECT_NEAR with a 10 microseconds tolerance to allow for
-  // sub-microsecond rounding errors from integer time conversion in
-  // AudioTimestampHelper::FramesToTime. The tolerance is smaller than 1 audio
-  // frame (~20.8 microseconds at 48kHz), ensuring any actually processed frame
-  // would still trigger a failure.
-  EXPECT_NEAR(playback_stats->totalDuration(script_state),
-              duration_after, 0.00001);
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  bool cross_origin_isolated =
+      execution_context ? execution_context->CrossOriginIsolatedCapability()
+                        : false;
+
+  base::TimeDelta expected_total_duration =
+      media::AudioTimestampHelper::FramesToTime(
+          2000, audio_context->sampleRate()) +
+      base::Milliseconds(10);  // 10ms baseline glitch
+  double duration_after = ConvertDOMHighResTimeStampToSeconds(
+      Performance::ClampTimeResolution(expected_total_duration,
+                                       cross_origin_isolated));
+  // We use EXPECT_NEAR with a 110 microseconds tolerance (0.00011s) to
+  // allow for coarsening grid alignment and sub-microsecond rounding errors.
+  EXPECT_NEAR(playback_stats->totalDuration(script_state), duration_after,
+              0.00011);
 }
 
 TEST_F(AudioContextStatsTest, PlaybackStatsMicrophoneRestrictionStartsDenied) {
@@ -1468,6 +1490,39 @@ TEST_F(AudioContextStatsTest, HasPendingActivityAfterClose) {
   audio_context->closeContext(script_state, exception_state);
 
   EXPECT_FALSE(audio_context->HasPendingActivity());
+}
+
+TEST_F(AudioContextStatsTest, PlaybackStatsCoarsening) {
+  blink::WebRuntimeFeatures::EnableFeatureFromString(
+      "AudioContextPlaybackStats", true);
+  AudioContextOptions* options = AudioContextOptions::Create();
+  AudioContext* audio_context = AudioContext::Create(
+      GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
+  audio_context->set_clock_for_testing(this);
+
+  ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+  AudioPlaybackStats* playback_stats = audio_context->playbackStats();
+
+  ContextRenderer* renderer =
+      MakeGarbageCollected<ContextRenderer>(audio_context);
+  renderer->Init();
+
+  // Advance time to allow updates.
+  fake_time_now_ += base::Seconds(1);
+
+  // Render with a very specific "fine" latency: 10.123 ms = 10123 us.
+  base::TimeDelta fine_delay = base::Microseconds(10123);
+  renderer->Render(100, fine_delay, media::AudioGlitchInfo{});
+
+  ToEventLoop(script_state).PerformMicrotaskCheckpoint();
+
+  double max_latency = playback_stats->maximumLatency(script_state);
+  int64_t max_latency_us = std::round(max_latency * 1000000.0);
+
+  // It should be a multiple of 100 us (0.1 ms).
+  EXPECT_EQ(max_latency_us % 100, 0) << "max_latency: " << max_latency;
+  EXPECT_TRUE(max_latency_us == 10100 || max_latency_us == 10200)
+      << "max_latency_us: " << max_latency_us;
 }
 
 // Test that AudioWorklet and its messaging proxy are signaled to terminate
