@@ -53,6 +53,7 @@ template("ios_eg2_test") {
 
   _target_name = target_name
   _test_target = "${target_name}_test"
+
   ios_xcuitest_test(_test_target) {
     forward_variables_from(invoker,
                            [

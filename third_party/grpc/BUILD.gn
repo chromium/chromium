@@ -2513,6 +2513,7 @@ source_set("grpc++_repeated1") {
     configs += [ "//build/config/gcc:symbol_visibility_default" ]
   }
 }
+
 source_set("grpc++_repeated2") {
   sources = [
     "source/src/core/ext/upb-gen/envoy/extensions/transport_sockets/tls/v3/common.upb_minitable.c",
@@ -2551,6 +2552,7 @@ source_set("grpc++_repeated2") {
     configs += [ "//build/config/gcc:symbol_visibility_default" ]
   }
 }
+
 source_set("grpc++_repeated3") {
   sources = [ "source/src/core/util/windows/cpu.cc" ]
 
@@ -2574,6 +2576,7 @@ source_set("grpc++_repeated3") {
     configs += [ "//build/config/gcc:symbol_visibility_default" ]
   }
 }
+
 source_set("grpc++_repeated4") {
   deps = [
     ":address_sorting",
@@ -3111,6 +3114,7 @@ source_set("upb_reflection_lib") {
     configs += [ "//build/config/gcc:symbol_visibility_default" ]
   }
 }
+
 source_set("upb_reflection_internal_lib") {
   sources = [
     "source/third_party/upb/upb/reflection/common.h",

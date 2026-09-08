@@ -21,6 +21,7 @@ source_set("compress") {
   public_configs = [ ":system_zstd" ]
   public_deps = [ ":zstd_headers" ]
 }
+
 source_set("decompress") {
   public_configs = [ ":system_zstd" ]
   public_deps = [ ":zstd_headers" ]

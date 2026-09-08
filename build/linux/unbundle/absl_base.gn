@@ -97,9 +97,12 @@ source_set("no_destructor") {
 
 source_set("config_test") {
 }
+
 source_set("no_destructor_test") {
 }
+
 source_set("nullability_test") {
 }
+
 source_set("prefetch_test") {
 }

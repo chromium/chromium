@@ -984,6 +984,7 @@ template("skia_source_set") {
     }
   }
 }
+
 set_defaults("skia_source_set") {
   # Match the defaults for `source_set`
   # (as defined in `build/config/BUILDCONFIG.gn`).
@@ -1059,6 +1060,7 @@ if (current_cpu == "x86" || current_cpu == "x64") {
     }
     visibility = [ ":skia_opts" ]
   }
+
   skia_source_set("skia_opts_ml4") {
     sources = skia_opts.ml4_sources
     configs += [ ":skia_avx512_flags" ]
@@ -1171,6 +1173,7 @@ if (current_cpu == "x64") {
     }
     visibility = [ ":skcms" ]
   }
+
   skia_source_set("skcms_TransformSkx") {
     sources = skcms_TransformSkx
     configs += [
@@ -1184,6 +1187,7 @@ if (current_cpu == "x64") {
     sources = []
     visibility = [ ":skcms" ]
   }
+
   skia_source_set("skcms_TransformSkx") {
     sources = []
     visibility = [ ":skcms" ]

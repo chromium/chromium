@@ -51,6 +51,7 @@ source_set("connections") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
+
 source_set("connections_types") {
   public_configs = [
     ":nearby_include_config",
@@ -754,6 +755,7 @@ source_set("platform_api_types") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
+
 source_set("platform_api_platform") {
   public_configs = [
     ":nearby_include_config",
@@ -810,6 +812,7 @@ source_set("platform_base") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
+
 source_set("platform_base_error_code_recorder") {
   public_configs = [
     ":nearby_include_config",
@@ -828,6 +831,7 @@ source_set("platform_base_error_code_recorder") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
+
 source_set("platform_base_uuid") {
   public_configs = [
     ":nearby_include_config",
@@ -843,6 +847,7 @@ source_set("platform_base_uuid") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
+
 source_set("platform_base_util") {
   public_configs = [
     ":nearby_include_config",
@@ -865,6 +870,7 @@ source_set("platform_base_util") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
+
 source_set("platform_base_logging") {
   public_configs = [
     ":nearby_include_config",
@@ -879,6 +885,7 @@ source_set("platform_base_logging") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
+
 source_set("platform_base_cancellation_flag") {
   public_configs = [
     ":nearby_include_config",
@@ -894,6 +901,7 @@ source_set("platform_base_cancellation_flag") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
+
 source_set("platform_base_connection_info") {
   public_configs = [
     ":nearby_include_config",
@@ -1019,6 +1027,7 @@ source_set("platform_public_types") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
+
 source_set("platform_public_comm") {
   public_configs = [
     ":nearby_include_config",
@@ -1061,6 +1070,7 @@ source_set("platform_public_comm") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
+
 source_set("platform_public_logging") {
   public_configs = [
     ":nearby_include_config",
@@ -1113,6 +1123,7 @@ source_set("presence") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
+
 source_set("presence_test") {
   testonly = true
   public_configs = [
@@ -1131,6 +1142,7 @@ source_set("presence_test") {
   ]
   deps = [ ":presence" ]
 }
+
 source_set("presence_types") {
   public_configs = [
     ":nearby_include_config",

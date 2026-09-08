@@ -424,14 +424,17 @@ if (!is_win) {
       has_exe_suffix = _tests_launcher_toolchain_has_exe_suffix
       target = ":$target_name($_tests_launcher_toolchain)"
     }
+
     copy_exe("minidump_stackwalk") {
       has_exe_suffix = _tests_launcher_toolchain_has_exe_suffix
       target = ":$target_name($_tests_launcher_toolchain)"
     }
+
     copy_exe("minidump_dump") {
       has_exe_suffix = _tests_launcher_toolchain_has_exe_suffix
       target = ":$target_name($_tests_launcher_toolchain)"
     }
+
     copy_exe("minidump_fuzzer") {
       testonly = true
       fuzzer = true
@@ -499,6 +502,7 @@ if (is_mac) {
       include_dirs += [ "//third_party/rust/chromium_crates_io/vendor/rustc-demangle-capi-v0_1/include" ]
       sources += [ "//third_party/rust/chromium_crates_io/vendor/rustc-demangle-capi-v0_1/include/rustc_demangle.h" ]
     }
+
     test("breakpad_unittests") {
       sources = [ "breakpad/src/common/module_unittest.cc" ]
       deps = [
@@ -565,10 +569,12 @@ if (is_mac) {
         has_exe_suffix = _tests_launcher_toolchain_has_exe_suffix
         target = ":$target_name($_tests_launcher_toolchain)"
       }
+
       copy_exe("minidump-2-core") {
         has_exe_suffix = _tests_launcher_toolchain_has_exe_suffix
         target = ":$target_name($_tests_launcher_toolchain)"
       }
+
       copy_exe("core-2-minidump") {
         has_exe_suffix = _tests_launcher_toolchain_has_exe_suffix
         target = ":$target_name($_tests_launcher_toolchain)"
@@ -581,10 +587,12 @@ if (is_mac) {
       has_exe_suffix = _tests_launcher_toolchain_has_exe_suffix
       target = ":$target_name($_tests_launcher_toolchain)"
     }
+
     copy_exe("symupload") {
       has_exe_suffix = _symupload_toolchain_has_exe_suffix
       target = ":$target_name($_symupload_toolchain)"
     }
+
     copy_exe("breakpad_unittests") {
       testonly = true
       has_exe_suffix = _tests_launcher_toolchain_has_exe_suffix
@@ -644,6 +652,7 @@ if (is_ios) {
       has_exe_suffix = _tests_launcher_toolchain_has_exe_suffix
       target = ":$target_name($_tests_launcher_toolchain)"
     }
+
     copy_exe("symupload") {
       has_exe_suffix = _symupload_toolchain_has_exe_suffix
       target = ":$target_name($_symupload_toolchain)"
@@ -760,6 +769,7 @@ if (is_linux || is_chromeos || is_android) {
       has_exe_suffix = _tests_launcher_toolchain_has_exe_suffix
       target = ":$target_name($_tests_launcher_toolchain)"
     }
+
     copy_exe("symupload") {
       has_exe_suffix = _symupload_toolchain_has_exe_suffix
       target = ":$target_name($_symupload_toolchain)"
@@ -1027,10 +1037,12 @@ if (is_linux || is_chromeos || is_android) {
       has_exe_suffix = _tests_launcher_toolchain_has_exe_suffix
       target = ":$target_name($_tests_launcher_toolchain)"
     }
+
     copy_exe("minidump-2-core") {
       has_exe_suffix = _tests_launcher_toolchain_has_exe_suffix
       target = ":$target_name($_tests_launcher_toolchain)"
     }
+
     copy_exe("core-2-minidump") {
       has_exe_suffix = _tests_launcher_toolchain_has_exe_suffix
       target = ":$target_name($_tests_launcher_toolchain)"
@@ -1201,10 +1213,12 @@ if (is_win) {
         target = ":$target_name($_tests_launcher_toolchain)"
       }
     }
+
     copy_exe("symupload") {
       has_exe_suffix = _symupload_toolchain_has_exe_suffix
       target = ":$target_name($_symupload_toolchain)"
     }
+
     copy_exe("dump_syms") {
       has_exe_suffix = _tests_launcher_toolchain_has_exe_suffix
       target = ":$target_name($_tests_launcher_toolchain)"

@@ -237,6 +237,7 @@ template("rust_target") {
     foreach(bindgen_dep, invoker.bindgen_deps) {
       _copy_target_name =
           target_name + "_" + get_label_info(bindgen_dep, "name") + "_copy"
+
       copy(_copy_target_name) {
         _bindgen_output_files = get_target_outputs(bindgen_dep)
 
@@ -716,6 +717,7 @@ template("rust_target") {
 
       if (_enable_clippy_for_this_target) {
         _clippy_stamp_file = "${target_out_dir}/${_target_name}.clippy"
+
         action("${_clippy_target_name}") {
           forward_variables_from(_secondary_rust_compiler_attrs,
                                  _SECONDARY_RUST_COMPILER_ATTR_NAMES)

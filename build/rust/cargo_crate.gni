@@ -250,6 +250,7 @@ template("cargo_crate") {
       sources = invoker.native_libs
       outputs = [ "${_native_libs_dir}/{{source_file_part}}" ]
     }
+
     config(_native_libs_config) {
       lib_dirs = [ "${_native_libs_dir}" ]
     }

@@ -218,6 +218,7 @@ config("default_libs") {
 
 _toolchain_marker_name =
     "toolchain_marker_" + get_label_info(current_toolchain, "name")
+
 group(_toolchain_marker_name) {
   # Can be used as an assert_no_deps target (assert_no_deps ignores toolchains).
 }

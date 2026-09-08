@@ -28,6 +28,7 @@ template("fuchsia_package_metadata") {
 
   _metadata_target = "${target_name}_script_meta_gen"
   _metadata_file = "$root_gen_dir/package_metadata/${invoker.target_name}.meta"
+
   generated_file(_metadata_target) {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     contents = {

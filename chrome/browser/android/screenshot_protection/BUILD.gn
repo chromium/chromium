@@ -4,6 +4,7 @@
 
 if (is_android) {
   import("//build/config/android/rules.gni")
+
   android_library("java") {
     sources = [ "java/src/org/chromium/chrome/browser/screenshot_protection/ScreenshotProtectionController.java" ]
     deps = [

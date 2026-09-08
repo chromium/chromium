@@ -36,6 +36,7 @@ template("cronet_renamed_jar") {
 # java classes in the same way the classes shipped in cronet jars are renamed.
 template("cronet_instrumentation_test_apk") {
   _single_jar_target_name = "${target_name}_single_jar_java"
+
   cronet_renamed_jar(_single_jar_target_name) {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
@@ -57,6 +58,7 @@ template("cronet_instrumentation_test_apk") {
 # same way the classes shipped in  cronet jars are renamed.
 template("cronet_test") {
   _single_jar_target_name = "${target_name}_single_jar_java"
+
   cronet_renamed_jar(_single_jar_target_name) {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 

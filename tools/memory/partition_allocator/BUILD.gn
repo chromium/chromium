@@ -24,6 +24,7 @@ if (_tcache_tool_supported) {
 
     deps = [ "//base" ]
   }
+
   executable("pa_tcache_inspect") {
     sources = [ "pa_tcache_inspect.cc" ]
     deps = [
@@ -41,6 +42,7 @@ if (_tcache_tool_supported) {
       ]
     }
   }
+
   executable("pa_buckets_inspect") {
     sources = [ "pa_buckets_inspect.cc" ]
     deps = [
@@ -48,6 +50,7 @@ if (_tcache_tool_supported) {
       "//base",
     ]
   }
+
   executable("pa_dump_heap") {
     sources = [ "pa_dump_heap.cc" ]
     deps = [

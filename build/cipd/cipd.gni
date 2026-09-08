@@ -71,6 +71,7 @@ template("cipd_package_definition") {
     foreach(source, sources) {
       _yaml_contents += [ "  - file: " + get_path_info(source, "file") ]
     }
+
     copy(target_name) {
       outputs = [ "${_package_staging_dir}/{{source_file_part}}" ]
     }
@@ -121,6 +122,7 @@ template("cipd_package_definition_by_file") {
   if (defined(invoker.package_definition_yaml)) {
     _output_yaml_filename = invoker.package_definition_yaml
   }
+
   action(target_name) {
     script = "//build/cipd/cipd_from_file.py"
     inputs = [ invoker.files_file ]

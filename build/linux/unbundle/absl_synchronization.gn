@@ -23,5 +23,6 @@ source_set("synchronization") {
 
 source_set("kernel_timeout_internal_test") {
 }
+
 source_set("waiter_test") {
 }

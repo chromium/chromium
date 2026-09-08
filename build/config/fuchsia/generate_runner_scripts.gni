@@ -157,6 +157,7 @@ template("fuchsia_package_installer") {
   } else {
     pkg_shortname = get_label_info(invoker.package, "name")
   }
+
   fuchsia_package_metadata(pkg_shortname) {
     forward_variables_from(invoker,
                            TESTONLY_AND_VISIBILITY + [
@@ -164,6 +165,7 @@ template("fuchsia_package_installer") {
                                  "package_deps",
                                ])
   }
+
   fuchsia_run_script_with_packages(target_name) {
     forward_variables_from(invoker,
                            "*",
@@ -237,6 +239,7 @@ template("fuchsia_test_runner") {
       package_name = invoker.package_name_override
     }
   }
+
   fuchsia_package_installer(_install_target) {
     forward_variables_from(invoker,
                            TESTONLY_AND_VISIBILITY + [

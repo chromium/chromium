@@ -30,6 +30,7 @@ template("optimize_ts") {
          "only a single source may be provided to optimize_ts")
 
   _compile_ts_target_name = target_name + "_compile_ts"
+
   compile_ts(_compile_ts_target_name) {
     forward_variables_from(invoker,
                            [

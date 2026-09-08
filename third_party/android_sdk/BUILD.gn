@@ -19,6 +19,7 @@ if (enable_java_templates) {
 
     # String replace to prevent dep from being treated as a java library.
     _manifest_target = string_replace(target_name, "_java", "_J") + "__manifest"
+
     jinja_template(_manifest_target) {
       input = "//third_party/android_sdk/AndroidManifest.xml.jinja2"
       output = _manifest_path
@@ -32,6 +33,7 @@ if (enable_java_templates) {
         "required=${invoker.required}",
       ]
     }
+
     java_group(target_name) {
       forward_variables_from(invoker, [ "jar_deps" ])
       deps = [ ":$_manifest_target" ]
@@ -59,10 +61,12 @@ if (enable_java_templates) {
     library_name = "android.test.mock"
     runtime_library_name = "android.test.runner"
   }
+
   android_sdk_optional_library("android_car_java") {
     library_name = "android.car"
     required = false
   }
+
   android_sdk_optional_library("android_xr_extensions_java") {
     runtime_library_name = "com.android.extensions.xr"
     input_jars_paths = [ "//third_party/android_deps/autorolled/cipd/libs/com_android_extensions_xr_extensions_xr/extensions-xr.jar" ]

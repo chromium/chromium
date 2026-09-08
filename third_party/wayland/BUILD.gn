@@ -239,6 +239,7 @@ if (!use_system_libwayland) {
 } else {
   # use_system_libwayland
   import("wayland_version.gni")
+
   pkg_config("wayland_server_config") {
     packages = [ "wayland-server" ]
     extra_args = [ "wayland-server >= $wayland_version" ]

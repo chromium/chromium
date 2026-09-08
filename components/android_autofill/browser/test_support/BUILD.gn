@@ -26,6 +26,7 @@ android_library("java") {
     "//third_party/jni_zero:jni_zero_java",
   ]
 }
+
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/components/autofill/AutofillProviderTestHelper.java",

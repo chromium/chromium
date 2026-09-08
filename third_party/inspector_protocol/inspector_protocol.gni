@@ -36,6 +36,7 @@ template("inspector_protocol_generate") {
   } else {
     jinja_dir = "//third_party"
   }
+
   action(target_name) {
     script = "$inspector_protocol_dir/code_generator.py"
 

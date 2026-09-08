@@ -647,10 +647,12 @@ if (is_ios) {
     testonly = true
     filelist_name = "testing/data/core_test_bundle_data.filelist"
   }
+
   bundle_data_from_filelist("animation_test_bundle_data") {
     testonly = true
     filelist_name = "animation/test_data/animation_test_bundle_data.filelist"
   }
+
   bundle_data_from_filelist("paint_test_bundle_data") {
     testonly = true
     filelist_name = "paint/test_data/paint_test_bundle_data.filelist"

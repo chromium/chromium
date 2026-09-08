@@ -112,6 +112,7 @@ source_set("unit_tests") {
     "//third_party/ocmock",
   ]
 }
+
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true

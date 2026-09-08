@@ -788,15 +788,18 @@ if (is_android) {
   java_cpp_enum("contacts_picker_properties_javagen") {
     sources = [ "contacts_picker_properties.h" ]
   }
+
   java_cpp_enum("bluetooth_chooser_event_javagen") {
     sources = [ "bluetooth_chooser.h" ]
   }
+
   java_cpp_enum("digital_identity_enum") {
     sources = [
       "digital_identity_interstitial_type.h",
       "digital_identity_provider.h",
     ]
   }
+
   java_cpp_enum("transfer_input_to_viz_result_enum") {
     sources = [ "android/transfer_input_to_viz_result.h" ]
   }

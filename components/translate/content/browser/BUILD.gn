@@ -41,8 +41,8 @@ static_library("browser") {
     "//content/public/common",
     "//google_apis",
     "//net",
-    "//services/network/public/cpp",
     "//pdf:buildflags",
+    "//services/network/public/cpp",
   ]
 
   if (enable_pdf_translation) {
@@ -74,9 +74,9 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//components/translate/core/browser:test_support",
     "//content/test:test_support",
+    "//pdf:buildflags",
     "//services/network:test_support",
     "//testing/gtest",
-    "//pdf:buildflags",
   ]
 
   if (enable_pdf_translation) {

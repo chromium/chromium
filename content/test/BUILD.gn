@@ -876,6 +876,7 @@ if (is_fuchsia) {
       "//tools/perf/:perf",
     ]
   }
+
   group("fuchsia_telemetry_test_data") {
     testonly = true
     data = [ "//content/test/gpu/fuchsia_util.py" ]
@@ -3734,6 +3735,7 @@ if (is_apple) {
     outputs =
         [ "{{bundle_resources_dir}}/gen/$_relative_path/{{source_file_part}}" ]
   }
+
   bundle_data("content_test_perfetto_chrome_bundle_data") {
     testonly = true
     _relative_path = "third_party/perfetto/protos/perfetto/config/chrome"

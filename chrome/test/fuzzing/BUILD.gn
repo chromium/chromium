@@ -68,6 +68,7 @@ if (!is_android) {
     sources = [ "html_in_process_fuzzer.cc" ]
     dict = "html_in_process_fuzzer.dictionary"
   }
+
   in_process_fuzzer("js_in_process_fuzzer") {
     sources = [ "js_in_process_fuzzer.cc" ]
     deps = [
@@ -84,6 +85,7 @@ if (!is_android) {
     ]
     is_fuzzilli_compatible = true
   }
+
   in_process_proto_fuzzer("page_load_in_process_fuzzer") {
     sources = [ "page_load_in_process_fuzzer.cc" ]
     proto_source = "page_load_in_process_fuzzer.proto"
@@ -94,6 +96,7 @@ if (!is_android) {
     ]
     testcase_proto_kind = "test.fuzzing.page_load_fuzzing.FuzzCase"
   }
+
   in_process_proto_fuzzer("speech_synthesis_in_process_fuzzer") {
     sources = [ "speech_synthesis_in_process_fuzzer.cc" ]
     proto_source = "speech_synthesis_in_process_fuzzer.proto"
@@ -139,6 +142,7 @@ if (!is_android) {
         "htmlfuzzer://chrome/test/fuzzing/domato_html_in_process_fuzzer_grammar/html.txt",
       ]
     }
+
     in_process_fuzzer("domato_html_in_process_fuzzer") {
       sources = [ "domato_html_in_process_fuzzer.cc" ]
 
@@ -174,6 +178,7 @@ if (!is_android) {
       "//chrome/test/fuzzing/webcodecs_in_process_fuzzer_grammar/helpers.txt",
     ]
   }
+
   in_process_fuzzer("webcodecs_in_process_fuzzer") {
     sources = [ "webcodecs_in_process_fuzzer.cc" ]
 

@@ -104,6 +104,7 @@ source_set("gvariant") {
     "//remoting/host/base",
   ]
 }
+
 pkg_config("pipewire_config") {
   packages = [ "libpipewire-0.3" ]
 

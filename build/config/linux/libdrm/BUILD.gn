@@ -16,9 +16,11 @@ declare_args() {
 
 if (use_system_libdrm) {
   assert(!is_linux, "System libdrm is not supported in linux")
+
   pkg_config("libdrm_config") {
     packages = [ "libdrm" ]
   }
+
   group("libdrm") {
     public_configs = [ ":libdrm_config" ]
   }
@@ -26,6 +28,7 @@ if (use_system_libdrm) {
   group("libdrm") {
     public_deps = [ "//third_party/libdrm" ]
   }
+
   config("libdrm_exynos_include_config") {
     include_dirs = [ "//third_party/libdrm/src/exynos" ]
   }

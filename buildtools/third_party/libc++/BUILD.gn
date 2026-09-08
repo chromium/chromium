@@ -129,8 +129,10 @@ if (use_clang_modules && use_unified_system_module) {
         ":_Builtin_float",
       ]
     }
+
     DarwinFoundation1_module("_AvailabilityInternal") {
     }
+
     DarwinFoundation2_module("_DarwinFoundation2") {
       public_deps = [
         ":_Builtin_stdarg",
@@ -138,15 +140,18 @@ if (use_clang_modules && use_unified_system_module) {
         ":_DarwinFoundation1",
       ]
     }
+
     DarwinFoundation2_module("alloca") {
       public_deps = [ ":_DarwinFoundation2" ]
     }
+
     DarwinFoundation3_module("_DarwinFoundation3") {
       public_deps = [
         ":_Builtin_stdint",
         ":_DarwinFoundation2",
       ]
     }
+
     DarwinFoundation3_module("xlocale") {
       public_deps = [
         ":_DarwinFoundation1",
@@ -169,42 +174,56 @@ if (use_clang_modules && use_unified_system_module) {
     group("sysroot_ctype") {
       public_deps = [ ":_DarwinFoundation2" ]
     }
+
     group("sysroot_errno") {
       public_deps = [ ":_DarwinFoundation1" ]
     }
+
     group("sysroot_fenv") {
       public_deps = [ ":_DarwinFoundation1" ]
     }
+
     group("sysroot_inttypes") {
       public_deps = [ ":_DarwinFoundation3" ]
     }
+
     group("sysroot_limits") {
       public_deps = [ ":_DarwinFoundation1" ]
     }
+
     group("sysroot_locale") {
     }
+
     group("sysroot_math") {
     }
+
     group("sysroot_pthread") {
     }
+
     group("sysroot_stdatomic") {
       public_deps = []
     }
+
     group("sysroot_stdint") {
       public_deps = [ ":_DarwinFoundation2" ]
     }
+
     group("sysroot_stdlib") {
       public_deps = [ ":_DarwinFoundation3" ]
     }
+
     group("sysroot_string") {
       public_deps = [ ":_DarwinFoundation2" ]
     }
+
     group("sysroot_uchar") {
       public_deps = []
     }
+
     group("sysroot_wchar") {
       public_deps = [ ":_DarwinFoundation3" ]
     }
+
     group("sysroot_wctype") {
       public_deps = [ ":_DarwinFoundation3" ]
     }

@@ -45,6 +45,7 @@ foreach(_item, _gperf_files) {
 group("common_words_dafsa") {
   public_deps = _generated_targets
 }
+
 group("common_words_test_dafsa") {
   public_deps = _generated_test_targets
   testonly = true

@@ -63,11 +63,13 @@ template("flatbuffer") {
   # Since flatc dynamically reads included schema files, all dependent .fbs
   # files must be tracked in inputs to ensure correct remote execution on RBE.
   _flatc_sources_config = "${target_name}_flatc_sources"
+
   config(_flatc_sources_config) {
     inputs = invoker.sources
   }
 
   _flatc_gen_group = "${target_name}_flatc_gen"
+
   group(_flatc_gen_group) {
     public_configs = [ ":${_flatc_sources_config}" ]
     if (defined(invoker.public_deps)) {
@@ -80,6 +82,7 @@ template("flatbuffer") {
 
   action_name = "${target_name}_gen"
   source_set_name = target_name
+
   compiled_action_foreach(action_name) {
     visibility = [ ":$source_set_name" ]
 

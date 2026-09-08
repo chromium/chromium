@@ -63,6 +63,7 @@ template("trichrome_library_apk_tmpl") {
   }
   _android_manifest = "$target_gen_dir/$target_name/AndroidManifest.xml"
   _android_manifest_target_name = "${target_name}__android_manifest"
+
   jinja_template(_android_manifest_target_name) {
     input = "//chrome/android/java/AndroidManifest_trichrome_library.xml"
     output = _android_manifest
@@ -78,6 +79,7 @@ template("trichrome_library_apk_tmpl") {
       variables += invoker.jinja_extra_variables
     }
   }
+
   android_apk(target_name) {
     android_manifest = _android_manifest
     android_manifest_dep = ":$_android_manifest_target_name"

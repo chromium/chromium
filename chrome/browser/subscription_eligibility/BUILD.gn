@@ -84,6 +84,7 @@ if (!is_android) {
 if (is_android) {
   import("//build/config/android/rules.gni")
   import("//third_party/jni_zero/jni_zero.gni")
+
   generate_jni("jni_headers") {
     sources = [ "android/java/src/org/chromium/chrome/browser/subscription_eligibility/SubscriptionEligibilityService.java" ]
   }

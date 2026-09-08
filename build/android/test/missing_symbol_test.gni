@@ -41,6 +41,7 @@ template("missing_symbol_test") {
 # missing_symbol_test() template wrapper which generates importer class.
 template("missing_symbol_generated_importer_test") {
   _importer_generator_target = "${target_name}__importer_javagen"
+
   java_cpp_template(_importer_generator_target) {
     sources = [ missing_symbol_generated_importer_template_nocompile_source ]
     defines = [

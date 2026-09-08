@@ -122,6 +122,7 @@ if (is_msan) {
     visibility = [ ":*" ]
     public_configs = [ ":no_asm_config" ]
   }
+
   source_set("test_support_asm") {
     visibility = [ ":*" ]
     testonly = true
@@ -129,11 +130,13 @@ if (is_msan) {
 } else if (is_win && (current_cpu == "x86" || current_cpu == "x64")) {
   # Windows' x86 and x86_64 assembly is built with NASM.
   import("//third_party/nasm/nasm_assemble.gni")
+
   nasm_assemble("boringssl_asm") {
     visibility = [ ":*" ]
     sources = rebase_path(bcm_sources_nasm + crypto_sources_nasm, ".", "src")
     include_dirs = [ "src/gen" ]
   }
+
   nasm_assemble("test_support_asm") {
     visibility = [ ":*" ]
     sources = rebase_path(test_support_sources_nasm, ".", "src")
@@ -148,6 +151,7 @@ if (is_msan) {
     sources = rebase_path(bcm_sources_asm + crypto_sources_asm, ".", "src")
     include_dirs = [ "src/include" ]
   }
+
   source_set("test_support_asm") {
     visibility = [ ":*" ]
     sources = rebase_path(test_support_sources_asm, ".", "src")
@@ -303,6 +307,7 @@ if (build_with_chromium) {
 
   foreach(source, fuzz_sources) {
     fuzzer = get_path_info(source, "name")
+
     fuzzer_test("boringssl_${fuzzer}_fuzzer") {
       sources = [
         rebase_path(source, ".", "src"),

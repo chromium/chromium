@@ -73,6 +73,7 @@ source_set("account_repository") {
   # enable the diagnostic by removing this line.
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
+
 source_set("account_repository_unit_tests") {
   testonly = true
   sources = [ "account_repository_unittest.cc" ]

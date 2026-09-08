@@ -442,6 +442,7 @@ template("proto_library") {
     # Not necessary if all protos are located in the same directory.
     if (_has_nested_dirs || defined(invoker.import_dirs)) {
       _include_dir_config_name = "${target_name}_config"
+
       config("$_include_dir_config_name") {
         include_dirs = []
         if (_has_nested_dirs) {
@@ -464,10 +465,12 @@ template("proto_library") {
   # Allows proto_library() targets that depend on this one to import its
   # .proto files without declaring them as inputs.
   _input_config_name = "${target_name}__inputs_config"
+
   config(_input_config_name) {
     inputs = _sources
   }
   _input_group_name = "${target_name}_input_group"
+
   group(_input_group_name) {
     public_configs = [ ":$_input_config_name" ]
     public_deps = []
@@ -499,6 +502,7 @@ template("proto_library") {
 
   # Generate protobuf stubs.
   _action_name = "${target_name}_gen"
+
   action(_action_name) {
     script = "//tools/protoc_wrapper/protoc_wrapper.py"
     sources = _sources

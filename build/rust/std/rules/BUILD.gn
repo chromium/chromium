@@ -82,6 +82,7 @@ cargo_crate("addr2line") {
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
+
 cargo_crate("adler2") {
   crate_type = "rlib"
   crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/adler2-2.0.1/src/lib.rs"
@@ -138,6 +139,7 @@ cargo_crate("adler2") {
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
+
 cargo_crate("alloc") {
   crate_type = "rlib"
   crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/alloc/src/lib.rs"
@@ -281,6 +283,7 @@ cargo_crate("alloc") {
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
+
 cargo_crate("cfg_if") {
   crate_type = "rlib"
   crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/cfg-if-1.0.4/src/lib.rs"
@@ -330,6 +333,7 @@ cargo_crate("cfg_if") {
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
+
 cargo_crate("compiler_builtins") {
   crate_type = "rlib"
   crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/lib.rs"
@@ -589,6 +593,7 @@ cargo_crate("compiler_builtins") {
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
+
 cargo_crate("core") {
   crate_type = "rlib"
   crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/core/src/lib.rs"
@@ -1147,6 +1152,7 @@ cargo_crate("core") {
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
+
 cargo_crate("getopts") {
   crate_type = "rlib"
   crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/getopts-0.2.24/src/lib.rs"
@@ -1202,6 +1208,7 @@ cargo_crate("getopts") {
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
+
 cargo_crate("gimli") {
   crate_type = "rlib"
   crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/gimli-0.34.0/src/lib.rs"
@@ -1308,6 +1315,7 @@ cargo_crate("gimli") {
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
+
 cargo_crate("hashbrown") {
   crate_type = "rlib"
   crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/hashbrown-0.17.1/src/lib.rs"
@@ -1390,6 +1398,7 @@ cargo_crate("hashbrown") {
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
+
 cargo_crate("libc") {
   crate_type = "rlib"
   crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/libc-0.2.189/src/lib.rs"
@@ -1827,6 +1836,7 @@ cargo_crate("libc") {
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
+
 cargo_crate("memchr") {
   crate_type = "rlib"
   crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/memchr-2.8.3/src/lib.rs"
@@ -1925,6 +1935,7 @@ cargo_crate("memchr") {
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
+
 cargo_crate("miniz_oxide") {
   crate_type = "rlib"
   crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/miniz_oxide-0.9.1/src/lib.rs"
@@ -1999,6 +2010,7 @@ cargo_crate("miniz_oxide") {
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
+
 cargo_crate("object") {
   crate_type = "rlib"
   crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/object-0.39.1/src/lib.rs"
@@ -2151,6 +2163,7 @@ cargo_crate("object") {
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
+
 cargo_crate("panic_abort") {
   crate_type = "rlib"
   crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/panic_abort/src/lib.rs"
@@ -2205,6 +2218,7 @@ cargo_crate("panic_abort") {
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
+
 cargo_crate("proc_macro") {
   crate_type = "rlib"
   crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/proc_macro/src/lib.rs"
@@ -2268,6 +2282,7 @@ cargo_crate("proc_macro") {
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
+
 cargo_crate("profiler_builtins") {
   crate_type = "rlib"
   crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/profiler_builtins/src/lib.rs"
@@ -2304,6 +2319,7 @@ cargo_crate("profiler_builtins") {
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
+
 cargo_crate("rustc_demangle") {
   crate_type = "rlib"
   crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/rustc-demangle-0.1.28/src/lib.rs"
@@ -2357,6 +2373,7 @@ cargo_crate("rustc_demangle") {
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
+
 cargo_crate("rustc_literal_escaper") {
   crate_type = "rlib"
   crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/rustc-literal-escaper-0.0.8/src/lib.rs"
@@ -2402,6 +2419,7 @@ cargo_crate("rustc_literal_escaper") {
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
+
 cargo_crate("rustc_std_workspace_alloc") {
   crate_type = "rlib"
   crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/rustc-std-workspace-alloc/lib.rs"
@@ -2442,6 +2460,7 @@ cargo_crate("rustc_std_workspace_alloc") {
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
+
 cargo_crate("rustc_std_workspace_core") {
   crate_type = "rlib"
   crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/rustc-std-workspace-core/lib.rs"
@@ -2483,6 +2502,7 @@ cargo_crate("rustc_std_workspace_core") {
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
+
 cargo_crate("rustc_std_workspace_std") {
   crate_type = "rlib"
   crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/rustc-std-workspace-std/lib.rs"
@@ -2523,6 +2543,7 @@ cargo_crate("rustc_std_workspace_std") {
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
+
 cargo_crate("std") {
   crate_type = "rlib"
   crate_root =
@@ -3325,6 +3346,7 @@ cargo_crate("std") {
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
+
 cargo_crate("std_detect") {
   crate_type = "rlib"
   crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std_detect/src/lib.rs"
@@ -3419,6 +3441,7 @@ cargo_crate("std_detect") {
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
+
 cargo_crate("sysroot") {
   crate_type = "rlib"
   crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/sysroot/src/lib.rs"
@@ -3465,6 +3488,7 @@ cargo_crate("sysroot") {
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
+
 cargo_crate("test") {
   crate_type = "rlib"
   crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/test/src/lib.rs"
@@ -3545,6 +3569,7 @@ cargo_crate("test") {
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
+
 cargo_crate("unwind") {
   crate_type = "rlib"
   crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/unwind/src/lib.rs"
@@ -3597,6 +3622,7 @@ cargo_crate("unwind") {
   output_dir =
       "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
+
 cargo_crate("windows_link") {
   crate_type = "rlib"
   crate_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/windows_link/src/lib.rs"

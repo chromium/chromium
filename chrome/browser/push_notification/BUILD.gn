@@ -47,6 +47,7 @@ source_set("push_notification") {
     "//google_apis",
   ]
 }
+
 source_set("test_support") {
   testonly = true
   sources = [

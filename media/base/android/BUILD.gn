@@ -240,6 +240,7 @@ if (is_android) {
 } else {
   source_set("android") {
   }
+
   source_set("test_support") {
     testonly = true
   }

@@ -90,12 +90,14 @@ source_set("lib_with_resources") {
 # builds. This list is parsed by the |create_installer_archive| script, the
 # DLL paths extracted out from the list, and included in the archive.
 updater_runtime_deps = "$target_gen_dir/updater.runtime_deps"
+
 group("updater_runtime_deps") {
   write_runtime_deps = updater_runtime_deps
   data_deps = [ "//chrome/updater/win:updater" ]
 }
 
 updater_test_runtime_deps = "$target_gen_dir/updater_test.runtime_deps"
+
 group("updater_test_runtime_deps") {
   write_runtime_deps = updater_test_runtime_deps
   data_deps = [ "//chrome/updater/win:updater_test" ]

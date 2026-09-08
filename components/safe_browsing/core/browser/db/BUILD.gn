@@ -267,6 +267,7 @@ source_set("prefix_iterator") {
 
 if (is_android) {
   import("//build/config/android/rules.gni")
+
   java_cpp_enum("sb_threat_values") {
     sources = [ "sb_protocol_manager_util.h" ]
   }

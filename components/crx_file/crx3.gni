@@ -21,6 +21,7 @@ template("crx3") {
 
   _zip_target = target_name + "_zip"
   _zip_out = "$target_gen_dir/$_zip_target.zip"
+
   zip(_zip_target) {
     inputs = invoker.inputs
     output = _zip_out

@@ -100,6 +100,7 @@ if (is_component_build) {
 if (is_mac) {
   import("//build/util/branding.gni")
   import("//chrome/version.gni")
+
   shared_library("aperitif") {
     sources = [ "aperitif_mac.h" ]
 

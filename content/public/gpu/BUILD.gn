@@ -16,6 +16,7 @@ if (is_component_build) {
 } else {
   link_target_type = "static_library"
 }
+
 target(link_target_type, "gpu_sources") {
   # You must depend on this via //content/public/gpu above for the component
   # build to work properly.

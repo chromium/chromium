@@ -140,6 +140,7 @@ template("generate_chromeos_sdk_deps") {
       }
     }
   }
+
   group(target_name) {
     data = _sdk_data
     data += [
@@ -220,6 +221,7 @@ template("generate_skylab_tast_filter") {
       ]
     }
   }
+
   action(target_name) {
     testonly = true
     script = "//build/chromeos/generate_skylab_tast_filter.py"
@@ -566,6 +568,7 @@ template("tast_test") {
     if (defined(tast_attr_expr)) {
       tast_attr_expr = "( " + tast_attr_expr + " )"
     }
+
     generate_runner_script(target_name) {
       testonly = true
       generated_script = "$root_build_dir/bin/run_${target_name}"

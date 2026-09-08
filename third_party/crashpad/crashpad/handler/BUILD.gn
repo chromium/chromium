@@ -385,6 +385,7 @@ if (crashpad_is_win) {
     cflags = [ "/guard:cf" ]
     ldflags = [ "/guard:cf" ]
   }
+
   crashpad_executable("fastfail_program") {
     testonly = true
 

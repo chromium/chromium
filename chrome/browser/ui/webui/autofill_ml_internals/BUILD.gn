@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 assert(!is_android)
+
 source_set("autofill_ml_internals") {
   sources = [
     "autofill_ml_internals_page_handler.cc",

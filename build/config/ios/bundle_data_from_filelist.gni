@@ -8,6 +8,7 @@ template("bundle_data_from_filelist") {
   assert(defined(invoker.filelist_name), "Requires setting filelist_name")
 
   _filelist_content = read_file(invoker.filelist_name, "list lines")
+
   bundle_data(target_name) {
     forward_variables_from(invoker,
                            "*",

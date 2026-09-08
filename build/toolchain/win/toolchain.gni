@@ -688,6 +688,7 @@ template("msvc_toolchain") {
       description = stamp_description
       pool = "//build/toolchain:action_pool($default_toolchain)"
     }
+
     tool("copy") {
       command = copy_command
       description = copy_description
@@ -819,6 +820,7 @@ template("win_toolchains") {
     } else {
       cl_toolchain_prefix = ""
     }
+
     msvc_toolchain(cl_toolchain_prefix + target_name) {
       environment = "environment." + toolchain_arch
       cl = "\"${win_toolchain_data.vc_bin_dir}/cl.exe\""
@@ -833,6 +835,7 @@ template("win_toolchains") {
         current_cpu = toolchain_arch
       }
     }
+
     msvc_system_allocator_toolchain(
         cl_toolchain_prefix + target_name + "_host_with_system_allocator") {
       environment = "environment." + rust_host_toolchain_arch
@@ -848,6 +851,7 @@ template("win_toolchains") {
         current_cpu = rust_host_toolchain_arch
       }
     }
+
     msvc_system_allocator_toolchain(
         cl_toolchain_prefix + target_name + "_with_system_allocator") {
       environment = "environment." + toolchain_arch
@@ -863,6 +867,7 @@ template("win_toolchains") {
         current_cpu = toolchain_arch
       }
     }
+
     msvc_rust_host_build_tools_toolchain(
         cl_toolchain_prefix + target_name + "_for_rust_host_build_tools") {
       environment = "environment." + rust_host_toolchain_arch
@@ -911,6 +916,7 @@ template("win_toolchains") {
       current_cpu = toolchain_arch
     }
   }
+
   msvc_system_allocator_toolchain(
       clang_toolchain_prefix + target_name + "_host_with_system_allocator") {
     environment = "environment." + rust_host_toolchain_arch
@@ -931,6 +937,7 @@ template("win_toolchains") {
       current_cpu = rust_host_toolchain_arch
     }
   }
+
   msvc_system_allocator_toolchain(
       clang_toolchain_prefix + target_name + "_with_system_allocator") {
     environment = "environment." + toolchain_arch
@@ -951,6 +958,7 @@ template("win_toolchains") {
       current_cpu = toolchain_arch
     }
   }
+
   msvc_rust_host_build_tools_toolchain(
       clang_toolchain_prefix + target_name + "_for_rust_host_build_tools") {
     environment = "environment." + rust_host_toolchain_arch

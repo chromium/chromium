@@ -136,6 +136,7 @@ template("js2gtest") {
 
   if (defined(invoker.extra_js_files)) {
     copy_target_name = target_name + "_copy"
+
     copy(copy_target_name) {
       if (defined(invoker.deps)) {
         deps = invoker.deps

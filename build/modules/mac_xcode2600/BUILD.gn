@@ -10,6 +10,7 @@ import("//buildtools/third_party/libc++/modules.gni")
 apple_sysroot_modulemap("DarwinFoundation1_modulemap") {
   sysroot_path = "DarwinFoundation1.modulemap"
 }
+
 apple_sysroot_module("TargetConditionals") {
   modulemap = ":DarwinFoundation1_modulemap"
   modulemap_path = "DarwinFoundation1.modulemap"
@@ -88,6 +89,7 @@ apple_sysroot_module("_DarwinFoundation1") {
 apple_sysroot_modulemap("DarwinFoundation2_modulemap") {
   sysroot_path = "DarwinFoundation2.modulemap"
 }
+
 apple_sysroot_module("_DarwinFoundation2") {
   modulemap = ":DarwinFoundation2_modulemap"
   modulemap_path = "DarwinFoundation2.modulemap"
@@ -101,6 +103,7 @@ apple_sysroot_module("_DarwinFoundation2") {
 apple_sysroot_modulemap("DarwinFoundation3_modulemap") {
   sysroot_path = "DarwinFoundation3.modulemap"
 }
+
 apple_sysroot_module("_DarwinFoundation3") {
   modulemap = ":DarwinFoundation3_modulemap"
   modulemap_path = "DarwinFoundation3.modulemap"
@@ -122,6 +125,7 @@ apple_sysroot_module("alloca") {
 apple_sysroot_modulemap("libunwind_modulemap") {
   sysroot_path = "libunwind.modulemap"
 }
+
 apple_sysroot_module("libunwind") {
   modulemap = ":libunwind_modulemap"
   modulemap_path = "libunwind.modulemap"

@@ -37,6 +37,7 @@ template("system_image_stub_apk") {
         get_label_info(_apk_or_bundle_target, "name") + ".build_config.json"
     _rebased_build_config = rebase_path(_build_config, root_build_dir)
   }
+
   action_with_pydeps("$_manifest_target_name") {
     outputs = [ _manifest_path ]
     script = "//build/android/gyp/create_stub_manifest.py"
@@ -221,6 +222,7 @@ template("system_image_stub_apk") {
 template("system_image_apks") {
   if (defined(invoker.stub_output)) {
     _stub_apk_target_name = "${target_name}__stub"
+
     system_image_stub_apk(_stub_apk_target_name) {
       forward_variables_from(invoker,
                              [

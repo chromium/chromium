@@ -55,6 +55,7 @@ template("intent_definition") {
   }
 
   _compile_intent_bundle = "${target_name}_compile_intent_bundle"
+
   bundle_data(_compile_intent_bundle) {
     sources = [ _compile_intent_output ]
     outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]

@@ -67,6 +67,7 @@ template("private_code_test") {
 
   _collect_sources_output = "$target_gen_dir/$target_name.json"
   _collect_sources_target_name = "${target_name}__parse_ninja"
+
   action(_collect_sources_target_name) {
     script = "//build/private_code_test/ninja_parser.py"
     outputs = [ _collect_sources_output ]

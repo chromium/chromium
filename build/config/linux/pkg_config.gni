@@ -118,6 +118,7 @@ if (host_pkg_config != "") {
 template("pkg_config") {
   assert(defined(invoker.packages),
          "Variable |packages| must be defined to be a list in pkg_config.")
+
   config(target_name) {
     if (current_toolchain == host_toolchain) {
       _cache_args = host_pkg_config_args + invoker.packages

@@ -251,6 +251,7 @@ tsc_folder = "tsc"
 # This script is injected by `pdf::PluginResponseWriter`, and must stand alone.
 # Consequently, it must always be rolled up by `optimize_webui()`.
 build_internal_plugin_manifest = "build_internal_plugin_manifest.json"
+
 optimize_webui("build_internal_plugin") {
   host = "about:blank"
   input = rebase_path("$target_gen_dir/$tsc_folder", root_build_dir)

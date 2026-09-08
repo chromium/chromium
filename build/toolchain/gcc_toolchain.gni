@@ -103,6 +103,7 @@ if (enable_resource_allowlist_generation) {
 template("single_gcc_toolchain") {
   _host_toolchain_is_msan = host_toolchain_is_msan
   _host_toolchain_msan_track_origins = host_toolchain_msan_track_origins
+
   toolchain(target_name) {
     assert(defined(invoker.ar), "gcc_toolchain() must specify a \"ar\" value")
     assert(defined(invoker.cc), "gcc_toolchain() must specify a \"cc\" value")
@@ -726,6 +727,7 @@ template("single_gcc_toolchain") {
       command = stamp_command
       description = stamp_description
     }
+
     tool("copy") {
       command = copy_command
       description = copy_description
@@ -1008,6 +1010,7 @@ template("gcc_toolchain") {
            "Toolchains must declare toolchain_args")
     forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
   }
+
   gcc_system_allocator_toolchain("${target_name}_with_system_allocator") {
     assert(defined(invoker.toolchain_args),
            "Toolchains must declare toolchain_args")

@@ -18,6 +18,7 @@ import("//ios/public/provider/chrome/browser/build_config.gni")
 #       not set, must include a custom implementation in deps.
 template("ios_chrome_xcuitest_app_host") {
   _tweak_info_plist = target_name + "_tweak_info_plist"
+
   tweak_info_plist(_tweak_info_plist) {
     info_plists = [
       "//ios/chrome/app/resources/Info.plist",

@@ -197,6 +197,7 @@ template("fuzzer_test") {
 
       # Generate .options file.
       config_file_name = target_name + ".options"
+
       action(config_file_name) {
         script = "//testing/libfuzzer/gen_fuzzer_config.py"
         args = [
@@ -254,6 +255,7 @@ template("fuzzer_test") {
       # Generating owners files is slow, only enable when fuzzing engine is
       # used.
       owners_file_name = target_name + ".owners"
+
       action(owners_file_name) {
         script = "//testing/libfuzzer/gen_fuzzer_owners.py"
         pool = "//testing/libfuzzer:fuzzer_owners_pool"
@@ -307,6 +309,7 @@ template("fuzzer_test") {
         if (_files_to_sign != []) {
           _codesign_action_name =
               target_name + "_codesign_supporting_files_" + _deps_type_label
+
           action_foreach(_codesign_action_name) {
             testonly = true
             script = "//build/config/apple/codesign.py"
@@ -323,6 +326,7 @@ template("fuzzer_test") {
             deps = _dep_list
           }
           _bundle_data_name = target_name + "_bundle_data_" + _deps_type_label
+
           bundle_data(_bundle_data_name) {
             testonly = true
             sources = get_target_outputs(":${_codesign_action_name}")
@@ -342,6 +346,7 @@ template("fuzzer_test") {
     }
 
     _template_type = "test"
+
     target(_template_type, target_name) {
       forward_variables_from(invoker,
                              [

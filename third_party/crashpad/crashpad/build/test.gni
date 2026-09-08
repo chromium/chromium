@@ -22,6 +22,7 @@ if (crashpad_is_in_chromium) {
       import("//third_party/mini_chromium/mini_chromium/build/ios/rules.gni")
 
       _launch_image_bundle_target = target_name + "_launch_image"
+
       bundle_data(_launch_image_bundle_target) {
         forward_variables_from(invoker, [ "testonly" ])
         sources = [ "//build/ios/Default.png" ]

@@ -17,6 +17,7 @@ template("extract_symbols") {
                            "deps",
                            "testonly",
                          ])
+
   action("${target_name}") {
     dump_syms_label =
         "//third_party/breakpad:dump_syms($host_system_allocator_toolchain)"

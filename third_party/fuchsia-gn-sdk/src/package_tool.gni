@@ -21,6 +21,7 @@ import("gn_sdk_configs.gni")
 #       visibility
 template("fuchsia_package_tool") {
   forward_variables_from(invoker, [ "*" ])
+
   action(target_name) {
     forward_variables_from(invoker,
                            [

@@ -367,6 +367,7 @@ template("generate_deps_js") {
   } else {
     rewrite_rules = []
   }
+
   action(target_name) {
     if (defined(invoker.testonly)) {
       testonly = invoker.testonly

@@ -68,6 +68,7 @@ template("chrome_app") {
     template("browserkit_extension") {
       _process_target = target_name
       _outer_target = _target_name
+
       tweak_info_plist("tweak_${_outer_target}_${_process_target}_plist") {
         info_plist = "//content/app/ios/appex/${_process_target}.plist"
       }

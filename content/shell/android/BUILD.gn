@@ -190,6 +190,7 @@ android_assets("content_shell_assets") {
 
 template("content_shell_apk_tmpl") {
   _target_type = invoker.target_type
+
   target(_target_type, target_name) {
     forward_variables_from(invoker, "*")
     testonly = true

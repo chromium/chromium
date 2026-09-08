@@ -109,6 +109,7 @@ source_set("proto_utils") {
     "//third_party/abseil-cpp:absl",
   ]
 }
+
 source_set("status_utils") {
   sources = [ "src/anonymous_tokens/cpp/shared/status_utils.h" ]
 

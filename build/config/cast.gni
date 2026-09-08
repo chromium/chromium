@@ -37,7 +37,6 @@ declare_args() {
   enable_cast_renderer = enable_cast_receiver && (is_linux || is_chromeos)
 }
 
-
 # Assert that Chromecast is being built for a supported platform.
 assert(is_linux || is_chromeos || is_android || is_fuchsia ||
            !enable_cast_receiver,

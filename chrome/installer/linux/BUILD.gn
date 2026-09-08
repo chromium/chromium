@@ -572,6 +572,7 @@ template("linux_package") {
   }
 
   deb_target_name = "${target_name}_deb"
+
   action(deb_target_name) {
     visibility = [ ":*" ]
     script = "debian/build.py"
@@ -609,6 +610,7 @@ template("linux_package") {
 
   if (!is_chromeos) {
     rpm_target_name = "${target_name}_rpm"
+
     action(rpm_target_name) {
       visibility = [ ":*" ]
       script = "rpm/build.py"
@@ -642,6 +644,7 @@ template("linux_package") {
 
     if (enable_flatpak) {
       flatpak_target_name = "${target_name}_flatpak"
+
       action(flatpak_target_name) {
         visibility = [ ":*" ]
         script = "flatpak/build.py"
@@ -687,12 +690,15 @@ template("linux_package") {
 linux_package("stable") {
   channel = "stable"
 }
+
 linux_package("beta") {
   channel = "beta"
 }
+
 linux_package("unstable") {
   channel = "unstable"
 }
+
 linux_package("canary") {
   channel = "canary"
 }
@@ -705,6 +711,7 @@ if (!is_chromeos) {
   group("dev_deb") {
     deps = [ ":unstable_deb" ]
   }
+
   group("dev_rpm") {
     deps = [ ":unstable_rpm" ]
   }

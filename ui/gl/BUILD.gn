@@ -72,6 +72,7 @@ if (use_angle_stubs) {
     output_name = "libEGL"
     sources = [ "dummy_stub.cc" ]
   }
+
   shared_library("dummy_libGLESv2") {
     output_name = "libGLESv2"
     sources = [ "dummy_stub.cc" ]

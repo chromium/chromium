@@ -40,6 +40,7 @@ if (enable_swift_cxx_interop) {
 
     # Generate a shim header file.
     _shim_target = "${target_name}__shim"
+
     generated_file(_shim_target) {
       outputs = [ _shim_path ]
       contents = _shim_content
@@ -214,6 +215,7 @@ template("swift_source_set") {
     _cxx_imports_target = "${target_name}__cxx_import_deps"
     assert(enable_swift_cxx_interop,
            "enable_swift_cxx_interop must be true to use cxx_import_deps")
+
     _swift_cxx_import_group(_cxx_imports_target) {
       forward_variables_from(invoker, [ "testonly" ])
       public_deps = invoker.cxx_import_deps

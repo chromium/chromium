@@ -11,6 +11,7 @@ import("//ios/build/config.gni")
 
 template("browserkit_extension") {
   _process_target = target_name
+
   tweak_info_plist("tweak_${_process_target}_plist") {
     info_plist = "//content/app/ios/appex/${_process_target}.plist"
   }

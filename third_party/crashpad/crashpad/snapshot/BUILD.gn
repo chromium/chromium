@@ -501,6 +501,7 @@ bundle_data("snapshot_test_ios_data") {
   outputs = [ "{{bundle_resources_dir}}/crashpad_test_data/" +
               "{{source_root_relative_dir}}/{{source_file_part}}" ]
 }
+
 crashpad_loadable_module("crashpad_snapshot_test_module") {
   testonly = true
   sources = [ "crashpad_info_client_options_test_module.cc" ]

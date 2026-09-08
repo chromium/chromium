@@ -18,6 +18,7 @@ template("embed_sections") {
                            "deps",
                            "testonly",
                          ])
+
   action("${target_name}") {
     script = "//build/chromeos/embed_sections.py"
 

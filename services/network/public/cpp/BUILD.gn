@@ -11,6 +11,7 @@ import("//testing/test.gni")
 import("//third_party/blink/renderer/build/scripts/scripts.gni")  # TODO(crbug.com/397934758)
 
 _is_directory_transfer_required = is_fuchsia
+
 buildflag_header("buildflags") {
   header = "network_service_buildflags.h"
   flags = [

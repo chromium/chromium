@@ -35,6 +35,7 @@ if (((is_linux && !is_castos) || is_chromeos) && !use_fuzzing_engine) {
     ]
     defines = [ "XML_STATIC" ]
   }
+
   config("expat_internal_config") {
     cflags = [
       # xmlparse.c has some |if (0 && ...)| statements.

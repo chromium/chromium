@@ -182,6 +182,7 @@ source_set("com_google_audio_tools_portable") {
   ]
   public_configs = [ ":com_google_audio_tools_config" ]
 }
+
 source_set("com_google_audio_tools") {
   sources = [
     "src/third_party/com_google_audio_tools/audio/dsp/bessel_functions.cc",

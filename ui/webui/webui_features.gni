@@ -46,6 +46,7 @@ if (enable_cast_receiver || is_cast_android || is_castos) {
         target_os == "win" || target_os == "mac" || target_os == "linux" ||
         target_os == "chromeos" || is_desktop_android
   }
+
   declare_args() {
     # Enable WebUI Contextual Tasks Composebox.
     # TODO(crbug.com/527601593): Revert to only enable for desktop_android if we

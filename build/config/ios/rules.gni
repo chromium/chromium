@@ -475,6 +475,7 @@ template("ios_app_bundle") {
   }
 
   _generate_info_plist = target_name + "_generate_info_plist"
+
   ios_info_plist(_generate_info_plist) {
     forward_variables_from(invoker,
                            [
@@ -535,6 +536,7 @@ template("ios_app_bundle") {
   # Only write PkgInfo for real application, not application extension.
   if (_is_app_bundle) {
     _create_pkg_info = target_name + "_pkg_info"
+
     action(_create_pkg_info) {
       forward_variables_from(invoker, [ "testonly" ])
       script = "//build/apple/write_pkg_info.py"
@@ -552,6 +554,7 @@ template("ios_app_bundle") {
     }
 
     _bundle_data_pkg_info = target_name + "_bundle_data_pkg_info"
+
     bundle_data(_bundle_data_pkg_info) {
       forward_variables_from(invoker, [ "testonly" ])
       sources = get_target_outputs(":$_create_pkg_info")
@@ -628,6 +631,7 @@ template("ios_app_bundle") {
 
   if (_default_variant.name != "") {
     _bundle_short_name = "$_output_name$_bundle_extension"
+
     action(_target_name) {
       forward_variables_from(invoker, [ "testonly" ])
 
@@ -685,6 +689,7 @@ set_defaults("ios_app_bundle") {
 template("ios_appex_bundle") {
   assert(ios_is_app_extension,
          "$target_name needs to be defined in app extension toolchain context")
+
   ios_app_bundle(target_name) {
     forward_variables_from(invoker,
                            "*",
@@ -823,6 +828,7 @@ template("ios_framework_bundle") {
     _headers_map_config = _target_name + "_headers_map"
     _header_map_filename =
         "$_default_toolchain_target_gen_dir/$_output_name.headers.hmap"
+
     config(_headers_map_config) {
       visibility = [
         ":${_shared_library_target}",
@@ -833,11 +839,13 @@ template("ios_framework_bundle") {
   }
 
   _framework_headers_config = _target_name + "_framework_headers_config"
+
   config(_framework_headers_config) {
     framework_dirs = [ root_out_dir ]
   }
 
   _framework_public_config = _target_name + "_public_config"
+
   config(_framework_public_config) {
     configs = [ ":$_framework_headers_config" ]
     frameworks = [ "$_output_name.framework" ]
@@ -888,6 +896,7 @@ template("ios_framework_bundle") {
     _framework_root_dir = "$root_out_dir/$_output_name.framework"
 
     _compile_headers_map_target = _target_name + "_compile_headers_map"
+
     action(_compile_headers_map_target) {
       visibility = [ ":$_framework_headers_target" ]
       forward_variables_from(invoker,
@@ -920,6 +929,7 @@ template("ios_framework_bundle") {
 
     _create_module_map_target = _target_name + "_module_map"
     _module_map_bundle_data = _target_name + "_module_map_bundle_data"
+
     action(_create_module_map_target) {
       visibility = [
         ":$_framework_headers_target",
@@ -943,6 +953,7 @@ template("ios_framework_bundle") {
     }
 
     _public_headers_bundle_data = _target_name + "_public_headers_bundle_data"
+
     bundle_data(_public_headers_bundle_data) {
       forward_variables_from(invoker,
                              [
@@ -983,6 +994,7 @@ template("ios_framework_bundle") {
 
   _info_plist_target = _target_name + "_info_plist"
   _info_plist_bundle = _target_name + "_info_plist_bundle"
+
   ios_info_plist(_info_plist_target) {
     visibility = [ ":$_info_plist_bundle" ]
     executable_name = _output_name
@@ -1218,6 +1230,7 @@ template("ios_xctest_bundle") {
   }
 
   _xctest_bundle = _target_name + "_bundle"
+
   ios_create_signed_bundle(_target_name) {
     forward_variables_from(invoker,
                            [
@@ -1311,6 +1324,7 @@ template("ios_xctest_test") {
   } else {
     _xctest_module_target_name = _xctest_target + "shell_source"
     _xctest_module_target = ":$_xctest_module_target_name"
+
     source_set(_xctest_module_target_name) {
       sources = [ "//build/config/ios/xctest_shell.mm" ]
 
@@ -1444,6 +1458,7 @@ template("ios_xcuitest_test_runner_bundle") {
   }
 
   _pkginfo_bundle = _target_name + "_pkginfo_bundle"
+
   bundle_data(_pkginfo_bundle) {
     testonly = true
     visibility = [ ":$_target_name" ]
@@ -1458,6 +1473,7 @@ template("ios_xcuitest_test_runner_bundle") {
   }
 
   _xctest_bundle = invoker.xctest_bundle
+
   ios_create_signed_bundle(_target_name) {
     testonly = true
     entitlements_path = "//build/config/ios/entitlements_test_runner.plist"
@@ -1525,6 +1541,7 @@ template("ios_xcuitest_test") {
   }
 
   _xcuitest_module_output = _xcuitest_target
+
   ios_xctest_bundle(_xcuitest_module_target) {
     forward_variables_from(invoker,
                            [
@@ -1545,6 +1562,7 @@ template("ios_xcuitest_test") {
   }
 
   _xcuitest_runner_output = _xcuitest_target + "-Runner"
+
   ios_xcuitest_test_runner_bundle(_xcuitest_runner_target) {
     output_name = _xcuitest_runner_output
     xctest_bundle = _xcuitest_module_target + "_bundle"

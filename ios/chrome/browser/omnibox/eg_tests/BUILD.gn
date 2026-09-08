@@ -39,6 +39,7 @@ source_set("eg_app_support+eg2") {
     "//ui/base:test_support",
   ]
 }
+
 source_set("eg_test_support+eg2") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true

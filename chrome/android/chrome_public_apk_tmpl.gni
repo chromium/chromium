@@ -65,6 +65,7 @@ default_chrome_public_jinja_variables = [
 template("split_manifest_template") {
   _definitions_in_split =
       defined(invoker.definitions_in_split) && invoker.definitions_in_split
+
   jinja_template(target_name) {
     forward_variables_from(invoker,
                            [
@@ -195,6 +196,7 @@ template("chrome_common_apk_or_module_tmpl") {
   _split_android_manifest =
       "$target_gen_dir/$target_name/AndroidManifest_split.xml"
   _android_manifest_target_name = "${target_name}__android_manifest"
+
   split_manifest_template(_android_manifest_target_name) {
     definitions_in_split = _is_bundle
     split_input = "//chrome/android/java/AndroidManifest_split.xml"
@@ -243,6 +245,7 @@ template("chrome_common_apk_or_module_tmpl") {
       includes += invoker.jinja_extra_includes
     }
   }
+
   target(_target_type, target_name) {
     android_manifest = _android_manifest
     android_manifest_dep = ":$_android_manifest_target_name"

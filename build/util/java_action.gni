@@ -19,6 +19,7 @@ template("java_action") {
          "Need outputs in $target_name listing the generated outputs.")
 
   jarscript = invoker.script
+
   action(target_name) {
     script = jarrunner
 
@@ -67,6 +68,7 @@ template("java_action_foreach") {
          "Need sources in $target_name listing the target inputs.")
 
   jarscript = invoker.script
+
   action_foreach(target_name) {
     script = jarrunner
 

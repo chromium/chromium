@@ -31,6 +31,7 @@ mojom("mojom") {
     },
   ]
 }
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "scanning_mojom_traits_unittest.cc" ]

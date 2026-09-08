@@ -43,6 +43,7 @@ if (is_win) {
     sources = [ "google.admx" ]
     outputs = [ "$root_build_dir/GoogleUpdateAdmx/{{source_file_part}}" ]
   }
+
   copy("GoogleUpdateAdml") {
     sources = [ "google.adml" ]
     outputs = [ "$root_build_dir/GoogleUpdateAdmx/en-US/{{source_file_part}}" ]
@@ -54,6 +55,7 @@ if (is_win) {
     outputs =
         [ "$root_build_dir/GoogleCloudManagementAdm/{{source_file_part}}" ]
   }
+
   copy("GoogleCloudManagementAdmx") {
     sources = [
       "GoogleCloudManagement.admx",
@@ -62,6 +64,7 @@ if (is_win) {
     outputs =
         [ "$root_build_dir/GoogleCloudManagementAdmx/{{source_file_part}}" ]
   }
+
   copy("GoogleCloudManagementAdml") {
     sources = [
       "GoogleCloudManagement.adml",

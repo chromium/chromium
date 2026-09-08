@@ -679,6 +679,7 @@ if (enable_pdf) {
   # depend on it.
   group("features") {
   }
+
   group("pdf") {
   }
 }

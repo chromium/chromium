@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//extensions/buildflags/buildflags.gni")
+
 source_set("tab_contents") {
   public = [
     "form_interaction_tab_helper.h",

@@ -47,6 +47,7 @@ template("optimize_js") {
 
   optimize_target_name = target_name + "_optimize"
   _target_name = target_name
+
   node(optimize_target_name) {
     visibility = [ ":$_target_name" ]
 

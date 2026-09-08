@@ -915,11 +915,13 @@ if (is_fuchsia) {
     manifest = "//v8/gni/v8.cml"
     data_deps = [ "//v8:d8" ]
   }
+
   fuchsia_package("d8_pkg") {
     testonly = true
     package_name = "d8"
     deps = [ ":d8_component" ]
   }
+
   fuchsia_package_installer("d8_fuchsia") {
     testonly = true
     package = ":d8_pkg"

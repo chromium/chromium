@@ -45,16 +45,19 @@ if (is_chrome_branded) {
     volume_name = "Google Chrome"
     app_name = "Google Chrome.app"
   }
+
   generate_dmg_dsstore("generate_chrome_beta_dmg_dsstore") {
     output_name = "chrome_beta_dmg_dsstore"
     volume_name = "Google Chrome Beta"
     app_name = "Google Chrome Beta.app"
   }
+
   generate_dmg_dsstore("generate_chrome_dev_dmg_dsstore") {
     output_name = "chrome_dev_dmg_dsstore"
     volume_name = "Google Chrome Dev"
     app_name = "Google Chrome Dev.app"
   }
+
   generate_dmg_dsstore("generate_chrome_canary_dmg_dsstore") {
     output_name = "chrome_canary_dmg_dsstore"
     volume_name = "Google Chrome Canary"

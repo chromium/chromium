@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//cc/cc.gni")
+
 cc_component("debug") {
   output_name = "cc_debug"
   sources = [

@@ -23,6 +23,7 @@ import("//build/rust/rust_static_library.gni")
 import("//build/toolchain/kythe.gni")
 import("//third_party/jinja2/jinja2.gni")
 import("//third_party/ply/ply.gni")
+
 declare_args() {
   # Indicates whether typemapping should be supported in this build
   # configuration. This may be disabled when building external projects which
@@ -699,6 +700,7 @@ template("mojom") {
                       target_gen_dir) ]
   }
   build_metadata_target_name = "${target_name}__build_metadata"
+
   generated_file(build_metadata_target_name) {
     outputs = [ build_metadata_filename ]
     contents = build_metadata
@@ -727,6 +729,7 @@ template("mojom") {
   config("${parser_target_name}_inputs") {
     inputs = sources_list + [ build_metadata_filename ]
   }
+
   group("${parser_target_name}_deps") {
     public_configs = [ ":${parser_target_name}_inputs" ]
     public_deps = parser_deps
@@ -1032,6 +1035,7 @@ template("mojom") {
   }
 
   shared_cpp_sources_target_name = "${target_name}_shared_cpp_sources"
+
   source_set(shared_cpp_sources_target_name) {
     if (defined(invoker.testonly)) {
       testonly = invoker.testonly
@@ -1710,6 +1714,7 @@ template("mojom") {
 
       mojolpm_target_name = "${target_name}_mojolpm"
       mojolpm_generator_target_name = "${target_name}__generator"
+
       source_set(mojolpm_target_name) {
         # There are still a few missing header dependencies between mojo targets
         # with typemaps and the dependencies of their typemap headers. It would
@@ -1846,6 +1851,7 @@ template("mojom") {
       }
 
       java_target_name = target_name + "_java"
+
       android_library(java_target_name) {
         forward_variables_from(invoker, [ "enable_bytecode_checks" ])
         deps = [
@@ -1944,6 +1950,7 @@ template("mojom") {
     }
 
     js_target_name = target_name + "_js"
+
     group(js_target_name) {
       public_deps = []
       if (sources_list != []) {
@@ -2030,6 +2037,7 @@ template("mojom") {
         foreach(typemap, invoker.ts_typemaps) {
           converter_sources += [ typemap.source ]
         }
+
         copy("${target_name}_ts__copy_converters") {
           sources = converter_sources
           outputs = [ "{{source_gen_dir}}/{{source_file_part}}" ]

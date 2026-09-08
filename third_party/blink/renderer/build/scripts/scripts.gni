@@ -296,6 +296,7 @@ template("make_names") {
                                     "$output_dir/{{source_name_part}}.cc",
                                     "$output_dir/{{source_name_part}}.h",
                                   ])
+
   process_json5_files(target_name) {
     script = "//third_party/blink/renderer/build/scripts/make_names.py"
     other_inputs = make_names_files

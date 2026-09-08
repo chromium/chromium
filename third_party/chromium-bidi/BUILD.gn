@@ -40,9 +40,7 @@ if (is_win) {
 
 group("default") {
   testonly = true
-  deps = [
-    "src:all",
-  ]
+  deps = [ "src:all" ]
 }
 
 script_test("webdriver_bidi_unittests") {
@@ -68,9 +66,7 @@ script_test("webdriver_bidi_unittests") {
     "package.json",
   ]
 
-  data_deps = [
-    "src:unit_tests",
-  ]
+  data_deps = [ "src:unit_tests" ]
 }
 
 script_test("webdriver_bidi_e2e_tests") {

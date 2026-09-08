@@ -108,33 +108,48 @@ source_set("log") {
 
 source_set("absl_check_test") {
 }
+
 source_set("absl_log_basic_test") {
 }
+
 source_set("basic_log_test") {
 }
+
 source_set("check_test") {
 }
+
 source_set("die_if_null_test") {
 }
+
 source_set("flags_test") {
 }
+
 source_set("globals_test") {
 }
+
 source_set("log_entry_test") {
 }
+
 source_set("log_format_test") {
 }
+
 source_set("log_macro_hygiene_test") {
 }
+
 source_set("log_modifier_methods_test") {
 }
+
 source_set("log_sink_test") {
 }
+
 source_set("log_streamer_test") {
 }
+
 source_set("scoped_mock_log_test") {
 }
+
 source_set("stripping_test") {
 }
+
 source_set("vlog_is_on_test") {
 }

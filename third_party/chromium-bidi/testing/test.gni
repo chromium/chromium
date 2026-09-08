@@ -15,9 +15,9 @@
 
 # dummy module for compatibility with chromium.
 
-
 template("script_test") {
   not_needed(invoker, "*")
+
   group(target_name) {
     testonly = true
   }

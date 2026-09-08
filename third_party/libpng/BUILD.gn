@@ -101,10 +101,10 @@ source_set("libpng_sources") {
         "loongarch/loongarch_lsx_init.c",
       ]
     } else {
-      defines += ["PNG_LOONGARCH_LSX_OPT=0"]
+      defines += [ "PNG_LOONGARCH_LSX_OPT=0" ]
     }
   } else if (current_cpu == "ppc64") {
-    defines += ["PNG_POWERPC_VSX_OPT=0"]
+    defines += [ "PNG_POWERPC_VSX_OPT=0" ]
   }
 
   configs -= [ "//build/config/compiler:chromium_code" ]

@@ -112,9 +112,11 @@ if (is_android) {
   java_strings_grd_prebuilt("branded_resources_grd") {
     generating_target = ":branded_strings"
   }
+
   java_strings_grd_prebuilt("generated_resources_grd") {
     generating_target = ":generated_resources"
   }
+
   java_group("java_strings_grd") {
     public_deps = [
       ":branded_resources_grd",

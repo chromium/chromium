@@ -11,6 +11,7 @@ config("gemmlowp_include") {
     cflags_cc = [ "-Wno-thread-safety" ]
   }
 }
+
 source_set("gemmlowp") {
   public = [
     "src/fixedpoint/fixedpoint.h",

@@ -251,6 +251,7 @@ template("validate_packaged_config") {
   _package_manifest = invoker.package_manifest
   _meta_far = get_path_info(_package_manifest, "dir") + "/meta.far"
   _stamp = "${target_out_dir}/${target_name}.configc.stamp"
+
   _configc_tool(target_name) {
     forward_variables_from(invoker,
                            [

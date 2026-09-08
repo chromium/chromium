@@ -24,6 +24,7 @@ template("module_desc_java") {
   _target_name = target_name
 
   _libraries_file = "${target_gen_dir}/${_target_name}.libraries"
+
   generated_file("${_target_name}__libraries") {
     if (defined(invoker.shared_libraries)) {
       deps = invoker.shared_libraries
@@ -36,6 +37,7 @@ template("module_desc_java") {
   }
 
   _srcjar = "$target_gen_dir/${_target_name}__srcjar.srcjar"
+
   action_with_pydeps("${_target_name}__srcjar") {
     script = "//components/module_installer/android/module_desc_java.py"
     outputs = [ _srcjar ]

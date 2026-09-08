@@ -79,7 +79,7 @@ source_set("impl") {
   deps = [
     "//chrome/app/resources:locale_settings",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/search:search",
+    "//chrome/browser/search",
     "//chrome/common",
     "//components/language/core/browser",
     "//components/policy:generated",

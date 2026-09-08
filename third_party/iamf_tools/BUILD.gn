@@ -234,6 +234,7 @@ iamf_tools_headers = [
   "src/iamf/obu/decoder_config/lpcm_decoder_config.h",
   "src/iamf/obu/decoder_config/opus_decoder_config.h",
 ]
+
 test("iamf_tools_lib_fuzz_tests") {
   sources = [
     "fuzz/get_test_path.cc",
@@ -254,6 +255,7 @@ test("iamf_tools_lib_fuzz_tests") {
     "//third_party/fuzztest:fuzztest_gtest_main",
   ]
 }
+
 config("strip_errors_config") {
   if (is_win) {
     cflags_cc = [

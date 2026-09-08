@@ -703,6 +703,7 @@ perfetto_cc_proto_descriptor("gen_cc_chrome_track_event_descriptor") {
 }
 
 import("//base/tracing/stdlib/chrome/perfetto_sql_files.gni")
+
 action("amalgamated_perfetto_sql_stdlib") {
   script = "tracing/gen_amalgamated_stdlib.py"
   sources =

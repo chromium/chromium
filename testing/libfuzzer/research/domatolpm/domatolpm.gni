@@ -71,6 +71,7 @@ template("domatolpm") {
     "${_gen_file_format}_sub11.cc",
     "${_gen_file_format}_sub11.h",
   ]
+
   action(_script_target_name) {
     testonly = true
     script = "//testing/libfuzzer/research/domatolpm/generator.py"
@@ -108,6 +109,7 @@ template("domatolpm") {
       deps = invoker.deps
     }
   }
+
   proto_library(_gen_target_name) {
     testonly = true
     proto_deps = [ ":${_script_target_name}" ]
@@ -117,6 +119,7 @@ template("domatolpm") {
     proto_out_dir = "."
     generate_python = false
   }
+
   static_library(_name) {
     testonly = true
     public_deps = [
@@ -136,6 +139,7 @@ template("domatolpm_fuzzer") {
     _grammars = string_split(grammar, ":")
     _target_name = _grammars[0]
     _templated_deps += [ ":${_target_name}" ]
+
     domatolpm(_target_name) {
       grammar_file = _grammars[1]
       grammar_name = _grammars[0]
@@ -155,6 +159,7 @@ template("domatolpm_fuzzer") {
   _gen_file_format = "${target_gen_dir}/${target_name}"
   _generator_target_name = "${target_name}_template_gen"
   _target_name = target_name
+
   action(_generator_target_name) {
     testonly = true
     script = "//testing/libfuzzer/research/domatolpm/fuzzer_generator.py"
@@ -197,6 +202,7 @@ template("domatolpm_fuzzer") {
 
   _proto_gen_target_name = "${target_name}_proto_gen"
   _target_gen_dir = "${target_gen_dir}"
+
   proto_library(_proto_gen_target_name) {
     testonly = true
     proto_deps = [ ":${_generator_target_name}" ]

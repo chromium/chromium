@@ -41,6 +41,7 @@ template("fuzzable_proto_library") {
   }
 
   _prepend_fuzzable_target = "${target_name}_prepend_fuzzable"
+
   action(_prepend_fuzzable_target) {
     script = "//third_party/libprotobuf-mutator/prepend_fuzzable.py"
     inputs = invoker.sources

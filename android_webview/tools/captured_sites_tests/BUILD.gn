@@ -53,6 +53,7 @@ robolectric_binary("captured_sites_junit_tests") {
     "//ui/android:ui_java_test_support",
   ]
 }
+
 android_library("webview_captured_sites_app_java") {
   sources = [
     "../automated_ui_tests/java/src/org/chromium/webview_ui_test/WebViewUiTestActivity.java",

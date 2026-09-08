@@ -9,6 +9,7 @@ import("//build/config/compiler/compiler.gni")
 if (is_mac) {
   import("//build/config/mac/rules.gni")
 }
+
 component("emoji") {
   output_name = "ui_base_emoji"
 

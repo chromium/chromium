@@ -44,6 +44,7 @@ generate_grd("build_injected_grdp") {
 # accommodate Closure Compiler, as a large number of external targets expect to
 # import these files from relative paths.
 preprocess_folder = target_gen_dir
+
 preprocess_if_expr("preprocess_src") {
   out_folder = preprocess_folder
   out_manifest = "$target_gen_dir/$manifest_existing_files"

@@ -48,6 +48,7 @@ foreach(_item, _gperf_files) {
   _source_name = get_path_info(_item.source, "name")
 
   _reversed_target_name = "generate_" + _source_name + "_reversed_dafsa"
+
   action(_reversed_target_name) {
     script = "//net/tools/dafsa/make_dafsa.py"
     sources = [ _item.source ]
@@ -69,6 +70,7 @@ foreach(_item, _gperf_files) {
   }
 
   _string_test_set_target_name = "generate_" + _source_name + "_dafsa"
+
   action(_string_test_set_target_name) {
     script = "//net/tools/dafsa/make_dafsa.py"
     sources = [ _item.source ]
@@ -88,6 +90,7 @@ foreach(_item, _gperf_files) {
 group("registry_controlled_domains") {
   public_deps = _generated_reversed_targets
 }
+
 group("registry_controlled_domains_test_dafsas") {
   public_deps = _generated_reversed_test_targets
   testonly = true

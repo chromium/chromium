@@ -22,6 +22,7 @@ if (enable_devtools_frontend) {
 
     deps = [ ":devtools_resources" ]
   }
+
   grit("devtools_resources") {
     source = "$root_gen_dir/$devtools_grd_location"
 
@@ -57,6 +58,7 @@ if (enable_devtools_frontend) {
 # done for cros_protocol.pdl in chrome/browser/devtools
 _concatenated_protocol_path =
     "$root_gen_dir/content/browser/devtools/protocol.json"
+
 action("concatenate_protocols") {
   script = "//third_party/inspector_protocol/concatenate_protocols.py"
   deps = [ "//third_party/blink/public/devtools_protocol:protocol_version" ]

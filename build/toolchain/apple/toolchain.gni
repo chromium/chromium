@@ -739,6 +739,7 @@ template("single_apple_toolchain") {
       command = stamp_command
       description = stamp_description
     }
+
     tool("copy") {
       command = copy_command
       description = copy_description
@@ -1024,6 +1025,7 @@ template("apple_toolchain") {
            "Toolchains must declare toolchain_args")
     forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
   }
+
   apple_system_allocator_toolchain("${target_name}_with_system_allocator") {
     assert(defined(invoker.toolchain_args),
            "Toolchains must declare toolchain_args")

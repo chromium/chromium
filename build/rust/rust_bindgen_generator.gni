@@ -94,6 +94,7 @@ template("rust_bindgen_generator") {
   }
 
   _bindgen_target_name = target_name
+
   action(target_name) {
     # bindgen relies on knowing the {{defines}} and {{include_dirs}} required
     # to build the C++ headers which it's parsing. These are passed to the

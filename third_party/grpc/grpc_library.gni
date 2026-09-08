@@ -16,6 +16,7 @@ import("//third_party/protobuf/proto_library.gni")
 
 template("grpc_library") {
   assert(defined(invoker.sources), "Need sources for proto_library")
+
   proto_library(target_name) {
     forward_variables_from(invoker,
                            [

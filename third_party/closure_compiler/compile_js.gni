@@ -306,6 +306,7 @@ if (is_chromeos) {
       }
     } else {
       not_needed(invoker, "*")
+
       group(target_name) {
       }
     }

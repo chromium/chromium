@@ -707,6 +707,7 @@ template("test_runner_script") {
     _runtime_deps_file =
         "$root_out_dir/gen.runtime/$_target_dir_name/$target_name.runtime_deps"
     _runtime_deps_target = "${target_name}__write_deps"
+
     group(_runtime_deps_target) {
       forward_variables_from(invoker,
                              [
@@ -738,6 +739,7 @@ template("test_runner_script") {
     _install_artifacts_json =
         "${target_gen_dir}/${target_name}.install_artifacts"
     _install_artifacts_target_name = "${target_name}__install_artifacts"
+
     generated_file(_install_artifacts_target_name) {
       deps = [ invoker.apk_under_test ]
       output_conversion = "json"
@@ -1443,6 +1445,7 @@ if (enable_java_templates) {
     if (defined(invoker.expected_proguard_config)) {
       _expectations_target =
           "${invoker.top_target_name}_validate_proguard_config"
+
       action_with_pydeps(_expectations_target) {
         script = _script
 
@@ -1494,11 +1497,13 @@ if (enable_java_templates) {
       _tracerefs_json = "$target_gen_dir/$target_name.tracerefs.json"
       _tracerefs_target_name = "${target_name}__tracerefs"
       _main_target_name = target_name
+
       trace_references(_tracerefs_target_name) {
         tracerefs_json = _tracerefs_json
         deps = [ ":$_main_target_name" ]
       }
     }
+
     action_with_pydeps(target_name) {
       forward_variables_from(invoker,
                              [
@@ -2481,6 +2486,7 @@ if (enable_java_templates) {
     if (defined(invoker.expected_android_manifest)) {
       _expectations_target =
           "${invoker.top_target_name}_validate_android_manifest"
+
       action_with_pydeps(_expectations_target) {
         _actual_file = "${invoker.android_manifest}.normalized"
         _failure_file =
@@ -2563,6 +2569,7 @@ if (enable_java_templates) {
   #       shortened resource paths.
   template("optimize_resources") {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+
     action_with_pydeps(target_name) {
       forward_variables_from(invoker, [ "deps" ])
       script = "//build/android/gyp/optimize_resources.py"
@@ -2863,6 +2870,7 @@ if (enable_java_templates) {
     if (defined(invoker.expected_libs_and_assets)) {
       _expectations_target =
           "${invoker.top_target_name}_validate_libs_and_assets"
+
       action_with_pydeps(_expectations_target) {
         _actual_file = "$target_gen_dir/$target_name.libs_and_assets"
         _failure_file =
@@ -2900,6 +2908,7 @@ if (enable_java_templates) {
       }
       _deps += [ ":$_expectations_target" ]
     }
+
     action_with_pydeps(target_name) {
       depfile = "$target_gen_dir/$target_name.d"
       inputs = java_paths_for_inputs + _inputs
@@ -3978,6 +3987,7 @@ if (enable_java_templates) {
         # Serves double purpose: Generating R.java, as well as being the
         #__assetres target (instead of using a separate group).
         _fake_rjava_target = "${target_name}__assetres"
+
         generate_r_java(_fake_rjava_target) {
           deps = [ ":$_build_config_target_name" ] + _java_assetres_deps +
                  _non_java_deps
@@ -4018,6 +4028,7 @@ if (enable_java_templates) {
             "$target_out_dir/$_output_name.kt-jvm-abi.jar"
         assert(filter_include(_lib_deps, [ _kotlin_stdlib_dep ]) != [],
                "${_main_target_name} is missing dep: $_kotlin_stdlib_dep")
+
         compile_kt(_compile_kt_target_name) {
           deps = _header_classpath_deps
           output_jar_path = _kotlinc_jar_path
@@ -4039,6 +4050,7 @@ if (enable_java_templates) {
       template("compile_java_helper") {
         _enable_errorprone =
             defined(invoker.enable_errorprone) && invoker.enable_errorprone
+
         compile_java(target_name) {
           forward_variables_from(invoker,
                                  "*",
@@ -4123,6 +4135,7 @@ if (enable_java_templates) {
       }
 
       _compile_java_target = "${_main_target_name}__compile_java"
+
       compile_java_helper(_compile_java_target) {
         forward_variables_from(invoker,
                                _compile_java_forward_variables + [
@@ -4191,6 +4204,7 @@ if (enable_java_templates) {
       _rewriter_path = root_build_dir + "/bin/helper/" +
                        get_label_info(invoker.bytecode_rewriter_target, "name")
       _rebased_build_config = rebase_path(_build_config, root_build_dir)
+
       action_with_pydeps(_rewritten_jar_target_name) {
         script = "//build/android/gyp/bytecode_rewriter.py"
         inputs = java_paths_for_inputs + [
@@ -4268,6 +4282,7 @@ if (enable_java_templates) {
 
       if (_filter_jar && _is_prebuilt) {
         _filter_jar_target_name = "${target_name}__filter_jar"
+
         filter_jar(_filter_jar_target_name) {
           forward_variables_from(invoker,
                                  [
@@ -4286,6 +4301,7 @@ if (enable_java_templates) {
         # javaagent as the desired coverage data was not being generated.
         # See crbug.com/1097815.
         _process_jar_target_name = "${target_name}__jacoco"
+
         jacoco_instr(_process_jar_target_name) {
           source_files = _source_files
           target_sources_file = _target_sources_file
@@ -4319,6 +4335,7 @@ if (enable_java_templates) {
         }
 
         _dex_target_name = "${target_name}__dex"
+
         dex(_dex_target_name) {
           forward_variables_from(invoker,
                                  [
@@ -4368,6 +4385,7 @@ if (enable_java_templates) {
       # Targets might use the generated script while building, so make it a dep
       # rather than a data_dep.
       _java_binary_script_target_name = "${target_name}__java_binary_script"
+
       java_binary_script(_java_binary_script_target_name) {
         forward_variables_from(invoker,
                                [
@@ -4647,6 +4665,7 @@ template("create_android_app_bundle_module") {
 
   if (defined(invoker.expected_libs_and_assets)) {
     _expectations_target = "${invoker.top_target_name}_validate_libs_and_assets"
+
     action_with_pydeps(_expectations_target) {
       _actual_file = "$target_gen_dir/$target_name.libs_and_assets"
       _failure_file = "$expectations_failure_dir/" +

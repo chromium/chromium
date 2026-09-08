@@ -30,9 +30,7 @@ source_set("first_run") {
   ]
 
   if (is_android) {
-    sources += [
-      "android/personal_context_first_run_service_bridge.cc",
-    ]
+    sources += [ "android/personal_context_first_run_service_bridge.cc" ]
   }
 
   deps = [
@@ -55,4 +53,3 @@ source_set("first_run") {
     ]
   }
 }
-

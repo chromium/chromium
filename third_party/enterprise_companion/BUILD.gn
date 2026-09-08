@@ -18,6 +18,7 @@ if (enable_enterprise_companion) {
     template("old_enterprise_companion_bundle") {
       _src_dir = "chromium_mac_${invoker.arch}/cipd/ChromiumEnterpriseCompanion_test.app/"
       _dest_dir = "${root_out_dir}/old_enterprise_companion/chromium_mac_${invoker.arch}/cipd/ChromiumEnterpriseCompanion.app/"
+
       copy("${target_name}__copy_exe") {
         sources =
             [ _src_dir + "Contents/MacOS/ChromiumEnterpriseCompanion_test" ]

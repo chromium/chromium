@@ -60,5 +60,6 @@ source_set("random") {
 
 group("distributions_test") {
 }
+
 group("mock_distributions_test") {
 }

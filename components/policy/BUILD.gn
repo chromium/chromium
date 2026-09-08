@@ -255,6 +255,7 @@ action_with_pydeps("policy_templates") {
 component("cloud_policy_proto_generated_compile") {
   public_deps = [ ":cloud_policy_proto_generated_compile_proto" ]
 }
+
 proto_library("cloud_policy_proto_generated_compile_proto") {
   visibility = [ ":cloud_policy_proto_generated_compile" ]
 
@@ -276,6 +277,7 @@ component("chrome_settings_proto_generated_compile") {
   testonly = true
   public_deps = [ ":chrome_settings_proto_generated_compile_proto" ]
 }
+
 proto_library("chrome_settings_proto_generated_compile_proto") {
   testonly = true
   visibility = [ ":chrome_settings_proto_generated_compile" ]

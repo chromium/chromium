@@ -126,6 +126,7 @@ template("proto_extras") {
 
     _to_value_target_name = "${target_name}_to_value"
     _all_targets += [ _to_value_target_name ]
+
     proto_library(_to_value_target_name) {
       proto_in_dir = _proto_in_dir
       forward_variables_from(invoker,
@@ -158,6 +159,7 @@ template("proto_extras") {
   if (_generate_ostream) {
     _ostream_target_name = "${target_name}_ostream"
     _all_targets += [ _ostream_target_name ]
+
     proto_library(_ostream_target_name) {
       proto_in_dir = _proto_in_dir
       forward_variables_from(invoker,
@@ -185,6 +187,7 @@ template("proto_extras") {
   if (_generate_equality) {
     _equality_target_name = "${target_name}_equal"
     _all_targets += [ _equality_target_name ]
+
     proto_library(_equality_target_name) {
       proto_in_dir = _proto_in_dir
       forward_variables_from(invoker,
@@ -286,6 +289,7 @@ template("proto_test_extras") {
         false,
         "The `deps` field is set, but the `extras_deps` field is not set. " + "Protobuf depependencies need to have a corresponding proto_extras " + "target so the generated matchers can use the `Serialize()` call.")
   }
+
   proto_library("${target_name}") {
     testonly = true
     proto_in_dir = _proto_in_dir

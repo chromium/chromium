@@ -84,11 +84,13 @@ if (enable_java_templates) {
       # We just need any file here, so use the test itself.
       sources = [ "junit/src/org/chromium/build/AndroidAssetsTest.java" ]
     }
+
     android_resources("junit_test_resources") {
       testonly = true
       sources = [ "junit/res/values/strings.xml" ]
       mergeable_android_manifests = [ "junit/AndroidManifest_mergetest.xml" ]
     }
+
     robolectric_binary("build_junit_tests") {
       # Test has no JNI, so skip JNI Generator step.
       resources_package = "org.chromium.build"

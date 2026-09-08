@@ -48,5 +48,6 @@ source_set("symbolize") {
 
 source_set("demangle_rust_test") {
 }
+
 source_set("stacktrace_test") {
 }

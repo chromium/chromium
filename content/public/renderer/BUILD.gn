@@ -22,6 +22,7 @@ if (is_component_build) {
 } else {
   link_target_type = "static_library"
 }
+
 target(link_target_type, "renderer_sources") {
   # External code should depend on via ":renderer" above.
   visibility = [ "//content/*" ]

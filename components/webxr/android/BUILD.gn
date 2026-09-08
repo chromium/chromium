@@ -32,6 +32,7 @@ android_resources("cardboard_java_resources") {
     "//components/strings:components_strings_grd",
   ]
 }
+
 source_set("android") {
   # TODO(crbug.com/40899237): Investigate why this cannot simply be an
   # assert(enable_vr).

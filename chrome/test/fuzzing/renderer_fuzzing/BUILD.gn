@@ -119,6 +119,7 @@ if (renderer_ipc_fuzzing_enabled) {
     ]
     deps += _mojolpm_deps
   }
+
   in_process_renderer_mojolpm_generated_fuzzer(
       "renderer_in_process_mojolpm_fuzzer") {
     sources = [ "renderer_in_process_mojolpm_fuzzer.cc" ]

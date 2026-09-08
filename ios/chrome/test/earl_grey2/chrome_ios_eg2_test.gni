@@ -16,6 +16,7 @@ template("chrome_ios_eg2_test_app_host") {
   if (!defined(entitlements_path) && !defined(entitlements_target)) {
     _target_name = target_name
     _tweak_entitlements = target_name + "_tweak_entitlements"
+
     compile_entitlements(_tweak_entitlements) {
       substitutions = [ "IOS_BUNDLE_ID_PREFIX=$ios_app_bundle_id_prefix" ]
       output_name = "$target_gen_dir/$_target_name.entitlements"
@@ -29,6 +30,7 @@ template("chrome_ios_eg2_test_app_host") {
 
   if (!defined(info_plist) && !defined(info_plist_target)) {
     _tweak_info_plist = target_name + "_tweak_info_plist"
+
     tweak_info_plist(_tweak_info_plist) {
       info_plists = [
         "//ios/chrome/app/resources/Info.plist",
@@ -54,6 +56,7 @@ template("chrome_ios_eg2_test_app_host") {
   }
 
   _deps_group_name = target_name + "_deps_group"
+
   group(_deps_group_name) {
     testonly = true
 
@@ -71,6 +74,7 @@ template("chrome_ios_eg2_test_app_host") {
     assert(defined(invoker.eg_extension_name),
            "eg_extension_name must be defined too")
     _eg_extension_bundle_data_target = target_name + "_appex_bundle_data"
+
     extension_bundle_data(_eg_extension_bundle_data_target) {
       extension_name = invoker.eg_extension_name
       extension_target = invoker.eg_extension_target
@@ -158,6 +162,7 @@ set_defaults("chrome_ios_eg_v2_test_app_host") {
 
 template("chrome_ios_eg2_test") {
   _deps_group_name = target_name + "_deps_group"
+
   group(_deps_group_name) {
     testonly = true
 

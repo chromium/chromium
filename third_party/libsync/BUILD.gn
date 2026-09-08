@@ -52,6 +52,7 @@ if (use_system_libsync) {
   pkg_config("libsync_config") {
     packages = [ "libsync" ]
   }
+
   group("libsync") {
     public_configs = [ ":libsync_config" ]
   }

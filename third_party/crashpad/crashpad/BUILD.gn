@@ -88,6 +88,7 @@ if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
 
   if (crashpad_is_in_fuchsia) {
     import("//build/components.gni")
+
     fuchsia_test_component("crashpad-test-component") {
       manifest = "test/fuchsia_crashpad_tests.cml"
       deps = [
@@ -131,6 +132,7 @@ if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
     _resources = []
     foreach(resource_file, _resource_files) {
       _resource_file_target = string_replace(resource_file, "/", "_")
+
       resource("${_resource_file_target}") {
         sources = [ "${resource_file}" ]
         outputs = [ "data/${resource_file}" ]

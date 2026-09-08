@@ -43,6 +43,7 @@ template("blink_modules_sources") {
     forward_variables_from(invoker, "*", [ "deps" ])
   }
 }
+
 set_defaults("blink_modules_sources") {
   # This sets the default list of configs when the blink_modules_sources target
   # is defined. The default_compiler_configs comes from BUILDCONFIG.gn and

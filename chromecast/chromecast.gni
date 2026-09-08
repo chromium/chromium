@@ -151,6 +151,7 @@ template("cast_shared_library") {
   } else {
     target_type = "source_set"
   }
+
   target(target_type, target_name) {
     forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
     forward_variables_from(invoker, [ "testonly" ])

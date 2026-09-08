@@ -15,6 +15,7 @@ import("//build/config/android/rules.gni")
 
 template("grpc_java_library") {
   assert(defined(invoker.sources), "Need sources for proto_library")
+
   proto_java_library(target_name) {
     forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY + [ "deps" ])
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)

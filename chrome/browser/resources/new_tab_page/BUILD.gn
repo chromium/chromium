@@ -11,6 +11,7 @@ import("./new_tab_page.gni")
 assert(enable_webui_ntp)
 
 grd_prefix = "new_tab_page"
+
 build_webui("build") {
   icons_html_files = [
     "modules/icons.html",

@@ -74,6 +74,7 @@ template("rust_unit_test") {
   assert(defined(invoker.sources), "sources must be listed")
 
   _exe_target_name = target_name + "_exe"
+
   rust_unit_tests_group(target_name) {
     deps = [ ":$_exe_target_name" ]
   }

@@ -48,10 +48,12 @@ template("crashpad_fuzzer_test") {
     # Append "crashpad_" to the beginning of the fuzzer's name to make it easier
     # in Chromium to recognize where fuzzer came from.
     forward_variables_from(invoker, "*")
+
     fuzzer_test("crashpad_" + target_name) {
     }
   } else {
     not_needed(invoker, "*")
+
     group(target_name) {
     }
   }

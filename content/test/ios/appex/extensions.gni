@@ -13,6 +13,7 @@ template("browserkit_extension") {
   _process_target = target_name
   _bundle_name = "test_${_process_target}"
   target_name = _bundle_name
+
   tweak_info_plist("tweak_${target_name}_plist") {
     info_plist = "//content/app/ios/appex/${_process_target}.plist"
   }

@@ -371,6 +371,7 @@ if (!is_ios) {
       "//net:simple_quic_tools",
     ]
   }
+
   source_set("quic_server_core") {
     testonly = true
     sources = [

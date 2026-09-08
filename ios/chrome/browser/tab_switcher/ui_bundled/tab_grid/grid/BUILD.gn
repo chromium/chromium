@@ -42,6 +42,7 @@ source_set("selected_grid_items") {
     "//ios/web/public",
   ]
 }
+
 source_set("grid_utils") {
   sources = [
     "grid_utils.h",

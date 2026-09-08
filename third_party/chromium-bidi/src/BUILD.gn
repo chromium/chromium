@@ -45,9 +45,7 @@ bidi_foundation_module("cdp") {
     "cdp/cdp.ts",
     "cdp/cdpMessage.ts",
   ]
-  deps = [
-    ":utils",
-  ]
+  deps = [ ":utils" ]
 }
 
 bidi_foundation_module("protocol") {
@@ -55,29 +53,27 @@ bidi_foundation_module("protocol") {
     "protocol/ErrorResponse.ts",
     "protocol/cdp.ts",
     "protocol/chromium-bidi.ts",
-    "protocol/protocol.ts",
     "protocol/generated/webdriver-bidi-bluetooth.ts",
     "protocol/generated/webdriver-bidi-digital-credentials.ts",
     "protocol/generated/webdriver-bidi-nav-speculation.ts",
     "protocol/generated/webdriver-bidi-permissions.ts",
     "protocol/generated/webdriver-bidi-ua-client-hints.ts",
     "protocol/generated/webdriver-bidi.ts",
+    "protocol/protocol.ts",
   ]
 }
 
 bidi_foundation_module("protocol_parser") {
   sources = [
-    "protocol-parser/protocol-parser.ts",
     "protocol-parser/generated/webdriver-bidi-bluetooth.ts",
     "protocol-parser/generated/webdriver-bidi-digital-credentials.ts",
     "protocol-parser/generated/webdriver-bidi-nav-speculation.ts",
     "protocol-parser/generated/webdriver-bidi-permissions.ts",
     "protocol-parser/generated/webdriver-bidi-ua-client-hints.ts",
     "protocol-parser/generated/webdriver-bidi.ts",
+    "protocol-parser/protocol-parser.ts",
   ]
-  deps = [
-    ":protocol",
-  ]
+  deps = [ ":protocol" ]
 }
 
 bidi_foundation_module("bidi_mapper") {
@@ -90,7 +86,6 @@ bidi_foundation_module("bidi_mapper") {
     "bidiMapper/CommandProcessor.ts",
     "bidiMapper/MapperOptions.ts",
     "bidiMapper/OutgoingMessage.ts",
-    
     "bidiMapper/modules/bluetooth/BluetoothProcessor.ts",
     "bidiMapper/modules/browser/BrowserProcessor.ts",
     "bidiMapper/modules/browser/ContextConfig.ts",
@@ -139,10 +134,10 @@ bidi_foundation_module("bidi_mapper") {
     "bidiMapper/modules/webExtension/WebExtensionProcessor.ts",
   ]
   deps = [
-    ":utils",
     ":cdp",
     ":protocol",
     ":protocol_parser",
+    ":utils",
   ]
   node_es_libs = [
     "es2023",
@@ -158,9 +153,7 @@ bidi_foundation_module("bidi_tab") {
     "bidiTab/bidiTab.ts",
     "bidiTab/mapperTabPage.ts",
   ]
-  deps = [
-    ":bidi_mapper",
-  ]
+  deps = [ ":bidi_mapper" ]
   node_es_libs = [
     "es2023",
     "dom",
@@ -171,9 +164,7 @@ bidi_foundation_module("bidi_tab") {
 bidi_bundle("mapper_bundle") {
   entrypoint = "$target_gen_dir/bidiTab/bidiTab.js"
   output_file = "$target_gen_dir/mapperTab.js"
-  deps = [
-    ":bidi_tab",
-  ]
+  deps = [ ":bidi_tab" ]
 }
 
 ts_library("unit_tests") {
@@ -247,9 +238,7 @@ bidi_foundation_module("bidi_server") {
 }
 
 bidi_foundation_module("chromium_bidi") {
-  sources = [
-    "index.ts",
-  ]
+  sources = [ "index.ts" ]
   deps = [
     ":bidi_mapper",
     ":protocol",
@@ -264,9 +253,9 @@ bidi_foundation_module("chromium_bidi") {
 group("all") {
   testonly = true
   deps = [
-    ":mapper_bundle",
-    ":unit_tests",
     ":bidi_server",
     ":chromium_bidi",
+    ":mapper_bundle",
+    ":unit_tests",
   ]
 }

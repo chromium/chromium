@@ -20,6 +20,7 @@ if (crashpad_is_in_chromium) {
     testonly = true
     public_deps = [ "//testing/gtest" ]
   }
+
   group("googlemock") {
     testonly = true
     public_deps = [ "//testing/gmock" ]
@@ -29,6 +30,7 @@ if (crashpad_is_in_chromium) {
     testonly = true
     public_deps = [ "//third_party/googletest:gtest" ]
   }
+
   group("googlemock") {
     testonly = true
     public_deps = [ "//third_party/googletest:gmock" ]

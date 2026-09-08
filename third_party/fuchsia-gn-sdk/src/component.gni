@@ -76,6 +76,7 @@ template("fuchsia_component_manifest") {
     # Put the coverage merged manifest in a coverage directory to avoid
     # collision with no base manifest.
     manifest_rel_path = "coverage/${manifest_file}"
+
     cmc_merge(merged_manifest) {
       forward_variables_from(invoker,
                              [
@@ -92,6 +93,7 @@ template("fuchsia_component_manifest") {
   }
 
   _manifest_name = get_path_info(manifest, "name")
+
   cmc_compile(target_name) {
     forward_variables_from(invoker,
                            [
@@ -238,6 +240,7 @@ template("fuchsia_component") {
   if (defined(invoker.manifest)) {
     # Compile the manifest from source
     cm_target = "${target_name}_manifest_compile"
+
     fuchsia_component_manifest(cm_target) {
       forward_variables_from(invoker,
                              [

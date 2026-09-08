@@ -31,6 +31,7 @@ component("capture_mode") {
     deps += [ "//media/capture:capture_lib" ]
   }
 }
+
 source_set("unit_tests") {
   testonly = true
   sources = [

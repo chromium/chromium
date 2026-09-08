@@ -32,6 +32,7 @@ if (is_chromeos) {
       "//components/enterprise/obfuscation/core:enterprise_obfuscation",
     ]
   }
+
   source_set("test_support") {
     testonly = true
 

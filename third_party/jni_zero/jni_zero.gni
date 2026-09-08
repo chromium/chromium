@@ -146,6 +146,7 @@ template("generate_final_jni") {
   if (current_toolchain == default_toolchain) {
     if (defined(invoker.native_deps)) {
       _native_sources_list = "$target_gen_dir/$_target_name.nativesources.txt"
+
       jni_sources_list("${_target_name}__native_sources") {
         forward_variables_from(invoker, [ "testonly" ])
         deps = invoker.native_deps
@@ -154,6 +155,7 @@ template("generate_final_jni") {
     }
 
     _java_sources_list = "$target_gen_dir/$_target_name.javasources.txt"
+
     jni_sources_list("${_target_name}__java_sources") {
       forward_variables_from(invoker, [ "testonly" ])
       deps = invoker.java_targets
@@ -170,6 +172,7 @@ template("generate_final_jni") {
       # need to take the intersection of it's native and java.
       _priority_java_sources_list =
           "$target_gen_dir/$_target_name.priority_javasources.txt"
+
       jni_sources_list("${_target_name}__priority_java_sources") {
         forward_variables_from(invoker, [ "testonly" ])
         deps = invoker.priority_java_targets
@@ -650,6 +653,7 @@ template("generate_jni") {
   assert(
       filter_exclude([ target_name ], [ "*jni*" ]) == [],
       "generate_jni() targets must contain \"jni\" in their names (a \"_jni\" suffix is common). Found \"$target_name\"")
+
   generate_jni_impl(target_name) {
     forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
@@ -727,6 +731,7 @@ template("native_with_jni") {
     _target_name_for_visibility = target_name
   }
   _final_jni_target_name = "${target_name}__jni_registration"
+
   generate_final_jni(_final_jni_target_name) {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     if (defined(visibility)) {
@@ -765,6 +770,7 @@ template("native_with_jni") {
     if (defined(invoker.target_type_import)) {
       import(invoker.target_type_import)
     }
+
     target(invoker.target_type, target_name) {
       deps = invoker.deps
       if (defined(invoker.sources)) {
@@ -811,6 +817,7 @@ template("shared_library_with_jni") {
     target_type = "shared_library"
   }
 }
+
 set_defaults("shared_library_with_jni") {
   configs = default_shared_library_configs
 }
@@ -823,6 +830,7 @@ template("component_with_jni") {
     target_type = "component"
   }
 }
+
 set_defaults("component_with_jni") {
   configs = default_component_configs
 }

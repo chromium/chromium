@@ -26,9 +26,9 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "bundle_downloader_unittest.cc" ]
   deps = [
-    "//components/webapps/isolated_web_apps",
     "//base",
     "//base/test:test_support",
+    "//components/webapps/isolated_web_apps",
     "//net",
     "//net/traffic_annotation:test_support",
     "//services/network:test_support",

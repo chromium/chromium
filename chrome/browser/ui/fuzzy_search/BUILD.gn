@@ -19,9 +19,7 @@ source_set("fuzzy_search") {
     "//ui/base",
   ]
 
-  deps = [
-    "//base:i18n",
-  ]
+  deps = [ "//base:i18n" ]
 }
 
 source_set("unit_tests") {

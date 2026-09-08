@@ -213,6 +213,7 @@ template("_fidl_cpp_library_impl") {
   }
 
   config_target_name = "${target_name}_config"
+
   config(config_target_name) {
     visibility = [ ":${target_name}" ]
     include_dirs = [ root ]
@@ -344,6 +345,7 @@ template("fidl_cpp_library") {
   if (invoker.fidl_target_name == "zx") {
     # The zx FIDL library isn't generated with C++ fidlgens.
     not_needed(invoker, "*")
+
     group(target_name) {
     }
   } else {
@@ -586,6 +588,7 @@ template("fidl_library") {
 
   # Define new C++ binding targets.
   layer_target_prefix = target_name + "_"
+
   fidl_cpp_codegen("${target_name}_cpp") {
     forward_variables_from(invoker,
                            [
@@ -612,6 +615,7 @@ template("fidl_library") {
 
   foreach(layer, llcpp_layers) {
     layer_target_name = layer_target_prefix + layer.layer
+
     fidl_cpp_library(layer_target_name) {
       forward_variables_from(invoker,
                              [

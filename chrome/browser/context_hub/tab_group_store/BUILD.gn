@@ -33,9 +33,7 @@ source_set("impl") {
     "//base",
   ]
 
-  deps = [
-    "//chrome/browser/context_hub:features",
-  ]
+  deps = [ "//chrome/browser/context_hub:features" ]
 }
 
 source_set("unit_tests") {

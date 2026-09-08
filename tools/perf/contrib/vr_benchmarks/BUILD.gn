@@ -47,6 +47,7 @@ if (!is_android) {
 } else {
   template("vr_perf_tests_android_template") {
     forward_variables_from(invoker, [ "telemetry_target_suffix" ])
+
     group(target_name) {
       testonly = true
       data_deps = [

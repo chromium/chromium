@@ -81,6 +81,7 @@ template("rust_bindgen") {
   if (defined(invoker.crate_name)) {
     _crate_name = invoker.crate_name
   }
+
   rust_bindgen_generator(_rust_bindgen_generator_target_name) {
     forward_variables_from(invoker,
                            "*",

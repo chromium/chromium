@@ -24,6 +24,7 @@ template("webui_ts_library") {
   if (defined(invoker.deps)) {
     path_mappings_target = "${target_name}_mappings"
     path_mappings_filename = "path_mappings_${path_mappings_target}.json"
+
     webui_path_mappings(path_mappings_target) {
       ts_deps = invoker.deps
       visibility = [ ":$ts_library_target" ]

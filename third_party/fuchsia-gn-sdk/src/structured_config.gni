@@ -96,6 +96,7 @@ template("fuchsia_structured_config_values") {
     _generated_values_label = "${target_name}_generated_values"
     _value_file_deps = [ ":$_generated_values_label" ]
     _value_file = "$target_gen_dir/${target_name}_values_from_literal.json"
+
     generated_file(_generated_values_label) {
       output_conversion = "json"
       contents = invoker.values

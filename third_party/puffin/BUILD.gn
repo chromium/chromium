@@ -4,6 +4,7 @@
 
 import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
+
 group("all") {
   deps = [
     ":libpuffdiff",

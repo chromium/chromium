@@ -541,6 +541,7 @@ assert(!use_asan_backup_ref_ptr || use_raw_ptr_hookable_impl,
 # version of glibc that does not include pkeys syscall numbers.
 is_pkeys_available =
     (is_linux || is_chromeos) && current_cpu == "x64" && !is_cronet_build
+
 declare_args() {
   enable_pkeys = is_pkeys_available
 }

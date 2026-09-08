@@ -34,6 +34,7 @@ if (target_cpu == "x86" || target_cpu == "x64") {
   win_toolchains("x86") {
     toolchain_arch = "x86"
   }
+
   win_toolchains("x64") {
     toolchain_arch = "x64"
   }
@@ -43,6 +44,7 @@ if (target_cpu == "arm64") {
   win_toolchains("arm64") {
     toolchain_arch = "arm64"
   }
+
   win_toolchains("x64") {
     toolchain_arch = "x64"
   }

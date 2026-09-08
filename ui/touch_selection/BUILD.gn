@@ -121,6 +121,7 @@ if (is_android) {
       "touch_selection_draggable.h",
     ]
   }
+
   java_cpp_enum("ui_touch_handle_orientation_srcjar") {
     sources = [ "touch_handle_orientation.h" ]
   }

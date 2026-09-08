@@ -33,6 +33,7 @@ group("temporal_capi") {
   ]
   public_deps = [ "//third_party/rust/temporal_capi/v0_2:lib" ]
 }
+
 config("temporal_capi_include_dirs") {
   include_dirs = [ "//third_party/rust/chromium_crates_io/vendor/temporal_capi-v0_2/bindings/cpp" ]
 }

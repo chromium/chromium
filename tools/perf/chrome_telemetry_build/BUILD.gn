@@ -110,6 +110,7 @@ if (is_android) {
   } else if (android_64bit_target_cpu) {
     _webview_bitness_if_needed = "_64"
   }
+
   group("telemetry_chrome_test_android_chrome") {
     testonly = true
 
@@ -165,6 +166,7 @@ if (is_android) {
 
     template("telemetry_chrome_test_clank_template") {
       forward_variables_from(invoker, [ "telemetry_target_suffix" ])
+
       group(target_name) {
         testonly = true
         data_deps = [

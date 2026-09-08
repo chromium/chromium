@@ -69,6 +69,7 @@ if (use_crash_key_stubs || use_crashpad_annotation) {
 } else {
   crash_key_target_type = "component"
 }
+
 target(crash_key_target_type, "crash_key_lib") {
   sources = [
     "crash_export.h",

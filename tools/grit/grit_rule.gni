@@ -165,6 +165,7 @@ template("grit") {
   if (defined(invoker.gritdeps)) {
     # This action is used to warn about outdated gritdeps files.
     _check_gritdeps_target = "${target_name}_check_gritdeps"
+
     action_with_pydeps(_check_gritdeps_target) {
       script = grit_info_script
       inputs = [
@@ -189,6 +190,7 @@ template("grit") {
   if (defined(invoker.grit_action_name_override)) {
     _grit_custom_target = invoker.grit_action_name_override
   }
+
   action_with_pydeps(_grit_custom_target) {
     script = "//tools/grit/grit.py"
     inputs = [ invoker.source ]
@@ -532,6 +534,7 @@ if (is_android) {
   template("java_strings_grd") {
     _grit_target_name = "${target_name}__grit"
     _resources_zip = "$target_out_dir/$target_name.resources.zip"
+
     grit(_grit_target_name) {
       forward_variables_from(invoker,
                              TESTONLY_AND_VISIBILITY + [

@@ -16,6 +16,7 @@ template("generate_library_loader") {
   output_cc = "$root_gen_dir/library_loaders/" + invoker.output_cc
 
   action_visibility = [ ":$target_name" ]
+
   action("${target_name}_loader") {
     visibility = action_visibility
 

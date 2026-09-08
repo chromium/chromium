@@ -246,6 +246,7 @@ source_set("verdict_cache_manager_unittest") {
     "//testing/gtest",
   ]
 }
+
 source_set("referrer_chain_provider") {
   sources = [ "referrer_chain_provider.h" ]
 

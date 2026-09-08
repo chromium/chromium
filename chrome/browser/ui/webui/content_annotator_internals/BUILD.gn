@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 assert(!is_android)
+
 source_set("content_annotator_internals") {
   sources = [
     "content_annotator_internals_page_handler.cc",

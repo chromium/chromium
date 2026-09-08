@@ -118,6 +118,7 @@ source_set("impl") {
     deps += [ "//chromeos/ash/components/install_attributes" ]
   }
 }
+
 source_set("test_support") {
   testonly = true
   sources = [

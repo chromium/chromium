@@ -394,6 +394,7 @@ source_set("gl_tests_filters") {
     "//testing/buildbot/filters/win.uhd_770.gl_tests_passthrough.filter",
   ]
 }
+
 source_set("gl_unittests_filters") {
   testonly = true
 

@@ -107,6 +107,7 @@ if (current_toolchain != default_toolchain) {
   binary_symlink("host_forwarder") {
     binary_label = ":$target_name($host_toolchain)"
   }
+
   binary_symlink("host_forwarder_unittests") {
     testonly = true
     binary_label = ":$target_name($host_toolchain)"

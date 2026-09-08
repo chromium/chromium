@@ -112,6 +112,7 @@ template("cpp_api_from_rust") {
   }
 
   _action_rsp_path = "$target_out_dir/$_action_target_name.rsp"
+
   generated_file(_rspgen_target_name) {
     forward_variables_from(invoker, [ "testonly" ])
     forward_variables_from(_original_attributes, [ "deps" ])

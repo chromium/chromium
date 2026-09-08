@@ -50,6 +50,7 @@ template("rust_unit_tests_group") {
   # our dependencies.
   _metadata_target_name = "${target_name}_metadata"
   _metadata_filepath = "$root_build_dir/${target_name}__rust_unittest_exes.txt"
+
   generated_file(_metadata_target_name) {
     forward_variables_from(invoker, [ "deps" ], [])
 

@@ -57,6 +57,7 @@ template("blink_core_sources") {
   } else {
     target_type = "static_library"
   }
+
   target(target_type, target_name) {
     # The visibility will get overridden by forward_variables_from below if the
     # invoker defined it.
@@ -84,6 +85,7 @@ template("blink_core_sources") {
                            ])
   }
 }
+
 set_defaults("blink_core_sources") {
   # This sets the default list of configs when the blink_core_sources target
   # is defined. The default_compiler_configs comes from BUILDCONFIG.gn and
