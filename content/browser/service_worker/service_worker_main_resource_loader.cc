@@ -483,6 +483,11 @@ void ServiceWorkerMainResourceLoader::MaybeDispatchPreload(
             MaybeStartAutoPreload(context_wrapper, version);
         base::UmaHistogramBoolean("ServiceWorker.AutoPreload.Dispatched",
                                   auto_preload_dispatched);
+        if (resource_request_.is_outermost_main_frame) {
+          base::UmaHistogramBoolean(
+              "ServiceWorker.AutoPreload.MainFrame.Dispatched",
+              auto_preload_dispatched);
+        }
         if (auto_preload_dispatched) {
           return;
         }

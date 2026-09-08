@@ -6902,6 +6902,8 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerAutoPreloadBrowserTest, PassThrough) {
   histogram_tester.ExpectUniqueSample("ServiceWorker.AutoPreload.Dispatched",
                                       true, 1);
   histogram_tester.ExpectUniqueSample(
+      "ServiceWorker.AutoPreload.MainFrame.Dispatched", true, 1);
+  histogram_tester.ExpectUniqueSample(
       "ServiceWorker.AutoPreload.DispatchResult",
       ServiceWorkerAutoPreloadDispatchResult::kDispatched, 1);
   histogram_tester.ExpectUniqueSample(
