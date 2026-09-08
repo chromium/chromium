@@ -14,6 +14,7 @@
 #include "base/rand_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
+#include "components/password_manager/core/common/password_manager_constants.h"
 
 namespace autofill {
 
@@ -22,7 +23,6 @@ namespace autofill {
 // crowd-sourcing server. (The server predicts password lengths only if the
 // prediction is smaller than the default.)
 const uint32_t kDefaultPasswordLength = 15;
-
 
 namespace {
 
@@ -208,6 +208,40 @@ std::u16string GenerateMaxEntropyPassword(PasswordRequirementsSpec spec) {
 }
 
 }  // namespace
+
+PasswordRequirementsSpec SanitizeRequirementsSpec(
+    const PasswordRequirementsSpec& spec) {
+  if (spec.has_lower_case() && spec.lower_case().has_character_set()) {
+    return PasswordRequirementsSpec();
+  }
+  if (spec.has_upper_case() && spec.upper_case().has_character_set()) {
+    return PasswordRequirementsSpec();
+  }
+  if (spec.has_alphabetic() && spec.alphabetic().has_character_set()) {
+    return PasswordRequirementsSpec();
+  }
+  if (spec.has_numeric() && spec.numeric().has_character_set()) {
+    return PasswordRequirementsSpec();
+  }
+  if (spec.has_max_length() &&
+      spec.max_length() < password_manager::constants::kMinimumPasswordLength) {
+    return PasswordRequirementsSpec();
+  }
+  if (spec.has_symbols() && spec.symbols().has_character_set() &&
+      !std::ranges::all_of(spec.symbols().character_set(), [](char c) {
+        return password_manager::constants::kSpecialSymbols.contains(c);
+      })) {
+    return PasswordRequirementsSpec();
+  }
+  if (spec.has_lower_case() && spec.lower_case().has_max() &&
+      spec.lower_case().max() == 0 && spec.has_upper_case() &&
+      spec.upper_case().has_max() && spec.upper_case().max() == 0 &&
+      spec.has_numeric() && spec.numeric().has_max() &&
+      spec.numeric().max() == 0) {
+    return PasswordRequirementsSpec();
+  }
+  return spec;
+}
 
 void ConditionallyAddNumericDigitsToAlphabet(PasswordRequirementsSpec* spec) {
   DCHECK(spec);

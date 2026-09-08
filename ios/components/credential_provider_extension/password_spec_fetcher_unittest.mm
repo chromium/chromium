@@ -17,6 +17,25 @@ using autofill::DomainSuggestions;
 using autofill::PasswordRequirementsSpec;
 using autofill::PasswordRequirementsSpec_CharacterClass;
 
+@interface PasswordSpecFetcher (Testing)
+- (void)onReceivedData:(NSData*)data
+              response:(NSURLResponse*)response
+                 error:(NSError*)error;
+@end
+
+namespace {
+
+// Returns the base64-encoded body that the fetcher expects, wrapping `spec` in
+// a `DomainSuggestions` message.
+NSData* EncodedResponseBodyForSpec(const PasswordRequirementsSpec& spec) {
+  DomainSuggestions suggestions;
+  *suggestions.mutable_password_requirements() = spec;
+  std::string encoded = base::Base64Encode(suggestions.SerializeAsString());
+  return [NSData dataWithBytes:encoded.data() length:encoded.size()];
+}
+
+}  // namespace
+
 class PasswordSpecFetcherTest : public PlatformTest {};
 
 // Tests a dummy proto can be parsed.
@@ -66,4 +85,46 @@ TEST_F(PasswordSpecFetcherTest, DefaultSpecInvalidFetch) {
       TestTimeouts::action_timeout(), ^{
         return block_ran;
       }));
+}
+
+// Tests that a valid response body is stored as the spec.
+TEST_F(PasswordSpecFetcherTest, ValidResponseStoredAsSpec) {
+  PasswordSpecFetcher* fetcher = [[PasswordSpecFetcher alloc] initWithHost:@""
+                                                                    APIKey:@""];
+  PasswordRequirementsSpec spec;
+  spec.set_max_length(12u);
+  spec.mutable_lower_case()->set_min(2u);
+  [fetcher onReceivedData:EncodedResponseBodyForSpec(spec)
+                 response:nil
+                    error:nil];
+  EXPECT_EQ(12u, fetcher.spec.max_length());
+  EXPECT_EQ(2u, fetcher.spec.lower_case().min());
+}
+
+// Tests that a response body that overrides the lower case character set is
+// replaced with an empty spec.
+TEST_F(PasswordSpecFetcherTest, ResponseWithCharacterSetOverrideRejected) {
+  PasswordSpecFetcher* fetcher = [[PasswordSpecFetcher alloc] initWithHost:@""
+                                                                    APIKey:@""];
+  PasswordRequirementsSpec spec;
+  spec.set_max_length(12u);
+  spec.mutable_lower_case()->set_character_set("a");
+  [fetcher onReceivedData:EncodedResponseBodyForSpec(spec)
+                 response:nil
+                    error:nil];
+  EXPECT_FALSE(fetcher.spec.has_max_length());
+  EXPECT_FALSE(fetcher.spec.has_lower_case());
+}
+
+// Tests that a response body with a max length below the minimum that the
+// generator should produce is replaced with an empty spec.
+TEST_F(PasswordSpecFetcherTest, ResponseWithShortMaxLengthRejected) {
+  PasswordSpecFetcher* fetcher = [[PasswordSpecFetcher alloc] initWithHost:@""
+                                                                    APIKey:@""];
+  PasswordRequirementsSpec spec;
+  spec.set_max_length(4u);
+  [fetcher onReceivedData:EncodedResponseBodyForSpec(spec)
+                 response:nil
+                    error:nil];
+  EXPECT_FALSE(fetcher.spec.has_max_length());
 }

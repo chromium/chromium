@@ -50,6 +50,7 @@ using autofill::FormSignature;
 using autofill::FormStructure;
 using autofill::IsMostRecentSingleUsernameCandidate;
 using autofill::RandomizedEncoder;
+using password_manager::constants::kSpecialSymbols;
 using password_manager_util::FindCredentialByUsername;
 
 using Logger = autofill::SavePasswordProgressLogger;
@@ -175,8 +176,7 @@ bool IsAddingUsernameToExistingMatch(
 // Returns a uniformly distributed random symbol from the set of random symbols
 // defined by the string |kSpecialSymbols|.
 int GetRandomSpecialSymbol() {
-  return password_manager_util::kSpecialSymbols[base::RandGenerator(
-      password_manager_util::kSpecialSymbols.size())];
+  return kSpecialSymbols[base::RandGenerator(kSpecialSymbols.size())];
 }
 
 // Returns a random special symbol used in |password|.

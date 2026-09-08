@@ -198,10 +198,6 @@ void SetCredentialProviderEnabledOnStartup(PrefService* local_state,
                                            bool enabled);
 #endif
 
-// Contains all special symbols considered for password-generation.
-inline constexpr std::u16string_view kSpecialSymbols =
-    u"!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
-
 // Helper functions for character type classification. The built-in functions
 // depend on locale, platform and other stuff. To make the output more
 // predictable, the function are re-implemented here.
@@ -214,7 +210,8 @@ bool IsLowercaseLetter(char16_t c);
 bool IsUppercaseLetter(char16_t c);
 
 // Checks if a supplied character |c| is a special symbol.
-// Special symbols are defined by the string |kSpecialSymbols|.
+// Special symbols are defined by
+// `password_manager::constants::kSpecialSymbols`.
 bool IsSpecialSymbol(char16_t c);
 
 // Returns true if 'type' is a username in a password-less form.

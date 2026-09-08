@@ -41,6 +41,7 @@
 #include "components/password_manager/core/browser/password_store/password_store_util.h"
 #include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
+#include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -51,6 +52,7 @@
 using autofill::password_generation::PasswordGenerationType;
 using password_manager::PasswordForm;
 using password_manager::StoredCredential;
+using password_manager::constants::kSpecialSymbols;
 
 namespace password_manager_util {
 namespace {

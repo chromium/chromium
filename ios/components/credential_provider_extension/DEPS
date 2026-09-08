@@ -1,6 +1,7 @@
 include_rules = [
   # keep-sorted start
   "+components/autofill/core/browser/proto",
+  "+components/password_manager/core/browser/generation/password_generator.h",
   "+crypto/apple/keychain_util.h",
   # keep-sorted end
 ]

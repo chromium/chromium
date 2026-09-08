@@ -15,6 +15,7 @@ source_set("core") {
   deps = [
     "//base",
     "//components/password_manager/core/browser/features:password_features",
+    "//components/password_manager/core/common:constants",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }

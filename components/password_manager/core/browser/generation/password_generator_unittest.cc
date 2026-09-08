@@ -306,6 +306,57 @@ TEST_F(PasswordGeneratorTest, ZeroLength) {
   EXPECT_EQ(kDefaultPasswordLength, GeneratePassword(spec_).length());
 }
 
+TEST_F(PasswordGeneratorTest, SanitizeRequirementsSpecAcceptsValidSpec) {
+  spec_.set_max_length(12u);
+  spec_.set_priority(10u);
+  spec_.mutable_lower_case()->set_min(2u);
+  spec_.mutable_symbols()->set_character_set("!@#");
+  PasswordRequirementsSpec sanitized = SanitizeRequirementsSpec(spec_);
+  EXPECT_EQ(12u, sanitized.max_length());
+  EXPECT_EQ(10u, sanitized.priority());
+  EXPECT_EQ(2u, sanitized.lower_case().min());
+  EXPECT_EQ("!@#", sanitized.symbols().character_set());
+}
+
+TEST_F(PasswordGeneratorTest, SanitizeRequirementsSpecRejectsInvalidSpec) {
+  PasswordRequirementsSpec spec_lower_case;
+  spec_lower_case.mutable_lower_case()->set_character_set("a");
+
+  PasswordRequirementsSpec spec_upper_case;
+  spec_upper_case.mutable_upper_case()->set_character_set("A");
+
+  PasswordRequirementsSpec spec_alphabetic;
+  spec_alphabetic.mutable_alphabetic()->set_character_set("aA");
+
+  PasswordRequirementsSpec spec_numeric;
+  spec_numeric.mutable_numeric()->set_character_set("1");
+
+  PasswordRequirementsSpec spec_short;
+  spec_short.set_max_length(4u);
+
+  PasswordRequirementsSpec spec_symbols_with_letters;
+  spec_symbols_with_letters.mutable_symbols()->set_character_set("!@a");
+
+  PasswordRequirementsSpec spec_no_alphanumeric;
+  spec_no_alphanumeric.mutable_lower_case()->set_max(0u);
+  spec_no_alphanumeric.mutable_upper_case()->set_max(0u);
+  spec_no_alphanumeric.mutable_numeric()->set_max(0u);
+
+  for (auto* spec :
+       {&spec_lower_case, &spec_upper_case, &spec_alphabetic, &spec_numeric,
+        &spec_short, &spec_symbols_with_letters, &spec_no_alphanumeric}) {
+    spec->set_priority(100u);
+    PasswordRequirementsSpec sanitized = SanitizeRequirementsSpec(*spec);
+    EXPECT_FALSE(sanitized.has_priority());
+    EXPECT_FALSE(sanitized.has_max_length());
+    EXPECT_FALSE(sanitized.has_lower_case());
+    EXPECT_FALSE(sanitized.has_upper_case());
+    EXPECT_FALSE(sanitized.has_alphabetic());
+    EXPECT_FALSE(sanitized.has_numeric());
+    EXPECT_FALSE(sanitized.has_symbols());
+  }
+}
+
 }  // namespace
 
 }  // namespace autofill

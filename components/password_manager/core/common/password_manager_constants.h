@@ -7,9 +7,18 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_COMMON_PASSWORD_MANAGER_CONSTANTS_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_COMMON_PASSWORD_MANAGER_CONSTANTS_H_
 
+#include <string_view>
+
 #include "base/time/time.h"
 
 namespace password_manager::constants {
+
+// Minimal length of a generated password.
+inline constexpr int kMinimumPasswordLength = 9;
+
+// Contains all special symbols considered for password-generation.
+inline constexpr std::u16string_view kSpecialSymbols =
+    u"!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
 
 // The character used to obfuscate password labels.
 inline constexpr char16_t kPasswordReplacementChar = 0x2022;

@@ -25,6 +25,7 @@ source_set("password_spec_fetcher") {
   deps = [
     "//base",
     "//components/autofill/core/browser/proto",
+    "//components/password_manager/core/browser/generation:core",
   ]
   frameworks = [ "Foundation.framework" ]
 }

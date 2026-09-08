@@ -8,6 +8,7 @@
 
 #import "base/base64.h"
 #import "components/autofill/core/browser/proto/password_requirements.pb.h"
+#import "components/password_manager/core/browser/generation/password_generator.h"
 
 using autofill::DomainSuggestions;
 using autofill::PasswordRequirementsSpec;
@@ -118,7 +119,8 @@ const NSTimeInterval kPasswordSpecTimeout = 10;
     DomainSuggestions suggestions;
     suggestions.ParseFromString(decoded);
     if (suggestions.has_password_requirements()) {
-      self.spec = suggestions.password_requirements();
+      self.spec = autofill::SanitizeRequirementsSpec(
+          suggestions.password_requirements());
     }
   }
   [self executeCompletion];

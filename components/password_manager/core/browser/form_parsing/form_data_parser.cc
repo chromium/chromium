@@ -30,7 +30,6 @@
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -1237,7 +1236,7 @@ bool FieldValueIsTooShortForSaving(const FormFieldData* field) {
 
 bool FieldMaxLengthAllowsPasswordGeneration(const FormFieldData& field) {
   return field.max_length() >=
-         autofill::password_generation::kMinimumPasswordLength;
+         password_manager::constants::kMinimumPasswordLength;
 }
 
 bool ShouldContinueParsing(bool parsing_complete_with_model_predictions,
