@@ -1,0 +1,4 @@
+Tests that opening DevTools (CSS.enable) on a file:// URL does not produce a security warning.
+CSS.enable completed
+Page.getResourceContent succeeded: true
+
