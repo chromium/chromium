@@ -29,6 +29,8 @@ class BrowserDelegateImpl : public BrowserDelegate {
   content::WebContents* GetActiveWebContents() const override;
   size_t GetWebContentsCount() const override;
   content::WebContents* GetWebContentsAt(size_t index) const override;
+  std::optional<size_t> GetIndexOfWebContents(
+      const content::WebContents* contents) const override;
   tabs::TabIteratorRange GetTabIterator() const override;
   content::WebContents* GetInspectedWebContents() const override;
   ui::BaseWindow* GetWindow() const override;
@@ -49,6 +51,7 @@ class BrowserDelegateImpl : public BrowserDelegate {
   void Activate() override;
   void Minimize() override;
   void Close() override;
+  void CloseAllTabs() override;
   void SetSkipWarningUserOnClose(bool skip) override;
   void AddTab(const GURL& url,
               std::optional<size_t> index,

@@ -107,6 +107,13 @@ content::WebContents* BrowserDelegateImpl::GetWebContentsAt(
   return browser_->tab_strip_model()->GetWebContentsAt(index);
 }
 
+std::optional<size_t> BrowserDelegateImpl::GetIndexOfWebContents(
+    const content::WebContents* contents) const {
+  int index = browser_->tab_strip_model()->GetIndexOfWebContents(contents);
+  return index == TabStripModel::kNoTab ? std::nullopt
+                                        : std::optional<size_t>(index);
+}
+
 tabs::TabIteratorRange BrowserDelegateImpl::GetTabIterator() const {
   TabStripModel* tab_strip_model = browser_->tab_strip_model();
   return {tab_strip_model->begin(), tab_strip_model->end()};
@@ -206,6 +213,10 @@ void BrowserDelegateImpl::Minimize() {
 
 void BrowserDelegateImpl::Close() {
   browser_->GetWindow()->Close();
+}
+
+void BrowserDelegateImpl::CloseAllTabs() {
+  browser_->tab_strip_model()->CloseAllTabs();
 }
 
 void BrowserDelegateImpl::SetSkipWarningUserOnClose(bool skip) {

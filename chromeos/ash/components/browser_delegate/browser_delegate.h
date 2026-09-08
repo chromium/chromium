@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_BROWSER_DELEGATE_BROWSER_DELEGATE_H_
 #define CHROMEOS_ASH_COMPONENTS_BROWSER_DELEGATE_BROWSER_DELEGATE_H_
 
+#include <optional>
 #include <vector>
 
 #include "chromeos/ash/components/browser_delegate/browser_type.h"
@@ -82,6 +83,11 @@ class BrowserDelegate {
   // be nullptr even if index is in bounds, just like GetActiveWebContents().
   virtual content::WebContents* GetWebContentsAt(size_t index) const = 0;
 
+  // Returns the index of the given `contents` in the tab strip, or std::nullopt
+  // if not found.
+  virtual std::optional<size_t> GetIndexOfWebContents(
+      const content::WebContents* contents) const = 0;
+
   // Returns a range wrapper to iterate over all tabs in the browser.
   virtual tabs::TabIteratorRange GetTabIterator() const = 0;
 
@@ -151,6 +157,19 @@ class BrowserDelegate {
 
   // Closes the browser as soon as possible.
   virtual void Close() = 0;
+
+  // Closes all tabs in the browser at once, causing the window to close once
+  // all tabs are gone.
+  //
+  // Unlike Close(), which closes the window as a whole (immediately hiding
+  // it and keeping all tabs intact if closing is cancelled, e.g. due to
+  // in-progress downloads), this closes the tabs first while the window
+  // remains visible.
+  //
+  // Unlike closing tabs iteratively, this avoids activating intermediate tabs
+  // (preventing visible tab switching) and records the tabs together so the
+  // window can be restored as a unit.
+  virtual void CloseAllTabs() = 0;
 
   // Sets whether the browser should skip warning the user (e.g. beforeunload or
   // download warnings) when closing.

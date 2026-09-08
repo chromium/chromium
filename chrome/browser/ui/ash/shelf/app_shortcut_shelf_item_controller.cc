@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/ash/shelf/shelf_context_menu.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -59,16 +58,15 @@ ash::ShelfAction ActivateContentOrMinimize(bool allow_minimize,
                                            content::WebContents* content) {
   ash::BrowserDelegate* browser =
       ash::BrowserController::GetInstance()->GetBrowserForTab(content);
-  TabStripModel* tab_strip = browser->GetBrowser().GetTabStripModel();
-  int index = tab_strip->GetIndexOfWebContents(content);
-  DCHECK_NE(TabStripModel::kNoTab, index);
+  std::optional<size_t> index = browser->GetIndexOfWebContents(content);
+  CHECK(index.has_value());
 
-  int old_index = tab_strip->active_index();
-  if (index != old_index) {
-    tab_strip->ActivateTabAt(index);
+  const bool is_active = browser->GetActiveWebContents() == content;
+  if (!is_active) {
+    browser->ActivateWebContentsAt(*index);
   }
   return ChromeShelfController::instance()->ActivateWindowOrMinimizeIfActive(
-      browser->GetWindow(), index == old_index && allow_minimize);
+      browser->GetWindow(), is_active && allow_minimize);
 }
 
 // Advance to the next window of an app if possible. |items| is the list of
@@ -423,7 +421,7 @@ void AppShortcutShelfItemController::ExecuteCommand(bool from_context_menu,
     ash::BrowserDelegate* browser = app_menu_browsers_[command_id];
     if (browser) {
       if (should_close) {
-        browser->GetBrowser().GetTabStripModel()->CloseAllTabs();
+        browser->CloseAllTabs();
       } else {
         ShowAndActivateBrowser(/*move_to_current_desktop=*/true, browser);
       }
@@ -431,20 +429,18 @@ void AppShortcutShelfItemController::ExecuteCommand(bool from_context_menu,
   } else {
     // If the web contents was destroyed while the menu was open, then the
     // invalid pointer cached in |app_menu_web_contents_| should yield a null
-    // browser or kNoTab.
+    // browser or no index.
     content::WebContents* web_contents = app_menu_web_contents_[command_id];
     ash::BrowserDelegate* browser =
         ash::BrowserController::GetInstance()->GetBrowserForTab(web_contents);
-    TabStripModel* tab_strip =
-        browser ? browser->GetBrowser().GetTabStripModel() : nullptr;
-    const int index = tab_strip ? tab_strip->GetIndexOfWebContents(web_contents)
-                                : TabStripModel::kNoTab;
-    if (index != TabStripModel::kNoTab) {
+    std::optional<size_t> index =
+        browser ? browser->GetIndexOfWebContents(web_contents) : std::nullopt;
+    if (index.has_value()) {
       if (should_close) {
-        browser->CloseWebContentsAt(index,
+        browser->CloseWebContentsAt(*index,
                                     ash::BrowserDelegate::UserGesture::kYes);
       } else {
-        tab_strip->ActivateTabAt(index);
+        browser->ActivateWebContentsAt(*index);
         ShowAndActivateBrowser(/*move_to_current_desktop=*/true, browser);
       }
     }
@@ -457,7 +453,7 @@ void AppShortcutShelfItemController::Close() {
   // Close all running 'programs' of this type.
   if (IsWindowedWebApp()) {
     for (ash::BrowserDelegate* browser : GetAppBrowsers(base::NullCallback())) {
-      browser->GetBrowser().GetTabStripModel()->CloseAllTabs();
+      browser->CloseAllTabs();
     }
   } else {
     for (content::WebContents* item : GetAppWebContents(base::NullCallback())) {
@@ -466,10 +462,9 @@ void AppShortcutShelfItemController::Close() {
       if (!browser || browser->GetAccountId() != GetActiveAccountId()) {
         continue;
       }
-      TabStripModel* tab_strip = browser->GetBrowser().GetTabStripModel();
-      int index = tab_strip->GetIndexOfWebContents(item);
-      DCHECK(index != TabStripModel::kNoTab);
-      browser->CloseWebContentsAt(index,
+      std::optional<size_t> index = browser->GetIndexOfWebContents(item);
+      CHECK(index.has_value());
+      browser->CloseWebContentsAt(*index,
                                   ash::BrowserDelegate::UserGesture::kNo);
     }
   }
@@ -589,15 +584,11 @@ AppShortcutShelfItemController::AdvanceToNextApp(
                   ash::BrowserController::GetInstance()->GetBrowserForTab(
                       web_content);
               // The active web contents is on the active browser, and matches
-              // the index of the current active tab.
-              if (browser && browser->IsActive()) {
-                TabStripModel* tab_strip =
-                    browser->GetBrowser().GetTabStripModel();
-                int index = tab_strip->GetIndexOfWebContents(web_content);
-                if (tab_strip->active_index() == index) {
-                  *out_window = browser->GetNativeWindow();
-                  return web_content;
-                }
+              // the current active tab.
+              if (browser && browser->IsActive() &&
+                  browser->GetActiveWebContents() == web_content) {
+                *out_window = browser->GetNativeWindow();
+                return web_content;
               }
             }
             return nullptr;
