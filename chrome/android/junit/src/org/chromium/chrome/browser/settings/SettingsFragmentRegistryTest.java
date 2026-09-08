@@ -22,8 +22,12 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.about_settings.AboutChromeSettings;
 import org.chromium.chrome.browser.about_settings.LegalInformationSettings;
 import org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragment;
+import org.chromium.chrome.browser.autofill.settings.AutofillAndPasswordsFragment;
+import org.chromium.chrome.browser.autofill.settings.AutofillAndPasswordsFragment.AutofillSettingsReferrer;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragment;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.language.settings.LanguagesManager.LanguageListType;
+import org.chromium.chrome.browser.language.settings.SelectLanguageFragment;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.prefetch.settings.ExtendedPreloadingSettingsFragment;
@@ -182,6 +186,14 @@ public class SettingsFragmentRegistryTest {
                         "chrome://settings/siteDetails?site=example.com");
         assertEquals("example.com", bundle.getString(SingleWebsiteSettings.EXTRA_SITE_ADDRESS));
 
+        Bundle autofillBundle =
+                SettingsFragmentRegistry.parseUrlArguments(
+                        "chrome://settings/autofill?referrer="
+                                + AutofillSettingsReferrer.SETTINGS_SEARCH);
+        assertEquals(
+                AutofillSettingsReferrer.SETTINGS_SEARCH,
+                autofillBundle.getInt(AutofillAndPasswordsFragment.EXTRA_REFERRER));
+
         // Non-hierarchical URIs return an empty bundle safely.
         assertTrue(SettingsFragmentRegistry.parseUrlArguments("mailto:user@example.com").isEmpty());
     }
@@ -190,9 +202,28 @@ public class SettingsFragmentRegistryTest {
     public void testTypedQueryParameterParsing() {
         Bundle bundle =
                 SettingsFragmentRegistry.parseUrlArguments(
+                        "chrome://settings/languages/select?potentialLanguages="
+                                + LanguageListType.TARGET_LANGUAGES);
+        assertEquals(
+                (short) LanguageListType.TARGET_LANGUAGES,
+                bundle.getShort(SelectLanguageFragment.KEY_POTENTIAL_LANGUAGES));
+
+        // Malformed numeric parameter should fall back to known good default values.
+        Bundle malformedBundle =
+                SettingsFragmentRegistry.parseUrlArguments(
+                        "chrome://settings/languages/select?potentialLanguages=invalid&referrer=abc");
+        assertEquals(
+                (short) LanguageListType.ACCEPT_LANGUAGES,
+                malformedBundle.getShort(SelectLanguageFragment.KEY_POTENTIAL_LANGUAGES));
+        assertEquals(
+                AutofillSettingsReferrer.SETTINGS_MENU,
+                malformedBundle.getInt(AutofillAndPasswordsFragment.EXTRA_REFERRER));
+
+        Bundle unknownBundle =
+                SettingsFragmentRegistry.parseUrlArguments(
                         "chrome://settings/foo?boolKey=true&intKey=42");
-        assertEquals("true", bundle.getString("boolKey"));
-        assertEquals("42", bundle.getString("intKey"));
+        assertEquals("true", unknownBundle.getString("boolKey"));
+        assertEquals("42", unknownBundle.getString("intKey"));
     }
 
     @Test

@@ -125,8 +125,10 @@ public class LanguagesManager {
         int VIEW_NEVER_TRANSLATE_SITES = 11;
         int NUM_ENTRIES = 12;
     }
+
     // LINT.ThenChange(
-    //   //chrome/browser/resources/settings/languages_page/languages_settings_metrics_proxy.ts:LanguageSettingsPageType,
+    //
+    // //chrome/browser/resources/settings/languages_page/languages_settings_metrics_proxy.ts:LanguageSettingsPageType,
     //   //tools/metrics/histograms/metadata/language/enums.xml:LanguageSettingsPageType
     // )
 
@@ -139,7 +141,7 @@ public class LanguagesManager {
         LanguageListType.ALWAYS_LANGUAGES
     })
     @Retention(RetentionPolicy.SOURCE)
-    @interface LanguageListType {
+    public @interface LanguageListType {
         int ACCEPT_LANGUAGES = 0; // Default
         int UI_LANGUAGES = 1;
         int TARGET_LANGUAGES = 2;

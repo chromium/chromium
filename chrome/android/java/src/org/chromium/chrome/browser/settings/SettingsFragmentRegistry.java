@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.about_settings.LegalInformationSettings;
 import org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragment;
 import org.chromium.chrome.browser.autofill.settings.AndroidPaymentAppsFragment;
 import org.chromium.chrome.browser.autofill.settings.AutofillAndPasswordsFragment;
+import org.chromium.chrome.browser.autofill.settings.AutofillAndPasswordsFragment.AutofillSettingsReferrer;
 import org.chromium.chrome.browser.autofill.settings.AutofillBuyNowPayLaterFragment;
 import org.chromium.chrome.browser.autofill.settings.AutofillCardBenefitsFragment;
 import org.chromium.chrome.browser.autofill.settings.AutofillIdentityDocsFragment;
@@ -36,6 +37,7 @@ import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsSettings;
 import org.chromium.chrome.browser.language.settings.AlwaysTranslateListFragment;
 import org.chromium.chrome.browser.language.settings.LanguageSettings;
+import org.chromium.chrome.browser.language.settings.LanguagesManager.LanguageListType;
 import org.chromium.chrome.browser.language.settings.NeverTranslateListFragment;
 import org.chromium.chrome.browser.language.settings.SelectLanguageFragment;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics;
@@ -101,6 +103,14 @@ public class SettingsFragmentRegistry {
 
     @VisibleForTesting
     static final ArrayMap<String, String> sArgKeyToQueryParamMap = new ArrayMap<>();
+
+    @FunctionalInterface
+    interface ParameterValueParser {
+        void putValue(Bundle bundle, String argKey, String val);
+    }
+
+    @VisibleForTesting
+    static final ArrayMap<String, ParameterValueParser> sQueryParamParsers = new ArrayMap<>();
 
     @VisibleForTesting
     static final ArrayMap<Class<? extends Fragment>, Consumer<Bundle>> sDefaultArgsProviders =
@@ -207,14 +217,19 @@ public class SettingsFragmentRegistry {
         registerMapping("/ai/gemini", GlicSettings.class);
 
         // Parameter translations mapping URL query string keys to Fragment
-        // argument extra keys.
+        // argument extra keys with appropriate type deserialization.
         registerParameterMapping("site", SingleWebsiteSettings.EXTRA_SITE_ADDRESS);
         registerParameterMapping("category", SingleCategorySettings.EXTRA_CATEGORY);
         registerParameterMapping("title", SingleCategorySettings.EXTRA_TITLE);
         registerParameterMapping("group", GroupedWebsitesSettings.EXTRA_GROUP);
-        registerParameterMapping(
-                "potentialLanguages", SelectLanguageFragment.KEY_POTENTIAL_LANGUAGES);
-        registerParameterMapping("referrer", AutofillAndPasswordsFragment.EXTRA_REFERRER);
+        registerShortParameterMapping(
+                "potentialLanguages",
+                SelectLanguageFragment.KEY_POTENTIAL_LANGUAGES,
+                /* defaultValue= */ (short) LanguageListType.ACCEPT_LANGUAGES);
+        registerIntParameterMapping(
+                "referrer",
+                AutofillAndPasswordsFragment.EXTRA_REFERRER,
+                /* defaultValue= */ AutofillSettingsReferrer.SETTINGS_MENU);
 
         // Register default argument providers cleanly without hardcoding in URL parsing logic
         sDefaultArgsProviders.put(
@@ -244,9 +259,52 @@ public class SettingsFragmentRegistry {
         }
     }
 
-    private static void registerParameterMapping(String queryParam, String argKey) {
+    private static void registerParameterMapping(
+            String queryParam, String argKey, ParameterValueParser parser) {
         sQueryParamToArgKeyMap.put(queryParam, argKey);
         sArgKeyToQueryParamMap.put(argKey, queryParam);
+        sQueryParamParsers.put(queryParam, parser);
+    }
+
+    private static void registerParameterMapping(String queryParam, String argKey) {
+        registerParameterMapping(
+                queryParam, argKey, (bundle, key, val) -> bundle.putString(key, val));
+    }
+
+    @SuppressWarnings("unused")
+    private static void registerBooleanParameterMapping(String queryParam, String argKey) {
+        registerParameterMapping(
+                queryParam,
+                argKey,
+                (bundle, key, val) -> bundle.putBoolean(key, Boolean.parseBoolean(val)));
+    }
+
+    private static void registerIntParameterMapping(
+            String queryParam, String argKey, int defaultValue) {
+        registerParameterMapping(
+                queryParam,
+                argKey,
+                (bundle, key, val) -> {
+                    try {
+                        bundle.putInt(key, Integer.parseInt(val));
+                    } catch (NumberFormatException e) {
+                        bundle.putInt(key, defaultValue);
+                    }
+                });
+    }
+
+    private static void registerShortParameterMapping(
+            String queryParam, String argKey, short defaultValue) {
+        registerParameterMapping(
+                queryParam,
+                argKey,
+                (bundle, key, val) -> {
+                    try {
+                        bundle.putShort(key, Short.parseShort(val));
+                    } catch (NumberFormatException e) {
+                        bundle.putShort(key, defaultValue);
+                    }
+                });
     }
 
     public static void registerMappingForTesting(
@@ -326,7 +384,12 @@ public class SettingsFragmentRegistry {
                 // Map query parameter key to argument bundle key if registered,
                 // otherwise keep original.
                 String argKey = sQueryParamToArgKeyMap.getOrDefault(param, param);
-                bundle.putString(argKey, val);
+                ParameterValueParser parser = sQueryParamParsers.get(param);
+                if (parser != null) {
+                    parser.putValue(bundle, argKey, val);
+                } else {
+                    bundle.putString(argKey, val);
+                }
             }
         } catch (UnsupportedOperationException
                 | IllegalArgumentException
