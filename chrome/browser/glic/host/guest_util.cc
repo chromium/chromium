@@ -423,6 +423,9 @@ bool IsAdminBlockedUrl(const GURL& url) {
 }
 
 bool IsFrameAllowedGlicApi(content::RenderFrameHost& frame_host) {
+  if (!frame_host.IsInPrimaryMainFrame()) {
+    return false;
+  }
   content::WebContents* guest_contents =
       content::WebContents::FromRenderFrameHost(&frame_host);
   if (!guest_contents || !IsGlicGuest(guest_contents)) {
