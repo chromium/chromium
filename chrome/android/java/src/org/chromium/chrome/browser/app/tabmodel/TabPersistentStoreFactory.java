@@ -89,6 +89,7 @@ public class TabPersistentStoreFactory {
         } else if (storeType == StoreType.TAB_STATE_STORE) {
             assert isTabStorageEnabled();
             return new TabStateStore(
+                    orchestratorType,
                     tabModelSelector,
                     windowTag,
                     tabCreatorManager,
@@ -169,6 +170,7 @@ public class TabPersistentStoreFactory {
             assert isTabStorageEnabled();
             TabStateStore tabStateStore =
                     new TabStateStore(
+                            orchestratorType,
                             selector,
                             windowTag,
                             shadowTabCreatorManager,

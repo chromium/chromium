@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabOrchestratorType;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 
 import java.util.Set;
@@ -84,26 +85,48 @@ public class BackgroundTabRestorationHelperTest {
     @Test
     @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
     public void testShouldIntercept_flagEnabled() {
-        assertTrue(BackgroundTabRestorationHelper.shouldIntercept(/* isIncognito= */ false));
+        assertTrue(
+                BackgroundTabRestorationHelper.shouldIntercept(
+                        TabOrchestratorType.TABBED, /* isIncognito= */ false));
     }
 
     @Test
     @DisableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
     public void testShouldIntercept_flagDisabled() {
-        assertFalse(BackgroundTabRestorationHelper.shouldIntercept(/* isIncognito= */ false));
+        assertFalse(
+                BackgroundTabRestorationHelper.shouldIntercept(
+                        TabOrchestratorType.TABBED, /* isIncognito= */ false));
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
     public void testShouldIntercept_notificationsDisabled() {
         NotificationProxyUtils.setNotificationEnabledForTest(false);
-        assertFalse(BackgroundTabRestorationHelper.shouldIntercept(/* isIncognito= */ false));
+        assertFalse(
+                BackgroundTabRestorationHelper.shouldIntercept(
+                        TabOrchestratorType.TABBED, /* isIncognito= */ false));
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
     public void testShouldIntercept_incognito() {
-        assertFalse(BackgroundTabRestorationHelper.shouldIntercept(/* isIncognito= */ true));
+        assertFalse(
+                BackgroundTabRestorationHelper.shouldIntercept(
+                        TabOrchestratorType.TABBED, /* isIncognito= */ true));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
+    public void testShouldIntercept_nonTabbedOrchestrator() {
+        assertFalse(
+                BackgroundTabRestorationHelper.shouldIntercept(
+                        TabOrchestratorType.CUSTOM, /* isIncognito= */ false));
+        assertFalse(
+                BackgroundTabRestorationHelper.shouldIntercept(
+                        TabOrchestratorType.ARCHIVED, /* isIncognito= */ false));
+        assertFalse(
+                BackgroundTabRestorationHelper.shouldIntercept(
+                        TabOrchestratorType.HEADLESS, /* isIncognito= */ false));
     }
 
     @Test
@@ -163,7 +186,7 @@ public class BackgroundTabRestorationHelperTest {
         BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
         Set<Integer> ids =
                 BackgroundTabRestorationHelper.fetchBackgroundTabIds(
-                        mTabModelSelector, /* isIncognito= */ false);
+                        TabOrchestratorType.TABBED, mTabModelSelector, /* isIncognito= */ false);
         assertTrue(ids.isEmpty());
         verify(mBackgroundTabPool, never()).getAllTabIds();
     }
@@ -174,7 +197,18 @@ public class BackgroundTabRestorationHelperTest {
         BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
         Set<Integer> ids =
                 BackgroundTabRestorationHelper.fetchBackgroundTabIds(
-                        mTabModelSelector, /* isIncognito= */ true);
+                        TabOrchestratorType.TABBED, mTabModelSelector, /* isIncognito= */ true);
+        assertTrue(ids.isEmpty());
+        verify(mBackgroundTabPool, never()).getAllTabIds();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
+    public void testFetchBackgroundTabIds_nonTabbedOrchestrator() {
+        BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
+        Set<Integer> ids =
+                BackgroundTabRestorationHelper.fetchBackgroundTabIds(
+                        TabOrchestratorType.CUSTOM, mTabModelSelector, /* isIncognito= */ false);
         assertTrue(ids.isEmpty());
         verify(mBackgroundTabPool, never()).getAllTabIds();
     }
@@ -187,7 +221,7 @@ public class BackgroundTabRestorationHelperTest {
 
         Set<Integer> ids =
                 BackgroundTabRestorationHelper.fetchBackgroundTabIds(
-                        mTabModelSelector, /* isIncognito= */ false);
+                        TabOrchestratorType.TABBED, mTabModelSelector, /* isIncognito= */ false);
         assertEquals(3, ids.size());
         assertTrue(ids.contains(1));
         assertTrue(ids.contains(2));
@@ -201,7 +235,7 @@ public class BackgroundTabRestorationHelperTest {
         when(mTabModelSelector.getModel(false)).thenReturn(null);
         Set<Integer> ids =
                 BackgroundTabRestorationHelper.fetchBackgroundTabIds(
-                        mTabModelSelector, /* isIncognito= */ false);
+                        TabOrchestratorType.TABBED, mTabModelSelector, /* isIncognito= */ false);
         assertTrue(ids.isEmpty());
     }
 
@@ -218,12 +252,36 @@ public class BackgroundTabRestorationHelperTest {
 
         Tab restoredTab =
                 BackgroundTabRestorationHelper.maybeRestoreBackgroundTab(
-                        mTabModelSelector, TAB_ID, DESTINATION_INDEX, tabState);
+                        TabOrchestratorType.TABBED,
+                        mTabModelSelector,
+                        TAB_ID,
+                        DESTINATION_INDEX,
+                        tabState);
 
         assertEquals(mTab, restoredTab);
         verify(mBackgroundTabPool).loadTab(TAB_ID, TAB_ID);
         verify(mBackgroundPoolTab).attachTab(eq(mNormalTabModel), eq(DESTINATION_INDEX));
         verify(mWebContentsState).destroy();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
+    public void testMaybeRestoreBackgroundTab_nonTabbedOrchestrator() {
+        BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
+        TabState tabState = new TabState();
+        tabState.contentsState = mWebContentsState;
+
+        Tab restoredTab =
+                BackgroundTabRestorationHelper.maybeRestoreBackgroundTab(
+                        TabOrchestratorType.CUSTOM,
+                        mTabModelSelector,
+                        TAB_ID,
+                        DESTINATION_INDEX,
+                        tabState);
+
+        assertNull(restoredTab);
+        verify(mBackgroundTabPool, never()).loadTab(anyInt(), anyInt());
+        verify(mWebContentsState, never()).destroy();
     }
 
     @Test
@@ -235,7 +293,11 @@ public class BackgroundTabRestorationHelperTest {
 
         Tab restoredTab =
                 BackgroundTabRestorationHelper.maybeRestoreBackgroundTab(
-                        mTabModelSelector, TAB_ID, DESTINATION_INDEX, tabState);
+                        TabOrchestratorType.TABBED,
+                        mTabModelSelector,
+                        TAB_ID,
+                        DESTINATION_INDEX,
+                        tabState);
 
         assertNull(restoredTab);
         verify(mBackgroundTabPool, never()).loadTab(anyInt(), anyInt());
@@ -252,7 +314,11 @@ public class BackgroundTabRestorationHelperTest {
 
         Tab restoredTab =
                 BackgroundTabRestorationHelper.maybeRestoreBackgroundTab(
-                        mTabModelSelector, TAB_ID, DESTINATION_INDEX, tabState);
+                        TabOrchestratorType.TABBED,
+                        mTabModelSelector,
+                        TAB_ID,
+                        DESTINATION_INDEX,
+                        tabState);
 
         assertNull(restoredTab);
         verify(mBackgroundTabPool, never()).loadTab(anyInt(), anyInt());
@@ -270,7 +336,11 @@ public class BackgroundTabRestorationHelperTest {
 
         Tab restoredTab =
                 BackgroundTabRestorationHelper.maybeRestoreBackgroundTab(
-                        mTabModelSelector, TAB_ID, DESTINATION_INDEX, tabState);
+                        TabOrchestratorType.TABBED,
+                        mTabModelSelector,
+                        TAB_ID,
+                        DESTINATION_INDEX,
+                        tabState);
 
         assertNull(restoredTab);
         verify(mBackgroundTabPool).loadTab(TAB_ID, TAB_ID);
@@ -282,7 +352,7 @@ public class BackgroundTabRestorationHelperTest {
     public void testMaybeRestoreBackgroundTab_nullSelector() {
         Tab restoredTab =
                 BackgroundTabRestorationHelper.maybeRestoreBackgroundTab(
-                        null, TAB_ID, DESTINATION_INDEX, null);
+                        TabOrchestratorType.TABBED, null, TAB_ID, DESTINATION_INDEX, null);
         assertNull(restoredTab);
     }
 
@@ -292,7 +362,11 @@ public class BackgroundTabRestorationHelperTest {
         when(mTabModelSelector.getModel(false)).thenReturn(null);
         Tab restoredTab =
                 BackgroundTabRestorationHelper.maybeRestoreBackgroundTab(
-                        mTabModelSelector, TAB_ID, DESTINATION_INDEX, null);
+                        TabOrchestratorType.TABBED,
+                        mTabModelSelector,
+                        TAB_ID,
+                        DESTINATION_INDEX,
+                        null);
         assertNull(restoredTab);
     }
 }

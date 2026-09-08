@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.tab.StorageLoadedData.LoadedTabState;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabOrchestratorType;
 
 import java.util.function.Supplier;
 
@@ -221,6 +222,7 @@ class CombinedTabRestorer {
     }
 
     /**
+     * @param orchestratorType The orchestrator type for this restorer.
      * @param restoreIncognitoTabs Whether to restore incognito tabs.
      * @param restoreRegularTabs Whether to restore regular tabs.
      * @param delegate The delegate to be notified of events from the tab restorers.
@@ -231,6 +233,7 @@ class CombinedTabRestorer {
      * @param isFromRecreating Whether the current activity is launched from recreating.
      */
     CombinedTabRestorer(
+            @TabOrchestratorType int orchestratorType,
             boolean restoreIncognitoTabs,
             boolean restoreRegularTabs,
             CombinedTabRestorerDelegate delegate,
@@ -243,6 +246,7 @@ class CombinedTabRestorer {
         mRegularTabRestorer =
                 restoreRegularTabs
                         ? new TabRestorer(
+                                orchestratorType,
                                 /* incognito= */ false,
                                 mDelegate,
                                 tabCreatorManager.getTabCreator(/* incognito= */ false),
@@ -253,6 +257,7 @@ class CombinedTabRestorer {
         mIncognitoTabRestorer =
                 restoreIncognitoTabs
                         ? new TabRestorer(
+                                orchestratorType,
                                 /* incognito= */ true,
                                 mDelegate,
                                 tabCreatorManager.getTabCreator(/* incognito= */ true),
