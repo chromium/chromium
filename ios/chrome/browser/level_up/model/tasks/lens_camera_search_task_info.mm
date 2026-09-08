@@ -28,7 +28,7 @@ class LensCameraSearchTaskInfo : public TaskInfo {
     return LevelUpTaskCategory::kSearch;
   }
   std::string GetTriggerUserAction() const override {
-    return "Mobile.LensOverlay.NewResult";
+    return "Mobile.LensOverlay.CameraSearch.Performed";
   }
   std::string GetCompletionSnackbarMessage() const override {
     return l10n_util::GetStringUTF8(

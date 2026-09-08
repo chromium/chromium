@@ -212,6 +212,10 @@ lens::MimeType MimeTypeFromWebState(web::WebState* web_state) {
 
 - (void)recordNewLensResultGenerated {
   RecordAction(base::UserMetricsAction("Mobile.LensOverlay.NewResult"));
+  if (!lens::IsLVFEntrypoint(_entrypoint)) {
+    RecordAction(
+        base::UserMetricsAction("Mobile.LensOverlay.WebsiteSearch.Performed"));
+  }
 }
 
 - (void)recordNewTabGeneratedWithSource:

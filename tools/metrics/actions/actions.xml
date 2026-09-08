@@ -18693,6 +18693,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Mobile.LensOverlay.WebsiteSearch.Performed">
+  <owner>rkgibson@google.com</owner>
+  <owner>pabouchard@google.com</owner>
+  <description>
+    Recorded when a search is performed via Lens Overlay on any
+    non-camera/gallery endpoint.
+  </description>
+</action>
+
 <action name="Mobile.LensViewFinder.CameraCapture">
   <owner>radunitescu@google.com</owner>
   <owner>stkhapugin@google.com</owner>
