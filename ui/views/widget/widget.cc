@@ -2059,7 +2059,12 @@ bool Widget::OnNativeWidgetActivationChanged(bool active) {
   // crbug/1303549).
   if (active) {
     if (parent() && !parent_paint_as_active_lock_) {
-      parent_paint_as_active_lock_ = parent()->LockPaintAsActive();
+      base::WeakPtr<Widget> weak_this = GetWeakPtr();
+      auto new_lock = parent()->LockPaintAsActive();
+      if (!weak_this) {
+        return false;
+      }
+      parent_paint_as_active_lock_ = std::move(new_lock);
     }
   } else {
     if (!paint_as_active_refcount_ && !widget_closed_) {
