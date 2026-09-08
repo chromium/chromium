@@ -19173,6 +19173,24 @@
             ]
         }
     ],
+    "TabSearchPerformanceImprovements": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260903",
+                    "enable_features": [
+                        "TabSearchPerformanceImprovements"
+                    ]
+                }
+            ]
+        }
+    ],
     "TabSharingToolbarAndroid": [
         {
             "platforms": [
