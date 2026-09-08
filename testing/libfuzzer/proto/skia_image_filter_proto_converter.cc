@@ -201,8 +201,6 @@ const uint8_t Converter::kCountNibBits[] = {0, 1, 1, 2, 1, 2, 2, 3,
 
 // The rest of the Converter attributes are not copied from skia.
 const int Converter::kFlattenableDepthLimit = 3;
-const int Converter::kColorTableBufferLength = 256;
-uint8_t Converter::kColorTableBuffer[kColorTableBufferLength];
 const int Converter::kNumBound = 20;
 const uint8_t Converter::kMutateEnumDenominator = 40;
 
@@ -625,7 +623,7 @@ void Converter::Visit(const Region& region) {
 }
 
 void Converter::Visit(const PictureInfo& picture_info) {
-  WriteArray(kPictureMagicString, sizeof(kPictureMagicString));
+  WriteArray(kPictureMagicString);
   WriteNum(picture_info.version());
   Visit(picture_info.rectangle());
   if (picture_info.version() < PictureInfo::kRemoveHeaderFlags_Version)
@@ -694,29 +692,21 @@ size_t Converter::PopStartSize() {
 
 template <typename T>
 void Converter::WriteNum(const T num) {
-  if (sizeof(T) > 4) {
-    auto four_byte_num = base::checked_cast<uint32_t>(num);
-    char num_arr[sizeof(four_byte_num)];
-    UNSAFE_TODO(memcpy(num_arr, &four_byte_num, sizeof(four_byte_num)));
-    for (size_t idx = 0; idx < sizeof(four_byte_num); idx++)
-      output_.push_back(UNSAFE_TODO(num_arr[idx]));
-    return;
+  if constexpr (sizeof(T) > 4) {
+    WriteNum(base::checked_cast<uint32_t>(num));
+  } else if constexpr (std::has_unique_object_representations_v<T>) {
+    output_.append_range(base::as_chars(base::byte_span_from_ref(num)));
+  } else {
+    output_.append_range(base::as_chars(
+        base::byte_span_from_ref(base::allow_nonunique_obj, num)));
   }
-  char num_arr[sizeof(T)];
-  UNSAFE_TODO(memcpy(num_arr, &num, sizeof(T)));
-  for (size_t idx = 0; idx < sizeof(T); idx++)
-    output_.push_back(UNSAFE_TODO(num_arr[idx]));
 }
 
 void Converter::InsertSize(const size_t size, const uint32_t position) {
-  std::array<char, sizeof(uint32_t)> size_arr;
-  UNSAFE_TODO(memcpy(size_arr.data(), &size, sizeof(uint32_t)));
-
-  for (size_t idx = 0; idx < sizeof(uint32_t); idx++) {
-    const size_t output__idx = position + idx - sizeof(uint32_t);
-    CHECK_LT(output__idx, output_.size());
-    output_[output__idx] = size_arr[idx];
-  }
+  const uint32_t size_32 = base::checked_cast<uint32_t>(size);
+  base::span(output_)
+      .subspan(position - sizeof(uint32_t), sizeof(uint32_t))
+      .copy_from(base::as_chars(base::byte_span_from_ref(size_32)));
 }
 
 void Converter::WriteBytesWritten() {
@@ -731,31 +721,25 @@ void Converter::WriteBytesWritten() {
 
 void Converter::WriteString(std::string_view str) {
   WriteNum(str.size());
-  const char* c_str = str.data();
-  for (size_t idx = 0; idx < str.size(); idx++)
-    output_.push_back(UNSAFE_TODO(c_str[idx]));
-
+  output_.append_range(str);
   output_.push_back('\0');  // Add trailing NULL.
-
   Pad(str.size() + 1);
 }
 
 void Converter::WriteArray(
-    const google::protobuf::RepeatedField<uint32_t>& repeated_field,
-    const size_t size) {
-  WriteNum(size * sizeof(uint32_t));  // Array size.
-  for (uint32_t element : repeated_field)
+    const google::protobuf::RepeatedField<uint32_t>& repeated_field) {
+  WriteNum(base::checked_cast<size_t>(repeated_field.size()) *
+           sizeof(uint32_t));  // Array size.
+  for (uint32_t element : repeated_field) {
     WriteNum(element);
+  }
   // Padding is not a concern because uint32_ts are 4 bytes.
 }
 
-void Converter::WriteArray(const char* arr, const size_t size) {
-  WriteNum(size);
-  for (size_t idx = 0; idx < size; idx++)
-    output_.push_back(UNSAFE_TODO(arr[idx]));
-
-  for (unsigned idx = 0; idx < size % 4; idx++)
-    output_.push_back('\0');
+void Converter::WriteArray(base::span<const char> arr) {
+  WriteNum(arr.size());
+  output_.append_range(arr);
+  Pad(arr.size());
 }
 
 void Converter::WriteBool(const bool bool_val) {
@@ -764,8 +748,7 @@ void Converter::WriteBool(const bool bool_val) {
 }
 
 void Converter::WriteNum(const char (&num_arr)[4]) {
-  for (size_t idx = 0; idx < 4; idx++)
-    output_.push_back(UNSAFE_TODO(num_arr[idx]));
+  output_.append_range(num_arr);
 }
 
 void Converter::Visit(const PictureShader& picture_shader) {
@@ -1075,22 +1058,21 @@ static size_t pack8(const uint8_t* src,
   return dst - origDst;
 }
 
-const uint8_t* Converter::ColorTableToArray(const ColorTable& color_table) {
-  float* dst = reinterpret_cast<float*>(kColorTableBuffer);
-  const int array_size = 64;
-  // Now write the 256 fields.
+std::array<float, Converter::kColorTableEntries> Converter::ColorTableToArray(
+    const ColorTable& color_table) {
+  std::array<float, kColorTableEntries> color_table_buffer;
   const Descriptor* descriptor = color_table.GetDescriptor();
   CHECK(descriptor);
   const Reflection* reflection = color_table.GetReflection();
   CHECK(reflection);
-  for (int field_num = 1; field_num <= array_size;
-       field_num++, UNSAFE_TODO(dst++)) {
+  for (size_t i = 0; i < color_table_buffer.size(); ++i) {
     const FieldDescriptor* field_descriptor =
-        descriptor->FindFieldByNumber(field_num);
+        descriptor->FindFieldByNumber(base::checked_cast<int>(i + 1));
     CHECK(field_descriptor);
-    *dst = BoundFloat(reflection->GetFloat(color_table, field_descriptor));
+    color_table_buffer[i] =
+        BoundFloat(reflection->GetFloat(color_table, field_descriptor));
   }
-  return kColorTableBuffer;
+  return color_table_buffer;
 }
 
 void Converter::Visit(const Table_ColorFilter& table__color_filter) {
@@ -1101,49 +1083,37 @@ void Converter::Visit(const Table_ColorFilter& table__color_filter) {
     kG_Flag = 1 << 2,
     kB_Flag = 1 << 3,
   };
-  unsigned flags = 0;
-  uint8_t f_storage[4 * kColorTableBufferLength];
-  uint8_t* dst = f_storage;
+  uint32_t flags = 0;
+  std::array<uint8_t, 4 * kColorTableByteSize> f_storage{};
+  base::span<uint8_t> dst = f_storage;
+
+  auto append_table = [&dst, &flags, this](const ColorTable& table,
+                                           uint32_t flag) {
+    dst.take_first<kColorTableByteSize>().copy_from(base::as_byte_span(
+        base::allow_nonunique_obj, ColorTableToArray(table)));
+    flags |= flag;
+  };
 
   if (table__color_filter.has_table_a()) {
-    UNSAFE_TODO(memcpy(dst, ColorTableToArray(table__color_filter.table_a()),
-                       kColorTableBufferLength));
-
-    UNSAFE_TODO(dst += kColorTableBufferLength);
-    flags |= kA_Flag;
+    append_table(table__color_filter.table_a(), kA_Flag);
   }
   if (table__color_filter.has_table_r()) {
-    UNSAFE_TODO(memcpy(dst, ColorTableToArray(table__color_filter.table_r()),
-                       kColorTableBufferLength));
-
-    UNSAFE_TODO(dst += kColorTableBufferLength);
-    flags |= kR_Flag;
+    append_table(table__color_filter.table_r(), kR_Flag);
   }
   if (table__color_filter.has_table_g()) {
-    UNSAFE_TODO(memcpy(dst, ColorTableToArray(table__color_filter.table_g()),
-                       kColorTableBufferLength));
-
-    UNSAFE_TODO(dst += kColorTableBufferLength);
-    flags |= kG_Flag;
+    append_table(table__color_filter.table_g(), kG_Flag);
   }
   if (table__color_filter.has_table_b()) {
-    UNSAFE_TODO(memcpy(dst, ColorTableToArray(table__color_filter.table_b()),
-                       kColorTableBufferLength));
-
-    UNSAFE_TODO(dst += kColorTableBufferLength);
-    flags |= kB_Flag;
+    append_table(table__color_filter.table_b(), kB_Flag);
   }
-  uint8_t storage[5 * kColorTableBufferLength];
+  std::array<uint8_t, 5 * kColorTableByteSize> storage{};
   const int count = kCountNibBits[flags & 0xF];
-  const size_t size = pack8(f_storage, count * kColorTableBufferLength, storage,
-                            sizeof(storage));
+  const size_t size = pack8(f_storage.data(), count * kColorTableByteSize,
+                            storage.data(), storage.size());
 
-  CHECK_LE(flags, UINT32_MAX);
-  const uint32_t flags_32 = (uint32_t)flags;
-  WriteNum(flags_32);
-  WriteNum((uint32_t)size);
-  for (size_t idx = 0; idx < size; idx++)
-    output_.push_back(UNSAFE_TODO(storage[idx]));
+  WriteNum(flags);
+  WriteNum(size);
+  output_.append_range(base::as_chars(base::span(storage).first(size)));
   Pad(output_.size());
 }
 
@@ -1713,10 +1683,7 @@ void Converter::WriteUInt8(T num) {
 }
 
 void Converter::WriteUInt16(uint16_t num) {
-  std::array<char, 2> num_arr;
-  UNSAFE_TODO(memcpy(num_arr.data(), &num, 2));
-  for (size_t idx = 0; idx < 2; idx++)
-    output_.push_back(num_arr[idx]);
+  WriteNum(num);
 }
 
 void Converter::Visit(const TransferFn& transfer_fn) {
@@ -2254,7 +2221,7 @@ void Converter::Visit(const TextBlob& text_blob) {
         break;
       WriteNum(glyph_pos_cluster.cluster());
     }
-    WriteArray(text_blob.text(), text_blob.text_size());
+    WriteArray(text_blob.text());
   }
 
   // No more glyphs.

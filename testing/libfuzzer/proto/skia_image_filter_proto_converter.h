@@ -5,6 +5,7 @@
 #ifndef TESTING_LIBFUZZER_PROTO_SKIA_IMAGE_FILTER_PROTO_CONVERTER_H_
 #define TESTING_LIBFUZZER_PROTO_SKIA_IMAGE_FILTER_PROTO_CONVERTER_H_
 
+#include <array>
 #include <random>
 #include <set>
 #include <string>
@@ -14,6 +15,7 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/containers/span.h"
 #include "testing/libfuzzer/proto/skia_image_filter.pb.h"
 #include "third_party/skia/include/core/SkPoint.h"
 
@@ -56,17 +58,15 @@ class Converter {
   static const char kSkPictReaderTag[];
   static const uint8_t kCountNibBits[];
 
-  // The size of kColorTableBuffer.
-  static const int kColorTableBufferLength;
-
   // Used to bound flattenable_depth_.
   static const int kFlattenableDepthLimit;
 
   // Used to bound numeric fields.
   static const int kNumBound;
 
-  // Used by ColorTableToArray to store a ColorTable Message as an array.
-  static uint8_t kColorTableBuffer[];
+  static constexpr size_t kColorTableEntries = 64;
+  static constexpr size_t kColorTableByteSize =
+      kColorTableEntries * sizeof(float);
 
   // There will be a 1/kMutateEnumDenominator chance that WriteEnum
   // writes an invalid enum value instead of the one given to us by LPM.
@@ -361,14 +361,12 @@ class Converter {
   // write_size + number of padding bytes is divisible by four.
   void Pad(const size_t write_size);
 
-  // Write size elements of RepeatedField of uint32_ts repeated_field as an
-  // array.
+  // Write repeated_field as an array.
   void WriteArray(
-      const google::protobuf::RepeatedField<uint32_t>& repeated_field,
-      const size_t size);
+      const google::protobuf::RepeatedField<uint32_t>& repeated_field);
 
-  // Write size bytes of arr as an array and pad if necessary.
-  void WriteArray(const char* arr, const size_t size);
+  // Write arr as an array and pad if necessary.
+  void WriteArray(base::span<const char> arr);
 
   void WriteBool(const bool bool_val);
 
@@ -470,9 +468,9 @@ class Converter {
   bool IsFinite(float num) const;
   bool IsBlacklisted(const std::string& field_name) const;
 
-  // Converts color_table from our proto Message format to a 256-byte array.
-  // Note that this function modifies kColorTableBuffer.
-  const uint8_t* ColorTableToArray(const ColorTable& color_table);
+  // Converts color_table from our proto Message format to an array of floats.
+  std::array<float, kColorTableEntries> ColorTableToArray(
+      const ColorTable& color_table);
 
 #ifdef DEVELOPMENT
   // ICC related functions
