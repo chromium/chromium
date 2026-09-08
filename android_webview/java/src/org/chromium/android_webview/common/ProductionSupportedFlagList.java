@@ -1298,9 +1298,6 @@ public final class ProductionSupportedFlagList {
                 "When enabled, touch move events to javascript handlers are unthrottled if "
                         + "they are sent as async to Renderer."),
         Flag.baseFeature(
-                BlinkFeatures.RUSTY_BMP_FEATURE,
-                "When enabled, uses Rust `image` crate to decode BMP images."),
-        Flag.baseFeature(
                 "NoSequenceForLevelDBCleanupTasks",
                 "When enabled, LevelDB cleanup tasks are run concurrently instead of in sequence."),
         Flag.baseFeature(

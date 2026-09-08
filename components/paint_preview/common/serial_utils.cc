@@ -12,7 +12,7 @@
 #include "components/paint_preview/common/subset_font.h"
 #include "skia/ext/codec_utils.h"
 #include "skia/ext/font_utils.h"
-#include "third_party/skia/include/codec/SkBmpDecoder.h"
+#include "third_party/skia/include/codec/SkBmpRustDecoder.h"
 #include "third_party/skia/include/codec/SkCodec.h"
 #include "third_party/skia/include/codec/SkGifDecoder.h"
 #include "third_party/skia/include/codec/SkJpegDecoder.h"
@@ -125,7 +125,7 @@ static sk_sp<SkTypeface> DeserializeTypeface(SkStream& stream, void* ctx) {
 
 static bool is_supported_codec(sk_sp<const SkData> data) {
   CHECK(data);
-  return SkBmpDecoder::IsBmp(data->data(), data->size()) ||
+  return SkBmpRustDecoder::IsBmp(data->data(), data->size()) ||
          SkGifDecoder::IsGif(data->data(), data->size()) ||
          SkPngRustDecoder::IsPng(data->data(), data->size()) ||
          SkJpegDecoder::IsJpeg(data->data(), data->size()) ||
@@ -204,8 +204,8 @@ sk_sp<SkImage> DeserializeImage(sk_sp<SkData> data,
     return get_image(SkPngRustDecoder::Decode(
         std::make_unique<SkMemoryStream>(std::move(data)), nullptr));
   }
-  if (SkBmpDecoder::IsBmp(bytes, length)) {
-    return get_image(SkBmpDecoder::Decode(data, nullptr));
+  if (SkBmpRustDecoder::IsBmp(bytes, length)) {
+    return get_image(SkBmpRustDecoder::Decode(data, nullptr));
   }
   if (SkGifDecoder::IsGif(bytes, length)) {
     return get_image(SkGifDecoder::Decode(data, nullptr));

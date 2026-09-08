@@ -2971,17 +2971,6 @@ blink_fuzzer_test("blink_bmp_decoder_fuzzer") {
   additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
-blink_fuzzer_test("blink_bmp_rust_decoder_fuzzer") {
-  sources = [ "image-decoders/bmp/bmp_rust_image_decoder_fuzzer.cc" ]
-  deps = [
-    ":blink_image_decoder_fuzzer_test_support",
-    ":platform",
-  ]
-  seed_corpuses = [ "//third_party/blink/web_tests/images/bmp-suite/good" ]
-
-  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
-}
-
 # Fuzzer for blink::WEBPImageDecoder.
 blink_fuzzer_test("blink_webp_decoder_fuzzer") {
   sources = [ "image-decoders/webp/webp_image_decoder_fuzzer.cc" ]

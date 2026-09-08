@@ -13,7 +13,7 @@
 #include "components/paint_preview/common/file_stream.h"
 #include "skia/ext/font_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/skia/include/codec/SkBmpDecoder.h"
+#include "third_party/skia/include/codec/SkBmpRustDecoder.h"
 #include "third_party/skia/include/codec/SkGifDecoder.h"
 #include "third_party/skia/include/codec/SkJpegDecoder.h"
 #include "third_party/skia/include/codec/SkPngRustDecoder.h"
@@ -415,7 +415,7 @@ TEST(PaintPreviewSerialUtils, TestImageContextEncodeAndDecodeBmp) {
       path.AppendASCII("components/test/data/paint_preview/test.bmp"),
       base::File::FLAG_OPEN | base::File::FLAG_READ));
 
-  SkCodecs::Register(SkBmpDecoder::Decoder());
+  SkCodecs::Register(SkBmpRustDecoder::Decoder());
   TrySerialAndDeserial(SkData::MakeFromStream(&stream, stream.length()));
 }
 

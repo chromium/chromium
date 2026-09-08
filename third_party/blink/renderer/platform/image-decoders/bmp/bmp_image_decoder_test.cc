@@ -8,23 +8,18 @@
 
 #include <memory>
 #include <string>
-#include <tuple>
 
 #include "base/containers/span.h"
 #include "base/containers/span_writer.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromecast_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/image-decoders/bmp/bmp_decoder_factory.h"
-#include "third_party/blink/renderer/platform/image-decoders/bmp/bmp_features.h"
-#include "third_party/blink/renderer/platform/image-decoders/bmp/bmp_rust_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_base_test.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
-#include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -68,28 +63,9 @@ Vector<uint8_t> MakeBmpWithTruncatedIccProfile() {
   return data;
 }
 
-enum class RustFeatureState { kRustEnabled, kRustDisabled };
-
-class BMPImageDecoderTest : public testing::TestWithParam<RustFeatureState> {
- public:
-  BMPImageDecoderTest() {
-    switch (GetParam()) {
-      case RustFeatureState::kRustEnabled:
-        features_.InitAndEnableFeature(kRustyBmpFeature);
-        break;
-      case RustFeatureState::kRustDisabled:
-        features_.InitAndDisableFeature(kRustyBmpFeature);
-        break;
-    }
-  }
-
- protected:
-  base::test::ScopedFeatureList features_;
-};
-
 }  // anonymous namespace
 
-TEST_P(BMPImageDecoderTest, isSizeAvailable) {
+TEST(BMPImageDecoderTest, isSizeAvailable) {
   // This image is 256x256.
   static constexpr char kBmpFile[] = "/images/resources/gracehopper.bmp";
   scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(kBmpFile);
@@ -102,7 +78,7 @@ TEST_P(BMPImageDecoderTest, isSizeAvailable) {
   EXPECT_EQ(256, decoder->Size().height());
 }
 
-TEST_P(BMPImageDecoderTest, parseAndDecode) {
+TEST(BMPImageDecoderTest, parseAndDecode) {
   // This image is 256x256.
   static constexpr char kBmpFile[] = "/images/resources/gracehopper.bmp";
   scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(kBmpFile);
@@ -121,7 +97,7 @@ TEST_P(BMPImageDecoderTest, parseAndDecode) {
 
 // Verify that tiny complete BMPs decode successfully. These inputs exercise the
 // small complete-data path in the Rust decoder.
-TEST_P(BMPImageDecoderTest, tinyCompleteBMPsDecode) {
+TEST(BMPImageDecoderTest, tinyCompleteBMPsDecode) {
   struct TestCase {
     const char* path;
     SkColor expected_color;
@@ -152,11 +128,7 @@ TEST_P(BMPImageDecoderTest, tinyCompleteBMPsDecode) {
 
 // Verify that tiny partial BMPs stay on the streaming path until the rest of
 // the data arrives.
-TEST_P(BMPImageDecoderTest, tinyPartialBMPStaysStreamingUntilComplete) {
-  if (GetParam() == RustFeatureState::kRustDisabled) {
-    return;
-  }
-
+TEST(BMPImageDecoderTest, tinyPartialBMPStaysStreamingUntilComplete) {
   scoped_refptr<SharedBuffer> full_data =
       ReadFileToSharedBuffer("/images/resources/tiny-24bit-1x1.bmp");
   ASSERT_TRUE(full_data.get());
@@ -188,7 +160,7 @@ TEST_P(BMPImageDecoderTest, tinyPartialBMPStaysStreamingUntilComplete) {
 }
 
 // Test if a BMP decoder returns a proper error while decoding an empty image.
-TEST_P(BMPImageDecoderTest, emptyImage) {
+TEST(BMPImageDecoderTest, emptyImage) {
   static constexpr char kBmpFile[] = "/images/resources/0x0.bmp";  // 0x0
   scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(kBmpFile);
   ASSERT_TRUE(data.get());
@@ -199,17 +171,12 @@ TEST_P(BMPImageDecoderTest, emptyImage) {
   // SkBmpRustCodec decoder returns decoder error with no frame created for
   // empty image.
   ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
-  if (GetParam() == RustFeatureState::kRustDisabled) {
-    ASSERT_TRUE(frame);
-    EXPECT_EQ(ImageFrame::kFrameEmpty, frame->GetStatus());
-  } else {
-    ASSERT_FALSE(frame);
-  }
+  ASSERT_FALSE(frame);
 
   EXPECT_TRUE(decoder->Failed());
 }
 
-TEST_P(BMPImageDecoderTest, int32MinHeight) {
+TEST(BMPImageDecoderTest, int32MinHeight) {
   static constexpr char kBmpFile[] =
       "/images/resources/1xint32_min.bmp";  // 0xINT32_MIN
   scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(kBmpFile);
@@ -221,7 +188,7 @@ TEST_P(BMPImageDecoderTest, int32MinHeight) {
 }
 
 // Verify that decoding this image does not crash.
-TEST_P(BMPImageDecoderTest, crbug752898) {
+TEST(BMPImageDecoderTest, crbug752898) {
   static constexpr char kBmpFile[] = "/images/resources/crbug752898.bmp";
   scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(kBmpFile);
   ASSERT_TRUE(data.get());
@@ -232,7 +199,7 @@ TEST_P(BMPImageDecoderTest, crbug752898) {
 }
 
 // Verify that decoding this image does not crash.
-TEST_P(BMPImageDecoderTest, invalidBitmapOffset) {
+TEST(BMPImageDecoderTest, invalidBitmapOffset) {
   static constexpr char kBmpFile[] =
       "/images/resources/invalid-bitmap-offset.bmp";
   scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(kBmpFile);
@@ -245,7 +212,7 @@ TEST_P(BMPImageDecoderTest, invalidBitmapOffset) {
 }
 
 // Verify that decoding an image with an unnecessary EOF marker does not crash.
-TEST_P(BMPImageDecoderTest, allowEOFWhenPastEndOfImage) {
+TEST(BMPImageDecoderTest, allowEOFWhenPastEndOfImage) {
   static constexpr char kBmpFile[] = "/images/resources/unnecessary-eof.bmp";
   scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(kBmpFile);
   ASSERT_TRUE(data.get());
@@ -257,8 +224,8 @@ TEST_P(BMPImageDecoderTest, allowEOFWhenPastEndOfImage) {
   EXPECT_FALSE(decoder->Failed());
 }
 
-TEST(BMPRustImageDecoderTest, RejectsTruncatedIccProfileBeforeAllocation) {
-  std::unique_ptr<ImageDecoder> decoder = std::make_unique<BmpRustImageDecoder>(
+TEST(BMPImageDecoderTest, RejectsTruncatedIccProfileBeforeAllocation) {
+  std::unique_ptr<ImageDecoder> decoder = std::make_unique<BMPImageDecoder>(
       ImageDecoder::kAlphaNotPremultiplied, ColorBehavior::kTransformToSRGB,
       ImageDecoder::kNoDecodedImageByteLimit);
   Vector<uint8_t> bmp_data = MakeBmpWithTruncatedIccProfile();
@@ -298,13 +265,6 @@ class BMPSuiteEntry {
 };
 
 class BMPImageDecoderSuiteTest : public testing::TestWithParam<BMPSuiteEntry> {
- public:
-  BMPImageDecoderSuiteTest() {
-    scoped_feature_list_.InitAndDisableFeature(kRustyBmpFeature);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 #if BUILDFLAG(IS_LINUX)
@@ -363,11 +323,6 @@ TEST_P(BMPImageDecoderSuiteTest, MAYBE_VerifyBMPSuiteImage) {
 #endif
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         BMPImageDecoderTest,
-                         testing::Values(RustFeatureState::kRustEnabled,
-                                         RustFeatureState::kRustDisabled));
-
 INSTANTIATE_TEST_SUITE_P(
     BMPSuite,
     BMPImageDecoderSuiteTest,
@@ -388,7 +343,7 @@ INSTANTIATE_TEST_SUITE_P(
         BMPSuiteEntry{"good", "pal8topdown"},
         BMPSuiteEntry{"good", "pal8nonsquare"},
         BMPSuiteEntry{"good", "pal8os2"},
-        BMPSuiteEntry{"good", "pal8v4"},
+        BMPSuiteEntry{"good", "pal8v4", "rev1"},
         BMPSuiteEntry{"good", "pal8v5"},
         BMPSuiteEntry{"good", "rgb16"},
         BMPSuiteEntry{"good", "rgb16bfdef"},
@@ -403,10 +358,10 @@ INSTANTIATE_TEST_SUITE_P(
         BMPSuiteEntry{"questionable", "pal1p1"},
         BMPSuiteEntry{"questionable", "pal2"},
         BMPSuiteEntry{"questionable", "pal2color"},
-        BMPSuiteEntry{"questionable", "pal4rletrns"},
-        BMPSuiteEntry{"questionable", "pal4rlecut"},
-        BMPSuiteEntry{"questionable", "pal8rletrns"},
-        BMPSuiteEntry{"questionable", "pal8rlecut"},
+        BMPSuiteEntry{"questionable", "pal4rletrns", "rev1"},
+        BMPSuiteEntry{"questionable", "pal4rlecut", "rev1"},
+        BMPSuiteEntry{"questionable", "pal8rletrns", "rev1"},
+        BMPSuiteEntry{"questionable", "pal8rlecut", "rev1"},
         BMPSuiteEntry{"questionable", "pal8offs"},
         BMPSuiteEntry{"questionable", "pal8oversizepal"},
         BMPSuiteEntry{"questionable", "pal8os2-sz"},
@@ -468,373 +423,6 @@ INSTANTIATE_TEST_SUITE_P(
         BMPSuiteEntry{"bad", "rletopdown"},
         BMPSuiteEntry{"bad", "rletopdown"},
         BMPSuiteEntry{"bad", "shortfile"}));
-
-// Describes the type of expected difference between decoders
-enum class DifferenceType {
-  kNone,      // Decoders should produce identical results
-  kPixelData  // Both decode successfully but produce different pixels
-};
-
-// Describes an expected difference between BMPImageDecoder and
-// BmpRustImageDecoder
-struct ExpectedDifference {
-  DifferenceType type;
-  std::string description;
-
-  ExpectedDifference() : type(DifferenceType::kNone), description("") {}
-  ExpectedDifference(DifferenceType t, std::string desc)
-      : type(t), description(std::move(desc)) {}
-
-  bool HasDifference() const { return type != DifferenceType::kNone; }
-  bool AllowsPixelDifference() const {
-    return type == DifferenceType::kPixelData;
-  }
-};
-
-// Test class that compares BMPImageDecoder vs BmpRustImageDecoder
-// to verify they produce identical results for all BMP suite files.
-//
-// Test parameter is a tuple of:
-// - BMPSuiteEntry: identifies the test file
-// - ExpectedDifference: documents the type and description of expected
-// differences
-class BMPDecoderComparisonTest
-    : public testing::TestWithParam<
-          std::tuple<BMPSuiteEntry, ExpectedDifference>> {};
-
-TEST_P(BMPDecoderComparisonTest, CompareDecoders) {
-  const auto& [entry, expected_diff] = GetParam();
-  std::string bmp_path =
-      base::StringPrintf("/images/bmp-suite/%s/%s.bmp",
-                         entry.entry_dir().c_str(), entry.entry_bmp().c_str());
-
-  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(bmp_path.c_str());
-  ASSERT_NE(data.get(), nullptr) << "Unable to load: " << bmp_path;
-  ASSERT_FALSE(data->empty());
-
-  // If there's an expected difference, log it for documentation
-  if (expected_diff.HasDifference()) {
-    SCOPED_TRACE("Expected difference (pixel): " + expected_diff.description);
-  }
-
-  // Create BMPImageDecoder
-  auto cpp_decoder = std::make_unique<BMPImageDecoder>(
-      ImageDecoder::kAlphaNotPremultiplied, ColorBehavior::kTransformToSRGB,
-      ImageDecoder::kNoDecodedImageByteLimit);
-
-  // Create BmpRustImageDecoder
-  auto rust_decoder = std::make_unique<BmpRustImageDecoder>(
-      ImageDecoder::kAlphaNotPremultiplied, ColorBehavior::kTransformToSRGB,
-      ImageDecoder::kNoDecodedImageByteLimit);
-
-  // Set data for both decoders
-  cpp_decoder->SetData(data.get(), true);
-  rust_decoder->SetData(data.get(), true);
-
-  // Check IsSizeAvailable
-  bool cpp_size_available = cpp_decoder->IsSizeAvailable();
-  bool rust_size_available = rust_decoder->IsSizeAvailable();
-
-  // Check Failed state
-  bool cpp_failed = cpp_decoder->Failed();
-  bool rust_failed = rust_decoder->Failed();
-
-  // Compare size availability
-  EXPECT_EQ(cpp_size_available, rust_size_available)
-      << bmp_path << ": IsSizeAvailable mismatch"
-      << " (BMPImageDecoder: " << cpp_size_available
-      << ", BmpRustImageDecoder: " << rust_size_available << ")";
-
-  // If either failed to get size, stop comparison here
-  if (!cpp_size_available || !rust_size_available) {
-    return;
-  }
-
-  // Compare dimensions
-  EXPECT_EQ(cpp_decoder->Size().width(), rust_decoder->Size().width())
-      << bmp_path << ": Width mismatch";
-  EXPECT_EQ(cpp_decoder->Size().height(), rust_decoder->Size().height())
-      << bmp_path << ": Height mismatch";
-
-  // Try to decode frame 0
-  ImageFrame* cpp_frame = cpp_decoder->DecodeFrameBufferAtIndex(0);
-  ImageFrame* rust_frame = rust_decoder->DecodeFrameBufferAtIndex(0);
-
-  // Check failure state after decode attempt
-  cpp_failed = cpp_decoder->Failed();
-  rust_failed = rust_decoder->Failed();
-
-  // Compare failure states
-  EXPECT_EQ(cpp_failed, rust_failed)
-      << bmp_path << ": Failed state mismatch after decode"
-      << " (BMPImageDecoder: " << cpp_failed
-      << ", BmpRustImageDecoder: " << rust_failed << ")";
-
-  // If either decoder failed, we can't compare pixels
-  if (cpp_failed || rust_failed) {
-    return;
-  }
-
-  // Check frame validity
-  if (!cpp_frame || !rust_frame) {
-    EXPECT_EQ(cpp_frame == nullptr, rust_frame == nullptr)
-        << bmp_path << ": Frame null mismatch";
-    return;
-  }
-
-  // Compare frame status
-  EXPECT_EQ(cpp_frame->GetStatus(), rust_frame->GetStatus())
-      << bmp_path << ": Frame status mismatch";
-
-  // If frames are not complete, skip pixel comparison
-  if (cpp_frame->GetStatus() != ImageFrame::kFrameComplete ||
-      rust_frame->GetStatus() != ImageFrame::kFrameComplete) {
-    return;
-  }
-
-  // Compare bitmap dimensions - strict unless pixel difference is expected
-  const SkBitmap& cpp_bitmap = cpp_frame->Bitmap();
-  const SkBitmap& rust_bitmap = rust_frame->Bitmap();
-
-  if (!expected_diff.AllowsPixelDifference()) {
-    EXPECT_EQ(cpp_bitmap.width(), rust_bitmap.width())
-        << bmp_path << ": Bitmap width mismatch";
-    EXPECT_EQ(cpp_bitmap.height(), rust_bitmap.height())
-        << bmp_path << ": Bitmap height mismatch";
-    EXPECT_EQ(cpp_bitmap.colorType(), rust_bitmap.colorType())
-        << bmp_path << ": Bitmap color type mismatch";
-    EXPECT_EQ(cpp_bitmap.alphaType(), rust_bitmap.alphaType())
-        << bmp_path << ": Bitmap alpha type mismatch";
-  }
-
-  // Compare pixel data - strict unless pixel difference is expected
-  if (!expected_diff.AllowsPixelDifference() &&
-      cpp_bitmap.width() == rust_bitmap.width() &&
-      cpp_bitmap.height() == rust_bitmap.height() &&
-      cpp_bitmap.colorType() == rust_bitmap.colorType()) {
-    size_t cpp_size = cpp_bitmap.computeByteSize();
-    size_t rust_size = rust_bitmap.computeByteSize();
-    EXPECT_EQ(cpp_size, rust_size) << bmp_path << ": Bitmap byte size mismatch";
-
-    if (cpp_size == rust_size && cpp_size > 0) {
-      // SAFETY: SkBitmap::getPixels() returns a valid pointer to pixel data
-      // with size verified by computeByteSize(). The span is used for safe
-      // iteration and bounds-checked access to compare decoder outputs.
-      base::span<const uint8_t> cpp_span = UNSAFE_BUFFERS(base::span(
-          static_cast<const uint8_t*>(cpp_bitmap.getPixels()), cpp_size));
-      // SAFETY: Same as above - getPixels() pointer validated by SkBitmap.
-      base::span<const uint8_t> rust_span = UNSAFE_BUFFERS(base::span(
-          static_cast<const uint8_t*>(rust_bitmap.getPixels()), cpp_size));
-
-      bool pixels_match = std::equal(cpp_span.begin(), cpp_span.end(),
-                                     rust_span.begin(), rust_span.end());
-      if (!pixels_match) {
-        // Find first differing pixel for debugging
-        int first_diff_offset = -1;
-        for (size_t i = 0; i < cpp_span.size(); i++) {
-          if (cpp_span[i] != rust_span[i]) {
-            first_diff_offset = static_cast<int>(i);
-            break;
-          }
-        }
-
-        int bytes_per_pixel = cpp_bitmap.bytesPerPixel();
-        int pixel_index = first_diff_offset / bytes_per_pixel;
-        int row = pixel_index / cpp_bitmap.width();
-        int col = pixel_index % cpp_bitmap.width();
-
-        EXPECT_TRUE(pixels_match)
-            << bmp_path << ": Pixel data mismatch. "
-            << "First difference at byte " << first_diff_offset
-            << " (pixel row=" << row << ", col=" << col << "). "
-            << "BMPImageDecoder value: 0x" << std::hex
-            << static_cast<int>(cpp_span[first_diff_offset])
-            << ", BmpRustImageDecoder value: 0x"
-            << static_cast<int>(rust_span[first_diff_offset]);
-      }
-    }
-  }
-}
-
-// Helper to generate readable test names - sanitizes invalid characters
-std::string BMPComparisonTestName(
-    const testing::TestParamInfo<std::tuple<BMPSuiteEntry, ExpectedDifference>>&
-        info) {
-  const auto& [entry, expected_diff] = info.param;
-  std::string name = entry.entry_dir() + "_" + entry.entry_bmp();
-  // Replace invalid characters (dashes, etc.) with underscores
-  for (char& c : name) {
-    if (!IsAsciiAlphanumeric(c) && c != '_') {
-      c = '_';
-    }
-  }
-  return name;
-}
-
-// Helper functions for creating test entries
-auto NoDifference() {
-  return ExpectedDifference();
-}
-
-auto PixelDiff(std::string desc) {
-  return ExpectedDifference(DifferenceType::kPixelData, std::move(desc));
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    BMPSuiteComparison,
-    BMPDecoderComparisonTest,
-    testing::Values(
-        // Good files - all should decode identically
-        std::make_tuple(BMPSuiteEntry{"good", "pal1"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"good", "pal1wb"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"good", "pal1bg"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"good", "pal4"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"good", "pal4gs"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"good", "pal4rle"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"good", "pal8"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"good", "pal8-0"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"good", "pal8gs"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"good", "pal8rle"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"good", "pal8w126"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"good", "pal8w125"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"good", "pal8w124"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"good", "pal8topdown"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"good", "pal8nonsquare"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"good", "pal8os2"}, NoDifference()),
-        std::make_tuple(
-            BMPSuiteEntry{"good", "pal8v4"},
-            PixelDiff("BMPv4 colorimetry: BMPImageDecoder applies color space "
-                      "transformation, BmpRustImageDecoder doesn't yet. "
-                      "Fix: https://github.com/image-rs/image/pull/2771")),
-        std::make_tuple(BMPSuiteEntry{"good", "pal8v5"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"good", "rgb16"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"good", "rgb16bfdef"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"good", "rgb16-565"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"good", "rgb16-565pal"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"good", "rgb24"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"good", "rgb24pal"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"good", "rgb32"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"good", "rgb32bfdef"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"good", "rgb32bf"}, NoDifference()),
-
-        // Questionable files - behavior may differ
-        std::make_tuple(BMPSuiteEntry{"questionable", "pal1p1"},
-                        NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"questionable", "pal2"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"questionable", "pal2color"},
-                        NoDifference()),
-        std::make_tuple(
-            BMPSuiteEntry{"questionable", "pal4rletrns"},
-            PixelDiff("RLE transparency: different alpha handling for pixels "
-                      "skipped by delta/EOL/EOF commands. "
-                      "Fix: https://github.com/image-rs/image/pull/2773")),
-        std::make_tuple(
-            BMPSuiteEntry{"questionable", "pal4rlecut"},
-            PixelDiff("Truncated RLE4: different alpha handling for pixels "
-                      "skipped by premature end of RLE stream. "
-                      "Fix: https://github.com/image-rs/image/pull/2773")),
-        std::make_tuple(
-            BMPSuiteEntry{"questionable", "pal8rletrns"},
-            PixelDiff("RLE transparency: different alpha handling for pixels "
-                      "skipped by delta/EOL/EOF commands. "
-                      "Fix: https://github.com/image-rs/image/pull/2773")),
-        std::make_tuple(
-            BMPSuiteEntry{"questionable", "pal8rlecut"},
-            PixelDiff("Truncated RLE8: different alpha handling for pixels "
-                      "skipped by premature end of RLE stream. "
-                      "Fix: https://github.com/image-rs/image/pull/2773")),
-        std::make_tuple(BMPSuiteEntry{"questionable", "pal8offs"},
-                        NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"questionable", "pal8oversizepal"},
-                        NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"questionable", "pal8os2-sz"},
-                        NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"questionable", "pal8os2-hs"},
-                        NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"questionable", "pal8os2sp"},
-                        NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"questionable", "pal8os2v2"},
-                        NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"questionable", "pal8os2v2-16"},
-                        NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"questionable", "pal8os2v2-sz"},
-                        NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"questionable", "pal8os2v2-40sz"},
-                        NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"questionable", "rgb24rle24"},
-                        NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"questionable", "pal1huffmsb"},
-                        NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"questionable", "rgb16faketrns"},
-                        NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"questionable", "rgb16-231"},
-                        NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"questionable", "rgb16-3103"},
-                        NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"questionable", "rgba16-4444"},
-                        NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"questionable", "rgba16-5551"},
-                        NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"questionable", "rgba16-1924"},
-                        NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"questionable", "rgb24largepal"},
-                        NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"questionable", "rgb24jpeg"},
-                        NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"questionable", "rgb24png"},
-                        NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"questionable", "rgb32h52"},
-                        NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"questionable", "rgb32-xbgr"},
-                        NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"questionable", "rgb32fakealpha"},
-                        NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"questionable", "rgb32-111110"},
-                        NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"questionable", "rgb32-7187"},
-                        NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"questionable", "rgba32-1"},
-                        NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"questionable", "rgba32-1010102"},
-                        NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"questionable", "rgba32-81284"},
-                        NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"questionable", "rgba32-61754"},
-                        NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"questionable", "rgba32abf"},
-                        NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"questionable", "rgba32h56"},
-                        NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"questionable", "rgba64"},
-                        NoDifference()),
-        // Regression: BITMAPV5HEADER declares alpha_mask under BI_RGB.
-        // The Rust decoder was ignoring alpha_mask, rendering transparent
-        // pixels as opaque black. Fixed by image-rs/image#2933.
-        std::make_tuple(BMPSuiteEntry{"questionable", "rgba32-v5-alpha"},
-                        NoDifference()),
-
-        // Bad files - both should reject
-        std::make_tuple(BMPSuiteEntry{"bad", "badbitcount"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"bad", "badbitssize"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"bad", "baddens1"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"bad", "baddens2"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"bad", "badfilesize"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"bad", "badheadersize"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"bad", "badpalettesize"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"bad", "badplanes"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"bad", "badrle"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"bad", "badrle4"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"bad", "badrle4bis"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"bad", "badrle4ter"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"bad", "badrlebis"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"bad", "badrleter"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"bad", "badwidth"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"bad", "pal8badindex"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"bad", "reallybig"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"bad", "rgb16-880"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"bad", "rletopdown"}, NoDifference()),
-        std::make_tuple(BMPSuiteEntry{"bad", "shortfile"}, NoDifference())),
-    BMPComparisonTestName);
 
 class BMPImageDecoderCorpusTest : public ImageDecoderBaseTest {
  public:

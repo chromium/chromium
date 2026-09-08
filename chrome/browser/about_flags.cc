@@ -5220,9 +5220,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kJxlImageFormatDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kJXLImageFormat)},
 #endif  // BUILDFLAG(ENABLE_JXL_DECODER)
-    {"enable-rusty-bmp", flag_descriptions::kRustyBmpName,
-     flag_descriptions::kRustyBmpDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kRustyBmpFeature)},
     {"enable-rusty-ico", flag_descriptions::kRustyIcoName,
      flag_descriptions::kRustyIcoDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kRustyIcoFeature)},

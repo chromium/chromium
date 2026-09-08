@@ -4328,10 +4328,6 @@ inline constexpr char kRendererSideContentDecodingDescription[] =
     "network service sends compressed HTTP response bodies to the renderer "
     "process.";
 
-inline constexpr char kRustyBmpName[] = "Rust-based BMP image handling";
-inline constexpr char kRustyBmpDescription[] =
-    "When enabled, uses Rust `image` crate to decode BMP images.";
-
 inline constexpr char kRustyIcoName[] = "Rust-based ICO image handling";
 inline constexpr char kRustyIcoDescription[] =
     "When enabled, uses Rust `image` crate to decode ICO images.";

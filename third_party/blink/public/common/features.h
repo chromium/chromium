@@ -1545,9 +1545,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,
     kRestrictLinkHeaderOnSubresourceResourceLoad);
 
-// Enables the Rust-based BMP image decoder.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRustyBmpFeature);
-
 // Enables the Rust-based ICO image decoder.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRustyIcoFeature);
 
