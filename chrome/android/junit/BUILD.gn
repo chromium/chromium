@@ -1066,6 +1066,7 @@ if (is_android) {
   robolectric_library(
       "chrome_junit_tests_org.chromium.chrome.browser.page_info") {
     sources = [
+      "src/org/chromium/chrome/browser/page_info/PageInfoConnectionSecurityControllerUnitTest.java",
       "src/org/chromium/chrome/browser/page_info/PageInfoCookiesSettingsUnitTest.java",
       "src/org/chromium/chrome/browser/page_info/PageInfoPermissionsControllerTest.java",
       "src/org/chromium/chrome/browser/page_info/PageInfoPermissionsControllerUnitTest.java",
