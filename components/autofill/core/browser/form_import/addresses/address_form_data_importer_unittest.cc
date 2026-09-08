@@ -506,9 +506,6 @@ TEST_F(AddressFormDataImporterTest, ComplementCountry_PhoneNumberParsing) {
 
 TEST_F(AddressFormDataImporterTest,
        GetAddressObservedFieldValues_FiltersPlaceholderValues) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillFilterPlaceholderValuesOnImport);
-
   AutofillField field1;
   field1.set_value(u"Please select a city");
   field1.SetTypeTo(AutofillType(ADDRESS_HOME_CITY),

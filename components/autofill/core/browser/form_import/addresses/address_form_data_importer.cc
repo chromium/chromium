@@ -362,9 +362,7 @@ AddressFormDataImporter::GetAddressObservedFieldValues(
     has_address_related_fields = true;
 
     // Skip common placeholder values (e.g. "select", "optional").
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillFilterPlaceholderValuesOnImport) &&
-        IsPlaceholder(value)) {
+    if (IsPlaceholder(value)) {
       autofill_metrics::LogRemovedPlaceholderValue(field_type);
       continue;
     }

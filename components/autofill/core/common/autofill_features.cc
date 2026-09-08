@@ -819,12 +819,6 @@ BASE_FEATURE(kAutofillExtendZipCodeValidation,
 BASE_FEATURE(kAutofillExtractOnlyNonAdFrames,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, removes address field values that contain words "select",
-// "choose", or "optional" during profile import.
-// TODO(crbug.com/485170688): Remove when launched.
-BASE_FEATURE(kAutofillFilterPlaceholderValuesOnImport,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, iframes are associated with the outermost ancestor form
 // (analogous to form control ownership) rather than the closest ancestor form
 // (analogous to form control association).
