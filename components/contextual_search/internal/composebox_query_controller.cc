@@ -707,14 +707,21 @@ void ComposeboxQueryController::CreateSearchUrl(
   latest_interaction_request_data_.reset();
   num_files_in_request_ = 0;
 
+  bool is_aim_search =
+      search_url_request_info->search_url_type == SearchUrlType::kAim;
   bool should_create_multimodal_url =
       !active_files_.empty() && !search_url_request_info->file_tokens.empty();
+  bool should_wait_for_uploads =
+      is_any_context_uploading() &&
+      (!contextual_tasks::
+           GetIsContextualTasksNonBlockingUrlNavigationEnabled() ||
+       !is_aim_search);
   // If a multimodal URL is requested, but the cluster info has not been
   // received yet, store the request info and callback for later use.
   if ((should_create_multimodal_url &&
        query_controller_state_ ==
            QueryControllerState::kAwaitingClusterInfoResponse) ||
-      is_any_context_uploading()) {
+      should_wait_for_uploads) {
     // Since 1) `startFileUploadFlow` should clear past pending/files,
     // and 2) resuming the "pause" by running `pending_search_url_request`
     // clears the stashed request (callback) and calls this function:
@@ -734,8 +741,6 @@ void ComposeboxQueryController::CreateSearchUrl(
         {kVoiceSearchQueryParameterKey, "1"});
   }
 
-  bool is_aim_search =
-      search_url_request_info->search_url_type == SearchUrlType::kAim;
   bool send_upload_type =
       base::FeatureList::IsEnabled(
           contextual_tasks::kContextualTasksSendContextualInputUploadType) &&

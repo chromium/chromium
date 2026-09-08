@@ -139,6 +139,14 @@ BASE_DECLARE_FEATURE(kContextualTasksSidePanelRearchitecture);
 // Enables sticky conversation UI that follows the user around.
 BASE_DECLARE_FEATURE(kContextualTasksEnableStickyConversation);
 
+// When enabled, allows AIM search URLs to be created and navigated immediately
+// upon starting contextual input uploads without waiting for background
+// network uploads to complete.
+BASE_DECLARE_FEATURE(kContextualTasksNonBlockingUrlNavigation);
+
+// Returns whether non-blocking AIM URL navigation is enabled.
+bool GetIsContextualTasksNonBlockingUrlNavigationEnabled();
+
 BASE_DECLARE_FEATURE(kContextualTasksEnableSpatialModelToolbarLayout);
 
 enum class OverflowMenuItems {
