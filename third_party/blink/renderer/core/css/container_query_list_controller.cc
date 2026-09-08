@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -43,6 +44,41 @@ void ContainerQueryListController::AddContainerQueryList(
     add_result.stored_value->value = MakeGarbageCollected<ListSet>();
   }
   add_result.stored_value->value->insert(&list);
+}
+
+void ContainerQueryListController::InvalidateSelectorCache(Document& document) {
+  if (!RuntimeEnabledFeatures::ElementMatchContainerEnabled()) {
+    return;
+  }
+  LocalDOMWindow* window = document.domWindow();
+  if (!window) {
+    return;
+  }
+  if (auto* controller = FromIfExists(*window)) {
+    ++controller->selector_cache_generation_;
+  }
+}
+
+void ContainerQueryListController::InvalidateSelectorCacheFor(
+    Element& element) {
+  if (!RuntimeEnabledFeatures::ElementMatchContainerEnabled()) {
+    return;
+  }
+  LocalDOMWindow* window = element.GetDocument().domWindow();
+  if (!window) {
+    return;
+  }
+  auto* controller = FromIfExists(*window);
+  if (!controller) {
+    return;
+  }
+  auto it = controller->lists_by_element_.find(&element);
+  if (it == controller->lists_by_element_.end()) {
+    return;
+  }
+  for (ContainerQueryList* list : *it->value) {
+    list->MarkCacheStale();
+  }
 }
 
 bool ContainerQueryListController::NotifyChanges() {

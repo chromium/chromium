@@ -14,6 +14,7 @@
 namespace blink {
 
 class ContainerQueryList;
+class Document;
 class Element;
 class LocalDOMWindow;
 
@@ -31,6 +32,12 @@ class CORE_EXPORT ContainerQueryListController final
 
   bool NotifyChanges();
 
+  uint64_t SelectorCacheGeneration() const {
+    return selector_cache_generation_;
+  }
+  static void InvalidateSelectorCache(Document&);
+  static void InvalidateSelectorCacheFor(Element&);
+
   void Trace(Visitor*) const override;
 
  private:
@@ -38,6 +45,7 @@ class CORE_EXPORT ContainerQueryListController final
 
   HeapLinkedHashSet<WeakMember<Element>> elements_;
   HeapHashMap<WeakMember<Element>, Member<ListSet>> lists_by_element_;
+  uint64_t selector_cache_generation_ = 1;
 };
 
 }  // namespace blink

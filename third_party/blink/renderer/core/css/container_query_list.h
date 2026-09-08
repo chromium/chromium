@@ -33,6 +33,7 @@ class CORE_EXPORT ContainerQueryList final
   String query() const;
 
   bool UpdateMatches();
+  void MarkCacheStale();
   Element* GetElement() const { return element_.Get(); }
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(change, kChange)
@@ -48,7 +49,10 @@ class CORE_EXPORT ContainerQueryList final
 
  private:
   bool ComputeMatches();
+  void InvalidateCacheIfStale();
 
+  ContainerSelectorCache selector_cache_;
+  std::optional<uint64_t> selector_cache_generation_;
   // Evaluation is deferred to avoid an update of style and layout at
   // construction; it runs on 1) the rendering step or 2) a matches() read.
   bool evaluated_ = false;

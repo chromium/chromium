@@ -4915,6 +4915,7 @@ void Element::DetachLayoutTree(bool performing_reattach) {
     data->RemoveAnchorPositionScrollData();
   }
 
+  ContainerQueryListController::InvalidateSelectorCacheFor(*this);
   DetachColumnPseudoElements(performing_reattach);
   DetachPrecedingPseudoElements(performing_reattach);
 
@@ -5885,6 +5886,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
     child_change = ApplyComputedStyleDiff(child_change, diff);
     if (ComputedStyle::DiffAffectsContainerQueries(old_style, new_style)) {
       child_change = child_change.ForceRecalcDescendantContainers();
+      ContainerQueryListController::InvalidateSelectorCache(GetDocument());
     }
     UpdateCallbackSelectors(old_style, new_style);
     NotifyIfMatchedDocumentRulesSelectorsChanged(old_style, new_style);
