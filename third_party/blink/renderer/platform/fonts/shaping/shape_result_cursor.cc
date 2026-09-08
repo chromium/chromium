@@ -94,7 +94,7 @@ void ShapeResultCursor::AddSpaceToRight(TextRunLayoutUnit advance) {
   while (IsCluster(glyph_index_ + 1, character_index)) [[unlikely]] {
     ++glyph_index_;
   }
-  GlyphData().advance += advance;
+  MutableGlyphData().advance += advance;
   const float advance_float = advance.ToFloat();
   run_->width_ += advance_float;
   result_->width_ += advance_float;
@@ -120,13 +120,13 @@ void ShapeResultCursor::AddSpaceToLeft(TextRunLayoutUnit advance) {
     }
     ++glyph_index_;
   }
-  GlyphData().advance += advance;
+  MutableGlyphData().advance += advance;
   run_->width_ += advance_float;
   result_->width_ += advance_float;
 }
 
 void ShapeResultCursor::SetUnsafeToBreakBefore() {
-  GlyphData().SetSafeToBreakBefore(SafeToBreak::kUnsafe);
+  MutableGlyphData().SetSafeToBreakBefore(SafeToBreak::kUnsafe);
 }
 
 }  // namespace blink

@@ -363,8 +363,7 @@ struct PLATFORM_EXPORT ShapeResultRun final
     // Note: Caller should be adjust |HarfBuzzRunGlyphData.character_index|.
     void CopyFromRange(const GlyphDataRange& range) {
       CHECK_EQ(range.size(), size());
-      static_assert(std::is_trivially_copyable_v<HarfBuzzRunGlyphData>);
-      std::ranges::copy(range, data_.data());
+      range.ExpandInto(data_);
 
       if (!range.HasOffsets() || range.IsEmpty()) {
         ClearOffsets();
@@ -562,6 +561,16 @@ struct PLATFORM_EXPORT ShapeResultRun final
 };
 
 static_assert(std::is_trivially_destructible_v<ShapeResultRun>);
+
+inline GlyphDataRange::Reader::Reader(const GlyphDataRange& range) {
+  if (range.run_) {
+    glyphs_ = base::span<const HarfBuzzRunGlyphData>(range.run_->glyph_data_)
+                  .subspan(range.index_, range.size_);
+  }
+}
+
+inline GlyphDataRange::Reader::Reader(const ShapeResultRun& run)
+    : glyphs_(run.glyph_data_) {}
 
 }  // namespace blink
 

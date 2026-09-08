@@ -26,7 +26,7 @@ bool ShapeResultTestInfo::RunInfoForTesting(unsigned run_index,
   if (run_index < runs_.size() && runs_[run_index]) {
     start_index = runs_[run_index]->start_index_;
     num_characters = runs_[run_index]->num_characters_;
-    num_glyphs = runs_[run_index]->glyph_data_.size();
+    num_glyphs = runs_[run_index]->NumGlyphs();
     script = runs_[run_index]->script_;
     return true;
   }
@@ -60,9 +60,8 @@ SimpleFontData* ShapeResultTestInfo::FontDataForTesting(
 Vector<unsigned> ShapeResultTestInfo::CharacterIndexesForTesting() const {
   Vector<unsigned> character_indexes;
   for (const auto& run : runs_) {
-    for (const auto& glyph_data : run->glyph_data_) {
-      character_indexes.push_back(run->start_index_ +
-                                  glyph_data.character_index);
+    for (unsigned i = 0; i < run->NumGlyphs(); ++i) {
+      character_indexes.push_back(run->GlyphToCharacterIndex(i));
     }
   }
   return character_indexes;

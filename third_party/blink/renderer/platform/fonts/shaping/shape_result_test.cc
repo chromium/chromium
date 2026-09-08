@@ -880,22 +880,22 @@ TEST_F(ShapeResultCursorTest, Ltr) {
   ShapeResult* result = shaper.Shape(GetFont(kLatinFont), TextDirection::kLtr);
   ShapeResultCursor cursor(result);
   EXPECT_EQ(cursor.CharacterIndex(), 0u);
-  EXPECT_EQ(cursor.GlyphData().glyph, 20u);
+  EXPECT_EQ(cursor.GlyphDataForTest().glyph, 20u);
 
   cursor.MoveToCharacter(4);
   EXPECT_EQ(cursor.glyph_index_, 4u);
   EXPECT_EQ(cursor.CharacterIndex(), 4u);
-  EXPECT_EQ(cursor.GlyphData().glyph, 24u);
+  EXPECT_EQ(cursor.GlyphDataForTest().glyph, 24u);
 
   const TextRunLayoutUnit advance = cursor.ClusterAdvance();
-  EXPECT_EQ(advance, cursor.GlyphData().advance);
+  EXPECT_EQ(advance, cursor.GlyphDataForTest().advance);
   const TextRunLayoutUnit space(10);
   cursor.AddSpaceToRight(space);
-  EXPECT_EQ(advance + space, cursor.GlyphData().advance);
+  EXPECT_EQ(advance + space, cursor.GlyphDataForTest().advance);
   EXPECT_FALSE(cursor.run_->glyph_data_.HasNonZeroOffsets());
 
   cursor.AddSpaceToLeft(-space);
-  EXPECT_EQ(advance, cursor.GlyphData().advance);
+  EXPECT_EQ(advance, cursor.GlyphDataForTest().advance);
   EXPECT_EQ(cursor.run_->glyph_data_.Offsets()[cursor.glyph_index_],
             GlyphOffset(-space, 0));
 }
@@ -909,22 +909,22 @@ TEST_F(ShapeResultCursorTest, Rtl) {
   ShapeResult* result = shaper.Shape(GetFont(kArabicFont), TextDirection::kRtl);
   ShapeResultCursor cursor(result);
   EXPECT_EQ(cursor.CharacterIndex(), 0u);
-  EXPECT_EQ(cursor.GlyphData().glyph, 497u);
+  EXPECT_EQ(cursor.GlyphDataForTest().glyph, 497u);
 
   cursor.MoveToCharacter(4);
   EXPECT_EQ(cursor.glyph_index_, 10u);
   EXPECT_EQ(cursor.CharacterIndex(), 4u);
-  EXPECT_EQ(cursor.GlyphData().glyph, 440u);
+  EXPECT_EQ(cursor.GlyphDataForTest().glyph, 440u);
 
   const TextRunLayoutUnit advance = cursor.ClusterAdvance();
-  EXPECT_EQ(advance, cursor.GlyphData().advance);
+  EXPECT_EQ(advance, cursor.GlyphDataForTest().advance);
   const TextRunLayoutUnit space(10);
   cursor.AddSpaceToRight(space);
-  EXPECT_EQ(advance + space, cursor.GlyphData().advance);
+  EXPECT_EQ(advance + space, cursor.GlyphDataForTest().advance);
   EXPECT_FALSE(cursor.run_->glyph_data_.HasNonZeroOffsets());
 
   cursor.AddSpaceToLeft(-space);
-  EXPECT_EQ(advance, cursor.GlyphData().advance);
+  EXPECT_EQ(advance, cursor.GlyphDataForTest().advance);
   EXPECT_EQ(cursor.run_->glyph_data_.Offsets()[cursor.glyph_index_],
             GlyphOffset(-space, 0));
 }
@@ -937,12 +937,12 @@ TEST_F(ShapeResultCursorTest, StartIndex) {
   EXPECT_EQ(result->StartIndex(), 2u);
   ShapeResultCursor cursor(result);
   EXPECT_EQ(cursor.CharacterIndex(), 2u);
-  EXPECT_EQ(cursor.GlyphData().glyph, 22u);
+  EXPECT_EQ(cursor.GlyphDataForTest().glyph, 22u);
 
   cursor.MoveToCharacter(4);
   EXPECT_EQ(cursor.glyph_index_, 2u);
   EXPECT_EQ(cursor.CharacterIndex(), 4u);
-  EXPECT_EQ(cursor.GlyphData().glyph, 24u);
+  EXPECT_EQ(cursor.GlyphDataForTest().glyph, 24u);
 }
 
 TEST_F(ShapeResultTest, ForEachGraphemeClustersBoundsCheck) {

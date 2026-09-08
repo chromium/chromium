@@ -792,7 +792,7 @@ float ShapeResult::ForEachGlyphImpl(float initial_advance,
   auto glyph_offsets = run.glyph_data_.GetOffsets<has_non_zero_glyph_offsets>();
   auto total_advance = InlineLayoutUnit::FromFloatRound(initial_advance);
   bool is_horizontal = run.IsHorizontal();
-  for (const auto& glyph_data : run.glyph_data_) {
+  for (const auto& glyph_data : GlyphDataRange::Reader(run)) {
     glyph_callback(context, run.start_index_ + glyph_data.character_index,
                    glyph_data.glyph, *glyph_offsets, total_advance,
                    is_horizontal, run.canvas_rotation_, run.font_data_.Get());
@@ -831,9 +831,10 @@ float ShapeResult::ForEachGlyphImpl(float initial_advance,
   unsigned run_start = run.start_index_ + index_offset;
   bool is_horizontal = run.IsHorizontal();
   const SimpleFontData* font_data = run.font_data_.Get();
+  const GlyphDataRange::Reader reader(run);
 
   if (run.IsLtr()) {  // Left-to-right
-    for (const auto& glyph_data : run.glyph_data_) {
+    for (const auto& glyph_data : reader) {
       const unsigned character_index = run_start + glyph_data.character_index;
       if (character_index >= to)
         break;
@@ -846,7 +847,7 @@ float ShapeResult::ForEachGlyphImpl(float initial_advance,
       ++glyph_offsets;
     }
   } else {  // Right-to-left
-    for (const auto& glyph_data : run.glyph_data_) {
+    for (const auto& glyph_data : reader) {
       const unsigned character_index = run_start + glyph_data.character_index;
       if (character_index < from)
         break;
@@ -907,9 +908,10 @@ float ShapeResult::ForEachGraphemeClusters(const StringView& text,
         rtl ? run->start_index_ + run->num_characters_ + run_offset
             : run->GlyphToCharacterIndex(0) + run_offset);
 
-    const unsigned num_glyphs = run->glyph_data_.size();
+    const GlyphDataRange::Reader reader(*run);
+    const unsigned num_glyphs = reader.size();
     for (unsigned i = 0; i < num_glyphs; ++i) {
-      const HarfBuzzRunGlyphData& glyph_data = run->glyph_data_[i];
+      const HarfBuzzRunGlyphData& glyph_data = reader[i];
       const uint16_t current_character_index =
           run->start_index_ + glyph_data.character_index + run_offset;
       const bool is_bounds_check_enabled =
@@ -2521,11 +2523,11 @@ void ShapeResult::ComputeRunInkBoundsScalar(const ShapeResultRun& run,
   auto glyph_offsets = run.glyph_data_.GetOffsets<has_non_zero_glyph_offsets>();
   const SimpleFontData& current_font_data = *run.font_data_;
   unsigned num_glyphs = run.glyph_data_.size();
+  const GlyphDataRange::Reader reader(run);
 #if !BUILDFLAG(IS_APPLE)
   Vector<Glyph, 256> glyphs(num_glyphs);
-  unsigned i = 0;
-  for (const auto& glyph_data : run.glyph_data_) {
-    glyphs[i++] = glyph_data.glyph;
+  for (unsigned i = 0; i < num_glyphs; ++i) {
+    glyphs[i] = reader[i].glyph;
   }
   Vector<SkRect, 256> bounds_list(num_glyphs);
   current_font_data.BoundsForGlyphs(glyphs, &bounds_list);
@@ -2534,7 +2536,7 @@ void ShapeResult::ComputeRunInkBoundsScalar(const ShapeResultRun& run,
   GlyphBoundsAccumulator<is_horizontal_run> bounds;
   InlineLayoutUnit origin = InlineLayoutUnit::FromFloatCeil(run_advance);
   for (unsigned j = 0; j < num_glyphs; ++j) {
-    const HarfBuzzRunGlyphData& glyph_data = run.glyph_data_[j];
+    const HarfBuzzRunGlyphData& glyph_data = reader[j];
 #if BUILDFLAG(IS_APPLE)
     gfx::RectF glyph_bounds =
         current_font_data.BoundsForGlyph(glyph_data.glyph);
@@ -2566,11 +2568,11 @@ void ShapeResult::ComputeRunInkBoundsVectorized(const ShapeResultRun& run,
   const SimpleFontData& current_font_data = *run.font_data_;
   unsigned num_glyphs = run.glyph_data_.size();
   DCHECK_GE(num_glyphs, 4u);
+  const GlyphDataRange::Reader reader(run);
 #if !BUILDFLAG(IS_APPLE)
   Vector<Glyph, 256> glyphs(num_glyphs);
-  unsigned i = 0;
-  for (const auto& glyph_data : run.glyph_data_) {
-    glyphs[i++] = glyph_data.glyph;
+  for (unsigned i = 0; i < num_glyphs; ++i) {
+    glyphs[i] = reader[i].glyph;
   }
   Vector<SkRect, 256> bounds_list(num_glyphs);
   current_font_data.BoundsForGlyphs(glyphs, &bounds_list);
@@ -2581,10 +2583,10 @@ void ShapeResult::ComputeRunInkBoundsVectorized(const ShapeResultRun& run,
   unsigned j = 0;
   for (; j < num_glyphs - (AccuType::kStride - 1); j += AccuType::kStride) {
     static_assert(AccuType::kStride == 4);
-    const HarfBuzzRunGlyphData& glyph_data1 = run.glyph_data_[j];
-    const HarfBuzzRunGlyphData& glyph_data2 = run.glyph_data_[j + 1];
-    const HarfBuzzRunGlyphData& glyph_data3 = run.glyph_data_[j + 2];
-    const HarfBuzzRunGlyphData& glyph_data4 = run.glyph_data_[j + 3];
+    const HarfBuzzRunGlyphData& glyph_data1 = reader[j];
+    const HarfBuzzRunGlyphData& glyph_data2 = reader[j + 1];
+    const HarfBuzzRunGlyphData& glyph_data3 = reader[j + 2];
+    const HarfBuzzRunGlyphData& glyph_data4 = reader[j + 3];
 #if BUILDFLAG(IS_APPLE)
     gfx::RectF glyph_bounds1 =
         current_font_data.BoundsForGlyph(glyph_data1.glyph);
@@ -2611,7 +2613,7 @@ void ShapeResult::ComputeRunInkBoundsVectorized(const ShapeResultRun& run,
     origin1 = origin4 + glyph_data4.advance;
   }
   for (; j < num_glyphs; ++j) {
-    const HarfBuzzRunGlyphData& glyph_data = run.glyph_data_[j];
+    const HarfBuzzRunGlyphData& glyph_data = reader[j];
 #if BUILDFLAG(IS_APPLE)
     gfx::RectF glyph_bounds =
         current_font_data.BoundsForGlyph(glyph_data.glyph);
