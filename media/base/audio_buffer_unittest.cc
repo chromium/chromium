@@ -357,6 +357,29 @@ TEST(AudioBufferTest, CopyBitstreamFromIECDts) {
   EXPECT_FALSE(buffer->end_of_stream());
 }
 
+TEST(AudioBufferTest, CopyBitstreamFromDtse) {
+  constexpr ChannelLayout kChannelLayout = CHANNEL_LAYOUT_STEREO;
+  constexpr int kChannelCount = 2;
+  constexpr int kFrameCount = 128;
+  constexpr uint8_t kTestData[] = {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10,
+                                   11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+                                   22, 23, 24, 25, 26, 27, 28, 29, 30, 31};
+  const base::TimeDelta kTimestamp = base::Microseconds(1337);
+
+  scoped_refptr<AudioBuffer> buffer = AudioBuffer::CopyBitstreamFrom(
+      kSampleFormatDtse, kChannelLayout, kChannelCount, kSampleRate,
+      kFrameCount, base::span<const uint8_t>(kTestData), kTimestamp);
+
+  EXPECT_EQ(kChannelLayout, buffer->channel_layout());
+  EXPECT_EQ(kChannelCount, buffer->channel_count());
+  EXPECT_EQ(kSampleRate, buffer->sample_rate());
+  EXPECT_EQ(kFrameCount, buffer->frame_count());
+  EXPECT_EQ(kTimestamp, buffer->timestamp());
+  EXPECT_EQ(sizeof(kTestData), buffer->data_size());
+  EXPECT_TRUE(buffer->IsBitstreamFormat());
+  EXPECT_FALSE(buffer->end_of_stream());
+}
+
 TEST(AudioBufferTest, WrapExternalMemory) {
   const ChannelLayout kChannelLayout = CHANNEL_LAYOUT_STEREO;
   const int kChannelCount = 2;
@@ -476,6 +499,27 @@ TEST(AudioBufferTest, ReadBitstreamIECDts) {
   EXPECT_EQ(frames, bus->GetBitstreamFrames());
   EXPECT_EQ(expected_size, bus->bitstream_data().size());
   VerifyBitstreamIECDtsAudioBus(bus.get(), data_size, 1, 1);
+}
+
+TEST(AudioBufferTest, ReadBitstreamDtse) {
+  const ChannelLayout channel_layout = CHANNEL_LAYOUT_STEREO;
+  const int channels = ChannelLayoutToChannelCount(channel_layout);
+  const int frames = 1024;
+  const size_t data_size = frames / 2;
+  const base::TimeDelta start_time;
+
+  scoped_refptr<AudioBuffer> buffer = MakeBitstreamAudioBuffer(
+      kSampleFormatDtse, channel_layout, channels, kSampleRate, 1, 1, frames,
+      data_size, start_time);
+  EXPECT_TRUE(buffer->IsBitstreamFormat());
+
+  std::unique_ptr<AudioBus> bus = AudioBus::Create(channels, frames);
+  buffer->ReadFrames(frames, 0, 0, bus.get());
+
+  EXPECT_TRUE(bus->is_bitstream_format());
+  EXPECT_EQ(frames, bus->GetBitstreamFrames());
+  EXPECT_EQ(data_size, bus->bitstream_data().size());
+  VerifyBitstreamAudioBus(bus.get(), 1, 1);
 }
 
 TEST(AudioBufferTest, ReadU8) {
