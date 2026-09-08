@@ -188,7 +188,7 @@ public class BackgroundTabRestorationHelperTest {
                 BackgroundTabRestorationHelper.fetchBackgroundTabIds(
                         TabOrchestratorType.TABBED, mTabModelSelector, /* isIncognito= */ false);
         assertTrue(ids.isEmpty());
-        verify(mBackgroundTabPool, never()).getAllTabIds();
+        verify(mBackgroundTabPool, never()).getAllPlaceholderTabIds();
     }
 
     @Test
@@ -210,14 +210,14 @@ public class BackgroundTabRestorationHelperTest {
                 BackgroundTabRestorationHelper.fetchBackgroundTabIds(
                         TabOrchestratorType.CUSTOM, mTabModelSelector, /* isIncognito= */ false);
         assertTrue(ids.isEmpty());
-        verify(mBackgroundTabPool, never()).getAllTabIds();
+        verify(mBackgroundTabPool, never()).getAllPlaceholderTabIds();
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
     public void testFetchBackgroundTabIds_poolReturnsIds() {
         BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
-        when(mBackgroundTabPool.getAllTabIds()).thenReturn(Set.of(1, 2, 3));
+        when(mBackgroundTabPool.getAllPlaceholderTabIds()).thenReturn(Set.of(1, 2, 3));
 
         Set<Integer> ids =
                 BackgroundTabRestorationHelper.fetchBackgroundTabIds(
@@ -226,7 +226,7 @@ public class BackgroundTabRestorationHelperTest {
         assertTrue(ids.contains(1));
         assertTrue(ids.contains(2));
         assertTrue(ids.contains(3));
-        verify(mBackgroundTabPool).getAllTabIds();
+        verify(mBackgroundTabPool).getAllPlaceholderTabIds();
     }
 
     @Test
@@ -243,7 +243,7 @@ public class BackgroundTabRestorationHelperTest {
     @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
     public void testMaybeRestoreBackgroundTab_success_destroysPlaceholderContentsState() {
         BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
-        when(mBackgroundTabPool.loadTab(TAB_ID, TAB_ID)).thenReturn(mBackgroundPoolTab);
+        when(mBackgroundTabPool.loadTab(TAB_ID)).thenReturn(mBackgroundPoolTab);
         when(mBackgroundPoolTab.attachTab(eq(mNormalTabModel), eq(DESTINATION_INDEX)))
                 .thenReturn(mTab);
 
@@ -259,7 +259,7 @@ public class BackgroundTabRestorationHelperTest {
                         tabState);
 
         assertEquals(mTab, restoredTab);
-        verify(mBackgroundTabPool).loadTab(TAB_ID, TAB_ID);
+        verify(mBackgroundTabPool).loadTab(TAB_ID);
         verify(mBackgroundPoolTab).attachTab(eq(mNormalTabModel), eq(DESTINATION_INDEX));
         verify(mWebContentsState).destroy();
     }
@@ -280,7 +280,7 @@ public class BackgroundTabRestorationHelperTest {
                         tabState);
 
         assertNull(restoredTab);
-        verify(mBackgroundTabPool, never()).loadTab(anyInt(), anyInt());
+        verify(mBackgroundTabPool, never()).loadTab(anyInt());
         verify(mWebContentsState, never()).destroy();
     }
 
@@ -300,7 +300,7 @@ public class BackgroundTabRestorationHelperTest {
                         tabState);
 
         assertNull(restoredTab);
-        verify(mBackgroundTabPool, never()).loadTab(anyInt(), anyInt());
+        verify(mBackgroundTabPool, never()).loadTab(anyInt());
         verify(mWebContentsState, never()).destroy();
     }
 
@@ -321,7 +321,7 @@ public class BackgroundTabRestorationHelperTest {
                         tabState);
 
         assertNull(restoredTab);
-        verify(mBackgroundTabPool, never()).loadTab(anyInt(), anyInt());
+        verify(mBackgroundTabPool, never()).loadTab(anyInt());
         verify(mWebContentsState, never()).destroy();
     }
 
@@ -329,7 +329,7 @@ public class BackgroundTabRestorationHelperTest {
     @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
     public void testMaybeRestoreBackgroundTab_tabNotFoundInPool() {
         BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
-        when(mBackgroundTabPool.loadTab(TAB_ID, TAB_ID)).thenReturn(null);
+        when(mBackgroundTabPool.loadTab(TAB_ID)).thenReturn(null);
 
         TabState tabState = new TabState();
         tabState.contentsState = mWebContentsState;
@@ -343,7 +343,7 @@ public class BackgroundTabRestorationHelperTest {
                         tabState);
 
         assertNull(restoredTab);
-        verify(mBackgroundTabPool).loadTab(TAB_ID, TAB_ID);
+        verify(mBackgroundTabPool).loadTab(TAB_ID);
         verify(mWebContentsState, never()).destroy();
     }
 

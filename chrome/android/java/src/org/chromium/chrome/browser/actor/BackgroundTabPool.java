@@ -48,6 +48,7 @@ public class BackgroundTabPool
     private final TabCache mTabCache;
     private final Runnable mOnEmptyCallback;
     private final ArrayMap<Integer, LiveBackgroundTab> mLiveEntries = new ArrayMap<>();
+    private final ArrayMap<@TabId Integer, @TabId Integer> mPlaceholderToTabId = new ArrayMap<>();
     private boolean mIsDestroyed;
 
     /**
@@ -63,6 +64,16 @@ public class BackgroundTabPool
                 TabCacheManager.create(
                         ACTOR_DIR_TAG_PREFIX + profileToken, /* cipherFactory= */ null);
         mOnEmptyCallback = onEmptyCallback;
+        populatePlaceholderAssociations();
+    }
+
+    private void populatePlaceholderAssociations() {
+        for (int cachedTabId : mTabCache.getAllTabIds()) {
+            int placeholderTabId = BackgroundTabDataStore.getPlaceholderTabId(cachedTabId);
+            if (placeholderTabId != Tab.INVALID_TAB_ID) {
+                mPlaceholderToTabId.put(placeholderTabId, cachedTabId);
+            }
+        }
     }
 
     /** Returns the profile token associated with this pool. */
@@ -71,14 +82,10 @@ public class BackgroundTabPool
         return mProfileToken;
     }
 
-    /**
-     * Checks if the pool has any tabs (either live in-memory or persisted in TabCache).
-     *
-     * @return True if the pool has no live tabs and no cached tabs, false otherwise.
-     */
+    /** Returns whether the pool has zero live in-memory tabs and zero placeholder associations. */
     public boolean isEmpty() {
         checkNotDestroyed();
-        return mLiveEntries.isEmpty() && mTabCache.getAllTabIds().isEmpty();
+        return mLiveEntries.isEmpty() && mPlaceholderToTabId.isEmpty();
     }
 
     /** Returns the number of active live in-memory tabs in the pool. */
@@ -95,12 +102,16 @@ public class BackgroundTabPool
      */
     public void addLiveTab(LiveBackgroundTab liveTab) {
         checkNotDestroyed();
+        assert !mPlaceholderToTabId.containsKey(liveTab.getPlaceholderTabId())
+                : "Placeholder already associated: " + liveTab.getPlaceholderTabId();
         Tab tab = liveTab.getTab();
         @TabId int tabId = tab.getId();
+        @TabId int placeholderTabId = liveTab.getPlaceholderTabId();
 
         // Clean up any existing observer and entry before inserting.
         removeTabObserver(tab);
         mLiveEntries.put(tabId, liveTab);
+        mPlaceholderToTabId.put(placeholderTabId, tabId);
 
         TabStateAttributes attributes = getTabStateAttributes(tab);
         if (attributes != null) {
@@ -138,17 +149,44 @@ public class BackgroundTabPool
     }
 
     /**
-     * Loads a tab from the pool, returning either a {@link LiveBackgroundTab} or a deserialized
-     * {@link ColdBackgroundTab}.
+     * Returns whether the pool has a background tab associated with the given placeholder tab ID.
      *
-     * @param tabId The ID of the tab to load.
-     * @param placeholderTabId The placeholder tab ID associated with this background tab.
+     * @param placeholderTabId The placeholder tab ID.
+     * @return True if the placeholder tab ID exists in the pool.
+     */
+    public boolean hasPlaceholder(@TabId int placeholderTabId) {
+        checkNotDestroyed();
+        return mPlaceholderToTabId.containsKey(placeholderTabId);
+    }
+
+    /**
+     * Returns an unmodifiable set of all placeholder tab IDs managed by this pool.
+     *
+     * @return A {@link Set} of all placeholder {@link TabId} integers.
+     */
+    public Set<@TabId Integer> getAllPlaceholderTabIds() {
+        checkNotDestroyed();
+        return Collections.unmodifiableSet(mPlaceholderToTabId.keySet());
+    }
+
+    /**
+     * Loads a tab from the pool by its placeholder tab ID, returning either a {@link
+     * LiveBackgroundTab} or a deserialized {@link ColdBackgroundTab}.
+     *
+     * @param placeholderTabId The placeholder tab ID of the tab to load.
      * @return The {@link BackgroundPoolTab}, or null if loading failed.
      */
-    public @Nullable BackgroundPoolTab loadTab(@TabId int tabId, @TabId int placeholderTabId) {
+    public @Nullable BackgroundPoolTab loadTab(@TabId int placeholderTabId) {
         checkNotDestroyed();
-        LiveBackgroundTab liveTab = mLiveEntries.get(tabId);
+        Integer tabId = mPlaceholderToTabId.get(placeholderTabId);
+        if (tabId == null) {
+            return null;
+        }
+
+        LiveBackgroundTab liveTab = mLiveEntries.remove(tabId);
         if (liveTab != null) {
+            removeTabObserver(liveTab.getTab());
+            notifyIfEmptied();
             return liveTab;
         }
 
@@ -162,17 +200,21 @@ public class BackgroundTabPool
     }
 
     /**
-     * Removes a tab from live in-memory entries, unregisters observers, and clears cached state.
+     * Removes a tab from live in-memory entries, placeholder mappings, and clears cached state.
      *
-     * @param tabId The ID of the tab to remove.
+     * @param placeholderTabId The placeholder ID of the tab to remove.
      */
-    public void removeTab(@TabId int tabId) {
+    public void removeTab(@TabId int placeholderTabId) {
         checkNotDestroyed();
-        LiveBackgroundTab liveTab = mLiveEntries.remove(tabId);
-        if (liveTab != null) {
-            removeTabObserver(liveTab.getTab());
+        Integer tabId = mPlaceholderToTabId.remove(placeholderTabId);
+        if (tabId != null) {
+            LiveBackgroundTab tab = mLiveEntries.remove(tabId);
+            if (tab != null) {
+                removeTabObserver(tab.getTab());
+            }
+            mTabCache.clear(getCacheKey(tabId));
+            BackgroundTabDataStore.deletePlaceholderTabId(tabId);
         }
-        mTabCache.clear(getCacheKey(tabId));
         notifyIfEmptied();
     }
 
@@ -199,6 +241,7 @@ public class BackgroundTabPool
             removeTabObserver(liveTab.getTab());
         }
         mLiveEntries.clear();
+        mPlaceholderToTabId.clear();
         mTabCache.clearAll();
         notifyIfEmptied();
     }
@@ -226,6 +269,7 @@ public class BackgroundTabPool
             removeTabObserver(liveTab.getTab());
         }
         mLiveEntries.clear();
+        mPlaceholderToTabId.clear();
     }
 
     /** Returns whether this pool has been destroyed. */
@@ -234,7 +278,7 @@ public class BackgroundTabPool
     }
 
     private void notifyIfEmptied() {
-        if (mLiveEntries.isEmpty() && !mIsDestroyed) {
+        if (isEmpty() && !mIsDestroyed) {
             PostTask.postTask(TaskTraits.UI_DEFAULT, mOnEmptyCallback);
         }
     }

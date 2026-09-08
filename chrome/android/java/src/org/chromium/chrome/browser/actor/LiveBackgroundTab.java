@@ -56,7 +56,7 @@ public class LiveBackgroundTab implements BackgroundPoolTab {
     public Tab attachTabImpl(TabModel tabModel, int index) {
         assert !mAttached : "LiveBackgroundTab has already been attached or destroyed.";
         mAttached = true;
-        mPool.removeTab(mTab.getId());
+        mPool.removeTab(mPlaceholderTabId);
         tabModel.addTab(
                 mTab, index, TabLaunchType.FROM_RESTORE, TabCreationState.LIVE_IN_BACKGROUND);
         return mTab;

@@ -9,6 +9,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -23,6 +24,7 @@ import org.chromium.chrome.browser.tab.StorageLoadedData;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabOrchestratorType;
+import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 
 /** Unit tests for {@link CombinedTabRestorer}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -38,8 +40,14 @@ public class CombinedTabRestorerUnitTest {
 
     @Before
     public void setUp() {
+        NotificationProxyUtils.setNotificationEnabledForTest(false);
         when(mStorageLoadedData.getLoadedTabStates())
                 .thenReturn(new StorageLoadedData.LoadedTabState[0]);
+    }
+
+    @After
+    public void tearDown() {
+        NotificationProxyUtils.setNotificationEnabledForTest(null);
     }
 
     private CombinedTabRestorer createRestorer(

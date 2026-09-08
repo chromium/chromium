@@ -16,8 +16,8 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 
 /**
- * Cold tab representation instantiated on demand by {@link BackgroundTabPool#loadTab(int, int)}
- * when restoring persisted Actor tab state from TabCache.
+ * Cold tab representation instantiated on demand by {@link BackgroundTabPool#loadTab(int)} when
+ * restoring persisted Actor tab state from TabCache.
  */
 @NullMarked
 public class ColdBackgroundTab implements BackgroundPoolTab {
@@ -53,7 +53,7 @@ public class ColdBackgroundTab implements BackgroundPoolTab {
     @Override
     public Tab attachTabImpl(TabModel tabModel, int index) {
         assert mTabState != null : "ColdBackgroundTab has already been attached or destroyed.";
-        mPool.removeTab(mTabId);
+        mPool.removeTab(mPlaceholderTabId);
         TabState state = mTabState;
         mTabState = null;
         TabCreator tabCreator = tabModel.getTabCreator();
