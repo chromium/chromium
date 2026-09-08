@@ -1338,9 +1338,21 @@ int HttpNetworkTransaction::DoGenerateProxyAuthToken() {
   if (!ShouldApplyProxyAuth())
     return OK;
   HttpAuth::Target target = HttpAuth::AUTH_PROXY;
+  GURL auth_url = AuthURL(target);
+  // The proxy may have changed (for example due to fallback to another proxy
+  // in the list) since the controller was created for a previous attempt on
+  // this transaction. In that case, drop it and create a new one bound to the
+  // current proxy.
+  // TODO(crbug.com/40704785): Make sure to update the matching logic here when
+  // fixing this bug.
+  if (auth_controllers_[target].get() &&
+      !auth_controllers_[target]->MatchesSchemeHostPort(
+          url::SchemeHostPort(auth_url))) {
+    auth_controllers_[target] = nullptr;
+  }
   if (!auth_controllers_[target].get())
     auth_controllers_[target] = base::MakeRefCounted<HttpAuthController>(
-        target, AuthURL(target), request_->network_anonymization_key,
+        target, auth_url, request_->network_anonymization_key,
         session_->http_auth_cache(), session_->http_auth_handler_factory(),
         session_->host_resolver());
   return auth_controllers_[target]->MaybeGenerateAuthToken(

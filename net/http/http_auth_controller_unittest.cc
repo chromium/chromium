@@ -26,6 +26,8 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
@@ -440,6 +442,29 @@ TEST(HttpAuthControllerTest, ConnectionBasedHandlerDroppedOnCertificateChange) {
   EXPECT_TRUE(controller->HaveAuthHandler());
   EXPECT_NE(HttpAuthHandlerMock::State::WAIT_FOR_INIT,
             second_handler_ptr->state());
+}
+
+TEST(HttpAuthControllerTest, MatchesSchemeHostPort) {
+  scoped_refptr<HttpAuthController> controller =
+      base::MakeRefCounted<HttpAuthController>(
+          HttpAuth::AUTH_PROXY, GURL("http://proxy.example.com:8080/"),
+          NetworkAnonymizationKey(), nullptr, nullptr, nullptr);
+
+  // Exact match.
+  EXPECT_TRUE(controller->MatchesSchemeHostPort(
+      url::SchemeHostPort(GURL("http://proxy.example.com:8080"))));
+
+  // Different port.
+  EXPECT_FALSE(controller->MatchesSchemeHostPort(
+      url::SchemeHostPort(GURL("http://proxy.example.com:80"))));
+
+  // Different host.
+  EXPECT_FALSE(controller->MatchesSchemeHostPort(
+      url::SchemeHostPort(GURL("http://other.example.com:8080"))));
+
+  // Different scheme.
+  EXPECT_FALSE(controller->MatchesSchemeHostPort(
+      url::SchemeHostPort(GURL("https://proxy.example.com:8080"))));
 }
 
 }  // namespace net

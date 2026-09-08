@@ -11264,11 +11264,11 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxyAuthRetryNoKeepAliveChangeProxy) {
 
   MockWrite data_writes2[] = {
       // After calling trans.RestartWithAuth(), this is the request we should
-      // be issuing -- the final header line contains the credentials.
+      // be issuing. The credentials entered for the first proxy must not be
+      // sent to a different proxy.
       MockWrite("GET http://www.example.org/ HTTP/1.1\r\n"
                 "Host: www.example.org\r\n"
-                "Proxy-Connection: keep-alive\r\n"
-                "Proxy-Authorization: Basic Zm9vOmJhcg==\r\n\r\n"),
+                "Proxy-Connection: keep-alive\r\n\r\n"),
   };
 
   MockRead data_reads2[] = {
@@ -11465,6 +11465,288 @@ TEST_P(HttpNetworkTransactionTest,
 
   // The password prompt info should not be set.
   EXPECT_FALSE(response->auth_challenge.has_value());
+}
+
+// Test that cached credentials for an HTTP proxy are sent preemptively.
+TEST_P(HttpNetworkTransactionTest, HttpProxyPreemptiveAuth) {
+  const auto proxy_chain = PacResultElementToProxyChain("PROXY myproxy:70");
+
+  session_deps_.proxy_resolution_service =
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
+          "PROXY myproxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+
+  session->http_auth_cache()->Add(
+      url::SchemeHostPort(GURL("http://myproxy:70/")), HttpAuth::AUTH_PROXY,
+      "MyRealm1", HttpAuth::AUTH_SCHEME_BASIC, NetworkAnonymizationKey(),
+      "Basic realm=MyRealm1", AuthCredentials(kFoo, kBar), "/");
+
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("http://www.example.org/");
+  request.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  MockWrite data_writes[] = {
+      MockWrite("GET http://www.example.org/ HTTP/1.1\r\n"
+                "Host: www.example.org\r\n"
+                "Proxy-Connection: keep-alive\r\n"
+                "Proxy-Authorization: Basic Zm9vOmJhcg==\r\n\r\n"),
+  };
+  MockRead data_reads[] = {
+      MockRead("HTTP/1.1 200 OK\r\nContent-Length: 5\r\n\r\n"),
+      MockRead("hello"),
+      MockRead(SYNCHRONOUS, OK),
+  };
+  StaticSocketDataProvider data(data_reads, data_writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+
+  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+  TestCompletionCallback callback;
+  int rv = trans.Start(&request, callback.callback(), NetLogWithSource());
+  EXPECT_THAT(callback.GetResult(rv), IsOk());
+  const HttpResponseInfo* response = trans.GetResponseInfo();
+  ASSERT_TRUE(response);
+  ASSERT_TRUE(response->headers);
+  EXPECT_EQ(200, response->headers->response_code());
+  EXPECT_EQ(proxy_chain, response->proxy_chain);
+  std::string response_data;
+  EXPECT_THAT(ReadTransaction(&trans, &response_data), IsOk());
+  EXPECT_EQ("hello", response_data);
+}
+
+// Test that cached credentials for one HTTP proxy are not sent preemptively to
+// a different fallback proxy after a keep-alive connection to the first proxy
+// resets and the retry falls back to a second proxy.
+TEST_P(HttpNetworkTransactionTest,
+       HttpProxyPreemptiveAuthKeepAliveResetFallback) {
+  const auto proxy_chain1 = PacResultElementToProxyChain("PROXY myproxy:70");
+  const auto proxy_chain2 = PacResultElementToProxyChain("PROXY myproxy2:70");
+
+  const IPAddress kProxy1IP(1, 2, 3, 4);
+  const IPAddress kProxy2IP(5, 6, 7, 8);
+  auto host_resolver = std::make_unique<MockHostResolver>();
+  host_resolver->rules()->AddRule("myproxy", "1.2.3.4");
+  host_resolver->rules()->AddRule("myproxy2", "5.6.7.8");
+  session_deps_.host_resolver = std::move(host_resolver);
+
+  session_deps_.proxy_resolution_service =
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
+          "PROXY myproxy:70; PROXY myproxy2:70", TRAFFIC_ANNOTATION_FOR_TESTS);
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+
+  session->http_auth_cache()->Add(
+      url::SchemeHostPort(GURL("http://myproxy:70/")), HttpAuth::AUTH_PROXY,
+      "MyRealm1", HttpAuth::AUTH_SCHEME_BASIC, NetworkAnonymizationKey(),
+      "Basic realm=MyRealm1", AuthCredentials(kFoo, kBar), "/");
+
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("http://www.example.org/");
+  request.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  // First socket to myproxy:70. The first request succeeds and stays alive in
+  // the pool. The second request over the reused keep-alive connection is
+  // reset before headers are received, triggering a retry.
+  MockWrite data_writes1[] = {
+      MockWrite(ASYNC, 0,
+                "GET http://www.example.org/ HTTP/1.1\r\n"
+                "Host: www.example.org\r\n"
+                "Proxy-Connection: keep-alive\r\n"
+                "Proxy-Authorization: Basic Zm9vOmJhcg==\r\n\r\n"),
+      MockWrite(ASYNC, 3,
+                "GET http://www.example.org/ HTTP/1.1\r\n"
+                "Host: www.example.org\r\n"
+                "Proxy-Connection: keep-alive\r\n"
+                "Proxy-Authorization: Basic Zm9vOmJhcg==\r\n\r\n"),
+  };
+  MockRead data_reads1[] = {
+      MockRead(ASYNC, 1, "HTTP/1.1 200 OK\r\nContent-Length: 5\r\n\r\n"),
+      MockRead(ASYNC, 2, "hello"),
+      MockRead(ASYNC, ERR_CONNECTION_RESET, 4),
+  };
+  SequencedSocketData data1(data_reads1, data_writes1);
+  data1.set_expected_addresses(AddressList(IPEndPoint(kProxy1IP, 70)));
+  session_deps_.socket_factory->AddSocketDataProvider(&data1);
+
+  // Second socket: retry to myproxy:70 fails, triggering fallback.
+  SequencedSocketData fail_data;
+  fail_data.set_connect_data(MockConnect(ASYNC, ERR_CONNECTION_REFUSED));
+  fail_data.set_expected_addresses(AddressList(IPEndPoint(kProxy1IP, 70)));
+  session_deps_.socket_factory->AddSocketDataProvider(&fail_data);
+
+  // Third socket: fallback to myproxy2:70. There are no cached credentials
+  // for this proxy, so the request must not carry a Proxy-Authorization
+  // header.
+  MockWrite data_writes2[] = {
+      MockWrite(ASYNC, 0,
+                "GET http://www.example.org/ HTTP/1.1\r\n"
+                "Host: www.example.org\r\n"
+                "Proxy-Connection: keep-alive\r\n\r\n"),
+  };
+  MockRead data_reads2[] = {
+      MockRead(ASYNC, 1, "HTTP/1.1 200 OK\r\nContent-Length: 5\r\n\r\n"),
+      MockRead(ASYNC, 2, "world"),
+  };
+  SequencedSocketData data2(data_reads2, data_writes2);
+  data2.set_expected_addresses(AddressList(IPEndPoint(kProxy2IP, 70)));
+  session_deps_.socket_factory->AddSocketDataProvider(&data2);
+
+  // Setup: warm up a persistent connection to myproxy:70 in the socket pool.
+  {
+    HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+    TestCompletionCallback callback;
+    int rv = trans.Start(&request, callback.callback(), NetLogWithSource());
+    EXPECT_THAT(callback.GetResult(rv), IsOk());
+    std::string response_data;
+    EXPECT_THAT(ReadTransaction(&trans, &response_data), IsOk());
+    EXPECT_EQ("hello", response_data);
+  }
+
+  // Second transaction: reuses the myproxy:70 socket which resets, then falls
+  // back to myproxy2:70 without preemptive auth.
+  {
+    HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+    TestCompletionCallback callback;
+    int rv = trans.Start(&request, callback.callback(), NetLogWithSource());
+    EXPECT_THAT(callback.GetResult(rv), IsOk());
+    const HttpResponseInfo* response = trans.GetResponseInfo();
+    ASSERT_TRUE(response);
+    ASSERT_TRUE(response->headers);
+    EXPECT_EQ(200, response->headers->response_code());
+    EXPECT_EQ(proxy_chain2, response->proxy_chain);
+    std::string response_data;
+    EXPECT_THAT(ReadTransaction(&trans, &response_data), IsOk());
+    EXPECT_EQ("world", response_data);
+  }
+
+  EXPECT_TRUE(data1.AllReadDataConsumed());
+  EXPECT_TRUE(data1.AllWriteDataConsumed());
+  EXPECT_TRUE(fail_data.AllReadDataConsumed());
+  EXPECT_TRUE(fail_data.AllWriteDataConsumed());
+  EXPECT_TRUE(data2.AllReadDataConsumed());
+  EXPECT_TRUE(data2.AllWriteDataConsumed());
+}
+
+// Test that when a keep-alive connection to one HTTP proxy resets and retrying
+// falls back to a second proxy that has its own cached credentials, the
+// fallback proxy's credentials are sent preemptively rather than the first
+// proxy's.
+TEST_P(HttpNetworkTransactionTest,
+       HttpProxyPreemptiveAuthKeepAliveResetFallbackUsesOwnCredentials) {
+  const auto proxy_chain1 = PacResultElementToProxyChain("PROXY myproxy:70");
+  const auto proxy_chain2 = PacResultElementToProxyChain("PROXY myproxy2:70");
+
+  const IPAddress kProxy1IP(1, 2, 3, 4);
+  const IPAddress kProxy2IP(5, 6, 7, 8);
+  auto host_resolver = std::make_unique<MockHostResolver>();
+  host_resolver->rules()->AddRule("myproxy", "1.2.3.4");
+  host_resolver->rules()->AddRule("myproxy2", "5.6.7.8");
+  session_deps_.host_resolver = std::move(host_resolver);
+
+  session_deps_.proxy_resolution_service =
+      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
+          "PROXY myproxy:70; PROXY myproxy2:70", TRAFFIC_ANNOTATION_FOR_TESTS);
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+
+  // Add credentials for both proxies.
+  session->http_auth_cache()->Add(
+      url::SchemeHostPort(GURL("http://myproxy:70/")), HttpAuth::AUTH_PROXY,
+      "MyRealm1", HttpAuth::AUTH_SCHEME_BASIC, NetworkAnonymizationKey(),
+      "Basic realm=MyRealm1", AuthCredentials(kFoo, kBar), "/");
+  session->http_auth_cache()->Add(
+      url::SchemeHostPort(GURL("http://myproxy2:70/")), HttpAuth::AUTH_PROXY,
+      "MyRealm2", HttpAuth::AUTH_SCHEME_BASIC, NetworkAnonymizationKey(),
+      "Basic realm=MyRealm2", AuthCredentials(kFoo2, kBar2), "/");
+
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("http://www.example.org/");
+  request.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  // First socket to myproxy:70. The first request succeeds and stays alive in
+  // the pool. The second request over the reused keep-alive connection is
+  // reset before headers are received, triggering a retry.
+  MockWrite data_writes1[] = {
+      MockWrite(ASYNC, 0,
+                "GET http://www.example.org/ HTTP/1.1\r\n"
+                "Host: www.example.org\r\n"
+                "Proxy-Connection: keep-alive\r\n"
+                "Proxy-Authorization: Basic Zm9vOmJhcg==\r\n\r\n"),
+      MockWrite(ASYNC, 3,
+                "GET http://www.example.org/ HTTP/1.1\r\n"
+                "Host: www.example.org\r\n"
+                "Proxy-Connection: keep-alive\r\n"
+                "Proxy-Authorization: Basic Zm9vOmJhcg==\r\n\r\n"),
+  };
+  MockRead data_reads1[] = {
+      MockRead(ASYNC, 1, "HTTP/1.1 200 OK\r\nContent-Length: 5\r\n\r\n"),
+      MockRead(ASYNC, 2, "hello"),
+      MockRead(ASYNC, ERR_CONNECTION_RESET, 4),
+  };
+  SequencedSocketData data1(data_reads1, data_writes1);
+  data1.set_expected_addresses(AddressList(IPEndPoint(kProxy1IP, 70)));
+  session_deps_.socket_factory->AddSocketDataProvider(&data1);
+
+  // Second socket: retry to myproxy:70 fails, triggering fallback.
+  SequencedSocketData fail_data;
+  fail_data.set_connect_data(MockConnect(ASYNC, ERR_CONNECTION_REFUSED));
+  fail_data.set_expected_addresses(AddressList(IPEndPoint(kProxy1IP, 70)));
+  session_deps_.socket_factory->AddSocketDataProvider(&fail_data);
+
+  // Third socket: fallback to myproxy2:70. The second proxy's own credentials
+  // (foo2:bar2 -> Zm9vMjpiYXIy) must be sent preemptively.
+  MockWrite data_writes2[] = {
+      MockWrite(ASYNC, 0,
+                "GET http://www.example.org/ HTTP/1.1\r\n"
+                "Host: www.example.org\r\n"
+                "Proxy-Connection: keep-alive\r\n"
+                "Proxy-Authorization: Basic Zm9vMjpiYXIy\r\n\r\n"),
+  };
+  MockRead data_reads2[] = {
+      MockRead(ASYNC, 1, "HTTP/1.1 200 OK\r\nContent-Length: 5\r\n\r\n"),
+      MockRead(ASYNC, 2, "world"),
+  };
+  SequencedSocketData data2(data_reads2, data_writes2);
+  data2.set_expected_addresses(AddressList(IPEndPoint(kProxy2IP, 70)));
+  session_deps_.socket_factory->AddSocketDataProvider(&data2);
+
+  // Setup: warm up a persistent connection to myproxy:70 in the socket pool.
+  {
+    HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+    TestCompletionCallback callback;
+    int rv = trans.Start(&request, callback.callback(), NetLogWithSource());
+    EXPECT_THAT(callback.GetResult(rv), IsOk());
+    std::string response_data;
+    EXPECT_THAT(ReadTransaction(&trans, &response_data), IsOk());
+    EXPECT_EQ("hello", response_data);
+  }
+
+  // Second transaction: reuses the myproxy:70 socket which resets, then falls
+  // back to myproxy2:70 with myproxy2's own preemptive auth.
+  {
+    HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+    TestCompletionCallback callback;
+    int rv = trans.Start(&request, callback.callback(), NetLogWithSource());
+    EXPECT_THAT(callback.GetResult(rv), IsOk());
+    const HttpResponseInfo* response = trans.GetResponseInfo();
+    ASSERT_TRUE(response);
+    ASSERT_TRUE(response->headers);
+    EXPECT_EQ(200, response->headers->response_code());
+    EXPECT_EQ(proxy_chain2, response->proxy_chain);
+    std::string response_data;
+    EXPECT_THAT(ReadTransaction(&trans, &response_data), IsOk());
+    EXPECT_EQ("world", response_data);
+  }
+
+  EXPECT_TRUE(data1.AllReadDataConsumed());
+  EXPECT_TRUE(data1.AllWriteDataConsumed());
+  EXPECT_TRUE(fail_data.AllReadDataConsumed());
+  EXPECT_TRUE(fail_data.AllWriteDataConsumed());
+  EXPECT_TRUE(data2.AllReadDataConsumed());
+  EXPECT_TRUE(data2.AllWriteDataConsumed());
 }
 
 void HttpNetworkTransactionTestBase::ConnectStatusHelperWithExpectedStatus(

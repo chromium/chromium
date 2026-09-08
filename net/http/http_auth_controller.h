@@ -121,6 +121,13 @@ class NET_EXPORT_PRIVATE HttpAuthController
 
   bool HaveAuth() const;
 
+  // Returns true if the target scheme, host, and port that this controller was
+  // constructed to authenticate against matches `scheme_host_port`.
+  bool MatchesSchemeHostPort(
+      const url::SchemeHostPort& scheme_host_port) const {
+    return auth_scheme_host_port_ == scheme_host_port;
+  }
+
   // Return whether the authentication scheme is incompatible with HTTP/2
   // and thus the server would presumably reject a request on HTTP/2 anyway.
   bool NeedsHTTP11() const;
