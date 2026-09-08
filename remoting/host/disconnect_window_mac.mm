@@ -18,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "remoting/base/email_utils.h"
 #include "remoting/base/string_resources.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/host_window.h"
@@ -104,7 +105,7 @@ void DisconnectWindowMac::Start(
       &ClientSessionControl::DisconnectSession, client_session_control,
       ErrorCode::OK, "Disconnect button was clicked.", FROM_HERE);
   std::string client_jid = client_session_control->client_jid();
-  std::string username = client_jid.substr(0, client_jid.find('/'));
+  std::string email = client_jid.substr(0, client_jid.find('/'));
 
   NSRect frame = NSMakeRect(0, 0, 466, 40);
   DisconnectWindow* window =
@@ -115,7 +116,7 @@ void DisconnectWindowMac::Start(
   window.releasedWhenClosed = NO;
   window_controller_ = [[DisconnectWindowController alloc]
       initWithCallback:std::move(disconnect_callback)
-              username:username
+                 email:email
                 window:window];
   [window_controller_ initializeWindow];
   [window_controller_ showWindow:nil];
@@ -130,7 +131,7 @@ std::unique_ptr<HostWindow> HostWindow::CreateDisconnectWindow() {
 
 @implementation DisconnectWindowController {
   base::OnceClosure _disconnect_callback;
-  std::u16string _username;
+  std::u16string _email;
   base::OneShotTimer _cooldown_timer;
 }
 
@@ -139,12 +140,17 @@ std::unique_ptr<HostWindow> HostWindow::CreateDisconnectWindow() {
 @synthesize disconnectButton = _disconnectButton;
 
 - (instancetype)initWithCallback:(base::OnceClosure)disconnect_callback
-                        username:(const std::string&)username
+                           email:(const std::string&)email
                           window:(NSWindow*)window {
   self = [super initWithWindow:window];
   if (self) {
     _disconnect_callback = std::move(disconnect_callback);
-    _username = base::UTF8ToUTF16(username);
+    std::u16string email_u16 = base::UTF8ToUTF16(email);
+    email_u16 = base::CollapseWhitespace(
+        email_u16, /*trim_sequences_with_line_breaks=*/true);
+    email_u16 = remoting::ElideEmail(email_u16);
+    base::i18n::SanitizeUserSuppliedString(&email_u16);
+    _email = std::move(email_u16);
     [NSNotificationCenter.defaultCenter
         addObserver:self
            selector:@selector(onScreenParametersChanged:)
@@ -223,6 +229,8 @@ std::unique_ptr<HostWindow> HostWindow::CreateDisconnectWindow() {
   self.connectedToField.bezeled = NO;
   self.connectedToField.editable = NO;
   self.connectedToField.font = [NSFont systemFontOfSize:11];
+  self.connectedToField.cell.lineBreakMode = NSLineBreakByTruncatingMiddle;
+  self.connectedToField.cell.usesSingleLineMode = YES;
   [self.window.contentView addSubview:self.connectedToField];
 
   self.disconnectButton =
@@ -235,7 +243,7 @@ std::unique_ptr<HostWindow> HostWindow::CreateDisconnectWindow() {
   [self.window.contentView addSubview:self.disconnectButton];
 
   self.connectedToField.stringValue =
-      l10n_util::GetNSStringF(IDS_MESSAGE_SHARED, _username);
+      l10n_util::GetNSStringF(IDS_MESSAGE_SHARED, _email);
   self.disconnectButton.title = l10n_util::GetNSString(IDS_STOP_SHARING_BUTTON);
 
   // Resize the window dynamically based on the content.

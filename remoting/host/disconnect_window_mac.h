@@ -16,7 +16,7 @@
 @interface DisconnectWindowController : NSWindowController
 
 - (instancetype)initWithCallback:(base::OnceClosure)disconnect_callback
-                        username:(const std::string&)username
+                           email:(const std::string&)email
                           window:(NSWindow*)window;
 - (void)initializeWindow;
 - (void)stopSharing:(id)sender;
