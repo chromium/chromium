@@ -364,6 +364,9 @@ void PipeToEngine::HandleNextEvent() {
 void PipeToEngine::ReadRequestChunkStepsBody(v8::Global<v8::Value> chunk,
                                              ScriptState* script_state) {
   is_reading_ = false;
+  if (is_shutting_down_) {
+    return;
+  }
   const auto write = WritableStreamDefaultWriter::Write(
       script_state, writer_, chunk.Get(script_state->GetIsolate()),
       PassThroughException(script_state_->GetIsolate()));
