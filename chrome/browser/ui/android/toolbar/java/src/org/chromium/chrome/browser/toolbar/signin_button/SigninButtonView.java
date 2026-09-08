@@ -12,15 +12,15 @@ import android.widget.FrameLayout;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.widget.ButtonCompat;
-import org.chromium.ui.widget.ChromeImageButton;
 
 /**
  * A View which has displays for various situations (user sign-in state, whether NTP is shown, etc.)
  */
 @NullMarked
 final class SigninButtonView extends FrameLayout {
-    private ChromeImageButton mAvatarButton;
+    private ListMenuButton mAvatarButton;
     private ButtonCompat mSigninTextButton;
 
     public SigninButtonView(Context context, @Nullable AttributeSet attrs) {
@@ -54,7 +54,7 @@ final class SigninButtonView extends FrameLayout {
         }
     }
 
-    ChromeImageButton getAvatarButton() {
+    ListMenuButton getAvatarButton() {
         return mAvatarButton;
     }
 

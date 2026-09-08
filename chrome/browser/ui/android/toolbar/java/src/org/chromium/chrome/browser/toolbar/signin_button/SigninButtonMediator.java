@@ -66,6 +66,7 @@ import org.chromium.components.sync.UserActionableError;
 import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -405,7 +406,7 @@ final class SigninButtonMediator
                                 () -> mSigninCoordinator,
                                 mSigninAndHistorySyncActivityLauncher);
             }
-            mAccountMenuCoordinator.show(view);
+            mAccountMenuCoordinator.show((ListMenuButton) view);
             return;
         }
 

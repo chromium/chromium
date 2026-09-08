@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoor
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
@@ -87,7 +88,7 @@ public class AccountMenuCoordinator {
     }
 
     /** Shows the account menu popup anchored to the provided signin button view. */
-    public void show(View anchorView) {
+    public void show(ListMenuButton anchorView) {
         if (mPopupWindow != null && mPopupWindow.isShowing()) {
             dismiss();
             return;
@@ -103,7 +104,7 @@ public class AccountMenuCoordinator {
         mPopupWindow = createPopupWindow(anchorView);
         mPopupWindow.show();
 
-        anchorView.setSelected(true);
+        anchorView.setIsPressed(true);
     }
 
     /** Dismisses the popup window if it is currently showing. */
@@ -119,7 +120,7 @@ public class AccountMenuCoordinator {
         mAdapter.destroy();
     }
 
-    private AnchoredPopupWindow createPopupWindow(View anchorView) {
+    private AnchoredPopupWindow createPopupWindow(ListMenuButton anchorView) {
         // Ensure mContentView is detached from any previous popup window parent.
         UiUtils.removeViewFromParent(mContentView);
 
@@ -141,8 +142,8 @@ public class AccountMenuCoordinator {
                 .build();
     }
 
-    private void onPopupDismissed(View anchorView) {
-        anchorView.setSelected(false);
+    private void onPopupDismissed(ListMenuButton anchorView) {
+        anchorView.setIsPressed(false);
         mLastDismissTimeMs = TimeUtils.elapsedRealtimeMillis();
         mPopupWindow = null;
     }

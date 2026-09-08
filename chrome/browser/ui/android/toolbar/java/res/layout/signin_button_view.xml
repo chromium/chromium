@@ -12,7 +12,9 @@ found in the LICENSE file.
     android:layout_height="match_parent"
     android:id="@+id/signin_button">
 
-    <org.chromium.ui.widget.ChromeImageButton
+    <!-- ListMenuButton is used to support pressed state styling as well as to
+         maintain consistency with other toolbar buttons. -->
+    <org.chromium.ui.listmenu.ListMenuButton
         android:id="@+id/avatar_button"
         style="@style/ToolbarHoverableButton"
         app:tint="@color/default_icon_color_tint_list"
