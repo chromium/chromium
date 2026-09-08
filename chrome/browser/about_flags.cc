@@ -13235,11 +13235,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kApb144Patch8Description, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kApb144Patch8)},
 #endif
-#if BUILDFLAG(IS_ANDROID)
-    {"apb144-patch9", flag_descriptions::kApb144Patch9Name,
-     flag_descriptions::kApb144Patch9Description, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kApb144Patch9)},
-#endif
+
 #if BUILDFLAG(IS_ANDROID)
     {"enable-gesture-user-education-back-swipe",
      flag_descriptions::kGestureUserEducationBackSwipeName,
