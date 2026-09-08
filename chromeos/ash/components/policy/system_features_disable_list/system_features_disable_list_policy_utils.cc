@@ -5,7 +5,6 @@
 #include "chromeos/ash/components/policy/system_features_disable_list/system_features_disable_list_policy_utils.h"
 
 #include "base/check.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/system_features_disable_list_constants.h"
 #include "components/prefs/pref_service.h"
@@ -32,12 +31,6 @@ bool IsDisabledAppsModeHidden(const PrefService& local_state) {
     return is_disabled_apps_mode_hidden_pref;
   }
 
-  // Legacy behavior (flag is off): Use the raw SystemFeaturesDisableMode pref's
-  // value for all session types. Typically this should default to "blocked" for
-  // regular user sessions.
-  if (!chromeos::features::IsSystemFeaturesDisableListHiddenEnabled()) {
-    return is_disabled_apps_mode_hidden_pref;
-  }
 
   CHECK(user_manager::UserManager::IsInitialized())
       << "IsDisabledAppsModeHidden() requires UserManager initialization.";

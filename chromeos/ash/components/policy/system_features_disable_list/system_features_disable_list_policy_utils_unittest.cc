@@ -7,11 +7,9 @@
 #include <optional>
 
 #include "base/functional/callback_helpers.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/fake_cros_settings_provider.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/system_features_disable_list_constants.h"
@@ -34,12 +32,7 @@ constexpr char kMGSAccountId[] = "mgs123";
 class SystemFeaturesDisableListPolicyUtilsTest : public testing::Test {
  public:
   SystemFeaturesDisableListPolicyUtilsTest()
-      : cros_settings_(std::make_unique<ash::CrosSettings>()) {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {chromeos::features::kSystemFeaturesDisableListHidden},
-        /*disabled_features=*/{});
-  }
+      : cros_settings_(std::make_unique<ash::CrosSettings>()) {}
   ~SystemFeaturesDisableListPolicyUtilsTest() override = default;
 
  protected:
@@ -88,7 +81,6 @@ class SystemFeaturesDisableListPolicyUtilsTest : public testing::Test {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   TestingPrefServiceSimple local_state_;
   std::unique_ptr<ash::CrosSettings> cros_settings_;
   std::unique_ptr<user_manager::UserManager> user_manager_;

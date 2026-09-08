@@ -27,7 +27,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/system_features_disable_list_constants.h"
@@ -65,9 +64,7 @@ class SystemFeaturesPolicyTestBase : public MixinBasedInProcessBrowserTest {
  public:
   SystemFeaturesPolicyTestBase() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ash::features::kEcheSWA, ash::features::kConch,
-                              chromeos::features::
-                                  kSystemFeaturesDisableListHidden},
+        /*enabled_features=*/{ash::features::kEcheSWA, ash::features::kConch},
         /*disabled_features=*/{});
 
     fake_crostini_features_.set_is_allowed_now(true);

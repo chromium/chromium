@@ -244,10 +244,6 @@ BASE_FEATURE(kFileSystemProviderCloudFileSystem,
 BASE_FEATURE(kFileSystemProviderContentCache,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables hiding apps disabled by SystemFeaturesDisableList policy by default
-// in user sessions.
-BASE_FEATURE(kSystemFeaturesDisableListHidden,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether Vids is preinstalled.
 BASE_FEATURE(kVidsAppPreinstall, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -308,9 +304,6 @@ bool IsFileSystemProviderContentCacheEnabled() {
   return base::FeatureList::IsEnabled(kFileSystemProviderContentCache);
 }
 
-bool IsSystemFeaturesDisableListHiddenEnabled() {
-  return base::FeatureList::IsEnabled(kSystemFeaturesDisableListHidden);
-}
 
 bool IsGeminiAppPreinstallFeatureManagementEnabled() {
   return base::FeatureList::IsEnabled(kFeatureManagementGeminiAppPreinstall);
