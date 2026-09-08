@@ -303,7 +303,7 @@ class AutocompleteController : public AutocompleteProviderListener,
   // Returns whether the given provider should be ran based on whether we're in
   // keyword mode and which keyword we're searching. Currently runs all enabled
   // providers unless in a Starter Pack scope, except for the @tabs scope.
-  bool ShouldRunProvider(AutocompleteProvider* provider) const;
+  bool ShouldRunProvider(const AutocompleteProvider* provider) const;
 
   const base::TimeTicks& last_time_default_match_changed() const {
     return last_time_default_match_changed_;

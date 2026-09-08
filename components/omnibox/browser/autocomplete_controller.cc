@@ -693,6 +693,7 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
     // Starter Pack engines in keyword mode only run a subset of the providers,
     // so call `ShouldRunProvider()` to determine which ones should run.
     if (!ShouldRunProvider(provider.get())) {
+      provider->Stop(AutocompleteStopReason::kClobbered);
       continue;
     }
 
@@ -799,9 +800,6 @@ void AutocompleteController::Stop(AutocompleteStopReason stop_reason) {
   metrics_.OnStop();
 
   for (const auto& provider : providers_) {
-    if (!ShouldRunProvider(provider.get())) {
-      continue;
-    }
     provider->Stop(stop_reason);
   }
 
@@ -869,6 +867,13 @@ void AutocompleteController::OnProviderUpdate(
   // the provider took.
   if (provider) {
     metrics_.OnProviderUpdate(*provider);
+  }
+
+  // Ignore updates from providers that shouldn't run for the current input.
+  // This can happen if a provider was started for a previous input and an async
+  // update arrived after a new input began (e.g. entering keyword mode).
+  if (provider && !ShouldRunProvider(provider)) {
+    return;
   }
 
   // Providers should only call this method during the asynchronous pass.
@@ -1117,7 +1122,7 @@ std::u16string AutocompleteController::GetSuggestionGroupHeaderText(
 }
 
 bool AutocompleteController::ShouldRunProvider(
-    AutocompleteProvider* provider) const {
+    const AutocompleteProvider* provider) const {
   if (!provider) {
     return false;
   }
