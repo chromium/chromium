@@ -1461,52 +1461,7 @@ if (is_android) {
     }
 
     if (enable_openxr) {
-      # Infrastructure.
-      sources += [
-        "../browser/vr/test/mock_xr_device_hook_base.cc",
-        "../browser/vr/test/mock_xr_device_hook_base.h",
-        "../browser/vr/test/mock_xr_input_source.cc",
-        "../browser/vr/test/mock_xr_input_source.h",
-        "../browser/vr/test/ui_utils.cc",
-        "../browser/vr/test/ui_utils.h",
-      ]
-
-      # Tests.
-      sources += [
-        "../browser/vr/webxr_vr_frame_loop_browser_test.cc",
-        "../browser/vr/webxr_vr_frame_pose_browser_test.cc",
-        "../browser/vr/webxr_vr_indicators_browser_test.cc",
-        "../browser/vr/webxr_vr_input_browser_test.cc",
-        "../browser/vr/webxr_vr_layers_browser_test.cc",
-        "../browser/vr/webxr_vr_lifecycle_browser_test.cc",
-        "../browser/vr/webxr_vr_permission_browser_test.cc",
-        "../browser/vr/webxr_vr_permission_request_browser_test.cc",
-        "../browser/vr/webxr_vr_pixel_browser_test.cc",
-        "../browser/vr/webxr_vr_secondary_views_browser_test.cc",
-        "../browser/vr/webxr_vr_tab_browser_test.cc",
-        "../browser/vr/webxr_vr_transition_browser_test.cc",
-      ]
-
-      deps += [
-        ":xr_android_emulator_tests_runner",
-        ":xr_browser_tests_common",
-        "//chrome/browser/vr:vr_common",
-        "//chrome/common:constants",
-        "//components/content_settings/core/browser",
-        "//components/webxr",
-        "//components/webxr/android",
-        "//components/webxr/android:features_java",
-        "//components/webxr/android:xr_java",
-        "//device/vr",
-        "//device/vr:openxr_data",
-        "//device/vr:openxr_test_helper",
-        "//device/vr:vr_test_utils",
-        "//device/vr/buildflags",
-        "//device/vr/orientation",
-        "//device/vr/public/mojom:isolated_xr_service",
-        "//device/vr/public/mojom/test:test_mojom",
-        "//third_party/openxr",
-      ]
+      deps += [ "//chrome/browser/vr:android_browsertests" ]
 
       extra_args += [ "--deploy-mock-openxr-runtime" ]
 

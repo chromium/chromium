@@ -509,5 +509,59 @@ if (enable_vr) {
         data_deps += [ "//device/vr:openxr_mock" ]
       }
     }
+  } else if (enable_openxr) {
+    source_set("android_browsertests") {
+      testonly = true
+      defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+      # Infrastructure.
+      sources = [
+        "test/mock_xr_device_hook_base.cc",
+        "test/mock_xr_device_hook_base.h",
+        "test/mock_xr_input_source.cc",
+        "test/mock_xr_input_source.h",
+        "test/ui_utils.cc",
+        "test/ui_utils.h",
+      ]
+
+      # Tests.
+      sources += [
+        "webxr_vr_frame_loop_browser_test.cc",
+        "webxr_vr_frame_pose_browser_test.cc",
+        "webxr_vr_indicators_browser_test.cc",
+        "webxr_vr_input_browser_test.cc",
+        "webxr_vr_layers_browser_test.cc",
+        "webxr_vr_lifecycle_browser_test.cc",
+        "webxr_vr_permission_browser_test.cc",
+        "webxr_vr_permission_request_browser_test.cc",
+        "webxr_vr_pixel_browser_test.cc",
+        "webxr_vr_secondary_views_browser_test.cc",
+        "webxr_vr_tab_browser_test.cc",
+        "webxr_vr_transition_browser_test.cc",
+      ]
+
+      deps = [
+        ":vr_common",
+        "//chrome/browser/content_settings:content_settings_factory",
+        "//chrome/common:constants",
+        "//chrome/test:xr_android_emulator_tests_runner",
+        "//chrome/test:xr_browser_tests_common",
+        "//components/content_settings/browser",
+        "//components/content_settings/core/browser",
+        "//components/webxr",
+        "//components/webxr/android",
+        "//components/webxr/android:features_java",
+        "//components/webxr/android:xr_java",
+        "//device/vr",
+        "//device/vr:openxr_data",
+        "//device/vr:openxr_test_helper",
+        "//device/vr:vr_test_utils",
+        "//device/vr/buildflags",
+        "//device/vr/orientation",
+        "//device/vr/public/mojom:isolated_xr_service",
+        "//device/vr/public/mojom/test:test_mojom",
+        "//third_party/openxr",
+      ]
+    }
   }
 }
