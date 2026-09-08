@@ -218,7 +218,7 @@ TEST_F(MahiUiControllerTest, RefreshContentsForElucidation) {
   // Calls `OpenMahiPanel` to set `elucidation_in_use_` to true.
   // This creates a panel widget and implicitly triggers `RefreshContents`
   // and `PanelBoundsChanged` calls, hence the first sequence.
-  // Because `kMahiPanelResizable` is enabled by default, there are two
+  // Because the panel is resizable, there are two
   // `PanelBoundsChanged` calls.
   {
     InSequence s;

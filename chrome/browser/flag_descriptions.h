@@ -8099,14 +8099,6 @@ inline constexpr char kHindiInscriptLayoutName[] =
 inline constexpr char kHindiInscriptLayoutDescription[] =
     "Enables Hindi Inscript Layout on ChromeOS.";
 
-inline constexpr char kMahiPanelResizableName[] = "Mahi panel resizing";
-inline constexpr char kMahiPanelResizableDescription[] =
-    "Enable Mahi panel resizing on ChromeOS.";
-
-inline constexpr char kMahiSummarizeSelectedName[] =
-    "Mahi summarize selected text";
-inline constexpr char kMahiSummarizeSelectedDescription[] =
-    "Enable Mahi to summarize the selected text";
 
 inline constexpr char kMicrophoneMuteSwitchDeviceName[] =
     "Microphone Mute Switch Device";

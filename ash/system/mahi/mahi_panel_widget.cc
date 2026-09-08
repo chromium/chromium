@@ -18,8 +18,6 @@
 #include "ash/system/mahi/refresh_banner_view.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/work_area_insets.h"
-#include "base/feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
@@ -131,9 +129,7 @@ views::UniqueWidgetPtr MahiPanelWidget::CreateAndShowPanelWidget(
 
   views::Widget::InitParams params(
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
-      base::FeatureList::IsEnabled(chromeos::features::kMahiPanelResizable)
-          ? views::Widget::InitParams::TYPE_WINDOW
-          : views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+      views::Widget::InitParams::TYPE_WINDOW);
   params.name = GetName();
 
   std::unique_ptr<views::BoxLayoutView> contents_view =
@@ -147,34 +143,29 @@ views::UniqueWidgetPtr MahiPanelWidget::CreateAndShowPanelWidget(
   // Make sure the `MahiPanelView` is sized to fill up the available space.
   contents_view->SetFlexForView(panel_view, 1.0);
 
-  // If resizing is enabled, create a custom delegate and set the contents view
-  // so that it can be set on the client view. Else the contents view will be
-  // set on the widget directly as there will be no client view.
-  if (base::FeatureList::IsEnabled(chromeos::features::kMahiPanelResizable)) {
-    auto delegate = std::make_unique<views::WidgetDelegate>();
+  auto delegate = std::make_unique<views::WidgetDelegate>();
 
-    // Set to true so that the delegate deletes itself.
-    delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
-    delegate->SetCanResize(true);
-    delegate->SetContentsView(std::move(contents_view));
-    delegate->SetFrameViewFactory(base::BindRepeating(
-        [](views::Widget* widget) -> std::unique_ptr<views::FrameView> {
-          return std::make_unique<FrameViewAsh>(widget);
-        }));
+  // Set to true so that the delegate deletes itself.
+  delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
+  delegate->SetCanResize(true);
+  delegate->SetContentsView(std::move(contents_view));
+  delegate->SetFrameViewFactory(base::BindRepeating(
+      [](views::Widget* widget) -> std::unique_ptr<views::FrameView> {
+        return std::make_unique<FrameViewAsh>(widget);
+      }));
 
-    params.delegate = delegate.release();
-    params.remove_standard_frame = true;
+  params.delegate = delegate.release();
+  params.remove_standard_frame = true;
 
-    // If resizable, disable the resize shadow on the window border.
-    params.init_properties_container.SetProperty(kDisableResizeShadow, true);
+  // Disable the resize shadow on the window border.
+  params.init_properties_container.SetProperty(kDisableResizeShadow, true);
 
-    params.init_properties_container.SetProperty(
-        kWindowResizeHistogramName,
-        new std::string(mahi_constants::kMahiPanelResizingHistogram));
-    params.init_properties_container.SetProperty(
-        kWindowResizeMaxLatencyHistogramName,
-        new std::string(mahi_constants::kMahiPanelResizingMaxLatencyHistogram));
-  }
+  params.init_properties_container.SetProperty(
+      kWindowResizeHistogramName,
+      new std::string(mahi_constants::kMahiPanelResizingHistogram));
+  params.init_properties_container.SetProperty(
+      kWindowResizeMaxLatencyHistogramName,
+      new std::string(mahi_constants::kMahiPanelResizingMaxLatencyHistogram));
 
   // `SystemModalContainer` can travel across displays, is not automatically
   // resizable on limited screen size and stays on top on full-screen.
@@ -188,10 +179,6 @@ views::UniqueWidgetPtr MahiPanelWidget::CreateAndShowPanelWidget(
   views::UniqueWidgetPtr widget = std::make_unique<MahiPanelWidget>(
       std::move(params), refresh_view, ui_controller);
 
-  // Set the contents view of the widget directly if non-resizable.
-  if (!base::FeatureList::IsEnabled(chromeos::features::kMahiPanelResizable)) {
-    widget->SetContentsView(std::move(contents_view));
-  }
   widget->SetBounds(CalculateInitialWidgetBounds(mahi_menu_bounds));
   widget->widget_delegate()->SetAccessibleTitle(
       l10n_util::GetStringUTF16(IDS_ASH_MAHI_PANEL_TITLE));

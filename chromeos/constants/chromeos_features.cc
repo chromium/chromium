@@ -65,15 +65,6 @@ BASE_FEATURE(kMagicBoostRevampForQuickAnswers,
 // module.
 BASE_FEATURE(kFeatureManagementMahi, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls enabling / disabling the Mahi resize feature
-// Does nothing if "Mahi" and "FeatureManagementMahi" are disabled.
-BASE_FEATURE(kMahiPanelResizable, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Controls whether mahi sends url when making request to the server.
-BASE_FEATURE(kMahiSendingUrl, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Controls enabling / disabling the summary of selected text feature.
-BASE_FEATURE(kMahiSummarizeSelected, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Changes the ChromeOS notification width size from 360px to 400px for pop-up
 // notifications and 344px to 400px for notifications in the message center.
@@ -312,17 +303,8 @@ bool IsMahiEnabled() {
   return base::FeatureList::IsEnabled(kFeatureManagementMahi);
 }
 
-// Mahi requests are composed & sent from ash.
-bool IsMahiSendingUrl() {
-  return base::FeatureList::IsEnabled(kMahiSendingUrl);
-}
-
 bool IsPlatformKeysChangesWave1Enabled() {
   return base::FeatureList::IsEnabled(kPlatformKeysChangesWave1);
-}
-
-bool IsMahiSummarizeSelectedEnabled() {
-  return base::FeatureList::IsEnabled(kMahiSummarizeSelected);
 }
 
 bool IsNotificationWidthIncreaseEnabled() {

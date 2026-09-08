@@ -28,7 +28,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -181,11 +180,8 @@ std::unique_ptr<views::View> CreateQuestionAnswerRow(const std::u16string& text,
             // TODO(crbug.com/377582486): When respecting size constraints, the
             // layout manager has no layout cache, so multiple levels of
             // FlexLayoutView nesting have performance issues here (see
-            // crbug.com/40232718). Only needs to be disabled if resizing is
-            // enabled.
-            layout->SetLayoutManagerUseConstrainedSpace(
-                !base::FeatureList::IsEnabled(
-                    chromeos::features::kMahiPanelResizable));
+            // crbug.com/40232718).
+            layout->SetLayoutManagerUseConstrainedSpace(false);
           }));
 
   views::Builder<views::FlexLayoutView> spacer =
@@ -257,9 +253,7 @@ MahiQuestionAnswerView::MahiQuestionAnswerView(MahiUiController* ui_controller)
   // layout manager has no layout cache, so multiple levels of
   // FlexLayoutView nesting have performance issues here (see
   // crbug.com/40232718).
-  // Only needs to be disabled if resizing is enabled.
-  SetLayoutManagerUseConstrainedSpace(
-      !base::FeatureList::IsEnabled(chromeos::features::kMahiPanelResizable));
+  SetLayoutManagerUseConstrainedSpace(false);
 }
 
 MahiQuestionAnswerView::~MahiQuestionAnswerView() {

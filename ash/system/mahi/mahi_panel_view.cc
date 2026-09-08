@@ -530,23 +530,19 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
       views::HighlightBorder::Type::kHighlightBorderOnShadow,
       /*insets_type=*/views::HighlightBorder::InsetsType::kHalfInsets));
 
-  // If resizing is enabled, display the drag handle icon at the bottom right
-  // corner of the panel.
-  if (base::FeatureList::IsEnabled(chromeos::features::kMahiPanelResizable)) {
-    AddChildView(
-        views::Builder<views::BoxLayoutView>()
-            .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
-            .SetCrossAxisAlignment(views::LayoutAlignment::kEnd)
-            .AddChild(
-                views::Builder<views::ImageView>()
-                    .SetID(mahi_constants::ViewId::kDragHandleIcon)
-                    .SetImage(ui::ImageModel::FromVectorIcon(
-                        ash::kDragHandleIcon, cros_tokens::kCrosSysSecondary,
-                        kDragHandleIconSize))
-                    .SetBorder(
-                        views::CreateEmptyBorder(kDragHandleIconPadding)))
-            .Build());
-  }
+  // Display the drag handle icon at the bottom right corner of the panel.
+  AddChildView(
+      views::Builder<views::BoxLayoutView>()
+          .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
+          .SetCrossAxisAlignment(views::LayoutAlignment::kEnd)
+          .AddChild(
+              views::Builder<views::ImageView>()
+                  .SetID(mahi_constants::ViewId::kDragHandleIcon)
+                  .SetImage(ui::ImageModel::FromVectorIcon(
+                      ash::kDragHandleIcon, cros_tokens::kCrosSysSecondary,
+                      kDragHandleIconSize))
+                  .SetBorder(views::CreateEmptyBorder(kDragHandleIconPadding)))
+          .Build());
 
   // The `main_container` is used to anchor the contents to the middle of the
   // panel when its size is animating. The anchoring to middle effect is

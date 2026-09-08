@@ -46,7 +46,6 @@
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_content_manager.h"
 #include "chromeos/components/mahi/public/cpp/mahi_types.h"
 #include "chromeos/components/mahi/public/cpp/mahi_web_contents_manager.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/feedback/feedback_constants.h"
 #include "components/manta/manta_service.h"
@@ -101,8 +100,7 @@ void LogProviderCreationStatus(ProviderCreationStatus status) {
 std::optional<std::string> MaybeGetUrl(
     const chromeos::MahiPageInfo& mahi_page_info) {
   // Do not send the fake URL of media app PDF files.
-  return chromeos::features::IsMahiSendingUrl() &&
-                 !mahi_page_info.url.spec().starts_with(kMediaAppPDFUrlPrefix)
+  return !mahi_page_info.url.spec().starts_with(kMediaAppPDFUrlPrefix)
              ? std::make_optional(mahi_page_info.url.spec())
              : std::nullopt;
 }

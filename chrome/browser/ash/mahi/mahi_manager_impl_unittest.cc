@@ -287,27 +287,11 @@ TEST_F(MahiManagerImplTest, NoContentCallWhenContentIsInCache) {
   EXPECT_EQ(content, new_content);
 }
 
-// Title is included in the request proto.
-TEST_F(MahiManagerImplTest, SendingTitleOnly) {
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{chromeos::features::kFeatureManagementMahi},
-      /*disabled_features=*/{chromeos::features::kMahiSendingUrl});
+// Title and url are included in the request proto.
+TEST_F(MahiManagerImplTest, SendingTitleAndUrl) {
   RequestSummary();
 
   EXPECT_EQ(GetMahiProvider()->latest_title(), "Title of url1");
-  EXPECT_FALSE(GetMahiProvider()->latest_url().has_value());
-}
-
-// Url, on the other hand, is controlled by kMahiSendingUrl.
-TEST_F(MahiManagerImplTest, SendingTitleAndUrl) {
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures({chromeos::features::kMahiSendingUrl,
-                                  chromeos::features::kFeatureManagementMahi},
-                                 /*disabled_features=*/{});
-
-  RequestSummary();
-
   EXPECT_TRUE(GetMahiProvider()->latest_url().has_value());
   EXPECT_EQ(GetMahiProvider()->latest_url().value(),
             "http://url1.com/abc#skip");

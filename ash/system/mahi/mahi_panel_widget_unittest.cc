@@ -53,8 +53,7 @@ class MahiPanelWidgetTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kFeatureManagementMahi,
-                              chromeos::features::kMahiPanelResizable},
+        /*enabled_features=*/{chromeos::features::kFeatureManagementMahi},
         /*disabled_features=*/{});
     AshTestBase::SetUp();
 
