@@ -24,7 +24,7 @@ public class DownloadManagerUiConfigHelper {
         boolean showBlockedSensitiveItems =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.SHOW_BLOCKED_SENSITIVE_DOWNLOAD);
         boolean isLff = DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
-        return new DownloadManagerUiConfig.Builder()
+        return new DownloadManagerUiConfig.Builder(context)
                 .setShowDangerousItems(showDangerousItems)
                 .setSupportsGrouping(true)
                 .setInlineSearchBar(isLff)

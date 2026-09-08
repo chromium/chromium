@@ -167,7 +167,7 @@ public class SelectPopup
         for (int i = 0; i < items.length; i++) {
             popupItems.add(new SelectPopupItem(items[i], enabled[i]));
         }
-        if (DeviceFormFactor.isTablet()
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
                 && !multiple
                 && !AccessibilityState.isTouchExplorationEnabled()) {
             mPopupView =

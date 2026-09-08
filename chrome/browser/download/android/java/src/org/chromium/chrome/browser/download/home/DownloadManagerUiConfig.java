@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.download.home;
 
 import static org.chromium.components.browser_ui.util.ConversionUtils.BYTES_PER_MEGABYTE;
 
+import android.content.Context;
 import android.view.View;
 
 import org.chromium.base.ContextUtils;
@@ -120,11 +121,13 @@ public class DownloadManagerUiConfig {
         private boolean mInlineSearchBar;
         private boolean mAutoFocusSearchBox;
 
-        public Builder() {
-            mSupportFullWidthImages =
-                    !DeviceFormFactor.isNonMultiDisplayContextOnTablet(
-                            ContextUtils.getApplicationContext());
+        public Builder(Context context) {
+            mSupportFullWidthImages = !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
             mUseGenericViewTypes = SysUtils.isLowEndDevice();
+        }
+
+        public Builder() {
+            this(ContextUtils.getApplicationContext());
         }
 
         public Builder setOtrProfileId(@Nullable OtrProfileId otrProfileId) {

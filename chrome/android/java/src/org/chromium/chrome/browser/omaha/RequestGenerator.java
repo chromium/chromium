@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omaha;
 
+import android.content.Context;
 import android.os.Build;
 import android.text.format.DateUtils;
 import android.util.Xml;
@@ -13,6 +14,8 @@ import androidx.annotation.VisibleForTesting;
 import org.xmlpull.v1.XmlSerializer;
 
 import org.chromium.base.ApkInfo;
+import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.uid.SettingsSecureBasedIdentificationGenerator;
@@ -183,7 +186,11 @@ public abstract class RequestGenerator {
      */
     @VisibleForTesting
     protected boolean getLayoutIsTablet() {
-        return DeviceFormFactor.isTablet();
+        Context context = ApplicationStatus.getLastTrackedFocusedActivity();
+        if (context == null) {
+            context = ContextUtils.getApplicationContext();
+        }
+        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }
 
     /** URL for the Omaha server. */

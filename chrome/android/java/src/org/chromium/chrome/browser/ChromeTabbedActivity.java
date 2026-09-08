@@ -1614,7 +1614,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             startUmaSession();
             // This is on the critical path so don't delay.
             setupCompositorContent();
-            if (!DeviceFormFactor.isTablet()) {
+            if (!isTablet()) {
                 PostTask.postTask(
                         TaskTraits.UI_DEFAULT,
                         mCallbackController.makeCancelable(this::initializeCompositorContent));

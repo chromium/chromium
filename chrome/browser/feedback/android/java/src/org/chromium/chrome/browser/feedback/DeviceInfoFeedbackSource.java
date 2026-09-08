@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.feedback;
 
+import android.content.Context;
 import android.os.Build;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.build.annotations.NullMarked;
@@ -32,14 +34,17 @@ class DeviceInfoFeedbackSource implements FeedbackSource {
         // via android.os.Build.DEVICE.
         String name = Build.DEVICE;
         String type;
+        Context context = ApplicationStatus.getLastTrackedFocusedActivity();
+        if (context == null) {
+            context = ContextUtils.getApplicationContext();
+        }
         if (DeviceInfo.isAutomotive()) {
             type = TYPE_AUTO;
         } else if (DeviceInfo.isXr()) {
             type = TYPE_XR;
         } else if (DeviceInfo.isDesktop()) {
             type = TYPE_DESKTOP;
-        } else if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(
-                ContextUtils.getApplicationContext())) {
+        } else if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
             type = TYPE_TABLET;
         } else {
             type = TYPE_PHONE;
