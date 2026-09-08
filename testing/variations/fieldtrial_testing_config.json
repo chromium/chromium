@@ -12191,6 +12191,21 @@
             ]
         }
     ],
+    "InhibitMessagePumpWakeupCounter": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "InhibitMessagePumpWakeupCounter"
+                    ]
+                }
+            ]
+        }
+    ],
     "InhibitSQLReleaseCacheMemoryIfNeeded": [
         {
             "platforms": [
