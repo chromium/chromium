@@ -16,9 +16,7 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/accessibility",
   "+chrome/browser/ash/nearby",
-  "+chrome/test/base",
 
   # Dependencies outside of //chrome:
-  "+components/qr_code_generator/qr_code_generator.h",
   "+components/endpoint_fetcher",
 ]

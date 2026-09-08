@@ -58,5 +58,4 @@ include_rules = [
   "+chrome/browser/ui/ash/holding_space",
   "+chrome/browser/ui/webui/ash/settings/services/hats",
   "+chrome/browser/ui/webui/ash/settings/services/settings_manager",
-  "+chromeos/ash/components/policy/policy_blocklist_service",
 ]

@@ -18,5 +18,4 @@ include_rules = [
   "+chrome/browser/ash/profiles",
   "+chrome/browser/profiles",
   "+chrome/grit",
-  "+chrome/test/base",
 ]
