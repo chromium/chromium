@@ -10,9 +10,12 @@
 #include <vector>
 
 #include "RawPtrHelpers.h"
+#include "Util.h"
+#include "clang/AST/ASTContext.h"
 #include "clang/AST/Decl.h"
 #include "clang/AST/DeclBase.h"
 #include "clang/ASTMatchers/ASTMatchFinder.h"
+#include "llvm/ADT/StringRef.h"
 #include "llvm/Support/Casting.h"
 #include "project.h"
 
@@ -79,8 +82,20 @@ class PartitionAllocProject : public Project {
   }
 
   bool IsExcludedFromProject(const clang::Decl& Node) const override {
-    // No known dependencies of partition_alloc to exclude at this time.
-    return false;
+    const clang::SourceManager& source_manager =
+        Node.getASTContext().getSourceManager();
+
+    std::string filename = raw_ptr_plugin::GetFilename(
+        source_manager, raw_ptr_plugin::getRepresentativeLocation(Node),
+        raw_ptr_plugin::FilenameLocationType::kSpellingLoc);
+
+    // Running in-place inside Chromium: absolute path contains
+    // "base/allocator/partition_allocator". We only want to spanify
+    // PartitionAlloc sources, excluding third_party (e.g. googletest).
+    llvm::StringRef file(filename);
+    return file.contains("third_party/") ||
+           (!file.contains("base/allocator/partition_allocator/") &&
+            !file.contains("partition_alloc/"));
   }
 
  private:
