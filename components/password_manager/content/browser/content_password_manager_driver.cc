@@ -330,6 +330,9 @@ void ContentPasswordManagerDriver::FillSuggestionById(
 void ContentPasswordManagerDriver::FillIntoFocusedField(
     bool is_password,
     const std::u16string& credential) {
+  if (!render_frame_host_->IsActive()) {
+    return;
+  }
   if (const auto& agent = GetPasswordAutofillAgent()) {
     agent->FillIntoFocusedField(is_password, credential);
   }

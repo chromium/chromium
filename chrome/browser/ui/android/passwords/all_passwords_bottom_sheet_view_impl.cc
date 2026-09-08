@@ -104,7 +104,7 @@ AllPasswordsBottomSheetViewImpl::GetOrCreateJavaObject() {
              AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
              controller_->GetProfile()->GetJavaObject(),
              controller_->GetNativeView()->GetWindowAndroid()->GetJavaObject(),
-             controller_->GetFrameUrl().spec());
+             controller_->GetFrameOriginUrl().spec());
 }
 
 DEFINE_JNI(AllPasswordsBottomSheetBridge)

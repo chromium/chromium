@@ -6,6 +6,7 @@
 
 #include "base/android/device_info.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -66,10 +67,30 @@ constexpr char16_t kPassword[] = u"password123";
 class MockPasswordManagerDriver
     : public password_manager::StubPasswordManagerDriver {
  public:
+  MockPasswordManagerDriver() {
+    ON_CALL(*this, CanShowAutofillUi).WillByDefault(testing::Return(true));
+    ON_CALL(*this, GetLastCommittedOrigin)
+        .WillByDefault(testing::ReturnRef(origin_));
+    ON_CALL(*this, GetLastCommittedURL).WillByDefault(testing::ReturnRef(url_));
+  }
+
   MOCK_METHOD(void,
               FillIntoFocusedField,
               (bool, const std::u16string&),
               (override));
+  MOCK_METHOD(bool, CanShowAutofillUi, (), (const, override));
+  MOCK_METHOD(const url::Origin&,
+              GetLastCommittedOrigin,
+              (),
+              (const, override));
+  MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (const, override));
+
+  void SetLastCommittedOrigin(const url::Origin& origin) { origin_ = origin; }
+  void SetLastCommittedURL(const GURL& url) { url_ = url; }
+
+ private:
+  url::Origin origin_;
+  GURL url_;
 };
 
 class MockAllPasswordsBottomSheetView : public AllPasswordsBottomSheetView {
@@ -139,18 +160,24 @@ class AllPasswordsBottomSheetControllerTest
   }
 
   void createAllPasswordsController(
-      autofill::mojom::FocusedFieldType focused_field_type) {
+      autofill::mojom::FocusedFieldType focused_field_type,
+      base::WeakPtr<password_manager::PasswordManagerDriver> driver) {
     std::unique_ptr<MockAllPasswordsBottomSheetView> mock_view_unique_ptr =
         std::make_unique<MockAllPasswordsBottomSheetView>();
     mock_view_ = mock_view_unique_ptr.get();
     all_passwords_controller_ =
         std::make_unique<AllPasswordsBottomSheetController>(
             base::PassKey<AllPasswordsBottomSheetControllerTest>(),
-            web_contents(), std::move(mock_view_unique_ptr),
-            driver_.AsWeakPtr(), profile_store_.get(), account_store_.get(),
+            web_contents(), std::move(mock_view_unique_ptr), driver,
+            profile_store_.get(), account_store_.get(),
             dissmissal_callback_.Get(), focused_field_type,
             mock_pwd_manager_client_.get(),
             mock_pwd_reuse_detection_manager_client_.get());
+  }
+
+  void createAllPasswordsController(
+      autofill::mojom::FocusedFieldType focused_field_type) {
+    createAllPasswordsController(focused_field_type, driver_.AsWeakPtr());
   }
 
   void TearDown() override {
@@ -457,4 +484,68 @@ TEST_F(AllPasswordsBottomSheetControllerAccountStoreTest, BothStoresEmpty) {
 
   // Show method uses the store which has async work.
   RunUntilIdle();
+}
+
+TEST_F(AllPasswordsBottomSheetControllerTest, DoesNotShowWhenDriverIsNull) {
+  base::RunLoop run_loop;
+  auto local_driver = std::make_unique<MockPasswordManagerDriver>();
+  createAllPasswordsController(FocusedFieldType::kFillablePasswordField,
+                               local_driver->AsWeakPtr());
+  local_driver.reset();
+
+  EXPECT_CALL(view(), Show).Times(0);
+  EXPECT_CALL(dismissal_callback(), Run())
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+  all_passwords_controller()->Show();
+  run_loop.Run();
+}
+
+TEST_F(AllPasswordsBottomSheetControllerTest,
+       DoesNotShowWhenCannotShowAutofillUi) {
+  base::RunLoop run_loop;
+  EXPECT_CALL(driver(), CanShowAutofillUi).WillRepeatedly(Return(false));
+  EXPECT_CALL(view(), Show).Times(0);
+  EXPECT_CALL(dismissal_callback(), Run())
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+
+  all_passwords_controller()->Show();
+  run_loop.Run();
+}
+
+TEST_F(AllPasswordsBottomSheetControllerTest, DoesNotShowWhenOriginChanged) {
+  base::RunLoop run_loop;
+  url::Origin new_origin = url::Origin::Create(GURL("https://different.com"));
+  driver().SetLastCommittedOrigin(new_origin);
+
+  EXPECT_CALL(view(), Show).Times(0);
+  EXPECT_CALL(dismissal_callback(), Run())
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+
+  all_passwords_controller()->Show();
+  run_loop.Run();
+}
+
+TEST_F(AllPasswordsBottomSheetControllerTest, DoesNotFillWhenOriginChanged) {
+  url::Origin new_origin = url::Origin::Create(GURL("https://different.com"));
+  driver().SetLastCommittedOrigin(new_origin);
+
+  EXPECT_CALL(driver(), FillIntoFocusedField).Times(0);
+  EXPECT_CALL(dismissal_callback(), Run());
+
+  all_passwords_controller()->OnCredentialSelected(
+      kUsername1, kPassword, RequestsToFillPassword(false));
+}
+
+TEST_F(AllPasswordsBottomSheetControllerTest,
+       GetFrameOriginUrlReturnsOriginUrlWhenDriverIsNull) {
+  url::Origin expected_origin =
+      url::Origin::Create(GURL("https://example.com/login"));
+  auto local_driver = std::make_unique<MockPasswordManagerDriver>();
+  local_driver->SetLastCommittedOrigin(expected_origin);
+  createAllPasswordsController(FocusedFieldType::kFillablePasswordField,
+                               local_driver->AsWeakPtr());
+
+  local_driver.reset();
+  EXPECT_EQ(expected_origin.GetURL(),
+            all_passwords_controller()->GetFrameOriginUrl());
 }

@@ -22,6 +22,7 @@
 #include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "ui/gfx/native_ui_types.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace password_manager {
 class PasswordManagerClient;
@@ -97,8 +98,8 @@ class AllPasswordsBottomSheetController
   // consumes |dismissal_callback|.
   void OnDismiss();
 
-  // Returns the last committed URL of the frame from |driver_|.
-  const GURL& GetFrameUrl();
+  // Returns the URL of `frame_origin_`.
+  GURL GetFrameOriginUrl();
 
  private:
   // Called when the biometric re-auth completes. |password| is the password
@@ -149,6 +150,9 @@ class AllPasswordsBottomSheetController
   // password has been reused.
   raw_ptr<safe_browsing::PasswordReuseDetectionManagerClient>
       password_reuse_detection_manager_client_ = nullptr;
+
+  // The origin of the frame at the time this controller was created.
+  url::Origin frame_origin_;
 
   base::WeakPtrFactory<AllPasswordsBottomSheetController> weak_ptr_factory_{
       this};

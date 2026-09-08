@@ -49,7 +49,10 @@ AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
       focused_field_type_(focused_field_type),
       client_(client),
       password_reuse_detection_manager_client_(
-          password_reuse_detection_manager_client) {}
+          password_reuse_detection_manager_client) {
+  CHECK(driver_);
+  frame_origin_ = driver_->GetLastCommittedOrigin();
+}
 
 AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
     content::WebContents* web_contents,
@@ -72,6 +75,7 @@ AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
       password_manager::ContentPasswordManagerDriver::GetForRenderFrameHost(
           focused_frame);
   driver_ = driver->AsWeakPtr();
+  frame_origin_ = driver_->GetLastCommittedOrigin();
   client_ = ChromePasswordManagerClient::FromWebContents(web_contents_);
   password_reuse_detection_manager_client_ =
       ChromePasswordReuseDetectionManagerClient::FromWebContents(web_contents_);
@@ -136,7 +140,8 @@ void AllPasswordsBottomSheetController::OnCredentialSelected(
     RequestsToFillPassword requests_to_fill_password) {
   const bool is_password_field =
       focused_field_type_ == FocusedFieldType::kFillablePasswordField;
-  if (!driver_) {
+  if (!driver_ ||
+      !driver_->GetLastCommittedOrigin().IsSameOriginWith(frame_origin_)) {
     OnDismiss();
     return;
   }
@@ -169,11 +174,13 @@ void AllPasswordsBottomSheetController::OnCredentialSelected(
 }
 
 void AllPasswordsBottomSheetController::OnDismiss() {
-  std::move(dismissal_callback_).Run();
+  if (dismissal_callback_) {
+    std::move(dismissal_callback_).Run();
+  }
 }
 
-const GURL& AllPasswordsBottomSheetController::GetFrameUrl() {
-  return driver_->GetLastCommittedURL();
+GURL AllPasswordsBottomSheetController::GetFrameOriginUrl() {
+  return frame_origin_.GetURL();
 }
 
 void AllPasswordsBottomSheetController::OnReauthCompleted(
@@ -192,7 +199,8 @@ void AllPasswordsBottomSheetController::OnReauthCompleted(
 
 void AllPasswordsBottomSheetController::FillPassword(
     const std::u16string& password) {
-  if (!driver_) {
+  if (!driver_ ||
+      !driver_->GetLastCommittedOrigin().IsSameOriginWith(frame_origin_)) {
     return;
   }
   driver_->FillIntoFocusedField(true, password);
@@ -204,6 +212,12 @@ void AllPasswordsBottomSheetController::OnResultFromAllStoresReceived(
   CHECK(on_password_forms_received_barrier_callback_);
   CHECK(!results.empty());
   on_password_forms_received_barrier_callback_.Reset();
+
+  if (!driver_ || !driver_->CanShowAutofillUi() ||
+      !driver_->GetLastCommittedOrigin().IsSameOriginWith(frame_origin_)) {
+    OnDismiss();
+    return;
+  }
 
   if (results.size() > 1) {
     std::move(results[1].begin(), results[1].end(),

@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
@@ -560,6 +561,16 @@ TEST_F(ContentPasswordManagerDriverTest, HasCrossOriginAncestor) {
 
   ContentPasswordManagerDriver mid_driver(mid_rfh, &password_manager_client_);
   EXPECT_TRUE(mid_driver.HasCrossOriginAncestor());
+}
+
+TEST_F(ContentPasswordManagerDriverTest, FillIntoFocusedField) {
+  base::RunLoop run_loop;
+  ContentPasswordManagerDriver driver(main_rfh(), &password_manager_client_);
+  EXPECT_CALL(fake_agent_,
+              FillIntoFocusedField(true, std::u16string(u"secret")))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+  driver.FillIntoFocusedField(/*is_password=*/true, u"secret");
+  run_loop.Run();
 }
 
 }  // namespace password_manager
