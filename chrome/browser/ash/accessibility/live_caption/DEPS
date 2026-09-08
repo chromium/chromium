@@ -15,7 +15,6 @@ include_rules = [
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/accessibility",
-  "+chrome/browser/accessibility/live_caption",
   "+chrome/browser/ash/login/session",
   "+chrome/browser/profiles",
   "+chrome/browser/speech",

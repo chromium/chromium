@@ -3,10 +3,6 @@ include_rules = [
   # details.
   "-chrome",
 
-  # This directory is in //chrome, which violates the rule above. Allow this
-  # directory to #include its own files.
-  "+chrome/browser/ash/app_list/search",
-
   # Existing dependencies within //chrome. There is an active effort to
   # refactor //chrome/browser/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
@@ -51,14 +47,6 @@ include_rules = [
   "+chrome/common/chrome_paths.h",
   "+chrome/grit",
   "+chrome/test/base",
-
-  # Dependencies outside of //chrome:
-  "+ash/accelerators",
-  "+ash/strings/grit",
-  "+chromeos/ash/components/launcher_search",
-  "+chromeos/ash/components/system_info",
-  "+chromeos/ui/vector_icons",
-  "+third_party/omnibox_proto",
 ]
 
 specific_include_rules = {

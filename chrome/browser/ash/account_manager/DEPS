@@ -19,7 +19,6 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/browser/signin",
   "+chrome/browser/ui/webui/ash/edu_coexistence",
-  "+chrome/browser/ui/webui/signin/ash",
   "+chrome/test/base",
 ]
 
