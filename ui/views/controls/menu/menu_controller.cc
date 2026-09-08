@@ -750,7 +750,7 @@ void MenuController::Run(Widget* parent,
     } else {
       owner_ = parent;
       if (owner_) {
-        owner_->AddObserver(this);
+        owner_observation_.Observe(owner_);
       }
     }
     SetShowing(true);
@@ -1694,10 +1694,8 @@ void MenuController::UpdateSubmenuSelection(SubmenuView* submenu) {
 
 void MenuController::ClearOwner() {
   SetShowing(false);
-  if (owner_) {
-    owner_->RemoveObserver(this);
-    owner_ = nullptr;
-  }
+  owner_observation_.Reset();
+  owner_ = nullptr;
 }
 
 void MenuController::OnWidgetDestroying(Widget* widget) {

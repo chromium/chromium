@@ -19,6 +19,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -817,6 +818,10 @@ class VIEWS_EXPORT MenuController final : public gfx::AnimationDelegate,
   // Owner of child windows.
   // WARNING: this may be NULL.
   raw_ptr<Widget> owner_ = nullptr;
+
+  // Observes `owner_` while a menu is running. Declared after `owner_` so it
+  // is destroyed first.
+  base::ScopedObservation<Widget, WidgetObserver> owner_observation_{this};
 
   // An optional NativeView to which gestures will be forwarded to if
   // RunType::SEND_GESTURE_EVENTS_TO_OWNER is set.
