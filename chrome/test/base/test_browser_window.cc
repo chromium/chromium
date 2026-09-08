@@ -68,7 +68,7 @@ ChipController* TestBrowserWindow::TestLocationBar::GetChipController() {
 }
 
 LocationBarTesting*
-    TestBrowserWindow::TestLocationBar::GetLocationBarForTesting() {
+TestBrowserWindow::TestLocationBar::GetLocationBarForTesting() {
   return nullptr;
 }
 
@@ -274,6 +274,10 @@ LocationBar* TestBrowserWindow::GetLocationBar() const {
   return const_cast<TestLocationBar*>(&location_bar_);
 }
 
+ui::AcceleratorProvider* TestBrowserWindow::GetAcceleratorProvider() {
+  return nullptr;
+}
+
 autofill::AutofillBubbleHandler* TestBrowserWindow::GetAutofillBubbleHandler() {
   return &autofill_bubble_handler_;
 }
@@ -331,7 +335,6 @@ ShowTranslateBubbleResult TestBrowserWindow::ShowTranslateBubble(
   return ShowTranslateBubbleResult::kSuccess;
 }
 
-
 #if BUILDFLAG(IS_CHROMEOS)
 void TestBrowserWindow::ToggleMultitaskMenu() {
   return;
@@ -347,7 +350,7 @@ std::unique_ptr<FindBar> TestBrowserWindow::CreateFindBar() {
 }
 
 web_modal::WebContentsModalDialogHost*
-    TestBrowserWindow::GetWebContentsModalDialogHost() {
+TestBrowserWindow::GetWebContentsModalDialogHost() {
   return nullptr;
 }
 

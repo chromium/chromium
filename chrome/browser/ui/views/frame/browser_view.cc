@@ -2328,6 +2328,10 @@ LocationBar* BrowserView::GetLocationBar() const {
   return toolbar_ ? toolbar_->location_bar() : nullptr;
 }
 
+ui::AcceleratorProvider* BrowserView::GetAcceleratorProvider() {
+  return this;
+}
+
 void BrowserView::SetFocusToLocationBar(bool is_user_initiated) {
   // On Windows, changing focus to the location bar causes the browser window to
   // become active. This can steal focus if the user has another window open

@@ -74,6 +74,7 @@ enum class AccessPoint;
 }
 
 namespace ui {
+class AcceleratorProvider;
 class ColorProvider;
 class NativeTheme;
 class ThemeProvider;
@@ -233,7 +234,6 @@ class BrowserWindow : public ui::BaseWindow {
   // if the window is visible.
   virtual void UpdateLoadingAnimations(bool is_visible) = 0;
 
-
   // Called when the active tab changes.  Subclasses which implement
   // TabStripModelObserver should implement this instead of ActiveTabChanged();
   // the Browser will call this method while processing that one.
@@ -266,6 +266,10 @@ class BrowserWindow : public ui::BaseWindow {
 
   // Returns the location bar.
   virtual LocationBar* GetLocationBar() const = 0;
+
+  // Returns the AcceleratorProvider for this window, or null if the window
+  // does not provide accelerators (notably TestBrowserWindow).
+  virtual ui::AcceleratorProvider* GetAcceleratorProvider() = 0;
 
   // Tries to focus the location bar.  Clears the window focus (to avoid
   // inconsistent state) if this fails.
@@ -369,7 +373,6 @@ class BrowserWindow : public ui::BaseWindow {
       const std::string& target_language,
       translate::TranslateErrors error_type,
       bool is_user_gesture) = 0;
-
 
   // Returns the DownloadBubbleUIController. Returns null if Download Bubble
   // UI is not enabled, or if the download toolbar button does not exist.

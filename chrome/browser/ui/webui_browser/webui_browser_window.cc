@@ -772,7 +772,6 @@ void WebUIBrowserWindow::UpdateLoadingAnimations(bool is_visible) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
-
 void WebUIBrowserWindow::OnActiveTabChanged(content::WebContents* old_contents,
                                             content::WebContents* new_contents,
                                             int index,
@@ -846,6 +845,10 @@ WebUIBrowserWindow::GetAutofillBubbleHandler() {
 
 LocationBar* WebUIBrowserWindow::GetLocationBar() const {
   return location_bar_.get();
+}
+
+ui::AcceleratorProvider* WebUIBrowserWindow::GetAcceleratorProvider() {
+  return this;
 }
 
 void WebUIBrowserWindow::SetFocusToLocationBar(bool is_user_initiated) {
