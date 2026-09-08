@@ -195,9 +195,13 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
   // Cancels the in-guest bootstrap ping interval.
   void StopGuestBootstrap();
 
-  // Swaps the active WebContents presented to the host view to the guest once
-  // the client is connected and ready.
-  void MaybeSwapToGuest();
+  // Evaluates current visibility, guest readiness, and error state to determine
+  // the desired display state.
+  DisplayState CalculateDesiredState() const;
+
+  // Re-evaluates and applies the desired display state, coordinating
+  // transitions and cleaning up overlay resources.
+  void UpdateDisplayState();
 
   // Applies the cached viewport size from the overlay/host to the guest view.
   void ApplySizeToGuest();

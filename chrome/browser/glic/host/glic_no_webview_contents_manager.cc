@@ -443,7 +443,8 @@ void GlicNoWebviewContentsManager::AttachToHost(Host* host) {
   }
 
   web_client_manager_.AttachToHost(host);
-  TransitionTo(DisplayState::kAttachedHidden);
+  // Move from warming pool state to attached-hidden state.
+  UpdateDisplayState();
 }
 
 base::CallbackListSubscription
@@ -476,15 +477,34 @@ void GlicNoWebviewContentsManager::ApplySizeToGuest() {
   guest_contents()->UpdateWebContentsVisibility(content::Visibility::VISIBLE);
 }
 
-void GlicNoWebviewContentsManager::MaybeSwapToGuest() {
-  if (!is_guest_ready_) {
+GlicNoWebviewContentsManager::DisplayState
+GlicNoWebviewContentsManager::CalculateDesiredState() const {
+  if (!is_visible_) {
+    return host_ ? DisplayState::kAttachedHidden : DisplayState::kWarming;
+  }
+  // When an overlay error is active, keep displaying the overlay UI regardless
+  // of whether the guest client connects in the background.
+  if (overlay_manager_.error_type().has_value()) {
+    return DisplayState::kShowingOverlay;
+  }
+  if (is_guest_ready_) {
+    return DisplayState::kShowingGuest;
+  }
+  return DisplayState::kShowingOverlay;
+}
+
+void GlicNoWebviewContentsManager::UpdateDisplayState() {
+  DisplayState desired = CalculateDesiredState();
+  if (state_ == desired) {
+    // If hidden/warming and the guest becomes ready, immediately reclaim any
+    // overlay WebContents that was previously allocated.
+    if (!is_visible_ && is_guest_ready_ &&
+        !overlay_manager_.error_type().has_value()) {
+      ScheduleOverlayDeletion(base::Milliseconds(0));
+    }
     return;
   }
-  if (is_visible_) {
-    TransitionTo(DisplayState::kShowingGuest);
-  } else {
-    ScheduleOverlayDeletion(base::Milliseconds(0));
-  }
+  TransitionTo(desired);
 }
 
 void GlicNoWebviewContentsManager::OnGuestNavigationStarted() {
@@ -500,6 +520,7 @@ void GlicNoWebviewContentsManager::OnGuestNavigated(
     bool is_initial_commit) {
   StopGuestBootstrap();
   is_guest_error_ = false;
+
   switch (page_type) {
     case mojom::GuestPageType::kLogin:
       SetErrorState(mojom::ErrorPanelType::kSignIn);
@@ -516,12 +537,14 @@ void GlicNoWebviewContentsManager::OnGuestNavigated(
       is_guest_error_ = true;
       is_guest_ready_ = true;
       ApplySizeToGuest();
-      MaybeSwapToGuest();
+      // Guest navigated to /sorry/ CAPTCHA; swap to guest directly so user can
+      // solve it.
+      UpdateDisplayState();
       break;
     case mojom::GuestPageType::kRegular:
       if (!is_api_allowed) {
         SetErrorState(mojom::ErrorPanelType::kError);
-      } else {
+      } else if (!overlay_manager_.error_type().has_value()) {
         ApplySizeToGuest();
         StartGuestBootstrap();
       }
@@ -560,7 +583,8 @@ void GlicNoWebviewContentsManager::OnGuestProcessGone(
 void GlicNoWebviewContentsManager::OnWebClientCreated() {
   StopGuestBootstrap();
   is_guest_ready_ = true;
-  MaybeSwapToGuest();
+  // Client script connected; swap to guest if visible and error-free.
+  UpdateDisplayState();
 }
 
 void GlicNoWebviewContentsManager::OnWebClientStateChanged(
@@ -568,7 +592,9 @@ void GlicNoWebviewContentsManager::OnWebClientStateChanged(
   switch (state) {
     case mojom::WebClientState::kResponsive:
       is_guest_ready_ = true;
-      MaybeSwapToGuest();
+      // Client state became responsive; swap to guest if visible and
+      // error-free.
+      UpdateDisplayState();
       break;
     case mojom::WebClientState::kError:
       is_guest_ready_ = false;
@@ -622,21 +648,17 @@ void GlicNoWebviewContentsManager::SetErrorState(
   StopGuestBootstrap();
   is_guest_ready_ = false;
   overlay_manager_.SetError(error_type);
-  if (is_visible_) {
-    TransitionTo(DisplayState::kShowingOverlay);
-  }
+  // An error occurred; transition to overlay if visible, or record for when
+  // shown.
+  UpdateDisplayState();
 }
 
 void GlicNoWebviewContentsManager::SetVisibility(
     content::Visibility visibility) {
   is_visible_ = (visibility == content::Visibility::VISIBLE);
-  if (is_visible_) {
-    TransitionTo(is_guest_ready_ ? DisplayState::kShowingGuest
-                                 : DisplayState::kShowingOverlay);
-  } else {
-    TransitionTo(host_ ? DisplayState::kAttachedHidden
-                       : DisplayState::kWarming);
-  }
+  // Re-evaluate display state on visibility change (swaps to guest/overlay
+  // when visible, or tears down/debounces overlay when hidden).
+  UpdateDisplayState();
 
   overlay_manager_.SetVisibility(visibility);
   if (!is_guest_ready_ && is_visible_ && overlay_contents() &&
