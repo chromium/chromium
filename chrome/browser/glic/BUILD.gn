@@ -615,6 +615,8 @@ source_set("impl") {
       "widget/glic_window_resize_animation.h",
       "widget/inactive_view_controller.cc",
       "widget/inactive_view_controller.h",
+      "widget/scoped_modal_dialog_manager_delegate.cc",
+      "widget/scoped_modal_dialog_manager_delegate.h",
     ]
 
     deps += [
@@ -840,6 +842,7 @@ source_set("unit_tests") {
       "suggestions/caching_zero_state_suggestions_manager_unittest.cc",
       "widget/glic_view_unittest.cc",
       "widget/glic_widget_unittest.cc",
+      "widget/scoped_modal_dialog_manager_delegate_unittest.cc",
     ]
 
     deps += [
@@ -856,6 +859,7 @@ source_set("unit_tests") {
       "//components/skills:features",
       "//components/skills/public",
       "//components/skills/public:metrics",
+      "//components/web_modal:test_support",
     ]
   } else {
     sources += [
