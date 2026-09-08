@@ -1335,10 +1335,6 @@ namespace features {
 NET_EXPORT BASE_DECLARE_FEATURE(
     kQuicMigrationIgnoreDisconnectSignalDuringProbing);
 
-// When enabled, QuicChromiumClientSession registers and unregisters QUIC
-// connection close payloads with the Android system service.
-NET_EXPORT BASE_DECLARE_FEATURE(kQuicRegisterConnectionClosePayload);
-
 }  // namespace features
 
 }  // namespace net
