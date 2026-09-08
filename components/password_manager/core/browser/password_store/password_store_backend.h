@@ -34,8 +34,9 @@ struct PasswordForm;
 class SmartBubbleStatsStore;
 
 using LoginsReply = base::OnceCallback<void(std::vector<StoredCredential>)>;
-using PasswordChangesOrErrorReply =
-    base::OnceCallback<void(PasswordChangesOrError)>;
+using PasswordChangesOrErrorReply = base::OnceCallback<void(
+    base::expected<std::optional<PasswordStoreChangeList>,
+                   PasswordStoreBackendError>)>;
 using LoginsOrErrorReply = base::OnceCallback<void(
     base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>)>;
 
@@ -46,8 +47,9 @@ using LoginsOrErrorReply = base::OnceCallback<void(
 // IO operation from possibly blocking the main thread.
 class PasswordStoreBackend {
  public:
-  using RemoteChangesReceived =
-      base::RepeatingCallback<void(PasswordChangesOrError)>;
+  using RemoteChangesReceived = base::RepeatingCallback<void(
+      base::expected<std::optional<PasswordStoreChangeList>,
+                     PasswordStoreBackendError>)>;
 
   PasswordStoreBackend() = default;
   PasswordStoreBackend(const PasswordStoreBackend&) = delete;

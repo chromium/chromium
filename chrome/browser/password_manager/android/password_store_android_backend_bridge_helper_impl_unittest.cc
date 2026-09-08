@@ -30,7 +30,6 @@ using testing::NiceMock;
 using testing::Optional;
 using testing::Return;
 using testing::StrictMock;
-using testing::VariantWith;
 using testing::WithArg;
 using JobId = PasswordStoreAndroidBackendDispatcherBridge::JobId;
 
@@ -56,7 +55,10 @@ class MockBackendConsumer
               OnCompleteWithLogins,
               (JobId, std::vector<StoredCredential>),
               (override));
-  MOCK_METHOD(void, OnLoginsChanged, (JobId, PasswordChanges), (override));
+  MOCK_METHOD(void,
+              OnLoginsChanged,
+              (JobId, std::optional<PasswordStoreChangeList>),
+              (override));
   MOCK_METHOD(void, OnError, (JobId, AndroidBackendError), (override));
 };
 

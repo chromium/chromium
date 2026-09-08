@@ -7,7 +7,6 @@
 #include <cstddef>
 #include <memory>
 #include <utility>
-#include <variant>
 
 #include "base/check.h"
 #include "base/files/scoped_temp_dir.h"
@@ -21,6 +20,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
@@ -43,6 +43,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using base::test::ErrorIs;
 using base::test::ValueIs;
 using testing::ElementsAre;
 using testing::ElementsAreArray;
@@ -51,7 +52,6 @@ using testing::Optional;
 using testing::Property;
 using testing::Return;
 using testing::UnorderedElementsAreArray;
-using testing::VariantWith;
 
 namespace password_manager {
 
@@ -318,9 +318,9 @@ TEST_P(PasswordStoreBuiltInBackendTest,
       .WillRepeatedly(
           Return(syncer::SyncService::UserActionableError::kSignInNeedsUpdate));
 
-  EXPECT_CALL(mock_remote_changes_callback,
-              Run(VariantWith<PasswordStoreBackendError>(
-                  Field(&PasswordStoreBackendError::type,
+  EXPECT_CALL(
+      mock_remote_changes_callback,
+      Run(ErrorIs(Field(&PasswordStoreBackendError::type,
                         PasswordStoreBackendErrorType::kAuthErrorResolvable))));
   EXPECT_CALL(mock_sync_enabled_or_disabled_cb, Run());
   built_in_backend->OnStateChanged(&mock_sync_service);
@@ -352,9 +352,9 @@ TEST_P(PasswordStoreBuiltInBackendTest,
       .WillRepeatedly(
           Return(syncer::SyncService::UserActionableError::kNeedsPassphrase));
 
-  EXPECT_CALL(mock_remote_changes_callback,
-              Run(VariantWith<PasswordStoreBackendError>(
-                  Field(&PasswordStoreBackendError::type,
+  EXPECT_CALL(
+      mock_remote_changes_callback,
+      Run(ErrorIs(Field(&PasswordStoreBackendError::type,
                         PasswordStoreBackendErrorType::kNeedsPassphrase))));
   EXPECT_CALL(mock_sync_enabled_or_disabled_cb, Run());
   built_in_backend->OnStateChanged(&mock_sync_service);
@@ -388,7 +388,7 @@ TEST_P(PasswordStoreBuiltInBackendTest,
                                  kNeedsTrustedVaultKeyForPasswords));
 
   EXPECT_CALL(mock_remote_changes_callback,
-              Run(VariantWith<PasswordStoreBackendError>(Field(
+              Run(ErrorIs(Field(
                   &PasswordStoreBackendError::type,
                   PasswordStoreBackendErrorType::kKeyRetrievalRequired))));
   EXPECT_CALL(mock_sync_enabled_or_disabled_cb, Run());
@@ -460,9 +460,7 @@ TEST_P(PasswordStoreBuiltInBackendTest, TestAddLoginAsync) {
       PasswordStoreChange::ADD, CloneStoredCredential(cred));
 
   base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
-  EXPECT_CALL(
-      mock_reply,
-      Run(VariantWith<PasswordChanges>(Optional(ElementsAre(add_change)))));
+  EXPECT_CALL(mock_reply, Run(ValueIs(Optional(ElementsAre(add_change)))));
   backend->AddLoginAsync(std::move(cred), mock_reply.Get());
   RunUntilIdle();
 }
@@ -483,9 +481,7 @@ TEST_P(PasswordStoreBuiltInBackendTest, TestUpdateLoginAsync) {
       /*password_changed=*/true);
 
   base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
-  EXPECT_CALL(
-      mock_reply,
-      Run(VariantWith<PasswordChanges>(Optional(ElementsAre(update_change)))));
+  EXPECT_CALL(mock_reply, Run(ValueIs(Optional(ElementsAre(update_change)))));
   backend->UpdateLoginAsync(std::move(cred), mock_reply.Get());
   RunUntilIdle();
 }
@@ -504,9 +500,7 @@ TEST_P(PasswordStoreBuiltInBackendTest, TestRemoveLoginAsync) {
       /*password_changed=*/true);
 
   base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
-  EXPECT_CALL(
-      mock_reply,
-      Run(VariantWith<PasswordChanges>(Optional(ElementsAre(remove_change)))));
+  EXPECT_CALL(mock_reply, Run(ValueIs(Optional(ElementsAre(remove_change)))));
   backend->RemoveLoginAsync(FROM_HERE, std::move(cred), mock_reply.Get());
   RunUntilIdle();
 }
@@ -558,9 +552,7 @@ TEST_P(PasswordStoreBuiltInBackendTest, GetAllLoginsAsyncMetrics) {
       PasswordStoreChange::ADD, CloneStoredCredential(cred));
 
   base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
-  EXPECT_CALL(
-      mock_reply,
-      Run(VariantWith<PasswordChanges>(Optional(ElementsAre(add_change)))));
+  EXPECT_CALL(mock_reply, Run(ValueIs(Optional(ElementsAre(add_change)))));
   backend->AddLoginAsync(std::move(cred), mock_reply.Get());
 
   // Get the logins
@@ -620,9 +612,7 @@ TEST_P(PasswordStoreBuiltInBackendTest, GetAutofillableLoginsAsyncMetrics) {
       PasswordStoreChange::ADD, CloneStoredCredential(cred));
 
   base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
-  EXPECT_CALL(
-      mock_reply,
-      Run(VariantWith<PasswordChanges>(Optional(ElementsAre(add_change)))));
+  EXPECT_CALL(mock_reply, Run(ValueIs(Optional(ElementsAre(add_change)))));
   backend->AddLoginAsync(std::move(cred), mock_reply.Get());
 
   // Get the logins
@@ -710,9 +700,7 @@ TEST_P(PasswordStoreBuiltInBackendTest, UpdateLoginAsyncMetrics) {
       /*password_changed=*/true);
 
   base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
-  EXPECT_CALL(
-      mock_reply,
-      Run(VariantWith<PasswordChanges>(Optional(ElementsAre(update_change)))));
+  EXPECT_CALL(mock_reply, Run(ValueIs(Optional(ElementsAre(update_change)))));
   backend->UpdateLoginAsync(std::move(cred), mock_reply.Get());
 
   AdvanceClock(kLatencyDelta);

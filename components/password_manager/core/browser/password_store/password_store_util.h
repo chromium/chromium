@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_PASSWORD_STORE_UTIL_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_PASSWORD_STORE_UTIL_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/types/expected.h"
@@ -18,11 +19,15 @@ namespace password_manager {
 
 class PasswordStoreInterface;
 
-// Aggregates a vector of PasswordChangesOrError into a single
-// PasswordChangesOrError. Does not check for duplicate values.
-// Will return first occurred error if any.
-PasswordChangesOrError JoinPasswordStoreChanges(
-    const std::vector<PasswordChangesOrError>& changes_to_join);
+// Aggregates change lists without deduplication. Stops at the first error or
+// successful result containing nullopt, returning that result. An empty input
+// produces a successful result containing an empty change list.
+base::expected<std::optional<PasswordStoreChangeList>,
+               PasswordStoreBackendError>
+JoinPasswordStoreChanges(
+    const std::vector<base::expected<std::optional<PasswordStoreChangeList>,
+                                     PasswordStoreBackendError>>&
+        changes_to_join);
 
 // Returns logins if |result| holds them, or an empty list if |result|
 // holds an error.

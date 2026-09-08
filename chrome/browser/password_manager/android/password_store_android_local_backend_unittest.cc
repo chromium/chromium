@@ -39,7 +39,6 @@ using testing::IsEmpty;
 using testing::NiceMock;
 using testing::Optional;
 using testing::Return;
-using testing::VariantWith;
 using testing::WithArg;
 using JobId = PasswordStoreAndroidBackendDispatcherBridge::JobId;
 
@@ -257,8 +256,7 @@ TEST_F(PasswordStoreAndroidLocalBackendTest, CallsBridgeForAddLogin) {
   PasswordStoreChangeList expected_changes;
   expected_changes.emplace_back(PasswordStoreChange::ADD,
                                 FromPasswordForm(std::move(form)));
-  EXPECT_CALL(mock_reply,
-              Run(VariantWith<PasswordChanges>(Optional(expected_changes))));
+  EXPECT_CALL(mock_reply, Run(ValueIs(Optional(expected_changes))));
   consumer().OnLoginsChanged(kAddLoginJobId, expected_changes);
   RunUntilIdle();
 }
@@ -277,8 +275,7 @@ TEST_F(PasswordStoreAndroidLocalBackendTest, CallsBridgeForUpdateLogin) {
   PasswordStoreChangeList expected_changes;
   expected_changes.emplace_back(PasswordStoreChange::UPDATE,
                                 FromPasswordForm(std::move(form)));
-  EXPECT_CALL(mock_reply,
-              Run(VariantWith<PasswordChanges>(Optional(expected_changes))));
+  EXPECT_CALL(mock_reply, Run(ValueIs(Optional(expected_changes))));
   consumer().OnLoginsChanged(kUpdateLoginJobId, expected_changes);
   RunUntilIdle();
 }

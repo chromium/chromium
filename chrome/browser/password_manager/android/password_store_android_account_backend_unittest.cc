@@ -64,7 +64,6 @@ using testing::Optional;
 using testing::Return;
 using testing::StrictMock;
 using testing::UnorderedElementsAre;
-using testing::VariantWith;
 using testing::WithArg;
 using JobId = PasswordStoreAndroidBackendDispatcherBridge::JobId;
 
@@ -573,8 +572,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest, CallsBridgeForRemoveLogin) {
   PasswordStoreChangeList expected_changes;
   expected_changes.emplace_back(PasswordStoreChange::REMOVE,
                                 FromPasswordForm(std::move(form)));
-  EXPECT_CALL(mock_reply,
-              Run(VariantWith<PasswordChanges>(Optional(expected_changes))));
+  EXPECT_CALL(mock_reply, Run(ValueIs(Optional(expected_changes))));
   consumer().OnLoginsChanged(kRemoveLoginJobId, expected_changes);
   RunUntilIdle();
 }
@@ -620,8 +618,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   PasswordStoreChangeList expected_changes;
   expected_changes.emplace_back(PasswordStoreChange::REMOVE,
                                 FromPasswordForm(std::move(form_to_delete)));
-  EXPECT_CALL(mock_deletion_reply,
-              Run(VariantWith<PasswordChanges>(Optional(expected_changes))));
+  EXPECT_CALL(mock_deletion_reply, Run(ValueIs(Optional(expected_changes))));
   consumer().OnLoginsChanged(kRemoveLoginJobId, expected_changes);
   RunUntilIdle();
 
@@ -649,8 +646,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest, CallsBridgeForAddLogin) {
   PasswordStoreChangeList expected_changes;
   expected_changes.emplace_back(PasswordStoreChange::ADD,
                                 FromPasswordForm(std::move(form)));
-  EXPECT_CALL(mock_reply,
-              Run(VariantWith<PasswordChanges>(Optional(expected_changes))));
+  EXPECT_CALL(mock_reply, Run(ValueIs(Optional(expected_changes))));
   consumer().OnLoginsChanged(kAddLoginJobId, expected_changes);
   RunUntilIdle();
 }
@@ -681,8 +677,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   PasswordStoreChangeList expected_changes;
   expected_changes.emplace_back(PasswordStoreChange::ADD,
                                 FromPasswordForm(std::move(form)));
-  EXPECT_CALL(mock_reply,
-              Run(VariantWith<PasswordChanges>(Optional(expected_changes))));
+  EXPECT_CALL(mock_reply, Run(ValueIs(Optional(expected_changes))));
   consumer().OnLoginsChanged(kAddLoginJobId, expected_changes);
   RunUntilIdle();
 }
@@ -705,8 +700,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest, CallsBridgeForUpdateLogin) {
   PasswordStoreChangeList expected_changes;
   expected_changes.emplace_back(PasswordStoreChange::UPDATE,
                                 FromPasswordForm(std::move(form)));
-  EXPECT_CALL(mock_reply,
-              Run(VariantWith<PasswordChanges>(Optional(expected_changes))));
+  EXPECT_CALL(mock_reply, Run(ValueIs(Optional(expected_changes))));
   consumer().OnLoginsChanged(kUpdateLoginJobId, expected_changes);
   RunUntilIdle();
 }
@@ -737,8 +731,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   PasswordStoreChangeList expected_changes;
   expected_changes.emplace_back(PasswordStoreChange::ADD,
                                 FromPasswordForm(std::move(form)));
-  EXPECT_CALL(mock_reply,
-              Run(VariantWith<PasswordChanges>(Optional(expected_changes))));
+  EXPECT_CALL(mock_reply, Run(ValueIs(Optional(expected_changes))));
   consumer().OnLoginsChanged(kUpdateLoginJobId, expected_changes);
   RunUntilIdle();
 }
@@ -1238,13 +1231,11 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   EXPECT_CALL(store_notification_trigger, Run(_)).Times(0);
   lifecycle_helper()->OnForegroundSessionStart();
 
-  EXPECT_CALL(store_notification_trigger,
-              Run(VariantWith<PasswordChanges>(Eq(std::nullopt))));
+  EXPECT_CALL(store_notification_trigger, Run(ValueIs(Eq(std::nullopt))));
   task_environment_.FastForwardBy(base::Seconds(5));
 
   // Subsequent foregroundings should issue immediate notifications.
-  EXPECT_CALL(store_notification_trigger,
-              Run(VariantWith<PasswordChanges>(Eq(std::nullopt))));
+  EXPECT_CALL(store_notification_trigger, Run(ValueIs(Eq(std::nullopt))));
   lifecycle_helper()->OnForegroundSessionStart();
 }
 
@@ -1630,8 +1621,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   backend().RemoveLoginAsync(FROM_HERE, FromPasswordForm(form),
                              mock_reply.Get());
 
-  EXPECT_CALL(mock_reply,
-              Run(VariantWith<PasswordChanges>(Optional(IsEmpty()))));
+  EXPECT_CALL(mock_reply, Run(ValueIs(Optional(IsEmpty()))));
   RunUntilIdle();
 }
 
@@ -1655,8 +1645,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   backend().RemoveLoginsCreatedBetweenAsync(FROM_HERE, delete_begin, delete_end,
                                             mock_reply.Get());
 
-  EXPECT_CALL(mock_reply,
-              Run(VariantWith<PasswordChanges>(Optional(IsEmpty()))));
+  EXPECT_CALL(mock_reply, Run(ValueIs(Optional(IsEmpty()))));
   RunUntilIdle();
 }
 
@@ -1869,7 +1858,7 @@ TEST_P(PasswordStoreAndroidAccountBackendAbleToSaveTest, AddLogin) {
   PasswordStoreBackendError error(GetBackendErrorType());
   error.android_backend_api_error = GetError().api_error_code;
 
-  EXPECT_CALL(mock_reply, Run(VariantWith<PasswordStoreBackendError>(error)));
+  EXPECT_CALL(mock_reply, Run(ErrorIs(error)));
   consumer().OnError(kJobId, GetError());
   RunUntilIdle();
 
@@ -1887,7 +1876,7 @@ TEST_P(PasswordStoreAndroidAccountBackendAbleToSaveTest, UpdateLogin) {
   PasswordStoreBackendError error(GetBackendErrorType());
   error.android_backend_api_error = GetError().api_error_code;
 
-  EXPECT_CALL(mock_reply, Run(VariantWith<PasswordStoreBackendError>(error)));
+  EXPECT_CALL(mock_reply, Run(ErrorIs(error)));
   consumer().OnError(kJobId, GetError());
   RunUntilIdle();
 
@@ -1906,7 +1895,7 @@ TEST_P(PasswordStoreAndroidAccountBackendAbleToSaveTest, RemoveLogin) {
 
   PasswordStoreBackendError error(GetBackendErrorType());
   error.android_backend_api_error = GetError().api_error_code;
-  EXPECT_CALL(mock_reply, Run(VariantWith<PasswordStoreBackendError>(error)));
+  EXPECT_CALL(mock_reply, Run(ErrorIs(error)));
   consumer().OnError(kJobId, GetError());
   RunUntilIdle();
 

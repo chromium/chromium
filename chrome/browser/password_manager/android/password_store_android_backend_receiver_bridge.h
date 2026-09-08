@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_STORE_ANDROID_BACKEND_RECEIVER_BRIDGE_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_STORE_ANDROID_BACKEND_RECEIVER_BRIDGE_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
@@ -46,9 +47,11 @@ class PasswordStoreAndroidBackendReceiverBridge {
 
     // Asynchronous response called with the `job_id` which was passed to the
     // corresponding call to `PasswordStoreAndroidBackendDispatcherBridge`, and
-    // with the PasswordChanges. Used in response to 'AddLogin', 'UpdateLogin'
+    // with the changes, if known. Used in response to 'AddLogin', 'UpdateLogin'
     // and `RemoveLogin`.
-    virtual void OnLoginsChanged(JobId job_id, PasswordChanges changes) = 0;
+    virtual void OnLoginsChanged(
+        JobId job_id,
+        std::optional<PasswordStoreChangeList> changes) = 0;
 
     // Asynchronous response called with the `job_id` which was passed to the
     // corresponding call to `PasswordStoreAndroidBackendDispatcherBridge`.

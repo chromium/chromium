@@ -6,6 +6,7 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_LOGIN_DATABASE_ASYNC_HELPER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/cancelable_callback.h"
@@ -77,14 +78,20 @@ class LoginDatabaseAsyncHelper : public PasswordStoreSync {
   FillMatchingLogins(const std::vector<PasswordFormDigest>& forms,
                      bool include_psl);
 
-  PasswordChangesOrError AddLogin(StoredCredential cred);
-  PasswordChangesOrError UpdateLogin(const StoredCredential& cred);
-  PasswordChangesOrError RemoveLogin(const base::Location& location,
-                                     const StoredCredential& cred);
-  PasswordChangesOrError RemoveLoginsCreatedBetween(
-      const base::Location& location,
-      base::Time delete_begin,
-      base::Time delete_end);
+  base::expected<std::optional<PasswordStoreChangeList>,
+                 PasswordStoreBackendError>
+  AddLogin(StoredCredential cred);
+  base::expected<std::optional<PasswordStoreChangeList>,
+                 PasswordStoreBackendError>
+  UpdateLogin(const StoredCredential& cred);
+  base::expected<std::optional<PasswordStoreChangeList>,
+                 PasswordStoreBackendError>
+  RemoveLogin(const base::Location& location, const StoredCredential& cred);
+  base::expected<std::optional<PasswordStoreChangeList>,
+                 PasswordStoreBackendError>
+  RemoveLoginsCreatedBetween(const base::Location& location,
+                             base::Time delete_begin,
+                             base::Time delete_end);
   PasswordStoreChangeList DisableAutoSignInForOrigins(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter);
 

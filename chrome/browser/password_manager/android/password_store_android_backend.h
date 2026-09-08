@@ -275,7 +275,7 @@ class PasswordStoreAndroidBackend
       std::vector<StoredCredential> passwords) override;
   void OnLoginsChanged(
       PasswordStoreAndroidBackendDispatcherBridge::JobId task_id,
-      PasswordChanges changes) override;
+      std::optional<PasswordStoreChangeList> changes) override;
   void OnError(PasswordStoreAndroidBackendDispatcherBridge::JobId job_id,
                AndroidBackendError error) override;
 

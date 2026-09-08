@@ -4,8 +4,6 @@
 
 #include "components/password_manager/core/browser/password_store/password_store_built_in_backend.h"
 
-#include <variant>
-
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
@@ -13,6 +11,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/common/encryptor.h"
@@ -39,19 +38,7 @@ namespace {
 
 using SuccessStatus = PasswordStoreBackendMetricsRecorder::SuccessStatus;
 
-const PasswordStoreBackendError* GetBackendError(
-    const base::expected<std::vector<StoredCredential>,
-                         PasswordStoreBackendError>& result) {
-  return result ? nullptr : &result.error();
-}
-
-const PasswordStoreBackendError* GetBackendError(
-    const PasswordChangesOrError& result) {
-  return std::get_if<PasswordStoreBackendError>(&result);
-}
-
-// Creates a metrics callback for expected read results or variant write
-// results.
+// Creates a metrics callback for expected read or write results.
 template <typename Result>
 base::OnceCallback<Result(Result)> ReportMetricsForResultCallback(
     MethodName method_name) {
@@ -62,8 +49,8 @@ base::OnceCallback<Result(Result)> ReportMetricsForResultCallback(
   return base::BindOnce(
       [](PasswordStoreBackendMetricsRecorder reporter,
          Result result) -> Result {
-        if (const PasswordStoreBackendError* error = GetBackendError(result)) {
-          reporter.RecordMetrics(SuccessStatus::kError, *error);
+        if (!result.has_value()) {
+          reporter.RecordMetrics(SuccessStatus::kError, result.error());
         } else {
           reporter.RecordMetrics(SuccessStatus::kSuccess, std::nullopt);
         }
@@ -74,13 +61,15 @@ base::OnceCallback<Result(Result)> ReportMetricsForResultCallback(
 
 // Records in a pref that passwords were deleted via sync. The pref is used to
 // report metrics.
-PasswordChangesOrError MaybeRecordPasswordDeletionViaSync(
+base::expected<std::optional<PasswordStoreChangeList>,
+               PasswordStoreBackendError>
+MaybeRecordPasswordDeletionViaSync(
     base::RepeatingCallback<void(password_manager::IsAccountStore)>
         write_prefs_callback,
     std::optional<PasswordStoreChangeList> password_store_change_list,
     bool is_account_store) {
   bool hasCredentialRemoval = std::ranges::any_of(
-      password_store_change_list.value(), [](PasswordStoreChange change) {
+      *password_store_change_list, [](const PasswordStoreChange& change) {
         return change.type() == PasswordStoreChange::REMOVE;
       });
   if (hasCredentialRemoval) {
@@ -121,8 +110,9 @@ bool ShouldForwardSyncErrorToStore(
   }
 }
 
-PasswordChangesOrError SyncErrorToBackendError(
-    syncer::SyncService::UserActionableError error) {
+base::expected<std::optional<PasswordStoreChangeList>,
+               PasswordStoreBackendError>
+SyncErrorToBackendError(syncer::SyncService::UserActionableError error) {
   using SyncError = syncer::SyncService::UserActionableError;
   using BackendError = PasswordStoreBackendErrorType;
   switch (error) {
@@ -136,12 +126,15 @@ PasswordChangesOrError SyncErrorToBackendError(
 
       return std::nullopt;  // These errors aren't directly actionable (yet).
     case SyncError::kNeedsPassphrase:
-      return PasswordStoreBackendError(BackendError::kNeedsPassphrase);
+      return base::unexpected(
+          PasswordStoreBackendError(BackendError::kNeedsPassphrase));
     case SyncError::kSignInNeedsUpdate:
-      return PasswordStoreBackendError(BackendError::kAuthErrorResolvable);
+      return base::unexpected(
+          PasswordStoreBackendError(BackendError::kAuthErrorResolvable));
     case SyncError::kNeedsTrustedVaultKeyForPasswords:
     case SyncError::kNeedsTrustedVaultKeyForEverything:
-      return PasswordStoreBackendError(BackendError::kKeyRetrievalRequired);
+      return base::unexpected(
+          PasswordStoreBackendError(BackendError::kKeyRetrievalRequired));
 #if !BUILDFLAG(IS_IOS)
     case SyncError::kNeedsSettingsConfirmation:
     case SyncError::kUnrecoverableError:
@@ -151,7 +144,8 @@ PasswordChangesOrError SyncErrorToBackendError(
 #endif
     case SyncError::kNeedsClientUpgrade:
       // Errors that aren't categorized will block saving.
-      return PasswordStoreBackendError(BackendError::kUncategorized);
+      return base::unexpected(
+          PasswordStoreBackendError(BackendError::kUncategorized));
   }
 }
 
@@ -366,7 +360,8 @@ void PasswordStoreBuiltInBackend::AddLoginAsync(
       FROM_HERE,
       base::BindOnce(&LoginDatabaseAsyncHelper::AddLogin,
                      base::Unretained(helper_.get()), std::move(cred)),
-      ReportMetricsForResultCallback<PasswordChangesOrError>(
+      ReportMetricsForResultCallback<base::expected<
+          std::optional<PasswordStoreChangeList>, PasswordStoreBackendError>>(
           MethodName("AddLoginAsync"))
           .Then(std::move(callback)));
 }
@@ -380,7 +375,8 @@ void PasswordStoreBuiltInBackend::UpdateLoginAsync(
       FROM_HERE,
       base::BindOnce(&LoginDatabaseAsyncHelper::UpdateLogin,
                      base::Unretained(helper_.get()), std::move(cred)),
-      ReportMetricsForResultCallback<PasswordChangesOrError>(
+      ReportMetricsForResultCallback<base::expected<
+          std::optional<PasswordStoreChangeList>, PasswordStoreBackendError>>(
           MethodName("UpdateLoginAsync"))
           .Then(std::move(callback)));
 }
@@ -397,7 +393,8 @@ void PasswordStoreBuiltInBackend::RemoveLoginAsync(
           &LoginDatabaseAsyncHelper::RemoveLogin,
           base::Unretained(helper_.get()),  // Safe until `Shutdown()`.
           location, std::move(cred)),
-      ReportMetricsForResultCallback<PasswordChangesOrError>(
+      ReportMetricsForResultCallback<base::expected<
+          std::optional<PasswordStoreChangeList>, PasswordStoreBackendError>>(
           MethodName("RemoveLoginAsync"))
           .Then(std::move(callback)));
 }
@@ -415,7 +412,8 @@ void PasswordStoreBuiltInBackend::RemoveLoginsCreatedBetweenAsync(
           &LoginDatabaseAsyncHelper::RemoveLoginsCreatedBetween,
           base::Unretained(helper_.get()),  // Safe until `Shutdown()`.
           location, delete_begin, delete_end),
-      ReportMetricsForResultCallback<PasswordChangesOrError>(
+      ReportMetricsForResultCallback<base::expected<
+          std::optional<PasswordStoreChangeList>, PasswordStoreBackendError>>(
           MethodName("RemoveLoginsCreatedBetweenAsync"))
           .Then(std::move(callback)));
 }

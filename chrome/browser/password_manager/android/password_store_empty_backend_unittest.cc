@@ -4,21 +4,27 @@
 
 #include "chrome/browser/password_manager/android/password_store_empty_backend.h"
 
-#include <variant>
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/types/expected.h"
 #include "chrome/browser/password_manager/android/password_store_android_account_backend.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace password_manager {
 
 namespace {
+
+using base::test::ValueIs;
+using testing::IsEmpty;
+using testing::Optional;
 
 constexpr char kTestUrl[] = "https://example.com";
 
@@ -116,12 +122,15 @@ TEST_F(PasswordStoreEmptyBackendTest,
 
   base::Time delete_begin = base::Time::FromTimeT(1000);
   base::Time delete_end = base::Time::FromTimeT(2000);
-  base::test::TestFuture<PasswordChangesOrError> future;
+  base::test::TestFuture<base::expected<std::optional<PasswordStoreChangeList>,
+                                        PasswordStoreBackendError>>
+      future;
   backend->RemoveLoginsCreatedBetweenAsync(FROM_HERE, delete_begin, delete_end,
                                            future.GetCallback());
 
-  const PasswordChangesOrError& result = future.Get();
-  EXPECT_TRUE(std::get<PasswordChanges>(result).value().empty());
+  const base::expected<std::optional<PasswordStoreChangeList>,
+                       PasswordStoreBackendError>& result = future.Get();
+  EXPECT_THAT(result, ValueIs(Optional(IsEmpty())));
 }
 
 TEST_F(PasswordStoreEmptyBackendTest,

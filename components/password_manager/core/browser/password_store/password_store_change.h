@@ -5,14 +5,11 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_PASSWORD_STORE_CHANGE_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_PASSWORD_STORE_CHANGE_H_
 
-#include <optional>
 #include <ostream>
-#include <variant>
 #include <vector>
 
 #include "base/types/strong_alias.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store/stored_credential.h"
 
 namespace password_manager {
@@ -56,9 +53,6 @@ class PasswordStoreChange {
 };
 
 using PasswordStoreChangeList = std::vector<PasswordStoreChange>;
-using PasswordChanges = std::optional<PasswordStoreChangeList>;
-using PasswordChangesOrError =
-    std::variant<PasswordChanges, PasswordStoreBackendError>;
 
 // For testing.
 #if defined(UNIT_TEST)

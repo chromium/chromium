@@ -8,7 +8,6 @@
 #include <iterator>
 #include <optional>
 #include <utility>
-#include <variant>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -137,7 +136,8 @@ void FakePasswordStoreBackend::NotifyAboutError() {
       error_type = PasswordStoreBackendErrorType::kUncategorized;
       break;
   }
-  remote_form_changes_received_.Run(PasswordStoreBackendError(error_type));
+  remote_form_changes_received_.Run(
+      base::unexpected(PasswordStoreBackendError(error_type)));
 }
 
 void FakePasswordStoreBackend::SetAffiliatedMatchHelper(
@@ -291,9 +291,7 @@ void FakePasswordStoreBackend::PostTaskAndReplyWithResultOrSimulateError(
     GetTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
-                       PasswordChangesOrError(
-                           std::in_place_type<PasswordStoreBackendError>,
-                           password_store_backend_error_.value())));
+                       base::unexpected(*password_store_backend_error_)));
     return;
   }
   GetTaskRunner()->PostTaskAndReplyWithResult(FROM_HERE, std::move(task),

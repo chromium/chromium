@@ -147,15 +147,6 @@ MATCHER_P(UnorderedPasswordFormElementsAre, expectations, "") {
                                              result_listener->stream());
 }
 
-MATCHER_P(LoginsResultsOrErrorAre, expectations, "") {
-  if (!arg) {
-    return false;
-  }
-
-  return ContainsEqualPasswordFormsUnordered(*expectations, *arg,
-                                             result_listener->stream());
-}
-
 // Matches a form or a stored credential that has the primary_key field set, and
 // that other fields (except `primary_key` and `keychain_identifier`) are the
 // same as in |expected|.
