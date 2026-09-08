@@ -197,6 +197,12 @@ std::optional<GURL> IsolatedOriginUtil::RemoveTrailingDotFromUrlIfNecessary(
 // static
 url::Origin IsolatedOriginUtil::CreateOriginWithDefaultPortIfNecessary(
     const url::Origin& origin) {
+  // This helper should only be used when `origin` is non-opaque. This is
+  // guaranteed to be true because this helper is only used when `origin`
+  // matches a valid isolated origin (which cannot be opaque per
+  // `IsValidIsolatedOrigin()`).
+  CHECK(!origin.opaque());
+
   uint16_t default_port = url::DefaultPortForScheme(origin.scheme());
   if (origin.port() != default_port) {
     return url::Origin::CreateFromNormalizedTuple(origin.scheme(),
