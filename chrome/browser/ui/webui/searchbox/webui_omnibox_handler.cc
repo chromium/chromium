@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_pedal_implementations.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
@@ -433,7 +434,14 @@ void WebuiOmniboxHandler::OverrideIconPaths(
 
 void WebuiOmniboxHandler::OnFocusChanged(bool focused) {
   if (focused) {
-    edit_model()->OnSetFocus(false);
+    if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
+      if (omnibox_controller() &&
+          omnibox_controller()->popup_state_manager()->popup_state() ==
+              OmniboxPopupState::kNone) {
+        return;
+      }
+    }
+    edit_model()->OnSetFocus(/*control_down=*/false);
   } else {
     edit_model()->OnWillKillFocus();
     // Delay killing focus for full popup until state is properly synced in

@@ -182,9 +182,11 @@ class OmniboxViewViews
 
   // views::Textfield:
   gfx::Size GetMinimumSize() const override;
+  bool SupportsDrag() const override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
+  void OnMouseCaptureLost() override;
   void OnPaint(gfx::Canvas* canvas) override;
   void ExecuteCommand(int command_id, int event_flags) override;
   void OnInputMethodChanged() override;

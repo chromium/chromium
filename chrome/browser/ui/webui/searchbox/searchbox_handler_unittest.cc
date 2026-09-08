@@ -1948,6 +1948,23 @@ TEST_F(WebuiOmniboxHandlerTabScopingTest, QueryAutocomplete_InvalidTabHandle) {
   EXPECT_EQ(test_omnibox_view_->GetText(), u"foreground untouched");
 }
 
+TEST_F(WebuiOmniboxHandlerTabScopingTest,
+       OnFocusChanged_IgnoredWhenPopupStateNone) {
+  ASSERT_EQ(omnibox_controller_->popup_state_manager()->popup_state(),
+            OmniboxPopupState::kNone);
+  ASSERT_FALSE(omnibox_controller_->edit_model()->has_focus());
+
+  // Background focus events when popup state is kNone should be ignored.
+  handler_->OnFocusChanged(/*focused=*/true);
+  EXPECT_FALSE(omnibox_controller_->edit_model()->has_focus());
+
+  // When popup state is kFull, focus events should be accepted.
+  omnibox_controller_->popup_state_manager()->SetPopupState(
+      OmniboxPopupState::kFull);
+  handler_->OnFocusChanged(/*focused=*/true);
+  EXPECT_TRUE(omnibox_controller_->edit_model()->has_focus());
+}
+
 #endif
 
 namespace {

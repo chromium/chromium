@@ -18,6 +18,7 @@
 class LocationBar;
 class OmniboxPopupPresenterDelegate;
 class OmniboxController;
+class OmniboxPopupHandler;
 
 // Implements subclass of OmniboxPopupPresenterBase to present a single full
 // WebUI (input row + suggestions dropdown) into the Omnibox popup.
@@ -81,7 +82,10 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   // Handles click events and determines if the popup should be deactivated.
   void OnEvent(const ui::Event& event) override;
 
+  // Focuses the native Views content, underlying WebContents, and DOM input.
+  void FocusPopupContent();
   void DeactivatePopupAndKillFocus();
+  OmniboxPopupHandler* GetPopupHandler();
 
   // Flag set when an ESC key event is intercepted before widget deactivation.
   bool is_handling_escape_key_ = false;

@@ -276,6 +276,8 @@ bool OmniboxPopupWebUIBaseContent::HandleKeyboardEvent(
       return controller_->edit_model()->OnEscapeKeyPressed();
     }
   }
+  // TODO(b/552482504): Handle keyboard event for Full WebUI omnibox popup
+  // properly.
   return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
       event, GetFocusManager());
 }

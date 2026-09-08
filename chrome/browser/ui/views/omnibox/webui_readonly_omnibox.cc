@@ -588,6 +588,19 @@ void WebUIReadOnlyOmnibox::OnBlur() {
   }
   has_focus_ = false;
   aim_hint_currently_shown_ = false;
+
+  // If focus is transferring to a WebUI popup widget (e.g., Full Popup or AIM
+  // Popup), treat this as a logical focus transfer rather than a true blur.
+  // Keep the edit model's focus state active, and skip all reversion/blurring.
+  if (controller()->popup_state_manager()->popup_state() ==
+          OmniboxPopupState::kFull ||
+      controller()->popup_state_manager()->popup_state() ==
+          OmniboxPopupState::kAim) {
+    ClearAccessibilityLabel();
+    RequestUpdateWebUI();
+    return;
+  }
+
   controller()->edit_model()->OnWillKillFocus();
   if (auto* popup_closer = controller()->client()->GetOmniboxPopupCloser()) {
     popup_closer->CloseWithReason(omnibox::PopupCloseReason::kBlur);

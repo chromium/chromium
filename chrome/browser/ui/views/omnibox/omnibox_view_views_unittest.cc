@@ -1525,6 +1525,52 @@ TEST_F(OmniboxViewViewsSteadyStateElisionsTest, MouseSingleThenDoubleClick) {
   EXPECT_EQ(19U, selection.end());
 }
 
+TEST_F(OmniboxViewViewsSteadyStateElisionsTest,
+       MouseDoubleClickWithFocusBehaviorNever) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kWebUIOmniboxFullPopup);
+  omnibox_view()->SetFocusBehavior(views::View::FocusBehavior::NEVER);
+  EXPECT_TRUE(IsElidedUrlDisplayed());
+
+  auto point = GetPointInTextAtXOffset(4 * kCharacterWidth);
+
+  // First click unelides on mousedown or gained focus.
+  SendMouseClickAtPoint(point, 1);
+  EXPECT_FALSE(omnibox_view()->HasFocus());
+
+  // Second click (double click) at the same point.
+  SendMouseClickAtPoint(point, 2);
+
+  // Selection should be "example" [12, 19], NOT select all!
+  gfx::Range selection = omnibox_view()->GetSelectionBounds();
+  EXPECT_EQ(12U, selection.start());
+  EXPECT_EQ(19U, selection.end());
+}
+
+TEST_F(OmniboxViewViewsSteadyStateElisionsTest,
+       MouseDragSelectionWithFocusBehaviorNever) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kWebUIOmniboxFullPopup);
+  omnibox_view()->SetFocusBehavior(views::View::FocusBehavior::NEVER);
+  EXPECT_TRUE(IsElidedUrlDisplayed());
+
+  gfx::Point click_point = GetPointInTextAtXOffset(2 * kCharacterWidth);
+  omnibox_textfield()->OnMousePressed(
+      CreateMouseEvent(ui::EventType::kMousePressed, click_point));
+
+  // Drag across by 5 characters
+  gfx::Point drag_point = GetPointInTextAtXOffset(7 * kCharacterWidth);
+  omnibox_textfield()->OnMouseDragged(
+      CreateMouseEvent(ui::EventType::kMouseDragged, drag_point));
+  omnibox_textfield()->OnMouseReleased(
+      CreateMouseEvent(ui::EventType::kMouseReleased, drag_point));
+
+  // Should have a valid partial selection despite FocusBehavior::NEVER
+  gfx::Range selection = omnibox_view()->GetSelectionBounds();
+  EXPECT_FALSE(selection.is_empty());
+  EXPECT_FALSE(omnibox_view()->IsSelectAll());
+}
+
 TEST_F(OmniboxViewViewsSteadyStateElisionsTest, MouseSingleThenRightClick) {
   EXPECT_TRUE(IsElidedUrlDisplayed());
   auto point = GetPointInTextAtXOffset(4 * kCharacterWidth);

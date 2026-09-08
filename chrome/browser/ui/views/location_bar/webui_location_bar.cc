@@ -470,7 +470,13 @@ bool WebUILocationBar::IsMouseHovered() const {
 }
 
 bool WebUILocationBar::IsFocusWithin() const {
-  return focus_within_;
+  // If `using_full_popup_` is `true`, focus resides inside the WebUI popup's
+  // `WebContents` / `RenderWidgetHost` rather than a native child View of
+  // `WebUILocationBar`.
+  const bool full_popup_has_focus =
+      using_full_popup_ && omnibox_controller_ &&
+      omnibox_controller_->edit_model()->has_focus();
+  return full_popup_has_focus || focus_within_;
 }
 
 void WebUILocationBar::InvalidateLayout() {

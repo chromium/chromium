@@ -379,6 +379,12 @@ void LocationBarView::Init() {
           /*controller=*/omnibox_controller_.get(), /*location_bar=*/this,
           /*presenter_delegate=*/*this);
     }
+
+    if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
+      // NOTE: In classic mode, `OmniboxViewViews` provides the accessible name.
+      GetViewAccessibility().SetName(
+          l10n_util::GetStringUTF16(IDS_ACCNAME_LOCATION));
+    }
   }
 
   // Default to the legacy popup view for web apps and devtools windows.
@@ -583,7 +589,8 @@ void LocationBarView::SelectAll() {
 void LocationBarView::FocusLocation(bool is_user_initiated,
                                     bool clear_focus_if_failed) {
   omnibox_view_->SetFocus(is_user_initiated);
-  if (clear_focus_if_failed && !omnibox_view_->HasFocus()) {
+  if (clear_focus_if_failed && !omnibox_view_->HasFocus() &&
+      !base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
     // If none of location bar got focus, then clear focus.
     views::FocusManager* focus_manager = GetFocusManager();
     DCHECK(focus_manager);
@@ -1558,6 +1565,17 @@ void LocationBarView::FocusSearch() {
 }
 
 void LocationBarView::UpdateFocusBehavior(bool toolbar_visible) {
+  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
+    // Set `omnibox_view`'s `FocusBehavior` to `NEVER` to prevent native caret
+    // blinking and selection conflicts.
+    // Mark `LocationBarView` as focusable so `FocusManager` includes the
+    // Omnibox in Tab / Shift+Tab traversal and routes focus to the WebUI
+    // popup via `LocationBarView::OnFocus()`.
+    omnibox_view()->SetFocusBehavior(FocusBehavior::NEVER);
+    SetFocusBehavior(toolbar_visible ? FocusBehavior::ALWAYS
+                                     : FocusBehavior::NEVER);
+    return;
+  }
   omnibox_view()->SetFocusBehavior(toolbar_visible ? FocusBehavior::ALWAYS
                                                    : FocusBehavior::NEVER);
 }
@@ -1900,13 +1918,6 @@ void LocationBarView::OnChanged() {
   // Ensure that background colors get updated on tab-switch.
   RefreshBackground();
 
-  // In Full WebUI Omnibox popup mode, ensure the focus ring's visibility
-  // matches the final tab focus state on tab switches.
-  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup) &&
-      views::FocusRing::Get(this)) {
-    views::FocusRing::Get(this)->Refresh();
-  }
-
   location_icon_view_->Update(
       /*suppress_animations=*/false, GetOmniboxController()->IsPopupOpen());
   clear_all_button_->SetVisible(
@@ -2014,6 +2025,14 @@ bool LocationBarView::IsMouseHovered() const {
 }
 
 bool LocationBarView::IsFocusWithin() const {
+  // In Full WebUI mode, focus resides inside the WebUI popup's `WebContents` /
+  // `RenderWidgetHost` rather than a native child View of `LocationBarView`.
+  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
+    const OmniboxController* const controller = GetOmniboxController();
+    if (controller && controller->edit_model()->has_focus()) {
+      return true;
+    }
+  }
   const views::FocusManager* const focus_manager = GetFocusManager();
   return focus_manager && Contains(focus_manager->GetFocusedView());
 }

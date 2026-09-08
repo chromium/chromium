@@ -189,10 +189,6 @@ bool OmniboxController::IsSuggestionHidden(
 }
 
 bool OmniboxController::IsPopupOpen() const {
-  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
-    return !autocomplete_controller()->result().empty();
-  }
-
   OmniboxPopupState state = popup_state_manager_->popup_state();
   if (popup_state_validation_callback_) {
     popup_state_validation_callback_.Run(state);
