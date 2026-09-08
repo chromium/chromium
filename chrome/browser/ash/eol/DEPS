@@ -18,10 +18,7 @@ include_rules = [
   "+chrome/browser/ash/extended_updates",
   "+chrome/browser/ash/login/session",
   "+chrome/browser/ash/login/test",
-  "+chrome/browser/ash/policy/core",
-  "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/system",
-  "+chrome/common",
   "+chrome/grit",
   "+chrome/test/base",
 
