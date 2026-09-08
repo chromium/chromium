@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -19,8 +20,10 @@
 #include "components/update_client/net/network_chromium.h"
 #include "components/update_client/test_utils.h"
 #include "components/update_client/update_client_errors.h"
+#include "components/update_client/url_fetcher_downloader.h"
 #include "components/update_client/utils.h"
 #include "net/base/net_errors.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -35,6 +38,20 @@ constexpr char kTestFileName[] = "jebgalgnebhfojomionfpkfelancnnkf.crx";
 
 constexpr char hash_jebg[] =
     "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498";
+
+// A successor downloader that fails the test if it is started.
+class FailingSuccessorDownloader : public CrxDownloader {
+ public:
+  FailingSuccessorDownloader() : CrxDownloader(nullptr) {}
+
+ private:
+  ~FailingSuccessorDownloader() override = default;
+
+  base::OnceClosure DoStartDownload(const GURL& url) override {
+    ADD_FAILURE() << "Successor started after cancellation: " << url;
+    return base::DoNothing();
+  }
+};
 
 }  // namespace
 
@@ -401,6 +418,46 @@ TEST_F(CrxDownloaderTest, TwoUrls_BothInvalid) {
   EXPECT_EQ(net::ERR_FILE_NOT_FOUND, download_metrics[1].error);
   EXPECT_EQ(-1, download_metrics[1].downloaded_bytes);
   EXPECT_EQ(-1, download_metrics[1].total_bytes);
+}
+
+// A download cancelled while its fetch is in flight reports CANCELLED once
+// and is not retried through the successor downloader.
+TEST_F(CrxDownloaderTest, CancelDoesNotFallBackToSuccessor) {
+  auto downloader = base::MakeRefCounted<UrlFetcherDownloader>(
+      base::MakeRefCounted<FailingSuccessorDownloader>(),
+      base::MakeRefCounted<NetworkFetcherChromiumFactory>(
+          base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+              &test_url_loader_factory_),
+          base::BindRepeating([](const GURL& url) { return false; })),
+      "CrxDownloaderTest");
+
+  // Wait for the request to reach the network; the response is never
+  // provided.
+  base::RunLoop request_loop;
+  test_url_loader_factory_.SetInterceptor(base::BindLambdaForTesting(
+      [&](const network::ResourceRequest&) { request_loop.Quit(); }));
+
+  base::RunLoop run_loop;
+  int num_complete_calls = 0;
+  CrxDownloader::Result result;
+  base::OnceClosure cancel = downloader->StartDownloadFromUrl(
+      GURL("http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf"),
+      hash_jebg,
+      base::BindLambdaForTesting([&](const CrxDownloader::Result& r) {
+        ++num_complete_calls;
+        result = r;
+        run_loop.Quit();
+      }));
+  request_loop.Run();
+  ASSERT_EQ(0, num_complete_calls);
+
+  std::move(cancel).Run();
+  run_loop.Run();
+
+  EXPECT_EQ(1, num_complete_calls);
+  EXPECT_EQ(std::to_underlying(CrxDownloaderError::CANCELLED), result.error);
+  EXPECT_TRUE(result.response.empty());
+  EXPECT_EQ(0, test_url_loader_factory_.NumPending());
 }
 
 }  // namespace update_client

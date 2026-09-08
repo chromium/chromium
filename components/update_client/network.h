@@ -72,7 +72,11 @@ class NetworkFetcher {
       ProgressCallback progress_callback,
       PostRequestCompleteCallback post_request_complete_callback) = 0;
 
-  // Returns a cancellation closure.
+  // Downloads `url` to `file_path`. `download_to_file_complete_callback` is
+  // run exactly once, when the download succeeds, fails, or is cancelled; a
+  // cancelled download completes with net::ERR_ABORTED. Returns a closure that
+  // cancels the download. Running it after the download has completed is a
+  // no-op.
   virtual base::OnceClosure DownloadToFile(
       const GURL& url,
       const base::FilePath& file_path,

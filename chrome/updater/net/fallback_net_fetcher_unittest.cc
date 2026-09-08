@@ -196,6 +196,38 @@ TEST(FallbackNetFetcher, FallbackOnFailure_Download) {
   EXPECT_TRUE(called_back);
 }
 
+// A cancelled download is not retried by the next fetcher.
+TEST(FallbackNetFetcher, NoFallbackOnCancel_Download) {
+  bool ran2 = false;
+  // The first fetcher completes with an error only when it is cancelled.
+  auto first = std::make_unique<FakeFetcher>(
+      base::BindOnce(
+          [](update_client::NetworkFetcher::PostRequestCompleteCallback) {
+            ADD_FAILURE();
+          }),
+      base::BindOnce(
+          [](update_client::NetworkFetcher::DownloadToFileCompleteCallback
+                 callback) {
+            return base::BindOnce(std::move(callback), -3, 0);
+          }));
+  FallbackNetFetcher fetcher(
+      std::move(first),
+      MakeFakeFetcherForDownload(base::BindLambdaForTesting([&] {
+        ran2 = true;
+        return 0;
+      })));
+  bool called_back = false;
+  fetcher
+      .DownloadToFile({}, {}, base::DoNothing(), base::DoNothing(),
+                      base::BindLambdaForTesting([&](int error, int64_t) {
+                        EXPECT_EQ(-3, error);
+                        called_back = true;
+                      }))
+      .Run();
+  EXPECT_FALSE(ran2);
+  EXPECT_TRUE(called_back);
+}
+
 TEST(FallbackNetFetcher, NoCrashOnNullptr_Post) {
   bool ran1 = false;
   bool called_back = false;

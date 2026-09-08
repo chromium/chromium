@@ -191,6 +191,14 @@ void CrxDownloader::HandleDownloadError(
 
   download_metrics_.push_back(download_metrics);
 
+  // Prevent the downloader from attempting other URLs or falling back to
+  // other downloader types (like BITS) once a cancellation is triggered.
+  if (result.error == std::to_underlying(CrxDownloaderError::CANCELLED)) {
+    main_task_runner()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(download_callback_), result));
+    return;
+  }
+
   // If an error has occured, try the next url if there is any,
   // or try the successor in the chain if there is any successor.
   // If this downloader has received a 5xx error for the current url,

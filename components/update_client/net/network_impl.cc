@@ -13,9 +13,11 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/branding_buildflags.h"
 #include "components/update_client/net/network_chromium.h"
 #include "net/base/load_flags.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -191,33 +193,57 @@ base::OnceClosure NetworkFetcherImpl::DownloadToFile(
   } else {
     resource_request->site_for_cookies = net::SiteForCookies::FromUrl(url);
   }
-  std::unique_ptr<network::SimpleURLLoader> simple_url_loader =
-      network::SimpleURLLoader::Create(std::move(resource_request),
-                                       traffic_annotation);
-  simple_url_loader->SetRetryOptions(
+  // The loader is owned by this fetcher so the download can be cancelled by
+  // destroying it. The completion callback is kept here so that it can be run
+  // after a cancellation, since a destroyed loader never runs it.
+  CHECK(!simple_url_loader_);
+  CHECK(!download_to_file_complete_callback_);
+  download_to_file_complete_callback_ =
+      std::move(download_to_file_complete_callback);
+  simple_url_loader_ = network::SimpleURLLoader::Create(
+      std::move(resource_request), traffic_annotation);
+  simple_url_loader_->SetRetryOptions(
       kMaxRetriesOnNetworkChange,
       network::SimpleURLLoader::RetryMode::RETRY_ON_NETWORK_CHANGE);
-  simple_url_loader->SetAllowPartialResults(true);
-  simple_url_loader->SetOnResponseStartedCallback(base::BindOnce(
+  simple_url_loader_->SetAllowPartialResults(true);
+  simple_url_loader_->SetOnResponseStartedCallback(base::BindOnce(
       &NetworkFetcherImpl::OnResponseStartedCallback,
       weak_ptr_factory_.GetWeakPtr(), std::move(response_started_callback)));
-  simple_url_loader->SetOnDownloadProgressCallback(base::BindRepeating(
+  simple_url_loader_->SetOnDownloadProgressCallback(base::BindRepeating(
       &NetworkFetcherImpl::OnProgressCallback, weak_ptr_factory_.GetWeakPtr(),
       std::move(progress_callback)));
-  simple_url_loader->DownloadToFile(
+  simple_url_loader_->DownloadToFile(
       shared_url_network_factory_.get(),
-      base::BindOnce(
-          [](std::unique_ptr<network::SimpleURLLoader> simple_url_loader,
-             DownloadToFileCompleteCallback download_to_file_complete_callback,
-             base::FilePath file_path) {
-            std::move(download_to_file_complete_callback)
-                .Run(simple_url_loader->NetError(),
-                     simple_url_loader->GetContentSize());
-          },
-          std::move(simple_url_loader),
-          std::move(download_to_file_complete_callback)),
+      base::BindOnce(&NetworkFetcherImpl::OnDownloadToFileComplete,
+                     weak_ptr_factory_.GetWeakPtr()),
       file_path);
-  return base::DoNothing();
+  return base::BindOnce(&NetworkFetcherImpl::CancelDownloadToFile,
+                        weak_ptr_factory_.GetWeakPtr());
+}
+
+void NetworkFetcherImpl::OnDownloadToFileComplete(base::FilePath file_path) {
+  // The loader runs this callback itself, and cancelling destroys the loader
+  // before it can, so the loader is always set here.
+  CHECK(simple_url_loader_);
+  // Take the loader so it is destroyed after this method returns, once its
+  // result has been read.
+  std::unique_ptr<network::SimpleURLLoader> simple_url_loader =
+      std::move(simple_url_loader_);
+  std::move(download_to_file_complete_callback_)
+      .Run(simple_url_loader->NetError(), simple_url_loader->GetContentSize());
+}
+
+void NetworkFetcherImpl::CancelDownloadToFile() {
+  if (!simple_url_loader_) {
+    // The download has already completed, or was already cancelled.
+    return;
+  }
+  // Destroying the loader stops the download. The loader then never runs the
+  // completion callback, so it is run here, once, like any other completion.
+  simple_url_loader_.reset();
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(download_to_file_complete_callback_),
+                                net::ERR_ABORTED, /*content_size=*/0));
 }
 
 void NetworkFetcherImpl::OnResponseStartedCallback(

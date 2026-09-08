@@ -12,6 +12,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -33,6 +34,10 @@ class UrlFetcherDownloader : public CrxDownloader {
   UrlFetcherDownloader& operator=(const UrlFetcherDownloader&) = delete;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(UrlFetcherDownloaderTest,
+                           CancelBeforeDownloadDirCreated);
+  FRIEND_TEST_ALL_PREFIXES(UrlFetcherDownloaderTest, CancelTwice);
+
   // Overrides for CrxDownloader.
   ~UrlFetcherDownloader() override;
   base::OnceClosure DoStartDownload(const GURL& url) override;
@@ -63,6 +68,8 @@ class UrlFetcherDownloader : public CrxDownloader {
 
   int response_code_ = -1;
   int64_t total_bytes_ = -1;
+  // The bytes downloaded so far, as last reported by the network fetcher.
+  int64_t downloaded_bytes_ = -1;
 };
 
 }  // namespace update_client

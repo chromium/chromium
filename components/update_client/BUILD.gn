@@ -330,7 +330,10 @@ source_set("unit_tests") {
   ]
 
   if (!disable_file_support) {
-    sources += [ "crx_downloader_unittest.cc" ]
+    sources += [
+      "crx_downloader_unittest.cc",
+      "url_fetcher_downloader_unittest.cc",
+    ]
 
     if (is_win) {
       sources += [ "background_downloader_win_unittest.cc" ]
