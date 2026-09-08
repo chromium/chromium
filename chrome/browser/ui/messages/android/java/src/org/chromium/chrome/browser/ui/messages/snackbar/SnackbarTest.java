@@ -25,6 +25,8 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -43,6 +45,7 @@ import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 /** Tests for {@link SnackbarManager}. */
@@ -857,6 +860,147 @@ public class SnackbarTest {
         TimeUnit.MILLISECONDS.sleep(timeout + 100);
         pollSnackbarCondition(
                 "Snackbar should eventually time out", () -> !mManager.isShowing() && mDismissed);
+    }
+
+    @Test
+    @SmallTest
+    public void testSnackbarPersistsWithActivityPaused() throws Exception {
+        int timeout = 400;
+        SnackbarManager.setDurationForTesting(timeout);
+        final Snackbar snackbar =
+                Snackbar.make(
+                        "stack",
+                        mDismissController,
+                        Snackbar.TYPE_ACTION,
+                        Snackbar.UMA_TEST_SNACKBAR);
+        mDismissed = false;
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mManager.showSnackbar(snackbar);
+                    // Simulate activity being paused (e.g. obscured by external/OS dialog).
+                    mManager.onActivityStateChange(sActivity, ActivityState.PAUSED);
+                });
+
+        // Wait for the duration of the timeout.
+        TimeUnit.MILLISECONDS.sleep(timeout + 100);
+
+        // Simulate activity being resumed.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mManager.onActivityStateChange(sActivity, ActivityState.RESUMED));
+
+        // Should not immediately time out.
+        Assert.assertFalse(
+                "Snackbar should not immediately time out after activity was resumed.", mDismissed);
+
+        // Now it should time out. This must be run from outside UI thread.
+        TimeUnit.MILLISECONDS.sleep(timeout + 200);
+
+        pollSnackbarCondition(
+                "Snackbar should eventually time out", () -> !mManager.isShowing() && mDismissed);
+    }
+
+    @Test
+    @SmallTest
+    public void testSnackbarShownDuringActivityPaused() throws Exception {
+        int timeout = 400;
+        SnackbarManager.setDurationForTesting(timeout);
+        final Snackbar snackbar =
+                Snackbar.make(
+                        "stack",
+                        mDismissController,
+                        Snackbar.TYPE_ACTION,
+                        Snackbar.UMA_TEST_SNACKBAR);
+        mDismissed = false;
+
+        // Simulate activity being paused before the snackbar is shown.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mManager.onActivityStateChange(sActivity, ActivityState.PAUSED);
+                    mManager.showSnackbar(snackbar);
+                });
+
+        // Wait for the duration of the timeout.
+        TimeUnit.MILLISECONDS.sleep(timeout + 100);
+
+        // Simulate activity being resumed.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mManager.onActivityStateChange(sActivity, ActivityState.RESUMED));
+
+        // Should not immediately time out.
+        Assert.assertFalse(
+                "Snackbar should not immediately time out after activity was resumed.", mDismissed);
+
+        // Now it should time out. This must be run from outside UI thread.
+        TimeUnit.MILLISECONDS.sleep(timeout + 100);
+        pollSnackbarCondition(
+                "Snackbar should eventually time out", () -> !mManager.isShowing() && mDismissed);
+    }
+
+    @Test
+    @SmallTest
+    public void testSnackbarManagerInitializedWhilePaused() throws Exception {
+        int timeout = 400;
+        SnackbarManager.setDurationForTesting(timeout);
+        int originalState =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> ApplicationStatus.getStateForActivity(sActivity));
+        AtomicReference<SnackbarManager> managerHolder = new AtomicReference<>();
+        try {
+            final Snackbar snackbar =
+                    Snackbar.make(
+                            "stack",
+                            mDismissController,
+                            Snackbar.TYPE_ACTION,
+                            Snackbar.UMA_TEST_SNACKBAR);
+            mDismissed = false;
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        ApplicationStatus.onStateChangeForTesting(sActivity, ActivityState.PAUSED);
+                        managerHolder.set(
+                                new SnackbarManager(
+                                        sActivity,
+                                        sMainParent,
+                                        null,
+                                        null,
+                                        null,
+                                        ObservableSuppliers.createNonNull(false)));
+                        Assert.assertTrue(
+                                "Manager should be able to show snackbars when paused.",
+                                managerHolder.get().canShowSnackbar());
+                        managerHolder.get().showSnackbar(snackbar);
+                    });
+
+            // Wait for the duration of the timeout.
+            TimeUnit.MILLISECONDS.sleep(timeout + 100);
+
+            // Simulate activity being resumed.
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        ApplicationStatus.onStateChangeForTesting(sActivity, ActivityState.RESUMED);
+                        Assert.assertTrue(
+                                "Manager should be able to show snackbars after resumed.",
+                                managerHolder.get().canShowSnackbar());
+                    });
+
+            // Should not immediately time out.
+            Assert.assertFalse(
+                    "Snackbar should not immediately time out after activity was resumed.",
+                    mDismissed);
+
+            // Now it should time out. This must be run from outside UI thread.
+            TimeUnit.MILLISECONDS.sleep(timeout + 100);
+            pollSnackbarCondition(
+                    "Snackbar should eventually time out",
+                    () -> !managerHolder.get().isShowing() && mDismissed);
+        } finally {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        if (managerHolder.get() != null) {
+                            managerHolder.get().destroy();
+                        }
+                        ApplicationStatus.onStateChangeForTesting(sActivity, originalState);
+                    });
+        }
     }
 
     @Test

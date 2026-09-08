@@ -204,6 +204,7 @@ public class SnackbarManager
     private boolean mActivityInForeground;
     private boolean mIsDisabledForTesting;
     private boolean mIsModalDialogShowing;
+    private boolean mIsActivityPaused;
 
     /**
      * Constructs a SnackbarManager to show snackbars in the given window.
@@ -257,9 +258,14 @@ public class SnackbarManager
         }
 
         ApplicationStatus.registerStateListenerForActivity(this, mActivity);
-        if (ApplicationStatus.getStateForActivity(mActivity) == ActivityState.STARTED
-                || ApplicationStatus.getStateForActivity(mActivity) == ActivityState.RESUMED) {
+        int initialActivityState = ApplicationStatus.getStateForActivity(mActivity);
+        if (initialActivityState == ActivityState.STARTED
+                || initialActivityState == ActivityState.RESUMED
+                || initialActivityState == ActivityState.PAUSED) {
             onStart();
+            if (initialActivityState == ActivityState.PAUSED) {
+                mIsActivityPaused = true;
+            }
         }
         mIsShowingSupplier = ObservableSuppliers.createNonNull(isShowing());
 
@@ -278,6 +284,10 @@ public class SnackbarManager
             onStart();
         } else if (newState == ActivityState.STOPPED) {
             onStop();
+        } else if (newState == ActivityState.PAUSED) {
+            onPause();
+        } else if (newState == ActivityState.RESUMED) {
+            onResume();
         }
     }
 
@@ -286,11 +296,23 @@ public class SnackbarManager
         mActivityInForeground = true;
     }
 
+    private void onPause() {
+        mIsActivityPaused = true;
+        mUiThreadHandler.removeCallbacks(mHideRunnable);
+    }
+
+    private void onResume() {
+        mActivityInForeground = true;
+        mIsActivityPaused = false;
+        resetSnackbarTimeout();
+    }
+
     /** Notifies the snackbar manager that the activity has been pushed to background. */
     private void onStop() {
         mSnackbars.clear();
         updateView();
         mActivityInForeground = false;
+        mIsActivityPaused = false;
     }
 
     /** Destroys the SnackbarManager, unregistering any observers and dismissing all snackbars. */
@@ -399,7 +421,8 @@ public class SnackbarManager
         Snackbar currentSnackbar = mSnackbars.getCurrent();
         if (currentSnackbar != null
                 && !currentSnackbar.isTypePersistent()
-                && !mIsModalDialogShowing) {
+                && !mIsModalDialogShowing
+                && !mIsActivityPaused) {
             mCurrentSnackbarStartTimeMs = TimeUtils.uptimeMillis();
             int durationMs = getDuration(currentSnackbar);
             mUiThreadHandler.postDelayed(mHideRunnable, durationMs);
@@ -551,12 +574,7 @@ public class SnackbarManager
             }
 
             if (viewChanged) {
-                mCurrentSnackbarStartTimeMs = TimeUtils.uptimeMillis();
-                mUiThreadHandler.removeCallbacks(mHideRunnable);
-                if (!currentSnackbar.isTypePersistent() && !mIsModalDialogShowing) {
-                    int durationMs = getDuration(currentSnackbar);
-                    mUiThreadHandler.postDelayed(mHideRunnable, durationMs);
-                }
+                resetSnackbarTimeout();
                 mView.updateAccessibilityPaneTitle();
             }
         }
