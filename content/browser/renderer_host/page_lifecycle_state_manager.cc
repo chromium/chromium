@@ -118,8 +118,10 @@ void PageLifecycleStateManager::SetIsInBackForwardCache(
   }
   // Prevent races by waiting for confirmation that the renderer will no longer
   // evict the page before allowing it to exit the back-forward cache
-  CHECK(is_in_back_forward_cache || !last_acknowledged_state_->eviction_enabled,
-        base::NotFatalUntil::M158);
+  // TODO(crbug.com/558345723): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(is_in_back_forward_cache ||
+         !last_acknowledged_state_->eviction_enabled);
   eviction_enabled_ = is_in_back_forward_cache;
   if (is_in_back_forward_cache) {
     SetBackForwardCacheEntered(BackForwardCacheEntered::kEntering);
