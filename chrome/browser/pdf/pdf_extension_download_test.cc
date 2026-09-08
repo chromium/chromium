@@ -7,7 +7,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/test/run_until.h"
-#include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -42,9 +41,6 @@ using extensions::FileSystemChooseEntryFunction;
 
 namespace {
 
-// Saved file is compared with the expectation after this delay.
-constexpr base::TimeDelta kFileComparisonDelay = base::Seconds(1);
-
 // LINT.IfChange(MaxSaveBufferSize)
 constexpr uint32_t kMaxSaveBufferSize = 16 * 1000 * 1000;
 // LINT.ThenChange(//pdf/pdf_view_web_plugin.cc:MaxSaveBufferSize)
@@ -77,26 +73,41 @@ void TriggerDownloadButton(content::RenderFrameHost* extension_host) {
       "downloads.shadowRoot.getElementById('save').click();"));
 }
 
-// Compares content of the saved file and original test file. This function may
-// be called while saving is not finished yet. On Windows trying to open the
-// file for reading while it is open for writing may result in a failure in
-// closing the file after save is finished. Hence file checking is done with a
-// delay to reduce the possibility of flakiness, and is repeated for the rare
-// cases that saving takes more than the 1s delay.
-void CompareFileContent(const base::FilePath& test_file_path,
-                        const base::FilePath& save_path,
-                        base::OnceClosure callback,
-                        bool wait_before_compare) {
-  if (!wait_before_compare && base::ContentsEqual(test_file_path, save_path)) {
-    std::move(callback).Run();
-    return;
-  }
+// Sets up a listener for `save-completed-for-testing` on `extension_host`.
+[[nodiscard]] bool SetUpSaveCompleteListener(
+    content::RenderFrameHost* extension_host) {
+  return content::ExecJs(
+      extension_host,
+      "window.saveCompletedPromise = new Promise(resolve => {"
+      "  const viewer = document.getElementById('viewer');"
+      "  viewer.addEventListener('save-completed-for-testing', () => "
+      "resolve(true), {once: true});"
+      "});"
+      "undefined;");
+}
 
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&CompareFileContent, test_file_path, save_path,
-                     std::move(callback), /*wait_before_compare=*/false),
-      kFileComparisonDelay);
+// Waits for `save-completed-for-testing` to fire on `extension_host`.
+[[nodiscard]] bool WaitForSaveCompleted(
+    content::RenderFrameHost* extension_host) {
+  return content::ExecJs(extension_host, "window.saveCompletedPromise;");
+}
+
+// Simulate saving the PDF from the context menu "Save As..." and wait for save
+// to complete.
+void SimulateContextMenuSaveAsAndWaitForSave(
+    content::RenderFrameHost* extension_host,
+    const GURL& url) {
+  ASSERT_TRUE(SetUpSaveCompleteListener(extension_host));
+  SimulateContextMenuSaveAs(extension_host, url);
+  ASSERT_TRUE(WaitForSaveCompleted(extension_host));
+}
+
+// Trigger toolbar download button and wait for save to complete.
+void TriggerDownloadButtonAndWaitForSave(
+    content::RenderFrameHost* extension_host) {
+  ASSERT_TRUE(SetUpSaveCompleteListener(extension_host));
+  TriggerDownloadButton(extension_host);
+  ASSERT_TRUE(WaitForSaveCompleted(extension_host));
 }
 
 // Generates a PDF larger than kMaxSaveBufferSize bytes.
@@ -342,15 +353,12 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionSaveInBlocksTest, BasicUsingContextMenu) {
   base::FilePath save_path = temp_dir.GetPath().AppendASCII("test.pdf");
 
   SetAutoSelectSavePath(save_path);
-  SimulateContextMenuSaveAs(extension_host, url);
+  SimulateContextMenuSaveAsAndWaitForSave(extension_host, url);
 
   base::FilePath test_file_path = chrome_test_utils::GetTestFilePath(
       base::FilePath(FILE_PATH_LITERAL("pdf")),
       base::FilePath(FILE_PATH_LITERAL("test.pdf")));
-  base::test::TestFuture<void> future;
-  CompareFileContent(test_file_path, save_path, future.GetCallback(),
-                     /*wait_before_compare=*/true);
-  ASSERT_TRUE(future.Wait());
+  EXPECT_TRUE(base::ContentsEqual(test_file_path, save_path));
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionSaveInBlocksTest, BasicUsingDownloadButton) {
@@ -365,15 +373,12 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionSaveInBlocksTest, BasicUsingDownloadButton) {
   base::FilePath save_path = temp_dir.GetPath().AppendASCII("test.pdf");
 
   SetAutoSelectSavePath(save_path);
-  TriggerDownloadButton(extension_host);
+  TriggerDownloadButtonAndWaitForSave(extension_host);
 
   base::FilePath test_file_path = chrome_test_utils::GetTestFilePath(
       base::FilePath(FILE_PATH_LITERAL("pdf")),
       base::FilePath(FILE_PATH_LITERAL("test.pdf")));
-  base::test::TestFuture<void> future;
-  CompareFileContent(test_file_path, save_path, future.GetCallback(),
-                     /*wait_before_compare=*/true);
-  ASSERT_TRUE(future.Wait());
+  EXPECT_TRUE(base::ContentsEqual(test_file_path, save_path));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -415,14 +420,11 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionSaveInBlocksLargeFileTest,
   base::FilePath save_path = temp_dir.GetPath().AppendASCII("test.pdf");
 
   SetAutoSelectSavePath(save_path);
-  TriggerDownloadButton(extension_host);
+  TriggerDownloadButtonAndWaitForSave(extension_host);
 
   base::FilePath expected_path = temp_dir.GetPath().AppendASCII("expected.pdf");
   EXPECT_TRUE(base::WriteFile(expected_path, GetLargePDFContent()));
-  base::test::TestFuture<void> future;
-  CompareFileContent(expected_path, save_path, future.GetCallback(),
-                     /*wait_before_compare=*/true);
-  ASSERT_TRUE(future.Wait());
+  EXPECT_TRUE(base::ContentsEqual(expected_path, save_path));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
