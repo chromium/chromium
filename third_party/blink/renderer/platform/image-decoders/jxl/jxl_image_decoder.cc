@@ -16,7 +16,7 @@
 #include "third_party/blink/renderer/platform/image-decoders/image_frame.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
-#include "third_party/rust/jxl/v0_6/wrapper/lib.rs.h"
+#include "third_party/rust/jxl/v0_7/wrapper/lib.rs.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkTypes.h"
 
@@ -89,7 +89,7 @@ bool JXLImageDecoder::MatchesJXLSignature(
 // Shared basic-info processing
 // ---------------------------------------------------------------------------
 
-void JXLImageDecoder::SetPixelFormat(JxlRsDecoder* decoder) {
+bool JXLImageDecoder::SetPixelFormat(JxlRsDecoder* decoder) {
   CHECK(basic_info_.has_value());
   bool decode_to_half_float =
       ImageIsHighBitDepth() &&
@@ -105,7 +105,8 @@ void JXLImageDecoder::SetPixelFormat(JxlRsDecoder* decoder) {
 #endif
   JxlRsPixelFormat pixel_format =
       decode_to_half_float ? JxlRsPixelFormat::RgbaF16 : kNativePixelFormat;
-  decoder->set_pixel_format(pixel_format, basic_info_->num_extra_channels);
+  return decoder->set_pixel_format(pixel_format,
+                                   basic_info_->num_extra_channels);
 }
 
 bool JXLImageDecoder::SetBasicInfo() {
@@ -122,7 +123,10 @@ bool JXLImageDecoder::SetBasicInfo() {
 
   // The output ICC profile may depend on the pixel format. Thus, let's ensure
   // that we set the pixel format here.
-  SetPixelFormat(&**scanner_);
+  if (!SetPixelFormat(&**scanner_)) {
+    SetFailed();
+    return false;
+  }
 
   // Extract ICC color profile.
   rust::Slice<const uint8_t> icc_data = (*scanner_)->get_icc_profile();
@@ -484,7 +488,10 @@ void JXLImageDecoder::Decode(wtf_size_t index, bool only_size) {
 
     switch (decoder_state_) {
       case DecoderState::kInitial: {
-        SetPixelFormat(&**decoder_);
+        if (!SetPixelFormat(&**decoder_)) {
+          SetFailed();
+          return;
+        }
         decoder_state_ = DecoderState::kHaveBasicInfo;
         break;
       }

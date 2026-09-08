@@ -1,0 +1,11 @@
+Name: jxl_transforms
+URL: https://crates.io/crates/jxl_transforms
+Version: 0.7.1
+Revision: 9e6b9f97d66be22a49c02d966a72f2ab5f7f8801
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: BSD-3-Clause
+License File: //third_party/rust/chromium_crates_io/vendor/jxl_transforms-v0_7/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description: High performance Rust implementation of a JPEG XL decoder - Transforms

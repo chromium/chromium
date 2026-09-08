@@ -574,6 +574,9 @@ allow_unsafe = false
 [crate.jpeg-encoder]
 extra_kv = { allow_unsafe = true }
 
+[crate.jxl]
+extra_input_roots = ["util/dither_32x32.bin"]
+
 [crate.jxl.extra_kv]
 allow_unsafe = true
 # JXL decoding requires optimizations even in Debug builds for reasonable performance.
