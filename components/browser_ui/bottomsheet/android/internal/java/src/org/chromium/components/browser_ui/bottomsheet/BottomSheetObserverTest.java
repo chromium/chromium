@@ -22,7 +22,6 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
@@ -185,7 +184,6 @@ public class BottomSheetObserverTest {
                                     new ScrimManager(
                                             sTestRule.getActivity(), rootView, ScrimClient.NONE);
                             Supplier<ScrimManager> scrimSupplier = () -> mScrimManager;
-                            Callback<View> initializedCallback = (v) -> {};
                             return new BottomSheetControllerImpl(
                                     scrimSupplier,
                                     sTestRule.getActivity().getWindow(),

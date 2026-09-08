@@ -42,7 +42,6 @@ import org.chromium.url.GURL;
 @RunWith(BaseRobolectricTestRunner.class)
 public class PwaUniversalInstallBottomSheetCoordinatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    Activity mActivity;
 
     @Mock private BottomSheetController mBottomSheetControllerMock;
 

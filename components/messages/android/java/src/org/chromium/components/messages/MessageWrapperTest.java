@@ -156,7 +156,7 @@ public class MessageWrapperTest {
         // Add secondary menu items.
         PropertyModel item1 = message.addSecondaryMenuItem(1, 0, "Item 1");
         message.addSecondaryMenuItemDivider();
-        PropertyModel item2 = message.addSecondaryMenuItem(2, 0, "Item 2");
+        message.addSecondaryMenuItem(2, 0, "Item 2");
         MessageSecondaryMenuItems messageSecondaryMenuItems =
                 message.getMessageSecondaryMenuItemsForTesting();
         Assert.assertEquals(
