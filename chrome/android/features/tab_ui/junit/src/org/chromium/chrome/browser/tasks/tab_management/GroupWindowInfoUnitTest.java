@@ -124,7 +124,9 @@ public class GroupWindowInfoUnitTest {
         when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab1, mTab2));
         when(mTabModel.getTabGroupTitle(groupId)).thenReturn("Local Group Title");
 
-        GroupWindowInfo info = GroupWindowInfo.forLocalGroup(mContext, mTabModel, groupId);
+        GroupWindowInfo info =
+                GroupWindowInfo.forLocalGroup(
+                        mContext, mTabModel, groupId, GroupWindowState.IN_CURRENT);
 
         assertEquals(groupId, info.localId);
         assertNull(info.syncId);
@@ -155,7 +157,9 @@ public class GroupWindowInfoUnitTest {
         when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab1, mTab2));
         when(mTabModel.getTabGroupTitle(groupId)).thenReturn("");
 
-        GroupWindowInfo info = GroupWindowInfo.forLocalGroup(mContext, mTabModel, groupId);
+        GroupWindowInfo info =
+                GroupWindowInfo.forLocalGroup(
+                        mContext, mTabModel, groupId, GroupWindowState.IN_CURRENT_CLOSING);
 
         assertEquals(groupId, info.localId);
         assertNull(info.syncId);
@@ -184,7 +188,9 @@ public class GroupWindowInfoUnitTest {
         when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab1, mTab2));
         when(mTabModel.getTabGroupTitle(groupId)).thenReturn("Active partially closing");
 
-        GroupWindowInfo info = GroupWindowInfo.forLocalGroup(mContext, mTabModel, groupId);
+        GroupWindowInfo info =
+                GroupWindowInfo.forLocalGroup(
+                        mContext, mTabModel, groupId, GroupWindowState.IN_CURRENT);
 
         assertEquals(groupId, info.localId);
         assertNull(info.syncId);
@@ -193,5 +199,32 @@ public class GroupWindowInfoUnitTest {
         assertEquals(2, info.tabCount);
         assertEquals(GroupWindowState.IN_CURRENT, info.groupWindowState);
         assertEquals(5000L, info.lastModifiedTimeMs);
+    }
+
+    @Test
+    public void testForLocalGroup_explicitState() {
+        Token groupId = new Token(9L, 10L);
+        when(mTab1.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
+        when(mTab1.getTimestampMillis()).thenReturn(3000L);
+
+        when(mTabModel.tabGroupExists(groupId)).thenReturn(true);
+        when(mTabModel.getTabCountForGroup(groupId)).thenReturn(1);
+        when(mTabModel.getTabGroupColorWithFallback(groupId)).thenReturn(TabGroupColorId.BLUE);
+        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab1));
+        when(mTabModel.getTabGroupTitle(groupId)).thenReturn("Local Explicit State");
+
+        GroupWindowInfo info =
+                GroupWindowInfo.forLocalGroup(
+                        mContext, mTabModel, groupId, GroupWindowState.IN_ANOTHER);
+
+        assertEquals(groupId, info.localId);
+        assertNull(info.syncId);
+        assertEquals("Local Explicit State", info.title);
+        assertEquals(TabGroupColorId.BLUE, info.color);
+        assertEquals(1, info.tabCount);
+        assertEquals(1, info.faviconUrls.size());
+        assertEquals(JUnitTestGURLs.URL_1, info.faviconUrls.get(0));
+        assertEquals(GroupWindowState.IN_ANOTHER, info.groupWindowState);
+        assertEquals(3000L, info.lastModifiedTimeMs);
     }
 }

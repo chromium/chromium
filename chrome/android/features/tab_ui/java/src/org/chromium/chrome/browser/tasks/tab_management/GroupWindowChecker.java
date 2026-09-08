@@ -16,15 +16,23 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelType;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
+import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
-/** For tab group lists to interact with {@link TabGroupSyncService} and multiple windows. */
+/**
+ * For tab group lists to interact with {@link TabGroupSyncService} and multiple windows. Evaluates
+ * tab group state relative to a specific current {@link TabModel} to determine whether groups
+ * reside in the current window, another window, or are hidden/closing.
+ */
 @NullMarked
 public class GroupWindowChecker {
     public static final Comparator<GroupWindowInfo> UPDATE_TIME_COMPARATOR =
@@ -43,18 +51,18 @@ public class GroupWindowChecker {
 
     private final Context mContext;
     private final @Nullable TabGroupSyncService mSyncService;
-    private final TabModel mTabModel;
+    private final TabModel mCurrentTabModel;
 
     /**
-     * @param context Context for tab group titles.
-     * @param syncService The service to use for accessing synced tab groups.
-     * @param tabModel Used for accessing tab information.
+     * @param context The {@link Context} for resources.
+     * @param syncService The {@link TabGroupSyncService} for synced tab groups.
+     * @param currentTabModel The active {@link TabModel} for the current window.
      */
     public GroupWindowChecker(
-            Context context, @Nullable TabGroupSyncService syncService, TabModel tabModel) {
+            Context context, @Nullable TabGroupSyncService syncService, TabModel currentTabModel) {
         mContext = context;
         mSyncService = syncService;
-        mTabModel = tabModel;
+        mCurrentTabModel = currentTabModel;
     }
 
     /**
@@ -79,26 +87,48 @@ public class GroupWindowChecker {
             TabGroupSelectionPredicate tabGroupSelectionPredicate,
             Comparator<GroupWindowInfo> comparator) {
         List<GroupWindowInfo> groupList = new ArrayList<>();
-        // All non-incognito tab groups are tracked by TabGroupSyncService.
-        if (mSyncService != null && !mTabModel.isIncognito()) {
-            for (String syncGroupId : mSyncService.getAllGroupIds()) {
-                SavedTabGroup savedTabGroup = mSyncService.getGroup(syncGroupId);
-                assert savedTabGroup != null && !savedTabGroup.savedTabs.isEmpty();
-
-                @GroupWindowState int groupWindowState = getState(savedTabGroup);
-                if (tabGroupSelectionPredicate.shouldInclude(groupWindowState)) {
-                    groupList.add(
-                            GroupWindowInfo.forSyncedGroup(
-                                    mContext, savedTabGroup, groupWindowState));
-                }
-            }
-        } else if (tabGroupSelectionPredicate.shouldInclude(GroupWindowState.IN_CURRENT)) {
-            for (Token groupId : mTabModel.getAllTabGroupIds()) {
-                groupList.add(GroupWindowInfo.forLocalGroup(mContext, mTabModel, groupId));
-            }
+        if (mSyncService != null && !mCurrentTabModel.isIncognito()) {
+            addSyncedTabGroups(groupList, tabGroupSelectionPredicate);
+        } else {
+            addLocalTabGroups(groupList, tabGroupSelectionPredicate);
         }
         groupList.sort(comparator);
         return groupList;
+    }
+
+    private void addSyncedTabGroups(
+            List<GroupWindowInfo> groupList,
+            TabGroupSelectionPredicate tabGroupSelectionPredicate) {
+        assert mSyncService != null;
+        for (String syncGroupId : mSyncService.getAllGroupIds()) {
+            SavedTabGroup savedTabGroup = mSyncService.getGroup(syncGroupId);
+            assert savedTabGroup != null && !savedTabGroup.savedTabs.isEmpty();
+
+            @GroupWindowState int groupWindowState = getState(savedTabGroup);
+            if (tabGroupSelectionPredicate.shouldInclude(groupWindowState)) {
+                groupList.add(
+                        GroupWindowInfo.forSyncedGroup(mContext, savedTabGroup, groupWindowState));
+            }
+        }
+    }
+
+    private void addLocalTabGroups(
+            List<GroupWindowInfo> groupList,
+            TabGroupSelectionPredicate tabGroupSelectionPredicate) {
+        Set<Token> seenGroups = new HashSet<>();
+        for (TabModel model : getAllTabModels()) {
+            for (Token groupId : model.getAllTabGroupIds()) {
+                if (!seenGroups.add(groupId)) {
+                    continue;
+                }
+                @GroupWindowState int groupWindowState = getState(groupId);
+                if (tabGroupSelectionPredicate.shouldInclude(groupWindowState)) {
+                    groupList.add(
+                            GroupWindowInfo.forLocalGroup(
+                                    mContext, model, groupId, groupWindowState));
+                }
+            }
+        }
     }
 
     /**
@@ -131,24 +161,27 @@ public class GroupWindowChecker {
         return true;
     }
 
-    /** Returns the {@link GroupWindowState} of the given {@link SavedTabGroup}. */
+    /**
+     * Returns the {@link GroupWindowState} of the given {@link SavedTabGroup}.
+     *
+     * @param savedTabGroup The {@link SavedTabGroup} to check.
+     * @return The {@link GroupWindowState} of the saved tab group.
+     */
     public @GroupWindowState int getState(SavedTabGroup savedTabGroup) {
         if (savedTabGroup.localId == null) {
             return GroupWindowState.HIDDEN;
         }
+        return getState(savedTabGroup.localId.tabGroupId);
+    }
 
-        Token groupId = savedTabGroup.localId.tabGroupId;
-        boolean isFullyClosing = true;
-        boolean foundGroup = false;
-
-        TabList tabList = mTabModel.getComprehensiveModel();
-        for (Tab tab : tabList) {
-            if (groupId.equals(tab.getTabGroupId())) {
-                foundGroup = true;
-                isFullyClosing &= tab.isClosing();
-            }
-        }
-        if (!foundGroup) {
+    /**
+     * Returns the {@link GroupWindowState} of the given local tab group ID.
+     *
+     * @param groupId The local tab group ID {@link Token}.
+     * @return The {@link GroupWindowState} of the tab group.
+     */
+    public @GroupWindowState int getState(Token groupId) {
+        if (!containsGroup(groupId)) {
             if (TabGroupUiUtils.isCrossWindowTabGroupOperationsEnabled()
                     && isWindowForGroupNotActive(groupId)) {
                 return GroupWindowState.HIDDEN;
@@ -156,9 +189,54 @@ public class GroupWindowChecker {
             return GroupWindowState.IN_ANOTHER;
         }
 
-        // If the group is only partially closing no special case is required since we still have to
-        // do all the IN_CURRENT work and returning to the tab group via the dialog will work.
-        return isFullyClosing ? GroupWindowState.IN_CURRENT_CLOSING : GroupWindowState.IN_CURRENT;
+        return isGroupFullyClosing(groupId)
+                ? GroupWindowState.IN_CURRENT_CLOSING
+                : GroupWindowState.IN_CURRENT;
+    }
+
+    private boolean containsGroup(Token groupId) {
+        TabList tabList = mCurrentTabModel.getComprehensiveModel();
+        if (tabList != null) {
+            for (Tab tab : tabList) {
+                if (groupId.equals(tab.getTabGroupId())) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        return mCurrentTabModel.tabGroupExists(groupId);
+    }
+
+    private boolean isGroupFullyClosing(Token groupId) {
+        TabList tabList = mCurrentTabModel.getComprehensiveModel();
+        if (tabList == null) {
+            return false;
+        }
+        boolean isFullyClosing = true;
+        for (Tab tab : tabList) {
+            if (groupId.equals(tab.getTabGroupId())) {
+                isFullyClosing &= tab.isClosing();
+            }
+        }
+        return isFullyClosing;
+    }
+
+    private List<TabModel> getAllTabModels() {
+        TabWindowManager tabWindowManager = TabWindowManagerSingleton.getInstance();
+        if (tabWindowManager == null || !TabGroupUiUtils.isCrossWindowTabGroupOperationsEnabled()) {
+            return List.of(mCurrentTabModel);
+        }
+
+        Collection<TabModelSelector> selectors = tabWindowManager.getAllTabModelSelectors();
+        if (selectors.isEmpty()) {
+            return List.of(mCurrentTabModel);
+        }
+
+        List<TabModel> tabModels = new ArrayList<>();
+        for (TabModelSelector selector : selectors) {
+            tabModels.add(selector.getModel(mCurrentTabModel.isIncognito()));
+        }
+        return tabModels;
     }
 
     private boolean isWindowForGroupNotActive(Token groupId) {
@@ -167,7 +245,7 @@ public class GroupWindowChecker {
             return false;
         }
 
-        int windowId = windowManager.findWindowIdForTabGroup(groupId);
+        @WindowId int windowId = windowManager.findWindowIdForTabGroup(groupId);
         if (windowId == TabWindowManager.INVALID_WINDOW_ID) {
             return false;
         }
@@ -177,6 +255,7 @@ public class GroupWindowChecker {
             return false;
         }
 
-        return selector.getModel(/* incognito= */ false).getTabModelType() == TabModelType.HEADLESS;
+        return selector.getModel(mCurrentTabModel.isIncognito()).getTabModelType()
+                == TabModelType.HEADLESS;
     }
 }
