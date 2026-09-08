@@ -7,9 +7,11 @@
 #include <optional>
 #include <string_view>
 
+#include "base/check.h"
 #include "base/feature.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/string_view_rust.h"
 #include "base/time/time.h"
 #include "third_party/rust/sfv/v0_15/wrapper/functions.h"
@@ -18,6 +20,18 @@
 // This namespace defines FFI-friendly functions that are called from Rust in
 // //third_party/rust/sfv/v0_15/wrapper/.
 namespace sfv {
+
+namespace {
+
+void set_member_item(Member& member, net::structured_headers::Item&& item) {
+  if (auto inner_list_and_params = member.GetWithParamsIfInnerList()) {
+    inner_list_and_params->first.emplace_back(std::move(item));
+  } else {
+    member = net::structured_headers::ParameterizedMember(std::move(item));
+  }
+}
+
+}  // namespace
 
 Member& list_append_member(List& list) {
   return list.emplace_back();
@@ -30,52 +44,66 @@ Member& dictionary_reset_key(Dictionary& dictionary, rust::Str key) {
 }
 
 void set_member_boolean(Member& member, bool v) {
-  member.member.emplace_back().item = net::structured_headers::Item(v);
+  set_member_item(member, net::structured_headers::Item(v));
 }
 
 void set_member_integer(Member& member, int64_t v) {
-  member.member.emplace_back().item = net::structured_headers::Item(v);
+  set_member_item(member, net::structured_headers::Item(v));
 }
 
 void set_member_decimal(Member& member, double v) {
-  member.member.emplace_back().item = net::structured_headers::Item(v);
+  set_member_item(member, net::structured_headers::Item(v));
 }
 
 void set_member_string(Member& member, rust::Str v) {
-  member.member.emplace_back().item =
-      net::structured_headers::Item(std::string(v));
+  set_member_item(member, net::structured_headers::Item(std::string(v)));
 }
 
 void set_member_token(Member& member, rust::Str v) {
-  member.member.emplace_back().item = net::structured_headers::Item(
-      std::string(v), net::structured_headers::Item::kTokenType);
+  set_member_item(
+      member, net::structured_headers::Item(
+                  std::string(v), net::structured_headers::Item::kTokenType));
 }
 
 void set_member_byte_sequence(Member& member, rust::Slice<const uint8_t> v) {
-  member.member.emplace_back().item = net::structured_headers::Item(
-      std::string(v.begin(), v.end()),
-      net::structured_headers::Item::kByteSequenceType);
+  set_member_item(member,
+                  net::structured_headers::Item(
+                      std::string(v.begin(), v.end()),
+                      net::structured_headers::Item::kByteSequenceType));
 }
 
 void set_member_inner_list(Member& member) {
-  member.member_is_inner_list = true;
+  member = net::structured_headers::ParameterizedMember(
+      std::vector<net::structured_headers::ParameterizedItem>());
 }
 
 // Parameters is a type alias in net::structured_headers, so it cannot be
 // forward-declared. To keep the FFI header (functions.h) clean, we use an
 // opaque tag class there and reinterpret_cast it here to the actual type.
 Parameters& get_member_params(Member& member) {
-  return *reinterpret_cast<Parameters*>(&member.params);
+  if (auto inner_list_and_params = member.GetWithParamsIfInnerList()) {
+    return *reinterpret_cast<Parameters*>(&inner_list_and_params->second);
+  }
+  if (auto item_and_params = member.GetWithParamsIfItem()) {
+    return *reinterpret_cast<Parameters*>(&item_and_params->second);
+  }
+  NOTREACHED();
 }
 
+// TODO(crbug.com/517204961): This should really be named
+// `get_last_inner_list_item_params`, but it will be replaced after the
+// `ParameterizedMember` implementation is replaced with `std::variant`.
 Parameters& get_item_params(Member& member) {
-  return *reinterpret_cast<Parameters*>(&member.member.back().params);
+  auto inner_list_and_params = member.GetWithParamsIfInnerList();
+  DCHECK(inner_list_and_params.has_value());
+  return *reinterpret_cast<Parameters*>(
+      &inner_list_and_params->first.back().params);
 }
 
 namespace {
 void set_parameter(Parameters& parameters,
                    rust::Str key,
-                   net::structured_headers::Item value) {
+                   net::structured_headers::Item&& value) {
   auto& params =
       reinterpret_cast<net::structured_headers::Parameters&>(parameters);
   std::string_view key_view = base::RustStrToStringView(key);
@@ -85,7 +113,7 @@ void set_parameter(Parameters& parameters,
       return;
     }
   }
-  params.emplace_back(std::string(key_view), std::move(value));
+  params.emplace_back(key_view, std::move(value));
 }
 }  // namespace
 
@@ -161,8 +189,10 @@ std::optional<ParameterizedItem> ParseItem(std::string_view str) {
     if (!ok) {
       return std::nullopt;
     }
-    return ParameterizedItem(std::move(member.member.back().item),
-                             std::move(member.params));
+    auto item_and_params = member.GetWithParamsIfItem();
+    DCHECK(item_and_params.has_value());
+    return ParameterizedItem(std::move(item_and_params->first),
+                             std::move(item_and_params->second));
   }
 
   return ParseAndRecordMetrics(kTimeMetricItem, kSuccessMetricItem, [&]() {
