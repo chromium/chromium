@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "services/network/public/mojom/web_transport.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -21,6 +22,8 @@ namespace blink {
 
 class ExceptionState;
 class ScriptState;
+template <typename T>
+class ScriptPromiseResolver;
 class WebTransport;
 class WebTransportReceiveStreamStats;
 
@@ -56,7 +59,19 @@ class MODULES_EXPORT WebTransportReceiveStream final : public ReadableStream {
   void Trace(Visitor*) const override;
 
  private:
+  void OnGetStatsResponse(
+      ScriptPromiseResolver<WebTransportReceiveStreamStats>* resolver,
+      network::mojom::blink::WebTransportReceiveStreamStatsPtr mojo_stats);
+
+  void DidConsumeBytes(size_t bytes) override { bytes_read_ += bytes; }
+
+  // Weak, mirroring the ForgetStream callback which uses WrapWeakPersistent:
+  // a ReceiveStream must not keep its WebTransport alive. getStats()
+  // null-checks this before issuing the Mojo call.
+  const WeakMember<WebTransport> web_transport_;
+  const uint32_t stream_id_;
   const Member<IncomingStream> incoming_stream_;
+  uint64_t bytes_read_ = 0;
 };
 
 template <>

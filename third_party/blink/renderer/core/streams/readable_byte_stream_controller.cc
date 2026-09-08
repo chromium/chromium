@@ -399,6 +399,9 @@ void ReadableByteStreamController::Enqueue(
       //     transferredView, false).
       ReadableStream::FulfillReadRequest(script_state, stream, transferred_view,
                                          false, exception_state);
+      if (!exception_state.HadException()) {
+        stream->DidConsumeBytes(byte_length);
+      }
     }
   }
 
@@ -739,6 +742,9 @@ void ReadableByteStreamController::CommitPullIntoDescriptor(
     //   done).
     ReadableStream::FulfillReadIntoRequest(script_state, stream, filled_view,
                                            done, exception_state);
+  }
+  if (!exception_state.HadException()) {
+    stream->DidConsumeBytes(filled_view->byteLength());
   }
 }
 
@@ -1161,6 +1167,10 @@ void ReadableByteStreamController::FillReadRequestFromQueue(
   read_request->ChunkSteps(script_state,
                            ToV8Traits<DOMUint8Array>::ToV8(script_state, view),
                            exception_state);
+  if (!exception_state.HadException()) {
+    controller->controlled_readable_stream_->DidConsumeBytes(
+        entry->byte_length);
+  }
 }
 
 void ReadableByteStreamController::PullInto(
@@ -1304,6 +1314,9 @@ void ReadableByteStreamController::PullInto(
       HandleQueueDrain(script_state, controller);
       //     iii. Perform readIntoRequest’s chunk steps, given filledView.
       read_into_request->ChunkSteps(script_state, filled_view, exception_state);
+      if (!exception_state.HadException()) {
+        stream->DidConsumeBytes(filled_view->byteLength());
+      }
       //     iv. Return.
       return;
     }

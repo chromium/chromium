@@ -183,6 +183,13 @@ class MODULES_EXPORT WebTransport final
   // Removes the reference to a stream.
   void ForgetOutgoingStream(uint32_t stream_id);
 
+  // Requests receive stream stats from the network service via Mojo.
+  using ReceiveStreamStatsCallback = base::OnceCallback<void(
+      network::mojom::blink::WebTransportReceiveStreamStatsPtr)>;
+  void GetReceiveStreamStats(uint32_t stream_id,
+                             ReceiveStreamStatsCallback callback);
+  void MaybeGetReceiveStreamStats(uint32_t stream_id);
+
   // Returns true if `OnIncomingStreamClosed()` arrived for a stream that hasn't
   // been created yet. Tests use this to verify that entries in
   // `closed_potentially_pending_streams_` are properly consumed or cleared.
@@ -192,6 +199,14 @@ class MODULES_EXPORT WebTransport final
   void Trace(Visitor* visitor) const override;
 
  private:
+  struct PendingIncomingStreamClose {
+    bool fin_received = false;
+    uint64_t bytes_received = 0;
+  };
+
+  void ProcessPendingIncomingStreamClose(uint32_t stream_id,
+                                         IncomingStream* stream);
+
   // Nested class to track recently forgotten stream IDs with FIFO eviction.
   // Used to ignore duplicate OnIncomingStreamClosed() calls for streams
   // that were forgotten before the close notification arrived.
@@ -234,6 +249,10 @@ class MODULES_EXPORT WebTransport final
   void RejectPendingStreamCreations(v8::Local<v8::Value> error);
   void RejectPendingStreamResolvers(v8::Local<v8::Value> error);
   void HandlePendingGetStatsResolvers(v8::Local<v8::Value> error);
+  void RunPendingReceiveStreamStatsCallbacks();
+  void OnReceiveStreamStatsResponse(
+      uint64_t request_id,
+      network::mojom::blink::WebTransportReceiveStreamStatsPtr stats);
   void ForgetDatagramUnderlyingSink(DatagramUnderlyingSink*);
   void RetainDatagramUnderlyingSinkWithPendingWrites(DatagramUnderlyingSink*);
   void ReleaseDatagramUnderlyingSinkWithPendingWrites(DatagramUnderlyingSink*);
@@ -344,10 +363,11 @@ class MODULES_EXPORT WebTransport final
               IntWithZeroKeyHashTraits<uint32_t>>
       outgoing_stream_map_;
 
-  // A map from stream id to whether the fin signal was received. When
-  // OnIncomingStreamClosed is called with a stream ID which doesn't have its
-  // corresponding incoming stream, the event is recorded here.
-  HashMap<uint32_t, bool, IntWithZeroKeyHashTraits<uint32_t>>
+  // Final close information for streams whose close notification arrived
+  // before the corresponding renderer stream was created.
+  HashMap<uint32_t,
+          PendingIncomingStreamClose,
+          IntWithZeroKeyHashTraits<uint32_t>>
       closed_potentially_pending_streams_;
 
   HeapMojoRemote<mojom::blink::WebTransportConnector> connector_;
@@ -371,6 +391,14 @@ class MODULES_EXPORT WebTransport final
   // Tracks resolvers for in-progress getStats() calls.
   HeapVector<Member<ScriptPromiseResolver<WebTransportConnectionStats>>>
       pending_get_stats_resolvers_;
+  // Tracks receive-stream stats callbacks so they can complete if the
+  // WebTransport Mojo remote disconnects.
+  HashMap<uint64_t,
+          ReceiveStreamStatsCallback,
+          IntWithZeroKeyHashTraits<uint64_t>>
+      pending_receive_stream_stats_callbacks_;
+  uint64_t next_receive_stream_stats_request_id_ = 0;
+  bool cleanup_started_ = false;
 
   // Tracks resolvers for in-progress createSendStream() and
   // createBidirectionalStream() operations so they can be rejected.

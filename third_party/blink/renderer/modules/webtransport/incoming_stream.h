@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <optional>
 
 #include "base/functional/callback.h"
@@ -79,6 +80,14 @@ class MODULES_EXPORT IncomingStream final
 
   State GetState() const { return state_; }
 
+  uint64_t BytesReceived() const {
+    return std::max(bytes_received_, network_bytes_received_);
+  }
+
+  void UpdateNetworkBytesReceived(uint64_t bytes_received) {
+    network_bytes_received_ = std::max(network_bytes_received_, bytes_received);
+  }
+
   void Trace(Visitor*) const;
 
  private:
@@ -149,6 +158,10 @@ class MODULES_EXPORT IncomingStream final
   // Indicates if we need to perform another read after the current one
   // completes.
   bool read_pending_ = false;
+
+  // Number of bytes received through |data_pipe_|.
+  uint64_t bytes_received_ = 0;
+  uint64_t network_bytes_received_ = 0;
 };
 
 }  // namespace blink

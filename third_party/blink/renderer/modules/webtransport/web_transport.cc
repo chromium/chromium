@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <limits>
 #include <optional>
 #include <utility>
@@ -929,20 +930,8 @@ class WebTransport::ReceiveStreamVendor final
     CHECK_LT(stream_id, 0xfffffffe);
     web_transport_->incoming_stream_map_.insert(stream_id, incoming_stream);
 
-    auto it =
-        web_transport_->closed_potentially_pending_streams_.find(stream_id);
-    if (it != web_transport_->closed_potentially_pending_streams_.end()) {
-      // The stream has already been closed in the network service.
-      const bool fin_received = it->value;
-      web_transport_->closed_potentially_pending_streams_.erase(it);
-
-      // This can run JavaScript. This is safe because the stream hasn't been
-      // exposed yet.
-      // Note: OnIncomingStreamClosed() will eventually trigger
-      // ForgetIncomingStream() via the on_abort_ callback, which handles
-      // removal from incoming_stream_map_.
-      incoming_stream->OnIncomingStreamClosed(fin_received);
-    }
+    web_transport_->ProcessPendingIncomingStreamClose(stream_id,
+                                                      incoming_stream);
 
     std::move(enqueue).Run(stream_to_enqueue);
   }
@@ -993,26 +982,13 @@ class WebTransport::BidirectionalStreamVendor final
 
     // 0xfffffffe and 0xffffffff are reserved values in stream_map_.
     CHECK_LT(stream_id, 0xfffffffe);
-    web_transport_->incoming_stream_map_.insert(
-        stream_id, bidirectional_stream->GetIncomingStream());
+    IncomingStream* incoming_stream = bidirectional_stream->GetIncomingStream();
+    web_transport_->incoming_stream_map_.insert(stream_id, incoming_stream);
     web_transport_->outgoing_stream_map_.insert(
         stream_id, bidirectional_stream->GetOutgoingStream());
 
-    auto it =
-        web_transport_->closed_potentially_pending_streams_.find(stream_id);
-    if (it != web_transport_->closed_potentially_pending_streams_.end()) {
-      // The stream has already been closed in the network service.
-      const bool fin_received = it->value;
-      web_transport_->closed_potentially_pending_streams_.erase(it);
-
-      // This can run JavaScript. This is safe because `receive_stream` hasn't
-      // been exposed yet.
-      // Note: OnIncomingStreamClosed() will eventually trigger
-      // ForgetIncomingStream() via the on_abort_ callback, which handles
-      // removal from incoming_stream_map_.
-      bidirectional_stream->GetIncomingStream()->OnIncomingStreamClosed(
-          fin_received);
-    }
+    web_transport_->ProcessPendingIncomingStreamClose(stream_id,
+                                                      incoming_stream);
 
     std::move(enqueue).Run(bidirectional_stream);
   }
@@ -1334,6 +1310,13 @@ void WebTransport::OnConnectionEstablished(
 
   DCHECK(!transport_remote_.is_bound());
   transport_remote_.Bind(std::move(web_transport), task_runner);
+  // Connection errors are handled by `client_receiver_`'s disconnect handler,
+  // which keeps the ordering of a clean close intact. All this handler has to
+  // do is complete receive-stream stats requests whose responses can no longer
+  // arrive.
+  transport_remote_.set_disconnect_handler(
+      BindOnce(&WebTransport::RunPendingReceiveStreamStatsCallbacks,
+               WrapWeakPersistent(this)));
 
   if (outgoing_datagram_expiration_duration_ != base::TimeDelta()) {
     transport_remote_->SetOutgoingDatagramExpirationDuration(
@@ -1422,7 +1405,7 @@ void WebTransport::OnDatagramReceived(base::span<const uint8_t> data) {
 
 void WebTransport::OnIncomingStreamClosed(uint32_t stream_id,
                                           bool fin_received,
-                                          uint64_t /*bytes_received*/) {
+                                          uint64_t bytes_received) {
   DVLOG(1) << "WebTransport::OnIncomingStreamClosed(" << stream_id << ", "
            << fin_received << ") this=" << this;
   // 0xfffffffe and 0xffffffff are reserved values in stream_map_.
@@ -1449,11 +1432,13 @@ void WebTransport::OnIncomingStreamClosed(uint32_t stream_id,
     // dispatch them later.
     DCHECK(closed_potentially_pending_streams_.find(stream_id) ==
            closed_potentially_pending_streams_.end());
-    closed_potentially_pending_streams_.insert(stream_id, fin_received);
+    closed_potentially_pending_streams_.insert(
+        stream_id, PendingIncomingStreamClose{fin_received, bytes_received});
     return;
   }
 
   IncomingStream* stream = it->value;
+  stream->UpdateNetworkBytesReceived(bytes_received);
   // Note: stream->OnIncomingStreamClosed() will eventually trigger
   // ForgetIncomingStream() via the on_abort_ callback, which handles removal
   // from incoming_stream_map_. We don't need to record this close because
@@ -1469,9 +1454,26 @@ wtf_size_t WebTransport::DatagramSinksWithPendingWritesSizeForTesting() const {
   return datagram_underlying_sinks_with_pending_writes_.size();
 }
 
+void WebTransport::ProcessPendingIncomingStreamClose(uint32_t stream_id,
+                                                     IncomingStream* stream) {
+  auto it = closed_potentially_pending_streams_.find(stream_id);
+  if (it == closed_potentially_pending_streams_.end()) {
+    return;
+  }
+
+  const PendingIncomingStreamClose close = it->value;
+  closed_potentially_pending_streams_.erase(it);
+
+  stream->UpdateNetworkBytesReceived(close.bytes_received);
+
+  // This can run JavaScript. ProcessPendingIncomingStreamClose is called
+  // before stream is exposed to application code.
+  stream->OnIncomingStreamClosed(close.fin_received);
+}
+
 void WebTransport::OnReceivedResetStream(uint32_t stream_id,
                                          uint32_t stream_error_code,
-                                         uint64_t /*bytes_received*/) {
+                                         uint64_t bytes_received) {
   DVLOG(1) << "WebTransport::OnReceivedResetStream(" << stream_id << ", "
            << stream_error_code << ") this=" << this;
   auto it = incoming_stream_map_.find(stream_id);
@@ -1479,6 +1481,7 @@ void WebTransport::OnReceivedResetStream(uint32_t stream_id,
     return;
   }
   IncomingStream* stream = it->value;
+  stream->UpdateNetworkBytesReceived(bytes_received);
 
   ScriptState::Scope scope(script_state_);
   v8::Local<v8::Value> error = WebTransportError::Create(
@@ -1660,6 +1663,46 @@ void WebTransport::ForgetOutgoingStream(uint32_t stream_id) {
   DVLOG(1) << "WebTransport::ForgetOutgoingStream() this=" << this
            << ", stream_id=" << stream_id;
   outgoing_stream_map_.erase(stream_id);
+}
+
+void WebTransport::MaybeGetReceiveStreamStats(uint32_t stream_id) {
+  auto it = incoming_stream_map_.find(stream_id);
+  if (it != incoming_stream_map_.end()) {
+    GetReceiveStreamStats(
+        stream_id,
+        BindOnce(
+            [](IncomingStream* stream,
+               network::mojom::blink::WebTransportReceiveStreamStatsPtr stats) {
+              if (stream && stats) {
+                stream->UpdateNetworkBytesReceived(stats->bytes_received);
+              }
+            },
+            WrapWeakPersistent(it->value.Get())));
+  }
+}
+
+void WebTransport::GetReceiveStreamStats(uint32_t stream_id,
+                                         ReceiveStreamStatsCallback callback) {
+  if (!transport_remote_.is_bound() || cleanup_started_) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  const uint64_t request_id = next_receive_stream_stats_request_id_++;
+  pending_receive_stream_stats_callbacks_.insert(request_id,
+                                                 std::move(callback));
+  transport_remote_->GetReceiveStreamStats(
+      stream_id, BindOnce(&WebTransport::OnReceiveStreamStatsResponse,
+                          WrapWeakPersistent(this), request_id));
+}
+
+void WebTransport::OnReceiveStreamStatsResponse(
+    uint64_t request_id,
+    network::mojom::blink::WebTransportReceiveStreamStatsPtr stats) {
+  auto callback = pending_receive_stream_stats_callbacks_.Take(request_id);
+  if (callback) {
+    std::move(callback).Run(std::move(stats));
+  }
 }
 
 void WebTransport::Trace(Visitor* visitor) const {
@@ -1945,6 +1988,7 @@ bool WebTransport::DoesSubresourceFilterBlockConnection(const KURL& url) {
 
 void WebTransport::Dispose() {
   DVLOG(1) << "WebTransport::Dispose() this=" << this;
+  cleanup_started_ = true;
   probe::WebTransportClosed(GetExecutionContext(), inspector_transport_id_);
   incoming_stream_map_.clear();
   outgoing_stream_map_.clear();
@@ -1952,6 +1996,7 @@ void WebTransport::Dispose() {
   // let the garbage collector free the memory.
   // Clear pending close notifications.
   closed_potentially_pending_streams_.clear();
+  pending_receive_stream_stats_callbacks_.clear();
   pending_stream_creations_.clear();
   send_groups_.clear();
   connector_.reset();
@@ -1967,6 +2012,7 @@ void WebTransport::Cleanup(WebTransportCloseInfo* info,
                            v8::Local<v8::Value> error,
                            bool abruptly) {
   CHECK_EQ(!info, abruptly);
+  cleanup_started_ = true;
   v8::Isolate* isolate = script_state_->GetIsolate();
 
   constexpr char kInvalidStateMessage[] =
@@ -1976,6 +2022,7 @@ void WebTransport::Cleanup(WebTransportCloseInfo* info,
   RejectPendingStreamCreations(stream_error);
   RejectPendingStreamResolvers(stream_error);
   HandlePendingGetStatsResolvers(error);
+  RunPendingReceiveStreamStatsCallbacks();
   ScriptValue error_value(isolate, error);
   datagram_underlying_source_->Error(received_datagrams_controller_, error);
   // Error() enters V8 and may trigger GC. Keep strong references so every sink
@@ -2056,6 +2103,16 @@ void WebTransport::RejectPendingStreamCreations(v8::Local<v8::Value> error) {
   pending.swap(pending_stream_creations_);
   for (PendingStreamCreation* stream_creation : pending) {
     stream_creation->Reject(error);
+  }
+}
+
+void WebTransport::RunPendingReceiveStreamStatsCallbacks() {
+  HashMap<uint64_t, ReceiveStreamStatsCallback,
+          IntWithZeroKeyHashTraits<uint64_t>>
+      callbacks;
+  callbacks.swap(pending_receive_stream_stats_callbacks_);
+  for (auto& entry : callbacks) {
+    std::move(entry.value).Run(nullptr);
   }
 }
 

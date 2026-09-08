@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_READABLE_STREAM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_READABLE_STREAM_H_
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <memory>
@@ -297,6 +298,10 @@ class CORE_EXPORT ReadableStream
   friend class ReadableStreamDefaultReader;
   friend class ReadableStreamGenericReader;
   friend class TeeEngine;
+
+  // Called exactly once after a successful byte-stream read delivers bytes.
+  // Subclasses may override this even though it is private.
+  virtual void DidConsumeBytes(size_t) {}
 
   class PullAlgorithm;
   class CancelAlgorithm;

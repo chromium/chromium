@@ -243,6 +243,7 @@ void IncomingStream::ReadFromPipeAndEnqueue(ExceptionState& exception_state) {
       // Casting back to `uint32_t` is safe because `read_bytes` cannot be
       // greater than `buffer_num_bytes`.
       data_pipe_->EndReadData(read_bytes);
+      bytes_received_ += read_bytes;
       in_two_phase_read_ = false;
       if (read_pending_) {
         read_pending_ = false;
