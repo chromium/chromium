@@ -662,7 +662,8 @@ void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsDesktop(
       .Add<tab_search::mojom::PageHandlerFactory>()
       .Add<tab_search::mojom::SearchHandler>();
   registry.ForWebUI<OrganizerPanelUI>()
-      .Add<tab_search::mojom::PageHandlerFactory>();
+      .Add<tab_search::mojom::PageHandlerFactory>()
+      .Add<tab_search::mojom::SearchHandler>();
 
   if (base::FeatureList::IsEnabled(ntp_features::kNtpFooter)) {
     registry.ForWebUI<NewTabFooterUI>()

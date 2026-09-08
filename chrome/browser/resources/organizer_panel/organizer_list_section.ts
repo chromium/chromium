@@ -8,6 +8,8 @@ import './organizer_list_section_item.js';
 import {assert} from '//resources/js/assert.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {SearchOptions} from '/tab_search/shared/search.js';
+import {search} from '/tab_search/shared/search.js';
 
 import {getCss} from './organizer_list_section.css.js';
 import {getHtml} from './organizer_list_section.html.js';
@@ -47,6 +49,7 @@ export class OrganizerListSectionElement extends CrLitElement implements
       items: {type: Array},
       expanded_: {type: Boolean},
       searchQuery: {type: String},
+      filteredItems_: {type: Array},
     };
   }
 
@@ -54,6 +57,29 @@ export class OrganizerListSectionElement extends CrLitElement implements
   accessor items: Array<OrganizerListSectionItem<unknown>> = [];
   protected accessor expanded_: boolean = false;
   accessor searchQuery: string = '';
+  protected accessor filteredItems_: Array<OrganizerListSectionItem<unknown>> =
+      [];
+
+  private searchOptions_: SearchOptions<OrganizerListSectionItem<unknown>> = {
+    includeScore: true,
+    includeMatches: true,
+    ignoreLocation: false,
+    threshold: 0.0,
+    distance: 200,
+    keys:
+        [
+          {
+            name: 'title',
+            getter: item => item.title,
+            weight: 2,
+          },
+          {
+            name: 'description',
+            getter: item => item.description?.join(' '),
+            weight: 1,
+          },
+        ],
+  };
 
   // The panel WebUI will remain loaded but invisible when the panel is closed.
   // While invisible, the WebUI will not receive update events from the browser,
@@ -81,6 +107,11 @@ export class OrganizerListSectionElement extends CrLitElement implements
       this.delegate?.init(this);
       this.updateItems_();
     }
+
+    if (changedProperties.has('items') ||
+        changedProperties.has('searchQuery')) {
+      this.updateFilteredItems_();
+    }
   }
 
   onItemsChanged(items: Array<OrganizerListSectionItem<unknown>>) {
@@ -93,6 +124,16 @@ export class OrganizerListSectionElement extends CrLitElement implements
       return;
     }
     this.items = await this.delegate.getItems();
+  }
+
+  private async updateFilteredItems_() {
+    const query = this.searchQuery;
+    const filteredItems = await search(query, this.items, this.searchOptions_);
+    // Confirm that the search query hasn't changed before updating the filtered
+    // items.
+    if (this.searchQuery === query) {
+      this.filteredItems_ = filteredItems;
+    }
   }
 
   protected getInitialItems_(): Array<OrganizerListSectionItem<unknown>> {
@@ -133,7 +174,7 @@ export class OrganizerListSectionElement extends CrLitElement implements
   }
 
   protected getFilteredItems_(): Array<OrganizerListSectionItem<unknown>> {
-    return this.searchQuery ? [] : this.items;
+    return this.filteredItems_;
   }
 }
 

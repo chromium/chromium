@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
+class SearchHandler;
 class TabSearchPageHandler;
 class OrganizerPanelUI;
 
@@ -35,6 +36,8 @@ class OrganizerPanelUI : public TopChromeWebUIController,
 
   void BindInterface(
       mojo::PendingReceiver<tab_search::mojom::PageHandlerFactory> receiver);
+  void BindInterface(
+      mojo::PendingReceiver<tab_search::mojom::SearchHandler> receiver);
 
   static constexpr std::string_view GetWebUIName() { return "OrganizerPanel"; }
 
@@ -45,6 +48,7 @@ class OrganizerPanelUI : public TopChromeWebUIController,
       mojo::PendingReceiver<tab_search::mojom::PageHandler> receiver) override;
 
   std::unique_ptr<TabSearchPageHandler> page_handler_;
+  std::unique_ptr<SearchHandler> search_handler_;
   mojo::Receiver<tab_search::mojom::PageHandlerFactory> page_factory_receiver_{
       this};
 

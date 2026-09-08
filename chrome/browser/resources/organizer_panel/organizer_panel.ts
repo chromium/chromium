@@ -4,6 +4,8 @@
 
 import './app.js';
 
+export type {SearchApiProxy} from '/tab_search/shared/search_api_proxy.js';
+export {SearchApiProxyImpl} from '/tab_search/shared/search_api_proxy.js';
 export {OrganizerPanelAppElement} from './app.js';
 export {OpenTabsDelegate} from './delegates/open_tabs_delegate.js';
 export {RecentTabsDelegate} from './delegates/recent_tabs_delegate.js';
@@ -15,5 +17,5 @@ export type {OrganizerListSectionClient, OrganizerListSectionDelegate} from './o
 export type {OrganizerListSectionItem, OrganizerListSectionItemActionButton, OrganizerListSectionItemIcon} from './organizer_list_section_item.js';
 export {OrganizerListSectionItemElement} from './organizer_list_section_item.js';
 export {Color} from './tab_group_types.mojom-webui.js';
-export type {PageRemote, ProfileData, RecentlyClosedTab, RecentlyClosedTabGroup, Tab, TabGroup} from './tab_search.mojom-webui.js';
+export type {PageRemote, ProfileData, RecentlyClosedTab, RecentlyClosedTabGroup, Tab, TabGroup, TokenRange} from './tab_search.mojom-webui.js';
 export {browserProxyFactory, PageHandlerRemote} from './tab_search.mojom-webui.js';
