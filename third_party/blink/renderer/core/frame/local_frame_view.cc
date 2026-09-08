@@ -603,7 +603,11 @@ void LocalFrameView::SetLifecycleUpdatesThrottledForTesting(bool throttled) {
 void LocalFrameView::FrameRectsChanged(const gfx::Rect& old_rect) {
   if (RuntimeEnabledFeatures::AvoidEmbeddedContentViewLocationEnabled() &&
       LayoutSizeFixedToFrameSize() && Size() != old_rect.size()) {
-    SetLayoutSizeInternal(Size());
+    SetLayoutSizeInternal(
+        Size(), {.should_suppress_events =
+                     is_being_auto_sized_ &&
+                     RuntimeEnabledFeatures::
+                         AutoSizeUsesScrollWidthForOverflowEnabled()});
   }
 
   FrameView::FrameRectsChanged(old_rect);
@@ -3498,10 +3502,20 @@ void LocalFrameView::UpdateStyleAndLayout() {
   // Second pass: run autosize until it stabilizes.
   if (auto_size_info_) {
     bool should_reset_for_layout = did_layout;
-    while (auto_size_info_->AutoSizeIfNeeded(should_reset_for_layout)) {
-      should_reset_for_layout = false;
+    bool did_run_autosize_layout = false;
+    {
       base::AutoReset<bool> reset(&is_being_auto_sized_, true);
-      did_layout |= UpdateStyleAndLayoutInternal();
+      while (auto_size_info_->AutoSizeIfNeeded(should_reset_for_layout)) {
+        should_reset_for_layout = false;
+        did_layout |= UpdateStyleAndLayoutInternal();
+        did_run_autosize_layout = true;
+      }
+    }
+    // Suppress notifications during scroll-width autosizing, then report any
+    // stable size change.
+    if (did_run_autosize_layout && frame_->IsMainFrame() &&
+        RuntimeEnabledFeatures::AutoSizeUsesScrollWidthForOverflowEnabled()) {
+      frame_->GetChromeClient().ResizeAfterLayout();
     }
     // We may have a mismatch as we impose an additional min-content constraint
     // while auto-sizing, set the view as needing layout which will then fall
@@ -4077,7 +4091,11 @@ void LocalFrameView::PropagateFrameRectsInternal() {
 
   if (!RuntimeEnabledFeatures::AvoidEmbeddedContentViewLocationEnabled()) {
     if (LayoutSizeFixedToFrameSize()) {
-      SetLayoutSizeInternal(Size());
+      SetLayoutSizeInternal(
+          Size(), {.should_suppress_events =
+                       is_being_auto_sized_ &&
+                       RuntimeEnabledFeatures::
+                           AutoSizeUsesScrollWidthForOverflowEnabled()});
     }
 
     ForAllChildViewsAndPlugins([](EmbeddedContentView& view) {

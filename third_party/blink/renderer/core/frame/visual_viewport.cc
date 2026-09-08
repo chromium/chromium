@@ -393,7 +393,8 @@ void VisualViewport::EnqueueResizeEvent() {
     document->EnqueueVisualViewportResizeEvent();
 }
 
-void VisualViewport::SetSize(const gfx::Size& size) {
+void VisualViewport::SetSize(const gfx::Size& size,
+                             bool should_suppress_resize_event) {
   if (size_ == size)
     return;
 
@@ -416,7 +417,9 @@ void VisualViewport::SetSize(const gfx::Size& size) {
     LocalMainFrame().View()->SetVisualViewportOrOverlayNeedsRepaint();
   }
 
-  EnqueueResizeEvent();
+  if (!should_suppress_resize_event) {
+    EnqueueResizeEvent();
+  }
 }
 
 void VisualViewport::Reset() {
