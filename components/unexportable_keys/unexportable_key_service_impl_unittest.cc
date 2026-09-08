@@ -98,9 +98,10 @@ class UnexportableKeyServiceImplTest : public testing::Test {
     task_environment_.FastForwardBy(delta);
   }
 
-  void ResetService(crypto::UnexportableKeyProvider::Config config = {}) {
+  void ResetService(crypto::UnexportableKeyProvider::Config config = {},
+                    BackgroundTaskOrigin origin = kTaskOrigin) {
     task_manager_.emplace();
-    service_.emplace(*task_manager_, kTaskOrigin, std::move(config));
+    service_.emplace(*task_manager_, origin, std::move(config));
   }
 
   void DestroyService() { service_ = std::nullopt; }
@@ -2166,6 +2167,37 @@ TYPED_TEST(SpareKeyPoolTest,
   this->histogram_tester().ExpectTotalCount(
       GetSpareKeyPoolHistogramName(this->pool_type(),
                                    kSpareKeyPoolUmaGenerateErrorSuffix),
+      0);
+}
+
+TYPED_TEST(SpareKeyPoolTest, SpareKeyPoolBypassedForNonDbscOrigin) {
+  base::test::ScopedFeatureList feature_list(
+      kEnableUnexportableKeysSpareKeyPool);
+
+  this->ResetService(/*config=*/{},
+                     BackgroundTaskOrigin::kOrphanedKeyGarbageCollection);
+
+  auto future = this->GenerateKey();
+  EXPECT_FALSE(future.IsReady());
+
+  this->RunBackgroundTasks();
+
+  EXPECT_OK(future.Get());
+
+  // Since the origin is not DBSC, the spare pool MUST be bypassed natively.
+  // There should be NO pool replenishment, NO pool size metrics, and NO
+  // retrieval result metrics. We just fallback to native generation.
+  this->histogram_tester().ExpectTotalCount(
+      GetSpareKeyPoolHistogramName(this->pool_type(),
+                                   kSpareKeyPoolUmaRetrievalResultSuffix),
+      0);
+  this->histogram_tester().ExpectTotalCount(
+      GetSpareKeyPoolHistogramName(this->pool_type(),
+                                   kSpareKeyPoolUmaPoolSizeSuffix),
+      0);
+  this->histogram_tester().ExpectTotalCount(
+      GetSpareKeyPoolHistogramName(this->pool_type(),
+                                   kSpareKeyPoolUmaRequestLatencySuffix),
       0);
 }
 
