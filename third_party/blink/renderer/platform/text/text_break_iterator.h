@@ -120,13 +120,10 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
 
  public:
   explicit LazyLineBreakIterator(
-      const String& string,
+      String string,
       const LayoutLocale* locale = nullptr,
       LineBreakType break_type = LineBreakType::kNormal)
-      : string_(string),
-        locale_(locale),
-        break_type_(break_type) {
-  }
+      : string_(std::move(string)), locale_(locale), break_type_(break_type) {}
 
   LazyLineBreakIterator(const String& string,
                         const AtomicString& locale,
@@ -146,7 +143,7 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
 
   void ResetStringAndReleaseIterator(String string,
                                      const LayoutLocale* locale) {
-    string_ = string;
+    string_ = std::move(string);
     start_offset_ = 0;
     SetLocale(locale);
     ReleaseIterator();
