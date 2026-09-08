@@ -268,6 +268,7 @@ config("xctest_config") {
     "-iframework",
     rebase_path("$ios_sdk_path/Developer/Library/Frameworks", root_build_dir),
   ]
+  asmflags = common_flags
   cflags = common_flags
   ldflags = common_flags
   swiftflags = common_flags
@@ -291,6 +292,51 @@ config("xctest_config") {
       ]
     }
     ldflags += [ "-Wl,-needed-lXCTestSwiftSupport,-lXCTestSwiftSupport" ]
+  }
+
+  # Starting with Xcode 27, Apple supports a "Deployment Target" of iOS 15.0 for
+  # binaries, but test runtime binaries (XCTest.framework,
+  # libXCTestSwiftSupport, etc.) have a minimum OS version of iOS 17.0 ("device
+  # support" of iOS 17+).
+  #
+  # In Chromium, ios_deployment_target is 18.0+, but //ios/web_view targets
+  # build with an overridden ios_deployment_target of 15.0 for embedders.
+  # When linking XCTest-based test targets (e.g. ios_web_view_inttests),
+  # ld64.lld fails because the XCTest framework version (17.0.0) is newer than
+  # the target minimum (15.0.0).
+  #
+  # This workaround overrides the linker -target flag to 17.0 specifically
+  # for XCTest targets when building with Xcode 27+ and targeting iOS 15 or 16.
+  # Darwin linkers allow linking iOS 15 static libraries and object files into
+  # an iOS 17 test binary. Keeping compilation at the base deployment target
+  # avoids Clang C++ module mismatches (-Wmodule-file-config-mismatch).
+  #
+  # TODO(crbug.com/558255805): Remove this workaround when //ios/web_view bumps
+  # its minimum deployment target to iOS 17.0+.
+  if (xcode_version_int >= 2700 &&
+      (ios_deployment_target == "15.0" || ios_deployment_target == "16.0")) {
+    _archs_mapping_os = archs_mapping[current_os]
+    _archs_mapping_os_cpu = _archs_mapping_os[current_cpu]
+    _triplet_cpu = _archs_mapping_os_cpu.clang_arch
+
+    if (target_environment == "simulator") {
+      _triplet_environment = "-simulator"
+    } else if (target_environment == "device") {
+      _triplet_environment = ""
+    } else if (target_environment == "catalyst") {
+      _triplet_environment = "-macabi"
+    }
+
+    if (target_platform == "iphoneos") {
+      _triplet_os = "apple-ios"
+    } else if (target_platform == "tvos") {
+      _triplet_os = "apple-tvos"
+    }
+    _xctest_target_flags = [
+      "-target",
+      "${_triplet_cpu}-${_triplet_os}17.0${_triplet_environment}",
+    ]
+    ldflags += _xctest_target_flags
   }
 }
 
