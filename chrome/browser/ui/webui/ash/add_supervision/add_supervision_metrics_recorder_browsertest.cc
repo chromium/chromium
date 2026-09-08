@@ -7,6 +7,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision.mojom.h"
@@ -14,6 +16,7 @@
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_handler_utils.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_ui.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_web_ui.h"
@@ -56,7 +59,9 @@ class AddSupervisionMetricsRecorderTest : public InProcessBrowserTest {
   void NotifySupervisionEnabled() {
     mojo::PendingReceiver<add_supervision::mojom::AddSupervisionHandler>
         receiver;
-    AddSupervisionUI add_supervision_ui(&test_web_ui_);
+    AddSupervisionUI add_supervision_ui(
+        &test_web_ui_,
+        g_browser_process->GetFeatures()->application_locale_storage()->Get());
     AddSupervisionHandler add_supervision_handler(
         std::move(receiver), &test_web_ui_,
         identity_test_env_->identity_manager(), &add_supervision_ui);

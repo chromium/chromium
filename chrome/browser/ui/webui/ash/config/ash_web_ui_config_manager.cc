@@ -381,7 +381,8 @@ void AshWebUIConfigManager::RegisterWebUIConfigs() {
   AddWebUIConfig(std::make_unique<chromeos::ChromeURLDisabledUIConfig>());
   AddWebUIConfig(std::make_unique<AccountManagerErrorUIConfig>());
   AddWebUIConfig(std::make_unique<AccountMigrationWelcomeUIConfig>());
-  AddWebUIConfig(std::make_unique<AddSupervisionUIConfig>());
+  AddWebUIConfig(std::make_unique<AddSupervisionUIConfig>(
+      &application_locale_storage_.get()));
   AddWebUIConfig(std::make_unique<app_install::AppInstallDialogUIConfig>());
   AddWebUIConfig(std::make_unique<ArcOverviewTracingUIConfig>(
       &application_locale_storage_.get()));
