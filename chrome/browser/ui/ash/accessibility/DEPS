@@ -13,7 +13,6 @@ include_rules = [
   "+chrome/browser/ash/accessibility",
   "+chrome/browser/ui/aura/accessibility",
   "+chrome/grit",
-  "+chrome/test",
 ]
 
 specific_include_rules = {

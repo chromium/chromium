@@ -14,9 +14,7 @@ include_rules = [
   "+chrome/browser/profiles/profile_manager.h",
   "+chrome/browser/ui/ash/system_web_apps",
   "+chrome/browser/ui/browser_window.h",
-  "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/browser/web_applications/test",
-  "+chrome/test/base",
 ]
 
 specific_include_rules = {
