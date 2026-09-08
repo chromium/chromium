@@ -195,13 +195,7 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, ThreadsRail) {
   RunTest("new_tab_page/composebox/threads_rail_test.js", "mocha.run()");
 }
 
-// TODO(crbug.com/554367777): Disabled by Gardener due to flakiness.
-#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
-#define MAYBE_ActionChips DISABLED_ActionChips
-#else
-#define MAYBE_ActionChips ActionChips
-#endif
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, MAYBE_ActionChips) {
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, ActionChips) {
   RunTest("new_tab_page/action_chips/action_chips_test.js", "mocha.run()");
 }
 
@@ -398,7 +392,13 @@ IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, RealboxNext) {
           "runMochaSuite('NewTabPageAppTest RealboxNext')");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, ActionChips) {
+// TODO(crbug.com/554367777): Disabled by Gardener due to flakiness.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_ActionChips DISABLED_ActionChips
+#else
+#define MAYBE_ActionChips ActionChips
+#endif
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, MAYBE_ActionChips) {
   RunTest("new_tab_page/app_test.js",
           "runMochaSuite('NewTabPageAppTest ActionChips')");
 }
