@@ -6646,6 +6646,18 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.OneTimeTokens.TickleTransmissionLatency" units="ms"
+    expires_after="2027-08-01">
+  <owner>kazinova@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Recorded upon tickle arrival to evaluate how long tickle travels from the
+    server to the client, namely the diff between
+    OneTimeTokenBackendNotification::notification_sent_timestamp and
+    OneTimeTokenBackendNotification::notification_received_timestamp.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.OtpAuth.{CardType}.{OtpAuthType}.Attempt"
     enum="BooleanAttempted" expires_after="2027-04-30">
   <owner>siyua@chromium.org</owner>

@@ -704,4 +704,61 @@ TEST_F(GmailOtpBackendImplTest,
   histogram_tester.ExpectTotalCount(kEmailSavedToTickleLatencyHistogram, 0);
 }
 
+TEST_F(GmailOtpBackendImplTest,
+       TickleTransmissionLatency_LoggedUponTickleArrival) {
+  base::HistogramTester histogram_tester;
+  base::Time now = base::Time::Now();
+  base::Time notification_sent = now - base::Milliseconds(500);
+  OneTimeTokenBackendNotification notification(
+      EncryptedMessageReference("ref1"),
+      /*otp_created_timestamp=*/now,
+      /*email_received_timestamp=*/now,
+      /*email_delivered_timestamp=*/base::Time(),
+      /*notification_sent_timestamp=*/notification_sent,
+      /*notification_received_timestamp=*/now,
+      /*notification_received_timeticks=*/base::TimeTicks::Now());
+
+  backend_.OnIncomingOneTimeTokenBackendNotification(notification);
+
+  histogram_tester.ExpectUniqueTimeSample(kTickleTransmissionLatencyHistogram,
+                                          base::Milliseconds(500), 1);
+}
+
+TEST_F(GmailOtpBackendImplTest,
+       TickleTransmissionLatency_NotLoggedIfSentTimestampMissing) {
+  base::HistogramTester histogram_tester;
+  base::Time now = base::Time::Now();
+  OneTimeTokenBackendNotification notification(
+      EncryptedMessageReference("ref1"),
+      /*otp_created_timestamp=*/now,
+      /*email_received_timestamp=*/now,
+      /*email_delivered_timestamp=*/base::Time(),
+      /*notification_sent_timestamp=*/base::Time(),
+      /*notification_received_timestamp=*/now,
+      /*notification_received_timeticks=*/base::TimeTicks::Now());
+
+  backend_.OnIncomingOneTimeTokenBackendNotification(notification);
+
+  histogram_tester.ExpectTotalCount(kTickleTransmissionLatencyHistogram, 0);
+}
+
+TEST_F(GmailOtpBackendImplTest,
+       TickleTransmissionLatency_NotLoggedIfNegativeLatency) {
+  base::HistogramTester histogram_tester;
+  base::Time now = base::Time::Now();
+  base::Time notification_sent_future = now + base::Seconds(1);
+  OneTimeTokenBackendNotification notification(
+      EncryptedMessageReference("ref1"),
+      /*otp_created_timestamp=*/now,
+      /*email_received_timestamp=*/now,
+      /*email_delivered_timestamp=*/base::Time(),
+      /*notification_sent_timestamp=*/notification_sent_future,
+      /*notification_received_timestamp=*/now,
+      /*notification_received_timeticks=*/base::TimeTicks::Now());
+
+  backend_.OnIncomingOneTimeTokenBackendNotification(notification);
+
+  histogram_tester.ExpectTotalCount(kTickleTransmissionLatencyHistogram, 0);
+}
+
 }  // namespace one_time_tokens
