@@ -15,6 +15,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -421,7 +422,16 @@ TEST_F(AliveCheckerTest, SuspendResumeWithAutoStop_DontNotify) {
   EXPECT_TRUE(GetDetectedDead());
 }
 
-TEST_F(AliveCheckerTest, ContinuousNotifications_StayAliveThenDetectDead) {
+// TODO(crbug.com/558333376): Flaky on MacOS.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ContinuousNotifications_StayAliveThenDetectDead \
+  DISABLED_ContinuousNotifications_StayAliveThenDetectDead
+#else
+#define MAYBE_ContinuousNotifications_StayAliveThenDetectDead \
+  ContinuousNotifications_StayAliveThenDetectDead
+#endif
+TEST_F(AliveCheckerTest,
+       MAYBE_ContinuousNotifications_StayAliveThenDetectDead) {
   CreateAliveChecker(/*stop_at_first_alive_notification=*/false,
                      /*pause_check_during_suspend=*/false);
 
@@ -442,8 +452,16 @@ TEST_F(AliveCheckerTest, ContinuousNotifications_StayAliveThenDetectDead) {
   EXPECT_TRUE(GetDetectedDead());
 }
 
+// TODO(crbug.com/558328920): Flaky on MacOS.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_NotifyAliveWhileTaskRunnerBlockedPreventsDeadDetection \
+  DISABLED_NotifyAliveWhileTaskRunnerBlockedPreventsDeadDetection
+#else
+#define MAYBE_NotifyAliveWhileTaskRunnerBlockedPreventsDeadDetection \
+  NotifyAliveWhileTaskRunnerBlockedPreventsDeadDetection
+#endif
 TEST_F(AliveCheckerTest,
-       NotifyAliveWhileTaskRunnerBlockedPreventsDeadDetection) {
+       MAYBE_NotifyAliveWhileTaskRunnerBlockedPreventsDeadDetection) {
   CreateAliveChecker(/*stop_at_first_alive_notification=*/false,
                      /*pause_check_during_suspend=*/false);
 
