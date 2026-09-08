@@ -341,6 +341,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Forward"/>
   <int value="7" label="Backward"/>
   <int value="8" label="Reload"/>
+  <int value="9" label="Context Menu Search"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/page_load_metrics/chrome_initiator_location.h:ChromeInitiatorLocation) -->

@@ -26,6 +26,8 @@ std::string StringifyChromeInitiatorLocation(
       return "Backward";
     case ChromeInitiatorLocation::kReload:
       return "Reload";
+    case ChromeInitiatorLocation::kContextMenuSearch:
+      return "ContextMenuSearch";
     case ChromeInitiatorLocation::kOther:
       return "Other";
   }
@@ -65,6 +67,15 @@ void AttachBookmarkBarNavigationHandleUserData(
       navigation_handle,
       GetInitiatorLocation(ChromeInitiatorLocation::kBookmarkBar),
       StringifyChromeInitiatorLocation(ChromeInitiatorLocation::kBookmarkBar));
+}
+
+void AttachContextMenuSearchNavigationHandleUserData(
+    content::NavigationHandle& navigation_handle) {
+  page_load_metrics::NavigationHandleUserData::CreateForNavigationHandle(
+      navigation_handle,
+      GetInitiatorLocation(ChromeInitiatorLocation::kContextMenuSearch),
+      StringifyChromeInitiatorLocation(
+          ChromeInitiatorLocation::kContextMenuSearch));
 }
 
 void MarkNavigationServedBySearchPrefetch(
