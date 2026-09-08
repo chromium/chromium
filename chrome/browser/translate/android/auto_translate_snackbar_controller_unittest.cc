@@ -128,6 +128,7 @@ class AutoTranslateSnackbarControllerTest : public ::testing::Test {
     manager_ = std::make_unique<TranslateManager>(client_.get(), ranker_.get(),
                                                   language_model_.get());
     manager_->GetLanguageState()->set_translation_declined(false);
+    TranslateDownloadManager::GetInstance()->ResetForTesting();
     TranslateDownloadManager::GetInstance()->set_application_locale("en");
 
     auto bridge = std::make_unique<TestBridge>();
@@ -137,6 +138,11 @@ class AutoTranslateSnackbarControllerTest : public ::testing::Test {
         std::make_unique<AutoTranslateSnackbarController>(
             /* web_contents= */ nullptr, manager_->GetWeakPtr(),
             std::move(bridge));
+  }
+
+  void TearDown() override {
+    TranslateDownloadManager::GetInstance()->ResetForTesting();
+    ::testing::Test::TearDown();
   }
 
   TestTranslateDriver driver_;
