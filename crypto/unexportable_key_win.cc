@@ -58,15 +58,25 @@ namespace crypto {
 namespace {
 
 // Persistent Storage Root Key (SRK) handles used as parent keys for TPM 2.0
-// keys on Windows.
+// keys by the Microsoft Platform Crypto Provider (PCP).
 //
 // In the TCG TPM 2.0 handle registry, 0x81000001 is reserved for the primary
-// RSA Storage Root Key (SRK), while 0x81000002 is recommended for ECC. However,
-// Windows Platform Crypto Provider (PCP) systems typically use 0x81000002 for
-// an RSA signing key and provision the persistent ECC Storage Root Key at
-// handle 0x81000009 (identified empirically via TPM2_GetCapability for
-// TPM_CAP_HANDLES in the 0x81000000 range with TPM_ALG_ECC and
-// restricted|decrypt attributes).
+// RSA Storage Root Key (SRK), while 0x81000002 is recommended for ECC.
+//
+// In Windows (PCPKsp.dll), handle 0x81000002 is repurposed as an RSA signing
+// key, and the ECC Storage Root Key is hardcoded to handle 0x81000009:
+//   - TpmKey20Ecc::ReadParent / GetEccSrk explicitly probes handle 0x81000009
+//     via TPM2_ReadPublic.
+//   - If absent, GetEccSrk creates a NIST P-256 primary key under TPM_RH_OWNER
+//     (objectAttributes = 0x00030472) and persists it to handle 0x81000009 via
+//     TPM2_EvictControl.
+//   - When importing opaque blobs (NCryptImportKey), PCPKsp.dll unconditionally
+//     passes 0x81000009 (ECC) or 0x81000001 (RSA) as the parentHandle to
+//     TPM2_Load.
+//
+// Both handles can be verified on a provisioned machine by executing
+// TPM2_ReadPublic(0x81000001) and TPM2_ReadPublic(0x81000009) via TBS, which
+// return TPM_ALG_RSA and TPM_ALG_ECC keys with attributes 0x00030472.
 enum class WindowsSrkHandle : uint32_t {
   kRsa = 0x81000001,
   kEcc = 0x81000009,
