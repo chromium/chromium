@@ -26,7 +26,6 @@
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "caption_bubble_model.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/confirm_bubble.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
