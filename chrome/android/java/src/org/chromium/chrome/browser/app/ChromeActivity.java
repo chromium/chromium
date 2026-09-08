@@ -2774,8 +2774,9 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
             // Maintain tab state by re-parenting tabs when a Chrome window is moved between
             // displays.
-            if (newConfig.touchscreen != mConfig.touchscreen
-                    || newConfig.colorMode != mConfig.colorMode) {
+            if ((newConfig.touchscreen != mConfig.touchscreen
+                            || newConfig.colorMode != mConfig.colorMode)
+                    && !ChromeFeatureList.sAvoidRecreateOnTouchscreenOrColorModeChange.isEnabled()) {
                 doRecreateActivity();
                 return;
             }
