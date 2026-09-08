@@ -10,10 +10,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
-#include "chrome/browser/site_protection/site_familiarity_fetcher.h"
-#include "chrome/browser/site_protection/site_familiarity_utils.h"
+#include "components/safe_browsing/buildflags.h"
 #include "chrome/browser/ui/views/infobars/confirm_infobar.h"
 #include "chrome/browser/ui/views/js_optimization/js_optimizations_infobar_delegate.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -51,9 +48,6 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/core/browser/db/fake_database_manager.h"
-#include "components/safe_browsing/core/common/features.h"
-#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/process_selection_deferring_condition.h"
@@ -75,7 +69,17 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
-typedef site_protection::SiteFamiliarityFetcher::Verdict FamiliarityVerdict;
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
+#include "chrome/browser/site_protection/site_familiarity_fetcher.h"
+#include "chrome/browser/site_protection/site_familiarity_utils.h"
+#include "components/safe_browsing/core/browser/db/fake_database_manager.h"
+#include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+
+using FamiliarityVerdict = site_protection::SiteFamiliarityFetcher::Verdict;
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 template <typename T>
 class JavascriptOptimizerBrowserTestMixin : public T {
@@ -826,6 +830,7 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest_CustomDeferralCondition,
   EXPECT_TRUE(frame->GetProcess()->AreV8OptimizationsDisabled());
 }
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 // Base class for integration tests which enable/disable the "disable JavaScript
 // optimization for unfamiliar sites" feature.
 class JavascriptOptimizerBrowserTest_UseSiteFamiliarityBase
@@ -1291,6 +1296,7 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest_DoNotUseSiteFamiliarity,
                                 ContentSetting::CONTENT_SETTING_BLOCK);
   NavigateToUnfamiliarSite(/*expect_v8_optimizations_enabled=*/false);
 }
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 #if !BUILDFLAG(IS_ANDROID)
 

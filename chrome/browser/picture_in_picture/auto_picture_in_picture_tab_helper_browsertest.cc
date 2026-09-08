@@ -25,7 +25,7 @@
 #include "chrome/browser/picture_in_picture/hats/auto_picture_in_picture_hats_service_factory.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
+#include "components/safe_browsing/buildflags.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/bubble_anchor_util.h"
@@ -50,7 +50,6 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
-#include "components/safe_browsing/core/browser/db/fake_database_manager.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/media_session.h"
@@ -90,6 +89,11 @@
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
+#include "components/safe_browsing/core/browser/db/fake_database_manager.h"
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 using media_session::mojom::MediaSessionAction;
 using testing::_;
@@ -1020,16 +1024,19 @@ class AutoPictureInPictureWithVideoPlaybackBrowserTest
     : public AutoPictureInPictureTabHelperBrowserTest {
  public:
   AutoPictureInPictureWithVideoPlaybackBrowserTest()
-      : safe_browsing_factory_(
-            std::make_unique<safe_browsing::TestSafeBrowsingServiceFactory>()),
-        dependency_manager_subscription_(
+      : dependency_manager_subscription_(
             BrowserContextDependencyManager::GetInstance()
                 ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
                     &AutoPictureInPictureWithVideoPlaybackBrowserTest::
                         SetTestingFactory,
                     // base::Unretained() is safe because `this` outlives the
                     // dependency manager subscription.
-                    base::Unretained(this)))) {}
+                    base::Unretained(this)))) {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+    safe_browsing_factory_ =
+        std::make_unique<safe_browsing::TestSafeBrowsingServiceFactory>();
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  }
 
   AutoPictureInPictureWithVideoPlaybackBrowserTest(
       const AutoPictureInPictureWithVideoPlaybackBrowserTest&) = delete;
@@ -1043,6 +1050,7 @@ class AutoPictureInPictureWithVideoPlaybackBrowserTest
     return features;
   }
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   void AddDangerousUrl(const GURL& dangerous_url) {
     fake_safe_browsing_database_manager_->AddDangerousUrl(
         dangerous_url,
@@ -1052,6 +1060,7 @@ class AutoPictureInPictureWithVideoPlaybackBrowserTest
   void ClearDangerousUrl(const GURL& dangerous_url) {
     fake_safe_browsing_database_manager_->ClearDangerousUrl(dangerous_url);
   }
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
   MediaEngagementService* GetMediaEngagementService() const {
     return MediaEngagementServiceFactory::GetForProfile(
@@ -1066,6 +1075,7 @@ class AutoPictureInPictureWithVideoPlaybackBrowserTest
   }
 
  protected:
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   void CreatedBrowserMainParts(
       content::BrowserMainParts* browser_main_parts) override {
     fake_safe_browsing_database_manager_ =
@@ -1076,6 +1086,7 @@ class AutoPictureInPictureWithVideoPlaybackBrowserTest
     safe_browsing::SafeBrowsingService::RegisterFactory(
         safe_browsing_factory_.get());
   }
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
   void SetTestingFactory(content::BrowserContext* context) {
     MediaEngagementServiceFactory::GetInstance()->SetTestingFactory(
@@ -1083,10 +1094,12 @@ class AutoPictureInPictureWithVideoPlaybackBrowserTest
   }
 
  private:
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   scoped_refptr<safe_browsing::FakeSafeBrowsingDatabaseManager>
       fake_safe_browsing_database_manager_;
   std::unique_ptr<safe_browsing::TestSafeBrowsingServiceFactory>
       safe_browsing_factory_;
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   base::CallbackListSubscription dependency_manager_subscription_;
 };
 
@@ -1270,11 +1283,15 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   // inside a remote iframe.
   SwitchToNewTabAndDontExpectAutopip();
 
-  // Verify that `has_safe_url_` is false, since the video element is within a
-  // remote iframe.
+  // A remote iframe is not considered safe when Safe Browsing can verify it.
+  // Without Safe Browsing, the flag retains its fail-open default.
   auto* tab_helper =
       AutoPictureInPictureTabHelper::FromWebContents(web_contents);
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   EXPECT_FALSE(tab_helper->has_safe_url_);
+#else
+  EXPECT_TRUE(tab_helper->has_safe_url_);
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
   // Verify that `MeetsMediaEngagementConditions` returns false (even though the
   // mock high engagement is set to return true), since the video element is
@@ -1301,6 +1318,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   SwitchToNewTabAndDontExpectAutopip();
 }
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
                        DoesNotVideoAutopip_DangerousURL) {
   // Load a page that registers for autopip and start video playback.
@@ -1357,6 +1375,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/true,
                                         /*should_document_pip=*/false);
 }
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
                        DoesNotVideoAutopip_LowEngagementScore) {
