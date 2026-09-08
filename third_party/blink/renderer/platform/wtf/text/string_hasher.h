@@ -50,21 +50,6 @@ class StringHasher {
         data.size() * Reader::kExpansionFactor / Reader::kCompressionFactor));
   }
 
-  // Another entry point for the string hasher. Computes the hash and returns
-  // only the lowest 24 bits, since that's what we have room for in StringImpl.
-  //
-  // NOTE: length is the number of bytes produced _by the reader_.
-  // Normally, this means that the number of bytes actually read will be
-  // equivalent to (length * Reader::kCompressionFactor /
-  // Reader::kExpansionFactor). Also note that if you are hashing something
-  // that is not 8-bit elements, and do _not_ use compression factors or
-  // similar, you'll need to multiply by sizeof(T) to get all data read.
-  template <class Reader = PlainHashReader>
-  static unsigned ComputeHashAndMaskTop8Bits(const char* data, size_t length) {
-    return MaskTop8Bits(
-        rapidhash<Reader>(reinterpret_cast<const uint8_t*>(data), length));
-  }
-
   // Hashing can be very performance-sensitive, but the hashing function is also
   // fairly big (~300 bytes on x86-64, give or take). This function is exactly
   // equivalent to ComputeHashAndMaskTop8Bits(), except that it is marked as

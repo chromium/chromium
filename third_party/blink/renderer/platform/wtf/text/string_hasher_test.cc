@@ -60,51 +60,6 @@ bool EqualCaseFoldingHash(StringView a, StringView b) {
 }  // anonymous namespace
 
 TEST(StringHasherTest, StringHasher_ComputeHashAndMaskTop8Bits) {
-  EXPECT_EQ(kEmptyStringHash & 0xFFFFFF,
-            StringHasher::ComputeHashAndMaskTop8Bits(nullptr, 0));
-  EXPECT_EQ(kEmptyStringHash & 0xFFFFFF,
-            StringHasher::ComputeHashAndMaskTop8Bits(kNullLChars, 0));
-  EXPECT_EQ(kEmptyStringHash & 0xFFFFFF,
-            StringHasher::ComputeHashAndMaskTop8Bits<ConvertTo8BitHashReader>(
-                nullptr, 0));
-  EXPECT_EQ(kEmptyStringHash & 0xFFFFFF,
-            StringHasher::ComputeHashAndMaskTop8Bits<ConvertTo8BitHashReader>(
-                (const char*)kNullUChars, 0));
-
-  EXPECT_EQ(kSingleNullCharacterHash & 0xFFFFFF,
-            StringHasher::ComputeHashAndMaskTop8Bits(kNullLChars, 1));
-  EXPECT_EQ(kSingleNullCharacterHash & 0xFFFFFF,
-            StringHasher::ComputeHashAndMaskTop8Bits<ConvertTo8BitHashReader>(
-                (const char*)kNullUChars, 1));
-
-  EXPECT_EQ(kTestAHash & 0xFFFFFF, StringHasher::ComputeHashAndMaskTop8Bits(
-                                       (const char*)kTestALChars, 5));
-  EXPECT_EQ(kTestAHash & 0xFFFFFF,
-            StringHasher::ComputeHashAndMaskTop8Bits<ConvertTo8BitHashReader>(
-                (const char*)kTestAUChars, 5));
-  EXPECT_EQ(kTestBHash & 0xFFFFFF, StringHasher::ComputeHashAndMaskTop8Bits(
-                                       (const char*)kTestBUChars, 10));
-
-  // Test a slightly longer case (including characters that fit in Latin1
-  // but not in ASCII).
-  constexpr base::span<const char> kStr =
-      base::span_from_cstring("A quick browñ föx jumps over thé lazy dog");
-  std::array<UChar, kStr.size()> wide_str;
-  std::ranges::copy(base::as_bytes(kStr), wide_str.begin());
-  auto wide_bytes = base::as_chars(base::as_byte_span(wide_str));
-  unsigned expected_hash =
-      StringHasher::ComputeHashAndMaskTop8Bits(kStr.data(), kStr.size());
-  using Reader = ConvertTo8BitHashReader;
-  EXPECT_EQ(expected_hash, StringHasher::ComputeHashAndMaskTop8Bits<Reader>(
-                               wide_bytes.data(),
-                               wide_bytes.size() / Reader::kCompressionFactor));
-  EXPECT_NE(expected_hash, StringHasher::ComputeHashAndMaskTop8Bits(
-                               wide_bytes.data(), wide_bytes.size() / 2));
-  EXPECT_NE(expected_hash, StringHasher::ComputeHashAndMaskTop8Bits(
-                               wide_bytes.data(), wide_bytes.size()));
-}
-
-TEST(StringHasherTest, ComputeHashAndMaskTop8Bits_Span) {
   EXPECT_EQ(
       kEmptyStringHash & 0xFFFFFF,
       StringHasher::ComputeHashAndMaskTop8Bits(base::span<const uint8_t>()));
@@ -144,15 +99,21 @@ TEST(StringHasherTest, ComputeHashAndMaskTop8Bits_Span) {
   using Reader = ConvertTo8BitHashReader;
   EXPECT_EQ(expected_hash, StringHasher::ComputeHashAndMaskTop8Bits<Reader>(
                                base::as_byte_span(wide_str)));
+  EXPECT_NE(expected_hash,
+            StringHasher::ComputeHashAndMaskTop8Bits(
+                base::as_byte_span(wide_str).first(wide_str.size())));
+  EXPECT_NE(expected_hash, StringHasher::ComputeHashAndMaskTop8Bits(
+                               base::as_byte_span(wide_str)));
 
   // Test a reader with expansion (kExpansionFactor > 1).
   using ExpansionReader = CaseFoldingHashReader<LChar>;
   base::span<const LChar> lchars = base::span(kTestALChars);
-  EXPECT_EQ(StringHasher::ComputeHashAndMaskTop8Bits<ExpansionReader>(
-                reinterpret_cast<const char*>(lchars.data()),
-                lchars.size_bytes() * ExpansionReader::kExpansionFactor),
-            StringHasher::ComputeHashAndMaskTop8Bits<ExpansionReader>(
-                base::as_byte_span(lchars)));
+  base::span<const UChar> uchars = base::span(kTestAUChars);
+  EXPECT_EQ(
+      StringHasher::ComputeHashAndMaskTop8Bits<ExpansionReader>(
+          base::as_byte_span(lchars)),
+      StringHasher::ComputeHashAndMaskTop8Bits<CaseFoldingHashReader<UChar>>(
+          base::as_byte_span(uchars)));
 }
 
 TEST(StringHasherTest, StringHasher_HashMemory) {
