@@ -105,7 +105,13 @@ RemoteActorCredentialSharingImpl::RemoteActorCredentialSharingImpl(
   CHECK(dialog_factory_);
 }
 
-RemoteActorCredentialSharingImpl::~RemoteActorCredentialSharingImpl() = default;
+RemoteActorCredentialSharingImpl::~RemoteActorCredentialSharingImpl() {
+  // Explicitly close the receiver before `pending_request_` is destroyed during
+  // member destruction. Closing the binding endpoint first ensures that any
+  // in-flight request callback can be safely dropped without invoking it when
+  // the hosting frame is destroyed.
+  receiver_.reset();
+}
 
 void RemoteActorCredentialSharingImpl::Bind(
     mojo::PendingAssociatedReceiver<chrome::mojom::RemoteActorCredentialSharing>

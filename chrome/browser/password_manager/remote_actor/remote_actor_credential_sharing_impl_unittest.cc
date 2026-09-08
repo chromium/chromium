@@ -1067,4 +1067,52 @@ TEST_F(RemoteActorCredentialSharingImplTest,
       RemoteActorCredentialSharingResult::kSuccess, 1);
 }
 
+TEST_F(RemoteActorCredentialSharingImplTest,
+       WebContentsDestroyedWhileRequestInProgress) {
+  SignIn("user@gmail.com");
+  NavigateAndCommit(GURL("https://gemini.google.com"));
+  content::RenderFrameHostTester::For(main_rfh())
+      ->InitializeRenderFrameIfNeeded();
+  CreateImpl();
+
+  RemoteActorCredentialSharingImpl* impl =
+      RemoteActorCredentialSharingImpl::GetForCurrentDocument(main_rfh());
+  ASSERT_NE(impl, nullptr);
+
+  mojo::AssociatedRemote<chrome::mojom::RemoteActorCredentialSharing> remote;
+  impl->Bind(remote.BindNewEndpointAndPassDedicatedReceiver());
+
+  PasswordForm form;
+  form.signon_realm = "https://google.com/";
+  form.url = GURL("https://google.com");
+  form.username_value = u"user";
+  form.password_value = PasswordString(u"pass");
+  form.in_store = PasswordForm::Store::kProfileStore;
+  profile_store_->AddLogin(FromPasswordForm(form));
+
+  content::RenderFrameHostTester::For(main_rfh())->SimulateUserActivation();
+  base::test::TestFuture<bool> result_future;
+  base::test::TestFuture<void> disconnect_future;
+  remote.set_disconnect_handler(disconnect_future.GetCallback());
+
+  base::test::TestFuture<void> dialog_shown_future;
+  dialog_shown_quit_closure_ = dialog_shown_future.GetCallback();
+  remote->RequestAgentAuthentication(
+      /*gaia_id=*/account_info_.GetGaiaId().ToString(),
+      /*domain=*/"google.com", /*task_id=*/"actor_id",
+      result_future.GetCallback());
+
+  dialog_shown_future.Get();
+
+  // Destroy the WebContents (and therefore the RenderFrameHost and DocumentUserData)
+  // while the authentication request dialog is in flight.
+  mock_client_ = nullptr;
+  DeleteContents();
+
+  // The remote should observe a disconnection on the pipe.
+  EXPECT_TRUE(disconnect_future.Wait());
+  // The callback should NOT be run when the tab is closed.
+  EXPECT_FALSE(result_future.IsReady());
+}
+
 }  // namespace password_manager
