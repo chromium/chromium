@@ -434,6 +434,10 @@ FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSGeminiContextualCueChip);
 // FET feature flag that enables "What can Gemini do" suggestion.
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSGeminiWhatCanGeminiDo);
 
+// FET feature flag that enables contextual default browser promo for Gemini.
+FEATURE_CONSTANTS_DECLARE_FEATURE(
+    kIPHiOSPromoContextualDefaultBrowserGeminiFeature);
+
 // FET feature flag that enables customized sites in the most visited tile.
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSPinMostVisitedSiteFeature);
 

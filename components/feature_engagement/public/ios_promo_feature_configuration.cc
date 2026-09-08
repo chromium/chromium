@@ -753,6 +753,36 @@ std::optional<FeatureConfig> GetCustomConfig(const base::Feature* feature) {
                     feature_engagement::kMaxStoragePeriod);
 
     return config;
+  } else if (kIPHiOSPromoContextualDefaultBrowserGeminiFeature.name ==
+             feature->name) {
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(ANY, 0);
+
+    // Time between impressions: 14 days.
+    config.trigger = EventConfig(
+        "contextual_default_browser_promo_gemini_trigger",
+        Comparator(LESS_THAN, 1), 14, feature_engagement::kMaxStoragePeriod);
+
+    // Max Impression cap: 4.
+    config.event_configs.insert(EventConfig(
+        "contextual_default_browser_promo_gemini_trigger",
+        Comparator(LESS_THAN, 4), feature_engagement::kMaxStoragePeriod,
+        feature_engagement::kMaxStoragePeriod));
+
+    // Precondition: Gemini session must have been terminated within the last
+    // 14 days.
+    config.event_configs.insert(EventConfig(
+        events::kGeminiSessionTerminated, Comparator(GREATER_THAN, 0), 14,
+        feature_engagement::kMaxStoragePeriod));
+
+    config.used =
+        EventConfig(events::kDefaultBrowserPromoContextualGeminiUsed,
+                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+
+    return config;
   } else {
     return std::nullopt;
   }

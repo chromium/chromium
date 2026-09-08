@@ -424,6 +424,8 @@ chromium-metrics-reviews@google.com.
       summary="showing the App Store Promo on iOS"/>
   <variant name="IPH_iOSPromoBackgroundCustomization"
       summary="Background customization feature for the iOS NTP"/>
+  <variant name="IPH_iOSPromoContextualDefaultBrowserGemini"
+      summary="showing the Gemini contextual default browser promo on iOS"/>
   <variant name="IPH_iOSPromoCredentialProviderExtension"
       summary="showing the Credential Provider Extension Promo on iOS"/>
   <variant name="IPH_iOSPromoDefaultBrowser"

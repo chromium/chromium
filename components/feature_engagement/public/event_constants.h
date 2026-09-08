@@ -456,6 +456,13 @@ extern const char kDefaultBrowserPromoOverflowMenuDestinationUsed[];
 // used.
 extern const char kDefaultBrowserPromoOverflowMenuShortcutsUsed[];
 
+// Event fired when the contextual default browser promo with Gemini is used
+// (displayed).
+extern const char kDefaultBrowserPromoContextualGeminiUsed[];
+
+// Event fired when a Gemini session terminates or disappears.
+extern const char kGeminiSessionTerminated[];
+
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.

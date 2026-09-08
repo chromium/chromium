@@ -53,6 +53,12 @@ bool IsDefaultBrowserPromoOverflowMenuEnabled();
 DefaultBrowserPromoOverflowMenuType
 CurrentDefaultBrowserPromoOverflowMenuType();
 
+// Feature to enable the Contextual Default Browser Promo.
+BASE_DECLARE_FEATURE(kIOSDefaultBrowserContextualPromo);
+
+// Returns whether `kIOSDefaultBrowserContextualPromo` is enabled.
+bool IsIOSDefaultBrowserContextualPromoEnabled();
+
 // Feature to enable the Omnibox Paste Flow copy experiments.
 BASE_DECLARE_FEATURE(kOmniboxPastePromoExperiment);
 

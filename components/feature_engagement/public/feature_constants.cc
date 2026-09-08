@@ -984,6 +984,10 @@ BASE_FEATURE(kIPHiOSGeminiContextualCueChip,
 
 BASE_FEATURE(kIPHiOSGeminiWhatCanGeminiDo, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIPHiOSPromoContextualDefaultBrowserGeminiFeature,
+             "IPH_iOSPromoContextualDefaultBrowserGemini",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kIPHiOSGeminiImageRemixFeature,
              "IPH_iOSGeminiImageRemixFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);

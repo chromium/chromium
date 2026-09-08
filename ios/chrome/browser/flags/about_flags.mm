@@ -1928,6 +1928,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          segmentation_platform::features::kDefaultBrowserPromoPropensityModel)},
+    {"ios-default-browser-contextual-promo",
+     flag_descriptions::kIOSDefaultBrowserContextualPromoName,
+     flag_descriptions::kIOSDefaultBrowserContextualPromoDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSDefaultBrowserContextualPromo)},
     {"ios-settings-default-browser-promo-v2",
      flag_descriptions::kIOSSettingsDefaultBrowserPromoV2Name,
      flag_descriptions::kIOSSettingsDefaultBrowserPromoV2Description,

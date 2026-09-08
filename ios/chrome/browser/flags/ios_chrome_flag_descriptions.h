@@ -1046,6 +1046,11 @@ inline constexpr char kIOSDateToCalendarSignedOutDescription[] =
     "When enabled, signed-out users can long-press detected dates to access "
     "the 'Add to Google Calendar' feature.";
 
+inline constexpr char kIOSDefaultBrowserContextualPromoName[] =
+    "Contextual Default Browser Promo";
+inline constexpr char kIOSDefaultBrowserContextualPromoDescription[] =
+    "Enables the contextual default browser promo half-sheet.";
+
 inline constexpr char kIOSEnableCloudProfileReportingName[] =
     "Enable profile reporting on iOS";
 inline constexpr char kIOSEnableCloudProfileReportingDescription[] =

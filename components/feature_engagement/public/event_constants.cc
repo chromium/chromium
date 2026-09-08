@@ -232,6 +232,9 @@ const char kDefaultBrowserPromoOverflowMenuDestinationUsed[] =
     "default_browser_promo_overflow_menu_destination_used";
 const char kDefaultBrowserPromoOverflowMenuShortcutsUsed[] =
     "default_browser_promo_overflow_menu_shortcuts_used";
+const char kDefaultBrowserPromoContextualGeminiUsed[] =
+    "default_browser_promo_contextual_gemini_used";
+const char kGeminiSessionTerminated[] = "gemini_session_terminated";
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)

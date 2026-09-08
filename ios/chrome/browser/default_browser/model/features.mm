@@ -78,6 +78,13 @@ CurrentDefaultBrowserPromoOverflowMenuType() {
   return DefaultBrowserPromoOverflowMenuType::kDestination;
 }
 
+BASE_FEATURE(kIOSDefaultBrowserContextualPromo,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsIOSDefaultBrowserContextualPromoEnabled() {
+  return base::FeatureList::IsEnabled(kIOSDefaultBrowserContextualPromo);
+}
+
 BASE_FEATURE(kOmniboxPastePromoExperiment, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(int,

@@ -536,3 +536,66 @@ TEST_F(DefaultBrowserFeatureEngagementTest,
   EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
       feature_engagement::kIPHiOSPromoNonModalShareDefaultBrowserFeature));
 }
+
+// Test for the Contextual Gemini default browser promo FET configuration.
+TEST_F(DefaultBrowserFeatureEngagementTest, ContextualGeminiPromoTest) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeatures(
+      {feature_engagement::kIPHiOSPromoContextualDefaultBrowserGeminiFeature});
+  std::unique_ptr<feature_engagement::Tracker> tracker = CreateAndInitTracker();
+
+  // Without Gemini session terminated event, should not trigger.
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoContextualDefaultBrowserGeminiFeature));
+
+  // Notify Gemini session terminated event.
+  tracker->NotifyEvent(feature_engagement::events::kGeminiSessionTerminated);
+
+  // First impression should trigger now.
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoContextualDefaultBrowserGeminiFeature));
+  tracker->Dismissed(
+      feature_engagement::kIPHiOSPromoContextualDefaultBrowserGeminiFeature);
+
+  // Shouldn't trigger immediately again (within 14 days).
+  test_clock_.Advance(base::Days(10));
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoContextualDefaultBrowserGeminiFeature));
+
+  // Advance 5 more days (total 15 days since 1st trigger). But last Gemini
+  // session was 15 days ago (precondition requires <= 14 days).
+  test_clock_.Advance(base::Days(5));
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoContextualDefaultBrowserGeminiFeature));
+
+  // Notify Gemini session terminated within the 14-day window. 2nd impression
+  // should trigger.
+  tracker->NotifyEvent(feature_engagement::events::kGeminiSessionTerminated);
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoContextualDefaultBrowserGeminiFeature));
+  tracker->Dismissed(
+      feature_engagement::kIPHiOSPromoContextualDefaultBrowserGeminiFeature);
+
+  // After 14 days, 3rd impression should trigger with event.
+  test_clock_.Advance(base::Days(14));
+  tracker->NotifyEvent(feature_engagement::events::kGeminiSessionTerminated);
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoContextualDefaultBrowserGeminiFeature));
+  tracker->Dismissed(
+      feature_engagement::kIPHiOSPromoContextualDefaultBrowserGeminiFeature);
+
+  // After 14 days, 4th impression should trigger with event.
+  test_clock_.Advance(base::Days(14));
+  tracker->NotifyEvent(feature_engagement::events::kGeminiSessionTerminated);
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoContextualDefaultBrowserGeminiFeature));
+  tracker->Dismissed(
+      feature_engagement::kIPHiOSPromoContextualDefaultBrowserGeminiFeature);
+
+  // After 14 days, 5th impression should not trigger even with event (max
+  // impression cap is 4).
+  test_clock_.Advance(base::Days(14));
+  tracker->NotifyEvent(feature_engagement::events::kGeminiSessionTerminated);
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoContextualDefaultBrowserGeminiFeature));
+}
