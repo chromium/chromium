@@ -831,6 +831,19 @@ def _loadline2_phone_crossbench(
   )
 
 
+# Web Power:
+@_register('web_power.crossbench')
+def _web_power_crossbench(
+  estimated_runtime: int = 7200, flags: tuple[str, ...] = ()
+):
+  return CrossbenchConfig(
+    'web_power.crossbench',
+    'web-power',
+    estimated_runtime=estimated_runtime,
+    flags=flags,
+  )
+
+
 # Webview:
 @_register('loading.crossbench')
 def _crossbench_loading(
@@ -948,7 +961,7 @@ PLATFORM_INFO = {
     'description': 'Ubuntu-24.04, Nvidia DGX Spark',
     'num_shards': 1,
     'platform_os': 'linux',
-    'is_fyi': False
+    'is_fyi': False,
   },
   'mac-intel-perf': {
     'description': 'Mac Mini 8,1, Core i7 3.2 GHz',

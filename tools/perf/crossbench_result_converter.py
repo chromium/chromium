@@ -8,6 +8,7 @@ See example inputs in testdata/crossbench_output folder.
 """
 
 import argparse
+import collections
 import csv
 import json
 import pathlib
@@ -106,6 +107,10 @@ def convert(
     _loadline(crossbench_out_dir, out_filename, benchmark, results_label)
     return
 
+  if benchmark and benchmark.lower().startswith('web-power'):
+    _web_power(crossbench_out_dir, out_filename, benchmark, results_label)
+    return
+
   crossbench_json_filenames = _get_crossbench_json_paths(crossbench_out_dir)
   crossbench_result = {}
   for filename in crossbench_json_filenames:
@@ -140,7 +145,8 @@ def convert(
       story_name = value.get('cb_story') or story or 'Default'
       data_point = histogram.Histogram.Create(metric, unit, value['values'])
       data_point.diagnostics[reserved_infos.STORIES.name] = (
-          generic_set.GenericSet([story_name]))
+        generic_set.GenericSet([story_name])
+      )
       results.AddHistogram(data_point)
 
   if benchmark:
@@ -237,6 +243,116 @@ def _loadline(
     )
   else:
     raise ValueError("Missing LoadLine probe results")
+
+  if benchmark:
+    results.AddSharedDiagnosticToAllHistograms(
+      reserved_infos.BENCHMARKS.name, generic_set.GenericSet([benchmark])
+    )
+  if results_label:
+    results.AddSharedDiagnosticToAllHistograms(
+      reserved_infos.LABELS.name, generic_set.GenericSet([results_label])
+    )
+
+  with out_filename.open('w') as f:
+    json.dump(results.AsDicts(), f)
+
+
+def _web_power_results(
+  cpu_time_csv: pathlib.Path,
+) -> histogram_set.HistogramSet:
+  if not cpu_time_csv.exists():
+    raise FileNotFoundError(
+      f'Missing web_power CPU time CSV results file: {cpu_time_csv}'
+    )
+
+  results = histogram_set.HistogramSet()
+  story_threads = collections.defaultdict(lambda: collections.defaultdict(list))
+  story_run_totals = collections.defaultdict(
+    lambda: collections.defaultdict(float)
+  )
+  browser_name = None
+
+  with cpu_time_csv.open() as f:
+    csv_reader = csv.DictReader(f)
+    for line in csv_reader:
+      thread_name = line.get('thread_name')
+      cpu_time_str = line.get('cpu_time_ms')
+      if not thread_name or not cpu_time_str:
+        continue
+      story_name = line.get('cb_story') or 'Default'
+      run_id = line.get('cb_run') or '0'
+      cpu_time_val = float(cpu_time_str.split()[0])
+
+      story_threads[story_name][thread_name].append(cpu_time_val)
+      story_run_totals[story_name][run_id] += cpu_time_val
+
+      if not browser_name and line.get('cb_browser'):
+        browser_name = line['cb_browser']
+
+  for story_name, thread_samples in story_threads.items():
+    for thread_name, samples in thread_samples.items():
+      h = histogram.Histogram.Create(
+        f'{thread_name}_cpu_time', 'ms_smallerIsBetter', samples
+      )
+      h.diagnostics[reserved_infos.STORIES.name] = generic_set.GenericSet(
+        [story_name]
+      )
+      results.AddHistogram(h)
+
+    total_samples = list(story_run_totals[story_name].values())
+    total_h = histogram.Histogram.Create(
+      'total_cpu_time', 'ms_smallerIsBetter', total_samples
+    )
+    total_h.diagnostics[reserved_infos.STORIES.name] = generic_set.GenericSet(
+      [story_name]
+    )
+    results.AddHistogram(total_h)
+
+  if browser_name:
+    results.AddSharedDiagnosticToAllHistograms(
+      'browser', generic_set.GenericSet([browser_name])
+    )
+
+  return results
+
+
+def _web_power(
+  crossbench_out_dir: pathlib.Path,
+  out_filename: pathlib.Path,
+  benchmark: Optional[str] = None,
+  results_label: Optional[str] = None,
+) -> None:
+  """Converts `web-power*` benchmarks."""
+  crossbench_json_filename = crossbench_out_dir / 'cb.results.json'
+  if not crossbench_json_filename.exists():
+    raise FileNotFoundError(
+      f'Missing crossbench results file: {crossbench_json_filename}'
+    )
+
+  with crossbench_json_filename.open() as f:
+    crossbench_result = json.load(f)
+
+  trace_processor_data = crossbench_result.get('probes', {}).get(
+    'trace_processor', {}
+  )
+  cpu_time_csvs = [
+    p
+    for p in trace_processor_data.get('csv', [])
+    if pathlib.Path(p).name == 'web_power_cpu_time.csv'
+  ]
+  if not cpu_time_csvs:
+    # Check browser-level probes as fallback.
+    for browser_info in crossbench_result.get('browsers', {}).values():
+      for p in (
+        browser_info.get('probes', {}).get('trace_processor', {}).get('csv', [])
+      ):
+        if pathlib.Path(p).name == 'web_power_cpu_time.csv':
+          cpu_time_csvs.append(p)
+
+  if not cpu_time_csvs:
+    raise ValueError('Missing web_power_cpu_time.csv probe results')
+
+  results = _web_power_results(pathlib.Path(cpu_time_csvs[0]))
 
   if benchmark:
     results.AddSharedDiagnosticToAllHistograms(

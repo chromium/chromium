@@ -211,6 +211,84 @@ class CrossbenchResultConverterTest(unittest.TestCase):
     self.assertIsNotNone(browser_diagnostic)
     self.assertEqual(list(browser_diagnostic), ['BrowserA'])
 
+  def test_web_power_results(self):
+    csv_content = (
+      'thread_name,cpu_time_ms,cb_browser,cb_story,cb_temperature,cb_run\n'
+      'CrBrowserMain,100.5,BrowserA,story1,0_default,0\n'
+      'CrRendererMain,250.25,BrowserA,story1,0_default,0\n'
+      'CrGpuMain,50.0,BrowserA,story1,0_default,0\n'
+    )
+    with tempfile.TemporaryDirectory() as temp_dir:
+      csv_path = pathlib.Path(temp_dir) / 'web_power_cpu_time.csv'
+      with open(csv_path, 'w') as f:
+        f.write(csv_content)
+
+      # pylint: disable=protected-access
+      hist_set = crossbench_result_converter._web_power_results(csv_path)
+      results = self.list_to_dict(hist_set.AsDicts())
+
+    self.assertEqual(len(results), 4)
+    self.check_result(
+      results, 'CrBrowserMain_cpu_time', 100.5, 'ms_smallerIsBetter'
+    )
+    self.check_result(
+      results, 'CrRendererMain_cpu_time', 250.25, 'ms_smallerIsBetter'
+    )
+    self.check_result(results, 'CrGpuMain_cpu_time', 50.0, 'ms_smallerIsBetter')
+    self.check_result(results, 'total_cpu_time', 400.75, 'ms_smallerIsBetter')
+
+    browser_diagnostic = None
+    for diag in hist_set.shared_diagnostics:
+      browser_diagnostic = diag.AsDict()['values']
+    self.assertIsNotNone(browser_diagnostic)
+    self.assertEqual(list(browser_diagnostic), ['BrowserA'])
+
+    hist = histogram.Histogram.FromDict(results['total_cpu_time'])
+    self.assertEqual(
+      hist.diagnostics[reserved_infos.STORIES.name].GetOnlyElement(),
+      'story1',
+    )
+
+  def test_web_power_convert(self):
+    csv_content = (
+      'thread_name,cpu_time_ms,cb_browser,cb_story,cb_temperature,cb_run\n'
+      'CrBrowserMain,100.5,BrowserA,story1,0_default,0\n'
+      'CrRendererMain,250.25,BrowserA,story1,0_default,0\n'
+      'CrGpuMain,50.0,BrowserA,story1,0_default,0\n'
+    )
+    with tempfile.TemporaryDirectory() as temp_dir:
+      dir_path = pathlib.Path(temp_dir)
+      csv_path = dir_path / 'web_power_cpu_time.csv'
+      with open(csv_path, 'w') as f:
+        f.write(csv_content)
+
+      cb_results = {
+        'probes': {
+          'trace_processor': {
+            'csv': [str(csv_path)],
+          }
+        }
+      }
+      with open(dir_path / 'cb.results.json', 'w') as f:
+        json.dump(cb_results, f)
+
+      out_file = dir_path / 'out.json'
+      crossbench_result_converter.convert(
+        dir_path,
+        out_file,
+        benchmark='web-power-idle',
+        results_label='canary',
+      )
+
+      with open(out_file) as f:
+        results = self.list_to_dict(json.load(f))
+
+    self.assertEqual(len(results), 4)
+    self.check_result(
+      results, 'CrBrowserMain_cpu_time', 100.5, 'ms_smallerIsBetter'
+    )
+    self.check_result(results, 'total_cpu_time', 400.75, 'ms_smallerIsBetter')
+
 
 if __name__ == '__main__':
   unittest.main()
