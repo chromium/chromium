@@ -1078,7 +1078,15 @@ class SearchEngineChoiceEligibilityOnRestoreTest
     if (state_changes.has_value()) {
       if (state_changes->set_restored) {
         restore_detected_in_current_session = true;
-        latest_restore_time_ = base::Time::Now();
+        latest_restore_time_ = base::Time::Now() - base::Minutes(1);
+        if (base::expected<search_engines::ChoiceCompletionMetadata,
+                           search_engines::ChoiceCompletionMetadata::ParseError>
+                metadata =
+                    search_engines::GetChoiceCompletionMetadata(pref_service_);
+            metadata.has_value()) {
+          metadata->timestamp = latest_restore_time_.value() - base::Minutes(1);
+          search_engines::SetChoiceCompletionMetadata(pref_service_, *metadata);
+        }
       }
 
       if (state_changes->device_country_id.IsValid()) {
