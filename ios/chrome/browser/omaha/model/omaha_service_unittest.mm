@@ -19,6 +19,7 @@
 #import "components/metrics/metrics_pref_names.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/version_info/version_info.h"
+#import "ios/chrome/browser/omaha/model/omaha_ping.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_constants.h"
@@ -159,7 +160,7 @@ TEST_F(OmahaServiceTest, PingMessageTest) {
       &OmahaServiceTest::OnNeedUpdate, base::Unretained(this)));
   std::string content = service.GetPingContent(
       "requestId", "sessionId", std::string(version_info::GetVersionNumber()),
-      GetChannelString(), base::Time::Now(), OmahaService::USAGE_PING);
+      GetChannelString(), base::Time::Now(), OmahaPingEvent::kUsagePing);
   regex_t regex;
   regcomp(&regex, expectedResult, REG_NOSUB);
   int result = regexec(&regex, content.c_str(), 0, NULL, 0);
@@ -188,7 +189,7 @@ TEST_F(OmahaServiceTest, PingMessageTestWithUnknownInstallDate) {
   std::string content = service.GetPingContent(
       "requestId", "sessionId", std::string(version_info::GetVersionNumber()),
       GetChannelString(), base::Time::FromTimeT(kUnknownInstallDate),
-      OmahaService::USAGE_PING);
+      OmahaPingEvent::kUsagePing);
   regex_t regex;
   regcomp(&regex, expectedResult, REG_NOSUB);
   int result = regexec(&regex, content.c_str(), 0, NULL, 0);
@@ -220,7 +221,7 @@ TEST_F(OmahaServiceTest, InstallEventMessageTest) {
   CleanService(&service, "");
   std::string content = service.GetPingContent(
       "requestId", "sessionId", std::string(version_info::GetVersionNumber()),
-      GetChannelString(), base::Time::Now(), OmahaService::INSTALL_EVENT);
+      GetChannelString(), base::Time::Now(), OmahaPingEvent::kInstallEvent);
   regmatch_t matches[2];
   regex_t regex;
   std::string expected_result =
@@ -237,7 +238,7 @@ TEST_F(OmahaServiceTest, InstallEventMessageTest) {
   CleanService(&service, kPreviousVersion);
   content = service.GetPingContent(
       "requestId", "sessionId", std::string(version_info::GetVersionNumber()),
-      GetChannelString(), base::Time::Now(), OmahaService::INSTALL_EVENT);
+      GetChannelString(), base::Time::Now(), OmahaPingEvent::kInstallEvent);
   expected_result = base::StringPrintf(kExpectedResultFormat, kPreviousVersion,
                                        0 /* install age */, 3 /* event type */);
   regcomp(&regex, expected_result.c_str(), REG_EXTENDED);
@@ -561,7 +562,7 @@ TEST_F(OmahaServiceTest, ParseAndEchoLastServerDate) {
   std::string content = service.GetPingContent(
       "requestId", "sessionId", std::string(version_info::GetVersionNumber()),
       GetChannelString(), base::Time::FromTimeT(kUnknownInstallDate),
-      OmahaService::USAGE_PING);
+      OmahaPingEvent::kUsagePing);
   regex_t regex;
   regcomp(&regex, expectedResult, REG_NOSUB);
   int result = regexec(&regex, content.c_str(), 0, nullptr, 0);
@@ -827,9 +828,9 @@ TEST_F(OmahaServiceTest, InstallRetryTest) {
   CleanService(&service, "");
 
   EXPECT_FALSE(service.IsNextPingInstallRetry());
-  std::string id1 = service.GetNextPingRequestId(OmahaService::INSTALL_EVENT);
+  std::string id1 = service.GetNextPingRequestId(OmahaPingEvent::kInstallEvent);
   EXPECT_TRUE(service.IsNextPingInstallRetry());
-  ASSERT_EQ(id1, service.GetNextPingRequestId(OmahaService::INSTALL_EVENT));
+  ASSERT_EQ(id1, service.GetNextPingRequestId(OmahaPingEvent::kInstallEvent));
 
   service.SendPing();
 
@@ -846,8 +847,8 @@ TEST_F(OmahaServiceTest, InstallRetryTest) {
       pending_request->request.url.spec(), response);
 
   EXPECT_FALSE(service.IsNextPingInstallRetry());
-  id1 = service.GetNextPingRequestId(OmahaService::USAGE_PING);
-  ASSERT_NE(id1, service.GetNextPingRequestId(OmahaService::USAGE_PING));
+  id1 = service.GetNextPingRequestId(OmahaPingEvent::kUsagePing);
+  ASSERT_NE(id1, service.GetNextPingRequestId(OmahaPingEvent::kUsagePing));
 }
 
 TEST_F(OmahaServiceTest, ResyncTimerAfterSystemSuspend) {

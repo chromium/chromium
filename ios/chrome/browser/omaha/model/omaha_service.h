@@ -26,6 +26,7 @@
 #include "ios/chrome/browser/upgrade/model/upgrade_recommended_details.h"
 
 class OmahaService;
+enum class OmahaPingEvent;
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -109,12 +110,6 @@ class OmahaService {
   // For the singleton:
   friend class base::NoDestructor<OmahaService>;
 
-  // Enum for the `GetPingContent` and `GetNextPingRequestId` method.
-  enum PingContent {
-    INSTALL_EVENT,
-    USAGE_PING,
-  };
-
   // Starts the service.
   void StartInternal();
 
@@ -164,7 +159,7 @@ class OmahaService {
                              const std::string& versionName,
                              const std::string& channelName,
                              base::Time installationTime,
-                             PingContent pingContent);
+                             OmahaPingEvent pingContent);
 
   // Returns the xml representation of the ping message to send to the Omaha
   // server. Use the current state of the service to compute the right message.
@@ -189,7 +184,7 @@ class OmahaService {
   // `send_install_event` must be true if the next ping is a install/update
   // event, in that case, the identifier will be stored so that it can be
   // reused until the ping is successful.
-  std::string GetNextPingRequestId(PingContent ping_content);
+  std::string GetNextPingRequestId(OmahaPingEvent ping_content);
 
   // Stores the given request id to be reused on install/update retry.
   void SetInstallRetryRequestId(const std::string& request_id);

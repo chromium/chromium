@@ -42,12 +42,16 @@ source_set("backend") {
     ":unit_tests",
   ]
   sources = [
+    "omaha_ping.h",
+    "omaha_ping.mm",
     "omaha_response.h",
     "omaha_response.mm",
   ]
   deps = [
     "//base",
     "//ios/chrome/browser/upgrade/model:public",
+    "//ios/public/provider/chrome/browser/omaha:omaha_api",
+    "//third_party/libxml:xml_writer",
   ]
   frameworks = [ "Foundation.framework" ]
 }
@@ -55,6 +59,7 @@ source_set("backend") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "omaha_ping_unittest.mm",
     "omaha_response_unittest.mm",
     "omaha_service_unittest.mm",
   ]
