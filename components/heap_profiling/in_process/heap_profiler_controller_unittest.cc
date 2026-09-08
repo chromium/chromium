@@ -354,9 +354,13 @@ class ProfilerSetUpMixin {
     // threads are started.
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
+    // Drain any accumulated churn samples from previous tests.
+    base::SamplingHeapProfiler::Get()->churn_profiler().TakeSamples();
   }
 
-  ~ProfilerSetUpMixin() = default;
+  ~ProfilerSetUpMixin() {
+    base::SamplingHeapProfiler::Get()->churn_profiler().TakeSamples();
+  }
 
   base::test::TaskEnvironment& task_env() { return task_environment_; }
 
@@ -781,6 +785,11 @@ class HeapProfilerControllerTest
   // subclasses.
   void RecordSampleReceived(base::TimeTicks,
                             metrics::SampledProfile sampled_profile) {
+    // Note: Tests expect regular heap profiles (PERIODIC_HEAP_COLLECTION) to be
+    // delivered before churn profiles (PERIODIC_HEAP_CHURN_COLLECTION). If
+    // HeapProfilerController ever changes the delivery order or reports churn
+    // samples first, tests expecting 1 sample will fail here or in
+    // ScopedCallbacks.
     EXPECT_EQ(sampled_profile.trigger_event(),
               metrics::SampledProfile::PERIODIC_HEAP_COLLECTION);
     EXPECT_EQ(sampled_profile.process(), expected_process_);
