@@ -38,20 +38,20 @@ sys.path.append(
 # These fields are written by //tools/clang/scripts/upload_revision.py, and
 # should not be changed manually.
 # They are also read by build/config/compiler/BUILD.gn.
-RUST_REVISION = '0913b18e489ac1011b580e31fa5559654be12bfc'
-RUST_SUB_REVISION = 2
+RUST_REVISION = 'c33d8f3b5a50b56466998e8c5ed8a077d2caed84'
+RUST_SUB_REVISION = 1
 
 # The revision of Crubit to use from https://github.com/google/crubit
 #
 # If changing the CRUBIT_REVISION but not the RUST_REVISION, bump the
 # RUST_SUB_REVISION to generate a unique package name.
-CRUBIT_REVISION = '69b85cba43f85a6439dc0be86a6fe424bb07a100'
+CRUBIT_REVISION = '09ad8b641be5f64bf4b0a5287ada39d2a729a6f9'
 
 # Hash of src/stage0.json, which itself contains the stage0 toolchain hashes.
 # We trust the Rust build system checks, but to ensure it is not tampered with
 # itself check the hash.
 STAGE0_JSON_SHA256 = (
-    '07502352e3922d94b31d95b639a558f2fc6c27029d823b590589e23f444dbbc3'
+    '960197f9f1c3929b815c76fb34aef300571f734204d7cb61bcf3559baa4624b9'
 )
 
 THIS_DIR = os.path.abspath(os.path.dirname(__file__))
