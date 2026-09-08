@@ -4147,21 +4147,19 @@ LogicalOffset BlockLayoutAlgorithm::AdjustSliderThumbInlineOffset(
 LayoutUnit BlockLayoutAlgorithm::ComputeInitialBlockStartAnnotationSpace()
     const {
   LayoutUnit padding_start = container_builder_.Padding().block_start;
+  const ConstraintSpace& space = GetConstraintSpace();
   // Allow ruby annotations to overflow to the block-start margin if the
   // container has no block-start border.
   if (RuntimeEnabledFeatures::AnnotationSpaceOnStartEnabled() &&
-      GetConstraintSpace().ContainsAnnotations() &&
-      !GetConstraintSpace().IsNewFormattingContext() &&
+      space.ContainsAnnotations() && !space.IsNewFormattingContext() &&
       (RuntimeEnabledFeatures::AnnotationSpaceForMultiColEnabled() ||
-       !GetConstraintSpace().IsInsideBalancedColumns()) &&
+       !space.IsInsideBalancedColumns()) &&
       Borders().block_start == 0) {
-    MarginStrut margin_strut = GetConstraintSpace().GetMarginStrut();
-    margin_strut.Append(
-        ComputeMarginsForSelf(GetConstraintSpace(), Style()).block_start,
-        Style().HasMarginBlockStartQuirk());
+    MarginStrut margin_strut = space.GetMarginStrut();
+    margin_strut.Append(ComputeMarginsForSelf(space, Style()).block_start,
+                        Style().HasMarginBlockStartQuirk());
     LayoutUnit annotation_space = margin_strut.Sum() + padding_start;
-    annotation_space +=
-        GetConstraintSpace().PreviousSiblingBlockEndAnnotationSpace();
+    annotation_space += space.PreviousSiblingBlockEndAnnotationSpace();
     return annotation_space;
   }
   return padding_start;
