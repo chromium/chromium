@@ -4921,11 +4921,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "exo-gamepad-vibration",
-    "owners": [ "prabirmsp@chromium.org" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "exo-ordinal-motion",
     "owners": [ "philpearson@google.com", "borealis-team@google.com" ],
     "expiry_milestone": 130

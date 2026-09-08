@@ -13,16 +13,16 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/exo/gamepad.h"
 #include "components/exo/gamepad_delegate.h"
-#include "components/exo/gamepad_observer.h"
 #include "components/exo/gaming_seat.h"
 #include "components/exo/gaming_seat_delegate.h"
 #include "components/exo/wayland/server_util.h"
 #include "ui/events/devices/gamepad_device.h"
+#include "ui/ozone/public/input_controller.h"
+#include "ui/ozone/public/ozone_platform.h"
 
 namespace exo {
 namespace wayland {
@@ -38,82 +38,6 @@ unsigned int GetGamepadBusType(ui::InputDeviceType type) {
       return ZCR_GAMING_SEAT_V2_BUS_TYPE_USB;
   }
 }
-
-////////////////////////////////////////////////////////////////////////////////
-// gaming_input_interface:
-
-// Handles the vibration requests sent by the client for a gamepad.
-class WaylandGamepadVibratorImpl : public GamepadObserver {
- public:
-  explicit WaylandGamepadVibratorImpl(Gamepad* gamepad) : gamepad_(gamepad) {
-    gamepad_->AddObserver(this);
-  }
-
-  WaylandGamepadVibratorImpl(const WaylandGamepadVibratorImpl& other) = delete;
-  WaylandGamepadVibratorImpl& operator=(
-      const WaylandGamepadVibratorImpl& other) = delete;
-
-  ~WaylandGamepadVibratorImpl() override {
-    if (gamepad_)
-      gamepad_->RemoveObserver(this);
-  }
-
-  void OnVibrate(wl_array* duration_millis,
-                 wl_array* amplitudes,
-                 int32_t repeat) {
-    // SAFETY: wl_array data is guaranteed to be valid for its size in bytes.
-    // We interpret it as a span of int64_t.
-    auto duration_span =
-        UNSAFE_BUFFERS(base::span(static_cast<int64_t*>(duration_millis->data),
-                                  duration_millis->size / sizeof(int64_t)));
-    std::vector<int64_t> extracted_durations = base::ToVector(duration_span);
-
-    // SAFETY: wl_array data is guaranteed to be valid for its size in bytes.
-    auto amplitudes_span = UNSAFE_BUFFERS(
-        base::span(static_cast<uint8_t*>(amplitudes->data), amplitudes->size));
-    std::vector<uint8_t> extracted_amplitudes = base::ToVector(amplitudes_span);
-
-    if (gamepad_) {
-      gamepad_->Vibrate(extracted_durations, extracted_amplitudes, repeat);
-    }
-  }
-
-  void OnCancelVibration() {
-    if (gamepad_)
-      gamepad_->CancelVibration();
-  }
-
-  // Overridden from GamepadObserver
-  void OnGamepadDestroying(Gamepad* gamepad) override {
-    DCHECK_EQ(gamepad_, gamepad);
-    gamepad_ = nullptr;
-  }
-
- private:
-  raw_ptr<Gamepad> gamepad_;
-};
-
-void gamepad_vibrator_vibrate(wl_client* client,
-                              wl_resource* resource,
-                              wl_array* duration_millis,
-                              wl_array* amplitudes,
-                              int32_t repeat) {
-  GetUserDataAs<WaylandGamepadVibratorImpl>(resource)->OnVibrate(
-      duration_millis, amplitudes, repeat);
-}
-
-void gamepad_vibrator_cancel_vibration(wl_client* client,
-                                       wl_resource* resource) {
-  GetUserDataAs<WaylandGamepadVibratorImpl>(resource)->OnCancelVibration();
-}
-
-void gamepad_vibrator_destroy(wl_client* client, wl_resource* resource) {
-  wl_resource_destroy(resource);
-}
-
-const struct zcr_gamepad_vibrator_v2_interface gamepad_vibrator_implementation =
-    {gamepad_vibrator_vibrate, gamepad_vibrator_cancel_vibration,
-     gamepad_vibrator_destroy};
 
 // Gamepad delegate class that forwards gamepad events to the client resource.
 class WaylandGamepadDelegate : public GamepadDelegate {
@@ -181,22 +105,6 @@ class WaylandGamepadDelegate : public GamepadDelegate {
       zcr_gamepad_v2_send_axis_added(gamepad_resource_, axis.code,
                                      axis.min_value, axis.max_value, axis.flat,
                                      axis.fuzz, axis.resolution);
-    }
-
-    if (gamepad->device.supports_vibration_rumble &&
-        wl_resource_get_version(gamepad_resource_) >=
-            ZCR_GAMEPAD_V2_VIBRATOR_ADDED_SINCE_VERSION) {
-      wl_resource* gamepad_vibrator_resource =
-          wl_resource_create(wl_resource_get_client(gamepad_resource_),
-                             &zcr_gamepad_vibrator_v2_interface,
-                             wl_resource_get_version(gamepad_resource_), 0);
-
-      SetImplementation(gamepad_vibrator_resource,
-                        &gamepad_vibrator_implementation,
-                        std::make_unique<WaylandGamepadVibratorImpl>(gamepad));
-
-      zcr_gamepad_v2_send_vibrator_added(gamepad_resource_,
-                                         gamepad_vibrator_resource);
     }
 
     if (wl_resource_get_version(gamepad_resource_) >=

@@ -4,46 +4,12 @@
 
 #include "components/exo/gamepad.h"
 
-#include "ash/constants/ash_features.h"
-#include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace exo {
 
 namespace {
-
-constexpr int64_t kDurationMillis = 0x8000;
-constexpr base::TimeDelta kPendingTaskDuration =
-    base::Milliseconds(kDurationMillis);
-constexpr base::TimeDelta kPendingMaxTaskDuration =
-    base::Milliseconds(kMaxDurationMillis);
-constexpr uint8_t kAmplitude = 128;
-
-class TestGamepad : public Gamepad {
- public:
-  TestGamepad(const ui::GamepadDevice& device)
-      : Gamepad(device),
-        send_vibrate_count_(0),
-        send_cancel_vibration_count_(0) {}
-
-  TestGamepad(const TestGamepad&) = delete;
-  TestGamepad& operator=(const TestGamepad& other) = delete;
-
-  void SendVibrate(uint8_t amplitude, int64_t duration_millis) override {
-    send_vibrate_count_++;
-    last_vibrate_amplitude_ = amplitude;
-    last_vibrate_duration_ = duration_millis;
-  }
-
-  void SendCancelVibration() override { send_cancel_vibration_count_++; }
-
-  uint8_t last_vibrate_amplitude_;
-  int64_t last_vibrate_duration_;
-  int send_vibrate_count_;
-  int send_cancel_vibration_count_;
-};
 
 class MockGamepadObserver : public GamepadObserver {
  public:
@@ -75,185 +41,14 @@ class GamepadTest : public testing::Test {
     ui::GamepadDevice device(
         ui::InputDevice(0, ui::InputDeviceType::INPUT_DEVICE_USB, "gamepad"),
         std::vector<ui::GamepadDevice::Axis>(), true);
-    gamepad_ = std::make_unique<TestGamepad>(device);
+    gamepad_ = std::make_unique<Gamepad>(device);
   }
 
   GamepadTest(const GamepadTest&) = delete;
   GamepadTest& operator=(const GamepadTest&) = delete;
 
-  void SetUp() override {
-    testing::Test::SetUp();
-    // Allow test to signal to gamepad that it can vibrate.
-    scoped_feature_list_.InitAndEnableFeature(ash::features::kGamepadVibration);
-    gamepad_->OnGamepadFocused();
-  }
-
-  std::unique_ptr<TestGamepad> gamepad_;
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<Gamepad> gamepad_;
 };
-
-TEST_F(GamepadTest, OneShotVibrationTest) {
-  EXPECT_EQ(0, gamepad_->send_vibrate_count_);
-  EXPECT_EQ(0, gamepad_->send_cancel_vibration_count_);
-
-  gamepad_->Vibrate({kDurationMillis}, {kAmplitude}, -1);
-  task_environment_.FastForwardBy(base::Milliseconds(kDurationMillis / 2));
-  EXPECT_EQ(1, gamepad_->send_vibrate_count_);
-  EXPECT_EQ(kAmplitude, gamepad_->last_vibrate_amplitude_);
-  EXPECT_EQ(kDurationMillis, gamepad_->last_vibrate_duration_);
-
-  // Cancel vibration when it's halfway through.
-  gamepad_->CancelVibration();
-  EXPECT_EQ(1, gamepad_->send_cancel_vibration_count_);
-}
-
-TEST_F(GamepadTest, OneShotVibrationTooLongTest) {
-  EXPECT_EQ(0, gamepad_->send_vibrate_count_);
-
-  gamepad_->Vibrate({kMaxDurationMillis * 3}, {kAmplitude}, -1);
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(1, gamepad_->send_vibrate_count_);
-  EXPECT_EQ(kAmplitude, gamepad_->last_vibrate_amplitude_);
-  EXPECT_EQ(kMaxDurationMillis, gamepad_->last_vibrate_duration_);
-
-  EXPECT_TRUE(task_environment_.NextTaskIsDelayed());
-  task_environment_.FastForwardBy(kPendingMaxTaskDuration);
-  EXPECT_EQ(2, gamepad_->send_vibrate_count_);
-  EXPECT_EQ(kAmplitude, gamepad_->last_vibrate_amplitude_);
-  EXPECT_EQ(kMaxDurationMillis, gamepad_->last_vibrate_duration_);
-
-  EXPECT_TRUE(task_environment_.NextTaskIsDelayed());
-  task_environment_.FastForwardBy(kPendingMaxTaskDuration);
-  EXPECT_EQ(3, gamepad_->send_vibrate_count_);
-  EXPECT_EQ(kAmplitude, gamepad_->last_vibrate_amplitude_);
-  EXPECT_EQ(kMaxDurationMillis, gamepad_->last_vibrate_duration_);
-
-  // Complete the last vibration and make sure no more vibration is scheduled.
-  task_environment_.FastForwardBy(kPendingMaxTaskDuration);
-  EXPECT_FALSE(task_environment_.NextTaskIsDelayed());
-}
-
-TEST_F(GamepadTest, WaveformVibrationTest) {
-  EXPECT_EQ(0, gamepad_->send_vibrate_count_);
-
-  gamepad_->Vibrate({kDurationMillis, kDurationMillis}, {kAmplitude, 0}, -1);
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(1, gamepad_->send_vibrate_count_);
-  EXPECT_EQ(kAmplitude, gamepad_->last_vibrate_amplitude_);
-  EXPECT_EQ(kDurationMillis, gamepad_->last_vibrate_duration_);
-
-  EXPECT_TRUE(task_environment_.NextTaskIsDelayed());
-  task_environment_.FastForwardBy(kPendingTaskDuration);
-  EXPECT_EQ(2, gamepad_->send_vibrate_count_);
-  EXPECT_EQ(0, gamepad_->last_vibrate_amplitude_);
-  EXPECT_EQ(kDurationMillis, gamepad_->last_vibrate_duration_);
-
-  // Complete the last vibration and make sure no more vibration is scheduled.
-  task_environment_.FastForwardBy(kPendingTaskDuration);
-  EXPECT_FALSE(task_environment_.NextTaskIsDelayed());
-}
-
-TEST_F(GamepadTest, VibrationWithRepeatTest) {
-  EXPECT_EQ(0, gamepad_->send_vibrate_count_);
-  EXPECT_EQ(0, gamepad_->send_cancel_vibration_count_);
-
-  gamepad_->Vibrate({kMaxDurationMillis, kDurationMillis}, {kAmplitude, 0}, 0);
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(1, gamepad_->send_vibrate_count_);
-  EXPECT_EQ(kAmplitude, gamepad_->last_vibrate_amplitude_);
-  EXPECT_EQ(kMaxDurationMillis, gamepad_->last_vibrate_duration_);
-
-  EXPECT_TRUE(task_environment_.NextTaskIsDelayed());
-  task_environment_.FastForwardBy(kPendingMaxTaskDuration);
-  EXPECT_EQ(2, gamepad_->send_vibrate_count_);
-  EXPECT_EQ(0, gamepad_->last_vibrate_amplitude_);
-  EXPECT_EQ(kDurationMillis, gamepad_->last_vibrate_duration_);
-
-  EXPECT_TRUE(task_environment_.NextTaskIsDelayed());
-  task_environment_.FastForwardBy(kPendingTaskDuration);
-  EXPECT_EQ(3, gamepad_->send_vibrate_count_);
-  EXPECT_EQ(kAmplitude, gamepad_->last_vibrate_amplitude_);
-  EXPECT_EQ(kMaxDurationMillis, gamepad_->last_vibrate_duration_);
-
-  EXPECT_TRUE(task_environment_.NextTaskIsDelayed());
-  task_environment_.FastForwardBy(kPendingTaskDuration);
-  gamepad_->CancelVibration();
-
-  EXPECT_EQ(1, gamepad_->send_cancel_vibration_count_);
-  EXPECT_EQ(3, gamepad_->send_vibrate_count_);
-}
-
-TEST_F(GamepadTest, OverrideVibrationTest) {
-  EXPECT_EQ(0, gamepad_->send_vibrate_count_);
-
-  gamepad_->Vibrate({kDurationMillis, kDurationMillis}, {kAmplitude, 0}, -1);
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(1, gamepad_->send_vibrate_count_);
-  EXPECT_EQ(kAmplitude, gamepad_->last_vibrate_amplitude_);
-  EXPECT_EQ(kDurationMillis, gamepad_->last_vibrate_duration_);
-
-  EXPECT_TRUE(task_environment_.NextTaskIsDelayed());
-  task_environment_.FastForwardBy(kPendingTaskDuration / 2);
-
-  // At this point, we're halfway through the first OneShot vibration in the
-  // duration vector.
-  gamepad_->Vibrate({kMaxDurationMillis}, {kAmplitude / 2}, -1);
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(2, gamepad_->send_vibrate_count_);
-  EXPECT_EQ(kAmplitude / 2, gamepad_->last_vibrate_amplitude_);
-  EXPECT_EQ(kMaxDurationMillis, gamepad_->last_vibrate_duration_);
-
-  // Make sure that the remaining vibration from the first call is no longer in
-  // the queue.
-  task_environment_.FastForwardBy(kPendingMaxTaskDuration);
-  EXPECT_FALSE(task_environment_.NextTaskIsDelayed());
-  // Verify that no extra vibration calls were made.
-  EXPECT_EQ(2, gamepad_->send_vibrate_count_);
-}
-
-TEST_F(GamepadTest, NoFocusTest) {
-  EXPECT_EQ(0, gamepad_->send_vibrate_count_);
-  gamepad_->OnGamepadFocusLost();
-
-  gamepad_->Vibrate({kDurationMillis}, {kAmplitude}, -1);
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(0, gamepad_->send_vibrate_count_);
-}
-
-TEST_F(GamepadTest, FocusLostTest) {
-  EXPECT_EQ(0, gamepad_->send_vibrate_count_);
-  EXPECT_EQ(0, gamepad_->send_cancel_vibration_count_);
-
-  gamepad_->Vibrate({kDurationMillis, kDurationMillis}, {kAmplitude, 0}, -1);
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(1, gamepad_->send_vibrate_count_);
-  EXPECT_EQ(kAmplitude, gamepad_->last_vibrate_amplitude_);
-  EXPECT_EQ(kDurationMillis, gamepad_->last_vibrate_duration_);
-
-  EXPECT_TRUE(task_environment_.NextTaskIsDelayed());
-  gamepad_->OnGamepadFocusLost();
-  task_environment_.FastForwardBy(kPendingTaskDuration);
-
-  // When focus is lost, CancelVibration is sent, and no more vibration can be
-  // scheduled.
-  EXPECT_EQ(1, gamepad_->send_cancel_vibration_count_);
-  EXPECT_EQ(1, gamepad_->send_vibrate_count_);
-
-  // While focus is not regained, gamepad cannot vibrate.
-  gamepad_->Vibrate({kDurationMillis}, {kAmplitude}, -1);
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(1, gamepad_->send_vibrate_count_);
-
-  // If focus is regained, gamepad can vibrate again.
-  gamepad_->OnGamepadFocused();
-  gamepad_->Vibrate({kDurationMillis / 2}, {kAmplitude / 2}, -1);
-  task_environment_.RunUntilIdle();
-  EXPECT_EQ(2, gamepad_->send_vibrate_count_);
-  EXPECT_EQ(kAmplitude / 2, gamepad_->last_vibrate_amplitude_);
-  EXPECT_EQ(kDurationMillis / 2, gamepad_->last_vibrate_duration_);
-}
 
 TEST_F(GamepadTest, GamepadObserverTest) {
   MockGamepadObserver observer1;

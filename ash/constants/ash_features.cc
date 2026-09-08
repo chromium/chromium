@@ -850,11 +850,6 @@ BASE_FEATURE(kGameDashboardUtilities, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kFeatureManagementGameDashboardRecordGame,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls gamepad vibration in Exo.
-BASE_FEATURE(kGamepadVibration,
-             "ExoGamepadVibration",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enable a D-Bus service for accessing gesture properties.
 BASE_FEATURE(kGesturePropertiesDBusService, base::FEATURE_DISABLED_BY_DEFAULT);
 

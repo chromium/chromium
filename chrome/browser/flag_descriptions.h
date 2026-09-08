@@ -7913,12 +7913,6 @@ inline constexpr char kEolResetDismissedPrefsDescription[] =
     "Reset the end of life notification prefs to their default value, at the "
     "start of the user session. This is meant to make manual testing easier.";
 
-inline constexpr char kExoGamepadVibrationName[] =
-    "Gamepad Vibration for Exo Clients";
-inline constexpr char kExoGamepadVibrationDescription[] =
-    "Allow Exo clients like Android to request vibration events for gamepads "
-    "that support it.";
-
 inline constexpr char kExoOrdinalMotionName[] =
     "Raw (unaccelerated) motion for Linux applications";
 inline constexpr char kExoOrdinalMotionDescription[] =
