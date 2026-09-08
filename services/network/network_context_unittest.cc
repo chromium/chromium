@@ -112,6 +112,7 @@
 #include "net/device_bound_sessions/session_service.h"
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
+#include "net/disk_cache/buildflags.h"
 #include "net/disk_cache/cache_util.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/memory/mem_backend_impl.h"
@@ -13394,6 +13395,30 @@ TEST_F(EarlyCookieLoadOnPreconnectTest, Basic) {
   histogram_tester.ExpectUniqueSample("Cookie.OnPreconnect.LoadCookie", true,
                                       1);
 }
+
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+TEST_F(NetworkContextTest,
+       ProcessSharedCacheEligibleEntriesWithoutSharedCacheSupport) {
+  mojom::NetworkContextParamsPtr context_params =
+      CreateNetworkContextParamsForTesting();
+  context_params->http_cache_enabled = true;
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(std::move(context_params));
+  net::HttpCache* cache = network_context->url_request_context()
+                              ->http_transaction_factory()
+                              ->GetCache();
+  ASSERT_TRUE(cache);
+  auto [rv, backend] = cache->GetBackend(base::DoNothing());
+  ASSERT_EQ(rv, net::OK);
+  ASSERT_NE(backend, nullptr);
+  ASSERT_FALSE(backend->SupportsSharedCache());
+
+  base::RunLoop run_loop;
+  network_context->ProcessSharedCacheEligibleEntriesForTesting(
+      run_loop.QuitClosure());
+  run_loop.Run();
+}
+#endif  // BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
 
 }  // namespace
 

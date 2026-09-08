@@ -8782,6 +8782,8 @@ data/links.html
 data/lite_js_test.test-mojom
 data/loader/async_resource_handler.html
 data/loader/blank.html
+data/loader/cacheable_jsonp.js
+data/loader/cacheable_jsonp.js.mock-http-headers
 data/loader/change_title.js
 data/loader/compressed.html.gz
 data/loader/compressed.html.gz.mock-http-headers

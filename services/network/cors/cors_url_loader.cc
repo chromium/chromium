@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/types/optional_util.h"
 #include "net/base/load_flags.h"
 #include "net/base/request_priority.h"
@@ -23,7 +24,11 @@
 #include "net/cookies/cookie_partition_key.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
+#include "net/disk_cache/buildflags.h"
+#include "net/disk_cache/disk_cache.h"
+#include "net/http/http_cache.h"
 #include "net/http/http_log_util.h"
+#include "net/http/http_response_info.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "net/log/net_log_util.h"
@@ -36,8 +41,10 @@
 #include "services/network/cors/cors_util.h"
 #include "services/network/cors/preflight_controller.h"
 #include "services/network/network_context.h"
+#include "services/network/pervasive_resources/shared_resource_checker.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
+#include "services/network/public/cpp/cross_origin_resource_policy.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -289,6 +296,126 @@ void RecordNetworkLoaderCompletionTime(const char* source,
 
 constexpr const char kTimingAllowOrigin[] = "Timing-Allow-Origin";
 
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+// Converts a URLResponseHead to net::HttpResponseInfo if the response is
+// eligible to be cached in the Renderer Accessible HTTP Cache.
+std::unique_ptr<net::HttpResponseInfo>
+MaybeCreateHttpResponseInfoForRendererAccessibleCache(
+    const net::IsolationInfo& isolation_info,
+    const mojom::URLResponseHead& response_head,
+    const ResourceRequest& request,
+    const GURL& last_response_url,
+    SharedResourceChecker& shared_resource_checker) {
+  const net::NetworkIsolationKey& network_isolation_key =
+      isolation_info.network_isolation_key();
+
+  // Do not cache responses with a transient NetworkIsolationKey in the Renderer
+  // Accessible HTTP Cache, as transient keys have no persistent cache key
+  // string and caching them could cause cross-site leaks.
+  if (network_isolation_key.IsTransient()) {
+    return nullptr;
+  }
+
+  // Only static subresources (images, scripts, styles, and fonts) are supported
+  // for the initial launch of the Renderer Accessible HTTP Cache. These static
+  // assets represent the majority of cacheable subresources and have simple
+  // lifecycles. Other destinations are currently out of scope:
+  // - Documents: Handled by navigation loader with specific lifecycle and
+  //   security checks.
+  // - Media (audio/video): Frequently use range requests and streaming, which
+  //   are unsupported.
+  // - Workers (Dedicated/Shared/Service Workers): Have separate execution
+  //   lifecycles and update check mechanisms.
+  // - Fetches / XHR: Often contain dynamic, user-specific, or
+  //   authorization-dependent data.
+  if (request.destination != mojom::RequestDestination::kImage &&
+      request.destination != mojom::RequestDestination::kScript &&
+      request.destination != mojom::RequestDestination::kStyle &&
+      request.destination != mojom::RequestDestination::kFont) {
+    return nullptr;
+  }
+
+  // Only GET requests without Range headers can be cached in the Renderer
+  // Accessible HTTP Cache. Non-GET or range requests (which could be sent by a
+  // compromised renderer, or arise from future changes to renderer behavior)
+  // must not be stored.
+  if (request.method != net::HttpRequestHeaders::kGetMethod ||
+      request.headers.HasHeader(net::HttpRequestHeaders::kRange)) {
+    return nullptr;
+  }
+
+  CHECK(response_head.headers);
+
+  // Only 200 OK complete responses can be cached in the Renderer Accessible
+  // HTTP Cache. Other response codes (e.g. 206 Partial Content, 204 No
+  // Content) cannot be cached.
+  if (response_head.headers->response_code() != net::HTTP_OK ||
+      response_head.has_range_requested) {
+    return nullptr;
+  }
+
+  const auto lifetimes =
+      response_head.headers->GetFreshnessLifetimes(response_head.response_time);
+  if (lifetimes.freshness.is_zero() && lifetimes.staleness.is_zero()) {
+    // Responses that cannot be served fresh or stale-while-revalidate without
+    // server revalidation should not be moved to the Renderer Accessible HTTP
+    // Cache, because the renderer cannot perform revalidation directly.
+    return nullptr;
+  }
+
+  // Responses with an `Access-Control-Allow-Origin` header whose value is not
+  // "*" must not be stored in the Renderer Accessible HTTP Cache, because they
+  // require origin-level isolation rather than site-level isolation.
+  if (std::optional<std::string> acao =
+          response_head.headers->GetNormalizedHeader(
+              header_names::kAccessControlAllowOrigin);
+      acao && *acao != "*") {
+    return nullptr;
+  }
+
+  // Responses with `Cross-Origin-Resource-Policy: same-origin` must not be
+  // stored in the site-level partitioned Renderer Accessible HTTP Cache,
+  // because they restrict resource access strictly to the same origin, whereas
+  // the Renderer Accessible HTTP Cache is isolated at the site level.
+  if (std::optional<std::string> corp =
+          response_head.headers->GetNormalizedHeader(
+              CrossOriginResourcePolicy::kHeaderName);
+      corp && base::EqualsCaseInsensitiveASCII(*corp, "same-origin")) {
+    return nullptr;
+  }
+
+  // Pervasive resources that use the cross-partition shared HTTP cache (via
+  // kCacheSharingForPervasiveResources) should not be moved to the partitioned
+  // Renderer Accessible HTTP Cache.
+  if (shared_resource_checker.IsSharedResource(
+          request, isolation_info.frame_origin(),
+          net::CookiePartitionKey::FromNetworkIsolationKey(
+              isolation_info.network_isolation_key(),
+              isolation_info.site_for_cookies(),
+              net::SchemefulSite(last_response_url),
+              /*main_frame_navigation=*/false))) {
+    return nullptr;
+  }
+
+  auto response_info = std::make_unique<net::HttpResponseInfo>();
+  response_info->headers = response_head.headers;
+  if (response_head.ssl_info.has_value()) {
+    response_info->ssl_info = *response_head.ssl_info;
+    DCHECK(response_info->ssl_info.is_valid());
+  }
+  response_info->was_fetched_via_spdy = response_head.was_fetched_via_spdy;
+  response_info->was_alpn_negotiated = response_head.was_alpn_negotiated;
+  response_info->alpn_negotiated_protocol =
+      response_head.alpn_negotiated_protocol;
+  response_info->connection_info = response_head.connection_info;
+  response_info->remote_endpoint = response_head.remote_endpoint;
+  response_info->request_time = response_head.request_time;
+  response_info->response_time = response_head.response_time;
+  response_info->original_response_time = response_head.original_response_time;
+  return response_info;
+}
+#endif  // BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+
 }  // namespace
 
 CorsURLLoader::CorsURLLoader(
@@ -300,6 +427,7 @@ CorsURLLoader::CorsURLLoader(
     ResourceRequest resource_request,
     bool ignore_isolated_world_origin,
     bool skip_cors_enabled_scheme_check,
+    bool renderer_accessible_http_cache_write_enabled,
     mojo::PendingRemote<mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     mojom::URLLoaderFactory* network_loader_factory,
@@ -340,6 +468,8 @@ CorsURLLoader::CorsURLLoader(
       net_log_(net::NetLogWithSource::Make(net::NetLog::Get(),
                                            net::NetLogSourceType::URL_REQUEST)),
       context_(context),
+      renderer_accessible_http_cache_write_enabled_(
+          renderer_accessible_http_cache_write_enabled),
       network_restrictions_id_(network_restrictions_id),
       shared_dictionary_storage_(std::move(shared_dictionary_storage)),
       shared_dictionary_observer_(shared_dictionary_observer),
@@ -782,6 +912,17 @@ void CorsURLLoader::OnReceiveResponse(
     response_head->did_use_server_http_auth = false;
     response_head->was_cookie_in_request = false;
   }
+
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+  if (disk_cache::Backend* backend = GetCurrentBackend();
+      backend && backend->SupportsSharedCache() &&
+      renderer_accessible_http_cache_write_enabled_) {
+    response_info_for_renderer_accessible_cache_ =
+        MaybeCreateHttpResponseInfoForRendererAccessibleCache(
+            isolation_info_, *response_head, request_, last_response_url_,
+            *context_->GetSharedResourceChecker());
+  }
+#endif  // BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
 
   forwarding_client_->OnReceiveResponse(
       std::move(response_head), std::move(body), std::move(cached_metadata));
@@ -1326,6 +1467,9 @@ void CorsURLLoader::HandleComplete(URLLoaderCompletionStatus status) {
     } else {
       RecordNetworkLoaderCompletionTime("Network", request_.priority, elapsed);
     }
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+    NotifyEntryEligibleForSharedCache();
+#endif  // BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
   }
 
   if (devtools_observer_ && status.cors_error_status) {
@@ -1345,6 +1489,41 @@ void CorsURLLoader::HandleComplete(URLLoaderCompletionStatus status) {
   std::move(delete_callback_).Run(this);
   // |this| is deleted here.
 }
+
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+void CorsURLLoader::NotifyEntryEligibleForSharedCache() {
+  if (!response_info_for_renderer_accessible_cache_) {
+    return;
+  }
+
+  disk_cache::Backend* backend = GetCurrentBackend();
+  if (!backend || !backend->SupportsSharedCache()) {
+    return;
+  }
+
+  // Note: We use the nullopt upload_data_identifier because we only care
+  // about GET requests for the Renderer Accessible HTTP Cache, which don't have
+  // upload data. Also assuming is_upload is false.
+  if (auto key = net::HttpCache::GenerateCacheKey(
+          request_.url, request_.load_flags,
+          isolation_info_.network_isolation_key(),
+          /*upload_data_identifier=*/std::nullopt,
+          /*is_subframe_document_resource=*/false,
+          /*is_mainframe_navigation=*/false,
+          /*is_shared_resource=*/false, request_.request_initiator,
+          /*include_url=*/true)) {
+    backend->OnEntryEligibleForSharedCache(
+        *key, request_.url,
+        std::move(response_info_for_renderer_accessible_cache_),
+        isolation_info_.network_isolation_key());
+  }
+}
+
+disk_cache::Backend* CorsURLLoader::GetCurrentBackend() const {
+  net::HttpCache* cache = context_->GetHttpCache();
+  return cache ? cache->GetCurrentBackend() : nullptr;
+}
+#endif  // BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
 
 void CorsURLLoader::OnMojoDisconnect() {
   HandleComplete(URLLoaderCompletionStatus(net::ERR_ABORTED));

@@ -2115,6 +2115,10 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
       result.cookie_setting_overrides_.Put(
           net::CookieSettingOverride::kAllowSameSiteNoneCookiesInSandbox);
     }
+
+    result.renderer_accessible_http_cache_write_enabled_ =
+        frame.document_associated_data_
+            ->renderer_accessible_http_cache_write_enabled();
     return result;
   }
 
@@ -2177,6 +2181,10 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
         result.cookie_setting_overrides_.Put(
             net::CookieSettingOverride::kAllowSameSiteNoneCookiesInSandbox);
       }
+
+      result.renderer_accessible_http_cache_write_enabled_ =
+          !!navigation_request
+                .GetNetworkIsolationKeyForRendererAccessibleHttpCache();
     }
 
     return result;
@@ -2268,6 +2276,10 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
     return network_restrictions_id_;
   }
 
+  bool renderer_accessible_http_cache_write_enabled() const {
+    return renderer_accessible_http_cache_write_enabled_;
+  }
+
  private:
   // Private constructor - please go through the static For... methods.
   SubresourceLoaderFactoriesConfig() = default;
@@ -2284,6 +2296,7 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
   ukm::SourceIdObj ukm_source_id_;
   net::CookieSettingOverrides cookie_setting_overrides_;
   base::UnguessableToken network_restrictions_id_;
+  bool renderer_accessible_http_cache_write_enabled_ = false;
 };
 
 class PendingNavigation {
@@ -14538,7 +14551,8 @@ RenderFrameHostImpl::CreateURLLoaderFactoryParamsForMainWorld(
       config.GetDipReporter(), GetProcess(),
       config.trust_token_issuance_policy(),
       config.trust_token_redemption_policy(), config.cookie_setting_overrides(),
-      config.network_restrictions_id(), debug_tag);
+      config.network_restrictions_id(),
+      config.renderer_accessible_http_cache_write_enabled(), debug_tag);
 }
 
 bool RenderFrameHostImpl::CreateNetworkServiceDefaultFactoryAndObserve(
@@ -16867,6 +16881,9 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     // DevTools tries to intercepts requests.
     document_associated_data_->set_keep_alive_url_loader_factory_context(
         navigation_request->keep_alive_url_loader_factory_context());
+    document_associated_data_->set_renderer_accessible_http_cache_write_enabled(
+        !!navigation_request
+              ->GetNetworkIsolationKeyForRendererAccessibleHttpCache());
 
     const std::optional<FencedFrameProperties>& fenced_frame_properties =
         navigation_request->ComputeFencedFrameProperties();

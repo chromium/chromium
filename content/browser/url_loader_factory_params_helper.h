@@ -70,6 +70,7 @@ class URLLoaderFactoryParamsHelper {
           trust_token_redemption_policy,
       net::CookieSettingOverrides cookie_setting_overrides,
       const base::UnguessableToken& network_restrictions_id,
+      bool renderer_accessible_http_cache_write_enabled,
       std::string_view debug_tag);
 
   // Creates URLLoaderFactoryParams to be used by |isolated_world_origin| hosted

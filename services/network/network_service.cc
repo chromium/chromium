@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
@@ -1380,6 +1381,16 @@ NetworkService::MaybeCreateDurableMessageWriter(
   }
   return std::make_unique<MultipleDurableMessageWriterImpl>(
       std::move(messages));
+}
+
+void NetworkService::ProcessSharedCacheEligibleEntriesForTesting(
+    base::OnceClosure callback) {
+  auto barrier_closure =
+      base::BarrierClosure(network_contexts_.size(), std::move(callback));
+  for (NetworkContext* context : network_contexts_) {
+    context->ProcessSharedCacheEligibleEntriesForTesting(  // IN-TEST
+        barrier_closure);
+  }
 }
 
 }  // namespace network

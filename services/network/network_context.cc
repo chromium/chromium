@@ -85,6 +85,7 @@
 #include "net/cookies/cookie_store.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/device_bound_sessions/session_service.h"
+#include "net/disk_cache/buildflags.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/dns/context_host_resolver.h"
 #include "net/dns/host_cache.h"
@@ -1564,17 +1565,39 @@ void NetworkContext::ComputeHttpCacheSize(
                      base::Unretained(this), std::move(callback))));
 }
 
+net::HttpCache* NetworkContext::GetHttpCache() {
+  if (!url_request_context_ ||
+      !url_request_context_->http_transaction_factory()) {
+    return nullptr;
+  }
+  return url_request_context_->http_transaction_factory()->GetCache();
+}
+
 void NetworkContext::NotifyBrowserIdle() {
-  net::HttpCache* htp_cache =
-      url_request_context_->http_transaction_factory()->GetCache();
-  if (!htp_cache) {
+  net::HttpCache* cache = GetHttpCache();
+  if (!cache) {
     return;
   }
-  disk_cache::Backend* backend = htp_cache->GetCurrentBackend();
+  disk_cache::Backend* backend = cache->GetCurrentBackend();
   if (!backend) {
     return;
   }
   backend->OnBrowserIdle();
+}
+
+void NetworkContext::ProcessSharedCacheEligibleEntriesForTesting(
+    base::OnceClosure callback) {
+  auto scoped_closure_runner = base::ScopedClosureRunner(std::move(callback));
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+  if (net::HttpCache* cache = GetHttpCache()) {
+    if (disk_cache::Backend* backend = cache->GetCurrentBackend()) {
+      if (backend->SupportsSharedCache()) {
+        backend->ProcessAllSharedCacheEligibleEntriesForTest(  // IN-TEST
+            std::move(scoped_closure_runner));
+      }
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
 }
 
 void NetworkContext::ClearCorsPreflightCache(

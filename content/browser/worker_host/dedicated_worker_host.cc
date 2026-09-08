@@ -705,6 +705,7 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
               : network::mojom::TrustTokenOperationPolicyVerdict::kForbid,
           ancestor_render_frame_host->GetCookieSettingOverrides(),
           network_restrictions_id_,
+          /*renderer_accessible_http_cache_write_enabled=*/false,
           "DedicatedWorkerHost::CreateNetworkFactoryForSubresources");
   // Worker subresources are not outermost-main-frame requests even when their
   // creator frame is outermost.

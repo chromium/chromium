@@ -834,6 +834,16 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
     std::move(callback).Run();
   }
 
+  void ProcessSharedCacheEligibleEntriesForTesting(
+      ProcessSharedCacheEligibleEntriesForTestingCallback callback) override {
+    if (auto* service =
+            network::NetworkService::GetNetworkServiceForTesting()) {
+      service->ProcessSharedCacheEligibleEntriesForTesting(std::move(callback));
+    } else {
+      std::move(callback).Run();
+    }
+  }
+
  private:
   void OnMemoryPressure(
       base::MemoryPressureLevel memory_pressure_level) override {

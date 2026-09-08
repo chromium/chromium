@@ -235,6 +235,13 @@ class CONTENT_EXPORT DocumentAssociatedData : public base::SupportsUserData {
     return crash_report_storage_region_;
   }
 
+  bool renderer_accessible_http_cache_write_enabled() const {
+    return renderer_accessible_http_cache_write_enabled_;
+  }
+  void set_renderer_accessible_http_cache_write_enabled(bool enabled) {
+    renderer_accessible_http_cache_write_enabled_ = enabled;
+  }
+
  private:
   const blink::DocumentToken token_;
   std::unique_ptr<PageImpl> owned_page_;
@@ -267,6 +274,12 @@ class CONTENT_EXPORT DocumentAssociatedData : public base::SupportsUserData {
   // `RenderFrameHostImpl::MaybeGenerateCrashReport()`, after the renderer
   // process has crashed.
   base::UnsafeSharedMemoryRegion crash_report_storage_region_;
+
+  // Whether writing to the Renderer-Accessible HTTP Cache is enabled for this
+  // document. This is determined and set upon navigation commit, and preserved
+  // here to re-enable cache writes when subresource loader factories are
+  // recreated (e.g. following a Network Service crash).
+  bool renderer_accessible_http_cache_write_enabled_ = false;
 
   base::WeakPtrFactory<RenderFrameHostImpl> weak_factory_;
 };

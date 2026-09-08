@@ -1857,6 +1857,11 @@ test("content_browsertests") {
     sources += [ "../browser/security/coop/cross_origin_opener_policy_reporting_browsertest.cc" ]
   }
 
+  if (enable_disk_cache_sql_backend) {
+    sources +=
+        [ "../browser/network/renderer_accessible_http_cache_browsertest.cc" ]
+  }
+
   if (use_viz_debugger) {
     sources += [
       "../browser/devtools/protocol/visual_debugger_handler_browsertest.cc",

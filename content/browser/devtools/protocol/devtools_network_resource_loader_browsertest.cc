@@ -82,6 +82,7 @@ class DevtoolsNetworkResourceLoaderTest : public ContentBrowserTest {
         network::mojom::TrustTokenOperationPolicyVerdict::kForbid,
         network::mojom::TrustTokenOperationPolicyVerdict::kForbid,
         net::CookieSettingOverrides(), network::GetTestNetworkRestrictionsId(),
+        /*renderer_accessible_http_cache_write_enabled=*/false,
         "DevtoolsNetworkResourceLoaderTest");
     // Let DevTools fetch resources without CORS and ORB. Source maps are valid
     // JSON and would otherwise require a CORS fetch + correct response headers.

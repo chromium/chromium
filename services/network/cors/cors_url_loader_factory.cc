@@ -249,6 +249,8 @@ CorsURLLoaderFactory::CorsURLLoaderFactory(
       is_main_frame_origin_recently_accessed_(
           params->is_main_frame_origin_recently_accessed),
       is_outermost_main_frame_(params->is_outermost_main_frame),
+      renderer_accessible_http_cache_write_enabled_(
+          params->renderer_accessible_http_cache_write_enabled),
       origin_access_list_(origin_access_list),
       owner_(owner),
       network_restrictions_id_(params->network_restrictions_id) {
@@ -479,7 +481,8 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
         std::move(resource_request), ignore_isolated_world_origin_,
         factory_override_ &&
             factory_override_->ShouldSkipCorsEnabledSchemeCheck(),
-        std::move(client), traffic_annotation, inner_url_loader_factory,
+        renderer_accessible_http_cache_write_enabled_, std::move(client),
+        traffic_annotation, inner_url_loader_factory,
         factory_override_ ? nullptr : network_loader_factory_.get(),
         origin_access_list_, *isolation_info_ptr, std::move(devtools_observer),
         client_security_state_.get(), &url_loader_network_service_observer_,

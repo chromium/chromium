@@ -405,6 +405,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 
   static NetworkService* GetNetworkServiceForTesting();
 
+  // Forces processing of shared cache eligible entries across all network
+  // contexts and invokes `callback` when done.
+  void ProcessSharedCacheEligibleEntriesForTesting(base::OnceClosure callback);
+
   std::unique_ptr<DevtoolsDurableMessageWriter> MaybeCreateDurableMessageWriter(
       const base::UnguessableToken& throttling_profile_id,
       const std::string& devtools_request_id);

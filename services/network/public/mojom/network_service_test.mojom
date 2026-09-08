@@ -278,4 +278,8 @@ interface NetworkServiceTest {
   // See net::handles::SetEmulateNetworkBindingForTesting, and
   // chrome/browser/multi_network_browser_test.cc, for details.
   SetEmulateNetworkBindingForTesting(bool enabled) => ();
+
+  // Forces processing of shared cache eligible entries and calls the callback
+  // when done.
+  ProcessSharedCacheEligibleEntriesForTesting() => ();
 };

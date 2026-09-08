@@ -672,6 +672,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
     return proxy_lookup_requests_.size();
   }
 
+  // Forces processing of shared cache eligible entries and calls the callback
+  // when done.
+  void ProcessSharedCacheEligibleEntriesForTesting(base::OnceClosure callback);
+
   void OnProxyCheckingHostResolverRequestComplete(
       ProxyCheckingHostResolverRequest* request);
 
@@ -750,6 +754,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   SharedResourceChecker* GetSharedResourceChecker() {
     return shared_resource_checker_.get();
   }
+
+  net::HttpCache* GetHttpCache();
 
   // Returns the current same-origin-policy exceptions.  For more details see
   // network::mojom::NetworkContextParams::cors_origin_access_list and

@@ -81,6 +81,7 @@ network::mojom::URLLoaderFactoryParamsPtr CreateParams(
     std::string_view debug_tag,
     bool require_cross_site_request_for_cookies,
     bool is_for_service_worker,
+    bool renderer_accessible_http_cache_write_enabled,
     const base::UnguessableToken& network_restrictions_id,
     bool has_effective_top_frame_for_storage_partitioning,
     bool is_outermost_main_frame = false) {
@@ -154,6 +155,9 @@ network::mojom::URLLoaderFactoryParamsPtr CreateParams(
     params->is_main_frame_origin_recently_accessed = true;
   }
 
+  params->renderer_accessible_http_cache_write_enabled =
+      renderer_accessible_http_cache_write_enabled;
+
   return params;
 }
 
@@ -183,6 +187,7 @@ URLLoaderFactoryParamsHelper::CreateForFrame(
         trust_token_redemption_policy,
     net::CookieSettingOverrides cookie_setting_overrides,
     const base::UnguessableToken& network_restrictions_id,
+    bool renderer_accessible_http_cache_write_enabled,
     std::string_view debug_tag) {
   const bool has_effective_top_frame_for_storage_partitioning =
       GetContentClient()->browser()->GetEffectiveTopFrameForPartitioning(
@@ -206,7 +211,8 @@ URLLoaderFactoryParamsHelper::CreateForFrame(
       frame->CreateDeviceBoundSessionObserver(), trust_token_issuance_policy,
       trust_token_redemption_policy, cookie_setting_overrides, debug_tag,
       /*require_cross_site_request_for_cookies=*/false,
-      /*is_for_service_worker=*/false, network_restrictions_id,
+      /*is_for_service_worker=*/false,
+      renderer_accessible_http_cache_write_enabled, network_restrictions_id,
       has_effective_top_frame_for_storage_partitioning,
       frame->IsOutermostMainFrame());
 }
@@ -249,6 +255,7 @@ URLLoaderFactoryParamsHelper::CreateForIsolatedWorld(
       "ParamHelper::CreateForIsolatedWorld",
       /*require_cross_site_request_for_cookies=*/false,
       /*is_for_service_worker=*/false,
+      /*renderer_accessible_http_cache_write_enabled=*/false,
       // Extensions and isolated worlds are out of scope for
       // Connection-Allowlists.
       network::GetNoOpNetworkRestrictionsId(),
@@ -289,7 +296,9 @@ URLLoaderFactoryParamsHelper::CreateForPrefetch(
       network::mojom::TrustTokenOperationPolicyVerdict::kForbid,
       cookie_setting_overrides, "ParamHelper::CreateForPrefetch",
       /*require_cross_site_request_for_cookies=*/false,
-      /*is_for_service_worker=*/false, network_restrictions_id,
+      /*is_for_service_worker=*/false,
+      /*renderer_accessible_http_cache_write_enabled=*/false,
+      network_restrictions_id,
       // TODO(crbug.com/495538206): Revisit if prefetch from a frame with
       // an effective top frame for storage partitioning needs the same
       // browser-side `site_for_cookies` override.
@@ -346,6 +355,7 @@ URLLoaderFactoryParamsHelper::CreateForWorker(
       network::mojom::TrustTokenOperationPolicyVerdict::kPotentiallyPermit,
       net::CookieSettingOverrides(), debug_tag,
       require_cross_site_request_for_cookies, is_for_service_worker,
+      /*renderer_accessible_http_cache_write_enabled=*/false,
       network_restrictions_id,
       // TODO(crbug.com/495538206): Revisit if workers attached to a
       // frame with an effective top frame for storage partitioning need
@@ -424,6 +434,7 @@ URLLoaderFactoryParamsHelper::CreateForEarlyHintsPreload(
       net::CookieSettingOverrides(), "ParamHelper::CreateForEarlyHintsPreload",
       /*require_cross_site_request_for_cookies=*/false,
       /*is_for_service_worker=*/false,
+      /*renderer_accessible_http_cache_write_enabled=*/false,
       /*network_restrictions_id=*/network::GetNoOpNetworkRestrictionsId(),
       // TODO(crbug.com/495538206): Revisit if early-hints preloads
       // initiated from a frame with an effective top frame for storage
