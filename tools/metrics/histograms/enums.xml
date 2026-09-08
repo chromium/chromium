@@ -15899,6 +15899,7 @@ from previous Chrome versions.
   <int value="360391863" label="NTPOfflineBadge:enabled"/>
   <int value="360599302" label="enable-gpu-rasterization"/>
   <int value="360697704" label="UseSyncInvalidations:enabled"/>
+  <int value="361907915" label="UnifyWaitForCookies:enabled"/>
   <int value="361984896"
       label="ExperimentalAccessibilityDictationOffline:enabled"/>
   <int value="362623880"
@@ -16278,6 +16279,7 @@ from previous Chrome versions.
   <int value="473085117" label="LaunchQueueStopSendingOnReload:disabled"/>
   <int value="473296799" label="NtpBackgroundImageErrorDetection:disabled"/>
   <int value="473958125" label="OmniboxWrapPopupPosition:enabled"/>
+  <int value="474474831" label="UnifyWaitForCookies:disabled"/>
   <int value="474743272" label="material-design-ink-drop"/>
   <int value="475447801" label="HistoryPaneAndroid:disabled"/>
   <int value="475682747" label="NtpNext:enabled"/>

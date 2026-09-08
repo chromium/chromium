@@ -4896,6 +4896,12 @@ inline constexpr char kUndoMigrationOfSyncingUserToSignedInDescription[] =
     "When enabled, reverts the migration of syncing users who were previously "
     "migrated to the signed-in, non-syncing state.";
 
+inline constexpr char kUnifyWaitForCookiesName[] =
+    "Unify wait for cookies for Desktop Android Extensions";
+inline constexpr char kUnifyWaitForCookiesDescription[] =
+    "Unifies the logic to wait for cookies after sign-in for Desktop "
+    "Android Extensions.";
+
 inline constexpr char kNotificationOneTapUnsubscribeOnDesktopName[] =
     "Notification one-tap unsubscribe on Desktop";
 inline constexpr char kNotificationOneTapUnsubscribeOnDesktopDescription[] =
