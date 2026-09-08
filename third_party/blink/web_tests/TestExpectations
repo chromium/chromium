@@ -1654,13 +1654,6 @@ crbug.com/421650040 virtual/xslt-enabled/inspector-protocol/debugger/unpause-aft
 crbug.com/421650040 virtual/xslt-enabled/external/wpt/xml/xslt/encoding-single-chunk.html [ Failure ]
 crbug.com/421650040 virtual/xslt-enabled/external/wpt/xml/xslt/large-cdata.html [ Failure ]
 
-# Rust XML related failures that still need work:
-crbug.com/441911594 virtual/rust-xml/http/tests/security/contentTypeOptions/xml-external-entity.xml [ Failure ]
-crbug.com/441911594 virtual/rust-xml/external/wpt/svg/painting/svg-with-outline.html [ Failure ]
-crbug.com/441911594 virtual/rust-xml/external/wpt/svg/painting/reftests/text-shadow-01.html [ Failure ]
-
-# Working on getting the CSP tests going:
-
 # These tests will be added back soon:
 crbug.com/706350 external/wpt/html/browsers/browsing-the-web/history-traversal/window-name-after-cross-origin-main-frame-navigation.sub.html [ Crash Failure Pass Timeout ]
 
