@@ -709,8 +709,6 @@ bool IsTpm20Available() {
 // case.
 std::optional<TPMOperation> TpmCommandToOperation(tpm::TpmCommand command) {
   switch (command) {
-    case tpm::TpmCommand::kCertify:
-      return TPMOperation::kKeyCertification;
     case tpm::TpmCommand::kCreate:
       return TPMOperation::kNewAttestationKeyCreation;
     case tpm::TpmCommand::kSign:
@@ -826,8 +824,7 @@ std::optional<T> ToOptionalAndRecordParseMetrics(
 // payload).
 constexpr size_t kMaxTpmHashBufferSize = 1024;
 
-// Maximum expected response buffer size for TPM commands (e.g. TPM2_Sign and
-// TPM2_Certify).
+// Maximum expected response buffer size for TPM commands (e.g. TPM2_Sign).
 constexpr size_t kMaxTpmResponseSize = 4096;
 
 // Holds the digest and validation ticket produced by hashing data with the TPM.

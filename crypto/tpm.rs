@@ -34,12 +34,8 @@ pub enum TpmParseError {
     TrailingBytes,
     /// The TPM returned an error code. Contains the TPM response code.
     TpmErrorResponse(u32),
-    /// The structure did not contain the expected TPM magic number.
-    BadMagicNumber,
     /// The structure type did not match the expected type.
     WrongType,
-    /// The provided challenge did not match the challenge in the attestation.
-    ChallengeMismatch,
 }
 
 impl std::fmt::Display for TpmParseError {
@@ -50,9 +46,7 @@ impl std::fmt::Display for TpmParseError {
             TpmParseError::TpmErrorResponse(code) => {
                 write!(f, "TPM returned an error response: {:#010x}", code)
             }
-            TpmParseError::BadMagicNumber => write!(f, "bad magic number in TPM response"),
             TpmParseError::WrongType => write!(f, "wrong type in TPM response"),
-            TpmParseError::ChallengeMismatch => write!(f, "challenge mismatch in TPM response"),
         }
     }
 }
@@ -101,13 +95,8 @@ pub mod ffi {
         TrailingBytes = 2,
         /// The TPM returned an error code.
         TpmErrorResponse = 3,
-        /// The structure did not contain the expected TPM magic number.
-        BadMagicNumber = 4,
         /// The structure type did not match the expected type.
         WrongType = 5,
-        /// The provided challenge did not match the challenge in the
-        /// attestation.
-        ChallengeMismatch = 6,
     }
     // LINT.ThenChange(//crypto/tpm_parser.h:TpmParseResult)
 
@@ -131,17 +120,6 @@ pub mod ffi {
         out_private: Vec<u8>,
         /// The serialized `TPM2B_PUBLIC` structure returned by the TPM.
         out_public: Vec<u8>,
-    }
-
-    /// Response from parsing a TPM2_Certify command.
-    #[cxx_name = "RawCertifyResponse"]
-    struct CertifyResponse {
-        /// The outcome of the parsing operation.
-        status: ResponseStatus,
-        /// The serialized `TPMS_ATTEST` statement returned by the TPM.
-        statement: Vec<u8>,
-        /// The serialized `TPMT_SIGNATURE` returned by the TPM.
-        signature: Vec<u8>,
     }
 
     /// Response from parsing a TPM2_Hash command.
@@ -186,7 +164,7 @@ pub mod ffi {
         /// The signature algorithm is not supported.
         UnsupportedSignatureAlgorithm = 3,
     }
-    // LINT.ThenChange(//crypto/tpm_parser.h:TpmCertifyVerifyResult)
+    // LINT.ThenChange(//crypto/tpm_parser.h:SignatureError)
 
     /// TPM Public / Key Types. See Table 9 & 14 in
     /// https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-2-Structures_Version-185_pub.pdf#page=41.
@@ -273,8 +251,6 @@ pub mod ffi {
         /// TPM_CC_SEQUENCE_COMPLETE is the command code for
         /// TPM2_SequenceComplete.
         TPM_CC_SEQUENCE_COMPLETE = 0x0000013E,
-        /// TPM_CC_CERTIFY is the command code for TPM2_Certify.
-        TPM_CC_CERTIFY = 0x00000148,
         /// TPM_CC_CREATE is the command code for TPM2_Create.
         TPM_CC_CREATE = 0x00000153,
         /// TPM_CC_SEQUENCE_UPDATE is the command code for TPM2_SequenceUpdate.
@@ -324,58 +300,6 @@ pub mod ffi {
     }
 
     extern "Rust" {
-        /// Builds a TPM2_Certify command buffer.
-        ///
-        /// This function constructs the raw byte representation of a
-        /// TPM2_Certify command.
-        ///
-        /// # Arguments
-        ///
-        /// * `object_handle` - Handle of the object to be certified (e.g., the
-        ///   signing key).
-        /// * `sign_handle` - Handle of the key used to sign the attestation
-        ///   (e.g., the AIK).
-        /// * `qualifying_data` - Data provided by the caller to ensure
-        ///   freshness (e.g., a challenge).
-        ///
-        /// # Returns
-        ///
-        /// A `Vec<u8>` containing the serialized command buffer.
-        ///
-        /// # Panics
-        ///
-        /// Panics if `qualifying_data` exceeds `u16::MAX` bytes.
-        fn build_certify_command(
-            object_handle: u32,
-            sign_handle: u32,
-            qualifying_data: &[u8],
-        ) -> Vec<u8>;
-
-        /// Parses a TPM2_Certify response.
-        ///
-        /// This function reads the response buffer from a TPM2_Certify command,
-        /// validates the headers, and extracts the attestation
-        /// statement and signature. It also verifies that the response
-        /// is for a certify command, checks the magic number,
-        /// and ensures the provided `expected_extra_data` matches the one in
-        /// the attestation's extra data to prevent replay attacks
-        /// (TPM2_Certify operates on `TPM2B_DATA qualifyingData`, which
-        /// for key attestation protocols is typically the SHA-256
-        /// digest of the challenge).
-        ///
-        /// # Arguments
-        ///
-        /// * `resp` - The raw byte response from the TPM2_Certify command.
-        /// * `expected_extra_data` - The extra data expected in the
-        ///   attestation's `extra_data` field (e.g., the SHA-256 digest of the
-        ///   challenge).
-        ///
-        /// # Returns
-        ///
-        /// A `CertifyResponse` containing the parsing result, any TPM error
-        /// code, the serialized `TPMS_ATTEST` statement, and the
-        /// serialized `TPMT_SIGNATURE`.
-        fn parse_certify_response(resp: &[u8], expected_extra_data: &[u8]) -> CertifyResponse;
 
         /// Builds a TPM2_Create command buffer for an Attestation Identity Key
         /// (AIK).
@@ -483,14 +407,8 @@ impl From<TpmParseError> for ffi::ResponseStatus {
             TpmParseError::TpmErrorResponse(code) => {
                 Self { result: ffi::ParseResult::TpmErrorResponse, tpm_response_code: code }
             }
-            TpmParseError::BadMagicNumber => {
-                Self { result: ffi::ParseResult::BadMagicNumber, tpm_response_code: 0 }
-            }
             TpmParseError::WrongType => {
                 Self { result: ffi::ParseResult::WrongType, tpm_response_code: 0 }
-            }
-            TpmParseError::ChallengeMismatch => {
-                Self { result: ffi::ParseResult::ChallengeMismatch, tpm_response_code: 0 }
             }
         }
     }
@@ -703,81 +621,6 @@ impl Writer {
     }
 }
 
-/// Builds a TPM2_Certify command.
-///
-/// * `object_handle` - Handle of the object to be certified (the signing key).
-/// * `sign_handle` - Handle of the key used to sign the attestation (the AIK).
-/// * `qualifying_data` - Data provided by the caller to ensure freshness (e.g.,
-///   a challenge).
-///
-/// Note: This function currently assumes empty password authorizations for both
-/// the object and sign handles.
-///
-/// # Panics
-///
-/// Panics if `qualifying_data` exceeds `u16::MAX` bytes.
-///
-/// A TPM Certify command has the following structure (Table 97):
-///
-/// | Type                | Name           |
-/// |---------------------|----------------|
-/// | TPMI_ST_COMMAND_TAG | tag            |
-/// | UINT32              | commandSize    |
-/// | TPM_CC              | commandCode    |
-///
-/// Handles:
-///
-/// | Type                | Name           |
-/// |---------------------|----------------|
-/// | TPMI_DH_OBJECT      | objectHandle   |
-/// | TPMI_DH_OBJECT+     | signHandle     |
-///
-/// Parameters:
-///
-/// | Type                | Name           |
-/// |---------------------|----------------|
-/// | TPM2B_DATA          | qualifyingData |
-/// | TPMT_SIG_SCHEME+    | inScheme       |
-///
-/// See Table 97 in https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-3-Commands_Version-185_pub.pdf#page=154.
-///
-/// Also see https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-1-Architecture_Version-185_pub.pdf#page=97
-/// for a general overview of the structure of a TPM command.
-pub fn build_certify_command(
-    object_handle: u32,
-    sign_handle: u32,
-    qualifying_data: &[u8],
-) -> Vec<u8> {
-    let total_size = TPM_HEADER_SIZE
-        + (2 * TPM_HANDLE_SIZE)
-        + TPM_AUTH_SIZE_SIZE
-        + (2 * TPM_SESSION_SIZE)
-        + 2
-        + qualifying_data.len()
-        + 2; // inScheme (Null)
-
-    let mut writer = Writer::with_capacity(total_size);
-
-    // 1. Command Header
-    writer.write_command_header(TpmSt::TPM_ST_SESSIONS, total_size, TpmCc::TPM_CC_CERTIFY);
-
-    // 2. Handles
-    writer.write_u32(object_handle);
-    writer.write_u32(sign_handle);
-
-    // 3. Authorization Area (TPMS_AUTH_COMMAND)
-    writer.write_password_sessions(2);
-
-    // 4. Command Parameters
-    // qualifyingData (TPM2B_DATA)
-    writer.write_tpm2b(qualifying_data);
-
-    // inScheme (TPMT_SIG_SCHEME)
-    writer.write_u16(TpmAlgSigScheme::TPM_ALG_NULL.repr);
-
-    writer.into_inner()
-}
-
 /// Builds a TPM2_Create command for an Attestation Identity Key (AIK).
 ///
 /// * `parent_handle` - Handle of the parent key under which the AIK is created
@@ -952,200 +795,6 @@ impl<'a> TpmsAuthResponse<'a> {
         let hmac = reader.read_tpm2b().ok_or(TpmParseError::BufferTooSmall)?;
         Ok(Self { nonce, session_attributes, hmac })
     }
-}
-
-/// Represents a TPMS_ATTEST structure.
-///
-/// | Type             | Name            |
-/// |------------------|-----------------|
-/// | TPM_CONSTANTS32  | magic           |
-/// | TPMI_ST_ATTEST   | type            |
-/// | TPM2B_NAME       | qualifiedSigner |
-/// | TPM2B_DATA       | extraData       |
-/// | TPMS_CLOCK_INFO  | clockInfo       |
-/// | UINT64           | firmwareVersion |
-/// | TPMU_ATTEST      | attested        |
-///
-/// See Table 154 in https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-2-Structures_Version-185_pub.pdf#page=162.
-struct TpmsAttest<'a> {
-    pub magic: TpmConstant,
-    pub type_: TpmSt,
-    // This field must be parsed to correctly advance the buffer offset according to the TPM 2.0
-    // spec, but its value is currently unused.
-    #[allow(dead_code)]
-    pub qualified_signer: &'a [u8],
-    pub extra_data: &'a [u8],
-}
-
-impl<'a> TpmsAttest<'a> {
-    /// Parses a TPMS_ATTEST from the reader.
-    fn parse(reader: &mut Reader<'a>) -> Result<Self, TpmParseError> {
-        // Read the magic number (should be TPM_GENERATED_VALUE)
-        let magic = reader
-            .read_u32()
-            .map(|repr| TpmConstant { repr })
-            .ok_or(TpmParseError::BufferTooSmall)?;
-        // Read the attestation type (e.g., TPM_ST_ATTEST_CERTIFY)
-        let type_ =
-            reader.read_u16().map(|repr| TpmSt { repr }).ok_or(TpmParseError::BufferTooSmall)?;
-        // Read the qualified signer name (Name of the object that signed the
-        // attestation)
-        let qualified_signer = reader.read_tpm2b().ok_or(TpmParseError::BufferTooSmall)?;
-        // Read the extra data (often contains a nonce for freshness)
-        let extra_data = reader.read_tpm2b().ok_or(TpmParseError::BufferTooSmall)?;
-
-        // Clock info and firmware version are part of TPMS_CLOCK_INFO and are standard
-        // trailing fields in all TPMS_ATTEST structures. We read them to advance the
-        // cursor.
-        let _clock_info = reader.read_bytes(17).ok_or(TpmParseError::BufferTooSmall)?;
-        let _firmware_version = reader.read_bytes(8).ok_or(TpmParseError::BufferTooSmall)?;
-
-        // For certify attestations, there are additional fields: the certified object's
-        // Name and Qualified Name. We read them to ensure the buffer is fully parsed.
-        if type_ == TpmSt::TPM_ST_ATTEST_CERTIFY {
-            let _name = reader.read_tpm2b().ok_or(TpmParseError::BufferTooSmall)?;
-            let _qualified_name = reader.read_tpm2b().ok_or(TpmParseError::BufferTooSmall)?;
-        }
-
-        // Ensure the entire buffer for this struct was parsed exactly.
-        // If there's data left, the format is unexpected or corrupted.
-        reader.ensure_empty()?;
-
-        Ok(Self { magic, type_, qualified_signer, extra_data })
-    }
-}
-/// Internal function to parse a certify response.
-/// Returns the attestation statement and signature bytes on success.
-struct CertifyData<'a> {
-    statement: &'a [u8], // Serialized TPMS_ATTEST
-    signature: &'a [u8], // Serialized TPMT_SIGNATURE
-}
-
-/// Parse a TPM2_Certify response.
-///
-/// Header:
-///
-/// | Type   | Name         |
-/// |--------|--------------|
-/// | TPM_ST | tag          |
-/// | UINT32 | responseSize |
-/// | TPM_RC | responseCode |
-///
-/// Parameters:
-///
-/// | Type           | Name        |
-/// |----------------|-------------|
-/// | TPM2B_ATTEST   | certifyInfo |
-/// | TPMT_SIGNATURE | signature   |
-///
-/// See Table 98 in https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-3-Commands_Version-185_pub.pdf#page=154.
-///
-/// Also see https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-1-Architecture_Version-185_pub.pdf#page=97
-/// for a general overview of the structure of a TPM response.
-fn parse_certify_response_impl<'a>(
-    resp: &'a [u8],
-    expected_extra_data: &[u8],
-) -> Result<CertifyData<'a>, TpmParseError> {
-    let mut reader = Reader::new(resp);
-    let header = reader.read_response_header(resp.len())?;
-
-    // Determine the size of the parameters section
-    let parameter_size = if header.tag == TpmSt::TPM_ST_SESSIONS {
-        reader.read_u32().ok_or(TpmParseError::BufferTooSmall)?.try_into().unwrap()
-    } else if header.tag == TpmSt::TPM_ST_NO_SESSIONS {
-        header.response_size - TPM_HEADER_SIZE
-    } else {
-        return Err(TpmParseError::WrongType);
-    };
-    // Create a sub-reader specifically for the parameters section
-    let mut param_reader =
-        Reader::new(reader.read_bytes(parameter_size).ok_or(TpmParseError::BufferTooSmall)?);
-
-    // Read the inner TPMS_ATTEST structure bytes (size-prefixed in the protocol)
-    let statement = param_reader.read_tpm2b().ok_or(TpmParseError::BufferTooSmall)?;
-
-    // The remaining data in the parameters section is the signature
-    // (TPMT_SIGNATURE)
-    // Read the signature algorithm (e.g., TPM_ALG_RSASSA or TPM_ALG_ECDSA)
-    // without advancing the reader, so we can return the entire TPMT_SIGNATURE.
-    // The entire rest of the parameter section is treated as the signature
-    let signature = param_reader.read_all();
-    // Sanity check that the signature at least contains the algorithms
-    let _algs = SignatureAlgorithms::parse(&mut Reader::new(signature))
-        .ok_or(TpmParseError::BufferTooSmall)?;
-
-    // The remaining bytes in the main reader are the response authorization
-    // sessions.
-    // TPM2_Certify requires two handles (objectHandle and signHandle), so we expect
-    // exactly two authorization sessions in the response.
-    if header.tag == TpmSt::TPM_ST_SESSIONS {
-        let _session1 = TpmsAuthResponse::parse(&mut reader)?;
-        let _session2 = TpmsAuthResponse::parse(&mut reader)?;
-    }
-
-    reader.ensure_empty()?;
-
-    // Parse the TPMS_ATTEST structure
-    let mut attest_reader = Reader::new(statement);
-    let attest_info = TpmsAttest::parse(&mut attest_reader)?;
-
-    // Validate the magic number to ensure it's a TPM-generated structure
-    if attest_info.magic != TpmConstant::TPM_GENERATED_VALUE {
-        return Err(TpmParseError::BadMagicNumber);
-    }
-    // Ensure this is specifically a certify attestation
-    if attest_info.type_ != TpmSt::TPM_ST_ATTEST_CERTIFY {
-        return Err(TpmParseError::WrongType);
-    }
-    // Verify the extra data matches to prevent replay attacks
-    if attest_info.extra_data != expected_extra_data {
-        return Err(TpmParseError::ChallengeMismatch);
-    }
-
-    Ok(CertifyData { statement, signature })
-}
-
-impl From<TpmParseError> for ffi::CertifyResponse {
-    fn from(err: TpmParseError) -> Self {
-        ffi::CertifyResponse { status: err.into(), statement: Vec::new(), signature: Vec::new() }
-    }
-}
-
-impl<'a> From<Result<CertifyData<'a>, TpmParseError>> for ffi::CertifyResponse {
-    fn from(result: Result<CertifyData<'a>, TpmParseError>) -> Self {
-        match result {
-            Ok(resp) => ffi::CertifyResponse {
-                status: ffi::ResponseStatus::OK,
-                statement: resp.statement.to_vec(),
-                signature: resp.signature.to_vec(),
-            },
-            Err(err) => err.into(),
-        }
-    }
-}
-
-/// Parses a TPM2_Certify response.
-///
-/// This function reads the response buffer from a TPM2_Certify command,
-/// validates the headers, and extracts the attestation statement and signature.
-/// It also verifies that the response is for a certify command, checks the
-/// magic number, and ensures `expected_extra_data` matches the `extra_data`
-/// field in the attestation to prevent replay attacks (TPM2_Certify operates on
-/// `TPM2B_DATA qualifyingData`, which for key attestation protocols is
-/// typically the SHA-256 digest of the challenge).
-///
-/// # Arguments
-///
-/// * `resp` - The raw byte response from the TPM2_Certify command.
-/// * `expected_extra_data` - The extra data expected in the attestation's
-///   `extra_data` field (e.g., the SHA-256 digest of the challenge).
-///
-/// # Returns
-///
-/// A `CertifyResponse` containing the parsing result, any TPM error code,
-/// the serialized `TPMS_ATTEST` statement, and the serialized `TPMT_SIGNATURE`.
-pub fn parse_certify_response(resp: &[u8], expected_extra_data: &[u8]) -> ffi::CertifyResponse {
-    parse_certify_response_impl(resp, expected_extra_data).into()
 }
 
 struct CreateData<'a> {

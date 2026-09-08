@@ -3824,78 +3824,6 @@ Called by update_net_trust_anchors.py.-->
 
 <!-- LINT.ThenChange(//net/socket/stream_socket_close_reason.h:StreamSocketCloseReason) -->
 
-<enum name="TpmAlgorithm">
-  <int value="0" label="TPM_ALG_ERROR"/>
-  <int value="1" label="TPM_ALG_RSA"/>
-  <int value="3" label="TPM_ALG_TDES"/>
-  <int value="4" label="TPM_ALG_SHA1"/>
-  <int value="5" label="TPM_ALG_HMAC"/>
-  <int value="6" label="TPM_ALG_AES"/>
-  <int value="7" label="TPM_ALG_MGF1"/>
-  <int value="8" label="TPM_ALG_KEYEDHASH"/>
-  <int value="10" label="TPM_ALG_XOR"/>
-  <int value="11" label="TPM_ALG_SHA256"/>
-  <int value="12" label="TPM_ALG_SHA384"/>
-  <int value="13" label="TPM_ALG_SHA512"/>
-  <int value="14" label="TPM_ALG_SHA256_192"/>
-  <int value="16" label="TPM_ALG_NULL"/>
-  <int value="18" label="TPM_ALG_SM3_256"/>
-  <int value="19" label="TPM_ALG_SM4"/>
-  <int value="20" label="TPM_ALG_RSASSA"/>
-  <int value="21" label="TPM_ALG_RSAES"/>
-  <int value="22" label="TPM_ALG_RSAPSS"/>
-  <int value="23" label="TPM_ALG_OAEP"/>
-  <int value="24" label="TPM_ALG_ECDSA"/>
-  <int value="25" label="TPM_ALG_ECDH"/>
-  <int value="26" label="TPM_ALG_ECDAA"/>
-  <int value="27" label="TPM_ALG_SM2"/>
-  <int value="28" label="TPM_ALG_ECSCHNORR"/>
-  <int value="29" label="TPM_ALG_ECMQV"/>
-  <int value="32" label="TPM_ALG_KDF1_SP800_56A"/>
-  <int value="33" label="TPM_ALG_KDF2"/>
-  <int value="34" label="TPM_ALG_KDF1_SP800_108"/>
-  <int value="35" label="TPM_ALG_ECC"/>
-  <int value="37" label="TPM_ALG_SYMCIPHER"/>
-  <int value="38" label="TPM_ALG_CAMELLIA"/>
-  <int value="39" label="TPM_ALG_SHA3_256"/>
-  <int value="40" label="TPM_ALG_SHA3_384"/>
-  <int value="41" label="TPM_ALG_SHA3_512"/>
-  <int value="42" label="TPM_ALG_SHAKE128"/>
-  <int value="43" label="TPM_ALG_SHAKE256"/>
-  <int value="44" label="TPM_ALG_SHAKE256_192"/>
-  <int value="45" label="TPM_ALG_SHAKE256_256"/>
-  <int value="46" label="TPM_ALG_SHAKE256_512"/>
-  <int value="63" label="TPM_ALG_CMAC"/>
-  <int value="64" label="TPM_ALG_CTR"/>
-  <int value="65" label="TPM_ALG_OFB"/>
-  <int value="66" label="TPM_ALG_CBC"/>
-  <int value="67" label="TPM_ALG_CFB"/>
-  <int value="68" label="TPM_ALG_ECB"/>
-  <int value="80" label="TPM_ALG_CCM"/>
-  <int value="81" label="TPM_ALG_GCM"/>
-  <int value="82" label="TPM_ALG_KW"/>
-  <int value="83" label="TPM_ALG_KWP"/>
-  <int value="84" label="TPM_ALG_EAX"/>
-  <int value="96" label="TPM_ALG_EDDSA"/>
-  <int value="97" label="TPM_ALG_EDDSA_PH"/>
-  <int value="112" label="TPM_ALG_LMS"/>
-  <int value="113" label="TPM_ALG_XMSS"/>
-</enum>
-
-<!-- LINT.IfChange(TpmCertifyVerifyResult) -->
-
-<enum name="TpmCertifyVerifyResult">
-  <int value="0" label="Ok"/>
-  <int value="1" label="BufferTooSmall"/>
-  <int value="2" label="TrailingBytes"/>
-  <int value="3" label="UnsupportedSignatureAlgorithm"/>
-  <int value="4" label="UnsupportedHashAlgorithm"/>
-  <int value="5" label="InvalidPublicKey"/>
-  <int value="6" label="InvalidSignature"/>
-</enum>
-
-<!-- LINT.ThenChange(//crypto/tpm_parser.h:TpmCertifyVerifyResult) -->
-
 <!-- LINT.IfChange(TpmParseResult) -->
 
 <enum name="TpmParseResult">
@@ -3903,9 +3831,9 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="BufferTooSmall"/>
   <int value="2" label="TrailingBytes"/>
   <int value="3" label="TpmErrorResponse"/>
-  <int value="4" label="BadMagicNumber"/>
+  <int value="4" label="(Obsolete) BadMagicNumber"/>
   <int value="5" label="WrongType"/>
-  <int value="6" label="ChallengeMismatch"/>
+  <int value="6" label="(Obsolete) ChallengeMismatch"/>
 </enum>
 
 <!-- LINT.ThenChange(//crypto/tpm_parser.h:TpmParseResult) -->

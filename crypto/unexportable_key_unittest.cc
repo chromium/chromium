@@ -12,9 +12,6 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/containers/span_reader.h"
-#include "base/containers/span_rust.h"
-#include "base/containers/span_writer.h"
 #include "base/containers/to_vector.h"
 #include "base/logging.h"
 #include "base/numerics/byte_conversions.h"
@@ -44,7 +41,6 @@
 // clang-format on
 
 #include "crypto/scoped_cng_types.h"
-#include "crypto/tpm.rs.h"
 #include "crypto/unexportable_key_win.h"
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -55,23 +51,6 @@ namespace {
 using ::testing::ElementsAre;
 using ::testing::Return;
 
-// Small helper to create a seriailzed TPM2_Certify response. This allows us to
-// use tpm.rs in the test expectations.
-std::vector<uint8_t> ConstructFakeTpmResponse(
-    base::span<const uint8_t> statement,
-    base::span<const uint8_t> signature) {
-  size_t size = 2 + 4 + 4 + 2 + statement.size() + signature.size();
-  std::vector<uint8_t> resp(size);
-  base::SpanWriter<uint8_t> writer(resp);
-  writer.WriteU16BigEndian(0x8001);  // TPM_ST_NO_SESSIONS
-  writer.WriteU32BigEndian(size);
-  writer.WriteU32BigEndian(0);  // responseCode = TPM_RC_SUCCESS
-  writer.WriteU16BigEndian(statement.size());
-  writer.Write(statement);
-  writer.Write(signature);
-  CHECK_EQ(writer.remaining(), 0u);
-  return resp;
-}
 
 enum class Provider {
   kTPM,
@@ -643,17 +622,6 @@ TEST_P(UnexportableKeyTest, FakeAttestationWorkflows) {
   EXPECT_EQ(statement.statement.size(), 105u);
   EXPECT_TRUE(statement.subject_key.empty());
 
-  std::vector<uint8_t> fake_resp =
-      ConstructFakeTpmResponse(statement.statement, statement.signature);
-
-  // Use C++ type-safe parser.
-  EXPECT_THAT(crypto::tpm::ParseCertifyResponse(
-                  fake_resp, crypto::hash::Sha256(kChallenge)),
-              base::test::ValueIs(crypto::tpm::CertifyResponse{
-                  .statement = statement.statement,
-                  .signature = statement.signature,
-              }));
-
   // Verify the signature using the C++ wrapper directly.
   EXPECT_OK(
       crypto::tpm::VerifySignature(attestation_key->GetSubjectPublicKeyInfo(),
@@ -670,14 +638,6 @@ TEST_P(UnexportableKeyTest, FakeAttestationWorkflows) {
     EXPECT_EQ(arbitrary_statement.format, crypto::AttestationStatement::kTpm);
     EXPECT_EQ(arbitrary_statement.statement.size(), 105u);
 
-    std::vector<uint8_t> arbitrary_resp = ConstructFakeTpmResponse(
-        arbitrary_statement.statement, arbitrary_statement.signature);
-    EXPECT_THAT(crypto::tpm::ParseCertifyResponse(
-                    arbitrary_resp, crypto::hash::Sha256(challenge)),
-                base::test::ValueIs(crypto::tpm::CertifyResponse{
-                    .statement = arbitrary_statement.statement,
-                    .signature = arbitrary_statement.signature,
-                }));
     EXPECT_OK(crypto::tpm::VerifySignature(
         attestation_key->GetSubjectPublicKeyInfo(),
         arbitrary_statement.statement, arbitrary_statement.signature));

@@ -248,7 +248,6 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(TpmCommand) -->
 
 <variants name="TpmCommand">
-  <variant name="Certify" summary="TPM2_Certify"/>
   <variant name="Create" summary="TPM2_Create"/>
   <variant name="FlushContext" summary="TPM2_FlushContext"/>
   <variant name="Hash" summary="TPM2_Hash"/>
@@ -540,36 +539,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Collected on Windows when Tbsip_Submit_Command fails during TPM
     certification. Represents the TBS_RESULT returned by the API.
-  </summary>
-</histogram>
-
-<histogram name="Crypto.TPMOperation.Win.TpmCertifyVerify.HashAlgorithm"
-    enum="TpmAlgorithm" expires_after="2027-01-24">
-  <owner>jdoerrie@chromium.org</owner>
-  <owner>src/crypto/OWNERS</owner>
-  <summary>
-    Collected on Windows during TPM2_Certify verification. Records the
-    TPM_ALG_ID of the hash algorithm unconditionally for all operations.
-  </summary>
-</histogram>
-
-<histogram name="Crypto.TPMOperation.Win.TpmCertifyVerify.Result"
-    enum="TpmCertifyVerifyResult" expires_after="2027-01-24">
-  <owner>jdoerrie@chromium.org</owner>
-  <owner>src/crypto/OWNERS</owner>
-  <summary>
-    Collected on Windows to record the verification result of a TPM2_Certify
-    response. Records whether the signature was valid or the specific error.
-  </summary>
-</histogram>
-
-<histogram name="Crypto.TPMOperation.Win.TpmCertifyVerify.SignatureAlgorithm"
-    enum="TpmAlgorithm" expires_after="2027-01-24">
-  <owner>jdoerrie@chromium.org</owner>
-  <owner>src/crypto/OWNERS</owner>
-  <summary>
-    Collected on Windows during TPM2_Certify verification. Records the
-    TPM_ALG_ID of the signature algorithm unconditionally for all operations.
   </summary>
 </histogram>
 

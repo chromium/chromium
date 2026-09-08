@@ -8,7 +8,6 @@
 
 #include <optional>
 #include <utility>
-#include <variant>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -53,14 +52,8 @@ TpmParseErrorOr<void> MapResponseStatus(const ResponseStatus& status) {
     case ParseResult::TpmErrorResponse:
       return base::unexpected(TpmParseError(
           TpmParseError::Type::kTpmErrorResponse, status.tpm_response_code));
-    case ParseResult::BadMagicNumber:
-      return base::unexpected(
-          TpmParseError(TpmParseError::Type::kBadMagicNumber));
     case ParseResult::WrongType:
       return base::unexpected(TpmParseError(TpmParseError::Type::kWrongType));
-    case ParseResult::ChallengeMismatch:
-      return base::unexpected(
-          TpmParseError(TpmParseError::Type::kChallengeMismatch));
   }
   NOTREACHED();
 }
@@ -196,29 +189,6 @@ std::optional<SignatureAlgorithms> ToSignatureAlgorithms(
 }
 
 }  // namespace
-
-std::vector<uint8_t> BuildCertifyCommand(
-    uint32_t object_handle,
-    uint32_t sign_handle,
-    base::span<const uint8_t> qualifying_data) {
-  return base::ToVector(build_certify_command(
-      object_handle, sign_handle, base::SpanToRustSlice(qualifying_data)));
-}
-
-TpmParseErrorOr<CertifyResponse> ParseCertifyResponse(
-    base::span<const uint8_t> response_blob,
-    base::span<const uint8_t> expected_extra_data) {
-  RawCertifyResponse raw_response =
-      parse_certify_response(base::SpanToRustSlice(response_blob),
-                             base::SpanToRustSlice(expected_extra_data));
-
-  return MapResponseStatus(raw_response.status).transform([&] {
-    return CertifyResponse{
-        .statement = base::ToVector(raw_response.statement),
-        .signature = base::ToVector(raw_response.signature),
-    };
-  });
-}
 
 std::optional<std::vector<uint8_t>> BuildCreateAikCommand(
     uint32_t parent_handle,
