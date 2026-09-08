@@ -64,14 +64,15 @@ The Omnibox Java code resides under `chrome/browser/ui/android/omnibox/java/src/
   - When updating classes, always read the top-level class comment to catch any critical context, invariants, or restrictions (what is / what is not allowed).
 - **Reuse & Pre-research**: Research relevant existing libraries, utilities, and methods before implementing something new. Follow existing patterns in the codebase when applicable.
 - **Resource & Type Annotations**: Always annotate integer resource IDs and typed values with appropriate AndroidX annotations (e.g., `@ColorInt`, `@ColorRes`, `@DrawableRes`, `@StringRes`, `@Px`).
+  - **Nullability Annotations**: Use `org.chromium.build.annotations.Nullable` (enforced by NullAway / JSpecify). Do not use `androidx.annotation.Nullable` or `javax.annotation.Nullable` in `@NullMarked` files (enforced by Checkstyle `WrongNullable`).
 - **`@CheckResult` Annotation**:
   - Use `@CheckResult` (from `androidx.annotation.CheckResult`) to annotate results that, if thrown away or ignored, would result in a memory leak, resource leak, or failure to satisfy contract (e.g., "returns `true` if callback will be emitted").
   - At call sites, it is acceptable to skip/ignore the return value only if annotated with an explanatory comment (e.g., `// Attempt to retrieve actual icon if we have it, otherwise show fallback icon`).
 - **Constants over Magic Numbers**: Do not create or use magic numbers directly in the code. Define and use descriptive constants instead.
 - **Minimum Visibility**:
   - Visibility should always reflect the minimum visibility required to satisfy the purpose of a class or method; do not make things `public` by default.
-  - Prefer `private`, `/* package */`, and `protected`, in that order.
-  - `/* package */` is preferred when visibility is required; if both `/* package */` and `protected` satisfy the need, use `/* package */` (reserve `protected` for when subclass access is required and package visibility does not suffice).
+  - Prefer `private`, package-private (no access modifier), and `protected`, in that order.
+  - Package-private is preferred when visibility is required across classes in the package; if both package-private and `protected` satisfy the need, use package-private (reserve `protected` for when subclass access is required and package visibility does not suffice). Avoid adding `/* package */` comments, as package-private is simply the absence of a modifier in Java and arbitrary inline comments are not recognized by `google-java-format`.
 - **Method Signatures & Parameter Comments**:
   - Avoid creating constructors or methods that accept too many boolean parameters, as this degrades readability.
   - **Boolean Parameter Annotations**: Call-site boolean literals (`true` / `false`) must be documented with a `/* paramName= */` comment unless the parameter's meaning is unmistakably clear from the method name (e.g., `setVisible(true)` is fine, but `open(view, /* animated= */ true)` is not).
@@ -80,10 +81,10 @@ The Omnibox Java code resides under `chrome/browser/ui/android/omnibox/java/src/
     - Do **not** add `/* paramName= */` comments when an argument is passed from a variable already named like that parameter (e.g., `new Rect(l, t, r, b)` assuming `Rect` takes `(l, t, r, b)`, or `updateSize(width, height)`). It is completely fine (and preferred) to skip them.
     - Do **not** add comments for self-evident single-argument calls or setters (e.g., `setValue(/* value= */ value)` is completely unnecessary and discouraged).
     - Parameter comments are intended to clarify ambiguous literals and unclear expressions, not to duplicate variable names.
-  - **ErrorProne `[ParameterName]` Strict Rule**: When using `/* paramName= */`, ErrorProne strictly verifies that `paramName` matches the exact formal parameter name in the method declaration (`[ParameterName]`). Always check the target method declaration, or use `/* comment */` without `=` if not matching.
+  - **ErrorProne `[ParameterName]` Strict Rule**: When using `/* paramName= */`, ErrorProne strictly verifies that `paramName` matches the exact formal parameter name in the method declaration (`[ParameterName]`). Checkstyle also strictly requires the `/* paramName= */` syntax (flagging comments without `=`). Always check the target method declaration to ensure the name matches; if the parameter name is unclear or misleading, rename the parameter in the method declaration rather than omitting `=`.
 - **Complexity & Early Returns**: Prefer early return statements over deeply nested conditional statements. Keep the cyclomatic complexity of methods low.
 - **Prefer Switch Expressions (`return switch (...)` / `variable = switch (...)`)**:
-  - Prefer modern Java `switch` expressions over verbose `if / else if` ladders or legacy statement `switch` blocks when mapping or resolving discrete `@IntDef`, `enum`, or primitive/string values to a result.
+  - Prefer modern Java `switch` expressions over verbose `if / else if` ladders or legacy statement `switch` blocks when mapping or resolving discrete `@IntDef`, `@LongDef`, `@StringDef`, or primitive/string values to a result (enums are banned in Chromium Java).
   - Using `return switch (key) { ... }` or assigning directly via `variable = switch (key) { ... }`:
     - Eliminates mutable temporary variables and repetitive branching boilerplate.
     - Eliminates fallthrough bugs (no `break` statements required) and enforces exhaustiveness at compile time.
@@ -116,7 +117,7 @@ The Omnibox Java code resides under `chrome/browser/ui/android/omnibox/java/src/
        - *Justification*: Method length is purely a linear function of property count in the model. Fragmenting a pure router into artificial sub-binders breaks alphabetical ordering, disrupts searchability, and introduces indirection without reducing complexity.
        - *Constraint*: Multi-line view manipulation logic, animations, or view hierarchy adjustments must *not* be inlined inside `bind()` branches; they must be extracted to private helper methods.
     2. **Pure Lookup / Mapping Switch Statements & Expressions**:
-       - *Permitted*: Linear `switch` statements or expressions mapping an enum, `@IntDef`, or `@PageClassification` to a resource ID, constant, or histogram name (e.g. `getFallbackIconFromIconType()`).
+       - *Permitted*: Linear `switch` statements or expressions mapping an `@IntDef` (e.g. `@PageClassification`), `@StringDef`, or primitive value to a resource ID, constant, or histogram name (e.g. `getFallbackIconFromIconType()`).
        - *Best Practice*: Prefer switch expressions (`return switch (...)` or `variable = switch (...)`) with arrow syntax (`case X -> Y;`) over legacy statement switches or chained `if / else if` blocks to minimize visual line count and eliminate intermediate mutable variables.
        - *Justification*: Cyclomatic complexity per branch is 1 with zero state mutation or side effects; splitting into sub-switches obscures the lookup table without architectural benefit.
     3. **Android View Constructors Parsing Attributes**:
@@ -126,6 +127,8 @@ The Omnibox Java code resides under `chrome/browser/ui/android/omnibox/java/src/
   - Non-trivial repetitive statements (encompassing at least 2 operations, e.g., `a && b || c`, or `a == x && b == y && c == z`) used more than 2 times in a file should be isolated to helper methods and reused.
   - If used across multiple files, isolate them to an appropriate separate utility/helper file so that everyone uses the same logic.
 - **Avoid `instanceof` Checks**: Avoid using `instanceof` and explicit downcasting. `instanceof` is typically a code smell indicating that concrete implementation details are being shoehorned into code that should be properly abstracted. Prefer polymorphism, interface contracts, or delegating behavior directly to the class hierarchy rather than type-checking and branching on concrete types.
+- **Nested Classes Isolation**: Large nested or inner classes ($\ge$ 100 LOC) should be isolated to a separate file.
+- **Thread Synchronization & Atomic Primitives**: Prefer atomic primitives over locks when sharing basic information across threads (e.g. `AtomicBoolean` rather than `Object sLock` + `Boolean mMember`).
 - **Placement**: Ensure logic is implemented in the correct architectural location as early as possible in the flow.
 - **OmniboxUrlUtils for NTP Evaluation**: In Omnibox and LocationBar UI logic, always use `OmniboxUrlUtils.isNtpUrl(url)` rather than calling `UrlUtilities.isNtpUrl(url)` directly. This ensures consistent handling of transient empty/invalid URLs occurring during new tab or new window creation before navigation commits (see crbug.com/553118979), preventing UI flickers (such as showing a globe icon instead of the search engine logo) and enabling early cursor focus.
 - **JNI Type Conversions (`@JniType`)**:
@@ -221,5 +224,5 @@ When introducing or modifying Omnibox feature flags:
     - *Alternative*: Use standardized Robolectric configuration across test suites; avoid custom shadows or SDK variants when real Android or POJO classes can be used. Using `@Config(qualifiers = ...)` is acceptable for establishing device/screen configurations, but avoid proliferating too many distinct configs—standardize on and reuse existing common configs where possible, or adjust qualifiers dynamically during test execution (e.g. `RuntimeEnvironment.setQualifiers(...)`).
   - **Java Reflection (`setAccessible(true)` / `ReflectionTestUtils`) (Unwelcome)**:
     - *Problem*: Bypasses encapsulation, breaks JIT escape analysis and method inlining, and produces fragile tests.
-    - *Alternative*: Interact with the class under test through existing public contracts or via its `PropertyModel` (the primary intended interface in Clank MVC). If internal state access is unavoidable, provide package-private `@VisibleForTesting` accessors or `getFooForTesting()` / `setFooForTesting()` methods.
+    - *Alternative*: Interact with the class under test through existing public contracts or via its `PropertyModel` (the primary intended interface in Clank MVC). If internal state access is unavoidable, provide package-private `@VisibleForTesting` accessors or `getFooForTesting()` / `setFooForTesting()` methods. (Note: methods with a `ForTesting` suffix must **never** be annotated with `@VisibleForTesting`, as this triggers Checkstyle `VisibleForTestingForTesting`.)
 
