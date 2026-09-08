@@ -24,12 +24,9 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/thumbnail_loader",
   "+chrome/browser/ui/browser_window",
-  "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/browser/ui/interaction",
   "+chrome/browser/ui/webui/ash/mako",
   "+chrome/common",
-  "+chrome/test",
-  "+chromeos/ash/components/search_engines",
 ]
 
 specific_include_rules = {

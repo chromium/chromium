@@ -1,7 +1,5 @@
 include_rules = [
-  "+chromeos/ash/experiences/system_web_apps/types",
   "+components/app_icon_loader",
-  "+components/services/app_service/public",
 
   # Existing dependencies within //chrome. There is an active effort to
   # refactor ash codes in //chrome to break these dependencies; see b/332804822.
@@ -11,7 +9,6 @@ include_rules = [
   "+chrome/browser/apps/app_preload_service/app_preload_service.h",
   "+chrome/browser/apps/app_service",
   "+chrome/browser/apps/browser_instance",
-  "+chrome/browser/apps/icon_standardizer.h",
   "+chrome/browser/apps/platform_apps",
   "+chrome/browser/ash/accessibility",
   "+chrome/browser/ash/app_list",

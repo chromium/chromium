@@ -13,7 +13,6 @@ include_rules = [
   "+chrome/browser/app_mode",
   "+chrome/browser/ash/floating_workspace",
   "+chrome/browser/ash/login/demo_mode",
-  "+chrome/browser/ash/login/lock",
   "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/policy/off_hours",
   "+chrome/browser/ash/profiles",
@@ -29,5 +28,4 @@ include_rules = [
   "+chrome/browser/ui/dialogs/browser_dialogs.h",
   "+chrome/browser/ui/managed_ui.h",
   "+chrome/grit",
-  "+chrome/test",
 ]

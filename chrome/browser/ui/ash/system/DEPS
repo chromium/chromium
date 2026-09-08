@@ -42,8 +42,6 @@ include_rules = [
   "+chrome/browser/ui/webui/ash/multidevice_setup",
   "+chrome/browser/ui/webui/ash/set_time",
   "+chrome/browser/upgrade_detector",
-  "+chrome/common",
-  "+chrome/test",
 ]
 
 specific_include_rules = {

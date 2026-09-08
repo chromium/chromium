@@ -21,7 +21,6 @@ include_rules = [
   "+chrome/browser/ui/ash/thumbnail_loader",
   "+chrome/browser/ui/color",
   "+chrome/grit",
-  "+chrome/test",
 ]
 
 specific_include_rules = {
