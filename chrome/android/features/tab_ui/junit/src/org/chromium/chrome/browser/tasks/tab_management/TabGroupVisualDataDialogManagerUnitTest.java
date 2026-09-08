@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
@@ -14,8 +16,10 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils.UNSET_TAB_GROUP_TITLE;
 
 import android.app.Activity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
+import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.DialogTitle;
@@ -224,5 +228,46 @@ public class TabGroupVisualDataDialogManagerUnitTest {
         String expectedText =
                 mActivity.getString(R.string.accessibility_tab_group_title_field, "0 tabs");
         Assert.assertEquals(expectedText, info.getText().toString());
+    }
+
+    @Test
+    public void testVisualDataDialogDelegate_editorActionDone() {
+        mTabGroupVisualDataDialogManager.showDialog(TAB_GROUP_ID, mTabModel, mDialogController);
+        verify(mModalDialogManager).showDialog(mModelCaptor.capture(), eq(ModalDialogType.APP));
+
+        PropertyModel model = mModelCaptor.getValue();
+        View customView = model.get(ModalDialogProperties.CUSTOM_VIEW);
+        TextView editTextView = customView.findViewById(R.id.title_input_text);
+
+        editTextView.onEditorAction(EditorInfo.IME_ACTION_DONE);
+        verify(mDialogController).onClick(model, ModalDialogProperties.ButtonType.POSITIVE);
+    }
+
+    @Test
+    public void testVisualDataDialogDelegate_keyEventEnter() {
+        mTabGroupVisualDataDialogManager.showDialog(TAB_GROUP_ID, mTabModel, mDialogController);
+        verify(mModalDialogManager).showDialog(mModelCaptor.capture(), eq(ModalDialogType.APP));
+
+        PropertyModel model = mModelCaptor.getValue();
+        View customView = model.get(ModalDialogProperties.CUSTOM_VIEW);
+        TextView editTextView = customView.findViewById(R.id.title_input_text);
+
+        KeyEvent enterDown = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER);
+        boolean consumed = editTextView.dispatchKeyEvent(enterDown);
+        Assert.assertTrue(consumed);
+        verify(mDialogController).onClick(model, ModalDialogProperties.ButtonType.POSITIVE);
+    }
+
+    @Test
+    public void testVisualDataDialogDelegate_unhandledEditorAction() {
+        mTabGroupVisualDataDialogManager.showDialog(TAB_GROUP_ID, mTabModel, mDialogController);
+        verify(mModalDialogManager).showDialog(mModelCaptor.capture(), eq(ModalDialogType.APP));
+
+        PropertyModel model = mModelCaptor.getValue();
+        View customView = model.get(ModalDialogProperties.CUSTOM_VIEW);
+        TextView editTextView = customView.findViewById(R.id.title_input_text);
+
+        editTextView.onEditorAction(EditorInfo.IME_ACTION_NEXT);
+        verify(mDialogController, never()).onClick(any(), anyInt());
     }
 }

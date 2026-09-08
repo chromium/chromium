@@ -8,11 +8,13 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityNodeInfo;
+import android.view.inputmethod.EditorInfo;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -45,6 +47,7 @@ import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -161,6 +164,23 @@ public class TabGroupVisualDataDialogManager {
                                         R.string.accessibility_tab_group_title_field,
                                         originalText));
                     }
+                });
+
+        // Listen for enter / done pressed to submit the dialog.
+        editTextView.setOnEditorActionListener(
+                (v, actionId, event) -> {
+                    if (actionId == EditorInfo.IME_ACTION_DONE
+                            || (event != null
+                                    && event.getAction() == KeyEvent.ACTION_DOWN
+                                    && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+                        KeyboardVisibilityDelegate.getInstance().hideKeyboard(editTextView);
+                        if (mModel != null) {
+                            dialogController.onClick(
+                                    mModel, ModalDialogProperties.ButtonType.POSITIVE);
+                        }
+                        return true; // Consumed.
+                    }
+                    return false;
                 });
 
         List<Integer> colors = TabGroupColorPickerUtils.getTabGroupColorIdList();

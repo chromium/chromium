@@ -18,7 +18,8 @@ found in the LICENSE file.
       android:id="@+id/title_input_text"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:imeOptions="flagNoExtractUi"
+      android:imeOptions="flagNoExtractUi|actionDone"
       android:inputType="textCapSentences|textAutoCorrect"
+      android:maxLines="1"
       android:selectAllOnFocus="true" />
 </org.chromium.chrome.browser.tasks.tab_management.TabGroupVisualDataTextInputLayout>
