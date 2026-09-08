@@ -111,6 +111,12 @@ public class RecordingTabCreator implements TabCreator {
     }
 
     @Override
+    public boolean isReparenting(@TabId int id) {
+        assertInitialized();
+        return mDelegate.isReparenting(id);
+    }
+
+    @Override
     public @Nullable Tab launchUrl(String url, @TabLaunchType int type) {
         assertInitialized();
         recordNewTab(url);

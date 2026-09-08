@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -126,6 +128,7 @@ public class RecordingTabCreatorUnitTest {
         List<TabCreationData> data = mRecordingTabCreator.getNewTabCreationData();
         assertEquals(0, data.size());
     }
+
 
     @Test
     public void testLaunchUrl() {
@@ -268,5 +271,16 @@ public class RecordingTabCreatorUnitTest {
         mRecordingTabCreator.stopRecording();
         mRecordingTabCreator.recordFallbackTab(456, "https://fallback456.com");
         assertEquals(1, mRecordingTabCreator.getRegularFallbackTabs().size());
+    }
+
+    @Test
+    public void testIsReparenting() {
+        when(mDelegate.isReparenting(123)).thenReturn(true);
+        when(mDelegate.isReparenting(456)).thenReturn(false);
+
+        assertTrue(mRecordingTabCreator.isReparenting(123));
+        assertFalse(mRecordingTabCreator.isReparenting(456));
+        verify(mDelegate).isReparenting(123);
+        verify(mDelegate).isReparenting(456);
     }
 }

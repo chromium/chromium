@@ -842,8 +842,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                         }
 
                         @Override
-                        public @Nullable Tab createFrozenTab(
-                                @Nullable TabState state, int id, int index) {
+                        public @Nullable Tab createFrozenTab(TabState state, int id, int index) {
                             return null;
                         }
 

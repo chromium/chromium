@@ -8,10 +8,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.url.GURL;
 
 /** Constructs delegates needed for reparenting tabs. */
 @NullMarked
@@ -38,25 +35,6 @@ public class ReparentingDelegateFactory {
             @Override
             public @Nullable TabDelegateFactory getTabDelegateFactory() {
                 return tabDelegateFactory;
-            }
-        };
-    }
-
-    /**
-     * @return Creates an implementation of {@link TabReparentingController.Delegate} that
-     *         supplies dependencies to {@link TabReparentingController}.
-     */
-    public static TabReparentingController.Delegate createReparentingControllerDelegate(
-            final TabModelSelector tabModelSelector) {
-        return new TabReparentingController.Delegate() {
-            @Override
-            public TabModelSelector getTabModelSelector() {
-                return tabModelSelector;
-            }
-
-            @Override
-            public boolean isNtpUrl(GURL url) {
-                return UrlUtilities.isNtpUrl(url);
             }
         };
     }

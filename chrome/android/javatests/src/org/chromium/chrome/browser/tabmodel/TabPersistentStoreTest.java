@@ -1366,6 +1366,7 @@ public class TabPersistentStoreTest {
         assertEquals(3, TabRestoreMethod.FAILED_TO_RESTORE);
         assertEquals(4, TabRestoreMethod.SKIPPED_NTP);
         assertEquals(5, TabRestoreMethod.SKIPPED_EMPTY_URL);
+        assertEquals(6, TabRestoreMethod.REPARENTING);
     }
 
     private TestTabModelSelector createAndRestoreRealTabModelImpls(TabModelMetaDataInfo info)

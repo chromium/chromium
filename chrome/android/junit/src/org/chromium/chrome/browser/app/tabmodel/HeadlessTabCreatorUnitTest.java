@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -26,7 +27,9 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabTestUtils;
+import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.content_public.browser.LoadUrlParams;
 
@@ -64,7 +67,12 @@ public class HeadlessTabCreatorUnitTest {
 
     @Test
     public void testCreateFrozenTabDoesNotCreateWebContents() {
-        Tab tab = mCreator.createFrozenTab(/* state= */ null, /* id= */ 1, /* index= */ 0);
+        TabState tabState = new TabState();
+        WebContentsState contentsState = mock(WebContentsState.class);
+        when(contentsState.getVirtualUrlFromState()).thenReturn("https://example.com");
+        when(contentsState.getDisplayTitleFromState()).thenReturn("Title");
+        tabState.contentsState = contentsState;
+        Tab tab = mCreator.createFrozenTab(tabState, /* id= */ 1, /* index= */ 0);
         assertNotNull(tab);
         assertNull(tab.getWebContents());
         assertFalse(tab.loadIfNeeded(/* forceBackingSize= */ false));
@@ -96,5 +104,11 @@ public class HeadlessTabCreatorUnitTest {
                         eq(/* index= */ 0),
                         eq(TabLaunchType.FROM_LINK),
                         eq(TabCreationState.FROZEN_FOR_LAZY_LOAD));
+    }
+
+    @Test
+    public void testIsReparenting() {
+        assertFalse(mCreator.isReparenting(1));
+        assertFalse(mDisabledCreator.isReparenting(1));
     }
 }

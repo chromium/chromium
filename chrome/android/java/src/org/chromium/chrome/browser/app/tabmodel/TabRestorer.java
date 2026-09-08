@@ -513,16 +513,27 @@ class TabRestorer {
     }
 
     /**
-     * Restores a tab from the given {@link TabState}. Returns null if the WebContentsState, if
-     * present, was not used to create the tab.
+     * Restores a tab from the given {@link TabState} or via reparenting. Returns null if the tab
+     * could not be restored or if the WebContentsState had an empty buffer.
      */
     private @Nullable Tab maybeRestoreTab(
             TabState tabState, int tabId, int index, boolean isActiveTab, boolean isRecreating) {
         boolean isReparenting = mTabCreator.isReparenting(tabId);
         if (isReparenting) {
-            createTabFromState(tabState, tabId, index);
-            // Reparenting will not use the TabState to create the tab.
-            return null;
+            Tab tab = mTabCreator.createFrozenTab(tabState, tabId, index);
+            if (tab != null) {
+                if (tabState.contentsState != null
+                        && tab.getWebContentsState() != tabState.contentsState) {
+                    tabState.contentsState.destroy();
+                    tabState.contentsState = null;
+                }
+                if (isActiveTab) {
+                    TabModel model = mTabModelSelector.getModel(mIncognito);
+                    TabModelUtils.setIndex(model, model.indexOf(tab));
+                    mDelegate.onActiveTabRestored(mIncognito);
+                }
+            }
+            return tab;
         }
 
         if (!isActiveTab) {
