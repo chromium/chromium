@@ -418,8 +418,10 @@ int DispatchCall() {
     if (!LoadLibraryA("dbghelp.dll")) {
       return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
     }
-    // TODO(crbug.com/534305839): Return a failure if we fail to load this,
-    // once we stabilize on win SDK 28000
+    // Try to load msdia as well, since dbghelp depends on it for some
+    // functionality (pdb handling and symbolization). This might fail
+    // if we're already low integrity, in which case we won't get
+    // symbolized traces if we crash.
     LoadLibraryA("msdia140.dll");
 #endif
 
