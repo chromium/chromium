@@ -193,13 +193,15 @@ void EntityDataManager::LoadEntitiesFromDatabase() {
       GetWeakPtr()));
 }
 
-void EntityDataManager::AddOrUpdateEntityInstance(EntityInstance entity) {
+void EntityDataManager::AddOrUpdateEntityInstance(
+    EntityInstance entity,
+    std::optional<std::string> context_token) {
   switch (entity.record_type()) {
     case EntityInstance::RecordType::kLocal:
     case EntityInstance::RecordType::kServerWallet:
       // Local and wallet entities are stored in EntityTable.
       webdata_service_->AddOrUpdateEntityInstance(
-          std::move(entity),
+          std::move(entity), std::move(context_token),
           base::BindOnce(
               [](base::WeakPtr<EntityDataManager> self,
                  EntityInstanceChange eic) {

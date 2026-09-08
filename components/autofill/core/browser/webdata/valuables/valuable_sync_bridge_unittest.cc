@@ -709,7 +709,8 @@ TEST_F(ValuableSyncBridgeTest,
   EXPECT_CALL(mock_processor(), Put).Times(0);
 
   bridge().EntityInstanceChanged(
-      EntityInstanceChange(EntityInstanceChange::ADD, vehicle.guid(), vehicle));
+      EntityInstanceChange(EntityInstanceChange::ADD, vehicle.guid(), vehicle),
+      /*context_token=*/std::nullopt);
 }
 
 // Tests that `EntityInstanceChanged()` ignores local entities.
@@ -718,7 +719,8 @@ TEST_F(ValuableSyncBridgeTest, EntityInstanceChanged_IgnoresLocalEntities) {
   const EntityInstance vehicle = GetLocalVehicleEntityInstance();
 
   bridge().EntityInstanceChanged(
-      EntityInstanceChange(EntityInstanceChange::ADD, vehicle.guid(), vehicle));
+      EntityInstanceChange(EntityInstanceChange::ADD, vehicle.guid(), vehicle),
+      /*context_token=*/std::nullopt);
 }
 
 // Tests that `EntityInstanceChanged()` handles ADD and UPDATE changes.
@@ -726,13 +728,47 @@ TEST_F(ValuableSyncBridgeTest, EntityInstanceChanged_AddUpdate) {
   ON_CALL(mock_processor(), IsTrackingMetadata).WillByDefault(Return(true));
   const EntityInstance vehicle = GetServerVehicleEntityInstance();
 
-  EXPECT_CALL(mock_processor(), Put(_, _, _));
+  EXPECT_CALL(mock_processor(), Put)
+      .WillOnce([](const std::string&,
+                   std::unique_ptr<syncer::EntityData> entity_data,
+                   syncer::MetadataChangeList*) {
+        EXPECT_FALSE(
+            entity_data->specifics.autofill_valuable().has_context_token());
+      });
   bridge().EntityInstanceChanged(
-      EntityInstanceChange(EntityInstanceChange::ADD, vehicle.guid(), vehicle));
+      EntityInstanceChange(EntityInstanceChange::ADD, vehicle.guid(), vehicle),
+      /*context_token=*/std::nullopt);
 
-  EXPECT_CALL(mock_processor(), Put(_, _, _));
-  bridge().EntityInstanceChanged(EntityInstanceChange(
-      EntityInstanceChange::UPDATE, vehicle.guid(), vehicle));
+  EXPECT_CALL(mock_processor(), Put)
+      .WillOnce([](const std::string&,
+                   std::unique_ptr<syncer::EntityData> entity_data,
+                   syncer::MetadataChangeList*) {
+        EXPECT_FALSE(
+            entity_data->specifics.autofill_valuable().has_context_token());
+      });
+  bridge().EntityInstanceChanged(
+      EntityInstanceChange(EntityInstanceChange::UPDATE, vehicle.guid(),
+                           vehicle),
+      /*context_token=*/std::nullopt);
+}
+
+// Tests that `EntityInstanceChanged()` includes the context token.
+TEST_F(ValuableSyncBridgeTest, EntityInstanceChanged_WithContextToken) {
+  ON_CALL(mock_processor(), IsTrackingMetadata).WillByDefault(Return(true));
+  const EntityInstance vehicle = GetServerVehicleEntityInstance();
+
+  EXPECT_CALL(mock_processor(), Put)
+      .WillOnce([&vehicle](const std::string& storage_key,
+                           std::unique_ptr<syncer::EntityData> entity_data,
+                           syncer::MetadataChangeList* metadata) {
+        ASSERT_EQ(storage_key, vehicle.guid().value());
+        EXPECT_EQ(entity_data->specifics.autofill_valuable().context_token(),
+                  "test_token");
+      });
+
+  bridge().EntityInstanceChanged(
+      EntityInstanceChange(EntityInstanceChange::ADD, vehicle.guid(), vehicle),
+      "test_token");
 }
 
 // Tests that `EntityInstanceChanged()` ignores a local entity REMOVE
@@ -740,8 +776,10 @@ TEST_F(ValuableSyncBridgeTest, EntityInstanceChanged_AddUpdate) {
 TEST_F(ValuableSyncBridgeTest, EntityInstanceChanged_RemoveLocal) {
   EXPECT_CALL(mock_processor(), Put).Times(0);
   const EntityInstance vehicle = GetLocalVehicleEntityInstance();
-  bridge().EntityInstanceChanged(EntityInstanceChange(
-      EntityInstanceChange::REMOVE, vehicle.guid(), vehicle));
+  bridge().EntityInstanceChanged(
+      EntityInstanceChange(EntityInstanceChange::REMOVE, vehicle.guid(),
+                           vehicle),
+      /*context_token=*/std::nullopt);
 }
 
 // Tests that `EntityInstanceChanged()` doesn't commit changes for private
@@ -751,12 +789,18 @@ TEST_F(ValuableSyncBridgeTest, EntityInstanceChanged_PrivatePasses) {
       test::MaskEntityInstance(test::GetPassportEntityInstance(
           {.record_type = EntityInstance::RecordType::kServerWallet}));
   EXPECT_CALL(mock_processor(), Put).Times(0);
-  bridge().EntityInstanceChanged(EntityInstanceChange(
-      EntityInstanceChange::ADD, passport.guid(), passport));
-  bridge().EntityInstanceChanged(EntityInstanceChange(
-      EntityInstanceChange::UPDATE, passport.guid(), passport));
-  bridge().EntityInstanceChanged(EntityInstanceChange(
-      EntityInstanceChange::REMOVE, passport.guid(), passport));
+  bridge().EntityInstanceChanged(
+      EntityInstanceChange(EntityInstanceChange::ADD, passport.guid(),
+                           passport),
+      /*context_token=*/std::nullopt);
+  bridge().EntityInstanceChanged(
+      EntityInstanceChange(EntityInstanceChange::UPDATE, passport.guid(),
+                           passport),
+      /*context_token=*/std::nullopt);
+  bridge().EntityInstanceChanged(
+      EntityInstanceChange(EntityInstanceChange::REMOVE, passport.guid(),
+                           passport),
+      /*context_token=*/std::nullopt);
 }
 
 // Tests that `EntityInstanceChanged()` doesn't commit changes for shopping
@@ -771,9 +815,12 @@ TEST_F(ValuableSyncBridgeTest, EntityInstanceChanged_Shopping) {
       {.record_type = EntityInstance::RecordType::kServerWallet});
   EXPECT_CALL(mock_processor(), Put).Times(0);
   bridge().EntityInstanceChanged(
-      EntityInstanceChange(EntityInstanceChange::ADD, order.guid(), order));
-  bridge().EntityInstanceChanged(EntityInstanceChange(
-      EntityInstanceChange::UPDATE, shipment.guid(), shipment));
+      EntityInstanceChange(EntityInstanceChange::ADD, order.guid(), order),
+      /*context_token=*/std::nullopt);
+  bridge().EntityInstanceChanged(
+      EntityInstanceChange(EntityInstanceChange::UPDATE, shipment.guid(),
+                           shipment),
+      /*context_token=*/std::nullopt);
 }
 
 // Tests that `EntityInstanceChanged()` includes unknown fields from the server.
@@ -799,7 +846,8 @@ TEST_F(ValuableSyncBridgeTest, EntityInstanceChanged_PreservesUnknownFields) {
       });
 
   bridge().EntityInstanceChanged(
-      EntityInstanceChange(EntityInstanceChange::ADD, vehicle.guid(), vehicle));
+      EntityInstanceChange(EntityInstanceChange::ADD, vehicle.guid(), vehicle),
+      /*context_token=*/std::nullopt);
 }
 
 class ValuableSyncBridgeWithIncrementalUpdates : public ValuableSyncBridge {

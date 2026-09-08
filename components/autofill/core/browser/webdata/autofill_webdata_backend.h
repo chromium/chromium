@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_AUTOFILL_WEBDATA_BACKEND_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_AUTOFILL_WEBDATA_BACKEND_H_
 
+#include <optional>
+#include <string_view>
+
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/sync/base/data_type.h"
 
@@ -79,7 +82,8 @@ class AutofillWebDataBackend {
   // added/removed/updated in the WebDatabase.
   // NOTE: This method is intended to be called from the DB sequence.
   virtual void NotifyOnEntityInstanceChanged(
-      const EntityInstanceChange& change) = 0;
+      const EntityInstanceChange& change,
+      std::optional<std::string_view> context_token) = 0;
 
   // Notifies listeners on the DB sequence that a server entity instance's
   // metadata has been added/removed/updated in the WebDatabase.

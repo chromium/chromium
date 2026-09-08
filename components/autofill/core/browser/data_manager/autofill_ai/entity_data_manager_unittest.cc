@@ -168,6 +168,21 @@ TEST_F(EntityDataManagerTest_InitiallyEmpty, AddEntityInstance) {
   EXPECT_THAT(GetEntityInstances(), UnorderedElementsAre(pp, dl, fr));
 }
 
+// Tests that AddOrUpdateEntityInstance() with a context_token asynchronously
+// adds entities.
+TEST_F(EntityDataManagerTest_InitiallyEmpty,
+       AddEntityInstanceWithContextToken) {
+  MockEntityDataManagerObserver observer;
+  base::ScopedObservation<EntityDataManager, MockEntityDataManagerObserver>
+      observation{&observer};
+  observation.Observe(&entity_data_manager());
+
+  EntityInstance pp = test::GetPassportEntityInstance();
+  EXPECT_CALL(observer, OnEntityInstancesChanged).Times(AtLeast(1));
+  entity_data_manager().AddOrUpdateEntityInstance(pp, "test_context_token");
+  EXPECT_THAT(GetEntityInstances(), UnorderedElementsAre(pp));
+}
+
 // Tests that AddOrUpdateEntityInstance() correctly adds entities with an id
 // that's not formatted as GUID.
 TEST_F(EntityDataManagerTest_InitiallyEmpty, AddEntityInstanceNonGuidFormatId) {

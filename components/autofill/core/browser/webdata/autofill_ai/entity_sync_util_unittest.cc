@@ -1153,5 +1153,43 @@ TEST(EntitySyncUtilTest, CreateEntityInstanceFromSpecifics_Shipment) {
             "Product 1, Product 2");
 }
 
+TEST(EntitySyncUtilTest, CreateSpecificsFromEntityInstance_WithContextToken) {
+  EntityInstance vehicle_entity = test::GetVehicleEntityInstance();
+  sync_pb::AutofillValuableSpecifics specifics =
+      CreateSpecificsFromEntityInstance(vehicle_entity,
+                                        /*base_specifics=*/{},
+                                        "sample_context_token");
+  EXPECT_TRUE(specifics.has_context_token());
+  EXPECT_EQ(specifics.context_token(), "sample_context_token");
+}
+
+TEST(EntitySyncUtilTest,
+     CreateSpecificsFromEntityInstance_WithoutContextToken) {
+  EntityInstance vehicle_entity = test::GetVehicleEntityInstance();
+  sync_pb::AutofillValuableSpecifics specifics =
+      CreateSpecificsFromEntityInstance(vehicle_entity,
+                                        /*base_specifics=*/{});
+  EXPECT_FALSE(specifics.has_context_token());
+
+  sync_pb::AutofillValuableSpecifics specifics_empty_token =
+      CreateSpecificsFromEntityInstance(vehicle_entity,
+                                        /*base_specifics=*/{},
+                                        /*context_token=*/"");
+  EXPECT_FALSE(specifics_empty_token.has_context_token());
+}
+
+TEST(EntitySyncUtilTest, CreateEntityDataFromEntityInstance_WithContextToken) {
+  EntityInstance vehicle_entity = test::GetVehicleEntityInstance();
+  std::unique_ptr<syncer::EntityData> entity_data =
+      CreateEntityDataFromEntityInstance(vehicle_entity,
+                                         /*base_specifics=*/{},
+                                         "sample_context_token");
+  ASSERT_TRUE(entity_data);
+  ASSERT_TRUE(entity_data->specifics.has_autofill_valuable());
+  EXPECT_TRUE(entity_data->specifics.autofill_valuable().has_context_token());
+  EXPECT_EQ(entity_data->specifics.autofill_valuable().context_token(),
+            "sample_context_token");
+}
+
 }  // namespace
 }  // namespace autofill

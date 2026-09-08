@@ -726,17 +726,19 @@ ChromeValuablesMetadata SerializeChromeValuablesMetadata(
 
 std::unique_ptr<syncer::EntityData> CreateEntityDataFromEntityInstance(
     const EntityInstance& entity,
-    const sync_pb::AutofillValuableSpecifics& base_specifics) {
+    const sync_pb::AutofillValuableSpecifics& base_specifics,
+    std::string_view context_token) {
   // WARNING: if you are adding support for new `AutofillValuableSpecifics`
   // fields, you need to update the
   // `TrimAutofillValuableSpecificsDataForCaching` function accordingly
   DCHECK_EQ(0u, TrimAutofillValuableSpecificsDataForCaching(
                     CreateSpecificsFromEntityInstance(entity,
-                                                      /*base_specifics=*/{}))
+                                                      /*base_specifics=*/{},
+                                                      context_token))
                     .ByteSizeLong());
 
   sync_pb::AutofillValuableSpecifics valuable_specifics =
-      CreateSpecificsFromEntityInstance(entity, base_specifics);
+      CreateSpecificsFromEntityInstance(entity, base_specifics, context_token);
   std::unique_ptr<syncer::EntityData> entity_data =
       std::make_unique<syncer::EntityData>();
   entity_data->name = valuable_specifics.id();
@@ -748,28 +750,43 @@ std::unique_ptr<syncer::EntityData> CreateEntityDataFromEntityInstance(
 
 sync_pb::AutofillValuableSpecifics CreateSpecificsFromEntityInstance(
     const EntityInstance& entity,
-    const sync_pb::AutofillValuableSpecifics& base_specifics) {
+    const sync_pb::AutofillValuableSpecifics& base_specifics,
+    std::string_view context_token) {
+  sync_pb::AutofillValuableSpecifics specifics;
   switch (entity.type().name()) {
     case EntityTypeName::kFlightReservation:
-      return GetFlightReservationSpecifics(entity, base_specifics);
+      specifics = GetFlightReservationSpecifics(entity, base_specifics);
+      break;
     case EntityTypeName::kVehicle:
-      return GetVehicleInformationSpecifics(entity, base_specifics);
+      specifics = GetVehicleInformationSpecifics(entity, base_specifics);
+      break;
     case EntityTypeName::kPassport:
-      return GetPassportSpecifics(entity, base_specifics);
+      specifics = GetPassportSpecifics(entity, base_specifics);
+      break;
     case EntityTypeName::kDriversLicense:
-      return GetDriversLicenseSpecifics(entity, base_specifics);
+      specifics = GetDriversLicenseSpecifics(entity, base_specifics);
+      break;
     case EntityTypeName::kNationalIdCard:
-      return GetNationalIdCardSpecifics(entity, base_specifics);
+      specifics = GetNationalIdCardSpecifics(entity, base_specifics);
+      break;
     case EntityTypeName::kRedressNumber:
-      return GetRedressNumberSpecifics(entity, base_specifics);
+      specifics = GetRedressNumberSpecifics(entity, base_specifics);
+      break;
     case EntityTypeName::kKnownTravelerNumber:
-      return GetKnownTravelerNumberSpecifics(entity, base_specifics);
+      specifics = GetKnownTravelerNumberSpecifics(entity, base_specifics);
+      break;
     case EntityTypeName::kOrder:
-      return GetOrderSpecifics(entity, base_specifics);
+      specifics = GetOrderSpecifics(entity, base_specifics);
+      break;
     case EntityTypeName::kShipment:
-      return GetShipmentSpecifics(entity, base_specifics);
+      specifics = GetShipmentSpecifics(entity, base_specifics);
+      break;
   }
-  NOTREACHED();
+
+  if (!context_token.empty()) {
+    specifics.set_context_token(std::string(context_token));
+  }
+  return specifics;
 }
 
 std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(

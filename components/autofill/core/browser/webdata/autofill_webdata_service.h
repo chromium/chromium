@@ -7,7 +7,9 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -119,6 +121,14 @@ class AutofillWebDataService : public WebDataServiceBase {
   // `on_success` is called only if the operation has been completed.
   void AddOrUpdateEntityInstance(
       EntityInstance entity,
+      base::OnceCallback<void(EntityInstanceChange)> on_success);
+
+  // Overload of `AddOrUpdateEntityInstance` that accepts an optional
+  // `context_token`. The token is passed to the DB sequence and sync bridge to
+  // populate the sync specifics for pass upserts.
+  void AddOrUpdateEntityInstance(
+      EntityInstance entity,
+      std::optional<std::string> context_token,
       base::OnceCallback<void(EntityInstanceChange)> on_success);
   void RemoveEntityInstance(
       EntityInstance entity,

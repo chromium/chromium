@@ -223,6 +223,7 @@ AutofillValuableSpecifics TrimAutofillValuableSpecificsDataForCaching(
   trimmed_specifics.clear_id();
   trimmed_specifics.clear_is_editable();
   trimmed_specifics.clear_serialized_chrome_valuables_metadata();
+  trimmed_specifics.clear_context_token();
 
   switch (trimmed_specifics.valuable_data_case()) {
     case AutofillValuableSpecifics::kLoyaltyCard: {

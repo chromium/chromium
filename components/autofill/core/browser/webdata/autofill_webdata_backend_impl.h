@@ -8,7 +8,9 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -102,7 +104,8 @@ class AutofillWebDataBackendImpl final
   void NotifyOnAutofillChangedBySync(syncer::DataType data_type) override;
   void NotifyOnServerCvcChanged(const ServerCvcChange& change) override;
   void NotifyOnEntityInstanceChanged(
-      const EntityInstanceChange& change) override;
+      const EntityInstanceChange& change,
+      std::optional<std::string_view> context_token) override;
   void NotifyOnServerEntityMetadataChanged(
       const EntityInstanceMetadataChange& change) override;
   void NotifyOnValuableMetadataChanged(
@@ -182,6 +185,7 @@ class AutofillWebDataBackendImpl final
   // RemoveEntityInstancesModifiedBetween() exists.
   WebDatabase::State AddOrUpdateEntityInstance(
       EntityInstance entity,
+      std::optional<std::string> context_token,
       base::OnceCallback<void(EntityInstanceChange)> on_success,
       WebDatabase* db);
   WebDatabase::State RemoveEntityInstance(

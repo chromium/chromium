@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -151,11 +152,19 @@ WebDataServiceBase::Handle AutofillWebDataService::GetAutofillProfiles(
 void AutofillWebDataService::AddOrUpdateEntityInstance(
     EntityInstance entity,
     base::OnceCallback<void(EntityInstanceChange)> on_success) {
+  AddOrUpdateEntityInstance(std::move(entity), /*context_token=*/std::nullopt,
+                            std::move(on_success));
+}
+
+void AutofillWebDataService::AddOrUpdateEntityInstance(
+    EntityInstance entity,
+    std::optional<std::string> context_token,
+    base::OnceCallback<void(EntityInstanceChange)> on_success) {
   wdbs_->ScheduleDBTask(
       FROM_HERE,
       base::BindOnce(&AutofillWebDataBackendImpl::AddOrUpdateEntityInstance,
                      autofill_backend_, std::move(entity),
-                     std::move(on_success)));
+                     std::move(context_token), std::move(on_success)));
 }
 
 void AutofillWebDataService::UpdateEntityMetadata(

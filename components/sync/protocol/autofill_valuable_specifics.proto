@@ -406,5 +406,12 @@ message AutofillValuableSpecifics {
   // Contains information that is used by Chrome and needs to be persisted
   // across clients.
   optional Any serialized_chrome_valuables_metadata = 4;
+
+  // Opaque context token, containing an encrypted `UpsertPassContextToken`
+  // issued by Google Wallet. This token certifies that the user was shown the
+  // necessary notices and disclosures prior to upserting the pass into Wallet.
+  // It is transient and only set during upsert operations, never persisted.
+  // It will only exist for public non-readonly passes.
+  optional string context_token = 17;
 }
 // LINT.ThenChange(//components/autofill/core/browser/webdata/valuables/valuables_sync_util.cc:TrimAutofillValuableSpecificsDataForCaching)

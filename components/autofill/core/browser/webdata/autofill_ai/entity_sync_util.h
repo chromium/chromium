@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/sync/protocol/entity_data.h"
@@ -30,14 +31,16 @@ ChromeValuablesMetadata SerializeChromeValuablesMetadata(
 // Converts the given `entity` into a `syncer::EntityData`.
 std::unique_ptr<syncer::EntityData> CreateEntityDataFromEntityInstance(
     const EntityInstance& entity,
-    const sync_pb::AutofillValuableSpecifics& base_specifics);
+    const sync_pb::AutofillValuableSpecifics& base_specifics,
+    std::string_view context_token = {});
 
 // For a given `EntityInstance`, returns the corresponding
 // `sync_pb::AutofillValuableSpecifics`. It is assumed that the entity passed to
 // this function is syncable.
 sync_pb::AutofillValuableSpecifics CreateSpecificsFromEntityInstance(
     const EntityInstance& entity,
-    const sync_pb::AutofillValuableSpecifics& base_specifics);
+    const sync_pb::AutofillValuableSpecifics& base_specifics,
+    std::string_view context_token = {});
 
 // Converts the given valuable `specifics` into an equivalent EntityInstance.
 std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(

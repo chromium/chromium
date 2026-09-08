@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_MOCK_AUTOFILL_WEBDATA_BACKEND_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_MOCK_AUTOFILL_WEBDATA_BACKEND_H_
 
+#include <optional>
+#include <string_view>
+
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/sync/base/data_type.h"
@@ -66,7 +69,8 @@ class MockAutofillWebDataBackend : public AutofillWebDataBackend {
               (override));
   MOCK_METHOD(void,
               NotifyOnEntityInstanceChanged,
-              (const EntityInstanceChange& change),
+              (const EntityInstanceChange& change,
+               std::optional<std::string_view> context_token),
               (override));
   MOCK_METHOD(void,
               NotifyOnServerEntityMetadataChanged,
