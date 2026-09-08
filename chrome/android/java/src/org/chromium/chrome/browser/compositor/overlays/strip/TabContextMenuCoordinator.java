@@ -51,7 +51,6 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabClosureParamsUtils;
-import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabGroupCreationCallback;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -757,10 +756,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
     private ListItem createMoveToTabGroupItem(List<Tab> tabs, boolean isIncognito) {
         // Available tab groups.
         @Nullable Token groupToNotBeIncluded = tabs.get(0).getTabGroupId();
-        List<ListItem> potentialGroups =
-                isIncognito
-                        ? getIncognitoTabGroups(tabs, groupToNotBeIncluded)
-                        : getRegularTabGroups(tabs, groupToNotBeIncluded);
+        List<ListItem> potentialGroups = getTabGroups(tabs, groupToNotBeIncluded, isIncognito);
 
         if (potentialGroups.isEmpty()) {
             String title =
@@ -1108,8 +1104,8 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         }
     }
 
-    private List<ListItem> getRegularTabGroups(
-            List<Tab> tabs, @Nullable Token groupToNotBeIncluded) {
+    private List<ListItem> getTabGroups(
+            List<Tab> tabs, @Nullable Token groupToNotBeIncluded, boolean isIncognito) {
         GroupWindowChecker windowChecker =
                 new GroupWindowChecker(mActivity, mTabGroupSyncService, getTabModel());
         List<GroupWindowInfo> sortedTabGroups = windowChecker.getDefaultSortedGroupList();
@@ -1132,20 +1128,21 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
 
             String label =
                     TabWindowManagerUtils.getTabGroupTitleInAnyWindow(
-                            mActivity, tabWindowManager, groupId, /* isIncognito= */ false);
+                            mActivity, tabWindowManager, groupId, isIncognito);
             // If no title could be found nor could a default be generated, skip the group
             if (label == null) continue;
             @TabGroupColorId
             int colorId =
                     TabWindowManagerUtils.getTabGroupColorInAnyWindow(
-                            tabWindowManager, groupId, /* isIncognito= */ false);
+                            tabWindowManager, groupId, isIncognito);
+            @IdRes
+            int menuId =
+                    isIncognito
+                            ? R.id.add_to_group_incognito_sub_menu_id
+                            : R.id.add_to_group_sub_menu_id;
             OnClickListener clickListener =
                     (v) -> {
-                        recordMenuAction(
-                                R.id.add_to_group_sub_menu_id,
-                                tabs.size() > 1,
-                                false,
-                                mTabStripLayout);
+                        recordMenuAction(menuId, tabs.size() > 1, isIncognito, mTabStripLayout);
                         TabGroupUiUtils.addTabsToGroup(
                                 getTabModel(),
                                 tabs,
@@ -1157,55 +1154,10 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                     new ListItemBuilder()
                             .withTitle(label)
                             .withClickListener(clickListener)
-                            .withIsIncognito(false)
+                            .withIsIncognito(isIncognito)
                             .withStartIconDrawable(
                                     TabGroupUtils.createColorDrawableForMenu(
-                                            mActivity,
-                                            colorId,
-                                            /* isIncognito= */ false,
-                                            mCircleSize))
-                            .withStartIconWidth(mCircleSize)
-                            .withShouldTintIcon(false)
-                            .build());
-        }
-        return result;
-    }
-
-    private List<ListItem> getIncognitoTabGroups(
-            List<Tab> tabs, @Nullable Token groupToNotBeIncluded) {
-        List<ListItem> result = new ArrayList<>();
-        for (Token groupId : getTabModel().getAllTabGroupIds()) {
-            if (Objects.equals(groupToNotBeIncluded, groupId)) {
-                continue;
-            }
-
-            OnClickListener clickListener =
-                    (v) -> {
-                        recordMenuAction(
-                                R.id.add_to_group_incognito_sub_menu_id,
-                                tabs.size() > 1,
-                                true,
-                                mTabStripLayout);
-                        TabGroupUiUtils.addTabsToGroup(
-                                getTabModel(),
-                                tabs,
-                                GroupWindowInfo.forLocalGroup(mActivity, getTabModel(), groupId),
-                                /* tabMovedCallback= */ null,
-                                /* bringToFront= */ true);
-                    };
-            result.add(
-                    new ListItemBuilder()
-                            .withTitle(
-                                    TabGroupTitleUtils.getDisplayableTitle(
-                                            mActivity, getTabModel(), groupId))
-                            .withClickListener(clickListener)
-                            .withIsIncognito(true)
-                            .withStartIconDrawable(
-                                    TabGroupUtils.createColorDrawableForMenu(
-                                            mActivity,
-                                            getTabModel().getTabGroupColor(groupId),
-                                            /* isIncognito= */ true,
-                                            mCircleSize))
+                                            mActivity, colorId, isIncognito, mCircleSize))
                             .withStartIconWidth(mCircleSize)
                             .withShouldTintIcon(false)
                             .build());

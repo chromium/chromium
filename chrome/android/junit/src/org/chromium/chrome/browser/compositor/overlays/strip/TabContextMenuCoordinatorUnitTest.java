@@ -350,6 +350,7 @@ public class TabContextMenuCoordinatorUnitTest {
         when(mTabWindowManager.getTabModelSelectorById(INSTANCE_ID_1))
                 .thenReturn(mTabModelSelector);
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
+        when(mTabModelSelector.getModel(true)).thenReturn(mTabModel);
         when(mTabModel.getTabUngrouper()).thenReturn(mTabUngrouper);
         when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(TAB_GROUP_ID));
         when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(1);
