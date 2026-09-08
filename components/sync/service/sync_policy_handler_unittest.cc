@@ -164,7 +164,33 @@ TEST(SyncPolicyHandlerTest, SyncTypesListDisabled_TabsAndSavedTabGroups) {
   EXPECT_FALSE(enabled);
 }
 
+TEST(SyncPolicyHandlerTest, SyncTypesListDisabledInvalidType) {
+  policy::PolicyMap policy;
+  policy.Set(policy::key::kSyncDisabled, policy::POLICY_LEVEL_MANDATORY,
+             policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+             base::Value(true), nullptr);
+  policy.Set(policy::key::kSyncTypesListDisabled,
+             policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+             policy::POLICY_SOURCE_CLOUD, base::Value("string_value"), nullptr);
 
+  SyncPolicyHandler handler;
+  PrefValueMap prefs;
+  policy::PolicyErrorMap errors;
+
+  // An invalid type for SyncTypesListDisabled should produce an error message
+  // but still return true so the primary SyncDisabled policy is applied.
+  EXPECT_TRUE(handler.CheckPolicySettings(policy, &errors));
+
+  std::vector<policy::PolicyErrorMap::Data> error_data =
+      errors.GetErrors(policy::key::kSyncTypesListDisabled);
+  ASSERT_EQ(error_data.size(), 1u);
+  EXPECT_EQ(error_data[0].level, policy::PolicyMap::MessageType::kError);
+
+  handler.ApplyPolicySettings(policy, &prefs);
+  bool sync_managed = false;
+  ASSERT_TRUE(prefs.GetBoolean(prefs::internal::kSyncManaged, &sync_managed));
+  EXPECT_TRUE(sync_managed);
+}
 
 TEST(SyncPolicyHandlerTest, SyncTypesListDisabledInvalidEntry) {
   // Start with prefs enabled so we can sense that they have changed.

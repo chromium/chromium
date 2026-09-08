@@ -70,8 +70,17 @@ bool SyncPolicyHandler::CheckPolicySettings(const policy::PolicyMap& policies,
     return false;
   }
 
-  const base::Value* disabled_sync_types_value = policies.GetValue(
-      policy::key::kSyncTypesListDisabled, base::Value::Type::LIST);
+  // Check the input type of the secondary policy SyncTypesListDisabled and
+  // record an error if it is invalid, but return true so that the primary
+  // SyncDisabled policy can still be applied.
+  const base::Value* disabled_sync_types_value = nullptr;
+  if (!CheckAndGetValue(policy::key::kSyncTypesListDisabled,
+                        base::Value::Type::LIST,
+                        policies.Get(policy::key::kSyncTypesListDisabled),
+                        errors, &disabled_sync_types_value)) {
+    return true;
+  }
+
   if (disabled_sync_types_value) {
     const base::ListValue& list = disabled_sync_types_value->GetList();
     for (const base::Value& type_name : list) {
