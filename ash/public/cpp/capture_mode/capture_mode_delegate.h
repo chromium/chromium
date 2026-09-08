@@ -17,6 +17,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+class AccountId;
 class SkBitmap;
 
 namespace ash {
@@ -266,13 +267,15 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
                                  OnTextDetectionComplete callback) = 0;
 
   // Sends the captured `image` to the Lens Web API for image search and text
-  // detection (if enabled). Invokes `search_callback` when the image search
-  // response is fetched, then `text_callback` when the text detection response
-  // is fetched. Invokes `error_callback` if an error occurs or an unexpected
-  // response is received.
+  // detection (if enabled), on behalf of `account_id`. Invokes
+  // `search_callback` when the image search response is fetched, then
+  // `text_callback` when the text detection response is fetched. Invokes
+  // `error_callback` if an error occurs or an unexpected response is
+  // received.
   virtual void SendLensWebRegionSearch(
       const gfx::Image& image,
       const bool is_standalone_session,
+      const AccountId& account_id,
       OnSearchUrlFetchedCallback search_callback,
       OnTextDetectionComplete text_callback,
       OnLensErrorCallback error_callback) = 0;

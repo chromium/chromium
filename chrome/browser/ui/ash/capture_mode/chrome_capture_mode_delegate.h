@@ -134,6 +134,7 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   void SendLensWebRegionSearch(
       const gfx::Image& image,
       const bool is_standalone_session,
+      const AccountId& account_id,
       ash::OnSearchUrlFetchedCallback search_callback,
       ash::OnTextDetectionComplete text_callback,
       ash::OnLensErrorCallback error_callback) override;
@@ -247,9 +248,9 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   // The current Lens request ID, used to validate the most recent request.
   int lens_request_id_ = 0;
 
-  // The account the current Lens request was made for, captured once at the
-  // start of the request in SendLensWebRegionSearch() and reused for any
-  // follow-up access token requests within the same flow.
+  // The account the current Lens request was made for, as passed by the
+  // caller of SendLensWebRegionSearch() and reused for any follow-up access
+  // token requests within the same flow.
   AccountId lens_request_account_id_;
 
   // Temporary directory to which files will be redirected before being uploaded

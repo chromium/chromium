@@ -19,6 +19,8 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 
+class AccountId;
+
 namespace recording {
 class RecordingServiceTestApi;
 }  // namespace recording
@@ -162,6 +164,7 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   void SendLensWebRegionSearch(
       const gfx::Image& original_image,
       const bool is_standalone_session,
+      const AccountId& account_id,
       ash::OnSearchUrlFetchedCallback search_callback,
       ash::OnTextDetectionComplete text_callback,
       ash::OnLensErrorCallback error_callback) override;

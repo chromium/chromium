@@ -246,6 +246,7 @@ std::unique_ptr<AshWebView> TestCaptureModeDelegate::CreateSearchResultsView()
 void TestCaptureModeDelegate::SendLensWebRegionSearch(
     const gfx::Image& original_image,
     const bool is_standalone_session,
+    const AccountId& account_id,
     ash::OnSearchUrlFetchedCallback search_callback,
     ash::OnTextDetectionComplete text_callback,
     ash::OnLensErrorCallback error_callback) {

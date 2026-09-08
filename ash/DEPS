@@ -178,12 +178,25 @@ specific_include_rules = {
   "ash_prefs\\.cc": [
     "+components/user_manager/user_manager.h",
   ],
+  # TODO(crbug.com/546860700): uses session_manager::SessionManager as an
+  # interim way to get the active session's AccountId while ash's
+  # session_manager migration is in progress; revisit.
+  "capture_mode_controller\\.cc": [
+    "+components/session_manager/core/session.h",
+    "+components/session_manager/core/session_manager.h",
+  ],
   "root_window_controller\\.(cc|h)": [
     "+ash/host"
   ],
   "shell\\.cc": [
     "+ash/host/ash_window_tree_host_init_params.h",
     "+chromeos/ash/components/fwupd",
+  ],
+  # See the TODO(crbug.com/546860700) comment on capture_mode_controller.cc
+  # above: this test drives the real SessionManager because AshTestHelper's
+  # SimulateUserLogin() only updates ash's SessionController.
+  "sunfish_unittest\\.cc": [
+    "+components/session_manager/core/session_manager.h",
   ],
   "window_restore_util\\.cc": [
     # The active user's AccountId comes from SessionManager, per the migration

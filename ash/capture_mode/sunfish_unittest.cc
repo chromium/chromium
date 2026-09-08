@@ -75,10 +75,16 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chromeos/ash/components/specialized_features/feature_access_checker.h"
+#include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/scanner.pb.h"
 #include "components/manta/scanner_provider.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/test_helper.h"
+#include "components/user_manager/user_manager.h"
 #include "disclaimer_view.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -108,6 +114,15 @@ namespace ash {
 using chromeos::AppType;
 
 namespace {
+
+// Matches AshTestHelper's own default SimulateUserLogin() account, so
+// SessionController and session_manager::SessionManager agree on who's
+// logged in. A Gaia-typed AccountId is required: AccountId::GetAccountIdKey(),
+// used when persisting the user, NOTREACHEs for an email-only,
+// AccountType::UNKNOWN id.
+constexpr auto kDefaultAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("user0@tray",
+                                            GaiaId::Literal("fake-gaia-id"));
 
 using ::base::test::InvokeFuture;
 using ::base::test::RunOnceCallback;
@@ -230,6 +245,24 @@ class SunfishTestBase : public AshTestBase {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kAshDebugShortcuts);
     AshTestBase::SetUp();
+
+    // CaptureModeController::OnImageCapturedForSearch() reads
+    // session_manager::SessionManager::Get()->GetActiveSession() to look up
+    // the account a Lens search should be made for (see
+    // TODO(crbug.com/546860700) at that call site). AshTestHelper constructs
+    // the UserManager/SessionManager pair, but nothing registers a user or
+    // starts a session: its SimulateUserLogin() only drives ash's
+    // SessionController, and the ash::test::TestUserSessionManager it owns is
+    // private, so its AddRegularUser()/LogIn() aren't reachable from here. Do
+    // both directly.
+    user_manager::User* user =
+        user_manager::TestHelper(user_manager::UserManager::Get())
+            .AddRegularUser(kDefaultAccountId);
+    CHECK(user);
+    session_manager::SessionManager::Get()->CreateSession(
+        kDefaultAccountId,
+        user_manager::TestHelper::GetFakeUsernameHash(kDefaultAccountId),
+        /*new_user=*/false, /*has_active_session=*/true);
 
     AckScannerDisclaimer(ScannerEntryPoint::kSmartActionsButton);
     AckScannerDisclaimer(ScannerEntryPoint::kSunfishSession);

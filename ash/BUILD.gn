@@ -4638,6 +4638,7 @@ test("ash_unittests") {
     "//chromeos/ui/wm",
     "//chromeos/utils",
     "//components/account_id",
+    "//components/account_id:test_support",
     "//components/app_constants",
     "//components/app_restore",
     "//components/desks_storage",

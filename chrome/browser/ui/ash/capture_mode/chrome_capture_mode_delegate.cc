@@ -796,6 +796,7 @@ void ChromeCaptureModeDelegate::DetectTextInImage(
 void ChromeCaptureModeDelegate::SendLensWebRegionSearch(
     const gfx::Image& image,
     const bool is_standalone_session,
+    const AccountId& account_id,
     ash::OnSearchUrlFetchedCallback search_callback,
     ash::OnTextDetectionComplete text_callback,
     ash::OnLensErrorCallback error_callback) {
@@ -806,15 +807,7 @@ void ChromeCaptureModeDelegate::SendLensWebRegionSearch(
   // Increment the `lens_request_id_` to represent a new request id.
   ++lens_request_id_;
 
-  // TODO: crbug.com/546860700 - This function should take AccountId from
-  // callers instead of looking up the active user here, matching
-  // GetPrimaryAccountAccessToken(). That requires plumbing an AccountId
-  // through the ash::CaptureModeDelegate::SendLensWebRegionSearch() virtual
-  // interface and its callers.
-  const user_manager::User* const active_user =
-      user_manager::UserManager::Get()->GetActiveUser();
-  CHECK(active_user);
-  lens_request_account_id_ = active_user->GetAccountId();
+  lens_request_account_id_ = account_id;
 
   GetPrimaryAccountAccessToken(
       lens_request_account_id_,
