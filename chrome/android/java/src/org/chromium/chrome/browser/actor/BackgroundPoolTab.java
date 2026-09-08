@@ -6,9 +6,12 @@ package org.chromium.chrome.browser.actor;
 
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
+import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 /**
  * Represents a tab managed by {@link BackgroundTabPool}, abstracting whether it is an active
@@ -17,32 +20,38 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 @NullMarked
 public interface BackgroundPoolTab extends Destroyable {
 
+    /** Returns the unique original tab ID of this background tab. */
+    @TabId
+    int getOriginalTabId();
+
     /** Returns the placeholder tab ID associated with this background tab. */
     @TabId
     int getPlaceholderTabId();
 
+    /** Prepares the background tab for foreground display, if applicable. */
+    default void prepareForForeground(TabModelSelector selector) {}
+
     /**
-     * Attaches the tab to the specified {@link TabModel} directly at the target index. Asserts that
-     * the placeholder tab is not attached when attaching the background tab.
+     * Attaches the tab to the specified {@link TabModel} directly at the target index.
      *
      * @param tabModel The window-scoped TabModel to attach the tab into.
      * @param index The target index within the TabModel.
      * @return The attached Tab instance.
      */
     default Tab attachTab(TabModel tabModel, int index) {
-        assert tabModel.getTabById(getPlaceholderTabId()) == null
-                : "Placeholder tab must not be attached when attaching background tab.";
-        return attachTabImpl(tabModel, index);
+        return attachTab(tabModel, index, /* placeholderTabState= */ null);
     }
 
     /**
-     * Implementation-specific method to attach the underlying tab to the {@link TabModel}.
+     * Attaches the tab to the specified {@link TabModel} directly at the target index, optionally
+     * providing the placeholder {@link TabState} to splice or destroy.
      *
      * @param tabModel The window-scoped TabModel to attach the tab into.
      * @param index The target index within the TabModel.
+     * @param placeholderTabState Optional placeholder TabState to splice or clean up.
      * @return The attached Tab instance.
      */
-    Tab attachTabImpl(TabModel tabModel, int index);
+    Tab attachTab(TabModel tabModel, int index, @Nullable TabState placeholderTabState);
 
     @Override
     default void destroy() {}

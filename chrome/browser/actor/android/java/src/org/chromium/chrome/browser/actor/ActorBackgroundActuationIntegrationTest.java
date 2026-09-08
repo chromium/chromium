@@ -26,6 +26,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.Token;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -40,11 +41,14 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
+import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tabmodel.TabOrchestratorType;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
@@ -507,6 +511,159 @@ public class ActorBackgroundActuationIntegrationTest {
                 () -> {
                     verifyTabInForegroundModel(model, mTab);
                     assertTrue(mBackgroundManager.getBackgroundSessions().isEmpty());
+                });
+    }
+
+    /**
+     * Verifies that when Chrome undergoes a cold startup (session restore) while an actuated tab in
+     * a tab group was in the background pool, cold restoration restores the tab with its original
+     * tab ID, transfers group properties, removes the placeholder, and ensures no duplicate tabs
+     * are created.
+     */
+    @Test
+    @MediumTest
+    public void testChromeToBackground_ColdStartup_RestoredCorrectly() throws Exception {
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+        TabModelSelector selector = activity.getTabModelSelector();
+        TabModel model = selector.getModel(/* incognito= */ false);
+
+        Token tabGroupId = Token.createRandom();
+
+        // Set up tab inside a tab group.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    model.createTabGroupForTabGroupSync(
+                            Collections.singletonList(mTab), tabGroupId);
+                    assertEquals(tabGroupId, mTab.getTabGroupId());
+                    verifyTabInForegroundModel(model, mTab);
+                    assertEquals(mTab, TabModelUtils.getCurrentTab(model));
+                });
+
+        // 1. Transition active task to background (placeholder inherits tab group).
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mController.transitionActiveTasksToBackground(selector);
+                });
+
+        int placeholderTabId =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            assertEquals(1, model.getCount());
+                            Tab placeholder = model.getTabAt(0);
+                            assertNotNull(placeholder);
+                            assertEquals(placeholder, TabModelUtils.getCurrentTab(model));
+                            assertEquals(tabGroupId, placeholder.getTabGroupId());
+                            return placeholder.getId();
+                        });
+
+        // 2. Verify Background Tab was ingested into BackgroundTabPool.
+        int originalTabId = mTab.getId();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BackgroundTabPool pool = BackgroundTabRestorationHelper.acquirePool(selector);
+                    assertNotNull(pool);
+                    assertTrue(pool.hasPlaceholder(placeholderTabId));
+                    assertTrue(pool.getAllPlaceholderTabIds().contains(placeholderTabId));
+                });
+
+        // 3. Simulate Cold Startup / Session Restoration via BackgroundTabRestorationHelper.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ActorTabStateHelper.listenAndSelectTabOnAdded(
+                            selector, activity.getLayoutManager(), originalTabId);
+
+                    TabState placeholderTabState = new TabState();
+                    placeholderTabState.tabGroupId = tabGroupId;
+
+                    Tab restoredTab =
+                            BackgroundTabRestorationHelper.maybeRestoreBackgroundTab(
+                                    TabOrchestratorType.TABBED,
+                                    selector,
+                                    placeholderTabId,
+                                    /* index= */ 0,
+                                    placeholderTabState,
+                                    /* isAuthoritativeStore= */ true);
+                    assertNotNull(restoredTab);
+
+                    // Verify model state after cold restore:
+                    // - Exactly 1 tab exists (no duplicate placeholder tab)
+                    // - Tab ID is originalTabId (NOT placeholderTabId)
+                    // - Placeholder tab is removed
+                    // - Tab is set at index 0 and selected as current tab via
+                    // listenAndSelectTabOnAdded
+                    // - Offscreen rendering is stopped
+                    assertEquals(1, model.getCount());
+                    Tab currentTab = model.getTabAt(0);
+                    assertNotNull(currentTab);
+                    assertEquals(originalTabId, currentTab.getId());
+                    assertNotEquals(placeholderTabId, currentTab.getId());
+                    assertNull(model.getTabById(placeholderTabId));
+                    assertFalse(restoredTab.getIsOffscreenRenderingSupplier().get());
+                    assertEquals(currentTab, TabModelUtils.getCurrentTab(model));
+                });
+    }
+
+    /**
+     * Verifies that when Chrome undergoes a cold startup while a pinned background tab was in the
+     * pool, cold restoration restores the tab with its original tab ID, transfers pinned state,
+     * removes the placeholder, and ensures no duplicate tabs are created.
+     */
+    @Test
+    @MediumTest
+    public void testChromeToBackground_ColdStartup_PinnedTab_RestoredCorrectly() throws Exception {
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+        TabModelSelector selector = activity.getTabModelSelector();
+        TabModel model = selector.getModel(/* incognito= */ false);
+
+        // Set up tab as pinned.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    model.pinTab(mTab.getId(), /* showUngroupDialog= */ false);
+                    assertTrue(mTab.getIsPinned());
+                    verifyTabInForegroundModel(model, mTab);
+                });
+
+        // 1. Transition active task to background (placeholder inherits pinned state).
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mController.transitionActiveTasksToBackground(selector);
+                });
+
+        int placeholderTabId =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            assertEquals(1, model.getCount());
+                            Tab placeholder = model.getTabAt(0);
+                            assertNotNull(placeholder);
+                            assertTrue(placeholder.getIsPinned());
+                            return placeholder.getId();
+                        });
+
+        int originalTabId = mTab.getId();
+
+        // 2. Simulate Cold Startup / Session Restoration via BackgroundTabRestorationHelper.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabState placeholderTabState = new TabState();
+                    placeholderTabState.isPinned = true;
+
+                    Tab restoredTab =
+                            BackgroundTabRestorationHelper.maybeRestoreBackgroundTab(
+                                    TabOrchestratorType.TABBED,
+                                    selector,
+                                    placeholderTabId,
+                                    /* index= */ 0,
+                                    placeholderTabState,
+                                    /* isAuthoritativeStore= */ true);
+                    assertNotNull(restoredTab);
+
+                    assertEquals(1, model.getCount());
+                    Tab currentTab = model.getTabAt(0);
+                    assertNotNull(currentTab);
+                    assertEquals(originalTabId, currentTab.getId());
+                    assertNull(model.getTabById(placeholderTabId));
+                    assertFalse(restoredTab.getIsOffscreenRenderingSupplier().get());
                 });
     }
 

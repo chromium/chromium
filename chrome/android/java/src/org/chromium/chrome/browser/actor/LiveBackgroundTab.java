@@ -4,16 +4,25 @@
 
 package org.chromium.chrome.browser.actor;
 
+import android.app.Activity;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.init.AsyncInitializationActivity;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -83,19 +92,83 @@ public class LiveBackgroundTab implements BackgroundPoolTab {
     }
 
     @Override
+    public @TabId int getOriginalTabId() {
+        return mTab.getId();
+    }
+
+    @Override
     public @TabId int getPlaceholderTabId() {
         return mPlaceholderTabId;
     }
 
     @Override
-    public Tab attachTabImpl(TabModel tabModel, int index) {
+    public void prepareForForeground(TabModelSelector selector) {
+        TabModel model = selector.getModel(/* incognito= */ false);
+        TabCreator tabCreator = model.getTabCreator();
+        TabDelegateFactory delegateFactory =
+                tabCreator != null ? tabCreator.createDefaultTabDelegateFactory() : null;
+        WindowAndroid window = resolveWindowFromSelector(selector);
+        ActorTabStateHelper.stopOffscreenAndAttachToWindow(mTab, window, delegateFactory);
+    }
+
+    private static @Nullable WindowAndroid resolveWindowFromSelector(TabModelSelector selector) {
+        int windowId = TabWindowManagerSingleton.getInstance().getWindowIdForSelector(selector);
+        if (windowId != TabWindowManager.INVALID_WINDOW_ID) {
+            Activity activity = MultiWindowUtils.getActivityById(windowId);
+            if (activity instanceof AsyncInitializationActivity asyncActivity) {
+                return asyncActivity.getWindowAndroid();
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Tab attachTab(TabModel tabModel, int index, @Nullable TabState placeholderTabState) {
         assert !mAttached : "LiveBackgroundTab has already been attached or destroyed.";
         mAttached = true;
         removeObserver();
         mPool.removeTabById(mTab.getId());
+
+        Tab placeholderTab = tabModel.getTabById(mPlaceholderTabId);
+        if (placeholderTab != null) {
+            tabModel.getTabRemover().removeTab(placeholderTab, /* allowDialog= */ false);
+            placeholderTab.destroy();
+        }
+
+        if (placeholderTabState != null && placeholderTabState.contentsState != null) {
+            placeholderTabState.contentsState.destroy();
+            placeholderTabState.contentsState = null;
+        }
+
+        if (placeholderTabState != null) {
+            transferPlaceholderMetadata(mTab, placeholderTabState);
+        }
         tabModel.addTab(
                 mTab, index, TabLaunchType.FROM_RESTORE, TabCreationState.LIVE_IN_BACKGROUND);
+
+        if (placeholderTabState != null && placeholderTabState.isPinned) {
+            tabModel.pinTab(mTab.getId(), /* showUngroupDialog= */ false);
+            tabModel.moveTab(mTab.getId(), index);
+        }
+
         return mTab;
+    }
+
+    /**
+     * Symmetrically transfers grouping and root ID metadata from a placeholder TabState to this
+     * live Tab.
+     *
+     * <p>Note: Pinned status is not transferred here because for a live {@link Tab}, pinned state
+     * is maintained by the {@link TabModel} and must be applied via {@link TabModel#pinTab(int,
+     * boolean)} after the tab has been added to the model.
+     */
+    private static void transferPlaceholderMetadata(Tab targetTab, TabState placeholderState) {
+        if (placeholderState.tabGroupId != null) {
+            targetTab.setTabGroupId(placeholderState.tabGroupId);
+        }
+        if (placeholderState.rootId != Tab.INVALID_TAB_ID) {
+            targetTab.setRootId(placeholderState.rootId);
+        }
     }
 
     /**

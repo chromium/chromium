@@ -20,10 +20,14 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * Shared helper utilities for intercepting and restoring tabs managed by {@link BackgroundTabPool}.
+ * Utility helper facilitating retrieval and restoration of background tabs from {@link
+ * BackgroundTabPool} during tab state initialization in {@link
+ * org.chromium.chrome.browser.tabmodel.TabPersistentStoreImpl} and {@link
+ * org.chromium.chrome.browser.app.tabmodel.TabRestorer}.
  */
 @NullMarked
 public final class BackgroundTabRestorationHelper {
+
     private BackgroundTabRestorationHelper() {}
 
     /**
@@ -124,17 +128,25 @@ public final class BackgroundTabRestorationHelper {
         }
 
         BackgroundTabPool pool = acquirePool(selector);
-        if (pool == null) return null;
+        if (pool == null) {
+            return null;
+        }
 
         try {
             BackgroundPoolTab backgroundTab = pool.loadTab(placeholderTabId);
             if (backgroundTab == null) return null;
 
+            TabModel model = selector.getModel(/* incognito= */ false);
+            backgroundTab.prepareForForeground(selector);
+            Tab restoredTab =
+                    tabState != null
+                            ? backgroundTab.attachTab(model, index, tabState)
+                            : backgroundTab.attachTab(model, index);
             if (tabState != null && tabState.contentsState != null) {
                 tabState.contentsState.destroy();
+                tabState.contentsState = null;
             }
-            TabModel model = selector.getModel(/* incognito= */ false);
-            return backgroundTab.attachTab(model, index);
+            return restoredTab;
         } finally {
             BackgroundTabPoolManager.release(pool);
         }

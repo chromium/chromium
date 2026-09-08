@@ -1100,6 +1100,9 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
             notifyActiveTabLoaded(isIncognito);
         }
         mSeenTabIds.add(tabToRestore.id);
+        if (tab.getId() != tabToRestore.id) {
+            mSeenTabIds.add(tab.getId());
+        }
         return true;
     }
 
