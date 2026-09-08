@@ -416,7 +416,7 @@
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Ưu đãi giảm giá trên các thẻ đang mở}other{Ưu đãi giảm giá trên các thẻ đang mở}}</translation>
 <translation id="5150048675001754041">Đăng nhập nhanh chóng và dễ dàng vào các trang web và ứng dụng</translation>
 <translation id="5186036860380548585">Tùy chọn này ở gần đầu màn hình</translation>
-<translation id="5197729504361054390">Những người liên hệ bạn chọn sẽ được chia sẻ với <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
+<translation id="5197729504361054390">Những thông tin liên hệ bạn chọn sẽ được chia sẻ với <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5198930230016462977">Bảng tuỳ chỉnh trang thẻ mới của bạn ở dưới cùng đã đóng</translation>
 <translation id="5216942107514965959">Lần truy cập gần đây nhất: hôm nay</translation>
 <translation id="5225463052809312700">Bật máy ảnh</translation>
@@ -559,7 +559,7 @@
 <translation id="6678072580827808850">Xem lại kết quả Kiểm tra an toàn</translation>
 <translation id="6682057173375416470">Xem các bài viết được đề xuất trên trang Thẻ mới</translation>
 <translation id="6683865262523156564">Trang web này nằm trong một nhóm có thể xem hoạt động của bạn. Nhóm này do <ph name="RWS_OWNER" /> xác định</translation>
-<translation id="6689172468748959065">Ảnh tiểu sử</translation>
+<translation id="6689172468748959065">Ảnh hồ sơ</translation>
 <translation id="6697925417670533197">Hiện đang tải xuống</translation>
 <translation id="6709432001666529933">Hỏi trước khi cho phép các trang web theo dõi tay bạn (khuyên dùng)</translation>
 <translation id="6722828510648505498">Chặn lời nhắc đăng nhập qua dịch vụ định danh</translation>
@@ -790,7 +790,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="9156722768168878035">Cho phép Chrome hiển thị các thẻ gần đây trong danh sách ứng dụng và kết quả tìm kiếm trên thiết bị. Bạn có thể tắt tính năng này bất cứ lúc nào trong phần cài đặt của Chrome.</translation>
 <translation id="9162462602695099906">Đây là trang nguy hiểm</translation>
 <translation id="9182556968660520230">Không cho phép trang web phát nội dung được bảo vệ</translation>
-<translation id="927148002081263046">Chia sẻ địa chỉ liên hệ</translation>
+<translation id="927148002081263046">Chia sẻ thông tin liên hệ</translation>
 <translation id="947156494302904893">Các trang web bạn truy cập có thể xác minh rằng bạn là người thực chứ không phải bot</translation>
 <translation id="959682366969460160">Sắp xếp gọn gàng</translation>
 <translation id="960590623979248167">Hiển thị siêu liên kết</translation>

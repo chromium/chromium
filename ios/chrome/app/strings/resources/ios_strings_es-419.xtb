@@ -26,7 +26,7 @@
 <translation id="1063300264396686489">Abrir automáticamente grupos de pestañas de otros dispositivos</translation>
 <translation id="1072476005125066234">Opiniones basadas en tus intereses</translation>
 <translation id="1072679792409426431">Inhabilitado por tu administrador</translation>
-<translation id="1074827084851510304">Estás a punto de borrar {password_count} contraseñas y la lista de sitios y apps para los que elegiste no guardar información de acceso. No se borrarán las cuentas que hayas creado para sitios y apps.</translation>
+<translation id="1074827084851510304">Estás a punto de borrar {password_count} contraseña(s) y la lista de sitios y apps para los que elegiste no guardar información de acceso. No se borrarán las cuentas que hayas creado para sitios y apps.</translation>
 <translation id="1076421457278169141">Código escaneado</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} pestaña}other{{count} pestañas}}</translation>
 <translation id="1081948304372277788">Desactivar Level Up</translation>

@@ -26,7 +26,7 @@
 <translation id="1063300264396686489">自動開啟其他裝置建立的分頁群組</translation>
 <translation id="1072476005125066234">依興趣喜好顯示的評論</translation>
 <translation id="1072679792409426431">已由管理員停用</translation>
-<translation id="1074827084851510304">你即將刪除 {password_count} 組密碼，以及你選擇一律不儲存登入資訊的網站和應用程式清單。你為網站和應用程式建立的帳戶不會遭到刪除。</translation>
+<translation id="1074827084851510304">你即將刪除 {password_count} 組密碼，以及選擇一律不儲存登入資訊的網站和應用程式清單。你為網站和應用程式建立的帳戶不會刪除。</translation>
 <translation id="1076421457278169141">已掃描圖碼/條碼</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} 個分頁}other{{count} 個分頁}}</translation>
 <translation id="1081948304372277788">關閉「升級」功能</translation>
@@ -525,7 +525,7 @@
 <translation id="264215785133931186">剛剛檢查</translation>
 <translation id="2647434099613338025">新增語言</translation>
 <translation id="2648812801228676606">目前登入的帳戶已經是「<ph name="NAME_OR_EMAIL" />」</translation>
-<translation id="2649592894792404568">Google 密碼管理工具資料即將刪除</translation>
+<translation id="2649592894792404568">即將刪除 Google 密碼管理工具資料</translation>
 <translation id="2652129567809778422">選取密碼</translation>
 <translation id="2658056020748144467">無法開啟檔案</translation>
 <translation id="2661809266906115479"><ph name="TITLE" />，<ph name="STATE" />，僅在這部裝置上，<ph name="URL" /></translation>
