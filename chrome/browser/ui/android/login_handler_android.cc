@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/tab_android.h"
@@ -17,6 +18,7 @@
 #include "net/base/auth.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
+#include "ui/display/types/display_constants.h"
 #include "url/gurl.h"
 
 using content::BrowserThread;
@@ -56,6 +58,13 @@ class LoginHandlerAndroid : public LoginHandler {
     ui::WindowAndroid* window = view ? view->GetWindowAndroid() : nullptr;
     // Notify WindowAndroid that HTTP authentication is required.
     if (tab && window) {
+      auto blocker = contents->ForSecurityDropFullscreen(
+          /*display_id=*/display::kInvalidDisplayId);
+      if (!blocker) {
+        return false;
+      }
+      fullscreen_blocker_ = std::move(*blocker);
+
       chrome_http_auth_handler_ = std::make_unique<ChromeHttpAuthHandler>(
           authority, explanation, auth_info().challenger.GetURL(),
           login_model_data);
@@ -77,6 +86,7 @@ class LoginHandlerAndroid : public LoginHandler {
   }
 
  private:
+  base::ScopedClosureRunner fullscreen_blocker_;
   std::unique_ptr<ChromeHttpAuthHandler> chrome_http_auth_handler_;
 };
 
