@@ -449,9 +449,10 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // This must be called when is_endpoint_ready() returns true, which is after
   // InitializeGlobalScope() is called.
   blink::mojom::ServiceWorker* endpoint() {
-    CHECK(running_status() == blink::EmbeddedWorkerStatus::kStarting ||
-              running_status() == blink::EmbeddedWorkerStatus::kRunning,
-          base::NotFatalUntil::M159);
+    // TODO(crbug.com/557920479): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(running_status() == blink::EmbeddedWorkerStatus::kStarting ||
+           running_status() == blink::EmbeddedWorkerStatus::kRunning);
     CHECK(service_worker_remote_.is_bound(), base::NotFatalUntil::M159);
     return service_worker_remote_.get();
   }
