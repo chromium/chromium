@@ -191,10 +191,14 @@ void FakeIdentityRequestDialogController::CloseModalDialog() {
 }
 
 void FakeIdentityRequestDialogController::WebContentsDestroyed() {
-  if (popup_dismiss_callback_) {
-    std::move(popup_dismiss_callback_).Run(DismissReason::kOther);
-  }
   popup_window_ = nullptr;
+  if (popup_dismiss_callback_) {
+    // Running `popup_dismiss_callback_` can trigger FedCM cleanup and delete
+    // `this`. Run it asynchronously to avoid destroying `this` while still
+    // handling the WebContentsDestroyed observer notification.
+    PostTask(FROM_HERE, base::BindOnce(std::move(popup_dismiss_callback_),
+                                       DismissReason::kOther));
+  }
 }
 
 void FakeIdentityRequestDialogController::RequestIdPRegistrationPermision(

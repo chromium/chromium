@@ -120,6 +120,18 @@ constexpr char kFedCmDisconnectScript[] = R"(IdentityCredential.disconnect({
   () => 'success',
   error => error.name + ': ' + error.message
 ))";
+constexpr char kFedCmActiveModeScript[] = R"(navigator.credentials.get({
+  identity: {
+    mode: 'active',
+    providers: [{
+      configURL: $1,
+      clientId: '1234'
+    }]
+  }
+}).then(
+  token => 'success',
+  error => error.name + ': ' + error.message
+))";
 constexpr char kIdpHost[] = "b.test";
 constexpr char kConfigPath[] = "/fedcm.json";
 constexpr char kWellKnownPath[] = "/.well-known/web-identity";
@@ -3776,6 +3788,9 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistEmbeddedEnforcementTest,
 // - Images (e.g., account avatar).
 // - Top-level navigation triggered by the "redirect_to" in the token endpoint
 //   response.
+// - Pop-up window navigation triggered by the "continue_on" in the token
+//   endpoint response.
+// - Pop-up window navigation triggered by the IdP login URL.
 // - Client metadata.
 // - Accounts.
 // - Disconnect.
@@ -3799,9 +3814,10 @@ class ConnectionAllowlistFedCmTest : public ConnectionAllowlistDevToolsTest {
   }
 
   void SetTestIdentityRequestDialogController(
-      std::optional<std::string> dialog_selected_account) {
+      std::optional<std::string> dialog_selected_account,
+      WebContents* web_contents = nullptr) {
     auto controller = std::make_unique<FakeIdentityRequestDialogController>(
-        std::move(dialog_selected_account), /*web_contents=*/nullptr);
+        std::move(dialog_selected_account), web_contents);
     test_browser_client_->SetIdentityRequestDialogController(
         std::move(controller));
   }
@@ -3900,6 +3916,10 @@ class ConnectionAllowlistFedCmTest : public ConnectionAllowlistDevToolsTest {
 
   GURL DisconnectURL() const {
     return embedded_https_test_server().GetURL(kIdpHost, kDisconnectPath);
+  }
+
+  GURL LoginURL() const {
+    return embedded_https_test_server().GetURL(kIdpHost, kLoginPath);
   }
 
   void RegisterConnectionAllowlistResponse(std::string_view allowlist) {
@@ -4867,6 +4887,250 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest, FedCmRedirectToBlocked) {
       shell()->web_contents()->GetController().GetLastCommittedEntry();
   ASSERT_NE(entry, nullptr);
   EXPECT_EQ(entry->GetPageType(), PAGE_TYPE_ERROR);
+}
+
+// The FedCM `continue_on` initiates a pop-up window navigation. The navigation
+// URL is allowed by the connection allowlist.
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest, FedCmContinueOnAllowed) {
+  // Allow all required FedCM requests and the continue_on URL.
+  RegisterConnectionAllowlistResponse(R"(
+               (
+                 response-origin
+                 "*://b.test:*/fedcm.json"
+                 "*://b.test:*/.well-known/web-identity"
+                 "*://b.test:*/accounts"
+                 "*://b.test:*/client_metadata*"
+                 "*://b.test:*/avatar.png"
+                 "*://b.test:*/token"
+                 "*://b.test:*/login"
+                 "*://b.test:*/continue_on.html"
+               )
+             )");
+
+  ASSERT_NO_FATAL_FAILURE(RegisterFedCmResponses());
+
+  GURL continue_on_url =
+      embedded_https_test_server().GetURL(kIdpHost, "/continue_on.html");
+
+  // Token response returns the continue_on URL.
+  RegisterResponse(kTokenPath,
+                   ResponseEntry(absl::StrFormat(R"({"continue_on": "%s"})",
+                                                 continue_on_url.spec()),
+                                 {{"Content-Type", "application/json"}}));
+  RegisterResponse("/continue_on.html", ResponseEntry("Continue on", {}));
+  SetTestIdentityRequestDialogController(kAccountID, shell()->web_contents());
+
+  EXPECT_TRUE(NavigateToURL(shell(), MainURL()));
+  URLLoaderMonitor monitor(
+      {WellKnownURL(), ConfigURL(), AccountsURL(), TokenURL()});
+  TestNavigationObserver navigation_observer(continue_on_url);
+  navigation_observer.StartWatchingNewWebContents();
+
+  // Trigger FedCM.
+  ExecuteScriptAsync(shell()->web_contents(),
+                     JsReplace(kFedCmScript, ConfigURL()));
+
+  // Verify FedCM requests completed successfully.
+  ExpectRequestsSucceeded(
+      monitor, {WellKnownURL(), ConfigURL(), AccountsURL(), TokenURL()});
+
+  // Wait for the pop-up navigation triggered by `continue_on`. It should be
+  // allowed.
+  navigation_observer.Wait();
+  EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
+  EXPECT_EQ(navigation_observer.last_net_error_code(), net::OK);
+  EXPECT_EQ(navigation_observer.last_navigation_url(), continue_on_url);
+}
+
+// The FedCM `continue_on` initiates a pop-up window navigation. The navigation
+// URL is not allowed by the connection allowlist.
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest, FedCmContinueOnBlocked) {
+  base::HistogramTester histogram_tester;
+  // Allow all required FedCM requests, but not the continue_on URL.
+  RegisterConnectionAllowlistResponse(R"(
+               (
+                 response-origin
+                 "*://b.test:*/fedcm.json"
+                 "*://b.test:*/.well-known/web-identity"
+                 "*://b.test:*/accounts"
+                 "*://b.test:*/client_metadata*"
+                 "*://b.test:*/avatar.png"
+                 "*://b.test:*/token"
+                 "*://b.test:*/login"
+               )
+             )");
+
+  ASSERT_NO_FATAL_FAILURE(RegisterFedCmResponses());
+
+  GURL continue_on_url =
+      embedded_https_test_server().GetURL(kIdpHost, "/continue_on.html");
+
+  // Token response returns the continue_on URL.
+  RegisterResponse(kTokenPath,
+                   ResponseEntry(absl::StrFormat(R"({"continue_on": "%s"})",
+                                                 continue_on_url.spec()),
+                                 {{"Content-Type", "application/json"}}));
+  RegisterResponse("/continue_on.html", ResponseEntry("target", {}));
+  SetTestIdentityRequestDialogController(kAccountID, shell()->web_contents());
+
+  EXPECT_TRUE(NavigateToURL(shell(), MainURL()));
+  SendCommandSync("Audits.enable");
+
+  // Observe the console error.
+  auto fedcm_console_observer =
+      CreateConsoleObserver(webid::GetConsoleErrorMessageFromResult(
+          FederatedRequestResult::kPopupBlockedByConnectionAllowlist));
+
+  URLLoaderMonitor monitor(
+      {WellKnownURL(), ConfigURL(), AccountsURL(), TokenURL()});
+
+  // Trigger FedCM. Because the continue_on URL is blocked by the connection
+  // allowlist, the request fails. And FedCM avoids exposing specific errors to
+  // the website, so all failures lead to "Error retrieving a token".
+  EXPECT_THAT(RunFedCmScript(shell()->web_contents()),
+              HasSubstr(webid::GetConsoleErrorMessageFromResult(
+                  FederatedRequestResult::kError)));
+
+  // Verify FedCM requests completed successfully.
+  ExpectRequestsSucceeded(
+      monitor, {WellKnownURL(), ConfigURL(), AccountsURL(), TokenURL()});
+
+  // There should be a console error on the blocked pop-up URL.
+  EXPECT_TRUE(fedcm_console_observer->Wait());
+
+  histogram_tester.ExpectUniqueSample(
+      kRequestIdTokenHistogram,
+      webid::RequestIdTokenStatus::kPopupBlockedByConnectionAllowlist, 1);
+
+  // Check the DevTools issues.
+  EXPECT_FALSE(WaitForMatchingNotification(
+                   kIssueAdded,
+                   ExpectsNotification(
+                       {{kIssueCode, protocol::Audits::InspectorIssueCodeEnum::
+                                         FederatedAuthRequestIssue},
+                        {kFedCMIssueReasonStr,
+                         protocol::Audits::FederatedAuthRequestIssueReasonEnum::
+                             PopupBlockedByConnectionAllowlist}}))
+                   .empty());
+}
+
+// The FedCM login pop-up window is initiated when there is an account mismatch
+// or when the user is signed out in active mode. The login URL is allowed by
+// the connection allowlist.
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest, FedCmLoginPopUpAllowed) {
+  // Allow all required FedCM requests and the login URL.
+  RegisterConnectionAllowlistResponse(R"(
+               (
+                 response-origin
+                 "*://b.test:*/fedcm.json"
+                 "*://b.test:*/.well-known/web-identity"
+                 "*://b.test:*/accounts"
+                 "*://b.test:*/client_metadata*"
+                 "*://b.test:*/avatar.png"
+                 "*://b.test:*/token"
+                 "*://b.test:*/login"
+               )
+             )");
+
+  ASSERT_NO_FATAL_FAILURE(RegisterFedCmResponses());
+
+  // Return empty accounts so that FedCM active mode triggers the login pop-up
+  // window.
+  RegisterResponse(kAccountPath,
+                   ResponseEntry(R"({"accounts": []})",
+                                 {{"Content-Type", "application/json"}}));
+
+  SetTestIdentityRequestDialogController(
+      /*dialog_selected_account=*/std::nullopt, shell()->web_contents());
+
+  EXPECT_TRUE(NavigateToURL(shell(), MainURL()));
+
+  URLLoaderMonitor monitor({WellKnownURL(), ConfigURL()});
+  TestNavigationObserver navigation_observer(LoginURL());
+  navigation_observer.StartWatchingNewWebContents();
+
+  // Trigger FedCM in active mode.
+  ExecuteScriptAsync(shell()->web_contents(),
+                     JsReplace(kFedCmActiveModeScript, ConfigURL()));
+
+  // Verify FedCM requests completed successfully.
+  ExpectRequestsSucceeded(monitor, {WellKnownURL(), ConfigURL()});
+
+  // Wait for the login pop-up navigation. It should be allowed.
+  navigation_observer.Wait();
+  EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
+  EXPECT_EQ(navigation_observer.last_net_error_code(), net::OK);
+  EXPECT_EQ(navigation_observer.last_navigation_url(), LoginURL());
+}
+
+// The FedCM login pop-up window is initiated when there is an account mismatch
+// or when the user is signed out in active mode. The login URL is not allowed
+// by the connection allowlist.
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmTest, FedCmLoginPopUpBlocked) {
+  base::HistogramTester histogram_tester;
+  // Allow all required FedCM requests, but not the login URL.
+  RegisterConnectionAllowlistResponse(R"(
+               (
+                 response-origin
+                 "*://b.test:*/fedcm.json"
+                 "*://b.test:*/.well-known/web-identity"
+                 "*://b.test:*/accounts"
+                 "*://b.test:*/client_metadata*"
+                 "*://b.test:*/avatar.png"
+                 "*://b.test:*/token"
+               )
+             )");
+
+  ASSERT_NO_FATAL_FAILURE(RegisterFedCmResponses());
+
+  // Return empty accounts so that FedCM active mode triggers the login pop-up
+  // window.
+  RegisterResponse(kAccountPath,
+                   ResponseEntry(R"({"accounts": []})",
+                                 {{"Content-Type", "application/json"}}));
+
+  SetTestIdentityRequestDialogController(
+      /*dialog_selected_account=*/std::nullopt, shell()->web_contents());
+
+  EXPECT_TRUE(NavigateToURL(shell(), MainURL()));
+  SendCommandSync("Audits.enable");
+
+  // Observe the console error.
+  auto fedcm_console_observer =
+      CreateConsoleObserver(webid::GetConsoleErrorMessageFromResult(
+          FederatedRequestResult::kPopupBlockedByConnectionAllowlist));
+
+  URLLoaderMonitor monitor({WellKnownURL(), ConfigURL()});
+
+  // Trigger FedCM in active mode. It should fail because the login pop-up URL
+  // is blocked by the connection allowlist. And FedCM avoids exposing specific
+  // errors to the website, so all failures lead to "Error retrieving a token".
+  EXPECT_THAT(EvalJs(shell()->web_contents(),
+                     JsReplace(kFedCmActiveModeScript, ConfigURL()))
+                  .ExtractString(),
+              HasSubstr(webid::GetConsoleErrorMessageFromResult(
+                  FederatedRequestResult::kError)));
+
+  // Verify FedCM requests completed successfully.
+  ExpectRequestsSucceeded(monitor, {WellKnownURL(), ConfigURL()});
+
+  // There should be a console error on the blocked pop-up URL.
+  EXPECT_TRUE(fedcm_console_observer->Wait());
+
+  histogram_tester.ExpectUniqueSample(
+      kRequestIdTokenHistogram,
+      webid::RequestIdTokenStatus::kPopupBlockedByConnectionAllowlist, 1);
+
+  // Check the DevTools issues.
+  EXPECT_FALSE(WaitForMatchingNotification(
+                   kIssueAdded,
+                   ExpectsNotification(
+                       {{kIssueCode, protocol::Audits::InspectorIssueCodeEnum::
+                                         FederatedAuthRequestIssue},
+                        {kFedCMIssueReasonStr,
+                         protocol::Audits::FederatedAuthRequestIssueReasonEnum::
+                             PopupBlockedByConnectionAllowlist}}))
+                   .empty());
 }
 
 // FedCM API's fetch of the client metadata file is allowed by the connection

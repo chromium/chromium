@@ -309,6 +309,10 @@ FederatedRequestResultToProtocol(blink::mojom::FederatedRequestResult result) {
       return FederatedAuthRequestIssueReasonEnum::
           SuppressedBySegmentationPlatform;
     }
+    case FederatedRequestResult::kPopupBlockedByConnectionAllowlist: {
+      return FederatedAuthRequestIssueReasonEnum::
+          PopupBlockedByConnectionAllowlist;
+    }
     case FederatedRequestResult::kSuccess: {
       NOTREACHED();
     }

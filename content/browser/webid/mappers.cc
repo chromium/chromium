@@ -105,6 +105,7 @@ RequestTokenStatus FederatedRequestResultToRequestTokenStatus(
     case FederatedRequestResult::kUiDismissedNoEmbargo:
     case FederatedRequestResult::kCorsError:
     case FederatedRequestResult::kSuppressedBySegmentationPlatform:
+    case FederatedRequestResult::kPopupBlockedByConnectionAllowlist:
     case FederatedRequestResult::kError: {
       return RequestTokenStatus::kError;
     }
@@ -155,7 +156,8 @@ MetricsEndpointErrorCode FederatedRequestResultToMetricsEndpointErrorCode(
     case FederatedRequestResult::kAccountsNoResponse:
     case FederatedRequestResult::kIdTokenHttpNotFound:
     case FederatedRequestResult::kIdTokenBlockedByConnectionAllowlist:
-    case FederatedRequestResult::kIdTokenNoResponse: {
+    case FederatedRequestResult::kIdTokenNoResponse:
+    case FederatedRequestResult::kPopupBlockedByConnectionAllowlist: {
       return MetricsEndpointErrorCode::kIdpServerUnavailable;
     }
     case FederatedRequestResult::kConfigNotInWellKnown:
@@ -604,6 +606,8 @@ FederatedLoginResult FederatedRequestResultToFederatedLoginResult(
     case blink::mojom::FederatedRequestResult::kTypeNotMatching:
     case blink::mojom::FederatedRequestResult::kError:
     case blink::mojom::FederatedRequestResult::kCorsError:
+    case blink::mojom::FederatedRequestResult::
+        kPopupBlockedByConnectionAllowlist:
       federated_login_result = FederatedLoginResult::kIdpNetworkError;
       break;
     case blink::mojom::FederatedRequestResult::kIdTokenIdpErrorResponse:

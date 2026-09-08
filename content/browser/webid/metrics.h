@@ -87,7 +87,8 @@ enum class RequestIdTokenStatus {
   kConfigBlockedByConnectionAllowlist = 55,
   kAccountsBlockedByConnectionAllowlist = 56,
   kIdTokenBlockedByConnectionAllowlist = 57,
-  kMaxValue = kIdTokenBlockedByConnectionAllowlist
+  kPopupBlockedByConnectionAllowlist = 58,
+  kMaxValue = kPopupBlockedByConnectionAllowlist
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmRequestIdTokenStatus)

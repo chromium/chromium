@@ -340,6 +340,9 @@ std::string GetConsoleErrorMessageFromResult(FederatedRequestResult status) {
              "For testing purposes, disable the #fedcm-segmentation-platform "
              "flag.";
     }
+    case FederatedRequestResult::kPopupBlockedByConnectionAllowlist: {
+      return "The provider's popup URL was blocked by connection allowlist.";
+    }
     case FederatedRequestResult::kSuccess: {
       // Should not be called with success, as we should not add a console
       // message for success.

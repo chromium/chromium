@@ -229,6 +229,7 @@ enum FederatedRequestResult {
   kUiDismissedNoEmbargo,
   kCorsError,
   kSuppressedBySegmentationPlatform,
+  kPopupBlockedByConnectionAllowlist,
 };
 
 struct FederatedRequestIssueDetails {

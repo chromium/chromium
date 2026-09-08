@@ -40,6 +40,7 @@
 #include "content/browser/webid/user_info_request.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/connection_allowlist_util.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
@@ -1430,6 +1431,12 @@ void Request::OnDismissErrorDialog(
     const GURL& idp_config_url,
     FetchStatus status,
     IdentityRequestDialogController::DismissReason dismiss_reason) {
+  // If the request has already completed (e.g. if the error URL popup was
+  // blocked), ignore any subsequent dismissals.
+  if (!request_token_callback_) {
+    return;
+  }
+
   bool has_url = token_error_ && !token_error_->url.is_empty();
   ErrorDialogResult result =
       DismissReasonToErrorDialogResult(dismiss_reason, has_url);
@@ -1507,6 +1514,20 @@ void Request::OnDialogDismissed(
 void Request::ShowModalDialog(DialogType dialog_type,
                               const GURL& idp_config_url,
                               const GURL& url_to_show) {
+  if (!content::FrameConnectionAllowlistAllowsRequestAndReportIfNeeded(
+          &render_frame_host(), url_to_show, /*is_redirect=*/false)) {
+    CompleteRequestWithError(
+        FederatedRequestResult::kPopupBlockedByConnectionAllowlist,
+        RequestIdTokenStatus::kPopupBlockedByConnectionAllowlist,
+        /*should_delay_callback=*/false);
+    return;
+  }
+
+  if (dialog_type == DialogType::kContinueOnPopup) {
+    fedcm_metrics_->RecordContinueOnPopupStatus(
+        ContinueOnPopupStatus::kPopupOpened);
+  }
+
   // Reset dialog type, since we are typically not showing a FedCM dialog while
   // the popup window is open. When using the active flow the dialog may
   // still be up in some cases, but we do not expect that browser automation
@@ -1609,8 +1630,6 @@ void Request::OnContinueOnResponseReceived(
     return;
   }
 
-  fedcm_metrics_->RecordContinueOnPopupStatus(
-      ContinueOnPopupStatus::kPopupOpened);
   ShowModalDialog(DialogType::kContinueOnPopup, idp->config->config_url,
                   continue_on);
 }

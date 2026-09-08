@@ -7362,6 +7362,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="55" label="ConfigBlockedByConnectionAllowlist"/>
   <int value="56" label="AccountsBlockedByConnectionAllowlist"/>
   <int value="57" label="IdTokenBlockedByConnectionAllowlist"/>
+  <int value="58" label="PopupBlockedByConnectionAllowlist"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/webid/metrics.h:RequestIdTokenStatus) -->
