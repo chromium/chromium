@@ -15,7 +15,6 @@ include_rules = [
   "+chrome/browser/ui/test",
   "+chrome/browser/ui/views/chrome_constrained_window_views_client.h",
   "+chrome/browser/ui/views/relaunch_notification",
-  "+chrome/test",
 ]
 
 specific_include_rules = {

@@ -6,8 +6,6 @@ include_rules = [
   "+chrome/browser/ash/lobster",
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/ash/read_write_cards",
-  "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
-  "+chrome/test/views/chrome_views_test_base.h",
 ]
 
 specific_include_rules = {
