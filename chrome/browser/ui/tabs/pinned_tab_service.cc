@@ -62,6 +62,23 @@ void PinnedTabService::OnBrowserCreated(BrowserWindowInterface* browser) {
   browser->GetTabStripModel()->AddObserver(this);
 }
 
+void PinnedTabService::OnBrowserClosed(BrowserWindowInterface* browser) {
+  if (browser->GetProfile() != profile_ ||
+      browser->GetType() != BrowserWindowInterface::TYPE_NORMAL) {
+    return;
+  }
+
+  browser->GetTabStripModel()->RemoveObserver(this);
+
+  // This happens when user closes each tab manually via the close button. In
+  // this case WillCloseAllTabs() with closing_all() is not called. This causes
+  // pinned tabs to reopen on the next startup. So we should call
+  // WritePinnedTabsIfNecessary() to clear the data. See crbug.com/543307904.
+  if (!TabStripModelObserver::IsObservingAny(this)) {
+    WritePinnedTabsIfNecessary();
+  }
+}
+
 void PinnedTabService::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
@@ -71,8 +88,14 @@ void PinnedTabService::OnTabStripModelChanged(
   }
 }
 
+void PinnedTabService::OnTabPinnedStateChanged(tabs::TabInterface* tab,
+                                               int index) {
+  need_to_write_pinned_tabs_ = true;
+}
+
 void PinnedTabService::WillCloseAllTabs(TabStripModel* tab_strip_model) {
-  if (TabStripModelObserver::CountObservedModels(this) == 1) {
+  if (tab_strip_model->closing_all() &&
+      TabStripModelObserver::CountObservedModels(this) == 1) {
     WritePinnedTabsIfNecessary();
   }
 }
