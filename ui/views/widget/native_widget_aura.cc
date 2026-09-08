@@ -297,7 +297,8 @@ void NativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
   gfx::NativeView context = params.context;
 
   if (!params.child) {
-    wm::TransientWindowManager::GetOrCreate(window_)->AddObserver(this);
+    transient_window_observation_.Observe(
+        wm::TransientWindowManager::GetOrCreate(window_));
 
     // Set up the transient child before the window is added. This way the
     // LayoutManager knows the window has a transient parent.
@@ -348,7 +349,7 @@ void NativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
         target_display.value_or(display::kInvalidDisplayId));
   }
 
-  window_->AddObserver(this);
+  window_observation_.Observe(window_);
 
   // Wait to set the bounds until we have a parent. That way we can know our
   // true state/bounds (the LayoutManager may enforce a particular
@@ -1210,10 +1211,8 @@ void NativeWidgetAura::OnDeviceScaleFactorChanged(
 }
 
 void NativeWidgetAura::OnWindowDestroying(aura::Window* window) {
-  window_->RemoveObserver(this);
-  if (wm::TransientWindowManager::GetIfExists(window_)) {
-    wm::TransientWindowManager::GetOrCreate(window_)->RemoveObserver(this);
-  }
+  window_observation_.Reset();
+  transient_window_observation_.Reset();
   if (delegate_) {
     delegate_->OnNativeWidgetDestroying();
   }
