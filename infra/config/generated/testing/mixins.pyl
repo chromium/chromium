@@ -458,6 +458,11 @@
       ],
     },
   },
+  'legacy_gpu_webgl2_conformance_shards': {
+    'swarming': {
+      'shards': 5,
+    },
+  },
   'legacy_gpu_webgl_conformance_shards': {
     'swarming': {
       'shards': 2,

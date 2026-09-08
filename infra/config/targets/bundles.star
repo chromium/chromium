@@ -3381,14 +3381,10 @@ targets.bundle(
 targets.bundle(
     name = "gpu_angle_linux_telemetry_tests",
     targets = [
-        "gpu_webgl2_conformance_gl_passthrough_telemetry_tests",
-
-        # Migrated individual tests below.
-        # TODO(crbug.com/541312843): Remove this comment once all tests are
-        # directly included.
         "info_collection_tests",
         "trace_test",
         "webgl_conformance_tests",
+        "webgl2_conformance_gl_passthrough_tests",
     ],
 )
 
@@ -4438,13 +4434,13 @@ targets.bundle(
         # TODO(jonross): remove this once Vulkan Swiftshader and Vulkan GL interop
         # paths are merged.
         "gpu_skia_renderer_vulkan_passthrough_telemetry_tests",
-        "gpu_webgl2_conformance_gl_passthrough_telemetry_tests",
-        "webrtc_tests",
 
         # Migrated individual tests below.
         # TODO(crbug.com/541312843): Remove this comment once all tests are
         # directly included.
         "webcodecs_tests",
+        "webgl2_conformance_gl_passthrough_tests",
+        "webrtc_tests",
     ],
 )
 

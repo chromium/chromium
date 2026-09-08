@@ -617,6 +617,15 @@ targets.mixin(
 )
 
 targets.mixin(
+    # TODO(crbug.com/554055689): Remove this mixin and use an anonymous mixin
+    # in the test definition once V8 uses Starlark test specs.
+    name = "legacy_gpu_webgl2_conformance_shards",
+    swarming = targets.swarming(
+        shards = 5,
+    ),
+)
+
+targets.mixin(
     name = "gpu_integration_test_common_args",
     args = [
         targets.magic_args.GPU_PARALLEL_JOBS,

@@ -1006,6 +1006,15 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
+    # TODO(crbug.com/554055689): Remove this thin wrapper and directly use the
+    # underlying test once V8 is migrated to use Starlark test specs.
+    name = "legacy_webgl2_conformance_gl_passthrough_tests",
+    tests = {
+        "webgl2_conformance_gl_passthrough_tests": targets.legacy_test_config(),
+    },
+)
+
+targets.legacy_basic_suite(
     name = "gpu_metal_passthrough_graphite_telemetry_tests",
     tests = {
         "context_lost_metal_passthrough_graphite_tests": targets.legacy_test_config(),
@@ -1099,17 +1108,6 @@ targets.legacy_basic_suite(
                 # These tests currently take about an hour and fifteen minutes
                 # to run. Split them into roughly 5-minute shards.
                 shards = 20,
-            ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "gpu_webgl2_conformance_gl_passthrough_telemetry_tests",
-    tests = {
-        "webgl2_conformance_gl_passthrough_tests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 5,
             ),
         ),
     },
