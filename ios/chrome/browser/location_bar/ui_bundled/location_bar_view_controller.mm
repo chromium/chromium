@@ -65,6 +65,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -299,8 +300,12 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
 }
 
 - (void)updateTrailingButtonState {
-  if (IsNextOldDesignEnabled()) {
-    self.trailingButtonState = kShareButton;
+  if (IsChromeNextIaEnabled()) {
+    BOOL shouldShowVoiceSearch = self.traitCollection.verticalSizeClass ==
+                                 UIUserInterfaceSizeClassCompact;
+
+    self.trailingButtonState =
+        shouldShowVoiceSearch ? kVoiceSearchButton : kShareButton;
     return;
   }
 
