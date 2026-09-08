@@ -53,10 +53,16 @@ export class WindowProxy {
     });
   }
 
-  /** Posts |message| on the content window of |iframe| at |targetOrigin|. */
+  /**
+   * Posts |message| on |target| at |targetOrigin| (or on its content window if
+   * |target| is an iframe).
+   */
   postMessage(
-      iframe: HTMLIFrameElement, message: unknown, targetOrigin: string) {
-    iframe.contentWindow!.postMessage(message, targetOrigin);
+      target: HTMLIFrameElement|Window, message: unknown,
+      targetOrigin: string) {
+    const targetWindow =
+        target instanceof HTMLIFrameElement ? target.contentWindow! : target;
+    targetWindow.postMessage(message, targetOrigin);
   }
 
   /** Returns `window.location.href` wrapped in a URL object. */

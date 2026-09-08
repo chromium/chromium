@@ -302,7 +302,7 @@ suite('NewTabPageAppTest', () => {
           messageType: 'loaded',
         },
         source: window,
-        origin: window.origin,
+        origin: 'chrome-untrusted://new-tab-page',
       }));
       await microtasksFinished();
 
@@ -512,7 +512,7 @@ suite('NewTabPageAppTest', () => {
                 messageType: 'loaded',
               },
               source: window,
-              origin: window.origin,
+              origin: 'chrome-untrusted://new-tab-page',
             }));
             await microtasksFinished();
 
@@ -704,7 +704,7 @@ suite('NewTabPageAppTest', () => {
           commandId,
         },
         source: window,
-        origin: window.origin,
+        origin: 'chrome-untrusted://new-tab-page',
       }));
 
       // Make sure the command is sent to the browser.
@@ -715,9 +715,13 @@ suite('NewTabPageAppTest', () => {
       assertEquals(Command.kUnknownCommand, expectedCommandId);
 
       // Make sure the promo frame gets notified whether the promo can be shown.
-      const {data} = await eventToPromise('message', window);
-      assertEquals('can-show-promo-with-browser-command', data.messageType);
-      assertTrue(data[commandId]);
+      const [target, data, targetOrigin] =
+          await windowProxy.whenCalled('postMessage');
+      assertEquals(window, target);
+      assertEquals('chrome-untrusted://new-tab-page', targetOrigin);
+      const response = data as {messageType: string, [key: number]: boolean};
+      assertEquals('can-show-promo-with-browser-command', response.messageType);
+      assertTrue(response[commandId]!);
     });
 
     test('executes promo browser command', async () => {
@@ -739,7 +743,7 @@ suite('NewTabPageAppTest', () => {
           },
         },
         source: window,
-        origin: window.origin,
+        origin: 'chrome-untrusted://new-tab-page',
       }));
 
       // Make sure the command and click information are sent to the browser.
@@ -752,8 +756,11 @@ suite('NewTabPageAppTest', () => {
 
       // Make sure the promo frame gets notified whether the command was
       // executed.
-      const {data: commandExecuted} = await eventToPromise('message', window);
-      assertTrue(commandExecuted);
+      const [target, commandExecuted, targetOrigin] =
+          await windowProxy.whenCalled('postMessage');
+      assertEquals(window, target);
+      assertEquals('chrome-untrusted://new-tab-page', targetOrigin);
+      assertTrue(commandExecuted as boolean);
     });
   });
 
@@ -799,6 +806,7 @@ suite('NewTabPageAppTest', () => {
           frameType: 'one-google-bar',
           messageType: 'click',
         },
+        origin: 'chrome-untrusted://new-tab-page',
       }));
 
       // Assert.

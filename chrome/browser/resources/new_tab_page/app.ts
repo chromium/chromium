@@ -645,7 +645,8 @@ export class AppElement extends AppElementBase {
       if (typeof data !== 'object') {
         return;
       }
-      if ('frameType' in data && data.frameType === 'one-google-bar') {
+      if ('frameType' in data && data.frameType === 'one-google-bar' &&
+          event.origin === OGB_IFRAME_ORIGIN) {
         this.handleOneGoogleBarMessage_(event);
       }
     });
@@ -1417,7 +1418,8 @@ export class AppElement extends AppElementBase {
             messageType: messageData.messageType,
             [messageData.commandId]: canExecute,
           };
-          commandSource.postMessage(response, commandOrigin);
+          WindowProxy.getInstance().postMessage(
+              commandSource, response, commandOrigin);
         });
   }
 
@@ -1442,7 +1444,8 @@ export class AppElement extends AppElementBase {
     BrowserCommandProxy.getInstance()
         .handler.executeCommand(commandId, commandData.clickInfo)
         .then(({commandExecuted}) => {
-          commandSource.postMessage(commandExecuted, commandOrigin);
+          WindowProxy.getInstance().postMessage(
+              commandSource, commandExecuted, commandOrigin);
         });
   }
 
