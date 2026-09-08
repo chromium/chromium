@@ -17,6 +17,7 @@
 #include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/obfuscation/core/download_obfuscator.h"
@@ -240,8 +241,16 @@ class FileAnalysisRequestBaseHashInFinalInvariantTest
             enterprise_connectors::kContentHashInFileUploadFinalCall) {}
 };
 
+#if BUILDFLAG(IS_ANDROID)
+// TODO(https://crbug.com/504414003): de-flake and re-enable.
+#define MAYBE_LargeFileAlwaysHasHashWhenNotDelayOpen \
+  DISABLED_LargeFileAlwaysHasHashWhenNotDelayOpen
+#else
+#define MAYBE_LargeFileAlwaysHasHashWhenNotDelayOpen \
+  LargeFileAlwaysHasHashWhenNotDelayOpen
+#endif
 TEST_P(FileAnalysisRequestBaseHashInFinalInvariantTest,
-       LargeFileAlwaysHasHashWhenNotDelayOpen) {
+       MAYBE_LargeFileAlwaysHasHashWhenNotDelayOpen) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       kEnableNewUploadSizeLimit, {{"max_file_size_mb", "250"}});
