@@ -877,8 +877,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "RulesRegistryService",
     "RuntimeAPI",
     "SafeBrowsingMetricsCollector",
-    "SafeBrowsingNetworkContextService",
-
     "SafeBrowsingPrivateEventRouter",
     "SafeBrowsingTailoredSecurityService",
     "SearchEngineChoiceServiceFactory",
