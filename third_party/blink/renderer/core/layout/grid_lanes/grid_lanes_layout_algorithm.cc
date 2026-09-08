@@ -419,6 +419,10 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
 
   container_builder_.SetGridLayoutData(layout_data);
 
+  if (sizing_tree) {
+    sizing_tree->ReleaseTrackSizingData();
+  }
+
   if (has_block_fragmentation) {
     container_builder_.SetBreakTokenData(
         MakeGarbageCollected<GridLanesBreakTokenData>(

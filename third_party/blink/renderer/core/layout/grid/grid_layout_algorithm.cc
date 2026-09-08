@@ -511,6 +511,9 @@ const GridLayoutSubtree* GridLayoutAlgorithm::ComputeGridGeometry(
   CompleteFinalBaselineAlignment(&grid_sizing_tree);
 
   *grid_items = &grid_sizing_tree.GetGridItems();
+
+  grid_sizing_tree.ReleaseTrackSizingData();
+
   return MakeGarbageCollected<GridLayoutSubtree>(
       grid_sizing_tree.FinalizeTree());
 }

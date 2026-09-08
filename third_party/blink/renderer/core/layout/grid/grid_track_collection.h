@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_GRID_TRACK_COLLECTION_H_
 
 #include "base/check_op.h"
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
@@ -283,6 +284,29 @@ class CORE_EXPORT GridLayoutTrackCollection
     return collapsed_track_indexes_;
   }
 
+  virtual void ReleaseTrackSizingData() {
+    // `FinalizeSetsGeometry` empties this vector but only shrinks its size, so
+    // clearing here releases the backing buffer.
+    if (last_indefinite_index_.empty()) {
+      last_indefinite_index_.clear();
+    }
+#if DCHECK_IS_ON()
+    sizing_data_released_ = true;
+#endif
+  }
+
+  void ValidateSizingData() const {
+#if DCHECK_IS_ON()
+    DCHECK(!sizing_data_released_);
+#endif
+  }
+
+  void RestoreSizingData() {
+#if DCHECK_IS_ON()
+    sizing_data_released_ = false;
+#endif
+  }
+
   virtual void Trace(Visitor* visitor) const {}
 
  protected:
@@ -329,6 +353,10 @@ class CORE_EXPORT GridLayoutTrackCollection
   // Collapsed track indexes from auto-fit ranges, populated when
   // `should_store_collapsed_track_indexes` is true at construction.
   Vector<wtf_size_t> collapsed_track_indexes_;
+
+#if DCHECK_IS_ON()
+  bool sizing_data_released_ = false;
+#endif
 };
 
 // |GridRangeBuilder::EnsureTrackCoverage| may introduce a range start and/or
@@ -487,6 +515,11 @@ class CORE_EXPORT GridSizingTrackCollection final
   void BuildSets(const ComputedStyle& container_style,
                  const LogicalSize& container_available_size);
   void SetIndefiniteGrowthLimitsToBaseSize();
+
+  void ReleaseTrackSizingData() override {
+    sets_.clear();
+    GridLayoutTrackCollection::ReleaseTrackSizingData();
+  }
 
   // Caches the geometry of definite sets; this is useful when building the sets
   // of a subgrid since we need to determine whether its available size (i.e.,

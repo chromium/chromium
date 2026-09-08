@@ -144,6 +144,14 @@ class CORE_EXPORT GridSizingTree {
   // (the subtree's root is at index 0 in the returned tree).
   const GridLayoutTree* FinalizeSubtreeAt(wtf_size_t subtree_root) const;
 
+  void ReleaseTrackSizingData() {
+    for (auto& tree_node : tree_data_) {
+      if (tree_node.layout_data) {
+        tree_node.layout_data->ReleaseTrackSizingData();
+      }
+    }
+  }
+
   SubgriddedItemData LookupSubgriddedItemData(
       const GridItemData& grid_item) const;
 

@@ -989,32 +989,38 @@ GridSizingTrackCollection::GridSizingTrackCollection(
 }
 
 GridSet& GridSizingTrackCollection::GetSetAt(wtf_size_t set_index) {
+  ValidateSizingData();
   DCHECK_LT(set_index, sets_.size());
   return sets_[set_index];
 }
 
 const GridSet& GridSizingTrackCollection::GetSetAt(wtf_size_t set_index) const {
+  ValidateSizingData();
   DCHECK_LT(set_index, sets_.size());
   return sets_[set_index];
 }
 
 GridSizingTrackCollection::SetIterator
 GridSizingTrackCollection::GetSetIterator() {
+  ValidateSizingData();
   return SetIterator(this, 0, sets_.size());
 }
 
 GridSizingTrackCollection::ConstSetIterator
 GridSizingTrackCollection::GetConstSetIterator() const {
+  ValidateSizingData();
   return ConstSetIterator(this, 0, sets_.size());
 }
 
 GridSizingTrackCollection::SetIterator
 GridSizingTrackCollection::GetSetIterator(wtf_size_t begin_set_index,
                                           wtf_size_t end_set_index) {
+  ValidateSizingData();
   return SetIterator(this, begin_set_index, end_set_index);
 }
 
 LayoutUnit GridSizingTrackCollection::TotalTrackSize() const {
+  ValidateSizingData();
   if (sets_.empty())
     return LayoutUnit();
 
@@ -1025,6 +1031,7 @@ LayoutUnit GridSizingTrackCollection::TotalTrackSize() const {
 }
 
 void GridSizingTrackCollection::CacheDefiniteSetsGeometry() {
+  ValidateSizingData();
   DCHECK(sets_geometry_.empty() && last_indefinite_index_.empty());
 
   LayoutUnit first_set_offset;
@@ -1046,6 +1053,7 @@ void GridSizingTrackCollection::CacheDefiniteSetsGeometry() {
 
 void GridSizingTrackCollection::CacheInitializedSetsGeometry(
     LayoutUnit first_set_offset) {
+  ValidateSizingData();
   last_indefinite_index_.Shrink(0);
   sets_geometry_.Shrink(0);
 
@@ -1068,6 +1076,7 @@ void GridSizingTrackCollection::CacheInitializedSetsGeometry(
 void GridSizingTrackCollection::FinalizeSetsGeometry(
     LayoutUnit first_set_offset,
     LayoutUnit override_gutter_size) {
+  ValidateSizingData();
   gutter_size_ = override_gutter_size;
 
   last_indefinite_index_.Shrink(0);
@@ -1083,6 +1092,7 @@ void GridSizingTrackCollection::FinalizeSetsGeometry(
 }
 
 void GridSizingTrackCollection::SetIndefiniteGrowthLimitsToBaseSize() {
+  ValidateSizingData();
   for (auto& set : sets_) {
     if (set.GrowthLimit() == kIndefiniteSize)
       set.growth_limit = set.base_size;
@@ -1113,6 +1123,7 @@ void GridSizingTrackCollection::BuildSets(
     bool is_available_size_indefinite) {
   properties_.ResetType();
   sets_.Shrink(0);
+  RestoreSizingData();
 
   for (auto& range : ranges_) {
     // Notice that |GridRange::Reset| does not reset the |kIsCollapsed| or
@@ -1217,6 +1228,7 @@ void GridSizingTrackCollection::BuildSets(
 
 // https://drafts.csswg.org/css-grid-2/#algo-init
 void GridSizingTrackCollection::InitializeSets(LayoutUnit grid_available_size) {
+  ValidateSizingData();
   for (auto& set : sets_) {
     const auto& track_size = set.track_size;
 

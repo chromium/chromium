@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_GRID_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_GRID_DATA_H_
 
+#include "base/dcheck_is_on.h"
 #include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_line_resolver.h"
@@ -150,6 +151,25 @@ class CORE_EXPORT GridLayoutData : public GarbageCollected<GridLayoutData> {
     }
   }
 
+  void ReleaseTrackSizingData() {
+    if (columns_) {
+      columns_->ReleaseTrackSizingData();
+    }
+    if (rows_) {
+      rows_->ReleaseTrackSizingData();
+    }
+    intrinsic_repeat_track_sizes_.reset();
+#if DCHECK_IS_ON()
+    sizing_data_released_ = true;
+#endif
+  }
+
+  void ValidateSizingData() const {
+#if DCHECK_IS_ON()
+    DCHECK(!sizing_data_released_);
+#endif
+  }
+
   // Returns true if any existing axis has an indefinite set. Handles the case
   // where one axis may not have a track collection (e.g., the stacking axis in
   // grid-lanes).
@@ -246,6 +266,7 @@ class CORE_EXPORT GridLayoutData : public GarbageCollected<GridLayoutData> {
   }
 
   const HashMap<GridTrackSize, LayoutUnit>* IntrinsicRepeatTrackSizes() const {
+    ValidateSizingData();
     if (intrinsic_repeat_track_sizes_.has_value()) {
       return &intrinsic_repeat_track_sizes_.value();
     }
@@ -254,6 +275,7 @@ class CORE_EXPORT GridLayoutData : public GarbageCollected<GridLayoutData> {
 
   void AppendIntrinsicRepeatTrackSize(const GridTrackSize& track_size,
                                       LayoutUnit size) {
+    ValidateSizingData();
     if (!intrinsic_repeat_track_sizes_.has_value()) {
       intrinsic_repeat_track_sizes_.emplace();
     }
@@ -280,6 +302,10 @@ class CORE_EXPORT GridLayoutData : public GarbageCollected<GridLayoutData> {
   // definition.
   std::optional<HashMap<GridTrackSize, LayoutUnit>>
       intrinsic_repeat_track_sizes_;
+
+#if DCHECK_IS_ON()
+  bool sizing_data_released_ = false;
+#endif
 };
 
 // Subgrid layout relies on the root grid to perform the track sizing algorithm
