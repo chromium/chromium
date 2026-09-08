@@ -875,6 +875,7 @@ void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
       ongoing_navigation_request->IsRendererInitiated() ==
           request->IsRendererInitiated() &&
       request->GetURL() == ongoing_navigation_request->GetURL() &&
+      request->GetURL().SchemeIsHTTPOrHTTPS() &&
       request->common_params().method == "GET" &&
       ongoing_navigation_request->common_params().method == "GET" &&
       request->GetInitiatorFrameToken() ==
