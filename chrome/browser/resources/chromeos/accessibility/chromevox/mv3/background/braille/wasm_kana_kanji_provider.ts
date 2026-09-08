@@ -57,10 +57,20 @@ export class WasmKanaKanjiProvider implements CompositionCandidateProvider {
       return [];
     }
 
+    const startTime = performance.now();
     try {
-      return await OffscreenBridge.tenjiConvert(kana, MAX_CANDIDATES);
+      const candidates =
+          await OffscreenBridge.tenjiConvert(kana, MAX_CANDIDATES);
+      chrome.metricsPrivate.recordBoolean(
+          'Accessibility.ChromeVox.Tenji.Convert.Result', true);
+      chrome.metricsPrivate.recordMediumTime(
+          'Accessibility.ChromeVox.Tenji.Convert.Latency',
+          Math.round(performance.now() - startTime));
+      return candidates;
     } catch (error) {
       console.error('Error during Mozc conversion: ' + error);
+      chrome.metricsPrivate.recordBoolean(
+          'Accessibility.ChromeVox.Tenji.Convert.Result', false);
       return [];
     }
   }

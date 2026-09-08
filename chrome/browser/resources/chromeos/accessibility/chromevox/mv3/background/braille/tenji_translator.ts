@@ -63,6 +63,8 @@ export class TenjiTranslator implements BrailleTranslator {
       await TenjiTranslator.installTenji_();
     } catch (error) {
       console.error('Error during tenji initialization: ' + error);
+      chrome.metricsPrivate.recordBoolean(
+          'Accessibility.ChromeVox.Tenji.Init.Result', false);
       TenjiTranslator.initPromise_ = null;
       TenjiTranslator.failQueuedRequests_();
       return false;
@@ -70,6 +72,8 @@ export class TenjiTranslator implements BrailleTranslator {
       TenjiTranslator.pendingRequest_ = false;
     }
 
+    chrome.metricsPrivate.recordBoolean(
+        'Accessibility.ChromeVox.Tenji.Init.Result', true);
     void TenjiTranslator.processNextRequest_();
     return true;
   }
@@ -158,7 +162,9 @@ export class TenjiTranslator implements BrailleTranslator {
     try {
       if (req.type === 'translate') {
         const result = await OffscreenBridge.tenjiTranslate(req.text);
-        if (!result || !result.value) {
+        chrome.metricsPrivate.recordBoolean(
+            'Accessibility.ChromeVox.Tenji.Translate.Result', !!result?.value);
+        if (!result?.value) {
           req.callback(new ArrayBuffer(0), [], []);
         } else {
           const tenjiString = result.value;
@@ -189,14 +195,21 @@ export class TenjiTranslator implements BrailleTranslator {
         }
         const tenjiString = tenjiChars.join('');
         const result = await OffscreenBridge.tenjiBackTranslate(tenjiString);
+        chrome.metricsPrivate.recordBoolean(
+            'Accessibility.ChromeVox.Tenji.BackTranslate.Result',
+            result !== null);
         req.callback(result);
       }
     } catch (error) {
       if (req.type === 'translate') {
         console.error('Error during tenji translation: ' + error);
+        chrome.metricsPrivate.recordBoolean(
+            'Accessibility.ChromeVox.Tenji.Translate.Result', false);
         req.callback(new ArrayBuffer(0), [], []);
       } else {
         console.error('Error during tenji back translation: ' + error);
+        chrome.metricsPrivate.recordBoolean(
+            'Accessibility.ChromeVox.Tenji.BackTranslate.Result', false);
         req.callback(null);
       }
     }
