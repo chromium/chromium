@@ -165,6 +165,9 @@ public class ActorPictureInPictureControllerTest {
 
     @Test
     public void testOnPictureInPictureEvent_Entered_ShowsOverlay() {
+        ActorForegroundServiceManager manager = mock(ActorForegroundServiceManager.class);
+        ActorForegroundServiceManager.setInstanceForTesting(manager);
+
         createMockActorTask(101, "Test Title", ActorTaskState.ACTING);
         mController.onPictureInPictureEvent(PictureInPictureDelegate.Event.ENTERED, null);
 
@@ -172,6 +175,7 @@ public class ActorPictureInPictureControllerTest {
         verify(mMockCoordinator).updateTitle("Test Title");
         verify(mMockCoordinator).updateStatus(ActorTaskState.ACTING);
         verify(mMockCoordinator, never()).destroy();
+        verify(manager).resendWorkingNotifications();
     }
 
     @Test

@@ -32,6 +32,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -614,5 +616,53 @@ public class ActorTaskHelperTest {
         mActorTaskHelper.destroy();
 
         verify(mOffscreenRenderingManager).stopOffscreenRendering(mTab);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
+    public void testOnStop_GlicBackgroundActuation_NoVisibleActivities_CallsTransitionAndManager() {
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
+        ActorForegroundServiceController controller = mock(ActorForegroundServiceController.class);
+        ActorForegroundServiceController.setInstanceForTesting(controller);
+        ActorForegroundServiceManager manager = mock(ActorForegroundServiceManager.class);
+        ActorForegroundServiceManager.setInstanceForTesting(manager);
+
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STOPPED);
+
+        mActorTaskHelper.onStopWithNative();
+
+        verify(controller).transitionActiveTasksToBackground(mTabModelSelector);
+        verify(manager).resendWorkingNotifications();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
+    public void testOnStop_GlicBackgroundActuation_WithVisibleActivities_DoesNotCallManager() {
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
+        ActorForegroundServiceController controller = mock(ActorForegroundServiceController.class);
+        ActorForegroundServiceController.setInstanceForTesting(controller);
+        ActorForegroundServiceManager manager = mock(ActorForegroundServiceManager.class);
+        ActorForegroundServiceManager.setInstanceForTesting(manager);
+
+        Activity otherActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        ApplicationStatus.onStateChangeForTesting(otherActivity, ActivityState.RESUMED);
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STOPPED);
+
+        mActorTaskHelper.onStopWithNative();
+
+        verify(controller).transitionActiveTasksToBackground(mTabModelSelector);
+        verify(manager, never()).resendWorkingNotifications();
+
+        ApplicationStatus.onStateChangeForTesting(otherActivity, ActivityState.DESTROYED);
+    }
+
+    @Test
+    public void testOnStop_BackgroundActuationDisabled_DoesNotCallManager() {
+        ActorForegroundServiceManager manager = mock(ActorForegroundServiceManager.class);
+        ActorForegroundServiceManager.setInstanceForTesting(manager);
+
+        mActorTaskHelper.onStopWithNative();
+
+        verify(manager, never()).resendWorkingNotifications();
     }
 }

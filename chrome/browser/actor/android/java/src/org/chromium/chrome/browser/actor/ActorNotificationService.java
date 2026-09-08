@@ -157,6 +157,24 @@ public class ActorNotificationService {
     }
 
     /**
+     * Resends the notification for a running task as loud (e.g. when moving to background or PiP).
+     *
+     * @param taskId The ID of the task to resend notification for.
+     */
+    public void resendWorkingNotificationLoudly(int taskId) {
+        ActorTask task = getTask(taskId);
+        if (task == null || !ActorUtils.isRunningState(task.getState())) {
+            return;
+        }
+        NotificationWrapper loudNotification =
+                ActorNotificationFactory.buildNotification(
+                        task, task.getState(), /* isSilent= */ false, /* isWarning= */ false);
+        mNotificationCache.put(taskId, loudNotification);
+        mTaskStates.put(taskId, task.getState());
+        mNotificationManager.notify(loudNotification);
+    }
+
+    /**
      * Retrieves the cached notification for a task, or creates a new one if it doesn't exist.
      *
      * @param taskId The ID of the task.

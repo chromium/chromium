@@ -393,4 +393,31 @@ public class ActorForegroundServiceManagerTest {
         mManager.onTaskStepProgressUpdated(taskId, "Navigating to site");
         verify(mNotificationService).updateNotificationForStepProgress(taskId);
     }
+
+    @Test
+    public void testResendWorkingNotifications_ActiveTask_CallsNotificationService() {
+        int taskId = 1;
+        mManager.setKeyedServiceForTesting(mKeyedService);
+
+        mManager.onTaskStateChanged(taskId, ActorTaskState.ACTING);
+        clearInvocations(mNotificationService);
+
+        mManager.resendWorkingNotifications();
+
+        verify(mNotificationService).resendWorkingNotificationLoudly(taskId);
+    }
+
+    @Test
+    public void testResendWorkingNotifications_TerminalTask_DoesNotCallNotificationService() {
+        int taskId = 1;
+        mManager.setKeyedServiceForTesting(mKeyedService);
+
+        mManager.onTaskStateChanged(taskId, ActorTaskState.ACTING);
+        mManager.onTaskStateChanged(taskId, ActorTaskState.FINISHED);
+        clearInvocations(mNotificationService);
+
+        mManager.resendWorkingNotifications();
+
+        verify(mNotificationService, never()).resendWorkingNotificationLoudly(anyInt());
+    }
 }
