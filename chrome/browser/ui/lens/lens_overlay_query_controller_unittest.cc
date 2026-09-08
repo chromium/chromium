@@ -4633,10 +4633,12 @@ TEST_F(LensOverlayQueryControllerMockTimeTest,
       url_response_future;
   base::test::TestFuture<const std::string&, const SkBitmap&>
       thumbnail_created_future;
+  base::test::TestFuture<uint64_t, uint64_t> upload_progress_future;
   TestLensOverlayQueryController query_controller(
       full_image_response_future.GetRepeatingCallback(),
       url_response_future.GetRepeatingCallback(), base::NullCallback(),
-      thumbnail_created_future.GetRepeatingCallback(), base::NullCallback(),
+      thumbnail_created_future.GetRepeatingCallback(),
+      upload_progress_future.GetRepeatingCallback(),
       fake_variations_client_.get(),
       IdentityManagerFactory::GetForProfile(profile()), profile(),
       lens::LensOverlayInvocationSource::kAppMenu,
@@ -4670,12 +4672,15 @@ TEST_F(LensOverlayQueryControllerMockTimeTest,
   CheckClusterInfoRequestMatchesDefaultClientContentRequest(
       *query_controller.last_cluster_info_request());
   full_image_response_future.Clear();
+  ASSERT_TRUE(upload_progress_future.Wait());
+  upload_progress_future.Clear();
 
   task_environment_->FastForwardBy(base::TimeDelta(base::Minutes(60)));
   query_controller.SendRegionSearch(
       kTestTime, std::move(region), lens::REGION_SEARCH,
       additional_search_query_params, std::nullopt);
   ASSERT_TRUE(url_response_future.Wait());
+  ASSERT_TRUE(upload_progress_future.Wait());
   query_controller.EndQuery();
 
   // The full image response having another value, after it was already
