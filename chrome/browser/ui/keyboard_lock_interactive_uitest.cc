@@ -411,8 +411,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockInteractiveBrowserTest,
   ASSERT_TRUE(IsKeyboardLockActive());
 
   // Single escape key press will now exit fullscreen.
-  ASSERT_NO_FATAL_FAILURE(SendEscape());
-  ASSERT_FALSE(IsActiveTabFullscreen());
+  ASSERT_NO_FATAL_FAILURE(SendEscapeAndWaitForExitingFullscreen());
   ASSERT_FALSE(IsKeyboardLockActive());
 }
 
@@ -522,8 +521,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardLockInteractiveBrowserTest,
   ASSERT_TRUE(IsKeyboardLockActive());
 
   // Single escape key press does exit fullscreen.
-  ASSERT_NO_FATAL_FAILURE(SendEscape());
-  ASSERT_FALSE(IsActiveTabFullscreen());
+  ASSERT_NO_FATAL_FAILURE(SendEscapeAndWaitForExitingFullscreen());
   ASSERT_FALSE(IsKeyboardLockActive());
 }
 
