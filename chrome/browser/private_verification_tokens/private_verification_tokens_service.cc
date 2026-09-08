@@ -452,9 +452,13 @@ PrivateVerificationTokensService::GetTokenForRedemption(
       tracker = new_tracker.get();
       profile->SetUserData(kOtrIssuerTrackerKey, std::move(new_tracker));
     }
+    if (tracker->issuers.contains(matching_issuer)) {
+      // matching_issuer already received a token in this session.
+      return std::nullopt;
+    }
     auto params = private_verification_tokens::GetParametersForVersion(
         config_it->second.public_key.version());
-    if (params.has_value() && !tracker->issuers.contains(matching_issuer) &&
+    if (params.has_value() &&
         tracker->issuers.size() >= params->max_distinct_issuers_per_session) {
       base::UmaHistogramBoolean("PrivateVerificationTokens.RedemptionLimitHit",
                                 true);

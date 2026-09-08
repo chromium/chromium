@@ -463,20 +463,31 @@ IN_PROC_BROWSER_TEST_F(PrivateVerificationTokensEndToEndBrowserTest,
   service->GetTokenIssuers(issuers_after_future.GetCallback());
   EXPECT_THAT(issuers_after_future.Take(), testing::ElementsAre(issuer_origin));
 
-  // 3. Navigate to a direct URL on redeemer.a.test to consume the remaining
-  // token.
+  // 3. Navigate to a direct URL on redeemer.a.test. Since the issuer was
+  // already processed in this incognito session, redemption is denied by the
+  // limit.
   const GURL direct_redeem_url =
       https_server().GetURL("redeemer.a.test", "/direct-redeem");
   ASSERT_TRUE(
       content::NavigateToURL(incognito_web_contents.get(), direct_redeem_url));
 
-  EXPECT_EQ(redemption_count_, 2);
+  // The redemption_count_ should remain 1.
+  EXPECT_EQ(redemption_count_, 1);
 
-  // Now all tokens have been spent.
+  // The token remains in the store.
   base::test::TestFuture<std::vector<url::Origin>> issuers_final_future;
   service->GetTokenIssuers(issuers_final_future.GetCallback());
-  EXPECT_TRUE(issuers_final_future.Take().empty());
-  EXPECT_FALSE(service->GetTokenForRedemption(redeemer_origin).has_value());
+  EXPECT_THAT(issuers_final_future.Take(), testing::ElementsAre(issuer_origin));
+
+  // Directly attempting to fetch the token strictly for this incognito session
+  // returns nullopt due to the limit...
+  EXPECT_FALSE(
+      service->GetTokenForRedemption(redeemer_origin, incognito_profile)
+          .has_value());
+
+  // ...but the token fundamentally still exists in the database and is
+  // available when queried globally (e.g. for a non-incognito profile context).
+  EXPECT_TRUE(service->GetTokenForRedemption(redeemer_origin).has_value());
 }
 
 }  // namespace

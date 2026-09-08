@@ -1164,8 +1164,8 @@ TEST_F(PrivateVerificationTokensServiceEmptyDatabaseTest,
   histogram_tester.ExpectTotalCount(
       "PrivateVerificationTokens.RedemptionLimitHit", 0);
 
-  // 1st issuer redemption AGAIN (should not increment limit)
-  EXPECT_TRUE(
+  // 1st issuer redemption AGAIN (fails per-issuer limit)
+  EXPECT_FALSE(
       service()
           ->GetTokenForRedemption(url::Origin::Create(GURL("https://r1.a.com")),
                                   otr_profile)
