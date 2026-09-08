@@ -7,6 +7,7 @@ assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//chrome/common/features.gni")
+import("//components/enterprise/buildflags/buildflags.gni")
 import("//content/public/common/features.gni")
 import("//third_party/webrtc/webrtc.gni")
 
@@ -168,6 +169,7 @@ source_set("webrtc") {
     "//chrome/common:non_code_constants",
     "//components/content_settings/browser",
     "//components/content_settings/core/browser",
+    "//components/enterprise/buildflags",
     "//components/favicon/content",
     "//components/media_device_salt",
     "//components/pref_registry",
@@ -196,6 +198,18 @@ source_set("webrtc") {
     "//ui/gfx:color_utils",
     "//ui/snapshot",
   ]
+
+  if (enterprise_screenshot_protection) {
+    sources += [
+      "data_protection_tab_capture_handler.cc",
+      "data_protection_tab_capture_handler.h",
+    ]
+    deps += [
+      "//chrome/browser/enterprise",
+      "//chrome/browser/ui/tabs:tabs_public",
+      "//components/tabs:public",
+    ]
+  }
 
   if (enable_extensions_core) {
     sources += [
@@ -463,6 +477,18 @@ if (!is_android) {
         "//chrome/browser/policy:test_support",
         "//chrome/browser/ui/ash/system_web_apps",
         "//components/embedder_support",
+      ]
+    }
+
+    if (enterprise_screenshot_protection) {
+      sources += [ "data_protection_tab_capture_handler_browsertest.cc" ]
+      deps += [
+        "//chrome/browser/enterprise",
+        "//chrome/browser/ui/browser_window",
+        "//chrome/browser/ui/tabs:tabs_public",
+        "//components/enterprise/buildflags",
+        "//components/enterprise/data_controls/core/browser:test_support",
+        "//components/tabs:public",
       ]
     }
   }
