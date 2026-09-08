@@ -706,6 +706,10 @@ public class PdfUtils {
         RecordHistogram.recordBooleanHistogram("Android.Pdf.UriIsNull", isNull);
     }
 
+    public static void recordRecoveredFragmentUriMatches(boolean matches) {
+        RecordHistogram.recordBooleanHistogram("Android.Pdf.RecoveredFragmentUriMatches", matches);
+    }
+
     /**
      * Checks if the given URI is valid and safe for sharing with external applications.
      * Specifically, if the URI belongs to one of Chrome's internal content providers, we restrict

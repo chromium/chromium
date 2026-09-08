@@ -809,4 +809,19 @@ public class PdfUtilsUnitTest {
         PdfUtils.recordEditFabAction();
         assertTrue(mUserActionTester.getActions().contains("Android.Pdf.EditFab"));
     }
+
+    @Test
+    public void testRecordRecoveredFragmentUriMatches() {
+        HistogramWatcher histogramExpectationTrue =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Pdf.RecoveredFragmentUriMatches", true);
+        PdfUtils.recordRecoveredFragmentUriMatches(true);
+        histogramExpectationTrue.assertExpected();
+
+        HistogramWatcher histogramExpectationFalse =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Pdf.RecoveredFragmentUriMatches", false);
+        PdfUtils.recordRecoveredFragmentUriMatches(false);
+        histogramExpectationFalse.assertExpected();
+    }
 }

@@ -190,6 +190,8 @@ public class PdfCoordinator
 
     private boolean mHasMadeAnyChanges;
 
+    private boolean mIsFragmentRestored;
+
     boolean mIsInitialZoomPass = true;
     private boolean mIsDefaultZoomPending;
 
@@ -279,6 +281,7 @@ public class PdfCoordinator
         if (fragment != null) {
             if (reuseFragment) {
                 mChromePdfViewerFragment = (ChromePdfViewerFragment) fragment;
+                mIsFragmentRestored = true;
                 mChromePdfViewerFragment.setPagesPerRow(false);
                 if (mPdfFilePath == null) {
                     mPdfFilePath =
@@ -1531,6 +1534,7 @@ public class PdfCoordinator
     @Override
     public void resetLoadState() {
         mIsPdfLoaded = false;
+        mIsFragmentRestored = false;
         mIsFitToPageActive = TriState.NOT_SET;
         mLastFitZoom = -1f;
         mHasMadeAnyChanges = false;
@@ -1695,6 +1699,11 @@ public class PdfCoordinator
                 try {
                     mIsInitialZoomPass = true;
                     mIsDefaultZoomPending = false;
+                    if (mIsFragmentRestored) {
+                        mIsFragmentRestored = false;
+                        PdfUtils.recordRecoveredFragmentUriMatches(
+                                mUri.equals(mChromePdfViewerFragment.getDocumentUri()));
+                    }
                     if (!mUri.equals(mChromePdfViewerFragment.getDocumentUri())) {
                         mChromePdfViewerFragment.setDocumentUri(mUri);
                         mChromePdfViewerFragment.setFilePath(mPdfFilePath);
