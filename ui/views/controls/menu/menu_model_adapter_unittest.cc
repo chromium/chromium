@@ -400,4 +400,36 @@ TEST_F(MenuModelAdapterTest, BasicTest) {
                2, actionable_submenu_index, kActionableSubmenuIdBase);
 }
 
+TEST_F(MenuModelAdapterTest, NonexistentCommandIdDoesNotCrash) {
+  RootModel model;
+  views::MenuModelAdapter delegate(&model);
+  views::MenuDelegate* menu_delegate = &delegate;
+
+  constexpr int kNonexistentId = 99999;
+  ui::Accelerator accelerator;
+
+  // When a command ID is not found in the model, methods should return default
+  // values and not crash.
+  EXPECT_FALSE(menu_delegate->GetAccelerator(kNonexistentId, &accelerator));
+  EXPECT_TRUE(menu_delegate->GetLabel(kNonexistentId).empty());
+  EXPECT_FALSE(menu_delegate->IsCommandEnabled(kNonexistentId));
+  EXPECT_FALSE(menu_delegate->IsCommandVisible(kNonexistentId));
+  EXPECT_FALSE(menu_delegate->IsItemChecked(kNonexistentId));
+  // ExecuteCommand should safely no-op.
+  menu_delegate->ExecuteCommand(kNonexistentId);
+  menu_delegate->ExecuteCommand(kNonexistentId, 0);
+  EXPECT_FALSE(model.last_activation().has_value());
+
+  // Simulating teardown when the model is cleared (menu_model_ = nullptr).
+  model.SetMenuModelDelegate(nullptr);
+  EXPECT_FALSE(menu_delegate->GetAccelerator(kNonexistentId, &accelerator));
+  EXPECT_TRUE(menu_delegate->GetLabel(kNonexistentId).empty());
+  EXPECT_FALSE(menu_delegate->IsCommandEnabled(kNonexistentId));
+  EXPECT_FALSE(menu_delegate->IsCommandVisible(kNonexistentId));
+  EXPECT_FALSE(menu_delegate->IsItemChecked(kNonexistentId));
+  menu_delegate->ExecuteCommand(kNonexistentId);
+  menu_delegate->ExecuteCommand(kNonexistentId, 0);
+  EXPECT_FALSE(model.last_activation().has_value());
+}
+
 }  // namespace views
