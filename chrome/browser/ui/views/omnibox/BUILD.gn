@@ -168,6 +168,7 @@ source_set("impl") {
     "//content/public/browser",
     "//extensions/common:common_constants",
     "//ui/base:data_exchange",
+    "//ui/content_accelerators",
     "//ui/strings:ui_strings_grit",
   ]
 

@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
@@ -659,12 +660,10 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest, EscapeStagedUnwinding) {
       }));
 }
 
-// TODO(b/552482504): Handle keyboard events for Full WebUI omnibox popup
-// properly.
 // Verifies ESC key Stage 3 clears user input and closes the popup UI when
 // the permanent URL is empty (on NTP) and input is empty.
 IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
-                       DISABLED_EscapeStagedUnwinding_EmptyPermanentUrl) {
+                       EscapeStagedUnwinding_EmptyPermanentUrl) {
   base::HistogramTester histogram_tester;
 
   RunTestSequence(
@@ -1066,6 +1065,22 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
       WaitForWebContentsReady(kTab2),
       InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)),
       WaitForOmniboxFocus(false));
+}
+
+// Verifies that pressing Ctrl+N / Cmd+N while the WebUI Omnibox is focused
+// opens a new browser window.
+// TODO(b/552482504): Fix this test.
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
+                       DISABLED_NewWindowShortcutWithWebUIOmniboxFocused) {
+  ui_test_utils::BrowserCreatedObserver observer;
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      WaitForWebUIInputValue("chrome://version"), CheckWebUIInputFocus(true),
+      InAnyContext(
+          SendKeyPress(kPopupWebView, ui::VKEY_N, ui::EF_PLATFORM_ACCELERATOR)),
+      Do([&observer]() { observer.Wait(); }), Check([]() {
+        return GlobalBrowserCollection::GetInstance()->GetSize() == 2;
+      }));
 }
 
 // Verifies that pressing Ctrl+L / Cmd+L while typing a query selects the typed

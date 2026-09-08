@@ -373,16 +373,7 @@ void OmniboxPopupFullPresenter::OnWidgetActivationChanged(views::Widget* widget,
     const bool is_popup_open =
         controller()->popup_state_manager()->popup_state() ==
         OmniboxPopupState::kFull;
-    // Only rescue focus on ESC if the user is in the middle of active
-    // unwinding (dirty input in progress or text differs from permanent
-    // display text). In Stage 4 (clean input matching permanent display text,
-    // dropdown closed), the ESC key was intended to blur and dismiss the UI, so
-    // do not fight the deactivation.
-    const bool has_active_user_input =
-        controller()->edit_model()->user_input_in_progress() ||
-        controller()->edit_model()->user_text() !=
-            controller()->edit_model()->GetPermanentDisplayText();
-    if (is_esc && is_popup_open && has_active_user_input) {
+    if (is_esc && is_popup_open) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&OmniboxPopupFullPresenter::RequestFocus,
                                     weak_factory_.GetWeakPtr()));

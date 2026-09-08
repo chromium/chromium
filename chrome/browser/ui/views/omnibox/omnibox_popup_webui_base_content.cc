@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_popup_file_selector.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_context_menu.h"
@@ -42,6 +43,7 @@
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/content_accelerators/accelerator_util.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -267,17 +269,41 @@ void OmniboxPopupWebUIBaseContent::ResizeDueToAutoResize(
 bool OmniboxPopupWebUIBaseContent::HandleKeyboardEvent(
     content::WebContents* source,
     const input::NativeWebKeyboardEvent& event) {
-  if (event.GetType() == input::NativeWebKeyboardEvent::Type::kRawKeyDown &&
-      event.windows_key_code == ui::VKEY_ESCAPE) {
-    if (popup_presenter_) {
+  if (event.windows_key_code == ui::VKEY_ESCAPE) {
+    if (event.GetType() == input::NativeWebKeyboardEvent::Type::kRawKeyDown &&
+        popup_presenter_) {
       popup_presenter_->NotifyEscapeKeyPressed();
     }
     if (EscClosesUI()) {
       return controller_->edit_model()->OnEscapeKeyPressed();
     }
+    if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
+      return true;
+    }
   }
-  // TODO(b/552482504): Handle keyboard event for Full WebUI omnibox popup
-  // properly.
+
+  // When the full WebUI Omnibox popup is enabled and focused, the popup widget
+  // is active while the parent browser frame is inactive. Forward unhandled
+  // keyboard events (excluding Escape, which is handled above and must not
+  // trigger `IDC_STOP`) directly to the parent `BrowserView` so browser-level
+  // accelerators (e.g., Ctrl+N, Ctrl+T, Ctrl+W) are executed.
+  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup) &&
+      popup_presenter_ &&
+      (event.GetType() == input::NativeWebKeyboardEvent::Type::kRawKeyDown ||
+       event.GetType() == input::NativeWebKeyboardEvent::Type::kKeyDown)) {
+    views::Widget* location_bar_widget =
+        popup_presenter_->delegate().GetLocationBarWidget();
+    BrowserView* browser_view =
+        location_bar_widget ? BrowserView::GetBrowserViewForNativeWindow(
+                                  location_bar_widget->GetNativeWindow())
+                            : nullptr;
+    if (browser_view &&
+        browser_view->AcceleratorPressed(
+            ui::GetAcceleratorFromNativeWebKeyboardEvent(event))) {
+      return true;
+    }
+  }
+
   return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
       event, GetFocusManager());
 }
