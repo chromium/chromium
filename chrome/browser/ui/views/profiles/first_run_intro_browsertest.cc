@@ -119,6 +119,7 @@ std::string_view GetMakeCardDescriptionLongerJsString() {
 
 }  // namespace
 
+// TODO(crbug.com/542896534): Add tests for larger profile picker window.
 class FirstRunIntroPixelTest
     : public ProfilesPixelTestBaseT<UiBrowserTest>,
       public testing::WithParamInterface<FirstRunTestParam> {
