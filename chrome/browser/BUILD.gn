@@ -4235,6 +4235,67 @@ if (!is_android) {
       sources += [ "platform_util_browsertest.cc" ]
     }
   }
+
+  # Interactive UI tests for top-level //chrome/browser code that does not
+  # live in a subdirectory.
+  source_set("core_interactive_ui_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [
+      "about_flags_browsertest.cc",
+      "browser_keyevents_interactive_uitest.cc",
+      "chrome_render_widget_host_interactive_uitest.cc",
+      "focus_ring_interactive_uitest.cc",
+      "mouse_events_interactive_uitest.cc",
+      "select_popup_interactive_uitest.cc",
+      "surface_embed_background_tab_capture_interactive_uitest.cc",
+    ]
+    deps = [
+      ":flags",
+      ":unexpire_flags",
+      "//cc:test_support",
+      "//chrome/browser/media/webrtc:test_support",
+      "//chrome/browser/media/webrtc:webrtc_browser_tests_base",
+      "//chrome/browser/renderer_context_menu:test_support",
+      "//chrome/browser/ui",
+      "//chrome/common:chrome_features",
+      "//chrome/common:non_code_constants",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/javascript_dialogs",
+      "//components/surface_embed/common",
+      "//components/webui/flags",
+      "//content/test:browsertest_support",
+      "//content/test:test_support",
+      "//net:test_support",
+      "//testing/gtest",
+      "//ui/base",
+      "//ui/events:test_support",
+    ]
+
+    if (is_mac) {
+      sources += [
+        "app_controller_mac_interactive_uitest.mm",
+        "global_keyboard_shortcuts_interactive_uitest_mac.mm",
+      ]
+      deps += [
+        ":app_controller_mac",
+        ":global_keyboard_shortcuts_mac",
+        "//chrome/app:command_ids",
+        "//chrome/browser/history",
+        "//chrome/browser/lifetime",
+        "//chrome/browser/profiles:profile",
+        "//chrome/browser/ui/cocoa",
+        "//chrome/test/base:chrome_test_path_utils",
+        "//chrome/test/base:profile_lifecycle_test_utils",
+        "//chrome/test/interaction",
+        "//extensions/browser",
+        "//ui/views",
+        "//ui/views:test_support",
+      ]
+    }
+  }
 }
 
 if (is_android) {
@@ -4244,5 +4305,26 @@ if (is_android) {
 
   java_cpp_enum("screenshot_mode_enum") {
     sources = [ "android/feedback/screenshot_mode.h" ]
+  }
+
+  # Browser tests for top-level //chrome/browser code that does not live in a
+  # subdirectory.
+  source_set("core_android_browsertests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "multi_network_browser_test.cc" ]
+    deps = [
+      ":chrome_content_browser_client",
+      "//chrome/browser/preloading",
+      "//chrome/browser/tab_list",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui_android",
+      "//components/download/public/common:public",
+      "//content/test:test_support",
+      "//net:test_support",
+      "//services/network:network_service",
+      "//testing/gtest",
+    ]
   }
 }

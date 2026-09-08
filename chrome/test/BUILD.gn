@@ -1137,7 +1137,6 @@ if (is_android) {
     sources = [
       "../browser/android/persisted_tab_data/persisted_tab_data_android_browsertest.cc",
       "../browser/android/persisted_tab_data/sensitivity_persisted_tab_data_android_browsertest.cc",
-      "../browser/multi_network_browser_test.cc",
       "../browser/renderer_host/javascript_optimizer_feature_browsertest.cc",
       "../renderer/accessibility/read_anything/read_anything_test_utils.cc",
       "../renderer/accessibility/read_anything/read_anything_test_utils.h",
@@ -1169,6 +1168,7 @@ if (is_android) {
       "//chrome/android:chrome_jni_headers",
       "//chrome/android:delegate_public_impl_java",
       "//chrome/browser:chrome_content_browser_client",
+      "//chrome/browser:core_android_browsertests",
       "//chrome/browser/accessibility/accessibility_prefs:browser_tests",
       "//chrome/browser/actor:browser_tests",
       "//chrome/browser/android",
@@ -8099,13 +8099,6 @@ if (!is_android && !is_chromeos_device) {
     use_xvfb = use_xvfb_in_this_config
 
     sources = [
-      "../browser/about_flags_browsertest.cc",
-      "../browser/browser_keyevents_interactive_uitest.cc",
-      "../browser/chrome_render_widget_host_interactive_uitest.cc",
-      "../browser/focus_ring_interactive_uitest.cc",
-      "../browser/mouse_events_interactive_uitest.cc",
-      "../browser/select_popup_interactive_uitest.cc",
-      "../browser/surface_embed_background_tab_capture_interactive_uitest.cc",
       "../browser/ui/views/autofill/payments/bnpl_tos_view_desktop_interactive_uitest.cc",
       "../browser/ui/views/autofill/payments/iban_bubble_view_interactive_uitest.cc",
       "../browser/ui/views/autofill/payments/select_bnpl_issuer_dialog_interactive_uitest.cc",
@@ -9009,8 +9002,6 @@ if (!is_android && !is_chromeos_device) {
 
     if (is_mac) {
       sources += [
-        "../browser/app_controller_mac_interactive_uitest.mm",
-        "../browser/global_keyboard_shortcuts_interactive_uitest_mac.mm",
         "../browser/ui/views/frame/browser_native_widget_mac_interactive_uitest.mm",
         "../browser/ui/views/frame/immersive_mode_controller_mac_interactive_uitest.mm",
         "//ui/display/mac/test/virtual_display_util_mac_interactive_uitest.mm",
@@ -9102,6 +9093,7 @@ if (!is_android && !is_chromeos_device) {
     }
 
     deps += [
+      "//chrome/browser:core_interactive_ui_tests",
       "//chrome/browser/actor:interactive_ui_tests",
       "//chrome/browser/background/glic",
       "//chrome/browser/background/glic:interactive_ui_tests",
