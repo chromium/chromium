@@ -45,6 +45,8 @@ const base::FeatureParam<std::string>
     kAutoDownloadTranslateLanguagePacksLanguagePairs{
         &kAutoDownloadTranslateLanguagePacks, "language_pairs", ""};
 
+BASE_FEATURE(kTranslateKitV3Models, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // static
 base::FilePath GetTranslateKitBinaryPathFromCommandLine() {
   return GetPathFromCommandLine(kTranslateKitBinaryPath);

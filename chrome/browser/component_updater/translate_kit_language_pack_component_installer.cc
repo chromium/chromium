@@ -120,7 +120,12 @@ std::string TranslateKitLanguagePackComponentInstallerPolicy::GetName() const {
 update_client::InstallerAttributes
 TranslateKitLanguagePackComponentInstallerPolicy::GetInstallerAttributes()
     const {
-  return update_client::InstallerAttributes();
+  update_client::InstallerAttributes attributes;
+  if (base::FeatureList::IsEnabled(
+          on_device_translation::kTranslateKitV3Models)) {
+    attributes["model_version"] = "v3";
+  }
+  return attributes;
 }
 
 const on_device_translation::LanguagePackComponentConfig&

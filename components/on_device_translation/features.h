@@ -42,6 +42,9 @@ BASE_DECLARE_FEATURE(kAutoDownloadTranslateLanguagePacks);
 extern const base::FeatureParam<std::string>
     kAutoDownloadTranslateLanguagePacksLanguagePairs;
 
+// Enables loading and using V3 TranslateKit language packs.
+BASE_DECLARE_FEATURE(kTranslateKitV3Models);
+
 const char kTranslateKitBinaryPath[] = "translate-kit-binary-path";
 
 base::FilePath GetTranslateKitBinaryPathFromCommandLine();
