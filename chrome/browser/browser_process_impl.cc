@@ -58,6 +58,7 @@
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/gpu/gpu_mode_manager.h"
 #include "chrome/browser/icon_manager.h"
+#include "chrome/browser/intranet_redirect_detector.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/media/audio_process_ml_model_forwarder.h"
@@ -204,7 +205,6 @@ void OnLocalStatePrefsLoaded();
 #include "chrome/browser/error_reporting/chrome_js_error_report_processor.h"
 #include "chrome/browser/gcm/gcm_product_util.h"
 #include "chrome/browser/hid/hid_system_tray_icon.h"
-#include "chrome/browser/intranet_redirect_detector.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/usb/usb_system_tray_icon.h"
@@ -1199,7 +1199,6 @@ BrowserProcessImpl::device_parental_controls() {
   return *device_parental_controls_;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 IntranetRedirectDetector* BrowserProcessImpl::intranet_redirect_detector() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!intranet_redirect_detector_) {
@@ -1208,7 +1207,6 @@ IntranetRedirectDetector* BrowserProcessImpl::intranet_redirect_detector() {
 
   return intranet_redirect_detector_.get();
 }
-#endif
 
 const std::string& BrowserProcessImpl::GetApplicationLocale() {
 #if !BUILDFLAG(IS_CHROMEOS)

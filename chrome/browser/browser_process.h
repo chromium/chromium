@@ -40,6 +40,7 @@ class DownloadStatusUpdater;
 class GlobalFeatures;
 class GpuModeManager;
 class IconManager;
+class IntranetRedirectDetector;
 class MediaFileSystemRegistry;
 class NotificationPlatformBridge;
 class NotificationUIManager;
@@ -54,7 +55,6 @@ class WebRtcLogUploader;
 #if !BUILDFLAG(IS_ANDROID)
 class HidSystemTrayIcon;
 class UsbSystemTrayIcon;
-class IntranetRedirectDetector;
 #endif
 
 namespace embedder_support {
@@ -232,9 +232,7 @@ class BrowserProcess {
   virtual supervised_user::DeviceParentalControls&
   device_parental_controls() = 0;
 
-#if !BUILDFLAG(IS_ANDROID)
   virtual IntranetRedirectDetector* intranet_redirect_detector() = 0;
-#endif
 
   // Sets or gets the locale used by the application. It is the IETF language
   // tag, defined in BCP 47. The region subtag is not included when it adds no

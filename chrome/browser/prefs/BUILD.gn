@@ -65,6 +65,7 @@ source_set("impl") {
     "//chrome/browser:chrome_content_browser_client",
     "//chrome/browser:defaults",
     "//chrome/browser:flags",
+    "//chrome/browser:intranet_redirect_detector",
     "//chrome/browser/accessibility",
     "//chrome/browser/accessibility/accessibility_prefs",
     "//chrome/browser/autocomplete:aim_eligibility_service",
@@ -383,7 +384,6 @@ source_set("impl") {
     ]
   } else {
     deps += [
-      "//chrome/browser:intranet_redirect_detector",
       "//chrome/browser/actor/ui",
       "//chrome/browser/desktop_to_mobile_promos:utils",
       "//chrome/browser/device_identity",

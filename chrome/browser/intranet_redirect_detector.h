@@ -26,8 +26,10 @@ class SimpleURLLoader;
 class PrefRegistrySimple;
 
 #if !(BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
-      BUILDFLAG(IS_CHROMEOS))
-#error "IntranetRedirectDetector should only be built on Desktop platforms."
+      BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID))
+#error \
+    "IntranetRedirectDetector should only be built on Desktop platforms " \
+    "and Android."
 #endif
 
 // This object is responsible for determining whether the user is on a network

@@ -467,6 +467,18 @@ source_set("universal_web_contents_observers") {
   deps = [ "//content/public/browser" ]
 }
 
+source_set("intranet_redirect_detector") {
+  public = [ "intranet_redirect_detector.h" ]
+  deps = [
+    "//base",
+    "//components/pref_registry",
+    "//mojo/public/cpp/bindings",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//url",
+  ]
+}
+
 if (!is_android) {
   source_set("certificate_viewer") {
     public = [ "certificate_viewer.h" ]
@@ -474,18 +486,6 @@ if (!is_android) {
       "//content/public/browser",
       "//net",
       "//ui/gfx:native_ui_types",
-    ]
-  }
-
-  source_set("intranet_redirect_detector") {
-    public = [ "intranet_redirect_detector.h" ]
-    deps = [
-      "//base",
-      "//components/pref_registry",
-      "//mojo/public/cpp/bindings",
-      "//services/network/public/cpp",
-      "//services/network/public/mojom",
-      "//url",
     ]
   }
 
@@ -863,6 +863,7 @@ source_set("core") {
     "font_family_cache.h",
     "global_features.cc",
     "icon_manager.cc",
+    "intranet_redirect_detector.cc",
     "memory_details.cc",
     "net_benchmarking.cc",
     "platform_util_internal.cc",
@@ -914,6 +915,7 @@ source_set("core") {
     ":global_features",
     ":icon_loader",
     ":icon_manager",
+    ":intranet_redirect_detector",
     ":main_extra_parts",
     ":memory_details",
     ":net_benchmarking",
@@ -1279,13 +1281,11 @@ source_set("core") {
 
     sources += [
       "chrome_process_singleton.cc",
-      "intranet_redirect_detector.cc",
       "process_singleton_startup_lock.cc",
       "repost_form_warning_controller.cc",
     ]
     deps += [
       ":chrome_process_singleton",
-      ":intranet_redirect_detector",
       ":repost_form_warning_controller",
       "//chrome/browser/accessibility/live_caption",
       "//chrome/browser/apps/app_service",

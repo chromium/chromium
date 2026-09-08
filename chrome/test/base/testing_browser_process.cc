@@ -514,11 +514,9 @@ TestingBrowserProcess::notification_platform_bridge() {
   return notification_platform_bridge_.get();
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 IntranetRedirectDetector* TestingBrowserProcess::intranet_redirect_detector() {
   return nullptr;
 }
-#endif
 
 void TestingBrowserProcess::CreateDevToolsProtocolHandler() {}
 

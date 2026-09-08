@@ -4873,6 +4873,7 @@ test("unit_tests") {
     "//chrome/browser:font_pref",
     "//chrome/browser:global_features",
     "//chrome/browser:icon_manager",
+    "//chrome/browser:intranet_redirect_detector",
     "//chrome/browser:primitives",
     "//chrome/browser:process_singleton",
     "//chrome/browser:renderer_preferences_util",
