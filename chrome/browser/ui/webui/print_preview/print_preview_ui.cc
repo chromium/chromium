@@ -99,7 +99,7 @@ namespace printing {
 
 namespace {
 
-// TODO(crbug.com/518763216): Remove flag once it is fully rolled out.
+// TODO(crbug.com/558757898): Remove flag once it is fully rolled out.
 // Enables sending non-modifiable (PDF) documents to the print compositor.
 BASE_FEATURE(kPdfWatermarkPrintCompositor,
              "PdfWatermarkPrintCompositor",
