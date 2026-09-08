@@ -14,7 +14,6 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
@@ -408,8 +407,8 @@ bool STGEverythingMenu::ShowContextMenu(views::MenuItemView* source,
 bool STGEverythingMenu::GetAccelerator(int id,
                                        ui::Accelerator* accelerator) const {
   if (id == IDC_CREATE_NEW_TAB_GROUP) {
-    return browser_->GetFeatures()
-        .accelerator_provider()
+    return BrowserWindow::FromBrowser(browser_)
+        ->GetAcceleratorProvider()
         ->GetAcceleratorForCommandId(id, accelerator);
   }
 

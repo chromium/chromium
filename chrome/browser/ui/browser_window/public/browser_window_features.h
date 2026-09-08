@@ -263,10 +263,6 @@ namespace ttc {
 class AiOverlayDialogController;
 }  // namespace ttc
 
-namespace ui {
-class AcceleratorProvider;
-}  // namespace ui
-
 namespace web_app {
 class AppBrowserController;
 }  // namespace web_app
@@ -305,10 +301,6 @@ class BrowserWindowFeatures {
 
   // Called exactly once to tear down state that depends on the window object.
   void TearDownPreBrowserWindowDestruction();
-
-  ui::AcceleratorProvider* accelerator_provider() {
-    return accelerator_provider_;
-  }
 
   chrome::BrowserCommandController* browser_command_controller() const {
     return browser_command_controller_.get();
@@ -599,11 +591,6 @@ class BrowserWindowFeatures {
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   // Non-owning references.
-  // TODO(webium): Current both BrowserView and WebUIBrowserWindow implement
-  // AcceleratorProvider. Consider eliminating this inheritance and composing
-  // this functionality into its own class.
-  raw_ptr<ui::AcceleratorProvider> accelerator_provider_;
-
   // TODO(crbug.com/423956131): Remove this.
   raw_ptr<BrowserWindowInterface> browser_ = nullptr;
 

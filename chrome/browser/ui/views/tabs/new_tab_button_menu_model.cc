@@ -10,7 +10,7 @@
 #include "base/metrics/user_metrics.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -92,8 +92,8 @@ bool NewTabButtonMenuModel::GetAcceleratorForCommandId(
     return false;
   }
 
-  return browser_->GetFeatures()
-      .accelerator_provider()
+  return BrowserWindow::FromBrowser(browser_)
+      ->GetAcceleratorProvider()
       ->GetAcceleratorForCommandId(command_id, accelerator);
 }
 

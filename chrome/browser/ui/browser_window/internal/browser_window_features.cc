@@ -695,14 +695,6 @@ void BrowserWindowFeatures::InitPostWindowConstruction(
   // out with `// Must be after X.` / `// Must be before X.` comments):
 
   if (browser_view) {
-    // BrowserView is an AcceleratorProvider.
-    accelerator_provider_ = browser_view;
-  } else if (webui_browser_window) {
-    // WebUIBrowserWindow is an AcceleratorProvider.
-    accelerator_provider_ = webui_browser_window;
-  }
-
-  if (browser_view) {
     bookmark_bar_controller_->SetDelegate(browser_view);
   } else if (webui_browser_window) {
     bookmark_bar_controller_->SetDelegate(webui_browser_window);
@@ -1226,7 +1218,6 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   browser_select_file_dialog_controller_.reset();
   browser_focus_controller_.reset();
   bookmark_bar_controller_->SetDelegate(nullptr);
-  accelerator_provider_ = nullptr;
 
   // ---------------------------------------------------------------------------
   // Init (reverse).
