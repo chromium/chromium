@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
@@ -612,6 +613,22 @@ bool IsAccessTokenRequiredForFeature(ModelBasedCapabilityKey feature) {
       return !base::FeatureList::IsEnabled(
           features::kOptimizationGuideBypassPasswordChangeAuth);
   }
+}
+
+GURL GetModelExecutionServiceBaseURL() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(
+          kOptimizationGuideServiceModelExecutionURLSwitch)) {
+    return GURL(command_line->GetSwitchValueASCII(
+        kOptimizationGuideServiceModelExecutionURLSwitch));
+  }
+  return GURL(kOptimizationGuideServiceModelExecutionDefaultBaseURL);
+}
+
+GURL GetModelExecutionServiceFullURL(std::string_view rpc_name) {
+  GURL base_url = GetModelExecutionServiceBaseURL();
+  CHECK(base_url.spec().ends_with('/'));
+  return GURL(base::StrCat({base_url.spec(), rpc_name}));
 }
 
 }  // namespace optimization_guide

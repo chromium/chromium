@@ -5,9 +5,12 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_REMOTE_MODEL_EXECUTION_COMMON_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_REMOTE_MODEL_EXECUTION_COMMON_H_
 
+#include <string_view>
+
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "url/gurl.h"
 
 namespace google::protobuf {
 class MessageLite;
@@ -21,6 +24,21 @@ struct ResourceRequest;
 // remote model execution. Utility methods of other purpose should not be added
 // here.
 namespace optimization_guide {
+
+// Overrides the Optimization Guide model execution base URL.
+inline constexpr char kOptimizationGuideServiceModelExecutionURLSwitch[] =
+    "optimization-guide-service-model-execution-url";
+
+// The default base URL for the remote model execution service.
+inline constexpr char kOptimizationGuideServiceModelExecutionDefaultBaseURL[] =
+    "https://chromemodelexecution-pa.googleapis.com/";
+
+// Returns the base URL endpoint used for the model execution service.
+GURL GetModelExecutionServiceBaseURL();
+
+// Returns the full URL endpoint used for the model execution service by
+// appending `rpc_name` to the base URL.
+GURL GetModelExecutionServiceFullURL(std::string_view rpc_name);
 
 // The name of the model execution debug logs header.
 inline constexpr char kOptimizationGuideModelExecutionDebugLogsHeaderKey[] =

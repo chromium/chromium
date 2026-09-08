@@ -39,7 +39,6 @@ class ModelExecutionFetcherImpl : public ModelExecutionFetcher {
  public:
   ModelExecutionFetcherImpl(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const GURL& optimization_guide_service_url,
       OptimizationGuideLogger* optimization_guide_logger);
 
   ModelExecutionFetcherImpl(const ModelExecutionFetcherImpl&) = delete;

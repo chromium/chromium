@@ -20,6 +20,7 @@
 #include "base/test/test_future.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
+#include "components/optimization_guide/core/model_execution/remote_model_execution_common.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -550,11 +551,11 @@ TEST_F(RemoteModelExecutionSessionImplTest, AccessTokenRequiredButNotSignedIn) {
 }
 
 TEST_F(RemoteModelExecutionSessionImplTest,
-       DevStreamUrlBypassesAccessTokenRequirement) {
+       DevUrlBypassesAccessTokenRequirement) {
   base::test::ScopedCommandLine scoped_command_line;
   scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
-      kOptimizationGuideServiceModelExecutionStreamURLSwitch,
-      "ws://127.0.0.1:8080/v1:StreamExecute");
+      kOptimizationGuideServiceModelExecutionURLSwitch,
+      "https://127.0.0.1:8080/");
 
   auto* session = CreateSession(ModelBasedCapabilityKey::kWallpaperSearch);
 

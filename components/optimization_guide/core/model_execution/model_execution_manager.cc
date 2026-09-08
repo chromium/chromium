@@ -35,9 +35,6 @@ namespace optimization_guide {
 
 namespace {
 
-constexpr char kOptimizationGuideServiceModelExecutionDefaultURL[] =
-    "https://chromemodelexecution-pa.googleapis.com/v1:Execute";
-
 const std::string& ProtoName(ModelBasedCapabilityKey feature) {
   return proto::ModelExecutionFeature_Name(
       ToModelExecutionFeatureProto(feature));
@@ -162,7 +159,6 @@ ModelExecutionManager::ModelExecutionManager(
         model_quality_uploader_service)
     : model_quality_uploader_service_(model_quality_uploader_service),
       optimization_guide_logger_(optimization_guide_logger),
-      model_execution_service_url_(GetModelExecutionServiceURL()),
       delegate_(std::move(delegate)),
       url_loader_factory_(url_loader_factory),
       identity_manager_(identity_manager) {}
@@ -286,8 +282,7 @@ ModelExecutionManager::CreateModelExecutionFetcher(
   switch (service_type) {
     case ModelExecutionServiceType::kDefault:
       return std::make_unique<ModelExecutionFetcherImpl>(
-          url_loader_factory_, model_execution_service_url_,
-          optimization_guide_logger_);
+          url_loader_factory_, optimization_guide_logger_);
     case ModelExecutionServiceType::kPrivateAi:
       if (!delegate_) {
         return nullptr;
@@ -397,16 +392,6 @@ void ModelExecutionManager::OnModelExecuteResponse(
                               base::ok(execute_response->response_metadata()),
                               std::move(execution_info)),
                           std::move(log_entry));
-}
-
-GURL GetModelExecutionServiceURL() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(
-          kOptimizationGuideServiceModelExecutionURLSwitch)) {
-    return GURL(command_line->GetSwitchValueASCII(
-        kOptimizationGuideServiceModelExecutionURLSwitch));
-  }
-  return GURL(kOptimizationGuideServiceModelExecutionDefaultURL);
 }
 
 }  // namespace optimization_guide

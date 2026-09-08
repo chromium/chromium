@@ -12,7 +12,7 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/optimization_guide/core/model_execution/model_execution_manager.h"
+#include "components/optimization_guide/core/model_execution/remote_model_execution_common.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
@@ -42,7 +42,7 @@ class ModelExecutionValidationBrowserTestBase : public InProcessBrowserTest {
     model_execution_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
     net::EmbeddedTestServer::ServerCertificateConfig cert_config;
-    cert_config.dns_names = {GetModelExecutionServiceURL().GetHost()};
+    cert_config.dns_names = {GetModelExecutionServiceBaseURL().GetHost()};
     model_execution_server_->SetSSLConfig(cert_config);
     model_execution_server_->RegisterRequestHandler(
         base::BindRepeating(&ModelExecutionValidationBrowserTestBase::
@@ -56,7 +56,7 @@ class ModelExecutionValidationBrowserTestBase : public InProcessBrowserTest {
     cmd->AppendSwitchASCII(
         kOptimizationGuideServiceModelExecutionURLSwitch,
         model_execution_server_
-            ->GetURL(GetModelExecutionServiceURL().GetHost(), "/")
+            ->GetURL(GetModelExecutionServiceBaseURL().GetHost(), "/")
             .spec());
     // Add a dummy variation ID so that the X-Client-Data header is appended to
     // eligible requests to select Google servers.

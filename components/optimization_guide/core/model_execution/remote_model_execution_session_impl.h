@@ -20,7 +20,6 @@
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/streaming_client/streaming_websocket_client.h"
-#include "url/gurl.h"
 
 class OptimizationGuideLogger;
 
@@ -33,17 +32,6 @@ class IdentityManager;
 }  // namespace signin
 
 namespace optimization_guide {
-
-inline constexpr char
-    kOptimizationGuideServiceModelExecutionDefaultStreamURL[] =
-        "https://chromemodelexecution-pa.googleapis.com/v1:StreamExecute";
-
-// Overrides the Optimization Guide model execution streaming URL.
-inline constexpr char kOptimizationGuideServiceModelExecutionStreamURLSwitch[] =
-    "optimization-guide-service-model-execution-stream-url";
-
-// Returns the URL endpoint used for the streaming model execution service.
-GURL GetModelExecutionServiceStreamURL();
 
 // RemoteModelExecutionSession implementation that communicates with MES
 // via WebSocket using StreamingWebSocketClient.

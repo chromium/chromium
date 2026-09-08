@@ -16,7 +16,6 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
-#include "url/gurl.h"
 
 class OptimizationGuideLogger;
 
@@ -33,13 +32,6 @@ class IdentityManager;
 }  // namespace signin
 
 namespace optimization_guide {
-
-// Overrides the Optimization Guide model execution URL.
-inline constexpr char kOptimizationGuideServiceModelExecutionURLSwitch[] =
-    "optimization-guide-service-model-execution-url";
-
-// Return the URL endpoint used for the model execution service.
-GURL GetModelExecutionServiceURL();
 
 class ModelExecutionFetcher;
 
@@ -125,9 +117,6 @@ class ModelExecutionManager final {
 
   // Owned by OptimizationGuideKeyedService and outlives `this`.
   raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
-
-  // The endpoint for the model execution service.
-  const GURL model_execution_service_url_;
 
   // Provides alternative fetcher implementations.
   std::unique_ptr<Delegate> delegate_;

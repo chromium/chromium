@@ -15,6 +15,7 @@
 #include "base/test/test.pb.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
+#include "components/optimization_guide/core/model_execution/remote_model_execution_common.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
@@ -36,9 +37,6 @@ namespace optimization_guide {
 using base::test::TestMessage;
 
 namespace {
-
-constexpr char kOptimizationGuideServiceUrl[] =
-    "https://optimization-guide-server.com/";
 
 TestMessage BuildTestMessage(const std::string& test_message_str) {
   TestMessage test_message;
@@ -69,8 +67,7 @@ class ModelExecutionFetcherImplTest : public testing::Test {
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {
     model_execution_fetcher_ = std::make_unique<ModelExecutionFetcherImpl>(
-        shared_url_loader_factory_, GURL(kOptimizationGuideServiceUrl),
-        /*optimization_guide_logger=*/nullptr);
+        shared_url_loader_factory_, /*optimization_guide_logger=*/nullptr);
   }
   ModelExecutionFetcherImplTest(const ModelExecutionFetcherImplTest&) = delete;
   ModelExecutionFetcherImplTest& operator=(
@@ -126,7 +123,7 @@ class ModelExecutionFetcherImplTest : public testing::Test {
   bool SimulateResponse(const std::string& content,
                         net::HttpStatusCode http_status) {
     return test_url_loader_factory_.SimulateResponseForPendingRequest(
-        kOptimizationGuideServiceUrl, content, http_status,
+        GetModelExecutionServiceBaseURL().spec(), content, http_status,
         network::TestURLLoaderFactory::kUrlMatchPrefix);
   }
 

@@ -21,10 +21,12 @@
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_execution/remote_model_execution_common.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -37,17 +39,18 @@ namespace {
 using ModelExecutionError =
     OptimizationGuideModelExecutionError::ModelExecutionError;
 
-}  // namespace
+constexpr char kModelExecutionStreamingRPCName[] = "v1:StreamExecute";
 
-GURL GetModelExecutionServiceStreamURL() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(
-          kOptimizationGuideServiceModelExecutionStreamURLSwitch)) {
-    return GURL(command_line->GetSwitchValueASCII(
-        kOptimizationGuideServiceModelExecutionStreamURLSwitch));
+GURL GetModelExecutionServiceStreamURL(ModelBasedCapabilityKey feature) {
+  GURL url = GetModelExecutionServiceFullURL(kModelExecutionStreamingRPCName);
+  if (!IsAccessTokenRequiredForFeature(feature)) {
+    return net::AppendOrReplaceQueryParameter(
+        url, "key", features::GetOptimizationGuideServiceAPIKey());
   }
-  return GURL(kOptimizationGuideServiceModelExecutionDefaultStreamURL);
+  return url;
 }
+
+}  // namespace
 
 RemoteModelExecutionSessionImpl::RemoteModelExecutionSessionImpl(
     ModelBasedCapabilityKey feature,
@@ -62,7 +65,7 @@ RemoteModelExecutionSessionImpl::RemoteModelExecutionSessionImpl(
           std::move(callback),
           identity_manager,
           std::make_unique<streaming_client::StreamingWebSocketClient>(
-              GetModelExecutionServiceStreamURL(),
+              GetModelExecutionServiceStreamURL(feature),
               network_context,
               GetNetworkTrafficAnnotation(feature),
               /*delegate=*/this),
@@ -166,7 +169,7 @@ void RemoteModelExecutionSessionImpl::OnAccessTokenReceived(
 
   if (IsAccessTokenRequiredForFeature(feature_) && access_token.empty() &&
       !base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kOptimizationGuideServiceModelExecutionStreamURLSwitch)) {
+          kOptimizationGuideServiceModelExecutionURLSwitch)) {
     HandleDisconnection(
         OptimizationGuideModelExecutionError::FromModelExecutionError(
             ModelExecutionError::kPermissionDenied));
