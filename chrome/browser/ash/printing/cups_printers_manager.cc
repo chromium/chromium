@@ -9,13 +9,11 @@
 #include <optional>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "base/check_deref.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -351,14 +349,10 @@ class CupsPrintersManagerImpl
       }
     }
 
-    if (base::FeatureList::IsEnabled(features::kManagedUsbPrinters)) {
-      // Retrigger the setup of enterprise USB printers. This also removes any
-      // detected (but not saved) USB printers which should be enterprise
-      // managed. `PrinterClass::kEnterprise` observers are also notified here.
-      RebuildDetectedLists();
-    } else {
-      NotifyObservers({PrinterClass::kEnterprise});
-    }
+    // Retrigger the setup of enterprise USB printers. This also removes any
+    // detected (but not saved) USB printers which should be enterprise
+    // managed. `PrinterClass::kEnterprise` observers are also notified here.
+    RebuildDetectedLists();
   }
 
   // CrosNetworkConfigObserver implementation.
@@ -907,9 +901,6 @@ class CupsPrintersManagerImpl
       }
     }
     // Now look through enterprise usb printers.
-    if (!base::FeatureList::IsEnabled(features::kManagedUsbPrinters)) {
-      return std::nullopt;
-    }
     if (std::optional<Printer> enterprise =
             printers_.Get(chromeos::PrinterClass::kEnterprise, id)) {
       // Need to find the corresponding detected usb printer and get the
@@ -977,21 +968,14 @@ class CupsPrintersManagerImpl
     // Update the list of connected printers.
     std::vector<PrinterDetector::DetectedPrinter> printers;
     for (const PrinterDetector::DetectedPrinter& detected : detected_list) {
-      if (base::FeatureList::IsEnabled(features::kManagedUsbPrinters)) {
-        UpdateEnterprisePrintersWithDetected(detected.printer);
-        // Skip further set up for any enterprise managed or saved printers.
-        if (AnyEnterprisePrinterMatches(detected.printer.usb_device_id()) ||
-            printers_.IsPrinterInClass(PrinterClass::kSaved,
-                                       detected.printer.id())) {
-          continue;
-        }
-        printers.push_back(detected);
-      } else {
-        if (!printers_.IsPrinterInClass(PrinterClass::kSaved,
-                                        detected.printer.id())) {
-          printers.push_back(detected);
-        }
+      UpdateEnterprisePrintersWithDetected(detected.printer);
+      // Skip further set up for any enterprise managed or saved printers.
+      if (AnyEnterprisePrinterMatches(detected.printer.usb_device_id()) ||
+          printers_.IsPrinterInClass(PrinterClass::kSaved,
+                                     detected.printer.id())) {
+        continue;
       }
+      printers.push_back(detected);
     }
 
     auto_usb_printer_configurer_->UpdateListOfConnectedPrinters(
@@ -1134,12 +1118,8 @@ class CupsPrintersManagerImpl
     AddDetectedUsbPrinters(usb_detections_);
     AddDetectedNetworkPrinters(zeroconf_detections_);
     AddDetectedNetworkPrinters(servers_detections_);
-    if (base::FeatureList::IsEnabled(features::kManagedUsbPrinters)) {
-      NotifyObservers({PrinterClass::kAutomatic, PrinterClass::kDiscovered,
-                       PrinterClass::kEnterprise});
-    } else {
-      NotifyObservers({PrinterClass::kAutomatic, PrinterClass::kDiscovered});
-    }
+    NotifyObservers({PrinterClass::kAutomatic, PrinterClass::kDiscovered,
+                     PrinterClass::kEnterprise});
   }
 
   void OnUsbPrinterSetupDone(std::string printer_id) {

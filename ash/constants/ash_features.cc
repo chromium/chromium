@@ -1214,9 +1214,6 @@ BASE_FEATURE(kMacAddressRandomization, base::FEATURE_DISABLED_BY_DEFAULT);
 // to be applied.
 BASE_FEATURE(kManagedLocalPinAndPassword, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables policy management for USB printers.
-BASE_FEATURE(kManagedUsbPrinters, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables Mantis on image contents in the Media App
 BASE_FEATURE(kMediaAppImageMantis, base::FEATURE_DISABLED_BY_DEFAULT);
 
