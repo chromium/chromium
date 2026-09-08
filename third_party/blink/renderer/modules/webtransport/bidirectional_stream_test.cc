@@ -115,6 +115,12 @@ class StubWebTransport : public network::mojom::blink::WebTransport {
                     base::OnceCallback<void(bool)>) override {
     NOTREACHED();
   }
+  void CreateDatagramWritable(
+      mojo::PendingReceiver<network::mojom::blink::WebTransportDatagramWritable>
+          writable,
+      network::mojom::blink::WebTransportStreamPriorityPtr priority) override {
+    NOTREACHED();
+  }
 
   void CreateStream(
       mojo::ScopedDataPipeConsumerHandle output_consumer,

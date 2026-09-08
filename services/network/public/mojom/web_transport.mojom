@@ -103,6 +103,38 @@ struct WebTransportStreamPriority {
   int64 send_order = 0;
 };
 
+// An outgoing Datagram writable created by
+// WebTransportDatagramDuplexStream.createWritable().
+// https://w3c.github.io/webtransport/#dom-webtransportdatagramduplexstream-createwritable
+// This is typically implemented in the network service, and used by renderer.
+//
+// The writable exists in the network service for exactly as long as this pipe
+// is open. Closing the pipe discards any Datagrams which are still queued and
+// removes the writable from the session's Datagram scheduler; to drain instead,
+// the client keeps the pipe open until every SendDatagram() response has been
+// received.
+interface WebTransportDatagramWritable {
+  // Indicates that the network service refused to create the writable because
+  // of a recoverable resource limit. Pending writes are treated as discarded
+  // Datagrams.
+  const uint32 kCreationRejectedDisconnectReason = 1;
+
+  // Indicates that the writable pipe was closed because its WebTransport
+  // session is terminating. The renderer waits for the session notification
+  // to reject pending writes instead of treating them as ordinary Datagram
+  // discards.
+  const uint32 kSessionClosedDisconnectReason = 2;
+
+  // Sends a Datagram through this writable. The response message represents
+  // whether the peer has sent or discarded the Datagram, with the same
+  // semantics as WebTransport.SendDatagram().
+  SendDatagram(mojo_base.mojom.ReadOnlyBuffer data) => (bool result);
+
+  // Updates the scheduling priority of this writable. Corresponds to the
+  // JavaScript WebTransportDatagramsWritable.sendGroup and .sendOrder setters.
+  SetPriority(WebTransportStreamPriority priority);
+};
+
 // A mojo interface for https://w3c.github.io/web-transport/#web-transport.
 // This is typically implemented in the network service, and used by renderer.
 // WebTransport represents a WebTransport over HTTP/3 session, which has
@@ -132,6 +164,16 @@ interface WebTransport {
   // A datagram message is sent from the client. The response message represents
   // whether the peer has sent or discarded the datagram.
   SendDatagram(mojo_base.mojom.ReadOnlyBuffer data) => (bool result);
+
+  // Creates an outgoing Datagram writable with the given initial scheduling
+  // priority. Datagrams sent through |writable| are scheduled against the
+  // Datagrams of every other writable of this session, including those sent
+  // with the legacy SendDatagram method, which uses the default priority.
+  // The writable is removed when |writable| is closed, at which point its
+  // queued Datagrams are discarded.
+  CreateDatagramWritable(
+      pending_receiver<WebTransportDatagramWritable> writable,
+      WebTransportStreamPriority priority);
 
   // Stream creation initiated by the client. |succeeded| represents whether
   // the stream is created successfully, and |stream_id| is meaningful only

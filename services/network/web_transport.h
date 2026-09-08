@@ -5,19 +5,26 @@
 #ifndef SERVICES_NETWORK_WEB_TRANSPORT_H_
 #define SERVICES_NETWORK_WEB_TRANSPORT_H_
 
+#include <map>
 #include <memory>
 #include <string_view>
+#include <vector>
 
 #include "base/containers/lru_cache.h"
 #include "base/containers/queue.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/completion_once_callback.h"
 #include "net/http/http_request_headers.h"
 #include "net/log/net_log_with_source.h"
 #include "net/quic/web_transport_client.h"
+#include "net/third_party/quiche/src/quiche/web_transport/web_transport.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
@@ -36,6 +43,7 @@ class NetworkAnonymizationKey;
 namespace network {
 
 class NetworkContext;
+class WebTransportTestPeer;
 
 // The implementation for WebTransport
 // (https://w3c.github.io/webtransport/#web-transport) in the NetworkService.
@@ -75,6 +83,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebTransport final
   // mojom::WebTransport implementation:
   void SendDatagram(base::span<const uint8_t> data,
                     base::OnceCallback<void(bool)> callback) override;
+  void CreateDatagramWritable(
+      mojo::PendingReceiver<mojom::WebTransportDatagramWritable> writable,
+      mojom::WebTransportStreamPriorityPtr priority) override;
   void CreateStream(mojo::ScopedDataPipeConsumerHandle readable,
                     mojo::ScopedDataPipeProducerHandle writable,
                     mojom::WebTransportStreamPriorityPtr priority,
@@ -121,6 +132,43 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebTransport final
   }
 
  private:
+  friend class WebTransportTestPeer;
+
+  class DatagramWritable;
+
+  static constexpr size_t kMaxDatagramWritables = 1024;
+  static constexpr size_t kMaxPendingDatagrams = 4096;
+  static constexpr size_t kMaxPendingDatagramBytes = 16 * 1024 * 1024;
+
+  struct PendingDatagram {
+    std::vector<uint8_t> data;
+    base::TimeTicks queued_at;
+    base::OnceCallback<void(bool)> callback;
+  };
+
+  void QueueDatagram(DatagramWritable* writable,
+                     base::span<const uint8_t> data,
+                     base::OnceCallback<void(bool)> callback);
+  void AccountForRemovedPendingDatagram(size_t size);
+  void ScheduleDatagramWritable(DatagramWritable* writable);
+  DatagramWritable* SelectNextDatagramWritable();
+  void RescheduleDatagramGroup(webtransport::SendGroupId send_group_id);
+  void MaybeSendDatagrams();
+  void CompleteNextDatagram(bool sent);
+  void ScheduleDatagramPump();
+  base::TimeDelta GetOutgoingDatagramExpirationDuration() const;
+  void ResetDatagramExpirationTimer();
+  void ExpirePendingDatagrams();
+  // Discards the queued Datagrams of a writable whose pipe the renderer closed
+  // and stops scheduling it. A Datagram which is already in flight keeps its
+  // slot in `datagram_callbacks_` so that QUICHE's FIFO completion order stays
+  // aligned.
+  void OnDatagramWritableDisconnected(DatagramWritable* writable);
+  // Closes every Datagram writable and drops the Datagrams they have queued.
+  void ClearDatagramState();
+  void MovePendingDatagramToInFlightForTesting(size_t index);
+  void ExpireNextDatagramForTesting(size_t index);
+
   void TearDown();
   void Dispose();
 
@@ -160,7 +208,36 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebTransport final
   mojo::Remote<mojom::URLLoaderNetworkServiceObserver>
       url_loader_network_observer_;
   mojom::ClientSecurityStatePtr client_security_state_;
+  // Completion callbacks for the Datagrams which have been handed to QUICHE,
+  // in the order QUICHE will report them. Entries are only ever appended and
+  // removed from the front, including when the writable a Datagram came from
+  // goes away. These callbacks belong to the pipes owned by `receiver_` and
+  // `datagram_writables_`, so they must be destroyed after those, which is why
+  // they are declared first.
   base::queue<base::OnceCallback<void(bool)>> datagram_callbacks_;
+  // The writables participating in Datagram scheduling. This owns the Mojo
+  // receivers of the writables created by CreateDatagramWritable(), plus the
+  // writable backing the legacy SendDatagram() path, which has no receiver.
+  // Order is stable so that scheduling ties are broken by creation order.
+  std::vector<std::unique_ptr<DatagramWritable>> datagram_writables_;
+  // Both are owned by `datagram_writables_` and cleared when the writable they
+  // point at goes away.
+  raw_ptr<DatagramWritable> legacy_datagram_writable_ = nullptr;
+  raw_ptr<DatagramWritable> in_flight_datagram_writable_ = nullptr;
+  base::TimeDelta outgoing_datagram_expiration_duration_;
+  base::OneShotTimer datagram_expiration_timer_;
+  uint64_t expired_pending_datagram_count_ = 0;
+  // Generates both group and writable schedule orders. Those values are only
+  // compared within their respective ordering domains.
+  uint64_t next_datagram_schedule_order_ = 0;
+  size_t pending_datagram_count_ = 0;
+  size_t pending_datagram_bytes_ = 0;
+  // These flags detect a synchronous OnDatagramProcessed() callback from
+  // SendOrQueueDatagram().
+  bool datagram_send_in_progress_ = false;
+  bool datagram_processed_during_send_ = false;
+  bool datagram_blocked_ = false;
+  bool datagram_pump_scheduled_ = false;
 
   // This must be the last member.
   base::WeakPtrFactory<WebTransport> weak_factory_{this};

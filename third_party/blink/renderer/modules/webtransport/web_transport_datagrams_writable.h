@@ -26,8 +26,20 @@ class MODULES_EXPORT WebTransportDatagramsWritable final
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  // An interface for the underlying sink to implement. The sink owns the Mojo
+  // remote of this writable, but is a private nested class of WebTransport and
+  // so cannot be named here.
+  class Client : public GarbageCollectedMixin {
+   public:
+    virtual ~Client() = default;
+
+    // Sends the current sendGroup and sendOrder to the network service.
+    virtual void SendDatagramWritablePriorityUpdate() = 0;
+  };
+
   WebTransportDatagramsWritable(ScriptState*,
                                 WebTransport*,
+                                Client*,
                                 WebTransportSendGroup*,
                                 int64_t send_order);
   ~WebTransportDatagramsWritable() override;
@@ -38,12 +50,15 @@ class MODULES_EXPORT WebTransportDatagramsWritable final
   void setSendGroup(WebTransportSendGroup*, ExceptionState&);
 
   int64_t sendOrder() const { return send_order_; }
-  void setSendOrder(int64_t send_order) { send_order_ = send_order; }
+  void setSendOrder(int64_t send_order);
 
   void Trace(Visitor*) const override;
 
  private:
+  void SendPriorityUpdate();
+
   const Member<WebTransport> transport_;
+  const Member<Client> client_;
   Member<WebTransportSendGroup> send_group_;
   int64_t send_order_;
 };

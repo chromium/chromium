@@ -25,10 +25,12 @@ constexpr size_t kHighWaterMark = 1;
 WebTransportDatagramsWritable::WebTransportDatagramsWritable(
     ScriptState* script_state,
     WebTransport* transport,
+    Client* client,
     WebTransportSendGroup* send_group,
     int64_t send_order)
     : WritableStream(script_state),
       transport_(transport),
+      client_(client),
       send_group_(send_group),
       send_order_(send_order) {}
 
@@ -50,11 +52,26 @@ void WebTransportDatagramsWritable::setSendGroup(
         "The sendGroup belongs to a different WebTransport instance.");
     return;
   }
-  send_group_ = group;
+  if (send_group_ != group) {
+    send_group_ = group;
+    SendPriorityUpdate();
+  }
+}
+
+void WebTransportDatagramsWritable::setSendOrder(int64_t send_order) {
+  if (send_order_ != send_order) {
+    send_order_ = send_order;
+    SendPriorityUpdate();
+  }
+}
+
+void WebTransportDatagramsWritable::SendPriorityUpdate() {
+  client_->SendDatagramWritablePriorityUpdate();
 }
 
 void WebTransportDatagramsWritable::Trace(Visitor* visitor) const {
   visitor->Trace(transport_);
+  visitor->Trace(client_);
   visitor->Trace(send_group_);
   WritableStream::Trace(visitor);
 }
