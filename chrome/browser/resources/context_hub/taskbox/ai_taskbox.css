@@ -122,13 +122,15 @@ h2 {
   margin: 0;
 }
 
-.completed-section {
+.completed-section,
+.dismissed-section {
   margin-top: 24px;
   display: flex;
   flex-direction: column;
 }
 
-.completed-expand-button {
+.completed-expand-button,
+.dismissed-expand-button {
   min-height: 36px;
   padding: 0;
   --cr-section-min-height: 36px;
@@ -136,14 +138,16 @@ h2 {
   --cr-section-padding: 0;
 }
 
-.completed-expand-button h2 {
+.completed-expand-button h2,
+.dismissed-expand-button h2 {
   color: var(--cr-primary-text-color);
   font-size: 20px;
   font-weight: 600;
   margin: 0;
 }
 
-.completed-todo-list {
+.completed-todo-list,
+.dismissed-todo-list {
   padding-top: 20px;
 }
 

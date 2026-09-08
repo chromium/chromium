@@ -205,6 +205,12 @@ export class TodoItemElement extends CrLitElement {
     await this.updateStatus_(AutoTodoStatus.kDismissed);
   }
 
+  protected async onMarkActiveClick_(e: Event) {
+    e.stopPropagation();
+    this.shadowRoot.querySelector<CrActionMenuElement>('#menu')?.close();
+    await this.updateStatus_(AutoTodoStatus.kActive);
+  }
+
   protected onMoreClick_(e: Event) {
     e.stopPropagation();
     this.shadowRoot.querySelector<CrActionMenuElement>('#menu')?.showAt(

@@ -51,6 +51,11 @@ cr-expand-button::part(icon) {
   --cr-icon-button-margin-start: 0;
 }
 
+.mark-active-button {
+  flex-shrink: 0;
+  margin-inline-start: 0;
+}
+
 .todo-info {
   display: flex;
   flex-direction: column;

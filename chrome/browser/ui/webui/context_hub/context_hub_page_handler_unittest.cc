@@ -995,7 +995,7 @@ TEST_F(ContextHubPageHandlerTest, OnAutoTodosChanged) {
   EXPECT_EQ(todos[0].importance_score, 0.8f);
 }
 
-TEST_F(ContextHubPageHandlerTest, GetAutoTodos_FiltersDismissedTodos) {
+TEST_F(ContextHubPageHandlerTest, GetAutoTodos_IncludesDismissedTodos) {
   ContextHubService* service =
       ContextHubServiceFactory::GetForProfile(&profile_);
   ASSERT_TRUE(service);
@@ -1036,7 +1036,7 @@ TEST_F(ContextHubPageHandlerTest, GetAutoTodos_FiltersDismissedTodos) {
                           completed_future.GetCallback());
   ASSERT_TRUE(completed_future.Get());
 
-  // Verify that GetAutoTodos returns non-dismissed todos to WebUI.
+  // Verify that GetAutoTodos returns both active and dismissed todos to WebUI.
   base::test::TestFuture<const std::vector<context_hub::AutoTodoEntry>&,
                          const std::vector<context_hub::AutoTodoEntry>&,
                          base::Time, base::Time>
@@ -1045,8 +1045,11 @@ TEST_F(ContextHubPageHandlerTest, GetAutoTodos_FiltersDismissedTodos) {
 
   auto [first_party, third_party, last_first_party_time,
         last_third_party_time] = get_future.Take();
-  ASSERT_EQ(first_party.size(), 1u);
-  EXPECT_EQ(first_party.at(0).id, "active_1");
+  ASSERT_EQ(first_party.size(), 2u);
+  std::vector<std::string> first_party_ids = {first_party.at(0).id,
+                                              first_party.at(1).id};
+  EXPECT_THAT(first_party_ids,
+              testing::UnorderedElementsAre("active_1", "dismissed_1"));
   ASSERT_EQ(third_party.size(), 1u);
   EXPECT_EQ(third_party.at(0).id, "completed_1");
   EXPECT_TRUE(last_first_party_time.is_null());
@@ -1059,12 +1062,13 @@ TEST_F(ContextHubPageHandlerTest, GetAutoTodos_FiltersDismissedTodos) {
   EXPECT_EQ(all_cached_entries.size(), 3u);
 }
 
-TEST_F(ContextHubPageHandlerTest, OnAutoTodosChanged_FiltersDismissedTodos) {
+TEST_F(ContextHubPageHandlerTest, OnAutoTodosChanged_IncludesDismissedTodos) {
   ContextHubService* service =
       ContextHubServiceFactory::GetForProfile(&profile_);
   ASSERT_TRUE(service);
 
-  // Updating the todo to dismissed should notify the page with an empty list.
+  // Updating the todo to dismissed should notify the page with the dismissed
+  // todo.
   AutoTodoEntry dismissed_entry;
   dismissed_entry.id = "todo_1";
   dismissed_entry.status = AutoTodoEntry::Status::kDismissed;
@@ -1085,10 +1089,11 @@ TEST_F(ContextHubPageHandlerTest, OnAutoTodosChanged_FiltersDismissedTodos) {
   EXPECT_TRUE(update_future.Get());
 
   auto updated_todos = dismissed_notify_future.Take();
-  EXPECT_TRUE(updated_todos.empty());
+  ASSERT_EQ(updated_todos.size(), 1u);
+  EXPECT_EQ(updated_todos[0].id, "todo_1");
+  EXPECT_EQ(updated_todos[0].status, AutoTodoEntry::Status::kDismissed);
 
-  // Verify that the dismissed item is in the cache still, just filtered from
-  // the WebUI.
+  // Verify that the dismissed item is in the cache.
   base::test::TestFuture<std::vector<AutoTodoEntry>> cache_future;
   service->GetAutoTodos(cache_future.GetCallback());
   auto cached_items = cache_future.Get();

@@ -165,6 +165,40 @@ ${this.showingReadingList_ ? html`
                         </div>
                     </cr-collapse>
                 </div>
+
+                <!-- Dismissed Workspace Todos Section -->
+                <div class="dismissed-section">
+                    <cr-expand-button
+                        class="dismissed-expand-button"
+                        ?disabled="${(this.dismissedTodos?.length || 0) === 0}"
+                        ?expanded="${this.isDismissedExpanded_ && (this.dismissedTodos?.length || 0) > 0}"
+                        @expanded-changed="${this.onDismissedExpandedChanged_}"
+                        no-hover>
+                        <h2>Dismissed Workspace Todos (${this.dismissedTodos?.length || 0})</h2>
+                    </cr-expand-button>
+
+                    <cr-collapse ?opened="${this.isDismissedExpanded_ && (this.dismissedTodos?.length || 0) > 0}">
+                        <div class="todo-list dismissed-todo-list">
+                            ${
+      this.dismissedTodos &&
+      this.dismissedTodos.length > 0 ? repeat(this.dismissedTodos, todo => todo.id, todo => html`
+                              <todo-item
+                                  .id="${todo.id}"
+                                  .heading="${todo.title}"
+                                  .description="${todo.description}"
+                                  .status="${todo.status}"
+                                  .actionableUrl="${
+                          todo.data.firstParty?.actionableUrl || ''}"
+                                  .sourceReferences="${
+                          todo.data.firstParty?.sourceReferences || []}"
+                                  .score="${todo.score}"
+                                  .liked="${this.feedbacks_.get(todo.id) ?? null}"
+                                  .disable_state_mgmt="${this.isGeneratingGmailTodos_}">
+                              </todo-item>
+                            `) : ''}
+                        </div>
+                    </cr-collapse>
+                </div>
             </section>
 
             <!-- Tab-based Todos Section -->
@@ -316,6 +350,40 @@ ${this.showingReadingList_ ? html`
                             ${
       this.completedTabTodos &&
       this.completedTabTodos.length > 0 ? repeat(this.completedTabTodos, todo => todo.id, todo => html`
+                              <todo-item
+                                  .id="${todo.id}"
+                                  .heading="${todo.title}"
+                                  .description="${todo.description}"
+                                  .tabId="${todo.data.thirdParty!.tabId}"
+                                  .lastActiveTimestamp="${
+                          todo.data.thirdParty!.lastActiveTimestamp}"
+                                  .groupType="${todo.data.thirdParty!.groupType}"
+                                  .status="${todo.status}"
+                                  .variant="${TodoItemVariant.TAB}"
+                                  .liked="${this.feedbacks_.get(todo.id) ?? null}"
+                                  .disable_state_mgmt="${this.isGeneratingTabTodos_}">
+                              </todo-item>
+                            `) : ''}
+                        </div>
+                    </cr-collapse>
+                </div>
+
+                <!-- Dismissed Browser Todos Section -->
+                <div class="dismissed-section">
+                    <cr-expand-button
+                        class="dismissed-expand-button"
+                        ?disabled="${(this.dismissedTabTodos?.length || 0) === 0}"
+                        ?expanded="${this.isDismissedTabExpanded_ && (this.dismissedTabTodos?.length || 0) > 0}"
+                        @expanded-changed="${this.onDismissedTabExpandedChanged_}"
+                        no-hover>
+                        <h2>Dismissed Browser Todos (${this.dismissedTabTodos?.length || 0})</h2>
+                    </cr-expand-button>
+
+                    <cr-collapse ?opened="${this.isDismissedTabExpanded_ && (this.dismissedTabTodos?.length || 0) > 0}">
+                        <div class="todo-list dismissed-todo-list">
+                            ${
+      this.dismissedTabTodos &&
+      this.dismissedTabTodos.length > 0 ? repeat(this.dismissedTabTodos, todo => todo.id, todo => html`
                               <todo-item
                                   .id="${todo.id}"
                                   .heading="${todo.title}"
