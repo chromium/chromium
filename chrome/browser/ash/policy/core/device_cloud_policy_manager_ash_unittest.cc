@@ -231,7 +231,7 @@ class DeviceCloudPolicyManagerAshTest
         base::SingleThreadTaskRunner::GetCurrentDefault(), &state_keys_broker_);
 
     manager_->Init(&schema_registry_);
-    manager_->SetSigninProfileSchemaRegistry(&schema_registry_);
+    manager_->AddAuthScreenSchemaRegistry(&schema_registry_);
 
     // SharedURLLoaderFactory and LocalState singletons have to be set since
     // they are accessed by EnrollmentHandler and StartupUtils.
@@ -684,7 +684,7 @@ TEST_F(DeviceCloudPolicyManagerAshObserverTest, GetSchemaRegistry) {
 
   EXPECT_FALSE(manager_->HasSchemaRegistry());
 
-  manager_->SetSigninProfileSchemaRegistry(&schema_registry_);
+  manager_->AddAuthScreenSchemaRegistry(&schema_registry_);
 
   EXPECT_TRUE(manager_->HasSchemaRegistry());
 }

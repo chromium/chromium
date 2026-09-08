@@ -54,9 +54,6 @@ BASE_FEATURE(kExternalDisplayEventTelemetry, base::FEATURE_ENABLED_BY_DEFAULT);
 // Feature flag used to gate preinstallation of the Gemini app.
 BASE_FEATURE(kGeminiAppPreinstall, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the Badge Authentication flow on the lock screen.
-BASE_FEATURE(kLockScreenBadgeAuth, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the new Magic Boost Consent Flow.
 BASE_FEATURE(kMagicBoostRevamp, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -306,10 +303,6 @@ bool IsGeminiAppPreinstallFeatureManagementEnabled() {
 
 bool IsGeminiAppPreinstallEnabled() {
   return base::FeatureList::IsEnabled(kGeminiAppPreinstall);
-}
-
-bool IsLockScreenBadgeAuthEnabled() {
-  return base::FeatureList::IsEnabled(kLockScreenBadgeAuth);
 }
 
 bool IsMagicBoostRevampEnabled() {

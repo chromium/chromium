@@ -22,7 +22,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #endif
@@ -91,29 +90,18 @@ std::unique_ptr<SchemaRegistryService> BuildSchemaRegistryServiceForProfile(
 
 #if BUILDFLAG(IS_CHROMEOS)
   Profile* const profile = Profile::FromBrowserContext(context);
-  if (ash::ProfileHelper::IsSigninProfile(profile)) {
-    // Pass the SchemaRegistry of the signin profile to the device policy
-    // managers, for being used for fetching the component policies.
-    BrowserPolicyConnectorAsh* connector =
-        g_browser_process->platform_part()->browser_policy_connector_ash();
-
-    policy::DeviceCloudPolicyManagerAsh* cloud_manager =
-        connector->GetDeviceCloudPolicyManager();
-    if (cloud_manager)
-      cloud_manager->SetSigninProfileSchemaRegistry(registry.get());
-  }
-
-  if (ash::ProfileHelper::IsLockScreenProfile(profile) &&
-      chromeos::features::IsLockScreenBadgeAuthEnabled()) {
-    // Pass the SchemaRegistry of the lock profile to the device policy
-    // managers, for being used for fetching the component policies.
+  if (ash::ProfileHelper::IsSigninProfile(profile) ||
+      ash::ProfileHelper::IsLockScreenProfile(profile)) {
+    // Pass the SchemaRegistry of the signin or lock screen profile to the
+    // device policy managers, for being used for fetching the component
+    // policies.
     BrowserPolicyConnectorAsh* connector =
         g_browser_process->platform_part()->browser_policy_connector_ash();
 
     policy::DeviceCloudPolicyManagerAsh* cloud_manager =
         connector->GetDeviceCloudPolicyManager();
     if (cloud_manager) {
-      cloud_manager->SetLockProfileSchemaRegistry(registry.get());
+      cloud_manager->AddAuthScreenSchemaRegistry(registry.get());
     }
   }
 #endif

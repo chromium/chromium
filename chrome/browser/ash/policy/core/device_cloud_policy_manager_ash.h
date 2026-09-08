@@ -57,7 +57,6 @@ namespace policy {
 class StartCrdSessionJobDelegate;
 class DeviceCloudPolicyStoreAsh;
 class EuiccStatusUploader;
-class ForwardingSchemaRegistry;
 class LookupKeyUploader;
 class ManagedSessionService;
 class ReportingUserTracker;
@@ -141,13 +140,12 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager,
     return syslog_uploader_.get();
   }
 
-  // Sets the SchemaRegistry that corresponds to the [sign-in screen / lock
-  // screen] profile. The device-wide ComponentCloudPolicyService will be
+  // Adds the SchemaRegistry that corresponds to the sign-in screen or lock
+  // screen profile. The device-wide ComponentCloudPolicyService will be
   // associated with a schema registry that combines the sign-in screen profile
   // and lock screen profile schema registries. It will only be initialized when
   // at least one of these has been invoked.
-  void SetSigninProfileSchemaRegistry(SchemaRegistry* schema_registry);
-  void SetLockProfileSchemaRegistry(SchemaRegistry* schema_registry);
+  void AddAuthScreenSchemaRegistry(SchemaRegistry* schema_registry);
 
   // Sets whether the component cloud policy should be disabled (by skipping
   // the component cloud policy service creation).
@@ -271,11 +269,6 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager,
 
   // Uploader for remote server unlock related lookup keys.
   std::unique_ptr<LookupKeyUploader> lookup_key_uploader_;
-
-  // Wrapper schema registry that will track the signin profile schema registry
-  // once it is passed to this class.
-  std::unique_ptr<ForwardingSchemaRegistry>
-      signin_profile_forwarding_schema_registry_;
 
   // Combined schema registry that tracks both the signin and lock profile
   // schema registries, if they exist.

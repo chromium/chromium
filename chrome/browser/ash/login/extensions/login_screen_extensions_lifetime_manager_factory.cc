@@ -10,7 +10,6 @@
 #include "chrome/browser/extensions/chrome_extension_system_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/session_manager/core/session_manager.h"
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/process_manager_factory.h"
@@ -63,11 +62,8 @@ std::unique_ptr<KeyedService> LoginScreenExtensionsLifetimeManagerFactory::
   if (!profile)
     return nullptr;
   // The manager should only be created for the sign-in or the lock profile.
-  bool should_create_service = ash::IsSigninBrowserContext(profile);
-  if (chromeos::features::IsLockScreenBadgeAuthEnabled()) {
-    should_create_service |= ash::IsLockScreenBrowserContext(profile);
-  }
-  if (should_create_service) {
+  if (ash::IsSigninBrowserContext(profile) ||
+      ash::IsLockScreenBrowserContext(profile)) {
     return std::make_unique<LoginScreenExtensionsLifetimeManager>(profile);
   }
   return nullptr;

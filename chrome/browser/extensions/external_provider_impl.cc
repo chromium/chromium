@@ -80,7 +80,6 @@
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #else
 #include "chrome/browser/extensions/preinstalled_extensions.h"
@@ -690,10 +689,8 @@ void ExternalProviderImpl::CreateExternalProviders(
       ManifestLocation::kInvalidLocation;
 
 #if BUILDFLAG(IS_CHROMEOS)
-  const bool install_on_lock_screen =
-      chromeos::features::IsLockScreenBadgeAuthEnabled() &&
-      ash::IsLockScreenBrowserContext(profile);
-  if (ash::IsSigninBrowserContext(profile) || install_on_lock_screen) {
+  if (ash::IsSigninBrowserContext(profile) ||
+      ash::IsLockScreenBrowserContext(profile)) {
     // Download extensions/apps installed by policy in the login and lock screen
     // profiles. Extensions (not apps) installed through this path will have
     // type |TYPE_LOGIN_SCREEN_EXTENSION| with limited API capabilities.

@@ -21,7 +21,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
@@ -78,8 +77,7 @@ bool IsBadgeBasedAuthenticationEnabled(
 bool IsLockScreenTakingOver(const base::DictValue& force_installed_extensions) {
   const session_manager::SessionState session_state =
       session_manager::SessionManager::Get()->session_state();
-  return chromeos::features::IsLockScreenBadgeAuthEnabled() &&
-         session_state == session_manager::SessionState::LOCKED &&
+  return session_state == session_manager::SessionState::LOCKED &&
          ash::BrowserContextHelper::Get()->GetLockScreenBrowserContext() &&
          IsBadgeBasedAuthenticationEnabled(force_installed_extensions);
 }
@@ -110,17 +108,12 @@ AuthenticationScreenExtensionsExternalLoader::
           /*wait_for_cache_initialization=*/false,
           /*allow_scheduled_updates=*/false) {
   DCHECK(ash::IsSigninBrowserContext(profile) ||
-         (chromeos::features::IsLockScreenBadgeAuthEnabled() &&
-          ash::IsLockScreenBrowserContext(profile)));
-  if (chromeos::features::IsLockScreenBadgeAuthEnabled()) {
-    session_manager_observation_.Observe(
-        session_manager::SessionManager::Get());
+         ash::IsLockScreenBrowserContext(profile));
+  session_manager_observation_.Observe(session_manager::SessionManager::Get());
 
-    ProfileManager* const profile_manager =
-        g_browser_process->profile_manager();
-    DCHECK(profile_manager);
-    profile_manager_observation_.Observe(profile_manager);
-  }
+  ProfileManager* const profile_manager = g_browser_process->profile_manager();
+  DCHECK(profile_manager);
+  profile_manager_observation_.Observe(profile_manager);
 }
 
 void AuthenticationScreenExtensionsExternalLoader::StartLoading() {
