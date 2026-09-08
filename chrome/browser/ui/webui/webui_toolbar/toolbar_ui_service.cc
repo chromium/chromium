@@ -388,9 +388,17 @@ void ToolbarUIService::OnAppMenuFocusChanged(bool focused) {
   }
 }
 
-void ToolbarUIService::ExecuteExtensionAction(const std::string& extension_id) {
+void ToolbarUIService::ExecuteExtensionAction(const std::string& extension_id,
+                                              bool is_pointer_interaction) {
   if (delegate_) {
-    delegate_->ExecuteExtensionAction(extension_id);
+    delegate_->ExecuteExtensionAction(extension_id, is_pointer_interaction);
+  }
+}
+
+void ToolbarUIService::OnExtensionActionPointerDown(
+    const std::string& extension_id) {
+  if (delegate_) {
+    delegate_->OnExtensionActionPointerDown(extension_id);
   }
 }
 

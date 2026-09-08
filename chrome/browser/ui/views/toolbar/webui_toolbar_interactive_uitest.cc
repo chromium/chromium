@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/extensions/extension_popup.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -2389,6 +2390,92 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveUiTest,
 
     EXPECT_TRUE(base::test::RunUntil(
         [&]() { return container->context_menu_ != nullptr; }));
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveUiTest,
+                       ExtensionBubbleReopenSuppression) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL allowed_url =
+      embedded_test_server()->GetURL("allowed.com", "/title1.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), allowed_url));
+
+  ui::TrackedElement* element = nullptr;
+  WebUIToolbarWebView* webui_toolbar_view = nullptr;
+  views::WebView* web_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
+                                     &webui_toolbar_view, &web_view,
+                                     browser()));
+  content::WebContents* web_contents = web_view->GetWebContents();
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  scoped_refptr<const extensions::Extension> extension =
+      LoadAndPinExtension(webui_toolbar_view, temp_dir,
+                          /*has_background_script=*/false, /*has_popup=*/true);
+  ASSERT_TRUE(extension);
+
+  std::string extension_id = extension->id();
+
+  auto* container = static_cast<WebUIToolbarExtensionsContainer*>(
+      ExtensionsContainer::From(*browser()));
+  ASSERT_TRUE(container);
+
+  container->SetSuppressionThresholdForTesting(base::Seconds(5));
+
+  // 1. Test click suppression for extensions menu button (puzzle piece, id:
+  // "").
+  {
+    auto* coordinator = container->extensions_menu_coordinator_.get();
+    ASSERT_TRUE(coordinator);
+    EXPECT_FALSE(coordinator->IsShowing());
+
+    // Click extensions button to open the menu.
+    LeftClickPointerSequenceExtensionButton(web_contents, "");
+    EXPECT_TRUE(
+        base::test::RunUntil([&]() { return coordinator->IsShowing(); }));
+    views::Widget* menu_widget = coordinator->GetExtensionsMenuWidget();
+    ASSERT_TRUE(menu_widget);
+
+    // Simulate losing focus when clicking the button while menu is open.
+    menu_widget->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
+
+    // Synchronously simulate the exact IPC payload sequence from WebUI.
+    container->OnPointerDown("");
+    container->ToggleExtensionsMenuFromWebUI(/*is_pointer_interaction=*/true);
+
+    // The show attempt should be suppressed, so the menu stays closed.
+    EXPECT_FALSE(coordinator->IsShowing());
+  }
+
+  // 2. Test click suppression for pinned extension button (popup).
+  {
+    // Click the extension button to open the popup.
+    LeftClickPointerSequenceExtensionButton(web_contents, extension_id);
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return ExtensionPopup::last_popup_for_testing() != nullptr &&
+             ExtensionPopup::last_popup_for_testing()->GetWidget()->IsVisible();
+    }));
+    views::Widget* popup_widget =
+        ExtensionPopup::last_popup_for_testing()->GetWidget();
+    ASSERT_TRUE(popup_widget);
+
+    // Simulate losing focus when clicking the button while popup is open.
+    popup_widget->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
+
+    // Synchronously simulate the exact IPC payload sequence from WebUI.
+    container->OnPointerDown(extension_id);
+    container->ExecuteUserAction(extension_id,
+                                 /*is_pointer_interaction=*/true);
+
+    // The show attempt should be suppressed, so the popup finishes closing
+    // and no new popup is shown.
+    EXPECT_TRUE(base::test::RunUntil(
+        [&]() { return ExtensionPopup::last_popup_for_testing() == nullptr; }));
   }
 }
 

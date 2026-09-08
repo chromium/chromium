@@ -796,6 +796,35 @@ void LeftClickExtensionButton(content::WebContents* web_contents,
                                        "btn.click();")));
 }
 
+void LeftClickPointerSequenceExtensionButton(content::WebContents* web_contents,
+                                             const std::string& id) {
+  EXPECT_TRUE(content::ExecJs(
+      web_contents,
+      base::StringPrintf(kClickExtensionButtonScript, id.c_str(), R"(
+        btn.dispatchEvent(new PointerEvent('pointerdown', {
+          bubbles: true,
+          cancelable: true,
+          view: window,
+          button: 0,
+          pointerType: 'mouse'
+        }));
+        btn.dispatchEvent(new PointerEvent('pointerup', {
+          bubbles: true,
+          cancelable: true,
+          view: window,
+          button: 0,
+          pointerType: 'mouse'
+        }));
+        btn.dispatchEvent(new PointerEvent('click', {
+          bubbles: true,
+          cancelable: true,
+          view: window,
+          button: 0,
+          pointerType: 'mouse'
+        }));
+      )")));
+}
+
 void RightClickExtensionButton(content::WebContents* web_contents,
                                const std::string& id) {
   EXPECT_TRUE(content::ExecJs(

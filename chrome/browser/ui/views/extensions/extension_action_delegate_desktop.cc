@@ -178,8 +178,11 @@ void ExtensionActionDelegateDesktop::HidePopup() {
   }
 }
 
-gfx::NativeView ExtensionActionDelegateDesktop::GetPopupNativeViewForTesting() {
-  return popup_host_ ? popup_host_->view()->GetNativeView() : gfx::NativeView();
+gfx::NativeView ExtensionActionDelegateDesktop::GetPopupNativeView() {
+  if (!popup_host_ || !popup_host_->view()) {
+    return gfx::NativeView();
+  }
+  return popup_host_->view()->GetNativeView();
 }
 
 void ExtensionActionDelegateDesktop::TriggerPopup(

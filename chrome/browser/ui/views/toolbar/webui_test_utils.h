@@ -64,6 +64,11 @@ WebUIToolbarWebView* GetWebUIToolbarWebView(BrowserWindowInterface* browser);
 void LeftClickExtensionButton(content::WebContents* web_contents,
                               const std::string& id);
 
+// Simulates a full pointerdown + pointerup + click sequence on the WebUI
+// toolbar extension button with the given `id`.
+void LeftClickPointerSequenceExtensionButton(content::WebContents* web_contents,
+                                             const std::string& id);
+
 // Simulates a right-click (context menu) on the WebUI toolbar extension button
 // with the given `id`.
 void RightClickExtensionButton(content::WebContents* web_contents,

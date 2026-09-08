@@ -70,6 +70,7 @@ class TestToolbarUiHandler extends TestBrowserProxy implements
   }
   onAppMenuFocusChanged() {}
   executeExtensionAction() {}
+  onExtensionActionPointerDown() {}
   showExtensionContextMenu() {}
   onPerformanceInterventionButtonClicked() {}
   onPerformanceInterventionButtonMousePressed() {}

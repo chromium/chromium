@@ -59,8 +59,14 @@ export class ExtensionElement extends CrLitElement {
     TrackedElementManager.getInstance().stopTracking(this);
   }
 
-  protected onClick() {
-    this.bar.onClick(this.extensionId);
+  protected onClick(e: PointerEvent) {
+    this.bar.onClick(this.extensionId, e.pointerType !== '');
+  }
+
+  protected onPointerdown_(e: PointerEvent) {
+    if (e.button === 0) {
+      this.bar.onPointerDown(this.extensionId);
+    }
   }
 
   protected onContextmenu_(event: PointerEvent) {

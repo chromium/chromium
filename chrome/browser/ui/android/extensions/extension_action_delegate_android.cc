@@ -56,8 +56,8 @@ void ExtensionActionDelegateAndroid::HidePopup() {
   toolbar_android_->HideActivePopup();
 }
 
-gfx::NativeView ExtensionActionDelegateAndroid::GetPopupNativeViewForTesting() {
-  // Unused for Android tests.
+gfx::NativeView ExtensionActionDelegateAndroid::GetPopupNativeView() {
+  // Unused for Android.
   NOTIMPLEMENTED();
   return nullptr;
 }

@@ -82,7 +82,10 @@ class TestToolbarUiHandler extends TestBrowserProxy implements
     return Promise.resolve({result: {}});
   }
 
-  executeExtensionAction(_extensionId: string) {}
+  executeExtensionAction(_extensionId: string, _isPointerInteraction: boolean) {
+  }
+
+  onExtensionActionPointerDown(_extensionId: string) {}
 
   showExtensionContextMenu(_extensionId: string, _source: any) {}
 

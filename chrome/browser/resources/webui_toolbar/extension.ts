@@ -48,8 +48,16 @@ export class ExtensionElement extends ExtensionElementBase {
     return 'ext:' + this.state.id;
   }
 
-  protected onClick_() {
-    this.browserProxy_.toolbarUIHandler.executeExtensionAction(this.state.id);
+  protected onClick_(e: PointerEvent) {
+    this.browserProxy_.toolbarUIHandler.executeExtensionAction(
+        this.state.id, e.pointerType !== '');
+  }
+
+  protected onPointerdown_(e: PointerEvent) {
+    if (e.button === 0) {
+      this.browserProxy_.toolbarUIHandler.onExtensionActionPointerDown(
+          this.state.id);
+    }
   }
 
   protected onContextmenu_(e: Event) {

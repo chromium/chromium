@@ -52,7 +52,7 @@ class ExtensionActionTestHelper {
   virtual gfx::NativeView GetPopupNativeView() = 0;
 
   // Spins a RunLoop until the NativeWindow hosting
-  // |GetPopupNativeViewForTesting()| is reported as active by the OS. This
+  // |GetPopupNativeView()| is reported as active by the OS. This
   // method is strange: it's not overridden by subclasses, and instead the
   // implementation is selected at compile-time depending on the windowing
   // system in use.

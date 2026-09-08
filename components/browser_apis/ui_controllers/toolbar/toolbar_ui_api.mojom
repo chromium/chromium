@@ -221,7 +221,12 @@ interface ToolbarUIService {
   OnAppMenuFocusChanged(bool focused);
 
   // Executes the user action for the extension with the given ID.
-  ExecuteExtensionAction(string extension_id);
+  // `is_pointer_interaction` is true if the action was triggered by a pointer
+  // interaction (mouse, touch, etc.) rather than a keyboard interaction.
+  ExecuteExtensionAction(string extension_id, bool is_pointer_interaction);
+
+  // Called when an extension action button is pressed (e.g. pointerdown).
+  OnExtensionActionPointerDown(string extension_id);
 
   // Displays the context menu for the extension with the given ID.
   ShowExtensionContextMenu(string extension_id, ui.mojom.MenuSourceType source);

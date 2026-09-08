@@ -163,7 +163,7 @@ class ToolbarActionViewModel {
   virtual void HidePopup() = 0;
 
   // Returns the native view for the popup, if one is active.
-  virtual gfx::NativeView GetPopupNativeViewForTesting() = 0;
+  virtual gfx::NativeView GetPopupNativeView() = 0;
 
   // Returns the context menu model, or null if no context menu should be shown.
   virtual ui::MenuModel* GetContextMenu(

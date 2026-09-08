@@ -863,8 +863,14 @@ void WebUIToolbarWebView::OnAppMenuFocusChanged(bool focused) {
 }
 
 void WebUIToolbarWebView::ExecuteExtensionAction(
+    const std::string& extension_id,
+    bool is_pointer_interaction) {
+  extensions_container_.ExecuteUserAction(extension_id, is_pointer_interaction);
+}
+
+void WebUIToolbarWebView::OnExtensionActionPointerDown(
     const std::string& extension_id) {
-  extensions_container_.ExecuteUserAction(extension_id);
+  extensions_container_.OnPointerDown(extension_id);
 }
 
 void WebUIToolbarWebView::ShowExtensionContextMenu(

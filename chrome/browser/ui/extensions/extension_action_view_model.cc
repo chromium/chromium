@@ -444,8 +444,8 @@ void ExtensionActionViewModel::HidePopup() {
   return delegate_->HidePopup();
 }
 
-gfx::NativeView ExtensionActionViewModel::GetPopupNativeViewForTesting() {
-  return delegate_->GetPopupNativeViewForTesting();
+gfx::NativeView ExtensionActionViewModel::GetPopupNativeView() {
+  return delegate_->GetPopupNativeView();
 }
 
 ui::MenuModel* ExtensionActionViewModel::GetContextMenu(

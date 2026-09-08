@@ -259,12 +259,25 @@ void WebUIToolbarExtensionsContainerWrapper::SendExtensionsState() {
 }
 
 void WebUIToolbarExtensionsContainerWrapper::ExecuteUserAction(
+    const std::string& extension_id,
+    bool is_pointer_interaction) {
+  if (extensions_container_) {
+    if (extension_id == kExtensionsButtonId) {
+      extensions_container_->ToggleExtensionsMenu(is_pointer_interaction);
+    } else {
+      extensions_container_->ExecuteUserAction(extension_id,
+                                               is_pointer_interaction);
+    }
+  }
+}
+
+void WebUIToolbarExtensionsContainerWrapper::OnPointerDown(
     const std::string& extension_id) {
   if (extensions_container_) {
     if (extension_id == kExtensionsButtonId) {
-      extensions_container_->ToggleExtensionsMenu();
+      extensions_container_->OnPointerDown("");
     } else {
-      extensions_container_->ExecuteUserAction(extension_id);
+      extensions_container_->OnPointerDown(extension_id);
     }
   }
 }

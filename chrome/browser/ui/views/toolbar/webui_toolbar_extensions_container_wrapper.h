@@ -57,7 +57,9 @@ class WebUIToolbarExtensionsContainerWrapper
     return extensions_container_.get();
   }
 
-  void ExecuteUserAction(const std::string& extension_id);
+  void ExecuteUserAction(const std::string& extension_id,
+                         bool is_pointer_interaction = false);
+  void OnPointerDown(const std::string& extension_id);
   void ShowContextMenu(ui::mojom::MenuSourceType source,
                        const std::string& extension_id);
   void MoveExtension(const std::string& extension_id, int32_t target_index);

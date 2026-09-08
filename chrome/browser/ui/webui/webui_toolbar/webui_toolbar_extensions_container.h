@@ -12,6 +12,7 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
+#include "chrome/browser/ui/views/bubble/webui_bubble_reopen_suppressor.h"
 #include "chrome/browser/ui/views/extensions/extensions_container_views.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_extensions_container_observer.h"
 #include "components/browser_apis/ui_controllers/toolbar/extensions_bar.mojom.h"
@@ -66,6 +67,7 @@ class WebUIToolbarExtensionsContainer
   bool ShowToolbarActionPopupForAPICall(const std::string& action_id,
                                         ShowPopupCallback callback) override;
   void ToggleExtensionsMenu() override;
+  void ToggleExtensionsMenu(bool is_pointer_interaction);
   bool HasAnyExtensions() const override;
 
   // ExtensionsContainerViews:
@@ -115,17 +117,23 @@ class WebUIToolbarExtensionsContainer
   ui::TrackedElement* GetExtensionAnchor(std::string_view extension_id) const;
 
   // extensions_bar::mojom::PageHandler:
-  void ExecuteUserAction(const std::string& id) override;
+  void ExecuteUserAction(const std::string& id,
+                         bool is_pointer_interaction) override;
+  void OnPointerDown(const std::string& id) override;
   void ShowContextMenu(ui::mojom::MenuSourceType source,
                        const std::string& id) override;
-  void ToggleExtensionsMenuFromWebUI() override;
+  void ToggleExtensionsMenuFromWebUI(bool is_pointer_interaction) override;
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
+  void SetSuppressionThresholdForTesting(base::TimeDelta threshold);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewInteractiveUiTest,
                            ExtensionUserActionsPlumbing);
+  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewInteractiveUiTest,
+                           ExtensionBubbleReopenSuppression);
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewBrowserTest, ExtensionAnchoring);
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewBrowserTest,
                            ShowWidgetForExtension);
@@ -188,6 +196,9 @@ class WebUIToolbarExtensionsContainer
                                       ui::TrackedElement* unused_anchor);
 
   std::vector<AnchoredWidget> anchored_widgets_;
+
+  WebUIBubbleReopenSuppressor extensions_menu_reopen_suppressor_;
+  std::optional<base::TimeDelta> suppression_threshold_for_testing_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_WEBUI_TOOLBAR_EXTENSIONS_CONTAINER_H_

@@ -57,6 +57,12 @@ export class ExtensionsBarElement extends CrLitElement {
     this.extensionsMenuButton.title =
         loadTimeData.getString('tooltipExtensionsButton');
     this.extensionsMenuButton.addEventListener(
+        'pointerdown', (e: PointerEvent) => {
+          if (e.button === 0) {
+            this.handler.onPointerDown('');
+          }
+        });
+    this.extensionsMenuButton.addEventListener(
         'click', this.extensionMenuButtonClicked.bind(this));
     this.trackedElementManager.startTracking(
         this.extensionsMenuButton, 'kExtensionsMenuButtonElementId',
@@ -121,16 +127,20 @@ export class ExtensionsBarElement extends CrLitElement {
     this.visible = (this.buttons.size !== 0);
   }
 
-  onClick(id: string) {
-    this.handler.executeUserAction(id);
+  onClick(id: string, isPointerInteraction: boolean = false) {
+    this.handler.executeUserAction(id, isPointerInteraction);
+  }
+
+  onPointerDown(id: string) {
+    this.handler.onPointerDown(id);
   }
 
   onContextMenu(source: MenuSourceType, id: string) {
     this.handler.showContextMenu(source, id);
   }
 
-  private extensionMenuButtonClicked() {
-    this.handler.toggleExtensionsMenuFromWebUI();
+  private extensionMenuButtonClicked(e: PointerEvent) {
+    this.handler.toggleExtensionsMenuFromWebUI(e.pointerType !== '');
   }
 
   /* Still TODO things:
