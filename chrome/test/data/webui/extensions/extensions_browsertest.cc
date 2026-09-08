@@ -212,6 +212,10 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsItemsTest, FailedReloadFiresLoadError) {
   RunTestCase("FailedReloadFiresLoadError");
 }
 
+IN_PROC_BROWSER_TEST_F(CrExtensionsItemsTest, Description) {
+  RunTestCase("Description");
+}
+
 IN_PROC_BROWSER_TEST_F(CrExtensionsItemsTest, Warnings) {
   RunTestCase("Warnings");
 }
@@ -219,6 +223,11 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsItemsTest, Warnings) {
 IN_PROC_BROWSER_TEST_F(CrExtensionsItemsTest,
                        UnsupportedDeveloperExtensionWarning) {
   RunTestCase("UnsupportedDeveloperExtensionWarning");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsItemsTest,
+                       DisabledByAnotherExtensionWarning) {
+  RunTestCase("DisabledByAnotherExtensionWarning");
 }
 
 IN_PROC_BROWSER_TEST_F(CrExtensionsItemsTest, SourceIndicator) {

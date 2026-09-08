@@ -473,6 +473,33 @@ suite('ExtensionItemTest', function() {
         isChildVisible(item, '#unsupported-developer-extension-warning'));
   });
 
+  test('DisabledByAnotherExtensionWarning', async () => {
+    assertFalse(isChildVisible(item, '#disabled-by-another-extension-warning'));
+    assertTrue(isChildVisible(item, '#description'));
+
+    // The disabling extension's name isn't always known, so the warning
+    // falls back to generic text in that case.
+    let data = createExtensionInfo(item.data);
+    data.disableReasons.disabledByAnotherExtension = true;
+    item.data = data;
+    await microtasksFinished();
+    testVisible(
+        item, '#disabled-by-another-extension-warning', true,
+        loadTimeData.getString('itemDisabledByExtensionGeneric'));
+
+    // It's a severe warning, so it takes the place of the description.
+    assertFalse(isChildVisible(item, '#description'));
+
+    // Once the name is known, the warning uses it.
+    data = createExtensionInfo(item.data);
+    data.disableReasons.disabledByExtensionName = 'Extension Name';
+    item.data = data;
+    await microtasksFinished();
+    testVisible(
+        item, '#disabled-by-another-extension-warning', true,
+        loadTimeData.getStringF('itemDisabledByExtension', 'Extension Name'));
+  });
+
   test('SourceIndicator', async () => {
     assertFalse(isChildVisible(item, '#source-indicator'));
     let data = createExtensionInfo(item.data);
