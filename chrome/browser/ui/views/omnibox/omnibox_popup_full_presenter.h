@@ -95,7 +95,7 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
 
   // Focuses the native Views content, underlying WebContents, and DOM input.
   void FocusPopupContent();
-  void DeactivatePopupAndKillFocus();
+  void DeactivatePopupAndKillFocus(bool focus_web_contents);
 
   // Flag set when an ESC key event is intercepted before widget deactivation.
   bool is_handling_escape_key_ = false;

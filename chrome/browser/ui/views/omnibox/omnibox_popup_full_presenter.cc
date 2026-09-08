@@ -117,7 +117,7 @@ void OmniboxPopupFullPresenter::Show() {
   }
 
   if (parent_widget && !event_monitor_) {
-    event_monitor_ = views::EventMonitor::CreateApplicationMonitor(
+    event_monitor_ = views::EventMonitor::CreateWindowMonitor(
         this, parent_widget->GetNativeWindow(), {ui::EventType::kMousePressed});
   }
 
@@ -417,7 +417,15 @@ void OmniboxPopupFullPresenter::OnWidgetActivationChanged(views::Widget* widget,
               },
               weak_factory_.GetWeakPtr()));
     }
-#endif  // BUILDFLAG(IS_MAC)
+#else
+    // If neither the popup nor the browser window is active (e.g. clicking
+    // another browser window or application), deactivate popup and reset focus
+    // without focusing this window's WebContents.
+    views::Widget* parent_widget = delegate().GetLocationBarWidget();
+    if (parent_widget && !parent_widget->IsActive()) {
+      DeactivatePopupAndKillFocus(/*focus_web_contents=*/false);
+    }
+#endif
   }
 }
 
@@ -447,7 +455,9 @@ void OmniboxPopupFullPresenter::FocusPopupContent() {
   }
 }
 
-void OmniboxPopupFullPresenter::DeactivatePopupAndKillFocus() {
+void OmniboxPopupFullPresenter::DeactivatePopupAndKillFocus(
+    bool focus_web_contents) {
+  pending_focus_task_.Cancel();
   ResetPermissionPromptShowingState();
   is_deactivating_ = true;
   OmniboxEditModel* edit_model = controller()->edit_model();
@@ -482,7 +492,9 @@ void OmniboxPopupFullPresenter::DeactivatePopupAndKillFocus() {
     parent_widget->GetFocusManager()->ClearFocus();
   }
 
-  controller()->client()->FocusWebContents();
+  if (focus_web_contents) {
+    controller()->client()->FocusWebContents();
+  }
   edit_model->OnKillFocus();
 
   // Close the popup unless the user has an uncommitted draft.
@@ -542,6 +554,11 @@ void OmniboxPopupFullPresenter::OnEvent(const ui::Event& event) {
     return;
   }
 
+  // If neither this window nor its popup is currently active, ignore the click.
+  if (!parent_widget->IsActive() && !(GetWidget() && GetWidget()->IsActive())) {
+    return;
+  }
+
   BrowserView* browser_view = BrowserView::GetBrowserViewForNativeWindow(
       parent_widget->GetNativeWindow());
   if (!browser_view) {
@@ -572,8 +589,6 @@ void OmniboxPopupFullPresenter::OnEvent(const ui::Event& event) {
   }
 
   if (contains_top_container) {
-    pending_focus_task_.Cancel();
-
     // Clear autocomplete matches and reset `activeQueryId_` on WebUI only if
     // click is outside of the popup and in the top container while popup is
     // shown.
@@ -587,7 +602,7 @@ void OmniboxPopupFullPresenter::OnEvent(const ui::Event& event) {
     return;
   }
 
-  DeactivatePopupAndKillFocus();
+  DeactivatePopupAndKillFocus(/*focus_web_contents=*/true);
 }
 
 OmniboxFullPopupWebUIContent* OmniboxPopupFullPresenter::GetWebUIContent() {
