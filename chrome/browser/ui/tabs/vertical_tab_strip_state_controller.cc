@@ -34,6 +34,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/sessions/core/session_id.h"
 #include "ui/actions/actions.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/vector_icons.h"
@@ -405,6 +406,9 @@ void VerticalTabStripStateController::UpdateCollapseActionItem() {
   const auto& text =
       is_collapsed ? IDS_EXPAND_VERTICAL_TABS : IDS_COLLAPSE_VERTICAL_TABS;
 
+  const int tooltip_id = is_collapsed ? IDS_EXPAND_VERTICAL_TABS_TOOLTIP
+                                      : IDS_COLLAPSE_VERTICAL_TABS_TOOLTIP;
+
   actions::ActionItem* collapse_action =
       actions::ActionManager::Get().FindAction(kActionToggleCollapseVertical,
                                                root_action_item_);
@@ -413,8 +417,17 @@ void VerticalTabStripStateController::UpdateCollapseActionItem() {
         ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon));
     collapse_action->SetText(
         chrome::GetCleanTitleAndTooltipText(l10n_util::GetStringUTF16(text)));
-    collapse_action->SetTooltipText(
-        chrome::GetCleanTitleAndTooltipText(l10n_util::GetStringUTF16(text)));
+
+    ui::Accelerator accelerator = collapse_action->GetAccelerator();
+    const std::u16string shortcut_text = accelerator.GetShortcutText();
+    const std::u16string tooltip_text =
+        shortcut_text.empty()
+            ? chrome::GetCleanTitleAndTooltipText(
+                  l10n_util::GetStringUTF16(text))
+            : chrome::GetCleanTitleAndTooltipText(
+                  l10n_util::GetStringFUTF16(tooltip_id, shortcut_text));
+    collapse_action->SetTooltipText(tooltip_text);
+
     collapse_action->SetEnabled(ShouldDisplayVerticalTabs());
   }
 }

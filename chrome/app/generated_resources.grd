@@ -10525,11 +10525,17 @@ Keep your key file in a safe place. You will need it to create new versions of y
           <message name="IDS_SWITCH_TO_HORIZONTAL_TAB_MAC" desc="In Title Case: The button in context menu that switches to horizontal tab view.">
             Show Tabs Horizontally
           </message>
-          <message name="IDS_COLLAPSE_VERTICAL_TABS" desc="In Title Case: The tooltip for the button in the top container that collapses the vertical tab strip.">
+          <message name="IDS_COLLAPSE_VERTICAL_TABS" desc="In Title Case: The text for the menu item that collapses the vertical tab strip.">
             Collapse Tabs
           </message>
-          <message name="IDS_EXPAND_VERTICAL_TABS" desc="In Title Case: The tooltip for the button in the top container that expands the vertical tab strip.">
+          <message name="IDS_EXPAND_VERTICAL_TABS" desc="In Title Case: The text for the menu item that expands the vertical tab strip.">
             Expand Tabs
+          </message>
+          <message name="IDS_COLLAPSE_VERTICAL_TABS_TOOLTIP" is_accessibility_with_no_ui="true" desc="In Title Case: The tooltip for the button in the top container that collapses the vertical tab strip.">
+            Collapse Tabs (<ph name="KEYBOARD_SHORTCUT">$1<ex>⇧⌘L</ex></ph>)
+          </message>
+          <message name="IDS_EXPAND_VERTICAL_TABS_TOOLTIP" is_accessibility_with_no_ui="true" desc="In Title Case: The tooltip for the button in the top container that expands the vertical tab strip.">
+            Expand Tabs (<ph name="KEYBOARD_SHORTCUT">$1<ex>⇧⌘L</ex></ph>)
           </message>
           <message name="IDS_VERTICAL_TABS_SEND_FEEDBACK" desc="In Title Case: The button in context menu that allows users to send feedback about vertical tabs.">
             Send Feedback About the Tab Strip
@@ -10554,11 +10560,17 @@ Keep your key file in a safe place. You will need it to create new versions of y
           </message>
         </then>
         <else>
-          <message name="IDS_COLLAPSE_VERTICAL_TABS" desc="The tooltip for the button in the top container that collapses the vertical tab strip.">
+          <message name="IDS_COLLAPSE_VERTICAL_TABS" desc="The text for the menu item that collapses the vertical tab strip.">
             Collapse tabs
           </message>
-          <message name="IDS_EXPAND_VERTICAL_TABS" desc="The tooltip for the button in the top container that expands the vertical tab strip.">
+          <message name="IDS_EXPAND_VERTICAL_TABS" desc="The text for the menu item that expands the vertical tab strip.">
             Expand tabs
+          </message>
+          <message name="IDS_COLLAPSE_VERTICAL_TABS_TOOLTIP" is_accessibility_with_no_ui="true" desc="The tooltip for the button in the top container that collapses the vertical tab strip.">
+            Collapse tabs (<ph name="KEYBOARD_SHORTCUT">$1<ex>Ctrl+Shift+L</ex></ph>)
+          </message>
+          <message name="IDS_EXPAND_VERTICAL_TABS_TOOLTIP" is_accessibility_with_no_ui="true" desc="The tooltip for the button in the top container that expands the vertical tab strip.">
+            Expand tabs (<ph name="KEYBOARD_SHORTCUT">$1<ex>Ctrl+Shift+L</ex></ph>)
           </message>
           <message name="IDS_VERTICAL_TABS_SEND_FEEDBACK" desc="The button in context menu that allows users to send feedback about vertical tabs.">
             Send feedback about the tab strip

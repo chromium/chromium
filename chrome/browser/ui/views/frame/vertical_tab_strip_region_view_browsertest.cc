@@ -48,6 +48,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/ui_base_features.h"
@@ -586,27 +587,36 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
                        CancelCollapseAnimationUpdatesCollapseButton) {
   actions::ActionItem* collapse_action =
       actions::ActionManager::Get().FindAction(kActionToggleCollapseVertical);
+  const ui::Accelerator accelerator = collapse_action->GetAccelerator();
 
   // Request that the tabstrip collapses. The state controller collapse state
   // should not be updated immediately.
   state_controller()->RequestCollapse(true);
   ASSERT_FALSE(state_controller()->IsCollapsed());
 
-  // The collapse button should be updated immediately to use the expand icon
-  // and text.
+  // The collapse button should be updated immediately to use the expand icon,
+  // text, and tooltip.
   EXPECT_EQ(BrowserActions::GetCleanTitleAndTooltipText(
                 l10n_util::GetStringUTF16(IDS_EXPAND_VERTICAL_TABS)),
             collapse_action->GetText());
+  EXPECT_EQ(
+      BrowserActions::GetCleanTitleAndTooltipText(l10n_util::GetStringFUTF16(
+          IDS_EXPAND_VERTICAL_TABS_TOOLTIP, accelerator.GetShortcutText())),
+      collapse_action->GetTooltipText());
 
   // Cancel the collapse request with an expand request.
   state_controller()->RequestCollapse(false);
   EXPECT_FALSE(state_controller()->IsCollapsed());
 
-  // The collapse button should be updated immediately to use the collapse icon
-  // and text.
+  // The collapse button should be updated immediately to use the collapse icon,
+  // text, and tooltip.
   EXPECT_EQ(BrowserActions::GetCleanTitleAndTooltipText(
                 l10n_util::GetStringUTF16(IDS_COLLAPSE_VERTICAL_TABS)),
             collapse_action->GetText());
+  EXPECT_EQ(
+      BrowserActions::GetCleanTitleAndTooltipText(l10n_util::GetStringFUTF16(
+          IDS_COLLAPSE_VERTICAL_TABS_TOOLTIP, accelerator.GetShortcutText())),
+      collapse_action->GetTooltipText());
 }
 
 // Verify that the pinned tabs container will never be larger than the unpinned
