@@ -238,6 +238,7 @@ class FuseboxPopup {
             // Defer showing the popup window by one main-looper tick when transitioning from
             // HIDDEN on the very first show so that pending PropertyModel view-binder callbacks
             // (e.g., model selection buttons) finish populating content views into mViewGroup.
+            updateDesiredWidth();
             PostTask.postTask(TaskTraits.UI_DEFAULT, this::show);
         } else {
             show();
@@ -270,8 +271,7 @@ class FuseboxPopup {
     void updateLayout() {
         if (!isShowing() || mCurrentState == PopupState.HIDDEN) return;
         updateInsets();
-        int width = mDynamicRectProvider.getPopupWidth(mCurrentState, mViewGroup.getResources());
-        mPopupWindow.updateDesiredContentSize(width, /* height= */ 0, /* updateLayout= */ true);
+        updateDesiredWidth();
     }
 
     private void initializeItem(View item, int textRes, int iconRes, int a11yRes) {
@@ -336,5 +336,10 @@ class FuseboxPopup {
                 mScrollView.getPaddingTop(),
                 mScrollView.getPaddingEnd(),
                 bottomPadding);
+    }
+
+    private void updateDesiredWidth() {
+        int width = mDynamicRectProvider.getPopupWidth(mCurrentState, mViewGroup.getResources());
+        mPopupWindow.updateDesiredContentSize(width, /* height= */ 0, /* updateLayout= */ true);
     }
 }
