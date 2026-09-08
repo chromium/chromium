@@ -16,6 +16,7 @@
   /* Embedders should define --cr-searchbox-min-width. */
   --cr-searchbox-width: var(--cr-searchbox-min-width);
   --cr-searchbox-border-radius: 16px;
+  --cr-searchbox-icon-size-in-searchbox: 18px;
   --cr-searchbox-icon-width: 26px;
   --cr-searchbox-inner-icon-margin: 8px;
   --cr-searchbox-voice-icon-offset: 16px;

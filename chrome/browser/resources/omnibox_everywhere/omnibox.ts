@@ -157,7 +157,7 @@ export class OmniboxEverywhereOmniboxElement extends
   accessor contextManagementInComposeboxEnabled: boolean =
       loadTimeData.getBoolean('contextManagementInComposeboxEnabled');
   protected accessor searchboxIcon_: string =
-      '//resources/cr_components/searchbox/icons/google_g.svg';
+      '//resources/cr_components/searchbox/icons/google_g_gradient.svg';
   protected accessor searchboxVoiceSearchEnabled_: boolean =
       loadTimeData.getBoolean('searchboxVoiceSearch');
   protected accessor searchboxLensSearchEnabled_: boolean =
