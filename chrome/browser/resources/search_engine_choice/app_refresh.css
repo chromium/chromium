@@ -48,11 +48,10 @@
 #content-div {
   align-items: flex-start;
   display: flex;
-  flex: 1;
   flex-direction: row;
   gap: var(--content-gap);
   justify-content: center;
-  margin: 0 3rem 0;
+  margin: auto 3rem;
 }
 
 @media screen and ((max-width: 780px) or (max-height: 600px)) {
@@ -70,7 +69,6 @@
   max-height: var(--child-max-height);
   max-width: var(--child-max-width);
   width: 60%;
-  margin: 20vh 0 0 0;
 }
 
 #showcase-illustration {
@@ -373,9 +371,7 @@ control the pointer location causes some flakiness. */
 }
 
 :host(:not([use-horizontal-mode_])) #choiceList.overlap-mitigation {
-  #choiceList.overlap-mitigation {
-    padding-bottom: 0;
-  }
+  padding-bottom: 0;
 }
 
 @media screen and (max-width: 548px) {
