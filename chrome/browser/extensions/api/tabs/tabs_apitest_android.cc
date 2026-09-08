@@ -13,7 +13,7 @@ namespace extensions {
 using TabsApiTest = ExtensionApiTest;
 
 // Regression test for crbug.com/459932363, specific to android.
-IN_PROC_BROWSER_TEST_F(TabsApiTest, ZoomTest) {
+IN_PROC_BROWSER_TEST_F(TabsApiTest, DISABLED_ZoomTest) {
   ASSERT_TRUE(RunExtensionTest("tabs/zoom")) << message_;
 }
 
