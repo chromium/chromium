@@ -25,6 +25,8 @@ TEST(FuseboxActionMojoUtilsTest, ConvertsAllProtoFieldsToMojo) {
       omnibox::SuggestTemplateInfo_FuseboxAction::QUERY_ACTION_PASTE);
   proto.set_searchbox_override(omnibox::SuggestTemplateInfo_FuseboxAction::
                                    SEARCHBOX_OVERRIDE_COMPOSEBOX);
+  proto.set_searchbox_tutorial(
+      omnibox::SearchboxTutorial::SEARCHBOX_TUTORIAL_GLOW_PLUS_BUTTON);
 
   mojom::FuseboxActionPtr mojo_action = SyncFuseboxActionProtoToMojo(proto);
   ASSERT_TRUE(mojo_action);
@@ -40,6 +42,8 @@ TEST(FuseboxActionMojoUtilsTest, ConvertsAllProtoFieldsToMojo) {
             mojom::QueryActionOverride::kPaste);
   EXPECT_EQ(mojo_action->searchbox_override,
             mojom::SearchboxOverride::kComposebox);
+  EXPECT_EQ(mojo_action->searchbox_tutorial,
+            mojom::SearchboxTutorial::kGlowPlusButton);
 }
 
 TEST(FuseboxActionMojoUtilsTest, MissingProtoFieldsStayNull) {
@@ -53,6 +57,7 @@ TEST(FuseboxActionMojoUtilsTest, MissingProtoFieldsStayNull) {
   EXPECT_FALSE(mojo_action->preselected_input_source);
   EXPECT_FALSE(mojo_action->query_action_override);
   EXPECT_FALSE(mojo_action->searchbox_override);
+  EXPECT_FALSE(mojo_action->searchbox_tutorial);
 }
 
 TEST(FuseboxActionMojoUtilsTest, MapsInputSourceValuesToMojo) {
@@ -150,6 +155,26 @@ TEST(FuseboxActionMojoUtilsTest, MapsSearchboxOverrideValuesToMojo) {
   }
 }
 
+TEST(FuseboxActionMojoUtilsTest, MapsSearchboxTutorialValuesToMojo) {
+  struct {
+    omnibox::SearchboxTutorial proto_value;
+    mojom::SearchboxTutorial mojo_value;
+  } kCases[] = {
+      {omnibox::SearchboxTutorial::SEARCHBOX_TUTORIAL_UNSPECIFIED,
+       mojom::SearchboxTutorial::kUnspecified},
+      {omnibox::SearchboxTutorial::SEARCHBOX_TUTORIAL_GLOW_PLUS_BUTTON,
+       mojom::SearchboxTutorial::kGlowPlusButton},
+  };
+  for (const auto& test_case : kCases) {
+    omnibox::SuggestTemplateInfo::FuseboxAction proto;
+    proto.set_searchbox_tutorial(test_case.proto_value);
+
+    mojom::FuseboxActionPtr mojo_action = SyncFuseboxActionProtoToMojo(proto);
+    ASSERT_TRUE(mojo_action);
+    EXPECT_EQ(mojo_action->searchbox_tutorial, test_case.mojo_value);
+  }
+}
+
 TEST(FuseboxActionMojoUtilsTest, DebugPrintFuseboxAction) {
   auto action = mojom::FuseboxAction::New();
   action->preselected_tool = omnibox::TOOL_MODE_CANVAS;
@@ -167,6 +192,7 @@ TEST(FuseboxActionMojoUtilsTest, DebugPrintFuseboxAction) {
             "  query_action_override: null,\n"
             "  preselected_input_source: null,\n"
             "  searchbox_override: 2,\n"
+            "  searchbox_tutorial: null,\n"
             "}");
 }
 

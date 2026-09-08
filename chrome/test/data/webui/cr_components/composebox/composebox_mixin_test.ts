@@ -70,6 +70,7 @@ function createFuseboxActionRequest(
     preselectedModel: null,
     preselectedTool: null,
     searchboxOverride: null,
+    searchboxTutorial: null,
     ...overrides,
   };
   return {suggestion, files: [], fuseboxAction};

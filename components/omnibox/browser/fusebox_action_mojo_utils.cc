@@ -52,6 +52,16 @@ mojom::FuseboxActionPtr SyncFuseboxActionProtoToMojo(
                    << proto.searchbox_override();
     }
   }
+  if (proto.has_searchbox_tutorial()) {
+    auto maybe_valid_searchbox_tutorial =
+        static_cast<mojom::SearchboxTutorial>(proto.searchbox_tutorial());
+    if (mojom::IsKnownEnumValue(maybe_valid_searchbox_tutorial)) {
+      mojo_action->searchbox_tutorial = maybe_valid_searchbox_tutorial;
+    } else {
+      NOTREACHED() << "Unknown SearchboxTutorial "
+                   << proto.searchbox_tutorial();
+    }
+  }
 
   return mojo_action;
 }
