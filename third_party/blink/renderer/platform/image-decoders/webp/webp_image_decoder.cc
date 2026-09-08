@@ -797,14 +797,16 @@ bool WEBPImageDecoder::DecodeSingleFrame(const uint8_t* data_bytes,
   const gfx::Rect& frame_rect = buffer.OriginalFrameRect();
   CHECK(gfx::Rect(Size()).Contains(frame_rect));
   CHECK(!frame_rect.IsEmpty());
-  decoder_buffer_.u.RGBA.rgba = reinterpret_cast<uint8_t*>(
-      buffer.GetAddr(frame_rect.x(), frame_rect.y()));
-  decoder_buffer_.u.RGBA.stride =
-      Size().width() * sizeof(ImageFrame::PixelData);
+  // The top-left pixel of frame_rect.
+  ImageFrame::PixelData* frame_rect_front =
+      buffer.GetAddr(frame_rect.x(), frame_rect.y());
+  // The bottom-right pixel of frame_rect.
+  ImageFrame::PixelData* frame_rect_back =
+      buffer.GetAddr(frame_rect.right() - 1, frame_rect.bottom() - 1);
+  decoder_buffer_.u.RGBA.rgba = reinterpret_cast<uint8_t*>(frame_rect_front);
+  decoder_buffer_.u.RGBA.stride = buffer.Bitmap().rowBytes();
   decoder_buffer_.u.RGBA.size =
-      static_cast<size_t>(decoder_buffer_.u.RGBA.stride) *
-          (frame_rect.height() - 1) +
-      frame_rect.width() * sizeof(ImageFrame::PixelData);
+      (frame_rect_back - frame_rect_front + 1) * sizeof(ImageFrame::PixelData);
 
   switch (WebPIUpdate(decoder_, data_bytes, data_size)) {
     case VP8_STATUS_OK:
