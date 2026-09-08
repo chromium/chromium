@@ -550,9 +550,8 @@ std::unique_ptr<SlopBucket> SlopBucket::RequestSlopBucket(
     return nullptr;
   }
   net::RequestPriority priority = for_request->priority();
-  base::UmaHistogramEnumeration(
-      "NetworkService.SlopBucket.RequestedPriority", priority,
-      static_cast<net::RequestPriority>(net::MAXIMUM_PRIORITY + 1));
+  base::UmaHistogramEnumeration("NetworkService.SlopBucket.RequestedPriority",
+                                priority);
   if (priority < manager.require_priority()) {
     DVLOG(1) << "Refused to create SlopBucket for request to '"
              << for_request->url() << "' with priority "

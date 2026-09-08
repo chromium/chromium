@@ -65,9 +65,8 @@ void StabilityMetricsManager::RecordMetricsToUMA() {
   const std::optional<NativeBridgeType> native_bridge_type =
       GetArcNativeBridgeType();
   if (native_bridge_type) {
-    UMA_STABILITY_HISTOGRAM_ENUMERATION(
-        "Arc.NativeBridge", *native_bridge_type,
-        static_cast<int>(NativeBridgeType::kMaxValue) + 1);
+    UMA_STABILITY_HISTOGRAM_ENUMERATION("Arc.NativeBridge",
+                                        *native_bridge_type);
   }
 }
 

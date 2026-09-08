@@ -191,10 +191,8 @@ void ChromeOSMetricsProvider::ProvideMetrics(
 
   // Use current enrollment status for initial stability logs, since it's not
   // likely to change between browser restarts.
-  UMA_STABILITY_HISTOGRAM_ENUMERATION(
-      "UMA.EnrollmentStatus", GetEnrollmentStatus(),
-      // static_cast because we only have macros for stability histograms.
-      static_cast<int>(EnrollmentStatus::kMaxValue) + 1);
+  UMA_STABILITY_HISTOGRAM_ENUMERATION("UMA.EnrollmentStatus",
+                                      GetEnrollmentStatus());
 
   if (should_include_arc_metrics) {
     // Record ARC-related stability metrics that should be included in initial

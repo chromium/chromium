@@ -79,40 +79,31 @@ base::TimeDelta ComputeRefreshIntervalFromBounds(
 
 void LogVideoFrameDropUMA(media::VideoCaptureFrameDropReason reason,
                           mojom::blink::MediaStreamType stream_type) {
-  const int kEnumCount =
-      static_cast<int>(media::VideoCaptureFrameDropReason::kMaxValue) + 1;
-  UMA_HISTOGRAM_ENUMERATION("Media.VideoCapture.Track.FrameDrop", reason,
-                            kEnumCount);
+  UMA_HISTOGRAM_ENUMERATION("Media.VideoCapture.Track.FrameDrop", reason);
   switch (stream_type) {
     case mojom::blink::MediaStreamType::DEVICE_VIDEO_CAPTURE:
       UMA_HISTOGRAM_ENUMERATION(
-          "Media.VideoCapture.Track.FrameDrop.DeviceCapture", reason,
-          kEnumCount);
+          "Media.VideoCapture.Track.FrameDrop.DeviceCapture", reason);
       break;
     case mojom::blink::MediaStreamType::GUM_TAB_VIDEO_CAPTURE:
       UMA_HISTOGRAM_ENUMERATION(
-          "Media.VideoCapture.Track.FrameDrop.GumTabCapture", reason,
-          kEnumCount);
+          "Media.VideoCapture.Track.FrameDrop.GumTabCapture", reason);
       break;
     case mojom::blink::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE:
       UMA_HISTOGRAM_ENUMERATION(
-          "Media.VideoCapture.Track.FrameDrop.GumDesktopCapture", reason,
-          kEnumCount);
+          "Media.VideoCapture.Track.FrameDrop.GumDesktopCapture", reason);
       break;
     case mojom::blink::MediaStreamType::DISPLAY_VIDEO_CAPTURE:
       UMA_HISTOGRAM_ENUMERATION(
-          "Media.VideoCapture.Track.FrameDrop.DisplayCapture", reason,
-          kEnumCount);
+          "Media.VideoCapture.Track.FrameDrop.DisplayCapture", reason);
       break;
     case mojom::blink::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB:
       UMA_HISTOGRAM_ENUMERATION(
-          "Media.VideoCapture.Track.FrameDrop.DisplayCaptureCurrentTab", reason,
-          kEnumCount);
+          "Media.VideoCapture.Track.FrameDrop.DisplayCaptureCurrentTab", reason);
       break;
     case mojom::blink::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET:
       UMA_HISTOGRAM_ENUMERATION(
-          "Media.VideoCapture.Track.FrameDrop.DisplayCaptureSet", reason,
-          kEnumCount);
+          "Media.VideoCapture.Track.FrameDrop.DisplayCaptureSet", reason);
       break;
     case mojom::blink::MediaStreamType::NO_SERVICE:
     case mojom::blink::MediaStreamType::DEVICE_AUDIO_CAPTURE:

@@ -52,11 +52,7 @@ void RecordIndexAndWriteRulesetResult(
     std::string_view uma_tag,
     RulesetService::IndexAndWriteRulesetResult result) {
   base::UmaHistogramEnumeration(
-      base::StrCat({uma_tag, ".WriteRuleset.Result"}), result,
-      static_cast<RulesetService::IndexAndWriteRulesetResult>(
-          static_cast<int>(
-              RulesetService::IndexAndWriteRulesetResult::kMaxValue) +
-          1));
+      base::StrCat({uma_tag, ".WriteRuleset.Result"}), result);
 }
 
 // Implements operations on a `sentinel file`, which is used as a safeguard to

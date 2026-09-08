@@ -720,20 +720,14 @@ void ContextualSearchMetricsRecorder::RecordAttachmentButtonShown(
   base::UmaHistogramEnumeration(
       base::StrCat(
           {"ContextualSearch.AttachmentButtonShown.", metrics_suffix_}),
-      button_type,
-      static_cast<ContextualSearchAttachmentButtonType>(
-          static_cast<int>(ContextualSearchAttachmentButtonType::kMaxValue) +
-          1));
+      button_type);
 }
 
 void ContextualSearchMetricsRecorder::RecordAttachmentButtonUsed(
     ContextualSearchAttachmentButtonType button_type) {
   base::UmaHistogramEnumeration(
       base::StrCat({"ContextualSearch.AttachmentButtonUsed.", metrics_suffix_}),
-      button_type,
-      static_cast<ContextualSearchAttachmentButtonType>(
-          static_cast<int>(ContextualSearchAttachmentButtonType::kMaxValue) +
-          1));
+      button_type);
 }
 
 void ContextualSearchMetricsRecorder::RecordAttachmentsMenuToggled(bool open) {
