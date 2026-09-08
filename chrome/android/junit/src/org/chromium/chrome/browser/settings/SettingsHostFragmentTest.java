@@ -488,6 +488,78 @@ public class SettingsHostFragmentTest {
         assertTrue(mSettingsHostFragment.getMainFragment() instanceof FirstFakeSettingsFragment);
     }
 
+    /**
+     * Tests that finishing a detail settings fragment in single-column mode closes the sliding pane
+     * and removes the detail fragment, returning to the MainSettings page.
+     */
+    @Test
+    @Config(qualifiers = "w320dp")
+    public void testFinishCurrentSettings_MultiColumnSettings_SingleColumnMode() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        mSettingsHostFragment = new TestSingleColumnMultiColumnSettingsHostFragment();
+        mActivity
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .add(
+                        android.R.id.content,
+                        mSettingsHostFragment,
+                        SettingsHostFragment.SETTINGS_NATIVE_PAGE_TAG)
+                .commitNow();
+
+        MultiColumnSettings multiColumnSettings =
+                (MultiColumnSettings) mSettingsHostFragment.getActiveFragment();
+        assertNotNull(multiColumnSettings);
+
+        SecondFakeSettingsFragment detailFragment = new SecondFakeSettingsFragment();
+        multiColumnSettings.showDetailFragment(
+                detailFragment, /* addToBackStack= */ false, /* tag= */ null);
+        multiColumnSettings.getChildFragmentManager().executePendingTransactions();
+        assertNotNull(
+                multiColumnSettings
+                        .getChildFragmentManager()
+                        .findFragmentById(R.id.preferences_detail));
+
+        mSettingsHostFragment.finishCurrentSettings(detailFragment);
+        multiColumnSettings.getChildFragmentManager().executePendingTransactions();
+
+        assertNull(
+                "Detail fragment should be removed in single column mode",
+                multiColumnSettings
+                        .getChildFragmentManager()
+                        .findFragmentById(R.id.preferences_detail));
+    }
+
+    /**
+     * Tests that SettingsHostFragment.get(Fragment) correctly resolves the host fragment from any
+     * child fragment within the settings hierarchy.
+     */
+    @Test
+    public void testGet_FromFragment() {
+        mSettingsHostFragment = new TestMultiColumnSettingsHostFragment();
+        mActivity
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .add(
+                        android.R.id.content,
+                        mSettingsHostFragment,
+                        SettingsHostFragment.SETTINGS_NATIVE_PAGE_TAG)
+                .commitNow();
+
+        MultiColumnSettings multiColumnSettings =
+                (MultiColumnSettings) mSettingsHostFragment.getActiveFragment();
+        assertNotNull(multiColumnSettings);
+
+        SecondFakeSettingsFragment detailFragment = new SecondFakeSettingsFragment();
+        multiColumnSettings.showDetailFragment(
+                detailFragment, /* addToBackStack= */ false, /* tag= */ null);
+        multiColumnSettings.getChildFragmentManager().executePendingTransactions();
+
+        assertEquals(mSettingsHostFragment, SettingsHostFragment.get(detailFragment));
+        assertEquals(mSettingsHostFragment, SettingsHostFragment.get(multiColumnSettings));
+        assertNull(SettingsHostFragment.get(new SecondFakeSettingsFragment()));
+        assertNull(SettingsHostFragment.get((Fragment) null));
+    }
+
     @Test
     public void testSetDependencyProvider_whenNotAdded_defersRegistrationUntilAttached() {
         SettingsHostFragment fragment = new TestSettingsHostFragment();

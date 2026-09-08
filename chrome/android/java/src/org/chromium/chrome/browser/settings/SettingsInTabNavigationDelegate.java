@@ -154,10 +154,16 @@ public class SettingsInTabNavigationDelegate implements SettingsNavigation {
 
     @Override
     public void finishCurrentSettings(Fragment fragment) {
-        // In-tab settings finish delegates to active host fragment.
-        WindowAndroid windowAndroid = mTab.getWindowAndroid();
-        Activity activity = windowAndroid != null ? windowAndroid.getActivity().get() : null;
-        SettingsHostFragment hostFragment = SettingsHostFragment.get(activity);
+        // Prefer looking up the enclosing SettingsHostFragment directly from the fragment's parent
+        // hierarchy. When Chrome is in the background or during lifecycle transitions, the host
+        // fragment view may not report isShown(), which causes the activity-level lookup to return
+        // null.
+        SettingsHostFragment hostFragment = SettingsHostFragment.get(fragment);
+        if (hostFragment == null) {
+            WindowAndroid windowAndroid = mTab.getWindowAndroid();
+            Activity activity = windowAndroid != null ? windowAndroid.getActivity().get() : null;
+            hostFragment = SettingsHostFragment.get(activity);
+        }
         if (hostFragment != null) {
             hostFragment.finishCurrentSettings(fragment);
         }

@@ -47,6 +47,7 @@ import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.test.util.DeviceRestriction;
 
 /** Integration tests for sign-in / sign-out behavior in {@link SettingsPage}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -66,6 +67,18 @@ public class SettingsPageSigninTest {
     @Before
     public void setUp() {
         mActivityTestRule.startMainActivityOnBlankPage();
+
+        // Skip the tests on landscape devices. Rotating to portrait may letterbox the activity on
+        // landscape-oriented devices, causing Android's letterbox education dialog to intercept
+        // clicks, or rotation to fail (e.g. on automotive).
+        var activity = mActivityTestRule.getActivity();
+        boolean isLandscape =
+                activity.getResources().getConfiguration().orientation
+                        == Configuration.ORIENTATION_LANDSCAPE;
+        Assume.assumeFalse(
+                "Rotating to portrait letterboxes the activity on landscape-oriented devices,"
+                        + " causing Android's letterbox education dialog to intercept clicks.",
+                isLandscape);
     }
 
     @After
@@ -75,7 +88,11 @@ public class SettingsPageSigninTest {
 
     @Test
     @MediumTest
-    @Restriction(DeviceFormFactor.ONLY_TABLET)
+    @Restriction({
+        DeviceFormFactor.ONLY_TABLET,
+        // Automotive devices do not support display rotation.
+        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
+    })
     public void testSignOutInSingleColumnThenTransitionToMultiColumn() {
         // Sign in.
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
@@ -89,19 +106,7 @@ public class SettingsPageSigninTest {
         onViewWaiting(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
 
         // Skip test if portrait mode happens to be wide enough for two-column mode.
-        var isSingleColumn =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            var hostFragment =
-                                    SettingsHostFragment.get(mActivityTestRule.getActivity());
-                            if (hostFragment == null) return false;
-                            var activeFragment = hostFragment.getActiveFragment();
-                            if (activeFragment instanceof MultiColumnSettings multiColumn) {
-                                return !multiColumn.isTwoColumn();
-                            }
-                            return false;
-                        });
-        Assume.assumeTrue("Test requires single-column mode in portrait.", isSingleColumn);
+        Assume.assumeTrue("Test requires single-column mode in portrait.", isSingleColumn());
 
         // Click on Account preference in MainSettings header pane to open ManageSyncSettings.
         var headerRecyclerViewMatcher =
@@ -147,6 +152,73 @@ public class SettingsPageSigninTest {
         onView(withText(R.string.account_settings_title)).check(doesNotExist());
     }
 
+    /**
+     * Tests that removing an account from the device while viewing the account subpage in
+     * single-column mode on a tablet dismisses the subpage and navigates back to MainSettings.
+     */
+    @Test
+    @MediumTest
+    @Restriction({
+        DeviceFormFactor.ONLY_TABLET,
+        // Automotive devices do not support display rotation.
+        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
+    })
+    public void testRemoveAccountInSingleColumnRemovesDetailFragment() {
+        // Sign in.
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+
+        // Ensure starting in portrait (usually single-column mode on tablet).
+        ensureActivityOrientation(Configuration.ORIENTATION_PORTRAIT);
+
+        mActivityTestRule.loadUrl("chrome-native://settings/");
+
+        // Wait for settings page to load.
+        onViewWaiting(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
+
+        // Skip test if portrait mode happens to be wide enough for two-column mode.
+        Assume.assumeTrue("Test requires single-column mode in portrait.", isSingleColumn());
+
+        // Click on Account preference in MainSettings header pane to open ManageSyncSettings.
+        var headerRecyclerViewMatcher =
+                allOf(
+                        withId(R.id.recycler_view),
+                        isDescendantOfA(withId(R.id.preferences_header)),
+                        hasDescendant(withText(TestAccounts.ACCOUNT1.getEmail())));
+        onViewWaiting(headerRecyclerViewMatcher)
+                .perform(scrollTo(hasDescendant(withText(TestAccounts.ACCOUNT1.getEmail()))));
+        var headerAccountMatcher =
+                allOf(
+                        isDescendantOfA(withId(R.id.preferences_header)),
+                        withText(TestAccounts.ACCOUNT1.getEmail()));
+        onViewWaiting(headerAccountMatcher).perform(click());
+
+        // Verify Account settings (ManageSyncSettings) is displayed.
+        onViewWaiting(allOf(withText(R.string.account_settings_title), isDisplayed()))
+                .check(matches(isDisplayed()));
+
+        // Remove the account from device.
+        mSigninTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
+
+        // Verify that after removing the account, the detail fragment is removed and settings
+        // returns to MainSettings.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    var hostFragment = SettingsHostFragment.get(mActivityTestRule.getActivity());
+                    if (hostFragment == null) return false;
+                    var activeFragment = hostFragment.getActiveFragment();
+                    if (!(activeFragment instanceof MultiColumnSettings multiColumn)) return false;
+                    var childFragmentManager = multiColumn.getChildFragmentManager();
+                    var detailFragment =
+                            childFragmentManager.findFragmentById(R.id.preferences_detail);
+                    return detailFragment == null;
+                });
+
+        // Verify MainSettings header pane is visible and Account settings is not displayed.
+        onViewWaiting(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
+        onView(allOf(withText(R.string.account_settings_title), isDisplayed()))
+                .check(doesNotExist());
+    }
+
     private void ensureActivityOrientation(int orientation) {
         var activity = mActivityTestRule.getActivity();
         ActivityTestUtils.rotateActivityToOrientation(activity, orientation);
@@ -167,5 +239,18 @@ public class SettingsPageSigninTest {
                     return hostFragment != null && hostFragment.isTwoColumnSettingsVisible();
                 },
                 "Settings should be shown in two-column mode.");
+    }
+
+    private boolean isSingleColumn() {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    var hostFragment = SettingsHostFragment.get(mActivityTestRule.getActivity());
+                    if (hostFragment == null) return false;
+                    var activeFragment = hostFragment.getActiveFragment();
+                    if (activeFragment instanceof MultiColumnSettings multiColumn) {
+                        return !multiColumn.isTwoColumn();
+                    }
+                    return false;
+                });
     }
 }
