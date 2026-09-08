@@ -15,7 +15,6 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/browser/ui/global_media_controls",
   "+chrome/browser/ui/views/global_media_controls",
-  "+chrome/test",
 ]
 
 specific_include_rules = {

@@ -5,14 +5,11 @@ include_rules = [
   "+chrome/browser/ash/system_web_apps",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui/ash/graduation",
   "+chrome/browser/ui/ash/shelf",
   "+chrome/browser/ui/ash/system_web_apps",
-  "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/browser/web_applications/policy/web_app_policy_manager.h",
   "+chrome/browser/web_applications/web_app_command_manager.h",
   "+chrome/browser/web_applications/web_app_provider.h",
-  "+chrome/test/base",
 ]
 
 specific_include_rules = {

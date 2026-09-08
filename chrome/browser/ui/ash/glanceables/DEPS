@@ -16,7 +16,6 @@ include_rules = [
   "+chrome/browser/prefs",
   "+chrome/browser/profiles",
   "+chrome/browser/signin",
-  "+chrome/test",
 ]
 
 specific_include_rules = {

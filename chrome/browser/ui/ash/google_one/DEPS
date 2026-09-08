@@ -14,7 +14,6 @@ include_rules = [
   "+chrome/browser/feature_engagement",
   "+chrome/browser/policy",
   "+chrome/browser/profiles/profile.h",
-  "+chrome/test",
 
   "+ui/message_center/message_center.h",
 ]
