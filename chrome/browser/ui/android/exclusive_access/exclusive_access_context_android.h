@@ -19,7 +19,7 @@ class ExclusiveAccessContextAndroid : public ExclusiveAccessContext {
  public:
   ExclusiveAccessContextAndroid(
       JNIEnv* env,
-      const jni_zero::JavaRef<jobject>& j_context,
+      const jni_zero::JavaRef<jobject>& j_window_android,
       const jni_zero::JavaRef<jobject>& j_fullscreen_manager,
       const jni_zero::JavaRef<jobject>& j_activity_tab_provider);
   // Constructor for testing, bypasses JNI creation.

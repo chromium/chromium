@@ -45,31 +45,30 @@ public class ExclusiveAccessBubble {
     public void show() {
         if (mText == null || mSnackbar != null) return;
         SnackbarManager snackbarManager = mParentContext.getSnackbarManager();
-        if (snackbarManager != null) {
-            mSnackbar =
-                    Snackbar.make(
-                                    mText,
-                                    mSnackbarController,
-                                    Snackbar.TYPE_ACTION,
-                                    Snackbar.UMA_EXCLUSIVE_ACCESS_BUBBLE)
-                            // The exclusive access notice is security-critical and should not
-                            // be discarded by the timeout of other action snackbars in the queue.
-                            .setHighPriority(true)
-                            // Use a Java-side timeout so that the timer only starts when
-                            // the notice is actually visible to the user.
-                            .setDuration(EXCLUSIVE_ACCESS_SNACKBAR_DURATION_MS);
-            snackbarManager.showSnackbar(mSnackbar);
-        }
+        if (snackbarManager == null) return;
+
+        mSnackbar =
+                Snackbar.make(
+                                mText,
+                                mSnackbarController,
+                                Snackbar.TYPE_ACTION,
+                                Snackbar.UMA_EXCLUSIVE_ACCESS_BUBBLE)
+                        // The exclusive access notice is security-critical and should not
+                        // be discarded by the timeout of other action snackbars in the queue.
+                        .setHighPriority(true)
+                        // Use a Java-side timeout so that the timer only starts when
+                        // the notice is actually visible to the user.
+                        .setDuration(EXCLUSIVE_ACCESS_SNACKBAR_DURATION_MS);
+        snackbarManager.showSnackbar(mSnackbar);
     }
 
     @CalledByNative
     public void update(String text) {
         if (mText != null && mText.equals(text) && mSnackbar != null) return;
-        SnackbarManager snackbarManager = mParentContext.getSnackbarManager();
-        if (snackbarManager == null) return;
-
         mText = text;
-        if (mSnackbar != null) {
+
+        SnackbarManager snackbarManager = mParentContext.getSnackbarManager();
+        if (snackbarManager != null && mSnackbar != null) {
             mSnackbar =
                     Snackbar.make(
                                     text,

@@ -14,12 +14,12 @@
 
 ExclusiveAccessContextAndroid::ExclusiveAccessContextAndroid(
     JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& j_context,
+    const jni_zero::JavaRef<jobject>& j_window_android,
     const jni_zero::JavaRef<jobject>& j_fullscreen_manager,
     const jni_zero::JavaRef<jobject>& j_activity_tab_provider) {
   java_context_.Reset(Java_ExclusiveAccessContext_create(
-      env, reinterpret_cast<int64_t>(this), j_context, j_fullscreen_manager,
-      j_activity_tab_provider));
+      env, reinterpret_cast<int64_t>(this), j_window_android,
+      j_fullscreen_manager, j_activity_tab_provider));
 }
 
 ExclusiveAccessContextAndroid::ExclusiveAccessContextAndroid() = default;

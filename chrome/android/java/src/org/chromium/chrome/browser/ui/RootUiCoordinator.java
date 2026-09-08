@@ -1359,7 +1359,8 @@ public class RootUiCoordinator
 
         if (ChromeFeatureList.sEnableExclusiveAccessManager.isEnabled()) {
             assumeNonNull(mExclusiveAccessManager);
-            mExclusiveAccessManager.initialize(tabModelSelector, mActivity, mActivityTabProvider);
+            mExclusiveAccessManager.initialize(
+                    tabModelSelector, mWindowAndroid, mActivityTabProvider);
         }
 
         initMessagesInfra();
