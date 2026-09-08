@@ -14,7 +14,6 @@
 #include "content/browser/first_party_sets/test/related_website_sets.pb.h"
 #include "content/browser/first_party_sets/test/related_website_sets_fuzzable.pb.h"
 #include "net/first_party_sets/global_first_party_sets.h"
-#include "net/first_party_sets/local_set_declaration.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
 
 namespace content {
@@ -87,30 +86,6 @@ std::string ConvertProto(
 
 
 
-std::string ConvertProto(
-    const related_website_sets::proto::CommandLineSwitch& command_line_switch) {
-  std::string out;
-
-  if (command_line_switch.has_set()) {
-    base::StrAppend(
-        &out, {base::WriteJson(ConvertSet(command_line_switch.set())).value()});
-  }
-
-  return out;
-}
-
-struct NativeInputs {
-  std::string public_sets;
-  std::string command_line_switch;
-};
-
-NativeInputs ConvertProto(const related_website_sets::proto::AllInputs& input) {
-  return NativeInputs{
-      ConvertProto(input.public_sets()),
-      ConvertProto(input.command_line_switch()),
-  };
-}
-
 }  // namespace
 
 DEFINE_PROTO_FUZZER(
@@ -123,23 +98,14 @@ DEFINE_PROTO_FUZZER(
     return;
   }
 
-  NativeInputs native_inputs = ConvertProto(input);
+  std::string public_sets = ConvertProto(input.public_sets());
 
   if (getenv("LPM_DUMP_NATIVE_INPUT")) {
-    std::cout << native_inputs.public_sets << std::endl;
-    std::cout << native_inputs.command_line_switch << std::endl;
+    std::cout << public_sets << std::endl;
   }
 
-  std::istringstream stream(native_inputs.public_sets);
-  net::GlobalFirstPartySets global_sets =
-      FirstPartySetParser::ParseSetsFromStream(stream, base::Version("1.0"),
-                                               false);
-
-  net::LocalSetDeclaration local_set_declaration =
-      FirstPartySetParser::ParseFromCommandLine(
-          native_inputs.command_line_switch);
-
-  global_sets.ApplyManuallySpecifiedSet(local_set_declaration);
+  std::istringstream stream(public_sets);
+  FirstPartySetParser::ParseSetsFromStream(stream, base::Version("1.0"), false);
 }
 
 }  // namespace content

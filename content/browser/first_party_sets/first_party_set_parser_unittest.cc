@@ -19,8 +19,6 @@
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/global_first_party_sets.h"
-#include "net/first_party_sets/local_set_declaration.h"
-#include "net/first_party_sets/sets_mutation.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
@@ -857,62 +855,6 @@ TEST(FirstPartySetParser, AliasesAreNotCountedAgainstAssociatedSiteLimit) {
           {{a_cctld1, a}, {a_cctld2, a}}));
 }
 
-TEST(FirstPartySetParser, ParseFromCommandLine_Invalid_MultipleSets) {
-  EXPECT_THAT(FirstPartySetParser::ParseFromCommandLine(
-                  R"({"primary": "https://primary1.test",)"
-                  R"("associatedSites": ["https://associated1.test"]})"
-                  "\n"
-                  R"({"primary": "https://primary2.test",)"
-                  R"("associatedSites": ["https://associated2.test"]})"),
-              IsEmpty());
-}
-
-TEST(FirstPartySetParser, ParseFromCommandLine_Invalid_Singleton) {
-  EXPECT_THAT(FirstPartySetParser::ParseFromCommandLine(
-                  R"({"primary": "https://primary1.test"})"),
-              IsEmpty());
-}
-
-TEST(FirstPartySetParser,
-     ParseFromCommandLine_Valid_MultipleSubsetsAndAliases) {
-  net::SchemefulSite primary(GURL("https://primary.test"));
-  net::SchemefulSite associated1(GURL("https://associated1.test"));
-  net::SchemefulSite associated2(GURL("https://associated2.test"));
-  net::SchemefulSite associated2_cctld(GURL("https://associated2.cctld"));
-  net::SchemefulSite service(GURL("https://service.test"));
-
-  net::LocalSetDeclaration local_set =
-      FirstPartySetParser::ParseFromCommandLine(
-          R"({"primary": "https://primary.test",)"
-          R"("associatedSites":)"
-          R"(["https://associated1.test", "https://associated2.test"],)"
-          R"("serviceSites": ["https://service.test"],)"
-          R"("ccTLDs": {)"
-          R"(  "https://associated2.test": ["https://associated2.cctld"])"
-          R"(})"
-          R"(})");
-
-  EXPECT_THAT(
-      local_set.ComputeMutation(),
-      net::SetsMutation(
-          /*replacement_sets=*/
-          {
-              {
-                  {primary,
-                   net::FirstPartySetEntry(primary, net::SiteType::kPrimary)},
-                  {associated1, net::FirstPartySetEntry(
-                                    primary, net::SiteType::kAssociated)},
-                  {associated2, net::FirstPartySetEntry(
-                                    primary, net::SiteType::kAssociated)},
-                  {associated2_cctld, net::FirstPartySetEntry(
-                                          primary, net::SiteType::kAssociated)},
-                  {service,
-                   net::FirstPartySetEntry(primary, net::SiteType::kService)},
-              },
-          },
-          /*addition_sets=*/{},
-          /*aliases=*/{{associated2_cctld, associated2}}));
-}
 
 void ParsesSetsCorrectly(std::string input) {
   std::istringstream stream(input);

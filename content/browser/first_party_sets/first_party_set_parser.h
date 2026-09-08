@@ -48,9 +48,6 @@ class CONTENT_EXPORT FirstPartySetParser {
   static std::optional<net::SchemefulSite> CanonicalizeRegisteredDomain(
       std::string_view origin_string,
       bool emit_errors);
-
-  [[nodiscard]] static net::LocalSetDeclaration ParseFromCommandLine(
-      const std::string& switch_value);
 };
 
 }  // namespace content

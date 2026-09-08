@@ -103,6 +103,7 @@ if (!is_android) {
       "//chrome/browser/webid",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
+      "//components/component_updater/installer_policies:installer_policies_no_content_deps",
       "//content/test:test_support",
       "//testing/gtest",
     ]

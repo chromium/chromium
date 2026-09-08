@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/barrier_closure.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -10,16 +11,22 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
+#include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 #include "chrome/browser/net/storage_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/top_level_storage_access_api/top_level_storage_access_permission_context.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/component_updater/installer_policies/first_party_sets_component_installer_policy.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -44,7 +51,6 @@
 #include "net/cookies/cookie_partition_key_collection.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -661,20 +667,38 @@ class RequestStorageAccessForWithFirstPartySetsBrowserTest
     content::ForceInProcessNetworkService();
   }
 
+  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
+    RequestStorageAccessForBaseBrowserTest::SetUpDefaultCommandLine(
+        command_line);
+    command_line->RemoveSwitch(switches::kDisableComponentUpdate);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    RequestStorageAccessForBaseBrowserTest::SetUpInProcessBrowserTestFixture();
+    CHECK(component_dir_.CreateUniqueTempDir());
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    component_updater::FirstPartySetsComponentInstallerPolicy::
+        WriteComponentForTesting(
+            base::Version("1.2.3"), component_dir_.GetPath(),
+            base::StrCat({R"({"primary": "https://)", kHostA,
+                          R"(", "associatedSites": ["https://)", kHostC,
+                          R"("])", R"(, "serviceSites": ["https://)", kHostB,
+                          R"("]})"}));
+  }
+
   void SetUpOnMainThread() override {
     RequestStorageAccessForBaseBrowserTest::SetUpOnMainThread();
     // Explicitly enable Related Website Sets (formerly First Party Sets).
     browser()->GetProfile()->GetPrefs()->SetBoolean(
         prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, true);
-  }
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    RequestStorageAccessForBaseBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(
-        network::switches::kUseRelatedWebsiteSet,
-        base::StrCat({R"({"primary": "https://)", kHostA,
-                      R"(", "associatedSites": ["https://)", kHostC, R"("])",
-                      R"(, "serviceSites": ["https://)", kHostB, R"("]})"}));
+    first_party_sets::FirstPartySetsPolicyService* service =
+        first_party_sets::FirstPartySetsPolicyServiceFactory::
+            GetForBrowserContext(browser()->GetProfile());
+    ASSERT_NE(service, nullptr);
+    base::test::TestFuture<void> future;
+    service->WaitForFirstInitCompleteForTesting(future.GetCallback());
+    ASSERT_TRUE(future.Wait());
   }
 
   permissions::MockPermissionPromptFactory MakePromptFactory(
@@ -686,6 +710,7 @@ class RequestStorageAccessForWithFirstPartySetsBrowserTest
 
  private:
   base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample_;
+  base::ScopedTempDir component_dir_;
 };
 
 IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,

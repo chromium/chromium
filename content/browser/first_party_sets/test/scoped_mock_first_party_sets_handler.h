@@ -60,8 +60,7 @@ class ScopedMockFirstPartySetsHandler
       base::FunctionRef<bool(const net::SchemefulSite&,
                              const net::FirstPartySetEntry&)> f) const override;
   // FirstPartySetsHandlerImpl:
-  void Init(const base::FilePath& user_data_dir,
-            const net::LocalSetDeclaration& local_set) override;
+  void Init(const base::FilePath& user_data_dir) override;
   [[nodiscard]] std::optional<net::GlobalFirstPartySets> GetSets(
       base::OnceCallback<void(net::GlobalFirstPartySets)> callback) override;
 

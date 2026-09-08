@@ -650,6 +650,7 @@ if (enable_devtools_frontend) {
       "//chrome/test:test_support",
       "//components/autofill/content/browser:test_support",
       "//components/autofill/core/browser:test_support",
+      "//components/component_updater/installer_policies:installer_policies_no_content_deps",
       "//components/infobars/content",
       "//components/javascript_dialogs",
       "//components/language/core/browser",

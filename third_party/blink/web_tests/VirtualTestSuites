@@ -1231,25 +1231,6 @@
     ],
     "expires": "Jan 9, 2027"
   },
-  {
-    "prefix": "first-party-sets",
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "http/tests/inspector-protocol/issues/third-party-cookie-blocking-first-party-set-enabled.js"
-    ],
-    "args": [
-      "--test-third-party-cookie-phaseout",
-      "--use-related-website-set={\"primary\":\"https://firstparty.test\",\"associatedSites\":[\"https://cookie.test\"]}"
-    ],
-    "expires": "Jan 1, 2027",
-    "owners": [
-      "chrome-first-party-sets@chromium.org"
-    ]
-  },
  "RasterInducingScroll disabled due to crbug.com/349939555",
   "TODO(crbug.com/398193016): Merge this suite into virtual/overlay-scrollbar",
   {

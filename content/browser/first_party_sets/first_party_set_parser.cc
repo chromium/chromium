@@ -591,20 +591,4 @@ net::GlobalFirstPartySets FirstPartySetParser::ParseSetsFromStream(
                                    std::move(public_config).value());
 }
 
-// static
-net::LocalSetDeclaration FirstPartySetParser::ParseFromCommandLine(
-    const std::string& switch_value) {
-  std::istringstream stream(switch_value);
-
-  SetsAndAliases parsed =
-      ParseSetsFromStreamInternal(stream, /*emit_errors=*/true);
-
-  SetsMap entries = std::move(parsed.first);
-  Aliases aliases = std::move(parsed.second);
-
-  return net::LocalSetDeclaration::Create(
-             std::move(entries), std::move(aliases), /*emit_errors=*/true)
-      .value_or(net::LocalSetDeclaration());
-}
-
 }  // namespace content

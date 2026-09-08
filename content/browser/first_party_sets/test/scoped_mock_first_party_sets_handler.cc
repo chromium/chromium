@@ -44,8 +44,7 @@ ScopedMockFirstPartySetsHandler::FindEntry(
 }
 
 void ScopedMockFirstPartySetsHandler::Init(
-    const base::FilePath& user_data_dir,
-    const net::LocalSetDeclaration& local_set) {}
+    const base::FilePath& user_data_dir) {}
 
 [[nodiscard]] std::optional<net::GlobalFirstPartySets>
 ScopedMockFirstPartySetsHandler::GetSets(

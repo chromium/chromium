@@ -440,18 +440,6 @@ uint32_t GenerateBrowserSalt() {
   return salt;
 }
 
-std::string GetRelatedWebsiteSetSwitch() {
-  // `kUseFirstPartySet` switch is being deprecated in favor of
-  // `kUseRelatedWebsiteSet` switch. Both switches are supported during the
-  // transition period with `kUseRelatedWebsiteSet` taking precedence.
-  base::CommandLine* commandLine = base::CommandLine::ForCurrentProcess();
-  if (commandLine->HasSwitch(network::switches::kUseRelatedWebsiteSet)) {
-    return commandLine->GetSwitchValueASCII(
-        network::switches::kUseRelatedWebsiteSet);
-  }
-  return commandLine->GetSwitchValueASCII(network::switches::kUseFirstPartySet);
-}
-
 }  // namespace
 
 // The currently-running BrowserMainLoop.  There can be one or zero.
@@ -1074,9 +1062,7 @@ int BrowserMainLoop::PreMainMessageLoopRun() {
   // to access this directory, hence triggering after this stage has run.
   if (result_code_ == RESULT_CODE_NORMAL_EXIT) {
     FirstPartySetsHandlerImpl::GetInstance()->Init(
-        GetContentClient()->browser()->GetFirstPartySetsDirectory(),
-        FirstPartySetParser::ParseFromCommandLine(
-            GetRelatedWebsiteSetSwitch()));
+        GetContentClient()->browser()->GetFirstPartySetsDirectory());
   }
 
   variations::MaybeScheduleFakeCrash();

@@ -11,6 +11,7 @@
 #include "base/containers/map_util.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/strings/escape.h"
@@ -22,10 +23,14 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
+#include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 #include "chrome/browser/net/storage_test_utils.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -36,8 +41,10 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/webid/federated_identity_permission_context.h"
 #include "chrome/browser/webid/federated_identity_permission_context_factory.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/component_updater/installer_policies/first_party_sets_component_installer_policy.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -78,7 +85,6 @@
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "net/test/test_data_directory.h"
 #include "services/network/public/cpp/features.h"
-#include "services/network/public/cpp/network_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -2572,29 +2578,49 @@ class StorageAccessAPIWithFirstPartySetsBrowserTest
     return enabled;
   }
 
+  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
+    StorageAccessAPIBaseBrowserTest::SetUpDefaultCommandLine(command_line);
+    command_line->RemoveSwitch(switches::kDisableComponentUpdate);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    StorageAccessAPIBaseBrowserTest::SetUpInProcessBrowserTestFixture();
+    CHECK(component_dir_.CreateUniqueTempDir());
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    component_updater::FirstPartySetsComponentInstallerPolicy::
+        WriteComponentForTesting(
+            base::Version("1.2.3"), component_dir_.GetPath(),
+            base::StrCat({R"({"primary": "https://)", kHostA,
+                          R"(", "associatedSites": ["https://)", kHostB,
+                          R"("])", R"(, "serviceSites": ["https://)", kHostD,
+                          R"("]})"}));
+  }
+
   void SetUpOnMainThread() override {
     StorageAccessAPIBaseBrowserTest::SetUpOnMainThread();
     // Explicitly enable Related Website Sets (formerly First Party Sets).
     browser()->GetProfile()->GetPrefs()->SetBoolean(
         prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, true);
+
+    first_party_sets::FirstPartySetsPolicyService* service =
+        first_party_sets::FirstPartySetsPolicyServiceFactory::
+            GetForBrowserContext(browser()->GetProfile());
+    ASSERT_NE(service, nullptr);
+    base::test::TestFuture<void> future;
+    service->WaitForFirstInitCompleteForTesting(future.GetCallback());
+    ASSERT_TRUE(future.Wait());
   }
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    StorageAccessAPIBaseBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(
-        network::switches::kUseRelatedWebsiteSet,
-        base::StrCat({R"({"primary": "https://)", kHostA,
-                      R"(", "associatedSites": ["https://)", kHostB, R"("])",
-                      R"(, "serviceSites": ["https://)", kHostD, R"("]})"}));
-  }
+ private:
+  base::ScopedTempDir component_dir_;
 };
 
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithFirstPartySetsBrowserTest,
                        StorageAccessWithFirstPartySetsDevToolsIssue) {
   SetBlockThirdPartyCookies(true);
 
-  // Note: kHostA and kHostB are considered same-party due to the use of
-  // `network::switches::kUseRelatedWebsiteSet`.
+  // Note: kHostA and kHostB are considered same-party due to the configured
+  // Related Website Set.
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(EchoCookiesURL(kHostB));
 
@@ -2643,8 +2669,8 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithFirstPartySetsBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithFirstPartySetsBrowserTest,
                        Permission_AutograntedWithinFirstPartySet) {
-  // Note: kHostA and kHostB are considered same-party due to the use of
-  // `network::switches::kUseFirstPartySet`.
+  // Note: kHostA and kHostB are considered same-party due to the configured
+  // Related Website Set.
   SetBlockThirdPartyCookies(true);
 
   NavigateToPageWithFrame(kHostA);
@@ -2797,8 +2823,8 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithFirstPartySetsBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithFirstPartySetsBrowserTest,
                        SameSite_NoRegression) {
-  // Note: kHostA and kHostB are considered same-party due to the use of
-  // `network::switches::kUseFirstPartySet`. But they should not be "same-site",
+  // Note: kHostA and kHostB are considered same-party due to the configured
+  // Related Website Set. But they should not be "same-site",
   // so SameSite=Lax and SameSite=Strict should still block cookie access.
   ASSERT_TRUE(
       SetCookie(browser()->GetProfile(), GetURL(kHostB),

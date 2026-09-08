@@ -12,7 +12,6 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/first_party_sets_handler.h"
 #include "net/first_party_sets/global_first_party_sets.h"
-#include "net/first_party_sets/local_set_declaration.h"
 
 namespace content {
 
@@ -34,8 +33,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   // invocation of Chromium which had First-Party Sets enabled.
   //
   // Only the first call has any effect.
-  void virtual Init(const base::FilePath& user_data_dir,
-                    const net::LocalSetDeclaration& local_set) = 0;
+  void virtual Init(const base::FilePath& user_data_dir) = 0;
 
   // Returns the fully-parsed and validated global First-Party Sets data.
   // Returns the data synchronously via an std::optional if it's already

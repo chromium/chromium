@@ -899,10 +899,6 @@ crbug.com/349636595 inspector-protocol/layout-fonts/generic-font-families.js [ S
 
 crbug.com/1366717 http/tests/inspector-protocol/storage/indexed-db-set-items-by-storage-key.js [ Slow ]
 
-crbug.com/1412278 [ Debug Linux ] http/tests/inspector-protocol/issues/third-party-cookie-blocking-first-party-set-enabled.js [ Slow ]
-crbug.com/1412278 [ Debug Mac13 ] http/tests/inspector-protocol/issues/third-party-cookie-blocking-first-party-set-enabled.js [ Slow ]
-crbug.com/1412278 [ Release ] http/tests/inspector-protocol/issues/third-party-cookie-blocking-first-party-set-enabled.js [ Slow ]
-
 crbug.com/1404951 [ Debug Mac ] external/wpt/fedcm/fedcm-iframe.https.html [ Slow ]
 crbug.com/1404951 [ Linux ] external/wpt/fedcm/fedcm-iframe.https.html [ Slow ]
 crbug.com/1404951 [ Mac13 Release ] external/wpt/fedcm/fedcm-iframe.https.html [ Slow ]

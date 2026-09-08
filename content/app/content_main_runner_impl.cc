@@ -115,7 +115,6 @@
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "mojo/public/cpp/system/message_pipe.h"
-#include "net/first_party_sets/local_set_declaration.h"
 #include "sandbox/policy/linux/landlock_util.h"
 #include "sandbox/policy/sandbox.h"
 #include "sandbox/policy/sandbox_type.h"
@@ -1389,8 +1388,7 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
       ForceInProcessNetworkService();
       // Minimal browser mode doesn't initialize First-Party Sets the "usual"
       // way, so we do it manually.
-      content::FirstPartySetsHandlerImpl::GetInstance()->Init(
-          base::FilePath(), net::LocalSetDeclaration());
+      content::FirstPartySetsHandlerImpl::GetInstance()->Init(base::FilePath());
     }
 
     discardable_shared_memory_manager_ =

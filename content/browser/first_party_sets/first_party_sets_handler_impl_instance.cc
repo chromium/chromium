@@ -145,8 +145,7 @@ FirstPartySetsHandlerImplInstance::GetSets(
 }
 
 void FirstPartySetsHandlerImplInstance::Init(
-    const base::FilePath& user_data_dir,
-    const net::LocalSetDeclaration& local_set) {
+    const base::FilePath& user_data_dir) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (initialized_) {
     return;
@@ -154,10 +153,6 @@ void FirstPartySetsHandlerImplInstance::Init(
 
   initialized_ = true;
   SetDatabase(user_data_dir);
-
-  if (sets_loader_) {
-    sets_loader_->SetManuallySpecifiedSet(local_set);
-  }
 }
 
 bool FirstPartySetsHandlerImplInstance::IsEnabled() const {

@@ -28,7 +28,6 @@
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
-#include "net/first_party_sets/local_set_declaration.h"
 
 namespace net {
 class FirstPartySetEntry;
@@ -62,8 +61,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerImplInstance
       bool embedder_will_provide_public_sets);
 
   // FirstPartySetsHandlerImpl:
-  void Init(const base::FilePath& user_data_dir,
-            const net::LocalSetDeclaration& local_set) override;
+  void Init(const base::FilePath& user_data_dir) override;
   [[nodiscard]] std::optional<net::GlobalFirstPartySets> GetSets(
       base::OnceCallback<void(net::GlobalFirstPartySets)> callback) override;
 
