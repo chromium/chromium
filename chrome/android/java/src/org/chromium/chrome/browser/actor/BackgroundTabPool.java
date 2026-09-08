@@ -6,9 +6,14 @@ package org.chromium.chrome.browser.actor;
 
 import static org.chromium.base.ThreadUtils.assertOnUiThread;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.ArrayMap;
 import android.util.ArraySet;
 
+import androidx.annotation.VisibleForTesting;
+
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.task.PostTask;
@@ -47,8 +52,9 @@ public class BackgroundTabPool
     private final String mProfileToken;
     private final TabCache mTabCache;
     private final Runnable mOnEmptyCallback;
-    private final ArrayMap<Integer, LiveBackgroundTab> mLiveEntries = new ArrayMap<>();
+    private final ArrayMap<@TabId Integer, LiveBackgroundTab> mLiveEntries = new ArrayMap<>();
     private final ArrayMap<@TabId Integer, @TabId Integer> mPlaceholderToTabId = new ArrayMap<>();
+    private final PlaceholderAssociationStore mAssociationStore;
     private boolean mIsDestroyed;
 
     /**
@@ -64,12 +70,13 @@ public class BackgroundTabPool
                 TabCacheManager.create(
                         ACTOR_DIR_TAG_PREFIX + profileToken, /* cipherFactory= */ null);
         mOnEmptyCallback = onEmptyCallback;
+        mAssociationStore = new PlaceholderAssociationStore(profileToken);
         populatePlaceholderAssociations();
     }
 
     private void populatePlaceholderAssociations() {
-        for (int cachedTabId : mTabCache.getAllTabIds()) {
-            int placeholderTabId = BackgroundTabDataStore.getPlaceholderTabId(cachedTabId);
+        for (@TabId int cachedTabId : mTabCache.getAllTabIds()) {
+            @TabId int placeholderTabId = mAssociationStore.getPlaceholderTabId(cachedTabId);
             if (placeholderTabId != Tab.INVALID_TAB_ID) {
                 mPlaceholderToTabId.put(placeholderTabId, cachedTabId);
             }
@@ -112,6 +119,8 @@ public class BackgroundTabPool
         removeTabObserver(tab);
         mLiveEntries.put(tabId, liveTab);
         mPlaceholderToTabId.put(placeholderTabId, tabId);
+
+        mAssociationStore.storePlaceholderTabId(tabId, placeholderTabId);
 
         TabStateAttributes attributes = getTabStateAttributes(tab);
         if (attributes != null) {
@@ -213,7 +222,7 @@ public class BackgroundTabPool
                 removeTabObserver(tab.getTab());
             }
             mTabCache.clear(getCacheKey(tabId));
-            BackgroundTabDataStore.deletePlaceholderTabId(tabId);
+            mAssociationStore.deletePlaceholderTabId(tabId);
         }
         notifyIfEmptied();
     }
@@ -243,6 +252,7 @@ public class BackgroundTabPool
         mLiveEntries.clear();
         mPlaceholderToTabId.clear();
         mTabCache.clearAll();
+        mAssociationStore.clearAll();
         notifyIfEmptied();
     }
 
@@ -250,6 +260,18 @@ public class BackgroundTabPool
     public void cleanupPostRestore() {
         checkNotDestroyed();
         mTabCache.clearAll();
+        mAssociationStore.clearAll();
+    }
+
+    /**
+     * Returns the association store for testing.
+     *
+     * @return The {@link PlaceholderAssociationStore} instance.
+     */
+    @VisibleForTesting
+    public PlaceholderAssociationStore getAssociationStoreForTesting() {
+        checkNotDestroyed();
+        return mAssociationStore;
     }
 
     @Override
@@ -325,5 +347,70 @@ public class BackgroundTabPool
 
     private static TabCacheKey getCacheKey(@TabId int tabId) {
         return new TabCacheKey(String.valueOf(tabId), /* isIncognito= */ false);
+    }
+
+    /**
+     * Internal store encapsulating profile-scoped SharedPreferences persistence for
+     * tab-to-placeholder associations.
+     */
+    @VisibleForTesting
+    public static class PlaceholderAssociationStore {
+        private static final String FILE_NAME_PREFIX = "background_tab_data_";
+        private static final String KEY_PLACEHOLDER_TAB_ID = "placeholder_tab_id_";
+
+        private final String mProfileToken;
+
+        /**
+         * Constructs a {@link PlaceholderAssociationStore} for the given profile token.
+         *
+         * @param profileToken The profile token used to scope the SharedPreferences file.
+         */
+        public PlaceholderAssociationStore(String profileToken) {
+            mProfileToken = profileToken;
+        }
+
+        private SharedPreferences getSharedPreferences() {
+            return ContextUtils.getApplicationContext()
+                    .getSharedPreferences(FILE_NAME_PREFIX + mProfileToken, Context.MODE_PRIVATE);
+        }
+
+        /**
+         * Stores the association between an original tab ID and a placeholder tab ID.
+         *
+         * @param originalTabId The ID of the original background tab.
+         * @param placeholderTabId The ID of the placeholder tab.
+         */
+        public void storePlaceholderTabId(@TabId int originalTabId, @TabId int placeholderTabId) {
+            getSharedPreferences()
+                    .edit()
+                    .putInt(KEY_PLACEHOLDER_TAB_ID + originalTabId, placeholderTabId)
+                    .apply();
+        }
+
+        /**
+         * Retrieves the placeholder tab ID associated with an original tab ID.
+         *
+         * @param originalTabId The ID of the original background tab.
+         * @return The stored placeholder tab ID, or {@link Tab#INVALID_TAB_ID} if not found.
+         */
+        public @TabId int getPlaceholderTabId(@TabId int originalTabId) {
+            return getSharedPreferences()
+                    .getInt(KEY_PLACEHOLDER_TAB_ID + originalTabId, Tab.INVALID_TAB_ID);
+        }
+
+        /**
+         * Deletes the stored placeholder tab ID associated with an original tab ID.
+         *
+         * @param originalTabId The ID of the original background tab.
+         */
+        public void deletePlaceholderTabId(@TabId int originalTabId) {
+            getSharedPreferences().edit().remove(KEY_PLACEHOLDER_TAB_ID + originalTabId).apply();
+        }
+
+        /** Clears all stored placeholder tab associations for this profile. */
+        public void clearAll() {
+            ContextUtils.getApplicationContext()
+                    .deleteSharedPreferences(FILE_NAME_PREFIX + mProfileToken);
+        }
     }
 }

@@ -160,7 +160,6 @@ public class BackgroundTabPoolManagerTest {
         TabStateExtractor.setTabStateForTesting(TAB_ID_1, tabState);
 
         pool1.addLiveTab(new LiveBackgroundTab(pool1, tab, PLACEHOLDER_ID, /* taskId= */ null));
-        BackgroundTabDataStore.storePlaceholderTabId(TAB_ID_1, PLACEHOLDER_ID);
         // Destroy the pool directly so tab state remains persisted in cache
         pool1.destroy();
 
