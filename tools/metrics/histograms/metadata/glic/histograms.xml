@@ -289,6 +289,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Actor.TaskIdMatchesCurrent" enum="BooleanMatched"
+    expires_after="2027-03-01">
+  <owner>mfoltz@chromium.org</owner>
+  <owner>dewittj@chromium.org</owner>
+  <summary>
+    Records whether the task ID provided with a Glic actor API call matches the
+    task ID currently known to Glic. Emitted on every invocation of a Glic API
+    method that takes a task ID (e.g. PerformActions, CancelActions,
+    StopActorTask).
+  </summary>
+</histogram>
+
+<histogram name="Glic.Actor.TaskIdMismatch.Method"
+    enum="GlicActorTaskIdMismatchMethod" expires_after="2027-03-01">
+  <owner>mfoltz@chromium.org</owner>
+  <owner>dewittj@chromium.org</owner>
+  <summary>
+    Records which Glic API call had a task ID mismatch. See
+    Glic.Actor.TaskIdMatchesCurrent for details.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Actor.TaskIdMismatch.Reason"
+    enum="GlicActorTaskIdMismatchReason" expires_after="2027-03-01">
+  <owner>mfoltz@chromium.org</owner>
+  <owner>dewittj@chromium.org</owner>
+  <summary>
+    Records the reason why a Glic API call had a task ID mismatch. See
+    Glic.Actor.TaskIdMatchesCurrent for details.
+  </summary>
+</histogram>
+
 <histogram name="Glic.AnimatedEffect.ShaderEmpty" enum="Boolean"
     expires_after="2027-02-17">
   <owner>iwells@chromium.org</owner>

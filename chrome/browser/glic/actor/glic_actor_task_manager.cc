@@ -28,6 +28,7 @@
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/glic/actor/glic_actor_journal_handler.h"
+#include "chrome/browser/glic/actor/glic_actor_metrics.h"
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic_mojom_traits.h"
@@ -462,7 +463,8 @@ void GlicActorClientSession::PerformActions(
   }
 
   actor::TaskId task_id(actions.task_id());
-  if (!ValidateTaskIdMatchesCurrent(task_id, "GlicPerformActions") ||
+  if (!ValidateTaskIdMatchesCurrent(
+          task_id, GlicActorTaskIdMismatchMethod::kPerformActions) ||
       !actor_keyed_service().GetTask(task_id)) {
     actor_keyed_service().GetJournal().Log(GURL::EmptyGURL(), task_id,
                                            "Act Failed",
@@ -512,7 +514,8 @@ void GlicActorClientSession::PerformActions(
 void GlicActorClientSession::CancelActions(int32_t task_id,
                                            CancelActionsCallback callback) {
   auto actor_task_id = actor::TaskId(task_id);
-  if (!ValidateTaskIdMatchesCurrent(actor_task_id, "CancelActions")) {
+  if (!ValidateTaskIdMatchesCurrent(
+          actor_task_id, GlicActorTaskIdMismatchMethod::kCancelActions)) {
     std::move(callback).Run(mojom::CancelActionsResult::kTaskNotFound);
     return;
   }
@@ -534,7 +537,8 @@ void GlicActorClientSession::StopActorTask(
     int32_t task_id,
     mojom::ActorTaskStopReason stop_reason) {
   auto actor_task_id = actor::TaskId(task_id);
-  if (!ValidateTaskIdMatchesCurrent(actor_task_id, "StopActorTask")) {
+  if (!ValidateTaskIdMatchesCurrent(
+          actor_task_id, GlicActorTaskIdMismatchMethod::kStopActorTask)) {
     return;
   }
   instance_metrics().OnStopActorTask();
@@ -580,7 +584,8 @@ void GlicActorClientSession::PauseActorTask(
     mojom::ActorTaskPauseReason pause_reason,
     std::optional<int32_t> tab_handle) {
   auto actor_task_id = actor::TaskId(task_id);
-  if (!ValidateTaskIdMatchesCurrent(actor_task_id, "PauseActorTask")) {
+  if (!ValidateTaskIdMatchesCurrent(
+          actor_task_id, GlicActorTaskIdMismatchMethod::kPauseActorTask)) {
     return;
   }
   tabs::TabInterface::Handle handle;
@@ -615,7 +620,8 @@ void GlicActorClientSession::ResumeActorTask(
     mojom::TabContextOptionsPtr context_options,
     ResumeActorTaskCallback callback) {
   auto actor_task_id = actor::TaskId(task_id);
-  if (!ValidateTaskIdMatchesCurrent(actor_task_id, "ResumeActorTask")) {
+  if (!ValidateTaskIdMatchesCurrent(
+          actor_task_id, GlicActorTaskIdMismatchMethod::kResumeActorTask)) {
     std::string error_message = "No such task";
     std::move(callback).Run(mojom::GetContextResultWithActionResultCode::New(
         mojom::GetContextResult::NewErrorReason(error_message), std::nullopt));
@@ -786,7 +792,8 @@ void GlicActorClientSession::InterruptActorTask(
     int32_t task_id,
     std::optional<mojom::ActorTaskInterruptReason> interrupt_reason) {
   auto actor_task_id = actor::TaskId(task_id);
-  if (!ValidateTaskIdMatchesCurrent(actor_task_id, "InterruptActorTask")) {
+  if (!ValidateTaskIdMatchesCurrent(
+          actor_task_id, GlicActorTaskIdMismatchMethod::kInterruptActorTask)) {
     return;
   }
   instance_metrics().InterruptActorTask();
@@ -809,7 +816,9 @@ void GlicActorClientSession::InterruptActorTask(
 
 void GlicActorClientSession::UninterruptActorTask(int32_t task_id) {
   auto actor_task_id = actor::TaskId(task_id);
-  if (!ValidateTaskIdMatchesCurrent(actor_task_id, "UninterruptActorTask")) {
+  if (!ValidateTaskIdMatchesCurrent(
+          actor_task_id,
+          GlicActorTaskIdMismatchMethod::kUninterruptActorTask)) {
     return;
   }
   instance_metrics().UninterruptActorTask();
@@ -834,8 +843,9 @@ void GlicActorClientSession::UpdateActorTaskStepProgress(
     int32_t task_id,
     const std::string& step_progress) {
   auto actor_task_id = actor::TaskId(task_id);
-  if (!ValidateTaskIdMatchesCurrent(actor_task_id,
-                                    "UpdateActorTaskStepProgress")) {
+  if (!ValidateTaskIdMatchesCurrent(
+          actor_task_id,
+          GlicActorTaskIdMismatchMethod::kUpdateActorTaskStepProgress)) {
     return;
   }
   actor::ActorTask* task = actor_keyed_service().GetTask(actor_task_id);
@@ -857,7 +867,8 @@ void GlicActorClientSession::CreateActorTab(
     mojom::CreateActorTabOptionsPtr options,
     CreateActorTabCallback callback) {
   auto actor_task_id = actor::TaskId(task_id);
-  if (!ValidateTaskIdMatchesCurrent(actor_task_id, "CreateActorTab")) {
+  if (!ValidateTaskIdMatchesCurrent(
+          actor_task_id, GlicActorTaskIdMismatchMethod::kCreateActorTab)) {
     std::move(callback).Run(nullptr);
     return;
   }
@@ -969,14 +980,35 @@ void GlicActorClientSession::StopTaskImpl(
 
 bool GlicActorClientSession::ValidateTaskIdMatchesCurrent(
     actor::TaskId task_id,
-    std::string_view method_name) {
-  if (current_task_id_.is_null() || task_id != current_task_id_) {
+    GlicActorTaskIdMismatchMethod method) {
+  const bool matches =
+      !current_task_id_.is_null() && task_id == current_task_id_;
+
+  // TODO(crbug.com/557064078): Convert this to terminate the glic renderer on a
+  // task ID mismatch, and obsolete and remove these histograms.
+  RecordTaskIdMatchesCurrent(matches);
+
+  if (!matches) {
+    GlicActorTaskIdMismatchReason reason;
+    if (current_task_id_.is_null() && task_id.is_null()) {
+      reason = GlicActorTaskIdMismatchReason::kBothNull;
+    } else if (current_task_id_.is_null()) {
+      reason = GlicActorTaskIdMismatchReason::kNoCurrentTask;
+    } else if (task_id.is_null()) {
+      reason = GlicActorTaskIdMismatchReason::kProvidedTaskIdNull;
+    } else {
+      reason = GlicActorTaskIdMismatchReason::kTaskIdMismatch;
+    }
+
+    RecordTaskIdMismatch(method, reason);
+
     actor_keyed_service().GetJournal().Log(
-        GURL::EmptyGURL(), task_id, method_name,
+        GURL::EmptyGURL(), task_id, ToString(method),
         actor::JournalDetailsBuilder()
             .AddError("Task ID does not match current task")
             .Add("expected_task_id", current_task_id_.value())
             .Add("provided_task_id", task_id.value())
+            .Add("reason", ToString(reason))
             .Build());
     return false;
   }

@@ -5,6 +5,7 @@
 #include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/actor/glic_actor_functional_browsertest.h"
+#include "chrome/browser/glic/actor/glic_actor_metrics.h"
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -40,6 +41,108 @@ IN_PROC_BROWSER_TEST_F(GlicActorMetricsFunctionalBrowserTest,
 
   histogram_tester.ExpectUniqueSample("Actor.Task.Created", true, 1);
   histogram_tester.ExpectUniqueSample("Actor.Task.CreateFailedReason", 0, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorMetricsFunctionalBrowserTest,
+                       LogsTaskIdMatchesCurrentOnMatchingTaskId) {
+  base::HistogramTester histogram_tester;
+
+  ASSERT_OK_AND_ASSIGN(TaskId task_id, CreateTask());
+  EXPECT_NE(task_id, TaskId());
+
+  EXPECT_THAT(CancelActions(task_id),
+              base::test::ValueIs(glic::mojom::CancelActionsResult::kSuccess));
+
+  histogram_tester.ExpectUniqueSample("Glic.Actor.TaskIdMatchesCurrent", true,
+                                      1);
+  histogram_tester.ExpectTotalCount("Glic.Actor.TaskIdMismatch.Method", 0);
+  histogram_tester.ExpectTotalCount("Glic.Actor.TaskIdMismatch.Reason", 0);
+
+  StopActorTask(task_id, glic::mojom::ActorTaskStopReason::kTaskComplete);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorMetricsFunctionalBrowserTest,
+                       LogsTaskIdMismatchOnNullProvidedTaskId) {
+  base::HistogramTester histogram_tester;
+
+  ASSERT_OK_AND_ASSIGN(TaskId task_id, CreateTask());
+  EXPECT_NE(task_id, TaskId());
+
+  EXPECT_THAT(
+      CancelActions(TaskId(0)),
+      base::test::ValueIs(glic::mojom::CancelActionsResult::kTaskNotFound));
+
+  histogram_tester.ExpectUniqueSample("Glic.Actor.TaskIdMatchesCurrent", false,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Actor.TaskIdMismatch.Method",
+      GlicActorTaskIdMismatchMethod::kCancelActions, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Actor.TaskIdMismatch.Reason",
+      GlicActorTaskIdMismatchReason::kProvidedTaskIdNull, 1);
+
+  StopActorTask(task_id, glic::mojom::ActorTaskStopReason::kTaskComplete);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorMetricsFunctionalBrowserTest,
+                       LogsTaskIdMismatchOnBothNull) {
+  base::HistogramTester histogram_tester;
+
+  EXPECT_THAT(
+      CancelActions(TaskId(0)),
+      base::test::ValueIs(glic::mojom::CancelActionsResult::kTaskNotFound));
+
+  histogram_tester.ExpectUniqueSample("Glic.Actor.TaskIdMatchesCurrent", false,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Actor.TaskIdMismatch.Method",
+      GlicActorTaskIdMismatchMethod::kCancelActions, 1);
+  histogram_tester.ExpectUniqueSample("Glic.Actor.TaskIdMismatch.Reason",
+                                      GlicActorTaskIdMismatchReason::kBothNull,
+                                      1);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorMetricsFunctionalBrowserTest,
+                       LogsTaskIdMismatchOnDifferentTaskId) {
+  base::HistogramTester histogram_tester;
+
+  ASSERT_OK_AND_ASSIGN(TaskId task_id, CreateTask());
+  EXPECT_NE(task_id, TaskId());
+
+  TaskId foreign_task_id(task_id.value() + 999);
+  EXPECT_THAT(
+      CancelActions(foreign_task_id),
+      base::test::ValueIs(glic::mojom::CancelActionsResult::kTaskNotFound));
+
+  histogram_tester.ExpectUniqueSample("Glic.Actor.TaskIdMatchesCurrent", false,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Actor.TaskIdMismatch.Method",
+      GlicActorTaskIdMismatchMethod::kCancelActions, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Actor.TaskIdMismatch.Reason",
+      GlicActorTaskIdMismatchReason::kTaskIdMismatch, 1);
+
+  StopActorTask(task_id, glic::mojom::ActorTaskStopReason::kTaskComplete);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorMetricsFunctionalBrowserTest,
+                       LogsTaskIdMismatchOnNoCurrentTask) {
+  base::HistogramTester histogram_tester;
+
+  TaskId non_null_task_id(12345);
+  EXPECT_THAT(
+      CancelActions(non_null_task_id),
+      base::test::ValueIs(glic::mojom::CancelActionsResult::kTaskNotFound));
+
+  histogram_tester.ExpectUniqueSample("Glic.Actor.TaskIdMatchesCurrent", false,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Actor.TaskIdMismatch.Method",
+      GlicActorTaskIdMismatchMethod::kCancelActions, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Actor.TaskIdMismatch.Reason",
+      GlicActorTaskIdMismatchReason::kNoCurrentTask, 1);
 }
 
 class GlicActorMetricsFunctionalBrowserTestWithoutPolicyExemption

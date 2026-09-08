@@ -6,6 +6,8 @@ source_set("actor") {
   sources = [
     "glic_actor_journal_handler.cc",
     "glic_actor_journal_handler.h",
+    "glic_actor_metrics.cc",
+    "glic_actor_metrics.h",
     "glic_actor_policy_checker.cc",
     "glic_actor_policy_checker.h",
     "glic_actor_task_manager.cc",

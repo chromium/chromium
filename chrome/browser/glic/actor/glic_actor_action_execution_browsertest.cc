@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/glic/actor/glic_actor_functional_browsertest.h"
+#include "chrome/browser/glic/actor/glic_actor_metrics.h"
 #include "chrome/browser/glic/actor/glic_actor_test_util.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -413,6 +415,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorActionExecutionFunctionalBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(GlicActorActionExecutionFunctionalBrowserTest,
                        PerformActionsRejectsMismatchedTaskId) {
+  base::HistogramTester histogram_tester;
   ASSERT_OK_AND_ASSIGN(TaskId task_id, CreateTask());
   EXPECT_NE(task_id, TaskId());
 
@@ -427,11 +430,21 @@ IN_PROC_BROWSER_TEST_F(GlicActorActionExecutionFunctionalBrowserTest,
   EXPECT_THAT(result,
               HasResultCode(::actor::mojom::ActionResultCode::kTaskWentAway));
 
+  histogram_tester.ExpectUniqueSample("Glic.Actor.TaskIdMatchesCurrent", false,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Actor.TaskIdMismatch.Method",
+      GlicActorTaskIdMismatchMethod::kPerformActions, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Actor.TaskIdMismatch.Reason",
+      GlicActorTaskIdMismatchReason::kTaskIdMismatch, 1);
+
   StopActorTask(task_id, glic::mojom::ActorTaskStopReason::kTaskComplete);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicActorActionExecutionFunctionalBrowserTest,
                        CancelActionsRejectsMismatchedTaskId) {
+  base::HistogramTester histogram_tester;
   ASSERT_OK_AND_ASSIGN(TaskId task_id, CreateTask());
   EXPECT_NE(task_id, TaskId());
 
@@ -439,6 +452,15 @@ IN_PROC_BROWSER_TEST_F(GlicActorActionExecutionFunctionalBrowserTest,
   EXPECT_THAT(
       CancelActions(foreign_task_id),
       base::test::ValueIs(glic::mojom::CancelActionsResult::kTaskNotFound));
+
+  histogram_tester.ExpectUniqueSample("Glic.Actor.TaskIdMatchesCurrent", false,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Actor.TaskIdMismatch.Method",
+      GlicActorTaskIdMismatchMethod::kCancelActions, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Actor.TaskIdMismatch.Reason",
+      GlicActorTaskIdMismatchReason::kTaskIdMismatch, 1);
 
   StopActorTask(task_id, glic::mojom::ActorTaskStopReason::kTaskComplete);
 }
@@ -449,6 +471,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorActionExecutionFunctionalBrowserTest,
 // task (current_task_id_ is null).
 IN_PROC_BROWSER_TEST_F(GlicActorActionExecutionFunctionalBrowserTest,
                        PerformActionsRejectsForeignTaskWhenNoCurrentTask) {
+  base::HistogramTester histogram_tester;
   const TaskId victim_task_id = actor_keyed_service()->CreateTask(
       ::actor::TaskSourceInfo(
           ::actor::TaskSourceInfo::Client::kExperimentalActor,
@@ -469,6 +492,15 @@ IN_PROC_BROWSER_TEST_F(GlicActorActionExecutionFunctionalBrowserTest,
   ASSERT_OK_AND_ASSIGN(ActionsResult result, PerformActions(hijack));
   EXPECT_THAT(result,
               HasResultCode(::actor::mojom::ActionResultCode::kTaskWentAway));
+
+  histogram_tester.ExpectUniqueSample("Glic.Actor.TaskIdMatchesCurrent", false,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Actor.TaskIdMismatch.Method",
+      GlicActorTaskIdMismatchMethod::kPerformActions, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Actor.TaskIdMismatch.Reason",
+      GlicActorTaskIdMismatchReason::kNoCurrentTask, 1);
 
   EXPECT_EQ(initial_url, web_contents()->GetURL());
   EXPECT_EQ(ActorTask::State::kCreated, victim_task->GetState());
