@@ -25,6 +25,7 @@
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -161,7 +162,7 @@ void LoginScreenDefaultPolicyLoginScreenBrowsertest::TearDownOnMainThread() {
       FROM_HERE, base::BindOnce([]() {
         session_manager::SessionManager::Get()->RequestSignOut();
       }));
-  base::RunLoop().RunUntilIdle();
+  RunUntilBrowserProcessQuits();
   LoginScreenDefaultPolicyBrowsertestBase::TearDownOnMainThread();
 }
 
