@@ -205,6 +205,7 @@
 #include "components/tracing/common/tracing_switches.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/translate/core/browser/translate_ranker_impl.h"
+#include "components/translate/core/common/translate_features.h"
 #include "components/translate/core/common/translate_util.h"
 #include "components/trusted_vault/features.h"
 #include "components/ui_devtools/switches.h"
@@ -14053,6 +14054,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableDesktopQrCodeDetectionName,
      flag_descriptions::kEnableDesktopQrCodeDetectionDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(payments::facilitated::kEnableDesktopQrCodeDetection)},
+    {"enable-translate-pdf", flag_descriptions::kTranslatePdfName,
+     flag_descriptions::kTranslatePdfDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(translate::kEnableTranslatePdf)},
 
 #if BUILDFLAG(IS_ANDROID)
     {"android-unknown-gamepad-extra-axes",

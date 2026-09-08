@@ -4852,6 +4852,10 @@ inline constexpr char kTouchTextEditingRedesignName[] =
 inline constexpr char kTouchTextEditingRedesignDescription[] =
     "Enables new touch text editing features.";
 
+inline constexpr char kTranslatePdfName[] = "Translate PDF documents";
+inline constexpr char kTranslatePdfDescription[] =
+    "Enables PDF translation in Chrome.";
+
 inline constexpr char kTreatInsecureOriginAsSecureName[] =
     "Insecure origins treated as secure";
 inline constexpr char kTreatInsecureOriginAsSecureDescription[] =
