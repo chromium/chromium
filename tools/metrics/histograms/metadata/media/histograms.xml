@@ -8615,7 +8615,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.Win.Device.CapturePixelFormat"
-    enum="VideoPixelFormatUnion" expires_after="2026-09-20">
+    enum="VideoPixelFormatUnion" expires_after="2027-09-20">
   <owner>ilnik@google.com</owner>
   <owner>video-cmi-mpp@google.com</owner>
   <summary>
@@ -8646,7 +8646,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.Win.Device.RequestedPixelFormat"
-    enum="VideoPixelFormatUnion" expires_after="2026-09-20">
+    enum="VideoPixelFormatUnion" expires_after="2027-09-20">
   <owner>ilnik@google.com</owner>
   <owner>video-cmi-mpp@google.com</owner>
   <summary>
