@@ -406,6 +406,7 @@ public class TabGroupItemBuilderUnitTest {
 
         when(mTab.getTabGroupId()).thenReturn(token1);
         when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(token1, token2));
+        when(mTabModel.tabGroupExists(token2)).thenReturn(true);
         when(mTabModel.getTabGroupTitle(token2)).thenReturn("Group 2");
         when(mTabModel.getTabGroupColorWithFallback(token2)).thenReturn(TabGroupColorId.BLUE);
 
