@@ -351,13 +351,56 @@ TEST_F(PrefetchManagerTest,
   // Simulate synthesis error response with nullptr buffer.
   manager.OnSynthesisResponse(seq_id, 0, nullptr, {});
 
-  // Chunk 0 should not be cached, but in-flight slot must be freed and chunk 3
-  // dispatched.
+  // Chunk 0 should not be reported as cached audio, but its status must be
+  // recorded as kSynthesisError in session_cache_, in-flight slot freed, and
+  // chunk 3 dispatched.
   EXPECT_FALSE(manager.HasCachedSegment(0));
+  const CachedCompressedSegment* cached0 = manager.GetCachedSegment(0);
+  ASSERT_NE(cached0, nullptr);
+  EXPECT_EQ(cached0->status, SynthesisResultStatus::kSynthesisError);
+  EXPECT_EQ(cached0->opus_buffer, nullptr);
+
   ASSERT_EQ(PrefetchManager::kMaxConcurrentRequests + 1,
             dispatched_indices.size());
   EXPECT_EQ(static_cast<uint32_t>(PrefetchManager::kMaxConcurrentRequests),
             dispatched_indices.back());
+}
+
+TEST_F(PrefetchManagerTest, RecordsSynthesisErrorStatusInCache) {
+  PrefetchManager manager;
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  read_aloud::mojom::TextSegmentPtr seg = read_aloud::mojom::TextSegment::New();
+  seg->segment_index = 0;
+  seg->text = u"Chunk zero.";
+  segments.push_back(std::move(seg));
+  manager.SetTextContent(segments);
+
+  manager.InsertCachedSegment(0, nullptr, {},
+                              SynthesisResultStatus::kSynthesisError);
+  EXPECT_FALSE(manager.HasCachedSegment(0));
+  const CachedCompressedSegment* cached = manager.GetCachedSegment(0);
+  ASSERT_NE(cached, nullptr);
+  EXPECT_EQ(cached->status, SynthesisResultStatus::kSynthesisError);
+  EXPECT_EQ(cached->opus_buffer, nullptr);
+}
+
+TEST_F(PrefetchManagerTest, RecordsCorruptDataStatusInCache) {
+  PrefetchManager manager;
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  read_aloud::mojom::TextSegmentPtr seg = read_aloud::mojom::TextSegment::New();
+  seg->segment_index = 0;
+  seg->text = u"Chunk zero.";
+  segments.push_back(std::move(seg));
+  manager.SetTextContent(segments);
+
+  scoped_refptr<media::DecoderBuffer> corrupt_buffer =
+      media::DecoderBuffer::CopyFrom(std::vector<uint8_t>{0xff, 0xff});
+  manager.InsertCachedSegment(0, corrupt_buffer, {},
+                              SynthesisResultStatus::kCorruptData);
+  EXPECT_FALSE(manager.HasCachedSegment(0));
+  const CachedCompressedSegment* cached = manager.GetCachedSegment(0);
+  ASSERT_NE(cached, nullptr);
+  EXPECT_EQ(cached->status, SynthesisResultStatus::kCorruptData);
 }
 
 TEST_F(PrefetchManagerTest, StaleOrOutOrderResponseIsDiscarded) {

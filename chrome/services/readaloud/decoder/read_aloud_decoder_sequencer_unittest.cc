@@ -77,10 +77,12 @@ class ReadAloudDecoderSequencerTest : public testing::Test {
     ASSERT_EQ(prefetch_manager_.GetTimelineChunkCount(), chunk_count);
   }
 
-  void InsertCachedSegment(uint32_t chunk_index,
-                           scoped_refptr<media::DecoderBuffer> opus_buffer) {
+  void InsertCachedSegment(
+      uint32_t chunk_index,
+      scoped_refptr<media::DecoderBuffer> opus_buffer,
+      SynthesisResultStatus status = SynthesisResultStatus::kSuccess) {
     prefetch_manager_.InsertCachedSegment(chunk_index, std::move(opus_buffer),
-                                          /*timings=*/{});
+                                          /*timings=*/{}, status);
   }
 
   scoped_refptr<media::DecoderBuffer> CreateDummyBuffer() {
@@ -274,7 +276,8 @@ TEST_F(ReadAloudDecoderSequencerTest,
 TEST_F(ReadAloudDecoderSequencerTest, HandlesNullCachedSegmentWithoutStalling) {
   SetUpTimeline(/*chunk_count=*/2);
   // Insert null audio buffer for chunk 0 (simulating failed synthesis response)
-  InsertCachedSegment(/*chunk_index=*/0, /*opus_buffer=*/nullptr);
+  InsertCachedSegment(/*chunk_index=*/0, /*opus_buffer=*/nullptr,
+                      SynthesisResultStatus::kSynthesisError);
   InsertCachedSegment(/*chunk_index=*/1, CreateDummyBuffer());
 
   // 1. ReplenishBuffer skips null chunk 0 and begins decoding chunk 1
@@ -291,6 +294,49 @@ TEST_F(ReadAloudDecoderSequencerTest, HandlesNullCachedSegmentWithoutStalling) {
   EXPECT_FALSE(sequencer_.is_decoding());
   EXPECT_EQ(sequencer_.next_chunk_to_decode(), 2u);
   EXPECT_EQ(audio_queue_->size(), 1u);
+}
+
+TEST_F(ReadAloudDecoderSequencerTest, SkipsCorruptDataSegmentWithoutStalling) {
+  SetUpTimeline(/*chunk_count=*/2);
+  scoped_refptr<media::DecoderBuffer> corrupt_buffer =
+      media::DecoderBuffer::CopyFrom(std::vector<uint8_t>{0xff, 0xff});
+  InsertCachedSegment(/*chunk_index=*/0, corrupt_buffer,
+                      SynthesisResultStatus::kCorruptData);
+  InsertCachedSegment(/*chunk_index=*/1, CreateDummyBuffer());
+
+  // ReplenishBuffer logs warning, skips corrupt chunk 0, and begins decoding
+  // chunk 1
+  sequencer_.ReplenishBuffer();
+  EXPECT_TRUE(sequencer_.is_decoding());
+  EXPECT_EQ(sequencer_.next_chunk_to_decode(), 1u);
+}
+
+TEST_F(ReadAloudDecoderSequencerTest,
+       ReplenishBufferLookaheadReplenishesOnChunkFailure) {
+  SetUpTimeline(/*chunk_count=*/6);
+  std::vector<uint32_t> dispatched_indices;
+  prefetch_manager_.SetRequestSynthesisCallback(base::BindRepeating(
+      [](std::vector<uint32_t>* out, uint32_t chunk_index,
+         std::u16string_view text) { out->push_back(chunk_index); },
+      &dispatched_indices));
+
+  // Insert failed synthesis response for chunk 0 and valid buffer for chunk 1
+  InsertCachedSegment(/*chunk_index=*/0, /*opus_buffer=*/nullptr,
+                      SynthesisResultStatus::kSynthesisError);
+  InsertCachedSegment(/*chunk_index=*/1, CreateDummyBuffer());
+
+  sequencer_.ReplenishBuffer();
+  // Cursor advances to 1u, decoding starts on chunk 1, and lookahead extends to
+  // chunk 5 (queued in pending_requests_)
+  EXPECT_EQ(sequencer_.next_chunk_to_decode(), 1u);
+  EXPECT_TRUE(sequencer_.is_decoding());
+
+  // Completing chunk 2 frees an in-flight slot and dispatches chunk 5 from
+  // pending queue
+  uint64_t seq_id = prefetch_manager_.GetCurrentSequenceId();
+  prefetch_manager_.OnSynthesisResponse(seq_id, 2, CreateDummyBuffer(), {});
+  EXPECT_FALSE(dispatched_indices.empty());
+  EXPECT_EQ(dispatched_indices.back(), 5u);
 }
 
 TEST_F(ReadAloudDecoderSequencerTest, ReentrancyGuardPreventsRecursiveReplenish) {
