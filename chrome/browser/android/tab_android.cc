@@ -213,8 +213,16 @@ std::unique_ptr<WebContentsStateByteBuffer>
 TabAndroid::GetWebContentsByteBuffer() const {
   JNIEnv* env = AttachCurrentThread();
   auto tab = GetJavaObject(env);
+  if (!tab) {
+    return nullptr;
+  }
+
   ScopedJavaLocalRef<jobject> state =
       Java_TabImpl_getWebContentsStateByteBuffer(env, tab);
+  if (!state) {
+    return nullptr;
+  }
+
   int version = Java_TabImpl_getWebContentsStateSavedStateVersion(env, tab);
 
   // If the web contents is null (denoted by saved_state_version being -1),

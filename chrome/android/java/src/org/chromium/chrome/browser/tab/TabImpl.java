@@ -2335,10 +2335,9 @@ class TabImpl implements Tab, TabInternal {
     }
 
     @CalledByNative
-    private ByteBuffer getWebContentsStateByteBuffer() {
-        // Return a temp byte buffer if the state is null.
+    private @Nullable ByteBuffer getWebContentsStateByteBuffer() {
         if (mWebContentsState == null) {
-            return ByteBuffer.allocateDirect(0);
+            return null;
         }
         assert mWebContentsState.buffer().isDirect();
         return mWebContentsState.buffer();
