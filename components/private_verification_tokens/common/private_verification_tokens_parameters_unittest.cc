@@ -17,6 +17,7 @@ TEST(PrivateVerificationTokensParametersTest, GetParametersForVersion1) {
   EXPECT_EQ(params->num_buckets, 2);
   EXPECT_EQ(params->single_request_size, 36u);
   EXPECT_EQ(params->blinded_request_size, 33u);
+  EXPECT_EQ(params->max_response_body_size, /*7 * 1024 = */ 7168u);
 }
 
 TEST(PrivateVerificationTokensParametersTest, GetParametersForUnknownVersion) {

@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
+#include "components/private_verification_tokens/common/private_verification_tokens_parameters.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -36,7 +37,6 @@ constexpr char kExpectedAcceptHeaderValue[] =
 constexpr char kExpectedContentTypeHeaderValue[] =
     "application/private-token-request";
 constexpr base::TimeDelta kFetchTimeout = base::Minutes(1);
-constexpr size_t kResponseMaxBodySize = 2 * 1024;
 constexpr char kIssuerServerUrl[] = "http://main.example:8080/issuepvt";
 
 class PrivateVerificationTokensFetcherTest : public testing::Test {
@@ -45,8 +45,16 @@ class PrivateVerificationTokensFetcherTest : public testing::Test {
     pvt_server_issuer_request_url_ = GURL(kIssuerServerUrl);
     fetcher_ = PrivateVerificationTokensFetcher::Create(
         pvt_server_issuer_request_url_,
-        test_url_loader_factory_.GetSafeWeakWrapper()->Clone());
+        test_url_loader_factory_.GetSafeWeakWrapper()->Clone(),
+        MaxResponseBodySize());
     ASSERT_TRUE(fetcher_);
+  }
+
+  size_t MaxResponseBodySize() const {
+    std::optional<PrivateVerificationTokensParameters> params =
+        private_verification_tokens::GetParametersForVersion(1);
+    CHECK(params.has_value());
+    return params->max_response_body_size;
   }
 
  public:
@@ -115,7 +123,7 @@ TEST_F(PrivateVerificationTokensFetcherTest, EmptyResponse) {
 
 TEST_F(PrivateVerificationTokensFetcherTest, LargeResponseWithinLimit) {
   const std::string request_body = "token-request-bytes";
-  const std::string response_body(kResponseMaxBodySize, 'a');
+  const std::string response_body(MaxResponseBodySize(), 'a');
   SetResponse(response_body, /*expected_request_body = */ request_body);
 
   base::test::TestFuture<base::expected<std::string, TryGetTokensResult>>
@@ -129,7 +137,7 @@ TEST_F(PrivateVerificationTokensFetcherTest, LargeResponseWithinLimit) {
 
 TEST_F(PrivateVerificationTokensFetcherTest, LargeResponseOverLimit) {
   const std::string request_body = "token-request-bytes";
-  const std::string response_body(kResponseMaxBodySize + 1, 'a');
+  const std::string response_body(MaxResponseBodySize() + 1, 'a');
   SetResponse(response_body, /*expected_request_body = */ request_body);
 
   base::test::TestFuture<base::expected<std::string, TryGetTokensResult>>
@@ -213,7 +221,7 @@ TEST_F(PrivateVerificationTokensFetcherTest, TrafficAnnotation) {
 
 TEST(PrivateVerificationTokensFetcherCreateTest, NullURLLoaderFactory) {
   EXPECT_THAT(PrivateVerificationTokensFetcher::Create(
-                  GURL("http://example.com"), nullptr),
+                  GURL("http://example.com"), nullptr, 0),
               testing::IsNull());
 }
 
@@ -222,7 +230,7 @@ TEST(PrivateVerificationTokensFetcherCreateTest, InvalidURL) {
   network::TestURLLoaderFactory test_url_loader_factory;
   EXPECT_THAT(
       PrivateVerificationTokensFetcher::Create(
-          GURL(), test_url_loader_factory.GetSafeWeakWrapper()->Clone()),
+          GURL(), test_url_loader_factory.GetSafeWeakWrapper()->Clone(), 0),
       testing::IsNull());
 }
 

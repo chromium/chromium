@@ -60,7 +60,8 @@ class PrivateVerificationTokensFetcher {
   static std::unique_ptr<PrivateVerificationTokensFetcher> Create(
       GURL issuer_request_url,
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
-          pending_url_loader_factory);
+          pending_url_loader_factory,
+      size_t max_response_body_size);
   ~PrivateVerificationTokensFetcher();
   void TryGetTokens(const std::string& request_body,
                     TryGetTokensCallback callback);
@@ -69,7 +70,8 @@ class PrivateVerificationTokensFetcher {
   PrivateVerificationTokensFetcher(
       GURL issuer_request_url,
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
-          pending_url_loader_factory);
+          pending_url_loader_factory,
+      size_t max_response_body_size);
   void OnGetTokensCompleted(
       std::unique_ptr<network::SimpleURLLoader> url_loader,
       TryGetTokensCallback callback,
@@ -77,6 +79,7 @@ class PrivateVerificationTokensFetcher {
 
   const network::ResourceRequest request_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  size_t max_response_body_size_;
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<PrivateVerificationTokensFetcher> weak_ptr_factory_{
       this};

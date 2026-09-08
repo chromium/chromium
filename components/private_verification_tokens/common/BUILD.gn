@@ -70,6 +70,7 @@ source_set("private_verification_tokens_fetcher_unittest") {
   sources = [ "private_verification_tokens_fetcher_unittest.cc" ]
   deps = [
     ":private_verification_tokens_fetcher",
+    ":private_verification_tokens_parameters",
     "//base",
     "//base/test:test_support",
     "//services/network:test_support",

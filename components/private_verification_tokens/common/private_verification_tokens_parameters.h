@@ -27,6 +27,20 @@ struct PrivateVerificationTokensParameters {
   size_t single_request_size = 0;
   // Size of the blinded token request in bytes.
   size_t blinded_request_size = 0;
+
+  // Response max is set based on ATHM token size and max batch size of
+  // 20, Ns=32 and Ne=33.
+  //
+  // Token response is as follows.
+  // struct TokenResponse {
+  //    big_u: Point,                  // 33 bytes
+  //    big_v: Point,                  // 33 bytes
+  //    ts: Scalar,                    // 32 bytes
+  //    issuance_proof: IssuanceProof, // 257 bytes
+  //}
+  // Total response is 355 bytes for a single token.
+  // For batch size of 20, response size is 7100 < 7 * 1024
+  size_t max_response_body_size = 0;
 };
 
 // Returns the parameters for a given version, or nullopt if the version is not

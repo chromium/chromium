@@ -29,6 +29,7 @@
 #include "components/private_verification_tokens/common/athm_ffi/athm_ffi.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_database.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_issuer_config.h"
+#include "components/private_verification_tokens/common/private_verification_tokens_parameters.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_test_util.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_token.h"
 #include "content/public/test/browser_task_environment.h"
@@ -898,6 +899,81 @@ TEST_F(PrivateVerificationTokensServiceTest,
   EXPECT_EQ(test_url_loader_factory.NumPending(), 1);
   EXPECT_EQ(test_url_loader_factory.GetPendingRequest(0)->request.url,
             GURL("https://a.com/pvt/issue"));
+}
+
+TEST_F(PrivateVerificationTokensServiceEmptyDatabaseTest,
+       MaybeFetchTokens_MaxBatchSize_FetchesTokens) {
+  WaitForInitialization(service());
+
+  std::optional<
+      private_verification_tokens::PrivateVerificationTokensParameters>
+      params = private_verification_tokens::GetParametersForVersion(1);
+  ASSERT_TRUE(params.has_value());
+
+  const std::string encoded_public_key =
+      base::Base64Encode(test_issuer().public_key_bytes());
+  const std::string encoded_public_key_proof =
+      base::Base64Encode(test_issuer().public_key_proof_bytes());
+  const FutureExpiration future_expiration = GetFutureExpiration();
+  const std::string json_str = base::StringPrintf(
+      R"({
+      "issuers": [
+        {
+          "issuerRequestUrl": "https://max-batch.com/pvt/issue",
+          "version": 1,
+          "publicKey": "%s",
+          "publicKeyProof": "%s",
+          "batchSize": %d,
+          "expiration": "%s",
+          "redeemers": [
+            "https://r.max-batch.com"
+          ],
+          "deploymentId": "1"
+        }
+      ]
+    })",
+      encoded_public_key.c_str(), encoded_public_key_proof.c_str(),
+      params->max_batch_size, future_expiration.string_rep.c_str());
+
+  auto config =
+      private_verification_tokens::PrivateVerificationTokensIssuerConfig::
+          Create(base::test::ParseJsonDict(json_str));
+  ASSERT_TRUE(config);
+  service()->SetIssuerConfig(config);
+
+  network::TestURLLoaderFactory test_url_loader_factory;
+  test_url_loader_factory.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        EXPECT_EQ(request.url, GURL("https://max-batch.com/pvt/issue"));
+        std::string request_body;
+        if (request.request_body) {
+          for (const auto& element : *request.request_body->elements()) {
+            if (element.type() == network::DataElement::Tag::kBytes) {
+              const auto& bytes =
+                  element.As<network::DataElementBytes>().bytes();
+              request_body.append(bytes.begin(), bytes.end());
+            }
+          }
+        }
+        auto response = test_issuer().issue_batch_from_bytes(
+            rs_std::SliceRef<const uint8_t>(base::as_byte_span(request_body)),
+            /*hidden_metadata=*/0);
+        ASSERT_TRUE(response.has_value());
+        test_url_loader_factory.AddResponse(
+            request.url.spec(),
+            std::string(response->begin(), response->end()));
+      }));
+
+  service()->MaybeFetchTokens(GURL("https://max-batch.com/pvt/issue"),
+                              test_url_loader_factory.GetSafeWeakWrapper());
+
+  WaitForTokensStored(service());
+
+  base::test::TestFuture<std::vector<url::Origin>> future;
+  service()->GetTokenIssuers(future.GetCallback());
+  auto issuers = future.Take();
+  EXPECT_THAT(issuers, testing::ElementsAre(
+                           url::Origin::Create(GURL("https://max-batch.com"))));
 }
 
 TEST_F(PrivateVerificationTokensServiceTest,

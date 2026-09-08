@@ -19,6 +19,7 @@ std::optional<PrivateVerificationTokensParameters> GetParametersForVersion(
         .num_buckets = 2,
         .single_request_size = 36,
         .blinded_request_size = 33,
+        .max_response_body_size = 7 * 1024,
     };
   }
   return std::nullopt;

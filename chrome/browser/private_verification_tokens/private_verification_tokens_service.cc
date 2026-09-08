@@ -343,7 +343,8 @@ void PrivateVerificationTokensService::MaybeFetchTokens(
 
   auto fetcher =
       private_verification_tokens::PrivateVerificationTokensFetcher::Create(
-          config.issuer_request_url, url_loader_factory->Clone());
+          config.issuer_request_url, url_loader_factory->Clone(),
+          params->max_response_body_size);
   if (!fetcher) {
     VLOG(1) << "Failed to initialize PVT fetcher for URL: "
             << config.issuer_request_url;
