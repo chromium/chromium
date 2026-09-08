@@ -56,6 +56,9 @@ class FakeRTCRtpSenderImpl : public blink::RTCRtpSenderPlatform {
   CreateEncodedVideoFrameInjector(
       webrtc::KeyFrameCallback keyframe_callback,
       webrtc::BitrateInfoCallback bitrate_callback) override;
+  scoped_refptr<webrtc::EncodedAudioFrameInjectorInterface>
+  CreateEncodedAudioFrameInjector(
+      webrtc::TargetBitrateCallback bitrate_callback) override;
 
  private:
   String track_id_;

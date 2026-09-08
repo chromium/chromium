@@ -121,6 +121,13 @@ FakeRTCRtpSenderImpl::CreateEncodedVideoFrameInjector(
   return nullptr;
 }
 
+scoped_refptr<webrtc::EncodedAudioFrameInjectorInterface>
+FakeRTCRtpSenderImpl::CreateEncodedAudioFrameInjector(
+    webrtc::TargetBitrateCallback bitrate_callback) {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
 FakeRTCRtpReceiverImpl::FakeRTCRtpReceiverImpl(
     const String& track_id,
     Vector<String> stream_ids,

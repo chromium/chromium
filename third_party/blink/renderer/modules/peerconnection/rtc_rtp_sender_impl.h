@@ -159,6 +159,9 @@ class MODULES_EXPORT RTCRtpSenderImpl : public blink::RTCRtpSenderPlatform {
   CreateEncodedVideoFrameInjector(
       webrtc::KeyFrameCallback keyframe_callback,
       webrtc::BitrateInfoCallback bitrate_callback) override;
+  scoped_refptr<webrtc::EncodedAudioFrameInjectorInterface>
+  CreateEncodedAudioFrameInjector(
+      webrtc::TargetBitrateCallback bitrate_callback) override;
 
   // The ReplaceTrack() that takes a blink::RTCVoidRequest is implemented on
   // top of this, which returns the result in a callback instead. Allows doing

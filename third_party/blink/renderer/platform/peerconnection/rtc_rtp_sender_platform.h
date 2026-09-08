@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/webrtc/api/dtls_transport_interface.h"
+#include "third_party/webrtc/api/encoded_audio_frame_injector_interface.h"
 #include "third_party/webrtc/api/encoded_video_frame_injector_interface.h"
 #include "third_party/webrtc/api/rtp_parameters.h"
 #include "third_party/webrtc/api/stats/rtc_stats.h"
@@ -69,6 +70,9 @@ class PLATFORM_EXPORT RTCRtpSenderPlatform {
   CreateEncodedVideoFrameInjector(
       webrtc::KeyFrameCallback keyframe_callback,
       webrtc::BitrateInfoCallback bitrate_callback) = 0;
+  virtual scoped_refptr<webrtc::EncodedAudioFrameInjectorInterface>
+  CreateEncodedAudioFrameInjector(
+      webrtc::TargetBitrateCallback bitrate_callback) = 0;
 };
 
 }  // namespace blink

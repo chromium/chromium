@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/workers/custom_event_message.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
+#include "third_party/webrtc/api/encoded_audio_frame_injector_interface.h"
 #include "third_party/webrtc/api/encoded_video_frame_injector_interface.h"
 
 namespace blink {
@@ -21,6 +22,13 @@ class MODULES_EXPORT RTCRtpSenderEncodedSource : public EventTarget {
 
  public:
   static Event* CreateVideoEncodedSource(
+      CrossThreadWeakHandle<RTCRtpSender> weak_sender,
+      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
+      CrossThreadHandle<ScriptPromiseResolver<IDLUndefined>> resolver_handle,
+      ScriptState* worker_script_state,
+      CustomEventMessage data);
+
+  static Event* CreateAudioEncodedSource(
       CrossThreadWeakHandle<RTCRtpSender> weak_sender,
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
       CrossThreadHandle<ScriptPromiseResolver<IDLUndefined>> resolver_handle,
@@ -52,6 +60,8 @@ class MODULES_EXPORT RTCRtpSenderEncodedSource : public EventTarget {
 
   void InitializeVideoSink(
       scoped_refptr<webrtc::EncodedVideoFrameInjectorInterface> injector);
+  void InitializeAudioSink(
+      scoped_refptr<webrtc::EncodedAudioFrameInjectorInterface> injector);
 
   void HandleBitrateInfoChange(int32_t allocated_bitrate,
                                int32_t available_outgoing_bitrate);

@@ -1291,8 +1291,14 @@ ScriptPromise<IDLUndefined> RTCRtpSender::createEncodedSource(
         CrossThreadFunction<Event*(ScriptState*)>(), options, transfer,
         exception_state);
   } else if (kind_ == "audio") {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotSupportedError, "Audio is not supported"));
+    worker->PostCustomEvent(
+        TaskType::kInternalMediaRealTime, script_state,
+        CrossThreadBindRepeating(
+            &RTCRtpSenderEncodedSource::CreateAudioEncodedSource,
+            MakeCrossThreadWeakHandle(this), main_task_runner,
+            MakeCrossThreadHandle(resolver)),
+        CrossThreadFunction<Event*(ScriptState*)>(), options, transfer,
+        exception_state);
   }
 
   if (exception_state.HadException()) {
@@ -1379,6 +1385,17 @@ RTCRtpSender::CreateEncodedVideoFrameInjector(
   if (sender_) {
     return sender_->CreateEncodedVideoFrameInjector(
         std::move(keyframe_callback), std::move(bitrate_callback));
+  }
+  return nullptr;
+}
+
+scoped_refptr<webrtc::EncodedAudioFrameInjectorInterface>
+RTCRtpSender::CreateEncodedAudioFrameInjector(
+    webrtc::TargetBitrateCallback bitrate_callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (sender_) {
+    return sender_->CreateEncodedAudioFrameInjector(
+        std::move(bitrate_callback));
   }
   return nullptr;
 }

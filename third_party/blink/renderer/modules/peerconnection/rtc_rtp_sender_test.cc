@@ -93,6 +93,12 @@ class FakeRTCRtpSenderPlatform : public RTCRtpSenderPlatform {
     return nullptr;
   }
 
+  scoped_refptr<webrtc::EncodedAudioFrameInjectorInterface>
+  CreateEncodedAudioFrameInjector(
+      webrtc::TargetBitrateCallback bitrate_callback) override {
+    return nullptr;
+  }
+
   bool set_parameters_called_ = false;
 
  private:
@@ -388,6 +394,62 @@ TEST_F(RTCRtpSenderEncodedSourceTest,
   auto promise = resolver->Promise();
 
   RTCRtpSenderEncodedSource::CreateVideoEncodedSource(
+      MakeCrossThreadWeakHandle(sender),
+      scope.GetExecutionContext()->GetTaskRunner(
+          TaskType::kInternalMediaRealTime),
+      MakeCrossThreadHandle(resolver), scope.GetScriptState(),
+      CustomEventMessage());
+
+  ScriptPromiseTester tester(scope.GetScriptState(), promise);
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsRejected());
+
+  DOMException* exception =
+      V8DOMException::ToWrappable(scope.GetIsolate(), tester.Value().V8Value());
+  ASSERT_TRUE(exception);
+  EXPECT_EQ(exception->name(), "OperationError");
+  EXPECT_EQ(exception->message(), "Failed to create injector");
+}
+
+TEST_F(RTCRtpSenderEncodedSourceTest,
+       CreateAudioEncodedSourceSenderDestroyedRejects) {
+  V8TestingScope scope;
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      scope.GetScriptState());
+  auto promise = resolver->Promise();
+
+  RTCRtpSenderEncodedSource::CreateAudioEncodedSource(
+      CrossThreadWeakHandle<RTCRtpSender>(nullptr),
+      scope.GetExecutionContext()->GetTaskRunner(
+          TaskType::kInternalMediaRealTime),
+      MakeCrossThreadHandle(resolver), scope.GetScriptState(),
+      CustomEventMessage());
+
+  ScriptPromiseTester tester(scope.GetScriptState(), promise);
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsRejected());
+
+  DOMException* exception =
+      V8DOMException::ToWrappable(scope.GetIsolate(), tester.Value().V8Value());
+  ASSERT_TRUE(exception);
+  EXPECT_EQ(exception->name(), "InvalidStateError");
+  EXPECT_EQ(exception->message(), "Sender destroyed");
+}
+
+TEST_F(RTCRtpSenderEncodedSourceTest,
+       CreateAudioEncodedSourceFailedToCreateInjectorRejects) {
+  V8TestingScope scope;
+  RTCPeerConnection* pc = CreatePC(scope);
+  ASSERT_TRUE(pc);
+
+  auto platform = std::make_unique<FakeRTCRtpSenderPlatform>();
+  auto* sender = CreateSender(pc, std::move(platform));
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      scope.GetScriptState());
+  auto promise = resolver->Promise();
+
+  RTCRtpSenderEncodedSource::CreateAudioEncodedSource(
       MakeCrossThreadWeakHandle(sender),
       scope.GetExecutionContext()->GetTaskRunner(
           TaskType::kInternalMediaRealTime),

@@ -124,6 +124,12 @@ class DummyRTCRtpSenderPlatform : public RTCRtpSenderPlatform {
     return nullptr;
   }
 
+  scoped_refptr<webrtc::EncodedAudioFrameInjectorInterface>
+  CreateEncodedAudioFrameInjector(
+      webrtc::TargetBitrateCallback bitrate_callback) override {
+    return nullptr;
+  }
+
  private:
   scoped_refptr<DummyRtpSenderInternal> internal_;
   std::unique_ptr<RTCEncodedAudioStreamTransformer> audio_transformer_;

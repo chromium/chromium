@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_sender_encoded_source.h"
 
 #include "base/notreached.h"
-#include "base/task/bind_post_task.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
@@ -14,6 +13,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/workers/dedicated_worker_global_scope.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_underlying_sink.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_underlying_sink.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_sender.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_sender_encoded_source_event.h"
@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
+#include "third_party/webrtc/api/encoded_audio_frame_injector_interface.h"
 #include "third_party/webrtc/api/encoded_video_frame_injector_interface.h"
 
 namespace blink {
@@ -104,6 +105,79 @@ void SetVideoFrameInjector(
                           std::move(main_task_runner)));
 }
 
+void InitializeAudioSinkAndFireEvent(
+    CrossThreadHandle<RTCRtpSenderEncodedSource> source_handle,
+    scoped_refptr<webrtc::EncodedAudioFrameInjectorInterface> injector,
+    CrossThreadHandle<ScriptPromiseResolver<IDLUndefined>> resolver_handle,
+    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner) {
+  // Runs on worker thread
+  auto* source =
+      MakeUnwrappingCrossThreadHandle(source_handle).GetOnCreationThread();
+  CHECK(source);
+
+  source->InitializeAudioSink(std::move(injector));
+
+  auto* global_scope =
+      To<DedicatedWorkerGlobalScope>(source->GetExecutionContext());
+  auto* event = MakeGarbageCollected<RTCRtpSenderEncodedSourceEvent>(source);
+  global_scope->DispatchEvent(*event);
+
+  // resolve promise on main thread
+  PostCrossThreadTask(
+      *main_task_runner, FROM_HERE,
+      CrossThreadBindOnce(
+          [](CrossThreadHandle<ScriptPromiseResolver<IDLUndefined>>
+                 resolver_handle) {
+            auto* resolver = MakeUnwrappingCrossThreadHandle(resolver_handle)
+                                 .GetOnCreationThread();
+            if (resolver) {
+              resolver->Resolve();
+            }
+          },
+          std::move(resolver_handle)));
+}
+
+void SetAudioFrameInjector(
+    CrossThreadWeakHandle<RTCRtpSender> weak_sender,
+    webrtc::TargetBitrateCallback bitrate_callback,
+    scoped_refptr<base::SingleThreadTaskRunner> worker_task_runner,
+    CrossThreadHandle<RTCRtpSenderEncodedSource> source_handle,
+    CrossThreadHandle<ScriptPromiseResolver<IDLUndefined>> resolver_handle) {
+  // Runs on main thread
+  auto* rtp_sender =
+      MakeUnwrappingCrossThreadWeakHandle(weak_sender).GetOnCreationThread();
+  auto* resolver =
+      MakeUnwrappingCrossThreadHandle(resolver_handle).GetOnCreationThread();
+  if (!rtp_sender) {
+    if (resolver) {
+      resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
+                                       "Sender destroyed");
+    }
+    return;
+  }
+
+  scoped_refptr<webrtc::EncodedAudioFrameInjectorInterface> injector =
+      rtp_sender->CreateEncodedAudioFrameInjector(std::move(bitrate_callback));
+  if (!injector) {
+    if (resolver) {
+      resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
+                                       "Failed to create injector");
+    }
+    return;
+  }
+
+  scoped_refptr<base::SingleThreadTaskRunner> main_task_runner =
+      rtp_sender->GetExecutionContext()->GetTaskRunner(
+          TaskType::kInternalMediaRealTime);
+
+  PostCrossThreadTask(
+      *worker_task_runner, FROM_HERE,
+      CrossThreadBindOnce(&InitializeAudioSinkAndFireEvent,
+                          std::move(source_handle), std::move(injector),
+                          std::move(resolver_handle),
+                          std::move(main_task_runner)));
+}
+
 }  // namespace
 
 Event* RTCRtpSenderEncodedSource::CreateVideoEncodedSource(
@@ -167,6 +241,50 @@ Event* RTCRtpSenderEncodedSource::CreateVideoEncodedSource(
   return nullptr;
 }
 
+Event* RTCRtpSenderEncodedSource::CreateAudioEncodedSource(
+    CrossThreadWeakHandle<RTCRtpSender> weak_sender,
+    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
+    CrossThreadHandle<ScriptPromiseResolver<IDLUndefined>> resolver_handle,
+    ScriptState* worker_script_state,
+    CustomEventMessage data) {
+  CHECK(ExecutionContext::From(worker_script_state)->IsContextThread());
+  auto* source = MakeGarbageCollected<RTCRtpSenderEncodedSource>(
+      worker_script_state, "audio");
+
+  scoped_refptr<base::SingleThreadTaskRunner> worker_task_runner =
+      ExecutionContext::From(worker_script_state)
+          ->GetTaskRunner(TaskType::kInternalMediaRealTime);
+
+  webrtc::TargetBitrateCallback bitrate_callback =
+      [worker_task_runner, source_handle = MakeCrossThreadWeakHandle(source)](
+          int32_t target_bitrate) {
+        PostCrossThreadTask(
+            *worker_task_runner, FROM_HERE,
+            CrossThreadBindOnce(
+                [](CrossThreadWeakHandle<RTCRtpSenderEncodedSource> handle,
+                   int32_t target_bitrate) {
+                  if (auto* source = MakeUnwrappingCrossThreadWeakHandle(handle)
+                                         .GetOnCreationThread()) {
+                    source->HandleBitrateInfoChange(target_bitrate,
+                                                    target_bitrate);
+                  }
+                },
+                source_handle, target_bitrate));
+      };
+
+  // set frame injector on main thread
+  PostCrossThreadTask(
+      *main_task_runner, FROM_HERE,
+      CrossThreadBindOnce(
+          &SetAudioFrameInjector, std::move(weak_sender),
+          std::move(bitrate_callback), std::move(worker_task_runner),
+          MakeCrossThreadHandle(source), std::move(resolver_handle)));
+
+  // RTCRtpSenderEncodedSourceEvent will be fired asynchronously after the
+  // frame injector is successfully set.
+  return nullptr;
+}
+
 RTCRtpSenderEncodedSource::RTCRtpSenderEncodedSource(ScriptState* script_state,
                                                      const String& kind)
     : execution_context_(ExecutionContext::From(script_state)) {}
@@ -179,6 +297,23 @@ void RTCRtpSenderEncodedSource::InitializeVideoSink(
   ScriptState::Scope scope(script_state);
 
   auto* underlying_sink = MakeGarbageCollected<RTCEncodedVideoUnderlyingSink>(
+      script_state, std::move(injector), this,
+      /*detach_frame_data_on_write=*/false);
+
+  writable_ = WritableStream::CreateWithCountQueueingStrategy(
+      script_state, underlying_sink, /*high_water_mark*/ 1);
+}
+
+void RTCRtpSenderEncodedSource::InitializeAudioSink(
+    scoped_refptr<webrtc::EncodedAudioFrameInjectorInterface> injector) {
+  CHECK(execution_context_->IsDedicatedWorkerGlobalScope());
+  CHECK(execution_context_->IsContextThread());
+  auto* global_scope = To<DedicatedWorkerGlobalScope>(execution_context_.Get());
+  ScriptState* script_state =
+      global_scope->ScriptController()->GetScriptState();
+  ScriptState::Scope scope(script_state);
+
+  auto* underlying_sink = MakeGarbageCollected<RTCEncodedAudioUnderlyingSink>(
       script_state, std::move(injector), this,
       /*detach_frame_data_on_write=*/false);
 

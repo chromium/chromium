@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_video_stream_transformer.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_sender_platform.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/webrtc/api/encoded_audio_frame_injector_interface.h"
 #include "third_party/webrtc/api/encoded_video_frame_injector_interface.h"
 #include "third_party/webrtc/api/rtp_transceiver_interface.h"
 
@@ -122,6 +123,9 @@ class MODULES_EXPORT RTCRtpSender final
   scoped_refptr<webrtc::EncodedVideoFrameInjectorInterface>
   CreateEncodedVideoFrameInjector(webrtc::KeyFrameCallback keyframe_callback,
                                   webrtc::BitrateInfoCallback bitrate_callback);
+  scoped_refptr<webrtc::EncodedAudioFrameInjectorInterface>
+  CreateEncodedAudioFrameInjector(
+      webrtc::TargetBitrateCallback bitrate_callback);
 
   RTCRtpScriptTransform* transform() { return transform_; }
   void setTransform(RTCRtpScriptTransform*, ExceptionState& exception_state);
