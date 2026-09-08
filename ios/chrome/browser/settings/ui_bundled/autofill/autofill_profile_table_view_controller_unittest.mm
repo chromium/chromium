@@ -41,6 +41,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
@@ -101,11 +102,11 @@ class AutofillProfileTableViewControllerTest
     builder.AddTestingFactory(
         IOSPersonalContextEligibilityServiceFactory::GetInstance(),
         base::BindRepeating(&CreateMockPersonalContextEligibilityService));
-    profile_ = std::move(builder).Build();
-    browser_ = std::make_unique<TestBrowser>(profile_.get());
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
+    browser_ = std::make_unique<TestBrowser>(profile_);
 
     // Set circular SyncService dependency to null.
-    autofill::PersonalDataManagerFactory::GetForProfile(profile_.get())
+    autofill::PersonalDataManagerFactory::GetForProfile(profile_)
         ->SetSyncServiceForTest(nullptr);
   }
 
@@ -125,7 +126,12 @@ class AutofillProfileTableViewControllerTest
   void TearDown() override {
     [base::apple::ObjCCastStrict<AutofillProfileTableViewController>(
         controller()) settingsWillBeDismissed];
+    // Call `LegacyChromeTableViewControllerTest::TearDown()` first to drain the
+    // autorelease pool and deallocate the controller while `browser_` and
+    // `profile_` are still valid.
     LegacyChromeTableViewControllerTest::TearDown();
+    browser_.reset();
+    profile_ = nullptr;
   }
 
   void SignIn() {
@@ -135,8 +141,7 @@ class AutofillProfileTableViewControllerTest
     FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
     fake_system_identity_manager->AddIdentity(fake_identity);
 
-    auto* identity_manager =
-        IdentityManagerFactory::GetForProfile(profile_.get());
+    auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
     AccountInfo account_info = signin::MakeAccountAvailable(
         identity_manager,
         signin::AccountAvailabilityOptionsBuilder()
@@ -151,9 +156,9 @@ class AutofillProfileTableViewControllerTest
     signin::UpdateAccountInfoForAccount(identity_manager, builder.Build());
 
     ChromeAccountManagerService* account_manager_service =
-        ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
+        ChromeAccountManagerServiceFactory::GetForProfile(profile_);
     AuthenticationService* auth_service =
-        AuthenticationServiceFactory::GetForProfile(profile_.get());
+        AuthenticationServiceFactory::GetForProfile(profile_);
     auth_service->SignIn(account_manager_service->GetDefaultIdentity(),
                          signin_metrics::AccessPoint::kStartPage);
   }
@@ -163,7 +168,7 @@ class AutofillProfileTableViewControllerTest
   // which maps autofill::FieldType keys to their string values.
   void AddProfile(const std::map<autofill::FieldType, std::string>& data) {
     autofill::PersonalDataManager* personal_data_manager =
-        autofill::PersonalDataManagerFactory::GetForProfile(profile_.get());
+        autofill::PersonalDataManagerFactory::GetForProfile(profile_);
     personal_data_manager->SetSyncServiceForTest(nullptr);
     autofill::PersonalDataChangedWaiter waiter(*personal_data_manager);
 
@@ -184,7 +189,8 @@ class AutofillProfileTableViewControllerTest
   base::test::ScopedFeatureList feature_list_;
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestProfileIOS> profile_;
+  TestProfileManagerIOS profile_manager_;
+  raw_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
 };
 
@@ -356,7 +362,7 @@ TEST_F(AutofillProfileTableViewControllerTest, TestLegacyPrefChange) {
       /*disabled_features=*/{autofill::features::kAutofillAiUsePrivateAi});
   SignIn();
 
-  autofill::SetEnhancedAutofillEnabled(profile_.get(), true);
+  autofill::SetEnhancedAutofillEnabled(profile_, true);
 
   CreateController();
   CheckController();
@@ -366,7 +372,7 @@ TEST_F(AutofillProfileTableViewControllerTest, TestLegacyPrefChange) {
           GetTableViewItem(/*section=*/1, /*item=*/0));
   EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_SETTING_ON), item.detailText);
 
-  autofill::SetEnhancedAutofillEnabled(profile_.get(), false);
+  autofill::SetEnhancedAutofillEnabled(profile_, false);
   EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_SETTING_OFF), item.detailText);
 }
 
@@ -396,7 +402,7 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
 // Tests that deleting an Autofill AI entity logs the Deleted metric.
 TEST_F(AutofillProfileTableViewControllerTest, DeleteAIEntity) {
   autofill::EntityDataManager* entity_data_manager =
-      IOSAutofillEntityDataManagerFactory::GetForProfile(profile_.get());
+      IOSAutofillEntityDataManagerFactory::GetForProfile(profile_);
   autofill::EntityInstance instance =
       autofill::test::GetVehicleEntityInstance();
   entity_data_manager->AddOrUpdateEntityInstance(instance);
@@ -442,7 +448,7 @@ TEST_F(AutofillProfileTableViewControllerTest, DeleteAIEntity) {
 TEST_F(AutofillProfileTableViewControllerTest,
        TestServerWalletEntityOpacityAndInteractionInEditing) {
   autofill::EntityDataManager* entity_data_manager =
-      IOSAutofillEntityDataManagerFactory::GetForProfile(profile_.get());
+      IOSAutofillEntityDataManagerFactory::GetForProfile(profile_);
 
   // Add a server wallet vehicle entity.
   autofill::EntityInstance wallet_entity =
@@ -700,7 +706,7 @@ TEST_F(AutofillProfileTableViewControllerYourSavedInfoEnabledTest,
 TEST_F(AutofillProfileTableViewControllerYourSavedInfoEnabledTest,
        TestNoEntitiesLoaded) {
   autofill::EntityDataManager* entity_data_manager =
-      IOSAutofillEntityDataManagerFactory::GetForProfile(profile_.get());
+      IOSAutofillEntityDataManagerFactory::GetForProfile(profile_);
   if (entity_data_manager) {
     autofill::EntityInstance instance =
         autofill::test::GetVehicleEntityInstance();

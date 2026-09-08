@@ -81,15 +81,15 @@ void PassphraseTableViewControllerTest::SetUp() {
                             base::BindRepeating(&CreateNiceMockSyncService));
   RegisterTestingFactories(builder);
   builder.SetPrefService(CreatePrefService());
-  profile_ = std::move(builder).Build();
+  profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
   app_state_ = [[AppState alloc] initWithStartupInformation:nil];
   profile_state_ = [[ProfileState alloc] initWithAppState:app_state_];
   scene_state_ = [[SceneState alloc] init];
   scene_state_.profileState = profile_state_;
-  browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
+  browser_ = std::make_unique<TestBrowser>(profile_, scene_state_);
 
   fake_sync_service_ = static_cast<syncer::MockSyncService*>(
-      SyncServiceFactory::GetForProfile(profile_.get()));
+      SyncServiceFactory::GetForProfile(profile_));
 
   // Set up non-default return values for our sync service mock.
   ON_CALL(*fake_sync_service_->GetMockUserSettings(), IsPassphraseRequired())
@@ -104,9 +104,9 @@ void PassphraseTableViewControllerTest::SetUp() {
   fake_system_identity_manager->AddIdentity(fake_identity);
 
   ChromeAccountManagerService* account_manager_service =
-      ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
+      ChromeAccountManagerServiceFactory::GetForProfile(profile_);
   AuthenticationService* auth_service =
-      AuthenticationServiceFactory::GetForProfile(profile_.get());
+      AuthenticationServiceFactory::GetForProfile(profile_);
   auth_service->SignIn(account_manager_service->GetDefaultIdentity(),
                        signin_metrics::AccessPoint::kStartPage);
 }
@@ -116,7 +116,16 @@ void PassphraseTableViewControllerTest::TearDown() {
   // controllers.
   [nav_controller_ cleanUpSettings];
   nav_controller_ = nil;
+  // Call `LegacyChromeTableViewControllerTest::TearDown()` first to drain the
+  // autorelease pool and deallocate the controller (and its `ScopedUIBlocker`)
+  // while `scene_state_`, `browser_`, and `profile_` are still valid.
   LegacyChromeTableViewControllerTest::TearDown();
+  browser_.reset();
+  fake_sync_service_ = nullptr;
+  profile_ = nullptr;
+  scene_state_ = nil;
+  profile_state_ = nil;
+  app_state_ = nil;
 }
 
 void PassphraseTableViewControllerTest::RegisterTestingFactories(

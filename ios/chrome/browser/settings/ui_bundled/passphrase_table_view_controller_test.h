@@ -5,15 +5,16 @@
 #ifndef IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_PASSPHRASE_TABLE_VIEW_CONTROLLER_TEST_H_
 #define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_PASSPHRASE_TABLE_VIEW_CONTROLLER_TEST_H_
 
-#include "base/memory/raw_ptr.h"
-#include "components/keyed_service/core/keyed_service.h"
-#include "components/sync/engine/cycle/sync_cycle_snapshot.h"
-#include "google_apis/gaia/google_service_auth_error.h"
-#include "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#include "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
-#include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "testing/platform_test.h"
+#import "base/memory/raw_ptr.h"
+#import "components/keyed_service/core/keyed_service.h"
+#import "components/sync/engine/cycle/sync_cycle_snapshot.h"
+#import "google_apis/gaia/google_service_auth_error.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/platform_test.h"
 
 namespace syncer {
 class MockSyncService;
@@ -49,8 +50,9 @@ class PassphraseTableViewControllerTest
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestProfileManagerIOS profile_manager_;
+  raw_ptr<TestProfileIOS> profile_ = nullptr;
 
-  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   // Weak, owned by profile_.
   raw_ptr<syncer::MockSyncService> fake_sync_service_;
