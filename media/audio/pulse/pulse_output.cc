@@ -73,7 +73,8 @@ PulseAudioOutputStream::PulseAudioOutputStream(
     const std::string& device_id,
     AudioManagerBase* manager,
     AudioManager::LogCallback log_callback)
-    : params_(AudioParameters(params.format(),
+    : id_(base::UnguessableToken::Create()),
+      params_(AudioParameters(params.format(),
                               params.channel_layout_config(),
                               params.sample_rate(),
                               params.frames_per_buffer())),
@@ -185,7 +186,7 @@ void PulseAudioOutputStream::SendLogMessage(const std::string& message) {
     return;
   }
   log_callback_.Run("PAOS::" + message +
-                    base::StringPrintf(" [this=%p]", this));
+                    base::StringPrintf(" [id=%s]", id_.ToString().c_str()));
 }
 
 void PulseAudioOutputStream::FulfillWriteRequest(size_t requested_bytes) {

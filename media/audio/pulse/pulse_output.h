@@ -27,6 +27,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "base/unguessable_token.h"
 #include "media/audio/audio_io.h"
 #include "media/audio/audio_manager.h"
 #include "media/base/amplitude_peak_detector.h"
@@ -80,6 +81,8 @@ class PulseAudioOutputStream : public AudioOutputStream {
 
   // Close() helper function to free internal structs.
   void Reset();
+
+  const base::UnguessableToken id_;
 
   // AudioParameters from the constructor.
   const AudioParameters params_;
