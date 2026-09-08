@@ -9324,3 +9324,6 @@ crbug.com/554722975 [ Win11-arm64 ] external/wpt/webtransport/stats.https.any.ht
 
 # Gardener 2026-09-04
 crbug.com/40940279 [ Debug ] external/wpt/css/css-anchor-position/anchor-position-multicol-nested-001.html [ Crash Pass ]
+
+# Gardener 2026-09-08
+crbug.com/558562090 http/tests/inspector-protocol/fenced-frame/device-emulation-commands-fenced-frame.https.js [ Failure Pass ]
