@@ -34,6 +34,7 @@
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_table_label_sensitive.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/range/range.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -95,10 +96,35 @@ struct Suggestion {
                            const PasswordSuggestionDetails&) = default;
   };
 
+  // Citation linking a substring range of a suggestion's main text to a source
+  // URL.
+  struct PersonalContextSourceCitation final {
+    PersonalContextSourceCitation();
+    PersonalContextSourceCitation(GURL url, gfx::Range range);
+    PersonalContextSourceCitation(const PersonalContextSourceCitation&);
+    PersonalContextSourceCitation(PersonalContextSourceCitation&&);
+    PersonalContextSourceCitation& operator=(
+        const PersonalContextSourceCitation&);
+    PersonalContextSourceCitation& operator=(PersonalContextSourceCitation&&);
+    ~PersonalContextSourceCitation();
+
+    friend bool operator==(const PersonalContextSourceCitation&,
+                           const PersonalContextSourceCitation&) = default;
+
+    // Destination URL to navigate to when the citation link is clicked.
+    GURL url;
+    // Character range in `Suggestion::main_text.value` corresponding to the
+    // citation badge link.
+    gfx::Range range;
+  };
+
   struct AutofillAiPayload final {
     AutofillAiPayload();
     explicit AutofillAiPayload(EntityInstance::EntityId guid,
                                bool requires_server_fetch = false);
+    AutofillAiPayload(EntityInstance::EntityId guid,
+                      std::vector<PersonalContextSourceCitation> citations,
+                      bool requires_server_fetch = false);
     AutofillAiPayload(const AutofillAiPayload&);
     AutofillAiPayload(AutofillAiPayload&&);
     AutofillAiPayload& operator=(const AutofillAiPayload&);
@@ -113,6 +139,9 @@ struct Suggestion {
                            const AutofillAiPayload&) = default;
 
     EntityInstance::EntityId guid;
+
+    // Citations to sources from which the entity was extracted.
+    std::vector<PersonalContextSourceCitation> citations;
 
     // Whether selecting this suggestion requires fetching data from a server.
     // E.g. retrieving masked credentials.
@@ -541,13 +570,13 @@ struct Suggestion {
       case SuggestionType::kTroubleSigningInEntry:
         return std::holds_alternative<PasswordSuggestionDetails>(payload);
       case SuggestionType::kSeePromoCodeDetails:
-      case SuggestionType::kAutofillAiSourceAttribution:
         return std::holds_alternative<GURL>(payload);
       case SuggestionType::kIbanEntry:
         return std::holds_alternative<Guid>(payload) ||
                std::holds_alternative<InstrumentId>(payload);
       case SuggestionType::kFillAutofillAi:
       case SuggestionType::kRemoveAutofillAi:
+      case SuggestionType::kAutofillAiSourceAttribution:
         return std::holds_alternative<AutofillAiPayload>(payload);
       case SuggestionType::kCreditCardEntry:
       case SuggestionType::kVirtualCreditCardEntry:

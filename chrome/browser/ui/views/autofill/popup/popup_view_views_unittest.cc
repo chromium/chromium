@@ -3750,6 +3750,8 @@ TEST_F(PopupViewViewsTest, SubPopupMaxWidth) {
       u"Very long suggestion text that would exceed the default submenu max "
       u"width and force multi-line text wrapping",
       SuggestionType::kAutofillAiSourceAttribution);
+  suggestion.payload = Suggestion::AutofillAiPayload(
+      autofill::EntityInstance::EntityId("test-guid"));
   controller().set_suggestions({suggestion});
   CreateAndShowView();
   auto [sub_controller, sub_view] =

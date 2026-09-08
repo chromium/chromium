@@ -45,7 +45,6 @@ SuggestionSection GetSuggestionSection(SuggestionType type) {
     case SuggestionType::kAllSavedPasswordsEntry:
     case SuggestionType::kAtMemoryAiDisclosure:
     case SuggestionType::kAutocompleteAtMemoryButton:
-    case SuggestionType::kAutofillAiSourceAttribution:
     case SuggestionType::kBnplFootnote:
     case SuggestionType::kFreeformFooter:
     case SuggestionType::kManageAddress:
@@ -82,6 +81,7 @@ SuggestionSection GetSuggestionSection(SuggestionType type) {
     case SuggestionType::kAutofillAiOtherOrders:
     case SuggestionType::kAutofillAiOtherShipments:
     case SuggestionType::kAutofillAiPrivateInferenceNotice:
+    case SuggestionType::kAutofillAiSourceAttribution:
     case SuggestionType::kBackupPasswordEntry:
     case SuggestionType::kBnplEntry:
     case SuggestionType::kComposeDisable:

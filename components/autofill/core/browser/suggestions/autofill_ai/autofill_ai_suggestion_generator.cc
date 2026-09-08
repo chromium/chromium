@@ -31,6 +31,7 @@
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -69,6 +70,7 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/range/range.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -512,86 +514,130 @@ bool CanFillSomeField(const EntityInstance& entity,
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-std::u16string PayloadSourceToString(
-    EntityInstance::PersonalContextRecordTypePayload::Source::Type
-        source_type) {
-  using EntityPayloadSourceType =
-      EntityInstance::PersonalContextRecordTypePayload::Source::Type;
+using EntityPayload = EntityInstance::PersonalContextRecordTypePayload;
+using SourceType = EntityPayload::Source::Type;
+
+std::u16string PayloadSourceToAppName(SourceType source_type) {
   switch (source_type) {
-    case EntityPayloadSourceType::kPhotos:
-      return l10n_util::GetStringFUTF16(
-          IDS_AUTOFILL_AI_SOURCE_FROM_APP,
-          l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_SOURCE_APP_PHOTOS));
-    case EntityPayloadSourceType::kGmail:
-      return l10n_util::GetStringFUTF16(
-          IDS_AUTOFILL_AI_SOURCE_FROM_APP,
-          l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_SOURCE_APP_GMAIL));
-    case EntityPayloadSourceType::kUnspecified:
+    case SourceType::kPhotos:
+      return l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_SOURCE_APP_PHOTOS);
+    case SourceType::kGmail:
+      return l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_SOURCE_APP_GMAIL);
+    case SourceType::kUnspecified:
       NOTREACHED();
   }
 }
 
-std::vector<std::u16string> GetDisambiguationValues(
-    const EntityInstance& entity,
-    std::string_view app_locale) {
-  std::vector<AttributeType> types = base::ToVector(entity.type().attributes());
-  std::erase_if(types, std::not_fn(&AttributeType::is_disambiguation_type));
-  std::ranges::sort(types, AttributeType::DisambiguationOrder);
-
-  std::vector<std::u16string> values;
-  for (AttributeType type : types) {
-    if (base::optional_ref<const AttributeInstance> attr =
-            entity.attribute(type)) {
-      if (std::u16string val = attr->GetCompleteInfo(app_locale);
-          !val.empty()) {
-        values.push_back(std::move(val));
-      }
+// Groups valid source URLs by their `SourceType`.
+//
+// Returns a `base::flat_map` which keeps entries sorted by `SourceType`.
+base::flat_map<SourceType, std::vector<GURL>> GroupSourcesByApp(
+    base::span<const EntityPayload::Source> payload_sources) {
+  base::flat_map<SourceType, std::vector<GURL>> app_urls;
+  for (const EntityPayload::Source& source : payload_sources) {
+    if (source.type != SourceType::kUnspecified &&
+        GURL(source.url).is_valid()) {
+      app_urls[source.type].emplace_back(source.url);
     }
   }
-  return values;
+  return app_urls;
 }
 
-std::optional<Suggestion> CreatePersonalContextSourceAttributionSuggestion(
-    const EntityInstance& entity,
-    const EntityInstance::PersonalContextRecordTypePayload::Source& source,
-    std::string_view app_locale) {
-  GURL source_url(source.url);
-  if (!source_url.is_valid()) {
+// Appends a formatted citation badge string (e.g. "\u00A0[1]") to `text` for
+// the given 0-based source index within an app.
+//
+// Returns the character range within `text` that corresponds to the newly
+// appended badge, which will later be styled as a clickable link.
+//
+// Example:
+//   `text` before: u"Gmail"
+//   `source_index`: 0
+//   `text` after:  u"Gmail\u00A0[1]"
+//   returned range: gfx::Range(5, 9)
+gfx::Range AppendSourceAttributionSuggestionBadge(size_t source_index,
+                                                  std::u16string& text) {
+  text.append(kBadgeSeparator);
+  const size_t badge_start = text.length();
+  base::StrAppend(
+      &text, {kBadgeStartDelimiter, base::NumberToString16(source_index + 1),
+              kBadgeEndDelimiter});
+  const size_t badge_end = text.length();
+  return {badge_start, badge_end};
+}
+
+struct AttributionData {
+  std::u16string full_text;
+  std::vector<Suggestion::PersonalContextSourceCitation> citations;
+};
+
+std::optional<AttributionData> BuildAttributionData(
+    base::span<const EntityPayload::Source> payload_sources) {
+  base::flat_map<SourceType, std::vector<GURL>> grouped_sources =
+      GroupSourcesByApp(payload_sources);
+  if (grouped_sources.empty()) {
     return std::nullopt;
   }
 
-  std::vector<std::u16string> parts = {PayloadSourceToString(source.type)};
-  base::Extend(parts, GetDisambiguationValues(entity, app_locale));
+  std::vector<size_t> offsets;
+  // Pre-calculate the starting offset of the placeholder in the translated
+  // string.
+  l10n_util::GetStringFUTF16(IDS_AUTOFILL_AI_SUGGESTED_BY_GEMINI_WITH_SOURCES,
+                             {std::u16string()}, &offsets);
+  if (offsets.empty()) {
+    // If the translated string is missing the placeholder (e.g. due to a
+    // localization error), `offsets` will be empty. Returning nullopt safely
+    // skips generating attribution rather than crashing Chrome.
+    return std::nullopt;
+  }
+  const size_t base_offset = offsets[0];
 
-  Suggestion source_info(base::JoinString(parts, kLabelSeparator),
-                         SuggestionType::kAutofillAiSourceAttribution);
-  source_info.icon = Suggestion::Icon::kSpark;
-  source_info.payload = std::move(source_url);
-  return source_info;
+  std::u16string sources_text;
+  std::vector<Suggestion::PersonalContextSourceCitation> citations;
+  bool needs_separator = false;
+  for (const auto& [app_type, urls] : grouped_sources) {
+    if (needs_separator) {
+      sources_text.append(kLabelSeparator);
+    }
+    sources_text.append(PayloadSourceToAppName(app_type));
+
+    for (size_t i = 0; i < urls.size(); ++i) {
+      const gfx::Range badge_range =
+          AppendSourceAttributionSuggestionBadge(i, sources_text);
+      citations.emplace_back(urls[i],
+                             gfx::Range(base_offset + badge_range.start(),
+                                        base_offset + badge_range.end()));
+    }
+    needs_separator = true;
+  }
+
+  std::u16string full_text = l10n_util::GetStringFUTF16(
+      IDS_AUTOFILL_AI_SUGGESTED_BY_GEMINI_WITH_SOURCES, {sources_text});
+
+  return AttributionData{std::move(full_text), std::move(citations)};
 }
 
-std::vector<Suggestion> CreatePersonalContextSourceAttributionSuggestions(
-    const EntityInstance& entity,
-    std::string_view app_locale) {
-  using EntityPayloadSource =
-      EntityInstance::PersonalContextRecordTypePayload::Source;
+std::optional<Suggestion> CreatePersonalContextSourceAttributionSuggestion(
+    const EntityInstance& entity) {
   CHECK_EQ(entity.record_type(), EntityInstance::RecordType::kPersonalContext);
   if (!base::FeatureList::IsEnabled(
           features::kAutofillAmbientAutofillSourceAttribution)) {
-    return {};
+    return std::nullopt;
   }
-  const EntityInstance::PersonalContextRecordTypePayload& payload =
-      std::get<EntityInstance::PersonalContextRecordTypePayload>(
-          entity.record_type_data());
-  std::vector<Suggestion> suggestions;
-  for (const EntityPayloadSource& source : payload.sources) {
-    if (std::optional<Suggestion> suggestion =
-            CreatePersonalContextSourceAttributionSuggestion(entity, source,
-                                                             app_locale)) {
-      suggestions.push_back(std::move(*suggestion));
-    }
+
+  std::optional<AttributionData> attribution_data = BuildAttributionData(
+      std::get<EntityPayload>(entity.record_type_data()).sources);
+  if (!attribution_data) {
+    return std::nullopt;
   }
-  return suggestions;
+
+  Suggestion source_info(std::move(attribution_data->full_text),
+                         SuggestionType::kAutofillAiSourceAttribution);
+  source_info.icon = Suggestion::Icon::kSpark;
+  source_info.acceptability =
+      Suggestion::Acceptability::kUnselectableAndUnacceptable;
+  source_info.payload = Suggestion::AutofillAiPayload(
+      entity.guid(), std::move(attribution_data->citations));
+  return source_info;
 }
 
 Suggestion CreateManageEnhancedAutofillSuggestion() {
@@ -603,10 +649,12 @@ Suggestion CreateManageEnhancedAutofillSuggestion() {
 }
 
 std::vector<Suggestion> CreateAmbientAutofillSubMenu(
-    const EntityInstance& entity,
-    std::string_view app_locale) {
-  std::vector<Suggestion> submenu =
-      CreatePersonalContextSourceAttributionSuggestions(entity, app_locale);
+    const EntityInstance& entity) {
+  std::vector<Suggestion> submenu;
+  if (std::optional<Suggestion> source_info =
+          CreatePersonalContextSourceAttributionSuggestion(entity)) {
+    submenu.push_back(std::move(*source_info));
+  }
 
   if (!submenu.empty()) {
     submenu.emplace_back(SuggestionType::kSeparator);
@@ -653,7 +701,7 @@ Suggestion GetSuggestionForEntity(
   if (entity.record_type() == EntityInstance::RecordType::kPersonalContext) {
     suggestion.labels.push_back({Suggestion::Text(
         l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_SUGGESTED_BY_GEMINI))});
-    suggestion.children = CreateAmbientAutofillSubMenu(entity, app_locale);
+    suggestion.children = CreateAmbientAutofillSubMenu(entity);
   }
 #endif
 

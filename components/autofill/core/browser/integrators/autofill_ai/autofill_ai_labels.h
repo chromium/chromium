@@ -19,7 +19,18 @@ class EntityInstance;
 
 // Separator to use between a certain entity label attributes, for example:
 // "Passport · Jon Doe · Germany".
-inline constexpr char16_t kLabelSeparator[] = u" · ";
+inline constexpr std::u16string_view kLabelSeparator = u" · ";
+
+// Initiating badge brace, e.g. "Photos [1]".
+inline constexpr std::u16string_view kBadgeStartDelimiter = u"[";
+
+// Ending badge brace, e.g. "Photos [1]".
+inline constexpr std::u16string_view kBadgeEndDelimiter = u"]";
+
+// The space between a badge and an app name, e.g. "Photos [1]". The
+// non-breaking space prevents the badge from becoming disconnected in
+// multi-line suggestions.
+inline constexpr std::u16string_view kBadgeSeparator = u"\u00A0";
 
 // During label computation, every entity's label is a vector of non-empty
 // strings (which the UI later concatenates).

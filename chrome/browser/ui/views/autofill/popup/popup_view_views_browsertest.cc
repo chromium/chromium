@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views_test_api.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
@@ -32,8 +33,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/range/range.h"
 #include "ui/gfx/render_text.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane.h"
+#include "url/gurl.h"
 
 namespace autofill {
 namespace {
@@ -566,10 +569,13 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
 }
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_AutofillAi_SubMenu) {
-  Suggestion source_attribution(
-      u"From Photos · Pippi Långstrump · Sweden · LR1234567",
-      SuggestionType::kAutofillAiSourceAttribution);
+  Suggestion source_attribution(u"Suggested by Gemini · Photos\u00A0[1]",
+                                SuggestionType::kAutofillAiSourceAttribution);
   source_attribution.icon = Suggestion::Icon::kSpark;
+  source_attribution.payload = Suggestion::AutofillAiPayload(
+      autofill::EntityInstance::EntityId("test-guid"),
+      {Suggestion::PersonalContextSourceCitation(
+          GURL("https://photos.google.com/test"), gfx::Range(29, 32))});
 
   Suggestion remove_suggestion(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_REMOVE_INFO),
@@ -589,10 +595,13 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_AutofillAi_SubMenu) {
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
                        InvokeUi_AutofillAi_SubMenu_Selected) {
-  Suggestion source_attribution(
-      u"From Photos · Pippi Långstrump · Sweden · LR1234567",
-      SuggestionType::kAutofillAiSourceAttribution);
+  Suggestion source_attribution(u"Suggested by Gemini · Photos\u00A0[1]",
+                                SuggestionType::kAutofillAiSourceAttribution);
   source_attribution.icon = Suggestion::Icon::kSpark;
+  source_attribution.payload = Suggestion::AutofillAiPayload(
+      autofill::EntityInstance::EntityId("test-guid"),
+      {Suggestion::PersonalContextSourceCitation(
+          GURL("https://photos.google.com/test"), gfx::Range(29, 32))});
 
   Suggestion remove_suggestion(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_REMOVE_INFO),

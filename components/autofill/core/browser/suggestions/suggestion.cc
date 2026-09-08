@@ -271,11 +271,44 @@ Suggestion::PasswordSuggestionDetails::operator=(PasswordSuggestionDetails&&) =
     default;
 Suggestion::PasswordSuggestionDetails::~PasswordSuggestionDetails() = default;
 
+Suggestion::PersonalContextSourceCitation::PersonalContextSourceCitation() =
+    default;
+
+Suggestion::PersonalContextSourceCitation::PersonalContextSourceCitation(
+    GURL url,
+    gfx::Range range)
+    : url(std::move(url)), range(range) {}
+
+Suggestion::PersonalContextSourceCitation::PersonalContextSourceCitation(
+    const PersonalContextSourceCitation&) = default;
+
+Suggestion::PersonalContextSourceCitation::PersonalContextSourceCitation(
+    PersonalContextSourceCitation&&) = default;
+
+Suggestion::PersonalContextSourceCitation&
+Suggestion::PersonalContextSourceCitation::operator=(
+    const PersonalContextSourceCitation&) = default;
+
+Suggestion::PersonalContextSourceCitation&
+Suggestion::PersonalContextSourceCitation::operator=(
+    PersonalContextSourceCitation&&) = default;
+
+Suggestion::PersonalContextSourceCitation::~PersonalContextSourceCitation() =
+    default;
+
 Suggestion::AutofillAiPayload::AutofillAiPayload() = default;
 
 Suggestion::AutofillAiPayload::AutofillAiPayload(EntityInstance::EntityId guid,
                                                  bool requires_server_fetch)
     : guid(std::move(guid)), requires_server_fetch(requires_server_fetch) {}
+
+Suggestion::AutofillAiPayload::AutofillAiPayload(
+    EntityInstance::EntityId guid,
+    std::vector<PersonalContextSourceCitation> citations,
+    bool requires_server_fetch)
+    : guid(std::move(guid)),
+      citations(std::move(citations)),
+      requires_server_fetch(requires_server_fetch) {}
 
 Suggestion::AutofillAiPayload::AutofillAiPayload(const AutofillAiPayload&) =
     default;
