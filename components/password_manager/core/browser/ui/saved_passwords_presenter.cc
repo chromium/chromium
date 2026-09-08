@@ -660,15 +660,16 @@ void SavedPasswordsPresenter::OnPasskeyModelIsReady(bool is_ready) {}
 
 void SavedPasswordsPresenter::OnGetPasswordStoreResultsOrErrorFrom(
     PasswordStoreInterface* store,
-    LoginsResultOrError results_or_error) {
+    base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+        results_or_error) {
   pending_store_updates_--;
   DCHECK_GE(pending_store_updates_, 0);
 
-  if (std::holds_alternative<PasswordStoreBackendError>(results_or_error)) {
+  if (!results_or_error) {
     NotifySavedPasswordsChanged(PasswordStoreChangeList());
     return;
   }
-  auto results = std::get<LoginsResult>(std::move(results_or_error));
+  std::vector<StoredCredential> results = std::move(*results_or_error);
 
   PasswordStoreChangeList changes;
   for (const auto& cred : results) {

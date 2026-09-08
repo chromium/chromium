@@ -60,7 +60,8 @@ void InvokeCallbacksForSuspectedChanges(
 
 void ConsumerReplyConverter(base::WeakPtr<PasswordStoreConsumer> consumer,
                             PasswordStoreInterface* store,
-                            BackendLoginsResultOrError result) {
+                            base::expected<std::vector<StoredCredential>,
+                                           PasswordStoreBackendError> result) {
   if (!consumer) {
     return;
   }
@@ -539,7 +540,8 @@ void PasswordStore::NotifyLoginsChangedOnMainSequence(
 }
 
 void PasswordStore::NotifyLoginsRetainedOnMainSequence(
-    BackendLoginsResultOrError result) {
+    base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+        result) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   // Don't propagate reference to this store after its shutdown. No caller
   // should expect any notifications from a shut down store in any case.
@@ -553,21 +555,19 @@ void PasswordStore::NotifyLoginsRetainedOnMainSequence(
   // error). This does not cause duplicate signals because the propagation
   // was skipped in `NotifyLoginsChangedOnMainSequence`.
   ActionableError error = ActionableError::kNoError;
-  if (std::holds_alternative<PasswordStoreBackendError>(result)) {
-    const PasswordStoreBackendError& backend_error =
-        std::get<PasswordStoreBackendError>(result);
+  if (!result) {
+    const PasswordStoreBackendError& backend_error = result.error();
     error = BackendErrorToActionableError(backend_error.type);
   }
 
   NotifyObserversIfErrorStateChanged(error);
 
   // Clients don't expect errors yet, so just wait for the next notification.
-  if (std::holds_alternative<PasswordStoreBackendError>(result)) {
+  if (!result) {
     return;
   }
 
-  const std::vector<StoredCredential>& retained_credentials =
-      std::get<BackendLoginsResult>(result);
+  const std::vector<StoredCredential>& retained_credentials = *result;
   for (auto& observer : observers_) {
     observer.OnLoginsRetained(this, retained_credentials);
   }
@@ -599,11 +599,11 @@ void PasswordStore::NotifyObserversIfErrorStateChanged(ActionableError error) {
 
 void PasswordStore::ForwardLoginsResultOrError(
     base::WeakPtr<PasswordStoreConsumer> consumer,
-    BackendLoginsResultOrError result) {
+    base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+        result) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  if (std::holds_alternative<PasswordStoreBackendError>(result)) {
-    const PasswordStoreBackendError& backend_error =
-        std::get<PasswordStoreBackendError>(result);
+  if (!result) {
+    const PasswordStoreBackendError& backend_error = result.error();
     NotifyObserversIfErrorStateChanged(
         BackendErrorToActionableError(backend_error.type));
   }
@@ -611,7 +611,7 @@ void PasswordStore::ForwardLoginsResultOrError(
 }
 
 void PasswordStore::UnblocklistInternal(base::OnceClosure completion,
-                                        LoginsResult forms) {
+                                        std::vector<StoredCredential> forms) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   if (!backend_) {
     return;  // Once the shutdown started, ignore new requests.

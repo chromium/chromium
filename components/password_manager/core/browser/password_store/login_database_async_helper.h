@@ -6,13 +6,14 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_LOGIN_DATABASE_ASYNC_HELPER_H_
 
 #include <memory>
-#include <variant>
+#include <vector>
 
 #include "base/cancelable_callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/expected.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/stored_credential.h"
@@ -36,9 +37,6 @@ class Encryptor;
 }  // namespace os_crypt_async
 
 namespace password_manager {
-
-using StoredCredentialsResultOrError =
-    std::variant<std::vector<StoredCredential>, PasswordStoreBackendError>;
 
 class LoginDatabase;
 class PasswordSyncBridge;
@@ -71,11 +69,13 @@ class LoginDatabaseAsyncHelper : public PasswordStoreSync {
       scoped_refptr<os_crypt_async::Encryptor> encryptor);
 
   // Synchronous implementation of PasswordStoreBackend interface.
-  StoredCredentialsResultOrError GetAllLogins();
-  StoredCredentialsResultOrError GetAutofillableLogins();
-  StoredCredentialsResultOrError FillMatchingLogins(
-      const std::vector<PasswordFormDigest>& forms,
-      bool include_psl);
+  base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+  GetAllLogins();
+  base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+  GetAutofillableLogins();
+  base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+  FillMatchingLogins(const std::vector<PasswordFormDigest>& forms,
+                     bool include_psl);
 
   PasswordChangesOrError AddLogin(StoredCredential cred);
   PasswordChangesOrError UpdateLogin(const StoredCredential& cred);

@@ -76,15 +76,11 @@ class FakeStoreConsumer : public password_manager::PasswordStoreConsumer {
  public:
   void OnGetPasswordStoreResultsOrErrorFrom(
       password_manager::PasswordStoreInterface* store,
-      password_manager::LoginsResultOrError results_or_error) override {
-    if (std::holds_alternative<password_manager::PasswordStoreBackendError>(
-            results_or_error)) {
-      obtained_ = std::vector<PasswordForm>();
-    } else {
-      obtained_ = password_manager::ToPasswordForms(
-          std::get<password_manager::LoginsResult>(
-              std::move(results_or_error)));
-    }
+      base::expected<std::vector<password_manager::StoredCredential>,
+                     password_manager::PasswordStoreBackendError>
+          results_or_error) override {
+    obtained_ = password_manager::ToPasswordForms(
+        std::move(results_or_error).value_or({}));
   }
 
   // Retrieves all logins from the profile password store and updates

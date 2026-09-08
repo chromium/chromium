@@ -32,9 +32,11 @@ void CredentialManagerPendingPreventSilentAccessTask::AddOrigin(
 }
 
 void CredentialManagerPendingPreventSilentAccessTask::
-    OnGetPasswordStoreResultsOrErrorFrom(PasswordStoreInterface* store,
-                                         LoginsResultOrError results_or_error) {
-  LoginsResult results =
+    OnGetPasswordStoreResultsOrErrorFrom(
+        PasswordStoreInterface* store,
+        base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+            results_or_error) {
+  std::vector<StoredCredential> results =
       GetLoginsOrEmptyListOnFailure(std::move(results_or_error));
   for (auto& form : results) {
     if (form.match_type == PasswordForm::MatchType::kGrouped ||

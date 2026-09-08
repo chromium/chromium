@@ -209,12 +209,13 @@ ProcessIncomingSharingInvitationTask::~ProcessIncomingSharingInvitationTask() =
 
 void ProcessIncomingSharingInvitationTask::OnGetPasswordStoreResultsOrErrorFrom(
     PasswordStoreInterface* store,
-    LoginsResultOrError results_or_error) {
-  if (std::holds_alternative<PasswordStoreBackendError>(results_or_error)) {
+    base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+        results_or_error) {
+  if (!results_or_error) {
     std::move(done_processing_invitation_callback_).Run(this);
     return;
   }
-  auto results = std::get<LoginsResult>(std::move(results_or_error));
+  std::vector<StoredCredential> results = std::move(*results_or_error);
 
   // Grouped credentials are ignored because they have different domains.
   std::erase_if(results, [](const auto& form) {

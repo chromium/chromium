@@ -5,11 +5,16 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_AFFILIATION_PASSWORD_AFFILIATION_SOURCE_ADAPTER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_AFFILIATION_PASSWORD_AFFILIATION_SOURCE_ADAPTER_H_
 
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/types/expected.h"
 #include "components/affiliations/core/browser/affiliation_source.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 
 namespace password_manager {
 
@@ -42,7 +47,8 @@ class PasswordAffiliationSourceAdapter
   // PasswordStoreConsumer:
   void OnGetPasswordStoreResultsOrErrorFrom(
       PasswordStoreInterface* store,
-      LoginsResultOrError results_or_error) override;
+      base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+          results_or_error) override;
 
   AffiliationSource::ResultCallback on_password_forms_received_callback_;
 

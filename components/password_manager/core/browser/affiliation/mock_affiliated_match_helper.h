@@ -9,7 +9,10 @@
 #include <string>
 #include <vector>
 
+#include "base/types/expected.h"
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -75,8 +78,10 @@ class MockAffiliatedMatchHelper : public AffiliatedMatchHelper {
       AffiliatedRealmsCallback result_callback) override;
 
   void InjectAffiliationAndBrandingInformation(
-      LoginsResult forms,
-      base::OnceCallback<void(LoginsResultOrError)> result_callback) override;
+      std::vector<StoredCredential> forms,
+      base::OnceCallback<void(base::expected<std::vector<StoredCredential>,
+                                             PasswordStoreBackendError>)>
+          result_callback) override;
 };
 
 }  // namespace password_manager

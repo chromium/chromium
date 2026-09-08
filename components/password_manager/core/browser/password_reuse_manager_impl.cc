@@ -496,9 +496,10 @@ void PasswordReuseManagerImpl::RequestLoginsFromStores() {
 
 void PasswordReuseManagerImpl::OnGetPasswordStoreResultsOrErrorFrom(
     PasswordStoreInterface* store,
-    LoginsResultOrError results_or_error) {
+    base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+        results_or_error) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  if (std::holds_alternative<PasswordStoreBackendError>(results_or_error)) {
+  if (!results_or_error) {
     return;
   }
 
@@ -512,7 +513,7 @@ void PasswordReuseManagerImpl::OnGetPasswordStoreResultsOrErrorFrom(
   if (!reuse_detector_) {
     return;
   }
-  auto results = std::get<LoginsResult>(std::move(results_or_error));
+  std::vector<StoredCredential> results = std::move(*results_or_error);
   ScheduleTask(base::BindOnce(&PasswordReuseDetector::OnGetPasswordStoreResults,
                               base::Unretained(reuse_detector_.get()),
                               std::move(results)));

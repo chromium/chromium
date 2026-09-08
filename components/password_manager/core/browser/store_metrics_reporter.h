@@ -6,11 +6,15 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_STORE_METRICS_REPORTER_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 
 class PrefService;
 
@@ -65,7 +69,8 @@ class StoreMetricsReporter : public PasswordStoreConsumer {
   // PasswordStoreConsumer:
   void OnGetPasswordStoreResultsOrErrorFrom(
       PasswordStoreInterface* store,
-      LoginsResultOrError results_or_error) override;
+      base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+          results_or_error) override;
   void ProcessPasswordResults(PasswordStoreInterface* store,
                               PasswordStoreResults results);
 

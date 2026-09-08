@@ -5,12 +5,17 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_OS_CRYPT_ASYNC_MIGRATOR_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_OS_CRYPT_ASYNC_MIGRATOR_H_
 
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "components/password_manager/core/browser/credentials_cleaner.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 
 class PrefService;
 
@@ -38,7 +43,8 @@ class OSCryptAsyncMigrator : public PasswordStoreConsumer,
   // PasswordStoreConsumer:
   void OnGetPasswordStoreResultsOrErrorFrom(
       PasswordStoreInterface* store,
-      LoginsResultOrError results_or_error) override;
+      base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+          results_or_error) override;
 
   void MarkMigrationComplete();
 

@@ -10,8 +10,10 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/browser/password_store/actionable_error.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_change.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store/stored_credential.h"
@@ -31,10 +33,11 @@ struct PasswordForm;
 
 class SmartBubbleStatsStore;
 
-using LoginsReply = base::OnceCallback<void(LoginsResult)>;
+using LoginsReply = base::OnceCallback<void(std::vector<StoredCredential>)>;
 using PasswordChangesOrErrorReply =
     base::OnceCallback<void(PasswordChangesOrError)>;
-using LoginsOrErrorReply = base::OnceCallback<void(LoginsResultOrError)>;
+using LoginsOrErrorReply = base::OnceCallback<void(
+    base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>)>;
 
 // The backend is used by the `PasswordStore` to interact with the storage in a
 // platform-dependent way (e.g. on Desktop, it calls a local database while on

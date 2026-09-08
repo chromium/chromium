@@ -16,6 +16,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliated_match_helper.h"
@@ -320,8 +321,11 @@ class FormFetcherImplTestBase : public testing::Test {
     }
   }
 
-  void DeliverPasswordStoreResults(LoginsResultOrError profile_store_results,
-                                   LoginsResultOrError account_store_results) {
+  void DeliverPasswordStoreResults(
+      base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+          profile_store_results,
+      base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+          account_store_results) {
     store_consumer()->OnGetPasswordStoreResultsOrErrorFrom(
         profile_mock_store_.get(), std::move(profile_store_results));
     if (account_mock_store_) {
@@ -868,10 +872,10 @@ TEST_P(FormFetcherImplTest, DoNotTryToMigrateHTTPPasswordsIfBackendError) {
   EXPECT_CALL(consumer_, OnFetchCompleted);
 
   DeliverPasswordStoreResults(
-      /*profile_store_results=*/PasswordStoreBackendError(
-          PasswordStoreBackendErrorType::kAuthErrorResolvable),
-      /*account_store_results=*/PasswordStoreBackendError(
-          PasswordStoreBackendErrorType::kAuthErrorResolvable));
+      /*profile_store_results=*/base::unexpected(PasswordStoreBackendError(
+          PasswordStoreBackendErrorType::kAuthErrorResolvable)),
+      /*account_store_results=*/base::unexpected(PasswordStoreBackendError(
+          PasswordStoreBackendErrorType::kAuthErrorResolvable)));
 
   EXPECT_THAT(form_fetcher_->GetNonFederatedMatches(), IsEmpty());
   EXPECT_THAT(form_fetcher_->GetFederatedMatches(), IsEmpty());
@@ -1433,8 +1437,8 @@ TEST_P(FormFetcherImplTest, ProfileBackendErrorResetsOnNewFetch) {
 
   Fetch();
 
-  PasswordStoreBackendError error_results = PasswordStoreBackendError(
-      PasswordStoreBackendErrorType::kAuthErrorResolvable);
+  auto error_results = base::unexpected(PasswordStoreBackendError(
+      PasswordStoreBackendErrorType::kAuthErrorResolvable));
   DeliverPasswordStoreResults(
       /*profile_store_results=*/std::move(error_results),
       /*account_store_results=*/{});
@@ -1462,8 +1466,8 @@ TEST_F(MultiStoreFormFetcherTest, AccountBackendErrorResetsOnNewFetch) {
 
   Fetch();
 
-  PasswordStoreBackendError error_results = PasswordStoreBackendError(
-      PasswordStoreBackendErrorType::kAuthErrorResolvable);
+  auto error_results = base::unexpected(PasswordStoreBackendError(
+      PasswordStoreBackendErrorType::kAuthErrorResolvable));
   DeliverPasswordStoreResults(
       /*profile_store_results=*/{},
       /*account_store_results=*/std::move(error_results));

@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/types/expected.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
 #include "components/password_manager/core/browser/http_password_store_migrator.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -88,7 +89,8 @@ class FormFetcherImpl : public FormFetcher,
   void OnGetSiteStatistics(std::vector<InteractionsStats> stats) override;
   void OnGetPasswordStoreResultsOrErrorFrom(
       PasswordStoreInterface* store,
-      LoginsResultOrError results_or_error) override;
+      base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+          results_or_error) override;
 
   // HttpPasswordStoreMigrator::Consumer:
   void ProcessMigratedForms(std::vector<PasswordForm> forms) override;

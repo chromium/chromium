@@ -43,12 +43,13 @@ void HttpCredentialCleaner::StartCleaning(Observer* observer) {
 
 void HttpCredentialCleaner::OnGetPasswordStoreResultsOrErrorFrom(
     PasswordStoreInterface* store,
-    LoginsResultOrError results_or_error) {
-  if (std::holds_alternative<PasswordStoreBackendError>(results_or_error)) {
+    base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+        results_or_error) {
+  if (!results_or_error) {
     observer_->CleaningCompleted();
     return;
   }
-  auto results = std::get<LoginsResult>(std::move(results_or_error));
+  std::vector<StoredCredential> results = std::move(*results_or_error);
 
   // Non HTTP or HTTPS credentials are ignored, in particular Android or
   // federated credentials.

@@ -20,11 +20,13 @@
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_change.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/smart_bubble_stats_store.h"
@@ -136,7 +138,9 @@ class PasswordStore : public PasswordStoreInterface {
                                          PasswordChangesOrError);
 
   // Notifies observers with all logins remaining after a modifying operation.
-  void NotifyLoginsRetainedOnMainSequence(BackendLoginsResultOrError result);
+  void NotifyLoginsRetainedOnMainSequence(
+      base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+          result);
 
   // Called when the backend reports that sync has been enabled or disabled.
   void NotifySyncEnabledOrDisabledOnMainSequence();
@@ -147,14 +151,17 @@ class PasswordStore : public PasswordStoreInterface {
 
   // Helper to forward the backend logins result or error to the consumer,
   // notifying observers via OnErrorStateChanged if the result is an error.
-  void ForwardLoginsResultOrError(base::WeakPtr<PasswordStoreConsumer> consumer,
-                                  BackendLoginsResultOrError result);
+  void ForwardLoginsResultOrError(
+      base::WeakPtr<PasswordStoreConsumer> consumer,
+      base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+          result);
 
   // The following methods notify observers that the password store may have
   // been modified via NotifyLoginsChangedOnMainSequence(). Note that there is
   // no guarantee that the called method will actually modify the password store
   // data.
-  void UnblocklistInternal(base::OnceClosure completion, LoginsResult forms);
+  void UnblocklistInternal(base::OnceClosure completion,
+                           std::vector<StoredCredential> forms);
 
   // This member is called to perform the actual interaction with the storage.
   // The backend is injected via the public constructor, this member owns the

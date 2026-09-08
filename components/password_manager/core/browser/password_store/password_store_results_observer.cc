@@ -15,12 +15,9 @@ PasswordStoreResultsObserver::~PasswordStoreResultsObserver() = default;
 
 void PasswordStoreResultsObserver::OnGetPasswordStoreResultsOrErrorFrom(
     PasswordStoreInterface* store,
-    LoginsResultOrError results_or_error) {
-  if (std::holds_alternative<PasswordStoreBackendError>(results_or_error)) {
-    results_ = std::vector<StoredCredential>();
-  } else {
-    results_ = std::get<LoginsResult>(std::move(results_or_error));
-  }
+    base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+        results_or_error) {
+  results_ = std::move(results_or_error).value_or({});
   run_loop_.Quit();
 }
 

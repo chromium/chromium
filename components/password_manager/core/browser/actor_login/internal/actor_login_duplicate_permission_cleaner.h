@@ -13,9 +13,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_permission_service.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "url/origin.h"
 
 namespace actor_login {
@@ -36,7 +39,9 @@ class ActorLoginDuplicatePermissionCleaner
   // password_manager::PasswordStoreConsumer:
   void OnGetPasswordStoreResultsOrErrorFrom(
       password_manager::PasswordStoreInterface* store,
-      password_manager::LoginsResultOrError results_or_error) override;
+      base::expected<std::vector<password_manager::StoredCredential>,
+                     password_manager::PasswordStoreBackendError>
+          results_or_error) override;
 
  private:
   void OnFederatedPermissionsListed(

@@ -12,9 +12,12 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "url/gurl.h"
 
 namespace password_manager {
@@ -54,7 +57,8 @@ class LeakDetectionDelegateHelper : public PasswordStoreConsumer {
   // specific password are retrieved.
   void OnGetPasswordStoreResultsOrErrorFrom(
       PasswordStoreInterface* store,
-      LoginsResultOrError results_or_error) override;
+      base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+          results_or_error) override;
 
   // Called when all password store results are available. Computes the
   // resulting credential type and invokes `callback_`.

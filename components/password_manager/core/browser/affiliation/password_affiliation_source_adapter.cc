@@ -87,12 +87,13 @@ void PasswordAffiliationSourceAdapter::OnLoginsRetained(
 
 void PasswordAffiliationSourceAdapter::OnGetPasswordStoreResultsOrErrorFrom(
     PasswordStoreInterface* store,
-    LoginsResultOrError results_or_error) {
-  if (std::holds_alternative<PasswordStoreBackendError>(results_or_error)) {
+    base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+        results_or_error) {
+  if (!results_or_error) {
     std::move(on_password_forms_received_callback_).Run({});
     return;
   }
-  auto results = std::get<LoginsResult>(std::move(results_or_error));
+  std::vector<StoredCredential> results = std::move(*results_or_error);
   std::vector<FacetURI> facets;
   for (const auto& form : results) {
     FacetURI facet_uri =

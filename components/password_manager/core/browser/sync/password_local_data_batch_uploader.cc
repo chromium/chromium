@@ -86,13 +86,9 @@ class PasswordLocalDataBatchUploader::PasswordFetchRequest
   // PasswordStoreConsumer implementation.
   void OnGetPasswordStoreResultsOrErrorFrom(
       PasswordStoreInterface* store,
-      LoginsResultOrError results_or_error) override {
-    if (std::holds_alternative<PasswordStoreBackendError>(results_or_error)) {
-      results_ = std::vector<PasswordForm>();
-    } else {
-      results_ =
-          ToPasswordForms(std::get<LoginsResult>(std::move(results_or_error)));
-    }
+      base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+          results_or_error) override {
+    results_ = ToPasswordForms(std::move(results_or_error).value_or({}));
     std::move(done_callback_).Run();
     // `this` might be deleted now, do not do anything else.
   }

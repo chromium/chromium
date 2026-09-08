@@ -7,9 +7,12 @@
 
 #include <vector>
 
+#include "base/types/expected.h"
 #include "components/password_manager/core/browser/password_store/actionable_error.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_change.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 
 namespace password_manager {
 
@@ -23,7 +26,9 @@ PasswordChangesOrError JoinPasswordStoreChanges(
 
 // Returns logins if |result| holds them, or an empty list if |result|
 // holds an error.
-LoginsResult GetLoginsOrEmptyListOnFailure(LoginsResultOrError result);
+std::vector<StoredCredential> GetLoginsOrEmptyListOnFailure(
+    base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+        result);
 
 // Wraps all password forms in the provided vector in a unique pointer.
 std::vector<std::unique_ptr<PasswordForm>> ConvertPasswordToUniquePtr(

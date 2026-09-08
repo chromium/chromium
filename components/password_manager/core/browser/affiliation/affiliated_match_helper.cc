@@ -134,8 +134,10 @@ void AffiliatedMatchHelper::GetAffiliatedAndGroupedRealms(
 }
 
 void AffiliatedMatchHelper::InjectAffiliationAndBrandingInformation(
-    LoginsResult forms,
-    base::OnceCallback<void(LoginsResultOrError)> result_callback) {
+    std::vector<StoredCredential> forms,
+    base::OnceCallback<void(base::expected<std::vector<StoredCredential>,
+                                           PasswordStoreBackendError>)>
+        result_callback) {
   std::vector<StoredCredential*> android_credentials;
   for (auto& form : forms) {
     if (IsValidAndroidCredential(form)) {

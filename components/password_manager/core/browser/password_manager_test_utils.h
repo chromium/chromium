@@ -6,7 +6,6 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_MANAGER_TEST_UTILS_H_
 
 #include <iosfwd>
-#include <variant>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
@@ -23,6 +22,7 @@
 #include "components/password_manager/core/browser/password_store/fake_password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
@@ -148,13 +148,12 @@ MATCHER_P(UnorderedPasswordFormElementsAre, expectations, "") {
 }
 
 MATCHER_P(LoginsResultsOrErrorAre, expectations, "") {
-  if (std::holds_alternative<PasswordStoreBackendError>(arg)) {
+  if (!arg) {
     return false;
   }
 
-  return ContainsEqualPasswordFormsUnordered(
-      *expectations, std::move(std::get<LoginsResult>(arg)),
-      result_listener->stream());
+  return ContainsEqualPasswordFormsUnordered(*expectations, *arg,
+                                             result_listener->stream());
 }
 
 // Matches a form or a stored credential that has the primary_key field set, and

@@ -43,13 +43,14 @@ void AllPasswordsBottomSheetHelper::ClearUpdateCallback() {
 
 void AllPasswordsBottomSheetHelper::OnGetPasswordStoreResultsOrErrorFrom(
     password_manager::PasswordStoreInterface* store,
-    password_manager::LoginsResultOrError results_or_error) {
-  if (std::holds_alternative<password_manager::PasswordStoreBackendError>(
-          results_or_error)) {
+    base::expected<std::vector<password_manager::StoredCredential>,
+                   password_manager::PasswordStoreBackendError>
+        results_or_error) {
+  if (!results_or_error) {
     return;
   }
-  auto results =
-      std::get<password_manager::LoginsResult>(std::move(results_or_error));
+  std::vector<password_manager::StoredCredential> results =
+      std::move(*results_or_error);
 
   int results_count = std::ranges::count_if(
       results,

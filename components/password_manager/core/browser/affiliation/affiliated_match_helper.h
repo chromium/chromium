@@ -13,9 +13,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 
 namespace affiliations {
 class AffiliationService;
@@ -63,8 +66,10 @@ class AffiliatedMatchHelper {
   // credentials in |forms|, sets |affiliated_web_realm|, |app_display_name| and
   // |app_icon_url| of forms, and invokes |result_callback|.
   virtual void InjectAffiliationAndBrandingInformation(
-      LoginsResult forms,
-      base::OnceCallback<void(LoginsResultOrError)> result_callback);
+      std::vector<StoredCredential> forms,
+      base::OnceCallback<void(base::expected<std::vector<StoredCredential>,
+                                             PasswordStoreBackendError>)>
+          result_callback);
 
   virtual void GetPSLExtensions(PSLExtensionCallback callback);
 

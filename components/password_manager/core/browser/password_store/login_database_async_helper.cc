@@ -103,35 +103,37 @@ bool LoginDatabaseAsyncHelper::Initialize(
   return success;
 }
 
-StoredCredentialsResultOrError LoginDatabaseAsyncHelper::GetAllLogins() {
+base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+LoginDatabaseAsyncHelper::GetAllLogins() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<StoredCredential> credentials;
 
   if (!login_db_) {
-    return PasswordStoreBackendError(
-        PasswordStoreBackendErrorType::kUncategorized);
+    return base::unexpected(PasswordStoreBackendError(
+        PasswordStoreBackendErrorType::kUncategorized));
   }
   FormRetrievalResult result = login_db_->GetAllLogins(&credentials);
   if (result != FormRetrievalResult::kSuccess &&
       result != FormRetrievalResult::kEncryptionServiceFailureWithPartialData) {
-    return PasswordStoreBackendError(
-        PasswordStoreBackendErrorType::kUncategorized);
+    return base::unexpected(PasswordStoreBackendError(
+        PasswordStoreBackendErrorType::kUncategorized));
   }
   return credentials;
 }
 
-StoredCredentialsResultOrError
+base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
 LoginDatabaseAsyncHelper::GetAutofillableLogins() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<StoredCredential> results;
   if (!login_db_ || !login_db_->GetAutofillableLogins(&results)) {
-    return PasswordStoreBackendError(
-        PasswordStoreBackendErrorType::kUncategorized);
+    return base::unexpected(PasswordStoreBackendError(
+        PasswordStoreBackendErrorType::kUncategorized));
   }
   return results;
 }
 
-StoredCredentialsResultOrError LoginDatabaseAsyncHelper::FillMatchingLogins(
+base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+LoginDatabaseAsyncHelper::FillMatchingLogins(
     const std::vector<PasswordFormDigest>& forms,
     bool include_psl) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -141,13 +143,13 @@ StoredCredentialsResultOrError LoginDatabaseAsyncHelper::FillMatchingLogins(
     if (!login_db_ ||
         !login_db_->GetLogins(form, include_psl, &matched_credentials)) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-      return PasswordStoreBackendError(
+      return base::unexpected(PasswordStoreBackendError(
           is_encryption_available_
               ? PasswordStoreBackendErrorType::kUncategorized
-              : PasswordStoreBackendErrorType::kKeychainError);
+              : PasswordStoreBackendErrorType::kKeychainError));
 #else
-      return PasswordStoreBackendError(
-          PasswordStoreBackendErrorType::kUncategorized);
+      return base::unexpected(PasswordStoreBackendError(
+          PasswordStoreBackendErrorType::kUncategorized));
 #endif
     }
     results.insert(results.end(),

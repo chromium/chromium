@@ -1118,7 +1118,9 @@ void PasskeyTabHelper::OnConditionalCreateInterstitialDecision(
 
 void PasskeyTabHelper::OnGetPasswordStoreResultsOrErrorFrom(
     password_manager::PasswordStoreInterface* store,
-    password_manager::LoginsResultOrError results_or_error) {
+    base::expected<std::vector<password_manager::StoredCredential>,
+                   password_manager::PasswordStoreBackendError>
+        results_or_error) {
   is_querying_password_store_ = false;
 
   if (!web_state_) {
@@ -1134,9 +1136,8 @@ void PasskeyTabHelper::OnGetPasswordStoreResultsOrErrorFrom(
   }
 
   const std::vector<password_manager::StoredCredential>* results = nullptr;
-  if (std::holds_alternative<password_manager::LoginsResult>(
-          results_or_error)) {
-    results = &std::get<password_manager::LoginsResult>(results_or_error);
+  if (results_or_error) {
+    results = &*results_or_error;
   }
 
   for (const std::string& request_id : request_ids_to_process) {

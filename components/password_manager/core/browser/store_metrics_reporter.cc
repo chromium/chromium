@@ -790,13 +790,11 @@ StoreMetricsReporter::StoreMetricsReporter(
   }
 }
 
-
-
 void StoreMetricsReporter::OnGetPasswordStoreResultsOrErrorFrom(
     PasswordStoreInterface* store,
-    LoginsResultOrError results_or_error) {
-  const bool has_error =
-      std::holds_alternative<PasswordStoreBackendError>(results_or_error);
+    base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+        results_or_error) {
+  const bool has_error = !results_or_error;
   PasswordStoreResults password_store_results{
       password_manager::ToPasswordForms(
           password_manager::GetLoginsOrEmptyListOnFailure(

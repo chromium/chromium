@@ -316,7 +316,9 @@ void CredentialProviderService::RequestSyncAllCredentials() {
 
 void CredentialProviderService::SyncAllCredentials(
     password_manager::PasswordStoreInterface* store,
-    password_manager::LoginsResultOrError forms_or_error) {
+    base::expected<std::vector<password_manager::StoredCredential>,
+                   password_manager::PasswordStoreBackendError>
+        forms_or_error) {
   std::vector<password_manager::StoredCredential> forms =
       password_manager::GetLoginsOrEmptyListOnFailure(
           std::move(forms_or_error));
@@ -647,10 +649,10 @@ void CredentialProviderService::UpdatePasskeyLargeBlobSetting() {
          forKey:AppGroupUserDefaulsCredentialProviderPasskeyLargeBlobEnabled()];
 }
 
-
 void CredentialProviderService::OnGetPasswordStoreResultsOrErrorFrom(
     password_manager::PasswordStoreInterface* store,
-    password_manager::LoginsResultOrError results) {
+    base::expected<std::vector<password_manager::StoredCredential>,
+                   password_manager::PasswordStoreBackendError> results) {
   auto callback =
       base::BindOnce(&CredentialProviderService::SyncAllCredentials,
                      weak_ptr_factory_.GetWeakPtr(), base::Unretained(store));
@@ -679,7 +681,9 @@ void CredentialProviderService::OnLoginsRetained(
 
 void CredentialProviderService::OnInjectedAffiliationAfterLoginsChanged(
     password_manager::PasswordStoreInterface* store,
-    password_manager::LoginsResultOrError results_or_error) {
+    base::expected<std::vector<password_manager::StoredCredential>,
+                   password_manager::PasswordStoreBackendError>
+        results_or_error) {
   AddCredentials(GetCredentialStore(store),
                  password_manager::GetLoginsOrEmptyListOnFailure(
                      std::move(results_or_error)),

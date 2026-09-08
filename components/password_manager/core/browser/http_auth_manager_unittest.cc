@@ -113,7 +113,9 @@ class MockHttpAuthObserver : public HttpAuthObserver {
 };
 
 ACTION_P(InvokeEmptyConsumerWithForms, store) {
-  arg0->OnGetPasswordStoreResultsOrErrorFrom(store, LoginsResultOrError());
+  arg0->OnGetPasswordStoreResultsOrErrorFrom(
+      store, base::expected<std::vector<StoredCredential>,
+                            PasswordStoreBackendError>());
 }
 }  // namespace
 

@@ -10,6 +10,7 @@
 
 #include "base/location.h"
 #include "base/strings/to_string.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -30,6 +31,8 @@
 namespace password_manager {
 namespace {
 
+using base::test::ErrorIs;
+using base::test::ValueIs;
 using testing::_;
 using testing::ElementsAreArray;
 using testing::IsEmpty;
@@ -136,7 +139,7 @@ TEST_F(PasswordStoreAndroidLocalBackendTest, CallsBridgeForGetAllLogins) {
       .WillOnce(Return(kJobId));
   backend().GetAllLoginsAsync(mock_reply.Get());
 
-  EXPECT_CALL(mock_reply, Run(VariantWith<LoginsResult>(testing::ResultOf(
+  EXPECT_CALL(mock_reply, Run(ValueIs(testing::ResultOf(
                               [](const std::vector<StoredCredential>& creds) {
                                 return ToPasswordForms(creds);
                               },
@@ -157,7 +160,7 @@ TEST_F(PasswordStoreAndroidLocalBackendTest,
       .WillOnce(Return(kJobId));
   backend().GetAllLoginsWithAffiliationAndBrandingAsync(mock_reply.Get());
 
-  EXPECT_CALL(mock_reply, Run(VariantWith<LoginsResult>(testing::ResultOf(
+  EXPECT_CALL(mock_reply, Run(ValueIs(testing::ResultOf(
                               [](const std::vector<StoredCredential>& creds) {
                                 return ToPasswordForms(creds);
                               },
@@ -178,7 +181,7 @@ TEST_F(PasswordStoreAndroidLocalBackendTest,
       .WillOnce(Return(kJobId));
   backend().GetAutofillableLoginsAsync(mock_reply.Get());
 
-  EXPECT_CALL(mock_reply, Run(VariantWith<LoginsResult>(testing::ResultOf(
+  EXPECT_CALL(mock_reply, Run(ValueIs(testing::ResultOf(
                               [](const std::vector<StoredCredential>& creds) {
                                 return ToPasswordForms(creds);
                               },
@@ -203,7 +206,7 @@ TEST_F(PasswordStoreAndroidLocalBackendTest,
       .WillOnce(Return(kJobId));
   backend().GetGroupedMatchingLoginsAsync(form_digest, mock_reply.Get());
 
-  LoginsResult returned_logins;
+  std::vector<StoredCredential> returned_logins;
   returned_logins.push_back(FromPasswordForm(
       CreateEntry("Todd Tester", "S3cr3t", GURL(u"https://example.com/"),
                   PasswordForm::MatchType::kAffiliated)));
@@ -230,7 +233,7 @@ TEST_F(PasswordStoreAndroidLocalBackendTest,
       "Marcus McSpartanGregor", "S0m3th1ngCr34t1v3",
       GURL(u"https://example.org/"), PasswordForm::MatchType::kGrouped));
 
-  EXPECT_CALL(mock_reply, Run(VariantWith<LoginsResult>(testing::ResultOf(
+  EXPECT_CALL(mock_reply, Run(ValueIs(testing::ResultOf(
                               [](const std::vector<StoredCredential>& creds) {
                                 return ToPasswordForms(creds);
                               },
@@ -341,7 +344,7 @@ TEST_P(PasswordStoreAndroidLocalBackendRetriesTest,
     task_environment_.FastForwardUntilNoTasksRemain();
   }
 
-  EXPECT_CALL(mock_reply, Run(VariantWith<LoginsResult>(testing::ResultOf(
+  EXPECT_CALL(mock_reply, Run(ValueIs(testing::ResultOf(
                               [](const std::vector<StoredCredential>& creds) {
                                 return ToPasswordForms(creds);
                               },
@@ -376,7 +379,7 @@ TEST_P(PasswordStoreAndroidLocalBackendRetriesTest,
     task_environment_.FastForwardUntilNoTasksRemain();
   }
 
-  EXPECT_CALL(mock_reply, Run(VariantWith<LoginsResult>(testing::ResultOf(
+  EXPECT_CALL(mock_reply, Run(ValueIs(testing::ResultOf(
                               [](const std::vector<StoredCredential>& creds) {
                                 return ToPasswordForms(creds);
                               },
@@ -414,8 +417,7 @@ TEST_P(PasswordStoreAndroidLocalBackendRetriesTest,
   PasswordStoreBackendError expected_error{
       PasswordStoreBackendErrorType::kUncategorized};
   expected_error.android_backend_api_error = static_cast<int>(GetParam());
-  EXPECT_CALL(mock_reply,
-              Run(VariantWith<PasswordStoreBackendError>(expected_error)));
+  EXPECT_CALL(mock_reply, Run(ErrorIs(expected_error)));
   consumer().OnError(kJobId, error);
 
   RunUntilIdle();
@@ -448,8 +450,7 @@ TEST_P(PasswordStoreAndroidLocalBackendRetriesTest,
   PasswordStoreBackendError expected_error{
       PasswordStoreBackendErrorType::kUncategorized};
   expected_error.android_backend_api_error = static_cast<int>(GetParam());
-  EXPECT_CALL(mock_reply,
-              Run(VariantWith<PasswordStoreBackendError>(expected_error)));
+  EXPECT_CALL(mock_reply, Run(ErrorIs(expected_error)));
   consumer().OnError(kJobId, error);
 
   RunUntilIdle();

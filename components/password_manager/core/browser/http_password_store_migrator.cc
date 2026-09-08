@@ -96,10 +96,11 @@ PasswordForm HttpPasswordStoreMigrator::MigrateHttpFormToHttps(
 
 void HttpPasswordStoreMigrator::OnGetPasswordStoreResultsOrErrorFrom(
     PasswordStoreInterface* store,
-    LoginsResultOrError results_or_error) {
+    base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+        results_or_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-if (auto* logins = std::get_if<LoginsResult>(&results_or_error)) {
-    results_ = ToPasswordForms(std::move(*logins));
+  if (results_or_error) {
+    results_ = ToPasswordForms(std::move(*results_or_error));
   }
   got_password_store_results_ = true;
 

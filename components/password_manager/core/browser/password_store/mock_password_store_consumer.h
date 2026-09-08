@@ -5,7 +5,12 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_MOCK_PASSWORD_STORE_CONSUMER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_MOCK_PASSWORD_STORE_CONSUMER_H_
 
+#include <vector>
+
+#include "base/types/expected.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace password_manager {
@@ -17,7 +22,9 @@ class MockPasswordStoreConsumer : public PasswordStoreConsumer {
 
   MOCK_METHOD(void,
               OnGetPasswordStoreResultsOrErrorFrom,
-              (PasswordStoreInterface*, LoginsResultOrError),
+              (PasswordStoreInterface*,
+               (base::expected<std::vector<StoredCredential>,
+                               PasswordStoreBackendError>)),
               (override));
 
   base::WeakPtr<PasswordStoreConsumer> GetWeakPtr();

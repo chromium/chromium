@@ -5,11 +5,16 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_CHANGE_BACKUP_PASSWORD_CLEANER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_CHANGE_BACKUP_PASSWORD_CLEANER_H_
 
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "components/password_manager/core/browser/credentials_cleaner.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 
 class PrefService;
 
@@ -44,7 +49,8 @@ class PasswordChangeBackupPasswordCleaner : public PasswordStoreConsumer,
   // PasswordStoreConsumer:
   void OnGetPasswordStoreResultsOrErrorFrom(
       PasswordStoreInterface* store,
-      LoginsResultOrError results_or_error) override;
+      base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+          results_or_error) override;
 
   // Password store for which the cleaning is performed.
   scoped_refptr<PasswordStoreInterface> store_;

@@ -61,41 +61,53 @@ TEST_F(PasswordStoreEmptyBackendTest, NotAbleToSavePasswords) {
 
 TEST_F(PasswordStoreEmptyBackendTest, GetAllLoginsAsyncReturnsEmpty) {
   PasswordStoreBackend* backend = CreateAndInitBackend();
-  base::test::TestFuture<LoginsResultOrError> future;
+  base::test::TestFuture<
+      base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>>
+      future;
   backend->GetAllLoginsAsync(future.GetCallback());
-  const LoginsResultOrError& result = future.Get();
-  EXPECT_TRUE(std::get<LoginsResult>(result).empty());
+  const base::expected<std::vector<StoredCredential>,
+                       PasswordStoreBackendError>& result = future.Get();
+  EXPECT_TRUE(result->empty());
 }
 
 TEST_F(PasswordStoreEmptyBackendTest,
        GetAllLoginsWithAffiliationAndBrandingAsyncReturnsEmpty) {
   PasswordStoreBackend* backend = CreateAndInitBackend();
-  base::test::TestFuture<LoginsResultOrError> future;
+  base::test::TestFuture<
+      base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>>
+      future;
   backend->GetAllLoginsWithAffiliationAndBrandingAsync(future.GetCallback());
-  const LoginsResultOrError& result = future.Get();
-  EXPECT_TRUE(std::get<LoginsResult>(result).empty());
+  const base::expected<std::vector<StoredCredential>,
+                       PasswordStoreBackendError>& result = future.Get();
+  EXPECT_TRUE(result->empty());
 }
 
 TEST_F(PasswordStoreEmptyBackendTest, FillMatchingLoginsAsyncReturnsEmpty) {
   PasswordStoreBackend* backend = CreateAndInitBackend();
-  base::test::TestFuture<LoginsResultOrError> future;
+  base::test::TestFuture<
+      base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>>
+      future;
   std::vector<PasswordFormDigest> forms = {PasswordFormDigest(
       PasswordForm::Scheme::kHtml, kTestUrl, GURL(kTestUrl))};
   backend->FillMatchingLoginsAsync(future.GetCallback(),
                                    /*include_psl=*/false, forms);
-  const LoginsResultOrError& result = future.Get();
-  EXPECT_TRUE(std::get<LoginsResult>(result).empty());
+  const base::expected<std::vector<StoredCredential>,
+                       PasswordStoreBackendError>& result = future.Get();
+  EXPECT_TRUE(result->empty());
 }
 
 TEST_F(PasswordStoreEmptyBackendTest,
        GetGroupedMatchingLoginsAsyncReturnsEmpty) {
   PasswordStoreBackend* backend = CreateAndInitBackend();
-  base::test::TestFuture<LoginsResultOrError> future;
+  base::test::TestFuture<
+      base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>>
+      future;
   PasswordFormDigest form_digest(PasswordForm::Scheme::kHtml, kTestUrl,
                                  GURL(kTestUrl));
   backend->GetGroupedMatchingLoginsAsync(form_digest, future.GetCallback());
-  const LoginsResultOrError& result = future.Get();
-  EXPECT_TRUE(std::get<LoginsResult>(result).empty());
+  const base::expected<std::vector<StoredCredential>,
+                       PasswordStoreBackendError>& result = future.Get();
+  EXPECT_TRUE(result->empty());
 }
 
 TEST_F(PasswordStoreEmptyBackendTest,

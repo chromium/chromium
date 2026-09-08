@@ -315,7 +315,9 @@ class PasskeyTabHelper : public web::WebStateObserver,
   // PasswordStoreConsumer:
   void OnGetPasswordStoreResultsOrErrorFrom(
       password_manager::PasswordStoreInterface* store,
-      password_manager::LoginsResultOrError results_or_error) override;
+      base::expected<std::vector<password_manager::StoredCredential>,
+                     password_manager::PasswordStoreBackendError>
+          results_or_error) override;
 
   // PasskeyModel::Observer:
   void OnPasskeysChanged(

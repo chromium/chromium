@@ -4,7 +4,6 @@
 
 #include "components/password_manager/core/browser/os_crypt_async_migrator.h"
 
-#include <variant>
 
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -42,16 +41,17 @@ void OSCryptAsyncMigrator::StartCleaning(Observer* observer) {
 
 void OSCryptAsyncMigrator::OnGetPasswordStoreResultsOrErrorFrom(
     PasswordStoreInterface* store,
-    LoginsResultOrError results_or_error) {
+    base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+        results_or_error) {
   CHECK(store_ == store);
-  if (std::holds_alternative<PasswordStoreBackendError>(results_or_error)) {
+  if (!results_or_error) {
     // Notify observer that cleaning is complete. Although don't mark it as such
     // to retry again in the future.
     observer_->CleaningCompleted();
     return;
   }
 
-  LoginsResult logins = std::move(std::get<LoginsResult>(results_or_error));
+  std::vector<StoredCredential> logins = std::move(*results_or_error);
 
   if (logins.empty()) {
     MarkMigrationComplete();

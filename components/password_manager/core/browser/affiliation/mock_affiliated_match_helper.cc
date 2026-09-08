@@ -70,8 +70,10 @@ void MockAffiliatedMatchHelper::
 }
 
 void MockAffiliatedMatchHelper::InjectAffiliationAndBrandingInformation(
-    LoginsResult forms,
-    base::OnceCallback<void(LoginsResultOrError)> result_callback) {
+    std::vector<StoredCredential> forms,
+    base::OnceCallback<void(base::expected<std::vector<StoredCredential>,
+                                           PasswordStoreBackendError>)>
+        result_callback) {
   const std::vector<AffiliationAndBrandingInformation>& information =
       OnInjectAffiliationAndBrandingInformationCalled();
   if (information.empty()) {

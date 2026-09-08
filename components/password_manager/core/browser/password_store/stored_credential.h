@@ -7,11 +7,11 @@
 
 #include <optional>
 #include <string>
-#include <variant>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
@@ -126,11 +126,8 @@ inline auto StoredCredentialUniqueKey(const StoredCredential& f) {
 bool AreStoredCredentialUniqueKeysEqual(const StoredCredential& left,
                                         const StoredCredential& right);
 
-using BackendLoginsResult = std::vector<StoredCredential>;
-using BackendLoginsResultOrError =
-    std::variant<BackendLoginsResult, PasswordStoreBackendError>;
-using BackendLoginsOrErrorReply =
-    base::OnceCallback<void(BackendLoginsResultOrError)>;
+using BackendLoginsOrErrorReply = base::OnceCallback<void(
+    base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>)>;
 
 }  // namespace password_manager
 

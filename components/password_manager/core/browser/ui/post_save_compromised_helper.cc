@@ -77,12 +77,13 @@ void PostSaveCompromisedHelper::AnalyzeLeakedCredentials(
 
 void PostSaveCompromisedHelper::OnGetPasswordStoreResultsOrErrorFrom(
     PasswordStoreInterface* store,
-    LoginsResultOrError results_or_error) {
-  if (std::holds_alternative<PasswordStoreBackendError>(results_or_error)) {
+    base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+        results_or_error) {
+  if (!results_or_error) {
     forms_received_.Run();
     return;
   }
-  auto results = std::get<LoginsResult>(std::move(results_or_error));
+  std::vector<StoredCredential> results = std::move(*results_or_error);
   std::ranges::move(ToPasswordForms(std::move(results)),
                     std::back_inserter(passwords_));
   forms_received_.Run();

@@ -37,30 +37,30 @@ ActionableError PasswordStoreEmptyBackend::GetError() {
 
 void PasswordStoreEmptyBackend::GetAllLoginsAsync(
     BackendLoginsOrErrorReply callback) {
-  ReplyWithEmptyList<BackendLoginsResult>(std::move(callback));
+  ReplyWithEmptyList<std::vector<StoredCredential>>(std::move(callback));
 }
 
 void PasswordStoreEmptyBackend::GetAllLoginsWithAffiliationAndBrandingAsync(
     BackendLoginsOrErrorReply callback) {
-  ReplyWithEmptyList<BackendLoginsResult>(std::move(callback));
+  ReplyWithEmptyList<std::vector<StoredCredential>>(std::move(callback));
 }
 
 void PasswordStoreEmptyBackend::GetAutofillableLoginsAsync(
     BackendLoginsOrErrorReply callback) {
-  ReplyWithEmptyList<BackendLoginsResult>(std::move(callback));
+  ReplyWithEmptyList<std::vector<StoredCredential>>(std::move(callback));
 }
 
 void PasswordStoreEmptyBackend::FillMatchingLoginsAsync(
     BackendLoginsOrErrorReply callback,
     bool include_psl,
     const std::vector<PasswordFormDigest>& forms) {
-  ReplyWithEmptyList<BackendLoginsResult>(std::move(callback));
+  ReplyWithEmptyList<std::vector<StoredCredential>>(std::move(callback));
 }
 
 void PasswordStoreEmptyBackend::GetGroupedMatchingLoginsAsync(
     const PasswordFormDigest& form_digest,
     BackendLoginsOrErrorReply callback) {
-  ReplyWithEmptyList<BackendLoginsResult>(std::move(callback));
+  ReplyWithEmptyList<std::vector<StoredCredential>>(std::move(callback));
 }
 
 void PasswordStoreEmptyBackend::AddLoginAsync(

@@ -50,12 +50,13 @@ void LeakDetectionDelegateHelper::ProcessLeakedPassword(
 
 void LeakDetectionDelegateHelper::OnGetPasswordStoreResultsOrErrorFrom(
     PasswordStoreInterface* store,
-    LoginsResultOrError results_or_error) {
-  if (std::holds_alternative<PasswordStoreBackendError>(results_or_error)) {
+    base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+        results_or_error) {
+  if (!results_or_error) {
     barrier_closure_.Run();
     return;
   }
-  auto results = std::get<LoginsResult>(std::move(results_or_error));
+  std::vector<StoredCredential> results = std::move(*results_or_error);
   std::ranges::move(std::move(results), std::back_inserter(partial_results_));
   barrier_closure_.Run();
 }

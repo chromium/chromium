@@ -43,9 +43,10 @@ void PasswordChangeBackupPasswordCleaner::StartCleaning(Observer* observer) {
 
 void PasswordChangeBackupPasswordCleaner::OnGetPasswordStoreResultsOrErrorFrom(
     PasswordStoreInterface* store,
-    LoginsResultOrError results_or_error) {
+    base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+        results_or_error) {
   CHECK(store_ == store);
-  if (std::holds_alternative<PasswordStoreBackendError>(results_or_error)) {
+  if (!results_or_error) {
     // Notify observer that cleaning is complete, but don't set the timestamp in
     // the pref, so it can be retried again in the future.
     observer_->CleaningCompleted();
@@ -53,7 +54,7 @@ void PasswordChangeBackupPasswordCleaner::OnGetPasswordStoreResultsOrErrorFrom(
   }
 
   base::Time cleaning_time = base::Time::Now();
-  for (auto& cred : std::get<LoginsResult>(std::move(results_or_error))) {
+  for (auto& cred : std::move(*results_or_error)) {
     auto note_itr = std::ranges::find(
         cred.notes, PasswordNote::kPasswordChangeBackupNoteName,
         &PasswordNote::unique_display_name);

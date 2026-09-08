@@ -8,7 +8,6 @@
 #include <iterator>
 #include <memory>
 #include <utility>
-#include <variant>
 #include <vector>
 
 #include "base/check_deref.h"
@@ -380,23 +379,21 @@ void FormFetcherImpl::SplitResults(std::vector<StoredCredential> forms) {
 
 void FormFetcherImpl::OnGetPasswordStoreResultsOrErrorFrom(
     PasswordStoreInterface* store,
-    LoginsResultOrError results_or_error) {
+    base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+        results_or_error) {
   if (store == client_->GetProfilePasswordStore()) {
     profile_store_backend_error_.reset();
-    if (std::holds_alternative<PasswordStoreBackendError>(results_or_error)) {
-      profile_store_backend_error_ =
-          std::get<PasswordStoreBackendError>(results_or_error);
+    if (!results_or_error) {
+      profile_store_backend_error_ = results_or_error.error();
     }
   } else if (store == client_->GetAccountPasswordStore()) {
     account_store_backend_error_.reset();
-    if (std::holds_alternative<PasswordStoreBackendError>(results_or_error)) {
-      account_store_backend_error_ =
-          std::get<PasswordStoreBackendError>(results_or_error);
+    if (!results_or_error) {
+      account_store_backend_error_ = results_or_error.error();
     }
   }
 
-  bool has_backend_error =
-      std::holds_alternative<PasswordStoreBackendError>(results_or_error);
+  bool has_backend_error = !results_or_error;
 
   std::vector<StoredCredential> results =
       GetLoginsOrEmptyListOnFailure(std::move(results_or_error));

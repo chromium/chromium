@@ -119,11 +119,12 @@ void ActorLoginDuplicatePermissionCleaner::Start(
 
 void ActorLoginDuplicatePermissionCleaner::OnGetPasswordStoreResultsOrErrorFrom(
     password_manager::PasswordStoreInterface* store,
-    password_manager::LoginsResultOrError results_or_error) {
-  if (std::holds_alternative<password_manager::LoginsResult>(
-          results_or_error)) {
-    const auto& results =
-        std::get<password_manager::LoginsResult>(results_or_error);
+    base::expected<std::vector<password_manager::StoredCredential>,
+                   password_manager::PasswordStoreBackendError>
+        results_or_error) {
+  if (results_or_error) {
+    const std::vector<password_manager::StoredCredential>& results =
+        *results_or_error;
     for (const auto& match : results) {
       pending_matches_.push_back(password_manager::ToPasswordForm(match));
     }

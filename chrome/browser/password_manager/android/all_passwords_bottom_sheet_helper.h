@@ -6,11 +6,15 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ALL_PASSWORDS_BOTTOM_SHEET_HELPER_H_
 
 #include <optional>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 
 // This class helps to determine the visibility of the "All Passwords Sheet"
 // button by requesting whether there are any passwords stored at all.
@@ -43,7 +47,9 @@ class AllPasswordsBottomSheetHelper
   // PasswordStoreConsumer:
   void OnGetPasswordStoreResultsOrErrorFrom(
       password_manager::PasswordStoreInterface* store,
-      password_manager::LoginsResultOrError results_or_error) override;
+      base::expected<std::vector<password_manager::StoredCredential>,
+                     password_manager::PasswordStoreBackendError>
+          results_or_error) override;
 
   // A callback used to update the suggestions if the password store provides
   // credentials and the focused field might still profit from them.

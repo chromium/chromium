@@ -6,7 +6,6 @@
 
 #include <cstddef>
 #include <ranges>
-#include <variant>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
@@ -51,14 +50,13 @@ void PasswordCounter::RemoveObserver(Observer* observer) {
 
 void PasswordCounter::OnGetPasswordStoreResultsOrErrorFrom(
     PasswordStoreInterface* store,
-    LoginsResultOrError results_or_error) {
-  if (std::holds_alternative<password_manager::PasswordStoreBackendError>(
-          results_or_error)) {
+    base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+        results_or_error) {
+  if (!results_or_error) {
     return;
   }
   size_t counter = std::ranges::count_if(
-      std::get<password_manager::LoginsResult>(results_or_error),
-      [](const StoredCredential& cred) {
+      *results_or_error, [](const StoredCredential& cred) {
         return IsAutofillableCredential(cred);
       });
   if (store == profile_store_) {

@@ -15,6 +15,8 @@
 #include "base/types/strong_alias.h"
 #include "components/password_manager/core/browser/password_store/password_store.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -123,23 +125,24 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
       base::OnceCallback<PasswordStoreChangeList()> task,
       PasswordChangesOrErrorReply callback);
   void PostTaskAndReplyWithResultOrSimulateError(
-      base::OnceCallback<BackendLoginsResult()> task,
+      base::OnceCallback<std::vector<StoredCredential>()> task,
       BackendLoginsOrErrorReply callback);
 
  private:
-  BackendLoginsResult GetAllLoginsInternal();
-  BackendLoginsResult GetAutofillableLoginsInternal();
-  BackendLoginsResult FillMatchingLoginsInternal(
+  std::vector<StoredCredential> GetAllLoginsInternal();
+  std::vector<StoredCredential> GetAutofillableLoginsInternal();
+  std::vector<StoredCredential> FillMatchingLoginsInternal(
       const std::vector<PasswordFormDigest>& forms,
       bool include_psl);
-  BackendLoginsResult FillMatchingLoginsHelper(const PasswordFormDigest& form,
-                                               bool include_psl);
+  std::vector<StoredCredential> FillMatchingLoginsHelper(
+      const PasswordFormDigest& form,
+      bool include_psl);
 #if BUILDFLAG(IS_ANDROID)
-  BackendLoginsResult GetGroupedMatchingLoginsInternal(
+  std::vector<StoredCredential> GetGroupedMatchingLoginsInternal(
       const PasswordFormDigest& form_digest);
   void AddLoginsWithMatchType(const std::vector<std::string>& realms,
                               PasswordForm::MatchType match_type,
-                              BackendLoginsResult& results);
+                              std::vector<StoredCredential>& results);
 #endif
   PasswordStoreChangeList AddLoginInternal(const StoredCredential& cred);
   PasswordStoreChangeList UpdateLoginInternal(const StoredCredential& cred);

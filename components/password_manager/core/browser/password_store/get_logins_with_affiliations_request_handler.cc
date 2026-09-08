@@ -4,7 +4,6 @@
 
 #include "components/password_manager/core/browser/password_store/get_logins_with_affiliations_request_handler.h"
 
-#include <variant>
 #include <vector>
 
 #include "base/barrier_callback.h"
@@ -15,6 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/expected.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -49,15 +49,17 @@ bool IsExtendedPSLMatch(const StoredCredential& form,
 }
 
 // Do post-processing on forms and mark PSL matches as such.
-LoginsResultOrError ProcessExactAndPSLForms(
+base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+ProcessExactAndPSLForms(
     const PasswordFormDigest& digest,
     const base::flat_set<std::string>& psl_extensions,
-    LoginsResultOrError logins_or_error) {
-  if (std::holds_alternative<PasswordStoreBackendError>(logins_or_error)) {
+    base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+        logins_or_error) {
+  if (!logins_or_error) {
     return logins_or_error;
   }
 
-  for (auto& form : std::get<LoginsResult>(logins_or_error)) {
+  for (auto& form : *logins_or_error) {
     switch (GetMatchResult(form, digest)) {
       case MatchResult::NO_MATCH:
         NOTREACHED();
@@ -84,15 +86,14 @@ LoginsResultOrError ProcessExactAndPSLForms(
 void InjectAffiliationAndBrandingInformation(
     base::WeakPtr<AffiliatedMatchHelper> affiliated_match_helper,
     LoginsOrErrorReply callback,
-    LoginsResultOrError forms_or_error) {
-  if (!affiliated_match_helper ||
-      std::holds_alternative<PasswordStoreBackendError>(forms_or_error) ||
-      std::get<LoginsResult>(forms_or_error).empty()) {
+    base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+        forms_or_error) {
+  if (!affiliated_match_helper || !forms_or_error || forms_or_error->empty()) {
     std::move(callback).Run(std::move(forms_or_error));
     return;
   }
   affiliated_match_helper->InjectAffiliationAndBrandingInformation(
-      std::move(std::get<LoginsResult>(forms_or_error)), std::move(callback));
+      std::move(*forms_or_error), std::move(callback));
 }
 
 // Removes username-only credentials from |credentials|.
@@ -127,7 +128,8 @@ class GetLoginsHelper : public base::RefCounted<GetLoginsHelper> {
   ~GetLoginsHelper() = default;
 
   void OnPSLExtensionsReceived(
-      base::RepeatingCallback<void(LoginsResultOrError)>
+      base::RepeatingCallback<void(base::expected<std::vector<StoredCredential>,
+                                                  PasswordStoreBackendError>)>
           forms_received_callback,
       const base::flat_set<std::string>& psl_extensions);
 
@@ -135,14 +137,17 @@ class GetLoginsHelper : public base::RefCounted<GetLoginsHelper> {
   // in the password store. The list excludes the PSL matches because those will
   // be already returned by the main request.
   void HandleAffiliationsAndGroupsReceived(
-      base::RepeatingCallback<void(LoginsResultOrError)>
+      base::RepeatingCallback<void(base::expected<std::vector<StoredCredential>,
+                                                  PasswordStoreBackendError>)>
           forms_received_callback,
       std::vector<affiliations::Facet> affiliated_facets,
       std::vector<affiliations::Facet> grouped_facets);
 
   // Method which is called after exact, PSL, affiliated and grouped matches
   // are received.
-  LoginsResultOrError MergeResults(std::vector<LoginsResultOrError> results);
+  base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+  MergeResults(std::vector<base::expected<std::vector<StoredCredential>,
+                                          PasswordStoreBackendError>> results);
 
   const PasswordFormDigest requested_digest_;
 
@@ -176,7 +181,8 @@ void GetLoginsHelper::Init(AffiliatedMatchHelper* affiliated_match_helper,
   auto affiliation_info_injection = base::BindOnce(
       &InjectAffiliationAndBrandingInformation,
       affiliated_match_helper->GetWeakPtr(), std::move(callback));
-  auto forms_received_callback = base::BarrierCallback<LoginsResultOrError>(
+  auto forms_received_callback = base::BarrierCallback<
+      base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>>(
       kCallsNumber, base::BindOnce(&GetLoginsHelper::MergeResults, this)
                         .Then(std::move(affiliation_info_injection)));
 
@@ -191,7 +197,9 @@ void GetLoginsHelper::Init(AffiliatedMatchHelper* affiliated_match_helper,
 }
 
 void GetLoginsHelper::OnPSLExtensionsReceived(
-    base::RepeatingCallback<void(LoginsResultOrError)> forms_received_callback,
+    base::RepeatingCallback<void(base::expected<std::vector<StoredCredential>,
+                                                PasswordStoreBackendError>)>
+        forms_received_callback,
     const base::flat_set<std::string>& psl_extensions) {
   if (!backend_) {
     return;
@@ -204,7 +212,9 @@ void GetLoginsHelper::OnPSLExtensionsReceived(
 }
 
 void GetLoginsHelper::HandleAffiliationsAndGroupsReceived(
-    base::RepeatingCallback<void(LoginsResultOrError)> forms_received_callback,
+    base::RepeatingCallback<void(base::expected<std::vector<StoredCredential>,
+                                                PasswordStoreBackendError>)>
+        forms_received_callback,
     std::vector<affiliations::Facet> affiliated_facets,
     std::vector<affiliations::Facet> grouped_facets) {
   if (!backend_) {
@@ -247,14 +257,16 @@ void GetLoginsHelper::HandleAffiliationsAndGroupsReceived(
                                     /*include_psl=*/false, digests_to_request);
 }
 
-LoginsResultOrError GetLoginsHelper::MergeResults(
-    std::vector<LoginsResultOrError> results) {
-  LoginsResult final_result;
+base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+GetLoginsHelper::MergeResults(
+    std::vector<base::expected<std::vector<StoredCredential>,
+                               PasswordStoreBackendError>> results) {
+  std::vector<StoredCredential> final_result;
   for (auto& result : results) {
-    if (std::holds_alternative<PasswordStoreBackendError>(result)) {
-      return std::get<PasswordStoreBackendError>(result);
+    if (!result) {
+      return base::unexpected(std::move(result).error());
     }
-    LoginsResult forms = std::move(std::get<LoginsResult>(result));
+    std::vector<StoredCredential> forms = std::move(*result);
     for (auto& form : forms) {
       final_result.push_back(std::move(form));
     }

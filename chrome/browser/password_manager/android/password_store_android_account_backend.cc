@@ -4,8 +4,6 @@
 
 #include "chrome/browser/password_manager/android/password_store_android_account_backend.h"
 
-#include <variant>
-
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper_impl.h"
@@ -103,7 +101,7 @@ ActionableError PasswordStoreAndroidAccountBackend::GetError() {
 void PasswordStoreAndroidAccountBackend::GetAllLoginsAsync(
     BackendLoginsOrErrorReply callback) {
   if (!password_manager::sync_util::HasChosenToSyncPasswords(sync_service_)) {
-    ReplyWithEmptyList<BackendLoginsResult>(std::move(callback));
+    ReplyWithEmptyList<std::vector<StoredCredential>>(std::move(callback));
     return;
   }
   GetAllLoginsInternal(GetSyncingAccount(sync_service_), std::move(callback));
@@ -113,7 +111,7 @@ void PasswordStoreAndroidAccountBackend::
     GetAllLoginsWithAffiliationAndBrandingAsync(
         BackendLoginsOrErrorReply callback) {
   if (!password_manager::sync_util::HasChosenToSyncPasswords(sync_service_)) {
-    ReplyWithEmptyList<BackendLoginsResult>(std::move(callback));
+    ReplyWithEmptyList<std::vector<StoredCredential>>(std::move(callback));
     return;
   }
   GetAllLoginsWithAffiliationAndBrandingInternal(
@@ -123,7 +121,7 @@ void PasswordStoreAndroidAccountBackend::
 void PasswordStoreAndroidAccountBackend::GetAutofillableLoginsAsync(
     BackendLoginsOrErrorReply callback) {
   if (!password_manager::sync_util::HasChosenToSyncPasswords(sync_service_)) {
-    ReplyWithEmptyList<BackendLoginsResult>(std::move(callback));
+    ReplyWithEmptyList<std::vector<StoredCredential>>(std::move(callback));
     return;
   }
   GetAutofillableLoginsInternal(GetSyncingAccount(sync_service_),
@@ -135,7 +133,7 @@ void PasswordStoreAndroidAccountBackend::FillMatchingLoginsAsync(
     bool include_psl,
     const std::vector<PasswordFormDigest>& forms) {
   if (!password_manager::sync_util::HasChosenToSyncPasswords(sync_service_)) {
-    ReplyWithEmptyList<BackendLoginsResult>(std::move(callback));
+    ReplyWithEmptyList<std::vector<StoredCredential>>(std::move(callback));
     return;
   }
   FillMatchingLoginsInternal(GetSyncingAccount(sync_service_),
@@ -146,7 +144,7 @@ void PasswordStoreAndroidAccountBackend::GetGroupedMatchingLoginsAsync(
     const PasswordFormDigest& form_digest,
     BackendLoginsOrErrorReply callback) {
   if (!password_manager::sync_util::HasChosenToSyncPasswords(sync_service_)) {
-    ReplyWithEmptyList<BackendLoginsResult>(std::move(callback));
+    ReplyWithEmptyList<std::vector<StoredCredential>>(std::move(callback));
     return;
   }
   GetGroupedMatchingLoginsInternal(GetSyncingAccount(sync_service_),

@@ -9,7 +9,6 @@
 #include <string>
 #include <tuple>
 #include <utility>
-#include <variant>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -164,13 +163,14 @@ void PasskeyUpgradeRequestController::ContinuePendingUpgradeRequest() {
 
 void PasskeyUpgradeRequestController::OnGetPasswordStoreResultsOrErrorFrom(
     password_manager::PasswordStoreInterface* store,
-    password_manager::LoginsResultOrError results_or_error) {
-  if (std::holds_alternative<password_manager::PasswordStoreBackendError>(
-          results_or_error)) {
+    base::expected<std::vector<password_manager::StoredCredential>,
+                   password_manager::PasswordStoreBackendError>
+        results_or_error) {
+  if (!results_or_error) {
     FinishRequest(PasskeyUpgradeResult::kPasswordStoreError);
     return;
   }
-  password_manager::LoginsResult result =
+  std::vector<password_manager::StoredCredential> result =
       password_manager::GetLoginsOrEmptyListOnFailure(
           std::move(results_or_error));
   bool upgrade_eligible = false;

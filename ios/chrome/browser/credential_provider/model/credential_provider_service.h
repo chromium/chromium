@@ -5,14 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_CREDENTIAL_PROVIDER_MODEL_CREDENTIAL_PROVIDER_SERVICE_H_
 #define IOS_CHROME_BROWSER_CREDENTIAL_PROVIDER_MODEL_CREDENTIAL_PROVIDER_SERVICE_H_
 
+#include <vector>
+
 #include "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/types/expected.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "components/prefs/pref_member.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
@@ -91,8 +95,11 @@ class CredentialProviderService
 
   // Replaces all data with credentials created from the passed forms and then
   // syncs to disk. Errors are treated as an empty list of credentials.
-  void SyncAllCredentials(password_manager::PasswordStoreInterface* store,
-                          password_manager::LoginsResultOrError forms_or_error);
+  void SyncAllCredentials(
+      password_manager::PasswordStoreInterface* store,
+      base::expected<std::vector<password_manager::StoredCredential>,
+                     password_manager::PasswordStoreBackendError>
+          forms_or_error);
 
   // Helper for completion of `AddCredentials` in `SyncAllCredentials`.
   void CompleteSyncAllCredentials(
@@ -167,14 +174,18 @@ class CredentialProviderService
   // PasswordStoreConsumer:
   void OnGetPasswordStoreResultsOrErrorFrom(
       password_manager::PasswordStoreInterface* store,
-      password_manager::LoginsResultOrError results_or_error) override;
+      base::expected<std::vector<password_manager::StoredCredential>,
+                     password_manager::PasswordStoreBackendError>
+          results_or_error) override;
 
   // Completion called after the affiliations are injected in the added forms.
   // If no affiliation matcher is available, it is called right away. Errors are
   // treated as an empty list of credentials.
   void OnInjectedAffiliationAfterLoginsChanged(
       password_manager::PasswordStoreInterface* store,
-      password_manager::LoginsResultOrError results_or_error);
+      base::expected<std::vector<password_manager::StoredCredential>,
+                     password_manager::PasswordStoreBackendError>
+          results_or_error);
 
   // PasskeyModel::Observer:
   void OnPasskeysChanged(

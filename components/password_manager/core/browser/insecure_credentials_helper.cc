@@ -35,16 +35,17 @@ class InsecureCredentialsHelper : public PasswordStoreConsumer {
   // PasswordStoreConsumer:
   void OnGetPasswordStoreResultsOrErrorFrom(
       PasswordStoreInterface* store,
-      LoginsResultOrError results_or_error) override;
+      base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+          results_or_error) override;
 
   void AddPhishedCredentialsInternal(const MatchingReusedCredential& credential,
-                                     LoginsResult results);
+                                     std::vector<StoredCredential> results);
 
   void RemovePhishedCredentialsInternal(
       const MatchingReusedCredential& credential,
-      LoginsResult results);
+      std::vector<StoredCredential> results);
 
-  base::OnceCallback<void(LoginsResult)> operation_;
+  base::OnceCallback<void(std::vector<StoredCredential>)> operation_;
 
   raw_ptr<PasswordStoreInterface> store_;
 
@@ -79,18 +80,19 @@ void InsecureCredentialsHelper::RemovePhishedCredentials(
 
 void InsecureCredentialsHelper::OnGetPasswordStoreResultsOrErrorFrom(
     PasswordStoreInterface* store,
-    LoginsResultOrError results_or_error) {
-  if (std::holds_alternative<PasswordStoreBackendError>(results_or_error)) {
+    base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+        results_or_error) {
+  if (!results_or_error) {
     std::move(operation_).Run({});
     return;
   }
-  auto results = std::get<LoginsResult>(std::move(results_or_error));
+  std::vector<StoredCredential> results = std::move(*results_or_error);
   std::move(operation_).Run(std::move(results));
 }
 
 void InsecureCredentialsHelper::AddPhishedCredentialsInternal(
     const MatchingReusedCredential& credential,
-    LoginsResult results) {
+    std::vector<StoredCredential> results) {
   for (auto& form : results) {
     if (form.signon_realm == credential.signon_realm &&
         form.username_value == credential.username) {
@@ -108,7 +110,7 @@ void InsecureCredentialsHelper::AddPhishedCredentialsInternal(
 
 void InsecureCredentialsHelper::RemovePhishedCredentialsInternal(
     const MatchingReusedCredential& credential,
-    LoginsResult results) {
+    std::vector<StoredCredential> results) {
   for (auto& form : results) {
     if (form.signon_realm == credential.signon_realm &&
         form.username_value == credential.username) {

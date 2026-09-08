@@ -11,8 +11,11 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "components/password_manager/core/browser/sharing/password_receiver_service.h"
 #include "components/sync/protocol/password_sharing_invitation_specifics.pb.h"
 #include "components/sync/service/sync_service_observer.h"
@@ -46,7 +49,8 @@ class ProcessIncomingSharingInvitationTask : public PasswordStoreConsumer {
   // PasswordStoreConsumer implementation:
   void OnGetPasswordStoreResultsOrErrorFrom(
       PasswordStoreInterface* store,
-      LoginsResultOrError results_or_error) override;
+      base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+          results_or_error) override;
 
   // The incoming credentials that are being processed by this task.
   PasswordForm incoming_credentials_;

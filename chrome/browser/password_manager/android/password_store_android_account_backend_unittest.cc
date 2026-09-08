@@ -13,6 +13,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/protobuf_matchers.h"
@@ -51,6 +52,8 @@ namespace {
 
 using affiliations::FakeAffiliationService;
 using affiliations::MockAffiliationService;
+using base::test::ErrorIs;
+using base::test::ValueIs;
 using testing::_;
 using testing::ElementsAre;
 using testing::ElementsAreArray;
@@ -291,7 +294,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest, CallsBridgeForLogins) {
       .WillOnce(Return(kJobId));
   backend().GetAllLoginsAsync(mock_reply.Get());
 
-  EXPECT_CALL(mock_reply, Run(VariantWith<LoginsResult>(testing::ResultOf(
+  EXPECT_CALL(mock_reply, Run(ValueIs(testing::ResultOf(
                               [](const std::vector<StoredCredential>& creds) {
                                 return ToPasswordForms(creds);
                               },
@@ -344,7 +347,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest, FillMatchingLoginsNoPSL) {
 
   // Retrieving logins for the last form should trigger the final callback.
   EXPECT_CALL(mock_reply,
-              Run(VariantWith<LoginsResult>(testing::ResultOf(
+              Run(ValueIs(testing::ResultOf(
                   [](const std::vector<StoredCredential>& creds) {
                     return ToPasswordForms(creds);
                   },
@@ -404,7 +407,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest, FillMatchingLoginsPSL) {
   // Retrieving logins for the last form should trigger the final callback.
   EXPECT_CALL(
       mock_reply,
-      Run(VariantWith<LoginsResult>(testing::ResultOf(
+      Run(ValueIs(testing::ResultOf(
           [](const std::vector<StoredCredential>& creds) {
             return ToPasswordForms(creds);
           },
@@ -447,7 +450,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
                       "https://accounts.google.com/", kTestDateCreated);
 
   // Retrieving logins for the last form should trigger the final callback.
-  EXPECT_CALL(mock_reply, Run(VariantWith<LoginsResult>(testing::ResultOf(
+  EXPECT_CALL(mock_reply, Run(ValueIs(testing::ResultOf(
                               [](const std::vector<StoredCredential>& creds) {
                                 return ToPasswordForms(creds);
                               },
@@ -468,7 +471,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   EXPECT_CALL(*bridge_helper(), GetAutofillableLogins).WillOnce(Return(kJobId));
   backend().GetAutofillableLoginsAsync(mock_reply.Get());
 
-  EXPECT_CALL(mock_reply, Run(VariantWith<LoginsResult>(testing::ResultOf(
+  EXPECT_CALL(mock_reply, Run(ValueIs(testing::ResultOf(
                               [](const std::vector<StoredCredential>& creds) {
                                 return ToPasswordForms(creds);
                               },
@@ -768,8 +771,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   PasswordStoreBackendError expected_error{
       PasswordStoreBackendErrorType::kUncategorized};
   expected_error.android_backend_api_error = kNetworkErrorCode;
-  EXPECT_CALL(mock_reply,
-              Run(VariantWith<PasswordStoreBackendError>(expected_error)));
+  EXPECT_CALL(mock_reply, Run(ErrorIs(expected_error)));
   consumer().OnError(kJobId, CreateNetworkError());
 
   RunUntilIdle();
@@ -838,7 +840,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   EXPECT_GE(after_retry_time - before_call_time, base::Seconds(1));
 
   // Answering the call with logins.
-  EXPECT_CALL(mock_reply, Run(VariantWith<LoginsResult>(testing::ResultOf(
+  EXPECT_CALL(mock_reply, Run(ValueIs(testing::ResultOf(
                               [](const std::vector<StoredCredential>& creds) {
                                 return ToPasswordForms(creds);
                               },
@@ -896,8 +898,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   sync_service()->FireStateChanged();
   PasswordStoreBackendError expected_error{
       PasswordStoreBackendErrorType::kUncategorized};
-  EXPECT_CALL(mock_reply,
-              Run(VariantWith<PasswordStoreBackendError>(expected_error)));
+  EXPECT_CALL(mock_reply, Run(ErrorIs(expected_error)));
   RunUntilIdle();
 
   // Since the retry was cancelled, nothing should happen after the retry
@@ -1015,8 +1016,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   sync_service()->Shutdown();
   PasswordStoreBackendError expected_error{
       PasswordStoreBackendErrorType::kUncategorized};
-  EXPECT_CALL(mock_reply,
-              Run(VariantWith<PasswordStoreBackendError>(expected_error)));
+  EXPECT_CALL(mock_reply, Run(ErrorIs(expected_error)));
   RunUntilIdle();
 
   // Since the retry was cancelled, nothing should happen after the retry
@@ -1069,8 +1069,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   PasswordStoreBackendError expected_error{
       PasswordStoreBackendErrorType::kAuthErrorUnresolvable};
   expected_error.android_backend_api_error = kUnresolvableAuthErrorCode;
-  EXPECT_CALL(mock_reply,
-              Run(VariantWith<PasswordStoreBackendError>(expected_error)));
+  EXPECT_CALL(mock_reply, Run(ErrorIs(expected_error)));
   AndroidBackendError error{AndroidBackendErrorType::kExternalError};
   // Simulate receiving AUTH_ERROR_UNRESOLVABLE code.
   error.api_error_code = std::optional<int>(kUnresolvableAuthErrorCode);
@@ -1132,8 +1131,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   PasswordStoreBackendError expected_error{
       PasswordStoreBackendErrorType::kUncategorized};
   expected_error.android_backend_api_error = kPassphraseRequiredErrorCode;
-  EXPECT_CALL(mock_reply,
-              Run(VariantWith<PasswordStoreBackendError>(expected_error)));
+  EXPECT_CALL(mock_reply, Run(ErrorIs(expected_error)));
   // Simulate receiving PASSPHRASE_REQUIRED code.
   consumer().OnError(kJobId, {.type = AndroidBackendErrorType::kExternalError,
                               .api_error_code = kPassphraseRequiredErrorCode});
@@ -1281,8 +1279,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   sync_service()->FireStateChanged();
   PasswordStoreBackendError expected_error{
       PasswordStoreBackendErrorType::kUncategorized};
-  EXPECT_CALL(mock_reply,
-              Run(VariantWith<PasswordStoreBackendError>(expected_error)));
+  EXPECT_CALL(mock_reply, Run(ErrorIs(expected_error)));
   RunUntilIdle();
   histogram_tester.ExpectUniqueSample(kSuccessMetric, false, 1);
   histogram_tester.ExpectUniqueSample(
@@ -1311,8 +1308,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   sync_service()->Shutdown();
   PasswordStoreBackendError expected_error{
       PasswordStoreBackendErrorType::kUncategorized};
-  EXPECT_CALL(mock_reply,
-              Run(VariantWith<PasswordStoreBackendError>(expected_error)));
+  EXPECT_CALL(mock_reply, Run(ErrorIs(expected_error)));
   RunUntilIdle();
   histogram_tester.ExpectUniqueSample(kSuccessMetric, false, 1);
   histogram_tester.ExpectUniqueSample(
@@ -1433,7 +1429,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   psl_match.scheme = PasswordForm::Scheme::kDigest;
 
   // Retrieving logins for the last form should trigger the final callback.
-  EXPECT_CALL(mock_reply, Run(VariantWith<LoginsResult>(testing::ResultOf(
+  EXPECT_CALL(mock_reply, Run(ValueIs(testing::ResultOf(
                               [](const std::vector<StoredCredential>& creds) {
                                 return ToPasswordForms(creds);
                               },
@@ -1459,7 +1455,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
       .WillOnce(Return(kJobId));
   backend().GetGroupedMatchingLoginsAsync(form_digest, mock_reply.Get());
 
-  LoginsResult returned_logins;
+  std::vector<StoredCredential> returned_logins;
   returned_logins.push_back(FromPasswordForm(
       CreateEntry("Todd Tester", "S3cr3t", GURL(u"https://example.com/"),
                   PasswordForm::MatchType::kAffiliated)));
@@ -1487,7 +1483,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
       GURL(u"https://example.org/"), PasswordForm::MatchType::kGrouped));
 
   base::HistogramTester histogram_tester;
-  EXPECT_CALL(mock_reply, Run(VariantWith<LoginsResult>(testing::ResultOf(
+  EXPECT_CALL(mock_reply, Run(ValueIs(testing::ResultOf(
                               [](const std::vector<StoredCredential>& creds) {
                                 return ToPasswordForms(creds);
                               },
@@ -1520,7 +1516,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
 
   consumer().OnCompleteWithLogins(kJobId,
                                   FromPasswordForms({android_form, form}));
-  EXPECT_CALL(mock_reply, Run(VariantWith<LoginsResult>(testing::ResultOf(
+  EXPECT_CALL(mock_reply, Run(ValueIs(testing::ResultOf(
                               [](const std::vector<StoredCredential>& creds) {
                                 return ToPasswordForms(creds);
                               },
@@ -1540,7 +1536,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
 
   EXPECT_CALL(*bridge_helper(), GetAllLogins).Times(0);
   backend().GetAllLoginsAsync(mock_reply.Get());
-  EXPECT_CALL(mock_reply, Run(VariantWith<LoginsResult>(IsEmpty())));
+  EXPECT_CALL(mock_reply, Run(ValueIs(IsEmpty())));
   RunUntilIdle();
 }
 
@@ -1557,7 +1553,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   EXPECT_CALL(*bridge_helper(), GetAllLoginsWithBrandingInfo).Times(0);
   backend().GetAllLoginsWithAffiliationAndBrandingAsync(mock_reply.Get());
 
-  EXPECT_CALL(mock_reply, Run(VariantWith<LoginsResult>(IsEmpty())));
+  EXPECT_CALL(mock_reply, Run(ValueIs(IsEmpty())));
   RunUntilIdle();
 }
 
@@ -1574,7 +1570,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   EXPECT_CALL(*bridge_helper(), GetAutofillableLogins).Times(0);
   backend().GetAutofillableLoginsAsync(mock_reply.Get());
 
-  EXPECT_CALL(mock_reply, Run(VariantWith<LoginsResult>(IsEmpty())));
+  EXPECT_CALL(mock_reply, Run(ValueIs(IsEmpty())));
   RunUntilIdle();
 }
 
@@ -1594,7 +1590,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
   backend().FillMatchingLoginsAsync(mock_reply.Get(), /*include_psl=*/false,
                                     forms);
 
-  EXPECT_CALL(mock_reply, Run(VariantWith<LoginsResult>(IsEmpty())));
+  EXPECT_CALL(mock_reply, Run(ValueIs(IsEmpty())));
   RunUntilIdle();
 }
 
@@ -1613,7 +1609,7 @@ TEST_F(PasswordStoreAndroidAccountBackendTest,
       PasswordFormDigest(PasswordForm::Scheme::kHtml, kTestUrl, GURL(kTestUrl)),
       mock_reply.Get());
 
-  EXPECT_CALL(mock_reply, Run(VariantWith<LoginsResult>(IsEmpty())));
+  EXPECT_CALL(mock_reply, Run(ValueIs(IsEmpty())));
   RunUntilIdle();
 }
 
@@ -1736,7 +1732,7 @@ TEST_P(PasswordStoreAndroidAccountBackendAbleToSaveTest, GetAllLogins) {
   PasswordStoreBackendError error(GetBackendErrorType());
   error.android_backend_api_error = GetError().api_error_code;
 
-  EXPECT_CALL(mock_reply, Run(VariantWith<PasswordStoreBackendError>(error)));
+  EXPECT_CALL(mock_reply, Run(ErrorIs(error)));
   if (IsRetriableError()) {
     // Simulate failure on all replies.
     for (int i = 0; i < 6; i++) {
@@ -1772,7 +1768,7 @@ TEST_P(PasswordStoreAndroidAccountBackendAbleToSaveTest,
   PasswordStoreBackendError error(GetBackendErrorType());
   error.android_backend_api_error = GetError().api_error_code;
 
-  EXPECT_CALL(mock_reply, Run(VariantWith<PasswordStoreBackendError>(error)));
+  EXPECT_CALL(mock_reply, Run(ErrorIs(error)));
   if (IsRetriableError()) {
     // Simulate failure on all replies.
     for (int i = 0; i < 6; i++) {
@@ -1807,7 +1803,7 @@ TEST_P(PasswordStoreAndroidAccountBackendAbleToSaveTest,
   PasswordStoreBackendError error(GetBackendErrorType());
   error.android_backend_api_error = GetError().api_error_code;
 
-  EXPECT_CALL(mock_reply, Run(VariantWith<PasswordStoreBackendError>(error)));
+  EXPECT_CALL(mock_reply, Run(ErrorIs(error)));
   consumer().OnError(kJobId, GetError());
   RunUntilIdle();
 
@@ -1832,7 +1828,7 @@ TEST_P(PasswordStoreAndroidAccountBackendAbleToSaveTest,
   PasswordStoreBackendError error(GetBackendErrorType());
   error.android_backend_api_error = GetError().api_error_code;
 
-  EXPECT_CALL(mock_reply, Run(VariantWith<PasswordStoreBackendError>(error)));
+  EXPECT_CALL(mock_reply, Run(ErrorIs(error)));
   consumer().OnError(kJobId, GetError());
   RunUntilIdle();
 
@@ -1855,7 +1851,7 @@ TEST_P(PasswordStoreAndroidAccountBackendAbleToSaveTest,
   PasswordStoreBackendError error(GetBackendErrorType());
   error.android_backend_api_error = GetError().api_error_code;
 
-  EXPECT_CALL(mock_reply, Run(VariantWith<PasswordStoreBackendError>(error)));
+  EXPECT_CALL(mock_reply, Run(ErrorIs(error)));
   consumer().OnError(kJobId, GetError());
   RunUntilIdle();
 

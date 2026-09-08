@@ -106,15 +106,16 @@ void AllPasswordsBottomSheetController::Show() {
 
 void AllPasswordsBottomSheetController::OnGetPasswordStoreResultsOrErrorFrom(
     password_manager::PasswordStoreInterface* store,
-    password_manager::LoginsResultOrError results_or_error) {
+    base::expected<std::vector<password_manager::StoredCredential>,
+                   password_manager::PasswordStoreBackendError>
+        results_or_error) {
   CHECK(on_password_forms_received_barrier_callback_);
-  if (std::holds_alternative<password_manager::PasswordStoreBackendError>(
-          results_or_error)) {
+  if (!results_or_error) {
     on_password_forms_received_barrier_callback_.Run({});
     return;
   }
-  auto results =
-      std::get<password_manager::LoginsResult>(std::move(results_or_error));
+  std::vector<password_manager::StoredCredential> results =
+      std::move(*results_or_error);
   std::erase_if(results, [](const auto& form) { return form.blocked_by_user; });
 
   on_password_forms_received_barrier_callback_.Run(

@@ -59,10 +59,10 @@ class PasswordStoreLoginsUpdateHelper : public PasswordStoreConsumer {
  private:
   void OnGetPasswordStoreResultsOrErrorFrom(
       PasswordStoreInterface* store,
-      LoginsResultOrError results_or_error) override {
-    ASSERT_FALSE(
-        std::holds_alternative<PasswordStoreBackendError>(results_or_error));
-    auto results = std::get<LoginsResult>(std::move(results_or_error));
+      base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+          results_or_error) override {
+    ASSERT_TRUE(results_or_error);
+    std::vector<StoredCredential> results = std::move(*results_or_error);
     EXPECT_EQ(results.size(), expected_logins_num_);
     for (const auto& form : results) {
       EXPECT_EQ(form.skip_zero_click, skip_zero_click_);

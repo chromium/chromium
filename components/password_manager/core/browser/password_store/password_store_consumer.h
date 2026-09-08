@@ -6,11 +6,11 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_PASSWORD_STORE_CONSUMER_H_
 
 #include <memory>
-#include <variant>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/types/expected.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store/stored_credential.h"
@@ -20,10 +20,6 @@ namespace password_manager {
 struct InteractionsStats;
 class PasswordStoreInterface;
 
-using LoginsResult = std::vector<StoredCredential>;
-using LoginsResultOrError =
-    std::variant<LoginsResult, PasswordStoreBackendError>;
-
 // Reads from the PasswordStoreInterface are done asynchronously on a separate
 // thread. PasswordStoreConsumer provides the virtual callback method, which is
 // guaranteed to be executed on this (the UI) thread. It also provides the
@@ -31,7 +27,6 @@ using LoginsResultOrError =
 // tasks upon destruction.
 class PasswordStoreConsumer {
  public:
-  // TODO(crbug.com/40238167): Use base::expected instead of std::variant.
   PasswordStoreConsumer();
 
   // Called when `GetLogins()` request is finished, with a vector of forms or
@@ -40,7 +35,8 @@ class PasswordStoreConsumer {
   // account-scoped password stores.
   virtual void OnGetPasswordStoreResultsOrErrorFrom(
       PasswordStoreInterface* store,
-      LoginsResultOrError results_or_error) = 0;
+      base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+          results_or_error) = 0;
 
   // Called when the GetSiteStats() request is finished, with the associated
   // site statistics.

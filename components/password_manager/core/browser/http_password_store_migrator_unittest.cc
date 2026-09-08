@@ -9,6 +9,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
+#include "base/types/expected.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
@@ -161,7 +162,9 @@ void HttpPasswordStoreMigratorTest::TestEmptyStore(bool is_hsts) {
                                      &consumer());
 
   EXPECT_CALL(consumer(), ProcessMigratedForms(IsEmpty()));
-  migrator.OnGetPasswordStoreResultsOrErrorFrom(nullptr, LoginsResultOrError());
+  migrator.OnGetPasswordStoreResultsOrErrorFrom(
+      nullptr, base::expected<std::vector<StoredCredential>,
+                              PasswordStoreBackendError>());
 }
 
 void HttpPasswordStoreMigratorTest::TestFullStore(bool is_hsts) {
@@ -237,8 +240,9 @@ void HttpPasswordStoreMigratorTest::TestMigratorDeletionByConsumer(
   EXPECT_CALL(consumer(), ProcessMigratedForms(_))
       .WillOnce([&migrator](Unused) { migrator.reset(); });
 
-  migrator->OnGetPasswordStoreResultsOrErrorFrom(nullptr,
-                                                 LoginsResultOrError());
+  migrator->OnGetPasswordStoreResultsOrErrorFrom(
+      nullptr, base::expected<std::vector<StoredCredential>,
+                              PasswordStoreBackendError>());
 }
 
 void HttpPasswordStoreMigratorTest::TestMigratorReceivesBackendError(
@@ -263,9 +267,9 @@ void HttpPasswordStoreMigratorTest::TestMigratorReceivesBackendError(
                                      &consumer());
 
   EXPECT_CALL(consumer(), ProcessMigratedForms(IsEmpty()));
-  PasswordStoreBackendError error_results = PasswordStoreBackendError(
-      PasswordStoreBackendErrorType::kAuthErrorResolvable);
-  migrator.OnGetPasswordStoreResultsOrErrorFrom(nullptr, error_results);
+  migrator.OnGetPasswordStoreResultsOrErrorFrom(
+      nullptr, base::unexpected(PasswordStoreBackendError(
+                   PasswordStoreBackendErrorType::kAuthErrorResolvable)));
 }
 
 TEST_F(HttpPasswordStoreMigratorTest, EmptyStoreWithHSTS) {

@@ -144,15 +144,16 @@ void RemoteActorCredentialSharingImpl::RequestAgentAuthentication(
 
 void RemoteActorCredentialSharingImpl::OnGetPasswordStoreResultsOrErrorFrom(
     PasswordStoreInterface* store,
-    LoginsResultOrError results_or_error) {
+    base::expected<std::vector<StoredCredential>, PasswordStoreBackendError>
+        results_or_error) {
   if (!pending_request_) {
     return;
   }
 
   pending_request_->received_callbacks++;
 
-  if (std::holds_alternative<LoginsResult>(results_or_error)) {
-    auto logins = std::get<LoginsResult>(std::move(results_or_error));
+  if (results_or_error) {
+    std::vector<StoredCredential> logins = std::move(*results_or_error);
 
     auto* profile =
         Profile::FromBrowserContext(render_frame_host().GetBrowserContext());
