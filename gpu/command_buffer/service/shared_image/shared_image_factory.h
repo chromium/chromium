@@ -114,8 +114,7 @@ class GPU_GLES2_EXPORT SharedImageFactory {
       const SharedImageInfo& si_info,
       gfx::GpuMemoryBufferHandle buffer_handle,
       std::optional<SharedImagePoolId> pool_id = std::nullopt);
-  bool UpdateSharedImage(const Mailbox& mailbox,
-                         std::unique_ptr<gfx::GpuFence> in_fence);
+  bool UpdateSharedImage(const Mailbox& mailbox, gfx::GpuFenceHandle in_fence);
   bool DestroySharedImage(const Mailbox& mailbox);
   void SetSharedImagePurgeable(const Mailbox& mailbox, bool purgeable);
   bool HasImages() const { return !shared_images_.empty(); }

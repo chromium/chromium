@@ -326,7 +326,7 @@ class AHardwareBufferImageBacking : public AndroidImageBacking {
 
   // SharedImageBacking implementation.
   SharedImageBackingType GetType() const override;
-  void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
+  void Update(gfx::GpuFenceHandle in_fence) override;
   gfx::Rect ClearedRect() const override;
   void SetClearedRect(const gfx::Rect& cleared_rect) override;
   base::android::ScopedHardwareBufferHandle GetAhbHandle() const;
@@ -560,11 +560,9 @@ void AHardwareBufferImageBacking::SetClearedRect(
   SetClearedRectInternal(cleared_rect);
 }
 
-void AHardwareBufferImageBacking::Update(
-    std::unique_ptr<gfx::GpuFence> in_fence) {
-  if (in_fence) {
-    gfx::GpuFenceHandle handle = in_fence->GetGpuFenceHandle().Clone();
-    write_sync_fd_ = handle.Release();
+void AHardwareBufferImageBacking::Update(gfx::GpuFenceHandle in_fence) {
+  if (!in_fence.is_null()) {
+    write_sync_fd_ = in_fence.Release();
   }
 }
 

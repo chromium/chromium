@@ -717,7 +717,7 @@ SharedImageBackingType D3DImageBacking::GetType() const {
   return SharedImageBackingType::kD3D;
 }
 
-void D3DImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
+void D3DImageBacking::Update(gfx::GpuFenceHandle in_fence) {
   // Do nothing since D3DImageBackings are only ever backed by DXGI GMB handles,
   // which are synonymous with D3D textures, and no explicit update is needed.
 }

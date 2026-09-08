@@ -241,8 +241,8 @@ SharedImageBackingType DCompSurfaceImageBacking::GetType() const {
   return SharedImageBackingType::kDCompSurface;
 }
 
-void DCompSurfaceImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
-  DCHECK(!in_fence);
+void DCompSurfaceImageBacking::Update(gfx::GpuFenceHandle in_fence) {
+  DCHECK(in_fence.is_null());
 }
 
 std::unique_ptr<OverlayImageRepresentation>

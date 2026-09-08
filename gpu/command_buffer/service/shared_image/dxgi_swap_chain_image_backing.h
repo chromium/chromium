@@ -51,7 +51,7 @@ class GPU_GLES2_EXPORT DXGISwapChainImageBacking
 
   // SharedImageBacking implementation.
   SharedImageBackingType GetType() const override;
-  void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
+  void Update(gfx::GpuFenceHandle in_fence) override;
 
  protected:
   std::unique_ptr<OverlayImageRepresentation> ProduceOverlay(

@@ -55,7 +55,7 @@ class GPU_GLES2_EXPORT OzoneImageBacking final
 
   // gpu::SharedImageBacking:
   SharedImageBackingType GetType() const override;
-  void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
+  void Update(gfx::GpuFenceHandle in_fence) override;
   bool UploadFromMemory(const std::vector<SkPixmap>& pixmaps) override;
   bool ReadbackToMemory(const std::vector<SkPixmap>& pixmaps) override;
   scoped_refptr<gfx::NativePixmap> GetNativePixmap() override;

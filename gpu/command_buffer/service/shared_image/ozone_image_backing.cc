@@ -116,9 +116,9 @@ SharedImageBackingType OzoneImageBacking::GetType() const {
   return SharedImageBackingType::kOzone;
 }
 
-void OzoneImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
-  if (in_fence) {
-    external_write_fence_ = in_fence->GetGpuFenceHandle().Clone();
+void OzoneImageBacking::Update(gfx::GpuFenceHandle in_fence) {
+  if (!in_fence.is_null()) {
+    external_write_fence_ = std::move(in_fence);
   }
 }
 

@@ -232,7 +232,7 @@ SharedImageBackingType EGLImageBacking::GetType() const {
   return SharedImageBackingType::kEGLImage;
 }
 
-void EGLImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
+void EGLImageBacking::Update(gfx::GpuFenceHandle in_fence) {
   NOTREACHED();
 }
 

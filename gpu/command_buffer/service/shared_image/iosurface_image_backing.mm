@@ -1520,7 +1520,7 @@ bool IOSurfaceImageBacking::IsPurgeable() const {
   return purgeable_;
 }
 
-void IOSurfaceImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
+void IOSurfaceImageBacking::Update(gfx::GpuFenceHandle in_fence) {
   AutoLock auto_lock(this);
 #if BUILDFLAG(IS_IOS)
   {

@@ -114,7 +114,7 @@ std::unique_ptr<DawnImageRepresentation> DawnImageBacking::ProduceDawn(
                                                        device, texture_);
 }
 
-void DawnImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {}
+void DawnImageBacking::Update(gfx::GpuFenceHandle in_fence) {}
 
 void DawnImageBacking::InitializeForTesting(const wgpu::Device& device) {
   wgpu::TextureDescriptor descriptor;

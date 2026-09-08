@@ -123,7 +123,7 @@ void SharedImageBacking::CopyToGpuMemoryBufferAsync(
   std::move(callback).Run(CopyToGpuMemoryBuffer());
 }
 
-void SharedImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {}
+void SharedImageBacking::Update(gfx::GpuFenceHandle in_fence) {}
 
 bool SharedImageBacking::UploadFromMemory(
     const std::vector<SkPixmap>& pixmaps) {

@@ -41,7 +41,7 @@ class GPU_GLES2_EXPORT DCompSurfaceImageBacking
 
   // SharedImageBacking implementation.
   SharedImageBackingType GetType() const override;
-  void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
+  void Update(gfx::GpuFenceHandle in_fence) override;
 
  protected:
   // Produce a lightweight wrapper that can retrieve the |dcomp_surface_| from

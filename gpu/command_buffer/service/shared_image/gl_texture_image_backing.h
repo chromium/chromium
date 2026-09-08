@@ -69,7 +69,7 @@ class GLTextureImageBacking : public ClearTrackingSharedImageBacking {
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       VideoDevice device) override;
-  void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
+  void Update(gfx::GpuFenceHandle in_fence) override;
   bool UploadFromMemory(const std::vector<SkPixmap>& pixmaps) override;
   bool ReadbackToMemory(const std::vector<SkPixmap>& pixmaps) override;
 

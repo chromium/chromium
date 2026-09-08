@@ -381,8 +381,8 @@ bool AngleVulkanImageBacking::UploadFromMemory(
   return updated;
 }
 
-void AngleVulkanImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
-  DCHECK(!in_fence);
+void AngleVulkanImageBacking::Update(gfx::GpuFenceHandle in_fence) {
+  DCHECK(in_fence.is_null());
 }
 
 std::unique_ptr<GLTexturePassthroughImageRepresentation>

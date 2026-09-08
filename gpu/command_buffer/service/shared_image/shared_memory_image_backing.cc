@@ -101,8 +101,8 @@ std::vector<SkPixmap> GetSkPixmaps(viz::SharedImageFormat format,
 
 SharedMemoryImageBacking::~SharedMemoryImageBacking() = default;
 
-void SharedMemoryImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
-  CHECK(!in_fence);
+void SharedMemoryImageBacking::Update(gfx::GpuFenceHandle in_fence) {
+  CHECK(in_fence.is_null());
 }
 
 SharedImageBackingType SharedMemoryImageBacking::GetType() const {

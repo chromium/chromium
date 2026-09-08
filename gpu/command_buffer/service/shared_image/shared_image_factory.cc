@@ -678,9 +678,8 @@ bool SharedImageFactory::CreateSharedImage(
   return RegisterBacking(std::move(backing), std::move(pool_id));
 }
 
-bool SharedImageFactory::UpdateSharedImage(
-    const Mailbox& mailbox,
-    std::unique_ptr<gfx::GpuFence> in_fence) {
+bool SharedImageFactory::UpdateSharedImage(const Mailbox& mailbox,
+                                           gfx::GpuFenceHandle in_fence) {
   return shared_image_manager_->UpdateSharedImage(mailbox, std::move(in_fence));
 }
 

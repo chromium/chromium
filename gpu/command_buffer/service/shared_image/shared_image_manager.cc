@@ -560,9 +560,8 @@ void SharedImageManager::OnRepresentationDestroyed(
   }
 }
 
-bool SharedImageManager::UpdateSharedImage(
-    const Mailbox& mailbox,
-    std::unique_ptr<gfx::GpuFence> in_fence) {
+bool SharedImageManager::UpdateSharedImage(const Mailbox& mailbox,
+                                           gfx::GpuFenceHandle in_fence) {
   AutoLock autolock(this);
   auto* backing = GetBacking(mailbox);
   if (!backing) {

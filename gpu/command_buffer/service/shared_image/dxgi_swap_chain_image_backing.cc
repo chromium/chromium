@@ -162,9 +162,8 @@ SharedImageBackingType DXGISwapChainImageBacking::GetType() const {
   return SharedImageBackingType::kDXGISwapChain;
 }
 
-void DXGISwapChainImageBacking::Update(
-    std::unique_ptr<gfx::GpuFence> in_fence) {
-  DCHECK(!in_fence);
+void DXGISwapChainImageBacking::Update(gfx::GpuFenceHandle in_fence) {
+  DCHECK(in_fence.is_null());
 }
 
 bool DXGISwapChainImageBacking::DidBeginWriteAccess(

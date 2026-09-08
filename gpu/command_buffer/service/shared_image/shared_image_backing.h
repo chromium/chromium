@@ -31,6 +31,7 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 #include "ui/gfx/native_pixmap.h"
 
@@ -53,7 +54,6 @@ class ProcessMemoryDump;
 
 namespace gfx {
 class D3DSharedFence;
-class GpuFence;
 }  // namespace gfx
 
 namespace gpu {
@@ -199,7 +199,7 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   virtual void SetPurgeable(bool purgeable) {}
   virtual bool IsPurgeable() const;
 
-  virtual void Update(std::unique_ptr<gfx::GpuFence> in_fence);
+  virtual void Update(gfx::GpuFenceHandle in_fence);
 
   // Uploads pixels from memory into GPU texture. `pixmaps` should have one
   // pixmap per plane. Backings must implement this if they support

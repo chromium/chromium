@@ -42,7 +42,7 @@ class TestImageBacking : public SharedImageBacking {
   gfx::Rect ClearedRect() const override;
   void SetClearedRect(const gfx::Rect& cleared_rect) override;
   void SetPurgeable(bool purgeable) override;
-  void Update(std::unique_ptr<gfx::GpuFence> in_fence) override {}
+  void Update(gfx::GpuFenceHandle in_fence) override {}
   bool UploadFromMemory(const std::vector<SkPixmap>& pixmap) override;
   bool ReadbackToMemory(const std::vector<SkPixmap>& pixmaps) override;
 

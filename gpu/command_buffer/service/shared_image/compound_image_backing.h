@@ -219,7 +219,7 @@ class GPU_GLES2_EXPORT CompoundImageBacking
   void SetPurgeable(bool purgeable) override;
   bool IsPurgeable() const override;
   SharedImageBackingType GetType() const override;
-  void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
+  void Update(gfx::GpuFenceHandle in_fence) override;
   bool CopyToGpuMemoryBuffer() override;
   void CopyToGpuMemoryBufferAsync(
       base::OnceCallback<void(bool)> callback) override;

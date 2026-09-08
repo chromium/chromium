@@ -141,8 +141,8 @@ gfx::Rect AndroidVideoImageBacking::ClearedRect() const {
 
 void AndroidVideoImageBacking::SetClearedRect(const gfx::Rect& cleared_rect) {}
 
-void AndroidVideoImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
-  DCHECK(!in_fence);
+void AndroidVideoImageBacking::Update(gfx::GpuFenceHandle in_fence) {
+  DCHECK(in_fence.is_null());
 }
 
 size_t AndroidVideoImageBacking::GetEstimatedSizeForMemoryDump() const {

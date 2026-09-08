@@ -1438,7 +1438,7 @@ SharedImageBackingType CompoundImageBacking::GetType() const {
   return SharedImageBackingType::kCompound;
 }
 
-void CompoundImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
+void CompoundImageBacking::Update(gfx::GpuFenceHandle in_fence) {
   // Update() synchronizes CPU-side writes (from Shared Memory or GMB) with the
   // GPU. Hence it must target the backing which owns the CPU-mappable memory.
   //

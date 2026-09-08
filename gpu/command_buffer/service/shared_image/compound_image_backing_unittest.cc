@@ -310,7 +310,7 @@ TEST_F(CompoundImageBackingTest, UploadOnAccess) {
 
     // Notify compound backing of shared memory update. Next access should
     // trigger a new upload.
-    compound_backing->Update(nullptr);
+    compound_backing->Update(gfx::GpuFenceHandle());
     overlay_rep->BeginScopedReadAccess();
     EXPECT_TRUE(gpu_backing->GetUploadFromMemoryCalledAndReset());
   } else {
@@ -330,7 +330,7 @@ TEST_F(CompoundImageBackingTest, UploadOnAccess) {
   // Test that GLTexturePassthrough access causes upload.
   auto gl_passthrough_rep = manager_.ProduceGLTexturePassthrough(
       compound_backing->mailbox(), &memory_type_tracker_);
-  compound_backing->Update(nullptr);
+  compound_backing->Update(gfx::GpuFenceHandle());
   gl_passthrough_rep->BeginScopedAccess(
       0, SharedImageRepresentation::AllowUnclearedAccess::kNo);
   ASSERT_TRUE(HasGpuBacking(compound_backing));
@@ -340,7 +340,7 @@ TEST_F(CompoundImageBackingTest, UploadOnAccess) {
   // Test that GLTexture access causes upload.
   auto gl_rep = manager_.ProduceGLTexture(compound_backing->mailbox(),
                                           &memory_type_tracker_);
-  compound_backing->Update(nullptr);
+  compound_backing->Update(gfx::GpuFenceHandle());
   gl_rep->BeginScopedAccess(
       0, SharedImageRepresentation::AllowUnclearedAccess::kNo);
   EXPECT_TRUE(gpu_backing->GetUploadFromMemoryCalledAndReset());
@@ -352,7 +352,7 @@ TEST_F(CompoundImageBackingTest, UploadOnAccess) {
       manager_.ProduceSkia(compound_backing->mailbox(), &memory_type_tracker_,
                            nullptr, /*required_usages=*/{});
 
-  compound_backing->Update(nullptr);
+  compound_backing->Update(gfx::GpuFenceHandle());
 
   // After Update() only shared memory should have latest content.
   EXPECT_TRUE(GetShmHasLatestContent(compound_backing));
@@ -367,7 +367,7 @@ TEST_F(CompoundImageBackingTest, UploadOnAccess) {
   EXPECT_FALSE(GetShmHasLatestContent(compound_backing));
   EXPECT_TRUE(GetGpuHasLatestContent(compound_backing));
 
-  compound_backing->Update(nullptr);
+  compound_backing->Update(gfx::GpuFenceHandle());
   skia_rep->BeginScopedReadAccess(&begin_semaphores, &end_semaphores);
   EXPECT_TRUE(gpu_backing->GetUploadFromMemoryCalledAndReset());
 }
@@ -390,11 +390,11 @@ TEST_F(CompoundImageBackingTest, UploadOnFirstAccessAfterManyUpdates) {
 
   // A further update should keep the shared memory element as the sole holder
   // of the latest content and never mark the untouched GPU element as current.
-  compound_backing->Update(nullptr);
+  compound_backing->Update(gfx::GpuFenceHandle());
   EXPECT_TRUE(GetShmHasLatestContent(compound_backing));
   EXPECT_FALSE(GetGpuHasLatestContent(compound_backing));
 
-  compound_backing->Update(nullptr);
+  compound_backing->Update(gfx::GpuFenceHandle());
   EXPECT_TRUE(GetShmHasLatestContent(compound_backing));
   EXPECT_FALSE(GetGpuHasLatestContent(compound_backing));
 
@@ -424,7 +424,7 @@ TEST_F(CompoundImageBackingTest, ReadbackToMemory) {
 
   auto gl_passthrough_rep = manager_.ProduceGLTexturePassthrough(
       compound_backing->mailbox(), &memory_type_tracker_);
-  compound_backing->Update(nullptr);
+  compound_backing->Update(gfx::GpuFenceHandle());
   gl_passthrough_rep->BeginScopedAccess(
       0, SharedImageRepresentation::AllowUnclearedAccess::kNo);
 
@@ -560,7 +560,7 @@ TEST_F(CompoundImageBackingTest, AccessFailsWhenLatestContentUnavailable) {
 
   // After the shared memory element is marked as the latest via Update(),
   // access should succeed again.
-  compound_backing->Update(nullptr);
+  compound_backing->Update(gfx::GpuFenceHandle());
   EXPECT_TRUE(GetShmHasLatestContent(compound_backing));
   {
     auto gl_access = gl_rep->BeginScopedAccess(

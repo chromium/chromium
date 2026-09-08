@@ -130,7 +130,7 @@ SharedImageBackingType RawDrawImageBacking::GetType() const {
   return SharedImageBackingType::kRawDraw;
 }
 
-void RawDrawImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
+void RawDrawImageBacking::Update(gfx::GpuFenceHandle in_fence) {
   NOTIMPLEMENTED();
 }
 

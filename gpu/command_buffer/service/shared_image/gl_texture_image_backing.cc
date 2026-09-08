@@ -337,7 +337,7 @@ void GLTextureImageBacking::SetClearedRect(const gfx::Rect& cleared_rect) {
   ClearTrackingSharedImageBacking::SetClearedRect(cleared_rect);
 }
 
-void GLTextureImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {}
+void GLTextureImageBacking::Update(gfx::GpuFenceHandle in_fence) {}
 
 bool GLTextureImageBacking::UploadFromMemory(
     const std::vector<SkPixmap>& pixmaps) {
