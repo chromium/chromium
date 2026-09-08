@@ -276,7 +276,7 @@ if (use_thin_lto && is_debug) {
         " (is_debug=true) build.")
 }
 
-compiler_logs = []
+compiler_logs = [ "symbol_level=$symbol_level" ]
 
 if (use_thin_lto) {
   compiler_logs += [ "use_thin_lto=true" ]
