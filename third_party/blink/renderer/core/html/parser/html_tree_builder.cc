@@ -1857,19 +1857,7 @@ void HTMLTreeBuilder::CallTheAdoptionAgency(AtomicHTMLToken* token) {
         // 4.13.4
         if (inner_loop_counter > kInnerIterationLimit &&
             node_in_active_formatting_elements) {
-          DCHECK(bookmark.Mark());
-          // Cache the bookmark's element to regenerate it after the removal.
-          Element* bookmark_element = bookmark.Mark()->GetElement();
-          bool has_been_moved = bookmark.HasBeenMoved();
           tree_.ActiveFormattingElements()->Remove(node->GetElement());
-          bookmark =
-              tree_.ActiveFormattingElements()->BookmarkFor(bookmark_element);
-          if (has_been_moved) {
-            // BookmarkFor creates a 'before' bookmark; if the original was
-            // moved, we must explicitly convert it back to an 'after' bookmark
-            // relative to its current mark.
-            bookmark.MoveToAfter(bookmark.Mark());
-          }
           // Set to false so the subsequent step (4.13.5) removes the node from
           // the stack of open elements and continues the inner loop.
           node_in_active_formatting_elements = false;
@@ -1890,7 +1878,7 @@ void HTMLTreeBuilder::CallTheAdoptionAgency(AtomicHTMLToken* token) {
 
         // 4.13.7
         if (last_node == furthest_block) {
-          bookmark.MoveToAfter(node_entry);
+          bookmark.MoveToAfter(node->GetElement());
         }
         // 4.13.8
         Sanitizer::Action action =
@@ -1944,7 +1932,7 @@ void HTMLTreeBuilder::CallTheAdoptionAgency(AtomicHTMLToken* token) {
 
         // 9.8
         if (last_node == furthest_block) {
-          bookmark.MoveToAfter(node_entry);
+          bookmark.MoveToAfter(node->GetElement());
         }
         // 9.9
         Sanitizer::Action action =
@@ -1973,6 +1961,10 @@ void HTMLTreeBuilder::CallTheAdoptionAgency(AtomicHTMLToken* token) {
     // 4.14
     if (last_node) {
       tree_.InsertAlreadyParsedChild(common_ancestor, last_node);
+    }
+    if (!tree_.OpenElements()->Contains(formatting_element) ||
+        !tree_.OpenElements()->Contains(furthest_block->GetElement())) {
+      return;
     }
     // 4.15
     HTMLStackItem* new_item =

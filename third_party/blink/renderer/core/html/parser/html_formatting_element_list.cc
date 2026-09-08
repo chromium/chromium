@@ -67,24 +67,26 @@ HTMLFormattingElementList::Entry* HTMLFormattingElementList::Find(
 
 HTMLFormattingElementList::Bookmark HTMLFormattingElementList::BookmarkFor(
     Element* element) {
-  wtf_size_t index = entries_.ReverseFind(element);
-  DCHECK_NE(index, kNotFound);
-  return Bookmark(&at(index));
+  DCHECK(Contains(element));
+  return Bookmark(element);
 }
 
 void HTMLFormattingElementList::SwapTo(Element* old_element,
                                        HTMLStackItem* new_item,
                                        const Bookmark& bookmark) {
-  DCHECK(Contains(old_element));
   DCHECK(!Contains(new_item->GetElement()));
   if (!bookmark.HasBeenMoved()) {
-    DCHECK(bookmark.Mark()->GetElement() == old_element);
-    bookmark.Mark()->ReplaceElement(new_item);
+    wtf_size_t index = entries_.ReverseFind(old_element);
+    if (index == kNotFound) {
+      return;
+    }
+    entries_[index].ReplaceElement(new_item);
     return;
   }
-  size_t index = bookmark.Mark() - First();
-  SECURITY_DCHECK(index < size());
-  entries_.insert(static_cast<wtf_size_t>(index + 1), new_item);
+  wtf_size_t mark_index = entries_.ReverseFind(bookmark.Mark());
+  if (mark_index != kNotFound) {
+    entries_.insert(mark_index + 1, new_item);
+  }
   Remove(old_element);
 }
 

@@ -83,19 +83,19 @@ class HTMLFormattingElementList {
     STACK_ALLOCATED();
 
    public:
-    explicit Bookmark(Entry* entry) : has_been_moved_(false), mark_(entry) {}
+    explicit Bookmark(Element* element) : mark_(element) {}
 
-    void MoveToAfter(Entry* before) {
+    void MoveToAfter(Element* before) {
       has_been_moved_ = true;
       mark_ = before;
     }
 
     bool HasBeenMoved() const { return has_been_moved_; }
-    Entry* Mark() const { return mark_; }
+    Element* Mark() const { return mark_; }
 
    private:
-    bool has_been_moved_;
-    Entry* mark_;
+    bool has_been_moved_ = false;
+    Element* mark_ = nullptr;
   };
 
   bool IsEmpty() const { return !size(); }
@@ -125,8 +125,6 @@ class HTMLFormattingElementList {
 #endif
 
  private:
-  Entry* First() { return &at(0); }
-
   // http://www.whatwg.org/specs/web-apps/current-work/multipage/parsing.html#list-of-active-formatting-elements
   // These functions enforce the "Noah's Ark" condition, which removes redundant
   // mis-nested elements.
