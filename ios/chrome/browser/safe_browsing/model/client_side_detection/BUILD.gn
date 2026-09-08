@@ -47,6 +47,7 @@ source_set("client_side_detection") {
     "//components/safe_browsing/ios/browser/web_ui",
     "//components/security_interstitials/core:unsafe_resource",
     "//components/signin/public/identity_manager",
+    "//ios/chrome/browser/intelligence/proto_wrappers",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/safe_browsing/model:user_population_helper",
     "//ios/chrome/browser/shared/model/application_context",
@@ -80,6 +81,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/history/core/browser",
     "//components/optimization_guide/core:prediction",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs:test_support",
     "//components/safe_browsing/core/browser",
     "//components/safe_browsing/core/browser:intelligent_scan_delegate",
@@ -96,6 +98,7 @@ source_set("unit_tests") {
     "//components/safe_browsing/ios/browser:client_side_detection_images_cache",
     "//components/safe_browsing/ios/browser/web_ui",
     "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/intelligence/proto_wrappers",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/safe_browsing/model",
     "//ios/chrome/browser/safe_browsing/model:verdict_cache_manager_factory",
@@ -116,6 +119,7 @@ source_set("unit_tests") {
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/ocmock",
     "//url",
   ]
 }

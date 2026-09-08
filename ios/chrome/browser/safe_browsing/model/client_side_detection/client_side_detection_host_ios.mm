@@ -33,6 +33,7 @@
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #import "components/security_interstitials/core/unsafe_resource.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/safe_browsing/model/client_side_detection/client_side_detection_service.h"
 #import "ios/chrome/browser/safe_browsing/model/user_population_helper.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -211,8 +212,36 @@ bool ClientSideDetectionHostIOS::IsErrorDocument() {
 }
 
 void ClientSideDetectionHostIOS::GetInnerText(HostInnerTextCallback callback) {
-  // TODO(crbug.com/502615476): Implement inner text extraction on iOS.
-  std::move(callback).Run("");
+  if (!web_state_) {
+    std::move(callback).Run("");
+    return;
+  }
+
+  if (pending_inner_text_callback_) {
+    inner_text_weak_factory_.InvalidateWeakPtrs();
+    std::move(pending_inner_text_callback_).Run("");
+  }
+  pending_inner_text_callback_ = std::move(callback);
+
+  auto completion_callback = base::BindOnce(
+      [](base::WeakPtr<ClientSideDetectionHostIOS> weak_host,
+         PageContextWrapperCallbackResponse response) {
+        if (!weak_host) {
+          return;
+        }
+        std::string inner_text;
+        if (response.has_value() && response.value() &&
+            response.value()->has_inner_text()) {
+          inner_text = std::move(*response.value()->mutable_inner_text());
+        }
+        weak_host->OnInnerTextExtracted(std::move(inner_text));
+      },
+      inner_text_weak_factory_.GetWeakPtr());
+  page_context_wrapper_ = [[PageContextWrapper alloc]
+        initWithWebState:web_state_
+      completionCallback:std::move(completion_callback)];
+  [page_context_wrapper_ setShouldGetInnerText:YES];
+  [page_context_wrapper_ populatePageContextFieldsAsync];
 }
 
 void ClientSideDetectionHostIOS::ClassifyPhishingThroughThresholds(
@@ -346,6 +375,9 @@ void ClientSideDetectionHostIOS::CancelPendingRequests() {
   set_is_classifying(false);
   set_is_csd_running(false);
   classification_image_ = gfx::Image();
+  inner_text_weak_factory_.InvalidateWeakPtrs();
+  pending_inner_text_callback_.Reset();
+  page_context_wrapper_ = nil;
   ClientSideDetectionHostBase::CancelPendingRequests();
 }
 
@@ -1112,4 +1144,13 @@ void ClientSideDetectionHostIOS::OnImageEmbeddingDone(
       translated_result, std::move(embedding), std::move(visual));
 }
 
+void ClientSideDetectionHostIOS::OnInnerTextExtracted(std::string inner_text) {
+  page_context_wrapper_ = nil;
+
+  if (!pending_inner_text_callback_) {
+    return;
+  }
+
+  std::move(pending_inner_text_callback_).Run(std::move(inner_text));
+}
 }  // namespace safe_browsing

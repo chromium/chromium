@@ -6,6 +6,9 @@
 
 #import <UIKit/UIKit.h>
 
+#import <string>
+
+#import "base/command_line.h"
 #import "base/containers/span.h"
 #import "base/strings/strcat.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -16,6 +19,7 @@
 #import "base/values.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
+#import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/safe_browsing/core/browser/db/test_database_manager.h"
 #import "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
 #import "components/safe_browsing/core/browser/verdict_cache_manager.h"
@@ -30,6 +34,7 @@
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/safe_browsing/model/client_side_detection/client_side_detection_service.h"
 #import "ios/chrome/browser/safe_browsing/model/client_side_detection/client_side_detection_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/verdict_cache_manager_factory.h"
@@ -56,6 +61,65 @@
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
+
+// Fake `PageContextWrapper` for testing inner text extraction in
+// `ClientSideDetectionHostIOS`.
+@interface FakeClientSideDetectionPageContextWrapper : PageContextWrapper
+
+@property(nonatomic, readonly) BOOL populateCalled;
+
+- (void)respondWithInnerText:(const std::string&)innerText;
+- (void)respondWithError:(PageContextWrapperError)error;
+- (void)respondWithEmptyProto;
+
+@end
+
+@implementation FakeClientSideDetectionPageContextWrapper {
+  base::OnceCallback<void(PageContextWrapperCallbackResponse)> _callback;
+}
+
+- (instancetype)initWithWebState:(web::WebState*)webState
+              completionCallback:
+                  (base::OnceCallback<void(PageContextWrapperCallbackResponse)>)
+                      completionCallback {
+  self = [super initWithWebState:webState completionCallback:base::DoNothing()];
+  if (self) {
+    _callback = std::move(completionCallback);
+    _populateCalled = NO;
+  }
+  return self;
+}
+
+- (void)populatePageContextFieldsAsync {
+  _populateCalled = YES;
+}
+
+- (void)respondWithInnerText:(const std::string&)innerText {
+  if (_callback) {
+    auto page_context =
+        std::make_unique<optimization_guide::proto::PageContext>();
+    page_context->set_inner_text(innerText);
+    std::move(_callback).Run(base::ok(std::move(page_context)));
+  }
+}
+
+- (void)respondWithError:(PageContextWrapperError)error {
+  if (_callback) {
+    std::move(_callback).Run(base::unexpected(error));
+  }
+}
+
+- (void)respondWithEmptyProto {
+  if (_callback) {
+    auto page_context =
+        std::make_unique<optimization_guide::proto::PageContext>();
+    std::move(_callback).Run(base::ok(std::move(page_context)));
+  }
+}
+
+@end
 
 namespace safe_browsing {
 namespace {
@@ -71,6 +135,7 @@ constexpr char kLoopbackIpUrl[] = "http://127.0.0.1";
 constexpr char kPrivateIpStr[] = "192.168.1.1";
 constexpr char kPrivateIpUrl[] = "http://192.168.1.1";
 constexpr char kLocalhostUrl[] = "http://localhost";
+constexpr char kTestInnerText[] = "Test page inner text content";
 
 class MockIntelligentScanDelegate
     : public safe_browsing::IntelligentScanDelegate {
@@ -240,8 +305,24 @@ class ClientSideDetectionHostIOSTest : public PlatformTest {
   }
 
   void TearDown() override {
+    if (mock_page_context_wrapper_class_) {
+      [mock_page_context_wrapper_class_ stopMocking];
+      mock_page_context_wrapper_class_ = nil;
+    }
     mock_service_.SetScorerForTesting(nullptr);
     PlatformTest::TearDown();
+  }
+
+  FakeClientSideDetectionPageContextWrapper* CreateAndStubPageContextWrapper() {
+    if (mock_page_context_wrapper_class_) {
+      [mock_page_context_wrapper_class_ stopMocking];
+      mock_page_context_wrapper_class_ = nil;
+    }
+    mock_page_context_wrapper_class_ = OCMClassMock([PageContextWrapper class]);
+    FakeClientSideDetectionPageContextWrapper* fake_wrapper =
+        [FakeClientSideDetectionPageContextWrapper alloc];
+    OCMStub([mock_page_context_wrapper_class_ alloc]).andReturn(fake_wrapper);
+    return fake_wrapper;
   }
 
   std::unique_ptr<ClientSideDetectionHostIOS> CreateHost() {
@@ -350,6 +431,10 @@ class ClientSideDetectionHostIOSTest : public PlatformTest {
 
   base::TimeTicks image_embedding_start_time(ClientSideDetectionHostIOS* host) {
     return host->image_embedding_start_time();
+  }
+
+  PageContextWrapper* page_context_wrapper(ClientSideDetectionHostIOS* host) {
+    return host->page_context_wrapper_;
   }
 
   void MaybeStartImageEmbedding(
@@ -563,6 +648,7 @@ class ClientSideDetectionHostIOSTest : public PlatformTest {
   FakeOptimizationGuideModelProvider test_opt_guide_;
   MockClientSideDetectionService mock_service_;
   base::HistogramTester histogram_tester_;
+  id mock_page_context_wrapper_class_ = nil;
 };
 
 // Tests that GetFeatureCache() creates the feature cache on-demand when it does
@@ -3490,6 +3576,219 @@ TEST_F(ClientSideDetectionHostIOSTest,
       safe_browsing::PhishingDetectorResult::CLASSIFICATION_SUCCESS);
 
   EXPECT_EQ(image_embedding_start_time(host.get()), expected_start_time);
+}
+
+// Tests that `GetInnerText` initiates text extraction via `PageContextWrapper`
+// and returns the extracted inner text on success.
+TEST_F(ClientSideDetectionHostIOSTest, GetInnerTextSuccess) {
+  std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
+  FakeClientSideDetectionPageContextWrapper* fake_wrapper =
+      CreateAndStubPageContextWrapper();
+
+  base::test::TestFuture<std::string> future;
+  host->GetInnerText(future.GetCallback());
+
+  EXPECT_TRUE([fake_wrapper populateCalled]);
+  EXPECT_TRUE(fake_wrapper.shouldGetInnerText);
+  EXPECT_FALSE(fake_wrapper.shouldGetSnapshot);
+  EXPECT_FALSE(fake_wrapper.shouldGetFullPagePDF);
+  EXPECT_FALSE(fake_wrapper.shouldGetAnnotatedPageContent);
+  EXPECT_EQ(page_context_wrapper(host.get()), fake_wrapper);
+
+  [fake_wrapper respondWithInnerText:kTestInnerText];
+  EXPECT_EQ(future.Get(), kTestInnerText);
+  EXPECT_EQ(page_context_wrapper(host.get()), nil);
+}
+
+// Tests that `GetInnerText` returns an empty string when `PageContextWrapper`
+// returns an error response.
+TEST_F(ClientSideDetectionHostIOSTest,
+       GetInnerTextExtractionFailureReturnsEmptyString) {
+  std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
+  FakeClientSideDetectionPageContextWrapper* fake_wrapper =
+      CreateAndStubPageContextWrapper();
+
+  base::test::TestFuture<std::string> future;
+  host->GetInnerText(future.GetCallback());
+
+  EXPECT_TRUE([fake_wrapper populateCalled]);
+  EXPECT_EQ(page_context_wrapper(host.get()), fake_wrapper);
+  [fake_wrapper respondWithError:PageContextWrapperError::kInnerTextError];
+
+  EXPECT_EQ(future.Get(), "");
+  EXPECT_EQ(page_context_wrapper(host.get()), nil);
+}
+
+// Tests that `GetInnerText` returns an empty string when `PageContextWrapper`
+// succeeds but the `PageContext` proto contains no inner text.
+TEST_F(ClientSideDetectionHostIOSTest,
+       GetInnerTextMissingInnerTextReturnsEmptyString) {
+  std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
+  FakeClientSideDetectionPageContextWrapper* fake_wrapper =
+      CreateAndStubPageContextWrapper();
+
+  base::test::TestFuture<std::string> future;
+  host->GetInnerText(future.GetCallback());
+
+  EXPECT_TRUE([fake_wrapper populateCalled]);
+  EXPECT_EQ(page_context_wrapper(host.get()), fake_wrapper);
+  [fake_wrapper respondWithEmptyProto];
+
+  EXPECT_EQ(future.Get(), "");
+  EXPECT_EQ(page_context_wrapper(host.get()), nil);
+}
+
+// Tests that when an earlier inner text extraction is in flight and a newer
+// request starts, the older callback is cleanly resolved with an empty string,
+// completing the older wrapper does not affect the active newer request, and
+// the newer request completes with its extracted inner text.
+TEST_F(ClientSideDetectionHostIOSTest,
+       OverlappingInnerTextExtractionCleanlyResolvesOlderCallback) {
+  std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
+
+  FakeClientSideDetectionPageContextWrapper* fake_wrapper1 =
+      CreateAndStubPageContextWrapper();
+  base::test::TestFuture<std::string> future1;
+  host->GetInnerText(future1.GetCallback());
+  EXPECT_EQ(page_context_wrapper(host.get()), fake_wrapper1);
+  EXPECT_FALSE(future1.IsReady());
+
+  // Start a second request, superseding the first request.
+  FakeClientSideDetectionPageContextWrapper* fake_wrapper2 =
+      CreateAndStubPageContextWrapper();
+  base::test::TestFuture<std::string> future2;
+  host->GetInnerText(future2.GetCallback());
+
+  // The first request must be cleanly resolved with an empty string.
+  EXPECT_TRUE(future1.IsReady());
+  EXPECT_EQ(future1.Get(), "");
+  EXPECT_EQ(page_context_wrapper(host.get()), fake_wrapper2);
+  EXPECT_FALSE(future2.IsReady());
+
+  // Triggering the superseded wrapper's response must not hijack the active
+  // request's callback or nil out the active wrapper.
+  [fake_wrapper1 respondWithInnerText:"stale text"];
+  EXPECT_FALSE(future2.IsReady());
+  EXPECT_EQ(page_context_wrapper(host.get()), fake_wrapper2);
+
+  // Completing the second wrapper resolves the second request.
+  [fake_wrapper2 respondWithInnerText:"new text"];
+  EXPECT_TRUE(future2.IsReady());
+  EXPECT_EQ(future2.Get(), "new text");
+  EXPECT_EQ(page_context_wrapper(host.get()), nil);
+}
+
+// Tests that completing a cancelled inner text extraction after a subsequent
+// extraction has started does not hijack the callback or deallocate the
+// wrapper.
+TEST_F(ClientSideDetectionHostIOSTest,
+       CancelledInnerTextExtractionCompletionDoesNotAffectSubsequentRequest) {
+  std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
+  FakeClientSideDetectionPageContextWrapper* fake_wrapper1 =
+      CreateAndStubPageContextWrapper();
+
+  base::test::TestFuture<std::string> future1;
+  host->GetInnerText(future1.GetCallback());
+  EXPECT_TRUE([fake_wrapper1 populateCalled]);
+
+  host->CancelPendingRequests();
+  EXPECT_EQ(page_context_wrapper(host.get()), nil);
+
+  // Start a new request after cancellation.
+  FakeClientSideDetectionPageContextWrapper* fake_wrapper2 =
+      CreateAndStubPageContextWrapper();
+  base::test::TestFuture<std::string> future2;
+  host->GetInnerText(future2.GetCallback());
+  EXPECT_EQ(page_context_wrapper(host.get()), fake_wrapper2);
+
+  // Trigger response on the cancelled older wrapper; ensure it is ignored.
+  [fake_wrapper1 respondWithInnerText:"stale text"];
+  EXPECT_FALSE(future1.IsReady());
+  EXPECT_FALSE(future2.IsReady());
+  EXPECT_EQ(page_context_wrapper(host.get()), fake_wrapper2);
+
+  // Trigger response on the active newer wrapper.
+  [fake_wrapper2 respondWithInnerText:kTestInnerText];
+  EXPECT_FALSE(future1.IsReady());
+  EXPECT_TRUE(future2.IsReady());
+  EXPECT_EQ(future2.Get(), kTestInnerText);
+  EXPECT_EQ(page_context_wrapper(host.get()), nil);
+}
+
+// Tests that `GetInnerText` returns an empty string immediately when
+// `web_state` is null.
+TEST_F(ClientSideDetectionHostIOSTest,
+       GetInnerTextNullWebStateReturnsEmptyString) {
+  std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
+  host->WebStateDestroyed(&web_state_);
+
+  base::test::TestFuture<std::string> future;
+  host->GetInnerText(future.GetCallback());
+
+  EXPECT_EQ(future.Get(), "");
+}
+
+// Tests that `CancelPendingRequests` cancels pending inner text extraction so
+// that subsequent wrapper completion does not invoke the callback.
+TEST_F(ClientSideDetectionHostIOSTest,
+       CancelPendingRequestsCancelsInnerTextExtraction) {
+  std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
+  FakeClientSideDetectionPageContextWrapper* fake_wrapper =
+      CreateAndStubPageContextWrapper();
+
+  base::test::TestFuture<std::string> future;
+  host->GetInnerText(future.GetCallback());
+
+  EXPECT_TRUE([fake_wrapper populateCalled]);
+  host->CancelPendingRequests();
+
+  // Trigger response after cancellation; ensure no callback dispatch occurs.
+  [fake_wrapper respondWithInnerText:kTestInnerText];
+
+  EXPECT_FALSE(future.IsReady());
+}
+
+// Tests that destroying `ClientSideDetectionHostIOS` while `PageContextWrapper`
+// is in flight safely resets and does not cause a use-after-free.
+TEST_F(ClientSideDetectionHostIOSTest,
+       HostDestructionDuringExtractionDoesNotCrash) {
+  std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
+  FakeClientSideDetectionPageContextWrapper* fake_wrapper =
+      CreateAndStubPageContextWrapper();
+
+  base::test::TestFuture<std::string> future;
+  host->GetInnerText(future.GetCallback());
+
+  EXPECT_TRUE([fake_wrapper populateCalled]);
+
+  // Destroy the host while the wrapper is in flight.
+  host.reset();
+
+  // Trigger response on the orphan wrapper; ensure no crash or callback
+  // dispatch occurs.
+  [fake_wrapper respondWithInnerText:kTestInnerText];
+
+  EXPECT_FALSE(future.IsReady());
+}
+
+// Tests that `WebState` destruction cancels pending inner text extraction.
+TEST_F(ClientSideDetectionHostIOSTest,
+       WebStateDestructionCancelsPendingInnerTextExtraction) {
+  std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
+  FakeClientSideDetectionPageContextWrapper* fake_wrapper =
+      CreateAndStubPageContextWrapper();
+
+  base::test::TestFuture<std::string> future;
+  host->GetInnerText(future.GetCallback());
+
+  EXPECT_TRUE([fake_wrapper populateCalled]);
+  host->WebStateDestroyed(&web_state_);
+
+  // Trigger response after `WebState` destruction; ensure no callback dispatch
+  // occurs.
+  [fake_wrapper respondWithInnerText:kTestInnerText];
+
+  EXPECT_FALSE(future.IsReady());
 }
 
 }  // namespace safe_browsing

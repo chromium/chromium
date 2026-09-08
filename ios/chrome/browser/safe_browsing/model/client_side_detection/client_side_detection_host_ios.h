@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_CLIENT_SIDE_DETECTION_CLIENT_SIDE_DETECTION_HOST_IOS_H_
 
 #import <optional>
+#import <string>
 #import <vector>
 
 #import "base/memory/raw_ptr.h"
@@ -26,6 +27,7 @@
 #import "url/gurl.h"
 
 class PrefService;
+@class PageContextWrapper;
 @class UIImage;
 
 namespace history {
@@ -238,6 +240,9 @@ class ClientSideDetectionHostIOS
       const safe_browsing::ImageFeatureEmbedding& image_embedding,
       const safe_browsing::VisualFeatures& visual_features);
 
+  // Callback invoked when `PageContextWrapper` completes inner text extraction.
+  void OnInnerTextExtracted(std::string inner_text);
+
   // Associated WebState.
   raw_ptr<web::WebState> web_state_ = nullptr;
 
@@ -246,6 +251,12 @@ class ClientSideDetectionHostIOS
 
   // Reference to the identity manager.
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
+
+  // In-flight callback for inner text extraction.
+  HostInnerTextCallback pending_inner_text_callback_;
+
+  // `PageContextWrapper` for inner text extraction.
+  __strong PageContextWrapper* page_context_wrapper_ = nil;
 
   std::unique_ptr<PhishingClassifier> classifier_;
   std::unique_ptr<PhishingImageEmbedder> image_embedder_;
@@ -269,6 +280,10 @@ class ClientSideDetectionHostIOS
   base::ScopedObservation<SafeBrowsingQueryManager,
                           SafeBrowsingQueryManager::Observer>
       query_manager_observation_{this};
+
+  // Invalidation factory dedicated to inner text extraction callbacks.
+  base::WeakPtrFactory<ClientSideDetectionHostIOS> inner_text_weak_factory_{
+      this};
 
   base::WeakPtrFactory<ClientSideDetectionHostIOS> weak_ptr_factory_{this};
 };
