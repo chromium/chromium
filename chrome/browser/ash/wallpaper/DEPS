@@ -18,5 +18,4 @@ include_rules = [
   "+chrome/browser/ash/file_manager",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
 ]

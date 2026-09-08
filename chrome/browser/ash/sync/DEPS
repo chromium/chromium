@@ -21,7 +21,6 @@ include_rules = [
   "+chrome/browser/ui/scoped_tabbed_browser_displayer.h",
   "+chrome/browser/ui/settings_window_manager_chromeos.h",
   "+chrome/browser/ui/webui/signin",
-  "+chrome/common/url_constants.h",
   "+chrome/grit",
   "+chrome/test/base",
 
