@@ -490,6 +490,13 @@ bool NodeLink::OnAcceptIntroduction(msg::AcceptIntroduction& accept) {
     return false;
   }
 
+  if (node()->type() == Node::Type::kBroker &&
+      accept.v0()->remote_node_type == Node::Type::kBroker) {
+    // Brokers are never introduced to other brokers; broker-to-broker links
+    // are always established directly via ConnectNode().
+    return false;
+  }
+
   DriverMemoryMapping mapping =
       DriverMemory(accept.TakeDriverObject(accept.v0()->memory)).Map();
   if (!mapping.is_valid()) {
@@ -835,7 +842,9 @@ bool NodeLink::OnProvideMemory(msg::ProvideMemory& provide) {
 }
 
 bool NodeLink::OnRelayMessage(msg::RelayMessage& relay) {
-  if (node_->type() != Node::Type::kBroker) {
+  // Relay requests are only sent by non-brokers to their own broker.
+  if (node_->type() != Node::Type::kBroker ||
+      remote_node_type_ != Node::Type::kNormal) {
     return false;
   }
 

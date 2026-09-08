@@ -942,6 +942,86 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(TransportFromUntrustedClient,
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 }
 
+DEFINE_TEST_CLIENT_TEST_WITH_PIPE(TransportFromUntrustedBrokerClient,
+                                  MojoIpczTransportTest,
+                                  h) {
+  scoped_refptr<Transport> transport = ReceiveTransport(h);
+  TransportListener listener(*transport);
+  EXPECT_EQ("ready", listener.WaitForNextMessage().as_string());
+
+  {
+    auto [our_new_transport, their_new_transport] =
+        Transport::CreatePair(Transport::kBroker, Transport::kNonBroker);
+    EXPECT_EQ(Transport::kBroker, their_new_transport->destination_type());
+    SerializeObjectFor(*transport, std::move(their_new_transport))
+        .Transmit(*transport);
+    EXPECT_EQ("got null", listener.WaitForNextMessage().as_string());
+  }
+
+  {
+    auto [our_new_transport, their_new_transport] =
+        Transport::CreatePair(Transport::kNonBroker, Transport::kNonBroker);
+    their_new_transport->set_is_peer_trusted(true);
+    SerializeObjectFor(*transport, std::move(their_new_transport))
+        .Transmit(*transport);
+    EXPECT_EQ("got null", listener.WaitForNextMessage().as_string());
+  }
+
+  {
+    auto [our_new_transport, their_new_transport] =
+        Transport::CreatePair(Transport::kNonBroker, Transport::kNonBroker);
+    SerializeObjectFor(*transport, std::move(their_new_transport))
+        .Transmit(*transport);
+    EXPECT_EQ("got untrusted", listener.WaitForNextMessage().as_string());
+  }
+
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
+}
+
+TEST_F(MojoIpczTransportTest, TransportFromUntrustedBroker) {
+  // When both endpoints of a transport are brokers, the peer being a broker
+  // does not by itself grant it any additional trust on this end. A broker
+  // receiving a serialized transport over such a link must reject it if it
+  // claims its own peer is trusted or is itself a broker.
+  RunTestClientWithController(
+      "TransportFromUntrustedBrokerClient", [&](ClientController& c) {
+        PlatformChannel channel;
+        MojoHandle transport_for_client =
+            WrapPlatformHandle(
+                channel.TakeRemoteEndpoint().TakePlatformHandle())
+                .release()
+                .value();
+        WriteMessageWithHandles(c.pipe(), "", &transport_for_client, 1);
+        scoped_refptr<Transport> transport = Transport::Create(
+            {.source = Transport::kBroker, .destination = Transport::kBroker},
+            channel.TakeLocalEndpoint(), c.process().Duplicate());
+        EXPECT_FALSE(transport->is_peer_trusted());
+
+        TransportListener listener(*transport);
+        TestMessage("ready").Transmit(*transport);
+
+        for (int i = 0; i < 2; i++) {
+          TestMessage message = listener.WaitForNextMessage();
+          scoped_refptr<ObjectBase> object;
+          const IpczResult result = transport->DeserializeObject(
+              base::span(message.bytes), base::span(message.handles), object);
+          EXPECT_EQ(result, IPCZ_RESULT_INVALID_ARGUMENT);
+          TestMessage("got null").Transmit(*transport);
+        }
+
+        {
+          TestMessage message = listener.WaitForNextMessage();
+          scoped_refptr<Transport> received =
+              DeserializeObjectFrom<Transport>(*transport, message);
+          EXPECT_FALSE(received->is_peer_trusted());
+          EXPECT_EQ(Transport::kNonBroker, received->destination_type());
+          TestMessage("got untrusted").Transmit(*transport);
+        }
+
+        listener.WaitForDisconnect();
+      });
+}
+
 TEST_F(MojoIpczTransportTest, TransportFromUntrusted) {
 #if BUILDFLAG(IS_WIN)
   // TODO(crbug.com/414392683) default to untrusted/untracked.
