@@ -900,7 +900,63 @@ enum class ScreenshotProtectionSource {
 
 class DataProtectionNavigationObserverRedirectScreenshotTest
     : public DataProtectionNavigationObserverTest,
-      public testing::WithParamInterface<ScreenshotProtectionSource> {};
+      public testing::WithParamInterface<ScreenshotProtectionSource> {
+ public:
+  void SetUp() override {
+    DataProtectionNavigationObserverTest::SetUp();
+    DataProtectionNavigationObserver::SetLookupServiceForTesting(
+        &lookup_service_);
+
+    switch (GetParam()) {
+      case ScreenshotProtectionSource::kDataControls:
+        data_controls::SetDataControls(profile()->GetPrefs(), {R"(
+              {
+                "name":"block",
+                "rule_id":"1234",
+                "sources":{"urls":["redirect.com"]},
+                "restrictions":[{"class": "SCREENSHOT", "level": "BLOCK"} ]
+              }
+            )"});
+        break;
+      case ScreenshotProtectionSource::kRealTimeUrlLookup:
+        lookup_service_.SetShouldHaveMatchedRule(true);
+        lookup_service_.SetBlockScreenshotForURL(GURL("https://example.com"),
+                                                 false);
+        lookup_service_.SetBlockScreenshotForURL(GURL("https://redirect.com"),
+                                                 true);
+        lookup_service_.SetWatermarkTextForURL(GURL("https://example.com"),
+                                               std::nullopt);
+        lookup_service_.SetWatermarkTextForURL(GURL("https://redirect.com"),
+                                               std::nullopt);
+        break;
+    }
+
+    validator_ =
+        std::make_unique<enterprise_connectors::test::EventReportValidator>(
+            client_.get());
+    validator_->ExpectNoReport();
+
+    SetContents(CreateTestWebContents());
+    simulator_ = content::NavigationSimulator::CreateRendererInitiated(
+        GURL("https://example.com"), web_contents()->GetPrimaryMainFrame());
+    controller_ = std::make_unique<FakeDataProtectionNavigationController>(
+        web_contents(), &lookup_service_, navigation_future_.GetCallback());
+  }
+
+  void TearDown() override {
+    controller_.reset();
+    simulator_.reset();
+    validator_.reset();
+    DataProtectionNavigationObserverTest::TearDown();
+  }
+
+ protected:
+  const GURL redirect_url_ = GURL("https://redirect.com");
+  std::unique_ptr<enterprise_connectors::test::EventReportValidator> validator_;
+  std::unique_ptr<content::NavigationSimulator> simulator_;
+  base::test::TestFuture<const UrlSettings&> navigation_future_;
+  std::unique_ptr<FakeDataProtectionNavigationController> controller_;
+};
 
 INSTANTIATE_TEST_SUITE_P(
     ,
@@ -910,50 +966,13 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(DataProtectionNavigationObserverRedirectScreenshotTest,
        BlockScreenshot_Redirect) {
-  enterprise_connectors::test::EventReportValidator validator(client_.get());
-  validator.ExpectNoReport();
-  DataProtectionNavigationObserver::SetLookupServiceForTesting(
-      &lookup_service_);
-
-  switch (GetParam()) {
-    case ScreenshotProtectionSource::kDataControls:
-      data_controls::SetDataControls(profile()->GetPrefs(), {R"(
-            {
-              "name":"block",
-              "rule_id":"1234",
-              "sources":{"urls":["redirect.com"]},
-              "restrictions":[{"class": "SCREENSHOT", "level": "BLOCK"} ]
-            }
-          )"});
-      break;
-    case ScreenshotProtectionSource::kRealTimeUrlLookup:
-      lookup_service_.SetShouldHaveMatchedRule(true);
-      lookup_service_.SetBlockScreenshotForURL(GURL("https://example.com"),
-                                               false);
-      lookup_service_.SetBlockScreenshotForURL(GURL("https://redirect.com"),
-                                               true);
-      lookup_service_.SetWatermarkTextForURL(GURL("https://example.com"),
-                                             std::nullopt);
-      lookup_service_.SetWatermarkTextForURL(GURL("https://redirect.com"),
-                                             std::nullopt);
-      break;
-  }
-
-  SetContents(CreateTestWebContents());
-  auto simulator = content::NavigationSimulator::CreateRendererInitiated(
-      GURL("https://example.com"), web_contents()->GetPrimaryMainFrame());
-  base::test::TestFuture<const UrlSettings&> navigation_future;
-  FakeDataProtectionNavigationController controller(
-      web_contents(), &lookup_service_, navigation_future.GetCallback());
-
-  const GURL kRedirectUrl = GURL("https://redirect.com");
 
   // Do initial navigation request which allows screenshots.
   {
     base::test::TestFuture<void> future_lookup_complete;
     lookup_service_.set_on_start_lookup_complete(
         future_lookup_complete.GetCallback());
-    simulator->Start();
+    simulator_->Start();
     EXPECT_TRUE(future_lookup_complete.Wait());
   }
 
@@ -962,15 +981,59 @@ TEST_P(DataProtectionNavigationObserverRedirectScreenshotTest,
     base::test::TestFuture<void> future_lookup_complete;
     lookup_service_.set_on_start_lookup_complete(
         future_lookup_complete.GetCallback());
-    simulator->Redirect(kRedirectUrl);
+    simulator_->Redirect(redirect_url_);
     EXPECT_TRUE(future_lookup_complete.Wait());
   }
 
-  simulator->Commit();
-  EXPECT_TRUE(navigation_future.Wait());
+  simulator_->Commit();
+  EXPECT_TRUE(navigation_future_.Wait());
 
   // The result of the above should be that
   // screenshots are not allowed.
+  base::test::TestFuture<const UrlSettings&> get_settings_future;
+  DataProtectionNavigationObserver::ApplyDataProtectionSettings(
+      Profile::FromBrowserContext(browser_context()), web_contents(),
+      get_settings_future.GetCallback());
+  EXPECT_FALSE(get_settings_future.Get().allow_screenshots);
+
+  // Value should be cached.
+  auto* user_data = DataProtectionPageUserData::GetForPage(
+      GetPageFromWebContents(web_contents()));
+  ASSERT_TRUE(user_data);
+  EXPECT_EQ(user_data->settings(), get_settings_future.Get());
+}
+
+TEST_P(DataProtectionNavigationObserverRedirectScreenshotTest,
+       BlockScreenshot_Redirect_LateVerdict) {
+  // Do initial navigation request which allows screenshots.
+  {
+    base::test::TestFuture<void> future_lookup_complete;
+    lookup_service_.set_on_start_lookup_complete(
+        future_lookup_complete.GetCallback());
+    simulator_->Start();
+    EXPECT_TRUE(future_lookup_complete.Wait());
+  }
+
+  // Redirect to a URL that should not allow screenshots.
+  base::test::TestFuture<void> future_lookup_complete;
+  lookup_service_.set_on_start_lookup_complete(
+      future_lookup_complete.GetCallback());
+  simulator_->Redirect(redirect_url_);
+
+  // Commit the navigation before the lookup for the redirect URL completes.
+  simulator_->Commit();
+
+  // The navigation callback should not have been invoked yet with a stale
+  // verdict.
+  EXPECT_FALSE(navigation_future_.IsReady());
+
+  // Wait for the redirect lookup to complete.
+  EXPECT_TRUE(future_lookup_complete.Wait());
+  EXPECT_TRUE(navigation_future_.Wait());
+
+  // The result of the above should be that screenshots are not allowed.
+  EXPECT_FALSE(navigation_future_.Get().allow_screenshots);
+
   base::test::TestFuture<const UrlSettings&> get_settings_future;
   DataProtectionNavigationObserver::ApplyDataProtectionSettings(
       Profile::FromBrowserContext(browser_context()), web_contents(),
