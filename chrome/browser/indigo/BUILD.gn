@@ -49,6 +49,7 @@ source_set("indigo") {
     "//content/public/browser",
     "//content/public/common",
     "//crypto",
+    "//google_apis/common",
     "//ui/menus",
     "//url",
   ]

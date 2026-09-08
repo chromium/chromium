@@ -22,6 +22,62 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="Indigo.Api.{Endpoint}.HttpResponseCode"
+    enum="HttpResponseCode" expires_after="2027-08-31">
+  <owner>jbroman@chromium.org</owner>
+  <owner>adithyas@chromium.org</owner>
+  <owner>baranerf@google.com</owner>
+  <summary>
+    The HTTP response code received when calling the {Endpoint} endpoint of the
+    Indigo API. This is only recorded if an HTTP response was actually received
+    (success or an HTTP-level error).
+  </summary>
+  <token key="Endpoint">
+    <variant name="Delete"/>
+    <variant name="Generate"/>
+    <variant name="GetStatus"/>
+  </token>
+</histogram>
+
+<histogram name="Indigo.Api.{Endpoint}.Latency.{Result}" units="ms"
+    expires_after="2027-08-31">
+  <owner>jbroman@chromium.org</owner>
+  <owner>adithyas@chromium.org</owner>
+  <owner>baranerf@google.com</owner>
+  <summary>
+    Time taken for the {Endpoint} API request to complete with {Result}. This is
+    only recorded for requests that are actually dispatched over the network. It
+    is not recorded for immediate local validation failures (e.g., missing user,
+    invalid URL, or payload too large) to avoid skewing network latency data.
+  </summary>
+  <token key="Endpoint">
+    <variant name="Delete"/>
+    <variant name="Generate"/>
+    <variant name="GetStatus"/>
+  </token>
+  <token key="Result">
+    <variant name="Failure"/>
+    <variant name="Success"/>
+  </token>
+</histogram>
+
+<histogram name="Indigo.Api.{Endpoint}.Status" enum="IndigoApiStatus"
+    expires_after="2027-08-31">
+  <owner>jbroman@chromium.org</owner>
+  <owner>adithyas@chromium.org</owner>
+  <owner>baranerf@google.com</owner>
+  <summary>
+    Detailed breakdown of the result of the {Endpoint} call. Helps diagnose
+    reliability issues and identify if failures are due to server errors, bad
+    responses, API-level errors, or client-side limits.
+  </summary>
+  <token key="Endpoint">
+    <variant name="Delete"/>
+    <variant name="Generate"/>
+    <variant name="GetStatus"/>
+  </token>
+</histogram>
+
 <histogram name="Indigo.Discovery.EligibilityCheck.Latency" units="ms"
     expires_after="2027-05-13">
   <owner>baranerf@google.com</owner>

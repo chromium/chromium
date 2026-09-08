@@ -6,12 +6,14 @@
 
 #include "base/base64.h"
 #include "base/json/json_reader.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
+#include "chrome/browser/indigo/indigo_metrics.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/public/base/test_signin_client.h"
@@ -91,6 +93,8 @@ class IndigoApiClientTest : public testing::Test {
 };
 
 TEST_F(IndigoApiClientTest, GenerateSuccess) {
+  base::HistogramTester histogram_tester;
+
   identity_test_env_.MakePrimaryAccountAvailable("test@example.com",
                                                  signin::ConsentLevel::kSignin);
 
@@ -131,9 +135,18 @@ TEST_F(IndigoApiClientTest, GenerateSuccess) {
   auto result = future.Get();
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value().image_url, GURL(kTestDataUrl));
+
+  histogram_tester.ExpectUniqueSample("Indigo.Api.Generate.Status",
+                                      IndigoApiStatus::kSuccess, 1);
+  histogram_tester.ExpectUniqueSample("Indigo.Api.Generate.HttpResponseCode",
+                                      200, 1);
+  histogram_tester.ExpectTotalCount("Indigo.Api.Generate.Latency.Success", 1);
+  histogram_tester.ExpectTotalCount("Indigo.Api.Generate.Latency.Failure", 0);
 }
 
 TEST_F(IndigoApiClientTest, GetStatusSuccess) {
+  base::HistogramTester histogram_tester;
+
   identity_test_env_.MakePrimaryAccountAvailable("test@example.com",
                                                  signin::ConsentLevel::kSignin);
 
@@ -166,6 +179,13 @@ TEST_F(IndigoApiClientTest, GetStatusSuccess) {
   ASSERT_TRUE(result.has_value());
   EXPECT_TRUE(result.value().has_user_image);
   EXPECT_TRUE(result.value().is_service_supported_for_account);
+
+  histogram_tester.ExpectUniqueSample("Indigo.Api.GetStatus.Status",
+                                      IndigoApiStatus::kSuccess, 1);
+  histogram_tester.ExpectUniqueSample("Indigo.Api.GetStatus.HttpResponseCode",
+                                      200, 1);
+  histogram_tester.ExpectTotalCount("Indigo.Api.GetStatus.Latency.Success", 1);
+  histogram_tester.ExpectTotalCount("Indigo.Api.GetStatus.Latency.Failure", 0);
 }
 
 TEST_F(IndigoApiClientTest, GetStatusFalse) {
@@ -219,6 +239,7 @@ TEST_F(IndigoApiClientTest, GetStatusMixed) {
 }
 
 TEST_F(IndigoApiClientTest, GetStatusHttpError) {
+  base::HistogramTester histogram_tester;
   identity_test_env_.MakePrimaryAccountAvailable("test@example.com",
                                                  signin::ConsentLevel::kSignin);
 
@@ -235,6 +256,11 @@ TEST_F(IndigoApiClientTest, GetStatusHttpError) {
   auto result = future.Get();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error().message, "HTTP error: HTTP_INTERNAL_SERVER_ERROR");
+
+  histogram_tester.ExpectUniqueSample("Indigo.Api.GetStatus.Status",
+                                      IndigoApiStatus::kHttpError, 1);
+  histogram_tester.ExpectUniqueSample("Indigo.Api.GetStatus.HttpResponseCode",
+                                      500, 1);
 }
 
 TEST_F(IndigoApiClientTest, GetStatusMalformedJson) {
@@ -476,6 +502,8 @@ TEST_F(IndigoApiClientTest, GenerateSignOutDuringTokenRequest) {
 }
 
 TEST_F(IndigoApiClientTest, GenerateAuthError) {
+  base::HistogramTester histogram_tester;
+
   identity_test_env_.MakePrimaryAccountAvailable("test@example.com",
                                                  signin::ConsentLevel::kSignin);
 
@@ -492,9 +520,17 @@ TEST_F(IndigoApiClientTest, GenerateAuthError) {
   auto result = future.Get();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error().message, "Premature failure: HTTP_FORBIDDEN");
+
+  histogram_tester.ExpectUniqueSample("Indigo.Api.Generate.Status",
+                                      IndigoApiStatus::kHttpError, 1);
+  histogram_tester.ExpectUniqueSample("Indigo.Api.Generate.HttpResponseCode",
+                                      403, 1);
+  histogram_tester.ExpectTotalCount("Indigo.Api.Generate.Latency.Failure", 1);
 }
 
 TEST_F(IndigoApiClientTest, GenerateSignOutDuringMainRequest) {
+  base::HistogramTester histogram_tester;
+
   if constexpr (!kSignOutSupportedOnPlatform) {
     GTEST_SKIP() << "Sign out is not supported on this platform.";
   }
@@ -523,9 +559,16 @@ TEST_F(IndigoApiClientTest, GenerateSignOutDuringMainRequest) {
   auto result = future.Get();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error().message, "Request cancelled");
+
+  histogram_tester.ExpectUniqueSample("Indigo.Api.Generate.Status",
+                                      IndigoApiStatus::kCancelled, 1);
+  histogram_tester.ExpectTotalCount("Indigo.Api.Generate.Latency.Success", 0);
+  histogram_tester.ExpectTotalCount("Indigo.Api.Generate.Latency.Failure", 1);
 }
 
 TEST_F(IndigoApiClientTest, GenerateCancel) {
+  base::HistogramTester histogram_tester;
+
   identity_test_env_.MakePrimaryAccountAvailable("test@example.com",
                                                  signin::ConsentLevel::kSignin);
 
@@ -544,9 +587,16 @@ TEST_F(IndigoApiClientTest, GenerateCancel) {
   auto result = future.Get();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error().message, "Premature failure: CANCELLED");
+
+  histogram_tester.ExpectUniqueSample("Indigo.Api.Generate.Status",
+                                      IndigoApiStatus::kCancelled, 1);
+  histogram_tester.ExpectTotalCount("Indigo.Api.Generate.Latency.Success", 0);
+  histogram_tester.ExpectTotalCount("Indigo.Api.Generate.Latency.Failure", 1);
 }
 
 TEST_F(IndigoApiClientTest, GenerateImageTooLarge) {
+  base::HistogramTester histogram_tester;
+
   identity_test_env_.MakePrimaryAccountAvailable("test@example.com",
                                                  signin::ConsentLevel::kSignin);
 
@@ -562,9 +612,16 @@ TEST_F(IndigoApiClientTest, GenerateImageTooLarge) {
   auto result = future.Get();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error().message, "Product image is too large (> 4MB)");
+
+  histogram_tester.ExpectUniqueSample("Indigo.Api.Generate.Status",
+                                      IndigoApiStatus::kTooLarge, 1);
+  histogram_tester.ExpectTotalCount("Indigo.Api.Generate.Latency.Success", 0);
+  histogram_tester.ExpectTotalCount("Indigo.Api.Generate.Latency.Failure", 0);
 }
 
 TEST_F(IndigoApiClientTest, DeleteSuccess) {
+  base::HistogramTester histogram_tester;
+
   identity_test_env_.MakePrimaryAccountAvailable("test@example.com",
                                                  signin::ConsentLevel::kSignin);
 
@@ -588,6 +645,13 @@ TEST_F(IndigoApiClientTest, DeleteSuccess) {
 
   auto result = future.Get();
   EXPECT_TRUE(result.has_value());
+
+  histogram_tester.ExpectUniqueSample("Indigo.Api.Delete.Status",
+                                      IndigoApiStatus::kSuccess, 1);
+  histogram_tester.ExpectUniqueSample("Indigo.Api.Delete.HttpResponseCode", 200,
+                                      1);
+  histogram_tester.ExpectTotalCount("Indigo.Api.Delete.Latency.Success", 1);
+  histogram_tester.ExpectTotalCount("Indigo.Api.Delete.Latency.Failure", 0);
 }
 
 TEST_F(IndigoApiClientTest, DeleteHttpError) {
@@ -650,6 +714,8 @@ TEST_F(IndigoApiClientTest, DeleteNotADictionary) {
 }
 
 TEST_F(IndigoApiClientTest, DeleteUnexpectedNonEmptyResponse) {
+  base::HistogramTester histogram_tester;
+
   identity_test_env_.MakePrimaryAccountAvailable("test@example.com",
                                                  signin::ConsentLevel::kSignin);
 
@@ -667,6 +733,13 @@ TEST_F(IndigoApiClientTest, DeleteUnexpectedNonEmptyResponse) {
   EXPECT_EQ(
       result.error().message,
       "Unexpected non-empty JSON response from https://example.com/delete");
+
+  histogram_tester.ExpectUniqueSample("Indigo.Api.Delete.Status",
+                                      IndigoApiStatus::kInvalidResponse, 1);
+  histogram_tester.ExpectUniqueSample("Indigo.Api.Delete.HttpResponseCode", 200,
+                                      1);
+  histogram_tester.ExpectTotalCount("Indigo.Api.Delete.Latency.Success", 0);
+  histogram_tester.ExpectTotalCount("Indigo.Api.Delete.Latency.Failure", 1);
 }
 
 TEST_F(IndigoApiClientTest, DeleteApiError) {

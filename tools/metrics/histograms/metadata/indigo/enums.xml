@@ -23,6 +23,24 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(IndigoApiStatus) -->
+
+<enum name="IndigoApiStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="HTTP Error"/>
+  <int value="2" label="Parse Error"/>
+  <int value="3" label="Too Large"/>
+  <int value="4" label="No Signed In User"/>
+  <int value="5" label="Invalid URL"/>
+  <int value="6" label="API Error"/>
+  <int value="7" label="Network Error"/>
+  <int value="8" label="Invalid Response"/>
+  <int value="9" label="Cancelled"/>
+  <int value="10" label="Other Error"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/indigo/indigo_metrics.h:IndigoApiStatus) -->
+
 <!-- LINT.IfChange(IndigoPageActionEntryPoint) -->
 
 <enum name="IndigoPageActionEntryPoint">

@@ -7,7 +7,9 @@
 
 #include <optional>
 
+#include "base/time/time.h"
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
+#include "google_apis/common/api_error_codes.h"
 
 namespace page_actions {
 enum class PageActionPriorityCategory;
@@ -34,6 +36,33 @@ inline constexpr char kAnchoredMessageClickAction[] =
 inline constexpr char kErrorToastRetryClickAction[] =
     "Indigo.ErrorToast.Retry.Click";
 
+enum class IndigoApiEndpoint {
+  kGenerate,
+  kGetStatus,
+  kDelete,
+};
+
+// LINT.IfChange(IndigoApiStatus)
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class IndigoApiStatus {
+  kSuccess = 0,
+  kHttpError = 1,
+  kParseError = 2,
+  kTooLarge = 3,
+  kNoSignedInUser = 4,
+  kInvalidUrl = 5,
+  kApiError = 6,
+  kNetworkError = 7,
+  kInvalidResponse = 8,
+  kCancelled = 9,
+  kOtherError = 10,
+  kMaxValue = kOtherError,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/indigo/enums.xml:IndigoApiStatus)
+
+IndigoApiStatus MapApiErrorCodeToStatus(google_apis::ApiErrorCode code);
+
 // Records UMA histogram and UserAction for shown entry points.
 void RecordShownEntryPoint(IndigoPageActionEntryPoint entry_point);
 
@@ -42,6 +71,15 @@ void RecordClickedEntryPoint(
     EntryPoint entry_point,
     std::optional<page_actions::PageActionPriorityCategory>
         last_anchored_message_priority);
+
+// Records UMA histogram for the raw HTTP response code.
+void RecordApiHttpResponse(IndigoApiEndpoint endpoint,
+                           google_apis::ApiErrorCode code);
+
+// Records UMA histogram for the mapped API status and latency.
+void RecordApiStatusAndLatency(IndigoApiEndpoint endpoint,
+                               IndigoApiStatus status,
+                               base::TimeDelta latency);
 
 }  // namespace indigo
 

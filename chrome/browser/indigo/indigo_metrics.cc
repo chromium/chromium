@@ -7,9 +7,46 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 
 namespace indigo {
+
+namespace {
+const char* GetEndpointString(IndigoApiEndpoint endpoint) {
+  switch (endpoint) {
+    case IndigoApiEndpoint::kGenerate:
+      return "Generate";
+    case IndigoApiEndpoint::kGetStatus:
+      return "GetStatus";
+    case IndigoApiEndpoint::kDelete:
+      return "Delete";
+  }
+}
+
+bool IsHttpCode(google_apis::ApiErrorCode code) {
+  return code > 0 && code < 600;
+}
+}  // namespace
+
+IndigoApiStatus MapApiErrorCodeToStatus(google_apis::ApiErrorCode code) {
+  if (code == google_apis::HTTP_SUCCESS) {
+    return IndigoApiStatus::kSuccess;
+  }
+  if (code == google_apis::CANCELLED) {
+    return IndigoApiStatus::kCancelled;
+  }
+  if (code == google_apis::NO_CONNECTION) {
+    return IndigoApiStatus::kNetworkError;
+  }
+  if (code == google_apis::PARSE_ERROR) {
+    return IndigoApiStatus::kParseError;
+  }
+  if (IsHttpCode(code)) {
+    return IndigoApiStatus::kHttpError;
+  }
+  return IndigoApiStatus::kOtherError;
+}
 
 void RecordShownEntryPoint(IndigoPageActionEntryPoint entry_point) {
   switch (entry_point) {
@@ -61,6 +98,31 @@ void RecordClickedEntryPoint(
                                     IndigoPageActionEntryPoint::kErrorToast);
       break;
   }
+}
+
+void RecordApiHttpResponse(IndigoApiEndpoint endpoint,
+                           google_apis::ApiErrorCode code) {
+  if (!IsHttpCode(code)) {
+    return;
+  }
+  base::UmaHistogramSparse(
+      base::StrCat(
+          {"Indigo.Api.", GetEndpointString(endpoint), ".HttpResponseCode"}),
+      code);
+}
+
+void RecordApiStatusAndLatency(IndigoApiEndpoint endpoint,
+                               IndigoApiStatus status,
+                               base::TimeDelta latency) {
+  const char* endpoint_str = GetEndpointString(endpoint);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Indigo.Api.", endpoint_str, ".Status"}), status);
+
+  bool is_success = (status == IndigoApiStatus::kSuccess);
+  base::UmaHistogramMediumTimes(
+      base::StrCat({"Indigo.Api.", endpoint_str, ".Latency.",
+                    is_success ? "Success" : "Failure"}),
+      latency);
 }
 
 }  // namespace indigo
