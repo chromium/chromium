@@ -79,7 +79,8 @@ import org.chromium.ui.test.util.ViewUtils;
 @EnableFeatures({SigninFeatures.SIGNIN_LEVEL_UP_BUTTON, SigninFeatures.PROFILE_DISC_ON_ALL_PAGES})
 @DisableFeatures({
     ChromeFeatureList.SETTINGS_IN_TAB, // crbug.com/521895796
-    ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP // crbug.com/556881398
+    ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP, // crbug.com/556881398
+    ChromeFeatureList.USE_WEB_UI_NTP_ANDROID // crbug.com/555414915
 })
 public class SigninButtonCoordinatorTest {
 

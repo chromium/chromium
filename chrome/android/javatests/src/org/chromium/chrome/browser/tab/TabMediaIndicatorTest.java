@@ -41,9 +41,11 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.media.MediaCapturePickerDelegate;
 import org.chromium.chrome.browser.media.MediaCapturePickerManager;
@@ -79,6 +81,8 @@ import java.util.concurrent.TimeoutException;
     "enable-experimental-web-platform-features",
     "enable-features=UserMediaScreenCapturing,AndroidMediaPicker",
 })
+// TODO(b/555414915): Update Android tests with WebUI NTP enabled on AL.
+@DisableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
 @Batch(Batch.PER_CLASS)
 public class TabMediaIndicatorTest {
     @Rule

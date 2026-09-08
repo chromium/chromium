@@ -138,7 +138,9 @@ import java.util.concurrent.atomic.AtomicReference;
     // Keep the exhaustive menu-structure assertions deterministic. The "Ask Gemini"
     // entry is covered by ChromeContextMenuPopulatorTest and
     // testContextMenuAddsAskGeminiForLink below.
-    ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU
+    ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU,
+    // TODO(b/555414915): Update Android tests with WebUI NTP enabled on AL.
+    ChromeFeatureList.USE_WEB_UI_NTP_ANDROID,
 })
 @Batch(Batch.PER_CLASS)
 @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288174

@@ -122,7 +122,8 @@ import java.io.IOException;
     SigninFeatures.SIGNIN_LEVEL_UP_BUTTON,
     ChromeFeatureList.ANDROID_BOTTOM_BAR,
     ChromeFeatureList.SETTINGS_IN_TAB, // crbug.com/521895796
-    ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP // crbug.com/556881398
+    ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP, // crbug.com/556881398
+    ChromeFeatureList.USE_WEB_UI_NTP_ANDROID // crbug.com/555414915
 })
 @DisableLeakChecks("crbug.com/527131198")
 public class IdentityDiscControllerTest {
