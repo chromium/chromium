@@ -133,8 +133,9 @@ void SimpleLruCache::Evict() {
   while (capacity_ < size_) {
     auto it = access_list_.begin();
     CHECK(it != access_list_.end());
-    CHECK(entries_.find(it->second) != entries_.end(),
-          base::NotFatalUntil::M159);
+    // TODO(crbug.com/558408632): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(entries_.find(it->second) != entries_.end());
 
     Delete(it->second);
   }
