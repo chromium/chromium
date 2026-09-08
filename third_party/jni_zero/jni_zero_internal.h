@@ -24,6 +24,9 @@
 
 namespace jni_zero::internal {
 
+extern JNI_ZERO_COMPONENT_BUILD_EXPORT RawPtrWrapFn g_raw_ptr_wrap_fn;
+extern JNI_ZERO_COMPONENT_BUILD_EXPORT RawPtrReleaseFn g_raw_ptr_release_fn;
+
 inline void HandleRegistrationError(JNIEnv* env,
                                     jclass clazz,
                                     const char* filename) {

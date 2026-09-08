@@ -39,6 +39,16 @@ static_assert(std::is_same<JArray<jobject>, jobjectArray>::value);
 static_assert(std::is_same<JArray<bool>, jbooleanArray>::value);
 
 namespace jni_zero {
+namespace internal {
+RawPtrWrapFn g_raw_ptr_wrap_fn = nullptr;
+RawPtrReleaseFn g_raw_ptr_release_fn = nullptr;
+}  // namespace internal
+
+void SetRawPtrHooks(RawPtrWrapFn wrap_fn, RawPtrReleaseFn release_fn) {
+  internal::g_raw_ptr_wrap_fn = wrap_fn;
+  internal::g_raw_ptr_release_fn = release_fn;
+}
+
 namespace {
 
 
@@ -144,7 +154,8 @@ void InitVM(JavaVM* vm) {
   // Mark as used when multiplexing not enabled.
   (void)&Java_JniZero_crashIfMultiplexingMisaligned;
 #endif
-  ScopedJavaLocalRef<JArray<jobject>> globals = JniZeroJni::init(env);
+  ScopedJavaLocalRef<JArray<jobject>> globals =
+      JniZeroJni::init(env, internal::g_raw_ptr_release_fn != nullptr);
   jobject empty_list = env->GetObjectArrayElement(globals.obj(), 0);
   jobject empty_map = env->GetObjectArrayElement(globals.obj(), 1);
   jobject jni_class_loader = env->GetObjectArrayElement(globals.obj(), 2);

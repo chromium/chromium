@@ -7,11 +7,14 @@
 
 #include <jni.h>
 
+#include <cstdint>
+
 // IWYU pragma: begin_exports
 #include "third_party/jni_zero/common_apis.h"
 #include "third_party/jni_zero/java_refs.h"
 #include "third_party/jni_zero/jni_export.h"
 #include "third_party/jni_zero/jni_methods.h"
+#include "third_party/jni_zero/jni_raw_ptr.h"
 #include "third_party/jni_zero/jni_unique_ptr.h"
 #include "third_party/jni_zero/jni_wrappers.h"
 #include "third_party/jni_zero/logging.h"
@@ -22,6 +25,19 @@
 
 namespace jni_zero {
 
+// Called at the JNI boundary right before a borrowed pointer is handed to
+// Java, to take a PartitionAlloc BackupRefPtr quarantine reference on it.
+using RawPtrWrapFn = uintptr_t (*)(uintptr_t);
+// Called from JNI_CommonApis_ReleaseRawPtr() to drop the reference taken by
+// RawPtrWrapFn. Must be balanced 1:1 with it.
+using RawPtrReleaseFn = void (*)(uintptr_t);
+
+// Installs the hooks used to take/drop a PartitionAlloc BackupRefPtr reference
+// when a JniRawPtr crosses the JNI boundary. Must be called exactly once,
+// before any JNI call can hand a JniRawPtr to Java; not thread-safe. Changing
+// the hooks while borrowed pointers are outstanding unbalances the refcount.
+JNI_ZERO_COMPONENT_BUILD_EXPORT void SetRawPtrHooks(RawPtrWrapFn wrap_fn,
+                                                    RawPtrReleaseFn release_fn);
 
 // Commonly needed jclasses:
 extern JNI_ZERO_COMPONENT_BUILD_EXPORT jclass g_class_loader_class;

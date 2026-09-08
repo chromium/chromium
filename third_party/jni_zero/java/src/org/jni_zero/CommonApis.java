@@ -33,5 +33,7 @@ public class CommonApis {
     @NativeMethods
     interface Natives {
         void deleteDeleterBasePtr(long ptr, long deleterAddress);
+
+        void releaseRawPtr(long ptr);
     }
 }

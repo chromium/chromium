@@ -66,6 +66,7 @@ component("jni_zero") {
   public = [
     "common_apis.h",
     "default_conversions.h",
+    "jni_raw_ptr.h",
     "jni_unique_ptr.h",
     "jni_zero.h",
   ]
@@ -134,6 +135,8 @@ if (enable_java_templates && is_android) {
       "java/src/org/jni_zero/JniPtr.java",
       "java/src/org/jni_zero/JniPtrImpl.java",
       "java/src/org/jni_zero/JniPtrInner.java",
+      "java/src/org/jni_zero/JniRawPtr.java",
+      "java/src/org/jni_zero/JniRawPtrImpl.java",
       "java/src/org/jni_zero/JniTestInstancesSnapshot.java",
       "java/src/org/jni_zero/JniType.java",
       "java/src/org/jni_zero/JniTypeToken.java",

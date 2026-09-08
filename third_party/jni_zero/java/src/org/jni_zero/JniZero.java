@@ -11,6 +11,11 @@ import java.util.Collections;
 public class JniZero {
     private static ClassLoader sPendingJniClassLoader;
     private static boolean sInitialized;
+    private static boolean sRawPtrHooksEnabled;
+
+    static boolean isRawPtrHooksEnabled() {
+        return sRawPtrHooksEnabled;
+    }
 
     /** Sets the ClassLoader used to resolve classes by JNI Zero. */
     public static void setJniClassLoader(ClassLoader classLoader) {
@@ -22,8 +27,9 @@ public class JniZero {
     }
 
     @CalledByNative
-    private static Object[] init() {
+    private static Object[] init(boolean rawPtrHooksEnabled) {
         sInitialized = true;
+        sRawPtrHooksEnabled = rawPtrHooksEnabled;
         // For JVM (works fine on ART), cannot call from Java -> Native during InitVM because the
         // System.loadLibrary() call has not yet completed. Could work around this by using
         // RegisterNatives(), but simpler to return an array than to make Java->Native work.

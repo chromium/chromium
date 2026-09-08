@@ -6,6 +6,8 @@
 
 #include "third_party/jni_zero/generate_jni/CommonApis_jni.h"
 #include "third_party/jni_zero/jni_unique_ptr.h"
+#include "third_party/jni_zero/jni_zero.h"
+#include "third_party/jni_zero/jni_zero_internal.h"
 #include "third_party/jni_zero/system_jni/Arrays_jni.h"
 #include "third_party/jni_zero/system_jni/Boolean_jni.h"
 #include "third_party/jni_zero/system_jni/Collection_jni.h"
@@ -204,6 +206,13 @@ static void JNI_CommonApis_DeleteDeleterBasePtr(JNIEnv* env,
   JNI_ZERO_DCHECK(deleter_ptr != 0);
   const auto* deleter = reinterpret_cast<const DeleterBase*>(deleter_ptr);
   deleter->Destroy(reinterpret_cast<void*>(ptr));
+}
+
+static void JNI_CommonApis_ReleaseRawPtr(JNIEnv* env, int64_t ptr) {
+  JNI_ZERO_DCHECK(ptr != 0);
+  if (internal::g_raw_ptr_release_fn) {
+    internal::g_raw_ptr_release_fn(static_cast<uintptr_t>(ptr));
+  }
 }
 
 }  // namespace jni_zero

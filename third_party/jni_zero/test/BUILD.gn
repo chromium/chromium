@@ -12,7 +12,10 @@ testonly = true
 # Runnable C++ tests. Built both as a standalone binary and as part of
 # base_unittests so that CQ bots cover them.
 source_set("jni_zero_unittests_sources") {
-  sources = [ "jni_unique_ptr_unittest.cc" ]
+  sources = [
+    "jni_raw_ptr_unittest.cc",
+    "jni_unique_ptr_unittest.cc",
+  ]
   deps = [
     "//testing/gtest",
     "//third_party/jni_zero",
