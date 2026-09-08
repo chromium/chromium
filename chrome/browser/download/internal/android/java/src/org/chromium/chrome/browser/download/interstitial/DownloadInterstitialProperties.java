@@ -12,7 +12,7 @@ import org.chromium.chrome.browser.download.home.list.ListProperties;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntDefPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /**
@@ -44,7 +44,7 @@ interface DownloadInterstitialProperties extends ListProperties {
 
     WritableObjectPropertyKey<OfflineItem> DOWNLOAD_ITEM = new WritableObjectPropertyKey<>();
 
-    WritableIntPropertyKey STATE = new WritableIntPropertyKey();
+    WritableIntDefPropertyKey<State> STATE = new WritableIntDefPropertyKey<>(State.UNKNOWN);
 
     WritableObjectPropertyKey<String> TITLE_TEXT = new WritableObjectPropertyKey<>();
 

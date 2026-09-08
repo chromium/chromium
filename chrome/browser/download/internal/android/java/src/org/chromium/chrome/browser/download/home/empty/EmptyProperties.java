@@ -8,6 +8,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntDefPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 
 import java.lang.annotation.Retention;
@@ -25,7 +26,7 @@ interface EmptyProperties {
     }
 
     /** The current state of the empty view. */
-    WritableIntPropertyKey STATE = new WritableIntPropertyKey();
+    WritableIntDefPropertyKey<State> STATE = new WritableIntDefPropertyKey<>(State.LOADING);
 
     /** The current text resource to use for the empty view. */
     WritableIntPropertyKey EMPTY_TEXT_RES_ID = new WritableIntPropertyKey();
