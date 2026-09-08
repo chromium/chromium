@@ -30,7 +30,8 @@ class FuzzyFinder {
   FuzzyFinder& operator=(const FuzzyFinder&) = delete;
   ~FuzzyFinder();
 
-  // Searches searchable_items_ for items matching query.
+  // Searches searchable_items_ for items matching query via case- and
+  // accent-insensitive substring matching against item titles.
   //
   // Parameters:
   //   query: The user-provided string to search for.
@@ -39,7 +40,7 @@ class FuzzyFinder {
   //                prevents unbounded searches and saves CPU cycles.
   //
   // Returns up to max_results matching items. Returns an empty vector if:
-  // - The query has fewer than 3 non-whitespace characters.
+  // - The query does not meet the minimum non-whitespace character threshold.
   // - No items match.
   // - searchable_items_ is empty or max_results is 0.
   std::vector<FuzzySearchResult> Find(const std::u16string& query,
@@ -48,15 +49,16 @@ class FuzzyFinder {
   // Performs a fuzzy search / string approximation over `searchable_items_`
   // which takes into account typos, letter transpositions, and word boundary
   // tolerances. Each field in a `FuzzySearchItem` is weighted differently (i.e.
-  // titles may have a higher influence on an items score than its synonyms).
+  // titles have a higher influence on an item's score than synonyms or
+  // secondary text).
   //
   // Returns up to max_results matching items ordered by descending score.
   std::vector<FuzzySearchResult> FuzzyFind(const std::u16string& query,
                                            size_t max_results);
 
  private:
-  // Scores an item across its title and synonyms using the fuzzy DP sequence
-  // alignment algorithm.
+  // Scores an item across its title, secondary text, and synonyms using the
+  // fuzzy DP sequence alignment algorithm.
   double ScoreItem(const FuzzySearchItem* item, std::u16string_view norm_query);
 
   // Evaluates a candidate string against a query with typo, transposition, and

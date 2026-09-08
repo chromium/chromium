@@ -27,6 +27,10 @@ constexpr double kTitleWeight = 1.00;
 // Multiplier applied to scores when a match is found in an item's synonyms.
 constexpr double kSynonymWeight = 0.85;
 
+// Multiplier applied to scores when a match is found in an item's secondary
+// text (e.g. section headers or descriptions).
+constexpr double kSecondaryTextWeight = 0.80;
+
 // Base score awarded for each matching character between query and candidate.
 constexpr int kMatchScore = 16;
 
@@ -71,10 +75,6 @@ FuzzyFinder::FuzzyFinder(std::vector<FuzzySearchItem*> searchable_items)
 
 FuzzyFinder::~FuzzyFinder() = default;
 
-// TODO(crbug.com/549169077): Implement full fuzzy matching algorithm and
-// support matching against title, secondary text, and synonyms.
-// Currently implements case- and accent-insensitive substring matching
-// against item titles.
 std::vector<FuzzySearchResult> FuzzyFinder::Find(const std::u16string& query,
                                                  size_t max_results) {
   if (searchable_items_.empty() || max_results == 0) {
@@ -85,8 +85,8 @@ std::vector<FuzzySearchResult> FuzzyFinder::Find(const std::u16string& query,
   std::u16string_view trimmed_query =
       base::TrimWhitespace(query, base::TRIM_ALL);
 
-  // Reject queries shorter than the minimum threshold (3 characters) to avoid
-  // broad/low-signal results.
+  // Reject queries shorter than the minimum threshold to avoid broad/low-signal
+  // results.
   if (!HasMinQueryLength(trimmed_query)) {
     return {};
   }
@@ -124,7 +124,7 @@ std::vector<FuzzySearchResult> FuzzyFinder::FuzzyFind(
   const std::u16string_view trimmed_query =
       base::TrimWhitespace(query, base::TRIM_ALL);
 
-  // Reject queries shorter than the minimum threshold (2 characters).
+  // Reject queries shorter than the minimum threshold.
   if (!HasMinQueryLength(trimmed_query)) {
     return {};
   }
@@ -169,7 +169,16 @@ double FuzzyFinder::ScoreItem(const FuzzySearchItem* item,
   double best_score =
       ComputeDpMatrixMatch(norm_query, norm_title) * kTitleWeight;
 
-  // 2. Synonyms match
+  // 2. Secondary text match
+  const std::u16string& secondary_text = item->GetSecondaryText();
+  if (!secondary_text.empty()) {
+    const std::u16string norm_secondary = base::i18n::ToLower(secondary_text);
+    const double secondary_score =
+        ComputeDpMatrixMatch(norm_query, norm_secondary) * kSecondaryTextWeight;
+    best_score = std::max(best_score, secondary_score);
+  }
+
+  // 3. Synonyms match
   for (const std::u16string& synonym : item->GetSynonyms()) {
     const std::u16string norm_syn = base::i18n::ToLower(synonym);
     const double syn_score =

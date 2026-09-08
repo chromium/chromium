@@ -491,6 +491,57 @@ TEST_F(FuzzyFinderTest, FuzzyFindMaxResultsCapping) {
   EXPECT_THAT(ExtractResultTitles(results), ElementsAre(u"Tab 1", u"Tab 2"));
 }
 
+TEST_F(FuzzyFinderTest, FuzzyFindSecondaryTextMatch) {
+  // Query matches secondary text when title does not match.
+  auto items = CreateItems({
+      {u"Google Password Manager", u"Passwords and autofill", {u"credentials"}},
+      {u"History", u"Past browsing data", {}},
+  });
+  FuzzyFinder finder(items);
+
+  auto results = finder.FuzzyFind(u"autofill", /*max_results=*/1);
+  EXPECT_THAT(ExtractResultTitles(results),
+              ElementsAre(u"Google Password Manager"));
+  ASSERT_EQ(results.size(), 1u);
+  EXPECT_GT(results[0].score, 0.70);
+}
+
+TEST_F(FuzzyFinderTest, FuzzyFindTitlePrioritizedOverSecondaryText) {
+  // Both match "autofill":
+  // 1. "Autofill Settings" matches via Title (weight 1.00).
+  // 2. "Google Password Manager" matches via Secondary Text (weight 0.80).
+  // Expected rank: "Autofill Settings" > "Google Password Manager".
+  auto items = CreateItems({
+      {u"Google Password Manager", u"Autofill Settings"},
+      {u"Autofill Settings", u"General"},
+  });
+  FuzzyFinder finder(items);
+
+  auto results = finder.FuzzyFind(u"autofill", /*max_results=*/2);
+  EXPECT_THAT(ExtractResultTitles(results),
+              ElementsAre(u"Autofill Settings", u"Google Password Manager"));
+  ASSERT_EQ(results.size(), 2u);
+  EXPECT_GT(results[0].score, results[1].score);
+}
+
+TEST_F(FuzzyFinderTest, FuzzyFindSynonymPrioritizedOverSecondaryText) {
+  // Both match "credentials":
+  // 1. "Password Manager" matches via Synonym (weight 0.85).
+  // 2. "Passkey Settings" matches via Secondary Text (weight 0.80).
+  // Expected rank: "Password Manager" > "Passkey Settings".
+  auto items = CreateItems({
+      {u"Passkey Settings", u"credentials"},
+      {u"Password Manager", u"General", {u"credentials"}},
+  });
+  FuzzyFinder finder(items);
+
+  auto results = finder.FuzzyFind(u"credentials", /*max_results=*/2);
+  EXPECT_THAT(ExtractResultTitles(results),
+              ElementsAre(u"Password Manager", u"Passkey Settings"));
+  ASSERT_EQ(results.size(), 2u);
+  EXPECT_GT(results[0].score, results[1].score);
+}
+
 TEST_F(FuzzyFinderTest, FuzzyFindCaseAndAccentInsensitive) {
   auto items = CreateItems({{u"Résumé Settings"}, {u"Café Mode"}});
   FuzzyFinder finder(items);
