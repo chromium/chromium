@@ -59,6 +59,7 @@ import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.ExternalEntryPoint;
 import org.chromium.components.signin.base.SigninDeepLinkPayload;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
@@ -497,19 +498,16 @@ final class SigninBridge {
         @Nullable Context context = windowAndroid.getContext().get();
         @Nullable IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile);
-        @Nullable SigninManager signinManager =
-                IdentityServicesProvider.get().getSigninManager(profile);
-        if (context == null || identityManager == null || signinManager == null) {
+        if (context == null || identityManager == null) {
             return;
         }
-        startSigninDeepLinkFlow(context, profile, identityManager, signinManager, payload);
+        startSigninDeepLinkFlow(context, profile, identityManager, payload);
     }
 
     private static void startSigninDeepLinkFlow(
             Context context,
             Profile profile,
             IdentityManager identityManager,
-            SigninManager signinManager,
             SigninDeepLinkPayload payload) {
         ThreadUtils.assertOnUiThread();
 
@@ -524,15 +522,10 @@ final class SigninBridge {
                         && targetAccountInfo != null
                         && primaryAccountInfo.getId().equals(targetAccountInfo.getId());
 
-        SigninMetricsUtils.recordCrossDeviceInitialState(
-                payload.getExternalEntryPoint(),
-                getCrossDeviceInitialState(
-                        /* isSigninAllowed= */ signinManager.isSigninAllowed(),
-                        /* isSignedIn= */ primaryAccountInfo != null,
-                        /* isTargetAccountOnDevice= */ targetAccountInfo != null,
-                        /* isTargetAccountSignedIn= */ isTargetAccountSignedIn));
-
         if (isTargetAccountSignedIn) {
+            SigninMetricsUtils.recordCrossDeviceInitialState(
+                    payload.getExternalEntryPoint(),
+                    CrossDeviceInitialState.SIGNED_IN_WITH_TARGET_ACCOUNT);
             String message =
                     SigninDeepLinkFlowStrings.alreadySignedInMessage(
                             context, assumeNonNull(targetAccountInfo), payload);
@@ -553,31 +546,36 @@ final class SigninBridge {
                 SigninAndHistorySyncActivityLauncherImpl.get()
                         .createFullscreenSigninIntentOrShowError(
                                 context, profile, config, SigninAccessPoint.DEEP_LINK_DEFAULT);
-        if (intent != null) {
-            context.startActivity(intent);
+        if (intent == null) {
+            SigninMetricsUtils.recordCrossDeviceInitialState(
+                    payload.getExternalEntryPoint(), CrossDeviceInitialState.FLOW_FORBIDDEN);
+            return;
         }
+
+        recordCrossDeviceFlowStart(
+                payload.getExternalEntryPoint(), primaryAccountInfo, targetAccountInfo);
+        context.startActivity(intent);
     }
 
-    private static @CrossDeviceInitialState int getCrossDeviceInitialState(
-            boolean isSigninAllowed,
-            boolean isSignedIn,
-            boolean isTargetAccountOnDevice,
-            boolean isTargetAccountSignedIn) {
-        if (!isSigninAllowed) {
-            return CrossDeviceInitialState.FLOW_FORBIDDEN;
-        } else if (isTargetAccountSignedIn) {
-            return CrossDeviceInitialState.SIGNED_IN_WITH_TARGET_ACCOUNT;
-        } else if (isSignedIn) {
-            return isTargetAccountOnDevice
-                    ? CrossDeviceInitialState
-                            .SIGNED_IN_WITH_DIFFERENT_ACCOUNT_TARGET_ACCOUNT_ON_DEVICE
-                    : CrossDeviceInitialState
-                            .SIGNED_IN_WITH_DIFFERENT_ACCOUNT_TARGET_ACCOUNT_NOT_ON_DEVICE;
+    private static void recordCrossDeviceFlowStart(
+            @ExternalEntryPoint int entryPoint,
+            @Nullable CoreAccountInfo primaryAccountInfo,
+            @Nullable AccountInfo targetAccountInfo) {
+        @CrossDeviceInitialState int initialState;
+        if (primaryAccountInfo != null) {
+            initialState =
+                    targetAccountInfo != null
+                            ? CrossDeviceInitialState
+                                    .SIGNED_IN_WITH_DIFFERENT_ACCOUNT_TARGET_ACCOUNT_ON_DEVICE
+                            : CrossDeviceInitialState
+                                    .SIGNED_IN_WITH_DIFFERENT_ACCOUNT_TARGET_ACCOUNT_NOT_ON_DEVICE;
         } else {
-            return isTargetAccountOnDevice
-                    ? CrossDeviceInitialState.SIGNED_OUT_TARGET_ACCOUNT_ON_DEVICE
-                    : CrossDeviceInitialState.SIGNED_OUT_TARGET_ACCOUNT_NOT_ON_DEVICE;
+            initialState =
+                    targetAccountInfo != null
+                            ? CrossDeviceInitialState.SIGNED_OUT_TARGET_ACCOUNT_ON_DEVICE
+                            : CrossDeviceInitialState.SIGNED_OUT_TARGET_ACCOUNT_NOT_ON_DEVICE;
         }
+        SigninMetricsUtils.recordCrossDeviceInitialState(entryPoint, initialState);
     }
 
     private SigninBridge() {}
