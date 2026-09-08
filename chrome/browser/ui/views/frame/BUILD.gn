@@ -6,6 +6,12 @@ import("//build/config/ui.gni")
 
 assert(!is_android)
 
+source_set("safe_invoke") {
+  sources = [ "safe_invoke/safe_invoke.h" ]
+
+  public_deps = [ "//base" ]
+}
+
 source_set("shadow") {
   public = [ "shadow_frame_view.h" ]
 
@@ -440,6 +446,7 @@ source_set("contents_web_view") {
     "//ui/views/controls/webview",
   ]
   deps = [
+    ":safe_invoke",
     ":web_contents_close_handler",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/views:status_bubble",

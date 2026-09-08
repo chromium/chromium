@@ -7425,6 +7425,7 @@ test("unit_tests") {
       "//chrome/browser/ui/views/frame:multi_contents_drop_target_view",
       "//chrome/browser/ui/views/frame:multi_contents_resize_area",
       "//chrome/browser/ui/views/frame:multi_contents_view_drop_target_controller",
+      "//chrome/browser/ui/views/frame:safe_invoke",
       "//chrome/browser/ui/views/frame:scrim_view",
       "//chrome/browser/ui/views/frame:test_support",
       "//chrome/browser/ui/views/frame:web_contents_close_handler_delegate",
