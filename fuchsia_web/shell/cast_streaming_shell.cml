@@ -16,6 +16,15 @@
   program: {
     binary: "cast_streaming_shell_exe",
   },
+  use: [
+    {
+      protocol: [
+        "fuchsia.inspect.InspectSink",
+        "fuchsia.logger.LogSink",
+      ],
+      from: "parent/diagnostics",
+    },
+  ],
   offer: [
     {
       // Required capabilities for WebInstanceHost in a child Component.
@@ -57,11 +66,6 @@
       availability: "optional",
     },
     {
-      dictionary:"diagnostics",
-      from: "parent",
-      to: "#realm_builder",
-    },
-    {
       // Holds ICU time zone data files.
       // See:
       // https://fuchsia.dev/fuchsia-src/concepts/process/namespaces?typical_directory_structure
@@ -77,13 +81,14 @@
     },
     {
       // Required capabilities for all WebInstance configurations.
+      // Note: The "diagnostics" dictionary is offered to #realm_builder by the
+      // RealmBuilder shard included above.
       protocol: [
         "fuchsia.buildinfo.Provider",
         "fuchsia.device.NameProvider",
         "fuchsia.fonts.Provider",
         "fuchsia.hwinfo.Product",
         "fuchsia.intl.PropertyProvider",
-        // "fuchsia.logger/LogSink", is included by the shard above.
         "fuchsia.memorypressure.Provider",
         "fuchsia.process.Launcher",
         "fuchsia.sysmem.Allocator",

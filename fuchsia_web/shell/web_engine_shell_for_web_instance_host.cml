@@ -26,7 +26,10 @@
       availability: "optional",
     },
     {
-      protocol: "fuchsia.logger.LogSink",
+      protocol: [
+        "fuchsia.inspect.InspectSink",
+        "fuchsia.logger.LogSink",
+      ],
       from: "parent/diagnostics",
     },
     // Used to hold the cdm_data directory passed to web_instance.

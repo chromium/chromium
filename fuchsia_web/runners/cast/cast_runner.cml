@@ -9,8 +9,6 @@
     // Although the protocol is technically optional, as in this shard, not
     // providing it will result in log spam.
     "trace/use.shard.cml",
-
-    "vulkan/client.shard.cml",
   ],
   program: {
     runner: "elf",
@@ -55,6 +53,13 @@
     },
   ],
   use: [
+    {
+      protocol: [
+        "fuchsia.inspect.InspectSink",
+        "fuchsia.logger.LogSink",
+      ],
+      from: "parent/diagnostics",
+    },
     {
       directory: "config-data",
       rights: [ "r*" ],

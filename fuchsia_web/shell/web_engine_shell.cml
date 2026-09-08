@@ -19,6 +19,14 @@
 
 
   use: [
+    {
+      protocol: [
+        "fuchsia.inspect.InspectSink",
+        "fuchsia.logger.LogSink",
+      ],
+      from: "parent/diagnostics",
+    },
+
     // Required in `--use-context-provider` mode.
 
     {
@@ -51,14 +59,14 @@
       // the `offer` when not in `--use-context-provider` mode.
     },
     {
+      // Required capabilities for all WebInstance configurations.
+      // LogSink and InspectSink are used above from parent/diagnostics.
       protocol: [
-        // Required capabilities for all WebInstance configurations.
         "fuchsia.buildinfo.Provider",
         "fuchsia.device.NameProvider",
         "fuchsia.fonts.Provider",
         "fuchsia.hwinfo.Product",
         "fuchsia.intl.PropertyProvider",
-        // "fuchsia.logger/LogSink", is included by the RealmBuilder shard
         "fuchsia.memorypressure.Provider",
         "fuchsia.process.Launcher",
         "fuchsia.sysmem.Allocator",
@@ -206,13 +214,14 @@
     },
     {
       // Required capabilities for all WebInstance configurations.
+      // Note: The "diagnostics" dictionary is offered to #realm_builder by the
+      // RealmBuilder shard included above.
       protocol: [
         "fuchsia.buildinfo.Provider",
         "fuchsia.device.NameProvider",
         "fuchsia.fonts.Provider",
         "fuchsia.hwinfo.Product",
         "fuchsia.intl.PropertyProvider",
-        // "fuchsia.logger/LogSink", is included by the shard above.
         "fuchsia.memorypressure.Provider",
         "fuchsia.process.Launcher",
         "fuchsia.sysmem.Allocator",

@@ -24,7 +24,10 @@
       protocol: "fuchsia.posix.socket.Provider",
     },
     {
-      protocol: "fuchsia.logger.LogSink",
+      protocol: [
+        "fuchsia.inspect.InspectSink",
+        "fuchsia.logger.LogSink",
+      ],
       from: "parent/diagnostics",
     },
     // Required if not run with --headless.

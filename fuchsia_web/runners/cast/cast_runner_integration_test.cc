@@ -5,12 +5,14 @@
 #include <chromium/cast/cpp/fidl.h>
 #include <fuchsia/camera3/cpp/fidl.h>
 #include <fuchsia/legacymetrics/cpp/fidl.h>
+#include <fuchsia/logger/cpp/fidl.h>
 #include <fuchsia/media/cpp/fidl.h>
 #include <fuchsia/ui/views/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fdio/directory.h>
 #include <lib/fidl/cpp/binding.h>
 #include <lib/sys/cpp/component_context.h>
+#include <lib/vfs/cpp/service.h>
 #include <lib/zx/eventpair.h>
 
 #include <optional>
@@ -25,6 +27,7 @@
 #include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/mem_buffer_util.h"
+#include "base/fuchsia/process_context.h"
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
@@ -382,7 +385,15 @@ class TestCastComponent {
           url_request_rewrite_rules_provider_binding(
               &services,
               &url_request_rewrite_rules_provider),
-          context_binding(&services, &application_context) {}
+          context_binding(&services, &application_context) {
+      services.AddEntry(
+          fuchsia::logger::LogSink::Name_,
+          std::make_unique<vfs::Service>(
+              [](zx::channel channel, async_dispatcher_t*) {
+                base::ComponentContextForProcess()->svc()->Connect(
+                    fuchsia::logger::LogSink::Name_, std::move(channel));
+              }));
+    }
 
     // Directory of services to offer to the Cast component.
     vfs::PseudoDir services;

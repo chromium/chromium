@@ -106,8 +106,6 @@ CastRunnerLauncher::CastRunnerLauncher(CastRunnerFeatures runner_features) {
   // protocols to cast_runner.
   FakeFeedbackService::RouteToChild(realm_builder, kCastRunnerComponentName);
 
-  AddSyslogRoutesFromParent(realm_builder, kCastRunnerComponentName);
-
   // Run an isolated font service and route it to cast_runner.
   AddFontService(realm_builder, kCastRunnerComponentName);
 

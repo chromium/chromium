@@ -16,14 +16,14 @@
   use: [
     {
       // Required capabilities for all configurations.
+      // "fuchsia.kernel.VmexResource" is optional below.
+      // LogSink and InspectSink are used below from parent/diagnostics.
       protocol: [
         "fuchsia.buildinfo.Provider",
         "fuchsia.device.NameProvider",
         "fuchsia.fonts.Provider",
         "fuchsia.hwinfo.Product",
         "fuchsia.intl.PropertyProvider",
-        // "fuchsia.kernel.VmexResource" is optional below.
-        // "fuchsia.logger/LogSink", is included by the shard above.
         "fuchsia.memorypressure.Provider",
         "fuchsia.process.Launcher",
         "fuchsia.sysmem.Allocator",
