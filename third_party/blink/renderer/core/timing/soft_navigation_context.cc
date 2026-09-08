@@ -103,11 +103,7 @@ bool SoftNavigationContext::AddPaintedArea(PaintTimingRecord* record) {
   uint64_t painted_area = rect.size().GetArea();
 
   Node* node = record->GetNode();
-  // TODO(crbug.com/441914208): `node` can be null here, which is unexpected.
-  // Change this back to a CHECK when the root cause is understood and fixed.
-  if (!node) {
-    return false;
-  }
+  CHECK(node);
 
   painted_area_ += painted_area;
   TRACE_EVENT_INSTANT(
