@@ -338,7 +338,7 @@ public class MostVisitedTilesMediator implements TileGroup.Observer {
     private void maybeTriggerCustomizationIph(List<Tile> tiles) {
         if (!ChromeFeatureList.sMostVisitedTilesCustomization.isEnabled()) return;
 
-        if (tiles.size() == 0) return;
+        if (tiles.isEmpty()) return;
 
         Tile firstTile = tiles.get(0);
         if (firstTile.getData().source == TileSource.CUSTOM_LINKS) return;

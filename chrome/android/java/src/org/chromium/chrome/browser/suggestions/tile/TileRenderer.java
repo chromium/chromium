@@ -335,7 +335,7 @@ public class TileRenderer {
             return false;
         }
 
-        if (sectionTiles.size() == 0) {
+        if (sectionTiles.isEmpty()) {
             // Still show the Add Custom Link Button, even if no suggestions exist. We might make
             // this configurable.
             return true;

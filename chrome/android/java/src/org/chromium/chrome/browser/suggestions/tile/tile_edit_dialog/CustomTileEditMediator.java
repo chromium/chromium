@@ -127,7 +127,7 @@ class CustomTileEditMediator implements ViewToMediator {
      */
     private GURL convertUrlTextToGurl(String urlText) {
         GURL url = new GURL(urlText);
-        return url.getScheme().equals("") ? new GURL(UrlConstants.HTTPS_URL_PREFIX + urlText) : url;
+        return url.getScheme().isEmpty() ? new GURL(UrlConstants.HTTPS_URL_PREFIX + urlText) : url;
     }
 
     private @UrlErrorCode int validateUrl(GURL url) {
