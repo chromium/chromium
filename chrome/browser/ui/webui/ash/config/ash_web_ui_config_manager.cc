@@ -462,7 +462,7 @@ void AshWebUIConfigManager::RegisterWebUIConfigs() {
                                       ChromeSanitizeUIDelegate>());
   AddWebUIConfig(MakeComponentConfigWithDelegate<ScanningUIConfig, ScanningUI,
                                                  ChromeScanningAppDelegate>());
-  AddWebUIConfig(std::make_unique<SetTimeUIConfig>());
+  AddWebUIConfig(std::make_unique<SetTimeUIConfig>(&local_state_.get()));
   AddWebUIConfig(MakeComponentConfigWithDelegate<
                  ShimlessRMADialogUIConfig, ShimlessRMADialogUI,
                  shimless_rma::ChromeShimlessRmaDelegate>());

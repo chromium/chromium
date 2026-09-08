@@ -5,29 +5,46 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_SET_TIME_SET_TIME_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_SET_TIME_SET_TIME_UI_H_
 
+#include <memory>
+
 #include "ash/constants/webui_url_constants.h"
+#include "base/memory/raw_ref.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
+class PrefService;
+
 namespace ash {
 
 class SetTimeUI;
 
 // WebUIConfig for chrome://set-time
-class SetTimeUIConfig : public content::DefaultWebUIConfig<SetTimeUI> {
+class SetTimeUIConfig : public content::WebUIConfig {
  public:
-  SetTimeUIConfig()
-      : DefaultWebUIConfig(content::kChromeUIScheme,
-                           ash::kChromeUISetTimeHost) {}
+  // `local_state` must be non-null and must outlive `this`.
+  explicit SetTimeUIConfig(PrefService* local_state);
+
+  SetTimeUIConfig(const SetTimeUIConfig&) = delete;
+  SetTimeUIConfig& operator=(const SetTimeUIConfig&) = delete;
+
+  ~SetTimeUIConfig() override;
+
+  std::unique_ptr<content::WebUIController> CreateWebUIController(
+      content::WebUI* web_ui,
+      const GURL& url) override;
+
+ private:
+  const raw_ref<PrefService> local_state_;
 };
 
 // The WebUI for chrome://set-time.
 class SetTimeUI : public ui::MojoWebDialogUI {
  public:
-  explicit SetTimeUI(content::WebUI* web_ui);
+  // `local_state` must be non-null and must outlive `web_ui`.
+  SetTimeUI(PrefService* local_state, content::WebUI* web_ui);
 
   SetTimeUI(const SetTimeUI&) = delete;
   SetTimeUI& operator=(const SetTimeUI&) = delete;
