@@ -18,7 +18,6 @@ features:
   per_profile: false
 future_on:
 - fuchsia
-- android
 owners:
 - mattreynolds@chromium.org
 - file://third_party/blink/renderer/modules/hid/OWNERS
@@ -52,6 +51,7 @@ schema:
 supported_on:
 - chrome_os:100-
 - chrome.*:100-
+- android:155-
 tags:
 - website-sharing
 type: dict
