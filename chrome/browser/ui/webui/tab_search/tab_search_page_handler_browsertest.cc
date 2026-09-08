@@ -395,13 +395,7 @@ class TabSearchPageHandlerTest : public InProcessBrowserTest,
 
 INSTANTIATE_TEST_SUITE_P(All, TabSearchPageHandlerTest, testing::Bool());
 
-// TODO(crbug.com/537538766): Flaky on Linux and ChromeOS.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_GetTabs DISABLED_GetTabs
-#else
-#define MAYBE_GetTabs GetTabs
-#endif
-IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest, MAYBE_GetTabs) {
+IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest, GetTabs) {
   // Browser3 and browser4 are using different profiles, browser5 is not a
   // normal type browser, thus their tabs should not be accessible.
   AddTabWithTitle(browser5(), tab_url6_, kTabName6);
@@ -882,13 +876,7 @@ IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest,
 
 // Ensure that tab model changes in a browser with a different profile
 // will not call TabsChanged().
-// TODO(crbug.com/537468010): Flaky on linux-chromeos-rel. Fix and re-enable.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_TabsNotChanged DISABLED_TabsNotChanged
-#else
-#define MAYBE_TabsNotChanged TabsNotChanged
-#endif
-IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest, MAYBE_TabsNotChanged) {
+IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest, TabsNotChanged) {
   EXPECT_CALL(page_, TabsChanged(_)).Times(1);
   EXPECT_CALL(page_, TabUpdated(_)).Times(0);
   FireTimer();  // Will call TabsChanged().
@@ -904,14 +892,7 @@ IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest, MAYBE_TabsNotChanged) {
 }
 
 // Verify tab update event is called correctly with data
-// TODO(https://crbug.com/537538766): Fails on Linux MSan Tests and looks
-// flaky on Linux and ChromeOS, generally.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_TabUpdated DISABLED_TabUpdated
-#else
-#define MAYBE_TabUpdated TabUpdated
-#endif
-IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest, MAYBE_TabUpdated) {
+IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest, TabUpdated) {
   AddTabWithTitle(browser1(), tab_url1_, kTabName1);
 
   ClearSetupExpectations();
@@ -1350,13 +1331,7 @@ IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest, RecentlyClosedTabInFuture) {
   handler()->GetProfileData(std::move(callback));
 }
 
-// TODO(crbug.com/537538766): Flaky on Linux and ChromeOS.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_ReplaceActiveSplitTab DISABLED_ReplaceActiveSplitTab
-#else
-#define MAYBE_ReplaceActiveSplitTab ReplaceActiveSplitTab
-#endif
-IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest, MAYBE_ReplaceActiveSplitTab) {
+IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest, ReplaceActiveSplitTab) {
   AddTabWithTitle(browser(), tab_url1_, kTabName1);
   AddTabWithTitle(browser(), tab_url2_, kTabName2);
   AddTabWithTitle(browser(), tab_url3_, kTabName3);
@@ -1492,13 +1467,7 @@ IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest, TabSearchUsedPref) {
   EXPECT_TRUE(prefs->GetBoolean(tab_search_prefs::kTabSearchUsed));
 }
 
-// TODO(crbug.com/537538766): Flaky on Linux and ChromeOS.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_RemoveSplit_NTP DISABLED_RemoveSplit_NTP
-#else
-#define MAYBE_RemoveSplit_NTP RemoveSplit_NTP
-#endif
-IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest, MAYBE_RemoveSplit_NTP) {
+IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest, RemoveSplit_NTP) {
   EXPECT_CALL(page_, HostWindowChanged()).Times(testing::AnyNumber());
   EXPECT_CALL(page_, TabsChanged(_)).Times(testing::AnyNumber());
   EXPECT_CALL(page_, TabUpdated(_)).Times(testing::AnyNumber());
