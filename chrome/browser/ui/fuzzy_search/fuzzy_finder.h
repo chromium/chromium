@@ -55,7 +55,24 @@ class FuzzyFinder {
                                            size_t max_results);
 
  private:
+  // Scores an item across its title and synonyms using the fuzzy DP sequence
+  // alignment algorithm.
+  double ScoreItem(const FuzzySearchItem* item, std::u16string_view norm_query);
+
+  // Evaluates a candidate string against a query with typo, transposition, and
+  // boundary tolerance using reusable scratch buffers. Returns a normalized
+  // confidence score in [0.0, 1.0].
+  double ComputeDpMatrixMatch(std::u16string_view query,
+                              std::u16string_view candidate);
+
   std::vector<FuzzySearchItem*> searchable_items_;
+
+  // Scratch buffers instantiated once upon FuzzyFinder construction and reused
+  // across candidate alignments to eliminate dynamic heap allocations during
+  // searches.
+  std::vector<bool> word_boundaries_;
+  std::vector<int> score_matrix_;
+  std::vector<int> consecutive_matrix_;
 };
 
 #endif  // CHROME_BROWSER_UI_FUZZY_SEARCH_FUZZY_FINDER_H_
