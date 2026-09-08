@@ -1811,26 +1811,6 @@
       },
     },
 
-    'gpu_webgl_conformance_gl_passthrough_telemetry_tests': {
-      'webgl_conformance_gl_passthrough_tests': {
-        'test_common': {
-          'mixins': [
-            'has_native_resultdb_integration',
-            'gpu_force_command_decoder_passthrough',
-            'gpu_force_angle_gl',
-            'gpu_force_high_performance_gpu',
-            'gpu_integration_test_webgl1_args',
-            'gpu_integration_test_common_args',
-          ],
-          'module_scheme': 'flat',
-        },
-        'telemetry_test_name': 'webgl1_conformance',
-        'swarming': {
-          'shards': 2,
-        },
-      },
-    },
-
     'gpu_webgl_conformance_metal_passthrough_graphite_telemetry_tests': {
       'webgl_conformance_metal_passthrough_graphite_tests': {
         'test_common': {
@@ -2123,6 +2103,22 @@
             'has_native_resultdb_integration',
             'gpu_force_angle_gles',
             'gpu_force_command_decoder_passthrough',
+            'gpu_force_high_performance_gpu',
+            'gpu_integration_test_webgl1_args',
+            'gpu_integration_test_common_args',
+            'legacy_gpu_webgl_conformance_shards',
+          ],
+          'module_scheme': 'flat',
+        },
+        'telemetry_test_name': 'webgl1_conformance',
+      },
+    },
+
+    'legacy_webgl_conformance_tests': {
+      'webgl_conformance_tests': {
+        'test_common': {
+          'mixins': [
+            'has_native_resultdb_integration',
             'gpu_force_high_performance_gpu',
             'gpu_integration_test_webgl1_args',
             'gpu_integration_test_common_args',
@@ -2730,10 +2726,10 @@
       'gpu_passthrough_telemetry_tests',
       'gpu_skia_renderer_vulkan_passthrough_telemetry_tests',
       'gpu_webgl2_conformance_gl_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
       'legacy_info_collection_tests',
       'legacy_trace_test',
       'legacy_webcodecs_tests',
+      'legacy_webgl_conformance_tests',
     ],
 
     'linux_chromeos_gtests': [

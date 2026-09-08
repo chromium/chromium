@@ -53,7 +53,6 @@ targets.legacy_compound_suite(
     basic_suites = [
         "gpu_passthrough_telemetry_tests",
         "gpu_webgl2_conformance_gl_passthrough_telemetry_tests",
-        "gpu_webgl_conformance_gl_passthrough_telemetry_tests",
         "gpu_skia_renderer_vulkan_passthrough_telemetry_tests",
 
         # Migrated individual tests below.
@@ -62,6 +61,7 @@ targets.legacy_compound_suite(
         "legacy_info_collection_tests",
         "legacy_trace_test",
         "legacy_webcodecs_tests",
+        "legacy_webgl_conformance_tests",
         # TODO(crbug.com/541312843): Add `webrtc_tests` to make this actually
         # identical to gpu_all_linux_release_telemetry_tests.
     ],

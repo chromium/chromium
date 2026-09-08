@@ -3181,11 +3181,6 @@ targets.bundle(
         "gpu_linux_release_telemetry_tests",
         "gpu_fyi_linux_release_telemetry_tests",
     ],
-    per_test_modifications = {
-        "webgl_conformance_tests": targets.remove(
-            reason = "Only run default behavior tests on the non-FYI testers",
-        ),
-    },
 )
 
 targets.bundle(
@@ -3387,13 +3382,13 @@ targets.bundle(
     name = "gpu_angle_linux_telemetry_tests",
     targets = [
         "gpu_webgl2_conformance_gl_passthrough_telemetry_tests",
-        "gpu_webgl_conformance_gl_passthrough_telemetry_tests",
 
         # Migrated individual tests below.
         # TODO(crbug.com/541312843): Remove this comment once all tests are
         # directly included.
         "info_collection_tests",
         "trace_test",
+        "webgl_conformance_tests",
     ],
 )
 
@@ -3428,8 +3423,15 @@ targets.bundle(
 targets.bundle(
     name = "gpu_chromeos_telemetry_tests",
     targets = [
-        "gpu_webgl_conformance_telemetry_tests",
+        "webgl_conformance_tests",
     ],
+    per_test_modifications = {
+        "webgl_conformance_tests": targets.mixin(
+            chromeos_swarming = targets.swarming(
+                shards = 20,
+            ),
+        ),
+    },
 )
 
 # The command buffer perf tests are only run on Windows.
@@ -4431,22 +4433,8 @@ targets.bundle(
         # TODO(jonross): remove this once Vulkan Swiftshader and Vulkan GL interop
         # paths are merged.
         "gpu_skia_renderer_vulkan_passthrough_telemetry_tests",
-        "gpu_webgl_conformance_gl_passthrough_telemetry_tests",
         "gpu_webgl2_conformance_gl_passthrough_telemetry_tests",
         "webrtc_tests",
-
-        # Migrated individual tests below.
-        # TODO(crbug.com/541312843): Remove this comment once all tests are
-        # directly included.
-        "webcodecs_tests",
-    ],
-)
-
-targets.bundle(
-    name = "gpu_fyi_linux_release_vulkan_telemetry_tests",
-    targets = [
-        "gpu_webgl2_conformance_gl_passthrough_telemetry_tests",
-        "gpu_skia_renderer_vulkan_passthrough_telemetry_tests",
 
         # Migrated individual tests below.
         # TODO(crbug.com/541312843): Remove this comment once all tests are
@@ -4476,9 +4464,6 @@ targets.bundle(
         "webgl_conformance_gles_passthrough_tests",
     ],
     per_test_modifications = {
-        "webgl_conformance_gl_passthrough_tests": targets.remove(
-            reason = "Wayland requires running tests with GLES, not GL",
-        ),
         "webgl2_conformance_gl_passthrough_tests": targets.remove(
             reason = "Wayland requires running tests with GLES, not GL",
         ),
@@ -4621,13 +4606,13 @@ targets.bundle(
     name = "gpu_linux_debug_telemetry_tests",
     targets = [
         "gpu_passthrough_telemetry_tests",
-        "gpu_webgl_conformance_telemetry_tests",
 
         # Migrated individual tests below.
         # TODO(crbug.com/541312843): Remove this comment once all tests are
         # directly included.
         "info_collection_tests",
         "trace_test",
+        "webgl_conformance_tests",
     ],
 )
 
@@ -4641,11 +4626,6 @@ targets.bundle(
 targets.bundle(
     name = "gpu_linux_release_telemetry_tests",
     targets = [
-        "gpu_webgl_conformance_telemetry_tests",
-
-        # Migrated individual tests below.
-        # TODO(crbug.com/541312843): Remove this comment once all tests are
-        # directly included.
         "context_lost_passthrough_tests",
         "expected_color_pixel_passthrough_test",
         "gpu_process_launch_tests",
@@ -4654,6 +4634,7 @@ targets.bundle(
         "pixel_skia_gold_passthrough_test",
         "screenshot_sync_passthrough_tests",
         "trace_test",
+        "webgl_conformance_tests",
     ],
 )
 
@@ -4743,28 +4724,6 @@ targets.bundle(
                 ],
                 swarming = targets.swarming(
                     shards = 1,
-                ),
-            ),
-        ],
-    },
-)
-
-targets.bundle(
-    name = "gpu_webgl_conformance_telemetry_tests",
-    targets = [
-        "webgl_conformance_tests",
-    ],
-    per_test_modifications = {
-        "webgl_conformance_tests": [
-            targets.mixin(
-                swarming = targets.swarming(
-                    shards = 2,
-                ),
-                android_swarming = targets.swarming(
-                    shards = 12,
-                ),
-                chromeos_swarming = targets.swarming(
-                    shards = 20,
                 ),
             ),
         ],
