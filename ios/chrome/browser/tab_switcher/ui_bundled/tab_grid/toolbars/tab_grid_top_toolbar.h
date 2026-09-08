@@ -96,6 +96,8 @@
                           animated:(BOOL)animated;
 // Sets whether the incognito toolbar background should be hidden.
 - (void)setIncognitoBackgroundHidden:(BOOL)hidden;
+// Sets whether the search button is hidden or not
+- (void)setSearchButtonHidden:(BOOL)hidden;
 
 @end
 

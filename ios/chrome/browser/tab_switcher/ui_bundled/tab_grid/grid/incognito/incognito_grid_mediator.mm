@@ -182,7 +182,8 @@
     toolbarsConfiguration.closeAllButton = !self.webStateList->empty();
     toolbarsConfiguration.exitTabGridButton = !self.webStateList->empty();
     toolbarsConfiguration.newTabButton = YES;
-    toolbarsConfiguration.searchButton = YES;
+    toolbarsConfiguration.searchButtonHidden = self.webStateList->empty();
+    toolbarsConfiguration.searchButton = !self.webStateList->empty();
     toolbarsConfiguration.selectTabsButton = !self.webStateList->empty();
     toolbarsConfiguration.closeOtherTabsButton = [self canCloseOtherTabs];
   }

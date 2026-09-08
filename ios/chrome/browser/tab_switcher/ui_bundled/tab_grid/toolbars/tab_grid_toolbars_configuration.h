@@ -53,6 +53,7 @@
 // is taken into account.
 @property(nonatomic) BOOL cancelSearchButton;
 @property(nonatomic) BOOL searchButton;
+@property(nonatomic) BOOL searchButtonHidden;
 
 // Returns a configuration disabling all buttons.
 + (TabGridToolbarsConfiguration*)disabledConfigurationForPage:(TabGridPage)page;

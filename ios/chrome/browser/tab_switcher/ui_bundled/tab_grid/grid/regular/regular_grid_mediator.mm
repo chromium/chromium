@@ -284,6 +284,7 @@ using ScopedTabGroupSyncObservation =
     toolbarsConfiguration.closeAllButton = [self canCloseRegularOrInactiveTabs];
     toolbarsConfiguration.exitTabGridButton = !self.webStateList->empty();
     toolbarsConfiguration.newTabButton = YES;
+    toolbarsConfiguration.searchButtonHidden = NO;
     toolbarsConfiguration.searchButton = YES;
     toolbarsConfiguration.selectTabsButton = [self canCloseTabs];
     toolbarsConfiguration.closeOtherTabsButton = [self canCloseOtherTabs];

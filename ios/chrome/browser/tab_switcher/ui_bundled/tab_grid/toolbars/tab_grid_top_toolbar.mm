@@ -183,6 +183,10 @@ CGFloat HorizontalMargin() {
   _searchButton.enabled = enabled;
 }
 
+- (void)setSearchButtonHidden:(BOOL)hidden {
+  _searchButton.hidden = hidden;
+}
+
 - (void)setSelectTabsActionEnabled:(BOOL)enabled {
   _selectTabsActionEnabled = enabled;
   _overflowMenuButton.menu = [self createOverflowMenu];

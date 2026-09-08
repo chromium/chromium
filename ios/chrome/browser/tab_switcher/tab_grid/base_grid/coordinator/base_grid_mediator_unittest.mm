@@ -727,7 +727,13 @@ TEST_P(BaseGridMediatorTest, CloseAllThenAddWebState) {
   TabGridToolbarsConfiguration* configuration =
       fake_toolbars_mediator_.configuration;
   EXPECT_TRUE(configuration.newTabButton);
-  EXPECT_TRUE(configuration.searchButton);
+  if (GetParam() == TEST_INCOGNITO_MEDIATOR) {
+    EXPECT_FALSE(configuration.searchButton);
+    EXPECT_TRUE(configuration.searchButtonHidden);
+  } else {
+    EXPECT_TRUE(configuration.searchButton);
+    EXPECT_FALSE(configuration.searchButtonHidden);
+  }
 
   EXPECT_FALSE(configuration.selectAllButton);
   EXPECT_FALSE(configuration.exitTabGridButton);
@@ -750,6 +756,7 @@ TEST_P(BaseGridMediatorTest, CloseAllThenAddWebState) {
   EXPECT_TRUE(configuration.exitTabGridButton);
   EXPECT_TRUE(configuration.newTabButton);
   EXPECT_TRUE(configuration.searchButton);
+  EXPECT_FALSE(configuration.searchButtonHidden);
   EXPECT_TRUE(configuration.selectTabsButton);
 
   EXPECT_FALSE(configuration.deselectAllButton);
@@ -790,6 +797,7 @@ TEST_P(BaseGridMediatorTest, SelectedTabAndGroupWithGroup) {
   EXPECT_FALSE(configuration.closeAllButton);
   EXPECT_FALSE(configuration.newTabButton);
   EXPECT_FALSE(configuration.searchButton);
+  EXPECT_FALSE(configuration.searchButtonHidden);
   EXPECT_FALSE(configuration.selectTabsButton);
   EXPECT_FALSE(configuration.deselectAllButton);
   EXPECT_FALSE(configuration.cancelSearchButton);

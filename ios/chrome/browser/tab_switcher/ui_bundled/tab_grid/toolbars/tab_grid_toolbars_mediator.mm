@@ -97,6 +97,9 @@
 
   [self.topToolbarConsumer setSearchButtonEnabled:_configuration.searchButton];
 
+  [self.topToolbarConsumer
+      setSearchButtonHidden:_configuration.searchButtonHidden];
+
   BOOL pageActionMenuButtonVisible = _configuration.pageActionMenuButtonVisible;
   [self.topToolbarConsumer
       setPageActionMenuButtonVisible:pageActionMenuButtonVisible];
