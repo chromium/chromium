@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_types.h"
@@ -60,4 +61,40 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersSidePanelCoordinatorBrowserTest,
   EXPECT_FALSE(HistoryClustersSidePanelCoordinator::IsSupported(
       browser()->GetProfile()));
   EXPECT_FALSE(history_clusters_coordinator->Show(std::string()));
+}
+
+IN_PROC_BROWSER_TEST_F(HistoryClustersSidePanelCoordinatorBrowserTest,
+                       DisabledInIncognito) {
+  BrowserWindowInterface* incognito_browser =
+      CreateIncognitoBrowser(browser()->GetProfile());
+  EXPECT_TRUE(incognito_browser->GetProfile()->IsIncognitoProfile());
+
+  EXPECT_FALSE(HistoryClustersSidePanelCoordinator::IsSupported(
+      incognito_browser->GetProfile()));
+}
+
+class HistoryClustersSidePanelCoordinatorIsolatedModeBrowserTest
+    : public HistoryClustersSidePanelCoordinatorBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    HistoryClustersSidePanelCoordinatorBrowserTest::SetUpCommandLine(
+        command_line);
+    command_line->AppendSwitch(
+        enterprise_isolated_mode::switches::
+            kForceEnterpriseIsolatedModeReplacesIncognito);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    HistoryClustersSidePanelCoordinatorIsolatedModeBrowserTest,
+    DisabledInIsolatedMode) {
+  // Use CreateIncognitoBrowser() which creates an isolated mode profile when
+  // the kForceEnterpriseIsolatedModeReplacesIncognito switch is present.
+  BrowserWindowInterface* isolated_browser =
+      CreateIncognitoBrowser(browser()->GetProfile());
+  EXPECT_TRUE(
+      isolated_browser->GetProfile()->IsEnterpriseIsolatedModeProfile());
+
+  EXPECT_FALSE(HistoryClustersSidePanelCoordinator::IsSupported(
+      isolated_browser->GetProfile()));
 }
