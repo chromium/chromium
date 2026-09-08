@@ -22,6 +22,7 @@ found in the LICENSE file.
         android:layout_weight="1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:minWidth="@dimen/zoom_menu_item_title_min_width"
         android:minHeight="?attr/listItemHeight"
         tools:ignore="InefficientWeight" />
 
