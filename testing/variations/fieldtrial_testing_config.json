@@ -15343,6 +15343,7 @@
     "PasswordSaveInContextErrorResolution": [
         {
             "platforms": [
+                "android",
                 "chromeos",
                 "ios",
                 "linux",
