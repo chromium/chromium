@@ -254,8 +254,8 @@ void DeclarativePerformanceObserver::SetStoragePartitionForTesting(  // IN-TEST
 }
 
 StoragePartition* DeclarativePerformanceObserver::GetStoragePartition() const {
-  return storage_partition_for_testing_
-             ? storage_partition_for_testing_.get()
+  return storage_partition_for_testing_.has_value()
+             ? storage_partition_for_testing_->get()
              : render_frame_host().GetStoragePartition();
 }
 

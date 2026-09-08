@@ -464,6 +464,41 @@ TEST_F(DeclarativePerformanceObserverTest, RecordsBFCacheLifecycle) {
   EXPECT_EQ(*(vis_entry->FindString("name")), "visible");
 }
 
+TEST_F(DeclarativePerformanceObserverTest, OnEnterBFCacheNullStoragePartition) {
+  const GURL kPageURL("https://example.com/index.html");
+  const std::string kEndpoint("telemetry");
+
+  auto policy = network::mojom::DeclarativePerformanceObserverPolicy::New();
+  policy->reporting_endpoint = kEndpoint;
+  policy->entry_types.push_back(
+      network::mojom::PerformanceEntryType::kNavigation);
+
+  MockNavigationHandle navigation_handle(kPageURL, main_rfh());
+  navigation_handle.set_has_committed(true);
+  navigation_handle.set_is_in_primary_main_frame(true);
+  navigation_handle.set_is_error_page(false);
+
+  NavigationHandleTiming timing;
+  ON_CALL(navigation_handle, GetNavigationHandleTiming())
+      .WillByDefault(testing::ReturnRef(timing));
+
+  ON_CALL(navigation_handle, GetDeclarativePerformanceObserverPolicy())
+      .WillByDefault(testing::Return(policy.get()));
+
+  CreateObserver(&navigation_handle);
+  auto* observer =
+      DeclarativePerformanceObserver::GetForCurrentDocument(main_rfh());
+  ASSERT_TRUE(observer);
+
+  // Explicitly simulate a null StoragePartition.
+  observer->SetStoragePartitionForTesting(nullptr);
+
+  // Entering BFCache should not crash when StoragePartition is null.
+  observer->OnEnterBFCache();
+  EXPECT_EQ(network_context_.reports().size(), 0u);
+  EXPECT_EQ(network_context_.send_reports_for_source_calls().size(), 0u);
+}
+
 TEST_F(DeclarativePerformanceObserverTest, RecordsPerformanceMarks) {
   const GURL kPageURL("https://example.com/index.html");
   const std::string kEndpoint("telemetry");

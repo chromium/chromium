@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_DECLARATIVE_PERFORMANCE_OBSERVER_DECLARATIVE_PERFORMANCE_OBSERVER_H_
 #define CONTENT_BROWSER_DECLARATIVE_PERFORMANCE_OBSERVER_DECLARATIVE_PERFORMANCE_OBSERVER_H_
 
+#include <optional>
+
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -116,7 +118,7 @@ class CONTENT_EXPORT DeclarativePerformanceObserver
   GURL committed_url_;
   net::NetworkAnonymizationKey network_anonymization_key_;
   base::UnguessableToken reporting_source_;
-  raw_ptr<StoragePartition> storage_partition_for_testing_ = nullptr;
+  std::optional<raw_ptr<StoragePartition>> storage_partition_for_testing_;
 
   mojo::Receiver<blink::mojom::DeclarativePerformanceObserverHost> receiver_{
       this};

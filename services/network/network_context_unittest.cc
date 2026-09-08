@@ -3868,6 +3868,67 @@ TEST_F(NetworkContextTest, ClearReportingCacheReportsWithNoService) {
   run_loop.Run();
 }
 
+TEST_F(NetworkContextTest, SendReportsForSource) {
+  auto reporting_context = std::make_unique<net::TestReportingContext>(
+      base::DefaultClock::GetInstance(), base::DefaultTickClock::GetInstance(),
+      net::ReportingPolicy());
+  net::ReportingCache* reporting_cache = reporting_context->cache();
+  std::unique_ptr<NetworkContext> network_context = CreateContextWithParams(
+      CreateNetworkContextParamsForTesting(),
+      net::ReportingService::CreateForTesting(std::move(reporting_context)));
+
+  base::UnguessableToken reporting_source = base::UnguessableToken::Create();
+  GURL url("https://google.com");
+  GURL endpoint1("https://google.com/report1");
+  GURL endpoint2("https://google.com/report2");
+  url::Origin origin = url::Origin::Create(url);
+  net::IsolationInfo isolation_info = net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kOther, origin, origin,
+      net::SiteForCookies::FromOrigin(origin));
+  base::flat_map<std::string, std::string> endpoints = {
+      {"group1", endpoint1.spec()},
+      {"group2", endpoint2.spec()},
+  };
+
+  network_context->SetDocumentReportingEndpoints(reporting_source, origin,
+                                                 isolation_info, endpoints);
+
+  net::ReportingService* reporting_service =
+      network_context->url_request_context()->reporting_service();
+  // 1st report: sent immediately and starts delivery agent timer.
+  reporting_service->QueueReport(
+      url, reporting_source, isolation_info.network_anonymization_key(),
+      "Mozilla/1.0", "group1", "type", base::DictValue(), 0,
+      net::ReportingTargetType::kDeveloper);
+
+  EXPECT_EQ(0u, reporting_cache->GetReportCountWithStatusForTesting(
+                    net::ReportingReport::Status::QUEUED));
+  EXPECT_EQ(1u, reporting_cache->GetReportCountWithStatusForTesting(
+                    net::ReportingReport::Status::PENDING));
+
+  // 2nd report for group2: remains queued because delivery timer is already
+  // running.
+  reporting_service->QueueReport(
+      url, reporting_source, isolation_info.network_anonymization_key(),
+      "Mozilla/1.0", "group2", "type", base::DictValue(), 0,
+      net::ReportingTargetType::kDeveloper);
+
+  EXPECT_EQ(1u, reporting_cache->GetReportCountWithStatusForTesting(
+                    net::ReportingReport::Status::QUEUED));
+  EXPECT_EQ(1u, reporting_cache->GetReportCountWithStatusForTesting(
+                    net::ReportingReport::Status::PENDING));
+
+  network_context_remote_->SendReportsForSource(reporting_source);
+  network_context_remote_.FlushForTesting();
+
+  // Both reports should now be pending.
+  EXPECT_EQ(0u, reporting_cache->GetReportCountWithStatusForTesting(
+                    net::ReportingReport::Status::QUEUED));
+  EXPECT_EQ(2u, reporting_cache->GetReportCountWithStatusForTesting(
+                    net::ReportingReport::Status::PENDING));
+  EXPECT_FALSE(reporting_cache->GetExpiredSources().contains(reporting_source));
+}
+
 TEST_F(NetworkContextTest, ClearReportingCacheClients) {
   auto reporting_context = std::make_unique<net::TestReportingContext>(
       base::DefaultClock::GetInstance(), base::DefaultTickClock::GetInstance(),

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/strings/string_util.h"
+#include "base/synchronization/lock.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/browsing_data/browsing_data_browsertest_utils.h"
 #include "content/browser/declarative_performance_observer/declarative_performance_observer_store.h"
@@ -13,10 +14,12 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "net/base/url_util.h"
 #include "net/dns/mock_host_resolver.h"
@@ -32,8 +35,10 @@ namespace content {
 class DeclarativePerformanceObserverBrowserTest : public ContentBrowserTest {
  public:
   DeclarativePerformanceObserverBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kDeclarativePerformanceObserver);
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kDeclarativePerformanceObserver,
+         features::kBackForwardCache},
+        {});
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -136,10 +141,10 @@ class DeclarativePerformanceObserverBrowserTest : public ContentBrowserTest {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<net::EmbeddedTestServer> https_server_;
   base::Lock report_lock_;
   std::vector<std::string> received_reports_ GUARDED_BY(report_lock_);
   base::OnceClosure report_quit_closure_ GUARDED_BY(report_lock_);
+  std::unique_ptr<net::EmbeddedTestServer> https_server_;
 };
 
 IN_PROC_BROWSER_TEST_F(DeclarativePerformanceObserverBrowserTest,
@@ -241,16 +246,21 @@ IN_PROC_BROWSER_TEST_F(DeclarativePerformanceObserverBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DeclarativePerformanceObserverBrowserTest,
                        SendsReportImmediatelyOnBFCacheEntry) {
-  GURL dpo_url = https_server()->GetURL("origin1.com", "/dpo-page");
+  GURL declarative_performance_observer_url =
+      https_server()->GetURL("origin1.com", "/dpo-page");
   GURL page2_url = https_server()->GetURL("origin1.com", "/clear-site-data");
 
-  EXPECT_TRUE(NavigateToURL(shell(), dpo_url));
+  EXPECT_TRUE(NavigateToURL(shell(), declarative_performance_observer_url));
+  RenderFrameHostWrapper rfh(shell()->web_contents()->GetPrimaryMainFrame());
 
   base::RunLoop report_loop;
   SetReportQuitClosure(report_loop.QuitClosure());
 
-  // Navigate to page 2 (putting dpo-page into BFCache).
+  // Navigate to page 2 (putting page into BFCache).
   EXPECT_TRUE(NavigateToURL(shell(), page2_url));
+
+  ASSERT_TRUE(rfh->IsInLifecycleState(
+      RenderFrameHost::LifecycleState::kInBackForwardCache));
 
   // The report should be dispatched immediately via SendReportsForSource
   // without waiting for 1 minute.
@@ -259,6 +269,25 @@ IN_PROC_BROWSER_TEST_F(DeclarativePerformanceObserverBrowserTest,
   std::vector<std::string> reports = GetReceivedReports();
   ASSERT_EQ(reports.size(), 1u);
   EXPECT_TRUE(reports[0].contains("session-end"));
+
+  // Restore the cached document and verify that subsequent observer reports
+  // are queued and delivered properly.
+  base::RunLoop restore_report_loop;
+  SetReportQuitClosure(restore_report_loop.QuitClosure());
+
+  shell()->web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  EXPECT_EQ(rfh.get(), shell()->web_contents()->GetPrimaryMainFrame());
+  EXPECT_FALSE(rfh->IsInLifecycleState(
+      RenderFrameHost::LifecycleState::kInBackForwardCache));
+
+  // Navigate away again to trigger subsequent session-end report.
+  EXPECT_TRUE(NavigateToURL(shell(), page2_url));
+  restore_report_loop.Run();
+
+  reports = GetReceivedReports();
+  ASSERT_EQ(reports.size(), 2u);
+  EXPECT_TRUE(reports[1].contains("session-end"));
 }
 
 }  // namespace content

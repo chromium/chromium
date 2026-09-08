@@ -356,6 +356,58 @@ TEST_P(ReportingServiceTest, SendReportsForSource) {
   // Source should NOT be marked as expired.
   EXPECT_FALSE(
       context()->cache()->GetExpiredSources().contains(*kReportingSource_));
+
+  // 3rd report for group: can still be queued and processed for the
+  // non-expired source.
+  service()->QueueReport(kUrl_, kReportingSource_, kNak_, kUserAgent_, kGroup_,
+                         kType_, base::DictValue(), 0,
+                         ReportingTargetType::kDeveloper);
+  EXPECT_EQ(1u, context()->cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::QUEUED));
+  EXPECT_EQ(2u, context()->cache()->GetReportCountWithStatusForTesting(
+                    ReportingReport::Status::PENDING));
+  context()->cache()->GetReports(&reports);
+  EXPECT_EQ(3u, reports.size());
+}
+
+TEST_P(ReportingServiceTest,
+       ProcessReportsBeforeSendReportsForSourceWhenUninitialized) {
+  // Test only relevant when using a persistent store. The store requires async
+  // loading, creating the opportunity for backlog tasks to accumulate before
+  // initialization completes.
+  if (!store()) {
+    GTEST_SKIP();
+  }
+  auto parsed_header =
+      ParseReportingEndpoints(kGroup_ + "=\"" + kEndpoint_.spec() + "\"");
+  ASSERT_TRUE(parsed_header.has_value());
+  service()->SetDocumentReportingEndpoints(*kReportingSource_, kOrigin_,
+                                           kIsolationInfo_, *parsed_header);
+  // Add a "create report" task to the backlog (service not initialized yet).
+  service()->QueueReport(kUrl_, kReportingSource_, kNak_, kUserAgent_, kGroup_,
+                         kType_, base::DictValue(), 0,
+                         ReportingTargetType::kDeveloper);
+
+  // Now trigger SendReportsForSource, adding a "send reports for source" task
+  // to the backlog.
+  service()->SendReportsForSource(*kReportingSource_);
+
+  // Verify neither operation has been processed yet.
+  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
+  context()->cache()->GetReports(&reports);
+  EXPECT_EQ(0u, reports.size());
+  EXPECT_FALSE(
+      context()->cache()->GetExpiredSources().contains(*kReportingSource_));
+
+  // Now finish loading, which should process the backlog.
+  FinishLoading(true /* load_success */);
+
+  // First the "create report" task was processed, then SendReportsForSource
+  // made the report pending without expiring the source.
+  context()->cache()->GetReports(&reports);
+  EXPECT_EQ(1u, reports.size());
+  EXPECT_FALSE(
+      context()->cache()->GetExpiredSources().contains(*kReportingSource_));
 }
 
 TEST_P(ReportingServiceTest,
