@@ -62,7 +62,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_scrollintoviewoptions.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_keyframeanimationoptions_unrestricteddouble.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_keyframeeffectoptions_unrestricteddouble.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_sethtmlunsafeoptions_trustedparseroptions.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_sethtmlunsafeoptions_trustedhtmlparseroptions.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_timelinerangeoffset.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_stringlegacynulltoemptystring_trustedhtml.h"
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
@@ -285,7 +285,7 @@
 #include "third_party/blink/renderer/core/svg/svg_use_element.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
-#include "third_party/blink/renderer/core/trustedtypes/trusted_parser_options.h"
+#include "third_party/blink/renderer/core/trustedtypes/trusted_html_parser_options.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_names.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_pseudo_element_base.h"
@@ -14085,7 +14085,7 @@ void Element::setHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
 }
 
 void Element::setHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
-                            TrustedParserOptions* options,
+                            TrustedHTMLParserOptions* options,
                             ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::TrustedTypesCreateParserOptionsEnabled());
   UseCounter::Count(GetDocument(), WebFeature::kHTMLUnsafeMethods);

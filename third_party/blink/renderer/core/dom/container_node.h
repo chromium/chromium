@@ -50,7 +50,7 @@ class HTMLCollection;
 class RadioNodeList;
 class ScriptState;
 class SetHTMLOptions;
-class V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions;
+class V8UnionSetHTMLUnsafeOptionsOrTrustedHTMLParserOptions;
 class StyleRecalcContext;
 class WhitespaceAttacher;
 class WritableStream;
@@ -404,11 +404,11 @@ class CORE_EXPORT ContainerNode : public Node {
 
   WritableStream* streamAppendHTMLUnsafe(
       ScriptState*,
-      V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions*,
+      V8UnionSetHTMLUnsafeOptionsOrTrustedHTMLParserOptions*,
       ExceptionState&);
   WritableStream* streamHTMLUnsafe(
       ScriptState*,
-      V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions*,
+      V8UnionSetHTMLUnsafeOptionsOrTrustedHTMLParserOptions*,
       ExceptionState&);
   WritableStream* streamHTML(ScriptState*, SetHTMLOptions*, ExceptionState&);
   WritableStream* streamAppendHTML(ScriptState*,
@@ -419,7 +419,7 @@ class CORE_EXPORT ContainerNode : public Node {
                   ExceptionState& exception_state);
   WritableStream* streamPrependHTMLUnsafe(
       ScriptState*,
-      V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions*,
+      V8UnionSetHTMLUnsafeOptionsOrTrustedHTMLParserOptions*,
       ExceptionState&);
   WritableStream* streamPrependHTML(ScriptState*,
                                     SetHTMLOptions*,
@@ -427,7 +427,7 @@ class CORE_EXPORT ContainerNode : public Node {
 
   void appendHTMLUnsafe(
       const V8UnionStringOrTrustedHTML* html,
-      V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions* options,
+      V8UnionSetHTMLUnsafeOptionsOrTrustedHTMLParserOptions* options,
       ExceptionState& exception_state);
 
   void prependHTML(const String& html,
@@ -436,7 +436,7 @@ class CORE_EXPORT ContainerNode : public Node {
 
   void prependHTMLUnsafe(
       const V8UnionStringOrTrustedHTML* html,
-      V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions* options,
+      V8UnionSetHTMLUnsafeOptionsOrTrustedHTMLParserOptions* options,
       ExceptionState& exception_state);
 
   void InsertHTMLBefore(Node* ref_child,

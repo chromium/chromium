@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TRUSTEDTYPES_TRUSTED_PARSER_OPTIONS_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_TRUSTEDTYPES_TRUSTED_PARSER_OPTIONS_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TRUSTEDTYPES_TRUSTED_HTML_PARSER_OPTIONS_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_TRUSTEDTYPES_TRUSTED_HTML_PARSER_OPTIONS_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/sanitizer/sanitizer.h"
@@ -11,20 +11,16 @@
 
 namespace blink {
 
-class CORE_EXPORT TrustedParserOptions final : public ScriptWrappable {
+class CORE_EXPORT TrustedHTMLParserOptions final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit TrustedParserOptions(Sanitizer* sanitizer, bool run_scripts)
+  explicit TrustedHTMLParserOptions(Sanitizer* sanitizer, bool run_scripts)
       : sanitizer_(sanitizer ? sanitizer->Clone() : nullptr),
         run_scripts_(run_scripts) {}
   void Trace(Visitor* visitor) const override {
     ScriptWrappable::Trace(visitor);
     visitor->Trace(sanitizer_);
-  }
-
-  Sanitizer* sanitizer() const {
-    return sanitizer_ ? sanitizer_->Clone() : nullptr;
   }
 
   Sanitizer* EffectiveSanitizer() const { return sanitizer_; }
@@ -36,4 +32,4 @@ class CORE_EXPORT TrustedParserOptions final : public ScriptWrappable {
 };
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_TRUSTEDTYPES_TRUSTED_PARSER_OPTIONS_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_TRUSTEDTYPES_TRUSTED_HTML_PARSER_OPTIONS_H_

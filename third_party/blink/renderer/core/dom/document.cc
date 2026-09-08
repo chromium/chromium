@@ -10347,7 +10347,7 @@ Document* Document::parseHTMLUnsafe(ExecutionContext* context,
 // static
 Document* Document::parseHTMLUnsafe(ExecutionContext* context,
                                     const V8UnionStringOrTrustedHTML* html,
-                                    TrustedParserOptions* options,
+                                    TrustedHTMLParserOptions* options,
                                     ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::TrustedTypesCreateParserOptionsEnabled());
   UseCounter::Count(context, WebFeature::kHTMLUnsafeMethods);

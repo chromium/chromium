@@ -8,7 +8,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_parse_html_unsafe_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_sanitizer_sanitizerconfig_sanitizerpresets.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_sethtmlunsafeoptions_trustedparseroptions.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_sethtmlunsafeoptions_trustedhtmlparseroptions.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_document_parser_fastpath.h"
 #include "third_party/blink/renderer/core/sanitizer/sanitizer.h"
 #include "third_party/blink/renderer/core/sanitizer/sanitizer_api.h"
+#include "third_party/blink/renderer/core/trustedtypes/trusted_html_parser_options.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -164,7 +165,7 @@ inline void RemoveElementPreservingChildren(DocumentFragment* fragment,
 
 }  // namespace
 
-FragmentParserOptions::FragmentParserOptions(TrustedParserOptions* options)
+FragmentParserOptions::FragmentParserOptions(TrustedHTMLParserOptions* options)
     : trust_mode_(TrustMode::kTrusted),
       run_scripts_((options->runScripts() &&
                     RuntimeEnabledFeatures::SetHTMLCanRunScriptsEnabled())
@@ -192,14 +193,14 @@ FragmentParserOptions::FragmentParserOptions(SetHTMLOptions* options)
 
 // static
 FragmentParserOptions FragmentParserOptions::From(
-    const V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions* options) {
+    const V8UnionSetHTMLUnsafeOptionsOrTrustedHTMLParserOptions* options) {
   switch (options->GetContentType()) {
-    case V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions::ContentType::
+    case V8UnionSetHTMLUnsafeOptionsOrTrustedHTMLParserOptions::ContentType::
         kSetHTMLUnsafeOptions:
       return FragmentParserOptions(options->GetAsSetHTMLUnsafeOptions());
-    case V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions::ContentType::
-        kTrustedParserOptions:
-      return FragmentParserOptions(options->GetAsTrustedParserOptions());
+    case V8UnionSetHTMLUnsafeOptionsOrTrustedHTMLParserOptions::ContentType::
+        kTrustedHTMLParserOptions:
+      return FragmentParserOptions(options->GetAsTrustedHTMLParserOptions());
   }
 }
 

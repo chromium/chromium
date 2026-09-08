@@ -24,7 +24,7 @@
 #include "third_party/blink/renderer/core/dom/container_node.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_get_html_options.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_sethtmlunsafeoptions_trustedparseroptions.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_sethtmlunsafeoptions_trustedhtmlparseroptions.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/selector_filter.h"
@@ -1976,7 +1976,7 @@ const AtomicString& TrustedTypesInterfaceName(ContainerNode* node) {
 
 WritableStream* ContainerNode::streamAppendHTMLUnsafe(
     ScriptState* script_state,
-    V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions* options,
+    V8UnionSetHTMLUnsafeOptionsOrTrustedHTMLParserOptions* options,
     ExceptionState& exception_state) {
   std::optional<FragmentParserOptions> resolved_options =
       TrustedTypesCheckForStreaming(
@@ -2007,7 +2007,7 @@ WritableStream* ContainerNode::streamAppendHTML(
 
 WritableStream* ContainerNode::streamPrependHTMLUnsafe(
     ScriptState* script_state,
-    V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions* options,
+    V8UnionSetHTMLUnsafeOptionsOrTrustedHTMLParserOptions* options,
     ExceptionState& exception_state) {
   std::optional<FragmentParserOptions> resolved_options =
       TrustedTypesCheckForStreaming(
@@ -2036,7 +2036,7 @@ WritableStream* ContainerNode::streamPrependHTML(
 
 WritableStream* ContainerNode::streamHTMLUnsafe(
     ScriptState* script_state,
-    V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions* options,
+    V8UnionSetHTMLUnsafeOptionsOrTrustedHTMLParserOptions* options,
     ExceptionState& exception_state) {
   std::optional<FragmentParserOptions> resolved_options =
       TrustedTypesCheckForStreaming(
@@ -2080,7 +2080,7 @@ void ContainerNode::appendHTML(const String& html,
 
 void ContainerNode::appendHTMLUnsafe(
     const V8UnionStringOrTrustedHTML* html,
-    V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions* options,
+    V8UnionSetHTMLUnsafeOptionsOrTrustedHTMLParserOptions* options,
     ExceptionState& exception_state) {
   const AtomicString& interface_name = IsElementNode()
                                            ? trusted_types_names::kElement
@@ -2120,7 +2120,7 @@ void ContainerNode::prependHTML(const String& html,
 
 void ContainerNode::prependHTMLUnsafe(
     const V8UnionStringOrTrustedHTML* html,
-    V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions* options,
+    V8UnionSetHTMLUnsafeOptionsOrTrustedHTMLParserOptions* options,
     ExceptionState& exception_state) {
   const AtomicString& interface_name = IsElementNode()
                                            ? trusted_types_names::kElement

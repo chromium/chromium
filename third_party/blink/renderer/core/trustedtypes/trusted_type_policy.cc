@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_sanitizer_sanitizerconfig_sanitizerpresets.h"
 #include "third_party/blink/renderer/core/sanitizer/sanitizer.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_html.h"
-#include "third_party/blink/renderer/core/trustedtypes/trusted_parser_options.h"
+#include "third_party/blink/renderer/core/trustedtypes/trusted_html_parser_options.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_script.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_script_url.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -159,7 +159,7 @@ TrustedScriptURL* TrustedTypePolicy::createScriptURLInternal(
   return MakeGarbageCollected<TrustedScriptURL>(script_url);
 }
 
-TrustedParserOptions* TrustedTypePolicy::createParserOptions(
+TrustedHTMLParserOptions* TrustedTypePolicy::createParserOptions(
     v8::Isolate* isolate,
     const SetHTMLUnsafeOptions* options,
     ExceptionState& exception_state) {
@@ -220,7 +220,7 @@ TrustedParserOptions* TrustedTypePolicy::createParserOptions(
     return nullptr;
   }
   if (out.IsNull() || out.IsUndefined()) {
-    return MakeGarbageCollected<TrustedParserOptions>(
+    return MakeGarbageCollected<TrustedHTMLParserOptions>(
         nullptr, options ? options->runScripts() : false);
   }
 
@@ -258,7 +258,7 @@ TrustedParserOptions* TrustedTypePolicy::createParserOptions(
     return nullptr;
   }
 
-  return MakeGarbageCollected<TrustedParserOptions>(
+  return MakeGarbageCollected<TrustedHTMLParserOptions>(
       final_sanitizer,
       new_options->runScripts() && (options ? options->runScripts() : false));
 }

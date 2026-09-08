@@ -64,7 +64,7 @@
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/script/module_script.h"
 #include "third_party/blink/renderer/core/script/value_wrapper_synthetic_module_script.h"
-#include "third_party/blink/renderer/core/trustedtypes/trusted_parser_options.h"
+#include "third_party/blink/renderer/core/trustedtypes/trusted_html_parser_options.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_names.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -222,7 +222,7 @@ void ShadowRoot::setHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
 }
 
 void ShadowRoot::setHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
-                               TrustedParserOptions* options,
+                               TrustedHTMLParserOptions* options,
                                ExceptionState& exception_state) {
   UseCounter::Count(GetDocument(), WebFeature::kHTMLUnsafeMethods);
   FragmentParserOptions resolved_options(options);

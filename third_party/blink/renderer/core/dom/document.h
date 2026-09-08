@@ -274,6 +274,7 @@ class Text;
 class TransformSource;
 class TreeWalker;
 class TrustedHTML;
+class TrustedHTMLParserOptions;
 class V8DocumentReadyState;
 class V8NodeFilter;
 class V8UnionCSSPseudoElementOrDocumentOrElementOrText;
@@ -2268,7 +2269,7 @@ class CORE_EXPORT Document : public ContainerNode,
                                    ExceptionState& exception_state);
   static Document* parseHTMLUnsafe(ExecutionContext* context,
                                    const V8UnionStringOrTrustedHTML* html,
-                                   TrustedParserOptions* options,
+                                   TrustedHTMLParserOptions* options,
                                    ExceptionState& exception_state);
   static Document* parseHTML(ExecutionContext* context,
                              const String& html,

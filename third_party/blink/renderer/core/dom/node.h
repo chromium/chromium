@@ -102,7 +102,7 @@ class TextVisitor;
 class V8UnionNodeOrStringOrTrustedScript;
 class V8UnionStringOrTrustedHTML;
 class V8UnionStringOrTrustedScript;
-class V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions;
+class V8UnionSetHTMLUnsafeOptionsOrTrustedHTMLParserOptions;
 class WebPluginContainerImpl;
 class WritableStream;
 struct PhysicalRect;
@@ -273,35 +273,36 @@ class CORE_EXPORT Node : public EventTarget {
 
   void beforeHTML(const String& html, SetHTMLOptions* options, ExceptionState&);
   void beforeHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
-                        V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions*,
+                        V8UnionSetHTMLUnsafeOptionsOrTrustedHTMLParserOptions*,
                         ExceptionState&);
   void afterHTML(const String& html, SetHTMLOptions* options, ExceptionState&);
   void afterHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
-                       V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions*,
+                       V8UnionSetHTMLUnsafeOptionsOrTrustedHTMLParserOptions*,
                        ExceptionState&);
   void replaceWithHTML(const String& html,
                        SetHTMLOptions* options,
                        ExceptionState&);
-  void replaceWithHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
-                             V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions*,
-                             ExceptionState&);
+  void replaceWithHTMLUnsafe(
+      const V8UnionStringOrTrustedHTML* html,
+      V8UnionSetHTMLUnsafeOptionsOrTrustedHTMLParserOptions*,
+      ExceptionState&);
   WritableStream* streamBeforeHTMLUnsafe(
       ScriptState*,
-      V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions*,
+      V8UnionSetHTMLUnsafeOptionsOrTrustedHTMLParserOptions*,
       ExceptionState&);
   WritableStream* streamBeforeHTML(ScriptState*,
                                    SetHTMLOptions*,
                                    ExceptionState&);
   WritableStream* streamAfterHTMLUnsafe(
       ScriptState*,
-      V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions*,
+      V8UnionSetHTMLUnsafeOptionsOrTrustedHTMLParserOptions*,
       ExceptionState&);
   WritableStream* streamAfterHTML(ScriptState*,
                                   SetHTMLOptions*,
                                   ExceptionState&);
   WritableStream* streamReplaceWithHTMLUnsafe(
       ScriptState*,
-      V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions*,
+      V8UnionSetHTMLUnsafeOptionsOrTrustedHTMLParserOptions*,
       ExceptionState&);
   WritableStream* streamReplaceWithHTML(ScriptState*,
                                         SetHTMLOptions*,

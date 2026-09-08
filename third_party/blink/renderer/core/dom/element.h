@@ -171,7 +171,7 @@ class StylePropertyMapReadOnly;
 class StyleRecalcContext;
 class StyleScopeData;
 class TextVisitor;
-class TrustedParserOptions;
+class TrustedHTMLParserOptions;
 class V8UnionBooleanOrScrollIntoViewOptions;
 class V8UnionCSSPseudoElementOrDocumentOrElementOrText;
 class V8UnionKeyframeAnimationOptionsOrUnrestrictedDouble;
@@ -1552,7 +1552,7 @@ class CORE_EXPORT Element : public ContainerNode {
                      SetHTMLUnsafeOptions*,
                      ExceptionState&);
   void setHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
-                     TrustedParserOptions*,
+                     TrustedHTMLParserOptions*,
                      ExceptionState&);
   void setHTML(const String& html, SetHTMLOptions*, ExceptionState&);
 

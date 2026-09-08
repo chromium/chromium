@@ -18,7 +18,7 @@ namespace blink {
 class ExceptionState;
 class SetHTMLUnsafeOptions;
 class TrustedHTML;
-class TrustedParserOptions;
+class TrustedHTMLParserOptions;
 class TrustedScript;
 class TrustedScriptURL;
 
@@ -41,9 +41,9 @@ class CORE_EXPORT TrustedTypePolicy final : public ScriptWrappable {
                                     const String&,
                                     const HeapVector<ScriptValue>&,
                                     ExceptionState&);
-  TrustedParserOptions* createParserOptions(v8::Isolate*,
-                                            const SetHTMLUnsafeOptions*,
-                                            ExceptionState&);
+  TrustedHTMLParserOptions* createParserOptions(v8::Isolate*,
+                                                const SetHTMLUnsafeOptions*,
+                                                ExceptionState&);
   // These methods do the bulk of the work, but they return a value with a
   // null-ish string. This is meant to support
   // https://w3c.github.io/trusted-types/dist/spec/#process-value-with-a-default-policy-algorithm

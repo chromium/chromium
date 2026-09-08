@@ -1117,7 +1117,7 @@ void Node::replaceWithHTML(const String& html,
 
 void Node::replaceWithHTMLUnsafe(
     const V8UnionStringOrTrustedHTML* html,
-    V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions* options,
+    V8UnionSetHTMLUnsafeOptionsOrTrustedHTMLParserOptions* options,
     ExceptionState& exception_state) {
   FragmentParserOptions resolved_options = FragmentParserOptions::From(options);
   String compliant_string = TrustedTypesCheckForFragment(
@@ -1156,7 +1156,7 @@ void Node::beforeHTML(const String& html,
 
 void Node::beforeHTMLUnsafe(
     const V8UnionStringOrTrustedHTML* html,
-    V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions* options,
+    V8UnionSetHTMLUnsafeOptionsOrTrustedHTMLParserOptions* options,
     ExceptionState& exception_state) {
   FragmentParserOptions resolved_options = FragmentParserOptions::From(options);
   String compliant_string = TrustedTypesCheckForFragment(
@@ -1195,7 +1195,7 @@ void Node::afterHTML(const String& html,
 
 void Node::afterHTMLUnsafe(
     const V8UnionStringOrTrustedHTML* html,
-    V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions* options,
+    V8UnionSetHTMLUnsafeOptionsOrTrustedHTMLParserOptions* options,
     ExceptionState& exception_state) {
   FragmentParserOptions resolved_options = FragmentParserOptions::From(options);
   String compliant_string = TrustedTypesCheckForFragment(
@@ -1219,7 +1219,7 @@ void Node::afterHTMLUnsafe(
 
 WritableStream* Node::streamBeforeHTMLUnsafe(
     ScriptState* script_state,
-    V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions* options,
+    V8UnionSetHTMLUnsafeOptionsOrTrustedHTMLParserOptions* options,
     ExceptionState& exception_state) {
   std::optional<FragmentParserOptions> resolved_options =
       TrustedTypesCheckForStreaming(
@@ -1244,7 +1244,7 @@ WritableStream* Node::streamBeforeHTML(ScriptState* script_state,
 
 WritableStream* Node::streamAfterHTMLUnsafe(
     ScriptState* script_state,
-    V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions* options,
+    V8UnionSetHTMLUnsafeOptionsOrTrustedHTMLParserOptions* options,
     ExceptionState& exception_state) {
   std::optional<FragmentParserOptions> resolved_options =
       TrustedTypesCheckForStreaming(
@@ -1269,7 +1269,7 @@ WritableStream* Node::streamAfterHTML(ScriptState* script_state,
 
 WritableStream* Node::streamReplaceWithHTMLUnsafe(
     ScriptState* script_state,
-    V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions* options,
+    V8UnionSetHTMLUnsafeOptionsOrTrustedHTMLParserOptions* options,
     ExceptionState& exception_state) {
   std::optional<FragmentParserOptions> resolved_options =
       TrustedTypesCheckForStreaming(
