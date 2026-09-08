@@ -421,6 +421,7 @@ GaiaScreenHandler::GaiaScreenHandler(
     const scoped_refptr<NetworkStateInformer>& network_state_informer,
     ErrorScreen* error_screen)
     : BaseScreenHandler(kScreenId),
+      local_state_(CHECK_DEREF(local_state)),
       browser_policy_connector_ash_(CHECK_DEREF(browser_policy_connector_ash)),
       shared_url_loader_factory_(std::move(shared_url_loader_factory)),
       network_state_informer_(network_state_informer),
@@ -447,8 +448,9 @@ void GaiaScreenHandler::LoadGaia(const login::GaiaContext& context) {
                                weak_factory_.GetWeakPtr(), context));
 
   if (!context.email.empty()) {
-    const AccountId account_id = login::GetAccountId(
-        context.email, std::string() /* id */, AccountType::UNKNOWN);
+    const AccountId account_id =
+        login::GetAccountId(local_state_.get(), context.email,
+                            std::string() /* id */, AccountType::UNKNOWN);
     const user_manager::User* const user =
         user_manager::UserManager::Get()->FindUser(account_id);
 
@@ -638,8 +640,9 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
 
   bool is_reauth = !context.email.empty();
   if (is_reauth) {
-    const AccountId account_id = login::GetAccountId(
-        context.email, context.gaia_id.ToString(), AccountType::GOOGLE);
+    const AccountId account_id =
+        login::GetAccountId(local_state_.get(), context.email,
+                            context.gaia_id.ToString(), AccountType::GOOGLE);
     auto* user = user_manager::UserManager::Get()->FindUser(account_id);
     DCHECK(user);
     bool is_child_account = user && user->IsChild();
@@ -995,8 +998,8 @@ void GaiaScreenHandler::CompleteAuthentication(
   }
 
   const AccountId account_id = login::GetAccountId(
-      signin_artifacts.email, signin_artifacts.gaia_id.ToString(),
-      AccountType::GOOGLE);
+      local_state_.get(), signin_artifacts.email,
+      signin_artifacts.gaia_id.ToString(), AccountType::GOOGLE);
   // Execute delayed allowlist check that is based on user type. If Gaia done
   // times out and doesn't provide us with services list try to use a saved
   // UserType.

@@ -11,6 +11,7 @@
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/certificate_provider/security_token_pin_dialog_host.h"
@@ -379,6 +380,7 @@ class GaiaScreenHandler final
   // `saml_challenge_key_handler_`.
   void CreateSamlChallengeKeyHandler();
 
+  const raw_ref<PrefService> local_state_;
   const raw_ref<policy::BrowserPolicyConnectorAsh>
       browser_policy_connector_ash_;
   const scoped_refptr<network::SharedURLLoaderFactory>

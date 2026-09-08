@@ -26,6 +26,8 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 
+class PrefService;
+
 namespace ash {
 
 class SyncTrustedVaultKeys;
@@ -135,7 +137,8 @@ std::unique_ptr<UserContext> BuildUserContextForGaiaSignIn(
 
 // Returns user canonical e-mail. Finds already used account alias, if
 // user has already signed in.
-AccountId GetAccountId(const std::string& authenticated_email,
+AccountId GetAccountId(PrefService& local_state,
+                       const std::string& authenticated_email,
                        const std::string& id,
                        const AccountType& account_type);
 

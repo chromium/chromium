@@ -192,15 +192,16 @@ void OobeTestAPIHandler::HandleCompleteLogin(const std::string& gaia_id,
   DCHECK(!gaia_id.empty());
   const std::string sanitized_email = gaia::SanitizeEmail(typed_email);
   LoginDisplayHost::default_host()->SetDisplayEmail(sanitized_email);
+  // TODO(crbug.com/489929275): Avoid using g_browser_process.
   const AccountId account_id =
-      login::GetAccountId(typed_email, gaia_id, AccountType::GOOGLE);
+      login::GetAccountId(CHECK_DEREF(g_browser_process->local_state()),
+                          typed_email, gaia_id, AccountType::GOOGLE);
   const user_manager::User* const user =
       user_manager::UserManager::Get()->FindUser(account_id);
 
   std::unique_ptr<UserContext> user_context =
       login::BuildUserContextForGaiaSignIn(
-          user ? user->GetType() : user_manager::UserType::kRegular,
-          login::GetAccountId(typed_email, gaia_id, AccountType::GOOGLE),
+          user ? user->GetType() : user_manager::UserType::kRegular, account_id,
           /*using_saml=*/false, /*using_saml_api=*/false, password,
           SamlPasswordAttributes(),
           /*sync_trusted_vault_keys=*/std::nullopt,

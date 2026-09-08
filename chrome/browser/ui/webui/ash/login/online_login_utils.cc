@@ -10,8 +10,6 @@
 #include "base/types/expected.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/signin_partition_manager_factory.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/ash/login/login_display_host_webui.h"
 #include "chrome/browser/ui/ash/login/signin_ui.h"
 #include "chrome/installer/util/google_update_settings.h"
@@ -204,13 +202,14 @@ std::unique_ptr<UserContext> BuildUserContextForGaiaSignIn(
   return user_context;
 }
 
-AccountId GetAccountId(const std::string& authenticated_email,
+AccountId GetAccountId(PrefService& local_state,
+                       const std::string& authenticated_email,
                        const std::string& id,
                        const AccountType& account_type) {
   const std::string canonicalized_email =
       gaia::CanonicalizeEmail(gaia::SanitizeEmail(authenticated_email));
 
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(&local_state);
   const AccountId account_id =
       known_user.GetAccountId(authenticated_email, id, account_type);
 
