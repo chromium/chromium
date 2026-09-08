@@ -126,12 +126,6 @@ class BLINK_EXPORT WebDocument : public WebNode {
   // cookie blocking.
   net::SiteForCookies SiteForCookies() const;
 
-  // `StorageAccessApiStatus` is used to describe how/if this document has opted
-  // into accessing cross-site cookies using the Storage Access API. This is
-  // relevant when attempting to access cookies in a context where third-party
-  // cookies may be blocked.
-  net::StorageAccessApiStatus StorageAccessApiStatus() const;
-
   WebSecurityOrigin TopFrameOrigin() const;
   WebElement DocumentElement() const;
   WebElement Body() const;
