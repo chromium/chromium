@@ -52,6 +52,9 @@ class UsbServiceImpl final : public UsbService {
       std::optional<std::vector<ScopedLibusbDeviceRef>> platform_devices);
   void RefreshDevicesComplete();
 
+  // Called when libusb could not be initialized.
+  void OnUsbUnavailable();
+
   // Creates a new UsbDevice based on the given libusb device.
   void EnumerateDevice(ScopedLibusbDeviceRef platform_device,
                        base::OnceClosure refresh_complete);
