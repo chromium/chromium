@@ -4,20 +4,28 @@
 
 source_set("device_authorization") {
   sources = [
+    "device_authorization_client.h",
     "device_authorization_keys_fetcher.cc",
     "device_authorization_keys_fetcher.h",
+    "device_authorization_service.h",
+    "device_authorization_service_impl.cc",
+    "device_authorization_service_impl.h",
   ]
 
+  public_deps = [ ":types" ]
+
   deps = [
+    ":features",
     ":metrics",
     ":switches",
     "//base",
     "//components/endpoint_fetcher",
+    "//components/keyed_service/core",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/sync/base",
     "//components/version_info",
-    "//components/webauthn/core/browser/device_authorization/proto",
+    "//google_apis",
     "//net",
     "//net/traffic_annotation",
     "//services/network/public/cpp",
@@ -55,12 +63,25 @@ source_set("switches") {
   ]
 }
 
+source_set("types") {
+  sources = [ "device_authorization_types.h" ]
+
+  public_deps = [
+    "//base",
+    "//components/webauthn/core/browser/device_authorization/proto",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
-  sources = [ "device_authorization_keys_fetcher_unittest.cc" ]
+  sources = [
+    "device_authorization_keys_fetcher_unittest.cc",
+    "device_authorization_service_unittest.cc",
+  ]
 
   deps = [
     ":device_authorization",
+    ":features",
     ":metrics",
     ":switches",
     "//base",
