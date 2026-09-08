@@ -74,12 +74,9 @@
 #include "net/quic/quic_chromium_alarm_factory.h"
 #include "net/quic/quic_chromium_client_session.h"
 #include "net/quic/quic_chromium_client_session_peer.h"
-#include "net/quic/quic_chromium_packet_reader.h"
-#include "net/quic/quic_chromium_packet_writer.h"
 #include "net/quic/quic_context.h"
 #include "net/quic/quic_http_stream.h"
 #include "net/quic/quic_http_utils.h"
-#include "net/quic/quic_migration_attempt_context.h"
 #include "net/quic/quic_server_info.h"
 #include "net/quic/quic_session_alias_key.h"
 #include "net/quic/quic_session_key.h"
@@ -7068,30 +7065,20 @@ TEST_P(QuicSessionPoolTest,
   std::unique_ptr<DatagramClientSocket> socket(pool_->CreateSocket(
       handles::kInvalidNetworkHandle, net_log_.net_log(), net_log_.source()));
   DatagramClientSocket* socket_ptr = socket.get();
-  auto context = std::make_unique<QuicMigrationAttemptContext>(
-      ON_NETWORK_CONNECTED, session->GetCurrentNetwork(), kNewNetworkForTests,
-      session->connection()->peer_address(),
-      std::make_unique<QuicChromiumPacketReader>(
-          std::move(socket), session->connection()->clock(), session,
-          /*yield_after_packets=*/100, quic::QuicTime::Delta::Infinite(),
-          session->net_log()),
-      std::make_unique<QuicChromiumPacketWriter>(
-          socket_ptr, base::SingleThreadTaskRunner::GetCurrentDefault().get()));
   pool_->ConnectAndConfigureSocket(
-      base::BindLambdaForTesting(
-          [&session, context = std::move(context)](int rv) mutable {
-            session->CloseSessionOnErrorLater(
-                0, quic::QUIC_TOO_MANY_RTOS,
-                quic::ConnectionCloseBehavior::SILENT_CLOSE);
-            // The QuicSession is closed so FinishMigrateWithoutProbing will
-            // fail to migrate the socket. Hence the callback should never be
-            // called.
-            session->FinishMigrateWithoutProbing(
-                std::move(context), true,
-                base::BindLambdaForTesting(
-                    [](MigrationResult result) { NOTREACHED(); }),
-                /* RV = OK */ 0);
-          }),
+      base::BindLambdaForTesting([&session, &socket](int rv) {
+        session->CloseSessionOnErrorLater(
+            0, quic::QUIC_TOO_MANY_RTOS,
+            quic::ConnectionCloseBehavior::SILENT_CLOSE);
+        // The QuicSession is closed so FinishMigrate will fail to migrate the
+        // socket. Hence the callback should never be called.
+        session->FinishMigrate(
+            std::move(socket),
+            ToIPEndPoint(session->connection()->peer_address()), true,
+            base::BindLambdaForTesting(
+                [](MigrationResult result) { NOTREACHED(); }),
+            /* RV = OK */ 0);
+      }),
       socket_ptr, ToIPEndPoint(session->connection()->peer_address()),
       kNewNetworkForTests, SocketTag());
   base::RunLoop().RunUntilIdle();
