@@ -355,11 +355,23 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
       const gfx::PointF& position) const {
     return position.OffsetFromOrigin();
   }
-  virtual gfx::Vector2d PixelSnappedScrollOffset() const = 0;
   virtual ScrollOffset GetScrollOffset() const = 0;
-  // Returns a floored version of the scroll offset as the web-exposed scroll
-  // offset to ensure web compatibility in DOM APIs.
-  virtual ScrollOffset GetWebExposedScrollOffset() const;
+  gfx::Vector2d PixelSnappedScrollOffset() const {
+    return SnapScrollOffsetToPhysicalPixels(GetScrollOffset());
+  }
+  // Returns the scroll offset for DOM API. The caller should convert the
+  // returned value from physical pixels to DIPs for DOM API.
+  ScrollOffset GetWebExposedScrollOffset() const {
+    if (RuntimeEnabledFeatures::FractionalScrollOffsetsForWebAPIEnabled()) {
+      return GetScrollOffset();
+    }
+    // Returns the scroll offset snapped to physical pixels as the web-exposed
+    // scroll offset to ensure web compatibility in DOM APIs. Note that when
+    // this is converted to DIPs for DOM API, the result can still be fractional
+    // at a physical pixel granularity (1.0 / device_pixel_ratio in most cases).
+    // TODO(crbug.com/40384509): Enable full fractional scroll offsets.
+    return ScrollOffset(PixelSnappedScrollOffset());
+  }
   ScrollOffset GetScrollOffsetForScrollMarkerUpdate();
   virtual gfx::Vector2d MinimumScrollOffsetInt() const = 0;
   virtual ScrollOffset MinimumScrollOffset() const {

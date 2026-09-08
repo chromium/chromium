@@ -5188,7 +5188,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"fractional-scroll-offsets",
      flag_descriptions::kFractionalScrollOffsetsName,
      flag_descriptions::kFractionalScrollOffsetsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kFractionalScrollOffsets)},
+     FEATURE_VALUE_TYPE(blink::features::kFractionalScrollOffsets)},
     {"overlay-scrollbars", flag_descriptions::kOverlayScrollbarsName,
      flag_descriptions::kOverlayScrollbarsDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kOverlayScrollbar,

@@ -173,8 +173,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            kSetOnlyIfOverridden},
           {wf::EnableFencedFrames, features::kPrivacySandboxAdsAPIsM1Override},
           {wf::EnableForcedColors, features::kForcedColors},
-          {wf::EnableFractionalScrollOffsets,
-           features::kFractionalScrollOffsets},
           {wf::EnableSensorExtraClasses, features::kGenericSensorExtraClasses},
 #if BUILDFLAG(IS_ANDROID)
           {wf::EnableGetDisplayMedia, features::kUserMediaScreenCapturing},

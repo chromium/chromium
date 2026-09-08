@@ -80,7 +80,6 @@ class CORE_EXPORT RootFrameViewport final
   gfx::PointF ScrollOffsetToPosition(const ScrollOffset& offset) const override;
   ScrollOffset ScrollPositionToOffset(
       const gfx::PointF& position) const override;
-  gfx::Vector2d PixelSnappedScrollOffset() const override;
   ScrollOffset GetScrollOffset() const override;
   gfx::Vector2d MinimumScrollOffsetInt() const override;
   gfx::Vector2d MaximumScrollOffsetInt() const override;

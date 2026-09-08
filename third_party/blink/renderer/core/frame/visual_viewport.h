@@ -202,9 +202,6 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   int ScrollSize(ScrollbarOrientation) const override;
   bool IsScrollCornerVisible() const override { return false; }
   gfx::Rect ScrollCornerRect() const override { return gfx::Rect(); }
-  gfx::Vector2d PixelSnappedScrollOffset() const override {
-    return SnapScrollOffsetToPhysicalPixels(offset_);
-  }
   ScrollOffset GetScrollOffset() const override { return offset_; }
   gfx::Vector2d MinimumScrollOffsetInt() const override;
   gfx::Vector2d MaximumScrollOffsetInt() const override;

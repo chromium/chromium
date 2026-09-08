@@ -1461,16 +1461,6 @@ void ScrollableArea::EnqueueScrollSnapChangingEvent() const {
       target_node, block_target, inline_target);
 }
 
-ScrollOffset ScrollableArea::GetWebExposedScrollOffset() const {
-  ScrollOffset scroll_offset =
-      SnapScrollOffsetToPhysicalPixels(GetScrollOffset());
-
-  // Ensure that, if fractional scroll offsets are not enabled, the scroll
-  // offset is an floored value.
-  CHECK_EQ(gfx::ToRoundedVector2d(scroll_offset), scroll_offset);
-  return scroll_offset;
-}
-
 ScrollOffset ScrollableArea::GetScrollOffsetForScrollMarkerUpdate() {
   ScrollOffset offset_for_scroll_marker_update = GetScrollOffset();
   if (GetScrollAnimator().HasRunningAnimation()) {

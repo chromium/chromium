@@ -3279,8 +3279,11 @@
     },
     {
       name: "FractionalScrollOffsets",
-      base_feature: "none",
-      public: true,
+      implied_by: ["FractionalScrollOffsetsForWebAPI"],
+    },
+    {
+      // https://crbug.com/40384509.
+      name: "FractionalScrollOffsetsForWebAPI",
     },
     {
       // Generate layout fragments for out-of-flow positioned elements as

@@ -520,10 +520,6 @@ BASE_FEATURE(kWebIdentityDigitalCredentials, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kWebIdentityDigitalCredentialsCreation,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables scrollers inside Blink to store scroll offsets in fractional
-// floating-point numbers rather than truncating to integers.
-BASE_FEATURE(kFractionalScrollOffsets, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Puts network quality estimate related Web APIs in the holdback mode. When the
 // holdback is enabled the related Web APIs return network quality estimate
 // set by the experiment (regardless of the actual quality).

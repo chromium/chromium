@@ -479,10 +479,6 @@ bool RootFrameViewport::DistributeScrollBetweenViewports(
   return did_scroll;
 }
 
-gfx::Vector2d RootFrameViewport::PixelSnappedScrollOffset() const {
-  return SnapScrollOffsetToPhysicalPixels(GetScrollOffset());
-}
-
 ScrollOffset RootFrameViewport::GetScrollOffset() const {
   return LayoutViewport().GetScrollOffset() +
          GetVisualViewport().GetScrollOffset();
