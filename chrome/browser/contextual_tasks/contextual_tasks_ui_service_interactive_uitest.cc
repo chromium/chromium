@@ -424,6 +424,56 @@ IN_PROC_BROWSER_TEST_F(
       contextual_tasks_service->GetContextualTaskForTab(tab2_id)->GetTaskId());
 }
 
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksUiServiceInteractiveUiTest,
+    OnTaskChanged_ActiveTabSwitchedToUnrelatedTab_PreservesOldTaskTabsAffiliation) {
+  // Add two new tabs.
+  chrome::AddTabAt(browser(), GURL(chrome::kChromeUISettingsURL), -1, true);
+  chrome::AddTabAt(browser(), GURL(chrome::kChromeUIHistoryURL), -1, true);
+
+  contextual_tasks::ContextualTasksService* contextual_tasks_service =
+      ContextualTasksServiceFactory::GetForProfile(browser()->GetProfile());
+  ContextualTasksUiService* service =
+      ContextualTasksUiServiceFactory::GetForBrowserContext(
+          browser()->GetProfile());
+  ASSERT_TRUE(service);
+
+  // Create two tasks.
+  ContextualTask task1 = contextual_tasks_service->CreateTask();
+  ContextualTask task2 = contextual_tasks_service->CreateTask();
+
+  // Associate only the first tab (index 1) with task1.
+  content::WebContents* tab1_contents =
+      TabListInterface::From(browser())->GetTab(1)->GetContents();
+  content::WebContents* tab2_contents =
+      TabListInterface::From(browser())->GetTab(2)->GetContents();
+  SessionID tab1_id = sessions::SessionTabHelper::IdForTab(tab1_contents);
+  SessionID tab2_id = sessions::SessionTabHelper::IdForTab(tab2_contents);
+  contextual_tasks_service->AssociateTabWithTask(task1.GetTaskId(), tab1_id);
+
+  // Activate the second tab (index 2), simulating the user switching to an
+  // unrelated tab while the task change was in-flight.
+  TabListInterface* tab_list = TabListInterface::From(browser());
+  tab_list->ActivateTab(tab_list->GetTab(2)->GetHandle());
+  EXPECT_EQ(2, TabListInterface::From(browser())->GetActiveIndex());
+
+  // Call OnTaskChanged for task1 -> task2.
+  auto dummy_web_contents = content::WebContents::Create(
+      content::WebContents::CreateParams(browser()->GetProfile()));
+  service->OnTaskChanged(browser(), dummy_web_contents.get(), task1.GetTaskId(),
+                         task2.GetTaskId(), /*is_shown_in_tab=*/false);
+
+  // Verify that tab 1 is now associated with task2.
+  EXPECT_EQ(
+      task2.GetTaskId(),
+      contextual_tasks_service->GetContextualTaskForTab(tab1_id)->GetTaskId());
+
+  // Verify that tab 2 (active during OnTaskChanged) is not associated with
+  // task2.
+  EXPECT_FALSE(
+      contextual_tasks_service->GetContextualTaskForTab(tab2_id).has_value());
+}
+
 IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
                        OnTaskChanged_WithInvalidTaskId) {
   // Add two new tabs.

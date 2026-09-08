@@ -2824,25 +2824,36 @@ void ContextualTasksUiService::OnTaskChanged(
       final_task_id = task.GetTaskId();
     }
 
-    TabListInterface* tab_list =
-        TabListInterface::From(browser_window_interface);
-    content::WebContents* active_contents =
-        tab_list->GetActiveTab()->GetContents();
-    SessionID active_id = SessionTabHelper::IdForTab(active_contents);
+    std::vector<SessionID> tab_ids;
+    if (old_task_id.has_value() && old_task_id->is_valid()) {
+      tab_ids =
+          contextual_tasks_service_->GetTabsAssociatedWithTask(*old_task_id);
+    }
 
-    // If the current tab is associated with any task, change associations for
-    // all tabs associated with that task.
-    std::optional<ContextualTask> current_task =
-        contextual_tasks_service_->GetContextualTaskForTab(active_id);
-    if (current_task) {
-      std::vector<SessionID> tab_ids =
-          contextual_tasks_service_->GetTabsAssociatedWithTask(
-              current_task->GetTaskId());
-      for (const auto& id : tab_ids) {
-        contextual_tasks_service_->AssociateTabWithTask(final_task_id, id);
+    // If old_task_id was unset or had no associated tabs (e.g. when opening the
+    // panel for the first time without prior task affiliation), fall back to
+    // associating the currently active tab.
+    if (tab_ids.empty()) {
+      TabListInterface* tab_list =
+          TabListInterface::From(browser_window_interface);
+      content::WebContents* active_contents =
+          tab_list->GetActiveTab()->GetContents();
+      SessionID active_id = SessionTabHelper::IdForTab(active_contents);
+
+      // If the current tab is associated with any task, change associations for
+      // all tabs associated with that task.
+      std::optional<ContextualTask> current_task =
+          contextual_tasks_service_->GetContextualTaskForTab(active_id);
+      if (current_task) {
+        tab_ids = contextual_tasks_service_->GetTabsAssociatedWithTask(
+            current_task->GetTaskId());
+      } else {
+        tab_ids.push_back(active_id);
       }
-    } else {
-      contextual_tasks_service_->AssociateTabWithTask(final_task_id, active_id);
+    }
+
+    for (const auto& id : tab_ids) {
+      contextual_tasks_service_->AssociateTabWithTask(final_task_id, id);
     }
 
     controller->OnTaskChanged(web_contents, final_task_id);
