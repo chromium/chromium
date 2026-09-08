@@ -206,6 +206,44 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateWithEmbeddedServerTest,
   VerifyMute(incognito_browser, /*isMuted=*/false);
 }
 
+class IsolatedBrowserTabStripModelDelegateWithEmbeddedServerTest
+    : public BrowserTabStripModelDelegateWithEmbeddedServerTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    BrowserTabStripModelDelegateWithEmbeddedServerTest::SetUpCommandLine(
+        command_line);
+    command_line->AppendSwitch(
+        enterprise_isolated_mode::switches::
+            kForceEnterpriseIsolatedModeReplacesIncognito);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    IsolatedBrowserTabStripModelDelegateWithEmbeddedServerTest,
+    ToggleMuteInRegularAndThenToggleMuteInIsolatedMode) {
+  GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Mute the site in regular tab.
+  ToggleMute(browser());
+  VerifyMute(browser(), /*isMuted=*/true);
+
+  // Open Isolated Mode tab and check the site is muted there.
+  BrowserWindowInterface* isolated_browser =
+      CreateIncognitoBrowser(browser()->GetProfile());
+  EXPECT_TRUE(
+      isolated_browser->GetProfile()->IsEnterpriseIsolatedModeProfile());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(isolated_browser, url));
+  VerifyMute(isolated_browser, /*isMuted=*/true);
+
+  // Unmute in Isolated Mode tab.
+  ToggleMute(isolated_browser);
+  VerifyMute(isolated_browser, /*isMuted=*/false);
+
+  // In regular tab the site should still be muted.
+  VerifyMute(browser(), /*isMuted=*/true);
+}
+
 IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateWithEmbeddedServerTest,
                        ToggleMuteOnlyInIncognitoWindow) {
   GURL url = embedded_test_server()->GetURL("/title1.html");

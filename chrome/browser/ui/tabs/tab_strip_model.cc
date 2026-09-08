@@ -5467,7 +5467,7 @@ void TabStripModel::SetSitesMuted(const std::vector<int>& indices,
       // The goal is to only add the site URL to the exception list if
       // the request behavior differs from the default value or if there is an
       // existing less specific rule (i.e. wildcards) in the exception list.
-      if (!profile->IsIncognitoProfile()) {
+      if (!profile->IsPrimaryOTRProfileWithRegularParent()) {
         // Using default setting value below clears the setting from the
         // exception list for the site URL if it exists.
         map->SetContentSettingDefaultScope(url, url, ContentSettingsType::SOUND,
