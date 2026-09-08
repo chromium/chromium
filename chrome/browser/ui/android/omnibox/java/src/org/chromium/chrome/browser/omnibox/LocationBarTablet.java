@@ -928,7 +928,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
                     bottomRadius, bottomRadius, bottomRadius, bottomRadius // Bottom corners
                 });
         mFocusedPopupDrawable.setLayerInsetRelative(
-                1,
+                mFocusedPopupDrawable.findIndexByLayerId(R.id.focused_popup_inner_bg),
                 mLocationBarTabletFuseboxPopupInset,
                 mLocationBarTabletFuseboxPopupInset,
                 mLocationBarTabletFuseboxPopupInset,
