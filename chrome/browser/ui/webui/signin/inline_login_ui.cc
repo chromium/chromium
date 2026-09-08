@@ -44,6 +44,8 @@
 #include "ash/webui/settings/public/constants/routes_util.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/webui/ash/edu_coexistence/edu_coexistence_login_handler.h"
@@ -294,10 +296,11 @@ InlineLoginUI::InlineLoginUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
           &WebDialogUI::CloseDialog, weak_factory_.GetWeakPtr(),
           base::ListValue() /* args */)));
   if (profile->IsChild()) {
-    web_ui->AddMessageHandler(
-        std::make_unique<ash::EduCoexistenceLoginHandler>(base::BindRepeating(
-            &WebDialogUI::CloseDialog, weak_factory_.GetWeakPtr(),
-            base::ListValue() /* args */)));
+    web_ui->AddMessageHandler(std::make_unique<ash::EduCoexistenceLoginHandler>(
+        g_browser_process->GetFeatures()->application_locale_storage(),
+        base::BindRepeating(&WebDialogUI::CloseDialog,
+                            weak_factory_.GetWeakPtr(),
+                            base::ListValue() /* args */)));
   }
 
 #else

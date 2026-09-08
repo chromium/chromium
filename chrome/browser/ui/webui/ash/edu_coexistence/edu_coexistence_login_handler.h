@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
@@ -17,6 +18,7 @@
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
+class ApplicationLocaleStorage;
 class PrefRegistrySimple;
 
 namespace ash {
@@ -27,10 +29,16 @@ class EduCoexistenceLoginHandler : public content::WebUIMessageHandler,
  public:
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  explicit EduCoexistenceLoginHandler(
+  // `application_locale_storage` must not be null and must outlive `this`.
+  EduCoexistenceLoginHandler(
+      const ApplicationLocaleStorage* application_locale_storage,
       const base::RepeatingClosure& close_dialog_closure);
-  EduCoexistenceLoginHandler(const base::RepeatingClosure& close_dialog_closure,
-                             signin::IdentityManager* identity_manager);
+  // `application_locale_storage` and `identity_manager` must not be null and
+  // must outlive `this`.
+  EduCoexistenceLoginHandler(
+      const ApplicationLocaleStorage* application_locale_storage,
+      signin::IdentityManager* identity_manager,
+      const base::RepeatingClosure& close_dialog_closure);
   EduCoexistenceLoginHandler(const EduCoexistenceLoginHandler&) = delete;
   EduCoexistenceLoginHandler& operator=(const EduCoexistenceLoginHandler&) =
       delete;
@@ -59,6 +67,8 @@ class EduCoexistenceLoginHandler : public content::WebUIMessageHandler,
   void ConsentValid(const base::ListValue& args);
   void ConsentLogged(const base::ListValue& args);
   void OnError(const base::ListValue& args);
+
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
 
   // Used for getting child access token.
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>

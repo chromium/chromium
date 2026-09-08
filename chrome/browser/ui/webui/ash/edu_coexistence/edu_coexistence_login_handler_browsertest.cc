@@ -13,6 +13,8 @@
 #include "base/values.h"
 #include "chrome/browser/ash/child_accounts/edu_coexistence_tos_store_utils.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -59,8 +61,9 @@ class EduCoexistenceLoginHandlerBrowserTest
   void TearDown() override { MixinBasedInProcessBrowserTest::TearDown(); }
 
   std::unique_ptr<EduCoexistenceLoginHandler> SetUpHandler() {
-    auto handler =
-        std::make_unique<EduCoexistenceLoginHandler>(base::DoNothing());
+    auto handler = std::make_unique<EduCoexistenceLoginHandler>(
+        g_browser_process->GetFeatures()->application_locale_storage(),
+        base::DoNothing());
     handler->set_web_ui_for_test(web_ui());
     handler->RegisterMessages();
     return handler;

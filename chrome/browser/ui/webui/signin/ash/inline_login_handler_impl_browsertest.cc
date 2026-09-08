@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/test/regular_logged_in_browser_test_mixin.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -262,8 +263,9 @@ class InlineLoginHandlerTest
       profile()->GetPrefs()->SetString(prefs::kSupervisedUserId,
                                        supervised_user::kChildAccountSUID);
       // This is required for Child users, otherwise an account cannot be added.
-      edu_handler_ =
-          std::make_unique<EduCoexistenceLoginHandler>(base::DoNothing());
+      edu_handler_ = std::make_unique<EduCoexistenceLoginHandler>(
+          g_browser_process->GetFeatures()->application_locale_storage(),
+          base::DoNothing());
       edu_handler_->set_web_ui_for_test(web_ui());
       edu_handler_->RegisterMessages();
     }
