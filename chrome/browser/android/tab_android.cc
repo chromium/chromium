@@ -584,6 +584,16 @@ void WillRemoveWebContentsFromTab(content::WebContents* contents,
 
 }  // namespace
 
+void TabAndroid::ResetTabAlertController() {
+  glic_tab_indicator_helper_.reset();
+  alert_to_show_subscription_ = {};
+  if (tab_alert_controller_ &&
+      tab_alert_controller_->GetAlertToShow().has_value()) {
+    OnAlertStateChanged(std::nullopt);
+  }
+  tab_alert_controller_.reset();
+}
+
 tabs::TabDestroyStatus TabAndroid::DestroyWebContents() {
   WillRemoveWebContentsFromTab(web_contents(), /*clear_delegate=*/false);
 
@@ -599,9 +609,7 @@ tabs::TabDestroyStatus TabAndroid::DestroyWebContents() {
     return DestroyWebContentsSlowShutdown();
   }
 
-  glic_tab_indicator_helper_.reset();
-  alert_to_show_subscription_ = {};
-  tab_alert_controller_.reset();
+  ResetTabAlertController();
   tab_features_.reset();
   web_contents_.reset();
   if (synced_tab_delegate_) {
@@ -637,9 +645,7 @@ std::unique_ptr<content::WebContents> TabAndroid::ReleaseWebContentsInternal(
     bool clear_delegate) {
   WillRemoveWebContentsFromTab(web_contents(), clear_delegate);
 
-  glic_tab_indicator_helper_.reset();
-  alert_to_show_subscription_ = {};
-  tab_alert_controller_.reset();
+  ResetTabAlertController();
   tab_features_.reset();
   std::unique_ptr<content::WebContents> released_contents =
       std::move(web_contents_);

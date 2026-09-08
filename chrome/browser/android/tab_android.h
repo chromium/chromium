@@ -326,6 +326,8 @@ class TabAndroid : public tabs::TabInterface,
       bool keep_session_id,
       bool clear_delegate);
 
+  void ResetTabAlertController();
+
   int tab_id_;
 
   // Identifier of the window the tab is in.

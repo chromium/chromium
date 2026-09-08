@@ -1462,6 +1462,8 @@ class TabImpl implements Tab, TabInternal {
         // Update the title before destroying the tab. http://b/5783092
         updateTitle();
 
+        onAlertStateChanged(TabAlert.NONE);
+
         for (TabObserver observer : mObservers) observer.onDestroyed(this);
         boolean abortNavigationsFromTabClosures =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.ABORT_NAVIGATIONS_FROM_TAB_CLOSURES);
