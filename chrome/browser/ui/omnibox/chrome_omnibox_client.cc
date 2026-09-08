@@ -13,6 +13,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
@@ -109,6 +110,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -165,34 +167,49 @@ LensSearchController* GetLensSearchController(
 //
 // Holding the continuation here makes the safe outcome the default: if this
 // object is destroyed without Run() having been called, the navigation is
-// resumed as if no dialog had been shown. Only an explicit user decision can
-// suppress it. See https://crbug.com/540532980.
-class PendingNavigationGuard {
+// resumed as if no dialog had been shown (unless the initiating tab was
+// closed or deactivated). Only an explicit user decision can suppress it. See
+// https://crbug.com/540532980.
+class PendingNavigationGuard : public content::WebContentsObserver {
  public:
   using Callback =
       base::OnceCallback<void(OmniboxClient::ExtensionControlledDialogResult)>;
 
-  explicit PendingNavigationGuard(Callback callback)
-      : callback_(std::move(callback)) {}
+  PendingNavigationGuard(Callback callback,
+                         LocationBar& location_bar,
+                         content::WebContents* initiating_web_contents)
+      : content::WebContentsObserver(initiating_web_contents),
+        callback_(std::move(callback)),
+        location_bar_(location_bar) {}
 
   PendingNavigationGuard(const PendingNavigationGuard&) = delete;
   PendingNavigationGuard& operator=(const PendingNavigationGuard&) = delete;
 
-  ~PendingNavigationGuard() {
+  ~PendingNavigationGuard() override {
     if (callback_) {
       std::move(callback_).Run(
-          OmniboxClient::ExtensionControlledDialogResult::kNoDialogShown);
+          OriginalTabStillActive()
+              ? OmniboxClient::ExtensionControlledDialogResult::kNoDialogShown
+              : OmniboxClient::ExtensionControlledDialogResult::kCancel);
     }
   }
 
   void Run(OmniboxClient::ExtensionControlledDialogResult result) {
     if (callback_) {
-      std::move(callback_).Run(result);
+      std::move(callback_).Run(
+          OriginalTabStillActive()
+              ? result
+              : OmniboxClient::ExtensionControlledDialogResult::kCancel);
     }
   }
 
  private:
+  bool OriginalTabStillActive() const {
+    return web_contents() && location_bar_->GetWebContents() == web_contents();
+  }
+
   Callback callback_;
+  const raw_ref<LocationBar> location_bar_;
 };
 
 ExtensionControlledDialogResult SettingDialogResultToExtensionDialogResult(
@@ -331,9 +348,10 @@ bool ChromeOmniboxClient::
     return false;
   }
 
-  auto guarded_callback = base::BindOnce(
-      &PendingNavigationGuard::Run,
-      std::make_unique<PendingNavigationGuard>(std::move(callback)));
+  auto guarded_callback =
+      base::BindOnce(&PendingNavigationGuard::Run,
+                     std::make_unique<PendingNavigationGuard>(
+                         std::move(callback), *location_bar_, web_contents));
 
   controller->ShowConfirmationDialog(
       *web_contents,
