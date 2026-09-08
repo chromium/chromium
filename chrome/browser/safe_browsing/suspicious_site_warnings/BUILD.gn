@@ -35,3 +35,32 @@ source_set("suspicious_site_warnings") {
     "//ui/base",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "suspicious_site_desktop_browsertest.cc" ]
+  deps = [
+    ":suspicious_site_warnings",
+    "//base/test:test_support",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/safe_browsing",
+    "//chrome/browser/safe_browsing:test_support",
+    "//chrome/browser/ssl",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/views/page_info",
+    "//chrome/test:test_support",
+    "//components/prefs",
+    "//components/safe_browsing/core/browser/db:test_database_manager",
+    "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/security_state/core",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
+}
