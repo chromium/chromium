@@ -45,22 +45,12 @@ ParseBcp47Extensions(SubtagsReader& subtags) {
   while (!(singleton = subtags.Read(SubtagsReader::Type::kExtensionSingleton))
               .empty()) {
     char normalized_singleton = base::ToLowerASCII(singleton.front());
+    auto [it, inserted] = result.try_emplace(normalized_singleton);
     // There cannot be two extensions with the same singleton in a language tag.
-    if (result.contains(normalized_singleton)) {
+    if (!inserted) {
       return std::nullopt;
     }
-
-    if (result.contains(normalized_singleton)) {
-      return std::nullopt;
-    }
-
-    std::vector<std::string_view> extension_subtags;
-    std::string_view subtag;
-    while (!(subtag = subtags.Read(SubtagsReader::Type::kExtensionSubtag))
-                .empty()) {
-      extension_subtags.push_back(subtag);
-    }
-    result[normalized_singleton] = extension_subtags;
+    it->second = subtags.ReadSubtags(SubtagsReader::Type::kExtensionSubtag);
   }
 
   return result;
@@ -71,19 +61,13 @@ ParseBcp47Extensions(SubtagsReader& subtags) {
 // the `IsPrivateUseSubtag` function for more details). If the "x" singleton is
 // not followed by any valid subtag, parsing fails (std::nullopt is returned) as
 // this is not allowed by the BCP47 standard.
-constexpr std::optional<std::vector<std::string_view>> ParseBcp47PrivateUse(
+constexpr std::vector<std::string_view> ParseBcp47PrivateUse(
     SubtagsReader& subtags) {
   if (subtags.Read(SubtagsReader::Type::kPrivateUseSingleton).empty()) {
     return std::vector<std::string_view>();
   }
-  // Private-use subtags parsing.
-  std::vector<std::string_view> private_use;
-  std::string_view subtag;
-  while (!(subtag = subtags.Read(SubtagsReader::Type::kPrivateUseSubtag))
-              .empty()) {
-    private_use.push_back(subtag);
-  }
-  return private_use;
+
+  return subtags.ReadSubtags(SubtagsReader::Type::kPrivateUseSubtag);
 }
 
 // The parsed BCP47 tag. It is a view on the actual input string.
@@ -133,10 +117,7 @@ constexpr std::optional<ParsedBcp47Tag> ParseBcp47Tag(SubtagsReader subtags) {
 
   parsed_tag.script = subtags.Read(SubtagsReader::Type::kScript);
   parsed_tag.region = subtags.Read(SubtagsReader::Type::kRegion);
-  std::string_view variant;
-  while (!(variant = subtags.Read(SubtagsReader::Type::kVariant)).empty()) {
-    parsed_tag.variants.push_back(variant);
-  }
+  parsed_tag.variants = subtags.ReadSubtags(SubtagsReader::Type::kVariant);
 
   std::optional<base::flat_map<char, std::vector<std::string_view>>>
       extensions = ParseBcp47Extensions(subtags);
@@ -144,12 +125,7 @@ constexpr std::optional<ParsedBcp47Tag> ParseBcp47Tag(SubtagsReader subtags) {
     return std::nullopt;
   }
   parsed_tag.extensions = *std::move(extensions);
-  std::optional<std::vector<std::string_view>> private_use =
-      ParseBcp47PrivateUse(subtags);
-  if (!private_use.has_value()) {
-    return std::nullopt;
-  }
-  parsed_tag.private_use = *std::move(private_use);
+  parsed_tag.private_use = ParseBcp47PrivateUse(subtags);
 
   // If there are remaining subtags, it means that the input is malformed.
   if (subtags.HasError() || !subtags.IsDone()) {

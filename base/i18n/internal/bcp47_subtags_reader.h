@@ -99,19 +99,40 @@ constexpr bool IsPrivateUseSubtag(std::string_view subtag) {
 }
 
 // This class constructs per-demand a reader over a BCP47 tag without any heap
-// allocations, that is the subtags are only parsed when needed.
+// allocations, that is, the subtags are only parsed when needed.
 //
 // It provides the following public methods:
 //  - HasError(): Returns whether there is an error with the underlying BCP47
-//  tag.
+//    tag.
 //  - IsDone(): Returns whether the reader is done (either completely parsed or
 //    encountered an error).
 //  - Read(Type type): Returns the current subtag if its type equals `type`
 //    and then advances to the next subtag in the underlying BCP47 tag.
 //    If the type does not match, returns an empty string without advancing.
+//  - ReadSubtags(Type type): Reads and returns all contiguous subtags matching
+//    `type`, advancing the reader past them.
+//  - Seek(Type type): Advances the reader until the current subtag's type
+//  matches `type` or becomes unreachable based on subtag ordering rules.
+//
+// Handling errors:
+//
+// If a parsing error is found, `HasError()` and `IsDone()` will always return
+// true and `Read()` will have no effect after that (an empty string is
+// returned). Also, a false `HasError()` has only significance over what
+// `SubtagsReader` has parsed so far, i.e. `HasError()` can return
+// false and at some point start returning true if it reaches a parsing error.
+// The same applies to `Read()` as it returning a non-empty string does not mean
+// anything about the underlying `tag` as a whole, only that it was able to
+// parse the current tag (and that so far no parsing errors were found).
+//
+// If you want to access the correctness of the tag `SubtagsReader` is acting
+// upon, you must read it until `IsDone()` is true and verify that `HasError()`
+// is false.
 class SubtagsReader {
  public:
   // Identifies the type of subtags as per the BCP47 standard.
+  // The order of the types within the enum here is important and we use it
+  // during parsing (please, do not change it).
   enum class Type {
     kLanguage,
     kScript,
@@ -171,6 +192,29 @@ class SubtagsReader {
     return read_front;
   }
 
+  // Reads and returns all contiguous subtags of the given `type` starting
+  // from the current position, advancing the reader past them.
+  // Returns an empty vector if the current subtag does not match `type`.
+  constexpr std::vector<std::string_view> ReadSubtags(Type type) {
+    std::vector<std::string_view> result;
+    std::string_view read_subtag;
+    while (!(read_subtag = Read(type)).empty()) {
+      result.push_back(read_subtag);
+    }
+    return result;
+  }
+
+  // Advances the reader until the current subtag's type matches `type` or is
+  // no longer reachable (meaning a subtag of `type` cannot follow the current
+  // subtag type according to BCP47 subtag ordering rules).
+  // Returns a reference to this reader to allow method chaining.
+  constexpr SubtagsReader& Seek(Type type) {
+    while (type_ != type && !IsDone() && IsReachable(type_, type)) {
+      Advance();
+    }
+    return *this;
+  }
+
   // Returns whether there is an error with the underlying BCP47 tag.
   constexpr bool HasError() const { return type_ == Type::kError; }
   // Returns whether the reader is done. This is true if the underlying tag has
@@ -180,6 +224,11 @@ class SubtagsReader {
   }
 
  private:
+  static constexpr bool IsReachable(Type lhs, Type rhs) {
+    // Extension subtag to extension singleton is the only valid type-loop.
+    return lhs < rhs ||
+           (lhs == Type::kExtensionSubtag && rhs == Type::kExtensionSingleton);
+  }
   // Advances the current subtag to the next one.
   constexpr void Advance() {
     size_t next = remaining_.find('-');

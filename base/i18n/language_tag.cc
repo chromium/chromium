@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/i18n/bcp47_extensions.h"
 #include "base/i18n/internal/bcp47_parser.h"
+#include "base/i18n/internal/bcp47_subtags_reader.h"
 #include "base/i18n/internal/legacy_icu_converter.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
@@ -87,16 +88,25 @@ LanguageTag::LanguageTag(ImmutableStringType tag) : tag_(std::move(tag)) {
 
 std::vector<std::string_view> LanguageTag::GetExtensionSubtagsInternal(
     char key) const {
-  std::optional<i18n_internal::ParsedBcp47Tag> parsed =
-      i18n_internal::ParseBcp47Tag(tag_.AsString());
-  if (!parsed) {
-    return {};
-  }
   char normalized_key = base::ToLowerASCII(key);
-  if (normalized_key == 'x') {
-    return parsed->private_use;
+  i18n_internal::SubtagsReader::Type singleton_type =
+      normalized_key == 'x'
+          ? i18n_internal::SubtagsReader::Type::kPrivateUseSingleton
+          : i18n_internal::SubtagsReader::Type::kExtensionSingleton;
+
+  std::string_view singleton;
+  i18n_internal::SubtagsReader reader(tag_string());
+  while (
+      !(singleton = reader.Seek(singleton_type).Read(singleton_type)).empty()) {
+    if (ToLowerASCII(singleton.front()) == normalized_key) {
+      return reader.ReadSubtags(
+          normalized_key == 'x'
+              ? i18n_internal::SubtagsReader::Type::kPrivateUseSubtag
+              : i18n_internal::SubtagsReader::Type::kExtensionSubtag);
+    }
   }
-  return parsed->extensions[normalized_key];
+
+  return {};
 }
 
 std::optional<UnicodeExtension> LanguageTag::GetExtension(
