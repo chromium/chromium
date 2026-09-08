@@ -865,7 +865,7 @@ inline const LayoutResult* BlockLayoutAlgorithm::Layout(
 
   PreviousInflowPosition previous_inflow_position = {
       LayoutUnit(), constraint_space.GetMarginStrut(),
-      is_resuming_ ? LayoutUnit() : ComputeInitialBlockStartAnnotationSpace(),
+      ComputeInitialBlockStartAnnotationSpace(),
       /* previous_sibling_block_end_annotation_space */ LayoutUnit(),
       /* self_collapsing_child_had_clearance */ false};
 
@@ -4146,6 +4146,9 @@ LogicalOffset BlockLayoutAlgorithm::AdjustSliderThumbInlineOffset(
 
 LayoutUnit BlockLayoutAlgorithm::ComputeInitialBlockStartAnnotationSpace()
     const {
+  if (is_resuming_) {
+    return LayoutUnit();
+  }
   LayoutUnit padding_start = container_builder_.Padding().block_start;
   const ConstraintSpace& space = GetConstraintSpace();
   // Allow ruby annotations to overflow to the block-start margin if the
