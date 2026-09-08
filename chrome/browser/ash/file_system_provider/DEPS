@@ -8,7 +8,6 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/apps/app_service",
   "+chrome/browser/ash/file_manager",
-  "+chrome/browser/ash/fileapi",
   "+chrome/browser/ash/guest_os",
   "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/profiles",
