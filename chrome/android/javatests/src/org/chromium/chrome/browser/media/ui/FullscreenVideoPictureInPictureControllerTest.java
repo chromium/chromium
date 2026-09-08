@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.media.ui;
 
+import android.os.Build;
+
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -410,6 +412,8 @@ public class FullscreenVideoPictureInPictureControllerTest {
 
     @Test
     @MediumTest
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S, message = "crbug.com/540400359")
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/540400359")
     public void testMetricsRecorded() throws Throwable {
         HistogramWatcher enteredWatcher =
                 HistogramWatcher.newBuilder()
