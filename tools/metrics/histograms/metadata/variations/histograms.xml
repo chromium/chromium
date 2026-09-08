@@ -65,17 +65,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Variations.ApplyRuntimeMutableChanges.Result"
-    enum="VariationsApplyRuntimeMutableChangesResult"
-    expires_after="2027-06-11">
+<histogram name="Variations.ApplyRuntimeMutableChanges.HasConflictingChanges"
+    enum="Boolean" expires_after="2027-06-11">
   <owner>lucnguyen@google.com</owner>
   <owner>rogerm@google.com</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
-    The result of attempting to apply a runtime mutable study from a new
-    variations seed. Recorded for each runtime mutable study in the seed
-    whenever a new seed is successfully stored.
+    Logged whenever there is at least one prepared runtime mutable change from a
+    new variations seed. Records whether there are conflicting changes (e.g.
+    overlapping study names, feature names, trials to override, or previous
+    overrides to replace) across the prepared studies. If true, the entire batch
+    of changes is discarded for safety.
+  </summary>
+</histogram>
+
+<histogram
+    name="Variations.ApplyRuntimeMutableChanges.ValidationFailedStudyName"
+    enum="FieldTrialNameHash" expires_after="2027-06-11">
+  <owner>lucnguyen@google.com</owner>
+  <owner>rogerm@google.com</owner>
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Logged whenever validation fails after applying a runtime mutable study from
+    a new variations seed. The logged value is a hash of the study name that
+    failed validation.
   </summary>
 </histogram>
 
@@ -407,6 +422,20 @@ chromium-metrics-reviews@google.com.
     to verify that the respective log is properly applied so it will be kept in
     the code even if not collected by the server anymore. TODO(crbug/1345624):
     Clean this dependency up and remove the histogram.
+  </summary>
+</histogram>
+
+<histogram name="Variations.PrepareRuntimeMutableChanges.Result"
+    enum="VariationsPrepareRuntimeMutableChangesResult"
+    expires_after="2027-06-11">
+  <owner>lucnguyen@google.com</owner>
+  <owner>rogerm@google.com</owner>
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The result of attempting to prepare a runtime mutable study from a new
+    variations seed. Recorded for each runtime mutable study in the seed
+    whenever a new seed is successfully stored.
   </summary>
 </histogram>
 

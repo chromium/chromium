@@ -103,11 +103,11 @@ enum class VerifySignatureResult {
   kMaxValue = kValidSignature,
 };
 
-// The result of attempting to apply runtime mutable experiment from a new seed.
+// The result of attempting to prepare runtime mutable changes from a new seed.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// LINT.IfChange(VariationsApplyRuntimeMutableChangesResult)
-enum class ApplyRuntimeMutableChangesResult {
+// LINT.IfChange(VariationsPrepareRuntimeMutableChangesResult)
+enum class PrepareRuntimeMutableChangesResult {
   // Reserve the default/uninitialized value. This should not be used.
   kUnknown = 0,
   kSuccess = 1,
@@ -123,15 +123,13 @@ enum class ApplyRuntimeMutableChangesResult {
   kControllingTrialHasOtherFeatures = 11,
   kTrialNameCollision = 12,
   kControllingTrialNotFound = 13,
-  kUpdateFeatureStateFailed = 14,
-  kApplyRuntimeFieldTrialOverrideFailed = 15,
-  kValidationFailed = 16,
-  kRuntimeExperimentHasGoogleWebId = 17,
-  kOverriddenTrialHasGoogleWebId = 18,
-  kRuntimeExperimentHasParams = 19,
+  kPrepareFeatureStateUpdateFailed = 14,
+  kRuntimeExperimentHasGoogleWebId = 15,
+  kOverriddenTrialHasGoogleWebId = 16,
+  kRuntimeExperimentHasParams = 17,
   kMaxValue = kRuntimeExperimentHasParams,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/variations/enums.xml:VariationsApplyRuntimeMutableChangesResult)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/variations/enums.xml:VariationsPrepareRuntimeMutableChangesResult)
 
 // Describes instance manipulations applied to data.
 struct InstanceManipulations {

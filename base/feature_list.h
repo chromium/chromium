@@ -187,8 +187,9 @@ class BASE_EXPORT FeatureList {
   //
   // Callers are responsible for invoking `RunPreMutationCallback()`,
   // `UpdateState()`, and `RunPostMutationCallback()` in that exact order.
-  // CHECKs enforce that all phases are called in order and complete before
-  // destruction.
+  // CHECKs enforce that once pre-mutation callbacks are run, all phases are
+  // called in order and complete before destruction. Destruction before
+  // running pre-mutation callbacks (kInitial) is permitted.
   class BASE_EXPORT [[nodiscard]] RuntimeMutableFeatureUpdate {
    public:
     enum class Stage {

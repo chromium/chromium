@@ -39,6 +39,7 @@
 #include "components/metrics/startup_visibility.h"
 #include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/variations/hashing.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/proto/variations_seed.pb.h"
@@ -90,8 +91,12 @@ const char kBase64SeedSignature[] =
     "MEQCIDD1IVxjzWYncun+9IGzqYjZvqxxujQEayJULTlbTGA/AiAr0oVmEgVUQZBYq5VLOSvy"
     "96JkMYgzTkHPwbv7K/CmgA==";
 
-const char kApplyRuntimeMutableChangesResultMetric[] =
-    "Variations.ApplyRuntimeMutableChanges.Result";
+const char kPrepareRuntimeMutableChangesResultMetric[] =
+    "Variations.PrepareRuntimeMutableChanges.Result";
+const char kApplyRuntimeMutableChangesHasConflictingChangesMetric[] =
+    "Variations.ApplyRuntimeMutableChanges.HasConflictingChanges";
+const char kApplyRuntimeMutableChangesValidationFailedStudyNameMetric[] =
+    "Variations.ApplyRuntimeMutableChanges.ValidationFailedStudyName";
 
 // TODO(crbug.com/40742801): Remove when fake VariationsServiceClient created.
 class TestVariationsServiceClient : public VariationsServiceClient {
@@ -1365,7 +1370,7 @@ TEST_F(VariationsServiceTest,
         {kTestRuntimeFeatureA.name, kTestRegularFeature.name});
     seed.mutable_study(0)->set_runtime_mutable(false);
     service.SimulateAndApplyRuntimeMutableChanges(seed);
-    histogram_tester.ExpectTotalCount(kApplyRuntimeMutableChangesResultMetric,
+    histogram_tester.ExpectTotalCount(kPrepareRuntimeMutableChangesResultMetric,
                                       0);
     EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
@@ -1400,7 +1405,7 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_PolicyRestriction) {
     VariationsSeed seed = CreateTestRuntimeMutableSeed(
         "MyStudy", "Group1", {}, {kTestRuntimeFeatureA.name});
     service.SimulateAndApplyRuntimeMutableChanges(seed);
-    histogram_tester.ExpectTotalCount(kApplyRuntimeMutableChangesResultMetric,
+    histogram_tester.ExpectTotalCount(kPrepareRuntimeMutableChangesResultMetric,
                                       0);
     EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
@@ -1418,8 +1423,8 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_PolicyRestriction) {
         "MyStudy", "Group1", {}, {kTestRuntimeFeatureA.name});
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kSuccess, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kSuccess, 1);
     EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     auto override =
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
@@ -1453,8 +1458,8 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_NotNull) {
         /*default_experiment_name=*/"", /*probability_weight=*/0);
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kSimulatedGroupIsNull, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kSimulatedGroupIsNull, 1);
     EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
                      ->GetRuntimeOverride("MyStudy")
@@ -1492,8 +1497,8 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_StrictKillswitch) {
         "MyStudy1", "Group1", {kTestRuntimeFeatureA.name}, {});
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kNotStrictKillswitch, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kNotStrictKillswitch, 1);
     EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
                      ->GetRuntimeOverride("MyStudy1")
@@ -1508,8 +1513,8 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_StrictKillswitch) {
         {kTestRuntimeFeatureB.name});
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kNotStrictKillswitch, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kNotStrictKillswitch, 1);
     EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
     EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
@@ -1524,8 +1529,8 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_StrictKillswitch) {
         CreateTestRuntimeMutableSeed("MyStudy3", "Group1", {}, {});
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kSuccess, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kSuccess, 1);
     auto override =
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
             "MyStudy3");
@@ -1541,8 +1546,8 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_StrictKillswitch) {
         "MyStudy4", "Group1", {}, {kTestRuntimeFeatureA.name});
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kSuccess, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kSuccess, 1);
     EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     auto override =
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
@@ -1585,8 +1590,8 @@ TEST_F(VariationsServiceTest,
         "NoOpStudy", "Disable", {}, {kTestRuntimeFeatureA.name});
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kTrialNameCollision, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kTrialNameCollision, 1);
     EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
   }
 
@@ -1598,8 +1603,8 @@ TEST_F(VariationsServiceTest,
         CreateTestRuntimeMutableSeed("NoOpStudy", "NewDefault", {}, {});
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kSuccess, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kSuccess, 1);
     // A new override should be active.
     auto override_info =
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
@@ -1617,8 +1622,8 @@ TEST_F(VariationsServiceTest,
         "NoOpStudy", "Disable", {}, {kTestRuntimeFeatureA.name});
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kTrialNameCollision, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kTrialNameCollision, 1);
     EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     // Previous override should still be active.
     auto override_info =
@@ -1637,8 +1642,8 @@ TEST_F(VariationsServiceTest,
         CreateTestRuntimeMutableSeed("NoOpStudy", "EvenNewerDefault", {}, {});
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kSuccess, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kSuccess, 1);
     // The new override should be active.
     auto override_info =
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
@@ -1675,8 +1680,8 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_NoOpOverride) {
         CreateTestRuntimeMutableSeed("NoOpStudy", "Default", {}, {});
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kSuccess, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kSuccess, 1);
     EXPECT_FALSE(base::FieldTrialList::Find("NoOpStudy"));
     // The new override should be active.
     auto override_info =
@@ -1695,8 +1700,8 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_NoOpOverride) {
         "NoOpStudy", "Disable", {}, {kTestRuntimeFeatureA.name});
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kTrialNameCollision, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kTrialNameCollision, 1);
     EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     // Previous override should still be active.
     auto override_info =
@@ -1715,8 +1720,8 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_NoOpOverride) {
         CreateTestRuntimeMutableSeed("NoOpStudy", "NewDefault", {}, {});
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kSuccess, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kSuccess, 1);
     // The new override should be active.
     auto override_info =
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
@@ -1751,8 +1756,8 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_NotStartsActive) {
     seed.mutable_study(0)->set_activation_type(Study::ACTIVATE_ON_QUERY);
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kNotStartsActive, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kNotStartsActive, 1);
     EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
                      ->GetRuntimeOverride("MyStudy")
@@ -1785,8 +1790,8 @@ TEST_F(VariationsServiceTest,
     seed.mutable_study(0)->set_consistency(Study::SESSION);
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kNotPermanentConsistency, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kNotPermanentConsistency, 1);
     EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
                      ->GetRuntimeOverride("MyStudy")
@@ -1834,8 +1839,8 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_AlreadyApplied) {
         "Killswitch", "Disabled50", {}, {kTestRuntimeFeatureA.name});
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kAlreadyApplied, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kAlreadyApplied, 1);
     EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
                      ->GetRuntimeOverride("Killswitch")
@@ -1850,8 +1855,8 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_AlreadyApplied) {
         "Killswitch", "Disabled100", {}, {kTestRuntimeFeatureA.name});
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kSuccess, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kSuccess, 1);
     EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     auto override =
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
@@ -1869,8 +1874,8 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_AlreadyApplied) {
         "Killswitch", "Disabled100", {}, {kTestRuntimeFeatureA.name});
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kAlreadyApplied, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kAlreadyApplied, 1);
     EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     // Override should be unchanged.
     auto override =
@@ -1891,8 +1896,8 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_AlreadyApplied) {
         "Killswitch", "Disabled50", {}, {kTestRuntimeFeatureA.name});
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kSuccess, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kSuccess, 1);
     EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     auto override =
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
@@ -1930,8 +1935,9 @@ TEST_F(VariationsServiceTest,
         12345);
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kRuntimeExperimentHasGoogleWebId, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kRuntimeExperimentHasGoogleWebId,
+        1);
     EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
                      ->GetRuntimeOverride("MyStudy")
@@ -1947,8 +1953,9 @@ TEST_F(VariationsServiceTest,
         ->set_google_web_trigger_experiment_id(12345);
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kRuntimeExperimentHasGoogleWebId, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kRuntimeExperimentHasGoogleWebId,
+        1);
     EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
                      ->GetRuntimeOverride("MyStudy")
@@ -1983,8 +1990,8 @@ TEST_F(VariationsServiceTest,
   param->set_value("param_value");
   service.SimulateAndApplyRuntimeMutableChanges(seed);
   histogram_tester.ExpectUniqueSample(
-      kApplyRuntimeMutableChangesResultMetric,
-      ApplyRuntimeMutableChangesResult::kRuntimeExperimentHasParams, 1);
+      kPrepareRuntimeMutableChangesResultMetric,
+      PrepareRuntimeMutableChangesResult::kRuntimeExperimentHasParams, 1);
   EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
   EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
                    ->GetRuntimeOverride("MyStudy")
@@ -2026,8 +2033,8 @@ TEST_F(VariationsServiceTest,
         "MyStudy", "Group1", {}, {kTestRuntimeFeatureA.name});
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kOverriddenTrialHasGoogleWebId, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kOverriddenTrialHasGoogleWebId, 1);
     EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
                      ->GetRuntimeOverride("MyStudy")
@@ -2066,8 +2073,8 @@ TEST_F(VariationsServiceTest,
         {kTestRuntimeFeatureA.name, kTestRegularFeature.name});
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kNonRuntimeMutableFeature, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kNonRuntimeMutableFeature, 1);
     EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRegularFeature));
     EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
@@ -2109,8 +2116,9 @@ TEST_F(VariationsServiceTest,
         {kTestRuntimeFeatureA.name, kTestRuntimeFeatureB.name});
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kFeatureOverriddenFromCommandLine, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kFeatureOverriddenFromCommandLine,
+        1);
     EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
     EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
@@ -2173,8 +2181,9 @@ TEST_F(VariationsServiceTest,
     service.SimulateAndApplyRuntimeMutableChanges(seed);
 
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kFeaturesNotControlledBySameTrial, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kFeaturesNotControlledBySameTrial,
+        1);
     EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
     EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
@@ -2189,8 +2198,8 @@ TEST_F(VariationsServiceTest,
     service.SimulateAndApplyRuntimeMutableChanges(seed);
 
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kSuccess, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kSuccess, 1);
     EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
     auto override =
@@ -2209,8 +2218,9 @@ TEST_F(VariationsServiceTest,
     service.SimulateAndApplyRuntimeMutableChanges(seed);
 
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kFeaturesNotControlledBySameTrial, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kFeaturesNotControlledBySameTrial,
+        1);
     EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
     EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
@@ -2225,8 +2235,8 @@ TEST_F(VariationsServiceTest,
     service.SimulateAndApplyRuntimeMutableChanges(seed);
 
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kSuccess, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kSuccess, 1);
     EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
     auto override =
@@ -2245,8 +2255,9 @@ TEST_F(VariationsServiceTest,
     service.SimulateAndApplyRuntimeMutableChanges(seed);
 
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kFeaturesNotControlledBySameTrial, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kFeaturesNotControlledBySameTrial,
+        1);
     EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
     EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
@@ -2300,8 +2311,9 @@ TEST_F(VariationsServiceTest,
     service.SimulateAndApplyRuntimeMutableChanges(seed);
 
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kFeaturesNotControlledBySameTrial, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kFeaturesNotControlledBySameTrial,
+        1);
     EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
     EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
@@ -2316,8 +2328,8 @@ TEST_F(VariationsServiceTest,
     service.SimulateAndApplyRuntimeMutableChanges(seed);
 
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kSuccess, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kSuccess, 1);
     EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
     auto override =
@@ -2336,8 +2348,9 @@ TEST_F(VariationsServiceTest,
     service.SimulateAndApplyRuntimeMutableChanges(seed);
 
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kFeaturesNotControlledBySameTrial, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kFeaturesNotControlledBySameTrial,
+        1);
     EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
     EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
@@ -2388,8 +2401,9 @@ TEST_F(VariationsServiceTest,
         "KillswitchA", "Disabled", {}, {kTestRuntimeFeatureA.name});
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kControllingTrialHasOtherFeatures, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kControllingTrialHasOtherFeatures,
+        1);
     EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
     EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
@@ -2405,8 +2419,8 @@ TEST_F(VariationsServiceTest,
         {kTestRuntimeFeatureB.name, kTestRuntimeFeatureA.name});
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kSuccess, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kSuccess, 1);
     EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
     auto override =
@@ -2425,8 +2439,9 @@ TEST_F(VariationsServiceTest,
         "KillswitchA", "Disable", {}, {kTestRuntimeFeatureA.name});
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kControllingTrialHasOtherFeatures, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kControllingTrialHasOtherFeatures,
+        1);
     EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
     EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
@@ -2479,8 +2494,8 @@ TEST_F(VariationsServiceTest,
         "KillswitchA", "Disabled", {}, {kTestRuntimeFeatureA.name});
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kSuccess, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kSuccess, 1);
     EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     auto override_info =
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
@@ -2531,8 +2546,8 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_FeaturesWithNoTrials) {
         {kTestRuntimeFeatureA.name, kTestRuntimeFeatureB.name});
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kSuccess, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kSuccess, 1);
     EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
     EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureC));
@@ -2557,8 +2572,9 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_FeaturesWithNoTrials) {
          kTestRuntimeFeatureC.name});
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kFeaturesNotControlledBySameTrial, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kFeaturesNotControlledBySameTrial,
+        1);
     EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
     EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureC));
@@ -2585,8 +2601,9 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_FeaturesWithNoTrials) {
         "KillswitchA", "DisableA", {}, {kTestRuntimeFeatureA.name});
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kControllingTrialHasOtherFeatures, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kControllingTrialHasOtherFeatures,
+        1);
     EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
     EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureC));
@@ -2611,8 +2628,8 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_FeaturesWithNoTrials) {
         {kTestRuntimeFeatureA.name, kTestRuntimeFeatureB.name});
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kSuccess, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kSuccess, 1);
     EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
     EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureC));
@@ -2670,8 +2687,8 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_TrialNameCollision) {
         "Trial2", "Group3", {}, {kTestRuntimeFeatureA.name});
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kTrialNameCollision, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kTrialNameCollision, 1);
     EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
     EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
@@ -2689,8 +2706,8 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_TrialNameCollision) {
         "Trial1", "Group3", {}, {kTestRuntimeFeatureA.name});
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kSuccess, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kSuccess, 1);
     EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
     auto override =
@@ -2710,8 +2727,8 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_TrialNameCollision) {
         "Killswitch", "Disabled50", {}, {kTestRuntimeFeatureA.name});
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kSuccess, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kSuccess, 1);
     EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
     EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
@@ -2734,8 +2751,8 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_TrialNameCollision) {
         "Killswitch", "DisableB", {}, {kTestRuntimeFeatureB.name});
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kTrialNameCollision, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kTrialNameCollision, 1);
     EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
     // The previously existing override should be unchanged.
@@ -2757,8 +2774,8 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_TrialNameCollision) {
         "Killswitch", "Disabled100", {}, {kTestRuntimeFeatureA.name});
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kSuccess, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kSuccess, 1);
     EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
     auto override =
@@ -2779,8 +2796,8 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_TrialNameCollision) {
         "Trial1", "Disabled", {}, {kTestRuntimeFeatureA.name});
     service.SimulateAndApplyRuntimeMutableChanges(seed);
     histogram_tester.ExpectUniqueSample(
-        kApplyRuntimeMutableChangesResultMetric,
-        ApplyRuntimeMutableChangesResult::kSuccess, 1);
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kSuccess, 1);
     EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
     EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
@@ -2874,6 +2891,287 @@ TEST_F(VariationsServiceTest,
   EXPECT_EQ(rollout_override->overridden_trial, nullptr);
 
   base::RuntimeFieldTrialOverrides::GetInstance()->RemoveObserver(&observer);
+}
+
+// Verifies that across multiple studies, all pre-mutation callbacks are run
+// before any mutations (FieldTrial override and feature state update), and all
+// mutations are applied before any post-mutation callbacks are run.
+TEST_F(VariationsServiceTest,
+       ApplyRuntimeMutableChanges_CallbackOrderAcrossMultipleStudies) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+
+  std::vector<std::string> event_log;
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureA,
+      /*pre_mutation_callback=*/
+      base::BindLambdaForTesting(
+          [&event_log](std::reference_wrapper<const base::Feature> feature,
+                       std::string_view study_name, std::string_view group_name,
+                       base::FeatureList::OverrideState state) {
+            event_log.push_back("A_pre");
+            EXPECT_EQ(study_name, "Study1");
+            EXPECT_EQ(group_name, "Group1");
+            EXPECT_EQ(state, base::FeatureList::OVERRIDE_DISABLE_FEATURE);
+            // Neither feature should have been mutated yet.
+            EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+            EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
+            EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
+                             ->GetRuntimeOverride("Study1")
+                             .has_value());
+            EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
+                             ->GetRuntimeOverride("Study2")
+                             .has_value());
+          }),
+      /*post_mutation_callback=*/
+      base::BindLambdaForTesting(
+          [&event_log](std::reference_wrapper<const base::Feature> feature,
+                       std::string_view study_name, std::string_view group_name,
+                       base::FeatureList::OverrideState state) {
+            event_log.push_back("A_post");
+            EXPECT_EQ(study_name, "Study1");
+            EXPECT_EQ(group_name, "Group1");
+            EXPECT_EQ(state, base::FeatureList::OVERRIDE_DISABLE_FEATURE);
+            // All mutations should have been applied already.
+            EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+            EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
+            EXPECT_TRUE(base::RuntimeFieldTrialOverrides::GetInstance()
+                            ->GetRuntimeOverride("Study1")
+                            .has_value());
+            EXPECT_TRUE(base::RuntimeFieldTrialOverrides::GetInstance()
+                            ->GetRuntimeOverride("Study2")
+                            .has_value());
+          }));
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureB,
+      /*pre_mutation_callback=*/
+      base::BindLambdaForTesting(
+          [&event_log](std::reference_wrapper<const base::Feature> feature,
+                       std::string_view study_name, std::string_view group_name,
+                       base::FeatureList::OverrideState state) {
+            event_log.push_back("B_pre");
+            EXPECT_EQ(study_name, "Study2");
+            EXPECT_EQ(group_name, "Group2");
+            EXPECT_EQ(state, base::FeatureList::OVERRIDE_DISABLE_FEATURE);
+            // Neither feature should have been mutated yet.
+            EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+            EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
+            EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
+                             ->GetRuntimeOverride("Study1")
+                             .has_value());
+            EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
+                             ->GetRuntimeOverride("Study2")
+                             .has_value());
+          }),
+      /*post_mutation_callback=*/
+      base::BindLambdaForTesting(
+          [&event_log](std::reference_wrapper<const base::Feature> feature,
+                       std::string_view study_name, std::string_view group_name,
+                       base::FeatureList::OverrideState state) {
+            event_log.push_back("B_post");
+            EXPECT_EQ(study_name, "Study2");
+            EXPECT_EQ(group_name, "Group2");
+            EXPECT_EQ(state, base::FeatureList::OVERRIDE_DISABLE_FEATURE);
+            // All mutations should have been applied already.
+            EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+            EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
+            EXPECT_TRUE(base::RuntimeFieldTrialOverrides::GetInstance()
+                            ->GetRuntimeOverride("Study1")
+                            .has_value());
+            EXPECT_TRUE(base::RuntimeFieldTrialOverrides::GetInstance()
+                            ->GetRuntimeOverride("Study2")
+                            .has_value());
+          }));
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  base::HistogramTester histogram_tester;
+  VariationsSeed seed;
+  *seed.add_study() = *CreateTestRuntimeMutableSeed("Study1", "Group1", {},
+                                                    {kTestRuntimeFeatureA.name})
+                           .mutable_study(0);
+  *seed.add_study() = *CreateTestRuntimeMutableSeed("Study2", "Group2", {},
+                                                    {kTestRuntimeFeatureB.name})
+                           .mutable_study(0);
+
+  service.SimulateAndApplyRuntimeMutableChanges(seed);
+
+  EXPECT_THAT(event_log,
+              testing::ElementsAre("A_pre", "B_pre", "A_post", "B_post"));
+  histogram_tester.ExpectBucketCount(
+      kPrepareRuntimeMutableChangesResultMetric,
+      PrepareRuntimeMutableChangesResult::kSuccess, 2);
+  histogram_tester.ExpectTotalCount(
+      kApplyRuntimeMutableChangesValidationFailedStudyNameMetric, 0);
+}
+
+// Verifies that if post-mutation validation fails, the study name hash is
+// emitted to Variations.ApplyRuntimeMutableChanges.ValidationFailedStudyName.
+TEST_F(VariationsServiceTest,
+       ApplyRuntimeMutableChanges_ValidationFailedTelemetry) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureA,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
+      base::BindLambdaForTesting(
+          [](std::reference_wrapper<const base::Feature> feature,
+             std::string_view study_name, std::string_view group_name,
+             base::FeatureList::OverrideState state) {
+            // Tamper with the runtime override to simulate a corrupted state
+            // during mutation.
+            bool result =
+                base::RuntimeFieldTrialOverrides::GetInstance()
+                    ->ApplyRuntimeOverride(
+                        VariationsService::CreatePassKeyForTesting(),
+                        std::string(study_name), "CorruptedGroup", nullptr,
+                        /*previous_override_trial_name=*/
+                        std::string(study_name));
+            EXPECT_TRUE(result);
+          }));
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  base::HistogramTester histogram_tester;
+  VariationsSeed seed = CreateTestRuntimeMutableSeed(
+      "Study1", "Group1", {}, {kTestRuntimeFeatureA.name});
+
+  service.SimulateAndApplyRuntimeMutableChanges(seed);
+
+  histogram_tester.ExpectUniqueSample(
+      kPrepareRuntimeMutableChangesResultMetric,
+      PrepareRuntimeMutableChangesResult::kSuccess, 1);
+  histogram_tester.ExpectUniqueSample(
+      kApplyRuntimeMutableChangesValidationFailedStudyNameMetric,
+      static_cast<int>(variations::HashName("Study1")), 1);
+}
+
+// Verifies that if multiple studies in the same seed contain conflicting
+// changes (e.g. overlapping features), the batch is rejected and
+// Variations.ApplyRuntimeMutableChanges.HasConflictingChanges records true.
+TEST_F(VariationsServiceTest,
+       ApplyRuntimeMutableChanges_HasConflictingChanges_OverlappingFeatures) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+
+  bool callback_called = false;
+  base::test::ScopedFeatureList scoped_feature_list;
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureA,
+      /*pre_mutation_callback=*/
+      base::BindLambdaForTesting(
+          [&callback_called](
+              std::reference_wrapper<const base::Feature> feature,
+              std::string_view study_name, std::string_view group_name,
+              base::FeatureList::OverrideState state) {
+            callback_called = true;
+          }),
+      /*post_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  base::HistogramTester histogram_tester;
+  VariationsSeed seed;
+  *seed.add_study() = *CreateTestRuntimeMutableSeed("Study1", "Group1", {},
+                                                    {kTestRuntimeFeatureA.name})
+                           .mutable_study(0);
+  *seed.add_study() = *CreateTestRuntimeMutableSeed("Study2", "Group2", {},
+                                                    {kTestRuntimeFeatureA.name})
+                           .mutable_study(0);
+
+  service.SimulateAndApplyRuntimeMutableChanges(seed);
+
+  // Both studies independently succeeded in preparation.
+  histogram_tester.ExpectBucketCount(
+      kPrepareRuntimeMutableChangesResultMetric,
+      PrepareRuntimeMutableChangesResult::kSuccess, 2);
+  // Conflict was detected before mutations; batch aborted.
+  histogram_tester.ExpectUniqueSample(
+      kApplyRuntimeMutableChangesHasConflictingChangesMetric, true, 1);
+  EXPECT_FALSE(callback_called);
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+  EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
+                   ->GetRuntimeOverride("Study1")
+                   .has_value());
+  EXPECT_FALSE(base::RuntimeFieldTrialOverrides::GetInstance()
+                   ->GetRuntimeOverride("Study2")
+                   .has_value());
+}
+
+// Verifies that HasConflictingRuntimeMutableChanges detects overlapping study
+// names between prepared changes. Note that duplicate study names in a seed are
+// filtered out earlier by FilterAndValidateStudies(), but
+// HasConflictingRuntimeMutableChanges verifies this as defense-in-depth.
+TEST_F(VariationsServiceTest,
+       ApplyRuntimeMutableChanges_HasConflictingChanges_OverlappingStudyNames) {
+  VariationsService::RuntimeMutableChanges c1;
+  c1.study_name = "Study1";
+  c1.feature_names = {kTestRuntimeFeatureA.name};
+  VariationsService::RuntimeMutableChanges c2;
+  c2.study_name = "Study1";
+  c2.feature_names = {kTestRuntimeFeatureB.name};
+  std::vector<VariationsService::RuntimeMutableChanges> changes;
+  changes.push_back(std::move(c1));
+  changes.push_back(std::move(c2));
+  EXPECT_TRUE(VariationsService::HasConflictingRuntimeMutableChanges(changes));
+}
+
+TEST_F(VariationsServiceTest,
+       HasConflictingRuntimeMutableChanges_OverlappingTrialsToOverride) {
+  base::FieldTrial* trial =
+      base::FieldTrialList::CreateFieldTrial("Trial", "Group");
+  VariationsService::RuntimeMutableChanges c1;
+  c1.study_name = "Study1";
+  c1.trial_to_override = trial;
+  VariationsService::RuntimeMutableChanges c2;
+  c2.study_name = "Study2";
+  c2.trial_to_override = trial;
+  std::vector<VariationsService::RuntimeMutableChanges> changes;
+  changes.push_back(std::move(c1));
+  changes.push_back(std::move(c2));
+  EXPECT_TRUE(VariationsService::HasConflictingRuntimeMutableChanges(changes));
+}
+
+TEST_F(VariationsServiceTest,
+       HasConflictingRuntimeMutableChanges_OverlappingPreviousOverrides) {
+  VariationsService::RuntimeMutableChanges c1;
+  c1.study_name = "Study1";
+  c1.previous_override_to_replace = "Override1";
+  VariationsService::RuntimeMutableChanges c2;
+  c2.study_name = "Study2";
+  c2.previous_override_to_replace = "Override1";
+  std::vector<VariationsService::RuntimeMutableChanges> changes;
+  changes.push_back(std::move(c1));
+  changes.push_back(std::move(c2));
+  EXPECT_TRUE(VariationsService::HasConflictingRuntimeMutableChanges(changes));
+}
+
+TEST_F(VariationsServiceTest, HasConflictingRuntimeMutableChanges_NoConflicts) {
+  VariationsService::RuntimeMutableChanges c1;
+  c1.study_name = "Study1";
+  c1.feature_names = {kTestRuntimeFeatureA.name};
+  c1.previous_override_to_replace = "Override1";
+  VariationsService::RuntimeMutableChanges c2;
+  c2.study_name = "Study2";
+  c2.feature_names = {kTestRuntimeFeatureB.name};
+  c2.previous_override_to_replace = "Override2";
+  std::vector<VariationsService::RuntimeMutableChanges> changes;
+  changes.push_back(std::move(c1));
+  changes.push_back(std::move(c2));
+  EXPECT_FALSE(VariationsService::HasConflictingRuntimeMutableChanges(changes));
 }
 
 // TODO(isherman): Add an integration test for saving and loading a safe seed,

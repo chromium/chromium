@@ -2069,9 +2069,8 @@ TEST_F(FeatureListTest, RuntimeMutableFeatureUpdate_MoveSemantics) {
   EXPECT_EQ(2, post_calls);
 }
 
-#if defined(GTEST_HAS_DEATH_TEST)
 TEST_F(FeatureListTest,
-       RuntimeMutableFeatureUpdate_DestructionInInitialState_DeathTest) {
+       RuntimeMutableFeatureUpdate_DestructionInInitialState_Succeeds) {
   test::ScopedFeatureList scoped_feature_list;
   {
     auto feature_list = std::make_unique<FeatureList>();
@@ -2081,19 +2080,17 @@ TEST_F(FeatureListTest,
     scoped_feature_list.InitWithFeatureList(std::move(feature_list));
   }
 
-  // Destroying the update object without running all phases should CHECK fail.
-  EXPECT_DEATH(
-      {
-        auto update =
-            FeatureList::GetInstance()->PrepareRuntimeMutableFeatureStateUpdate(
-                variations::VariationsService::CreatePassKeyForTesting(),
-                "TrialA", "GroupA", kRuntimeMutableFeature.name,
-                FeatureList::OVERRIDE_DISABLE_FEATURE);
-        ASSERT_TRUE(update.has_value());
-      },
-      "");
+  // Destroying the update object in initial state without running any phases
+  // is allowed (e.g. if the batch is aborted before callbacks start).
+  {
+    auto update =
+        FeatureList::GetInstance()->PrepareRuntimeMutableFeatureStateUpdate(
+            variations::VariationsService::CreatePassKeyForTesting(), "TrialA",
+            "GroupA", kRuntimeMutableFeature.name,
+            FeatureList::OVERRIDE_DISABLE_FEATURE);
+    ASSERT_TRUE(update.has_value());
+  }
 }
-#endif  // defined(GTEST_HAS_DEATH_TEST)
 
 #if defined(GTEST_HAS_DEATH_TEST)
 TEST_F(FeatureListTest,

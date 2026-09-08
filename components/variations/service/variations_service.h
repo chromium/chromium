@@ -12,6 +12,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/feature.h"
+#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -19,6 +20,7 @@
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/entropy_provider.h"
@@ -409,6 +411,17 @@ class VariationsService
   FRIEND_TEST_ALL_PREFIXES(VariationsServiceTest, DoNotRetryAfterARetry);
   FRIEND_TEST_ALL_PREFIXES(VariationsServiceTest,
                            DoNotRetryIfInsecureURLIsHTTPS);
+  FRIEND_TEST_ALL_PREFIXES(
+      VariationsServiceTest,
+      ApplyRuntimeMutableChanges_HasConflictingChanges_OverlappingStudyNames);
+  FRIEND_TEST_ALL_PREFIXES(
+      VariationsServiceTest,
+      HasConflictingRuntimeMutableChanges_OverlappingTrialsToOverride);
+  FRIEND_TEST_ALL_PREFIXES(
+      VariationsServiceTest,
+      HasConflictingRuntimeMutableChanges_OverlappingPreviousOverrides);
+  FRIEND_TEST_ALL_PREFIXES(VariationsServiceTest,
+                           HasConflictingRuntimeMutableChanges_NoConflicts);
 
   void InitResourceRequestedAllowedNotifier();
 
@@ -454,11 +467,31 @@ class VariationsService
   void PerformSimulationWithVersion(const VariationsSeed& seed,
                                     const base::Version& version);
 
-  // Applies the runtime mutable changes of the `trial`'s selected group to the
-  // current session.
-  ApplyRuntimeMutableChangesResult ApplyRuntimeMutableChanges(
-      base::FieldTrial* simulated_trial,
-      const ProcessedStudy& processed_study);
+  struct RuntimeMutableChanges {
+    RuntimeMutableChanges();
+    RuntimeMutableChanges(RuntimeMutableChanges&&);
+    RuntimeMutableChanges& operator=(RuntimeMutableChanges&&);
+    ~RuntimeMutableChanges();
+
+    std::string study_name;
+    std::string group_name;
+    raw_ptr<const base::FieldTrial> trial_to_override = nullptr;
+    std::string previous_override_to_replace;
+    std::vector<std::string> feature_names;
+    std::vector<base::FeatureList::RuntimeMutableFeatureUpdate> feature_updates;
+  };
+
+  // Prepares the runtime mutable changes of the `simulated_trial`'s selected
+  // group for the current session.
+  base::expected<RuntimeMutableChanges, PrepareRuntimeMutableChangesResult>
+  PrepareRuntimeMutableChanges(base::FieldTrial* simulated_trial,
+                               const ProcessedStudy& processed_study);
+
+  // Returns true if there are conflicting changes within `prepared_changes`
+  // (e.g. overlapping study names, feature names, trials to override, or
+  // previous overrides to replace).
+  static bool HasConflictingRuntimeMutableChanges(
+      base::span<const RuntimeMutableChanges> prepared_changes);
 
   // Calls `done_callback` with the studies and their groups which could
   // possibly be forced from the given `seed`.

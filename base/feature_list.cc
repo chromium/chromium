@@ -554,7 +554,8 @@ FeatureList::RuntimeMutableFeatureUpdate&
 FeatureList::RuntimeMutableFeatureUpdate::operator=(
     RuntimeMutableFeatureUpdate&& other) noexcept {
   if (this != &other) {
-    CHECK(stage_ == Stage::kPostMutationRun || stage_ == Stage::kMovedFrom);
+    CHECK(stage_ == Stage::kInitial || stage_ == Stage::kPostMutationRun ||
+          stage_ == Stage::kMovedFrom);
     state_entry_ = other.state_entry_;
     field_trial_name_ = std::move(other.field_trial_name_);
     group_name_ = std::move(other.group_name_);
@@ -565,7 +566,8 @@ FeatureList::RuntimeMutableFeatureUpdate::operator=(
 }
 
 FeatureList::RuntimeMutableFeatureUpdate::~RuntimeMutableFeatureUpdate() {
-  CHECK(stage_ == Stage::kPostMutationRun || stage_ == Stage::kMovedFrom);
+  CHECK(stage_ == Stage::kInitial || stage_ == Stage::kPostMutationRun ||
+        stage_ == Stage::kMovedFrom);
 }
 
 void FeatureList::RuntimeMutableFeatureUpdate::RunPreMutationCallback() {
