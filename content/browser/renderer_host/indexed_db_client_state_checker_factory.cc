@@ -229,8 +229,7 @@ class DocumentIndexedDBClientStateChecker final
   // registered.
   struct KeepActiveReceiverContext {
     int32_t connection_id;
-    RenderFrameHostImpl::BackForwardCacheDisablingFeatureHandle
-        bfcache_feature_handle;
+    BackForwardCacheDisablingFeatureHandle bfcache_feature_handle;
     RenderFrameHostImpl::HoldingBlockingIDBLockHandle
         holding_blocking_idb_lock_handle;
   };

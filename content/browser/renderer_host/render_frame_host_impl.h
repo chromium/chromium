@@ -55,6 +55,7 @@
 #include "content/browser/buckets/bucket_context.h"
 #include "content/browser/can_commit_status.h"
 #include "content/browser/locks/lock_manager.h"
+#include "content/browser/renderer_host/back_forward_cache_disabling_feature_handle.h"
 #include "content/browser/renderer_host/browsing_context_state.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/cookie_access_observers.h"
@@ -2041,32 +2042,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Clears the entries in the PrefetchedSignedExchangeCache if exists.
   void ClearPrefetchedSignedExchangeCache();
 
-  class BackForwardCacheDisablingFeatureHandle {
-   public:
-    BackForwardCacheDisablingFeatureHandle();
-    BackForwardCacheDisablingFeatureHandle(
-        BackForwardCacheDisablingFeatureHandle&&);
-    BackForwardCacheDisablingFeatureHandle& operator=(
-        BackForwardCacheDisablingFeatureHandle&& other) = default;
-
-    ~BackForwardCacheDisablingFeatureHandle();
-
-    bool IsValid() const;
-
-    // This will reduce the feature count for |feature_| for the first time, and
-    // do nothing for further calls.
-    void Reset();
-
-   private:
-    friend class RenderFrameHostImpl;
-    BackForwardCacheDisablingFeatureHandle(
-        RenderFrameHostImpl* render_frame_host,
-        BackForwardCacheDisablingFeature feature);
-
-    base::WeakPtr<RenderFrameHostImpl> render_frame_host_ = nullptr;
-    BackForwardCacheDisablingFeature feature_;
-  };
-
   // A feature that blocks back/forward cache is used. This function is used for
   // non sticky blocking features.
   BackForwardCacheDisablingFeatureHandle
@@ -3475,14 +3450,15 @@ class CONTENT_EXPORT RenderFrameHostImpl
                                 base::WeakPtr<RenderFrameHostImpl> impl);
 
  private:
+  friend class BackForwardCacheDisablingFeatureHandle;
   friend class CommitNavigationPauser;
+  friend class NavigationBrowserTest;
+  friend class RenderFrameHostManagerUnloadBrowserTest;
   friend class RenderFrameHostPermissionsPolicyTest;
   friend class TestRenderFrameHost;
   friend class TestRenderViewHost;
   friend class TextInputTestLocalFrame;
   friend class WebContentsSplitCacheBrowserTest;
-  friend class RenderFrameHostManagerUnloadBrowserTest;
-  friend class NavigationBrowserTest;
 
   FRIEND_TEST_ALL_PREFIXES(NavigatorTest, TwoNavigationsRacingCommit);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBeforeUnloadBrowserTest,

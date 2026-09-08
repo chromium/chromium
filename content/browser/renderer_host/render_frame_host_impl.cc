@@ -6365,42 +6365,6 @@ void RenderFrameHostImpl::DidChangeBackForwardCacheDisablingFeatures(
   MaybeEvictFromBackForwardCache();
 }
 
-using BackForwardCacheDisablingFeatureHandle =
-    RenderFrameHostImpl::BackForwardCacheDisablingFeatureHandle;
-
-BackForwardCacheDisablingFeatureHandle::
-    BackForwardCacheDisablingFeatureHandle() {
-  // |render_frame_host_| will be null, so this value is never used.
-  feature_ = BackForwardCacheDisablingFeature::kDummy;
-}
-
-BackForwardCacheDisablingFeatureHandle::BackForwardCacheDisablingFeatureHandle(
-    BackForwardCacheDisablingFeatureHandle&& other) = default;
-
-BackForwardCacheDisablingFeatureHandle::BackForwardCacheDisablingFeatureHandle(
-    RenderFrameHostImpl* render_frame_host,
-    BackForwardCacheDisablingFeature feature)
-    : render_frame_host_(render_frame_host->GetWeakPtr()), feature_(feature) {
-  CHECK(render_frame_host_);
-  render_frame_host_->OnBackForwardCacheDisablingFeatureUsed(feature_);
-}
-
-BackForwardCacheDisablingFeatureHandle::
-    ~BackForwardCacheDisablingFeatureHandle() {
-  Reset();
-}
-
-bool BackForwardCacheDisablingFeatureHandle::IsValid() const {
-  return render_frame_host_.get();
-}
-
-void BackForwardCacheDisablingFeatureHandle::Reset() {
-  if (render_frame_host_) {
-    render_frame_host_->OnBackForwardCacheDisablingFeatureRemoved(feature_);
-  }
-  render_frame_host_ = nullptr;
-}
-
 void RenderFrameHostImpl::RecordBackForwardCacheDisablingReason(
     BackForwardCacheDisablingFeature feature) {
   ++browser_reported_bfcache_disabling_features_counts_[feature];
@@ -6460,7 +6424,7 @@ RenderFrameHostImpl::GetBackForwardCacheBlockingDetails() const {
   return combined_details_list;
 }
 
-RenderFrameHostImpl::BackForwardCacheDisablingFeatureHandle
+BackForwardCacheDisablingFeatureHandle
 RenderFrameHostImpl::RegisterBackForwardCacheDisablingNonStickyFeature(
     BackForwardCacheDisablingFeature feature) {
   return BackForwardCacheDisablingFeatureHandle(this, feature);

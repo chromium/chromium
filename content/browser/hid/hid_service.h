@@ -9,9 +9,10 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/uuid.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/back_forward_cache_disabling_feature_handle.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/public/browser/hid_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -25,6 +26,7 @@
 namespace content {
 
 class HidChooser;
+class RenderFrameHostImpl;
 
 // HidService provides an implementation of the HidService mojom interface. This
 // interface is used by Blink to implement the WebHID API.
@@ -153,8 +155,7 @@ class CONTENT_EXPORT HidService : public blink::mojom::HidService,
 
   // Prevent the document from going into an inactive state while the service is
   // active.
-  RenderFrameHostImpl::BackForwardCacheDisablingFeatureHandle
-      back_forward_cache_feature_handle_;
+  BackForwardCacheDisablingFeatureHandle back_forward_cache_feature_handle_;
 
   base::WeakPtrFactory<HidService> weak_factory_{this};
 };
