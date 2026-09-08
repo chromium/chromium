@@ -284,5 +284,167 @@ TEST_F(ConfigureUrlRequestTest,
       extension_site_for_cookies, origin_access_list));
 }
 
+class SetRequestCredentialsTest : public testing::Test {
+ protected:
+  void SetUp() override {
+    context_ = net::CreateTestURLRequestContextBuilder()->Build();
+  }
+
+  std::unique_ptr<net::URLRequest> CreateURLRequest(const GURL& url) {
+    return context_->CreateRequest(url, net::DEFAULT_PRIORITY, &delegate_,
+                                   TRAFFIC_ANNOTATION_FOR_TESTS,
+                                   net::handles::kInvalidNetworkHandle);
+  }
+
+  base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<net::URLRequestContext> context_;
+  net::TestDelegate delegate_;
+};
+
+TEST_F(SetRequestCredentialsTest, SameOriginAllowed) {
+  const GURL url("https://example.com/foo");
+  const url::Origin initiator = url::Origin::Create(url);
+  auto request = CreateURLRequest(url);
+
+  SetRequestCredentials(
+      url, /*client_security_state=*/nullptr, mojom::RequestMode::kSameOrigin,
+      mojom::CredentialsMode::kSameOrigin, initiator, *request,
+      /*origin_access_list=*/nullptr);
+  EXPECT_TRUE(request->allow_credentials());
+  EXPECT_TRUE(request->send_client_certs());
+}
+
+TEST_F(SetRequestCredentialsTest, CrossOriginDisallowed) {
+  const GURL url("https://example.com/foo");
+  const url::Origin initiator =
+      url::Origin::Create(GURL("https://other.example.com"));
+  auto request = CreateURLRequest(url);
+
+  SetRequestCredentials(
+      url, /*client_security_state=*/nullptr, mojom::RequestMode::kSameOrigin,
+      mojom::CredentialsMode::kSameOrigin, initiator, *request,
+      /*origin_access_list=*/nullptr);
+  EXPECT_FALSE(request->allow_credentials());
+}
+
+TEST_F(SetRequestCredentialsTest, NulloptInitiatorAllowed) {
+  const GURL url("https://example.com/foo");
+  auto request = CreateURLRequest(url);
+
+  SetRequestCredentials(
+      url, /*client_security_state=*/nullptr, mojom::RequestMode::kSameOrigin,
+      mojom::CredentialsMode::kSameOrigin, /*initiator=*/std::nullopt, *request,
+      /*origin_access_list=*/nullptr);
+  EXPECT_TRUE(request->allow_credentials());
+  EXPECT_TRUE(request->send_client_certs());
+}
+
+TEST_F(SetRequestCredentialsTest, ExtensionWithHostPermissionAllowed) {
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::AddStandardScheme("chrome-extension", url::SCHEME_WITH_HOST);
+
+  const GURL url("https://example.com/foo");
+  const url::Origin extension_origin =
+      url::Origin::Create(GURL("chrome-extension://abc123"));
+
+  cors::OriginAccessList origin_access_list;
+  origin_access_list.AddAllowListEntryForOrigin(
+      extension_origin, "https", "example.com",
+      /*port=*/0, mojom::CorsDomainMatchMode::kAllowSubdomains,
+      mojom::CorsPortMatchMode::kAllowAnyPort,
+      mojom::CorsOriginAccessMatchPriority::kDefaultPriority);
+
+  auto request = CreateURLRequest(url);
+  SetRequestCredentials(url, /*client_security_state=*/nullptr,
+                        mojom::RequestMode::kSameOrigin,
+                        mojom::CredentialsMode::kSameOrigin, extension_origin,
+                        *request, &origin_access_list);
+  EXPECT_TRUE(request->allow_credentials());
+  EXPECT_TRUE(request->send_client_certs());
+}
+
+TEST_F(SetRequestCredentialsTest, ExtensionWithoutHostPermissionDisallowed) {
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::AddStandardScheme("chrome-extension", url::SCHEME_WITH_HOST);
+
+  const GURL url("https://example.com/foo");
+  const url::Origin extension_origin =
+      url::Origin::Create(GURL("chrome-extension://abc123"));
+
+  cors::OriginAccessList origin_access_list;
+  auto request = CreateURLRequest(url);
+  SetRequestCredentials(url, /*client_security_state=*/nullptr,
+                        mojom::RequestMode::kSameOrigin,
+                        mojom::CredentialsMode::kSameOrigin, extension_origin,
+                        *request, &origin_access_list);
+  EXPECT_FALSE(request->allow_credentials());
+}
+
+TEST_F(SetRequestCredentialsTest, OpaqueOriginDisallowed) {
+  const GURL url("https://example.com/foo");
+  const url::Origin opaque_origin;
+
+  cors::OriginAccessList origin_access_list;
+  auto request = CreateURLRequest(url);
+  SetRequestCredentials(url, /*client_security_state=*/nullptr,
+                        mojom::RequestMode::kSameOrigin,
+                        mojom::CredentialsMode::kSameOrigin, opaque_origin,
+                        *request, &origin_access_list);
+  EXPECT_FALSE(request->allow_credentials());
+}
+
+TEST_F(SetRequestCredentialsTest,
+       CredentialsRevocationIsStickyAcrossRedirects) {
+  const GURL initial_url("https://example.com/foo");
+  const GURL cross_url("https://other.example.com/bar");
+  const GURL redirect_back_url("https://example.com/baz");
+  const url::Origin initiator = url::Origin::Create(initial_url);
+  auto request = CreateURLRequest(initial_url);
+
+  // Hop 0: Same-origin allows credentials and client certs.
+  SetRequestCredentials(initial_url, /*client_security_state=*/nullptr,
+                        mojom::RequestMode::kSameOrigin,
+                        mojom::CredentialsMode::kSameOrigin, initiator,
+                        *request, /*origin_access_list=*/nullptr);
+  EXPECT_TRUE(request->allow_credentials());
+  EXPECT_TRUE(request->send_client_certs());
+
+  // Hop 1: Cross-origin disallows credentials.
+  SetRequestCredentials(cross_url, /*client_security_state=*/nullptr,
+                        mojom::RequestMode::kSameOrigin,
+                        mojom::CredentialsMode::kSameOrigin, initiator,
+                        *request, /*origin_access_list=*/nullptr);
+  EXPECT_FALSE(request->allow_credentials());
+
+  // Hop 2: Redirect back to same-origin; revocation must remain sticky.
+  SetRequestCredentials(redirect_back_url, /*client_security_state=*/nullptr,
+                        mojom::RequestMode::kSameOrigin,
+                        mojom::CredentialsMode::kSameOrigin, initiator,
+                        *request, /*origin_access_list=*/nullptr);
+  EXPECT_FALSE(request->allow_credentials());
+}
+
+TEST_F(SetRequestCredentialsTest,
+       IncludeCredentialsPreservedAcrossCrossOriginRedirect) {
+  const GURL initial_url("https://example.com/foo");
+  const GURL cross_url("https://other.example.com/bar");
+  const url::Origin initiator = url::Origin::Create(initial_url);
+  auto request = CreateURLRequest(initial_url);
+
+  SetRequestCredentials(initial_url, /*client_security_state=*/nullptr,
+                        mojom::RequestMode::kCors,
+                        mojom::CredentialsMode::kInclude, initiator, *request,
+                        /*origin_access_list=*/nullptr);
+  EXPECT_TRUE(request->allow_credentials());
+  EXPECT_TRUE(request->send_client_certs());
+
+  SetRequestCredentials(cross_url, /*client_security_state=*/nullptr,
+                        mojom::RequestMode::kCors,
+                        mojom::CredentialsMode::kInclude, initiator, *request,
+                        /*origin_access_list=*/nullptr);
+  EXPECT_TRUE(request->allow_credentials());
+  EXPECT_TRUE(request->send_client_certs());
+}
+
 }  // namespace
 }  // namespace network::url_loader_util

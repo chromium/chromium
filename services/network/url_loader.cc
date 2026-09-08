@@ -1019,7 +1019,7 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
   url_loader_util::SetRequestCredentials(
       redirect_info.new_url, factory_params_->client_security_state,
       request_mode_, request_credentials_mode_, url_request_->initiator(),
-      *url_request_);
+      *url_request_, &origin_access_list_.get());
 
   // Clear the Cookie header to ensure that cookies passed in through the
   // `ResourceRequest` do not persist across redirects.

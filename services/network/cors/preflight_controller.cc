@@ -109,8 +109,8 @@ std::unique_ptr<ResourceRequest> CreatePreflightRequest(
     bool tainted,
     const net::NetLogWithSource& net_log_for_actual_request,
     const std::optional<base::UnguessableToken>& devtools_request_id) {
-  DCHECK(!request.url.has_username());
-  DCHECK(!request.url.has_password());
+  CHECK(!request.url.has_username());
+  CHECK(!request.url.has_password());
 
   std::unique_ptr<ResourceRequest> preflight_request =
       std::make_unique<ResourceRequest>();
@@ -181,7 +181,7 @@ std::unique_ptr<ResourceRequest> CreatePreflightRequest(
     }
   }
 
-  DCHECK(request.request_initiator);
+  CHECK(request.request_initiator);
   preflight_request->request_initiator = request.request_initiator;
   preflight_request->headers.SetHeader(
       net::HttpRequestHeaders::kOrigin,

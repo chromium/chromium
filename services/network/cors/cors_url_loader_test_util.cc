@@ -41,6 +41,24 @@ namespace network::cors {
 // TEST URL LOADER FACTORY
 // =======================
 
+TestURLLoaderFactory::TestURLLoaderImpl::TestURLLoaderImpl(
+    mojo::PendingReceiver<mojom::URLLoader> receiver)
+    : receiver_(this, std::move(receiver)) {}
+
+TestURLLoaderFactory::TestURLLoaderImpl::~TestURLLoaderImpl() = default;
+
+void TestURLLoaderFactory::TestURLLoaderImpl::FollowRedirect(
+    network::HttpRequestHeadersUpdateParams headers_update_params,
+    const std::optional<GURL>& new_url) {
+  ++follow_redirect_count_;
+  last_headers_update_params_ = std::move(headers_update_params);
+  last_new_url_ = new_url;
+}
+
+void TestURLLoaderFactory::TestURLLoaderImpl::SetPriority(
+    net::RequestPriority priority,
+    int32_t intra_priority_value) {}
+
 TestURLLoaderFactory::TestURLLoaderFactory() = default;
 
 TestURLLoaderFactory::~TestURLLoaderFactory() = default;
@@ -49,9 +67,22 @@ base::WeakPtr<TestURLLoaderFactory> TestURLLoaderFactory::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+mojo::Remote<mojom::URLLoaderClient>& TestURLLoaderFactory::client_remote() {
+  std::erase_if(client_remotes_, [](const auto& remote) {
+    return !remote.is_bound() || !remote.is_connected();
+  });
+  DCHECK(!client_remotes_.empty());
+  return client_remotes_.back();
+}
+
+mojo::Remote<mojom::URLLoaderClient>& TestURLLoaderFactory::client_remote_at(
+    size_t index) {
+  DCHECK_LT(index, client_remotes_.size());
+  return client_remotes_[index];
+}
+
 void TestURLLoaderFactory::NotifyClientOnReceiveEarlyHints(
     const std::vector<std::pair<std::string, std::string>>& headers) {
-  DCHECK(client_remote_);
   auto response_headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\n");
   for (const auto& header : headers)
@@ -59,14 +90,13 @@ void TestURLLoaderFactory::NotifyClientOnReceiveEarlyHints(
   auto hints = mojom::EarlyHints::New(
       PopulateParsedHeaders(response_headers.get(), GetRequestedURL()),
       mojom::ReferrerPolicy::kDefault, mojom::IPAddressSpace::kPublic);
-  client_remote_->OnReceiveEarlyHints(std::move(hints));
+  client_remote()->OnReceiveEarlyHints(std::move(hints));
 }
 
 void TestURLLoaderFactory::NotifyClientOnReceiveResponse(
     int status_code,
     const std::vector<std::pair<std::string, std::string>>& extra_headers,
     mojo::ScopedDataPipeConsumerHandle body) {
-  DCHECK(client_remote_);
   auto response = mojom::URLResponseHead::New();
   response->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
       base::StringPrintf("HTTP/1.1 %d OK\n"
@@ -75,27 +105,38 @@ void TestURLLoaderFactory::NotifyClientOnReceiveResponse(
   for (const auto& header : extra_headers)
     response->headers->SetHeader(header.first, header.second);
 
-  client_remote_->OnReceiveResponse(std::move(response), std::move(body),
-                                    std::nullopt);
+  client_remote()->OnReceiveResponse(std::move(response), std::move(body),
+                                     std::nullopt);
 }
 
 void TestURLLoaderFactory::NotifyClientOnReceiveResponse(
     mojom::URLResponseHeadPtr response_head,
     mojo::ScopedDataPipeConsumerHandle body) {
-  DCHECK(client_remote_);
-  client_remote_->OnReceiveResponse(std::move(response_head), std::move(body),
-                                    std::nullopt);
+  client_remote()->OnReceiveResponse(std::move(response_head), std::move(body),
+                                     std::nullopt);
 }
 
 void TestURLLoaderFactory::NotifyClientOnComplete(int error_code) {
-  DCHECK(client_remote_);
-  client_remote_->OnComplete(URLLoaderCompletionStatus(error_code));
+  mojo::Remote<mojom::URLLoaderClient> remote;
+  if (!client_remotes_.empty()) {
+    remote = std::move(client_remotes_.back());
+    client_remotes_.pop_back();
+  }
+  if (remote.is_bound()) {
+    remote->OnComplete(URLLoaderCompletionStatus(error_code));
+  }
 }
 
 void TestURLLoaderFactory::NotifyClientOnComplete(
     const CorsErrorStatus& status) {
-  DCHECK(client_remote_);
-  client_remote_->OnComplete(URLLoaderCompletionStatus(status));
+  mojo::Remote<mojom::URLLoaderClient> remote;
+  if (!client_remotes_.empty()) {
+    remote = std::move(client_remotes_.back());
+    client_remotes_.pop_back();
+  }
+  if (remote.is_bound()) {
+    remote->OnComplete(URLLoaderCompletionStatus(status));
+  }
 }
 
 void TestURLLoaderFactory::NotifyClientOnReceiveRedirect(
@@ -107,18 +148,17 @@ void TestURLLoaderFactory::NotifyClientOnReceiveRedirect(
   for (const auto& header : extra_headers)
     response->headers->SetHeader(header.first, header.second);
 
-  client_remote_->OnReceiveRedirect(redirect_info, std::move(response));
+  client_remote()->OnReceiveRedirect(redirect_info, std::move(response));
 }
 
 void TestURLLoaderFactory::NotifyClientOnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
     mojom::URLResponseHeadPtr response_head) {
-  DCHECK(client_remote_);
-  client_remote_->OnReceiveRedirect(redirect_info, std::move(response_head));
+  client_remote()->OnReceiveRedirect(redirect_info, std::move(response_head));
 }
 
 void TestURLLoaderFactory::ResetClientRemote() {
-  client_remote_.reset();
+  client_remotes_.clear();
 }
 
 void TestURLLoaderFactory::CreateLoaderAndStart(
@@ -131,8 +171,8 @@ void TestURLLoaderFactory::CreateLoaderAndStart(
   ++num_created_loaders_;
   DCHECK(client);
   request_ = resource_request;
-  client_remote_.reset();
-  client_remote_.Bind(std::move(client));
+  client_remotes_.emplace_back(std::move(client));
+  loaders_.push_back(std::make_unique<TestURLLoaderImpl>(std::move(receiver)));
 
   if (on_create_loader_and_start_)
     on_create_loader_and_start_.Run();

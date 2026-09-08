@@ -9,12 +9,14 @@
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
+#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/system/functions.h"
-#include "net/base/features.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/load_flags.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
@@ -54,6 +56,31 @@ using ::testing::Optional;
 using ::testing::Pointee;
 
 class CorsURLLoaderTest : public CorsURLLoaderTestBase {};
+
+class ParameterizedCorsURLLoaderTest
+    : public CorsURLLoaderTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  void SetUp() override {
+    CorsURLLoaderTestBase::SetUp();
+    if (IsAvoidCorsURLLoaderRestartOnRedirectEnabled()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kAvoidCorsURLLoaderRestartOnRedirect);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kAvoidCorsURLLoaderRestartOnRedirect);
+    }
+  }
+
+  bool IsAvoidCorsURLLoaderRestartOnRedirectEnabled() const {
+    return GetParam();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All, ParameterizedCorsURLLoaderTest, testing::Bool());
 
 class CorsURLLoaderTestWithSafeRevalidation
     : public CorsURLLoaderTestBase,
@@ -1250,7 +1277,7 @@ TEST_F(CorsURLLoaderTest, SameOriginToSameOriginRedirect) {
   EXPECT_EQ(net::OK, client().completion_status().error_code);
 }
 
-TEST_F(CorsURLLoaderTest, SameOriginToCrossOriginRedirect) {
+TEST_P(ParameterizedCorsURLLoaderTest, SameOriginToCrossOriginRedirect) {
   const GURL origin("https://example.com");
   const GURL url("https://example.com/foo.png");
   const GURL new_url("https://other.example.com/bar.png");
@@ -1273,11 +1300,13 @@ TEST_F(CorsURLLoaderTest, SameOriginToCrossOriginRedirect) {
   ClearHasReceivedRedirect();
   FollowRedirect();
 
-  RunUntilCreateLoaderAndStartCalled();
-
-  // A new loader is created.
-  EXPECT_EQ(2, num_created_loaders());
-  EXPECT_EQ(GetRequest().url, new_url);
+  if (IsAvoidCorsURLLoaderRestartOnRedirectEnabled()) {
+    EXPECT_EQ(1, num_created_loaders());
+  } else {
+    RunUntilCreateLoaderAndStartCalled();
+    EXPECT_EQ(2, num_created_loaders());
+    EXPECT_EQ(GetRequest().url, new_url);
+  }
 
   NotifyLoaderClientOnReceiveResponse(
       {{"Access-Control-Allow-Origin", "https://example.com"}});
@@ -1288,6 +1317,15 @@ TEST_F(CorsURLLoaderTest, SameOriginToCrossOriginRedirect) {
   EXPECT_TRUE(client().has_received_response());
   EXPECT_TRUE(client().has_received_completion());
   EXPECT_EQ(net::OK, client().completion_status().error_code);
+
+  if (IsAvoidCorsURLLoaderRestartOnRedirectEnabled()) {
+    ASSERT_TRUE(first_loader());
+    EXPECT_TRUE(first_loader()->follow_redirect_called());
+    EXPECT_EQ(
+        "https://example.com",
+        first_loader()->last_headers_update_params().modified_headers.GetHeader(
+            net::HttpRequestHeaders::kOrigin));
+  }
 }
 
 TEST_F(CorsURLLoaderTest, CrossOriginToCrossOriginRedirect) {
@@ -1418,7 +1456,7 @@ TEST_F(CorsURLLoaderTest, CrossOriginToAnotherCrossOriginRedirect) {
   EXPECT_EQ(net::OK, client().completion_status().error_code);
 }
 
-TEST_F(CorsURLLoaderTest,
+TEST_P(ParameterizedCorsURLLoaderTest,
        CrossOriginToAnotherCrossOriginRedirectWithPreflight) {
   const GURL origin("https://example.com");
   const GURL url("https://other.example.com/foo.png");
@@ -1471,16 +1509,24 @@ TEST_F(CorsURLLoaderTest,
   NotifyLoaderClientOnReceiveResponse(
       {{"Access-Control-Allow-Origin", "null"},
        {"Access-Control-Allow-Methods", "PATCH"}});
-  RunUntilCreateLoaderAndStartCalled();
+  NotifyLoaderClientOnComplete(net::OK);
 
-  // the second actual request
-  EXPECT_EQ(4, num_created_loaders());
-  EXPECT_EQ(GetRequest().url, new_url);
-  EXPECT_EQ(GetRequest().method, "PATCH");
-  ASSERT_TRUE(GetRequest().request_initiator);
-  EXPECT_EQ(GetRequest().request_initiator->Serialize(), "https://example.com");
+  if (IsAvoidCorsURLLoaderRestartOnRedirectEnabled()) {
+    // When the second preflight completes, network_loader_->FollowRedirect() is
+    // called on the existing loader, so no fourth loader is created.
+    EXPECT_EQ(3, num_created_loaders());
+  } else {
+    RunUntilCreateLoaderAndStartCalled();
+    // the second actual request is created when the feature is disabled.
+    EXPECT_EQ(4, num_created_loaders());
+    EXPECT_EQ(GetRequest().url, new_url);
+    EXPECT_EQ(GetRequest().method, "PATCH");
+    ASSERT_TRUE(GetRequest().request_initiator);
+    EXPECT_EQ(GetRequest().request_initiator->Serialize(),
+              "https://example.com");
+  }
 
-  // The request is tainted, so the origin is "null".
+  // Notify response on the actual request and complete.
   NotifyLoaderClientOnReceiveResponse(
       {{"Access-Control-Allow-Origin", "null"}});
   NotifyLoaderClientOnComplete(net::OK);
@@ -1539,7 +1585,7 @@ TEST_F(CorsURLLoaderTest, CrossOriginPreflightReceiveRedirect) {
   EXPECT_THAT(entry->params.FindString("failed-parameter"), IsNull());
 }
 
-TEST_F(CorsURLLoaderTest, RedirectInfoShouldBeUsed) {
+TEST_P(ParameterizedCorsURLLoaderTest, RedirectInfoShouldBeUsed) {
   const GURL origin("https://example.com");
   const GURL url("https://example.com/foo.png");
   const GURL new_url("https://other.example.com/foo.png");
@@ -1575,14 +1621,18 @@ TEST_F(CorsURLLoaderTest, RedirectInfoShouldBeUsed) {
 
   ClearHasReceivedRedirect();
   FollowRedirect();
-  RunUntilCreateLoaderAndStartCalled();
 
-  EXPECT_EQ(2, num_created_loaders());
-  EXPECT_EQ(new_url, GetRequest().url);
-  EXPECT_EQ("GET", GetRequest().method);
-  EXPECT_EQ(GURL("https://other.example.com"), GetRequest().referrer);
-  EXPECT_EQ(net::ReferrerPolicy::ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN,
-            GetRequest().referrer_policy);
+  if (IsAvoidCorsURLLoaderRestartOnRedirectEnabled()) {
+    EXPECT_EQ(1, num_created_loaders());
+  } else {
+    RunUntilCreateLoaderAndStartCalled();
+    EXPECT_EQ(2, num_created_loaders());
+    EXPECT_EQ(new_url, GetRequest().url);
+    EXPECT_EQ("GET", GetRequest().method);
+    EXPECT_EQ(GURL("https://other.example.com"), GetRequest().referrer);
+    EXPECT_EQ(net::ReferrerPolicy::ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN,
+              GetRequest().referrer_policy);
+  }
 
   NotifyLoaderClientOnReceiveResponse(
       {{"Access-Control-Allow-Origin", "https://example.com"}});
@@ -1599,7 +1649,7 @@ TEST_F(CorsURLLoaderTest, RedirectInfoShouldBeUsed) {
 // SiteForCookies values, the CorsURLLoader respects those changes. The former
 // only happens for frames, and the latter for subframes, but should make
 // assumptions about whether these need to be updated in CorsURLLoader.
-TEST_F(CorsURLLoaderTest,
+TEST_P(ParameterizedCorsURLLoaderTest,
        InterceptedRedirectChangesIsolationInfoAndSiteForCookies) {
   const GURL url("https://example.com/foo.png");
   const url::Origin url_origin = url::Origin::Create(url);
@@ -1645,18 +1695,22 @@ TEST_F(CorsURLLoaderTest,
 
   ClearHasReceivedRedirect();
   FollowRedirect();
-  RunUntilCreateLoaderAndStartCalled();
 
-  EXPECT_EQ(2, num_created_loaders());
-  EXPECT_EQ(new_url, GetRequest().url);
-  EXPECT_EQ("GET", GetRequest().method);
-  EXPECT_TRUE(
-      GetRequest().site_for_cookies.IsEquivalent(new_url_site_for_cookies));
-  EXPECT_TRUE(GetRequest().trusted_params->isolation_info.IsEqualForTesting(
-      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kMainFrame,
-                                 new_url_origin /* top_frame_origin */,
-                                 new_url_origin /* frame_origin */,
-                                 new_url_site_for_cookies)));
+  if (IsAvoidCorsURLLoaderRestartOnRedirectEnabled()) {
+    EXPECT_EQ(1, num_created_loaders());
+  } else {
+    RunUntilCreateLoaderAndStartCalled();
+    EXPECT_EQ(2, num_created_loaders());
+    EXPECT_EQ(new_url, GetRequest().url);
+    EXPECT_EQ("GET", GetRequest().method);
+    EXPECT_TRUE(
+        GetRequest().site_for_cookies.IsEquivalent(new_url_site_for_cookies));
+    EXPECT_TRUE(GetRequest().trusted_params->isolation_info.IsEqualForTesting(
+        net::IsolationInfo::Create(net::IsolationInfo::RequestType::kMainFrame,
+                                   new_url_origin /* top_frame_origin */,
+                                   new_url_origin /* frame_origin */,
+                                   new_url_site_for_cookies)));
+  }
 
   NotifyLoaderClientOnReceiveResponse(
       {{"Access-Control-Allow-Origin", "https://example.com"}});
@@ -1732,7 +1786,8 @@ TEST_F(CorsURLLoaderTest, FollowErrorRedirect) {
   EXPECT_EQ(net::ERR_FAILED, client().completion_status().error_code);
 }
 
-TEST_F(CorsURLLoaderTest, CorsExemptHeaderRemovalOnCrossOriginRedirects) {
+TEST_P(ParameterizedCorsURLLoaderTest,
+       CorsExemptHeaderRemovalOnCrossOriginRedirects) {
   ResourceRequest request;
   request.url = GURL("https://example.com/foo.png");
   request.request_initiator = url::Origin::Create(GURL("https://example.com"));
@@ -1756,11 +1811,15 @@ TEST_F(CorsURLLoaderTest, CorsExemptHeaderRemovalOnCrossOriginRedirects) {
   network::HttpRequestHeadersUpdateParams headers_update_params;
   headers_update_params.removed_headers.push_back(kTestCorsExemptHeader);
   FollowRedirect(std::move(headers_update_params));
-  RunUntilCreateLoaderAndStartCalled();
 
-  EXPECT_EQ(2, num_created_loaders());
-  EXPECT_FALSE(
-      GetRequest().cors_exempt_headers.HasHeader(kTestCorsExemptHeader));
+  if (IsAvoidCorsURLLoaderRestartOnRedirectEnabled()) {
+    EXPECT_EQ(1, num_created_loaders());
+  } else {
+    RunUntilCreateLoaderAndStartCalled();
+    EXPECT_EQ(2, num_created_loaders());
+    EXPECT_FALSE(
+        GetRequest().cors_exempt_headers.HasHeader(kTestCorsExemptHeader));
+  }
 }
 
 TEST_F(CorsURLLoaderTest, CorsExemptHeaderModificationOnRedirects) {
@@ -2649,9 +2708,7 @@ TEST_P(CorsURLLoaderTestWithTaintedOriginCacheKey,
   NotifyLoaderClientOnReceiveResponse(
       {{"Access-Control-Allow-Origin", "null"},
        {"Access-Control-Allow-Headers", "x-custom"}});
-
-  RunUntilCreateLoaderAndStartCalled();
-
+  NotifyLoaderClientOnComplete(net::OK);
   if (IsTaintedOriginCacheKeyEnabled()) {
     // When kCorsPreflightCacheKeyTaintedOrigin is enabled, tainted preflights
     // are not cached, so no entry is added for new_url.
@@ -2674,6 +2731,127 @@ TEST_P(CorsURLLoaderTestWithTaintedOriginCacheKey,
     // preflight is keyed under `initiator`. Verify that the preflight cache
     // contains the entry for other.example.org under expected_nik and NOT under
     // the stale NIK.
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return network_context()
+          ->cors_preflight_controller()
+          ->GetPreflightCacheForTesting()
+          .DoesEntryExistForTesting(initiator, new_url.spec(), expected_nik);
+    }));
+    EXPECT_FALSE(
+        network_context()
+            ->cors_preflight_controller()
+            ->GetPreflightCacheForTesting()
+            .DoesEntryExistForTesting(initiator, new_url.spec(), stale_nik));
+    EXPECT_EQ(2u, network_context()
+                      ->cors_preflight_controller()
+                      ->GetPreflightCacheForTesting()
+                      .CountEntriesForTesting());
+  }
+
+  // When the second preflight completes, network_loader_->FollowRedirect() is
+  // called on the existing loader, so no fourth loader is created.
+  EXPECT_EQ(3, num_created_loaders());
+
+  NotifyLoaderClientOnReceiveResponse(
+      {{"Access-Control-Allow-Origin", "null"}});
+  NotifyLoaderClientOnComplete(net::OK);
+  RunUntilComplete();
+
+  EXPECT_TRUE(client().has_received_response());
+  EXPECT_TRUE(client().has_received_completion());
+  EXPECT_EQ(net::OK, client().completion_status().error_code);
+}
+
+TEST_P(CorsURLLoaderTestWithTaintedOriginCacheKey,
+       RestrictedPrefetchRedirectUpdatesIsolationInfo_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAvoidCorsURLLoaderRestartOnRedirect);
+
+  url::Origin initiator = url::Origin::Create(GURL("https://example.com"));
+  const GURL url("https://other.example.com/foo.png");
+  const GURL new_url("https://other.example.org/bar.png");
+
+  ResetFactoryParams factory_params;
+  factory_params.is_trusted = true;
+  ResetFactory(initiator, kRendererProcessId, factory_params);
+
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kCors;
+  request.credentials_mode = mojom::CredentialsMode::kOmit;
+  request.method = "GET";
+  request.url = url;
+  request.request_initiator = initiator;
+  request.load_flags |= net::LOAD_RESTRICTED_PREFETCH_FOR_MAIN_FRAME;
+  request.headers.SetHeader("x-custom", "value");
+  request.trusted_params = ResourceRequest::TrustedParams();
+
+  url::Origin request_origin = url::Origin::Create(request.url);
+  request.trusted_params->isolation_info = net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kMainFrame, request_origin,
+      request_origin, net::SiteForCookies());
+
+  CreateLoaderAndStart(request);
+  RunUntilCreateLoaderAndStartCalled();
+
+  // First preflight request (OPTIONS) to `url`
+  EXPECT_EQ(1, num_created_loaders());
+  EXPECT_EQ(GetRequest().url, url);
+  EXPECT_EQ(GetRequest().method, "OPTIONS");
+
+  NotifyLoaderClientOnReceiveResponse(
+      {{"Access-Control-Allow-Origin", "https://example.com"},
+       {"Access-Control-Allow-Headers", "x-custom"}});
+  RunUntilCreateLoaderAndStartCalled();
+
+  // The actual prefetch request (GET) to `url`
+  EXPECT_EQ(2, num_created_loaders());
+  EXPECT_EQ(GetRequest().url, url);
+  EXPECT_EQ(GetRequest().method, "GET");
+
+  // Redirect actual request to `new_url`
+  net::RedirectInfo redirect_info = CreateRedirectInfo(301, "GET", new_url);
+  NotifyLoaderClientOnReceiveRedirect(
+      redirect_info, {{"Access-Control-Allow-Origin", "https://example.com"}});
+  RunUntilRedirectReceived();
+  EXPECT_TRUE(client().has_received_redirect());
+
+  ClearHasReceivedRedirect();
+  FollowRedirect();
+  RunUntilCreateLoaderAndStartCalled();
+
+  // The second preflight request (OPTIONS) to `new_url` because of the redirect
+  EXPECT_EQ(3, num_created_loaders());
+  EXPECT_EQ(GetRequest().url, new_url);
+  EXPECT_EQ(GetRequest().method, "OPTIONS");
+
+  net::SchemefulSite expected_site(new_url);
+  net::NetworkIsolationKey expected_nik(expected_site, expected_site);
+  net::SchemefulSite stale_site(url);
+  net::NetworkIsolationKey stale_nik(stale_site, stale_site);
+
+  NotifyLoaderClientOnReceiveResponse(
+      {{"Access-Control-Allow-Origin", "null"},
+       {"Access-Control-Allow-Headers", "x-custom"}});
+
+  RunUntilCreateLoaderAndStartCalled();
+
+  if (IsTaintedOriginCacheKeyEnabled()) {
+    EXPECT_FALSE(
+        network_context()
+            ->cors_preflight_controller()
+            ->GetPreflightCacheForTesting()
+            .DoesEntryExistForTesting(initiator, new_url.spec(), expected_nik));
+    EXPECT_FALSE(
+        network_context()
+            ->cors_preflight_controller()
+            ->GetPreflightCacheForTesting()
+            .DoesEntryExistForTesting(initiator, new_url.spec(), stale_nik));
+    EXPECT_EQ(1u, network_context()
+                      ->cors_preflight_controller()
+                      ->GetPreflightCacheForTesting()
+                      .CountEntriesForTesting());
+  } else {
     EXPECT_TRUE(
         network_context()
             ->cors_preflight_controller()
@@ -3595,7 +3773,20 @@ TEST_F(StorageAccessHeadersCorsURLLoaderTest, OmitsOriginWhenStatusIsActive) {
       GetRequest().headers.HasHeader(net::HttpRequestHeaders::kOrigin));
 }
 
-class RedirectCorsURLLoaderTest : public CorsURLLoaderTest {
+class RedirectCorsURLLoaderTest : public CorsURLLoaderTest,
+                                  public testing::WithParamInterface<bool> {
+ public:
+  void SetUp() override {
+    CorsURLLoaderTest::SetUp();
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kAvoidCorsURLLoaderRestartOnRedirect);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kAvoidCorsURLLoaderRestartOnRedirect);
+    }
+  }
+
  protected:
   void VerifyUpdateRequestForRedirect(int status_code,
                                       const std::string& method) {
@@ -3643,19 +3834,34 @@ class RedirectCorsURLLoaderTest : public CorsURLLoaderTest {
 
     ClearHasReceivedRedirect();
     FollowRedirect();
-    RunUntilCreateLoaderAndStartCalled();
 
-    EXPECT_EQ(2, num_created_loaders());
-    EXPECT_EQ(new_url, GetRequest().url);
-    EXPECT_EQ("GET", GetRequest().method);
-    EXPECT_EQ(GURL("https://other.example.com"), GetRequest().referrer);
-    EXPECT_EQ(net::ReferrerPolicy::ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN,
-              GetRequest().referrer_policy);
-    EXPECT_FALSE(GetRequest().headers.HasHeader("Content-Type"));
-    EXPECT_FALSE(GetRequest().headers.HasHeader("Content-Encoding"));
-    EXPECT_FALSE(GetRequest().headers.HasHeader("Content-Language"));
-    EXPECT_FALSE(GetRequest().headers.HasHeader("Content-Location"));
-    EXPECT_EQ(nullptr, GetRequest().request_body);
+    if (base::FeatureList::IsEnabled(
+            features::kAvoidCorsURLLoaderRestartOnRedirect)) {
+      ASSERT_TRUE(base::test::RunUntil([&] {
+        return current_loader() && current_loader()->follow_redirect_called();
+      }));
+      EXPECT_EQ(1, num_created_loaders());
+      ASSERT_NE(nullptr, current_loader());
+      EXPECT_TRUE(current_loader()->follow_redirect_called());
+      EXPECT_EQ(
+          "https://example.com",
+          current_loader()
+              ->last_headers_update_params()
+              .modified_headers.GetHeader(net::HttpRequestHeaders::kOrigin));
+    } else {
+      RunUntilCreateLoaderAndStartCalled();
+      EXPECT_EQ(2, num_created_loaders());
+      EXPECT_EQ(new_url, GetRequest().url);
+      EXPECT_EQ("GET", GetRequest().method);
+      EXPECT_EQ(GURL("https://other.example.com"), GetRequest().referrer);
+      EXPECT_EQ(net::ReferrerPolicy::ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN,
+                GetRequest().referrer_policy);
+      EXPECT_FALSE(GetRequest().headers.HasHeader("Content-Type"));
+      EXPECT_FALSE(GetRequest().headers.HasHeader("Content-Encoding"));
+      EXPECT_FALSE(GetRequest().headers.HasHeader("Content-Language"));
+      EXPECT_FALSE(GetRequest().headers.HasHeader("Content-Location"));
+      EXPECT_EQ(nullptr, GetRequest().request_body);
+    }
 
     NotifyLoaderClientOnReceiveResponse(
         {{"Access-Control-Allow-Origin", "https://example.com"}});
@@ -3667,19 +3873,24 @@ class RedirectCorsURLLoaderTest : public CorsURLLoaderTest {
     EXPECT_TRUE(client().has_received_completion());
     EXPECT_EQ(net::OK, client().completion_status().error_code);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(RedirectCorsURLLoaderTest, UpdateRequestFor301PostRedirect) {
+TEST_P(RedirectCorsURLLoaderTest, UpdateRequestFor301PostRedirect) {
   VerifyUpdateRequestForRedirect(301, "POST");
 }
 
-TEST_F(RedirectCorsURLLoaderTest, UpdateRequestFor302PostRedirect) {
+TEST_P(RedirectCorsURLLoaderTest, UpdateRequestFor302PostRedirect) {
   VerifyUpdateRequestForRedirect(302, "POST");
 }
 
-TEST_F(RedirectCorsURLLoaderTest, UpdateRequestFor303Redirect) {
+TEST_P(RedirectCorsURLLoaderTest, UpdateRequestFor303Redirect) {
   VerifyUpdateRequestForRedirect(303, "FOO");
 }
+
+INSTANTIATE_TEST_SUITE_P(All, RedirectCorsURLLoaderTest, testing::Bool());
 
 TEST_F(CorsURLLoaderTest, SafeRevalidationIgnoresSpoofedIsRevalidating) {
   base::test::ScopedFeatureList feature_list;
@@ -3737,6 +3948,586 @@ TEST_F(CorsURLLoaderTest, SafeRevalidationWithStructuredMetadata) {
 
   EXPECT_TRUE(client().has_received_completion());
   EXPECT_EQ(net::OK, client().completion_status().error_code);
+}
+
+TEST_F(CorsURLLoaderTest, SameOriginCredentialsDroppedOnCrossOriginRedirect) {
+  const GURL origin("https://example.com");
+  const GURL url("https://example.com/foo.png");
+  const GURL new_url("https://other.example.com/bar.png");
+
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kCors;
+  request.credentials_mode = mojom::CredentialsMode::kSameOrigin;
+  request.method = "GET";
+  request.url = url;
+  request.request_initiator = url::Origin::Create(origin);
+
+  CreateLoaderAndStart(request);
+  RunUntilCreateLoaderAndStartCalled();
+
+  EXPECT_EQ(1, num_created_loaders());
+  EXPECT_EQ(url, GetRequest().url);
+  EXPECT_EQ(mojom::CredentialsMode::kSameOrigin, GetRequest().credentials_mode);
+
+  NotifyLoaderClientOnReceiveRedirect(CreateRedirectInfo(302, "GET", new_url));
+  RunUntilRedirectReceived();
+
+  EXPECT_TRUE(client().has_received_redirect());
+  ClearHasReceivedRedirect();
+
+  FollowRedirect();
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return first_loader() && first_loader()->follow_redirect_called();
+  }));
+
+  // Handled in-place by the existing network loader without restart.
+  EXPECT_EQ(1, num_created_loaders());
+  ASSERT_NE(nullptr, first_loader());
+  EXPECT_TRUE(first_loader()->follow_redirect_called());
+
+  NotifyLoaderClientOnReceiveResponse(
+      {{"Access-Control-Allow-Origin", "https://example.com"}});
+  NotifyLoaderClientOnComplete(net::OK);
+  RunUntilComplete();
+
+  EXPECT_TRUE(client().has_received_response());
+  EXPECT_TRUE(client().has_received_completion());
+  EXPECT_EQ(net::OK, client().completion_status().error_code);
+}
+
+TEST_P(ParameterizedCorsURLLoaderTest,
+       SameOriginToCrossOriginRedirectWithPreflight) {
+  const GURL origin("https://example.com");
+  const GURL url("https://example.com/foo.png");
+  const GURL new_url("https://other.example.com/bar.png");
+
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kCors;
+  request.credentials_mode = mojom::CredentialsMode::kOmit;
+  request.method = "GET";
+  request.url = url;
+  request.request_initiator = url::Origin::Create(origin);
+  request.headers.SetHeader("X-Custom-Header", "custom-value");
+
+  CreateLoaderAndStart(request);
+  RunUntilCreateLoaderAndStartCalled();
+
+  // Same-origin request with custom header does not need initial preflight.
+  EXPECT_EQ(1, num_created_loaders());
+  EXPECT_EQ(url, GetRequest().url);
+  EXPECT_EQ("GET", GetRequest().method);
+
+  NotifyLoaderClientOnReceiveRedirect(CreateRedirectInfo(302, "GET", new_url));
+  RunUntilRedirectReceived();
+
+  EXPECT_TRUE(client().has_received_redirect());
+  ClearHasReceivedRedirect();
+
+  FollowRedirect();
+  RunUntilCreateLoaderAndStartCalled();
+
+  // Preflight request to the cross-origin redirect destination.
+  EXPECT_EQ(2, num_created_loaders());
+  EXPECT_EQ(new_url, GetRequest().url);
+  EXPECT_EQ("OPTIONS", GetRequest().method);
+
+  NotifyLoaderClientOnReceiveResponse(
+      {{"Access-Control-Allow-Origin", "https://example.com"},
+       {"Access-Control-Allow-Headers", "X-Custom-Header"}});
+  NotifyLoaderClientOnComplete(net::OK);
+
+  if (IsAvoidCorsURLLoaderRestartOnRedirectEnabled()) {
+    ASSERT_TRUE(base::test::RunUntil([&] {
+      return first_loader() && first_loader()->follow_redirect_count() == 1;
+    }));
+
+    // When preflight succeeds, in-place FollowRedirect is called on the existing
+    // main loader, so no third loader is created.
+    EXPECT_EQ(2, num_created_loaders());
+    ASSERT_NE(nullptr, first_loader());
+    EXPECT_EQ(1u, first_loader()->follow_redirect_count());
+    EXPECT_EQ(
+        "https://example.com",
+        first_loader()->last_headers_update_params().modified_headers.GetHeader(
+            net::HttpRequestHeaders::kOrigin));
+  } else {
+    RunUntilCreateLoaderAndStartCalled();
+    // Legacy restart creates a third loader via StartRequest().
+    EXPECT_EQ(3, num_created_loaders());
+    EXPECT_EQ(new_url, GetRequest().url);
+    EXPECT_EQ("GET", GetRequest().method);
+    ASSERT_TRUE(GetRequest().request_initiator);
+    EXPECT_EQ(GetRequest().request_initiator->Serialize(),
+              "https://example.com");
+  }
+
+  NotifyLoaderClientOnReceiveResponse(
+      {{"Access-Control-Allow-Origin", "https://example.com"}});
+  NotifyLoaderClientOnComplete(net::OK);
+  RunUntilComplete();
+
+  EXPECT_TRUE(client().has_received_response());
+  EXPECT_TRUE(client().has_received_completion());
+  EXPECT_EQ(net::OK, client().completion_status().error_code);
+}
+
+TEST_F(CorsURLLoaderTest,
+       CrossOriginToAnotherCrossOriginRedirect_PreflightFails) {
+  const GURL origin("https://example.com");
+  const GURL url("https://other.example.com/foo.png");
+  const GURL new_url("https://other2.example.com/bar.png");
+
+  ResourceRequest original_request;
+  original_request.mode = mojom::RequestMode::kCors;
+  original_request.credentials_mode = mojom::CredentialsMode::kOmit;
+  original_request.method = "PATCH";
+  original_request.url = url;
+  original_request.request_initiator = url::Origin::Create(origin);
+  CreateLoaderAndStart(original_request);
+  RunUntilCreateLoaderAndStartCalled();
+
+  // Preflight for first request.
+  EXPECT_EQ(1, num_created_loaders());
+  EXPECT_EQ(GetRequest().url, url);
+  EXPECT_EQ(GetRequest().method, "OPTIONS");
+
+  NotifyLoaderClientOnReceiveResponse(
+      {{"Access-Control-Allow-Origin", "https://example.com"},
+       {"Access-Control-Allow-Methods", "PATCH"}});
+  RunUntilCreateLoaderAndStartCalled();
+
+  // Actual request.
+  EXPECT_EQ(2, num_created_loaders());
+  EXPECT_EQ(GetRequest().url, url);
+  EXPECT_EQ(GetRequest().method, "PATCH");
+
+  NotifyLoaderClientOnReceiveRedirect(
+      CreateRedirectInfo(301, "PATCH", new_url),
+      {{"Access-Control-Allow-Origin", "https://example.com"}});
+  RunUntilRedirectReceived();
+  EXPECT_TRUE(client().has_received_redirect());
+
+  ClearHasReceivedRedirect();
+  FollowRedirect();
+  RunUntilCreateLoaderAndStartCalled();
+
+  // Second preflight for redirected URL.
+  EXPECT_EQ(3, num_created_loaders());
+  EXPECT_EQ(GetRequest().url, new_url);
+  EXPECT_EQ(GetRequest().method, "OPTIONS");
+
+  // Preflight fails because Access-Control-Allow-Origin header is missing.
+  NotifyLoaderClientOnReceiveResponse(403, {});
+  NotifyLoaderClientOnComplete(net::OK);
+  RunUntilComplete();
+
+  EXPECT_FALSE(client().has_received_response());
+  ASSERT_TRUE(client().has_received_completion());
+  EXPECT_EQ(net::ERR_FAILED, client().completion_status().error_code);
+  ASSERT_TRUE(client().completion_status().cors_error_status);
+  EXPECT_EQ(mojom::CorsError::kPreflightMissingAllowOriginHeader,
+            client().completion_status().cors_error_status->cors_error);
+  ASSERT_NE(nullptr, loader(1));
+  EXPECT_FALSE(loader(1)->follow_redirect_called());
+}
+
+TEST_F(CorsURLLoaderTest, DisconnectWhileRedirectPreflightInProgress) {
+  const GURL origin("https://example.com");
+  const GURL url("https://example.com/foo.png");
+  const GURL new_url("https://other.example.com/bar.png");
+
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kCors;
+  request.credentials_mode = mojom::CredentialsMode::kOmit;
+  request.method = "GET";
+  request.url = url;
+  request.request_initiator = url::Origin::Create(origin);
+  request.headers.SetHeader("X-Custom-Header", "custom-value");
+
+  CreateLoaderAndStart(request);
+  RunUntilCreateLoaderAndStartCalled();
+
+  EXPECT_EQ(1, num_created_loaders());
+
+  NotifyLoaderClientOnReceiveRedirect(CreateRedirectInfo(302, "GET", new_url));
+  RunUntilRedirectReceived();
+
+  ClearHasReceivedRedirect();
+  FollowRedirect();
+  RunUntilCreateLoaderAndStartCalled();
+
+  // Redirect preflight is in flight.
+  EXPECT_EQ(2, num_created_loaders());
+
+  // Simulate network loader disconnecting while redirect preflight is in
+  // progress.
+  ResetLoaderClientRemoteAt(0);
+  RunUntilComplete();
+
+  EXPECT_TRUE(client().has_received_completion());
+  EXPECT_EQ(net::ERR_ABORTED, client().completion_status().error_code);
+}
+
+TEST_F(CorsURLLoaderTest, ChainedRedirectWithPreflights) {
+  const GURL origin("https://example.com");
+  const GURL url("https://example.com/foo.png");
+  const GURL hop1_url("https://cross1.example.com/hop1.png");
+  const GURL hop2_url("https://cross2.example.com/hop2.png");
+
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kCors;
+  request.credentials_mode = mojom::CredentialsMode::kOmit;
+  request.method = "GET";
+  request.url = url;
+  request.request_initiator = url::Origin::Create(origin);
+  request.headers.SetHeader("X-Custom-Header", "val");
+
+  CreateLoaderAndStart(request);
+  RunUntilCreateLoaderAndStartCalled();
+
+  // Hop 0 (same-origin): loader 1.
+  EXPECT_EQ(1, num_created_loaders());
+
+  // Redirect to hop 1.
+  NotifyLoaderClientOnReceiveRedirect(CreateRedirectInfo(302, "GET", hop1_url));
+  RunUntilRedirectReceived();
+  ClearHasReceivedRedirect();
+  FollowRedirect();
+  RunUntilCreateLoaderAndStartCalled();
+
+  // Hop 1 preflight: loader 2.
+  EXPECT_EQ(2, num_created_loaders());
+  EXPECT_EQ(hop1_url, GetRequest().url);
+  EXPECT_EQ("OPTIONS", GetRequest().method);
+
+  NotifyLoaderClientOnReceiveResponse(
+      {{"Access-Control-Allow-Origin", "https://example.com"},
+       {"Access-Control-Allow-Headers", "X-Custom-Header"}});
+  NotifyLoaderClientOnComplete(net::OK);
+
+  // Preflight 1 completes, main loader follows redirect in-place.
+  EXPECT_EQ(2, num_created_loaders());
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return first_loader() && first_loader()->follow_redirect_count() == 1;
+  }));
+  EXPECT_EQ(
+      "https://example.com",
+      first_loader()->last_headers_update_params().modified_headers.GetHeader(
+          net::HttpRequestHeaders::kOrigin));
+
+  // Hop 1 redirects to Hop 2.
+  NotifyLoaderClientOnReceiveRedirect(
+      CreateRedirectInfo(302, "GET", hop2_url),
+      {{"Access-Control-Allow-Origin", "https://example.com"}});
+  RunUntilRedirectReceived();
+  ClearHasReceivedRedirect();
+  FollowRedirect();
+  RunUntilCreateLoaderAndStartCalled();
+
+  // Hop 2 preflight: loader 3.
+  EXPECT_EQ(3, num_created_loaders());
+  EXPECT_EQ(hop2_url, GetRequest().url);
+  EXPECT_EQ("OPTIONS", GetRequest().method);
+
+  // Origin is tainted after multi-hop cross-origin redirects.
+  NotifyLoaderClientOnReceiveResponse(
+      {{"Access-Control-Allow-Origin", "null"},
+       {"Access-Control-Allow-Headers", "X-Custom-Header"}});
+  NotifyLoaderClientOnComplete(net::OK);
+
+  // Preflight 2 completes, main loader follows redirect in-place with tainted
+  // origin.
+  EXPECT_EQ(3, num_created_loaders());
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return first_loader() && first_loader()->follow_redirect_count() == 2;
+  }));
+  EXPECT_EQ(
+      "null",
+      first_loader()->last_headers_update_params().modified_headers.GetHeader(
+          net::HttpRequestHeaders::kOrigin));
+
+  // Hop 2 responds with 200 OK.
+  NotifyLoaderClientOnReceiveResponse(
+      {{"Access-Control-Allow-Origin", "null"}});
+  NotifyLoaderClientOnComplete(net::OK);
+  RunUntilComplete();
+
+  EXPECT_TRUE(client().has_received_response());
+  EXPECT_TRUE(client().has_received_completion());
+  EXPECT_EQ(net::OK, client().completion_status().error_code);
+}
+
+TEST_F(CorsURLLoaderTest,
+       FollowRedirectWithCrossOriginNewUrlReportsBadMessage) {
+  const GURL origin("https://example.com");
+  const GURL url("https://example.com/foo.png");
+  const GURL new_url("https://other.example.com/bar.png");
+  const GURL cross_origin_new_url("https://evil.com/bar.png");
+
+  CreateLoaderAndStart(origin, url, mojom::RequestMode::kCors);
+  RunUntilCreateLoaderAndStartCalled();
+
+  NotifyLoaderClientOnReceiveRedirect(CreateRedirectInfo(301, "GET", new_url));
+  RunUntilRedirectReceived();
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  FollowRedirect(/*headers_update_params=*/{}, cross_origin_new_url);
+  RunUntilComplete();
+
+  EXPECT_EQ(
+      "CorsURLLoader: cross-origin or cross-scheme new_url in FollowRedirect "
+      "is not permitted",
+      bad_message_observer.WaitForBadMessage());
+  EXPECT_TRUE(client().has_received_completion());
+  EXPECT_EQ(net::ERR_INVALID_ARGUMENT, client().completion_status().error_code);
+}
+
+TEST_F(CorsURLLoaderTest,
+       FollowRedirectWithCrossSchemeNewUrlReportsBadMessage) {
+  const GURL origin("https://example.com");
+  const GURL url("https://example.com/foo.png");
+  const GURL new_url("https://other.example.com/bar.png");
+  // A blob: URL whose inner origin is same-origin with `new_url`.
+  const GURL cross_scheme_new_url("blob:https://other.example.com/uuid");
+
+  CreateLoaderAndStart(origin, url, mojom::RequestMode::kCors);
+  RunUntilCreateLoaderAndStartCalled();
+
+  NotifyLoaderClientOnReceiveRedirect(CreateRedirectInfo(301, "GET", new_url));
+  RunUntilRedirectReceived();
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  FollowRedirect(/*headers_update_params=*/{}, cross_scheme_new_url);
+  RunUntilComplete();
+
+  EXPECT_EQ(
+      "CorsURLLoader: cross-origin or cross-scheme new_url in FollowRedirect "
+      "is not permitted",
+      bad_message_observer.WaitForBadMessage());
+  EXPECT_TRUE(client().has_received_completion());
+  EXPECT_EQ(net::ERR_INVALID_ARGUMENT, client().completion_status().error_code);
+}
+
+TEST_F(CorsURLLoaderTest,
+       FollowRedirectWithCredentialedNewUrlReportsBadMessage) {
+  const GURL origin("https://example.com");
+  const GURL url("https://example.com/foo.png");
+  const GURL new_url("https://other.example.com/bar.png");
+  const GURL credentialed_new_url(
+      "https://user:pass@other.example.com/bar.png");
+
+  CreateLoaderAndStart(origin, url, mojom::RequestMode::kCors);
+  RunUntilCreateLoaderAndStartCalled();
+
+  NotifyLoaderClientOnReceiveRedirect(CreateRedirectInfo(301, "GET", new_url));
+  RunUntilRedirectReceived();
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  FollowRedirect(/*headers_update_params=*/{}, credentialed_new_url);
+  RunUntilComplete();
+
+  EXPECT_EQ(
+      "CorsURLLoader: new_url with credentials in FollowRedirect is not "
+      "permitted",
+      bad_message_observer.WaitForBadMessage());
+  EXPECT_TRUE(client().has_received_completion());
+  EXPECT_EQ(net::ERR_INVALID_ARGUMENT, client().completion_status().error_code);
+}
+
+TEST_F(CorsURLLoaderTest, BlockInvalidOriginHeaderModificationOnRedirect) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kBlockInvalidOriginHeaderModificationOnRedirect);
+
+  const GURL origin("https://example.com");
+  const GURL url("https://example.com/foo.png");
+  const GURL new_url("https://other.example.com/bar.png");
+
+  CreateLoaderAndStart(origin, url, mojom::RequestMode::kCors);
+  RunUntilCreateLoaderAndStartCalled();
+
+  NotifyLoaderClientOnReceiveRedirect(CreateRedirectInfo(301, "GET", new_url));
+  RunUntilRedirectReceived();
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  network::HttpRequestHeadersUpdateParams headers_update_params;
+  headers_update_params.modified_headers.SetHeader(
+      net::HttpRequestHeaders::kOrigin, "https://evil.com");
+  FollowRedirect(std::move(headers_update_params));
+  RunUntilComplete();
+
+  EXPECT_EQ(
+      "CorsURLLoader: Invalid Origin header modification on redirect is not "
+      "permitted",
+      bad_message_observer.WaitForBadMessage());
+  EXPECT_TRUE(client().has_received_completion());
+  EXPECT_EQ(net::ERR_INVALID_ARGUMENT, client().completion_status().error_code);
+}
+
+TEST_F(CorsURLLoaderTest, NoCorsRedirectDoesNotModifyOriginHeader) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAvoidCorsURLLoaderRestartOnRedirect);
+
+  const GURL origin("https://example.com");
+  const GURL url("https://example.com/foo.png");
+  const GURL new_url("https://other.example.com/bar.png");
+
+  CreateLoaderAndStart(origin, url, mojom::RequestMode::kNoCors);
+  RunUntilCreateLoaderAndStartCalled();
+
+  NotifyLoaderClientOnReceiveRedirect(CreateRedirectInfo(301, "GET", new_url));
+  RunUntilRedirectReceived();
+
+  EXPECT_TRUE(client().has_received_redirect());
+  ClearHasReceivedRedirect();
+  FollowRedirect();
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return first_loader() && first_loader()->follow_redirect_called();
+  }));
+
+  // For no-cors requests, CorsURLLoader::FollowRedirect must not add the Origin
+  // header to modified_headers forwarded to network_loader_->FollowRedirect().
+  ASSERT_TRUE(first_loader());
+  EXPECT_TRUE(first_loader()->follow_redirect_called());
+  EXPECT_FALSE(
+      first_loader()->last_headers_update_params().modified_headers.HasHeader(
+          net::HttpRequestHeaders::kOrigin));
+
+  NotifyLoaderClientOnReceiveResponse();
+  NotifyLoaderClientOnComplete(net::OK);
+  RunUntilComplete();
+
+  EXPECT_TRUE(client().has_received_response());
+  EXPECT_EQ(mojom::FetchResponseType::kOpaque,
+            client().response_head()->response_type);
+  EXPECT_TRUE(client().has_received_completion());
+  EXPECT_EQ(net::OK, client().completion_status().error_code);
+}
+
+TEST_F(CorsURLLoaderTest, FollowRedirectWithValidSameOriginNewUrl) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAvoidCorsURLLoaderRestartOnRedirect);
+
+  const GURL origin("https://example.com");
+  const GURL url("https://example.com/foo.png");
+  const GURL new_url("https://other.example.com/bar.png");
+  const GURL modified_new_url("https://other.example.com/bar2.png");
+
+  CreateLoaderAndStart(origin, url, mojom::RequestMode::kCors);
+  RunUntilCreateLoaderAndStartCalled();
+
+  NotifyLoaderClientOnReceiveRedirect(CreateRedirectInfo(301, "GET", new_url));
+  RunUntilRedirectReceived();
+
+  FollowRedirect(/*headers_update_params=*/{}, modified_new_url);
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return first_loader() && first_loader()->follow_redirect_called();
+  }));
+
+  ASSERT_TRUE(first_loader());
+  EXPECT_TRUE(first_loader()->follow_redirect_called());
+  EXPECT_EQ(modified_new_url, first_loader()->last_new_url());
+
+  NotifyLoaderClientOnReceiveResponse(
+      {{"Access-Control-Allow-Origin", "https://example.com"}});
+  NotifyLoaderClientOnComplete(net::OK);
+  RunUntilComplete();
+
+  EXPECT_TRUE(client().has_received_response());
+  EXPECT_TRUE(client().has_received_completion());
+  EXPECT_EQ(net::OK, client().completion_status().error_code);
+}
+
+TEST_F(CorsURLLoaderTest,
+       DisconnectPreflightLoaderWhileRedirectPreflightInProgress) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAvoidCorsURLLoaderRestartOnRedirect);
+
+  const GURL origin("https://example.com");
+  const GURL url("https://example.com/foo.png");
+  const GURL new_url("https://other.example.com/bar.png");
+
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kCors;
+  request.credentials_mode = mojom::CredentialsMode::kOmit;
+  request.method = "GET";
+  request.url = url;
+  request.request_initiator = url::Origin::Create(origin);
+  request.headers.SetHeader("X-Custom-Header", "custom-value");
+
+  CreateLoaderAndStart(request);
+  RunUntilCreateLoaderAndStartCalled();
+
+  EXPECT_EQ(1, num_created_loaders());
+
+  NotifyLoaderClientOnReceiveRedirect(CreateRedirectInfo(302, "GET", new_url));
+  RunUntilRedirectReceived();
+
+  ClearHasReceivedRedirect();
+  FollowRedirect();
+  RunUntilCreateLoaderAndStartCalled();
+
+  // Redirect preflight is in flight.
+  EXPECT_EQ(2, num_created_loaders());
+
+  // Simulate preflight loader disconnecting while redirect preflight is in
+  // progress.
+  ResetLoaderClientRemoteAt(1);
+  RunUntilComplete();
+
+  EXPECT_TRUE(client().has_received_completion());
+  EXPECT_EQ(net::ERR_FAILED, client().completion_status().error_code);
+}
+
+TEST_F(CorsURLLoaderTest, SameOriginRedirectToCrossOriginDisallowedByMode) {
+  const GURL origin("https://example.com");
+  const GURL url("https://example.com/foo.png");
+  const GURL cross_origin_url("https://other.example.com/bar.png");
+
+  CreateLoaderAndStart(origin, url, mojom::RequestMode::kSameOrigin);
+  RunUntilCreateLoaderAndStartCalled();
+
+  NotifyLoaderClientOnReceiveRedirect(
+      CreateRedirectInfo(301, "GET", cross_origin_url));
+  RunUntilRedirectReceived();
+
+  FollowRedirect();
+  RunUntilComplete();
+
+  EXPECT_FALSE(client().has_received_response());
+  EXPECT_EQ(net::ERR_FAILED, client().completion_status().error_code);
+  ASSERT_TRUE(client().completion_status().cors_error_status);
+  EXPECT_EQ(mojom::CorsError::kDisallowedByMode,
+            client().completion_status().cors_error_status->cors_error);
+}
+
+TEST_F(CorsURLLoaderTest, RedirectToCorsDisabledSchemeFails) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAvoidCorsURLLoaderRestartOnRedirect);
+
+  const GURL origin("https://example.com");
+  const GURL url("https://example.com/foo.png");
+  const GURL disabled_scheme_url("my-scheme://other.example.com/bar.png");
+
+  CreateLoaderAndStart(origin, url, mojom::RequestMode::kCors);
+  RunUntilCreateLoaderAndStartCalled();
+
+  NotifyLoaderClientOnReceiveRedirect(
+      CreateRedirectInfo(301, "GET", disabled_scheme_url));
+  RunUntilRedirectReceived();
+
+  FollowRedirect();
+  RunUntilComplete();
+
+  EXPECT_FALSE(client().has_received_response());
+  EXPECT_EQ(net::ERR_FAILED, client().completion_status().error_code);
+  ASSERT_TRUE(client().completion_status().cors_error_status);
+  EXPECT_EQ(mojom::CorsError::kCorsDisabledScheme,
+            client().completion_status().cors_error_status->cors_error);
 }
 
 }  // namespace

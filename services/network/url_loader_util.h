@@ -111,13 +111,15 @@ void ConfigureUrlRequest(const ResourceRequest& request,
 // Checks both the request's `credentials_mode` and relevant web platform
 // policies (COEP, DIP). May also add the `net::LOAD_BYPASS_CACHE` flag if web
 // policies disallow credentials.
+COMPONENT_EXPORT(NETWORK_SERVICE)
 void SetRequestCredentials(
     const GURL& url,
     const network::mojom::ClientSecurityStatePtr& client_security_state,
     mojom::RequestMode request_mode,
     mojom::CredentialsMode credentials_mode,
     const std::optional<url::Origin>& initiator,
-    net::URLRequest& url_request);
+    net::URLRequest& url_request,
+    const cors::OriginAccessList* origin_access_list);
 
 // Selects between the `client_security_state` fields in
 // `url_loader_factory_params` and the ClientSecurityState from

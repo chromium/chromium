@@ -186,6 +186,13 @@ BASE_DECLARE_FEATURE(kFrameAncestorsHeader);
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE(kUpdateRequestForCorsRedirect);
 
+// https://crbug.com/513518289
+// When enabled, CorsURLLoader handles CORS redirects in-place via
+// network_loader_->FollowRedirect() rather than restarting the request via
+// StartRequest().
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+BASE_DECLARE_FEATURE(kAvoidCorsURLLoaderRestartOnRedirect);
+
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE(kBrowsingTopics);
 

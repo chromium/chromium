@@ -448,9 +448,29 @@ void CorsURLLoader::FollowRedirect(
     return;
   }
 
-  if (new_url && (new_url->DeprecatedGetOriginAsURL() !=
-                  deferred_redirect_url_->DeprecatedGetOriginAsURL())) {
-    NOTREACHED() << "Can only change the URL within the same origin.";
+  // Note: Calling HandleComplete() before mojo::ReportBadMessage() is
+  // intentional and required. HandleComplete() notifies forwarding_client_
+  // of completion and cleanly destroys this loader via delete_callback_.
+  // mojo::ReportBadMessage() operates on thread-local message dispatch
+  // context and does not access `this`. Reversing the order would cause
+  // premature pipe disconnection and break client completion expectations.
+  if (new_url) {
+    if (!new_url->is_valid() ||
+        new_url->scheme() != deferred_redirect_url_->scheme() ||
+        !url::IsSameOriginWith(*new_url, *deferred_redirect_url_)) {
+      HandleComplete(URLLoaderCompletionStatus(net::ERR_INVALID_ARGUMENT));
+      mojo::ReportBadMessage(
+          "CorsURLLoader: cross-origin or cross-scheme new_url in "
+          "FollowRedirect is not permitted");
+      return;
+    }
+    if (new_url->has_username() || new_url->has_password()) {
+      HandleComplete(URLLoaderCompletionStatus(net::ERR_INVALID_ARGUMENT));
+      mojo::ReportBadMessage(
+          "CorsURLLoader: new_url with credentials in FollowRedirect is not "
+          "permitted");
+      return;
+    }
   }
 
   deferred_redirect_url_.reset();
@@ -468,10 +488,13 @@ void CorsURLLoader::FollowRedirect(
                                       &forbidden_header)) {
     SCOPED_CRASH_KEY_STRING32("network", "forbidden_sec_header",
                               forbidden_header);
+    // Note: Calling HandleComplete() before mojo::ReportBadMessage() is
+    // intentional and required to fulfill client completion notification
+    // before the pipe teardown.
+    HandleComplete(URLLoaderCompletionStatus(net::ERR_INVALID_ARGUMENT));
     mojo::ReportBadMessage(
         "CorsURLLoader: Forbidden Sec- header from renderer in "
         "FollowRedirect");
-    HandleComplete(URLLoaderCompletionStatus(net::ERR_INVALID_ARGUMENT));
     return;
   }
 
@@ -500,6 +523,7 @@ void CorsURLLoader::FollowRedirect(
     return;
   }
 
+  // TODO(crbug.com/556536450): Clean up removed_headers handling.
   for (const auto& name : headers_update_params.removed_headers) {
     request_.headers.RemoveHeader(name);
     request_.cors_exempt_headers.RemoveHeader(name);
@@ -523,6 +547,9 @@ void CorsURLLoader::FollowRedirect(
 
   const std::string original_method = std::move(request_.method);
   request_.UpdateOnRedirect(redirect_info_);
+  if (new_url) {
+    request_.url = *new_url;
+  }
 
   // Update isolation_info_ and the shared dictionary storage location if they
   // changed as a result of the redirect for a browser-initiated request (e.g.
@@ -560,36 +587,81 @@ void CorsURLLoader::FollowRedirect(
   const bool original_fetch_cors_flag = fetch_cors_flag_;
   SetCorsFlagIfNeeded();
 
-  // We cannot use FollowRedirect for a request with preflight (i.e., when
-  // `fetch_cors_flag_` is true and `NeedsPreflight(request_)` is not nullopt).
-  //
-  // When `original_fetch_cors_flag` is false, `fetch_cors_flag_` is true and
-  // `NeedsPreflight(request)` is nullopt, the net/ implementation won't attach
-  // an "origin" header on redirect, as the original request didn't have one.
-  //
-  // When the request method is changed (due to 302 status code, for example),
-  // the net/ implementation removes the origin header.
-  //
-  // In such cases we need to re-issue a request manually in order to attach the
-  // correct origin header. For "no-cors" requests we rely on redirect logic in
-  // net/ (specifically in net/url_request/redirect_util.cc).
-  //
-  // After both OOR-CORS and network service are fully shipped, we may be able
-  // to remove the logic in net/.
-  if ((fetch_cors_flag_ && NeedsPreflight(request_)) ||
-      (!original_fetch_cors_flag && fetch_cors_flag_) ||
-      (fetch_cors_flag_ && original_method != request_.method)) {
-    DCHECK_NE(request_.mode, mojom::RequestMode::kNoCors);
-    network_client_receiver_.reset();
-    sync_client_receiver_factory_.InvalidateWeakPtrs();
-    StartRequest();
+  if (!base::FeatureList::IsEnabled(
+          features::kAvoidCorsURLLoaderRestartOnRedirect) ||
+      request_.trust_token_params) {
+    // We cannot use FollowRedirect for a request with preflight (i.e., when
+    // `fetch_cors_flag_` is true and `NeedsPreflight(request_)` is not
+    // nullopt).
+    //
+    // When `original_fetch_cors_flag` is false, `fetch_cors_flag_` is true and
+    // `NeedsPreflight(request)` is nullopt, the net/ implementation won't
+    // attach an "origin" header on redirect, as the original request didn't
+    // have one.
+    //
+    // When the request method is changed (due to 302 status code, for example),
+    // the net/ implementation removes the origin header.
+    //
+    // In such cases we need to re-issue a request manually in order to attach
+    // the correct origin header. For "no-cors" requests we rely on redirect
+    // logic in net/ (specifically in net/url_request/redirect_util.cc).
+    //
+    // After both OOR-CORS and network service are fully shipped, we may be able
+    // to remove the logic in net/.
+    if ((fetch_cors_flag_ && NeedsPreflight(request_)) ||
+        (!original_fetch_cors_flag && fetch_cors_flag_) ||
+        (fetch_cors_flag_ && original_method != request_.method)) {
+      DCHECK_NE(request_.mode, mojom::RequestMode::kNoCors);
+      network_client_receiver_.reset();
+      sync_client_receiver_factory_.InvalidateWeakPtrs();
+      StartRequest();
+      return;
+    }
+
+    response_tainting_ = CalculateResponseTainting(
+        request_.url, request_.mode, request_.request_initiator,
+        request_.isolated_world_origin, fetch_cors_flag_, tainted_,
+        *origin_access_list_);
+    network_loader_->FollowRedirect(std::move(headers_update_params), new_url);
     return;
+  }
+
+  if (fetch_cors_flag_ && request_.mode == mojom::RequestMode::kSameOrigin) {
+    CHECK(request_.request_initiator);
+    HandleComplete(URLLoaderCompletionStatus(
+        CorsErrorStatus(mojom::CorsError::kDisallowedByMode)));
+    return;
+  }
+
+  if (fetch_cors_flag_ && !skip_cors_enabled_scheme_check_ &&
+      !std::ranges::contains(url::GetCorsEnabledSchemes(),
+                             request_.url.scheme())) {
+    HandleComplete(URLLoaderCompletionStatus(
+        CorsErrorStatus(mojom::CorsError::kCorsDisabledScheme)));
+    return;
+  }
+
+  if (request_.mode != mojom::RequestMode::kNoCors) {
+    MaybeSetOriginHeader(&headers_update_params);
   }
 
   response_tainting_ = CalculateResponseTainting(
       request_.url, request_.mode, request_.request_initiator,
       request_.isolated_world_origin, fetch_cors_flag_, tainted_,
       *origin_access_list_);
+
+  has_authorization_covered_by_wildcard_ = false;
+  if (CheckPreflightRequired()) {
+    CHECK(!deferred_redirect_preflight_.has_value());
+    deferred_redirect_preflight_ = DeferredRedirectPreflight{
+        .headers_update_params = std::move(headers_update_params),
+        .new_url = new_url,
+    };
+
+    StartPreflightCheck();
+    return;
+  }
+
   network_loader_->FollowRedirect(std::move(headers_update_params), new_url);
 }
 
@@ -921,7 +993,7 @@ void CorsURLLoader::OnComplete(const URLLoaderCompletionStatus& status) {
 }
 
 std::optional<net::cookie_util::StorageAccessStatus>
-CorsURLLoader::GetStorageAccessStatus() {
+CorsURLLoader::GetStorageAccessStatus() const {
   if (isolation_info_.network_isolation_key().GetNonce()) {
     return net::cookie_util::StorageAccessStatus::kNone;
   }
@@ -971,47 +1043,74 @@ bool CorsURLLoader::HasValidOriginHeader(
   return false;
 }
 
+bool CorsURLLoader::ShouldIncludeOriginHeader() const {
+  if (!request_.request_initiator) {
+    return false;
+  }
+
+  if (request_.credentials_mode == mojom::CredentialsMode::kInclude &&
+      GetStorageAccessStatus() ==
+          net::cookie_util::StorageAccessStatus::kInactive) {
+    // Lower layers will add the Sec-Fetch-Storage-Access header, and the
+    // server may respond with a "retry" header. The server needs to know the
+    // origin in that event.
+    return true;
+  }
+
+  // If the `CORS flag` is set, `httpRequest`’s method is neither `GET` nor
+  // `HEAD`, or `httpRequest`’s mode is "websocket", then append
+  // `Origin`/the result of serializing a request origin with `httpRequest`,
+  // to `httpRequest`’s header list.
+  //
+  // We exclude navigation requests to keep the existing behavior.
+  // TODO(yhirano): Reconsider this.
+  if (request_.mode == network::mojom::RequestMode::kNavigate) {
+    return false;
+  }
+  if (fetch_cors_flag_) {
+    return true;
+  }
+  return request_.method != net::HttpRequestHeaders::kGetMethod &&
+         request_.method != net::HttpRequestHeaders::kHeadMethod;
+}
+
+void CorsURLLoader::MaybeSetOriginHeader(
+    network::HttpRequestHeadersUpdateParams* headers_update_params) {
+  if (!ShouldIncludeOriginHeader()) {
+    return;
+  }
+
+  // If the Origin header is given, check if the initiator has a permission to
+  // override unsafe headers for the target URL. This Allowlist is given from
+  // a trustworthy process per factory, and safe to trust as a secondary
+  // security check here in the network service.
+  if (request_.headers.HasHeader(net::HttpRequestHeaders::kOrigin) &&
+      AllowUnsafeHeaders()) {
+    return;
+  }
+
+  std::string origin_value = tainted_
+                                 ? url::Origin().Serialize()
+                                 : request_.request_initiator->Serialize();
+  if (headers_update_params) {
+    std::erase(headers_update_params->removed_headers,
+               net::HttpRequestHeaders::kOrigin);
+    headers_update_params->modified_headers.SetHeader(
+        net::HttpRequestHeaders::kOrigin, origin_value);
+  }
+  request_.headers.SetHeader(net::HttpRequestHeaders::kOrigin, origin_value);
+}
+
 void CorsURLLoader::StartRequest() {
   TRACE_EVENT("loading", "CorsURLLoader::StartRequest",
               net::NetLogWithSourceToFlow(net_log_));
   if (fetch_cors_flag_ && !skip_cors_enabled_scheme_check_ &&
       !std::ranges::contains(url::GetCorsEnabledSchemes(),
-                             request_.url.GetScheme())) {
+                             request_.url.scheme())) {
     HandleComplete(URLLoaderCompletionStatus(
         CorsErrorStatus(mojom::CorsError::kCorsDisabledScheme)));
     return;
   }
-
-  auto should_include_origin_header = [&]() -> bool {
-    if (!request_.request_initiator) {
-      return false;
-    }
-
-    if (request_.credentials_mode == mojom::CredentialsMode::kInclude &&
-        GetStorageAccessStatus() ==
-            net::cookie_util::StorageAccessStatus::kInactive) {
-      // Lower layers will add the Sec-Fetch-Storage-Access header, and the
-      // server may respond with a "retry" header. The server needs to know the
-      // origin in that event.
-      return true;
-    }
-
-    // If the `CORS flag` is set, `httpRequest`’s method is neither `GET` nor
-    // `HEAD`, or `httpRequest`’s mode is "websocket", then append
-    // `Origin`/the result of serializing a request origin with `httpRequest`,
-    // to `httpRequest`’s header list.
-    //
-    // We exclude navigation requests to keep the existing behavior.
-    // TODO(yhirano): Reconsider this.
-    if (request_.mode == network::mojom::RequestMode::kNavigate) {
-      return false;
-    }
-    if (fetch_cors_flag_) {
-      return true;
-    }
-    return request_.method != net::HttpRequestHeaders::kGetMethod &&
-           request_.method != net::HttpRequestHeaders::kHeadMethod;
-  };
 
   std::optional<std::string> origin_header_value =
       request_.headers.GetHeader(net::HttpRequestHeaders::kOrigin);
@@ -1025,28 +1124,10 @@ void CorsURLLoader::StartRequest() {
     return;
   }
 
-  if (should_include_origin_header()) {
-    // If the Origin header is given, check if the initiator has a permission to
-    // override unsafe headers for the target URL. This Allowlist is given from
-    // a trustworthy process per factory, and safe to trust as a secondary
-    // security check here in the network service.
-    const bool has_custom_origin_header_with_bypass =
-        request_.headers.HasHeader(net::HttpRequestHeaders::kOrigin) &&
-        AllowUnsafeHeaders();
-
-    if (!has_custom_origin_header_with_bypass) {
-      if (tainted_) {
-        request_.headers.SetHeader(net::HttpRequestHeaders::kOrigin,
-                                   url::Origin().Serialize());
-      } else {
-        request_.headers.SetHeader(net::HttpRequestHeaders::kOrigin,
-                                   request_.request_initiator->Serialize());
-      }
-    }
-  }
+  MaybeSetOriginHeader(/*headers_update_params=*/nullptr);
 
   if (fetch_cors_flag_ && request_.mode == mojom::RequestMode::kSameOrigin) {
-    DCHECK(request_.request_initiator);
+    CHECK(request_.request_initiator);
     HandleComplete(URLLoaderCompletionStatus(
         CorsErrorStatus(mojom::CorsError::kDisallowedByMode)));
     return;
@@ -1056,19 +1137,8 @@ void CorsURLLoader::StartRequest() {
       request_.url, request_.mode, request_.request_initiator,
       request_.isolated_world_origin, fetch_cors_flag_, tainted_,
       *origin_access_list_);
-
-  // Note that even when `needs_preflight` holds we might not make a preflight
-  // request. This happens when `fetch_cors_flag_` is false, e.g. when the
-  // origin of the url is equal to the origin of the request.
-  std::optional<PreflightRequiredReason> needs_preflight =
-      NeedsPreflight(request_);
-  bool preflight_required = needs_preflight.has_value() && fetch_cors_flag_;
-  net_log_.AddEvent(net::NetLogEventType::CHECK_CORS_PREFLIGHT_REQUIRED, [&] {
-    return NetLogPreflightRequiredParams(needs_preflight);
-  });
-
   has_authorization_covered_by_wildcard_ = false;
-  if (!preflight_required) {
+  if (!CheckPreflightRequired()) {
     StartNetworkRequest();
     return;
   }
@@ -1077,6 +1147,19 @@ void CorsURLLoader::StartRequest() {
   // it now to free up the socket.
   network_loader_.reset();
 
+  StartPreflightCheck();
+}
+
+bool CorsURLLoader::CheckPreflightRequired() {
+  std::optional<PreflightRequiredReason> needs_preflight =
+      NeedsPreflight(request_);
+  net_log_.AddEvent(net::NetLogEventType::CHECK_CORS_PREFLIGHT_REQUIRED, [&] {
+    return NetLogPreflightRequiredParams(needs_preflight);
+  });
+  return needs_preflight.has_value() && fetch_cors_flag_;
+}
+
+void CorsURLLoader::StartPreflightCheck() {
   mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver> remote_observer;
 
   context_->cors_preflight_controller()->PerformPreflightCheck(
@@ -1150,10 +1233,21 @@ void CorsURLLoader::OnPreflightRequestComplete(
   has_authorization_covered_by_wildcard_ =
       has_authorization_covered_by_wildcard;
 
+  std::optional<DeferredRedirectPreflight> deferred_redirect =
+      std::exchange(deferred_redirect_preflight_, std::nullopt);
+
   std::optional<URLLoaderCompletionStatus> completion_status =
       ConvertPreflightResult(net_error, std::move(status));
   if (completion_status) {
     HandleComplete(*std::move(completion_status));
+    return;
+  }
+
+  if (deferred_redirect) {
+    CHECK(network_loader_);
+    network_loader_->FollowRedirect(
+        std::move(deferred_redirect->headers_update_params),
+        deferred_redirect->new_url);
     return;
   }
 
@@ -1163,11 +1257,14 @@ void CorsURLLoader::OnPreflightRequestComplete(
 void CorsURLLoader::StartNetworkRequest() {
   TRACE_EVENT("loading", "CorsURLLoader::StartNetworkRequest",
               net::NetLogWithSourceToFlow(net_log_));
-  // Here we overwrite the credentials mode sent to URLLoader because
-  // network::URLLoader doesn't understand |kSameOrigin|.
-  // TODO(crbug.com/40619226): Fix this.
+  // When `kAvoidCorsURLLoaderRestartOnRedirect` is disabled (legacy behavior),
+  // overwrite the credentials mode sent to URLLoader because legacy
+  // network::URLLoader didn't handle `kSameOrigin` on redirects.
   auto original_credentials_mode = request_.credentials_mode;
-  if (original_credentials_mode == mojom::CredentialsMode::kSameOrigin) {
+  if ((!base::FeatureList::IsEnabled(
+           features::kAvoidCorsURLLoaderRestartOnRedirect) ||
+       request_.trust_token_params) &&
+      original_credentials_mode == mojom::CredentialsMode::kSameOrigin) {
     request_.credentials_mode =
         CalculateCredentialsFlag(original_credentials_mode, response_tainting_)
             ? mojom::CredentialsMode::kInclude
