@@ -175,8 +175,6 @@ source_set("authentication_service") {
 
 source_set("authentication_service_factory") {
   sources = [
-    "authentication_service_delegate_impl.cc",
-    "authentication_service_delegate_impl.h",
     "authentication_service_factory.h",
     "authentication_service_factory.mm",
   ]
@@ -184,13 +182,7 @@ source_set("authentication_service_factory") {
     ":authentication_service",
     ":model",
     "//base",
-    "//components/browsing_data/core",
-    "//components/signin/ios/browser:signin_enabled_datasource",
-    "//ios/chrome/browser/browsing_data/model",
-    "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
-    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
-    "//ios/chrome/browser/shared/model/profile:features",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/sync/model",
   ]

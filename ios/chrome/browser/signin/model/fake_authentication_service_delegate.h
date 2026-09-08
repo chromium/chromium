@@ -16,12 +16,6 @@ class FakeAuthenticationServiceDelegate : public AuthenticationServiceDelegate {
       const FakeAuthenticationServiceDelegate&) = delete;
 
   ~FakeAuthenticationServiceDelegate() override;
-
-  // AuthenticationServiceDelegate implementation.
-  // Executes `completion` synchronously.
-  void ClearBrowsingData(base::OnceClosure completion) override;
-  void ClearBrowsingDataForSignedinPeriod(
-      base::OnceClosure completion) override;
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_FAKE_AUTHENTICATION_SERVICE_DELEGATE_H_
