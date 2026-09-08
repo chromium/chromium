@@ -11,12 +11,14 @@
 #include "base/strings/to_string.h"
 #include "base/test/bind.h"
 #include "base/test/icu_test_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_log.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_logging_settings.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/connectors/interstitials/delayed_interstitial_reporter.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
@@ -380,6 +382,39 @@ TEST_F(DataProtectionNavigationObserverTest, MatchedAuditRuleHasEvent) {
       GetPageFromWebContents(web_contents()));
   ASSERT_TRUE(user_data);
   run_loop.Run();
+}
+
+TEST_F(DataProtectionNavigationObserverTest,
+       DelayedInterstitialReporterTrigger) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      enterprise_data_protection::kEnterpriseTabTitleReporting);
+
+  base::HistogramTester histogram_tester;
+
+  lookup_service_.SetShouldHaveMatchedRule(true);
+
+  auto simulator = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://example.com/"), web_contents()->GetPrimaryMainFrame());
+
+  base::test::TestFuture<const UrlSettings&> future;
+  FakeDataProtectionNavigationController controller(
+      web_contents(), &lookup_service_, future.GetCallback());
+
+  base::test::TestFuture<void> future_lookup_complete;
+  lookup_service_.set_on_start_lookup_complete(
+      future_lookup_complete.GetCallback());
+
+  simulator->Start();
+  EXPECT_TRUE(future_lookup_complete.Wait());
+  simulator->Commit();
+
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.DelayedReportingInterstitial.Triggered.UrlFiltering", true,
+      1);
+
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.DelayedReportingInterstitial.Time.UrlFiltering", 1);
 }
 
 TEST_F(DataProtectionNavigationObserverTest,

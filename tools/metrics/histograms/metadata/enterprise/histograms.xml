@@ -1348,6 +1348,21 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Enterprise.DelayedReportingInterstitial.Triggered{EventType}"
+    enum="BooleanEnabled" expires_after="2027-08-28">
+  <owner>rslan@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
+  <summary>
+    Records whether a delayed interstitial reporter was actually triggered and
+    created for an event, tracking the kEnterpriseTabTitleReporting feature
+    flag.
+  </summary>
+  <token key="EventType">
+    <variant name=".SafeBrowsing" summary="SafeBrowsing events"/>
+    <variant name=".UrlFiltering" summary="URL filtering events"/>
+  </token>
+</histogram>
+
 <histogram name="Enterprise.DeviceLocalAccountCount" units="accounts"
     expires_after="M130">
   <owner>igorcov@chromium.org</owner>

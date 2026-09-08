@@ -114,10 +114,34 @@ void RunPendingNavigationCallback(
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   if (ShouldReportSafeUrlFilteringEvents(user_data)) {
-    MaybeTriggerUrlFilteringInterstitialEvent(
-        web_contents, web_contents->GetLastCommittedURL(),
-        /*threat_type=*/"", *user_data->rt_lookup_response(),
-        /*tab_title=*/base::UTF16ToUTF8(web_contents->GetTitle()));
+    bool is_enabled = base::FeatureList::IsEnabled(
+        enterprise_data_protection::kEnterpriseTabTitleReporting);
+    base::UmaHistogramBoolean(
+        "Enterprise.DelayedReportingInterstitial.Triggered.UrlFiltering",
+        is_enabled);
+    if (is_enabled) {
+      enterprise_data_protection::DelayedInterstitialReporter::Start(
+          web_contents,
+          base::BindOnce(
+              [](base::WeakPtr<content::WebContents> web_contents, GURL url,
+                 std::string threat_type,
+                 safe_browsing::RTLookupResponse response,
+                 const std::string& tab_title) {
+                if (web_contents) {
+                  MaybeTriggerUrlFilteringInterstitialEvent(
+                      web_contents.get(), std::move(url),
+                      std::move(threat_type), std::move(response), tab_title);
+                }
+              },
+              web_contents->GetWeakPtr(), web_contents->GetLastCommittedURL(),
+              /*threat_type=*/"", *user_data->rt_lookup_response()),
+          /*is_bypassing_interstitial=*/false, "UrlFiltering");
+    } else {
+      MaybeTriggerUrlFilteringInterstitialEvent(
+          web_contents, web_contents->GetLastCommittedURL(),
+          /*threat_type=*/"", *user_data->rt_lookup_response(),
+          /*tab_title=*/base::UTF16ToUTF8(web_contents->GetTitle()));
+    }
   }
 #endif
 

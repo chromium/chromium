@@ -34,15 +34,15 @@ class DelayedInterstitialReporter
   DelayedInterstitialReporter& operator=(const DelayedInterstitialReporter&) =
       delete;
 
- private:
-  friend class content::WebContentsUserData<DelayedInterstitialReporter>;
-  friend class DelayedInterstitialReporterTest;
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
-
   static void Start(content::WebContents* web_contents,
                     TitleCallback report_callback,
                     bool is_bypassing_interstitial,
                     std::string uma_suffix);
+
+ private:
+  friend class content::WebContentsUserData<DelayedInterstitialReporter>;
+  friend class DelayedInterstitialReporterTest;
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
 
   DelayedInterstitialReporter(content::WebContents* web_contents,
                               TitleCallback report_callback,
