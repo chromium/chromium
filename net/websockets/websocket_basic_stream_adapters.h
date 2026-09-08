@@ -31,6 +31,7 @@ class QuicHeaderList;
 namespace net {
 
 class StreamSocketHandle;
+class DrainableIOBuffer;
 class IOBuffer;
 class SpdyBuffer;
 struct NetworkTrafficAnnotationTag;
@@ -47,15 +48,34 @@ class NET_EXPORT_PRIVATE WebSocketClientSocketHandleAdapter
   int Read(IOBuffer* buf,
            int buf_len,
            CompletionOnceCallback callback) override;
+
+  // A socket may accept only part of the buffer at a time, so Write() keeps
+  // writing until all of it has been accepted and reports only the total.
   int Write(IOBuffer* buf,
             int buf_len,
+            bool is_final_write,
             CompletionOnceCallback callback,
             const NetworkTrafficAnnotationTag& traffic_annotation) override;
   void Disconnect() override;
   bool is_initialized() const override;
 
  private:
+  // Writes until |buffer| is drained, in which case it returns the number of
+  // bytes written, or until the socket write does not complete, in which case
+  // it returns ERR_IO_PENDING or the error.
+  int DrainWriteBuffer(scoped_refptr<DrainableIOBuffer> buffer,
+                       const NetworkTrafficAnnotationTag& traffic_annotation);
+
+  // Called when a socket write completes. Writes the rest of |buffer| if there
+  // is any, otherwise runs |write_callback_|.
+  void OnWriteComplete(scoped_refptr<DrainableIOBuffer> buffer,
+                       const NetworkTrafficAnnotationTag& traffic_annotation,
+                       int result);
+
   std::unique_ptr<StreamSocketHandle> connection_;
+
+  // Write callback saved while a socket write is outstanding.
+  CompletionOnceCallback write_callback_;
 };
 
 // Adapter to make WebSocketBasicStream use an HTTP/2 stream.
@@ -99,6 +119,7 @@ class NET_EXPORT_PRIVATE WebSocketSpdyStreamAdapter
   // Write() always returns asynchronously.
   int Write(IOBuffer* buf,
             int buf_len,
+            bool is_final_write,
             CompletionOnceCallback callback,
             const NetworkTrafficAnnotationTag& traffic_annotation) override;
 
@@ -125,10 +146,6 @@ class NET_EXPORT_PRIVATE WebSocketSpdyStreamAdapter
   // Call WebSocketSpdyStreamAdapter::Delegate::OnClose().
   void CallDelegateOnClose();
 
-  // Send the zero-length final DATA frame that closes our half of the stream,
-  // if no other write is in flight, otherwise queue it.
-  void MaybeSendEndStream();
-
   // True if SpdyStream::Delegate::OnHeadersSent() has been called.
   // SpdyStream::SendData() must not be called before that.
   bool headers_sent_ = false;
@@ -136,6 +153,11 @@ class NET_EXPORT_PRIVATE WebSocketSpdyStreamAdapter
   // True once the final DATA frame has been sent to SendData(). This indicates
   // that the stream should accept no more writes.
   bool end_stream_sent_ = false;
+
+  // True once the peer's END_STREAM has been received, after which reads
+  // report the end of the stream. The stream may outlive this, waiting for
+  // `end_stream_sent_`.
+  bool end_stream_received_ = false;
 
   // The underlying SpdyStream.
   base::WeakPtr<SpdyStream> stream_;
@@ -152,6 +174,11 @@ class NET_EXPORT_PRIVATE WebSocketSpdyStreamAdapter
   // read operations.
   raw_ptr<IOBuffer> read_buffer_ = nullptr;
   size_t read_length_ = 0u;
+
+  // Set when we're in a read or write context because |read_callback_| and
+  // |write_callback_| can end up deleting |this|, therefore if this is set
+  // then the callback should be deferred.
+  bool in_callback_disallowed_scope_ = false;
 
   // Read callback saved for asynchronous reads.
   // Whenever |read_data_| is not empty, |read_callback_| must be null.
@@ -220,6 +247,7 @@ class NET_EXPORT_PRIVATE WebSocketQuicStreamAdapter
   // be invoked when the stream can accept new data.
   int Write(IOBuffer* buf,
             int buf_len,
+            bool is_final_write,
             CompletionOnceCallback callback,
             const NetworkTrafficAnnotationTag& traffic_annotation) override;
   void Disconnect() override;
@@ -256,6 +284,12 @@ class NET_EXPORT_PRIVATE WebSocketQuicStreamAdapter
   raw_ptr<IOBuffer> read_buffer_ = nullptr;
   int read_length_ = 0u;
   int write_length_ = 0u;
+
+  // Set when we're in a read or write context because |read_callback_| and
+  // |write_callback_| can end up deleting |this|, therefore if this is set
+  // then the callback should be deferred.
+  bool in_callback_disallowed_scope_ = false;
+
   CompletionOnceCallback read_callback_;
   CompletionOnceCallback write_callback_;
 

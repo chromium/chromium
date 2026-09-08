@@ -204,16 +204,22 @@ int WebSocketBasicStream::WriteFrames(
   // TODO(ricea): Investigate whether it would be better in some cases to
   // perform multiple writes with smaller buffers.
 
-  write_callback_ = std::move(callback);
-
   // First calculate the size of the buffer we need to allocate.
   int total_size = CalculateSerializedSizeAndTurnOnMaskBit(frames);
+  if (total_size == 0) {
+    return OK;
+  }
   auto combined_buffer = base::MakeRefCounted<IOBufferWithSize>(total_size);
 
   base::span<uint8_t> dest = combined_buffer->span();
+  // A Close frame is the last frame an endpoint may send, so writing one also
+  // closes the send side of the transport.
+  bool is_final_write = false;
   for (const auto& frame : *frames) {
     net_log_.AddEvent(net::NetLogEventType::WEBSOCKET_SENT_FRAME_HEADER,
                       [&] { return NetLogFrameHeaderParam(&frame->header); });
+    is_final_write |=
+        frame->header.opcode == WebSocketFrameHeader::kOpCodeClose;
     WebSocketMaskingKey mask = generate_websocket_masking_key_();
     int result = WriteWebSocketFrameHeader(frame->header, &mask, dest);
     DCHECK_NE(ERR_INVALID_ARGUMENT, result)
@@ -232,9 +238,23 @@ int WebSocketBasicStream::WriteFrames(
   }
   DCHECK(dest.empty()) << "Buffer size calculation was wrong; " << dest.size()
                        << " bytes left over.";
-  auto drainable_buffer = base::MakeRefCounted<DrainableIOBuffer>(
-      std::move(combined_buffer), total_size);
-  return WriteEverything(drainable_buffer);
+
+  // The adapter writes the whole buffer or fails, so `is_final_write` can never
+  // end up applied to a partial write. The buffer is carried by the callback to
+  // keep it alive until an asynchronous write completes.
+  IOBuffer* buf = combined_buffer.get();
+  int result = connection_->Write(
+      buf, total_size, is_final_write,
+      base::BindOnce(
+          [](const scoped_refptr<IOBufferWithSize>& buffer,
+             CompletionOnceCallback callback, int result) {
+            CHECK(result < 0 || result == buffer->size());
+            std::move(callback).Run(result < 0 ? result : OK);
+          },
+          std::move(combined_buffer), std::move(callback)),
+      kTrafficAnnotation);
+  CHECK(result < 0 || result == total_size);
+  return result < 0 ? result : OK;
 }
 
 void WebSocketBasicStream::Close() {
@@ -327,42 +347,6 @@ void WebSocketBasicStream::OnReadComplete(
     result = ReadEverything(frames);
   if (result != ERR_IO_PENDING)
     std::move(read_callback_).Run(result);
-}
-
-int WebSocketBasicStream::WriteEverything(
-    const scoped_refptr<DrainableIOBuffer>& buffer) {
-  while (buffer->BytesRemaining() > 0) {
-    // The use of base::Unretained() here is safe because on destruction we
-    // disconnect the socket, preventing any further callbacks.
-    int result = connection_->Write(
-        buffer.get(), buffer->BytesRemaining(),
-        base::BindOnce(&WebSocketBasicStream::OnWriteComplete,
-                       base::Unretained(this), buffer),
-        kTrafficAnnotation);
-    if (result > 0) {
-      buffer->DidConsume(result);
-    } else {
-      return result;
-    }
-  }
-  return OK;
-}
-
-void WebSocketBasicStream::OnWriteComplete(
-    const scoped_refptr<DrainableIOBuffer>& buffer,
-    int result) {
-  if (result < 0) {
-    DCHECK_NE(ERR_IO_PENDING, result);
-    std::move(write_callback_).Run(result);
-    return;
-  }
-
-  DCHECK_NE(0, result);
-
-  buffer->DidConsume(result);
-  result = WriteEverything(buffer);
-  if (result != ERR_IO_PENDING)
-    std::move(write_callback_).Run(result);
 }
 
 int WebSocketBasicStream::HandleReadResult(

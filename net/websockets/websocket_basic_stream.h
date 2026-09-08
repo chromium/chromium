@@ -32,7 +32,6 @@ class TimeTicks;
 namespace net {
 
 class ClientSocketHandle;
-class DrainableIOBuffer;
 class GrowableIOBuffer;
 class IOBuffer;
 class IOBufferWithSize;
@@ -106,9 +105,18 @@ class NET_EXPORT_PRIVATE WebSocketBasicStream final : public WebSocketStream {
     virtual int Read(IOBuffer* buf,
                      int buf_len,
                      CompletionOnceCallback callback) = 0;
+    // Writes `buf_len` bytes of `buf`, all of it or none of it: returns
+    // `buf_len`, or ERR_IO_PENDING and later runs `callback` with `buf_len`, or
+    // a network error. A partial byte count is never reported, so an
+    // implementation that cannot write everything at once must do the
+    // remaining writes itself. `buf` must remain valid until the write
+    // completes. `is_final_write` is true when this is the last data that will
+    // ever be written, so an implementation may close the send side once the
+    // whole buffer has been consumed.
     virtual int Write(
         IOBuffer* buf,
         int buf_len,
+        bool is_final_write,
         CompletionOnceCallback callback,
         const NetworkTrafficAnnotationTag& traffic_annotation) = 0;
     virtual void Disconnect() = 0;
@@ -165,16 +173,6 @@ class NET_EXPORT_PRIVATE WebSocketBasicStream final : public WebSocketStream {
   // Might call |read_callback_|.
   void OnReadComplete(std::vector<std::unique_ptr<WebSocketFrame>>* frames,
                       int result);
-
-  // Writes until |buffer| is fully drained (in which case returns OK) or a
-  // socket write returns asynchronously or returns an error.  If returns
-  // ERR_IO_PENDING, then |write_callback_| will be called with result later.
-  int WriteEverything(const scoped_refptr<DrainableIOBuffer>& buffer);
-
-  // Called when a write completes.  Tries to write more.
-  // Might call |write_callback_|.
-  void OnWriteComplete(const scoped_refptr<DrainableIOBuffer>& buffer,
-                       int result);
 
   // Attempts to parse the output of a read as WebSocket frames. On success,
   // returns OK and places the frame(s) in |frames|.
@@ -234,7 +232,6 @@ class NET_EXPORT_PRIVATE WebSocketBasicStream final : public WebSocketStream {
   WebSocketMaskingKeyGeneratorFunction generate_websocket_masking_key_;
 
   // User callback saved for asynchronous writes and reads.
-  CompletionOnceCallback write_callback_;
   CompletionOnceCallback read_callback_;
 
   // Used to assemble FrameChunks into Frames.

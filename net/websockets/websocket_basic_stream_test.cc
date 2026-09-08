@@ -44,6 +44,7 @@
 
 using net::test::IsError;
 using net::test::IsOk;
+using ::testing::ElementsAre;
 
 namespace net {
 namespace {
@@ -1070,6 +1071,108 @@ TEST_F(WebSocketBasicStreamSocketWriteTest, WriteNullptrPong) {
   std::vector<std::unique_ptr<WebSocketFrame>> frames;
   frames.push_back(std::move(frame));
   EXPECT_THAT(stream_->WriteFrames(&frames, cb_.callback()), IsOk());
+}
+
+// An Adapter that records the `is_final_write` argument of each Write() and
+// consumes the whole buffer, as the HTTP/2 and HTTP/3 adapters do.
+class FinRecordingAdapter : public WebSocketBasicStream::Adapter {
+ public:
+  int Read(IOBuffer* buf,
+           int buf_len,
+           CompletionOnceCallback callback) override {
+    return ERR_IO_PENDING;
+  }
+
+  int Write(IOBuffer* buf,
+            int buf_len,
+            bool is_final_write,
+            CompletionOnceCallback callback,
+            const NetworkTrafficAnnotationTag& traffic_annotation) override {
+    is_final_writes_.push_back(is_final_write);
+    return buf_len;
+  }
+
+  void Disconnect() override {}
+  bool is_initialized() const override { return true; }
+
+  const std::vector<bool>& is_final_writes() const { return is_final_writes_; }
+
+ private:
+  std::vector<bool> is_final_writes_;
+};
+
+class WebSocketBasicStreamWriteFinTest : public TestWithTaskEnvironment {
+ protected:
+  // Creates a stream over a FinRecordingAdapter, ownership of which stays with
+  // the stream. The returned pointer outlives `stream_`.
+  FinRecordingAdapter* CreateStreamOverFinRecordingAdapter() {
+    auto adapter = std::make_unique<FinRecordingAdapter>();
+    FinRecordingAdapter* adapter_ptr = adapter.get();
+    stream_ = std::make_unique<WebSocketBasicStream>(
+        std::move(adapter), /*http_read_buffer=*/nullptr, /*sub_protocol=*/"",
+        /*extensions=*/"", NetLogWithSource());
+    return adapter_ptr;
+  }
+
+  static std::unique_ptr<WebSocketFrame> MakeEmptyFrame(
+      WebSocketFrameHeader::OpCode opcode,
+      bool final) {
+    auto frame = std::make_unique<WebSocketFrame>(opcode);
+    frame->header.final = final;
+    frame->header.masked = true;
+    frame->header.payload_length = 0;
+    return frame;
+  }
+
+  TestCompletionCallback cb_;
+  std::unique_ptr<WebSocketBasicStream> stream_;
+};
+
+// A Close frame is the last frame an endpoint may send, so writing one closes
+// the send side of the transport. Nothing else does. In particular this must
+// not follow `header.final`, which is the message fragmentation bit and is set
+// on every unfragmented frame.
+TEST_F(WebSocketBasicStreamWriteFinTest, OnlyCloseFrameSetsFin) {
+  const struct {
+    std::string_view description;
+    WebSocketFrameHeader::OpCode opcode;
+    bool final;
+    bool expected_final_write;
+  } kCases[] = {
+      {"unfragmented text", WebSocketFrameHeader::kOpCodeText, true, false},
+      {"first fragment", WebSocketFrameHeader::kOpCodeText, false, false},
+      {"final continuation", WebSocketFrameHeader::kOpCodeContinuation, true,
+       false},
+      {"binary", WebSocketFrameHeader::kOpCodeBinary, true, false},
+      {"ping", WebSocketFrameHeader::kOpCodePing, true, false},
+      {"pong", WebSocketFrameHeader::kOpCodePong, true, false},
+      {"close", WebSocketFrameHeader::kOpCodeClose, true, true},
+  };
+
+  for (const auto& test_case : kCases) {
+    SCOPED_TRACE(test_case.description);
+    FinRecordingAdapter* adapter = CreateStreamOverFinRecordingAdapter();
+
+    std::vector<std::unique_ptr<WebSocketFrame>> frames;
+    frames.push_back(MakeEmptyFrame(test_case.opcode, test_case.final));
+    EXPECT_THAT(stream_->WriteFrames(&frames, cb_.callback()), IsOk());
+
+    EXPECT_THAT(adapter->is_final_writes(),
+                ElementsAre(test_case.expected_final_write));
+  }
+}
+
+// Frames are combined into a single write, so a batch ending in a Close frame
+// closes the send side once all of it has been written.
+TEST_F(WebSocketBasicStreamWriteFinTest, CloseFrameBatchedWithDataSetsFin) {
+  FinRecordingAdapter* adapter = CreateStreamOverFinRecordingAdapter();
+
+  std::vector<std::unique_ptr<WebSocketFrame>> frames;
+  frames.push_back(MakeEmptyFrame(WebSocketFrameHeader::kOpCodeText, true));
+  frames.push_back(MakeEmptyFrame(WebSocketFrameHeader::kOpCodeClose, true));
+  EXPECT_THAT(stream_->WriteFrames(&frames, cb_.callback()), IsOk());
+
+  EXPECT_THAT(adapter->is_final_writes(), ElementsAre(true));
 }
 
 // Check that writing with a non-nullptr mask works correctly.
