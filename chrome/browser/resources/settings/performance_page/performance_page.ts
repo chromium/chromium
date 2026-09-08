@@ -20,6 +20,7 @@ import type {SettingsToggleButtonElement} from '../controls/settings_toggle_butt
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
+import {getCss as getSettingsSharedCss} from '../settings_shared_lit.css.js';
 
 import {PerformanceBrowserProxyImpl, PerformanceFeedbackCategory} from './performance_browser_proxy.js';
 import type {PerformanceMetricsProxy} from './performance_metrics_proxy.js';
@@ -49,6 +50,12 @@ export class SettingsPerformancePageElement extends
     SettingsPerformancePageElementBase {
   static get is() {
     return 'settings-performance-page';
+  }
+
+  static override get styles() {
+    return [
+      getSettingsSharedCss(),
+    ];
   }
 
   override render() {
