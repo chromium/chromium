@@ -39,7 +39,7 @@ struct TokenContext {
 struct TokenOptions {
   std::string evt_typ = "evt+jwt";
   std::string evt_alg = "EdDSA";
-  std::optional<std::string> evt_kid = "test_kid";
+  std::optional<std::string> evt_kid = "valid_kid";
   std::string evt_iss = "https://issuer.example.com";
   std::string evt_email = "test@example.com";
   base::Time evt_iat = base::Time::Now();
@@ -59,35 +59,18 @@ struct TokenOptions {
 TokenContext CreateTokenContext(const TokenOptions& options = TokenOptions()) {
   // 1. Generate Keys
   auto issuer_key = crypto::keypair::PrivateKey::GenerateEd25519();
-  auto issuer_pub_bytes = crypto::keypair::PublicKey::FromPrivateKey(issuer_key)
-                              .ToEd25519PublicKey();
-
   auto browser_key = crypto::keypair::PrivateKey::GenerateEd25519();
-  auto browser_pub_bytes =
-      crypto::keypair::PublicKey::FromPrivateKey(browser_key)
-          .ToEd25519PublicKey();
 
   // 2. Construct JWKS for Issuer
   base::DictValue jwks;
   base::ListValue keys;
-  base::DictValue key_dict;
-  key_dict.Set("kty", "OKP");
-  key_dict.Set("crv", "Ed25519");
-  key_dict.Set("kid", options.evt_kid.value_or("valid_kid"));
-  std::string x_b64;
-  base::Base64UrlEncode(issuer_pub_bytes,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING, &x_b64);
-  key_dict.Set("x", x_b64);
+  base::DictValue key_dict = sdjwt::ExportPublicKey(issuer_key)->ToDict();
+  key_dict.Set("kid", "valid_kid");
   keys.Append(std::move(key_dict));
   jwks.Set("keys", std::move(keys));
 
   // 3. Construct Browser JWK for cnf claim
-  sdjwt::Jwk browser_jwk;
-  browser_jwk.kty = "OKP";
-  browser_jwk.crv = "Ed25519";
-  base::Base64UrlEncode(browser_pub_bytes,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &browser_jwk.x);
+  sdjwt::Jwk browser_jwk = *sdjwt::ExportPublicKey(browser_key);
 
   // 4. Construct and Sign EVT
   sdjwt::SdJwt token;
@@ -148,6 +131,17 @@ TokenContext CreateTokenContext(const TokenOptions& options = TokenOptions()) {
       .nonce = options.expected_nonce,
       .browser_jwk = browser_jwk,
   };
+}
+
+void PrependKey(base::ListValue* keys,
+                std::optional<std::string> kid = std::nullopt) {
+  CHECK(keys);
+  auto key = crypto::keypair::PrivateKey::GenerateEd25519();
+  base::DictValue key_dict = sdjwt::ExportPublicKey(key)->ToDict();
+  if (kid) {
+    key_dict.Set("kid", *kid);
+  }
+  keys->Insert(keys->begin(), base::Value(std::move(key_dict)));
 }
 
 }  // namespace
@@ -211,23 +205,10 @@ TEST_F(EvtVerifierTest, VerificationFallbackWhenKidMissing) {
   options.evt_kid = std::nullopt;
   auto ctx = CreateTokenContext(options);
 
-  // Prepend an invalid key to JWKS to verify fallback iterates through keys.
-  auto invalid_key = crypto::keypair::PrivateKey::GenerateEd25519();
-  auto invalid_pub_bytes =
-      crypto::keypair::PublicKey::FromPrivateKey(invalid_key)
-          .ToEd25519PublicKey();
-  base::DictValue invalid_key_dict;
-  invalid_key_dict.Set("kty", "OKP");
-  invalid_key_dict.Set("crv", "Ed25519");
-  invalid_key_dict.Set("kid", "invalid_kid");
-  std::string inv_x_b64;
-  base::Base64UrlEncode(invalid_pub_bytes,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING, &inv_x_b64);
-  invalid_key_dict.Set("x", inv_x_b64);
-
+  // Prepend an unmatching key to JWKS to verify fallback iterates through keys.
   base::ListValue* keys = ctx.jwks.FindList("keys");
   ASSERT_TRUE(keys);
-  keys->Insert(keys->begin(), base::Value(std::move(invalid_key_dict)));
+  PrependKey(keys, "unmatching_kid");
 
   EXPECT_EQ(
       EvtVerifier::Verify(ctx.full_token, ctx.issuer_origin, ctx.jwks,
@@ -240,28 +221,104 @@ TEST_F(EvtVerifierTest, VerificationFallbackWhenKidEmpty) {
   options.evt_kid = "";
   auto ctx = CreateTokenContext(options);
 
-  // Prepend an invalid key to JWKS to verify fallback iterates through keys.
-  auto invalid_key = crypto::keypair::PrivateKey::GenerateEd25519();
-  auto invalid_pub_bytes =
-      crypto::keypair::PublicKey::FromPrivateKey(invalid_key)
-          .ToEd25519PublicKey();
-  base::DictValue invalid_key_dict;
-  invalid_key_dict.Set("kty", "OKP");
-  invalid_key_dict.Set("crv", "Ed25519");
-  invalid_key_dict.Set("kid", "invalid_kid");
-  std::string inv_x_b64;
-  base::Base64UrlEncode(invalid_pub_bytes,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING, &inv_x_b64);
-  invalid_key_dict.Set("x", inv_x_b64);
-
+  // Prepend an unmatching key to JWKS to verify fallback iterates through keys.
   base::ListValue* keys = ctx.jwks.FindList("keys");
   ASSERT_TRUE(keys);
-  keys->Insert(keys->begin(), base::Value(std::move(invalid_key_dict)));
+  PrependKey(keys, "unmatching_kid");
 
   EXPECT_EQ(
       EvtVerifier::Verify(ctx.full_token, ctx.issuer_origin, ctx.jwks,
                           ctx.rp_origin, ctx.email, ctx.nonce, ctx.browser_jwk),
       EvtVerifier::Result::kVerified);
+}
+
+TEST_F(EvtVerifierTest, VerificationFallbackWhenBothHeaderAndJwksHaveNoKid) {
+  TokenOptions options;
+  options.evt_kid = std::nullopt;
+  auto ctx = CreateTokenContext(options);
+
+  // Remove "kid" from the valid JWKS key so that the JWKS key has no kid.
+  base::ListValue* keys = ctx.jwks.FindList("keys");
+  ASSERT_TRUE(keys && !keys->empty());
+  base::DictValue* valid_key_dict = (*keys)[0].GetIfDict();
+  ASSERT_TRUE(valid_key_dict);
+  valid_key_dict->Remove("kid");
+
+  // Also prepend an unmatching key (without kid) to verify fallback iterates
+  // through keys and successfully finds the valid key.
+  PrependKey(keys);
+
+  EXPECT_EQ(
+      EvtVerifier::Verify(ctx.full_token, ctx.issuer_origin, ctx.jwks,
+                          ctx.rp_origin, ctx.email, ctx.nonce, ctx.browser_jwk),
+      EvtVerifier::Result::kVerified);
+}
+
+TEST_F(EvtVerifierTest, MismatchedKidInTokenRejected) {
+  TokenOptions options;
+  options.evt_kid = "nonexistent_kid";
+  auto ctx = CreateTokenContext(options);
+  EXPECT_EQ(
+      EvtVerifier::Verify(ctx.full_token, ctx.issuer_origin, ctx.jwks,
+                          ctx.rp_origin, ctx.email, ctx.nonce, ctx.browser_jwk),
+      EvtVerifier::Result::kSdJwtSignatureFailed);
+}
+
+TEST_F(EvtVerifierTest, VerificationWithMatchingKidInMultiKeyJwks) {
+  TokenOptions options;
+  options.evt_kid = "valid_kid";
+  auto ctx = CreateTokenContext(options);
+
+  // Prepend a key with a different kid. Verifier should skip the prepended key
+  // based on kid and find the matching valid_kid.
+  base::ListValue* keys = ctx.jwks.FindList("keys");
+  ASSERT_TRUE(keys);
+  PrependKey(keys, "other_kid");
+
+  EXPECT_EQ(
+      EvtVerifier::Verify(ctx.full_token, ctx.issuer_origin, ctx.jwks,
+                          ctx.rp_origin, ctx.email, ctx.nonce, ctx.browser_jwk),
+      EvtVerifier::Result::kVerified);
+}
+
+TEST_F(EvtVerifierTest, NoFallbackWhenKidSpecified) {
+  TokenOptions options;
+  options.evt_kid = "target_kid";
+  auto ctx = CreateTokenContext(options);
+
+  // Prepend a key whose kid matches the header's target_kid ("target_kid").
+  // Since kid is specified, it must only test the key matching "target_kid",
+  // which does not match the token's signature, and must NOT fall back to
+  // "valid_kid".
+  base::ListValue* keys = ctx.jwks.FindList("keys");
+  ASSERT_TRUE(keys);
+  PrependKey(keys, "target_kid");
+
+  EXPECT_EQ(
+      EvtVerifier::Verify(ctx.full_token, ctx.issuer_origin, ctx.jwks,
+                          ctx.rp_origin, ctx.email, ctx.nonce, ctx.browser_jwk),
+      EvtVerifier::Result::kSdJwtSignatureFailed);
+}
+
+TEST_F(EvtVerifierTest, TokenSpecifiesKidJwksOmitsKidRejected) {
+  TokenOptions options;
+  options.evt_kid = "valid_kid";
+  auto ctx = CreateTokenContext(options);
+
+  // Remove "kid" from the valid JWKS key so that the JWKS key has no kid.
+  base::ListValue* keys = ctx.jwks.FindList("keys");
+  ASSERT_TRUE(keys && !keys->empty());
+  base::DictValue* valid_key_dict = (*keys)[0].GetIfDict();
+  ASSERT_TRUE(valid_key_dict);
+  valid_key_dict->Remove("kid");
+
+  // Also prepend an unmatching key without kid.
+  PrependKey(keys);
+
+  EXPECT_EQ(
+      EvtVerifier::Verify(ctx.full_token, ctx.issuer_origin, ctx.jwks,
+                          ctx.rp_origin, ctx.email, ctx.nonce, ctx.browser_jwk),
+      EvtVerifier::Result::kSdJwtSignatureFailed);
 }
 
 TEST_F(EvtVerifierTest, InvalidTypRejected) {
