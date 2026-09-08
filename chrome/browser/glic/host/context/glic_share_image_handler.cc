@@ -59,6 +59,29 @@ mojom::AdditionalContextPtr CreateAdditionalContext(
   return context;
 }
 
+std::optional<content::ClipboardEndpoint> CreateSourceClipboardEndpoint(
+    content::GlobalRenderFrameHostId render_frame_host_id) {
+  content::RenderFrameHost* rfh =
+      content::RenderFrameHost::FromID(render_frame_host_id);
+  if (!rfh || !rfh->IsActive()) {
+    return std::nullopt;
+  }
+
+  return content::ClipboardEndpoint(
+      ui::DataTransferEndpoint(
+          rfh->GetMainFrame()->GetLastCommittedURL(),
+          {.off_the_record = rfh->GetBrowserContext()->IsOffTheRecord()}),
+      base::BindRepeating(
+          [](content::GlobalRenderFrameHostId rfh_id)
+              -> content::BrowserContext* {
+            auto* rfh = content::RenderFrameHost::FromID(rfh_id);
+            return (rfh && rfh->IsActive()) ? rfh->GetBrowserContext()
+                                            : nullptr;
+          },
+          rfh->GetGlobalId()),
+      *rfh);
+}
+
 }  // namespace
 
 GlicShareImageHandler::GlicShareImageHandler(GlicKeyedService& service)
@@ -123,7 +146,17 @@ void GlicShareImageHandler::ShareContextImage(
 
 void GlicShareImageHandler::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  ShareComplete(ShareImageResult::kFailedSawNavigation);
+  auto source = CreateSourceClipboardEndpoint(render_frame_host_id_);
+  if (!source || !initial_cached_source_.has_value()) {
+    ShareComplete(ShareImageResult::kFailedSawNavigation);
+    return;
+  }
+
+  auto current_cached_source =
+      enterprise_data_protection::CacheFullCopySource(*source);
+  if (current_cached_source != *initial_cached_source_) {
+    ShareComplete(ShareImageResult::kFailedSawNavigation);
+  }
 }
 
 void GlicShareImageHandler::OnWillDiscardContents(
@@ -172,18 +205,11 @@ void GlicShareImageHandler::OnReceivedImage(
       CreateAdditionalContext(src_url_, frame_url_, frame_origin_,
                               thumbnail_data, tab_handle_, mime_type);
 
-  content::ClipboardEndpoint source(
-      ui::DataTransferEndpoint(
-          rfh->GetMainFrame()->GetLastCommittedURL(),
-          {.off_the_record = rfh->GetBrowserContext()->IsOffTheRecord()}),
-      base::BindRepeating(
-          [](content::GlobalRenderFrameHostId rfh_id)
-              -> content::BrowserContext* {
-            auto* rfh = content::RenderFrameHost::FromID(rfh_id);
-            return rfh ? rfh->GetBrowserContext() : nullptr;
-          },
-          rfh->GetGlobalId()),
-      *rfh);
+  auto source = CreateSourceClipboardEndpoint(render_frame_host_id_);
+  if (!source) {
+    ShareComplete(ShareImageResult::kFailedNoFrame);
+    return;
+  }
 
   ui::ClipboardMetadata metadata;
   metadata.format_type = ui::ClipboardFormatType::PngType();
@@ -312,31 +338,17 @@ void GlicShareImageHandler::StopObservingNavigation() {
 
 bool GlicShareImageHandler::AreClipboardPolicyChecksRequired(
     std::optional<size_t> size) {
-  content::RenderFrameHost* rfh =
-      content::RenderFrameHost::FromID(render_frame_host_id_);
-  if (!rfh) {
+  auto source = CreateSourceClipboardEndpoint(render_frame_host_id_);
+  if (!source) {
     return false;
   }
-
-  content::ClipboardEndpoint source(
-      ui::DataTransferEndpoint(
-          rfh->GetMainFrame()->GetLastCommittedURL(),
-          {.off_the_record = rfh->GetBrowserContext()->IsOffTheRecord()}),
-      base::BindRepeating(
-          [](content::GlobalRenderFrameHostId rfh_id)
-              -> content::BrowserContext* {
-            auto* rfh = content::RenderFrameHost::FromID(rfh_id);
-            return rfh ? rfh->GetBrowserContext() : nullptr;
-          },
-          rfh->GetGlobalId()),
-      *rfh);
 
   ui::ClipboardMetadata metadata;
   metadata.format_type = ui::ClipboardFormatType::PngType();
   metadata.size = size.value_or(kShareThumbnailMaxSize);
 
   bool copy_check_required =
-      enterprise_data_protection::IsCopyPolicyCheckRequired(source, metadata);
+      enterprise_data_protection::IsCopyPolicyCheckRequired(*source, metadata);
 
   ui::DataTransferEndpoint dte(glic::GetGuestURL());
   content::ClipboardEndpoint paste_destination(
@@ -348,7 +360,7 @@ bool GlicShareImageHandler::AreClipboardPolicyChecksRequired(
 
   bool paste_check_required =
       enterprise_data_protection::IsPastePolicyCheckRequired(
-          source, paste_destination, metadata);
+          *source, paste_destination, metadata);
 
   return copy_check_required || paste_check_required;
 }
@@ -357,6 +369,12 @@ void GlicShareImageHandler::MaybeStartObservingNavigation(
     tabs::TabInterface* tab) {
   if (!AreClipboardPolicyChecksRequired(std::nullopt)) {
     return;
+  }
+
+  auto source = CreateSourceClipboardEndpoint(render_frame_host_id_);
+  if (source) {
+    initial_cached_source_ =
+        enterprise_data_protection::CacheFullCopySource(*source);
   }
 
   // Listen for navigations and WebContents destruction.
@@ -408,6 +426,7 @@ void GlicShareImageHandler::Reset() {
   src_url_ = GURL();
   frame_url_ = GURL();
   frame_origin_ = url::Origin();
+  initial_cached_source_.reset();
   StopObservingNavigation();
 
   if (is_share_in_progress_ && current_invocation_instance_) {

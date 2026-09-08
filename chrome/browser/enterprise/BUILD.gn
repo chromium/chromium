@@ -232,6 +232,7 @@ source_set("enterprise") {
     public += [
       "data_controls/chrome_clipboard_context.h",
       "data_protection/data_protection_clipboard_utils.h",
+      "data_protection/data_protection_clipboard_utils_types.h",
       "data_protection/data_protection_navigation_controller.h",
       "data_protection/data_protection_navigation_observer.h",
       "data_protection/data_protection_page_user_data.h",
@@ -679,6 +680,7 @@ source_set("impl") {
     sources += [
       "data_controls/chrome_clipboard_context.cc",
       "data_protection/data_protection_clipboard_utils.cc",
+      "data_protection/data_protection_clipboard_utils_types.cc",
     ]
     deps += [ "//chrome/browser/enterprise/data_controls" ]
     if (!is_android) {

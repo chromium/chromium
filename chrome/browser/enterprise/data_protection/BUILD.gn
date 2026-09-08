@@ -57,7 +57,10 @@ source_set("unit_tests") {
   }
 
   if (enterprise_data_controls) {
-    sources += [ "data_protection_clipboard_utils_unittest.cc" ]
+    sources += [
+      "data_protection_clipboard_utils_types_unittest.cc",
+      "data_protection_clipboard_utils_unittest.cc",
+    ]
     deps += [
       "//components/enterprise/data_controls/content/browser",
       "//components/enterprise/data_controls/core/browser:features",

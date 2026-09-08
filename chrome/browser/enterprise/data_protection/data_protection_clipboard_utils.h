@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils_types.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/files_scan_data.h"
 #include "content/public/browser/content_browser_client.h"
@@ -23,7 +24,6 @@ class GURL;
 class Profile;
 
 namespace content {
-class BrowserContext;
 class ClipboardEndpoint;
 class RenderFrameHost;
 class WebContents;
@@ -31,42 +31,6 @@ struct DropData;
 }  // namespace content
 
 namespace enterprise_data_protection {
-
-// Holds cached values from a clipboard source endpoint so that policy checks
-// can be performed asynchronously without requiring the original source tab or
-// RenderFrameHost to remain alive or unnavigated.
-struct BasicPasteSource {
-  BasicPasteSource();
-  BasicPasteSource(const BasicPasteSource&);
-  BasicPasteSource& operator=(const BasicPasteSource&);
-  BasicPasteSource(BasicPasteSource&&);
-  BasicPasteSource& operator=(BasicPasteSource&&);
-  virtual ~BasicPasteSource();
-
-  std::optional<ui::DataTransferEndpoint> data_transfer_endpoint;
-  base::WeakPtr<content::BrowserContext> browser_context;
-  bool gemini_in_chrome = false;
-};
-
-// Extends `BasicPasteSource` to also include the active user account email.
-// Suitable for Enterprise Connectors reporting and safe browsing contexts.
-struct FullPasteSource : public BasicPasteSource {
-  FullPasteSource();
-  FullPasteSource(const FullPasteSource&);
-  FullPasteSource& operator=(const FullPasteSource&);
-  FullPasteSource(FullPasteSource&&);
-  FullPasteSource& operator=(FullPasteSource&&);
-  ~FullPasteSource() override;
-
-  std::string active_user;
-};
-
-// Returns a basic cached snapshot of `source` without querying user identity.
-BasicPasteSource CacheBasicPasteSource(
-    const content::ClipboardEndpoint& source);
-
-// Returns a full cached snapshot of `source`, including the active user email.
-FullPasteSource CacheFullPasteSource(const content::ClipboardEndpoint& source);
 
 // This function checks if a paste is allowed to proceed according to the
 // following policies:

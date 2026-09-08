@@ -30,7 +30,9 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/tabs/public/mock_tab_interface.h"
+#include "content/public/browser/clipboard_types.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -130,6 +132,11 @@ class GlicShareImageHandlerTest : public testing::Test {
     handler_->render_frame_host_id_ = id;
   }
 
+  void SetInitialCachedSource(
+      std::optional<enterprise_data_protection::FullCopySource> source) {
+    handler_->initial_cached_source_ = std::move(source);
+  }
+
   void OnReceivedImage(const std::vector<uint8_t>& thumbnail_data,
                        const gfx::Size& original_size,
                        const gfx::Size& downscaled_size,
@@ -164,6 +171,92 @@ TEST_F(GlicShareImageHandlerTest, SawNavigationDidNotCompleteOnboarding) {
   histogram_tester_.ExpectBucketCount(
       "Glic.TabContext.ShareImageResult",
       static_cast<int>(ShareImageResult::kFailedSawNavigation), 1);
+}
+
+TEST_F(GlicShareImageHandlerTest,
+       DidFinishNavigationEnterpriseValuesUnchangedDoesNotFail) {
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  content::WebContentsTester::For(web_contents.get())
+      ->NavigateAndCommit(GURL("https://example.com"));
+
+  auto* rfh = web_contents->GetPrimaryMainFrame();
+  SetRenderFrameHostId(rfh->GetGlobalId());
+  SetShareInProgress(true);
+
+  content::ClipboardEndpoint source(
+      ui::DataTransferEndpoint(
+          rfh->GetMainFrame()->GetLastCommittedURL(),
+          {.off_the_record = rfh->GetBrowserContext()->IsOffTheRecord()}),
+      base::BindRepeating(
+          [](content::GlobalRenderFrameHostId rfh_id)
+              -> content::BrowserContext* {
+            auto* rfh = content::RenderFrameHost::FromID(rfh_id);
+            return rfh ? rfh->GetBrowserContext() : nullptr;
+          },
+          rfh->GetGlobalId()),
+      *rfh);
+  SetInitialCachedSource(
+      enterprise_data_protection::CacheFullCopySource(source));
+
+  CallDidFinishNavigation(nullptr);
+
+  histogram_tester_.ExpectBucketCount(
+      "Glic.TabContext.ShareImageResult",
+      static_cast<int>(ShareImageResult::kFailedSawNavigation), 0);
+  EXPECT_TRUE(IsShareInProgress());
+}
+
+TEST_F(GlicShareImageHandlerTest,
+       DidFinishNavigationEnterpriseValuesChangedFails) {
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  content::WebContentsTester::For(web_contents.get())
+      ->NavigateAndCommit(GURL("https://example.com"));
+
+  auto* rfh = web_contents->GetPrimaryMainFrame();
+  SetRenderFrameHostId(rfh->GetGlobalId());
+  SetShareInProgress(true);
+
+  content::ClipboardEndpoint source(
+      ui::DataTransferEndpoint(
+          rfh->GetMainFrame()->GetLastCommittedURL(),
+          {.off_the_record = rfh->GetBrowserContext()->IsOffTheRecord()}),
+      base::BindRepeating(
+          [](content::GlobalRenderFrameHostId rfh_id)
+              -> content::BrowserContext* {
+            auto* rfh = content::RenderFrameHost::FromID(rfh_id);
+            return rfh ? rfh->GetBrowserContext() : nullptr;
+          },
+          rfh->GetGlobalId()),
+      *rfh);
+  SetInitialCachedSource(
+      enterprise_data_protection::CacheFullCopySource(source));
+
+  // Perform a same-document navigation which updates the URL while keeping
+  // the RenderFrameHost alive and active.
+  content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://example.com/#fragment"), rfh)
+      ->CommitSameDocument();
+
+  CallDidFinishNavigation(nullptr);
+
+  histogram_tester_.ExpectBucketCount(
+      "Glic.TabContext.ShareImageResult",
+      static_cast<int>(ShareImageResult::kFailedSawNavigation), 1);
+  EXPECT_FALSE(IsShareInProgress());
+}
+
+TEST_F(GlicShareImageHandlerTest, DidFinishNavigationFrameDestroyedFails) {
+  SetShareInProgress(true);
+  SetInitialCachedSource(enterprise_data_protection::FullCopySource());
+  // render_frame_host_id_ is empty / invalid.
+  CallDidFinishNavigation(nullptr);
+
+  histogram_tester_.ExpectBucketCount(
+      "Glic.TabContext.ShareImageResult",
+      static_cast<int>(ShareImageResult::kFailedSawNavigation), 1);
+  EXPECT_FALSE(IsShareInProgress());
 }
 
 TEST_F(GlicShareImageHandlerTest, OnInvokeErrorUnknown) {

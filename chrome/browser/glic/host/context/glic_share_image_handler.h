@@ -5,12 +5,14 @@
 #ifndef CHROME_BROWSER_GLIC_HOST_CONTEXT_GLIC_SHARE_IMAGE_HANDLER_H_
 #define CHROME_BROWSER_GLIC_HOST_CONTEXT_GLIC_SHARE_IMAGE_HANDLER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils_types.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
@@ -130,6 +132,12 @@ class GlicShareImageHandler : public content::WebContentsObserver {
   // This is used for communicating with the renderer to capture image context.
   std::unique_ptr<mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>>
       chrome_render_frame_remote_;
+
+  // Holds the cached enterprise source captured at the beginning of the share
+  // flow. When navigations occur before image fetching completes, we
+  // re-evaluate and only fail if the enterprise source values have changed.
+  std::optional<enterprise_data_protection::FullCopySource>
+      initial_cached_source_;
 
   base::WeakPtrFactory<GlicShareImageHandler> weak_ptr_factory_{this};
 };
