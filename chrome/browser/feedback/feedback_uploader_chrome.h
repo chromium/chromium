@@ -5,17 +5,14 @@
 #ifndef CHROME_BROWSER_FEEDBACK_FEEDBACK_UPLOADER_CHROME_H_
 #define CHROME_BROWSER_FEEDBACK_FEEDBACK_UPLOADER_CHROME_H_
 
+#include <memory>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"
 #include "components/feedback/feedback_uploader.h"
-#include "components/signin/public/identity_manager/access_token_info.h"
-
-#if BUILDFLAG(PLATFORM_CFM)
-#include "chrome/browser/device_identity/device_identity_provider.h"
-#endif
 
 namespace content {
 class BrowserContext;
@@ -23,6 +20,7 @@ class BrowserContext;
 
 namespace signin {
 class PrimaryAccountAccessTokenFetcher;
+struct AccessTokenInfo;
 }  // namespace signin
 
 class GoogleServiceAuthError;
@@ -66,10 +64,12 @@ class FeedbackUploaderChrome final : public FeedbackUploader {
   void AccessTokenAvailable(GoogleServiceAuthError error, std::string token);
 
 #if BUILDFLAG(PLATFORM_CFM)
-  void ActiveAccountAccessTokenAvailable(GoogleServiceAuthError error,
-                                         std::string token);
+  class ActiveAccountAccessTokenFetcher;
 
-  std::unique_ptr<invalidation::ActiveAccountAccessTokenFetcher>
+  void ActiveAccountAccessTokenAvailable(
+      base::expected<std::string, GoogleServiceAuthError> access_token);
+
+  std::unique_ptr<ActiveAccountAccessTokenFetcher>
       active_account_token_fetcher_;
 #endif  // BUILDFLAG(PLATFORM_CFM)
 
