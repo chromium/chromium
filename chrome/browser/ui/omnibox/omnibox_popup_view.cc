@@ -35,6 +35,10 @@ OmniboxPopupViewBrowserView* OmniboxPopupView::AsOmniboxPopupViewBrowserView() {
   return nullptr;
 }
 
+bool OmniboxPopupView::IsPopupHandlerReady() const {
+  return false;
+}
+
 bool OmniboxPopupView::IsReverting() const {
   return false;
 }

@@ -377,7 +377,9 @@ void LocationBarView::Init() {
       omnibox_popup_view_ = std::make_unique<OmniboxPopupViewFullWebUI>(
           /*omnibox_view=*/omnibox_view_,
           /*controller=*/omnibox_controller_.get(), /*location_bar=*/this,
-          /*presenter_delegate=*/*this);
+          /*presenter_delegate=*/*this,
+          base::BindOnce(&LocationBarView::OnFullWebUiOmniboxReady,
+                         weak_factory_.GetWeakPtr()));
     }
 
     if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
@@ -1232,7 +1234,10 @@ OmniboxPopupAimPresenter* LocationBarView::GetOmniboxPopupAimPresenter() const {
 }
 
 views::View* LocationBarView::GetLocationBarFocusRestoreView() {
-  return omnibox_view_;
+  if (IsFullWebUiOmniboxReady()) {
+    return this;
+  }
+  return omnibox_view_.get();
 }
 
 // If omnibox is open, notify Omnibox presenter that a permission prompt is
@@ -1565,15 +1570,17 @@ void LocationBarView::FocusSearch() {
 }
 
 void LocationBarView::UpdateFocusBehavior(bool toolbar_visible) {
+  const bool is_ready = IsFullWebUiOmniboxReady();
+  is_toolbar_visible_ = toolbar_visible;
+
   if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
-    // Set `omnibox_view`'s `FocusBehavior` to `NEVER` to prevent native caret
-    // blinking and selection conflicts.
-    // Mark `LocationBarView` as focusable so `FocusManager` includes the
-    // Omnibox in Tab / Shift+Tab traversal and routes focus to the WebUI
-    // popup via `LocationBarView::OnFocus()`.
-    omnibox_view()->SetFocusBehavior(FocusBehavior::NEVER);
-    SetFocusBehavior(toolbar_visible ? FocusBehavior::ALWAYS
-                                     : FocusBehavior::NEVER);
+    // Route focus to `LocationBarView` (which forwards focus to WebUI) once
+    // WebUI is ready. Native Omnibox is focusable until then.
+    omnibox_view()->SetFocusBehavior(toolbar_visible && !is_ready
+                                         ? FocusBehavior::ALWAYS
+                                         : FocusBehavior::NEVER);
+    SetFocusBehavior(toolbar_visible && is_ready ? FocusBehavior::ALWAYS
+                                                 : FocusBehavior::NEVER);
     return;
   }
   omnibox_view()->SetFocusBehavior(toolbar_visible ? FocusBehavior::ALWAYS
@@ -1652,9 +1659,17 @@ void LocationBarView::OnVisibleBoundsChanged() {
 }
 
 void LocationBarView::OnFocus() {
-  // This is only called when the user explicitly focuses the location bar.
-  // Renderer-initiated focuses go through the `FocusLocation()` call instead.
-  omnibox_view_->SetFocus(/*is_user_initiated=*/true);
+  bool is_user_initiated = true;
+  if (IsFullWebUiOmniboxReady()) {
+    // In Full WebUI mode, `LocationBarView` is the focusable Views proxy for
+    // the WebUI omnibox, so `OnFocus()` is called for both user-initiated focus
+    // (e.g. Tab traversal) and focus restoration (e.g. closing a bubble/menu).
+    // If the popup is already open, do not treat focus restoration as a new
+    // user-initiated focus to prevent redundant Zero-Prefix Suggestion (ZPS)
+    // queries or clobbering existing input.
+    is_user_initiated = !GetOmniboxController()->IsPopupOpen();
+  }
+  omnibox_view_->SetFocus(is_user_initiated);
 }
 
 void LocationBarView::OnPaintBorder(gfx::Canvas* canvas) {
@@ -1728,6 +1743,50 @@ bool LocationBarView::CanStartDragForView(View* sender,
                                           const gfx::Point& press_pt,
                                           const gfx::Point& p) {
   return true;
+}
+
+void LocationBarView::OnFullWebUiOmniboxReady() {
+  // Update stored focus if the window was deactivated while `omnibox_view_`
+  // had focus.
+  auto* focus_manager = GetFocusManager();
+  if (focus_manager &&
+      focus_manager->GetStoredFocusView() == omnibox_view_.get()) {
+    focus_manager->SetStoredFocusView(this);
+  }
+
+  // Check if `omnibox_view_` has focus in Views or FocusManager before OS
+  // window activation completes on newly opened windows (e.g. New Tab Page).
+  const bool is_focused_in_manager =
+      focus_manager && focus_manager->GetFocusedView() == omnibox_view_.get();
+  const bool had_focus =
+      (omnibox_view_ && omnibox_view_->HasFocus()) || is_focused_in_manager;
+
+  // Capture user intent before blurring `omnibox_view_`, as
+  // `OmniboxView::OnBlur()` can reset `is_user_initiated_focus_`.
+  const bool query_zps =
+      had_focus && omnibox_view_->is_user_initiated_focus() &&
+      !GetOmniboxController()->edit_model()->user_input_in_progress();
+  if (had_focus) {
+    // Make `LocationBarView` focusable so `SetFocusedView()` satisfies
+    // `IsFocusable()`.
+    // NOTE: We don't call `UpdateFocusBehavior()` here because it
+    // might trigger `View::AdvanceFocusIfNecessary()`.
+    SetFocusBehavior(is_toolbar_visible_ ? FocusBehavior::ALWAYS
+                                         : FocusBehavior::NEVER);
+    // Shift Views-level focus away from `omnibox_view_` to synchronously blur
+    // it.
+    if (focus_manager) {
+      focus_manager->SetFocusedView(this);
+    }
+    if (auto* popup_view = GetOmniboxPopupView()) {
+      popup_view->OnFocus(query_zps);
+    }
+  }
+
+  // Switch native focus behavior.
+  // `omnibox_view_` no longer has active focus, so setting its behavior to
+  // `FocusBehavior::NEVER` will not trigger ` View::AdvanceFocusIfNecessary()`.
+  UpdateFocusBehavior(is_toolbar_visible_);
 }
 
 void LocationBarView::OnPopupStateChanged(OmniboxPopupState old_state,
@@ -1805,9 +1864,17 @@ void LocationBarView::OnPopupStateChanged(OmniboxPopupState old_state,
       break;
     case OmniboxPopupState::kNone:
       if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
-        // When the popup is closed, remove focus from the location bar.
-        if (GetFocusManager()) {
-          GetFocusManager()->ClearFocus();
+        // When the popup is closed, remove focus from the location bar if it
+        // currently holds focus or stored focus.
+        if (auto* focus_manager = GetFocusManager()) {
+          views::View* stored_view = focus_manager->GetStoredFocusView();
+          if (stored_view == omnibox_view_.get() || stored_view == this) {
+            focus_manager->SetStoredFocusView(nullptr);
+          }
+          views::View* focused_view = focus_manager->GetFocusedView();
+          if (focused_view == omnibox_view_.get() || focused_view == this) {
+            focus_manager->ClearFocus();
+          }
         }
         GetOmniboxController()->edit_model()->OnKillFocus();
       }
@@ -1978,6 +2045,11 @@ void LocationBarView::OnOmniboxBlurred() {
   RefreshAiModePageAction();
 
   location_icon_view_->Update(false, false);
+}
+
+bool LocationBarView::IsFullWebUiOmniboxReady() const {
+  return base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup) &&
+         omnibox_popup_view_ && omnibox_popup_view_->IsPopupHandlerReady();
 }
 
 void LocationBarView::OnOmniboxHovered(bool is_hovering) {

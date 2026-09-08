@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
+#include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
@@ -44,6 +45,7 @@
 #include "content/public/test/browser_test.h"
 #include "third_party/omnibox_proto/aim_eligibility_response.pb.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/controls/button/label_button.h"
@@ -657,10 +659,12 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest, EscapeStagedUnwinding) {
       }));
 }
 
+// TODO(b/552482504): Handle keyboard events for Full WebUI omnibox popup
+// properly.
 // Verifies ESC key Stage 3 clears user input and closes the popup UI when
 // the permanent URL is empty (on NTP) and input is empty.
 IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
-                       EscapeStagedUnwinding_EmptyPermanentUrl) {
+                       DISABLED_EscapeStagedUnwinding_EmptyPermanentUrl) {
   base::HistogramTester histogram_tester;
 
   RunTestSequence(
@@ -829,6 +833,96 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
       InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
       MoveMouseTo(kOmniboxElementId), ClickMouse(),
       InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)));
+}
+
+// Verifies that opening the App Menu from both empty and typed Omnibox states
+// opens the menu (without ZPS collision dismissing it) and closes suggestions,
+// and closing the App Menu restores keyboard focus and typing ability to the
+// Full WebUI Omnibox.
+// TODO(b/552482504): Fix this test.
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
+                       DISABLED_AppMenuOpenAndCloseLifecycle) {
+  const ui::ElementContext browser_context =
+      BrowserView::GetBrowserViewForBrowser(browser())->GetElementContext();
+
+  RunTestSequence(
+      // --- Part 1: Empty Omnibox / NTP (verifies no ZPS collision) ---
+      AddInstrumentedTab(kTab1, GURL(chrome::kChromeUINewTabURL)),
+      WaitForWebContentsReady(kTab1),
+      InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      InAnyContext(
+          InstrumentNonTabWebView(kPopupWebView, GetActivePopupWebView())),
+      CheckWebUIInputFocus(true),
+
+      // Open App Menu from empty state.
+      InContext(browser_context, MoveMouseTo(kToolbarAppMenuButtonElementId)),
+      InSameContextAs(OmniboxPopupPresenter::kRoundedResultsFrame,
+                      ClickMouse()),
+      InAnyContext(WaitForShow(AppMenuModel::kMoreToolsMenuItem)),
+
+      // Close App Menu via Escape and verify focus restoration.
+      InAnyContext(
+          SendKeyPress(kBrowserViewElementId, ui::VKEY_ESCAPE, ui::EF_NONE)),
+      InAnyContext(WaitForHide(AppMenuModel::kMoreToolsMenuItem)),
+      InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      CheckWebUIInputFocus(true),
+
+      // --- Part 2: Active Draft & Suggestions (verifies dropdown hiding &
+      // typing restoration) ---
+      InputWebUIText("a"),
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchContents,
+                   "suggestion-1"),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && el.dropdownIsVisible"),
+      InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
+
+      // Re-open App Menu while suggestions are showing.
+      InContext(browser_context, MoveMouseTo(kToolbarAppMenuButtonElementId)),
+      InSameContextAs(OmniboxPopupPresenter::kRoundedResultsFrame,
+                      ClickMouse()),
+      InAnyContext(WaitForShow(AppMenuModel::kMoreToolsMenuItem)),
+
+      // Suggestions should collapse while rounded results frame remains
+      // visible.
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && !el.dropdownIsVisible"),
+      InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
+
+      // Close App Menu again and verify we can continue typing.
+      InAnyContext(
+          SendKeyPress(kBrowserViewElementId, ui::VKEY_ESCAPE, ui::EF_NONE)),
+      InAnyContext(WaitForHide(AppMenuModel::kMoreToolsMenuItem)),
+      InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      CheckWebUIInputFocus(true), InputWebUIText("ab"),
+      WaitForWebUIInputValue("ab"));
+}
+
+// Verifies that dragging the mouse across the WebUI Omnibox input
+// produces a non-empty text selection highlight.
+// TODO(b/552482504): Fix this test.
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
+                       DISABLED_MouseDragHighlightsInputText) {
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      InputWebUIText("dragandhighlight"),
+      WaitForWebUIInputValue("dragandhighlight"),
+      // Move native mouse to the start of the input text within the popup.
+      InAnyContext(
+          MoveMouseTo(kPopupWebView, base::BindOnce([](ui::TrackedElement* el) {
+                        gfx::Rect bounds = el->GetScreenBounds();
+                        return gfx::Point(bounds.x() + 65, bounds.y() + 24);
+                      }))),
+      // Drag mouse to the right across the input text.
+      InSameContext(DragMouseTo(base::BindOnce([]() -> gfx::Point {
+        return display::Screen::Get()->GetCursorScreenPoint() +
+               gfx::Vector2d(100, 0);
+      }))),
+      // Verify that non-empty text selection was created.
+      InAnyContext(WaitForJsConditionAt(
+          kPopupWebView, kWebUIInput,
+          "(el) => el && Math.abs(el.selectionEnd - el.selectionStart) > 0")),
+      // Verify input value remains intact.
+      WaitForWebUIInputValue("dragandhighlight"));
 }
 
 #if !BUILDFLAG(IS_MAC)

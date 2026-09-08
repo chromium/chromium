@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/functional/callback.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
 
@@ -18,10 +19,12 @@ class OmniboxPopupHandler;
 
 class OmniboxPopupViewFullWebUI : public OmniboxPopupViewWebUI {
  public:
-  OmniboxPopupViewFullWebUI(OmniboxView* omnibox_view,
-                            OmniboxController* controller,
-                            LocationBar* location_bar,
-                            OmniboxPopupPresenterDelegate& presenter_delegate);
+  OmniboxPopupViewFullWebUI(
+      OmniboxView* omnibox_view,
+      OmniboxController* controller,
+      LocationBar* location_bar,
+      OmniboxPopupPresenterDelegate& presenter_delegate,
+      base::OnceClosure on_ready_callback = base::OnceClosure());
   OmniboxPopupViewFullWebUI(const OmniboxPopupViewFullWebUI&) = delete;
   OmniboxPopupViewFullWebUI& operator=(const OmniboxPopupViewFullWebUI&) =
       delete;
@@ -48,6 +51,9 @@ class OmniboxPopupViewFullWebUI : public OmniboxPopupViewWebUI {
   // `SetFocus(false)` Mojo IPC to ensure DOM input focus in the WebUI is
   // cleared.
   void OnBlur() override;
+  // Called when the WebUI page handler establishes its Mojo connection.
+  void OnPopupHandlerReady() override;
+  bool IsPopupHandlerReady() const override;
   bool IsReverting() const override;
   void SetIsReverting(bool reverting) override;
 
@@ -55,7 +61,7 @@ class OmniboxPopupViewFullWebUI : public OmniboxPopupViewWebUI {
   // out-of-sync with the model's when doing auto-focus, since the timings of
   // OnTabChanged() and LocationBar::FocusLocation(/*user_initiated=*/false) are
   // messy.
-  bool is_focused() { return focused_; }
+  bool is_focused() const { return focused_; }
 
  private:
   // Gets the OmniboxPopupHandler associated with this view's WebUI.
@@ -69,6 +75,9 @@ class OmniboxPopupViewFullWebUI : public OmniboxPopupViewWebUI {
   bool has_completed_first_tab_changed_ = false;
   bool is_reverting_ = false;
   bool focused_ = false;
+  // Invoked when the WebUI Mojo handler connects to trigger one-time focus
+  // handoff from `OmniboxViewViews` to `OmniboxPopupViewFullWebUI`.
+  base::OnceClosure on_ready_callback_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_VIEW_FULL_WEBUI_H_

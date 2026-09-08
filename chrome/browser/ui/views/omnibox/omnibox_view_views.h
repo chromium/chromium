@@ -176,6 +176,7 @@ class OmniboxViewViews
   void SelectAll(bool reversed) override;
   void RevertAll() override;
   void SetFocus(bool is_user_initiated) override;
+  bool is_user_initiated_focus() const { return is_user_initiated_focus_; }
   void ApplyFocusRingToAimButton(bool focus_aim) override;
   bool AimButtonVisible() const override;
   bool IsImeShowingPopup() const override;
@@ -500,6 +501,11 @@ class OmniboxViewViews
   // Used to track whether the AIM hint has been shown during a single focus
   // session (omnibox focused -> omnibox blurred).
   bool aim_hint_shown_ = false;
+
+  // Tracks whether the most recent call to `SetFocus()` was user-initiated.
+  // Used during full WebUI omnibox startup handoff to determine whether to
+  // query zero-prefix suggestions (ZPS).
+  bool is_user_initiated_focus_ = false;
 
   base::ScopedObservation<ui::Compositor, ui::CompositorObserver>
       scoped_compositor_observation_{this};

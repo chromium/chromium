@@ -1712,9 +1712,7 @@ IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest, DoubleClick) {
       FocusTab(), NavigateWebContents(kTabId, GURL("https://local.test")),
       // Navigation will deactivate any full popup
       WaitTillOmniboxViewText("local.test", View::kStatic),
-      WaitTillOmniboxViewSelection(
-          "", mode() == Mode::kFull ? gfx::Range(0) : gfx::Range(10),
-          View::kStatic),
+      WaitTillOmniboxViewSelection("", gfx::Range(10), View::kStatic),
       InAnyContext(MoveMouseTo(
           kOmniboxElementId,
           base::BindOnce(
@@ -1745,9 +1743,7 @@ IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest, DoubleClick2) {
       WaitTillOmniboxViewSelection("about:blank", gfx::Range(11, 0)),
       FocusTab(), NavigateWebContents(kTabId, GURL("https://local.test")),
       WaitTillOmniboxViewText("local.test", View::kStatic),
-      WaitTillOmniboxViewSelection(
-          "", mode() == Mode::kFull ? gfx::Range(0) : gfx::Range(10),
-          View::kStatic),
+      WaitTillOmniboxViewSelection("", gfx::Range(10), View::kStatic),
       // Focus location bar. This is important since if it's already focused
       // it won't try to select-all on first click. Also we do it with
       // JS and not Ctrl-L since that would unelide.

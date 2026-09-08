@@ -93,6 +93,12 @@ class OmniboxPopupView {
   // Called when the WebUI omnibox reports a manual blur.
   virtual void OnManualBlur() {}
 
+  // Notifies the popup view that its WebUI page handler is ready.
+  virtual void OnPopupHandlerReady() {}
+
+  // Returns true if the WebUI page handler is ready to process input.
+  virtual bool IsPopupHandlerReady() const;
+
   // Returns true if the popup controls its own selection state.
   virtual bool IsSelectionPopupControlled() const = 0;
 

@@ -59,6 +59,14 @@ OmniboxPopupHandler::OmniboxPopupHandler(
     }
   }
   NotifyDefaultSearchProviderChanged();
+
+  if (controller_ && controller_->edit_model()) {
+    if (auto* popup_view = controller_->edit_model()->popup_view()) {
+      // Notify the popup view that the WebUI page handler is ready to process
+      // input and display suggestions.
+      popup_view->OnPopupHandlerReady();
+    }
+  }
 }
 
 OmniboxPopupHandler::~OmniboxPopupHandler() = default;
@@ -93,22 +101,13 @@ void OmniboxPopupHandler::OnSelectionChanged(const gfx::Range& selection,
   }
   latest_selection_ = selection;
   show_full_url_ = show_full_url;
-
-  // Update the selection range of the native view so that when keyboard focus
-  // is transferred to the native view upon click on top container, that typed
-  // text is entered at the correct place.
-  if (controller_) {
-    if (auto* view = controller_->edit_model()->view()) {
-      view->SetSelectionBounds(selection);
-    }
-  }
 }
 
 void OmniboxPopupHandler::Revert(uint32_t sequence_number) {
   if (sequence_number < current_sequence_number_) {
     return;
   }
-  if (controller_) {
+  if (controller_ && controller_->edit_model()) {
     if (auto* popup_view = controller_->edit_model()->popup_view()) {
       popup_view->SetIsReverting(true);
     }
@@ -126,7 +125,7 @@ void OmniboxPopupHandler::OnInputCleared(uint32_t sequence_number) {
   }
   latest_selection_ = gfx::Range(0, 0);
   show_full_url_ = false;
-  if (controller_) {
+  if (controller_ && controller_->edit_model()) {
     controller_->edit_model()->SetUserText(std::u16string());
     // TODO(b/504668292): Vet if this setting of `SetWindowTextAndCaretPos` can
     // be removed. Right now `FullWebUIOmniboxInteractiveTest.ClearAndSwitchTab`

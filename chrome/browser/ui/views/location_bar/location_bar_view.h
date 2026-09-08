@@ -279,6 +279,10 @@ class LocationBarView
   void OnOmniboxFocused();
   void OpenOmniboxPopup(bool query_zps = true);
   void OnOmniboxBlurred();
+  // Returns true if Full WebUI Omnibox is enabled and ready to handle focus.
+  bool IsFullWebUiOmniboxReady() const;
+  // Returns whether the toolbar containing this location bar is visible.
+  bool is_toolbar_visible() const { return is_toolbar_visible_; }
 
   // Called when omnibox view receives mouse notifications relevant to hover.
   // |is_hovering| should be true when mouse is in omnibox; false when exited.
@@ -286,6 +290,7 @@ class LocationBarView
 
   // LocationBar:
   void SetPermissionPromptShowing(bool showing) override;
+  void UpdateFocusBehavior(bool toolbar_visible) override;
 
   // `browser_` returned here may be nullptr. There are two known cases.
   //
@@ -382,6 +387,10 @@ class LocationBarView
   // `ime_inline_autocomplete_view_`, and `omnibox_additional_text_view_`.
   void SetOmniboxAdjacentText(views::Label* label, std::u16string_view text);
 
+  // Called when the Full WebUI popup handler has connected and is ready
+  // to process input and display suggestions.
+  void OnFullWebUiOmniboxReady();
+
   // Called when the popup state changes (classic, AIM, or none).
   void OnPopupStateChanged(OmniboxPopupState old_state,
                            OmniboxPopupState new_state);
@@ -399,7 +408,6 @@ class LocationBarView
 
   // LocationBar:
   void FocusSearch() override;
-  void UpdateFocusBehavior(bool toolbar_visible) override;
   void UpdateContentSettingsIcons() override;
   void SaveStateToContents(content::WebContents* contents) override;
   LocationBarTesting* GetLocationBarForTesting() override;
@@ -622,6 +630,9 @@ class LocationBarView
   // TODO(crbug.com/40251974): Remove this once state manager is proven
   //  reliable.
   bool in_popup_state_transition_ = false;
+  // Caches the latest toolbar visibility state for re-evaluating focus
+  // behavior.
+  bool is_toolbar_visible_ = true;
 
   void OnMiddleClickPaste(base::TimeTicks event_timestamp, std::u16string text);
 

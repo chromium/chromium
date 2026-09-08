@@ -52,11 +52,11 @@ class OmniboxPopupWebUIContent : public OmniboxPopupWebUIBaseContent {
   void Clear() override;
   void OnContextMenuClosed() override;
 
- protected:
-  std::string_view GetMetricPrefix() const override;
-
   // Returns the WebUI Omnibox Handler. Can return null.
   OmniboxPopupHandler* popup_handler();
+
+ protected:
+  std::string_view GetMetricPrefix() const override;
 
  private:
   // Indicate whether this WebUI content wants to receive activation and focus.

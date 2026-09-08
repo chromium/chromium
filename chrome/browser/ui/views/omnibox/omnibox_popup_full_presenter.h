@@ -5,9 +5,13 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_FULL_PRESENTER_H_
 #define CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_FULL_PRESENTER_H_
 
+#include <memory>
+
+#include "base/cancelable_callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ui/views/frame/app_menu_button_observer.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "ui/events/event_observer.h"
 #include "ui/gfx/geometry/point.h"
@@ -15,16 +19,18 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
+class AppMenuControl;
 class LocationBar;
 class OmniboxPopupPresenterDelegate;
 class OmniboxController;
-class OmniboxPopupHandler;
+class OmniboxFullPopupWebUIContent;
 
 // Implements subclass of OmniboxPopupPresenterBase to present a single full
 // WebUI (input row + suggestions dropdown) into the Omnibox popup.
 class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
                                   public views::WidgetObserver,
-                                  public ui::EventObserver {
+                                  public ui::EventObserver,
+                                  public AppMenuButtonObserver {
  public:
   OmniboxPopupFullPresenter(LocationBar* location_bar,
                             OmniboxPopupPresenterDelegate& presenter_delegate,
@@ -42,7 +48,6 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   // while clearing stored focus on the container widget to prevent stealing
   // focus back from the WebUI input field.
   void RequestFocus() override;
-
   std::string_view GetPopupMetricPrefix() const override;
 
   std::optional<base::TimeDelta> ShouldDeferUntilVisualStateReady()
@@ -55,6 +60,7 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   bool ShouldHideForInitialLayout() const override;
 
   bool IsDeactivating() const override;
+  bool ShouldReceiveFocus() const override;
 
  protected:
   // OmniboxPopupPresenterBase:
@@ -68,6 +74,8 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   void SynchronizePopupBounds() override;
   void WidgetDestroyed() override;
 
+  OmniboxFullPopupWebUIContent* GetWebUIContent();
+
  private:
   // views::WidgetObserver:
   // Handles window-wide focus shifts (e.g. clicking the webpage to activate
@@ -78,6 +86,9 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   void StopForwardingEvents();
 
+  // AppMenuButtonObserver:
+  void AppMenuClosed() override;
+
   // ui::EventObserver:
   // Handles click events and determines if the popup should be deactivated.
   void OnEvent(const ui::Event& event) override;
@@ -85,7 +96,6 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   // Focuses the native Views content, underlying WebContents, and DOM input.
   void FocusPopupContent();
   void DeactivatePopupAndKillFocus();
-  OmniboxPopupHandler* GetPopupHandler();
 
   // Flag set when an ESC key event is intercepted before widget deactivation.
   bool is_handling_escape_key_ = false;
@@ -94,6 +104,8 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
       popup_widget_observation_{this};
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       parent_widget_observation_{this};
+  base::ScopedObservation<AppMenuControl, AppMenuButtonObserver>
+      app_menu_control_observation_{this};
 
   // Used to determine where a click event happened to decide if the popup
   // should be deactivated.
@@ -101,6 +113,9 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
 
   // Timer to stop forwarding events after a short delay.
   base::OneShotTimer forward_events_timer_;
+
+  // Pending asynchronous focus and activation task.
+  base::CancelableOnceClosure pending_focus_task_;
 
   // Whether the "first shown" metrics have been logged at least once.
   bool logged_first_shown_metric_ = false;
