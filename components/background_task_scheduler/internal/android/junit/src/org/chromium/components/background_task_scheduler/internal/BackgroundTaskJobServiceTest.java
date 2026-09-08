@@ -39,7 +39,7 @@ import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link BackgroundTaskJobService}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.S)
+@Config(sdk = Build.VERSION_CODES.S)
 public class BackgroundTaskJobServiceTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private static final BackgroundTaskSchedulerJobService.Clock sClock = () -> 1415926535000L;
