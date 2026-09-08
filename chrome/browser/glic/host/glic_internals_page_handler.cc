@@ -19,6 +19,7 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
+#include "chrome/browser/glic/common/local_hotkey_manager.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_controller.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_manager.h"
 #include "chrome/browser/glic/glic_enums.h"
@@ -613,7 +614,10 @@ void GlicInternalsPageHandler::GetInternalsDataPayload(
       state->enable_process_counter_abuse_verdict;
 
   debug_info->boolean_settings = std::move(boolean_settings);
-  debug_info->hotkey = state->hotkey;
+  debug_info->hotkey =
+      base::UTF16ToUTF8(LocalHotkeyManager::GetConfigurableAccelerator(
+                            LocalHotkeyManager::Command::kPanelToggle)
+                            .GetShortcutText());
 
   // Locale and country settings
   if (auto* startup_data = g_browser_process->startup_data()) {

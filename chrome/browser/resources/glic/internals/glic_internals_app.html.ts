@@ -12,186 +12,264 @@ export function getHtml(this: GlicInternalsAppElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
   <div>
-    <cr-tabs id="tabs" .tabNames="${this.tabNames_}"
-        .selected="${this.selectedTabIndex_}"
-        @selected-changed="${this.onSelectedTabIndexSelectedChanged_}">
-    </cr-tabs>
+    <div class="header-bar">
+      <cr-tabs id="tabs" .tabNames="${this.tabNames_}"
+          .selected="${this.selectedTabIndex_}"
+          @selected-changed="${this.onSelectedTabIndexSelectedChanged_}">
+      </cr-tabs>
+      <div class="action-bar">
+        <cr-button id="refreshButton" class="tonal-button" @click="${this.onRefreshClick_}">
+          Refresh
+        </cr-button>
+      </div>
+    </div>
     <div id="general-contents" class="tab-contents"
         ?hidden="${this.selectedTabIndex_ !== 0}">
-        <h2>Enablement State</h2>
+
+      ${this.data_?.enablement ? html`
+        <div class="status-banner ${this.computeOverallStatus_().enabled ? 'status-ok' : 'status-blocked'}">
+          <div class="status-banner-header">
+            <div class="status-banner-title">
+              <span class="badge ${this.computeOverallStatus_().enabled ? 'badge-success' : 'badge-error'}">
+                ${this.computeOverallStatus_().enabled ? 'Eligible & Enabled' : 'Blocked / Ineligible'}
+              </span>
+              <span>Glic Status</span>
+            </div>
+            <div class="status-banner-chips">
+              ${this.data_?.debugInfo ? html`
+                <span class="badge badge-neutral">${this.getPlatformString_(this.data_.debugInfo.platform)}</span>
+                <span class="badge badge-neutral">${this.getFormFactorString_(this.data_.debugInfo.formFactor)}</span>
+              ` : ''}
+              ${this.data_?.tieredRolloutInfo ? html`
+                <span class="badge badge-neutral">Tier: ${this.data_.tieredRolloutInfo.aiSubscriptionTier ?? 'N/A'}</span>
+              ` : ''}
+            </div>
+          </div>
+          ${!this.computeOverallStatus_().enabled && this.computeOverallStatus_().reason ? html`
+            <div class="status-banner-reason">
+              <strong>Blocking reason:</strong> ${this.computeOverallStatus_().reason}
+            </div>
+          ` : ''}
+        </div>
+      ` : ''}
+
+      <div class="card">
+        <div class="card-header">Enablement State</div>
         ${this.data_?.enablement ? html`
-      <table>
-        <tr>
-          <th>Property</th>
-          <th>Value</th>
-        </tr>
-        ${this.getTableData_().map(item => html`
-          <tr>
-            <td>${item.label}</td>
-            <td class="status-${item.value}">
-              ${item.value ? '✅' : '🚫'}
-            </td>
-          </tr>
-        `)}
-      </table>` :
-      html`<h3 id="loadingMsg">Loading...</h3>`}
-    <h2>Sub-features</h2>
-    ${this.data_?.enablement ? html`
-      <table>
-        <tr>
-          <th>Feature</th>
-          <th>State</th>
-        </tr>
-        <tr>
-          <td>Account is eligible for Live</td>
-          <td class="status-${this.data_.enablement.liveAllowed}">
-            ${this.data_.enablement.liveAllowed ? '✅' : '🚫'}
-          </td>
-        </tr>
-        <tr>
-          <td>Account is eligible for 'Create Image with Gemini'</td>
-          <td class="status-${this.data_.enablement.shareImageAllowed}">
-            ${this.data_.enablement.shareImageAllowed ? '✅' : '🚫'}
-          </td>
-        </tr>
-        <tr>
-          <td>Gemini Enterprise Settings</td>
-          <td>
-            ${this.data_.enablement.geminiEnterpriseSettings ? html`
-              <div>
-                Project ID:
-                ${this.data_.enablement.geminiEnterpriseSettings.projectId}
-              </div>
-              <div>
-                App ID: ${this.data_.enablement.geminiEnterpriseSettings.appId}
-              </div>
-              <div>
-                Location:
-                ${this.data_.enablement.geminiEnterpriseSettings.location}
-              </div>
-            ` : html`🚫`}
-          </td>
-        </tr>
-        <tr>
-          <td>Actuation eligibility</td>
-          <td>
-            ${this.getActuationEligibilityString_(
-                this.data_.enablement.actuationEligibility)}
-          </td>
-        </tr>
-        <tr>
-          <td>Glic Api actuation eligibility</td>
-          <td>
-            ${this.getActuationEligibilityString_(
-                this.data_.enablement.glicApiActuationEligibility)}
-          </td>
-        </tr>
-        <tr>
-          <td>Experimental triggering state</td>
-          <td>
-            ${this.getExperimentalTriggeringStateString_(
-                this.data_.enablement.glicExperimentalTriggeringState)}
-          </td>
-        </tr>
-      </table>` :
-      html`<h3 id="loadingMsg">Loading...</h3>`}
-    <h2>Tiered Rollout / User Tier</h2>
-    ${this.data_?.tieredRolloutInfo ? html`
-      <table>
-        <tr>
-          <th>Property</th>
-          <th>Value</th>
-        </tr>
-        <tr>
-          <td>AI Subscription Tier</td>
-          <td>${this.data_.tieredRolloutInfo.aiSubscriptionTier === null ?
-              'N/A (No Service or Not Logged In)' :
-              this.data_.tieredRolloutInfo.aiSubscriptionTier}</td>
-        </tr>
-        <tr>
-          <td>Preference Sync Status (Server Fetch)</td>
-          <td>${this.data_.tieredRolloutInfo.preferenceSyncStatus}</td>
-        </tr>
-        <tr>
-          <td>Is Eligible for Tiered Rollout V1 (C++)</td>
-          <td class="status-${
-              this.data_.tieredRolloutInfo.isEligibleForTieredRolloutV1}">
-            ${
-              this.data_.tieredRolloutInfo.isEligibleForTieredRolloutV1 ? '✅' :
-                                                                          '🚫'}
-          </td>
-        </tr>
-        <tr>
-          <td>Is Eligible for Tiered Rollout V2 (C++)</td>
-          <td class="status-${
-              this.data_.tieredRolloutInfo.isEligibleForTieredRolloutV2}">
-            ${
-              this.data_.tieredRolloutInfo.isEligibleForTieredRolloutV2 ? '✅' :
-                                                                          '🚫'}
-          </td>
-        </tr>
-        <tr>
-          <td>Is Eligible Overall (C++)</td>
-          <td class="status-${
-              this.data_.tieredRolloutInfo.isEligibleOverall}">
-            ${
-              this.data_.tieredRolloutInfo.isEligibleOverall ? '✅' :
-                                                               '🚫'}
-          </td>
-        </tr>
-        <tr>
-          <td>Rollout Eligibility Pref (kGlicRolloutEligibility)</td>
-          <td class="status-${
-              this.data_.tieredRolloutInfo.glicRolloutEligibilityPref}">
-            ${
-              this.data_.tieredRolloutInfo.glicRolloutEligibilityPref ? '✅' :
-                                                                        '🚫'}
-          </td>
-        </tr>
-        <tr>
-          <td>Eligible Tiers for V2 Rollout (Param)</td>
-          <td>
-            ${
-              this.data_.tieredRolloutInfo.tieredRolloutV2EligibleTiers ||
-              'None'}
-          </td>
-        </tr>
-      </table>` :
-      html`<h3 id="loadingMsg">Loading...</h3>`}
-    <h2>Configuration</h2>
-    ${this.data_?.config ? html`
-      <table>
-        <tr>
-          <th>Name</th>
-          <th>Value</th>
-        </tr>
-        <tr>
-          <td>Guest URL</td>
-          <td>${this.data_.config.guestUrl}</td>
-        </tr>
-      </table>` :
-      html`<h3 id="loadingMsg">Loading...</h3>`}
-    <h2>Glic UI / Client Debug Information</h2>
-    <div style="margin-bottom: 12px; font-weight: bold; color: var(--google-red-700, #c5221f);">
-      ⚠️ Note: These settings are not dynamically observed. Please refresh the page to get the latest settings.
-    </div>
-    ${this.data_?.debugInfo ? html`
-      <table>
-        <tr>
-          <th>Setting / Flag</th>
-          <th>Value</th>
-        </tr>
-        ${this.getDebugSettingsData_().map(item => html`
-          <tr>
-            <td>${item.label}</td>
-            <td class="status-${item.value}">
-              ${typeof item.value === 'boolean' ? (item.value ? '✅' : '🚫') : item.value}
-            </td>
-          </tr>
-        `)}
-      </table>` :
-      html`<h3 id="loadingMsg">Loading...</h3>`}
+          <table>
+            <thead>
+              <tr>
+                <th class="status-col">Status</th>
+                <th>Property</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${this.getTableData_().map(item => html`
+                <tr>
+                  <td class="status-cell-left">
+                    <span class="badge ${item.value ? 'badge-success' : 'badge-error'}">
+                      ${item.value ? 'Passed' : 'Blocked'}
+                    </span>
+                  </td>
+                  <td class="property-name">${item.label}</td>
+                </tr>
+              `)}
+            </tbody>
+          </table>` :
+          html`<div style="padding: 16px;">Loading...</div>`}
       </div>
+
+      <div class="card">
+        <div class="card-header">Sub-features & Actuation</div>
+        ${this.data_?.enablement ? html`
+          <table>
+            <thead>
+              <tr>
+                <th class="status-col">State</th>
+                <th>Feature</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="status-cell-left">
+                  <span class="badge ${this.data_.enablement.liveAllowed ? 'badge-success' : 'badge-error'}">
+                    ${this.data_.enablement.liveAllowed ? 'Allowed' : 'Disallowed'}
+                  </span>
+                </td>
+                <td class="property-name">Account is eligible for Live</td>
+              </tr>
+              <tr>
+                <td class="status-cell-left">
+                  <span class="badge ${this.data_.enablement.shareImageAllowed ? 'badge-success' : 'badge-error'}">
+                    ${this.data_.enablement.shareImageAllowed ? 'Allowed' : 'Disallowed'}
+                  </span>
+                </td>
+                <td class="property-name">Account is eligible for 'Create Image with Gemini'</td>
+              </tr>
+              <tr>
+                <td class="status-cell-left" style="vertical-align: top;">
+                  <span class="badge badge-neutral">
+                    ${this.data_.enablement.geminiEnterpriseSettings ? 'Configured' : 'None'}
+                  </span>
+                </td>
+                <td class="property-name">
+                  <div>Gemini Enterprise Settings</div>
+                  ${this.data_.enablement.geminiEnterpriseSettings ? html`
+                    <div style="font-size: 12px; color: var(--cr-secondary-text-color); margin-top: 4px;">
+                      Project ID: <code>${this.data_.enablement.geminiEnterpriseSettings.projectId}</code> |
+                      App ID: <code>${this.data_.enablement.geminiEnterpriseSettings.appId}</code> |
+                      Location: <code>${this.data_.enablement.geminiEnterpriseSettings.location}</code>
+                    </div>
+                  ` : ''}
+                </td>
+              </tr>
+              <tr>
+                <td class="status-cell-left">
+                  <span class="badge ${this.isActuationEligible_() ? 'badge-success' : 'badge-error'}">
+                    ${this.getActuationEligibilityString_(this.data_.enablement.actuationEligibility)}
+                  </span>
+                </td>
+                <td class="property-name">Actuation Eligibility</td>
+              </tr>
+              <tr>
+                <td class="status-cell-left">
+                  <span class="badge ${this.isGlicApiActuationEligible_() ? 'badge-success' : 'badge-error'}">
+                    ${this.getActuationEligibilityString_(this.data_.enablement.glicApiActuationEligibility)}
+                  </span>
+                </td>
+                <td class="property-name">Glic API Actuation Eligibility</td>
+              </tr>
+              <tr>
+                <td class="status-cell-left">
+                  <span class="badge badge-neutral">
+                    ${this.getExperimentalTriggeringStateString_(this.data_.enablement.glicExperimentalTriggeringState)}
+                  </span>
+                </td>
+                <td class="property-name">Experimental Triggering State</td>
+              </tr>
+            </tbody>
+          </table>` :
+          html`<div style="padding: 16px;">Loading...</div>`}
+      </div>
+
+      <div class="card">
+        <div class="card-header">Tiered Rollout / User Tier</div>
+        ${this.data_?.tieredRolloutInfo ? html`
+          <table>
+            <thead>
+              <tr>
+                <th class="status-col">State / Value</th>
+                <th>Property</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="status-cell-left">
+                  <span class="badge ${this.data_.tieredRolloutInfo.isEligibleOverall ? 'badge-success' : 'badge-error'}">
+                    ${this.data_.tieredRolloutInfo.isEligibleOverall ? 'Eligible' : 'Ineligible'}
+                  </span>
+                </td>
+                <td class="property-name">Is Eligible Overall (C++)</td>
+              </tr>
+              <tr>
+                <td class="status-cell-left">
+                  <span class="badge ${this.data_.tieredRolloutInfo.isEligibleForTieredRolloutV1 ? 'badge-success' : 'badge-error'}">
+                    ${this.data_.tieredRolloutInfo.isEligibleForTieredRolloutV1 ? 'Eligible' : 'Ineligible'}
+                  </span>
+                </td>
+                <td class="property-name">Is Eligible for Tiered Rollout V1 (C++)</td>
+              </tr>
+              <tr>
+                <td class="status-cell-left">
+                  <span class="badge ${this.data_.tieredRolloutInfo.isEligibleForTieredRolloutV2 ? 'badge-success' : 'badge-error'}">
+                    ${this.data_.tieredRolloutInfo.isEligibleForTieredRolloutV2 ? 'Eligible' : 'Ineligible'}
+                  </span>
+                </td>
+                <td class="property-name">Is Eligible for Tiered Rollout V2 (C++)</td>
+              </tr>
+              <tr>
+                <td class="status-cell-left">
+                  <span class="badge ${this.data_.tieredRolloutInfo.glicRolloutEligibilityPref ? 'badge-success' : 'badge-error'}">
+                    ${this.data_.tieredRolloutInfo.glicRolloutEligibilityPref ? 'Enabled' : 'Disabled'}
+                  </span>
+                </td>
+                <td class="property-name">Rollout Eligibility Pref (kGlicRolloutEligibility)</td>
+              </tr>
+              <tr>
+                <td class="status-cell-left">
+                  ${this.data_.tieredRolloutInfo.aiSubscriptionTier === null ?
+                      html`<span class="badge badge-neutral">N/A</span>` :
+                      html`<span class="badge badge-neutral">Tier ${this.data_.tieredRolloutInfo.aiSubscriptionTier}</span>`}
+                </td>
+                <td class="property-name">AI Subscription Tier</td>
+              </tr>
+              <tr>
+                <td class="status-cell-left">
+                  <span class="badge badge-neutral">${this.data_.tieredRolloutInfo.preferenceSyncStatus}</span>
+                </td>
+                <td class="property-name">Preference Sync Status (Server Fetch)</td>
+              </tr>
+              <tr>
+                <td class="status-cell-left">
+                  <code>${this.data_.tieredRolloutInfo.tieredRolloutV2EligibleTiers || 'None'}</code>
+                </td>
+                <td class="property-name">Eligible Tiers for V2 Rollout (Param)</td>
+              </tr>
+            </tbody>
+          </table>` :
+          html`<div style="padding: 16px;">Loading...</div>`}
+      </div>
+
+      <div class="card">
+        <div class="card-header">Configuration</div>
+        ${this.data_?.config ? html`
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 130px;">Name</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-weight: 500;">Guest URL</td>
+                <td><code>${this.data_.config.guestUrl}</code></td>
+              </tr>
+            </tbody>
+          </table>` :
+          html`<div style="padding: 16px;">Loading...</div>`}
+      </div>
+
+      <div class="card">
+        <div class="card-header">Glic UI / Client Debug Information</div>
+        <div class="warning-banner">
+          <span>⚠️</span>
+          <span>These settings are not dynamically observed. Click Refresh to get the latest settings.</span>
+        </div>
+        ${this.data_?.debugInfo ? html`
+          <table>
+            <thead>
+              <tr>
+                <th class="status-col">Value</th>
+                <th>Setting / Flag</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${this.getDebugSettingsData_().map(item => html`
+                <tr>
+                  <td class="status-cell-left">
+                    ${typeof item.value === 'boolean' ?
+                      html`<span class="badge ${item.value ? 'badge-success' : 'badge-error'}">${item.value ? 'Enabled' : 'Disabled'}</span>` :
+                      html`<span class="badge badge-neutral">${item.value}</span>`}
+                  </td>
+                  <td class="property-name">${item.label}</td>
+                </tr>
+              `)}
+            </tbody>
+          </table>` :
+          html`<div style="padding: 16px;">Loading...</div>`}
+      </div>
+    </div>
 
       <!-- ================= DEBUG CONTROLS TAB ================= -->
       <div id="debug-controls-contents" class="tab-contents"

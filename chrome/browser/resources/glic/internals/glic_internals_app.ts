@@ -261,6 +261,71 @@ export class GlicInternalsAppElement extends CrLitElement {
     return GlicExperimentalTriggeringState[state] || 'Unknown';
   }
 
+  protected isActuationEligible_(): boolean {
+    return this.data_?.enablement?.actuationEligibility ===
+        ActuationEligibility.kEligible;
+  }
+
+  protected isGlicApiActuationEligible_(): boolean {
+    return this.data_?.enablement?.glicApiActuationEligibility ===
+        ActuationEligibility.kEligible;
+  }
+
+  protected computeOverallStatus_(): {enabled: boolean, reason?: string} {
+    if (!this.data_ || !this.data_.enablement) {
+      return {enabled: false, reason: 'Loading or unavailable'};
+    }
+    const e = this.data_.enablement;
+    if (!e.featureEnabled) {
+      return {enabled: false, reason: 'Disabled by Chrome feature flag'};
+    }
+    if (!e.isRegularProfile) {
+      return {
+        enabled: false,
+        reason: 'Not a regular user profile (e.g. Incognito or Guest)',
+      };
+    }
+    if (!e.allowedByCountryFilter) {
+      return {enabled: false, reason: 'Blocked by country filter'};
+    }
+    if (!e.allowedByLocaleFilter) {
+      return {enabled: false, reason: 'Blocked by UI locale filter'};
+    }
+    if (!e.allowedByChromePolicy) {
+      return {enabled: false, reason: 'Disabled by enterprise Chrome policy'};
+    }
+    if (!e.allowedByRemoteAdmin) {
+      return {enabled: false, reason: 'Disabled by server-side admin policy'};
+    }
+    if (!e.allowedByRemoteOther) {
+      return {enabled: false, reason: 'Disabled by server-side configuration'};
+    }
+    if (!e.isRolledOut) {
+      return {enabled: false, reason: 'Profile not in rollout group'};
+    }
+    if (!e.primaryAccountIsCapable) {
+      return {
+        enabled: false,
+        reason: 'Primary account lacks Gemini capabilities',
+      };
+    }
+    if (!e.primaryAccountIsFullySignedIn) {
+      return {enabled: false, reason: 'Primary account not fully signed in'};
+    }
+    if (!e.freIsConsented) {
+      return {
+        enabled: false,
+        reason: 'First Run Experience (FRE) consent not completed',
+      };
+    }
+    return {enabled: true};
+  }
+
+  protected onRefreshClick_() {
+    this.fetchInternalsData_();
+    this.refreshOpenTabs_();
+  }
+
   protected isExperimentalOptInConsentMet_(): boolean {
     return this.data_?.enablement?.glicExperimentalTriggeringState ===
         GlicExperimentalTriggeringState.kReady;
@@ -670,7 +735,7 @@ export class GlicInternalsAppElement extends CrLitElement {
         value: this.getFormFactorString_(debugInfo.formFactor),
       },
       {
-        label: 'OS Hotkey',
+        label: 'Launcher Hotkey',
         value: debugInfo.hotkey || 'None',
       },
       {
