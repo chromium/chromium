@@ -2468,6 +2468,11 @@ void TemplateURL::set_is_active(TemplateURLData::ActiveStatus active_status) {
   active_data().is_active = active_status;
 }
 
+bool TemplateURL::CanBeUsedForKeywordMatching() const {
+  return type() == OMNIBOX_API_EXTENSION || prepopulate_id() != 0 ||
+         is_active() == TemplateURLData::ActiveStatus::kTrue;
+}
+
 const std::optional<TemplateURLData>& TemplateURL::GetLocalData() const {
   return local_data_;
 }

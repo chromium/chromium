@@ -533,6 +533,7 @@ void AutocompleteProviderTest::ResetControllerWithKeywordAndSearchProviders() {
   data2.SetShortName(u"k");
   data2.SetKeyword(u"k");
   data2.SetURL("http://keyword/{searchTerms}");
+  data2.is_active = TemplateURLData::ActiveStatus::kTrue;
   TemplateURL* keyword_turl =
       turl_model->Add(std::make_unique<TemplateURL>(data2));
   ASSERT_NE(0, keyword_turl->id());

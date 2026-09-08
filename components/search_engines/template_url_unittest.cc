@@ -3618,3 +3618,55 @@ TEST_F(TemplateURLTest, RequiresRemovalConfirmation) {
     EXPECT_TRUE(url.RequiresRemovalConfirmation());
   }
 }
+
+TEST_F(TemplateURLTest, CanBeUsedForKeywordMatching) {
+  auto create_turl = [](TemplateURLData::ActiveStatus active,
+                        int prepopulate_id = 0,
+                        TemplateURL::Type type = TemplateURL::NORMAL,
+                        int starter_pack_id = 0) {
+    TemplateURLData data;
+    data.SetShortName(u"test");
+    data.SetKeyword(u"test");
+    data.SetURL("http://test/{searchTerms}");
+    data.prepopulate_id = prepopulate_id;
+    data.starter_pack_id = starter_pack_id;
+    data.is_active = active;
+    return TemplateURL(data, type);
+  };
+
+  // Extension keyword engine is eligible regardless of is_active.
+  EXPECT_TRUE(create_turl(TemplateURLData::ActiveStatus::kFalse,
+                          /*prepopulate_id=*/0,
+                          TemplateURL::OMNIBOX_API_EXTENSION)
+                  .CanBeUsedForKeywordMatching());
+
+  // Prepopulated engine (prepopulate_id != 0) is eligible regardless of
+  // is_active (including kUnspecified, which is the production default).
+  EXPECT_TRUE(create_turl(TemplateURLData::ActiveStatus::kUnspecified,
+                          /*prepopulate_id=*/1)
+                  .CanBeUsedForKeywordMatching());
+  EXPECT_TRUE(create_turl(TemplateURLData::ActiveStatus::kFalse,
+                          /*prepopulate_id=*/1)
+                  .CanBeUsedForKeywordMatching());
+
+  // Starter pack engine (starter_pack_id != 0) with active status kTrue is
+  // eligible.
+  EXPECT_TRUE(create_turl(TemplateURLData::ActiveStatus::kTrue,
+                          /*prepopulate_id=*/0, TemplateURL::NORMAL,
+                          /*starter_pack_id=*/1)
+                  .CanBeUsedForKeywordMatching());
+
+  // Custom engine with is_active == kTrue is eligible.
+  EXPECT_TRUE(create_turl(TemplateURLData::ActiveStatus::kTrue)
+                  .CanBeUsedForKeywordMatching());
+
+  // Custom engine with prepopulate_id == 0 and is_active == kUnspecified is
+  // not eligible.
+  EXPECT_FALSE(create_turl(TemplateURLData::ActiveStatus::kUnspecified)
+                   .CanBeUsedForKeywordMatching());
+
+  // Custom engine with prepopulate_id == 0 and is_active == kFalse is not
+  // eligible.
+  EXPECT_FALSE(create_turl(TemplateURLData::ActiveStatus::kFalse)
+                   .CanBeUsedForKeywordMatching());
+}

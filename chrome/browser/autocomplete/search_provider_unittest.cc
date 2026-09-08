@@ -410,6 +410,7 @@ void BaseSearchProviderTest::CustomizableSetUp(
   data.SetKeyword(u"k");
   data.SetURL("http://keyword/{searchTerms}");
   data.suggestions_url = "http://suggest_keyword/{searchTerms}";
+  data.is_active = TemplateURLData::ActiveStatus::kTrue;
   keyword_t_url_ = turl_model->Add(std::make_unique<TemplateURL>(data));
   ASSERT_NE(0, keyword_t_url_->id());
 
@@ -819,6 +820,58 @@ TEST_F(SearchProviderTest, QueryKeywordProvider) {
   // The fill into edit should contain the keyword.
   EXPECT_EQ(base::StrCat({keyword_t_url_->keyword(), u" ", keyword_term_}),
             match.fill_into_edit);
+}
+
+TEST_F(SearchProviderTest, DoesNotQueryInactiveKeywordProvider) {
+  TemplateURLService* turl_model =
+      TemplateURLServiceFactory::GetForProfile(profile_.get());
+  TemplateURLData data;
+  data.SetShortName(u"inactive");
+  data.SetKeyword(u"inactive");
+  data.SetURL("http://inactive/{searchTerms}");
+  data.suggestions_url = "http://suggest_inactive/{searchTerms}";
+  data.is_active = TemplateURLData::ActiveStatus::kUnspecified;
+  TemplateURL* inactive_turl =
+      turl_model->Add(std::make_unique<TemplateURL>(data));
+  ASSERT_NE(nullptr, inactive_turl);
+
+  // In keyword mode with the inactive keyword engine.
+  QueryForInput(u"inactive test", false, true);
+
+  // Inactive engine (kUnspecified) must not send a suggest request.
+  EXPECT_EQ(0, test_url_loader_factory_.NumPending());
+  for (const auto& match : provider_->matches()) {
+    EXPECT_NE(match.keyword, inactive_turl->keyword());
+  }
+
+  // Activate the engine.
+  turl_model->SetIsActiveTemplateURL(inactive_turl, true);
+
+  // Query again in keyword mode.
+  QueryForInput(u"inactive test", false, true);
+
+  // Active engine should now send a suggest request.
+  std::string expected_url(
+      inactive_turl->suggestions_url_ref().ReplaceSearchTerms(
+          TemplateURLRef::SearchTermsArgs(u"test"),
+          turl_model->search_terms_data()));
+  EXPECT_TRUE(test_url_loader_factory_.IsPending(expected_url));
+
+  // Clear pending request.
+  test_url_loader_factory_.SimulateResponseForPendingRequest(expected_url,
+                                                             "[]");
+
+  // Deactivate the engine (sets is_active to kFalse).
+  turl_model->SetIsActiveTemplateURL(inactive_turl, false);
+
+  // Query again in keyword mode.
+  QueryForInput(u"inactive test2", false, true);
+
+  // Deactivated engine (kFalse) must not send a suggest request.
+  EXPECT_EQ(0, test_url_loader_factory_.NumPending());
+  for (const auto& match : provider_->matches()) {
+    EXPECT_NE(match.keyword, inactive_turl->keyword());
+  }
 }
 
 TEST_F(SearchProviderTest, SendDataToSuggestAtAppropriateTimes) {

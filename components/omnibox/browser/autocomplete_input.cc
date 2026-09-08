@@ -776,6 +776,9 @@ const TemplateURL* AutocompleteInput::GetSubstitutingTemplateURLForInput(
   const TemplateURL* template_url = model->GetTemplateURLForKeyword(keyword);
   if (template_url &&
       template_url->SupportsReplacement(model->search_terms_data())) {
+    if (!template_url->CanBeUsedForKeywordMatching()) {
+      return nullptr;
+    }
     // Adjust cursor position iff it was set before, otherwise leave it as is.
     size_t cursor_position = std::u16string::npos;
     // The adjustment assumes that the keyword was stripped from the beginning

@@ -2385,12 +2385,14 @@ TEST_F(AutocompleteControllerTest,
   drive_turl_data.SetShortName(u"Google Drive");
   drive_turl_data.SetKeyword(u"drive.google.com");
   drive_turl_data.SetURL("https://drive.google.com/search?q={searchTerms}");
+  drive_turl_data.is_active = TemplateURLData::ActiveStatus::kTrue;
   controller_.template_url_service_->Add(
       std::make_unique<TemplateURL>(drive_turl_data));
   TemplateURLData turl_data;
   turl_data.SetShortName(u"Test Keyword");
   turl_data.SetKeyword(u"keyword");
   turl_data.SetURL("https://google.com/search?q={searchTerms}");
+  turl_data.is_active = TemplateURLData::ActiveStatus::kTrue;
   controller_.template_url_service_->Add(
       std::make_unique<TemplateURL>(turl_data));
 
@@ -2496,6 +2498,7 @@ TEST_F(AutocompleteControllerTest,
     data.SetURL("https://" + name + ".com/q={searchTerms}");
     data.policy_origin = policy_origin;
     data.featured_by_policy = featured;
+    data.is_active = TemplateURLData::ActiveStatus::kTrue;
     controller_.template_url_service_->Add(std::make_unique<TemplateURL>(data));
   };
 

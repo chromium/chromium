@@ -118,12 +118,8 @@ const TemplateURL* KeywordProvider::GetTemplateUrlForText(
     return nullptr;
   }
 
-  // Don't provide a keyword for inactive search engines (if the active search
-  // engine flag is enabled). Prepopulated engines and extensions controlled
-  // engines should always work regardless of is_active.
-  if (template_url->type() != TemplateURL::OMNIBOX_API_EXTENSION &&
-      template_url->prepopulate_id() == 0 &&
-      template_url->is_active() != TemplateURLData::ActiveStatus::kTrue) {
+  // Don't provide a keyword for inactive search engines.
+  if (!template_url->CanBeUsedForKeywordMatching()) {
     return nullptr;
   }
 
@@ -250,12 +246,8 @@ void KeywordProvider::Start(const AutocompleteInput& input,
       continue;
     }
 
-    // Prune any keywords for inactive search engines (if the active search
-    // engine flag is enabled). Prepopulated engines and extensions controlled
-    // engines should always work regardless of is_active.
-    if (template_url->type() != TemplateURL::OMNIBOX_API_EXTENSION &&
-        template_url->prepopulate_id() == 0 &&
-        template_url->is_active() != TemplateURLData::ActiveStatus::kTrue) {
+    // Prune any keywords for inactive search engines.
+    if (!template_url->CanBeUsedForKeywordMatching()) {
       i = turls.erase(i);
       continue;
     }

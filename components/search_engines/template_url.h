@@ -905,6 +905,11 @@ class TemplateURL {
 
   Type type() const { return type_; }
 
+  // Returns true if this engine is eligible for keyword matching in the
+  // omnibox. Prepopulated engines and Omnibox API extensions are eligible by
+  // default; custom engines must have is_active() == ActiveStatus::kTrue.
+  bool CanBeUsedForKeywordMatching() const;
+
   const AssociatedExtensionInfo* GetExtensionInfo() const {
     return extension_info_.get();
   }

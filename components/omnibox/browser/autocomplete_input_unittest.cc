@@ -11,8 +11,13 @@
 
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
+#include "components/search_engines/search_engines_test_environment.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
@@ -628,4 +633,42 @@ TEST(AutocompleteInputTest, ContextFlags) {
   input.Clear();
   EXPECT_FALSE(input.has_previous_submitted_thread_context());
   EXPECT_FALSE(input.has_auto_suggested_tab());
+}
+
+TEST(AutocompleteInputTest, GetSubstitutingTemplateURLForInput_InactiveEngine) {
+  base::test::TaskEnvironment task_environment;
+  search_engines::SearchEnginesTestEnvironment search_engines_test_environment;
+  TemplateURLService* template_url_service =
+      search_engines_test_environment.template_url_service();
+  ASSERT_NE(nullptr, template_url_service);
+
+  TemplateURLData data;
+  data.SetShortName(u"inactive");
+  data.SetKeyword(u"inactive");
+  data.SetURL("https://inactive.com/?q={searchTerms}");
+  data.is_active = TemplateURLData::ActiveStatus::kUnspecified;
+  TemplateURL* engine =
+      template_url_service->Add(std::make_unique<TemplateURL>(data));
+  ASSERT_NE(nullptr, engine);
+
+  AutocompleteInput input(u"inactive test", metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+
+  // Inactive engine (kUnspecified) should return nullptr and not consume
+  // keyword.
+  EXPECT_EQ(nullptr, AutocompleteInput::GetSubstitutingTemplateURLForInput(
+                         template_url_service, &input));
+  EXPECT_EQ(u"inactive test", input.text());
+
+  // Inactive engine (kFalse) should also return nullptr.
+  template_url_service->SetIsActiveTemplateURL(engine, false);
+  EXPECT_EQ(nullptr, AutocompleteInput::GetSubstitutingTemplateURLForInput(
+                         template_url_service, &input));
+  EXPECT_EQ(u"inactive test", input.text());
+
+  // Active engine (kTrue) should be returned and keyword stripped from input.
+  template_url_service->SetIsActiveTemplateURL(engine, true);
+  EXPECT_EQ(engine, AutocompleteInput::GetSubstitutingTemplateURLForInput(
+                        template_url_service, &input));
+  EXPECT_EQ(u"test", input.text());
 }
