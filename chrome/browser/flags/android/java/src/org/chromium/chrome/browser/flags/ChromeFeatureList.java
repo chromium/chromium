@@ -1026,7 +1026,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sBookmarkPaneAndroid =
             newCachedFlag(BOOKMARK_PANE_ANDROID, false);
     public static final CachedFlag sBottomControlsJankImprovement =
-            newCachedFlag(BOTTOM_CONTROLS_JANK_IMPROVEMENT, false, true);
+            newCachedFlag(BOTTOM_CONTROLS_JANK_IMPROVEMENT, false, false);
     public static final CachedFlag sBottomSheetAsBrowserControls =
             newCachedFlag(BOTTOM_SHEET_AS_BROWSER_CONTROLS, true);
     public static final CachedFlag sBottomSheetOnDesktopWindowing =
