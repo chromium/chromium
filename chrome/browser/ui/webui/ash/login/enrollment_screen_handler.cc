@@ -32,12 +32,11 @@
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/login/localized_values_builder.h"
 #include "components/policy/core/browser/cloud/message_util.h"
 #include "components/strings/grit/components_strings.h"
@@ -157,8 +156,12 @@ bool ShouldSpecifyLicenseType(const policy::EnrollmentConfig& config) {
 
 // EnrollmentScreenHandler, public ------------------------------
 
-EnrollmentScreenHandler::EnrollmentScreenHandler()
-    : BaseScreenHandler(kScreenId) {}
+EnrollmentScreenHandler::EnrollmentScreenHandler(
+    PrefService* local_state,
+    ApplicationLocaleStorage* application_locale_storage)
+    : BaseScreenHandler(kScreenId),
+      local_state_(CHECK_DEREF(local_state)),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)) {}
 
 EnrollmentScreenHandler::~EnrollmentScreenHandler() = default;
 
@@ -319,9 +322,8 @@ void EnrollmentScreenHandler::ShowEnrollmentStatus(
       // Some special cases for generating a nicer message that's more helpful.
       switch (status.client_status()) {
         case policy::DM_STATUS_SERVICE_MANAGEMENT_NOT_SUPPORTED:
-          // TODO(crbug.com/489929275): Remove g_browser_process use.
           if (policy::EnrollmentRequisitionManager::IsMeetDevice(
-                  CHECK_DEREF(g_browser_process->local_state()))) {
+                  local_state_.get())) {
             ShowError(IDS_ENTERPRISE_ENROLLMENT_ACCOUNT_ERROR_MEETS,
                       /*retry=*/true);
           } else {
@@ -336,10 +338,8 @@ void EnrollmentScreenHandler::ShowEnrollmentStatus(
                          IsCuttlefishDevice()) {
             message_id =
                 IDS_ENTERPRISE_ENROLLMENT_MISSING_LICENSES_ERROR_BEAM_MEET;
-          } else if (
-              // TODO(crbug.com/489929275): Remove g_browser_process use.
-              policy::EnrollmentRequisitionManager::IsMeetDevice(
-                  CHECK_DEREF(g_browser_process->local_state()))) {
+          } else if (policy::EnrollmentRequisitionManager::IsMeetDevice(
+                         local_state_.get())) {
             message_id = IDS_ENTERPRISE_ENROLLMENT_MISSING_LICENSES_ERROR_MEETS;
           }
           ShowError(message_id, /*retry=*/true);
@@ -373,9 +373,8 @@ void EnrollmentScreenHandler::ShowEnrollmentStatus(
               /*retry=*/true);
           break;
         case policy::DM_STATUS_SERVICE_ENTERPRISE_TOS_HAS_NOT_BEEN_ACCEPTED:
-          // TODO(crbug.com/489929275): Remove g_browser_process use.
           if (policy::EnrollmentRequisitionManager::IsMeetDevice(
-                  CHECK_DEREF(g_browser_process->local_state()))) {
+                  local_state_.get())) {
             ShowError(
                 IDS_ENTERPRISE_ENROLLMENT_ENTERPRISE_TOS_HAS_NOT_BEEN_ACCEPTED_MEETS,
                 /*retry=*/true);
@@ -518,9 +517,7 @@ void EnrollmentScreenHandler::DeclareLocalizedValues(
                IDS_EDUCATION_ENROLLMENT_SCREEN_TITLE);
   builder->Add("oauthEnrollNextBtn", IDS_OFFLINE_LOGIN_NEXT_BUTTON_TEXT);
   builder->Add("oauthEnrollSkip", IDS_ENTERPRISE_ENROLLMENT_SKIP);
-  // TODO(crbug.com/489929275): Remove g_browser_process use.
-  if (policy::EnrollmentRequisitionManager::IsMeetDevice(
-          CHECK_DEREF(g_browser_process->local_state()))) {
+  if (policy::EnrollmentRequisitionManager::IsMeetDevice(local_state_.get())) {
     // Use Next text since the setup is not finished.
     builder->Add("oauthEnrollDone", IDS_EULA_NEXT_BUTTON);
   } else {
@@ -857,7 +854,7 @@ base::DictValue EnrollmentScreenHandler::ScreenDataForOAuthEnrollment() {
   screen_data.Set("management_domain", config_.management_domain);
   screen_data.Set("gaia_buttons_type",
                   GetGaiaButtonsTypeString(gaia_buttons_type_));
-  const std::string& app_locale = g_browser_process->GetApplicationLocale();
+  const std::string& app_locale = application_locale_storage_->Get();
   if (!app_locale.empty()) {
     screen_data.Set("hl", app_locale);
   }

@@ -10,12 +10,16 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_launcher.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen_view.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
+
+class ApplicationLocaleStorage;
+class PrefService;
 
 namespace ash {
 
@@ -28,7 +32,10 @@ class EnrollmentScreenHandler : public BaseScreenHandler,
  public:
   using TView = EnrollmentScreenView;
 
-  EnrollmentScreenHandler();
+  // `local_state` and `application_locale_storage` must be non-null and must
+  // outlive `this`.
+  EnrollmentScreenHandler(PrefService* local_state,
+                          ApplicationLocaleStorage* application_locale_storage);
 
   EnrollmentScreenHandler(const EnrollmentScreenHandler&) = delete;
   EnrollmentScreenHandler& operator=(const EnrollmentScreenHandler&) = delete;
@@ -130,6 +137,9 @@ class EnrollmentScreenHandler : public BaseScreenHandler,
 
   // Returns true if current visible screen is the enrollment sign-in page.
   bool IsOnEnrollmentScreen();
+
+  const raw_ref<PrefService> local_state_;
+  const raw_ref<ApplicationLocaleStorage> application_locale_storage_;
 
   // Keeps the controller for this view.
   raw_ptr<Controller, DanglingUntriaged> controller_ = nullptr;

@@ -47,6 +47,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/extensions/tab_helper.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
@@ -414,6 +415,8 @@ bool OobeUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
 void OobeUI::ConfigureOobeDisplay() {
   // TODO(crbug.com/489929275): Avoid using g_browser_process.
   PrefService* local_state = g_browser_process->local_state();
+  ApplicationLocaleStorage* application_locale_storage =
+      g_browser_process->GetFeatures()->application_locale_storage();
   policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory =
@@ -454,7 +457,8 @@ void OobeUI::ConfigureOobeDisplay() {
       local_state, GetView<ErrorScreenHandler>()->AsWeakPtr());
   ErrorScreen* error_screen = error_screen_.get();
 
-  AddScreenHandler(std::make_unique<EnrollmentScreenHandler>());
+  AddScreenHandler(std::make_unique<EnrollmentScreenHandler>(
+      local_state, application_locale_storage));
 
   AddScreenHandler(std::make_unique<LocaleSwitchScreenHandler>());
 

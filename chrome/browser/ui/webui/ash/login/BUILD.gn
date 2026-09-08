@@ -316,6 +316,7 @@ static_library("login") {
     "//chromeos/dbus/power",
     "//chromeos/strings",
     "//chromeos/version",
+    "//components/application_locale_storage",
     "//components/content_settings/core/common",
     "//components/enterprise/device_trust",
     "//components/onc",
