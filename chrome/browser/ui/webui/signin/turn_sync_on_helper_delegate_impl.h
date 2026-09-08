@@ -12,10 +12,10 @@
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 
+class AccountInfo;
+class BrowserWindowInterface;
 class Profile;
 class SigninUIError;
-class BrowserWindowInterface;
-struct AccountInfo;
 
 namespace policy {
 class ProfileSeparationPolicies;

@@ -47,9 +47,9 @@ enum class PasswordTitleType {
   UPDATE_PASSWORD,  // update plain password
 };
 
+class AccountInfo;
 class BrowserWindowInterface;
 class Profile;
-struct AccountInfo;
 
 // The desired width and height in pixels for an account avatar.
 inline constexpr int kAvatarImageSize = 32;

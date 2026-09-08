@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 
-struct AccountInfo;
+class AccountInfo;
 class Browser;
 @class SnackbarMessageAction;
 

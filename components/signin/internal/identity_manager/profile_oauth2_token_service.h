@@ -36,10 +36,10 @@ namespace signin {
 class IdentityManager;
 }
 
-struct AccountInfo;
-class PrefService;
-class PrefRegistrySimple;
+class AccountInfo;
 class OAuth2AccessTokenConsumer;
+class PrefRegistrySimple;
+class PrefService;
 class ProfileOAuth2TokenServiceDelegate;
 
 // ProfileOAuth2TokenService retrieves OAuth2 access tokens for a given set of

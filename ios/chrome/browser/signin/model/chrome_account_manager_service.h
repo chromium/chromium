@@ -22,7 +22,7 @@
 #import "ios/chrome/browser/signin/model/pattern_account_restriction.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 
-struct AccountInfo;
+class AccountInfo;
 class DeviceAccountsProviderImpl;
 class PrefService;
 @protocol RefreshAccessTokenError;

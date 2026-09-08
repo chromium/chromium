@@ -23,7 +23,7 @@ namespace content {
 class WebContents;
 }
 
-struct AccountInfo;
+class AccountInfo;
 class BrowserWindowInterface;
 class SigninUIError;
 

@@ -18,10 +18,10 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
 
-class BrowserWindowInterface;
-struct AccountInfo;
-class StateProvider;
+class AccountInfo;
 class AvatarToolbarButtonTestAccessor;
+class BrowserWindowInterface;
+class StateProvider;
 
 // This class takes care the Profile Avatar Button.
 // Primarily applies UI configuration.

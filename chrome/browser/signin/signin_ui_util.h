@@ -15,7 +15,7 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 
-struct AccountInfo;
+class AccountInfo;
 struct CoreAccountInfo;
 class Profile;
 class ProfileAttributesEntry;

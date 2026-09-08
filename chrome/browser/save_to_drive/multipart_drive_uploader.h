@@ -12,9 +12,9 @@
 #include "chrome/browser/save_to_drive/drive_uploader.h"
 #include "url/gurl.h"
 
+class AccountInfo;
 class GURL;
 class Profile;
-struct AccountInfo;
 
 namespace endpoint_fetcher {
 class EndpointFetcher;

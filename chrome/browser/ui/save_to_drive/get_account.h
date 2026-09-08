@@ -15,7 +15,7 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-struct AccountInfo;
+class AccountInfo;
 
 namespace save_to_drive {
 class AccountChooserController;

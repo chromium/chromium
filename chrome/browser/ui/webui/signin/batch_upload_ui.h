@@ -18,7 +18,7 @@ namespace content {
 class WebUI;
 }
 
-struct AccountInfo;
+class AccountInfo;
 class BatchUploadHandler;
 class BatchUploadUI;
 class BrowserWindowInterface;

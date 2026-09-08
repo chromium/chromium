@@ -25,9 +25,9 @@
 #include "content/public/browser/web_ui_message_handler.h"
 #include "google_apis/gaia/core_account_id.h"
 
+class AccountInfo;
 class BrowserWindowInterface;
 class Profile;
-struct AccountInfo;
 
 namespace base {
 class FilePath;

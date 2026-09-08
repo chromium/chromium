@@ -10,7 +10,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
-struct AccountInfo;
+class AccountInfo;
 class BtmBrowserSigninDetectorFactory;
 
 namespace content {

@@ -40,7 +40,7 @@ namespace gfx {
 struct VectorIcon;
 }
 
-struct AccountInfo;
+class AccountInfo;
 class AuthenticatorRequestDialogViewController;
 class Profile;
 

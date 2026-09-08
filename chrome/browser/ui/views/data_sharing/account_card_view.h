@@ -8,7 +8,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
-struct AccountInfo;
+class AccountInfo;
 
 class AccountCardView : public views::View {
   METADATA_HEADER(AccountCardView, views::View)

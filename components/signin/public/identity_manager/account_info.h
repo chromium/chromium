@@ -60,7 +60,8 @@ struct CoreAccountInfo {
 // Stores all the information known about an account. Part of the information
 // may only become available asynchronously, which is indicated by optional
 // return values.
-struct AccountInfo {
+class AccountInfo {
+ public:
   class Builder;
 
   AccountInfo();

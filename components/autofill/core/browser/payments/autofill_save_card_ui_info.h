@@ -12,7 +12,7 @@
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "ui/gfx/image/image.h"
 
-struct AccountInfo;
+class AccountInfo;
 
 namespace autofill {
 

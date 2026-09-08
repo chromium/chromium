@@ -9,10 +9,10 @@
 #include <utility>
 #include <vector>
 
+class AccountInfo;
 class GURL;
 class Profile;
 class ProfileAttributesEntry;
-struct AccountInfo;
 
 namespace gfx {
 class ImageSkia;

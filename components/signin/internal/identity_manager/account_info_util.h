@@ -17,8 +17,8 @@
 
 #include "base/values.h"
 
-struct AccountInfo;
 class AccountCapabilities;
+class AccountInfo;
 
 namespace signin {
 

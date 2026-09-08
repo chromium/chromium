@@ -10,7 +10,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/sync/service/local_data_description.h"
 
-struct AccountInfo;
+class AccountInfo;
 class Profile;
 
 namespace signin_metrics {

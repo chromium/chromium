@@ -15,7 +15,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-struct AccountInfo;
+class AccountInfo;
 
 class BrowserWindowInterface;
 

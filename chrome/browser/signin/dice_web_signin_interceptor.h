@@ -51,7 +51,7 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
-struct AccountInfo;
+class AccountInfo;
 class DiceSignedInProfileCreator;
 class DiceInterceptedSessionStartupHelper;
 class Profile;

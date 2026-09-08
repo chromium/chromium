@@ -36,10 +36,10 @@
 #error This file should only be included on desktop.
 #endif
 
+class AccountInfo;
 class BrowserWindowInterface;
 class Profile;
 class TabStripModel;
-struct AccountInfo;
 struct CoreAccountId;
 
 namespace content {

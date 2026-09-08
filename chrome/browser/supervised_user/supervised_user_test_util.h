@@ -10,7 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 
-struct AccountInfo;
+class AccountInfo;
 
 namespace supervised_user_test_util {
 

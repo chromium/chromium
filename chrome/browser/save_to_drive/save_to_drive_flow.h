@@ -13,7 +13,7 @@
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
 #include "content/public/browser/document_user_data.h"
 
-struct AccountInfo;
+class AccountInfo;
 
 namespace content {
 class RenderFrameHost;

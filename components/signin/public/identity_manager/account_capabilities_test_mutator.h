@@ -12,7 +12,7 @@
 #include "build/build_config.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 
-struct AccountInfo;
+class AccountInfo;
 
 // Support class that allows callers to modify internal capability state
 // mappings used for tests.

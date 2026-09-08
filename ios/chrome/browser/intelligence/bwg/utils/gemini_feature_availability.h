@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-struct AccountInfo;
+class AccountInfo;
 class ProfileIOS;
 
 namespace signin {

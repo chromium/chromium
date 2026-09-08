@@ -20,7 +20,7 @@
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
-struct AccountInfo;
+class AccountInfo;
 struct CoreAccountId;
 class GURL;
 class PrefRegistrySimple;

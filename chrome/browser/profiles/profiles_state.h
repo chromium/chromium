@@ -16,7 +16,7 @@
 #include <vector>
 #endif
 
-struct AccountInfo;
+class AccountInfo;
 struct CoreAccountInfo;
 class BrowserWindowInterface;
 class PrefRegistrySimple;

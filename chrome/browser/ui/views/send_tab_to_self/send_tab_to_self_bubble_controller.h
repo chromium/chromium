@@ -40,7 +40,7 @@ namespace ui {
 class Event;
 }  // namespace ui
 
-struct AccountInfo;
+class AccountInfo;
 
 namespace send_tab_to_self {
 

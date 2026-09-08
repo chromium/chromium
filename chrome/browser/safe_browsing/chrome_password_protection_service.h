@@ -37,7 +37,7 @@
 #include "chrome/browser/password_manager/android/password_checkup_launcher_helper.h"
 #endif
 
-struct AccountInfo;
+class AccountInfo;
 class PrefChangeRegistrar;
 class PrefService;
 class PrefChangeRegistrar;

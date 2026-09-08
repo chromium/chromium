@@ -25,7 +25,7 @@ namespace signin {
 class IdentityTestEnvironment;
 }
 
-struct AccountInfo;
+class AccountInfo;
 
 // Parameters that are used for most of the pixel tests. These params
 // will be used to create combinations with the test name as `test_suffix` and

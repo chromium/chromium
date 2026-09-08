@@ -15,8 +15,8 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
+class AccountInfo;
 class Profile;
-struct AccountInfo;
 
 class HistorySyncOptinServiceDefaultDelegate
     : public HistorySyncOptinHelper::Delegate {
