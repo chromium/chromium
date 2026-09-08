@@ -16,6 +16,7 @@
 #import "components/variations/variations_ids_provider.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/fake_chrome_lens_overlay_result.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_navigation_mutator.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_url_utils.h"
 #import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
@@ -387,4 +388,49 @@ TEST_F(LensOverlayNavigationManagerTest, MultimodalSRPNavigationUpdatesText) {
   // Go back expecting `URL2` with no text.
   GoBackExpectingURLReload(URL2, /*expect_can_go_back=*/YES);
   EXPECT_TRUE([latest_loaded_omnibox_text_ isEqualToString:text1]);
+}
+
+// Tests that navigation to a non-Google domain does not update the omnibox
+// steady-state text.
+TEST_F(LensOverlayNavigationManagerTest,
+       NonGoogleHostURLDoesNotUpdateOmniboxText) {
+  id<ChromeLensOverlayResult> result1 = GenerateResult(/*identifier=*/1);
+  SimulateLensDidGenerateResult(result1, /*expect_load=*/YES,
+                                /*expect_can_go_back=*/NO);
+
+  NSString* sample_query = @"sample search label";
+  GURL non_google_url = GURL("https://example.com/search");
+  non_google_url = net::AppendOrReplaceQueryParameter(
+      non_google_url, "q", sample_query.cr_UTF8String);
+  non_google_url = net::AppendOrReplaceQueryParameter(
+      non_google_url, lens::kLensSurfaceQueryParameter, "4");
+
+  // Mutator should not receive onSRPLoadWithOmniboxText: for non-Google hosts.
+  [[mock_mutator_ reject] onSRPLoadWithOmniboxText:[OCMArg any]
+                                      isMultimodal:NO];
+  [[mock_mutator_ reject] onSRPLoadWithOmniboxText:[OCMArg any]
+                                      isMultimodal:YES];
+  SimulateWebNavigation(non_google_url, /*expect_can_go_back=*/YES);
+  EXPECT_OCMOCK_VERIFY(mock_mutator_);
+
+  // Direct verification of URL utils.
+  EXPECT_FALSE(lens::IsLensOverlaySRP(non_google_url));
+  EXPECT_FALSE(lens::IsLensMultimodalSRP(non_google_url));
+}
+
+// Tests that IsLensOverlaySRP and IsLensMultimodalSRP require a Google host.
+TEST_F(LensOverlayNavigationManagerTest, GoogleHostURLValidation) {
+  EXPECT_TRUE(lens::IsLensOverlaySRP(
+      GURL("https://www.google.com/search?q=test&lns_surface=4")));
+  EXPECT_TRUE(lens::IsLensOverlaySRP(
+      GURL("https://www.google.co.uk/search?q=test&lns_surface=4")));
+  EXPECT_FALSE(lens::IsLensOverlaySRP(
+      GURL("https://example.com/search?q=test&lns_surface=4")));
+  EXPECT_FALSE(lens::IsLensOverlaySRP(
+      GURL("https://google.com.example.com/search?q=test&lns_surface=4")));
+
+  EXPECT_TRUE(lens::IsLensMultimodalSRP(GURL(
+      "https://www.google.com/search?q=test&lns_surface=4&vsrid=123&udm=24")));
+  EXPECT_FALSE(lens::IsLensMultimodalSRP(GURL(
+      "https://example.com/search?q=test&lns_surface=4&vsrid=123&udm=24")));
 }

@@ -27,6 +27,9 @@ bool IsGoogleHostURL(const GURL& url) {
 }
 
 bool IsLensOverlaySRP(const GURL& url) {
+  if (!IsGoogleHostURL(url)) {
+    return false;
+  }
   std::string search_term;
   bool hasSearchTerms = net::GetValueForKeyInQuery(url, "q", &search_term);
   std::string lens_surface;
@@ -41,6 +44,9 @@ bool IsLensOverlaySRP(const GURL& url) {
 }
 
 bool IsLensMultimodalSRP(const GURL& url) {
+  if (!IsGoogleHostURL(url)) {
+    return false;
+  }
   std::string search_term;
   bool has_search_terms = net::GetValueForKeyInQuery(url, "q", &search_term);
   std::string lens_surface;
