@@ -38,6 +38,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -524,6 +525,77 @@ public class SettingsHostFragmentTest {
 
         assertNull(
                 "Detail fragment should be removed in single column mode",
+                multiColumnSettings
+                        .getChildFragmentManager()
+                        .findFragmentById(R.id.preferences_detail));
+    }
+
+    /**
+     * Tests that popping a child detail settings fragment in single-column mode retains the base
+     * detail fragment in the detail pane rather than removing it and closing the sliding pane.
+     */
+    @Test
+    @Config(qualifiers = "w320dp")
+    public void testPopBackStack_MultiColumnSettings_SingleColumnMode_RetainsBaseDetailFragment() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        mSettingsHostFragment = new TestSingleColumnMultiColumnSettingsHostFragment();
+        mActivity
+                .getSupportFragmentManager()
+                .beginTransaction()
+                .add(
+                        android.R.id.content,
+                        mSettingsHostFragment,
+                        SettingsHostFragment.SETTINGS_NATIVE_PAGE_TAG)
+                .commitNow();
+
+        MultiColumnSettings multiColumnSettings =
+                (MultiColumnSettings) mSettingsHostFragment.getActiveFragment();
+        assertNotNull(multiColumnSettings);
+
+        SecondFakeSettingsFragment baseDetailFragment = new SecondFakeSettingsFragment();
+        multiColumnSettings.showDetailFragment(
+                baseDetailFragment, /* addToBackStack= */ false, /* tag= */ null);
+        multiColumnSettings.getChildFragmentManager().executePendingTransactions();
+        assertEquals(
+                baseDetailFragment,
+                multiColumnSettings
+                        .getChildFragmentManager()
+                        .findFragmentById(R.id.preferences_detail));
+
+        // Open child subpage with addToBackStack = true (e.g. going from Safety Check to Safe
+        // Browsing).
+        FirstFakeSettingsFragment childDetailFragment = new FirstFakeSettingsFragment();
+        multiColumnSettings.showDetailFragment(
+                childDetailFragment, /* addToBackStack= */ true, /* tag= */ null);
+        multiColumnSettings.getChildFragmentManager().executePendingTransactions();
+        assertEquals(
+                childDetailFragment,
+                multiColumnSettings
+                        .getChildFragmentManager()
+                        .findFragmentById(R.id.preferences_detail));
+
+        // Pop the back stack (e.g. user navigated back from child detail fragment).
+        multiColumnSettings.popBackStack();
+        multiColumnSettings.getChildFragmentManager().executePendingTransactions();
+        ShadowLooper.idleMainLooper();
+
+        assertEquals(
+                "Base detail fragment should be retained when popping child detail fragment",
+                baseDetailFragment,
+                multiColumnSettings
+                        .getChildFragmentManager()
+                        .findFragmentById(R.id.preferences_detail));
+        assertTrue(
+                "Sliding pane should remain open after popping child detail fragment",
+                multiColumnSettings.getSlidingPaneLayout().isOpen());
+
+        // Finish base detail fragment to return to root settings.
+        mSettingsHostFragment.finishCurrentSettings(baseDetailFragment);
+        multiColumnSettings.getChildFragmentManager().executePendingTransactions();
+        ShadowLooper.idleMainLooper();
+
+        assertNull(
+                "Detail fragment should be removed when returning to root",
                 multiColumnSettings
                         .getChildFragmentManager()
                         .findFragmentById(R.id.preferences_detail));

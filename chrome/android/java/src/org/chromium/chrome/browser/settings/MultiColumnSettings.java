@@ -112,6 +112,15 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
 
     private @Nullable String mInitialUrl;
 
+    /**
+     * Tracks whether an asynchronous back stack clearing was initiated specifically to return to
+     * root settings in single-column mode (e.g. via {@link #onCreateInitialDetailFragment}). When
+     * true, {@link #onBackStackEmpty} removes any remaining un-backstacked detail fragment and
+     * closes the sliding pane. When false, normal back navigation from a child detail fragment
+     * retains the base detail fragment.
+     */
+    private boolean mClearingBackStackForRoot;
+
     @Override
     public void onAttach(Context context) {
         // Traditional settings has the theme applied at the activity level.
@@ -237,6 +246,7 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
             // If the back stack is already empty, directly remove any current detail fragment.
             FragmentManager fragmentManager = getChildFragmentManager();
             if (fragmentManager.getBackStackEntryCount() > 0) {
+                mClearingBackStackForRoot = true;
                 fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             } else {
                 Fragment currentDetail = fragmentManager.findFragmentById(R.id.preferences_detail);
@@ -273,7 +283,8 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
      * Handles back stack becoming empty after FragmentManager finishes executing transactions. In
      * two-column mode, populates the initial detail fragment so the detail pane does not remain
      * blank. In single-column mode, removes any remaining detail fragment (if SettingsInTab is
-     * enabled), closes the sliding pane, and restores header focusability.
+     * enabled and we are clearing the back stack to return to root), closes the sliding pane, and
+     * restores header focusability.
      */
     private void onBackStackEmpty() {
         if (getView() == null) return;
@@ -281,9 +292,13 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
         FragmentManager fragmentManager = getChildFragmentManager();
         if (fragmentManager.getBackStackEntryCount() != 0) return;
 
+        boolean clearingForRoot = mClearingBackStackForRoot;
+        mClearingBackStackForRoot = false;
+
         if (isTwoColumn()) {
             ensureInitialDetailFragment();
-        } else if (SettingsInTab.isEnabled()) {
+        } else if (clearingForRoot) {
+            assert SettingsInTab.isEnabled();
             // When SettingsInTab is enabled in single-column mode, there should be no detail
             // fragment when at the root settings level. If any detail fragment remains (e.g.
             // an un-backstacked base fragment after popping all back stack entries), remove it
