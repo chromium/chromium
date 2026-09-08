@@ -29,8 +29,7 @@ using LoadHandwritingModelCallback = ::chromeos::machine_learning::mojom::
 // Records CrOSActionRecorder event.
 void RecordLoadHandwritingModelResult(const LoadHandwritingModelResult val) {
   UMA_HISTOGRAM_ENUMERATION(
-      "MachineLearningService.HandwritingModel.LoadModelResult.Event", val,
-      LoadHandwritingModelResult::LOAD_MODEL_FILES_ERROR);
+      "MachineLearningService.HandwritingModel.LoadModelResult.Event", val);
 }
 
 constexpr char kLibHandwritingDlcId[] = "libhandwriting";

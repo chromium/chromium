@@ -91,7 +91,6 @@ void ConvertWsToHttp(url::SchemeHostPort& input) {
 }
 
 void HistogramProxyUsed(const ProxyInfo& proxy_info, bool success) {
-  const ProxyServer::Scheme max_scheme = ProxyServer::Scheme::SCHEME_QUIC;
   ProxyServer::Scheme proxy_scheme = ProxyServer::Scheme::SCHEME_INVALID;
   if (!proxy_info.is_empty() && !proxy_info.is_direct()) {
     if (proxy_info.proxy_chain().is_multi_proxy()) {
@@ -106,11 +105,9 @@ void HistogramProxyUsed(const ProxyInfo& proxy_info, bool success) {
                        : proxy_info.proxy_chain().First().scheme();
   }
   if (success) {
-    UMA_HISTOGRAM_ENUMERATION("Net.HttpJob.ProxyTypeSuccess", proxy_scheme,
-                              max_scheme);
+    UMA_HISTOGRAM_ENUMERATION("Net.HttpJob.ProxyTypeSuccess", proxy_scheme);
   } else {
-    UMA_HISTOGRAM_ENUMERATION("Net.HttpJob.ProxyTypeFailed", proxy_scheme,
-                              max_scheme);
+    UMA_HISTOGRAM_ENUMERATION("Net.HttpJob.ProxyTypeFailed", proxy_scheme);
   }
 }
 

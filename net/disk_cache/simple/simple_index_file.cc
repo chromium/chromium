@@ -351,8 +351,7 @@ void SimpleIndexFile::SyncWriteToDisk(
   IndexWriteResult result = SyncWriteToDiskInternal(
       std::move(file_operations), cache_type, cache_directory, index_filename,
       temp_index_filename, std::move(pickle));
-  SIMPLE_CACHE_UMA(ENUMERATION, "IndexWriteResult", cache_type, result,
-                   IndexWriteResult::kMaxValue);
+  SIMPLE_CACHE_UMA(ENUMERATION, "IndexWriteResult", cache_type, result);
 }
 
 bool SimpleIndexFile::IndexMetadata::CheckIndexMetadata() {

@@ -178,15 +178,13 @@ void LogOSVersionChange(std::string os_version) {
     }
   }
 
-  UMA_STABILITY_HISTOGRAM_ENUMERATION("Stability.iOS.UTE.OSVersion", difference,
-                                      VersionComparison::kMaxValue);
+  UMA_STABILITY_HISTOGRAM_ENUMERATION("Stability.iOS.UTE.OSVersion", difference);
 }
 
 // Logs the thermal state of the device.
 void LogDeviceThermalState(DeviceThermalState thermal_state) {
   UMA_STABILITY_HISTOGRAM_ENUMERATION("Stability.iOS.UTE.DeviceThermalState",
-                                      thermal_state,
-                                      DeviceThermalState::kMaxValue);
+                                      thermal_state);
 }
 
 MobileSessionShutdownType GetLastShutdownType(bool has_reports_to_upload) {
@@ -291,18 +289,15 @@ void OnProcessIntermediateDumpsFinished(bool has_new_pending_reports) {
 
     UMA_STABILITY_HISTOGRAM_ENUMERATION(
         "Stability.iOS.UTE.MobileSessionOOMShutdownHint",
-        GetMobileSessionOomShutdownHint(possible_explanation),
-        MobileSessionOomShutdownHint::kMaxValue);
+        GetMobileSessionOomShutdownHint(possible_explanation));
 
     UMA_STABILITY_HISTOGRAM_ENUMERATION(
         "Stability.iOS.UTE.MobileSessionAppState",
-        GetMobileSessionAppState(possible_explanation),
-        MobileSessionAppState::kMaxValue);
+        GetMobileSessionAppState(possible_explanation));
 
     UMA_STABILITY_HISTOGRAM_ENUMERATION(
         "Stability.iOS.UTE.MobileSessionAppWillTerminateWasReceived",
-        GetMobileSessionAppWillTerminateWasReceived(possible_explanation),
-        MobileSessionAppWillTerminateWasReceived::kMaxValue);
+        GetMobileSessionAppWillTerminateWasReceived(possible_explanation));
   } else if (shutdown_type ==
                  SHUTDOWN_IN_FOREGROUND_WITH_CRASH_LOG_NO_MEMORY_WARNING ||
              shutdown_type ==

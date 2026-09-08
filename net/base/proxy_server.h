@@ -39,6 +39,7 @@ class NET_EXPORT ProxyServer {
     // A QUIC proxy is an HTTP proxy in which QUIC is used as the transport,
     // instead of TCP.
     SCHEME_QUIC = 1 << 6,
+    kMaxValue = SCHEME_QUIC,
   };
 
   // Default copy-constructor and assignment operator are OK!
