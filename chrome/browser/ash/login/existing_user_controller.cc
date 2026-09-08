@@ -64,7 +64,6 @@
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_handler.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system/device_disabling_manager.h"
 #include "chrome/browser/enterprise/browser_management/management_identity.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -82,6 +81,7 @@
 #include "chrome/browser/ui/webui/ash/login/l10n_util.h"
 #include "chrome/browser/ui/webui/ash/login/tpm_error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/update_required_screen_handler.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
@@ -185,10 +185,10 @@ void TransferHttpAuthCaches(policy::PolicyService* policy_service) {
             &TransferHttpAuthCacheToSystemNetworkContext, completion_callback));
   }
 
+  auto* signin_profile = Profile::FromBrowserContext(
+      BrowserContextHelper::Get()->GetSigninBrowserContext());
   network::mojom::NetworkContext* default_network_context =
-      ProfileHelper::GetSigninProfile()
-          ->GetDefaultStoragePartition()
-          ->GetNetworkContext();
+      signin_profile->GetDefaultStoragePartition()->GetNetworkContext();
   default_network_context->SaveHttpAuthCacheProxyEntries(base::BindOnce(
       &TransferHttpAuthCacheToSystemNetworkContext, completion_callback));
 }
@@ -235,7 +235,8 @@ void SetLoginExtensionApiCanLockManagedGuestSessionPref(
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(account_id);
   DCHECK(user);
-  Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
+  Profile* profile = Profile::FromBrowserContext(
+      BrowserContextHelper::Get()->GetBrowserContextByUser(user));
   DCHECK(profile);
   PrefService* prefs = profile->GetPrefs();
   prefs->SetBoolean(ash::prefs::kLoginExtensionApiCanLockManagedGuestSession,
@@ -1028,8 +1029,8 @@ void ExistingUserController::OnProfilePrepared(Profile* profile,
 
   profile_prepared_ = true;
 
-  UserContext user_context =
-      UserContext(*ProfileHelper::Get()->GetUserByProfile(profile));
+  UserContext user_context(
+      *BrowserContextHelper::Get()->GetUserByBrowserContext(profile));
   auto* profile_connector = profile->GetProfilePolicyConnector();
   bool is_enterprise_managed =
       profile_connector->IsManaged() &&
