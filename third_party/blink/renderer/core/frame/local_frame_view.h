@@ -485,6 +485,7 @@ class CORE_EXPORT LocalFrameView final
   void DisableAutoSizeMode();
   bool IsAutoSizeModeEnabled() const { return auto_size_info_; }
   bool IsBeingAutoSized() const { return is_being_auto_sized_; }
+  void SetNeedsAutoSizeForOverflow() { needs_autosize_for_overflow_ = true; }
 
   void ForceLayoutForPagination(float maximum_shrink_factor);
 
@@ -1217,6 +1218,8 @@ class CORE_EXPORT LocalFrameView final
   bool layout_size_fixed_to_frame_size_;
 
   bool is_being_auto_sized_ = false;
+  // Preserve overflow invalidation across style updates that do not lay out.
+  bool needs_autosize_for_overflow_ = false;
 
   bool needs_update_geometries_;
 

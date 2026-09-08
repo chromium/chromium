@@ -3584,12 +3584,12 @@ void LocalFrameView::UpdateStyleAndLayout() {
 
   // Second pass: run autosize until it stabilizes.
   if (auto_size_info_) {
-    bool should_reset_for_layout = did_layout;
+    bool should_reset_for_content = did_layout || needs_autosize_for_overflow_;
     bool did_run_autosize_layout = false;
     {
       base::AutoReset<bool> reset(&is_being_auto_sized_, true);
-      while (auto_size_info_->AutoSizeIfNeeded(should_reset_for_layout)) {
-        should_reset_for_layout = false;
+      while (auto_size_info_->AutoSizeIfNeeded(should_reset_for_content)) {
+        should_reset_for_content = false;
         did_layout |= UpdateStyleAndLayoutInternal();
         did_run_autosize_layout = true;
       }
@@ -3619,6 +3619,10 @@ void LocalFrameView::UpdateStyleAndLayout() {
     did_layout |= UpdateStyleAndLayoutInternal();
   }
   delay_scroll_offset_clamp_scope.reset();
+
+  // Clear the overflow invalidation flag so changes caused by this sizing
+  // sequence do not trigger another measurement sequence.
+  needs_autosize_for_overflow_ = false;
 
 #if DCHECK_IS_ON()
   if (!Lifecycle().LifecyclePostponed() && !ShouldThrottleRendering()) {

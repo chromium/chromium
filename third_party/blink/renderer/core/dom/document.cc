@@ -2855,6 +2855,10 @@ void Document::UpdateStyle() {
   style_engine.UpdateStyleAndLayoutTree();
 
   LayoutView* layout_view = GetLayoutView();
+  if (View()->IsAutoSizeModeEnabled() &&
+      layout_view->NeedsScrollableOverflowRecalc()) {
+    View()->SetNeedsAutoSizeForOverflow();
+  }
   layout_view->RecalcScrollableOverflow();
 
 #if DCHECK_IS_ON()
