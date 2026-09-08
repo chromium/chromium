@@ -5,6 +5,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_chip/cr_chip.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
+import {htmlEscape} from 'chrome://resources/js/util.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -193,6 +194,11 @@ export class CalendarEventElement extends CalendarEventElementBase {
     recordCalendarAction(action, this.moduleName);
     recordSmallCount(
         `NewTabPage.${this.moduleName}.EventClickIndex`, this.index);
+  }
+
+  protected getConferenceButtonAriaLabel_(): string {
+    return this.i18n(
+        'modulesCalendarJoinMeetingButtonAcc', htmlEscape(this.event.title));
   }
 
   protected showConferenceButton_(): boolean {

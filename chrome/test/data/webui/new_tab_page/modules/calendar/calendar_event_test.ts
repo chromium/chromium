@@ -245,6 +245,22 @@ suite('NewTabPageModulesCalendarEventTest', () => {
       assertTrue(!!conferenceElement);
       assertFalse(isVisible(conferenceElement));
     });
+
+    test('conference button aria-label with html in title', async () => {
+      element.expanded = true;
+      element.event = createEvent(1, {
+        title: '<CLOH< Test Meeting',
+        conferenceUrl: 'https://google.com/',
+      });
+      await microtasksFinished();
+
+      const conferenceButton = element.renderRoot.querySelector<HTMLElement>(
+          '#conference cr-button');
+      assertTrue(!!conferenceButton);
+      assertEquals(
+          'Join meeting <CLOH< Test Meeting',
+          conferenceButton.getAttribute('aria-label'));
+    });
   });
 
   suite('metrics', () => {
